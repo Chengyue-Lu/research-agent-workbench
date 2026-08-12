@@ -36,7 +36,7 @@
 | M2-005 | DONE | 创建 handoff-integrity 检查 | M1 | 确定性脚本已验证 Task/input/Skill/artifact 交接边界，不宣称科学正确性 |
 | M2-006 | IN_PROGRESS | 实现 Codex Runtime Adapter | M2-002..005 | 原生 Agent/Skill 发现、验证和显式 dispatch 已完成；launch/collect 仍使用平台原生会话、待真实演练 |
 | M2-007 | IN_PROGRESS | 执行首个双 Skill 垂直切片 | M2-006 | 离线契约切片已证明 Skills 不同且原始资料不进入 dispatch；两次真实原生执行待完成 |
-| M2-008 | IN_PROGRESS | 建立外部 Skill 发现、隔离评估与准入 Registry | M1 | ZIP 只读审计器、18/18 入口追溯和非发现派生候选已落地；Claim 表层漂移 fixtures 通过，真实 with/without 与 trial/accepted 仍待完成 |
+| M2-008 | IN_PROGRESS | 建立外部 Skill 发现、隔离评估与准入 Registry | M1 | ZIP 审计、18/18 追溯、非发现候选和 provider-neutral 双臂评估契约/CLI 已落地；fixture 会被正确阻断，真实 with/without 与 trial/accepted 仍待完成 |
 
 ## M3：上下文与风险
 
@@ -90,4 +90,4 @@ M1 已建立里程碑与首批可执行 Issues：
 
 ## 当前下一任务
 
-当前功能分支已推送，M1 本地功能完成；`M1-001` 等待 PR/main 触发 GitHub CI。M2 的 accepted Registry、四个 Profile、三个仓库级 Skills 和 Codex 原生配置映射已落地。M3 已具备 Context Snapshot、Execution Receipt、checkpoint/resume 和首批故障注入。M6-001 的三家 API Adapter、ToolChoice、本地工具参数校验和脱敏 live conformance runner 已完成；下一步由用户在真实 Windows 授权上下文执行每家一个模型，不在 Codex 沙箱内读取令牌或据此判断认证。之后仍需平台原生子 Agent 各执行一次 evidence/simulation Task，把实际 Handoff、上下文与成本写入同一收据。`M2-008` 已完成首个 ZIP 的 18/18 入口审计，并建立非发现的 `claim-preserving-rewrite` 派生候选及正反 fixtures；下一步是真实 with/without 前向测试、误报分析和继续审查外部来源，不安装原始候选。`M5-001` 和 `M5-002` 保持阻塞，直到人类选择真实案例；不以虚构课题替代真实验证。
+当前功能分支已推送，M1 本地功能完成；`M1-001` 等待 PR/main 触发 GitHub CI。M2 的 accepted Registry、四个 Profile、三个仓库级 Skills 和 Codex 原生配置映射已落地。M3 已具备 Context Snapshot、Execution Receipt、checkpoint/resume 和首批故障注入。M6-001 的三家 API Adapter、ToolChoice、本地工具参数校验和脱敏 live conformance runner 已完成；下一步由用户在真实 Windows 授权上下文执行每家一个模型，不在 Codex 沙箱内读取令牌或据此判断认证。之后仍需平台原生子 Agent 各执行一次 evidence/simulation Task，把实际 Handoff、上下文与成本写入同一收据。`M2-008` 已完成首个 ZIP 的 18/18 入口审计、非发现 `claim-preserving-rewrite` 候选以及 paired same-input 评估契约；当前 fixture 明确为 `not-eligible`。下一步是在真实 Windows 运行至少四类 baseline/with-Skill pair、盲评并分析误报，不安装原始候选。`M5-001` 和 `M5-002` 保持阻塞，直到人类选择真实案例；不以虚构课题替代真实验证。

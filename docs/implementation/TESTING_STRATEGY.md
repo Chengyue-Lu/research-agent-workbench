@@ -4,6 +4,7 @@
 
 - 先测试契约与引用，再测试模型行为；
 - deterministic tests 与 Agent evals 分开；
+- Skill 准入使用 paired same-input baseline/with-Skill，fixture-only 必须得到 not-eligible；
 - 结构 PASS 不代表科学正确；
 - 测试失败、负结果和平台漂移均保留；
 - 测试本身不能演化成庞大控制面。

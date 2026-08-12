@@ -76,6 +76,7 @@ DOCUMENT_REQUIRED: dict[str, tuple[str, ...]] = {
 }
 
 SCHEMA_KINDS = {
+    "deterministic_check_report",
     "project_protocol",
     "provider_conformance_report",
     "research_mode",
@@ -83,6 +84,7 @@ SCHEMA_KINDS = {
     "skill_manifest",
     "skill_assignment",
     "skill_archive_audit",
+    "skill_evaluation",
     "task_packet",
     "attempt",
     "handoff_packet",
@@ -122,8 +124,12 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "execution_receipt"
     if "report_id" in document and "adapter_id" in document and "checks" in document:
         return "provider_conformance_report"
+    if "report_id" in document and "checker" in document and "checks" in document:
+        return "deterministic_check_report"
     if "report_id" in document and "source_id" in document and "archive_signals" in document:
         return "skill_archive_audit"
+    if "evaluation_id" in document and "candidate_id" in document and "cases" in document:
+        return "skill_evaluation"
     if "object_type" in document and "object_id" in document:
         return "research_object"
     return None

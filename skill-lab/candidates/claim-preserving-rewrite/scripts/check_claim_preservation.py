@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 from collections import Counter
@@ -129,17 +130,99 @@ def check(source: str, revision: str, lock: dict[str, list[str]]) -> dict[str, A
     }
 
 
+def _hash_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def _file_ref(path: Path, root: Path) -> dict[str, str]:
+    resolved = path.resolve()
+    try:
+        relative = resolved.relative_to(root.resolve()).as_posix()
+    except ValueError as exc:
+        raise ValueError(f"formal report subject is outside --root: {path}") from exc
+    return {"path": relative, "sha256": _hash_file(resolved)}
+
+
+def formal_report(
+    report: dict[str, Any],
+    *,
+    source_path: Path,
+    revision_path: Path,
+    lock_path: Path | None,
+    root: Path,
+    report_id: str | None,
+) -> dict[str, Any]:
+    checker_path = Path(__file__).resolve()
+    subject_paths = [source_path, revision_path]
+    if lock_path is not None:
+        subject_paths.append(lock_path)
+    subjects = [_file_ref(path, root) for path in subject_paths]
+    checker_ref = _file_ref(checker_path, root)
+    if report_id is None:
+        identity = "|".join(
+            [checker_ref["sha256"], *(subject["sha256"] for subject in subjects)]
+        ).encode("utf-8")
+        report_id = "DCR-" + hashlib.sha256(identity).hexdigest()[:16]
+    return {
+        "schema_version": "0.1.0",
+        "report_id": report_id,
+        "checker": {
+            "checker_id": "claim-preservation-surface-check",
+            "version": "0.1.0",
+            "source_ref": checker_ref,
+        },
+        "subject_refs": subjects,
+        "status": "pass" if report["valid"] else "fail",
+        "checks": report["checks"],
+        "scope": report["scope"],
+        "limitations": [
+            "A pass checks surface invariants only and does not establish semantic or scientific equivalence."
+        ],
+    }
+
+
 def main(argv: Iterable[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("source")
     parser.add_argument("revision")
     parser.add_argument("--lock")
     parser.add_argument("--json", action="store_true")
+    parser.add_argument("--root")
+    parser.add_argument("--report-id")
+    parser.add_argument("--output")
     args = parser.parse_args(argv)
-    source = Path(args.source).read_text(encoding="utf-8-sig")
-    revision = Path(args.revision).read_text(encoding="utf-8-sig")
-    report = check(source, revision, load_lock(Path(args.lock) if args.lock else None))
-    if args.json:
+    if args.output and args.json:
+        parser.error("--output and --json are mutually exclusive")
+    if (args.root or args.report_id) and not args.output:
+        parser.error("--root and --report-id are only valid with --output")
+    if args.output and not args.root:
+        parser.error("--output requires --root")
+    source_path = Path(args.source)
+    revision_path = Path(args.revision)
+    lock_path = Path(args.lock) if args.lock else None
+    source = source_path.read_text(encoding="utf-8-sig")
+    revision = revision_path.read_text(encoding="utf-8-sig")
+    report = check(source, revision, load_lock(lock_path))
+    if args.output:
+        persisted = formal_report(
+            report,
+            source_path=source_path,
+            revision_path=revision_path,
+            lock_path=lock_path,
+            root=Path(args.root),
+            report_id=args.report_id,
+        )
+        output = Path(args.output)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        with output.open("x", encoding="utf-8", newline="\n") as stream:
+            json.dump(persisted, stream, ensure_ascii=False, indent=2)
+            stream.write("\n")
+        print(f"claim preservation report written: status={persisted['status']} output={output}")
+    elif args.json:
         print(json.dumps(report, ensure_ascii=False, indent=2))
     else:
         for item in report["checks"]:

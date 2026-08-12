@@ -56,7 +56,7 @@
       "source_id": "rwb-derived-claim-preserving-rewrite-0.1.0",
       "origin": "repository",
       "locator": "skill-lab/candidates/claim-preserving-rewrite",
-      "revision": "sha256:d663862b5800b3c4b4d5d601a61c9d7965c3044e8adcaa7aa310a1ce5b3c1366",
+      "revision": "sha256:f4eee066f7166fb94afd7c3fd2e15a75dd02e874c9c7a6f2c9fc091d0a3ad3ea",
       "license_status": "project-original-unlicensed",
       "trust": "repository-candidate",
       "notes": "Independent candidate implementation derived from reviewed design constraints. The original external package is not vendored, this package remains outside runtime discovery, and it requires separate admission evidence."

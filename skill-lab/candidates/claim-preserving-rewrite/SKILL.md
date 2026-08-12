@@ -12,7 +12,7 @@ Improve expression without changing the scientific payload. Treat every factual 
 1. Read the source and the requested style boundary. Refuse to infer missing facts or repair scientific content silently.
 2. Inventory protected quantities, units, citations, entities, polarity, uncertainty, comparison groups, scope qualifiers, and evidence-strength terms. For fragile terms, create a JSON lock using [claim-lock-contract.md](references/claim-lock-contract.md).
 3. Rewrite only wording and sentence structure. Keep negative, null, conflicting, and limitation statements visible.
-4. Run `python scripts/check_claim_preservation.py <source> <revision> [--lock <lock.json>]`.
+4. Run `python scripts/check_claim_preservation.py <source> <revision> [--lock <lock.json>]`. For formal evaluation evidence, also pass `--root <project-root> --output <new-report.json>`.
 5. If the checker reports drift, restore the source meaning or return the unresolved conflict; do not weaken the gate.
 6. Return the revision plus a short disclosure of unresolved semantic risks. State that the deterministic pass does not establish scientific equivalence.
 

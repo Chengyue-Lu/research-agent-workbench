@@ -1,0 +1,76 @@
+schema_version: 0.1.0
+evaluation_id: SE-CLAIM-REWRITE-FIXTURE-001
+candidate_id: rwb-claim-preserving-rewrite
+skill_id: claim-preserving-rewrite
+skill_version: 0.1.0
+skill_source_ref:
+  path: skill-lab/candidates/claim-preserving-rewrite/SKILL.md
+  sha256: 0e9f0753cdfdf02104b1539656c2dc7b261713162be07c902abf6bb9bc6069af
+skill_package_hash: f4eee066f7166fb94afd7c3fd2e15a75dd02e874c9c7a6f2c9fc091d0a3ad3ea
+evaluation_scope: fixture-only
+generated_at: "2026-08-13T06:00:00Z"
+protocol:
+  design: paired-same-input
+  same_provider_model_required: true
+  blinded_review_required: true
+  decision_owner: human
+  minimum_live_cases: 4
+  required_case_kinds: [trigger, non-trigger, boundary, adversarial]
+  required_review_criteria: [scientific-integrity, task-success, clarity]
+cases:
+  - case_id: CLAIM-REWRITE-FIXTURE-TRIGGER-001
+    case_kind: trigger
+    task_contract_ref:
+      path: examples/evals/claim-preserving-rewrite/task-contract.txt
+      sha256: 425fd48eeadedff2349740d22940b4ab8310a55f2f1a953d89b1dee36fadf4de
+    input_ref:
+      path: tests/fixtures/claim-preserving-rewrite/source.txt
+      sha256: b0b189e9d48c3057c96ab12eae6e21bef8fcef3f489991cbec20c783e3b494cc
+    arms:
+      baseline:
+        skill_loaded: false
+        output_ref:
+          path: tests/fixtures/claim-preserving-rewrite/invalid-revision.txt
+          sha256: 3f690cc94618d956f3e30d3cfbc645075e142c74f6d2120b6f331ce77e61125a
+        validation_ref:
+          path: examples/evals/claim-preserving-rewrite/baseline-check.json
+          sha256: 16f665351aa3d217d6ac6d7b37fa5d380f48292a9979f2995bb8398d5562fe1a
+        deterministic_status: fail
+        context:
+          status: measured
+          task_input_characters: 316
+          skill_instruction_characters: 0
+          total_loaded_characters: 316
+      with_skill:
+        skill_loaded: true
+        output_ref:
+          path: tests/fixtures/claim-preserving-rewrite/valid-revision.txt
+          sha256: bd30fd2953f16531a4bca0ce13bb5f0cf800b19ca3f35fbe6a612a86d304bba5
+        validation_ref:
+          path: examples/evals/claim-preserving-rewrite/with-skill-check.json
+          sha256: 3d2503856df32b5d111a4730bf4523241510c6102bbc78bf1cb9b3d098a266dd
+        deterministic_status: pass
+        context:
+          status: measured
+          task_input_characters: 316
+          skill_instruction_characters: 2251
+          total_loaded_characters: 2567
+    review:
+      status: pending
+      reviewer_kind: none
+      reviewer_independent: false
+      blinded: false
+      order_revealed_after_scoring: false
+      label_order: [baseline, with-skill]
+      preference: pending
+      criteria: []
+      limitations:
+        - Outputs are authored fixtures, not independently generated model responses.
+admission:
+  status: not-eligible
+  outcome: pending
+  rationale: This fixture proves the evaluation harness rejects incomplete evidence; it does not measure Skill value.
+limitations:
+  - No model or native Agent executed either arm.
+  - No blind human review, token usage, monetary cost, wall time, or Context Snapshot is available.
+  - Only one trigger fixture is present; non-trigger, boundary, adversarial, and live cases remain pending.

@@ -54,6 +54,8 @@ rwb skills audit-archive <archive-path> `
 
 外部候选与本项目派生实现严格分离。独立重写、尚未准入的包放在 `skill-lab/candidates/`，该路径不参与 Codex Skill 自动发现；只有完成准入 Gate 后，才允许以新版本和新哈希进入 `.agents/skills` 与 accepted Registry。外部未知许可文本不复制到派生包。
 
+候选的 with/without 证据遵循 [Skill 双臂评估协议](SKILL_EVALUATION_PROTOCOL.md)：同一输入、同一 provider/model/config，分别运行 baseline 与显式加载固定 Skill 的条件，持久化收据与上下文，再进行盲评。fixture 只能验证评估器，不能替代真实前向测试。
+
 归档内的 science skill catalog 自称含 1391 个条目及 trust/review 标签。这些是来源方声明，不是本项目的准入结论；首版只把它视为发现索引，不导入全部条目。
 
 ## 3. 候选评分维度

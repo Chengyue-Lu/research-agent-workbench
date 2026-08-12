@@ -99,7 +99,7 @@ rwb providers probe --config registry/providers/adapters.yaml --check-environmen
 
 ### P1：三家非流式薄 Adapter（完成）
 
-实现 text、client tools、structured output 和可得 usage 映射；用注入 Transport 的离线 fixture 覆盖正反路径。连同 ToolChoice、本地工具参数复验、conformance runner 和 CLI 安全边界，当前 82 项仓库测试通过。
+实现 text、client tools、structured output 和可得 usage 映射；用注入 Transport 的离线 fixture 覆盖正反路径。ToolChoice、本地工具参数复验、conformance runner 和 CLI 安全边界均纳入全仓回归；不在文档中固定易漂移的测试数量。
 
 ### P2：真实 Windows live conformance（Runner 已完成，执行待完成）
 

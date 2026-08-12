@@ -2,6 +2,7 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -64,6 +65,36 @@ class ClaimPreservingRewriteCandidateTests(unittest.TestCase):
         report = json.loads(result.stdout)
         failed = {item["code"] for item in report["checks"] if item["status"] == "fail"}
         self.assertIn("CLAIM-REVISION-EMPTY", failed)
+
+    def test_checker_writes_a_pinned_formal_report_without_overwriting(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "report.json"
+            command = [
+                sys.executable,
+                str(SCRIPT),
+                str(FIXTURES / "source.txt"),
+                str(FIXTURES / "valid-revision.txt"),
+                "--lock",
+                str(FIXTURES / "claim-lock.json"),
+                "--root",
+                str(ROOT),
+                "--output",
+                str(output),
+            ]
+            first = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
+            report = load_document(output)
+            second = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
+        committed = load_document(
+            ROOT / "examples/evals/claim-preserving-rewrite/with-skill-check.json"
+        )
+        self.assertEqual(0, first.returncode, first.stdout + first.stderr)
+        self.assertEqual([], SchemaCatalog().validate("deterministic_check_report", report))
+        self.assertEqual("pass", report["status"])
+        self.assertEqual(
+            {key: value for key, value in committed.items() if key != "report_id"},
+            {key: value for key, value in report.items() if key != "report_id"},
+        )
+        self.assertNotEqual(0, second.returncode)
 
     def test_candidate_is_not_discoverable_or_accepted(self) -> None:
         self.assertTrue(SCRIPT.is_file())

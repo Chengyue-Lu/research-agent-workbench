@@ -38,6 +38,7 @@ from research_workbench.context import (
     checkpoint_digest,
 )
 from research_workbench.contracts import ContractError, ContractRisk, RiskLevel, to_plain
+from research_workbench.evaluation import assess_skill_evaluation
 from research_workbench.io import iter_documents, load_document
 from research_workbench.observability import ExecutionReceipt, check_execution_receipt
 from research_workbench.protocol import ProjectProtocol
@@ -153,6 +154,46 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
             path_only.append(receipt.context_snapshot_ref)
         if receipt.runtime.capability_snapshot_ref:
             path_only.append(receipt.runtime.capability_snapshot_ref)
+    elif kind == "deterministic_check_report":
+        checker = document.get("checker")
+        if isinstance(checker, Mapping) and isinstance(checker.get("source_ref"), Mapping):
+            references = (FileReference.from_mapping(checker["source_ref"]),)
+        for subject_ref in document.get("subject_refs", []):
+            if isinstance(subject_ref, Mapping):
+                references += (FileReference.from_mapping(subject_ref),)
+    elif kind == "skill_evaluation":
+        source_ref = document.get("skill_source_ref")
+        if isinstance(source_ref, Mapping):
+            references = (FileReference.from_mapping(source_ref),)
+        project_protocol_ref = document.get("project_protocol_ref")
+        if isinstance(project_protocol_ref, Mapping):
+            references += (FileReference.from_mapping(project_protocol_ref),)
+        model_config_ref = document.get("model_config_ref")
+        if isinstance(model_config_ref, Mapping):
+            references += (FileReference.from_mapping(model_config_ref),)
+        for case in document.get("cases", []):
+            if not isinstance(case, Mapping):
+                continue
+            for key in ("task_contract_ref", "input_ref"):
+                case_ref = case.get(key)
+                if isinstance(case_ref, Mapping):
+                    references += (FileReference.from_mapping(case_ref),)
+            arms = case.get("arms")
+            if not isinstance(arms, Mapping):
+                continue
+            for arm in arms.values():
+                if not isinstance(arm, Mapping):
+                    continue
+                for key in ("output_ref", "validation_ref"):
+                    reference = arm.get(key)
+                    if isinstance(reference, Mapping):
+                        references += (FileReference.from_mapping(reference),)
+                receipt_ref = arm.get("execution_receipt_ref")
+                if isinstance(receipt_ref, str):
+                    path_only.append(receipt_ref)
+        admission = document.get("admission")
+        if isinstance(admission, Mapping) and isinstance(admission.get("decision_ref"), str):
+            path_only.append(str(admission["decision_ref"]))
     risks = check_references(root, references)
     risks.extend(extra_risks)
     for relative in path_only:
@@ -318,6 +359,17 @@ def _skill_audit_archive(args: argparse.Namespace) -> int:
         return 0
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0
+
+
+def _skill_eval_assess(args: argparse.Namespace) -> int:
+    document = _load_valid(args.evaluation, "skill_evaluation")
+    assessment = assess_skill_evaluation(
+        document,
+        root=args.root,
+        candidate_registry=args.registry,
+    )
+    print(f"skill evaluation verdict: {assessment.verdict}")
+    return _print_risks(assessment.risks)
 
 
 def _provider_list(args: argparse.Namespace) -> int:
@@ -868,6 +920,19 @@ def build_parser() -> argparse.ArgumentParser:
     archive_audit.add_argument("--generated-at")
     archive_audit.add_argument("--output")
     archive_audit.set_defaults(handler=_skill_audit_archive)
+    skill_eval = skill_subparsers.add_parser(
+        "eval",
+        help="assess whether paired Skill evidence is ready for a human admission decision",
+    )
+    skill_eval_subparsers = skill_eval.add_subparsers(dest="skill_eval_command", required=True)
+    skill_eval_assess = skill_eval_subparsers.add_parser(
+        "assess",
+        help="check paired outputs, receipts, context, blind review, and case coverage",
+    )
+    skill_eval_assess.add_argument("evaluation")
+    skill_eval_assess.add_argument("--root", default=".")
+    skill_eval_assess.add_argument("--registry", default=str(DEFAULT_CANDIDATES))
+    skill_eval_assess.set_defaults(handler=_skill_eval_assess)
 
     providers = subparsers.add_parser("providers", help="inspect model provider baselines")
     provider_subparsers = providers.add_subparsers(dest="providers_command", required=True)

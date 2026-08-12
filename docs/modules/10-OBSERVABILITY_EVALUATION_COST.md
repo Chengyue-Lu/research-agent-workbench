@@ -82,6 +82,8 @@
 
 Skill 的价值由任务成功、错误率、上下文成本和结果采纳率衡量，不以安装次数或描述覆盖范围衡量。
 
+当前 `skill_evaluation` 契约实现 provider-neutral 的 paired same-input 评估：baseline 与 with-Skill 必须冻结 Task/input，控制 provider/model/config，分别引用输出、确定性报告、Execution Receipt 与 Context Snapshot，并在揭示条件前完成人类评分。`rwb skills eval assess` 会阻断 fixture-only、案例不足、输入/模型/配置漂移、with-Skill 确定性失败、上下文不可比和非盲评；它不会自动求总分或批准 Skill。平台无法提供 token 时保留 `unavailable` 并产生警告，仍可使用实测字符数与 wall time，但不得宣称 token 节省。
+
 ## 8. Trace 政策
 
 Tracing 用于定位 handoff、工具、guardrail 和成本问题，但不是科研证据本身。默认策略：
