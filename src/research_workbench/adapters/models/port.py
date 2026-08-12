@@ -77,6 +77,18 @@ class ToolDefinition:
 
 
 @dataclass(frozen=True, slots=True)
+class ToolChoice:
+    """Provider-neutral client-tool selection policy.
+
+    `specific` requires `name`; the other modes must not carry one. This is a
+    control-plane constraint only and never authorizes provider-hosted tools.
+    """
+
+    kind: str = "auto"
+    name: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class ToolCall:
     call_id: str
     name: str
@@ -113,6 +125,7 @@ class ModelRequest:
     data_policy: DataPolicy = field(default_factory=DataPolicy)
     metadata: Mapping[str, str] = field(default_factory=dict)
     extensions: Mapping[str, Any] = field(default_factory=dict)
+    tool_choice: ToolChoice = field(default_factory=ToolChoice)
 
 
 @dataclass(frozen=True, slots=True)

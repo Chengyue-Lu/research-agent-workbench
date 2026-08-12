@@ -9,7 +9,13 @@ from typing import Any, Mapping, Sequence
 import yaml
 
 from research_workbench.adapters import CodexRuntimeAdapter
-from research_workbench.adapters.models import probe_provider_adapters
+from research_workbench.adapters.models import (
+    build_live_provider,
+    conformance_plan,
+    get_provider_adapter_config,
+    probe_provider_adapters,
+    run_provider_conformance,
+)
 from research_workbench.artifacts.integrity import hash_directory, hash_file, resolve_within_root
 from research_workbench.capability import (
     AcceptedSkillRegistry,
@@ -312,6 +318,44 @@ def _provider_probe(args: argparse.Namespace) -> int:
         )
     print(result["note"])
     return 0
+
+
+def _provider_conformance(args: argparse.Namespace) -> int:
+    config = get_provider_adapter_config(args.config, args.adapter)
+    checks = tuple(args.check) if args.check else None
+    plan = conformance_plan(
+        config,
+        checks=checks,
+        max_provider_invocations=args.max_provider_invocations,
+        max_output_tokens=args.max_output_tokens,
+    )
+    if not args.execute:
+        print(json.dumps(plan, ensure_ascii=False, indent=2))
+        return 0
+    if not args.execution_context:
+        raise ValueError("--execute requires --execution-context")
+    if not args.output:
+        raise ValueError("--execute requires --output")
+    provider = build_live_provider(config)
+    report = run_provider_conformance(
+        provider,
+        adapter_id=config.adapter_id,
+        execution_context=args.execution_context,
+        checks=tuple(plan["checks"]),
+        max_provider_invocations=args.max_provider_invocations,
+        max_output_tokens=args.max_output_tokens,
+    )
+    document = report.to_mapping()
+    schema_errors = SchemaCatalog().validate("provider_conformance_report", document)
+    if schema_errors:
+        first = schema_errors[0]
+        raise ValueError(f"generated provider conformance report is invalid at {first.pointer}: {first.message}")
+    _write_yaml(Path(args.output), document)
+    print(
+        f"provider conformance {report.status}: adapter={report.adapter_id} "
+        f"invocations={report.budget.provider_invocations} output={args.output}"
+    )
+    return 0 if report.status == "passed" else 1
 
 
 def _schema_list(args: argparse.Namespace) -> int:
@@ -800,6 +844,31 @@ def build_parser() -> argparse.ArgumentParser:
     )
     provider_probe.add_argument("--json", action="store_true")
     provider_probe.set_defaults(handler=_provider_probe)
+    provider_conformance = provider_subparsers.add_parser(
+        "conformance",
+        help="plan or explicitly execute bounded synthetic provider checks",
+    )
+    provider_conformance.add_argument("--config", default="registry/providers/adapters.yaml")
+    provider_conformance.add_argument("--adapter", required=True)
+    provider_conformance.add_argument(
+        "--check",
+        action="append",
+        choices=("text", "structured", "tools"),
+        help="check to run; repeat to select multiple (default: all claimed checks)",
+    )
+    provider_conformance.add_argument("--max-provider-invocations", type=int, default=3)
+    provider_conformance.add_argument("--max-output-tokens", type=int, default=64)
+    provider_conformance.add_argument(
+        "--execute",
+        action="store_true",
+        help="perform live network requests; without this flag the command is a zero-environment dry run",
+    )
+    provider_conformance.add_argument(
+        "--execution-context",
+        help="human assertion describing the real authorization context; required with --execute",
+    )
+    provider_conformance.add_argument("--output", help="new YAML report path; required with --execute")
+    provider_conformance.set_defaults(handler=_provider_conformance)
 
     task = subparsers.add_parser("task", help="resolve Task/Profile/Skill bindings")
     task_subparsers = task.add_subparsers(dest="task_command", required=True)

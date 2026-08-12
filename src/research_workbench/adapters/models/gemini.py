@@ -15,7 +15,7 @@ from research_workbench.adapters.models.base import (
     require_list,
     require_object,
     validate_adapter_capabilities,
-    validate_structured_response,
+    validate_response_contract,
 )
 from research_workbench.adapters.models.http import CredentialProvider, HttpTransport, UrllibTransport
 from research_workbench.adapters.models.port import (
@@ -119,7 +119,7 @@ class GeminiGenerateContentProvider:
         )
         if http_response.status_code >= 400:
             self._raise_api_error(http_response.status_code, document)
-        return validate_structured_response(request, self._parse_response(request, document))
+        return validate_response_contract(request, self._parse_response(request, document))
 
     def _payload(self, request: ModelRequest, extension: Mapping[str, Any]) -> dict[str, object]:
         system, contents = self._contents(request)
@@ -139,6 +139,12 @@ class GeminiGenerateContentProvider:
                     ]
                 }
             ]
+            if request.tool_choice.kind != "auto":
+                mode = "ANY" if request.tool_choice.kind in {"required", "specific"} else "NONE"
+                function_config: dict[str, object] = {"mode": mode}
+                if request.tool_choice.kind == "specific":
+                    function_config["allowedFunctionNames"] = [request.tool_choice.name]
+                payload["toolConfig"] = {"functionCallingConfig": function_config}
         generation: dict[str, object] = {}
         if request.max_output_tokens is not None:
             generation["maxOutputTokens"] = request.max_output_tokens
@@ -151,6 +157,11 @@ class GeminiGenerateContentProvider:
             payload["generationConfig"] = generation
         for key in ("safetySettings", "toolConfig"):
             if key in extension:
+                if key in payload:
+                    raise ProviderError(
+                        ProviderErrorCategory.INVALID_REQUEST,
+                        f"Gemini {key} was supplied through both canonical and extension paths",
+                    )
                 payload[key] = extension[key]
         return payload
 

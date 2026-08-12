@@ -17,6 +17,7 @@ from research_workbench.adapters.models import (
     ProviderError,
     ProviderErrorCategory,
     ResponseFormat,
+    ToolChoice,
     ToolDefinition,
 )
 
@@ -180,6 +181,7 @@ class OpenAIAdapterTests(unittest.TestCase):
             model="test-model",
             messages=(Message("user", (ContentBlock(kind="text", text="find A-1"),)),),
             tools=(lookup_tool(),),
+            tool_choice=ToolChoice(kind="specific", name="lookup"),
         )
 
         result = provider.generate(request)
@@ -187,9 +189,48 @@ class OpenAIAdapterTests(unittest.TestCase):
         payload = json.loads(transport.requests[0].body)
         self.assertEqual("function", payload["tools"][0]["type"])
         self.assertIs(payload["tools"][0]["strict"], True)
+        self.assertEqual(
+            {"type": "function", "name": "lookup"},
+            payload["tool_choice"],
+        )
         self.assertEqual(FinishReason.TOOL_CALL, result.finish_reason)
         self.assertEqual({"id": "A-1"}, result.tool_calls[0].arguments)
         self.assertEqual("client", result.tool_calls[0].executed_by)
+
+    def test_tool_arguments_are_locally_validated_before_execution(self) -> None:
+        transport = ScriptedTransport(
+            response(
+                200,
+                {
+                    "id": "resp_invalid_tool",
+                    "status": "completed",
+                    "output": [
+                        {
+                            "type": "function_call",
+                            "call_id": "call_invalid",
+                            "name": "lookup",
+                            "arguments": "{\"id\":7}",
+                        }
+                    ],
+                },
+            )
+        )
+        provider = OpenAIResponsesProvider(
+            model="test-model",
+            credential=StaticCredential(),
+            transport=transport,
+            supported=frozenset({Capability.TEXT, Capability.TOOLS}),
+        )
+        request = ModelRequest(
+            model="test-model",
+            messages=(Message("user", (ContentBlock(kind="text", text="find"),)),),
+            tools=(lookup_tool(),),
+            tool_choice=ToolChoice(kind="specific", name="lookup"),
+        )
+        with self.assertRaises(ProviderError) as caught:
+            provider.generate(request)
+        self.assertEqual(ProviderErrorCategory.CONTRACT_VIOLATION, caught.exception.category)
+        self.assertIn("failed local validation", str(caught.exception))
 
     def test_tool_result_is_sent_as_function_call_output(self) -> None:
         transport = ScriptedTransport(
@@ -360,9 +401,12 @@ class AnthropicAdapterTests(unittest.TestCase):
             model="claude-test",
             messages=(Message("user", (ContentBlock(kind="text", text="lookup"),)),),
             tools=(lookup_tool(),),
+            tool_choice=ToolChoice(kind="specific", name="lookup"),
             max_output_tokens=100,
         )
         result = provider.generate(request)
+        tool_choice = json.loads(tool_transport.requests[0].body)["tool_choice"]
+        self.assertEqual({"type": "tool", "name": "lookup"}, tool_choice)
         self.assertEqual(FinishReason.TOOL_CALL, result.finish_reason)
         self.assertEqual("toolu_1", result.tool_calls[0].call_id)
 
@@ -551,12 +595,17 @@ class GeminiAdapterTests(unittest.TestCase):
             model="gemini-test",
             messages=(Message("user", (ContentBlock(kind="text", text="find A and B"),)),),
             tools=(lookup_tool(),),
+            tool_choice=ToolChoice(kind="specific", name="lookup"),
             capability_requirements=frozenset({Capability.PARALLEL_TOOLS}),
         )
         result = provider.generate(request)
         payload = json.loads(transport.requests[0].body)
         declaration = payload["tools"][0]["functionDeclarations"][0]
         self.assertIn("parametersJsonSchema", declaration)
+        self.assertEqual(
+            {"mode": "ANY", "allowedFunctionNames": ["lookup"]},
+            payload["toolConfig"]["functionCallingConfig"],
+        )
         self.assertEqual(FinishReason.TOOL_CALL, result.finish_reason)
         self.assertEqual(2, len(result.tool_calls))
         self.assertEqual("gemini-gem_tools-0", result.tool_calls[0].call_id)
@@ -656,6 +705,27 @@ class GeminiAdapterTests(unittest.TestCase):
         )
         result = provider.generate(text_request("gemini-test"))
         self.assertEqual(FinishReason.REFUSAL, result.finish_reason)
+
+    def test_specific_tool_choice_must_name_a_declared_tool_before_call(self) -> None:
+        transport = ScriptedTransport()
+        credential = StaticCredential()
+        provider = GeminiGenerateContentProvider(
+            model="gemini-test",
+            credential=credential,
+            transport=transport,
+            supported=frozenset({Capability.TEXT, Capability.TOOLS}),
+        )
+        request = ModelRequest(
+            model="gemini-test",
+            messages=(Message("user", (ContentBlock(kind="text", text="find"),)),),
+            tools=(lookup_tool(),),
+            tool_choice=ToolChoice(kind="specific", name="missing"),
+        )
+        with self.assertRaises(ProviderError) as caught:
+            provider.generate(request)
+        self.assertEqual(ProviderErrorCategory.INVALID_REQUEST, caught.exception.category)
+        self.assertEqual(0, credential.resolve_count)
+        self.assertEqual([], transport.requests)
 
     def test_resource_exhausted_is_normalized_as_rate_limit(self) -> None:
         transport = ScriptedTransport(

@@ -59,7 +59,11 @@ Runtime Adapter 与 Model Provider Adapter 是两层：前者映射 Codex/Claude
 
 首版只声明经过离线合同测试的能力，不根据厂商品牌推断模型能力。真实模型/账户仍需 live conformance；缺少能力、模型不匹配或 data policy 不满足时必须在解析凭据和发送请求前失败。Adapter 不自动重试、不静默 fallback，且结构化响应仍需本地 Schema 校验。
 
+工具选择以公共 `ToolChoice` 表达 auto、none、required 或指定 client tool，但由各 Adapter 映射厂商原生字段。任何返回的工具名称、call ID 和 arguments 都必须在工具执行前通过本地 allowlist、唯一性和 JSON Schema 检查，不能只依赖远端 strict mode。
+
 非秘密配置只保存环境变量名称。`rwb providers probe` 默认不读取环境；真实 Windows 中可显式使用 `--check-environment` 做不回显值的存在性检查。
+
+`rwb providers conformance` 默认同样是零环境、零网络 dry-run。显式 live 执行使用固定合成内容、至多三次请求，并生成 `provider_conformance_report`；该报告可审计预算、停止原因和用量，但禁止保留正文、工具参数、凭据与 provider response ID。
 
 ## 6. Tool Adapter
 

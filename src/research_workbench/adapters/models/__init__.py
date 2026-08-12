@@ -1,8 +1,18 @@
 from research_workbench.adapters.models.anthropic import AnthropicMessagesProvider
 from research_workbench.adapters.models.configuration import (
     ProviderAdapterConfig,
+    get_provider_adapter_config,
     load_provider_adapter_configs,
     probe_provider_adapters,
+)
+from research_workbench.adapters.models.conformance import (
+    CHECK_ORDER,
+    ConformanceBudgetRecord,
+    ConformanceCheckResult,
+    ProviderConformanceReport,
+    build_live_provider,
+    conformance_plan,
+    run_provider_conformance,
 )
 from research_workbench.adapters.models.gemini import GeminiGenerateContentProvider
 from research_workbench.adapters.models.http import (
@@ -34,6 +44,7 @@ from research_workbench.adapters.models.port import (
     ProviderRegistry,
     ResponseFormat,
     ToolCall,
+    ToolChoice,
     ToolDefinition,
     Usage,
     required_capabilities,
@@ -43,6 +54,9 @@ __all__ = [
     "AnthropicMessagesProvider",
     "Capability",
     "CapabilityGap",
+    "CHECK_ORDER",
+    "ConformanceBudgetRecord",
+    "ConformanceCheckResult",
     "ContentBlock",
     "CredentialProvider",
     "CredentialUnavailable",
@@ -62,16 +76,22 @@ __all__ = [
     "ModelResponse",
     "OpenAIResponsesProvider",
     "ProviderAdapterConfig",
+    "ProviderConformanceReport",
     "ProviderCapabilities",
     "ProviderError",
     "ProviderErrorCategory",
     "ProviderRegistry",
     "ResponseFormat",
     "ToolCall",
+    "ToolChoice",
     "ToolDefinition",
     "Usage",
     "UrllibTransport",
+    "build_live_provider",
+    "conformance_plan",
+    "get_provider_adapter_config",
     "load_provider_adapter_configs",
     "probe_provider_adapters",
     "required_capabilities",
+    "run_provider_conformance",
 ]

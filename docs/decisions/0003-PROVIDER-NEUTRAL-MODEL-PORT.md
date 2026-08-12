@@ -13,7 +13,7 @@ Workbench 首先利用 Codex 等平台的原生 Agent/Skill 运行能力，但�
 
 建立 `ModelProvider` 端口，并采用“稳定规范对象 + 显式能力协商 + 提供商 Adapter”的结构：
 
-1. 公共请求只包含 `Message`、`ContentBlock`、`ToolDefinition`、`ResponseFormat`、`DataPolicy` 和预算参数。
+1. 公共请求只包含 `Message`、`ContentBlock`、`ToolDefinition`、`ToolChoice`、`ResponseFormat`、`DataPolicy` 和预算参数。
 2. 公共响应只包含规范化内容、工具调用、停止原因、用量和警告。
 3. 每个 Adapter 在执行前返回具体模型与配置的 `ProviderCapabilities`；缺少硬能力时返回 `CapabilityGap`，不得静默模拟。
 4. 提供商特有参数只能进入命名空间化 `extensions`，其原始响应只能作为诊断元数据，不能成为 Project/Task/Claim 的权威状态。
@@ -21,6 +21,7 @@ Workbench 首先利用 Codex 等平台的原生 Agent/Skill 运行能力，但�
 6. Adapter 必须区分正常完成、工具调用、长度截断、拒答、暂停和上下文上限；不得全部压成一个 `finished` 布尔值。
 7. 即使提供商承诺结构化输出，Workbench 仍进行本地 Schema 与业务规则验证。
 8. 重试只适用于明确的瞬态失败并受预算限制。跨提供商回退必须记录实际提供商、模型和数据策略，不能无声发生。
+9. 工具选择只统一 auto、none、required 和 specific client tool 四种稳定语义；返回的 tool name、call ID 和 arguments 必须在执行前做本地 allowlist、唯一性和 Schema 复验。
 
 模型选择是项目/任务策略，不写进科研对象；Runtime Adapter（Codex/Claude Code 等 Agent 平台）与 Model Provider Adapter（API 调用）保持分离。
 

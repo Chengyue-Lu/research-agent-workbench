@@ -245,7 +245,7 @@ rwb context checkpoint
 
 新增项必须有真实消费者、预算、测试和退出条件。不得一次引入两个功能重叠的重量级工具。
 
-当前因“后续兼容不同 AI API”的明确需求提前完成了 M6 的基础薄片：三家非流式 Adapter、延迟凭据解析、非秘密配置探测与离线合同测试。下一步不是继续铺更多提供商，而是在真实 Windows 授权上下文以每家一个模型、最小预算执行 live conformance；随后只有真实 Task 需要时才实现有预算的 tool-loop runner。
+当前因“后续兼容不同 AI API”的明确需求提前完成了 M6 的基础薄片：三家非流式 Adapter、ToolChoice、本地工具参数校验、延迟凭据解析、非秘密配置探测、离线合同测试，以及有三次调用硬上限的脱敏 live conformance runner。下一步不是继续铺更多提供商，而是在真实 Windows 授权上下文以每家一个模型执行该 runner；随后只有真实 Task 需要时才实现有预算的 tool-loop runner。
 
 ## 11. 开发分支与提交策略
 

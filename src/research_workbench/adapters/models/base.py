@@ -76,10 +76,57 @@ def preflight(request: ModelRequest, snapshot: ProviderCapabilities) -> None:
                 ProviderErrorCategory.INVALID_REQUEST,
                 f"invalid response JSON Schema: {exc.message}",
             ) from exc
+    if request.tool_choice.kind not in {"auto", "none", "required", "specific"}:
+        raise ProviderError(
+            ProviderErrorCategory.INVALID_REQUEST,
+            f"unsupported tool choice: {request.tool_choice.kind}",
+        )
+    if request.tool_choice.kind == "specific":
+        if not request.tool_choice.name:
+            raise ProviderError(
+                ProviderErrorCategory.INVALID_REQUEST,
+                "specific tool choice requires a tool name",
+            )
+        names = {tool.name for tool in request.tools}
+        if request.tool_choice.name not in names:
+            raise ProviderError(
+                ProviderErrorCategory.INVALID_REQUEST,
+                f"specific tool choice names an unavailable tool: {request.tool_choice.name}",
+            )
+    elif request.tool_choice.name is not None:
+        raise ProviderError(
+            ProviderErrorCategory.INVALID_REQUEST,
+            f"tool choice {request.tool_choice.kind} must not include a tool name",
+        )
+    if request.tool_choice.kind != "auto" and not request.tools:
+        raise ProviderError(
+            ProviderErrorCategory.INVALID_REQUEST,
+            f"tool choice {request.tool_choice.kind} requires at least one tool definition",
+        )
     if request.max_output_tokens is not None and request.max_output_tokens <= 0:
         raise ProviderError(ProviderErrorCategory.INVALID_REQUEST, "max_output_tokens must be positive")
     if request.temperature is not None and not 0 <= request.temperature <= 2:
         raise ProviderError(ProviderErrorCategory.INVALID_REQUEST, "temperature must be between 0 and 2")
+    tool_names: set[str] = set()
+    for tool in request.tools:
+        if not tool.name.strip() or not tool.description.strip():
+            raise ProviderError(
+                ProviderErrorCategory.INVALID_REQUEST,
+                "tool name and description must be non-empty",
+            )
+        if tool.name in tool_names:
+            raise ProviderError(
+                ProviderErrorCategory.INVALID_REQUEST,
+                f"duplicate tool definition: {tool.name}",
+            )
+        tool_names.add(tool.name)
+        try:
+            Draft202012Validator.check_schema(tool.input_schema)
+        except SchemaError as exc:
+            raise ProviderError(
+                ProviderErrorCategory.INVALID_REQUEST,
+                f"invalid input schema for tool {tool.name!r}: {exc.message}",
+            ) from exc
     for message in request.messages:
         if message.role not in {"system", "developer", "user", "assistant", "tool"}:
             raise ProviderError(ProviderErrorCategory.INVALID_REQUEST, f"unsupported message role: {message.role}")
@@ -227,6 +274,63 @@ def validate_structured_response(request: ModelRequest, response: ModelResponse)
             f"{response.provider} structured output failed local validation at {pointer}: {first.message}",
         )
     return response
+
+
+def validate_response_contract(request: ModelRequest, response: ModelResponse) -> ModelResponse:
+    """Apply provider-independent checks before output can reach a tool runner."""
+
+    definitions = {tool.name: tool for tool in request.tools}
+    seen_ids: set[str] = set()
+    for call in response.tool_calls:
+        if call.call_id in seen_ids:
+            raise ProviderError(
+                ProviderErrorCategory.CONTRACT_VIOLATION,
+                f"{response.provider} returned duplicate tool call id: {call.call_id}",
+            )
+        seen_ids.add(call.call_id)
+        definition = definitions.get(call.name)
+        if definition is None:
+            raise ProviderError(
+                ProviderErrorCategory.CONTRACT_VIOLATION,
+                f"{response.provider} called undeclared tool: {call.name}",
+            )
+        errors = sorted(
+            Draft202012Validator(definition.input_schema).iter_errors(call.arguments),
+            key=lambda item: list(item.absolute_path),
+        )
+        if errors:
+            first = errors[0]
+            pointer = "$" + "".join(
+                f"[{part}]" if isinstance(part, int) else f".{part}" for part in first.absolute_path
+            )
+            raise ProviderError(
+                ProviderErrorCategory.CONTRACT_VIOLATION,
+                f"{response.provider} tool call {call.name!r} failed local validation at "
+                f"{pointer}: {first.message}",
+            )
+    if response.tool_calls and request.tool_choice.kind == "none":
+        raise ProviderError(
+            ProviderErrorCategory.CONTRACT_VIOLATION,
+            f"{response.provider} returned tool calls when tool_choice was none",
+        )
+    if request.tool_choice.kind in {"required", "specific"} and not response.tool_calls:
+        raise ProviderError(
+            ProviderErrorCategory.CONTRACT_VIOLATION,
+            f"{response.provider} did not return a required tool call",
+        )
+    if request.tool_choice.kind == "specific" and any(
+        call.name != request.tool_choice.name for call in response.tool_calls
+    ):
+        raise ProviderError(
+            ProviderErrorCategory.CONTRACT_VIOLATION,
+            f"{response.provider} called a tool other than the specifically selected tool",
+        )
+    if response.finish_reason == FinishReason.TOOL_CALL and not response.tool_calls:
+        raise ProviderError(
+            ProviderErrorCategory.CONTRACT_VIOLATION,
+            f"{response.provider} reported tool_call without tool calls",
+        )
+    return validate_structured_response(request, response)
 
 
 def text_from_output(value: object) -> str:

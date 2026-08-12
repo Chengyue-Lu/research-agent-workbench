@@ -77,6 +77,7 @@ DOCUMENT_REQUIRED: dict[str, tuple[str, ...]] = {
 
 SCHEMA_KINDS = {
     "project_protocol",
+    "provider_conformance_report",
     "research_mode",
     "agent_profile",
     "skill_manifest",
@@ -118,6 +119,8 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "context_snapshot"
     if "receipt_id" in document and "execution_kind" in document and "attempt_ref" in document:
         return "execution_receipt"
+    if "report_id" in document and "adapter_id" in document and "checks" in document:
+        return "provider_conformance_report"
     if "object_type" in document and "object_id" in document:
         return "research_object"
     return None

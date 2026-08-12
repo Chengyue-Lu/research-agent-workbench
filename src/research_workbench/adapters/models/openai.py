@@ -16,7 +16,7 @@ from research_workbench.adapters.models.base import (
     require_object,
     text_from_output,
     validate_adapter_capabilities,
-    validate_structured_response,
+    validate_response_contract,
 )
 from research_workbench.adapters.models.http import CredentialProvider, HttpTransport, UrllibTransport
 from research_workbench.adapters.models.port import (
@@ -113,7 +113,7 @@ class OpenAIResponsesProvider:
         )
         if http_response.status_code >= 400:
             self._raise_api_error(http_response.status_code, document)
-        return validate_structured_response(request, self._parse_response(request, document))
+        return validate_response_contract(request, self._parse_response(request, document))
 
     def _payload(self, request: ModelRequest, extension: Mapping[str, Any]) -> dict[str, object]:
         payload: dict[str, object] = {
@@ -134,6 +134,13 @@ class OpenAIResponsesProvider:
                 }
                 for tool in request.tools
             ]
+            if request.tool_choice.kind == "specific":
+                payload["tool_choice"] = {
+                    "type": "function",
+                    "name": request.tool_choice.name,
+                }
+            elif request.tool_choice.kind != "auto":
+                payload["tool_choice"] = request.tool_choice.kind
         if request.response_format.kind == "json_schema":
             payload["text"] = {
                 "format": {

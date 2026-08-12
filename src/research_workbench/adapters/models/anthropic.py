@@ -15,7 +15,7 @@ from research_workbench.adapters.models.base import (
     require_object,
     text_from_output,
     validate_adapter_capabilities,
-    validate_structured_response,
+    validate_response_contract,
 )
 from research_workbench.adapters.models.http import CredentialProvider, HttpTransport, UrllibTransport
 from research_workbench.adapters.models.port import (
@@ -131,7 +131,7 @@ class AnthropicMessagesProvider:
                 ),
                 provider_metadata=response.provider_metadata,
             )
-        return validate_structured_response(request, response)
+        return validate_response_contract(request, response)
 
     def _payload(self, request: ModelRequest, extension: Mapping[str, Any]) -> dict[str, object]:
         system, messages = self._messages(request)
@@ -152,6 +152,15 @@ class AnthropicMessagesProvider:
                 }
                 for tool in request.tools
             ]
+            if request.tool_choice.kind == "specific":
+                payload["tool_choice"] = {
+                    "type": "tool",
+                    "name": request.tool_choice.name,
+                }
+            elif request.tool_choice.kind == "required":
+                payload["tool_choice"] = {"type": "any"}
+            elif request.tool_choice.kind != "auto":
+                payload["tool_choice"] = {"type": request.tool_choice.kind}
         if request.response_format.kind == "json_schema":
             payload["output_config"] = {
                 "format": {

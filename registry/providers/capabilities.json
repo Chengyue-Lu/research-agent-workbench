@@ -12,6 +12,7 @@
       "deferred_capabilities": ["streaming", "images", "files", "server_tools", "provider_state"],
       "semantic_notes": [
         "Tool calls are returned as structured output items and client tools remain application-executed.",
+        "Canonical tool_choice maps to native required/specific controls and returned arguments are locally schema-validated before execution.",
         "Structured outputs still require local schema and business-rule validation.",
         "Response and conversation identifiers must not become canonical project state.",
         "The adapter sends store=false and still requires live model/account conformance before enabling capabilities."
@@ -30,6 +31,7 @@
       "deferred_capabilities": ["streaming", "reasoning", "images", "files", "server_tools", "prompt_caching"],
       "semantic_notes": [
         "Client tool_use and provider server tools have different execution ownership.",
+        "Canonical required/specific tool choice maps to any/tool; model and thinking compatibility still require live conformance.",
         "pause_turn and model_context_window_exceeded must remain distinct from normal completion.",
         "Structured output support varies by model and hosting surface.",
         "The client-tool adapter does not claim provider-hosted server tools and still requires live conformance."
@@ -48,6 +50,7 @@
       "deferred_capabilities": ["streaming", "reasoning", "images", "files"],
       "semantic_notes": [
         "Function calls are suggestions; the application executes functions and returns results.",
+        "Canonical required/specific tool choice maps to ANY with an optional allowedFunctionNames restriction.",
         "Compositional and parallel tool behavior must be normalized without assuming one call per turn.",
         "Transient 429 and 503 responses require bounded backoff, not silent provider switching.",
         "Function-call IDs may require a visible synthetic identifier when the API omits one; live conformance remains pending."

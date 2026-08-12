@@ -30,6 +30,7 @@ flowchart LR
 - `base.py`：共同 preflight、本地结构化校验和错误边界；
 - `openai.py`、`anthropic.py`、`gemini.py`：三套独立映射；
 - `configuration.py`：非秘密配置解析和存在性探测；
+- `conformance.py`：固定合成提示、硬预算和脱敏报告的 live conformance runner；
 - `registry/providers/adapters.yaml`：禁用状态的环境变量引用模板；
 - `tests/test_provider_adapters.py`：官方响应形状的离线合同 fixture。
 
@@ -44,6 +45,7 @@ flowchart LR
 | JSON Schema 输出 | `text.format` | `output_config.format` | `generationConfig.responseJsonSchema` |
 | 暂停/拒绝 | status/refusal | `pause_turn`/`refusal` | finish reason / prompt block |
 | 用量 | input/output + cached/reasoning | input/output + cache read | prompt/candidate/cache |
+| 指定工具 | Responses `tool_choice` function | `tool_choice.type=tool` | `functionCallingConfig=ANY` + allowlist |
 
 统一只发生在确有共同含义的字段。Anthropic 的 `pause_turn` 保留为 `paused`，Gemini 的并行调用要求显式 `parallel_tools`，服务端工具不映射为普通客户端工具。
 
@@ -80,6 +82,7 @@ rwb providers probe --config registry/providers/adapters.yaml --check-environmen
 - **角色优先级损失**：把 developer/system 合并时可能改变指令优先级；live test 必须覆盖。
 - **Schema 方言差异**：提供商仅支持 JSON Schema 子集；本地完整校验不能证明远端接受，同样远端接受不能替代业务规则。
 - **工具输出注入**：工具结果是不可信数据；进入下一轮前需要长度、类型、来源和敏感信息检查。
+- **工具参数越界**：即使厂商 strict mode 成功，也必须在本地按声明的 Schema 复验工具名称和参数，验证通过前不得执行。
 - **调用 ID 不稳定**：缺失 ID 时生成的 ID 只可用于当前 Attempt，不能成为跨运行权威标识。
 - **用量不可直接横比**：cached/reasoning/工具 token 定义不同；Execution Receipt 保留分项和 provider 原值，不伪造统一成本。
 - **双重重试与重复收费**：SDK、网关和上层若同时重试可能重复执行工具或计费；当前 Adapter 不自动重试。
@@ -96,13 +99,37 @@ rwb providers probe --config registry/providers/adapters.yaml --check-environmen
 
 ### P1：三家非流式薄 Adapter（完成）
 
-实现 text、client tools、structured output 和可得 usage 映射；用注入 Transport 的离线 fixture 覆盖正反路径。当前 73 项仓库测试通过；本切片新增 20 项 Adapter/凭据合同测试和 2 项 CLI 探测测试。
+实现 text、client tools、structured output 和可得 usage 映射；用注入 Transport 的离线 fixture 覆盖正反路径。连同 ToolChoice、本地工具参数复验、conformance runner 和 CLI 安全边界，当前 82 项仓库测试通过。
 
-### P2：真实 Windows live conformance（下一阶段）
+### P2：真实 Windows live conformance（Runner 已完成，执行待完成）
 
-由用户在真实 Windows 授权上下文执行，每家先选一个明确模型，只发最小低成本请求。记录：请求时间、实际 model/version、停止原因、用量字段、结构化输出和单次工具往返。测试脚本只读环境变量，不打印 key，并提供 `--dry-run` 与预算上限。
+已实现 `rwb providers conformance`：默认只生成计划，不读取环境或发送网络；live 模式必须显式启用本地配置、添加 `--execute`、声明执行上下文并指定一个不存在的输出文件。每家先选一个明确模型，最多发送三个固定合成请求：文本、Schema 和指定 client tool。默认每次最多 64 output tokens，硬上限 256；不重试，第一次失败后停止。
 
-通过条件：文本、Schema、工具调用、错误 fixture 至少各一次；失败时降低 capability snapshot，而不是添加兼容猜测。
+报告记录实际 model/version、停止原因、可得用量、输出块类型和工具调用数量，但不保存 prompt、响应正文、工具参数、凭据、provider response ID 或原始错误正文。HTTP 错误映射继续由离线 fixture 覆盖，不为了测试而故意发送无效 live 请求。
+
+真实 Windows 执行流程：
+
+```powershell
+New-Item -ItemType Directory -Force .rwb
+Copy-Item registry/providers/adapters.yaml .rwb/provider-adapters.local.yaml
+# 在本地副本中只启用要测试的一个 Adapter；不要把 key 写入该文件。
+
+rwb providers conformance `
+  --config .rwb/provider-adapters.local.yaml `
+  --adapter openai-responses
+
+# 只在已确认授权的真实 Windows Terminal 中设置/继承模型与凭据变量后执行：
+rwb providers conformance `
+  --config .rwb/provider-adapters.local.yaml `
+  --adapter openai-responses `
+  --execute `
+  --execution-context real-windows-user-session `
+  --max-provider-invocations 3 `
+  --max-output-tokens 64 `
+  --output runs/provider-conformance/openai.yaml
+```
+
+`.rwb/` 与 `runs/` 均被 Git 忽略。通过条件：文本、Schema、指定工具调用三项均通过；失败时保留脱敏报告并降低/修正 capability snapshot，而不是添加兼容猜测。
 
 ### P3：有预算的工具循环执行器
 
@@ -118,7 +145,7 @@ rwb providers probe --config registry/providers/adapters.yaml --check-environmen
 
 ## 7. 当前不做
 
-- 不读取或提交真实 API key；
+- 不在默认/dry-run 路径读取或提交真实 API key；live 路径只在即将发送请求时读取真实 Windows 进程已有的环境变量；
 - 不在 Codex 沙箱内判断真实 Windows 身份是否认证；
 - 不自动选模型、自动降级或静默切换提供商；
 - 不实现网关、常驻代理、会话数据库或通用 Agent loop；

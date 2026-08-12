@@ -36,6 +36,7 @@ class VersionedSchemaTests(unittest.TestCase):
                 "handoff_packet",
                 "main_state",
                 "project_protocol",
+                "provider_conformance_report",
                 "research_mode",
                 "research_object",
                 "skill_manifest",

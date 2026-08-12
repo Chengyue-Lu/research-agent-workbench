@@ -21,6 +21,8 @@ ADR-0003 已冻结提供商中立端口，但仅有端口不能证明三家 API 
 7. Client tools 统一为 `tool_call` / `tool_result`，但 provider-hosted tools 不进入首版实现，也不伪装为客户端工具。
 8. 提供商结构化输出返回后仍进行本地 JSON 解析与 Draft 2020-12 Schema 校验。
 9. 未知响应块、停止原因、用量字段和 API 形状不能静默吞掉：可安全忽略的进入 warning，破坏契约的返回 `contract_violation`。
+10. `ToolChoice` 将 `auto`、`none`、`required` 和指定 client tool 作为公共控制语义；各 Adapter 映射到厂商原生字段。工具调用名称、ID 唯一性和参数必须在执行工具之前再次通过本地 Schema 校验。
+11. Live conformance 只使用固定合成提示，最多三次 provider invocation；报告不保存提示、响应正文、工具参数、凭据、provider response ID 或原始错误正文。
 
 ## 首版实现面
 
@@ -35,9 +37,12 @@ ADR-0003 已冻结提供商中立端口，但仅有端口不能证明三家 API 
 ## 依据
 
 - OpenAI Responses 的函数调用以 `function_call` output item 表达，并通过 `call_id` 关联工具输出；Structured Outputs 在 Responses API 使用 `text.format`：[Function calling](https://developers.openai.com/api/docs/guides/function-calling)、[Structured outputs](https://developers.openai.com/api/docs/guides/structured-outputs)。
+- OpenAI `tool_choice` 支持 auto、required、none 和指定 function；strict tool schemas 仍有明确 JSON Schema 子集要求：[Function calling](https://developers.openai.com/api/docs/guides/function-calling)。
 - Responses 默认存储，需显式 `store: false` 关闭：[Migrate to the Responses API](https://developers.openai.com/api/docs/guides/migrate-to-responses)。
 - Anthropic 区分 client tools 与 server tools，client tool use 通过 `tool_use` / `tool_result` 往返：[Tool use overview](https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview)。Structured Outputs 当前位于 `output_config.format`：[Structured outputs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs)。
+- Anthropic 的 `tool_choice` 分为 auto、any、tool、none，并存在与部分 thinking 模式或模型不兼容的边界：[Define tools](https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools)。
 - Gemini `generateContent` 分开表达 `systemInstruction`、`contents`、`tools`、`generationConfig`、候选停止原因和 `usageMetadata`：[GenerateContent API](https://ai.google.dev/api/generate-content)、[Function calling](https://ai.google.dev/gemini-api/docs/function-calling)。
+- Gemini `functionCallingConfig` 使用 AUTO、ANY、NONE 等模式，并可用 `allowedFunctionNames` 约束指定函数：[Function calling modes](https://ai.google.dev/gemini-api/docs/generate-content/function-calling)。
 
 ## 后果
 

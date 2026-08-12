@@ -72,7 +72,7 @@
 
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
-| M6-001 | IN_PROGRESS | OpenAI/Anthropic/Gemini 薄 Model Provider Adapters | M1-008 | 端口、HTTPS Transport、工具/Schema/停止原因/用量/错误离线合同已通过；每家一个模型的真实 Windows live conformance 待执行 |
+| M6-001 | IN_PROGRESS | OpenAI/Anthropic/Gemini 薄 Model Provider Adapters | M1-008 | 端口、ToolChoice、本地工具参数校验、HTTPS Transport 与离线合同已通过；有硬预算和脱敏报告的 live runner 已完成，每家一个模型的真实 Windows 执行待完成 |
 | M6-002 | READY | 有预算的 client-tool loop runner | M6-001, 真实消费者 | 轮次、调用、并行、工具输出、token/成本/time 均有硬上限；不自动跨提供商 fallback |
 | M6-003 | PARKED | streaming/multimodal/server tools | 真实案例需求 | 每项独立 capability、data policy、合同与删除条件，不批量铺开 |
 
@@ -90,4 +90,4 @@ M1 已建立里程碑与首批可执行 Issues：
 
 ## 当前下一任务
 
-当前功能分支已推送，M1 本地功能完成；`M1-001` 等待 PR/main 触发 GitHub CI。M2 的 accepted Registry、四个 Profile、三个仓库级 Skills 和 Codex 原生配置映射已落地。M3 已具备 Context Snapshot、Execution Receipt、checkpoint/resume 和首批故障注入。M6-001 的三家 API Adapter 离线合同已完成，凭据只在出站边界解析；下一步由用户在真实 Windows 授权上下文执行最小 live conformance，不在 Codex 沙箱内读取令牌或据此判断认证。之后仍需平台原生子 Agent 各执行一次 evidence/simulation Task，把实际 Handoff、上下文与成本写入同一收据。`M2-008` 继续逐文件候选审计但不安装候选。`M5-001` 和 `M5-002` 保持阻塞，直到人类选择真实案例；不以虚构课题替代真实验证。
+当前功能分支已推送，M1 本地功能完成；`M1-001` 等待 PR/main 触发 GitHub CI。M2 的 accepted Registry、四个 Profile、三个仓库级 Skills 和 Codex 原生配置映射已落地。M3 已具备 Context Snapshot、Execution Receipt、checkpoint/resume 和首批故障注入。M6-001 的三家 API Adapter、ToolChoice、本地工具参数校验和脱敏 live conformance runner 已完成；下一步由用户在真实 Windows 授权上下文执行每家一个模型，不在 Codex 沙箱内读取令牌或据此判断认证。之后仍需平台原生子 Agent 各执行一次 evidence/simulation Task，把实际 Handoff、上下文与成本写入同一收据。`M2-008` 继续逐文件候选审计但不安装候选。`M5-001` 和 `M5-002` 保持阻塞，直到人类选择真实案例；不以虚构课题替代真实验证。

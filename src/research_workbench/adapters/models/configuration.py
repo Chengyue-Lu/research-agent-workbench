@@ -142,6 +142,13 @@ def load_provider_adapter_configs(path: str | Path) -> tuple[ProviderAdapterConf
     return tuple(adapters)
 
 
+def get_provider_adapter_config(path: str | Path, adapter_id: str) -> ProviderAdapterConfig:
+    matches = [item for item in load_provider_adapter_configs(path) if item.adapter_id == adapter_id]
+    if not matches:
+        raise KeyError(f"unknown provider adapter: {adapter_id}")
+    return matches[0]
+
+
 def probe_provider_adapters(
     path: str | Path,
     *,

@@ -70,6 +70,53 @@ class CliTests(unittest.TestCase):
         self.assertNotIn(secret, output)
         self.assertNotIn("configured-model", output)
 
+    def test_provider_conformance_defaults_to_zero_environment_dry_run(self) -> None:
+        code, output = run_cli(
+            [
+                "providers",
+                "conformance",
+                "--config",
+                str(ROOT / "registry" / "providers" / "adapters.yaml"),
+                "--adapter",
+                "openai-responses",
+            ]
+        )
+        self.assertEqual(0, code)
+        document = json.loads(output)
+        self.assertEqual("dry-run", document["mode"])
+        self.assertIs(document["environment_read"], False)
+        self.assertEqual(0, document["network_requests"])
+
+    def test_provider_conformance_execute_rejects_disabled_template_before_environment(self) -> None:
+        secret = "must-not-be-read-or-printed"
+        with tempfile.TemporaryDirectory() as temporary:
+            output_path = Path(temporary) / "report.yaml"
+            with patch.dict(
+                "os.environ",
+                {"OPENAI_API_KEY": secret, "RWB_OPENAI_MODEL": "secret-model-marker"},
+                clear=True,
+            ):
+                code, output = run_cli(
+                    [
+                        "providers",
+                        "conformance",
+                        "--config",
+                        str(ROOT / "registry" / "providers" / "adapters.yaml"),
+                        "--adapter",
+                        "openai-responses",
+                        "--execute",
+                        "--execution-context",
+                        "offline-cli-test",
+                        "--output",
+                        str(output_path),
+                    ]
+                )
+            self.assertEqual(2, code)
+            self.assertIn("is disabled", output)
+            self.assertNotIn(secret, output)
+            self.assertNotIn("secret-model-marker", output)
+            self.assertFalse(output_path.exists())
+
     def test_validate_runs_schema_and_live_reference_checks(self) -> None:
         code, output = run_cli(
             [
