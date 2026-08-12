@@ -1,0 +1,56 @@
+{
+  "schema_version": "0.1.0",
+  "registry_kind": "skill_sources",
+  "generated_at": "2026-08-13",
+  "sources": [
+    {
+      "source_id": "research-copilot-archive-1.0.0",
+      "origin": "user-supplied-archive",
+      "locator": "research-copilot.zip",
+      "revision": "sha256:c69471fdec7164595b5d28a613a5421d549472585d8ace0f89b745b801ebe940",
+      "license_status": "unknown-mixed",
+      "trust": "untrusted-quarantine",
+      "notes": "Archive contains 18 SKILL.md files, 392 Python files, and 1005 entries. Only metadata and selected text were inspected; no code was executed or installed."
+    },
+    {
+      "source_id": "k-dense-scientific-agent-skills",
+      "origin": "github",
+      "locator": "https://github.com/K-Dense-AI/scientific-agent-skills",
+      "revision": "5ad4aae76bc40257b914367afacc6fd686a282d5",
+      "license_status": "MIT-repository-level",
+      "trust": "external-untrusted"
+    },
+    {
+      "source_id": "ngtiendong-academic-research-agent-skill",
+      "origin": "github",
+      "locator": "https://github.com/ngtiendong/Academic-Research-Agent-Skill",
+      "revision": "41c611c2e36461596c0c072e7641f9ddba251be8",
+      "license_status": "MIT-repository-level",
+      "trust": "external-untrusted"
+    },
+    {
+      "source_id": "lingzhi-agent-research-skills",
+      "origin": "github",
+      "locator": "https://github.com/lingzhi227/agent-research-skills",
+      "revision": "9e6c085d65e313e475e921fdfe795ac11eb7589e",
+      "license_status": "not-detected",
+      "trust": "external-untrusted"
+    },
+    {
+      "source_id": "anthropic-skills",
+      "origin": "github",
+      "locator": "https://github.com/anthropics/skills",
+      "revision": "f17010c9bb483898c1d9c9f42dde2b3a98889434",
+      "license_status": "file-level-mixed-review-required",
+      "trust": "external-reference"
+    },
+    {
+      "source_id": "openai-skills",
+      "origin": "github",
+      "locator": "https://github.com/openai/skills",
+      "revision": "49f948faa9258a0c61caceaf225e179651397431",
+      "license_status": "file-level-review-required",
+      "trust": "external-reference"
+    }
+  ]
+}

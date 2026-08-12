@@ -6,9 +6,9 @@
 
 ## 当前状态
 
-状态：`Architecture Baseline / M0`
+状态：`M1 Provider-neutral Foundation`
 
-当前仓库首先确立架构、模块边界和实施任务。尚未承诺具体运行时、数据库、Web UI 或完整自动化。只有通过两个差异明显的真实研究案例后，候选机制才可以进入公共内核。
+当前仓库已进入 M1：提供最小 Python 包、确定性文档校验、Skill 候选 Registry 和模型 API 中立端口。尚未接入真实模型 API、数据库、Web UI 或完整自动化。只有通过两个差异明显的真实研究案例后，候选机制才可以进入公共内核。
 
 ## 核心判断
 
@@ -28,6 +28,19 @@
 - [任务清单](docs/TASKS.md)
 - [模块文档索引](docs/modules/README.md)
 - [迁移方案](docs/implementation/MIGRATION_PLAN.md)
+- [Skill 候选准入流程](docs/implementation/SKILL_CANDIDATE_PIPELINE.md)
+- [模型 API 中立端口 ADR](docs/decisions/0003-PROVIDER-NEUTRAL-MODEL-PORT.md)
+
+## 当前可执行入口
+
+```powershell
+python -m pip install -e .
+rwb validate examples registry
+rwb skills candidates --status triage
+rwb providers list
+```
+
+`validate` 只确认结构、哈希格式与 Registry 引用等机器可判定条件，不代表科学正确性。外部 Skill 默认不可执行；`discovered`、`triage`、`reference` 和 `quarantine` 均不等于已安装或已准入。
 
 ## 第一条验证路线
 

@@ -1,0 +1,222 @@
+{
+  "schema_version": "0.1.0",
+  "registry_kind": "skill_candidates",
+  "generated_at": "2026-08-13",
+  "policy": {
+    "default_state": "discovered",
+    "accepted_requires": [
+      "license_review",
+      "script_and_network_audit",
+      "trigger_and_non_trigger_tests",
+      "success_and_boundary_failure_fixture",
+      "context_cost_measurement",
+      "pinned_content_hash"
+    ],
+    "note": "Source trust labels and catalog review claims are not inherited by this registry."
+  },
+  "candidates": [
+    {
+      "candidate_id": "rc-experiment-design",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/experiment-design/SKILL.md",
+      "content_hash": "sha256:ff930b27e369805296829950fb74bf6737c4d51f9e236c2d87753170de970dda",
+      "status": "triage",
+      "kind": "method",
+      "capabilities": ["experiment-design", "power-planning", "randomization", "design-of-experiments"],
+      "applicable_modes": ["experiment"],
+      "context_cost": "medium",
+      "risk_flags": ["bundled-python", "optional-statistics-dependencies", "frontmatter-normalization-required"],
+      "decision": {
+        "action": "derive-minimal-skill",
+        "reason": "Bounded pre-data-collection scope and deterministic scripts are useful, but assumptions, power claims, and dependencies require method review."
+      }
+    },
+    {
+      "candidate_id": "rc-papercheck",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/papercheck/SKILL.md",
+      "content_hash": "sha256:f5d6109f559eba0535111d3c3fd5183b6ca29c8530c9c5ae04e7655329a8ad71",
+      "status": "triage",
+      "kind": "integrity",
+      "capabilities": ["citation-audit", "claim-source-check", "manuscript-integrity"],
+      "applicable_modes": ["evidence-synthesis", "theory", "experiment", "simulation"],
+      "context_cost": "low",
+      "risk_flags": ["bundled-python", "citation-resolution-can-use-network"],
+      "decision": {
+        "action": "extract-deterministic-checks",
+        "reason": "Local citation and claim checks align with the integrity layer; semantic scientific review must remain separate."
+      }
+    },
+    {
+      "candidate_id": "rc-research-baseline-builder",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/research-baseline-builder/SKILL.md",
+      "content_hash": "sha256:abd78c01841603828cfecf5b5be800c383bb27ed101b49158e3be00d13a0fd5b",
+      "status": "reference",
+      "kind": "method",
+      "capabilities": ["baseline-selection", "evaluation-framing", "ablation-planning"],
+      "applicable_modes": ["experiment", "simulation", "observational-statistics"],
+      "context_cost": "high",
+      "risk_flags": ["model-specific-templates", "dependency-heavy", "broad-output-orchestration"],
+      "decision": {
+        "action": "extract-contract-ideas-only",
+        "reason": "Its input/output/sample/baseline decomposition is valuable, but the bundled workflow is too broad for one reusable skill."
+      }
+    },
+    {
+      "candidate_id": "rc-find-science-skills",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/find-science-skills-mcp/SKILL.md",
+      "content_hash": "sha256:d25fcefc97d1972e27c749795b5b5859827c76f7d4918331500689cff8ee41f4",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["skill-discovery", "catalog-filtering", "metadata-ranking"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "low",
+      "risk_flags": ["catalog-trust-claims-not-transferable", "large-third-party-catalog"],
+      "decision": {
+        "action": "adopt-discovery-pattern-not-catalog",
+        "reason": "Deterministic metadata filtering is useful. The embedded 1391-entry catalog remains an unverified discovery source, not an admission decision."
+      }
+    },
+    {
+      "candidate_id": "rc-skill-criticagent",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/skill-criticagent/SKILL.md",
+      "content_hash": "sha256:ab063cc612239eb95f41b4a76982344f4d569b906d47b0adb4f4b09daa3e1dec",
+      "status": "reference",
+      "kind": "integrity",
+      "capabilities": ["skill-trigger-testing", "with-without-evaluation", "skill-security-review"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "medium",
+      "risk_flags": ["recursive-agent-evaluation", "external-runtime-assumptions", "coordination-cost"],
+      "decision": {
+        "action": "extract-evaluation-cases-only",
+        "reason": "Trigger, non-trigger, boundary, and with/without tests are useful; a critic agent must not become a permanent recursive control plane."
+      }
+    },
+    {
+      "candidate_id": "rc-sci-employee-deep-research",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/sci-employee-deep-research/SKILL.md",
+      "content_hash": "sha256:46bacaaa126975422bcff343fc1fb893d566805a4eb697c384092af3a8d7ef10",
+      "status": "quarantine",
+      "kind": "tool",
+      "capabilities": ["deep-research-api", "reference-return"],
+      "applicable_modes": ["evidence-synthesis"],
+      "context_cost": "medium",
+      "risk_flags": ["hardcoded-plain-http-endpoint", "hardcoded-vendor-models", "external-data-upload", "unknown-service-operator"],
+      "decision": {
+        "action": "do-not-execute-or-adopt",
+        "reason": "The skill sends research content to a hardcoded public HTTP service and binds execution to one provider family."
+      }
+    },
+    {
+      "candidate_id": "rc-visual-deck-builder",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/visual-deck-builder/SKILL.md",
+      "content_hash": "sha256:3b44c72a758fe33c22f761c02622136ff83d0d4401a59f93f443bae03f1dc1d7",
+      "status": "rejected",
+      "kind": "output",
+      "capabilities": ["presentation-generation"],
+      "applicable_modes": ["reporting"],
+      "context_cost": "extreme",
+      "risk_flags": ["623-line-skill-body", "context-flood", "outside-first-vertical-slice"],
+      "decision": {
+        "action": "exclude-from-core-roadmap",
+        "reason": "Presentation production is not a current research-kernel need and this single skill imposes excessive instruction context."
+      }
+    },
+    {
+      "candidate_id": "rc-cognitive-profile",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/cognitive-profile/SKILL.md",
+      "content_hash": "sha256:a6d36a0106a16604e2a5558a0569f9475ad1bcf71222c8e629a51b44cfdd99a2",
+      "status": "rejected",
+      "kind": "method",
+      "capabilities": ["user-profile-memory"],
+      "applicable_modes": ["personalization"],
+      "context_cost": "medium",
+      "risk_flags": ["sensitive-user-model", "long-term-memory-expansion", "not-research-method"],
+      "decision": {
+        "action": "exclude-from-project",
+        "reason": "Persistent cognitive profiling increases privacy and context risks without improving the research object model."
+      }
+    },
+    {
+      "candidate_id": "kdense-citation-management",
+      "source_id": "k-dense-scientific-agent-skills",
+      "source_path": "skills/citation-management/SKILL.md",
+      "status": "discovered",
+      "kind": "integrity",
+      "capabilities": ["citation-management", "metadata-validation", "bibtex-formatting"],
+      "applicable_modes": ["evidence-synthesis", "theory", "experiment", "simulation"],
+      "context_cost": "unknown",
+      "risk_flags": ["large-skill-suite", "network-search-scripts", "individual-file-audit-pending"],
+      "decision": {
+        "action": "shortlist-for-triage",
+        "reason": "Granular citation tooling could support evidence integrity, but the individual skill and scripts have not yet been audited."
+      }
+    },
+    {
+      "candidate_id": "lingzhi-backward-traceability",
+      "source_id": "lingzhi-agent-research-skills",
+      "source_path": "skills/backward-traceability/SKILL.md",
+      "status": "discovered",
+      "kind": "integrity",
+      "capabilities": ["numeric-value-traceability", "claim-source-check"],
+      "applicable_modes": ["evidence-synthesis", "theory", "experiment", "simulation"],
+      "context_cost": "unknown",
+      "risk_flags": ["repository-license-not-detected", "bundled-python", "install-script-not-admitted"],
+      "decision": {
+        "action": "license-and-script-audit-first",
+        "reason": "Backward traceability maps well to Claim-Evidence integrity, but no reuse decision is possible without a license review."
+      }
+    },
+    {
+      "candidate_id": "ngtiendong-claim-verification-pattern",
+      "source_id": "ngtiendong-academic-research-agent-skill",
+      "source_path": "_agents/rules/claim_verification.md",
+      "status": "reference",
+      "kind": "integrity",
+      "capabilities": ["claim-verification", "reviewer-simulation"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "high",
+      "risk_flags": ["large-lifecycle-workflow", "many-role-pattern", "semantic-review-cost"],
+      "decision": {
+        "action": "extract-human-gate-patterns",
+        "reason": "The human-guided gates and claim checks are useful references, but the full lifecycle should not become a mandatory global workflow."
+      }
+    },
+    {
+      "candidate_id": "anthropic-skill-format-reference",
+      "source_id": "anthropic-skills",
+      "source_path": "skills/skill-creator/SKILL.md",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["skill-authoring", "progressive-disclosure"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "low",
+      "risk_flags": ["file-level-license-review"],
+      "decision": {
+        "action": "use-as-structural-reference",
+        "reason": "Useful for skill packaging conventions; it is not a research method and is not copied into the runtime."
+      }
+    },
+    {
+      "candidate_id": "openai-skill-format-reference",
+      "source_id": "openai-skills",
+      "source_path": "skills/.curated/openai-docs/SKILL.md",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["skill-authoring", "official-document-routing"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "low",
+      "risk_flags": ["provider-specific-content", "file-level-license-review"],
+      "decision": {
+        "action": "use-as-portability-reference",
+        "reason": "Useful for understanding Codex skill structure and source discipline; provider-specific content stays outside the research kernel."
+      }
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 # 完整实施计划
 
-版本：0.2
+版本：0.3
 
-状态：准备执行
+状态：执行中
 
 日期：2026-08-13
 
@@ -14,19 +14,22 @@
 
 ## 2. 技术基线
 
-首版建议：
+当前已接受的首版基线：
 
 - Python 3.11+；
 - `pyproject.toml` 单包结构；
-- Pydantic v2 表达内部模型并导出 JSON Schema；
+- 标准库 `dataclasses` 和 `typing.Protocol` 表达内部对象与端口；
 - YAML 作为主要人类编辑格式，JSON 作为交换/校验格式；
-- Typer 提供本地 CLI；
-- pytest + property-based tests（必要时 Hypothesis）；
+- `argparse` 提供本地 CLI；
+- `unittest` 提供首轮测试；
+- PyYAML 是当前唯一运行依赖；
 - SHA-256 和 Git 提供首版版本/内容引用；
 - `.agents/skills` 和 `.codex/agents` 提供 Codex 原生适配；
 - 无数据库、无服务端、无常驻进程。
 
-技术选型在 M1 开始前用 ADR 确认。若标准库即可满足，不提前引入依赖。
+技术选型见 [ADR-0004](../decisions/0004-MINIMAL-DEPENDENCY-M1.md)。Schema 生成或属性测试出现明确复杂度后再评估 Pydantic、jsonschema 或 Hypothesis，不预先引入。
+
+模型 API 采用能力协商式中立端口，见 [ADR-0003](../decisions/0003-PROVIDER-NEUTRAL-MODEL-PORT.md)。M1 只冻结端口和能力/错误语义，不接入密钥或真实调用；后续各提供商以独立 Adapter 接入。
 
 ## 3. 里程碑总览
 

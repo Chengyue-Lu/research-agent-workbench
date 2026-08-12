@@ -16,13 +16,14 @@
 
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
-| M1-001 | READY | 初始化 Python 包、pyproject 和基础 CI | M0 | 空包测试在 Windows/CI 通过 |
-| M1-002 | READY | 实现核心对象模型与 JSON Schema | M1-001 | 7 类对象正反 fixture 通过 |
+| M1-001 | IN_PROGRESS | 初始化 Python 包、pyproject 和基础 CI | M0 | 本地测试已通过，等待 GitHub CI |
+| M1-002 | IN_PROGRESS | 实现核心对象模型与 JSON Schema | M1-001 | 7 类对象类已建立；Schema 与正反 fixture 待补 |
 | M1-003 | READY | 实现 Protocol、Mode、Profile、Skill Manifest | M1-002 | 组合冲突和权限上限可验证 |
 | M1-004 | READY | 实现 Task、Attempt、Handoff、Main State | M1-002 | 示例交接与 incomplete 交接可验证 |
 | M1-005 | READY | 实现引用、revision、SHA-256 和 stale 检查 | M1-002 | 修改输入会使依赖结果失效 |
 | M1-006 | READY | 实现最小 CLI | M1-003..005 | init/validate/trace/checkpoint 可用 |
 | M1-007 | READY | 建立确定性风险检查 | M1-004..006 | 关键故障注入按预期阻断 |
+| M1-008 | DONE | 冻结模型 API 中立端口与能力协商语义 | M1-001 | Capability/Data Policy gap 在调用前阻断，提供商基线可查询 |
 
 ## M2：Agent 与 Skills
 
@@ -35,6 +36,7 @@
 | M2-005 | READY | 创建 handoff-integrity 检查 | M1 | 优先确定性脚本，语义部分可选 |
 | M2-006 | READY | 实现 Codex Runtime Adapter | M2-002..005 | 生成/验证原生 Agent 与 Skill 绑定 |
 | M2-007 | READY | 执行首个双 Skill 垂直切片 | M2-006 | 两个子 Agent Skills 不同，主 Agent只收 Handoff |
+| M2-008 | IN_PROGRESS | 建立外部 Skill 发现、隔离评估与准入 Registry | M1 | 来源/哈希/许可/风险/上下文成本可追溯，未准入候选不可执行 |
 
 ## M3：上下文与风险
 
@@ -75,7 +77,9 @@ M1 已建立里程碑与首批可执行 Issues：
 - [#3 M1-003 Implement protocol, mode, agent, and skill manifests](https://github.com/Chengyue-Lu/research-agent-workbench/issues/3)
 - [#4 M1-004 Implement task, handoff, main state, and reference integrity](https://github.com/Chengyue-Lu/research-agent-workbench/issues/4)
 - [#5 M1-005 Build the minimal CLI and deterministic risk checks](https://github.com/Chengyue-Lu/research-agent-workbench/issues/5)
+- [#6 M1-008 Freeze provider-neutral model API port](https://github.com/Chengyue-Lu/research-agent-workbench/issues/6)
+- [#7 M2-008 Audit and admit external Skill candidates](https://github.com/Chengyue-Lu/research-agent-workbench/issues/7)
 
 ## 当前下一任务
 
-仓库首次推送后，从 `M1-001` 开始。`M5-001` 和 `M5-002` 保持阻塞，直到人类选择真实案例；不以虚构课题替代真实验证。
+当前先让 `M1-001` 通过 GitHub CI，再完成 `M1-002` 的版本化 JSON Schema 与负 fixture；并行继续 `M2-008` 的逐文件候选审计，但不安装候选。`M5-001` 和 `M5-002` 保持阻塞，直到人类选择真实案例；不以虚构课题替代真实验证。

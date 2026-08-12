@@ -1,0 +1,71 @@
+{
+  "schema_version": "0.1.0",
+  "registry_kind": "provider_baselines",
+  "generated_at": "2026-08-13",
+  "warning": "These are design baselines, not live availability guarantees. Every adapter must emit a model- and configuration-specific capability snapshot at runtime.",
+  "providers": [
+    {
+      "provider": "openai",
+      "api_surface": "Responses API",
+      "adapter_status": "planned",
+      "capabilities": ["text", "tools", "structured_output", "streaming", "reasoning", "images", "files", "server_tools", "provider_state"],
+      "semantic_notes": [
+        "Tool calls are returned as structured output items and client tools remain application-executed.",
+        "Structured outputs still require local schema and business-rule validation.",
+        "Response and conversation identifiers must not become canonical project state."
+      ],
+      "sources": [
+        "https://developers.openai.com/api/docs/guides/latest-model",
+        "https://developers.openai.com/api/docs/guides/function-calling",
+        "https://developers.openai.com/api/docs/guides/structured-outputs"
+      ]
+    },
+    {
+      "provider": "anthropic",
+      "api_surface": "Messages API",
+      "adapter_status": "planned",
+      "capabilities": ["text", "tools", "structured_output", "streaming", "reasoning", "images", "files", "server_tools", "prompt_caching"],
+      "semantic_notes": [
+        "Client tool_use and provider server tools have different execution ownership.",
+        "pause_turn and model_context_window_exceeded must remain distinct from normal completion.",
+        "Structured output support varies by model and hosting surface."
+      ],
+      "sources": [
+        "https://platform.claude.com/docs/claude/docs/tool-use",
+        "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+        "https://platform.claude.com/docs/en/build-with-claude/structured-outputs"
+      ]
+    },
+    {
+      "provider": "google",
+      "api_surface": "Gemini API",
+      "adapter_status": "planned",
+      "capabilities": ["text", "tools", "parallel_tools", "structured_output", "streaming", "reasoning", "images", "files"],
+      "semantic_notes": [
+        "Function calls are suggestions; the application executes functions and returns results.",
+        "Compositional and parallel tool behavior must be normalized without assuming one call per turn.",
+        "Transient 429 and 503 responses require bounded backoff, not silent provider switching."
+      ],
+      "sources": [
+        "https://ai.google.dev/gemini-api/docs/function-calling",
+        "https://ai.google.dev/gemini-api/docs/troubleshooting"
+      ]
+    },
+    {
+      "provider": "openrouter",
+      "api_surface": "OpenAI-compatible chat completions gateway",
+      "adapter_status": "planned-optional-gateway",
+      "capabilities": ["text", "tools", "structured_output", "streaming", "reasoning", "images", "provider-routing"],
+      "semantic_notes": [
+        "Actual capabilities and data policy depend on the selected downstream provider and model.",
+        "Routing and fallback must be logged and constrained by require_parameters, region, retention, and collection policy.",
+        "Gateway compatibility does not erase downstream provider semantics."
+      ],
+      "sources": [
+        "https://openrouter.ai/docs/guides/features/tool-calling",
+        "https://openrouter.ai/docs/guides/features/structured-outputs",
+        "https://openrouter.ai/docs/guides/routing/provider-selection"
+      ]
+    }
+  ]
+}
