@@ -50,6 +50,9 @@ not_claimed: scientifically_correct
 | SKILL-CONFLICT | Skills 指令或契约冲突 | BLOCK |
 | SKILL-PERMISSION-ESCALATION | Skill 越权 | BLOCK |
 | SKILL-CONTEXT-FLOOD | Skill 过多/过长 | 拆 Task |
+| SKILL-NAMESPACE-COLLISION | 不同来源使用相同 Skill name，平台不会自动合并 | 以 accepted Registry + 来源哈希解析，等价项交人工选择 |
+| REGISTRY-SPLIT-BRAIN | Task、运行时和 Handoff 使用了不同 Registry 快照 | 冻结 registry digest，阻断合并 |
+| ASSIGNMENT-HANDOFF-DRIFT | Handoff 只写 Skill ID/version，遗漏实际内容哈希 | 对照 Attempt/Assignment lock；未补齐前不得 promotion |
 | CONSENSUS-CORRELATED | 多 Agent 同源错误被当共识 | 改用异质证据/工具或人类复核 |
 | COORD-INTERFACE | 协调接口多于有效工作 | 简化流程 |
 | WRITE-RACE | 并行写冲突 | BLOCK / 重新分区 |
@@ -62,6 +65,8 @@ not_claimed: scientifically_correct
 | REPRO-GAP | 缺代码、输入、参数或环境 | 降低 Claim / BLOCK release |
 | FRAMEWORK-BYPASS | 使用者经常绕过系统 | 简化所绕过机制 |
 | PLATFORM-DRIFT | Runtime/Skill 行为变化 | capability snapshot + 回归测试 |
+| ADAPTER-ENFORCEMENT-GAP | 平台 sandbox 只能限制工作区，不能强制 Task 子目录 | scoped-write 校验 + 独立任务目录；不得把提示约束称为平台强制 |
+| PROVIDER-SEMANTIC-DRIFT | 不同模型 API 对工具、结构化输出、缓存和停止原因语义不同 | capability negotiation + provider-specific contract tests；不做静默模拟 |
 | CLAIM-OVERREACH | Claim 超出 Evidence/Mode ceiling | 降级或 Human Gate |
 | SOURCE-QUALITY | 来源质量或定位不足 | 标记限制，定向检索 |
 | HANDOFF-OMITS-NEGATIVE | 失败/反证未传递 | BLOCK promotion |

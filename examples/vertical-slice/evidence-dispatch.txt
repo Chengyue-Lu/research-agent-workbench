@@ -1,0 +1,18 @@
+Execute Task EVID-001@1 as custom agent `evidence_scout`.
+Required Skills: $literature-evidence-extraction
+Skill Assignment: SA-B461CC0DDA2FCC6A
+Goal: Extract citable evidence for Q-001 from the bounded source set.
+Active modes: evidence-synthesis
+Input references:
+- examples/fixtures/paper-001.txt sha256:82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
+Write scope:
+- work/EVID-001/**
+Required outputs:
+- evidence-record
+- handoff-packet
+Stop conditions:
+- required_outputs_complete
+- source_boundary_exhausted
+- human_judgment_required
+Do not expand the task, load unrelated Skills, or delegate unless the Task Packet explicitly permits it.
+Persist formal artifacts before returning. Return a compact Handoff Packet; do not return raw logs or full source text.

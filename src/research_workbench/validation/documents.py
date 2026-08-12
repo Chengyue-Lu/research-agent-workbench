@@ -70,6 +70,7 @@ DOCUMENT_REQUIRED: dict[str, tuple[str, ...]] = {
     ),
     "skill_sources": ("registry_kind", "sources"),
     "skill_candidates": ("registry_kind", "candidates"),
+    "skill_accepted": ("registry_kind", "entries", "policy"),
     "provider_baselines": ("registry_kind", "providers"),
 }
 
@@ -78,6 +79,7 @@ SCHEMA_KINDS = {
     "research_mode",
     "agent_profile",
     "skill_manifest",
+    "skill_assignment",
     "task_packet",
     "attempt",
     "handoff_packet",
@@ -105,6 +107,8 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "agent_profile"
     if "skill_id" in document and "capabilities" in document:
         return "skill_manifest"
+    if "assignment_id" in document and "skill_lock" in document:
+        return "skill_assignment"
     if "checkpoint_id" in document and "project_protocol_ref" in document:
         return "main_state"
     if "object_type" in document and "object_id" in document:
@@ -206,6 +210,29 @@ def _validate_registry(
                 issues.append(ValidationIssue(path, "SOURCE-UNKNOWN", f"candidate references unknown source: {source_id}"))
             if candidate.get("status") == "accepted" and "content_hash" not in candidate:
                 issues.append(ValidationIssue(path, "CANDIDATE-UNPINNED", f"accepted candidate lacks content_hash: {candidate_id}"))
+    elif kind == "skill_accepted":
+        seen = set()
+        for index, entry in enumerate(document.get("entries", [])):
+            if not isinstance(entry, Mapping):
+                issues.append(ValidationIssue(path, "ACCEPTED-INVALID", f"entries[{index}] is not an object"))
+                continue
+            issues.extend(
+                _require_fields(
+                    path,
+                    entry,
+                    (
+                        "skill_id", "version", "status", "manifest_path", "source_path",
+                        "content_hash", "license_status", "admission",
+                        "package_hash",
+                    ),
+                )
+            )
+            key = (entry.get("skill_id"), entry.get("version"))
+            if key in seen:
+                issues.append(ValidationIssue(path, "ACCEPTED-DUPLICATE", f"duplicate accepted Skill: {key}"))
+            seen.add(key)
+            if entry.get("status") != "accepted":
+                issues.append(ValidationIssue(path, "ACCEPTED-STATUS", f"entries[{index}] is not accepted"))
     elif kind == "provider_baselines":
         for provider in document.get("providers", []):
             if isinstance(provider, Mapping):

@@ -1,0 +1,31 @@
+schema_version: 0.1.0
+task_id: SIM-001
+attempt_id: A-SIM-001
+status: incomplete
+input_lock:
+  - path: examples/fixtures/run-manifest.txt
+    sha256: 6079913f340dd071404c96cf0a9a041f1f59798a7cf448acf6e698e039aa0a14
+skill_lock:
+  - simulation-vv@0.1.0
+skill_assignment_ref: examples/vertical-slice/simulation-assignment.yaml
+result:
+  summary: The structural V&V fixture records convergence evidence while sensitivity and benchmarks remain incomplete.
+  facts:
+    - The run and input versions are pinned.
+  inferences:
+    - No physical-validation conclusion is available.
+  recommendations:
+    - Add bounded sensitivity and benchmark runs before claim review.
+artifact_refs:
+  - tests/fixtures/valid/simulation-vv-report.yaml
+validation_refs: []
+limitations:
+  - This is a structural fixture and contains no numerical scientific result.
+conflicts: []
+unresolved:
+  - Sensitivity evidence is absent.
+  - Benchmark comparison is absent.
+human_decision_required:
+  - Approve model assumptions only after real case inputs are selected.
+recommended_next_actions:
+  - Select a real bounded simulation case.

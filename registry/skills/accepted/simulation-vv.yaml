@@ -1,0 +1,29 @@
+schema_version: 0.1.0
+skill_id: simulation-vv
+version: 0.1.0
+kind: integrity
+description: Audits bounded simulation runs for version, convergence, sensitivity, benchmark, and claim-limit evidence.
+capabilities: [version-audit, convergence-analysis, sensitivity-analysis, benchmark-comparison, simulation-claim-limiting]
+applies_to_modes: [simulation, engineering-validation]
+excludes: [experimental-validation, final-physical-interpretation]
+required_tools: [file-read, bounded-compute]
+optional_tools: []
+permission_ceiling:
+  filesystem: worktree-write
+  network: forbidden
+  external_write: forbidden
+  allowed_roots: [work]
+input_contracts: [task-packet, skill-assignment, run-manifest, parameter-boundary, input-lock]
+output_contracts: [simulation-vv-report, handoff-packet]
+context_cost:
+  metadata: low
+  instructions: low
+  references: on-demand
+incompatible_with: [experimental-validation]
+verification:
+  deterministic: [input-hash, vv-report-structure, claim-ceiling, handoff-integrity]
+source:
+  origin: repository-original
+  locator: .agents/skills/simulation-vv/SKILL.md
+  content_hash: 2a3c19b5af6288c4d5eab6e2fc2557231cc684f0ec9b6ec8bb5b864d126a99c4
+  package_hash: 6a86d52046e52bf404ef4aa74a7a13edcba3cc0f49e2eb1a1bb48fa259e4f75a

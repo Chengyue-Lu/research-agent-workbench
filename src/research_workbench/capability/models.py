@@ -69,6 +69,7 @@ class SkillManifest:
     source_origin: str
     source_content_hash: str
     source_locator: str | None = None
+    source_package_hash: str | None = None
 
     @classmethod
     def from_mapping(cls, data: Mapping[str, Any]) -> "SkillManifest":
@@ -99,6 +100,7 @@ class SkillManifest:
             source_origin=require_string(source, "origin"),
             source_content_hash=require_string(source, "content_hash"),
             source_locator=optional_string(source, "locator"),
+            source_package_hash=optional_string(source, "package_hash"),
         )
 
 
@@ -108,6 +110,7 @@ class SkillLock:
     version: str
     content_hash: str
     source_locator: str | None = None
+    package_hash: str | None = None
 
     @property
     def identifier(self) -> str:
@@ -120,4 +123,5 @@ class SkillLock:
             version=require_string(data, "version"),
             content_hash=require_string(data, "content_hash"),
             source_locator=optional_string(data, "source_locator"),
+            package_hash=optional_string(data, "package_hash"),
         )

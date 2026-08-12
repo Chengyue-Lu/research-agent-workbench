@@ -1,0 +1,28 @@
+schema_version: 0.1.0
+assignment_id: SA-AE722D7FCD0B0D39
+task_id: SIM-001
+task_revision: 1
+agent_profile: simulation-auditor@0.1.0
+skill_lock:
+- skill_id: simulation-vv
+  version: 0.1.0
+  content_hash: 2a3c19b5af6288c4d5eab6e2fc2557231cc684f0ec9b6ec8bb5b864d126a99c4
+  source_locator: .agents/skills/simulation-vv/SKILL.md
+  package_hash: 6a86d52046e52bf404ef4aa74a7a13edcba3cc0f49e2eb1a1bb48fa259e4f75a
+resolved_tools:
+- bounded-compute
+- file-read
+effective_permissions:
+  filesystem: worktree-write
+  network: forbidden
+  external_write: false
+  allowed_roots:
+  - work/SIM-001
+output_contracts:
+- handoff-packet
+- simulation-vv-report
+resolution_reason:
+- all required capabilities are covered
+- no forbidden or incompatible skill is loaded
+- permissions are the intersection of task, profile, and selected skills
+registry_digest: 9b743836da2e9772341db5f13ad9be4598b5c0cf994d81779ded6654566efd1a

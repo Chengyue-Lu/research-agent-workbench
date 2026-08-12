@@ -129,6 +129,8 @@ rwb context checkpoint
 6. 以 Task Packet 显式点名 required Skills。
 7. 记录 Skill lock、实际工具、Runtime snapshot 和 Handoff。
 
+截至 2026-08-13，1、3、4、5、6 的文件与确定性契约已完成；Codex Adapter 已能验证并渲染原生 dispatch。离线双 Skill 切片已通过，原生 `launch/collect` 演练和两个真实案例仍未完成，因此 M2 尚未退出。
+
 ### 路由测试矩阵
 
 | Task | Profile | 必需 Skill | 不应加载 |

@@ -166,6 +166,7 @@ class AttemptRecord:
     trigger_reason: str
     input_lock: tuple[FileReference, ...]
     skill_lock: tuple[str, ...]
+    skill_assignment_ref: str | None
     runtime_snapshot_ref: str | None
     artifact_refs: tuple[str, ...]
     handoff_ref: str | None
@@ -178,7 +179,12 @@ class AttemptRecord:
             raise ContractError("task_revision", "must be a positive integer")
         runtime_ref = optional_string(data, "runtime_snapshot_ref")
         handoff_ref = optional_string(data, "handoff_ref")
-        for field, value in (("runtime_snapshot_ref", runtime_ref), ("handoff_ref", handoff_ref)):
+        assignment_ref = optional_string(data, "skill_assignment_ref")
+        for field, value in (
+            ("skill_assignment_ref", assignment_ref),
+            ("runtime_snapshot_ref", runtime_ref),
+            ("handoff_ref", handoff_ref),
+        ):
             if value is not None:
                 require_relative_path(value, field)
         artifact_refs = string_tuple(data, "artifact_refs", required=True)
@@ -198,6 +204,7 @@ class AttemptRecord:
             trigger_reason=require_string(data, "trigger_reason"),
             input_lock=tuple(FileReference.from_mapping(item) for item in mapping_tuple(data, "input_lock")),
             skill_lock=string_tuple(data, "skill_lock", required=True),
+            skill_assignment_ref=assignment_ref,
             runtime_snapshot_ref=runtime_ref,
             artifact_refs=artifact_refs,
             handoff_ref=handoff_ref,
@@ -213,6 +220,7 @@ class HandoffPacket:
     status: str
     input_lock: tuple[FileReference, ...]
     skill_lock: tuple[str, ...]
+    skill_assignment_ref: str | None
     result: HandoffResult
     artifact_refs: tuple[str, ...]
     validation_refs: tuple[str, ...]
@@ -228,6 +236,9 @@ class HandoffPacket:
         status = require_string(data, "status")
         if status not in {"completed", "incomplete", "failed", "blocked", "cancelled"}:
             raise ContractError("status", "is not a supported handoff status")
+        assignment_ref = optional_string(data, "skill_assignment_ref")
+        if assignment_ref is not None:
+            require_relative_path(assignment_ref, "skill_assignment_ref")
         return cls(
             schema_version=require_string(data, "schema_version"),
             task_id=require_string(data, "task_id"),
@@ -235,6 +246,7 @@ class HandoffPacket:
             status=status,
             input_lock=tuple(FileReference.from_mapping(item) for item in mapping_tuple(data, "input_lock")),
             skill_lock=string_tuple(data, "skill_lock", required=True),
+            skill_assignment_ref=assignment_ref,
             result=HandoffResult.from_mapping(mapping_value(data, "result", required=True)),
             artifact_refs=string_tuple(data, "artifact_refs", required=True),
             validation_refs=string_tuple(data, "validation_refs"),

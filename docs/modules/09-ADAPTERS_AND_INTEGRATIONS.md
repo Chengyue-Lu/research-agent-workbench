@@ -41,6 +41,10 @@ Adapter 必须暴露：
 
 官方能力允许项目级自定义 Agent 设置模型、推理、sandbox、MCP 和 Skill 配置；仓库级 Skill 通过渐进披露加载。首版利用这些能力，不包裹一个长期驻留的自建调度进程。
 
+当前实现依据 OpenAI 官方的 [Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) 与 [Build skills](https://learn.chatgpt.com/docs/build-skills) 文档：项目 Agent 使用 `.codex/agents/*.toml`，仓库 Skill 使用 `.agents/skills/*/SKILL.md`。Canonical Agent Profile 不固定厂商模型；Codex 配置也默认继承会话模型。Task Assignment 通过 dispatch 中的显式 `$skill-name` 调用绑定，而不是把 Skill 永久写死在 Agent Profile 中。
+
+`CodexRuntimeAdapter` 当前实现 `capabilities`、`resolve_agent`、`resolve_skills`、布局验证和 dispatch 渲染。`launch/collect/cancel` 保留给 Codex 原生线程；在真实垂直切片证明需要前，不添加包裹原生运行时的第二调度层。
+
 ## 4. 其他 Runtime
 
 Claude Code 等平台以后以独立 Adapter 接入。Canonical manifests 保持不变，Adapter 负责翻译对应的 Agent/Skill 配置与显式调用方式。

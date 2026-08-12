@@ -24,6 +24,7 @@
       "minItems": 1,
       "uniqueItems": true
     },
+    "skill_assignment_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
     "result": {
       "type": "object",
       "required": ["summary", "facts", "inferences", "recommendations"],

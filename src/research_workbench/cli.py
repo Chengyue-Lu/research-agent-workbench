@@ -7,16 +7,20 @@ from typing import Any, Mapping, Sequence
 
 import yaml
 
-from research_workbench.artifacts.integrity import hash_file, resolve_within_root
+from research_workbench.adapters import CodexRuntimeAdapter
+from research_workbench.artifacts.integrity import hash_directory, hash_file, resolve_within_root
 from research_workbench.capability import (
+    AcceptedSkillRegistry,
     AgentProfile,
+    ResolvedTask,
     ResolutionError,
     SkillManifest,
     filter_candidates,
     load_candidates,
     resolve_task,
+    resolve_task_from_registry,
 )
-from research_workbench.capability.catalog import DEFAULT_CANDIDATES
+from research_workbench.capability.catalog import DEFAULT_ACCEPTED, DEFAULT_CANDIDATES
 from research_workbench.context import MainStatePacket
 from research_workbench.contracts import ContractError, ContractRisk, RiskLevel, to_plain
 from research_workbench.io import iter_documents, load_document
@@ -41,6 +45,12 @@ def _write_yaml(path: Path, document: Mapping[str, Any]) -> None:
         yaml.safe_dump(dict(document), stream, sort_keys=False, allow_unicode=True)
 
 
+def _write_text(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("x", encoding="utf-8", newline="\n") as stream:
+        stream.write(content)
+
+
 def _print_risks(risks) -> int:
     if not risks:
         print("ok: no blocking deterministic risks")
@@ -55,11 +65,14 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
     kind = infer_document_kind(document)
     references: tuple[FileReference, ...] = ()
     path_only: list[str] = []
+    extra_risks: list[ContractRisk] = []
     if kind == "task_packet":
         references = TaskPacket.from_mapping(document).input_refs
     elif kind == "handoff_packet":
         handoff = HandoffPacket.from_mapping(document)
         references = handoff.input_lock
+        if handoff.skill_assignment_ref:
+            path_only.append(handoff.skill_assignment_ref)
         path_only.extend(handoff.artifact_refs)
         path_only.extend(handoff.validation_refs)
     elif kind == "skill_manifest":
@@ -68,6 +81,27 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
             references = (
                 FileReference(skill.source_locator, skill.source_content_hash.removeprefix("sha256:")),
             )
+    elif kind == "skill_assignment":
+        assignment = ResolvedTask.from_mapping(document)
+        references = tuple(
+            FileReference(lock.source_locator, lock.content_hash.removeprefix("sha256:"))
+            for lock in assignment.skill_lock
+            if lock.source_locator
+        )
+        for lock in assignment.skill_lock:
+            if lock.source_locator and lock.package_hash:
+                resolved = resolve_within_root(root, lock.source_locator)
+                if resolved is not None and resolved.is_file():
+                    actual = hash_directory(resolved.parent)
+                    expected = lock.package_hash.removeprefix("sha256:").lower()
+                    if actual != expected:
+                        extra_risks.append(
+                            ContractRisk(
+                                "SKILL-PACKAGE-DRIFT",
+                                RiskLevel.BLOCK,
+                                f"Skill package drift: {lock.identifier} expected={expected} actual={actual}",
+                            )
+                        )
     elif kind == "attempt":
         attempt = AttemptRecord.from_mapping(document)
         references = attempt.input_lock
@@ -79,6 +113,7 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
         path_only.extend(item.ref for item in state.recent_handoffs)
         path_only.extend(state.artifact_index_refs)
     risks = check_references(root, references)
+    risks.extend(extra_risks)
     for relative in path_only:
         resolved = resolve_within_root(root, relative)
         if resolved is None:
@@ -182,6 +217,37 @@ def _skill_candidates(args: argparse.Namespace) -> int:
     return 0
 
 
+def _skill_accepted(args: argparse.Namespace) -> int:
+    registry = AcceptedSkillRegistry.load(args.registry, project_root=args.root)
+    if args.json:
+        print(
+            json.dumps(
+                {
+                    "registry_digest": registry.digest,
+                    "entries": [
+                        {
+                            "skill_id": entry.skill_id,
+                            "version": entry.version,
+                            "source_path": entry.source_path,
+                            "content_hash": entry.content_hash,
+                            "package_hash": entry.package_hash,
+                            "license_status": entry.license_status,
+                        }
+                        for entry in registry.entries
+                    ],
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        return 0
+    print("skill\tversion\tlicense\tcontent_hash")
+    for entry in registry.entries:
+        print(f"{entry.skill_id}\t{entry.version}\t{entry.license_status}\t{entry.content_hash}")
+    print(f"registry_digest\t{registry.digest}")
+    return 0
+
+
 def _provider_list(args: argparse.Namespace) -> int:
     document = load_document(args.registry)
     providers = document.get("providers", [])
@@ -211,12 +277,62 @@ def _schema_show(args: argparse.Namespace) -> int:
 def _task_resolve(args: argparse.Namespace) -> int:
     task = TaskPacket.from_mapping(_load_valid(args.task, "task_packet"))
     profile = AgentProfile.from_mapping(_load_valid(args.profile, "agent_profile"))
-    skills = [SkillManifest.from_mapping(_load_valid(path, "skill_manifest")) for path in args.skill]
     try:
-        resolved = resolve_task(task, profile, skills)
+        if args.registry:
+            if args.skill:
+                raise ValueError("use either --registry or --skill, not both")
+            registry = AcceptedSkillRegistry.load(args.registry, project_root=args.root)
+            resolved = resolve_task_from_registry(
+                task,
+                profile,
+                registry,
+                allow_auto_select=args.auto_select,
+            )
+        else:
+            if not args.skill:
+                raise ValueError("task resolution requires --registry or at least one --skill")
+            skills = [SkillManifest.from_mapping(_load_valid(path, "skill_manifest")) for path in args.skill]
+            resolved = resolve_task(task, profile, skills)
+    except (KeyError, ResolutionError) as exc:
+        if isinstance(exc, KeyError):
+            print(f"BLOCK   SKILL-MISSING                {exc}")
+            return 1
+        return _print_risks(exc.risks)
+    document = to_plain(resolved)
+    if args.output:
+        _write_yaml(Path(args.output), document)
+        print(f"assignment {resolved.assignment_id} written to {args.output}")
+    else:
+        print(json.dumps(document, ensure_ascii=False, indent=2))
+    return 0
+
+
+def _runtime_codex_validate(args: argparse.Namespace) -> int:
+    adapter = CodexRuntimeAdapter(args.root, platform_version=args.platform_version)
+    issues = adapter.validate_project_layout()
+    for issue in issues:
+        print(f"ERROR   CODEX-LAYOUT                 {issue}")
+    if issues:
+        return 1
+    print(json.dumps(to_plain(adapter.capabilities()), ensure_ascii=False, indent=2))
+    return 0
+
+
+def _runtime_codex_render(args: argparse.Namespace) -> int:
+    task = TaskPacket.from_mapping(_load_valid(args.task, "task_packet"))
+    profile = AgentProfile.from_mapping(_load_valid(args.profile, "agent_profile"))
+    registry = AcceptedSkillRegistry.load(args.registry, project_root=args.root)
+    try:
+        assignment = resolve_task_from_registry(task, profile, registry)
     except ResolutionError as exc:
         return _print_risks(exc.risks)
-    print(json.dumps(to_plain(resolved), ensure_ascii=False, indent=2))
+    adapter = CodexRuntimeAdapter(args.root, platform_version=args.platform_version)
+    prompt = adapter.render_task_prompt(task, profile, assignment)
+    if args.output:
+        _write_text(Path(args.output), prompt)
+        print(f"Codex dispatch prompt written to {args.output}")
+    else:
+        print(prompt, end="")
     return 0
 
 
@@ -226,7 +342,33 @@ def _handoff_validate(args: argparse.Namespace) -> int:
     if not args.task:
         return _print_risks(_document_reference_risks(handoff_document, Path(args.root).resolve()))
     task = TaskPacket.from_mapping(_load_valid(args.task, "task_packet"))
-    return _print_risks(check_handoff_against_task(task, handoff, project_root=args.root))
+    assignment_path = args.assignment or handoff.skill_assignment_ref
+    assignment = None
+    risks = []
+    if args.assignment and handoff.skill_assignment_ref:
+        supplied = (Path(args.root) / args.assignment).resolve()
+        recorded = (Path(args.root) / handoff.skill_assignment_ref).resolve()
+        if supplied != recorded:
+            risks.append(
+                ContractRisk(
+                    "HANDOFF-ASSIGNMENT-REF-DRIFT",
+                    RiskLevel.BLOCK,
+                    "supplied Assignment differs from the Handoff Assignment reference",
+                )
+            )
+    if assignment_path:
+        assignment_document = _load_valid(Path(args.root) / assignment_path, "skill_assignment")
+        assignment = ResolvedTask.from_mapping(assignment_document)
+        risks.extend(_document_reference_risks(assignment_document, Path(args.root).resolve()))
+    risks.extend(
+        check_handoff_against_task(
+            task,
+            handoff,
+            project_root=args.root,
+            assignment=assignment,
+        )
+    )
+    return _print_risks(risks)
 
 
 def _reference_check(args: argparse.Namespace) -> int:
@@ -336,6 +478,11 @@ def build_parser() -> argparse.ArgumentParser:
     candidates.add_argument("--capability")
     candidates.add_argument("--json", action="store_true")
     candidates.set_defaults(handler=_skill_candidates)
+    accepted = skill_subparsers.add_parser("accepted", help="validate and list accepted repository Skills")
+    accepted.add_argument("--registry", default=str(DEFAULT_ACCEPTED))
+    accepted.add_argument("--root", default=".")
+    accepted.add_argument("--json", action="store_true")
+    accepted.set_defaults(handler=_skill_accepted)
 
     providers = subparsers.add_parser("providers", help="inspect model provider baselines")
     provider_subparsers = providers.add_subparsers(dest="providers_command", required=True)
@@ -349,14 +496,36 @@ def build_parser() -> argparse.ArgumentParser:
     task_resolve = task_subparsers.add_parser("resolve")
     task_resolve.add_argument("task")
     task_resolve.add_argument("--profile", required=True)
-    task_resolve.add_argument("--skill", action="append", required=True)
+    task_resolve.add_argument("--skill", action="append", default=[])
+    task_resolve.add_argument("--registry")
+    task_resolve.add_argument("--root", default=".")
+    task_resolve.add_argument("--auto-select", action="store_true")
+    task_resolve.add_argument("--output")
     task_resolve.set_defaults(handler=_task_resolve)
+
+    runtime = subparsers.add_parser("runtime", help="inspect native runtime mappings")
+    runtime_subparsers = runtime.add_subparsers(dest="runtime_command", required=True)
+    codex = runtime_subparsers.add_parser("codex", help="inspect the Codex native adapter")
+    codex_subparsers = codex.add_subparsers(dest="codex_command", required=True)
+    codex_validate = codex_subparsers.add_parser("validate")
+    codex_validate.add_argument("--root", default=".")
+    codex_validate.add_argument("--platform-version", default="unprobed")
+    codex_validate.set_defaults(handler=_runtime_codex_validate)
+    codex_render = codex_subparsers.add_parser("render")
+    codex_render.add_argument("task")
+    codex_render.add_argument("--profile", required=True)
+    codex_render.add_argument("--registry", default=str(DEFAULT_ACCEPTED))
+    codex_render.add_argument("--root", default=".")
+    codex_render.add_argument("--platform-version", default="unprobed")
+    codex_render.add_argument("--output")
+    codex_render.set_defaults(handler=_runtime_codex_render)
 
     handoff = subparsers.add_parser("handoff", help="validate Handoff structure and locks")
     handoff_subparsers = handoff.add_subparsers(dest="handoff_command", required=True)
     handoff_validate = handoff_subparsers.add_parser("validate")
     handoff_validate.add_argument("handoff")
     handoff_validate.add_argument("--task")
+    handoff_validate.add_argument("--assignment")
     handoff_validate.add_argument("--root", default=".")
     handoff_validate.set_defaults(handler=_handoff_validate)
 

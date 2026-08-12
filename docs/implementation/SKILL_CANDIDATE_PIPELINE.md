@@ -68,7 +68,14 @@ Source snapshot
 
 - `research-baseline-builder` 的输入/输出/样本/基线分解；
 - `skill-criticagent` 的 trigger、non-trigger、boundary、with/without 测试设计；
+- `thesis-audit-reviewer` 的覆盖分母、问题定位和完成 Gate；
+- `scispark` 的稳定假设/评审 ID 与阶段工件契约；
+- `academic-writing` 的输出模板，但必须按 drafting/review/revision 拆分，不能整体准入；
 - Academic Research Agent Skill 的人工 Gate 与 Claim verification。
+
+继续 triage：
+
+- `giiisp-paper-search-apis` 的请求规划、失败分类和结果归一化可以提炼；外部数据出口必须经过 provider-neutral Tool Adapter 与 Data Policy 协商，不能默认绑定该服务。
 
 隔离或排除：
 

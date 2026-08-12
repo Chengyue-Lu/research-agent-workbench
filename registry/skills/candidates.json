@@ -48,6 +48,70 @@
       }
     },
     {
+      "candidate_id": "rc-giiisp-paper-search-apis",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/giiisp-paper-search-apis/SKILL.md",
+      "content_hash": "sha256:b9938f75c2dca9b0989dde2f5590a983a01b97d311669fe7fa270a5be761bde8",
+      "status": "triage",
+      "kind": "tool",
+      "capabilities": ["paper-search", "search-fallback", "result-normalization", "citation-audit-support"],
+      "applicable_modes": ["evidence-synthesis"],
+      "context_cost": "high",
+      "risk_flags": ["single-service-default", "credentialed-external-api", "research-data-egress", "license-not-detected", "255-line-instructions"],
+      "decision": {
+        "action": "extract-provider-neutral-search-contract",
+        "reason": "Its request planning, failure classification, normalization, and open-source fallback are useful; the accepted tool port must not privilege one endpoint or upload data without policy negotiation."
+      }
+    },
+    {
+      "candidate_id": "rc-thesis-audit-reviewer",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/thesis-audit-reviewer/SKILL.md",
+      "content_hash": "sha256:f5886b0a79d80f64bc151f821e32765c6bdccb2329224336ff9125e9f5da3806",
+      "status": "reference",
+      "kind": "integrity",
+      "capabilities": ["document-audit", "finding-traceability", "coverage-ledger", "completion-gate"],
+      "applicable_modes": ["reporting", "cross-cutting"],
+      "context_cost": "high",
+      "risk_flags": ["broad-audit-operating-system", "online-pdf-upload-default", "many-script-dependencies", "semantic-review-cost", "license-not-detected"],
+      "decision": {
+        "action": "extract-ledger-and-gate-patterns",
+        "reason": "Location, evidence basis, coverage denominator, and residual-risk gates are useful integrity patterns; the full thesis workflow is too broad and contains upload assumptions."
+      }
+    },
+    {
+      "candidate_id": "rc-academic-writing",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/academic-writing/SKILL.md",
+      "content_hash": "sha256:2ef2f673dec57e39ca162f7cd0af3c438f8ada12730b288d0eda642add160154",
+      "status": "reference",
+      "kind": "output",
+      "capabilities": ["manuscript-drafting", "peer-review-formatting", "revision-response", "submission-materials"],
+      "applicable_modes": ["reporting"],
+      "context_cost": "high",
+      "risk_flags": ["multi-workflow-bundle", "semantic-review-fanout", "reporting-standards-require-version-review", "frontmatter-normalization-required"],
+      "decision": {
+        "action": "defer-and-split-by-output-contract",
+        "reason": "Writing and response templates may be useful later, but drafting, review, grants, and submission should not be admitted as one global Skill."
+      }
+    },
+    {
+      "candidate_id": "rc-scispark",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/scispark/SKILL.md",
+      "content_hash": "sha256:aa24c2c68047c9c432be4d18ffe8d1339675595e948a47261358200b4ea1009b",
+      "status": "reference",
+      "kind": "method",
+      "capabilities": ["fact-hypothesis-separation", "staged-idea-generation", "evidence-thresholding", "review-ledger"],
+      "applicable_modes": ["evidence-synthesis", "theory"],
+      "context_cost": "high",
+      "risk_flags": ["broad-seven-stage-workflow", "paper-count-thresholds-not-domain-general", "idea-to-proposal-overreach", "coordination-cost", "license-not-detected"],
+      "decision": {
+        "action": "extract-stage-contracts-only",
+        "reason": "Stable hypothesis and review IDs are useful; a fixed seven-stage pipeline and paper-count thresholds should not become a cross-discipline global research process."
+      }
+    },
+    {
       "candidate_id": "rc-research-baseline-builder",
       "source_id": "research-copilot-archive-1.0.0",
       "source_path": "research-copilot/1.0.0/skills/research-baseline-builder/SKILL.md",

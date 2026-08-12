@@ -16,7 +16,7 @@
 
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
-| M1-001 | IN_PROGRESS | 初始化 Python 包、pyproject 和基础 CI | M0 | 本地测试已通过，等待 GitHub CI |
+| M1-001 | IN_PROGRESS | 初始化 Python 包、pyproject 和基础 CI | M0 | 功能分支已推送；工作流仅监听 `main`/PR，等待进入 PR 后的 GitHub CI |
 | M1-002 | DONE | 实现核心对象模型与 JSON Schema | M1-001 | 7 类对象正反 fixture 通过 Draft 2020-12 Schema |
 | M1-003 | DONE | 实现 Protocol、Mode、Profile、Skill Manifest | M1-002 | 能力、工具、输出、模式、冲突和 scoped permission 可验证 |
 | M1-004 | DONE | 实现 Task、Attempt、Handoff、Main State | M1-002 | completed/incomplete Handoff、Attempt 与 checkpoint 示例通过 |
@@ -29,13 +29,13 @@
 
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
-| M2-001 | IN_PROGRESS | 实现 Skill Registry 与 Resolver | M1 | Resolver 已支持最小覆盖、冲突、权限交集和版本锁；正式 accepted Registry 待接入 |
-| M2-002 | READY | 定义四个 Agent Profiles | M2-001 | 权限、工具、输出边界完整 |
-| M2-003 | READY | 创建 literature-evidence-extraction Skill | M2-001 | 正/反/注入 eval 通过 |
-| M2-004 | READY | 创建 simulation-vv Skill | M2-001 | 收敛、版本、Claim ceiling eval 通过 |
-| M2-005 | READY | 创建 handoff-integrity 检查 | M1 | 优先确定性脚本，语义部分可选 |
-| M2-006 | READY | 实现 Codex Runtime Adapter | M2-002..005 | 生成/验证原生 Agent 与 Skill 绑定 |
-| M2-007 | READY | 执行首个双 Skill 垂直切片 | M2-006 | 两个子 Agent Skills 不同，主 Agent只收 Handoff |
+| M2-001 | DONE | 实现 Skill Registry 与 Resolver | M1 | accepted Registry、最小覆盖、显式选择、冲突、权限交集、版本/哈希锁与确定性 Assignment 已测试 |
+| M2-002 | DONE | 定义四个 Agent Profiles | M2-001 | coordinator/evidence/simulation/reviewer 的权限、工具、输出和上下文边界可验证 |
+| M2-003 | IN_PROGRESS | 创建 literature-evidence-extraction Skill | M2-001 | 结构、正例、stale source 和 dispatch 注入隔离通过；真实 Agent 前向测试待执行 |
+| M2-004 | IN_PROGRESS | 创建 simulation-vv Skill | M2-001 | V&V 结构、版本锁和 Claim ceiling 正反例通过；真实数值案例待执行 |
+| M2-005 | DONE | 创建 handoff-integrity 检查 | M1 | 确定性脚本已验证 Task/input/Skill/artifact 交接边界，不宣称科学正确性 |
+| M2-006 | IN_PROGRESS | 实现 Codex Runtime Adapter | M2-002..005 | 原生 Agent/Skill 发现、验证和显式 dispatch 已完成；launch/collect 仍使用平台原生会话、待真实演练 |
+| M2-007 | IN_PROGRESS | 执行首个双 Skill 垂直切片 | M2-006 | 离线契约切片已证明 Skills 不同且原始资料不进入 dispatch；两次真实原生执行待完成 |
 | M2-008 | IN_PROGRESS | 建立外部 Skill 发现、隔离评估与准入 Registry | M1 | 来源/哈希/许可/风险/上下文成本可追溯，未准入候选不可执行 |
 
 ## M3：上下文与风险
@@ -82,4 +82,4 @@ M1 已建立里程碑与首批可执行 Issues：
 
 ## 当前下一任务
 
-当前 M1 功能与本地验收已完成；`M1-001` 仅等待带 `workflow` scope 的 GitHub 推送与 CI。下一步完成 `M2-001` 的正式 accepted Skill Registry，再建立四个 Profile 与两个仓库级 Skills；`M2-008` 继续逐文件候选审计但不安装候选。`M5-001` 和 `M5-002` 保持阻塞，直到人类选择真实案例；不以虚构课题替代真实验证。
+当前功能分支已推送，M1 本地功能完成；`M1-001` 等待 PR/main 触发 GitHub CI。M2 的 accepted Registry、四个 Profile、三个仓库级 Skills 和 Codex 原生配置映射已落地。下一步以平台原生子 Agent 各执行一次 evidence/simulation Task，并记录实际 Handoff、上下文与成本；`M2-008` 继续逐文件候选审计但不安装候选。`M5-001` 和 `M5-002` 保持阻塞，直到人类选择真实案例；不以虚构课题替代真实验证。

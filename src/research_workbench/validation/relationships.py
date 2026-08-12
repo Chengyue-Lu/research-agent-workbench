@@ -4,9 +4,11 @@ from pathlib import Path
 from typing import Iterable
 
 from research_workbench.artifacts.integrity import ReferenceStatus, check_file_reference
+from research_workbench.capability.resolver import ResolvedTask
 from research_workbench.contracts.risks import ContractRisk, RiskLevel
 from research_workbench.protocol.models import ProjectProtocol
 from research_workbench.tasks.models import FileReference, HandoffPacket, TaskPacket
+
 
 def _skill_id_from_lock(value: str) -> str:
     return value.split("@", 1)[0]
@@ -17,6 +19,7 @@ def check_handoff_against_task(
     handoff: HandoffPacket,
     *,
     project_root: str | Path | None = None,
+    assignment: ResolvedTask | None = None,
 ) -> list[ContractRisk]:
     risks: list[ContractRisk] = []
     if task.task_id != handoff.task_id:
@@ -38,6 +41,42 @@ def check_handoff_against_task(
             )
         )
 
+    if assignment is not None:
+        if assignment.task_id != task.task_id or assignment.task_revision != task.revision:
+            risks.append(
+                ContractRisk(
+                    "HANDOFF-ASSIGNMENT-TASK-DRIFT",
+                    RiskLevel.BLOCK,
+                    "Skill Assignment does not match the Task identity or revision",
+                )
+            )
+        if assignment.agent_profile.split("@", 1)[0] != task.agent_profile:
+            risks.append(
+                ContractRisk(
+                    "HANDOFF-ASSIGNMENT-PROFILE-DRIFT",
+                    RiskLevel.BLOCK,
+                    "Skill Assignment Agent Profile does not match the Task",
+                )
+            )
+        expected_locks = {lock.identifier for lock in assignment.skill_lock}
+        actual_locks = set(handoff.skill_lock)
+        if expected_locks != actual_locks:
+            risks.append(
+                ContractRisk(
+                    "HANDOFF-ASSIGNMENT-SKILL-DRIFT",
+                    RiskLevel.BLOCK,
+                    f"handoff Skill lock {sorted(actual_locks)!r} differs from Assignment {sorted(expected_locks)!r}",
+                )
+            )
+        if not handoff.skill_assignment_ref:
+            risks.append(
+                ContractRisk(
+                    "HANDOFF-ASSIGNMENT-MISSING",
+                    RiskLevel.BLOCK,
+                    "controlled handoff does not retain its Skill Assignment reference",
+                )
+            )
+
     expected_inputs = {(ref.path, ref.sha256) for ref in task.input_refs}
     locked_inputs = {(ref.path, ref.sha256) for ref in handoff.input_lock}
     if expected_inputs != locked_inputs:
@@ -58,6 +97,16 @@ def check_handoff_against_task(
             )
         )
     if project_root is not None:
+        if handoff.skill_assignment_ref:
+            assignment_path = Path(project_root).resolve() / handoff.skill_assignment_ref
+            if not assignment_path.is_file():
+                risks.append(
+                    ContractRisk(
+                        "HANDOFF-ASSIGNMENT-MISSING",
+                        RiskLevel.BLOCK,
+                        f"Skill Assignment does not exist: {handoff.skill_assignment_ref}",
+                    )
+                )
         for reference in handoff.input_lock:
             check = check_file_reference(project_root, reference)
             if check.status != ReferenceStatus.OK:

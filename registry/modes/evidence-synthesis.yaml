@@ -1,0 +1,12 @@
+schema_version: 0.1.0
+mode_id: evidence-synthesis
+version: 0.1.0
+applies_when:
+  - Evidence is primarily obtained from a bounded source set.
+required_artifact_types: [question, evidence, claim]
+recommended_skill_capabilities: [evidence-extraction, citation-location]
+claim_rules:
+  allows: [source_reported, synthesis_supported]
+  forbids_without_other_mode: [experimentally_supported]
+human_decisions: [approve_source_weight, approve_synthesis_claim]
+risk_rules: [CITATION-DRIFT, CLAIM-OVERREACH]

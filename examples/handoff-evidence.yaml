@@ -7,6 +7,7 @@ input_lock:
     sha256: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
 skill_lock:
   - literature-evidence-extraction@0.1.0
+skill_assignment_ref: examples/vertical-slice/evidence-assignment.yaml
 result:
   summary: Four evidence records were extracted; one conflicts with HYP-001.
   facts:

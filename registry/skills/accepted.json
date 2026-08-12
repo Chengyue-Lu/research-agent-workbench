@@ -1,0 +1,62 @@
+{
+  "schema_version": "0.1.0",
+  "registry_kind": "skill_accepted",
+  "generated_at": "2026-08-13",
+  "policy": {
+    "default_invocation": "explicit",
+    "maximum_primary_skills_per_task": 2,
+    "maximum_integrity_skills_per_task": 1,
+    "external_candidates_are_executable": false,
+    "note": "Directory membership is not sufficient; every entry is pinned to a manifest, source path, version, and content hash."
+  },
+  "entries": [
+    {
+      "skill_id": "literature-evidence-extraction",
+      "version": "0.1.0",
+      "status": "accepted",
+      "manifest_path": "registry/skills/accepted/literature-evidence-extraction.yaml",
+      "source_path": ".agents/skills/literature-evidence-extraction/SKILL.md",
+      "content_hash": "sha256:7eb2ee75df035b24e68578242b6a77f0a6fa7e2e62516b17d90a862c3d1dc2b4",
+      "package_hash": "sha256:a1e5f34e768c139dec99629057e6ede6f060bda54741bacf16bf3997930e49b6",
+      "license_status": "project-original-unlicensed",
+      "admission": {
+        "trigger_non_trigger_reviewed": true,
+        "boundary_failure_tested": true,
+        "deterministic_check": "scripts/check_evidence_record.py",
+        "scientific_correctness_claimed": false
+      }
+    },
+    {
+      "skill_id": "simulation-vv",
+      "version": "0.1.0",
+      "status": "accepted",
+      "manifest_path": "registry/skills/accepted/simulation-vv.yaml",
+      "source_path": ".agents/skills/simulation-vv/SKILL.md",
+      "content_hash": "sha256:2a3c19b5af6288c4d5eab6e2fc2557231cc684f0ec9b6ec8bb5b864d126a99c4",
+      "package_hash": "sha256:6a86d52046e52bf404ef4aa74a7a13edcba3cc0f49e2eb1a1bb48fa259e4f75a",
+      "license_status": "project-original-unlicensed",
+      "admission": {
+        "trigger_non_trigger_reviewed": true,
+        "boundary_failure_tested": true,
+        "deterministic_check": "scripts/check_vv_report.py",
+        "scientific_correctness_claimed": false
+      }
+    },
+    {
+      "skill_id": "handoff-integrity",
+      "version": "0.1.0",
+      "status": "accepted",
+      "manifest_path": "registry/skills/accepted/handoff-integrity.yaml",
+      "source_path": ".agents/skills/handoff-integrity/SKILL.md",
+      "content_hash": "sha256:5f7e175402932cc4b12d95abe59d3b803574e7b70e3ff940740ee6727bf091be",
+      "package_hash": "sha256:1f9f909c5d082be06899d6ea465e5841bd4795148f2905b58916b714297bd52b",
+      "license_status": "project-original-unlicensed",
+      "admission": {
+        "trigger_non_trigger_reviewed": true,
+        "boundary_failure_tested": true,
+        "deterministic_check": "scripts/check_handoff.py",
+        "scientific_correctness_claimed": false
+      }
+    }
+  ]
+}

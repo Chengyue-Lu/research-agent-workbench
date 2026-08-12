@@ -35,6 +35,32 @@ def hash_file(path: str | Path) -> str:
     return digest.hexdigest()
 
 
+def hash_directory(path: str | Path) -> str:
+    """Hash stable package sources, excluding generated interpreter/OS caches."""
+
+    root = Path(path).resolve()
+    if not root.is_dir():
+        raise FileNotFoundError(root)
+    digest = hashlib.sha256()
+    excluded_names = {".DS_Store"}
+    files = (
+        candidate
+        for candidate in root.rglob("*")
+        if candidate.is_file()
+        and "__pycache__" not in candidate.parts
+        and candidate.suffix.lower() not in {".pyc", ".pyo"}
+        and candidate.name not in excluded_names
+    )
+    for file_path in sorted(files):
+        if file_path.is_symlink():
+            raise ValueError(f"refusing to hash symlinked package file: {file_path}")
+        relative = file_path.relative_to(root).as_posix().encode("utf-8")
+        digest.update(len(relative).to_bytes(8, "big"))
+        digest.update(relative)
+        digest.update(bytes.fromhex(hash_file(file_path)))
+    return digest.hexdigest()
+
+
 def resolve_within_root(root: str | Path, relative_path: str) -> Path | None:
     root_path = Path(root).resolve()
     candidate = (root_path / relative_path).resolve()

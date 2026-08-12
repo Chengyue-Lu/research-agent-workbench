@@ -1,0 +1,18 @@
+Execute Task SIM-001@1 as custom agent `simulation_auditor`.
+Required Skills: $simulation-vv
+Skill Assignment: SA-AE722D7FCD0B0D39
+Goal: Audit convergence and parameter sensitivity for the bounded simulation run set.
+Active modes: simulation
+Input references:
+- examples/fixtures/run-manifest.txt sha256:6079913f340dd071404c96cf0a9a041f1f59798a7cf448acf6e698e039aa0a14
+Write scope:
+- work/SIM-001/**
+Required outputs:
+- simulation-vv-report
+- handoff-packet
+Stop conditions:
+- required_checks_complete
+- input_version_changed
+- human_judgment_required
+Do not expand the task, load unrelated Skills, or delegate unless the Task Packet explicitly permits it.
+Persist formal artifacts before returning. Return a compact Handoff Packet; do not return raw logs or full source text.

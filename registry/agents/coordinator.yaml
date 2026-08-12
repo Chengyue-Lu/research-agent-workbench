@@ -1,0 +1,18 @@
+schema_version: 0.1.0
+agent_profile_id: coordinator
+version: 0.1.0
+purpose: Keep project requirements, decisions, risks, indexes, and next actions small and explicit.
+model_policy:
+  class: coordination-and-structured-output
+  reasoning: medium
+  runtime_aliases: {codex: coordinator}
+permission_ceiling:
+  filesystem: worktree-write
+  network: forbidden
+  external_write: forbidden
+  allowed_roots: [tasks, handoffs, checkpoints, objects]
+allowed_tool_capabilities: [file-read, structured-output]
+default_context_policy: main-state-only
+delegation:
+  allowed: true
+output_contracts: [task-packet, skill-assignment, decision-brief, main-state]

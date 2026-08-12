@@ -6,9 +6,9 @@
 
 ## 当前状态
 
-状态：`M1 Provider-neutral Foundation`
+状态：`M2 Agent—Skill Contract Slice`
 
-当前仓库已进入 M1：提供最小 Python 包、确定性文档校验、Skill 候选 Registry 和模型 API 中立端口。尚未接入真实模型 API、数据库、Web UI 或完整自动化。只有通过两个差异明显的真实研究案例后，候选机制才可以进入公共内核。
+当前仓库已完成 M1 的本地实现，并进入 M2：提供 accepted Skill Registry、四个 Agent Profiles、三个仓库级 Skills、确定性 Skill Assignment，以及 Codex 原生配置/dispatch 映射。尚未接入真实模型 API、数据库、Web UI 或自建调度器；离线双 Skill 契约切片已通过，真实原生子 Agent 案例仍待执行。
 
 ## 核心判断
 
@@ -38,8 +38,13 @@ python -m pip install -e .
 rwb validate examples registry
 rwb schema list
 rwb task resolve examples/task-evidence.yaml `
-  --profile examples/profiles/evidence-scout.yaml `
-  --skill examples/skills/literature-evidence-extraction.yaml
+  --profile registry/agents/evidence-scout.yaml `
+  --registry registry/skills/accepted.json
+rwb skills accepted --root .
+rwb runtime codex validate --root .
+rwb runtime codex render examples/task-evidence.yaml `
+  --profile registry/agents/evidence-scout.yaml `
+  --root .
 rwb handoff validate examples/handoff-evidence.yaml `
   --task examples/task-evidence.yaml
 rwb claim trace examples/objects/claim/CLAIM-001.yaml `
@@ -48,25 +53,25 @@ rwb skills candidates --status triage
 rwb providers list
 ```
 
-`validate` 会检查 Schema、实际文件、SHA-256 与 Registry 引用等机器可判定条件，但不代表科学正确性。`task resolve` 只生成固定的 Profile/Skill/权限执行视图，不启动 Agent。外部 Skill 默认不可执行；`discovered`、`triage`、`reference` 和 `quarantine` 均不等于已安装或已准入。
+`validate` 会检查 Schema、实际文件、SHA-256 与 Registry 引用等机器可判定条件，但不代表科学正确性。`task resolve` 只生成固定的 Profile/Skill/权限执行视图，不启动 Agent；`runtime codex render` 只生成原生 dispatch prompt，也不启动自建运行时。外部 Skill 默认不可执行；`discovered`、`triage`、`reference` 和 `quarantine` 均不等于已安装或已准入。
 
 ## 第一条验证路线
 
-首个垂直切片将验证两个能力差异明显的子 Agent：
+首个离线契约切片已验证两个能力差异明显的子 Agent 配置：
 
 1. `evidence-scout` + `literature-evidence-extraction` Skill：源材料只读、任务区受限写的检索、证据定位和引用交接。
 2. `simulation-auditor` + `simulation-vv` Skill：读取模型与运行工件，检查版本、参数、收敛和敏感性。
 
-两者共享最小科研内核与 Task/Handoff 契约，但使用不同的输入、权限、Skill、输出和质量检查。该切片的目标不是证明多 Agent 更强，而是验证“能力按需绑定、主上下文不被污染、结果可追溯”是否成立。
+两者共享最小科研内核与 Task/Handoff 契约，但使用不同的输入、权限、Skill、输出和质量检查。离线证据见 [双 Skill 契约切片](examples/vertical-slice/SLICE_REPORT.md)。该切片只证明绑定、隔离与校验可重放，不证明多 Agent 更强；后续仍需两个真实原生子 Agent 执行和单 Agent 对照。
 
 ## 近期交付边界
 
-M1 只计划交付：
+当前近期交付边界：
 
 - 最小 Schema 与确定性验证器；
 - 一个本地 CLI；
 - Codex 优先的 Runtime Adapter；
-- 两个 Agent Profile 与两个 Skill；
+- 四个 Agent Profile、三个仓库级 Skill 与 accepted Registry；
 - 主状态包、Task Packet 和 Handoff Packet；
 - 无数据库、无常驻 Supervisor、无全局自治 DAG。
 
