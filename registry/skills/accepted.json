@@ -16,8 +16,8 @@
       "status": "accepted",
       "manifest_path": "registry/skills/accepted/literature-evidence-extraction.yaml",
       "source_path": ".agents/skills/literature-evidence-extraction/SKILL.md",
-      "content_hash": "sha256:7eb2ee75df035b24e68578242b6a77f0a6fa7e2e62516b17d90a862c3d1dc2b4",
-      "package_hash": "sha256:a1e5f34e768c139dec99629057e6ede6f060bda54741bacf16bf3997930e49b6",
+      "content_hash": "sha256:c0a080ea9c4743a599000bc6978386a8dcbb8aaa09e1ed4c0e54a4deadca780b",
+      "package_hash": "sha256:4756548448d00e78fea7743e126a4b233930ce2145ed69fdad0995e2ef478004",
       "license_status": "project-original-unlicensed",
       "admission": {
         "trigger_non_trigger_reviewed": true,
@@ -48,8 +48,8 @@
       "status": "accepted",
       "manifest_path": "registry/skills/accepted/handoff-integrity.yaml",
       "source_path": ".agents/skills/handoff-integrity/SKILL.md",
-      "content_hash": "sha256:5f7e175402932cc4b12d95abe59d3b803574e7b70e3ff940740ee6727bf091be",
-      "package_hash": "sha256:1f9f909c5d082be06899d6ea465e5841bd4795148f2905b58916b714297bd52b",
+      "content_hash": "sha256:2a4c727eb7462628e9f246a5363a8add1ba244c05b6c7b7e7b2ad450befabbf7",
+      "package_hash": "sha256:eacfb88221e37a388970542d87d3f4ce4424295e23887b7047ffba06680a3e5f",
       "license_status": "project-original-unlicensed",
       "admission": {
         "trigger_non_trigger_reviewed": true,

@@ -39,6 +39,8 @@
 - 主 Agent发生非计划压缩的次数；
 - checkpoint/rollover 后恢复成功率；
 - Handoff 缺失限制或未完成项比例；
+- Transfer Manifest 条目数、必传条目覆盖率和未映射负面区段数；
+- 触发语义复核的条目数、实际抽样数及 preserved/distorted/unverifiable 分布；
 - 主 Agent回查原始材料/日志频率；
 - Pinned State 大小与增长率；
 - Skill 正文加载量；
@@ -52,11 +54,14 @@
 - 每个 Skill 的加载成本与采纳率；
 - 子 Agent无效产出比例；
 - reviewer 改变实际决定的比例；
+- Handoff 抽样与失真修复的人工分钟数；
 - Human Gate 阅读与等待时间。
 
 协调成本持续超过三分之一时进入 WARN，并优先减少 Agent、Handoff 字段、review 或规则，而不是提高预算。
 
 协调比例优先使用 `coordination_tokens / (coordination_tokens + execution_tokens)`；token 不可得时才使用对应时间比例。两个基准都不可得时产生 unknown 警告，不合成跨单位总分。
+
+Handoff 语义复核不默认扩大为全文复核。只有 Task 明确要求或 Transfer Manifest 出现关键/高风险条目时才计入最小抽样；若抽样成本持续高而并未改变接受、返工或升级决定，应缩减字段或触发条件，而不是常驻一个 reviewer Agent。
 
 ## 6. 对照评估
 

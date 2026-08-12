@@ -1,5 +1,5 @@
 schema_version: 0.1.0
-assignment_id: SA-AE722D7FCD0B0D39
+assignment_id: SA-B12E83DDDC626378
 task_id: SIM-001
 task_revision: 1
 agent_profile: simulation-auditor@0.1.0
@@ -25,4 +25,4 @@ resolution_reason:
 - all required capabilities are covered
 - no forbidden or incompatible skill is loaded
 - permissions are the intersection of task, profile, and selected skills
-registry_digest: 9b743836da2e9772341db5f13ad9be4598b5c0cf994d81779ded6654566efd1a
+registry_digest: 9991ef98131666dd8437e5f444027e4a833edbea9f5ab50273d8cc120ddf934f

@@ -44,7 +44,7 @@
 |---|---|---|---|---|
 | M3-001 | IN_PROGRESS | Main State checkpoint/resume | M1 | 规范化 digest、前序引用、协议 revision、下一动作和约束/决定丢失检查已通过；真实新主会话恢复待演练 |
 | M3-002 | IN_PROGRESS | context pressure 代理指标 | M3-001 | 可测/未知指标、阈值、WARN/rollover/block 和 checkpoint 链已测试；真实运行指标待采集 |
-| M3-003 | IN_PROGRESS | Handoff loss/stale/summary 抽查 | M2 | 未固化 Handoff 的子 Agent 压缩会阻断；摘要失真抽查仍待实现 |
+| M3-003 | IN_PROGRESS | Handoff loss/stale/summary 抽查 | M2 | Transfer Manifest/Audit、负面区段覆盖、风险触发抽查、Context/Receipt 绑定已实现；真实原生 Handoff 的人工样本仍待执行 |
 | M3-004 | IN_PROGRESS | review loop/fanout/write race 检查 | M2 | 并发预算、review loop、协调成本与既有 write race 检查已落地；真实停止行为待验证 |
 | M3-005 | IN_PROGRESS | 敏感 trace 策略 | M2 | 外部/完整/敏感 trace 会阻断或警告；真实脱敏器与密钥 fixture 待实现 |
 
@@ -90,4 +90,4 @@ M1 已建立里程碑与首批可执行 Issues：
 
 ## 当前下一任务
 
-当前功能分支已推送，M1 本地功能完成；`M1-001` 等待 PR/main 触发 GitHub CI。M2 的 accepted Registry、四个 Profile、三个仓库级 Skills 和 Codex 原生配置映射已落地。M3 已具备 Context Snapshot、Execution Receipt、checkpoint/resume 和首批故障注入。M6-001 的三家 API Adapter、ToolChoice、本地工具参数校验和脱敏 live conformance runner 已完成；下一步由用户在真实 Windows 授权上下文执行每家一个模型，不在 Codex 沙箱内读取令牌或据此判断认证。之后仍需平台原生子 Agent 各执行一次 evidence/simulation Task，把实际 Handoff、上下文与成本写入同一收据。`M2-008` 已完成首个 ZIP 的 18/18 入口审计、非发现 `claim-preserving-rewrite` 候选以及 paired same-input 评估契约；当前 fixture 明确为 `not-eligible`。下一步是在真实 Windows 运行至少四类 baseline/with-Skill pair、盲评并分析误报，不安装原始候选。`M5-001` 和 `M5-002` 保持阻塞，直到人类选择真实案例；不以虚构课题替代真实验证。
+项目按用户要求在本轮完成后暂停。当前可恢复状态、所需输入与恢复顺序见 `docs/NEXT_STEPS.md`，累计变更见 `CHANGELOG.md`。恢复后的首要工作是：在真实 Windows 授权上下文完成三家 Provider conformance；随后运行两个真实原生子 Agent，保存 Transfer Manifest/Audit、Context Snapshot 和 Receipt；再执行候选 Skill 的四类 paired evaluation。不得在 Codex 沙箱读取令牌，不安装原始 ZIP 候选，也不以 fixture 替代真实科研价值验证。`M5-001`、`M5-002` 继续等待研究者选择真实案例。

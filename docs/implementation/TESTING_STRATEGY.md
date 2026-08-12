@@ -62,7 +62,7 @@
 - reviewer 给出与原 Agent 一致但无新证据的“共识”；
 - trace 中出现敏感字段。
 
-M3 首批已自动化的故障注入包括：主上下文原始材料、隐藏决定、子 Agent 压缩但未固化 Handoff、伪造 Context assessment、checkpoint digest 篡改、高 coordination ratio、超并发、重复 review、敏感/外部/full trace。摘要语义失真和真实运行中的 secret redaction 仍需后续定向案例，不用结构测试冒充完成。
+M3 首批已自动化的故障注入包括：主上下文原始材料、隐藏决定、子 Agent 压缩但未固化 Handoff/Audit、Manifest 条目遗漏、负面区段无映射、来源哈希/定位漂移、抽查发现 summary distortion、伪造 Context assessment、checkpoint digest 篡改、高 coordination ratio、超并发、重复 review、敏感/外部/full trace。fixture 只证明风险代码生效；真实摘要失真率、Manifest 源头遗漏和 secret redaction 仍需真实定向案例。
 
 ## 4. 黄金样例
 

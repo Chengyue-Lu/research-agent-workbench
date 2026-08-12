@@ -1,0 +1,33 @@
+schema_version: 0.1.0
+audit_id: HTA-EVID-0001
+task_ref:
+  path: examples/task-evidence.yaml
+  sha256: 56d655da944f5c358904528c7e7414b82f90864534dfeb4934f747016e965402
+handoff_ref:
+  path: examples/handoff-evidence.yaml
+  sha256: 575f392611b47dc3f61a75fc73733a0b82329a229a5958d1e2f703a4ab9c3db1
+manifest_ref:
+  path: examples/handoff-transfer-evidence.yaml
+  sha256: 778342a900bb30ea58ad83a40ca62f40915ad813c3ac4c71264d99519bc53de0
+generated_at: "2026-08-13T00:01:05Z"
+mappings:
+  - item_id: HTI-EVID-FACT-001
+    status: carried
+    handoff_locator: /result/facts/0
+  - item_id: HTI-EVID-INFERENCE-001
+    status: carried
+    handoff_locator: /result/inferences/0
+  - item_id: HTI-EVID-LIMITATION-001
+    status: carried
+    handoff_locator: /limitations/0
+  - item_id: HTI-EVID-UNRESOLVED-001
+    status: carried
+    handoff_locator: /unresolved/0
+review:
+  status: pending
+  reviewer_kind: none
+  reviewer_independent: false
+  sampled_item_ids: []
+  findings: []
+limitations:
+  - Structural coverage is a fixture result; semantic equivalence has not been reviewed.

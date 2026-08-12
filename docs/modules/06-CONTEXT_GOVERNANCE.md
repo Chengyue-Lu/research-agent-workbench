@@ -99,7 +99,7 @@ rollover 步骤：
 
 否则 Agent 必须在压缩/终止前输出 `incomplete` Handoff。不能仅凭“我记得主要结论”继续。
 
-确定性规则区分两种情况：`scope: task` 且 `handoff_ready: true` 的压缩只产生可恢复警告；没有固化 Handoff 的压缩触发 `CTX-HANDOFF-LOSS` 并阻断继续。主上下文发生任何非计划压缩则触发 rollover，而不使用同一宽容规则。
+确定性规则区分两种情况：`scope: task`、发生过压缩且 `handoff_ready: true` 时，Context Snapshot 必须引用一份 Handoff Transfer Audit；Receipt 会重新检查其条目覆盖。低风险未做人类抽查时最多得到 `structurally-ready` 和可恢复警告；缺少 Audit、必需条目或关键语义抽查时阻断。主上下文发生任何非计划压缩仍触发 rollover，不使用同一宽容规则。
 
 ## 7. 按需拉取
 
@@ -134,9 +134,10 @@ rollover 步骤：
 rwb context assess ...
 rwb context checkpoint ...
 rwb context resume-check ...
+rwb handoff audit-transfer ...
 ```
 
-`assess` 不读取聊天隐式状态，调用方必须传入可测代理指标；生成文件会显式列出其余 unknown。`checkpoint` 可以从上一 Main State 继承状态，并链接触发它的 Context Snapshot；`resume-check` 是换届前后的确定性门槛，不启动或管理新会话。
+`assess` 不读取聊天隐式状态，调用方必须传入可测代理指标；压缩后的 task 若声明 handoff-ready，还要传 `--handoff-audit-ref`。`checkpoint` 可以从上一 Main State 继承状态；`resume-check` 是换届门槛，不启动或管理新会话。
 
 ## 10. 不保存的内容
 

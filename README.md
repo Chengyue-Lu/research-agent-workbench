@@ -8,7 +8,7 @@
 
 状态：`M3 Context/Receipt + M6 Provider Adapter Foundation`
 
-当前仓库已完成 M1 的本地实现和 M2 的离线 Agent—Skill 契约切片，并开始实现 M3：提供可恢复 Main State、Context Snapshot、Execution Receipt，以及上下文压力、协调成本、并发、复核循环和敏感 trace 检查。Skill 供应链现具备只读 ZIP 静态审计、18/18 来源入口追溯、非发现候选实验区和 provider-neutral paired evaluation；首个 `claim-preserving-rewrite` 候选尚未准入。另已实现 OpenAI Responses、Anthropic Messages、Gemini `generateContent` 的非流式薄 Adapter、ToolChoice、本地工具参数校验，以及默认零环境/零网络的 live conformance runner；但尚未用真实账户/模型执行 conformance。项目仍无数据库、Web UI 或自建调度器；真实原生子 Agent 和真实科研案例仍待执行。
+当前仓库已完成 M1 的本地实现和 M2 的离线 Agent—Skill 契约切片，并实现 M3 的首批上下文治理：可恢复 Main State、Context Snapshot、Execution Receipt，以及 Handoff Transfer Manifest/Audit。压缩后的子 Agent 不能只自报 `handoff_ready`；必须把任务条目映射到正式 Handoff，关键风险才触发有界人工抽查。Skill 供应链现具备只读 ZIP 静态审计、18/18 来源入口追溯、非发现候选实验区和 provider-neutral paired evaluation；首个 `claim-preserving-rewrite` 候选尚未准入。另已实现 OpenAI Responses、Anthropic Messages、Gemini `generateContent` 的非流式薄 Adapter和脱敏 live conformance runner，但尚未用真实账户/模型执行。项目现按用户要求暂停继续构建；真实原生子 Agent 和真实科研案例仍待执行。
 
 ## 核心判断
 
@@ -26,6 +26,8 @@
 - [总体架构](docs/ARCHITECTURE.md)
 - [完整实施计划](docs/implementation/IMPLEMENTATION_PLAN.md)
 - [任务清单](docs/TASKS.md)
+- [暂停点与下一步](docs/NEXT_STEPS.md)
+- [Changelog](CHANGELOG.md)
 - [模块文档索引](docs/modules/README.md)
 - [迁移方案](docs/implementation/MIGRATION_PLAN.md)
 - [Skill 候选准入流程](docs/implementation/SKILL_CANDIDATE_PIPELINE.md)
@@ -34,6 +36,7 @@
 - [多提供商模型 API 实施计划](docs/implementation/PROVIDER_ADAPTER_PLAN.md)
 - [薄 Adapter 与凭据边界 ADR](docs/decisions/0007-THIN-PROVIDER-ADAPTERS.md)
 - [上下文与执行收据 ADR](docs/decisions/0006-CONTEXT-AND-EXECUTION-RECEIPTS.md)
+- [Handoff Transfer Audit ADR](docs/decisions/0008-HANDOFF-TRANSFER-AUDIT.md)
 
 ## 当前可执行入口
 
@@ -51,6 +54,8 @@ rwb runtime codex render examples/task-evidence.yaml `
   --root .
 rwb handoff validate examples/handoff-evidence.yaml `
   --task examples/task-evidence.yaml
+rwb handoff audit-transfer examples/handoff-transfer-audit-evidence.yaml `
+  --root .
 rwb claim trace examples/objects/claim/CLAIM-001.yaml `
   --protocol examples/project-protocol.yaml
 rwb skills candidates --status triage
@@ -73,7 +78,7 @@ rwb execution assess examples/observability/execution-evidence-contract.yaml `
   --protocol examples/project-protocol.yaml --root .
 ```
 
-`validate` 会检查 Schema、实际文件、SHA-256 与 Registry 引用等机器可判定条件，但不代表科学正确性。`task resolve` 只生成固定的 Profile/Skill/权限执行视图，不启动 Agent；`runtime codex render` 只生成原生 dispatch prompt，也不启动自建运行时。`skills audit-archive` 只在 ZIP 内做有界静态文本扫描，不解压、不执行、不联网，也不保存正文或命中片段。`skills eval assess` 只检查双臂证据是否足以交给人类决策；示例故意返回 `not-eligible`，不会自动准入候选。`context assess` 的字符/回合等数据是压力代理，不是假装精确的 token 窗口；缺失指标会明确标为 unknown。外部 Skill 默认不可执行；`discovered`、`triage`、`reference` 和 `quarantine` 均不等于已安装或已准入。
+`validate` 会检查 Schema、实际文件、SHA-256 与 Registry 引用等机器可判定条件，但不代表科学正确性。`handoff audit-transfer` 的 `structurally-ready` 只表示条目和引用覆盖，不表示语义等价；关键风险或 Task policy 会要求独立人工抽查。`task resolve` 和 `runtime codex render` 不启动 Agent。`skills audit-archive` 不解压、不执行、不联网；`skills eval assess` 不自动准入候选。`context assess` 的字符/回合是压力代理而非假精确 token 余量。外部 Skill 的 `discovered`、`triage`、`reference` 和 `quarantine` 均不等于已安装或已准入。
 
 ## 第一条验证路线
 

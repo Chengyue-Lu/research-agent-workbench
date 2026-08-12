@@ -30,7 +30,10 @@ trace:
   redactions_applied: 0
 output_refs:
   - examples/objects/evidence/EVID-001-01.yaml
+  - examples/objects/claim/CLAIM-EVID-001-BOUNDARY.yaml
+  - examples/handoff-transfer-evidence.yaml
   - examples/handoff-evidence.yaml
-validation_refs: []
+validation_refs:
+  - examples/handoff-transfer-audit-evidence.yaml
 limitations:
   - This records an offline contract slice, not a native subagent or model API execution.

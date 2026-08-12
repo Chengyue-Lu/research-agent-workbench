@@ -14,7 +14,7 @@ permission_ceiling:
   external_write: forbidden
   allowed_roots: [work]
 input_contracts: [task-packet, skill-assignment, question-ref, source-boundary, input-lock]
-output_contracts: [evidence-record, handoff-packet]
+output_contracts: [evidence-record, handoff-transfer-manifest, handoff-packet]
 context_cost:
   metadata: low
   instructions: low
@@ -25,5 +25,5 @@ verification:
 source:
   origin: repository-original
   locator: .agents/skills/literature-evidence-extraction/SKILL.md
-  content_hash: 7eb2ee75df035b24e68578242b6a77f0a6fa7e2e62516b17d90a862c3d1dc2b4
-  package_hash: a1e5f34e768c139dec99629057e6ede6f060bda54741bacf16bf3997930e49b6
+  content_hash: c0a080ea9c4743a599000bc6978386a8dcbb8aaa09e1ed4c0e54a4deadca780b
+  package_hash: 4756548448d00e78fea7743e126a4b233930ce2145ed69fdad0995e2ef478004

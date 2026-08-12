@@ -13,7 +13,7 @@ from typing import Any, Mapping
 
 from research_workbench.artifacts.integrity import resolve_within_root
 from research_workbench.capability import AgentProfile, ResolvedTask
-from research_workbench.context import ContextSnapshot
+from research_workbench.context import ContextSnapshot, assess_handoff_transfer
 from research_workbench.contracts import ContractError, ContractRisk, RiskLevel
 from research_workbench.contracts.common import (
     mapping_tuple,
@@ -405,6 +405,13 @@ def check_execution_receipt(
                         "Context Snapshot contains an unresolved blocking condition",
                     )
                 )
+            if snapshot.handoff_audit_ref:
+                _, audit_document = _load_reference(project_root, snapshot.handoff_audit_ref)
+                if audit_document is None:
+                    missing("handoff_audit_ref", snapshot.handoff_audit_ref)
+                else:
+                    assessment = assess_handoff_transfer(audit_document, root=project_root)
+                    risks.extend(assessment.risks)
 
     for field, references in (("output_refs", receipt.output_refs), ("validation_refs", receipt.validation_refs)):
         for relative in references:

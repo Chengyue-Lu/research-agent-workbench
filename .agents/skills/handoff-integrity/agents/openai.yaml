@@ -1,4 +1,4 @@
 interface:
   display_name: "Handoff Integrity"
-  short_description: "Validate task handoffs and frozen input locks"
-  default_prompt: "Use $handoff-integrity to validate a handoff against its task, inputs, artifacts, and skill locks."
+  short_description: "Audit handoffs and compressed-context transfer"
+  default_prompt: "Use $handoff-integrity to validate a Handoff, its Transfer Manifest, and any required semantic sample."

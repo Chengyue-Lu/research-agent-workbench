@@ -9,22 +9,23 @@ skill_lock:
   - literature-evidence-extraction@0.1.0
 skill_assignment_ref: examples/vertical-slice/evidence-assignment.yaml
 execution_receipt_ref: examples/observability/execution-evidence-contract.yaml
+transfer_manifest_ref: examples/handoff-transfer-evidence.yaml
 result:
-  summary: Four evidence records were extracted; one conflicts with HYP-001.
+  summary: One fixture Evidence record was extracted; it does not support a causal claim about HYP-001.
   facts:
-    - Four records contain source locators.
+    - One admitted fixture Evidence record contains a source locator and identifies the source as synthetic.
   inferences:
-    - The bounded evidence does not support a causal claim.
+    - The bounded synthetic fixture does not support a causal claim about HYP-001.
   recommendations:
     - Search for a preregistered replication.
 artifact_refs:
   - examples/objects/evidence/EVID-001-01.yaml
-validation_refs: []
+  - examples/objects/claim/CLAIM-EVID-001-BOUNDARY.yaml
+validation_refs:
+  - examples/handoff-transfer-audit-evidence.yaml
 limitations:
-  - Only sources in the approved set were reviewed.
-conflicts:
-  - evidence_ref: EVID-001-04
-    with: HYP-001
+  - Only the approved synthetic fixture was reviewed.
+conflicts: []
 unresolved:
   - No source directly measures the proposed mediator.
 human_decision_required: []

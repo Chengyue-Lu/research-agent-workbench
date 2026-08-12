@@ -1,0 +1,51 @@
+schema_version: 0.1.0
+manifest_id: HTM-EVID-0001
+task_id: EVID-001
+task_revision: 1
+attempt_id: A-001
+generated_at: "2026-08-13T00:00:50Z"
+declared_by: task-agent
+source_artifact_refs:
+  - path: examples/objects/evidence/EVID-001-01.yaml
+    sha256: e11a3fa9bc41bf6b1331291d3dbe4567369c576f7df05dd5bc81654fdf3ebc57
+  - path: examples/objects/claim/CLAIM-EVID-001-BOUNDARY.yaml
+    sha256: 0f1d2bc7e531aee2e891bfec19493965cb3124e1dca87cf48aed0bd230311abf
+items:
+  - item_id: HTI-EVID-FACT-001
+    kind: fact
+    criticality: material
+    required_for_handoff: true
+    statement: One admitted fixture Evidence record contains a source locator and identifies the source as synthetic.
+    source_ref:
+      path: examples/objects/evidence/EVID-001-01.yaml
+      sha256: e11a3fa9bc41bf6b1331291d3dbe4567369c576f7df05dd5bc81654fdf3ebc57
+    source_locator: /statement
+  - item_id: HTI-EVID-INFERENCE-001
+    kind: inference
+    criticality: material
+    required_for_handoff: true
+    statement: The bounded fixture does not support a causal claim about HYP-001.
+    source_ref:
+      path: examples/objects/claim/CLAIM-EVID-001-BOUNDARY.yaml
+      sha256: 0f1d2bc7e531aee2e891bfec19493965cb3124e1dca87cf48aed0bd230311abf
+    source_locator: /statement
+  - item_id: HTI-EVID-LIMITATION-001
+    kind: limitation
+    criticality: material
+    required_for_handoff: true
+    statement: Only the approved synthetic fixture was reviewed.
+    source_ref:
+      path: examples/objects/claim/CLAIM-EVID-001-BOUNDARY.yaml
+      sha256: 0f1d2bc7e531aee2e891bfec19493965cb3124e1dca87cf48aed0bd230311abf
+    source_locator: /limitations/0
+  - item_id: HTI-EVID-UNRESOLVED-001
+    kind: unresolved
+    criticality: material
+    required_for_handoff: true
+    statement: No source directly measures the proposed mediator.
+    source_ref:
+      path: examples/objects/claim/CLAIM-EVID-001-BOUNDARY.yaml
+      sha256: 0f1d2bc7e531aee2e891bfec19493965cb3124e1dca87cf48aed0bd230311abf
+    source_locator: /limitations/1
+limitations:
+  - The task agent declares transfer obligations; this manifest does not prove that it found every scientifically important item.

@@ -15,4 +15,6 @@ skill_assignment_ref: examples/vertical-slice/evidence-assignment.yaml
 execution_receipt_ref: examples/observability/execution-evidence-contract.yaml
 artifact_refs:
   - examples/objects/evidence/EVID-001-01.yaml
+  - examples/objects/claim/CLAIM-EVID-001-BOUNDARY.yaml
+  - examples/handoff-transfer-evidence.yaml
 handoff_ref: examples/handoff-evidence.yaml

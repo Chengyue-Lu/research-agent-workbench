@@ -185,6 +185,21 @@ class RepositorySkillScriptTests(unittest.TestCase):
         )
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
+    def test_handoff_checker_can_assess_transfer_manifest_without_semantic_overclaim(self) -> None:
+        result = self.run_script(
+            ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+            "examples/handoff-evidence.yaml",
+            "--task",
+            "examples/task-evidence.yaml",
+            "--root",
+            ".",
+            "--audit",
+            "examples/handoff-transfer-audit-evidence.yaml",
+        )
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertIn("verdict=structurally-ready", result.stdout)
+        self.assertIn("HANDOFF-SEMANTIC-UNREVIEWED", result.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

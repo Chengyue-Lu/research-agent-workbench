@@ -77,7 +77,17 @@
         { "minItems": 1 }
       ]
     },
-    "stale_if": { "$ref": "common.schema.json#/$defs/stringArray" }
+    "stale_if": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "handoff_policy": {
+      "type": "object",
+      "required": ["require_transfer_manifest", "semantic_review", "minimum_semantic_samples"],
+      "properties": {
+        "require_transfer_manifest": { "type": "boolean" },
+        "semantic_review": { "enum": ["required", "risk-triggered"] },
+        "minimum_semantic_samples": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    }
   },
   "additionalProperties": false,
   "allOf": [

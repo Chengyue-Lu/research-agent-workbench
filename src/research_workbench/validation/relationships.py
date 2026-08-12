@@ -96,6 +96,14 @@ def check_handoff_against_task(
                 "completed handoff has no artifact references",
             )
         )
+    if task.handoff_policy.require_transfer_manifest and not handoff.transfer_manifest_ref:
+        risks.append(
+            ContractRisk(
+                "HANDOFF-TRANSFER-MANIFEST-MISSING",
+                RiskLevel.BLOCK,
+                "Task requires a Handoff Transfer Manifest but the Handoff does not reference one",
+            )
+        )
     if project_root is not None:
         if handoff.skill_assignment_ref:
             assignment_path = Path(project_root).resolve() / handoff.skill_assignment_ref
@@ -124,6 +132,16 @@ def check_handoff_against_task(
                         "HANDOFF-MISSING-OUTPUT",
                         RiskLevel.BLOCK,
                         f"artifact does not exist: {artifact}",
+                    )
+                )
+        if handoff.transfer_manifest_ref:
+            manifest_path = Path(project_root).resolve() / handoff.transfer_manifest_ref
+            if not manifest_path.is_file():
+                risks.append(
+                    ContractRisk(
+                        "HANDOFF-TRANSFER-MANIFEST-MISSING",
+                        RiskLevel.BLOCK,
+                        f"Handoff Transfer Manifest does not exist: {handoff.transfer_manifest_ref}",
                     )
                 )
     return risks

@@ -12,7 +12,7 @@ class VersionedSchemaTests(unittest.TestCase):
     def test_all_seven_research_object_types_have_valid_positive_fixtures(self) -> None:
         catalog = SchemaCatalog(ROOT / "schemas")
         paths = sorted((ROOT / "examples" / "objects").rglob("*.yaml"))
-        self.assertEqual(7, len(paths))
+        self.assertGreaterEqual(len(paths), 7)
         for path in paths:
             with self.subTest(path=path.name):
                 self.assertEqual([], catalog.validate("research_object", load_document(path)))
@@ -35,6 +35,8 @@ class VersionedSchemaTests(unittest.TestCase):
                 "deterministic_check_report",
                 "execution_receipt",
                 "handoff_packet",
+                "handoff_transfer_audit",
+                "handoff_transfer_manifest",
                 "main_state",
                 "project_protocol",
                 "provider_conformance_report",

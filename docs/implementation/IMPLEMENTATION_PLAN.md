@@ -154,7 +154,7 @@ rwb context checkpoint
 
 验证主 Agent克制、子 Agent压缩容忍和主动 rollover。
 
-截至 2026-08-13，已实现 Context Snapshot、Execution Receipt、规范化 Main State digest，以及 `context assess/checkpoint/resume-check` 和 `execution assess`。离线故障注入覆盖 Handoff 未固化压缩、主上下文原始材料、隐藏决定、成本/并发/review/trace 风险；真实原生会话恢复与真实 token/时间采集仍未完成。
+截至 2026-08-13，已实现 Context Snapshot、Execution Receipt、规范化 Main State digest，以及 `context assess/checkpoint/resume-check` 和 `execution assess`。Transfer Manifest/Audit 现会把压缩前条目、来源哈希、Handoff locator、负面区段与风险触发抽查绑定到 Context Snapshot 和 Receipt；离线故障注入已覆盖遗漏、错配、失真、主上下文原始材料、隐藏决定、成本/并发/review/trace 风险。该机制只证明结构覆盖和抽样记录，不证明完整语义等价；真实原生会话恢复、人工抽样与真实 token/时间采集仍未完成，设计边界见 [ADR-0008](../decisions/0008-HANDOFF-TRANSFER-AUDIT.md)。
 
 ### 实现内容
 
@@ -162,7 +162,7 @@ rwb context checkpoint
 - context pressure 代理指标；
 - checkpoint 与 resume check；
 - 新会话恢复演练；
-- Handoff loss、summary distortion、stale、Skill context flood 预警；
+- Handoff loss、summary distortion、stale、Skill context flood 预警，以及 Transfer Manifest/Audit；
 - delegation fanout、review loop 与 write race 检查；
 - 敏感 trace 关闭/脱敏策略。
 

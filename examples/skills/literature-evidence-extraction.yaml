@@ -14,7 +14,7 @@ permission_ceiling:
   external_write: forbidden
   allowed_roots: [work]
 input_contracts: [question-ref, source-boundary]
-output_contracts: [evidence-record, handoff-packet]
+output_contracts: [evidence-record, handoff-transfer-manifest, handoff-packet]
 context_cost:
   metadata: low
   instructions: low

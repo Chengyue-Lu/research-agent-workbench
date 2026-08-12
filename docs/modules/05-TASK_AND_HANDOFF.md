@@ -105,6 +105,12 @@ recommended_next_actions:
 - `completed` 只表示 Task 合同完成，不表示 Claim 被接受；
 - 失败 Handoff 也是正式结果，不得丢弃。
 
+### Transfer Manifest 与接收审计
+
+当 Task 的 `handoff_policy.require_transfer_manifest` 为 true 时，执行者必须在压缩或结束 Task Context 前写 `handoff_transfer_manifest`。Manifest 只列需要跨上下文保留的稳定条目 ID、类型、关键度、来源工件哈希和定位符，不复制原始材料或推理日志。
+
+接收者用 `handoff_transfer_audit` 把条目映射到 Handoff 的 `/result/facts/*`、`/limitations/*`、`/unresolved/*` 等位置。机器检查覆盖、哈希、定位、必需条目和负面区段；语义是否被改写只能由有界独立抽查记录。领域 Skill 决定哪些内容应进入 Manifest，通用 Handoff 契约不规定所有学科共用的参数或质量评分表。
+
 ## 6. Attempt 与 Task
 
 一次 Task 可以有多个 Attempt。重试必须使用新 `attempt_id`，记录触发原因、输入是否变化、Skill/模型/工具是否变化。禁止覆盖失败 Attempt。
@@ -137,6 +143,9 @@ Attempt 可以引用一份 `Execution Receipt`。Receipt 记录实际 Runtime、
 - `HANDOFF-LOSSY`：摘要存在无引用关键结论；
 - `HANDOFF-OMITS-NEGATIVE`：失败、反证或限制未交接；
 - `HANDOFF-CLAIM-UPGRADE`：Handoff 越过 Claim ceiling。
+- `HANDOFF-AUDIT-COVERAGE`：Manifest 条目没有 Handoff 映射；
+- `HANDOFF-NEGATIVE-UNMAPPED`：限制、冲突、未解决项或 Human Gate 没有来源映射；
+- `HANDOFF-SUMMARY-DISTORTION`：有界语义抽查发现限定条件改变。
 
 ## 9. 验收条件
 

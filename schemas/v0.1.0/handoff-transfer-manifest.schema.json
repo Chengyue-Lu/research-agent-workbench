@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/handoff-transfer-manifest.schema.json",
+  "title": "Handoff Transfer Manifest",
+  "x-rwb-document-kind": "handoff_transfer_manifest",
+  "type": "object",
+  "required": [
+    "schema_version", "manifest_id", "task_id", "task_revision", "attempt_id",
+    "generated_at", "declared_by", "source_artifact_refs", "items", "limitations"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "manifest_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "task_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "task_revision": { "type": "integer", "minimum": 1 },
+    "attempt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "declared_by": { "const": "task-agent" },
+    "source_artifact_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/fileRef" }
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "item_id", "kind", "criticality", "required_for_handoff", "statement",
+          "source_ref", "source_locator"
+        ],
+        "properties": {
+          "item_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "kind": {
+            "enum": [
+              "fact", "inference", "recommendation", "limitation", "conflict",
+              "unresolved", "human-decision", "negative-result", "parameter",
+              "assumption", "method-boundary"
+            ]
+          },
+          "criticality": { "enum": ["critical", "material", "informational"] },
+          "required_for_handoff": { "type": "boolean" },
+          "statement": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "source_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+          "source_locator": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "limitations": { "$ref": "common.schema.json#/$defs/stringArray" }
+  },
+  "additionalProperties": false
+}

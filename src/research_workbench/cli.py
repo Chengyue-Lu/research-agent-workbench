@@ -34,6 +34,7 @@ from research_workbench.context import (
     CONTEXT_METRIC_NAMES,
     ContextPolicySnapshot,
     ContextSnapshot,
+    assess_handoff_transfer,
     MainStatePacket,
     checkpoint_digest,
 )
@@ -94,6 +95,8 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
         path_only.extend(handoff.validation_refs)
         if handoff.execution_receipt_ref:
             path_only.append(handoff.execution_receipt_ref)
+        if handoff.transfer_manifest_ref:
+            path_only.append(handoff.transfer_manifest_ref)
     elif kind == "skill_manifest":
         skill = SkillManifest.from_mapping(document)
         if skill.source_locator and not skill.source_locator.startswith(("http://", "https://")):
@@ -138,7 +141,9 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
         if state.context_snapshot_ref:
             path_only.append(state.context_snapshot_ref)
     elif kind == "context_snapshot":
-        ContextSnapshot.from_mapping(document)
+        snapshot = ContextSnapshot.from_mapping(document)
+        if snapshot.handoff_audit_ref:
+            path_only.append(snapshot.handoff_audit_ref)
     elif kind == "execution_receipt":
         receipt = ExecutionReceipt.from_mapping(document)
         path_only.extend(
@@ -161,6 +166,15 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
         for subject_ref in document.get("subject_refs", []):
             if isinstance(subject_ref, Mapping):
                 references += (FileReference.from_mapping(subject_ref),)
+    elif kind == "handoff_transfer_manifest":
+        for source_ref in document.get("source_artifact_refs", []):
+            if isinstance(source_ref, Mapping):
+                references += (FileReference.from_mapping(source_ref),)
+    elif kind == "handoff_transfer_audit":
+        for key in ("task_ref", "handoff_ref", "manifest_ref"):
+            reference = document.get(key)
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
     elif kind == "skill_evaluation":
         source_ref = document.get("skill_source_ref")
         if isinstance(source_ref, Mapping):
@@ -583,6 +597,16 @@ def _handoff_validate(args: argparse.Namespace) -> int:
     return _print_risks(risks)
 
 
+def _handoff_audit_transfer(args: argparse.Namespace) -> int:
+    audit = _load_valid(args.audit, "handoff_transfer_audit")
+    assessment = assess_handoff_transfer(audit, root=args.root)
+    print(
+        f"handoff transfer verdict: {assessment.verdict} "
+        f"review_required={str(assessment.review_required).lower()}"
+    )
+    return _print_risks(assessment.risks)
+
+
 def _reference_check(args: argparse.Namespace) -> int:
     document = load_document(args.document)
     return _print_risks(_document_reference_risks(document, Path(args.root).resolve()))
@@ -664,6 +688,7 @@ def _context_assess(args: argparse.Namespace) -> int:
         metrics=metrics,
         unknown_metrics=unknown,
         handoff_ready=handoff_ready,
+        handoff_audit_ref=args.handoff_audit_ref,
         policy=ContextPolicySnapshot.from_project_policy(protocol.context_policy),
     )
     document = snapshot.to_mapping()
@@ -1015,6 +1040,13 @@ def build_parser() -> argparse.ArgumentParser:
     handoff_validate.add_argument("--assignment")
     handoff_validate.add_argument("--root", default=".")
     handoff_validate.set_defaults(handler=_handoff_validate)
+    handoff_audit = handoff_subparsers.add_parser(
+        "audit-transfer",
+        help="check manifest coverage and bounded semantic review for a compressed Handoff",
+    )
+    handoff_audit.add_argument("audit")
+    handoff_audit.add_argument("--root", default=".")
+    handoff_audit.set_defaults(handler=_handoff_audit_transfer)
 
     reference = subparsers.add_parser("reference", help="check live file and hash references")
     reference_subparsers = reference.add_subparsers(dest="reference_command", required=True)
@@ -1045,6 +1077,10 @@ def build_parser() -> argparse.ArgumentParser:
     assess.add_argument("--metric", action="append", default=[], metavar="NAME=VALUE")
     assess.add_argument("--unknown", action="append", default=[], metavar="NAME")
     assess.add_argument("--handoff-ready", choices=("yes", "no", "unknown"), default="unknown")
+    assess.add_argument(
+        "--handoff-audit-ref",
+        help="project-relative Handoff Transfer Audit required for a compacted handoff-ready task",
+    )
     assess.add_argument(
         "--captured-at",
     )

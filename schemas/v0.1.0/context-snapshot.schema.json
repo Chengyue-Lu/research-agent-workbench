@@ -43,6 +43,7 @@
       "uniqueItems": true
     },
     "handoff_ready": { "type": ["boolean", "null"] },
+    "handoff_audit_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
     "policy": {
       "type": "object",
       "required": ["proactive_checkpoint", "main_raw_material", "thresholds"],
@@ -76,5 +77,21 @@
       "additionalProperties": false
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "scope": { "const": "task" },
+          "handoff_ready": { "const": true },
+          "metrics": {
+            "properties": { "compaction_events": { "type": "integer", "minimum": 1 } },
+            "required": ["compaction_events"]
+          }
+        },
+        "required": ["scope", "handoff_ready", "metrics"]
+      },
+      "then": { "required": ["handoff_audit_ref"] }
+    }
+  ],
   "additionalProperties": false
 }

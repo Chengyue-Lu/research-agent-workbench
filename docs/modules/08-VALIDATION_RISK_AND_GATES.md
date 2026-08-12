@@ -25,6 +25,8 @@ not_claimed: scientifically_correct
 
 只在存在明确语义风险时启用，例如“此段总结是否超出引用”“这条 Claim 是否忽略已记录反证”。审查 Agent 只收到问题、相关工件和停止条件，不读取整个项目。
 
+Handoff 传递审计也遵循这一边界：确定性验证器先核对 Transfer Manifest 条目、来源哈希、Handoff JSON Pointer、必传项与负面区段覆盖；只有关键条目、假设、冲突、方法边界、负结果或人工决定等明确风险才要求独立人工抽样。`structurally-ready` 仅表示结构覆盖可解释，不表示摘要与来源语义等价。
+
 ### 第三层：Human Gate
 
 处理：方法选择、关键假设、伦理/安全、异常数据排除、因果解释、模型代表性、主要 Claim、不可逆操作和外部发布。
@@ -73,6 +75,10 @@ not_claimed: scientifically_correct
 | CLAIM-OVERREACH | Claim 超出 Evidence/Mode ceiling | 降级或 Human Gate |
 | SOURCE-QUALITY | 来源质量或定位不足 | 标记限制，定向检索 |
 | HANDOFF-OMITS-NEGATIVE | 失败/反证未传递 | BLOCK promotion |
+| HANDOFF-AUDIT-COVERAGE | Transfer Manifest 条目没有完整映射到 Handoff | BLOCK promotion |
+| HANDOFF-NEGATIVE-UNMAPPED | Handoff 中的限制、冲突、未决项或人工决定没有来源条目 | BLOCK promotion |
+| HANDOFF-SEMANTIC-REVIEW-REQUIRED | 关键或高风险条目尚未完成有界独立抽样 | BLOCK promotion，完成最小样本复核 |
+| HANDOFF-SUMMARY-DISTORTION | 抽样发现 Handoff 歪曲或无法验证来源语义 | BLOCK，修订 Handoff 并重新审计 |
 | DELEGATION-FANOUT | 递归/并发膨胀 | 停止新委派，合并任务树 |
 | COORDINATION-COST-HIGH | 协调/汇总/校核占比超过预算 | WARN，优先删 Agent、review 或字段 |
 | COST-USAGE-UNKNOWN | 真实模型运行没有可用量数据 | 不得宣称 token/成本收益 |

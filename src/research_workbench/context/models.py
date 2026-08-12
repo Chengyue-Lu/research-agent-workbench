@@ -267,6 +267,7 @@ class ContextSnapshot:
     metrics: Mapping[str, int]
     unknown_metrics: tuple[str, ...]
     handoff_ready: bool | None
+    handoff_audit_ref: str | None
     policy: ContextPolicySnapshot
     assessment: ContextAssessment
 
@@ -302,6 +303,19 @@ class ContextSnapshot:
         handoff_ready = data.get("handoff_ready")
         if handoff_ready is not None and not isinstance(handoff_ready, bool):
             raise ContractError("handoff_ready", "must be boolean or null")
+        handoff_audit_ref = optional_string(data, "handoff_audit_ref")
+        if handoff_audit_ref is not None:
+            require_relative_path(handoff_audit_ref, "handoff_audit_ref")
+        if (
+            scope == "task"
+            and metrics.get("compaction_events", 0) > 0
+            and handoff_ready is True
+            and handoff_audit_ref is None
+        ):
+            raise ContractError(
+                "handoff_audit_ref",
+                "is required when a compacted task context is declared handoff-ready",
+            )
         policy = ContextPolicySnapshot.from_mapping(mapping_value(data, "policy", required=True))
         assessment = ContextAssessment.from_mapping(mapping_value(data, "assessment", required=True))
         expected = assess_context(
@@ -324,6 +338,7 @@ class ContextSnapshot:
             metrics=metrics,
             unknown_metrics=unknown_metrics,
             handoff_ready=handoff_ready,
+            handoff_audit_ref=handoff_audit_ref,
             policy=policy,
             assessment=assessment,
         )
@@ -343,6 +358,8 @@ class ContextSnapshot:
         }
         if self.owner_ref is not None:
             document["owner_ref"] = self.owner_ref
+        if self.handoff_audit_ref is not None:
+            document["handoff_audit_ref"] = self.handoff_audit_ref
         return document
 
     @classmethod
@@ -358,6 +375,7 @@ class ContextSnapshot:
         handoff_ready: bool | None,
         policy: ContextPolicySnapshot,
         owner_ref: str | None = None,
+        handoff_audit_ref: str | None = None,
     ) -> "ContextSnapshot":
         assessment = assess_context(
             scope=scope,
@@ -377,6 +395,7 @@ class ContextSnapshot:
                 "metrics": dict(metrics),
                 "unknown_metrics": list(unknown_metrics),
                 "handoff_ready": handoff_ready,
+                "handoff_audit_ref": handoff_audit_ref,
                 "policy": policy.to_mapping(),
                 "assessment": assessment.to_mapping(),
             }

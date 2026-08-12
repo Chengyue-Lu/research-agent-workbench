@@ -8,8 +8,8 @@
 
 | Task | Profile | Assignment | 唯一加载的 Skill | Codex dispatch bytes |
 |---|---|---|---|---:|
-| `EVID-001` | `evidence-scout@0.1.0` | `SA-B461CC0DDA2FCC6A` | `literature-evidence-extraction@0.1.0` | 781 |
-| `SIM-001` | `simulation-auditor@0.1.0` | `SA-AE722D7FCD0B0D39` | `simulation-vv@0.1.0` | 777 |
+| `EVID-001` | `evidence-scout@0.1.0` | `SA-5F3DA8AF760F648B` | `literature-evidence-extraction@0.1.0` | 809 |
+| `SIM-001` | `simulation-auditor@0.1.0` | `SA-B12E83DDDC626378` | `simulation-vv@0.1.0` | 777 |
 
 两次 Assignment 使用相同 accepted Registry digest，但 Profile、Skill、工具和网络权限不同。重复解析相同 Task 得到相同 Assignment ID；修改 Skill 正文、scripts 或 references 会分别触发 content drift 或 package drift 阻断。
 

@@ -15,4 +15,4 @@ allowed_tool_capabilities: [file-read, web-search, document-read, citation-resol
 default_context_policy: isolated-task
 delegation:
   allowed: false
-output_contracts: [evidence-record, handoff-packet]
+output_contracts: [evidence-record, handoff-transfer-manifest, handoff-packet]

@@ -7,6 +7,7 @@ import argparse
 from pathlib import Path
 
 from research_workbench.capability import ResolvedTask
+from research_workbench.context import assess_handoff_transfer
 from research_workbench.io import load_document
 from research_workbench.tasks import FileReference, HandoffPacket, TaskPacket
 from research_workbench.validation import check_handoff_against_task, check_references
@@ -17,6 +18,7 @@ def main() -> int:
     parser.add_argument("handoff")
     parser.add_argument("--task", required=True)
     parser.add_argument("--root", default=".")
+    parser.add_argument("--audit")
     args = parser.parse_args()
 
     task = TaskPacket.from_mapping(load_document(args.task))
@@ -43,6 +45,13 @@ def main() -> int:
                 ),
             )
         )
+    if args.audit:
+        assessment = assess_handoff_transfer(load_document(args.audit), root=args.root)
+        print(
+            f"HANDOFF-TRANSFER verdict={assessment.verdict} "
+            f"review_required={str(assessment.review_required).lower()}"
+        )
+        risks.extend(assessment.risks)
     blocked = False
     for risk in risks:
         print(f"{risk.level.upper()} {risk.code} {risk.message}")

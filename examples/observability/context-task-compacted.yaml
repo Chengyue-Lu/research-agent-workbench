@@ -17,6 +17,7 @@ metrics:
   hidden_decisions: 0
 unknown_metrics: []
 handoff_ready: true
+handoff_audit_ref: examples/handoff-transfer-audit-evidence.yaml
 policy:
   proactive_checkpoint: true
   main_raw_material: forbidden

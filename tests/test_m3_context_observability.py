@@ -61,6 +61,7 @@ class ContextGovernanceTests(unittest.TestCase):
             metrics=metrics,
             unknown_metrics=(),
             handoff_ready=True,
+            handoff_audit_ref="checks/HTA-RECOVERABLE.yaml",
             policy=self.policy,
         )
         lost = ContextSnapshot.create(
@@ -77,6 +78,21 @@ class ContextGovernanceTests(unittest.TestCase):
         self.assertIn("CTX-SUBAGENT-COMPACTION-RECOVERABLE", recoverable.assessment.triggered_rules)
         self.assertEqual("block", lost.assessment.level)
         self.assertIn("CTX-HANDOFF-LOSS", lost.assessment.triggered_rules)
+
+    def test_compacted_task_cannot_self_declare_ready_without_transfer_audit(self) -> None:
+        metrics = dict(self.zero_metrics)
+        metrics["compaction_events"] = 1
+        with self.assertRaises(ContractError):
+            ContextSnapshot.create(
+                snapshot_id="CTX-UNBOUND",
+                captured_at="2026-08-13T00:00:00Z",
+                scope="task",
+                measurement_source="runtime",
+                metrics=metrics,
+                unknown_metrics=(),
+                handoff_ready=True,
+                policy=self.policy,
+            )
 
     def test_snapshot_rejects_falsified_assessment(self) -> None:
         document = copy.deepcopy(load_document(ROOT / "examples/observability/context-main-warn.yaml"))
@@ -143,7 +159,8 @@ class ExecutionReceiptTests(unittest.TestCase):
             root=ROOT,
             receipt_ref="examples/observability/execution-evidence-contract.yaml",
         )
-        self.assertEqual([], risks)
+        self.assertEqual([], [risk for risk in risks if risk.level == "block"])
+        self.assertIn("HANDOFF-SEMANTIC-UNREVIEWED", {risk.code for risk in risks})
 
     def test_cost_fanout_review_and_trace_faults_are_visible(self) -> None:
         document = copy.deepcopy(load_document(self.receipt_path))

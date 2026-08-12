@@ -88,6 +88,8 @@ SCHEMA_KINDS = {
     "task_packet",
     "attempt",
     "handoff_packet",
+    "handoff_transfer_audit",
+    "handoff_transfer_manifest",
     "main_state",
     "context_snapshot",
     "execution_receipt",
@@ -122,6 +124,10 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "context_snapshot"
     if "receipt_id" in document and "execution_kind" in document and "attempt_ref" in document:
         return "execution_receipt"
+    if "audit_id" in document and "manifest_ref" in document and "mappings" in document:
+        return "handoff_transfer_audit"
+    if "manifest_id" in document and "source_artifact_refs" in document and "items" in document:
+        return "handoff_transfer_manifest"
     if "report_id" in document and "adapter_id" in document and "checks" in document:
         return "provider_conformance_report"
     if "report_id" in document and "checker" in document and "checks" in document:

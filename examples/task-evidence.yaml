@@ -20,6 +20,7 @@ write_scope:
   - work/EVID-001/**
 required_outputs:
   - evidence-record
+  - handoff-transfer-manifest
   - handoff-packet
 permissions:
   filesystem: worktree-write
@@ -36,3 +37,7 @@ stop_conditions:
   - human_judgment_required
 stale_if:
   - any_input_hash_changes
+handoff_policy:
+  require_transfer_manifest: true
+  semantic_review: risk-triggered
+  minimum_semantic_samples: 1

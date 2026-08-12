@@ -81,6 +81,26 @@ class TaskBudget:
 
 
 @dataclass(frozen=True, slots=True)
+class HandoffPolicy:
+    require_transfer_manifest: bool = False
+    semantic_review: str = "risk-triggered"
+    minimum_semantic_samples: int = 1
+
+    @classmethod
+    def from_mapping(cls, data: Mapping[str, Any]) -> "HandoffPolicy":
+        required = data.get("require_transfer_manifest", False)
+        if not isinstance(required, bool):
+            raise ContractError("handoff_policy.require_transfer_manifest", "must be boolean")
+        review = data.get("semantic_review", "risk-triggered")
+        if review not in {"required", "risk-triggered"}:
+            raise ContractError("handoff_policy.semantic_review", "has unsupported value")
+        samples = data.get("minimum_semantic_samples", 1)
+        if isinstance(samples, bool) or not isinstance(samples, int) or samples < 0:
+            raise ContractError("handoff_policy.minimum_semantic_samples", "must be non-negative")
+        return cls(required, str(review), samples)
+
+
+@dataclass(frozen=True, slots=True)
 class TaskPacket:
     schema_version: str
     task_id: str
@@ -99,6 +119,7 @@ class TaskPacket:
     budget: TaskBudget
     stop_conditions: tuple[str, ...]
     stale_if: tuple[str, ...]
+    handoff_policy: HandoffPolicy = HandoffPolicy()
     revision: int = 1
 
     @classmethod
@@ -133,6 +154,7 @@ class TaskPacket:
             budget=TaskBudget.from_mapping(budget_data),
             stop_conditions=string_tuple(data, "stop_conditions", required=True),
             stale_if=string_tuple(data, "stale_if"),
+            handoff_policy=HandoffPolicy.from_mapping(mapping_value(data, "handoff_policy")),
             revision=revision,
         )
 
@@ -235,6 +257,7 @@ class HandoffPacket:
     recommended_next_actions: tuple[str, ...]
     runtime_metadata_ref: str | None = None
     execution_receipt_ref: str | None = None
+    transfer_manifest_ref: str | None = None
 
     @classmethod
     def from_mapping(cls, data: Mapping[str, Any]) -> "HandoffPacket":
@@ -250,6 +273,9 @@ class HandoffPacket:
         runtime_metadata_ref = optional_string(data, "runtime_metadata_ref")
         if runtime_metadata_ref is not None:
             require_relative_path(runtime_metadata_ref, "runtime_metadata_ref")
+        transfer_manifest_ref = optional_string(data, "transfer_manifest_ref")
+        if transfer_manifest_ref is not None:
+            require_relative_path(transfer_manifest_ref, "transfer_manifest_ref")
         return cls(
             schema_version=require_string(data, "schema_version"),
             task_id=require_string(data, "task_id"),
@@ -268,4 +294,5 @@ class HandoffPacket:
             recommended_next_actions=string_tuple(data, "recommended_next_actions"),
             runtime_metadata_ref=runtime_metadata_ref,
             execution_receipt_ref=receipt_ref,
+            transfer_manifest_ref=transfer_manifest_ref,
         )

@@ -97,7 +97,7 @@ Agent Profile 描述执行容器；Skill 描述可复用工作方法；Capabilit
 
 ### L4：任务与上下文层
 
-Task Packet 是委派边界，Handoff Packet 是返回边界，Main State Packet 是主 Agent 的可恢复最小状态。原始资料和日志留在工件层，按需拉取。
+Task Packet 是委派边界，Handoff Packet 是返回边界，Main State Packet 是主 Agent 的可恢复最小状态。压缩前由 Transfer Manifest 声明必须传递的条目和来源，Transfer Audit 再核对它们在 Handoff 中的位置，并在风险触发时要求有界独立抽样。原始资料和日志留在工件层，按需拉取。
 
 详见[Task 与 Handoff](modules/05-TASK_AND_HANDOFF.md)及[上下文治理](modules/06-CONTEXT_GOVERNANCE.md)。
 
@@ -132,7 +132,8 @@ sequenceDiagram
     M->>N: 显式委派并命名 required skills
     N->>S: 最小输入 + Agent Profile + Skills
     S->>S: 工作；长结果写入工件
-    S-->>V: Handoff Packet + artifact refs
+    S-->>V: Transfer Manifest + Handoff Packet + artifact refs
+    V->>V: 结构映射 + 风险触发抽样
     V-->>M: 结构结果、风险与缺口
     M-->>H: 决策摘要或 Human Gate
 ```
