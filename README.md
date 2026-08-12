@@ -6,9 +6,9 @@
 
 ## 当前状态
 
-状态：`M3 Context and Execution Receipt Slice`
+状态：`M3 Context/Receipt + M6 Provider Adapter Foundation`
 
-当前仓库已完成 M1 的本地实现和 M2 的离线 Agent—Skill 契约切片，并开始实现 M3：提供可恢复 Main State、Context Snapshot、Execution Receipt，以及上下文压力、协调成本、并发、复核循环和敏感 trace 检查。尚未接入真实模型 API、数据库、Web UI 或自建调度器；真实原生子 Agent 和真实科研案例仍待执行。
+当前仓库已完成 M1 的本地实现和 M2 的离线 Agent—Skill 契约切片，并开始实现 M3：提供可恢复 Main State、Context Snapshot、Execution Receipt，以及上下文压力、协调成本、并发、复核循环和敏感 trace 检查。另已实现 OpenAI Responses、Anthropic Messages、Gemini `generateContent` 的非流式薄 Adapter 与离线合同测试，但尚未用真实账户/模型执行 live conformance。项目仍无数据库、Web UI 或自建调度器；真实原生子 Agent 和真实科研案例仍待执行。
 
 ## 核心判断
 
@@ -30,6 +30,8 @@
 - [迁移方案](docs/implementation/MIGRATION_PLAN.md)
 - [Skill 候选准入流程](docs/implementation/SKILL_CANDIDATE_PIPELINE.md)
 - [模型 API 中立端口 ADR](docs/decisions/0003-PROVIDER-NEUTRAL-MODEL-PORT.md)
+- [多提供商模型 API 实施计划](docs/implementation/PROVIDER_ADAPTER_PLAN.md)
+- [薄 Adapter 与凭据边界 ADR](docs/decisions/0007-THIN-PROVIDER-ADAPTERS.md)
 - [上下文与执行收据 ADR](docs/decisions/0006-CONTEXT-AND-EXECUTION-RECEIPTS.md)
 
 ## 当前可执行入口
@@ -52,6 +54,7 @@ rwb claim trace examples/objects/claim/CLAIM-001.yaml `
   --protocol examples/project-protocol.yaml
 rwb skills candidates --status triage
 rwb providers list
+rwb providers probe --config registry/providers/adapters.yaml
 rwb context assess --id CTX-001 `
   --protocol examples/project-protocol.yaml --scope main `
   --metric loaded_chars=25000 --output work/CTX-001.yaml

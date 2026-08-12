@@ -72,6 +72,7 @@ DOCUMENT_REQUIRED: dict[str, tuple[str, ...]] = {
     "skill_candidates": ("registry_kind", "candidates"),
     "skill_accepted": ("registry_kind", "entries", "policy"),
     "provider_baselines": ("registry_kind", "providers"),
+    "provider_adapters": ("registry_kind", "adapters"),
 }
 
 SCHEMA_KINDS = {
@@ -249,6 +250,37 @@ def _validate_registry(
                         ("provider", "api_surface", "adapter_status", "capabilities", "semantic_notes", "sources"),
                     )
                 )
+    elif kind == "provider_adapters":
+        seen = set()
+        for index, adapter in enumerate(document.get("adapters", [])):
+            if not isinstance(adapter, Mapping):
+                issues.append(
+                    ValidationIssue(path, "PROVIDER-ADAPTER-INVALID", f"adapters[{index}] is not an object")
+                )
+                continue
+            issues.extend(
+                _require_fields(
+                    path,
+                    adapter,
+                    (
+                        "adapter_id",
+                        "provider",
+                        "enabled",
+                        "base_url",
+                        "credential_env",
+                        "model_env",
+                        "capabilities",
+                        "live_conformance",
+                    ),
+                )
+            )
+            adapter_id = adapter.get("adapter_id")
+            if isinstance(adapter_id, str):
+                if adapter_id in seen:
+                    issues.append(
+                        ValidationIssue(path, "PROVIDER-ADAPTER-DUPLICATE", f"duplicate adapter_id: {adapter_id}")
+                    )
+                seen.add(adapter_id)
     return issues
 
 

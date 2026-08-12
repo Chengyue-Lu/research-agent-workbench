@@ -9,6 +9,7 @@ from typing import Any, Mapping, Sequence
 import yaml
 
 from research_workbench.adapters import CodexRuntimeAdapter
+from research_workbench.adapters.models import probe_provider_adapters
 from research_workbench.artifacts.integrity import hash_directory, hash_file, resolve_within_root
 from research_workbench.capability import (
     AcceptedSkillRegistry,
@@ -290,6 +291,26 @@ def _provider_list(args: argparse.Namespace) -> int:
     print("provider\tapi_surface\tadapter_status")
     for provider in providers:
         print(f"{provider['provider']}\t{provider['api_surface']}\t{provider['adapter_status']}")
+    return 0
+
+
+def _provider_probe(args: argparse.Namespace) -> int:
+    result = probe_provider_adapters(
+        args.config,
+        check_environment=args.check_environment,
+    )
+    if args.json:
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    print(f"environment_checked\t{str(result['environment_checked']).lower()}")
+    print("adapter\tprovider\tenabled\tcredential\tmodel\tlive_conformance")
+    for adapter in result["adapters"]:
+        print(
+            f"{adapter['adapter_id']}\t{adapter['provider']}\t"
+            f"{str(adapter['enabled']).lower()}\t{adapter['credential_status']}\t"
+            f"{adapter['model_status']}\t{adapter['live_conformance']}"
+        )
+    print(result["note"])
     return 0
 
 
@@ -767,6 +788,18 @@ def build_parser() -> argparse.ArgumentParser:
     provider_list.add_argument("--registry", default="registry/providers/capabilities.json")
     provider_list.add_argument("--json", action="store_true")
     provider_list.set_defaults(handler=_provider_list)
+    provider_probe = provider_subparsers.add_parser(
+        "probe",
+        help="validate non-secret adapter config and optionally check environment presence",
+    )
+    provider_probe.add_argument("--config", default="registry/providers/adapters.yaml")
+    provider_probe.add_argument(
+        "--check-environment",
+        action="store_true",
+        help="explicitly check named variables in the current process without printing values",
+    )
+    provider_probe.add_argument("--json", action="store_true")
+    provider_probe.set_defaults(handler=_provider_probe)
 
     task = subparsers.add_parser("task", help="resolve Task/Profile/Skill bindings")
     task_subparsers = task.add_subparsers(dest="task_command", required=True)

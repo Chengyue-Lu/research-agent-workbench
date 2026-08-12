@@ -29,7 +29,7 @@
 
 技术选型见 [ADR-0004](../decisions/0004-MINIMAL-DEPENDENCY-M1.md)。当前使用 Draft 2020-12 JSON Schema；属性测试出现明确复杂度后再评估 Pydantic 或 Hypothesis。
 
-模型 API 采用能力协商式中立端口，见 [ADR-0003](../decisions/0003-PROVIDER-NEUTRAL-MODEL-PORT.md)。M1 只冻结端口和能力/错误语义，不接入密钥或真实调用；后续各提供商以独立 Adapter 接入。
+模型 API 采用能力协商式中立端口，见 [ADR-0003](../decisions/0003-PROVIDER-NEUTRAL-MODEL-PORT.md)。M1 冻结端口和能力/错误语义；后续已按用户明确需求提前完成 OpenAI、Anthropic、Gemini 的首个离线薄 Adapter 切片，见 [ADR-0007](../decisions/0007-THIN-PROVIDER-ADAPTERS.md) 与 [多提供商模型 API 实施计划](PROVIDER_ADAPTER_PLAN.md)。这不改变 M1“不调用真实 API”的退出边界，也不等于 live conformance。
 
 ## 3. 里程碑总览
 
@@ -244,6 +244,8 @@ rwb context checkpoint
 - 轻量可视界面。
 
 新增项必须有真实消费者、预算、测试和退出条件。不得一次引入两个功能重叠的重量级工具。
+
+当前因“后续兼容不同 AI API”的明确需求提前完成了 M6 的基础薄片：三家非流式 Adapter、延迟凭据解析、非秘密配置探测与离线合同测试。下一步不是继续铺更多提供商，而是在真实 Windows 授权上下文以每家一个模型、最小预算执行 live conformance；随后只有真实 Task 需要时才实现有预算的 tool-loop runner。
 
 ## 11. 开发分支与提交策略
 

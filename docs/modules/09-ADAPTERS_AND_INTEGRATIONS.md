@@ -53,7 +53,15 @@ Claude Code 等平台以后以独立 Adapter 接入。Canonical manifests 保持
 
 不得为了“跨平台统一”只保留所有平台的最小公分母。Adapter 应报告 capability gap；上层可以选择降级、换平台或请求人工决定。
 
-## 5. Tool Adapter
+## 5. Model Provider Adapter
+
+Runtime Adapter 与 Model Provider Adapter 是两层：前者映射 Codex/Claude Code 等完整 Agent 平台，后者只处理程序化模型 API。当前已实现 OpenAI Responses、Anthropic Messages 和 Gemini `generateContent` 三个模型绑定的薄 Adapter，详见 [多提供商模型 API 实施计划](../implementation/PROVIDER_ADAPTER_PLAN.md) 与 [ADR-0007](../decisions/0007-THIN-PROVIDER-ADAPTERS.md)。
+
+首版只声明经过离线合同测试的能力，不根据厂商品牌推断模型能力。真实模型/账户仍需 live conformance；缺少能力、模型不匹配或 data policy 不满足时必须在解析凭据和发送请求前失败。Adapter 不自动重试、不静默 fallback，且结构化响应仍需本地 Schema 校验。
+
+非秘密配置只保存环境变量名称。`rwb providers probe` 默认不读取环境；真实 Windows 中可显式使用 `--check-environment` 做不回显值的存在性检查。
+
+## 6. Tool Adapter
 
 Tool Adapter 提供数据或动作，Skill 提供工作流程：
 
@@ -66,7 +74,7 @@ Tool Adapter 提供数据或动作，Skill 提供工作流程：
 
 首版不同时接入所有工具。只有首个案例需要且可替换的最小适配器进入实现。
 
-## 6. 权限模型
+## 7. 权限模型
 
 有效权限是以下交集：
 
@@ -80,7 +88,7 @@ Runtime session permission
 
 任一层缺失不按最宽权限推断。Skill 缺少工具时返回 capability gap；不自动安装、不自动登录、不自动扩大网络或文件权限。
 
-## 7. 平台漂移
+## 8. 平台漂移
 
 运行前记录 `RuntimeCapabilitySnapshot`：
 
@@ -94,7 +102,7 @@ Runtime session permission
 
 版本变化后运行 Adapter contract tests。平台新增原生能力时优先删掉重复代码，而不是保留兼容层。
 
-## 8. 安全边界
+## 9. 安全边界
 
 - Adapter 不签署 Human Gate；
 - Tool 输出视为不可信数据；
@@ -103,7 +111,7 @@ Runtime session permission
 - 安装依赖、插件或 Skill 属于供应链变化，需要明确任务或人工批准；
 - Runtime 会话日志不能成为唯一证据。
 
-## 9. 验收条件
+## 10. 验收条件
 
 - Codex Adapter 能把两个 Profile 和两个 Skill 映射到原生配置；
 - Adapter 不保存自己的权威项目状态；
@@ -111,3 +119,4 @@ Runtime session permission
 - 平台升级后可通过 contract test 发现关键行为漂移；
 - 替换 Tool Adapter 不修改科研内核；
 - 所有外部写动作可追溯到授权 Task。
+- 模型 Adapter 的离线合同测试与 live conformance 状态分开记录；未知响应语义不会被静默归一化。

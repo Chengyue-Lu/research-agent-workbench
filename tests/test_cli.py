@@ -4,6 +4,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from research_workbench.cli import main
 from research_workbench.io import load_document
@@ -21,6 +22,54 @@ def run_cli(arguments: list[str]) -> tuple[int, str]:
 
 
 class CliTests(unittest.TestCase):
+    def test_provider_probe_defaults_to_config_only_and_never_prints_values(self) -> None:
+        secret = "must-never-appear-in-cli-output"
+        with patch.dict(
+            "os.environ",
+            {"OPENAI_API_KEY": secret, "RWB_OPENAI_MODEL": "test-model"},
+            clear=False,
+        ):
+            code, output = run_cli(
+                [
+                    "providers",
+                    "probe",
+                    "--config",
+                    str(ROOT / "registry" / "providers" / "adapters.yaml"),
+                    "--json",
+                ]
+            )
+        self.assertEqual(0, code)
+        document = json.loads(output)
+        self.assertIs(document["environment_checked"], False)
+        self.assertEqual("unchecked", document["adapters"][0]["credential_status"])
+        self.assertNotIn(secret, output)
+        self.assertNotIn("test-model", output)
+
+    def test_provider_probe_presence_check_is_explicit_and_value_free(self) -> None:
+        secret = "another-secret-that-must-not-appear"
+        with patch.dict(
+            "os.environ",
+            {"OPENAI_API_KEY": secret, "RWB_OPENAI_MODEL": "configured-model"},
+            clear=True,
+        ):
+            code, output = run_cli(
+                [
+                    "providers",
+                    "probe",
+                    "--config",
+                    str(ROOT / "registry" / "providers" / "adapters.yaml"),
+                    "--check-environment",
+                    "--json",
+                ]
+            )
+        self.assertEqual(0, code)
+        document = json.loads(output)
+        self.assertIs(document["environment_checked"], True)
+        self.assertEqual("present", document["adapters"][0]["credential_status"])
+        self.assertEqual("missing", document["adapters"][1]["credential_status"])
+        self.assertNotIn(secret, output)
+        self.assertNotIn("configured-model", output)
+
     def test_validate_runs_schema_and_live_reference_checks(self) -> None:
         code, output = run_cli(
             [

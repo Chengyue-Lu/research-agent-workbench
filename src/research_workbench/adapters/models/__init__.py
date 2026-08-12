@@ -1,3 +1,21 @@
+from research_workbench.adapters.models.anthropic import AnthropicMessagesProvider
+from research_workbench.adapters.models.configuration import (
+    ProviderAdapterConfig,
+    load_provider_adapter_configs,
+    probe_provider_adapters,
+)
+from research_workbench.adapters.models.gemini import GeminiGenerateContentProvider
+from research_workbench.adapters.models.http import (
+    CredentialProvider,
+    CredentialUnavailable,
+    EnvironmentCredential,
+    HttpRequest,
+    HttpResponse,
+    HttpTransport,
+    HttpTransportError,
+    UrllibTransport,
+)
+from research_workbench.adapters.models.openai import OpenAIResponsesProvider
 from research_workbench.adapters.models.port import (
     Capability,
     CapabilityGap,
@@ -7,6 +25,7 @@ from research_workbench.adapters.models.port import (
     FinishReason,
     Message,
     ModelProvider,
+    ModelNotSupported,
     ModelRequest,
     ModelResponse,
     ProviderCapabilities,
@@ -21,16 +40,28 @@ from research_workbench.adapters.models.port import (
 )
 
 __all__ = [
+    "AnthropicMessagesProvider",
     "Capability",
     "CapabilityGap",
     "ContentBlock",
+    "CredentialProvider",
+    "CredentialUnavailable",
     "DataPolicy",
     "DataPolicyGap",
+    "EnvironmentCredential",
     "FinishReason",
+    "GeminiGenerateContentProvider",
+    "HttpRequest",
+    "HttpResponse",
+    "HttpTransport",
+    "HttpTransportError",
     "Message",
     "ModelProvider",
+    "ModelNotSupported",
     "ModelRequest",
     "ModelResponse",
+    "OpenAIResponsesProvider",
+    "ProviderAdapterConfig",
     "ProviderCapabilities",
     "ProviderError",
     "ProviderErrorCategory",
@@ -39,5 +70,8 @@ __all__ = [
     "ToolCall",
     "ToolDefinition",
     "Usage",
+    "UrllibTransport",
+    "load_provider_adapter_configs",
+    "probe_provider_adapters",
     "required_capabilities",
 ]

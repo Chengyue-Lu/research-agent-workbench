@@ -48,6 +48,7 @@ class ProviderErrorCategory(StrEnum):
     SAFETY_REFUSAL = "safety_refusal"
     CONTEXT_LIMIT = "context_limit"
     CANCELLED = "cancelled"
+    CONTRACT_VIOLATION = "contract_violation"
     UNKNOWN = "unknown"
 
 
@@ -155,6 +156,9 @@ class ProviderCapabilities:
     data_controls: frozenset[str] = frozenset()
     known_gaps: tuple[str, ...] = ()
 
+    def supports_model(self, model: str) -> bool:
+        return not self.models or model in self.models
+
     def gaps_for(self, request: ModelRequest) -> tuple[Capability, ...]:
         return tuple(
             capability
@@ -181,6 +185,15 @@ class CapabilityGap(ValueError):
         self.gaps = tuple(gaps)
         rendered = ", ".join(str(gap) for gap in self.gaps)
         super().__init__(f"provider {provider!r} lacks required capabilities: {rendered}")
+
+
+class ModelNotSupported(ValueError):
+    def __init__(self, provider: str, model: str, configured_models: Iterable[str]):
+        self.provider = provider
+        self.model = model
+        self.configured_models = tuple(configured_models)
+        rendered = ", ".join(self.configured_models) or "none"
+        super().__init__(f"provider {provider!r} is not configured for model {model!r}; configured: {rendered}")
 
 
 class DataPolicyGap(ValueError):
@@ -222,6 +235,8 @@ def required_capabilities(request: ModelRequest) -> frozenset[Capability]:
                 required.add(Capability.IMAGES)
             elif block.kind == "file":
                 required.add(Capability.FILES)
+            elif block.kind in {"tool_call", "tool_result"}:
+                required.add(Capability.TOOLS)
     return frozenset(required)
 
 
@@ -252,6 +267,8 @@ class ProviderRegistry:
     def require(self, name: str, request: ModelRequest) -> ModelProvider:
         provider = self.get(name)
         snapshot = provider.capabilities()
+        if not snapshot.supports_model(request.model):
+            raise ModelNotSupported(name, request.model, snapshot.models)
         gaps = snapshot.gaps_for(request)
         if gaps:
             raise CapabilityGap(name, gaps)

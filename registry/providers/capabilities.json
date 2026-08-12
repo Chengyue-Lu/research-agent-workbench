@@ -2,17 +2,19 @@
   "schema_version": "0.1.0",
   "registry_kind": "provider_baselines",
   "generated_at": "2026-08-13",
-  "warning": "These are design baselines, not live availability guarantees. Every adapter must emit a model- and configuration-specific capability snapshot at runtime.",
+  "warning": "These are adapter implementation baselines, not live availability guarantees. Offline contract tests do not prove a model/account supports a capability. Every adapter must emit a model- and configuration-specific capability snapshot at runtime.",
   "providers": [
     {
       "provider": "openai",
       "api_surface": "Responses API",
-      "adapter_status": "planned",
-      "capabilities": ["text", "tools", "structured_output", "streaming", "reasoning", "images", "files", "server_tools", "provider_state"],
+      "adapter_status": "offline-contract-tested",
+      "capabilities": ["text", "tools", "structured_output", "reasoning"],
+      "deferred_capabilities": ["streaming", "images", "files", "server_tools", "provider_state"],
       "semantic_notes": [
         "Tool calls are returned as structured output items and client tools remain application-executed.",
         "Structured outputs still require local schema and business-rule validation.",
-        "Response and conversation identifiers must not become canonical project state."
+        "Response and conversation identifiers must not become canonical project state.",
+        "The adapter sends store=false and still requires live model/account conformance before enabling capabilities."
       ],
       "sources": [
         "https://developers.openai.com/api/docs/guides/latest-model",
@@ -23,15 +25,17 @@
     {
       "provider": "anthropic",
       "api_surface": "Messages API",
-      "adapter_status": "planned",
-      "capabilities": ["text", "tools", "structured_output", "streaming", "reasoning", "images", "files", "server_tools", "prompt_caching"],
+      "adapter_status": "offline-contract-tested",
+      "capabilities": ["text", "tools", "structured_output"],
+      "deferred_capabilities": ["streaming", "reasoning", "images", "files", "server_tools", "prompt_caching"],
       "semantic_notes": [
         "Client tool_use and provider server tools have different execution ownership.",
         "pause_turn and model_context_window_exceeded must remain distinct from normal completion.",
-        "Structured output support varies by model and hosting surface."
+        "Structured output support varies by model and hosting surface.",
+        "The client-tool adapter does not claim provider-hosted server tools and still requires live conformance."
       ],
       "sources": [
-        "https://platform.claude.com/docs/claude/docs/tool-use",
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
         "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
         "https://platform.claude.com/docs/en/build-with-claude/structured-outputs"
       ]
@@ -39,14 +43,17 @@
     {
       "provider": "google",
       "api_surface": "Gemini API",
-      "adapter_status": "planned",
-      "capabilities": ["text", "tools", "parallel_tools", "structured_output", "streaming", "reasoning", "images", "files"],
+      "adapter_status": "offline-contract-tested",
+      "capabilities": ["text", "tools", "parallel_tools", "structured_output"],
+      "deferred_capabilities": ["streaming", "reasoning", "images", "files"],
       "semantic_notes": [
         "Function calls are suggestions; the application executes functions and returns results.",
         "Compositional and parallel tool behavior must be normalized without assuming one call per turn.",
-        "Transient 429 and 503 responses require bounded backoff, not silent provider switching."
+        "Transient 429 and 503 responses require bounded backoff, not silent provider switching.",
+        "Function-call IDs may require a visible synthetic identifier when the API omits one; live conformance remains pending."
       ],
       "sources": [
+        "https://ai.google.dev/api/generate-content",
         "https://ai.google.dev/gemini-api/docs/function-calling",
         "https://ai.google.dev/gemini-api/docs/troubleshooting"
       ]

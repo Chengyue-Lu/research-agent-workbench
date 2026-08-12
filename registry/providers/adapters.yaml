@@ -1,0 +1,32 @@
+schema_version: 0.1.0
+registry_kind: provider_adapters
+warning: >-
+  This file contains only non-secret source references and conservative
+  adapter capabilities. Keep API keys and selected model names in the named
+  environment variables. Offline contract tests do not imply live API
+  conformance for an account or model.
+adapters:
+  - adapter_id: openai-responses
+    provider: openai
+    enabled: false
+    base_url: https://api.openai.com/v1
+    credential_env: OPENAI_API_KEY
+    model_env: RWB_OPENAI_MODEL
+    capabilities: [text, tools, structured_output, reasoning]
+    live_conformance: pending
+  - adapter_id: anthropic-messages
+    provider: anthropic
+    enabled: false
+    base_url: https://api.anthropic.com/v1
+    credential_env: ANTHROPIC_API_KEY
+    model_env: RWB_ANTHROPIC_MODEL
+    capabilities: [text, tools, structured_output]
+    live_conformance: pending
+  - adapter_id: google-generate-content
+    provider: google
+    enabled: false
+    base_url: https://generativelanguage.googleapis.com/v1beta
+    credential_env: GEMINI_API_KEY
+    model_env: RWB_GEMINI_MODEL
+    capabilities: [text, tools, parallel_tools, structured_output]
+    live_conformance: pending
