@@ -10,7 +10,7 @@
       "revision": "sha256:c69471fdec7164595b5d28a613a5421d549472585d8ace0f89b745b801ebe940",
       "license_status": "unknown-mixed",
       "trust": "untrusted-quarantine",
-      "notes": "Archive contains 18 SKILL.md files, 392 Python files, and 1005 entries. Only metadata and selected text were inspected; no code was executed or installed."
+      "notes": "Pinned archive contains 18 SKILL.md files, 392 Python files, and 1005 entries. The bounded static audit scanned 647 text files (4,197,764 bytes) and registered all 18 Skill entrypoints; one oversized 1391-entry catalog JSON was skipped by policy. Nothing was extracted, executed, installed, or sent over the network."
     },
     {
       "source_id": "k-dense-scientific-agent-skills",

@@ -38,7 +38,19 @@ Source snapshot
 - agent-research-skills；
 - Anthropic Skills 与 OpenAI Skills（只作为结构和平台规范参考）。
 
-`research-copilot.zip` 的归档 SHA-256 为 `c69471fdec7164595b5d28a613a5421d549472585d8ace0f89b745b801ebe940`。初步清点得到 1005 个归档条目、18 个 `SKILL.md` 和 392 个 Python 文件。该归档未执行、未安装、未把脚本复制进本仓库。
+`research-copilot.zip` 的归档 SHA-256 为 `c69471fdec7164595b5d28a613a5421d549472585d8ace0f89b745b801ebe940`。清点得到 1005 个归档条目、18 个 `SKILL.md` 和 392 个 Python 文件。该归档未执行、未安装、未把脚本复制进本仓库。
+
+仓库提供有界、只读的静态审计入口：
+
+```powershell
+rwb skills audit-archive <archive-path> `
+  --source-id research-copilot-archive-1.0.0 `
+  --expected-sha256 c69471fdec7164595b5d28a613a5421d549472585d8ace0f89b745b801ebe940 `
+  --registry registry/skills/candidates.json `
+  --output .rwb/research-copilot-archive-audit.json
+```
+
+本次审计扫描了 647 个受支持文本文件、共 4,197,764 字节；一个超过单文件上限的 catalog JSON 被明确记为 skipped，所以报告的 `text_scan_complete` 为 `false`，不能表述成“全文件审计”。审计器不解压文件到磁盘、不导入模块、不运行脚本或安装命令、不发起网络请求，也不在报告中保存正文、命中片段或本机绝对路径。报告只包含哈希、路径、计数、边界状态和静态风险信号；信号用于人工 triage，不等同于恶意或安全结论。
 
 归档内的 science skill catalog 自称含 1391 个条目及 trust/review 标签。这些是来源方声明，不是本项目的准入结论；首版只把它视为发现索引，不导入全部条目。
 
@@ -62,6 +74,7 @@ Source snapshot
 
 - `experiment-design`：提炼成实验模式下的最小设计 Skill，保留随机化/功效/DoE 的确定性脚本，但需要统计假设审查。
 - `papercheck`：优先提取引用定位与 Claim-Source 的确定性检查，语义正确性不由脚本宣布。
+- `scientific-humanization`：仅提炼“事实、数字、引用与证据强度锁定”的最小改写 Skill；先用对抗 fixture 和 with/without 对照证明不会改变 Claim，再决定是否进入 `trial`。
 - K-Dense `citation-management` 与 lingzhi `backward-traceability`：先做逐文件许可、网络和脚本审计。
 
 只作参考：
@@ -71,6 +84,8 @@ Source snapshot
 - `thesis-audit-reviewer` 的覆盖分母、问题定位和完成 Gate；
 - `scispark` 的稳定假设/评审 ID 与阶段工件契约；
 - `academic-writing` 的输出模板，但必须按 drafting/review/revision 拆分，不能整体准入；
+- `manim-agent` 的工件与渲染 Gate，但不接纳仓库克隆、依赖安装、提供商绑定或生成代码执行；
+- `mcp-criticagent` 的部署/协议/行为/维护分层裁决模式，但不引入执行任意 npm 包或常驻 AI critic；
 - Academic Research Agent Skill 的人工 Gate 与 Claim verification。
 
 继续 triage：
@@ -80,10 +95,13 @@ Source snapshot
 隔离或排除：
 
 - `sci-employee-deep-research` 含硬编码明文 HTTP 服务和模型名，禁止执行或直接采用。
+- `giiisp-scientific-image-generation` 含硬编码明文 HTTP、凭据读取、研究内容外传、外部模型绑定与脚本执行，保持隔离；仅保留 figure spec、lineage 和质量 Gate 作为设计参考。
 - `visual-deck-builder` 单个 `SKILL.md` 达 623 行，且不属于第一验证切片，排除出近期核心路线。
+- `practical-course-producer` 属于课程/视频制作工具链，不是当前科研方法或完整性需求，且带来 TTS、浏览器、FFmpeg 和脚本执行负担。
 - `cognitive-profile` 引入长期个人画像与隐私/上下文负担，不属于科研方法层。
+- `world-threads-entry` 操作外部社交账户、身份状态和积分互动，与科研质量无关且包含外部写副作用。
 
-完整逐项记录见 `registry/skills/candidates.json`。
+至此，归档中的 18 个 Skill 入口均有独立候选记录和固定内容哈希；完整逐项记录见 `registry/skills/candidates.json`。覆盖完整不代表任何候选已安装、已执行或已准入。
 
 ## 5. 准入 Gate
 

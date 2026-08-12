@@ -41,6 +41,7 @@ class VersionedSchemaTests(unittest.TestCase):
                 "research_object",
                 "skill_manifest",
                 "skill_assignment",
+                "skill_archive_audit",
                 "task_packet",
             },
             set(catalog.document_kinds),

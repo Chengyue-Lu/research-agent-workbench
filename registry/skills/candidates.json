@@ -208,6 +208,102 @@
       }
     },
     {
+      "candidate_id": "rc-giiisp-scientific-image-generation",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/giiisp-scientific-image-generation/SKILL.md",
+      "content_hash": "sha256:27e44acf2707e9d5f867ed0de9c9d102e633c4e69b08fa1c9f0f81d36f100429",
+      "status": "quarantine",
+      "kind": "output",
+      "capabilities": ["scientific-figure-generation", "figure-lineage", "visual-quality-audit"],
+      "applicable_modes": ["experiment", "simulation", "reporting"],
+      "context_cost": "extreme",
+      "risk_flags": ["hardcoded-plain-http-endpoint", "credentialed-external-api", "research-content-upload", "provider-bound-vlm", "generated-process-execution", "15-bundled-scripts", "license-not-detected", "381-line-instructions"],
+      "decision": {
+        "action": "extract-figure-contracts-only",
+        "reason": "Figure specifications, lineage, and visual gates may be useful, but the package uploads research content to a hardcoded plain-HTTP service, reads credentials, invokes external models, and can execute repair scripts."
+      }
+    },
+    {
+      "candidate_id": "rc-manim-agent",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/manim-agent/SKILL.md",
+      "content_hash": "sha256:c0db5c644a228f3a2b387e834b0557ec4e6f596a46ec8fba09429432d41aeb3a",
+      "status": "reference",
+      "kind": "output",
+      "capabilities": ["formula-visualization", "animation-production", "render-validation"],
+      "applicable_modes": ["theory", "reporting"],
+      "context_cost": "low",
+      "risk_flags": ["repository-clone-and-install", "generated-code-execution", "provider-bound-endpoint-and-model", "heavy-media-dependencies", "credential-access", "license-not-detected"],
+      "decision": {
+        "action": "extract-artifact-and-verification-gates",
+        "reason": "Animation output and render checks are useful optional patterns, but cloning a runtime, installing dependencies, binding one provider, and executing generated Manim code do not belong in the research kernel."
+      }
+    },
+    {
+      "candidate_id": "rc-mcp-criticagent",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/mcp-criticagent/SKILL.md",
+      "content_hash": "sha256:bb756938ce9ef9c61c22a6cfaa800311779c6b68917839a7255b41e908b7d263",
+      "status": "reference",
+      "kind": "integrity",
+      "capabilities": ["tool-protocol-test", "tool-behavior-test", "repository-health-audit"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "low",
+      "risk_flags": ["executes-untrusted-npm", "external-registry-and-github-access", "optional-result-export", "popularity-score-proxy", "smart-test-model-cost", "recursive-meta-evaluation", "license-not-detected"],
+      "decision": {
+        "action": "extract-layered-verdict-pattern",
+        "reason": "Separating deployment, protocol, behavior, and maintenance evidence is useful; executing arbitrary packages and adding another AI critic would increase supply-chain and recursive review costs."
+      }
+    },
+    {
+      "candidate_id": "rc-practical-course-producer",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/practical-course-producer/SKILL.md",
+      "content_hash": "sha256:0a6f4ba279b40e03bb26b86edf70f2eee98e2d7931951172450e2d2357849deb",
+      "status": "rejected",
+      "kind": "output",
+      "capabilities": ["tutorial-video-production", "course-production", "media-quality-audit"],
+      "applicable_modes": ["reporting"],
+      "context_cost": "high",
+      "risk_flags": ["media-production-outside-scope", "credentialed-external-tts", "generated-process-execution", "ffmpeg-and-browser-dependencies", "12-bundled-scripts", "license-not-detected", "278-line-instructions"],
+      "decision": {
+        "action": "exclude-from-core-roadmap",
+        "reason": "Course and video production is not a research-method or integrity need for the current workbench and would add a large external media toolchain."
+      }
+    },
+    {
+      "candidate_id": "rc-scientific-humanization",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/scientific-humanization/SKILL.md",
+      "content_hash": "sha256:4dbff8ce9a2f394e9e7c782e52d808382add666a6c71532e6a9708560ddd2a36",
+      "status": "triage",
+      "kind": "integrity",
+      "capabilities": ["claim-preserving-rewrite", "evidence-strength-calibration", "fact-lock", "scientific-style-revision"],
+      "applicable_modes": ["evidence-synthesis", "theory", "experiment", "simulation", "reporting"],
+      "context_cost": "low",
+      "risk_flags": ["semantic-rewrite-can-alter-claims", "domain-boundary-tests-required", "overlaps-writing-skills", "human-review-required", "license-not-detected"],
+      "decision": {
+        "action": "derive-and-test-minimal-rewrite-skill",
+        "reason": "Fact, number, citation, and evidence-strength locks can add bounded value at reporting time; admission requires adversarial fixtures and a with/without comparison proving claims remain unchanged."
+      }
+    },
+    {
+      "candidate_id": "rc-world-threads-entry",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/world-threads-entry/SKILL.md",
+      "content_hash": "sha256:826979da2fb64678614237c2523cca6997cf24968a980cebd7b6a9d43586c4e6",
+      "status": "rejected",
+      "kind": "tool",
+      "capabilities": ["social-thread-operation", "external-account-state", "notification-handling"],
+      "applicable_modes": ["personalization"],
+      "context_cost": "low",
+      "risk_flags": ["external-account-actions", "engagement-and-points-optimization", "bind-key-handling", "persistent-remote-identity", "remote-skill-update", "not-research-method", "license-not-detected"],
+      "decision": {
+        "action": "exclude-from-project",
+        "reason": "Operating a social account, engagement loop, and points system is unrelated to research quality and introduces persistent external identity and write-side effects."
+      }
+    },
+    {
       "candidate_id": "kdense-citation-management",
       "source_id": "k-dense-scientific-agent-skills",
       "source_path": "skills/citation-management/SKILL.md",

@@ -4,6 +4,7 @@ from research_workbench.capability.catalog import (
     filter_candidates,
     load_candidates,
 )
+from research_workbench.capability.archive_audit import audit_skill_archive
 from research_workbench.capability.models import AgentProfile, SkillLock, SkillManifest
 from research_workbench.capability.resolver import (
     ResolvedTask,
@@ -22,6 +23,7 @@ __all__ = [
     "ResolvedTask",
     "ResolutionError",
     "filter_candidates",
+    "audit_skill_archive",
     "check_task_binding",
     "load_candidates",
     "resolve_task",

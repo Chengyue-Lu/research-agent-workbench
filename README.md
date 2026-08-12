@@ -53,6 +53,10 @@ rwb handoff validate examples/handoff-evidence.yaml `
 rwb claim trace examples/objects/claim/CLAIM-001.yaml `
   --protocol examples/project-protocol.yaml
 rwb skills candidates --status triage
+rwb skills audit-archive <archive-path> `
+  --source-id research-copilot-archive-1.0.0 `
+  --expected-sha256 c69471fdec7164595b5d28a613a5421d549472585d8ace0f89b745b801ebe940 `
+  --registry registry/skills/candidates.json
 rwb providers list
 rwb providers probe --config registry/providers/adapters.yaml
 rwb providers conformance --adapter openai-responses
@@ -65,7 +69,7 @@ rwb execution assess examples/observability/execution-evidence-contract.yaml `
   --protocol examples/project-protocol.yaml --root .
 ```
 
-`validate` 会检查 Schema、实际文件、SHA-256 与 Registry 引用等机器可判定条件，但不代表科学正确性。`task resolve` 只生成固定的 Profile/Skill/权限执行视图，不启动 Agent；`runtime codex render` 只生成原生 dispatch prompt，也不启动自建运行时。`context assess` 的字符/回合等数据是压力代理，不是假装精确的 token 窗口；缺失指标会明确标为 unknown。外部 Skill 默认不可执行；`discovered`、`triage`、`reference` 和 `quarantine` 均不等于已安装或已准入。
+`validate` 会检查 Schema、实际文件、SHA-256 与 Registry 引用等机器可判定条件，但不代表科学正确性。`task resolve` 只生成固定的 Profile/Skill/权限执行视图，不启动 Agent；`runtime codex render` 只生成原生 dispatch prompt，也不启动自建运行时。`skills audit-archive` 只在 ZIP 内做有界静态文本扫描，不解压、不执行、不联网，也不保存正文或命中片段。`context assess` 的字符/回合等数据是压力代理，不是假装精确的 token 窗口；缺失指标会明确标为 unknown。外部 Skill 默认不可执行；`discovered`、`triage`、`reference` 和 `quarantine` 均不等于已安装或已准入。
 
 ## 第一条验证路线
 

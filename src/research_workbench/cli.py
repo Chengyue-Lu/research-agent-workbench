@@ -23,6 +23,7 @@ from research_workbench.capability import (
     ResolvedTask,
     ResolutionError,
     SkillManifest,
+    audit_skill_archive,
     filter_candidates,
     load_candidates,
     resolve_task,
@@ -285,6 +286,37 @@ def _skill_accepted(args: argparse.Namespace) -> int:
     for entry in registry.entries:
         print(f"{entry.skill_id}\t{entry.version}\t{entry.license_status}\t{entry.content_hash}")
     print(f"registry_digest\t{registry.digest}")
+    return 0
+
+
+def _skill_audit_archive(args: argparse.Namespace) -> int:
+    report = audit_skill_archive(
+        args.archive,
+        source_id=args.source_id,
+        expected_sha256=args.expected_sha256,
+        candidate_registry=args.registry,
+        generated_at=args.generated_at,
+    )
+    schema_errors = SchemaCatalog().validate("skill_archive_audit", report)
+    if schema_errors:
+        first = schema_errors[0]
+        raise ValueError(f"generated archive audit is invalid at {first.pointer}: {first.message}")
+    if args.output:
+        output = Path(args.output)
+        if output.suffix.lower() == ".json":
+            _write_text(output, json.dumps(report, ensure_ascii=False, indent=2) + "\n")
+        elif output.suffix.lower() in {".yaml", ".yml"}:
+            _write_yaml(output, report)
+        else:
+            raise ValueError("archive audit output must use .json, .yaml, or .yml")
+        summary = report["summary"]
+        print(
+            f"skill archive audit written: skills={summary['skill_count']} "
+            f"registered={summary['registered_skill_count']} "
+            f"unregistered={summary['unregistered_skill_count']} output={output}"
+        )
+        return 0
+    print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0
 
 
@@ -825,6 +857,17 @@ def build_parser() -> argparse.ArgumentParser:
     accepted.add_argument("--root", default=".")
     accepted.add_argument("--json", action="store_true")
     accepted.set_defaults(handler=_skill_accepted)
+    archive_audit = skill_subparsers.add_parser(
+        "audit-archive",
+        help="statically audit Skill packages in a ZIP without extracting or executing them",
+    )
+    archive_audit.add_argument("archive")
+    archive_audit.add_argument("--source-id", required=True)
+    archive_audit.add_argument("--expected-sha256", required=True)
+    archive_audit.add_argument("--registry", default=str(DEFAULT_CANDIDATES))
+    archive_audit.add_argument("--generated-at")
+    archive_audit.add_argument("--output")
+    archive_audit.set_defaults(handler=_skill_audit_archive)
 
     providers = subparsers.add_parser("providers", help="inspect model provider baselines")
     provider_subparsers = providers.add_subparsers(dest="providers_command", required=True)

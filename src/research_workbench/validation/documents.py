@@ -82,6 +82,7 @@ SCHEMA_KINDS = {
     "agent_profile",
     "skill_manifest",
     "skill_assignment",
+    "skill_archive_audit",
     "task_packet",
     "attempt",
     "handoff_packet",
@@ -121,6 +122,8 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "execution_receipt"
     if "report_id" in document and "adapter_id" in document and "checks" in document:
         return "provider_conformance_report"
+    if "report_id" in document and "source_id" in document and "archive_signals" in document:
+        return "skill_archive_audit"
     if "object_type" in document and "object_id" in document:
         return "research_object"
     return None
