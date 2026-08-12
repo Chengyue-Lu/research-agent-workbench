@@ -1,0 +1,24 @@
+schema_version: 0.1.0
+project_id: dual-mode-demo
+question_refs:
+  - Q-001@1
+active_modes:
+  - evidence-synthesis
+  - simulation
+claim_ceiling:
+  - source_reported
+  - simulation_supported
+required_human_gates:
+  - approve_method_assumptions
+  - approve_main_claim
+  - approve_external_release
+budgets:
+  max_parallel_subagents: 2
+  max_delegation_depth: 1
+  coordination_cost_ratio_warn: 0.33
+context_policy:
+  proactive_checkpoint: true
+  main_raw_material: forbidden
+data_boundary:
+  local_only: true
+  external_upload_requires_approval: true

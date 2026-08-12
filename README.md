@@ -1,0 +1,66 @@
+# Research Agent Workbench
+
+一个由研究者主导、按研究活动组合、以证据和可复现性为中心的 AI 科研辅助框架。
+
+本项目不是“自动课题组”，也不试图重新实现 Codex、Claude Code 或其他平台已有的子 Agent 调度。它提供的是平台之上的轻量科研契约层：把研究问题、研究模式、Agent 边界、Skill 选择、工件、证据、交接与人工决策组织成可审查、可替换的结构。
+
+## 当前状态
+
+状态：`Architecture Baseline / M0`
+
+当前仓库首先确立架构、模块边界和实施任务。尚未承诺具体运行时、数据库、Web UI 或完整自动化。只有通过两个差异明显的真实研究案例后，候选机制才可以进入公共内核。
+
+## 核心判断
+
+- 主 Agent 是决策工作区，不是长期存储，也不是所有工作的执行者。
+- 子 Agent 只接收窄任务；其过程可以被压缩，但正式工件和交接契约不能丢失。
+- Agent Profile、Skill、Research Mode 和 Tool 是四个不同概念，必须在单次 Task Packet 中显式组合。
+- 不同子 Agent 应按任务加载不同 Skill；关键任务不能只依赖模型的隐式 Skill 匹配。
+- 研究差异按实验、仿真、推导、观察统计、证据综合等“研究模式”表达，不按学科建立全局固定流程。
+- 确定性校验优先于第二个 Agent；Agent 复核只针对明确风险；关键科学判断保留给人。
+- 优先使用平台原生的 Agent、Skill、线程、权限和工具能力，不另造通用 Supervisor。
+
+## 架构入口
+
+- [项目章程](docs/PROJECT_CHARTER.md)
+- [总体架构](docs/ARCHITECTURE.md)
+- [完整实施计划](docs/implementation/IMPLEMENTATION_PLAN.md)
+- [任务清单](docs/TASKS.md)
+- [模块文档索引](docs/modules/README.md)
+- [迁移方案](docs/implementation/MIGRATION_PLAN.md)
+
+## 第一条验证路线
+
+首个垂直切片将验证两个能力差异明显的子 Agent：
+
+1. `evidence-scout` + `literature-evidence-extraction` Skill：只读检索、证据定位和引用交接。
+2. `simulation-auditor` + `simulation-vv` Skill：读取模型与运行工件，检查版本、参数、收敛和敏感性。
+
+两者共享最小科研内核与 Task/Handoff 契约，但使用不同的输入、权限、Skill、输出和质量检查。该切片的目标不是证明多 Agent 更强，而是验证“能力按需绑定、主上下文不被污染、结果可追溯”是否成立。
+
+## 近期交付边界
+
+M1 只计划交付：
+
+- 最小 Schema 与确定性验证器；
+- 一个本地 CLI；
+- Codex 优先的 Runtime Adapter；
+- 两个 Agent Profile 与两个 Skill；
+- 主状态包、Task Packet 和 Handoff Packet；
+- 无数据库、无常驻 Supervisor、无全局自治 DAG。
+
+## 参考方向
+
+设计借鉴但不复制以下项目的边界：
+
+- [Codex Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents)：使用原生子 Agent，将噪声工作移出主线程。
+- [Codex Build Skills](https://learn.chatgpt.com/docs/build-skills)：使用可渐进加载的仓库级 Skills。
+- [OpenAI Agents SDK](https://github.com/openai/openai-agents-python)：参考结构化 handoff、guardrail 与 tracing 的职责分离。
+- [STORM / Co-STORM](https://github.com/stanford-oval/storm)：参考多视角知识整理与人机协作，但不把文章生成等同于科研闭环。
+- [PaperQA2](https://github.com/Future-House/paper-qa)：参考带定位引用的科学文献证据检索。
+- [LangGraph](https://github.com/langchain-ai/langgraph)：参考持久执行与人工中断，不在首版引入通用图运行时。
+- [DVC](https://github.com/treeverse/dvc)：在确有大数据/实验版本需求时接入，不自行重造数据版本系统。
+
+## 名称说明
+
+`Research Agent Workbench` 是工作名。它强调“研究工作台”而不是“自治科研系统”，以免产品目标被误解为将选题、实验解释和结论责任全盘交给模型。

@@ -1,0 +1,24 @@
+schema_version: 0.1.0
+task_id: EVID-001
+attempt_id: A-001
+status: completed
+skill_lock:
+  - literature-evidence-extraction@0.1.0
+result:
+  summary: Four evidence records were extracted; one conflicts with HYP-001.
+  facts:
+    - Four records contain source locators.
+  inferences:
+    - The bounded evidence does not support a causal claim.
+  recommendations:
+    - Search for a preregistered replication.
+artifact_refs:
+  - objects/evidence/EVID-001-01.yaml
+limitations:
+  - Only sources in the approved set were reviewed.
+conflicts:
+  - evidence_ref: EVID-001-04
+    with: HYP-001
+unresolved:
+  - No source directly measures the proposed mediator.
+human_decision_required: []

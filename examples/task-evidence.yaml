@@ -1,0 +1,31 @@
+schema_version: 0.1.0
+task_id: EVID-001
+goal: Extract citable evidence for Q-001 from the bounded source set.
+question_refs:
+  - Q-001@1
+active_modes:
+  - evidence-synthesis
+required_capabilities:
+  - evidence-extraction
+  - citation-location
+required_skills:
+  - literature-evidence-extraction
+forbidden_skills:
+  - final-synthesis
+agent_profile: evidence-scout
+input_refs:
+  - path: sources/raw/paper-001.pdf
+    sha256: REPLACE_WITH_FIXTURE_HASH
+write_scope:
+  - work/EVID-001/**
+required_outputs:
+  - evidence-record
+  - handoff-packet
+permissions:
+  external_write: false
+delegation:
+  allowed: false
+stop_conditions:
+  - required_outputs_complete
+  - source_boundary_exhausted
+  - human_judgment_required

@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+
+# Build and coverage
+build/
+dist/
+*.egg-info/
+.coverage
+htmlcov/
+
+# Local runtime material
+.env
+.env.*
+!.env.example
+.rwb/
+work/
+runs/
+
+# Editors and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini

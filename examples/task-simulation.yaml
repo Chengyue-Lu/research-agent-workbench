@@ -1,0 +1,31 @@
+schema_version: 0.1.0
+task_id: SIM-001
+goal: Audit convergence and parameter sensitivity for the bounded simulation run set.
+question_refs:
+  - Q-001@1
+active_modes:
+  - simulation
+required_capabilities:
+  - convergence-analysis
+  - sensitivity-analysis
+required_skills:
+  - simulation-vv
+forbidden_skills:
+  - experimental-validation
+agent_profile: simulation-auditor
+input_refs:
+  - path: runs/RUN-001/manifest.yaml
+    sha256: REPLACE_WITH_FIXTURE_HASH
+write_scope:
+  - work/SIM-001/**
+required_outputs:
+  - simulation-vv-report
+  - handoff-packet
+permissions:
+  external_write: false
+delegation:
+  allowed: false
+stop_conditions:
+  - required_checks_complete
+  - input_version_changed
+  - human_judgment_required
