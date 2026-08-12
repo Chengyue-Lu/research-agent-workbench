@@ -197,3 +197,5 @@ Skill 若要求超出上层边界的动作，Resolver 必须阻断或裁剪，�
 截至 2026-08-13，`registry/skills/accepted.json` 是唯一可执行 Skill 索引；`.agents/skills` 中的三个原创 Skill 均由版本、来源路径、`SKILL.md` 内容哈希和整个 Skill 目录包哈希锁定。`.gitattributes` 固定可哈希文本为 LF，避免跨 Windows/Linux 的伪漂移。Resolver 默认要求 Task 显式列出 `required_skills`；自动最小覆盖只在调用方明确允许时启用，等价候选会返回 `SKILL-AMBIGUOUS` 而不是猜测。
 
 外部来源继续保存在 `registry/skills/candidates.json`，不会因下载、发现或 `reference` 状态进入 accepted Registry。Codex 只在 dispatch 中显式调用本次 Assignment 的 `$skill-name`；未选择 Skill 的正文和 references 不进入任务上下文。
+
+独立派生但尚未准入的实现放在 `skill-lab/candidates/`。该路径不是平台 Skill 发现路径，也不进入 accepted Registry；它用于保存短指令、确定性脚本、fixtures、内容/包哈希和 with/without 评估证据。首个包 `claim-preserving-rewrite` 只验证数字、引用、否定、证据强度、因果措辞与显式保护词等表层不变量，并明确不宣称语义或科学等价。

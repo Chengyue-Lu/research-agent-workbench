@@ -276,15 +276,32 @@
       "source_id": "research-copilot-archive-1.0.0",
       "source_path": "research-copilot/1.0.0/skills/scientific-humanization/SKILL.md",
       "content_hash": "sha256:4dbff8ce9a2f394e9e7c782e52d808382add666a6c71532e6a9708560ddd2a36",
-      "status": "triage",
+      "status": "reference",
       "kind": "integrity",
       "capabilities": ["claim-preserving-rewrite", "evidence-strength-calibration", "fact-lock", "scientific-style-revision"],
       "applicable_modes": ["evidence-synthesis", "theory", "experiment", "simulation", "reporting"],
       "context_cost": "low",
       "risk_flags": ["semantic-rewrite-can-alter-claims", "domain-boundary-tests-required", "overlaps-writing-skills", "human-review-required", "license-not-detected"],
       "decision": {
-        "action": "derive-and-test-minimal-rewrite-skill",
-        "reason": "Fact, number, citation, and evidence-strength locks can add bounded value at reporting time; admission requires adversarial fixtures and a with/without comparison proving claims remain unchanged."
+        "action": "retain-constraints-as-reference",
+        "reason": "Fact, number, citation, and evidence-strength locks are useful design constraints, but the unlicensed source package is not vendored; an independently implemented repository candidate carries the evaluation work."
+      }
+    },
+    {
+      "candidate_id": "rwb-claim-preserving-rewrite",
+      "source_id": "rwb-derived-claim-preserving-rewrite-0.1.0",
+      "source_path": "skill-lab/candidates/claim-preserving-rewrite/SKILL.md",
+      "content_hash": "sha256:d5dfb393ee52e3919483514f878c6100746f7f3093cd8c1d3adac17cf32b4417",
+      "package_hash": "sha256:d663862b5800b3c4b4d5d601a61c9d7965c3044e8adcaa7aa310a1ce5b3c1366",
+      "status": "triage",
+      "kind": "integrity",
+      "capabilities": ["claim-preserving-rewrite", "evidence-strength-calibration", "surface-invariant-check"],
+      "applicable_modes": ["evidence-synthesis", "theory", "experiment", "simulation", "reporting"],
+      "context_cost": "low",
+      "risk_flags": ["surface-checks-not-semantic-proof", "false-positive-gates-possible", "human-review-required", "with-without-forward-test-pending", "project-original-unlicensed", "non-discoverable-candidate"],
+      "decision": {
+        "action": "run-adversarial-and-with-without-evaluation",
+        "reason": "The independently implemented candidate is bounded, offline, and deterministically checks surface invariants, but it remains outside runtime discovery until semantic drift and incremental value are measured on representative tasks."
       }
     },
     {

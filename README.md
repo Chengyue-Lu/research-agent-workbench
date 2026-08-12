@@ -8,7 +8,7 @@
 
 状态：`M3 Context/Receipt + M6 Provider Adapter Foundation`
 
-当前仓库已完成 M1 的本地实现和 M2 的离线 Agent—Skill 契约切片，并开始实现 M3：提供可恢复 Main State、Context Snapshot、Execution Receipt，以及上下文压力、协调成本、并发、复核循环和敏感 trace 检查。另已实现 OpenAI Responses、Anthropic Messages、Gemini `generateContent` 的非流式薄 Adapter、ToolChoice、本地工具参数校验，以及默认零环境/零网络的 live conformance runner；但尚未用真实账户/模型执行 conformance。项目仍无数据库、Web UI 或自建调度器；真实原生子 Agent 和真实科研案例仍待执行。
+当前仓库已完成 M1 的本地实现和 M2 的离线 Agent—Skill 契约切片，并开始实现 M3：提供可恢复 Main State、Context Snapshot、Execution Receipt，以及上下文压力、协调成本、并发、复核循环和敏感 trace 检查。Skill 供应链现具备只读 ZIP 静态审计、18/18 来源入口追溯和非发现候选实验区；首个 `claim-preserving-rewrite` 候选尚未准入。另已实现 OpenAI Responses、Anthropic Messages、Gemini `generateContent` 的非流式薄 Adapter、ToolChoice、本地工具参数校验，以及默认零环境/零网络的 live conformance runner；但尚未用真实账户/模型执行 conformance。项目仍无数据库、Web UI 或自建调度器；真实原生子 Agent 和真实科研案例仍待执行。
 
 ## 核心判断
 

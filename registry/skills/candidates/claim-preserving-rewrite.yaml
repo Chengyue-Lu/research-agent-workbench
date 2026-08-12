@@ -1,0 +1,29 @@
+schema_version: 0.1.0
+skill_id: claim-preserving-rewrite
+version: 0.1.0
+kind: integrity
+description: Revises fixed scientific prose while preserving surface claim invariants and disclosing semantic review limits.
+capabilities: [claim-preserving-rewrite, evidence-strength-calibration, surface-invariant-check]
+applies_to_modes: [evidence-synthesis, theory, experiment, simulation, reporting]
+excludes: [fact-checking, scientific-interpretation, translation, summarization, citation-discovery, conclusion-strengthening]
+required_tools: [file-read]
+optional_tools: [file-write]
+permission_ceiling:
+  filesystem: worktree-write
+  network: forbidden
+  external_write: forbidden
+  allowed_roots: [work]
+input_contracts: [fixed-scientific-text, style-boundary, optional-claim-lock]
+output_contracts: [revised-scientific-text, claim-preservation-report, handoff-packet]
+context_cost:
+  metadata: low
+  instructions: low
+  references: on-demand
+incompatible_with: []
+verification:
+  deterministic: [numeric-lock, citation-lock, polarity-lock, strength-escalation, causal-introduction, protected-terms]
+source:
+  origin: repository-derived-candidate
+  locator: skill-lab/candidates/claim-preserving-rewrite/SKILL.md
+  content_hash: d5dfb393ee52e3919483514f878c6100746f7f3093cd8c1d3adac17cf32b4417
+  package_hash: d663862b5800b3c4b4d5d601a61c9d7965c3044e8adcaa7aa310a1ce5b3c1366

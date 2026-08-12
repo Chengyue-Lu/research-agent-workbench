@@ -46,7 +46,7 @@ class CandidateCatalogTests(unittest.TestCase):
             "rc-manim-agent": "reference",
             "rc-mcp-criticagent": "reference",
             "rc-practical-course-producer": "rejected",
-            "rc-scientific-humanization": "triage",
+            "rc-scientific-humanization": "reference",
             "rc-world-threads-entry": "rejected",
         }
 

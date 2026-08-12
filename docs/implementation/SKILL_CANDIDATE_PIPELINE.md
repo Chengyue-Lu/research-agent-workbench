@@ -52,6 +52,8 @@ rwb skills audit-archive <archive-path> `
 
 本次审计扫描了 647 个受支持文本文件、共 4,197,764 字节；一个超过单文件上限的 catalog JSON 被明确记为 skipped，所以报告的 `text_scan_complete` 为 `false`，不能表述成“全文件审计”。审计器不解压文件到磁盘、不导入模块、不运行脚本或安装命令、不发起网络请求，也不在报告中保存正文、命中片段或本机绝对路径。报告只包含哈希、路径、计数、边界状态和静态风险信号；信号用于人工 triage，不等同于恶意或安全结论。
 
+外部候选与本项目派生实现严格分离。独立重写、尚未准入的包放在 `skill-lab/candidates/`，该路径不参与 Codex Skill 自动发现；只有完成准入 Gate 后，才允许以新版本和新哈希进入 `.agents/skills` 与 accepted Registry。外部未知许可文本不复制到派生包。
+
 归档内的 science skill catalog 自称含 1391 个条目及 trust/review 标签。这些是来源方声明，不是本项目的准入结论；首版只把它视为发现索引，不导入全部条目。
 
 ## 3. 候选评分维度
@@ -74,7 +76,7 @@ rwb skills audit-archive <archive-path> `
 
 - `experiment-design`：提炼成实验模式下的最小设计 Skill，保留随机化/功效/DoE 的确定性脚本，但需要统计假设审查。
 - `papercheck`：优先提取引用定位与 Claim-Source 的确定性检查，语义正确性不由脚本宣布。
-- `scientific-humanization`：仅提炼“事实、数字、引用与证据强度锁定”的最小改写 Skill；先用对抗 fixture 和 with/without 对照证明不会改变 Claim，再决定是否进入 `trial`。
+- 本项目派生的 `claim-preserving-rewrite`：已在非发现路径实现最小 Skill 和数字、引用、否定、证据强度、因果措辞的表层确定性 Gate；仍须通过真实 with/without 与语义漂移评估后才能进入 `trial`。
 - K-Dense `citation-management` 与 lingzhi `backward-traceability`：先做逐文件许可、网络和脚本审计。
 
 只作参考：
@@ -84,6 +86,7 @@ rwb skills audit-archive <archive-path> `
 - `thesis-audit-reviewer` 的覆盖分母、问题定位和完成 Gate；
 - `scispark` 的稳定假设/评审 ID 与阶段工件契约；
 - `academic-writing` 的输出模板，但必须按 drafting/review/revision 拆分，不能整体准入；
+- `scientific-humanization` 的事实、数字、引用和证据强度锁定思路；原包许可未知，只保留为来源参考，不复制实现；
 - `manim-agent` 的工件与渲染 Gate，但不接纳仓库克隆、依赖安装、提供商绑定或生成代码执行；
 - `mcp-criticagent` 的部署/协议/行为/维护分层裁决模式，但不引入执行任意 npm 包或常驻 AI critic；
 - Academic Research Agent Skill 的人工 Gate 与 Claim verification。

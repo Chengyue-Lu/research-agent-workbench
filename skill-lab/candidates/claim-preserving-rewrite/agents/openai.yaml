@@ -1,0 +1,7 @@
+interface:
+  display_name: "Claim-Preserving Rewrite"
+  short_description: "Preserve claims while revising scientific prose"
+  default_prompt: "Use $claim-preserving-rewrite to improve this scientific passage without changing its claims, quantities, citations, polarity, or evidence strength."
+
+policy:
+  allow_implicit_invocation: false
