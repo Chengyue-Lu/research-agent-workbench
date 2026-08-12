@@ -49,7 +49,11 @@
       "items": { "$ref": "common.schema.json#/$defs/relativePath" },
       "uniqueItems": true
     },
-    "rollover_reason": { "type": "string" }
+    "rollover_reason": { "type": "string" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "previous_checkpoint_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
+    "context_snapshot_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
+    "checkpoint_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
   },
   "additionalProperties": false
 }

@@ -31,6 +31,8 @@ class VersionedSchemaTests(unittest.TestCase):
             {
                 "agent_profile",
                 "attempt",
+                "context_snapshot",
+                "execution_receipt",
                 "handoff_packet",
                 "main_state",
                 "project_protocol",

@@ -19,3 +19,6 @@ next_actions:
   - Validate the simulation fixture handoff.
 artifact_index_refs: []
 rollover_reason: Synthetic checkpoint fixture.
+created_at: "2026-08-13T01:01:00Z"
+context_snapshot_ref: examples/observability/context-main-warn.yaml
+checkpoint_digest: e92c418909e504e11a09be667886da8f0caeba209a2a50fcbe1bbf21909ea9d5

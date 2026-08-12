@@ -8,6 +8,7 @@ input_lock:
 skill_lock:
   - literature-evidence-extraction@0.1.0
 skill_assignment_ref: examples/vertical-slice/evidence-assignment.yaml
+execution_receipt_ref: examples/observability/execution-evidence-contract.yaml
 result:
   summary: Four evidence records were extracted; one conflicts with HYP-001.
   facts:

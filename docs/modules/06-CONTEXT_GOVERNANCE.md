@@ -29,6 +29,8 @@
 
 不将具体百分比写死为平台真值。首版用代理指标估计压力：累计读取字符、最近 Handoff 数、未关闭问题数、长工具输出次数、线程持续回合、平台压缩预警以及主 Agent 自检。
 
+当前实现使用 `Context Snapshot` 把每个指标标记为“已测量”或“未知”。缺失数据不能自动填零；字符数只用于本地压力比较，不换算成假精确的 token 余量。默认阈值可由 Project Protocol 覆盖，并随 Snapshot 一起冻结，避免事后改变解释。
+
 ## 4. Main State Packet
 
 ```yaml
@@ -58,6 +60,8 @@ rollover_reason: approaching soft context budget
 ```
 
 Main State 是恢复入口，不是第二套数据库。它只引用正式工件，不复制原始内容。
+
+当前 Main State 还可携带 `created_at`、`previous_checkpoint_ref`、`context_snapshot_ref` 和规范化 `checkpoint_digest`。`rwb context resume-check` 会验证协议 revision、引用、下一动作、活动 Task 的预期 Handoff，以及相邻 checkpoint 是否丢失已固定约束或决定。
 
 ## 5. 主动 checkpoint 与 rollover
 
@@ -95,6 +99,8 @@ rollover 步骤：
 
 否则 Agent 必须在压缩/终止前输出 `incomplete` Handoff。不能仅凭“我记得主要结论”继续。
 
+确定性规则区分两种情况：`scope: task` 且 `handoff_ready: true` 的压缩只产生可恢复警告；没有固化 Handoff 的压缩触发 `CTX-HANDOFF-LOSS` 并阻断继续。主上下文发生任何非计划压缩则触发 rollover，而不使用同一宽容规则。
+
 ## 7. 按需拉取
 
 主 Agent 读取顺序：
@@ -122,7 +128,17 @@ rollover 步骤：
 | CTX-HIDDEN-STATE | 决定只存在于对话 | 创建 Decision 工件 |
 | CTX-RECOVERY-DRIFT | 新会话恢复后目标改变 | 对比 checkpoint 与下一动作，Human Gate |
 
-## 9. 不保存的内容
+## 9. 当前 CLI
+
+```text
+rwb context assess ...
+rwb context checkpoint ...
+rwb context resume-check ...
+```
+
+`assess` 不读取聊天隐式状态，调用方必须传入可测代理指标；生成文件会显式列出其余 unknown。`checkpoint` 可以从上一 Main State 继承状态，并链接触发它的 Context Snapshot；`resume-check` 是换届前后的确定性门槛，不启动或管理新会话。
+
+## 10. 不保存的内容
 
 - 完整 Chain-of-Thought；
 - 没有消费方的每轮自省；
@@ -130,7 +146,7 @@ rollover 步骤：
 - 未经验证的自动摘要集合；
 - 可以从源工件确定性重建的重复视图。
 
-## 10. 验收条件
+## 11. 验收条件
 
 - 主 Agent 在不读取原始论文/日志的情况下恢复并继续下一步；
 - 人工抽查能够从 Handoff 定位到原始 Evidence/Run；

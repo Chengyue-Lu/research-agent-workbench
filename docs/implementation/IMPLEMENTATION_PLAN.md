@@ -1,6 +1,6 @@
 # 完整实施计划
 
-版本：0.3
+版本：0.4
 
 状态：执行中
 
@@ -153,6 +153,8 @@ rwb context checkpoint
 ### 目标
 
 验证主 Agent克制、子 Agent压缩容忍和主动 rollover。
+
+截至 2026-08-13，已实现 Context Snapshot、Execution Receipt、规范化 Main State digest，以及 `context assess/checkpoint/resume-check` 和 `execution assess`。离线故障注入覆盖 Handoff 未固化压缩、主上下文原始材料、隐藏决定、成本/并发/review/trace 风险；真实原生会话恢复与真实 token/时间采集仍未完成。
 
 ### 实现内容
 

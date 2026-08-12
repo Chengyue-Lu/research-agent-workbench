@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/context-snapshot.schema.json",
+  "title": "Context Pressure Snapshot",
+  "x-rwb-document-kind": "context_snapshot",
+  "type": "object",
+  "required": [
+    "schema_version", "snapshot_id", "captured_at", "scope", "measurement_source",
+    "metrics", "unknown_metrics", "handoff_ready", "policy", "assessment"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "snapshot_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "captured_at": { "type": "string", "format": "date-time" },
+    "scope": { "enum": ["main", "task"] },
+    "owner_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "measurement_source": { "enum": ["runtime", "manual", "file-estimate", "mixed"] },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "loaded_chars": { "type": "integer", "minimum": 0 },
+        "pinned_chars": { "type": "integer", "minimum": 0 },
+        "skill_instruction_chars": { "type": "integer", "minimum": 0 },
+        "raw_material_chars": { "type": "integer", "minimum": 0 },
+        "recent_handoffs": { "type": "integer", "minimum": 0 },
+        "open_items": { "type": "integer", "minimum": 0 },
+        "turns": { "type": "integer", "minimum": 0 },
+        "long_tool_outputs": { "type": "integer", "minimum": 0 },
+        "compaction_events": { "type": "integer", "minimum": 0 },
+        "hidden_decisions": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "unknown_metrics": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "loaded_chars", "pinned_chars", "skill_instruction_chars", "raw_material_chars",
+          "recent_handoffs", "open_items", "turns", "long_tool_outputs",
+          "compaction_events", "hidden_decisions"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "handoff_ready": { "type": ["boolean", "null"] },
+    "policy": {
+      "type": "object",
+      "required": ["proactive_checkpoint", "main_raw_material", "thresholds"],
+      "properties": {
+        "proactive_checkpoint": { "type": "boolean" },
+        "main_raw_material": { "enum": ["forbidden", "on-demand", "allowed"] },
+        "thresholds": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "object",
+            "required": ["warn", "rollover"],
+            "properties": {
+              "warn": { "type": "integer", "minimum": 0 },
+              "rollover": { "type": "integer", "minimum": 0 }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "assessment": {
+      "type": "object",
+      "required": ["level", "triggered_rules", "required_actions"],
+      "properties": {
+        "level": { "enum": ["ok", "warn", "rollover", "block"] },
+        "triggered_rules": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "required_actions": { "$ref": "common.schema.json#/$defs/stringArray" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

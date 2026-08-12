@@ -168,6 +168,7 @@ class AttemptRecord:
     skill_lock: tuple[str, ...]
     skill_assignment_ref: str | None
     runtime_snapshot_ref: str | None
+    execution_receipt_ref: str | None
     artifact_refs: tuple[str, ...]
     handoff_ref: str | None
     failure: Mapping[str, Any] | None
@@ -178,11 +179,13 @@ class AttemptRecord:
         if not isinstance(task_revision, int) or task_revision < 1:
             raise ContractError("task_revision", "must be a positive integer")
         runtime_ref = optional_string(data, "runtime_snapshot_ref")
+        receipt_ref = optional_string(data, "execution_receipt_ref")
         handoff_ref = optional_string(data, "handoff_ref")
         assignment_ref = optional_string(data, "skill_assignment_ref")
         for field, value in (
             ("skill_assignment_ref", assignment_ref),
             ("runtime_snapshot_ref", runtime_ref),
+            ("execution_receipt_ref", receipt_ref),
             ("handoff_ref", handoff_ref),
         ):
             if value is not None:
@@ -206,6 +209,7 @@ class AttemptRecord:
             skill_lock=string_tuple(data, "skill_lock", required=True),
             skill_assignment_ref=assignment_ref,
             runtime_snapshot_ref=runtime_ref,
+            execution_receipt_ref=receipt_ref,
             artifact_refs=artifact_refs,
             handoff_ref=handoff_ref,
             failure=dict(failure) if failure else None,
@@ -230,6 +234,7 @@ class HandoffPacket:
     human_decision_required: tuple[str, ...]
     recommended_next_actions: tuple[str, ...]
     runtime_metadata_ref: str | None = None
+    execution_receipt_ref: str | None = None
 
     @classmethod
     def from_mapping(cls, data: Mapping[str, Any]) -> "HandoffPacket":
@@ -239,6 +244,12 @@ class HandoffPacket:
         assignment_ref = optional_string(data, "skill_assignment_ref")
         if assignment_ref is not None:
             require_relative_path(assignment_ref, "skill_assignment_ref")
+        receipt_ref = optional_string(data, "execution_receipt_ref")
+        if receipt_ref is not None:
+            require_relative_path(receipt_ref, "execution_receipt_ref")
+        runtime_metadata_ref = optional_string(data, "runtime_metadata_ref")
+        if runtime_metadata_ref is not None:
+            require_relative_path(runtime_metadata_ref, "runtime_metadata_ref")
         return cls(
             schema_version=require_string(data, "schema_version"),
             task_id=require_string(data, "task_id"),
@@ -255,5 +266,6 @@ class HandoffPacket:
             unresolved=string_tuple(data, "unresolved", required=True),
             human_decision_required=string_tuple(data, "human_decision_required"),
             recommended_next_actions=string_tuple(data, "recommended_next_actions"),
-            runtime_metadata_ref=optional_string(data, "runtime_metadata_ref"),
+            runtime_metadata_ref=runtime_metadata_ref,
+            execution_receipt_ref=receipt_ref,
         )

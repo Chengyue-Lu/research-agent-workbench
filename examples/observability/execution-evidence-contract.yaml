@@ -1,0 +1,36 @@
+schema_version: 0.1.0
+receipt_id: XR-EVID-0001
+execution_kind: contract-only
+attempt_ref: examples/attempt-evidence.yaml
+task_id: EVID-001
+task_revision: 1
+agent_profile_ref: registry/agents/evidence-scout.yaml
+skill_assignment_ref: examples/vertical-slice/evidence-assignment.yaml
+context_snapshot_ref: examples/observability/context-task-compacted.yaml
+started_at: "2026-08-13T00:00:00Z"
+finished_at: "2026-08-13T00:01:00Z"
+status: completed
+runtime:
+  name: codex-contract-renderer
+  version: unprobed
+  adapter_version: 0.1.0
+model_usage_status: not-applicable
+model_usage: []
+coordination:
+  delegated_attempts: 0
+  handoff_count: 1
+  review_rounds: 0
+  max_parallel_observed: 0
+  coordination_seconds: 1
+  execution_seconds: 4
+trace:
+  mode: disabled
+  external: false
+  sensitive_data_detected: false
+  redactions_applied: 0
+output_refs:
+  - examples/objects/evidence/EVID-001-01.yaml
+  - examples/handoff-evidence.yaml
+validation_refs: []
+limitations:
+  - This records an offline contract slice, not a native subagent or model API execution.

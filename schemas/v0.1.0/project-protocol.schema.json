@@ -31,7 +31,19 @@
       "required": ["proactive_checkpoint", "main_raw_material"],
       "properties": {
         "proactive_checkpoint": { "type": "boolean" },
-        "main_raw_material": { "enum": ["forbidden", "on-demand", "allowed"] }
+        "main_raw_material": { "enum": ["forbidden", "on-demand", "allowed"] },
+        "pressure_thresholds": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["warn", "rollover"],
+            "properties": {
+              "warn": { "type": "integer", "minimum": 0 },
+              "rollover": { "type": "integer", "minimum": 0 }
+            },
+            "additionalProperties": false
+          }
+        }
       },
       "additionalProperties": true
     },

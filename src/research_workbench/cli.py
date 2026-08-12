@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
@@ -21,9 +22,16 @@ from research_workbench.capability import (
     resolve_task_from_registry,
 )
 from research_workbench.capability.catalog import DEFAULT_ACCEPTED, DEFAULT_CANDIDATES
-from research_workbench.context import MainStatePacket
+from research_workbench.context import (
+    CONTEXT_METRIC_NAMES,
+    ContextPolicySnapshot,
+    ContextSnapshot,
+    MainStatePacket,
+    checkpoint_digest,
+)
 from research_workbench.contracts import ContractError, ContractRisk, RiskLevel, to_plain
 from research_workbench.io import iter_documents, load_document
+from research_workbench.observability import ExecutionReceipt, check_execution_receipt
 from research_workbench.protocol import ProjectProtocol
 from research_workbench.tasks import AttemptRecord, FileReference, HandoffPacket, TaskPacket
 from research_workbench.validation import (
@@ -75,6 +83,8 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
             path_only.append(handoff.skill_assignment_ref)
         path_only.extend(handoff.artifact_refs)
         path_only.extend(handoff.validation_refs)
+        if handoff.execution_receipt_ref:
+            path_only.append(handoff.execution_receipt_ref)
     elif kind == "skill_manifest":
         skill = SkillManifest.from_mapping(document)
         if skill.source_locator and not skill.source_locator.startswith(("http://", "https://")):
@@ -108,10 +118,33 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
         path_only.extend(attempt.artifact_refs)
         if attempt.handoff_ref:
             path_only.append(attempt.handoff_ref)
+        if attempt.execution_receipt_ref:
+            path_only.append(attempt.execution_receipt_ref)
     elif kind == "main_state":
         state = MainStatePacket.from_mapping(document)
         path_only.extend(item.ref for item in state.recent_handoffs)
         path_only.extend(state.artifact_index_refs)
+        if state.previous_checkpoint_ref:
+            path_only.append(state.previous_checkpoint_ref)
+        if state.context_snapshot_ref:
+            path_only.append(state.context_snapshot_ref)
+    elif kind == "context_snapshot":
+        ContextSnapshot.from_mapping(document)
+    elif kind == "execution_receipt":
+        receipt = ExecutionReceipt.from_mapping(document)
+        path_only.extend(
+            (
+                receipt.attempt_ref,
+                receipt.agent_profile_ref,
+                receipt.skill_assignment_ref,
+                *receipt.output_refs,
+                *receipt.validation_refs,
+            )
+        )
+        if receipt.context_snapshot_ref:
+            path_only.append(receipt.context_snapshot_ref)
+        if receipt.runtime.capability_snapshot_ref:
+            path_only.append(receipt.runtime.capability_snapshot_ref)
     risks = check_references(root, references)
     risks.extend(extra_risks)
     for relative in path_only:
@@ -339,8 +372,9 @@ def _runtime_codex_render(args: argparse.Namespace) -> int:
 def _handoff_validate(args: argparse.Namespace) -> int:
     handoff_document = _load_valid(args.handoff, "handoff_packet")
     handoff = HandoffPacket.from_mapping(handoff_document)
+    root = Path(args.root).resolve()
     if not args.task:
-        return _print_risks(_document_reference_risks(handoff_document, Path(args.root).resolve()))
+        return _print_risks(_document_reference_risks(handoff_document, root))
     task = TaskPacket.from_mapping(_load_valid(args.task, "task_packet"))
     assignment_path = args.assignment or handoff.skill_assignment_ref
     assignment = None
@@ -357,9 +391,38 @@ def _handoff_validate(args: argparse.Namespace) -> int:
                 )
             )
     if assignment_path:
-        assignment_document = _load_valid(Path(args.root) / assignment_path, "skill_assignment")
+        assignment_document = _load_valid(root / assignment_path, "skill_assignment")
         assignment = ResolvedTask.from_mapping(assignment_document)
-        risks.extend(_document_reference_risks(assignment_document, Path(args.root).resolve()))
+        risks.extend(_document_reference_risks(assignment_document, root))
+    if handoff.execution_receipt_ref:
+        receipt_path = resolve_within_root(root, handoff.execution_receipt_ref)
+        if receipt_path is None or not receipt_path.is_file():
+            risks.append(
+                ContractRisk(
+                    "HANDOFF-RECEIPT-MISSING",
+                    RiskLevel.BLOCK,
+                    f"Execution Receipt does not exist: {handoff.execution_receipt_ref}",
+                )
+            )
+        else:
+            receipt = ExecutionReceipt.from_mapping(_load_valid(receipt_path, "execution_receipt"))
+            handoff_ref = _project_relative(args.handoff, root, "handoff")
+            if receipt.task_id != handoff.task_id or receipt.status != handoff.status:
+                risks.append(
+                    ContractRisk(
+                        "HANDOFF-RECEIPT-DRIFT",
+                        RiskLevel.BLOCK,
+                        "Execution Receipt task or status differs from Handoff",
+                    )
+                )
+            if handoff_ref not in receipt.output_refs:
+                risks.append(
+                    ContractRisk(
+                        "HANDOFF-RECEIPT-BACKREF",
+                        RiskLevel.BLOCK,
+                        "Execution Receipt does not list this Handoff as an output",
+                    )
+                )
     risks.extend(
         check_handoff_against_task(
             task,
@@ -403,36 +466,250 @@ def _claim_trace(args: argparse.Namespace) -> int:
     return 0
 
 
+def _project_relative(path: str | Path, root: Path, field: str) -> str:
+    try:
+        return Path(path).resolve().relative_to(root).as_posix()
+    except ValueError as exc:
+        raise ValueError(f"{field} must be within --root") from exc
+
+
+def _parse_context_metrics(values: Sequence[str]) -> dict[str, int]:
+    metrics: dict[str, int] = {}
+    for raw in values:
+        name, separator, raw_value = raw.partition("=")
+        if not separator or name not in CONTEXT_METRIC_NAMES:
+            known = ", ".join(CONTEXT_METRIC_NAMES)
+            raise ValueError(f"--metric must be NAME=VALUE using one of: {known}")
+        if name in metrics:
+            raise ValueError(f"duplicate context metric: {name}")
+        try:
+            value = int(raw_value)
+        except ValueError as exc:
+            raise ValueError(f"context metric {name!r} must be an integer") from exc
+        if value < 0:
+            raise ValueError(f"context metric {name!r} must be non-negative")
+        metrics[name] = value
+    return metrics
+
+
+def _context_assess(args: argparse.Namespace) -> int:
+    protocol = ProjectProtocol.from_mapping(_load_valid(args.protocol, "project_protocol"))
+    metrics = _parse_context_metrics(args.metric)
+    explicit_unknown = tuple(args.unknown)
+    invalid_unknown = sorted(set(explicit_unknown) - set(CONTEXT_METRIC_NAMES))
+    if invalid_unknown:
+        raise ValueError(f"unknown context metrics: {', '.join(invalid_unknown)}")
+    overlap = sorted(set(metrics) & set(explicit_unknown))
+    if overlap:
+        raise ValueError(f"metrics cannot be both measured and unknown: {', '.join(overlap)}")
+    unknown = tuple(
+        name for name in CONTEXT_METRIC_NAMES if name not in metrics
+    )
+    handoff_ready = {"yes": True, "no": False, "unknown": None}[args.handoff_ready]
+    snapshot = ContextSnapshot.create(
+        snapshot_id=args.id,
+        captured_at=args.captured_at or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        scope=args.scope,
+        owner_ref=args.owner_ref,
+        measurement_source=args.measurement_source,
+        metrics=metrics,
+        unknown_metrics=unknown,
+        handoff_ready=handoff_ready,
+        policy=ContextPolicySnapshot.from_project_policy(protocol.context_policy),
+    )
+    document = snapshot.to_mapping()
+    errors = SchemaCatalog().validate("context_snapshot", document)
+    if errors:
+        rendered = "; ".join(f"{error.pointer}: {error.message}" for error in errors[:5])
+        raise ValueError(f"generated Context Snapshot failed schema validation: {rendered}")
+    if args.output:
+        _write_yaml(Path(args.output), document)
+        print(f"context snapshot {args.id!r} written to {args.output}")
+    else:
+        print(json.dumps(document, ensure_ascii=False, indent=2))
+    return 1 if snapshot.assessment.level == "block" else 0
+
+
+def _context_resume_check(args: argparse.Namespace) -> int:
+    root = Path(args.root).resolve()
+    state_document = _load_valid(args.state, "main_state")
+    state = MainStatePacket.from_mapping(state_document)
+    protocol_path = Path(args.protocol)
+    protocol = ProjectProtocol.from_mapping(_load_valid(protocol_path, "project_protocol"))
+    expected_protocol = f"{_project_relative(protocol_path, root, 'protocol')}@{protocol.revision}"
+    risks = list(_document_reference_risks(state_document, root))
+    if state.checkpoint_digest is None:
+        risks.append(
+            ContractRisk(
+                "STATE-DIGEST-MISSING",
+                RiskLevel.BLOCK,
+                "Main State must carry a canonical checkpoint_digest before resume",
+            )
+        )
+    if state.project_protocol_ref != expected_protocol:
+        risks.append(
+            ContractRisk(
+                "STATE-PROTOCOL-DRIFT",
+                RiskLevel.BLOCK,
+                f"Main State pins {state.project_protocol_ref!r}, current protocol is {expected_protocol!r}",
+            )
+        )
+    if state.current_questions != protocol.question_refs:
+        risks.append(
+            ContractRisk(
+                "STATE-QUESTION-DRIFT",
+                RiskLevel.BLOCK,
+                "Main State questions differ from the pinned Project Protocol",
+            )
+        )
+    if not state.next_actions:
+        risks.append(
+            ContractRisk(
+                "STATE-NEXT-ACTION-MISSING",
+                RiskLevel.BLOCK,
+                "resume requires at least one bounded next action",
+            )
+        )
+    for active in state.active_tasks:
+        if active.status in {"ready", "running"} and active.expected_handoff is None:
+            risks.append(
+                ContractRisk(
+                    "STATE-HANDOFF-EXPECTED",
+                    RiskLevel.BLOCK,
+                    f"active Task {active.task_id!r} has no expected_handoff",
+                )
+            )
+    if state.context_snapshot_ref is None:
+        risks.append(
+            ContractRisk(
+                "STATE-CONTEXT-SNAPSHOT-MISSING",
+                RiskLevel.BLOCK,
+                "resume requires the pre-rollover Context Snapshot",
+            )
+        )
+    else:
+        snapshot_path = resolve_within_root(root, state.context_snapshot_ref)
+        if snapshot_path is not None and snapshot_path.is_file():
+            snapshot = ContextSnapshot.from_mapping(_load_valid(snapshot_path, "context_snapshot"))
+            if snapshot.scope != "main":
+                risks.append(
+                    ContractRisk(
+                        "STATE-CONTEXT-SCOPE",
+                        RiskLevel.BLOCK,
+                        "Main State must reference a main-scope Context Snapshot",
+                    )
+                )
+            if snapshot.assessment.level == "block":
+                risks.append(
+                    ContractRisk(
+                        "STATE-CONTEXT-BLOCKED",
+                        RiskLevel.BLOCK,
+                        "blocking context condition was not repaired before resume",
+                    )
+                )
+            if snapshot.assessment.level in {"warn", "rollover"} and not state.rollover_reason:
+                risks.append(
+                    ContractRisk(
+                        "STATE-ROLLOVER-REASON-MISSING",
+                        RiskLevel.BLOCK,
+                        "pressure-triggered checkpoint must explain its rollover reason",
+                    )
+                )
+    if state.previous_checkpoint_ref:
+        previous_path = resolve_within_root(root, state.previous_checkpoint_ref)
+        if previous_path is not None and previous_path.is_file():
+            previous = MainStatePacket.from_mapping(_load_valid(previous_path, "main_state"))
+            lost_constraints = sorted(set(previous.pinned_constraints) - set(state.pinned_constraints))
+            lost_decisions = sorted(set(previous.accepted_decisions) - set(state.accepted_decisions))
+            if lost_constraints:
+                risks.append(
+                    ContractRisk(
+                        "STATE-CONSTRAINT-LOSS",
+                        RiskLevel.BLOCK,
+                        "checkpoint dropped pinned constraints: " + "; ".join(lost_constraints),
+                    )
+                )
+            if lost_decisions:
+                risks.append(
+                    ContractRisk(
+                        "STATE-DECISION-LOSS",
+                        RiskLevel.BLOCK,
+                        "checkpoint dropped accepted decisions: " + "; ".join(lost_decisions),
+                    )
+                )
+    return _print_risks(risks)
+
+
+def _execution_assess(args: argparse.Namespace) -> int:
+    root = Path(args.root).resolve()
+    receipt_path = Path(args.receipt)
+    receipt = ExecutionReceipt.from_mapping(_load_valid(receipt_path, "execution_receipt"))
+    protocol = ProjectProtocol.from_mapping(_load_valid(args.protocol, "project_protocol"))
+    receipt_ref = _project_relative(receipt_path, root, "receipt")
+    return _print_risks(
+        check_execution_receipt(receipt, protocol, root=root, receipt_ref=receipt_ref)
+    )
+
+
 def _context_checkpoint(args: argparse.Namespace) -> int:
     protocol_path = Path(args.protocol)
     protocol = ProjectProtocol.from_mapping(_load_valid(protocol_path, "project_protocol"))
     root = Path(args.root).resolve()
-    try:
-        relative_protocol = protocol_path.resolve().relative_to(root).as_posix()
-    except ValueError as exc:
-        raise ValueError("protocol must be within --root") from exc
-    constraints = list(args.constraint)
+    relative_protocol = _project_relative(protocol_path, root, "protocol")
+    base: Mapping[str, Any] = {}
+    if args.from_state:
+        base = _load_valid(args.from_state, "main_state")
+        MainStatePacket.from_mapping(base)
+    constraints = list(base.get("pinned_constraints", [])) + list(args.constraint)
     if protocol.data_boundary.get("local_only"):
-        constraints.append("local data must not be uploaded")
-    constraints.append("claim ceiling: " + ", ".join(protocol.claim_ceiling))
+        if "local data must not be uploaded" not in constraints:
+            constraints.append("local data must not be uploaded")
+    claim_constraint = "claim ceiling: " + ", ".join(protocol.claim_ceiling)
+    if claim_constraint not in constraints:
+        constraints.append(claim_constraint)
+    risks = list(base.get("open_risks", [])) + list(args.risk)
+    snapshot_ref = None
+    if args.snapshot:
+        snapshot_ref = _project_relative(args.snapshot, root, "snapshot")
+        snapshot = ContextSnapshot.from_mapping(_load_valid(args.snapshot, "context_snapshot"))
+        if snapshot.scope != "main":
+            raise ValueError("checkpoint snapshot must have scope=main")
+        for rule in snapshot.assessment.triggered_rules:
+            if rule not in risks:
+                risks.append(rule)
+    previous_ref = None
+    if args.previous_checkpoint:
+        previous_ref = _project_relative(args.previous_checkpoint, root, "previous checkpoint")
+    elif args.from_state:
+        previous_ref = _project_relative(args.from_state, root, "from-state")
+    next_actions = list(base.get("next_actions", [])) + list(args.next_action)
+    if not next_actions:
+        raise ValueError("checkpoint requires at least one --next-action or a prior next action")
     document = {
         "schema_version": "0.1.0",
         "checkpoint_id": args.id,
         "project_protocol_ref": f"{relative_protocol}@{protocol.revision}",
         "current_questions": list(protocol.question_refs),
         "pinned_constraints": constraints,
-        "accepted_decisions": [],
-        "active_tasks": [],
-        "recent_handoffs": [],
-        "open_conflicts": [],
-        "open_risks": list(args.risk),
-        "next_actions": list(args.next_action),
-        "artifact_index_refs": [],
+        "accepted_decisions": list(base.get("accepted_decisions", [])) + list(args.decision),
+        "active_tasks": list(base.get("active_tasks", [])),
+        "recent_handoffs": list(base.get("recent_handoffs", [])),
+        "open_conflicts": list(base.get("open_conflicts", [])),
+        "open_risks": risks,
+        "next_actions": next_actions,
+        "artifact_index_refs": list(base.get("artifact_index_refs", [])),
         "rollover_reason": args.rollover_reason,
+        "created_at": args.created_at or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
     }
+    if previous_ref:
+        document["previous_checkpoint_ref"] = previous_ref
+    if snapshot_ref:
+        document["context_snapshot_ref"] = snapshot_ref
+    document["checkpoint_digest"] = checkpoint_digest(document)
     errors = SchemaCatalog().validate("main_state", document)
     if errors:
         raise ValueError("generated checkpoint failed schema validation")
+    MainStatePacket.from_mapping(document)
     _write_yaml(Path(args.output), document)
     print(f"checkpoint {args.id!r} written to {args.output}")
     return 0
@@ -545,6 +822,24 @@ def build_parser() -> argparse.ArgumentParser:
 
     context = subparsers.add_parser("context", help="create and validate recoverable Main State")
     context_subparsers = context.add_subparsers(dest="context_command", required=True)
+    assess = context_subparsers.add_parser("assess", help="record deterministic context-pressure proxies")
+    assess.add_argument("--id", required=True)
+    assess.add_argument("--protocol", required=True)
+    assess.add_argument("--scope", choices=("main", "task"), required=True)
+    assess.add_argument("--owner-ref")
+    assess.add_argument(
+        "--measurement-source",
+        choices=("runtime", "manual", "file-estimate", "mixed"),
+        default="manual",
+    )
+    assess.add_argument("--metric", action="append", default=[], metavar="NAME=VALUE")
+    assess.add_argument("--unknown", action="append", default=[], metavar="NAME")
+    assess.add_argument("--handoff-ready", choices=("yes", "no", "unknown"), default="unknown")
+    assess.add_argument(
+        "--captured-at",
+    )
+    assess.add_argument("--output")
+    assess.set_defaults(handler=_context_assess)
     checkpoint = context_subparsers.add_parser("checkpoint")
     checkpoint.add_argument("--id", required=True)
     checkpoint.add_argument("--protocol", required=True)
@@ -553,8 +848,28 @@ def build_parser() -> argparse.ArgumentParser:
     checkpoint.add_argument("--next-action", action="append", default=[])
     checkpoint.add_argument("--risk", action="append", default=[])
     checkpoint.add_argument("--constraint", action="append", default=[])
+    checkpoint.add_argument("--decision", action="append", default=[])
+    checkpoint.add_argument("--from-state")
+    checkpoint.add_argument("--previous-checkpoint")
+    checkpoint.add_argument("--snapshot")
     checkpoint.add_argument("--rollover-reason", default="manual checkpoint")
+    checkpoint.add_argument(
+        "--created-at",
+    )
     checkpoint.set_defaults(handler=_context_checkpoint)
+    resume = context_subparsers.add_parser("resume-check", help="verify a checkpoint can safely seed a new main session")
+    resume.add_argument("state")
+    resume.add_argument("--protocol", required=True)
+    resume.add_argument("--root", default=".")
+    resume.set_defaults(handler=_context_resume_check)
+
+    execution = subparsers.add_parser("execution", help="validate cost, context, trace, and delegation receipts")
+    execution_subparsers = execution.add_subparsers(dest="execution_command", required=True)
+    execution_assess = execution_subparsers.add_parser("assess")
+    execution_assess.add_argument("receipt")
+    execution_assess.add_argument("--protocol", required=True)
+    execution_assess.add_argument("--root", default=".")
+    execution_assess.set_defaults(handler=_execution_assess)
     return parser
 
 

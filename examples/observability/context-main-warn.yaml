@@ -1,0 +1,35 @@
+schema_version: 0.1.0
+snapshot_id: CTX-MAIN-0001
+captured_at: "2026-08-13T01:00:00Z"
+scope: main
+owner_ref: dual-mode-demo
+measurement_source: mixed
+metrics:
+  loaded_chars: 25000
+  pinned_chars: 500
+  skill_instruction_chars: 2000
+  raw_material_chars: 0
+  recent_handoffs: 1
+  open_items: 3
+  turns: 12
+  long_tool_outputs: 1
+  compaction_events: 0
+  hidden_decisions: 0
+unknown_metrics: []
+handoff_ready: null
+policy:
+  proactive_checkpoint: true
+  main_raw_material: forbidden
+  thresholds:
+    loaded_chars: {warn: 24000, rollover: 48000}
+    pinned_chars: {warn: 4000, rollover: 8000}
+    skill_instruction_chars: {warn: 6000, rollover: 12000}
+    recent_handoffs: {warn: 4, rollover: 8}
+    open_items: {warn: 8, rollover: 16}
+    turns: {warn: 20, rollover: 40}
+    long_tool_outputs: {warn: 3, rollover: 6}
+assessment:
+  level: warn
+  triggered_rules: [CTX-LOADED-CHARS-WARN]
+  required_actions:
+    - write a Main State checkpoint before accepting more context

@@ -46,6 +46,9 @@ not_claimed: scientifically_correct
 |---|---|---|
 | CTX-MAIN-PRESSURE | 主上下文过载 | checkpoint / rollover |
 | CTX-HANDOFF-LOSS | 子 Agent 交接丢失关键内容 | BLOCK |
+| CTX-AUTO-COMPACTION | 主上下文发生非计划压缩 | 写 Main State 并 rollover |
+| CTX-HIDDEN-STATE | 决定只存在于聊天/隐式状态 | BLOCK，创建 Decision 工件 |
+| CTX-METRICS-UNKNOWN | 压力指标不可获得 | 显式保留 unknown，禁止成本结论 |
 | CTX-STALE | 使用旧 revision | BLOCK |
 | SKILL-CONFLICT | Skills 指令或契约冲突 | BLOCK |
 | SKILL-PERMISSION-ESCALATION | Skill 越权 | BLOCK |
@@ -71,8 +74,11 @@ not_claimed: scientifically_correct
 | SOURCE-QUALITY | 来源质量或定位不足 | 标记限制，定向检索 |
 | HANDOFF-OMITS-NEGATIVE | 失败/反证未传递 | BLOCK promotion |
 | DELEGATION-FANOUT | 递归/并发膨胀 | 停止新委派，合并任务树 |
+| COORDINATION-COST-HIGH | 协调/汇总/校核占比超过预算 | WARN，优先删 Agent、review 或字段 |
+| COST-USAGE-UNKNOWN | 真实模型运行没有可用量数据 | 不得宣称 token/成本收益 |
 | TOOL-OUTPUT-POISONING | 工具输出被当作高优先级指令 | 按不可信数据处理 |
-| TRACE-SENSITIVE-DATA | trace 泄漏数据/密钥 | 脱敏或关闭相关 tracing |
+| TRACE-SENSITIVE | trace 检测到敏感数据 | BLOCK，脱敏或删除 |
+| TRACE-DATA-BOUNDARY | 外部 trace 与本地数据边界冲突 | BLOCK |
 
 ## 5. Agent 复核准入
 

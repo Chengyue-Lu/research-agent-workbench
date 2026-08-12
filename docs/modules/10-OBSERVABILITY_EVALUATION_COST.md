@@ -19,6 +19,10 @@
 
 不默认保存完整 prompt、Chain-of-Thought 或原始工具输出副本。
 
+当前 `Execution Receipt` 将上述信息收敛为平台中立文件，并与 Attempt、Agent Profile、Skill Assignment、Context Snapshot 和 Handoff 双向关联。`model_usage_status` 必须是 `measured`、`estimated`、`unavailable` 或 `not-applicable`；未知成本不允许伪装成零。
+
+`rwb execution assess` 当前检查：Task/Profile/Assignment/Attempt 一致性、输出存在性、Handoff 回指、时间与状态一致性、协调成本比例、并发上限、review loop、敏感/外部/full trace，以及真实 Agent/API 执行是否缺少用量。它不把 contract-only fixture 计作模型运行。
+
 ## 3. 质量指标
 
 - 关键 Claim 的 Evidence 覆盖率；
@@ -51,6 +55,8 @@
 - Human Gate 阅读与等待时间。
 
 协调成本持续超过三分之一时进入 WARN，并优先减少 Agent、Handoff 字段、review 或规则，而不是提高预算。
+
+协调比例优先使用 `coordination_tokens / (coordination_tokens + execution_tokens)`；token 不可得时才使用对应时间比例。两个基准都不可得时产生 unknown 警告，不合成跨单位总分。
 
 ## 6. 对照评估
 

@@ -6,9 +6,9 @@
 
 ## 当前状态
 
-状态：`M2 Agent—Skill Contract Slice`
+状态：`M3 Context and Execution Receipt Slice`
 
-当前仓库已完成 M1 的本地实现，并进入 M2：提供 accepted Skill Registry、四个 Agent Profiles、三个仓库级 Skills、确定性 Skill Assignment，以及 Codex 原生配置/dispatch 映射。尚未接入真实模型 API、数据库、Web UI 或自建调度器；离线双 Skill 契约切片已通过，真实原生子 Agent 案例仍待执行。
+当前仓库已完成 M1 的本地实现和 M2 的离线 Agent—Skill 契约切片，并开始实现 M3：提供可恢复 Main State、Context Snapshot、Execution Receipt，以及上下文压力、协调成本、并发、复核循环和敏感 trace 检查。尚未接入真实模型 API、数据库、Web UI 或自建调度器；真实原生子 Agent 和真实科研案例仍待执行。
 
 ## 核心判断
 
@@ -30,6 +30,7 @@
 - [迁移方案](docs/implementation/MIGRATION_PLAN.md)
 - [Skill 候选准入流程](docs/implementation/SKILL_CANDIDATE_PIPELINE.md)
 - [模型 API 中立端口 ADR](docs/decisions/0003-PROVIDER-NEUTRAL-MODEL-PORT.md)
+- [上下文与执行收据 ADR](docs/decisions/0006-CONTEXT-AND-EXECUTION-RECEIPTS.md)
 
 ## 当前可执行入口
 
@@ -51,9 +52,16 @@ rwb claim trace examples/objects/claim/CLAIM-001.yaml `
   --protocol examples/project-protocol.yaml
 rwb skills candidates --status triage
 rwb providers list
+rwb context assess --id CTX-001 `
+  --protocol examples/project-protocol.yaml --scope main `
+  --metric loaded_chars=25000 --output work/CTX-001.yaml
+rwb context resume-check examples/main-state.yaml `
+  --protocol examples/project-protocol.yaml --root .
+rwb execution assess examples/observability/execution-evidence-contract.yaml `
+  --protocol examples/project-protocol.yaml --root .
 ```
 
-`validate` 会检查 Schema、实际文件、SHA-256 与 Registry 引用等机器可判定条件，但不代表科学正确性。`task resolve` 只生成固定的 Profile/Skill/权限执行视图，不启动 Agent；`runtime codex render` 只生成原生 dispatch prompt，也不启动自建运行时。外部 Skill 默认不可执行；`discovered`、`triage`、`reference` 和 `quarantine` 均不等于已安装或已准入。
+`validate` 会检查 Schema、实际文件、SHA-256 与 Registry 引用等机器可判定条件，但不代表科学正确性。`task resolve` 只生成固定的 Profile/Skill/权限执行视图，不启动 Agent；`runtime codex render` 只生成原生 dispatch prompt，也不启动自建运行时。`context assess` 的字符/回合等数据是压力代理，不是假装精确的 token 窗口；缺失指标会明确标为 unknown。外部 Skill 默认不可执行；`discovered`、`triage`、`reference` 和 `quarantine` 均不等于已安装或已准入。
 
 ## 第一条验证路线
 
@@ -73,6 +81,7 @@ rwb providers list
 - Codex 优先的 Runtime Adapter；
 - 四个 Agent Profile、三个仓库级 Skill 与 accepted Registry；
 - 主状态包、Task Packet 和 Handoff Packet；
+- Context Snapshot 与 Execution Receipt；
 - 无数据库、无常驻 Supervisor、无全局自治 DAG。
 
 ## 参考方向

@@ -42,11 +42,11 @@
 
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
-| M3-001 | READY | Main State checkpoint/resume | M1 | 新会话可恢复下一步 |
-| M3-002 | READY | context pressure 代理指标 | M3-001 | WARN 能触发 checkpoint/rollover |
-| M3-003 | READY | Handoff loss/stale/summary 抽查 | M2 | 故障注入被识别 |
-| M3-004 | READY | review loop/fanout/write race 检查 | M2 | 预算和停止规则生效 |
-| M3-005 | READY | 敏感 trace 策略 | M2 | fixture 中密钥/敏感字段不泄漏 |
+| M3-001 | IN_PROGRESS | Main State checkpoint/resume | M1 | 规范化 digest、前序引用、协议 revision、下一动作和约束/决定丢失检查已通过；真实新主会话恢复待演练 |
+| M3-002 | IN_PROGRESS | context pressure 代理指标 | M3-001 | 可测/未知指标、阈值、WARN/rollover/block 和 checkpoint 链已测试；真实运行指标待采集 |
+| M3-003 | IN_PROGRESS | Handoff loss/stale/summary 抽查 | M2 | 未固化 Handoff 的子 Agent 压缩会阻断；摘要失真抽查仍待实现 |
+| M3-004 | IN_PROGRESS | review loop/fanout/write race 检查 | M2 | 并发预算、review loop、协调成本与既有 write race 检查已落地；真实停止行为待验证 |
+| M3-005 | IN_PROGRESS | 敏感 trace 策略 | M2 | 外部/完整/敏感 trace 会阻断或警告；真实脱敏器与密钥 fixture 待实现 |
 
 ## M4：工件与复现
 
@@ -82,4 +82,4 @@ M1 已建立里程碑与首批可执行 Issues：
 
 ## 当前下一任务
 
-当前功能分支已推送，M1 本地功能完成；`M1-001` 等待 PR/main 触发 GitHub CI。M2 的 accepted Registry、四个 Profile、三个仓库级 Skills 和 Codex 原生配置映射已落地。下一步以平台原生子 Agent 各执行一次 evidence/simulation Task，并记录实际 Handoff、上下文与成本；`M2-008` 继续逐文件候选审计但不安装候选。`M5-001` 和 `M5-002` 保持阻塞，直到人类选择真实案例；不以虚构课题替代真实验证。
+当前功能分支已推送，M1 本地功能完成；`M1-001` 等待 PR/main 触发 GitHub CI。M2 的 accepted Registry、四个 Profile、三个仓库级 Skills 和 Codex 原生配置映射已落地。M3 已具备 Context Snapshot、Execution Receipt、checkpoint/resume 和首批故障注入。下一步以平台原生子 Agent 各执行一次 evidence/simulation Task，把实际 Handoff、上下文与成本写入同一收据；当前嵌入式 Windows 环境直接启动 `codex.exe` 返回 Access denied，不把它误报为认证失败或项目验证通过。`M2-008` 继续逐文件候选审计但不安装候选。`M5-001` 和 `M5-002` 保持阻塞，直到人类选择真实案例；不以虚构课题替代真实验证。

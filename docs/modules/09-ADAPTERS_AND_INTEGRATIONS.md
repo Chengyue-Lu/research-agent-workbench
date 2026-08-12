@@ -45,6 +45,8 @@ Adapter 必须暴露：
 
 `CodexRuntimeAdapter` 当前实现 `capabilities`、`resolve_agent`、`resolve_skills`、布局验证和 dispatch 渲染。`launch/collect/cancel` 保留给 Codex 原生线程；在真实垂直切片证明需要前，不添加包裹原生运行时的第二调度层。
 
+运行后由平台适配器或人工采集器生成平台中立 `Execution Receipt`：原生 thread/response ID 只能进入可选诊断字段，实际模型/提供商、可得用量、Context Snapshot、输出和限制必须映射到统一契约。无法取得 token 或成本时写 `unavailable`，不能由 Adapter 猜测或填零。
+
 ## 4. 其他 Runtime
 
 Claude Code 等平台以后以独立 Adapter 接入。Canonical manifests 保持不变，Adapter 负责翻译对应的 Agent/Skill 配置与显式调用方式。

@@ -12,6 +12,7 @@ input_lock:
 skill_lock:
   - literature-evidence-extraction@0.1.0
 skill_assignment_ref: examples/vertical-slice/evidence-assignment.yaml
+execution_receipt_ref: examples/observability/execution-evidence-contract.yaml
 artifact_refs:
   - examples/objects/evidence/EVID-001-01.yaml
 handoff_ref: examples/handoff-evidence.yaml

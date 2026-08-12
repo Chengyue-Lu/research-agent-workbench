@@ -84,6 +84,8 @@ SCHEMA_KINDS = {
     "attempt",
     "handoff_packet",
     "main_state",
+    "context_snapshot",
+    "execution_receipt",
     "research_object",
 }
 
@@ -111,6 +113,10 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "skill_assignment"
     if "checkpoint_id" in document and "project_protocol_ref" in document:
         return "main_state"
+    if "snapshot_id" in document and "assessment" in document and "metrics" in document:
+        return "context_snapshot"
+    if "receipt_id" in document and "execution_kind" in document and "attempt_ref" in document:
+        return "execution_receipt"
     if "object_type" in document and "object_id" in document:
         return "research_object"
     return None

@@ -61,6 +61,8 @@
 - reviewer 给出与原 Agent 一致但无新证据的“共识”；
 - trace 中出现敏感字段。
 
+M3 首批已自动化的故障注入包括：主上下文原始材料、隐藏决定、子 Agent 压缩但未固化 Handoff、伪造 Context assessment、checkpoint digest 篡改、高 coordination ratio、超并发、重复 review、敏感/外部/full trace。摘要语义失真和真实运行中的 secret redaction 仍需后续定向案例，不用结构测试冒充完成。
+
 ## 4. 黄金样例
 
 黄金样例不追求唯一语言输出，固定的是：

@@ -51,7 +51,8 @@
     "unresolved": { "$ref": "common.schema.json#/$defs/stringArray" },
     "human_decision_required": { "$ref": "common.schema.json#/$defs/stringArray" },
     "recommended_next_actions": { "$ref": "common.schema.json#/$defs/stringArray" },
-    "runtime_metadata_ref": { "$ref": "common.schema.json#/$defs/relativePath" }
+    "runtime_metadata_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
+    "execution_receipt_ref": { "$ref": "common.schema.json#/$defs/relativePath" }
   },
   "additionalProperties": false,
   "allOf": [
