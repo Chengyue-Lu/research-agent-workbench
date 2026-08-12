@@ -10,7 +10,7 @@
 | M0-002 | DONE | 确立总体架构与模块边界 | 总架构 + 10 模块文件 |
 | M0-003 | DONE | 将不同 Agent—Skill 绑定纳入架构 | Resolver、Assignment、预警与验收明确 |
 | M0-004 | DONE | 建立实施、迁移与测试计划 | 三份实施文档完成 |
-| M0-005 | IN_PROGRESS | 创建并推送独立 GitHub 仓库 | `main` 可访问，首次提交完成 |
+| M0-005 | DONE | 创建并推送独立 GitHub 仓库 | `main` 可访问，首次提交完成 |
 
 ## M1：契约与 CLI
 
