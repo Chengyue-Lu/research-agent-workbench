@@ -82,7 +82,7 @@ rwb object supersede <old-id> --with <new-path>
 rwb decision create --from <template>
 ```
 
-首版使用 YAML/JSON 文件与 JSON Schema/Pydantic 验证，不建设数据库和事件总线。
+首版使用 YAML/JSON 文件、dataclass 契约与 Draft 2020-12 JSON Schema 验证，不建设数据库和事件总线。
 
 ## 7. 主要风险
 

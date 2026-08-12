@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/main-state.schema.json",
+  "title": "Main State Packet",
+  "x-rwb-document-kind": "main_state",
+  "type": "object",
+  "required": [
+    "schema_version", "checkpoint_id", "project_protocol_ref", "current_questions",
+    "pinned_constraints", "accepted_decisions", "active_tasks", "recent_handoffs",
+    "open_conflicts", "open_risks", "next_actions", "artifact_index_refs"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "checkpoint_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "project_protocol_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "current_questions": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "pinned_constraints": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "accepted_decisions": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "active_tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["task_id", "status"],
+        "properties": {
+          "task_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "status": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "expected_handoff": { "$ref": "common.schema.json#/$defs/relativePath" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "recent_handoffs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["ref", "disposition"],
+        "properties": {
+          "ref": { "$ref": "common.schema.json#/$defs/relativePath" },
+          "disposition": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "open_conflicts": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "open_risks": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "next_actions": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "artifact_index_refs": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/relativePath" },
+      "uniqueItems": true
+    },
+    "rollover_reason": { "type": "string" }
+  },
+  "additionalProperties": false
+}

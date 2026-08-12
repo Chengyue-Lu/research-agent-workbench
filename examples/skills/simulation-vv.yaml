@@ -1,0 +1,28 @@
+schema_version: 0.1.0
+skill_id: simulation-vv
+version: 0.1.0
+kind: integrity
+description: Checks version, convergence, and sensitivity for a bounded simulation run.
+capabilities: [convergence-analysis, sensitivity-analysis]
+applies_to_modes: [simulation, engineering-validation]
+excludes: [experimental-validation, final-physical-interpretation]
+required_tools: [file-read, bounded-compute]
+optional_tools: []
+permission_ceiling:
+  filesystem: worktree-write
+  network: forbidden
+  external_write: forbidden
+  allowed_roots: [work]
+input_contracts: [run-manifest, parameter-boundary]
+output_contracts: [simulation-vv-report, handoff-packet]
+context_cost:
+  metadata: low
+  instructions: medium
+  references: on-demand
+incompatible_with: [experimental-validation]
+verification:
+  deterministic: [input-hash, convergence-check]
+source:
+  origin: repository-fixture
+  locator: examples/fixtures/skills/simulation-vv/SKILL.md
+  content_hash: ef61448174416b99c090dcc22c3de586fc69d75516cb22673be1b10e7001662d

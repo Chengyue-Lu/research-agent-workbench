@@ -1,0 +1,5 @@
+fixture: synthetic-simulation-run
+model: bounded-demo
+parameters:
+  resolution: 16
+status: completed

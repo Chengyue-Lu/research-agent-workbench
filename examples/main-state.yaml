@@ -1,0 +1,21 @@
+schema_version: 0.1.0
+checkpoint_id: MS-0001
+project_protocol_ref: examples/project-protocol.yaml@1
+current_questions: [Q-001@1]
+pinned_constraints:
+  - Local data must not be uploaded.
+  - Claim ceiling is simulation_supported or source_reported.
+accepted_decisions: [D-001@1]
+active_tasks:
+  - task_id: SIM-001
+    status: ready
+    expected_handoff: examples/handoffs/SIM-001.yaml
+recent_handoffs:
+  - ref: examples/handoff-evidence.yaml
+    disposition: accepted-with-limitations
+open_conflicts: []
+open_risks: [REPRO-GAP]
+next_actions:
+  - Validate the simulation fixture handoff.
+artifact_index_refs: []
+rollover_reason: Synthetic checkpoint fixture.

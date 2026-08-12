@@ -1,0 +1,12 @@
+{
+  "schema_version": "0.1.0",
+  "object_type": "decision",
+  "object_id": "D-BAD",
+  "revision": 1,
+  "status": "accepted",
+  "decision": "bad fixture",
+  "scope": [],
+  "reason_refs": [],
+  "actor": "human",
+  "timestamp": "not-a-timestamp"
+}

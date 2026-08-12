@@ -1,0 +1,12 @@
+schema_version: 0.1.0
+object_type: method
+object_id: METH-001
+revision: 1
+status: accepted-for-fixture
+kind: bounded-document-extraction
+spec_ref: SPEC-EXTRACT-001@1
+version: 0.1.0
+limitations:
+  - This method fixture has no scientific validity.
+metadata:
+  fixture: true

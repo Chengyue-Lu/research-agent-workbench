@@ -1,0 +1,16 @@
+schema_version: 0.1.0
+task_id: EVID-001
+task_revision: 1
+attempt_id: A-001
+status: completed
+started_at: "2026-08-13T00:00:00Z"
+finished_at: "2026-08-13T00:01:00Z"
+trigger_reason: initial bounded execution
+input_lock:
+  - path: examples/fixtures/paper-001.txt
+    sha256: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
+skill_lock:
+  - literature-evidence-extraction@0.1.0
+artifact_refs:
+  - examples/objects/evidence/EVID-001-01.yaml
+handoff_ref: examples/handoff-evidence.yaml

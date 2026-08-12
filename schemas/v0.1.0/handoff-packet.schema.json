@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/handoff-packet.schema.json",
+  "title": "Handoff Packet",
+  "x-rwb-document-kind": "handoff_packet",
+  "type": "object",
+  "required": [
+    "schema_version", "task_id", "attempt_id", "status", "input_lock", "skill_lock",
+    "result", "artifact_refs", "validation_refs", "limitations", "conflicts", "unresolved",
+    "human_decision_required", "recommended_next_actions"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "task_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "attempt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "status": { "enum": ["completed", "incomplete", "failed", "blocked", "cancelled"] },
+    "input_lock": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/fileRef" }
+    },
+    "skill_lock": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "result": {
+      "type": "object",
+      "required": ["summary", "facts", "inferences", "recommendations"],
+      "properties": {
+        "summary": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "facts": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "inferences": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "recommendations": { "$ref": "common.schema.json#/$defs/stringArray" }
+      },
+      "additionalProperties": false
+    },
+    "artifact_refs": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/relativePath" },
+      "uniqueItems": true
+    },
+    "validation_refs": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/relativePath" },
+      "uniqueItems": true
+    },
+    "limitations": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "conflicts": { "type": "array", "items": { "type": "object", "minProperties": 1 } },
+    "unresolved": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "human_decision_required": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "recommended_next_actions": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "runtime_metadata_ref": { "$ref": "common.schema.json#/$defs/relativePath" }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "completed" } }, "required": ["status"] },
+      "then": { "properties": { "artifact_refs": { "minItems": 1 } } }
+    }
+  ]
+}

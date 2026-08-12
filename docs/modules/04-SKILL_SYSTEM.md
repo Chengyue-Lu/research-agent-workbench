@@ -40,8 +40,9 @@ excludes:
 required_tools: [document-read]
 optional_tools: [web-search, zotero-read]
 permission_ceiling:
-  filesystem: read-only
+  filesystem: worktree-write
   external_write: forbidden
+  allowed_roots: [work]
 input_contracts: [question-ref, source-boundary]
 output_contracts: [evidence-record, handoff-packet]
 context_cost:
@@ -97,8 +98,9 @@ forbidden:
   - final-synthesis
 resolved_tools: [document-read, web-search]
 effective_permissions:
-  filesystem: read-only
+  filesystem: worktree-write
   external_write: forbidden
+  allowed_roots: [work/EVID-001]
 resolution_reason:
   - covers all required capabilities
   - satisfies source and citation output contracts

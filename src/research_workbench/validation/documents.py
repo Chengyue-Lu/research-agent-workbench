@@ -14,6 +14,7 @@ from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any, Iterable, Mapping
 
 from research_workbench.io import load_document
+from research_workbench.validation.schemas import SchemaCatalog
 
 
 SHA256_RE = re.compile(r"^[0-9a-fA-F]{64}$")
@@ -72,17 +73,42 @@ DOCUMENT_REQUIRED: dict[str, tuple[str, ...]] = {
     "provider_baselines": ("registry_kind", "providers"),
 }
 
+SCHEMA_KINDS = {
+    "project_protocol",
+    "research_mode",
+    "agent_profile",
+    "skill_manifest",
+    "task_packet",
+    "attempt",
+    "handoff_packet",
+    "main_state",
+    "research_object",
+}
 
-def _kind(document: Mapping[str, Any]) -> str | None:
+
+def infer_document_kind(document: Mapping[str, Any]) -> str | None:
     registry_kind = document.get("registry_kind")
     if isinstance(registry_kind, str):
         return registry_kind
     if "attempt_id" in document and "task_id" in document:
-        return "handoff_packet"
+        if "result" in document:
+            return "handoff_packet"
+        if "started_at" in document and "task_revision" in document:
+            return "attempt"
     if "goal" in document and "task_id" in document:
         return "task_packet"
     if "project_id" in document and "active_modes" in document:
         return "project_protocol"
+    if "mode_id" in document and "claim_rules" in document:
+        return "research_mode"
+    if "agent_profile_id" in document and "permission_ceiling" in document:
+        return "agent_profile"
+    if "skill_id" in document and "capabilities" in document:
+        return "skill_manifest"
+    if "checkpoint_id" in document and "project_protocol_ref" in document:
+        return "main_state"
+    if "object_type" in document and "object_id" in document:
+        return "research_object"
     return None
 
 
@@ -211,6 +237,7 @@ def _validate_task(path: Path, document: Mapping[str, Any], kind: str) -> list[V
 def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     source_ids: set[str] = set()
+    schema_catalog = SchemaCatalog()
 
     for path, document in documents.items():
         if isinstance(document, Mapping) and document.get("registry_kind") == "skill_sources":
@@ -222,11 +249,21 @@ def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
         if not isinstance(document, Mapping):
             issues.append(ValidationIssue(path, "DOCUMENT-INVALID", "top-level value must be an object"))
             continue
-        kind = _kind(document)
-        if kind is None or kind not in DOCUMENT_REQUIRED:
+        kind = infer_document_kind(document)
+        if kind is None or (kind not in DOCUMENT_REQUIRED and kind not in SCHEMA_KINDS):
             issues.append(ValidationIssue(path, "DOCUMENT-UNKNOWN", "document kind cannot be inferred"))
             continue
-        issues.extend(_require_fields(path, document, COMMON_REQUIRED + DOCUMENT_REQUIRED[kind]))
+        if kind in SCHEMA_KINDS:
+            for schema_error in schema_catalog.validate(kind, document):
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "SCHEMA-INVALID",
+                        f"{schema_error.pointer}: {schema_error.message}",
+                    )
+                )
+        if kind in DOCUMENT_REQUIRED:
+            issues.extend(_require_fields(path, document, COMMON_REQUIRED + DOCUMENT_REQUIRED[kind]))
         issues.extend(_validate_hashes(path, document))
         issues.extend(_validate_registry(path, document, kind, source_ids))
         issues.extend(_validate_task(path, document, kind))

@@ -1,0 +1,12 @@
+{
+  "schema_version": "0.1.0",
+  "object_type": "claim",
+  "object_id": "C-BAD",
+  "revision": 1,
+  "status": "active",
+  "statement": "bad fixture",
+  "strength": "definitely-true",
+  "support_refs": [],
+  "counterevidence_refs": [],
+  "limitations": []
+}

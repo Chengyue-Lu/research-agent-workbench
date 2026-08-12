@@ -17,19 +17,19 @@
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
 | M1-001 | IN_PROGRESS | 初始化 Python 包、pyproject 和基础 CI | M0 | 本地测试已通过，等待 GitHub CI |
-| M1-002 | IN_PROGRESS | 实现核心对象模型与 JSON Schema | M1-001 | 7 类对象类已建立；Schema 与正反 fixture 待补 |
-| M1-003 | READY | 实现 Protocol、Mode、Profile、Skill Manifest | M1-002 | 组合冲突和权限上限可验证 |
-| M1-004 | READY | 实现 Task、Attempt、Handoff、Main State | M1-002 | 示例交接与 incomplete 交接可验证 |
-| M1-005 | READY | 实现引用、revision、SHA-256 和 stale 检查 | M1-002 | 修改输入会使依赖结果失效 |
-| M1-006 | READY | 实现最小 CLI | M1-003..005 | init/validate/trace/checkpoint 可用 |
-| M1-007 | READY | 建立确定性风险检查 | M1-004..006 | 关键故障注入按预期阻断 |
+| M1-002 | DONE | 实现核心对象模型与 JSON Schema | M1-001 | 7 类对象正反 fixture 通过 Draft 2020-12 Schema |
+| M1-003 | DONE | 实现 Protocol、Mode、Profile、Skill Manifest | M1-002 | 能力、工具、输出、模式、冲突和 scoped permission 可验证 |
+| M1-004 | DONE | 实现 Task、Attempt、Handoff、Main State | M1-002 | completed/incomplete Handoff、Attempt 与 checkpoint 示例通过 |
+| M1-005 | DONE | 实现引用、revision、SHA-256 和 stale 检查 | M1-002 | 修改输入触发 `REF-HASH-MISMATCH`，input lock 不同触发 stale |
+| M1-006 | DONE | 实现最小 CLI | M1-003..005 | init/validate/resolve/handoff/trace/checkpoint 可用 |
+| M1-007 | DONE | 建立确定性风险检查 | M1-004..006 | Skill 缺失、越权、写冲突、Claim overreach、stale 注入均阻断 |
 | M1-008 | DONE | 冻结模型 API 中立端口与能力协商语义 | M1-001 | Capability/Data Policy gap 在调用前阻断，提供商基线可查询 |
 
 ## M2：Agent 与 Skills
 
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
-| M2-001 | READY | 实现 Skill Registry 与 Resolver | M1 | 最小覆盖、冲突、版本锁可重放 |
+| M2-001 | IN_PROGRESS | 实现 Skill Registry 与 Resolver | M1 | Resolver 已支持最小覆盖、冲突、权限交集和版本锁；正式 accepted Registry 待接入 |
 | M2-002 | READY | 定义四个 Agent Profiles | M2-001 | 权限、工具、输出边界完整 |
 | M2-003 | READY | 创建 literature-evidence-extraction Skill | M2-001 | 正/反/注入 eval 通过 |
 | M2-004 | READY | 创建 simulation-vv Skill | M2-001 | 收敛、版本、Claim ceiling eval 通过 |
@@ -82,4 +82,4 @@ M1 已建立里程碑与首批可执行 Issues：
 
 ## 当前下一任务
 
-当前先让 `M1-001` 通过 GitHub CI，再完成 `M1-002` 的版本化 JSON Schema 与负 fixture；并行继续 `M2-008` 的逐文件候选审计，但不安装候选。`M5-001` 和 `M5-002` 保持阻塞，直到人类选择真实案例；不以虚构课题替代真实验证。
+当前 M1 功能与本地验收已完成；`M1-001` 仅等待带 `workflow` scope 的 GitHub 推送与 CI。下一步完成 `M2-001` 的正式 accepted Skill Registry，再建立四个 Profile 与两个仓库级 Skills；`M2-008` 继续逐文件候选审计但不安装候选。`M5-001` 和 `M5-002` 保持阻塞，直到人类选择真实案例；不以虚构课题替代真实验证。

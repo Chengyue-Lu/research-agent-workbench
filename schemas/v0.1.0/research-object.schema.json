@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/research-object.schema.json",
+  "title": "Research Object",
+  "x-rwb-document-kind": "research_object",
+  "oneOf": [
+    { "$ref": "#/$defs/question" },
+    { "$ref": "#/$defs/proposition" },
+    { "$ref": "#/$defs/method" },
+    { "$ref": "#/$defs/run" },
+    { "$ref": "#/$defs/evidence" },
+    { "$ref": "#/$defs/claim" },
+    { "$ref": "#/$defs/decision" }
+  ],
+  "$defs": {
+    "base": {
+      "type": "object",
+      "required": ["schema_version", "object_type", "object_id", "revision", "status"],
+      "properties": {
+        "schema_version": { "const": "0.1.0" },
+        "object_type": { "type": "string" },
+        "object_id": { "type": "string", "minLength": 1 },
+        "revision": { "type": "integer", "minimum": 1 },
+        "status": { "type": "string", "minLength": 1 },
+        "content_hash": { "$ref": "common.schema.json#/$defs/sha256" },
+        "supersedes": { "$ref": "common.schema.json#/$defs/objectRef" },
+        "metadata": { "type": "object" }
+      }
+    },
+    "question": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "required": ["text", "scope", "known_ambiguities"],
+          "properties": {
+            "object_type": { "const": "question" },
+            "text": { "type": "string", "minLength": 1 },
+            "scope": { "$ref": "common.schema.json#/$defs/stringArray" },
+            "known_ambiguities": { "$ref": "common.schema.json#/$defs/stringArray" }
+          }
+        }
+      ]
+    },
+    "proposition": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "required": ["statement", "assumptions", "applicability"],
+          "properties": {
+            "object_type": { "enum": ["hypothesis", "proposition"] },
+            "statement": { "type": "string", "minLength": 1 },
+            "assumptions": { "$ref": "common.schema.json#/$defs/stringArray" },
+            "applicability": { "$ref": "common.schema.json#/$defs/stringArray" }
+          }
+        }
+      ]
+    },
+    "method": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "required": ["kind", "spec_ref", "version", "limitations"],
+          "properties": {
+            "object_type": { "const": "method" },
+            "kind": { "type": "string", "minLength": 1 },
+            "spec_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+            "version": { "type": "string", "minLength": 1 },
+            "limitations": { "$ref": "common.schema.json#/$defs/stringArray" }
+          }
+        }
+      ]
+    },
+    "run": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "required": ["method_ref", "input_refs", "environment_ref", "started_at", "output_refs"],
+          "properties": {
+            "object_type": { "const": "run" },
+            "method_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+            "input_refs": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/objectRef" } },
+            "environment_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+            "started_at": { "type": "string", "format": "date-time" },
+            "output_refs": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/objectRef" } }
+          }
+        }
+      ]
+    },
+    "evidence": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "required": ["kind", "source_ref", "locator", "statement", "quality_flags", "content_hash"],
+          "properties": {
+            "object_type": { "const": "evidence" },
+            "kind": { "type": "string", "minLength": 1 },
+            "source_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+            "locator": { "type": "string", "minLength": 1 },
+            "statement": { "type": "string", "minLength": 1 },
+            "quality_flags": { "$ref": "common.schema.json#/$defs/stringArray" }
+          }
+        }
+      ]
+    },
+    "claim": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "required": ["statement", "strength", "support_refs", "counterevidence_refs", "limitations"],
+          "properties": {
+            "object_type": { "const": "claim" },
+            "statement": { "type": "string", "minLength": 1 },
+            "strength": {
+              "enum": [
+                "exploratory", "source_reported", "derivation_supported", "simulation_supported",
+                "observationally_supported", "experimentally_supported", "synthesis_supported",
+                "unresolved", "withdrawn"
+              ]
+            },
+            "support_refs": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/objectRef" } },
+            "counterevidence_refs": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/objectRef" } },
+            "limitations": { "$ref": "common.schema.json#/$defs/stringArray" }
+          }
+        }
+      ]
+    },
+    "decision": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "required": ["decision", "scope", "reason_refs", "actor", "timestamp"],
+          "properties": {
+            "object_type": { "const": "decision" },
+            "decision": { "type": "string", "minLength": 1 },
+            "scope": { "$ref": "common.schema.json#/$defs/stringArray" },
+            "reason_refs": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/objectRef" } },
+            "actor": { "type": "string", "minLength": 1 },
+            "timestamp": { "type": "string", "format": "date-time" }
+          }
+        }
+      ]
+    }
+  }
+}

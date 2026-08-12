@@ -25,59 +25,85 @@ class ObjectRef:
 @dataclass(slots=True)
 class ResearchObject:
     object_id: str
+    schema_version: str = "0.1.0"
+    object_type: str = field(init=False, default="research_object")
     revision: int = 1
-    source_refs: list[ObjectRef] = field(default_factory=list)
+    status: str = "draft"
+    content_hash: str | None = None
+    supersedes: ObjectRef | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
 
     @property
     def ref(self) -> ObjectRef:
-        return ObjectRef(self.object_id, self.revision)
+        return ObjectRef(self.object_id, self.revision, self.content_hash)
 
 
 @dataclass(slots=True)
 class Question(ResearchObject):
-    prompt: str = ""
+    object_type: str = field(init=False, default="question")
+    text: str = ""
     scope: list[str] = field(default_factory=list)
+    known_ambiguities: list[str] = field(default_factory=list)
 
 
 @dataclass(slots=True)
 class Proposition(ResearchObject):
+    object_type: str = field(init=False, default="proposition")
     statement: str = ""
-    falsifiers: list[str] = field(default_factory=list)
+    assumptions: list[str] = field(default_factory=list)
+    applicability: list[str] = field(default_factory=list)
 
 
 @dataclass(slots=True)
 class Method(ResearchObject):
-    name: str = ""
-    assumptions: list[str] = field(default_factory=list)
-    protocol_refs: list[ObjectRef] = field(default_factory=list)
+    object_type: str = field(init=False, default="method")
+    kind: str = "unspecified"
+    spec_ref: ObjectRef | None = None
+    version: str = "0.1.0"
+    limitations: list[str] = field(default_factory=list)
 
 
 @dataclass(slots=True)
 class Run(ResearchObject):
+    object_type: str = field(init=False, default="run")
     method_ref: ObjectRef | None = None
-    status: str = "planned"
     input_refs: list[ObjectRef] = field(default_factory=list)
+    environment_ref: ObjectRef | None = None
+    started_at: str | None = None
     output_refs: list[ObjectRef] = field(default_factory=list)
 
 
 @dataclass(slots=True)
 class Evidence(ResearchObject):
+    object_type: str = field(init=False, default="evidence")
+    kind: str = "unspecified"
     statement: str = ""
+    source_ref: ObjectRef | None = None
     locator: str | None = None
-    polarity: str = "neutral"
+    quality_flags: list[str] = field(default_factory=list)
 
 
 @dataclass(slots=True)
 class Claim(ResearchObject):
+    object_type: str = field(init=False, default="claim")
     statement: str = ""
-    evidence_refs: list[ObjectRef] = field(default_factory=list)
+    strength: str = "unresolved"
+    support_refs: list[ObjectRef] = field(default_factory=list)
     counterevidence_refs: list[ObjectRef] = field(default_factory=list)
-    claim_ceiling: str = "unresolved"
+    limitations: list[str] = field(default_factory=list)
+
+    @property
+    def evidence_refs(self) -> list[ObjectRef]:
+        """Compatibility alias; canonical field name is support_refs."""
+
+        return self.support_refs
 
 
 @dataclass(slots=True)
 class Decision(ResearchObject):
+    object_type: str = field(init=False, default="decision")
     decision: str = ""
-    rationale_refs: list[ObjectRef] = field(default_factory=list)
-    decided_by: str = "human"
+    scope: list[str] = field(default_factory=list)
+    reason_refs: list[ObjectRef] = field(default_factory=list)
+    actor: str = "human"
+    timestamp: str | None = None

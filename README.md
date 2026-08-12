@@ -36,17 +36,25 @@
 ```powershell
 python -m pip install -e .
 rwb validate examples registry
+rwb schema list
+rwb task resolve examples/task-evidence.yaml `
+  --profile examples/profiles/evidence-scout.yaml `
+  --skill examples/skills/literature-evidence-extraction.yaml
+rwb handoff validate examples/handoff-evidence.yaml `
+  --task examples/task-evidence.yaml
+rwb claim trace examples/objects/claim/CLAIM-001.yaml `
+  --protocol examples/project-protocol.yaml
 rwb skills candidates --status triage
 rwb providers list
 ```
 
-`validate` 只确认结构、哈希格式与 Registry 引用等机器可判定条件，不代表科学正确性。外部 Skill 默认不可执行；`discovered`、`triage`、`reference` 和 `quarantine` 均不等于已安装或已准入。
+`validate` 会检查 Schema、实际文件、SHA-256 与 Registry 引用等机器可判定条件，但不代表科学正确性。`task resolve` 只生成固定的 Profile/Skill/权限执行视图，不启动 Agent。外部 Skill 默认不可执行；`discovered`、`triage`、`reference` 和 `quarantine` 均不等于已安装或已准入。
 
 ## 第一条验证路线
 
 首个垂直切片将验证两个能力差异明显的子 Agent：
 
-1. `evidence-scout` + `literature-evidence-extraction` Skill：只读检索、证据定位和引用交接。
+1. `evidence-scout` + `literature-evidence-extraction` Skill：源材料只读、任务区受限写的检索、证据定位和引用交接。
 2. `simulation-auditor` + `simulation-vv` Skill：读取模型与运行工件，检查版本、参数、收敛和敏感性。
 
 两者共享最小科研内核与 Task/Handoff 契约，但使用不同的输入、权限、Skill、输出和质量检查。该切片的目标不是证明多 Agent 更强，而是验证“能力按需绑定、主上下文不被污染、结果可追溯”是否成立。

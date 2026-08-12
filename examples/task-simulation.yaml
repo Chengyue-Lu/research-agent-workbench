@@ -14,18 +14,25 @@ forbidden_skills:
   - experimental-validation
 agent_profile: simulation-auditor
 input_refs:
-  - path: runs/RUN-001/manifest.yaml
-    sha256: REPLACE_WITH_FIXTURE_HASH
+  - path: examples/fixtures/run-manifest.txt
+    sha256: 6079913f340dd071404c96cf0a9a041f1f59798a7cf448acf6e698e039aa0a14
 write_scope:
   - work/SIM-001/**
 required_outputs:
   - simulation-vv-report
   - handoff-packet
 permissions:
+  filesystem: worktree-write
   external_write: false
+  allowed_roots: [work/SIM-001]
 delegation:
   allowed: false
+budget:
+  max_turns: 8
+  max_output_tokens: 1600
 stop_conditions:
   - required_checks_complete
   - input_version_changed
   - human_judgment_required
+stale_if:
+  - any_input_hash_changes

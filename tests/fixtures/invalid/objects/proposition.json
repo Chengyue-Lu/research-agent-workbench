@@ -1,0 +1,10 @@
+{
+  "schema_version": "0.1.0",
+  "object_type": "hypothesis",
+  "object_id": "H-BAD",
+  "revision": 1,
+  "status": "proposed",
+  "statement": "bad fixture",
+  "assumptions": "not-an-array",
+  "applicability": []
+}

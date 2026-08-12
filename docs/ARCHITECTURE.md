@@ -232,7 +232,7 @@ Codex 首版映射：
 
 | 项目 | Evidence Scout | Simulation Auditor |
 |---|---|---|
-| Agent Profile | 只读、检索密集 | 工件读取、受限计算 |
+| Agent Profile | 源只读、任务区受限写、检索密集 | 工件读取、任务区受限计算 |
 | 主 Skill | 文献证据提取 | 仿真验证与确认 |
 | 输入 | 问题、语料/检索边界 | 模型、参数、运行清单 |
 | 输出 | Evidence records、引用缺口 | V&V report、Run 风险 |

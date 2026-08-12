@@ -1,0 +1,17 @@
+schema_version: 0.1.0
+agent_profile_id: simulation-auditor
+version: 0.1.0
+purpose: Audit bounded simulation versions, convergence, and sensitivity.
+model_policy:
+  class: bounded-compute
+  reasoning: high
+permission_ceiling:
+  filesystem: worktree-write
+  network: forbidden
+  external_write: forbidden
+  allowed_roots: [work]
+allowed_tool_capabilities: [file-read, bounded-compute]
+default_context_policy: isolated-task
+delegation:
+  allowed: false
+output_contracts: [simulation-vv-report, handoff-packet]

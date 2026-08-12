@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/project-protocol.schema.json",
+  "title": "Project Protocol",
+  "x-rwb-document-kind": "project_protocol",
+  "type": "object",
+  "required": [
+    "schema_version", "project_id", "question_refs", "active_modes", "claim_ceiling",
+    "required_human_gates", "budgets", "context_policy", "data_boundary"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "project_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "revision": { "type": "integer", "minimum": 1 },
+    "question_refs": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "active_modes": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "claim_ceiling": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "required_human_gates": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "budgets": {
+      "type": "object",
+      "required": ["max_parallel_subagents", "max_delegation_depth", "coordination_cost_ratio_warn"],
+      "properties": {
+        "max_parallel_subagents": { "type": "integer", "minimum": 0 },
+        "max_delegation_depth": { "type": "integer", "minimum": 0 },
+        "coordination_cost_ratio_warn": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "context_policy": {
+      "type": "object",
+      "required": ["proactive_checkpoint", "main_raw_material"],
+      "properties": {
+        "proactive_checkpoint": { "type": "boolean" },
+        "main_raw_material": { "enum": ["forbidden", "on-demand", "allowed"] }
+      },
+      "additionalProperties": true
+    },
+    "data_boundary": {
+      "type": "object",
+      "required": ["local_only", "external_upload_requires_approval"],
+      "properties": {
+        "local_only": { "type": "boolean" },
+        "external_upload_requires_approval": { "type": "boolean" },
+        "allowed_regions": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "zero_data_retention_required": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

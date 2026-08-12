@@ -12,9 +12,10 @@
 - Python 版本保持 3.11+。
 - 核心对象使用标准库 `dataclasses`；Provider 端口使用 `typing.Protocol`。
 - CLI 使用 `argparse`，测试使用 `unittest`。
-- 唯一运行依赖为 PyYAML，用于读取人类编辑的 YAML；JSON 继续作为 Registry 交换格式。
-- 当 Schema 生成、复杂联合验证或 CLI 可用性出现经测试的明确成本时，再分别评估 Pydantic、jsonschema、Typer、pytest 或 Hypothesis。
+- PyYAML 用于读取人类编辑的 YAML；JSON 继续作为 Registry 交换格式。
+- M1 开始执行版本化 JSON Schema 后，引入 `jsonschema` 的 Draft 2020-12 验证器。项目不自行实现不完整的 Schema 子集。
+- 当 CLI 可用性或属性测试出现经测试的明确成本时，再分别评估 Pydantic、Typer、pytest 或 Hypothesis。
 
 ## 后果
 
-首版可在较少依赖下运行，且 Provider Adapter 不依赖任何厂商 SDK。代价是 M1 仍需显式实现版本化 JSON Schema 与更完整的错误定位；本 ADR 不取消这些交付物。
+首版只有 PyYAML 与 jsonschema 两个运行依赖，且 Provider Adapter 不依赖任何厂商 SDK。版本化 Schema 和错误定位由标准实现负责，内部对象仍保持轻量 dataclass。

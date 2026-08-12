@@ -1,0 +1,11 @@
+schema_version: 0.1.0
+object_type: question
+object_id: Q-001
+revision: 1
+status: active
+text: Does the bounded synthetic source support the demonstration claim?
+scope: [synthetic-fixture-only]
+known_ambiguities:
+  - The fixture is not scientific evidence.
+metadata:
+  fixture: true

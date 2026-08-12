@@ -35,9 +35,10 @@ model_policy:
   class: efficient-read-heavy
   reasoning: medium
 permission_ceiling:
-  filesystem: read-only
+  filesystem: worktree-write
   network: search-and-fetch
   external_write: forbidden
+  allowed_roots: [work]
 allowed_tool_capabilities: [web-search, document-read, citation-resolve]
 default_context_policy: isolated-task
 delegation:
@@ -55,7 +56,7 @@ Profile 不包含完整 Skill 指令，只声明允许的能力、权限上限�
 
 ### evidence-scout
 
-只读检索密集 Agent。允许搜索、文档阅读和引用解析；禁止修改正式 Claim、上传本地敏感材料或生成最终综合结论。
+源材料只读、任务区受限写的检索密集 Agent。允许搜索、文档阅读、引用解析并写自己的 Task 工件；禁止修改正式 Claim、其他 Task、上传本地敏感材料或生成最终综合结论。路径权限语义见 [ADR-0005](../decisions/0005-SCOPED-WRITE-PERMISSIONS.md)。
 
 ### simulation-auditor
 
