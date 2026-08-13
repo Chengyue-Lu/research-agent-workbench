@@ -1,0 +1,43 @@
+{
+  "schema_version": "0.1.0",
+  "report_id": "DCR-CLAIM-REWRITE-BASELINE-001",
+  "checker": {
+    "checker_id": "claim-preservation-surface-check",
+    "version": "0.1.0",
+    "source_ref": {
+      "path": "skill-lab/candidates/claim-preserving-rewrite/scripts/check_claim_preservation.py",
+      "sha256": "5a78cf8611f2d841c72db278b90955d27440be5132b85251ac148188fb36022f"
+    }
+  },
+  "subject_refs": [
+    {
+      "path": "tests/fixtures/claim-preserving-rewrite/source.txt",
+      "sha256": "b0b189e9d48c3057c96ab12eae6e21bef8fcef3f489991cbec20c783e3b494cc"
+    },
+    {
+      "path": "tests/fixtures/claim-preserving-rewrite/invalid-revision.txt",
+      "sha256": "3f690cc94618d956f3e30d3cfbc645075e142c74f6d2120b6f331ce77e61125a"
+    },
+    {
+      "path": "tests/fixtures/claim-preserving-rewrite/claim-lock.json",
+      "sha256": "ebeb22f3e832d50c644b3a1152c840af2fef83034b9352aa7561a8dd75168c24"
+    }
+  ],
+  "status": "fail",
+  "checks": [
+    {"code": "CLAIM-SOURCE-EMPTY", "status": "pass", "detail": "source must contain non-whitespace text"},
+    {"code": "CLAIM-REVISION-EMPTY", "status": "pass", "detail": "revision must contain non-whitespace text"},
+    {"code": "CLAIM-NUMBER-DRIFT", "status": "fail", "detail": "numeric expression drift: removed=['120', '1.01', '0.08', '12'] added=['125', '0.95', '0.03', '13']"},
+    {"code": "CLAIM-CITATION-DRIFT", "status": "fail", "detail": "citation locator drift: removed=['[12]'] added=['[13]']"},
+    {"code": "CLAIM-POLARITY-DRIFT", "status": "fail", "detail": "negation marker drift: removed=['未'] added=[]"},
+    {"code": "CLAIM-STRENGTHENED", "status": "fail", "detail": "evidence-strength level source=1 revision=3"},
+    {"code": "CLAIM-CAUSALITY-INTRODUCED", "status": "fail", "detail": "new causal markers=['导致']"},
+    {"code": "CLAIM-PROTECTED-TERM", "status": "pass", "detail": "protected exact term 'Treatment A' must occur in source and revision"},
+    {"code": "CLAIM-PROTECTED-TERM", "status": "pass", "detail": "protected exact term '95% CI' must occur in source and revision"},
+    {"code": "CLAIM-FORBIDDEN-TERM", "status": "pass", "detail": "forbidden revision term '确定有效' must be absent"}
+  ],
+  "scope": "surface invariants only; scientific and semantic equivalence require human review",
+  "limitations": [
+    "A pass checks surface invariants only and does not establish semantic or scientific equivalence."
+  ]
+}

@@ -19,11 +19,12 @@ research-agent-workbench/
 │   ├── context/                    # Main State / checkpoint
 │   ├── artifacts/                  # store / hash / promotion
 │   ├── validation/                 # deterministic checks / risks
-│   ├── adapters/                   # runtime and tool adapters
-│   │   └── codex/
+│   ├── adapters/                   # model API, optional runtime, and tool adapters
+│   │   ├── models/                 # Provider Port / Model Pool / API Session
+│   │   └── codex.py                # optional Codex mapping
 │   └── cli.py
 ├── schemas/                        # 生成并版本化的 JSON Schemas
-├── registry/                       # Agent/Skill/Mode manifests
+├── registry/                       # Agent/Skill/Mode/Provider/Model Pool manifests
 ├── .agents/skills/                 # M2 Codex/Open Agent Skills
 ├── .codex/agents/                  # M2 Codex custom agents
 ├── examples/                       # 无敏感数据的可运行例子
@@ -50,7 +51,8 @@ research-agent-workbench/
 - `adapters` 依赖上层契约，反向依赖禁止。
 - `validation` 的 deterministic 部分不得调用 LLM。
 - `.agents/skills` 可调用 `src` 中稳定脚本，但不能复制核心状态。
-- `.codex/agents` 只是平台配置，不是 canonical Agent Profile 的唯一来源。
+- `registry/models` 只保存非秘密槽位模板；模型 ID 从本地环境显式绑定，不做自动路由。
+- `.codex/agents` 只是可选平台配置，不是 canonical Agent Profile 的唯一来源。
 - `examples` 只使用合成/公开数据，不提交研究者私有材料。
 - 项目实例与框架仓库分开；框架仓库不积累真实项目 raw/runs。
 

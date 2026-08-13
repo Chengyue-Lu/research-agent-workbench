@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "research-agent-workbench"
+version = "0.1.0"
+description = "A human-governed, provider-neutral research agent workbench."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Research Agent Workbench contributors" }]
+dependencies = [
+  "jsonschema>=4.23,<5",
+  "PyYAML>=6,<7",
+  "rfc3339-validator>=0.1.4,<0.2",
+]
+
+[project.scripts]
+rwb = "research_workbench.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.data-files]
+"share/research-agent-workbench/schemas/v0.1.0" = ["schemas/v0.1.0/*.schema.json"]

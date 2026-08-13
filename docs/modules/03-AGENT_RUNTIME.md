@@ -2,7 +2,7 @@
 
 ## 1. 目标
 
-定义主 Agent 与子 Agent 的职责、Agent Profile、委派条件和原生运行时映射。项目不自建通用 Agent 调度器，只生成和验证平台可执行的边界。
+定义主 Agent 与子 Agent 的职责、Agent Profile、委派条件和执行映射。项目以纯 API 新隔离会话作为可移植基线，同时允许 Codex、OpenCode 等平台 Adapter 复用原生能力；两条路径都不发展成通用 Agent 调度器。
 
 ## 2. 主 Agent Charter
 
@@ -33,11 +33,13 @@ version: 0.1.0
 purpose: read-heavy evidence discovery and extraction
 model_policy:
   class: efficient-read-heavy
+  default_slot: worker
   reasoning: medium
 permission_ceiling:
-  filesystem: read-only
+  filesystem: worktree-write
   network: search-and-fetch
   external_write: forbidden
+  allowed_roots: [work]
 allowed_tool_capabilities: [web-search, document-read, citation-resolve]
 default_context_policy: isolated-task
 delegation:
@@ -45,7 +47,7 @@ delegation:
 output_contracts: [evidence-record, handoff-packet]
 ```
 
-Profile 不包含完整 Skill 指令，只声明允许的能力、权限上限、上下文策略和输出类型。
+Profile 不包含完整 Skill 指令，也不固定厂商模型。`default_slot` 只在小型本地模型池中指向 `primary`、`worker` 或一个显式 specialist；Task/人类可以覆盖它，但不能触发自动评分或静默 fallback。
 
 ## 4. 首批 Agent Profiles
 
@@ -55,7 +57,7 @@ Profile 不包含完整 Skill 指令，只声明允许的能力、权限上限�
 
 ### evidence-scout
 
-只读检索密集 Agent。允许搜索、文档阅读和引用解析；禁止修改正式 Claim、上传本地敏感材料或生成最终综合结论。
+源材料只读、任务区受限写的检索密集 Agent。允许搜索、文档阅读、引用解析并写自己的 Task 工件；禁止修改正式 Claim、其他 Task、上传本地敏感材料或生成最终综合结论。路径权限语义见 [ADR-0005](../decisions/0005-SCOPED-WRITE-PERMISSIONS.md)。
 
 ### simulation-auditor
 
@@ -93,7 +95,18 @@ Profile 不包含完整 Skill 指令，只声明允许的能力、权限上限�
 
 任何递归委派都必须返回一份合并后的 Handoff，而不是把完整子树抛给主 Agent。
 
-## 7. Codex 首版映射
+## 7. 首版执行映射
+
+### 纯 API 基线
+
+- coordinator 默认使用 `primary` 槽；其他首批 Profile 默认使用 `worker` 槽；
+- 每个子任务建立一个 fresh context，不继承主 Agent 的完整消息历史；
+- Task、Skill Assignment、输入引用、输出契约和预算组成唯一启动材料；
+- 工具循环在本地受轮次、调用数、结果大小、token/成本和 wall time 限制；
+- provider/model 不满足能力或数据政策时阻断，不换槽、不换 Provider；
+- 临时 API transcript 不是权威状态，退出前必须固化工件与 Handoff。
+
+### 可选 Codex 映射
 
 - `.codex/agents/*.toml` 保存项目级自定义 Agent Profile；
 - Profile 可指定模型、推理强度、sandbox、MCP 和 skill 配置；
@@ -102,7 +115,7 @@ Profile 不包含完整 Skill 指令，只声明允许的能力、权限上限�
 - 并发、等待、follow-up 和线程生命周期交给 Codex 原生能力；
 - 写密集任务默认串行，或分配互不重叠的 write scope。
 
-项目不把 Codex 私有 thread ID 写入科研内核，只可作为可选 Run metadata。
+项目不把 Codex 或其他平台的私有 thread/session ID 写入科研内核，只可作为可选 Run metadata。OpenCode、Claude Code 等以后遵循同一规则；平台是否最终采用不影响 API 基线。
 
 ## 8. 失败处理
 
@@ -122,6 +135,8 @@ Profile 不包含完整 Skill 指令，只声明允许的能力、权限上限�
 - 同模型的多个 Agent 产生相关性错误，伪装成共识；
 - Agent 角色名称诱导主 Agent过度信任；
 - 平台版本更新改变继承、权限或 Skill 发现行为；
+- 平台或网关在 Workbench 已选模型后再次路由，造成 planned/actual 不一致；
+- 子 Agent 隐式继承主 Agent 的高价模型，绕过 `worker` 槽；
 - 子 Agent 为完成任务私自扩大问题边界；
 - 写密集并行造成冲突与难以追责的合并。
 
@@ -134,4 +149,6 @@ Profile 不包含完整 Skill 指令，只声明允许的能力、权限上限�
 - 权限由 Profile、Task 和平台三者取交集；
 - Skill 缺失时任务失败关闭，而非退化成无声明通用执行；
 - 并行写入不允许重叠路径；
-- 更换运行时只需实现 Adapter，不修改科研对象。
+- 同一受限 Task 可以通过纯 API fresh session 执行，不依赖特定平台；
+- 更换运行时只需实现 Adapter，不修改科研对象；
+- 模型槽选择显式，Receipt 能核对实际 Provider/Model，没有自动 fallback。

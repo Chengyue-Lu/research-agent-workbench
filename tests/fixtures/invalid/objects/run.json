@@ -1,0 +1,12 @@
+{
+  "schema_version": "0.1.0",
+  "object_type": "run",
+  "object_id": "RUN-BAD",
+  "revision": 1,
+  "status": "completed",
+  "method_ref": "M-1@1",
+  "input_refs": [],
+  "environment_ref": "ENV-1@1",
+  "started_at": "not-a-timestamp",
+  "output_refs": []
+}

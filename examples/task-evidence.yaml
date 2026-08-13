@@ -14,18 +14,37 @@ forbidden_skills:
   - final-synthesis
 agent_profile: evidence-scout
 input_refs:
-  - path: sources/raw/paper-001.pdf
-    sha256: REPLACE_WITH_FIXTURE_HASH
+  - path: examples/fixtures/paper-001.txt
+    sha256: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
 write_scope:
   - work/EVID-001/**
 required_outputs:
   - evidence-record
+  - handoff-transfer-manifest
   - handoff-packet
 permissions:
+  filesystem: worktree-write
   external_write: false
+  allowed_roots: [work/EVID-001]
 delegation:
   allowed: false
+budget:
+  max_turns: 10
+  max_output_tokens: 1800
+atomic_boundary: One bounded source set is inspected and its Evidence, Claim boundary, Transfer Manifest, and Handoff are persisted.
+completion_checks:
+  - Required Evidence and Handoff contracts exist and pass deterministic reference checks.
+  - The Handoff Transfer Audit has no blocking risk.
+safe_pause_conditions:
+  - Context budget cannot safely cover the next bounded source plus closeout reserve.
+  - A required source, permission, or human decision is unavailable.
 stop_conditions:
   - required_outputs_complete
   - source_boundary_exhausted
   - human_judgment_required
+stale_if:
+  - any_input_hash_changes
+handoff_policy:
+  require_transfer_manifest: true
+  semantic_review: risk-triggered
+  minimum_semantic_samples: 1

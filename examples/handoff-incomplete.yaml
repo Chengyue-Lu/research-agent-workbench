@@ -1,0 +1,27 @@
+schema_version: 0.1.0
+task_id: EVID-001
+attempt_id: A-002
+status: incomplete
+input_lock:
+  - path: examples/fixtures/paper-001.txt
+    sha256: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
+skill_lock:
+  - literature-evidence-extraction@0.1.0
+skill_assignment_ref: examples/vertical-slice/evidence-assignment.yaml
+result:
+  summary: The attempt stopped before producing an evidence record.
+  facts:
+    - The input hash was verified.
+  inferences: []
+  recommendations:
+    - Resume only with the same input lock or create a new Task revision.
+artifact_refs: []
+validation_refs: []
+limitations:
+  - No evidence record was completed.
+conflicts: []
+unresolved:
+  - Citation locator extraction remains incomplete.
+human_decision_required: []
+recommended_next_actions:
+  - Decide whether the bounded attempt is still worth continuing.

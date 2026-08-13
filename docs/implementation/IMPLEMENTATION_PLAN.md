@@ -1,8 +1,8 @@
 # 完整实施计划
 
-版本：0.2
+版本：0.5
 
-状态：准备执行
+状态：执行中
 
 日期：2026-08-13
 
@@ -14,19 +14,23 @@
 
 ## 2. 技术基线
 
-首版建议：
+当前已接受的首版基线：
 
 - Python 3.11+；
 - `pyproject.toml` 单包结构；
-- Pydantic v2 表达内部模型并导出 JSON Schema；
+- 标准库 `dataclasses` 和 `typing.Protocol` 表达内部对象与端口；
 - YAML 作为主要人类编辑格式，JSON 作为交换/校验格式；
-- Typer 提供本地 CLI；
-- pytest + property-based tests（必要时 Hypothesis）；
+- `argparse` 提供本地 CLI；
+- `unittest` 提供首轮测试；
+- PyYAML 与 jsonschema 是当前两个运行依赖；
 - SHA-256 和 Git 提供首版版本/内容引用；
-- `.agents/skills` 和 `.codex/agents` 提供 Codex 原生适配；
+- `.agents/skills` 提供跨平台 Skill 布局，纯 API fresh session 提供可移植执行基线；
+- `.codex/agents` 是已有的可选 Codex 映射，不代表最终平台选择；
 - 无数据库、无服务端、无常驻进程。
 
-技术选型在 M1 开始前用 ADR 确认。若标准库即可满足，不提前引入依赖。
+技术选型见 [ADR-0004](../decisions/0004-MINIMAL-DEPENDENCY-M1.md)。当前使用 Draft 2020-12 JSON Schema；属性测试出现明确复杂度后再评估 Pydantic 或 Hypothesis。
+
+模型 API 采用能力协商式中立端口，见 [ADR-0003](../decisions/0003-PROVIDER-NEUTRAL-MODEL-PORT.md)。M1 冻结端口和能力/错误语义；后续已按用户明确需求提前完成 OpenAI、Anthropic、Gemini 的首个离线薄 Adapter 切片，见 [ADR-0007](../decisions/0007-THIN-PROVIDER-ADAPTERS.md) 与 [多提供商模型 API 实施计划](PROVIDER_ADAPTER_PLAN.md)。这不改变 M1“不调用真实 API”的退出边界，也不等于 live conformance。
 
 ## 3. 里程碑总览
 
@@ -34,11 +38,11 @@
 |---|---|---|
 | M0 | 架构与仓库基线 | 文档、任务、独立仓库 |
 | M1 | 契约与确定性验证 | CLI 可验证最小对象、Task、Handoff |
-| M2 | 不同 Agent—Skill 绑定 | 两个 Profile + 两个 Skill 原生执行 |
+| M2 | 不同 Agent—Skill 绑定 | 两个 Profile + 两个 Skill 隔离执行 |
 | M3 | 上下文与预警垂直切片 | checkpoint/rollover 恢复与边界预警 |
 | M4 | 工件、Run 与可复现性 | Claim 可定位、Run 可重建 |
 | M5 | 两个真实案例与删减 | 与单 Agent 基线的净收益数据 |
-| M6 | 按真实需求扩展 | 可选工具/运行时适配，不扩大内核 |
+| M6 | API-first 执行与按需扩展 | 显式模型槽、隔离 API 会话、可选平台适配 |
 
 ## 4. M0：架构与项目基线
 
@@ -112,7 +116,7 @@ rwb context checkpoint
 ### 实现内容
 
 1. 建立 Skill Registry 与 Resolver。
-2. 建立 Codex Runtime Adapter。
+2. 建立 provider-neutral Model Port、显式模型槽和隔离 API Session；Codex Runtime Adapter 作为可选映射保留。
 3. 创建 Agent Profiles：
    - `coordinator`
    - `evidence-scout`
@@ -122,9 +126,11 @@ rwb context checkpoint
    - `literature-evidence-extraction`
    - `simulation-vv`
    - `handoff-integrity`（优先脚本化）
-5. 生成 `.codex/agents/*.toml` 和/或验证项目级配置。
+5. 为纯 API fresh session 生成最小执行输入；可选生成或验证 `.codex/agents/*.toml`。
 6. 以 Task Packet 显式点名 required Skills。
-7. 记录 Skill lock、实际工具、Runtime snapshot 和 Handoff。
+7. 记录 Skill lock、实际工具、Provider/Model、Runtime snapshot（若有）和 Handoff。
+
+截至 2026-08-13，Registry、Profiles、Skills、显式绑定和 Codex 可选映射均已有确定性契约。新增的小型 Model Pool 与 Isolated API Session Runner 已完成离线工具循环与预算测试，达到 `K-API-1`。Task/Assignment 到 Attempt/Handoff/Receipt 的文件闭环与两个真实案例仍未完成，因此 M2 尚未退出。
 
 ### 路由测试矩阵
 
@@ -136,12 +142,12 @@ rwb context checkpoint
 
 ### 退出条件
 
-- 至少两次真实原生子 Agent执行，Skill 集不同；
+- 至少两次真实隔离子任务执行，Skill 集不同；首条走纯 API，平台路径只在需要时对照；
 - required Skill 缺失或版本漂移会阻断；
 - 主 Agent只读取 Handoff 与索引即可决定下一步；
 - 子 Agent不能越过 Profile/Task 权限；
 - Resolver 的选择理由可解释且可重放；
-- 使用原生 Agent 能力，没有自建 Scheduler。
+- 没有自建全局 Scheduler；API Runner 只在单个 Attempt 内执行有界循环。
 
 ## 7. M3：上下文与预警垂直切片
 
@@ -149,13 +155,15 @@ rwb context checkpoint
 
 验证主 Agent克制、子 Agent压缩容忍和主动 rollover。
 
+截至 2026-08-13，已实现 Context Snapshot、Execution Receipt、规范化 Main State digest，以及 `context assess/checkpoint/resume-check` 和 `execution assess`。Transfer Manifest/Audit 会把压缩前条目、来源哈希、Handoff locator、负面区段与风险触发抽查绑定到 Context Snapshot 和 Receipt。随后根据 CCRML 讨论补入 Atomic Work Unit、动态 next-AWU/closeout/reserve 预算、`safe-paused`/`waiting`、机器验证完成权、机器状态哈希与 Git 恢复冲突；这些语义复用现有工件，不新增 SQLite 或运行时。该机制只证明结构与可恢复性，不证明科学正确或完整语义等价；真实 API 子会话恢复、人工抽样与真实 token/时间采集仍未完成，见 [ADR-0008](../decisions/0008-HANDOFF-TRANSFER-AUDIT.md)、[ADR-0009](../decisions/0009-FILE-FIRST-CONTINUITY-AND-SAFE-PAUSE.md)与[ADR-0010](../decisions/0010-API-FIRST-ISOLATED-EXECUTION.md)。
+
 ### 实现内容
 
 - Main State Packet 生成与验证；
 - context pressure 代理指标；
 - checkpoint 与 resume check；
 - 新会话恢复演练；
-- Handoff loss、summary distortion、stale、Skill context flood 预警；
+- Handoff loss、summary distortion、stale、Skill context flood 预警，以及 Transfer Manifest/Audit；
 - delegation fanout、review loop 与 write race 检查；
 - 敏感 trace 关闭/脱敏策略。
 
@@ -227,16 +235,20 @@ rwb context checkpoint
 
 ## 10. M6：谨慎扩展
 
-只有 M5 通过后按需求选择：
+核心科研能力仍应在 M5 通过后按需求扩展；但为保证平台可替换性，API-first 执行缝已按明确需求提前实现：
 
 - 新 Mode（experiment、theory、observational-statistics）；
 - Zotero/PaperQA2 Tool Adapter；
 - DVC 或 MLflow；
 - Quarto/Jupyter 报告；
-- Claude/Agents SDK/其他 Runtime Adapter；
+- Codex/OpenCode/Claude Code/Agents SDK 等可选 Runtime Adapter；
 - 轻量可视界面。
 
 新增项必须有真实消费者、预算、测试和退出条件。不得一次引入两个功能重叠的重量级工具。
+
+当前已完成三家非流式 Adapter、ToolChoice、本地工具参数校验、延迟凭据解析、非秘密配置探测、脱敏 live conformance runner，以及 `explicit-slot-only` Model Pool 和有硬预算的 fresh API tool-loop runner。不会继续铺更多提供商或构建复杂 Router。
+
+当前下一关键节点 `K-API-2`：把一个已解析 evidence Task 编译成纯 API 子会话，在结束或 `safe-paused` 时固化 Attempt、工件、Transfer Manifest、Handoff、Context Snapshot、Execution Receipt 与 Main State；删除临时 transcript 后从文件恢复。节点完成即暂停评审，不延伸到 GUI、公开发布或平台选型。
 
 ## 11. 开发分支与提交策略
 

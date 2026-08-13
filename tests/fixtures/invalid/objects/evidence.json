@@ -1,0 +1,13 @@
+{
+  "schema_version": "0.1.0",
+  "object_type": "evidence",
+  "object_id": "E-BAD",
+  "revision": 1,
+  "status": "draft",
+  "content_hash": "not-a-sha256",
+  "kind": "excerpt",
+  "source_ref": "SRC-1@1",
+  "locator": "line 1",
+  "statement": "bad fixture",
+  "quality_flags": []
+}

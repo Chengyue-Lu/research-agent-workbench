@@ -1,0 +1,15 @@
+schema_version: 0.1.0
+object_type: claim
+object_id: CLAIM-EVID-001-BOUNDARY
+revision: 1
+status: proposed-fixture
+statement: The bounded synthetic fixture does not support a causal claim about HYP-001.
+strength: unresolved
+support_refs: [EVID-001-01@1]
+counterevidence_refs: []
+limitations:
+  - Only the approved synthetic fixture was reviewed.
+  - No source directly measures the proposed mediator.
+metadata:
+  fixture: true
+  not_scientific_evidence: true

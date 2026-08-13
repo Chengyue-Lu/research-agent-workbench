@@ -1,0 +1,2 @@
+Synthetic evidence fixture for structural and reference-integrity tests.
+It is not a scientific source and must not support a real claim.

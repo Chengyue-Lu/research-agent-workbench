@@ -1,0 +1,11 @@
+run_ref: RUN-001@1
+model_version: fixture-model@0.1.0
+input_lock: []
+parameter_boundary: Synthetic fixture.
+checks:
+  convergence: {status: pass, evidence_refs: []}
+  sensitivity: {status: pass, evidence_refs: []}
+  benchmark_comparison: {status: pass, evidence_refs: []}
+assumptions: []
+limitations: []
+claim_ceiling: experimentally_supported

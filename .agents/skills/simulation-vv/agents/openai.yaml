@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Simulation V&V'
+  short_description: 'Audit bounded simulation verification evidence'
+  default_prompt: 'Use $simulation-vv to audit a simulation run for version, convergence, sensitivity, and claim limits.'

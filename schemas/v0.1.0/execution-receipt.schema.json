@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/execution-receipt.schema.json",
+  "title": "Execution Receipt",
+  "x-rwb-document-kind": "execution_receipt",
+  "type": "object",
+  "required": [
+    "schema_version", "receipt_id", "execution_kind", "attempt_ref", "task_id",
+    "task_revision", "agent_profile_ref", "skill_assignment_ref", "started_at",
+    "finished_at", "status", "runtime", "model_usage_status", "model_usage",
+    "coordination", "trace", "output_refs", "validation_refs", "limitations"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "receipt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "execution_kind": { "enum": ["contract-only", "native-agent", "model-api", "local-tool"] },
+    "attempt_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
+    "task_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "task_revision": { "type": "integer", "minimum": 1 },
+    "agent_profile_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
+    "skill_assignment_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
+    "context_snapshot_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
+    "started_at": { "type": "string", "format": "date-time" },
+    "finished_at": { "type": "string", "format": "date-time" },
+    "status": {
+      "enum": [
+        "completed", "stage-completed", "safe-paused", "waiting",
+        "incomplete", "failed", "blocked", "cancelled"
+      ]
+    },
+    "completion_claim": { "enum": ["execution-only", "contract-satisfied"] },
+    "runtime": {
+      "type": "object",
+      "required": ["name", "version", "adapter_version"],
+      "properties": {
+        "name": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "version": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "adapter_version": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "native_execution_id": { "type": "string" },
+        "capability_snapshot_ref": { "$ref": "common.schema.json#/$defs/relativePath" }
+      },
+      "additionalProperties": false
+    },
+    "model_usage_status": { "enum": ["measured", "estimated", "unavailable", "not-applicable"] },
+    "model_usage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["provider", "model", "requests"],
+        "properties": {
+          "provider": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "model": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "requests": { "type": "integer", "minimum": 0 },
+          "input_tokens": { "type": "integer", "minimum": 0 },
+          "output_tokens": { "type": "integer", "minimum": 0 },
+          "cached_input_tokens": { "type": "integer", "minimum": 0 },
+          "reasoning_tokens": { "type": "integer", "minimum": 0 },
+          "provider_reported_cost": { "type": "number", "minimum": 0 },
+          "currency": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "coordination": {
+      "type": "object",
+      "required": ["delegated_attempts", "handoff_count", "review_rounds", "max_parallel_observed"],
+      "properties": {
+        "delegated_attempts": { "type": "integer", "minimum": 0 },
+        "handoff_count": { "type": "integer", "minimum": 0 },
+        "review_rounds": { "type": "integer", "minimum": 0 },
+        "max_parallel_observed": { "type": "integer", "minimum": 0 },
+        "coordination_tokens": { "type": "integer", "minimum": 0 },
+        "execution_tokens": { "type": "integer", "minimum": 0 },
+        "coordination_seconds": { "type": "number", "minimum": 0 },
+        "execution_seconds": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "trace": {
+      "type": "object",
+      "required": ["mode", "external", "sensitive_data_detected", "redactions_applied"],
+      "properties": {
+        "mode": { "enum": ["disabled", "minimal", "redacted", "full"] },
+        "external": { "type": "boolean" },
+        "sensitive_data_detected": { "type": "boolean" },
+        "redactions_applied": { "type": "integer", "minimum": 0 },
+        "retained_until": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "output_refs": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/relativePath" },
+      "uniqueItems": true
+    },
+    "validation_refs": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/relativePath" },
+      "uniqueItems": true
+    },
+    "limitations": { "$ref": "common.schema.json#/$defs/stringArray" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "completion_claim": { "const": "contract-satisfied" } },
+        "required": ["completion_claim"]
+      },
+      "then": {
+        "properties": { "status": { "enum": ["completed", "stage-completed"] } }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

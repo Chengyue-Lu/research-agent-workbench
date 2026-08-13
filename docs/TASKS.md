@@ -11,40 +11,46 @@
 | M0-003 | DONE | 将不同 Agent—Skill 绑定纳入架构 | Resolver、Assignment、预警与验收明确 |
 | M0-004 | DONE | 建立实施、迁移与测试计划 | 三份实施文档完成 |
 | M0-005 | DONE | 创建并推送独立 GitHub 仓库 | `main` 可访问，首次提交完成 |
+| M0-006 | DONE | 建立零基础使用与发布就绪度指南 | 安装、离线 quickstart、真实运行边界、故障处理和分级发布 Gate 可由新用户顺序阅读 |
+| M0-007 | BLOCKED | 选择项目许可证并核对仓库原创 Skills 的许可状态 | 人类维护者确定发布许可后加入 LICENSE，并消除 `project-original-unlicensed` 发布阻断 |
 
 ## M1：契约与 CLI
 
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
-| M1-001 | READY | 初始化 Python 包、pyproject 和基础 CI | M0 | 空包测试在 Windows/CI 通过 |
-| M1-002 | READY | 实现核心对象模型与 JSON Schema | M1-001 | 7 类对象正反 fixture 通过 |
-| M1-003 | READY | 实现 Protocol、Mode、Profile、Skill Manifest | M1-002 | 组合冲突和权限上限可验证 |
-| M1-004 | READY | 实现 Task、Attempt、Handoff、Main State | M1-002 | 示例交接与 incomplete 交接可验证 |
-| M1-005 | READY | 实现引用、revision、SHA-256 和 stale 检查 | M1-002 | 修改输入会使依赖结果失效 |
-| M1-006 | READY | 实现最小 CLI | M1-003..005 | init/validate/trace/checkpoint 可用 |
-| M1-007 | READY | 建立确定性风险检查 | M1-004..006 | 关键故障注入按预期阻断 |
+| M1-001 | IN_PROGRESS | 初始化 Python 包、pyproject 和基础 CI | M0 | 功能分支已推送；工作流仅监听 `main`/PR，等待进入 PR 后的 GitHub CI |
+| M1-002 | DONE | 实现核心对象模型与 JSON Schema | M1-001 | 7 类对象正反 fixture 通过 Draft 2020-12 Schema |
+| M1-003 | DONE | 实现 Protocol、Mode、Profile、Skill Manifest | M1-002 | 能力、工具、输出、模式、冲突和 scoped permission 可验证 |
+| M1-004 | DONE | 实现 Task、Attempt、Handoff、Main State | M1-002 | completed/incomplete Handoff、Attempt 与 checkpoint 示例通过 |
+| M1-005 | DONE | 实现引用、revision、SHA-256 和 stale 检查 | M1-002 | 修改输入触发 `REF-HASH-MISMATCH`，input lock 不同触发 stale |
+| M1-006 | DONE | 实现最小 CLI | M1-003..005 | init/validate/resolve/handoff/trace/checkpoint 可用 |
+| M1-007 | DONE | 建立确定性风险检查 | M1-004..006 | Skill 缺失、越权、写冲突、Claim overreach、stale 注入均阻断 |
+| M1-008 | DONE | 冻结模型 API 中立端口与能力协商语义 | M1-001 | Capability/Data Policy gap 在调用前阻断，提供商基线可查询 |
+| M1-009 | READY | 建立外部可复用项目 scaffold 与 `0.x` 兼容政策 | M1-006 | `rwb init` 可生成或选择完整模板；新项目不需手工复制 Registry/Profiles/Skills；Schema/CLI 迁移与废弃规则明确 |
 
 ## M2：Agent 与 Skills
 
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
-| M2-001 | READY | 实现 Skill Registry 与 Resolver | M1 | 最小覆盖、冲突、版本锁可重放 |
-| M2-002 | READY | 定义四个 Agent Profiles | M2-001 | 权限、工具、输出边界完整 |
-| M2-003 | READY | 创建 literature-evidence-extraction Skill | M2-001 | 正/反/注入 eval 通过 |
-| M2-004 | READY | 创建 simulation-vv Skill | M2-001 | 收敛、版本、Claim ceiling eval 通过 |
-| M2-005 | READY | 创建 handoff-integrity 检查 | M1 | 优先确定性脚本，语义部分可选 |
-| M2-006 | READY | 实现 Codex Runtime Adapter | M2-002..005 | 生成/验证原生 Agent 与 Skill 绑定 |
-| M2-007 | READY | 执行首个双 Skill 垂直切片 | M2-006 | 两个子 Agent Skills 不同，主 Agent只收 Handoff |
+| M2-001 | DONE | 实现 Skill Registry 与 Resolver | M1 | accepted Registry、最小覆盖、显式选择、冲突、权限交集、版本/哈希锁与确定性 Assignment 已测试 |
+| M2-002 | DONE | 定义四个 Agent Profiles | M2-001 | coordinator/evidence/simulation/reviewer 的权限、工具、输出和上下文边界可验证 |
+| M2-003 | IN_PROGRESS | 创建 literature-evidence-extraction Skill | M2-001 | 结构、正例、stale source 和 dispatch 注入隔离通过；真实 Agent 前向测试待执行 |
+| M2-004 | IN_PROGRESS | 创建 simulation-vv Skill | M2-001 | V&V 结构、版本锁和 Claim ceiling 正反例通过；真实数值案例待执行 |
+| M2-005 | DONE | 创建 handoff-integrity 检查 | M1 | 确定性脚本已验证 Task/input/Skill/artifact 交接边界，不宣称科学正确性 |
+| M2-006 | PARKED | 扩展 Codex Runtime Adapter | M2-002..005 | 已有 Agent/Skill 发现、验证和显式 dispatch 保留；平台 launch/collect 不在当前 API-first 关键路径 |
+| M2-007 | IN_PROGRESS | 执行首个双 Skill 垂直切片 | M6-003 | 离线契约切片已证明 Skills 不同；先完成 evidence 的纯 API 文件闭环，再按需做 simulation 或平台对照 |
+| M2-008 | IN_PROGRESS | 建立外部 Skill 发现、隔离评估与准入 Registry | M1 | ZIP 审计、18/18 追溯、非发现候选和 provider-neutral 双臂评估契约/CLI 已落地；fixture 会被正确阻断，真实 with/without 与 trial/accepted 仍待完成 |
 
 ## M3：上下文与风险
 
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
-| M3-001 | READY | Main State checkpoint/resume | M1 | 新会话可恢复下一步 |
-| M3-002 | READY | context pressure 代理指标 | M3-001 | WARN 能触发 checkpoint/rollover |
-| M3-003 | READY | Handoff loss/stale/summary 抽查 | M2 | 故障注入被识别 |
-| M3-004 | READY | review loop/fanout/write race 检查 | M2 | 预算和停止规则生效 |
-| M3-005 | READY | 敏感 trace 策略 | M2 | fixture 中密钥/敏感字段不泄漏 |
+| M3-001 | IN_PROGRESS | Main State checkpoint/resume | M1 | 规范化 digest、原子文件发布、Continuity 状态、机器证据哈希、Git 基线、下一动作和约束/决定丢失检查已通过；进程级 kill 矩阵与真实新主会话恢复待演练 |
+| M3-002 | IN_PROGRESS | context pressure 与 AWU 预算 | M3-001 | 可测/未知指标、动态 next-AWU/closeout/reserve 判定、WARN/rollover/block 和 checkpoint 链已测试；真实运行估计误差待采集 |
+| M3-003 | IN_PROGRESS | Handoff loss/stale/summary 抽查 | M2 | Transfer Manifest/Audit、负面区段覆盖、风险触发抽查、Context/Receipt 绑定已实现；真实隔离 API Handoff 的人工样本仍待执行 |
+| M3-004 | IN_PROGRESS | review loop/fanout/write race 检查 | M2 | 并发预算、review loop、协调成本与既有 write race 检查已落地；真实停止行为待验证 |
+| M3-005 | IN_PROGRESS | 敏感 trace 策略 | M2 | 外部/完整/敏感 trace 会阻断或警告；真实脱敏器与密钥 fixture 待实现 |
+| M3-006 | IN_PROGRESS | SAFE_PAUSE 与机器完成权 | M3-001..003 | AWU/完成/暂停条件、stage/safe-pause/waiting、执行结束与 `contract-satisfied` 分离、失败报告覆盖显式完成宣称和可恢复 pause fixture 已实现；API session rollover 待演练 |
 
 ## M4：工件与复现
 
@@ -66,6 +72,16 @@
 | M5-004 | READY | 运行案例并分析净收益 | M5-001..003 | 质量、上下文、成本数据完整 |
 | M5-005 | READY | 里程碑删减评审 | M5-004 | 至少做出一项保留/删除/停止决定 |
 
+## M6：API-first 执行与按真实需求扩展
+
+| ID | 状态 | 任务 | 依赖 | 验收 |
+|---|---|---|---|---|
+| M6-001 | IN_PROGRESS | OpenAI/Anthropic/Gemini 薄 Model Provider Adapters | M1-008 | 端口、ToolChoice、本地工具参数校验、HTTPS Transport 与离线合同已通过；有硬预算和脱敏报告的 live runner 已完成，实际启用槽位的真实 Windows conformance 待完成 |
+| M6-002 | DONE | 显式模型池与隔离 API session kernel（`K-API-1`） | M6-001 | primary/worker/specialist 槽只可显式绑定；轮次、工具、并行、工具结果、输出、token/成本/time 有硬边界；无自动 fallback；离线测试通过 |
+| M6-003 | IN_PROGRESS | Task-to-API 文件闭环（`K-API-2`） | M1-008, M2-001..005, M6-002 | 已解析 evidence Task 进入 fresh API session，完成或 safe-pause 后固化 Attempt/工件/Manifest/Handoff/Receipt/Main State；删除临时 transcript 后可恢复 |
+| M6-004 | READY | 选定模型槽的真实 Windows conformance 与一次 evidence 调用 | M6-001..003 | 只验证实际启用的 primary/worker 槽，不要求三家齐全；脱敏报告与实际 Provider/Model 可核对 |
+| M6-005 | PARKED | streaming/multimodal/server tools 与平台 Adapter | 真实案例或平台选择 | 每项独立 capability、data policy、合同与删除条件，不批量铺开，不预先绑定 OpenCode/Codex |
+
 ## GitHub 执行入口
 
 M1 已建立里程碑与首批可执行 Issues：
@@ -75,7 +91,9 @@ M1 已建立里程碑与首批可执行 Issues：
 - [#3 M1-003 Implement protocol, mode, agent, and skill manifests](https://github.com/Chengyue-Lu/research-agent-workbench/issues/3)
 - [#4 M1-004 Implement task, handoff, main state, and reference integrity](https://github.com/Chengyue-Lu/research-agent-workbench/issues/4)
 - [#5 M1-005 Build the minimal CLI and deterministic risk checks](https://github.com/Chengyue-Lu/research-agent-workbench/issues/5)
+- [#6 M1-008 Freeze provider-neutral model API port](https://github.com/Chengyue-Lu/research-agent-workbench/issues/6)
+- [#7 M2-008 Audit and admit external Skill candidates](https://github.com/Chengyue-Lu/research-agent-workbench/issues/7)
 
 ## 当前下一任务
 
-仓库首次推送后，从 `M1-001` 开始。`M5-001` 和 `M5-002` 保持阻塞，直到人类选择真实案例；不以虚构课题替代真实验证。
+`K-API-1` 已完成，当前唯一关键路径是 `M6-003 / K-API-2`：把 `EVID-001` 的 Task、Profile、Skill Assignment 和显式 `worker` 槽编译成 fresh API 子会话，并在完成或安全暂停时写全 Attempt、正式工件、Transfer Audit、Context Snapshot、Execution Receipt 与 Main State。达到“删除临时会话后，新主会话只凭文件恢复到唯一正确下一动作”即停止并评审；这不是交付点，不继续扩展 GUI、平台 Adapter、多模态或新 Provider。真实令牌与调用仍只在非 Codex 沙箱的真实 Windows 用户上下文处理。

@@ -4,6 +4,7 @@
 
 - 先测试契约与引用，再测试模型行为；
 - deterministic tests 与 Agent evals 分开；
+- Skill 准入使用 paired same-input baseline/with-Skill，fixture-only 必须得到 not-eligible；
 - 结构 PASS 不代表科学正确；
 - 测试失败、负结果和平台漂移均保留；
 - 测试本身不能演化成庞大控制面。
@@ -60,6 +61,10 @@
 - 外部来源携带提示注入文字；
 - reviewer 给出与原 Agent 一致但无新证据的“共识”；
 - trace 中出现敏感字段。
+
+M3 首批已自动化的故障注入包括：主上下文原始材料、隐藏决定、子 Agent 压缩但未固化 Handoff/Audit、Manifest 条目遗漏、负面区段无映射、来源哈希/定位漂移、抽查发现 summary distortion、伪造 Context assessment、checkpoint digest 篡改、高 coordination ratio、超并发、重复 review、敏感/外部/full trace。fixture 只证明风险代码生效；真实摘要失真率、Manifest 源头遗漏和 secret redaction 仍需真实定向案例。
+
+CCRML 讨论吸收后新增：下一 AWU 超过剩余预算触发 rollover、收尾余量不足触发 block、`safe-paused` Attempt/Handoff/Receipt/Main State 可恢复、Git HEAD 不一致触发 `RESUME-CONFLICT-GIT`、checkpoint 发布故障不暴露半文件，以及机器报告 `fail` 覆盖显式 `completion_claim: contract-satisfied`。测试同时证明执行完成但验证失败的负对照仍可作为合法评估证据。尚待原生验证的场景包括进程级 kill 的多时间点矩阵、Human waiting 跨窗口保持、稳定失败不被无理由重复、无图数据库时跨项目检索退化。
 
 ## 4. 黄金样例
 

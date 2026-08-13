@@ -25,6 +25,8 @@ not_claimed: scientifically_correct
 
 只在存在明确语义风险时启用，例如“此段总结是否超出引用”“这条 Claim 是否忽略已记录反证”。审查 Agent 只收到问题、相关工件和停止条件，不读取整个项目。
 
+Handoff 传递审计也遵循这一边界：确定性验证器先核对 Transfer Manifest 条目、来源哈希、Handoff JSON Pointer、必传项与负面区段覆盖；只有关键条目、假设、冲突、方法边界、负结果或人工决定等明确风险才要求独立人工抽样。`structurally-ready` 仅表示结构覆盖可解释，不表示摘要与来源语义等价。
+
 ### 第三层：Human Gate
 
 处理：方法选择、关键假设、伦理/安全、异常数据排除、因果解释、模型代表性、主要 Claim、不可逆操作和外部发布。
@@ -46,10 +48,20 @@ not_claimed: scientifically_correct
 |---|---|---|
 | CTX-MAIN-PRESSURE | 主上下文过载 | checkpoint / rollover |
 | CTX-HANDOFF-LOSS | 子 Agent 交接丢失关键内容 | BLOCK |
+| CTX-AUTO-COMPACTION | 主上下文发生非计划压缩 | 写 Main State 并 rollover |
+| CTX-HIDDEN-STATE | 决定只存在于聊天/隐式状态 | BLOCK，创建 Decision 工件 |
+| CTX-METRICS-UNKNOWN | 压力指标不可获得 | 显式保留 unknown，禁止成本结论 |
+| CTX-NEXT-AWU-UNSAFE | 剩余预算不足以覆盖下一原子单元和收尾余量 | 不开启新 AWU，进入 safe pause/rollover |
+| CTX-CLOSEOUT-RESERVE-INSUFFICIENT | 连最小收尾余量都无法覆盖 | BLOCK 扩展，立即持久化最小恢复状态 |
 | CTX-STALE | 使用旧 revision | BLOCK |
+| RESUME-CONFLICT-GIT | Main State 的 Git 基线与当前 HEAD 不同 | BLOCK，先解释或重建恢复状态 |
+| RECEIPT-VALIDATION-FAILED | 完成宣称引用的机器验证为失败 | BLOCK；机器证据覆盖自然语言状态 |
 | SKILL-CONFLICT | Skills 指令或契约冲突 | BLOCK |
 | SKILL-PERMISSION-ESCALATION | Skill 越权 | BLOCK |
 | SKILL-CONTEXT-FLOOD | Skill 过多/过长 | 拆 Task |
+| SKILL-NAMESPACE-COLLISION | 不同来源使用相同 Skill name，平台不会自动合并 | 以 accepted Registry + 来源哈希解析，等价项交人工选择 |
+| REGISTRY-SPLIT-BRAIN | Task、运行时和 Handoff 使用了不同 Registry 快照 | 冻结 registry digest，阻断合并 |
+| ASSIGNMENT-HANDOFF-DRIFT | Handoff 只写 Skill ID/version，遗漏实际内容哈希 | 对照 Attempt/Assignment lock；未补齐前不得 promotion |
 | CONSENSUS-CORRELATED | 多 Agent 同源错误被当共识 | 改用异质证据/工具或人类复核 |
 | COORD-INTERFACE | 协调接口多于有效工作 | 简化流程 |
 | WRITE-RACE | 并行写冲突 | BLOCK / 重新分区 |
@@ -62,12 +74,21 @@ not_claimed: scientifically_correct
 | REPRO-GAP | 缺代码、输入、参数或环境 | 降低 Claim / BLOCK release |
 | FRAMEWORK-BYPASS | 使用者经常绕过系统 | 简化所绕过机制 |
 | PLATFORM-DRIFT | Runtime/Skill 行为变化 | capability snapshot + 回归测试 |
+| ADAPTER-ENFORCEMENT-GAP | 平台 sandbox 只能限制工作区，不能强制 Task 子目录 | scoped-write 校验 + 独立任务目录；不得把提示约束称为平台强制 |
+| PROVIDER-SEMANTIC-DRIFT | 不同模型 API 对工具、结构化输出、缓存和停止原因语义不同 | capability negotiation + provider-specific contract tests；不做静默模拟 |
 | CLAIM-OVERREACH | Claim 超出 Evidence/Mode ceiling | 降级或 Human Gate |
 | SOURCE-QUALITY | 来源质量或定位不足 | 标记限制，定向检索 |
 | HANDOFF-OMITS-NEGATIVE | 失败/反证未传递 | BLOCK promotion |
+| HANDOFF-AUDIT-COVERAGE | Transfer Manifest 条目没有完整映射到 Handoff | BLOCK promotion |
+| HANDOFF-NEGATIVE-UNMAPPED | Handoff 中的限制、冲突、未决项或人工决定没有来源条目 | BLOCK promotion |
+| HANDOFF-SEMANTIC-REVIEW-REQUIRED | 关键或高风险条目尚未完成有界独立抽样 | BLOCK promotion，完成最小样本复核 |
+| HANDOFF-SUMMARY-DISTORTION | 抽样发现 Handoff 歪曲或无法验证来源语义 | BLOCK，修订 Handoff 并重新审计 |
 | DELEGATION-FANOUT | 递归/并发膨胀 | 停止新委派，合并任务树 |
+| COORDINATION-COST-HIGH | 协调/汇总/校核占比超过预算 | WARN，优先删 Agent、review 或字段 |
+| COST-USAGE-UNKNOWN | 真实模型运行没有可用量数据 | 不得宣称 token/成本收益 |
 | TOOL-OUTPUT-POISONING | 工具输出被当作高优先级指令 | 按不可信数据处理 |
-| TRACE-SENSITIVE-DATA | trace 泄漏数据/密钥 | 脱敏或关闭相关 tracing |
+| TRACE-SENSITIVE | trace 检测到敏感数据 | BLOCK，脱敏或删除 |
+| TRACE-DATA-BOUNDARY | 外部 trace 与本地数据边界冲突 | BLOCK |
 
 ## 5. Agent 复核准入
 

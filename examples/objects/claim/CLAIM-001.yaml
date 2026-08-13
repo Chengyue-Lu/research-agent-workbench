@@ -1,0 +1,13 @@
+schema_version: 0.1.0
+object_type: claim
+object_id: CLAIM-001
+revision: 1
+status: active
+statement: The fixture is suitable for structural validation only.
+strength: source_reported
+support_refs: [EVID-001-01@1]
+counterevidence_refs: []
+limitations:
+  - The claim does not generalize to scientific quality.
+metadata:
+  fixture: true

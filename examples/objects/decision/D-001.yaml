@@ -1,0 +1,12 @@
+schema_version: 0.1.0
+object_type: decision
+object_id: D-001
+revision: 1
+status: accepted
+decision: Keep the example strictly synthetic and structurally scoped.
+scope: [examples]
+reason_refs: [CLAIM-001@1]
+actor: human-maintainer
+timestamp: "2026-08-13T00:00:00Z"
+metadata:
+  fixture: true

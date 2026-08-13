@@ -1,0 +1,399 @@
+{
+  "schema_version": "0.1.0",
+  "registry_kind": "skill_candidates",
+  "generated_at": "2026-08-13",
+  "policy": {
+    "default_state": "discovered",
+    "accepted_requires": [
+      "license_review",
+      "script_and_network_audit",
+      "trigger_and_non_trigger_tests",
+      "success_and_boundary_failure_fixture",
+      "context_cost_measurement",
+      "pinned_content_hash"
+    ],
+    "note": "Source trust labels and catalog review claims are not inherited by this registry."
+  },
+  "candidates": [
+    {
+      "candidate_id": "rc-experiment-design",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/experiment-design/SKILL.md",
+      "content_hash": "sha256:ff930b27e369805296829950fb74bf6737c4d51f9e236c2d87753170de970dda",
+      "status": "triage",
+      "kind": "method",
+      "capabilities": ["experiment-design", "power-planning", "randomization", "design-of-experiments"],
+      "applicable_modes": ["experiment"],
+      "context_cost": "medium",
+      "risk_flags": ["bundled-python", "optional-statistics-dependencies", "frontmatter-normalization-required"],
+      "decision": {
+        "action": "derive-minimal-skill",
+        "reason": "Bounded pre-data-collection scope and deterministic scripts are useful, but assumptions, power claims, and dependencies require method review."
+      }
+    },
+    {
+      "candidate_id": "rc-papercheck",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/papercheck/SKILL.md",
+      "content_hash": "sha256:f5d6109f559eba0535111d3c3fd5183b6ca29c8530c9c5ae04e7655329a8ad71",
+      "status": "triage",
+      "kind": "integrity",
+      "capabilities": ["citation-audit", "claim-source-check", "manuscript-integrity"],
+      "applicable_modes": ["evidence-synthesis", "theory", "experiment", "simulation"],
+      "context_cost": "low",
+      "risk_flags": ["bundled-python", "citation-resolution-can-use-network"],
+      "decision": {
+        "action": "extract-deterministic-checks",
+        "reason": "Local citation and claim checks align with the integrity layer; semantic scientific review must remain separate."
+      }
+    },
+    {
+      "candidate_id": "rc-giiisp-paper-search-apis",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/giiisp-paper-search-apis/SKILL.md",
+      "content_hash": "sha256:b9938f75c2dca9b0989dde2f5590a983a01b97d311669fe7fa270a5be761bde8",
+      "status": "triage",
+      "kind": "tool",
+      "capabilities": ["paper-search", "search-fallback", "result-normalization", "citation-audit-support"],
+      "applicable_modes": ["evidence-synthesis"],
+      "context_cost": "high",
+      "risk_flags": ["single-service-default", "credentialed-external-api", "research-data-egress", "license-not-detected", "255-line-instructions"],
+      "decision": {
+        "action": "extract-provider-neutral-search-contract",
+        "reason": "Its request planning, failure classification, normalization, and open-source fallback are useful; the accepted tool port must not privilege one endpoint or upload data without policy negotiation."
+      }
+    },
+    {
+      "candidate_id": "rc-thesis-audit-reviewer",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/thesis-audit-reviewer/SKILL.md",
+      "content_hash": "sha256:f5886b0a79d80f64bc151f821e32765c6bdccb2329224336ff9125e9f5da3806",
+      "status": "reference",
+      "kind": "integrity",
+      "capabilities": ["document-audit", "finding-traceability", "coverage-ledger", "completion-gate"],
+      "applicable_modes": ["reporting", "cross-cutting"],
+      "context_cost": "high",
+      "risk_flags": ["broad-audit-operating-system", "online-pdf-upload-default", "many-script-dependencies", "semantic-review-cost", "license-not-detected"],
+      "decision": {
+        "action": "extract-ledger-and-gate-patterns",
+        "reason": "Location, evidence basis, coverage denominator, and residual-risk gates are useful integrity patterns; the full thesis workflow is too broad and contains upload assumptions."
+      }
+    },
+    {
+      "candidate_id": "rc-academic-writing",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/academic-writing/SKILL.md",
+      "content_hash": "sha256:2ef2f673dec57e39ca162f7cd0af3c438f8ada12730b288d0eda642add160154",
+      "status": "reference",
+      "kind": "output",
+      "capabilities": ["manuscript-drafting", "peer-review-formatting", "revision-response", "submission-materials"],
+      "applicable_modes": ["reporting"],
+      "context_cost": "high",
+      "risk_flags": ["multi-workflow-bundle", "semantic-review-fanout", "reporting-standards-require-version-review", "frontmatter-normalization-required"],
+      "decision": {
+        "action": "defer-and-split-by-output-contract",
+        "reason": "Writing and response templates may be useful later, but drafting, review, grants, and submission should not be admitted as one global Skill."
+      }
+    },
+    {
+      "candidate_id": "rc-scispark",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/scispark/SKILL.md",
+      "content_hash": "sha256:aa24c2c68047c9c432be4d18ffe8d1339675595e948a47261358200b4ea1009b",
+      "status": "reference",
+      "kind": "method",
+      "capabilities": ["fact-hypothesis-separation", "staged-idea-generation", "evidence-thresholding", "review-ledger"],
+      "applicable_modes": ["evidence-synthesis", "theory"],
+      "context_cost": "high",
+      "risk_flags": ["broad-seven-stage-workflow", "paper-count-thresholds-not-domain-general", "idea-to-proposal-overreach", "coordination-cost", "license-not-detected"],
+      "decision": {
+        "action": "extract-stage-contracts-only",
+        "reason": "Stable hypothesis and review IDs are useful; a fixed seven-stage pipeline and paper-count thresholds should not become a cross-discipline global research process."
+      }
+    },
+    {
+      "candidate_id": "rc-research-baseline-builder",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/research-baseline-builder/SKILL.md",
+      "content_hash": "sha256:abd78c01841603828cfecf5b5be800c383bb27ed101b49158e3be00d13a0fd5b",
+      "status": "reference",
+      "kind": "method",
+      "capabilities": ["baseline-selection", "evaluation-framing", "ablation-planning"],
+      "applicable_modes": ["experiment", "simulation", "observational-statistics"],
+      "context_cost": "high",
+      "risk_flags": ["model-specific-templates", "dependency-heavy", "broad-output-orchestration"],
+      "decision": {
+        "action": "extract-contract-ideas-only",
+        "reason": "Its input/output/sample/baseline decomposition is valuable, but the bundled workflow is too broad for one reusable skill."
+      }
+    },
+    {
+      "candidate_id": "rc-find-science-skills",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/find-science-skills-mcp/SKILL.md",
+      "content_hash": "sha256:d25fcefc97d1972e27c749795b5b5859827c76f7d4918331500689cff8ee41f4",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["skill-discovery", "catalog-filtering", "metadata-ranking"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "low",
+      "risk_flags": ["catalog-trust-claims-not-transferable", "large-third-party-catalog"],
+      "decision": {
+        "action": "adopt-discovery-pattern-not-catalog",
+        "reason": "Deterministic metadata filtering is useful. The embedded 1391-entry catalog remains an unverified discovery source, not an admission decision."
+      }
+    },
+    {
+      "candidate_id": "rc-skill-criticagent",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/skill-criticagent/SKILL.md",
+      "content_hash": "sha256:ab063cc612239eb95f41b4a76982344f4d569b906d47b0adb4f4b09daa3e1dec",
+      "status": "reference",
+      "kind": "integrity",
+      "capabilities": ["skill-trigger-testing", "with-without-evaluation", "skill-security-review"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "medium",
+      "risk_flags": ["recursive-agent-evaluation", "external-runtime-assumptions", "coordination-cost"],
+      "decision": {
+        "action": "extract-evaluation-cases-only",
+        "reason": "Trigger, non-trigger, boundary, and with/without tests are useful; a critic agent must not become a permanent recursive control plane."
+      }
+    },
+    {
+      "candidate_id": "rc-sci-employee-deep-research",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/sci-employee-deep-research/SKILL.md",
+      "content_hash": "sha256:46bacaaa126975422bcff343fc1fb893d566805a4eb697c384092af3a8d7ef10",
+      "status": "quarantine",
+      "kind": "tool",
+      "capabilities": ["deep-research-api", "reference-return"],
+      "applicable_modes": ["evidence-synthesis"],
+      "context_cost": "medium",
+      "risk_flags": ["hardcoded-plain-http-endpoint", "hardcoded-vendor-models", "external-data-upload", "unknown-service-operator"],
+      "decision": {
+        "action": "do-not-execute-or-adopt",
+        "reason": "The skill sends research content to a hardcoded public HTTP service and binds execution to one provider family."
+      }
+    },
+    {
+      "candidate_id": "rc-visual-deck-builder",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/visual-deck-builder/SKILL.md",
+      "content_hash": "sha256:3b44c72a758fe33c22f761c02622136ff83d0d4401a59f93f443bae03f1dc1d7",
+      "status": "rejected",
+      "kind": "output",
+      "capabilities": ["presentation-generation"],
+      "applicable_modes": ["reporting"],
+      "context_cost": "extreme",
+      "risk_flags": ["623-line-skill-body", "context-flood", "outside-first-vertical-slice"],
+      "decision": {
+        "action": "exclude-from-core-roadmap",
+        "reason": "Presentation production is not a current research-kernel need and this single skill imposes excessive instruction context."
+      }
+    },
+    {
+      "candidate_id": "rc-cognitive-profile",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/cognitive-profile/SKILL.md",
+      "content_hash": "sha256:a6d36a0106a16604e2a5558a0569f9475ad1bcf71222c8e629a51b44cfdd99a2",
+      "status": "rejected",
+      "kind": "method",
+      "capabilities": ["user-profile-memory"],
+      "applicable_modes": ["personalization"],
+      "context_cost": "medium",
+      "risk_flags": ["sensitive-user-model", "long-term-memory-expansion", "not-research-method"],
+      "decision": {
+        "action": "exclude-from-project",
+        "reason": "Persistent cognitive profiling increases privacy and context risks without improving the research object model."
+      }
+    },
+    {
+      "candidate_id": "rc-giiisp-scientific-image-generation",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/giiisp-scientific-image-generation/SKILL.md",
+      "content_hash": "sha256:27e44acf2707e9d5f867ed0de9c9d102e633c4e69b08fa1c9f0f81d36f100429",
+      "status": "quarantine",
+      "kind": "output",
+      "capabilities": ["scientific-figure-generation", "figure-lineage", "visual-quality-audit"],
+      "applicable_modes": ["experiment", "simulation", "reporting"],
+      "context_cost": "extreme",
+      "risk_flags": ["hardcoded-plain-http-endpoint", "credentialed-external-api", "research-content-upload", "provider-bound-vlm", "generated-process-execution", "15-bundled-scripts", "license-not-detected", "381-line-instructions"],
+      "decision": {
+        "action": "extract-figure-contracts-only",
+        "reason": "Figure specifications, lineage, and visual gates may be useful, but the package uploads research content to a hardcoded plain-HTTP service, reads credentials, invokes external models, and can execute repair scripts."
+      }
+    },
+    {
+      "candidate_id": "rc-manim-agent",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/manim-agent/SKILL.md",
+      "content_hash": "sha256:c0db5c644a228f3a2b387e834b0557ec4e6f596a46ec8fba09429432d41aeb3a",
+      "status": "reference",
+      "kind": "output",
+      "capabilities": ["formula-visualization", "animation-production", "render-validation"],
+      "applicable_modes": ["theory", "reporting"],
+      "context_cost": "low",
+      "risk_flags": ["repository-clone-and-install", "generated-code-execution", "provider-bound-endpoint-and-model", "heavy-media-dependencies", "credential-access", "license-not-detected"],
+      "decision": {
+        "action": "extract-artifact-and-verification-gates",
+        "reason": "Animation output and render checks are useful optional patterns, but cloning a runtime, installing dependencies, binding one provider, and executing generated Manim code do not belong in the research kernel."
+      }
+    },
+    {
+      "candidate_id": "rc-mcp-criticagent",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/mcp-criticagent/SKILL.md",
+      "content_hash": "sha256:bb756938ce9ef9c61c22a6cfaa800311779c6b68917839a7255b41e908b7d263",
+      "status": "reference",
+      "kind": "integrity",
+      "capabilities": ["tool-protocol-test", "tool-behavior-test", "repository-health-audit"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "low",
+      "risk_flags": ["executes-untrusted-npm", "external-registry-and-github-access", "optional-result-export", "popularity-score-proxy", "smart-test-model-cost", "recursive-meta-evaluation", "license-not-detected"],
+      "decision": {
+        "action": "extract-layered-verdict-pattern",
+        "reason": "Separating deployment, protocol, behavior, and maintenance evidence is useful; executing arbitrary packages and adding another AI critic would increase supply-chain and recursive review costs."
+      }
+    },
+    {
+      "candidate_id": "rc-practical-course-producer",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/practical-course-producer/SKILL.md",
+      "content_hash": "sha256:0a6f4ba279b40e03bb26b86edf70f2eee98e2d7931951172450e2d2357849deb",
+      "status": "rejected",
+      "kind": "output",
+      "capabilities": ["tutorial-video-production", "course-production", "media-quality-audit"],
+      "applicable_modes": ["reporting"],
+      "context_cost": "high",
+      "risk_flags": ["media-production-outside-scope", "credentialed-external-tts", "generated-process-execution", "ffmpeg-and-browser-dependencies", "12-bundled-scripts", "license-not-detected", "278-line-instructions"],
+      "decision": {
+        "action": "exclude-from-core-roadmap",
+        "reason": "Course and video production is not a research-method or integrity need for the current workbench and would add a large external media toolchain."
+      }
+    },
+    {
+      "candidate_id": "rc-scientific-humanization",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/scientific-humanization/SKILL.md",
+      "content_hash": "sha256:4dbff8ce9a2f394e9e7c782e52d808382add666a6c71532e6a9708560ddd2a36",
+      "status": "reference",
+      "kind": "integrity",
+      "capabilities": ["claim-preserving-rewrite", "evidence-strength-calibration", "fact-lock", "scientific-style-revision"],
+      "applicable_modes": ["evidence-synthesis", "theory", "experiment", "simulation", "reporting"],
+      "context_cost": "low",
+      "risk_flags": ["semantic-rewrite-can-alter-claims", "domain-boundary-tests-required", "overlaps-writing-skills", "human-review-required", "license-not-detected"],
+      "decision": {
+        "action": "retain-constraints-as-reference",
+        "reason": "Fact, number, citation, and evidence-strength locks are useful design constraints, but the unlicensed source package is not vendored; an independently implemented repository candidate carries the evaluation work."
+      }
+    },
+    {
+      "candidate_id": "rwb-claim-preserving-rewrite",
+      "source_id": "rwb-derived-claim-preserving-rewrite-0.1.0",
+      "source_path": "skill-lab/candidates/claim-preserving-rewrite/SKILL.md",
+      "content_hash": "sha256:0e9f0753cdfdf02104b1539656c2dc7b261713162be07c902abf6bb9bc6069af",
+      "package_hash": "sha256:11d1673ab7c5200552dc95383c2fc30c4c6a04c38f171a0e1a80f67531576809",
+      "status": "triage",
+      "kind": "integrity",
+      "capabilities": ["claim-preserving-rewrite", "evidence-strength-calibration", "surface-invariant-check"],
+      "applicable_modes": ["evidence-synthesis", "theory", "experiment", "simulation", "reporting"],
+      "context_cost": "low",
+      "risk_flags": ["surface-checks-not-semantic-proof", "false-positive-gates-possible", "human-review-required", "with-without-forward-test-pending", "project-original-unlicensed", "non-discoverable-candidate"],
+      "decision": {
+        "action": "run-adversarial-and-with-without-evaluation",
+        "reason": "The independently implemented candidate is bounded, offline, and deterministically checks surface invariants, but it remains outside runtime discovery until semantic drift and incremental value are measured on representative tasks."
+      }
+    },
+    {
+      "candidate_id": "rc-world-threads-entry",
+      "source_id": "research-copilot-archive-1.0.0",
+      "source_path": "research-copilot/1.0.0/skills/world-threads-entry/SKILL.md",
+      "content_hash": "sha256:826979da2fb64678614237c2523cca6997cf24968a980cebd7b6a9d43586c4e6",
+      "status": "rejected",
+      "kind": "tool",
+      "capabilities": ["social-thread-operation", "external-account-state", "notification-handling"],
+      "applicable_modes": ["personalization"],
+      "context_cost": "low",
+      "risk_flags": ["external-account-actions", "engagement-and-points-optimization", "bind-key-handling", "persistent-remote-identity", "remote-skill-update", "not-research-method", "license-not-detected"],
+      "decision": {
+        "action": "exclude-from-project",
+        "reason": "Operating a social account, engagement loop, and points system is unrelated to research quality and introduces persistent external identity and write-side effects."
+      }
+    },
+    {
+      "candidate_id": "kdense-citation-management",
+      "source_id": "k-dense-scientific-agent-skills",
+      "source_path": "skills/citation-management/SKILL.md",
+      "status": "discovered",
+      "kind": "integrity",
+      "capabilities": ["citation-management", "metadata-validation", "bibtex-formatting"],
+      "applicable_modes": ["evidence-synthesis", "theory", "experiment", "simulation"],
+      "context_cost": "unknown",
+      "risk_flags": ["large-skill-suite", "network-search-scripts", "individual-file-audit-pending"],
+      "decision": {
+        "action": "shortlist-for-triage",
+        "reason": "Granular citation tooling could support evidence integrity, but the individual skill and scripts have not yet been audited."
+      }
+    },
+    {
+      "candidate_id": "lingzhi-backward-traceability",
+      "source_id": "lingzhi-agent-research-skills",
+      "source_path": "skills/backward-traceability/SKILL.md",
+      "status": "discovered",
+      "kind": "integrity",
+      "capabilities": ["numeric-value-traceability", "claim-source-check"],
+      "applicable_modes": ["evidence-synthesis", "theory", "experiment", "simulation"],
+      "context_cost": "unknown",
+      "risk_flags": ["repository-license-not-detected", "bundled-python", "install-script-not-admitted"],
+      "decision": {
+        "action": "license-and-script-audit-first",
+        "reason": "Backward traceability maps well to Claim-Evidence integrity, but no reuse decision is possible without a license review."
+      }
+    },
+    {
+      "candidate_id": "ngtiendong-claim-verification-pattern",
+      "source_id": "ngtiendong-academic-research-agent-skill",
+      "source_path": "_agents/rules/claim_verification.md",
+      "status": "reference",
+      "kind": "integrity",
+      "capabilities": ["claim-verification", "reviewer-simulation"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "high",
+      "risk_flags": ["large-lifecycle-workflow", "many-role-pattern", "semantic-review-cost"],
+      "decision": {
+        "action": "extract-human-gate-patterns",
+        "reason": "The human-guided gates and claim checks are useful references, but the full lifecycle should not become a mandatory global workflow."
+      }
+    },
+    {
+      "candidate_id": "anthropic-skill-format-reference",
+      "source_id": "anthropic-skills",
+      "source_path": "skills/skill-creator/SKILL.md",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["skill-authoring", "progressive-disclosure"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "low",
+      "risk_flags": ["file-level-license-review"],
+      "decision": {
+        "action": "use-as-structural-reference",
+        "reason": "Useful for skill packaging conventions; it is not a research method and is not copied into the runtime."
+      }
+    },
+    {
+      "candidate_id": "openai-skill-format-reference",
+      "source_id": "openai-skills",
+      "source_path": "skills/.curated/openai-docs/SKILL.md",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["skill-authoring", "official-document-routing"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "low",
+      "risk_flags": ["provider-specific-content", "file-level-license-review"],
+      "decision": {
+        "action": "use-as-portability-reference",
+        "reason": "Useful for understanding Codex skill structure and source discipline; provider-specific content stays outside the research kernel."
+      }
+    }
+  ]
+}

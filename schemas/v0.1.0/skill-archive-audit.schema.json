@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/skill-archive-audit.schema.json",
+  "title": "Skill Archive Audit",
+  "x-rwb-document-kind": "skill_archive_audit",
+  "type": "object",
+  "required": [
+    "schema_version", "report_id", "source_id", "generated_at", "archive",
+    "policy", "summary", "archive_integrity", "coverage", "archive_signals",
+    "skills", "limitations"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "report_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "source_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "archive": {
+      "type": "object",
+      "required": ["name", "sha256", "size_bytes"],
+      "properties": {
+        "name": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "sha256": { "$ref": "common.schema.json#/$defs/sha256" },
+        "size_bytes": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "policy": {
+      "type": "object",
+      "required": [
+        "mode", "extracted", "executed", "network_used", "max_archive_entries",
+        "max_uncompressed_bytes", "max_text_entry_bytes", "max_total_text_bytes",
+        "snippets_retained"
+      ],
+      "properties": {
+        "mode": { "const": "read-only-static" },
+        "extracted": { "const": false },
+        "executed": { "const": false },
+        "network_used": { "const": false },
+        "max_archive_entries": { "type": "integer", "minimum": 1 },
+        "max_uncompressed_bytes": { "type": "integer", "minimum": 1 },
+        "max_text_entry_bytes": { "type": "integer", "minimum": 1 },
+        "max_total_text_bytes": { "type": "integer", "minimum": 1 },
+        "snippets_retained": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "archive_entry_count", "file_count", "total_uncompressed_bytes", "skill_count",
+        "script_file_count", "text_file_count_scanned", "text_bytes_scanned",
+        "text_scan_complete", "registered_skill_count", "unregistered_skill_count"
+      ],
+      "properties": {
+        "archive_entry_count": { "type": "integer", "minimum": 1 },
+        "file_count": { "type": "integer", "minimum": 1 },
+        "total_uncompressed_bytes": { "type": "integer", "minimum": 1 },
+        "skill_count": { "type": "integer", "minimum": 1 },
+        "script_file_count": { "type": "integer", "minimum": 0 },
+        "text_file_count_scanned": { "type": "integer", "minimum": 1 },
+        "text_bytes_scanned": { "type": "integer", "minimum": 1 },
+        "text_scan_complete": { "type": "boolean" },
+        "registered_skill_count": { "type": "integer", "minimum": 0 },
+        "unregistered_skill_count": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "archive_integrity": {
+      "type": "object",
+      "required": [
+        "unsafe_paths", "unsafe_paths_truncated", "duplicate_paths",
+        "duplicate_paths_truncated", "encrypted_paths", "encrypted_paths_truncated",
+        "symlink_paths", "symlink_paths_truncated", "skipped_text_paths",
+        "skipped_text_paths_truncated"
+      ],
+      "properties": {
+        "unsafe_paths": { "$ref": "#/$defs/pathArray" },
+        "unsafe_paths_truncated": { "type": "boolean" },
+        "duplicate_paths": { "$ref": "#/$defs/pathArray" },
+        "duplicate_paths_truncated": { "type": "boolean" },
+        "encrypted_paths": { "$ref": "#/$defs/pathArray" },
+        "encrypted_paths_truncated": { "type": "boolean" },
+        "symlink_paths": { "$ref": "#/$defs/pathArray" },
+        "symlink_paths_truncated": { "type": "boolean" },
+        "skipped_text_paths": { "$ref": "#/$defs/pathArray" },
+        "skipped_text_paths_truncated": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "coverage": {
+      "type": "object",
+      "required": [
+        "candidate_registry_checked", "unregistered_skill_paths",
+        "candidate_paths_missing_from_archive"
+      ],
+      "properties": {
+        "candidate_registry_checked": { "type": "boolean" },
+        "unregistered_skill_paths": { "$ref": "#/$defs/pathArray" },
+        "candidate_paths_missing_from_archive": { "$ref": "#/$defs/pathArray" }
+      },
+      "additionalProperties": false
+    },
+    "archive_signals": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/signal" }
+    },
+    "skills": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/skill" }
+    },
+    "limitations": { "$ref": "common.schema.json#/$defs/stringArray" }
+  },
+  "$defs": {
+    "pathArray": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "uniqueItems": true
+    },
+    "signal": {
+      "type": "object",
+      "required": ["rule_id", "severity", "occurrences", "file_paths", "paths_truncated"],
+      "properties": {
+        "rule_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "severity": { "enum": ["high", "medium", "info"] },
+        "occurrences": { "type": "integer", "minimum": 1 },
+        "file_paths": { "$ref": "#/$defs/pathArray" },
+        "paths_truncated": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "skill": {
+      "type": "object",
+      "required": [
+        "source_path", "declared_name", "frontmatter_status", "content_hash",
+        "instruction_bytes", "instruction_lines", "context_cost_estimate",
+        "package_file_count", "script_file_count", "script_paths_sample",
+        "script_paths_truncated", "binary_file_count", "binary_paths_sample",
+        "license_files", "registered_candidate", "signals"
+      ],
+      "properties": {
+        "source_path": { "$ref": "common.schema.json#/$defs/relativePath" },
+        "declared_name": {
+          "oneOf": [
+            { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+            { "type": "null" }
+          ]
+        },
+        "frontmatter_status": { "enum": ["parsed", "missing", "invalid"] },
+        "content_hash": { "$ref": "common.schema.json#/$defs/sha256" },
+        "instruction_bytes": { "type": "integer", "minimum": 1 },
+        "instruction_lines": { "type": "integer", "minimum": 1 },
+        "context_cost_estimate": { "enum": ["low", "medium", "high", "extreme"] },
+        "package_file_count": { "type": "integer", "minimum": 0 },
+        "script_file_count": { "type": "integer", "minimum": 0 },
+        "script_paths_sample": { "$ref": "#/$defs/pathArray" },
+        "script_paths_truncated": { "type": "boolean" },
+        "binary_file_count": { "type": "integer", "minimum": 0 },
+        "binary_paths_sample": { "$ref": "#/$defs/pathArray" },
+        "license_files": { "$ref": "#/$defs/pathArray" },
+        "registered_candidate": { "type": "boolean" },
+        "signals": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/signal" }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

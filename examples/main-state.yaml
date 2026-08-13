@@ -1,0 +1,32 @@
+schema_version: 0.1.0
+checkpoint_id: MS-0001
+continuity_status: active
+project_protocol_ref: examples/project-protocol.yaml@1
+current_questions: [Q-001@1]
+pinned_constraints:
+  - Local data must not be uploaded.
+  - Claim ceiling is simulation_supported or source_reported.
+accepted_decisions: [D-001@1]
+active_tasks:
+  - task_id: SIM-001
+    status: ready
+    expected_handoff: examples/handoffs/SIM-001.yaml
+recent_handoffs:
+  - ref: examples/handoff-evidence.yaml
+    disposition: accepted-with-limitations
+open_conflicts: []
+open_risks: [REPRO-GAP]
+next_actions:
+  - Validate the simulation fixture handoff.
+artifact_index_refs: []
+machine_state_refs:
+  - path: examples/observability/context-main-warn.yaml
+    sha256: 7dd5592db43bde1d52dbffb49b227135e98d85bf1dea0f97fb08e76999288a09
+  - path: examples/project-protocol.yaml
+    sha256: ec82e730b020c9e78ed9c00985cc37cac867e954c81f8ce8220a1021bdb0c209
+  - path: examples/task-simulation.yaml
+    sha256: fdc5b46774d903b2330940add700ce1d4ab709e36a3609a76655b400e7f56158
+rollover_reason: Synthetic checkpoint fixture.
+created_at: "2026-08-13T01:01:00Z"
+context_snapshot_ref: examples/observability/context-main-warn.yaml
+checkpoint_digest: 03290b606f7ac5ec6a6de6be4746aff08da9fe752171a80de6ed9f8e5e1f3ab3

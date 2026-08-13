@@ -1,0 +1,12 @@
+schema_version: 0.1.0
+object_type: run
+object_id: RUN-001
+revision: 1
+status: completed
+method_ref: METH-001@1
+input_refs: [INPUT-SYNTHETIC-001@1]
+environment_ref: ENV-FIXTURE-001@1
+started_at: "2026-08-13T00:00:00Z"
+output_refs: [EVID-001-01@1]
+metadata:
+  fixture: true

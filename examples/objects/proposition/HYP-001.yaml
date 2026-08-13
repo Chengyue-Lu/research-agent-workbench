@@ -1,0 +1,11 @@
+schema_version: 0.1.0
+object_type: hypothesis
+object_id: HYP-001
+revision: 1
+status: proposed
+statement: The bounded synthetic source supports the demonstration claim.
+assumptions:
+  - Fixture text is treated only as structural input.
+applicability: [synthetic-fixture-only]
+metadata:
+  fixture: true

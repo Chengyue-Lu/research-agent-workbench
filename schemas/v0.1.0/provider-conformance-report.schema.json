@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/provider-conformance-report.schema.json",
+  "title": "Provider Conformance Report",
+  "x-rwb-document-kind": "provider_conformance_report",
+  "type": "object",
+  "required": [
+    "schema_version", "report_id", "adapter_id", "provider", "adapter_version",
+    "execution_context", "requested_model", "observed_models", "started_at",
+    "finished_at", "status", "checks", "budget", "privacy", "limitations"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "report_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "adapter_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "provider": { "enum": ["openai", "anthropic", "google"] },
+    "adapter_version": { "$ref": "common.schema.json#/$defs/semver" },
+    "execution_context": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "requested_model": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "observed_models": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "uniqueItems": true
+    },
+    "started_at": { "type": "string", "format": "date-time" },
+    "finished_at": { "type": "string", "format": "date-time" },
+    "status": { "enum": ["passed", "failed"] },
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["check", "status", "output_kinds", "tool_call_count", "warnings_count"],
+        "properties": {
+          "check": { "enum": ["text", "structured", "tools"] },
+          "status": { "enum": ["passed", "failed", "not-run"] },
+          "finish_reason": {
+            "enum": [
+              "complete", "tool_call", "length", "stop", "refusal", "paused",
+              "context_limit", "error", "unknown"
+            ]
+          },
+          "output_kinds": {
+            "type": "array",
+            "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+          },
+          "tool_call_count": { "type": "integer", "minimum": 0 },
+          "warnings_count": { "type": "integer", "minimum": 0 },
+          "input_tokens": { "type": "integer", "minimum": 0 },
+          "output_tokens": { "type": "integer", "minimum": 0 },
+          "cached_input_tokens": { "type": "integer", "minimum": 0 },
+          "reasoning_tokens": { "type": "integer", "minimum": 0 },
+          "error_category": {
+            "enum": [
+              "authentication", "permission", "invalid_request", "unsupported",
+              "rate_limit", "transient", "safety_refusal", "context_limit",
+              "cancelled", "contract_violation", "unknown"
+            ]
+          },
+          "error_status_code": { "type": "integer", "minimum": 100, "maximum": 599 },
+          "error_retryable": { "type": "boolean" },
+          "failure_code": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "budget": {
+      "type": "object",
+      "required": [
+        "max_provider_invocations", "max_output_tokens_per_invocation",
+        "provider_invocations", "successful_responses", "elapsed_seconds"
+      ],
+      "properties": {
+        "max_provider_invocations": { "type": "integer", "minimum": 1, "maximum": 3 },
+        "max_output_tokens_per_invocation": { "type": "integer", "minimum": 16, "maximum": 256 },
+        "provider_invocations": { "type": "integer", "minimum": 0, "maximum": 3 },
+        "successful_responses": { "type": "integer", "minimum": 0, "maximum": 3 },
+        "elapsed_seconds": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "privacy": {
+      "type": "object",
+      "required": [
+        "fixed_synthetic_prompts_only", "credential_values_stored",
+        "request_content_stored", "response_content_stored",
+        "provider_response_ids_stored", "tool_arguments_stored"
+      ],
+      "properties": {
+        "fixed_synthetic_prompts_only": { "const": true },
+        "credential_values_stored": { "const": false },
+        "request_content_stored": { "const": false },
+        "response_content_stored": { "const": false },
+        "provider_response_ids_stored": { "const": false },
+        "tool_arguments_stored": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "limitations": { "$ref": "common.schema.json#/$defs/stringArray" }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/research-mode.schema.json",
+  "title": "Research Mode",
+  "x-rwb-document-kind": "research_mode",
+  "type": "object",
+  "required": [
+    "schema_version", "mode_id", "version", "applies_when", "required_artifact_types",
+    "recommended_skill_capabilities", "claim_rules", "human_decisions", "risk_rules"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "mode_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "version": { "$ref": "common.schema.json#/$defs/semver" },
+    "applies_when": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "required_artifact_types": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "recommended_skill_capabilities": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "claim_rules": {
+      "type": "object",
+      "required": ["allows"],
+      "properties": {
+        "allows": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "forbids_without_other_mode": { "$ref": "common.schema.json#/$defs/stringArray" }
+      },
+      "additionalProperties": false
+    },
+    "human_decisions": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "risk_rules": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "metadata": { "type": "object" }
+  },
+  "additionalProperties": false
+}

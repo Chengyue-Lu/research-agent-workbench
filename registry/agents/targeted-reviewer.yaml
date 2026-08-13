@@ -1,0 +1,19 @@
+schema_version: 0.1.0
+agent_profile_id: targeted-reviewer
+version: 0.1.0
+purpose: Review one declared risk or contract boundary without reopening the whole research task.
+model_policy:
+  class: targeted-critical-review
+  default_slot: worker
+  reasoning: medium
+  runtime_aliases: {codex: targeted_reviewer}
+permission_ceiling:
+  filesystem: worktree-write
+  network: forbidden
+  external_write: forbidden
+  allowed_roots: [work]
+allowed_tool_capabilities: [file-read, document-read, structured-output]
+default_context_policy: isolated-risk-slice
+delegation:
+  allowed: false
+output_contracts: [validation-report, handoff-packet]

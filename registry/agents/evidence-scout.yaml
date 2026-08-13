@@ -1,0 +1,19 @@
+schema_version: 0.1.0
+agent_profile_id: evidence-scout
+version: 0.1.0
+purpose: Perform read-heavy evidence extraction inside an explicit source and write boundary.
+model_policy:
+  class: efficient-read-heavy
+  default_slot: worker
+  reasoning: medium
+  runtime_aliases: {codex: evidence_scout}
+permission_ceiling:
+  filesystem: worktree-write
+  network: search-and-fetch
+  external_write: forbidden
+  allowed_roots: [work]
+allowed_tool_capabilities: [file-read, web-search, document-read, citation-resolve]
+default_context_policy: isolated-task
+delegation:
+  allowed: false
+output_contracts: [evidence-record, handoff-transfer-manifest, handoff-packet]

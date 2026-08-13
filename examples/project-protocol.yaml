@@ -19,6 +19,14 @@ budgets:
 context_policy:
   proactive_checkpoint: true
   main_raw_material: forbidden
+  pressure_thresholds:
+    loaded_chars: {warn: 24000, rollover: 48000}
+    pinned_chars: {warn: 4000, rollover: 8000}
+    skill_instruction_chars: {warn: 6000, rollover: 12000}
+    recent_handoffs: {warn: 4, rollover: 8}
+    open_items: {warn: 8, rollover: 16}
+    turns: {warn: 20, rollover: 40}
+    long_tool_outputs: {warn: 3, rollover: 6}
 data_boundary:
   local_only: true
   external_upload_requires_approval: true

@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/task-packet.schema.json",
+  "title": "Task Packet",
+  "x-rwb-document-kind": "task_packet",
+  "type": "object",
+  "required": [
+    "schema_version", "task_id", "goal", "question_refs", "active_modes",
+    "required_capabilities", "required_skills", "forbidden_skills", "agent_profile",
+    "input_refs", "write_scope", "required_outputs", "permissions", "delegation",
+    "budget", "atomic_boundary", "completion_checks", "safe_pause_conditions",
+    "stop_conditions", "stale_if"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "task_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "revision": { "type": "integer", "minimum": 1 },
+    "goal": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "question_refs": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "active_modes": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "required_capabilities": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "required_skills": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "forbidden_skills": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "agent_profile": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "input_refs": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/fileRef" }
+    },
+    "write_scope": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/relativePath" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "required_outputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          {
+            "type": "object",
+            "required": ["contract"],
+            "properties": {
+              "contract": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+              "min_count": { "type": "integer", "minimum": 0 }
+            },
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "permissions": { "$ref": "common.schema.json#/$defs/permissions" },
+    "delegation": {
+      "type": "object",
+      "required": ["allowed"],
+      "properties": {
+        "allowed": { "type": "boolean" },
+        "max_depth": { "type": "integer", "minimum": 0 },
+        "max_parallel": { "type": "integer", "minimum": 0 },
+        "sub_budget": { "type": "object" }
+      },
+      "additionalProperties": false
+    },
+    "budget": {
+      "type": "object",
+      "properties": {
+        "max_turns": { "type": "integer", "minimum": 1 },
+        "max_output_tokens": { "type": "integer", "minimum": 1 },
+        "max_seconds": { "type": "integer", "minimum": 1 }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    },
+    "atomic_boundary": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "completion_checks": {
+      "allOf": [
+        { "$ref": "common.schema.json#/$defs/stringArray" },
+        { "minItems": 1 }
+      ]
+    },
+    "safe_pause_conditions": {
+      "allOf": [
+        { "$ref": "common.schema.json#/$defs/stringArray" },
+        { "minItems": 1 }
+      ]
+    },
+    "stop_conditions": {
+      "allOf": [
+        { "$ref": "common.schema.json#/$defs/stringArray" },
+        { "minItems": 1 }
+      ]
+    },
+    "stale_if": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "handoff_policy": {
+      "type": "object",
+      "required": ["require_transfer_manifest", "semantic_review", "minimum_semantic_samples"],
+      "properties": {
+        "require_transfer_manifest": { "type": "boolean" },
+        "semantic_review": { "enum": ["required", "risk-triggered"] },
+        "minimum_semantic_samples": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "delegation": {
+            "properties": { "allowed": { "const": false } },
+            "required": ["allowed"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "delegation": {
+            "properties": {
+              "max_depth": { "const": 0 },
+              "max_parallel": { "const": 0 }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

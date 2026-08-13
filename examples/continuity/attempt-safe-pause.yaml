@@ -1,0 +1,18 @@
+schema_version: 0.1.0
+task_id: SIM-001
+task_revision: 1
+attempt_id: A-SIM-SAFE-PAUSE-001
+status: safe-paused
+started_at: "2026-08-13T02:00:00Z"
+finished_at: "2026-08-13T02:01:00Z"
+trigger_reason: bounded continuity failure-injection fixture
+input_lock:
+  - path: examples/fixtures/run-manifest.txt
+    sha256: 6079913f340dd071404c96cf0a9a041f1f59798a7cf448acf6e698e039aa0a14
+skill_lock:
+  - simulation-vv@0.1.0
+skill_assignment_ref: examples/vertical-slice/simulation-assignment.yaml
+execution_receipt_ref: examples/continuity/execution-safe-pause.yaml
+artifact_refs:
+  - tests/fixtures/valid/simulation-vv-report.yaml
+handoff_ref: examples/continuity/handoff-safe-pause.yaml

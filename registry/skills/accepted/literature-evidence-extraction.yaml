@@ -1,0 +1,29 @@
+schema_version: 0.1.0
+skill_id: literature-evidence-extraction
+version: 0.1.0
+kind: method
+description: Extracts traceable evidence records from a bounded scientific source set.
+capabilities: [evidence-extraction, citation-location, contradictory-evidence-capture]
+applies_to_modes: [evidence-synthesis, experiment, theory, simulation]
+excludes: [unbounded-literature-discovery, final-synthesis, final-causal-interpretation]
+required_tools: [document-read]
+optional_tools: [web-search, citation-resolve]
+permission_ceiling:
+  filesystem: worktree-write
+  network: search-and-fetch
+  external_write: forbidden
+  allowed_roots: [work]
+input_contracts: [task-packet, skill-assignment, question-ref, source-boundary, input-lock]
+output_contracts: [evidence-record, handoff-transfer-manifest, handoff-packet]
+context_cost:
+  metadata: low
+  instructions: low
+  references: on-demand
+incompatible_with: [final-synthesis]
+verification:
+  deterministic: [evidence-schema, citation-locator, source-hash, handoff-integrity]
+source:
+  origin: repository-original
+  locator: .agents/skills/literature-evidence-extraction/SKILL.md
+  content_hash: c0a080ea9c4743a599000bc6978386a8dcbb8aaa09e1ed4c0e54a4deadca780b
+  package_hash: 60c8b11adc147fbcb3c0d1c79d05c441d3143f446502a5b12c73f1b8b04895cb

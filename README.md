@@ -6,9 +6,9 @@
 
 ## 当前状态
 
-状态：`Architecture Baseline / M0`
+状态：`K-API-1 Isolated API Session Foundation`
 
-当前仓库首先确立架构、模块边界和实施任务。尚未承诺具体运行时、数据库、Web UI 或完整自动化。只有通过两个差异明显的真实研究案例后，候选机制才可以进入公共内核。
+当前仓库已完成 M1 的本地实现和 M2 的离线 Agent—Skill 契约切片，并实现 M3 的首批上下文治理：可恢复 Main State、Context Snapshot、Execution Receipt，以及 Handoff Transfer Manifest/Audit。AWU、动态上下文预算、`SAFE_PAUSE`、机器证据优先和恢复冲突检查已合并进文件工件，没有另建平行记忆数据库。压缩后的子 Agent 不能只自报 `handoff_ready`；必须把任务条目映射到正式 Handoff。另已实现 OpenAI Responses、Anthropic Messages、Gemini `generateContent` 的非流式薄 Adapter、小型显式模型池和 fresh API session runner。`K-API-1` 已用离线测试证明有界工具循环与无自动 fallback；Task-to-API 文件闭环、真实模型调用和真实科研案例仍待执行。
 
 ## 核心判断
 
@@ -18,35 +18,101 @@
 - 不同子 Agent 应按任务加载不同 Skill；关键任务不能只依赖模型的隐式 Skill 匹配。
 - 研究差异按实验、仿真、推导、观察统计、证据综合等“研究模式”表达，不按学科建立全局固定流程。
 - 确定性校验优先于第二个 Agent；Agent 复核只针对明确风险；关键科学判断保留给人。
-- 优先使用平台原生的 Agent、Skill、线程、权限和工具能力，不另造通用 Supervisor。
+- 纯 API fresh session 是可移植执行基线；平台原生 Agent/线程是可选便利层，不另造通用 Supervisor。
+- 模型只按 `primary`、`worker` 和少量 `specialist` 槽显式绑定，不建设复杂自动 Router。
 
 ## 架构入口
 
+- [零基础使用指南与发布就绪度](docs/GETTING_STARTED.md)
 - [项目章程](docs/PROJECT_CHARTER.md)
 - [总体架构](docs/ARCHITECTURE.md)
 - [完整实施计划](docs/implementation/IMPLEMENTATION_PLAN.md)
 - [任务清单](docs/TASKS.md)
+- [恢复点与下一步](docs/NEXT_STEPS.md)
+- [当前开发 Handoff](docs/CURRENT_HANDOFF.md)
+- [Changelog](CHANGELOG.md)
 - [模块文档索引](docs/modules/README.md)
 - [迁移方案](docs/implementation/MIGRATION_PLAN.md)
+- [Skill 候选准入流程](docs/implementation/SKILL_CANDIDATE_PIPELINE.md)
+- [Skill 双臂评估协议](docs/implementation/SKILL_EVALUATION_PROTOCOL.md)
+- [模型 API 中立端口 ADR](docs/decisions/0003-PROVIDER-NEUTRAL-MODEL-PORT.md)
+- [多提供商模型 API 实施计划](docs/implementation/PROVIDER_ADAPTER_PLAN.md)
+- [薄 Adapter 与凭据边界 ADR](docs/decisions/0007-THIN-PROVIDER-ADAPTERS.md)
+- [API-first 隔离执行 ADR](docs/decisions/0010-API-FIRST-ISOLATED-EXECUTION.md)
+- [上下文与执行收据 ADR](docs/decisions/0006-CONTEXT-AND-EXECUTION-RECEIPTS.md)
+- [Handoff Transfer Audit ADR](docs/decisions/0008-HANDOFF-TRANSFER-AUDIT.md)
+- [文件式连续性与 SAFE_PAUSE ADR](docs/decisions/0009-FILE-FIRST-CONTINUITY-AND-SAFE-PAUSE.md)
+- [CCRML 会议吸收与差距审计](docs/references/CCRML_MEETING_ADOPTION.md)
+
+## 当前可执行入口
+
+```powershell
+python -m pip install -e .
+rwb validate examples registry
+rwb schema list
+rwb task resolve examples/task-evidence.yaml `
+  --profile registry/agents/evidence-scout.yaml `
+  --registry registry/skills/accepted.json
+rwb skills accepted --root .
+rwb runtime codex validate --root .
+rwb runtime codex render examples/task-evidence.yaml `
+  --profile registry/agents/evidence-scout.yaml `
+  --root .
+rwb handoff validate examples/handoff-evidence.yaml `
+  --task examples/task-evidence.yaml
+rwb handoff audit-transfer examples/handoff-transfer-audit-evidence.yaml `
+  --root .
+rwb claim trace examples/objects/claim/CLAIM-001.yaml `
+  --protocol examples/project-protocol.yaml
+rwb skills candidates --status triage
+rwb skills audit-archive <archive-path> `
+  --source-id research-copilot-archive-1.0.0 `
+  --expected-sha256 c69471fdec7164595b5d28a613a5421d549472585d8ace0f89b745b801ebe940 `
+  --registry registry/skills/candidates.json
+rwb skills eval assess `
+  examples/evals/claim-preserving-rewrite/fixture-evaluation.yaml `
+  --root . --registry registry/skills/candidates.json
+rwb providers list
+rwb providers probe --config registry/providers/adapters.yaml
+rwb providers conformance --adapter openai-responses
+rwb models probe --config registry/models/pool.example.yaml
+rwb context assess --id CTX-001 `
+  --protocol examples/project-protocol.yaml --scope main `
+  --metric loaded_chars=25000 `
+  --context-budget-status estimated --context-budget-unit characters `
+  --remaining-context 10000 --next-atomic-cost 4000 `
+  --closeout-cost 800 --safety-margin 500 `
+  --output work/CTX-001.yaml
+rwb context resume-check examples/main-state.yaml `
+  --protocol examples/project-protocol.yaml --root .
+rwb context resume-check examples/continuity/main-state-safe-pause.yaml `
+  --protocol examples/project-protocol.yaml --root .
+rwb execution assess examples/observability/execution-evidence-contract.yaml `
+  --protocol examples/project-protocol.yaml --root .
+```
+
+`validate` 会检查 Schema、实际文件、SHA-256 与 Registry 引用等机器可判定条件，但不代表科学正确性。`handoff audit-transfer` 的 `structurally-ready` 只表示条目和引用覆盖，不表示语义等价；关键风险或 Task policy 会要求独立人工抽查。`task resolve` 和 `runtime codex render` 不启动 Agent。`skills audit-archive` 不解压、不执行、不联网；`skills eval assess` 不自动准入候选。`context assess` 的字符/回合是压力代理；只有同单位的 `remaining >= next atomic + closeout + safety margin` 才支持继续一个 AWU。外部 Skill 的 `discovered`、`triage`、`reference` 和 `quarantine` 均不等于已安装或已准入。
 
 ## 第一条验证路线
 
-首个垂直切片将验证两个能力差异明显的子 Agent：
+首个离线契约切片已验证两个能力差异明显的子 Agent 配置：
 
-1. `evidence-scout` + `literature-evidence-extraction` Skill：只读检索、证据定位和引用交接。
+1. `evidence-scout` + `literature-evidence-extraction` Skill：源材料只读、任务区受限写的检索、证据定位和引用交接。
 2. `simulation-auditor` + `simulation-vv` Skill：读取模型与运行工件，检查版本、参数、收敛和敏感性。
 
-两者共享最小科研内核与 Task/Handoff 契约，但使用不同的输入、权限、Skill、输出和质量检查。该切片的目标不是证明多 Agent 更强，而是验证“能力按需绑定、主上下文不被污染、结果可追溯”是否成立。
+两者共享最小科研内核与 Task/Handoff 契约，但使用不同的输入、权限、Skill、输出和质量检查。离线证据见 [双 Skill 契约切片](examples/vertical-slice/SLICE_REPORT.md)。该切片只证明绑定、隔离与校验可重放，不证明多 Agent 更强；后续先用纯 API 跑通 evidence 文件闭环，再进行 simulation 和平台路径对照。
 
 ## 近期交付边界
 
-M1 只计划交付：
+当前近期交付边界：
 
 - 最小 Schema 与确定性验证器；
 - 一个本地 CLI；
-- Codex 优先的 Runtime Adapter；
-- 两个 Agent Profile 与两个 Skill；
+- 纯 API 隔离会话内核与显式模型槽；
+- 可选的 Codex Runtime Adapter 映射；
+- 四个 Agent Profile、三个仓库级 Skill 与 accepted Registry；
 - 主状态包、Task Packet 和 Handoff Packet；
+- Context Snapshot 与 Execution Receipt；
 - 无数据库、无常驻 Supervisor、无全局自治 DAG。
 
 ## 参考方向

@@ -1,0 +1,29 @@
+schema_version: 0.1.0
+skill_id: handoff-integrity
+version: 0.1.0
+kind: integrity
+description: Validates task handoffs, frozen inputs, Skill locks, transfer coverage, artifacts, outputs, and disclosed gaps.
+capabilities: [handoff-validation, handoff-transfer-audit, input-lock-validation, skill-lock-validation, artifact-reference-validation]
+applies_to_modes: [evidence-synthesis, simulation, experiment, theory, observational-statistics, cross-cutting]
+excludes: [scientific-correctness-review, human-gate-approval]
+required_tools: [file-read]
+optional_tools: []
+permission_ceiling:
+  filesystem: read-only
+  network: forbidden
+  external_write: forbidden
+  allowed_roots: []
+input_contracts: [task-packet, skill-assignment, handoff-packet, handoff-transfer-manifest, handoff-transfer-audit]
+output_contracts: [validation-report]
+context_cost:
+  metadata: low
+  instructions: low
+  references: on-demand
+incompatible_with: []
+verification:
+  deterministic: [task-handoff-match, input-hash, skill-lock, artifact-reference, transfer-coverage]
+source:
+  origin: repository-original
+  locator: .agents/skills/handoff-integrity/SKILL.md
+  content_hash: 2a4c727eb7462628e9f246a5363a8add1ba244c05b6c7b7e7b2ad450befabbf7
+  package_hash: 7ef583e26e3759705ae2c4b75f978e80cce01b5307f858570601fb44fcd5d1cd

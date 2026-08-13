@@ -1,0 +1,10 @@
+{
+  "schema_version": "0.1.0",
+  "object_type": "method",
+  "object_id": "M-BAD",
+  "revision": 1,
+  "status": "draft",
+  "kind": "simulation",
+  "spec_ref": "SPEC-1@1",
+  "version": "0.1.0"
+}

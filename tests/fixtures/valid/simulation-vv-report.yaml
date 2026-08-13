@@ -1,0 +1,21 @@
+run_ref: RUN-001@1
+model_version: fixture-model@0.1.0
+input_lock:
+  - path: examples/fixtures/run-manifest.txt
+    sha256: 6079913f340dd071404c96cf0a9a041f1f59798a7cf448acf6e698e039aa0a14
+parameter_boundary: Synthetic fixture only; no physical parameter claim.
+checks:
+  convergence:
+    status: pass
+    evidence_refs: [examples/objects/run/RUN-001.yaml]
+  sensitivity:
+    status: blocked
+    evidence_refs: []
+  benchmark_comparison:
+    status: not-run
+    evidence_refs: []
+assumptions:
+  - The fixture tests structural behavior only.
+limitations:
+  - No numerical result or real-world validation is present.
+claim_ceiling: simulation_supported

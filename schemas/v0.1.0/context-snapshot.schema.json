@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/context-snapshot.schema.json",
+  "title": "Context Pressure Snapshot",
+  "x-rwb-document-kind": "context_snapshot",
+  "type": "object",
+  "required": [
+    "schema_version", "snapshot_id", "captured_at", "scope", "measurement_source",
+    "metrics", "unknown_metrics", "context_budget", "handoff_ready", "policy", "assessment"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "snapshot_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "captured_at": { "type": "string", "format": "date-time" },
+    "scope": { "enum": ["main", "task"] },
+    "owner_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "measurement_source": { "enum": ["runtime", "manual", "file-estimate", "mixed"] },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "loaded_chars": { "type": "integer", "minimum": 0 },
+        "pinned_chars": { "type": "integer", "minimum": 0 },
+        "skill_instruction_chars": { "type": "integer", "minimum": 0 },
+        "raw_material_chars": { "type": "integer", "minimum": 0 },
+        "recent_handoffs": { "type": "integer", "minimum": 0 },
+        "open_items": { "type": "integer", "minimum": 0 },
+        "turns": { "type": "integer", "minimum": 0 },
+        "long_tool_outputs": { "type": "integer", "minimum": 0 },
+        "compaction_events": { "type": "integer", "minimum": 0 },
+        "hidden_decisions": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "unknown_metrics": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "loaded_chars", "pinned_chars", "skill_instruction_chars", "raw_material_chars",
+          "recent_handoffs", "open_items", "turns", "long_tool_outputs",
+          "compaction_events", "hidden_decisions"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "context_budget": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": { "enum": ["measured", "estimated", "unavailable"] },
+        "unit": { "enum": ["tokens", "characters"] },
+        "remaining": { "type": "integer", "minimum": 0 },
+        "next_atomic_cost": { "type": "integer", "minimum": 0 },
+        "closeout_cost": { "type": "integer", "minimum": 0 },
+        "safety_margin": { "type": "integer", "minimum": 0 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "unavailable" } }, "required": ["status"] },
+          "then": {
+            "not": {
+              "anyOf": [
+                { "required": ["unit"] },
+                { "required": ["remaining"] },
+                { "required": ["next_atomic_cost"] },
+                { "required": ["closeout_cost"] },
+                { "required": ["safety_margin"] }
+              ]
+            }
+          },
+          "else": {
+            "required": ["unit", "remaining", "next_atomic_cost", "closeout_cost", "safety_margin"]
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "handoff_ready": { "type": ["boolean", "null"] },
+    "handoff_audit_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
+    "policy": {
+      "type": "object",
+      "required": ["proactive_checkpoint", "main_raw_material", "thresholds"],
+      "properties": {
+        "proactive_checkpoint": { "type": "boolean" },
+        "main_raw_material": { "enum": ["forbidden", "on-demand", "allowed"] },
+        "thresholds": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "object",
+            "required": ["warn", "rollover"],
+            "properties": {
+              "warn": { "type": "integer", "minimum": 0 },
+              "rollover": { "type": "integer", "minimum": 0 }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "assessment": {
+      "type": "object",
+      "required": ["level", "triggered_rules", "required_actions"],
+      "properties": {
+        "level": { "enum": ["ok", "warn", "rollover", "block"] },
+        "triggered_rules": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "required_actions": { "$ref": "common.schema.json#/$defs/stringArray" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "scope": { "const": "task" },
+          "handoff_ready": { "const": true },
+          "metrics": {
+            "properties": { "compaction_events": { "type": "integer", "minimum": 1 } },
+            "required": ["compaction_events"]
+          }
+        },
+        "required": ["scope", "handoff_ready", "metrics"]
+      },
+      "then": { "required": ["handoff_audit_ref"] }
+    }
+  ],
+  "additionalProperties": false
+}

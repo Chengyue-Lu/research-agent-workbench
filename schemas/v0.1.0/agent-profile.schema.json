@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/agent-profile.schema.json",
+  "title": "Agent Profile",
+  "x-rwb-document-kind": "agent_profile",
+  "type": "object",
+  "required": [
+    "schema_version", "agent_profile_id", "version", "purpose", "model_policy",
+    "permission_ceiling", "allowed_tool_capabilities", "default_context_policy",
+    "delegation", "output_contracts"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "agent_profile_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "version": { "$ref": "common.schema.json#/$defs/semver" },
+    "purpose": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "model_policy": {
+      "type": "object",
+      "required": ["class"],
+      "properties": {
+        "class": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "default_slot": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "reasoning": { "type": "string" },
+        "required_capabilities": { "$ref": "common.schema.json#/$defs/stringArray" }
+      },
+      "additionalProperties": true
+    },
+    "permission_ceiling": { "$ref": "common.schema.json#/$defs/permissions" },
+    "allowed_tool_capabilities": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "default_context_policy": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "delegation": {
+      "type": "object",
+      "required": ["allowed"],
+      "properties": { "allowed": { "type": "boolean" } },
+      "additionalProperties": false
+    },
+    "output_contracts": { "$ref": "common.schema.json#/$defs/stringArray" }
+  },
+  "additionalProperties": false
+}
