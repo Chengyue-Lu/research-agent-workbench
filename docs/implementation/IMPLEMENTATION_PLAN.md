@@ -154,7 +154,7 @@ rwb context checkpoint
 
 验证主 Agent克制、子 Agent压缩容忍和主动 rollover。
 
-截至 2026-08-13，已实现 Context Snapshot、Execution Receipt、规范化 Main State digest，以及 `context assess/checkpoint/resume-check` 和 `execution assess`。Transfer Manifest/Audit 现会把压缩前条目、来源哈希、Handoff locator、负面区段与风险触发抽查绑定到 Context Snapshot 和 Receipt；离线故障注入已覆盖遗漏、错配、失真、主上下文原始材料、隐藏决定、成本/并发/review/trace 风险。该机制只证明结构覆盖和抽样记录，不证明完整语义等价；真实原生会话恢复、人工抽样与真实 token/时间采集仍未完成，设计边界见 [ADR-0008](../decisions/0008-HANDOFF-TRANSFER-AUDIT.md)。
+截至 2026-08-13，已实现 Context Snapshot、Execution Receipt、规范化 Main State digest，以及 `context assess/checkpoint/resume-check` 和 `execution assess`。Transfer Manifest/Audit 会把压缩前条目、来源哈希、Handoff locator、负面区段与风险触发抽查绑定到 Context Snapshot 和 Receipt。随后根据 CCRML 讨论补入 Atomic Work Unit、动态 next-AWU/closeout/reserve 预算、`safe-paused`/`waiting`、机器验证完成权、机器状态哈希与 Git 恢复冲突；这些语义复用现有工件，不新增 SQLite 或运行时。该机制只证明结构与可恢复性，不证明科学正确或完整语义等价；真实原生会话恢复、人工抽样与真实 token/时间采集仍未完成，见 [ADR-0008](../decisions/0008-HANDOFF-TRANSFER-AUDIT.md) 与 [ADR-0009](../decisions/0009-FILE-FIRST-CONTINUITY-AND-SAFE-PAUSE.md)。
 
 ### 实现内容
 

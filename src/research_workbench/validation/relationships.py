@@ -88,12 +88,37 @@ def check_handoff_against_task(
             )
         )
 
-    if handoff.status == "completed" and not handoff.artifact_refs:
+    if handoff.status in {"completed", "stage-completed"} and not handoff.artifact_refs:
         risks.append(
             ContractRisk(
                 "HANDOFF-MISSING-OUTPUT",
                 RiskLevel.BLOCK,
                 "completed handoff has no artifact references",
+            )
+        )
+    if handoff.status == "safe-paused":
+        if not handoff.unresolved:
+            risks.append(
+                ContractRisk(
+                    "HANDOFF-SAFE-PAUSE-STATE-MISSING",
+                    RiskLevel.BLOCK,
+                    "safe-paused Handoff must state unfinished work",
+                )
+            )
+        if not handoff.recommended_next_actions:
+            risks.append(
+                ContractRisk(
+                    "HANDOFF-SAFE-PAUSE-NEXT-ACTION-MISSING",
+                    RiskLevel.BLOCK,
+                    "safe-paused Handoff must provide a bounded resume action",
+                )
+            )
+    if handoff.status == "waiting" and not handoff.human_decision_required:
+        risks.append(
+            ContractRisk(
+                "HANDOFF-WAITING-DECISION-MISSING",
+                RiskLevel.BLOCK,
+                "waiting Handoff must identify the human decision being awaited",
             )
         )
     if task.handoff_policy.require_transfer_manifest and not handoff.transfer_manifest_ref:

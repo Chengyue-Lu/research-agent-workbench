@@ -42,11 +42,12 @@
 
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
-| M3-001 | IN_PROGRESS | Main State checkpoint/resume | M1 | 规范化 digest、前序引用、协议 revision、下一动作和约束/决定丢失检查已通过；真实新主会话恢复待演练 |
-| M3-002 | IN_PROGRESS | context pressure 代理指标 | M3-001 | 可测/未知指标、阈值、WARN/rollover/block 和 checkpoint 链已测试；真实运行指标待采集 |
+| M3-001 | IN_PROGRESS | Main State checkpoint/resume | M1 | 规范化 digest、原子文件发布、Continuity 状态、机器证据哈希、Git 基线、下一动作和约束/决定丢失检查已通过；进程级 kill 矩阵与真实新主会话恢复待演练 |
+| M3-002 | IN_PROGRESS | context pressure 与 AWU 预算 | M3-001 | 可测/未知指标、动态 next-AWU/closeout/reserve 判定、WARN/rollover/block 和 checkpoint 链已测试；真实运行估计误差待采集 |
 | M3-003 | IN_PROGRESS | Handoff loss/stale/summary 抽查 | M2 | Transfer Manifest/Audit、负面区段覆盖、风险触发抽查、Context/Receipt 绑定已实现；真实原生 Handoff 的人工样本仍待执行 |
 | M3-004 | IN_PROGRESS | review loop/fanout/write race 检查 | M2 | 并发预算、review loop、协调成本与既有 write race 检查已落地；真实停止行为待验证 |
 | M3-005 | IN_PROGRESS | 敏感 trace 策略 | M2 | 外部/完整/敏感 trace 会阻断或警告；真实脱敏器与密钥 fixture 待实现 |
+| M3-006 | IN_PROGRESS | SAFE_PAUSE 与机器完成权 | M3-001..003 | AWU/完成/暂停条件、stage/safe-pause/waiting、执行结束与 `contract-satisfied` 分离、失败报告覆盖显式完成宣称和可恢复 pause fixture 已实现；原生 rollover 待演练 |
 
 ## M4：工件与复现
 
@@ -90,4 +91,4 @@ M1 已建立里程碑与首批可执行 Issues：
 
 ## 当前下一任务
 
-项目按用户要求在本轮完成后暂停。当前可恢复状态、所需输入与恢复顺序见 `docs/NEXT_STEPS.md`，累计变更见 `CHANGELOG.md`。恢复后的首要工作是：在真实 Windows 授权上下文完成三家 Provider conformance；随后运行两个真实原生子 Agent，保存 Transfer Manifest/Audit、Context Snapshot 和 Receipt；再执行候选 Skill 的四类 paired evaluation。不得在 Codex 沙箱读取令牌，不安装原始 ZIP 候选，也不以 fixture 替代真实科研价值验证。`M5-001`、`M5-002` 继续等待研究者选择真实案例。
+项目已从暂停点恢复。下一原子工作是运行一次真实原生 evidence 子 Agent，并把 Task、Attempt、Handoff、Transfer Audit、Context Snapshot、Execution Receipt 和 Main State 固化成可由新会话恢复的样本；随后再运行 simulation 样本。真实 Windows Provider conformance 仍需在非 Codex 沙箱的用户上下文执行。不得安装原始 ZIP 候选，也不以 fixture 替代真实科研价值验证。`M5-001`、`M5-002` 继续等待研究者选择真实案例。

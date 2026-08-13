@@ -144,6 +144,11 @@ class CodexRuntimeAdapter:
         lines.extend(
             f"- {item if isinstance(item, str) else item.get('contract', '')}" for item in task.required_outputs
         )
+        lines.append("Atomic boundary: " + task.atomic_boundary)
+        lines.append("Completion checks:")
+        lines.extend(f"- {condition}" for condition in task.completion_checks)
+        lines.append("Safe-pause conditions:")
+        lines.extend(f"- {condition}" for condition in task.safe_pause_conditions)
         lines.append("Stop conditions:")
         lines.extend(f"- {condition}" for condition in task.stop_conditions)
         lines.extend(

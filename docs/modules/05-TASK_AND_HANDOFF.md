@@ -35,6 +35,12 @@ delegation:
 budget:
   max_turns: 10
   max_output_tokens: 1800
+atomic_boundary: One bounded source set and its formal Handoff.
+completion_checks:
+  - evidence and handoff contracts pass deterministic checks
+safe_pause_conditions:
+  - next atomic unit would consume the closeout reserve
+  - required source, permission, or human decision is unavailable
 stop_conditions:
   - required_outputs_complete
   - source_boundary_exhausted
@@ -44,6 +50,8 @@ stale_if:
 ```
 
 Task 必须可在有限时间内完成。`goal` 不能写成“完成整个研究”或“确保论文正确”。
+
+Task Packet 同时是 Atomic Work Unit/ExecutionContract，不另建平行契约。`atomic_boundary` 说明可安全切换的最小边界；`completion_checks` 是机器完成权；`safe_pause_conditions` 说明何时允许持久化后停止。上下文不足只能进入 `safe-paused`，不能把未通过的检查包装成 `completed`。
 
 ## 3. Resolved Task
 
@@ -103,6 +111,7 @@ recommended_next_actions:
 - 原始日志不进入主上下文，但保存在 Run/Attempt 目录；
 - 若摘要可疑，主 Agent可沿引用按需回查；
 - `completed` 只表示 Task 合同完成，不表示 Claim 被接受；
+- `stage-completed` 表示预定义阶段完成但上层目标未完成；`safe-paused` 表示机器验收尚未满足但恢复状态完整；`waiting` 保留人类或外部依赖等待；
 - 失败 Handoff 也是正式结果，不得丢弃。
 
 ### Transfer Manifest 与接收审计
@@ -116,6 +125,8 @@ recommended_next_actions:
 一次 Task 可以有多个 Attempt。重试必须使用新 `attempt_id`，记录触发原因、输入是否变化、Skill/模型/工具是否变化。禁止覆盖失败 Attempt。
 
 Attempt 可以引用一份 `Execution Receipt`。Receipt 记录实际 Runtime、模型用量状态、协调/执行成本、Context Snapshot 和 trace 策略；Handoff 也回指同一 Receipt。验证器检查这三者的 Task、状态、时间和路径一致性，避免把另一次执行的成本或结果串入当前交接。
+
+Receipt 的生命周期 `status: completed` 只表示一次执行已经结束，不等于 Task 合同已满足；这使负对照和失败实验仍能成为合法记录。只有显式声明 `completion_claim: contract-satisfied` 时，Receipt 才必须至少引用一个内核能够解释的机器验证工件。若确定性报告为 `fail`，或其 checker/subject 哈希已漂移，该声明被阻断；Receipt/LLM 文本不能覆盖机器证据。
 
 重试政策：
 

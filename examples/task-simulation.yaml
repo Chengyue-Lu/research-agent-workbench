@@ -30,6 +30,13 @@ delegation:
 budget:
   max_turns: 8
   max_output_tokens: 1600
+atomic_boundary: One bounded simulation run set is audited for convergence and parameter sensitivity and a Handoff is persisted.
+completion_checks:
+  - The simulation verification report covers convergence and sensitivity without Claim overreach.
+  - Required Run and Handoff references pass deterministic checks.
+safe_pause_conditions:
+  - Context budget cannot safely cover the next bounded run audit plus closeout reserve.
+  - Required run artifacts, parameters, or human method decisions are unavailable.
 stop_conditions:
   - required_checks_complete
   - input_version_changed

@@ -13,7 +13,12 @@
     "schema_version": { "const": "0.1.0" },
     "task_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "attempt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
-    "status": { "enum": ["completed", "incomplete", "failed", "blocked", "cancelled"] },
+    "status": {
+      "enum": [
+        "completed", "stage-completed", "safe-paused", "waiting",
+        "incomplete", "failed", "blocked", "cancelled"
+      ]
+    },
     "input_lock": {
       "type": "array",
       "items": { "$ref": "common.schema.json#/$defs/fileRef" }

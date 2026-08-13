@@ -22,7 +22,13 @@
     "context_snapshot_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
     "started_at": { "type": "string", "format": "date-time" },
     "finished_at": { "type": "string", "format": "date-time" },
-    "status": { "enum": ["completed", "incomplete", "failed", "blocked", "cancelled"] },
+    "status": {
+      "enum": [
+        "completed", "stage-completed", "safe-paused", "waiting",
+        "incomplete", "failed", "blocked", "cancelled"
+      ]
+    },
+    "completion_claim": { "enum": ["execution-only", "contract-satisfied"] },
     "runtime": {
       "type": "object",
       "required": ["name", "version", "adapter_version"],
@@ -94,5 +100,16 @@
     },
     "limitations": { "$ref": "common.schema.json#/$defs/stringArray" }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "completion_claim": { "const": "contract-satisfied" } },
+        "required": ["completion_claim"]
+      },
+      "then": {
+        "properties": { "status": { "enum": ["completed", "stage-completed"] } }
+      }
+    }
+  ],
   "additionalProperties": false
 }

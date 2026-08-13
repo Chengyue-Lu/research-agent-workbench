@@ -16,6 +16,13 @@ metrics:
   compaction_events: 1
   hidden_decisions: 0
 unknown_metrics: []
+context_budget:
+  status: estimated
+  unit: tokens
+  remaining: 8000
+  next_atomic_cost: 3000
+  closeout_cost: 1000
+  safety_margin: 1000
 handoff_ready: true
 handoff_audit_ref: examples/handoff-transfer-audit-evidence.yaml
 policy:

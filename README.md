@@ -8,7 +8,7 @@
 
 状态：`M3 Context/Receipt + M6 Provider Adapter Foundation`
 
-当前仓库已完成 M1 的本地实现和 M2 的离线 Agent—Skill 契约切片，并实现 M3 的首批上下文治理：可恢复 Main State、Context Snapshot、Execution Receipt，以及 Handoff Transfer Manifest/Audit。压缩后的子 Agent 不能只自报 `handoff_ready`；必须把任务条目映射到正式 Handoff，关键风险才触发有界人工抽查。Skill 供应链现具备只读 ZIP 静态审计、18/18 来源入口追溯、非发现候选实验区和 provider-neutral paired evaluation；首个 `claim-preserving-rewrite` 候选尚未准入。另已实现 OpenAI Responses、Anthropic Messages、Gemini `generateContent` 的非流式薄 Adapter和脱敏 live conformance runner，但尚未用真实账户/模型执行。项目现按用户要求暂停继续构建；真实原生子 Agent 和真实科研案例仍待执行。
+当前仓库已完成 M1 的本地实现和 M2 的离线 Agent—Skill 契约切片，并实现 M3 的首批上下文治理：可恢复 Main State、Context Snapshot、Execution Receipt，以及 Handoff Transfer Manifest/Audit。2026-08-13 吸收的 CCRML 讨论纪要所提出的 AWU、动态上下文预算、`SAFE_PAUSE`、机器证据优先和恢复冲突检查已合并进现有工件，没有另建平行记忆数据库。压缩后的子 Agent 不能只自报 `handoff_ready`；必须把任务条目映射到正式 Handoff，关键风险才触发有界人工抽查。Skill 供应链现具备只读 ZIP 静态审计、18/18 来源入口追溯、非发现候选实验区和 provider-neutral paired evaluation；首个 `claim-preserving-rewrite` 候选尚未准入。另已实现 OpenAI Responses、Anthropic Messages、Gemini `generateContent` 的非流式薄 Adapter和脱敏 live conformance runner，但尚未用真实账户/模型执行。真实原生子 Agent 和真实科研案例仍待执行。
 
 ## 核心判断
 
@@ -26,7 +26,7 @@
 - [总体架构](docs/ARCHITECTURE.md)
 - [完整实施计划](docs/implementation/IMPLEMENTATION_PLAN.md)
 - [任务清单](docs/TASKS.md)
-- [暂停点与下一步](docs/NEXT_STEPS.md)
+- [恢复点与下一步](docs/NEXT_STEPS.md)
 - [Changelog](CHANGELOG.md)
 - [模块文档索引](docs/modules/README.md)
 - [迁移方案](docs/implementation/MIGRATION_PLAN.md)
@@ -37,6 +37,8 @@
 - [薄 Adapter 与凭据边界 ADR](docs/decisions/0007-THIN-PROVIDER-ADAPTERS.md)
 - [上下文与执行收据 ADR](docs/decisions/0006-CONTEXT-AND-EXECUTION-RECEIPTS.md)
 - [Handoff Transfer Audit ADR](docs/decisions/0008-HANDOFF-TRANSFER-AUDIT.md)
+- [文件式连续性与 SAFE_PAUSE ADR](docs/decisions/0009-FILE-FIRST-CONTINUITY-AND-SAFE-PAUSE.md)
+- [CCRML 会议吸收与差距审计](docs/references/CCRML_MEETING_ADOPTION.md)
 
 ## 当前可执行入口
 
@@ -71,14 +73,20 @@ rwb providers probe --config registry/providers/adapters.yaml
 rwb providers conformance --adapter openai-responses
 rwb context assess --id CTX-001 `
   --protocol examples/project-protocol.yaml --scope main `
-  --metric loaded_chars=25000 --output work/CTX-001.yaml
+  --metric loaded_chars=25000 `
+  --context-budget-status estimated --context-budget-unit characters `
+  --remaining-context 10000 --next-atomic-cost 4000 `
+  --closeout-cost 800 --safety-margin 500 `
+  --output work/CTX-001.yaml
 rwb context resume-check examples/main-state.yaml `
+  --protocol examples/project-protocol.yaml --root .
+rwb context resume-check examples/continuity/main-state-safe-pause.yaml `
   --protocol examples/project-protocol.yaml --root .
 rwb execution assess examples/observability/execution-evidence-contract.yaml `
   --protocol examples/project-protocol.yaml --root .
 ```
 
-`validate` 会检查 Schema、实际文件、SHA-256 与 Registry 引用等机器可判定条件，但不代表科学正确性。`handoff audit-transfer` 的 `structurally-ready` 只表示条目和引用覆盖，不表示语义等价；关键风险或 Task policy 会要求独立人工抽查。`task resolve` 和 `runtime codex render` 不启动 Agent。`skills audit-archive` 不解压、不执行、不联网；`skills eval assess` 不自动准入候选。`context assess` 的字符/回合是压力代理而非假精确 token 余量。外部 Skill 的 `discovered`、`triage`、`reference` 和 `quarantine` 均不等于已安装或已准入。
+`validate` 会检查 Schema、实际文件、SHA-256 与 Registry 引用等机器可判定条件，但不代表科学正确性。`handoff audit-transfer` 的 `structurally-ready` 只表示条目和引用覆盖，不表示语义等价；关键风险或 Task policy 会要求独立人工抽查。`task resolve` 和 `runtime codex render` 不启动 Agent。`skills audit-archive` 不解压、不执行、不联网；`skills eval assess` 不自动准入候选。`context assess` 的字符/回合是压力代理；只有同单位的 `remaining >= next atomic + closeout + safety margin` 才支持继续一个 AWU。外部 Skill 的 `discovered`、`triage`、`reference` 和 `quarantine` 均不等于已安装或已准入。
 
 ## 第一条验证路线
 

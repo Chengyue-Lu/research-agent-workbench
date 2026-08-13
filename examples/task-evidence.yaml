@@ -31,6 +31,13 @@ delegation:
 budget:
   max_turns: 10
   max_output_tokens: 1800
+atomic_boundary: One bounded source set is inspected and its Evidence, Claim boundary, Transfer Manifest, and Handoff are persisted.
+completion_checks:
+  - Required Evidence and Handoff contracts exist and pass deterministic reference checks.
+  - The Handoff Transfer Audit has no blocking risk.
+safe_pause_conditions:
+  - Context budget cannot safely cover the next bounded source plus closeout reserve.
+  - A required source, permission, or human decision is unavailable.
 stop_conditions:
   - required_outputs_complete
   - source_boundary_exhausted

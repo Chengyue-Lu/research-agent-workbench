@@ -8,7 +8,8 @@
     "schema_version", "task_id", "goal", "question_refs", "active_modes",
     "required_capabilities", "required_skills", "forbidden_skills", "agent_profile",
     "input_refs", "write_scope", "required_outputs", "permissions", "delegation",
-    "budget", "stop_conditions", "stale_if"
+    "budget", "atomic_boundary", "completion_checks", "safe_pause_conditions",
+    "stop_conditions", "stale_if"
   ],
   "properties": {
     "schema_version": { "const": "0.1.0" },
@@ -70,6 +71,19 @@
       },
       "minProperties": 1,
       "additionalProperties": false
+    },
+    "atomic_boundary": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "completion_checks": {
+      "allOf": [
+        { "$ref": "common.schema.json#/$defs/stringArray" },
+        { "minItems": 1 }
+      ]
+    },
+    "safe_pause_conditions": {
+      "allOf": [
+        { "$ref": "common.schema.json#/$defs/stringArray" },
+        { "minItems": 1 }
+      ]
     },
     "stop_conditions": {
       "allOf": [

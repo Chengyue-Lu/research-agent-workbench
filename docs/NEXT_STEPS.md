@@ -1,8 +1,8 @@
-# 暂停点与下一步规划
+# 恢复点与下一步规划
 
-状态：按用户要求暂停继续构建
+状态：已于 2026-08-13 根据新增 CCRML 讨论纪要恢复
 
-暂停提交：见 `agent/m1-provider-neutral-foundation` 分支的最新已推送提交
+前一暂停提交：`238d51e15fa84adf8919f9ba66156a8e32d778ec`
 
 日期：2026-08-13
 
@@ -15,12 +15,21 @@
 3. `CHANGELOG.md` 的最新条目；
 4. 本文件的执行顺序；
 5. 目标任务对应的 ADR、Task Packet、Skill Assignment 和 fixtures。
+6. `docs/references/CCRML_MEETING_ADOPTION.md` 的采纳/暂缓边界。
 
 不要从旧聊天记录重建项目状态，也不要在恢复时加载全部候选 Skill、ZIP 内容或原始科研材料。
 
-## 2. 恢复后的优先顺序
+## 2. 当前优先顺序
 
-### P0：真实 Windows Provider conformance
+### P0：真实原生 Continuity 垂直切片
+
+- 先运行 `evidence-scout + literature-evidence-extraction`，再运行 simulation 切片；
+- 每次只执行 Task Packet 声明的一个 Atomic Work Unit；
+- 固化 Attempt、Handoff、Transfer Audit、Context Snapshot、Execution Receipt 与 Main State；
+- 新会话先运行 `resume-check`，再执行唯一下一动作；
+- 验收：机器失败不能被完成宣称覆盖，`safe-paused` 能恢复且不重复已完成工作。
+
+### P1：真实 Windows Provider conformance
 
 - 在真实 Windows 用户上下文分别选择一个 OpenAI、Anthropic、Gemini 模型；
 - 不在 Codex 沙箱读取、回显或导出令牌；
@@ -28,7 +37,7 @@
 - 保存脱敏 conformance report，失败也保留；
 - 验收：每家得到当前账户/模型的 `passed` 或可定位 `failed`，不把认证成功当作 API shape 通过。
 
-### P1：两个真实原生子 Agent 垂直切片
+### P2：第二个真实原生子 Agent 与跨模式比较
 
 - 运行 `evidence-scout + literature-evidence-extraction`；
 - 运行 `simulation-auditor + simulation-vv`；
@@ -36,23 +45,24 @@
 - 至少人工抽查一次压缩前源条目与 Handoff，记录 preserved/distorted/unverifiable；
 - 验收：删除子 Agent 会话后，主 Agent 仍能只凭工件恢复任务状态。
 
-### P2：候选 Skill 的四类真实配对评估
+### P3：候选 Skill 的四类真实配对评估
 
 - 对 `claim-preserving-rewrite` 运行 trigger、non-trigger、boundary、adversarial；
 - baseline/with-Skill 使用相同 provider、model、脱敏配置、基础上下文和 checker；
 - 独立盲评后再揭示条件；
 - 验收：只形成 `eligible-for-human-decision` 或 `not-eligible`，不自动写 accepted Registry。
 
-### P3：选择真实科研案例并建立对照
+### P4：选择真实科研案例并建立对照
 
 需要研究者先提供或批准：问题边界、可用来源/数据、隐私边界、Claim ceiling，以及“什么结果值得继续”。随后建立单 Agent、轻量委派、多 Agent 三组对照，记录质量、返工、上下文、时间、token/成本和人工决策负担。
 
-### P4：仅由真实消费者触发后续实现
+### P5：仅由真实消费者触发后续实现
 
 - 有预算的 client-tool loop runner；
 - source admission、promotion 与 Run reproducibility；
 - 观察统计、实验、理论推导等模式的专用 Skill；
 - streaming、multimodal 或 server tools。
+- 只有文件式连续性 benchmark 证明不足后才评估 SQLite/FTS；图只可作 Index。
 
 没有真实消费者时保持 PARKED，不为架构图补空模块。
 

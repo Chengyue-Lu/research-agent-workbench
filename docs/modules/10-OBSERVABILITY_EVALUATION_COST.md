@@ -19,7 +19,7 @@
 
 不默认保存完整 prompt、Chain-of-Thought 或原始工具输出副本。
 
-当前 `Execution Receipt` 将上述信息收敛为平台中立文件，并与 Attempt、Agent Profile、Skill Assignment、Context Snapshot 和 Handoff 双向关联。`model_usage_status` 必须是 `measured`、`estimated`、`unavailable` 或 `not-applicable`；未知成本不允许伪装成零。
+当前 `Execution Receipt` 将上述信息收敛为平台中立文件，并与 Attempt、Agent Profile、Skill Assignment、Context Snapshot 和 Handoff 双向关联。`model_usage_status` 必须是 `measured`、`estimated`、`unavailable` 或 `not-applicable`；未知成本不允许伪装成零。Receipt 的 `status` 是执行生命周期；只有显式的 `completion_claim: contract-satisfied` 才声明结果通过 Task 合同，避免把负对照的“执行完成”误写成“验证通过”。
 
 `rwb execution assess` 当前检查：Task/Profile/Assignment/Attempt 一致性、输出存在性、Handoff 回指、时间与状态一致性、协调成本比例、并发上限、review loop、敏感/外部/full trace，以及真实 Agent/API 执行是否缺少用量。它不把 contract-only fixture 计作模型运行。
 
@@ -38,6 +38,8 @@
 
 - 主 Agent发生非计划压缩的次数；
 - checkpoint/rollover 后恢复成功率；
+- 下一 AWU 成本估计误差、closeout reserve 命中率与 false-completion rate；
+- 新会话 Time-to-First-Correct-Action 与重复工作率；
 - Handoff 缺失限制或未完成项比例；
 - Transfer Manifest 条目数、必传条目覆盖率和未映射负面区段数；
 - 触发语义复核的条目数、实际抽样数及 preserved/distorted/unverifiable 分布；

@@ -6,7 +6,7 @@
   "type": "object",
   "required": [
     "schema_version", "snapshot_id", "captured_at", "scope", "measurement_source",
-    "metrics", "unknown_metrics", "handoff_ready", "policy", "assessment"
+    "metrics", "unknown_metrics", "context_budget", "handoff_ready", "policy", "assessment"
   ],
   "properties": {
     "schema_version": { "const": "0.1.0" },
@@ -41,6 +41,38 @@
         ]
       },
       "uniqueItems": true
+    },
+    "context_budget": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": { "enum": ["measured", "estimated", "unavailable"] },
+        "unit": { "enum": ["tokens", "characters"] },
+        "remaining": { "type": "integer", "minimum": 0 },
+        "next_atomic_cost": { "type": "integer", "minimum": 0 },
+        "closeout_cost": { "type": "integer", "minimum": 0 },
+        "safety_margin": { "type": "integer", "minimum": 0 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "unavailable" } }, "required": ["status"] },
+          "then": {
+            "not": {
+              "anyOf": [
+                { "required": ["unit"] },
+                { "required": ["remaining"] },
+                { "required": ["next_atomic_cost"] },
+                { "required": ["closeout_cost"] },
+                { "required": ["safety_margin"] }
+              ]
+            }
+          },
+          "else": {
+            "required": ["unit", "remaining", "next_atomic_cost", "closeout_cost", "safety_margin"]
+          }
+        }
+      ],
+      "additionalProperties": false
     },
     "handoff_ready": { "type": ["boolean", "null"] },
     "handoff_audit_ref": { "$ref": "common.schema.json#/$defs/relativePath" },

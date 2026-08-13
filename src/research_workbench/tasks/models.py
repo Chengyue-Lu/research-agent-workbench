@@ -18,6 +18,20 @@ from research_workbench.contracts.common import (
 
 SHA256_RE = re.compile(r"^(?:sha256:)?[0-9a-fA-F]{64}$")
 
+ATTEMPT_STATUSES = {
+    "planned",
+    "running",
+    "completed",
+    "stage-completed",
+    "safe-paused",
+    "waiting",
+    "incomplete",
+    "failed",
+    "blocked",
+    "cancelled",
+}
+HANDOFF_STATUSES = ATTEMPT_STATUSES - {"planned", "running"}
+
 
 @dataclass(frozen=True, slots=True)
 class FileReference:
@@ -117,6 +131,9 @@ class TaskPacket:
     permissions: PermissionPolicy
     delegation: DelegationPolicy
     budget: TaskBudget
+    atomic_boundary: str
+    completion_checks: tuple[str, ...]
+    safe_pause_conditions: tuple[str, ...]
     stop_conditions: tuple[str, ...]
     stale_if: tuple[str, ...]
     handoff_policy: HandoffPolicy = HandoffPolicy()
@@ -152,6 +169,9 @@ class TaskPacket:
             permissions=PermissionPolicy.from_mapping(mapping_value(data, "permissions", required=True)),
             delegation=DelegationPolicy.from_mapping(mapping_value(data, "delegation", required=True)),
             budget=TaskBudget.from_mapping(budget_data),
+            atomic_boundary=require_string(data, "atomic_boundary"),
+            completion_checks=string_tuple(data, "completion_checks", required=True),
+            safe_pause_conditions=string_tuple(data, "safe_pause_conditions", required=True),
             stop_conditions=string_tuple(data, "stop_conditions", required=True),
             stale_if=string_tuple(data, "stale_if"),
             handoff_policy=HandoffPolicy.from_mapping(mapping_value(data, "handoff_policy")),
@@ -218,12 +238,15 @@ class AttemptRecord:
         failure = data.get("failure")
         if failure is not None and not isinstance(failure, Mapping):
             raise ContractError("failure", "must be an object")
+        status = require_string(data, "status")
+        if status not in ATTEMPT_STATUSES:
+            raise ContractError("status", "is not a supported attempt status")
         return cls(
             schema_version=require_string(data, "schema_version"),
             task_id=require_string(data, "task_id"),
             task_revision=task_revision,
             attempt_id=require_string(data, "attempt_id"),
-            status=require_string(data, "status"),
+            status=status,
             started_at=require_string(data, "started_at"),
             finished_at=optional_string(data, "finished_at"),
             trigger_reason=require_string(data, "trigger_reason"),
@@ -262,7 +285,7 @@ class HandoffPacket:
     @classmethod
     def from_mapping(cls, data: Mapping[str, Any]) -> "HandoffPacket":
         status = require_string(data, "status")
-        if status not in {"completed", "incomplete", "failed", "blocked", "cancelled"}:
+        if status not in HANDOFF_STATUSES:
             raise ContractError("status", "is not a supported handoff status")
         assignment_ref = optional_string(data, "skill_assignment_ref")
         if assignment_ref is not None:

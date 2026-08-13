@@ -11,6 +11,13 @@ Required outputs:
 - evidence-record
 - handoff-transfer-manifest
 - handoff-packet
+Atomic boundary: One bounded source set is inspected and its Evidence, Claim boundary, Transfer Manifest, and Handoff are persisted.
+Completion checks:
+- Required Evidence and Handoff contracts exist and pass deterministic reference checks.
+- The Handoff Transfer Audit has no blocking risk.
+Safe-pause conditions:
+- Context budget cannot safely cover the next bounded source plus closeout reserve.
+- A required source, permission, or human decision is unavailable.
 Stop conditions:
 - required_outputs_complete
 - source_boundary_exhausted

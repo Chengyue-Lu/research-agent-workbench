@@ -10,6 +10,7 @@ context_snapshot_ref: examples/observability/context-task-compacted.yaml
 started_at: "2026-08-13T00:00:00Z"
 finished_at: "2026-08-13T00:01:00Z"
 status: completed
+completion_claim: contract-satisfied
 runtime:
   name: codex-contract-renderer
   version: unprobed

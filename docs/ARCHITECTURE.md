@@ -170,11 +170,11 @@ sequenceDiagram
 
 ### 子 Agent 输入
 
-仅包含 Task Packet、选定 Agent Profile、明确的 Skill Assignment、必要输入引用、写入范围和输出 Schema。子 Agent 压缩只有在正式工件已写入且 Handoff 可验证时才可接受。
+仅包含 Task Packet、选定 Agent Profile、明确的 Skill Assignment、必要输入引用、写入范围和输出 Schema。Task Packet 同时声明 Atomic Work Unit、完成检查和安全暂停条件。子 Agent 压缩只有在正式工件已写入且 Handoff 可验证时才可接受；预算不足时持久化 `safe-paused`，不得伪造完成。
 
 ## 7. 状态与真值
 
-采用三类真值，而不是继续扩张控制面：
+采用三类真值，而不是继续扩张控制面；Continuity State 是这三类真值的最小投影，不是第四种事实裁决源：
 
 | 真值 | 载体 | 示例 |
 |---|---|---|

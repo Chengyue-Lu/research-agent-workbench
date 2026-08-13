@@ -56,6 +56,9 @@ DOCUMENT_REQUIRED: dict[str, tuple[str, ...]] = {
         "required_outputs",
         "permissions",
         "delegation",
+        "atomic_boundary",
+        "completion_checks",
+        "safe_pause_conditions",
         "stop_conditions",
     ),
     "handoff_packet": (

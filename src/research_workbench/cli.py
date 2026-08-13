@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import subprocess
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -32,6 +35,7 @@ from research_workbench.capability import (
 from research_workbench.capability.catalog import DEFAULT_ACCEPTED, DEFAULT_CANDIDATES
 from research_workbench.context import (
     CONTEXT_METRIC_NAMES,
+    ContextBudgetEstimate,
     ContextPolicySnapshot,
     ContextSnapshot,
     assess_handoff_transfer,
@@ -59,8 +63,29 @@ from research_workbench.validation.documents import (
 
 def _write_yaml(path: Path, document: Mapping[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("x", encoding="utf-8", newline="\n") as stream:
-        yaml.safe_dump(dict(document), stream, sort_keys=False, allow_unicode=True)
+    temporary_path: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            newline="\n",
+            dir=path.parent,
+            prefix=f".{path.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as stream:
+            temporary_path = Path(stream.name)
+            yaml.safe_dump(dict(document), stream, sort_keys=False, allow_unicode=True)
+            stream.flush()
+            os.fsync(stream.fileno())
+
+        # Linking publishes a fully flushed inode only when the destination is
+        # still absent. It preserves the previous exclusive-create behaviour
+        # without exposing a partially written checkpoint as the final path.
+        os.link(temporary_path, path)
+    finally:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
 
 
 def _write_text(path: Path, content: str) -> None:
@@ -134,6 +159,7 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
             path_only.append(attempt.execution_receipt_ref)
     elif kind == "main_state":
         state = MainStatePacket.from_mapping(document)
+        references = state.machine_state_refs
         path_only.extend(item.ref for item in state.recent_handoffs)
         path_only.extend(state.artifact_index_refs)
         if state.previous_checkpoint_ref:
@@ -678,6 +704,19 @@ def _context_assess(args: argparse.Namespace) -> int:
     unknown = tuple(
         name for name in CONTEXT_METRIC_NAMES if name not in metrics
     )
+    if args.context_budget_status == "unavailable":
+        budget = ContextBudgetEstimate("unavailable")
+    else:
+        budget = ContextBudgetEstimate.from_mapping(
+            {
+                "status": args.context_budget_status,
+                "unit": args.context_budget_unit,
+                "remaining": args.remaining_context,
+                "next_atomic_cost": args.next_atomic_cost,
+                "closeout_cost": args.closeout_cost,
+                "safety_margin": args.safety_margin,
+            }
+        )
     handoff_ready = {"yes": True, "no": False, "unknown": None}[args.handoff_ready]
     snapshot = ContextSnapshot.create(
         snapshot_id=args.id,
@@ -688,6 +727,7 @@ def _context_assess(args: argparse.Namespace) -> int:
         metrics=metrics,
         unknown_metrics=unknown,
         handoff_ready=handoff_ready,
+        context_budget=budget,
         handoff_audit_ref=args.handoff_audit_ref,
         policy=ContextPolicySnapshot.from_project_policy(protocol.context_policy),
     )
@@ -744,6 +784,38 @@ def _context_resume_check(args: argparse.Namespace) -> int:
                 "resume requires at least one bounded next action",
             )
         )
+    if state.continuity_status == "safe-paused" and not state.rollover_reason:
+        risks.append(
+            ContractRisk(
+                "STATE-SAFE-PAUSE-REASON-MISSING",
+                RiskLevel.BLOCK,
+                "safe-paused state must explain why work stopped",
+            )
+        )
+    if state.git_head:
+        completed = subprocess.run(
+            ["git", "-C", str(root), "rev-parse", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        actual_head = completed.stdout.strip().lower() if completed.returncode == 0 else None
+        if actual_head is None:
+            risks.append(
+                ContractRisk(
+                    "RESUME-GIT-UNAVAILABLE",
+                    RiskLevel.BLOCK,
+                    "Main State pins a Git HEAD but the current project cannot resolve HEAD",
+                )
+            )
+        elif actual_head != state.git_head:
+            risks.append(
+                ContractRisk(
+                    "RESUME-CONFLICT-GIT",
+                    RiskLevel.BLOCK,
+                    f"Main State pins Git HEAD {state.git_head}, current HEAD is {actual_head}",
+                )
+            )
     for active in state.active_tasks:
         if active.status in {"ready", "running"} and active.expected_handoff is None:
             risks.append(
@@ -859,9 +931,30 @@ def _context_checkpoint(args: argparse.Namespace) -> int:
     next_actions = list(base.get("next_actions", [])) + list(args.next_action)
     if not next_actions:
         raise ValueError("checkpoint requires at least one --next-action or a prior next action")
+    machine_refs_by_path: dict[str, Mapping[str, Any]] = {
+        str(item.get("path")): item
+        for item in base.get("machine_state_refs", [])
+        if isinstance(item, Mapping) and isinstance(item.get("path"), str)
+    }
+
+    def freeze_machine_state(raw_path: str | Path) -> None:
+        path = Path(raw_path)
+        relative = _project_relative(path, root, "machine state")
+        resolved = resolve_within_root(root, relative)
+        if resolved is None or not resolved.is_file():
+            raise ValueError(f"machine state reference does not exist: {relative}")
+        machine_refs_by_path[relative] = {"path": relative, "sha256": hash_file(resolved)}
+
+    freeze_machine_state(protocol_path)
+    if args.snapshot:
+        freeze_machine_state(args.snapshot)
+    for raw_ref in args.machine_state_ref:
+        freeze_machine_state(raw_ref)
+
     document = {
         "schema_version": "0.1.0",
         "checkpoint_id": args.id,
+        "continuity_status": args.continuity_status,
         "project_protocol_ref": f"{relative_protocol}@{protocol.revision}",
         "current_questions": list(protocol.question_refs),
         "pinned_constraints": constraints,
@@ -872,6 +965,7 @@ def _context_checkpoint(args: argparse.Namespace) -> int:
         "open_risks": risks,
         "next_actions": next_actions,
         "artifact_index_refs": list(base.get("artifact_index_refs", [])),
+        "machine_state_refs": [machine_refs_by_path[path] for path in sorted(machine_refs_by_path)],
         "rollover_reason": args.rollover_reason,
         "created_at": args.created_at or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
     }
@@ -879,6 +973,16 @@ def _context_checkpoint(args: argparse.Namespace) -> int:
         document["previous_checkpoint_ref"] = previous_ref
     if snapshot_ref:
         document["context_snapshot_ref"] = snapshot_ref
+    if args.capture_git_head:
+        completed = subprocess.run(
+            ["git", "-C", str(root), "rev-parse", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if completed.returncode != 0:
+            raise ValueError("cannot capture Git HEAD from the checkpoint root")
+        document["git_head"] = completed.stdout.strip().lower()
     document["checkpoint_digest"] = checkpoint_digest(document)
     errors = SchemaCatalog().validate("main_state", document)
     if errors:
@@ -1076,6 +1180,16 @@ def build_parser() -> argparse.ArgumentParser:
     )
     assess.add_argument("--metric", action="append", default=[], metavar="NAME=VALUE")
     assess.add_argument("--unknown", action="append", default=[], metavar="NAME")
+    assess.add_argument(
+        "--context-budget-status",
+        choices=("measured", "estimated", "unavailable"),
+        default="unavailable",
+    )
+    assess.add_argument("--context-budget-unit", choices=("tokens", "characters"))
+    assess.add_argument("--remaining-context", type=int)
+    assess.add_argument("--next-atomic-cost", type=int)
+    assess.add_argument("--closeout-cost", type=int)
+    assess.add_argument("--safety-margin", type=int)
     assess.add_argument("--handoff-ready", choices=("yes", "no", "unknown"), default="unknown")
     assess.add_argument(
         "--handoff-audit-ref",
@@ -1098,6 +1212,13 @@ def build_parser() -> argparse.ArgumentParser:
     checkpoint.add_argument("--from-state")
     checkpoint.add_argument("--previous-checkpoint")
     checkpoint.add_argument("--snapshot")
+    checkpoint.add_argument(
+        "--continuity-status",
+        choices=("active", "stage-completed", "safe-paused", "waiting", "blocked"),
+        default="active",
+    )
+    checkpoint.add_argument("--machine-state-ref", action="append", default=[])
+    checkpoint.add_argument("--capture-git-head", action="store_true")
     checkpoint.add_argument("--rollover-reason", default="manual checkpoint")
     checkpoint.add_argument(
         "--created-at",
@@ -1123,6 +1244,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
         return int(args.handler(args))
-    except (ContractError, FileExistsError, FileNotFoundError, KeyError, ValueError) as exc:
+    except (ContractError, OSError, KeyError, ValueError) as exc:
         print(f"ERROR: {exc}")
         return 2

@@ -25,7 +25,10 @@ from research_workbench.contracts.common import (
 )
 from research_workbench.io import load_document
 from research_workbench.protocol import ProjectProtocol
-from research_workbench.tasks import AttemptRecord, HandoffPacket
+from research_workbench.tasks import AttemptRecord, FileReference, HandoffPacket
+from research_workbench.validation.documents import infer_document_kind
+from research_workbench.validation.relationships import check_references
+from research_workbench.validation.schemas import SchemaCatalog
 
 
 def _optional_non_negative_int(data: Mapping[str, Any], field: str) -> int | None:
@@ -180,6 +183,7 @@ class ExecutionReceipt:
     started_at: str
     finished_at: str
     status: str
+    completion_claim: str | None
     runtime: ExecutionRuntime
     model_usage_status: str
     model_usage: tuple[ModelUsageRecord, ...]
@@ -198,8 +202,28 @@ class ExecutionReceipt:
         if isinstance(revision, bool) or not isinstance(revision, int) or revision < 1:
             raise ContractError("task_revision", "must be a positive integer")
         status = require_string(data, "status")
-        if status not in {"completed", "incomplete", "failed", "blocked", "cancelled"}:
+        if status not in {
+            "completed",
+            "stage-completed",
+            "safe-paused",
+            "waiting",
+            "incomplete",
+            "failed",
+            "blocked",
+            "cancelled",
+        }:
             raise ContractError("status", "has unsupported value")
+        completion_claim = optional_string(data, "completion_claim")
+        if completion_claim not in {None, "execution-only", "contract-satisfied"}:
+            raise ContractError("completion_claim", "has unsupported value")
+        if completion_claim == "contract-satisfied" and status not in {
+            "completed",
+            "stage-completed",
+        }:
+            raise ContractError(
+                "completion_claim",
+                "contract-satisfied requires completed or stage-completed status",
+            )
         usage_status = require_string(data, "model_usage_status")
         if usage_status not in {"measured", "estimated", "unavailable", "not-applicable"}:
             raise ContractError("model_usage_status", "has unsupported value")
@@ -247,6 +271,7 @@ class ExecutionReceipt:
             started_at=started_at,
             finished_at=finished_at,
             status=status,
+            completion_claim=completion_claim,
             runtime=ExecutionRuntime.from_mapping(mapping_value(data, "runtime", required=True)),
             model_usage_status=usage_status,
             model_usage=usage,
@@ -419,6 +444,93 @@ def check_execution_receipt(
             if path is None or not path.is_file():
                 missing(field, relative)
 
+    interpreted_validations = 0
+    for relative in receipt.validation_refs:
+        path = resolve_within_root(project_root, relative)
+        if path is None or not path.is_file() or path.suffix.lower() not in {".json", ".yaml", ".yml"}:
+            continue
+        validation_document = load_document(path)
+        if not isinstance(validation_document, Mapping):
+            continue
+        kind = infer_document_kind(validation_document)
+        if kind == "deterministic_check_report":
+            interpreted_validations += 1
+            schema_errors = SchemaCatalog().validate(kind, validation_document)
+            if schema_errors:
+                risks.append(
+                    ContractRisk(
+                        "RECEIPT-VALIDATION-INVALID",
+                        RiskLevel.BLOCK,
+                        f"validation report {relative} is schema-invalid",
+                    )
+                )
+                continue
+            subject_refs = [
+                FileReference.from_mapping(item)
+                for item in validation_document.get("subject_refs", [])
+                if isinstance(item, Mapping)
+            ]
+            pinned_refs = list(subject_refs)
+            checker = validation_document.get("checker")
+            if isinstance(checker, Mapping) and isinstance(checker.get("source_ref"), Mapping):
+                pinned_refs.append(FileReference.from_mapping(checker["source_ref"]))
+            risks.extend(check_references(project_root, pinned_refs))
+            subject_paths = {reference.path for reference in subject_refs}
+            expected_subjects = set(receipt.output_refs) | {receipt.attempt_ref}
+            if not subject_paths.intersection(expected_subjects):
+                risks.append(
+                    ContractRisk(
+                        "RECEIPT-VALIDATION-SCOPE-MISMATCH",
+                        RiskLevel.BLOCK,
+                        f"validation report {relative} does not pin an Attempt or output from this receipt",
+                    )
+                )
+            if (
+                receipt.completion_claim == "contract-satisfied"
+                and validation_document.get("status") != "pass"
+            ):
+                risks.append(
+                    ContractRisk(
+                        "RECEIPT-VALIDATION-FAILED",
+                        RiskLevel.BLOCK,
+                        f"machine validation failed: {relative}",
+                    )
+                )
+        elif kind == "handoff_transfer_audit":
+            interpreted_validations += 1
+            assessment = assess_handoff_transfer(validation_document, root=project_root)
+            risks.extend(assessment.risks)
+        elif kind == "provider_conformance_report":
+            interpreted_validations += 1
+            if SchemaCatalog().validate(kind, validation_document):
+                risks.append(
+                    ContractRisk(
+                        "RECEIPT-VALIDATION-INVALID",
+                        RiskLevel.BLOCK,
+                        f"provider conformance report {relative} is schema-invalid",
+                    )
+                )
+            elif (
+                receipt.completion_claim == "contract-satisfied"
+                and validation_document.get("status") != "passed"
+            ):
+                risks.append(
+                    ContractRisk(
+                        "RECEIPT-VALIDATION-FAILED",
+                        RiskLevel.BLOCK,
+                        f"provider conformance failed: {relative}",
+                    )
+                )
+
+    if receipt.completion_claim == "contract-satisfied" and interpreted_validations == 0:
+        risks.append(
+            ContractRisk(
+                "RECEIPT-MACHINE-VALIDATION-MISSING",
+                RiskLevel.BLOCK,
+                "completion requires at least one understood machine validation artifact",
+            )
+        )
+
     for relative in receipt.output_refs:
         path = resolve_within_root(project_root, relative)
         if path is None or not path.is_file():
@@ -443,10 +555,29 @@ def check_execution_receipt(
                     )
                 )
 
-    if receipt.status == "completed" and not receipt.output_refs:
+    if receipt.status in {"completed", "stage-completed"} and not receipt.output_refs:
         risks.append(
             ContractRisk("RECEIPT-MISSING-OUTPUT", RiskLevel.BLOCK, "completed execution has no output references")
         )
+    if receipt.status == "safe-paused":
+        if receipt.context_snapshot_ref is None:
+            risks.append(
+                ContractRisk(
+                    "RECEIPT-SAFE-PAUSE-CONTEXT-MISSING",
+                    RiskLevel.BLOCK,
+                    "safe-paused execution must pin the Context Snapshot that triggered closeout",
+                )
+            )
+        if attempt_document is not None:
+            attempt = AttemptRecord.from_mapping(attempt_document)
+            if attempt.handoff_ref is None:
+                risks.append(
+                    ContractRisk(
+                        "RECEIPT-SAFE-PAUSE-HANDOFF-MISSING",
+                        RiskLevel.BLOCK,
+                        "safe-paused execution must persist a recoverable Handoff",
+                    )
+                )
     if receipt.execution_kind in {"native-agent", "model-api"} and receipt.model_usage_status == "unavailable":
         risks.append(
             ContractRisk(

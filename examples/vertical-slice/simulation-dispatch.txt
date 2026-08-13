@@ -10,6 +10,13 @@ Write scope:
 Required outputs:
 - simulation-vv-report
 - handoff-packet
+Atomic boundary: One bounded simulation run set is audited for convergence and parameter sensitivity and a Handoff is persisted.
+Completion checks:
+- The simulation verification report covers convergence and sensitivity without Claim overreach.
+- Required Run and Handoff references pass deterministic checks.
+Safe-pause conditions:
+- Context budget cannot safely cover the next bounded run audit plus closeout reserve.
+- Required run artifacts, parameters, or human method decisions are unavailable.
 Stop conditions:
 - required_checks_complete
 - input_version_changed

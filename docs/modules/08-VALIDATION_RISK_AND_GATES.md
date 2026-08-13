@@ -51,7 +51,11 @@ Handoff 传递审计也遵循这一边界：确定性验证器先核对 Transfer
 | CTX-AUTO-COMPACTION | 主上下文发生非计划压缩 | 写 Main State 并 rollover |
 | CTX-HIDDEN-STATE | 决定只存在于聊天/隐式状态 | BLOCK，创建 Decision 工件 |
 | CTX-METRICS-UNKNOWN | 压力指标不可获得 | 显式保留 unknown，禁止成本结论 |
+| CTX-NEXT-AWU-UNSAFE | 剩余预算不足以覆盖下一原子单元和收尾余量 | 不开启新 AWU，进入 safe pause/rollover |
+| CTX-CLOSEOUT-RESERVE-INSUFFICIENT | 连最小收尾余量都无法覆盖 | BLOCK 扩展，立即持久化最小恢复状态 |
 | CTX-STALE | 使用旧 revision | BLOCK |
+| RESUME-CONFLICT-GIT | Main State 的 Git 基线与当前 HEAD 不同 | BLOCK，先解释或重建恢复状态 |
+| RECEIPT-VALIDATION-FAILED | 完成宣称引用的机器验证为失败 | BLOCK；机器证据覆盖自然语言状态 |
 | SKILL-CONFLICT | Skills 指令或契约冲突 | BLOCK |
 | SKILL-PERMISSION-ESCALATION | Skill 越权 | BLOCK |
 | SKILL-CONTEXT-FLOOD | Skill 过多/过长 | 拆 Task |

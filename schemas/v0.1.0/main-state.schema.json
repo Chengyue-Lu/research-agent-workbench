@@ -5,13 +5,16 @@
   "x-rwb-document-kind": "main_state",
   "type": "object",
   "required": [
-    "schema_version", "checkpoint_id", "project_protocol_ref", "current_questions",
+    "schema_version", "checkpoint_id", "continuity_status", "project_protocol_ref", "current_questions",
     "pinned_constraints", "accepted_decisions", "active_tasks", "recent_handoffs",
-    "open_conflicts", "open_risks", "next_actions", "artifact_index_refs"
+    "open_conflicts", "open_risks", "next_actions", "artifact_index_refs", "machine_state_refs"
   ],
   "properties": {
     "schema_version": { "const": "0.1.0" },
     "checkpoint_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "continuity_status": {
+      "enum": ["active", "stage-completed", "safe-paused", "waiting", "blocked"]
+    },
     "project_protocol_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "current_questions": { "$ref": "common.schema.json#/$defs/stringArray" },
     "pinned_constraints": { "$ref": "common.schema.json#/$defs/stringArray" },
@@ -23,7 +26,12 @@
         "required": ["task_id", "status"],
         "properties": {
           "task_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
-          "status": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "status": {
+            "enum": [
+              "ready", "running", "completed", "stage-completed", "safe-paused",
+              "waiting", "incomplete", "failed", "blocked", "cancelled"
+            ]
+          },
           "expected_handoff": { "$ref": "common.schema.json#/$defs/relativePath" }
         },
         "additionalProperties": false
@@ -49,6 +57,13 @@
       "items": { "$ref": "common.schema.json#/$defs/relativePath" },
       "uniqueItems": true
     },
+    "machine_state_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/fileRef" }
+    },
+    "git_head": { "type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$" },
     "rollover_reason": { "type": "string" },
     "created_at": { "type": "string", "format": "date-time" },
     "previous_checkpoint_ref": { "$ref": "common.schema.json#/$defs/relativePath" },

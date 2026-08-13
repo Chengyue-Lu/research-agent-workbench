@@ -31,6 +31,14 @@
 
 当前实现使用 `Context Snapshot` 把每个指标标记为“已测量”或“未知”。缺失数据不能自动填零；字符数只用于本地压力比较，不换算成假精确的 token 余量。默认阈值可由 Project Protocol 覆盖，并随 Snapshot 一起冻结，避免事后改变解释。
 
+在已知同单位预算时，是否开启下一个 Atomic Work Unit 使用更严格的条件：
+
+```text
+remaining_context >= next_atomic_cost + closeout_cost + safety_margin
+```
+
+不满足时进入 rollover；连 closeout reserve 都不足时 block 并立即持久化最小安全暂停状态。成本不可获得时显式记录 `unavailable`，不得把百分比观测伪装成可完成保证。
+
 ## 4. Main State Packet
 
 ```yaml
@@ -59,7 +67,7 @@ artifact_index_refs:
 rollover_reason: approaching soft context budget
 ```
 
-Main State 是恢复入口，不是第二套数据库。它只引用正式工件，不复制原始内容。
+Main State 是恢复入口，不是第二套数据库。它只引用正式工件，不复制原始内容。`continuity_status` 区分 active、stage-completed、safe-paused、waiting 与 blocked；`machine_state_refs` 用哈希冻结恢复所需机器证据，可选 `git_head` 用于发现工作树基线冲突。
 
 当前 Main State 还可携带 `created_at`、`previous_checkpoint_ref`、`context_snapshot_ref` 和规范化 `checkpoint_digest`。`rwb context resume-check` 会验证协议 revision、引用、下一动作、活动 Task 的预期 Handoff，以及相邻 checkpoint 是否丢失已固定约束或决定。
 
@@ -137,7 +145,7 @@ rwb context resume-check ...
 rwb handoff audit-transfer ...
 ```
 
-`assess` 不读取聊天隐式状态，调用方必须传入可测代理指标；压缩后的 task 若声明 handoff-ready，还要传 `--handoff-audit-ref`。`checkpoint` 可以从上一 Main State 继承状态；`resume-check` 是换届门槛，不启动或管理新会话。
+`assess` 不读取聊天隐式状态，调用方必须传入可测代理指标；若提供动态预算，remaining、next AWU、closeout 和 safety margin 必须同单位。压缩后的 task 若声明 handoff-ready，还要传 `--handoff-audit-ref`。`checkpoint` 可以从上一 Main State 继承状态并冻结机器证据；YAML 采用刷盘后排他发布，不支持原子硬链接时安全失败。`resume-check` 会检查引用哈希、Git HEAD、协议和 digest，是换届门槛，但不启动或管理新会话。Git HEAD 不覆盖未提交工作树，因此应在提交边界创建带 Git 基线的 checkpoint。
 
 ## 10. 不保存的内容
 

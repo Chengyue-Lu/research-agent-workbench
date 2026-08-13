@@ -13,7 +13,12 @@
     "task_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "task_revision": { "type": "integer", "minimum": 1 },
     "attempt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
-    "status": { "enum": ["planned", "running", "completed", "incomplete", "failed", "blocked", "cancelled"] },
+    "status": {
+      "enum": [
+        "planned", "running", "completed", "stage-completed", "safe-paused",
+        "waiting", "incomplete", "failed", "blocked", "cancelled"
+      ]
+    },
     "started_at": { "type": "string", "format": "date-time" },
     "finished_at": { "type": ["string", "null"], "format": "date-time" },
     "trigger_reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
