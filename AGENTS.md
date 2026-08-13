@@ -3,7 +3,8 @@
 ## Project boundary
 
 - This repository builds a human-governed research workbench, not an autonomous research lab.
-- Prefer native agent, skill, permission, thread, and tool capabilities over a custom orchestration runtime.
+- Keep file contracts and provider-neutral isolated API sessions as the portable execution baseline.
+- Reuse native agent, skill, permission, thread, and tool capabilities through optional adapters; do not make Codex, OpenCode, or another platform a core dependency.
 - Do not introduce a global Supervisor, continuity database, message bus, or fixed research DAG without an accepted ADR backed by a demonstrated failure.
 - Keep the common research kernel small. Method-specific rules belong in Research Mode Packs or Skills.
 

@@ -4,7 +4,8 @@ version: 0.1.0
 purpose: Audit bounded simulation versions, convergence, sensitivity, benchmark evidence, and claim limits.
 model_policy:
   class: bounded-compute
-  reasoning: high
+  default_slot: worker
+  reasoning: medium
   runtime_aliases: {codex: simulation_auditor}
 permission_ceiling:
   filesystem: worktree-write

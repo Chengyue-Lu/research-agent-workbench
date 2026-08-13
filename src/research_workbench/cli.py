@@ -16,6 +16,7 @@ from research_workbench.adapters.models import (
     build_live_provider,
     conformance_plan,
     get_provider_adapter_config,
+    load_model_pool,
     probe_provider_adapters,
     run_provider_conformance,
 )
@@ -480,6 +481,25 @@ def _provider_conformance(args: argparse.Namespace) -> int:
         f"invocations={report.budget.provider_invocations} output={args.output}"
     )
     return 0 if report.status == "passed" else 1
+
+
+def _model_pool_probe(args: argparse.Namespace) -> int:
+    pool = load_model_pool(args.config)
+    environment = os.environ if args.check_environment else None
+    report = pool.probe(environment=environment)
+    if args.json:
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+        return 0
+    print(f"pool\t{report['pool_id']}")
+    print(f"selection_policy\t{report['selection_policy']}")
+    print(f"environment_checked\t{str(report['environment_checked']).lower()}")
+    print("slot\trole\tprovider_adapter\tenabled\tmodel")
+    for slot in report["slots"]:
+        print(
+            f"{slot['slot_id']}\t{slot['role']}\t{slot['provider_adapter']}\t"
+            f"{str(slot['enabled']).lower()}\t{slot['model_status']}"
+        )
+    return 0
 
 
 def _schema_list(args: argparse.Namespace) -> int:
@@ -1106,6 +1126,21 @@ def build_parser() -> argparse.ArgumentParser:
     )
     provider_conformance.add_argument("--output", help="new YAML report path; required with --execute")
     provider_conformance.set_defaults(handler=_provider_conformance)
+
+    models = subparsers.add_parser("models", help="inspect the explicit local model pool")
+    model_subparsers = models.add_subparsers(dest="models_command", required=True)
+    model_probe = model_subparsers.add_parser(
+        "probe",
+        help="validate model slots without choosing, ranking, or calling a model",
+    )
+    model_probe.add_argument("--config", default="registry/models/pool.example.yaml")
+    model_probe.add_argument(
+        "--check-environment",
+        action="store_true",
+        help="explicitly check named model variables without printing their values",
+    )
+    model_probe.add_argument("--json", action="store_true")
+    model_probe.set_defaults(handler=_model_pool_probe)
 
     task = subparsers.add_parser("task", help="resolve Task/Profile/Skill bindings")
     task_subparsers = task.add_subparsers(dest="task_command", required=True)

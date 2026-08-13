@@ -1,0 +1,29 @@
+schema_version: 0.1.0
+registry_kind: model_pool
+pool_id: local-explicit-pool
+selection_policy: explicit-slot-only
+warning: >-
+  Template only. Copy this file to an ignored local configuration, enable only
+  slots that have passed live conformance, and set model identifiers through
+  the named environment variables. No slot is selected automatically.
+slots:
+  - slot_id: primary
+    role: primary
+    provider_adapter: openai-responses
+    model_env: RWB_PRIMARY_MODEL
+    enabled: false
+    capabilities: [text, tools, structured_output, reasoning]
+    reasoning_effort: high
+  - slot_id: worker
+    role: worker
+    provider_adapter: anthropic-messages
+    model_env: RWB_WORKER_MODEL
+    enabled: false
+    capabilities: [text, tools, structured_output]
+  - slot_id: multimodal
+    role: specialist
+    provider_adapter: google-generate-content
+    model_env: RWB_MULTIMODAL_MODEL
+    enabled: false
+    capabilities: [text, images]
+    specialties: [images]

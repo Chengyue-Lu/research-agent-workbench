@@ -76,6 +76,7 @@ DOCUMENT_REQUIRED: dict[str, tuple[str, ...]] = {
     "skill_accepted": ("registry_kind", "entries", "policy"),
     "provider_baselines": ("registry_kind", "providers"),
     "provider_adapters": ("registry_kind", "adapters"),
+    "model_pool": ("registry_kind", "pool_id", "selection_policy", "slots"),
 }
 
 SCHEMA_KINDS = {
@@ -302,6 +303,15 @@ def _validate_registry(
                         ValidationIssue(path, "PROVIDER-ADAPTER-DUPLICATE", f"duplicate adapter_id: {adapter_id}")
                     )
                 seen.add(adapter_id)
+    elif kind == "model_pool":
+        # Import locally to keep the generic validation module independent of
+        # adapter initialization at import time.
+        from research_workbench.adapters.models.pool import ModelPool
+
+        try:
+            ModelPool.from_mapping(document)
+        except ValueError as exc:
+            issues.append(ValidationIssue(path, "MODEL-POOL-INVALID", str(exc)))
     return issues
 
 

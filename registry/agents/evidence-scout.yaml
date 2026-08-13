@@ -4,6 +4,7 @@ version: 0.1.0
 purpose: Perform read-heavy evidence extraction inside an explicit source and write boundary.
 model_policy:
   class: efficient-read-heavy
+  default_slot: worker
   reasoning: medium
   runtime_aliases: {codex: evidence_scout}
 permission_ceiling:

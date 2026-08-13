@@ -50,6 +50,8 @@
 
 ## 5. 成本指标
 
+模型成本策略不建设连续评分 Router。只比较实际启用的少量槽位：`primary`、`worker` 和按需 specialist。Receipt 同时记录计划槽位对应的请求模型与 Provider 实际返回模型；简单任务是否留在 `worker`，由同类 Task 的完成率、返工、token、时间和人工纠错决定。若 `worker` 未过门槛，由人类或明确规则创建新 Attempt 并改用 `primary`，不自动让两个模型轮流校核。
+
 - 每条最终采用 Evidence 的 token/时间；
 - 每条 accepted Claim 的 token/人工时间；
 - 协调、汇总、校核占总成本的比例；

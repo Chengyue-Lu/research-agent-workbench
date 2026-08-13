@@ -4,7 +4,8 @@ version: 0.1.0
 purpose: Review one declared risk or contract boundary without reopening the whole research task.
 model_policy:
   class: targeted-critical-review
-  reasoning: high
+  default_slot: worker
+  reasoning: medium
   runtime_aliases: {codex: targeted_reviewer}
 permission_ceiling:
   filesystem: worktree-write

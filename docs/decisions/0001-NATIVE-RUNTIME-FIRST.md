@@ -1,6 +1,6 @@
 # ADR-0001：优先使用原生 Agent 运行时
 
-状态：Accepted
+状态：Superseded in execution priority by ADR-0010；“不自建通用 Supervisor/DAG/会话数据库”仍有效
 
 日期：2026-08-13
 
@@ -13,6 +13,8 @@ Codex、Claude Code 等平台已经提供子 Agent、线程、模型、权限、
 首版只实现平台中立契约和 Runtime Adapter。并发、线程生命周期、模型执行和基础权限交给平台原生能力。Codex 为首个 Adapter。
 
 只有真实案例证明需要跨平台批处理、长期服务或可重复大规模评估时，才通过新 ADR 评估 Agents SDK、LangGraph 或其他编程式运行时。
+
+2026-08-13 后续决定：平台尚未选定，而 Provider-neutral API Port 已形成，因此 [ADR-0010](0010-API-FIRST-ISOLATED-EXECUTION.md) 将纯 API fresh session 改为可移植执行基线；本 ADR 的平台优先级不再适用。
 
 ## Consequences
 

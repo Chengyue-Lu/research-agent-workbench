@@ -22,6 +22,25 @@ def run_cli(arguments: list[str]) -> tuple[int, str]:
 
 
 class CliTests(unittest.TestCase):
+    def test_model_pool_probe_is_explicit_and_value_free(self) -> None:
+        model_marker = "model-id-that-must-not-appear"
+        with patch.dict("os.environ", {"RWB_PRIMARY_MODEL": model_marker}, clear=True):
+            code, output = run_cli(
+                [
+                    "models",
+                    "probe",
+                    "--config",
+                    str(ROOT / "registry" / "models" / "pool.example.yaml"),
+                    "--json",
+                ]
+            )
+        self.assertEqual(0, code)
+        document = json.loads(output)
+        self.assertEqual("explicit-slot-only", document["selection_policy"])
+        self.assertIs(document["environment_checked"], False)
+        self.assertTrue(all(slot["model_status"] == "unchecked" for slot in document["slots"]))
+        self.assertNotIn(model_marker, output)
+
     def test_provider_probe_defaults_to_config_only_and_never_prints_values(self) -> None:
         secret = "must-never-appear-in-cli-output"
         with patch.dict(

@@ -1,6 +1,6 @@
 # 总体架构
 
-版本：0.2
+版本：0.3
 
 状态：实施基线
 
@@ -8,7 +8,7 @@
 
 ## 1. 架构结论
 
-系统采用“最小科研内核 + 方法模式包 + 能力绑定 + 原生 Agent 运行时 + 工件与验证”的分层结构。
+系统采用“最小科研内核 + 方法模式包 + 能力绑定 + 纯 API 隔离执行 + 工件与验证”的分层结构。Codex、OpenCode 等原生平台是可替换的交互外壳，不是核心前置。
 
 真正的运行单位不是“某个永久角色”，而是一次已解析的任务绑定：
 
@@ -21,6 +21,17 @@ Resolved Task
 + Skill Assignment
 + Tool/permission boundary
 + Output contract
+```
+
+进入执行前再增加一个很小的显式模型绑定：
+
+```text
+API Child Session
+= Resolved Task
++ explicit Model Slot (primary / worker / specialist)
++ provider/model binding
++ bounded fresh context
++ execution budget
 ```
 
 这一区分解决了两个常见问题：
@@ -39,6 +50,9 @@ Resolved Task
 | Task Packet | 这一次具体要做什么 | 不成为长期记忆 |
 | Handoff Packet | 正式交付了什么、证据在哪里 | 不复制完整会话 |
 | Project Protocol | 本项目允许什么、禁止什么 | 不规定唯一研究顺序 |
+| Model Slot | 本次使用主模型、工作模型还是特定能力模型 | 不评分、不自动路由、不决定科研方法 |
+| API Session | 在全新上下文中执行一个受限 Task | 不成为长期状态或全局调度器 |
+| Runtime Adapter | 将同一契约映射到 Codex、OpenCode 等平台 | 不拥有模型策略或项目真值 |
 
 ## 3. 逻辑架构
 
@@ -48,7 +62,9 @@ flowchart TB
     PP["Project Protocol\n模式、Claim ceiling、预算、数据边界"]
     MA["Main Agent\n协调、冲突处理、下一步决策"]
     CR["Capability Resolver\n任务 → Agent Profile + Skill Assignment"]
-    RT["Native Runtime Adapter\nCodex first; other runtimes later"]
+    MB["Explicit Model Slot\nprimary / worker / specialist"]
+    API["Isolated API Session\nportable baseline"]
+    RT["Optional Runtime Adapter\nCodex / OpenCode / others"]
     SA1["Bounded Subagent A\nAgent Profile + Skills A"]
     SA2["Bounded Subagent B\nAgent Profile + Skills B"]
     AR["Artifact & Provenance\nEvidence / Run / Claim / Decision"]
@@ -60,9 +76,13 @@ flowchart TB
     PP --> MA
     MS <--> MA
     MA --> CR
-    CR --> RT
-    RT --> SA1
-    RT --> SA2
+    CR --> MB
+    MB --> API
+    MB -.->|"optional native mapping"| RT
+    API --> SA1
+    API --> SA2
+    RT -.-> SA1
+    RT -.-> SA2
     SA1 --> AR
     SA2 --> AR
     AR --> DV
@@ -109,7 +129,7 @@ Task Packet 是委派边界，Handoff Packet 是返回边界，Main State Packet
 
 ### L6：适配与观测层
 
-Runtime Adapter 把平台中立契约映射到 Codex 等原生能力；Tool Adapter 接入检索、引用、仿真、统计和版本工具；观测层只记录决策所需的 trace、成本和质量指标。
+Model Provider Adapter 和有界 API Session Runner 构成可移植执行基线；Runtime Adapter 可把同一契约映射到 Codex、OpenCode 等原生能力；Tool Adapter 接入检索、引用、仿真、统计和版本工具；观测层只记录决策所需的 trace、成本和质量指标。
 
 详见[适配器](modules/09-ADAPTERS_AND_INTEGRATIONS.md)及[观测、成本与评估](modules/10-OBSERVABILITY_EVALUATION_COST.md)。
 
@@ -120,7 +140,8 @@ sequenceDiagram
     participant H as Human
     participant M as Main Agent
     participant R as Capability Resolver
-    participant N as Native Runtime
+    participant P as Explicit Model Pool
+    participant N as API Session / Optional Runtime
     participant S as Subagent
     participant V as Validator
 
@@ -129,7 +150,9 @@ sequenceDiagram
     R->>R: 过滤权限、工具、输出和数据边界
     R->>R: 选择最小 Agent Profile + Skill Bundle
     R-->>M: Resolved Task + skill lock
-    M->>N: 显式委派并命名 required skills
+    M->>P: 显式选择 primary / worker / specialist 槽
+    P-->>M: 固定 provider、model、能力与 reasoning
+    M->>N: 新建隔离会话并命名 required skills
     N->>S: 最小输入 + Agent Profile + Skills
     S->>S: 工作；长结果写入工件
     S-->>V: Transfer Manifest + Handoff Packet + artifact refs
@@ -197,22 +220,21 @@ sequenceDiagram
 
 预警级别为 `INFO / WARN / BLOCK / HUMAN`。只有结构损坏、权限越界、缺失必需证据、数据边界冲突等问题可以自动阻断；方法合理性和科学解释进入 Human Gate。
 
-## 9. 运行时策略
+## 9. 执行策略
 
-### 首选：原生平台适配
+### 首选：纯 API 隔离子会话
 
-Codex 首版映射：
+- 每个子任务从空白会话开始，只加载 Task、Skill Assignment、必要输入和输出契约；
+- 主 Agent 使用 `primary` 槽，普通子任务使用 `worker` 槽，独特能力显式使用一个 `specialist` 槽；
+- 模型槽只做显式映射，不建设复杂 Router、价格数据库或自动 fallback；
+- API Runner 限制轮次、工具调用、工具结果、token/成本和 wall time；
+- 会话关闭后只依赖 Attempt、工件、Handoff、Receipt 和 Main State 恢复。
 
-- 仓库指令：`AGENTS.md`；
-- Agent Profile：`.codex/agents/*.toml`；
-- Skills：`.agents/skills/*/SKILL.md`；
-- 单次绑定：Task Packet + 显式 Skill 调用；
-- 并行与线程：Codex 原生子 Agent；
-- 权限：平台 sandbox/approval 与 Agent Profile 的交集。
+### 可选：平台适配与人工新窗口
 
-### 以后才考虑编程式运行时
+Codex、OpenCode、Claude Code 或其他平台可以把同一个已解析 Task 映射到原生 Agent、Skill、权限和窗口；也可以由人工在新窗口粘贴最小 dispatch。平台路径是便利层和兜底，不改变公共契约，也不得暗中继承或替换已经选择的模型。
 
-只有当真实案例证明需要跨平台批处理、可重复批量评估或稳定 API 编排时，才评估 OpenAI Agents SDK、LangGraph 或其他运行时。即使引入，也只能实现 Adapter，不得取代科研内核和正式工件。
+具体决策见 [ADR-0010](decisions/0010-API-FIRST-ISOLATED-EXECUTION.md)。
 
 ## 10. 架构不变量
 
@@ -223,9 +245,10 @@ Codex 首版映射：
 5. 任何关键人工决定必须形成 Decision 工件。
 6. 确定性检查不得宣称科学正确性。
 7. 原始证据、负结果和冲突不得因摘要而消失。
-8. Runtime Adapter 可替换，公共内核不得绑定平台私有会话格式。
+8. API Provider 与 Runtime Adapter 都可替换，公共内核不得绑定厂商 SDK 或平台私有会话格式。
 9. 不得默认递归委派；子 Agent 再委派需要 Task Packet 明确允许并受深度/预算限制。
 10. 新全局机制必须由真实事故或已量化风险支持。
+11. 模型只能按显式槽位选择；任何升级、降级或跨 Provider 重试都必须形成新的可审计 Attempt。
 
 ## 11. 首个垂直切片
 

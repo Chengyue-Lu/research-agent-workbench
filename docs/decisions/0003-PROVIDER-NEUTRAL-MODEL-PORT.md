@@ -3,6 +3,8 @@
 状态：Accepted
 日期：2026-08-13
 
+后续说明：本 ADR 的 Provider-neutral 端口和 Runtime/Provider 分离继续有效；[ADR-0010](0010-API-FIRST-ISOLATED-EXECUTION.md) 已将纯 API 隔离会话提升为首要可移植执行路径，并把模型选择收缩为少量显式槽位。
+
 ## 背景
 
 Workbench 首先利用 Codex 等平台的原生 Agent/Skill 运行能力，但后续可能需要在程序化任务中调用 OpenAI、Anthropic、Gemini、OpenRouter 网关或本地模型。各 API 都有文本、工具调用和结构化输出等相似概念，却在停止原因、服务端工具、会话状态、推理参数、用量统计、数据保留和错误语义上存在实质差异。

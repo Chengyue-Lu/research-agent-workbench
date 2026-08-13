@@ -4,7 +4,8 @@ version: 0.1.0
 purpose: Keep project requirements, decisions, risks, indexes, and next actions small and explicit.
 model_policy:
   class: coordination-and-structured-output
-  reasoning: medium
+  default_slot: primary
+  reasoning: high
   runtime_aliases: {codex: coordinator}
 permission_ceiling:
   filesystem: worktree-write

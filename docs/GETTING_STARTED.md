@@ -12,7 +12,7 @@ Research Agent Workbench（下文简称 Workbench）不是自动运行整个课�
 
 1. 阅读和复用架构、Schema、风险边界；
 2. 在本仓库中运行完整的离线示例、生成确定性的 Agent/Skill Assignment 和 Codex dispatch；
-3. 由熟悉 Git、YAML 和原生 Agent 平台的开发者进行受控试点。
+3. 由熟悉 Git、YAML 和模型 API/Agent 平台的开发者进行受控试点。
 
 当前版本还不适合：
 
@@ -34,17 +34,20 @@ flowchart LR
     P["Project Protocol<br/>模式、预算、数据边界"]
     T["Task Packet<br/>一个原子工作单元"]
     R["Resolver<br/>Agent + Skill + 权限"]
-    N["Native Agent Runtime<br/>Codex first"]
+    S["Explicit Model Slot<br/>primary / worker / specialist"]
+    N["Fresh API Session<br/>portable baseline"]
+    O["Optional Runtime Adapter<br/>Codex / OpenCode / others"]
     A["Artifacts + Handoff<br/>正式结果与限制"]
     V["Validators<br/>Schema、哈希、引用、预算"]
     M["Main State<br/>最小可恢复状态"]
 
-    H --> P --> T --> R --> N --> A --> V --> M
+    H --> P --> T --> R --> S --> N --> A --> V --> M
+    S -.-> O -.-> A
     V --> H
     M --> T
 ```
 
-初次使用只需理解八个概念：
+初次使用只需理解九个概念：
 
 | 概念 | 用一句话解释 | 仓库示例 |
 |---|---|---|
@@ -54,6 +57,7 @@ flowchart LR
 | Skill | 完成某类任务的可复用方法，不持有项目状态 | [`.agents/skills`](../.agents/skills) |
 | Task Packet | 这一次具体要完成的一个原子工作单元 | [`examples/task-evidence.yaml`](../examples/task-evidence.yaml) |
 | Skill Assignment | Resolver 固定下来的 Agent、Skill、权限和内容哈希 | [`examples/vertical-slice/evidence-assignment.yaml`](../examples/vertical-slice/evidence-assignment.yaml) |
+| Model Slot | 显式选择主模型、平价工作模型或特定能力模型 | [`registry/models/pool.example.yaml`](../registry/models/pool.example.yaml) |
 | Handoff / Receipt | 子 Agent 正式交付了什么，实际执行和验证情况如何 | [`examples/handoff-evidence.yaml`](../examples/handoff-evidence.yaml) |
 | Main State | 新主会话恢复所需的最小状态，不复制聊天历史 | [`examples/main-state.yaml`](../examples/main-state.yaml) |
 
@@ -73,7 +77,7 @@ flowchart LR
 - Python 3.11 或更高版本；
 - Git；
 - PowerShell、Bash 或同等命令行；
-- 只有在实际运行子 Agent 时才需要 Codex 或其他原生 Agent 平台；
+- 实际纯 API 执行需要一个已配置的 Provider 和模型；Codex、OpenCode 等平台不是必须条件；
 - 离线示例和 dry-run 不需要模型 API 凭据。
 
 ### 3.2 安装开发快照
@@ -100,7 +104,7 @@ python -m venv .venv
 当前仓库快照的预期摘要是：
 
 ```text
-validated=52 errors=0 warnings=0
+validated=<current count> errors=0 warnings=0
 ```
 
 这个命令只读取本地文件，检查 Schema、引用、内容哈希和 Registry 关系，不会启动 Agent，也不会调用模型 API。
@@ -165,7 +169,7 @@ rwb runtime codex render examples/task-evidence.yaml `
 
 dispatch 只包含 Task 边界、输入路径与哈希、写入范围、显式 Skill、完成检查和暂停条件。它不会嵌入论文全文、其他 Skill 正文或主会话历史。
 
-到这里仍然没有启动 Agent。当前 Runtime Adapter 只负责验证和渲染，`launch/collect/cancel` 继续交给 Codex 等平台原生线程能力。
+到这里仍然没有启动 Agent。这是已有的可选 Codex dispatch 路径；当前主线将 Task 编译到 fresh API session 的文件桥接仍处于 `K-API-2` 实现中。
 
 ### 4.5 检查一份已有 Handoff
 
@@ -200,19 +204,19 @@ rwb context resume-check `
 
 ## 5. 当前怎样实际运行一个子 Agent
 
-目前推荐“Workbench 管契约，原生平台管执行”。完整动作如下：
+当前仓库已经有 fresh API session 内核，但尚未提供完整的 Task-to-API CLI。因此过渡期有两种受控方式：开发者直接调用该内核进行离线/集成测试，或使用现有 Codex dispatch 作为人工平台入口。无论采用哪种方式，Workbench 都管理同一套契约和文件闭环。
 
 1. 人类批准 Project Protocol 和本次 Task 边界；
 2. 用 `rwb task resolve` 生成不可变 Assignment；
-3. 用 `rwb runtime codex render` 生成最小 dispatch；
-4. 在 Codex 中显式选择 Task 指定的 Agent Profile 和 `$skill-name`；
+3. 显式绑定 `primary`、`worker` 或 specialist 模型槽；若走平台路径，再用 `rwb runtime codex render` 生成最小 dispatch；
+4. 为子任务新建独立 API session 或平台窗口，不继承主 Agent 全历史；
 5. 让子 Agent 只读取 Task 的 `input_refs`，只写入 `write_scope`；
 6. 子 Agent 在结束或压缩前写正式工件、Attempt、Transfer Manifest 和 Handoff；
 7. 运行确定性检查和 `rwb handoff validate`；
 8. 主 Agent 只读取 Handoff、风险、工件索引和下一动作；
 9. 需要换主会话时生成 Main State，新会话先通过 `resume-check`。
 
-给原生 Agent 的指令至少要明确：
+给 API session 或平台 Agent 的指令至少要明确：
 
 ```text
 执行指定 Task Packet；使用指定 Agent Profile 和 required Skill；
@@ -450,10 +454,11 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 | 能力 | 当前状态 | 判断 |
 |---|---|---|
 | 产品边界和总体架构 | 已形成 Charter、Architecture、模块和 ADR | 可复用 |
-| Schema、模型和确定性验证 | 本地测试和 52 份示例/Registry 校验通过 | 技术 alpha 可用 |
+| Schema、模型和确定性验证 | 本地测试和全部示例/Registry 校验通过 | 技术 alpha 可用 |
 | CLI | 可 init、validate、resolve、render、audit、checkpoint | 技术 alpha 可用 |
-| Agent—Skill 路由 | 两条不同 Skill 的离线切片可重放 | 缺真实原生执行 |
-| Codex Runtime Adapter | 布局、能力和 dispatch 已实现 | 只到 render，未做真实 launch/collect 演练 |
+| Agent—Skill 路由 | 两条不同 Skill 的离线切片可重放 | 缺真实隔离执行 |
+| API Session 内核 | 显式模型槽、有界工具循环和无 fallback 已测试 | 缺 Task-to-API 文件桥接与真实调用 |
+| Codex Runtime Adapter | 布局、能力和 dispatch 已实现 | 可选路径，不在当前关键路径 |
 | 上下文连续性 | SAFE_PAUSE、哈希、digest、Git 冲突和恢复 fixture 已实现 | 缺真实跨会话恢复 |
 | Handoff 压缩审计 | Manifest/Audit 和风险触发抽样契约已实现 | 缺真实材料语义样本 |
 | Provider Adapters | OpenAI、Anthropic、Gemini 离线合同和有界 runner 已实现 | 缺真实账户/model conformance |
@@ -472,7 +477,7 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 
 至少还需关闭六个发布 Gate：
 
-1. 完成 evidence 与 simulation 两次真实原生 Agent 执行；
+1. 完成 evidence 的纯 API 文件闭环，并以 simulation 或平台路径完成第二种 Skill 执行；
 2. 完成一次真实 `safe-paused → 新主会话 → 正确下一动作` 恢复；
 3. 把 `rwb init` 升级为可选择的完整项目模板，或提供受支持的 template repository；
 4. 选择并加入项目 LICENSE，同时清理 accepted Skills 的许可状态；
@@ -489,7 +494,7 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 2. 用至少一个证据综合案例和一个理论/仿真案例完成真实端到端验证；
 3. 对单 Agent、轻量委派、多 Agent 做同任务对照，记录质量、返工、上下文和成本；
 4. 完成真实 Handoff 语义抽样，测量遗漏和失真；
-5. 若对外宣称模型 API 兼容，完成三家 Provider 的真实、有界、脱敏 conformance；
+5. 若对外宣称某个模型 API 兼容，完成实际启用槽位的真实、有界、脱敏 conformance；
 6. 增加 release 构建、安装测试、安全/数据边界说明和最小维护政策。
 
 达到这些条件后，才适合标记 `0.x beta`。Provider conformance 不是所有本地文件用户的前置，但如果产品宣传多 API 兼容，它就是发布前置。
@@ -512,9 +517,9 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 
 发布关键路径应保持克制：
 
-1. 运行真实 `evidence-scout + literature-evidence-extraction` 连续性切片；
-2. 删除/放弃旧会话，只凭 Main State 在新会话恢复；
-3. 运行 `simulation-auditor + simulation-vv`，确认不同任务确实加载不同 Skills；
+1. 完成 `K-API-2`：把 `evidence-scout + literature-evidence-extraction` 编译到 fresh API session 并写全文件闭环；
+2. 删除临时 transcript，只凭 Main State 在新主会话恢复；
+3. 在真实 Windows 用户上下文验证实际启用的 primary/worker 槽，再运行 simulation 或平台对照；
 4. 同步确定 LICENSE 和完整项目 scaffold 方案；
 5. 再进入两个真实科研案例、M4 工件 promotion/复现和对照评估；
 6. 只有对外承诺相应 API 时，执行真实 Provider conformance；

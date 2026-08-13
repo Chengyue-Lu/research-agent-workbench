@@ -1,83 +1,102 @@
 # 恢复点与下一步规划
 
-状态：已于 2026-08-13 根据新增 CCRML 讨论纪要恢复
-
-前一暂停提交：`238d51e15fa84adf8919f9ba66156a8e32d778ec`
+状态：API-first 方向已确认，`K-API-1` 已到达
 
 日期：2026-08-13
 
-## 1. 当前可恢复入口
+## 1. 当前架构判断
 
-恢复工作时先读取：
+系统的优势不是在一个长窗口内反复压缩，而是让主 Agent 只维护大局、决定、风险、工件索引和下一 Atomic Work Unit；每个子任务在独立上下文中执行，结束前把不可丢失内容固化为正式工件与 Handoff。子会话可以关闭或压缩，项目方向不依赖其聊天历史。
 
-1. `README.md` 的当前状态与边界；
-2. `docs/TASKS.md` 的各里程碑证据；
-3. `CHANGELOG.md` 的最新条目；
-4. 本文件的执行顺序；
-5. 目标任务对应的 ADR、Task Packet、Skill Assignment 和 fixtures。
-6. `docs/references/CCRML_MEETING_ADOPTION.md` 的采纳/暂缓边界。
+执行优先级现调整为：
 
-不要从旧聊天记录重建项目状态，也不要在恢复时加载全部候选 Skill、ZIP 内容或原始科研材料。
+1. 文件式科研契约和连续性；
+2. 纯 API fresh session，作为只依赖模型 API 的可移植基线；
+3. Codex、OpenCode、Claude Code 等可选平台 Adapter 或人工新窗口；
+4. 只有真实失败证明需要时，才评估更重的运行时。
 
-## 2. 当前优先顺序
+模型选择保持很小：`primary` 主模型、`worker` 平价模型、按需 `specialist`。模型槽只做显式映射，不建设价格数据库、评分 Router 或自动 fallback。
 
-### P0：真实原生 Continuity 垂直切片
+## 2. 已到达的关键节点：K-API-1
 
-- 先运行 `evidence-scout + literature-evidence-extraction`，再运行 simulation 切片；
-- 每次只执行 Task Packet 声明的一个 Atomic Work Unit；
-- 固化 Attempt、Handoff、Transfer Audit、Context Snapshot、Execution Receipt 与 Main State；
-- 新会话先运行 `resume-check`，再执行唯一下一动作；
-- 验收：机器失败不能被完成宣称覆盖，`safe-paused` 能恢复且不重复已完成工作。
+已经具备：
 
-### P1：真实 Windows Provider conformance
+- `explicit-slot-only` Model Pool，默认不读取环境，不自动选择模型；
+- Profile 可以声明 `default_slot`，coordinator 使用 `primary`，首批子任务使用 `worker`；
+- provider-neutral fresh API session runner；
+- 模型轮次、工具调用、单轮并行、工具结果大小、单轮输出、累计 token/可得成本和 wall time 边界；
+- data policy、模型/能力缺口在调用前阻断；
+- 工具越界、不可测硬预算和超预算进入失败或 `safe-paused`；
+- 不使用 Provider response ID 延续权威状态，不跨 Provider/Model 静默 fallback。
 
-- 在真实 Windows 用户上下文分别选择一个 OpenAI、Anthropic、Gemini 模型；
-- 不在 Codex 沙箱读取、回显或导出令牌；
-- 使用既有有界 runner，每家最多三个合成请求；
-- 保存脱敏 conformance report，失败也保留；
-- 验收：每家得到当前账户/模型的 `passed` 或可定位 `failed`，不把认证成功当作 API shape 通过。
+该节点仅证明执行内核，不证明真实科研价值，也尚未把 Task 自动转换为 API 请求和正式结果文件。
 
-### P2：第二个真实原生子 Agent 与跨模式比较
+## 3. 当前唯一构建目标：K-API-2
 
-- 运行 `evidence-scout + literature-evidence-extraction`；
-- 运行 `simulation-auditor + simulation-vv`；
-- 固化 Attempt、Skill Assignment、Handoff、Transfer Manifest/Audit、Context Snapshot 和 Execution Receipt；
-- 至少人工抽查一次压缩前源条目与 Handoff，记录 preserved/distorted/unverifiable；
-- 验收：删除子 Agent 会话后，主 Agent 仍能只凭工件恢复任务状态。
+终点定义：一个已解析 evidence Task 能够进入全新的纯 API 子会话，并在完成或安全暂停后形成完整文件闭环；删除临时 transcript 后，新主会话只凭文件恢复到唯一正确的下一动作。
 
-### P3：候选 Skill 的四类真实配对评估
+需要完成的最小链路：
 
-- 对 `claim-preserving-rewrite` 运行 trigger、non-trigger、boundary、adversarial；
-- baseline/with-Skill 使用相同 provider、model、脱敏配置、基础上下文和 checker；
-- 独立盲评后再揭示条件；
-- 验收：只形成 `eligible-for-human-decision` 或 `not-eligible`，不自动写 accepted Registry。
+```text
+Project Protocol
+  + Task Packet
+  + Agent Profile
+  + Skill Assignment
+  + explicit worker slot
+        ↓ compile
+minimal system/developer instructions
+  + bounded input references
+  + client-tool allowlist
+        ↓ fresh API session
+Attempt + Research Artifacts
+  + Transfer Manifest
+  + Handoff
+  + Context Snapshot
+  + Execution Receipt
+        ↓ validate and close out
+Main State → new main session resume-check
+```
 
-### P4：选择真实科研案例并建立对照
+实施顺序：
 
-需要研究者先提供或批准：问题边界、可用来源/数据、隐私边界、Claim ceiling，以及“什么结果值得继续”。随后建立单 Agent、轻量委派、多 Agent 三组对照，记录质量、返工、上下文、时间、token/成本和人工决策负担。
+1. 定义 Task/Assignment → `ModelRequest` 的最小编译边界，禁止注入主 Agent 全历史和未选 Skill；
+2. 把 Task budget、有效权限、工具 allowlist、模型槽和 Project data boundary 合并为一次 session limits；
+3. 先用 fake Provider 跑通完成、工具失败、预算暂停和 stale input 四条离线路径；
+4. 原子写入 Attempt、Handoff、Transfer Manifest/Audit、Context Snapshot、Execution Receipt 与 Main State；
+5. 删除内存 transcript，从新主会话执行 `resume-check`，确认下一动作不重复已完成工作；
+6. 仅在上述离线闭环通过后，在真实 Windows 用户上下文对实际启用的 `worker` 槽执行一次受限 evidence 调用。
 
-### P5：仅由真实消费者触发后续实现
+达到第 5 步即到达 `K-API-2` 并暂停评审。第 6 步是随后真实环境确认，不是本节点的强制条件。
 
-- 有预算的 client-tool loop runner；
-- source admission、promotion 与 Run reproducibility；
-- 观察统计、实验、理论推导等模式的专用 Skill；
-- streaming、multimodal 或 server tools。
-- 只有文件式连续性 benchmark 证明不足后才评估 SQLite/FTS；图只可作 Index。
+## 4. 本节点明确不做
 
-没有真实消费者时保持 PARKED，不为架构图补空模块。
+- 不选择或实现 OpenCode、Codex、Claude Code 的新 Runtime Adapter；
+- 不要求 OpenAI、Anthropic、Gemini 三家全部启用，只验证实际选择的模型槽；
+- 不实现自动模型排名、价格抓取、LLM Router 或静默升级；
+- 不实现 GUI、服务端、数据库、消息总线或长期 Supervisor；
+- 不扩展 streaming、多模态或 server tools；
+- 不安装 ZIP 候选 Skill；
+- 不把离线闭环标为科研正确或可公开发布。
 
-## 3. 恢复前需要的输入
+## 5. K-API-2 之后的候选顺序
 
-- 真实 Windows 中可用的 provider/model 名称；
-- 一个证据综合案例和一个理论/仿真案例，或明确只先做其中一个；
-- 数据是否允许外发以及允许的 provider；
-- 真实评估可接受的调用/金额/时间预算；
-- 盲评者与最终 Skill 准入决策者。
+只有节点评审通过才继续：
 
-## 4. 不应在恢复时做的事
+1. 对启用的 `primary` 与 `worker` 槽做真实 Windows conformance；
+2. 用同一 evidence Task 比较轻量单 Agent 与主/子隔离执行的上下文、质量和成本；
+3. 运行 simulation Task，验证不同 Skill 和工具边界；
+4. 出现真实图像/文件需求时增加一个 specialist 槽及相应 capability；
+5. 团队明确选择某个平台后，再实现该平台的薄 Runtime Adapter 并与 API 基线对照。
 
-- 不重新实现平台已有的子 Agent 调度器；
-- 不自动安装 ZIP 或候选 Registry 中的 Skill；
-- 不把所有研究模式合并为一条固定科研流水线；
-- 不用更多 reviewer Agent 挽救缺少工件或定义不清的任务；
-- 不因 fixture、Schema 或离线测试通过而宣称科研价值已经验证。
+## 6. 恢复入口
+
+恢复工作时只需依次读取：
+
+1. `README.md` 的当前边界；
+2. `docs/TASKS.md` 的当前唯一关键路径；
+3. `docs/decisions/0010-API-FIRST-ISOLATED-EXECUTION.md`；
+4. `docs/implementation/PROVIDER_ADAPTER_PLAN.md`；
+5. `examples/task-evidence.yaml`、对应 Profile、Skill Assignment 和 Main State；
+6. `CHANGELOG.md` 最新条目。
+
+不要从旧聊天记录或某个平台会话重建项目状态。

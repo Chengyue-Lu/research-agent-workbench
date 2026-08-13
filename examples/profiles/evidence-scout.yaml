@@ -4,6 +4,7 @@ version: 0.1.0
 purpose: Read-heavy evidence discovery and extraction.
 model_policy:
   class: efficient-read-heavy
+  default_slot: worker
   reasoning: medium
 permission_ceiling:
   filesystem: worktree-write

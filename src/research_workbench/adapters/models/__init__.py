@@ -26,6 +26,12 @@ from research_workbench.adapters.models.http import (
     UrllibTransport,
 )
 from research_workbench.adapters.models.openai import OpenAIResponsesProvider
+from research_workbench.adapters.models.pool import (
+    ModelBinding,
+    ModelPool,
+    ModelSlotConfig,
+    load_model_pool,
+)
 from research_workbench.adapters.models.port import (
     Capability,
     CapabilityGap,
@@ -49,15 +55,28 @@ from research_workbench.adapters.models.port import (
     Usage,
     required_capabilities,
 )
+from research_workbench.adapters.models.session import (
+    AggregateUsage,
+    ApiSessionLimits,
+    ApiSessionResult,
+    ApiSessionStatus,
+    ClientTool,
+    IsolatedApiSessionRunner,
+)
 
 __all__ = [
+    "AggregateUsage",
     "AnthropicMessagesProvider",
+    "ApiSessionLimits",
+    "ApiSessionResult",
+    "ApiSessionStatus",
     "Capability",
     "CapabilityGap",
     "CHECK_ORDER",
     "ConformanceBudgetRecord",
     "ConformanceCheckResult",
     "ContentBlock",
+    "ClientTool",
     "CredentialProvider",
     "CredentialUnavailable",
     "DataPolicy",
@@ -69,11 +88,15 @@ __all__ = [
     "HttpResponse",
     "HttpTransport",
     "HttpTransportError",
+    "IsolatedApiSessionRunner",
     "Message",
+    "ModelBinding",
     "ModelProvider",
+    "ModelPool",
     "ModelNotSupported",
     "ModelRequest",
     "ModelResponse",
+    "ModelSlotConfig",
     "OpenAIResponsesProvider",
     "ProviderAdapterConfig",
     "ProviderConformanceReport",
@@ -90,6 +113,7 @@ __all__ = [
     "build_live_provider",
     "conformance_plan",
     "get_provider_adapter_config",
+    "load_model_pool",
     "load_provider_adapter_configs",
     "probe_provider_adapters",
     "required_capabilities",

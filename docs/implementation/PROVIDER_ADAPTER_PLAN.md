@@ -6,11 +6,12 @@
 
 ## 1. 目标与边界
 
-该层服务于需要程序化模型调用的受限 Task，不取代 Codex、Claude Code 等平台原生 Agent，也不成为第二个全局调度器。它只负责：请求映射、能力预检、错误/停止原因归一化、工具往返表达、用量记录和数据策略前置检查。
+该层现在构成受限 Task 的首要可移植执行路径；Codex、OpenCode、Claude Code 等平台保留为可选交互外壳或兜底入口。它仍不成为全局调度器，只负责：显式模型槽绑定、请求映射、能力预检、错误/停止原因归一化、有界工具往返、用量记录和数据策略前置检查。
 
 ```mermaid
 flowchart LR
-  Task["Task / Skill Assignment"] --> Port["Provider-neutral ModelRequest"]
+  Task["Task / Skill Assignment"] --> Slot["Explicit Model Slot"]
+  Slot --> Port["Provider-neutral ModelRequest"]
   Port --> Gate["Model + Capability + DataPolicy preflight"]
   Gate --> OA["OpenAI Responses Adapter"]
   Gate --> AN["Anthropic Messages Adapter"]
@@ -21,7 +22,7 @@ flowchart LR
   Result --> Receipt["Execution Receipt / Handoff"]
 ```
 
-提供商选择属于 Project/Task 策略；研究对象和 Claim 不保存 SDK 对象或路由状态。跨提供商 fallback 必须是上层的一次新 Attempt，并保留实际 provider/model/data policy，不能在 Adapter 内静默完成。
+提供商选择属于执行策略；研究对象和 Claim 不保存 SDK 对象或路由状态。模型池只有 `primary`、`worker` 和按需 specialist 等少量显式槽，不建设动态 Router。跨提供商 fallback 必须是上层的一次新 Attempt，并保留实际 provider/model/data policy，不能在 Adapter 内静默完成。
 
 ## 2. 当前文件边界
 
@@ -31,6 +32,8 @@ flowchart LR
 - `openai.py`、`anthropic.py`、`gemini.py`：三套独立映射；
 - `configuration.py`：非秘密配置解析和存在性探测；
 - `conformance.py`：固定合成提示、硬预算和脱敏报告的 live conformance runner；
+- `pool.py`：显式模型槽配置与延迟模型 ID 绑定，不做评分或自动选择；
+- `session.py`：fresh context 的 provider-neutral 有界工具循环，不保存跨 Attempt 会话；
 - `registry/providers/adapters.yaml`：禁用状态的环境变量引用模板；
 - `tests/test_provider_adapters.py`：官方响应形状的离线合同 fixture。
 
@@ -131,15 +134,21 @@ rwb providers conformance `
 
 `.rwb/` 与 `runs/` 均被 Git 忽略。通过条件：文本、Schema、指定工具调用三项均通过；失败时保留脱敏报告并降低/修正 capability snapshot，而不是添加兼容猜测。
 
-### P3：有预算的工具循环执行器
+### P3：有预算的隔离 API 会话内核（完成）
 
-在 Adapter 之上新增独立 runner，限制最大模型轮次、工具调用数、并行数、单工具输出大小、累计 token/成本和 wall time。每轮生成 Attempt/Execution Receipt；工具调用默认需要 allowlist，不接受模型临时发明工具。
+已在 Adapter 之上新增独立 runner，限制最大模型轮次、工具调用数、单轮并行数、单工具输出大小、单轮输出、累计 token/可得成本和 wall time。工具调用需要本地声明和 handler，不接受模型临时发明工具；未知硬预算会安全暂停。Runner 每次从调用方提供的消息开始，不复用 provider response ID，不自动 fallback。
 
-### P4：按真实消费者扩展
+该阶段达到 `K-API-1`，但还没有把 Task/Skill Assignment 自动编译为请求，也没有自动生成 Attempt/Execution Receipt，因此不是完整 Task 执行器。
+
+### P4：Task-to-API 文件闭环（当前下一节点）
+
+把已解析 Task、Agent Profile、Skill Assignment 和显式模型槽编译成最小初始消息与工具 allowlist；执行结束或安全暂停时原子写入 Attempt、正式工件、Transfer Manifest、Handoff、Context Snapshot、Execution Receipt 与 Main State。删除临时 transcript 后做一次恢复检查。
+
+### P5：按真实消费者扩展
 
 只有案例需要时才增加 streaming、图像、文件、prompt caching 或 server tools。每项单独增加 capability、data policy、合同测试和停止/删除条件。
 
-### P5：跨提供商对照
+### P6：跨提供商对照
 
 使用同一受限 Task 比较科研质量、证据完整性、上下文负担、工具失败率、成本和人工校核时间。不以“能返回答案”作为兼容性结论。
 
@@ -147,6 +156,6 @@ rwb providers conformance `
 
 - 不在默认/dry-run 路径读取或提交真实 API key；live 路径只在即将发送请求时读取真实 Windows 进程已有的环境变量；
 - 不在 Codex 沙箱内判断真实 Windows 身份是否认证；
-- 不自动选模型、自动降级或静默切换提供商；
+- 不做评分式选模、自动降级或静默切换提供商；只允许调用方显式绑定模型槽；
 - 不实现网关、常驻代理、会话数据库或通用 Agent loop；
 - 不因为离线 fixture 通过而把 live conformance 标成 passed。
