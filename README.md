@@ -22,6 +22,7 @@
 
 ## 架构入口
 
+- [零基础使用指南与发布就绪度](docs/GETTING_STARTED.md)
 - [项目章程](docs/PROJECT_CHARTER.md)
 - [总体架构](docs/ARCHITECTURE.md)
 - [完整实施计划](docs/implementation/IMPLEMENTATION_PLAN.md)
