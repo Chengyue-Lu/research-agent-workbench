@@ -26,4 +26,4 @@ source:
   origin: repository-original
   locator: .agents/skills/literature-evidence-extraction/SKILL.md
   content_hash: c0a080ea9c4743a599000bc6978386a8dcbb8aaa09e1ed4c0e54a4deadca780b
-  package_hash: 4756548448d00e78fea7743e126a4b233930ce2145ed69fdad0995e2ef478004
+  package_hash: 60c8b11adc147fbcb3c0d1c79d05c441d3143f446502a5b12c73f1b8b04895cb

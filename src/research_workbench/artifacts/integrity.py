@@ -51,7 +51,10 @@ def hash_directory(path: str | Path) -> str:
         and candidate.suffix.lower() not in {".pyc", ".pyo"}
         and candidate.name not in excluded_names
     )
-    for file_path in sorted(files):
+    # Path ordering is host-dependent: WindowsPath compares case-insensitively,
+    # while PosixPath compares case-sensitively. Package locks instead use one
+    # repository-relative ordering on every host.
+    for file_path in sorted(files, key=lambda item: item.relative_to(root).as_posix()):
         if file_path.is_symlink():
             raise ValueError(f"refusing to hash symlinked package file: {file_path}")
         relative = file_path.relative_to(root).as_posix().encode("utf-8")

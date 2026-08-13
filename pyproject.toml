@@ -12,6 +12,7 @@ authors = [{ name = "Research Agent Workbench contributors" }]
 dependencies = [
   "jsonschema>=4.23,<5",
   "PyYAML>=6,<7",
+  "rfc3339-validator>=0.1.4,<0.2",
 ]
 
 [project.scripts]

@@ -1,5 +1,5 @@
 schema_version: 0.1.0
-assignment_id: SA-5F3DA8AF760F648B
+assignment_id: SA-9A9D7C442B60B3E8
 task_id: EVID-001
 task_revision: 1
 agent_profile: evidence-scout@0.1.0
@@ -8,7 +8,7 @@ skill_lock:
   version: 0.1.0
   content_hash: c0a080ea9c4743a599000bc6978386a8dcbb8aaa09e1ed4c0e54a4deadca780b
   source_locator: .agents/skills/literature-evidence-extraction/SKILL.md
-  package_hash: 4756548448d00e78fea7743e126a4b233930ce2145ed69fdad0995e2ef478004
+  package_hash: 60c8b11adc147fbcb3c0d1c79d05c441d3143f446502a5b12c73f1b8b04895cb
 resolved_tools:
 - document-read
 effective_permissions:
@@ -25,4 +25,4 @@ resolution_reason:
 - all required capabilities are covered
 - no forbidden or incompatible skill is loaded
 - permissions are the intersection of task, profile, and selected skills
-registry_digest: 9991ef98131666dd8437e5f444027e4a833edbea9f5ab50273d8cc120ddf934f
+registry_digest: b1cc47113f6fb1ab9a3ca98bdb9f409336372d69199c0ce5cbaf9dc24b69e415

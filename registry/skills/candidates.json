@@ -292,7 +292,7 @@
       "source_id": "rwb-derived-claim-preserving-rewrite-0.1.0",
       "source_path": "skill-lab/candidates/claim-preserving-rewrite/SKILL.md",
       "content_hash": "sha256:0e9f0753cdfdf02104b1539656c2dc7b261713162be07c902abf6bb9bc6069af",
-      "package_hash": "sha256:f4eee066f7166fb94afd7c3fd2e15a75dd02e874c9c7a6f2c9fc091d0a3ad3ea",
+      "package_hash": "sha256:11d1673ab7c5200552dc95383c2fc30c4c6a04c38f171a0e1a80f67531576809",
       "status": "triage",
       "kind": "integrity",
       "capabilities": ["claim-preserving-rewrite", "evidence-strength-calibration", "surface-invariant-check"],

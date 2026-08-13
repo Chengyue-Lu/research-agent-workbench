@@ -1,4 +1,4 @@
 interface:
-  display_name: "Literature Evidence Extraction"
-  short_description: "Extract evidence and preserve transfer obligations"
-  default_prompt: "Use $literature-evidence-extraction to extract bounded evidence and persist a traceable Handoff Transfer Manifest."
+  display_name: 'Literature Evidence Extraction'
+  short_description: 'Extract evidence and preserve transfer obligations'
+  default_prompt: 'Use $literature-evidence-extraction to extract bounded evidence and persist a traceable Handoff Transfer Manifest.'

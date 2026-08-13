@@ -128,7 +128,7 @@ python -m unittest discover -s tests -v
 
 本 Handoff 写入时的验证基线：
 
-- 全量单元与合同测试：135 项通过；
+- 全量单元与合同测试：137 项通过；
 - 示例与 Registry：`validated=53 errors=0 warnings=0`；
 - `git diff --check`：通过；
 - 未执行真实 API 调用。

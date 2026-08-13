@@ -1,5 +1,5 @@
 schema_version: 0.1.0
-assignment_id: SA-B12E83DDDC626378
+assignment_id: SA-8F028F5324E0F9A0
 task_id: SIM-001
 task_revision: 1
 agent_profile: simulation-auditor@0.1.0
@@ -8,7 +8,7 @@ skill_lock:
   version: 0.1.0
   content_hash: 2a3c19b5af6288c4d5eab6e2fc2557231cc684f0ec9b6ec8bb5b864d126a99c4
   source_locator: .agents/skills/simulation-vv/SKILL.md
-  package_hash: 6a86d52046e52bf404ef4aa74a7a13edcba3cc0f49e2eb1a1bb48fa259e4f75a
+  package_hash: e71c2977b8b839b7b7edc3e3af8b5a923f46c96ad44d30adc23c965bf8f96040
 resolved_tools:
 - bounded-compute
 - file-read
@@ -25,4 +25,4 @@ resolution_reason:
 - all required capabilities are covered
 - no forbidden or incompatible skill is loaded
 - permissions are the intersection of task, profile, and selected skills
-registry_digest: 9991ef98131666dd8437e5f444027e4a833edbea9f5ab50273d8cc120ddf934f
+registry_digest: b1cc47113f6fb1ab9a3ca98bdb9f409336372d69199c0ce5cbaf9dc24b69e415

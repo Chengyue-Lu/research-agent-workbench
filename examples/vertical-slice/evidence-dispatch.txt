@@ -1,6 +1,6 @@
 Execute Task EVID-001@1 as custom agent `evidence_scout`.
 Required Skills: $literature-evidence-extraction
-Skill Assignment: SA-5F3DA8AF760F648B
+Skill Assignment: SA-9A9D7C442B60B3E8
 Goal: Extract citable evidence for Q-001 from the bounded source set.
 Active modes: evidence-synthesis
 Input references:

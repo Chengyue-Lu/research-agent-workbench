@@ -26,4 +26,4 @@ source:
   origin: repository-original
   locator: .agents/skills/handoff-integrity/SKILL.md
   content_hash: 2a4c727eb7462628e9f246a5363a8add1ba244c05b6c7b7e7b2ad450befabbf7
-  package_hash: eacfb88221e37a388970542d87d3f4ce4424295e23887b7047ffba06680a3e5f
+  package_hash: 7ef583e26e3759705ae2c4b75f978e80cce01b5307f858570601fb44fcd5d1cd

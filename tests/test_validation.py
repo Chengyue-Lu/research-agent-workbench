@@ -3,12 +3,32 @@ from pathlib import Path
 
 from research_workbench.io import iter_documents
 from research_workbench.validation.documents import Severity, load_and_validate, validate_documents
+from research_workbench.validation.schemas import SchemaCatalog
 
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 class ValidationTests(unittest.TestCase):
+    def test_rfc3339_validation_is_available_in_clean_install(self) -> None:
+        errors = SchemaCatalog().validate(
+            "research_object",
+            {
+                "schema_version": "0.1.0",
+                "object_type": "decision",
+                "object_id": "D-BAD-TIME",
+                "revision": 1,
+                "status": "accepted",
+                "decision": "Reject invalid timestamps deterministically.",
+                "scope": [],
+                "reason_refs": [],
+                "actor": "human",
+                "timestamp": "not-a-timestamp",
+            },
+        )
+
+        self.assertTrue(any(error.validator == "format" for error in errors))
+
     def test_repository_examples_and_registries_have_no_errors(self) -> None:
         paths = iter_documents([ROOT / "examples", ROOT / "registry"])
         _, issues = load_and_validate(paths)

@@ -1,6 +1,6 @@
 Execute Task SIM-001@1 as custom agent `simulation_auditor`.
 Required Skills: $simulation-vv
-Skill Assignment: SA-B12E83DDDC626378
+Skill Assignment: SA-8F028F5324E0F9A0
 Goal: Audit convergence and parameter sensitivity for the bounded simulation run set.
 Active modes: simulation
 Input references:
