@@ -122,7 +122,7 @@ recommended_next_actions:
 - `H1`：普通跨 Agent 返回；默认只要求一个 Handoff Packet。
 - `H2`：发生压缩、关键 Evidence/Claim/Decision promotion、外部副作用、长等待/会话销毁、摘要争议或 Task 明确要求时，增加 Transfer Manifest/Audit，并按需增加 Context Snapshot、Execution Receipt 与独立语义抽样。
 
-H1/H2 都必须声明失败、限制、冲突和未完成项。H2 不是默认“更可靠”；若额外工件不改变主 Agent 决策，应缩减触发条件。
+H1/H2 都必须声明失败、限制、冲突和未完成项。H2 不是默认“更可靠”；若额外工件不改变主 Agent 决策，应缩减触发条件。Handoff 等级只控制回传主上下文的摘要与审查强度，不控制是否留存原始过程：所有跨 Agent 可见传递均进入 Attempt Archive。
 
 ### Transfer Manifest 与接收审计
 
@@ -160,11 +160,14 @@ Receipt 的生命周期 `status: completed` 只表示一次执行已经结束，
 
 - Task、仓库 guidance、选定 Profile/Skill、显式输入和目标模块构成初始内容允许集；
 - 允许用文件名、目录名、大小、版本和哈希定位依赖，但不默认读取其他正文；
-- 新正文必须由 Task owner 扩展允许集，并在 Task 工作目录的简短 worklog 中记录原因；
-- worklog 记录基线、关键决定、范围变化、修改路径、重要验证和未完成项，不记录每次普通读取或完整推理；
+- 新正文必须由实名 Task owner 扩展允许集，并在 Task 工作目录记录 scope-decision 消息；
+- 每个 Agent 间实际可见的 Assignment、澄清、范围变化、进度、Handoff、review、确认、失败与取消都进入 `work/<TASK>/<ATTEMPT>/messages/`；
+- 运行时可观察的正文读取、工具/命令与文件 revision 进入 `events.jsonl`；Worklog 不逐项复制，但 validator 可用账本核对越界读取；
+- `INDEX.yaml` 提供消息元数据发现，但另一个 Agent 的消息正文不在默认读取集，除非 Assignment 或后续 scope-decision 明确引用；
+- worklog 记录基线、关键决定、范围变化、修改路径、重要验证和未完成项，不记录每次普通读取或完整推理；它是 Trace 的可读索引，不是 Trace 本身；
 - 另一个 Agent 的 `work/<TASK>/<ATTEMPT>` 不在默认读取集，除非作为正式输入交接。
 
-可复制使用[Task Worklog Template](../templates/TASK_WORKLOG.md)。
+可复制使用[Attempt Archive Template](../templates/TASK_WORKLOG.md)，完整目录和消息信封见[工件与溯源](07-ARTIFACTS_AND_PROVENANCE.md)。
 
 ## 8. 预警
 
@@ -181,6 +184,8 @@ Receipt 的生命周期 `status: completed` 只表示一次执行已经结束，
 - `HANDOFF-SUMMARY-DISTORTION`：有界语义抽查发现限定条件改变。
 - `HANDOFF-OVERHEAD`：审计工件成本持续增加但不改变接受、返工或 Gate 决定。
 - `TASK-READ-OUTSIDE-SCOPE`：Agent 请求或读取未授权正文且没有 Task 扩展记录。
+- `TRACE-MESSAGE-MISSING`：已发生跨 Agent 传递但 Attempt Archive 找不到对应消息。
+- `TRACE-ACTOR-UNOWNED`：Agent actor 没有绑定实名责任人。
 
 ## 9. 验收条件
 
@@ -191,3 +196,4 @@ Receipt 的生命周期 `status: completed` 只表示一次执行已经结束，
 - 输入变化后旧 Handoff 自动标记 stale；
 - 并行任务不能写入同一正式路径。
 - 普通 H1 与高风险 H2 可以分别验收，且能够记录其协调成本差异。
+- 不读取原 Agent 会话也能按 message sequence、Handoff 和 Decision 回放一次委派。

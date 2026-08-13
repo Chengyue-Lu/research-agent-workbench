@@ -115,11 +115,11 @@ rollover 步骤：
 
 1. Main State / Project Protocol；
 2. Handoff 摘要；
-3. Evidence/Run/Claim 索引；
-4. 具体工件片段；
-5. 原始材料或日志，仅在争议仍无法解决时。
+3. Attempt `INDEX.yaml` 与 Evidence/Run/Claim 索引；
+4. Handoff 明确引用的消息、Decision 或具体工件片段；
+5. 其他 Agent 消息、原始材料或工具日志，仅在争议或排障仍无法解决时。
 
-这避免把“可访问”误解为“应全部进入上下文”。
+完整 Agent Trace 的存在不改变这个顺序。这避免把“已留存”或“可访问”误解为“应全部进入上下文”。
 
 ### 内容允许集
 
@@ -128,8 +128,9 @@ rollover 步骤：
 1. 永久允许的控制输入只有当前 Task、`AGENTS.md`、选定 Profile、Skill Assignment 和本次 Skill 入口；
 2. `input_refs`、目标模块及获批扩展构成正文允许集；
 3. 允许先查看路径元数据，禁止默认递归读取全仓库文档、候选 Skills、历史 Handoffs 或其他 Agent 工作目录；
-4. 需要额外正文时先说明它将回答哪个未决问题，由 Task owner 扩展范围；
-5. 不记录无意义的逐文件流水，只记录范围扩展、实际成为正式输入的文件和关键验证。
+4. 需要额外正文时先说明它将回答哪个未决问题，由实名 Task owner 扩展范围，并保存 scope-request/scope-decision 消息；
+5. Agent 间实际传递全部进入 Attempt Archive，但正文只有被 Assignment 或 scope-decision 引用后才可读取；
+6. 不记录无意义的逐文件打开流水，只记录范围扩展、实际成为正式输入的文件和关键验证。
 
 ## 8. 隐藏风险与预警
 
@@ -147,6 +148,7 @@ rollover 步骤：
 | CTX-RECOVERY-DRIFT | 新会话恢复后目标改变 | 对比 checkpoint 与下一动作，Human Gate |
 | CTX-READ-SCOPE-DRIFT | Agent 阅读未声明正文或将临时材料当正式输入 | BLOCK 合并，补录范围或重做 |
 | CTX-HANDOFF-OVERHEAD | Handoff 工件增长但没有改变决策 | 降为 H1、缩小 H2 触发器 |
+| CTX-TRACE-RELOAD | 主 Agent 因 Trace 已存在而批量读回历史消息 | 只读索引和 Handoff，另建排障 Task 扩展消息范围 |
 
 ## 9. 当前 CLI
 
@@ -163,9 +165,11 @@ rwb handoff audit-transfer ...
 
 - 完整 Chain-of-Thought；
 - 没有消费方的每轮自省；
-- 为证明控制系统可靠而产生的控制系统日志洪流；
+- 没有发生 Agent 间传递、不能影响决定且无排障价值的逐 token/逐文件遥测洪流；
 - 未经验证的自动摘要集合；
 - 可以从源工件确定性重建的重复视图。
+
+上述限制不允许删除实际已经发送给另一个 Agent 的可见消息。敏感或政策禁止留存的内容按 Trace redaction/omission 规则登记，而不是静默消失。
 
 ## 11. 验收条件
 
@@ -176,3 +180,4 @@ rwb handoff audit-transfer ...
 - Main State 保持小而稳定，不随项目历史线性增长；
 - 子 Agent 结束后其会话可删除而不影响正式结果。
 - 普通任务无需完整审计链也能恢复；高风险任务触发 H2 时仍可定位关键条目。
+- 默认不加载完整 Trace 仍能继续；需要排障时可以按 message ID 回放原始传递。

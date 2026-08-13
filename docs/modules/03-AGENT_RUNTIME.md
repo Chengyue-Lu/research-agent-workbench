@@ -2,7 +2,7 @@
 
 ## 1. 目标
 
-定义主 Agent 与子 Agent 的职责、Agent Profile、委派条件和执行映射。项目保持 API 与平台中立，但 API session 及其测试由独立 API Execution 工作流维护；本模块重点约束进入任何执行路径之前的 Task、Mode、Skill、读取和返回边界。
+定义主 Agent 与子 Agent 的职责、Agent Profile、委派条件和执行映射。项目保持 API 与平台中立；黄毅维护 API session 及其测试，路诚钺维护进入任何执行路径之前的 Task、Mode、Skill、读取、Trace 和返回边界。
 
 ## 2. 主 Agent Charter
 

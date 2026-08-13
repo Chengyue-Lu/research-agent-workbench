@@ -2,7 +2,7 @@
 
 状态：`DONE / IN_PROGRESS / READY / BLOCKED / PARKED / EXTERNAL`
 
-当前 owner：M2/M7 的 Mode–Skill、读取与 Handoff 成本由本侧维护；M6 的 API 执行实现与测试由独立 API Execution 工作流维护。共享接口变更见 `docs/WORKSTREAM_OWNERSHIP.md`。
+当前责任人：路诚钺维护 M2/M7 的 Mode–Skill、读取、Handoff 与 Trace 评估；黄毅维护 M6 的 API 执行实现与测试。共享接口变更按[开发协作指南](DEVELOPMENT.md)由两人共同确认。
 
 ## M0：架构与仓库
 
@@ -40,7 +40,7 @@
 | M2-004 | IN_PROGRESS | 创建 simulation-vv Skill | M2-001 | V&V 结构、版本锁和 Claim ceiling 正反例通过；真实数值案例待执行 |
 | M2-005 | DONE | 创建 handoff-integrity 检查 | M1 | 确定性脚本已验证 Task/input/Skill/artifact 交接边界，不宣称科学正确性 |
 | M2-006 | PARKED | 扩展 Codex Runtime Adapter | M2-002..005 | 已有 Agent/Skill 发现、验证和显式 dispatch 保留；平台 launch/collect 不在当前 Mode–Skill 关键路径 |
-| M2-007 | IN_PROGRESS | 执行首个双 Skill 垂直切片 | M7-002..006 | 离线契约切片已证明 Skills 不同；本侧先完成 Mode/Skill 选择、读取计划和 H1/H2 成本基线，真实执行证据由执行工作流提供 |
+| M2-007 | IN_PROGRESS | 执行首个双 Skill 垂直切片 | M7-002..006 | 离线契约切片已证明 Skills 不同；路诚钺先完成 Mode/Skill 选择、读取计划和 H1/H2 成本基线，真实执行证据由黄毅负责的执行工作流提供 |
 | M2-008 | IN_PROGRESS | 建立外部 Skill 发现、隔离评估与准入 Registry | M1 | ZIP 审计、18/18 追溯、非发现候选和 provider-neutral 双臂评估契约/CLI 已落地；fixture 会被正确阻断，真实 with/without 与 trial/accepted 仍待完成 |
 
 ## M3：上下文与风险
@@ -53,6 +53,8 @@
 | M3-004 | IN_PROGRESS | review loop/fanout/write race 检查 | M2 | 并发预算、review loop、协调成本与既有 write race 检查已落地；真实停止行为待验证 |
 | M3-005 | IN_PROGRESS | 敏感 trace 策略 | M2 | 外部/完整/敏感 trace 会阻断或警告；真实脱敏器与密钥 fixture 待实现 |
 | M3-006 | IN_PROGRESS | SAFE_PAUSE 与机器完成权 | M3-001..003 | AWU/完成/暂停条件、stage/safe-pause/waiting、执行结束与 `contract-satisfied` 分离、失败报告覆盖显式完成宣称和可恢复 pause fixture 已实现；真实 Task rollover 待演练 |
+| M3-007 | IN_PROGRESS | 冻结实名 actor、Attempt Archive 与完整 Agent Trace 规则 | M3-003..006 | ADR-0012、目录、消息信封、写前捕获、capture gap、按需读取和 Worklog 关系一致；负责人明确为路诚钺/黄毅 |
+| M3-008 | READY | 实现 Trace Envelope/Index/Event Schema、validator 与手工 fixture | M3-007 | 能检测 message/event sequence、hash、actor owner、capture gap、未声明删减、越界正文/工具、瞬时结果丢失和过程产物覆盖；不保存 Chain-of-Thought |
 
 ## M4：工件与复现
 
@@ -74,26 +76,27 @@
 | M5-004 | READY | 运行案例并分析净收益 | M5-001..003 | 质量、上下文、成本数据完整 |
 | M5-005 | READY | 里程碑删减评审 | M5-004 | 至少做出一项保留/删除/停止决定 |
 
-## M6：API Execution 工作流（外部维护）
+## M6：API Execution（黄毅维护）
 
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
-| M6-001 | EXTERNAL | OpenAI/Anthropic/Gemini 薄 Model Provider Adapters | M1-008 | 已移交 API Execution 工作流；本侧不修改实现或测试 |
+| M6-001 | EXTERNAL | OpenAI/Anthropic/Gemini 薄 Model Provider Adapters | M1-008 | 黄毅维护；路诚钺不修改实现或测试 |
 | M6-002 | DONE | 显式模型池与隔离 API session kernel（`K-API-1`） | M6-001 | primary/worker/specialist 槽只可显式绑定；轮次、工具、并行、工具结果、输出、token/成本/time 有硬边界；无自动 fallback；离线测试通过 |
-| M6-003 | EXTERNAL | Task-to-API 文件闭环（`K-API-2`） | M1-008, M2-001..005, M6-002 | 已移交；本侧只提供冻结 Task/Mode/Skill/read/handoff 接口 |
-| M6-004 | EXTERNAL | 选定模型槽的真实 Windows conformance 与一次 evidence 调用 | M6-001..003 | 由 API Execution 工作流执行并返回脱敏工件 |
-| M6-005 | PARKED | streaming/multimodal/server tools 与平台 Adapter | 真实案例或平台选择 | API 工作流 owner；没有真实需求不启动 |
+| M6-003 | EXTERNAL | Task-to-API 文件闭环（`K-API-2`） | M1-008, M2-001..005, M6-002 | 黄毅维护；路诚钺只提供冻结 Task/Mode/Skill/read/handoff 接口 |
+| M6-004 | EXTERNAL | 选定模型槽的真实 Windows conformance 与一次 evidence 调用 | M6-001..003 | 黄毅执行并返回脱敏工件 |
+| M6-005 | PARKED | streaming/multimodal/server tools 与平台 Adapter | 真实案例或平台选择 | 黄毅决定执行端启动条件；没有真实需求不启动 |
+| M6-006 | EXTERNAL | API/平台执行时自动写入 Agent Trace | M3-008, M6-003 | 黄毅实现消息写前捕获/导出与 capture-gap 报告；不得把密钥或隐藏推理写入 Trace |
 
 ## M7：Mode–Skill 选择与协调成本
 
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
-| M7-001 | DONE | 冻结工作流 owner、受控读取与分级 Handoff 文档策略 | M2, M3 | Ownership、ADR-0011、架构图和恢复入口一致 |
+| M7-001 | DONE | 冻结实名 owner、受控读取与分级 Handoff 文档策略 | M2, M3 | 路诚钺/黄毅职责、ADR-0011/0012、架构图和开发入口一致 |
 | M7-002 | IN_PROGRESS | 建立现有 Mode 决策卡与边界 fixtures | M1-003 | evidence/simulation 具有 trigger、non-trigger、组合、歧义和 no-Mode 样本 |
 | M7-003 | READY | 建立 Task-to-Skill 选择矩阵 | M2-001 | 可解释 no-Skill、accepted Skill、拆 Task 和 Human Gate；排除理由可重放 |
 | M7-004 | READY | 审计三个 accepted Skills 的 trigger/non-trigger | M7-002..003 | 每个 Skill 有适用、边界、不适用和删除条件 |
 | M7-005 | READY | 对一个 triage candidate 作证据化去留决定 | M2-008, M7-003 | 产出 reject/retain-reference/continue-trial，不自动 accepted |
-| M7-006 | READY | 建立 H0/H1/H2 与内容读取成本对照 | M3-003, M7-002 | 记录工件数、字符、审阅、回查、遗漏、返工和读取扩展 |
+| M7-006 | READY | 建立 H0/H1/H2 与内容读取成本对照 | M3-008, M7-002 | 通过 Attempt Archive 记录消息/工件数、字符、审阅、回查、遗漏、返工、读取扩展和 capture gap |
 | M7-007 | PARKED | 新增 experiment/theory/observational/engineering Mode | 真实案例 + Mode 准入卡 | 证明现有 Mode 组合不足后逐个启用 |
 
 ## GitHub 执行入口
@@ -110,4 +113,4 @@ M1 已建立里程碑与首批可执行 Issues：
 
 ## 当前下一任务
 
-当前唯一关键路径是 `M7-002..006 / K-MS-1`：为现有两个 Mode 建立边界 fixtures，形成 Task-to-Skill 选择矩阵，审计 accepted Skills，处理一个 triage candidate，并为每个任务给出内容允许集与 H0/H1/H2。到达可解释、可复现、可删减的选择基线后暂停评审；不在本分支补 API、Provider、模型或 live conformance。
+当前关键路径是 `M3-007..008 → M7-002..006 / K-MS-1`：先让每次 Agent 试验能够用实名 actor 和 Attempt Archive 完整留痕，再为现有两个 Mode 建立边界 fixtures，形成 Task-to-Skill 选择矩阵，审计 accepted Skills，处理一个 triage candidate，并为每个任务给出内容允许集与 H0/H1/H2。到达可解释、可回放、可删减的选择基线后暂停评审；路诚钺不在本分支补 API、Provider、模型或 live conformance。

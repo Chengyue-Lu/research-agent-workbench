@@ -169,7 +169,7 @@ rwb runtime codex render examples/task-evidence.yaml `
 
 dispatch 只包含 Task 边界、输入路径与哈希、写入范围、显式 Skill、完成检查和暂停条件。它不会嵌入论文全文、其他 Skill 正文或主会话历史。
 
-到这里仍然没有启动 Agent。这是已有的可选 Codex dispatch 路径。Task-to-API 文件桥接由独立 API Execution 工作流维护；本侧当前主线是 Mode–Skill 选择与上下文成本，不依赖该桥接完成后才开始。
+到这里仍然没有启动 Agent。这是已有的可选 Codex dispatch 路径。Task-to-API 文件桥接由黄毅维护；路诚钺当前主线是 Mode–Skill 选择、Agent Trace 与上下文成本，不依赖该桥接完成后才开始。
 
 ### 4.5 检查一份已有 Handoff
 
@@ -204,16 +204,16 @@ rwb context resume-check `
 
 ## 5. 当前怎样实际运行一个子 Agent
 
-当前仓库已经有 fresh API session 内核，但尚未提供完整的 Task-to-API CLI。因此过渡期有两种受控方式：开发者直接调用该内核进行离线/集成测试，或使用现有 Codex dispatch 作为人工平台入口。无论采用哪种方式，Workbench 都管理同一套契约和文件闭环。
+当前仓库已经有 fresh API session 内核，但尚未提供完整的 Task-to-API CLI 和自动 Trace 捕获。因此过渡期有两种受控方式：开发者直接调用该内核进行离线/集成测试，或使用现有 Codex dispatch 作为人工平台入口。无论采用哪种方式，Workbench 都使用同一套契约和 Attempt Archive；黄毅负责执行端实现，路诚钺负责 Mode/Skill/Trace 方法与评估。
 
 1. 人类批准 Project Protocol 和本次 Task 边界；
 2. 用 `rwb task resolve` 生成不可变 Assignment；
 3. 显式绑定 `primary`、`worker` 或 specialist 模型槽；若走平台路径，再用 `rwb runtime codex render` 生成最小 dispatch；
-4. 为子任务新建独立 API session 或平台窗口，不继承主 Agent 全历史；
+4. 为子任务新建独立 API session 或平台窗口，不继承主 Agent 全历史；同时创建 Attempt Archive、稳定 actor_id 和实名 accountable owner；
 5. 让子 Agent 只读取 Task、选定 Skill、`input_refs` 和获批目标模块；可以先看路径元数据，新增正文需请求扩展；只写入 `write_scope`；
-6. 子 Agent 持续写简短 worklog；普通返回写 H1 Compact Handoff，只有风险/压缩/副作用等触发时才增加 H2 Manifest/Audit/Receipt；
+6. 每条 Agent 间可见传递写入 `messages/`；简短 Worklog 只做导航。普通返回写 H1 Compact Handoff，只有风险/压缩/副作用等触发时才增加 H2 Manifest/Audit/Receipt；
 7. 运行确定性检查和 `rwb handoff validate`；
-8. 主 Agent 只读取 Handoff、风险、工件索引和下一动作；
+8. 主 Agent 只读取 Handoff、风险、Attempt/工件索引和下一动作；仅在排障 Task 获批后按 message ID 回放原文；
 9. 需要换主会话时生成 Main State，新会话先通过 `resume-check`。
 
 给 API session 或平台 Agent 的指令至少要明确：
@@ -456,12 +456,13 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 | 产品边界和总体架构 | 已形成 Charter、Architecture、模块和 ADR | 可复用 |
 | Schema、模型和确定性验证 | 本地测试和全部示例/Registry 校验通过 | 技术 alpha 可用 |
 | CLI | 可 init、validate、resolve、render、audit、checkpoint | 技术 alpha 可用 |
-| Agent—Skill 路由 | 两条不同 Skill 的离线切片可重放 | 本侧缺 Mode 决策卡、选择矩阵和增量价值证据 |
-| API Session 内核 | 显式模型槽、有界工具循环和无 fallback 已测试 | Task-to-API 与真实调用由 API Execution 工作流维护 |
+| Agent—Skill 路由 | 两条不同 Skill 的离线切片可重放 | 路诚钺尚缺 Mode 决策卡、选择矩阵和增量价值证据 |
+| API Session 内核 | 显式模型槽、有界工具循环和无 fallback 已测试 | Task-to-API 与真实调用由黄毅维护 |
 | Codex Runtime Adapter | 布局、能力和 dispatch 已实现 | 可选路径，不在当前关键路径 |
 | 上下文连续性 | SAFE_PAUSE、哈希、digest、Git 冲突和恢复 fixture 已实现 | 缺真实跨会话恢复 |
-| Handoff 压缩审计 | Manifest/Audit 和风险触发抽样契约已实现 | 本侧缺 H1/H2 成本对照与真实材料样本 |
-| Provider Adapters | OpenAI、Anthropic、Gemini 离线合同和有界 runner 已实现 | 由 API Execution 工作流继续维护 |
+| Handoff 压缩审计 | Manifest/Audit 和风险触发抽样契约已实现 | 路诚钺尚缺 H1/H2 成本对照与真实材料样本 |
+| Agent 过程留痕 | 已冻结实名 actor、Attempt Archive 和按需读取规则 | Trace Schema/validator 与运行时自动捕获尚未实现 |
+| Provider Adapters | OpenAI、Anthropic、Gemini 离线合同和有界 runner 已实现 | 由黄毅继续维护 |
 | Skill 供应链 | 候选隔离、静态审计、paired evaluation 契约已实现 | accepted Skills 仍标记 `project-original-unlicensed` |
 | 工件 promotion 和 Run 复现 | 已有架构与任务 | 核心实现未完成 |
 | 科研价值 | 有指标和对照计划 | 尚无两个真实案例，也未证明多 Agent 净收益 |
@@ -477,7 +478,7 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 
 至少还需关闭六个发布 Gate：
 
-1. 本侧完成 `K-MS-1` Mode–Skill 选择基线；API 工作流并行完成其 Task-to-API 闭环；
+1. 路诚钺完成 `K-MS-1` Mode–Skill/Trace 选择基线；黄毅并行完成 Task-to-API 闭环；
 2. 完成一次真实 `safe-paused → 新主会话 → 正确下一动作` 恢复；
 3. 把 `rwb init` 升级为可选择的完整项目模板，或提供受支持的 template repository；
 4. 选择并加入项目 LICENSE，同时清理 accepted Skills 的许可状态；
@@ -517,23 +518,26 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 
 发布关键路径应保持克制：
 
-1. 完成 `K-MS-1`：Mode 决策卡、6 个边界 fixtures、Task-to-Skill 选择矩阵和 accepted Skill 边界审计；
-2. 为同类任务比较 H1/H2 与内容读取扩展成本，删减没有改变决策的控制项；
-3. 对一个 triage candidate 作 reject/retain-reference/continue-trial 决定；
-4. API Execution 工作流独立推进 Task-to-API、恢复和真实模型证据；本侧只消费正式脱敏工件；
-5. 同步确定 LICENSE 和完整项目 scaffold 方案；
-6. 再进入两个真实科研案例、M4 工件 promotion/复现和对照评估；
-7. 只有文件式连续性 benchmark 出现可复现瓶颈时，才评估 SQLite/FTS；图层只能作为 Index，不能成为事实源。
+1. 先完成 Attempt Archive、实名 actor 与 Agent Trace 的手工 fixture/validator，使后续试验可以回放；
+2. 完成 `K-MS-1`：Mode 决策卡、6 个边界 fixtures、Task-to-Skill 选择矩阵和 accepted Skill 边界审计；
+3. 为同类任务比较 H1/H2 与内容读取扩展成本，删减没有改变决策的控制项；
+4. 对一个 triage candidate 作 reject/retain-reference/continue-trial 决定；
+5. 黄毅独立推进 Task-to-API、恢复、自动 Trace 捕获和真实模型证据；路诚钺只消费正式脱敏工件；
+6. 同步确定 LICENSE 和完整项目 scaffold 方案；
+7. 再进入两个真实科研案例、M4 工件 promotion/复现和对照评估；
+8. 只有文件式连续性 benchmark 出现可复现瓶颈时，才评估 SQLite/FTS；图层只能作为 Index，不能成为事实源。
 
 不要把增加 Supervisor、数据库、Agent 数量或 reviewer 层数当作发布进度。每个新增机制都应有真实故障、消费方、成本和删除条件。
 
 ## 13. 继续阅读
 
+- [文档导航](README.md)
+- [开发协作指南](DEVELOPMENT.md)
 - [项目章程](PROJECT_CHARTER.md)
 - [总体架构](ARCHITECTURE.md)
 - [Task 与 Handoff](modules/05-TASK_AND_HANDOFF.md)
 - [上下文治理](modules/06-CONTEXT_GOVERNANCE.md)
 - [验证、风险与 Human Gate](modules/08-VALIDATION_RISK_AND_GATES.md)
 - [实施任务清单](TASKS.md)
-- [恢复点与下一步](NEXT_STEPS.md)
+- [工件与 Agent Trace](modules/07-ARTIFACTS_AND_PROVENANCE.md)
 - [Changelog](../CHANGELOG.md)

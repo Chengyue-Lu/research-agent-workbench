@@ -8,7 +8,7 @@
 
 ## 1. 架构结论
 
-系统采用“最小科研内核 + 方法模式包 + 能力绑定 + 受限执行接口 + 工件与验证”的分层结构。Mode–Skill 工作流决定方法与能力边界；API Execution 工作流或可选平台只负责执行已冻结的任务，不反向决定科研方法。
+系统采用“最小科研内核 + 方法模式包 + 能力绑定 + 受限执行接口 + 工件与验证”的分层结构。路诚钺维护的 Mode–Skill 工作流决定方法与能力边界；黄毅维护的 API Execution 工作流或可选平台只负责执行已冻结的任务，不反向决定科研方法。
 
 真正的运行单位不是“某个永久角色”，而是一次已解析的任务绑定：
 
@@ -62,7 +62,7 @@ flowchart TB
     MA["Main Agent\n目标、冲突、索引、下一动作"]
     MS["Main State\n小、可恢复"]
 
-    subgraph OWN["Mode–Skill 工作流（本侧维护）"]
+    subgraph OWN["路诚钺：Mode–Skill 维护"]
         TD["Task Design\n目标路径、Atomic Work Unit、风险"]
         RM["Research Mode Decision\n触发、非触发、组合约束"]
         CR["Capability Resolver\n能力 → Profile + Skill Assignment"]
@@ -70,9 +70,9 @@ flowchart TB
         SE["Skill Evaluation & Registry\ntrial / accepted / deprecated"]
     end
 
-    subgraph EXEC["Execution 工作流（API 同伴或可选平台）"]
+    subgraph EXEC["黄毅：API Execution；或可选平台"]
         EB["Execution Boundary\n显式模型/平台绑定"]
-        TW["Bounded Task Workspace\n只读允许内容 + Worklog + 独占写入"]
+        TW["Bounded Task Workspace\n只读允许内容 + 独占写入"]
     end
 
     DG{"Delegate?"}
@@ -81,6 +81,7 @@ flowchart TB
     HC{"Handoff Risk Classifier"}
     H1["H1 Compact Handoff\nPacket only"]
     H2["H2 Audited Handoff\nManifest / Audit / Receipt as triggered"]
+    TA["Attempt Archive\nactors + messages + read/tool events + revisions + decisions + outputs"]
     DV["Deterministic Validators\nSchema / hash / refs / boundaries"]
     RG["Risk Review & Human Gates"]
 
@@ -94,12 +95,19 @@ flowchart TB
     DG -->|"no"| L0 --> AR
     DG -->|"yes"| EB --> TW --> AR
     TW -.->|"需要新正文：申请扩大允许集"| MA
+    RP --> TA
+    L0 --> TA
+    TW --> TA
     AR --> HC
     HC -->|"无跨上下文转移"| DV
     HC -->|"普通任务"| H1
     HC -->|"压缩、高风险、副作用、争议"| H2
     H1 --> DV
     H2 --> DV
+    H1 --> TA
+    H2 --> TA
+    DV --> TA
+    TA -.->|"默认只加载 INDEX + Handoff"| MA
     DV --> RG --> MA --> H
 ```
 
@@ -129,7 +137,7 @@ Agent Profile 描述执行容器；Skill 描述可复用工作方法；Capabilit
 
 ### L4：任务与上下文层
 
-Task Packet 是委派边界，Handoff Packet 是返回边界，Main State Packet 是主 Agent 的可恢复最小状态。压缩前由 Transfer Manifest 声明必须传递的条目和来源，Transfer Audit 再核对它们在 Handoff 中的位置，并在风险触发时要求有界独立抽样。原始资料和日志留在工件层，按需拉取。
+Task Packet 是委派边界，Handoff Packet 是返回边界，Main State Packet 是主 Agent 的可恢复最小状态。每个 Attempt Archive 留存 actor、全部可见 Agent 消息、Decision、检查和输出；主 Agent 默认只读取其索引与 Handoff。压缩前由 Transfer Manifest 声明必须传递的条目和来源，Transfer Audit 再核对它们在 Handoff 中的位置，并在风险触发时要求有界独立抽样。原始资料和 Trace 留在工件层，按需拉取。
 
 详见[Task 与 Handoff](modules/05-TASK_AND_HANDOFF.md)及[上下文治理](modules/06-CONTEXT_GOVERNANCE.md)。
 
@@ -154,6 +162,7 @@ sequenceDiagram
     participant R as Capability Resolver
     participant E as API/Platform Execution
     participant S as Bounded Subagent
+    participant A as Attempt Archive
     participant V as Validator
 
     H->>M: 批准 Project Protocol / 当前目标
@@ -163,20 +172,29 @@ sequenceDiagram
     R->>R: 过滤权限、冲突、上下文成本和候选 Skill
     R-->>M: Resolved Task + Skill lock + 内容允许集 + H0/H1/H2
     alt H0：不委派
-        M->>M: 在当前上下文完成 AWU，写 worklog 与正式工件
+        M->>A: 写 Task/actors/输出/检查与 Worklog
+        M->>M: 在当前上下文完成 AWU
         M->>V: 正式工件 + 确定性检查
     else H1/H2：受限委派
+        M->>A: 发送前保存 Assignment 消息
         M->>E: 交付冻结接口，不传主会话全历史
+        E->>A: 登记 Runtime actor 与实际 dispatch
         E->>S: Task + 选定 Skill + 明确输入/写入范围
-        S->>S: 路径元数据发现；长结果写工件并记关键留痕
+        S->>A: 追加可观察的读取/工具/文件事件
+        S->>S: 路径元数据发现；长结果写工件
         opt 需要读取允许集之外的正文
+            S->>A: 保存 read-scope request
             S-->>M: 说明原因并请求扩展
             M->>R: 修订输入或保持拒绝
+            M->>A: 保存实名 scope decision
         end
+        S->>A: 保存可见进度、输出和 Handoff 原文
         S-->>V: H1 Packet 或风险触发的 H2 审计链
     end
     V->>V: 结构/边界检查 + 必要时有界语义抽样
+    V->>A: 保存检查与 review/accept/reject
     V-->>M: 结构结果、风险与缺口
+    M->>A: 保存接收决定；只按需读取历史消息
     M-->>H: 决策摘要或 Human Gate
 ```
 
@@ -191,6 +209,7 @@ sequenceDiagram
 - 主 Agent 只读取 Skill 元数据和路由结果，不默认加载所有 Skill 正文。
 - Agent 对仓库内容采用默认拒绝：允许路径元数据发现，但读取新增正文必须扩展 Task 允许集。
 - 普通跨 Agent 返回使用 H1；H2 仅由风险、压缩、副作用、promotion、争议或明确策略触发。
+- H0/H1/H2 都有 Attempt Archive；H1/H2 的每条可见跨 Agent 传递必须留存，但不会因此自动进入主 Agent 上下文。
 
 ## 6. 上下文架构
 
@@ -249,9 +268,9 @@ sequenceDiagram
 - 主 Agent 使用 `primary` 槽，普通子任务使用 `worker` 槽，独特能力显式使用一个 `specialist` 槽；
 - 模型槽只做显式映射，不建设复杂 Router、价格数据库或自动 fallback；
 - API Runner 限制轮次、工具调用、工具结果、token/成本和 wall time；
-- 会话关闭后只依赖任务要求的 Attempt、工件、Handoff 和恢复状态；Receipt/Manifest/Audit 不再对普通任务默认强制。
+- 会话关闭后只依赖 Attempt Archive、正式工件、Handoff 和恢复状态；全部可见 Agent 传递已归档，但 Receipt/Manifest/Audit 不对普通任务默认强制。
 
-上述实现和测试由独立 API Execution 工作流维护。本侧只冻结 Mode、Skill Assignment、内容允许集、输出契约、Handoff 等级与评估接口，不修改 Provider 或 session 实现。
+上述实现和测试由黄毅维护。路诚钺只冻结 Mode、Skill Assignment、内容允许集、输出契约、Handoff/Trace 等级与评估接口，不修改 Provider 或 session 实现。
 
 ### 可选：平台适配与人工新窗口
 
@@ -274,6 +293,8 @@ Codex、OpenCode、Claude Code 或其他平台可以把同一个已解析 Task �
 11. 模型只能按显式槽位选择；任何升级、降级或跨 Provider 重试都必须形成新的可审计 Attempt。
 12. 工作区可见性不等于内容读取授权；正文读取必须来自 Task 允许集或显式扩展。
 13. Handoff 的复杂度必须由转移风险决定，不能为了流程完整而默认生成全部审计工件。
+14. 每次跨 Agent 可见传递必须进入 Attempt Archive；完整留存不等于默认加载。
+15. 工作流、Agent、模型和平台名称不能替代实名责任人；共享接口必须有明确的人类 owner。
 
 ## 11. 首个垂直切片
 
@@ -292,4 +313,4 @@ Codex、OpenCode、Claude Code 或其他平台可以把同一个已解析 Task �
 
 ## 12. 文档与实施关系
 
-本文件定义稳定关系和不变量；模块文件定义各自的职责、接口、风险和验收；[工作流职责](WORKSTREAM_OWNERSHIP.md)定义维护边界；[Mode–Skill 计划](implementation/MODE_SKILL_WORKSTREAM_PLAN.md)定义本侧下一节点；[任务清单](TASKS.md)是当前执行状态的唯一入口。软件交付阶段不是研究工作的强制顺序。
+本文件定义稳定关系和不变量；模块文件定义各自的职责、接口、风险和验收；[开发协作指南](DEVELOPMENT.md)定义实名维护边界与运行纪律；[Mode–Skill 计划](implementation/MODE_SKILL_WORKSTREAM_PLAN.md)定义路诚钺的下一节点；[任务清单](TASKS.md)是当前执行状态的唯一入口。软件交付阶段不是研究工作的强制顺序。

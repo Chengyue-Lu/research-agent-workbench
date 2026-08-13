@@ -117,7 +117,7 @@ rwb context checkpoint
 ### 实现内容
 
 1. 建立 Skill Registry 与 Resolver。
-2. 消费 provider-neutral 执行接口；具体 Model Port、模型槽和隔离 API Session 由 API Execution 工作流维护。
+2. 消费 provider-neutral 执行接口；具体 Model Port、模型槽和隔离 API Session 由黄毅维护。
 3. 创建 Agent Profiles：
    - `coordinator`
    - `evidence-scout`
@@ -131,7 +131,7 @@ rwb context checkpoint
 6. 以 Task Packet 显式点名 required Skills。
 7. 记录 Skill lock、实际工具、Provider/Model、Runtime snapshot（若有）和 Handoff。
 
-截至 2026-08-14，Registry、Profiles、Skills、显式绑定和 Codex 可选映射均已有确定性契约；API 工作流已达到 `K-API-1` 并由独立团队继续维护。本侧尚缺 Mode 决策卡、Task-to-Skill 选择矩阵、accepted Skill 边界审计和真实增量价值，因此 M2 尚未退出。
+截至 2026-08-14，Registry、Profiles、Skills、显式绑定和 Codex 可选映射均已有确定性契约；API 工作已达到 `K-API-1` 并由黄毅继续维护。路诚钺尚缺 Mode 决策卡、Task-to-Skill 选择矩阵、accepted Skill 边界审计和真实增量价值，因此 M2 尚未退出。
 
 ### 路由测试矩阵
 
@@ -156,7 +156,7 @@ rwb context checkpoint
 
 验证主 Agent克制、子 Agent压缩容忍和主动 rollover。
 
-截至 2026-08-14，已实现 Context Snapshot、Execution Receipt、规范化 Main State digest，以及 `context assess/checkpoint/resume-check` 和 `execution assess`。Transfer Manifest/Audit 能支持高风险或压缩后的 H2 交接，但普通任务改以 H1 Compact Handoff 为默认；后续必须比较两者的实际遗漏、回查、返工与审阅成本。真实执行和用量由执行工作流提供，本侧负责读取边界、Handoff 分级与结果评估，见 [ADR-0008](../decisions/0008-HANDOFF-TRANSFER-AUDIT.md)、[ADR-0009](../decisions/0009-FILE-FIRST-CONTINUITY-AND-SAFE-PAUSE.md)与[ADR-0011](../decisions/0011-RISK-TIERED-HANDOFF-AND-CONTROLLED-READS.md)。
+截至 2026-08-14，已实现 Context Snapshot、Execution Receipt、规范化 Main State digest，以及 `context assess/checkpoint/resume-check` 和 `execution assess`。Transfer Manifest/Audit 能支持高风险或压缩后的 H2 交接，但普通任务改以 H1 Compact Handoff 为默认；后续必须比较两者的实际遗漏、回查、返工与审阅成本。所有 H1/H2 Agent 间可见传递都进入 Attempt Archive，完整 Trace 与主上下文加载解耦。真实执行、用量和执行端捕获由黄毅提供；路诚钺负责实名 actor、读取边界、Handoff/Trace 分级与结果评估，见 [ADR-0008](../decisions/0008-HANDOFF-TRANSFER-AUDIT.md)、[ADR-0009](../decisions/0009-FILE-FIRST-CONTINUITY-AND-SAFE-PAUSE.md)、[ADR-0011](../decisions/0011-RISK-TIERED-HANDOFF-AND-CONTROLLED-READS.md)与[ADR-0012](../decisions/0012-NAMED-OWNERSHIP-AND-REPLAYABLE-AGENT-TRACE.md)。
 
 ### 实现内容
 
@@ -234,7 +234,7 @@ rwb context checkpoint
 - 研究者愿意在下一任务继续使用；
 - 若净收益不足，明确停止而不是增加 Agent。
 
-## 10. M6：API 执行与谨慎扩展（独立工作流）
+## 10. M6：API 执行与谨慎扩展（黄毅维护）
 
 核心科研能力仍应在 M5 通过后按需求扩展；但为保证平台可替换性，API-first 执行缝已按明确需求提前实现：
 
@@ -248,11 +248,11 @@ rwb context checkpoint
 
 当前已完成三家非流式 Adapter、ToolChoice、本地工具参数校验、延迟凭据解析、非秘密配置探测、脱敏 live conformance runner，以及 `explicit-slot-only` Model Pool 和有硬预算的 fresh API tool-loop runner。不会继续铺更多提供商或构建复杂 Router。
 
-截至 2026-08-14，Provider Adapter、Task-to-API、live conformance 和 API 专用测试移交给 API Execution 工作流。本侧只维护冻结的 Mode、Skill Assignment、内容允许集、输出/Handoff 契约和评估接口；M6 不再阻塞本侧里程碑。
+截至 2026-08-14，黄毅维护 Provider Adapter、Task-to-API、live conformance、执行端 Agent Trace 捕获和 API 专用测试。路诚钺只维护冻结的 Mode、Skill Assignment、内容允许集、输出/Handoff/Trace 契约和评估接口；M6 不阻塞路诚钺的里程碑。
 
 ## 11. M7：Mode–Skill 选择基线
 
-本侧下一关键节点为 `K-MS-1`：用现有 `evidence-synthesis` 与 `simulation` 建立 Mode 决策卡、6 个边界 Task fixtures、Task-to-Skill 选择矩阵、三个 accepted Skills 的适用性审计、一个 triage candidate 的去留决定，以及 H0/H1/H2 和内容读取成本对照。
+路诚钺的下一关键节点为 `K-MS-1`：先冻结实名 actor、Attempt Archive 与 Agent Trace fixture，再用现有 `evidence-synthesis` 与 `simulation` 建立 Mode 决策卡、6 个边界 Task fixtures、Task-to-Skill 选择矩阵、三个 accepted Skills 的适用性审计、一个 triage candidate 的去留决定，以及 H0/H1/H2 和内容读取成本对照。
 
 完成后暂停评审。不得为了“覆盖完整”批量新增 Mode/Skill，也不得在本分支修改 API 执行实现。详细阶段和停止点见 [Mode–Skill 工作流计划](MODE_SKILL_WORKSTREAM_PLAN.md)。
 

@@ -4,11 +4,9 @@
 
 本项目不是“自动课题组”，也不试图重新实现 Codex、Claude Code 或其他平台已有的子 Agent 调度。它提供的是平台之上的轻量科研契约层：把研究问题、研究模式、Agent 边界、Skill 选择、工件、证据、交接与人工决策组织成可审查、可替换的结构。
 
-## 当前状态
+## 项目阶段
 
-状态：`K-MS-0 Mode–Skill Workstream Baseline`
-
-当前仓库已完成最小契约、离线 Agent—Skill 切片、文件式上下文治理和 `K-API-1` 隔离 API session 基础。自 2026-08-14 起，API Adapter、Task-to-API、live conformance 及其测试由独立 API Execution 工作流维护；本侧转向 Research Mode 打磨、Skill 选择/评估/准入、受控读取和 Handoff 成本验证。当前下一节点是 `K-MS-1`，不是继续扩展 API。
+当前为内部技术 alpha：最小契约、离线 Agent—Skill 切片、文件式上下文治理和 `K-API-1` 隔离 API session 基础已经形成。路诚钺负责 Research Mode、Skill 选择/评估/准入、受控读取和 Handoff/Trace 成本验证；黄毅负责 API Adapter、Task-to-API、live conformance 及其测试。逐项状态和唯一下一节点以[任务清单](docs/TASKS.md)为准。
 
 ## 核心判断
 
@@ -22,32 +20,19 @@
 - 模型只按 `primary`、`worker` 和少量 `specialist` 槽显式绑定，不建设复杂自动 Router。
 - Agent 对文件内容采用任务级允许集；可以先发现路径元数据，但不能因为拥有工作区权限就递归读取无关文档。
 - 普通委派默认只返回 Compact Handoff；完整 Manifest/Audit/Receipt 由风险、压缩、外部副作用或明确策略触发。
+- 所有 Agent 间实际传递的可见内容，以及运行时可观察的读取、工具、命令和文件 revision 进入 Attempt Archive；主 Agent 默认只读取索引与 Handoff，完整 Trace 仅在评估或排障时按需回放。
 
-## 架构入口
+## 文档入口
 
-- [零基础使用指南与发布就绪度](docs/GETTING_STARTED.md)
-- [项目章程](docs/PROJECT_CHARTER.md)
-- [总体架构](docs/ARCHITECTURE.md)
-- [完整实施计划](docs/implementation/IMPLEMENTATION_PLAN.md)
-- [任务清单](docs/TASKS.md)
-- [恢复点与下一步](docs/NEXT_STEPS.md)
-- [当前开发 Handoff](docs/CURRENT_HANDOFF.md)
-- [工作流职责与接口边界](docs/WORKSTREAM_OWNERSHIP.md)
-- [Mode–Skill 工作流实施计划](docs/implementation/MODE_SKILL_WORKSTREAM_PLAN.md)
-- [Changelog](CHANGELOG.md)
-- [模块文档索引](docs/modules/README.md)
-- [迁移方案](docs/implementation/MIGRATION_PLAN.md)
-- [Skill 候选准入流程](docs/implementation/SKILL_CANDIDATE_PIPELINE.md)
-- [Skill 双臂评估协议](docs/implementation/SKILL_EVALUATION_PROTOCOL.md)
-- [模型 API 中立端口 ADR](docs/decisions/0003-PROVIDER-NEUTRAL-MODEL-PORT.md)
-- [多提供商模型 API 实施计划](docs/implementation/PROVIDER_ADAPTER_PLAN.md)
-- [薄 Adapter 与凭据边界 ADR](docs/decisions/0007-THIN-PROVIDER-ADAPTERS.md)
-- [API-first 隔离执行 ADR](docs/decisions/0010-API-FIRST-ISOLATED-EXECUTION.md)
-- [上下文与执行收据 ADR](docs/decisions/0006-CONTEXT-AND-EXECUTION-RECEIPTS.md)
-- [Handoff Transfer Audit ADR](docs/decisions/0008-HANDOFF-TRANSFER-AUDIT.md)
-- [文件式连续性与 SAFE_PAUSE ADR](docs/decisions/0009-FILE-FIRST-CONTINUITY-AND-SAFE-PAUSE.md)
-- [分级 Handoff 与受控读取 ADR](docs/decisions/0011-RISK-TIERED-HANDOFF-AND-CONTROLLED-READS.md)
-- [CCRML 会议吸收与差距审计](docs/references/CCRML_MEETING_ADOPTION.md)
+- [文档导航](docs/README.md)：按使用目的给出最小阅读集，避免遍历全部文档。
+- [开发协作指南](docs/DEVELOPMENT.md)：实名责任、当前节点、分支、读取与完整 Trace 规则。
+- [项目章程](docs/PROJECT_CHARTER.md)：使命、非目标和人的最终责任。
+- [总体架构](docs/ARCHITECTURE.md)：稳定关系、Mermaid 流程与架构不变量。
+- [任务清单](docs/TASKS.md)：当前状态的唯一权威入口。
+- [零基础使用指南](docs/GETTING_STARTED.md)：安装、离线演练与发布就绪度。
+- [Changelog](CHANGELOG.md)：已经落地的变更。
+
+模块、实施计划、ADR 和参考材料均从[文档导航](docs/README.md)按需进入。
 
 ## 当前可执行入口
 
@@ -120,7 +105,7 @@ rwb execution assess examples/observability/execution-evidence-contract.yaml `
 - Context Snapshot 与 Execution Receipt；
 - 无数据库、无常驻 Supervisor、无全局自治 DAG。
 
-当前本侧维护范围不包括 Provider Adapter、API session、真实模型 conformance 或 API 测试；边界见[工作流职责](docs/WORKSTREAM_OWNERSHIP.md)。
+路诚钺的维护范围不包括 Provider Adapter、API session、真实模型 conformance 或 API 测试；实名边界见[开发协作指南](docs/DEVELOPMENT.md)。
 
 ## 参考方向
 

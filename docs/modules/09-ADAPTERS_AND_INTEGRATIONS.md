@@ -4,7 +4,7 @@
 
 将平台中立的 Project Protocol、Agent Profile、Skill Assignment、Task 和 Handoff 映射到模型 API、可选 Agent 平台与科研工具。纯 API 隔离会话是可移植基线；平台 Adapter 是便利层。任何 Adapter 都只能执行映射，不能改变科研状态或批准 Gate。
 
-本模块的 API 实现与测试由独立 API Execution 工作流维护。Mode–Skill 工作流只提供冻结的 Mode/Skill/read/handoff 接口并消费脱敏结果，不在自己的分支上补 Provider 或 session 功能。
+本模块的 API 实现与测试由黄毅维护。路诚钺只提供冻结的 Mode/Skill/read/handoff/trace 接口并消费脱敏结果，不在自己的分支上补 Provider 或 session 功能。
 
 ## 2. API-first 执行接口
 

@@ -1,6 +1,6 @@
 # Skill 双臂评估与准入证据协议
 
-维护说明：评估设计、冻结条件、checker、人工盲评和准入决定由 Mode–Skill 工作流维护；实际 API/模型执行可由 API Execution 工作流提供脱敏输出与 Receipt，本侧不为评估修改 API 实现或测试。
+维护说明：路诚钺负责评估设计、冻结条件、checker、人工盲评和准入决定；黄毅可以通过 API/模型执行提供脱敏输出、Receipt 与 Agent Trace。路诚钺不为评估修改 API 实现或测试。
 
 ## 1. 目的
 

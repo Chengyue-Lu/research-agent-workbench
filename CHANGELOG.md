@@ -2,18 +2,33 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
+## 2026-08-14 — 实名责任、完整 Agent Trace 与文档归并
+
+### Changed
+
+- 维护责任改为实名：路诚钺负责 Mode/Skill、读取、Handoff/Trace 方法与评估；黄毅负责 API 执行实现、自动 Trace 捕获与测试；工作流名称不再替代审批主体。
+- Worklog 降为 Attempt Archive 的导航摘要。所有 Agent 间实际可见传递，以及运行时可观察的读取、工具/命令、文件 revision、结果和状态事件均要求留存。
+- 完整留存与上下文加载解耦：主 Agent 默认只读取 `INDEX.yaml` 与 Handoff，排障或评估时才按 message ID 回放原文。
+- 原 `CURRENT_HANDOFF.md`、`NEXT_STEPS.md` 和 `WORKSTREAM_OWNERSHIP.md` 合并为 `docs/DEVELOPMENT.md`、`docs/TASKS.md` 与 `docs/README.md`，减少当前状态的重复来源。
+
+### Added
+
+- ADR-0012：实名责任人与可回放 Agent Trace 决策。
+- Attempt Archive 目录、actor registry、消息信封、capture-gap、删减和保留规则。
+- 总体架构 Mermaid 图中的 Trace 写入、默认只读索引与实名维护关系。
+
 ## 2026-08-14 — Mode–Skill 工作流接管与上下文简化
 
 ### Changed
 
-- API Adapter、API session、Task-to-API、live conformance 与 API 测试移交独立 API Execution 工作流；本侧主线改为 Research Mode、Skill 选择/评估/准入和协调成本。
+- API Adapter、API session、Task-to-API、live conformance 与 API 测试由黄毅维护；路诚钺主线改为 Research Mode、Skill 选择/评估/准入和协调成本。
 - 当前下一节点从 `K-API-2` 调整为 `K-MS-1 Mode–Skill Selection Baseline`；API backlog 保留为共享仓库中的 external workstream。
 - Handoff 改为 H0/H1/H2 风险分级：普通子 Agent 默认只返回 Compact Handoff，完整 Manifest/Audit/Receipt 只在压缩、高风险、外部副作用、promotion、争议或明确策略下触发。
 - Agent 内容读取采用默认拒绝与逐级扩大：允许路径元数据发现，但未声明正文需先扩展 Task 允许集。
 
 ### Added
 
-- `docs/WORKSTREAM_OWNERSHIP.md`：冻结 Mode–Skill、API Execution 和共享接口 owner。
+- `docs/WORKSTREAM_OWNERSHIP.md`：曾用于冻结工作流边界，现已归并到 `docs/DEVELOPMENT.md` 并改用实名责任。
 - ADR-0011：记录风险分级 Handoff、受控内容读取和简短工作留痕原则。
 - `docs/implementation/MODE_SKILL_WORKSTREAM_PLAN.md`：记录当前缺口、候选优先级、`K-MS-1` 验收和分支范围。
 - 更新总体架构 Mermaid 图，显示 Mode–Skill 决策、执行工作流、内容允许集、读取扩展和 H1/H2 返回关系。
@@ -21,7 +36,7 @@
 ### Clarified
 
 - 正式 Mode 目前只有 evidence-synthesis 与 simulation；其他模式名称不是待批量补齐的承诺。
-- 工作留痕记录基线、重要决定、范围变化、修改和验证，不记录每次读取或完整推理。
+- Worklog 记录基线、重要决定、范围变化、修改和验证；Agent 间实际可见传递另由 Attempt Archive 完整保存，仍不记录隐藏推理。
 - 流程简化仍是假设；后续必须比较 H1/H2 的工件数、字符、审阅、回查、遗漏和返工。
 
 ## 2026-08-13 — API-first 隔离执行关键节点
