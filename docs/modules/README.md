@@ -14,3 +14,5 @@
 10. [观测、成本与评估](10-OBSERVABILITY_EVALUATION_COST.md)
 
 模块之间只通过版本化契约连接。若一个模块必须读取另一个模块的内部会话或私有状态才能工作，应视为架构泄漏。
+
+当前维护分工见[工作流职责与接口边界](../WORKSTREAM_OWNERSHIP.md)；本侧 Mode–Skill 下一节点见[专项实施计划](../implementation/MODE_SKILL_WORKSTREAM_PLAN.md)。

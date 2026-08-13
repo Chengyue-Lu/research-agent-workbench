@@ -7,6 +7,7 @@
 - Reuse native agent, skill, permission, thread, and tool capabilities through optional adapters; do not make Codex, OpenCode, or another platform a core dependency.
 - Do not introduce a global Supervisor, continuity database, message bus, or fixed research DAG without an accepted ADR backed by a demonstrated failure.
 - Keep the common research kernel small. Method-specific rules belong in Research Mode Packs or Skills.
+- The Mode-Skill workstream owns mode semantics, capability vocabulary, Skill selection/evaluation/admission, and related fixtures. Provider adapters, API sessions, live conformance, and API-specific tests are maintained by the separate API Execution workstream.
 
 ## Agent use
 
@@ -14,6 +15,10 @@
 - A delegated task must declare an Agent Profile, required Skills, input references, write scope, output contract, budget, and stop conditions.
 - Keep the main agent focused on requirements, decisions, risks, indexes, and the next action. Do not load raw logs, full corpora, or long exploratory notes into the main context.
 - Persist formal outputs before returning a handoff. Chat summaries are not authoritative artifacts.
+- Treat content reads as scoped access, not as a consequence of workspace visibility. Read the task, repository guidance, selected profile/Skill, declared inputs, and target module first; use filename/metadata discovery before requesting additional file content.
+- Do not recursively read unrelated docs, examples, candidate Skills, historical handoffs, or another agent's work directory. If new content is necessary, record why and have the Task owner extend the allowed read set.
+- Keep a compact work log in the Task write scope for baseline, material decisions, read-scope expansions, changed paths, important checks, and remaining work. Do not log every file open or hidden reasoning.
+- Use a Compact Handoff by default. Require the full Manifest/Audit/Receipt chain only when risk, compaction, external side effects, promotion, dispute, or explicit Task policy triggers it.
 
 ## Change discipline
 

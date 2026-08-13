@@ -4,6 +4,8 @@
 
 日期：2026-08-13
 
+2026-08-14 维护说明：本 ADR 的架构决定继续有效；`K-API-2` 及 API 实现/测试由独立 API Execution 工作流负责，不再是 Mode–Skill 工作流的当前节点。
+
 ## 背景
 
 ADR-0001 在项目早期选择“原生 Agent 运行时优先”，目的是避免重新实现 Codex、Claude Code 等平台已经提供的线程、子 Agent、权限和 Skill 能力。后续实现证明，科研契约、文件式连续性和 Provider-neutral Model Port 可以独立于这些平台存在；同时，项目未来使用的平台尚未确定，若继续把真实垂直切片绑定到 Codex 或 OpenCode，会使平台选择提前成为核心依赖。

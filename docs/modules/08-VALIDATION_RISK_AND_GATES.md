@@ -64,6 +64,7 @@ Handoff 传递审计也遵循这一边界：确定性验证器先核对 Transfer
 | ASSIGNMENT-HANDOFF-DRIFT | Handoff 只写 Skill ID/version，遗漏实际内容哈希 | 对照 Attempt/Assignment lock；未补齐前不得 promotion |
 | CONSENSUS-CORRELATED | 多 Agent 同源错误被当共识 | 改用异质证据/工具或人类复核 |
 | COORD-INTERFACE | 协调接口多于有效工作 | 简化流程 |
+| TASK-READ-OUTSIDE-SCOPE | Agent 读取未声明正文或未记录范围扩展 | BLOCK 合并，补录/重做 |
 | WRITE-RACE | 并行写冲突 | BLOCK / 重新分区 |
 | REVIEW-LOOP | 互审无停止条件 | 停止并交给主 Agent/Human |
 | GOAL-DRIFT | 子任务偏离当前问题 | 关闭 Task 或新建 Question |
@@ -83,6 +84,7 @@ Handoff 传递审计也遵循这一边界：确定性验证器先核对 Transfer
 | HANDOFF-NEGATIVE-UNMAPPED | Handoff 中的限制、冲突、未决项或人工决定没有来源条目 | BLOCK promotion |
 | HANDOFF-SEMANTIC-REVIEW-REQUIRED | 关键或高风险条目尚未完成有界独立抽样 | BLOCK promotion，完成最小样本复核 |
 | HANDOFF-SUMMARY-DISTORTION | 抽样发现 Handoff 歪曲或无法验证来源语义 | BLOCK，修订 Handoff 并重新审计 |
+| HANDOFF-OVERHEAD | H2 工件持续增加但不改变决策 | 降为 H1 或缩小触发器 |
 | DELEGATION-FANOUT | 递归/并发膨胀 | 停止新委派，合并任务树 |
 | COORDINATION-COST-HIGH | 协调/汇总/校核占比超过预算 | WARN，优先删 Agent、review 或字段 |
 | COST-USAGE-UNKNOWN | 真实模型运行没有可用量数据 | 不得宣称 token/成本收益 |

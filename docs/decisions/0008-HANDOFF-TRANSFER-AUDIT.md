@@ -4,6 +4,8 @@
 
 日期：2026-08-13
 
+2026-08-14 后续决定：[ADR-0011](0011-RISK-TIERED-HANDOFF-AND-CONTROLLED-READS.md) 将本 ADR 的 Manifest/Audit 明确为 H2 风险触发路径；没有压缩或高风险触发的普通委派默认使用 H1 Compact Handoff。
+
 ## 背景
 
 子 Agent 的局部上下文允许被压缩或丢弃，但 `handoff_ready: true` 过去只是一项布尔自述。Schema、路径和哈希可以证明 Handoff 存在，却不能证明关键限定、负结果或未解决项确实从任务工件进入了 Handoff。另一方面，对每份 Handoff 启动第二个 Agent 全量复核，会把节省的上下文和 token 重新消耗在控制面上。

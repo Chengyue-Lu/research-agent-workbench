@@ -1,8 +1,10 @@
 # 多提供商模型 API 实施计划
 
-状态：离线合同切片完成，真实环境一致性验证待执行
+状态：离线合同切片完成；后续由 API Execution 工作流维护
 
-日期：2026-08-13
+日期：2026-08-14
+
+维护边界：Mode–Skill 工作流只消费本计划公开的 Task/Assignment/Handoff/Receipt 接口和脱敏执行证据，不修改 Provider Adapter、API session、live conformance 或相关测试。共享接口变更按 `docs/WORKSTREAM_OWNERSHIP.md` 协调。
 
 ## 1. 目标与边界
 
@@ -140,9 +142,9 @@ rwb providers conformance `
 
 该阶段达到 `K-API-1`，但还没有把 Task/Skill Assignment 自动编译为请求，也没有自动生成 Attempt/Execution Receipt，因此不是完整 Task 执行器。
 
-### P4：Task-to-API 文件闭环（当前下一节点）
+### P4：Task-to-API 文件闭环（API 工作流的 external 节点）
 
-把已解析 Task、Agent Profile、Skill Assignment 和显式模型槽编译成最小初始消息与工具 allowlist；执行结束或安全暂停时原子写入 Attempt、正式工件、Transfer Manifest、Handoff、Context Snapshot、Execution Receipt 与 Main State。删除临时 transcript 后做一次恢复检查。
+把已解析 Task、Agent Profile、Skill Assignment、内容允许集、Handoff 等级和显式模型槽编译成最小初始消息与工具 allowlist；执行结束或安全暂停时写入 Attempt、正式工件和 Task 要求的 H1/H2 交接工件。删除临时 transcript 后做一次恢复检查。具体实现由 API Execution 工作流负责。
 
 ### P5：按真实消费者扩展
 

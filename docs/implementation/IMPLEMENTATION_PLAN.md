@@ -1,10 +1,10 @@
 # 完整实施计划
 
-版本：0.5
+版本：0.6
 
 状态：执行中
 
-日期：2026-08-13
+日期：2026-08-14
 
 ## 1. 实施总则
 
@@ -22,7 +22,7 @@
 - YAML 作为主要人类编辑格式，JSON 作为交换/校验格式；
 - `argparse` 提供本地 CLI；
 - `unittest` 提供首轮测试；
-- PyYAML 与 jsonschema 是当前两个运行依赖；
+- PyYAML、jsonschema 与 RFC3339 validator 是当前运行依赖；
 - SHA-256 和 Git 提供首版版本/内容引用；
 - `.agents/skills` 提供跨平台 Skill 布局，纯 API fresh session 提供可移植执行基线；
 - `.codex/agents` 是已有的可选 Codex 映射，不代表最终平台选择；
@@ -43,6 +43,7 @@
 | M4 | 工件、Run 与可复现性 | Claim 可定位、Run 可重建 |
 | M5 | 两个真实案例与删减 | 与单 Agent 基线的净收益数据 |
 | M6 | API-first 执行与按需扩展 | 显式模型槽、隔离 API 会话、可选平台适配 |
+| M7 | Mode–Skill 选择与协调成本 | 模式决策卡、Skill 选择矩阵、受控读取与分级 Handoff |
 
 ## 4. M0：架构与项目基线
 
@@ -116,7 +117,7 @@ rwb context checkpoint
 ### 实现内容
 
 1. 建立 Skill Registry 与 Resolver。
-2. 建立 provider-neutral Model Port、显式模型槽和隔离 API Session；Codex Runtime Adapter 作为可选映射保留。
+2. 消费 provider-neutral 执行接口；具体 Model Port、模型槽和隔离 API Session 由 API Execution 工作流维护。
 3. 创建 Agent Profiles：
    - `coordinator`
    - `evidence-scout`
@@ -126,11 +127,11 @@ rwb context checkpoint
    - `literature-evidence-extraction`
    - `simulation-vv`
    - `handoff-integrity`（优先脚本化）
-5. 为纯 API fresh session 生成最小执行输入；可选生成或验证 `.codex/agents/*.toml`。
+5. 生成与运行时无关的最小执行输入、内容允许集和 Handoff 等级；执行工作流负责映射到 API 或可选平台。
 6. 以 Task Packet 显式点名 required Skills。
 7. 记录 Skill lock、实际工具、Provider/Model、Runtime snapshot（若有）和 Handoff。
 
-截至 2026-08-13，Registry、Profiles、Skills、显式绑定和 Codex 可选映射均已有确定性契约。新增的小型 Model Pool 与 Isolated API Session Runner 已完成离线工具循环与预算测试，达到 `K-API-1`。Task/Assignment 到 Attempt/Handoff/Receipt 的文件闭环与两个真实案例仍未完成，因此 M2 尚未退出。
+截至 2026-08-14，Registry、Profiles、Skills、显式绑定和 Codex 可选映射均已有确定性契约；API 工作流已达到 `K-API-1` 并由独立团队继续维护。本侧尚缺 Mode 决策卡、Task-to-Skill 选择矩阵、accepted Skill 边界审计和真实增量价值，因此 M2 尚未退出。
 
 ### 路由测试矩阵
 
@@ -142,7 +143,7 @@ rwb context checkpoint
 
 ### 退出条件
 
-- 至少两次真实隔离子任务执行，Skill 集不同；首条走纯 API，平台路径只在需要时对照；
+- 至少两类 Task 得到不同、可解释的 Skill 选择；真实执行可由外部执行工作流提供；
 - required Skill 缺失或版本漂移会阻断；
 - 主 Agent只读取 Handoff 与索引即可决定下一步；
 - 子 Agent不能越过 Profile/Task 权限；
@@ -155,7 +156,7 @@ rwb context checkpoint
 
 验证主 Agent克制、子 Agent压缩容忍和主动 rollover。
 
-截至 2026-08-13，已实现 Context Snapshot、Execution Receipt、规范化 Main State digest，以及 `context assess/checkpoint/resume-check` 和 `execution assess`。Transfer Manifest/Audit 会把压缩前条目、来源哈希、Handoff locator、负面区段与风险触发抽查绑定到 Context Snapshot 和 Receipt。随后根据 CCRML 讨论补入 Atomic Work Unit、动态 next-AWU/closeout/reserve 预算、`safe-paused`/`waiting`、机器验证完成权、机器状态哈希与 Git 恢复冲突；这些语义复用现有工件，不新增 SQLite 或运行时。该机制只证明结构与可恢复性，不证明科学正确或完整语义等价；真实 API 子会话恢复、人工抽样与真实 token/时间采集仍未完成，见 [ADR-0008](../decisions/0008-HANDOFF-TRANSFER-AUDIT.md)、[ADR-0009](../decisions/0009-FILE-FIRST-CONTINUITY-AND-SAFE-PAUSE.md)与[ADR-0010](../decisions/0010-API-FIRST-ISOLATED-EXECUTION.md)。
+截至 2026-08-14，已实现 Context Snapshot、Execution Receipt、规范化 Main State digest，以及 `context assess/checkpoint/resume-check` 和 `execution assess`。Transfer Manifest/Audit 能支持高风险或压缩后的 H2 交接，但普通任务改以 H1 Compact Handoff 为默认；后续必须比较两者的实际遗漏、回查、返工与审阅成本。真实执行和用量由执行工作流提供，本侧负责读取边界、Handoff 分级与结果评估，见 [ADR-0008](../decisions/0008-HANDOFF-TRANSFER-AUDIT.md)、[ADR-0009](../decisions/0009-FILE-FIRST-CONTINUITY-AND-SAFE-PAUSE.md)与[ADR-0011](../decisions/0011-RISK-TIERED-HANDOFF-AND-CONTROLLED-READS.md)。
 
 ### 实现内容
 
@@ -233,11 +234,10 @@ rwb context checkpoint
 - 研究者愿意在下一任务继续使用；
 - 若净收益不足，明确停止而不是增加 Agent。
 
-## 10. M6：谨慎扩展
+## 10. M6：API 执行与谨慎扩展（独立工作流）
 
 核心科研能力仍应在 M5 通过后按需求扩展；但为保证平台可替换性，API-first 执行缝已按明确需求提前实现：
 
-- 新 Mode（experiment、theory、observational-statistics）；
 - Zotero/PaperQA2 Tool Adapter；
 - DVC 或 MLflow；
 - Quarto/Jupyter 报告；
@@ -248,9 +248,15 @@ rwb context checkpoint
 
 当前已完成三家非流式 Adapter、ToolChoice、本地工具参数校验、延迟凭据解析、非秘密配置探测、脱敏 live conformance runner，以及 `explicit-slot-only` Model Pool 和有硬预算的 fresh API tool-loop runner。不会继续铺更多提供商或构建复杂 Router。
 
-当前下一关键节点 `K-API-2`：把一个已解析 evidence Task 编译成纯 API 子会话，在结束或 `safe-paused` 时固化 Attempt、工件、Transfer Manifest、Handoff、Context Snapshot、Execution Receipt 与 Main State；删除临时 transcript 后从文件恢复。节点完成即暂停评审，不延伸到 GUI、公开发布或平台选型。
+截至 2026-08-14，Provider Adapter、Task-to-API、live conformance 和 API 专用测试移交给 API Execution 工作流。本侧只维护冻结的 Mode、Skill Assignment、内容允许集、输出/Handoff 契约和评估接口；M6 不再阻塞本侧里程碑。
 
-## 11. 开发分支与提交策略
+## 11. M7：Mode–Skill 选择基线
+
+本侧下一关键节点为 `K-MS-1`：用现有 `evidence-synthesis` 与 `simulation` 建立 Mode 决策卡、6 个边界 Task fixtures、Task-to-Skill 选择矩阵、三个 accepted Skills 的适用性审计、一个 triage candidate 的去留决定，以及 H0/H1/H2 和内容读取成本对照。
+
+完成后暂停评审。不得为了“覆盖完整”批量新增 Mode/Skill，也不得在本分支修改 API 执行实现。详细阶段和停止点见 [Mode–Skill 工作流计划](MODE_SKILL_WORKSTREAM_PLAN.md)。
+
+## 12. 开发分支与提交策略
 
 - 默认分支 `main` 保持可读、可验证；
 - 每个里程碑或小型垂直切片使用 `agent/<description>` 分支；
@@ -259,7 +265,7 @@ rwb context checkpoint
 - 不把生成的运行数据、原始论文或敏感项目工件提交到框架仓库；
 - 里程碑结束创建版本标签，早期使用 `v0.x`。
 
-## 12. 停止和回退条件
+## 13. 停止和回退条件
 
 暂停扩展并重新评审，如果：
 

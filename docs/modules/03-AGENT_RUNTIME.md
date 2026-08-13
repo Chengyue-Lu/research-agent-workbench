@@ -2,7 +2,7 @@
 
 ## 1. 目标
 
-定义主 Agent 与子 Agent 的职责、Agent Profile、委派条件和执行映射。项目以纯 API 新隔离会话作为可移植基线，同时允许 Codex、OpenCode 等平台 Adapter 复用原生能力；两条路径都不发展成通用 Agent 调度器。
+定义主 Agent 与子 Agent 的职责、Agent Profile、委派条件和执行映射。项目保持 API 与平台中立，但 API session 及其测试由独立 API Execution 工作流维护；本模块重点约束进入任何执行路径之前的 Task、Mode、Skill、读取和返回边界。
 
 ## 2. 主 Agent Charter
 
@@ -14,6 +14,7 @@
 - 比较 Handoff、处理冲突和识别 Human Gate；
 - 控制 Claim 强度、成本和停止时机；
 - 在上下文压力前写 Main State 并主动 rollover。
+- 给出目标路径和初始内容允许集；需要扩大正文读取范围时负责修订 Task。
 
 主 Agent 不负责：
 
@@ -22,6 +23,7 @@
 - 亲自完成所有检索、编程、仿真和复核；
 - 用自然语言摘要替代正式工件；
 - 默认建立多轮 Agent 互审。
+- 把“能访问工作区”解释为“可以读取全部仓库正文”。
 
 ## 3. Agent Profile
 
@@ -83,6 +85,8 @@ Profile 不包含完整 Skill 指令，也不固定厂商模型。`default_slot`
 - 需要频繁共享隐式状态的紧耦合写入；
 - 子 Agent 产出无法形成独立工件；
 - 协调成本可能高于执行成本。
+
+委派后，子 Agent 可以先发现路径、文件名、大小、版本与哈希等元数据；读取允许集之外的正文必须请求扩展并记录原因。普通返回使用 H1 Compact Handoff；只有风险、压缩、外部副作用、promotion、争议或 Task 明确要求时才升级为 H2 审计链。
 
 ## 6. 递归委派
 

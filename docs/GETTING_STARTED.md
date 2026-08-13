@@ -2,7 +2,7 @@
 
 - 文档状态：面向首次使用者的当前实现指南
 - 适用版本：`0.1.x` 开发快照
-- 更新日期：2026-08-13
+- 更新日期：2026-08-14
 
 ## 1. 先说结论
 
@@ -169,7 +169,7 @@ rwb runtime codex render examples/task-evidence.yaml `
 
 dispatch 只包含 Task 边界、输入路径与哈希、写入范围、显式 Skill、完成检查和暂停条件。它不会嵌入论文全文、其他 Skill 正文或主会话历史。
 
-到这里仍然没有启动 Agent。这是已有的可选 Codex dispatch 路径；当前主线将 Task 编译到 fresh API session 的文件桥接仍处于 `K-API-2` 实现中。
+到这里仍然没有启动 Agent。这是已有的可选 Codex dispatch 路径。Task-to-API 文件桥接由独立 API Execution 工作流维护；本侧当前主线是 Mode–Skill 选择与上下文成本，不依赖该桥接完成后才开始。
 
 ### 4.5 检查一份已有 Handoff
 
@@ -189,7 +189,7 @@ rwb execution assess `
   --root .
 ```
 
-`HANDOFF-SEMANTIC-UNREVIEWED` 是一个有意保留的警告：它表示结构覆盖已通过，但没有冒充语义等价或科学审查。只有真实的独立抽样或人工判断才能解除相应语义风险。
+该 evidence 示例的 Task 明确要求 Transfer Manifest，因此属于 H2 路径。普通 H1 Handoff 不需要运行 `audit-transfer`。`HANDOFF-SEMANTIC-UNREVIEWED` 是一个有意保留的警告：它表示结构覆盖已通过，但没有冒充语义等价或科学审查。只有真实的独立抽样或人工判断才能解除相应语义风险。
 
 ### 4.6 检查安全暂停能否恢复
 
@@ -210,8 +210,8 @@ rwb context resume-check `
 2. 用 `rwb task resolve` 生成不可变 Assignment；
 3. 显式绑定 `primary`、`worker` 或 specialist 模型槽；若走平台路径，再用 `rwb runtime codex render` 生成最小 dispatch；
 4. 为子任务新建独立 API session 或平台窗口，不继承主 Agent 全历史；
-5. 让子 Agent 只读取 Task 的 `input_refs`，只写入 `write_scope`；
-6. 子 Agent 在结束或压缩前写正式工件、Attempt、Transfer Manifest 和 Handoff；
+5. 让子 Agent 只读取 Task、选定 Skill、`input_refs` 和获批目标模块；可以先看路径元数据，新增正文需请求扩展；只写入 `write_scope`；
+6. 子 Agent 持续写简短 worklog；普通返回写 H1 Compact Handoff，只有风险/压缩/副作用等触发时才增加 H2 Manifest/Audit/Receipt；
 7. 运行确定性检查和 `rwb handoff validate`；
 8. 主 Agent 只读取 Handoff、风险、工件索引和下一动作；
 9. 需要换主会话时生成 Main State，新会话先通过 `resume-check`。
@@ -225,7 +225,7 @@ rwb context resume-check `
 机器完成检查未通过时只能 safe-paused，不能宣称 completed。
 ```
 
-不要把整个仓库、全部 Skills、完整聊天和所有原始材料一次性塞给子 Agent。需要查看来源时沿 `input_refs` 按需读取。
+不要把整个仓库、全部 Skills、完整聊天和所有原始材料一次性塞给子 Agent。需要查看来源时沿 `input_refs` 按需读取；需要未声明正文时先扩展 Task 允许集，不能先扫完再补理由。
 
 ## 6. 从零建立一个真实 Task
 
@@ -456,12 +456,12 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 | 产品边界和总体架构 | 已形成 Charter、Architecture、模块和 ADR | 可复用 |
 | Schema、模型和确定性验证 | 本地测试和全部示例/Registry 校验通过 | 技术 alpha 可用 |
 | CLI | 可 init、validate、resolve、render、audit、checkpoint | 技术 alpha 可用 |
-| Agent—Skill 路由 | 两条不同 Skill 的离线切片可重放 | 缺真实隔离执行 |
-| API Session 内核 | 显式模型槽、有界工具循环和无 fallback 已测试 | 缺 Task-to-API 文件桥接与真实调用 |
+| Agent—Skill 路由 | 两条不同 Skill 的离线切片可重放 | 本侧缺 Mode 决策卡、选择矩阵和增量价值证据 |
+| API Session 内核 | 显式模型槽、有界工具循环和无 fallback 已测试 | Task-to-API 与真实调用由 API Execution 工作流维护 |
 | Codex Runtime Adapter | 布局、能力和 dispatch 已实现 | 可选路径，不在当前关键路径 |
 | 上下文连续性 | SAFE_PAUSE、哈希、digest、Git 冲突和恢复 fixture 已实现 | 缺真实跨会话恢复 |
-| Handoff 压缩审计 | Manifest/Audit 和风险触发抽样契约已实现 | 缺真实材料语义样本 |
-| Provider Adapters | OpenAI、Anthropic、Gemini 离线合同和有界 runner 已实现 | 缺真实账户/model conformance |
+| Handoff 压缩审计 | Manifest/Audit 和风险触发抽样契约已实现 | 本侧缺 H1/H2 成本对照与真实材料样本 |
+| Provider Adapters | OpenAI、Anthropic、Gemini 离线合同和有界 runner 已实现 | 由 API Execution 工作流继续维护 |
 | Skill 供应链 | 候选隔离、静态审计、paired evaluation 契约已实现 | accepted Skills 仍标记 `project-original-unlicensed` |
 | 工件 promotion 和 Run 复现 | 已有架构与任务 | 核心实现未完成 |
 | 科研价值 | 有指标和对照计划 | 尚无两个真实案例，也未证明多 Agent 净收益 |
@@ -477,7 +477,7 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 
 至少还需关闭六个发布 Gate：
 
-1. 完成 evidence 的纯 API 文件闭环，并以 simulation 或平台路径完成第二种 Skill 执行；
+1. 本侧完成 `K-MS-1` Mode–Skill 选择基线；API 工作流并行完成其 Task-to-API 闭环；
 2. 完成一次真实 `safe-paused → 新主会话 → 正确下一动作` 恢复；
 3. 把 `rwb init` 升级为可选择的完整项目模板，或提供受支持的 template repository；
 4. 选择并加入项目 LICENSE，同时清理 accepted Skills 的许可状态；
@@ -517,12 +517,12 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 
 发布关键路径应保持克制：
 
-1. 完成 `K-API-2`：把 `evidence-scout + literature-evidence-extraction` 编译到 fresh API session 并写全文件闭环；
-2. 删除临时 transcript，只凭 Main State 在新主会话恢复；
-3. 在真实 Windows 用户上下文验证实际启用的 primary/worker 槽，再运行 simulation 或平台对照；
-4. 同步确定 LICENSE 和完整项目 scaffold 方案；
-5. 再进入两个真实科研案例、M4 工件 promotion/复现和对照评估；
-6. 只有对外承诺相应 API 时，执行真实 Provider conformance；
+1. 完成 `K-MS-1`：Mode 决策卡、6 个边界 fixtures、Task-to-Skill 选择矩阵和 accepted Skill 边界审计；
+2. 为同类任务比较 H1/H2 与内容读取扩展成本，删减没有改变决策的控制项；
+3. 对一个 triage candidate 作 reject/retain-reference/continue-trial 决定；
+4. API Execution 工作流独立推进 Task-to-API、恢复和真实模型证据；本侧只消费正式脱敏工件；
+5. 同步确定 LICENSE 和完整项目 scaffold 方案；
+6. 再进入两个真实科研案例、M4 工件 promotion/复现和对照评估；
 7. 只有文件式连续性 benchmark 出现可复现瓶颈时，才评估 SQLite/FTS；图层只能作为 Index，不能成为事实源。
 
 不要把增加 Supervisor、数据库、Agent 数量或 reviewer 层数当作发布进度。每个新增机制都应有真实故障、消费方、成本和删除条件。

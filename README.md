@@ -6,9 +6,9 @@
 
 ## 当前状态
 
-状态：`K-API-1 Isolated API Session Foundation`
+状态：`K-MS-0 Mode–Skill Workstream Baseline`
 
-当前仓库已完成 M1 的本地实现和 M2 的离线 Agent—Skill 契约切片，并实现 M3 的首批上下文治理：可恢复 Main State、Context Snapshot、Execution Receipt，以及 Handoff Transfer Manifest/Audit。AWU、动态上下文预算、`SAFE_PAUSE`、机器证据优先和恢复冲突检查已合并进文件工件，没有另建平行记忆数据库。压缩后的子 Agent 不能只自报 `handoff_ready`；必须把任务条目映射到正式 Handoff。另已实现 OpenAI Responses、Anthropic Messages、Gemini `generateContent` 的非流式薄 Adapter、小型显式模型池和 fresh API session runner。`K-API-1` 已用离线测试证明有界工具循环与无自动 fallback；Task-to-API 文件闭环、真实模型调用和真实科研案例仍待执行。
+当前仓库已完成最小契约、离线 Agent—Skill 切片、文件式上下文治理和 `K-API-1` 隔离 API session 基础。自 2026-08-14 起，API Adapter、Task-to-API、live conformance 及其测试由独立 API Execution 工作流维护；本侧转向 Research Mode 打磨、Skill 选择/评估/准入、受控读取和 Handoff 成本验证。当前下一节点是 `K-MS-1`，不是继续扩展 API。
 
 ## 核心判断
 
@@ -20,6 +20,8 @@
 - 确定性校验优先于第二个 Agent；Agent 复核只针对明确风险；关键科学判断保留给人。
 - 纯 API fresh session 是可移植执行基线；平台原生 Agent/线程是可选便利层，不另造通用 Supervisor。
 - 模型只按 `primary`、`worker` 和少量 `specialist` 槽显式绑定，不建设复杂自动 Router。
+- Agent 对文件内容采用任务级允许集；可以先发现路径元数据，但不能因为拥有工作区权限就递归读取无关文档。
+- 普通委派默认只返回 Compact Handoff；完整 Manifest/Audit/Receipt 由风险、压缩、外部副作用或明确策略触发。
 
 ## 架构入口
 
@@ -30,6 +32,8 @@
 - [任务清单](docs/TASKS.md)
 - [恢复点与下一步](docs/NEXT_STEPS.md)
 - [当前开发 Handoff](docs/CURRENT_HANDOFF.md)
+- [工作流职责与接口边界](docs/WORKSTREAM_OWNERSHIP.md)
+- [Mode–Skill 工作流实施计划](docs/implementation/MODE_SKILL_WORKSTREAM_PLAN.md)
 - [Changelog](CHANGELOG.md)
 - [模块文档索引](docs/modules/README.md)
 - [迁移方案](docs/implementation/MIGRATION_PLAN.md)
@@ -42,6 +46,7 @@
 - [上下文与执行收据 ADR](docs/decisions/0006-CONTEXT-AND-EXECUTION-RECEIPTS.md)
 - [Handoff Transfer Audit ADR](docs/decisions/0008-HANDOFF-TRANSFER-AUDIT.md)
 - [文件式连续性与 SAFE_PAUSE ADR](docs/decisions/0009-FILE-FIRST-CONTINUITY-AND-SAFE-PAUSE.md)
+- [分级 Handoff 与受控读取 ADR](docs/decisions/0011-RISK-TIERED-HANDOFF-AND-CONTROLLED-READS.md)
 - [CCRML 会议吸收与差距审计](docs/references/CCRML_MEETING_ADOPTION.md)
 
 ## 当前可执行入口
@@ -100,7 +105,7 @@ rwb execution assess examples/observability/execution-evidence-contract.yaml `
 1. `evidence-scout` + `literature-evidence-extraction` Skill：源材料只读、任务区受限写的检索、证据定位和引用交接。
 2. `simulation-auditor` + `simulation-vv` Skill：读取模型与运行工件，检查版本、参数、收敛和敏感性。
 
-两者共享最小科研内核与 Task/Handoff 契约，但使用不同的输入、权限、Skill、输出和质量检查。离线证据见 [双 Skill 契约切片](examples/vertical-slice/SLICE_REPORT.md)。该切片只证明绑定、隔离与校验可重放，不证明多 Agent 更强；后续先用纯 API 跑通 evidence 文件闭环，再进行 simulation 和平台路径对照。
+两者共享最小科研内核与 Task/Handoff 契约，但使用不同的输入、权限、Skill、输出和质量检查。离线证据见 [双 Skill 契约切片](examples/vertical-slice/SLICE_REPORT.md)。该切片只证明绑定、隔离与校验可重放，不证明多 Agent 更强。下一步先完善 Mode 触发边界、Task-to-Skill 选择矩阵和轻量/审计 Handoff 对照；执行证据由相应运行工作流提供。
 
 ## 近期交付边界
 
@@ -114,6 +119,8 @@ rwb execution assess examples/observability/execution-evidence-contract.yaml `
 - 主状态包、Task Packet 和 Handoff Packet；
 - Context Snapshot 与 Execution Receipt；
 - 无数据库、无常驻 Supervisor、无全局自治 DAG。
+
+当前本侧维护范围不包括 Provider Adapter、API session、真实模型 conformance 或 API 测试；边界见[工作流职责](docs/WORKSTREAM_OWNERSHIP.md)。
 
 ## 参考方向
 

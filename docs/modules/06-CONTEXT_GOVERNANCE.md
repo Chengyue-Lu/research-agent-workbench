@@ -121,6 +121,16 @@ rollover 步骤：
 
 这避免把“可访问”误解为“应全部进入上下文”。
 
+### 内容允许集
+
+按需拉取还必须满足任务级读取边界：
+
+1. 永久允许的控制输入只有当前 Task、`AGENTS.md`、选定 Profile、Skill Assignment 和本次 Skill 入口；
+2. `input_refs`、目标模块及获批扩展构成正文允许集；
+3. 允许先查看路径元数据，禁止默认递归读取全仓库文档、候选 Skills、历史 Handoffs 或其他 Agent 工作目录；
+4. 需要额外正文时先说明它将回答哪个未决问题，由 Task owner 扩展范围；
+5. 不记录无意义的逐文件流水，只记录范围扩展、实际成为正式输入的文件和关键验证。
+
 ## 8. 隐藏风险与预警
 
 | 代码 | 风险 | 处置 |
@@ -135,6 +145,8 @@ rollover 步骤：
 | CTX-SKILL-POLLUTION | 加载不相关 Skills | 重新解析最小 Skill Assignment |
 | CTX-HIDDEN-STATE | 决定只存在于对话 | 创建 Decision 工件 |
 | CTX-RECOVERY-DRIFT | 新会话恢复后目标改变 | 对比 checkpoint 与下一动作，Human Gate |
+| CTX-READ-SCOPE-DRIFT | Agent 阅读未声明正文或将临时材料当正式输入 | BLOCK 合并，补录范围或重做 |
+| CTX-HANDOFF-OVERHEAD | Handoff 工件增长但没有改变决策 | 降为 H1、缩小 H2 触发器 |
 
 ## 9. 当前 CLI
 
@@ -163,3 +175,4 @@ rwb handoff audit-transfer ...
 - 主 Agent非计划读取原始材料的频率随版本下降；
 - Main State 保持小而稳定，不随项目历史线性增长；
 - 子 Agent 结束后其会话可删除而不影响正式结果。
+- 普通任务无需完整审计链也能恢复；高风险任务触发 H2 时仍可定位关键条目。

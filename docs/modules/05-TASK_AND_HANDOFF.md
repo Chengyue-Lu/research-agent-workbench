@@ -114,11 +114,23 @@ recommended_next_actions:
 - `stage-completed` 表示预定义阶段完成但上层目标未完成；`safe-paused` 表示机器验收尚未满足但恢复状态完整；`waiting` 保留人类或外部依赖等待；
 - 失败 Handoff 也是正式结果，不得丢弃。
 
+### 按风险分级
+
+交接复杂度不是固定流水线：
+
+- `H0`：同一 Agent/上下文内完成，不发生交接；保留正式输出、验证和工作留痕即可。
+- `H1`：普通跨 Agent 返回；默认只要求一个 Handoff Packet。
+- `H2`：发生压缩、关键 Evidence/Claim/Decision promotion、外部副作用、长等待/会话销毁、摘要争议或 Task 明确要求时，增加 Transfer Manifest/Audit，并按需增加 Context Snapshot、Execution Receipt 与独立语义抽样。
+
+H1/H2 都必须声明失败、限制、冲突和未完成项。H2 不是默认“更可靠”；若额外工件不改变主 Agent 决策，应缩减触发条件。
+
 ### Transfer Manifest 与接收审计
 
 当 Task 的 `handoff_policy.require_transfer_manifest` 为 true 时，执行者必须在压缩或结束 Task Context 前写 `handoff_transfer_manifest`。Manifest 只列需要跨上下文保留的稳定条目 ID、类型、关键度、来源工件哈希和定位符，不复制原始材料或推理日志。
 
 接收者用 `handoff_transfer_audit` 把条目映射到 Handoff 的 `/result/facts/*`、`/limitations/*`、`/unresolved/*` 等位置。机器检查覆盖、哈希、定位、必需条目和负面区段；语义是否被改写只能由有界独立抽查记录。领域 Skill 决定哪些内容应进入 Manifest，通用 Handoff 契约不规定所有学科共用的参数或质量评分表。
+
+Manifest/Audit 是 H2 工件，不再对所有普通 Handoff 默认要求。Task 的 `handoff_policy`、实际压缩和风险检查决定是否升级。
 
 ## 6. Attempt 与 Task
 
@@ -144,6 +156,16 @@ Receipt 的生命周期 `status: completed` 只表示一次执行已经结束，
 - 主 Agent 或确定性 promotion 命令负责正式合并；
 - 高风险 Agent 默认只读并提交建议工件。
 
+### Read Set 与工作留痕
+
+- Task、仓库 guidance、选定 Profile/Skill、显式输入和目标模块构成初始内容允许集；
+- 允许用文件名、目录名、大小、版本和哈希定位依赖，但不默认读取其他正文；
+- 新正文必须由 Task owner 扩展允许集，并在 Task 工作目录的简短 worklog 中记录原因；
+- worklog 记录基线、关键决定、范围变化、修改路径、重要验证和未完成项，不记录每次普通读取或完整推理；
+- 另一个 Agent 的 `work/<TASK>/<ATTEMPT>` 不在默认读取集，除非作为正式输入交接。
+
+可复制使用[Task Worklog Template](../templates/TASK_WORKLOG.md)。
+
 ## 8. 预警
 
 - `TASK-TOO-BROAD`：目标无法在预算内完成；
@@ -157,6 +179,8 @@ Receipt 的生命周期 `status: completed` 只表示一次执行已经结束，
 - `HANDOFF-AUDIT-COVERAGE`：Manifest 条目没有 Handoff 映射；
 - `HANDOFF-NEGATIVE-UNMAPPED`：限制、冲突、未解决项或 Human Gate 没有来源映射；
 - `HANDOFF-SUMMARY-DISTORTION`：有界语义抽查发现限定条件改变。
+- `HANDOFF-OVERHEAD`：审计工件成本持续增加但不改变接受、返工或 Gate 决定。
+- `TASK-READ-OUTSIDE-SCOPE`：Agent 请求或读取未授权正文且没有 Task 扩展记录。
 
 ## 9. 验收条件
 
@@ -166,3 +190,4 @@ Receipt 的生命周期 `status: completed` 只表示一次执行已经结束，
 - 失败 Attempt 和负结果保留；
 - 输入变化后旧 Handoff 自动标记 stale；
 - 并行任务不能写入同一正式路径。
+- 普通 H1 与高风险 H2 可以分别验收，且能够记录其协调成本差异。
