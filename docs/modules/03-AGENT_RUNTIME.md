@@ -121,6 +121,15 @@ Profile 不包含完整 Skill 指令，也不固定厂商模型。`default_slot`
 
 项目不把 Codex 或其他平台的私有 thread/session ID 写入科研内核，只可作为可选 Run metadata。OpenCode、Claude Code 等以后遵循同一规则；平台是否最终采用不影响 API 基线。
 
+### Task-to-API 关闭事务（K-API-2 离线闭环）
+
+`src/research_workbench/execution/` 已把上述基线缝合成一条可回放链路：
+
+- `compile_session` 是纯函数编译边界：只接收冻结契约对象与项目根，产出最小 system/user 消息、冻结结构化输出 Schema、工具 allowlist 与带来源标注的会话限额；输入与 Skill 正文逐个哈希校验，超限阻断而非截断。
+- 会话结果经唯一状态映射表写入 Attempt/Handoff/Receipt/Main State；completed 只有在按哈希钉住的确定性检查通过后才允许 `contract-satisfied` 宣称，模型漂移一律阻断宣称。
+- 关闭事务 stage/validate/publish 三阶段：全部文档先落 staging 并通过 Schema 与交叉引用校验，再按固定顺序排他硬链接发布，Main State 严格殿后；崩溃后同计划确定性续跑，内容分歧阻断；发布后用真实校验器复核。
+- `rwb execute task` 是唯一 CLI 入口；真实 Provider 接线保持显式阻断，live 调用属 M6-004。
+
 ## 8. 失败处理
 
 | 失败 | 默认动作 |

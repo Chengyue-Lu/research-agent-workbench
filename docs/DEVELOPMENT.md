@@ -30,6 +30,8 @@ Agent 不是责任主体。每个运行中的 Agent 使用稳定 `actor_id`，�
 
 达到上述节点后暂停评审，不批量新增 Mode/Skill，也不在此分支修改 API 实现。详细验收见 [Mode–Skill 实施计划](implementation/MODE_SKILL_WORKSTREAM_PLAN.md)，状态以[任务清单](TASKS.md)为准。
 
+M6-003（`K-API-2` Task-to-API 文件闭环）的离线部分已在独立分支 `agent/k-api-2-task-to-api-closure` 完成并等待评审合并：`src/research_workbench/execution/` 编译器、原子关闭事务、`rwb execute task` 与 `examples/api-execution/` 可再生 fixtures；四条离线路径与仅凭文件的恢复检查全部通过。真实 Provider 接线与一次真实 evidence 调用是合并后的 `M6-004`，由黄毅在已授权的真实 Windows 用户上下文执行。
+
 ## 3. 开始一个开发 Task
 
 1. 读取根目录 `AGENTS.md`、本文件和 `TASKS.md`。

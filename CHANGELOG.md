@@ -2,6 +2,27 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
+## 2026-08-14 — K-API-2 离线文件闭环（M6-003）
+
+分支：`agent/k-api-2-task-to-api-closure`（基于 `main` @ `6a4c49b`，待评审合并）。
+
+### Added
+
+- `src/research_workbench/execution/` 新工作流包：
+  - `compile_session` 纯函数编译边界：Task Packet + Profile + 冻结 Skill Assignment + 显式模型槽 → 一个全新 `ModelRequest`。逐个哈希校验输入与 Skill 正文（`TASK-STALE-INPUT`、`COMPILE-SKILL-DRIFT`），超限直接阻断不截断；每个会话限额标注来源（task-budget 或 policy-default）；类型上无法携带主 Agent 历史或未选 Skill。
+  - read-only `document-read` 客户端工具与 `SessionToolLog`：只读声明输入或有效 allowed roots，越界/超限拒绝并留痕。
+  - 状态映射表：会话结果 → Attempt/Handoff/Receipt/Main State 一致状态；模型漂移阻断 `contract-satisfied` 宣称；completed 只有在确定性检查（`execution/checks.py`，按哈希钉住）通过时才宣称 `contract-satisfied`。
+  - 原子关闭事务：stage/validate/publish 三阶段，11 类文档按固定顺序排他 `os.link` 发布、Main State 严格殿后；完成标记 + 崩溃后同计划确定性续跑；内容分歧以 `EXEC-CLOSEOUT-PATH-CONFLICT` 阻断；发布后用真实 Receipt/Handoff/Transfer 校验器复核。
+  - `execute_task` 编排与 `build_provider_registry` 缝隙（真实 Provider 接线显式阻断为 `EXEC-PROVIDER-NOT-CONFIGURED`，属 M6-004）；确定性 attempt id + 完成标记让重跑跳过模型执行。
+- `rwb execute task` CLI 子命令：显式 `--model-env NAME=VALUE` 注入或 `--from-environment` 实环境读取；`--dry-run` 只编译不执行。
+- `examples/api-execution/`：completed / tool-failed / safe-paused 三组可再生静态 fixtures（`regenerate.py` + README 声明离线边界）；stale-input 路径按设计零写入，由 E2E 测试证明。
+- 55 项新测试：编译器 15、工具 7、关闭事务 12（含逐步 `os.link` 故障注入矩阵）、离线 E2E 12（四路径 + 全新 CLI 会话仅凭文件的 resume-check 证明 + 漂移/预检/幂等/写范围）、CLI 接线 4、fixtures 一致性 5。
+
+### Milestone
+
+- `K-API-2` 的离线验收到达：已解析 evidence Task 编译进全新 API 子会话，完成或安全暂停后 Attempt、Evidence、确定性检查、Transfer Manifest/Audit、双 Context Snapshot、Assignment、Handoff、Receipt、Main State 全链原子落盘；删除内存会话后新 CLI 会话仅凭文件恢复唯一下一动作。全量 192 项测试通过；`validate examples registry` = 84/0/0。
+- 未证明：真实 Provider/模型调用（M6-004）、Attempt Archive 自动捕获（M6-006）、任何科学正确性。
+
 ## 2026-08-14 — 实名责任、完整 Agent Trace 与文档归并
 
 ### Changed

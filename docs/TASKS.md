@@ -82,7 +82,7 @@
 |---|---|---|---|---|
 | M6-001 | EXTERNAL | OpenAI/Anthropic/Gemini 薄 Model Provider Adapters | M1-008 | 黄毅维护；路诚钺不修改实现或测试 |
 | M6-002 | DONE | 显式模型池与隔离 API session kernel（`K-API-1`） | M6-001 | primary/worker/specialist 槽只可显式绑定；轮次、工具、并行、工具结果、输出、token/成本/time 有硬边界；无自动 fallback；离线测试通过 |
-| M6-003 | EXTERNAL | Task-to-API 文件闭环（`K-API-2`） | M1-008, M2-001..005, M6-002 | 黄毅维护；路诚钺只提供冻结 Task/Mode/Skill/read/handoff 接口 |
+| M6-003 | IN_PROGRESS | Task-to-API 文件闭环（`K-API-2`） | M1-008, M2-001..005, M6-002 | 离线验收已达成（分支 `agent/k-api-2-task-to-api-closure`，待评审合并）：`execution/` 编译器+原子关闭事务+`rwb execute task`+可再生 fixtures；completed/tool-failed/safe-paused/stale-input 四路径与仅凭文件的恢复检查全部通过。真实 Provider 接线与一次真实 evidence 调用仍待 M6-004 |
 | M6-004 | EXTERNAL | 选定模型槽的真实 Windows conformance 与一次 evidence 调用 | M6-001..003 | 黄毅执行并返回脱敏工件 |
 | M6-005 | PARKED | streaming/multimodal/server tools 与平台 Adapter | 真实案例或平台选择 | 黄毅决定执行端启动条件；没有真实需求不启动 |
 | M6-006 | EXTERNAL | API/平台执行时自动写入 Agent Trace | M3-008, M6-003 | 黄毅实现消息写前捕获/导出与 capture-gap 报告；不得把密钥或隐藏推理写入 Trace |
@@ -113,4 +113,6 @@ M1 已建立里程碑与首批可执行 Issues：
 
 ## 当前下一任务
 
-当前关键路径是 `M3-007..008 → M7-002..006 / K-MS-1`：先让每次 Agent 试验能够用实名 actor 和 Attempt Archive 完整留痕，再为现有两个 Mode 建立边界 fixtures，形成 Task-to-Skill 选择矩阵，审计 accepted Skills，处理一个 triage candidate，并为每个任务给出内容允许集与 H0/H1/H2。到达可解释、可回放、可删减的选择基线后暂停评审；路诚钺不在本分支补 API、Provider、模型或 live conformance。
+`M6-003 / K-API-2` 的离线闭环已在分支 `agent/k-api-2-task-to-api-closure` 完成（192 项测试通过，含四条离线路径、关闭事务崩溃矩阵与仅凭文件的恢复证明），等待评审合并；合并后 M6 的下一步是 `M6-004`：由黄毅在已授权的真实 Windows 用户上下文对实际启用的 `worker` 槽接线真实 Provider 并执行一次受限 evidence 调用，返回脱敏工件。
+
+路诚钺的关键路径保持 `M3-007..008 → M7-002..006 / K-MS-1` 不变：先让每次 Agent 试验能够用实名 actor 和 Attempt Archive 完整留痕，再为现有两个 Mode 建立边界 fixtures，形成 Task-to-Skill 选择矩阵，审计 accepted Skills，处理一个 triage candidate，并为每个任务给出内容允许集与 H0/H1/H2。到达可解释、可回放、可删减的选择基线后暂停评审；路诚钺不在本分支补 API、Provider、模型或 live conformance。

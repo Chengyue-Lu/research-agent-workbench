@@ -142,9 +142,11 @@ rwb providers conformance `
 
 该阶段达到 `K-API-1`，但还没有把 Task/Skill Assignment 自动编译为请求，也没有自动生成 Attempt/Execution Receipt，因此不是完整 Task 执行器。
 
-### P4：Task-to-API 文件闭环（API 工作流的 external 节点）
+### P4：Task-to-API 文件闭环（离线闭环完成；真实调用确认待 M6-004）
 
 把已解析 Task、Agent Profile、Skill Assignment、内容允许集、Handoff 等级和显式模型槽编译成最小初始消息与工具 allowlist；执行期间将全部可见 Agent 传递写入 Attempt Archive；结束或安全暂停时写入正式工件和 Task 要求的 H1/H2 交接工件。删除临时平台会话后做一次恢复检查。具体实现与自动捕获由黄毅负责。
+
+离线闭环已落地（分支 `agent/k-api-2-task-to-api-closure`）：`src/research_workbench/execution/` 提供纯函数编译器（哈希校验输入与 Skill 正文、显式记录每个限额来源、read-only `document-read` 客户端工具）、会话结果到七类文件的唯一状态映射表、stage/validate/publish 三阶段且 Main State 严格殿后的原子关闭事务（排他 `os.link` 发布、完成标记、崩溃后确定性续跑、内容分歧阻断、发布后用真实校验器复核）、`rwb execute task` CLI 与 `examples/api-execution/` 可再生离线 fixtures。completed、tool-failed、safe-paused、stale-input 四条离线路径与“删除临时会话后新会话仅凭文件恢复唯一下一动作”均由测试证明。真实 Provider 接线（`build_provider_registry` 目前显式阻断为 `EXEC-PROVIDER-NOT-CONFIGURED`）与 Attempt Archive 自动捕获仍属 M6-004/M6-006。
 
 ### P5：按真实消费者扩展
 
