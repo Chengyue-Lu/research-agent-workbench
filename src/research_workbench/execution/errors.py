@@ -12,3 +12,15 @@ class CompileError(ValueError):
     def __init__(self, code: str, message: str) -> None:
         self.code = code
         super().__init__(f"{code}: {message}")
+
+
+class CloseoutError(ValueError):
+    """A blocking condition while staging, validating, or publishing files.
+
+    Codes (``EXEC-CLOSEOUT-*``) distinguish staging crashes, validation
+    failures, path conflicts, and post-publish verification failures.
+    """
+
+    def __init__(self, code: str, message: str) -> None:
+        self.code = code
+        super().__init__(f"{code}: {message}")
