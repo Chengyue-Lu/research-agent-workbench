@@ -516,6 +516,60 @@ def _schema_show(args: argparse.Namespace) -> int:
     return 0
 
 
+def _execute_task(args: argparse.Namespace) -> int:
+    from research_workbench.execution import execute_task
+
+    environment: dict[str, str] = {}
+    for item in args.model_env:
+        name, separator, value = item.partition("=")
+        if not separator or not name.strip():
+            raise ValueError(f"--model-env expects NAME=VALUE, got {item!r}")
+        environment[name.strip()] = value
+    if args.from_environment:
+        environment.update(dict(os.environ))
+    run = execute_task(
+        root=Path(args.root).resolve(),
+        task_path=args.task,
+        profile_path=args.profile,
+        assignment_path=args.assignment,
+        slot=args.slot,
+        pool_path=args.pool,
+        environment=environment,
+        protocol_path=args.protocol,
+        base_state_path=args.from_state,
+        dry_run=args.dry_run,
+    )
+    summary = {
+        "task_id": run.compiled.request.metadata["task_id"],
+        "attempt_id": run.compiled.attempt_id,
+        "assignment_id": run.compiled.request.metadata["assignment_id"],
+        "slot": run.compiled.request.metadata["slot_id"],
+        "provider": run.compiled.provider_name,
+        "dry_run": run.dry_run,
+        "status": run.outcome.status if run.outcome else "already-published",
+        "main_state": run.main_state_path,
+        "published": len(run.closeout.published) if run.closeout else 0,
+    }
+    if args.json:
+        print(json.dumps(summary, ensure_ascii=False, indent=2))
+    elif run.dry_run:
+        print(
+            f"compiled attempt {summary['attempt_id']} task {summary['task_id']} "
+            f"slot {summary['slot']} provider {summary['provider']}; no session was run"
+        )
+    elif run.closeout is not None and run.closeout.resumed:
+        print(
+            f"attempt {summary['attempt_id']} already published; "
+            f"{summary['published']} files verified, model not re-executed"
+        )
+    else:
+        print(
+            f"executed attempt {summary['attempt_id']} status {summary['status']}; "
+            f"published {summary['published']} files; main state {summary['main_state']}"
+        )
+    return 0
+
+
 def _task_resolve(args: argparse.Namespace) -> int:
     task = TaskPacket.from_mapping(_load_valid(args.task, "task_packet"))
     profile = AgentProfile.from_mapping(_load_valid(args.profile, "agent_profile"))
@@ -1153,6 +1207,37 @@ def build_parser() -> argparse.ArgumentParser:
     task_resolve.add_argument("--auto-select", action="store_true")
     task_resolve.add_argument("--output")
     task_resolve.set_defaults(handler=_task_resolve)
+
+    execute = subparsers.add_parser(
+        "execute", help="run one Task through a fresh isolated API session"
+    )
+    execute_subparsers = execute.add_subparsers(dest="execute_command", required=True)
+    execute_task_parser = execute_subparsers.add_parser(
+        "task", help="compile, execute, and atomically close out one Task"
+    )
+    execute_task_parser.add_argument("task")
+    execute_task_parser.add_argument("--profile", required=True)
+    execute_task_parser.add_argument("--assignment", required=True)
+    execute_task_parser.add_argument("--slot", required=True, help="explicit model pool slot")
+    execute_task_parser.add_argument("--pool", required=True, help="model pool config path")
+    execute_task_parser.add_argument("--protocol", required=True)
+    execute_task_parser.add_argument("--root", default=".")
+    execute_task_parser.add_argument("--from-state")
+    execute_task_parser.add_argument(
+        "--model-env",
+        action="append",
+        default=[],
+        metavar="NAME=VALUE",
+        help="explicitly inject a model identifier variable",
+    )
+    execute_task_parser.add_argument(
+        "--from-environment",
+        action="store_true",
+        help="read model variables from the real process environment (live path)",
+    )
+    execute_task_parser.add_argument("--dry-run", action="store_true")
+    execute_task_parser.add_argument("--json", action="store_true")
+    execute_task_parser.set_defaults(handler=_execute_task)
 
     runtime = subparsers.add_parser("runtime", help="inspect native runtime mappings")
     runtime_subparsers = runtime.add_subparsers(dest="runtime_command", required=True)
