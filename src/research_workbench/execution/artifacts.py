@@ -666,6 +666,7 @@ def _receipt_document(
             "adapter_version": binding.provider_adapter,
         },
         "model_usage_status": usage_status,
+        "model_usage": usage_records,
         "coordination": {
             "delegated_attempts": 0,
             "handoff_count": 1,
@@ -692,8 +693,6 @@ def _receipt_document(
     }
     if statuses.completion_claim is not None:
         document["completion_claim"] = statuses.completion_claim
-    if usage_records:
-        document["model_usage"] = usage_records
     return document
 
 

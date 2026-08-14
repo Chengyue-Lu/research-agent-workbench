@@ -28,6 +28,12 @@ from research_workbench.execution.compiler import (
 )
 from research_workbench.execution.errors import CompileError
 from research_workbench.execution.options import ExecutionPolicy
+from research_workbench.execution.runner import (
+    ExecutionRun,
+    build_provider_registry,
+    execute_task,
+    utc_now,
+)
 from research_workbench.execution.status import CloseoutStatuses, map_outcome
 from research_workbench.execution.tools import (
     DOCUMENT_READ_DEFINITION,
@@ -53,12 +59,16 @@ __all__ = [
     "CompileReport",
     "CompiledSession",
     "ExecutionPolicy",
+    "ExecutionRun",
     "SessionOutcome",
     "SessionToolLog",
     "ToolCallRecord",
     "build_client_tools",
+    "build_provider_registry",
     "build_closeout_documents",
     "compile_session",
+    "execute_task",
+    "utc_now",
     "map_outcome",
     "outcome_from_result",
     "run_closeout",
