@@ -108,10 +108,17 @@ def build_closeout_documents(
     started_at: str,
     finished_at: str,
     base_state: Any | None = None,
+    batch_prefix: str = "",
+    checkpoint_prefix: str = "",
 ) -> CloseoutPlan:
-    """Build every closeout document for one attempt in publish order."""
+    """Build every closeout document for one attempt in publish order.
 
-    paths = _batch_paths(task.task_id, compiled.attempt_id)
+    ``batch_prefix``/``checkpoint_prefix`` relocate the batch and checkpoint
+    directories (used to regenerate the static example fixtures); runtime
+    execution keeps the defaults under the task write scope.
+    """
+
+    paths = _batch_paths(task.task_id, compiled.attempt_id, batch_prefix, checkpoint_prefix)
     completed = outcome.structured_output is not None and outcome.status == "completed"
     model_drift = MODEL_DRIFT_WARNING in outcome.warnings
     checks = (
@@ -257,8 +264,11 @@ def build_closeout_documents(
     return CloseoutPlan(batch_dir=paths["batch"], documents=documents, main_state_path=paths["main-state"])
 
 
-def _batch_paths(task_id: str, attempt_id: str) -> dict[str, str]:
-    batch = f"work/{task_id}/{attempt_id}"
+def _batch_paths(
+    task_id: str, attempt_id: str, batch_prefix: str = "", checkpoint_prefix: str = ""
+) -> dict[str, str]:
+    batch = f"{batch_prefix}work/{task_id}/{attempt_id}".lstrip("/")
+    checkpoint_dir = f"{checkpoint_prefix}checkpoints".rstrip("/")
     return {
         "batch": batch,
         "evidence": f"{batch}/evidence.yaml",
@@ -271,7 +281,7 @@ def _batch_paths(task_id: str, attempt_id: str) -> dict[str, str]:
         "handoff": f"{batch}/handoff.yaml",
         "attempt": f"{batch}/attempt.yaml",
         "receipt": f"{batch}/execution-receipt.yaml",
-        "main-state": f"checkpoints/MS-{attempt_id.removeprefix('A-')}.yaml",
+        "main-state": f"{checkpoint_dir}/MS-{attempt_id.removeprefix('A-')}.yaml",
     }
 
 

@@ -1,0 +1,49 @@
+schema_version: 0.1.0
+checkpoint_id: MS-BA6F66DC41E7
+continuity_status: blocked
+project_protocol_ref: examples/project-protocol.yaml@1
+current_questions:
+- Q-001@1
+pinned_constraints:
+- 'claim ceiling: source_reported, simulation_supported'
+- local data must not be uploaded
+accepted_decisions: []
+active_tasks:
+- task_id: EVID-001
+  status: failed
+  expected_handoff: examples/api-execution/tool-failed/work/EVID-001/A-BA6F66DC41E7/handoff.yaml
+recent_handoffs:
+- ref: examples/api-execution/tool-failed/work/EVID-001/A-BA6F66DC41E7/handoff.yaml
+  disposition: machine-recorded-failed
+open_conflicts: []
+open_risks:
+- CTX-NEXT-AWU-COST-UNKNOWN
+- CTX-METRICS-UNKNOWN
+next_actions:
+- Review the failed outcome of attempt A-BA6F66DC41E7 and decide whether to dispatch
+  a fresh attempt.
+artifact_index_refs:
+- examples/api-execution/tool-failed/work/EVID-001/A-BA6F66DC41E7/check-report.yaml
+machine_state_refs:
+- path: examples/api-execution/tool-failed/work/EVID-001/A-BA6F66DC41E7/skill-assignment.yaml
+  sha256: bb46548effd1004bca6491fbf7ae9828e1859ce61ee59ce6de0e0c861cee406f
+- path: examples/api-execution/tool-failed/work/EVID-001/A-BA6F66DC41E7/attempt.yaml
+  sha256: 1ed267a0a32580db1eeaa248bd8c06efeb07f5bdd62a53bf04d7cbfe98988464
+- path: examples/api-execution/tool-failed/work/EVID-001/A-BA6F66DC41E7/transfer-audit.yaml
+  sha256: 038a9133a24a62a36427b8335e64d9fcf2062dfc169cb898f98da2303f581abb
+- path: examples/api-execution/tool-failed/work/EVID-001/A-BA6F66DC41E7/check-report.yaml
+  sha256: e32015bc0ab2e4fa0fa7b83d8a4db807dd51501c2cbfb4394a41d082bb918ac8
+- path: examples/api-execution/tool-failed/work/EVID-001/A-BA6F66DC41E7/handoff.yaml
+  sha256: d0e7b5030cd52771fdb8119e394af1fe8270d9327075deca5fcb61b7fe23063e
+- path: examples/api-execution/tool-failed/work/EVID-001/A-BA6F66DC41E7/context-snapshot-main.yaml
+  sha256: a66b2ec15f312705ccaba4ff2834af18c41f633b1ab4bd3577ed8512c98dc40b
+- path: examples/api-execution/tool-failed/work/EVID-001/A-BA6F66DC41E7/transfer-manifest.yaml
+  sha256: 5dbded2e746c7c61d2e1d19213f4d49c5717b9ce7373137561d3b9c4cf28defe
+- path: examples/api-execution/tool-failed/work/EVID-001/A-BA6F66DC41E7/execution-receipt.yaml
+  sha256: 2b1231f4c7a90ad808935bbe6897ff7d272f844a46c0096ba39e213155a1cc9f
+- path: examples/api-execution/tool-failed/work/EVID-001/A-BA6F66DC41E7/context-snapshot-task.yaml
+  sha256: a95aa14d3f3e164c228c752f5c26f014577b341f1777c299a3d48531967f5479
+rollover_reason: 'session failed: error'
+created_at: '2026-08-14T00:01:00Z'
+context_snapshot_ref: examples/api-execution/tool-failed/work/EVID-001/A-BA6F66DC41E7/context-snapshot-main.yaml
+checkpoint_digest: d059c5429b4c473714e9fee5e6f398ec05494645ecab3bf6b35ccd3df2457db4
