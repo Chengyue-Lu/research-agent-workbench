@@ -41,7 +41,7 @@
 | M2-005 | DONE | 创建 handoff-integrity 检查 | M1 | 确定性脚本已验证 Task/input/Skill/artifact 交接边界，不宣称科学正确性 |
 | M2-006 | PARKED | 扩展 Codex Runtime Adapter | M2-002..005 | 已有 Agent/Skill 发现、验证和显式 dispatch 保留；平台 launch/collect 不在当前 Mode–Skill 关键路径 |
 | M2-007 | IN_PROGRESS | 执行首个双 Skill 垂直切片 | M7-002..006, M7-008 | 离线契约切片已证明 Skills 不同；路诚钺先完成 Skill 整理、Mode/Skill/Tool 选择、读取计划和 H1/H2 成本基线，真实执行证据由黄毅负责的执行工作流提供 |
-| M2-008 | IN_PROGRESS | 建立外部 Skill 发现、隔离评估与准入 Registry | M1 | ZIP 审计、18/18 追溯、非发现候选和 provider-neutral 双臂评估契约/CLI 已落地；首批 9 个固定来源、54 个入口已完成静态与人工处置，除三家一方来源外的 35 项已固定哈希并进入 `triage`/`reference`/`quarantine`/`rejected`；dossier、真实 with/without 与 trial/accepted 仍待完成 |
+| M2-008 | IN_PROGRESS | 建立外部 Skill 发现、隔离评估与准入 Registry | M1 | ZIP 审计、18/18 追溯、非发现候选和 provider-neutral 双臂评估契约/CLI 已落地；首批 9 个固定来源、54 个入口均已完成逐项哈希与 `triage`/`reference`/`quarantine`/`rejected` 留痕；dossier、真实 with/without 与 trial/accepted 仍待完成 |
 
 ## M3：上下文与风险
 
@@ -99,7 +99,8 @@
 | M7-006 | READY | 建立 H0/H1/H2 与内容读取成本对照 | M3-008, M7-002 | 通过 Attempt Archive 记录消息/工件数、字符、审阅、回查、遗漏、返工、读取扩展和 capture gap |
 | M7-007 | PARKED | 新增 experiment/theory/observational/engineering Mode | 真实案例 + Mode 准入卡 | 证明现有 Mode 组合不足后逐个启用 |
 | M7-008 | READY | 建立首批 Tool capability cards 与调用边界 | M1-008, M7-004 | 至少覆盖 document-read、citation-resolve、literature-search、bounded-compute、project-cli；数据出口、副作用、失败、验证和 Adapter owner 明确，不实现 API |
-| M7-009 | IN_PROGRESS | 建立多来源 Skill 候选池与机器/人工筛选 Gate | M2-008 | 首批 54 个入口均已处置；社区 35 项形成 6 个 `triage`、21 个 `reference` 和 8 个隔离/排除项。下一 Gate 从 6 项中最多选择 4 个 dossier、2 个重写/困难任务，下载内容不安装或自动准入 |
+| M7-009 | DONE | 建立多来源 Skill 候选池与机器/人工筛选 Gate | M2-008 | 首批 54 个入口均已固定来源、路径、内容哈希和人工 Decision；一方 19 项为 18 `reference`/1 `rejected`，社区 35 项为 6 `triage`/21 `reference`/8 隔离或排除；下载内容未安装、执行或自动准入 |
+| M7-010 | IN_PROGRESS | 建立最多四个候选 dossier 并选择最多两个验证对象 | M7-004, M7-009 | 首轮覆盖 evidence map、citation integrity、experimental design、scientific visualization；每份含 no-Skill/direct-tool、上下文、学科、Human Gate、Tool/权限、停止条件和重叠判断，最终最多两个进入独立重写/困难任务 |
 
 ## GitHub 执行入口
 
@@ -115,4 +116,4 @@ M1 已建立里程碑与首批可执行 Issues：
 
 ## 当前下一任务
 
-当前关键路径是 `M7-009 dossier 选择 → M7-004/M7-008 → M7-002/003 → M3-008 → M7-005/006 → K-MS-1`：54 个入口均已处置，下一步从 `build-evidence-map`、K-Dense citation/experiment/peer-review/visualization/power 六项中最多选择 4 个详细 dossier，再最多推进 2 个独立重写或困难任务；同时把已下沉项转成 provider-neutral capability、Task 模板或运行时契约。`claim-preserving-rewrite` 的 checker/compact 复验保留，但不让单一候选测试先行决定整体方向。路诚钺不在本分支补 API、Provider、模型或 live conformance。
+当前关键路径是 `M7-004 + M7-010 → M7-008 → M7-002/003 → M3-008 → M7-005/006 → K-MS-1`：先完成 accepted Skill 重叠审计，并为 `build-evidence-map`、K-Dense citation/experiment/visualization 建立四份 dossier；`peer-review` 保持 reserve，`statistical-power` 先作为 experiment dossier 的方法参考。人工最多选择 2 个进入独立重写或困难任务，再把已下沉项转成 provider-neutral capability、Task 模板或运行时契约。新的真实 forward test 必须等待 M3-008 Trace validator；路诚钺不在本分支补 API、Provider、模型或 live conformance。

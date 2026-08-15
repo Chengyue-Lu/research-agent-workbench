@@ -48,6 +48,37 @@ class CandidateCatalogTests(unittest.TestCase):
             {item["candidate_id"] for item in selected if item["status"] == "triage"},
         )
 
+    def test_first_party_intake_has_pinned_non_executable_decisions(self) -> None:
+        candidates = load_candidates(ROOT / "registry" / "skills" / "candidates.json")
+        expected_counts = {
+            "openai-skills": 5,
+            "anthropic-skills": 6,
+            "googleworkspace-cli": 8,
+        }
+        selected = [item for item in candidates if item["source_id"] in expected_counts]
+
+        self.assertEqual(19, len(selected))
+        self.assertEqual(
+            expected_counts,
+            {
+                source_id: sum(item["source_id"] == source_id for item in selected)
+                for source_id in expected_counts
+            },
+        )
+        self.assertEqual(19, len({(item["source_id"], item["source_path"]) for item in selected}))
+        self.assertTrue(all(item.get("content_hash", "").startswith("sha256:") for item in selected))
+        self.assertEqual(
+            {"reference": 18, "rejected": 1},
+            {
+                status: sum(item["status"] == status for item in selected)
+                for status in {item["status"] for item in selected}
+            },
+        )
+        self.assertEqual(
+            ["google-persona-researcher"],
+            [item["candidate_id"] for item in selected if item["status"] == "rejected"],
+        )
+
     def test_mode_filter_is_metadata_only(self) -> None:
         candidates = load_candidates(ROOT / "registry" / "skills" / "candidates.json")
         experiment = filter_candidates(candidates, mode="experiment", capability="experiment-design")

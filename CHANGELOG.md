@@ -30,6 +30,8 @@
 - 跨 GPT/Claude/GLM 采用公共 Skill core、薄 runtime binding 和测试生成的 model conformance policy，不维护三套完整分叉。
 - GitHub、K-Dense、Academic Research Agent、lingzhi 与 Superpowers 的 35 个入口已逐项固定哈希并写入候选 Registry：6 个 `triage`、21 个 `reference`、3 个 `quarantine`、5 个 `rejected`。
 - `build-evidence-map` 与 K-Dense citation/experiment/peer-review/visualization/power 组成 dossier 候选池；转换、上下文请求和完成前验证下沉为 Tool/模板/运行时契约，单体研究总管和递归 reviewer 工作流不进入当前架构。
+- 补齐 OpenAI 5、Anthropic 6、Google 8 个一方入口的逐项 Registry 记录，替换两条无内容哈希的早期占位引用；结果为 18 个 `reference` 和 1 个 `rejected`，没有一方条目进入 `triage`、`trial` 或 `accepted`。
+- M7-009 多来源筛选 Gate 完成；下一任务 M7-010 固定为四份 dossier，并在 accepted Skill 重叠审计后最多选择两个独立重写或困难任务对象。
 
 ## 2026-08-16 — `claim-preserving-rewrite` 探索性 Stage 1
 

@@ -2,7 +2,7 @@
 
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 分支：`agent/mode-skill-selection-baseline`
-- 状态：首批 54 个 Skill 入口完成处置，进入社区候选 dossier 选择
+- 状态：首批 54 个外部入口完成逐项 Registry 留痕，进入 dossier 决策
 - 日期：2026-08-16
 - 目标节点：`K-MS-1 Mode–Skill Selection Baseline`
 
@@ -12,7 +12,7 @@
 
 当前优先级调整为：
 
-1. 首批 9 个来源、54 个 Skill 入口已完成隔离、机器筛选和人工处置；
+1. 首批 9 个来源、54 个 Skill 入口已完成隔离、机器筛选、人工处置、固定哈希和逐项 Registry 留痕；
 2. 从 6 个 `triage` 项中只让最多 4 个进入 dossier、最多 2 个进入独立重写或困难任务验证；
 3. 用筛选后的真实候选反推 Mode 边界、capability 词汇和 Skill 显式调用规则；
 4. 同时定义这些 Skills 需要的外部 Tool 能力与调用边界；
@@ -23,12 +23,12 @@
 
 ## 2. 当前基线
 
-截至 2026-08-15：
+截至 2026-08-16：
 
 - 正式 Mode：2 个，`evidence-synthesis`、`simulation`；
 - accepted Skills：3 个，`literature-evidence-extraction`、`simulation-vv`、`handoff-integrity`；
 - 三个 accepted Skills 当前均标记 `project-original-unlicensed`，M0-007 仍阻断对外发布；
-- 外部候选：24 个，其中 triage 4、discovered 2、reference 12、quarantine 2、rejected 4；
+- 候选 Registry：73 个，其中 `triage` 10、`reference` 48、`quarantine` 5、`rejected` 10；首批新增 54 个外部入口均不可执行，只有 6 个社区入口进入本轮 dossier shortlist；
 - 独立本地候选包：1 个，`claim-preserving-rewrite`；
 - API 执行、真实模型调用和自动 Trace 捕获不属于本分支实现范围。
 
@@ -38,6 +38,7 @@
 
 - [Skill 整理、独立重写与准入计划](SKILL_CURATION.md)
 - [Skill 来源搜集、隔离与机器/人工筛选](SKILL_SOURCE_INTAKE.md)
+- [一方 Skill 逐项筛选结论](FIRST_PARTY_SKILL_TRIAGE.md)
 - [社区 Skill 人工筛选结论](COMMUNITY_SKILL_TRIAGE.md)
 - [Mode–Skill–Tool 划分与调用计划](MODE_SKILL_TOOL_ROUTING.md)
 - [Skill 诊断性困难任务测试计划](DIAGNOSTIC_FORWARD_TESTING.md)
@@ -61,11 +62,12 @@ P1–P3 可以先做离线文档、契约和 fixtures；P4 必须在任何声称
 
 ## 5. 首批处理顺序
 
-1. OpenAI/Anthropic/Google 19 个一方入口和其他来源 35 个入口均已处置；下一步从 6 个 `triage` 项选择最多 4 个 dossier，不同时展开全部 references/scripts。
-2. 审计三个 accepted Skills，特别检验 `handoff-integrity` 是否应退回确定性 Tool，而不是常驻 Skill。
-3. 从 dossier 中最多选择 2 个候选进入独立最小重写或困难任务；许可不明时不复制正文或脚本。
-4. 从证据类候选只抽取 provider-neutral 的 search/citation/traceability 契约；在证明 Agent 工作流有增量价值前不创建搜索“大 Skill”。
-5. `claim-preserving-rewrite` 的 compact 复验保留，但排在多来源筛选之后；不再用单次或简单样例决定候选方向。
+1. 先完成三个 accepted Skills 的 retain/revise/deprecate 审计，特别判断 `handoff-integrity` 是否应退回确定性 Tool，并为 dossier 提供真实重叠基线。
+2. 首轮只建立 4 个 dossier：`build-evidence-map`、K-Dense `citation-management`、`experimental-design`、`scientific-visualization`；每份必须包含 no-Skill/direct-tool 对照、上下文成本、学科边界、Human Gate、所需 Tool 和可判定停止条件。
+3. `peer-review` 暂作高语义成本 reserve；`statistical-power` 先作为 experiment dossier 的方法参考，只有证明不能被有界组合表达时才升级为独立 dossier。
+4. 四份 dossier 完成后由人工最多选择 2 个进入独立最小重写或困难任务；许可不明时不复制正文或脚本，不因官方来源自动提高状态。
+5. 同步从已下沉条目定义首批 provider-neutral Tool capability cards；在证明 Agent workflow 有增量价值前不创建文件转换、搜索或 API 目录“大 Skill”。
+6. 在任何新的真实 Agent forward test 前完成 M3-008 最小 Trace validator；`claim-preserving-rewrite` 只保留 checker 修复和 CPD-02/03 compact 复验，不先行决定整体路线。
 
 ## 6. 预期写入位置
 

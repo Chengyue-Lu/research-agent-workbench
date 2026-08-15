@@ -168,6 +168,11 @@ Attempt 的 `audits/`。没有内容被安装、执行、注册或准入。
 | Google `gws-docs-write`、`gws-sheets-read` | 保留为窄 Tool recipe | 分开 `read` 与 `external-write` capability；写操作要求显式确认，读操作限制范围、分页和结果大小 |
 | Google `persona-researcher` | reject as architecture Skill | 它把 Drive、Docs、Sheets、Gmail 和协作写操作绑定成宽泛人格，与本项目 Mode/Skill/权限分离原则冲突 |
 
+上述 19 个入口已补齐为逐项候选 Registry 记录，每项均固定 `source_path`、
+`content_hash`、状态、能力、风险和 Decision；18 项为 `reference`，Google
+`persona-researcher` 为 `rejected`，没有 `triage`、`trial` 或 `accepted`。
+完整记录见[一方 Skill 逐项筛选结论](FIRST_PARTY_SKILL_TRIAGE.md)。
+
 筛选后的方向不是维护 GPT、Claude、GLM 三套完整 Skill，而是维护一个公共核心和
 很薄的运行时绑定：
 
@@ -227,7 +232,7 @@ binding，限制性许可内容只作参考；真正需要昂贵测试的是科�
 
 `K-MS-SOURCE-1` 的完成条件与当前状态：
 
-1. [x] 19 个一方入口完成快速处置，35 个社区入口完成逐项人工筛选与 Registry 留痕；
+1. [x] 19 个一方入口与 35 个社区入口均完成逐项人工筛选、固定哈希与 Registry 留痕；
 2. [x] 每个来源的许可限制与 revision 有证据位置，每个入口固定内容哈希；
 3. [x] 覆盖工具/格式、证据/完整性、实验/统计、理论/推导和元技能；
 4. [ ] 从六项 shortlist 中形成不超过 4 个详细 dossier，并明确 no-Skill/direct-tool 对照；

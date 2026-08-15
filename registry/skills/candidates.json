@@ -353,36 +353,6 @@
       }
     },
     {
-      "candidate_id": "anthropic-skill-format-reference",
-      "source_id": "anthropic-skills",
-      "source_path": "skills/skill-creator/SKILL.md",
-      "status": "reference",
-      "kind": "tool",
-      "capabilities": ["skill-authoring", "progressive-disclosure"],
-      "applicable_modes": ["cross-cutting"],
-      "context_cost": "low",
-      "risk_flags": ["file-level-license-review"],
-      "decision": {
-        "action": "use-as-structural-reference",
-        "reason": "Useful for skill packaging conventions; it is not a research method and is not copied into the runtime."
-      }
-    },
-    {
-      "candidate_id": "openai-skill-format-reference",
-      "source_id": "openai-skills",
-      "source_path": "skills/.curated/openai-docs/SKILL.md",
-      "status": "reference",
-      "kind": "tool",
-      "capabilities": ["skill-authoring", "official-document-routing"],
-      "applicable_modes": ["cross-cutting"],
-      "context_cost": "low",
-      "risk_flags": ["provider-specific-content", "file-level-license-review"],
-      "decision": {
-        "action": "use-as-portability-reference",
-        "reason": "Useful for understanding Codex skill structure and source discipline; provider-specific content stays outside the research kernel."
-      }
-    },
-    {
       "candidate_id": "gh-audit-integrity",
       "source_id": "github-awesome-copilot",
       "source_path": "skills/audit-integrity/SKILL.md",
@@ -908,6 +878,310 @@
       "decision": {
         "action": "extract-risk-tiered-skill-evaluation-method",
         "reason": "Baseline failure, pressure scenarios, and wording microtests are useful; test repetition and process depth must scale with risk, variance, and budget rather than apply universally."
+      }
+    },
+    {
+      "candidate_id": "openai-jupyter-notebook",
+      "source_id": "openai-skills",
+      "source_path": "skills/.curated/jupyter-notebook/SKILL.md",
+      "content_hash": "sha256:a2ed923c4af32d850eff94df5297a358654e966c8bcd526c6718d26921a87931",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["notebook-authoring", "notebook-reproducibility", "notebook-rendering"],
+      "applicable_modes": ["experiment", "simulation", "observational-statistics", "reporting"],
+      "context_cost": "low",
+      "risk_flags": ["bundled-script", "package-install", "runtime-specific-paths", "fixed-tool-assumptions"],
+      "decision": {
+        "action": "derive-portable-notebook-tool-contract",
+        "reason": "Templates, clean execution, rendering, and reproducibility checks are useful, but runtime paths, automatic installation, and a fixed package runner belong in a binding."
+      }
+    },
+    {
+      "candidate_id": "openai-pdf",
+      "source_id": "openai-skills",
+      "source_path": "skills/.curated/pdf/SKILL.md",
+      "content_hash": "sha256:724b72c932053fd87133144405b00fbeec30285ee770168328c8f591ec89c134",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["pdf-reading", "pdf-rendering", "pdf-generation", "layout-verification"],
+      "applicable_modes": ["evidence-synthesis", "reporting", "cross-cutting"],
+      "context_cost": "low",
+      "risk_flags": ["package-install", "runtime-specific-paths", "fixed-output-assumptions"],
+      "decision": {
+        "action": "derive-portable-pdf-tool-contract",
+        "reason": "Render-and-inspect discipline is a strong baseline, while concrete libraries, paths, and installation instructions must stay in optional adapters."
+      }
+    },
+    {
+      "candidate_id": "openai-screenshot",
+      "source_id": "openai-skills",
+      "source_path": "skills/.curated/screenshot/SKILL.md",
+      "content_hash": "sha256:2fb7b2d8010517699b1a44f1d587d028b9dad2e2770366d2052238d46c9a9e36",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["screen-capture", "window-capture", "region-capture", "artifact-save"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "medium",
+      "risk_flags": ["three-bundled-scripts", "process-execution", "os-specific-commands", "privacy-sensitive-capture", "external-write"],
+      "decision": {
+        "action": "demote-to-screen-capture-adapter",
+        "reason": "Capture priority, permission, privacy, and save-location policy belong in a capability card; operating-system commands should load only in the active binding."
+      }
+    },
+    {
+      "candidate_id": "openai-imagegen",
+      "source_id": "openai-skills",
+      "source_path": "skills/.system/imagegen/SKILL.md",
+      "content_hash": "sha256:1c3860b6eb079badaceaa2a5792fd26f23a258dc8fa2a04d1677d8d9b8022763",
+      "status": "reference",
+      "kind": "output",
+      "capabilities": ["image-generation", "image-editing", "reference-image-control", "visual-output"],
+      "applicable_modes": ["reporting"],
+      "context_cost": "high",
+      "risk_flags": ["bundled-script", "credential-access", "provider-bound-model", "package-install", "external-service", "data-egress"],
+      "decision": {
+        "action": "demote-to-specialist-image-adapter",
+        "reason": "A provider-neutral visual-task and invariant contract is useful; model names, API keys, upload behavior, and save paths belong only in the OpenAI binding."
+      }
+    },
+    {
+      "candidate_id": "openai-skill-creator",
+      "source_id": "openai-skills",
+      "source_path": "skills/.system/skill-creator/SKILL.md",
+      "content_hash": "sha256:02167b0ecf9f17bb3d2e3395c3d20fe0c356e4edc57a99fc3ad8a82ef82ccfe2",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["skill-authoring", "trigger-design", "progressive-disclosure", "skill-validation"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "high",
+      "risk_flags": ["three-bundled-scripts", "runtime-specific-packaging", "authoring-process-cost", "not-research-method"],
+      "decision": {
+        "action": "retain-as-primary-authoring-baseline",
+        "reason": "Concise triggers, calibrated freedom, progressive disclosure, and validation are the preferred authoring baseline; project version, license, lineage, and bindings remain in the Registry."
+      }
+    },
+    {
+      "candidate_id": "anthropic-doc-coauthoring",
+      "source_id": "anthropic-skills",
+      "source_path": "skills/doc-coauthoring/SKILL.md",
+      "content_hash": "sha256:acb9b89b228fb818ffe2f464e40b1cdbf6948b50ceeeb7378f0e5b9d78c996ad",
+      "status": "reference",
+      "kind": "output",
+      "capabilities": ["document-coauthoring", "reader-testing", "revision-loop", "author-accountability"],
+      "applicable_modes": ["reporting"],
+      "context_cost": "high",
+      "risk_flags": ["file-license-not-confirmed", "whole-document-workflow", "connector-assumptions", "multi-reviewer-cost", "copying-prohibited"],
+      "decision": {
+        "action": "extract-reader-test-and-author-ownership-patterns",
+        "reason": "Reader testing and final author responsibility are useful; the default interview, connector, and reviewer orchestration is too broad and the file license remains unresolved."
+      }
+    },
+    {
+      "candidate_id": "anthropic-docx",
+      "source_id": "anthropic-skills",
+      "source_path": "skills/docx/SKILL.md",
+      "content_hash": "sha256:ffd82aa6a49674c09914941639e5945694e19c67e43d8459704391e13b4ace25",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["docx-reading", "docx-editing", "docx-rendering", "layout-verification"],
+      "applicable_modes": ["reporting", "cross-cutting"],
+      "context_cost": "medium",
+      "risk_flags": ["restricted-source-available-license", "fifteen-bundled-scripts", "package-install", "process-execution", "copying-prohibited"],
+      "decision": {
+        "action": "independently-derive-docx-capability-contract",
+        "reason": "Only public-format and project-derived render, structure, and layout QA requirements may be implemented; the source text and scripts are not reusable."
+      }
+    },
+    {
+      "candidate_id": "anthropic-pdf",
+      "source_id": "anthropic-skills",
+      "source_path": "skills/pdf/SKILL.md",
+      "content_hash": "sha256:067401220db5745f719ff8c048d545d5edc8545e809668a3a6f9e2892fa51d48",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["pdf-reading", "pdf-generation", "pdf-rendering", "form-handling", "layout-verification"],
+      "applicable_modes": ["evidence-synthesis", "reporting", "cross-cutting"],
+      "context_cost": "medium",
+      "risk_flags": ["restricted-source-available-license", "eight-bundled-scripts", "package-install", "copying-prohibited"],
+      "decision": {
+        "action": "independently-derive-pdf-capability-contract",
+        "reason": "Render and layout verification requirements are useful references, but implementation must come from public formats and project needs rather than this restricted package."
+      }
+    },
+    {
+      "candidate_id": "anthropic-pptx",
+      "source_id": "anthropic-skills",
+      "source_path": "skills/pptx/SKILL.md",
+      "content_hash": "sha256:d11d1c5e9f8cf7cdfebeda2c1ef73299bee612e2d16eff90513b7aa2f1bc4d31",
+      "status": "reference",
+      "kind": "output",
+      "capabilities": ["pptx-reading", "pptx-generation", "slide-rendering", "layout-verification"],
+      "applicable_modes": ["reporting"],
+      "context_cost": "high",
+      "risk_flags": ["restricted-source-available-license", "fifteen-bundled-scripts", "package-install", "process-execution", "copying-prohibited"],
+      "decision": {
+        "action": "independently-derive-pptx-capability-contract",
+        "reason": "Slide rendering and visual QA are useful requirements, but the package is a tool workflow with restricted reuse rather than a research Skill."
+      }
+    },
+    {
+      "candidate_id": "anthropic-skill-creator",
+      "source_id": "anthropic-skills",
+      "source_path": "skills/skill-creator/SKILL.md",
+      "content_hash": "sha256:e030e7685e26283b4a76f5202aa3ae8516fb41dde799be5ae8ea6393ec009fe9",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["skill-authoring", "trigger-evaluation", "baseline-comparison", "blind-review"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "extreme",
+      "risk_flags": ["ten-bundled-scripts", "485-line-instructions", "runtime-specific-orchestration", "provider-assumptions", "evaluation-cost"],
+      "decision": {
+        "action": "retain-as-skill-evaluation-reference",
+        "reason": "Trigger evaluation, no-Skill baselines, and blind review add value, but Claude/Cowork execution details and the complete testing fanout do not belong in the portable authoring core."
+      }
+    },
+    {
+      "candidate_id": "anthropic-xlsx",
+      "source_id": "anthropic-skills",
+      "source_path": "skills/xlsx/SKILL.md",
+      "content_hash": "sha256:111e06521941d60feea6c160d9f67a0b9b95a383d3db0b4c95e65937eb12fb5a",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["spreadsheet-reading", "spreadsheet-generation", "formula-verification", "workbook-rendering"],
+      "applicable_modes": ["experiment", "observational-statistics", "reporting", "cross-cutting"],
+      "context_cost": "medium",
+      "risk_flags": ["restricted-source-available-license", "twelve-bundled-scripts", "package-install", "process-execution", "copying-prohibited"],
+      "decision": {
+        "action": "independently-derive-spreadsheet-capability-contract",
+        "reason": "Formula, structure, and rendering checks are useful requirements, but the restricted package must remain reference-only and outside the research kernel."
+      }
+    },
+    {
+      "candidate_id": "google-gws-docs-write",
+      "source_id": "googleworkspace-cli",
+      "source_path": "skills/gws-docs-write/SKILL.md",
+      "content_hash": "sha256:2dcf04ce33b01d71e790cc7ac0e449ed00662683bab3ca524cf83b4bec892998",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["document-create", "document-append", "external-write", "write-confirmation"],
+      "applicable_modes": ["reporting"],
+      "context_cost": "low",
+      "risk_flags": ["external-write", "credentialed-service", "data-egress", "google-cli-binding"],
+      "decision": {
+        "action": "demote-to-narrow-document-write-recipe",
+        "reason": "Create and append operations should bind to an explicit external-write capability with dry-run, user confirmation, data policy, and receipt requirements."
+      }
+    },
+    {
+      "candidate_id": "google-gws-docs",
+      "source_id": "googleworkspace-cli",
+      "source_path": "skills/gws-docs/SKILL.md",
+      "content_hash": "sha256:635dd2cf08a89dac5e669c275d5f150c0f5b7b560be068e4df43794cf6f04e01",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["google-docs-api", "method-schema-discovery", "document-operations"],
+      "applicable_modes": ["reporting", "cross-cutting"],
+      "context_cost": "low",
+      "risk_flags": ["generated-api-catalog", "credentialed-service", "data-egress", "external-write-possible", "google-cli-binding"],
+      "decision": {
+        "action": "demote-to-on-demand-api-reference",
+        "reason": "The generated method catalog should be queried only for the active operation after shared safety policy and capability authorization are resolved."
+      }
+    },
+    {
+      "candidate_id": "google-gws-drive",
+      "source_id": "googleworkspace-cli",
+      "source_path": "skills/gws-drive/SKILL.md",
+      "content_hash": "sha256:fb18d640b9df3253db573a35e06aca52ede07b2f01f831c8469646e24f59a310",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["drive-file-discovery", "drive-file-read", "drive-file-write", "method-schema-discovery"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "high",
+      "risk_flags": ["generated-api-catalog", "credentialed-service", "data-egress", "external-write-possible", "absolute-local-path", "google-cli-binding"],
+      "decision": {
+        "action": "demote-to-on-demand-api-reference",
+        "reason": "Drive methods must be resolved per operation with read/write separation, bounded search, explicit data export policy, and no always-loaded API catalog."
+      }
+    },
+    {
+      "candidate_id": "google-gws-shared",
+      "source_id": "googleworkspace-cli",
+      "source_path": "skills/gws-shared/SKILL.md",
+      "content_hash": "sha256:8d767f56471daac0bbe7209103347ff8e577c93d679b4dba3fe8fff60011d480",
+      "status": "reference",
+      "kind": "integrity",
+      "capabilities": ["api-schema-discovery", "dry-run", "write-confirmation", "output-sanitization", "auth-policy"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "low",
+      "risk_flags": ["credentialed-service", "data-egress", "external-write-policy", "google-cli-binding"],
+      "decision": {
+        "action": "retain-as-adapter-safety-policy-reference",
+        "reason": "Schema discovery, dry-run, write confirmation, and sanitization are useful adapter policies; authentication and data handling remain capability and Project Protocol decisions."
+      }
+    },
+    {
+      "candidate_id": "google-gws-sheets-read",
+      "source_id": "googleworkspace-cli",
+      "source_path": "skills/gws-sheets-read/SKILL.md",
+      "content_hash": "sha256:e561790507006982c49772a18b09b89ef142f89f88165f70a550ff4c03f1ab4d",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["spreadsheet-read", "range-selection", "bounded-output", "pagination"],
+      "applicable_modes": ["experiment", "observational-statistics", "cross-cutting"],
+      "context_cost": "low",
+      "risk_flags": ["credentialed-service", "data-egress", "result-size-risk", "google-cli-binding"],
+      "decision": {
+        "action": "demote-to-narrow-spreadsheet-read-recipe",
+        "reason": "Read operations should be a bounded capability with explicit ranges, pagination, result-size ceilings, and no inherited write permission."
+      }
+    },
+    {
+      "candidate_id": "google-gws-sheets",
+      "source_id": "googleworkspace-cli",
+      "source_path": "skills/gws-sheets/SKILL.md",
+      "content_hash": "sha256:19d0539e4dfbe2adab0ad1f8d1055563376c8dc118aa5566b8f4299041af07a1",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["google-sheets-api", "method-schema-discovery", "spreadsheet-operations"],
+      "applicable_modes": ["experiment", "observational-statistics", "reporting", "cross-cutting"],
+      "context_cost": "low",
+      "risk_flags": ["generated-api-catalog", "credentialed-service", "data-egress", "external-write-possible", "absolute-local-path", "google-cli-binding"],
+      "decision": {
+        "action": "demote-to-on-demand-api-reference",
+        "reason": "The API catalog should load only after selecting a read or write capability; spreadsheet access must not imply broad mutation rights."
+      }
+    },
+    {
+      "candidate_id": "google-gws-slides",
+      "source_id": "googleworkspace-cli",
+      "source_path": "skills/gws-slides/SKILL.md",
+      "content_hash": "sha256:ae3b2a28aeac94a4e6f7efb327d059e1bf591e3f7ad04a614e324f33d756ea5a",
+      "status": "reference",
+      "kind": "output",
+      "capabilities": ["google-slides-api", "method-schema-discovery", "presentation-operations"],
+      "applicable_modes": ["reporting"],
+      "context_cost": "low",
+      "risk_flags": ["generated-api-catalog", "credentialed-service", "data-egress", "external-write-possible", "google-cli-binding"],
+      "decision": {
+        "action": "demote-to-on-demand-api-reference",
+        "reason": "Presentation API methods are runtime references, not a standing research Skill; creation and mutation require explicit external-write authorization."
+      }
+    },
+    {
+      "candidate_id": "google-persona-researcher",
+      "source_id": "googleworkspace-cli",
+      "source_path": "skills/persona-researcher/SKILL.md",
+      "content_hash": "sha256:47223420f203dcb937b6ddf34133a95964698a73783c61a08a008a4b2a256a73",
+      "status": "rejected",
+      "kind": "method",
+      "capabilities": ["cross-service-research-persona", "drive-docs-sheets-gmail-orchestration"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "low",
+      "risk_flags": ["broad-persona", "cross-service-permission-bundling", "external-write", "email-side-effects", "mode-skill-tool-conflation"],
+      "decision": {
+        "action": "exclude-as-architecture-skill",
+        "reason": "Bundling Drive, Docs, Sheets, Gmail, and collaboration writes into one persona conflicts with explicit Mode, capability, permission, and Tool separation."
       }
     }
   ]
