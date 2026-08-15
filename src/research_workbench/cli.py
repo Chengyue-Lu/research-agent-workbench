@@ -540,14 +540,20 @@ def _execute_task(args: argparse.Namespace) -> int:
         base_state_path=args.from_state,
         dry_run=args.dry_run,
     )
+    if run.outcome is not None:
+        status = run.outcome.status
+    elif run.dry_run:
+        status = "compiled-not-executed"
+    else:
+        status = "already-published"
     summary = {
-        "task_id": run.compiled.request.metadata["task_id"],
+        "task_id": run.compiled.task_id,
         "attempt_id": run.compiled.attempt_id,
-        "assignment_id": run.compiled.request.metadata["assignment_id"],
-        "slot": run.compiled.request.metadata["slot_id"],
+        "assignment_id": run.compiled.assignment_id,
+        "slot": run.compiled.slot_id,
         "provider": run.compiled.provider_name,
         "dry_run": run.dry_run,
-        "status": run.outcome.status if run.outcome else "already-published",
+        "status": status,
         "main_state": run.main_state_path,
         "published": len(run.closeout.published) if run.closeout else 0,
     }

@@ -1,0 +1,36 @@
+schema_version: 0.1.0
+audit_id: HTA-A-FA9447E646E7
+task_ref:
+  path: examples/task-evidence.yaml
+  sha256: 341af5e45b51e04c1cd9b8d27d6c32ee900eed3d1b469e53a80f0b30f6474f32
+handoff_ref:
+  path: examples/api-execution/completed/work/EVID-001/A-FA9447E646E7/handoff.yaml
+  sha256: aa20231dc454195afc7de2f59d3980bd6651143e43b1374ddebac58d673b782c
+manifest_ref:
+  path: examples/api-execution/completed/work/EVID-001/A-FA9447E646E7/transfer-manifest.yaml
+  sha256: 3f715c31fcbe50b41c760a7c9b5eb11872bdde3b414901e950b2f719b737bf69
+generated_at: '2026-08-14T00:01:00Z'
+mappings:
+- item_id: HTI-FA9447E646E7-FACT-000
+  status: carried
+  handoff_locator: /result/facts/0
+- item_id: HTI-FA9447E646E7-INFERENCE-000
+  status: carried
+  handoff_locator: /result/inferences/0
+- item_id: HTI-FA9447E646E7-RECOMMENDATION-000
+  status: carried
+  handoff_locator: /result/recommendations/0
+- item_id: HTI-FA9447E646E7-LIMITATION-000
+  status: carried
+  handoff_locator: /limitations/0
+- item_id: HTI-FA9447E646E7-LIMITATION-001
+  status: carried
+  handoff_locator: /limitations/1
+review:
+  status: pending
+  reviewer_kind: none
+  reviewer_independent: false
+  sampled_item_ids: []
+  findings: []
+limitations:
+- Structural coverage is a machine result; semantic equivalence has not been reviewed.

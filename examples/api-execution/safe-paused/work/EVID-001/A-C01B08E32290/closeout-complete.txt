@@ -1,0 +1,11 @@
+published=10
+check examples/api-execution/safe-paused/work/EVID-001/A-C01B08E32290/check-report.yaml 73953a32b1252607034f59d518a949c9386955ec1f0f8873208fdd61c5dff9ec
+manifest examples/api-execution/safe-paused/work/EVID-001/A-C01B08E32290/transfer-manifest.yaml dac773aa09dc261ad54b32f304e2ad26700f7dad793d4b1b116c8c4033401e81
+audit examples/api-execution/safe-paused/work/EVID-001/A-C01B08E32290/transfer-audit.yaml 5f203be22ed363bbc5ea8d8d3997823c659e96418da8ca7d45daaeed2cd04d89
+task-snapshot examples/api-execution/safe-paused/work/EVID-001/A-C01B08E32290/context-snapshot-task.yaml caa0b758da59fa5b7c8d70e6c4772036125de19077b0c0f0e333f5cbb1267592
+main-snapshot examples/api-execution/safe-paused/work/EVID-001/A-C01B08E32290/context-snapshot-main.yaml bbadbb1717b4d16092b63302d0ef2b6ff64e0a258b7fc8b73b148e2d999a17c7
+assignment examples/api-execution/safe-paused/work/EVID-001/A-C01B08E32290/skill-assignment.yaml bb46548effd1004bca6491fbf7ae9828e1859ce61ee59ce6de0e0c861cee406f
+handoff examples/api-execution/safe-paused/work/EVID-001/A-C01B08E32290/handoff.yaml fd261a780c33804ffb1a715e94f3fbdae4634b48814e1558b6329e4892bc5bbb
+attempt examples/api-execution/safe-paused/work/EVID-001/A-C01B08E32290/attempt.yaml 0599d74d961f4f2a1980a197a7fa3805a77b9110b1840b62a7a776738fb25ee3
+receipt examples/api-execution/safe-paused/work/EVID-001/A-C01B08E32290/execution-receipt.yaml ff6b3572c42ba6e6ed103047764ac04418b886167eeecc2c7bb1eab89710f4cb
+main-state examples/api-execution/safe-paused/checkpoints/MS-C01B08E32290.yaml 6902efaec3d0a6647c17e3f661f3bcc4982bc32145ed34930647418537bc3fdd

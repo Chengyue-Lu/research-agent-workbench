@@ -105,10 +105,16 @@ class CompileSessionTests(unittest.TestCase):
                 ("system", "user"),
                 tuple(message.role for message in compiled.request.messages),
             )
-            self.assertEqual(
-                {"task_id", "assignment_id", "attempt_id", "slot_id"},
-                set(compiled.request.metadata),
-            )
+            # Bookkeeping fields live on CompiledSession, never on the wire
+            # request: adapter metadata contracts are provider-specific
+            # (Anthropic only transmits user_id; Gemini transmits none), so a
+            # populated request.metadata makes live execution fail before the
+            # first network round-trip.
+            self.assertEqual({}, dict(compiled.request.metadata))
+            task, _, assignment = load_contracts(root)
+            self.assertEqual(task.task_id, compiled.task_id)
+            self.assertEqual(assignment.assignment_id, compiled.assignment_id)
+            self.assertEqual("worker", compiled.slot_id)
             self.assertTrue(compiled.attempt_id.startswith("A-"))
 
     def test_system_message_carries_goal_and_frozen_skill_instructions(self) -> None:
@@ -210,7 +216,7 @@ class CompileSessionTests(unittest.TestCase):
             compiled = compile_default(root)
 
             self.assertEqual(10, compiled.limits.max_model_turns)
-            self.assertEqual(1800, compiled.limits.max_output_tokens_per_turn)
+            self.assertEqual(4096, compiled.limits.max_output_tokens_per_turn)
             self.assertEqual(600.0, compiled.limits.max_seconds)
             self.assertEqual(
                 "task-budget", compiled.report.limit_sources["max_model_turns"]

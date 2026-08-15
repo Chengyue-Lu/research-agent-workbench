@@ -1,0 +1,27 @@
+schema_version: 0.1.0
+report_id: DCR-A-FA9447E646E7
+checker:
+  checker_id: k-api-2-closeout-checks
+  version: 0.1.0
+  source_ref:
+    path: src/research_workbench/execution/checks.py
+    sha256: e812928457dbc0b2940b16cf60fc789222c9837c229182ab65095fa996f57635
+subject_refs:
+- path: examples/api-execution/completed/work/EVID-001/A-FA9447E646E7/evidence.yaml
+  sha256: 3675db00345579049be1aada09e347b7692f24f1024d3beaf5cdafe2d0e1de40
+status: pass
+checks:
+- code: EVIDENCE-SCHEMA
+  status: pass
+  detail: structured output conforms to the frozen evidence-extraction schema
+- code: SOURCE-HASH
+  status: pass
+  detail: evidence content hash pinned to task input sha256 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
+- code: SOURCE-LOCATOR
+  status: pass
+  detail: source locator recorded as 'lines 1-2'
+scope: k-api-2 offline closeout for task EVID-001 attempt A-FA9447E646E7
+limitations:
+- Offline K-API-2 execution record; structural evidence only, not a scientific correctness
+  claim.
+- Offline fixture execution; no live provider was contacted.

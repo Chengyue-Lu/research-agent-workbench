@@ -2,6 +2,29 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
+## 2026-08-15 — M6-004 live 接线、两处 live-only 集成缺陷修复与真实 evidence 调用
+
+分支：`agent/m6-004-live-provider-wiring`（含 K-API-2 全部提交 + live 接线 + 本日修复，待评审合并）。
+
+### Added
+
+- `rwb execute task` live 路径（3d1b79e）：`--from-environment` / `--provider-config` / `--model-env` 显式接线；模型池绑定模型透传；缺配置、禁用适配器、未知适配器分别以 `EXEC-PROVIDER-NOT-CONFIGURED` / `EXEC-ADAPTER-DISABLED` / `EXEC-ADAPTER-UNKNOWN` fail-closed；离线测试 9 项（装配、键控、阻断、缺模型变量零写入）。
+- 真实 conformance 记录：glm-5.3 经 `glm-anthropic-messages`（open.bigmodel.cn Anthropic 兼容端点）text/structured/tools 三项通过（本地 `runs/provider-conformance/glm-rerun-20260815.yaml`，`runs/` 按设计不入库）。
+
+### Fixed
+
+- 结构化输出在 Anthropic 兼容端点的诚实性（54f3d1d）：探针把 JSON Schema 直接嵌入提示词（GLM 端点静默忽略 `output_config`）、解析前剥离一层 markdown code fence、单次调用输出上限 256→1024（thinking 优先模型会耗尽小预算）。
+- **live-only 集成缺陷 1**：编译器把 task/assignment/slot 记账信息写入 `ModelRequest.metadata`，而适配器 metadata 契约是 provider 特定的（Anthropic 只传 `user_id`，Gemini 全不传）→ 任何 live 执行在首次网络往返前死于 `UNSUPPORTED`。离线路径（脚本化 provider）不经过适配器序列化，故 214 项离线测试从未暴露。修复：记账字段上移到 `CompiledSession`（`task_id`/`assignment_id`/`slot_id`），wire 请求 metadata 恒空。
+- **live-only 集成缺陷 2**：`incomplete` 会话关闭事务必然失败——合成的 `human_decision_required` 条目不在 `_negative_mirror`/manifest 内（`HANDOFF-NEGATIVE-UNMAPPED`），且语义评审 pending 被发布期验证一刀切阻断（`HANDOFF-SEMANTIC-REVIEW-REQUIRED`）。离线四路径未覆盖 incomplete。修复：决策条目纳入 mirror/manifest（schema `kind: human-decision` 早已预留）；发布期验证豁免"评审待完成"（review.pending 是人工门禁的预期状态，结构风险仍阻断）。
+- `execute task --json --dry-run` 的 `status` 字段误标 `already-published`（与真 resume 不可区分）→ 细分为 `compiled-not-executed`。
+- `examples/task-evidence.yaml` 输出预算 1800→4096：1800 在 live 实测中把 glm-5.3 截断在 `finish_reason=length`（thinking token + 完整 JSON 单轮放不下）；静态 fixtures 与引用哈希同步再生成。
+
+### Milestone
+
+- `M6-004` 到达（live 面）：真实 Windows 用户会话 conformance 通过 + 一次真实 evidence 调用完成（EVID-001 attempt `A-3F04FD1F0130`，glm-5.3 实测 1182 入/783 出 tokens）；会话因模型并行工具调用触发 `parallel-tool-budget` 硬边界安全暂停——设计内终态，原子关闭完整落盘 10 工件 + Main State；确定性幂等（重跑跳过模型执行、10 文件哈希复核）、`context resume-check` 仅凭文件恢复、`handoff validate` 均通过。全量 215 项测试通过；`validate examples registry` = 84/0/0。
+- 附带发现：glm-5.3 在该任务上倾向并行发起 read-only 工具调用，当前示例 policy `max_parallel_tool_calls=1` 下任务无法到达 completed；放宽并行度属 M6-005 范畴的显式决策，未在本分支放水。
+- 未证明：completed 终态的 live evidence 产物（需并行度决策或模型行为配合）、Attempt Archive 自动捕获（M6-006）、任何科学正确性。
+
 ## 2026-08-14 — K-API-2 离线文件闭环（M6-003）
 
 分支：`agent/k-api-2-task-to-api-closure`（基于 `main` @ `6a4c49b`，待评审合并）。

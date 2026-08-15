@@ -30,7 +30,10 @@ delegation:
   allowed: false
 budget:
   max_turns: 10
-  max_output_tokens: 1800
+  # Sized for thinking-first live models: reasoning tokens plus the full
+  # structured output must fit in one turn (1800 truncated glm-5.3 at
+  # finish_reason=length during M6-004 live execution).
+  max_output_tokens: 4096
 atomic_boundary: One bounded source set is inspected and its Evidence, Claim boundary, Transfer Manifest, and Handoff are persisted.
 completion_checks:
   - Required Evidence and Handoff contracts exist and pass deterministic reference checks.

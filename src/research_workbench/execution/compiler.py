@@ -90,6 +90,12 @@ class CompiledSession:
     provider_name: str
     output_contract: str
     report: CompileReport
+    # Local bookkeeping only. Adapter metadata contracts are provider-specific
+    # (Anthropic transmits only user_id; Gemini transmits none), so these never
+    # belong on the wire request.
+    task_id: str
+    assignment_id: str
+    slot_id: str
 
 
 def compile_session(
@@ -126,12 +132,6 @@ def compile_session(
             schema=OUTPUT_CONTRACT_SCHEMAS[output_contract],
         ),
         capability_requirements=frozenset({Capability.STRUCTURED_OUTPUT}),
-        metadata={
-            "task_id": task.task_id,
-            "assignment_id": assignment.assignment_id,
-            "attempt_id": attempt_id,
-            "slot_id": binding.slot_id,
-        },
     )
     report = CompileReport(
         input_chars=sum(len(text) for text in input_texts.values()),
@@ -147,6 +147,9 @@ def compile_session(
         provider_name=binding.provider_adapter,
         output_contract=output_contract,
         report=report,
+        task_id=task.task_id,
+        assignment_id=assignment.assignment_id,
+        slot_id=binding.slot_id,
     )
 
 

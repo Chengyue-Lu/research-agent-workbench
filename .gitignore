@@ -13,14 +13,16 @@ dist/
 .coverage
 htmlcov/
 
-# Local runtime material. `/work/` and `/runs/` are anchored to the repo
-# root so committed fixture chains under `examples/**/work/` stay tracked.
+# Local runtime material. `/work/`, `/runs/`, and `/checkpoints/` are anchored
+# to the repo root so committed fixture chains under `examples/**/work/` and
+# `examples/**/checkpoints/` stay tracked.
 .env
 .env.*
 !.env.example
 .rwb/
 /work/
 /runs/
+/checkpoints/
 
 # Editors and OS
 .idea/

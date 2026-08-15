@@ -2,7 +2,7 @@ schema_version: 0.1.0
 audit_id: HTA-EVID-0001
 task_ref:
   path: examples/task-evidence.yaml
-  sha256: 9e01e1567498df687655c8776a33c39edba883637908919b694fa23e9e61679f
+  sha256: 341af5e45b51e04c1cd9b8d27d6c32ee900eed3d1b469e53a80f0b30f6474f32
 handoff_ref:
   path: examples/handoff-evidence.yaml
   sha256: 575f392611b47dc3f61a75fc73733a0b82329a229a5958d1e2f703a4ab9c3db1

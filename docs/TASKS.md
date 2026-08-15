@@ -82,8 +82,8 @@
 |---|---|---|---|---|
 | M6-001 | EXTERNAL | OpenAI/Anthropic/Gemini 薄 Model Provider Adapters | M1-008 | 黄毅维护；路诚钺不修改实现或测试 |
 | M6-002 | DONE | 显式模型池与隔离 API session kernel（`K-API-1`） | M6-001 | primary/worker/specialist 槽只可显式绑定；轮次、工具、并行、工具结果、输出、token/成本/time 有硬边界；无自动 fallback；离线测试通过 |
-| M6-003 | IN_PROGRESS | Task-to-API 文件闭环（`K-API-2`） | M1-008, M2-001..005, M6-002 | 离线验收已达成（分支 `agent/k-api-2-task-to-api-closure`，待评审合并）：`execution/` 编译器+原子关闭事务+`rwb execute task`+可再生 fixtures；completed/tool-failed/safe-paused/stale-input 四路径与仅凭文件的恢复检查全部通过。真实 Provider 接线与一次真实 evidence 调用仍待 M6-004 |
-| M6-004 | EXTERNAL | 选定模型槽的真实 Windows conformance 与一次 evidence 调用 | M6-001..003 | 黄毅执行并返回脱敏工件 |
+| M6-003 | IN_PROGRESS | Task-to-API 文件闭环（`K-API-2`） | M1-008, M2-001..005, M6-002 | 离线验收已达成（分支 `agent/k-api-2-task-to-api-closure`，待评审合并）：`execution/` 编译器+原子关闭事务+`rwb execute task`+可再生 fixtures；completed/tool-failed/safe-paused/stale-input 四路径与仅凭文件的恢复检查全部通过。live 侧两处集成缺陷（wire metadata 误用、incomplete 关闭事务）已在 M6-004 分支修复 |
+| M6-004 | IN_PROGRESS | 选定模型槽的真实 Windows conformance 与一次 evidence 调用 | M6-001..003 | 2026-08-15 live 验证完成（分支 `agent/m6-004-live-provider-wiring`，本地 `runs/` 报告不入库）：glm-5.3 三项 conformance 通过；evidence 调用 EVID-001 真实执行并以 safe-paused（parallel-tool-budget 硬边界）合法关闭，原子落盘+幂等重跑+仅凭文件恢复全部通过。completed 终态需 M6-005 并行度决策；脱敏报告如需入库由黄毅定夺 |
 | M6-005 | PARKED | streaming/multimodal/server tools 与平台 Adapter | 真实案例或平台选择 | 黄毅决定执行端启动条件；没有真实需求不启动 |
 | M6-006 | EXTERNAL | API/平台执行时自动写入 Agent Trace | M3-008, M6-003 | 黄毅实现消息写前捕获/导出与 capture-gap 报告；不得把密钥或隐藏推理写入 Trace |
 

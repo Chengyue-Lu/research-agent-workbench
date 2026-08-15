@@ -82,7 +82,7 @@ Handoff 传递审计也遵循这一边界：确定性验证器先核对 Transfer
 | HANDOFF-OMITS-NEGATIVE | 失败/反证未传递 | BLOCK promotion |
 | HANDOFF-AUDIT-COVERAGE | Transfer Manifest 条目没有完整映射到 Handoff | BLOCK promotion |
 | HANDOFF-NEGATIVE-UNMAPPED | Handoff 中的限制、冲突、未决项或人工决定没有来源条目 | BLOCK promotion |
-| HANDOFF-SEMANTIC-REVIEW-REQUIRED | 关键或高风险条目尚未完成有界独立抽样 | BLOCK promotion，完成最小样本复核 |
+| HANDOFF-SEMANTIC-REVIEW-REQUIRED | 关键或高风险条目尚未完成有界独立抽样 | BLOCK promotion，完成最小样本复核。注：发布期 closeout 验证（`execution/closeout.py`）豁免此码——新发布 batch 的 audit 恒为 `review.status=pending`，语义评审是发布后的人工动作；完成标记只证明结构完整，transfer 门禁仍由 `handoff audit-transfer` 把守，两者不对称是有意设计 |
 | HANDOFF-SUMMARY-DISTORTION | 抽样发现 Handoff 歪曲或无法验证来源语义 | BLOCK，修订 Handoff 并重新审计 |
 | HANDOFF-OVERHEAD | H2 工件持续增加但不改变决策 | 降为 H1 或缩小触发器 |
 | DELEGATION-FANOUT | 递归/并发膨胀 | 停止新委派，合并任务树 |

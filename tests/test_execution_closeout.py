@@ -13,6 +13,8 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest import mock
 
+import yaml
+
 from research_workbench.adapters.models import (
     AggregateUsage,
     ApiSessionResult,
@@ -39,6 +41,7 @@ from research_workbench.execution import (
     outcome_from_result,
     run_closeout,
 )
+from research_workbench.execution.closeout import _verify_published
 from research_workbench.io import load_document
 from research_workbench.observability import ExecutionReceipt, check_execution_receipt
 from research_workbench.protocol import ProjectProtocol
@@ -133,6 +136,12 @@ def completed_outcome() -> SessionOutcome:
 def paused_outcome() -> SessionOutcome:
     return outcome_from_result(
         fake_result(ApiSessionStatus.SAFE_PAUSED, "tool-result-size-budget", turns=1, tools=0)
+    )
+
+
+def incomplete_outcome() -> SessionOutcome:
+    return outcome_from_result(
+        fake_result(ApiSessionStatus.INCOMPLETE, "length", turns=1, tools=0)
     )
 
 
@@ -277,6 +286,81 @@ class CloseoutDocumentTests(unittest.TestCase):
             ):
                 blockers = [risk.code for risk in risks if risk.level.value == "block"]
                 self.assertEqual([], blockers, label)
+
+    def test_incomplete_chain_carries_human_decision_entry(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = build_project(Path(directory))
+            task, assignment, protocol, plan = prepare(root, incomplete_outcome())
+            run_closeout(plan, root=root, protocol=protocol, task=task, assignment=assignment)
+
+            handoff = HandoffPacket.from_mapping(load_document(root / plan.batch_dir / "handoff.yaml"))
+            attempt = AttemptRecord.from_mapping(load_document(root / plan.batch_dir / "attempt.yaml"))
+            self.assertEqual("incomplete", handoff.status)
+            self.assertEqual("incomplete", attempt.status)
+            self.assertTrue(handoff.human_decision_required)
+
+            # The synthesized decision entry must be carried by the transfer
+            # manifest with a source mapping, exactly like limitations and
+            # unresolved entries; otherwise post-publish verification blocks
+            # every incomplete closeout with HANDOFF-NEGATIVE-UNMAPPED.
+            manifest = load_document(root / plan.batch_dir / "transfer-manifest.yaml")
+            audit_document = load_document(root / plan.batch_dir / "transfer-audit.yaml")
+            handoff_locators = {
+                mapping["handoff_locator"] for mapping in audit_document["mappings"]
+            }
+            for index in range(len(handoff.human_decision_required)):
+                self.assertIn(f"/human_decision_required/{index}", handoff_locators)
+            decision_kinds = {
+                item["kind"] for item in manifest["items"] if item["kind"] == "human-decision"
+            }
+            self.assertTrue(decision_kinds)
+
+            audit = assess_handoff_transfer(audit_document, root=root)
+            self.assertTrue(audit.review_required)
+            self.assertEqual([], audit_document["review"]["sampled_item_ids"])
+
+    def test_completed_review_with_distortion_still_blocks_verification(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = build_project(Path(directory))
+            task, assignment, protocol, plan = prepare(root, incomplete_outcome())
+            run_closeout(plan, root=root, protocol=protocol, task=task, assignment=assignment)
+
+            # The closeout exemption for HANDOFF-SEMANTIC-REVIEW-REQUIRED only
+            # covers the freshly published review.status=pending state: a
+            # completed review that records distortion must still fail
+            # post-publish verification instead of being waved through.
+            audit_path = root / plan.path_for("audit")
+            audit = load_document(audit_path)
+            item_ids = [
+                item["item_id"]
+                for item in load_document(root / plan.path_for("manifest"))["items"]
+            ]
+            audit["review"] = {
+                "status": "completed",
+                "reviewer_kind": "human",
+                "reviewer_independent": True,
+                "sampled_item_ids": item_ids,
+                "findings": [
+                    {
+                        "item_id": item_id,
+                        "status": "distorted",
+                        "detail": "statement drifted from the source",
+                    }
+                    for item_id in item_ids
+                ],
+                "reviewed_at": "2026-08-15T00:00:00Z",
+            }
+            audit_path.write_text(
+                yaml.safe_dump(audit, sort_keys=False, allow_unicode=True),
+                encoding="utf-8",
+            )
+
+            with self.assertRaises(CloseoutError) as raised:
+                _verify_published(
+                    plan, root, protocol=protocol, task=task, assignment=assignment
+                )
+            self.assertIn("EXEC-CLOSEOUT-VERIFICATION-FAILED", str(raised.exception))
+            self.assertIn("HANDOFF-SUMMARY-DISTORTION", str(raised.exception))
 
     def test_safe_paused_chain_satisfies_recovery_rules(self) -> None:
         with TemporaryDirectory() as directory:

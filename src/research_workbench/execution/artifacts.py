@@ -320,7 +320,11 @@ def _negative_mirror(handoff: Mapping[str, Any]) -> tuple[list[str], dict[str, i
 
     mirror: list[str] = []
     index: dict[str, int] = {}
-    for value in [*handoff["limitations"], *handoff["unresolved"]]:
+    for value in [
+        *handoff["limitations"],
+        *handoff["unresolved"],
+        *handoff["human_decision_required"],
+    ]:
         if value not in index:
             index[value] = len(mirror)
             mirror.append(value)
@@ -522,6 +526,7 @@ def _manifest_document(
         for kind, values, handoff_prefix in (
             ("limitation", handoff["limitations"], "/limitations"),
             ("unresolved", handoff["unresolved"], "/unresolved"),
+            ("human-decision", handoff["human_decision_required"], "/human_decision_required"),
         ):
             for index, statement in enumerate(values):
                 add(

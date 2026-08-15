@@ -36,6 +36,12 @@ from research_workbench.validation.documents import infer_document_kind
 from research_workbench.validation.schemas import SchemaCatalog
 
 
+# Risks that describe the expected post-publish handoff-gate state rather
+# than a broken batch: a freshly published audit always carries
+# review.status=pending because the bounded semantic review is a human action
+# recorded after publishing. Structural risks still block publication.
+_POST_PUBLISH_DEFERRED_RISK_CODES = frozenset({"HANDOFF-SEMANTIC-REVIEW-REQUIRED"})
+
 ROLE_KINDS: Mapping[str, str] = {
     "evidence": "research_object",
     "check": "deterministic_check_report",
@@ -376,18 +382,26 @@ def _verify_published(
     by_role = {document.role: project_root / document.path for document in plan.documents}
     receipt = ExecutionReceipt.from_mapping(load_document(by_role["receipt"]))
     handoff = HandoffPacket.from_mapping(load_document(by_role["handoff"]))
+    assessment = assess_handoff_transfer(
+        load_document(by_role["audit"]), root=project_root
+    )
     risk_groups = (
         check_execution_receipt(
             receipt, protocol, root=project_root, receipt_ref=plan.path_for("receipt")
         ),
         check_handoff_against_task(task, handoff, project_root=project_root, assignment=assignment),
-        assess_handoff_transfer(load_document(by_role["audit"]), root=project_root).risks,
+        assessment.risks,
     )
     blockers = [
         f"{risk.code}: {risk.message}"
         for risks in risk_groups
         for risk in risks
+        # A freshly published audit always carries review.status=pending: the
+        # semantic review is a bounded human action recorded after publishing,
+        # so "review still pending" describes the expected handoff-gate state
+        # rather than a broken batch. Structural risks still block here.
         if risk.level == RiskLevel.BLOCK
+        and risk.code not in _POST_PUBLISH_DEFERRED_RISK_CODES
     ]
     if blockers:
         raise CloseoutError(

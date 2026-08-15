@@ -1,0 +1,42 @@
+schema_version: 0.1.0
+manifest_id: HTM-A-C01B08E32290
+task_id: EVID-001
+task_revision: 1
+attempt_id: A-C01B08E32290
+generated_at: '2026-08-14T00:01:00Z'
+declared_by: task-agent
+source_artifact_refs:
+- path: examples/api-execution/safe-paused/work/EVID-001/A-C01B08E32290/check-report.yaml
+  sha256: 73953a32b1252607034f59d518a949c9386955ec1f0f8873208fdd61c5dff9ec
+items:
+- item_id: HTI-C01B08E32290-LIMITATION-000
+  kind: limitation
+  criticality: material
+  required_for_handoff: true
+  statement: 'Session ended safe-paused: total-token-budget.'
+  source_ref:
+    path: examples/api-execution/safe-paused/work/EVID-001/A-C01B08E32290/check-report.yaml
+    sha256: 73953a32b1252607034f59d518a949c9386955ec1f0f8873208fdd61c5dff9ec
+  source_locator: /limitations/0
+- item_id: HTI-C01B08E32290-LIMITATION-001
+  kind: limitation
+  criticality: material
+  required_for_handoff: true
+  statement: Offline K-API-2 execution record; structural evidence only, not a scientific
+    correctness claim.
+  source_ref:
+    path: examples/api-execution/safe-paused/work/EVID-001/A-C01B08E32290/check-report.yaml
+    sha256: 73953a32b1252607034f59d518a949c9386955ec1f0f8873208fdd61c5dff9ec
+  source_locator: /limitations/1
+- item_id: HTI-C01B08E32290-UNRESOLVED-000
+  kind: unresolved
+  criticality: material
+  required_for_handoff: true
+  statement: 'Session stopped before completion: total-token-budget.'
+  source_ref:
+    path: examples/api-execution/safe-paused/work/EVID-001/A-C01B08E32290/check-report.yaml
+    sha256: 73953a32b1252607034f59d518a949c9386955ec1f0f8873208fdd61c5dff9ec
+  source_locator: /limitations/2
+limitations:
+- The task agent declares transfer obligations; this manifest does not prove that
+  it found every scientifically important item.

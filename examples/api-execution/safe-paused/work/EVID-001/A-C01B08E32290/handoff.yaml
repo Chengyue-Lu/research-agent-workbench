@@ -1,0 +1,32 @@
+schema_version: 0.1.0
+task_id: EVID-001
+attempt_id: A-C01B08E32290
+status: safe-paused
+input_lock:
+- path: examples/fixtures/paper-001.txt
+  sha256: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
+skill_lock:
+- literature-evidence-extraction@0.1.0
+skill_assignment_ref: examples/api-execution/safe-paused/work/EVID-001/A-C01B08E32290/skill-assignment.yaml
+result:
+  summary: 'Session safe-paused: total-token-budget.'
+  facts: []
+  inferences: []
+  recommendations: []
+artifact_refs:
+- examples/api-execution/safe-paused/work/EVID-001/A-C01B08E32290/check-report.yaml
+validation_refs:
+- examples/api-execution/safe-paused/work/EVID-001/A-C01B08E32290/transfer-audit.yaml
+limitations:
+- 'Session ended safe-paused: total-token-budget.'
+- Offline K-API-2 execution record; structural evidence only, not a scientific correctness
+  claim.
+conflicts: []
+unresolved:
+- 'Session stopped before completion: total-token-budget.'
+human_decision_required: []
+recommended_next_actions:
+- Resume task EVID-001 from the safe-paused files of attempt A-C01B08E32290 without
+  re-executing recorded side effects.
+execution_receipt_ref: examples/api-execution/safe-paused/work/EVID-001/A-C01B08E32290/execution-receipt.yaml
+transfer_manifest_ref: examples/api-execution/safe-paused/work/EVID-001/A-C01B08E32290/transfer-manifest.yaml
