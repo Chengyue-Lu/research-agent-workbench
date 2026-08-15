@@ -213,14 +213,22 @@ def build_live_provider(
     config: ProviderAdapterConfig,
     *,
     transport: HttpTransport | None = None,
+    model: str | None = None,
 ) -> ModelProvider:
-    """Resolve only the non-secret model selector; API key stays deferred."""
+    """Resolve only the non-secret model selector; API key stays deferred.
+
+    The model selector comes from ``os.environ[config.model_env]`` unless the
+    caller supplies ``model`` explicitly (the execution runner does, so the
+    pool binding stays the single model authority). The API key is never
+    resolved here; it stays deferred to the outbound request boundary.
+    """
 
     if not config.enabled:
         raise ValueError(
             f"adapter {config.adapter_id!r} is disabled; use a local config and set enabled: true"
         )
-    model = os.environ.get(config.model_env)
+    if model is None:
+        model = os.environ.get(config.model_env)
     if not model:
         raise ValueError(f"model selector is unavailable from env:{config.model_env}")
     common: dict[str, Any] = {

@@ -22,6 +22,8 @@ from research_workbench.adapters.models import (
     ProviderError,
     ProviderRegistry,
 )
+from research_workbench.adapters.models.configuration import get_provider_adapter_config
+from research_workbench.adapters.models.conformance import build_live_provider
 from research_workbench.adapters.models.pool import ModelBinding, ModelPool
 from research_workbench.artifacts.integrity import hash_file
 from research_workbench.capability.models import AgentProfile
@@ -56,14 +58,47 @@ class ExecutionRun:
     dry_run: bool = False
 
 
-def build_provider_registry(provider_adapter: str) -> ProviderRegistry:
-    """Live provider wiring is intentionally out of scope for K-API-2."""
+def build_provider_registry(
+    provider_adapter: str,
+    *,
+    config_path: Path | None = None,
+    model: str | None = None,
+) -> ProviderRegistry:
+    """Build the live registry for one adapter, or block without a config.
 
-    raise CompileError(
-        "EXEC-PROVIDER-NOT-CONFIGURED",
-        f"no live provider is configured for adapter {provider_adapter!r}; "
-        "inject a provider registry or wait for the M6-004 conformance workstream",
-    )
+    The pool binding stays the single model authority: ``model`` is passed
+    through to the provider so no second environment read can diverge. The
+    credential is never resolved here; it stays deferred to the outbound
+    request boundary.
+    """
+
+    if config_path is None:
+        raise CompileError(
+            "EXEC-PROVIDER-NOT-CONFIGURED",
+            f"no live provider is configured for adapter {provider_adapter!r}; "
+            "pass a local provider-adapter config (never the committed disabled "
+            "template) or inject a provider registry explicitly",
+        )
+    try:
+        config = get_provider_adapter_config(config_path, provider_adapter)
+    except KeyError as exc:
+        raise CompileError(
+            "EXEC-ADAPTER-UNKNOWN", str(exc)
+        ) from exc
+    try:
+        provider = build_live_provider(config, model=model)
+    except ValueError as exc:
+        message = str(exc)
+        if "disabled" in message:
+            raise CompileError(
+                "EXEC-ADAPTER-DISABLED",
+                f"adapter {provider_adapter!r} is disabled in {config_path}; "
+                "enable it in a local copy, not the committed template",
+            ) from exc
+        raise CompileError("EXEC-PROVIDER-INVALID", message) from exc
+    registry = ProviderRegistry()
+    registry.register(provider_adapter, provider)
+    return registry
 
 
 def utc_now() -> str:
@@ -82,6 +117,7 @@ def execute_task(
     protocol_path: str,
     policy: ExecutionPolicy = ExecutionPolicy(),
     provider_registry: ProviderRegistry | None = None,
+    provider_config_path: str | None = None,
     base_state_path: str | None = None,
     now: Callable[[], str] = utc_now,
     dry_run: bool = False,
@@ -111,7 +147,11 @@ def execute_task(
             closeout=resumed,
             main_state_path=_main_state_path(compiled.attempt_id),
         )
-    registry = provider_registry or build_provider_registry(binding.provider_adapter)
+    registry = provider_registry or build_provider_registry(
+        binding.provider_adapter,
+        config_path=project_root / provider_config_path if provider_config_path else None,
+        model=binding.model,
+    )
     # Preflight the registry against the compiled request: model, capability,
     # and data-policy gaps block here with zero writes to the batch.
     registry.require(binding.provider_adapter, compiled.request)

@@ -136,6 +136,10 @@ rwb providers conformance `
 
 `.rwb/` 与 `runs/` 均被 Git 忽略。通过条件：文本、Schema、指定工具调用三项均通过；失败时保留脱敏报告并降低/修正 capability snapshot，而不是添加兼容猜测。
 
+### P2.5：执行接缝（M6-004，分支 `agent/m6-004-live-provider-wiring`）
+
+`build_live_provider` 增加可选 `model` 覆盖：执行路径传入 pool 绑定的模型，保持 explicit-slot-only 的单一模型权威；conformance 路径保持从 `os.environ[model_env]` 读取。`build_provider_registry(adapter, config_path=..., model=...)` 经本地（git 忽略的）adapters 配置构造唯一 Provider 并按 adapter id 注册；不带配置仍显式阻断为 `EXEC-PROVIDER-NOT-CONFIGURED`。`rwb execute task --provider-config <本地配置> --from-environment` 打开 live 路径：凭据仍在出站边界由 `EnvironmentCredential` 延迟解析，不进入任何文件。真实调用顺序：先本节 conformance，通过后再执行一次受限 evidence Task，产物 receipts 必须能核对实际 Provider/Model。
+
 ### P3：有预算的隔离 API 会话内核（完成）
 
 已在 Adapter 之上新增独立 runner，限制最大模型轮次、工具调用数、单轮并行数、单工具输出大小、单轮输出、累计 token/可得成本和 wall time。工具调用需要本地声明和 handler，不接受模型临时发明工具；未知硬预算会安全暂停。Runner 每次从调用方提供的消息开始，不复用 provider response ID，不自动 fallback。

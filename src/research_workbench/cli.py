@@ -536,6 +536,7 @@ def _execute_task(args: argparse.Namespace) -> int:
         pool_path=args.pool,
         environment=environment,
         protocol_path=args.protocol,
+        provider_config_path=args.provider_config,
         base_state_path=args.from_state,
         dry_run=args.dry_run,
     )
@@ -1234,6 +1235,10 @@ def build_parser() -> argparse.ArgumentParser:
         "--from-environment",
         action="store_true",
         help="read model variables from the real process environment (live path)",
+    )
+    execute_task_parser.add_argument(
+        "--provider-config",
+        help="local provider-adapter config with the adapter enabled (live path)",
     )
     execute_task_parser.add_argument("--dry-run", action="store_true")
     execute_task_parser.add_argument("--json", action="store_true")
