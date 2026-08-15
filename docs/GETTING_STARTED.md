@@ -2,7 +2,7 @@
 
 - 文档状态：面向首次使用者的当前实现指南
 - 适用版本：`0.1.x` 开发快照
-- 更新日期：2026-08-14
+- 更新日期：2026-08-15
 
 ## 1. 先说结论
 
@@ -518,10 +518,10 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 
 发布关键路径应保持克制：
 
-1. 先完成 Attempt Archive、实名 actor 与 Agent Trace 的手工 fixture/validator，使后续试验可以回放；
-2. 完成 `K-MS-1`：Mode 决策卡、6 个边界 fixtures、Task-to-Skill 选择矩阵和 accepted Skill 边界审计；
-3. 为同类任务比较 H1/H2 与内容读取扩展成本，删减没有改变决策的控制项；
-4. 对一个 triage candidate 作 reject/retain-reference/continue-trial 决定；
+1. 审计三个 accepted Skills，独立整理/重写最多两个明确候选，并冻结其 Tool capabilities；
+2. 完成 `K-MS-1` 的 Mode 决策卡、6–8 个边界 fixtures 和 Task-to-Mode/Skill/Tool 选择矩阵；
+3. 在真实 Agent forward test 前完成 Attempt Archive、实名 actor 与 Agent Trace 的手工 fixture/validator；
+4. 比较 with/without Skill、H1/H2 与内容读取扩展成本，删减没有改变决策的控制项；
 5. 黄毅独立推进 Task-to-API、恢复、自动 Trace 捕获和真实模型证据；路诚钺只消费正式脱敏工件；
 6. 同步确定 LICENSE 和完整项目 scaffold 方案；
 7. 再进入两个真实科研案例、M4 工件 promotion/复现和对照评估；
@@ -533,6 +533,7 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 
 - [文档导航](README.md)
 - [开发协作指南](DEVELOPMENT.md)
+- [路诚钺 Mode–Skill–Tool 分支计划](workstreams/chengyue-lu-mode-skill/README.md)
 - [项目章程](PROJECT_CHARTER.md)
 - [总体架构](ARCHITECTURE.md)
 - [Task 与 Handoff](modules/05-TASK_AND_HANDOFF.md)

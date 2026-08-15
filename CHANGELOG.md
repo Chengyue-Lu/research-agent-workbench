@@ -2,6 +2,24 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
+## 2026-08-15 — 路诚钺 Mode–Skill–Tool 分支计划
+
+### Changed
+
+- 当前分支顺序调整为：先审计 accepted Skills、独立整理/重写最多两个明确候选并定义 Tool capabilities，再完善 Mode/Skill/Tool 路由；Attempt Trace validator 保留为真实 forward test 的前置条件。
+- `handoff-integrity` 必须与 direct-tool/no-Skill 基线比较，不再因 accepted 状态默认保留 Skill wrapper。
+- 外部 Tool 在本分支只冻结 provider-neutral 能力、数据出口、副作用、失败、验证与调用规则；Adapter、凭据和 API 测试仍由黄毅负责。
+
+### Added
+
+- `docs/workstreams/chengyue-lu-mode-skill/`：以实名责任人命名的分支计划目录。
+- Skill 来源/许可、独立重写、渐进披露、首批候选队列和停止条件。
+- Mode–Skill–Tool 路由 Mermaid、Tool Capability Card、首批 Tool 能力和 8 个路由 fixture 规划。
+
+### Consolidated
+
+- 原 `docs/implementation/MODE_SKILL_WORKSTREAM_PLAN.md` 已并入新的实名分支计划目录，避免维护两份当前专项计划。
+
 ## 2026-08-14 — 实名责任、完整 Agent Trace 与文档归并
 
 ### Changed

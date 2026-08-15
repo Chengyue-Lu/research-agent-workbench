@@ -2,7 +2,7 @@
 
 状态：当前协作入口
 
-日期：2026-08-14
+日期：2026-08-15
 
 ## 1. 实名维护边界
 
@@ -21,14 +21,14 @@ Agent 不是责任主体。每个运行中的 Agent 使用稳定 `actor_id`，�
 
 路诚钺当前维护分支为 `agent/mode-skill-selection-baseline`，目标节点是 `K-MS-1 Mode–Skill Selection Baseline`：
 
-1. 为现有 Mode 建立 trigger、non-trigger、组合与歧义 fixtures；
-2. 建立 Task → Mode → capability → deterministic/no-Skill/Skill 的可解释选择矩阵；
-3. 审核三个 accepted Skills 的适用边界；
-4. 对一个 triage candidate 作证据化去留决定；
-5. 在相同 fixture 上比较 H0/H1/H2 和读取成本；
-6. 使用完整 Attempt Archive 留存 Agent 间实际传递内容，但只将紧凑 Handoff 加载回主上下文。
+1. 先审计、整理并在必要时独立重写少量明确可用的 Skills；
+2. 用候选反推 Mode 边界、Task → Mode → capability → Tool → no-Skill/Skill 的可解释选择矩阵；
+3. 明确外部 Tool capability、数据出口、副作用、失败和 Adapter 责任边界；
+4. 在真实 Agent forward test 前完成最小 Attempt Archive/Trace validator；
+5. 在相同 fixture 上比较 with/without Skill 与 H0/H1/H2 成本；
+6. 到达节点后做保留、拆分、降级和删除评审。
 
-达到上述节点后暂停评审，不批量新增 Mode/Skill，也不在此分支修改 API 实现。详细验收见 [Mode–Skill 实施计划](implementation/MODE_SKILL_WORKSTREAM_PLAN.md)，状态以[任务清单](TASKS.md)为准。
+达到上述节点后暂停评审，不批量新增 Mode/Skill/Tool，也不在此分支修改 API 实现。详细顺序见[路诚钺 Mode–Skill 分支计划](workstreams/chengyue-lu-mode-skill/README.md)，状态以[任务清单](TASKS.md)为准。
 
 ## 3. 开始一个开发 Task
 

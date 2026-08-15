@@ -76,12 +76,16 @@ rwb skills audit-archive <archive-path> `
 
 ## 4. 首轮判断
 
+截至 2026-08-15，本分支先审计三个 accepted Skills，再同时维护最多两个新 candidate packages。详细顺序见[路诚钺 Mode–Skill 分支计划](../workstreams/chengyue-lu-mode-skill/README.md)。
+
 首轮优先推进：
 
-- `experiment-design`：提炼成实验模式下的最小设计 Skill，保留随机化/功效/DoE 的确定性脚本，但需要统计假设审查。
-- `papercheck`：优先提取引用定位与 Claim-Source 的确定性检查，语义正确性不由脚本宣布。
 - 本项目派生的 `claim-preserving-rewrite`：已在非发现路径实现最小 Skill 和数字、引用、否定、证据强度、因果措辞的表层确定性 Gate；仍须通过真实 with/without 与语义漂移评估后才能进入 `trial`。
-- K-Dense `citation-management` 与 lingzhi `backward-traceability`：先做逐文件许可、网络和脚本审计。
+- `papercheck`、K-Dense `citation-management` 与 lingzhi `backward-traceability`：先审计许可/脚本，只从问题定义独立设计最小 citation/claim locator；语义正确性不由脚本宣布。
+
+延后：
+
+- `experiment-design`：等待真实 experiment Task、Mode 准入证据和统计方法审查；不因已有候选就先建空 Mode。
 
 只作参考：
 
@@ -97,7 +101,7 @@ rwb skills audit-archive <archive-path> `
 
 继续 triage：
 
-- `giiisp-paper-search-apis` 的请求规划、失败分类和结果归一化可以提炼；外部数据出口必须经过 provider-neutral Tool Adapter 与 Data Policy 协商，不能默认绑定该服务。
+- `giiisp-paper-search-apis` 的请求规划、失败分类和结果归一化可以提炼为 provider-neutral Tool capability；外部数据出口必须经过 Data Policy 协商，不能默认绑定该服务，也不在本分支实现 API Adapter。
 
 隔离或排除：
 

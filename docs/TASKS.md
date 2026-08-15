@@ -40,7 +40,7 @@
 | M2-004 | IN_PROGRESS | 创建 simulation-vv Skill | M2-001 | V&V 结构、版本锁和 Claim ceiling 正反例通过；真实数值案例待执行 |
 | M2-005 | DONE | 创建 handoff-integrity 检查 | M1 | 确定性脚本已验证 Task/input/Skill/artifact 交接边界，不宣称科学正确性 |
 | M2-006 | PARKED | 扩展 Codex Runtime Adapter | M2-002..005 | 已有 Agent/Skill 发现、验证和显式 dispatch 保留；平台 launch/collect 不在当前 Mode–Skill 关键路径 |
-| M2-007 | IN_PROGRESS | 执行首个双 Skill 垂直切片 | M7-002..006 | 离线契约切片已证明 Skills 不同；路诚钺先完成 Mode/Skill 选择、读取计划和 H1/H2 成本基线，真实执行证据由黄毅负责的执行工作流提供 |
+| M2-007 | IN_PROGRESS | 执行首个双 Skill 垂直切片 | M7-002..006, M7-008 | 离线契约切片已证明 Skills 不同；路诚钺先完成 Skill 整理、Mode/Skill/Tool 选择、读取计划和 H1/H2 成本基线，真实执行证据由黄毅负责的执行工作流提供 |
 | M2-008 | IN_PROGRESS | 建立外部 Skill 发现、隔离评估与准入 Registry | M1 | ZIP 审计、18/18 追溯、非发现候选和 provider-neutral 双臂评估契约/CLI 已落地；fixture 会被正确阻断，真实 with/without 与 trial/accepted 仍待完成 |
 
 ## M3：上下文与风险
@@ -93,11 +93,12 @@
 |---|---|---|---|---|
 | M7-001 | DONE | 冻结实名 owner、受控读取与分级 Handoff 文档策略 | M2, M3 | 路诚钺/黄毅职责、ADR-0011/0012、架构图和开发入口一致 |
 | M7-002 | IN_PROGRESS | 建立现有 Mode 决策卡与边界 fixtures | M1-003 | evidence/simulation 具有 trigger、non-trigger、组合、歧义和 no-Mode 样本 |
-| M7-003 | READY | 建立 Task-to-Skill 选择矩阵 | M2-001 | 可解释 no-Skill、accepted Skill、拆 Task 和 Human Gate；排除理由可重放 |
-| M7-004 | READY | 审计三个 accepted Skills 的 trigger/non-trigger | M7-002..003 | 每个 Skill 有适用、边界、不适用和删除条件 |
-| M7-005 | READY | 对一个 triage candidate 作证据化去留决定 | M2-008, M7-003 | 产出 reject/retain-reference/continue-trial，不自动 accepted |
+| M7-003 | READY | 建立 Task-to-Mode/Skill/Tool 选择矩阵 | M7-002, M7-004, M7-008 | 可解释 tool-only/no-Skill、accepted Skill、拆 Task、capability gap 和 Human Gate；排除理由可重放 |
+| M7-004 | IN_PROGRESS | 审计、整理并必要时修订三个 accepted Skills | M2-001 | 每个 Skill 有 trigger/non-trigger、Tool/权限、direct-tool 基线和 retain/revise/deprecate 结论 |
+| M7-005 | READY | 独立整理/重写最多两个候选并作证据化去留决定 | M2-008, M7-004 | 不复制未知许可实现；至少一个候选产出 reject/retain-reference/continue-trial，不自动 accepted |
 | M7-006 | READY | 建立 H0/H1/H2 与内容读取成本对照 | M3-008, M7-002 | 通过 Attempt Archive 记录消息/工件数、字符、审阅、回查、遗漏、返工、读取扩展和 capture gap |
 | M7-007 | PARKED | 新增 experiment/theory/observational/engineering Mode | 真实案例 + Mode 准入卡 | 证明现有 Mode 组合不足后逐个启用 |
+| M7-008 | READY | 建立首批 Tool capability cards 与调用边界 | M1-008, M7-004 | 至少覆盖 document-read、citation-resolve、literature-search、bounded-compute、project-cli；数据出口、副作用、失败、验证和 Adapter owner 明确，不实现 API |
 
 ## GitHub 执行入口
 
@@ -113,4 +114,4 @@ M1 已建立里程碑与首批可执行 Issues：
 
 ## 当前下一任务
 
-当前关键路径是 `M3-007..008 → M7-002..006 / K-MS-1`：先让每次 Agent 试验能够用实名 actor 和 Attempt Archive 完整留痕，再为现有两个 Mode 建立边界 fixtures，形成 Task-to-Skill 选择矩阵，审计 accepted Skills，处理一个 triage candidate，并为每个任务给出内容允许集与 H0/H1/H2。到达可解释、可回放、可删减的选择基线后暂停评审；路诚钺不在本分支补 API、Provider、模型或 live conformance。
+当前关键路径是 `M7-004 → M7-005/M7-008 → M7-002/003 → M3-007/008 → M7-006 / K-MS-1`：先审计现有 Skills、独立整理/重写最多两个候选并冻结 Tool 能力，再完善 Mode/Skill/Tool 路由。真实 Agent forward test 前补齐 Attempt Trace validator，最后比较 with/without Skill 与 H0/H1/H2。到达可解释、可回放、可删减的选择基线后暂停评审；路诚钺不在本分支补 API、Provider、模型或 live conformance。详细计划见[路诚钺 Mode–Skill 分支计划](workstreams/chengyue-lu-mode-skill/README.md)。

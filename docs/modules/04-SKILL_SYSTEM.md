@@ -202,4 +202,4 @@ Skill 若要求超出上层边界的动作，Resolver 必须阻断或裁剪，�
 
 独立派生但尚未准入的实现放在 `skill-lab/candidates/`。该路径不是平台 Skill 发现路径，也不进入 accepted Registry；它用于保存短指令、确定性脚本、fixtures、内容/包哈希和 with/without 评估证据。首个包 `claim-preserving-rewrite` 只验证数字、引用、否定、证据强度、因果措辞与显式保护词等表层不变量，并明确不宣称语义或科学等价。
 
-截至 2026-08-14，路诚钺的下一工作不是扩大 accepted 数量，而是完成 Task-to-Skill 选择矩阵：先判断确定性工具/no-Skill 是否足够，再比较 accepted candidates；歧义时拆 Task 或进入 Human Gate。候选优先级、停止点和黄毅负责的 API 边界见 [Mode–Skill 工作流计划](../implementation/MODE_SKILL_WORKSTREAM_PLAN.md)。
+截至 2026-08-15，路诚钺的下一工作不是扩大 accepted 数量，而是先审计现有 Skills、独立整理/重写少量候选并明确所需 Tool capabilities，再完成 Task-to-Mode/Skill/Tool 选择矩阵。确定性 Tool/no-Skill 足够时不加载 Skill；歧义时拆 Task或进入 Human Gate。候选优先级、停止点和黄毅负责的 API 边界见[路诚钺 Mode–Skill 分支计划](../workstreams/chengyue-lu-mode-skill/README.md)。

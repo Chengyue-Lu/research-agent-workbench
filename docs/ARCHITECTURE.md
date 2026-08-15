@@ -4,7 +4,7 @@
 
 状态：实施基线
 
-日期：2026-08-14
+日期：2026-08-15
 
 ## 1. 架构结论
 
@@ -313,4 +313,4 @@ Codex、OpenCode、Claude Code 或其他平台可以把同一个已解析 Task �
 
 ## 12. 文档与实施关系
 
-本文件定义稳定关系和不变量；模块文件定义各自的职责、接口、风险和验收；[开发协作指南](DEVELOPMENT.md)定义实名维护边界与运行纪律；[Mode–Skill 计划](implementation/MODE_SKILL_WORKSTREAM_PLAN.md)定义路诚钺的下一节点；[任务清单](TASKS.md)是当前执行状态的唯一入口。软件交付阶段不是研究工作的强制顺序。
+本文件定义稳定关系和不变量；模块文件定义各自的职责、接口、风险和验收；[开发协作指南](DEVELOPMENT.md)定义实名维护边界与运行纪律；[路诚钺分支计划](workstreams/chengyue-lu-mode-skill/README.md)定义当前 Mode–Skill–Tool 实施顺序；[任务清单](TASKS.md)是当前执行状态的唯一入口。软件交付阶段不是研究工作的强制顺序。

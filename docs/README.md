@@ -8,7 +8,7 @@
 |---|---|---|
 | 第一次了解项目 | [项目章程](PROJECT_CHARTER.md) | [总体架构](ARCHITECTURE.md)、[使用指南](GETTING_STARTED.md) |
 | 接手当前开发 | [开发协作指南](DEVELOPMENT.md) | [任务清单](TASKS.md)、Task 指向的专项计划 |
-| 修改 Mode 或 Skill | [Mode–Skill 实施计划](implementation/MODE_SKILL_WORKSTREAM_PLAN.md) | [Mode 模块](modules/02-PROTOCOL_AND_MODES.md)、[Skill 模块](modules/04-SKILL_SYSTEM.md) |
+| 修改 Mode、Skill 或 Tool 选择 | [路诚钺分支计划](workstreams/chengyue-lu-mode-skill/README.md) | [Mode 模块](modules/02-PROTOCOL_AND_MODES.md)、[Skill 模块](modules/04-SKILL_SYSTEM.md)、[Tool 模块](modules/09-ADAPTERS_AND_INTEGRATIONS.md) |
 | 修改 Agent、Task 或上下文 | [Task 与 Handoff](modules/05-TASK_AND_HANDOFF.md) | [上下文治理](modules/06-CONTEXT_GOVERNANCE.md)、[工件与溯源](modules/07-ARTIFACTS_AND_PROVENANCE.md) |
 | 修改 API 执行 | [开发协作指南](DEVELOPMENT.md) | [Provider 计划](implementation/PROVIDER_ADAPTER_PLAN.md)、相关 ADR；该范围由黄毅维护 |
 | 查询当前状态 | [任务清单](TASKS.md) | 对应分支、Issue 和 Attempt Archive |
@@ -22,6 +22,7 @@
 - `GETTING_STARTED.md`：面向首次使用者的顺序式指南。
 - `modules/`：模块契约、风险和验收条件；只在 Task 涉及时读取。
 - `implementation/`：仍在推进的专项计划，不承担全局状态记录。
+- `workstreams/`：以实名责任人命名的当前分支计划；只描述本分支范围、顺序和停止点。
 - `decisions/`：已经作出的架构决定及其理由，不作为当前任务清单。
 - `references/`：外部材料吸收记录，不是运行时指令。
 - `templates/`：任务运行档案和其他可复制模板。

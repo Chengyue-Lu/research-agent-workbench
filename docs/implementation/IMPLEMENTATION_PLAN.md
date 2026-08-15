@@ -1,10 +1,10 @@
 # 完整实施计划
 
-版本：0.6
+版本：0.7
 
 状态：执行中
 
-日期：2026-08-14
+日期：2026-08-15
 
 ## 1. 实施总则
 
@@ -252,9 +252,9 @@ rwb context checkpoint
 
 ## 11. M7：Mode–Skill 选择基线
 
-路诚钺的下一关键节点为 `K-MS-1`：先冻结实名 actor、Attempt Archive 与 Agent Trace fixture，再用现有 `evidence-synthesis` 与 `simulation` 建立 Mode 决策卡、6 个边界 Task fixtures、Task-to-Skill 选择矩阵、三个 accepted Skills 的适用性审计、一个 triage candidate 的去留决定，以及 H0/H1/H2 和内容读取成本对照。
+路诚钺的下一关键节点为 `K-MS-1`：先审计三个 accepted Skills，独立整理/重写最多两个候选，并定义它们需要的 Tool capabilities；再用现有 `evidence-synthesis` 与 `simulation` 建立 Mode 决策卡、6–8 个边界 Task fixtures 和 Task-to-Mode/Skill/Tool 选择矩阵。实名 actor、Attempt Archive 与 Agent Trace fixture 必须在真实 forward test 前完成，随后再比较 with/without Skill 与 H0/H1/H2 成本。
 
-完成后暂停评审。不得为了“覆盖完整”批量新增 Mode/Skill，也不得在本分支修改 API 执行实现。详细阶段和停止点见 [Mode–Skill 工作流计划](MODE_SKILL_WORKSTREAM_PLAN.md)。
+完成后暂停评审。不得为了“覆盖完整”批量新增 Mode/Skill/Tool，也不得在本分支修改 API 执行实现。详细阶段和停止点见[路诚钺 Mode–Skill 分支计划](../workstreams/chengyue-lu-mode-skill/README.md)。
 
 ## 12. 开发分支与提交策略
 
