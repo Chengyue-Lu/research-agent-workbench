@@ -1,10 +1,10 @@
 # 完整实施计划
 
-版本：0.5
+版本：0.6
 
 状态：执行中
 
-日期：2026-08-13
+日期：2026-08-14
 
 ## 1. 实施总则
 
@@ -22,7 +22,7 @@
 - YAML 作为主要人类编辑格式，JSON 作为交换/校验格式；
 - `argparse` 提供本地 CLI；
 - `unittest` 提供首轮测试；
-- PyYAML 与 jsonschema 是当前两个运行依赖；
+- PyYAML、jsonschema 与 RFC3339 validator 是当前运行依赖；
 - SHA-256 和 Git 提供首版版本/内容引用；
 - `.agents/skills` 提供跨平台 Skill 布局，纯 API fresh session 提供可移植执行基线；
 - `.codex/agents` 是已有的可选 Codex 映射，不代表最终平台选择；
@@ -43,6 +43,7 @@
 | M4 | 工件、Run 与可复现性 | Claim 可定位、Run 可重建 |
 | M5 | 两个真实案例与删减 | 与单 Agent 基线的净收益数据 |
 | M6 | API-first 执行与按需扩展 | 显式模型槽、隔离 API 会话、可选平台适配 |
+| M7 | Mode–Skill 选择与协调成本 | 模式决策卡、Skill 选择矩阵、受控读取与分级 Handoff |
 
 ## 4. M0：架构与项目基线
 
@@ -116,7 +117,7 @@ rwb context checkpoint
 ### 实现内容
 
 1. 建立 Skill Registry 与 Resolver。
-2. 建立 provider-neutral Model Port、显式模型槽和隔离 API Session；Codex Runtime Adapter 作为可选映射保留。
+2. 消费 provider-neutral 执行接口；具体 Model Port、模型槽和隔离 API Session 由黄毅维护。
 3. 创建 Agent Profiles：
    - `coordinator`
    - `evidence-scout`
@@ -126,11 +127,11 @@ rwb context checkpoint
    - `literature-evidence-extraction`
    - `simulation-vv`
    - `handoff-integrity`（优先脚本化）
-5. 为纯 API fresh session 生成最小执行输入；可选生成或验证 `.codex/agents/*.toml`。
+5. 生成与运行时无关的最小执行输入、内容允许集和 Handoff 等级；执行工作流负责映射到 API 或可选平台。
 6. 以 Task Packet 显式点名 required Skills。
 7. 记录 Skill lock、实际工具、Provider/Model、Runtime snapshot（若有）和 Handoff。
 
-截至 2026-08-14，Registry、Profiles、Skills、显式绑定和 Codex 可选映射均已有确定性契约。`K-API-2` 已把一个合成 evidence Task 经由冻结合同、最小请求编译、fresh API session 和 commit-last closeout 跑通离线文件闭环；这仍不是第二种 Skill 的真实隔离执行，也不是实际科研案例，因此 M2 尚未退出。
+截至 2026-08-15，Registry、Profiles、Skills、显式绑定和 Codex 可选映射均已有确定性契约；API 工作在 `K-API-1` 之上完成了明确 H2 evidence Task 的 fake-local 文件关闭切片，并由黄毅继续维护。该切片不覆盖普通 H1 closeout 或自动 Agent Trace。路诚钺尚缺 Mode 决策卡、Task-to-Skill 选择矩阵、accepted Skill 边界审计和真实增量价值，因此 M2 尚未退出。
 
 ### 路由测试矩阵
 
@@ -142,7 +143,7 @@ rwb context checkpoint
 
 ### 退出条件
 
-- 至少两次真实隔离子任务执行，Skill 集不同；首条走纯 API，平台路径只在需要时对照；
+- 至少两类 Task 得到不同、可解释的 Skill 选择；真实执行可由外部执行工作流提供；
 - required Skill 缺失或版本漂移会阻断；
 - 主 Agent只读取 Handoff 与索引即可决定下一步；
 - 子 Agent不能越过 Profile/Task 权限；
@@ -155,7 +156,7 @@ rwb context checkpoint
 
 验证主 Agent克制、子 Agent压缩容忍和主动 rollover。
 
-截至 2026-08-14，已实现 Context Snapshot、Execution Receipt、规范化 Main State digest，以及 `context assess/checkpoint/resume-check` 和 `execution assess`。Transfer Manifest/Audit 会把压缩前条目、来源哈希、Handoff locator、负面区段与风险触发抽查绑定到 Context Snapshot 和 Receipt。随后根据 CCRML 讨论补入 Atomic Work Unit、动态 next-AWU/closeout/reserve 预算、`safe-paused`/`waiting`、机器验证完成权、机器状态哈希与 Git 恢复冲突；这些语义复用现有工件，不新增 SQLite 或运行时。`K-API-2` 又用 fake Provider 和 fresh Python 子进程证明了不依赖 transcript 的最小文件恢复；它只证明合成 fixture 的结构闭环，不证明真实 API/主会话恢复、科学正确、完整语义等价、人工抽样或真实 token/时间采集，见 [ADR-0008](../decisions/0008-HANDOFF-TRANSFER-AUDIT.md)、[ADR-0009](../decisions/0009-FILE-FIRST-CONTINUITY-AND-SAFE-PAUSE.md)与[ADR-0010](../decisions/0010-API-FIRST-ISOLATED-EXECUTION.md)。
+截至 2026-08-15，已实现 Context Snapshot、Execution Receipt、规范化 Main State digest，以及 `context assess/checkpoint/resume-check` 和 `execution assess`。Transfer Manifest/Audit 能支持高风险或压缩后的 H2 交接，但普通任务改以 H1 Compact Handoff 为默认；后续必须比较两者的实际遗漏、回查、返工与审阅成本。API 工作流已用 fake-local H2 fixture 证明 Main State 最后提交、防重放和 fresh Python 子进程文件恢复，但没有证明真实新主模型会话，也没有自动生成完整 Attempt Archive/Agent Trace。所有 H1/H2 Agent 间可见传递都应进入 Attempt Archive，完整 Trace 与主上下文加载解耦。真实执行、用量和执行端捕获由黄毅提供；路诚钺负责实名 actor、读取边界、Handoff/Trace 分级与结果评估，见 [ADR-0008](../decisions/0008-HANDOFF-TRANSFER-AUDIT.md)、[ADR-0009](../decisions/0009-FILE-FIRST-CONTINUITY-AND-SAFE-PAUSE.md)、[ADR-0011](../decisions/0011-RISK-TIERED-HANDOFF-AND-CONTROLLED-READS.md)与[ADR-0012](../decisions/0012-NAMED-OWNERSHIP-AND-REPLAYABLE-AGENT-TRACE.md)。
 
 ### 实现内容
 
@@ -233,11 +234,10 @@ rwb context checkpoint
 - 研究者愿意在下一任务继续使用；
 - 若净收益不足，明确停止而不是增加 Agent。
 
-## 10. M6：谨慎扩展
+## 10. M6：API 执行与谨慎扩展（黄毅维护）
 
 核心科研能力仍应在 M5 通过后按需求扩展；但为保证平台可替换性，API-first 执行缝已按明确需求提前实现：
 
-- 新 Mode（experiment、theory、observational-statistics）；
 - Zotero/PaperQA2 Tool Adapter；
 - DVC 或 MLflow；
 - Quarto/Jupyter 报告；
@@ -246,11 +246,17 @@ rwb context checkpoint
 
 新增项必须有真实消费者、预算、测试和退出条件。不得一次引入两个功能重叠的重量级工具。
 
-当前已完成三家非流式 Adapter、ToolChoice、本地工具参数校验、延迟凭据解析、非秘密配置探测、脱敏 live conformance runner，以及 `explicit-slot-only` Model Pool 和有界 fresh API tool-loop runner。边界在请求前、调用边界和响应后检查；它不能中断正在进行的 Provider/工具调用。`max_parallel_tool_calls` 是每轮 fan-out 上限，客户端 handler 当前串行执行。不会继续铺更多提供商或构建复杂 Router。
+当前已完成三家非流式 Adapter、ToolChoice、本地工具参数校验、延迟凭据解析、非秘密配置探测、脱敏 live conformance runner、`explicit-slot-only` Model Pool、有界 fresh API tool-loop runner，以及明确 H2 evidence Task 的 fake-local 编译与文件关闭切片。不会继续铺更多提供商或构建复杂 Router；预算 guard 也不被描述为能取消 in-flight 调用。
 
-`K-API-2` 的离线最小节点已经达到并通过评审：合成 evidence Task 可编译到只读 fresh API 子会话；`completed` 固化 Attempt、Research Artifact、Transfer Manifest/Audit、Handoff、两个 Context Snapshot、Execution Receipt 与最后发布的 Main State，其他终态只固化控制/恢复所需文件，不伪造科研工件。删除内存 transcript 后，fresh Python 子进程可只凭文件得到唯一下一动作。Gate PASS 本身不授权真实 Windows worker、GUI、公开发布或平台选型；任何后续节点都需维护者明确决定。
+截至 2026-08-15，黄毅维护 Provider Adapter、Task-to-API、live conformance、执行端 Agent Trace 捕获和 API 专用测试。已完成的 H2 fake-local 切片冻结合同与输入字节、限制只读工具、区分 Adapter ID 与规范 Provider 身份、持久化五种终态，并以 commit-last 与执行 intent 防止同 Attempt 静默重放；普通 H1/risk-tier closeout、自动 Trace、真实 Provider/Windows 和科研正确性仍未证明。路诚钺只维护冻结的 Mode、Skill Assignment、内容允许集、输出/Handoff/Trace 契约和评估接口；M6 不阻塞路诚钺的里程碑。
 
-## 11. 开发分支与提交策略
+## 11. M7：Mode–Skill 选择基线
+
+路诚钺的下一关键节点为 `K-MS-1`：先冻结实名 actor、Attempt Archive 与 Agent Trace fixture，再用现有 `evidence-synthesis` 与 `simulation` 建立 Mode 决策卡、6 个边界 Task fixtures、Task-to-Skill 选择矩阵、三个 accepted Skills 的适用性审计、一个 triage candidate 的去留决定，以及 H0/H1/H2 和内容读取成本对照。
+
+完成后暂停评审。不得为了“覆盖完整”批量新增 Mode/Skill，也不得在本分支修改 API 执行实现。详细阶段和停止点见 [Mode–Skill 工作流计划](MODE_SKILL_WORKSTREAM_PLAN.md)。
+
+## 12. 开发分支与提交策略
 
 - 默认分支 `main` 保持可读、可验证；
 - 每个里程碑或小型垂直切片使用 `agent/<description>` 分支；
@@ -259,7 +265,7 @@ rwb context checkpoint
 - 不把生成的运行数据、原始论文或敏感项目工件提交到框架仓库；
 - 里程碑结束创建版本标签，早期使用 `v0.x`。
 
-## 12. 停止和回退条件
+## 13. 停止和回退条件
 
 暂停扩展并重新评审，如果：
 

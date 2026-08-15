@@ -35,6 +35,8 @@ research-agent-workbench/
 │   ├── fixtures/
 │   └── evals/
 └── docs/
+    ├── README.md                   # 按目的选择最小阅读集
+    ├── DEVELOPMENT.md             # 实名责任、协作与当前入口
     ├── ARCHITECTURE.md
     ├── PROJECT_CHARTER.md
     ├── TASKS.md
@@ -55,6 +57,7 @@ research-agent-workbench/
 - `.codex/agents` 只是可选平台配置，不是 canonical Agent Profile 的唯一来源。
 - `examples` 只使用合成/公开数据，不提交研究者私有材料。
 - 项目实例与框架仓库分开；框架仓库不积累真实项目 raw/runs。
+- 真实项目在自己的 `work/<task>/<attempt>/` 保存 Attempt Archive；框架仓库只提交脱敏 fixture，不默认保存真实 Agent Trace。
 
 ## 4. 为什么不先创建所有目录
 

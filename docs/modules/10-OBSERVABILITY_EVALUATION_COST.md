@@ -9,7 +9,10 @@
 每个 Attempt 记录：
 
 - Task、Agent Profile、Skill Assignment 和 Runtime snapshot；
+- actor_id 与实名 accountable owner；
 - 开始/结束时间、状态、重试原因；
+- Agent 间每条可见消息的 ID、类型、发送/接收者、时间、内容哈希和附件引用；
+- 可观察的正文读取、工具/命令、文件 revision、外部副作用和状态事件；
 - 输入/输出工件引用；
 - token/调用/工具执行等平台可获得成本；
 - deterministic checks；
@@ -17,7 +20,7 @@
 - Handoff 被接受、修改、拒绝或废弃；
 - 敏感 trace 是否关闭或脱敏。
 
-不默认保存完整 prompt、Chain-of-Thought 或原始工具输出副本。
+不保存隐藏 prompt 或 Chain-of-Thought，也不重复复制已经有不可变路径与哈希的工具输出；但实际发送给另一个 Agent 的可见 payload、运行时可观察的调用元数据，以及进入 Agent 上下文却没有稳定来源的瞬时工具结果必须进入 Attempt Archive。
 
 当前 `Execution Receipt` 将上述信息收敛为平台中立文件，并与 Attempt、Agent Profile、Skill Assignment、Context Snapshot 和 Handoff 双向关联。`model_usage_status` 必须是 `measured`、`estimated`、`unavailable` 或 `not-applicable`；未知成本不允许伪装成零。Receipt 的 `status` 是执行生命周期；只有显式的 `completion_claim: contract-satisfied` 才声明结果通过 Task 合同，避免把负对照的“执行完成”误写成“验证通过”。
 
@@ -47,6 +50,8 @@
 - Pinned State 大小与增长率；
 - Skill 正文加载量；
 - 因摘要失真导致的返工次数。
+- Trace capture gap、延迟归档、未声明删减和越界回读次数。
+- event ledger 中越界读取/工具调用、未保存瞬时结果和过程产物覆盖次数。
 
 ## 5. 成本指标
 
@@ -66,6 +71,8 @@
 协调比例优先使用 `coordination_tokens / (coordination_tokens + execution_tokens)`；token 不可得时才使用对应时间比例。两个基准都不可得时产生 unknown 警告，不合成跨单位总分。
 
 Handoff 语义复核不默认扩大为全文复核。只有 Task 明确要求或 Transfer Manifest 出现关键/高风险条目时才计入最小抽样；若抽样成本持续高而并未改变接受、返工或升级决定，应缩减字段或触发条件，而不是常驻一个 reviewer Agent。
+
+Handoff 成本对照按 H0/H1/H2 分组，至少记录工件数、总字符、生成时间、审阅时间、主 Agent 回查次数、限制遗漏与返工。内容读取另记录初始允许集、范围扩展次数、实际使用的新输入和无关读取。目的不是追求零读取或最短 Handoff，而是确认额外控制确实改变了决策或降低了错误。
 
 ## 6. 对照评估
 
@@ -95,14 +102,19 @@ Skill 的价值由任务成功、错误率、上下文成本和结果采纳率�
 
 ## 8. Trace 政策
 
-Tracing 用于定位 handoff、工具、guardrail 和成本问题，但不是科研证据本身。默认策略：
+Trace 分为两类：核心协作 Trace 保存实际 Agent 传递、可观察的读取/工具/文件事件、Decision、Handoff 和过程产物，是可恢复性与排障所必需；可选运行遥测记录 token 级、内部调试或平台细节。两者都不是科研证据本身。
 
-- 本地开发允许最小 trace；
+默认策略：
+
+- 核心协作 Trace 对每个跨 Agent Attempt 必须存在；
+- 可选遥测只在有明确调试或评估消费方时开启；
 - 敏感项目关闭外部 trace 或先脱敏；
 - trace 有保留期限；
 - 正式事实必须提升为工件；
-- 没有调试消费方的 trace 不保存；
+- 没有调试消费方的可选遥测不保存；
 - trace 关闭不能破坏核心可追溯性。
+
+Trace 完整度不是越高越好。禁止通过记录隐藏推理、密钥或无界工具输出追求“全量”；也禁止用 Worklog 摘要替换已经发生的 Agent 间原始传递。
 
 ## 9. 反指标异化
 
@@ -119,5 +131,7 @@ Tracing 用于定位 handoff、工具、guardrail 和成本问题，但不是科
 - 能比较单 Agent 与多 Agent 的净收益；
 - 能识别上下文污染和 review loop 的真实成本；
 - trace 不包含不必要的敏感数据；
+- 任一跨 Agent Attempt 能检测消息序列缺口并定位到实名责任人；
+- 主 Agent 可以只加载 Handoff/索引而不加载完整消息正文；
 - 至少一个低价值机制因指标被删除或降级；
 - 评估结果能支持继续、修改或停止项目，而不是只支持扩张。

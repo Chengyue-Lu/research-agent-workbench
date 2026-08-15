@@ -1,8 +1,10 @@
 # 多提供商模型 API 实施计划
 
-状态：`K-API-2` 离线最小文件闭环 Gate 已通过；真实环境一致性验证待另行授权
+状态：`K-API-2` H2 fake-local 文件关闭切片完成；风险分级、自动 Trace 与 live 证据待完成
 
 日期：2026-08-15
+
+维护边界：黄毅负责本计划的 Provider Adapter、API session、live conformance、自动 Trace 捕获和相关测试。路诚钺只消费公开的 Task/Assignment/Handoff/Receipt/Trace 接口和脱敏执行证据。共享接口变更按 [开发协作指南](../DEVELOPMENT.md)由两人共同确认。
 
 ## 1. 目标与边界
 
@@ -10,9 +12,8 @@
 
 ```mermaid
 flowchart LR
-  Task["Frozen Protocol / Task / Profile / Assignment"] --> Slot["Explicit Model Slot"]
-  Slot --> Compile["Pure request / limits / tool compiler"]
-  Compile --> Port["Provider-neutral ModelRequest"]
+  Task["Task / Skill Assignment"] --> Slot["Explicit Model Slot"]
+  Slot --> Port["Provider-neutral ModelRequest"]
   Port --> Gate["Model + Capability + DataPolicy preflight"]
   Gate --> OA["OpenAI Responses Adapter"]
   Gate --> AN["Anthropic Messages Adapter"]
@@ -20,8 +21,7 @@ flowchart LR
   OA --> Result["ModelResponse + Usage + Warnings"]
   AN --> Result
   GE --> Result
-  Result --> Closeout["Validate + commit-last closeout"]
-  Closeout --> Receipt["Attempt / Artifacts / Handoff / Receipt / Main State"]
+  Result --> Receipt["Execution Receipt / Handoff"]
 ```
 
 提供商选择属于执行策略；研究对象和 Claim 不保存 SDK 对象或路由状态。模型池只有 `primary`、`worker` 和按需 specialist 等少量显式槽，不建设动态 Router。跨提供商 fallback 必须是上层的一次新 Attempt，并保留实际 provider/model/data policy，不能在 Adapter 内静默完成。
@@ -33,11 +33,14 @@ flowchart LR
 - `base.py`：共同 preflight、本地结构化校验和错误边界；
 - `openai.py`、`anthropic.py`、`gemini.py`：三套独立映射；
 - `configuration.py`：非秘密配置解析和存在性探测；
-- `conformance.py`：固定合成提示、请求上限/调用边界 guard 和脱敏报告的 live conformance runner；
+- `conformance.py`：固定合成提示、硬预算和脱敏报告的 live conformance runner；
 - `pool.py`：显式模型槽配置与延迟模型 ID 绑定，不做评分或自动选择；
 - `session.py`：fresh context 的 provider-neutral 有界工具循环，不保存跨 Attempt 会话；
+- `execution/compiler.py`：冻结 Task/Profile/Assignment/Skill/输入，把 H2 Task 编译为最小请求、限制与精确只读工具；
+- `execution/output.py`：把模型输出当作不可信数据，做 Schema、来源哈希、locator 和跨工件语义一致性预检；
+- `execution/pipeline.py` 与 `execution/closeout.py`：执行 intent、防重放、五终态、排他发布、Main State 最后提交和文件恢复；
 - `registry/providers/adapters.yaml`：禁用状态的环境变量引用模板；
-- `tests/test_provider_adapters.py`：官方响应形状的离线合同 fixture。
+- `tests/test_provider_adapters.py` 与 `tests/test_k_api_2_pipeline.py` 等：官方响应形状和 fake-local 文件闭环的离线合同 fixture。
 
 ## 3. 已实现的语义
 
@@ -138,13 +141,15 @@ rwb providers conformance `
 
 ### P3：有预算的隔离 API 会话内核（完成）
 
-已在 Adapter 之上新增独立 runner，限制最大模型轮次、工具调用数、每轮 fan-out、单工具输出大小、单轮输出、累计 token/可得成本和 wall time。工具调用需要本地声明和 handler，不接受模型临时发明工具；不可测 usage 会安全暂停。fan-out 当前由 handler 串行执行；这些限制在请求前、调用边界和响应后检查，不能取消已经在途的 Provider/工具调用。Runner 每次从调用方提供的消息开始，不复用 provider response ID，不自动 fallback。
+已在 Adapter 之上新增独立 runner，限制最大模型轮次、工具调用数、单轮并行数、单工具输出大小、单轮输出、累计 token/可得成本和 wall time。工具调用需要本地声明和 handler，不接受模型临时发明工具；未知硬预算会安全暂停。Runner 每次从调用方提供的消息开始，不复用 provider response ID，不自动 fallback。
 
-该阶段达到 `K-API-1`；随后 `K-API-2` 已增加冻结合同、Task/Skill Assignment 编译和文件 closeout，但仍只是 fake-local 的窄 Task 执行切片，不是通用或 live Task 执行器。
+该阶段达到 `K-API-1`，但还没有把 Task/Skill Assignment 自动编译为请求，也没有自动生成 Attempt/Execution Receipt，因此不是完整 Task 执行器。
 
-### P4：Task-to-API 文件闭环（离线最小节点 Gate 已通过）
+### P4：Task-to-API 文件闭环（API 工作流的 external 节点）
 
-已把已解析 Task、Agent Profile、Skill Assignment 和显式模型槽编译成最小初始消息与只读工具 allowlist。`completed` 写 Attempt、正式工件、Transfer Manifest/Audit、Handoff、Context Snapshot、Execution Receipt，并最后发布 Main State；其他终态只写控制/恢复文件，不伪造科研工件。closeout 是 commit-last 协议而非多文件事务。删除内存 transcript 后，fresh Python 子进程恢复检查可得到唯一下一动作。该证据不包含真实 API、真实 Windows worker、科学正确性或完整语义等价；离线 Gate 已通过，但进入 P2/M6-004 仍需维护者明确授权。
+当前已完成一条受限 H2 切片：`examples/task-evidence.yaml` 明确要求 Transfer Manifest；编译器冻结 Protocol、Task、Profile、Assignment、选中 Skill、输入和可选 previous Main State，只向模型提供引用/哈希与精确 `document-read`；runner 产生 `completed`、`safe-paused`、`incomplete`、`failed`、`blocked` 五种终态；closeout 采用执行 intent、排他发布和 Main State 最后提交，已提交或可验证 stage 的同 Attempt 重试不会重放 Provider。Adapter ID 与规范 Provider identity 分别用于 Registry 绑定和 capability/响应审计。
+
+该切片只接受 `handoff_policy.require_transfer_manifest: true` 的 H2 Task，并在不支持 H1/risk-tier closeout 时于 Provider 调用前 fail-closed。恢复验证是在删除临时 transcript 后，以显式 protocol、项目根和 Main State 引用启动 fresh Python 子进程；它不是已运行的真实主模型会话，也不是单文件自足恢复。普通 H1 closeout、全部可见 Agent 传递的 Attempt Archive/Agent Trace 自动捕获、真实 Provider/Windows conformance、科研语义等价与科学正确性仍未完成，因此 P4 的通用接口尚未关闭，`M6-004` 和 `M6-006` 不会由本切片自动启动。
 
 ### P5：按真实消费者扩展
 

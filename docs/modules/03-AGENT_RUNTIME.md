@@ -2,7 +2,7 @@
 
 ## 1. 目标
 
-定义主 Agent 与子 Agent 的职责、Agent Profile、委派条件和执行映射。项目以纯 API 新隔离会话作为可移植基线，同时允许 Codex、OpenCode 等平台 Adapter 复用原生能力；两条路径都不发展成通用 Agent 调度器。
+定义主 Agent 与子 Agent 的职责、Agent Profile、委派条件和执行映射。项目保持 API 与平台中立；黄毅维护 API session 及其测试，路诚钺维护进入任何执行路径之前的 Task、Mode、Skill、读取、Trace 和返回边界。
 
 ## 2. 主 Agent Charter
 
@@ -14,6 +14,7 @@
 - 比较 Handoff、处理冲突和识别 Human Gate；
 - 控制 Claim 强度、成本和停止时机；
 - 在上下文压力前写 Main State 并主动 rollover。
+- 给出目标路径和初始内容允许集；需要扩大正文读取范围时负责修订 Task。
 
 主 Agent 不负责：
 
@@ -22,6 +23,7 @@
 - 亲自完成所有检索、编程、仿真和复核；
 - 用自然语言摘要替代正式工件；
 - 默认建立多轮 Agent 互审。
+- 把“能访问工作区”解释为“可以读取全部仓库正文”。
 
 ## 3. Agent Profile
 
@@ -84,6 +86,8 @@ Profile 不包含完整 Skill 指令，也不固定厂商模型。`default_slot`
 - 子 Agent 产出无法形成独立工件；
 - 协调成本可能高于执行成本。
 
+委派后，子 Agent 可以先发现路径、文件名、大小、版本与哈希等元数据；读取允许集之外的正文必须请求扩展并记录原因。普通返回使用 H1 Compact Handoff；只有风险、压缩、外部副作用、promotion、争议或 Task 明确要求时才升级为 H2 审计链。
+
 ## 6. 递归委派
 
 默认 `max_delegation_depth: 1`。子 Agent 不得再创建子 Agent，除非 Task Packet 同时声明：
@@ -103,7 +107,7 @@ Profile 不包含完整 Skill 指令，也不固定厂商模型。`default_slot`
 - 每个子任务建立一个 fresh context，不继承主 Agent 的完整消息历史；
 - Protocol、Task、Profile、Skill Assignment 和可选 previous Main State 在 Provider 调用前按精确字节冻结并校验 Schema；
 - 纯编译边界只把冻结 Task、选中 Skill、输入引用、显式模型槽和各层权限/预算交集变成请求、限制与精确工具 handler；
-- `K-API-2` 当前只开放 hash-locked `document-read`，不注入主 Agent 全历史、未选 Skill 或预读的源正文；
+- `K-API-2` 当前 H2 fake-local 切片只开放 hash-locked `document-read`，不注入主 Agent 全历史、未选 Skill 或预读的源正文；
 - 工具循环在请求前、调用边界和响应后检查轮次、调用数、结果大小、token/成本与 wall time；它不能中断正在进行的 Provider/工具调用；
 - `max_parallel_tool_calls` 只是每轮 fan-out 上限，首版客户端 handler 串行执行；
 - provider/model 不满足能力或数据政策时阻断，不换槽、不换 Provider；
@@ -129,7 +133,7 @@ Profile 不包含完整 Skill 指令，也不固定厂商模型。`default_slot`
 | 输入版本变化 | 标记 `stale_input`，阻止合并 |
 | Skill 缺失或版本不符 | `BLOCK`，重新解析能力 |
 | 权限不足 | 返回 capability gap，不自动扩大权限 |
-| API 输出或科研工件契约不合格 | 当前 `K-API-2` 写 failed closeout；定向修复必须使用新 Attempt，不在原 Attempt 内自动重放 |
+| API 输出或科研工件契约不合格 | 当前 `K-API-2` H2 切片写 failed closeout；定向修复必须使用新 Attempt，不在原 Attempt 内自动重放 |
 | 结果冲突 | 并列保存，主 Agent提出可判别的下一步，不做多数投票 |
 | 写入冲突 | 阻止合并，重新划分 write scope |
 

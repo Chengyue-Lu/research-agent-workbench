@@ -124,6 +124,8 @@ Codex 等平台可以根据 description 隐式激活 Skill，但本项目分三�
 - 一个任务默认最多两个主 Skill和一个校验 Skill；
 - Skill 指令总量超预算时必须拆任务，不能压缩成含混“大综合 Skill”；
 - 频繁同时出现的一组 Skills 只有在真实数据证明稳定后才能形成 Bundle。
+- Agent 只能读取本次选中 Skill 的 `SKILL.md` 和其中为当前步骤显式引用的 references；不得借 Skill 发现递归读取其他候选 Skill 或整个 reference 树。
+- 对未选 Skill 只允许读取 Registry 元数据；需要比较正文时，应创建独立的 Skill 评估 Task，而不是在业务 Task 中临时展开。
 
 ## 8. 生命周期与供应链
 
@@ -199,3 +201,5 @@ Skill 若要求超出上层边界的动作，Resolver 必须阻断或裁剪，�
 外部来源继续保存在 `registry/skills/candidates.json`，不会因下载、发现或 `reference` 状态进入 accepted Registry。Codex 只在 dispatch 中显式调用本次 Assignment 的 `$skill-name`；未选择 Skill 的正文和 references 不进入任务上下文。
 
 独立派生但尚未准入的实现放在 `skill-lab/candidates/`。该路径不是平台 Skill 发现路径，也不进入 accepted Registry；它用于保存短指令、确定性脚本、fixtures、内容/包哈希和 with/without 评估证据。首个包 `claim-preserving-rewrite` 只验证数字、引用、否定、证据强度、因果措辞与显式保护词等表层不变量，并明确不宣称语义或科学等价。
+
+截至 2026-08-14，路诚钺的下一工作不是扩大 accepted 数量，而是完成 Task-to-Skill 选择矩阵：先判断确定性工具/no-Skill 是否足够，再比较 accepted candidates；歧义时拆 Task 或进入 Human Gate。候选优先级、停止点和黄毅负责的 API 边界见 [Mode–Skill 工作流计划](../implementation/MODE_SKILL_WORKSTREAM_PLAN.md)。

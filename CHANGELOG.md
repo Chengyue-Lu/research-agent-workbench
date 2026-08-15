@@ -2,35 +2,60 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
-## 2026-08-14 — K-API-2 离线最小文件闭环
+## 2026-08-15 — K-API-2 H2 fake-local 文件关闭切片
 
 ### Added
 
-- `research_workbench.execution` 的可信 Task-to-API 边界：Project Protocol、Task、Profile、Skill Assignment 和可选 previous Main State 在 Provider 前按精确字节捕获并做 canonical ref/Schema 校验；执行期漂移阻断 Main State 发布。
-- 只编译 Task 冻结输入、Assignment 选定 Skill、显式模型槽、权限/工具/data-policy/budget 交集的 `CompiledApiExecution`；主会话历史、未选 Skill 和原始 source 正文不会被预先注入 prompt。
-- 只读、哈希复验的 `document-read`，以及 Evidence source/hash、claim ceiling、locator 和 Transfer statement 的结构化输出校验。
-- commit-last closeout：stage/validate、逐文件排他发布、real-tree 复验和 Main State last；completed 生成 Research Artifacts 与 Manifest/Audit，非 completed 不伪造这些科研工件。
-- 持久 execution intent、精确 stage plan、已提交 bundle 检查和同 Attempt 并发互斥。完整 validated stage 可续发；执行已开始但 plan 尚未形成时返回结果未知并禁止自动重放。
-- fake-local K2 测试覆盖 completed、tool-failed、safe-paused、incomplete、stale/missing input、错误模型、无效/漂移合同、错误 Evidence hash、动态写权限、并发、关键 closeout 崩溃及 Main 提交窗口的输入/Skill/非 Main 文件漂移；fresh Python subprocess 可在无 transcript 时以 Main State 为入口校验项目文件树并执行 `resume-check`。
-- Task 输入以执行前捕获的精确字节写入 stage；每个发布文件由 stage plan 哈希锁定，并在发布 Main State 前重新核验真实合同、输入、Skill lock、非 Main 文件与 staged Main State。
-- staged/committed 重试绑定规范 Task/Attempt 输出路径与 optional previous Main State identity，并在任何续发写入前重新执行 write-scope/allowed-root 检查。
-- 最终离线验证为仓库全量 226 tests passed、K2 专项 92/92 passed（compiler 18、session 16、I/O 6、closeout 11、pipeline 41）、Registry validator 53/0/0；未执行真实 API。独立冻结字节复测由节点评审另行记录。
+- 新增 Task/Profile/Skill Assignment/显式模型槽到最小 API 请求、限制与精确 `document-read` handler 的纯编译边界；Protocol、合同、Skill、输入和 previous Main State 在 Provider 调用前按精确字节冻结。
+- 新增 `completed`、`safe-paused`、`incomplete`、`failed`、`blocked` 五种终态的文件关闭路径；成功路径生成研究工件、Manifest/Audit、Handoff、Snapshots、Receipt 和 Main State，非成功终态不伪造科研工件。
+- 新增执行 intent、可验证 stage 续发、排他发布、Main State 最后提交、已提交身份核验和 fresh Python 子进程恢复检查。
 
 ### Hardened
 
-- Provider Adapter ID 与规范 Provider identity 使用不同命名空间：前者用于 Registry/请求绑定，后者用于 capability/响应核验和 Receipt usage；错误 Provider/模型会在工具前阻断。负值、布尔值或非有限 usage/limit 不能绕过预算 guard。
-- `LENGTH`、`PAUSED` 与 `CONTEXT_LIMIT` 明确关闭为 `incomplete`，使用独立下一动作；已提交 Attempt 会从正式 Receipt 核对请求的 Adapter ID/模型，改变绑定不能命中幂等 fast path。
-- Skill 指令和 Task document-read 均对同一份捕获字节完成哈希与 UTF-8 解码；content-only Skill lock 不再隐式授权邻近 Markdown。
-- repository-relative path 拒绝 Windows drive-relative 形式，动态 artifact 路径按真实 `object_id` 复验 write scope/allowed roots，并拒绝 Windows reserved basenames。
-- 工具失败仅持久化本地调用序号、工具名和异常类型，不保存 Provider call/response ID 或异常正文。
+- 模型控制的 JSON、locator、object ID、Provider/Model identity、usage、动态输出路径和 contract/input/Skill 漂移均在完成宣称前 fail-closed；同 Attempt 不自动重放未知外部执行。
+- Provider Adapter ID 与规范 Provider identity 分离记录；预算文案明确为请求前、调用边界与响应后 guard，不宣称可取消 in-flight 调用。
 
-### Milestone and limits
+### Scope
 
-- `K-API-2 Offline Minimal File Loop Gate Passed`：2026-08-15 三路只读复审均给出 PASS，未发现阻断性 P0/P1；`M6-004` 仍为待维护者明确授权的真实 Windows 工作。
-- closeout 是 Main State last 的崩溃一致协议，不是跨文件事务；崩溃可留下未被权威 Main State 引用的孤立文件。
-- `max_parallel_tool_calls` 只是单轮 fan-out 上限，handler 当前串行。token/成本在响应后检查，wall time 在调用前后检查，均不能取消 in-flight 调用。
-- 当前只证明 fake-local、合成 source、临时目录和 fresh Python subprocess。没有执行真实 API，也未证明真实 Windows 主/子会话、外部写幂等、科研正确性、Transfer 语义等价或多 Agent 净收益。
-- 风险触发的 negative-result/conflict 等候选目前转为失败且不保留内容；mandatory semantic review 与中途 Provider 异常的 partial aggregate 仍未完整支持。
+- 当前实现只接受明确要求 Transfer Manifest 的 H2 evidence Task，并用 fake Provider/合成 fixture 验证；普通 H1/risk-tier closeout、完整 Attempt Archive/Agent Trace 自动捕获、真实 Provider/Windows、科研语义等价和科学正确性均未证明。
+- 主线已将当前唯一节点调整为 `K-MS-1`。本切片不恢复已归并的旧交接文档，也不授权启动 `M6-004` 或 `M6-006`。
+
+## 2026-08-14 — 实名责任、完整 Agent Trace 与文档归并
+
+### Changed
+
+- 维护责任改为实名：路诚钺负责 Mode/Skill、读取、Handoff/Trace 方法与评估；黄毅负责 API 执行实现、自动 Trace 捕获与测试；工作流名称不再替代审批主体。
+- Worklog 降为 Attempt Archive 的导航摘要。所有 Agent 间实际可见传递，以及运行时可观察的读取、工具/命令、文件 revision、结果和状态事件均要求留存。
+- 完整留存与上下文加载解耦：主 Agent 默认只读取 `INDEX.yaml` 与 Handoff，排障或评估时才按 message ID 回放原文。
+- 原 `CURRENT_HANDOFF.md`、`NEXT_STEPS.md` 和 `WORKSTREAM_OWNERSHIP.md` 合并为 `docs/DEVELOPMENT.md`、`docs/TASKS.md` 与 `docs/README.md`，减少当前状态的重复来源。
+
+### Added
+
+- ADR-0012：实名责任人与可回放 Agent Trace 决策。
+- Attempt Archive 目录、actor registry、消息信封、capture-gap、删减和保留规则。
+- 总体架构 Mermaid 图中的 Trace 写入、默认只读索引与实名维护关系。
+
+## 2026-08-14 — Mode–Skill 工作流接管与上下文简化
+
+### Changed
+
+- API Adapter、API session、Task-to-API、live conformance 与 API 测试由黄毅维护；路诚钺主线改为 Research Mode、Skill 选择/评估/准入和协调成本。
+- 当前下一节点从 `K-API-2` 调整为 `K-MS-1 Mode–Skill Selection Baseline`；API backlog 保留为共享仓库中的 external workstream。
+- Handoff 改为 H0/H1/H2 风险分级：普通子 Agent 默认只返回 Compact Handoff，完整 Manifest/Audit/Receipt 只在压缩、高风险、外部副作用、promotion、争议或明确策略下触发。
+- Agent 内容读取采用默认拒绝与逐级扩大：允许路径元数据发现，但未声明正文需先扩展 Task 允许集。
+
+### Added
+
+- `docs/WORKSTREAM_OWNERSHIP.md`：曾用于冻结工作流边界，现已归并到 `docs/DEVELOPMENT.md` 并改用实名责任。
+- ADR-0011：记录风险分级 Handoff、受控内容读取和简短工作留痕原则。
+- `docs/implementation/MODE_SKILL_WORKSTREAM_PLAN.md`：记录当前缺口、候选优先级、`K-MS-1` 验收和分支范围。
+- 更新总体架构 Mermaid 图，显示 Mode–Skill 决策、执行工作流、内容允许集、读取扩展和 H1/H2 返回关系。
+
+### Clarified
+
+- 正式 Mode 目前只有 evidence-synthesis 与 simulation；其他模式名称不是待批量补齐的承诺。
+- Worklog 记录基线、重要决定、范围变化、修改和验证；Agent 间实际可见传递另由 Attempt Archive 完整保存，仍不记录隐藏推理。
+- 流程简化仍是假设；后续必须比较 H1/H2 的工件数、字符、审阅、回查、遗漏和返工。
 
 ## 2026-08-13 — API-first 隔离执行关键节点
 
@@ -44,7 +69,7 @@
 
 - ADR-0010，冻结 API-first 隔离执行、平台可替换和小型模型池边界。
 - `ModelPool`/`ModelSlotConfig`：默认不读取环境，只按调用者指定槽位绑定一个 Provider/Model。
-- `IsolatedApiSessionRunner`：单 Attempt 内的 fresh context 工具循环，限制模型轮次、工具调用、单轮 fan-out、工具副作用类别、工具结果、单轮输出、累计 token/可得成本和 wall time；handler 当前串行。
+- `IsolatedApiSessionRunner`：单 Attempt 内的 fresh context 工具循环，限制模型轮次、工具调用、单轮并行、工具副作用类别、工具结果、单轮输出、累计 token/可得成本和 wall time。
 - `rwb models probe` 与禁用状态的 `registry/models/pool.example.yaml` 模板。
 - 离线测试覆盖显式槽位、禁用/未知槽、工具往返、data policy、预算暂停、工具结果不静默截断和无 Provider fallback。
 - `docs/CURRENT_HANDOFF.md`：为无既往会话上下文的开发者或 AI 固化恢复顺序、已证明/未证明边界、`K-API-2` 验收、并行写入范围和风险预警。

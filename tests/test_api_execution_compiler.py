@@ -293,6 +293,14 @@ class ApiExecutionCompilerTests(unittest.TestCase):
         with self.assertRaisesRegex(ApiExecutionCompilationError, "OUTPUT-CONTRACT-UNSUPPORTED"):
             self.compile(task=task)
 
+    def test_compact_h1_handoff_is_blocked_until_risk_tiered_closeout_exists(self) -> None:
+        task = replace(
+            self.task,
+            handoff_policy=replace(self.task.handoff_policy, require_transfer_manifest=False),
+        )
+        with self.assertRaisesRegex(ApiExecutionCompilationError, "OUTPUT-CONTRACT-UNSUPPORTED"):
+            self.compile(task=task)
+
     def test_verified_material_seal_rejects_instruction_substitution(self) -> None:
         material = verify_execution_material(ROOT, self.task, self.assignment)
         forged_skill = replace(material.skills[0], instructions="FORGED-INSTRUCTIONS")

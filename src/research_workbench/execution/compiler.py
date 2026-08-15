@@ -509,6 +509,11 @@ def _check_compilation_identities(
             "ASSIGNMENT-OUTPUT-DRIFT",
             "Assignment omits Task output contracts: " + ", ".join(missing_outputs),
         )
+    if not task.handoff_policy.require_transfer_manifest:
+        raise ApiExecutionCompilationError(
+            "OUTPUT-CONTRACT-UNSUPPORTED",
+            "K-API-2 currently supports only H2 Tasks that explicitly require a Transfer Manifest",
+        )
     if task.handoff_policy.require_transfer_manifest and "handoff-transfer-manifest" not in required_outputs:
         raise ApiExecutionCompilationError(
             "ASSIGNMENT-OUTPUT-DRIFT",

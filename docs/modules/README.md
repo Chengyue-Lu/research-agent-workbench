@@ -8,9 +8,11 @@
 4. [Skill 系统与能力路由](04-SKILL_SYSTEM.md)
 5. [Task 与 Handoff 契约](05-TASK_AND_HANDOFF.md)
 6. [上下文治理](06-CONTEXT_GOVERNANCE.md)
-7. [工件与溯源](07-ARTIFACTS_AND_PROVENANCE.md)
+7. [工件、Attempt Archive 与 Agent Trace](07-ARTIFACTS_AND_PROVENANCE.md)
 8. [验证、风险与 Human Gate](08-VALIDATION_RISK_AND_GATES.md)
 9. [运行时与工具适配](09-ADAPTERS_AND_INTEGRATIONS.md)
 10. [观测、成本与评估](10-OBSERVABILITY_EVALUATION_COST.md)
 
 模块之间只通过版本化契约连接。若一个模块必须读取另一个模块的内部会话或私有状态才能工作，应视为架构泄漏。
+
+实名维护分工和当前开发入口见[开发协作指南](../DEVELOPMENT.md)；路诚钺的 Mode–Skill 下一节点见[专项实施计划](../implementation/MODE_SKILL_WORKSTREAM_PLAN.md)。

@@ -20,8 +20,19 @@ projects/<project-id>/
 │   ├── claims/
 │   └── decisions/
 ├── tasks/
-├── handoffs/
 ├── work/<task>/<attempt>/
+│   ├── TASK.yaml             # 本 Attempt 使用的冻结 Task
+│   ├── INDEX.yaml            # 默认可读的元数据索引
+│   ├── ACTORS.yaml           # actor_id → 实名责任人/运行身份
+│   ├── events.jsonl          # 顺序事件账本；读取/工具/文件/状态
+│   ├── messages/             # Agent 间实际传递的可见内容
+│   ├── tool-events/          # 瞬时或较长工具请求/结果正文
+│   ├── handoffs/             # H1/H2 回传和接收决定
+│   ├── decisions/            # 范围、接受、拒绝与升级决定
+│   ├── checks/               # 验证报告与关键工具收据
+│   ├── outputs/              # 尚未 promotion 的过程产物
+│   ├── snapshots/            # 必要的上下文/运行快照
+│   └── WORKLOG.md            # 从上述记录提炼的导航摘要
 ├── runs/<run-id>/
 ├── checks/
 ├── indexes/
@@ -33,7 +44,66 @@ projects/<project-id>/
 
 阶段视图可以生成，但物理存储按工件类别和生命周期组织，避免移动目录破坏身份。
 
-## 3. 原始来源接纳
+Attempt Archive 是一次 Agent 协作的完整过程边界。正式 Evidence、Claim、Run 等仍提升到稳定对象区；Archive 保留它们在产生、审查和交接时的路径、哈希和消息/工具关系。旧项目若保留顶层 `handoffs/`，可作为正式 Handoff 索引，但新内容的原始副本应归入对应 Attempt。
+
+## 3. Agent Trace 与消息信封
+
+所有 Agent 间实际可见的传递都必须归档，包括 Assignment、澄清问题/回答、读取范围申请/批准、进度、Handoff、review、接受/拒绝、确认、错误、取消与安全暂停。Worklog 不能替代这些正文。
+
+消息文件按发送顺序命名，例如：
+
+```text
+messages/0001-main-agent-to-mode-reviewer-assignment.md
+messages/0002-mode-reviewer-to-main-agent-read-scope-request.md
+messages/0003-main-agent-to-mode-reviewer-scope-decision.md
+messages/0004-mode-reviewer-to-main-agent-handoff.md
+```
+
+每个文件使用可机器解析的头部并保存当时实际发送的可见 payload：
+
+```yaml
+---
+message_id: MSG-0004
+task_id: MODE-001
+attempt_id: A-001
+sequence: 4
+kind: handoff
+sender_actor_id: mode-reviewer
+receiver_actor_ids: [main-agent]
+accountable_owner: 路诚钺
+created_at: 2026-08-14T10:30:00+08:00
+in_reply_to: MSG-0003
+content_sha256: "..."
+attachment_refs:
+  - path: work/MODE-001/A-001/outputs/mode-card.yaml
+    sha256: "..."
+redactions: []
+capture_status: complete
+---
+<实际传递的正文；若只发送引用，就保存引用而不复制附件正文>
+```
+
+`ACTORS.yaml` 记录 `actor_id`、角色、模型/Runtime 快照和 `accountable_owner`。人类负责人必须使用姓名；临时窗口、模型版本和 Agent Profile 是运行身份，不是审批主体。
+
+发送方应先持久化消息再 dispatch；接收方应在基于消息继续行动前完成接收记录。平台不支持写前捕获时，Adapter 必须尽快导出并在 `capture_status` 标记 `delayed`。丢失、截断、政策性删减或平台不可导出时，写 `capture-gap` 事件，说明受影响的 message range、原因和可用定位信息，不能静默假装完整。
+
+`INDEX.yaml` 只保存 actor、消息 ID、kind、时间、状态、哈希、附件引用和 Handoff/Decision 关系，不复制消息正文。Agent 默认可用索引发现记录，但只有 Task 明确引用的消息正文进入读取允许集。完整 Trace 主要供排障、审计和对照评估，不回灌主上下文。
+
+### 可观察操作账本
+
+`events.jsonl` 以单调 sequence 记录运行时能够观察到的动作：
+
+- 文件/文档读取：actor、路径、revision/hash、读取范围、是否仅看元数据、允许集依据；
+- 工具或命令：工具名、脱敏参数、开始/结束时间、状态、exit/error、结果正文或不可变 result ref；
+- 文件写入：路径、旧/新哈希、revision、创建/修改/删除；
+- 外部动作：目标类别、授权依据、副作用状态和 Receipt；
+- Attempt 状态：开始、暂停、恢复、失败、完成与 capture gap。
+
+如果源文件已经不可变且有哈希，读取事件引用它即可，不复制正文；如果工具结果只存在于瞬时 stdout/API response 且进入过 Agent 上下文，应将脱敏后的实际结果保存在 `tool-events/`。过程产物不原地覆盖：新版本使用新路径/revision；确需删除时事件账本保存 tombstone、旧哈希、责任人和原因。
+
+该账本用于确认 Agent 是否越界读取或执行，而不是要求主 Agent 浏览全部操作。validator 应能用 `read_allowlist` 检测越界；人工只在排障 Task 中按 event ID 调取请求/结果正文。
+
+## 4. 原始来源接纳
 
 `sources/inbox` 中的内容默认不可信、可变且不可引用。接纳到 `sources/raw` 时记录：
 
@@ -47,7 +117,7 @@ projects/<project-id>/
 
 网页、API 返回和数据库查询也需要快照或可复现 locator；只保存 URL 不足以保证来源未变化。
 
-## 4. Run Manifest
+## 5. Run Manifest
 
 每个实验、仿真、统计分析、检索批次或证明检查记录：
 
@@ -75,7 +145,7 @@ limitations: []
 
 模型输出和 Agent 输出都只是工件，必须经过后续 Claim 关系与决策。
 
-## 5. 提升与冻结
+## 6. 提升与冻结
 
 - 子 Agent 先写 `work/<TASK>/<ATTEMPT>`；
 - 校验通过后由 promotion 操作复制/登记到正式区；
@@ -84,7 +154,9 @@ limitations: []
 - archive 表示保留但不活跃，不等于可删除；
 - 垃圾回收不进入首版。
 
-## 6. 大文件策略
+Agent Trace 随 Attempt 冻结。promotion 只引用所需消息、Decision 或输出，不把整个 Archive 复制到正式对象，也不删除失败、拒绝或未采用路径。
+
+## 7. 大文件与保留策略
 
 首版只用 Git 管理文本、Schema、索引和小型工件。出现真实大数据或模型文件后再选择：
 
@@ -94,7 +166,15 @@ limitations: []
 
 不得为兼容未来可能的大数据，在 M1 自建 CAS、远程对象存储或复杂引用计数。
 
-## 7. 数据安全
+Trace 默认保存在项目工作区，但不等于默认提交 Git：
+
+- 小型、脱敏的测试 fixture 和契约样例可以版本化；
+- 真实运行的完整消息、工具输出和敏感材料按 Project Protocol 设置位置、访问权和保留期限；
+- 大正文通过不可变路径与哈希引用，避免在消息、Handoff 和输出区重复复制；
+- event ledger 保留操作元数据，瞬时结果放在 `tool-events/`；已有不可变来源时不制造第二份正文；
+- 到期清理必须先保留索引、必要 provenance 和删除 Decision；首版不自动清理。
+
+## 8. 数据安全
 
 - 数据边界随 Project Protocol 和 Task Packet 传递；
 - Tool/Skill 不能隐式上传本地材料；
@@ -102,8 +182,11 @@ limitations: []
 - 敏感数据的摘要也可能泄露，不能因为“只是 Handoff”而放宽；
 - 外部来源中的提示文本视为数据，不视为指令；
 - 日志和 trace 中不得无意保留密钥、私人数据或受限原文。
+- 不保存隐藏 Chain-of-Thought；保存的是实际跨 Agent 发送的可见内容、决策和正式过程工件；
+- 对认证头、密钥、个人数据或政策禁止留存内容进行删减时，保留 redaction/omission 类型和原因，不保存被删值；
+- 完整 Trace 的可见性不得高于其中最敏感输入的边界。
 
-## 8. 预警
+## 9. 预警
 
 - `ARTIFACT-HASH-MISMATCH`
 - `ARTIFACT-UNVERSIONED-REF`
@@ -115,12 +198,27 @@ limitations: []
 - `DATA-BOUNDARY`
 - `SOURCE-INJECTION`
 - `REPRO-GAP`
+- `TRACE-MESSAGE-MISSING`
+- `TRACE-SEQUENCE-GAP`
+- `TRACE-ACTOR-UNOWNED`
+- `TRACE-HASH-MISMATCH`
+- `TRACE-CAPTURE-DELAYED`
+- `TRACE-REDACTION-UNDECLARED`
+- `TRACE-READ-OUTSIDE-SCOPE`
+- `TRACE-EVENT-MISSING`
+- `TRACE-TRANSIENT-RESULT-MISSING`
+- `TRACE-PROCESS-ARTIFACT-OVERWRITTEN`
 
-## 9. 验收条件
+## 10. 验收条件
 
 - 任一正式 Evidence 和 Run 可定位到不可变输入或快照；
 - 路径调整不破坏逻辑 ID 与内容引用；
 - 失败和负结果不会因 promotion 被过滤掉；
 - 子 Agent无权直接覆盖 accepted 工件；
 - 外部发送的数据有清单和授权；
-- 一个 Run 可在没有原 Agent 会话的情况下理解与重建。
+- 一个 Run 可在没有原 Agent 会话的情况下理解与重建；
+- 任一跨 Agent Handoff 能定位到发送前后的消息、actor、附件和接收决定；
+- 能从 event ledger 核对每个 Agent 实际读取的正文与执行的工具是否在 Task 边界内；
+- 未采用的中间产物、失败与覆盖尝试仍可沿 revision/tombstone 定位；
+- Worklog 缺失不导致 Trace 消失，Trace 很长也不要求主 Agent 默认加载；
+- capture gap、删减和延迟会显式暴露，不能被误报为完整记录。

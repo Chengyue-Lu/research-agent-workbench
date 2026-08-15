@@ -114,22 +114,36 @@ recommended_next_actions:
 - `stage-completed` 表示预定义阶段完成但上层目标未完成；`safe-paused` 表示机器验收尚未满足但恢复状态完整；`waiting` 保留人类或外部依赖等待；
 - 失败 Handoff 也是正式结果，不得丢弃。
 
+### 按风险分级
+
+交接复杂度不是固定流水线：
+
+- `H0`：同一 Agent/上下文内完成，不发生交接；保留正式输出、验证和工作留痕即可。
+- `H1`：普通跨 Agent 返回；默认只要求一个 Handoff Packet。
+- `H2`：发生压缩、关键 Evidence/Claim/Decision promotion、外部副作用、长等待/会话销毁、摘要争议或 Task 明确要求时，增加 Transfer Manifest/Audit，并按需增加 Context Snapshot、Execution Receipt 与独立语义抽样。
+
+H1/H2 都必须声明失败、限制、冲突和未完成项。H2 不是默认“更可靠”；若额外工件不改变主 Agent 决策，应缩减触发条件。Handoff 等级只控制回传主上下文的摘要与审查强度，不控制是否留存原始过程：所有跨 Agent 可见传递均进入 Attempt Archive。
+
 ### Transfer Manifest 与接收审计
 
 当 Task 的 `handoff_policy.require_transfer_manifest` 为 true 且本次 Attempt 接纳了正式 Research Artifact 时，执行者必须在压缩或结束 Task Context 前写 `handoff_transfer_manifest`。Manifest 只列需要跨上下文保留的稳定条目 ID、类型、关键度、来源工件哈希和定位符，不复制原始材料或推理日志。`failed`、`blocked` 或 `safe-paused` 没有接纳科研工件时不得为满足清单而伪造 Manifest/Audit。
 
 接收者用 `handoff_transfer_audit` 把条目映射到 Handoff 的 `/result/facts/*`、`/limitations/*`、`/unresolved/*` 等位置。机器检查覆盖、哈希、定位、必需条目和负面区段；语义是否被改写只能由有界独立抽查记录。领域 Skill 决定哪些内容应进入 Manifest，通用 Handoff 契约不规定所有学科共用的参数或质量评分表。
 
+Manifest/Audit 是 H2 工件，不再对所有普通 Handoff 默认要求。Task 的 `handoff_policy`、实际压缩和风险检查决定是否升级。
+
 ## 6. Attempt 与 Task
 
 一次 Task 可以有多个 Attempt。重试必须使用新 `attempt_id`，记录触发原因、输入是否变化、Skill/模型/工具是否变化。禁止覆盖失败 Attempt。
 
-`K-API-2` 的终态落盘矩阵是：
+`K-API-2` 当前 H2 fake-local 切片的终态落盘矩阵是：
 
 - `completed`：Attempt、Research Artifact、Transfer Manifest/Audit、Handoff、Task/Main Context Snapshot、Execution Receipt，最后发布 Main State；
 - `safe-paused`、`incomplete`、`failed`、`blocked`：Attempt、Handoff、Task/Main Context Snapshot、Execution Receipt，最后发布 Main State；不生成 Research Artifact、Manifest 或 Audit。`incomplete` 表示 Provider 只返回不完整终止结果，必须持久化自己的下一动作并使用新 Attempt，不能恢复或重放原 transcript。
 
 多文件 closeout 采用 commit-last 协议，不是多文件事务：各正式文件逐个排他发布，Main State 是最后提交点。崩溃可能留下未被 Main State 引用的不可变孤立文件；验证完成的 stage 可以续发而不重放 Provider，只有 intent 但没有可验证结果的 Attempt 必须 fail-closed 并人工确认后使用新 Attempt。
+
+该矩阵不代表普通 H1 closeout 或完整 Attempt Archive/Agent Trace 已实现；当前编译器只接受明确要求 Transfer Manifest 的 H2 Task，其他等级在 Provider 调用前阻断。
 
 Attempt 可以引用一份 `Execution Receipt`。Receipt 记录实际 Runtime、模型用量状态、协调/执行成本、Context Snapshot 和 trace 策略；Handoff 也回指同一 Receipt。验证器检查这三者的 Task、状态、时间和路径一致性，避免把另一次执行的成本或结果串入当前交接。
 
@@ -153,6 +167,19 @@ Receipt 的生命周期 `status: completed` 只表示一次执行已经结束，
 - 主 Agent 或确定性 promotion 命令负责正式合并；
 - 高风险 Agent 默认只读并提交建议工件。
 
+### Read Set 与工作留痕
+
+- Task、仓库 guidance、选定 Profile/Skill、显式输入和目标模块构成初始内容允许集；
+- 允许用文件名、目录名、大小、版本和哈希定位依赖，但不默认读取其他正文；
+- 新正文必须由实名 Task owner 扩展允许集，并在 Task 工作目录记录 scope-decision 消息；
+- 每个 Agent 间实际可见的 Assignment、澄清、范围变化、进度、Handoff、review、确认、失败与取消都进入 `work/<TASK>/<ATTEMPT>/messages/`；
+- 运行时可观察的正文读取、工具/命令与文件 revision 进入 `events.jsonl`；Worklog 不逐项复制，但 validator 可用账本核对越界读取；
+- `INDEX.yaml` 提供消息元数据发现，但另一个 Agent 的消息正文不在默认读取集，除非 Assignment 或后续 scope-decision 明确引用；
+- worklog 记录基线、关键决定、范围变化、修改路径、重要验证和未完成项，不记录每次普通读取或完整推理；它是 Trace 的可读索引，不是 Trace 本身；
+- 另一个 Agent 的 `work/<TASK>/<ATTEMPT>` 不在默认读取集，除非作为正式输入交接。
+
+可复制使用[Attempt Archive Template](../templates/TASK_WORKLOG.md)，完整目录和消息信封见[工件与溯源](07-ARTIFACTS_AND_PROVENANCE.md)。
+
 ## 8. 预警
 
 - `TASK-TOO-BROAD`：目标无法在预算内完成；
@@ -166,6 +193,10 @@ Receipt 的生命周期 `status: completed` 只表示一次执行已经结束，
 - `HANDOFF-AUDIT-COVERAGE`：Manifest 条目没有 Handoff 映射；
 - `HANDOFF-NEGATIVE-UNMAPPED`：限制、冲突、未解决项或 Human Gate 没有来源映射；
 - `HANDOFF-SUMMARY-DISTORTION`：有界语义抽查发现限定条件改变。
+- `HANDOFF-OVERHEAD`：审计工件成本持续增加但不改变接受、返工或 Gate 决定。
+- `TASK-READ-OUTSIDE-SCOPE`：Agent 请求或读取未授权正文且没有 Task 扩展记录。
+- `TRACE-MESSAGE-MISSING`：已发生跨 Agent 传递但 Attempt Archive 找不到对应消息。
+- `TRACE-ACTOR-UNOWNED`：Agent actor 没有绑定实名责任人。
 
 ## 9. 验收条件
 
@@ -175,3 +206,5 @@ Receipt 的生命周期 `status: completed` 只表示一次执行已经结束，
 - 失败 Attempt 和负结果保留；
 - 输入变化后旧 Handoff 自动标记 stale；
 - 并行任务不能写入同一正式路径。
+- 普通 H1 与高风险 H2 可以分别验收，且能够记录其协调成本差异。
+- 不读取原 Agent 会话也能按 message sequence、Handoff 和 Decision 回放一次委派。

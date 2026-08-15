@@ -1,14 +1,14 @@
 # 总体架构
 
-版本：0.3
+版本：0.4
 
 状态：实施基线
 
-日期：2026-08-13
+日期：2026-08-14
 
 ## 1. 架构结论
 
-系统采用“最小科研内核 + 方法模式包 + 能力绑定 + 纯 API 隔离执行 + 工件与验证”的分层结构。Codex、OpenCode 等原生平台是可替换的交互外壳，不是核心前置。
+系统采用“最小科研内核 + 方法模式包 + 能力绑定 + 受限执行接口 + 工件与验证”的分层结构。路诚钺维护的 Mode–Skill 工作流决定方法与能力边界；黄毅维护的 API Execution 工作流或可选平台只负责执行已冻结的任务，不反向决定科研方法。
 
 真正的运行单位不是“某个永久角色”，而是一次已解析的任务绑定：
 
@@ -23,13 +23,12 @@ Resolved Task
 + Output contract
 ```
 
-进入执行前再增加一个很小的显式模型绑定：
+进入执行前由执行工作流增加一个很小的显式模型绑定：
 
 ```text
-API Child Session
+Execution Instance
 = Resolved Task
-+ explicit Model Slot (primary / worker / specialist)
-+ provider/model binding
++ explicit Model/Runtime binding
 + bounded fresh context
 + execution budget
 ```
@@ -59,36 +58,57 @@ API Child Session
 ```mermaid
 flowchart TB
     H["Human Researcher\n问题、方法、解释、关键决定"]
-    PP["Project Protocol\n模式、Claim ceiling、预算、数据边界"]
-    MA["Main Agent\n协调、冲突处理、下一步决策"]
-    CR["Capability Resolver\n任务 → Agent Profile + Skill Assignment"]
-    MB["Explicit Model Slot\nprimary / worker / specialist"]
-    API["Isolated API Session\nportable baseline"]
-    RT["Optional Runtime Adapter\nCodex / OpenCode / others"]
-    SA1["Bounded Subagent A\nAgent Profile + Skills A"]
-    SA2["Bounded Subagent B\nAgent Profile + Skills B"]
-    AR["Artifact & Provenance\nEvidence / Run / Claim / Decision"]
-    DV["Deterministic Validators\nSchema / hash / refs / limits"]
+    PP["Project Protocol\nClaim ceiling、数据边界、Human Gates"]
+    MA["Main Agent\n目标、冲突、索引、下一动作"]
+    MS["Main State\n小、可恢复"]
+
+    subgraph OWN["路诚钺：Mode–Skill 维护"]
+        TD["Task Design\n目标路径、Atomic Work Unit、风险"]
+        RM["Research Mode Decision\n触发、非触发、组合约束"]
+        CR["Capability Resolver\n能力 → Profile + Skill Assignment"]
+        RP["Resolved Task\n内容允许集 + 写入范围 + Handoff 等级"]
+        SE["Skill Evaluation & Registry\ntrial / accepted / deprecated"]
+    end
+
+    subgraph EXEC["黄毅：API Execution；或可选平台"]
+        EB["Execution Boundary\n显式模型/平台绑定"]
+        TW["Bounded Task Workspace\n只读允许内容 + 独占写入"]
+    end
+
+    DG{"Delegate?"}
+    L0["H0 Same-context Work\nWorklog + formal output"]
+    AR["Formal Artifacts\nEvidence / Run / Claim / Decision"]
+    HC{"Handoff Risk Classifier"}
+    H1["H1 Compact Handoff\nPacket only"]
+    H2["H2 Audited Handoff\nManifest / Audit / Receipt as triggered"]
+    TA["Attempt Archive\nactors + messages + read/tool events + revisions + decisions + outputs"]
+    DV["Deterministic Validators\nSchema / hash / refs / boundaries"]
     RG["Risk Review & Human Gates"]
-    MS["Main State Packet\nsmall, versioned, recoverable"]
 
     H <--> PP
     PP --> MA
     MS <--> MA
-    MA --> CR
-    CR --> MB
-    MB --> API
-    MB -.->|"optional native mapping"| RT
-    API --> SA1
-    API --> SA2
-    RT -.-> SA1
-    RT -.-> SA2
-    SA1 --> AR
-    SA2 --> AR
-    AR --> DV
-    DV --> RG
-    RG --> MA
-    MA --> H
+    MA --> TD
+    TD --> RM --> CR --> RP
+    SE <--> CR
+    RP --> DG
+    DG -->|"no"| L0 --> AR
+    DG -->|"yes"| EB --> TW --> AR
+    TW -.->|"需要新正文：申请扩大允许集"| MA
+    RP --> TA
+    L0 --> TA
+    TW --> TA
+    AR --> HC
+    HC -->|"无跨上下文转移"| DV
+    HC -->|"普通任务"| H1
+    HC -->|"压缩、高风险、副作用、争议"| H2
+    H1 --> DV
+    H2 --> DV
+    H1 --> TA
+    H2 --> TA
+    DV --> TA
+    TA -.->|"默认只加载 INDEX + Handoff"| MA
+    DV --> RG --> MA --> H
 ```
 
 ## 4. 分层职责
@@ -117,7 +137,7 @@ Agent Profile 描述执行容器；Skill 描述可复用工作方法；Capabilit
 
 ### L4：任务与上下文层
 
-Task Packet 是委派边界，Handoff Packet 是返回边界，Main State Packet 是主 Agent 的可恢复最小状态。压缩前由 Transfer Manifest 声明必须传递的条目和来源，Transfer Audit 再核对它们在 Handoff 中的位置，并在风险触发时要求有界独立抽样。原始资料和日志留在工件层，按需拉取。
+Task Packet 是委派边界，Handoff Packet 是返回边界，Main State Packet 是主 Agent 的可恢复最小状态。每个 Attempt Archive 留存 actor、全部可见 Agent 消息、Decision、检查和输出；主 Agent 默认只读取其索引与 Handoff。压缩前由 Transfer Manifest 声明必须传递的条目和来源，Transfer Audit 再核对它们在 Handoff 中的位置，并在风险触发时要求有界独立抽样。原始资料和 Trace 留在工件层，按需拉取。
 
 详见[Task 与 Handoff](modules/05-TASK_AND_HANDOFF.md)及[上下文治理](modules/06-CONTEXT_GOVERNANCE.md)。
 
@@ -140,24 +160,41 @@ sequenceDiagram
     participant H as Human
     participant M as Main Agent
     participant R as Capability Resolver
-    participant P as Explicit Model Pool
-    participant N as API Session / Optional Runtime
-    participant S as Subagent
+    participant E as API/Platform Execution
+    participant S as Bounded Subagent
+    participant A as Attempt Archive
     participant V as Validator
 
     H->>M: 批准 Project Protocol / 当前目标
-    M->>R: 提交 Task Packet + active modes + risk
-    R->>R: 过滤权限、工具、输出和数据边界
-    R->>R: 选择最小 Agent Profile + Skill Bundle
-    R-->>M: Resolved Task + skill lock
-    M->>P: 显式选择 primary / worker / specialist 槽
-    P-->>M: 固定 provider、model、能力与 reasoning
-    M->>N: 新建隔离会话并命名 required skills
-    N->>S: 最小输入 + Agent Profile + Skills
-    S->>S: 工作；长结果写入工件
-    S-->>V: Transfer Manifest + Handoff Packet + artifact refs
-    V->>V: 结构映射 + 风险触发抽样
+    M->>R: Task 特征 + 目标路径 + active modes + risk
+    R->>R: 选择/组合 Mode，推导能力与 Claim 限制
+    R->>R: 先判断确定性工具或 no-Skill 是否足够
+    R->>R: 过滤权限、冲突、上下文成本和候选 Skill
+    R-->>M: Resolved Task + Skill lock + 内容允许集 + H0/H1/H2
+    alt H0：不委派
+        M->>A: 写 Task/actors/输出/检查与 Worklog
+        M->>M: 在当前上下文完成 AWU
+        M->>V: 正式工件 + 确定性检查
+    else H1/H2：受限委派
+        M->>A: 发送前保存 Assignment 消息
+        M->>E: 交付冻结接口，不传主会话全历史
+        E->>A: 登记 Runtime actor 与实际 dispatch
+        E->>S: Task + 选定 Skill + 明确输入/写入范围
+        S->>A: 追加可观察的读取/工具/文件事件
+        S->>S: 路径元数据发现；长结果写工件
+        opt 需要读取允许集之外的正文
+            S->>A: 保存 read-scope request
+            S-->>M: 说明原因并请求扩展
+            M->>R: 修订输入或保持拒绝
+            M->>A: 保存实名 scope decision
+        end
+        S->>A: 保存可见进度、输出和 Handoff 原文
+        S-->>V: H1 Packet 或风险触发的 H2 审计链
+    end
+    V->>V: 结构/边界检查 + 必要时有界语义抽样
+    V->>A: 保存检查与 review/accept/reject
     V-->>M: 结构结果、风险与缺口
+    M->>A: 保存接收决定；只按需读取历史消息
     M-->>H: 决策摘要或 Human Gate
 ```
 
@@ -170,6 +207,9 @@ sequenceDiagram
 - 任务声明的 `forbidden_skills` 优先级高于推荐；
 - 路由不确定、Skill 冲突或缺少验证时，返回阻塞/人工决定，而不是猜测；
 - 主 Agent 只读取 Skill 元数据和路由结果，不默认加载所有 Skill 正文。
+- Agent 对仓库内容采用默认拒绝：允许路径元数据发现，但读取新增正文必须扩展 Task 允许集。
+- 普通跨 Agent 返回使用 H1；H2 仅由风险、压缩、副作用、promotion、争议或明确策略触发。
+- H0/H1/H2 都有 Attempt Archive；H1/H2 的每条可见跨 Agent 传递必须留存，但不会因此自动进入主 Agent 上下文。
 
 ## 6. 上下文架构
 
@@ -193,7 +233,7 @@ sequenceDiagram
 
 ### 子 Agent 输入
 
-仅包含 Task Packet、选定 Agent Profile、明确的 Skill Assignment、必要输入引用、写入范围和输出 Schema。Task Packet 同时声明 Atomic Work Unit、完成检查和安全暂停条件。子 Agent 压缩只有在正式工件已写入且 Handoff 可验证时才可接受；预算不足时持久化 `safe-paused`，不得伪造完成。
+仅包含 Task Packet、选定 Agent Profile、明确的 Skill Assignment、必要输入引用、目标模块、写入范围、Handoff 等级和输出 Schema。正文读取以该允许集为边界；文件名、目录名、大小和哈希可用于发现，但不能据此递归加载内容。Task Packet 同时声明 Atomic Work Unit、完成检查和安全暂停条件。子 Agent 压缩只有在正式工件已写入且 H2 可验证时才可接受；预算不足时持久化 `safe-paused`，不得伪造完成。
 
 ## 7. 状态与真值
 
@@ -220,15 +260,17 @@ sequenceDiagram
 
 预警级别为 `INFO / WARN / BLOCK / HUMAN`。只有结构损坏、权限越界、缺失必需证据、数据边界冲突等问题可以自动阻断；方法合理性和科学解释进入 Human Gate。
 
-## 9. 执行策略
+## 9. 执行接口与维护边界
 
-### 首选：纯 API 隔离子会话
+### API Execution 工作流
 
 - 每个子任务从空白会话开始，只加载 Task、Skill Assignment、必要输入和输出契约；
 - 主 Agent 使用 `primary` 槽，普通子任务使用 `worker` 槽，独特能力显式使用一个 `specialist` 槽；
 - 模型槽只做显式映射，不建设复杂 Router、价格数据库或自动 fallback；
 - API Runner 限制轮次、工具调用、工具结果、token/成本和 wall time；
-- 会话关闭后只依赖 Attempt、工件、Handoff、Receipt 和 Main State 恢复。
+- 会话关闭后只依赖 Attempt Archive、正式工件、Handoff 和恢复状态；全部可见 Agent 传递已归档，但 Receipt/Manifest/Audit 不对普通任务默认强制。
+
+上述实现和测试由黄毅维护。路诚钺只冻结 Mode、Skill Assignment、内容允许集、输出契约、Handoff/Trace 等级与评估接口，不修改 Provider 或 session 实现。
 
 ### 可选：平台适配与人工新窗口
 
@@ -249,6 +291,10 @@ Codex、OpenCode、Claude Code 或其他平台可以把同一个已解析 Task �
 9. 不得默认递归委派；子 Agent 再委派需要 Task Packet 明确允许并受深度/预算限制。
 10. 新全局机制必须由真实事故或已量化风险支持。
 11. 模型只能按显式槽位选择；任何升级、降级或跨 Provider 重试都必须形成新的可审计 Attempt。
+12. 工作区可见性不等于内容读取授权；正文读取必须来自 Task 允许集或显式扩展。
+13. Handoff 的复杂度必须由转移风险决定，不能为了流程完整而默认生成全部审计工件。
+14. 每次跨 Agent 可见传递必须进入 Attempt Archive；完整留存不等于默认加载。
+15. 工作流、Agent、模型和平台名称不能替代实名责任人；共享接口必须有明确的人类 owner。
 
 ## 11. 首个垂直切片
 
@@ -267,4 +313,4 @@ Codex、OpenCode、Claude Code 或其他平台可以把同一个已解析 Task �
 
 ## 12. 文档与实施关系
 
-本文件定义稳定关系和不变量；模块文件定义各自的职责、接口、风险和验收；[实施计划](implementation/IMPLEMENTATION_PLAN.md)定义交付顺序；[任务清单](TASKS.md)是当前执行状态的唯一入口。软件交付阶段不是研究工作的强制顺序。
+本文件定义稳定关系和不变量；模块文件定义各自的职责、接口、风险和验收；[开发协作指南](DEVELOPMENT.md)定义实名维护边界与运行纪律；[Mode–Skill 计划](implementation/MODE_SKILL_WORKSTREAM_PLAN.md)定义路诚钺的下一节点；[任务清单](TASKS.md)是当前执行状态的唯一入口。软件交付阶段不是研究工作的强制顺序。

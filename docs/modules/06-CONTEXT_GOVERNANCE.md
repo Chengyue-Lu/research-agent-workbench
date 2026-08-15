@@ -115,11 +115,22 @@ rollover 步骤：
 
 1. Main State / Project Protocol；
 2. Handoff 摘要；
-3. Evidence/Run/Claim 索引；
-4. 具体工件片段；
-5. 原始材料或日志，仅在争议仍无法解决时。
+3. Attempt `INDEX.yaml` 与 Evidence/Run/Claim 索引；
+4. Handoff 明确引用的消息、Decision 或具体工件片段；
+5. 其他 Agent 消息、原始材料或工具日志，仅在争议或排障仍无法解决时。
 
-这避免把“可访问”误解为“应全部进入上下文”。
+完整 Agent Trace 的存在不改变这个顺序。这避免把“已留存”或“可访问”误解为“应全部进入上下文”。
+
+### 内容允许集
+
+按需拉取还必须满足任务级读取边界：
+
+1. 永久允许的控制输入只有当前 Task、`AGENTS.md`、选定 Profile、Skill Assignment 和本次 Skill 入口；
+2. `input_refs`、目标模块及获批扩展构成正文允许集；
+3. 允许先查看路径元数据，禁止默认递归读取全仓库文档、候选 Skills、历史 Handoffs 或其他 Agent 工作目录；
+4. 需要额外正文时先说明它将回答哪个未决问题，由实名 Task owner 扩展范围，并保存 scope-request/scope-decision 消息；
+5. Agent 间实际传递全部进入 Attempt Archive，但正文只有被 Assignment 或 scope-decision 引用后才可读取；
+6. 不记录无意义的逐文件打开流水，只记录范围扩展、实际成为正式输入的文件和关键验证。
 
 ## 8. 隐藏风险与预警
 
@@ -135,6 +146,9 @@ rollover 步骤：
 | CTX-SKILL-POLLUTION | 加载不相关 Skills | 重新解析最小 Skill Assignment |
 | CTX-HIDDEN-STATE | 决定只存在于对话 | 创建 Decision 工件 |
 | CTX-RECOVERY-DRIFT | 新会话恢复后目标改变 | 对比 checkpoint 与下一动作，Human Gate |
+| CTX-READ-SCOPE-DRIFT | Agent 阅读未声明正文或将临时材料当正式输入 | BLOCK 合并，补录范围或重做 |
+| CTX-HANDOFF-OVERHEAD | Handoff 工件增长但没有改变决策 | 降为 H1、缩小 H2 触发器 |
+| CTX-TRACE-RELOAD | 主 Agent 因 Trace 已存在而批量读回历史消息 | 只读索引和 Handoff，另建排障 Task 扩展消息范围 |
 
 ## 9. 当前 CLI
 
@@ -145,15 +159,17 @@ rwb context resume-check ...
 rwb handoff audit-transfer ...
 ```
 
-`assess` 不读取聊天隐式状态，调用方必须传入可测代理指标；若提供动态预算，remaining、next AWU、closeout 和 safety margin 必须同单位。压缩后的 task 若声明 handoff-ready，还要传 `--handoff-audit-ref`。`checkpoint` 可以从上一 Main State 继承状态并冻结机器证据；单个 YAML 采用刷盘后排他发布，不支持原子硬链接时安全失败。`K-API-2` 的多文件 closeout 是 Main State 最后发布的 commit-last 协议，并非原子事务，崩溃时可能留下不可达孤立文件。`resume-check` 会检查引用哈希、Git HEAD、协议和 digest，是换届门槛，但不启动或管理新会话；当前只在 fake-local fixture 的 fresh Python 子进程中证明文件恢复，尚未证明真实主模型会话。Provider 中途异常时部分 usage、工具数和 turns 可能不可得，Context/Receipt 必须标为 unknown/unavailable，不能写成零。Git HEAD 不覆盖未提交工作树，因此应在提交边界创建带 Git 基线的 checkpoint。
+`assess` 不读取聊天隐式状态，调用方必须传入可测代理指标；若提供动态预算，remaining、next AWU、closeout 和 safety margin 必须同单位。压缩后的 task 若声明 handoff-ready，还要传 `--handoff-audit-ref`。`checkpoint` 可以从上一 Main State 继承状态并冻结机器证据；单个 YAML 采用刷盘后排他发布，不支持原子硬链接时安全失败。`K-API-2` 当前 H2 fake-local 切片的多文件 closeout 是 Main State 最后发布的 commit-last 协议，并非原子事务，崩溃时可能留下不可达孤立文件。`resume-check` 会检查引用哈希、Git HEAD、协议和 digest，是换届门槛，但不启动或管理新会话；当前只在 fake-local fixture 的 fresh Python 子进程中证明文件恢复，尚未证明真实主模型会话。Provider 中途异常时部分 usage、工具数和 turns 可能不可得，Context/Receipt 必须标为 unknown/unavailable，不能写成零。普通 H1 closeout 与自动 Agent Trace 尚未实现。Git HEAD 不覆盖未提交工作树，因此应在提交边界创建带 Git 基线的 checkpoint。
 
 ## 10. 不保存的内容
 
 - 完整 Chain-of-Thought；
 - 没有消费方的每轮自省；
-- 为证明控制系统可靠而产生的控制系统日志洪流；
+- 没有发生 Agent 间传递、不能影响决定且无排障价值的逐 token/逐文件遥测洪流；
 - 未经验证的自动摘要集合；
 - 可以从源工件确定性重建的重复视图。
+
+上述限制不允许删除实际已经发送给另一个 Agent 的可见消息。敏感或政策禁止留存的内容按 Trace redaction/omission 规则登记，而不是静默消失。
 
 ## 11. 验收条件
 
@@ -163,3 +179,5 @@ rwb handoff audit-transfer ...
 - 主 Agent非计划读取原始材料的频率随版本下降；
 - Main State 保持小而稳定，不随项目历史线性增长；
 - 子 Agent 结束后其会话可删除而不影响正式结果。
+- 普通任务无需完整审计链也能恢复；高风险任务触发 H2 时仍可定位关键条目。
+- 默认不加载完整 Trace 仍能继续；需要排障时可以按 message ID 回放原始传递。

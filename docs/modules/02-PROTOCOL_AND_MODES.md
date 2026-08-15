@@ -111,10 +111,27 @@ conflict_policy:
 
 应对：首版只实现 `evidence-synthesis` 与 `simulation`；新增 Mode 必须有真实案例，并证明无法由现有模式组合表达。
 
-## 8. 验收条件
+### Mode 准入卡
+
+新增或拆分 Mode 前必须同时回答：
+
+- 哪些任务特征明确触发它，哪些相近任务明确不触发；
+- 它相对现有 Mode 或组合新增了哪些 Artifact、Claim 限制、Human Gate 或风险处置；
+- 如果只更换 Skill 就能处理，为什么仍需要新 Mode；
+- 至少一个正例、一个边界例和一个反例；
+- 没有真实案例时为何不能继续停留在候选分类。
+
+若新增 Mode 只改变 Agent 名称、提示语或推荐 Skill，不改变方法约束，则不准入。`experiment`、`theory`、`observational-statistics` 与 `engineering-validation` 当前均是规划分类，不是正式 Registry 承诺。
+
+## 8. 当前打磨重点
+
+`K-MS-1` 先为 `evidence-synthesis` 与 `simulation` 建立同构决策卡、组合 fixture 和 no-Mode/ambiguous 边界。目标不是扩充 Mode 数量，而是让主 Agent 能用少量任务特征解释：为什么选择、为什么不选择、冲突时为何阻断。
+
+## 9. 验收条件
 
 - 两个首批 Mode 共享内核但具有不同 Required Artifacts、风险和 Human Gate；
 - 更换 Skill 实现不需修改 Mode Schema；
 - 混合模式冲突可以确定性检测；
 - 轻量探索不会被迫创建完整流程；
 - 新 Mode 可作为独立包加入，不修改内核代码。
+- 没有方法差异证据时，候选 Mode 不会因分类表已有名称而自动进入 Registry。

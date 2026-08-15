@@ -4,6 +4,8 @@
 
 将平台中立的 Project Protocol、Agent Profile、Skill Assignment、Task 和 Handoff 映射到模型 API、可选 Agent 平台与科研工具。纯 API 隔离会话是可移植基线；平台 Adapter 是便利层。任何 Adapter 都只能执行映射，不能改变科研状态或批准 Gate。
 
+本模块的 API 实现与测试由黄毅维护。路诚钺只提供冻结的 Mode/Skill/read/handoff/trace 接口并消费脱敏结果，不在自己的分支上补 Provider 或 session 功能。
+
 ## 2. API-first 执行接口
 
 首版 API 执行链保持为几个窄接口：
@@ -20,7 +22,7 @@ closeout_api_attempt(...) -> immutable files + Main State commit
 
 模型池固定为 `explicit-slot-only`。初始约定为一个 `primary`、一个 `worker` 和按需的少量 `specialist` 槽；允许多个槽暂时指向同一模型，也允许没有 specialist。不实现价格抓取、综合评分、LLM Router 或自动降级。
 
-每次 `run` 都是新隔离会话；Runner 不保存跨调用消息、不把 provider response ID 当状态，也不跨 Provider fallback。它在请求前、调用边界和响应后检查模型轮次、工具调用、每轮 fan-out、工具副作用类别、工具结果字符、单轮输出、累计 token/可得成本与 wall time，但不能取消已经在途的 Provider/工具调用。`max_parallel_tool_calls` 不代表并行执行，客户端 handler 当前串行。`K-API-2` 已用 fake Provider 打通 Task/Assignment 到 Attempt/Handoff/Receipt/Main State 的最小文件桥接；真实 Provider/Windows 行为仍未验证。
+每次 `run` 都是新隔离会话；Runner 不保存跨调用消息、不把 provider response ID 当状态，也不跨 Provider fallback。它在请求前、调用边界和响应后检查模型轮次、工具调用、每轮 fan-out、工具副作用类别、工具结果字符、单轮输出、累计 token/可得成本与 wall time，但不能取消已经在途的 Provider/工具调用。`max_parallel_tool_calls` 不代表并行执行，客户端 handler 当前串行。`K-API-2` 已用 fake Provider 打通明确 H2 evidence Task 从 Task/Assignment 到 Attempt/Handoff/Receipt/Main State 的文件关闭切片；普通 H1/risk-tier closeout、自动 Agent Trace 与真实 Provider/Windows 行为仍未验证。
 
 Provider Adapter ID 是本地 Registry 的查找键（例如 `anthropic-messages`）；capability snapshot 与 `ModelResponse.provider` 使用规范 Provider 身份（例如 `anthropic`）。两者不得直接比较或互相冒充。Execution Receipt 的 `model_binding` 记录请求的 Adapter ID/模型，`model_usage.provider` 记录已核验的规范 Provider；这使幂等请求身份与实际执行身份可以分别审计。
 

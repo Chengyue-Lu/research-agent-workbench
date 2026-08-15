@@ -4,6 +4,8 @@
 
 日期：2026-08-13
 
+2026-08-14 维护说明：本 ADR 的架构决定继续有效；`K-API-2` 及 API 实现/测试由黄毅负责，不再是路诚钺当前 Mode–Skill 节点。
+
 ## 背景
 
 ADR-0001 在项目早期选择“原生 Agent 运行时优先”，目的是避免重新实现 Codex、Claude Code 等平台已经提供的线程、子 Agent、权限和 Skill 能力。后续实现证明，科研契约、文件式连续性和 Provider-neutral Model Port 可以独立于这些平台存在；同时，项目未来使用的平台尚未确定，若继续把真实垂直切片绑定到 Codex 或 OpenCode，会使平台选择提前成为核心依赖。
@@ -36,11 +38,11 @@ ADR-0001 在项目早期选择“原生 Agent 运行时优先”，目的是避�
 
 该节点只是执行缝合点，不是产品交付点。它不要求真实科研 Task、GUI、平台 Adapter 或公开发布。
 
-## 下一关键节点
+## 文件闭环节点
 
-`K-API-2` 是一次完整的 Task-to-API 文件闭环：将一个已解析 Task 和 Skill Assignment 编译为隔离 API 子会话，产生 Attempt、研究工件、Transfer Manifest、Handoff、Execution Receipt 和 Main State；删除临时会话后，新主会话只凭文件恢复到正确下一动作。真实 API 调用只在已授权的 Windows 用户上下文执行。
+`K-API-2` 的完整目标是风险分级的 Task-to-API 文件闭环：将一个已解析 Task 和 Skill Assignment 编译为隔离 API 子会话，按 Task 的 H1/H2 要求产生 Attempt、正式输出、Handoff、Execution Receipt、Main State 和完整 Attempt Archive/Agent Trace；删除临时会话后，新主会话从明确文件引用恢复到正确下一动作。真实 API 调用只在已授权的 Windows 用户上下文执行。
 
-实现状态（2026-08-15）：fake-local 最小节点 Gate 已通过，但 `M6-004` 仍未授权。`completed` 还会生成 Transfer Audit 和 task/main Context Snapshots；`safe-paused`、`incomplete`、`failed`、`blocked` 只生成 Attempt、Handoff、两个 Snapshot、Receipt 和 Main State，不伪造研究工件/Manifest/Audit。Provider Adapter ID 与规范 Provider identity 分别用于 Registry 请求绑定和 capability/响应核验。多文件 closeout 是 Main State 最后发布的 commit-last 协议，不是事务；恢复证据来自以 Main State 为入口并校验项目文件树的 fresh Python 子进程，不是已运行的真实主模型会话，也不是单文件自足。
+实现状态（2026-08-15）：明确要求 Transfer Manifest 的 H2 evidence Task 已通过 fake-local 文件关闭切片 Gate，但完整风险分级接口尚未关闭，`M6-004` 与 `M6-006` 仍未授权。`completed` 还会生成 Transfer Audit 和 task/main Context Snapshots；`safe-paused`、`incomplete`、`failed`、`blocked` 只生成 Attempt、Handoff、两个 Snapshot、Receipt 和 Main State，不伪造研究工件/Manifest/Audit。Provider Adapter ID 与规范 Provider identity 分别用于 Registry 请求绑定和 capability/响应核验。多文件 closeout 是 Main State 最后发布的 commit-last 协议，不是事务；恢复证据来自以 Main State 为入口并校验项目文件树的 fresh Python 子进程，不是已运行的真实主模型会话，也不是单文件自足。普通 H1 closeout 与完整 Attempt Archive/Agent Trace 自动捕获仍待实现。
 
 ## 后果
 

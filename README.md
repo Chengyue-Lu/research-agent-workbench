@@ -4,11 +4,9 @@
 
 本项目不是“自动课题组”，也不试图重新实现 Codex、Claude Code 或其他平台已有的子 Agent 调度。它提供的是平台之上的轻量科研契约层：把研究问题、研究模式、Agent 边界、Skill 选择、工件、证据、交接与人工决策组织成可审查、可替换的结构。
 
-## 当前状态
+## 项目阶段
 
-状态：`K-API-2 Offline Minimal File Loop Gate Passed`（仍停在 `M6-004` 授权门前）
-
-当前仓库已完成 M1 的核心本地契约、M2 的离线 Agent—Skill 切片和 M3 的首批文件式连续性，并通过 `K-API-2` 的最小离线节点评审：`EVID-001` 的冻结合同、选定 Skill 和显式 `worker` 槽可编译为 fresh API session；fake-local Provider 可走 completed/tool-failed/safe-paused/incomplete/stale-input 路径；commit-last closeout 最后发布 Main State；删除内存 transcript 后可由 fresh Python subprocess 以 Main State 为入口，在 Protocol 与哈希锁定的项目文件树中恢复。该 PASS 不包含真实 API、真实 Windows 槽、真实主 Agent 会话、科学正确性或多 Agent 净收益；未经维护者明确授权，不得自动进入 `M6-004`。
+当前为内部技术 alpha：最小契约、离线 Agent—Skill 切片、文件式上下文治理、`K-API-1` 隔离 API session，以及面向明确 H2 evidence Task 的 `K-API-2` fake-local 文件关闭切片已经形成。该切片不等于通用 H1/H2 Task 执行器，也没有自动 Agent Trace 或真实 Provider/Windows 证据。路诚钺负责 Research Mode、Skill 选择/评估/准入、受控读取和 Handoff/Trace 成本验证；黄毅负责 API Adapter、Task-to-API、live conformance 及其测试。逐项状态和唯一下一节点以[任务清单](docs/TASKS.md)为准。
 
 ## 核心判断
 
@@ -20,29 +18,21 @@
 - 确定性校验优先于第二个 Agent；Agent 复核只针对明确风险；关键科学判断保留给人。
 - 纯 API fresh session 是可移植执行基线；平台原生 Agent/线程是可选便利层，不另造通用 Supervisor。
 - 模型只按 `primary`、`worker` 和少量 `specialist` 槽显式绑定，不建设复杂自动 Router。
+- Agent 对文件内容采用任务级允许集；可以先发现路径元数据，但不能因为拥有工作区权限就递归读取无关文档。
+- 普通委派默认只返回 Compact Handoff；完整 Manifest/Audit/Receipt 由风险、压缩、外部副作用或明确策略触发。
+- 所有 Agent 间实际传递的可见内容，以及运行时可观察的读取、工具、命令和文件 revision 进入 Attempt Archive；主 Agent 默认只读取索引与 Handoff，完整 Trace 仅在评估或排障时按需回放。
 
-## 架构入口
+## 文档入口
 
-- [零基础使用指南与发布就绪度](docs/GETTING_STARTED.md)
-- [项目章程](docs/PROJECT_CHARTER.md)
-- [总体架构](docs/ARCHITECTURE.md)
-- [完整实施计划](docs/implementation/IMPLEMENTATION_PLAN.md)
-- [任务清单](docs/TASKS.md)
-- [恢复点与下一步](docs/NEXT_STEPS.md)
-- [当前开发 Handoff](docs/CURRENT_HANDOFF.md)
-- [Changelog](CHANGELOG.md)
-- [模块文档索引](docs/modules/README.md)
-- [迁移方案](docs/implementation/MIGRATION_PLAN.md)
-- [Skill 候选准入流程](docs/implementation/SKILL_CANDIDATE_PIPELINE.md)
-- [Skill 双臂评估协议](docs/implementation/SKILL_EVALUATION_PROTOCOL.md)
-- [模型 API 中立端口 ADR](docs/decisions/0003-PROVIDER-NEUTRAL-MODEL-PORT.md)
-- [多提供商模型 API 实施计划](docs/implementation/PROVIDER_ADAPTER_PLAN.md)
-- [薄 Adapter 与凭据边界 ADR](docs/decisions/0007-THIN-PROVIDER-ADAPTERS.md)
-- [API-first 隔离执行 ADR](docs/decisions/0010-API-FIRST-ISOLATED-EXECUTION.md)
-- [上下文与执行收据 ADR](docs/decisions/0006-CONTEXT-AND-EXECUTION-RECEIPTS.md)
-- [Handoff Transfer Audit ADR](docs/decisions/0008-HANDOFF-TRANSFER-AUDIT.md)
-- [文件式连续性与 SAFE_PAUSE ADR](docs/decisions/0009-FILE-FIRST-CONTINUITY-AND-SAFE-PAUSE.md)
-- [CCRML 会议吸收与差距审计](docs/references/CCRML_MEETING_ADOPTION.md)
+- [文档导航](docs/README.md)：按使用目的给出最小阅读集，避免遍历全部文档。
+- [开发协作指南](docs/DEVELOPMENT.md)：实名责任、当前节点、分支、读取与完整 Trace 规则。
+- [项目章程](docs/PROJECT_CHARTER.md)：使命、非目标和人的最终责任。
+- [总体架构](docs/ARCHITECTURE.md)：稳定关系、Mermaid 流程与架构不变量。
+- [任务清单](docs/TASKS.md)：当前状态的唯一权威入口。
+- [零基础使用指南](docs/GETTING_STARTED.md)：安装、离线演练与发布就绪度。
+- [Changelog](CHANGELOG.md)：已经落地的变更。
+
+模块、实施计划、ADR 和参考材料均从[文档导航](docs/README.md)按需进入。
 
 ## 当前可执行入口
 
@@ -93,7 +83,7 @@ rwb execution assess examples/observability/execution-evidence-contract.yaml `
 
 `validate` 会检查 Schema、实际文件、SHA-256 与 Registry 引用等机器可判定条件，但不代表科学正确性。`handoff audit-transfer` 的 `structurally-ready` 只表示条目和引用覆盖，不表示语义等价；关键风险或 Task policy 会要求独立人工抽查。`task resolve` 和 `runtime codex render` 不启动 Agent。`skills audit-archive` 不解压、不执行、不联网；`skills eval assess` 不自动准入候选。`context assess` 的字符/回合是压力代理；只有同单位的 `remaining >= next atomic + closeout + safety margin` 才支持继续一个 AWU。外部 Skill 的 `discovered`、`triage`、`reference` 和 `quarantine` 均不等于已安装或已准入。
 
-`K-API-2` 当前没有新增 CLI 命令；最窄入口是 Python API `research_workbench.execution.run_task_api_attempt`，可复现用法和 fake-local fixtures 见 `tests/test_k_api_2_pipeline.py`。单轮 tool-call fan-out 有上限，但 handler 当前串行；token/成本和 wall-time 是调用边界/响应后 guard，不能取消 in-flight 调用。`completed` 证明结构、引用、哈希与文件 closeout 合同成立，但通用路径尚未强制证明 Provider 一定调用了 `document-read`。
+`research_workbench.execution.run_task_api_attempt` 是当前窄线 Python 入口：它只接受显式要求 Transfer Manifest 的 H2 Task，以 fake Provider 验证编译、只读工具、五种终态、commit-last 文件关闭和 fresh-process 恢复。它不是稳定 CLI，也不自动捕获完整 Attempt Archive/Agent Trace。
 
 ## 第一条验证路线
 
@@ -102,7 +92,7 @@ rwb execution assess examples/observability/execution-evidence-contract.yaml `
 1. `evidence-scout` + `literature-evidence-extraction` Skill：源材料只读、任务区受限写的检索、证据定位和引用交接。
 2. `simulation-auditor` + `simulation-vv` Skill：读取模型与运行工件，检查版本、参数、收敛和敏感性。
 
-两者共享最小科研内核与 Task/Handoff 契约，但使用不同的输入、权限、Skill、输出和质量检查。离线证据见 [双 Skill 契约切片](examples/vertical-slice/SLICE_REPORT.md)。evidence 的 fake-local API 文件闭环现已通过，但仍只证明合成输入下的绑定、隔离、关闭和文件恢复；simulation、平台路径和真实案例对照须等 K-API-2 节点评审后另行授权。
+两者共享最小科研内核与 Task/Handoff 契约，但使用不同的输入、权限、Skill、输出和质量检查。离线证据见 [双 Skill 契约切片](examples/vertical-slice/SLICE_REPORT.md)。该切片只证明绑定、隔离与校验可重放，不证明多 Agent 更强。下一步先完善 Mode 触发边界、Task-to-Skill 选择矩阵和轻量/审计 Handoff 对照；执行证据由相应运行工作流提供。
 
 ## 近期交付边界
 
@@ -110,13 +100,14 @@ rwb execution assess examples/observability/execution-evidence-contract.yaml `
 
 - 最小 Schema 与确定性验证器；
 - 一个本地 CLI；
-- 纯 API 隔离会话内核与显式模型槽；
-- `EVID-001` 的可信编译、严格输出验证、commit-last closeout 与防重放 intent；
+- 纯 API 隔离会话内核、显式模型槽与 H2 fake-local 文件关闭切片；
 - 可选的 Codex Runtime Adapter 映射；
 - 四个 Agent Profile、三个仓库级 Skill 与 accepted Registry；
 - 主状态包、Task Packet 和 Handoff Packet；
 - Context Snapshot 与 Execution Receipt；
 - 无数据库、无常驻 Supervisor、无全局自治 DAG。
+
+路诚钺的维护范围不包括 Provider Adapter、API session、真实模型 conformance 或 API 测试；实名边界见[开发协作指南](docs/DEVELOPMENT.md)。
 
 ## 参考方向
 
