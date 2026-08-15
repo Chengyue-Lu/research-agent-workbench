@@ -257,7 +257,7 @@ def validate_structured_response(request: ModelRequest, response: ModelResponse)
     assert isinstance(schema, Mapping)
     text = "".join(block.text or "" for block in response.output if block.kind == "text")
     try:
-        value = json.loads(text)
+        value = json.loads(_strip_code_fence(text))
     except json.JSONDecodeError as exc:
         raise ProviderError(
             ProviderErrorCategory.CONTRACT_VIOLATION,
@@ -274,6 +274,23 @@ def validate_structured_response(request: ModelRequest, response: ModelResponse)
             f"{response.provider} structured output failed local validation at {pointer}: {first.message}",
         )
     return response
+
+
+def _strip_code_fence(text: str) -> str:
+    """Drop one markdown code fence around structured output.
+
+    Several Anthropic-compatible endpoints emit schema-conforming JSON
+    inside a single ``` fence even when a JSON schema was requested. The
+    fence is a transport quirk, not content: stripping it does not weaken
+    the local schema validation that runs right after parsing.
+    """
+
+    stripped = text.strip()
+    if stripped.startswith("```") and stripped.endswith("```"):
+        first_newline = stripped.find("\n")
+        if first_newline != -1:
+            return stripped[first_newline + 1 : -3].strip()
+    return stripped
 
 
 def validate_response_contract(request: ModelRequest, response: ModelResponse) -> ModelResponse:

@@ -351,8 +351,11 @@ def _system_message(
         [
             "",
             "# Output contract",
-            f"Return exactly one structured {output_contract} result. The response format is "
-            "a JSON schema; every required field must be present.",
+            f"Return exactly one structured {output_contract} result as a single JSON object. "
+            "Match this JSON Schema exactly (no markdown, no extra fields):\n"
+            + json.dumps(
+                OUTPUT_CONTRACT_SCHEMAS[output_contract], ensure_ascii=False, indent=2
+            ),
             "",
             "# Stop conditions",
             *(f"- {condition}" for condition in task.stop_conditions),

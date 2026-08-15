@@ -43,7 +43,11 @@ CHECK_CAPABILITIES = {
     "tools": Capability.TOOLS,
 }
 MIN_OUTPUT_TOKENS = 16
-MAX_OUTPUT_TOKENS = 256
+# Thinking-first models allocate the output budget to hidden reasoning
+# before any visible text: a 256-token cap turns the structured check into
+# a thinking-depth lottery instead of a capability verdict. The cap stays
+# a hard bound, only raised to cover reasoning plus a small answer.
+MAX_OUTPUT_TOKENS = 1024
 MAX_CHECKS = len(CHECK_ORDER)
 
 
@@ -383,11 +387,26 @@ def _request_for(check: str, model: str, max_output_tokens: int) -> ModelRequest
             "required": ["ok"],
             "additionalProperties": False,
         }
+        # The schema rides in both the response format and the prompt: the
+        # port enforces structured output with LOCAL schema validation, and
+        # Anthropic-compatible endpoints vary in whether they pass the
+        # response-format field through to the model at all.
         return ModelRequest(
             model=model,
             messages=(
                 system,
-                Message("user", (ContentBlock(kind="text", text="Return the requested conformance object."),)),
+                Message(
+                    "user",
+                    (
+                        ContentBlock(
+                            kind="text",
+                            text=(
+                                "Return a single JSON object matching this schema exactly "
+                                f"(no markdown): {json.dumps(schema)}"
+                            ),
+                        ),
+                    ),
+                ),
             ),
             response_format=ResponseFormat(kind="json_schema", name="rwb_conformance", schema=schema),
             max_output_tokens=max_output_tokens,

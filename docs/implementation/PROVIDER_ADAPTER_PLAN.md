@@ -108,7 +108,7 @@ rwb providers probe --config registry/providers/adapters.yaml --check-environmen
 
 ### P2：真实 Windows live conformance（Runner 已完成，执行待完成）
 
-已实现 `rwb providers conformance`：默认只生成计划，不读取环境或发送网络；live 模式必须显式启用本地配置、添加 `--execute`、声明执行上下文并指定一个不存在的输出文件。每家先选一个明确模型，最多发送三个固定合成请求：文本、Schema 和指定 client tool。默认每次最多 64 output tokens，硬上限 256；不重试，第一次失败后停止。
+已实现 `rwb providers conformance`：默认只生成计划，不读取环境或发送网络；live 模式必须显式启用本地配置、添加 `--execute`、声明执行上下文并指定一个不存在的输出文件。每家先选一个明确模型，最多发送三个固定合成请求：文本、Schema 和指定 client tool。默认每次最多 64 output tokens，硬上限 1024（思考型模型先把输出预算消耗在隐藏推理上，256 会让 structured 探针退化为思考深度抽签而非能力判定）；不重试，第一次失败后停止。
 
 报告记录实际 model/version、停止原因、可得用量、输出块类型和工具调用数量，但不保存 prompt、响应正文、工具参数、凭据、provider response ID 或原始错误正文。HTTP 错误映射继续由离线 fixture 覆盖，不为了测试而故意发送无效 live 请求。
 

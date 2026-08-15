@@ -9,18 +9,22 @@ from research_workbench.adapters.models import (
     Capability,
     ContentBlock,
     FinishReason,
+    Message,
     ModelRequest,
     ModelResponse,
     ProviderAdapterConfig,
     ProviderCapabilities,
     ProviderError,
     ProviderErrorCategory,
+    ResponseFormat,
     ToolCall,
     Usage,
     build_live_provider,
     conformance_plan,
     run_provider_conformance,
 )
+from research_workbench.adapters.models.base import validate_structured_response
+from research_workbench.adapters.models.conformance import _request_for
 from research_workbench.validation import SchemaCatalog
 
 
@@ -179,6 +183,58 @@ class ConformanceRunnerTests(unittest.TestCase):
         self.assertEqual("authentication", report.checks[0].error_category)
         self.assertNotIn("sensitive-provider-message", json.dumps(document))
         self.assertEqual([], SchemaCatalog().validate("provider_conformance_report", document))
+
+
+class StructuredOutputNormalizationTests(unittest.TestCase):
+    """The port enforces structured output with LOCAL schema validation;
+    a markdown fence around otherwise-conforming JSON is a transport quirk."""
+
+    SCHEMA = {
+        "type": "object",
+        "properties": {"ok": {"const": True}},
+        "required": ["ok"],
+        "additionalProperties": False,
+    }
+
+    def _request(self):
+        return ModelRequest(
+            model="m",
+            messages=(Message("user", (ContentBlock(kind="text", text="x"),)),),
+            response_format=ResponseFormat(kind="json_schema", name="s", schema=self.SCHEMA),
+        )
+
+    def _response(self, text):
+        return ModelResponse(
+            response_id="r",
+            provider="p",
+            model="m",
+            output=(ContentBlock(kind="text", text=text),),
+            finish_reason=FinishReason.COMPLETE,
+        )
+
+    def test_fenced_conforming_json_passes(self) -> None:
+        fenced = "```json" + "\n" + '{"ok": true}' + "\n" + "```"
+        validate_structured_response(self._request(), self._response(fenced))
+
+    def test_bare_conforming_json_passes(self) -> None:
+        validate_structured_response(self._request(), self._response('{"ok": true}'))
+
+    def test_fenced_non_conforming_json_still_fails(self) -> None:
+        fenced = "```json" + "\n" + '{"nope": 1}' + "\n" + "```"
+        with self.assertRaises(ProviderError):
+            validate_structured_response(self._request(), self._response(fenced))
+
+    def test_prose_still_fails(self) -> None:
+        with self.assertRaises(ProviderError):
+            validate_structured_response(self._request(), self._response("no json at all"))
+
+    def test_structured_probe_embeds_the_schema_in_the_prompt(self) -> None:
+        request = _request_for("structured", "probe-model", 64)
+        text = "".join(
+            block.text or "" for block in request.messages[-1].content if block.kind == "text"
+        )
+        self.assertIn('"ok"', text)
+        self.assertIn("no markdown", text)
 
 
 if __name__ == "__main__":
