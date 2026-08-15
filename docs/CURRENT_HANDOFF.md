@@ -1,147 +1,121 @@
 # 当前开发 Handoff
 
-状态：`K-API-1` 已完成，`K-API-2` 是唯一下一关键节点
+状态：`K-API-2 Offline Minimal File Loop Gate Passed`，仍停在 `M6-004` 授权门前
 
-更新日期：2026-08-13
+更新日期：2026-08-15
 
-权威分支：合并后的 `main`
+实现分支：`codex/k-api-2-minimal`（评审合并后仍以 `main` 为权威）
 
 这份文件用于让没有既往聊天上下文的人或 AI 直接恢复开发。聊天摘要、平台线程和临时 transcript 都不是项目状态的权威来源。
 
 ## 1. 恢复结论
 
-当前仓库可以由新的开发者或 AI 直接接手。离线依赖、确定性验证、任务与 Skill 绑定、Provider 薄适配器、文件式连续性和隔离 API session kernel 均已进入仓库；接手者不需要访问原讨论记录，也不需要先选择 Codex、OpenCode、Claude Code 或其他 Agent 平台。
+仓库已经完成 `EVID-001` 的最小离线 Task-to-API 文件闭环：冻结的 Project Protocol、Task、Profile、Skill Assignment 和显式 `worker` 槽可以编译为 fresh API session；fake-local Provider 的结果可以关闭为可验证文件；删除内存 transcript 后，fresh Python subprocess 可以以 Main State 为恢复入口，在 Protocol 与哈希锁定的项目文件树中得到唯一下一动作。
 
-但当前只到技术基础节点，尚不能宣称：
-
-- Task 已能自动执行成完整 API 子会话；
-- 真实 Provider/Model 已通过本机 conformance；
-- 多 Agent 路径比单 Agent 更有效；
-- 生成内容具有科学正确性；
-- 项目已达到公开发布条件。
+这不是完整 Task 执行产品，也不是 live Provider、Windows 槽、科研正确性或多 Agent 净收益证明。`K-API-2` 节点评审已通过；当前唯一下一动作是由维护者决定是否明确授权 `M6-004`，不得自动进入。
 
 ## 2. 接手时先读取
 
-按以下顺序读取，避免把全部仓库加载进主上下文：
-
 1. `AGENTS.md`：不可违反的仓库边界；
 2. `docs/decisions/0010-API-FIRST-ISOLATED-EXECUTION.md`：当前执行方向；
-3. `docs/TASKS.md`：任务状态和唯一关键路径；
-4. `docs/NEXT_STEPS.md`：`K-API-2` 的停止条件；
-5. `docs/modules/03-AGENT_RUNTIME.md` 和 `docs/modules/09-ADAPTERS_AND_INTEGRATIONS.md`；
-6. `examples/task-evidence.yaml` 及对应 Profile、Skill Assignment 和 Main State；
-7. 只有修改具体契约时，再读取其 Schema、ADR 和测试。
+3. 本文件；
+4. `docs/TASKS.md` 与 `docs/NEXT_STEPS.md`；
+5. `src/research_workbench/execution/compiler.py`、`pipeline.py`、`output.py`、`closeout.py`；
+6. `tests/test_k_api_2_pipeline.py` 及三个 K2 专项单元测试文件；
+7. 只有修改具体契约时，再读取相应 Schema、ADR 和模块文档。
 
-不要用旧聊天记录补全仓库没有表达的状态。若本文与已接受 ADR 冲突，以较新的 ADR 和机器验证结果为准。
+若本文与已接受 ADR 冲突，以较新的 ADR 和机器验证结果为准。不要用旧聊天记录补全仓库没有表达的状态。
 
 ## 3. 已冻结的架构边界
 
 - 文件契约是权威状态；会话历史不是。
 - 纯 API fresh session 是可移植执行基线；平台原生 Agent/线程只是可选 Adapter 或人工入口。
-- 模型池只保留 `primary`、`worker` 和少量显式 `specialist` 槽。
-- 不实现模型评分、价格抓取、LLM Router、静默升级或跨 Provider fallback。
-- 主 Agent 只维护目标、任务图、决策、风险、工件索引和下一动作，不接收全部原始材料与工具日志。
-- 子 Agent 只获得 Task、选定 Skill、必要输入、有效权限、输出合同、预算和停止条件。
-- 子会话可压缩或删除，但必须先写出正式工件、Handoff、Receipt 和可恢复状态。
+- 模型只通过少量显式槽绑定；不实现评分 Router、价格抓取、静默升级或跨 Provider fallback。
+- 主 Agent 不接收全部原始材料与工具日志；子 Agent 只获得 Task、选定 Skill、必要输入、有效权限、输出合同和预算。
 - 不建立全局 Supervisor、固定科研 DAG、消息总线或连续性数据库，除非真实失败证据支持新的 ADR。
-- 学科差异通过 Research Mode Pack、Skill 和 Tool 组合表达，不固化为一条全局科研流程。
+- `K-API-2` 只允许只读 `document-read`；外部写入、streaming、多模态、server tools、新 Provider 和平台 Adapter 均不在本节点。
 
-## 4. 当前代码状态
+## 4. 本次已实现
 
-已经实现：
+### 4.1 可信编译边界
 
-- 版本化科研对象、Task、Attempt、Handoff、Context Snapshot、Execution Receipt 和 Transfer Audit Schema；
-- Agent Profile、Skill Registry、确定性 Skill Assignment 和作用域权限交集；
-- OpenAI Responses、Anthropic Messages、Gemini `generateContent` 非流式薄 Adapter；
-- `explicit-slot-only` Model Pool，模型 ID 由调用者显式注入；
-- fresh `IsolatedApiSessionRunner`，具有轮次、工具、并行、输出、token/可得成本和 wall-time 边界；
-- data policy、能力和预算的调用前阻断；
-- `SAFE_PAUSE`、文件 checkpoint、恢复冲突检查及机器证据优先；
-- 可选 Codex 配置映射，但没有平台 launch/collect 依赖。
+- `verify_execution_material` 只接受 Task 的冻结输入与 Assignment 中选定的 Skill；未选 Skill 和主会话历史不进入请求。
+- Protocol、Task、Profile、Assignment 及可选 previous Main State 在 Provider 前按精确字节捕获，先做 canonical relative-ref 和 JSON Schema 校验；执行后及 Main State 发布前再次核对，漂移时 fail-closed。
+- Skill 指令和 `document-read` 对同一份字节完成哈希与 UTF-8 解码，避免“先验哈希、后读不同内容”的窗口。
+- Task budget、runtime ceiling、有效权限、工具 allowlist、显式模型槽和 Project data boundary 取可信交集；远程上传需要批准但本节点没有批准证据时直接阻断。
+- 编译结果包含显式 Provider Adapter ID、冻结的规范 Provider capability identity、`ModelRequest`、`ApiSessionLimits` 和精确 client-tool handlers，不做 fallback。Adapter ID 是 Registry 查找键，不能与 Provider 响应自报的规范身份混用。
 
-尚未实现：
+### 4.2 bounded API runner
 
-- Task/Skill Assignment 到 `ModelRequest` 的正式编译器；
-- API session 结束到 Attempt、Research Artifact、Manifest、Handoff、Receipt 和 Main State 的原子关闭流程；
-- 删除临时 transcript 后的端到端新主会话恢复测试；
-- 实际启用 `primary`/`worker` 槽的真实 Windows 调用证据；
-- 多模态 specialist 的真实 Adapter 能力。示例中的该槽默认禁用，只是未来占位。
+- fresh session 有模型回合、工具调用、单轮 fan-out、工具结果字符数、单轮输出、累计 token/可得成本和 wall-time guard。
+- `max_parallel_tool_calls` 是单轮 fan-out 上限；当前 handler 按顺序串行执行，不宣称并行。
+- token/成本在响应后检查，wall time 在调用前后检查；这些 guard 不能取消 in-flight Provider 或工具调用。
+- Provider/模型身份和 Usage 数值在工具执行前校验。Receipt 的 `model_binding` 保存请求的 Adapter ID/模型，`model_usage.provider` 保存规范 Provider 身份；错误身份会停止执行其工具并阻断完成宣称。
+- 工具失败只持久化本地调用序号、工具名和异常类型，不持久化 Provider call/response ID 或异常正文。
 
-## 5. 唯一下一节点：K-API-2
+### 4.3 结构化输出与 closeout
 
-目标：把 `EVID-001` 的 Task、Profile、Skill Assignment 和显式 `worker` 槽编译到一个全新 API session。会话完成或安全暂停后，必须形成：
+- 模型只能提出受 Schema、Evidence source/hash、claim ceiling、locator 和 Transfer statement 一致性约束的 Research Objects 与 Handoff 内容；Attempt、路径、Receipt 和 Main State 由可信 closeout 生成。
+- closeout 是 `stage → validate → 逐文件排他 publish → real-tree revalidate → Main State last` 的 commit-last 协议，不是多文件事务。Task 输入以执行前捕获的精确字节写入 stage，而不是链接到可变源文件；stage plan 锁定每个待发布文件的哈希。
+- 动态 artifact 路径按模型返回的真实 `object_id` 再做 write-scope 和 allowed-root 检查；placeholder 不能授权别的路径。
+- 完整、已验证的 stage 可在同一 `attempt_id` 下续发，不重放 Provider/工具；已提交 bundle 只有在合同、previous Main State、请求的 Adapter ID 和模型都相同时才验证并幂等返回。
+- 恢复时会从 `task_id + attempt_id` 重建规范输出路径、重新执行 write-scope/allowed-root 检查，并把 optional previous Main State（包括 `None`）绑定到 intent、stage plan 和 committed fast path；调用者不能用同一 Attempt 静默换前序状态或发布位置。
+- 在 Main State 发布前的最后边界，closeout 再次核验真实树中的合同、Task 输入、selected Skill lock、全部已发布非 Main 文件和 staged Main State；此窗口出现漂移时不提交 Main State，恢复源文件后可从 stage 续发且不重放 Provider。
+- Provider 前以排他文件记录持久 execution intent。若进程在执行开始后、可恢复 stage plan 形成前丢失，同 Attempt 只返回 `API-ATTEMPT-RESULT-UNKNOWN`，不会自动重放；需要人工检查并显式创建新 Attempt。
+- Main State 发布后即为 commit point。崩溃可能留下未被 Main State 引用的不可变孤立文件，因此不得把该协议称为跨文件事务。
 
-1. Attempt；
-2. 正式 Research Artifacts；
-3. Transfer Manifest 与 Audit；
-4. Handoff；
-5. Context Snapshot；
-6. Execution Receipt；
-7. 更新后的 Main State。
+## 5. 终态输出合同
 
-随后删除内存 transcript，启动新的主会话并运行恢复检查。只有新会话仅凭文件即可得到唯一正确的下一动作，且不会重复已完成副作用时，才算到达 `K-API-2`。
+| 终态 | 持久输出 |
+|---|---|
+| `completed` | Attempt、正式 Research Artifacts、Transfer Manifest、Transfer Audit、Handoff、task/main Context Snapshots、Execution Receipt、Main State |
+| `safe-paused` / `incomplete` / `failed` / `blocked` | Attempt、Handoff、task/main Context Snapshots、Execution Receipt、Main State；不得伪造 Research Artifact、Manifest 或 Audit。`incomplete` 必须使用自己的有界下一动作，不得静默套用 `failed` 动作 |
+| 合同文件在执行期漂移、执行结果不确定、stage 不完整 | fail-closed；不发布 Main State，也不自动重放同 Attempt |
 
-到达该节点后立即暂停评审。不要顺手扩展 GUI、数据库、多模态、streaming、server tools、新 Provider 或平台 Adapter。
+模型/Provider 身份不符、工具失败、无效 Research Object、错误 Evidence 哈希或高风险 Transfer 语义都不能产生 `contract-satisfied`。
 
-## 6. 可同步开展的工作
+## 6. K-API-2 的验证证据
 
-多名开发者或 AI 应使用独立分支和不重叠写入范围。建议分为：
+专项测试位于：
 
-| 轨道 | 工作 | 独占写入范围 | 交付给集成者的内容 |
-|---|---|---|---|
-| K2-A 编译边界 | 定义 Task/Assignment/Profile/Model Slot 到 session 输入与 limits 的纯函数 | 新的 `src/research_workbench/execution/` 编译文件及对应单元测试 | 输入输出类型、失败码、最小上下文证明 |
-| K2-B 连续性 fixtures | 准备 completed、tool-failed、safe-paused、stale-input 四条无网络 fixtures | 新的 `examples/api-execution/` 和专用测试文件 | 可重放 fixture、预期状态与哈希 |
-| K2-C 关闭事务设计 | 评审 Attempt 到 Main State 的写入顺序、临时路径和崩溃恢复点 | 先只写设计/测试；接口冻结后再写独立 closeout 文件 | 原子性测试和部分写入失败矩阵 |
-| K2-D 独立审计 | 检查主上下文泄漏、权限扩大、重复副作用和完成过度宣称 | 测试与审计报告，不修改生产接口 | 阻断项及最小复现 |
+- `tests/test_api_execution_compiler.py`；
+- `tests/test_api_session_runner.py`；
+- `tests/test_api_execution_closeout.py`；
+- `tests/test_k_api_2_pipeline.py`；
+- `tests/test_io.py`。
 
-同步规则：
+程序化 fake-local fixtures 已覆盖 completed、tool-failed、safe-paused、`LENGTH/PAUSED/CONTEXT_LIMIT → incomplete`、stale/missing input，以及 Adapter ID/规范 Provider 分离、错误模型、无效/漂移合同、错误 Evidence 哈希、窄 write scope、同 Attempt 并发、intent 写入后的进程丢失、关键发布崩溃、Main 提交窗口的输入/Skill/非 Main 文件漂移、提交后部分清理和 fresh-process `resume-check`。
 
-- K2-A 的内部输入/输出合同先由一名集成者冻结；其他轨道不得各自发明第二套 session 状态。
-- 不允许两个轨道同时修改 Schema、`cli.py` 或同一 Registry 文件；这三类修改由集成者串行吸收。
-- fixtures 可以并行准备，但不得把 fixture 成功写成真实 API 或科学价值证据。
-- 每次 Handoff 都要给出基线提交、实际修改路径、验证命令、未完成项和下一动作。
+最终验证：仓库全量 `226/226 passed`；独立冻结字节 K2 专项 `92/92 passed`（compiler 18、session 16、I/O 6、closeout 11、pipeline 41）；Registry validator 为 `validated=53 errors=0 warnings=0`；变更 Python 文件 Ruff、文档链接与 `git diff --check` 均通过。三路只读复审均给出 `PASS`，未发现阻断性 P0/P1。未执行任何真实 API 调用。
 
-## 7. 已知风险和预警
+## 7. 仍未证明与已知限制
 
-- 编译器最容易误把主 Agent 全历史、未选 Skill 或原始大材料注入子会话。
-- 多文件关闭若没有 stage/validate/publish 边界，崩溃后可能出现部分完成状态。
-- 工具产生外部副作用后再发现预算不足，会导致恢复时重复执行；副作用必须有幂等键或显式人工确认边界。
-- 部分 Provider 不返回完整 token 或成本数据；配置硬预算时必须失败或安全暂停，不能假定为零。
-- Provider 返回的实际模型与显式槽位不一致时必须记录并阻断完成宣称。
-- Handoff 结构完整只表示可审计，不表示语义无损或科学正确。
-- 并行 Agent 会增加合并和校核成本；无法声明独立写入范围的任务不应并行化。
-- 真实凭据仅在获准的真实 Windows 用户上下文使用，不写入仓库、不输出值、不在隔离环境迁移令牌。
+- fake-local、合成 source、临时目录和 fresh Python subprocess 不等于真实 Windows 主 Agent/worker 会话。
+- 三家 Provider 只有离线 Adapter 合同；实际启用槽的 live conformance 仍是 `M6-004`。
+- 风险触发的 negative-result/conflict/assumption 候选当前转为失败 closeout，候选内容不会被保留；mandatory semantic review 也尚不支持。因此本节点不是一般科研语义闭环。
+- Provider 在中途异常时，已返回回合与工具的部分 aggregate 目前记为 unavailable，而不是虚构为零。
+- `completed` 证明输出结构、引用、哈希与文件 closeout 合同成立，但通用路径尚未强制证明 Provider 实际调用过 `document-read`；只有 happy-path fixture 明确覆盖了该只读工具往返。
+- 多文件目录快照不是 OS 级原子快照；本实现以同字节读取、前后包哈希、执行后合同复验和 fail-closed 缩小并发篡改窗口。
+- 外部副作用幂等、真实 token/time 误差、科学正确性、Transfer 语义等价和多 Agent 净收益均未验证。
+- 项目许可证、真实 evidence/simulation 案例与公开发布 Gate 仍需人类维护者决定。
 
-## 8. 本地恢复与验证
+## 8. 节点评审结论与当前停止条件
 
-```powershell
-git clone https://github.com/Chengyue-Lu/research-agent-workbench.git
-Set-Location research-agent-workbench
-git checkout main
-python -m pip install -e .
-rwb validate examples registry --root .
-rwb models probe --config registry/models/pool.example.yaml --json
-python -m unittest discover -s tests -v
-```
+`K-API-2` 离线最小文件闭环 Gate 已通过。评审确认：
 
-`models probe` 默认不读取环境值。只有使用者显式增加环境检查或执行真实 conformance 时，才允许在已授权的本机上下文检查配置是否存在；任何报告都不得保存凭据值。
+1. 编译输入保持最小，无主历史/未选 Skill 泄漏；
+2. completed 与非 completed 的完成宣称由文件和机器验证约束；
+3. commit-last、intent 和恢复边界未被误写成“事务”或“任意崩溃自动恢复”；
+4. 文档明确区分 fake-local 证明与 live/科研证明。
 
-本 Handoff 写入时的验证基线：
+当前依然必须停止。唯一下一动作是维护者决定是否明确授权 `M6-004`；Gate PASS 本身不构成授权。不要顺手扩展 GUI、数据库、多模态、streaming、server tools、新 Provider 或平台 Adapter。
 
-- 全量单元与合同测试：137 项通过；
-- 示例与 Registry：`validated=53 errors=0 warnings=0`；
-- `git diff --check`：通过；
-- 未执行真实 API 调用。
-
-## 9. 接手者完成一次工作的最小回传
-
-新的开发者或 AI 至少应回传：
+## 9. 接手者最小回传
 
 - 基线提交与工作分支；
-- 负责的 Task ID 和独占写入范围；
 - 修改过的正式文件；
 - 执行过的验证及原始结果位置；
-- 未证明的内容和剩余风险；
-- 是否达到 `K-API-2`，以及唯一下一动作。
+- 未证明内容和剩余风险；
+- `K-API-2` 审查结论，以及唯一下一动作。
 
 缺少以上任一项时，不应把聊天中的“已完成”同步回 Main State。

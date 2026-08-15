@@ -145,7 +145,7 @@ rwb context resume-check ...
 rwb handoff audit-transfer ...
 ```
 
-`assess` 不读取聊天隐式状态，调用方必须传入可测代理指标；若提供动态预算，remaining、next AWU、closeout 和 safety margin 必须同单位。压缩后的 task 若声明 handoff-ready，还要传 `--handoff-audit-ref`。`checkpoint` 可以从上一 Main State 继承状态并冻结机器证据；YAML 采用刷盘后排他发布，不支持原子硬链接时安全失败。`resume-check` 会检查引用哈希、Git HEAD、协议和 digest，是换届门槛，但不启动或管理新会话。Git HEAD 不覆盖未提交工作树，因此应在提交边界创建带 Git 基线的 checkpoint。
+`assess` 不读取聊天隐式状态，调用方必须传入可测代理指标；若提供动态预算，remaining、next AWU、closeout 和 safety margin 必须同单位。压缩后的 task 若声明 handoff-ready，还要传 `--handoff-audit-ref`。`checkpoint` 可以从上一 Main State 继承状态并冻结机器证据；单个 YAML 采用刷盘后排他发布，不支持原子硬链接时安全失败。`K-API-2` 的多文件 closeout 是 Main State 最后发布的 commit-last 协议，并非原子事务，崩溃时可能留下不可达孤立文件。`resume-check` 会检查引用哈希、Git HEAD、协议和 digest，是换届门槛，但不启动或管理新会话；当前只在 fake-local fixture 的 fresh Python 子进程中证明文件恢复，尚未证明真实主模型会话。Provider 中途异常时部分 usage、工具数和 turns 可能不可得，Context/Receipt 必须标为 unknown/unavailable，不能写成零。Git HEAD 不覆盖未提交工作树，因此应在提交边界创建带 Git 基线的 checkpoint。
 
 ## 10. 不保存的内容
 

@@ -4,12 +4,9 @@ import argparse
 import json
 import os
 import subprocess
-import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
-
-import yaml
 
 from research_workbench.adapters import CodexRuntimeAdapter
 from research_workbench.adapters.models import (
@@ -45,7 +42,12 @@ from research_workbench.context import (
 )
 from research_workbench.contracts import ContractError, ContractRisk, RiskLevel, to_plain
 from research_workbench.evaluation import assess_skill_evaluation
-from research_workbench.io import iter_documents, load_document
+from research_workbench.io import (
+    iter_documents,
+    load_document,
+    write_text_exclusive,
+    write_yaml_exclusive,
+)
 from research_workbench.observability import ExecutionReceipt, check_execution_receipt
 from research_workbench.protocol import ProjectProtocol
 from research_workbench.tasks import AttemptRecord, FileReference, HandoffPacket, TaskPacket
@@ -63,36 +65,13 @@ from research_workbench.validation.documents import (
 
 
 def _write_yaml(path: Path, document: Mapping[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary_path: Path | None = None
-    try:
-        with tempfile.NamedTemporaryFile(
-            mode="w",
-            encoding="utf-8",
-            newline="\n",
-            dir=path.parent,
-            prefix=f".{path.name}.",
-            suffix=".tmp",
-            delete=False,
-        ) as stream:
-            temporary_path = Path(stream.name)
-            yaml.safe_dump(dict(document), stream, sort_keys=False, allow_unicode=True)
-            stream.flush()
-            os.fsync(stream.fileno())
-
-        # Linking publishes a fully flushed inode only when the destination is
-        # still absent. It preserves the previous exclusive-create behaviour
-        # without exposing a partially written checkpoint as the final path.
-        os.link(temporary_path, path)
-    finally:
-        if temporary_path is not None:
-            temporary_path.unlink(missing_ok=True)
+    # Pass the module attribute so existing CLI failure-injection tests can
+    # replace ``research_workbench.cli.os.link`` at this compatibility wrapper.
+    write_yaml_exclusive(path, document, _link=os.link)
 
 
 def _write_text(path: Path, content: str) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("x", encoding="utf-8", newline="\n") as stream:
-        stream.write(content)
+    write_text_exclusive(path, content, _link=os.link)
 
 
 def _print_risks(risks) -> int:

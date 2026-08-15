@@ -2,7 +2,7 @@
 
 - 文档状态：面向首次使用者的当前实现指南
 - 适用版本：`0.1.x` 开发快照
-- 更新日期：2026-08-13
+- 更新日期：2026-08-14
 
 ## 1. 先说结论
 
@@ -169,7 +169,7 @@ rwb runtime codex render examples/task-evidence.yaml `
 
 dispatch 只包含 Task 边界、输入路径与哈希、写入范围、显式 Skill、完成检查和暂停条件。它不会嵌入论文全文、其他 Skill 正文或主会话历史。
 
-到这里仍然没有启动 Agent。这是已有的可选 Codex dispatch 路径；当前主线将 Task 编译到 fresh API session 的文件桥接仍处于 `K-API-2` 实现中。
+到这里仍然没有启动 Agent。这是已有的可选 Codex dispatch 路径；`K-API-2` 另已通过 Python API 和 fake-local fixture 打通 Task 到 fresh API session 的最小文件桥接，但没有新增 Task-to-API CLI，也没有执行真实 API。
 
 ### 4.5 检查一份已有 Handoff
 
@@ -204,14 +204,16 @@ rwb context resume-check `
 
 ## 5. 当前怎样实际运行一个子 Agent
 
-当前仓库已经有 fresh API session 内核，但尚未提供完整的 Task-to-API CLI。因此过渡期有两种受控方式：开发者直接调用该内核进行离线/集成测试，或使用现有 Codex dispatch 作为人工平台入口。无论采用哪种方式，Workbench 都管理同一套契约和文件闭环。
+当前仓库已经有 fresh API session 内核和 Python 入口 `research_workbench.execution.run_task_api_attempt`，但尚未提供 Task-to-API CLI。因此有两种受控方式：开发者通过该 Python 入口运行离线/集成 fixture，或使用现有 Codex dispatch 作为人工平台入口。无论采用哪种方式，Workbench 都管理同一套契约和文件闭环；`K-API-2` 评审虽已通过，真实 Provider/Windows worker 仍必须另行明确授权。
+
+这个节点仍只是结构闭环：`completed` 表示输出引用、哈希和机器契约自洽，不证明模型确实调用了 `document-read`、理解了来源或得出科学正确结论。当前风险触发的 negative-result/conflict/assumption 会 fail-closed，但候选内容尚不会进入人类复核等待区，因此也不能宣称已经普遍“保留负结果”。
 
 1. 人类批准 Project Protocol 和本次 Task 边界；
 2. 用 `rwb task resolve` 生成不可变 Assignment；
 3. 显式绑定 `primary`、`worker` 或 specialist 模型槽；若走平台路径，再用 `rwb runtime codex render` 生成最小 dispatch；
 4. 为子任务新建独立 API session 或平台窗口，不继承主 Agent 全历史；
 5. 让子 Agent 只读取 Task 的 `input_refs`，只写入 `write_scope`；
-6. 子 Agent 在结束或压缩前写正式工件、Attempt、Transfer Manifest 和 Handoff；
+6. 成功结果写正式工件、Attempt、Transfer Manifest/Audit 和 Handoff；`failed`、`blocked`、`safe-paused` 只写控制/恢复文件，不伪造科研工件；
 7. 运行确定性检查和 `rwb handoff validate`；
 8. 主 Agent 只读取 Handoff、风险、工件索引和下一动作；
 9. 需要换主会话时生成 Main State，新会话先通过 `resume-check`。
@@ -291,7 +293,7 @@ rwb hash path/to/input-file
 
 ### 6.5 交付正式结果
 
-一次真实执行至少应留下：
+一次成功并接纳科研结果的真实执行至少应留下：
 
 - Task Packet；
 - Skill Assignment；
@@ -301,6 +303,8 @@ rwb hash path/to/input-file
 - Execution Receipt；
 - 若 Task 要求，Transfer Manifest 和 Transfer Audit；
 - 若会话需要交接，Context Snapshot 和 Main State。
+
+失败、阻断或安全暂停也必须留下 Attempt、Handoff、Execution Receipt、Context Snapshot 和 Main State，但不要求也不允许伪造领域工件或 Transfer Manifest/Audit。
 
 聊天摘要不是这些工件的替代品。
 
@@ -361,7 +365,7 @@ rwb context checkpoint --id MS-001 `
 
 `--capture-git-head` 只能锁定已提交 HEAD，不能代表未提交工作树；应在明确的提交边界使用。Main State 还会用哈希固定协议、Snapshot 和显式提供的 `--machine-state-ref`。
 
-YAML 工件采用排他原子发布，不覆盖已有文件。若输出路径已存在，请创建新的 ID/文件，而不是删除旧 Attempt 或 checkpoint。
+单个 YAML 工件采用排他发布，不覆盖已有文件。`K-API-2` 的多文件 closeout 是 Main State 最后发布的 commit-last 协议，不是多文件原子事务；崩溃时可能留下未被 Main State 引用的不可变文件。若输出路径已存在，请创建新的 ID/文件，而不是删除旧 Attempt 或 checkpoint。
 
 ## 8. 怎样为不同研究类型扩展
 
@@ -457,9 +461,9 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 | Schema、模型和确定性验证 | 本地测试和全部示例/Registry 校验通过 | 技术 alpha 可用 |
 | CLI | 可 init、validate、resolve、render、audit、checkpoint | 技术 alpha 可用 |
 | Agent—Skill 路由 | 两条不同 Skill 的离线切片可重放 | 缺真实隔离执行 |
-| API Session 内核 | 显式模型槽、有界工具循环和无 fallback 已测试 | 缺 Task-to-API 文件桥接与真实调用 |
+| API Session 与文件桥接 | 显式模型槽、有界只读工具循环、无 fallback、Task 编译和 commit-last closeout 已用 fake-local fixture 测试 | 缺真实调用、真实 Windows worker 和科研语义验证 |
 | Codex Runtime Adapter | 布局、能力和 dispatch 已实现 | 可选路径，不在当前关键路径 |
-| 上下文连续性 | SAFE_PAUSE、哈希、digest、Git 冲突和恢复 fixture 已实现 | 缺真实跨会话恢复 |
+| 上下文连续性 | SAFE_PAUSE、哈希、digest、Git 冲突以及 fresh Python 子进程文件恢复已实现 | 缺真实主模型跨会话恢复 |
 | Handoff 压缩审计 | Manifest/Audit 和风险触发抽样契约已实现 | 缺真实材料语义样本 |
 | Provider Adapters | OpenAI、Anthropic、Gemini 离线合同和有界 runner 已实现 | 缺真实账户/model conformance |
 | Skill 供应链 | 候选隔离、静态审计、paired evaluation 契约已实现 | accepted Skills 仍标记 `project-original-unlicensed` |
@@ -477,11 +481,11 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 
 至少还需关闭六个发布 Gate：
 
-1. 完成 evidence 的纯 API 文件闭环，并以 simulation 或平台路径完成第二种 Skill 执行；
-2. 完成一次真实 `safe-paused → 新主会话 → 正确下一动作` 恢复；
+1. evidence 的 fake-local 纯 API 文件闭环已完成；仍需以 simulation 或平台路径完成第二种 Skill 的真实隔离执行；
+2. fake-local fresh 子进程已恢复唯一下一动作；仍需完成一次真实 `safe-paused → 新主会话 → 正确下一动作` 恢复；
 3. 把 `rwb init` 升级为可选择的完整项目模板，或提供受支持的 template repository；
 4. 选择并加入项目 LICENSE，同时清理 accepted Skills 的许可状态；
-5. 在 Windows 和 CI/Linux 上验证安装、原子文件发布和完整 quickstart；
+5. 在 Windows 和 CI/Linux 上验证安装、单文件排他发布、多文件 commit-last 恢复和完整 quickstart；
 6. 定义 `0.x` Schema/CLI 兼容、迁移和废弃政策。
 
 完成这些后可以发布 `0.2.x pilot`，邀请少量外部研究者使用，但仍不能宣称科研价值或生产稳定性。
@@ -517,9 +521,9 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 
 发布关键路径应保持克制：
 
-1. 完成 `K-API-2`：把 `evidence-scout + literature-evidence-extraction` 编译到 fresh API session 并写全文件闭环；
-2. 删除临时 transcript，只凭 Main State 在新主会话恢复；
-3. 在真实 Windows 用户上下文验证实际启用的 primary/worker 槽，再运行 simulation 或平台对照；
+1. `K-API-2` 离线最小闭环已完成独立评审，合同冻结、权限交集、终态矩阵、崩溃恢复和 no-replay 证据的 Gate 结论为 PASS；
+2. 只有维护者另行明确授权后，才进入 M6-004，在真实 Windows 用户上下文验证实际启用的 primary/worker 槽；
+3. 再运行 simulation 或平台路径的第二种 Skill 隔离执行，以及真实 `safe-paused → 新主会话` 恢复；
 4. 同步确定 LICENSE 和完整项目 scaffold 方案；
 5. 再进入两个真实科研案例、M4 工件 promotion/复现和对照评估；
 6. 只有对外承诺相应 API 时，执行真实 Provider conformance；

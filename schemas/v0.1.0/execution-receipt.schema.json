@@ -29,6 +29,15 @@
       ]
     },
     "completion_claim": { "enum": ["execution-only", "contract-satisfied"] },
+    "model_binding": {
+      "type": "object",
+      "required": ["provider_adapter_id", "requested_model"],
+      "properties": {
+        "provider_adapter_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "requested_model": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "additionalProperties": false
+    },
     "runtime": {
       "type": "object",
       "required": ["name", "version", "adapter_version"],
@@ -101,6 +110,13 @@
     "limitations": { "$ref": "common.schema.json#/$defs/stringArray" }
   },
   "allOf": [
+    {
+      "if": {
+        "properties": { "execution_kind": { "const": "model-api" } },
+        "required": ["execution_kind"]
+      },
+      "then": { "required": ["model_binding"] }
+    },
     {
       "if": {
         "properties": { "completion_claim": { "const": "contract-satisfied" } },

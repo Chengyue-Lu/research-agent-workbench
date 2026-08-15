@@ -1,8 +1,8 @@
 # 多提供商模型 API 实施计划
 
-状态：离线合同切片完成，真实环境一致性验证待执行
+状态：`K-API-2` 离线最小文件闭环 Gate 已通过；真实环境一致性验证待另行授权
 
-日期：2026-08-13
+日期：2026-08-15
 
 ## 1. 目标与边界
 
@@ -10,8 +10,9 @@
 
 ```mermaid
 flowchart LR
-  Task["Task / Skill Assignment"] --> Slot["Explicit Model Slot"]
-  Slot --> Port["Provider-neutral ModelRequest"]
+  Task["Frozen Protocol / Task / Profile / Assignment"] --> Slot["Explicit Model Slot"]
+  Slot --> Compile["Pure request / limits / tool compiler"]
+  Compile --> Port["Provider-neutral ModelRequest"]
   Port --> Gate["Model + Capability + DataPolicy preflight"]
   Gate --> OA["OpenAI Responses Adapter"]
   Gate --> AN["Anthropic Messages Adapter"]
@@ -19,7 +20,8 @@ flowchart LR
   OA --> Result["ModelResponse + Usage + Warnings"]
   AN --> Result
   GE --> Result
-  Result --> Receipt["Execution Receipt / Handoff"]
+  Result --> Closeout["Validate + commit-last closeout"]
+  Closeout --> Receipt["Attempt / Artifacts / Handoff / Receipt / Main State"]
 ```
 
 提供商选择属于执行策略；研究对象和 Claim 不保存 SDK 对象或路由状态。模型池只有 `primary`、`worker` 和按需 specialist 等少量显式槽，不建设动态 Router。跨提供商 fallback 必须是上层的一次新 Attempt，并保留实际 provider/model/data policy，不能在 Adapter 内静默完成。
@@ -31,7 +33,7 @@ flowchart LR
 - `base.py`：共同 preflight、本地结构化校验和错误边界；
 - `openai.py`、`anthropic.py`、`gemini.py`：三套独立映射；
 - `configuration.py`：非秘密配置解析和存在性探测；
-- `conformance.py`：固定合成提示、硬预算和脱敏报告的 live conformance runner；
+- `conformance.py`：固定合成提示、请求上限/调用边界 guard 和脱敏报告的 live conformance runner；
 - `pool.py`：显式模型槽配置与延迟模型 ID 绑定，不做评分或自动选择；
 - `session.py`：fresh context 的 provider-neutral 有界工具循环，不保存跨 Attempt 会话；
 - `registry/providers/adapters.yaml`：禁用状态的环境变量引用模板；
@@ -136,13 +138,13 @@ rwb providers conformance `
 
 ### P3：有预算的隔离 API 会话内核（完成）
 
-已在 Adapter 之上新增独立 runner，限制最大模型轮次、工具调用数、单轮并行数、单工具输出大小、单轮输出、累计 token/可得成本和 wall time。工具调用需要本地声明和 handler，不接受模型临时发明工具；未知硬预算会安全暂停。Runner 每次从调用方提供的消息开始，不复用 provider response ID，不自动 fallback。
+已在 Adapter 之上新增独立 runner，限制最大模型轮次、工具调用数、每轮 fan-out、单工具输出大小、单轮输出、累计 token/可得成本和 wall time。工具调用需要本地声明和 handler，不接受模型临时发明工具；不可测 usage 会安全暂停。fan-out 当前由 handler 串行执行；这些限制在请求前、调用边界和响应后检查，不能取消已经在途的 Provider/工具调用。Runner 每次从调用方提供的消息开始，不复用 provider response ID，不自动 fallback。
 
-该阶段达到 `K-API-1`，但还没有把 Task/Skill Assignment 自动编译为请求，也没有自动生成 Attempt/Execution Receipt，因此不是完整 Task 执行器。
+该阶段达到 `K-API-1`；随后 `K-API-2` 已增加冻结合同、Task/Skill Assignment 编译和文件 closeout，但仍只是 fake-local 的窄 Task 执行切片，不是通用或 live Task 执行器。
 
-### P4：Task-to-API 文件闭环（当前下一节点）
+### P4：Task-to-API 文件闭环（离线最小节点 Gate 已通过）
 
-把已解析 Task、Agent Profile、Skill Assignment 和显式模型槽编译成最小初始消息与工具 allowlist；执行结束或安全暂停时原子写入 Attempt、正式工件、Transfer Manifest、Handoff、Context Snapshot、Execution Receipt 与 Main State。删除临时 transcript 后做一次恢复检查。
+已把已解析 Task、Agent Profile、Skill Assignment 和显式模型槽编译成最小初始消息与只读工具 allowlist。`completed` 写 Attempt、正式工件、Transfer Manifest/Audit、Handoff、Context Snapshot、Execution Receipt，并最后发布 Main State；其他终态只写控制/恢复文件，不伪造科研工件。closeout 是 commit-last 协议而非多文件事务。删除内存 transcript 后，fresh Python 子进程恢复检查可得到唯一下一动作。该证据不包含真实 API、真实 Windows worker、科学正确性或完整语义等价；离线 Gate 已通过，但进入 P2/M6-004 仍需维护者明确授权。
 
 ### P5：按真实消费者扩展
 

@@ -116,13 +116,20 @@ recommended_next_actions:
 
 ### Transfer Manifest 与接收审计
 
-当 Task 的 `handoff_policy.require_transfer_manifest` 为 true 时，执行者必须在压缩或结束 Task Context 前写 `handoff_transfer_manifest`。Manifest 只列需要跨上下文保留的稳定条目 ID、类型、关键度、来源工件哈希和定位符，不复制原始材料或推理日志。
+当 Task 的 `handoff_policy.require_transfer_manifest` 为 true 且本次 Attempt 接纳了正式 Research Artifact 时，执行者必须在压缩或结束 Task Context 前写 `handoff_transfer_manifest`。Manifest 只列需要跨上下文保留的稳定条目 ID、类型、关键度、来源工件哈希和定位符，不复制原始材料或推理日志。`failed`、`blocked` 或 `safe-paused` 没有接纳科研工件时不得为满足清单而伪造 Manifest/Audit。
 
 接收者用 `handoff_transfer_audit` 把条目映射到 Handoff 的 `/result/facts/*`、`/limitations/*`、`/unresolved/*` 等位置。机器检查覆盖、哈希、定位、必需条目和负面区段；语义是否被改写只能由有界独立抽查记录。领域 Skill 决定哪些内容应进入 Manifest，通用 Handoff 契约不规定所有学科共用的参数或质量评分表。
 
 ## 6. Attempt 与 Task
 
 一次 Task 可以有多个 Attempt。重试必须使用新 `attempt_id`，记录触发原因、输入是否变化、Skill/模型/工具是否变化。禁止覆盖失败 Attempt。
+
+`K-API-2` 的终态落盘矩阵是：
+
+- `completed`：Attempt、Research Artifact、Transfer Manifest/Audit、Handoff、Task/Main Context Snapshot、Execution Receipt，最后发布 Main State；
+- `safe-paused`、`incomplete`、`failed`、`blocked`：Attempt、Handoff、Task/Main Context Snapshot、Execution Receipt，最后发布 Main State；不生成 Research Artifact、Manifest 或 Audit。`incomplete` 表示 Provider 只返回不完整终止结果，必须持久化自己的下一动作并使用新 Attempt，不能恢复或重放原 transcript。
+
+多文件 closeout 采用 commit-last 协议，不是多文件事务：各正式文件逐个排他发布，Main State 是最后提交点。崩溃可能留下未被 Main State 引用的不可变孤立文件；验证完成的 stage 可以续发而不重放 Provider，只有 intent 但没有可验证结果的 Attempt 必须 fail-closed 并人工确认后使用新 Attempt。
 
 Attempt 可以引用一份 `Execution Receipt`。Receipt 记录实际 Runtime、模型用量状态、协调/执行成本、Context Snapshot 和 trace 策略；Handoff 也回指同一 Receipt。验证器检查这三者的 Task、状态、时间和路径一致性，避免把另一次执行的成本或结果串入当前交接。
 
@@ -135,6 +142,8 @@ Receipt 的生命周期 `status: completed` 只表示一次执行已经结束，
 - 语义不确定：不自动重试多个 Agent 直至“达成一致”；
 - 权限/数据边界失败：直接阻断；
 - 新输入或范围变化：创建新 Task revision，而非伪装重试。
+
+上述“一次定向修复”是调度政策，不授权在已经写入执行 intent 的同一 Attempt 内自动再次调用 Provider 或重放工具。
 
 ## 7. Write Scope
 

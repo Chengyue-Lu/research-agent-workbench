@@ -62,6 +62,7 @@ from research_workbench.adapters.models.session import (
     ApiSessionStatus,
     ClientTool,
     IsolatedApiSessionRunner,
+    ToolFailureSummary,
 )
 
 __all__ = [
@@ -108,6 +109,7 @@ __all__ = [
     "ToolCall",
     "ToolChoice",
     "ToolDefinition",
+    "ToolFailureSummary",
     "Usage",
     "UrllibTransport",
     "build_live_provider",

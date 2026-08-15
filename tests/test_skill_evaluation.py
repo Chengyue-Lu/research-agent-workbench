@@ -222,6 +222,10 @@ def _receipt(
             "finished_at": "2026-08-13T06:00:01Z",
             "status": "completed",
             "runtime": {"name": "fixture-runtime", "version": "1", "adapter_version": "0.1.0"},
+            "model_binding": {
+                "provider_adapter_id": "fixture-adapter",
+                "requested_model": model,
+            },
             "model_usage_status": "measured",
             "model_usage": [
                 {

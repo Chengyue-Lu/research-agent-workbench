@@ -38,19 +38,19 @@
 | M2-004 | IN_PROGRESS | 创建 simulation-vv Skill | M2-001 | V&V 结构、版本锁和 Claim ceiling 正反例通过；真实数值案例待执行 |
 | M2-005 | DONE | 创建 handoff-integrity 检查 | M1 | 确定性脚本已验证 Task/input/Skill/artifact 交接边界，不宣称科学正确性 |
 | M2-006 | PARKED | 扩展 Codex Runtime Adapter | M2-002..005 | 已有 Agent/Skill 发现、验证和显式 dispatch 保留；平台 launch/collect 不在当前 API-first 关键路径 |
-| M2-007 | IN_PROGRESS | 执行首个双 Skill 垂直切片 | M6-003 | 离线契约切片已证明 Skills 不同；先完成 evidence 的纯 API 文件闭环，再按需做 simulation 或平台对照 |
+| M2-007 | IN_PROGRESS | 执行首个双 Skill 垂直切片 | M6-003 | evidence 的 fake-local API 文件闭环已完成；simulation 的同等级执行或平台对照仍待明确授权，不由 K-API-2 自动启动 |
 | M2-008 | IN_PROGRESS | 建立外部 Skill 发现、隔离评估与准入 Registry | M1 | ZIP 审计、18/18 追溯、非发现候选和 provider-neutral 双臂评估契约/CLI 已落地；fixture 会被正确阻断，真实 with/without 与 trial/accepted 仍待完成 |
 
 ## M3：上下文与风险
 
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
-| M3-001 | IN_PROGRESS | Main State checkpoint/resume | M1 | 规范化 digest、原子文件发布、Continuity 状态、机器证据哈希、Git 基线、下一动作和约束/决定丢失检查已通过；进程级 kill 矩阵与真实新主会话恢复待演练 |
+| M3-001 | IN_PROGRESS | Main State checkpoint/resume | M1 | 规范化 digest、单文件排他发布、Continuity 状态、机器证据哈希、下一动作检查、K2 关键发布故障续发与 fresh subprocess resume-check 已通过；完整 kill 矩阵和真实主模型会话仍待演练 |
 | M3-002 | IN_PROGRESS | context pressure 与 AWU 预算 | M3-001 | 可测/未知指标、动态 next-AWU/closeout/reserve 判定、WARN/rollover/block 和 checkpoint 链已测试；真实运行估计误差待采集 |
 | M3-003 | IN_PROGRESS | Handoff loss/stale/summary 抽查 | M2 | Transfer Manifest/Audit、负面区段覆盖、风险触发抽查、Context/Receipt 绑定已实现；真实隔离 API Handoff 的人工样本仍待执行 |
 | M3-004 | IN_PROGRESS | review loop/fanout/write race 检查 | M2 | 并发预算、review loop、协调成本与既有 write race 检查已落地；真实停止行为待验证 |
 | M3-005 | IN_PROGRESS | 敏感 trace 策略 | M2 | 外部/完整/敏感 trace 会阻断或警告；真实脱敏器与密钥 fixture 待实现 |
-| M3-006 | IN_PROGRESS | SAFE_PAUSE 与机器完成权 | M3-001..003 | AWU/完成/暂停条件、stage/safe-pause/waiting、执行结束与 `contract-satisfied` 分离、失败报告覆盖显式完成宣称和可恢复 pause fixture 已实现；API session rollover 待演练 |
+| M3-006 | IN_PROGRESS | SAFE_PAUSE 与机器完成权 | M3-001..003 | AWU/完成/暂停条件、stage/safe-pause/waiting、执行结束与 `contract-satisfied` 分离，以及 fake-local API safe-pause closeout 已验证；真实 Provider/session rollover 仍待演练 |
 
 ## M4：工件与复现
 
@@ -76,9 +76,9 @@
 
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
-| M6-001 | IN_PROGRESS | OpenAI/Anthropic/Gemini 薄 Model Provider Adapters | M1-008 | 端口、ToolChoice、本地工具参数校验、HTTPS Transport 与离线合同已通过；有硬预算和脱敏报告的 live runner 已完成，实际启用槽位的真实 Windows conformance 待完成 |
-| M6-002 | DONE | 显式模型池与隔离 API session kernel（`K-API-1`） | M6-001 | primary/worker/specialist 槽只可显式绑定；轮次、工具、并行、工具结果、输出、token/成本/time 有硬边界；无自动 fallback；离线测试通过 |
-| M6-003 | IN_PROGRESS | Task-to-API 文件闭环（`K-API-2`） | M1-008, M2-001..005, M6-002 | 已解析 evidence Task 进入 fresh API session，完成或 safe-pause 后固化 Attempt/工件/Manifest/Handoff/Receipt/Main State；删除临时 transcript 后可恢复 |
+| M6-001 | IN_PROGRESS | OpenAI/Anthropic/Gemini 薄 Model Provider Adapters | M1-008 | 端口、ToolChoice、本地工具参数校验、HTTPS Transport 与离线合同已通过；有请求上限、调用边界/响应后 guard 和脱敏报告的 live runner 已完成，实际启用槽位的真实 Windows conformance 待完成 |
+| M6-002 | DONE | 显式模型池与隔离 API session kernel（`K-API-1`） | M6-001 | primary/worker/specialist 槽只可显式绑定；轮次/工具/单轮 fan-out/结果/输出/token/成本/time guard 明确，handler 串行且不能取消 in-flight 调用；无自动 fallback；离线测试通过 |
+| M6-003 | DONE | Task-to-API 文件闭环（`K-API-2`） | M1-008, M2-001..005, M6-002 | `EVID-001` 已通过 exact-byte 合同快照、可信编译、fake-local completed/safe-paused/incomplete/failed/blocked 终态、Adapter/Provider 身份分离、commit-last closeout、持久 intent 防重放与 fresh subprocess resume-check；仅 completed 生成 Research Artifacts/Manifest/Audit；离线节点评审已通过，真实 API 与 `M6-004` 仍未授权 |
 | M6-004 | READY | 选定模型槽的真实 Windows conformance 与一次 evidence 调用 | M6-001..003 | 只验证实际启用的 primary/worker 槽，不要求三家齐全；脱敏报告与实际 Provider/Model 可核对 |
 | M6-005 | PARKED | streaming/multimodal/server tools 与平台 Adapter | 真实案例或平台选择 | 每项独立 capability、data policy、合同与删除条件，不批量铺开，不预先绑定 OpenCode/Codex |
 
@@ -96,4 +96,4 @@ M1 已建立里程碑与首批可执行 Issues：
 
 ## 当前下一任务
 
-`K-API-1` 已完成，当前唯一关键路径是 `M6-003 / K-API-2`：把 `EVID-001` 的 Task、Profile、Skill Assignment 和显式 `worker` 槽编译成 fresh API 子会话，并在完成或安全暂停时写全 Attempt、正式工件、Transfer Audit、Context Snapshot、Execution Receipt 与 Main State。达到“删除临时会话后，新主会话只凭文件恢复到唯一正确下一动作”即停止并评审；这不是交付点，不继续扩展 GUI、平台 Adapter、多模态或新 Provider。真实令牌与调用仍只在非 Codex 沙箱的真实 Windows 用户上下文处理。
+`M6-003 / K-API-2` 的 fake-local 最小文件闭环与节点评审已完成。`M6-004` 保持 `READY`，不得因 Gate PASS 而自动启动。当前唯一下一动作是由维护者决定是否明确授权 `M6-004`；真实令牌与调用仍只在获准的真实 Windows 用户上下文处理。

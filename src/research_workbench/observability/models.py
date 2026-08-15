@@ -109,6 +109,21 @@ class ModelUsageRecord:
 
 
 @dataclass(frozen=True, slots=True)
+class RequestedModelBinding:
+    """The explicit adapter lookup key and model requested for one API Attempt."""
+
+    provider_adapter_id: str
+    requested_model: str
+
+    @classmethod
+    def from_mapping(cls, data: Mapping[str, Any]) -> "RequestedModelBinding":
+        return cls(
+            provider_adapter_id=require_string(data, "provider_adapter_id"),
+            requested_model=require_string(data, "requested_model"),
+        )
+
+
+@dataclass(frozen=True, slots=True)
 class CoordinationUsage:
     delegated_attempts: int
     handoff_count: int
@@ -184,6 +199,7 @@ class ExecutionReceipt:
     finished_at: str
     status: str
     completion_claim: str | None
+    model_binding: RequestedModelBinding | None
     runtime: ExecutionRuntime
     model_usage_status: str
     model_usage: tuple[ModelUsageRecord, ...]
@@ -224,6 +240,15 @@ class ExecutionReceipt:
                 "completion_claim",
                 "contract-satisfied requires completed or stage-completed status",
             )
+        raw_model_binding = data.get("model_binding")
+        if raw_model_binding is None:
+            if kind == "model-api":
+                raise ContractError("model_binding", "is required for model-api execution")
+            model_binding = None
+        elif not isinstance(raw_model_binding, Mapping):
+            raise ContractError("model_binding", "must be an object")
+        else:
+            model_binding = RequestedModelBinding.from_mapping(raw_model_binding)
         usage_status = require_string(data, "model_usage_status")
         if usage_status not in {"measured", "estimated", "unavailable", "not-applicable"}:
             raise ContractError("model_usage_status", "has unsupported value")
@@ -272,6 +297,7 @@ class ExecutionReceipt:
             finished_at=finished_at,
             status=status,
             completion_claim=completion_claim,
+            model_binding=model_binding,
             runtime=ExecutionRuntime.from_mapping(mapping_value(data, "runtime", required=True)),
             model_usage_status=usage_status,
             model_usage=usage,

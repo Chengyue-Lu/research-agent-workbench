@@ -101,10 +101,14 @@ Profile 不包含完整 Skill 指令，也不固定厂商模型。`default_slot`
 
 - coordinator 默认使用 `primary` 槽；其他首批 Profile 默认使用 `worker` 槽；
 - 每个子任务建立一个 fresh context，不继承主 Agent 的完整消息历史；
-- Task、Skill Assignment、输入引用、输出契约和预算组成唯一启动材料；
-- 工具循环在本地受轮次、调用数、结果大小、token/成本和 wall time 限制；
+- Protocol、Task、Profile、Skill Assignment 和可选 previous Main State 在 Provider 调用前按精确字节冻结并校验 Schema；
+- 纯编译边界只把冻结 Task、选中 Skill、输入引用、显式模型槽和各层权限/预算交集变成请求、限制与精确工具 handler；
+- `K-API-2` 当前只开放 hash-locked `document-read`，不注入主 Agent 全历史、未选 Skill 或预读的源正文；
+- 工具循环在请求前、调用边界和响应后检查轮次、调用数、结果大小、token/成本与 wall time；它不能中断正在进行的 Provider/工具调用；
+- `max_parallel_tool_calls` 只是每轮 fan-out 上限，首版客户端 handler 串行执行；
 - provider/model 不满足能力或数据政策时阻断，不换槽、不换 Provider；
-- 临时 API transcript 不是权威状态，退出前必须固化工件与 Handoff。
+- 临时 API transcript 不是权威状态；`completed` 通过 stage → validate → 排他发布并最后提交 Main State，其他终态只写恢复/审计文件，不伪造科研工件；
+- Provider 调用前排他记录 Attempt intent；已验证 stage 只续发文件，未知执行结果同 Attempt fail-closed，不自动重放副作用。
 
 ### 可选 Codex 映射
 
@@ -125,7 +129,7 @@ Profile 不包含完整 Skill 指令，也不固定厂商模型。`default_slot`
 | 输入版本变化 | 标记 `stale_input`，阻止合并 |
 | Skill 缺失或版本不符 | `BLOCK`，重新解析能力 |
 | 权限不足 | 返回 capability gap，不自动扩大权限 |
-| 输出 Schema 不合格 | 一次定向修复；再次失败升级给主 Agent |
+| API 输出或科研工件契约不合格 | 当前 `K-API-2` 写 failed closeout；定向修复必须使用新 Attempt，不在原 Attempt 内自动重放 |
 | 结果冲突 | 并列保存，主 Agent提出可判别的下一步，不做多数投票 |
 | 写入冲突 | 阻止合并，重新划分 write scope |
 

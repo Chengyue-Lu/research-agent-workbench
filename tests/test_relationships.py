@@ -5,6 +5,7 @@ from pathlib import Path
 
 from research_workbench.artifacts import hash_file
 from research_workbench.capability import AgentProfile, ResolutionError, SkillManifest, resolve_task
+from research_workbench.contracts import ContractError
 from research_workbench.io import load_document
 from research_workbench.tasks import FileReference, HandoffPacket, TaskPacket
 from research_workbench.protocol import ProjectProtocol
@@ -36,6 +37,41 @@ class RelationshipValidationTests(unittest.TestCase):
         task = TaskPacket.from_mapping(self.load("examples/task-evidence.yaml"))
         handoff = HandoffPacket.from_mapping(self.load("examples/handoff-evidence.yaml"))
         self.assertEqual([], check_handoff_against_task(task, handoff, project_root=ROOT))
+
+    def test_failed_handoff_without_research_artifacts_does_not_fabricate_manifest(self) -> None:
+        task = TaskPacket.from_mapping(self.load("examples/task-evidence.yaml"))
+        baseline = HandoffPacket.from_mapping(self.load("examples/handoff-evidence.yaml"))
+        failed = replace(
+            baseline,
+            status="failed",
+            artifact_refs=(),
+            validation_refs=(),
+            transfer_manifest_ref=None,
+        )
+        codes = {risk.code for risk in check_handoff_against_task(task, failed)}
+        self.assertNotIn("HANDOFF-TRANSFER-MANIFEST-MISSING", codes)
+
+    def test_persisted_partial_artifacts_still_require_transfer_manifest(self) -> None:
+        task = TaskPacket.from_mapping(self.load("examples/task-evidence.yaml"))
+        baseline = HandoffPacket.from_mapping(self.load("examples/handoff-evidence.yaml"))
+        partial = replace(baseline, status="safe-paused", transfer_manifest_ref=None)
+        codes = {risk.code for risk in check_handoff_against_task(task, partial)}
+        self.assertIn("HANDOFF-TRANSFER-MANIFEST-MISSING", codes)
+
+    def test_handoff_references_reject_drive_relative_and_outside_paths(self) -> None:
+        document = self.load("examples/handoff-evidence.yaml")
+        document["artifact_refs"] = ["C:outside.yaml"]
+        with self.assertRaises(ContractError):
+            HandoffPacket.from_mapping(document)
+
+        task = TaskPacket.from_mapping(self.load("examples/task-evidence.yaml"))
+        baseline = HandoffPacket.from_mapping(self.load("examples/handoff-evidence.yaml"))
+        escaped = replace(baseline, artifact_refs=("../outside.yaml",))
+        codes = {
+            risk.code
+            for risk in check_handoff_against_task(task, escaped, project_root=ROOT)
+        }
+        self.assertIn("HANDOFF-REF-OUTSIDE-ROOT", codes)
 
     def test_missing_skill_and_capability_are_both_reported(self) -> None:
         task = TaskPacket.from_mapping(self.load("examples/task-evidence.yaml"))

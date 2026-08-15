@@ -282,6 +282,20 @@ class ExecutionReceiptTests(unittest.TestCase):
         self.assertEqual([], [risk for risk in risks if risk.level == "block"])
         self.assertIn("HANDOFF-SEMANTIC-UNREVIEWED", {risk.code for risk in risks})
 
+    def test_model_api_receipt_requires_explicit_requested_binding(self) -> None:
+        document = copy.deepcopy(load_document(self.receipt_path))
+        document["execution_kind"] = "model-api"
+        with self.assertRaisesRegex(ContractError, "model_binding"):
+            ExecutionReceipt.from_mapping(document)
+
+        document["model_binding"] = {
+            "provider_adapter_id": "fixture-responses",
+            "requested_model": "fixture-model",
+        }
+        receipt = ExecutionReceipt.from_mapping(document)
+        self.assertEqual("fixture-responses", receipt.model_binding.provider_adapter_id)
+        self.assertEqual("fixture-model", receipt.model_binding.requested_model)
+
     def test_cost_fanout_review_and_trace_faults_are_visible(self) -> None:
         document = copy.deepcopy(load_document(self.receipt_path))
         document["execution_kind"] = "native-agent"

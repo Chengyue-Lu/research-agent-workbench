@@ -23,6 +23,8 @@ ADR-0001 在项目早期选择“原生 Agent 运行时优先”，目的是避�
 7. 若平台路径执行，仍必须固定同一模型槽并在 Receipt 中核对实际 Provider/Model，防止平台继承或二次路由。
 8. 本 ADR 取代 ADR-0001 中“真实执行首先依赖原生平台”的优先级；ADR-0001 关于不建设通用 Supervisor、固定 DAG 和会话数据库的限制继续有效。
 
+实现解释（2026-08-14）：上述“单轮并行调用数”在首版实现中是每轮 fan-out 上限，客户端 handler 串行执行；token/成本与 wall time 是请求前、调用边界和响应后 guard，不能取消 in-flight 调用。“硬预算不可测”只授权在下一次调用前停止或安全暂停，不构成对在途 transport/tool 的强制中断声明。
+
 ## 当前关键节点
 
 `K-API-1` 定义为：
@@ -37,6 +39,8 @@ ADR-0001 在项目早期选择“原生 Agent 运行时优先”，目的是避�
 ## 下一关键节点
 
 `K-API-2` 是一次完整的 Task-to-API 文件闭环：将一个已解析 Task 和 Skill Assignment 编译为隔离 API 子会话，产生 Attempt、研究工件、Transfer Manifest、Handoff、Execution Receipt 和 Main State；删除临时会话后，新主会话只凭文件恢复到正确下一动作。真实 API 调用只在已授权的 Windows 用户上下文执行。
+
+实现状态（2026-08-15）：fake-local 最小节点 Gate 已通过，但 `M6-004` 仍未授权。`completed` 还会生成 Transfer Audit 和 task/main Context Snapshots；`safe-paused`、`incomplete`、`failed`、`blocked` 只生成 Attempt、Handoff、两个 Snapshot、Receipt 和 Main State，不伪造研究工件/Manifest/Audit。Provider Adapter ID 与规范 Provider identity 分别用于 Registry 请求绑定和 capability/响应核验。多文件 closeout 是 Main State 最后发布的 commit-last 协议，不是事务；恢复证据来自以 Main State 为入口并校验项目文件树的 fresh Python 子进程，不是已运行的真实主模型会话，也不是单文件自足。
 
 ## 后果
 

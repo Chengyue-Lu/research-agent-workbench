@@ -299,6 +299,14 @@ class HandoffPacket:
         transfer_manifest_ref = optional_string(data, "transfer_manifest_ref")
         if transfer_manifest_ref is not None:
             require_relative_path(transfer_manifest_ref, "transfer_manifest_ref")
+        artifact_refs = string_tuple(data, "artifact_refs", required=True)
+        validation_refs = string_tuple(data, "validation_refs")
+        for field, references in (
+            ("artifact_refs", artifact_refs),
+            ("validation_refs", validation_refs),
+        ):
+            for index, reference in enumerate(references):
+                require_relative_path(reference, f"{field}[{index}]")
         return cls(
             schema_version=require_string(data, "schema_version"),
             task_id=require_string(data, "task_id"),
@@ -308,8 +316,8 @@ class HandoffPacket:
             skill_lock=string_tuple(data, "skill_lock", required=True),
             skill_assignment_ref=assignment_ref,
             result=HandoffResult.from_mapping(mapping_value(data, "result", required=True)),
-            artifact_refs=string_tuple(data, "artifact_refs", required=True),
-            validation_refs=string_tuple(data, "validation_refs"),
+            artifact_refs=artifact_refs,
+            validation_refs=validation_refs,
             limitations=string_tuple(data, "limitations", required=True),
             conflicts=mapping_tuple(data, "conflicts"),
             unresolved=string_tuple(data, "unresolved", required=True),

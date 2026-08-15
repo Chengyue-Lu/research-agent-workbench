@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import StrEnum
+from types import MappingProxyType
 from typing import Any, Iterable, Mapping, Protocol, runtime_checkable
 
 
@@ -169,6 +170,25 @@ class ProviderCapabilities:
     data_controls: frozenset[str] = frozenset()
     known_gaps: tuple[str, ...] = ()
 
+    def frozen_snapshot(self) -> "ProviderCapabilities":
+        """Return a detached, deeply immutable approval snapshot.
+
+        ``provider`` is the adapter's canonical provider identity. It is not
+        the registry adapter id used to select the adapter instance.
+        """
+
+        return ProviderCapabilities(
+            provider=self.provider,
+            adapter_version=self.adapter_version,
+            supported=frozenset(self.supported),
+            models=tuple(self.models),
+            deployment=self.deployment,
+            regions=frozenset(self.regions),
+            limits=MappingProxyType(dict(self.limits)),
+            data_controls=frozenset(self.data_controls),
+            known_gaps=tuple(self.known_gaps),
+        )
+
     def supports_model(self, model: str) -> bool:
         return not self.models or model in self.models
 
@@ -266,28 +286,69 @@ class ProviderRegistry:
     def __init__(self) -> None:
         self._providers: dict[str, ModelProvider] = {}
 
-    def register(self, name: str, provider: ModelProvider) -> None:
-        if name in self._providers:
-            raise ValueError(f"provider already registered: {name}")
-        self._providers[name] = provider
+    def register(self, adapter_id: str, provider: ModelProvider) -> None:
+        """Register an adapter lookup key independently of provider identity."""
 
-    def get(self, name: str) -> ModelProvider:
+        if adapter_id in self._providers:
+            raise ValueError(f"provider adapter already registered: {adapter_id}")
+        self._providers[adapter_id] = provider
+
+    def get(self, adapter_id: str) -> ModelProvider:
         try:
-            return self._providers[name]
+            return self._providers[adapter_id]
         except KeyError as exc:
-            raise KeyError(f"unknown provider: {name}") from exc
+            raise KeyError(f"unknown provider adapter: {adapter_id}") from exc
 
-    def require(self, name: str, request: ModelRequest) -> ModelProvider:
-        provider = self.get(name)
-        snapshot = provider.capabilities()
+    def require_with_capabilities(
+        self,
+        adapter_id: str,
+        request: ModelRequest,
+        *,
+        expected_capabilities: ProviderCapabilities | None = None,
+    ) -> tuple[ModelProvider, ProviderCapabilities]:
+        """Resolve ``adapter_id`` and revalidate its canonical capability snapshot."""
+
+        provider = self.get(adapter_id)
+        raw_snapshot = provider.capabilities()
+        if not isinstance(raw_snapshot, ProviderCapabilities):
+            raise ProviderError(
+                ProviderErrorCategory.CONTRACT_VIOLATION,
+                "Provider adapter returned an invalid capability snapshot",
+            )
+        snapshot = raw_snapshot.frozen_snapshot()
+        if (
+            not isinstance(snapshot.provider, str)
+            or not snapshot.provider.strip()
+            or snapshot.provider != snapshot.provider.strip()
+        ):
+            raise ProviderError(
+                ProviderErrorCategory.CONTRACT_VIOLATION,
+                "Provider capability snapshot lacks a valid canonical provider identity",
+            )
+        if expected_capabilities is not None:
+            if not isinstance(expected_capabilities, ProviderCapabilities):
+                raise ProviderError(
+                    ProviderErrorCategory.CONTRACT_VIOLATION,
+                    "Approved provider capability snapshot is invalid",
+                )
+            approved_snapshot = expected_capabilities.frozen_snapshot()
+            if snapshot != approved_snapshot:
+                raise ProviderError(
+                    ProviderErrorCategory.CONTRACT_VIOLATION,
+                    "Provider capability snapshot drifted after execution compilation",
+                )
         if not snapshot.supports_model(request.model):
-            raise ModelNotSupported(name, request.model, snapshot.models)
+            raise ModelNotSupported(adapter_id, request.model, snapshot.models)
         gaps = snapshot.gaps_for(request)
         if gaps:
-            raise CapabilityGap(name, gaps)
+            raise CapabilityGap(adapter_id, gaps)
         policy_gaps = snapshot.data_policy_gaps_for(request.data_policy)
         if policy_gaps:
-            raise DataPolicyGap(name, policy_gaps)
+            raise DataPolicyGap(adapter_id, policy_gaps)
+        return provider, snapshot
+
+    def require(self, adapter_id: str, request: ModelRequest) -> ModelProvider:
+        provider, _snapshot = self.require_with_capabilities(adapter_id, request)
         return provider
 
     def snapshots(self) -> tuple[ProviderCapabilities, ...]:

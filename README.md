@@ -6,9 +6,9 @@
 
 ## 当前状态
 
-状态：`K-API-1 Isolated API Session Foundation`
+状态：`K-API-2 Offline Minimal File Loop Gate Passed`（仍停在 `M6-004` 授权门前）
 
-当前仓库已完成 M1 的本地实现和 M2 的离线 Agent—Skill 契约切片，并实现 M3 的首批上下文治理：可恢复 Main State、Context Snapshot、Execution Receipt，以及 Handoff Transfer Manifest/Audit。AWU、动态上下文预算、`SAFE_PAUSE`、机器证据优先和恢复冲突检查已合并进文件工件，没有另建平行记忆数据库。压缩后的子 Agent 不能只自报 `handoff_ready`；必须把任务条目映射到正式 Handoff。另已实现 OpenAI Responses、Anthropic Messages、Gemini `generateContent` 的非流式薄 Adapter、小型显式模型池和 fresh API session runner。`K-API-1` 已用离线测试证明有界工具循环与无自动 fallback；Task-to-API 文件闭环、真实模型调用和真实科研案例仍待执行。
+当前仓库已完成 M1 的核心本地契约、M2 的离线 Agent—Skill 切片和 M3 的首批文件式连续性，并通过 `K-API-2` 的最小离线节点评审：`EVID-001` 的冻结合同、选定 Skill 和显式 `worker` 槽可编译为 fresh API session；fake-local Provider 可走 completed/tool-failed/safe-paused/incomplete/stale-input 路径；commit-last closeout 最后发布 Main State；删除内存 transcript 后可由 fresh Python subprocess 以 Main State 为入口，在 Protocol 与哈希锁定的项目文件树中恢复。该 PASS 不包含真实 API、真实 Windows 槽、真实主 Agent 会话、科学正确性或多 Agent 净收益；未经维护者明确授权，不得自动进入 `M6-004`。
 
 ## 核心判断
 
@@ -93,6 +93,8 @@ rwb execution assess examples/observability/execution-evidence-contract.yaml `
 
 `validate` 会检查 Schema、实际文件、SHA-256 与 Registry 引用等机器可判定条件，但不代表科学正确性。`handoff audit-transfer` 的 `structurally-ready` 只表示条目和引用覆盖，不表示语义等价；关键风险或 Task policy 会要求独立人工抽查。`task resolve` 和 `runtime codex render` 不启动 Agent。`skills audit-archive` 不解压、不执行、不联网；`skills eval assess` 不自动准入候选。`context assess` 的字符/回合是压力代理；只有同单位的 `remaining >= next atomic + closeout + safety margin` 才支持继续一个 AWU。外部 Skill 的 `discovered`、`triage`、`reference` 和 `quarantine` 均不等于已安装或已准入。
 
+`K-API-2` 当前没有新增 CLI 命令；最窄入口是 Python API `research_workbench.execution.run_task_api_attempt`，可复现用法和 fake-local fixtures 见 `tests/test_k_api_2_pipeline.py`。单轮 tool-call fan-out 有上限，但 handler 当前串行；token/成本和 wall-time 是调用边界/响应后 guard，不能取消 in-flight 调用。`completed` 证明结构、引用、哈希与文件 closeout 合同成立，但通用路径尚未强制证明 Provider 一定调用了 `document-read`。
+
 ## 第一条验证路线
 
 首个离线契约切片已验证两个能力差异明显的子 Agent 配置：
@@ -100,7 +102,7 @@ rwb execution assess examples/observability/execution-evidence-contract.yaml `
 1. `evidence-scout` + `literature-evidence-extraction` Skill：源材料只读、任务区受限写的检索、证据定位和引用交接。
 2. `simulation-auditor` + `simulation-vv` Skill：读取模型与运行工件，检查版本、参数、收敛和敏感性。
 
-两者共享最小科研内核与 Task/Handoff 契约，但使用不同的输入、权限、Skill、输出和质量检查。离线证据见 [双 Skill 契约切片](examples/vertical-slice/SLICE_REPORT.md)。该切片只证明绑定、隔离与校验可重放，不证明多 Agent 更强；后续先用纯 API 跑通 evidence 文件闭环，再进行 simulation 和平台路径对照。
+两者共享最小科研内核与 Task/Handoff 契约，但使用不同的输入、权限、Skill、输出和质量检查。离线证据见 [双 Skill 契约切片](examples/vertical-slice/SLICE_REPORT.md)。evidence 的 fake-local API 文件闭环现已通过，但仍只证明合成输入下的绑定、隔离、关闭和文件恢复；simulation、平台路径和真实案例对照须等 K-API-2 节点评审后另行授权。
 
 ## 近期交付边界
 
@@ -109,6 +111,7 @@ rwb execution assess examples/observability/execution-evidence-contract.yaml `
 - 最小 Schema 与确定性验证器；
 - 一个本地 CLI；
 - 纯 API 隔离会话内核与显式模型槽；
+- `EVID-001` 的可信编译、严格输出验证、commit-last closeout 与防重放 intent；
 - 可选的 Codex Runtime Adapter 映射；
 - 四个 Agent Profile、三个仓库级 Skill 与 accepted Registry；
 - 主状态包、Task Packet 和 Handoff Packet；

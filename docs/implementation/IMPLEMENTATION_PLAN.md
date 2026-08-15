@@ -130,7 +130,7 @@ rwb context checkpoint
 6. 以 Task Packet 显式点名 required Skills。
 7. 记录 Skill lock、实际工具、Provider/Model、Runtime snapshot（若有）和 Handoff。
 
-截至 2026-08-13，Registry、Profiles、Skills、显式绑定和 Codex 可选映射均已有确定性契约。新增的小型 Model Pool 与 Isolated API Session Runner 已完成离线工具循环与预算测试，达到 `K-API-1`。Task/Assignment 到 Attempt/Handoff/Receipt 的文件闭环与两个真实案例仍未完成，因此 M2 尚未退出。
+截至 2026-08-14，Registry、Profiles、Skills、显式绑定和 Codex 可选映射均已有确定性契约。`K-API-2` 已把一个合成 evidence Task 经由冻结合同、最小请求编译、fresh API session 和 commit-last closeout 跑通离线文件闭环；这仍不是第二种 Skill 的真实隔离执行，也不是实际科研案例，因此 M2 尚未退出。
 
 ### 路由测试矩阵
 
@@ -155,7 +155,7 @@ rwb context checkpoint
 
 验证主 Agent克制、子 Agent压缩容忍和主动 rollover。
 
-截至 2026-08-13，已实现 Context Snapshot、Execution Receipt、规范化 Main State digest，以及 `context assess/checkpoint/resume-check` 和 `execution assess`。Transfer Manifest/Audit 会把压缩前条目、来源哈希、Handoff locator、负面区段与风险触发抽查绑定到 Context Snapshot 和 Receipt。随后根据 CCRML 讨论补入 Atomic Work Unit、动态 next-AWU/closeout/reserve 预算、`safe-paused`/`waiting`、机器验证完成权、机器状态哈希与 Git 恢复冲突；这些语义复用现有工件，不新增 SQLite 或运行时。该机制只证明结构与可恢复性，不证明科学正确或完整语义等价；真实 API 子会话恢复、人工抽样与真实 token/时间采集仍未完成，见 [ADR-0008](../decisions/0008-HANDOFF-TRANSFER-AUDIT.md)、[ADR-0009](../decisions/0009-FILE-FIRST-CONTINUITY-AND-SAFE-PAUSE.md)与[ADR-0010](../decisions/0010-API-FIRST-ISOLATED-EXECUTION.md)。
+截至 2026-08-14，已实现 Context Snapshot、Execution Receipt、规范化 Main State digest，以及 `context assess/checkpoint/resume-check` 和 `execution assess`。Transfer Manifest/Audit 会把压缩前条目、来源哈希、Handoff locator、负面区段与风险触发抽查绑定到 Context Snapshot 和 Receipt。随后根据 CCRML 讨论补入 Atomic Work Unit、动态 next-AWU/closeout/reserve 预算、`safe-paused`/`waiting`、机器验证完成权、机器状态哈希与 Git 恢复冲突；这些语义复用现有工件，不新增 SQLite 或运行时。`K-API-2` 又用 fake Provider 和 fresh Python 子进程证明了不依赖 transcript 的最小文件恢复；它只证明合成 fixture 的结构闭环，不证明真实 API/主会话恢复、科学正确、完整语义等价、人工抽样或真实 token/时间采集，见 [ADR-0008](../decisions/0008-HANDOFF-TRANSFER-AUDIT.md)、[ADR-0009](../decisions/0009-FILE-FIRST-CONTINUITY-AND-SAFE-PAUSE.md)与[ADR-0010](../decisions/0010-API-FIRST-ISOLATED-EXECUTION.md)。
 
 ### 实现内容
 
@@ -246,9 +246,9 @@ rwb context checkpoint
 
 新增项必须有真实消费者、预算、测试和退出条件。不得一次引入两个功能重叠的重量级工具。
 
-当前已完成三家非流式 Adapter、ToolChoice、本地工具参数校验、延迟凭据解析、非秘密配置探测、脱敏 live conformance runner，以及 `explicit-slot-only` Model Pool 和有硬预算的 fresh API tool-loop runner。不会继续铺更多提供商或构建复杂 Router。
+当前已完成三家非流式 Adapter、ToolChoice、本地工具参数校验、延迟凭据解析、非秘密配置探测、脱敏 live conformance runner，以及 `explicit-slot-only` Model Pool 和有界 fresh API tool-loop runner。边界在请求前、调用边界和响应后检查；它不能中断正在进行的 Provider/工具调用。`max_parallel_tool_calls` 是每轮 fan-out 上限，客户端 handler 当前串行执行。不会继续铺更多提供商或构建复杂 Router。
 
-当前下一关键节点 `K-API-2`：把一个已解析 evidence Task 编译成纯 API 子会话，在结束或 `safe-paused` 时固化 Attempt、工件、Transfer Manifest、Handoff、Context Snapshot、Execution Receipt 与 Main State；删除临时 transcript 后从文件恢复。节点完成即暂停评审，不延伸到 GUI、公开发布或平台选型。
+`K-API-2` 的离线最小节点已经达到并通过评审：合成 evidence Task 可编译到只读 fresh API 子会话；`completed` 固化 Attempt、Research Artifact、Transfer Manifest/Audit、Handoff、两个 Context Snapshot、Execution Receipt 与最后发布的 Main State，其他终态只固化控制/恢复所需文件，不伪造科研工件。删除内存 transcript 后，fresh Python 子进程可只凭文件得到唯一下一动作。Gate PASS 本身不授权真实 Windows worker、GUI、公开发布或平台选型；任何后续节点都需维护者明确决定。
 
 ## 11. 开发分支与提交策略
 
