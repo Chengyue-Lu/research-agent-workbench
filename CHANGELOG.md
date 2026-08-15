@@ -2,6 +2,68 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
+## 2026-08-16 — 多来源 Skill 摄取与首批机器筛选
+
+### Changed
+
+- Skill 方向从优先重复单个候选的高成本模型测试，调整为先建立多来源隔离候选池，再执行机器初筛、人工语义筛选和小规模困难任务验证。
+- 工具/文件格式类以标准组织和官方仓库为优先；科研方法类按学科与研究形态比较多个来源，不接受全流程“大总管”作为默认架构。
+- 高成本 GLM 搜索改为分片候选发现；GitHub 元数据、Tree、revision、许可和下载由主 Agent 独立核验。
+
+### Added
+
+- 首批固定 9 个来源；8 个筛选归档包含 54 个 `SKILL.md`，覆盖格式工具、证据、完整性、实验统计、理论推导和元技能。
+- 只读静态初筛报告：140 个脚本文件、0 个不安全 ZIP 路径、0 个跳过文本；所有风险命中保留为人工定位信号，不解释为漏洞数量。
+- [Skill 来源搜集、隔离与筛选](docs/workstreams/chengyue-lu-mode-skill/SKILL_SOURCE_INTAKE.md)：来源层级、开放分类轴、机器/人工 Gate、首批快照和 `K-MS-SOURCE-1`。
+
+### Known gaps
+
+- GLM 5.3 source scout 因抓取大型渲染页面至少消耗 82,966 reported tokens，超过 30,000 预算且未形成 JSON handoff；会话已终止并留存 capture gap。
+- OpenAI/Anthropic/Google 的 19 个一方入口和其他来源的 35 个入口均已完成人工处置；6 个仅进入 `triage` 候选池，详细 dossier、困难任务和正式准入仍待完成。没有下载内容被安装、执行或写入 accepted Registry。
+
+### Screened
+
+- 补入 Google `gws-shared` 前置 Skill，修正首批 Google 工具选择缺少认证、dry-run、写前确认和输出规则的问题。
+- OpenAI 的 Notebook/PDF/Skill authoring 进入 portable-core/authoring baseline；截图和图像生成转为 Tool/specialist Adapter 参考。
+- Anthropic 的 `docx/pdf/pptx/xlsx` 按限制性 source-available 保持 reference-only；`skill-creator` 只吸收 Apache-2.0 评估结构。
+- Google 广泛 API 目录降为按需 reference，窄 read/write recipe 转入 capability card，`persona-researcher` 因宽泛人格和跨工具写操作被拒绝为架构 Skill。
+- 跨 GPT/Claude/GLM 采用公共 Skill core、薄 runtime binding 和测试生成的 model conformance policy，不维护三套完整分叉。
+- GitHub、K-Dense、Academic Research Agent、lingzhi 与 Superpowers 的 35 个入口已逐项固定哈希并写入候选 Registry：6 个 `triage`、21 个 `reference`、3 个 `quarantine`、5 个 `rejected`。
+- `build-evidence-map` 与 K-Dense citation/experiment/peer-review/visualization/power 组成 dossier 候选池；转换、上下文请求和完成前验证下沉为 Tool/模板/运行时契约，单体研究总管和递归 reviewer 工作流不进入当前架构。
+
+## 2026-08-16 — `claim-preserving-rewrite` 探索性 Stage 1
+
+### Tested
+
+- 用 9 个隔离 OpenCode/GLM 5.3 会话完成 CPD-01..03 的 baseline、compact contract、full Skill 三臂诊断；总 reported tokens 125,709，无 worker 工具调用或外部副作用。
+- CPD-02/03 产生可解释的硬失败差异：compact contract 两案均通过，baseline 分别发生 Claim 遗漏与无据机制生成，full Skill 在 CPD-03 仍越过术语/应用边界。
+- CPD-01 三臂均保留 Claim，但只压缩 7.4%–10.0%，未达到约 25% Task 目标，因此不把“内容更完整”误记为任务成功。
+
+### Decided
+
+- 候选暂定 `revise-compact`：完整 Skill 暂未证明比 8 条最小约束更有价值，不进入 `accepted`。
+- 暂不直接使用真实研究材料；先修复 checker 并只复验有区分的 CPD-02/03，差异可重复后再申请脱敏真实片段。
+
+### Known gaps
+
+- surface checker 把 Markdown case ID、列表编号当作科研数字，且中文 polarity/strength 正则存在编码问题；当前报告只能作诊断，不能作准入 Gate。
+- CPD-03/full 超过单臂 120 秒和 20,000 token 边界；Attempt 只有手工 Trace，仍缺 M3-008 validator 与独立盲评。
+- 诊断辅助 manifest/ledger 改用 `.yaml.txt`，避免被正式 `examples/` 对象的 Schema validator 误收；执行前 manifest 以原始 SHA-256 单独归档。
+
+## 2026-08-16 — Skill 诊断性困难任务测试计划
+
+### Changed
+
+- 简单、单约束 fixture 降为结构/checker 冒烟，不再单独作为 Skill 增量价值证据。
+- 首轮评估改为 baseline、compact contract、完整 Skill 三臂诊断；存在 checker 重叠时再做 direct-tool/full-Skill 配对，以区分普通提示、确定性 Tool 与 Skill workflow 的贡献。
+- 测试采用分层预算：先运行少量高辨识度案例，只重复出现实质差异的案例；没有区分度时停止并优先缩短、降级或删除。
+
+### Added
+
+- 路诚钺维护的 Skill 诊断性困难任务计划：定义学科/动作相关压力类型、隐藏 challenge ledger、GLM 5.3 隔离执行、盲评、硬失败、上下文/协调成本和停止规则。
+- `claim-preserving-rewrite` 首轮 CPD-01..03：高密度跨段 Claim、诱导增强/提示注入、混合意图/术语边界，共 9 个 Stage 1 会话的冻结计划。
+- `examples/evals/claim-preserving-rewrite/diagnostic-v1/`：三份合成困难题、隔离的 review-only ledgers、8 条 compact contract、draft hash manifest 与人类预审表；尚未调用模型或写入理想答案。
+
 ## 2026-08-15 — 路诚钺 Mode–Skill–Tool 分支计划
 
 ### Changed

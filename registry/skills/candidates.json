@@ -1,7 +1,7 @@
 {
   "schema_version": "0.1.0",
   "registry_kind": "skill_candidates",
-  "generated_at": "2026-08-13",
+  "generated_at": "2026-08-16",
   "policy": {
     "default_state": "discovered",
     "accepted_requires": [
@@ -323,46 +323,33 @@
     {
       "candidate_id": "kdense-citation-management",
       "source_id": "k-dense-scientific-agent-skills",
-      "source_path": "skills/citation-management/SKILL.md",
-      "status": "discovered",
+      "source_path": "citation-management/SKILL.md",
+      "content_hash": "sha256:502331499c36890fdb37a00bbfca6dff2fb631ebe50684cec142c64e3a6566dc",
+      "status": "triage",
       "kind": "integrity",
       "capabilities": ["citation-management", "metadata-validation", "bibtex-formatting"],
       "applicable_modes": ["evidence-synthesis", "theory", "experiment", "simulation"],
-      "context_cost": "unknown",
-      "risk_flags": ["large-skill-suite", "network-search-scripts", "individual-file-audit-pending"],
+      "context_cost": "high",
+      "risk_flags": ["eight-bundled-scripts", "credential-and-network-access", "provider-coupling", "method-review-required"],
       "decision": {
-        "action": "shortlist-for-triage",
-        "reason": "Granular citation tooling could support evidence integrity, but the individual skill and scripts have not yet been audited."
+        "action": "derive-provider-neutral-citation-integrity",
+        "reason": "The metadata, DOI, BibTeX, validation, and opt-in write patterns are valuable, but discovery, enrichment, and validation must be split and provider assumptions removed."
       }
     },
     {
       "candidate_id": "lingzhi-backward-traceability",
       "source_id": "lingzhi-agent-research-skills",
       "source_path": "skills/backward-traceability/SKILL.md",
-      "status": "discovered",
+      "content_hash": "sha256:5a7812d315f4f31a4c70a2f4f5700bc66f2d76d824083a65e391114bd3dc028f",
+      "status": "reference",
       "kind": "integrity",
       "capabilities": ["numeric-value-traceability", "claim-source-check"],
       "applicable_modes": ["evidence-synthesis", "theory", "experiment", "simulation"],
-      "context_cost": "unknown",
-      "risk_flags": ["repository-license-not-detected", "bundled-python", "install-script-not-admitted"],
+      "context_cost": "low",
+      "risk_flags": ["repository-license-not-detected", "bundled-python", "line-number-links-are-unstable", "copying-prohibited"],
       "decision": {
-        "action": "license-and-script-audit-first",
-        "reason": "Backward traceability maps well to Claim-Evidence integrity, but no reuse decision is possible without a license review."
-      }
-    },
-    {
-      "candidate_id": "ngtiendong-claim-verification-pattern",
-      "source_id": "ngtiendong-academic-research-agent-skill",
-      "source_path": "_agents/rules/claim_verification.md",
-      "status": "reference",
-      "kind": "integrity",
-      "capabilities": ["claim-verification", "reviewer-simulation"],
-      "applicable_modes": ["cross-cutting"],
-      "context_cost": "high",
-      "risk_flags": ["large-lifecycle-workflow", "many-role-pattern", "semantic-review-cost"],
-      "decision": {
-        "action": "extract-human-gate-patterns",
-        "reason": "The human-guided gates and claim checks are useful references, but the full lifecycle should not become a mandatory global workflow."
+        "action": "derive-stable-value-provenance-ids",
+        "reason": "The provenance objective is useful, but every paper value cannot reliably link to a mutable code line; only the problem pattern may inform an independent design."
       }
     },
     {
@@ -393,6 +380,534 @@
       "decision": {
         "action": "use-as-portability-reference",
         "reason": "Useful for understanding Codex skill structure and source discipline; provider-specific content stays outside the research kernel."
+      }
+    },
+    {
+      "candidate_id": "gh-audit-integrity",
+      "source_id": "github-awesome-copilot",
+      "source_path": "skills/audit-integrity/SKILL.md",
+      "content_hash": "sha256:53b662856bf68ca310d68803a3b3a0533812a40e2444bb7bd8ec7522996bbf08",
+      "status": "reference",
+      "kind": "integrity",
+      "capabilities": ["audit-evidence-discipline", "failure-reporting", "retry-bounds"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "low",
+      "risk_flags": ["recursive-self-review", "self-scoring", "persistent-memory-assumption"],
+      "decision": {
+        "action": "extract-failure-evidence-patterns",
+        "reason": "Evidence and retry discipline are useful; self-scoring thresholds and self-learning loops should not become global architecture."
+      }
+    },
+    {
+      "candidate_id": "gh-build-evidence-map",
+      "source_id": "github-awesome-copilot",
+      "source_path": "skills/build-evidence-map/SKILL.md",
+      "content_hash": "sha256:fb104196d94a0530eb5b86c56edfdaac0954a842f7cc71dfd4dcf87b20675fc9",
+      "status": "triage",
+      "kind": "integrity",
+      "capabilities": ["evidence-mapping", "counterevidence", "claim-source-locators", "unknown-tracking"],
+      "applicable_modes": ["evidence-synthesis", "theory", "experiment", "simulation"],
+      "context_cost": "low",
+      "risk_flags": ["schema-overlap-with-project", "network-verification-optional", "adaptation-required"],
+      "decision": {
+        "action": "derive-minimal-evidence-map-skill",
+        "reason": "Typed support, contradiction, qualification, missing-evidence, and exact-locator contracts align strongly with the project evidence model."
+      }
+    },
+    {
+      "candidate_id": "gh-context-map",
+      "source_id": "github-awesome-copilot",
+      "source_path": "skills/context-map/SKILL.md",
+      "content_hash": "sha256:af0037b06a0b56a5014e16a32538ac419725638659428b7e229ed5bbb9087a37",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["code-context-selection", "read-scope-proposal"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "low",
+      "risk_flags": ["generic-planning-prompt", "overlaps-context-governance"],
+      "decision": {
+        "action": "demote-to-task-template",
+        "reason": "The file-selection checklist is useful, but it adds no stable method beyond the existing read allowlist and context-governance contract."
+      }
+    },
+    {
+      "candidate_id": "gh-convert-excel-to-md",
+      "source_id": "github-awesome-copilot",
+      "source_path": "skills/convert-excel-to-md/SKILL.md",
+      "content_hash": "sha256:f392579af2e4f3f7ebcb20453299e62d85d1461ef3456973d57243ff036809f0",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["spreadsheet-to-markdown", "image-extraction"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "medium",
+      "risk_flags": ["implicit-output-writes", "package-install", "limited-chart-support", "broad-auto-trigger"],
+      "decision": {
+        "action": "demote-to-document-tool-capability",
+        "reason": "Conversion is deterministic tooling, not a research judgment Skill; retain limitations and explicit output policy in a capability card."
+      }
+    },
+    {
+      "candidate_id": "gh-convert-pdf-to-md",
+      "source_id": "github-awesome-copilot",
+      "source_path": "skills/convert-pdf-to-md/SKILL.md",
+      "content_hash": "sha256:adadaec52cb7bda8b03254df12eae421d58fd85b6e5c96e57f494ee42216b6a1",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["pdf-to-markdown", "embedded-image-extraction"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "medium",
+      "risk_flags": ["no-ocr", "implicit-output-writes", "package-install", "broad-auto-trigger"],
+      "decision": {
+        "action": "demote-to-document-tool-capability",
+        "reason": "PDF conversion belongs in a renderer/parser adapter and does not add enough judgment to justify a standalone research Skill."
+      }
+    },
+    {
+      "candidate_id": "gh-convert-word-to-md",
+      "source_id": "github-awesome-copilot",
+      "source_path": "skills/convert-word-to-md/SKILL.md",
+      "content_hash": "sha256:dde993754e47ebccf30b540b98f9555936d44a5e40c9c70d83d296e03e60785e",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["word-to-markdown", "embedded-image-extraction"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "medium",
+      "risk_flags": ["legacy-doc-unsupported", "implicit-output-writes", "package-install", "broad-auto-trigger"],
+      "decision": {
+        "action": "demote-to-document-tool-capability",
+        "reason": "Word conversion is a deterministic adapter concern; output location and format limitations must be explicit."
+      }
+    },
+    {
+      "candidate_id": "gh-md-to-docx",
+      "source_id": "github-awesome-copilot",
+      "source_path": "skills/md-to-docx/SKILL.md",
+      "content_hash": "sha256:2f47a261fac808051f10f023f258c4b34a89ee909f82f280ad14a6e9fcf22f06",
+      "status": "reference",
+      "kind": "output",
+      "capabilities": ["markdown-to-docx", "document-styling"],
+      "applicable_modes": ["reporting"],
+      "context_cost": "low",
+      "risk_flags": ["package-install", "overlaps-official-document-tools", "render-verification-needed"],
+      "decision": {
+        "action": "demote-to-document-output-tool",
+        "reason": "The reusable part is a conversion script and render check, not a research workflow Skill."
+      }
+    },
+    {
+      "candidate_id": "gh-microsoft-skill-creator",
+      "source_id": "github-awesome-copilot",
+      "source_path": "skills/microsoft-skill-creator/SKILL.md",
+      "content_hash": "sha256:2b1e9f91f7088d8ac7f774f933adf336e8fb47a2e0926d8373884c5e486c74c6",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["skill-authoring", "official-doc-routing", "dynamic-reference-binding"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "medium",
+      "risk_flags": ["microsoft-specific", "package-install", "overlaps-authoring-baselines"],
+      "decision": {
+        "action": "extract-stable-core-dynamic-doc-pattern",
+        "reason": "The stable local core plus dynamic official lookup pattern is useful for MCP and tool bindings, but the Skill is vendor-specific and redundant as an authoring baseline."
+      }
+    },
+    {
+      "candidate_id": "gh-mini-context-graph",
+      "source_id": "github-awesome-copilot",
+      "source_path": "skills/mini-context-graph/SKILL.md",
+      "content_hash": "sha256:53faa986896b13ef99f03681e7b3a7a5a8ac7b93120387922459527450022aaa",
+      "status": "rejected",
+      "kind": "tool",
+      "capabilities": ["persistent-context-graph", "wiki-generation", "source-ingestion"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "medium",
+      "risk_flags": ["ten-bundled-scripts", "persistent-state-subsystem", "context-expansion", "architecture-overlap"],
+      "decision": {
+        "action": "exclude-as-skill",
+        "reason": "This is a persistent knowledge subsystem rather than a bounded Skill and would duplicate provenance, artifact, and context-governance layers."
+      }
+    },
+    {
+      "candidate_id": "gh-what-context-needed",
+      "source_id": "github-awesome-copilot",
+      "source_path": "skills/what-context-needed/SKILL.md",
+      "content_hash": "sha256:65ed7445bf561a5e5199ac77478d2691c05019e0dc32fdddc23db9e45bd9d135",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["context-request", "input-gap-reporting"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "low",
+      "risk_flags": ["generic-prompt", "overlaps-read-scope-contract"],
+      "decision": {
+        "action": "demote-to-context-request-template",
+        "reason": "Requesting missing files is part of the Task/read-scope protocol and does not need independent Skill discovery."
+      }
+    },
+    {
+      "candidate_id": "kdense-experimental-design",
+      "source_id": "k-dense-scientific-agent-skills",
+      "source_path": "experimental-design/SKILL.md",
+      "content_hash": "sha256:0071452b2927a75510a19019ac9a6a8e4b0ee7a3f2b27968b26dab1f164c465f",
+      "status": "triage",
+      "kind": "method",
+      "capabilities": ["experimental-unit-definition", "randomization", "replication", "blocking", "design-of-experiments"],
+      "applicable_modes": ["experiment"],
+      "context_cost": "high",
+      "risk_flags": ["two-bundled-scripts", "optional-statistics-dependencies", "cross-discipline-overgeneralization", "method-review-required"],
+      "decision": {
+        "action": "derive-gated-experimental-design-skill",
+        "reason": "Pre-data design, pseudoreplication, randomization, and blocking are valuable, but discipline-specific assumptions and human method approval are mandatory."
+      }
+    },
+    {
+      "candidate_id": "kdense-literature-review",
+      "source_id": "k-dense-scientific-agent-skills",
+      "source_path": "literature-review/SKILL.md",
+      "content_hash": "sha256:6c84fad575448e4ff600e15d3d6772d67a38cd5af1a873c5926b742a94d936f3",
+      "status": "reference",
+      "kind": "method",
+      "capabilities": ["review-protocol", "screening-ledger", "evidence-extraction", "prisma-reporting"],
+      "applicable_modes": ["evidence-synthesis"],
+      "context_cost": "high",
+      "risk_flags": ["five-bundled-scripts", "provider-bound-search", "credential-access", "mandatory-figure-generation", "workflow-bundling"],
+      "decision": {
+        "action": "extract-systematic-review-ledger",
+        "reason": "Scope, search, screening, extraction, and synthesis patterns are useful; fixed services, database counts, and forced figure generation are not portable requirements."
+      }
+    },
+    {
+      "candidate_id": "kdense-peer-review",
+      "source_id": "k-dense-scientific-agent-skills",
+      "source_path": "peer-review/SKILL.md",
+      "content_hash": "sha256:4591645c59b057d0d12875134ab02560ca15fc073c9a47a6d21ff74ab0fb2c73",
+      "status": "triage",
+      "kind": "integrity",
+      "capabilities": ["manuscript-review", "methods-audit", "statistics-review", "ethics-review", "channel-separation"],
+      "applicable_modes": ["reporting", "cross-cutting"],
+      "context_cost": "medium",
+      "risk_flags": ["eight-bundled-scripts", "venue-rules-can-drift", "semantic-review-cost", "human-accountability-required"],
+      "decision": {
+        "action": "derive-human-authorized-peer-review-skill",
+        "reason": "Confidentiality, authorization, evidence separation, and accountable review are strong; venue-specific rules and autonomous editorial authority must be excluded."
+      }
+    },
+    {
+      "candidate_id": "kdense-research-lookup",
+      "source_id": "k-dense-scientific-agent-skills",
+      "source_path": "research-lookup/SKILL.md",
+      "content_hash": "sha256:af563045535db63e5fe439874e2862dfaf1cb23504576a05ca7f05d64b5f3ec7",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["research-search", "source-packet", "counterevidence", "source-quality"],
+      "applicable_modes": ["evidence-synthesis"],
+      "context_cost": "high",
+      "risk_flags": ["provider-bound-search", "credential-access", "external-write", "arbitrary-reference-target", "two-bundled-scripts"],
+      "decision": {
+        "action": "extract-provider-neutral-search-packet-contract",
+        "reason": "Source packets and counterevidence fields are useful; fixed APIs, model names, and a target of sixty references must not enter the portable core."
+      }
+    },
+    {
+      "candidate_id": "kdense-scientific-visualization",
+      "source_id": "k-dense-scientific-agent-skills",
+      "source_path": "scientific-visualization/SKILL.md",
+      "content_hash": "sha256:d5b507dec004191eff12c5b387434b1666085b552c4c3c33713482689bc3d205",
+      "status": "triage",
+      "kind": "output",
+      "capabilities": ["scientific-figure-integrity", "honest-encoding", "accessibility", "figure-provenance", "export-validation"],
+      "applicable_modes": ["experiment", "simulation", "observational-statistics", "reporting"],
+      "context_cost": "high",
+      "risk_flags": ["eight-bundled-scripts", "dated-dependency-pins", "broad-tool-stack", "visual-inspection-required"],
+      "decision": {
+        "action": "derive-figure-integrity-core-and-tool-binding",
+        "reason": "Honest encodings, accessibility, provenance, explicit exports, and inspection gates provide clear value when separated from plotting-library adapters."
+      }
+    },
+    {
+      "candidate_id": "kdense-scientific-writing",
+      "source_id": "k-dense-scientific-agent-skills",
+      "source_path": "scientific-writing/SKILL.md",
+      "content_hash": "sha256:f8ba28fda17953b8a5d9e5712d52a1336d80b0e4866ea166e69fa946d4c7b583",
+      "status": "reference",
+      "kind": "output",
+      "capabilities": ["evidence-bound-writing", "manuscript-drafting", "authorship-boundary", "integrity-checking"],
+      "applicable_modes": ["reporting"],
+      "context_cost": "high",
+      "risk_flags": ["nine-bundled-scripts", "whole-manuscript-workflow", "architecture-overlap", "context-cost", "human-authorship-required"],
+      "decision": {
+        "action": "extract-writing-gates-and-deterministic-checks",
+        "reason": "No-fabrication, evidence binding, and authorship boundaries are useful, but the monolithic workflow duplicates the workbench claim and handoff architecture."
+      }
+    },
+    {
+      "candidate_id": "kdense-statistical-analysis",
+      "source_id": "k-dense-scientific-agent-skills",
+      "source_path": "statistical-analysis/SKILL.md",
+      "content_hash": "sha256:3e8d96b035f6665709b16d06109417a6803b641e6f4b291b739223290469d908",
+      "status": "reference",
+      "kind": "method",
+      "capabilities": ["statistical-test-selection", "assumption-checking", "effect-size", "reproducible-analysis"],
+      "applicable_modes": ["experiment", "observational-statistics"],
+      "context_cost": "high",
+      "risk_flags": ["generic-test-selection-table", "large-method-scope", "package-install", "method-review-required"],
+      "decision": {
+        "action": "split-by-analysis-family-before-trial",
+        "reason": "Assumptions, effect sizes, and reproducibility are useful, but one generic Skill cannot safely route frequentist, Bayesian, and domain-specific analyses."
+      }
+    },
+    {
+      "candidate_id": "kdense-statistical-power",
+      "source_id": "k-dense-scientific-agent-skills",
+      "source_path": "statistical-power/SKILL.md",
+      "content_hash": "sha256:1a75ab4006fc13190b7a92705c299aa9e0bad90196df782254c931d0f71e61ed",
+      "status": "triage",
+      "kind": "method",
+      "capabilities": ["power-planning", "sample-size", "sensitivity-analysis", "cluster-adjustment", "simulation-power"],
+      "applicable_modes": ["experiment", "observational-statistics"],
+      "context_cost": "high",
+      "risk_flags": ["two-bundled-scripts", "package-install", "design-assumptions-required", "method-review-required"],
+      "decision": {
+        "action": "derive-gated-power-planning-skill",
+        "reason": "Its effect-size, sensitivity, observed-power, clustering, attrition, and simulation warnings are valuable when bound to an approved design and explicit assumptions."
+      }
+    },
+    {
+      "candidate_id": "lingzhi-atomic-decomposition",
+      "source_id": "lingzhi-agent-research-skills",
+      "source_path": "skills/atomic-decomposition/SKILL.md",
+      "content_hash": "sha256:13da03b978eeab2bbbf9fcbdc6d3adf603d4f0ec8404d9d444733af63fa54da6",
+      "status": "reference",
+      "kind": "method",
+      "capabilities": ["math-code-traceability", "derivation-decomposition"],
+      "applicable_modes": ["theory", "simulation"],
+      "context_cost": "low",
+      "risk_flags": ["repository-license-not-detected", "hardcoded-runtime-paths", "over-decomposition", "copying-prohibited"],
+      "decision": {
+        "action": "derive-bounded-math-code-traceability",
+        "reason": "The traceability objective is useful, but requiring every formula and code module to map one-to-one is not generally valid."
+      }
+    },
+    {
+      "candidate_id": "lingzhi-citation-management",
+      "source_id": "lingzhi-agent-research-skills",
+      "source_path": "skills/citation-management/SKILL.md",
+      "content_hash": "sha256:f69458fa1047b04bffb452d4037a058dda49bbb6c1ddea68cc8bdce810d4fae9",
+      "status": "quarantine",
+      "kind": "integrity",
+      "capabilities": ["citation-harvesting", "bibtex-management", "citation-validation"],
+      "applicable_modes": ["evidence-synthesis", "reporting"],
+      "context_cost": "low",
+      "risk_flags": ["repository-license-not-detected", "hardcoded-credential-file", "credential-command-exposure", "automatic-harvesting", "copying-prohibited"],
+      "decision": {
+        "action": "do-not-execute-or-copy",
+        "reason": "The implementation reads credentials from a hardcoded local file and passes them into commands; only the general citation validation problem may inform an independent design."
+      }
+    },
+    {
+      "candidate_id": "lingzhi-data-analysis",
+      "source_id": "lingzhi-agent-research-skills",
+      "source_path": "skills/data-analysis/SKILL.md",
+      "content_hash": "sha256:43a70badeebf4281c9b8ca9bfa5f12df8044a81867566d31dbacca35f6ebbdb2",
+      "status": "rejected",
+      "kind": "method",
+      "capabilities": ["statistical-analysis", "multi-reviewer-check"],
+      "applicable_modes": ["experiment", "observational-statistics"],
+      "context_cost": "low",
+      "risk_flags": ["repository-license-not-detected", "simplistic-test-routing", "mandatory-reviewer-fanout", "always-report-p-values", "copying-prohibited"],
+      "decision": {
+        "action": "exclude-as-general-analysis-skill",
+        "reason": "The statistical routing is too generic and the fixed four-reviewer process adds coordination cost without method-specific assurance."
+      }
+    },
+    {
+      "candidate_id": "lingzhi-experiment-design",
+      "source_id": "lingzhi-agent-research-skills",
+      "source_path": "skills/experiment-design/SKILL.md",
+      "content_hash": "sha256:c35ccd5feacfefda79fe48bf71a236560f822580d0025afedd306fc0573741bc",
+      "status": "reference",
+      "kind": "method",
+      "capabilities": ["ml-experiment-planning", "hyperparameter-tuning", "ablation-planning"],
+      "applicable_modes": ["experiment"],
+      "context_cost": "low",
+      "risk_flags": ["repository-license-not-detected", "ml-specific", "arbitrary-dataset-count", "novelty-overclaim-risk", "copying-prohibited"],
+      "decision": {
+        "action": "extract-ablation-planning-pattern",
+        "reason": "Ablation sequencing may be useful for ML cases, but the implementation-tuning-improvement recipe is not a general experimental design method."
+      }
+    },
+    {
+      "candidate_id": "lingzhi-literature-review",
+      "source_id": "lingzhi-agent-research-skills",
+      "source_path": "skills/literature-review/SKILL.md",
+      "content_hash": "sha256:4c4d9be2e4a196b30f8b8e06a0f62a2f85f29521f57dc98cc1fee3a200a24b53",
+      "status": "rejected",
+      "kind": "method",
+      "capabilities": ["persona-literature-discussion", "query-diversification"],
+      "applicable_modes": ["evidence-synthesis"],
+      "context_cost": "low",
+      "risk_flags": ["repository-license-not-detected", "multi-persona-token-cost", "fixed-dialogue-rounds", "weak-systematic-review-rigor", "copying-prohibited"],
+      "decision": {
+        "action": "exclude-persona-review-workflow",
+        "reason": "Persona dialogue creates token-heavy correlated review; query-angle diversification can be implemented directly without preserving the workflow."
+      }
+    },
+    {
+      "candidate_id": "lingzhi-literature-search",
+      "source_id": "lingzhi-agent-research-skills",
+      "source_path": "skills/literature-search/SKILL.md",
+      "content_hash": "sha256:afbeb3a81dccad12db5d15382f19b6bd2746b7d96cfd7fc64efbdcb10447b803",
+      "status": "quarantine",
+      "kind": "tool",
+      "capabilities": ["literature-search", "multi-api-search", "source-ranking"],
+      "applicable_modes": ["evidence-synthesis"],
+      "context_cost": "low",
+      "risk_flags": ["repository-license-not-detected", "hardcoded-credential-file", "absolute-local-path", "network-clients", "field-biased-ranking", "copying-prohibited"],
+      "decision": {
+        "action": "do-not-execute-or-copy",
+        "reason": "Hardcoded credential discovery and paths are unsafe; provider-neutral search and ranking contracts must be designed independently."
+      }
+    },
+    {
+      "candidate_id": "lingzhi-math-reasoning",
+      "source_id": "lingzhi-agent-research-skills",
+      "source_path": "skills/math-reasoning/SKILL.md",
+      "content_hash": "sha256:d148489deb82f6e5b798eeaa87fc32fec39368bdecb67666cbcf07e2b0ee4e45",
+      "status": "reference",
+      "kind": "method",
+      "capabilities": ["derivation", "proof-checking", "formalization", "notation-checking"],
+      "applicable_modes": ["theory"],
+      "context_cost": "low",
+      "risk_flags": ["repository-license-not-detected", "generic-model-advice", "unclear-incremental-value", "copying-prohibited"],
+      "decision": {
+        "action": "demote-to-theory-task-template",
+        "reason": "The entry is too generic to establish incremental Skill value; its headings may inform a theory-task action checklist."
+      }
+    },
+    {
+      "candidate_id": "lingzhi-novelty-assessment",
+      "source_id": "lingzhi-agent-research-skills",
+      "source_path": "skills/novelty-assessment/SKILL.md",
+      "content_hash": "sha256:78c9cc911a0b32865308850243f68520bff78bf48cc6496cb607d3101149b020",
+      "status": "rejected",
+      "kind": "integrity",
+      "capabilities": ["novelty-search", "prior-work-overlap", "critic-review"],
+      "applicable_modes": ["evidence-synthesis", "theory", "experiment", "simulation"],
+      "context_cost": "low",
+      "risk_flags": ["repository-license-not-detected", "binary-novelty-verdict", "mandatory-review-rounds", "false-authority", "copying-prohibited"],
+      "decision": {
+        "action": "exclude-as-novelty-decision-skill",
+        "reason": "A bounded search can report closest overlaps and residual uncertainty, but an agent cannot reliably certify novelty with a binary verdict."
+      }
+    },
+    {
+      "candidate_id": "lingzhi-paper-revision",
+      "source_id": "lingzhi-agent-research-skills",
+      "source_path": "skills/paper-revision/SKILL.md",
+      "content_hash": "sha256:05831afbb5a80f361189fb2f9b82948d398b591943071c1250c2d0bdf8664f42",
+      "status": "reference",
+      "kind": "output",
+      "capabilities": ["review-response-ledger", "revision-planning", "revision-verification"],
+      "applicable_modes": ["reporting"],
+      "context_cost": "low",
+      "risk_flags": ["repository-license-not-detected", "address-every-comment-absolute", "automatic-experiment-expansion", "recursive-self-review", "copying-prohibited"],
+      "decision": {
+        "action": "derive-bounded-revision-ledger",
+        "reason": "Concern-to-section-to-action-to-verification mapping is useful, but acceptance, extra experiments, and unresolved disagreements remain human decisions."
+      }
+    },
+    {
+      "candidate_id": "lingzhi-self-review",
+      "source_id": "lingzhi-agent-research-skills",
+      "source_path": "skills/self-review/SKILL.md",
+      "content_hash": "sha256:36caa5ee30583729ae2b5c631cc1292722ae2e3783e7345996abdc1dd9253406",
+      "status": "rejected",
+      "kind": "integrity",
+      "capabilities": ["multi-persona-review", "paper-scoring", "accept-reject-simulation"],
+      "applicable_modes": ["reporting"],
+      "context_cost": "low",
+      "risk_flags": ["repository-license-not-detected", "correlated-reviewer-fanout", "subjective-score-averaging", "venue-specific", "false-authority", "copying-prohibited"],
+      "decision": {
+        "action": "exclude-recursive-review-panel",
+        "reason": "Three simulated reviewers and averaged scores do not provide independent review evidence and can produce misleading editorial authority."
+      }
+    },
+    {
+      "candidate_id": "lingzhi-symbolic-equation",
+      "source_id": "lingzhi-agent-research-skills",
+      "source_path": "skills/symbolic-equation/SKILL.md",
+      "content_hash": "sha256:cddb315c604230279e1210e726eb1f0506da1b3669ec92410f095f254f970740",
+      "status": "quarantine",
+      "kind": "method",
+      "capabilities": ["symbolic-regression", "equation-search", "fitness-evaluation"],
+      "applicable_modes": ["theory", "simulation"],
+      "context_cost": "low",
+      "risk_flags": ["repository-license-not-detected", "generated-equation-execution", "missing-sandbox-contract", "missing-units-validation", "algorithm-sketch-only", "copying-prohibited"],
+      "decision": {
+        "action": "defer-until-bounded-symbolic-regression-case",
+        "reason": "The sketch lacks a safe evaluator, units and dimensional checks, and a validated execution contract; it should not be tested generically."
+      }
+    },
+    {
+      "candidate_id": "ngtiendong-research-agent",
+      "source_id": "ngtiendong-academic-research-agent-skill",
+      "source_path": "SKILL.md",
+      "content_hash": "sha256:854227d703bfe2abdd716c4829d54a0a54ae76471bcd6253d82a236352219154",
+      "status": "reference",
+      "kind": "method",
+      "capabilities": ["research-gating", "reality-audit", "claim-state", "pilot-authorization", "artifact-depth-control"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "medium",
+      "risk_flags": ["whole-lifecycle-skill", "architecture-overlap", "many-optional-references", "global-workflow-risk"],
+      "decision": {
+        "action": "split-gates-into-architecture-references",
+        "reason": "Human ownership, reality gates, claim states, and plan-depth limits align with the workbench, but the full research lifecycle must not load as one global Skill."
+      }
+    },
+    {
+      "candidate_id": "superpowers-systematic-debugging",
+      "source_id": "superpowers",
+      "source_path": "skills/systematic-debugging/SKILL.md",
+      "content_hash": "sha256:808fc5717aa88ad65efff312b11c186294d3e6ee301afb584e2f86599b137787",
+      "status": "reference",
+      "kind": "method",
+      "capabilities": ["root-cause-analysis", "hypothesis-testing", "minimal-fix", "architecture-escalation"],
+      "applicable_modes": ["engineering", "cross-cutting"],
+      "context_cost": "medium",
+      "risk_flags": ["two-bundled-scripts", "absolute-process-rules", "mandatory-cross-skill-dependencies", "coding-oriented"],
+      "decision": {
+        "action": "retain-as-engineering-method-reference",
+        "reason": "Root-cause evidence and one-variable hypothesis tests are useful for engineering, but the iron-law workflow should not govern every research task."
+      }
+    },
+    {
+      "candidate_id": "superpowers-verification-before-completion",
+      "source_id": "superpowers",
+      "source_path": "skills/verification-before-completion/SKILL.md",
+      "content_hash": "sha256:2befe7fc55bcadaa3d97dd9e8efeb633d2561c0ebe74c5a8b17c4d9e7e4520b3",
+      "status": "reference",
+      "kind": "integrity",
+      "capabilities": ["fresh-verification", "completion-gate", "agent-output-check"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "low",
+      "risk_flags": ["global-trigger", "overlaps-runtime-policy", "prose-enforced-mechanical-rule"],
+      "decision": {
+        "action": "demote-to-runtime-invariant-and-acceptance-contract",
+        "reason": "Fresh evidence before completion claims is a stable invariant and deterministic Gate, not an optional Skill that should consume discovery context."
+      }
+    },
+    {
+      "candidate_id": "superpowers-writing-skills",
+      "source_id": "superpowers",
+      "source_path": "skills/writing-skills/SKILL.md",
+      "content_hash": "sha256:d34db5c8aed6a4e0440132bd0613aace70a693ec7819d5637ad77481d8e10d1b",
+      "status": "reference",
+      "kind": "tool",
+      "capabilities": ["skill-authoring", "skill-pressure-testing", "trigger-testing", "wording-microtest"],
+      "applicable_modes": ["cross-cutting"],
+      "context_cost": "extreme",
+      "risk_flags": ["679-line-instructions", "mandatory-multi-sample-tests", "subagent-cost", "runtime-specific-paths", "overlaps-official-authoring-baselines"],
+      "decision": {
+        "action": "extract-risk-tiered-skill-evaluation-method",
+        "reason": "Baseline failure, pressure scenarios, and wording microtests are useful; test repetition and process depth must scale with risk, variance, and budget rather than apply universally."
       }
     }
   ]

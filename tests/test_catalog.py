@@ -15,8 +15,37 @@ class CandidateCatalogTests(unittest.TestCase):
             [
                 "rc-sci-employee-deep-research",
                 "rc-giiisp-scientific-image-generation",
+                "lingzhi-citation-management",
+                "lingzhi-literature-search",
+                "lingzhi-symbolic-equation",
             ],
             [item["candidate_id"] for item in quarantined],
+        )
+
+    def test_community_intake_has_one_decision_per_selected_skill(self) -> None:
+        candidates = load_candidates(ROOT / "registry" / "skills" / "candidates.json")
+        source_ids = {
+            "github-awesome-copilot",
+            "k-dense-scientific-agent-skills",
+            "lingzhi-agent-research-skills",
+            "ngtiendong-academic-research-agent-skill",
+            "superpowers",
+        }
+        selected = [item for item in candidates if item["source_id"] in source_ids]
+
+        self.assertEqual(35, len(selected))
+        self.assertEqual(35, len({(item["source_id"], item["source_path"]) for item in selected}))
+        self.assertTrue(all(item.get("content_hash", "").startswith("sha256:") for item in selected))
+        self.assertEqual(
+            {
+                "gh-build-evidence-map",
+                "kdense-citation-management",
+                "kdense-experimental-design",
+                "kdense-peer-review",
+                "kdense-scientific-visualization",
+                "kdense-statistical-power",
+            },
+            {item["candidate_id"] for item in selected if item["status"] == "triage"},
         )
 
     def test_mode_filter_is_metadata_only(self) -> None:

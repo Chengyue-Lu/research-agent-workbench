@@ -28,7 +28,7 @@
 4. 有明确版本、许可证和维护状态的开源 Skill/方法实现；
 5. 论文或工具文档中的方法要求，用于独立实现 checker 或流程。
 
-每次新增来源只做 metadata-first intake：记录 locator、revision/hash、license、入口数量、脚本/二进制/安装/网络/凭据/删除信号，再决定是否读取正文。禁止为了“多搜集”批量安装、执行或导入整个 Skill 仓库。
+每次新增来源先做 metadata-first intake：记录 locator、revision/hash、license、入口数量、脚本/二进制/安装/网络/凭据/删除信号，再决定是否读取正文。允许把固定版本的代表性目录批量下载到忽略 Git 的隔离区，以降低单一来源和单次模型判断偏差；禁止批量安装、执行、导入或直接注册整个 Skill 仓库。统一流程与首批快照见[Skill 来源搜集、隔离与筛选](SKILL_SOURCE_INTAKE.md)。
 
 未知许可或禁止复制时：
 
@@ -105,7 +105,7 @@ source intake
 
 | 优先级 | 候选/来源 | 本轮动作 | 不做什么 |
 |---|---|---|---|
-| P0 | `rwb-claim-preserving-rewrite` | 完成 adversarial、non-trigger 和 paired evaluation 准备；根据结果 continue-trial 或 reject | 不用表层 checker 宣称语义等价 |
+| P0 | `rwb-claim-preserving-rewrite` | 探索性三臂 Stage 1 已暂定 `revise-compact`；修复 checker 后只复验 CPD-02/03，再决定 continue-trial/retain-reference/reject | compact 在 2 个区分案优于 full；不把单次合成测试或表层 checker 当作语义等价证明 |
 | P0 | `rc-papercheck` + citation-management/backward-traceability 问题模式 | 独立设计最小 `citation-claim-integrity`；优先确定性 citation/claim locator | 不复制未知许可脚本，不把科学正确性变成 PASS |
 | P1 | `rc-giiisp-paper-search-apis` | 只定义 provider-neutral `literature-search` Tool capability 和结果归一化/失败语义 | 不绑定单一服务，不在本分支实现凭据/API |
 | P2 | `rc-experiment-design` | 保持 triage，等待真实 experiment Task 与统计方法审查 | 不先建空 experiment Mode 或自动接受功效结论 |
@@ -122,12 +122,14 @@ source intake
 2. trigger/non-trigger/permission/tool/data fixtures；
 3. scripts 的真实确定性测试；
 4. resolver 的 selected/rejected/no-Skill 解释；
-5. 同一 Task/input/model/config 的 baseline/with-Skill；
+5. 同一 Task/input/model/config 的 baseline/compact-contract/full-Skill 困难任务诊断；必要时再做 direct-tool/full-Skill 配对；
 6. 盲评、错误类型、人工修正时间、上下文和协调成本；
 7. 人工 Decision；
 8. 独立更新 accepted Registry。
 
 只有真实 forward test 才能支持增量价值。fixture PASS、模型自评、另一个 reviewer Agent 同意或格式更完整都不能自动准入。
+
+简单样例只用于结构和 checker 冒烟，不作为价值证据。高密度 Claim、对抗压力、混合边界、分层预算和停止条件见[路诚钺 Skill 诊断性困难任务测试计划](DIAGNOSTIC_FORWARD_TESTING.md)。三臂诊断不会替代正式配对契约；Registry 证据仍记录为共享 baseline 的独立 pair。
 
 ## 8. 停止和删除条件
 

@@ -32,6 +32,8 @@ outputs -> deterministic reports -> blind human review -> reveal -> human Decisi
 
 当前 `claim-preserving-rewrite` 至少需要 trigger、non-trigger、boundary 和 adversarial 四类；推导、实验设计、仿真 V&V 等 Skill 应使用各自方法相关的判据，而不是复用写作质量分数。
 
+简单、单约束案例只能校准执行与 checker，不能单独证明 Skill 增量价值。案例应包含预先声明的真实失败诱因；当前 Mode–Skill 工作流的困难任务设计、compact-contract 诊断臂和分层停止规则见[路诚钺 Skill 诊断性困难任务测试计划](../workstreams/chengyue-lu-mode-skill/DIAGNOSTIC_FORWARD_TESTING.md)。
+
 ## 3. 配对控制
 
 一对执行必须满足：

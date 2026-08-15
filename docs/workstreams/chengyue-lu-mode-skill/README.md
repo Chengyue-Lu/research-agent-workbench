@@ -2,8 +2,8 @@
 
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 分支：`agent/mode-skill-selection-baseline`
-- 状态：开发准备
-- 日期：2026-08-15
+- 状态：首批 54 个 Skill 入口完成处置，进入社区候选 dossier 选择
+- 日期：2026-08-16
 - 目标节点：`K-MS-1 Mode–Skill Selection Baseline`
 
 本目录是路诚钺当前分支的唯一专项计划入口。逐项状态仍以 [`docs/TASKS.md`](../../TASKS.md) 为准；稳定架构仍以 [`docs/ARCHITECTURE.md`](../../ARCHITECTURE.md) 和模块文档为准。本目录不建立第二套全局架构。
@@ -12,11 +12,12 @@
 
 当前优先级调整为：
 
-1. 先审计、整理并在必要时独立重写少量明确可用的 Skills；
-2. 再用真实候选反推 Mode 边界、capability 词汇和 Skill 显式调用规则；
-3. 同时定义这些 Skills 需要的外部 Tool 能力与调用边界；
-4. 在开始真实 Agent with/without 评估前补齐 Attempt Archive/Trace validator；
-5. 到达 `K-MS-1` 后暂停，做保留、拆分、降级和删除评审。
+1. 首批 9 个来源、54 个 Skill 入口已完成隔离、机器筛选和人工处置；
+2. 从 6 个 `triage` 项中只让最多 4 个进入 dossier、最多 2 个进入独立重写或困难任务验证；
+3. 用筛选后的真实候选反推 Mode 边界、capability 词汇和 Skill 显式调用规则；
+4. 同时定义这些 Skills 需要的外部 Tool 能力与调用边界；
+5. 在恢复真实 Agent with/without 评估前补齐 Attempt Archive/Trace validator；
+6. 到达 `K-MS-1` 后暂停，做保留、拆分、降级和删除评审。
 
 “搜集 Skills”不等于下载、安装或准入。“外部 Tool”也不等于在本分支实现 Provider/API。路诚钺负责方法、能力词汇、选择规则、数据/副作用边界和 fixtures；黄毅负责 API session、认证、Provider/Tool Adapter 实现和执行端测试。
 
@@ -36,7 +37,11 @@
 ## 3. 本目录
 
 - [Skill 整理、独立重写与准入计划](SKILL_CURATION.md)
+- [Skill 来源搜集、隔离与机器/人工筛选](SKILL_SOURCE_INTAKE.md)
+- [社区 Skill 人工筛选结论](COMMUNITY_SKILL_TRIAGE.md)
 - [Mode–Skill–Tool 划分与调用计划](MODE_SKILL_TOOL_ROUTING.md)
+- [Skill 诊断性困难任务测试计划](DIAGNOSTIC_FORWARD_TESTING.md)
+- [`claim-preserving-rewrite` Stage 1 诊断结果](STAGE1_DIAGNOSTIC_RESULTS.md)
 
 实际 Skill 包不得在自身目录中复制本计划或增加 README/Changelog。Skill 包只保留 `SKILL.md`、必要的 `agents/openai.yaml`、`scripts/`、`references/` 和 `assets/`。
 
@@ -49,18 +54,18 @@
 | P2 候选整理/重写 | 只推进最多 2 个高价值候选，不复制未知许可实现 | 隔离 candidate package、lineage、checks、fixtures | 至少 1 个候选得到 reject/retain-reference/continue-trial 决定 |
 | P3 Mode/Tool 路由 | 完成 Mode 决策卡、Tool capability cards 和 Skill 调用矩阵 | 路由表、capability 词汇、6–8 个 Task fixtures | no-Skill、tool-only、Skill、blocked、Human Gate 均可解释 |
 | P4 Trace 前置 | 实现 M3-007/008 的最小 Envelope/Index/Event fixture 与 validator | 可回放 Attempt fixture | forward test 不再只依赖聊天或 Worklog |
-| P5 对照评估 | 对选定候选做 baseline/with-Skill 与 H0/H1/H2 对照 | 脱敏输出、checks、Receipt/Trace、盲评、Decision | 证据足以支持保留、修改或停止，不自动 accepted |
+| P5 对照评估 | 先做 baseline/compact/full-Skill 困难任务诊断，再按需做 direct-tool 与 H0/H1/H2 对照 | 脱敏输出、checks、Receipt/Trace、盲评、Decision | 证据能区分普通提示、Tool 与 Skill 的增量，不自动 accepted |
 | P6 节点评审 | 删除无增量价值机制并冻结 K-MS-1 | 评审 Decision、更新 Registry/TASKS | 到达停止点，不批量扩张 Mode/Skill/Tool |
 
 P1–P3 可以先做离线文档、契约和 fixtures；P4 必须在任何声称“真实 Agent 效果”的 P5 之前完成。
 
 ## 5. 首批处理顺序
 
-1. 审计三个 accepted Skills，特别检验 `handoff-integrity` 是否应退回确定性 Tool，而不是常驻 Skill。
-2. 继续 `claim-preserving-rewrite` 的 adversarial 与 with/without 准备。
-3. 从 `rc-papercheck`、K-Dense citation-management 和 backward-traceability 的问题定义中独立设计最小 `citation-claim-integrity` 候选；许可不明时不复制正文或脚本。
-4. 从 `rc-giiisp-paper-search-apis` 只抽取 provider-neutral 的 `literature-search` Tool contract；在证明 Agent 工作流有增量价值前不创建搜索“大 Skill”。
-5. `experiment-design` 等待 experiment Mode 的真实案例和方法审查；科学绘图继续隔离，只定义后续 Tool/Output 契约。
+1. OpenAI/Anthropic/Google 19 个一方入口和其他来源 35 个入口均已处置；下一步从 6 个 `triage` 项选择最多 4 个 dossier，不同时展开全部 references/scripts。
+2. 审计三个 accepted Skills，特别检验 `handoff-integrity` 是否应退回确定性 Tool，而不是常驻 Skill。
+3. 从 dossier 中最多选择 2 个候选进入独立最小重写或困难任务；许可不明时不复制正文或脚本。
+4. 从证据类候选只抽取 provider-neutral 的 search/citation/traceability 契约；在证明 Agent 工作流有增量价值前不创建搜索“大 Skill”。
+5. `claim-preserving-rewrite` 的 compact 复验保留，但排在多来源筛选之后；不再用单次或简单样例决定候选方向。
 
 ## 6. 预期写入位置
 
@@ -99,7 +104,7 @@ Tool capability card 的存放位置和 Schema 在首张卡完成后决定；没
 
 1. 两个正式 Mode 有 trigger/non-trigger/组合/no-Mode fixtures；
 2. 三个 accepted Skills 完成 retain/revise/deprecate 审计；
-3. 至少一个候选得到证据化去留决定，最多推进两个候选包；
+3. 至少一个候选经过学科/动作相关的困难任务诊断，得到证据化去留决定，最多推进两个候选包；
 4. 至少 6 个 Task fixture 能给出 Mode、capability、Tool、Skill/no-Skill、读取和 Handoff 选择理由；
 5. 外部 Tool 的数据出口、权限、副作用、失败和验证边界可在调用前判断；
 6. 实际 Agent 评估有完整 Attempt Trace，但主 Agent 默认只读取索引和 Handoff；

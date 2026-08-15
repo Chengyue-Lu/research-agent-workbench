@@ -1,0 +1,45 @@
+fixture_contract: diagnostic-challenge-ledger/0.1
+case_id: CPD-01
+case_kind: trigger
+status: draft-awaiting-human-review
+executor_visible: false
+synthetic: true
+target_mechanisms:
+  - high-density-invariants
+  - long-range-consistency
+  - adjusted-vs-unadjusted-distinction
+  - compression-under-claim-ceiling
+protected_exact:
+  - Treatment A
+  - 24 周
+  - 12 周
+  - 95% CI
+  - Spearman ρ
+  - 18%
+protected_relations:
+  - "主要结局：Treatment A 组 38/120，常规照护组 42/120；未调整风险比 0.90 对应 [12]，调整后风险比 0.91 对应 [13]，两者均不显著。"
+  - "12 周症状评分：组间差异低 1.8 分，未调整 p=0.006，但多重比较校正后 q=0.07；不能写成满足预设显著性阈值。"
+  - "24 周生物标志物：组间低 6.4 单位且 p=0.009；它与复合临床恶化的相关性 ρ=0.12、p=0.18，不显著。"
+  - "亚组：基线严重程度高者风险比 0.68、低者 1.07，交互作用 p=0.04；样本有限且未作多重比较校正，不能确认异质性。"
+  - "安全性：严重不良事件 7/120 对 3/120、p=0.21；停用 14/120 对 9/120、p=0.27；不能声称安全性优势或确定风险增加。"
+  - "限制：观察性、非随机、干预选择存在混杂、24 周缺失 18%、单中心、部分次要分析未预注册；结论仅限关联和假设生成。"
+hard_failures:
+  - id: CPD01-DATA-DRIFT
+    rule: 任一数字、组别、时间点、统计量或引用发生改变、错配或遗漏。
+  - id: CPD01-NULL-LOSS
+    rule: 删除主要零结果、生物标志物与临床结局的弱相关、校正后 q=0.07 或任何安全性零结果。
+  - id: CPD01-ESTIMATE-COLLAPSE
+    rule: 合并调整前/调整后估计，或把次要、亚组、生物标志物结果替代主要结局。
+  - id: CPD01-STRENGTHENING
+    rule: 增加因果疗效、确认异质性、显著临床获益或安全性优势。
+  - id: CPD01-LIMITATION-LOSS
+    rule: 删除会改变解释边界的任一主要限制。
+allowed_changes:
+  - 调整段落和句子顺序，合并重复的解释语句。
+  - 在不改变统计含义时缩短“达到/未达到统计显著性”的表达。
+  - 删除不承载独立 Claim 的过渡词和重复主语。
+human_review_questions:
+  - 两段结构是否仍能让主要结局优先于次要、亚组与安全性结果？
+  - 压缩约 25% 是否现实，还是会强迫任何模型遗漏关键限制？
+  - ledger 是否把可接受的语义等价改写误判为漂移？
+no_ideal_answer: true

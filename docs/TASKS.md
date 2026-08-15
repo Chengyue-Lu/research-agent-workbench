@@ -41,7 +41,7 @@
 | M2-005 | DONE | 创建 handoff-integrity 检查 | M1 | 确定性脚本已验证 Task/input/Skill/artifact 交接边界，不宣称科学正确性 |
 | M2-006 | PARKED | 扩展 Codex Runtime Adapter | M2-002..005 | 已有 Agent/Skill 发现、验证和显式 dispatch 保留；平台 launch/collect 不在当前 Mode–Skill 关键路径 |
 | M2-007 | IN_PROGRESS | 执行首个双 Skill 垂直切片 | M7-002..006, M7-008 | 离线契约切片已证明 Skills 不同；路诚钺先完成 Skill 整理、Mode/Skill/Tool 选择、读取计划和 H1/H2 成本基线，真实执行证据由黄毅负责的执行工作流提供 |
-| M2-008 | IN_PROGRESS | 建立外部 Skill 发现、隔离评估与准入 Registry | M1 | ZIP 审计、18/18 追溯、非发现候选和 provider-neutral 双臂评估契约/CLI 已落地；fixture 会被正确阻断，真实 with/without 与 trial/accepted 仍待完成 |
+| M2-008 | IN_PROGRESS | 建立外部 Skill 发现、隔离评估与准入 Registry | M1 | ZIP 审计、18/18 追溯、非发现候选和 provider-neutral 双臂评估契约/CLI 已落地；首批 9 个固定来源、54 个入口已完成静态与人工处置，除三家一方来源外的 35 项已固定哈希并进入 `triage`/`reference`/`quarantine`/`rejected`；dossier、真实 with/without 与 trial/accepted 仍待完成 |
 
 ## M3：上下文与风险
 
@@ -95,10 +95,11 @@
 | M7-002 | IN_PROGRESS | 建立现有 Mode 决策卡与边界 fixtures | M1-003 | evidence/simulation 具有 trigger、non-trigger、组合、歧义和 no-Mode 样本 |
 | M7-003 | READY | 建立 Task-to-Mode/Skill/Tool 选择矩阵 | M7-002, M7-004, M7-008 | 可解释 tool-only/no-Skill、accepted Skill、拆 Task、capability gap 和 Human Gate；排除理由可重放 |
 | M7-004 | IN_PROGRESS | 审计、整理并必要时修订三个 accepted Skills | M2-001 | 每个 Skill 有 trigger/non-trigger、Tool/权限、direct-tool 基线和 retain/revise/deprecate 结论 |
-| M7-005 | READY | 独立整理/重写最多两个候选并作证据化去留决定 | M2-008, M7-004 | 不复制未知许可实现；至少一个候选产出 reject/retain-reference/continue-trial，不自动 accepted |
+| M7-005 | IN_PROGRESS | 独立整理/重写最多两个候选并作证据化去留决定 | M2-008, M7-004 | `claim-preserving-rewrite` 探索性 Stage 1 已完成：compact 在 CPD-02/03 优于 baseline/full，暂定 `revise-compact`；checker 修复、两案复验、独立盲评与真实材料 Gate 尚未完成，不自动 accepted |
 | M7-006 | READY | 建立 H0/H1/H2 与内容读取成本对照 | M3-008, M7-002 | 通过 Attempt Archive 记录消息/工件数、字符、审阅、回查、遗漏、返工、读取扩展和 capture gap |
 | M7-007 | PARKED | 新增 experiment/theory/observational/engineering Mode | 真实案例 + Mode 准入卡 | 证明现有 Mode 组合不足后逐个启用 |
 | M7-008 | READY | 建立首批 Tool capability cards 与调用边界 | M1-008, M7-004 | 至少覆盖 document-read、citation-resolve、literature-search、bounded-compute、project-cli；数据出口、副作用、失败、验证和 Adapter owner 明确，不实现 API |
+| M7-009 | IN_PROGRESS | 建立多来源 Skill 候选池与机器/人工筛选 Gate | M2-008 | 首批 54 个入口均已处置；社区 35 项形成 6 个 `triage`、21 个 `reference` 和 8 个隔离/排除项。下一 Gate 从 6 项中最多选择 4 个 dossier、2 个重写/困难任务，下载内容不安装或自动准入 |
 
 ## GitHub 执行入口
 
@@ -114,4 +115,4 @@ M1 已建立里程碑与首批可执行 Issues：
 
 ## 当前下一任务
 
-当前关键路径是 `M7-004 → M7-005/M7-008 → M7-002/003 → M3-007/008 → M7-006 / K-MS-1`：先审计现有 Skills、独立整理/重写最多两个候选并冻结 Tool 能力，再完善 Mode/Skill/Tool 路由。真实 Agent forward test 前补齐 Attempt Trace validator，最后比较 with/without Skill 与 H0/H1/H2。到达可解释、可回放、可删减的选择基线后暂停评审；路诚钺不在本分支补 API、Provider、模型或 live conformance。详细计划见[路诚钺 Mode–Skill 分支计划](workstreams/chengyue-lu-mode-skill/README.md)。
+当前关键路径是 `M7-009 dossier 选择 → M7-004/M7-008 → M7-002/003 → M3-008 → M7-005/006 → K-MS-1`：54 个入口均已处置，下一步从 `build-evidence-map`、K-Dense citation/experiment/peer-review/visualization/power 六项中最多选择 4 个详细 dossier，再最多推进 2 个独立重写或困难任务；同时把已下沉项转成 provider-neutral capability、Task 模板或运行时契约。`claim-preserving-rewrite` 的 checker/compact 复验保留，但不让单一候选测试先行决定整体方向。路诚钺不在本分支补 API、Provider、模型或 live conformance。
