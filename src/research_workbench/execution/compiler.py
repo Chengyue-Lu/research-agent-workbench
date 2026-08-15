@@ -34,6 +34,7 @@ from research_workbench.artifacts.integrity import (
 )
 from research_workbench.capability.models import AgentProfile
 from research_workbench.capability.resolver import ResolvedTask
+from research_workbench.contracts.common import to_plain
 from research_workbench.execution.errors import CompileError
 from research_workbench.execution.options import ExecutionPolicy
 from research_workbench.execution.tools import SessionToolLog, build_client_tools
@@ -162,7 +163,13 @@ def _select_output_contract(task: TaskPacket) -> str:
             + ", ".join(sorted(OUTPUT_CONTRACT_SCHEMAS))
             + f" (found {list(supported)})",
         )
-    return supported[0]
+    contract = supported[0]
+    if contract == "evidence-record" and not task.input_refs:
+        raise CompileError(
+            "COMPILE-INPUT-MISSING",
+            "the evidence-record output contract requires at least one hash-pinned input",
+        )
+    return contract
 
 
 def _check_binding_capabilities(binding: ModelBinding, *, require_tools: bool) -> None:
@@ -298,8 +305,13 @@ def _build_limits(task: TaskPacket, policy: ExecutionPolicy) -> tuple[ApiSession
 def _attempt_identifier(
     assignment: ResolvedTask, binding: ModelBinding, task: TaskPacket
 ) -> str:
+    task_payload = json.dumps(
+        to_plain(task), sort_keys=True, separators=(",", ":"), default=str
+    )
     payload = {
         "assignment_id": assignment.assignment_id,
+        "task_revision": task.revision,
+        "task_payload_sha256": hashlib.sha256(task_payload.encode("utf-8")).hexdigest(),
         "slot_id": binding.slot_id,
         "provider_adapter": binding.provider_adapter,
         "model": binding.model,

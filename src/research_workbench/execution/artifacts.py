@@ -132,7 +132,9 @@ def build_closeout_documents(
     statuses = map_outcome(
         ApiSessionStatus(outcome.status),
         outcome.stop_reason,
-        check_passed=all(check.passed for check in checks),
+        # A completed session without a structured payload can never gate a
+        # contract-satisfied claim, whatever the session checks recorded.
+        check_passed=all(check.passed for check in checks) and completed,
         model_drift=model_drift,
     )
 

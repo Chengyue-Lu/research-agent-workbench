@@ -4,8 +4,12 @@ Every document of a batch is staged and fully validated before anything is
 published, then published by exclusive hard link in a fixed order with the
 Main State strictly last: the Main State is the only recovery entry point,
 so a crash at any earlier point can never expose a state that references
-missing files. Re-running the same deterministic plan resumes an interrupted
-publish instead of diverging; a conflict with different content blocks.
+missing files. The completion marker is written only after post-publish
+verification passes, so a batch that was never verified is never treated as
+complete. Re-running the SAME plan (byte-identical documents, e.g. within
+one process) resumes an interrupted publish; a cross-process interruption
+produces a batch without a marker, which the runner's pre-flight check
+blocks for a manual decision instead of re-executing the model.
 """
 
 from __future__ import annotations
@@ -128,8 +132,14 @@ def run_closeout(
         raise
 
     published, resumed = _publish_all(plan, project_root, staged)
+    try:
+        _verify_published(plan, project_root, protocol=protocol, task=task, assignment=assignment)
+    except CloseoutError:
+        # The batch is published but NOT verified: no completion marker is
+        # written, so no later run may treat it as complete.
+        shutil.rmtree(staging, ignore_errors=True)
+        raise
     _write_marker(marker, published)
-    _verify_published(plan, project_root, protocol=protocol, task=task, assignment=assignment)
     shutil.rmtree(staging, ignore_errors=True)
     return CloseoutResult(tuple(published), _relative(project_root, marker), resumed)
 
@@ -306,6 +316,17 @@ def _write_marker(marker: Path, published: list[tuple[str, str, str]]) -> None:
     _write_flushed(marker, ("\n".join(lines) + "\n").encode("utf-8"))
 
 
+def read_completion_marker(marker: Path) -> tuple[tuple[str, str, str], ...]:
+    """Parse a completion marker into (role, relative path, sha256) entries."""
+
+    entries: list[tuple[str, str, str]] = []
+    for line in marker.read_text(encoding="utf-8").splitlines():
+        parts = line.split(" ", 2)
+        if len(parts) == 3:
+            entries.append((parts[0], parts[1], parts[2]))
+    return tuple(entries)
+
+
 def _marker_state(plan: CloseoutPlan, project_root: Path, marker: Path) -> str:
     """Classify a marked batch: complete, repairable (files lost), or diverged.
 
@@ -314,11 +335,7 @@ def _marker_state(plan: CloseoutPlan, project_root: Path, marker: Path) -> str:
     divergence and blocks.
     """
 
-    recorded: dict[str, str] = {}
-    for line in marker.read_text(encoding="utf-8").splitlines():
-        parts = line.split(" ", 2)
-        if len(parts) == 3:
-            recorded[parts[1]] = parts[2]
+    recorded = {relative: digest for _, relative, digest in read_completion_marker(marker)}
     repairable = False
     for document in plan.documents:
         digest = recorded.get(document.path)

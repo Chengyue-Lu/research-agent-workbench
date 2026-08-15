@@ -1,0 +1,28 @@
+schema_version: 0.1.0
+assignment_id: SA-9A9D7C442B60B3E8
+task_id: EVID-001
+task_revision: 1
+agent_profile: evidence-scout@0.1.0
+skill_lock:
+- skill_id: literature-evidence-extraction
+  version: 0.1.0
+  content_hash: c0a080ea9c4743a599000bc6978386a8dcbb8aaa09e1ed4c0e54a4deadca780b
+  source_locator: .agents/skills/literature-evidence-extraction/SKILL.md
+  package_hash: 60c8b11adc147fbcb3c0d1c79d05c441d3143f446502a5b12c73f1b8b04895cb
+resolved_tools:
+- document-read
+effective_permissions:
+  filesystem: worktree-write
+  network: search-and-fetch
+  external_write: false
+  allowed_roots:
+  - work/EVID-001
+output_contracts:
+- evidence-record
+- handoff-packet
+- handoff-transfer-manifest
+resolution_reason:
+- all required capabilities are covered
+- no forbidden or incompatible skill is loaded
+- permissions are the intersection of task, profile, and selected skills
+registry_digest: b1cc47113f6fb1ab9a3ca98bdb9f409336372d69199c0ce5cbaf9dc24b69e415

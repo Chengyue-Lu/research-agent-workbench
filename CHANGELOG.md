@@ -12,11 +12,12 @@
   - `compile_session` 纯函数编译边界：Task Packet + Profile + 冻结 Skill Assignment + 显式模型槽 → 一个全新 `ModelRequest`。逐个哈希校验输入与 Skill 正文（`TASK-STALE-INPUT`、`COMPILE-SKILL-DRIFT`），超限直接阻断不截断；每个会话限额标注来源（task-budget 或 policy-default）；类型上无法携带主 Agent 历史或未选 Skill。
   - read-only `document-read` 客户端工具与 `SessionToolLog`：只读声明输入或有效 allowed roots，越界/超限拒绝并留痕。
   - 状态映射表：会话结果 → Attempt/Handoff/Receipt/Main State 一致状态；模型漂移阻断 `contract-satisfied` 宣称；completed 只有在确定性检查（`execution/checks.py`，按哈希钉住）通过时才宣称 `contract-satisfied`。
-  - 原子关闭事务：stage/validate/publish 三阶段，11 类文档按固定顺序排他 `os.link` 发布、Main State 严格殿后；完成标记 + 崩溃后同计划确定性续跑；内容分歧以 `EXEC-CLOSEOUT-PATH-CONFLICT` 阻断；发布后用真实 Receipt/Handoff/Transfer 校验器复核。
-  - `execute_task` 编排与 `build_provider_registry` 缝隙（真实 Provider 接线显式阻断为 `EXEC-PROVIDER-NOT-CONFIGURED`，属 M6-004）；确定性 attempt id + 完成标记让重跑跳过模型执行。
+  - 原子关闭事务：stage/validate/publish 三阶段，11 类文档按固定顺序排他 `os.link` 发布、Main State 严格殿后；完成标记只在发布后验证通过时写入；同一进程内同计划可确定性续跑；跨进程中断由预检以 `EXEC-CLOSEOUT-INCOMPLETE`/`EXEC-BATCH-CLAIMED` fail-closed 阻断（不自动重跑模型，人工处置）；内容分歧以 `EXEC-CLOSEOUT-PATH-CONFLICT` 阻断；发布后用真实 Receipt/Handoff/Transfer 校验器复核。
+  - `execute_task` 编排与 `build_provider_registry` 缝隙（真实 Provider 接线显式阻断为 `EXEC-PROVIDER-NOT-CONFIGURED`，属 M6-004）；确定性 attempt id（覆盖 assignment、槽位、模型与任务正文哈希）+ 完成标记让重跑跳过模型执行。
 - `rwb execute task` CLI 子命令：显式 `--model-env NAME=VALUE` 注入或 `--from-environment` 实环境读取；`--dry-run` 只编译不执行。
 - `examples/api-execution/`：completed / tool-failed / safe-paused 三组可再生静态 fixtures（`regenerate.py` + README 声明离线边界）；stale-input 路径按设计零写入，由 E2E 测试证明。
-- 55 项新测试：编译器 15、工具 7、关闭事务 12（含逐步 `os.link` 故障注入矩阵）、离线 E2E 12（四路径 + 全新 CLI 会话仅凭文件的 resume-check 证明 + 漂移/预检/幂等/写范围）、CLI 接线 4、fixtures 一致性 5。
+- 新测试：编译器 17、工具 7、关闭事务 13（含逐步 `os.link` 故障注入矩阵与验证失败不落标记回归）、离线 E2E 16（四路径 + 全新 CLI 会话仅凭文件的 resume-check 证明 + 漂移/预检/幂等/写范围/中断批次防护/独占 claim）、CLI 接线 4、fixtures 一致性 6（含 checker 哈希钉住校验）。
+- 评审加固（REQUEST-CHANGES 整改）：`.gitignore` 的 `work/` 锚定到仓库根（此前 fixtures 批次链被静默排除、fresh clone 自检失败）；attempt_id 覆盖任务正文；零输入 evidence 任务编译期阻断；completed 无结构化输出时强制不宣称 contract-satisfied；批次独占 claim 防并发重复执行。
 
 ### Milestone
 

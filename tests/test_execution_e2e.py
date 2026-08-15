@@ -430,5 +430,70 @@ class FailureAndPausePathTests(unittest.TestCase):
                 )
 
 
+class InterruptedBatchGuardTests(unittest.TestCase):
+    """H-2/M-4 regressions: an interrupted batch blocks re-execution, and a
+    concurrent duplicate is refused by the exclusive claim."""
+
+    def _run_completed(self, root: Path) -> None:
+        provider = OfflineProvider(
+            tool_response(
+                "r1", (ToolCall("call-1", "document-read", {"path": "examples/fixtures/paper-001.txt"}),)
+            ),
+            structured_response("r2"),
+        )
+        run_execute(root, provider)
+
+    def test_batch_without_marker_blocks_instead_of_re_running_model(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = build_project(Path(directory))
+            self._run_completed(root)
+            batch = next((root / "work" / "EVID-001").iterdir())
+            (batch / "closeout-complete.txt").unlink()
+            empty_provider = OfflineProvider()
+
+            with self.assertRaises(Exception) as caught:
+                run_execute(root, empty_provider)
+            self.assertIn("EXEC-CLOSEOUT-INCOMPLETE", str(caught.exception))
+            self.assertEqual([], empty_provider.requests)
+
+    def test_stray_batch_file_blocks_execution(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = build_project(Path(directory))
+            provider = OfflineProvider()
+            compiled_probe = run_execute(root, provider, dry_run=True)
+            batch = root / "work" / "EVID-001" / compiled_probe.compiled.attempt_id
+            batch.mkdir(parents=True)
+            (batch / "stray.yaml").write_text("interrupted", encoding="utf-8")
+
+            with self.assertRaises(Exception) as caught:
+                run_execute(root, provider)
+            self.assertIn("EXEC-CLOSEOUT-INCOMPLETE", str(caught.exception))
+            self.assertEqual([], provider.requests)
+
+    def test_claim_file_refuses_concurrent_duplicate(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = build_project(Path(directory))
+            provider = OfflineProvider()
+            compiled_probe = run_execute(root, provider, dry_run=True)
+            batch = root / "work" / "EVID-001" / compiled_probe.compiled.attempt_id
+            batch.mkdir(parents=True)
+            (batch / "closeout-claim.txt").write_text(
+                "claimed_at=2026-08-14T00:00:00Z", encoding="utf-8"
+            )
+
+            with self.assertRaises(Exception) as caught:
+                run_execute(root, provider)
+            self.assertIn("EXEC-BATCH-CLAIMED", str(caught.exception))
+            self.assertEqual([], provider.requests)
+
+    def test_successful_run_releases_the_claim(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = build_project(Path(directory))
+            self._run_completed(root)
+            batch = next((root / "work" / "EVID-001").iterdir())
+            self.assertFalse((batch / "closeout-claim.txt").exists())
+            self.assertTrue((batch / "closeout-complete.txt").exists())
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -312,6 +312,32 @@ class CloseoutDocumentTests(unittest.TestCase):
             self.assertTrue(main_state["rollover_reason"])
 
 
+    def test_verification_failure_writes_no_marker_and_reruns_raise(self) -> None:
+        """H-1 regression: a failed post-publish verification must never be
+        swallowed by the idempotent skip on a later run."""
+
+        import dataclasses
+
+        with TemporaryDirectory() as directory:
+            root = build_project(Path(directory))
+            task, assignment, protocol, plan = prepare(root, completed_outcome())
+            drifted_task = dataclasses.replace(task, revision=task.revision + 1)
+
+            for _ in range(2):
+                with self.assertRaises(CloseoutError) as caught:
+                    run_closeout(
+                        plan,
+                        root=root,
+                        protocol=protocol,
+                        task=drifted_task,
+                        assignment=assignment,
+                    )
+                self.assertEqual("EXEC-CLOSEOUT-VERIFICATION-FAILED", caught.exception.code)
+
+            marker = root / plan.batch_dir / "closeout-complete.txt"
+            self.assertFalse(marker.exists())
+
+
 class CloseoutAtomicityTests(unittest.TestCase):
     def test_rerun_with_same_plan_is_idempotent(self) -> None:
         with TemporaryDirectory() as directory:

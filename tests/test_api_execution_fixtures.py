@@ -98,6 +98,20 @@ class ApiExecutionFixtureTests(unittest.TestCase):
         resolved = [Path(ref).name for ref in receipt.validation_refs]
         self.assertIn("check-report.yaml", resolved)
 
+    def test_checker_source_pins_match_the_current_checks_module(self) -> None:
+        """M-5 regression: the fixtures pin the checker by hash; editing
+        execution/checks.py without regenerating must fail here."""
+
+        from research_workbench.artifacts.integrity import hash_file
+
+        current = hash_file(ROOT / "src" / "research_workbench" / "execution" / "checks.py")
+        for scenario in SCENARIOS:
+            with self.subTest(scenario=scenario):
+                check = load_document(batch_directory(scenario) / "check-report.yaml")
+                source = check["checker"]["source_ref"]
+                self.assertEqual("src/research_workbench/execution/checks.py", source["path"])
+                self.assertEqual(current, source["sha256"])
+
     def test_recovery_from_files_alone_via_fresh_cli_sessions(self) -> None:
         for scenario in RECOVERY_SCENARIOS:
             with self.subTest(scenario=scenario):

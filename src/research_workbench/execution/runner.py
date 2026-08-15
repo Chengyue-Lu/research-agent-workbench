@@ -32,7 +32,13 @@ from research_workbench.execution.artifacts import (
     build_closeout_documents,
     outcome_from_result,
 )
-from research_workbench.execution.closeout import CloseoutError, CloseoutResult, run_closeout
+from research_workbench.execution.closeout import (
+    PUBLISH_ORDER,
+    CloseoutError,
+    CloseoutResult,
+    read_completion_marker,
+    run_closeout,
+)
 from research_workbench.execution.compiler import CompiledSession, compile_session
 from research_workbench.execution.errors import CompileError
 from research_workbench.execution.options import ExecutionPolicy
@@ -93,7 +99,11 @@ def execute_task(
     if dry_run:
         return ExecutionRun(compiled=compiled, main_state_path=None, dry_run=True)
 
-    resumed = _already_published(project_root, task, compiled)
+    batch_root = project_root / "work" / task.task_id / compiled.attempt_id
+    marker = batch_root / "closeout-complete.txt"
+    claim = batch_root / "closeout-claim.txt"
+
+    resumed = _already_published(project_root, batch_root, marker, claim)
     if resumed is not None:
         return ExecutionRun(
             compiled=compiled,
@@ -101,8 +111,14 @@ def execute_task(
             closeout=resumed,
             main_state_path=_main_state_path(compiled.attempt_id),
         )
-
     registry = provider_registry or build_provider_registry(binding.provider_adapter)
+    # Preflight the registry against the compiled request: model, capability,
+    # and data-policy gaps block here with zero writes to the batch.
+    registry.require(binding.provider_adapter, compiled.request)
+
+    _preflight_batch(batch_root, marker, claim)
+    _claim_batch(claim, now())
+
     started_at = now()
     outcome, finished_at = _run_session(registry, binding, compiled, now, started_at)
     base_state = (
@@ -126,6 +142,9 @@ def execute_task(
         base_state=base_state,
     )
     closeout = run_closeout(plan, root=project_root, protocol=protocol, task=task, assignment=assignment)
+    # The claim only disappears on full success: an interrupted run leaves
+    # it behind so the pre-flight check blocks the batch for a manual decision.
+    claim.unlink(missing_ok=True)
     return ExecutionRun(
         compiled=compiled,
         outcome=outcome,
@@ -155,39 +174,83 @@ def _bind_slot(
 
 
 def _already_published(
-    project_root: Path, task: TaskPacket, compiled: CompiledSession
+    project_root: Path, batch_root: Path, marker: Path, claim: Path
 ) -> CloseoutResult | None:
     """Skip the model entirely when this deterministic attempt already closed."""
 
-    batch_root = project_root / "work" / task.task_id / compiled.attempt_id
-    marker = batch_root / "closeout-complete.txt"
-    main_state = project_root / _main_state_path(compiled.attempt_id)
-    if not marker.is_file() or not main_state.is_file():
+    if not marker.is_file():
         return None
+    entries = read_completion_marker(marker)
+    if not entries:
+        raise CloseoutError(
+            "EXEC-CLOSEOUT-INCOMPLETE",
+            "completion marker is malformed; inspect the batch manually",
+        )
     published: list[tuple[str, str, str]] = []
-    for line in marker.read_text(encoding="utf-8").splitlines():
-        parts = line.split(" ", 2)
-        if len(parts) != 3:
-            continue
-        role, relative, digest = parts
+    for _, relative, digest in entries:
         target = project_root / relative
         if not target.is_file():
-            # A lost file falls through to the normal closeout path, which
-            # resumes deterministically or reports a conflict.
-            return None
+            raise CloseoutError(
+                "EXEC-CLOSEOUT-INCOMPLETE",
+                f"marked batch lost a file: {relative}; inspect the batch manually",
+            )
         if hash_file(target) != digest:
             raise CloseoutError(
                 "EXEC-CLOSEOUT-PATH-CONFLICT",
                 f"published batch diverges at {relative}",
             )
-        published.append((role, relative, digest))
-    if not published:
-        return None
+        published.append((_role_for(relative), relative, digest))
+    claim.unlink(missing_ok=True)
     return CloseoutResult(
         published=tuple(published),
-        marker_path=(batch_root / "closeout-complete.txt").relative_to(project_root).as_posix(),
+        marker_path=marker.relative_to(project_root).as_posix(),
         resumed=True,
     )
+
+
+def _role_for(relative: str) -> str:
+    for role in PUBLISH_ORDER:
+        if role in relative:
+            return role
+    return "unknown"
+
+
+def _preflight_batch(batch_root: Path, marker: Path, claim: Path) -> None:
+    """Block execution when an interrupted run already touched this batch."""
+
+    if marker.exists() or not batch_root.exists():
+        return
+    if claim.exists():
+        raise CloseoutError(
+            "EXEC-BATCH-CLAIMED",
+            "an interrupted execution left a claim on this batch ("
+            + claim.read_text(encoding="utf-8").strip()
+            + "); inspect and remove it manually before re-executing",
+        )
+    leftovers = sorted(entry.name for entry in batch_root.iterdir())
+    if leftovers:
+        raise CloseoutError(
+            "EXEC-CLOSEOUT-INCOMPLETE",
+            "batch directory exists without a completion marker; a previous run was "
+            "interrupted before verification. Inspect "
+            f"{batch_root.as_posix()} and complete or remove it manually before "
+            "re-executing (the model is never re-run automatically).",
+        )
+
+
+def _claim_batch(claim: Path, claimed_at: str) -> None:
+    """Take an exclusive claim so a concurrent execution cannot duplicate work."""
+
+    claim.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        with claim.open("x", encoding="utf-8") as stream:
+            stream.write(f"claimed_at={claimed_at}\n")
+    except FileExistsError as exc:
+        raise CloseoutError(
+            "EXEC-BATCH-CLAIMED",
+            "another execution already holds the claim on this batch; "
+            "do not run the same attempt concurrently",
+        ) from exc
 
 
 def _run_session(

@@ -346,6 +346,45 @@ class CompileSessionTests(unittest.TestCase):
             )
             self.assertTrue(all(tool.side_effect == "read-only" for tool in compiled.tools))
 
+    def test_attempt_id_covers_the_task_body(self) -> None:
+        """M-1 regression: editing the task goal without a revision bump must
+        change the attempt identity instead of silently reusing the batch."""
+
+        with TemporaryDirectory() as directory:
+            root = build_project(Path(directory))
+            first = compile_default(root)
+
+            import yaml as yaml_module
+
+            task_document = load_document(root / "examples" / "task-evidence.yaml")
+            task_document["goal"] = "Edited instruction that must not reuse the old attempt."
+            (root / "examples" / "task-evidence.yaml").write_text(
+                yaml_module.safe_dump(task_document, sort_keys=False, allow_unicode=True),
+                encoding="utf-8",
+            )
+            edited = compile_default(root)
+
+            self.assertNotEqual(first.attempt_id, edited.attempt_id)
+
+    def test_evidence_contract_requires_at_least_one_input(self) -> None:
+        """M-2 regression: a zero-input evidence task must fail at compile
+        time, before the model session runs."""
+
+        with TemporaryDirectory() as directory:
+            root = build_project(Path(directory))
+            import yaml as yaml_module
+
+            task_document = load_document(root / "examples" / "task-evidence.yaml")
+            task_document["input_refs"] = []
+            (root / "examples" / "task-evidence.yaml").write_text(
+                yaml_module.safe_dump(task_document, sort_keys=False, allow_unicode=True),
+                encoding="utf-8",
+            )
+
+            with self.assertRaises(CompileError) as caught:
+                compile_default(root)
+            self.assertEqual("COMPILE-INPUT-MISSING", caught.exception.code)
+
     def test_structured_output_contract_is_frozen(self) -> None:
         with TemporaryDirectory() as directory:
             root = build_project(Path(directory))

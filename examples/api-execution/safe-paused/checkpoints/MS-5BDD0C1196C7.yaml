@@ -1,0 +1,49 @@
+schema_version: 0.1.0
+checkpoint_id: MS-5BDD0C1196C7
+continuity_status: safe-paused
+project_protocol_ref: examples/project-protocol.yaml@1
+current_questions:
+- Q-001@1
+pinned_constraints:
+- 'claim ceiling: source_reported, simulation_supported'
+- local data must not be uploaded
+accepted_decisions: []
+active_tasks:
+- task_id: EVID-001
+  status: safe-paused
+  expected_handoff: examples/api-execution/safe-paused/work/EVID-001/A-5BDD0C1196C7/handoff.yaml
+recent_handoffs:
+- ref: examples/api-execution/safe-paused/work/EVID-001/A-5BDD0C1196C7/handoff.yaml
+  disposition: machine-recorded-safe-paused
+open_conflicts: []
+open_risks:
+- CTX-NEXT-AWU-COST-UNKNOWN
+- CTX-METRICS-UNKNOWN
+next_actions:
+- Resume task EVID-001 from the safe-paused files of attempt A-5BDD0C1196C7 without
+  re-executing recorded side effects.
+artifact_index_refs:
+- examples/api-execution/safe-paused/work/EVID-001/A-5BDD0C1196C7/check-report.yaml
+machine_state_refs:
+- path: examples/api-execution/safe-paused/work/EVID-001/A-5BDD0C1196C7/skill-assignment.yaml
+  sha256: bb46548effd1004bca6491fbf7ae9828e1859ce61ee59ce6de0e0c861cee406f
+- path: examples/api-execution/safe-paused/work/EVID-001/A-5BDD0C1196C7/attempt.yaml
+  sha256: aa43ca7bf7c60e282370f5ca62181d21a1ba7f64a518ff7ca552be9475de7ff6
+- path: examples/api-execution/safe-paused/work/EVID-001/A-5BDD0C1196C7/transfer-audit.yaml
+  sha256: 7dd7fd6f104f4a66acfd740b3e94e9377664dd3e945ade5705e2ef2dc927e1f9
+- path: examples/api-execution/safe-paused/work/EVID-001/A-5BDD0C1196C7/check-report.yaml
+  sha256: 299201e3546a2552aa499ec965c046f81d87116b6a33c50df356a6b1305c2c89
+- path: examples/api-execution/safe-paused/work/EVID-001/A-5BDD0C1196C7/handoff.yaml
+  sha256: becf3b008b8b0046b433de976bab3331c2fb57f139aa82dd597ad65d1d23a6cf
+- path: examples/api-execution/safe-paused/work/EVID-001/A-5BDD0C1196C7/context-snapshot-main.yaml
+  sha256: de4a48fb1904e6be34ffe477c5e4ff8249d2f124c5dcfd701e3da362d9fabf63
+- path: examples/api-execution/safe-paused/work/EVID-001/A-5BDD0C1196C7/transfer-manifest.yaml
+  sha256: a97245d03b11d2b8e7c6a19e294aa2055083f590d77095cf41ae6b8391f1a12f
+- path: examples/api-execution/safe-paused/work/EVID-001/A-5BDD0C1196C7/execution-receipt.yaml
+  sha256: ed76580e4e2fb14eb2dc62f29bc45aaffa6025e601c42bc68fc63872391d6f9d
+- path: examples/api-execution/safe-paused/work/EVID-001/A-5BDD0C1196C7/context-snapshot-task.yaml
+  sha256: 099864afd756bed1e4b4d528e0c79165a14dfc33a7a3cf6cd7cb4c9352720921
+rollover_reason: 'api-session safe pause: total-token-budget'
+created_at: '2026-08-14T00:01:00Z'
+context_snapshot_ref: examples/api-execution/safe-paused/work/EVID-001/A-5BDD0C1196C7/context-snapshot-main.yaml
+checkpoint_digest: a2e6d1bf1e32ad9a3842d989fa627ae56dc93f9e5ff664550f8dc418e6646b5f
