@@ -4,7 +4,7 @@ version: 0.1.0
 kind: integrity
 description: Audits bounded simulation runs for version, convergence, sensitivity, benchmark, and claim-limit evidence.
 capabilities: [version-audit, convergence-analysis, sensitivity-analysis, benchmark-comparison, simulation-claim-limiting]
-applies_to_modes: [simulation]
+applies_to_modes: [simulation, engineering-validation]
 excludes: [experimental-validation, final-physical-interpretation]
 required_tools: [file-read, bounded-compute]
 optional_tools: []

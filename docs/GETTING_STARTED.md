@@ -169,7 +169,7 @@ rwb runtime codex render examples/task-evidence.yaml `
 
 dispatch 只包含 Task 边界、输入路径与哈希、写入范围、显式 Skill、完成检查和暂停条件。它不会嵌入论文全文、其他 Skill 正文或主会话历史。
 
-到这里仍然没有启动 Agent。这是已有的可选 Codex dispatch 路径。黄毅维护的 Python API 已对 evidence/H2 与 simulation/H1 双合同路径完成 fake-local 文件关闭，覆盖受控 Tool Registry、Model Assignment、自动诚实 gapped Trace 和 H1/H2 fresh-process/commit-last。它仍不是通用 Task-to-API CLI，真实 OpenAI Gate 也尚未运行。路诚钺维护的 Mode–Skill 选择基线已实现，当前关闭条件仍是可比实际 H1/H2 Attempt 的运行时与成本证据。
+到这里仍然没有启动 Agent。这是已有的可选 Codex dispatch 路径。黄毅维护的 Python API 已对 evidence/H2 与 simulation/H1 双合同路径完成 fake-local 文件关闭，覆盖受控 Tool Registry、Model Assignment、自动诚实 gapped Trace 和 H1/H2 fresh-process/commit-last。它仍不是通用 Task-to-API CLI，真实 Provider Gate 也尚未通过。路诚钺维护的 Mode–Skill 选择基线在独立工作流推进，不属于该 API 路径的完成声明。
 
 ### 4.5 检查一份已有 Handoff
 
@@ -456,11 +456,11 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 | 产品边界和总体架构 | 已形成 Charter、Architecture、模块和 ADR | 可复用 |
 | Schema、模型和确定性验证 | 本地测试和全部示例/Registry 校验通过 | 技术 alpha 可用 |
 | CLI | 可 init、validate、resolve、render、audit、checkpoint | 技术 alpha 可用 |
-| Agent—Skill 路由 | 两张 Mode 决策卡、8 组选择 fixtures 和三份 accepted Skill 审计可重放 | 离线 `K-MS-1` 实现已完成；真实增量价值与 H1/H2 运行成本证据尚缺，节点未关闭 |
+| Agent—Skill 路由 | 两条不同 Skill 的离线切片可重放 | Mode 决策卡、选择矩阵、Skill 审计与增量价值证据由路诚钺独立维护，当前 API 分支不宣称完成 |
 | API Session 与双合同文件关闭 | evidence/H2 + simulation/H1、受控 Tool Registry、Model Assignment、五终态和 commit-last 已离线测试 | `M6-003` 仍为 IN_PROGRESS；真实 OpenAI Gate 未跑 |
 | Codex Runtime Adapter | 布局、能力和 dispatch 已实现 | 可选路径，不在当前关键路径 |
 | 上下文连续性 | SAFE_PAUSE、哈希、digest、Git 冲突及 H1/H2 fresh-process 恢复已离线实现 | 缺真实新主模型会话恢复 |
-| Handoff 压缩审计 | Manifest/Audit 契约和 H0/H1/H2 fixture-only 成本对照已实现 | 尚缺可比实际 H1/H2 Attempt 的运行时、成本与真实材料证据 |
+| Handoff 压缩审计 | Manifest/Audit 和风险触发抽样契约已实现 | 路诚钺侧尚缺 H1/H2 成本对照与真实材料样本 |
 | Agent 过程留痕 | 实名 actor、Trace Schema/validator/CLI 与 API 运行时自动捕获已离线通过 | 不可得捕获显式记 gap，不伪装 complete；真实 Provider Trace 仍待 Gate |
 | Provider Adapters | OpenAI、Anthropic、Gemini 离线合同和有界 runner 已实现 | 由黄毅继续维护 |
 | Skill 供应链 | 候选隔离、静态审计、paired evaluation 契约已实现 | accepted Skills 仍标记 `project-original-unlicensed` |
@@ -478,7 +478,7 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 
 至少还需关闭以下发布 Gate：
 
-1. 路诚钺用可比实际 H1/H2 Attempt 的运行时与成本证据关闭已实现但未关闭的 `K-MS-1/M7-006`；
+1. 路诚钺在独立工作流完成 `K-MS-1` Mode–Skill/Trace 选择基线与 H1/H2 成本证据；
 2. 在已授权环境执行真实 OpenAI Gate；当前机器缺少 `OPENAI_API_KEY` 和 `RWB_WORKER_MODEL`，状态只能是 pending/not-run；
 3. 完成一次真实 `safe-paused → 新主会话 → 正确下一动作` 恢复；
 4. 把 `rwb init` 升级为可选择的完整项目模板，或提供受支持的 template repository；
@@ -520,13 +520,11 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 发布关键路径应保持克制：
 
 1. 保持已完成的 Attempt Archive、实名 actor、Agent Trace Schema/validator/CLI 和自动诚实 gap 捕获边界；
-2. 保留已完成的 Mode 决策卡、8 组 fixtures、Task-to-Skill 选择矩阵和 accepted Skill 边界审计，不为“覆盖完整”新增 Mode/Skill；
-3. 为可比的实际 H1/H2 Attempt 采集运行时、成本和内容读取扩展证据，再删减没有改变决策的控制项并关闭 `K-MS-1`；
-4. 将 `claim-preserving-rewrite` 保持在 `continue-trial` 且不准入的候选边界，只在新的真实 with/without 证据到位后重审；
-5. 黄毅保持已通过的 H1/H2 Task-to-API 与自动 Trace 边界，并在取得授权与所需环境变量后单独执行真实 OpenAI Gate；路诚钺只消费正式脱敏工件；
-6. 同步确定 LICENSE 和完整项目 scaffold 方案；
-7. 再进入两个真实科研案例、M4 工件 promotion/复现和对照评估；
-8. 只有文件式连续性 benchmark 出现可复现瓶颈时，才评估 SQLite/FTS；图层只能作为 Index，不能成为事实源。
+2. 路诚钺在其分支推进 Mode 决策卡、Task-to-Skill 选择矩阵、accepted Skill 边界审计和 H1/H2 成本证据；当前 API 分支不修改或代做这些工件；
+3. 黄毅保持已通过的 H1/H2 Task-to-API 与自动 Trace 边界，并在确认 Provider 授权、端点和模型可用性后单独执行真实 Gate；路诚钺只消费正式脱敏工件；
+4. 同步确定 LICENSE 和完整项目 scaffold 方案；
+5. 再进入两个真实科研案例、M4 工件 promotion/复现和对照评估；
+6. 只有文件式连续性 benchmark 出现可复现瓶颈时，才评估 SQLite/FTS；图层只能作为 Index，不能成为事实源。
 
 不要把增加 Supervisor、数据库、Agent 数量或 reviewer 层数当作发布进度。每个新增机制都应有真实故障、消费方、成本和删除条件。
 

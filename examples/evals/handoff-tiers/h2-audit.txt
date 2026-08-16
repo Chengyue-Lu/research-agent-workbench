@@ -1,3 +1,0 @@
-Item 1 carried: yes.
-Item 2 carried: yes.
-Semantic equivalence reviewed: no.

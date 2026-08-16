@@ -19,18 +19,18 @@ Agent 不是责任主体。每个运行中的 Agent 使用稳定 `actor_id`，�
 
 ## 2. 当前开发节点
 
-路诚钺当前维护分支为 `agent/mode-skill-selection-baseline`。`K-MS-1 Mode–Skill Selection Baseline` 已实现但尚未关闭：`M7-002..005` 已完成，`M7-006` 仍为 `IN_PROGRESS`。
+路诚钺当前维护分支为 `agent/mode-skill-selection-baseline`，目标节点是 `K-MS-1 Mode–Skill Selection Baseline`：
 
-1. 两个现有 Mode 的 trigger、non-trigger、组合与歧义决策卡及 8 组 fixtures 已实现；
-2. Task → Mode → capability → deterministic/no-Skill/Skill 的可解释选择矩阵已实现；
-3. 三个 accepted Skills 的 manifest-bound 适用边界审计已完成；
-4. `claim-preserving-rewrite` 已作 `continue-trial` 决定，未进入 accepted Registry；
-5. H0/H1/H2 与读取成本已有 fixture-only 对照，但缺少可比实际 H1/H2 Attempt 的运行时与成本证据；
-6. 完整 Attempt Archive 仍保存 Agent 间可见传递，主 Agent 只按需读取索引、紧凑 Handoff 和受控扩展内容。
+1. 为现有 Mode 建立 trigger、non-trigger、组合与歧义 fixtures；
+2. 建立 Task → Mode → capability → deterministic/no-Skill/Skill 的可解释选择矩阵；
+3. 审核三个 accepted Skills 的适用边界；
+4. 对一个 triage candidate 作证据化去留决定；
+5. 在相同 fixture 上比较 H0/H1/H2 和读取成本；
+6. 使用完整 Attempt Archive 留存 Agent 间实际传递内容，但只将紧凑 Handoff 加载回主上下文。
 
-只有在 `M7-006` 取得实际 H1/H2 运行时/成本证据并完成节点评审后，才能关闭 `K-MS-1`。此前仍保持内部技术 alpha，不新增 Mode/Skill，也不在此分支修改 API 实现。详细验收见 [Mode–Skill 实施计划](implementation/MODE_SKILL_WORKSTREAM_PLAN.md)，状态以[任务清单](TASKS.md)为准。
+达到上述节点后暂停评审，不批量新增 Mode/Skill，也不在此分支修改 API 实现。详细验收见 [Mode–Skill 实施计划](implementation/MODE_SKILL_WORKSTREAM_PLAN.md)，状态以[任务清单](TASKS.md)为准。
 
-黄毅的 API 工作流已在离线 fake-local Gate 中完成 `K-API-2` 的 evidence/H2 与 simulation/H1 双合同路径：冻结 Task/Profile/Skill/输入和 Model Assignment，只通过受控 Tool Registry 构建工具，持久化五种终态，自动生成诚实声明 capture gap 的 Trace，以 Main State 最后提交，并在 H1/H2 fresh Python 子进程中恢复。`M3-007`、`M3-008` 和 `M6-006` 已完成；`M6-003` 仍为 `IN_PROGRESS`，唯一未跑的 API Gate 是真实 OpenAI 调用。当前机器缺少 `OPENAI_API_KEY` 和 `RWB_WORKER_MODEL`，因此 `M6-004` 保持 `EXTERNAL`/pending；离线通过不等于真实 Provider 或科研正确性证据。这不改变本仓库当前未关闭的 `K-MS-1/M7-006`。
+黄毅的 API 工作流已在离线 fake-local Gate 中完成 `K-API-2` 的 evidence/H2 与 simulation/H1 双合同路径：冻结 Task/Profile/Skill/输入和 Model Assignment，只通过受控 Tool Registry 构建工具，持久化五种终态，自动生成诚实声明 capture gap 的 Trace，以 Main State 最后提交，并在 H1/H2 fresh Python 子进程中恢复。`M3-007`、`M3-008` 和 `M6-006` 已完成；`M6-003` 仍为 `IN_PROGRESS`，真实 Provider Gate 尚未通过。离线通过不等于真实 Provider 或科研正确性证据，也不构成路诚钺工作流的完成证据。
 
 ## 3. 开始一个开发 Task
 

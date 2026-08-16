@@ -1,3 +1,0 @@
-Result: structure passes.
-Limitation: semantic correctness remains unreviewed.
-Transfer audit: attached.

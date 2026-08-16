@@ -1,1 +1,0 @@
-Every arm must return the structural result and the semantic-review limitation.

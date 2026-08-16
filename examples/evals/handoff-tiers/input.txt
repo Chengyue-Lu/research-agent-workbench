@@ -1,1 +1,0 @@
-Fixture result: the structure passes, but semantic correctness is not reviewed.

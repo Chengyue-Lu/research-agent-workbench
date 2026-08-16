@@ -20,7 +20,6 @@ class AcceptedSkillEntry:
     skill_id: str
     version: str
     manifest_path: str
-    manifest_hash: str
     source_path: str
     content_hash: str
     package_hash: str
@@ -65,7 +64,6 @@ class AcceptedSkillRegistry:
                 "version",
                 "status",
                 "manifest_path",
-                "manifest_hash",
                 "source_path",
                 "content_hash",
                 "package_hash",
@@ -100,13 +98,6 @@ class AcceptedSkillRegistry:
                 raise ValueError(f"accepted registry identity mismatch: {key[0]}@{key[1]}")
             if manifest.source_locator != str(raw["source_path"]):
                 raise ValueError(f"accepted source locator mismatch: {key[0]}")
-            expected_manifest = str(raw["manifest_hash"]).removeprefix("sha256:").lower()
-            actual_manifest = hash_file(manifest_path)
-            if actual_manifest != expected_manifest:
-                raise ValueError(
-                    f"accepted manifest drift: {key[0]} "
-                    f"expected={expected_manifest} actual={actual_manifest}"
-                )
             expected = str(raw["content_hash"]).removeprefix("sha256:").lower()
             expected_package = str(raw["package_hash"]).removeprefix("sha256:").lower()
             if manifest.source_content_hash.removeprefix("sha256:").lower() != expected:
@@ -127,7 +118,6 @@ class AcceptedSkillRegistry:
                 skill_id=key[0],
                 version=key[1],
                 manifest_path=str(raw["manifest_path"]),
-                manifest_hash=expected_manifest,
                 source_path=str(raw["source_path"]),
                 content_hash=expected,
                 package_hash=expected_package,
@@ -140,7 +130,6 @@ class AcceptedSkillRegistry:
                     "skill_id": entry.skill_id,
                     "version": entry.version,
                     "manifest_path": entry.manifest_path,
-                    "manifest_hash": entry.manifest_hash,
                     "source_path": entry.source_path,
                     "content_hash": entry.content_hash,
                     "package_hash": entry.package_hash,

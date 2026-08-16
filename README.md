@@ -92,7 +92,7 @@ rwb execution assess examples/observability/execution-evidence-contract.yaml `
 1. `evidence-scout` + `literature-evidence-extraction` Skill：源材料只读、任务区受限写的检索、证据定位和引用交接。
 2. `simulation-auditor` + `simulation-vv` Skill：读取模型与运行工件，检查版本、参数、收敛和敏感性。
 
-两者共享最小科研内核与 Task/Handoff 契约，但使用不同的输入、权限、Skill、输出和质量检查。离线证据见 [双 Skill 契约切片](examples/vertical-slice/SLICE_REPORT.md)。该切片和新增 API fake-local Gate 只证明绑定、隔离、H1/H2 关闭与 Trace 校验可重放，不证明多 Agent 更强。Mode 触发边界、Task-to-Skill 选择矩阵和 fixture-only Handoff 对照已实现；下一步仍是采集可比实际 H1/H2 Attempt 的运行时与成本证据，以决定是否关闭 `K-MS-1/M7-006`。
+两者共享最小科研内核与 Task/Handoff 契约，但使用不同的输入、权限、Skill、输出和质量检查。离线证据见 [双 Skill 契约切片](examples/vertical-slice/SLICE_REPORT.md)。该切片和新增 API fake-local Gate 只证明绑定、隔离、H1/H2 关闭与 Trace 校验可重放，不证明多 Agent 更强。Mode 触发边界、Task-to-Skill 选择矩阵和 Handoff 成本对照仍由路诚钺在独立工作流中维护，不属于当前 API 分支的完成声明。
 
 ## 近期交付边界
 

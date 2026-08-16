@@ -131,7 +131,7 @@ rwb context checkpoint
 6. 以 Task Packet 显式点名 required Skills。
 7. 记录 Skill lock、实际工具、Provider/Model、Runtime snapshot（若有）和 Handoff。
 
-截至 2026-08-16，Registry、Profiles、Skills、显式绑定和 Codex 可选映射均已有确定性契约。API 工作在 `K-API-1` 之上对 evidence/H2 与 simulation/H1 双合同路径完成 fake-local 文件关闭，包括受控 Tool Registry、Model Assignment、自动诚实 gapped Agent Trace 和 H1/H2 fresh-process/commit-last。Mode 决策卡、Task-to-Skill 选择矩阵与 accepted Skill 边界审计也已实现；尚缺的是 `M7-006` 可比实际 H1/H2 运行时/成本证据和真实增量价值，因此 `K-MS-1` 仍未关闭。
+截至 2026-08-16，Registry、Profiles、Skills、显式绑定和 Codex 可选映射均已有确定性契约。API 工作在 `K-API-1` 之上对 evidence/H2 与 simulation/H1 双合同路径完成 fake-local 文件关闭，包括受控 Tool Registry、Model Assignment、自动诚实 gapped Agent Trace 和 H1/H2 fresh-process/commit-last。Mode 决策卡、Task-to-Skill 选择矩阵、accepted Skill 边界审计和真实增量价值仍由路诚钺的独立工作流维护，不在当前 API 分支声明完成。
 
 ### 路由测试矩阵
 
@@ -252,9 +252,9 @@ rwb context checkpoint
 
 ## 11. M7：Mode–Skill 选择基线
 
-路诚钺维护的 `K-MS-1` 已实现但尚未关闭：现有 `evidence-synthesis` 与 `simulation` 已有 Mode 决策卡，8 组 Task/选择 fixtures 已形成 Task-to-Skill 选择矩阵，三个 accepted Skills 已完成适用性审计，一个 candidate 已得到 `continue-trial` 且不准入的决定，H0/H1/H2 已有 fixture-only 成本对照。
+路诚钺的下一关键节点为 `K-MS-1`：先冻结实名 actor、Attempt Archive 与 Agent Trace fixture，再用现有 `evidence-synthesis` 与 `simulation` 建立 Mode 决策卡、代表性边界 Task fixtures、Task-to-Skill 选择矩阵、accepted Skills 适用性审计、一个 triage candidate 的去留决定，以及 H0/H1/H2 和内容读取成本对照。
 
-`M7-002..005` 已完成；`M7-006` 仍为进行中，因为还没有可比实际 H1/H2 Attempt 的运行时与成本证据。在该证据与节点评审完成前，`K-MS-1` 不关闭，项目仍为内部技术 alpha；不得为了“覆盖完整”新增 Mode/Skill，也不得在本分支修改 API 执行实现。详细阶段和停止点见 [Mode–Skill 工作流计划](MODE_SKILL_WORKSTREAM_PLAN.md)。
+完成后暂停评审。不得为了“覆盖完整”批量新增 Mode/Skill，也不得在本分支修改 API 执行实现。详细阶段和停止点见 [Mode–Skill 工作流计划](MODE_SKILL_WORKSTREAM_PLAN.md)。
 
 ## 12. 开发分支与提交策略
 

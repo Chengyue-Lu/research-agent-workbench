@@ -1,2 +1,0 @@
-Assignment: inspect the bounded structural fixture and preserve limitations.
-Handoff: structure passes; semantic correctness remains unreviewed.

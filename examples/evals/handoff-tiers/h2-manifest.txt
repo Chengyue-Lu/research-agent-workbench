@@ -1,2 +1,0 @@
-Required item 1: carry the structural result.
-Required item 2: carry the semantic-review limitation.

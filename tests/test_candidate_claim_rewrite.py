@@ -101,13 +101,7 @@ class ClaimPreservingRewriteCandidateTests(unittest.TestCase):
         self.assertFalse((ROOT / ".agents/skills/claim-preserving-rewrite").exists())
         candidates = load_candidates(ROOT / "registry/skills/candidates.json")
         candidate = next(item for item in candidates if item["candidate_id"] == "rwb-claim-preserving-rewrite")
-        self.assertEqual("trial", candidate["status"])
-        self.assertEqual("continue-trial", candidate["decision"]["action"])
-        decision = load_document(ROOT / candidate["decision"]["decision_ref"])
-        self.assertEqual([], SchemaCatalog().validate("research_object", decision))
-        self.assertEqual("continue-trial", decision["metadata"]["disposition"])
-        self.assertEqual("not-eligible", decision["metadata"]["evaluator_verdict"])
-        self.assertFalse((ROOT / ".agents/skills/claim-preserving-rewrite").exists())
+        self.assertEqual("triage", candidate["status"])
         package = SCRIPT.parents[1]
         self.assertEqual(
             candidate["content_hash"].removeprefix("sha256:"),

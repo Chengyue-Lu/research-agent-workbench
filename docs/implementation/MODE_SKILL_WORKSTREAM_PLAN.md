@@ -1,14 +1,14 @@
 # Mode–Skill 工作流实施计划
 
-状态：基线已实现，未关闭（`M7-006 IN_PROGRESS`）
+状态：准备实施
 
-日期：2026-08-16
+日期：2026-08-14
 
 ## 1. 目标与停止点
 
 本计划由路诚钺维护。黄毅负责 API Adapter、API session、live conformance 及其测试。路诚钺当前目标是把“任务特征 → Research Mode → 能力要求 → Skill 候选 → 显式选择/不选择 → 评估与准入”打磨成可解释、可回放、可删减的决策链。
 
-`K-MS-1：Mode–Skill Selection Baseline` 的契约、Registry、fixtures 和确定性校验已实现，但节点尚未关闭。`M7-002..005` 已完成；`M7-006` 只有 fixture-only 对照，必须在可比实际 H1/H2 Attempt 上补齐运行时与成本证据后再做节点评审。评审前不批量新增 Mode 或 Skill。
+下一个关键节点为 `K-MS-1：Mode–Skill Selection Baseline`。达到该节点后暂停评审，不立即批量新增 Mode 或 Skill。
 
 `K-MS-1` 的完成条件：
 
@@ -21,30 +21,28 @@
 7. 每个实际 Agent Attempt 使用实名 actor 与完整 Archive 留存全部可见传递，主 Agent 仍只按需读取；
 8. 没有修改 API 实现或把离线 fixture 宣称为真实科研价值。
 
-当前验收记录：条件 1–6 的实现工件已落地，三个 accepted Skills 已完成边界审计，一个 candidate 已得到不准入的 `continue-trial` 决定。但 H0/H1/H2 比较仍是 fixture-only，尚不满足条件 7 所需的实际 Attempt 证据，因此不宣称 `K-MS-1` 关闭、H1/H2 有净收益或任一等级最优。
-
 ## 2. 当前缺口
 
 ### Mode 层
 
 - Registry 只有 `evidence-synthesis` 与 `simulation` 两个正式 Mode；文档列出的 experiment、theory、observational-statistics、engineering-validation 仍是候选分类，不是已实现承诺。
-- 两张同构 Mode 决策卡和 8 组 Task/选择 fixtures 已锁定 trigger、non-trigger、组合、歧义、no-Mode 与 Claim ceiling；这些只是可重放结构证据，不是科学正确性证明。
-- accepted Skill manifests 只使用两个已注册 Mode 标签；未经真实案例和准入卡证明，不创建 experiment、theory、observational-statistics 或 engineering-validation Mode。
+- 缺少统一的 Mode trigger/non-trigger 测试卡，以及“现有 Mode 组合已经足够”与“必须新增 Mode”的判定门槛。
+- 缺少组合模式 fixture，尚未真实验证 Claim ceiling、Human Gate 和风险规则取更严格约束。
+- `engineering-validation` 已出现在部分 Skill 适用标签中，但没有正式 Registry Mode，需要决定删除标签、视为别名还是等待真实案例后建包。
 
 ### Skill 层
 
 - accepted Registry 只有 `literature-evidence-extraction`、`simulation-vv`、`handoff-integrity`；前两者只有离线合同证据，没有真实前向与增量价值证据。
-- 三个 accepted Skills 已有 manifest-bound 的 trigger/boundary/non-trigger/删除条件审计，但还没有真实 with/without 增量价值证据。
-- `claim-preserving-rewrite` 已得到 `continue-trial` 决定，仍留在 candidate 隔离边界内，未进入 accepted Registry 或可发现路径。
-- 以任务特征为入口的选择矩阵已能解释显式 Skill、no-Skill、拆 Task、Human Gate 和拒绝理由；它不会把 fixture 通过视为 Skill 准入证据。
+- 候选 Registry 共 24 项：4 项 triage、2 项 discovered，其余为 reference/quarantine/rejected；只有 `claim-preserving-rewrite` 已形成隔离的本地 candidate package。
+- 缺少以任务特征为入口的选择矩阵。目前 Registry 能解析显式 Skill，但还不能帮助人判断“应显式选哪个、何时不选、何时拆任务”。
 - Skill 评估契约较完整，但真实 baseline/with-Skill 样本、人工盲评和协调成本数据缺失。
 - 供应链、方法质量、上下文成本和可删除性尚未汇总成一个简短的人类准入表。
 
 ### 协作与上下文
 
-- H0/H1/H2 fixture-only 对照已量化字符、工件、审阅、回查、遗漏、返工、读取扩展和 capture gap；它未证明真实普通任务需要 H2，也未证明 H1/H2 的净收益。
-- Agent Trace Schema、validator 与 API 两阶段 recorder 已实现；自动 API 路径覆盖 Assignment/Handoff、Provider/工具边界、受控读取结果和 closeout revision。平台不可见或当前未自动捕获的前置读取、命令与消息正文必须显式声明 capture gap，不能把 `gapped` 冒充 `complete`。
-- 完整留存与克制读取已有离线 H1/H2 索引/Handoff 恢复和按 message ID 回放证据，但尚缺真实平台消息、前置命令/读取与 H1/H2 成本对照的实测。
+- 现有示例倾向完整 Handoff 审计链，尚未证明普通任务需要同等复杂度。
+- Worklog 只能提供摘要，尚无 Agent Trace Schema/validator 自动保证每条 Assignment、澄清、scope change、Handoff 与 review 都被留存。
+- 完整留存与克制读取尚未经过实测：需要证明可由索引/Handoff 恢复，同时在排障时按 message ID 回放。
 - 责任以前用“本侧/同伴侧”表示，无法稳定追责；现已明确路诚钺与黄毅，但仍需在实际 Task/PR/Trace 中执行。
 
 ## 3. 实施阶段
@@ -57,8 +55,6 @@
 - 建立路诚钺与黄毅共同确认共享接口的规则。
 
 ### P1：Mode 决策卡
-
-状态：已完成（`M7-002`）。
 
 为每个正式 Mode 建立同构决策卡：
 
@@ -73,8 +69,6 @@
 先打磨两个现有 Mode，不因为文档列出其他类别就补齐空包。
 
 ### P2：Task-to-Skill 选择矩阵
-
-状态：已完成（`M7-003`）。
 
 选择顺序固定为：
 
@@ -92,8 +86,6 @@ Task characteristics
 
 ### P3：候选优先级
 
-状态：accepted Skill 边界审计和首个 candidate 决定已完成（`M7-004..005`）；真实 with/without 证据仍属后续准入工作。
-
 按以下顺序处理，不按候选总数铺开：
 
 1. 审计现有三个 accepted Skills 的触发与非触发边界；
@@ -104,9 +96,7 @@ Task characteristics
 
 ### P4：轻量 Handoff 与受控读取演练
 
-状态：进行中（`M7-006`）；fixture-only 对照已完成，实际 H1/H2 Attempt 的运行时与成本证据尚缺。
-
-已用 `M3-007..008` 的 Attempt Archive、实名 actor、消息信封和手工 fixture 建立 H0/H1/H2 结构对照。下一阶段必须对可比实际 Task 记录 Handoff 字符量、完整消息/工件数、生成/审阅时间、主 Agent 回查次数、限制遗漏、capture gap 和返工。读取演练同时记录初始允许集、申请扩大的次数、实际使用的新输入和无关读取。
+在真实 Agent 试验前先以 `M3-007..008` 建立 Attempt Archive、实名 actor、消息信封和手工 fixture。对同一类 Task 比较 H1 与 H2：记录 Handoff 字符量、完整消息/工件数、生成/审阅时间、主 Agent 回查次数、限制遗漏、capture gap 和返工。读取演练记录初始允许集、申请扩大的次数、实际使用的新输入和无关读取。
 
 H1 与 H2 都保存完整 Agent 间可见消息；区别只在回传主上下文的内容和附加审计。完整 Trace 不默认加载，评估者通过 `INDEX.yaml` 选择需要回放的 message ID。
 
@@ -114,9 +104,7 @@ H1 与 H2 都保存完整 Agent 间可见消息；区别只在回传主上下文
 
 ### P5：节点评审
 
-状态：待 `M7-006` 实际证据完成后启动。在此之前 `K-MS-1` 不关闭。
-
-节点评审将做保留/删减决定：
+达到 `K-MS-1` 后做保留/删减决定：
 
 - 删除没有改变决策的 Handoff 字段或触发器；
 - 退回没有增量价值的 Skill；
@@ -126,13 +114,13 @@ H1 与 H2 都保存完整 Agent 间可见消息；区别只在回传主上下文
 
 ## 4. 分支计划
 
-文档基线已经进入 `main`。`K-MS-1` 实现阶段使用：
+文档基线已经进入 `main`。路诚钺随后从最新 `main` 创建：
 
 ```text
 agent/mode-skill-selection-baseline
 ```
 
-该分支只处理 `M3-007..008` 的 Trace 契约前置工作和 `K-MS-1`。当前后续仅限 `M7-006` 实际证据与节点评审；不得新增 Mode/Skill，也不得修改黄毅维护的 API Adapter、模型池、session runner、Provider conformance 或真实凭据配置。
+该分支只处理 `M3-007..008` 的 Trace 契约前置工作和 `K-MS-1`。默认写入范围为 Agent Trace/Mode/Skill 文档、Schema、Registry、fixtures、相关 resolver/validation 测试；不得修改黄毅维护的 API Adapter、模型池、session runner、Provider conformance 或真实凭据配置。
 
 ## 5. 评估指标
 

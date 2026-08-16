@@ -57,12 +57,7 @@ from research_workbench.io import (
     write_yaml_exclusive,
 )
 from research_workbench.observability import ExecutionReceipt, check_execution_receipt
-from research_workbench.protocol import ProjectProtocol, ResearchModeRegistry
-from research_workbench.selection import (
-    assess_mode_card,
-    assess_mode_skill_selection,
-    load_mode_card,
-)
+from research_workbench.protocol import ProjectProtocol
 from research_workbench.tasks import AttemptRecord, FileReference, HandoffPacket, TaskPacket
 from research_workbench.validation import (
     SchemaCatalog,
@@ -291,47 +286,6 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
         admission = document.get("admission")
         if isinstance(admission, Mapping) and isinstance(admission.get("decision_ref"), str):
             path_only.append(str(admission["decision_ref"]))
-    elif kind == "mode_decision_card":
-        mode_ref = document.get("mode_ref")
-        if isinstance(mode_ref, Mapping):
-            references = (FileReference.from_mapping(mode_ref),)
-    elif kind == "mode_skill_selection":
-        task_ref = document.get("task_ref")
-        if isinstance(task_ref, Mapping):
-            references = (FileReference.from_mapping(task_ref),)
-        mode_assessment = document.get("mode_assessment")
-        if isinstance(mode_assessment, Mapping):
-            for item in mode_assessment.get("considered", []):
-                if isinstance(item, Mapping) and isinstance(item.get("card_ref"), Mapping):
-                    references += (FileReference.from_mapping(item["card_ref"]),)
-        read_plan = document.get("read_plan")
-        if isinstance(read_plan, Mapping):
-            for field in ("initial_content_refs", "selected_skill_content_refs"):
-                for item in read_plan.get(field, []):
-                    if isinstance(item, Mapping):
-                        references += (FileReference.from_mapping(item),)
-    elif kind == "skill_boundary_audit":
-        for item in document.get("evidence_refs", []):
-            if isinstance(item, Mapping):
-                references += (FileReference.from_mapping(item),)
-    elif kind == "handoff_tier_comparison":
-        for field in ("task_ref", "input_ref", "outcome_criteria_ref"):
-            item = document.get(field)
-            if isinstance(item, Mapping):
-                references += (FileReference.from_mapping(item),)
-        for arm in document.get("arms", []):
-            if not isinstance(arm, Mapping):
-                continue
-            for field in (
-                "archive_ref",
-                "returned_context_ref",
-                "handoff_ref",
-                "transfer_manifest_ref",
-                "transfer_audit_ref",
-            ):
-                item = arm.get(field)
-                if isinstance(item, Mapping):
-                    references += (FileReference.from_mapping(item),)
             for item in arm.get("artifact_refs", []):
                 if isinstance(item, Mapping):
                     references += (FileReference.from_mapping(item),)
@@ -673,52 +627,7 @@ def _task_resolve(args: argparse.Namespace) -> int:
     task = TaskPacket.from_mapping(_load_valid(args.task, "task_packet"))
     profile = AgentProfile.from_mapping(_load_valid(args.profile, "agent_profile"))
     try:
-        if args.selection:
-            if args.skill or args.auto_select:
-                raise ValueError("--selection cannot be combined with --skill or --auto-select")
-            selection_document = _load_valid(args.selection, "mode_skill_selection")
-            registry_path = args.registry or str(DEFAULT_ACCEPTED)
-            assessment = assess_mode_skill_selection(
-                selection_document,
-                root=args.root,
-                mode_directory=args.mode_dir,
-                accepted_registry=registry_path,
-            )
-            blockers = [risk for risk in assessment.risks if risk.level == RiskLevel.BLOCK]
-            if blockers:
-                return _print_risks(assessment.risks)
-            skill_assessment = selection_document.get("skill_assessment")
-            if (
-                not assessment.ready
-                or not isinstance(skill_assessment, Mapping)
-                or skill_assessment.get("outcome") != "assign-skills"
-            ):
-                print(
-                    "BLOCK   SELECTION-NOT-EXECUTABLE     "
-                    "only a ready assign-skills Selection Decision can resolve a Skill Assignment"
-                )
-                return 1
-            selection_task_ref = FileReference.from_mapping(selection_document["task_ref"])
-            task_relative = _project_relative(args.task, Path(args.root).resolve(), "task")
-            if (
-                task_relative != selection_task_ref.path
-                or hash_file(Path(args.task)) != selection_task_ref.sha256
-            ):
-                print(
-                    "BLOCK   SELECTION-TASK-DRIFT         "
-                    "--task path/hash differs from the Selection Decision"
-                )
-                return 1
-            registry = AcceptedSkillRegistry.load(registry_path, project_root=args.root)
-            resolved = resolve_task_from_registry(task, profile, registry)
-            selected_ids = set(skill_assessment.get("selected_skill_ids", []))
-            if {lock.skill_id for lock in resolved.skill_lock} != selected_ids:
-                print(
-                    "BLOCK   SELECTION-ASSIGNMENT-DRIFT   "
-                    "resolved Skill locks differ from the Selection Decision"
-                )
-                return 1
-        elif args.registry:
+        if args.registry:
             if args.skill:
                 raise ValueError("use either --registry or --skill, not both")
             registry = AcceptedSkillRegistry.load(args.registry, project_root=args.root)
@@ -745,101 +654,6 @@ def _task_resolve(args: argparse.Namespace) -> int:
     else:
         print(json.dumps(document, ensure_ascii=False, indent=2))
     return 0
-
-
-def _modes_cards(args: argparse.Namespace) -> int:
-    root = Path(args.root).resolve()
-    registry = ResearchModeRegistry.load(args.mode_dir, project_root=root)
-    card_directory = Path(args.card_dir)
-    if not card_directory.is_absolute():
-        card_directory = root / card_directory
-    card_directory = card_directory.resolve()
-    try:
-        card_directory.relative_to(root)
-    except ValueError as exc:
-        raise ValueError("Mode card directory escapes the project root") from exc
-    if not card_directory.is_dir():
-        raise ValueError(f"Mode card directory does not exist: {card_directory}")
-    records: list[dict[str, object]] = []
-    risks: list[ContractRisk] = []
-    card_paths = sorted((*card_directory.glob("*.yaml"), *card_directory.glob("*.yml")))
-    for path in card_paths:
-        _load_valid(path, "mode_decision_card")
-        card = load_mode_card(path)
-        card_risks = list(assess_mode_card(card, registry=registry, root=root))
-        risks.extend(card_risks)
-        records.append(
-            {
-                "card_id": card.card_id,
-                "mode_id": card.mode_id,
-                "mode_version": card.mode_version,
-                "path": path.relative_to(root).as_posix(),
-                "status": "valid" if not any(risk.level == RiskLevel.BLOCK for risk in card_risks) else "invalid",
-            }
-        )
-    if len(records) != len(registry.entries):
-        risks.append(
-            ContractRisk(
-                "MODE-CARD-COVERAGE",
-                RiskLevel.BLOCK,
-                "Mode card count must equal the registered Mode count",
-            )
-        )
-    document = {
-        "mode_registry_digest": registry.digest,
-        "registered_modes": len(registry.entries),
-        "cards": records,
-        "errors": sum(risk.level == RiskLevel.BLOCK for risk in risks),
-        "warnings": sum(risk.level == RiskLevel.WARNING for risk in risks),
-    }
-    if args.json:
-        print(json.dumps(document, ensure_ascii=False, sort_keys=True))
-    else:
-        for risk in risks:
-            print(f"{risk.level.upper():7} {risk.code:28} {risk.message}")
-        print(
-            f"mode_digest={registry.digest} modes={len(registry.entries)} "
-            f"cards={len(records)} errors={document['errors']} warnings={document['warnings']}"
-        )
-    return 1 if document["errors"] else 0
-
-
-def _task_select(args: argparse.Namespace) -> int:
-    decision = _load_valid(args.decision, "mode_skill_selection")
-    assessment = assess_mode_skill_selection(
-        decision,
-        root=args.root,
-        mode_directory=args.mode_dir,
-        accepted_registry=args.registry,
-    )
-    errors = sum(risk.level == RiskLevel.BLOCK for risk in assessment.risks)
-    warnings = sum(risk.level == RiskLevel.WARNING for risk in assessment.risks)
-    if args.json:
-        print(
-            json.dumps(
-                {
-                    "selection_id": decision["selection_id"],
-                    "verdict": assessment.verdict,
-                    "ready": assessment.ready,
-                    "errors": errors,
-                    "warnings": warnings,
-                    "risks": [
-                        {"level": risk.level, "code": risk.code, "message": risk.message}
-                        for risk in assessment.risks
-                    ],
-                },
-                ensure_ascii=False,
-                sort_keys=True,
-            )
-        )
-    else:
-        for risk in assessment.risks:
-            print(f"{risk.level.upper():7} {risk.code:28} {risk.message}")
-        print(
-            f"selection={decision['selection_id']} verdict={assessment.verdict} "
-            f"ready={str(assessment.ready).lower()} errors={errors} warnings={warnings}"
-        )
-    return 1 if errors else 0
 
 
 def _discover_trace_link_documents(
@@ -1486,15 +1300,6 @@ def build_parser() -> argparse.ArgumentParser:
     schema_show.add_argument("--version", default="0.1.0")
     schema_show.set_defaults(handler=_schema_show)
 
-    modes = subparsers.add_parser("modes", help="inspect registered Research Mode decision cards")
-    mode_subparsers = modes.add_subparsers(dest="mode_command", required=True)
-    mode_cards = mode_subparsers.add_parser("cards", help="validate and list Mode decision cards")
-    mode_cards.add_argument("--root", default=".")
-    mode_cards.add_argument("--mode-dir", default="registry/modes")
-    mode_cards.add_argument("--card-dir", default="registry/modes/cards")
-    mode_cards.add_argument("--json", action="store_true")
-    mode_cards.set_defaults(handler=_modes_cards)
-
     skills = subparsers.add_parser("skills", help="inspect the skill candidate registry")
     skill_subparsers = skills.add_subparsers(dest="skills_command", required=True)
     candidates = skill_subparsers.add_parser("candidates", help="list or filter candidates")
@@ -1621,21 +1426,9 @@ def build_parser() -> argparse.ArgumentParser:
     task_resolve.add_argument("--skill", action="append", default=[])
     task_resolve.add_argument("--registry")
     task_resolve.add_argument("--root", default=".")
-    task_resolve.add_argument("--selection")
-    task_resolve.add_argument("--mode-dir", default="registry/modes")
     task_resolve.add_argument("--auto-select", action="store_true")
     task_resolve.add_argument("--output")
     task_resolve.set_defaults(handler=_task_resolve)
-    task_select = task_subparsers.add_parser(
-        "select", help="validate a replayable Mode-Skill Selection Decision"
-    )
-    task_select.add_argument("decision")
-    task_select.add_argument("--root", default=".")
-    task_select.add_argument("--mode-dir", default="registry/modes")
-    task_select.add_argument("--registry", default=str(DEFAULT_ACCEPTED))
-    task_select.add_argument("--json", action="store_true")
-    task_select.set_defaults(handler=_task_select)
-
     runtime = subparsers.add_parser("runtime", help="inspect native runtime mappings")
     runtime_subparsers = runtime.add_subparsers(dest="runtime_command", required=True)
     codex = runtime_subparsers.add_parser("codex", help="inspect the Codex native adapter")

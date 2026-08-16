@@ -1,1 +1,0 @@
-Audited Handoff: structure passes; semantic correctness remains unreviewed.
