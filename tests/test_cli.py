@@ -48,6 +48,10 @@ class CliTests(unittest.TestCase):
         self.assertEqual("explicit-slot-only", document["selection_policy"])
         self.assertIs(document["environment_checked"], False)
         self.assertTrue(all(slot["model_status"] == "unchecked" for slot in document["slots"]))
+        zhipu = next(slot for slot in document["slots"] if slot["slot_id"] == "zhipu-worker")
+        self.assertEqual("zhipu-chat-completions", zhipu["provider_adapter"])
+        self.assertIs(zhipu["enabled"], False)
+        self.assertEqual("low", zhipu["reasoning_effort"])
         self.assertNotIn(model_marker, output)
 
     def test_provider_probe_defaults_to_config_only_and_never_prints_values(self) -> None:

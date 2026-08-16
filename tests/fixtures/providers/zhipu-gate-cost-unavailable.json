@@ -23,12 +23,28 @@
     "output_tokens": 3
   },
   {
-    "response_id": "zhipu-e2e-id-must-not-be-retained",
+    "response_id": "zhipu-e2e-read-one-id-must-not-be-retained",
     "finish_reason": "tool_call",
-    "tool_call_id": "zhipu-document-call-id-must-not-be-retained",
+    "tool_call_id": "zhipu-document-call-one-id-must-not-be-retained",
     "tool_name": "document-read",
     "tool_arguments": {"path": "examples/fixtures/paper-001.txt"},
     "input_tokens": 30,
     "output_tokens": 5
+  },
+  {
+    "response_id": "zhipu-e2e-read-two-id-must-not-be-retained",
+    "finish_reason": "tool_call",
+    "tool_call_id": "zhipu-document-call-two-id-must-not-be-retained",
+    "tool_name": "document-read",
+    "tool_arguments": {"path": "examples/fixtures/paper-001.txt"},
+    "input_tokens": 40,
+    "output_tokens": 5
+  },
+  {
+    "response_id": "zhipu-e2e-final-id-must-not-be-retained",
+    "finish_reason": "complete",
+    "text": "__EVIDENCE_OUTPUT__",
+    "input_tokens": 50,
+    "output_tokens": 4
   }
 ]

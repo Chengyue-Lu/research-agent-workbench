@@ -133,6 +133,20 @@ def _zhipu_gate_decision_relationship_risks(
     if decision.get("decision") != expected_decision:
         mismatches.append("decision")
 
+    split_fields = ("status_scope", "monetary_cost")
+    report_uses_split = any(key in report for key in split_fields)
+    decision_uses_split = any(key in decision for key in split_fields)
+    if report_uses_split:
+        for key in split_fields:
+            if (
+                key not in report
+                or key not in decision
+                or decision[key] != report[key]
+            ):
+                mismatches.append(key)
+    elif decision_uses_split:
+        mismatches.extend(key for key in split_fields if key in decision)
+
     conformance = report.get("conformance")
     expected_refs: dict[str, object] = {}
     if isinstance(conformance, Mapping) and isinstance(conformance.get("check_ref"), Mapping):

@@ -82,7 +82,7 @@
         "Client function tools use tool_choice=auto only and permit at most one function call per turn; parallel and provider-hosted tools are rejected.",
         "GLM thinking remains enabled with an explicit low, high, or max reasoning effort; tool-turn reasoning_content is retained only in bounded adapter-private memory for exact handback and is never normalized into ModelResponse or project records.",
         "Each Attempt requires a fresh single-active adapter instance and an explicit final discard of its ephemeral continuation state.",
-        "Provider-reported monetary cost is unavailable; the execution budget must fail closed rather than infer a tariff."
+        "Provider-reported monetary cost is unavailable and must never be inferred from a tariff. The Zhipu technical-readiness Gate uses explicit token, call, turn, tool, output, and time ceilings and records monetary accounting as unavailable; any Task or policy that requires a monetary ceiling must still fail closed."
       ],
       "sources": [
         "https://docs.bigmodel.cn/cn/guide/models/text/glm-5.3",

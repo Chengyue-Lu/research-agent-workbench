@@ -44,7 +44,11 @@ ZHIPU_GATE_LIMITS = ApiSessionLimits(
     max_output_tokens_per_turn=256,
     max_seconds=120.0,
     max_total_tokens=5_000,
-    max_provider_reported_cost=0.50,
+    # The standard Zhipu response contract reports tokens, but not a monetary
+    # amount or currency.  Capability readiness is therefore bounded by the
+    # enforceable runtime/token ceilings below; it must not invent a price or
+    # make an unavailable monetary field an impossible capability prerequisite.
+    max_provider_reported_cost=None,
     allowed_tool_side_effects=frozenset({"read-only"}),
 )
 
@@ -74,6 +78,11 @@ def zhipu_gate_plan() -> dict[str, object]:
             "max_model_turns": ZHIPU_GATE_LIMITS.max_model_turns,
             "max_tool_calls": ZHIPU_GATE_LIMITS.max_tool_calls,
             "max_parallel_tool_calls": ZHIPU_GATE_LIMITS.max_parallel_tool_calls,
+            "max_tool_result_chars": ZHIPU_GATE_LIMITS.max_tool_result_chars,
+            "max_output_tokens_per_turn": (
+                ZHIPU_GATE_LIMITS.max_output_tokens_per_turn
+            ),
+            "max_seconds": ZHIPU_GATE_LIMITS.max_seconds,
             "tool_allowlist": ["document-read"],
             "reasoning_effort": "low",
             "allowed_tool_side_effects": sorted(
@@ -83,6 +92,12 @@ def zhipu_gate_plan() -> dict[str, object]:
             "max_provider_reported_cost": (
                 ZHIPU_GATE_LIMITS.max_provider_reported_cost
             ),
+            "monetary_cost_policy": {
+                "provider_reported_required": False,
+                "blocks_technical_readiness": False,
+                "inferred_amount_allowed": False,
+                "inferred_currency_allowed": False,
+            },
             "automatic_retries": 0,
             "automatic_fallback": False,
             "task_fixture": "examples/task-evidence.yaml",
@@ -231,7 +246,7 @@ def run_zhipu_gate(
         )
         e2e_status = str(e2e["status"])
         if e2e_status == "passed":
-            gate_status, reason = "passed", "all-checks-passed"
+            gate_status, reason = "passed", "bounded-technical-readiness-passed"
         elif e2e_status in {"safe-paused", "blocked"}:
             gate_status = "safe-paused"
             reason = str(e2e.get("reason", "project-readiness-safe-paused"))
@@ -529,7 +544,7 @@ def _run_project_e2e(
         trace_accountable_owner=accountable_owner,
         extra_limitations=(
             "Zhipu live readiness Gate over a public synthetic fixture; no scientific claim was evaluated.",
-            "Offline implementation of the adapter tool protocol is not live capability or cost evidence.",
+            "Monetary cost and currency are not provider-reported; no price was estimated or derived.",
         ),
         event_clock=lambda: _timestamp(current_time()),
         provider_conformance_document=conformance_document,
@@ -697,7 +712,7 @@ def _gate_next_actions() -> dict[str, str]:
     return {
         "completed": "Review the synthetic Zhipu Gate closeout; do not treat it as scientific evidence.",
         "stage-completed": "Review the stage-complete Gate closeout before promotion.",
-        "safe-paused": "Resolve live cost/capability evidence before a new Gate Attempt.",
+        "safe-paused": "Resolve the frozen live capability or runtime-policy block before a new Gate Attempt.",
         "incomplete": "Review the incomplete Gate closeout before a new Attempt.",
         "failed": "Inspect redacted Gate failure evidence before a new Attempt.",
         "blocked": "Resolve the frozen Gate capability or policy block before a new Attempt.",
@@ -714,7 +729,20 @@ def _not_run_report(
         gate_id=gate_id,
         conformance={"status": "not-run", "reason": reason},
         e2e={"status": "not-run", "reason": reason},
+        monetary_cost_status="not-run",
     )
+
+
+def _monetary_cost(status: str = "unavailable") -> dict[str, object]:
+    """Describe the Zhipu monetary evidence boundary without estimating cost."""
+
+    return {
+        "status": status,
+        "provider_reported": False,
+        "blocks_technical_readiness": False,
+        "inferred_amount": False,
+        "inferred_currency": False,
+    }
 
 
 def _report(
@@ -727,12 +755,14 @@ def _report(
     e2e: Mapping[str, object],
     requested_model: str | None = None,
     archive: Mapping[str, object] | None = None,
+    monetary_cost_status: str = "unavailable",
 ) -> dict[str, object]:
     report: dict[str, object] = {
         "schema_version": "0.1.0",
         "report_kind": "zhipu_live_gate",
         "gate_id": gate_id,
         "status": status,
+        "status_scope": "technical-readiness",
         "reason": reason,
         "provider": "zhipu",
         "adapter_id": ZHIPU_GATE_ADAPTER_ID,
@@ -740,6 +770,7 @@ def _report(
         "policy": zhipu_gate_plan(),
         "conformance": dict(conformance),
         "e2e": dict(e2e),
+        "monetary_cost": _monetary_cost(monetary_cost_status),
         "privacy": {
             "credential_values_stored": False,
             "provider_response_ids_stored": False,
@@ -749,7 +780,8 @@ def _report(
         },
         "limitations": [
             "Offline adapter tool-protocol implementation does not prove live tool compatibility.",
-            "Token usage without provider-reported monetary cost and currency cannot satisfy the cost Gate.",
+            "Provider-reported monetary cost and currency are unavailable; no price was estimated or derived.",
+            "A passed capability Gate proves bounded technical readiness, not monetary-budget compliance.",
             "No Zhipu readiness outcome, including passed, is an ADR-0013 OpenAI Gate pass or proof of scientific correctness.",
         ],
     }
@@ -779,23 +811,31 @@ def _persist_gate_outcome(
         "failed": "reject",
         "not-run": "not-run",
     }[status]
+    monetary_limitation = (
+        "Monetary accounting was not run; no technical-readiness evidence was accepted."
+        if status == "not-run"
+        else "Monetary accounting was unavailable and did not block the bounded capability Gate."
+    )
     decision: dict[str, object] = {
         "schema_version": "0.1.0",
         "decision_kind": "zhipu_live_gate_decision",
         "decision_id": f"{report['gate_id']}-decision",
         "gate_id": report["gate_id"],
         "gate_status": status,
+        "status_scope": "technical-readiness",
         "decision": decision_name,
         "reason": report["reason"],
         "automatic_fallback": False,
         "scientific_correctness_proven": False,
         "adr_0013_passed": False,
+        "monetary_cost": dict(report["monetary_cost"]),
         "gate_report_ref": _ref_mapping(
             FileReference(report_relative, hash_file(report_path))
         ),
         "limitations": [
             "No automatic provider or model fallback was allowed.",
             "Offline tool-protocol implementation is not live compatibility evidence.",
+            monetary_limitation,
             "A Zhipu readiness result does not replace the ADR-0013 OpenAI Gate.",
         ],
     }

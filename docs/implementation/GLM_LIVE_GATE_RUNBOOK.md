@@ -158,18 +158,26 @@ streaming、images、files 和 server tools 仍不声明。
 离线协议与内存边界，没有自动解决账户权限、标准 API 上线状态、
 自建应用授权和货币成本证据。
 
-因此当前行为是有意的：
+因此当前行为是有意分层的：
 
 - text/structured/tools generic conformance 可以执行；
-- evidence/H2 可进入受控项目执行，但 Provider 不报告货币成本时会在第一个项目响应后诚实 `safe-paused`；
+- evidence/H2 可进入受控项目执行；Zhipu 专属 readiness policy 以调用数、轮次、
+  工具、输出、token 和 wall time 作为可执行硬上限，不把 Provider 不提供的货币字段
+  设为技术能力的不可满足前置条件；
+- Gate report/Decision 将总体状态限定为 `technical-readiness`，并把
+  `monetary_cost.status: unavailable` 作为独立维度；它不填 0、不猜币种、不按价目表
+  推算，也不宣称货币预算已受控；
+- 若具体 Task 或组织政策要求可证明的货币 ceiling，通用 Session 的 fail-closed
+  规则仍然有效，不能用本 readiness Gate 绕过；
 - 不新增“无工具但声称等价”的合同；
 - 不删除 Task 所需工具；
 - 不降低 ADR-0013 的真实 Gate 强度。
 
 专用项目准备度命令与固定安全策略见
 [Zhipu Standard API Project Readiness Gate](ZHIPU_LIVE_GATE_RUNBOOK.md)。它会发布完整
-Attempt/Trace/Receipt/Main State 和 Decision，但在成本证据缺失时只能 `defer`，
-不能被重解释为 ADR-0013 通过。
+Attempt/Trace/Receipt/Main State 和 Decision。技术准备度可以在货币证据不可得时通过，
+但 Decision 必须同时保留 `adr_0013_passed: false` 和金额不可得状态，不能被重解释为
+ADR-0013 通过或科研正确性证据。
 
 ## 5. 零环境检查
 

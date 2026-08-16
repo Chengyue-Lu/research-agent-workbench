@@ -10,6 +10,7 @@
     "report_kind": { "const": "zhipu_live_gate" },
     "gate_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "status": { "enum": ["passed", "failed", "safe-paused", "not-run"] },
+    "status_scope": { "const": "technical-readiness" },
     "reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "provider": { "const": "zhipu" },
     "adapter_id": { "const": "zhipu-chat-completions" },
@@ -57,6 +58,18 @@
       },
       "additionalProperties": false
     },
+    "monetary_cost": {
+      "type": "object",
+      "required": ["status", "provider_reported", "blocks_technical_readiness", "inferred_amount", "inferred_currency"],
+      "properties": {
+        "status": { "enum": ["unavailable", "not-run"] },
+        "provider_reported": { "const": false },
+        "blocks_technical_readiness": { "const": false },
+        "inferred_amount": { "const": false },
+        "inferred_currency": { "const": false }
+      },
+      "additionalProperties": false
+    },
     "privacy": {
       "type": "object",
       "required": ["credential_values_stored", "provider_response_ids_stored", "prompt_bodies_stored", "response_bodies_stored", "tool_arguments_stored"],
@@ -72,6 +85,14 @@
     "limitations": { "$ref": "common.schema.json#/$defs/stringArray" }
   },
   "allOf": [
+    {
+      "if": { "anyOf": [{ "required": ["status_scope"] }, { "required": ["monetary_cost"] }] },
+      "then": { "required": ["status_scope", "monetary_cost"] }
+    },
+    {
+      "if": { "properties": { "reason": { "const": "bounded-technical-readiness-passed" } }, "required": ["reason"] },
+      "then": { "required": ["status_scope", "monetary_cost"] }
+    },
     {
       "if": { "properties": { "conformance": { "properties": { "status": { "const": "passed" } }, "required": ["status"] } } },
       "then": { "properties": { "conformance": { "required": ["check_ref"] } } }
@@ -106,6 +127,7 @@
         "required": ["requested_model", "archive"],
         "properties": {
           "environment_checked": { "const": true },
+          "monetary_cost": { "properties": { "status": { "const": "unavailable" } } },
           "archive": { "required": ["conformance_check_ref"] },
           "conformance": { "properties": { "status": { "const": "passed" } }, "required": ["check_ref"] },
           "e2e": {
@@ -127,6 +149,7 @@
         "required": ["requested_model", "archive"],
         "properties": {
           "environment_checked": { "const": true },
+          "monetary_cost": { "properties": { "status": { "const": "unavailable" } } },
           "archive": { "required": ["conformance_check_ref"] },
           "conformance": { "properties": { "status": { "enum": ["passed", "failed"] } }, "required": ["check_ref"] },
           "e2e": { "properties": { "status": { "enum": ["not-run", "safe-paused", "blocked"] } } }
@@ -139,6 +162,7 @@
         "required": ["requested_model", "archive"],
         "properties": {
           "environment_checked": { "const": true },
+          "monetary_cost": { "properties": { "status": { "const": "unavailable" } } },
           "conformance": { "properties": { "status": { "enum": ["passed", "failed"] } }, "required": ["status"] },
           "e2e": { "properties": { "status": { "enum": ["not-run", "failed", "incomplete", "stage-completed"] } } }
         }
@@ -148,6 +172,7 @@
       "if": { "properties": { "status": { "const": "not-run" } }, "required": ["status"] },
       "then": {
         "properties": {
+          "monetary_cost": { "properties": { "status": { "const": "not-run" } } },
           "conformance": { "properties": { "status": { "const": "not-run" } } },
           "e2e": { "properties": { "status": { "const": "not-run" } } }
         }
