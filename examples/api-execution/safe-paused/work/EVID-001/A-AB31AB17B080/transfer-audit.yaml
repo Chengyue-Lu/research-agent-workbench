@@ -1,0 +1,30 @@
+schema_version: 0.1.0
+audit_id: HTA-A-AB31AB17B080
+task_ref:
+  path: examples/task-evidence.yaml
+  sha256: 341af5e45b51e04c1cd9b8d27d6c32ee900eed3d1b469e53a80f0b30f6474f32
+handoff_ref:
+  path: examples/api-execution/safe-paused/work/EVID-001/A-AB31AB17B080/handoff.yaml
+  sha256: 98305874972ca10606787e390753be54ad20f595ba453976c30414c5934a334d
+manifest_ref:
+  path: examples/api-execution/safe-paused/work/EVID-001/A-AB31AB17B080/transfer-manifest.yaml
+  sha256: 0fed476eb73fd6ec907f57f73d5731058c66d6a52c285bcf5cb74e4438551355
+generated_at: '2026-08-14T00:01:00Z'
+mappings:
+- item_id: HTI-AB31AB17B080-LIMITATION-000
+  status: carried
+  handoff_locator: /limitations/0
+- item_id: HTI-AB31AB17B080-LIMITATION-001
+  status: carried
+  handoff_locator: /limitations/1
+- item_id: HTI-AB31AB17B080-UNRESOLVED-000
+  status: carried
+  handoff_locator: /unresolved/0
+review:
+  status: pending
+  reviewer_kind: none
+  reviewer_independent: false
+  sampled_item_ids: []
+  findings: []
+limitations:
+- Structural coverage is a machine result; semantic equivalence has not been reviewed.

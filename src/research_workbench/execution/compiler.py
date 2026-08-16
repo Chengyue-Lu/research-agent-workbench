@@ -118,7 +118,7 @@ def compile_session(
     skill_texts = _read_verified_skills(assignment, root=root, policy=policy)
     limits, limit_sources = _build_limits(task, policy)
 
-    attempt_id = _attempt_identifier(assignment, binding, task)
+    attempt_id = _attempt_identifier(assignment, binding, task, limits)
     request = ModelRequest(
         model=binding.model,
         messages=(
@@ -306,7 +306,10 @@ def _build_limits(task: TaskPacket, policy: ExecutionPolicy) -> tuple[ApiSession
 
 
 def _attempt_identifier(
-    assignment: ResolvedTask, binding: ModelBinding, task: TaskPacket
+    assignment: ResolvedTask,
+    binding: ModelBinding,
+    task: TaskPacket,
+    limits: ApiSessionLimits,
 ) -> str:
     task_payload = json.dumps(
         to_plain(task), sort_keys=True, separators=(",", ":"), default=str
@@ -322,6 +325,20 @@ def _attempt_identifier(
             {"path": reference.path, "sha256": reference.sha256}
             for reference in task.input_refs
         ],
+        # The session bounds are part of the execution identity: two runs under
+        # different budgets are different attempts and must never share a
+        # closeout batch or completion marker.
+        "session_limits": {
+            "max_model_turns": limits.max_model_turns,
+            "max_tool_calls": limits.max_tool_calls,
+            "max_parallel_tool_calls": limits.max_parallel_tool_calls,
+            "max_tool_result_chars": limits.max_tool_result_chars,
+            "max_output_tokens_per_turn": limits.max_output_tokens_per_turn,
+            "max_seconds": limits.max_seconds,
+            "max_total_tokens": limits.max_total_tokens,
+            "max_provider_reported_cost": limits.max_provider_reported_cost,
+            "allowed_tool_side_effects": sorted(limits.allowed_tool_side_effects),
+        },
     }
     digest = hashlib.sha256(
         json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")

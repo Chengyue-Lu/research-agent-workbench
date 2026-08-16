@@ -1,0 +1,26 @@
+schema_version: 0.1.0
+report_id: DCR-A-BA4C11473D8C
+checker:
+  checker_id: k-api-2-closeout-checks
+  version: 0.1.0
+  source_ref:
+    path: src/research_workbench/execution/checks.py
+    sha256: e812928457dbc0b2940b16cf60fc789222c9837c229182ab65095fa996f57635
+subject_refs:
+- path: examples/api-execution/tool-failed/work/EVID-001/A-BA4C11473D8C/handoff.yaml
+  sha256: 1d6855c5dbfa11e58c4bdd617fe6c3be9ab15a1b598f393e7f2f6c2317fa382e
+status: pass
+checks:
+- code: STOP-REASON-RECORDED
+  status: pass
+  detail: session ended with machine stop reason 'error'
+- code: TOOL-FAILURES-RETAINED
+  status: pass
+  detail: 'tool failures retained in the handoff and receipt: document-read:PermissionError'
+scope: k-api-2 offline closeout for task EVID-001 attempt A-BA4C11473D8C
+limitations:
+- 'Session ended failed: error.'
+- client tool document-read failed with PermissionError
+- Offline K-API-2 execution record; structural evidence only, not a scientific correctness
+  claim.
+- 'Session stopped before completion: error.'

@@ -1,0 +1,34 @@
+schema_version: 0.1.0
+task_id: EVID-001
+attempt_id: A-23FF30C9E9C9
+status: completed
+input_lock:
+- path: examples/fixtures/paper-001.txt
+  sha256: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
+skill_lock:
+- literature-evidence-extraction@0.1.0
+skill_assignment_ref: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/skill-assignment.yaml
+result:
+  summary: One bounded extraction from the admitted fixture source.
+  facts:
+  - The source identifies itself as synthetic and not scientific evidence.
+  inferences:
+  - The fixture cannot support a causal claim about Q-001.
+  recommendations:
+  - Keep the claim boundary at source_reported strength.
+artifact_refs:
+- examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/evidence.yaml
+validation_refs:
+- examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/transfer-audit.yaml
+limitations:
+- Only the approved synthetic fixture source was reviewed.
+- Offline K-API-2 execution record; structural evidence only, not a scientific correctness
+  claim.
+conflicts: []
+unresolved: []
+human_decision_required: []
+recommended_next_actions:
+- Verify the evidence record and transfer audit of attempt A-23FF30C9E9C9, then admit
+  or reject the evidence at the human gate.
+execution_receipt_ref: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/execution-receipt.yaml
+transfer_manifest_ref: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/transfer-manifest.yaml

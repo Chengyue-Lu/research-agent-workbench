@@ -161,6 +161,103 @@ class ApiSessionRunnerTests(unittest.TestCase):
         self.assertEqual("tool-call-budget", result.stop_reason)
         self.assertEqual([], executed)
 
+    def test_read_only_fan_out_within_cap_executes_every_call_in_order(self) -> None:
+        calls = (
+            ToolCall("call-1", "lookup", {"id": "A"}),
+            ToolCall("call-2", "lookup", {"id": "B"}),
+        )
+        provider = ScriptedProvider(
+            response("r1", FinishReason.TOOL_CALL, tool_calls=calls),
+            response("r2", FinishReason.COMPLETE, text="done"),
+        )
+        registry = ProviderRegistry()
+        registry.register("worker", provider)
+        executed: list[str] = []
+        runner = IsolatedApiSessionRunner(
+            registry,
+            tools=(
+                ClientTool(
+                    lookup_definition(),
+                    lambda arguments: executed.append(str(arguments["id"])) or {"value": 1},
+                ),
+            ),
+        )
+
+        result = runner.run(
+            provider_name="worker",
+            request=request(),
+            limits=limits(max_parallel_tool_calls=2),
+        )
+
+        self.assertEqual(ApiSessionStatus.COMPLETED, result.status)
+        self.assertEqual(2, result.tool_calls)
+        # Fan-out is permitted, never concurrent: calls execute one by one in
+        # the order the model issued them.
+        self.assertEqual(["A", "B"], executed)
+        tool_message = provider.requests[1].messages[-1]
+        self.assertEqual("tool", tool_message.role)
+        self.assertEqual(
+            ("call-1", "call-2"),
+            tuple(block.data["call_id"] for block in tool_message.content),
+        )
+
+    def test_side_effecting_turn_stays_serial_even_with_parallel_cap(self) -> None:
+        write = ToolDefinition(
+            name="write",
+            description="Write one bounded record",
+            input_schema={
+                "type": "object",
+                "properties": {"value": {"type": "integer"}},
+                "required": ["value"],
+                "additionalProperties": False,
+            },
+        )
+        calls = (
+            ToolCall("call-1", "lookup", {"id": "A"}),
+            ToolCall("call-2", "write", {"value": 1}),
+        )
+        provider = ScriptedProvider(
+            response("r1", FinishReason.TOOL_CALL, tool_calls=calls)
+        )
+        registry = ProviderRegistry()
+        registry.register("worker", provider)
+        executed: list[str] = []
+        runner = IsolatedApiSessionRunner(
+            registry,
+            tools=(
+                ClientTool(
+                    lookup_definition(),
+                    lambda arguments: executed.append("lookup") or {"value": 1},
+                ),
+                ClientTool(
+                    write,
+                    lambda arguments: executed.append("write") or {"value": 1},
+                    side_effect="local-write",
+                ),
+            ),
+        )
+        model_request = ModelRequest(
+            model="worker-model",
+            messages=(Message("user", (ContentBlock(kind="text", text="bounded task"),)),),
+            tools=(lookup_definition(), write),
+            max_output_tokens=999,
+        )
+
+        result = runner.run(
+            provider_name="worker",
+            request=model_request,
+            limits=limits(
+                max_parallel_tool_calls=2,
+                allowed_tool_side_effects=frozenset({"read-only", "local-write"}),
+            ),
+        )
+
+        # A turn mixing read-only and side-effecting tools may not fan out:
+        # it pauses before any tool side effect.
+        self.assertEqual(ApiSessionStatus.SAFE_PAUSED, result.status)
+        self.assertEqual("parallel-tool-budget", result.stop_reason)
+        self.assertEqual([], executed)
+
     def test_oversized_tool_result_is_not_silently_truncated(self) -> None:
         provider = ScriptedProvider(
             response(

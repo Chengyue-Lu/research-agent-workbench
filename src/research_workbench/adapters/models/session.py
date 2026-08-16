@@ -222,7 +222,10 @@ class IsolatedApiSessionRunner:
                 )
 
             if response.tool_calls:
-                if len(response.tool_calls) > limits.max_parallel_tool_calls:
+                parallel_cap = _parallel_cap(
+                    response.tool_calls, self._tools, limits.max_parallel_tool_calls
+                )
+                if len(response.tool_calls) > parallel_cap:
                     return self._result(
                         ApiSessionStatus.SAFE_PAUSED,
                         "parallel-tool-budget",
@@ -325,6 +328,20 @@ def _tool_call_block(call: ToolCall) -> ContentBlock:
         kind="tool_call",
         data={"call_id": call.call_id, "name": call.name, "arguments": dict(call.arguments)},
     )
+
+
+def _parallel_cap(
+    calls: Iterable[ToolCall],
+    tools: Mapping[str, ClientTool],
+    declared_cap: int,
+) -> int:
+    """Read-only fan-out may use the declared cap; side-effecting turns stay serial."""
+
+    for call in calls:
+        binding = tools.get(call.name)
+        if binding is None or binding.side_effect != "read-only":
+            return 1
+    return declared_cap
 
 
 def _render_tool_output(output: object) -> str:

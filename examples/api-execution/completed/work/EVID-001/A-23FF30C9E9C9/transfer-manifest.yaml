@@ -1,0 +1,60 @@
+schema_version: 0.1.0
+manifest_id: HTM-A-23FF30C9E9C9
+task_id: EVID-001
+task_revision: 1
+attempt_id: A-23FF30C9E9C9
+generated_at: '2026-08-14T00:01:00Z'
+declared_by: task-agent
+source_artifact_refs:
+- path: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/evidence.yaml
+  sha256: 8f92968e2595389b878ac1b6f7c4f1b435dbc249b1ae8f321b894f608c461252
+items:
+- item_id: HTI-23FF30C9E9C9-FACT-000
+  kind: fact
+  criticality: material
+  required_for_handoff: true
+  statement: The source identifies itself as synthetic and not scientific evidence.
+  source_ref:
+    path: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/evidence.yaml
+    sha256: 8f92968e2595389b878ac1b6f7c4f1b435dbc249b1ae8f321b894f608c461252
+  source_locator: /metadata/transfer_facts/0
+- item_id: HTI-23FF30C9E9C9-INFERENCE-000
+  kind: inference
+  criticality: material
+  required_for_handoff: true
+  statement: The fixture cannot support a causal claim about Q-001.
+  source_ref:
+    path: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/evidence.yaml
+    sha256: 8f92968e2595389b878ac1b6f7c4f1b435dbc249b1ae8f321b894f608c461252
+  source_locator: /metadata/transfer_inferences/0
+- item_id: HTI-23FF30C9E9C9-RECOMMENDATION-000
+  kind: recommendation
+  criticality: material
+  required_for_handoff: true
+  statement: Keep the claim boundary at source_reported strength.
+  source_ref:
+    path: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/evidence.yaml
+    sha256: 8f92968e2595389b878ac1b6f7c4f1b435dbc249b1ae8f321b894f608c461252
+  source_locator: /metadata/transfer_recommendations/0
+- item_id: HTI-23FF30C9E9C9-LIMITATION-000
+  kind: limitation
+  criticality: material
+  required_for_handoff: true
+  statement: Only the approved synthetic fixture source was reviewed.
+  source_ref:
+    path: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/evidence.yaml
+    sha256: 8f92968e2595389b878ac1b6f7c4f1b435dbc249b1ae8f321b894f608c461252
+  source_locator: /metadata/transfer_limitations/0
+- item_id: HTI-23FF30C9E9C9-LIMITATION-001
+  kind: limitation
+  criticality: material
+  required_for_handoff: true
+  statement: Offline K-API-2 execution record; structural evidence only, not a scientific
+    correctness claim.
+  source_ref:
+    path: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/evidence.yaml
+    sha256: 8f92968e2595389b878ac1b6f7c4f1b435dbc249b1ae8f321b894f608c461252
+  source_locator: /metadata/transfer_limitations/1
+limitations:
+- The task agent declares transfer obligations; this manifest does not prove that
+  it found every scientifically important item.

@@ -1,0 +1,43 @@
+schema_version: 0.1.0
+receipt_id: XR-A-BA4C11473D8C
+execution_kind: model-api
+attempt_ref: examples/api-execution/tool-failed/work/EVID-001/A-BA4C11473D8C/attempt.yaml
+task_id: EVID-001
+task_revision: 1
+agent_profile_ref: registry/agents/evidence-scout.yaml
+skill_assignment_ref: examples/api-execution/tool-failed/work/EVID-001/A-BA4C11473D8C/skill-assignment.yaml
+context_snapshot_ref: examples/api-execution/tool-failed/work/EVID-001/A-BA4C11473D8C/context-snapshot-task.yaml
+started_at: '2026-08-14T00:00:00Z'
+finished_at: '2026-08-14T00:01:00Z'
+status: failed
+runtime:
+  name: isolated-api-session
+  version: 0.1.0
+  adapter_version: offline-tool-failed
+model_usage_status: measured
+model_usage:
+- provider: offline-tool-failed
+  model: worker-model
+  requests: 2
+  input_tokens: 10
+  output_tokens: 4
+coordination:
+  delegated_attempts: 0
+  handoff_count: 1
+  review_rounds: 0
+  max_parallel_observed: 0
+trace:
+  mode: minimal
+  external: false
+  sensitive_data_detected: false
+  redactions_applied: 0
+output_refs:
+- examples/api-execution/tool-failed/work/EVID-001/A-BA4C11473D8C/check-report.yaml
+- examples/api-execution/tool-failed/work/EVID-001/A-BA4C11473D8C/transfer-manifest.yaml
+- examples/api-execution/tool-failed/work/EVID-001/A-BA4C11473D8C/handoff.yaml
+validation_refs:
+- examples/api-execution/tool-failed/work/EVID-001/A-BA4C11473D8C/check-report.yaml
+- examples/api-execution/tool-failed/work/EVID-001/A-BA4C11473D8C/transfer-audit.yaml
+limitations:
+- Offline K-API-2 execution record; structural evidence only, not a scientific correctness
+  claim.

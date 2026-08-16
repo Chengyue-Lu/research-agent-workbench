@@ -1,0 +1,25 @@
+schema_version: 0.1.0
+report_id: DCR-A-AB31AB17B080
+checker:
+  checker_id: k-api-2-closeout-checks
+  version: 0.1.0
+  source_ref:
+    path: src/research_workbench/execution/checks.py
+    sha256: e812928457dbc0b2940b16cf60fc789222c9837c229182ab65095fa996f57635
+subject_refs:
+- path: examples/api-execution/safe-paused/work/EVID-001/A-AB31AB17B080/handoff.yaml
+  sha256: 98305874972ca10606787e390753be54ad20f595ba453976c30414c5934a334d
+status: pass
+checks:
+- code: STOP-REASON-RECORDED
+  status: pass
+  detail: session ended with machine stop reason 'total-token-budget'
+- code: TOOL-FAILURES-RETAINED
+  status: pass
+  detail: 'tool failures retained in the handoff and receipt: none'
+scope: k-api-2 offline closeout for task EVID-001 attempt A-AB31AB17B080
+limitations:
+- 'Session ended safe-paused: total-token-budget.'
+- Offline K-API-2 execution record; structural evidence only, not a scientific correctness
+  claim.
+- 'Session stopped before completion: total-token-budget.'

@@ -1,0 +1,43 @@
+schema_version: 0.1.0
+receipt_id: XR-A-AB31AB17B080
+execution_kind: model-api
+attempt_ref: examples/api-execution/safe-paused/work/EVID-001/A-AB31AB17B080/attempt.yaml
+task_id: EVID-001
+task_revision: 1
+agent_profile_ref: registry/agents/evidence-scout.yaml
+skill_assignment_ref: examples/api-execution/safe-paused/work/EVID-001/A-AB31AB17B080/skill-assignment.yaml
+context_snapshot_ref: examples/api-execution/safe-paused/work/EVID-001/A-AB31AB17B080/context-snapshot-task.yaml
+started_at: '2026-08-14T00:00:00Z'
+finished_at: '2026-08-14T00:01:00Z'
+status: safe-paused
+runtime:
+  name: isolated-api-session
+  version: 0.1.0
+  adapter_version: offline-safe-paused
+model_usage_status: measured
+model_usage:
+- provider: offline-safe-paused
+  model: worker-model
+  requests: 1
+  input_tokens: 5
+  output_tokens: 2
+coordination:
+  delegated_attempts: 0
+  handoff_count: 1
+  review_rounds: 0
+  max_parallel_observed: 0
+trace:
+  mode: minimal
+  external: false
+  sensitive_data_detected: false
+  redactions_applied: 0
+output_refs:
+- examples/api-execution/safe-paused/work/EVID-001/A-AB31AB17B080/check-report.yaml
+- examples/api-execution/safe-paused/work/EVID-001/A-AB31AB17B080/transfer-manifest.yaml
+- examples/api-execution/safe-paused/work/EVID-001/A-AB31AB17B080/handoff.yaml
+validation_refs:
+- examples/api-execution/safe-paused/work/EVID-001/A-AB31AB17B080/check-report.yaml
+- examples/api-execution/safe-paused/work/EVID-001/A-AB31AB17B080/transfer-audit.yaml
+limitations:
+- Offline K-API-2 execution record; structural evidence only, not a scientific correctness
+  claim.

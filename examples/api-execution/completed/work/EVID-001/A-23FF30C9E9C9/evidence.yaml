@@ -1,0 +1,30 @@
+schema_version: 0.1.0
+object_type: evidence
+object_id: EVIDENCE-EVID-001-A-23FF30C9E9C9
+revision: 1
+status: proposed
+content_hash: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
+kind: model-extracted-statement
+source_ref:
+  object_id: examples/fixtures/paper-001.txt
+  revision: 1
+  sha256: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
+locator: lines 1-2
+statement: The source explicitly identifies itself as a synthetic structural fixture.
+quality_flags:
+- synthetic_fixture
+- not_scientific_evidence
+metadata:
+  attempt_id: A-23FF30C9E9C9
+  assignment_id: SA-9A9D7C442B60B3E8
+  transfer_facts:
+  - The source identifies itself as synthetic and not scientific evidence.
+  transfer_inferences:
+  - The fixture cannot support a causal claim about Q-001.
+  transfer_recommendations:
+  - Keep the claim boundary at source_reported strength.
+  transfer_limitations:
+  - Only the approved synthetic fixture source was reviewed.
+  - Offline K-API-2 execution record; structural evidence only, not a scientific correctness
+    claim.
+  transfer_unresolved: []

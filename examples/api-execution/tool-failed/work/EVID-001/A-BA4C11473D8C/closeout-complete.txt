@@ -1,0 +1,11 @@
+published=10
+check examples/api-execution/tool-failed/work/EVID-001/A-BA4C11473D8C/check-report.yaml ac547aecb8bb7bbe1d84243ceed933dee7b7cb1ed21114b95706d9da4a90c022
+manifest examples/api-execution/tool-failed/work/EVID-001/A-BA4C11473D8C/transfer-manifest.yaml c505043b9e3cf679e0d9014349fda149bc39e2d203e1e51e42685359e48f26a8
+audit examples/api-execution/tool-failed/work/EVID-001/A-BA4C11473D8C/transfer-audit.yaml e3854c4241e11fb30d01eaae32f92c6ddb945b02a2c694197d02f9fe9528a0c0
+task-snapshot examples/api-execution/tool-failed/work/EVID-001/A-BA4C11473D8C/context-snapshot-task.yaml 29977c0c86af080152a0a28e36c057d30f70f5ffca1fc9a740f6c3826192d638
+main-snapshot examples/api-execution/tool-failed/work/EVID-001/A-BA4C11473D8C/context-snapshot-main.yaml 7ac26538ef05f29e7ed5e90cab9f80367db4556ef03913745525aff8a6a472be
+assignment examples/api-execution/tool-failed/work/EVID-001/A-BA4C11473D8C/skill-assignment.yaml bb46548effd1004bca6491fbf7ae9828e1859ce61ee59ce6de0e0c861cee406f
+handoff examples/api-execution/tool-failed/work/EVID-001/A-BA4C11473D8C/handoff.yaml 1d6855c5dbfa11e58c4bdd617fe6c3be9ab15a1b598f393e7f2f6c2317fa382e
+attempt examples/api-execution/tool-failed/work/EVID-001/A-BA4C11473D8C/attempt.yaml 8e1cef07a20b545ba1fa479c3504dfee2de1536b570bd0d788f550b859354c87
+receipt examples/api-execution/tool-failed/work/EVID-001/A-BA4C11473D8C/execution-receipt.yaml ff50189809355b0bdcd44b9ef86b378954ff7e39689aea9cc702f9888664da5b
+main-state examples/api-execution/tool-failed/checkpoints/MS-BA4C11473D8C.yaml 08c859aa7248b3c9d58d0847ee96991cae34e1610a838ad366f0302316f6546d

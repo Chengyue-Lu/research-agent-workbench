@@ -19,7 +19,10 @@ class ExecutionPolicy:
     default_max_output_tokens_per_turn: int = 4096
     default_max_seconds: float = 600.0
     max_tool_calls: int = 8
-    max_parallel_tool_calls: int = 1
+    # Per-turn fan-out cap for turns whose tool calls are all read-only. A turn
+    # that includes any side-effecting tool stays serial (cap 1) regardless of
+    # this default; total fan-out stays bounded by ``max_tool_calls``.
+    max_parallel_tool_calls: int = 4
     max_tool_result_chars: int = 20000
     max_input_chars: int = 20000
     max_skill_instruction_chars: int = 20000

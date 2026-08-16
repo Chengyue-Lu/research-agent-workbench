@@ -1,0 +1,18 @@
+schema_version: 0.1.0
+task_id: EVID-001
+task_revision: 1
+attempt_id: A-23FF30C9E9C9
+status: completed
+started_at: '2026-08-14T00:00:00Z'
+finished_at: '2026-08-14T00:01:00Z'
+trigger_reason: task-to-api execution of assignment SA-9A9D7C442B60B3E8 via slot worker
+input_lock:
+- path: examples/fixtures/paper-001.txt
+  sha256: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
+skill_lock:
+- literature-evidence-extraction@0.1.0
+skill_assignment_ref: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/skill-assignment.yaml
+execution_receipt_ref: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/execution-receipt.yaml
+artifact_refs:
+- examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/evidence.yaml
+handoff_ref: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/handoff.yaml

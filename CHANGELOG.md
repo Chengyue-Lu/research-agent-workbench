@@ -2,6 +2,25 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
+## 2026-08-16 — M6-004 收尾：只读并行度显式决策与 live completed 终态
+
+### Decision（并行度子决策，登记在 M6-005 范畴）
+
+- 单轮工具 fan-out 上限 `ExecutionPolicy.max_parallel_tool_calls` 默认 1→4，**仅对该轮全部调用为 read-only 工具的回合生效**；含任何副作用工具（或未知名）的回合保持串行上限 1。runner 仍逐个顺序执行（无线程并发），总 fan-out 继续受 `max_tool_calls` 硬上限约束，当前切片工具白名单仅 read-only。
+- attempt 身份纳入会话边界：`_attempt_identifier` 增加 `session_limits` 规范化摘要。不同执行边界是不同 Attempt，不得共享关闭批次/完成标记——修复“放宽策略后重跑永远命中已关闭旧批次（幂等跳过、模型不重执行）”的隐性缺口。`examples/api-execution/` 三条链 fixtures 已再生成（attempt id 更新）。
+
+### Added
+
+- session runner 分级并行测试：全 read-only fan-out 在上限内逐个按序执行并继续会话；read-only + local-write 混合回合即使上限 ≥2 也在任何副作用前以 `parallel-tool-budget` 安全暂停（零执行）。
+- compiler 测试：attempt id 对会话边界敏感（不同 policy ⇒ 不同 attempt id）。
+
+### Milestone
+
+- `M6-004` live 面收尾：EVID-001 新尝试 `A-2D05287D7252`（经 `--from-state` 链自 safe-paused `A-3F04FD1F0130` 的 Main State）在真实 Windows 会话以 glm-5.3 执行，**status completed、completion_claim contract-satisfied**；11 工件原子落盘（含首个 live Evidence 工件）；check-report pass（EVIDENCE-SCHEMA/SOURCE-HASH/SOURCE-LOCATOR，checker 哈希钉住）；Receipt 记录真实 2 请求、2455 入/4997 出 tokens；幂等重跑 `already-published`（模型不重执行、11 文件哈希复核）；`handoff validate` 与 `context resume-check`（仅凭文件）均通过。
+- 诚实边界：Evidence 工件如实自标 `synthetic-fixture/no-citable-evidence/extraction-blocked`（结构完成 ≠ 科学价值）；本次运行 receipt `max_parallel_observed: 0`——决策移除的是上一次尝试确定性触发的 `parallel-tool-budget` 阻断，本次运行本身未发生 fan-out；Attempt Archive 自动捕获仍属 M6-006；live 运行工件按设计留在本地 `work/` 与 `checkpoints/`，不入库。
+
+全量 219 项测试通过；`validate examples registry` = 84/0/0。
+
 ## 2026-08-16 — claim-preserving-rewrite checker 跨 locale 输出契约修复
 
 ### Fixed

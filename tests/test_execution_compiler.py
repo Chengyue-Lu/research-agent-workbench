@@ -210,6 +210,21 @@ class CompileSessionTests(unittest.TestCase):
             changed_input = compile_default(root)
             self.assertNotEqual(first.attempt_id, changed_input.attempt_id)
 
+    def test_attempt_id_is_sensitive_to_session_limits(self) -> None:
+        # Two runs under different execution bounds are different attempts:
+        # they must never share a closeout batch or completion marker, so a
+        # policy change cannot silently resume an already-closed batch.
+        with TemporaryDirectory() as directory:
+            root = build_project(Path(directory))
+            first = compile_default(root)
+            relaxed = compile_default(
+                root, policy=replace(ExecutionPolicy(), max_parallel_tool_calls=2)
+            )
+
+            self.assertEqual(4, first.limits.max_parallel_tool_calls)
+            self.assertEqual(2, relaxed.limits.max_parallel_tool_calls)
+            self.assertNotEqual(first.attempt_id, relaxed.attempt_id)
+
     def test_task_budget_overrides_policy_defaults(self) -> None:
         with TemporaryDirectory() as directory:
             root = build_project(Path(directory))
@@ -244,7 +259,9 @@ class CompileSessionTests(unittest.TestCase):
             self.assertEqual(4096, compiled.limits.max_output_tokens_per_turn)
             self.assertEqual(600.0, compiled.limits.max_seconds)
             self.assertEqual(8, compiled.limits.max_tool_calls)
-            self.assertEqual(1, compiled.limits.max_parallel_tool_calls)
+            # Read-only per-turn fan-out default; side-effecting turns stay
+            # serial regardless (see the session runner).
+            self.assertEqual(4, compiled.limits.max_parallel_tool_calls)
             self.assertEqual(20000, compiled.limits.max_tool_result_chars)
             self.assertEqual(
                 "policy-default", compiled.report.limit_sources["max_model_turns"]

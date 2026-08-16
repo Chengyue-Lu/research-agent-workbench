@@ -1,0 +1,12 @@
+published=11
+evidence examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/evidence.yaml 8f92968e2595389b878ac1b6f7c4f1b435dbc249b1ae8f321b894f608c461252
+check examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/check-report.yaml d835ab22e571cf871ed99ff736616f44e14c4af6a6935cd39746bdbe7a666801
+manifest examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/transfer-manifest.yaml 6087ceeb0823640d894e16fbba5c993f008f3ae3406dee63ef4eb6fb998181e8
+audit examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/transfer-audit.yaml 12b838c083fee481013776a92ceef63b8774965792323b3f0fb091cc7ae0c519
+task-snapshot examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/context-snapshot-task.yaml 6c0d76bc88090fd176c69fed876aadce372659077d8ed1764cee2d695720c285
+main-snapshot examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/context-snapshot-main.yaml 4d3b75796b207fcf8bbd05fb0b246927c0f24c31775d585b347bfa1181f9798a
+assignment examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/skill-assignment.yaml bb46548effd1004bca6491fbf7ae9828e1859ce61ee59ce6de0e0c861cee406f
+handoff examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/handoff.yaml d94878ad9af37b8fd70a6076076998879f40ad330898392c9ba8b3ff76174cfb
+attempt examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/attempt.yaml a90c57f1b50144dd6b23d2327c623e4af47b1b632009eabf59908f5224ac0baf
+receipt examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/execution-receipt.yaml 99800e3b02df9dffbbe3caeba5683dba446ceada5e7b2eef288ca9ca39e4bc2f
+main-state examples/api-execution/completed/checkpoints/MS-23FF30C9E9C9.yaml b8d60f93cb80e040fbad4b7b64345fd7deafc58251ed2d42712c9a28284f10af

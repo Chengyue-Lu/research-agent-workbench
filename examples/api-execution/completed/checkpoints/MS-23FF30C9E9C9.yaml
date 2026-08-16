@@ -1,0 +1,51 @@
+schema_version: 0.1.0
+checkpoint_id: MS-23FF30C9E9C9
+continuity_status: stage-completed
+project_protocol_ref: examples/project-protocol.yaml@1
+current_questions:
+- Q-001@1
+pinned_constraints:
+- 'claim ceiling: source_reported, simulation_supported'
+- local data must not be uploaded
+accepted_decisions: []
+active_tasks:
+- task_id: EVID-001
+  status: completed
+  expected_handoff: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/handoff.yaml
+recent_handoffs:
+- ref: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/handoff.yaml
+  disposition: machine-recorded-completed
+open_conflicts: []
+open_risks:
+- CTX-NEXT-AWU-COST-UNKNOWN
+- CTX-METRICS-UNKNOWN
+next_actions:
+- Verify the evidence record and transfer audit of attempt A-23FF30C9E9C9, then admit
+  or reject the evidence at the human gate.
+artifact_index_refs:
+- examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/evidence.yaml
+machine_state_refs:
+- path: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/skill-assignment.yaml
+  sha256: bb46548effd1004bca6491fbf7ae9828e1859ce61ee59ce6de0e0c861cee406f
+- path: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/attempt.yaml
+  sha256: a90c57f1b50144dd6b23d2327c623e4af47b1b632009eabf59908f5224ac0baf
+- path: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/transfer-audit.yaml
+  sha256: 12b838c083fee481013776a92ceef63b8774965792323b3f0fb091cc7ae0c519
+- path: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/check-report.yaml
+  sha256: d835ab22e571cf871ed99ff736616f44e14c4af6a6935cd39746bdbe7a666801
+- path: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/evidence.yaml
+  sha256: 8f92968e2595389b878ac1b6f7c4f1b435dbc249b1ae8f321b894f608c461252
+- path: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/handoff.yaml
+  sha256: d94878ad9af37b8fd70a6076076998879f40ad330898392c9ba8b3ff76174cfb
+- path: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/context-snapshot-main.yaml
+  sha256: 4d3b75796b207fcf8bbd05fb0b246927c0f24c31775d585b347bfa1181f9798a
+- path: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/transfer-manifest.yaml
+  sha256: 6087ceeb0823640d894e16fbba5c993f008f3ae3406dee63ef4eb6fb998181e8
+- path: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/execution-receipt.yaml
+  sha256: 99800e3b02df9dffbbe3caeba5683dba446ceada5e7b2eef288ca9ca39e4bc2f
+- path: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/context-snapshot-task.yaml
+  sha256: 6c0d76bc88090fd176c69fed876aadce372659077d8ed1764cee2d695720c285
+rollover_reason: task closed at its atomic boundary
+created_at: '2026-08-14T00:01:00Z'
+context_snapshot_ref: examples/api-execution/completed/work/EVID-001/A-23FF30C9E9C9/context-snapshot-main.yaml
+checkpoint_digest: 88b391781f2d9b643168b770341a756629650219f65b4a33ccfba6764e8b69e1

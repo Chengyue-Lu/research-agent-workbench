@@ -83,8 +83,8 @@
 | M6-001 | EXTERNAL | OpenAI/Anthropic/Gemini 薄 Model Provider Adapters | M1-008 | 黄毅维护；路诚钺不修改实现或测试 |
 | M6-002 | DONE | 显式模型池与隔离 API session kernel（`K-API-1`） | M6-001 | primary/worker/specialist 槽只可显式绑定；轮次、工具、并行、工具结果、输出、token/成本/time 有硬边界；无自动 fallback；离线测试通过 |
 | M6-003 | IN_PROGRESS | Task-to-API 文件闭环（`K-API-2`） | M1-008, M2-001..005, M6-002 | 离线验收已达成（分支 `agent/k-api-2-task-to-api-closure`，待评审合并）：`execution/` 编译器+原子关闭事务+`rwb execute task`+可再生 fixtures；completed/tool-failed/safe-paused/stale-input 四路径与仅凭文件的恢复检查全部通过。live 侧两处集成缺陷（wire metadata 误用、incomplete 关闭事务）已在 M6-004 分支修复 |
-| M6-004 | IN_PROGRESS | 选定模型槽的真实 Windows conformance 与一次 evidence 调用 | M6-001..003 | 2026-08-15 live 验证完成（分支 `agent/m6-004-live-provider-wiring`，本地 `runs/` 报告不入库）：glm-5.3 三项 conformance 通过；evidence 调用 EVID-001 真实执行并以 safe-paused（parallel-tool-budget 硬边界）合法关闭，原子落盘+幂等重跑+仅凭文件恢复全部通过。completed 终态需 M6-005 并行度决策；脱敏报告如需入库由黄毅定夺 |
-| M6-005 | PARKED | streaming/multimodal/server tools 与平台 Adapter | 真实案例或平台选择 | 黄毅决定执行端启动条件；没有真实需求不启动 |
+| M6-004 | DONE | 选定模型槽的真实 Windows conformance 与一次 evidence 调用 | M6-001..003 | 2026-08-15：glm-5.3 三项 conformance 通过，EVID-001 以 safe-paused（parallel-tool-budget 硬边界）合法关闭。2026-08-16：只读并行度显式决策后重跑到达 **completed**（`A-2D05287D7252`，completion_claim contract-satisfied、11 工件原子落盘、check-report pass、幂等重跑、handoff validate、仅凭文件 resume-check 全过），M6-004 收口；live 工件按设计留本地不入库 |
+| M6-005 | PARKED | streaming/multimodal/server tools 与平台 Adapter | 真实案例或平台选择 | 并行度子决策已作出（2026-08-16：read-only 单轮 fan-out 默认 4、含副作用工具的回合保持串行、attempt 身份纳入会话边界）；streaming/multimodal/server tools 与平台 Adapter 仍无真实需求不启动 |
 | M6-006 | EXTERNAL | API/平台执行时自动写入 Agent Trace | M3-008, M6-003 | 黄毅实现消息写前捕获/导出与 capture-gap 报告；不得把密钥或隐藏推理写入 Trace |
 
 ## M7：Mode–Skill 选择与协调成本
@@ -113,6 +113,8 @@ M1 已建立里程碑与首批可执行 Issues：
 
 ## 当前下一任务
 
-`M6-003 / K-API-2` 的离线闭环已在分支 `agent/k-api-2-task-to-api-closure` 完成（192 项测试通过，含四条离线路径、关闭事务崩溃矩阵与仅凭文件的恢复证明），等待评审合并；合并后 M6 的下一步是 `M6-004`：由黄毅在已授权的真实 Windows 用户上下文对实际启用的 `worker` 槽接线真实 Provider 并执行一次受限 evidence 调用，返回脱敏工件。
+`M6-004` 已于 2026-08-16 收口：只读并行度显式决策（登记在 M6-005 范畴）后，EVID-001 在真实 Windows 会话以 glm-5.3 到达 live **completed** 终态（contract-satisfied、11 工件原子落盘、幂等重跑、handoff validate、仅凭文件 resume-check 全过）。本地分支 `agent/m6-004-live-provider-wiring`（含 K-API-2 与 M6-004 全部提交，219 项测试全绿）是否/何时推送 GitHub，待黄毅与路诚钺商定——远端 PR #9 是 Codex 平行产物，收敛方案未定。
+
+M6 的下一步是 `M6-006`：API/平台执行自动写入 Agent Trace（黄毅实现消息写前捕获/导出与 capture-gap 报告），依赖路诚钺的 `M3-008` 冻结 Trace Envelope/Index/Event Schema，接口字段需两人共同确认后再动工。
 
 路诚钺的关键路径保持 `M3-007..008 → M7-002..006 / K-MS-1` 不变：先让每次 Agent 试验能够用实名 actor 和 Attempt Archive 完整留痕，再为现有两个 Mode 建立边界 fixtures，形成 Task-to-Skill 选择矩阵，审计 accepted Skills，处理一个 triage candidate，并为每个任务给出内容允许集与 H0/H1/H2。到达可解释、可回放、可删减的选择基线后暂停评审；路诚钺不在本分支补 API、Provider、模型或 live conformance。
