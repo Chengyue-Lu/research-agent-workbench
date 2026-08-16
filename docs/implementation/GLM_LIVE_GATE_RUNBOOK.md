@@ -2,7 +2,7 @@
 
 状态：标准 API Adapter 与工具续传协议已完成离线合同测试；真实调用未执行
 
-日期：2026-08-16
+日期：2026-08-17
 
 维护边界：本文和 `zhipu` Provider Adapter 由黄毅维护。本文不实现或修改路诚钺负责的 Mode、Skill、选择矩阵、评估 fixtures 或准入语义，也不改变共享 Task、Handoff、Trace、Receipt 和 Model Assignment 合同。
 
@@ -23,7 +23,7 @@
 | key 类型 | 当前处理 |
 |---|---|
 | 标准开放平台 API key，且控制台明确开放 `glm-5.3` | 可以在用户自己的已授权终端执行本文的有界 conformance |
-| GLM Coding Plan 专属 key | 不直接接入本自建 Runner；除非另有明确书面授权，不能把 Workbench 伪装成官方支持的 Codex 等工具 |
+| GLM Coding Plan 专属 key | 不交给 Workbench 自建 HTTP Provider；可走智谱已明确支持的官方 Codex Runtime 独立通道，但不等同于直接 ModelProvider 或 K-API-2 Gate |
 | 标准 key，但控制台尚未开放 `glm-5.3` | 停止；不静默改用 `glm-5.2`，不把其他模型的结果记为 5.3 Gate |
 | 产品类型、endpoint 或模型 ID 不明确 | 只运行零环境 dry-run，不发网络请求 |
 
@@ -34,6 +34,43 @@ https://open.bigmodel.cn/api/paas/v4/chat/completions
 ```
 
 它不会接受 Coding Plan endpoint，也不会复用 `OpenAIResponsesProvider`。兼容请求形状不等于相同 Provider 身份、响应协议或数据政策。
+
+### 2.1 Coding Plan + 官方 Codex 是另一条真实路线
+
+截至 2026-08-17，智谱的专门 Codex 接入页已经明确支持：
+
+```text
+model = glm-5.3
+base_url = https://open.bigmodel.cn/api/v1
+wire_api = responses
+```
+
+因此，“GLM-5.3 今天完全不能真实运行”的说法已经过时；使用官方 Codex
+消费 Coding Plan 是一条正式支持的路线。但它必须作为 `native-agent` Runtime
+Adapter 建模，不能把 Coding Plan key 交给 Workbench 自建 HTTP 客户端，也不能把
+Codex JSONL 伪装成 Provider 原始响应。两条路线的证据能力不同：
+
+| 路线 | 可以证明 | 当前不能证明 |
+|---|---|---|
+| `ZhipuChatCompletionsProvider` | 标准 API 请求/响应、返回 `model`、token usage | GLM-5.3 标准 API 对当前账户已开放；Provider 货币成本 |
+| `Codex Coding Plan Runtime` | 官方 Codex 按固定 endpoint、requested model 和 Responses 配置完成一次传输 | 服务端 actual provider/model；Provider-reported 美元成本或套餐积分 |
+
+当前仓库中的 `codex_coding_plan.py` 只冻结离线命令、最小环境、JSONL 与
+attestation 合同，默认 live host 会在读取 key 前失败关闭。启用真实凭据前还必须
+完成 Windows 原生二进制版本/hash/签名核验、增量输出上限、进程树封闭、请求工具
+指纹和外部出站策略。这个暂停是进程安全边界，不是否认 GLM-5.3 或官方 Codex
+路线的可用性。
+
+本机 Codex CLI 0.124.0 的 localhost 假端点探针进一步确认：请求确实是
+`POST /v1/responses`、`model: glm-5.3`、`reasoning.effort: low`，且 HTTP 与
+stream retry 均为 0。原始 catalog 会声明 `update_plan`、`request_user_input`、
+`apply_patch` 和 `view_image` 四个工具并允许并行调用；当前兼容投影通过省略
+`apply_patch_tool_type` 和收缩并行能力，将其降到
+`update_plan / request_user_input / view_image` 且 `parallel_tool_calls: false`。
+Codex 0.124.0 没有可用的公开配置把这三个剩余工具继续清空，其中 `view_image`
+仍具有宿主读取能力。因此当前版本尚不满足 no-tool Runtime 合同，不能仅因 endpoint
+与模型配置正确就注入真实 key。这个结论来自零外网、假凭据探针，不是对真实
+Provider 能力的声称。
 
 ## 3. 当前 Adapter 能力
 
@@ -151,3 +188,4 @@ rwb providers conformance `
 - API 错误码：<https://docs.bigmodel.cn/cn/faq/api-code>
 - Coding Plan 概览：<https://docs.bigmodel.cn/cn/coding-plan/overview>
 - Coding Plan 订阅协议：<https://docs.bigmodel.cn/cn/terms/subscription-agreement>
+- Coding Plan 的 Codex 接入：<https://docs.bigmodel.cn/cn/coding-plan/tool/codex>
