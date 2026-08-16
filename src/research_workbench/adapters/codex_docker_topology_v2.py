@@ -284,26 +284,11 @@ def attest_codex_docker_topology_v2(
         plan,
         networks_by_name[plan.internal_network],
         internal=True,
-        expected_members={
-            runtime_id: (plan.runtime_container, plan.runtime_ipv4),
-            proxy_id: (plan.proxy_container, plan.proxy_internal_ipv4),
-        },
     )
     egress_id = _attest_network(
         plan,
         networks_by_name[plan.egress_network],
         internal=False,
-        expected_members={
-            proxy_id: (plan.proxy_container, plan.proxy_egress_ipv4),
-        },
-    )
-    _attest_endpoint_network_ids(
-        containers_by_name[plan.runtime_container],
-        {plan.internal_network: internal_id},
-    )
-    _attest_endpoint_network_ids(
-        containers_by_name[plan.proxy_container],
-        {plan.internal_network: internal_id, plan.egress_network: egress_id},
     )
     return CodexDockerTopologyV2Attestation(
         attempt_sha256=plan.attempt_sha256,
@@ -411,7 +396,6 @@ def _build_container_create_command(
         "--cap-drop=ALL",
         f"--security-opt={_SECURITY_OPT}",
         "--ipc=none",
-        "--pid=private",
         f"--pids-limit={_PIDS_LIMIT}",
         f"--memory={_MEMORY_BYTES}",
         f"--memory-swap={_MEMORY_BYTES}",
@@ -566,7 +550,9 @@ def _attest_container(
         config.get("Entrypoint") != expected_entrypoint
         or config.get("Cmd") != expected_command
         or config.get("OpenStdin") is not (role == "runtime")
-        or config.get("StdinOnce") is not False
+        # Docker records `--interactive` as both OpenStdin and StdinOnce for
+        # a created container. The proxy has neither flag.
+        or config.get("StdinOnce") is not (role == "runtime")
         or config.get("Tty") is not False
         or config.get("User") != f"{_CONTAINER_UID}:{_CONTAINER_GID}"
         or config.get("WorkingDir") != expected_workdir
@@ -602,7 +588,9 @@ def _attest_container(
         "MemorySwap": _MEMORY_BYTES,
         "NanoCpus": _NANO_CPUS,
         "NetworkMode": plan.internal_network,
-        "PidMode": "private",
+        # Docker's private PID namespace is represented by the empty default
+        # PidMode. The CLI rejects the tempting but invalid `--pid=private`.
+        "PidMode": "",
         "PidsLimit": _PIDS_LIMIT,
         "Privileged": False,
         "PublishAllPorts": False,
@@ -637,10 +625,13 @@ def _attest_container(
     if item.get("Mounts") not in (None, []):
         raise CodexDockerTopologyV2Error("v2-container-mount-drift")
 
+    network_settings = _require_mapping(
+        item, "NetworkSettings", "v2-container-networks-invalid"
+    )
+    if not _empty(network_settings.get("Ports")):
+        raise CodexDockerTopologyV2Error("v2-container-port-binding-drift")
     networks = _require_mapping(
-        _require_mapping(item, "NetworkSettings", "v2-container-networks-invalid"),
-        "Networks",
-        "v2-container-networks-invalid",
+        network_settings, "Networks", "v2-container-networks-invalid"
     )
     expected_networks = (
         {plan.internal_network: (plan.runtime_ipv4, plan.internal_gateway, 0)}
@@ -657,11 +648,16 @@ def _attest_container(
         if not isinstance(endpoint, Mapping):
             raise CodexDockerTopologyV2Error("v2-container-endpoint-invalid")
         ipam = _require_mapping(endpoint, "IPAMConfig", "v2-static-ip-drift")
-        if ipam != {"IPv4Address": ipv4, "IPv6Address": ""}:
+        if ipam != {"IPv4Address": ipv4}:
             raise CodexDockerTopologyV2Error("v2-static-ip-drift")
         if (
-            endpoint.get("IPAddress") != ipv4
-            or endpoint.get("Gateway") != gateway
+            # Before first start Docker keeps the assigned address only in
+            # IPAMConfig. Runtime endpoint fields and NetworkID remain empty;
+            # network inspect below independently validates network policy and
+            # IPAM, but no-start Docker does not expose member IDs here.
+            endpoint.get("IPAddress") != ""
+            or endpoint.get("Gateway") != ""
+            or endpoint.get("NetworkID") != ""
             or endpoint.get("GwPriority") != priority
         ):
             raise CodexDockerTopologyV2Error("v2-route-or-ip-drift")
@@ -710,12 +706,13 @@ def _attest_network(
     item: Mapping[str, object],
     *,
     internal: bool,
-    expected_members: Mapping[str, tuple[str, str]],
 ) -> str:
     network_id = _require_object_id(item, "Id", "v2-network-id-invalid")
     expected_policy = {
         "Attachable": False,
+        "ConfigOnly": False,
         "Driver": "bridge",
+        "EnableIPv4": True,
         "EnableIPv6": False,
         "Ingress": False,
         "Internal": internal,
@@ -730,9 +727,9 @@ def _attest_network(
         _VERSION_LABEL: CODEX_DOCKER_TOPOLOGY_V2_VERSION,
     }:
         raise CodexDockerTopologyV2Error("v2-network-labels-mismatch")
-    expected_options = (
-        {"com.docker.network.bridge.enable_ip_masquerade": "false"} if internal else {}
-    )
+    expected_options = {"com.docker.network.enable_ipv4": "true"}
+    if internal:
+        expected_options["com.docker.network.bridge.enable_ip_masquerade"] = "false"
     if (item.get("Options") or {}) != expected_options:
         raise CodexDockerTopologyV2Error("v2-network-options-drift")
     ipam = _require_mapping(item, "IPAM", "v2-network-ipam-invalid")
@@ -746,38 +743,12 @@ def _attest_network(
     ):
         raise CodexDockerTopologyV2Error("v2-network-ipam-drift")
     members = _require_mapping(item, "Containers", "v2-network-members-invalid")
-    if set(members) != set(expected_members):
+    # Docker does not populate the network member table until a container is
+    # started. A no-start topology therefore requires the table to stay empty;
+    # each container's IPAMConfig above carries the frozen static assignment.
+    if members:
         raise CodexDockerTopologyV2Error("v2-network-members-mismatch")
-    prefix = ipaddress.ip_network(expected_subnet).prefixlen
-    for member_id, (expected_name, expected_ipv4) in expected_members.items():
-        member = members.get(member_id)
-        if not isinstance(member, Mapping):
-            raise CodexDockerTopologyV2Error("v2-network-members-mismatch")
-        if (
-            member.get("Name") != expected_name
-            or member.get("IPv4Address") != f"{expected_ipv4}/{prefix}"
-            or not _empty(member.get("IPv6Address"))
-        ):
-            raise CodexDockerTopologyV2Error("v2-network-member-address-drift")
     return network_id
-
-
-def _attest_endpoint_network_ids(
-    container: Mapping[str, object], expected: Mapping[str, str]
-) -> None:
-    settings = _require_mapping(
-        container, "NetworkSettings", "v2-container-networks-invalid"
-    )
-    if not _empty(settings.get("Ports")):
-        raise CodexDockerTopologyV2Error("v2-container-port-binding-drift")
-    networks = _require_mapping(settings, "Networks", "v2-container-networks-invalid")
-    for name, expected_id in expected.items():
-        endpoint = networks.get(name)
-        if (
-            not isinstance(endpoint, Mapping)
-            or endpoint.get("NetworkID") != expected_id
-        ):
-            raise CodexDockerTopologyV2Error("v2-container-network-id-mismatch")
 
 
 def _attested_image_labels(item: Mapping[str, object]) -> dict[str, str]:

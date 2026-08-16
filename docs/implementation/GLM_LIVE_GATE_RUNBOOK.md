@@ -94,11 +94,19 @@ stdlib resolve-once、单次 literal 拨号、selector 双向 relay、统一 wal
 没有默认 resolver/dialer，必须显式注入。这样可以验证镜像和边界合同，但不会把未完成的网络拓扑
 误当成可用代理。
 
-事务监督器同样保持 no-start：它先证明四个 Attempt-scoped 名称不存在，再 create/inspect，且只按
-本事务明确返回的 ID 清理；模糊 create 不会按名字接管或删除其他资源。兼容新增的 topology v0.2
-已经冻结双 `/29`、runtime/proxy 静态 IP、数值 proxy URL、Python proxy 入口与安全资源配置，并能
-严格校验调用方提供的 image/container/network inspect 文档；它没有 executor，`start=()`，且明确
-只声称 inspect 文档校验完成，不能声称真实 Docker capture 完整。
+topology v0.2 仍是无 executor、`start=()` 的纯合同；它冻结双 `/29`、runtime/proxy 静态 IP、
+数值 proxy URL、Python proxy 入口与安全资源配置，并严格校验 image/container/network inspect
+文档。其上的 no-start supervisor 现已补齐真实命令边界：固定绝对 Docker binary、Attempt 私有空白
+config、platform-local daemon、空 executor 环境、单一事务截止时间与独立 cleanup 截止时间；它先
+证明四个 Attempt-scoped 名称不存在，再 create/inspect，并以 name+ID 双向 reconcile、created-state
+核验和无 `--force` 的 ID-only cleanup 收口。模糊 create 不会按名字接管或删除其他资源，inspect
+正文仅供临时解析，持久 audit 只保留哈希和字节计数。
+
+2026-08-17 已在 Docker Desktop 4.64.0 / Engine 29.2.1 上完成一次无 key、no-start 兼容探针：
+使用两个本地固定 image ID 和注入的有界 executor，四个资源均完成 create/inspect/ID-only cleanup，
+最终容器与网络计数为 0；全程没有 `start`、`attach`、`exec`、Provider 请求或凭据读取。该结果只在
+`single-writer-daemon-assumption` 下证明 supervisor 未发启动命令、观察到 created state，并完整捕获
+事务哈希、时序和 cleanup；它不声称原始 inspect capture 完整，也不证明可安全注入真实 key。
 
 独立 audit-capture 合同以有界增量 UTF-8/JSONL 解码校验 exactly-one 脱敏 audit，绑定 policy、DNS
 resolution、Attempt/container lifecycle 和终态矩阵。当前 lifecycle 仍标记为 `caller-attested`；该
@@ -111,12 +119,14 @@ HTTP 字段和 supervisor lifecycle hash；但 Codex 0.124.0 的真实无 Provid
 request，不证明服务端 actual model/provider 或成本。
 
 因此 Docker host、network、proxy container、supervisor、topology v0.2、audit capture 和 request
-fingerprint 的全部 `LIVE_READY` 开关继续为 `False`。下一道真实凭据门是：让 supervisor 以真实
-命令结果、daemon identity、绝对 deadline 和 container lifecycle 绑定 v0.2 inspect；冻结最终 OCI
-digest；实现有界 attach 或 tmpfs audit 提取；在外层绝对截止时间内完成 DNS snapshot；用真实 Engine
-验证双网拓扑、无直连/host-gateway/metadata/任意 DNS 路径及完整清理；并让 Codex 的实际
-`/api/v1/responses` 请求不再暴露未批准工具。这些项目没有通过前，不得仅把 `network=none` 改成
-default bridge，也不得注入 key。
+fingerprint 的全部 `LIVE_READY` 开关继续为 `False`。下一道真实凭据门仍包括：提供受信的 no-shell、
+空环境、进程组可终止的生产 executor；对 Docker binary、config 目录与 daemon socket 建立 owner、
+ACL 和 single-writer 证明并消除 daemon ABA/并发 rogue-member 窗口；冻结最终 OCI digest 与构建
+attestation；实现有界 attach 或 tmpfs audit 提取；在外层绝对截止时间内完成 DNS snapshot；用真实
+Engine 验证启动后的成员绑定、双网拓扑、无直连/host-gateway/metadata/任意 DNS 路径及完整清理；
+并让 Codex 的实际 `/api/v1/responses` 请求不再暴露未批准工具。服务端 actual model/provider 与
+Provider-reported 货币成本仍不可由该 Runtime 单独证明。这些项目没有通过前，不得仅把
+`network=none` 改成 default bridge，也不得注入 key。
 
 ## 3. 当前 Adapter 能力
 

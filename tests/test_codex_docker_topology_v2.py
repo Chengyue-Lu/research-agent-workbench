@@ -89,17 +89,15 @@ class TopologyFixture:
     def _endpoint(
         self,
         *,
-        network_id: str,
         ipv4: str,
-        gateway: str,
         priority: int,
     ) -> dict[str, object]:
         return {
-            "IPAMConfig": {"IPv4Address": ipv4, "IPv6Address": ""},
+            "IPAMConfig": {"IPv4Address": ipv4},
             "Links": None,
-            "NetworkID": network_id,
-            "IPAddress": ipv4,
-            "Gateway": gateway,
+            "NetworkID": "",
+            "IPAddress": "",
+            "Gateway": "",
             "GwPriority": priority,
         }
 
@@ -109,21 +107,17 @@ class TopologyFixture:
         image_id = RUNTIME_IMAGE if runtime else PROXY_IMAGE
         networks = {
             self.plan.internal_network: self._endpoint(
-                network_id=INTERNAL_ID,
                 ipv4=(
                     CODEX_DOCKER_V2_RUNTIME_IPV4
                     if runtime
                     else CODEX_DOCKER_V2_PROXY_INTERNAL_IPV4
                 ),
-                gateway=CODEX_DOCKER_V2_INTERNAL_GATEWAY,
                 priority=0,
             )
         }
         if not runtime:
             networks[self.plan.egress_network] = self._endpoint(
-                network_id=EGRESS_ID,
                 ipv4=CODEX_DOCKER_V2_PROXY_EGRESS_IPV4,
-                gateway=CODEX_DOCKER_V2_EGRESS_GATEWAY,
                 priority=1,
             )
         environment = [
@@ -166,7 +160,7 @@ class TopologyFixture:
                 "MemorySwap": 536_870_912,
                 "NanoCpus": 1_000_000_000,
                 "NetworkMode": self.plan.internal_network,
-                "PidMode": "private",
+                "PidMode": "",
                 "PidsLimit": 64,
                 "Privileged": False,
                 "PublishAllPorts": False,
@@ -217,7 +211,7 @@ class TopologyFixture:
                 ),
                 "Cmd": ["--run"] if runtime else list(CODEX_DOCKER_V2_PROXY_COMMAND),
                 "OpenStdin": runtime,
-                "StdinOnce": False,
+                "StdinOnce": runtime,
                 "Tty": False,
                 "User": "65532:65532",
                 "WorkingDir": "/workspace" if runtime else "/proxy",
@@ -237,37 +231,25 @@ class TopologyFixture:
             name = self.plan.internal_network
             subnet = CODEX_DOCKER_V2_INTERNAL_SUBNET
             gateway = CODEX_DOCKER_V2_INTERNAL_GATEWAY
-            options = {"com.docker.network.bridge.enable_ip_masquerade": "false"}
-            members = {
-                RUNTIME_ID: {
-                    "Name": self.plan.runtime_container,
-                    "IPv4Address": f"{CODEX_DOCKER_V2_RUNTIME_IPV4}/29",
-                    "IPv6Address": "",
-                },
-                PROXY_ID: {
-                    "Name": self.plan.proxy_container,
-                    "IPv4Address": f"{CODEX_DOCKER_V2_PROXY_INTERNAL_IPV4}/29",
-                    "IPv6Address": "",
-                },
+            options = {
+                "com.docker.network.bridge.enable_ip_masquerade": "false",
+                "com.docker.network.enable_ipv4": "true",
             }
+            members = {}
         else:
             network_id = EGRESS_ID
             name = self.plan.egress_network
             subnet = CODEX_DOCKER_V2_EGRESS_SUBNET
             gateway = CODEX_DOCKER_V2_EGRESS_GATEWAY
-            options = {}
-            members = {
-                PROXY_ID: {
-                    "Name": self.plan.proxy_container,
-                    "IPv4Address": f"{CODEX_DOCKER_V2_PROXY_EGRESS_IPV4}/29",
-                    "IPv6Address": "",
-                }
-            }
+            options = {"com.docker.network.enable_ipv4": "true"}
+            members = {}
         return {
             "Id": network_id,
             "Name": name,
             "Attachable": False,
+            "ConfigOnly": False,
             "Driver": "bridge",
+            "EnableIPv4": True,
             "EnableIPv6": False,
             "Ingress": False,
             "Internal": internal,
@@ -413,10 +395,12 @@ class CodexDockerTopologyV2TransactionTests(unittest.TestCase):
             proxy[-len(CODEX_DOCKER_V2_PROXY_COMMAND) :],
         )
         self.assertIn(f"--ip={CODEX_DOCKER_V2_PROXY_INTERNAL_IPV4}", proxy)
+        self.assertNotIn("--pid=private", proxy)
         self.assertNotIn("--gw-priority=0", proxy)
         self.assertIn(f"--ip={CODEX_DOCKER_V2_PROXY_EGRESS_IPV4}", connect)
         self.assertIn("--gw-priority=1", connect)
         self.assertIn(f"--ip={CODEX_DOCKER_V2_RUNTIME_IPV4}", runtime)
+        self.assertNotIn("--pid=private", runtime)
         self.assertIn(f"--env=HTTP_PROXY={CODEX_DOCKER_V2_PROXY_URL}", runtime)
 
     def test_every_command_is_secret_free_without_host_mount_or_publish(self) -> None:
@@ -463,6 +447,12 @@ class CodexDockerTopologyV2AttestationTests(unittest.TestCase):
         process = copy.deepcopy(self.fixture.container_documents)
         process[1]["Config"]["Entrypoint"] = ["/bin/sh"]  # type: ignore[index]
         cases.append(("process", process))
+        pid_mode = copy.deepcopy(self.fixture.container_documents)
+        pid_mode[1]["HostConfig"]["PidMode"] = "host"  # type: ignore[index]
+        cases.append(("pid-mode", pid_mode))
+        stdin_once = copy.deepcopy(self.fixture.container_documents)
+        stdin_once[0]["Config"]["StdinOnce"] = False  # type: ignore[index]
+        cases.append(("runtime-stdin-once", stdin_once))
         for field, value in (
             ("Status", "running"),
             ("Running", True),
@@ -545,9 +535,38 @@ class CodexDockerTopologyV2AttestationTests(unittest.TestCase):
             ):
                 self.fixture.attest(containers=containers)
 
+        for field, value in (
+            ("IPAddress", "missing"),
+            ("Gateway", []),
+            ("NetworkID", None),
+        ):
+            containers = copy.deepcopy(self.fixture.container_documents)
+            endpoint = containers[0]["NetworkSettings"]["Networks"][  # type: ignore[index]
+                self.fixture.plan.internal_network
+            ]
+            if value == "missing":
+                endpoint.pop(field)
+            else:
+                endpoint[field] = value
+            with (
+                self.subTest(field=f"missing-or-typed-{field}"),
+                self.assertRaisesRegex(CodexDockerTopologyV2Error, "route-or-ip-drift"),
+            ):
+                self.fixture.attest(containers=containers)
+
+        runtime_ports = copy.deepcopy(self.fixture.container_documents)
+        runtime_ports[0]["NetworkSettings"]["Ports"] = {  # type: ignore[index]
+            "1234/tcp": [{"HostIp": "0.0.0.0", "HostPort": "1234"}]
+        }
+        with self.assertRaisesRegex(
+            CodexDockerTopologyV2Error, "container-port-binding-drift"
+        ):
+            self.fixture.attest(containers=runtime_ports)
+
     def test_static_ip_route_and_network_id_drift_fail_closed(self) -> None:
         mutations = (
             ("IPAMConfig", {"IPv4Address": "172.28.53.4"}),
+            ("IPAddress", CODEX_DOCKER_V2_PROXY_EGRESS_IPV4),
             ("Gateway", CODEX_DOCKER_V2_INTERNAL_GATEWAY),
             ("GwPriority", 0),
             ("NetworkID", "9" * 64),
@@ -566,7 +585,7 @@ class CodexDockerTopologyV2AttestationTests(unittest.TestCase):
             ):
                 self.fixture.attest(containers=containers)
 
-    def test_rogue_member_or_member_address_drift_fails_closed(self) -> None:
+    def test_any_started_network_member_fails_closed(self) -> None:
         rogue = copy.deepcopy(self.fixture.network_documents)
         rogue[0]["Containers"][ROGUE_ID] = {  # type: ignore[index]
             "Name": "rogue",
@@ -578,15 +597,6 @@ class CodexDockerTopologyV2AttestationTests(unittest.TestCase):
         ):
             self.fixture.attest(networks=rogue)
 
-        address = copy.deepcopy(self.fixture.network_documents)
-        address[0]["Containers"][RUNTIME_ID][  # type: ignore[index]
-            "IPv4Address"
-        ] = "172.28.53.4/29"
-        with self.assertRaisesRegex(
-            CodexDockerTopologyV2Error, "network-member-address-drift"
-        ):
-            self.fixture.attest(networks=address)
-
     def test_subnet_gateway_options_and_dns_environment_drift_fail_closed(self) -> None:
         networks = copy.deepcopy(self.fixture.network_documents)
         networks[0]["IPAM"]["Config"] = [  # type: ignore[index]
@@ -594,6 +604,24 @@ class CodexDockerTopologyV2AttestationTests(unittest.TestCase):
         ]
         with self.assertRaisesRegex(CodexDockerTopologyV2Error, "network-ipam-drift"):
             self.fixture.attest(networks=networks)
+
+        for field, value in (("EnableIPv4", False), ("ConfigOnly", True)):
+            policy = copy.deepcopy(self.fixture.network_documents)
+            policy[0][field] = value
+            with (
+                self.subTest(field=field),
+                self.assertRaisesRegex(
+                    CodexDockerTopologyV2Error, "network-policy-drift"
+                ),
+            ):
+                self.fixture.attest(networks=policy)
+
+        options = copy.deepcopy(self.fixture.network_documents)
+        del options[1]["Options"]["com.docker.network.enable_ipv4"]  # type: ignore[index]
+        with self.assertRaisesRegex(
+            CodexDockerTopologyV2Error, "network-options-drift"
+        ):
+            self.fixture.attest(networks=options)
 
         environment = copy.deepcopy(self.fixture.container_documents)
         environment[1]["Config"]["Env"].append("API_TOKEN=not-a-real-key")  # type: ignore[index,union-attr]

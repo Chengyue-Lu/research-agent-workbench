@@ -490,23 +490,51 @@ class CodexCodingPlanDockerHostTests(DockerTestCase):
 class BoundedDockerCommandExecutorTests(DockerTestCase):
     def setUp(self) -> None:
         super().setUp()
-        system_root = Path(os.environ.get("SYSTEMROOT", r"C:\Windows"))
-        shutil.copy2(system_root / "System32" / "cmd.exe", self.docker)
+        self.windows = os.name == "nt"
+        if self.windows:
+            system_root = Path(os.environ.get("SYSTEMROOT", r"C:\Windows"))
+            shutil.copy2(system_root / "System32" / "cmd.exe", self.docker)
+        else:
+            # The production boundary intentionally requires an absolute file
+            # named docker.exe.  A self-contained POSIX stub avoids depending
+            # on whether the active Python executable is relocatable.
+            self.docker.write_text(
+                "#!/bin/sh\n"
+                'case "$1" in\n'
+                "  ok) printf 'ok\\n' ;;\n"
+                "  overflow) printf 'xxxxx\\n' ;;\n"
+                "  timeout) while :; do :; done ;;\n"
+                "  no-read) exit 0 ;;\n"
+                "  *) exit 2 ;;\n"
+                "esac\n",
+                encoding="utf-8",
+            )
+            self.docker.chmod(0o700)
         self.executor = BoundedDockerCommandExecutor(environment={})
 
     def test_output_is_captured_with_a_hard_incremental_limit(self) -> None:
+        ok_command = (
+            (str(self.docker), "/d", "/c", "echo ok")
+            if self.windows
+            else (str(self.docker), "ok")
+        )
         result = self.executor.execute(
-            (str(self.docker), "/d", "/c", "echo ok"),
+            ok_command,
             stdin=b"",
             timeout_seconds=5.0,
             stdout_limit=4,
             stderr_limit=64,
         )
         self.assertEqual(0, result.returncode)
-        self.assertEqual(b"ok\r\n", result.stdout)
+        self.assertEqual(b"ok\n", result.stdout.replace(b"\r\n", b"\n"))
+        overflow_command = (
+            (str(self.docker), "/d", "/c", "echo xxxxx")
+            if self.windows
+            else (str(self.docker), "overflow")
+        )
         with self.assertRaisesRegex(CodexCodingPlanRuntimeError, "stdout-limit"):
             self.executor.execute(
-                (str(self.docker), "/d", "/c", "echo xxxxx"),
+                overflow_command,
                 stdin=b"",
                 timeout_seconds=5.0,
                 stdout_limit=4,
@@ -514,14 +542,19 @@ class BoundedDockerCommandExecutorTests(DockerTestCase):
             )
 
     def test_timeout_terminates_the_child(self) -> None:
+        timeout_command = (
+            (
+                str(self.docker),
+                "/d",
+                "/c",
+                "for /L %i in (1,1,100000000) do @rem",
+            )
+            if self.windows
+            else (str(self.docker), "timeout")
+        )
         with self.assertRaisesRegex(CodexCodingPlanRuntimeError, "timeout"):
             self.executor.execute(
-                (
-                    str(self.docker),
-                    "/d",
-                    "/c",
-                    "for /L %i in (1,1,100000000) do @rem",
-                ),
+                timeout_command,
                 stdin=b"",
                 timeout_seconds=0.1,
                 stdout_limit=64,
@@ -529,8 +562,13 @@ class BoundedDockerCommandExecutorTests(DockerTestCase):
             )
 
     def test_writer_terminates_when_child_exits_without_reading_stdin(self) -> None:
+        no_read_command = (
+            (str(self.docker), "/d", "/c", "exit /b 0")
+            if self.windows
+            else (str(self.docker), "no-read")
+        )
         result = self.executor.execute(
-            (str(self.docker), "/d", "/c", "exit /b 0"),
+            no_read_command,
             stdin=b"x" * 65_536,
             timeout_seconds=5.0,
             stdout_limit=64,
