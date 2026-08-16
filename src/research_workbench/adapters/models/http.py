@@ -86,6 +86,13 @@ class HttpTransport(Protocol):
         """Send one bounded request. HTTP error statuses are returned, not raised."""
 
 
+class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """Surface redirects to the caller without issuing another request."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
 class UrllibTransport:
     def __init__(self, *, max_response_bytes: int = DEFAULT_MAX_RESPONSE_BYTES) -> None:
         if max_response_bytes <= 0:
@@ -102,8 +109,9 @@ class UrllibTransport:
             headers=dict(request.headers),
             method=request.method,
         )
+        opener = urllib.request.build_opener(_NoRedirectHandler())
         try:
-            with urllib.request.urlopen(native, timeout=request.timeout_seconds) as response:
+            with opener.open(native, timeout=request.timeout_seconds) as response:
                 body = self._read_bounded(response)
                 return HttpResponse(int(response.status), dict(response.headers.items()), body)
         except urllib.error.HTTPError as exc:
