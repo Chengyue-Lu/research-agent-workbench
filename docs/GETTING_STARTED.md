@@ -169,7 +169,7 @@ rwb runtime codex render examples/task-evidence.yaml `
 
 dispatch 只包含 Task 边界、输入路径与哈希、写入范围、显式 Skill、完成检查和暂停条件。它不会嵌入论文全文、其他 Skill 正文或主会话历史。
 
-到这里仍然没有启动 Agent。这是已有的可选 Codex dispatch 路径。黄毅维护的 Python API 已有一条面向明确 H2 evidence Task 的 fake-local 文件关闭切片，但还没有通用 Task-to-API CLI、普通 H1 closeout 或自动 Agent Trace。路诚钺当前主线是 Mode–Skill 选择、Agent Trace 与上下文成本，不依赖该桥接完成后才开始。
+到这里仍然没有启动 Agent。这是已有的可选 Codex dispatch 路径。黄毅维护的 Python API 已对 evidence/H2 与 simulation/H1 双合同路径完成 fake-local 文件关闭，覆盖受控 Tool Registry、Model Assignment、自动诚实 gapped Trace 和 H1/H2 fresh-process/commit-last。它仍不是通用 Task-to-API CLI，真实 OpenAI Gate 也尚未运行。路诚钺维护的 Mode–Skill 选择基线已实现，当前关闭条件仍是可比实际 H1/H2 Attempt 的运行时与成本证据。
 
 ### 4.5 检查一份已有 Handoff
 
@@ -204,7 +204,7 @@ rwb context resume-check `
 
 ## 5. 当前怎样实际运行一个子 Agent
 
-当前仓库已经有 fresh API session 内核，以及 `research_workbench.execution.run_task_api_attempt` 这条 H2 fake-local Python 入口。它只接受显式要求 Transfer Manifest 的 Task，验证最小编译、只读工具、五种终态、commit-last closeout、防重放与 fresh-process 文件恢复；尚未提供完整 Task-to-API CLI、普通 H1 closeout或自动 Trace 捕获。因此过渡期有两种受控方式：开发者直接调用该窄线入口进行离线/集成测试，或使用现有 Codex dispatch 作为人工平台入口。无论采用哪种方式，Workbench 都使用同一套契约；黄毅负责执行端实现，路诚钺负责 Mode/Skill/Trace 方法与评估。
+当前仓库已经有 fresh API session 内核，以及 `research_workbench.execution.run_task_api_attempt` 这条 fake-local Python 入口。它已对 evidence/H2 和 simulation/H1 验证双合同冻结、受控只读 Tool Registry、Model Assignment、五种终态、自动诚实 gapped Trace、commit-last closeout、防重放与 fresh-process 文件恢复。尚未提供完整 Task-to-API CLI，真实 OpenAI Gate 仍为 pending。因此过渡期有两种受控方式：开发者直接调用该窄线入口进行离线/集成测试，或使用现有 Codex dispatch 作为人工平台入口。无论采用哪种方式，Workbench 都使用同一套契约；黄毅负责执行端实现，路诚钺负责 Mode/Skill/Trace 方法与评估。
 
 1. 人类批准 Project Protocol 和本次 Task 边界；
 2. 用 `rwb task resolve` 生成不可变 Assignment；
@@ -456,12 +456,12 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 | 产品边界和总体架构 | 已形成 Charter、Architecture、模块和 ADR | 可复用 |
 | Schema、模型和确定性验证 | 本地测试和全部示例/Registry 校验通过 | 技术 alpha 可用 |
 | CLI | 可 init、validate、resolve、render、audit、checkpoint | 技术 alpha 可用 |
-| Agent—Skill 路由 | 两条不同 Skill 的离线切片可重放 | 路诚钺尚缺 Mode 决策卡、选择矩阵和增量价值证据 |
-| API Session 与 H2 文件关闭切片 | 显式模型槽、有界工具循环、无 fallback、五终态和 fake-local 文件恢复已测试 | 普通 H1/risk-tier closeout、自动 Trace 与真实调用仍由黄毅维护 |
+| Agent—Skill 路由 | 两张 Mode 决策卡、8 组选择 fixtures 和三份 accepted Skill 审计可重放 | 离线 `K-MS-1` 实现已完成；真实增量价值与 H1/H2 运行成本证据尚缺，节点未关闭 |
+| API Session 与双合同文件关闭 | evidence/H2 + simulation/H1、受控 Tool Registry、Model Assignment、五终态和 commit-last 已离线测试 | `M6-003` 仍为 IN_PROGRESS；真实 OpenAI Gate 未跑 |
 | Codex Runtime Adapter | 布局、能力和 dispatch 已实现 | 可选路径，不在当前关键路径 |
-| 上下文连续性 | SAFE_PAUSE、哈希、digest、Git 冲突和恢复 fixture 已实现 | 缺真实跨会话恢复 |
-| Handoff 压缩审计 | Manifest/Audit 和风险触发抽样契约已实现 | 路诚钺尚缺 H1/H2 成本对照与真实材料样本 |
-| Agent 过程留痕 | 已冻结实名 actor、Attempt Archive 和按需读取规则 | Trace Schema/validator 与运行时自动捕获尚未实现 |
+| 上下文连续性 | SAFE_PAUSE、哈希、digest、Git 冲突及 H1/H2 fresh-process 恢复已离线实现 | 缺真实新主模型会话恢复 |
+| Handoff 压缩审计 | Manifest/Audit 契约和 H0/H1/H2 fixture-only 成本对照已实现 | 尚缺可比实际 H1/H2 Attempt 的运行时、成本与真实材料证据 |
+| Agent 过程留痕 | 实名 actor、Trace Schema/validator/CLI 与 API 运行时自动捕获已离线通过 | 不可得捕获显式记 gap，不伪装 complete；真实 Provider Trace 仍待 Gate |
 | Provider Adapters | OpenAI、Anthropic、Gemini 离线合同和有界 runner 已实现 | 由黄毅继续维护 |
 | Skill 供应链 | 候选隔离、静态审计、paired evaluation 契约已实现 | accepted Skills 仍标记 `project-original-unlicensed` |
 | 工件 promotion 和 Run 复现 | 已有架构与任务 | 核心实现未完成 |
@@ -472,18 +472,19 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 
 #### 当前：内部技术 alpha
 
-已经达到。适合维护者和愿意阅读 YAML/契约的协作者进行离线验证与受控试点。此级别不承诺独立脚手架、稳定 API 或科研效果。
+已经达到。适合维护者和愿意阅读 YAML/契约的协作者进行离线验证。此级别不承诺独立脚手架、稳定 API、外部 pilot 或科研效果。
 
 #### 下一档：外部可复用 pilot
 
-至少还需关闭六个发布 Gate：
+至少还需关闭以下发布 Gate：
 
-1. 路诚钺完成 `K-MS-1` Mode–Skill/Trace 选择基线；黄毅把已有 H2 fake-local 切片接入普通 H1/risk-tier closeout 与自动 Trace；
-2. 完成一次真实 `safe-paused → 新主会话 → 正确下一动作` 恢复；
-3. 把 `rwb init` 升级为可选择的完整项目模板，或提供受支持的 template repository；
-4. 选择并加入项目 LICENSE，同时清理 accepted Skills 的许可状态；
-5. 在 Windows 和 CI/Linux 上验证安装、原子文件发布和完整 quickstart；
-6. 定义 `0.x` Schema/CLI 兼容、迁移和废弃政策。
+1. 路诚钺用可比实际 H1/H2 Attempt 的运行时与成本证据关闭已实现但未关闭的 `K-MS-1/M7-006`；
+2. 在已授权环境执行真实 OpenAI Gate；当前机器缺少 `OPENAI_API_KEY` 和 `RWB_WORKER_MODEL`，状态只能是 pending/not-run；
+3. 完成一次真实 `safe-paused → 新主会话 → 正确下一动作` 恢复；
+4. 把 `rwb init` 升级为可选择的完整项目模板，或提供受支持的 template repository；
+5. 选择并加入项目 LICENSE，同时清理 accepted Skills 的许可状态；
+6. 在 Windows 和 CI/Linux 上验证安装、原子文件发布和完整 quickstart；
+7. 定义 `0.x` Schema/CLI 兼容、迁移和废弃政策。
 
 完成这些后可以发布 `0.2.x pilot`，邀请少量外部研究者使用，但仍不能宣称科研价值或生产稳定性。
 
@@ -512,17 +513,17 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 - 至少删除或简化一项真实数据证明无价值的控制机制；
 - 许可、发布物、支持平台和安全边界明确。
 
-因此距离 `1.0` 不能用代码完成百分比可靠表达。工程骨架已经形成，但决定稳定发布的真实执行与科研验证证据仍基本未开始。更准确的表述是：内部 alpha 已到位，外部 pilot 还差六个明确 Gate，公开 beta 和 `1.0` 还依赖 M4/M5 的真实案例证据。
+因此距离 `1.0` 不能用代码完成百分比可靠表达。工程骨架已经形成，但决定稳定发布的真实执行与科研验证证据仍基本未开始。更准确的表述是：内部 alpha 已到位，外部 pilot 尚未达到且仍有上述明确 Gate，公开 beta 和 `1.0` 还依赖 M4/M5 的真实案例证据。
 
 ## 12. 推荐的下一步顺序
 
 发布关键路径应保持克制：
 
-1. 先完成 Attempt Archive、实名 actor 与 Agent Trace 的手工 fixture/validator，使后续试验可以回放；
-2. 完成 `K-MS-1`：Mode 决策卡、6 个边界 fixtures、Task-to-Skill 选择矩阵和 accepted Skill 边界审计；
-3. 为同类任务比较 H1/H2 与内容读取扩展成本，删减没有改变决策的控制项；
-4. 对一个 triage candidate 作 reject/retain-reference/continue-trial 决定；
-5. 黄毅独立推进 H1/H2 Task-to-API 整合、自动 Trace 捕获和经授权的真实模型证据；路诚钺只消费正式脱敏工件；
+1. 保持已完成的 Attempt Archive、实名 actor、Agent Trace Schema/validator/CLI 和自动诚实 gap 捕获边界；
+2. 保留已完成的 Mode 决策卡、8 组 fixtures、Task-to-Skill 选择矩阵和 accepted Skill 边界审计，不为“覆盖完整”新增 Mode/Skill；
+3. 为可比的实际 H1/H2 Attempt 采集运行时、成本和内容读取扩展证据，再删减没有改变决策的控制项并关闭 `K-MS-1`；
+4. 将 `claim-preserving-rewrite` 保持在 `continue-trial` 且不准入的候选边界，只在新的真实 with/without 证据到位后重审；
+5. 黄毅保持已通过的 H1/H2 Task-to-API 与自动 Trace 边界，并在取得授权与所需环境变量后单独执行真实 OpenAI Gate；路诚钺只消费正式脱敏工件；
 6. 同步确定 LICENSE 和完整项目 scaffold 方案；
 7. 再进入两个真实科研案例、M4 工件 promotion/复现和对照评估；
 8. 只有文件式连续性 benchmark 出现可复现瓶颈时，才评估 SQLite/FTS；图层只能作为 Index，不能成为事实源。

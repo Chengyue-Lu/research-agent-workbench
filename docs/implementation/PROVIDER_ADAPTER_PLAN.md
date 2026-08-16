@@ -1,8 +1,8 @@
 # 多提供商模型 API 实施计划
 
-状态：`K-API-2` H2 fake-local 文件关闭切片完成；风险分级、自动 Trace 与 live 证据待完成
+状态：`K-API-2` evidence/H2 与 simulation/H1 双合同离线闭环完成；真实 OpenAI Gate 待运行
 
-日期：2026-08-15
+日期：2026-08-16
 
 维护边界：黄毅负责本计划的 Provider Adapter、API session、live conformance、自动 Trace 捕获和相关测试。路诚钺只消费公开的 Task/Assignment/Handoff/Receipt/Trace 接口和脱敏执行证据。共享接口变更按 [开发协作指南](../DEVELOPMENT.md)由两人共同确认。
 
@@ -34,11 +34,13 @@ flowchart LR
 - `openai.py`、`anthropic.py`、`gemini.py`：三套独立映射；
 - `configuration.py`：非秘密配置解析和存在性探测；
 - `conformance.py`：固定合成提示、硬预算和脱敏报告的 live conformance runner；
-- `pool.py`：显式模型槽配置与延迟模型 ID 绑定，不做评分或自动选择；
+- `pool.py`：显式模型槽配置、不可变 Model Assignment 与延迟模型 ID 绑定，不做评分、自动选择或 fallback；
 - `session.py`：fresh context 的 provider-neutral 有界工具循环，不保存跨 Attempt 会话；
-- `execution/compiler.py`：冻结 Task/Profile/Assignment/Skill/输入，把 H2 Task 编译为最小请求、限制与精确只读工具；
+- `execution/contracts.py` 与 `execution/compiler.py`：按精确签名选择 evidence/H2 或 simulation/H1 合同，冻结 Task/Profile/Assignment/Skill/输入并编译最小请求；
+- `execution/tool_registry.py` 与 `execution/tools.py`：把合同工具和 Assignment 允许集求交，只构造哈希锁定读取与无代码执行的有限数值原语；
 - `execution/output.py`：把模型输出当作不可信数据，做 Schema、来源哈希、locator 和跨工件语义一致性预检；
-- `execution/pipeline.py` 与 `execution/closeout.py`：执行 intent、防重放、五终态、排他发布、Main State 最后提交和文件恢复；
+- `execution/pipeline.py` 与 `execution/closeout/`：执行 intent、防重放、五终态、排他发布、Main State 最后提交和文件恢复；
+- `observability/trace_recorder.py`：在调用前冻结允许集，自动记录脱敏边界事件，并对未保存的 Provider/工具正文诚实声明 capture gap；
 - `registry/providers/adapters.yaml`：禁用状态的环境变量引用模板；
 - `tests/test_provider_adapters.py` 与 `tests/test_k_api_2_pipeline.py` 等：官方响应形状和 fake-local 文件闭环的离线合同 fixture。
 
@@ -145,11 +147,15 @@ rwb providers conformance `
 
 该阶段达到 `K-API-1`，但还没有把 Task/Skill Assignment 自动编译为请求，也没有自动生成 Attempt/Execution Receipt，因此不是完整 Task 执行器。
 
-### P4：Task-to-API 文件闭环（API 工作流的 external 节点）
+### P4：Task-to-API 文件闭环（离线实现完成，真实 Gate 待运行）
 
-当前已完成一条受限 H2 切片：`examples/task-evidence.yaml` 明确要求 Transfer Manifest；编译器冻结 Protocol、Task、Profile、Assignment、选中 Skill、输入和可选 previous Main State，只向模型提供引用/哈希与精确 `document-read`；runner 产生 `completed`、`safe-paused`、`incomplete`、`failed`、`blocked` 五种终态；closeout 采用执行 intent、排他发布和 Main State 最后提交，已提交或可验证 stage 的同 Attempt 重试不会重放 Provider。Adapter ID 与规范 Provider identity 分别用于 Registry 绑定和 capability/响应审计。
+当前已完成两个精确合同。`evidence-h2@0.1.0` 处理明确要求 Transfer Manifest 的 evidence Task，产出 Evidence、Compact Handoff、Manifest/Audit；`simulation-h1@0.1.0` 产出 Simulation V&V Report、Compact Handoff 和只证明结构/引用/Claim 边界的 deterministic check report，不伪造 Manifest/Audit。未知或歧义签名在 Provider discovery 前 fail closed，不做排名、默认合同或 fallback。
 
-该切片只接受 `handoff_policy.require_transfer_manifest: true` 的 H2 Task，并在不支持 H1/risk-tier closeout 时于 Provider 调用前 fail-closed。恢复验证是在删除临时 transcript 后，以显式 protocol、项目根和 Main State 引用启动 fresh Python 子进程；它不是已运行的真实主模型会话，也不是单文件自足恢复。普通 H1 closeout、全部可见 Agent 传递的 Attempt Archive/Agent Trace 自动捕获、真实 Provider/Windows conformance、科研语义等价与科学正确性仍未完成，因此 P4 的通用接口尚未关闭，`M6-004` 和 `M6-006` 不会由本切片自动启动。
+两条路径都在首次 Provider 调用前冻结 Task、Profile、Assignment、Skill、输入、Execution Contract 和 Model Assignment，只从受控 Tool Registry 构造合同与 Assignment 允许集的精确交集。runner 保留 `completed`、`stage-completed`、`safe-paused`、`incomplete`、`failed`、`blocked` 的合同化关闭语义；`stage-completed` 只表示模型阶段和结构检查完成，必须转入 Human Gate，不能宣称科研接受。closeout 采用执行 intent、排他发布和 Main State 最后提交；H1/H2 的四个故障注入检查点均验证同 Attempt 恢复不会重放 Provider。
+
+Agent Trace 现已自动生成。由于默认不持久化完整 prompt、响应正文、工具参数和工具结果正文，Trace 会以声明的 policy-omission capture gap 诚实标记 `gapped`，而不是伪装 `complete`。Attempt、Receipt、Trace、Model Assignment、Handoff 等级和 Main State 相互锁定引用与哈希；删除临时运行状态后，H1/H2 均可由 fresh Python 子进程恢复。该恢复是文件级执行/审计链证据，不是已运行的真实主模型会话，也不证明科研正确性。
+
+因此 `M3-007`、`M3-008` 和 `M6-006` 已完成，`M6-003` 仍为 `IN_PROGRESS`。项目级 K-API-2 的剩余关闭条件是 `M6-004` OpenAI 单家真实 Gate；当前机器缺少 `OPENAI_API_KEY` 与 `RWB_WORKER_MODEL`，只能保留为 `EXTERNAL`/pending/not-run，不能因 fake-local fixture 通过而标成 passed。
 
 ### P5：按真实消费者扩展
 

@@ -98,6 +98,6 @@ M2：由路诚钺建立不同 Mode—Skill 的显式选择、边界测试和准�
 
 M3：完成上下文换届、完整但按需读取的 Agent Trace、风险预警和两个真实案例评估。
 
-路诚钺当前下一关键节点为 `K-MS-1`：完成 Mode–Skill 选择基线、受控读取计划、Attempt Archive 和分级 Handoff 对照。黄毅负责的 API backlog 保留在共享仓库，但不作为路诚钺的退出条件。
+路诚钺维护的 `K-MS-1` 选择基线已实现但尚未关闭：Mode 决策卡、受控读取计划、accepted Skill 边界审计和 fixture-only 分级 Handoff 对照已落地，但还缺可比实际 H1/H2 Attempt 的运行时与成本证据。节点评审前不新增 Mode/Skill，项目仍为内部技术 alpha。黄毅负责的 API backlog 保留在共享仓库，但不作为路诚钺的退出条件。
 
 详细顺序见[实施计划](implementation/IMPLEMENTATION_PLAN.md)与[任务清单](TASKS.md)。

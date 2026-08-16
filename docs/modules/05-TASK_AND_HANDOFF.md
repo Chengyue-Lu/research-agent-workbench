@@ -136,16 +136,16 @@ Manifest/Audit 是 H2 工件，不再对所有普通 Handoff 默认要求。Task
 
 一次 Task 可以有多个 Attempt。重试必须使用新 `attempt_id`，记录触发原因、输入是否变化、Skill/模型/工具是否变化。禁止覆盖失败 Attempt。
 
-`K-API-2` 当前 H2 fake-local 切片的终态落盘矩阵是：
+`K-API-2` 已用 fake Provider 离线验证 evidence/H2 与 simulation/H1 双合同路径。两者的终态落盘矩阵是：
 
-- `completed`：Attempt、Research Artifact、Transfer Manifest/Audit、Handoff、Task/Main Context Snapshot、Execution Receipt，最后发布 Main State；
-- `safe-paused`、`incomplete`、`failed`、`blocked`：Attempt、Handoff、Task/Main Context Snapshot、Execution Receipt，最后发布 Main State；不生成 Research Artifact、Manifest 或 Audit。`incomplete` 表示 Provider 只返回不完整终止结果，必须持久化自己的下一动作并使用新 Attempt，不能恢复或重放原 transcript。
+- `completed`：H1/H2 都持久化 Attempt、合同要求的 Research Artifact/检查、Handoff、Task/Main Context Snapshot、Execution Receipt 和 Agent Trace，最后发布 Main State；H2 另增 Transfer Manifest/Audit，H1 不伪造这两份工件；
+- `safe-paused`、`incomplete`、`failed`、`blocked`：Attempt、Handoff、Task/Main Context Snapshot、Execution Receipt 和诚实标记 gap 的 Agent Trace，最后发布 Main State；不生成 Research Artifact、Manifest 或 Audit。`incomplete` 表示 Provider 只返回不完整终止结果，必须持久化自己的下一动作并使用新 Attempt，不能恢复或重放原 transcript。
 
 多文件 closeout 采用 commit-last 协议，不是多文件事务：各正式文件逐个排他发布，Main State 是最后提交点。崩溃可能留下未被 Main State 引用的不可变孤立文件；验证完成的 stage 可以续发而不重放 Provider，只有 intent 但没有可验证结果的 Attempt 必须 fail-closed 并人工确认后使用新 Attempt。
 
-该矩阵不代表普通 H1 closeout 或完整 Attempt Archive/Agent Trace 已实现；当前编译器只接受明确要求 Transfer Manifest 的 H2 Task，其他等级在 Provider 调用前阻断。
+双路径都通过受控 Tool Registry 按 Execution Contract 和 Assignment 的精确交集构建只读工具，并冻结 Model Assignment。Agent Trace 对不可得的前置捕获显式声明 gap，而不把延迟或缺失伪装为 `complete`。当前证据是离线 fake-local；真实 OpenAI Gate 仍未运行。
 
-Attempt 可以引用一份 `Execution Receipt`。Receipt 记录实际 Runtime、模型用量状态、协调/执行成本、Context Snapshot 和 trace 策略；Handoff 也回指同一 Receipt。验证器检查这三者的 Task、状态、时间和路径一致性，避免把另一次执行的成本或结果串入当前交接。
+Attempt 可以引用一份 `Execution Receipt`。Receipt 记录实际 Runtime、Model Assignment/Execution Contract、模型用量状态、协调/执行成本、Context Snapshot 和哈希绑定的 Agent Trace；Handoff 也回指同一 Receipt。验证器检查 Task、Attempt、Receipt、Main State 与 Trace 的身份、状态、时间、路径和哈希一致性，避免把另一次执行的成本或结果串入当前交接。
 
 Receipt 的生命周期 `status: completed` 只表示一次执行已经结束，不等于 Task 合同已满足；这使负对照和失败实验仍能成为合法记录。只有显式声明 `completion_claim: contract-satisfied` 时，Receipt 才必须至少引用一个内核能够解释的机器验证工件。若确定性报告为 `fail`，或其 checker/subject 哈希已漂移，该声明被阻断；Receipt/LLM 文本不能覆盖机器证据。
 

@@ -4,7 +4,7 @@
 
 状态：执行中
 
-日期：2026-08-14
+日期：2026-08-16
 
 ## 1. 实施总则
 
@@ -131,7 +131,7 @@ rwb context checkpoint
 6. 以 Task Packet 显式点名 required Skills。
 7. 记录 Skill lock、实际工具、Provider/Model、Runtime snapshot（若有）和 Handoff。
 
-截至 2026-08-15，Registry、Profiles、Skills、显式绑定和 Codex 可选映射均已有确定性契约；API 工作在 `K-API-1` 之上完成了明确 H2 evidence Task 的 fake-local 文件关闭切片，并由黄毅继续维护。该切片不覆盖普通 H1 closeout 或自动 Agent Trace。路诚钺尚缺 Mode 决策卡、Task-to-Skill 选择矩阵、accepted Skill 边界审计和真实增量价值，因此 M2 尚未退出。
+截至 2026-08-16，Registry、Profiles、Skills、显式绑定和 Codex 可选映射均已有确定性契约。API 工作在 `K-API-1` 之上对 evidence/H2 与 simulation/H1 双合同路径完成 fake-local 文件关闭，包括受控 Tool Registry、Model Assignment、自动诚实 gapped Agent Trace 和 H1/H2 fresh-process/commit-last。Mode 决策卡、Task-to-Skill 选择矩阵与 accepted Skill 边界审计也已实现；尚缺的是 `M7-006` 可比实际 H1/H2 运行时/成本证据和真实增量价值，因此 `K-MS-1` 仍未关闭。
 
 ### 路由测试矩阵
 
@@ -156,7 +156,7 @@ rwb context checkpoint
 
 验证主 Agent克制、子 Agent压缩容忍和主动 rollover。
 
-截至 2026-08-15，已实现 Context Snapshot、Execution Receipt、规范化 Main State digest，以及 `context assess/checkpoint/resume-check` 和 `execution assess`。Transfer Manifest/Audit 能支持高风险或压缩后的 H2 交接，但普通任务改以 H1 Compact Handoff 为默认；后续必须比较两者的实际遗漏、回查、返工与审阅成本。API 工作流已用 fake-local H2 fixture 证明 Main State 最后提交、防重放和 fresh Python 子进程文件恢复，但没有证明真实新主模型会话，也没有自动生成完整 Attempt Archive/Agent Trace。所有 H1/H2 Agent 间可见传递都应进入 Attempt Archive，完整 Trace 与主上下文加载解耦。真实执行、用量和执行端捕获由黄毅提供；路诚钺负责实名 actor、读取边界、Handoff/Trace 分级与结果评估，见 [ADR-0008](../decisions/0008-HANDOFF-TRANSFER-AUDIT.md)、[ADR-0009](../decisions/0009-FILE-FIRST-CONTINUITY-AND-SAFE-PAUSE.md)、[ADR-0011](../decisions/0011-RISK-TIERED-HANDOFF-AND-CONTROLLED-READS.md)与[ADR-0012](../decisions/0012-NAMED-OWNERSHIP-AND-REPLAYABLE-AGENT-TRACE.md)。
+截至 2026-08-16，已实现 Context Snapshot、Execution Receipt、规范化 Main State digest，以及 `context assess/checkpoint/resume-check`、`execution assess` 和 Agent Trace Schema/validator/CLI。Transfer Manifest/Audit 支持高风险或压缩后的 H2 交接，普通任务以 H1 Compact Handoff 为默认；后续仍必须比较两者的实际遗漏、回查、返工与审阅成本。API 工作流已用 evidence/H2 与 simulation/H1 fake-local fixture 证明 Main State 最后提交、防重放、fresh Python 子进程文件恢复和自动诚实 gapped Agent Trace；`M3-007`、`M3-008` 和 `M6-006` 已完成。这些测试没有证明真实新主模型会话或科研正确性。所有 H1/H2 Agent 间可见传递都应进入 Attempt Archive，完整 Trace 与主上下文加载解耦。真实执行和用量证据由黄毅提供；路诚钺负责实名 actor、读取边界、Handoff/Trace 分级与结果评估，见 [ADR-0008](../decisions/0008-HANDOFF-TRANSFER-AUDIT.md)、[ADR-0009](../decisions/0009-FILE-FIRST-CONTINUITY-AND-SAFE-PAUSE.md)、[ADR-0011](../decisions/0011-RISK-TIERED-HANDOFF-AND-CONTROLLED-READS.md)与[ADR-0012](../decisions/0012-NAMED-OWNERSHIP-AND-REPLAYABLE-AGENT-TRACE.md)。
 
 ### 实现内容
 
@@ -246,15 +246,15 @@ rwb context checkpoint
 
 新增项必须有真实消费者、预算、测试和退出条件。不得一次引入两个功能重叠的重量级工具。
 
-当前已完成三家非流式 Adapter、ToolChoice、本地工具参数校验、延迟凭据解析、非秘密配置探测、脱敏 live conformance runner、`explicit-slot-only` Model Pool、有界 fresh API tool-loop runner，以及明确 H2 evidence Task 的 fake-local 编译与文件关闭切片。不会继续铺更多提供商或构建复杂 Router；预算 guard 也不被描述为能取消 in-flight 调用。
+当前已完成三家非流式 Adapter、ToolChoice、本地工具参数校验、延迟凭据解析、非秘密配置探测、脱敏 live conformance runner、`explicit-slot-only` Model Pool、有界 fresh API tool-loop runner，以及 evidence/H2 + simulation/H1 双合同 fake-local 编译与文件关闭。后者包括受控 Tool Registry、Model Assignment、自动诚实 gapped Trace 与 H1/H2 fresh-process/commit-last。不会继续铺更多提供商或构建复杂 Router；预算 guard 也不被描述为能取消 in-flight 调用。
 
-截至 2026-08-15，黄毅维护 Provider Adapter、Task-to-API、live conformance、执行端 Agent Trace 捕获和 API 专用测试。已完成的 H2 fake-local 切片冻结合同与输入字节、限制只读工具、区分 Adapter ID 与规范 Provider 身份、持久化五种终态，并以 commit-last 与执行 intent 防止同 Attempt 静默重放；普通 H1/risk-tier closeout、自动 Trace、真实 Provider/Windows 和科研正确性仍未证明。路诚钺只维护冻结的 Mode、Skill Assignment、内容允许集、输出/Handoff/Trace 契约和评估接口；M6 不阻塞路诚钺的里程碑。
+截至 2026-08-16，黄毅维护 Provider Adapter、Task-to-API、live conformance、执行端 Agent Trace 捕获和 API 专用测试。evidence/H2 与 simulation/H1 离线路径已冻结双合同与输入字节、限制只读工具、区分 Adapter ID 与规范 Provider 身份、持久化五种终态，并以 commit-last 与执行 intent 防止同 Attempt 静默重放；自动 Trace 对不可得捕获诚实声明 gap。`M6-003` 仍为 `IN_PROGRESS`，唯一未跑的 API Gate 是真实 OpenAI 调用；当前机器缺少 `OPENAI_API_KEY` 和 `RWB_WORKER_MODEL`，所以 `M6-004` 保持 `EXTERNAL`/pending。离线结果不证明真实 Provider/Windows 行为或科研正确性。路诚钺只维护冻结的 Mode、Skill Assignment、内容允许集、输出/Handoff/Trace 契约和评估接口；M6 不阻塞路诚钺的里程碑。
 
 ## 11. M7：Mode–Skill 选择基线
 
-路诚钺的下一关键节点为 `K-MS-1`：先冻结实名 actor、Attempt Archive 与 Agent Trace fixture，再用现有 `evidence-synthesis` 与 `simulation` 建立 Mode 决策卡、6 个边界 Task fixtures、Task-to-Skill 选择矩阵、三个 accepted Skills 的适用性审计、一个 triage candidate 的去留决定，以及 H0/H1/H2 和内容读取成本对照。
+路诚钺维护的 `K-MS-1` 已实现但尚未关闭：现有 `evidence-synthesis` 与 `simulation` 已有 Mode 决策卡，8 组 Task/选择 fixtures 已形成 Task-to-Skill 选择矩阵，三个 accepted Skills 已完成适用性审计，一个 candidate 已得到 `continue-trial` 且不准入的决定，H0/H1/H2 已有 fixture-only 成本对照。
 
-完成后暂停评审。不得为了“覆盖完整”批量新增 Mode/Skill，也不得在本分支修改 API 执行实现。详细阶段和停止点见 [Mode–Skill 工作流计划](MODE_SKILL_WORKSTREAM_PLAN.md)。
+`M7-002..005` 已完成；`M7-006` 仍为进行中，因为还没有可比实际 H1/H2 Attempt 的运行时与成本证据。在该证据与节点评审完成前，`K-MS-1` 不关闭，项目仍为内部技术 alpha；不得为了“覆盖完整”新增 Mode/Skill，也不得在本分支修改 API 执行实现。详细阶段和停止点见 [Mode–Skill 工作流计划](MODE_SKILL_WORKSTREAM_PLAN.md)。
 
 ## 12. 开发分支与提交策略
 

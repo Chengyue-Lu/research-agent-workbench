@@ -12,17 +12,19 @@
 
 ```text
 ModelPool.bind(explicit_slot) -> ModelBinding
+freeze_model_assignment(selection + binding) -> Model Assignment
 capture_closeout_contracts(refs) -> frozen bytes + typed contracts
 compile_api_execution(Task, Profile, Assignment, binding, runtime limits) -> request + limits + tools
+ExecutionToolRegistry.build_tools(contract ∩ assignment) -> exact trusted tools
 ProviderRegistry.require(provider_adapter_id, request) -> ModelProvider + canonical capability identity
 IsolatedApiSessionRunner.run(request, limits) -> ApiSessionResult
 parse_api_task_output(result) -> admitted candidate or bounded failure
-closeout_api_attempt(...) -> immutable files + Main State commit
+closeout_api_attempt(...) -> immutable files + Agent Trace + Main State commit
 ```
 
 模型池固定为 `explicit-slot-only`。初始约定为一个 `primary`、一个 `worker` 和按需的少量 `specialist` 槽；允许多个槽暂时指向同一模型，也允许没有 specialist。不实现价格抓取、综合评分、LLM Router 或自动降级。
 
-每次 `run` 都是新隔离会话；Runner 不保存跨调用消息、不把 provider response ID 当状态，也不跨 Provider fallback。它在请求前、调用边界和响应后检查模型轮次、工具调用、每轮 fan-out、工具副作用类别、工具结果字符、单轮输出、累计 token/可得成本与 wall time，但不能取消已经在途的 Provider/工具调用。`max_parallel_tool_calls` 不代表并行执行，客户端 handler 当前串行。`K-API-2` 已用 fake Provider 打通明确 H2 evidence Task 从 Task/Assignment 到 Attempt/Handoff/Receipt/Main State 的文件关闭切片；普通 H1/risk-tier closeout、自动 Agent Trace 与真实 Provider/Windows 行为仍未验证。
+每次 `run` 都是新隔离会话；Runner 不保存跨调用消息、不把 provider response ID 当状态，也不跨 Provider fallback。它在请求前、调用边界和响应后检查模型轮次、工具调用、每轮 fan-out、工具副作用类别、工具结果字符、单轮输出、累计 token/可得成本与 wall time，但不能取消已经在途的 Provider/工具调用。`max_parallel_tool_calls` 不代表并行执行，客户端 handler 当前串行。`K-API-2` 已用 fake Provider 对 evidence/H2 与 simulation/H1 双合同路径打通 Task/Assignment/Model Assignment 到 Attempt/Handoff/Receipt/Agent Trace/Main State 的文件关闭；受控 Tool Registry 只按契约与 Assignment 精确交集构建工具，H1/H2 fresh-process/commit-last 和自动诚实 gapped Trace 均已离线验证。真实 Provider/Windows 行为仍未验证。
 
 Provider Adapter ID 是本地 Registry 的查找键（例如 `anthropic-messages`）；capability snapshot 与 `ModelResponse.provider` 使用规范 Provider 身份（例如 `anthropic`）。两者不得直接比较或互相冒充。Execution Receipt 的 `model_binding` 记录请求的 Adapter ID/模型，`model_usage.provider` 记录已核验的规范 Provider；这使幂等请求身份与实际执行身份可以分别审计。
 
@@ -86,6 +88,8 @@ Runtime Adapter 与 Model Provider Adapter 仍是两层：前者映射完整 Age
 非秘密配置只保存环境变量名称。`rwb providers probe` 默认不读取环境；真实 Windows 中可显式使用 `--check-environment` 做不回显值的存在性检查。
 
 `rwb providers conformance` 默认同样是零环境、零网络 dry-run。显式 live 执行使用固定合成内容、至多三次请求，并生成 `provider_conformance_report`；该报告可审计预算、停止原因和用量，但禁止保留正文、工具参数、凭据与 provider response ID。
+
+离线 conformance 和 fake Provider Gate 不等于真实 OpenAI 兼容证据。当前机器缺少 `OPENAI_API_KEY` 和 `RWB_WORKER_MODEL`，所以真实 Gate 必须保持 pending/not-run；不得把离线通过写成 live passed。
 
 ## 7. Tool Adapter
 
@@ -152,3 +156,4 @@ API 路径额外记录所选模型槽、请求模型和 Provider 实际返回模
 - 一个显式 `worker` 槽可以启动 fresh API session，完成一次有界客户端工具往返；
 - 未知槽、缺少模型、data-policy gap、工具预算和不可测 usage 会在本地失败或安全暂停；在途调用不被描述为可硬取消；
 - API Runner 不保存跨 Attempt 会话，也不自动更换 Provider/Model。
+- evidence/H2 与 simulation/H1 离线路径均使用 Model Assignment、受控 Tool Registry、commit-last/fresh-process 和诚实 gapped Trace；该验收不声称真实 API 或科研正确性。
