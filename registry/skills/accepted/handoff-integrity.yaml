@@ -4,7 +4,7 @@ version: 0.1.0
 kind: integrity
 description: Validates task handoffs, frozen inputs, Skill locks, transfer coverage, artifacts, outputs, and disclosed gaps.
 capabilities: [handoff-validation, handoff-transfer-audit, input-lock-validation, skill-lock-validation, artifact-reference-validation]
-applies_to_modes: [evidence-synthesis, simulation, experiment, theory, observational-statistics, cross-cutting]
+applies_to_modes: [evidence-synthesis, simulation]
 excludes: [scientific-correctness-review, human-gate-approval]
 required_tools: [file-read]
 optional_tools: []

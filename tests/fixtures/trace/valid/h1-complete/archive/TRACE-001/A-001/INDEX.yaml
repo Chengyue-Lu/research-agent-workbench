@@ -1,0 +1,62 @@
+schema_version: 0.1.0
+trace_id: TRACE-TRACE-001-A-001
+task_id: TRACE-001
+task_revision: 1
+attempt_id: A-001
+archive_root: archive/TRACE-001/A-001
+baseline: fixture-baseline
+owner_actor_id: main-agent
+owner: 路诚钺
+attempt_status: completed
+trace_status: frozen
+completeness: complete
+task_ref:
+  path: archive/TRACE-001/A-001/TASK.yaml
+  sha256: 74988b02eb1b08303866b1c08963d88c6e15fe8f325303d48f54c32218d1fe3e
+actors_ref:
+  path: archive/TRACE-001/A-001/ACTORS.yaml
+  sha256: f6625dc789656fec5b4cacc6ea363c7ae696327b4aa42029550ec8a766c88863
+read_allowlist:
+  - path: archive/TRACE-001/A-001/TASK.yaml
+    authorized_by: TASK
+write_scope:
+  - archive/TRACE-001/A-001/**
+tool_allowlist: []
+messages:
+  - message_id: MSG-0001
+    sequence: 1
+    path: archive/TRACE-001/A-001/messages/0001-main-agent-to-trace-reviewer-assignment.md
+    sha256: 575e5b1184d883632689088c35dec8245d4a164e6444d8705df0198253413755
+    content_sha256: 940d4aaf2c9bdaa023122a7b37e26db80cf829bf5545b66e67e56c89017c1e89
+    kind: assignment
+    sender_actor_id: main-agent
+    receiver_actor_ids: [trace-reviewer]
+    created_at: "2026-08-16T00:00:01Z"
+    capture_status: complete
+    attachment_refs: []
+  - message_id: MSG-0002
+    sequence: 2
+    path: archive/TRACE-001/A-001/messages/0002-trace-reviewer-to-main-agent-handoff.md
+    sha256: 7fe9a52421855f76093ecdb02d0c088ddd5804118967c37db9b052b6d2b5e3c2
+    content_sha256: 025685c1625884da40d08b07fdc41ec98cad9caa2aca95e9d62fe7391ad2adbd
+    kind: handoff
+    sender_actor_id: trace-reviewer
+    receiver_actor_ids: [main-agent]
+    created_at: "2026-08-16T00:00:06Z"
+    capture_status: complete
+    attachment_refs:
+      - path: archive/TRACE-001/A-001/handoffs/handoff.yaml
+        sha256: 2c86033fa0e22fb164f80f99a136864ce56bf1b31cd413c6024d8be486280fde
+    in_reply_to: MSG-0001
+event_ledger:
+  path: archive/TRACE-001/A-001/events.jsonl
+  sha256: 8eced183127474e15c590ee2025bb299141b3dae6fa4157724926e23fb1d22a9
+  event_count: 7
+tool_event_refs: []
+handoff_refs:
+  - path: archive/TRACE-001/A-001/handoffs/handoff.yaml
+    sha256: 2c86033fa0e22fb164f80f99a136864ce56bf1b31cd413c6024d8be486280fde
+decision_refs: []
+output_refs: []
+check_refs: []
+capture_gaps: []

@@ -14,8 +14,12 @@ from research_workbench.adapters.models import (
     ApiSessionResult,
     ApiSessionStatus,
     ContentBlock,
+    Capability,
+    DataPolicy,
     FinishReason,
     ModelResponse,
+    ModelAssignment,
+    ModelBinding,
 )
 from research_workbench.adapters.models.session import ToolFailureSummary
 from research_workbench.artifacts import hash_file
@@ -28,7 +32,7 @@ from research_workbench.execution.closeout import (
 )
 from research_workbench.io import load_document, write_yaml_exclusive
 from research_workbench.protocol import ProjectProtocol
-from research_workbench.tasks import TaskPacket
+from research_workbench.tasks import FileReference, TaskPacket
 
 
 SOURCE_ROOT = Path(__file__).resolve().parents[1]
@@ -218,6 +222,42 @@ class ApiExecutionCloseoutTests(unittest.TestCase):
         }
         values.update(overrides)
         return closeout_api_attempt(**values)
+
+    def test_direct_closeout_rejects_model_assignment_data_policy_drift(self) -> None:
+        assignment = ModelAssignment.create(
+            attempt_id="A-K2-DATA-POLICY-DRIFT",
+            task_id="EVID-001",
+            task_revision=1,
+            agent_profile_ref=FileReference(
+                PROFILE_REF, hash_file(self.root / PROFILE_REF)
+            ),
+            pool_id="direct-closeout-test",
+            pool_config_hash="0" * 64,
+            binding=ModelBinding(
+                slot_id="worker",
+                role="worker",
+                provider_adapter="fake-local",
+                model="worker-model",
+                capabilities=frozenset(
+                    {Capability.TEXT, Capability.TOOLS, Capability.STRUCTURED_OUTPUT}
+                ),
+                reasoning_effort=None,
+                specialties=(),
+            ),
+            selection_source="profile-default",
+            selection_reason="Exercise direct closeout policy revalidation.",
+            effective_data_policy=DataPolicy(local_only=False),
+            execution_limits=limits(),
+        )
+
+        with self.assertRaises(CloseoutError) as raised:
+            self.closeout(
+                "A-K2-DATA-POLICY-DRIFT",
+                model_assignment=assignment,
+            )
+
+        self.assertEqual("MODEL-ASSIGNMENT-DATA-POLICY", raised.exception.code)
+        self.assertFalse((self.root / "work").exists())
 
     def test_windows_reserved_attempt_id_is_rejected_before_staging(self) -> None:
         with self.assertRaises(CloseoutError) as raised:

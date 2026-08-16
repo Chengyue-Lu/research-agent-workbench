@@ -10,11 +10,13 @@ from typing import Any, Mapping, Sequence
 
 from research_workbench.adapters import CodexRuntimeAdapter
 from research_workbench.adapters.models import (
+    ModelAssignment,
     build_live_provider,
     conformance_plan,
     get_provider_adapter_config,
     load_model_pool,
     probe_provider_adapters,
+    run_openai_gate,
     run_provider_conformance,
 )
 from research_workbench.artifacts.integrity import hash_directory, hash_file, resolve_within_root
@@ -40,7 +42,13 @@ from research_workbench.context import (
     MainStatePacket,
     checkpoint_digest,
 )
-from research_workbench.contracts import ContractError, ContractRisk, RiskLevel, to_plain
+from research_workbench.contracts import (
+    ContractError,
+    ContractRisk,
+    RiskLevel,
+    is_path_safe_identifier,
+    to_plain,
+)
 from research_workbench.evaluation import assess_skill_evaluation
 from research_workbench.io import (
     iter_documents,
@@ -49,16 +57,23 @@ from research_workbench.io import (
     write_yaml_exclusive,
 )
 from research_workbench.observability import ExecutionReceipt, check_execution_receipt
-from research_workbench.protocol import ProjectProtocol
+from research_workbench.protocol import ProjectProtocol, ResearchModeRegistry
+from research_workbench.selection import (
+    assess_mode_card,
+    assess_mode_skill_selection,
+    load_mode_card,
+)
 from research_workbench.tasks import AttemptRecord, FileReference, HandoffPacket, TaskPacket
 from research_workbench.validation import (
     SchemaCatalog,
     check_claim_ceiling,
     check_handoff_against_task,
     check_references,
+    validate_agent_trace,
 )
 from research_workbench.validation.documents import (
     Severity,
+    ValidationIssue,
     infer_document_kind,
     load_and_validate,
 )
@@ -129,9 +144,20 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
                                 f"Skill package drift: {lock.identifier} expected={expected} actual={actual}",
                             )
                         )
+    elif kind == "model_assignment":
+        model_assignment = ModelAssignment.from_mapping(document)
+        references = (model_assignment.agent_profile_ref,)
+        if model_assignment.selection_ref is not None:
+            references += (model_assignment.selection_ref,)
     elif kind == "attempt":
         attempt = AttemptRecord.from_mapping(document)
         references = attempt.input_lock
+        if attempt.agent_trace_index_ref:
+            references += (attempt.agent_trace_index_ref,)
+        if attempt.model_assignment_ref:
+            references += (attempt.model_assignment_ref,)
+        if attempt.provider_conformance_ref:
+            references += (attempt.provider_conformance_ref,)
         path_only.extend(attempt.artifact_refs)
         if attempt.handoff_ref:
             path_only.append(attempt.handoff_ref)
@@ -139,19 +165,38 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
             path_only.append(attempt.execution_receipt_ref)
     elif kind == "main_state":
         state = MainStatePacket.from_mapping(document)
-        references = state.machine_state_refs
+        references = state.machine_state_refs + state.agent_trace_index_refs
         path_only.extend(item.ref for item in state.recent_handoffs)
         path_only.extend(state.artifact_index_refs)
         if state.previous_checkpoint_ref:
             path_only.append(state.previous_checkpoint_ref)
         if state.context_snapshot_ref:
             path_only.append(state.context_snapshot_ref)
+        for trace_ref in state.agent_trace_index_refs:
+            trace_path = resolve_within_root(root, trace_ref.path)
+            if trace_path is None or not trace_path.is_file():
+                continue
+            trace_document = load_document(trace_path)
+            if not isinstance(trace_document, Mapping) or trace_document.get("trace_status") != "frozen":
+                extra_risks.append(
+                    ContractRisk(
+                        "TRACE-NOT-FROZEN",
+                        RiskLevel.BLOCK,
+                        f"Main State references a Trace Index that is not frozen: {trace_ref.path}",
+                    )
+                )
     elif kind == "context_snapshot":
         snapshot = ContextSnapshot.from_mapping(document)
         if snapshot.handoff_audit_ref:
             path_only.append(snapshot.handoff_audit_ref)
     elif kind == "execution_receipt":
         receipt = ExecutionReceipt.from_mapping(document)
+        if receipt.agent_trace_index_ref:
+            references = (receipt.agent_trace_index_ref,)
+        if receipt.model_assignment_ref:
+            references += (receipt.model_assignment_ref,)
+        if receipt.provider_conformance_ref:
+            references += (receipt.provider_conformance_ref,)
         path_only.extend(
             (
                 receipt.attempt_ref,
@@ -165,6 +210,38 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
             path_only.append(receipt.context_snapshot_ref)
         if receipt.runtime.capability_snapshot_ref:
             path_only.append(receipt.runtime.capability_snapshot_ref)
+    elif kind == "openai_live_gate_report":
+        archive = document.get("archive")
+        if isinstance(archive, Mapping):
+            for key in ("intent_ref", "model_assignment_ref", "conformance_check_ref"):
+                reference = archive.get(key)
+                if isinstance(reference, Mapping):
+                    references += (FileReference.from_mapping(reference),)
+        conformance = document.get("conformance")
+        if isinstance(conformance, Mapping) and isinstance(
+            conformance.get("check_ref"), Mapping
+        ):
+            references += (FileReference.from_mapping(conformance["check_ref"]),)
+        e2e = document.get("e2e")
+        if isinstance(e2e, Mapping):
+            for key in ("main_state_ref", "receipt_ref", "trace_ref"):
+                reference = e2e.get(key)
+                if isinstance(reference, Mapping):
+                    references += (FileReference.from_mapping(reference),)
+            for reference in e2e.get("published_refs", []):
+                if isinstance(reference, Mapping):
+                    references += (FileReference.from_mapping(reference),)
+    elif kind == "openai_live_gate_decision":
+        for key in (
+            "gate_report_ref",
+            "conformance_check_ref",
+            "main_state_ref",
+            "receipt_ref",
+            "trace_ref",
+        ):
+            reference = document.get(key)
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
     elif kind == "deterministic_check_report":
         checker = document.get("checker")
         if isinstance(checker, Mapping) and isinstance(checker.get("source_ref"), Mapping):
@@ -214,6 +291,65 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
         admission = document.get("admission")
         if isinstance(admission, Mapping) and isinstance(admission.get("decision_ref"), str):
             path_only.append(str(admission["decision_ref"]))
+    elif kind == "mode_decision_card":
+        mode_ref = document.get("mode_ref")
+        if isinstance(mode_ref, Mapping):
+            references = (FileReference.from_mapping(mode_ref),)
+    elif kind == "mode_skill_selection":
+        task_ref = document.get("task_ref")
+        if isinstance(task_ref, Mapping):
+            references = (FileReference.from_mapping(task_ref),)
+        mode_assessment = document.get("mode_assessment")
+        if isinstance(mode_assessment, Mapping):
+            for item in mode_assessment.get("considered", []):
+                if isinstance(item, Mapping) and isinstance(item.get("card_ref"), Mapping):
+                    references += (FileReference.from_mapping(item["card_ref"]),)
+        read_plan = document.get("read_plan")
+        if isinstance(read_plan, Mapping):
+            for field in ("initial_content_refs", "selected_skill_content_refs"):
+                for item in read_plan.get(field, []):
+                    if isinstance(item, Mapping):
+                        references += (FileReference.from_mapping(item),)
+    elif kind == "skill_boundary_audit":
+        for item in document.get("evidence_refs", []):
+            if isinstance(item, Mapping):
+                references += (FileReference.from_mapping(item),)
+    elif kind == "handoff_tier_comparison":
+        for field in ("task_ref", "input_ref", "outcome_criteria_ref"):
+            item = document.get(field)
+            if isinstance(item, Mapping):
+                references += (FileReference.from_mapping(item),)
+        for arm in document.get("arms", []):
+            if not isinstance(arm, Mapping):
+                continue
+            for field in (
+                "archive_ref",
+                "returned_context_ref",
+                "handoff_ref",
+                "transfer_manifest_ref",
+                "transfer_audit_ref",
+            ):
+                item = arm.get(field)
+                if isinstance(item, Mapping):
+                    references += (FileReference.from_mapping(item),)
+            for item in arm.get("artifact_refs", []):
+                if isinstance(item, Mapping):
+                    references += (FileReference.from_mapping(item),)
+    elif kind == "simulation_vv_report":
+        references = tuple(
+            FileReference.from_mapping(item)
+            for item in document.get("input_lock", [])
+            if isinstance(item, Mapping)
+        )
+        checks = document.get("checks")
+        if isinstance(checks, Mapping):
+            for check in checks.values():
+                if isinstance(check, Mapping):
+                    path_only.extend(
+                        str(value)
+                        for value in check.get("evidence_refs", [])
+                        if isinstance(value, str)
+                    )
     risks = check_references(root, references)
     risks.extend(extra_risks)
     for relative in path_only:
@@ -250,6 +386,16 @@ def _validate(args: argparse.Namespace) -> int:
             if path in error_paths or not isinstance(document, Mapping):
                 continue
             try:
+                if infer_document_kind(document) == "agent_trace_index":
+                    bundle_issues = validate_agent_trace(path, root=Path(args.root).resolve())
+                    for issue in bundle_issues:
+                        print(
+                            f"{issue.severity.upper():7} {issue.code:20} "
+                            f"{issue.path}: {issue.message}"
+                        )
+                    errors += sum(issue.severity == Severity.ERROR for issue in bundle_issues)
+                    warnings += sum(issue.severity == Severity.WARNING for issue in bundle_issues)
+                    continue
                 reference_risks.extend(_document_reference_risks(document, Path(args.root).resolve()))
             except ContractError as exc:
                 print(f"ERROR   CONTRACT-INVALID     {path}: {exc}")
@@ -462,6 +608,34 @@ def _provider_conformance(args: argparse.Namespace) -> int:
     return 0 if report.status == "passed" else 1
 
 
+def _provider_openai_gate(args: argparse.Namespace) -> int:
+    if args.execute and not args.report:
+        raise ValueError("--execute requires --report")
+    report = run_openai_gate(
+        execute=args.execute,
+        root=args.root,
+        attempt_id=args.attempt_id,
+        accountable_owner=args.accountable_owner,
+        report_path=args.report,
+    )
+    if args.report:
+        target = Path(args.report)
+        suffix = target.suffix.lower()
+        if suffix not in {".json", ".yaml", ".yml"}:
+            raise ValueError("--report must use a .json, .yaml, or .yml suffix")
+        if suffix == ".json":
+            _write_text(target, json.dumps(report, ensure_ascii=False, indent=2) + "\n")
+        else:
+            _write_yaml(target, report)
+        print(
+            f"OpenAI live gate {report['status']}: reason={report['reason']} "
+            f"report={target}"
+        )
+    else:
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+    return 0 if report["status"] in {"passed", "not-run"} else 1
+
+
 def _model_pool_probe(args: argparse.Namespace) -> int:
     pool = load_model_pool(args.config)
     environment = os.environ if args.check_environment else None
@@ -499,7 +673,52 @@ def _task_resolve(args: argparse.Namespace) -> int:
     task = TaskPacket.from_mapping(_load_valid(args.task, "task_packet"))
     profile = AgentProfile.from_mapping(_load_valid(args.profile, "agent_profile"))
     try:
-        if args.registry:
+        if args.selection:
+            if args.skill or args.auto_select:
+                raise ValueError("--selection cannot be combined with --skill or --auto-select")
+            selection_document = _load_valid(args.selection, "mode_skill_selection")
+            registry_path = args.registry or str(DEFAULT_ACCEPTED)
+            assessment = assess_mode_skill_selection(
+                selection_document,
+                root=args.root,
+                mode_directory=args.mode_dir,
+                accepted_registry=registry_path,
+            )
+            blockers = [risk for risk in assessment.risks if risk.level == RiskLevel.BLOCK]
+            if blockers:
+                return _print_risks(assessment.risks)
+            skill_assessment = selection_document.get("skill_assessment")
+            if (
+                not assessment.ready
+                or not isinstance(skill_assessment, Mapping)
+                or skill_assessment.get("outcome") != "assign-skills"
+            ):
+                print(
+                    "BLOCK   SELECTION-NOT-EXECUTABLE     "
+                    "only a ready assign-skills Selection Decision can resolve a Skill Assignment"
+                )
+                return 1
+            selection_task_ref = FileReference.from_mapping(selection_document["task_ref"])
+            task_relative = _project_relative(args.task, Path(args.root).resolve(), "task")
+            if (
+                task_relative != selection_task_ref.path
+                or hash_file(Path(args.task)) != selection_task_ref.sha256
+            ):
+                print(
+                    "BLOCK   SELECTION-TASK-DRIFT         "
+                    "--task path/hash differs from the Selection Decision"
+                )
+                return 1
+            registry = AcceptedSkillRegistry.load(registry_path, project_root=args.root)
+            resolved = resolve_task_from_registry(task, profile, registry)
+            selected_ids = set(skill_assessment.get("selected_skill_ids", []))
+            if {lock.skill_id for lock in resolved.skill_lock} != selected_ids:
+                print(
+                    "BLOCK   SELECTION-ASSIGNMENT-DRIFT   "
+                    "resolved Skill locks differ from the Selection Decision"
+                )
+                return 1
+        elif args.registry:
             if args.skill:
                 raise ValueError("use either --registry or --skill, not both")
             registry = AcceptedSkillRegistry.load(args.registry, project_root=args.root)
@@ -526,6 +745,228 @@ def _task_resolve(args: argparse.Namespace) -> int:
     else:
         print(json.dumps(document, ensure_ascii=False, indent=2))
     return 0
+
+
+def _modes_cards(args: argparse.Namespace) -> int:
+    root = Path(args.root).resolve()
+    registry = ResearchModeRegistry.load(args.mode_dir, project_root=root)
+    card_directory = Path(args.card_dir)
+    if not card_directory.is_absolute():
+        card_directory = root / card_directory
+    card_directory = card_directory.resolve()
+    try:
+        card_directory.relative_to(root)
+    except ValueError as exc:
+        raise ValueError("Mode card directory escapes the project root") from exc
+    if not card_directory.is_dir():
+        raise ValueError(f"Mode card directory does not exist: {card_directory}")
+    records: list[dict[str, object]] = []
+    risks: list[ContractRisk] = []
+    card_paths = sorted((*card_directory.glob("*.yaml"), *card_directory.glob("*.yml")))
+    for path in card_paths:
+        _load_valid(path, "mode_decision_card")
+        card = load_mode_card(path)
+        card_risks = list(assess_mode_card(card, registry=registry, root=root))
+        risks.extend(card_risks)
+        records.append(
+            {
+                "card_id": card.card_id,
+                "mode_id": card.mode_id,
+                "mode_version": card.mode_version,
+                "path": path.relative_to(root).as_posix(),
+                "status": "valid" if not any(risk.level == RiskLevel.BLOCK for risk in card_risks) else "invalid",
+            }
+        )
+    if len(records) != len(registry.entries):
+        risks.append(
+            ContractRisk(
+                "MODE-CARD-COVERAGE",
+                RiskLevel.BLOCK,
+                "Mode card count must equal the registered Mode count",
+            )
+        )
+    document = {
+        "mode_registry_digest": registry.digest,
+        "registered_modes": len(registry.entries),
+        "cards": records,
+        "errors": sum(risk.level == RiskLevel.BLOCK for risk in risks),
+        "warnings": sum(risk.level == RiskLevel.WARNING for risk in risks),
+    }
+    if args.json:
+        print(json.dumps(document, ensure_ascii=False, sort_keys=True))
+    else:
+        for risk in risks:
+            print(f"{risk.level.upper():7} {risk.code:28} {risk.message}")
+        print(
+            f"mode_digest={registry.digest} modes={len(registry.entries)} "
+            f"cards={len(records)} errors={document['errors']} warnings={document['warnings']}"
+        )
+    return 1 if document["errors"] else 0
+
+
+def _task_select(args: argparse.Namespace) -> int:
+    decision = _load_valid(args.decision, "mode_skill_selection")
+    assessment = assess_mode_skill_selection(
+        decision,
+        root=args.root,
+        mode_directory=args.mode_dir,
+        accepted_registry=args.registry,
+    )
+    errors = sum(risk.level == RiskLevel.BLOCK for risk in assessment.risks)
+    warnings = sum(risk.level == RiskLevel.WARNING for risk in assessment.risks)
+    if args.json:
+        print(
+            json.dumps(
+                {
+                    "selection_id": decision["selection_id"],
+                    "verdict": assessment.verdict,
+                    "ready": assessment.ready,
+                    "errors": errors,
+                    "warnings": warnings,
+                    "risks": [
+                        {"level": risk.level, "code": risk.code, "message": risk.message}
+                        for risk in assessment.risks
+                    ],
+                },
+                ensure_ascii=False,
+                sort_keys=True,
+            )
+        )
+    else:
+        for risk in assessment.risks:
+            print(f"{risk.level.upper():7} {risk.code:28} {risk.message}")
+        print(
+            f"selection={decision['selection_id']} verdict={assessment.verdict} "
+            f"ready={str(assessment.ready).lower()} errors={errors} warnings={warnings}"
+        )
+    return 1 if errors else 0
+
+
+def _discover_trace_link_documents(
+    index_path: Path,
+    *,
+    root: Path,
+    attempt_path: str | None,
+    receipt_path: str | None,
+    state_path: str | None,
+) -> tuple[dict[str, str | Path | None], list[ValidationIssue]]:
+    """Find unambiguous Trace link documents without leaving ``root``."""
+
+    paths: dict[str, str | Path | None] = {
+        "attempt_path": attempt_path,
+        "receipt_path": receipt_path,
+        "state_path": state_path,
+    }
+    if all(value is not None for value in paths.values()):
+        return paths, []
+
+    resolved_index = index_path.resolve()
+    try:
+        resolved_index.relative_to(root)
+    except ValueError:
+        # The bundle validator reports the target escape without reading it.
+        return paths, []
+
+    try:
+        loaded_index = load_document(resolved_index)
+    except (OSError, ValueError):
+        # Parsing and missing-file diagnostics remain owned by the bundle validator.
+        return paths, []
+    if not isinstance(loaded_index, Mapping):
+        return paths, []
+
+    candidate_directories = [resolved_index.parent]
+    task_id = loaded_index.get("task_id")
+    attempt_id = loaded_index.get("attempt_id")
+    if is_path_safe_identifier(task_id) and is_path_safe_identifier(attempt_id):
+        candidate_directories.append(root / "work" / str(task_id) / str(attempt_id))
+
+    filenames = {
+        "attempt_path": "attempt.yaml",
+        "receipt_path": "execution-receipt.yaml",
+        "state_path": "main-state.yaml",
+    }
+    issues: list[ValidationIssue] = []
+    for field, filename in filenames.items():
+        if paths[field] is not None:
+            continue
+        candidates: dict[Path, Path] = {}
+        escaped: set[Path] = set()
+        for directory in candidate_directories:
+            raw_candidate = directory / filename
+            resolved_candidate = raw_candidate.resolve()
+            try:
+                resolved_candidate.relative_to(root)
+            except ValueError:
+                escaped.add(raw_candidate)
+                continue
+            if resolved_candidate.is_file():
+                candidates.setdefault(resolved_candidate, raw_candidate)
+        for escaped_candidate in sorted(escaped, key=str):
+            issues.append(
+                ValidationIssue(
+                    resolved_index,
+                    "TRACE-REF-OUTSIDE-ROOT",
+                    f"automatic {filename} candidate resolves outside root: {escaped_candidate}",
+                )
+            )
+        if len(candidates) == 1:
+            paths[field] = next(iter(candidates))
+        elif len(candidates) > 1:
+            rendered = ", ".join(
+                candidate.relative_to(root).as_posix() for candidate in sorted(candidates, key=str)
+            )
+            issues.append(
+                ValidationIssue(
+                    resolved_index,
+                    "TRACE-LINK-AMBIGUOUS",
+                    f"multiple {filename} candidates were found: {rendered}",
+                )
+            )
+    return paths, issues
+
+
+def _trace_validate(args: argparse.Namespace) -> int:
+    root = Path(args.root).resolve()
+    target = Path(args.target)
+    if not target.is_absolute():
+        target = root / target
+    if target.is_dir():
+        target = target / "INDEX.yaml"
+    link_paths, discovery_issues = _discover_trace_link_documents(
+        target,
+        root=root,
+        attempt_path=args.attempt,
+        receipt_path=args.receipt,
+        state_path=args.state,
+    )
+    issues = discovery_issues + validate_agent_trace(
+        target,
+        root=root,
+        attempt_path=link_paths["attempt_path"],
+        receipt_path=link_paths["receipt_path"],
+        state_path=link_paths["state_path"],
+    )
+    for issue in issues:
+        print(f"{issue.severity.upper():7} {issue.code:32} {issue.path}: {issue.message}")
+    errors = sum(issue.severity == Severity.ERROR for issue in issues)
+    warnings = sum(issue.severity == Severity.WARNING for issue in issues)
+    try:
+        resolved_target = target.resolve()
+        resolved_target.relative_to(root)
+        loaded_index = load_document(resolved_target)
+    except (OSError, ValueError):
+        loaded_index = {}
+    index = loaded_index if isinstance(loaded_index, Mapping) else {}
+    messages = index.get("messages", [])
+    ledger = index.get("event_ledger")
+    event_count = ledger.get("event_count", 0) if isinstance(ledger, Mapping) else 0
+    print(
+        f"trace={index.get('trace_id', 'unknown')} messages={len(messages) if isinstance(messages, list) else 0} "
+        f"events={event_count} errors={errors} warnings={warnings} "
+        f"completeness={index.get('completeness', 'unknown')}"
+    )
+    return 1 if errors else 0
 
 
 def _runtime_codex_validate(args: argparse.Namespace) -> int:
@@ -935,6 +1376,11 @@ def _context_checkpoint(args: argparse.Namespace) -> int:
         for item in base.get("machine_state_refs", [])
         if isinstance(item, Mapping) and isinstance(item.get("path"), str)
     }
+    trace_refs_by_path: dict[str, Mapping[str, Any]] = {
+        str(item.get("path")): item
+        for item in base.get("agent_trace_index_refs", [])
+        if isinstance(item, Mapping) and isinstance(item.get("path"), str)
+    }
 
     def freeze_machine_state(raw_path: str | Path) -> None:
         path = Path(raw_path)
@@ -944,11 +1390,24 @@ def _context_checkpoint(args: argparse.Namespace) -> int:
             raise ValueError(f"machine state reference does not exist: {relative}")
         machine_refs_by_path[relative] = {"path": relative, "sha256": hash_file(resolved)}
 
+    def freeze_agent_trace(raw_path: str | Path) -> None:
+        path = Path(raw_path)
+        relative = _project_relative(path, root, "Agent Trace index")
+        resolved = resolve_within_root(root, relative)
+        if resolved is None or not resolved.is_file():
+            raise ValueError(f"Agent Trace index does not exist: {relative}")
+        trace_document = _load_valid(resolved, "agent_trace_index")
+        if trace_document.get("trace_status") != "frozen":
+            raise ValueError(f"Agent Trace index must be frozen before checkpoint: {relative}")
+        trace_refs_by_path[relative] = {"path": relative, "sha256": hash_file(resolved)}
+
     freeze_machine_state(protocol_path)
     if args.snapshot:
         freeze_machine_state(args.snapshot)
     for raw_ref in args.machine_state_ref:
         freeze_machine_state(raw_ref)
+    for raw_ref in args.agent_trace_index_ref:
+        freeze_agent_trace(raw_ref)
 
     document = {
         "schema_version": "0.1.0",
@@ -968,6 +1427,10 @@ def _context_checkpoint(args: argparse.Namespace) -> int:
         "rollover_reason": args.rollover_reason,
         "created_at": args.created_at or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
     }
+    if trace_refs_by_path:
+        document["agent_trace_index_refs"] = [
+            trace_refs_by_path[path] for path in sorted(trace_refs_by_path)
+        ]
     if previous_ref:
         document["previous_checkpoint_ref"] = previous_ref
     if snapshot_ref:
@@ -1022,6 +1485,15 @@ def build_parser() -> argparse.ArgumentParser:
     schema_show.add_argument("--root")
     schema_show.add_argument("--version", default="0.1.0")
     schema_show.set_defaults(handler=_schema_show)
+
+    modes = subparsers.add_parser("modes", help="inspect registered Research Mode decision cards")
+    mode_subparsers = modes.add_subparsers(dest="mode_command", required=True)
+    mode_cards = mode_subparsers.add_parser("cards", help="validate and list Mode decision cards")
+    mode_cards.add_argument("--root", default=".")
+    mode_cards.add_argument("--mode-dir", default="registry/modes")
+    mode_cards.add_argument("--card-dir", default="registry/modes/cards")
+    mode_cards.add_argument("--json", action="store_true")
+    mode_cards.set_defaults(handler=_modes_cards)
 
     skills = subparsers.add_parser("skills", help="inspect the skill candidate registry")
     skill_subparsers = skills.add_subparsers(dest="skills_command", required=True)
@@ -1105,6 +1577,26 @@ def build_parser() -> argparse.ArgumentParser:
     )
     provider_conformance.add_argument("--output", help="new YAML report path; required with --execute")
     provider_conformance.set_defaults(handler=_provider_conformance)
+    provider_openai_gate = provider_subparsers.add_parser(
+        "openai-gate",
+        help="run the fixed OpenAI Responses live gate or emit deterministic not-run evidence",
+    )
+    provider_openai_gate.add_argument(
+        "--execute",
+        action="store_true",
+        help="authorize the fixed live requests; without this flag no environment or network is used",
+    )
+    provider_openai_gate.add_argument(
+        "--report",
+        help="atomically create a redacted JSON or YAML report; defaults to JSON on stdout",
+    )
+    provider_openai_gate.add_argument("--root", help="project root containing the public Gate fixture")
+    provider_openai_gate.add_argument("--attempt-id", help="new path-safe Attempt identifier")
+    provider_openai_gate.add_argument(
+        "--accountable-owner",
+        help="real person accountable for the live Gate Attempt and Agent Trace",
+    )
+    provider_openai_gate.set_defaults(handler=_provider_openai_gate)
 
     models = subparsers.add_parser("models", help="inspect the explicit local model pool")
     model_subparsers = models.add_subparsers(dest="models_command", required=True)
@@ -1129,9 +1621,20 @@ def build_parser() -> argparse.ArgumentParser:
     task_resolve.add_argument("--skill", action="append", default=[])
     task_resolve.add_argument("--registry")
     task_resolve.add_argument("--root", default=".")
+    task_resolve.add_argument("--selection")
+    task_resolve.add_argument("--mode-dir", default="registry/modes")
     task_resolve.add_argument("--auto-select", action="store_true")
     task_resolve.add_argument("--output")
     task_resolve.set_defaults(handler=_task_resolve)
+    task_select = task_subparsers.add_parser(
+        "select", help="validate a replayable Mode-Skill Selection Decision"
+    )
+    task_select.add_argument("decision")
+    task_select.add_argument("--root", default=".")
+    task_select.add_argument("--mode-dir", default="registry/modes")
+    task_select.add_argument("--registry", default=str(DEFAULT_ACCEPTED))
+    task_select.add_argument("--json", action="store_true")
+    task_select.set_defaults(handler=_task_select)
 
     runtime = subparsers.add_parser("runtime", help="inspect native runtime mappings")
     runtime_subparsers = runtime.add_subparsers(dest="runtime_command", required=True)
@@ -1165,6 +1668,16 @@ def build_parser() -> argparse.ArgumentParser:
     handoff_audit.add_argument("audit")
     handoff_audit.add_argument("--root", default=".")
     handoff_audit.set_defaults(handler=_handoff_audit_transfer)
+
+    trace = subparsers.add_parser("trace", help="validate a replayable Agent Trace bundle")
+    trace_subparsers = trace.add_subparsers(dest="trace_command", required=True)
+    trace_validate = trace_subparsers.add_parser("validate")
+    trace_validate.add_argument("target", help="Agent Trace INDEX.yaml or its Attempt archive directory")
+    trace_validate.add_argument("--root", default=".")
+    trace_validate.add_argument("--attempt")
+    trace_validate.add_argument("--receipt")
+    trace_validate.add_argument("--state")
+    trace_validate.set_defaults(handler=_trace_validate)
 
     reference = subparsers.add_parser("reference", help="check live file and hash references")
     reference_subparsers = reference.add_subparsers(dest="reference_command", required=True)
@@ -1232,6 +1745,7 @@ def build_parser() -> argparse.ArgumentParser:
         default="active",
     )
     checkpoint.add_argument("--machine-state-ref", action="append", default=[])
+    checkpoint.add_argument("--agent-trace-index-ref", action="append", default=[])
     checkpoint.add_argument("--capture-git-head", action="store_true")
     checkpoint.add_argument("--rollover-reason", default="manual checkpoint")
     checkpoint.add_argument(

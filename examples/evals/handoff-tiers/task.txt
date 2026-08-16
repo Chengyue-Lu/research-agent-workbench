@@ -1,0 +1,1 @@
+Summarize one bounded structural result and preserve its limitation.

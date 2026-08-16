@@ -1,0 +1,32 @@
+schema_version: 0.1.0
+task_id: KMS-001
+goal: Extract traceable Evidence from one bounded source without performing final synthesis.
+question_refs: [Q-001@1]
+active_modes: [evidence-synthesis]
+required_capabilities: [evidence-extraction, citation-location]
+required_skills: [literature-evidence-extraction]
+forbidden_skills: [final-synthesis]
+agent_profile: evidence-scout
+input_refs:
+  - path: examples/fixtures/paper-001.txt
+    sha256: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
+write_scope: [work/KMS-001/**]
+required_outputs: [evidence-record, handoff-transfer-manifest, handoff-packet]
+permissions:
+  filesystem: worktree-write
+  network: forbidden
+  external_write: false
+  allowed_roots: [work/KMS-001]
+delegation: {allowed: false}
+budget: {max_turns: 8, max_output_tokens: 1600}
+atomic_boundary: One bounded source is converted into traceable Evidence and a claim-limited Handoff.
+completion_checks:
+  - Evidence locations and the source hash pass deterministic checks.
+safe_pause_conditions:
+  - A required source or human source-weight decision is unavailable.
+stop_conditions: [required_outputs_complete, source_boundary_exhausted, human_judgment_required]
+stale_if: [any_input_hash_changes]
+handoff_policy:
+  require_transfer_manifest: true
+  semantic_review: risk-triggered
+  minimum_semantic_samples: 1

@@ -1,0 +1,30 @@
+schema_version: 0.1.0
+task_id: KMS-003
+goal: Compare claims from a bounded paper with live computational run evidence without mixing their provenance.
+question_refs: [Q-001@1]
+active_modes: [evidence-synthesis, simulation]
+required_capabilities: [evidence-extraction, convergence-analysis]
+required_skills: []
+forbidden_skills: []
+agent_profile: coordinator
+input_refs:
+  - path: examples/fixtures/paper-001.txt
+    sha256: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
+  - path: examples/fixtures/run-manifest.txt
+    sha256: 6079913f340dd071404c96cf0a9a041f1f59798a7cf448acf6e698e039aa0a14
+write_scope: [tasks/KMS-003/**]
+required_outputs: [task-packet]
+permissions:
+  filesystem: worktree-write
+  network: forbidden
+  external_write: false
+  allowed_roots: [tasks/KMS-003]
+delegation: {allowed: false}
+budget: {max_turns: 4, max_output_tokens: 1200}
+atomic_boundary: The mixed request is split into provenance-preserving child Task contracts.
+completion_checks:
+  - Each child Task has one evidence basis and an explicit Skill decision.
+safe_pause_conditions:
+  - The requested comparison cannot preserve separate Claim support.
+stop_conditions: [split_contracts_complete, human_judgment_required]
+stale_if: [any_input_hash_changes]

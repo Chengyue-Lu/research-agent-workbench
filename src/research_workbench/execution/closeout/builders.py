@@ -9,7 +9,7 @@ from typing import Any
 
 from research_workbench.adapters.models import ApiSessionLimits, ApiSessionResult
 from research_workbench.artifacts.integrity import hash_file
-from research_workbench.capability import AgentProfile, ResolvedTask
+from research_workbench.capability import ResolvedTask
 from research_workbench.context import (
     CONTEXT_METRIC_NAMES,
     ContextBudgetEstimate,
@@ -21,7 +21,7 @@ from research_workbench.context import (
 from research_workbench.contracts import RiskLevel, is_path_safe_identifier
 from research_workbench.observability import ExecutionReceipt
 from research_workbench.protocol import ProjectProtocol
-from research_workbench.tasks import AttemptRecord, HandoffPacket, TaskPacket
+from research_workbench.tasks import AttemptRecord, FileReference, HandoffPacket, TaskPacket
 from research_workbench.validation import check_claim_ceiling
 
 from .documents import _load_mapping, _snapshot_document, _unique, _validate_schema
@@ -37,7 +37,7 @@ def _prepare_artifacts(
     status: str,
 ) -> tuple[dict[str, dict[str, Any]], dict[str, str]]:
     if output is None:
-        if status == "completed":
+        if status in {"completed", "stage-completed"}:
             raise CloseoutError("CLOSEOUT-OUTPUT-MISSING", "completed Attempt has no API output")
         return {}, {}
     raw_artifacts = output.get("artifacts")
@@ -76,9 +76,9 @@ def _prepare_artifacts(
         value if isinstance(value, str) else str(value.get("contract", ""))
         for value in task.required_outputs
     }
-    if status == "completed" and "evidence-record" in required and evidence_count == 0:
+    if status in {"completed", "stage-completed"} and "evidence-record" in required and evidence_count == 0:
         raise CloseoutError("CLOSEOUT-EVIDENCE-MISSING", "Task requires an Evidence record")
-    if status == "completed" and not documents:
+    if status in {"completed", "stage-completed"} and not documents:
         raise CloseoutError("CLOSEOUT-ARTIFACT-MISSING", "completed Attempt has no research artifacts")
     return documents, by_id
 
@@ -158,7 +158,7 @@ def _build_handoff(
     output: Mapping[str, Any] | None,
     artifact_refs: tuple[str, ...],
     manifest_ref: str | None,
-    audit_ref: str | None,
+    validation_refs: tuple[str, ...],
     receipt_ref: str,
     operational_failure: Mapping[str, Any] | None,
     next_action: str,
@@ -207,7 +207,7 @@ def _build_handoff(
         "skill_assignment_ref": assignment_ref,
         "result": result,
         "artifact_refs": list(artifact_refs),
-        "validation_refs": [audit_ref] if audit_ref else [],
+        "validation_refs": list(validation_refs),
         "limitations": limitations,
         "conflicts": conflicts,
         "unresolved": unresolved,
@@ -276,6 +276,11 @@ def _build_attempt(
     artifact_refs: tuple[str, ...],
     handoff_ref: str,
     receipt_ref: str,
+    agent_trace_index_ref: FileReference | None,
+    model_assignment_ref: FileReference | None,
+    provider_conformance_ref: FileReference | None,
+    handoff_tier: str,
+    handoff_tier_reasons: tuple[str, ...],
     operational_failure: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
     document: dict[str, Any] = {
@@ -293,9 +298,29 @@ def _build_attempt(
         "execution_receipt_ref": receipt_ref,
         "artifact_refs": list(artifact_refs),
         "handoff_ref": handoff_ref,
+        "handoff_tier": handoff_tier,
+        "handoff_tier_reasons": list(handoff_tier_reasons),
     }
     if operational_failure:
         document["failure"] = dict(operational_failure)
+    if agent_trace_index_ref is not None:
+        document["agent_trace_index_ref"] = _file_ref(
+            agent_trace_index_ref.path,
+            agent_trace_index_ref.sha256,
+            agent_trace_index_ref.revision,
+        )
+    if model_assignment_ref is not None:
+        document["model_assignment_ref"] = _file_ref(
+            model_assignment_ref.path,
+            model_assignment_ref.sha256,
+            model_assignment_ref.revision,
+        )
+    if provider_conformance_ref is not None:
+        document["provider_conformance_ref"] = _file_ref(
+            provider_conformance_ref.path,
+            provider_conformance_ref.sha256,
+            provider_conformance_ref.revision,
+        )
     _validate_schema("attempt", document)
     AttemptRecord.from_mapping(document)
     return document
@@ -306,6 +331,12 @@ def _build_receipt(
     task: TaskPacket,
     profile_ref: str,
     assignment_ref: str,
+    model_assignment_ref: FileReference | None,
+    provider_conformance_ref: FileReference | None,
+    execution_contract: str | None,
+    agent_trace_index_ref: FileReference | None,
+    handoff_tier: str,
+    handoff_tier_reasons: tuple[str, ...],
     attempt_ref: str,
     context_ref: str,
     status: str,
@@ -409,7 +440,13 @@ def _build_receipt(
         "started_at": started_at,
         "finished_at": finished_at,
         "status": status,
-        "completion_claim": "contract-satisfied" if status == "completed" else "execution-only",
+        "completion_claim": (
+            "contract-satisfied"
+            if status in {"completed", "stage-completed"}
+            else "execution-only"
+        ),
+        "handoff_tier": handoff_tier,
+        "handoff_tier_reasons": list(handoff_tier_reasons),
         "runtime": {
             "name": "isolated-api-session-runner",
             "version": "0.1.0",
@@ -431,7 +468,7 @@ def _build_receipt(
         },
         "trace": {
             "mode": "minimal",
-            "external": external_provider,
+            "external": False,
             "sensitive_data_detected": False,
             "redactions_applied": 0,
         },
@@ -439,6 +476,26 @@ def _build_receipt(
         "validation_refs": list(validation_refs),
         "limitations": limitations,
     }
+    if model_assignment_ref is not None:
+        document["model_assignment_ref"] = _file_ref(
+            model_assignment_ref.path,
+            model_assignment_ref.sha256,
+            model_assignment_ref.revision,
+        )
+    if provider_conformance_ref is not None:
+        document["provider_conformance_ref"] = _file_ref(
+            provider_conformance_ref.path,
+            provider_conformance_ref.sha256,
+            provider_conformance_ref.revision,
+        )
+    if execution_contract is not None:
+        document["execution_contract"] = execution_contract
+    if agent_trace_index_ref is not None:
+        document["agent_trace_index_ref"] = _file_ref(
+            agent_trace_index_ref.path,
+            agent_trace_index_ref.sha256,
+            agent_trace_index_ref.revision,
+        )
     _validate_schema("execution_receipt", document)
     ExecutionReceipt.from_mapping(document)
     return document
@@ -527,9 +584,12 @@ def _build_main_state(
     main_context_ref: str,
     artifact_refs: tuple[str, ...],
     machine_refs: tuple[str, ...],
+    agent_trace_index_ref: FileReference | None,
+    source_refs: tuple[str, ...] = (),
     created_at: str,
     operational_failure: Mapping[str, Any] | None,
     previous_main_state_ref: str | None,
+    provider_conformance_ref: FileReference | None = None,
 ) -> dict[str, Any]:
     previous: Mapping[str, Any] = {}
     if previous_main_state_ref:
@@ -551,13 +611,23 @@ def _build_main_state(
     recent.append(
         {
             "ref": handoff_ref,
-            "disposition": "accepted-closeout" if status == "completed" else f"{status}-recoverable",
+            "disposition": (
+                "accepted-closeout"
+                if status == "completed"
+                else "accepted-stage-closeout"
+                if status == "stage-completed"
+                else f"{status}-recoverable"
+            ),
         }
     )
     risks = list(previous.get("open_risks", []))
     if operational_failure and operational_failure["code"] not in risks:
         risks.append(str(operational_failure["code"]))
-    if status == "completed" and "API-LIVE-CONFORMANCE-NOT-RUN" not in risks:
+    if (
+        status in {"completed", "stage-completed"}
+        and provider_conformance_ref is None
+        and "API-LIVE-CONFORMANCE-NOT-RUN" not in risks
+    ):
         risks.append("API-LIVE-CONFORMANCE-NOT-RUN")
     candidate_ref_paths = _unique(
         [
@@ -565,6 +635,7 @@ def _build_main_state(
             task_ref,
             profile_ref,
             assignment_ref,
+            *source_refs,
             *(reference.path for reference in task.input_refs),
             *machine_refs,
             *( [previous_main_state_ref] if previous_main_state_ref else [] ),
@@ -579,7 +650,13 @@ def _build_main_state(
         "schema_version": "0.1.0",
         "checkpoint_id": f"MS-{attempt_id}",
         "continuity_status": (
-            "active" if status == "completed" else "safe-paused" if status == "safe-paused" else "blocked"
+            "active"
+            if status == "completed"
+            else "stage-completed"
+            if status == "stage-completed"
+            else "safe-paused"
+            if status == "safe-paused"
+            else "blocked"
         ),
         "project_protocol_ref": f"{protocol_ref}@{protocol.revision}",
         "current_questions": list(protocol.question_refs),
@@ -597,6 +674,17 @@ def _build_main_state(
             {"path": relative, "sha256": hash_file(_stage_path(stage_root, relative))}
             for relative in ref_paths
         ],
+        "agent_trace_index_refs": (
+            [
+                _file_ref(
+                    agent_trace_index_ref.path,
+                    agent_trace_index_ref.sha256,
+                    agent_trace_index_ref.revision,
+                )
+            ]
+            if agent_trace_index_ref is not None
+            else []
+        ),
         "rollover_reason": "A fresh main session is required to prove file-only recovery after API closeout.",
         "created_at": created_at,
         "context_snapshot_ref": main_context_ref,

@@ -1,0 +1,28 @@
+schema_version: 0.1.0
+task_id: KMS-006
+goal: Assess new physical experiment measurements and issue an experimentally supported Claim.
+question_refs: [Q-001@1]
+active_modes: []
+required_capabilities: [experimental-evidence-assessment]
+required_skills: []
+forbidden_skills: []
+agent_profile: coordinator
+input_refs:
+  - path: examples/fixtures/paper-001.txt
+    sha256: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
+write_scope: [tasks/KMS-006/**]
+required_outputs: [decision-brief]
+permissions:
+  filesystem: worktree-write
+  network: forbidden
+  external_write: false
+  allowed_roots: [tasks/KMS-006]
+delegation: {allowed: false}
+budget: {max_turns: 2, max_output_tokens: 600}
+atomic_boundary: The unsupported method boundary is recorded without creating a Mode package.
+completion_checks:
+  - No planned Mode classification is treated as a registered Mode.
+safe_pause_conditions:
+  - A real case and Mode admission evidence are unavailable.
+stop_conditions: [human_judgment_required, unsupported_mode_recorded]
+stale_if: [any_input_hash_changes]

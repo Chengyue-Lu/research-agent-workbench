@@ -13,7 +13,7 @@ import time
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass, replace
 from enum import StrEnum
-from typing import Any
+from typing import Any, Protocol
 
 from research_workbench.adapters.models.base import validate_response_contract
 from research_workbench.adapters.models.port import (
@@ -51,6 +51,7 @@ class ApiSessionLimits:
     max_total_tokens: int | None = None
     max_provider_reported_cost: float | None = None
     allowed_tool_side_effects: frozenset[str] = frozenset({"read-only"})
+    max_compute_values_per_call: int = 256
 
     def __post_init__(self) -> None:
         positive_integers = {
@@ -61,6 +62,12 @@ class ApiSessionLimits:
         for field, value in positive_integers.items():
             if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
                 raise ValueError(f"{field} must be a positive integer")
+        if (
+            isinstance(self.max_compute_values_per_call, bool)
+            or not isinstance(self.max_compute_values_per_call, int)
+            or self.max_compute_values_per_call <= 0
+        ):
+            raise ValueError("max_compute_values_per_call must be a positive integer")
         for field, value in {
             "max_tool_calls": self.max_tool_calls,
             "max_parallel_tool_calls": self.max_parallel_tool_calls,
@@ -91,7 +98,7 @@ class ApiSessionLimits:
             raise ValueError(
                 "max_provider_reported_cost must be a non-negative finite number when supplied"
             )
-        supported_side_effects = {"read-only", "local-write", "external-write"}
+        supported_side_effects = {"none", "read-only", "local-write", "external-write"}
         unknown_side_effects = sorted(set(self.allowed_tool_side_effects) - supported_side_effects)
         if unknown_side_effects:
             raise ValueError("unknown allowed tool side effects: " + ", ".join(unknown_side_effects))
@@ -102,6 +109,52 @@ class ClientTool:
     definition: ToolDefinition
     execute: Callable[[Mapping[str, Any]], object]
     side_effect: str = "read-only"
+    trace_result: bool = False
+
+
+class ApiSessionObserver(Protocol):
+    """Sanitized lifecycle observer for one isolated session.
+
+    The runner exposes only boundary identities and counts.  It never passes
+    prompts, response bodies, tool arguments/results, native call IDs,
+    credentials, exception messages, or model reasoning to the observer.
+    Observer failures propagate so execution fails closed.
+    """
+
+    def provider_call_started(
+        self,
+        *,
+        call_number: int,
+        provider_identity: str,
+        model: str,
+    ) -> None: ...
+
+    def provider_call_finished(
+        self,
+        *,
+        call_number: int,
+        status: str,
+    ) -> None: ...
+
+    def tool_call_started(
+        self,
+        *,
+        call_number: int,
+        tool_name: str,
+    ) -> None: ...
+
+    def tool_call_finished(
+        self,
+        *,
+        call_number: int,
+        tool_name: str,
+        status: str,
+        result_char_count: int,
+        result_entered_context: bool,
+        frozen_read_path: str | None,
+        frozen_read_sha256: str | None,
+        captured_result: object | None,
+    ) -> None: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -164,12 +217,14 @@ class IsolatedApiSessionRunner:
         *,
         tools: tuple[ClientTool, ...] = (),
         clock: Callable[[], float] = time.monotonic,
+        observer: ApiSessionObserver | None = None,
     ) -> None:
         self._providers = providers
         self._tools = {tool.definition.name: tool for tool in tools}
         if len(self._tools) != len(tools):
             raise ValueError("client tool names must be unique")
         self._clock = clock
+        self._observer = observer
 
     def run(
         self,
@@ -255,7 +310,27 @@ class IsolatedApiSessionRunner:
                 )
 
             current = replace(bounded_request, messages=tuple(messages))
-            response = validate_response_contract(current, provider.generate(current))
+            provider_call_number = len(responses) + 1
+            if self._observer is not None:
+                self._observer.provider_call_started(
+                    call_number=provider_call_number,
+                    provider_identity=canonical_provider,
+                    model=request.model,
+                )
+            try:
+                response = validate_response_contract(current, provider.generate(current))
+            except Exception:
+                if self._observer is not None:
+                    self._observer.provider_call_finished(
+                        call_number=provider_call_number,
+                        status="failed",
+                    )
+                raise
+            if self._observer is not None:
+                self._observer.provider_call_finished(
+                    call_number=provider_call_number,
+                    status="succeeded",
+                )
             if response.provider != canonical_provider:
                 raise ProviderError(
                     ProviderErrorCategory.CONTRACT_VIOLATION,
@@ -343,6 +418,11 @@ class IsolatedApiSessionRunner:
                         )
                     binding = self._tools[call.name]
                     tool_call_count += 1
+                    if self._observer is not None:
+                        self._observer.tool_call_started(
+                            call_number=tool_call_count,
+                            tool_name=call.name,
+                        )
                     try:
                         output = binding.execute(call.arguments)
                         is_error = False
@@ -358,7 +438,28 @@ class IsolatedApiSessionRunner:
                             )
                         )
                     rendered = _render_tool_output(output)
+                    frozen_read_path: str | None = None
+                    frozen_read_sha256: str | None = None
+                    if (
+                        binding.side_effect == "read-only"
+                        and isinstance(output, Mapping)
+                        and isinstance(output.get("path"), str)
+                        and isinstance(output.get("sha256"), str)
+                    ):
+                        frozen_read_path = str(output["path"])
+                        frozen_read_sha256 = str(output["sha256"])
                     if self._clock() - started >= limits.max_seconds:
+                        if self._observer is not None:
+                            self._observer.tool_call_finished(
+                                call_number=tool_call_count,
+                                tool_name=call.name,
+                                status="failed" if is_error else "succeeded",
+                                result_char_count=len(rendered),
+                                result_entered_context=False,
+                                frozen_read_path=frozen_read_path,
+                                frozen_read_sha256=frozen_read_sha256,
+                                captured_result=(output if is_error or binding.trace_result else None),
+                            )
                         return self._result(
                             ApiSessionStatus.SAFE_PAUSED,
                             "wall-time-budget",
@@ -370,6 +471,17 @@ class IsolatedApiSessionRunner:
                             tool_failures,
                         )
                     if len(rendered) > limits.max_tool_result_chars:
+                        if self._observer is not None:
+                            self._observer.tool_call_finished(
+                                call_number=tool_call_count,
+                                tool_name=call.name,
+                                status="failed" if is_error else "succeeded",
+                                result_char_count=len(rendered),
+                                result_entered_context=False,
+                                frozen_read_path=frozen_read_path,
+                                frozen_read_sha256=frozen_read_sha256,
+                                captured_result=(output if is_error or binding.trace_result else None),
+                            )
                         return self._result(
                             ApiSessionStatus.SAFE_PAUSED,
                             "tool-result-size-budget",
@@ -379,6 +491,17 @@ class IsolatedApiSessionRunner:
                             tool_call_count,
                             warnings,
                             tool_failures,
+                        )
+                    if self._observer is not None:
+                        self._observer.tool_call_finished(
+                            call_number=tool_call_count,
+                            tool_name=call.name,
+                            status="failed" if is_error else "succeeded",
+                            result_char_count=len(rendered),
+                            result_entered_context=True,
+                            frozen_read_path=frozen_read_path,
+                            frozen_read_sha256=frozen_read_sha256,
+                            captured_result=(output if is_error or binding.trace_result else None),
                         )
                     tool_blocks.append(
                         ContentBlock(

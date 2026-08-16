@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/simulation-vv-report.schema.json",
+  "title": "Simulation V&V Report",
+  "x-rwb-document-kind": "simulation_vv_report",
+  "type": "object",
+  "required": [
+    "run_ref", "model_version", "input_lock", "parameter_boundary", "checks",
+    "assumptions", "limitations", "claim_ceiling"
+  ],
+  "properties": {
+    "run_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "model_version": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "input_lock": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/fileRef" }
+    },
+    "parameter_boundary": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "checks": {
+      "type": "object",
+      "required": ["convergence", "sensitivity", "benchmark_comparison"],
+      "properties": {
+        "convergence": { "$ref": "#/$defs/check" },
+        "sensitivity": { "$ref": "#/$defs/check" },
+        "benchmark_comparison": { "$ref": "#/$defs/check" }
+      },
+      "additionalProperties": false
+    },
+    "assumptions": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "limitations": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "claim_ceiling": { "enum": ["exploratory", "simulation_supported", "unresolved"] }
+  },
+  "$defs": {
+    "check": {
+      "type": "object",
+      "required": ["status", "evidence_refs"],
+      "properties": {
+        "status": { "enum": ["pass", "fail", "not-run", "blocked"] },
+        "evidence_refs": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/relativePath" },
+          "uniqueItems": true
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "pass" } }, "required": ["status"] },
+          "then": { "properties": { "evidence_refs": { "minItems": 1 } } }
+        }
+      ],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

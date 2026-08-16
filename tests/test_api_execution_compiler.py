@@ -22,6 +22,7 @@ from research_workbench.execution import (
     compile_api_execution,
     verify_execution_material,
 )
+from research_workbench.execution.contracts import default_execution_contract_registry
 from research_workbench.io import load_document
 from research_workbench.protocol import ProjectProtocol
 from research_workbench.tasks import TaskPacket
@@ -89,6 +90,7 @@ class ApiExecutionCompilerTests(unittest.TestCase):
         root=ROOT,
         protocol=None,
         task=None,
+        profile=None,
         assignment=None,
         binding=None,
         provider=None,
@@ -102,7 +104,7 @@ class ApiExecutionCompilerTests(unittest.TestCase):
         return compile_api_execution(
             protocol=protocol or self.protocol,
             task=task,
-            profile=self.profile,
+            profile=profile or self.profile,
             assignment=assignment,
             binding=binding or self.binding(),
             provider_capabilities=provider or self.provider(),
@@ -132,12 +134,67 @@ class ApiExecutionCompilerTests(unittest.TestCase):
         self.assertIn("references/evidence-contract.md", prompt)
         self.assertEqual({}, first.request.extensions)
 
+    def test_simulation_prompt_names_only_its_schema_and_tools(self) -> None:
+        task = TaskPacket.from_mapping(load_document(ROOT / "examples/task-simulation.yaml"))
+        profile = AgentProfile.from_mapping(
+            load_document(ROOT / "examples/profiles/simulation-auditor.yaml")
+        )
+        assignment = ResolvedTask.from_mapping(
+            load_document(ROOT / "examples/vertical-slice/simulation-assignment.yaml")
+        )
+        limits = self.runtime_limits(
+            allowed_tool_side_effects=frozenset({"none", "read-only"})
+        )
+        contract = default_execution_contract_registry().require(task, assignment)
+        tools = contract.build_tools(ROOT, task, limits)
+
+        compiled = self.compile(
+            task=task,
+            profile=profile,
+            assignment=assignment,
+            limits=limits,
+            catalog={tool.definition.name: tool for tool in tools},
+        )
+        prompt = "\n".join(
+            block.text or ""
+            for message in compiled.request.messages
+            for block in message.content
+        )
+
+        self.assertIn("simulation_vv_api_output", prompt)
+        self.assertIn("file-read", prompt)
+        self.assertIn("bounded-compute", prompt)
+        self.assertNotIn("api_task_output", prompt)
+        self.assertNotIn("document-read", prompt)
+
     def test_budget_is_the_narrower_task_and_runtime_intersection(self) -> None:
         compiled = self.compile(limits=self.runtime_limits(max_model_turns=12, max_output_tokens_per_turn=3000, max_seconds=90))
         self.assertEqual(10, compiled.limits.max_model_turns)
         self.assertEqual(1800, compiled.limits.max_output_tokens_per_turn)
         self.assertEqual(90, compiled.limits.max_seconds)
         self.assertEqual(frozenset({"read-only"}), compiled.limits.allowed_tool_side_effects)
+
+    def test_runtime_tool_side_effects_are_a_permission_ceiling(self) -> None:
+        for label, allowed in (
+            ("empty", frozenset()),
+            ("only-none", frozenset({"none"})),
+        ):
+            with self.subTest(label=label), self.assertRaises(
+                ApiExecutionCompilationError
+            ) as raised:
+                self.compile(
+                    limits=self.runtime_limits(allowed_tool_side_effects=allowed)
+                )
+            self.assertEqual("TOOL-PERMISSION-ESCALATION", raised.exception.code)
+
+        compiled = self.compile(
+            limits=self.runtime_limits(
+                allowed_tool_side_effects=frozenset({"read-only"})
+            )
+        )
+        self.assertEqual(
+            frozenset({"read-only"}), compiled.limits.allowed_tool_side_effects
+        )
 
     def test_document_read_allows_only_frozen_refs_and_rechecks_hash(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -150,6 +207,30 @@ class ApiExecutionCompilerTests(unittest.TestCase):
             (root / "examples/fixtures/paper-001.txt").write_text("drift", encoding="utf-8")
             with self.assertRaisesRegex(DocumentReadBoundaryError, "REF-HASH-MISMATCH"):
                 tool.execute({"path": "examples/fixtures/paper-001.txt"})
+
+    def test_document_read_enforces_the_explicit_byte_ceiling(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = self.copy_material(Path(directory))
+            payload = (root / "examples/fixtures/paper-001.txt").read_bytes()
+
+            exact = build_document_read_tool(
+                root,
+                self.task,
+                max_bytes=len(payload),
+            )
+            self.assertEqual(
+                self.task.input_refs[0].sha256,
+                exact.execute({"path": "examples/fixtures/paper-001.txt"})["sha256"],
+            )
+
+            too_small = build_document_read_tool(
+                root,
+                self.task,
+                max_bytes=len(payload) - 1,
+            )
+            with self.assertRaises(DocumentReadBoundaryError) as raised:
+                too_small.execute({"path": "examples/fixtures/paper-001.txt"})
+            self.assertEqual("DOCUMENT-READ-SIZE", raised.exception.code)
 
     def test_document_read_hashes_and_decodes_the_same_bytes(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

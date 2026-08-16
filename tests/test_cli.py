@@ -6,8 +6,17 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from research_workbench.adapters.models import (
+    ApiSessionLimits,
+    Capability,
+    DataPolicy,
+    ModelAssignment,
+    ModelBinding,
+)
+from research_workbench.artifacts.integrity import hash_file
 from research_workbench.cli import main
-from research_workbench.io import load_document
+from research_workbench.io import load_document, write_yaml_exclusive
+from research_workbench.tasks import FileReference
 from research_workbench.validation import SchemaCatalog
 
 
@@ -148,6 +157,51 @@ class CliTests(unittest.TestCase):
         )
         self.assertEqual(0, code)
         self.assertIn("errors=0 warnings=0", output)
+
+    def test_validate_model_assignment_detects_profile_hash_drift(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            profile = root / "profile.yaml"
+            profile.write_text("profile: original\n", encoding="utf-8")
+            assignment = ModelAssignment.create(
+                attempt_id="A-CLI-MODEL-REF",
+                task_id="TASK-CLI",
+                task_revision=1,
+                agent_profile_ref=FileReference("profile.yaml", hash_file(profile)),
+                pool_id="cli-test-pool",
+                pool_config_hash="0" * 64,
+                binding=ModelBinding(
+                    slot_id="worker",
+                    role="worker",
+                    provider_adapter="fake-local",
+                    model="fixture-model",
+                    capabilities=frozenset({Capability.TEXT}),
+                    reasoning_effort=None,
+                    specialties=(),
+                ),
+                selection_source="profile-default",
+                selection_reason="Validate the hash-pinned Agent Profile reference.",
+                effective_data_policy=DataPolicy(local_only=True),
+                execution_limits=ApiSessionLimits(
+                    max_model_turns=1,
+                    max_tool_calls=0,
+                    max_parallel_tool_calls=1,
+                    max_tool_result_chars=256,
+                    max_output_tokens_per_turn=64,
+                    max_seconds=10,
+                    max_total_tokens=128,
+                ),
+            )
+            assignment_path = root / "model-assignment.yaml"
+            write_yaml_exclusive(assignment_path, assignment.to_mapping())
+            profile.write_text("profile: drifted\n", encoding="utf-8")
+
+            code, output = run_cli(
+                ["validate", str(assignment_path), "--root", str(root)]
+            )
+
+        self.assertEqual(1, code)
+        self.assertIn("REF-HASH-MISMATCH", output)
 
     def test_invalid_fixture_returns_nonzero_with_local_pointer(self) -> None:
         code, output = run_cli(

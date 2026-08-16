@@ -4,7 +4,7 @@ version: 0.1.0
 kind: method
 description: Extracts traceable evidence records from a bounded scientific source set.
 capabilities: [evidence-extraction, citation-location, contradictory-evidence-capture]
-applies_to_modes: [evidence-synthesis, experiment, theory, simulation]
+applies_to_modes: [evidence-synthesis, simulation]
 excludes: [unbounded-literature-discovery, final-synthesis, final-causal-interpretation]
 required_tools: [document-read]
 optional_tools: [web-search, citation-resolve]

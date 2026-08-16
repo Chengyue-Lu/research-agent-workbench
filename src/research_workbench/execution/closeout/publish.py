@@ -4,19 +4,33 @@ from __future__ import annotations
 
 import hashlib
 from collections.abc import Callable, Mapping
-from pathlib import Path
-from typing import Any
+from pathlib import Path, PurePosixPath
+from typing import Any, Protocol
 
-from research_workbench.adapters.models import ApiSessionLimits, ApiSessionResult
-from research_workbench.artifacts.integrity import resolve_within_root
+from research_workbench.adapters.models import (
+    ApiSessionLimits,
+    ApiSessionResult,
+    DataPolicy,
+    ModelAssignment,
+)
+from research_workbench.artifacts.integrity import hash_file, resolve_within_root
 from research_workbench.capability import AgentProfile, ResolvedTask
 from research_workbench.context import ContextPolicySnapshot, MainStatePacket
 from research_workbench.contracts import is_path_safe_identifier
 from research_workbench.execution.output import validate_api_task_output
+from research_workbench.execution.contracts import (
+    ContractAdmission,
+    EvidenceH2ExecutionContract,
+    ExecutionArtifact,
+    ExecutionContract,
+    ExecutionContractError,
+    default_execution_contract_registry,
+)
 from research_workbench.io import publish_staged_file_exclusive, write_bytes_exclusive
 from research_workbench.observability import ExecutionReceipt
 from research_workbench.protocol import ProjectProtocol
-from research_workbench.tasks import AttemptRecord, HandoffPacket, TaskPacket
+from research_workbench.tasks import AttemptRecord, FileReference, HandoffPacket, TaskPacket
+from research_workbench.validation import SchemaCatalog
 
 from .builders import (
     _build_attempt,
@@ -69,6 +83,63 @@ from .verify import (
     _verify_staged_hash,
 )
 
+
+class AgentTraceSealer(Protocol):
+    """Trusted bridge that seals runtime Trace bytes against staged closeout files."""
+
+    def __call__(
+        self,
+        *,
+        stage_root: Path,
+        handoff_refs: tuple[str, ...],
+        decision_refs: tuple[str, ...],
+        output_refs: tuple[str, ...],
+        check_refs: tuple[str, ...],
+    ) -> tuple[FileReference, Mapping[str, bytes]]: ...
+
+
+def _protocol_data_policy(protocol: ProjectProtocol) -> DataPolicy:
+    """Derive the protocol policy again at the closeout trust boundary."""
+
+    boundary = protocol.data_boundary
+    supported = {
+        "local_only",
+        "external_upload_requires_approval",
+        "zero_data_retention_required",
+        "training_opt_out_required",
+        "allowed_regions",
+        "allow_provider_server_tools",
+    }
+    if set(boundary) - supported:
+        raise CloseoutError(
+            "PROJECT-DATA-BOUNDARY", "Project Protocol has unsupported data-boundary fields"
+        )
+    boolean_fields = (
+        "local_only",
+        "external_upload_requires_approval",
+        "zero_data_retention_required",
+        "training_opt_out_required",
+        "allow_provider_server_tools",
+    )
+    if any(not isinstance(boundary.get(field, False), bool) for field in boolean_fields):
+        raise CloseoutError(
+            "PROJECT-DATA-BOUNDARY", "Project Protocol data-boundary flags must be boolean"
+        )
+    regions = boundary.get("allowed_regions", [])
+    if not isinstance(regions, list) or any(
+        not isinstance(region, str) or not region for region in regions
+    ):
+        raise CloseoutError(
+            "PROJECT-DATA-BOUNDARY", "Project Protocol allowed_regions must be strings"
+        )
+    return DataPolicy(
+        local_only=boundary.get("local_only", False),
+        zero_data_retention_required=boundary.get("zero_data_retention_required", False),
+        training_opt_out_required=boundary.get("training_opt_out_required", False),
+        allowed_regions=tuple(regions),
+        allow_provider_server_tools=boundary.get("allow_provider_server_tools", False),
+    )
+
 def capture_closeout_contracts(
     root: str | Path,
     specifications: tuple[tuple[str, str], ...],
@@ -112,6 +183,170 @@ def contract_snapshot_document(
     return _snapshot_document(matches[0])
 
 
+def _contract_output_ref(attempt_root: str, relative_name: str) -> str:
+    if (
+        not isinstance(relative_name, str)
+        or not relative_name
+        or "\\" in relative_name
+        or PurePosixPath(relative_name).is_absolute()
+        or ".." in PurePosixPath(relative_name).parts
+        or PurePosixPath(relative_name).as_posix() != relative_name
+    ):
+        raise CloseoutError(
+            "EXECUTION-CONTRACT-PATH", "ExecutionContract output name is not canonical"
+        )
+    return f"{attempt_root}/{relative_name}"
+
+
+def _agent_trace_material_paths(
+    index: Mapping[str, Any],
+    index_path: str,
+) -> set[str]:
+    archive_root = index.get("archive_root")
+    if not isinstance(archive_root, str) or not archive_root:
+        raise CloseoutError("AGENT-TRACE-IDENTITY", "Trace archive_root is unavailable")
+    paths = {index_path}
+
+    def add_ref(value: object) -> None:
+        if not isinstance(value, Mapping):
+            return
+        path = value.get("path")
+        if isinstance(path, str) and (
+            path == archive_root or path.startswith(archive_root.rstrip("/") + "/")
+        ):
+            paths.add(path)
+
+    add_ref(index.get("actors_ref"))
+    add_ref(index.get("event_ledger"))
+    # Closeout refs are hash-bound dependencies of the index, not Trace-owned
+    # payloads.  They are staged and published by the closeout transaction.
+    for key in ("messages", "tool_event_refs"):
+        values = index.get(key, [])
+        if not isinstance(values, list):
+            continue
+        for value in values:
+            add_ref(value)
+            if isinstance(value, Mapping):
+                attachments = value.get("attachment_refs", [])
+                if isinstance(attachments, list):
+                    for attachment in attachments:
+                        add_ref(attachment)
+    return paths
+
+
+def _validate_frozen_agent_trace_bundle(
+    *,
+    content_root: Path,
+    project_root: Path,
+    attempt_root: str,
+    task: TaskPacket,
+    assignment: ResolvedTask,
+    normalized_status: str,
+    index_ref: FileReference,
+    payloads: Mapping[str, bytes],
+) -> Mapping[str, Any]:
+    """Verify Trace-owned bytes without absorbing closeout-owned dependencies."""
+
+    if index_ref.path != f"{attempt_root}/INDEX.yaml":
+        raise CloseoutError(
+            "AGENT-TRACE-IDENTITY",
+            "Agent Trace index is outside the canonical Attempt root",
+        )
+    if index_ref.path not in payloads:
+        raise CloseoutError(
+            "AGENT-TRACE-BUNDLE-MISSING",
+            "Agent Trace index is absent from its frozen bundle",
+        )
+    for relative, payload in payloads.items():
+        if not (relative == attempt_root or relative.startswith(attempt_root + "/")):
+            raise CloseoutError(
+                "AGENT-TRACE-IDENTITY",
+                f"Agent Trace material escapes the Attempt root: {relative}",
+            )
+        if not isinstance(payload, bytes):
+            raise CloseoutError(
+                "AGENT-TRACE-BUNDLE-DRIFT",
+                f"Agent Trace payload is not frozen bytes: {relative}",
+            )
+        live = resolve_within_root(content_root, relative)
+        if (
+            live is None
+            or not live.is_file()
+            or live.is_symlink()
+            or live.read_bytes() != payload
+        ):
+            raise CloseoutError(
+                "AGENT-TRACE-BUNDLE-DRIFT",
+                f"Agent Trace material drifted before closeout: {relative}",
+            )
+    if hashlib.sha256(payloads[index_ref.path]).hexdigest() != index_ref.sha256:
+        raise CloseoutError(
+            "AGENT-TRACE-BUNDLE-DRIFT",
+            "Agent Trace index digest differs from its frozen reference",
+        )
+    trace_index = _load_mapping(
+        content_root,
+        index_ref.path,
+        "sealed Agent Trace Index",
+    )
+    if set(payloads) != _agent_trace_material_paths(trace_index, index_ref.path):
+        raise CloseoutError(
+            "AGENT-TRACE-BUNDLE-DRIFT",
+            "frozen Agent Trace payloads differ from Trace-owned indexed material",
+        )
+    if (
+        trace_index.get("task_id"),
+        trace_index.get("task_revision"),
+        trace_index.get("attempt_id"),
+        trace_index.get("attempt_status"),
+        trace_index.get("trace_status"),
+    ) != (
+        task.task_id,
+        task.revision,
+        attempt_root.rsplit("/", 1)[-1],
+        normalized_status,
+        "frozen",
+    ):
+        raise CloseoutError(
+            "AGENT-TRACE-IDENTITY",
+            "Agent Trace identity or terminal status differs from closeout",
+        )
+    _validate_output_paths(
+        project_root,
+        task,
+        assignment,
+        tuple(sorted(payloads)),
+    )
+    return trace_index
+
+
+def _prepare_admitted_artifacts(
+    *,
+    attempt_root: str,
+    artifacts: tuple[ExecutionArtifact, ...],
+) -> tuple[dict[str, dict[str, Any]], dict[str, str], dict[str, str]]:
+    documents: dict[str, dict[str, Any]] = {}
+    refs_by_id: dict[str, str] = {}
+    kinds: dict[str, str] = {}
+    for artifact in artifacts:
+        relative = _contract_output_ref(attempt_root, artifact.relative_name)
+        if relative in documents:
+            raise CloseoutError(
+                "EXECUTION-CONTRACT-PATH", f"duplicate contract artifact path: {relative}"
+            )
+        document = dict(artifact.document)
+        documents[relative] = document
+        kinds[relative] = artifact.document_kind
+        object_id = document.get("object_id")
+        if isinstance(object_id, str) and object_id:
+            if object_id in refs_by_id:
+                raise CloseoutError(
+                    "EXECUTION-CONTRACT-ARTIFACT", f"duplicate artifact identity: {object_id}"
+                )
+            refs_by_id[object_id] = relative
+    return documents, refs_by_id, kinds
+
+
 def resume_staged_closeout(
     *,
     root: str | Path,
@@ -123,6 +358,8 @@ def resume_staged_closeout(
     expected_assignment_ref: str,
     expected_provider_adapter_id: str,
     expected_model: str,
+    expected_model_assignment_id: str,
+    expected_execution_contract: str,
     expected_previous_main_state_ref: str | None,
     fault_injector: Callable[[str], None] | None = None,
 ) -> CloseoutPublication:
@@ -143,6 +380,8 @@ def resume_staged_closeout(
             assignment_ref=expected_assignment_ref,
             provider_adapter_id=expected_provider_adapter_id,
             requested_model=expected_model,
+            model_assignment_id=expected_model_assignment_id,
+            execution_contract=expected_execution_contract,
             previous_main_state_ref=expected_previous_main_state_ref,
         )
         raise CloseoutError("CLOSEOUT-STAGE-MISSING", f"no staged closeout for {attempt_id}")
@@ -160,6 +399,8 @@ def resume_staged_closeout(
                 assignment_ref=expected_assignment_ref,
                 provider_adapter_id=expected_provider_adapter_id,
                 requested_model=expected_model,
+                model_assignment_id=expected_model_assignment_id,
+                execution_contract=expected_execution_contract,
                 previous_main_state_ref=expected_previous_main_state_ref,
             )
         raise
@@ -170,6 +411,8 @@ def resume_staged_closeout(
         "assignment_ref": expected_assignment_ref,
         "provider_adapter_id": expected_provider_adapter_id,
         "requested_model": expected_model,
+        "model_assignment_id": expected_model_assignment_id,
+        "execution_contract": expected_execution_contract,
         "previous_main_state_ref": expected_previous_main_state_ref,
     }
     if any(plan[key] != value for key, value in expected_plan.items()):
@@ -223,16 +466,60 @@ def resume_staged_closeout(
         raise CloseoutError("CLOSEOUT-STAGE-IDENTITY", "stage plan and Receipt Profile differ")
     if receipt.skill_assignment_ref != plan["assignment_ref"]:
         raise CloseoutError("CLOSEOUT-STAGE-IDENTITY", "stage plan and Receipt Assignment differ")
+    if receipt.execution_contract != expected_execution_contract:
+        raise CloseoutError(
+            "CLOSEOUT-STAGE-IDENTITY", "stage plan and Receipt ExecutionContract differ"
+        )
+    planned_model_ref = plan.get("model_assignment_ref")
+    if (
+        (planned_model_ref is None) != (receipt.model_assignment_ref is None)
+        or (
+            isinstance(planned_model_ref, FileReference)
+            and receipt.model_assignment_ref is not None
+            and (
+                planned_model_ref.path,
+                planned_model_ref.sha256,
+            )
+            != (
+                receipt.model_assignment_ref.path,
+                receipt.model_assignment_ref.sha256,
+            )
+        )
+    ):
+        raise CloseoutError(
+            "CLOSEOUT-STAGE-IDENTITY",
+            "stage plan and Receipt Model Assignment reference differ",
+        )
+    if expected_model_assignment_id != "unavailable":
+        if receipt.model_assignment_ref is None:
+            raise CloseoutError(
+                "CLOSEOUT-STAGE-INCOMPLETE", "Receipt omits the Model Assignment"
+            )
+        staged_model_assignment = ModelAssignment.from_mapping(
+            _load_mapping(
+                stage_root,
+                receipt.model_assignment_ref.path,
+                "staged Model Assignment",
+            )
+        )
+        if staged_model_assignment.model_assignment_id != expected_model_assignment_id:
+            raise CloseoutError(
+                "CLOSEOUT-STAGE-IDENTITY", "staged Model Assignment identity differs"
+            )
     assignment = ResolvedTask.from_mapping(
         _load_mapping(stage_root, receipt.skill_assignment_ref, "staged Skill Assignment")
     )
     handoff_document = _load_mapping(stage_root, attempt.handoff_ref, "staged Handoff")
     handoff = HandoffPacket.from_mapping(handoff_document)
     audit_document: Mapping[str, Any] | None = None
-    if handoff.validation_refs:
-        if len(handoff.validation_refs) != 1:
-            raise CloseoutError("CLOSEOUT-STAGE-INCOMPLETE", "K-API-2 expects at most one Transfer Audit")
-        audit_document = _load_mapping(stage_root, handoff.validation_refs[0], "staged Transfer Audit")
+    if handoff.transfer_manifest_ref:
+        if canonical_paths.audit not in handoff.validation_refs:
+            raise CloseoutError(
+                "CLOSEOUT-STAGE-INCOMPLETE", "H2 Handoff omits its Transfer Audit"
+            )
+        audit_document = _load_mapping(
+            stage_root, canonical_paths.audit, "staged Transfer Audit"
+        )
     failure = attempt.failure if isinstance(attempt.failure, Mapping) else None
     allowed = _expected_blockers(failure)
     view = _ViewCheck(
@@ -271,6 +558,10 @@ def resume_staged_closeout(
             "stage publication plan differs from Main State output references",
         )
     required = {attempt_ref, attempt.handoff_ref, receipt_ref, state.context_snapshot_ref}
+    if receipt.model_assignment_ref is not None:
+        required.add(receipt.model_assignment_ref.path)
+    if receipt.agent_trace_index_ref is not None:
+        required.add(receipt.agent_trace_index_ref.path)
     if None in required or not {str(value) for value in required}.issubset(set(output_refs)):
         raise CloseoutError("CLOSEOUT-STAGE-INCOMPLETE", "Main State omits required closeout files")
     _validate_closeout_permission(assignment)
@@ -341,6 +632,8 @@ def inspect_committed_closeout(
     previous_main_state_ref: str | None,
     expected_provider_adapter_id: str,
     expected_model: str,
+    expected_model_assignment_id: str,
+    expected_execution_contract: str,
 ) -> CloseoutPublication | None:
     """Validate and return one already committed Attempt without replaying execution."""
 
@@ -387,6 +680,29 @@ def inspect_committed_closeout(
             "CLOSEOUT-COMMITTED-IDENTITY",
             "committed Receipt differs from the requested Profile or Assignment",
         )
+    if receipt.execution_contract != expected_execution_contract:
+        raise CloseoutError(
+            "CLOSEOUT-COMMITTED-IDENTITY",
+            "committed Receipt has a different ExecutionContract",
+        )
+    if expected_model_assignment_id != "unavailable":
+        if receipt.model_assignment_ref is None:
+            raise CloseoutError(
+                "CLOSEOUT-COMMITTED-INCOMPLETE",
+                "committed Receipt omits its Model Assignment",
+            )
+        committed_model_assignment = ModelAssignment.from_mapping(
+            _load_mapping(
+                project_root,
+                receipt.model_assignment_ref.path,
+                "committed Model Assignment",
+            )
+        )
+        if committed_model_assignment.model_assignment_id != expected_model_assignment_id:
+            raise CloseoutError(
+                "CLOSEOUT-COMMITTED-IDENTITY",
+                "committed Model Assignment identity differs",
+            )
     assignment = ResolvedTask.from_mapping(
         _load_mapping(project_root, assignment_ref, "committed Skill Assignment")
     )
@@ -399,12 +715,14 @@ def inspect_committed_closeout(
     ):
         raise CloseoutError("CLOSEOUT-COMMITTED-IDENTITY", "committed Handoff differs")
     audit_document: Mapping[str, Any] | None = None
-    if handoff.validation_refs:
-        if len(handoff.validation_refs) != 1:
-            raise CloseoutError("CLOSEOUT-COMMITTED-INCOMPLETE", "expected at most one Transfer Audit")
+    if handoff.transfer_manifest_ref:
+        if paths.audit not in handoff.validation_refs:
+            raise CloseoutError(
+                "CLOSEOUT-COMMITTED-INCOMPLETE", "H2 Handoff omits its Transfer Audit"
+            )
         audit_document = _load_mapping(
             project_root,
-            handoff.validation_refs[0],
+            paths.audit,
             "committed Transfer Audit",
         )
     required_refs = {
@@ -417,6 +735,10 @@ def inspect_committed_closeout(
         receipt_ref,
         state.context_snapshot_ref,
     }
+    if receipt.model_assignment_ref is not None:
+        required_refs.add(receipt.model_assignment_ref.path)
+    if receipt.agent_trace_index_ref is not None:
+        required_refs.add(receipt.agent_trace_index_ref.path)
     state_refs = {reference.path for reference in state.machine_state_refs}
     if None in required_refs or not {str(value) for value in required_refs}.issubset(state_refs):
         raise CloseoutError(
@@ -531,10 +853,19 @@ def closeout_api_attempt(
     failure_summary: str | None = None,
     previous_main_state_ref: str | None = None,
     external_provider: bool = False,
+    provider_conformance_document: Mapping[str, Any] | None = None,
+    provider_conformance_expected_sha256: str | None = None,
     extra_limitations: tuple[str, ...] = (),
     fault_injector: Callable[[str], None] | None = None,
     contract_snapshots: tuple[CloseoutContractSnapshot, ...] | None = None,
     frozen_input_payloads: Mapping[str, bytes] | None = None,
+    frozen_contract_payloads: Mapping[str, bytes] | None = None,
+    execution_contract: ExecutionContract | None = None,
+    admission: ContractAdmission | None = None,
+    model_assignment: ModelAssignment | None = None,
+    agent_trace_index_ref: FileReference | None = None,
+    frozen_agent_trace_payloads: Mapping[str, bytes] | None = None,
+    agent_trace_sealer: AgentTraceSealer | None = None,
 ) -> CloseoutPublication:
     """Persist one terminal Attempt and publish Main State last.
 
@@ -572,12 +903,82 @@ def closeout_api_attempt(
     assignment = ResolvedTask.from_mapping(assignment_document)
     _validate_identities(task, profile, assignment)
     _validate_closeout_permission(assignment)
+    try:
+        selected_contract = execution_contract or default_execution_contract_registry().require(
+            task, assignment
+        )
+        selected_contract.validate_task_assignment(task, assignment)
+    except ExecutionContractError as exc:
+        raise CloseoutError(exc.code, str(exc).split(": ", 1)[-1]) from exc
+    contract_identifier = selected_contract.identifier
+    handoff_tier = "H2" if selected_contract.require_transfer_manifest else "H1"
+    handoff_tier_reasons = (
+        "task-policy-requires-transfer-manifest"
+        if selected_contract.require_transfer_manifest
+        else "fresh-model-api-without-transfer-manifest",
+    )
+    model_assignment_id = "unavailable"
+    model_assignment_ref: FileReference | None = None
+    if model_assignment is not None:
+        if model_assignment.attempt_id != attempt_id:
+            raise CloseoutError(
+                "MODEL-ASSIGNMENT-ATTEMPT-MISMATCH",
+                "Model Assignment does not match the Attempt identity",
+            )
+        if (model_assignment.task_id, model_assignment.task_revision) != (
+            task.task_id,
+            task.revision,
+        ):
+            raise CloseoutError(
+                "MODEL-ASSIGNMENT-TASK-MISMATCH",
+                "Model Assignment does not match the Task identity/revision",
+            )
+        if (
+            model_assignment.agent_profile_ref.path != profile_ref
+            or model_assignment.agent_profile_ref.sha256
+            != snapshot_map[profile_ref].sha256
+        ):
+            raise CloseoutError(
+                "MODEL-ASSIGNMENT-PROFILE-MISMATCH",
+                "Model Assignment does not hash-pin the selected Agent Profile",
+            )
+        if (
+            model_assignment.provider_adapter_id,
+            model_assignment.requested_model,
+        ) != (provider_adapter_id, requested_model):
+            raise CloseoutError(
+                "MODEL-ASSIGNMENT-BINDING-MISMATCH",
+                "Model Assignment differs from the requested adapter/model",
+            )
+        if model_assignment.selection_source == "profile-default" and (
+            model_assignment.slot_id != profile.model_policy.get("default_slot")
+        ):
+            raise CloseoutError(
+                "MODEL-SLOT-MISMATCH",
+                "profile-default Model Assignment does not use the Profile default slot",
+            )
+        if model_assignment.execution_limits != limits:
+            raise CloseoutError(
+                "MODEL-ASSIGNMENT-EXECUTION-LIMITS",
+                "Model Assignment execution limits differ from closeout limits",
+            )
+        if model_assignment.effective_data_policy != _protocol_data_policy(protocol):
+            raise CloseoutError(
+                "MODEL-ASSIGNMENT-DATA-POLICY",
+                "Model Assignment data policy differs from the Project Protocol",
+            )
+        if model_assignment.automatic_fallback is not False:
+            raise CloseoutError(
+                "MODEL-ASSIGNMENT-FALLBACK",
+                "Model Assignment must forbid automatic fallback",
+            )
+        model_assignment_id = model_assignment.model_assignment_id
     if not is_path_safe_identifier(task.task_id):
         raise CloseoutError("CLOSEOUT-TASK-ID", "task_id must be one path-safe segment")
-    if terminal_status == "completed" and session_result is None:
+    if terminal_status in {"completed", "stage-completed"} and session_result is None:
         raise CloseoutError(
             "CLOSEOUT-SESSION-RESULT-MISSING",
-            "a completed closeout requires the isolated API session result",
+            "a successful closeout requires the isolated API session result",
         )
     if session_result is not None:
         if (
@@ -594,29 +995,146 @@ def closeout_api_attempt(
                 "session requested model differs from the closeout model",
             )
 
+    if (provider_conformance_document is None) != (
+        provider_conformance_expected_sha256 is None
+    ):
+        raise CloseoutError(
+            "PROVIDER-CONFORMANCE-EVIDENCE",
+            "Provider conformance document and expected hash must be supplied together",
+        )
+    if provider_conformance_document is not None:
+        schema_errors = SchemaCatalog().validate(
+            "provider_conformance_report", provider_conformance_document
+        )
+        if schema_errors:
+            raise CloseoutError(
+                "PROVIDER-CONFORMANCE-EVIDENCE",
+                "Provider conformance document is schema-invalid",
+            )
+        if provider_conformance_document.get("status") != "passed":
+            raise CloseoutError(
+                "PROVIDER-CONFORMANCE-FAILED",
+                "Provider conformance evidence must have status passed",
+            )
+        if (
+            provider_conformance_document.get("adapter_id"),
+            provider_conformance_document.get("requested_model"),
+        ) != (provider_adapter_id, requested_model):
+            raise CloseoutError(
+                "PROVIDER-CONFORMANCE-BINDING-MISMATCH",
+                "Provider conformance evidence differs from the closeout adapter/model",
+            )
+
+    expected_frozen_contract_refs = set(selected_contract.supporting_refs)
+    if model_assignment is not None and model_assignment.selection_ref is not None:
+        expected_frozen_contract_refs.add(model_assignment.selection_ref.path)
+    supplied_contract_payloads = dict(frozen_contract_payloads or {})
+    if set(supplied_contract_payloads) != expected_frozen_contract_refs:
+        raise CloseoutError(
+            "EXECUTION-CONTRACT-SNAPSHOT",
+            "frozen supporting and override references do not exactly match the execution identity",
+        )
+    for relative, payload in supplied_contract_payloads.items():
+        if not isinstance(payload, bytes):
+            raise CloseoutError(
+                "EXECUTION-CONTRACT-SNAPSHOT", f"frozen contract payload is not bytes: {relative}"
+            )
+        live = resolve_within_root(project_root, relative)
+        if live is None or not live.is_file() or live.read_bytes() != payload:
+            raise CloseoutError(
+                "EXECUTION-CONTRACT-DRIFT", f"execution support reference drifted: {relative}"
+            )
+    if model_assignment is not None and model_assignment.selection_ref is not None:
+        selection_payload = supplied_contract_payloads[model_assignment.selection_ref.path]
+        if hashlib.sha256(selection_payload).hexdigest() != model_assignment.selection_ref.sha256:
+            raise CloseoutError(
+                "MODEL-ASSIGNMENT-SELECTION-DRIFT",
+                "Model Assignment override reference digest differs",
+            )
+
     normalized_status, operational_failure = _normalize_terminal_status(
         terminal_status=terminal_status,
         session_result=session_result,
         failure_code=failure_code,
         failure_summary=failure_summary,
     )
-    if normalized_status != "completed":
+    if normalized_status not in {"completed", "stage-completed"}:
         output = None
+        admission = None
+    elif admission is not None:
+        if admission.success_status != selected_contract.success_status:
+            raise CloseoutError(
+                "EXECUTION-CONTRACT-STATUS",
+                "admitted output success status differs from its ExecutionContract",
+            )
+        if normalized_status != admission.success_status:
+            raise CloseoutError(
+                "EXECUTION-CONTRACT-STATUS",
+                "closeout success status differs from the admitted output contract",
+            )
+        output = {
+            "artifacts": [
+                {"document": dict(artifact.document)} for artifact in admission.artifacts
+            ],
+            "handoff": dict(admission.handoff),
+            "transfer_items": [dict(item) for item in admission.transfer_items],
+        }
     elif output is None:
-        raise CloseoutError("CLOSEOUT-OUTPUT-MISSING", "completed Attempt has no API output")
-    else:
+        raise CloseoutError("CLOSEOUT-OUTPUT-MISSING", "successful Attempt has no API output")
+    elif isinstance(selected_contract, EvidenceH2ExecutionContract):
         validate_api_task_output(output, task=task, protocol=protocol)
+    else:
+        raise CloseoutError(
+            "CLOSEOUT-OUTPUT-ADMISSION",
+            "non-evidence ExecutionContracts require trusted admission before closeout",
+        )
 
     attempt_root = f"work/{task.task_id}/{attempt_id}"
     paths = _CloseoutPaths(attempt_root)
+    trace_payloads = dict(frozen_agent_trace_payloads or {})
+    if agent_trace_sealer is not None and (
+        agent_trace_index_ref is not None or trace_payloads
+    ):
+        raise CloseoutError(
+            "AGENT-TRACE-BUNDLE-AMBIGUOUS",
+            "supply either a deferred Trace sealer or an already frozen Trace bundle",
+        )
+    if (agent_trace_index_ref is None) != (not trace_payloads):
+        raise CloseoutError(
+            "AGENT-TRACE-BUNDLE-MISSING",
+            "Agent Trace index and frozen bundle must be supplied together",
+        )
+    if agent_trace_index_ref is not None:
+        _validate_frozen_agent_trace_bundle(
+            content_root=project_root,
+            project_root=project_root,
+            attempt_root=attempt_root,
+            task=task,
+            assignment=assignment,
+            normalized_status=normalized_status,
+            index_ref=agent_trace_index_ref,
+            payloads=trace_payloads,
+        )
     _validate_output_paths(project_root, task, assignment, paths.static_final_paths)
-    artifact_documents, artifact_refs_by_id = _prepare_artifacts(
-        task=task,
-        protocol=protocol,
-        attempt_root=attempt_root,
-        output=output,
-        status=normalized_status,
-    )
+    if provider_conformance_document is not None:
+        _validate_output_paths(
+            project_root, task, assignment, (paths.provider_conformance,)
+        )
+    artifact_kinds: dict[str, str]
+    if admission is not None and not isinstance(selected_contract, EvidenceH2ExecutionContract):
+        artifact_documents, artifact_refs_by_id, artifact_kinds = _prepare_admitted_artifacts(
+            attempt_root=attempt_root,
+            artifacts=admission.artifacts,
+        )
+    else:
+        artifact_documents, artifact_refs_by_id = _prepare_artifacts(
+            task=task,
+            protocol=protocol,
+            attempt_root=attempt_root,
+            output=output,
+            status=normalized_status,
+        )
+        artifact_kinds = {relative: "research_object" for relative in artifact_documents}
     # Artifact names are derived from untrusted model output and therefore
     # cannot be represented by a preflight placeholder.  Authorize the exact
     # resolved paths before creating even the temporary closeout tree.
@@ -638,6 +1156,40 @@ def closeout_api_attempt(
                 "CLOSEOUT-CONTRACT-SNAPSHOT", f"no frozen closeout source for {relative}"
             )
         write_bytes_exclusive(destination, snapshot.payload)
+    for relative, payload in supplied_contract_payloads.items():
+        write_bytes_exclusive(_stage_path(stage_root, relative), payload)
+    for relative, payload in sorted(trace_payloads.items()):
+        write_bytes_exclusive(_stage_path(stage_root, relative), payload)
+    if model_assignment is not None:
+        model_assignment_path = paths.model_assignment
+        _stage_document(
+            stage_root,
+            model_assignment_path,
+            model_assignment.to_mapping(),
+            "model_assignment",
+        )
+        model_assignment_ref = FileReference(
+            model_assignment_path,
+            hash_file(_stage_path(stage_root, model_assignment_path)),
+        )
+    provider_conformance_ref: FileReference | None = None
+    if provider_conformance_document is not None:
+        _stage_document(
+            stage_root,
+            paths.provider_conformance,
+            provider_conformance_document,
+            "provider_conformance_report",
+        )
+        actual_hash = hash_file(_stage_path(stage_root, paths.provider_conformance))
+        if actual_hash != provider_conformance_expected_sha256:
+            raise CloseoutError(
+                "PROVIDER-CONFORMANCE-HASH-MISMATCH",
+                "staged Provider conformance evidence differs from its approved hash",
+            )
+        provider_conformance_ref = FileReference(
+            paths.provider_conformance,
+            actual_hash,
+        )
     stale_failure = _expected_blockers(operational_failure)
     # A session result does not prove that Task inputs and selected Skills were
     # captured by the trusted compiler.  Only the explicit frozen-material
@@ -653,12 +1205,40 @@ def closeout_api_attempt(
     )
 
     for relative, document in artifact_documents.items():
-        _stage_document(stage_root, relative, document, "research_object")
+        _stage_document(stage_root, relative, document, artifact_kinds[relative])
+
+    contract_validation_refs: tuple[str, ...] = ()
+    if admission is not None:
+        try:
+            validations = selected_contract.build_validations(
+                stage_root=stage_root,
+                attempt_root=attempt_root,
+                attempt_id=attempt_id,
+                artifacts=admission.artifacts,
+            )
+        except ExecutionContractError as exc:
+            raise CloseoutError(exc.code, str(exc).split(": ", 1)[-1]) from exc
+        validation_refs: list[str] = []
+        for validation in validations:
+            relative = _contract_output_ref(attempt_root, validation.relative_name)
+            if relative in artifact_documents or relative in validation_refs:
+                raise CloseoutError(
+                    "EXECUTION-CONTRACT-PATH", f"duplicate contract output path: {relative}"
+                )
+            _validate_output_paths(project_root, task, assignment, (relative,))
+            _stage_document(
+                stage_root,
+                relative,
+                validation.document,
+                validation.document_kind,
+            )
+            validation_refs.append(relative)
+        contract_validation_refs = tuple(validation_refs)
 
     manifest_ref: str | None = None
     audit_ref: str | None = None
     manifest_document: dict[str, Any] | None = None
-    if artifact_documents:
+    if selected_contract.require_transfer_manifest and artifact_documents:
         if output is None or not output.get("transfer_items"):
             raise CloseoutError(
                 "CLOSEOUT-TRANSFER-EMPTY",
@@ -685,7 +1265,7 @@ def closeout_api_attempt(
         output=output,
         artifact_refs=tuple(artifact_documents),
         manifest_ref=manifest_ref,
-        audit_ref=audit_ref,
+        validation_refs=contract_validation_refs + ((audit_ref,) if audit_ref else ()),
         receipt_ref=paths.receipt,
         operational_failure=operational_failure,
         next_action=next_action,
@@ -704,6 +1284,56 @@ def closeout_api_attempt(
             stage_root=stage_root,
         )
         _stage_document(stage_root, paths.audit, audit_document, "handoff_transfer_audit")
+
+    if agent_trace_sealer is not None:
+        try:
+            sealed_ref, sealed_payloads = agent_trace_sealer(
+                stage_root=stage_root,
+                handoff_refs=(paths.handoff,)
+                + ((manifest_ref,) if manifest_ref is not None else ()),
+                decision_refs=(),
+                output_refs=tuple(artifact_documents),
+                check_refs=contract_validation_refs
+                + ((audit_ref,) if audit_ref is not None else ())
+                + (
+                    (provider_conformance_ref.path,)
+                    if provider_conformance_ref is not None
+                    else ()
+                ),
+            )
+        except CloseoutError:
+            raise
+        except Exception as exc:
+            raise CloseoutError(
+                "AGENT-TRACE-CAPTURE-FAILED",
+                "Agent Trace could not be sealed against the staged closeout",
+            ) from exc
+        if not isinstance(sealed_ref, FileReference) or not isinstance(
+            sealed_payloads, Mapping
+        ):
+            raise CloseoutError(
+                "AGENT-TRACE-CAPTURE-FAILED",
+                "Agent Trace sealer returned an invalid frozen bundle",
+            )
+        agent_trace_index_ref = sealed_ref
+        trace_payloads = dict(sealed_payloads)
+        for relative, payload in trace_payloads.items():
+            if not isinstance(relative, str) or not isinstance(payload, bytes):
+                raise CloseoutError(
+                    "AGENT-TRACE-CAPTURE-FAILED",
+                    "Agent Trace sealer returned invalid path or payload metadata",
+                )
+            write_bytes_exclusive(_stage_path(stage_root, relative), payload)
+        _validate_frozen_agent_trace_bundle(
+            content_root=stage_root,
+            project_root=project_root,
+            attempt_root=attempt_root,
+            task=task,
+            assignment=assignment,
+            normalized_status=normalized_status,
+            index_ref=agent_trace_index_ref,
+            payloads=trace_payloads,
+        )
 
     unresolved_count = len(handoff_document["unresolved"])
     context_policy = ContextPolicySnapshot.from_project_policy(protocol.context_policy)
@@ -729,6 +1359,11 @@ def closeout_api_attempt(
         artifact_refs=tuple(artifact_documents) + ((manifest_ref,) if manifest_ref else ()),
         handoff_ref=paths.handoff,
         receipt_ref=paths.receipt,
+        agent_trace_index_ref=agent_trace_index_ref,
+        model_assignment_ref=model_assignment_ref,
+        provider_conformance_ref=provider_conformance_ref,
+        handoff_tier=handoff_tier,
+        handoff_tier_reasons=handoff_tier_reasons,
         operational_failure=operational_failure,
     )
     _stage_document(stage_root, paths.attempt, attempt_document, "attempt")
@@ -737,6 +1372,12 @@ def closeout_api_attempt(
         task=task,
         profile_ref=profile_ref,
         assignment_ref=assignment_ref,
+        model_assignment_ref=model_assignment_ref,
+        provider_conformance_ref=provider_conformance_ref,
+        execution_contract=contract_identifier,
+        agent_trace_index_ref=agent_trace_index_ref,
+        handoff_tier=handoff_tier,
+        handoff_tier_reasons=handoff_tier_reasons,
         attempt_ref=paths.attempt,
         context_ref=paths.task_context,
         status=normalized_status,
@@ -746,7 +1387,13 @@ def closeout_api_attempt(
         output_refs=tuple(artifact_documents)
         + ((manifest_ref,) if manifest_ref else ())
         + (paths.handoff,),
-        validation_refs=((audit_ref,) if audit_ref else ()),
+        validation_refs=contract_validation_refs
+        + ((audit_ref,) if audit_ref else ())
+        + (
+            (provider_conformance_ref.path,)
+            if provider_conformance_ref is not None
+            else ()
+        ),
         provider_adapter_id=provider_adapter_id,
         requested_model=requested_model,
         provider_adapter_version=provider_adapter_version,
@@ -767,18 +1414,47 @@ def closeout_api_attempt(
     )
     _stage_document(stage_root, paths.main_context, main_context, "context_snapshot")
 
-    non_main_refs = tuple(artifact_documents) + tuple(
-        relative
-        for relative in (
-            manifest_ref,
-            paths.handoff,
-            audit_ref,
-            paths.task_context,
-            paths.attempt,
-            paths.receipt,
-            paths.main_context,
+    trace_index_path = (
+        agent_trace_index_ref.path if agent_trace_index_ref is not None else None
+    )
+    trace_non_index_refs = tuple(
+        relative for relative in trace_payloads if relative != trace_index_path
+    )
+    # Referenced closeout files must be published before the Trace INDEX commit
+    # marker. Attempt/Receipt then publish after INDEX because both hash-pin it;
+    # Main State remains the final authoritative commit.
+    non_main_refs = tuple(
+        _unique(
+            [
+                *artifact_documents,
+                *(
+                    relative
+                    for relative in (
+                        manifest_ref,
+                        paths.handoff,
+                        audit_ref,
+                        *contract_validation_refs,
+                        paths.task_context,
+                        model_assignment_ref.path if model_assignment_ref is not None else None,
+                        (
+                            provider_conformance_ref.path
+                            if provider_conformance_ref is not None
+                            else None
+                        ),
+                    )
+                    if relative is not None
+                ),
+                *trace_non_index_refs,
+                *(
+                    (trace_index_path,)
+                    if trace_index_path is not None
+                    else ()
+                ),
+                paths.attempt,
+                paths.receipt,
+                paths.main_context,
+            ]
         )
-        if relative is not None
     )
     main_state_document = _build_main_state(
         stage_root=stage_root,
@@ -795,9 +1471,12 @@ def closeout_api_attempt(
         main_context_ref=paths.main_context,
         artifact_refs=tuple(artifact_documents),
         machine_refs=non_main_refs,
+        agent_trace_index_ref=agent_trace_index_ref,
+        source_refs=tuple(supplied_contract_payloads),
         created_at=finished_at,
         operational_failure=operational_failure,
         previous_main_state_ref=previous_main_state_ref,
+        provider_conformance_ref=provider_conformance_ref,
     )
     _stage_document(stage_root, paths.main_state, main_state_document, "main_state")
 
@@ -827,6 +1506,9 @@ def closeout_api_attempt(
         assignment_ref=assignment_ref,
         provider_adapter_id=provider_adapter_id,
         requested_model=requested_model,
+        model_assignment_id=model_assignment_id,
+        model_assignment_ref=model_assignment_ref,
+        execution_contract=contract_identifier,
         attempt_ref=paths.attempt,
         main_state_ref=paths.main_state,
         publication_refs=(*non_main_refs, paths.main_state),

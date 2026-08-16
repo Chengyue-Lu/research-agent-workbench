@@ -13,7 +13,7 @@ import zipfile
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
-from typing import Any, Iterable, Mapping
+from typing import Iterable, Mapping
 
 import yaml
 

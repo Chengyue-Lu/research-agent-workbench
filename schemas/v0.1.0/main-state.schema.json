@@ -63,6 +63,11 @@
       "uniqueItems": true,
       "items": { "$ref": "common.schema.json#/$defs/fileRef" }
     },
+    "agent_trace_index_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/fileRef" }
+    },
     "git_head": { "type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$" },
     "rollover_reason": { "type": "string" },
     "created_at": { "type": "string", "format": "date-time" },

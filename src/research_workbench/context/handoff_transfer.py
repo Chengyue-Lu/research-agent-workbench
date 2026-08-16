@@ -7,6 +7,7 @@ equivalence from matching structure; a bounded human review records that claim.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import cache
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -16,6 +17,11 @@ from research_workbench.io import load_document
 from research_workbench.tasks import HandoffPacket, TaskPacket
 from research_workbench.validation.relationships import check_handoff_against_task
 from research_workbench.validation.schemas import SchemaCatalog
+
+
+@cache
+def _schema_catalog() -> SchemaCatalog:
+    return SchemaCatalog()
 
 
 RISK_REVIEW_KINDS = {
@@ -53,7 +59,7 @@ def assess_handoff_transfer(
 ) -> HandoffTransferAssessment:
     project_root = Path(root).resolve()
     risks: list[ContractRisk] = []
-    audit_errors = SchemaCatalog().validate("handoff_transfer_audit", document)
+    audit_errors = _schema_catalog().validate("handoff_transfer_audit", document)
     if audit_errors:
         first = audit_errors[0]
         risks.append(
@@ -345,7 +351,7 @@ def _load_document_ref(
     if resolved is None or not resolved.is_file():
         return None
     value = load_document(resolved)
-    if not isinstance(value, Mapping) or SchemaCatalog().validate(kind, value):
+    if not isinstance(value, Mapping) or _schema_catalog().validate(kind, value):
         risks.append(_block("HANDOFF-AUDIT-DOCUMENT-INVALID", f"{label} is not a valid {kind}"))
         return None
     return value

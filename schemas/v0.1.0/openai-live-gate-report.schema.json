@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/openai-live-gate-report.schema.json",
+  "title": "OpenAI Live Gate Report",
+  "x-rwb-document-kind": "openai_live_gate_report",
+  "type": "object",
+  "required": ["schema_version", "report_kind", "gate_id", "status", "reason", "provider", "adapter_id", "environment_checked", "policy", "conformance", "e2e", "privacy"],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "report_kind": { "const": "openai_live_gate" },
+    "gate_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "status": { "enum": ["passed", "failed", "not-run"] },
+    "reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "provider": { "const": "openai" },
+    "adapter_id": { "const": "openai-responses" },
+    "environment_checked": { "type": "boolean" },
+    "requested_model": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "missing_environment": { "type": "array", "items": { "enum": ["OPENAI_API_KEY", "RWB_WORKER_MODEL"] }, "uniqueItems": true },
+    "policy": { "type": "object" },
+    "archive": {
+      "type": "object",
+      "required": ["intent_ref", "model_assignment_ref"],
+      "properties": {
+        "intent_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+        "model_assignment_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+        "conformance_check_ref": { "$ref": "common.schema.json#/$defs/fileRef" }
+      },
+      "additionalProperties": false
+    },
+    "conformance": {
+      "type": "object",
+      "required": ["status", "reason"],
+      "properties": {
+        "status": { "enum": ["passed", "failed", "not-run"] },
+        "reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "check_ref": { "$ref": "common.schema.json#/$defs/fileRef" }
+      },
+      "additionalProperties": false
+    },
+    "e2e": {
+      "type": "object",
+      "required": ["status", "reason"],
+      "properties": {
+        "status": { "enum": ["passed", "failed", "not-run"] },
+        "reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "closeout_status": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "main_state_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+        "receipt_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+        "trace_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+        "published_refs": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/fileRef" }, "uniqueItems": true },
+        "fresh_process_resume_check": {
+          "type": "object",
+          "required": ["status", "returncode"],
+          "properties": { "status": { "enum": ["passed", "failed"] }, "returncode": { "type": "integer" } },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "privacy": {
+      "type": "object",
+      "required": ["credential_values_stored", "provider_response_ids_stored", "prompt_bodies_stored", "response_bodies_stored", "tool_arguments_stored"],
+      "properties": {
+        "credential_values_stored": { "const": false },
+        "provider_response_ids_stored": { "const": false },
+        "prompt_bodies_stored": { "const": false },
+        "response_bodies_stored": { "const": false },
+        "tool_arguments_stored": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,4 @@
+task_id: TRACE-001
+attempt_id: A-001
+status: completed
+summary: Trace fixture validated with no unresolved items.

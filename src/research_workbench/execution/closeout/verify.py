@@ -19,7 +19,7 @@ from research_workbench.contracts.common import ContractError, require_relative_
 from research_workbench.observability import ExecutionReceipt, check_execution_receipt
 from research_workbench.protocol import ProjectProtocol
 from research_workbench.tasks import HandoffPacket, TaskPacket
-from research_workbench.validation import check_handoff_against_task
+from research_workbench.validation import Severity, check_handoff_against_task, validate_agent_trace
 
 from .documents import _load_mapping
 from .errors import CloseoutContractSnapshot, CloseoutError, _RFC3339_TIMESTAMP
@@ -73,6 +73,55 @@ class _ViewCheck:
         )
         _raise_blocking(receipt_risks)
         warnings.extend(risk.code for risk in receipt_risks if risk.level == RiskLevel.WARNING)
+        state = MainStatePacket.from_mapping(main_state_document)
+        if receipt.agent_trace_index_ref is not None:
+            state_trace_keys = {
+                (reference.path, reference.sha256)
+                for reference in state.agent_trace_index_refs
+            }
+            receipt_trace_key = (
+                receipt.agent_trace_index_ref.path,
+                receipt.agent_trace_index_ref.sha256,
+            )
+            if state_trace_keys != {receipt_trace_key}:
+                raise CloseoutError(
+                    "STATE-AGENT-TRACE-MISMATCH",
+                    "Main State and Execution Receipt must pin the same Agent Trace",
+                )
+            trace_path = resolve_within_root(root, receipt.agent_trace_index_ref.path)
+            if trace_path is None or not trace_path.is_file():
+                raise CloseoutError(
+                    "STATE-AGENT-TRACE-MISSING",
+                    receipt.agent_trace_index_ref.path,
+                )
+            trace_issues = validate_agent_trace(
+                trace_path,
+                root=root,
+                attempt_path=receipt.attempt_ref,
+                receipt_path=self.receipt_ref,
+                state_path=(
+                    self.main_state_ref
+                    if (
+                        (state_path := resolve_within_root(root, self.main_state_ref))
+                        is not None
+                        and state_path.is_file()
+                    )
+                    else None
+                ),
+            )
+            blocking = [issue for issue in trace_issues if issue.severity == Severity.ERROR]
+            if blocking:
+                raise CloseoutError(blocking[0].code, blocking[0].message)
+            warnings.extend(
+                issue.code
+                for issue in trace_issues
+                if issue.severity == Severity.WARNING
+            )
+        elif state.agent_trace_index_refs:
+            raise CloseoutError(
+                "STATE-AGENT-TRACE-MISMATCH",
+                "Main State declares an Agent Trace absent from the Receipt",
+            )
         _validate_main_state_view(
             root=root,
             document=main_state_document,
@@ -103,6 +152,15 @@ def _validate_main_state_view(
             raise CloseoutError("STATE-MACHINE-REF-MISSING", reference.path)
         if hash_file(resolved) != reference.sha256:
             raise CloseoutError("STATE-MACHINE-REF-DRIFT", reference.path)
+    machine_keys = {
+        (reference.path, reference.sha256) for reference in state.machine_state_refs
+    }
+    for reference in state.agent_trace_index_refs:
+        if (reference.path, reference.sha256) not in machine_keys:
+            raise CloseoutError(
+                "STATE-AGENT-TRACE-MISMATCH",
+                "Agent Trace index is not also pinned as machine state",
+            )
     if state.context_snapshot_ref is None:
         raise CloseoutError("STATE-CONTEXT-SNAPSHOT-MISSING", "Main State lacks Context Snapshot")
     snapshot_document = _load_mapping(root, state.context_snapshot_ref, "main Context Snapshot")
@@ -137,12 +195,15 @@ def _normalize_terminal_status(
     if session_result is not None:
         session_status = session_result.status.value
         if terminal_status != session_status:
+            is_contract_stage_completion = (
+                session_status == "completed" and terminal_status == "stage-completed"
+            )
             is_explicit_downgrade = (
                 terminal_status != "completed"
                 and failure_code is not None
                 and failure_summary is not None
             )
-            if not is_explicit_downgrade:
+            if not is_contract_stage_completion and not is_explicit_downgrade:
                 raise CloseoutError(
                     "CLOSEOUT-SESSION-STATUS-MISMATCH",
                     "caller status differs from the isolated session without an explicit failure gate",
@@ -164,9 +225,9 @@ def _normalize_terminal_status(
                 }
                 for failure in session_result.tool_failures
             ]
-    if status == "completed" and (code or summary):
+    if status in {"completed", "stage-completed"} and (code or summary):
         status = "failed"
-    if status == "completed":
+    if status in {"completed", "stage-completed"}:
         return status, None
     failure = {
         "code": code or f"API-SESSION-{status.upper().replace('-', '_')}",

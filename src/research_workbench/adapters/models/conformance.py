@@ -13,7 +13,7 @@ import time
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Callable, Mapping, Sequence
+from typing import Any, Callable, Sequence
 
 from research_workbench.adapters.models.anthropic import AnthropicMessagesProvider
 from research_workbench.adapters.models.configuration import ProviderAdapterConfig

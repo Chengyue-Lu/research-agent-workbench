@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/agent-trace-index.schema.json",
+  "title": "Agent Trace Index",
+  "x-rwb-document-kind": "agent_trace_index",
+  "type": "object",
+  "required": [
+    "schema_version", "trace_id", "task_id", "task_revision", "attempt_id",
+    "archive_root", "baseline", "owner_actor_id", "owner", "attempt_status",
+    "trace_status", "completeness", "task_ref", "actors_ref", "read_allowlist",
+    "write_scope", "tool_allowlist", "messages", "event_ledger", "tool_event_refs",
+    "handoff_refs", "decision_refs", "output_refs", "check_refs", "capture_gaps"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "trace_id": { "type": "string", "pattern": "^TRACE-[A-Za-z0-9._-]+$" },
+    "task_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "task_revision": { "type": "integer", "minimum": 1 },
+    "attempt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "archive_root": { "$ref": "common.schema.json#/$defs/relativePath" },
+    "baseline": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "owner_actor_id": { "$ref": "#/$defs/actorId" },
+    "owner": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "attempt_status": { "$ref": "#/$defs/attemptStatus" },
+    "trace_status": { "enum": ["active", "frozen"] },
+    "completeness": { "enum": ["complete", "delayed", "gapped"] },
+    "task_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "actors_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "read_allowlist": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/readScope" }
+    },
+    "write_scope": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/relativePath" }
+    },
+    "tool_allowlist": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/toolScope" }
+    },
+    "messages": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/messageEntry" }
+    },
+    "event_ledger": { "$ref": "#/$defs/eventLedger" },
+    "tool_event_refs": { "$ref": "#/$defs/fileRefArray" },
+    "handoff_refs": { "$ref": "#/$defs/fileRefArray" },
+    "decision_refs": { "$ref": "#/$defs/fileRefArray" },
+    "output_refs": { "$ref": "#/$defs/fileRefArray" },
+    "check_refs": { "$ref": "#/$defs/fileRefArray" },
+    "capture_gaps": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/captureGap" }
+    }
+  },
+  "$defs": {
+    "actorId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "attemptStatus": {
+      "enum": [
+        "planned", "running", "completed", "stage-completed", "safe-paused",
+        "waiting", "incomplete", "failed", "blocked", "cancelled"
+      ]
+    },
+    "readScope": {
+      "type": "object",
+      "required": ["path", "authorized_by"],
+      "properties": {
+        "path": { "$ref": "common.schema.json#/$defs/relativePath" },
+        "authorized_by": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "additionalProperties": false
+    },
+    "toolScope": {
+      "type": "object",
+      "required": ["tool_name", "authorized_by"],
+      "properties": {
+        "tool_name": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "authorized_by": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "additionalProperties": false
+    },
+    "messageEntry": {
+      "type": "object",
+      "required": [
+        "message_id", "sequence", "path", "sha256", "content_sha256", "kind",
+        "sender_actor_id", "receiver_actor_ids", "created_at", "capture_status",
+        "attachment_refs"
+      ],
+      "properties": {
+        "message_id": { "type": "string", "pattern": "^MSG-[0-9]{4,}$" },
+        "sequence": { "type": "integer", "minimum": 1 },
+        "path": { "$ref": "common.schema.json#/$defs/relativePath" },
+        "sha256": { "$ref": "common.schema.json#/$defs/sha256" },
+        "content_sha256": { "$ref": "common.schema.json#/$defs/sha256" },
+        "kind": { "$ref": "agent-trace-envelope.schema.json#/properties/kind" },
+        "sender_actor_id": { "$ref": "#/$defs/actorId" },
+        "receiver_actor_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/actorId" }
+        },
+        "created_at": { "type": "string", "format": "date-time" },
+        "capture_status": { "enum": ["complete", "delayed", "partial", "unavailable"] },
+        "attachment_refs": { "$ref": "#/$defs/fileRefArray" },
+        "in_reply_to": { "type": "string", "pattern": "^MSG-[0-9]{4,}$" },
+        "capture_gap_event_id": { "type": "string", "pattern": "^EVT-[0-9]{4,}$" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "capture_status": { "enum": ["partial", "unavailable"] } },
+            "required": ["capture_status"]
+          },
+          "then": { "required": ["capture_gap_event_id"] }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "eventLedger": {
+      "type": "object",
+      "required": ["path", "sha256", "event_count"],
+      "properties": {
+        "path": { "$ref": "common.schema.json#/$defs/relativePath" },
+        "sha256": { "$ref": "common.schema.json#/$defs/sha256" },
+        "event_count": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "fileRefArray": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/fileRef" }
+    },
+    "captureGap": {
+      "type": "object",
+      "required": ["event_id", "affected_stream"],
+      "properties": {
+        "event_id": { "type": "string", "pattern": "^EVT-[0-9]{4,}$" },
+        "affected_stream": {
+          "enum": ["messages", "events", "tool-results", "file-revisions", "external-actions"]
+        },
+        "sequence_start": { "type": "integer", "minimum": 1 },
+        "sequence_end": { "type": "integer", "minimum": 1 },
+        "affected_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+        }
+      },
+      "dependentRequired": {
+        "sequence_start": ["sequence_end"],
+        "sequence_end": ["sequence_start"]
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

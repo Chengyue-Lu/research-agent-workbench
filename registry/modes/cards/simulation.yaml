@@ -1,0 +1,54 @@
+schema_version: 0.1.0
+card_id: MC-simulation-0.1.0
+mode_id: simulation
+mode_version: 0.1.0
+mode_ref:
+  path: registry/modes/simulation.yaml
+  sha256: 6d59427b7b303693575f13c4213d84e42c2e7a968dda3c2fe5bf6a06591ecf27
+decision_basis:
+  research_output_required: true
+  applies_evidence_bases: [computational-model-output, mixed-bounded-and-computational]
+  does_not_apply_evidence_bases: [bounded-source-set, other-empirical, none]
+  ambiguous_evidence_bases: [unknown]
+rules:
+  triggers:
+    - code: MODE-SIM-COMPUTATIONAL
+      description: The Task produces Evidence or Claims from computational model outputs and bounded run artifacts.
+  non_triggers:
+    - code: MODE-SIM-MECHANICAL
+      description: A mechanical structure, hash, or Handoff check does not itself produce simulation Evidence or a Claim.
+    - code: EVIDENCE-BASIS-MISMATCH
+      description: A bounded paper-only review belongs to evidence synthesis even if the paper describes a simulation.
+  boundaries:
+    - code: MODE-SIM-MIXED
+      description: A Task spanning published sources and live run artifacts must preserve each evidence basis separately.
+      action: combine-or-split
+    - code: MODE-SIM-UNKNOWN
+      description: The Task does not identify whether actual run artifacts are in scope.
+      action: human-gate
+combination_rules:
+  - with_mode_id: evidence-synthesis
+    status: compatible
+    default_task_action: split-if-capabilities-span-both
+    constraint_merge:
+      required_artifact_types: union
+      human_decisions: union
+      risk_rules: union
+      forbidden_claims: union
+      claim_support: per-mode-no-auto-upgrade
+      permissions: take-stricter
+      data_boundary: take-stricter
+fixture_ids:
+  trigger: [KMS-002]
+  non_trigger: [KMS-001, KMS-005, KMS-007]
+  boundary: [KMS-004, KMS-006]
+  combination: [KMS-003, KMS-008]
+change_gate:
+  add_or_split_requires:
+    - A real case exhibits a distinct Artifact, Claim, Human Gate, or risk constraint.
+    - Positive, boundary, and negative fixtures demonstrate that the existing Mode combination is insufficient.
+  merge_or_delete_when:
+    - Representative Tasks no longer exhibit a method constraint distinct from another registered Mode.
+    - The existing Mode combination expresses every observed boundary without semantic loss.
+limitations:
+  - This card does not treat a published simulation paper as live run evidence and does not establish model validity.

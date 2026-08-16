@@ -12,8 +12,6 @@ from research_workbench.execution.closeout import (
 from research_workbench.execution.compiler import (
     ApiExecutionCompilationError,
     CompiledApiExecution,
-    DocumentReadBoundaryError,
-    build_document_read_tool,
     compile_api_execution,
     verify_execution_material,
 )
@@ -24,6 +22,15 @@ from research_workbench.execution.output import (
     validate_api_task_output,
 )
 from research_workbench.execution.pipeline import run_task_api_attempt
+from research_workbench.execution.tool_registry import (
+    ExecutionToolRegistry,
+    ExecutionToolRegistryError,
+    default_execution_tool_registry,
+)
+from research_workbench.execution.tools import (
+    DocumentReadBoundaryError,
+    build_document_read_tool,
+)
 
 __all__ = [
     "API_TASK_OUTPUT_SCHEMA",
@@ -33,9 +40,12 @@ __all__ = [
     "CloseoutPublication",
     "CompiledApiExecution",
     "DocumentReadBoundaryError",
+    "ExecutionToolRegistry",
+    "ExecutionToolRegistryError",
     "build_document_read_tool",
     "closeout_api_attempt",
     "compile_api_execution",
+    "default_execution_tool_registry",
     "fail_if_api_attempt_intent_exists",
     "inspect_committed_closeout",
     "parse_api_task_output",

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
+from functools import cache
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -26,9 +27,14 @@ from research_workbench.contracts.common import (
 from research_workbench.io import load_document
 from research_workbench.protocol import ProjectProtocol
 from research_workbench.tasks import AttemptRecord, FileReference, HandoffPacket
-from research_workbench.validation.documents import infer_document_kind
+from research_workbench.validation.documents import Severity, infer_document_kind
 from research_workbench.validation.relationships import check_references
 from research_workbench.validation.schemas import SchemaCatalog
+
+
+@cache
+def _schema_catalog() -> SchemaCatalog:
+    return SchemaCatalog()
 
 
 def _optional_non_negative_int(data: Mapping[str, Any], field: str) -> int | None:
@@ -194,6 +200,12 @@ class ExecutionReceipt:
     task_revision: int
     agent_profile_ref: str
     skill_assignment_ref: str
+    model_assignment_ref: FileReference | None
+    provider_conformance_ref: FileReference | None
+    execution_contract: str | None
+    agent_trace_index_ref: FileReference | None
+    handoff_tier: str | None
+    handoff_tier_reasons: tuple[str, ...]
     context_snapshot_ref: str | None
     started_at: str
     finished_at: str
@@ -249,6 +261,35 @@ class ExecutionReceipt:
             raise ContractError("model_binding", "must be an object")
         else:
             model_binding = RequestedModelBinding.from_mapping(raw_model_binding)
+        raw_trace_ref = data.get("agent_trace_index_ref")
+        if raw_trace_ref is None:
+            agent_trace_index_ref = None
+        elif isinstance(raw_trace_ref, Mapping):
+            agent_trace_index_ref = FileReference.from_mapping(raw_trace_ref)
+        else:
+            raise ContractError("agent_trace_index_ref", "must be a file reference")
+        raw_model_assignment_ref = data.get("model_assignment_ref")
+        if raw_model_assignment_ref is None:
+            model_assignment_ref = None
+        elif isinstance(raw_model_assignment_ref, Mapping):
+            model_assignment_ref = FileReference.from_mapping(raw_model_assignment_ref)
+        else:
+            raise ContractError("model_assignment_ref", "must be a file reference")
+        raw_conformance_ref = data.get("provider_conformance_ref")
+        if raw_conformance_ref is None:
+            provider_conformance_ref = None
+        elif isinstance(raw_conformance_ref, Mapping):
+            provider_conformance_ref = FileReference.from_mapping(raw_conformance_ref)
+        else:
+            raise ContractError("provider_conformance_ref", "must be a file reference")
+        handoff_tier = optional_string(data, "handoff_tier")
+        if handoff_tier not in {None, "H0", "H1", "H2"}:
+            raise ContractError("handoff_tier", "has unsupported value")
+        handoff_tier_reasons = string_tuple(data, "handoff_tier_reasons")
+        if handoff_tier is None and handoff_tier_reasons:
+            raise ContractError("handoff_tier_reasons", "requires handoff_tier")
+        if handoff_tier is not None and not handoff_tier_reasons:
+            raise ContractError("handoff_tier_reasons", "is required with handoff_tier")
         usage_status = require_string(data, "model_usage_status")
         if usage_status not in {"measured", "estimated", "unavailable", "not-applicable"}:
             raise ContractError("model_usage_status", "has unsupported value")
@@ -292,6 +333,12 @@ class ExecutionReceipt:
             task_revision=revision,
             agent_profile_ref=str(refs["agent_profile_ref"]),
             skill_assignment_ref=str(refs["skill_assignment_ref"]),
+            model_assignment_ref=model_assignment_ref,
+            provider_conformance_ref=provider_conformance_ref,
+            execution_contract=optional_string(data, "execution_contract"),
+            agent_trace_index_ref=agent_trace_index_ref,
+            handoff_tier=handoff_tier,
+            handoff_tier_reasons=handoff_tier_reasons,
             context_snapshot_ref=refs["context_snapshot_ref"],
             started_at=started_at,
             finished_at=finished_at,
@@ -334,6 +381,7 @@ def check_execution_receipt(
             ContractRisk("REF-MISSING", RiskLevel.BLOCK, f"{field} does not resolve within project: {relative}")
         )
 
+    attempt: AttemptRecord | None = None
     _, attempt_document = _load_reference(project_root, receipt.attempt_ref)
     if attempt_document is None:
         missing("attempt_ref", receipt.attempt_ref)
@@ -402,6 +450,118 @@ def check_execution_receipt(
                     "execution receipt status does not match Attempt",
                 )
             )
+        if (
+            (attempt.model_assignment_ref is None)
+            != (receipt.model_assignment_ref is None)
+            or (
+                attempt.model_assignment_ref is not None
+                and receipt.model_assignment_ref is not None
+                and (
+                    attempt.model_assignment_ref.path,
+                    attempt.model_assignment_ref.sha256,
+                )
+                != (
+                    receipt.model_assignment_ref.path,
+                    receipt.model_assignment_ref.sha256,
+                )
+            )
+        ):
+            risks.append(
+                ContractRisk(
+                    "RECEIPT-ATTEMPT-MODEL-ASSIGNMENT-MISMATCH",
+                    RiskLevel.BLOCK,
+                    "Attempt and Execution Receipt must pin the same Model Assignment",
+                )
+            )
+        if (
+            attempt.handoff_tier != receipt.handoff_tier
+            or attempt.handoff_tier_reasons != receipt.handoff_tier_reasons
+        ):
+            risks.append(
+                ContractRisk(
+                    "RECEIPT-ATTEMPT-HANDOFF-TIER-MISMATCH",
+                    RiskLevel.BLOCK,
+                    "Attempt and Execution Receipt Handoff tier decisions differ",
+                )
+            )
+
+    # ``execution_contract`` predates the project-level execution identity and
+    # remains present in legacy K-API-2 fixtures.  A persisted Model Assignment
+    # is the migration marker for a newly produced project-level API Attempt;
+    # those Attempts must also carry an Agent Trace.
+    new_model_api_receipt = (
+        receipt.execution_kind == "model-api"
+        and receipt.model_assignment_ref is not None
+    )
+    if new_model_api_receipt and receipt.agent_trace_index_ref is None:
+        risks.append(
+            ContractRisk(
+                "RECEIPT-TRACE-REQUIRED",
+                RiskLevel.BLOCK,
+                "model-api Receipt with an Execution Contract or Model Assignment "
+                "must pin its Agent Trace index",
+            )
+        )
+
+    attempt_trace_ref = attempt.agent_trace_index_ref if attempt is not None else None
+    if attempt is not None and (
+        (attempt_trace_ref is None) != (receipt.agent_trace_index_ref is None)
+        or (
+            attempt_trace_ref is not None
+            and receipt.agent_trace_index_ref is not None
+            and (
+                attempt_trace_ref.path,
+                attempt_trace_ref.sha256,
+            )
+            != (
+                receipt.agent_trace_index_ref.path,
+                receipt.agent_trace_index_ref.sha256,
+            )
+        )
+    ):
+        risks.append(
+            ContractRisk(
+                "RECEIPT-ATTEMPT-TRACE-MISMATCH",
+                RiskLevel.BLOCK,
+                "Attempt and Execution Receipt must pin the same Agent Trace path and hash",
+            )
+        )
+
+    trace_references: dict[tuple[str, str], FileReference] = {}
+    for trace_reference in (attempt_trace_ref, receipt.agent_trace_index_ref):
+        if trace_reference is not None:
+            trace_references[(trace_reference.path, trace_reference.sha256)] = trace_reference
+    risks.extend(check_references(project_root, trace_references.values()))
+
+    if receipt.agent_trace_index_ref is not None:
+        trace_path = resolve_within_root(
+            project_root,
+            receipt.agent_trace_index_ref.path,
+        )
+        if trace_path is not None and trace_path.is_file():
+            from research_workbench.validation.trace import validate_agent_trace
+
+            receipt_path: Path | None = None
+            if receipt_ref is not None:
+                candidate = resolve_within_root(project_root, receipt_ref)
+                if candidate is not None and candidate.is_file():
+                    receipt_path = candidate
+            trace_issues = validate_agent_trace(
+                trace_path,
+                root=project_root,
+                attempt_path=receipt.attempt_ref if attempt is not None else None,
+                receipt_path=receipt_path,
+            )
+            for issue in trace_issues:
+                risks.append(
+                    ContractRisk(
+                        issue.code,
+                        RiskLevel.BLOCK
+                        if issue.severity == Severity.ERROR
+                        else RiskLevel.WARNING,
+                        f"Agent Trace {issue.path}: {issue.message}",
+                    )
+                )
 
     _, assignment_document = _load_reference(project_root, receipt.skill_assignment_ref)
     if assignment_document is None:
@@ -416,6 +576,85 @@ def check_execution_receipt(
                     "execution receipt task identity does not match Skill Assignment",
                 )
             )
+
+    if receipt.model_assignment_ref:
+        risks.extend(check_references(project_root, (receipt.model_assignment_ref,)))
+        _, model_assignment_document = _load_reference(
+            project_root, receipt.model_assignment_ref.path
+        )
+        if model_assignment_document is None:
+            missing("model_assignment_ref", receipt.model_assignment_ref.path)
+        else:
+            from research_workbench.adapters.models import ModelAssignment
+
+            model_assignment = ModelAssignment.from_mapping(model_assignment_document)
+            if (model_assignment.task_id, model_assignment.task_revision) != (
+                receipt.task_id,
+                receipt.task_revision,
+            ):
+                risks.append(
+                    ContractRisk(
+                        "RECEIPT-MODEL-ASSIGNMENT-MISMATCH",
+                        RiskLevel.BLOCK,
+                        "Model Assignment task identity differs from the Execution Receipt",
+                    )
+                )
+            if receipt.model_binding is not None and (
+                model_assignment.provider_adapter_id,
+                model_assignment.requested_model,
+            ) != (
+                receipt.model_binding.provider_adapter_id,
+                receipt.model_binding.requested_model,
+            ):
+                risks.append(
+                    ContractRisk(
+                        "RECEIPT-MODEL-BINDING-MISMATCH",
+                        RiskLevel.BLOCK,
+                        "Model Assignment differs from the requested model binding",
+                    )
+                )
+
+    if receipt.provider_conformance_ref is not None:
+        risks.extend(check_references(project_root, (receipt.provider_conformance_ref,)))
+        _, conformance_document = _load_reference(
+            project_root, receipt.provider_conformance_ref.path
+        )
+        if conformance_document is None:
+            missing("provider_conformance_ref", receipt.provider_conformance_ref.path)
+        else:
+            schema_errors = _schema_catalog().validate(
+                "provider_conformance_report", conformance_document
+            )
+            if schema_errors:
+                risks.append(
+                    ContractRisk(
+                        "RECEIPT-CONFORMANCE-INVALID",
+                        RiskLevel.BLOCK,
+                        "Provider conformance evidence is schema-invalid",
+                    )
+                )
+            elif conformance_document.get("status") != "passed":
+                risks.append(
+                    ContractRisk(
+                        "RECEIPT-CONFORMANCE-FAILED",
+                        RiskLevel.BLOCK,
+                        "Provider conformance evidence did not pass",
+                    )
+                )
+            elif receipt.model_binding is not None and (
+                conformance_document.get("adapter_id"),
+                conformance_document.get("requested_model"),
+            ) != (
+                receipt.model_binding.provider_adapter_id,
+                receipt.model_binding.requested_model,
+            ):
+                risks.append(
+                    ContractRisk(
+                        "RECEIPT-CONFORMANCE-BINDING-MISMATCH",
+                        RiskLevel.BLOCK,
+                        "Provider conformance evidence differs from the Receipt model binding",
+                    )
+                )
 
     _, profile_document = _load_reference(project_root, receipt.agent_profile_ref)
     if profile_document is None:
@@ -481,7 +720,7 @@ def check_execution_receipt(
         kind = infer_document_kind(validation_document)
         if kind == "deterministic_check_report":
             interpreted_validations += 1
-            schema_errors = SchemaCatalog().validate(kind, validation_document)
+            schema_errors = _schema_catalog().validate(kind, validation_document)
             if schema_errors:
                 risks.append(
                     ContractRisk(
@@ -528,7 +767,7 @@ def check_execution_receipt(
             risks.extend(assessment.risks)
         elif kind == "provider_conformance_report":
             interpreted_validations += 1
-            if SchemaCatalog().validate(kind, validation_document):
+            if _schema_catalog().validate(kind, validation_document):
                 risks.append(
                     ContractRisk(
                         "RECEIPT-VALIDATION-INVALID",

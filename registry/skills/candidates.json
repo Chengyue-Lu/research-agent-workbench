@@ -293,15 +293,16 @@
       "source_path": "skill-lab/candidates/claim-preserving-rewrite/SKILL.md",
       "content_hash": "sha256:0e9f0753cdfdf02104b1539656c2dc7b261713162be07c902abf6bb9bc6069af",
       "package_hash": "sha256:11d1673ab7c5200552dc95383c2fc30c4c6a04c38f171a0e1a80f67531576809",
-      "status": "triage",
+      "status": "trial",
       "kind": "integrity",
       "capabilities": ["claim-preserving-rewrite", "evidence-strength-calibration", "surface-invariant-check"],
       "applicable_modes": ["evidence-synthesis", "theory", "experiment", "simulation", "reporting"],
       "context_cost": "low",
       "risk_flags": ["surface-checks-not-semantic-proof", "false-positive-gates-possible", "human-review-required", "with-without-forward-test-pending", "project-original-unlicensed", "non-discoverable-candidate"],
       "decision": {
-        "action": "run-adversarial-and-with-without-evaluation",
-        "reason": "The independently implemented candidate is bounded, offline, and deterministically checks surface invariants, but it remains outside runtime discovery until semantic drift and incremental value are measured on representative tasks."
+        "action": "continue-trial",
+        "decision_ref": "examples/evals/claim-preserving-rewrite/triage-decision.yaml",
+        "reason": "Fixture checks justify a controlled trial, but EVAL-FIXTURE-ONLY and EVAL-CASE-COVERAGE keep the candidate outside runtime discovery and the accepted Registry until live paired evidence and blind human review exist."
       }
     },
     {

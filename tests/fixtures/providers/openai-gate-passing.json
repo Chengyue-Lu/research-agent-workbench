@@ -1,0 +1,56 @@
+[
+  {
+    "response_id": "resp-text-must-not-be-retained",
+    "finish_reason": "complete",
+    "text": "response-body-must-not-be-retained",
+    "input_tokens": 12,
+    "output_tokens": 2,
+    "provider_reported_cost": 0.02
+  },
+  {
+    "response_id": "resp-structured-must-not-be-retained",
+    "finish_reason": "complete",
+    "text": "{\"ok\":true}",
+    "input_tokens": 18,
+    "output_tokens": 4,
+    "provider_reported_cost": 0.02
+  },
+  {
+    "response_id": "resp-conformance-tool-must-not-be-retained",
+    "finish_reason": "tool_call",
+    "tool_call_id": "call-conformance-must-not-be-retained",
+    "tool_name": "rwb_conformance_echo",
+    "tool_arguments": {"value": "probe"},
+    "input_tokens": 20,
+    "output_tokens": 3,
+    "provider_reported_cost": 0.02
+  },
+  {
+    "response_id": "resp-e2e-read-one-must-not-be-retained",
+    "finish_reason": "tool_call",
+    "tool_call_id": "call-read-one-must-not-be-retained",
+    "tool_name": "document-read",
+    "tool_arguments": {"path": "examples/fixtures/paper-001.txt"},
+    "input_tokens": 30,
+    "output_tokens": 5,
+    "provider_reported_cost": 0.05
+  },
+  {
+    "response_id": "resp-e2e-read-two-must-not-be-retained",
+    "finish_reason": "tool_call",
+    "tool_call_id": "call-read-two-must-not-be-retained",
+    "tool_name": "document-read",
+    "tool_arguments": {"path": "examples/fixtures/paper-001.txt"},
+    "input_tokens": 40,
+    "output_tokens": 5,
+    "provider_reported_cost": 0.05
+  },
+  {
+    "response_id": "resp-e2e-final-must-not-be-retained",
+    "finish_reason": "complete",
+    "text": "__EVIDENCE_OUTPUT__",
+    "input_tokens": 50,
+    "output_tokens": 4,
+    "provider_reported_cost": 0.05
+  }
+]

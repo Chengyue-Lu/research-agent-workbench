@@ -26,8 +26,19 @@ from research_workbench.adapters.models.http import (
     UrllibTransport,
 )
 from research_workbench.adapters.models.openai import OpenAIResponsesProvider
+from research_workbench.adapters.models.openai_gate import (
+    OPENAI_GATE_ADAPTER_ID,
+    OPENAI_GATE_CHECKS,
+    OPENAI_GATE_CREDENTIAL_ENV,
+    OPENAI_GATE_LIMITS,
+    OPENAI_GATE_MAX_OUTPUT_TOKENS,
+    OPENAI_GATE_MODEL_ENV,
+    openai_gate_plan,
+    run_openai_gate,
+)
 from research_workbench.adapters.models.pool import (
     ModelBinding,
+    ModelAssignment,
     ModelPool,
     ModelSlotConfig,
     load_model_pool,
@@ -92,6 +103,7 @@ __all__ = [
     "IsolatedApiSessionRunner",
     "Message",
     "ModelBinding",
+    "ModelAssignment",
     "ModelProvider",
     "ModelPool",
     "ModelNotSupported",
@@ -99,6 +111,12 @@ __all__ = [
     "ModelResponse",
     "ModelSlotConfig",
     "OpenAIResponsesProvider",
+    "OPENAI_GATE_ADAPTER_ID",
+    "OPENAI_GATE_CHECKS",
+    "OPENAI_GATE_CREDENTIAL_ENV",
+    "OPENAI_GATE_LIMITS",
+    "OPENAI_GATE_MAX_OUTPUT_TOKENS",
+    "OPENAI_GATE_MODEL_ENV",
     "ProviderAdapterConfig",
     "ProviderConformanceReport",
     "ProviderCapabilities",
@@ -117,7 +135,9 @@ __all__ = [
     "get_provider_adapter_config",
     "load_model_pool",
     "load_provider_adapter_configs",
+    "openai_gate_plan",
     "probe_provider_adapters",
     "required_capabilities",
     "run_provider_conformance",
+    "run_openai_gate",
 ]

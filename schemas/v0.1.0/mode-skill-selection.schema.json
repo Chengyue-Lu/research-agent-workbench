@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/mode-skill-selection.schema.json",
+  "title": "Mode Skill Selection Decision",
+  "x-rwb-document-kind": "mode_skill_selection",
+  "type": "object",
+  "required": [
+    "schema_version", "selection_id", "task_ref", "task_revision", "created_at",
+    "decision_owner", "registry_lock", "task_signals", "mode_assessment",
+    "skill_assessment", "execution", "read_plan", "handoff", "limitations"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "selection_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "task_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "task_revision": { "type": "integer", "minimum": 1 },
+    "created_at": { "type": "string", "format": "date-time" },
+    "decision_owner": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "registry_lock": {
+      "type": "object",
+      "required": ["mode_registry_digest", "accepted_skill_registry_digest"],
+      "properties": {
+        "mode_registry_digest": { "$ref": "common.schema.json#/$defs/sha256" },
+        "accepted_skill_registry_digest": { "$ref": "common.schema.json#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    },
+    "task_signals": {
+      "type": "object",
+      "required": [
+        "evidence_basis", "produces_research_evidence_or_claim",
+        "requested_claim_strengths", "available_input_contracts", "ambiguities"
+      ],
+      "properties": {
+        "evidence_basis": { "$ref": "mode-decision-card.schema.json#/$defs/evidenceBasis" },
+        "produces_research_evidence_or_claim": { "type": "boolean" },
+        "requested_claim_strengths": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "available_input_contracts": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "ambiguities": { "$ref": "common.schema.json#/$defs/stringArray" }
+      },
+      "additionalProperties": false
+    },
+    "mode_assessment": {
+      "type": "object",
+      "required": ["outcome", "selected_mode_ids", "considered", "effective_constraints"],
+      "properties": {
+        "outcome": { "enum": ["selected", "none", "ambiguous", "unsupported", "blocked"] },
+        "selected_mode_ids": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "considered": {
+          "type": "array", "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["mode_id", "card_ref", "disposition", "reason_code"],
+            "properties": {
+              "mode_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+              "card_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+              "disposition": { "enum": ["selected", "excluded", "plausible"] },
+              "reason_code": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "effective_constraints": {
+          "type": "object",
+          "required": [
+            "required_artifact_types", "human_decisions", "risk_rules",
+            "forbidden_claims", "claim_support_by_mode"
+          ],
+          "properties": {
+            "required_artifact_types": { "$ref": "common.schema.json#/$defs/stringArray" },
+            "human_decisions": { "$ref": "common.schema.json#/$defs/stringArray" },
+            "risk_rules": { "$ref": "common.schema.json#/$defs/stringArray" },
+            "forbidden_claims": { "$ref": "common.schema.json#/$defs/stringArray" },
+            "claim_support_by_mode": {
+              "type": "object",
+              "additionalProperties": { "$ref": "common.schema.json#/$defs/stringArray" }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "skill_assessment": {
+      "type": "object",
+      "required": [
+        "outcome", "deterministic_coverage", "candidates", "selected_skill_ids",
+        "capability_gaps_before", "capability_gaps_after"
+      ],
+      "properties": {
+        "outcome": { "enum": ["assign-skills", "no-skill", "split-task", "human-gate", "blocked"] },
+        "deterministic_coverage": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["mechanism_id", "covers"],
+            "properties": {
+              "mechanism_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+              "covers": { "$ref": "common.schema.json#/$defs/stringArray" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "candidates": {
+          "type": "array", "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "skill_id", "version", "manifest_hash", "content_hash", "package_hash",
+              "disposition", "covers", "reason_code"
+            ],
+            "properties": {
+              "skill_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+              "version": { "$ref": "common.schema.json#/$defs/semver" },
+              "manifest_hash": { "$ref": "common.schema.json#/$defs/sha256" },
+              "content_hash": { "$ref": "common.schema.json#/$defs/sha256" },
+              "package_hash": { "$ref": "common.schema.json#/$defs/sha256" },
+              "disposition": { "enum": ["selected", "excluded"] },
+              "covers": { "$ref": "common.schema.json#/$defs/stringArray" },
+              "reason_code": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "selected_skill_ids": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "capability_gaps_before": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "capability_gaps_after": { "$ref": "common.schema.json#/$defs/stringArray" }
+      },
+      "additionalProperties": false
+    },
+    "execution": {
+      "type": "object",
+      "required": ["ready", "disposition", "split_plan", "human_gate_questions"],
+      "properties": {
+        "ready": { "type": "boolean" },
+        "disposition": { "enum": ["execute", "deterministic-local", "split-task", "human-gate", "blocked"] },
+        "split_plan": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["proposed_task_id", "active_modes", "required_capabilities", "required_skill_ids"],
+            "properties": {
+              "proposed_task_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+              "active_modes": { "$ref": "common.schema.json#/$defs/stringArray" },
+              "required_capabilities": { "$ref": "common.schema.json#/$defs/stringArray" },
+              "required_skill_ids": { "$ref": "common.schema.json#/$defs/stringArray" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "human_gate_questions": { "$ref": "common.schema.json#/$defs/stringArray" }
+      },
+      "additionalProperties": false
+    },
+    "read_plan": {
+      "type": "object",
+      "required": [
+        "initial_content_refs", "selected_skill_content_refs",
+        "metadata_only_skill_ids", "expansion_policy"
+      ],
+      "properties": {
+        "initial_content_refs": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/fileRef" } },
+        "selected_skill_content_refs": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/fileRef" } },
+        "metadata_only_skill_ids": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "expansion_policy": { "const": "request-record-and-pin" }
+      },
+      "additionalProperties": false
+    },
+    "handoff": {
+      "type": "object",
+      "required": ["tier", "reason_codes", "upgrade_triggers"],
+      "properties": {
+        "tier": { "enum": ["H0", "H1", "H2"] },
+        "reason_codes": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "upgrade_triggers": { "$ref": "common.schema.json#/$defs/stringArray" }
+      },
+      "additionalProperties": false
+    },
+    "limitations": { "$ref": "common.schema.json#/$defs/stringArray" }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,26 @@
+schema_version: 0.1.0
+audit_id: SBA-literature-evidence-extraction-20260816
+skill_lock:
+  skill_id: literature-evidence-extraction
+  version: 0.1.0
+  manifest_hash: b4b64867e91b162e633575d35ba1abcfe7298612b160ebba21af4f8a681ab92d
+  content_hash: c0a080ea9c4743a599000bc6978386a8dcbb8aaa09e1ed4c0e54a4deadca780b
+  package_hash: 60c8b11adc147fbcb3c0d1c79d05c441d3143f446502a5b12c73f1b8b04895cb
+outcome: retain-with-boundary-fix
+selection_policy: Select for bounded, source-located extraction; use deterministic validation for an already structured locator-only check.
+trigger_fixture_ids: [KMS-001]
+boundary_fixture_ids: [KMS-003]
+non_trigger_fixture_ids: [KMS-007]
+manifest_changes:
+  - Formal Mode applicability is limited to evidence-synthesis and simulation.
+  - Planned experiment and theory classifications are removed until their Modes are admitted.
+deletion_conditions:
+  - Four live paired cases show no substantive gain over a lower-context deterministic or alternative path.
+  - Representative Tasks no longer require semantic extraction beyond deterministic source and locator checks.
+evidence_refs:
+  - path: examples/mode-skill-selection/KMS-001-evidence-extraction.yaml
+    sha256: a991c0f4fd4cbe872dcf391ac2f8fb207afec696ad56ff07d08ec5ff1f62934f
+  - path: examples/mode-skill-selection/KMS-007-evidence-locator-check-no-skill.yaml
+    sha256: 627324d07f147f1658c04f07a720fd33d6e0d8e267ed1f6cb1c07b8d7d814f28
+limitations:
+  - Contract fixtures do not establish real forward-execution value.

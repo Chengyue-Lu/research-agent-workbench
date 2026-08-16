@@ -1,0 +1,2 @@
+Assignment: inspect the bounded structural fixture and enumerate transfer obligations.
+Handoff: structure passes; semantic correctness remains unreviewed; audit is attached.

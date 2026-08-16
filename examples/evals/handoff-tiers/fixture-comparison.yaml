@@ -1,0 +1,130 @@
+schema_version: 0.1.0
+comparison_id: HTC-FIXTURE-001
+evidence_scope: fixture-only
+task_ref:
+  path: examples/evals/handoff-tiers/task.txt
+  sha256: be257423c26543cad5e0cb1ed3788da6ba8f04074a81aae48084770c01a09520
+input_ref:
+  path: examples/evals/handoff-tiers/input.txt
+  sha256: 24b589d96f4d9c422b847c3945bf84bc1e0015d9e9147ebb167f782d579784a3
+outcome_criteria_ref:
+  path: examples/evals/handoff-tiers/outcome-criteria.txt
+  sha256: 4d71fd10f5a908570f657484c382a72946a56c16ba617ce2264b1263e75540ae
+arms:
+  - tier: H0
+    archive_ref: null
+    returned_context_ref:
+      path: examples/evals/handoff-tiers/h0-return.txt
+      sha256: 2231e95bbc2934098b12ebbf2358e7a87bda4eb5c58592304c964f66467ccd98
+    handoff_ref: null
+    transfer_manifest_ref: null
+    transfer_audit_ref: null
+    artifact_refs:
+      - path: examples/evals/handoff-tiers/shared-artifact.txt
+        sha256: 98495e853f2ef2828e03cc788474703fec45e5002ec9792111efb48fdba52f18
+    metrics:
+      visible_message_count: 0
+      visible_message_chars: 0
+      archived_message_count: 0
+      archived_message_chars: 0
+      returned_context_chars: 59
+      artifact_count: 1
+      artifact_chars: 70
+      handoff_chars: 0
+      transfer_manifest_chars: 0
+      transfer_audit_chars: 0
+      generation_seconds: 5
+      review_seconds: 0
+      main_lookup_count: 0
+      limitation_omissions: 0
+      rework_actions: 0
+      read_expansion_requests: 0
+      read_expansion_grants: 0
+      new_inputs_used: 0
+      unrelated_reads: 0
+      capture_gap_count: 0
+      required_transfer_items: 0
+      carried_transfer_items: 0
+  - tier: H1
+    archive_ref:
+      path: examples/evals/handoff-tiers/h1-archive.txt
+      sha256: 3b7c09bff45b760fd8faaef5fc3e778f144e1a153594f76a97f7c06486aa3c43
+    returned_context_ref:
+      path: examples/evals/handoff-tiers/h1-return.txt
+      sha256: 652988cccda8f702949c6b05d49076b500779bfa21ef93604fa01c3800ed77f0
+    handoff_ref:
+      path: examples/evals/handoff-tiers/h1-handoff.txt
+      sha256: 021232d4fa2513b46bb59a6868649a6c411c88e6732951d7bc6fb3985d48e6ea
+    transfer_manifest_ref: null
+    transfer_audit_ref: null
+    artifact_refs:
+      - path: examples/evals/handoff-tiers/shared-artifact.txt
+        sha256: 98495e853f2ef2828e03cc788474703fec45e5002ec9792111efb48fdba52f18
+    metrics:
+      visible_message_count: 2
+      visible_message_chars: 145
+      archived_message_count: 2
+      archived_message_chars: 145
+      returned_context_chars: 76
+      artifact_count: 1
+      artifact_chars: 70
+      handoff_chars: 79
+      transfer_manifest_chars: 0
+      transfer_audit_chars: 0
+      generation_seconds: 7
+      review_seconds: 1
+      main_lookup_count: 0
+      limitation_omissions: 0
+      rework_actions: 0
+      read_expansion_requests: 0
+      read_expansion_grants: 0
+      new_inputs_used: 0
+      unrelated_reads: 0
+      capture_gap_count: 0
+      required_transfer_items: 0
+      carried_transfer_items: 0
+  - tier: H2
+    archive_ref:
+      path: examples/evals/handoff-tiers/h2-archive.txt
+      sha256: 15576c9674844b4b57d4f5ef66e3a9dce8decddc8a48a1a569e86cb3453d67d5
+    returned_context_ref:
+      path: examples/evals/handoff-tiers/h2-return.txt
+      sha256: 7b0b517f4c8627c2e82b747f4e02c7f0d556789790b7f12c3794b601324ee60f
+    handoff_ref:
+      path: examples/evals/handoff-tiers/h2-handoff.txt
+      sha256: 5bbbd11a2919ffcc38e04ab4d9918fa83217c429b9c657648b264a507e76f8f2
+    transfer_manifest_ref:
+      path: examples/evals/handoff-tiers/h2-manifest.txt
+      sha256: 6964a59f51e5960efefc8a32238836ba79e4c3a01c45278724a33c36d4c78d6d
+    transfer_audit_ref:
+      path: examples/evals/handoff-tiers/h2-audit.txt
+      sha256: ff8a21aa54d0f33d63085b64b655e83c805c7a583ec4c09191543f038ae6584c
+    artifact_refs:
+      - path: examples/evals/handoff-tiers/shared-artifact.txt
+        sha256: 98495e853f2ef2828e03cc788474703fec45e5002ec9792111efb48fdba52f18
+    metrics:
+      visible_message_count: 2
+      visible_message_chars: 174
+      archived_message_count: 2
+      archived_message_chars: 174
+      returned_context_chars: 76
+      artifact_count: 1
+      artifact_chars: 70
+      handoff_chars: 105
+      transfer_manifest_chars: 101
+      transfer_audit_chars: 77
+      generation_seconds: 9
+      review_seconds: 3
+      main_lookup_count: 0
+      limitation_omissions: 0
+      rework_actions: 0
+      read_expansion_requests: 0
+      read_expansion_grants: 0
+      new_inputs_used: 0
+      unrelated_reads: 0
+      capture_gap_count: 0
+      required_transfer_items: 2
+      carried_transfer_items: 2
+declared_best_tier: null
+limitations:
+  - Authored fixture metrics validate measurement and tier contracts but do not establish real coordination value or an optimal tier.

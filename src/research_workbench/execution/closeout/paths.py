@@ -40,6 +40,14 @@ class _CloseoutPaths:
         return f"{self.attempt_root}/execution-receipt.yaml"
 
     @property
+    def model_assignment(self) -> str:
+        return f"{self.attempt_root}/model-assignment.yaml"
+
+    @property
+    def provider_conformance(self) -> str:
+        return f"{self.attempt_root}/provider-conformance.yaml"
+
+    @property
     def main_context(self) -> str:
         return f"{self.attempt_root}/context-main.yaml"
 
@@ -56,6 +64,7 @@ class _CloseoutPaths:
             self.task_context,
             self.attempt,
             self.receipt,
+            self.model_assignment,
             self.main_context,
             self.main_state,
         )

@@ -1,0 +1,26 @@
+schema_version: 0.1.0
+audit_id: SBA-handoff-integrity-20260816
+skill_lock:
+  skill_id: handoff-integrity
+  version: 0.1.0
+  manifest_hash: a60baaf2ab3c75029863d73f1b0c69c1a9e70d011e7e762eee49b790008e7729
+  content_hash: 2a4c727eb7462628e9f246a5363a8add1ba244c05b6c7b7e7b2ad450befabbf7
+  package_hash: 7ef583e26e3759705ae2c4b75f978e80cce01b5307f858570601fb44fcd5d1cd
+outcome: retain-deterministic-first
+selection_policy: Run schema, hash, task, lock, and artifact checks deterministically; load the Skill only for H2 semantic transfer residuals or stale, disputed, or incomplete Handoffs.
+trigger_fixture_ids: [H2-SEMANTIC-TRANSFER]
+boundary_fixture_ids: [KMS-003]
+non_trigger_fixture_ids: [KMS-005]
+manifest_changes:
+  - Formal Mode applicability is limited to evidence-synthesis and simulation.
+  - Cross-cutting and planned classifications no longer masquerade as registered Mode ids.
+deletion_conditions:
+  - H2 live cases show no substantive gain beyond deterministic Transfer Manifest and Audit checks.
+  - Every remaining semantic decision is explicitly retained by a human rather than delegated to this Skill.
+evidence_refs:
+  - path: examples/mode-skill-selection/KMS-005-deterministic-handoff-no-skill.yaml
+    sha256: 48c82c59aa96fe927ce74e352772df6365d6f6d9e1b6be9dd0172bb64e72df96
+  - path: examples/handoff-transfer-audit-evidence.yaml
+    sha256: cc72796f9dcc93d035f7920841a769cb9640f7604873e97a365d9b0c90b71ab0
+limitations:
+  - Structural and transfer coverage do not establish scientific correctness or complete semantic equivalence.

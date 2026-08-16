@@ -1,0 +1,30 @@
+schema_version: 0.1.0
+object_type: decision
+object_id: D-SKILL-CLAIM-REWRITE-TRIAGE-001
+revision: 1
+status: recorded
+decision: Continue a controlled trial of the pinned candidate; do not add it to the accepted Registry or runtime discovery.
+scope: [rwb-claim-preserving-rewrite@0.1.0]
+reason_refs: [SE-CLAIM-REWRITE-FIXTURE-001]
+actor: Chengyue-Lu
+timestamp: "2026-08-16T10:08:00Z"
+metadata:
+  decision_kind: skill-triage
+  candidate_id: rwb-claim-preserving-rewrite
+  disposition: continue-trial
+  evaluation_ref:
+    path: examples/evals/claim-preserving-rewrite/fixture-evaluation.yaml
+    sha256: a4293ab1ddc2f762c2579372f849d96c6084ec42ebc3052b813277f58e99d89c
+  evaluator_verdict: not-eligible
+  positive_evidence:
+    - Valid surface locks pass while retaining an explicit human-review limitation.
+    - Independent number, citation, polarity, strength, causality, and empty-output failures are detected.
+    - Candidate source and package hashes are pinned and the package remains outside runtime discovery.
+  blocking_evidence: [EVAL-FIXTURE-ONLY, EVAL-CASE-COVERAGE]
+  required_next_evidence:
+    - Four live paired cases covering trigger, non-trigger, boundary, and adversarial kinds.
+    - Same provider, model, frozen configuration, Task input, and non-Skill context in both arms.
+    - Actual Assignments, receipts, runtime-measured Context Snapshots, and the same deterministic checker.
+    - Independent blinded human review of scientific integrity, task success, and clarity.
+  accepted_registry_effect: none
+  scientific_correctness_claimed: false

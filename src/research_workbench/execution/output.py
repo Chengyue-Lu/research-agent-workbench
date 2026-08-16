@@ -7,6 +7,7 @@ remain trusted closeout responsibilities.
 
 from __future__ import annotations
 
+from functools import cache
 from typing import Any, Mapping
 
 from jsonschema import Draft202012Validator
@@ -21,6 +22,11 @@ from research_workbench.validation import SchemaCatalog, check_claim_ceiling
 
 
 _MISSING = object()
+
+
+@cache
+def _schema_catalog() -> SchemaCatalog:
+    return SchemaCatalog()
 
 
 def _string_array() -> dict[str, Any]:
@@ -192,7 +198,7 @@ def _validate_research_payload(
             "API-OUTPUT-HUMAN-REVIEW-REQUIRED",
             "Task requires a semantic review unavailable in K-API-2",
         )
-    catalog = SchemaCatalog()
+    catalog = _schema_catalog()
     frozen_inputs = {
         reference.path: reference.sha256.removeprefix("sha256:").lower()
         for reference in task.input_refs

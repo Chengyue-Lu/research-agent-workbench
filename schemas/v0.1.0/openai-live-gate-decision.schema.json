@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/openai-live-gate-decision.schema.json",
+  "title": "OpenAI Live Gate Decision",
+  "x-rwb-document-kind": "openai_live_gate_decision",
+  "type": "object",
+  "required": ["schema_version", "decision_kind", "decision_id", "gate_id", "gate_status", "decision", "reason", "automatic_fallback", "scientific_correctness_proven", "gate_report_ref", "limitations"],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "decision_kind": { "const": "openai_live_gate_decision" },
+    "decision_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "gate_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "gate_status": { "enum": ["passed", "failed", "not-run"] },
+    "decision": { "enum": ["accept", "reject", "not-run"] },
+    "reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "automatic_fallback": { "const": false },
+    "scientific_correctness_proven": { "const": false },
+    "gate_report_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "conformance_check_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "main_state_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "receipt_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "trace_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "limitations": { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" } }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "decision": { "const": "accept" } }, "required": ["decision"] },
+      "then": { "properties": { "gate_status": { "const": "passed" } }, "required": ["conformance_check_ref", "main_state_ref", "receipt_ref", "trace_ref"] }
+    },
+    {
+      "if": { "properties": { "decision": { "const": "reject" } }, "required": ["decision"] },
+      "then": { "properties": { "gate_status": { "const": "failed" } } }
+    },
+    {
+      "if": { "properties": { "decision": { "const": "not-run" } }, "required": ["decision"] },
+      "then": { "properties": { "gate_status": { "const": "not-run" } } }
+    }
+  ],
+  "additionalProperties": false
+}

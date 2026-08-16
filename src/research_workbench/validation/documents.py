@@ -80,9 +80,16 @@ DOCUMENT_REQUIRED: dict[str, tuple[str, ...]] = {
 }
 
 SCHEMA_KINDS = {
+    "agent_trace_actors",
+    "agent_trace_envelope",
+    "agent_trace_event",
+    "agent_trace_index",
     "deterministic_check_report",
+    "handoff_tier_comparison",
     "project_protocol",
     "provider_conformance_report",
+    "openai_live_gate_report",
+    "openai_live_gate_decision",
     "research_mode",
     "agent_profile",
     "skill_manifest",
@@ -95,16 +102,45 @@ SCHEMA_KINDS = {
     "handoff_transfer_audit",
     "handoff_transfer_manifest",
     "main_state",
+    "mode_decision_card",
+    "mode_skill_selection",
+    "model_assignment",
     "context_snapshot",
     "execution_receipt",
     "research_object",
+    "simulation_vv_report",
+    "skill_boundary_audit",
 }
 
 
 def infer_document_kind(document: Mapping[str, Any]) -> str | None:
+    if document.get("report_kind") == "openai_live_gate":
+        return "openai_live_gate_report"
+    if document.get("decision_kind") == "openai_live_gate_decision":
+        return "openai_live_gate_decision"
     registry_kind = document.get("registry_kind")
     if isinstance(registry_kind, str):
         return registry_kind
+    if "trace_id" in document and "event_ledger" in document and "actors_ref" in document:
+        return "agent_trace_index"
+    if "event_id" in document and "event_type" in document and "occurred_at" in document:
+        return "agent_trace_event"
+    if "message_id" in document and "sender_actor_id" in document and "content_sha256" in document:
+        return "agent_trace_envelope"
+    if "actors" in document and "attempt_id" in document and "task_revision" in document:
+        return "agent_trace_actors"
+    if "card_id" in document and "mode_ref" in document and "decision_basis" in document:
+        return "mode_decision_card"
+    if "model_assignment_id" in document and "requested_model" in document and "slot_id" in document:
+        return "model_assignment"
+    if "selection_id" in document and "mode_assessment" in document and "skill_assessment" in document:
+        return "mode_skill_selection"
+    if "comparison_id" in document and "evidence_scope" in document and "arms" in document:
+        return "handoff_tier_comparison"
+    if "audit_id" in document and "skill_lock" in document and "selection_policy" in document:
+        return "skill_boundary_audit"
+    if "run_ref" in document and "input_lock" in document and "parameter_boundary" in document and "checks" in document:
+        return "simulation_vv_report"
     if "attempt_id" in document and "task_id" in document:
         if "result" in document:
             return "handoff_packet"
@@ -253,6 +289,7 @@ def _validate_registry(
                         "skill_id", "version", "status", "manifest_path", "source_path",
                         "content_hash", "license_status", "admission",
                         "package_hash",
+                        "manifest_hash",
                     ),
                 )
             )

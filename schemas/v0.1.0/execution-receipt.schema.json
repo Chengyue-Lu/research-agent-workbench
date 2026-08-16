@@ -19,6 +19,15 @@
     "task_revision": { "type": "integer", "minimum": 1 },
     "agent_profile_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
     "skill_assignment_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
+    "model_assignment_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "provider_conformance_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "execution_contract": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "handoff_tier": { "enum": ["H0", "H1", "H2"] },
+    "handoff_tier_reasons": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+    },
+    "agent_trace_index_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
     "context_snapshot_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
     "started_at": { "type": "string", "format": "date-time" },
     "finished_at": { "type": "string", "format": "date-time" },

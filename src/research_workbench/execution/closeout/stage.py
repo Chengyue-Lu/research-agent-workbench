@@ -11,7 +11,7 @@ from typing import Any
 from research_workbench.artifacts.integrity import hash_file, resolve_within_root
 from research_workbench.contracts import is_path_safe_identifier
 from research_workbench.io import load_document, write_bytes_exclusive, write_yaml_exclusive
-from research_workbench.tasks import TaskPacket
+from research_workbench.tasks import FileReference, TaskPacket
 
 from .errors import CloseoutError
 from .paths import _attempt_intent_path, _stage_locations, _stage_path
@@ -38,6 +38,9 @@ def record_api_attempt_intent(
     assignment_ref: str,
     provider_adapter_id: str,
     requested_model: str,
+    model_assignment_id: str,
+    model_assignment_ref: FileReference,
+    execution_contract: str,
     started_at: str,
     previous_main_state_ref: str | None,
 ) -> bool:
@@ -56,7 +59,7 @@ def record_api_attempt_intent(
     return write_yaml_exclusive(
         intent_path,
         {
-            "version": 2,
+            "version": 4,
             "attempt_id": attempt_id,
             "task_id": task_id,
             "protocol_ref": protocol_ref,
@@ -65,6 +68,17 @@ def record_api_attempt_intent(
             "assignment_ref": assignment_ref,
             "provider_adapter_id": provider_adapter_id,
             "requested_model": requested_model,
+            "model_assignment_id": model_assignment_id,
+            "model_assignment_ref": {
+                "path": model_assignment_ref.path,
+                "sha256": model_assignment_ref.sha256,
+                **(
+                    {"revision": model_assignment_ref.revision}
+                    if model_assignment_ref.revision is not None
+                    else {}
+                ),
+            },
+            "execution_contract": execution_contract,
             "started_at": started_at,
             "previous_main_state_ref": previous_main_state_ref,
         },
@@ -82,6 +96,9 @@ def fail_if_api_attempt_intent_exists(
     assignment_ref: str,
     provider_adapter_id: str,
     requested_model: str,
+    model_assignment_id: str,
+    model_assignment_ref: FileReference,
+    execution_contract: str,
     previous_main_state_ref: str | None,
 ) -> None:
     """Reject an uncommitted retry after execution may already have started."""
@@ -96,6 +113,9 @@ def fail_if_api_attempt_intent_exists(
         assignment_ref=assignment_ref,
         provider_adapter_id=provider_adapter_id,
         requested_model=requested_model,
+        model_assignment_id=model_assignment_id,
+        model_assignment_ref=model_assignment_ref,
+        execution_contract=execution_contract,
         previous_main_state_ref=previous_main_state_ref,
     )
 
@@ -146,6 +166,9 @@ def _write_stage_plan(
     assignment_ref: str,
     provider_adapter_id: str,
     requested_model: str,
+    model_assignment_id: str,
+    model_assignment_ref: FileReference | None,
+    execution_contract: str,
     attempt_ref: str,
     main_state_ref: str,
     publication_refs: tuple[str, ...],
@@ -160,7 +183,7 @@ def _write_stage_plan(
     write_yaml_exclusive(
         stage_parent / "plan.yaml",
         {
-            "version": 3,
+            "version": 4,
             "attempt_id": attempt_id,
             "protocol_ref": protocol_ref,
             "task_ref": task_ref,
@@ -168,6 +191,21 @@ def _write_stage_plan(
             "assignment_ref": assignment_ref,
             "provider_adapter_id": provider_adapter_id,
             "requested_model": requested_model,
+            "model_assignment_id": model_assignment_id,
+            "model_assignment_ref": (
+                {
+                    "path": model_assignment_ref.path,
+                    "sha256": model_assignment_ref.sha256,
+                    **(
+                        {"revision": model_assignment_ref.revision}
+                        if model_assignment_ref.revision is not None
+                        else {}
+                    ),
+                }
+                if model_assignment_ref is not None
+                else None
+            ),
+            "execution_contract": execution_contract,
             "attempt_ref": attempt_ref,
             "attempt_sha256": hash_file(attempt_path),
             "main_state_ref": main_state_ref,
@@ -196,17 +234,46 @@ def _load_stage_plan(stage_parent: Path, stage_root: Path, attempt_id: str) -> d
         "assignment_ref",
         "provider_adapter_id",
         "requested_model",
+        "model_assignment_id",
+        "execution_contract",
         "attempt_ref",
         "attempt_sha256",
         "main_state_ref",
         "main_state_sha256",
         "execution_material_status",
     )
-    if not isinstance(value, Mapping) or value.get("version") != 3:
+    if not isinstance(value, Mapping) or value.get("version") != 4:
         raise CloseoutError("CLOSEOUT-STAGE-INCOMPLETE", "stage plan version is invalid")
     if any(not isinstance(value.get(key), str) or not value[key] for key in required_strings):
         raise CloseoutError("CLOSEOUT-STAGE-INCOMPLETE", "stage plan fields are invalid")
     plan: dict[str, Any] = {key: str(value[key]) for key in required_strings}
+    if "model_assignment_ref" not in value:
+        raise CloseoutError(
+            "CLOSEOUT-STAGE-INCOMPLETE",
+            "stage Model Assignment reference is missing",
+        )
+    raw_model_assignment_ref = value.get("model_assignment_ref")
+    if raw_model_assignment_ref is None:
+        plan["model_assignment_ref"] = None
+    elif isinstance(raw_model_assignment_ref, Mapping):
+        try:
+            model_assignment_ref = FileReference.from_mapping(raw_model_assignment_ref)
+        except Exception as exc:
+            raise CloseoutError(
+                "CLOSEOUT-STAGE-INCOMPLETE",
+                "stage Model Assignment reference is invalid",
+            ) from exc
+        _verify_staged_hash(
+            stage_root,
+            model_assignment_ref.path,
+            model_assignment_ref.sha256,
+        )
+        plan["model_assignment_ref"] = model_assignment_ref
+    else:
+        raise CloseoutError(
+            "CLOSEOUT-STAGE-INCOMPLETE",
+            "stage Model Assignment reference is invalid",
+        )
     if "previous_main_state_ref" not in value:
         raise CloseoutError(
             "CLOSEOUT-STAGE-INCOMPLETE",
@@ -261,14 +328,17 @@ def _raise_if_execution_intent_is_incomplete(
     assignment_ref: str,
     provider_adapter_id: str,
     requested_model: str,
+    model_assignment_id: str,
+    model_assignment_ref: FileReference | None = None,
+    execution_contract: str,
     previous_main_state_ref: str | None,
 ) -> None:
     intent_path = _attempt_intent_path(project_root, attempt_id, create=False)
     if not intent_path.is_file():
         return
     value = load_document(intent_path)
-    expected = {
-        "version": 2,
+    expected: dict[str, Any] = {
+        "version": 4,
         "attempt_id": attempt_id,
         "task_id": task_id,
         "protocol_ref": protocol_ref,
@@ -277,8 +347,20 @@ def _raise_if_execution_intent_is_incomplete(
         "assignment_ref": assignment_ref,
         "provider_adapter_id": provider_adapter_id,
         "requested_model": requested_model,
+        "model_assignment_id": model_assignment_id,
+        "execution_contract": execution_contract,
         "previous_main_state_ref": previous_main_state_ref,
     }
+    if model_assignment_ref is not None:
+        expected["model_assignment_ref"] = {
+            "path": model_assignment_ref.path,
+            "sha256": model_assignment_ref.sha256,
+            **(
+                {"revision": model_assignment_ref.revision}
+                if model_assignment_ref.revision is not None
+                else {}
+            ),
+        }
     if not isinstance(value, Mapping) or any(value.get(key) != item for key, item in expected.items()):
         raise CloseoutError(
             "CLOSEOUT-STAGE-IDENTITY",

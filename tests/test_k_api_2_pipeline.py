@@ -1,3 +1,4 @@
+import hashlib
 import json
 import shutil
 import subprocess
@@ -16,6 +17,7 @@ from research_workbench.adapters.models import (
     Capability,
     ContentBlock,
     FinishReason,
+    ModelAssignment,
     ModelBinding,
     ModelRequest,
     ModelResponse,
@@ -33,9 +35,11 @@ from research_workbench.execution import (
     run_task_api_attempt,
     validate_closeout_preconditions,
 )
+from research_workbench.execution.compiler import derive_execution_controls
+from research_workbench.execution.contracts import default_execution_contract_registry
 from research_workbench.io import load_document
 from research_workbench.protocol import ProjectProtocol
-from research_workbench.tasks import TaskPacket
+from research_workbench.tasks import FileReference, TaskPacket
 
 
 SOURCE_ROOT = Path(__file__).resolve().parents[1]
@@ -204,6 +208,7 @@ class KApi2PipelineTests(unittest.TestCase):
     def actions() -> dict[str, str]:
         return {
             "completed": "Review K-API-2 closeout; do not repeat the completed evidence extraction.",
+            "stage-completed": "Review the stage-complete result before scientific acceptance.",
             "safe-paused": "Review the explicit budget before creating a new Attempt; do not replay automatically.",
             "incomplete": "Review the bounded incomplete result before creating a new Attempt.",
             "failed": "Inspect the persisted failure summary before explicitly creating a new Attempt.",
@@ -211,7 +216,33 @@ class KApi2PipelineTests(unittest.TestCase):
         }
 
     def run_pipeline(self, provider: ScriptedLocalProvider, attempt_id: str, **overrides):
-        binding = overrides.get("binding", self.binding())
+        binding = overrides.pop("binding", self.binding())
+        runtime_limits = overrides.get("runtime_limits", self.limits())
+        protocol = ProjectProtocol.from_mapping(load_document(self.root / PROTOCOL_REF))
+        task = TaskPacket.from_mapping(load_document(self.root / TASK_REF))
+        assignment = ResolvedTask.from_mapping(load_document(self.root / ASSIGNMENT_REF))
+        model_assignment = overrides.pop("model_assignment", None)
+        if model_assignment is None:
+            execution_contract = default_execution_contract_registry().require(task, assignment)
+            policy, effective_limits = derive_execution_controls(
+                protocol=protocol,
+                task=task,
+                runtime_limits=runtime_limits,
+                execution_contract=execution_contract,
+            )
+            model_assignment = ModelAssignment.create(
+                attempt_id=attempt_id,
+                task_id=task.task_id,
+                task_revision=task.revision,
+                agent_profile_ref=FileReference(PROFILE_REF, hash_file(self.root / PROFILE_REF)),
+                pool_id="test-model-pool",
+                pool_config_hash=hashlib.sha256(b"test-model-pool-config").hexdigest(),
+                binding=binding,
+                selection_source="profile-default",
+                selection_reason="The frozen Agent Profile explicitly selects its default slot.",
+                effective_data_policy=policy,
+                execution_limits=effective_limits,
+            )
         registry = ProviderRegistry()
         registry.register(binding.provider_adapter, provider)
         values = {
@@ -220,13 +251,14 @@ class KApi2PipelineTests(unittest.TestCase):
             "task_ref": TASK_REF,
             "profile_ref": PROFILE_REF,
             "assignment_ref": ASSIGNMENT_REF,
-            "binding": binding,
+            "model_assignment": model_assignment,
             "providers": registry,
-            "runtime_limits": self.limits(),
+            "runtime_limits": runtime_limits,
             "attempt_id": attempt_id,
             "started_at": "2026-08-14T02:00:00Z",
             "finished_at": "2026-08-14T02:01:00Z",
             "next_actions": self.actions(),
+            "trace_accountable_owner": "Huang Yi",
             "extra_limitations": ("Offline fake Provider; no live API compatibility was tested.",),
         }
         values.update(overrides)
@@ -263,6 +295,73 @@ class KApi2PipelineTests(unittest.TestCase):
         self.assertEqual(0, checked.returncode, checked.stdout + checked.stderr)
         state = load_document(self.root / publication.main_state_ref)
         self.assertEqual([self.actions()["completed"]], state["next_actions"])
+        attempt_root = self.root / "work/EVID-001/A-K2-E2E-COMPLETED"
+        attempt = load_document(attempt_root / "attempt.yaml")
+        receipt = load_document(attempt_root / "execution-receipt.yaml")
+        trace = load_document(attempt_root / "INDEX.yaml")
+        self.assertEqual("H2", attempt["handoff_tier"])
+        self.assertEqual("H2", receipt["handoff_tier"])
+        self.assertEqual(
+            ["task-policy-requires-transfer-manifest"],
+            receipt["handoff_tier_reasons"],
+        )
+        self.assertEqual(
+            {"handoff.yaml", "transfer-manifest.yaml"},
+            {Path(item["path"]).name for item in trace["handoff_refs"]},
+        )
+        self.assertEqual(
+            {"transfer-audit.yaml"},
+            {Path(item["path"]).name for item in trace["check_refs"]},
+        )
+        self.assertEqual(1, len(trace["output_refs"]))
+        self.assertIn(
+            "/artifacts/",
+            "/" + trace["output_refs"][0]["path"],
+        )
+        self._assert_provider_content_gap(trace)
+
+    def test_model_assignment_is_hash_pinned_before_first_provider_call(self) -> None:
+        attempt_id = "A-K2-E2E-MODEL-ASSIGNMENT-EARLY"
+        relative = f"work/EVID-001/{attempt_id}/model-assignment.yaml"
+
+        def assert_frozen_assignment(_request: ModelRequest) -> ModelResponse:
+            assignment_path = self.root / relative
+            intent_path = self.root / f".rwb/attempt-intents/{attempt_id}.yaml"
+            self.assertTrue(assignment_path.is_file())
+            self.assertTrue(intent_path.is_file())
+            intent = load_document(intent_path)
+            expected_ref = {
+                "path": relative,
+                "sha256": hash_file(assignment_path),
+            }
+            self.assertEqual(expected_ref, intent["model_assignment_ref"])
+            persisted = ModelAssignment.from_mapping(load_document(assignment_path))
+            self.assertEqual(
+                persisted.model_assignment_id,
+                intent["model_assignment_id"],
+            )
+            return response(
+                "r-model-assignment-early",
+                FinishReason.COMPLETE,
+                text=json.dumps(output_payload()),
+            )
+
+        publication = self.run_pipeline(
+            ScriptedLocalProvider(assert_frozen_assignment),
+            attempt_id,
+        )
+
+        attempt_root = self.root / f"work/EVID-001/{attempt_id}"
+        expected_ref = {
+            "path": relative,
+            "sha256": hash_file(attempt_root / "model-assignment.yaml"),
+        }
+        attempt = load_document(attempt_root / "attempt.yaml")
+        receipt = load_document(attempt_root / "execution-receipt.yaml")
+        state = load_document(self.root / publication.main_state_ref)
+        self.assertEqual(expected_ref, attempt["model_assignment_ref"])
+        self.assertEqual(expected_ref, receipt["model_assignment_ref"])
+        self.assertIn(expected_ref, state["machine_state_refs"])
 
     def test_tool_failed_path_retains_failure_without_completion_claim(self) -> None:
         payload = json.dumps(output_payload(), ensure_ascii=False)
@@ -447,6 +546,63 @@ class KApi2PipelineTests(unittest.TestCase):
 
         self.assertEqual(0, provider.capability_calls)
         self.assertEqual([], provider.requests)
+
+    def test_runtime_side_effect_ceiling_blocks_before_provider_discovery(self) -> None:
+        protocol = ProjectProtocol.from_mapping(load_document(self.root / PROTOCOL_REF))
+        task = TaskPacket.from_mapping(load_document(self.root / TASK_REF))
+        assignment = ResolvedTask.from_mapping(load_document(self.root / ASSIGNMENT_REF))
+        contract = default_execution_contract_registry().require(task, assignment)
+        policy, effective_limits = derive_execution_controls(
+            protocol=protocol,
+            task=task,
+            runtime_limits=self.limits(),
+            execution_contract=contract,
+        )
+
+        for label, allowed in (
+            ("EMPTY", frozenset()),
+            ("ONLY-NONE", frozenset({"none"})),
+        ):
+            with self.subTest(label=label):
+                attempt_id = f"A-K2-E2E-SIDE-EFFECT-{label}"
+                model_assignment = ModelAssignment.create(
+                    attempt_id=attempt_id,
+                    task_id=task.task_id,
+                    task_revision=task.revision,
+                    agent_profile_ref=FileReference(
+                        PROFILE_REF,
+                        hash_file(self.root / PROFILE_REF),
+                    ),
+                    pool_id="test-model-pool",
+                    pool_config_hash=hashlib.sha256(
+                        b"test-model-pool-config"
+                    ).hexdigest(),
+                    binding=self.binding(),
+                    selection_source="profile-default",
+                    selection_reason=(
+                        "The frozen Agent Profile explicitly selects its default slot."
+                    ),
+                    effective_data_policy=policy,
+                    execution_limits=effective_limits,
+                )
+                provider = ScriptedLocalProvider()
+
+                with self.assertRaises(CloseoutError) as raised:
+                    self.run_pipeline(
+                        provider,
+                        attempt_id,
+                        runtime_limits=replace(
+                            self.limits(),
+                            allowed_tool_side_effects=allowed,
+                        ),
+                        model_assignment=model_assignment,
+                    )
+
+                self.assertEqual(
+                    "TOOL-PERMISSION-ESCALATION", raised.exception.code
+                )
+                self.assertEqual(0, provider.capability_calls)
+                self.assertEqual([], provider.requests)
 
     def test_stale_input_blocks_with_zero_provider_and_tool_calls(self) -> None:
         (self.root / INPUT_REF).write_text("stale", encoding="utf-8")
@@ -943,8 +1099,6 @@ class KApi2PipelineTests(unittest.TestCase):
         self.assertEqual(capability_calls, provider.capability_calls)
 
     def test_concurrent_same_attempt_has_one_atomic_provider_winner(self) -> None:
-        barrier = threading.Barrier(2)
-
         class ConcurrentProvider:
             def __init__(self) -> None:
                 self.lock = threading.Lock()
@@ -954,9 +1108,6 @@ class KApi2PipelineTests(unittest.TestCase):
             def capabilities(self) -> ProviderCapabilities:
                 with self.lock:
                     self.capability_calls += 1
-                    call_number = self.capability_calls
-                if call_number <= 2:
-                    barrier.wait(timeout=10)
                 return ProviderCapabilities(
                     provider="fake-local",
                     adapter_version="fixture-1",
@@ -993,31 +1144,81 @@ class KApi2PipelineTests(unittest.TestCase):
         self.assertEqual(1, len(publications))
         self.assertEqual("completed", publications[0].status)
         self.assertEqual(1, len(failures))
-        self.assertEqual("API-ATTEMPT-ALREADY-STARTED", failures[0].code)
+        self.assertEqual("API-ATTEMPT-RESULT-UNKNOWN", failures[0].code)
 
-    def test_crash_before_main_state_resumes_closeout_without_provider_replay(self) -> None:
-        payload = json.dumps(output_payload())
-        provider = ScriptedLocalProvider(
-            response(
-                "r1",
-                FinishReason.TOOL_CALL,
-                calls=(ToolCall("read-1", "document-read", {"path": INPUT_REF}),),
-            ),
-            response("r2", FinishReason.COMPLETE, text=payload),
+    def test_h2_fault_checkpoints_resume_without_provider_replay(self) -> None:
+        cases = (
+            ("AFTER-STAGE", "after-stage-validation"),
+            ("FIRST-PUBLISH", "first-after-publish"),
+            ("BEFORE-MAIN", "before-main-state-publish"),
+            ("AFTER-MAIN", "after-main-state-publish"),
         )
 
-        def crash(point: str) -> None:
-            if point == "before-main-state-publish":
-                raise RuntimeError("simulated closeout crash")
+        for suffix, checkpoint in cases:
+            with self.subTest(checkpoint=checkpoint):
+                attempt_id = f"A-K2-E2E-FAULT-{suffix}"
+                provider = ScriptedLocalProvider(
+                    response(
+                        f"r-fault-{suffix.lower()}",
+                        FinishReason.COMPLETE,
+                        text=json.dumps(output_payload()),
+                    )
+                )
+                triggered: list[str] = []
 
-        with self.assertRaisesRegex(RuntimeError, "simulated closeout crash"):
-            self.run_pipeline(provider, "A-K2-E2E-CRASH", fault_injector=crash)
-        self.assertEqual(2, len(provider.requests))
-        self.assertFalse((self.root / "work/EVID-001/A-K2-E2E-CRASH/main-state.yaml").exists())
+                def crash(point: str) -> None:
+                    first_non_main = (
+                        checkpoint == "first-after-publish"
+                        and point.startswith("after-publish:")
+                        and not point.endswith("/main-state.yaml")
+                    )
+                    if not triggered and (point == checkpoint or first_non_main):
+                        triggered.append(point)
+                        raise RuntimeError(f"injected H2 fault at {point}")
 
-        publication = self.run_pipeline(provider, "A-K2-E2E-CRASH")
-        self.assertEqual(2, len(provider.requests), "Provider was called again instead of resuming staged closeout")
-        self.assertTrue((self.root / publication.main_state_ref).is_file())
+                with self.assertRaisesRegex(RuntimeError, "injected H2 fault"):
+                    self.run_pipeline(provider, attempt_id, fault_injector=crash)
+
+                self.assertEqual(1, len(triggered))
+                self.assertEqual(1, len(provider.requests))
+                provider_calls = len(provider.requests)
+                capability_calls = provider.capability_calls
+                attempt_root = self.root / "work/EVID-001" / attempt_id
+                main_state = attempt_root / "main-state.yaml"
+                stage_attempt = (
+                    self.root
+                    / ".rwb/closeout"
+                    / attempt_id
+                    / "tree/work/EVID-001"
+                    / attempt_id
+                    / "attempt.yaml"
+                )
+                self.assertTrue(
+                    (self.root / ".rwb/closeout" / attempt_id / "plan.yaml").is_file()
+                )
+
+                if checkpoint == "after-main-state-publish":
+                    self.assertTrue(main_state.is_file())
+                    self.assertTrue(stage_attempt.is_file())
+                    stage_attempt.unlink()
+                else:
+                    self.assertFalse(
+                        main_state.exists(),
+                        "non-Main files must not become an authoritative checkpoint",
+                    )
+                if checkpoint == "first-after-publish":
+                    published_ref = triggered[0].removeprefix("after-publish:")
+                    self.assertFalse(published_ref.endswith("/main-state.yaml"))
+                    self.assertTrue((self.root / published_ref).is_file())
+                if checkpoint == "before-main-state-publish":
+                    self.assertTrue((attempt_root / "execution-receipt.yaml").is_file())
+                    self.assertTrue((attempt_root / "INDEX.yaml").is_file())
+
+                publication = self.run_pipeline(provider, attempt_id)
+
+                self.assertEqual(provider_calls, len(provider.requests))
+                self.assertEqual(capability_calls, provider.capability_calls)
+                self._assert_recovered_archive(publication, attempt_id)
 
     def test_resume_rejects_noncanonical_stage_publication_paths(self) -> None:
         provider = ScriptedLocalProvider(
@@ -1223,37 +1424,53 @@ class KApi2PipelineTests(unittest.TestCase):
         self.assertEqual("CLOSEOUT-STAGE-DRIFT", retry.exception.code)
         self.assertEqual(1, len(provider.requests))
 
-    def test_committed_main_state_wins_over_partially_cleaned_stage(self) -> None:
-        provider = ScriptedLocalProvider(
-            response(
-                "r-post-commit",
-                FinishReason.COMPLETE,
-                text=json.dumps(output_payload()),
-            )
-        )
-
-        def crash(point: str) -> None:
-            if point == "after-main-state-publish":
-                raise RuntimeError("simulated post-commit crash")
-
-        with self.assertRaisesRegex(RuntimeError, "simulated post-commit crash"):
-            self.run_pipeline(
-                provider,
-                "A-K2-E2E-POST-COMMIT",
-                fault_injector=crash,
-            )
-        staged_attempt = (
-            self.root
-            / ".rwb/closeout/A-K2-E2E-POST-COMMIT/tree/work/EVID-001/"
-            "A-K2-E2E-POST-COMMIT/attempt.yaml"
-        )
-        staged_attempt.unlink()
-
-        publication = self.run_pipeline(provider, "A-K2-E2E-POST-COMMIT")
+    def _assert_recovered_archive(self, publication, attempt_id: str) -> None:
+        attempt_root = self.root / "work/EVID-001" / attempt_id
+        attempt_ref = f"work/EVID-001/{attempt_id}/attempt.yaml"
+        receipt_ref = f"work/EVID-001/{attempt_id}/execution-receipt.yaml"
+        state = load_document(attempt_root / "main-state.yaml")
+        attempt = load_document(attempt_root / "attempt.yaml")
+        receipt = load_document(attempt_root / "execution-receipt.yaml")
+        trace_ref = receipt["agent_trace_index_ref"]
+        trace = load_document(self.root / trace_ref["path"])
 
         self.assertEqual("completed", publication.status)
-        self.assertEqual(1, len(provider.requests))
-        self.assertEqual(0, self.resume_check(publication.main_state_ref).returncode)
+        self.assertEqual("completed", receipt["status"])
+        self.assertEqual("active", state["continuity_status"])
+        self.assertEqual(attempt_ref, receipt["attempt_ref"])
+        self.assertEqual(receipt_ref, attempt["execution_receipt_ref"])
+        self.assertEqual(trace_ref, attempt["agent_trace_index_ref"])
+        self.assertEqual([trace_ref], state["agent_trace_index_refs"])
+        self.assertEqual(hash_file(self.root / trace_ref["path"]), trace_ref["sha256"])
+        self.assertEqual(attempt_id, trace["attempt_id"])
+        self.assertEqual("completed", trace["attempt_status"])
+        self.assertEqual("frozen", trace["trace_status"])
+        checked = self.resume_check(publication.main_state_ref)
+        self.assertEqual(0, checked.returncode, checked.stdout + checked.stderr)
+
+    def _assert_provider_content_gap(self, trace: dict) -> None:
+        self.assertEqual("gapped", trace["completeness"])
+        events = [
+            json.loads(line)
+            for line in (self.root / trace["event_ledger"]["path"])
+            .read_text(encoding="utf-8")
+            .splitlines()
+            if line
+        ]
+        provider_gap_ids = {
+            event["event_id"]
+            for event in events
+            if event["event_type"] == "capture-gap"
+            and event["payload"].get("affected_stream") == "messages"
+            and event["payload"].get("reason_category") == "policy-omission"
+            and event["payload"].get("reason")
+            == "Provider boundary content is excluded by Trace policy."
+        }
+        self.assertTrue(provider_gap_ids)
+        self.assertTrue(
+            provider_gap_ids & {gap["event_id"] for gap in trace["capture_gaps"]},
+            "Provider-content omission must be indexed as an explicit capture gap",
+        )
 
     def resume_check(self, main_state_ref: str):
         return subprocess.run(

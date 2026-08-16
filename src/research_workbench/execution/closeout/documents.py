@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from functools import cache
 from collections.abc import Mapping
 from pathlib import Path, PurePosixPath
 from typing import Any
@@ -14,8 +15,15 @@ from research_workbench.artifacts.integrity import resolve_within_root
 from research_workbench.io import load_document, write_yaml_exclusive
 from research_workbench.validation import SchemaCatalog
 
-from .errors import CloseoutError
+from .errors import CloseoutContractSnapshot, CloseoutError
 from .paths import _stage_path
+
+
+@cache
+def _schema_catalog() -> SchemaCatalog:
+    """Reuse the immutable schema registry across one closeout process."""
+
+    return SchemaCatalog()
 
 def _snapshot_document(snapshot: CloseoutContractSnapshot) -> Mapping[str, Any]:
     if hashlib.sha256(snapshot.payload).hexdigest() != snapshot.sha256:
@@ -42,7 +50,7 @@ def _snapshot_document(snapshot: CloseoutContractSnapshot) -> Mapping[str, Any]:
         raise CloseoutError(
             "CLOSEOUT-CONTRACT-PARSE", f"contract must be an object: {snapshot.ref}"
         )
-    errors = SchemaCatalog().validate(snapshot.kind, value)
+    errors = _schema_catalog().validate(snapshot.kind, value)
     if errors:
         first = errors[0]
         raise CloseoutError(
@@ -58,7 +66,7 @@ def _stage_document(root: Path, relative: str, document: Mapping[str, Any], kind
 
 
 def _validate_schema(kind: str, document: Mapping[str, Any]) -> None:
-    errors = SchemaCatalog().validate(kind, document)
+    errors = _schema_catalog().validate(kind, document)
     if errors:
         first = errors[0]
         raise CloseoutError("CLOSEOUT-SCHEMA", f"{kind} {first.pointer}: {first.message}")

@@ -32,6 +32,14 @@
     "skill_assignment_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
     "runtime_snapshot_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
     "execution_receipt_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
+    "agent_trace_index_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "model_assignment_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "provider_conformance_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "handoff_tier": { "enum": ["H0", "H1", "H2"] },
+    "handoff_tier_reasons": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+    },
     "artifact_refs": {
       "type": "array",
       "items": { "$ref": "common.schema.json#/$defs/relativePath" },
