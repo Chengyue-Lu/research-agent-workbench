@@ -72,6 +72,30 @@ Codex 0.124.0 没有可用的公开配置把这三个剩余工具继续清空，
 与模型配置正确就注入真实 key。这个结论来自零外网、假凭据探针，不是对真实
 Provider 能力的声称。
 
+### 2.2 Docker 隔离与 egress 合同的当前进度
+
+项目已新增一条独立的、不改动共享对象的 Docker no-key host：
+
+- 固定 Node 基础镜像 digest、Codex `0.124.0` lock/integrity、模型 catalog 和运行资产哈希；
+- 容器使用只读 rootfs、非 root 用户、零 Linux capability、`no-new-privileges`、资源上限与无宿主挂载的 tmpfs；
+- 默认 `network=none`，无凭据探针必须证明宿主盘、Docker socket 与外网均不可达；
+- key 与 prompt 只允许通过有长度上限的 stdin frame 进入镜像内 wrapper，不进入 Docker argv 或 `Config.Env`；
+- `create -> start -> kill/rm` 后重新核对 ID 和名称必须均不存在，不能用主错误掩盖清理失败。
+
+另外已冻结一份仅面向 `open.bigmodel.cn:443` 的 egress 合同：严格 CONNECT 解析、全量 DNS
+答案公网地址校验、literal-IP-only 拨号、实际 peer 核对、有界 TLS ClientHello 重组和精确 SNI
+校验，以及不包含 host/IP/header/body/key 的脱敏计量字段。独立 socket host 已实现显式启动、
+stdlib resolve-once、单次 literal 拨号、selector 双向 relay、统一 wall/idle/字节上限和 exactly-one
+脱敏 audit；真实 `socketpair` 测试覆盖了 partial I/O 与双向 half-close。它仍未被打包成 proxy
+镜像，也没有 Docker 监听/peer 绑定、事务化 start/cleanup supervisor、DNS 外层绝对超时或真实
+Provider 网络验收，因此不能视为 live egress。
+
+因此 `CODEX_CODING_PLAN_DOCKER_LIVE_READY` 与 `CODEX_DOCKER_NETWORK_LIVE_READY` 继续为 `False`。
+下一道真实凭据门是：固定最终 runtime/proxy OCI digest；补齐 proxy 镜像、仅 internal endpoint
+监听和 runtime peer 核验；用真实 Engine 验证双网拓扑、无直连/host-gateway/metadata 路径及完整
+清理；再用 localhost/fake-upstream 冻结 `/v1/responses` 请求指纹。这些项目没有通过前，不得仅把
+`network=none` 改成 default bridge，也不得注入 key。
+
 ## 3. 当前 Adapter 能力
 
 `ZhipuChatCompletionsProvider` 当前保守实现：

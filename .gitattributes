@@ -8,3 +8,7 @@
 *.txt text eol=lf
 *.yaml text eol=lf
 *.yml text eol=lf
+
+docker/codex-coding-plan/Dockerfile text eol=lf
+docker/codex-coding-plan/*.mjs text eol=lf
+docker/codex-coding-plan/*.sha256 text eol=lf
