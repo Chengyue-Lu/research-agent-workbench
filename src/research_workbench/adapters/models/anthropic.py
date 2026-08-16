@@ -6,6 +6,7 @@ from collections.abc import Mapping
 from typing import Any
 
 from research_workbench.adapters.models.base import (
+    _integer,
     perform_json_request,
     preflight,
     provider_extension,
@@ -343,7 +344,3 @@ _ERROR_TYPES: dict[str | None, ProviderErrorCategory] = {
     "rate_limit_error": ProviderErrorCategory.RATE_LIMIT,
     "overloaded_error": ProviderErrorCategory.TRANSIENT,
 }
-
-
-def _integer(value: object) -> int | None:
-    return value if isinstance(value, int) and not isinstance(value, bool) else None

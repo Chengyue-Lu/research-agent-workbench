@@ -462,3 +462,7 @@ def require_list(value: object, *, provider: str, field: str) -> list[Any]:
 
 def _nonempty_string(value: object) -> bool:
     return isinstance(value, str) and bool(value.strip())
+
+
+def _integer(value: object) -> int | None:
+    return value if isinstance(value, int) and not isinstance(value, bool) else None

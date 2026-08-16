@@ -8,6 +8,7 @@ from typing import Any
 
 from research_workbench.adapters.models import (
     ApiSessionLimits,
+    ApiSessionResult,
     ApiSessionStatus,
     IsolatedApiSessionRunner,
     ModelBinding,
@@ -16,6 +17,7 @@ from research_workbench.adapters.models import (
 )
 from research_workbench.capability import AgentProfile, ResolvedTask
 from research_workbench.execution.closeout import (
+    TERMINAL_STATUSES,
     CloseoutError,
     CloseoutPublication,
     capture_closeout_contracts,
@@ -39,11 +41,6 @@ from research_workbench.protocol import ProjectProtocol
 from research_workbench.tasks import TaskPacket
 
 
-_REQUIRED_ACTIONS = frozenset(
-    {"completed", "safe-paused", "incomplete", "failed", "blocked"}
-)
-
-
 def run_task_api_attempt(
     *,
     root: str | Path,
@@ -64,10 +61,10 @@ def run_task_api_attempt(
 ) -> CloseoutPublication:
     """Run exactly one fresh API Attempt and return no transcript-bearing object."""
 
-    missing_actions = sorted(_REQUIRED_ACTIONS - set(next_actions))
+    missing_actions = sorted(TERMINAL_STATUSES - set(next_actions))
     if missing_actions or any(
         not isinstance(next_actions[key], str) or not next_actions[key].strip()
-        for key in _REQUIRED_ACTIONS
+        for key in TERMINAL_STATUSES
     ):
         raise ValueError(
             "next_actions requires non-empty completed, safe-paused, incomplete, failed, "
@@ -159,10 +156,24 @@ def run_task_api_attempt(
         previous_main_state_document=previous_main_state_document,
     )
 
-    try:
-        material = verify_execution_material(project_root, task, assignment)
-        document_read = build_document_read_tool(project_root, task)
-    except ApiExecutionCompilationError as exc:
+    def closeout_terminal(
+        *,
+        terminal_status: str,
+        failure_code: str | None,
+        failure_summary: str | None,
+        action_key: str | None = None,
+        session_result: ApiSessionResult | None = None,
+        output: Mapping[str, Any] | None = None,
+        provider_adapter_id: str | None = None,
+        requested_model: str | None = None,
+        provider_adapter_version: str = "unavailable",
+        expected_provider_identity: str | None = None,
+        limits: ApiSessionLimits | None = None,
+        external_provider: bool = False,
+        frozen_input_payloads: Mapping[str, bytes] | None = None,
+    ) -> CloseoutPublication:
+        """Close out at one terminal boundary; defaults hold the pre-compile phase."""
+
         return closeout_api_attempt(
             root=project_root,
             protocol_ref=protocol_ref,
@@ -172,20 +183,36 @@ def run_task_api_attempt(
             attempt_id=attempt_id,
             started_at=started_at,
             finished_at=finished_at,
-            terminal_status="blocked",
-            next_action=next_actions["blocked"],
-            provider_adapter_id=binding.provider_adapter,
-            requested_model=binding.model,
-            provider_adapter_version="unavailable",
-            expected_provider_identity=None,
-            limits=runtime_limits,
-            failure_code=exc.code,
-            failure_summary="Frozen execution material failed verification before Provider generation or a tool call.",
+            terminal_status=terminal_status,
+            next_action=next_actions[action_key or terminal_status],
+            provider_adapter_id=provider_adapter_id or binding.provider_adapter,
+            requested_model=requested_model or binding.model,
+            provider_adapter_version=provider_adapter_version,
+            expected_provider_identity=expected_provider_identity,
+            limits=limits or runtime_limits,
+            session_result=session_result,
+            output=output,
+            failure_code=failure_code,
+            failure_summary=failure_summary,
             previous_main_state_ref=previous_main_state_ref,
-            external_provider=False,
+            external_provider=external_provider,
             extra_limitations=extra_limitations,
             fault_injector=fault_injector,
             contract_snapshots=contract_snapshots,
+            frozen_input_payloads=frozen_input_payloads,
+        )
+
+    try:
+        material = verify_execution_material(project_root, task, assignment)
+        document_read = build_document_read_tool(project_root, task)
+    except ApiExecutionCompilationError as exc:
+        return closeout_terminal(
+            terminal_status="blocked",
+            failure_code=exc.code,
+            failure_summary=(
+                "Frozen execution material failed verification before Provider generation "
+                "or a tool call."
+            ),
         )
 
     frozen_input_payloads = dict(
@@ -200,32 +227,13 @@ def run_task_api_attempt(
         provider = providers.get(binding.provider_adapter)
         snapshot = provider.capabilities()
     except Exception as exc:
-        return closeout_api_attempt(
-            root=project_root,
-            protocol_ref=protocol_ref,
-            task_ref=task_ref,
-            profile_ref=profile_ref,
-            assignment_ref=assignment_ref,
-            attempt_id=attempt_id,
-            started_at=started_at,
-            finished_at=finished_at,
+        return closeout_terminal(
             terminal_status="blocked",
-            next_action=next_actions["blocked"],
-            provider_adapter_id=binding.provider_adapter,
-            requested_model=binding.model,
-            provider_adapter_version="unavailable",
-            expected_provider_identity=None,
-            limits=runtime_limits,
             failure_code="PROVIDER-CAPABILITIES-UNAVAILABLE",
             failure_summary=(
                 f"Provider capability discovery raised {type(exc).__name__}; "
                 "no exception message was persisted."
             ),
-            previous_main_state_ref=previous_main_state_ref,
-            external_provider=False,
-            extra_limitations=extra_limitations,
-            fault_injector=fault_injector,
-            contract_snapshots=contract_snapshots,
             frozen_input_payloads=frozen_input_payloads,
         )
 
@@ -242,29 +250,14 @@ def run_task_api_attempt(
             tool_catalog={"document-read": document_read},
         )
     except ApiExecutionCompilationError as exc:
-        return closeout_api_attempt(
-            root=project_root,
-            protocol_ref=protocol_ref,
-            task_ref=task_ref,
-            profile_ref=profile_ref,
-            assignment_ref=assignment_ref,
-            attempt_id=attempt_id,
-            started_at=started_at,
-            finished_at=finished_at,
+        return closeout_terminal(
             terminal_status="blocked",
-            next_action=next_actions["blocked"],
-            provider_adapter_id=binding.provider_adapter,
-            requested_model=binding.model,
+            failure_code=exc.code,
+            failure_summary=(
+                "Task-to-API compilation was blocked before Provider generation or a tool call."
+            ),
             provider_adapter_version=snapshot.adapter_version,
             expected_provider_identity=snapshot.provider,
-            limits=runtime_limits,
-            failure_code=exc.code,
-            failure_summary="Task-to-API compilation was blocked before Provider generation or a tool call.",
-            previous_main_state_ref=previous_main_state_ref,
-            external_provider=False,
-            extra_limitations=extra_limitations,
-            fault_injector=fault_injector,
-            contract_snapshots=contract_snapshots,
             frozen_input_payloads=frozen_input_payloads,
         )
 
@@ -295,64 +288,40 @@ def run_task_api_attempt(
             expected_capabilities=compiled.provider_capabilities,
         )
     except Exception as exc:  # normalize the bounded execution boundary, not arbitrary process errors
-        code = _execution_exception_code(exc)
-        return closeout_api_attempt(
-            root=project_root,
-            protocol_ref=protocol_ref,
-            task_ref=task_ref,
-            profile_ref=profile_ref,
-            assignment_ref=assignment_ref,
-            attempt_id=attempt_id,
-            started_at=started_at,
-            finished_at=finished_at,
+        return closeout_terminal(
             terminal_status="failed",
-            next_action=next_actions["failed"],
+            failure_code=_execution_exception_code(exc),
+            failure_summary=(
+                f"The isolated API runner raised {type(exc).__name__}; "
+                "no exception message was persisted."
+            ),
             provider_adapter_id=compiled.adapter_id,
             requested_model=compiled.request.model,
             provider_adapter_version=snapshot.adapter_version,
             expected_provider_identity=snapshot.provider,
             limits=compiled.limits,
-            failure_code=code,
-            failure_summary=f"The isolated API runner raised {type(exc).__name__}; no exception message was persisted.",
-            previous_main_state_ref=previous_main_state_ref,
             external_provider=snapshot.deployment != "local",
-            extra_limitations=extra_limitations,
-            fault_injector=fault_injector,
-            contract_snapshots=contract_snapshots,
             frozen_input_payloads=frozen_input_payloads,
         )
 
     try:
         verify_execution_material(project_root, task, assignment)
     except ApiExecutionCompilationError as exc:
-        effective_status = _effective_status("blocked", result)
-        return closeout_api_attempt(
-            root=project_root,
-            protocol_ref=protocol_ref,
-            task_ref=task_ref,
-            profile_ref=profile_ref,
-            assignment_ref=assignment_ref,
-            attempt_id=attempt_id,
-            started_at=started_at,
-            finished_at=finished_at,
+        return closeout_terminal(
             terminal_status="blocked",
-            next_action=next_actions[effective_status],
-            provider_adapter_id=compiled.adapter_id,
-            requested_model=compiled.request.model,
-            provider_adapter_version=snapshot.adapter_version,
-            expected_provider_identity=snapshot.provider,
-            limits=compiled.limits,
-            session_result=result,
+            action_key=_effective_status("blocked", result),
             failure_code=exc.code,
             failure_summary=(
                 "Frozen Task input or selected Skill material drifted during the isolated session; "
                 "no model output was admitted."
             ),
-            previous_main_state_ref=previous_main_state_ref,
+            session_result=result,
+            provider_adapter_id=compiled.adapter_id,
+            requested_model=compiled.request.model,
+            provider_adapter_version=snapshot.adapter_version,
+            expected_provider_identity=snapshot.provider,
+            limits=compiled.limits,
             external_provider=snapshot.deployment != "local",
-            extra_limitations=extra_limitations,
-            fault_injector=fault_injector,
-            contract_snapshots=contract_snapshots,
             frozen_input_payloads=frozen_input_payloads,
         )
 
@@ -379,31 +348,19 @@ def run_task_api_attempt(
                 "no exception message or model output was persisted."
             )
     effective_status = _effective_status(status, result)
-    return closeout_api_attempt(
-        root=project_root,
-        protocol_ref=protocol_ref,
-        task_ref=task_ref,
-        profile_ref=profile_ref,
-        assignment_ref=assignment_ref,
-        attempt_id=attempt_id,
-        started_at=started_at,
-        finished_at=finished_at,
+    return closeout_terminal(
         terminal_status=status,
-        next_action=next_actions[effective_status],
+        action_key=effective_status,
+        failure_code=failure_code,
+        failure_summary=failure_summary,
+        session_result=result,
+        output=output,
         provider_adapter_id=compiled.adapter_id,
         requested_model=compiled.request.model,
         provider_adapter_version=snapshot.adapter_version,
         expected_provider_identity=snapshot.provider,
         limits=compiled.limits,
-        session_result=result,
-        output=output,
-        failure_code=failure_code,
-        failure_summary=failure_summary,
-        previous_main_state_ref=previous_main_state_ref,
         external_provider=snapshot.deployment != "local",
-        extra_limitations=extra_limitations,
-        fault_injector=fault_injector,
-        contract_snapshots=contract_snapshots,
         frozen_input_payloads=frozen_input_payloads,
     )
 
