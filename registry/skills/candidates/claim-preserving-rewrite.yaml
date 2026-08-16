@@ -26,4 +26,4 @@ source:
   origin: repository-derived-candidate
   locator: skill-lab/candidates/claim-preserving-rewrite/SKILL.md
   content_hash: 0e9f0753cdfdf02104b1539656c2dc7b261713162be07c902abf6bb9bc6069af
-  package_hash: 11d1673ab7c5200552dc95383c2fc30c4c6a04c38f171a0e1a80f67531576809
+  package_hash: 6c05f9f2966e4990a8179091b0fed5c3584dcaa6f1d5c4662a46a5152fa1bde5

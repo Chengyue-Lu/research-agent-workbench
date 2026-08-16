@@ -34,6 +34,7 @@ class ClaimPreservingRewriteCandidateTests(unittest.TestCase):
             env=environment,
             capture_output=True,
             text=True,
+            encoding="utf-8",
             check=False,
         )
 
@@ -81,9 +82,13 @@ class ClaimPreservingRewriteCandidateTests(unittest.TestCase):
                 "--output",
                 str(output),
             ]
-            first = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
+            first = subprocess.run(
+                command, cwd=ROOT, capture_output=True, text=True, encoding="utf-8", check=False
+            )
             report = load_document(output)
-            second = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
+            second = subprocess.run(
+                command, cwd=ROOT, capture_output=True, text=True, encoding="utf-8", check=False
+            )
         committed = load_document(
             ROOT / "examples/evals/claim-preserving-rewrite/with-skill-check.json"
         )

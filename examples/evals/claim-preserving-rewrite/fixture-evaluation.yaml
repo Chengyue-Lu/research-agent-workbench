@@ -6,7 +6,7 @@ skill_version: 0.1.0
 skill_source_ref:
   path: skill-lab/candidates/claim-preserving-rewrite/SKILL.md
   sha256: 0e9f0753cdfdf02104b1539656c2dc7b261713162be07c902abf6bb9bc6069af
-skill_package_hash: 11d1673ab7c5200552dc95383c2fc30c4c6a04c38f171a0e1a80f67531576809
+skill_package_hash: 6c05f9f2966e4990a8179091b0fed5c3584dcaa6f1d5c4662a46a5152fa1bde5
 evaluation_scope: fixture-only
 generated_at: "2026-08-13T06:00:00Z"
 protocol:
@@ -34,7 +34,7 @@ cases:
           sha256: 3f690cc94618d956f3e30d3cfbc645075e142c74f6d2120b6f331ce77e61125a
         validation_ref:
           path: examples/evals/claim-preserving-rewrite/baseline-check.json
-          sha256: 16f665351aa3d217d6ac6d7b37fa5d380f48292a9979f2995bb8398d5562fe1a
+          sha256: 62e94f38cdf5e411342b9f28077726d7c9c116a9fb7381f003615c151d98c14f
         deterministic_status: fail
         context:
           status: measured
@@ -48,7 +48,7 @@ cases:
           sha256: bd30fd2953f16531a4bca0ce13bb5f0cf800b19ca3f35fbe6a612a86d304bba5
         validation_ref:
           path: examples/evals/claim-preserving-rewrite/with-skill-check.json
-          sha256: 3d2503856df32b5d111a4730bf4523241510c6102bbc78bf1cb9b3d098a266dd
+          sha256: e81bddfeddf6d5d0a5ed0ffe11162d0c917ae0ba5ceec4dc3fcc5d1c35ec090b
         deterministic_status: pass
         context:
           status: measured

@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import re
+import sys
 from collections import Counter
 from pathlib import Path
 from typing import Any, Iterable
@@ -186,6 +187,10 @@ def formal_report(
 
 
 def main(argv: Iterable[str] | None = None) -> int:
+    # Report text (including JSON with non-ASCII details) must not depend on the
+    # host locale: parents capture pipes with their own default encoding.
+    for stream in (sys.stdout, sys.stderr):
+        stream.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser()
     parser.add_argument("source")
     parser.add_argument("revision")

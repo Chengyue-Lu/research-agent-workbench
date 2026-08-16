@@ -2,6 +2,15 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
+## 2026-08-16 — claim-preserving-rewrite checker 跨 locale 输出契约修复
+
+### Fixed
+
+- `check_claim_preservation.py` 入口将 stdout/stderr 钉为 UTF-8：此前 `--json` 报告（`ensure_ascii=False`，含中文 detail）按子进程 locale 编码输出，父进程 `subprocess.run(text=True)` 按宿主 locale 解码；混合环境（如带 `PYTHONIOENCODING=utf-8` 的中文 Windows 会话）下读线程 `UnicodeDecodeError` 使 stdout 丢失，`test_candidate_claim_rewrite.py` 3 项测试崩溃。本机 GBK/GBK 与 CI UTF-8/UTF-8 的通过只是父子 locale 恰好一致。
+- `tests/test_candidate_claim_rewrite.py` 全部 3 处 `subprocess.run` 显式 `encoding="utf-8"`，解码不再跟随宿主 locale。
+- 哈希钉住链同步再生成：候选包 `package_hash`（`6c05f9f2…`）更新于 `registry/skills/candidates.json`、候选 manifest、`registry/skills/sources.json` 与 `examples/evals/claim-preserving-rewrite/fixture-evaluation.yaml`；`baseline-check.json` 与 `with-skill-check.json` 用修后 checker 重生成（仅 checker 哈希与派生 `report_id` 变化，`checks` 输出逐项一致），两份校验文件的新哈希同步写入 `fixture-evaluation.yaml`。
+- 验证：全量测试在干净环境与 `PYTHONIOENCODING=utf-8` 环境均 216/216 通过（修复前后者 213 通过 + 3 失败）；`validate examples registry` = 84/0/0。
+
 ## 2026-08-15 — M6-004 live 接线、两处 live-only 集成缺陷修复与真实 evidence 调用
 
 分支：`agent/m6-004-live-provider-wiring`（含 K-API-2 全部提交 + live 接线 + 本日修复，待评审合并）。
