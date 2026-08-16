@@ -95,21 +95,28 @@ stdlib resolve-once、单次 literal 拨号、selector 双向 relay、统一 wal
 误当成可用代理。
 
 事务监督器同样保持 no-start：它先证明四个 Attempt-scoped 名称不存在，再 create/inspect，且只按
-本事务明确返回的 ID 清理；模糊 create 不会按名字接管或删除其他资源。它在 attestation 后以
-`docker-proxy-ip-interface-not-frozen` 停止，因为已提交的 topology v0.1 仍是旧 JavaScript 入口，
-尚不能表达 Python proxy 所需的固定 subnet、listener IP、peer IP 和有界 audit attach 通道。
+本事务明确返回的 ID 清理；模糊 create 不会按名字接管或删除其他资源。兼容新增的 topology v0.2
+已经冻结双 `/29`、runtime/proxy 静态 IP、数值 proxy URL、Python proxy 入口与安全资源配置，并能
+严格校验调用方提供的 image/container/network inspect 文档；它没有 executor，`start=()`，且明确
+只声称 inspect 文档校验完成，不能声称真实 Docker capture 完整。
+
+独立 audit-capture 合同以有界增量 UTF-8/JSONL 解码校验 exactly-one 脱敏 audit，绑定 policy、DNS
+resolution、Attempt/container lifecycle 和终态矩阵。当前 lifecycle 仍标记为 `caller-attested`；该
+合同不能替代未来 supervisor 对 attach、EOF、container exit、deadline 和 durable publication 的实际
+观测，也不会把 Python 对象类型当成信任根。
 
 localhost 请求指纹合同现在绑定完整 ordered input、turn metadata、工具 Schema、模型、reasoning、
 HTTP 字段和 supervisor lifecycle hash；但 Codex 0.124.0 的真实无 Provider 探针仍暴露
 `update_plan / request_user_input / view_image`，因此该合同会主动拒绝当前请求。探针只证明 client
 request，不证明服务端 actual model/provider 或成本。
 
-因此 Docker host、network、proxy container、supervisor 和 request fingerprint 的全部
-`LIVE_READY` 开关继续为 `False`。下一道真实凭据门是：新增兼容而非覆盖 topology v0.2，冻结
-runtime/proxy IP 与最终 OCI digest；实现有界 attach 或 tmpfs audit 提取；在外层绝对截止时间内完成
-DNS snapshot；用真实 Engine 验证双网拓扑、无直连/host-gateway/metadata/任意 DNS 路径及完整清理；
-并让 Codex 的实际 `/api/v1/responses` 请求不再暴露未批准工具。这些项目没有通过前，不得仅把
-`network=none` 改成 default bridge，也不得注入 key。
+因此 Docker host、network、proxy container、supervisor、topology v0.2、audit capture 和 request
+fingerprint 的全部 `LIVE_READY` 开关继续为 `False`。下一道真实凭据门是：让 supervisor 以真实
+命令结果、daemon identity、绝对 deadline 和 container lifecycle 绑定 v0.2 inspect；冻结最终 OCI
+digest；实现有界 attach 或 tmpfs audit 提取；在外层绝对截止时间内完成 DNS snapshot；用真实 Engine
+验证双网拓扑、无直连/host-gateway/metadata/任意 DNS 路径及完整清理；并让 Codex 的实际
+`/api/v1/responses` 请求不再暴露未批准工具。这些项目没有通过前，不得仅把 `network=none` 改成
+default bridge，也不得注入 key。
 
 ## 3. 当前 Adapter 能力
 

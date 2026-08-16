@@ -13,13 +13,13 @@ from research_workbench.adapters.models import (
     ApiSessionLimits,
     ApiSessionResult,
     ApiSessionStatus,
-    ContentBlock,
     Capability,
+    ContentBlock,
     DataPolicy,
     FinishReason,
-    ModelResponse,
     ModelAssignment,
     ModelBinding,
+    ModelResponse,
 )
 from research_workbench.adapters.models.session import ToolFailureSummary
 from research_workbench.artifacts import hash_file
@@ -30,10 +30,12 @@ from research_workbench.execution.closeout import (
     closeout_api_attempt,
     validate_closeout_preconditions,
 )
+from research_workbench.execution.closeout.verify import (
+    _normalize_closeout_windows_namespace,
+)
 from research_workbench.io import load_document, write_yaml_exclusive
 from research_workbench.protocol import ProjectProtocol
 from research_workbench.tasks import FileReference, TaskPacket
-
 
 SOURCE_ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL_REF = "examples/project-protocol.yaml"
@@ -185,6 +187,27 @@ def completed_output() -> dict:
 
 
 class ApiExecutionCloseoutTests(unittest.TestCase):
+    def test_windows_namespace_alias_normalization_never_accepts_device_paths(
+        self,
+    ) -> None:
+        self.assertEqual(
+            Path(r"C:\project\work\artifact.yaml"),
+            _normalize_closeout_windows_namespace(
+                Path(r"\\?\C:\project\work\artifact.yaml")
+            ),
+        )
+        self.assertEqual(
+            Path(r"\\server\share\project\artifact.yaml"),
+            _normalize_closeout_windows_namespace(
+                Path(r"\\?\UNC\server\share\project\artifact.yaml")
+            ),
+        )
+        device_path = Path(r"\\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1")
+        self.assertEqual(
+            device_path,
+            _normalize_closeout_windows_namespace(device_path),
+        )
+
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
         self.root = Path(self.temporary.name)

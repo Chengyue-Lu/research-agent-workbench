@@ -11,19 +11,32 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 from research_workbench.adapters.models import ApiSessionResult
-from research_workbench.artifacts.integrity import hash_directory, hash_file, resolve_within_root
+from research_workbench.artifacts.integrity import (
+    hash_directory,
+    hash_file,
+    resolve_within_root,
+)
 from research_workbench.capability import AgentProfile, ResolvedTask
-from research_workbench.context import ContextSnapshot, MainStatePacket, assess_handoff_transfer
+from research_workbench.context import (
+    ContextSnapshot,
+    MainStatePacket,
+    assess_handoff_transfer,
+)
 from research_workbench.contracts import RiskLevel
 from research_workbench.contracts.common import ContractError, require_relative_path
 from research_workbench.observability import ExecutionReceipt, check_execution_receipt
 from research_workbench.protocol import ProjectProtocol
 from research_workbench.tasks import HandoffPacket, TaskPacket
-from research_workbench.validation import Severity, check_handoff_against_task, validate_agent_trace
+from research_workbench.validation import (
+    Severity,
+    check_handoff_against_task,
+    validate_agent_trace,
+)
 
 from .documents import _load_mapping
-from .errors import CloseoutContractSnapshot, CloseoutError, _RFC3339_TIMESTAMP
+from .errors import _RFC3339_TIMESTAMP, CloseoutContractSnapshot, CloseoutError
 from .paths import _final_path, _stage_path
+
 
 @dataclass(frozen=True, slots=True)
 class _ViewCheck:
@@ -267,7 +280,7 @@ def _validate_output_paths(
 ) -> None:
     for relative in paths:
         normalized = relative.replace("\\", "/")
-        resolved = resolve_within_root(project_root, normalized)
+        resolved = _resolve_closeout_output_within_root(project_root, normalized)
         if resolved is None:
             raise CloseoutError("CLOSEOUT-WRITE-SCOPE", f"path escapes project root: {relative}")
         if not any(_path_scope_matches(normalized, scope) for scope in task.write_scope):
@@ -275,12 +288,22 @@ def _validate_output_paths(
         if assignment.effective_permissions.allowed_roots:
             allowed = False
             for allowed_root in assignment.effective_permissions.allowed_roots:
-                allowed_path = resolve_within_root(project_root, allowed_root)
-                if allowed_path is None:
+                try:
+                    normalized_root = require_relative_path(
+                        allowed_root, "effective_permissions.allowed_roots"
+                    ).replace("\\", "/")
+                except ContractError:
                     raise CloseoutError(
                         "CLOSEOUT-PERMISSION",
                         f"effective allowed_root escapes project: {allowed_root}",
-                    )
+                    ) from None
+                # Do not resolve a concurrently-created parent a second time on
+                # Windows.  ``resolved`` was already proven to stay inside the
+                # project; compare it to the literal, validated permission root
+                # so a symlink redirect cannot widen that root either.
+                allowed_path = project_root.joinpath(
+                    *PurePosixPath(normalized_root).parts
+                )
                 try:
                     resolved.relative_to(allowed_path)
                     allowed = True
@@ -323,6 +346,40 @@ def _path_scope_matches(path: str, pattern: str) -> bool:
         return result
 
     return match(0, 0)
+
+
+def _resolve_closeout_output_within_root(
+    project_root: Path, relative: str
+) -> Path | None:
+    """Resolve a closeout output without Windows namespace alias false negatives."""
+
+    root = project_root.resolve()
+    candidate = (root / relative).resolve()
+    comparison_root = _normalize_closeout_windows_namespace(root)
+    comparison_candidate = _normalize_closeout_windows_namespace(candidate)
+    try:
+        comparison_candidate.relative_to(comparison_root)
+    except ValueError:
+        return None
+    return comparison_candidate
+
+
+def _normalize_closeout_windows_namespace(path: Path) -> Path:
+    """Collapse only equivalent Win32 drive/UNC extended-path aliases."""
+
+    value = str(path)
+    extended_unc = "\\\\?\\UNC\\"
+    if value[: len(extended_unc)].casefold() == extended_unc.casefold():
+        return Path("\\\\" + value[len(extended_unc) :])
+    extended = "\\\\?\\"
+    if (
+        value.startswith(extended)
+        and len(value) >= len(extended) + 3
+        and value[len(extended)].isalpha()
+        and value[len(extended) + 1 : len(extended) + 3] == ":\\"
+    ):
+        return Path(value[len(extended) :])
+    return path
 
 
 def _verify_live_contract_snapshots(
