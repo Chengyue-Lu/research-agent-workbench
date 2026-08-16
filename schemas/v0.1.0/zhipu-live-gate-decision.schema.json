@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/zhipu-live-gate-decision.schema.json",
+  "title": "Zhipu Live Readiness Gate Decision",
+  "x-rwb-document-kind": "zhipu_live_gate_decision",
+  "type": "object",
+  "required": ["schema_version", "decision_kind", "decision_id", "gate_id", "gate_status", "decision", "reason", "automatic_fallback", "scientific_correctness_proven", "adr_0013_passed", "gate_report_ref", "limitations"],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "decision_kind": { "const": "zhipu_live_gate_decision" },
+    "decision_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "gate_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "gate_status": { "enum": ["passed", "failed", "safe-paused", "not-run"] },
+    "decision": { "enum": ["accept", "reject", "defer", "not-run"] },
+    "reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "automatic_fallback": { "const": false },
+    "scientific_correctness_proven": { "const": false },
+    "adr_0013_passed": { "type": "boolean" },
+    "gate_report_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "conformance_check_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "main_state_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "receipt_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "trace_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "limitations": { "type": "array", "minItems": 3, "uniqueItems": true, "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" } }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "decision": { "const": "accept" } }, "required": ["decision"] },
+      "then": { "properties": { "gate_status": { "const": "passed" }, "adr_0013_passed": { "const": false } }, "required": ["conformance_check_ref", "main_state_ref", "receipt_ref", "trace_ref"] }
+    },
+    {
+      "if": { "properties": { "decision": { "const": "defer" } }, "required": ["decision"] },
+      "then": { "properties": { "gate_status": { "const": "safe-paused" }, "adr_0013_passed": { "const": false } } }
+    },
+    {
+      "if": { "properties": { "decision": { "const": "reject" } }, "required": ["decision"] },
+      "then": { "properties": { "gate_status": { "const": "failed" }, "adr_0013_passed": { "const": false } } }
+    },
+    {
+      "if": { "properties": { "decision": { "const": "not-run" } }, "required": ["decision"] },
+      "then": { "properties": { "gate_status": { "const": "not-run" }, "adr_0013_passed": { "const": false } } }
+    }
+  ],
+  "additionalProperties": false
+}

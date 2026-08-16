@@ -1,6 +1,6 @@
 # GLM-5.3 标准 API 接入与真实 Gate Runbook
 
-状态：标准 API Adapter 已完成离线合同测试；真实调用未执行
+状态：标准 API Adapter 与工具续传协议已完成离线合同测试；真实调用未执行
 
 日期：2026-08-16
 
@@ -49,23 +49,34 @@ https://open.bigmodel.cn/api/paas/v4/chat/completions
 - 映射 prompt/completion/cached token，但不推导或伪造货币成本；
 - 不持久化 `reasoning_content`、prompt、响应正文、response ID、认证头或 key。
 
-当前不声明 tools、parallel tools、reasoning handback、streaming、images、files 或 server tools。缺失能力在凭据解析和网络调用前阻断。
+当前还支持受控客户端 function tools：`tool_choice` 只允许 `auto`，
+每轮最多一个调用，GLM-5.3 的 `reasoning_content` 只在单个 Attempt 的
+有界、`repr=False` 内存中原样续传。终态、失败和上层 `finally` 都会清理它；
+它不进入通用 `ModelResponse`、Trace、Receipt 或科研工件。该 Provider 是
+“单活动 Attempt”设计，不能作为跨 Attempt 并发单例。`parallel_tools`、
+streaming、images、files 和 server tools 仍不声明。
 
 通用 conformance 报告当前只保存归一化错误类别与 HTTP 状态，不持久化 Zhipu 业务错误码。如要将失败结果升格为项目级 Gate Decision，需通过共享 Schema 的兼容扩展增加该字段，不在本 Provider 独立分支中单方修改。
 
-## 4. 为什么它还不能关闭项目级 K-API-2
+## 4. 为什么补上 tools 仍不等于关闭项目级 K-API-2
 
-现有两个 `ExecutionContract` 都需要客户端工具：evidence/H2 需要冻结的 `document-read`，simulation/H1 需要 `file-read` 与 `bounded-compute`。GLM-5.3 的工具轮次还要求正确保留 Provider 特有的思考/工具上下文；当前共享 `ModelRequest`/`ModelResponse` 端口没有可审计且不泄露隐藏推理的 handback 表达。
+现有 evidence/H2 已可以通过适配器私有 continuation 使用冻结的
+`document-read`，不需要改动共享 `ModelRequest`/`ModelResponse` 结构。但这只解决了
+离线协议与内存边界，没有自动解决账户权限、标准 API 上线状态、
+自建应用授权和货币成本证据。
 
 因此当前行为是有意的：
 
-- text/structured generic conformance 可以执行；
-- evidence/H2 或 simulation/H1 编译会因 `MODEL-CAPABILITY-GAP: tools` 在网络前阻断；
+- text/structured/tools generic conformance 可以执行；
+- evidence/H2 可进入受控项目执行，但 Provider 不报告货币成本时会在第一个项目响应后诚实 `safe-paused`；
 - 不新增“无工具但声称等价”的合同；
 - 不删除 Task 所需工具；
 - 不降低 ADR-0013 的真实 Gate 强度。
 
-要让 GLM 替代 ADR-0013 中的 OpenAI 项目 Gate，必须先由共享接口负责人共同确认工具/推理 handback 契约，并用新的 ADR 明确把关闭条件改为 Provider-neutral Gate。只增加一个能返回文本的 Adapter 不等于项目级 Gate 通过。
+专用项目准备度命令与固定安全策略见
+[Zhipu Standard API Project Readiness Gate](ZHIPU_LIVE_GATE_RUNBOOK.md)。它会发布完整
+Attempt/Trace/Receipt/Main State 和 Decision，但在成本证据缺失时只能 `defer`，
+不能被重解释为 ADR-0013 通过。
 
 ## 5. 零环境检查
 
@@ -80,7 +91,8 @@ rwb providers conformance `
   --adapter zhipu-chat-completions
 ```
 
-预期计划只列出 `text` 和 `structured` 两项，Adapter 默认 `enabled: false`，网络请求数为 0。
+预期计划列出 `text`、`structured` 和 `tools` 三项，Adapter 默认
+`enabled: false`，网络请求数为 0。
 
 如需只检查变量是否存在，可由用户在已授权终端显式运行：
 
@@ -108,15 +120,15 @@ $env:RWB_ZHIPU_MODEL = "glm-5.3"
 rwb providers conformance `
   --config .rwb/provider-adapters.local.yaml `
   --adapter zhipu-chat-completions `
-  --checks text structured `
-  --max-provider-invocations 2 `
+  --checks text structured tools `
+  --max-provider-invocations 3 `
   --max-output-tokens 64 `
   --execute `
   --execution-context authorized-standard-api-windows-session `
   --output runs/provider-conformance/zhipu-glm-5.3.yaml
 ```
 
-第一次失败后停止，不重试。报告只保存脱敏控制面字段。通过该两项检查只能证明当前账户、模型、endpoint 的 text/JSON 基础兼容；它不证明工具合同、H1/H2 文件闭环、科研正确性或 Provider 报告成本可用。
+第一次失败后停止，不重试。报告只保存脱敏控制面字段。通过该三项检查只能证明当前账户、模型、endpoint 的 text/JSON/工具基础兼容；它不证明 H1/H2 文件闭环、科研正确性或 Provider 报告成本可用。
 
 ## 7. 失败和停止条件
 
@@ -127,7 +139,7 @@ rwb providers conformance `
 - 结构化输出未通过本地 Schema；
 - usage 缺失或与分项矛盾；
 - 需要 Provider-reported cost 但响应不提供；
-- 当前 Task 需要工具、reasoning handback 或项目级 H2；
+- tool 没有按 `auto` 调用指定客户端函数，或工具轮没有返回可原样续传的 `reasoning_content`；
 - 不能确认 key 的产品类型或自建使用授权。
 
 ## 8. 官方依据

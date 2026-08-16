@@ -1,6 +1,6 @@
 # 多提供商模型 API 实施计划
 
-状态：`K-API-2` evidence/H2 与 simulation/H1 双合同离线闭环完成；Zhipu 标准 API text/structured Adapter 已离线通过；真实项目 Gate 待运行
+状态：`K-API-2` evidence/H2 与 simulation/H1 双合同离线闭环完成；Zhipu 标准 API text/structured/tools Adapter 已离线通过；真实项目 Gate 待运行
 
 日期：2026-08-16
 
@@ -33,7 +33,7 @@ flowchart LR
 - `port.py`：稳定请求、响应、能力、数据策略和标准错误；
 - `http.py`：可注入的有界 HTTPS Transport 与延迟凭据解析；
 - `base.py`：共同 preflight、本地结构化校验和错误边界；
-- `openai.py`、`anthropic.py`、`gemini.py`、`zhipu_chat.py`：四套独立映射；其中 Zhipu 当前只声明标准 API text 与本地校验的 structured output；
+- `openai.py`、`anthropic.py`、`gemini.py`、`zhipu_chat.py`：四套独立映射；其中 Zhipu 声明标准 API text、本地校验的 structured output，以及仅 `auto`、每轮单调用的 client tools；
 - `configuration.py`：非秘密配置解析和存在性探测；
 - `conformance.py`：固定合成提示、硬预算和脱敏报告的 live conformance runner；
 - `pool.py`：显式模型槽配置、不可变 Model Assignment 与延迟模型 ID 绑定，不做评分、自动选择或 fallback；
@@ -51,13 +51,13 @@ flowchart LR
 | 规范语义 | OpenAI | Anthropic | Gemini | Zhipu 标准 API |
 |---|---|---|---|---|
 | 系统指令 | system/developer input | top-level `system` | `systemInstruction` | Chat `system` message |
-| 客户端工具定义 | Responses function tool | `tools[].input_schema` | `functionDeclarations` | 当前不声明 |
-| 工具调用 | `function_call` | `tool_use` | `functionCall` | 当前不声明 |
-| 工具结果 | `function_call_output` | `tool_result` | `functionResponse` | 当前不声明 |
+| 客户端工具定义 | Responses function tool | `tools[].input_schema` | `functionDeclarations` | Chat `tools[].function.parameters` |
+| 工具调用 | `function_call` | `tool_use` | `functionCall` | 单个 `tool_calls[].function` |
+| 工具结果 | `function_call_output` | `tool_result` | `functionResponse` | `role=tool` + exact call id |
 | JSON Schema 输出 | `text.format` | `output_config.format` | `generationConfig.responseJsonSchema` | `json_object` + 本地完整校验 |
 | 暂停/拒绝 | status/refusal | `pause_turn`/`refusal` | finish reason / prompt block | finish reason / sensitive filter |
 | 用量 | input/output + cached/reasoning | input/output + cache read | prompt/candidate/cache | prompt/completion/cache；无货币 cost |
-| 指定工具 | Responses `tool_choice` function | `tool_choice.type=tool` | `functionCallingConfig=ANY` + allowlist | 当前不声明 |
+| 指定工具 | Responses `tool_choice` function | `tool_choice.type=tool` | `functionCallingConfig=ANY` + allowlist | 只支持 `auto`；返回名称必须通过本地验收 |
 
 统一只发生在确有共同含义的字段。Anthropic 的 `pause_turn` 保留为 `paused`，Gemini 的并行调用要求显式 `parallel_tools`，服务端工具不映射为普通客户端工具。
 
@@ -109,9 +109,9 @@ rwb providers probe --config registry/providers/adapters.yaml --check-environmen
 
 冻结 canonical request/response、能力、data policy、错误与停止原因；缺口在出站前阻断。
 
-### P1：非流式薄 Adapter（完成；Zhipu 工具面暂缓）
+### P1：非流式薄 Adapter（完成；Zhipu 工具面离线完成）
 
-OpenAI、Anthropic、Gemini 实现 text、client tools、structured output 和可得 usage 映射；Zhipu 标准 API 当前只实现 text、`json_object` + 本地 Schema 校验和 token usage。用注入 Transport 的离线 fixture 覆盖正反路径。ToolChoice、本地工具参数复验、conformance runner 和 CLI 安全边界均纳入全仓回归；不在文档中固定易漂移的测试数量。GLM-5.3 的标准 API、key 类型、工具与 reasoning handback 边界见 [GLM Runbook](GLM_LIVE_GATE_RUNBOOK.md)。
+OpenAI、Anthropic、Gemini 实现 text、client tools、structured output 和可得 usage 映射；Zhipu 标准 API 实现 text、`json_object` + 本地 Schema 校验、token usage 和单调用 client-tool 循环。GLM 工具轮所需的 `reasoning_content` 只在单 Attempt 的有界私有内存中原样续传，不进入共享端口或项目记录。用注入 Transport 的离线 fixture 覆盖正反路径。ToolChoice、本地工具参数复验、conformance runner 和 CLI 安全边界均纳入全仓回归；不在文档中固定易漂移的测试数量。GLM-5.3 的标准 API、key 类型、工具与 reasoning handback 边界见 [GLM Runbook](GLM_LIVE_GATE_RUNBOOK.md)。
 
 ### P2：真实 Windows live conformance（Runner 已完成，执行待完成）
 

@@ -115,7 +115,7 @@ class CliTests(unittest.TestCase):
         self.assertIs(document["environment_read"], False)
         self.assertEqual(0, document["network_requests"])
 
-    def test_zhipu_conformance_plan_is_two_check_zero_network(self) -> None:
+    def test_zhipu_conformance_plan_is_three_check_zero_network(self) -> None:
         secret = "zhipu-secret-must-not-appear"
         with patch.dict(
             "os.environ",
@@ -134,7 +134,7 @@ class CliTests(unittest.TestCase):
             )
         self.assertEqual(0, code)
         document = json.loads(output)
-        self.assertEqual(["text", "structured"], document["checks"])
+        self.assertEqual(["text", "structured", "tools"], document["checks"])
         self.assertIs(document["environment_read"], False)
         self.assertEqual(0, document["network_requests"])
         self.assertNotIn(secret, output)

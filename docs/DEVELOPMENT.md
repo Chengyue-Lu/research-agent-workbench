@@ -30,7 +30,7 @@ Agent 不是责任主体。每个运行中的 Agent 使用稳定 `actor_id`，�
 
 达到上述节点后暂停评审，不批量新增 Mode/Skill，也不在此分支修改 API 实现。详细验收见 [Mode–Skill 实施计划](implementation/MODE_SKILL_WORKSTREAM_PLAN.md)，状态以[任务清单](TASKS.md)为准。
 
-黄毅的 API 工作流已在离线 fake-local Gate 中完成 `K-API-2` 的 evidence/H2 与 simulation/H1 双合同路径：冻结 Task/Profile/Skill/输入和 Model Assignment，只通过受控 Tool Registry 构建工具，持久化五种终态，自动生成诚实声明 capture gap 的 Trace，以 Main State 最后提交，并在 H1/H2 fresh Python 子进程中恢复。`M3-007`、`M3-008` 和 `M6-006` 已完成；`M6-003` 仍为 `IN_PROGRESS`，真实 Provider Gate 尚未通过。离线通过不等于真实 Provider 或科研正确性证据，也不构成路诚钺工作流的完成证据。
+黄毅的 API 工作流已在离线 fake-local Gate 中完成 `K-API-2` 的 evidence/H2 与 simulation/H1 双合同路径：冻结 Task/Profile/Skill/输入和 Model Assignment，只通过受控 Tool Registry 构建工具，持久化五种终态，自动生成诚实声明 capture gap 的 Trace，以 Main State 最后提交，并在 H1/H2 fresh Python 子进程中恢复。Zhipu 标准 API 的 text/structured/tools、单 Attempt 有界私有 reasoning handback 与可审计准备度 Gate 也已离线实现；它仍等待账户/授权/live/货币成本证据，且不静默替代 ADR-0013 的 OpenAI Gate。`M3-007`、`M3-008` 和 `M6-006` 已完成；`M6-003` 仍为 `IN_PROGRESS`，真实 Provider Gate 尚未通过。离线通过不等于真实 Provider 或科研正确性证据，也不构成路诚钺工作流的完成证据。
 
 ## 3. 开始一个开发 Task
 

@@ -11,12 +11,14 @@ from typing import Any, Mapping, Sequence
 from research_workbench.adapters import CodexRuntimeAdapter
 from research_workbench.adapters.models import (
     ModelAssignment,
+    ToolChoice,
     build_live_provider,
     conformance_plan,
     get_provider_adapter_config,
     load_model_pool,
     probe_provider_adapters,
     run_openai_gate,
+    run_zhipu_gate,
     run_provider_conformance,
 )
 from research_workbench.artifacts.integrity import hash_directory, hash_file, resolve_within_root
@@ -92,6 +94,70 @@ def _print_risks(risks) -> int:
         print(f"{risk.level.upper():7} {risk.code:28} {risk.message}")
     blockers = sum(risk.level == RiskLevel.BLOCK for risk in risks)
     return 1 if blockers else 0
+
+
+def _zhipu_gate_decision_relationship_risks(
+    decision: Mapping[str, Any], root: Path
+) -> list[ContractRisk]:
+    report_ref_value = decision.get("gate_report_ref")
+    if not isinstance(report_ref_value, Mapping):
+        return []
+    report_ref = FileReference.from_mapping(report_ref_value)
+    report_path = resolve_within_root(root, report_ref.path)
+    if report_path is None or not report_path.is_file():
+        return []
+    report = load_document(report_path)
+    if not isinstance(report, Mapping) or report.get("report_kind") != "zhipu_live_gate":
+        return [
+            ContractRisk(
+                "ZHIPU-GATE-DECISION-MISMATCH",
+                RiskLevel.BLOCK,
+                "Zhipu Gate Decision does not reference a Zhipu Gate report",
+            )
+        ]
+
+    mismatches: list[str] = []
+    for decision_key, report_key in (
+        ("gate_id", "gate_id"),
+        ("gate_status", "status"),
+        ("reason", "reason"),
+    ):
+        if decision.get(decision_key) != report.get(report_key):
+            mismatches.append(decision_key)
+    expected_decision = {
+        "passed": "accept",
+        "safe-paused": "defer",
+        "failed": "reject",
+        "not-run": "not-run",
+    }.get(report.get("status"))
+    if decision.get("decision") != expected_decision:
+        mismatches.append("decision")
+
+    conformance = report.get("conformance")
+    expected_refs: dict[str, object] = {}
+    if isinstance(conformance, Mapping) and isinstance(conformance.get("check_ref"), Mapping):
+        expected_refs["conformance_check_ref"] = conformance["check_ref"]
+    e2e = report.get("e2e")
+    if isinstance(e2e, Mapping):
+        for key in ("main_state_ref", "receipt_ref", "trace_ref"):
+            if isinstance(e2e.get(key), Mapping):
+                expected_refs[key] = e2e[key]
+    for key in ("conformance_check_ref", "main_state_ref", "receipt_ref", "trace_ref"):
+        actual = decision.get(key)
+        expected = expected_refs.get(key)
+        if actual != expected:
+            mismatches.append(key)
+
+    if not mismatches:
+        return []
+    return [
+        ContractRisk(
+            "ZHIPU-GATE-DECISION-MISMATCH",
+            RiskLevel.BLOCK,
+            "Zhipu Gate Decision differs from its hash-bound report: "
+            + ", ".join(sorted(set(mismatches))),
+        )
+    ]
 
 
 def _document_reference_risks(document: Mapping[str, Any], root: Path):
@@ -205,7 +271,7 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
             path_only.append(receipt.context_snapshot_ref)
         if receipt.runtime.capability_snapshot_ref:
             path_only.append(receipt.runtime.capability_snapshot_ref)
-    elif kind == "openai_live_gate_report":
+    elif kind in {"openai_live_gate_report", "zhipu_live_gate_report"}:
         archive = document.get("archive")
         if isinstance(archive, Mapping):
             for key in ("intent_ref", "model_assignment_ref", "conformance_check_ref"):
@@ -226,7 +292,7 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
             for reference in e2e.get("published_refs", []):
                 if isinstance(reference, Mapping):
                     references += (FileReference.from_mapping(reference),)
-    elif kind == "openai_live_gate_decision":
+    elif kind in {"openai_live_gate_decision", "zhipu_live_gate_decision"}:
         for key in (
             "gate_report_ref",
             "conformance_check_ref",
@@ -237,6 +303,8 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
             reference = document.get(key)
             if isinstance(reference, Mapping):
                 references += (FileReference.from_mapping(reference),)
+        if kind == "zhipu_live_gate_decision":
+            extra_risks.extend(_zhipu_gate_decision_relationship_risks(document, root))
     elif kind == "deterministic_check_report":
         checker = document.get("checker")
         if isinstance(checker, Mapping) and isinstance(checker.get("source_ref"), Mapping):
@@ -541,14 +609,22 @@ def _provider_conformance(args: argparse.Namespace) -> int:
     if not args.output:
         raise ValueError("--execute requires --output")
     provider = build_live_provider(config)
-    report = run_provider_conformance(
-        provider,
-        adapter_id=config.adapter_id,
-        execution_context=args.execution_context,
-        checks=tuple(plan["checks"]),
-        max_provider_invocations=args.max_provider_invocations,
-        max_output_tokens=args.max_output_tokens,
-    )
+    try:
+        report = run_provider_conformance(
+            provider,
+            adapter_id=config.adapter_id,
+            execution_context=args.execution_context,
+            checks=tuple(plan["checks"]),
+            max_provider_invocations=args.max_provider_invocations,
+            max_output_tokens=args.max_output_tokens,
+            tool_choice_override=(
+                ToolChoice(kind="auto") if config.provider == "zhipu" else None
+            ),
+        )
+    finally:
+        discard = getattr(provider, "discard_ephemeral_continuation", None)
+        if callable(discard):
+            discard()
     document = report.to_mapping()
     schema_errors = SchemaCatalog().validate("provider_conformance_report", document)
     if schema_errors:
@@ -577,13 +653,43 @@ def _provider_openai_gate(args: argparse.Namespace) -> int:
         suffix = target.suffix.lower()
         if suffix not in {".json", ".yaml", ".yml"}:
             raise ValueError("--report must use a .json, .yaml, or .yml suffix")
-        if suffix == ".json":
-            _write_text(target, json.dumps(report, ensure_ascii=False, indent=2) + "\n")
-        else:
-            _write_yaml(target, report)
+        if not args.execute:
+            if suffix == ".json":
+                _write_text(target, json.dumps(report, ensure_ascii=False, indent=2) + "\n")
+            else:
+                _write_yaml(target, report)
         print(
             f"OpenAI live gate {report['status']}: reason={report['reason']} "
             f"report={target}"
+        )
+    else:
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+    return 0 if report["status"] in {"passed", "not-run"} else 1
+
+
+def _provider_zhipu_gate(args: argparse.Namespace) -> int:
+    if args.execute and not args.report:
+        raise ValueError("--execute requires --report")
+    report = run_zhipu_gate(
+        execute=args.execute,
+        root=args.root,
+        attempt_id=args.attempt_id,
+        accountable_owner=args.accountable_owner,
+        report_path=args.report,
+    )
+    if args.report:
+        target = Path(args.report)
+        suffix = target.suffix.lower()
+        if suffix not in {".json", ".yaml", ".yml"}:
+            raise ValueError("--report must use a .json, .yaml, or .yml suffix")
+        if not args.execute:
+            if suffix == ".json":
+                _write_text(target, json.dumps(report, ensure_ascii=False, indent=2) + "\n")
+            else:
+                _write_yaml(target, report)
+        print(
+            f"Zhipu live readiness gate {report['status']}: "
+            f"reason={report['reason']} report={target}"
         )
     else:
         print(json.dumps(report, ensure_ascii=False, indent=2))
@@ -1402,6 +1508,30 @@ def build_parser() -> argparse.ArgumentParser:
         help="real person accountable for the live Gate Attempt and Agent Trace",
     )
     provider_openai_gate.set_defaults(handler=_provider_openai_gate)
+    provider_zhipu_gate = provider_subparsers.add_parser(
+        "zhipu-gate",
+        help="run the fixed Zhipu standard-API readiness gate or emit not-run evidence",
+    )
+    provider_zhipu_gate.add_argument(
+        "--execute",
+        action="store_true",
+        help="authorize fixed live requests; without this flag no environment or network is used",
+    )
+    provider_zhipu_gate.add_argument(
+        "--report",
+        help="atomically create a redacted JSON or YAML report; defaults to JSON on stdout",
+    )
+    provider_zhipu_gate.add_argument(
+        "--root", help="project root containing the public Gate fixture"
+    )
+    provider_zhipu_gate.add_argument(
+        "--attempt-id", help="new path-safe Attempt identifier"
+    )
+    provider_zhipu_gate.add_argument(
+        "--accountable-owner",
+        help="real person accountable for the live Gate Attempt and Agent Trace",
+    )
+    provider_zhipu_gate.set_defaults(handler=_provider_zhipu_gate)
 
     models = subparsers.add_parser("models", help="inspect the explicit local model pool")
     model_subparsers = models.add_subparsers(dest="models_command", required=True)

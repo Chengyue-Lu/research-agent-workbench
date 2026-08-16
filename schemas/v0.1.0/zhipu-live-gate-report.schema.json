@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/zhipu-live-gate-report.schema.json",
+  "title": "Zhipu Live Readiness Gate Report",
+  "x-rwb-document-kind": "zhipu_live_gate_report",
+  "type": "object",
+  "required": ["schema_version", "report_kind", "gate_id", "status", "reason", "provider", "adapter_id", "environment_checked", "policy", "conformance", "e2e", "privacy", "limitations"],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "report_kind": { "const": "zhipu_live_gate" },
+    "gate_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "status": { "enum": ["passed", "failed", "safe-paused", "not-run"] },
+    "reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "provider": { "const": "zhipu" },
+    "adapter_id": { "const": "zhipu-chat-completions" },
+    "environment_checked": { "type": "boolean" },
+    "requested_model": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "missing_environment": { "type": "array", "items": { "enum": ["ZHIPU_API_KEY", "RWB_ZHIPU_MODEL"] }, "uniqueItems": true },
+    "policy": { "type": "object" },
+    "archive": {
+      "type": "object",
+      "required": ["intent_ref", "model_assignment_ref"],
+      "properties": {
+        "intent_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+        "model_assignment_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+        "conformance_check_ref": { "$ref": "common.schema.json#/$defs/fileRef" }
+      },
+      "additionalProperties": false
+    },
+    "conformance": {
+      "type": "object",
+      "required": ["status", "reason"],
+      "properties": {
+        "status": { "enum": ["passed", "failed", "not-run"] },
+        "reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "check_ref": { "$ref": "common.schema.json#/$defs/fileRef" }
+      },
+      "additionalProperties": false
+    },
+    "e2e": {
+      "type": "object",
+      "required": ["status", "reason"],
+      "properties": {
+        "status": { "enum": ["passed", "failed", "blocked", "safe-paused", "incomplete", "stage-completed", "not-run"] },
+        "reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "closeout_status": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "main_state_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+        "receipt_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+        "trace_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+        "published_refs": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/fileRef" }, "uniqueItems": true },
+        "fresh_process_resume_check": {
+          "type": "object",
+          "required": ["status", "returncode"],
+          "properties": { "status": { "enum": ["passed", "failed"] }, "returncode": { "type": "integer" } },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "privacy": {
+      "type": "object",
+      "required": ["credential_values_stored", "provider_response_ids_stored", "prompt_bodies_stored", "response_bodies_stored", "tool_arguments_stored"],
+      "properties": {
+        "credential_values_stored": { "const": false },
+        "provider_response_ids_stored": { "const": false },
+        "prompt_bodies_stored": { "const": false },
+        "response_bodies_stored": { "const": false },
+        "tool_arguments_stored": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "limitations": { "$ref": "common.schema.json#/$defs/stringArray" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "conformance": { "properties": { "status": { "const": "passed" } }, "required": ["status"] } } },
+      "then": { "properties": { "conformance": { "required": ["check_ref"] } } }
+    },
+    {
+      "if": { "properties": { "e2e": { "properties": { "status": { "enum": ["passed", "failed", "blocked", "safe-paused", "incomplete", "stage-completed"] } }, "required": ["status"] } } },
+      "then": {
+        "properties": {
+          "e2e": {
+            "required": ["closeout_status", "main_state_ref", "receipt_ref", "trace_ref", "published_refs", "fresh_process_resume_check"]
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "e2e": { "properties": { "status": { "enum": ["passed", "blocked", "safe-paused", "incomplete", "stage-completed"] } }, "required": ["status"] } } },
+      "then": {
+        "properties": {
+          "e2e": {
+            "properties": {
+              "fresh_process_resume_check": {
+                "properties": { "status": { "const": "passed" }, "returncode": { "const": 0 } }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "passed" } }, "required": ["status"] },
+      "then": {
+        "required": ["requested_model", "archive"],
+        "properties": {
+          "environment_checked": { "const": true },
+          "archive": { "required": ["conformance_check_ref"] },
+          "conformance": { "properties": { "status": { "const": "passed" } }, "required": ["check_ref"] },
+          "e2e": {
+            "properties": {
+              "status": { "const": "passed" },
+              "closeout_status": { "const": "completed" },
+              "fresh_process_resume_check": {
+                "properties": { "status": { "const": "passed" }, "returncode": { "const": 0 } }
+              }
+            },
+            "required": ["closeout_status", "main_state_ref", "receipt_ref", "trace_ref", "published_refs", "fresh_process_resume_check"]
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "safe-paused" } }, "required": ["status"] },
+      "then": {
+        "required": ["requested_model", "archive"],
+        "properties": {
+          "environment_checked": { "const": true },
+          "archive": { "required": ["conformance_check_ref"] },
+          "conformance": { "properties": { "status": { "enum": ["passed", "failed"] } }, "required": ["check_ref"] },
+          "e2e": { "properties": { "status": { "enum": ["not-run", "safe-paused", "blocked"] } } }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "failed" } }, "required": ["status"] },
+      "then": {
+        "required": ["requested_model", "archive"],
+        "properties": {
+          "environment_checked": { "const": true },
+          "conformance": { "properties": { "status": { "enum": ["passed", "failed"] } }, "required": ["status"] },
+          "e2e": { "properties": { "status": { "enum": ["not-run", "failed", "incomplete", "stage-completed"] } } }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "not-run" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "conformance": { "properties": { "status": { "const": "not-run" } } },
+          "e2e": { "properties": { "status": { "const": "not-run" } } }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

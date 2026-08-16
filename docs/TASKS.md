@@ -80,7 +80,7 @@
 
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
-| M6-001 | EXTERNAL | OpenAI/Anthropic/Gemini/Zhipu 薄 Model Provider Adapters | M1-008 | 黄毅维护；Zhipu 标准 API 当前仅 text/structured 离线合同通过，tools/live 仍 pending；路诚钺不修改实现或测试 |
+| M6-001 | EXTERNAL | OpenAI/Anthropic/Gemini/Zhipu 薄 Model Provider Adapters | M1-008 | 黄毅维护；Zhipu 标准 API text/structured/tools 与有界私有 reasoning handback 已离线通过，live 及货币成本证据仍 pending；路诚钺不修改实现或测试 |
 | M6-002 | DONE | 显式模型池与隔离 API session kernel（`K-API-1`） | M6-001 | primary/worker/specialist 槽只可显式绑定；轮次、工具、并行、工具结果、输出、token/成本/time 有硬边界；无自动 fallback；离线测试通过 |
 | M6-003 | IN_PROGRESS | Task-to-API 文件闭环（`K-API-2`） | M1-008, M2-001..005, M6-002 | evidence/H2 与 simulation/H1 双合同路径已离线通过：受控 Tool Registry、Model Assignment、五终态、commit-last、自动诚实 gapped Trace 与 H1/H2 fresh-process 恢复均有 fake-local 证据；节点仍等待 M6-004 真实 OpenAI Gate，不声称科研正确性 |
 | M6-004 | EXTERNAL | 选定模型槽的真实 Windows conformance 与一次 evidence 调用 | M6-001..003 | 待黄毅在授权环境执行并返回脱敏工件；当前机器缺少 `OPENAI_API_KEY` 和 `RWB_WORKER_MODEL`，状态为 pending/not-run，不得伪造通过 |
@@ -115,4 +115,4 @@ M1 已建立里程碑与首批可执行 Issues：
 
 路诚钺的 `K-MS-1` 实现不属于当前 API 分支。本分支只保留共享 Task/Handoff/Trace/Receipt 接口；Mode 决策卡、Task-to-Skill 选择、Skill 审计与 Handoff 成本对照仍按 `M7-002..006` 由其独立工作流推进。黄毅不在本分支补写或宣称完成这些工件。
 
-`M6-003` 的 evidence/H2 与 simulation/H1 双合同、受控 Tool Registry、Model Assignment、自动诚实 gapped Trace 与 fresh-process/commit-last 已有离线证据；`M6-006` 因此已完成。`M6-003` 仍为 `IN_PROGRESS`，唯一未跑的 API Gate 是 `M6-004` 真实 OpenAI 调用；当前机器缺少 `OPENAI_API_KEY` 和 `RWB_WORKER_MODEL`，必须保持 `EXTERNAL`/pending。
+`M6-003` 的 evidence/H2 与 simulation/H1 双合同、受控 Tool Registry、Model Assignment、自动诚实 gapped Trace 与 fresh-process/commit-last 已有离线证据；`M6-006` 因此已完成。`M6-003` 仍为 `IN_PROGRESS`，关闭条件仍是 `M6-004` 真实 OpenAI 调用；当前机器缺少 `OPENAI_API_KEY` 和 `RWB_WORKER_MODEL`，必须保持 `EXTERNAL`/pending。额外的 Zhipu 项目准备度 Gate 已实现但尚未真实执行；它不在无新 ADR 的情况下静默替代 `M6-004`。

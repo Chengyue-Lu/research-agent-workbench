@@ -65,6 +65,20 @@ from research_workbench.io import load_document, write_yaml_exclusive
 from research_workbench.tasks import FileReference, TaskPacket
 
 
+class _ProviderEphemeralCleanupError(RuntimeError):
+    """A Provider-private continuation could not be discarded safely."""
+
+
+def _discard_provider_ephemeral_state(provider: Any) -> None:
+    discard = getattr(provider, "discard_ephemeral_continuation", None)
+    if not callable(discard):
+        return
+    try:
+        discard()
+    except Exception as exc:
+        raise _ProviderEphemeralCleanupError from exc
+
+
 class _TraceSessionObserver:
     """Bridge sanitized runner boundaries into one two-phase Trace recorder."""
 
@@ -619,11 +633,30 @@ def run_task_api_attempt(
         observer=trace_observer,
     )
     try:
-        result = runner.run(
-            adapter_id=compiled.adapter_id,
-            request=compiled.request,
+        try:
+            result = runner.run(
+                adapter_id=compiled.adapter_id,
+                request=compiled.request,
+                limits=compiled.limits,
+                expected_capabilities=compiled.provider_capabilities,
+            )
+        finally:
+            _discard_provider_ephemeral_state(provider)
+    except _ProviderEphemeralCleanupError:
+        return closeout_terminal(
+            terminal_status="failed",
+            failure_code="PROVIDER-EPHEMERAL-CLEANUP-FAILED",
+            failure_summary=(
+                "Provider-private continuation cleanup failed; no exception message "
+                "was persisted and the Provider instance must not be reused."
+            ),
+            provider_adapter_id=compiled.adapter_id,
+            requested_model=compiled.request.model,
+            provider_adapter_version=snapshot.adapter_version,
+            expected_provider_identity=snapshot.provider,
             limits=compiled.limits,
-            expected_capabilities=compiled.provider_capabilities,
+            external_provider=snapshot.deployment != "local",
+            frozen_input_payloads=frozen_input_payloads,
         )
     except TraceRecorderError as exc:
         raise CloseoutError(

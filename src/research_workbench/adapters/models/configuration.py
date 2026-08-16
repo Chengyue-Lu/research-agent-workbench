@@ -25,7 +25,14 @@ IMPLEMENTED_CAPABILITIES: dict[str, frozenset[Capability]] = {
             Capability.STRUCTURED_OUTPUT,
         }
     ),
-    "zhipu": frozenset({Capability.TEXT, Capability.STRUCTURED_OUTPUT}),
+    "zhipu": frozenset(
+        {
+            Capability.TEXT,
+            Capability.TOOLS,
+            Capability.STRUCTURED_OUTPUT,
+            Capability.REASONING,
+        }
+    ),
 }
 
 

@@ -45,6 +45,8 @@ class VersionedSchemaTests(unittest.TestCase):
                 "model_assignment",
                 "openai_live_gate_decision",
                 "openai_live_gate_report",
+                "zhipu_live_gate_decision",
+                "zhipu_live_gate_report",
                 "project_protocol",
                 "provider_conformance_report",
                 "research_mode",

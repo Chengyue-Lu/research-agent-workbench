@@ -250,6 +250,7 @@ def run_provider_conformance(
     checks: Sequence[str],
     max_provider_invocations: int,
     max_output_tokens: int,
+    tool_choice_override: ToolChoice | None = None,
     now: Callable[[], datetime] | None = None,
     monotonic: Callable[[], float] = time.monotonic,
 ) -> ProviderConformanceReport:
@@ -287,7 +288,12 @@ def run_provider_conformance(
         if stopped:
             results.append(ConformanceCheckResult(check=check, status="not-run", failure_code="prior_failure"))
             continue
-        request = _request_for(check, snapshot.models[0], max_output_tokens)
+        request = _request_for(
+            check,
+            snapshot.models[0],
+            max_output_tokens,
+            tool_choice_override=tool_choice_override,
+        )
         invocations += 1
         try:
             response = provider.generate(request)
@@ -351,7 +357,13 @@ def run_provider_conformance(
     )
 
 
-def _request_for(check: str, model: str, max_output_tokens: int) -> ModelRequest:
+def _request_for(
+    check: str,
+    model: str,
+    max_output_tokens: int,
+    *,
+    tool_choice_override: ToolChoice | None = None,
+) -> ModelRequest:
     system = Message(
         "system",
         (
@@ -408,7 +420,11 @@ def _request_for(check: str, model: str, max_output_tokens: int) -> ModelRequest
                 ),
             ),
             tools=(tool,),
-            tool_choice=ToolChoice(kind="specific", name=tool.name),
+            tool_choice=(
+                tool_choice_override
+                if tool_choice_override is not None
+                else ToolChoice(kind="specific", name=tool.name)
+            ),
             max_output_tokens=max_output_tokens,
         )
     raise ValueError(f"unknown conformance check: {check}")

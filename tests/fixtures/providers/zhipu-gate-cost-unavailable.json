@@ -1,0 +1,34 @@
+[
+  {
+    "response_id": "zhipu-text-id-must-not-be-retained",
+    "finish_reason": "complete",
+    "text": "zhipu-text-body-must-not-be-retained",
+    "input_tokens": 12,
+    "output_tokens": 2
+  },
+  {
+    "response_id": "zhipu-structured-id-must-not-be-retained",
+    "finish_reason": "complete",
+    "text": "{\"ok\":true}",
+    "input_tokens": 18,
+    "output_tokens": 4
+  },
+  {
+    "response_id": "zhipu-tool-id-must-not-be-retained",
+    "finish_reason": "tool_call",
+    "tool_call_id": "zhipu-tool-call-id-must-not-be-retained",
+    "tool_name": "rwb_conformance_echo",
+    "tool_arguments": {"value": "probe"},
+    "input_tokens": 20,
+    "output_tokens": 3
+  },
+  {
+    "response_id": "zhipu-e2e-id-must-not-be-retained",
+    "finish_reason": "tool_call",
+    "tool_call_id": "zhipu-document-call-id-must-not-be-retained",
+    "tool_name": "document-read",
+    "tool_arguments": {"path": "examples/fixtures/paper-001.txt"},
+    "input_tokens": 30,
+    "output_tokens": 5
+  }
+]

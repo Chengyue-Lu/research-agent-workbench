@@ -1,6 +1,6 @@
 import json
 import unittest
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from research_workbench.adapters.models.conformance import run_provider_conformance
 from research_workbench.adapters.models.http import HttpRequest, HttpResponse
@@ -14,8 +14,16 @@ from research_workbench.adapters.models.port import (
     ModelRequest,
     ProviderError,
     ProviderErrorCategory,
+    ProviderRegistry,
     ResponseFormat,
+    ToolChoice,
     ToolDefinition,
+)
+from research_workbench.adapters.models.session import (
+    ApiSessionLimits,
+    ApiSessionStatus,
+    ClientTool,
+    IsolatedApiSessionRunner,
 )
 from research_workbench.adapters.models.zhipu_chat import (
     ZhipuChatCompletionsProvider,
@@ -61,7 +69,7 @@ def response(status: int, document: dict) -> HttpResponse:
 
 
 def chat_response(
-    content: str,
+    content: str | None,
     *,
     model: str = "glm-5.3",
     finish_reason: str = "stop",
@@ -92,6 +100,33 @@ def chat_response(
     )
 
 
+def tool_response(
+    *,
+    call_id: str = "call-1",
+    name: str = "lookup",
+    arguments: str = '{"record_id":"R-1"}',
+    reasoning_content: object = "private-reasoning-turn",
+    tool_calls: list[dict[str, object]] | None = None,
+) -> HttpResponse:
+    calls = tool_calls
+    if calls is None:
+        calls = [
+            {
+                "id": call_id,
+                "type": "function",
+                "function": {"name": name, "arguments": arguments},
+            }
+        ]
+    return chat_response(
+        None,
+        finish_reason="tool_calls",
+        message_extra={
+            "reasoning_content": reasoning_content,
+            "tool_calls": calls,
+        },
+    )
+
+
 def text_request(**changes) -> ModelRequest:
     values = {
         "model": "glm-5.3",
@@ -99,6 +134,70 @@ def text_request(**changes) -> ModelRequest:
     }
     values.update(changes)
     return ModelRequest(**values)
+
+
+def lookup_tool() -> ToolDefinition:
+    return ToolDefinition(
+        name="lookup",
+        description="Read one bounded record",
+        input_schema={
+            "type": "object",
+            "properties": {"record_id": {"type": "string"}},
+            "required": ["record_id"],
+            "additionalProperties": False,
+        },
+    )
+
+
+ZHIPU_TOOL_CAPABILITIES = frozenset(
+    {
+        Capability.TEXT,
+        Capability.TOOLS,
+        Capability.STRUCTURED_OUTPUT,
+        Capability.REASONING,
+    }
+)
+
+
+def append_tool_result(
+    request: ModelRequest,
+    *,
+    call_id: str = "call-1",
+    name: str = "lookup",
+    arguments: dict[str, object] | None = None,
+    output: object = None,
+    is_error: bool = False,
+    result_data: dict[str, object] | None = None,
+) -> ModelRequest:
+    assistant = Message(
+        "assistant",
+        (
+            ContentBlock(
+                kind="tool_call",
+                data={
+                    "call_id": call_id,
+                    "name": name,
+                    "arguments": (
+                        {"record_id": "R-1"} if arguments is None else arguments
+                    ),
+                },
+            ),
+        ),
+    )
+    data = (
+        {
+            "call_id": call_id,
+            "name": name,
+            "output": (
+                {"record_id": "R-1", "value": 7} if output is None else output
+            ),
+            "is_error": is_error,
+        }
+        if result_data is None
+        else result_data
+    )
+    result = Message("tool", (ContentBlock(kind="tool_result", data=data),))
+    return replace(request, messages=(*request.messages, assistant, result))
 
 
 class ZhipuChatCompletionsProviderTests(unittest.TestCase):
@@ -115,6 +214,9 @@ class ZhipuChatCompletionsProviderTests(unittest.TestCase):
         self.assertNotIn(Capability.TOOLS, snapshot.supported)
         self.assertNotIn(Capability.REASONING, snapshot.supported)
         self.assertEqual(0, snapshot.limits["max_retries"])
+        self.assertEqual("low", snapshot.limits["default_reasoning_effort"])
+        self.assertEqual("auto-only", snapshot.limits["tool_choice"])
+        self.assertEqual("single-active-attempt", snapshot.limits["session_scope"])
         with self.assertRaisesRegex(ValueError, "max_retries=0"):
             ZhipuChatCompletionsProvider(
                 model="glm-5.3",
@@ -156,7 +258,10 @@ class ZhipuChatCompletionsProviderTests(unittest.TestCase):
         self.assertEqual(0.5, payload["temperature"])
         self.assertIs(payload["stream"], False)
         self.assertNotIn("tools", payload)
-        self.assertNotIn("thinking", payload)
+        self.assertEqual(
+            {"type": "enabled", "clear_thinking": False}, payload["thinking"]
+        )
+        self.assertEqual("low", payload["reasoning_effort"])
         self.assertEqual("zhipu", result.provider)
         self.assertEqual("glm-5.3", result.model)
         self.assertEqual("answer", result.output[0].text)
@@ -318,11 +423,7 @@ class ZhipuChatCompletionsProviderTests(unittest.TestCase):
         self.assertEqual([], transport.requests)
 
     def test_tools_and_reasoning_are_rejected_before_secret_resolution(self) -> None:
-        tool = ToolDefinition(
-            name="lookup",
-            description="Read one bounded record",
-            input_schema={"type": "object"},
-        )
+        tool = lookup_tool()
         for request in (
             text_request(tools=(tool,)),
             text_request(reasoning_effort="high"),
@@ -342,6 +443,491 @@ class ZhipuChatCompletionsProviderTests(unittest.TestCase):
                 self.assertEqual(0, credential.resolve_count)
                 self.assertEqual([], transport.requests)
 
+    def test_tool_round_trip_replays_private_reasoning_and_clears_on_terminal(
+        self,
+    ) -> None:
+        hidden = "private reasoning\nwith unicode 界 and exact spacing"
+        raw_arguments = '{ "record_id" : "R-1" }'
+        transport = ScriptedTransport(
+            tool_response(arguments=raw_arguments, reasoning_content=hidden),
+            chat_response('{"status":"complete"}'),
+            chat_response("fresh attempt"),
+        )
+        provider = ZhipuChatCompletionsProvider(
+            model="glm-5.3",
+            credential=StaticCredential(),
+            transport=transport,
+            supported=ZHIPU_TOOL_CAPABILITIES,
+        )
+        request = text_request(
+            tools=(lookup_tool(),),
+            reasoning_effort="high",
+        )
+
+        first = provider.generate(request)
+
+        self.assertEqual(FinishReason.TOOL_CALL, first.finish_reason)
+        self.assertEqual((), first.output)
+        self.assertEqual(1, len(first.tool_calls))
+        self.assertEqual("call-1", first.tool_calls[0].call_id)
+        self.assertEqual("lookup", first.tool_calls[0].name)
+        self.assertEqual({"record_id": "R-1"}, first.tool_calls[0].arguments)
+        self.assertNotIn(hidden, repr(first))
+        self.assertNotIn(hidden, repr(provider))
+        self.assertNotIn(hidden, json.dumps(first.warnings))
+        self.assertNotIn(hidden, json.dumps(first.provider_metadata))
+
+        second = provider.generate(append_tool_result(request))
+
+        first_payload = json.loads(transport.requests[0].body)
+        second_payload = json.loads(transport.requests[1].body)
+        self.assertEqual("auto", first_payload["tool_choice"])
+        self.assertEqual("high", first_payload["reasoning_effort"])
+        self.assertEqual(
+            {
+                "type": "function",
+                "function": {
+                    "name": "lookup",
+                    "description": "Read one bounded record",
+                    "parameters": lookup_tool().input_schema,
+                },
+            },
+            first_payload["tools"][0],
+        )
+        self.assertEqual(["user", "assistant", "tool"], [
+            message["role"] for message in second_payload["messages"]
+        ])
+        assistant = second_payload["messages"][1]
+        self.assertEqual(hidden, assistant["reasoning_content"])
+        self.assertEqual(raw_arguments, assistant["tool_calls"][0]["function"]["arguments"])
+        self.assertEqual("call-1", assistant["tool_calls"][0]["id"])
+        tool_result = second_payload["messages"][2]
+        self.assertEqual("call-1", tool_result["tool_call_id"])
+        self.assertEqual(
+            '{"record_id":"R-1","value":7}', tool_result["content"]
+        )
+        self.assertEqual(FinishReason.COMPLETE, second.finish_reason)
+        self.assertIsNone(second.usage.provider_reported_cost)
+        self.assertNotIn(hidden, repr(second))
+        self.assertIn("continuation_active=False", repr(provider))
+
+        fresh = provider.generate(text_request())
+        self.assertEqual("fresh attempt", fresh.output[0].text)
+        self.assertNotIn(hidden, transport.requests[2].body.decode("utf-8"))
+
+    def test_shared_isolated_runner_executes_zhipu_client_tool_without_port_changes(
+        self,
+    ) -> None:
+        transport = ScriptedTransport(
+            tool_response(reasoning_content="runner-private-reasoning"),
+            chat_response("done"),
+        )
+        provider = ZhipuChatCompletionsProvider(
+            model="glm-5.3",
+            credential=StaticCredential(),
+            transport=transport,
+            supported=ZHIPU_TOOL_CAPABILITIES,
+        )
+        registry = ProviderRegistry()
+        registry.register("zhipu-chat-completions", provider)
+        executed: list[str] = []
+        runner = IsolatedApiSessionRunner(
+            registry,
+            tools=(
+                ClientTool(
+                    lookup_tool(),
+                    lambda arguments: executed.append(str(arguments["record_id"]))
+                    or {"record_id": arguments["record_id"], "value": 7},
+                ),
+            ),
+        )
+
+        result = runner.run(
+            adapter_id="zhipu-chat-completions",
+            request=text_request(tools=(lookup_tool(),)),
+            limits=ApiSessionLimits(
+                max_model_turns=3,
+                max_tool_calls=2,
+                max_parallel_tool_calls=1,
+                max_tool_result_chars=512,
+                max_output_tokens_per_turn=64,
+                max_seconds=30,
+                max_total_tokens=100,
+            ),
+            expected_capabilities=provider.capabilities(),
+        )
+
+        self.assertEqual(ApiSessionStatus.COMPLETED, result.status)
+        self.assertEqual(["R-1"], executed)
+        self.assertEqual(2, result.model_turns)
+        self.assertEqual(1, result.tool_calls)
+        self.assertIn("continuation_active=False", repr(provider))
+
+    def test_two_tool_turns_replay_the_full_private_chain_in_order(self) -> None:
+        first_hidden = "private reasoning turn one"
+        second_hidden = "private reasoning turn two"
+        transport = ScriptedTransport(
+            tool_response(reasoning_content=first_hidden),
+            tool_response(
+                call_id="call-2",
+                arguments='{ "record_id" : "R-2" }',
+                reasoning_content=second_hidden,
+            ),
+            chat_response("done"),
+        )
+        provider = ZhipuChatCompletionsProvider(
+            model="glm-5.3",
+            credential=StaticCredential(),
+            transport=transport,
+            supported=ZHIPU_TOOL_CAPABILITIES,
+        )
+        initial = text_request(tools=(lookup_tool(),))
+        first_result = append_tool_result(initial)
+
+        provider.generate(initial)
+        provider.generate(first_result)
+        terminal = provider.generate(
+            append_tool_result(
+                first_result,
+                call_id="call-2",
+                arguments={"record_id": "R-2"},
+                output={"record_id": "R-2", "value": 9},
+            )
+        )
+
+        payload = json.loads(transport.requests[2].body)
+        assistants = [
+            message
+            for message in payload["messages"]
+            if message["role"] == "assistant"
+        ]
+        self.assertEqual(
+            [first_hidden, second_hidden],
+            [message["reasoning_content"] for message in assistants],
+        )
+        self.assertEqual(
+            ["call-1", "call-2"],
+            [message["tool_calls"][0]["id"] for message in assistants],
+        )
+        self.assertEqual(FinishReason.COMPLETE, terminal.finish_reason)
+        self.assertIn("continuation_active=False", repr(provider))
+        self.assertNotIn(first_hidden, repr(terminal) + repr(provider))
+        self.assertNotIn(second_hidden, repr(terminal) + repr(provider))
+
+    def test_shared_runner_cost_ceiling_fails_closed_before_tool_execution(self) -> None:
+        hidden = "cost-private-reasoning"
+        provider = ZhipuChatCompletionsProvider(
+            model="glm-5.3",
+            credential=StaticCredential(),
+            transport=ScriptedTransport(
+                tool_response(reasoning_content=hidden)
+            ),
+            supported=ZHIPU_TOOL_CAPABILITIES,
+        )
+        registry = ProviderRegistry()
+        registry.register("zhipu-chat-completions", provider)
+        executed: list[str] = []
+        runner = IsolatedApiSessionRunner(
+            registry,
+            tools=(
+                ClientTool(
+                    lookup_tool(),
+                    lambda arguments: executed.append(str(arguments["record_id"])),
+                ),
+            ),
+        )
+
+        try:
+            result = runner.run(
+                adapter_id="zhipu-chat-completions",
+                request=text_request(tools=(lookup_tool(),)),
+                limits=ApiSessionLimits(
+                    max_model_turns=3,
+                    max_tool_calls=2,
+                    max_parallel_tool_calls=1,
+                    max_tool_result_chars=512,
+                    max_output_tokens_per_turn=64,
+                    max_seconds=30,
+                    max_total_tokens=100,
+                    max_provider_reported_cost=0.5,
+                ),
+                expected_capabilities=provider.capabilities(),
+            )
+            self.assertEqual(ApiSessionStatus.SAFE_PAUSED, result.status)
+            self.assertEqual("cost-usage-unavailable", result.stop_reason)
+            self.assertEqual([], executed)
+            self.assertIn("continuation_active=True", repr(provider))
+            self.assertNotIn(hidden, repr(result) + repr(provider))
+        finally:
+            provider.discard_ephemeral_continuation()
+        self.assertIn("continuation_active=False", repr(provider))
+
+    def test_continuation_rejects_identity_transcript_and_result_drift_offline(
+        self,
+    ) -> None:
+        cases = (
+            ("assistant-call-id", {"call_id": "wrong"}, None),
+            ("assistant-name", {"name": "other"}, None),
+            ("assistant-arguments", {"arguments": {"record_id": "R-2"}}, None),
+            (
+                "result-call-id",
+                {},
+                {
+                    "call_id": "wrong",
+                    "name": "lookup",
+                    "output": {"value": 7},
+                    "is_error": False,
+                },
+            ),
+            (
+                "result-incomplete",
+                {},
+                {"call_id": "call-1", "output": {"value": 7}},
+            ),
+            (
+                "result-extra-field",
+                {},
+                {
+                    "call_id": "call-1",
+                    "name": "lookup",
+                    "output": {"value": 7},
+                    "is_error": False,
+                    "extra": "not-allowed",
+                },
+            ),
+        )
+        for label, assistant_changes, result_data in cases:
+            with self.subTest(label=label):
+                credential = StaticCredential()
+                transport = ScriptedTransport(tool_response())
+                provider = ZhipuChatCompletionsProvider(
+                    model="glm-5.3",
+                    credential=credential,
+                    transport=transport,
+                    supported=ZHIPU_TOOL_CAPABILITIES,
+                )
+                request = text_request(tools=(lookup_tool(),))
+                provider.generate(request)
+                continued = append_tool_result(
+                    request,
+                    call_id=str(assistant_changes.get("call_id", "call-1")),
+                    name=str(assistant_changes.get("name", "lookup")),
+                    arguments=assistant_changes.get(
+                        "arguments", {"record_id": "R-1"}
+                    ),
+                    result_data=result_data,
+                )
+
+                with self.assertRaises(ProviderError) as caught:
+                    provider.generate(continued)
+
+                self.assertEqual(
+                    ProviderErrorCategory.CONTRACT_VIOLATION,
+                    caught.exception.category,
+                )
+                self.assertEqual(1, credential.resolve_count)
+                self.assertEqual(1, len(transport.requests))
+                self.assertIn("continuation_active=False", repr(provider))
+
+    def test_discard_blocks_late_result_and_new_initial_request_cannot_interleave(
+        self,
+    ) -> None:
+        hidden = "discard-only-private-reasoning"
+        request = text_request(tools=(lookup_tool(),))
+
+        for action in ("discard", "interleave"):
+            with self.subTest(action=action):
+                credential = StaticCredential()
+                transport = ScriptedTransport(
+                    tool_response(reasoning_content=hidden)
+                )
+                provider = ZhipuChatCompletionsProvider(
+                    model="glm-5.3",
+                    credential=credential,
+                    transport=transport,
+                    supported=ZHIPU_TOOL_CAPABILITIES,
+                )
+                provider.generate(request)
+                if action == "discard":
+                    provider.discard_ephemeral_continuation()
+                    next_request = append_tool_result(request)
+                else:
+                    next_request = request
+
+                with self.assertRaises(ProviderError) as caught:
+                    provider.generate(next_request)
+
+                self.assertEqual(
+                    ProviderErrorCategory.CONTRACT_VIOLATION,
+                    caught.exception.category,
+                )
+                self.assertEqual(1, credential.resolve_count)
+                self.assertEqual(1, len(transport.requests))
+                self.assertNotIn(hidden, repr(provider))
+                self.assertIn("continuation_active=False", repr(provider))
+
+    def test_malformed_tool_responses_are_rejected_and_private_state_is_purged(
+        self,
+    ) -> None:
+        hidden = "malformed-response-private-reasoning"
+        function_call = {
+            "id": "call-1",
+            "type": "function",
+            "function": {
+                "name": "lookup",
+                "arguments": '{"record_id":"R-1"}',
+            },
+        }
+        cases = (
+            ("missing-reasoning", tool_response(reasoning_content=None)),
+            (
+                "parallel-calls",
+                tool_response(
+                    reasoning_content=hidden,
+                    tool_calls=[function_call, {**function_call, "id": "call-2"}],
+                ),
+            ),
+            (
+                "mcp-call",
+                tool_response(
+                    reasoning_content=hidden,
+                    tool_calls=[
+                        {"id": "call-1", "type": "mcp", "mcp": {"name": "search"}}
+                    ],
+                ),
+            ),
+            (
+                "non-json-arguments",
+                tool_response(arguments="{not-json", reasoning_content=hidden),
+            ),
+            (
+                "non-object-arguments",
+                tool_response(arguments='["R-1"]', reasoning_content=hidden),
+            ),
+        )
+        for label, provider_response in cases:
+            with self.subTest(label=label):
+                provider = ZhipuChatCompletionsProvider(
+                    model="glm-5.3",
+                    credential=StaticCredential(),
+                    transport=ScriptedTransport(provider_response),
+                    supported=ZHIPU_TOOL_CAPABILITIES,
+                )
+
+                with self.assertRaises(ProviderError) as caught:
+                    provider.generate(text_request(tools=(lookup_tool(),)))
+
+                self.assertEqual(
+                    ProviderErrorCategory.CONTRACT_VIOLATION,
+                    caught.exception.category,
+                )
+                self.assertNotIn(hidden, str(caught.exception))
+                self.assertNotIn(hidden, repr(provider))
+                self.assertIn("continuation_active=False", repr(provider))
+
+    def test_private_continuation_byte_and_turn_caps_fail_closed(self) -> None:
+        hidden = "private-size-canary-" * 20
+        byte_transport = ScriptedTransport(
+            tool_response(reasoning_content=hidden)
+        )
+        byte_provider = ZhipuChatCompletionsProvider(
+            model="glm-5.3",
+            credential=StaticCredential(),
+            transport=byte_transport,
+            supported=ZHIPU_TOOL_CAPABILITIES,
+            max_continuation_bytes=64,
+        )
+
+        with self.assertRaises(ProviderError) as byte_error:
+            byte_provider.generate(text_request(tools=(lookup_tool(),)))
+
+        self.assertIn("private-memory size", str(byte_error.exception))
+        self.assertNotIn(hidden, str(byte_error.exception))
+        self.assertIn("continuation_active=False", repr(byte_provider))
+
+        turn_transport = ScriptedTransport(
+            tool_response(reasoning_content="turn-one"),
+            tool_response(
+                call_id="call-2",
+                arguments='{"record_id":"R-2"}',
+                reasoning_content="turn-two",
+            ),
+        )
+        turn_provider = ZhipuChatCompletionsProvider(
+            model="glm-5.3",
+            credential=StaticCredential(),
+            transport=turn_transport,
+            supported=ZHIPU_TOOL_CAPABILITIES,
+            max_continuation_turns=1,
+        )
+        request = text_request(tools=(lookup_tool(),))
+        turn_provider.generate(request)
+
+        with self.assertRaises(ProviderError) as turn_error:
+            turn_provider.generate(append_tool_result(request))
+
+        self.assertIn("tool-turn count", str(turn_error.exception))
+        self.assertEqual(2, len(turn_transport.requests))
+        self.assertIn("continuation_active=False", repr(turn_provider))
+
+    def test_only_auto_tool_choice_and_glm_reasoning_efforts_are_accepted(
+        self,
+    ) -> None:
+        for choice in (
+            ToolChoice(kind="none"),
+            ToolChoice(kind="required"),
+            ToolChoice(kind="specific", name="lookup"),
+        ):
+            with self.subTest(choice=choice.kind):
+                credential = StaticCredential()
+                provider = ZhipuChatCompletionsProvider(
+                    model="glm-5.3",
+                    credential=credential,
+                    transport=ScriptedTransport(),
+                    supported=ZHIPU_TOOL_CAPABILITIES,
+                )
+                with self.assertRaises(ProviderError) as caught:
+                    provider.generate(
+                        text_request(tools=(lookup_tool(),), tool_choice=choice)
+                    )
+                self.assertEqual(
+                    ProviderErrorCategory.UNSUPPORTED,
+                    caught.exception.category,
+                )
+                self.assertEqual(0, credential.resolve_count)
+
+        for effort in ("low", "high", "max"):
+            with self.subTest(effort=effort):
+                transport = ScriptedTransport(chat_response("answer"))
+                provider = ZhipuChatCompletionsProvider(
+                    model="glm-5.3",
+                    credential=StaticCredential(),
+                    transport=transport,
+                    supported=ZHIPU_TOOL_CAPABILITIES,
+                )
+                provider.generate(text_request(reasoning_effort=effort))
+                payload = json.loads(transport.requests[0].body)
+                self.assertEqual(effort, payload["reasoning_effort"])
+                self.assertEqual(
+                    {"type": "enabled", "clear_thinking": False},
+                    payload["thinking"],
+                )
+
+        credential = StaticCredential()
+        provider = ZhipuChatCompletionsProvider(
+            model="glm-5.3",
+            credential=credential,
+            transport=ScriptedTransport(),
+            supported=ZHIPU_TOOL_CAPABILITIES,
+        )
+        with self.assertRaises(ProviderError) as caught:
+            provider.generate(text_request(reasoning_effort="medium"))
+        self.assertEqual(
+            ProviderErrorCategory.INVALID_REQUEST,
+            caught.exception.category,
+        )
+        self.assertEqual(0, credential.resolve_count)
+
     def test_reasoning_content_is_omitted_without_leaking_it(self) -> None:
         hidden = "private chain of thought"
         transport = ScriptedTransport(
@@ -358,9 +944,10 @@ class ZhipuChatCompletionsProviderTests(unittest.TestCase):
 
         result = provider.generate(text_request())
 
-        rendered = repr(result)
+        rendered = repr(result) + repr(provider)
         self.assertNotIn(hidden, rendered)
-        self.assertIn("reasoning content was omitted", result.warnings[0])
+        self.assertNotIn(hidden, json.dumps(result.provider_metadata))
+        self.assertNotIn(hidden, json.dumps(result.warnings))
         self.assertNotIn("reasoning_content", result.provider_metadata)
 
     def test_retryable_api_error_is_reported_without_automatic_retry(self) -> None:

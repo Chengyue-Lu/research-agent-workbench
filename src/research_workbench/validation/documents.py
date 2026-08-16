@@ -89,6 +89,8 @@ SCHEMA_KINDS = {
     "provider_conformance_report",
     "openai_live_gate_report",
     "openai_live_gate_decision",
+    "zhipu_live_gate_report",
+    "zhipu_live_gate_decision",
     "research_mode",
     "agent_profile",
     "skill_manifest",
@@ -114,6 +116,10 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "openai_live_gate_report"
     if document.get("decision_kind") == "openai_live_gate_decision":
         return "openai_live_gate_decision"
+    if document.get("report_kind") == "zhipu_live_gate":
+        return "zhipu_live_gate_report"
+    if document.get("decision_kind") == "zhipu_live_gate_decision":
+        return "zhipu_live_gate_decision"
     registry_kind = document.get("registry_kind")
     if isinstance(registry_kind, str):
         return registry_kind

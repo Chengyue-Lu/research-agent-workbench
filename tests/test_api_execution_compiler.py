@@ -293,6 +293,11 @@ class ApiExecutionCompilerTests(unittest.TestCase):
 
     def test_real_adapter_ids_preserve_identity_and_capability_boundaries(self) -> None:
         adapters = load_provider_adapter_configs(ROOT / "registry/providers/adapters.yaml")
+        zhipu = next(adapter for adapter in adapters if adapter.provider == "zhipu")
+        self.assertTrue(
+            {Capability.TOOLS, Capability.STRUCTURED_OUTPUT, Capability.REASONING}
+            <= zhipu.capabilities
+        )
 
         for adapter in adapters:
             with self.subTest(adapter_id=adapter.adapter_id, provider=adapter.provider):

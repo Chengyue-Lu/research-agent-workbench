@@ -65,12 +65,10 @@
       "provider": "zhipu",
       "api_surface": "Standard Chat Completions API",
       "adapter_status": "offline-contract-tested-live-pending",
-      "capabilities": ["text", "structured_output"],
+      "capabilities": ["text", "tools", "structured_output", "reasoning"],
       "deferred_capabilities": [
-        "tools",
         "parallel_tools",
         "streaming",
-        "reasoning",
         "images",
         "files",
         "server_tools"
@@ -81,8 +79,10 @@
         "Structured output is prompt-enforced with a bounded schema instruction, uses provider json_object mode, and is locally validated; it is not provider-native strict JSON Schema.",
         "Canonical Task, Assignment, and execution-contract metadata remains local and is not transmitted in the provider payload.",
         "The adapter requires an exact returned model match and never accepts automatic routing from another requested model as fallback.",
-        "Provider-reported monetary cost is unavailable; the execution budget must fail closed rather than infer a tariff.",
-        "Client tools and reasoning handback remain disabled until their protocol can be represented without weakening the shared port or H2 contract."
+        "Client function tools use tool_choice=auto only and permit at most one function call per turn; parallel and provider-hosted tools are rejected.",
+        "GLM thinking remains enabled with an explicit low, high, or max reasoning effort; tool-turn reasoning_content is retained only in bounded adapter-private memory for exact handback and is never normalized into ModelResponse or project records.",
+        "Each Attempt requires a fresh single-active adapter instance and an explicit final discard of its ephemeral continuation state.",
+        "Provider-reported monetary cost is unavailable; the execution budget must fail closed rather than infer a tariff."
       ],
       "sources": [
         "https://docs.bigmodel.cn/cn/guide/models/text/glm-5.3",

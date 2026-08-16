@@ -76,6 +76,16 @@ from research_workbench.adapters.models.session import (
     ToolFailureSummary,
 )
 from research_workbench.adapters.models.zhipu_chat import ZhipuChatCompletionsProvider
+from research_workbench.adapters.models.zhipu_gate import (
+    ZHIPU_GATE_ADAPTER_ID,
+    ZHIPU_GATE_CHECKS,
+    ZHIPU_GATE_CREDENTIAL_ENV,
+    ZHIPU_GATE_LIMITS,
+    ZHIPU_GATE_MAX_OUTPUT_TOKENS,
+    ZHIPU_GATE_MODEL_ENV,
+    run_zhipu_gate,
+    zhipu_gate_plan,
+)
 
 __all__ = [
     "CHECK_ORDER",
@@ -132,6 +142,12 @@ __all__ = [
     "UrllibTransport",
     "Usage",
     "ZhipuChatCompletionsProvider",
+    "ZHIPU_GATE_ADAPTER_ID",
+    "ZHIPU_GATE_CHECKS",
+    "ZHIPU_GATE_CREDENTIAL_ENV",
+    "ZHIPU_GATE_LIMITS",
+    "ZHIPU_GATE_MAX_OUTPUT_TOKENS",
+    "ZHIPU_GATE_MODEL_ENV",
     "build_live_provider",
     "conformance_plan",
     "get_provider_adapter_config",
@@ -142,4 +158,6 @@ __all__ = [
     "required_capabilities",
     "run_openai_gate",
     "run_provider_conformance",
+    "run_zhipu_gate",
+    "zhipu_gate_plan",
 ]

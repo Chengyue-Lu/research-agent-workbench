@@ -36,5 +36,5 @@ adapters:
     base_url: https://open.bigmodel.cn/api/paas/v4
     credential_env: ZHIPU_API_KEY
     model_env: RWB_ZHIPU_MODEL
-    capabilities: [text, structured_output]
+    capabilities: [text, tools, structured_output, reasoning]
     live_conformance: pending
