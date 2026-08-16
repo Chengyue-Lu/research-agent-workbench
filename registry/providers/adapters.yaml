@@ -30,3 +30,11 @@ adapters:
     model_env: RWB_GEMINI_MODEL
     capabilities: [text, tools, parallel_tools, structured_output]
     live_conformance: pending
+  - adapter_id: zhipu-chat-completions
+    provider: zhipu
+    enabled: false
+    base_url: https://open.bigmodel.cn/api/paas/v4
+    credential_env: ZHIPU_API_KEY
+    model_env: RWB_ZHIPU_MODEL
+    capabilities: [text, structured_output]
+    live_conformance: pending

@@ -30,7 +30,7 @@
 
 技术选型见 [ADR-0004](../decisions/0004-MINIMAL-DEPENDENCY-M1.md)。当前使用 Draft 2020-12 JSON Schema；属性测试出现明确复杂度后再评估 Pydantic 或 Hypothesis。
 
-模型 API 采用能力协商式中立端口，见 [ADR-0003](../decisions/0003-PROVIDER-NEUTRAL-MODEL-PORT.md)。M1 冻结端口和能力/错误语义；后续已按用户明确需求提前完成 OpenAI、Anthropic、Gemini 的首个离线薄 Adapter 切片，见 [ADR-0007](../decisions/0007-THIN-PROVIDER-ADAPTERS.md) 与 [多提供商模型 API 实施计划](PROVIDER_ADAPTER_PLAN.md)。这不改变 M1“不调用真实 API”的退出边界，也不等于 live conformance。
+模型 API 采用能力协商式中立端口，见 [ADR-0003](../decisions/0003-PROVIDER-NEUTRAL-MODEL-PORT.md)。M1 冻结端口和能力/错误语义；后续已按明确需求完成 OpenAI、Anthropic、Gemini 的首个离线薄 Adapter，并新增保守的 Zhipu 标准 Chat Adapter，见 [ADR-0007](../decisions/0007-THIN-PROVIDER-ADAPTERS.md)、[多提供商模型 API 实施计划](PROVIDER_ADAPTER_PLAN.md)与 [GLM Runbook](GLM_LIVE_GATE_RUNBOOK.md)。Zhipu 当前只声明 text/structured，不能替代需要工具的项目 Gate；这些离线切片也不等于 live conformance。
 
 ## 3. 里程碑总览
 
@@ -246,7 +246,7 @@ rwb context checkpoint
 
 新增项必须有真实消费者、预算、测试和退出条件。不得一次引入两个功能重叠的重量级工具。
 
-当前已完成三家非流式 Adapter、ToolChoice、本地工具参数校验、延迟凭据解析、非秘密配置探测、脱敏 live conformance runner、`explicit-slot-only` Model Pool、有界 fresh API tool-loop runner，以及 evidence/H2 + simulation/H1 双合同 fake-local 编译与文件关闭。后者包括受控 Tool Registry、Model Assignment、自动诚实 gapped Trace 与 H1/H2 fresh-process/commit-last。不会继续铺更多提供商或构建复杂 Router；预算 guard 也不被描述为能取消 in-flight 调用。
+当前已完成 OpenAI、Anthropic、Gemini 三家工具型非流式 Adapter，以及按本次明确需求新增的 Zhipu 标准 API text/structured 薄 Adapter；共同具备延迟凭据解析、非秘密配置探测和脱敏 live conformance runner。`explicit-slot-only` Model Pool、有界 fresh API tool-loop runner，以及 evidence/H2 + simulation/H1 双合同 fake-local 编译与文件关闭也已实现。后者包括受控 Tool Registry、Model Assignment、自动诚实 gapped Trace 与 H1/H2 fresh-process/commit-last。Zhipu 不宣称 tools 或 reasoning handback，项目不继续铺更多提供商或构建复杂 Router；预算 guard 也不被描述为能取消 in-flight 调用。
 
 截至 2026-08-16，黄毅维护 Provider Adapter、Task-to-API、live conformance、执行端 Agent Trace 捕获和 API 专用测试。evidence/H2 与 simulation/H1 离线路径已冻结双合同与输入字节、限制只读工具、区分 Adapter ID 与规范 Provider 身份、持久化五种终态，并以 commit-last 与执行 intent 防止同 Attempt 静默重放；自动 Trace 对不可得捕获诚实声明 gap。`M6-003` 仍为 `IN_PROGRESS`，唯一未跑的 API Gate 是真实 OpenAI 调用；当前机器缺少 `OPENAI_API_KEY` 和 `RWB_WORKER_MODEL`，所以 `M6-004` 保持 `EXTERNAL`/pending。离线结果不证明真实 Provider/Windows 行为或科研正确性。路诚钺只维护冻结的 Mode、Skill Assignment、内容允许集、输出/Handoff/Trace 契约和评估接口；M6 不阻塞路诚钺的里程碑。
 

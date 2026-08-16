@@ -27,7 +27,6 @@ from research_workbench.io import load_document
 from research_workbench.protocol import ProjectProtocol
 from research_workbench.tasks import TaskPacket
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -292,12 +291,26 @@ class ApiExecutionCompilerTests(unittest.TestCase):
         with self.assertRaisesRegex(ApiExecutionCompilationError, "MODEL-NOT-SUPPORTED"):
             self.compile(provider=self.provider(models=("another-model",)))
 
-    def test_real_adapter_ids_compile_with_distinct_canonical_provider_identities(self) -> None:
+    def test_real_adapter_ids_preserve_identity_and_capability_boundaries(self) -> None:
         adapters = load_provider_adapter_configs(ROOT / "registry/providers/adapters.yaml")
 
         for adapter in adapters:
             with self.subTest(adapter_id=adapter.adapter_id, provider=adapter.provider):
                 mutable_limits = {"requests_per_minute": 1}
+                if Capability.TOOLS not in adapter.capabilities:
+                    with self.assertRaisesRegex(
+                        ApiExecutionCompilationError,
+                        "MODEL-CAPABILITY-GAP: provider lacks: tools",
+                    ):
+                        self.compile(
+                            binding=self.binding(provider_adapter=adapter.adapter_id),
+                            provider=self.provider(
+                                provider=adapter.provider,
+                                supported=adapter.capabilities,
+                                limits=mutable_limits,
+                            ),
+                        )
+                    continue
                 compiled = self.compile(
                     binding=self.binding(provider_adapter=adapter.adapter_id),
                     provider=self.provider(

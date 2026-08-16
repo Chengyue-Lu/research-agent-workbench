@@ -34,7 +34,7 @@ from research_workbench.adapters.models.port import (
     ToolDefinition,
     Usage,
 )
-
+from research_workbench.adapters.models.zhipu_chat import ZhipuChatCompletionsProvider
 
 CHECK_ORDER = ("text", "structured", "tools")
 CHECK_CAPABILITIES = {
@@ -237,6 +237,8 @@ def build_live_provider(
         return AnthropicMessagesProvider(**common)
     if config.provider == "google":
         return GeminiGenerateContentProvider(**common)
+    if config.provider == "zhipu":
+        return ZhipuChatCompletionsProvider(**common)
     raise ValueError(f"unsupported provider adapter: {config.provider}")
 
 

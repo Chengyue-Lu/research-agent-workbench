@@ -115,6 +115,31 @@ class CliTests(unittest.TestCase):
         self.assertIs(document["environment_read"], False)
         self.assertEqual(0, document["network_requests"])
 
+    def test_zhipu_conformance_plan_is_two_check_zero_network(self) -> None:
+        secret = "zhipu-secret-must-not-appear"
+        with patch.dict(
+            "os.environ",
+            {"ZHIPU_API_KEY": secret, "RWB_ZHIPU_MODEL": "glm-5.3"},
+            clear=True,
+        ):
+            code, output = run_cli(
+                [
+                    "providers",
+                    "conformance",
+                    "--config",
+                    str(ROOT / "registry" / "providers" / "adapters.yaml"),
+                    "--adapter",
+                    "zhipu-chat-completions",
+                ]
+            )
+        self.assertEqual(0, code)
+        document = json.loads(output)
+        self.assertEqual(["text", "structured"], document["checks"])
+        self.assertIs(document["environment_read"], False)
+        self.assertEqual(0, document["network_requests"])
+        self.assertNotIn(secret, output)
+        self.assertNotIn("glm-5.3", output)
+
     def test_provider_conformance_execute_rejects_disabled_template_before_environment(self) -> None:
         secret = "must-not-be-read-or-printed"
         with tempfile.TemporaryDirectory() as temporary:

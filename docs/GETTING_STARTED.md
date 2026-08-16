@@ -462,7 +462,7 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 | 上下文连续性 | SAFE_PAUSE、哈希、digest、Git 冲突及 H1/H2 fresh-process 恢复已离线实现 | 缺真实新主模型会话恢复 |
 | Handoff 压缩审计 | Manifest/Audit 和风险触发抽样契约已实现 | 路诚钺侧尚缺 H1/H2 成本对照与真实材料样本 |
 | Agent 过程留痕 | 实名 actor、Trace Schema/validator/CLI 与 API 运行时自动捕获已离线通过 | 不可得捕获显式记 gap，不伪装 complete；真实 Provider Trace 仍待 Gate |
-| Provider Adapters | OpenAI、Anthropic、Gemini 离线合同和有界 runner 已实现 | 由黄毅继续维护 |
+| Provider Adapters | OpenAI、Anthropic、Gemini 离线合同和有界 runner 已实现；Zhipu 标准 API text/structured 薄 Adapter 已离线通过 | Zhipu tools/live 与 ADR-0013 项目 Gate 仍未通过；由黄毅继续维护 |
 | Skill 供应链 | 候选隔离、静态审计、paired evaluation 契约已实现 | accepted Skills 仍标记 `project-original-unlicensed` |
 | 工件 promotion 和 Run 复现 | 已有架构与任务 | 核心实现未完成 |
 | 科研价值 | 有指标和对照计划 | 尚无两个真实案例，也未证明多 Agent 净收益 |

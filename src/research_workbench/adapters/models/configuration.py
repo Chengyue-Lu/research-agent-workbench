@@ -11,8 +11,7 @@ from urllib.parse import urlparse
 from research_workbench.adapters.models.port import Capability
 from research_workbench.io import load_document
 
-
-SUPPORTED_PROVIDERS = frozenset({"openai", "anthropic", "google"})
+SUPPORTED_PROVIDERS = frozenset({"openai", "anthropic", "google", "zhipu"})
 IMPLEMENTED_CAPABILITIES: dict[str, frozenset[Capability]] = {
     "openai": frozenset(
         {Capability.TEXT, Capability.TOOLS, Capability.STRUCTURED_OUTPUT, Capability.REASONING}
@@ -26,6 +25,7 @@ IMPLEMENTED_CAPABILITIES: dict[str, frozenset[Capability]] = {
             Capability.STRUCTURED_OUTPUT,
         }
     ),
+    "zhipu": frozenset({Capability.TEXT, Capability.STRUCTURED_OUTPUT}),
 }
 
 

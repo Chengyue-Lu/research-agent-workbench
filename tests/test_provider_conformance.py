@@ -17,6 +17,7 @@ from research_workbench.adapters.models import (
     ProviderErrorCategory,
     ToolCall,
     Usage,
+    ZhipuChatCompletionsProvider,
     build_live_provider,
     conformance_plan,
     run_provider_conformance,
@@ -95,6 +96,19 @@ def config(*, enabled: bool = False) -> ProviderAdapterConfig:
     )
 
 
+def zhipu_config(*, enabled: bool = False) -> ProviderAdapterConfig:
+    return ProviderAdapterConfig(
+        adapter_id="zhipu-chat-completions",
+        provider="zhipu",
+        enabled=enabled,
+        base_url="https://open.bigmodel.cn/api/paas/v4",
+        credential_env="ZHIPU_API_KEY",
+        model_env="RWB_ZHIPU_MODEL",
+        capabilities=frozenset({Capability.TEXT, Capability.STRUCTURED_OUTPUT}),
+        live_conformance="pending",
+    )
+
+
 class ConformancePlanTests(unittest.TestCase):
     def test_dry_run_plan_reads_no_environment_and_sends_no_network(self) -> None:
         plan = conformance_plan(config())
@@ -117,6 +131,16 @@ class ConformancePlanTests(unittest.TestCase):
             provider = build_live_provider(config(enabled=True))
         self.assertIsInstance(provider, AnthropicMessagesProvider)
         self.assertEqual(("claude-synthetic",), provider.capabilities().models)
+
+    def test_zhipu_live_factory_is_standard_api_and_defers_credential(self) -> None:
+        with patch.dict("os.environ", {"RWB_ZHIPU_MODEL": "glm-5.3"}, clear=True):
+            provider = build_live_provider(zhipu_config(enabled=True))
+        self.assertIsInstance(provider, ZhipuChatCompletionsProvider)
+        self.assertEqual(("glm-5.3",), provider.capabilities().models)
+        self.assertEqual(
+            ["text", "structured"],
+            conformance_plan(zhipu_config())["checks"],
+        )
 
 
 class ConformanceRunnerTests(unittest.TestCase):
