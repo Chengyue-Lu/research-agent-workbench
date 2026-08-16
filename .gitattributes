@@ -12,3 +12,8 @@
 docker/codex-coding-plan/Dockerfile text eol=lf
 docker/codex-coding-plan/*.mjs text eol=lf
 docker/codex-coding-plan/*.sha256 text eol=lf
+docker/codex-egress-proxy/Dockerfile text eol=lf
+docker/codex-egress-proxy/*.py text eol=lf
+docker/codex-egress-proxy/*.json text eol=lf
+docker/codex-egress-proxy/*.sha256 text eol=lf
+docker/codex-egress-proxy/*.dockerignore text eol=lf

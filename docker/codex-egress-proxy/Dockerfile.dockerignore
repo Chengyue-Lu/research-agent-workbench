@@ -1,0 +1,14 @@
+**
+!docker/
+!docker/codex-egress-proxy/
+!docker/codex-egress-proxy/Dockerfile
+!docker/codex-egress-proxy/dependencies.lock.json
+!docker/codex-egress-proxy/asset-manifest.sha256
+!docker/codex-egress-proxy/build-context-policy.sha256
+!docker/codex-egress-proxy/entrypoint.py
+!src/
+!src/research_workbench/
+!src/research_workbench/adapters/
+!src/research_workbench/adapters/codex_egress_proxy.py
+!src/research_workbench/adapters/codex_egress_server.py
+!src/research_workbench/adapters/codex_egress_container.py

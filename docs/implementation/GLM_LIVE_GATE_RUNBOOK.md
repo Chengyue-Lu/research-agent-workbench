@@ -62,7 +62,7 @@ attestation 合同，默认 live host 会在读取 key 前失败关闭。启用�
 路线的可用性。
 
 本机 Codex CLI 0.124.0 的 localhost 假端点探针进一步确认：请求确实是
-`POST /v1/responses`、`model: glm-5.3`、`reasoning.effort: low`，且 HTTP 与
+`POST /api/v1/responses`、`model: glm-5.3`、`reasoning.effort: low`，且 HTTP 与
 stream retry 均为 0。原始 catalog 会声明 `update_plan`、`request_user_input`、
 `apply_patch` 和 `view_image` 四个工具并允许并行调用；当前兼容投影通过省略
 `apply_patch_tool_type` 和收缩并行能力，将其降到
@@ -86,14 +86,29 @@ Provider 能力的声称。
 答案公网地址校验、literal-IP-only 拨号、实际 peer 核对、有界 TLS ClientHello 重组和精确 SNI
 校验，以及不包含 host/IP/header/body/key 的脱敏计量字段。独立 socket host 已实现显式启动、
 stdlib resolve-once、单次 literal 拨号、selector 双向 relay、统一 wall/idle/字节上限和 exactly-one
-脱敏 audit；真实 `socketpair` 测试覆盖了 partial I/O 与双向 half-close。它仍未被打包成 proxy
-镜像，也没有 Docker 监听/peer 绑定、事务化 start/cleanup supervisor、DNS 外层绝对超时或真实
-Provider 网络验收，因此不能视为 live egress。
+脱敏 audit；真实 `socketpair` 测试覆盖了 partial I/O 与双向 half-close。
 
-因此 `CODEX_CODING_PLAN_DOCKER_LIVE_READY` 与 `CODEX_DOCKER_NETWORK_LIVE_READY` 继续为 `False`。
-下一道真实凭据门是：固定最终 runtime/proxy OCI digest；补齐 proxy 镜像、仅 internal endpoint
-监听和 runtime peer 核验；用真实 Engine 验证双网拓扑、无直连/host-gateway/metadata 路径及完整
-清理；再用 localhost/fake-upstream 冻结 `/v1/responses` 请求指纹。这些项目没有通过前，不得仅把
+该 host 现已被放入一个固定 Python platform digest、空第三方依赖、精确 build-context allowlist 的
+独立 proxy 镜像合同。镜像只接受冻结的 RFC1918 listener/runtime peer 地址，拒绝 `0.0.0.0`，并且
+直接入口在读取 argv/env、创建 socket 或解析 DNS 前固定返回 `proxy-live-not-ready`。内部测试函数也
+没有默认 resolver/dialer，必须显式注入。这样可以验证镜像和边界合同，但不会把未完成的网络拓扑
+误当成可用代理。
+
+事务监督器同样保持 no-start：它先证明四个 Attempt-scoped 名称不存在，再 create/inspect，且只按
+本事务明确返回的 ID 清理；模糊 create 不会按名字接管或删除其他资源。它在 attestation 后以
+`docker-proxy-ip-interface-not-frozen` 停止，因为已提交的 topology v0.1 仍是旧 JavaScript 入口，
+尚不能表达 Python proxy 所需的固定 subnet、listener IP、peer IP 和有界 audit attach 通道。
+
+localhost 请求指纹合同现在绑定完整 ordered input、turn metadata、工具 Schema、模型、reasoning、
+HTTP 字段和 supervisor lifecycle hash；但 Codex 0.124.0 的真实无 Provider 探针仍暴露
+`update_plan / request_user_input / view_image`，因此该合同会主动拒绝当前请求。探针只证明 client
+request，不证明服务端 actual model/provider 或成本。
+
+因此 Docker host、network、proxy container、supervisor 和 request fingerprint 的全部
+`LIVE_READY` 开关继续为 `False`。下一道真实凭据门是：新增兼容而非覆盖 topology v0.2，冻结
+runtime/proxy IP 与最终 OCI digest；实现有界 attach 或 tmpfs audit 提取；在外层绝对截止时间内完成
+DNS snapshot；用真实 Engine 验证双网拓扑、无直连/host-gateway/metadata/任意 DNS 路径及完整清理；
+并让 Codex 的实际 `/api/v1/responses` 请求不再暴露未批准工具。这些项目没有通过前，不得仅把
 `network=none` 改成 default bridge，也不得注入 key。
 
 ## 3. 当前 Adapter 能力
