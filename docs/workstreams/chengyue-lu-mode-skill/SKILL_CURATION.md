@@ -93,6 +93,11 @@ source intake
 
 ## 5. accepted Skills 先行审计
 
+首轮结果保存在 [Accepted Skill 重叠审计](ACCEPTED_SKILL_OVERLAP_AUDIT.md)，但 ADR-0013
+之后这些结论只作为输入。`literature-evidence-extraction` 与 `simulation-vv` 不再直接
+修补，而是先映射到 [Mode Action Requirements](MODE_ACTION_REQUIREMENTS.md)；
+`handoff-integrity` 的 Tool/Trace/H2 迁移方向保持不变。
+
 | Skill | 当前判断 | 本轮必须回答 | 可能结果 |
 |---|---|---|---|
 | `literature-evidence-extraction` | 边界清楚，最可能继续保留 | bounded extraction 与 search/synthesis 的非触发是否稳定；Transfer Manifest 是否应仅由 H2 触发 | retain 或缩短 Handoff 步骤 |
@@ -102,6 +107,10 @@ source intake
 审计必须包含 no-Skill/direct-tool 基线。accepted 不是永久状态；若只剩脚本调用说明，应优先把脚本作为 Tool/checker，而不是保留一个上下文 Skill。
 
 ## 6. 首批候选队列
+
+四份来源候选判断保存在[首轮 Skill 候选 Dossier](SKILL_CANDIDATE_DOSSIERS.md)，作为历史
+探索与 reference。当前选择 0 个来源候选直接重写；后续 dossier 以 `need_id` 为主键，
+汇总多个来源、真实失败、Tool 基线与学科变体。
 
 | 优先级 | 候选/来源 | 本轮动作 | 不做什么 |
 |---|---|---|---|

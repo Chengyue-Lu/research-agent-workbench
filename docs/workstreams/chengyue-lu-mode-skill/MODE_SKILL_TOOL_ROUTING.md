@@ -1,10 +1,12 @@
 # Mode–Skill–Tool 划分与调用计划
 
-## 1. 五个概念
+## 1. 七个概念
 
 | 概念 | 回答的问题 | 不负责 |
 |---|---|---|
 | Research Mode | 什么证据与工件能支持什么强度的 Claim | 指定模型、Agent 或厂商工具 |
+| Mode Action | 某个 Mode 下本次 Task 可能需要哪一个原子研究动作 | 构成所有项目都必须执行的阶段图 |
+| Skill Need | 哪个 action 缺少可复用的非平凡语义方法 | 预先指定某个外部 Skill 实现 |
 | Agent Profile | 哪类执行容器、权限和上下文适合该 Task | 固定携带某个 Skill |
 | Skill | 如何完成一个可复用研究动作 | 授予工具、网络或外部写权限 |
 | Tool capability | 用什么确定性或外部能力读取、计算、查询或产出 | 决定方法合理性和 Claim ceiling |
@@ -38,9 +40,14 @@
 flowchart TD
     T["Task characteristics + required output"]
     RQ{"是否产生或解释研究证据？"}
+    IQ{"是否需要项目内交接 / 恢复 / Gate 准备？"}
     NM["No new Mode\n继承 Project/parent constraints"]
     MD["Mode decision\nartifacts + claim rules + human gates"]
-    CP["Required capabilities"]
+    AC["Select Mode actions\nfailure + artifact + stop + gate"]
+    PA["Select project-internal action\nprotocol + semantic failure + output"]
+    NI["No internal action"]
+    MC{"最小机制\nMode / Task / Tool / Skill Need / Human / Blocked"}
+    CP["Required capabilities / Need specs"]
     TS["Tool capability snapshot\navailability + data + side effects + version"]
     DT{"确定性 Tool/普通 Task 指令足够？"}
     NS["no-Skill / tool-only\n记录选择理由"]
@@ -49,19 +56,31 @@ flowchart TD
     RS{"唯一最小可用组合？"}
     SA["Explicit Skill Assignment\n版本/哈希 + resolved Tools"]
     SP["Split Task / capability gap / Human Gate"]
+    BL["Blocked\n保留缺口与恢复条件"]
     EX["Bounded execution + Attempt Trace"]
 
     T --> RQ
-    RQ -->|"否"| NM --> CP
-    RQ -->|"是"| MD --> CP
+    T --> IQ
+    RQ -->|"否"| NM --> MC
+    RQ -->|"是"| MD --> AC
+    AC --> MC
+    IQ -->|"否"| NI --> MC
+    IQ -->|"是"| PA --> MC
+    MC -->|"必需输入 / 权限 / capability 缺失"| BL
+    MC -->|"Mode / Task / Human 已足够"| NS
+    MC -->|"需要 Tool 或 Skill Need"| CP
     CP --> TS --> DT
     DT -->|"是"| NS --> EX
     DT -->|"否"| SC --> HF --> RS
     RS -->|"是"| SA --> EX
     RS -->|"否"| SP
+    TS -->|"不可用且无获批 fallback"| BL
 ```
 
-该流程先判断方法和 Tool，再加载 Skill 正文。未选 Skill 只读取 Registry 元数据；不能通过遍历候选正文让模型“自己挑”。
+该流程分别判断本次 Task 的 Mode action 与 project-internal action，再在同一个最小机制节点合流。
+只有 action 被判定为 Skill Need 后，才读取相关来源元数据并建立 need-centered dossier；不能通过
+遍历候选正文让模型“自己挑”。Mode action 和内部 action 都是可选目录，不是固定 DAG，也不形成
+Mode-to-Skill 或 governance Skill bundle。
 
 ## 4. Skill 调用规则
 
@@ -73,6 +92,8 @@ flowchart TD
 6. 多个等价 Skill 不能靠 Agent 名称、描述长度或“更全面”自动选择；拆 Task、请求人工或返回 ambiguous。
 7. Skill 可以要求 Tool capability，但 Tool 不能反向改变 Skill/Mode 的方法边界。
 8. H1/H2 的完整消息均归档；只有风险触发 H2 审计链，不能把 `handoff-integrity` 常驻作为所有任务的默认校核 Agent。
+9. project-internal Need 与 Mode-derived Need 并行发现，但在同一 Atomic Task 的 Resolver 合流；内部 Skill 继承 Mode/Project 边界并计入相同 Skill/context 上限。
+10. 交互留痕、读取权限、输出 Schema 和确定性校验始终由 Protocol/Task/Tool 强制，不能因内部 Skill 未加载而失效。
 
 ## 5. Tool Capability Card
 

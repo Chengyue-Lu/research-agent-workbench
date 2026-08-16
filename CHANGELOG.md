@@ -2,6 +2,45 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
+## 2026-08-17 — 转为 Mode-first Skill 需求推导
+
+### Decided
+
+- ADR-0013 冻结新顺序：Research Mode → 可选 Action → Failure/Artifact/Human Gate → 最小机制 → Skill Need；禁止从外部来源候选直接反推项目 Skill。
+- 四份来源候选 dossier 保留为历史探索，本轮选择 0 个来源候选直接重写；后续 dossier 以 `need_id` 汇总多来源参考、真实失败和 no-Skill/direct-tool 基线。
+- 三个 0.1.0 accepted Skill 作为历史原型冻结，不立即删除或原地扩写；后续按 Mode action 创建新版本或显式 deprecation。
+- ADR-0014 增加与 Mode-derived Need 并行的 project-internal Need 来源，用于本项目特有的交接、恢复和 Human Gate 准备语义；强制交互留痕、读取边界、输出 Schema 和确定性校验仍不是 Skill。
+
+### Added
+
+- `MODE_ACTION_REQUIREMENTS.md`：为 `evidence-synthesis` 与 `simulation` 建立 Action–Failure–Artifact–Gate 和机制分配，首批每个 Mode 最多保留两个 Skill Need 入口。
+- M7-011 Mode-derived requirement baseline 完成，并显式加入 `blocked/capability gap` 出口；M7-004/M7-005 暂停到 Need/Tool/Trace 前置条件满足，M7-010 以零直接重写对象完成。
+- `PROJECT_INTERNAL_SKILLS.md`：预留五个 project-only Need，其中只允许 Compact Handoff 与 H2 Transfer 两项进入首批 dossier；没有创建 Skill 包、Registry 记录或全局 bundle。
+- M7-012 项目内生 Skill 规划完成；M7-013 可与 Mode-derived Tool/路由工作并行，真实比较 M7-014 继续等待 M3-008。
+
+### Boundaries
+
+- 未新增 Mode、Skill、Tool Registry 条目，未修改 API/Provider/Runtime、模型路由或 live conformance；未安装、执行或注册 GLM 采集到的外部内容。
+- GLM 第二批的 14 个 Tool/MCP 与 6 个 Skill 条目继续留在 Attempt Archive，只在已确认 action gap 下作为 reference inventory 使用。
+- project-internal Skill 计入现有 Skill 数量和上下文预算，默认最多一个；不能授予权限、改变 Mode/Claim 或替代 Runtime Trace。
+
+## 2026-08-16 — Accepted Skill 重叠审计与首轮 Dossier
+
+### Audited
+
+- `literature-evidence-extraction` 与 `simulation-vv` 结论为 `retain-revise`：保留方法语义，但 Transfer Manifest/`handoff-integrity` 从固定依赖改为 Task/H2 风险触发。
+- `handoff-integrity` 结论为 `deprecate-wrapper`：确定性部分迁移为 `handoff-validation` Tool capability，H2 语义义务进入 Task/Trace 模板；Tool card 和 Resolver 迁移前不直接删除 accepted 条目。
+
+### Triaged
+
+- 完成 `build-evidence-map`、K-Dense citation management、experimental design、scientific visualization 四份 dossier，均包含 no-Skill/direct-tool、上下文、学科、Tool/权限、Human Gate、停止与重叠判断。
+- evidence map 下沉为项目 Artifact/validator，scientific visualization 先拆 figure spec 与 Tool capability；两者不占当前重写名额。
+- 建议只让极小 `citation-claim-integrity` 与 gated `experiment-design-checkpoint` 进入下一 Human Gate；该建议不是 `trial` 或 `accepted` 决定。
+
+### Delegated discovery
+
+- 通过原 OpenCode/GLM 5.3 会话派发第二批 S5/S6/S1/S2 候选采集；输出被限制在忽略的 Attempt Archive，不得修改 Registry、受控文档、commit 或 push，且新增模型预算目标不超过 30,000 tokens。
+
 ## 2026-08-16 — 多来源 Skill 摄取与首批机器筛选
 
 ### Changed

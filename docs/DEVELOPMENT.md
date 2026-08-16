@@ -2,7 +2,7 @@
 
 状态：当前协作入口
 
-日期：2026-08-15
+日期：2026-08-17
 
 ## 1. 实名维护边界
 
@@ -21,12 +21,16 @@ Agent 不是责任主体。每个运行中的 Agent 使用稳定 `actor_id`，�
 
 路诚钺当前维护分支为 `agent/mode-skill-selection-baseline`，目标节点是 `K-MS-1 Mode–Skill Selection Baseline`：
 
-1. 先审计、整理并在必要时独立重写少量明确可用的 Skills；
-2. 用候选反推 Mode 边界、Task → Mode → capability → Tool → no-Skill/Skill 的可解释选择矩阵；
-3. 明确外部 Tool capability、数据出口、副作用、失败和 Adapter 责任边界；
-4. 在真实 Agent forward test 前完成最小 Attempt Archive/Trace validator；
-5. 在相同 fixture 上比较 with/without Skill 与 H0/H1/H2 成本；
-6. 到达节点后做保留、拆分、降级和删除评审。
+1. 从 `evidence-synthesis` 与 `simulation` 推导可选 Mode actions、失败、Artifact、停止条件和 Human Gate；
+2. 为每个 action 选择最小充分机制：Mode/Task/Tool/Skill Need/Human/blocked，不从来源候选反推需求；
+3. 只为已确认的 action gap 建 provider-neutral Tool capability card 和 Task 路由 fixture；
+4. 按 Mode action 版本化复核三个 0.1.0 Skill 原型，不原地改义；
+5. 在真实 Agent forward test 前完成最小 Attempt Archive/Trace validator，再比较 no-Skill/direct-tool/compact trial 与 H0/H1/H2 成本；
+6. 到达节点后做保留、拆分、降级和退役评审。
+
+并行维护一条 project-internal Skill Need 路线，只处理本项目交接、恢复与 Human Gate 准备中的
+可复用语义动作。它先比较 Protocol/template/Tool 基线，不把交互留痕、受控读取、输出 Schema
+或权限包装成可选 Skill；当前候选与停止条件见[项目内生协议 Skill 规划](workstreams/chengyue-lu-mode-skill/PROJECT_INTERNAL_SKILLS.md)。
 
 达到上述节点后暂停评审，不批量新增 Mode/Skill/Tool，也不在此分支修改 API 实现。详细顺序见[路诚钺 Mode–Skill 分支计划](workstreams/chengyue-lu-mode-skill/README.md)，状态以[任务清单](TASKS.md)为准。
 

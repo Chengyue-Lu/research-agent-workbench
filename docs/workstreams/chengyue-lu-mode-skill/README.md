@@ -2,8 +2,8 @@
 
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 分支：`agent/mode-skill-selection-baseline`
-- 状态：首批 54 个外部入口完成逐项 Registry 留痕，进入 dossier 决策
-- 日期：2026-08-16
+- 状态：Mode-derived 与 project-internal 两条 Skill Need 路线并行
+- 日期：2026-08-17
 - 目标节点：`K-MS-1 Mode–Skill Selection Baseline`
 
 本目录是路诚钺当前分支的唯一专项计划入口。逐项状态仍以 [`docs/TASKS.md`](../../TASKS.md) 为准；稳定架构仍以 [`docs/ARCHITECTURE.md`](../../ARCHITECTURE.md) 和模块文档为准。本目录不建立第二套全局架构。
@@ -12,23 +12,26 @@
 
 当前优先级调整为：
 
-1. 首批 9 个来源、54 个 Skill 入口已完成隔离、机器筛选、人工处置、固定哈希和逐项 Registry 留痕；
-2. 从 6 个 `triage` 项中只让最多 4 个进入 dossier、最多 2 个进入独立重写或困难任务验证；
-3. 用筛选后的真实候选反推 Mode 边界、capability 词汇和 Skill 显式调用规则；
-4. 同时定义这些 Skills 需要的外部 Tool 能力与调用边界；
-5. 在恢复真实 Agent with/without 评估前补齐 Attempt Archive/Trace validator；
-6. 到达 `K-MS-1` 后暂停，做保留、拆分、降级和删除评审。
+1. 先为 `evidence-synthesis` 与 `simulation` 建立可选 Action、失败、Artifact、机制和 Human Gate 地图；
+2. 对每个 action 优先判断 Mode/Task/Tool/Human 是否足够，只有非平凡语义复用缺口才建立 Skill Need；
+3. 外部候选和 GLM 采集结果只作为按 Need 检索的 reference inventory，不再直接形成重写清单；
+4. 用 Mode-derived Need 反查 capability、Tool card、Skill 和 no-Skill 路由；
+5. Mode 需求确认后才版本化修订或退役三个 0.1.0 Skill 原型；
+6. 真实 Agent with/without 评估仍以前置 Attempt Archive/Trace validator 为条件。
+
+与上述 Mode-derived 路线并行，为 Agent 交接、H2 转移、受控恢复和 Human Gate Brief 建立少量
+project-internal Need 占位。它们先比较 Protocol/template/Tool 基线，不全局加载，也不改变 Mode。
 
 “搜集 Skills”不等于下载、安装或准入。“外部 Tool”也不等于在本分支实现 Provider/API。路诚钺负责方法、能力词汇、选择规则、数据/副作用边界和 fixtures；黄毅负责 API session、认证、Provider/Tool Adapter 实现和执行端测试。
 
 ## 2. 当前基线
 
-截至 2026-08-16：
+截至 2026-08-17：
 
 - 正式 Mode：2 个，`evidence-synthesis`、`simulation`；
-- accepted Skills：3 个，`literature-evidence-extraction`、`simulation-vv`、`handoff-integrity`；
+- accepted Registry 中仍有 3 个 0.1.0 原型，历史 Assignment 保持可解析；它们尚未证明真实方法增量，不作为新需求的默认答案；
 - 三个 accepted Skills 当前均标记 `project-original-unlicensed`，M0-007 仍阻断对外发布；
-- 候选 Registry：73 个，其中 `triage` 10、`reference` 48、`quarantine` 5、`rejected` 10；首批新增 54 个外部入口均不可执行，只有 6 个社区入口进入本轮 dossier shortlist；
+- 候选 Registry：73 个；第二批 GLM Attempt 另有 14 个 Tool/MCP 和 6 个 Skill 元数据，均只作 reference inventory，未进入 Registry；
 - 独立本地候选包：1 个，`claim-preserving-rewrite`；
 - API 执行、真实模型调用和自动 Trace 捕获不属于本分支实现范围。
 
@@ -37,6 +40,10 @@
 ## 3. 本目录
 
 - [Skill 整理、独立重写与准入计划](SKILL_CURATION.md)
+- [Mode Action Requirements](MODE_ACTION_REQUIREMENTS.md)
+- [项目内生协议 Skill 规划](PROJECT_INTERNAL_SKILLS.md)
+- [Accepted Skill 重叠审计](ACCEPTED_SKILL_OVERLAP_AUDIT.md)
+- [首轮四份 Skill 候选 Dossier（历史探索）](SKILL_CANDIDATE_DOSSIERS.md)
 - [Skill 来源搜集、隔离与机器/人工筛选](SKILL_SOURCE_INTAKE.md)
 - [一方 Skill 逐项筛选结论](FIRST_PARTY_SKILL_TRIAGE.md)
 - [社区 Skill 人工筛选结论](COMMUNITY_SKILL_TRIAGE.md)
@@ -51,23 +58,28 @@
 | 阶段 | 工作 | 交付物 | 退出条件 |
 |---|---|---|---|
 | P0 计划冻结 | 固定库存、责任、来源和非目标 | 本目录、TASKS/导航更新 | 开发者能从本目录确定唯一下一动作 |
-| P1 accepted 审计 | 审核 3 个 accepted Skills 的 trigger、non-trigger、工具、上下文和删除条件 | 3 份边界审计或等价 fixtures | 每个 Skill 有 retain/revise/deprecate 结论 |
-| P2 候选整理/重写 | 只推进最多 2 个高价值候选，不复制未知许可实现 | 隔离 candidate package、lineage、checks、fixtures | 至少 1 个候选得到 reject/retain-reference/continue-trial 决定 |
-| P3 Mode/Tool 路由 | 完成 Mode 决策卡、Tool capability cards 和 Skill 调用矩阵 | 路由表、capability 词汇、6–8 个 Task fixtures | no-Skill、tool-only、Skill、blocked、Human Gate 均可解释 |
-| P4 Trace 前置 | 实现 M3-007/008 的最小 Envelope/Index/Event fixture 与 validator | 可回放 Attempt fixture | forward test 不再只依赖聊天或 Worklog |
-| P5 对照评估 | 先做 baseline/compact/full-Skill 困难任务诊断，再按需做 direct-tool 与 H0/H1/H2 对照 | 脱敏输出、checks、Receipt/Trace、盲评、Decision | 证据能区分普通提示、Tool 与 Skill 的增量，不自动 accepted |
+| P1 Mode action 推导 | 为两个正式 Mode 建立 Action–Failure–Artifact–Gate 地图 | `MODE_ACTION_REQUIREMENTS.md` | action 不形成全局 DAG，机制选择可解释 |
+| P2 Need 与机制分配 | 每个 action 判定 Mode/Task/Tool/Skill Need/Human | Need specs、capability gaps | no-Skill 是正常结果；每个 Mode 首批 Need 不超过两个 |
+| P3 路由与 Tool 卡 | 按 Need 完成路由 fixture 和 provider-neutral Tool capability cards | 路由表、Tool cards、6–8 个 fixtures | tool-only、Skill、blocked、Human Gate 均可解释 |
+| P4 原型迁移 | 按 Mode action 重审三个 0.1.0 Skill | 新版本或 deprecation/migration Decision | 不原地改义，不因历史 accepted 默认保留 |
+| P5 Trace 与对照评估 | 完成最小 Trace 后才做 no-Skill/direct-tool/compact trial | Trace、脱敏输出、盲评、Decision | 证据能区分机制增量，不自动 accepted |
 | P6 节点评审 | 删除无增量价值机制并冻结 K-MS-1 | 评审 Decision、更新 Registry/TASKS | 到达停止点，不批量扩张 Mode/Skill/Tool |
 
-P1–P3 可以先做离线文档、契约和 fixtures；P4 必须在任何声称“真实 Agent 效果”的 P5 之前完成。
+P1–P4 可以先做离线文档、契约、迁移设计和 fixtures；P5 的任何真实效果宣称仍必须等待 M3-008。
+
+Project-internal 路线与 P3/P4 并行：先为 `NEED-INT-COMPACT-HANDOFF` 和
+`NEED-INT-AUDITED-TRANSFER` 建 direct baseline 与 failure fixture，最多同时维护两个 active Need；
+其真实对照同样等待 M3-008，不成为全局默认 Skill bundle。
 
 ## 5. 首批处理顺序
 
-1. 先完成三个 accepted Skills 的 retain/revise/deprecate 审计，特别判断 `handoff-integrity` 是否应退回确定性 Tool，并为 dossier 提供真实重叠基线。
-2. 首轮只建立 4 个 dossier：`build-evidence-map`、K-Dense `citation-management`、`experimental-design`、`scientific-visualization`；每份必须包含 no-Skill/direct-tool 对照、上下文成本、学科边界、Human Gate、所需 Tool 和可判定停止条件。
-3. `peer-review` 暂作高语义成本 reserve；`statistical-power` 先作为 experiment dossier 的方法参考，只有证明不能被有界组合表达时才升级为独立 dossier。
-4. 四份 dossier 完成后由人工最多选择 2 个进入独立最小重写或困难任务；许可不明时不复制正文或脚本，不因官方来源自动提高状态。
-5. 同步从已下沉条目定义首批 provider-neutral Tool capability cards；在证明 Agent workflow 有增量价值前不创建文件转换、搜索或 API 目录“大 Skill”。
-6. 在任何新的真实 Agent forward test 前完成 M3-008 最小 Trace validator；`claim-preserving-rewrite` 只保留 checker 修复和 CPD-02/03 compact 复验，不先行决定整体路线。
+1. 完成两个正式 Mode 的 trigger/non-trigger/组合/no-Mode 决策卡。
+2. 完成 `MODE_ACTION_REQUIREMENTS.md`，先确认 action 和机制分配，不创建 Skill 包。
+3. 以 `need_id` 而非外部来源建立最多四个 Need dossier；每个 Mode 首批最多两个。
+4. 只为已确认 action gap 建立 Tool capability card；具体 MCP/API 仍只是 Adapter 候选。
+5. Mode/Need/Tool 路由稳定后，版本化迁移三个 0.1.0 Skill 原型。
+6. 新的真实 forward test 等待 M3-008；此前的 candidate dossier 和 GLM 结果保留为历史/reference，不触发重写。
+7. 并行为前两个 project-internal Need 建 compact dossier；Task/Schema/Tool 足够时记录 `no-Skill` 并停止。
 
 ## 6. 预期写入位置
 
@@ -105,13 +117,14 @@ Tool capability card 的存放位置和 Schema 在首张卡完成后决定；没
 ## 8. K-MS-1 完成条件
 
 1. 两个正式 Mode 有 trigger/non-trigger/组合/no-Mode fixtures；
-2. 三个 accepted Skills 完成 retain/revise/deprecate 审计；
-3. 至少一个候选经过学科/动作相关的困难任务诊断，得到证据化去留决定，最多推进两个候选包；
-4. 至少 6 个 Task fixture 能给出 Mode、capability、Tool、Skill/no-Skill、读取和 Handoff 选择理由；
-5. 外部 Tool 的数据出口、权限、副作用、失败和验证边界可在调用前判断；
-6. 实际 Agent 评估有完整 Attempt Trace，但主 Agent 默认只读取索引和 Handoff；
-7. 没有修改 API 执行实现，没有把 fixture PASS 宣称为科研价值；
-8. 至少删除、降级或合并一项没有净价值的 Skill/规则/字段，或形成可审计的“暂不删除”理由。
+2. 两个 Mode 的 Action–Failure–Artifact–Gate 与最小机制分配完成；
+3. 每个 Mode 首批 Skill Need 不超过两个，且能解释 no-Skill/direct-tool 基线；
+4. 至少 6 个 Task fixture 能给出 Mode、action、Tool、Skill Need/no-Skill、读取和 Handoff 选择理由；
+5. 已确认 Tool gap 的数据出口、权限、副作用、失败和验证边界可在调用前判断；
+6. 三个 0.1.0 Skill 原型有按 Mode action 得出的保留、拆分、降级或版本化迁移决定；
+7. 没有新增正式 Mode、修改 API 执行实现或把文档/fixture PASS 宣称为科研价值；
+8. 外部来源只通过 Need dossier 被引用，没有来源候选直接成为开发清单。
+9. project-internal 候选有明确 direct baseline、project-only 边界和最多两个 active Need，且没有把强制 Protocol/Schema/Trace 规则降级成 Skill。
 
 在项目 LICENSE 和候选来源许可未解决前，候选最高进入内部 `trial`，不能宣称可公开再分发。
 

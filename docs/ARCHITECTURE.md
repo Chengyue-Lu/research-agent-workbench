@@ -131,7 +131,7 @@ Project Protocol 声明当前问题、激活模式、Claim ceiling、人工 Gate
 
 ### L3：Agent 与 Skill 能力层
 
-Agent Profile 描述执行容器；Skill 描述可复用工作方法；Capability Resolver 按任务的硬约束选择最小组合，生成不可变的 Skill Assignment。
+Agent Profile 描述执行容器；Skill 描述可复用工作方法；Capability Resolver 按任务的硬约束选择最小组合，生成不可变的 Skill Assignment。Skill Need 可以来自 Research Mode action，也可以来自本项目特有的交接、恢复和 Gate 准备动作；后者继承上游 Mode/Project 边界，不改变科研方法或 Claim ceiling。
 
 详见[Agent 运行模型](modules/03-AGENT_RUNTIME.md)与[Skill 系统](modules/04-SKILL_SYSTEM.md)。
 
@@ -207,6 +207,7 @@ sequenceDiagram
 - 任务声明的 `forbidden_skills` 优先级高于推荐；
 - 路由不确定、Skill 冲突或缺少验证时，返回阻塞/人工决定，而不是猜测；
 - 主 Agent 只读取 Skill 元数据和路由结果，不默认加载所有 Skill 正文。
+- Project-internal Skill 不全局加载、不获得额外上下文配额，也不能替代 Project Protocol、Schema、Tool 或 Runtime Trace。
 - Agent 对仓库内容采用默认拒绝：允许路径元数据发现，但读取新增正文必须扩展 Task 允许集。
 - 普通跨 Agent 返回使用 H1；H2 仅由风险、压缩、副作用、promotion、争议或明确策略触发。
 - H0/H1/H2 都有 Attempt Archive；H1/H2 的每条可见跨 Agent 传递必须留存，但不会因此自动进入主 Agent 上下文。

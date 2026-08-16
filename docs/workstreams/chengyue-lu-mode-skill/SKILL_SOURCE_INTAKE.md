@@ -228,16 +228,25 @@ binding，限制性许可内容只作参考；真正需要昂贵测试的是科�
 拆成动作，不验证“大总管”版本。附带 references/scripts 仍按 dossier 需要读取，
 不因候选进入 Registry 而自动展开。
 
-## 6. 下一 Gate
+## 6. 第二批摄取（已完成，保持 Attempt-only）
+
+- 计划位置：`work/SKILL-SOURCE-INTAKE-002/A-20260816-001/`（TASK.yaml、DISCOVERY_BRIEF.md、tool-adapter-metadata.json 骨架）。
+- 结果：20 个条目，其中 14 个 Tool/MCP Adapter、6 个 Skill；低于 32 项执行上限主动停止。理论方向没有成熟 proof-assistant Skill，仿真方向没有独立通用 V&V Skill，均保留为负结果。
+- MCP/Tool Adapter 只做元数据登记（官方 README、manifest/package 元数据、服务器/工具清单、许可证据），不下载、不安装、不启动服务、不发起连接；条目保存在 Attempt 内的 `tool-adapter-metadata.json`，在 M7-008 首张 Tool capability card 与其 Schema 冻结前不进入任何 registry。
+- 本批使用一条独立 GLM 5.3 会话按分片预算采集，输出只写 Attempt Archive；首批 scout 的
+  超支教训见 §4.1。主 Agent 不加载完整探索过程，只接收结构化结果并人工复核。
+- 采集 Agent 未改 registry、受控文档、未提交也未推送。ADR-0013 后，这些结果不按来源逐项纳入；只有 Mode action 产生明确 Need/Tool gap 时才引用。
+
+## 7. 下一 Gate
 
 `K-MS-SOURCE-1` 的完成条件与当前状态：
 
 1. [x] 19 个一方入口与 35 个社区入口均完成逐项人工筛选、固定哈希与 Registry 留痕；
 2. [x] 每个来源的许可限制与 revision 有证据位置，每个入口固定内容哈希；
 3. [x] 覆盖工具/格式、证据/完整性、实验/统计、理论/推导和元技能；
-4. [ ] 从六项 shortlist 中形成不超过 4 个详细 dossier，并明确 no-Skill/direct-tool 对照；
-5. [ ] 最多选择 2 个候选进入独立重写或困难任务，其他停留在 `triage`/`reference`/`quarantine`/`rejected`；
+4. [x] 已形成 4 个来源候选 dossier，并明确 no-Skill/direct-tool；其结论保留为历史探索；
+5. [x] Human Decision 选择 0 个来源候选直接重写，全部保持原状态并转入 Mode-derived Need reference；
 6. [x] 没有下载内容被安装、执行或直接复制进 accepted Skill。
 
-到达该 Gate 后再恢复高成本模型测试。这样测试对象来自多来源比较，而不是由
-某一次搜索或某一个看起来完整的 Skill 偶然决定。
+`K-MS-SOURCE-1` 到此关闭。新的高成本模型测试必须同时满足：Mode-derived Need 已冻结、
+多来源综合完成、M3-008 Trace validator 可用；不再由某一次搜索或单个完整 Skill 决定。

@@ -252,7 +252,9 @@ rwb context checkpoint
 
 ## 11. M7：Mode–Skill 选择基线
 
-路诚钺的下一关键节点为 `K-MS-1`：先审计三个 accepted Skills，独立整理/重写最多两个候选，并定义它们需要的 Tool capabilities；再用现有 `evidence-synthesis` 与 `simulation` 建立 Mode 决策卡、6–8 个边界 Task fixtures 和 Task-to-Mode/Skill/Tool 选择矩阵。实名 actor、Attempt Archive 与 Agent Trace fixture 必须在真实 forward test 前完成，随后再比较 with/without Skill 与 H0/H1/H2 成本。
+路诚钺的下一关键节点为 `K-MS-1`：先用现有 `evidence-synthesis` 与 `simulation` 建立 Mode 决策卡和 Action–Failure–Artifact–Gate 地图，再为每个 action 判定 Mode/Task/Tool/Skill Need/Human/blocked 的最小机制。只为已确认的 action gap 建 Tool capabilities、6–8 个边界 Task fixtures，并按 Mode action 版本化复核三个 accepted 0.1.0 Skill 原型；外部候选不再直接成为重写清单。实名 actor、Attempt Archive 与 Agent Trace fixture 必须在真实 forward test 前完成，随后再比较 no-Skill/direct-tool/compact trial 与 H0/H1/H2 成本。
+
+与 Mode-derived 路线并行，为本项目特有的 Compact Handoff、H2 Transfer、Task Assignment、受控恢复和 Human Gate Brief 保留 project-internal Need。首批只允许前两项建立 dossier；它们计入既有 Skill/context 上限，不全局加载，不改变 Mode/Claim，也不替代 Protocol、Schema、Tool 或 Runtime Trace。真实增量比较同样等待 M3-008。
 
 完成后暂停评审。不得为了“覆盖完整”批量新增 Mode/Skill/Tool，也不得在本分支修改 API 执行实现。详细阶段和停止点见[路诚钺 Mode–Skill 分支计划](../workstreams/chengyue-lu-mode-skill/README.md)。
 
