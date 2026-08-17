@@ -30,3 +30,6 @@ htmlcov/
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# Local-only diagrams (the md version is tracked under docs/)
+/流程图.pdf
