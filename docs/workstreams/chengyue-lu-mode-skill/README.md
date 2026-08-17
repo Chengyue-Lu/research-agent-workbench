@@ -42,6 +42,7 @@ project-internal Need 占位。它们先比较 Protocol/template/Tool 基线，�
 - [Skill 整理、独立重写与准入计划](SKILL_CURATION.md)
 - [Mode Action Requirements](MODE_ACTION_REQUIREMENTS.md)
 - [项目内生协议 Skill 规划](PROJECT_INTERNAL_SKILLS.md)
+- [项目内生 Handoff Skill Need Dossiers](PROJECT_INTERNAL_SKILL_DOSSIERS.md)
 - [Accepted Skill 重叠审计](ACCEPTED_SKILL_OVERLAP_AUDIT.md)
 - [首轮四份 Skill 候选 Dossier（历史探索）](SKILL_CANDIDATE_DOSSIERS.md)
 - [Skill 来源搜集、隔离与机器/人工筛选](SKILL_SOURCE_INTAKE.md)
@@ -70,6 +71,10 @@ P1–P4 可以先做离线文档、契约、迁移设计和 fixtures；P5 的任
 Project-internal 路线与 P3/P4 并行：先为 `NEED-INT-COMPACT-HANDOFF` 和
 `NEED-INT-AUDITED-TRANSFER` 建 direct baseline 与 failure fixture，最多同时维护两个 active Need；
 其真实对照同样等待 M3-008，不成为全局默认 Skill bundle。
+
+截至 M7-013，两项 direct baseline、compact dossier 和诊断 fixture 已完成，结论均为
+`hold-no-skill`。下一步不是初始化 Skill 包，而是让 Mode-derived 的 M7-008/M7-003 继续推进；
+project-internal 路线等待独立 Task family 与 M3-008 Trace 后再决定是否进入 M7-014。
 
 ## 5. 首批处理顺序
 

@@ -103,7 +103,7 @@
 | M7-010 | DONE | 建立四个来源候选 dossier 并决定是否进入验证 | M7-004, M7-009 | 四份历史 dossier 已完成；Human Decision 选择 0 个来源候选直接重写，转入 ADR-0013 的 Mode-derived Need 路线 |
 | M7-011 | DONE | 建立两个正式 Mode 的 Action–Failure–Artifact–Gate 与 Skill Need 基线 | M7-002, M7-010 | evidence/simulation 的每个 action 有最小机制；每个 Mode 首批 Need≤2；no-Skill、Tool、Skill Need、blocked、Human Gate 均可出现 |
 | M7-012 | DONE | 建立 project-internal Skill Need 路线与候选占位 | M7-001, M7-011 | 与 Mode-derived 路线分离；交互、输出、恢复和 Gate 候选先比较 Protocol/template/Tool；未新增 Skill/Registry/Runtime |
-| M7-013 | READY | 为两个优先 project-internal Need 建 direct baseline、failure fixture 与 compact dossier | M7-012, M1-004 | 只处理 Compact Handoff 与 H2 Transfer；最多两个 active Need；能得出 no-Skill 结论；不修改自动 Trace/API |
+| M7-013 | DONE | 为两个优先 project-internal Need 建 direct baseline、failure fixture 与 compact dossier | M7-012, M1-004 | H1 omission 与 H2 semantic reversal 均形成可复验诊断；两项结论均为 `hold-no-skill`；未修改自动 Trace/API |
 | M7-014 | PARKED | 对 project-internal 候选做有 Trace 的困难任务比较 | M7-013, M3-008 | 比较 template/tool/compact Skill 的遗漏、回查、返工和上下文成本；无重复语义增量即退役 |
 
 ## GitHub 执行入口
@@ -120,4 +120,4 @@ M1 已建立里程碑与首批可执行 Issues：
 
 ## 当前下一任务
 
-当前有两条并行路径：Mode-derived 路线为 `M7-002 → M7-011 → M7-008/003 → M7-004`，project-internal 路线为 `M7-012 → M7-013`；两者在 K-MS-1 路由评审合流。前者不新增 Mode、不从来源 shortlist 直接创建 Skill；后者不把强制 Protocol/Schema/Trace 规则包装成常驻 Skill。`M3-008 → M7-005/006/014` 属于后续真实评估路径，不阻塞当前需求与路由基线；路诚钺不在本分支补 API、Provider、模型或 live conformance。
+当前 Mode-derived 路线为 `M7-002 → M7-011 → M7-008/003 → M7-004`；project-internal 的 `M7-012 → M7-013` 规划与诊断基线已经完成并停在 `hold-no-skill`。两者在 K-MS-1 路由评审合流。下一实现重点回到 M7-008/M7-003；`M3-008 → M7-005/006/014` 属于后续真实评估路径，不阻塞当前基线。路诚钺不在本分支补 API、Provider、模型或 live conformance。

@@ -1,0 +1,28 @@
+schema_version: 0.1.0
+task_id: EVID-PIH-01
+attempt_id: A-PIH-01
+status: completed
+input_lock:
+  - path: examples/fixtures/paper-001.txt
+    sha256: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
+skill_lock:
+  - literature-evidence-extraction@0.1.0
+skill_assignment_ref: examples/vertical-slice/evidence-assignment.yaml
+result:
+  summary: One fixture Evidence record was extracted and the task completed.
+  facts:
+    - One admitted fixture Evidence record contains a source locator.
+  inferences:
+    - The Evidence record is ready for downstream synthesis.
+  recommendations:
+    - Continue to synthesis.
+artifact_refs:
+  - examples/objects/evidence/EVID-001-01.yaml
+  - examples/objects/claim/CLAIM-EVID-001-BOUNDARY.yaml
+validation_refs: []
+limitations: []
+conflicts: []
+unresolved: []
+human_decision_required: []
+recommended_next_actions:
+  - Start downstream synthesis.

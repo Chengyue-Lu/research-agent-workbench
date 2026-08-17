@@ -1,7 +1,7 @@
 # 项目内生协议 Skill 规划
 
 - 责任人：路诚钺
-- 状态：候选槽与并行路线基线
+- 状态：候选槽与 direct baseline 已完成；Skill package 继续阻断
 - 日期：2026-08-17
 - 决策依据：[ADR-0014](../../decisions/0014-PROJECT-INTERNAL-SKILL-LANE.md)
 
@@ -95,7 +95,7 @@ flowchart LR
 | Lane | 下一活动 | 可并行对象 | 停止点 |
 |---|---|---|---|
 | Mode-derived | M7-008 Tool cards、M7-003 路由 fixtures、M7-004 原型迁移 | 与内部 Need dossier 并行 | 不创建来源驱动 Skill |
-| Project-internal | 为前两个 Need 建 direct baseline、failure fixture 与 compact dossier | 不修改 Mode/Registry/Runtime | 最多两个 active Need |
+| Project-internal | M7-013 已完成 direct baseline、failure fixture 与 compact dossier；等待独立 Task family | 不修改 Mode/Registry/Runtime | 两项均为 `hold-no-skill` |
 | Shared evaluation | M3-008 后比较 no-Skill/template/tool/compact Skill | 两条 Lane 共用 Trace 指标 | 没有重复语义失败即停止 |
 | Runtime/API | 由黄毅维护 Trace capture 与 Adapter | 只消费冻结契约 | 本分支不实现或测试 |
 

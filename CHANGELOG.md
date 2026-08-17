@@ -2,6 +2,23 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
+## 2026-08-18 — Project-internal Handoff direct baseline
+
+### Added
+
+- `PROJECT_INTERNAL_SKILL_DOSSIERS.md`：为 Compact Handoff 与 H2 Audited Transfer 建立 trigger/non-trigger、direct baseline、边界、compact candidate hypothesis 和进入条件。
+- `examples/evals/project-internal-handoff/`：保存 H1 negative omission 与 H2 semantic reversal 两个诊断样例；review-only challenge ledger 与 worker 可见输入分离。
+- 两项 fixture 测试，固定“结构检查通过但语义问题仍存在”的预期行为，防止未来把结构 PASS 误报为语义等价。
+
+### Decided
+
+- 两个 project-internal Need 均保持 `hold-no-skill`。合成 fixture 只证明 Schema/结构 mapping 的已知边界，不能证明 Skill 优于 Task policy、template、Tool 或 Human sample。
+- M7-013 完成后，主线返回 M7-008/M7-003；project-internal 的真实比较继续等待独立 Task family 与 M3-008，不初始化 Skill 包。
+
+### Boundaries
+
+- 未修改 Handoff/Transfer Schema、assessor、Registry、Skill package、Runtime、Provider/API 或模型路由；未调用模型或外部系统。
+
 ## 2026-08-17 — 转为 Mode-first Skill 需求推导
 
 ### Decided

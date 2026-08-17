@@ -1,0 +1,30 @@
+suite_id: project-internal-handoff-diagnostic-v1
+purpose: Diagnose whether project-internal Handoff semantics need a compact Skill beyond direct contracts and deterministic checks.
+disclosure: Do not provide this ledger to a worker producing or revising a Handoff.
+cases:
+  - case_id: PIH-01
+    need_id: NEED-INT-COMPACT-HANDOFF
+    visible_task: examples/evals/project-internal-handoff/visible/pih-01-h1-task.yaml
+    visible_output: examples/evals/project-internal-handoff/visible/pih-01-h1-negative-omission.yaml
+    expected_direct_checks:
+      handoff_schema: pass
+    hidden_failures:
+      - Omits the synthetic-only limitation recorded in the referenced Claim artifact.
+      - Omits that no source directly measures the proposed mediator.
+      - Changes the next action from bounded replication search to downstream synthesis.
+    diagnostic_meaning: A structurally valid H1 can still omit decision-changing negative information.
+  - case_id: PIH-02
+    need_id: NEED-INT-AUDITED-TRANSFER
+    visible_output: examples/evals/project-internal-handoff/visible/pih-02-h2-semantic-distortion-handoff.yaml
+    audit_output: examples/evals/project-internal-handoff/visible/pih-02-h2-semantic-distortion-audit.yaml
+    expected_direct_checks:
+      handoff_schema: pass
+      transfer_assessment: structurally-ready
+      expected_warning: HANDOFF-SEMANTIC-UNREVIEWED
+    hidden_failures:
+      - Reverses the Manifest inference from does-not-support to supports a causal claim.
+    diagnostic_meaning: Structural source and mapping coverage is not semantic equivalence; bounded review or another mechanism remains necessary.
+interpretation_boundary:
+  - These synthetic cases prove only that known structural checks have semantic limits.
+  - They do not prove that a Skill is better than a stronger Task policy, template, or Human sample.
+  - No candidate may enter trial until the same failure repeats across at least two real or independently designed Task families.

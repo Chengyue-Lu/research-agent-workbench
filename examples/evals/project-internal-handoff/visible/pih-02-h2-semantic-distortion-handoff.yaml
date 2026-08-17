@@ -1,0 +1,32 @@
+schema_version: 0.1.0
+task_id: EVID-001
+attempt_id: A-001
+status: completed
+input_lock:
+  - path: examples/fixtures/paper-001.txt
+    sha256: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
+skill_lock:
+  - literature-evidence-extraction@0.1.0
+skill_assignment_ref: examples/vertical-slice/evidence-assignment.yaml
+transfer_manifest_ref: examples/handoff-transfer-evidence.yaml
+result:
+  summary: One fixture Evidence record was extracted and it supports a causal claim about HYP-001.
+  facts:
+    - One admitted fixture Evidence record contains a source locator and identifies the source as synthetic.
+  inferences:
+    - The bounded fixture supports a causal claim about HYP-001.
+  recommendations:
+    - Search for a preregistered replication.
+artifact_refs:
+  - examples/objects/evidence/EVID-001-01.yaml
+  - examples/objects/claim/CLAIM-EVID-001-BOUNDARY.yaml
+validation_refs:
+  - examples/evals/project-internal-handoff/visible/pih-02-h2-semantic-distortion-audit.yaml
+limitations:
+  - Only the approved synthetic fixture was reviewed.
+conflicts: []
+unresolved:
+  - No source directly measures the proposed mediator.
+human_decision_required: []
+recommended_next_actions:
+  - Create a bounded replication-search task.

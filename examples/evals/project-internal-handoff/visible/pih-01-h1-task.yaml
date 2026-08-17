@@ -1,0 +1,47 @@
+schema_version: 0.1.0
+task_id: EVID-PIH-01
+revision: 1
+goal: Extract citable evidence from the bounded fixture and return an ordinary H1 Compact Handoff.
+question_refs:
+  - Q-001@1
+active_modes:
+  - evidence-synthesis
+required_capabilities:
+  - evidence-extraction
+  - citation-location
+required_skills:
+  - literature-evidence-extraction
+forbidden_skills:
+  - handoff-integrity
+agent_profile: evidence-scout
+input_refs:
+  - path: examples/fixtures/paper-001.txt
+    sha256: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
+write_scope:
+  - work/EVID-PIH-01/**
+required_outputs:
+  - evidence-record
+  - handoff-packet
+permissions:
+  filesystem: worktree-write
+  external_write: false
+  allowed_roots: [work/EVID-PIH-01]
+delegation:
+  allowed: false
+budget:
+  max_turns: 6
+  max_output_tokens: 1200
+atomic_boundary: One bounded fixture is inspected and an H1 Handoff is persisted without an additional project-internal Skill.
+completion_checks:
+  - Evidence and Handoff contracts pass deterministic checks.
+safe_pause_conditions:
+  - A required source, permission, or human decision is unavailable.
+stop_conditions:
+  - required_outputs_complete
+  - source_boundary_exhausted
+stale_if:
+  - any_input_hash_changes
+handoff_policy:
+  require_transfer_manifest: false
+  semantic_review: risk-triggered
+  minimum_semantic_samples: 0
