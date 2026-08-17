@@ -92,13 +92,13 @@
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
 | M7-001 | DONE | 冻结实名 owner、受控读取与分级 Handoff 文档策略 | M2, M3 | 路诚钺/黄毅职责、ADR-0011/0012、架构图和开发入口一致 |
-| M7-002 | IN_PROGRESS | 建立现有 Mode 决策卡与边界 fixtures | M1-003 | evidence/simulation 具有 trigger、non-trigger、组合、歧义和 no-Mode 样本 |
-| M7-003 | READY | 建立 Task-to-Mode/action/mechanism 选择矩阵 | M7-002, M7-011, M7-008 | 可解释 tool-only/no-Skill、Skill Need、拆 Task、capability gap 和 Human Gate；不从来源候选反推需求 |
-| M7-004 | PARKED | 按 Mode action 重新审计并迁移三个 0.1.0 Skill 原型 | M7-011, M7-008 | 历史重叠审计只作输入；新版本或 deprecation 必须有 action、baseline、manifest/hash/fixture 与迁移决定 |
+| M7-002 | DONE | 建立现有 Mode 决策卡与边界 fixtures | M1-003 | 八个诊断 case 覆盖 evidence/simulation trigger、no-Mode、candidate Mode、组合拆分与歧义阻断 |
+| M7-003 | DONE | 建立 Task-to-Mode/action/mechanism 选择矩阵 | M7-002, M7-011, M7-008 | tool-only/no-Skill、Skill Need、拆 Task、capability gap、blocked 和 Human Gate 均有可复验路径；无隐式 Assignment |
+| M7-004 | READY | 按 Mode action 重新审计并迁移三个 0.1.0 Skill 原型 | M7-011, M7-008 | 历史重叠审计只作输入；新版本或 deprecation 必须有 action、baseline、manifest/hash/fixture 与迁移决定 |
 | M7-005 | PARKED | 独立整理/重写最多两个 Mode-derived Need 并作证据化去留决定 | M7-011, M3-008 | 不再从来源 shortlist 直接选择；`claim-preserving-rewrite` Stage 1 保留为历史诊断，新的 trial 等待 Need 与 Trace |
 | M7-006 | READY | 建立 H0/H1/H2 与内容读取成本对照 | M3-008, M7-002 | 通过 Attempt Archive 记录消息/工件数、字符、审阅、回查、遗漏、返工、读取扩展和 capture gap |
 | M7-007 | PARKED | 新增 experiment/theory/observational/engineering Mode | 真实案例 + Mode 准入卡 | 证明现有 Mode 组合不足后逐个启用 |
-| M7-008 | READY | 为已确认 Mode action gap 建立首批 Tool capability cards | M1-008, M7-011 | 只覆盖有真实 action 消费者的 document-read、literature-search、bounded-compute 等能力；数据出口、副作用、失败、验证和 Adapter owner 明确，不实现 API |
+| M7-008 | DONE | 为已确认 Mode action gap 建立首批 Tool capability cards | M1-008, M7-011 | 五张 Action-driven cards 已明确数据出口、权限、副作用、预算、失败、验证、fallback 与 owner；未实现 API/Adapter |
 | M7-009 | DONE | 建立多来源 Skill 候选池与机器/人工筛选 Gate | M2-008 | 首批 54 个入口均已固定来源、路径、内容哈希和人工 Decision；一方 19 项为 18 `reference`/1 `rejected`，社区 35 项为 6 `triage`/21 `reference`/8 隔离或排除；下载内容未安装、执行或自动准入 |
 | M7-010 | DONE | 建立四个来源候选 dossier 并决定是否进入验证 | M7-004, M7-009 | 四份历史 dossier 已完成；Human Decision 选择 0 个来源候选直接重写，转入 ADR-0013 的 Mode-derived Need 路线 |
 | M7-011 | DONE | 建立两个正式 Mode 的 Action–Failure–Artifact–Gate 与 Skill Need 基线 | M7-002, M7-010 | evidence/simulation 的每个 action 有最小机制；每个 Mode 首批 Need≤2；no-Skill、Tool、Skill Need、blocked、Human Gate 均可出现 |
@@ -120,4 +120,4 @@ M1 已建立里程碑与首批可执行 Issues：
 
 ## 当前下一任务
 
-当前 Mode-derived 路线为 `M7-002 → M7-011 → M7-008/003 → M7-004`；project-internal 的 `M7-012 → M7-013` 规划与诊断基线已经完成并停在 `hold-no-skill`。两者在 K-MS-1 路由评审合流。下一实现重点回到 M7-008/M7-003；`M3-008 → M7-005/006/014` 属于后续真实评估路径，不阻塞当前基线。路诚钺不在本分支补 API、Provider、模型或 live conformance。
+Mode-derived 的 M7-002/003/008/011 与 project-internal 的 M7-012/013 均已完成需求、Tool 和路由诊断基线。当前唯一下一任务为 M7-004：按已冻结 action/route 对三个 0.1.0 Skill 原型作版本化保留、拆分、降级或 deprecation 决定。`M3-008 → M7-005/006/014` 属于后续真实评估路径；路诚钺不在本分支补 API、Provider、模型或 live conformance。

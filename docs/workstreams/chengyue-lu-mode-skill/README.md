@@ -3,7 +3,7 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 分支：`agent/mode-skill-selection-baseline`
 - 状态：Mode-derived 与 project-internal 两条 Skill Need 路线并行
-- 日期：2026-08-17
+- 日期：2026-08-18
 - 目标节点：`K-MS-1 Mode–Skill Selection Baseline`
 
 本目录是路诚钺当前分支的唯一专项计划入口。逐项状态仍以 [`docs/TASKS.md`](../../TASKS.md) 为准；稳定架构仍以 [`docs/ARCHITECTURE.md`](../../ARCHITECTURE.md) 和模块文档为准。本目录不建立第二套全局架构。
@@ -49,6 +49,8 @@ project-internal Need 占位。它们先比较 Protocol/template/Tool 基线，�
 - [一方 Skill 逐项筛选结论](FIRST_PARTY_SKILL_TRIAGE.md)
 - [社区 Skill 人工筛选结论](COMMUNITY_SKILL_TRIAGE.md)
 - [Mode–Skill–Tool 划分与调用计划](MODE_SKILL_TOOL_ROUTING.md)
+- [Action-driven Tool Capability Cards](TOOL_CAPABILITY_CARDS.md)
+- [Task–Mode–Action–Mechanism Routing Fixtures](TASK_MODE_ACTION_ROUTING_FIXTURES.md)
 - [Skill 诊断性困难任务测试计划](DIAGNOSTIC_FORWARD_TESTING.md)
 - [`claim-preserving-rewrite` Stage 1 诊断结果](STAGE1_DIAGNOSTIC_RESULTS.md)
 
@@ -73,8 +75,10 @@ Project-internal 路线与 P3/P4 并行：先为 `NEED-INT-COMPACT-HANDOFF` 和
 其真实对照同样等待 M3-008，不成为全局默认 Skill bundle。
 
 截至 M7-013，两项 direct baseline、compact dossier 和诊断 fixture 已完成，结论均为
-`hold-no-skill`。下一步不是初始化 Skill 包，而是让 Mode-derived 的 M7-008/M7-003 继续推进；
-project-internal 路线等待独立 Task family 与 M3-008 Trace 后再决定是否进入 M7-014。
+`hold-no-skill`；project-internal 路线等待独立 Task family 与 M3-008 Trace 后再决定是否进入 M7-014。
+
+截至 M7-002/003/008，五张 Tool cards 与八个路由 fixtures 也已完成并通过覆盖测试。P3 到达停止点；
+当前唯一下一任务为 M7-004，按这些 action/route 版本化处理三个 0.1.0 Skill 原型。
 
 ## 5. 首批处理顺序
 
@@ -99,7 +103,8 @@ examples/mode-skill-routing/            # 路由与 no-Skill/tool-only fixtures
 work/<task>/<attempt>/                  # 实际评估的完整 Attempt Archive
 ```
 
-Tool capability card 的存放位置和 Schema 在首张卡完成后决定；没有真实消费者前不新建空 `registry/tools/`。
+首批 Tool capability card 保存在本专项文档中；在 Runtime 出现机器消费者前不创建 `registry/tools/`
+或公共 Schema，具体 Adapter 仍由黄毅在独立范围内实现和验证。
 
 ## 7. 分支边界
 

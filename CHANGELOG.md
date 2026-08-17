@@ -2,6 +2,24 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
+## 2026-08-18 — Action-driven Tool 与路由 fixtures
+
+### Added
+
+- 五张 provider-neutral Tool capability card：`document-read`、`literature-search`、`citation-resolve`、`bounded-compute` 与 `research-contract-check`；逐项声明数据出口、权限、副作用、预算、失败、验证、fallback、Action 消费者和责任边界。
+- 八个 Task–Mode–Action–Mechanism 诊断 fixture，覆盖 evidence/simulation trigger、no-Mode、candidate Mode、组合拆分、内部 Handoff、tool-only、no-Skill、Skill Need、Human Gate、capability gap 与 blocked。
+- 六项 fixture 覆盖测试；`.yaml.txt` 明确不是 Runtime Schema，不因规划测试创建新的正式契约。
+
+### Decided
+
+- Tool card 只从已确认 Action gap 产生；没有 Runtime 消费者前不建立 `registry/tools/`。具体 CLI/MCP/API 只是 Adapter 候选，不能反向定义 Mode 或 Skill。
+- Skill Need 不自动形成 Assignment。三个尚未实现的 Mode-derived Need 在 fixture 中保持 Need/Human Gate，两个 tool-only 场景明确不加载额外 Skill。
+- candidate observational Mode 的子任务被拆分并阻断，不强塞进 evidence-synthesis 或 simulation。
+
+### Boundaries
+
+- 未实现、选择、安装、探测或调用任何 Adapter/MCP/CLI/API；未读取凭据，未修改 Registry、Schema、Resolver、Runtime、Provider 或模型路由。
+
 ## 2026-08-18 — Project-internal Handoff direct baseline
 
 ### Added

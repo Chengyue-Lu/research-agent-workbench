@@ -97,33 +97,12 @@ Mode-to-Skill 或 governance Skill bundle。
 
 ## 5. Tool Capability Card
 
-在绑定具体 CLI/MCP/API 前，先写 provider-neutral 卡：
+在绑定具体 CLI/MCP/API 前，先写 provider-neutral 卡。每张卡至少声明：用途、接口形态、读/写/执行
+类别、输入输出、数据出口、凭据、权限、副作用、版本、预算、失败语义、验证、显式 fallback、
+action 消费者和责任人。完整定义见[Action-driven Tool Capability Cards](TOOL_CAPABILITY_CARDS.md)。
 
-```yaml
-tool_capability_id: literature-search
-purpose: Query bibliographic indexes inside a declared search boundary.
-interfaces: [local-index, cli, mcp, remote-api]
-operation_kind: read-only
-determinism: external-snapshot-dependent
-inputs: [query-plan, source-boundary, date-boundary]
-outputs: [normalized-search-result, query-receipt]
-data_egress:
-  sends: [search-query]
-  forbids_by_default: [private-full-text, unpublished-results]
-permissions: [network-search]
-side_effects: none
-versioning: adapter-and-source-snapshot
-failure_semantics: [unavailable, partial, rate-limited, policy-blocked]
-validation: [result-schema, source-id, query-receipt]
-fallback_policy: explicit-only
-owner:
-  contract: 路诚钺
-  execution_adapter: 黄毅
-```
-
-每张卡至少声明：用途、接口形态、读/写/执行类别、输入输出、数据出口、凭据、权限、副作用、版本、可复现性、预算、失败语义、验证、显式 fallback、适用 Mode/Skill 和责任人。
-
-卡描述的是能力，不承诺所有接口都实现。具体 Adapter 必须报告 capability gap，不能根据厂商名称推断能力。
+卡描述的是能力，不承诺所有接口都实现。具体 Adapter 必须报告 capability gap，不能根据厂商名称
+推断能力，也不能由路诚钺的文档测试替代黄毅维护的 Adapter/conformance 测试。
 
 ## 6. 首批 Tool 能力
 
@@ -133,10 +112,10 @@ owner:
 | `citation-resolve` | external/read | 默认只发送 DOI/题名等书目信息；全文外传需单独批准 | evidence/citation integrity |
 | `literature-search` | external/read | 发送 query plan；返回归一化结果和查询 Receipt；无静默多服务 fallback | search planning、evidence synthesis |
 | `bounded-compute` | local/execute | 固定工作目录、依赖、wall time、输出路径和随机种子；禁止任意安装 | simulation V&V、统计/检查脚本 |
-| `project-cli` | local/deterministic | 只调用 allowlisted 子命令；保存命令、exit 和报告 hash | handoff、schema、claim/citation checks |
-| `scientific-figure-generation` | specialist/output | 可能涉及研究内容外传和生成代码；默认不可用，需 figure spec、lineage、data approval 和 Human Gate | 后续 output Skill |
+| `research-contract-check` | local/deterministic | 只检查 Schema、hash、reference、coverage 和声明状态；结构 PASS 不等于科学正确 | ES-A3/A4/A6/A7、SIM-A2/A7、内部 closeout |
 
-具体工具如 Zotero、Crossref/OpenAlex、Python/R、Jupyter/Quarto、CAS 或项目仿真 CLI 只能作为某张能力卡的 Adapter 候选，不直接写进 Mode。
+`scientific-figure-generation` 尚未形成当前 Action-driven card；Zotero、Crossref/OpenAlex、Python/R、
+Jupyter、MCP 或项目仿真 CLI 只能作为既有卡的 Adapter 候选，不直接写进 Mode。
 
 ## 7. 路由记录
 
@@ -156,18 +135,12 @@ owner:
 
 ## 8. 首批路由 fixtures
 
-| Fixture | Mode 判断 | 期望 Skill/Tool 路径 | 关键边界 |
-|---|---|---|---|
-| 从 3 篇固定论文提取可定位结果 | `evidence-synthesis` | evidence extraction + `document-read` | 不做检索和最终综合 |
-| 为开放问题制定检索并归一化结果 | `evidence-synthesis` | 先评估 search Skill 是否有增量；`literature-search` | query/data egress、部分结果 |
-| 审核已冻结仿真 Run | `simulation` | simulation V&V + `bounded-compute/project-cli` | verification 不等于 physical validation |
-| 只改善固定 Claim 的表达 | no new Mode | claim-preserving rewrite + local checker | 不事实核查、不增强结论 |
-| 检查 DOI、引用和 Claim locator | no new Mode/继承上游 | direct Tool 或 citation integrity | deterministic PASS 不等于科学正确 |
-| 推导一个带假设的引理 | candidate `theory` | 当前无 accepted Skill；Human Gate/blocked | CAS Tool 不自动创建 theory Mode |
-| 设计随机化与功效方案 | candidate `experiment` | experiment-design 保持 trial/blocked | 统计假设和伦理/资源由人决定 |
-| 生成论文示意图 | no new Mode/继承上游 | figure Output Skill + specialist Tool（当前 unavailable） | 数据外传、lineage、视觉误导 |
+首批八个实际 fixture、选择矩阵和边界解释见
+[Task–Mode–Action–Mechanism Routing Fixtures](TASK_MODE_ACTION_ROUTING_FIXTURES.md)。机器输入使用
+`.yaml.txt` 并声明 `formal_contract: false`；测试只固定 case 自洽、Tool ID 和结果覆盖。
 
-至少前五个 fixture 必须能在不调用真实外部 API 的情况下完成路由解析；Tool 不可用也应得到明确 `capability-gap`，而不是伪造成功。
+这些 fixture 均不调用外部 API。Tool 不可用或数据策略不允许时得到明确 `capability-gap/blocked`；
+Skill Need 尚未实现时保留 Need 和 Human Gate，不伪造 Assignment。
 
 ## 9. 与 API 执行的接口
 
