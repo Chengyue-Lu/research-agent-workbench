@@ -94,7 +94,7 @@
 | M7-001 | DONE | 冻结实名 owner、受控读取与分级 Handoff 文档策略 | M2, M3 | 路诚钺/黄毅职责、ADR-0011/0012、架构图和开发入口一致 |
 | M7-002 | DONE | 建立现有 Mode 决策卡与边界 fixtures | M1-003 | 八个诊断 case 覆盖 evidence/simulation trigger、no-Mode、candidate Mode、组合拆分与歧义阻断 |
 | M7-003 | DONE | 建立 Task-to-Mode/action/mechanism 选择矩阵 | M7-002, M7-011, M7-008 | tool-only/no-Skill、Skill Need、拆 Task、capability gap、blocked 和 Human Gate 均有可复验路径；无隐式 Assignment |
-| M7-004 | READY | 按 Mode action 重新审计并迁移三个 0.1.0 Skill 原型 | M7-011, M7-008 | 历史重叠审计只作输入；新版本或 deprecation 必须有 action、baseline、manifest/hash/fixture 与迁移决定 |
+| M7-004 | DONE | 按 Mode action 重新审计并迁移三个 0.1.0 Skill 原型 | M7-011, M7-008 | 三个冻结包均有 action、direct baseline、manifest/package hash、new-assignment/版本决定与机器夹具；未创建无证据的 `0.2.0` |
 | M7-005 | PARKED | 独立整理/重写最多两个 Mode-derived Need 并作证据化去留决定 | M7-011, M3-008 | 不再从来源 shortlist 直接选择；`claim-preserving-rewrite` Stage 1 保留为历史诊断，新的 trial 等待 Need 与 Trace |
 | M7-006 | READY | 建立 H0/H1/H2 与内容读取成本对照 | M3-008, M7-002 | 通过 Attempt Archive 记录消息/工件数、字符、审阅、回查、遗漏、返工、读取扩展和 capture gap |
 | M7-007 | PARKED | 新增 experiment/theory/observational/engineering Mode | 真实案例 + Mode 准入卡 | 证明现有 Mode 组合不足后逐个启用 |
@@ -105,6 +105,7 @@
 | M7-012 | DONE | 建立 project-internal Skill Need 路线与候选占位 | M7-001, M7-011 | 与 Mode-derived 路线分离；交互、输出、恢复和 Gate 候选先比较 Protocol/template/Tool；未新增 Skill/Registry/Runtime |
 | M7-013 | DONE | 为两个优先 project-internal Need 建 direct baseline、failure fixture 与 compact dossier | M7-012, M1-004 | H1 omission 与 H2 semantic reversal 均形成可复验诊断；两项结论均为 `hold-no-skill`；未修改自动 Trace/API |
 | M7-014 | PARKED | 对 project-internal 候选做有 Trace 的困难任务比较 | M7-013, M3-008 | 比较 template/tool/compact Skill 的遗漏、回查、返工和上下文成本；无重复语义增量即退役 |
+| M7-015 | READY | 分离 Skill 历史解析与新分配 lifecycle | M7-004 | Registry/Resolver 表达 active/legacy/deprecated 与精确版本约束；旧 Assignment 可复验，新路由不能选择 legacy/deprecated |
 
 ## GitHub 执行入口
 
@@ -120,4 +121,4 @@ M1 已建立里程碑与首批可执行 Issues：
 
 ## 当前下一任务
 
-Mode-derived 的 M7-002/003/008/011 与 project-internal 的 M7-012/013 均已完成需求、Tool 和路由诊断基线。当前唯一下一任务为 M7-004：按已冻结 action/route 对三个 0.1.0 Skill 原型作版本化保留、拆分、降级或 deprecation 决定。`M3-008 → M7-005/006/014` 属于后续真实评估路径；路诚钺不在本分支补 API、Provider、模型或 live conformance。
+Mode-derived 的 M7-002/003/004/008/011 与 project-internal 的 M7-012/013 已完成需求、Tool、路由和 0.1.0 原型迁移基线。当前唯一下一任务为 M7-015：只分离 Skill 的历史解析与新分配 lifecycle，补精确版本约束后进入 K-MS-1 节点评审。`M3-008 → M7-005/006/014` 属于后续真实评估路径；路诚钺不在本分支补 API、Provider、模型或 live conformance。

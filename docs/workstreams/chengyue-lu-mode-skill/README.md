@@ -2,7 +2,7 @@
 
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 分支：`agent/mode-skill-selection-baseline`
-- 状态：Mode-derived 与 project-internal 两条 Skill Need 路线并行
+- 状态：Mode-derived 路由和 0.1.0 原型迁移基线已完成；等待 lifecycle seam
 - 日期：2026-08-18
 - 目标节点：`K-MS-1 Mode–Skill Selection Baseline`
 
@@ -44,6 +44,7 @@ project-internal Need 占位。它们先比较 Protocol/template/Tool 基线，�
 - [项目内生协议 Skill 规划](PROJECT_INTERNAL_SKILLS.md)
 - [项目内生 Handoff Skill Need Dossiers](PROJECT_INTERNAL_SKILL_DOSSIERS.md)
 - [Accepted Skill 重叠审计](ACCEPTED_SKILL_OVERLAP_AUDIT.md)
+- [Accepted Skill 0.1.0 迁移决定](ACCEPTED_SKILL_MIGRATION.md)
 - [首轮四份 Skill 候选 Dossier（历史探索）](SKILL_CANDIDATE_DOSSIERS.md)
 - [Skill 来源搜集、隔离与机器/人工筛选](SKILL_SOURCE_INTAKE.md)
 - [一方 Skill 逐项筛选结论](FIRST_PARTY_SKILL_TRIAGE.md)
@@ -77,8 +78,10 @@ Project-internal 路线与 P3/P4 并行：先为 `NEED-INT-COMPACT-HANDOFF` 和
 截至 M7-013，两项 direct baseline、compact dossier 和诊断 fixture 已完成，结论均为
 `hold-no-skill`；project-internal 路线等待独立 Task family 与 M3-008 Trace 后再决定是否进入 M7-014。
 
-截至 M7-002/003/008，五张 Tool cards 与八个路由 fixtures 也已完成并通过覆盖测试。P3 到达停止点；
-当前唯一下一任务为 M7-004，按这些 action/route 版本化处理三个 0.1.0 Skill 原型。
+截至 M7-002/003/008，五张 Tool cards 与八个路由 fixtures 也已完成并通过覆盖测试。M7-004
+进一步冻结了三个原型的逐项迁移：历史包保留解析，新 Task 不再默认分配，且没有为填补库存创建
+`0.2.0` 占位包。当前唯一下一任务为 M7-015，用一个独立 lifecycle seam 区分“历史可解析”和
+“新分配可选择”，然后进入 K-MS-1 节点评审。
 
 ## 5. 首批处理顺序
 
@@ -86,7 +89,7 @@ Project-internal 路线与 P3/P4 并行：先为 `NEED-INT-COMPACT-HANDOFF` 和
 2. 完成 `MODE_ACTION_REQUIREMENTS.md`，先确认 action 和机制分配，不创建 Skill 包。
 3. 以 `need_id` 而非外部来源建立最多四个 Need dossier；每个 Mode 首批最多两个。
 4. 只为已确认 action gap 建立 Tool capability card；具体 MCP/API 仍只是 Adapter 候选。
-5. Mode/Need/Tool 路由稳定后，版本化迁移三个 0.1.0 Skill 原型。
+5. Mode/Need/Tool 路由稳定后，版本化迁移三个 0.1.0 Skill 原型；已由 M7-004 完成决策基线。
 6. 新的真实 forward test 等待 M3-008；此前的 candidate dossier 和 GLM 结果保留为历史/reference，不触发重写。
 7. 并行为前两个 project-internal Need 建 compact dossier；Task/Schema/Tool 足够时记录 `no-Skill` 并停止。
 

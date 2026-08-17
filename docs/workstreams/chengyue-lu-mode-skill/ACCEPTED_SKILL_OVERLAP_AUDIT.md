@@ -3,7 +3,7 @@
 - 责任人：路诚钺
 - 日期：2026-08-16
 - 对应任务：`M7-004`
-- 状态：历史审计输入；ADR-0013 之后须按 Mode action 重新判定，不直接触发 Skill 修订
+- 状态：历史审计输入；后续决定见 [`ACCEPTED_SKILL_MIGRATION.md`](ACCEPTED_SKILL_MIGRATION.md)
 - 证据边界：当前三个 accepted Skill、manifest、确定性 checker、既有 fixtures 与首批候选 dossier；本审计不宣称真实模型增量或科学正确性。
 
 ## 1. 结论
@@ -14,9 +14,9 @@
 | `simulation-vv` | `file-read`/`bounded-compute` 加 `check_vv_report.py` 可检查报告字段、hash 语法和 evidence refs | 区分数值验证、模型假设、校准和外部验证；独立检查收敛、敏感性、基准与 Claim ceiling | `retain-revise`：保留方法/完整性 Skill；移除未准入 Mode 的隐式适用并取消普通任务的强制 Handoff Skill |
 | `handoff-integrity` | `check_handoff.py` 已覆盖 Task/Handoff 匹配、输入锁、Skill 锁、引用存在性和 Transfer coverage | H2 中决定“哪些语义项目必须转移”与有限人工抽样，但这应由 Mode/Task 风险策略定义 | `deprecate-wrapper`：迁移为确定性 `handoff-validation` Tool + H2 Task 模板；在 Tool card 和 Resolver 迁移完成前暂不从 Registry 删除 |
 
-这三个结论都不是立即改写 accepted Registry 的授权。先在 `M7-008` 建立对应
-Tool capability card，再以新版本 manifest、hash、fixtures 和迁移记录执行变更，避免旧
-Assignment 静默改义。
+这三个结论都不是立即改写 accepted Registry 的授权。`M7-008` 已把确定性检查统一归入
+`research-contract-check` Tool card；`M7-004` 随后冻结 manifest/hash，并用迁移夹具把新
+Mode-action 路由与历史 Assignment 解析分开，避免旧对象静默改义。
 
 ## 2. `literature-evidence-extraction`
 
@@ -97,13 +97,13 @@ Task 模板与 Tool；在此之前保留并缩短，不扩大为全工程验证 
 
 ### 4.2 迁移结论
 
-1. 把 `check_handoff.py` 及错误代码登记为 provider-neutral `handoff-validation` Tool
-   capability；默认直接运行，不加载 Skill 正文。
+1. 把 `check_handoff.py` 及错误代码归入 provider-neutral `research-contract-check` Tool
+   capability；默认直接运行，不加载 Skill 正文，也不另造同义 Tool card。
 2. 把 Transfer Manifest/Audit 的触发条件写入 H2 Task/Trace 模板和 Resolver 规则。
 3. 保留一个按需 reference，解释结构 PASS 不等于科学正确性、何时需要人工抽样；它不是
    standing Skill。
-4. `M7-008` 的 capability card、Resolver fixture 和旧 Assignment 迁移通过后，将当前
-   Skill 标记为 `deprecated`；历史版本继续可解析，不原地改写。
+4. 新路由将当前 wrapper 判为 `deprecated-wrapper`；历史版本继续可解析，不原地改写。
+   Registry/Resolver 的 lifecycle enforcement 由 `M7-015` 单独完成。
 
 该结论直接回应主 Agent 上下文克制原则：确定性失败只回传错误码与工件路径，只有风险触发
 时才回读原始消息或加载语义 reference，不能让每个子 Agent 都生成并互审一套完整审计链。
@@ -114,7 +114,9 @@ Task 模板与 Tool；在此之前保留并缩短，不扩大为全工程验证 
 - [x] 每个 Skill 有 no-Skill/direct-tool 基线和语义增量判断。
 - [x] Tool、权限、上下文与删除条件明确。
 - [x] 给出 `retain-revise` 或 `deprecate-wrapper` 结论。
-- [ ] 以新版本实际修订两个 retained Skill 的正文/manifest/hash/fixtures。
-- [ ] 在 `M7-008` 建立 `handoff-validation` Tool card 后执行 wrapper 退役迁移。
+- [x] 逐项冻结历史正文/manifest/hash，并决定不在缺少困难任务证据时创建占位新版本。
+- [x] 在 `M7-008` 的 `research-contract-check` Tool card 后完成 wrapper 的新路由退役决定。
+- [x] 迁移夹具覆盖历史解析、new-assignment 决定、action baseline 与版本 Gate。
+- [ ] `M7-015` 实现 historical/active/deprecated lifecycle 与精确版本约束。
 - [ ] 真实 with/without 价值判断等待 M3-008 Trace validator 与困难任务，不把本审计当成
   forward-test 证据。

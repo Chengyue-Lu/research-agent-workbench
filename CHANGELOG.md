@@ -2,6 +2,24 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
+## 2026-08-18 — Accepted Skill 0.1.0 迁移基线
+
+### Decided
+
+- 三个 accepted `0.1.0` 包保持内容与包哈希冻结，只用于历史 Assignment 解析；新的 Mode-action 路由不再默认分配这些原型。
+- `literature-evidence-extraction` 回到 ES-A4 的 Task+checker 基线和 ES-A6 的窄 Need；`simulation-vv` 拆回 Tool、两个方法 Need、Mode/Human Gate，不创建新的宽泛 V&V bundle。
+- `handoff-integrity` 判为 `deprecated-wrapper`：确定性检查归入现有 `research-contract-check` card，H2 语义义务仍由 Task/Trace/Human sample 决定，不创建换名 Skill。
+- 当前 accepted Registry 缺少 historical/active/deprecated lifecycle、精确版本约束且禁止同 ID 多版本；该 enforcement 缺口独立记为 M7-015，不在文档层假称已实现。
+
+### Added
+
+- `ACCEPTED_SKILL_MIGRATION.md` 与机器可读迁移夹具，逐项固定 action、direct baseline、content/package hash、new-assignment 决定和 next-version Gate。
+- 确定性测试核对夹具与实际 accepted Registry/包哈希一致，并阻止迁移文件暗示占位新版本或 Runtime enforcement。
+
+### Boundaries
+
+- 未修改三个历史 Skill 包、accepted manifests/Registry、Schema、Provider/API/Runtime/Adapter、模型路由或 live conformance；没有创建或准入新 Skill。
+
 ## 2026-08-18 — Action-driven Tool 与路由 fixtures
 
 ### Added
