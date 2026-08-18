@@ -53,8 +53,8 @@
 | M3-004 | IN_PROGRESS | review loop/fanout/write race 检查 | M2 | 并发预算、review loop、协调成本与既有 write race 检查已落地；真实停止行为待验证 |
 | M3-005 | IN_PROGRESS | 敏感 trace 策略 | M2 | 外部/完整/敏感 trace 会阻断或警告；真实脱敏器与密钥 fixture 待实现 |
 | M3-006 | IN_PROGRESS | SAFE_PAUSE 与机器完成权 | M3-001..003 | AWU/完成/暂停条件、stage/safe-pause/waiting、执行结束与 `contract-satisfied` 分离、失败报告覆盖显式完成宣称和可恢复 pause fixture 已实现；真实 Task rollover 待演练 |
-| M3-007 | IN_PROGRESS | 冻结实名 actor、Attempt Archive 与完整 Agent Trace 规则 | M3-003..006 | ADR-0012、目录、消息信封、写前捕获、capture gap、按需读取和 Worklog 关系一致；负责人明确为路诚钺/黄毅 |
-| M3-008 | READY | 实现 Trace Envelope/Index/Event Schema、validator 与手工 fixture | M3-007 | 能检测 message/event sequence、hash、actor owner、capture gap、未声明删减、越界正文/工具、瞬时结果丢失和过程产物覆盖；不保存 Chain-of-Thought |
+| M3-007 | DONE | 冻结实名 actor、Attempt Archive 与完整 Agent Trace 规则 | M3-003..006 | ADR-0012、目录、消息信封、写前捕获、capture gap、按需读取和 Worklog 关系一致；负责人明确为路诚钺/黄毅 |
+| M3-008 | DONE | 实现 Trace Envelope/Index/Event Schema、validator 与手工 fixture | M3-007 | 三份 0.1.0 Schema、`rwb trace validate`、手工 H1 fixture 与反例测试已检测 sequence/hash/owner/capture/scope/Tool/result/revision；不保存 Chain-of-Thought，不宣称自动捕获完整性 |
 
 ## M4：工件与复现
 
@@ -122,4 +122,8 @@ M1 已建立里程碑与首批可执行 Issues：
 
 ## 当前下一任务
 
-`K-MS-1` 已由 M7-016 接受为离线 Mode–Skill–Tool 选择/治理基线，本分支进入 safe stop。下一唯一跨节点前置任务为 M3-008 Trace Envelope/Index/Event Schema、validator 与手工 fixture；其后才可解锁 M7-005/006/014 的真实评估。路诚钺不在本分支补 API、Provider、模型或 live conformance。
+`K-MS-1` 与 M3-008 的离线基线均已完成。下一关键节点不自动展开：由人类另开 Task，优先在
+M7-006 做小样本 H0/H1/H2 与读取扩展成本对照；只有形成真实、脱敏 Trace 后，才从
+M7-005/M7-014 选择一个 Mode-derived 或 project-internal Need 做 no-Skill/direct-tool/compact
+比较。路诚钺不补 API、Provider、模型、自动捕获或 live conformance；执行端缺少合格 Trace 时
+只能报告 `capture-gap`，不能把缺失当作零成本。

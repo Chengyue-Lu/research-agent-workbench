@@ -2,6 +2,23 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
+## 2026-08-19 — M3-008 provider-neutral Agent Trace 基线
+
+### Added
+
+- 新增 Trace Envelope、Index 和 Event `0.1.0` Schema，显式冻结实名 owner、actors、读写/Tool/
+  外部动作边界、捕获策略、消息元数据和不可变引用；隐藏 Chain-of-Thought 固定为禁止留存。
+- 新增 `rwb trace validate` 和手工 H1 fixture，确定性检查 sequence、hash、actor、消息收发、
+  capture gap/删减、越界读取/Tool、瞬时结果与过程文件 revision。
+- 新增正向及十一类边界测试，并建立实名 Trace 分支计划。
+
+### Boundaries
+
+- 本节点只证明 provider-neutral 文件契约和离线 validator；不实现或证明 API/Adapter 自动捕获、
+  模型调用、传输原子性、科学正确性或多 Agent/Skill 的净收益。
+- M3-008 完成后停止当前分支。下一 Task 建议先用 M7-006 做极小样本 H0/H1/H2 成本对照，
+  再由人类选择至多一个 Need 进入真实机制比较。
+
 ## 2026-08-19 — K-MS-1 节点评审与分支收束
 
 ### Reviewed

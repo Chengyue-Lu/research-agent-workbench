@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/agent-trace-envelope.schema.json",
+  "title": "Agent Trace Envelope",
+  "x-rwb-document-kind": "agent_trace_envelope",
+  "type": "object",
+  "required": [
+    "schema_version", "trace_id", "task_id", "attempt_id", "accountable_owner",
+    "handoff_level", "archive_root", "created_at", "status", "capture_status",
+    "capture_policy", "actors", "read_allowlist", "write_scope", "allowed_tools",
+    "external_actions", "event_ledger_ref", "index_ref", "limitations"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "trace_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "task_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "attempt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "accountable_owner": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "handoff_level": { "enum": ["H0", "H1", "H2"] },
+    "archive_root": { "$ref": "common.schema.json#/$defs/relativePath" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "closed_at": { "type": "string", "format": "date-time" },
+    "status": {
+      "enum": ["active", "completed", "safe-paused", "failed", "blocked", "cancelled"]
+    },
+    "capture_status": { "enum": ["complete", "gap-declared"] },
+    "capture_policy": {
+      "type": "object",
+      "required": ["hidden_reasoning", "secrets", "default_context", "retention"],
+      "properties": {
+        "hidden_reasoning": { "const": "forbidden" },
+        "secrets": { "const": "redact-or-omit" },
+        "default_context": { "const": "index-and-handoff-only" },
+        "retention": { "enum": ["fixture", "project-policy"] }
+      },
+      "additionalProperties": false
+    },
+    "actors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["actor_id", "actor_kind", "accountable_owner", "runtime"],
+        "properties": {
+          "actor_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "actor_kind": { "enum": ["human", "agent", "tool", "runtime"] },
+          "accountable_owner": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "runtime": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "model": { "type": "string" },
+          "profile_ref": { "$ref": "common.schema.json#/$defs/relativePath" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "read_allowlist": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/relativePath" },
+      "uniqueItems": true
+    },
+    "write_scope": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/relativePath" },
+      "uniqueItems": true
+    },
+    "allowed_tools": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "external_actions": { "enum": ["forbidden", "human-approved-only"] },
+    "event_ledger_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "index_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "limitations": { "$ref": "common.schema.json#/$defs/stringArray" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "status": { "enum": ["completed", "safe-paused", "failed", "blocked", "cancelled"] } },
+        "required": ["status"]
+      },
+      "then": { "required": ["closed_at"] }
+    }
+  ],
+  "additionalProperties": false
+}

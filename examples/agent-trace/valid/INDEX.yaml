@@ -1,0 +1,62 @@
+schema_version: 0.1.0
+trace_id: TRACE-FIXTURE-VALID
+task_id: TRACE-FIXTURE-001
+attempt_id: A-TRACE-VALID-001
+accountable_owner: 路诚钺
+generated_at: "2026-08-19T09:00:12+08:00"
+event_ledger_ref:
+  path: examples/agent-trace/valid/events.jsonl
+  sha256: 52f074339bc655dca18351979575140158a7d8744616189a2cf535daa184da71
+events:
+  - {event_id: EVT-0001, sequence: 1, event_type: attempt-start, actor_id: main-agent, occurred_at: "2026-08-19T09:00:00+08:00", status: succeeded}
+  - {event_id: EVT-0002, sequence: 2, event_type: message-sent, actor_id: main-agent, occurred_at: "2026-08-19T09:00:01+08:00", status: succeeded}
+  - {event_id: EVT-0003, sequence: 3, event_type: message-received, actor_id: worker-agent, occurred_at: "2026-08-19T09:00:02+08:00", status: succeeded}
+  - {event_id: EVT-0004, sequence: 4, event_type: file-read, actor_id: worker-agent, occurred_at: "2026-08-19T09:00:03+08:00", status: succeeded}
+  - {event_id: EVT-0005, sequence: 5, event_type: tool-call, actor_id: worker-agent, occurred_at: "2026-08-19T09:00:04+08:00", status: succeeded}
+  - {event_id: EVT-0006, sequence: 6, event_type: tool-result, actor_id: worker-agent, occurred_at: "2026-08-19T09:00:05+08:00", status: succeeded}
+  - {event_id: EVT-0007, sequence: 7, event_type: file-write, actor_id: worker-agent, occurred_at: "2026-08-19T09:00:06+08:00", status: succeeded}
+  - {event_id: EVT-0008, sequence: 8, event_type: message-sent, actor_id: worker-agent, occurred_at: "2026-08-19T09:00:08+08:00", status: succeeded}
+  - {event_id: EVT-0009, sequence: 9, event_type: message-received, actor_id: main-agent, occurred_at: "2026-08-19T09:00:09+08:00", status: succeeded}
+  - {event_id: EVT-0010, sequence: 10, event_type: handoff, actor_id: worker-agent, occurred_at: "2026-08-19T09:00:10+08:00", status: succeeded}
+  - {event_id: EVT-0011, sequence: 11, event_type: attempt-complete, actor_id: main-agent, occurred_at: "2026-08-19T09:00:11+08:00", status: succeeded}
+messages:
+  - message_id: MSG-0001
+    sequence: 1
+    kind: assignment
+    sender_actor_id: main-agent
+    receiver_actor_ids: [worker-agent]
+    accountable_owner: 路诚钺
+    created_at: "2026-08-19T09:00:01+08:00"
+    capture_status: complete
+    content_ref:
+      path: examples/agent-trace/valid/messages/0001-main-agent-to-worker-agent-assignment.md
+      sha256: 43886bd138466faecb3e2d0e7bdf8e3fa23d2801f10c66a72ab6338f0ba3babc
+    attachment_refs:
+      - path: examples/agent-trace/valid/input.txt
+        sha256: 9a5a4fddaef398dce8bef6fe77a4f2ec65a5ba8bba246dee0c8083ef837e232a
+    sent_event_id: EVT-0002
+    received_event_ids: [EVT-0003]
+  - message_id: MSG-0002
+    sequence: 2
+    kind: handoff
+    sender_actor_id: worker-agent
+    receiver_actor_ids: [main-agent]
+    accountable_owner: 路诚钺
+    created_at: "2026-08-19T09:00:08+08:00"
+    capture_status: complete
+    content_ref:
+      path: examples/agent-trace/valid/messages/0002-worker-agent-to-main-agent-handoff.md
+      sha256: b8a4d3459fcc2ffd0b507a5afa84c8b260fc6e1a64da27f1eb15b5a176843de1
+    attachment_refs:
+      - path: examples/agent-trace/valid/outputs/result.txt
+        sha256: e4fff6feb8d9e3ab023ca1a7c613decb2e519271fb8c8f2269aec6602ad71025
+    sent_event_id: EVT-0008
+    received_event_ids: [EVT-0009]
+    handoff_ref:
+      path: examples/agent-trace/valid/handoffs/HANDOFF.md
+      sha256: 16fae0379b46e1bd69db5553197546b73c7ce2f80353969c67d5762195dadb3e
+capture_gap_event_ids: []
+handoff_refs:
+  - path: examples/agent-trace/valid/handoffs/HANDOFF.md
+    sha256: 16fae0379b46e1bd69db5553197546b73c7ce2f80353969c67d5762195dadb3e
+decision_refs: []

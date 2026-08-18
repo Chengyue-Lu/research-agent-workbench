@@ -98,6 +98,9 @@ SCHEMA_KINDS = {
     "main_state",
     "context_snapshot",
     "execution_receipt",
+    "agent_trace_envelope",
+    "agent_trace_index",
+    "agent_trace_event",
     "research_object",
 }
 
@@ -129,6 +132,12 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "context_snapshot"
     if "receipt_id" in document and "execution_kind" in document and "attempt_ref" in document:
         return "execution_receipt"
+    if "trace_id" in document and "event_ledger_ref" in document and "capture_policy" in document:
+        return "agent_trace_envelope"
+    if "trace_id" in document and "event_ledger_ref" in document and "events" in document:
+        return "agent_trace_index"
+    if "event_id" in document and "event_type" in document and "sequence" in document:
+        return "agent_trace_event"
     if "audit_id" in document and "manifest_ref" in document and "mappings" in document:
         return "handoff_transfer_audit"
     if "manifest_id" in document and "source_artifact_refs" in document and "items" in document:

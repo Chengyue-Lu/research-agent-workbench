@@ -1,0 +1,42 @@
+schema_version: 0.1.0
+trace_id: TRACE-FIXTURE-VALID
+task_id: TRACE-FIXTURE-001
+attempt_id: A-TRACE-VALID-001
+accountable_owner: 路诚钺
+handoff_level: H1
+archive_root: examples/agent-trace/valid
+created_at: "2026-08-19T09:00:00+08:00"
+closed_at: "2026-08-19T09:00:12+08:00"
+status: completed
+capture_status: complete
+capture_policy:
+  hidden_reasoning: forbidden
+  secrets: redact-or-omit
+  default_context: index-and-handoff-only
+  retention: fixture
+actors:
+  - actor_id: main-agent
+    actor_kind: agent
+    accountable_owner: 路诚钺
+    runtime: manual-fixture
+    model: fixture-main
+  - actor_id: worker-agent
+    actor_kind: agent
+    accountable_owner: 路诚钺
+    runtime: manual-fixture
+    model: fixture-worker
+read_allowlist:
+  - examples/agent-trace/valid/input.txt
+write_scope:
+  - examples/agent-trace/valid/outputs/**
+allowed_tools:
+  - document-read
+external_actions: forbidden
+event_ledger_ref:
+  path: examples/agent-trace/valid/events.jsonl
+  sha256: 52f074339bc655dca18351979575140158a7d8744616189a2cf535daa184da71
+index_ref:
+  path: examples/agent-trace/valid/INDEX.yaml
+  sha256: 30c2197d31375851d15440937dbdd9a78dc5f643516655f2a4ada01b18856b8c
+limitations:
+  - Synthetic structural fixture; it does not prove scientific correctness or runtime capture completeness.

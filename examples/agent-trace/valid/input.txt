@@ -1,0 +1,1 @@
+Synthetic bounded input for the M3-008 Agent Trace fixture.

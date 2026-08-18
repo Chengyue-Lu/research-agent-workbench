@@ -19,15 +19,15 @@ Agent 不是责任主体。每个运行中的 Agent 使用稳定 `actor_id`，�
 
 ## 2. 当前开发节点
 
-路诚钺维护分支 `agent/mode-skill-selection-baseline` 已到达 `K-MS-1 Mode–Skill Selection Baseline`：
+路诚钺维护分支 `agent/mode-skill-selection-baseline` 已到达并冻结
+`K-MS-1 Mode–Skill Selection Baseline`。当前从最新 `main` 建立
+`agent/m3-008-trace-baseline`，只实现 M3-008 的 provider-neutral Trace 文件契约：
 
-1. 从 `evidence-synthesis` 与 `simulation` 推导可选 Mode actions、失败、Artifact、停止条件和 Human Gate；
-2. 为每个 action 选择最小充分机制：Mode/Task/Tool/Skill Need/Human/blocked，不从来源候选反推需求；
-3. 只为已确认的 action gap 建 provider-neutral Tool capability card 和 Task 路由 fixture；
-4. 按 Mode action 版本化复核三个 0.1.0 Skill 原型，不原地改义；
-5. 分离历史 Skill 解析与新分配 lifecycle，默认只选择 active，历史 replay 必须显式精确版本；
-6. 在真实 Agent forward test 前完成最小 Attempt Archive/Trace validator，再比较 no-Skill/direct-tool/compact trial 与 H0/H1/H2 成本；
-7. 到达节点后做保留、拆分、降级和退役评审。
+1. 冻结 Envelope/Index/Event `0.1.0` Schema 和隐藏推理/敏感信息边界；
+2. 实现确定性 validator，检查身份、顺序、哈希、actor/owner、消息、范围、Tool、捕获与 revision；
+3. 用一个手工 H1 fixture 和反例测试证明检查器能阻断已知结构性风险；
+4. 更新 Task、开发入口、使用指南、模块文档与 Changelog；
+5. 到达节点后停止，不在本分支启动真实 Agent、API/Adapter 自动捕获或 Skill 效果比较。
 
 并行维护一条 project-internal Skill Need 路线，只处理本项目交接、恢复与 Human Gate 准备中的
 可复用语义动作。它先比较 Protocol/template/Tool 基线，不把交互留痕、受控读取、输出 Schema
@@ -36,8 +36,10 @@ Agent 不是责任主体。每个运行中的 Agent 使用稳定 `actor_id`，�
 达到上述节点后暂停评审，不批量新增 Mode/Skill/Tool，也不在此分支修改 API 实现。详细顺序见[路诚钺 Mode–Skill 分支计划](workstreams/chengyue-lu-mode-skill/README.md)，状态以[任务清单](TASKS.md)为准。
 
 截至 2026-08-19，M7-016 已逐项确认九个节点条件并写入正式 Decision。三个历史 `0.1.0` 原型
-均为 legacy/deprecated，当前 active accepted Skill 为零；零 active 不触发补包。该分支进入
-safe stop，唯一下一前置为 M3-008 Trace Schema/validator/fixture。
+均为 legacy/deprecated，当前 active accepted Skill 为零；零 active 不触发补包。M3-008 已形成
+可执行 Schema、CLI validator、手工 fixture 和反例测试；下一节点必须另开 Task，由人类在
+M7-006 H0/H1/H2 成本对照与 M7-005/M7-014 的真实机制比较之间选择，不能自动批量启动。
+专项范围见[路诚钺 Trace 基线分支计划](workstreams/chengyue-lu-trace/README.md)。
 
 ## 3. 开始一个开发 Task
 
@@ -84,8 +86,10 @@ H1/H2 的差异是回传主上下文和审查强度，不是“是否保存过�
 
 ## 7. 当前已知缺口
 
-- Attempt Archive、Agent Trace Envelope 和自动捕获尚未实现 Schema/CLI；当前只能先按文档约定和模板留存。
-- API session 与平台 Adapter 的自动 Trace 写入属于黄毅的执行实现范围；Trace 语义、最小字段和 Mode/Skill 评估消费方式由双方共同冻结。
+- Trace Envelope/Index/Event Schema、CLI validator 与手工 fixture 已实现；尚缺真实运行的自动捕获、
+  写前原子性和 runtime-vs-archive 完整度证明。
+- API session 与平台 Adapter 的自动 Trace 写入属于黄毅的执行实现范围；本分支不修改该实现，
+  接入方应消费现有 provider-neutral Schema，若需改共享字段则先共同确认迁移影响。
 - 尚无真实运行数据证明 H1/H2 的净收益；不能把消息数量、Trace 完整度或审计工件数量当作质量本身。
 - 当前只有两个正式 Mode、三个历史 accepted Skill 条目且 active 为零；真实 with/without 证据不足。
 - 黄毅的 GitHub 身份尚未登记在本文件；登记后应替换占位说明，不应猜测账号。

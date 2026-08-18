@@ -30,6 +30,9 @@ class VersionedSchemaTests(unittest.TestCase):
         self.assertEqual(
             {
                 "agent_profile",
+                "agent_trace_envelope",
+                "agent_trace_event",
+                "agent_trace_index",
                 "attempt",
                 "context_snapshot",
                 "deterministic_check_report",

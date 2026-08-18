@@ -209,6 +209,17 @@ rwb context resume-check `
 
 预期结果是没有 blocking deterministic risks。它证明文件引用、哈希、状态和下一动作自洽，不证明下一次模型执行一定正确。
 
+### 4.7 验证 Agent Trace Archive
+
+```powershell
+rwb trace validate examples/agent-trace/valid/TRACE.yaml --root .
+```
+
+预期显示 `events=11 messages=2 capture_gaps=0` 且没有 blocking risk。该命令会核对
+Envelope、Index、事件账本、消息正文/附件和 Tool 结果的哈希与关系，也会检测越界读取、未授权
+Tool、缺失瞬时结果和过程文件覆盖。它不会启动 Agent，不会读取隐藏推理，也不能证明 Adapter
+已捕获运行中的每一个动作。
+
 ## 5. 当前怎样实际运行一个子 Agent
 
 当前仓库已经有 fresh API session 内核，但尚未提供完整的 Task-to-API CLI 和自动 Trace 捕获。因此过渡期有两种受控方式：开发者直接调用该内核进行离线/集成测试，或使用现有 Codex dispatch 作为人工平台入口。无论采用哪种方式，Workbench 都使用同一套契约和 Attempt Archive；黄毅负责执行端实现，路诚钺负责 Mode/Skill/Trace 方法与评估。
@@ -470,7 +481,7 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 | Codex Runtime Adapter | 布局、能力和 dispatch 已实现 | 可选路径，不在当前关键路径 |
 | 上下文连续性 | SAFE_PAUSE、哈希、digest、Git 冲突和恢复 fixture 已实现 | 缺真实跨会话恢复 |
 | Handoff 压缩审计 | Manifest/Audit 和风险触发抽样契约已实现 | 路诚钺尚缺 H1/H2 成本对照与真实材料样本 |
-| Agent 过程留痕 | 已冻结实名 actor、Attempt Archive 和按需读取规则 | Trace Schema/validator 与运行时自动捕获尚未实现 |
+| Agent 过程留痕 | Envelope/Index/Event Schema、CLI validator、H1 fixture 与反例测试已实现 | provider-neutral 离线基线可用；运行时自动捕获与真实完整度仍缺 |
 | Provider Adapters | OpenAI、Anthropic、Gemini 离线合同和有界 runner 已实现 | 由黄毅继续维护 |
 | Skill 供应链 | 候选隔离、静态审计、paired evaluation 与 lifecycle 已实现 | 三个历史条目均非 active 且仍为 `project-original-unlicensed` |
 | 工件 promotion 和 Run 复现 | 已有架构与任务 | 核心实现未完成 |
@@ -527,8 +538,8 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 
 发布关键路径应保持克制：
 
-1. K-MS-1 已冻结；先完成 M3-008 Trace Envelope/Index/Event Schema、validator 与手工 fixture；
-2. Trace 可用后，比较 with/without Skill、H1/H2 与内容读取扩展成本，删减没有改变决策的控制项；
+1. K-MS-1 与 M3-008 离线 Trace 基线已冻结；先用 M7-006 小样本测量 H0/H1/H2、回查与读取扩展成本；
+2. 取得合格真实 Trace 后，只选择一个 Need 比较 no-Skill/direct-tool/compact Skill，删减没有改变决策的控制项；
 3. 黄毅独立推进 Task-to-API、恢复、自动 Trace 捕获和真实模型证据；路诚钺只消费正式脱敏工件；
 4. 同步确定 LICENSE 和完整项目 scaffold 方案；
 5. 再进入两个真实科研案例、M4 工件 promotion/复现和对照评估；

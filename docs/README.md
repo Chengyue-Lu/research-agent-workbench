@@ -23,6 +23,7 @@
 - `modules/`：模块契约、风险和验收条件；只在 Task 涉及时读取。
 - `implementation/`：仍在推进的专项计划，不承担全局状态记录。
 - `workstreams/`：以实名责任人命名的当前分支计划；只描述本分支范围、顺序和停止点。
+  当前 Trace 节点见[路诚钺 Agent Trace 基线分支计划](workstreams/chengyue-lu-trace/README.md)。
 - `decisions/`：已经作出的架构决定及其理由，不作为当前任务清单。
 - `references/`：外部材料吸收记录，不是运行时指令。
 - `templates/`：任务运行档案和其他可复制模板。

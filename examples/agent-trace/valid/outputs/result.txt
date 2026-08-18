@@ -1,0 +1,1 @@
+The worker observed the frozen synthetic input and produced this bounded result.

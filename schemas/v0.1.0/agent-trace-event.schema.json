@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/agent-trace-event.schema.json",
+  "title": "Agent Trace Event",
+  "x-rwb-document-kind": "agent_trace_event",
+  "$defs": {
+    "eventType": {
+      "enum": [
+        "attempt-start", "message-sent", "message-received", "file-read",
+        "tool-call", "tool-result", "file-write", "external-action",
+        "state-change", "decision", "handoff", "check", "capture-gap",
+        "redaction", "omission", "attempt-complete"
+      ]
+    },
+    "eventStatus": {
+      "enum": ["started", "observed", "succeeded", "failed", "blocked", "redacted", "omitted"]
+    }
+  },
+  "type": "object",
+  "required": [
+    "schema_version", "event_id", "trace_id", "task_id", "attempt_id",
+    "sequence", "event_type", "actor_id", "occurred_at", "status", "details"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "event_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "trace_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "task_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "attempt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "sequence": { "type": "integer", "minimum": 1 },
+    "event_type": { "$ref": "#/$defs/eventType" },
+    "actor_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "occurred_at": { "type": "string", "format": "date-time" },
+    "status": { "$ref": "#/$defs/eventStatus" },
+    "message_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "related_event_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "target": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": { "enum": ["attempt", "message", "file", "tool", "external", "decision", "handoff", "check", "output", "other"] },
+        "id": { "type": "string" },
+        "path": { "$ref": "common.schema.json#/$defs/relativePath" },
+        "sha256": { "$ref": "common.schema.json#/$defs/sha256" },
+        "revision": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "authorization": {
+      "type": "object",
+      "required": ["basis", "allowed"],
+      "properties": {
+        "basis": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "allowed": { "type": "boolean" },
+        "approved_by_actor_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "decision_ref": { "$ref": "common.schema.json#/$defs/fileRef" }
+      },
+      "additionalProperties": false
+    },
+    "request_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "result_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "tombstone_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "capture": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": { "enum": ["complete", "delayed", "redacted", "omitted", "gap"] },
+        "reason": { "type": "string" },
+        "affected_ids": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "uniqueItems": true
+        },
+        "locator_hashes": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/sha256" },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "details": {
+      "type": "object",
+      "properties": {
+        "operation": { "enum": ["create", "modify", "delete"] },
+        "old_sha256": { "$ref": "common.schema.json#/$defs/sha256" },
+        "new_sha256": { "$ref": "common.schema.json#/$defs/sha256" },
+        "transient": { "type": "boolean" },
+        "side_effect": { "enum": ["read-only", "local-write", "external-write", "unknown"] },
+        "result_chars": { "type": "integer", "minimum": 0 },
+        "exit_code": { "type": "integer" },
+        "error": { "type": "string" },
+        "metadata_only": { "type": "boolean" },
+        "reason": { "type": "string" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "event_type": { "enum": ["message-sent", "message-received"] } }, "required": ["event_type"] },
+      "then": { "required": ["message_id", "target"] }
+    },
+    {
+      "if": { "properties": { "event_type": { "const": "file-read" } }, "required": ["event_type"] },
+      "then": { "required": ["target", "authorization"] }
+    },
+    {
+      "if": { "properties": { "event_type": { "const": "tool-call" } }, "required": ["event_type"] },
+      "then": { "required": ["target", "authorization"] }
+    },
+    {
+      "if": { "properties": { "event_type": { "const": "tool-result" } }, "required": ["event_type"] },
+      "then": { "required": ["target", "related_event_id", "capture"] }
+    },
+    {
+      "if": { "properties": { "event_type": { "const": "file-write" } }, "required": ["event_type"] },
+      "then": { "required": ["target"] }
+    },
+    {
+      "if": { "properties": { "event_type": { "const": "external-action" } }, "required": ["event_type"] },
+      "then": { "required": ["target", "authorization"] }
+    },
+    {
+      "if": { "properties": { "event_type": { "enum": ["capture-gap", "redaction", "omission"] } }, "required": ["event_type"] },
+      "then": { "required": ["capture"] }
+    }
+  ],
+  "additionalProperties": false
+}

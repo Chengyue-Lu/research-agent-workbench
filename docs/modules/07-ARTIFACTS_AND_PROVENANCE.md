@@ -83,7 +83,10 @@ capture_status: complete
 <实际传递的正文；若只发送引用，就保存引用而不复制附件正文>
 ```
 
-`ACTORS.yaml` 记录 `actor_id`、角色、模型/Runtime 快照和 `accountable_owner`。人类负责人必须使用姓名；临时窗口、模型版本和 Agent Profile 是运行身份，不是审批主体。
+当前 `0.1.0` Trace Envelope 把 actor 表直接保存在 `TRACE.yaml`；未来如拆出
+`ACTORS.yaml`，它只能是 Envelope 的哈希引用，不能形成第二个责任来源。actor 记录包含
+`actor_id`、角色、模型/Runtime 快照和 `accountable_owner`。人类负责人必须使用姓名；临时窗口、
+模型版本和 Agent Profile 是运行身份，不是审批主体。
 
 发送方应先持久化消息再 dispatch；接收方应在基于消息继续行动前完成接收记录。平台不支持写前捕获时，Adapter 必须尽快导出并在 `capture_status` 标记 `delayed`。丢失、截断、政策性删减或平台不可导出时，写 `capture-gap` 事件，说明受影响的 message range、原因和可用定位信息，不能静默假装完整。
 
@@ -101,7 +104,25 @@ capture_status: complete
 
 如果源文件已经不可变且有哈希，读取事件引用它即可，不复制正文；如果工具结果只存在于瞬时 stdout/API response 且进入过 Agent 上下文，应将脱敏后的实际结果保存在 `tool-events/`。过程产物不原地覆盖：新版本使用新路径/revision；确需删除时事件账本保存 tombstone、旧哈希、责任人和原因。
 
-该账本用于确认 Agent 是否越界读取或执行，而不是要求主 Agent 浏览全部操作。validator 应能用 `read_allowlist` 检测越界；人工只在排障 Task 中按 event ID 调取请求/结果正文。
+该账本用于确认 Agent 是否越界读取或执行，而不是要求主 Agent 浏览全部操作。当前已实现的
+validator 使用 Envelope 中的 `read_allowlist`、`write_scope`、`allowed_tools` 和
+`external_actions` 检查边界；人工只在排障 Task 中按 event ID 调取请求/结果正文。
+
+### 当前 `0.1.0` 可执行契约
+
+- [`agent-trace-envelope.schema.json`](../../schemas/v0.1.0/agent-trace-envelope.schema.json)：
+  冻结 Attempt 身份、实名 owner、actors、读写/Tool/外部动作边界、capture policy 及 Index/ledger 引用；
+- [`agent-trace-index.schema.json`](../../schemas/v0.1.0/agent-trace-index.schema.json)：
+  只保留 event/message 元数据、哈希和 Handoff/Decision 引用，不复制正文；
+- [`agent-trace-event.schema.json`](../../schemas/v0.1.0/agent-trace-event.schema.json)：
+  保存运行时可观察事件；`details` 是受控扩展槽，不改变事件身份、授权或引用字段；
+- [`examples/agent-trace/valid`](../../examples/agent-trace/valid)：
+  一个手工 H1 fixture，演示消息写前留存、读取、Tool 请求/瞬时结果、过程输出与 Handoff；
+- `rwb trace validate <TRACE.yaml> --root <project-root>`：验证 Schema、引用哈希、连续顺序、
+  actor/owner、读写与 Tool 边界、消息收发覆盖、捕获声明、瞬时结果和过程文件 revision。
+
+验证器只判断档案是否自洽、边界是否可审计；它不证明运行时没有漏报、消息在网络上真的被接收，
+也不判断研究内容正确。自动捕获属于执行 Adapter，当前 fixture 只证明 provider-neutral 文件契约。
 
 ## 4. 原始来源接纳
 

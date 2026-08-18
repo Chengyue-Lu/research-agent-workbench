@@ -49,6 +49,7 @@ from research_workbench.io import iter_documents, load_document
 from research_workbench.observability import ExecutionReceipt, check_execution_receipt
 from research_workbench.protocol import ProjectProtocol
 from research_workbench.tasks import AttemptRecord, FileReference, HandoffPacket, TaskPacket
+from research_workbench.trace import validate_trace_archive
 from research_workbench.validation import (
     SchemaCatalog,
     check_claim_ceiling,
@@ -287,6 +288,35 @@ def _hash(args: argparse.Namespace) -> int:
     path = Path(args.path)
     print(f"sha256:{hash_file(path)}  {path}")
     return 0
+
+
+def _trace_validate(args: argparse.Namespace) -> int:
+    report = validate_trace_archive(args.envelope, root=args.root)
+    if args.json:
+        print(
+            json.dumps(
+                {
+                    "trace_id": report.trace_id,
+                    "event_count": report.event_count,
+                    "message_count": report.message_count,
+                    "capture_gap_count": report.capture_gap_count,
+                    "blocked": report.blocked,
+                    "risks": [
+                        {"code": risk.code, "level": str(risk.level), "message": risk.message}
+                        for risk in report.risks
+                    ],
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+    else:
+        _print_risks(report.risks)
+        print(
+            f"trace={report.trace_id} events={report.event_count} "
+            f"messages={report.message_count} capture_gaps={report.capture_gap_count}"
+        )
+    return 1 if report.blocked else 0
 
 
 def _init_project(args: argparse.Namespace) -> int:
@@ -1045,6 +1075,16 @@ def build_parser() -> argparse.ArgumentParser:
     hash_parser = subparsers.add_parser("hash", help="calculate a SHA-256 content identifier")
     hash_parser.add_argument("path")
     hash_parser.set_defaults(handler=_hash)
+
+    trace = subparsers.add_parser("trace", help="validate a file-first Agent Trace Archive")
+    trace_subparsers = trace.add_subparsers(dest="trace_command", required=True)
+    trace_validate = trace_subparsers.add_parser(
+        "validate", help="check Trace Envelope, Index, events, messages, scope, and hashes"
+    )
+    trace_validate.add_argument("envelope")
+    trace_validate.add_argument("--root", default=".")
+    trace_validate.add_argument("--json", action="store_true")
+    trace_validate.set_defaults(handler=_trace_validate)
 
     schema_parser = subparsers.add_parser("schema", help="inspect versioned JSON Schemas")
     schema_subparsers = schema_parser.add_subparsers(dest="schema_command", required=True)
