@@ -2,8 +2,8 @@
 
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 分支：`agent/mode-skill-selection-baseline`
-- 状态：`K-MS-1` 已通过离线节点评审；本分支 safe stop
-- 日期：2026-08-18
+- 状态：`K-MS-1` 已通过离线节点评审；远端/主线合并审计通过；本分支 safe stop
+- 日期：2026-08-19
 - 目标节点：`K-MS-1 Mode–Skill Selection Baseline`
 
 本目录是路诚钺当前分支的唯一专项计划入口。逐项状态仍以 [`docs/TASKS.md`](../../TASKS.md) 为准；稳定架构仍以 [`docs/ARCHITECTURE.md`](../../ARCHITECTURE.md) 和模块文档为准。本目录不建立第二套全局架构。
@@ -57,6 +57,9 @@ project-internal Need 占位。它们先比较 Protocol/template/Tool 基线，�
 - [`claim-preserving-rewrite` Stage 1 诊断结果](STAGE1_DIAGNOSTIC_RESULTS.md)
 
 实际 Skill 包不得在自身目录中复制本计划或增加 README/Changelog。Skill 包只保留 `SKILL.md`、必要的 `agents/openai.yaml`、`scripts/`、`references/` 和 `assets/`。
+
+K-MS-1 的远端提交、主线关系、回归、责任与许可证边界统一记录在节点评审的“远端提交与主线
+合并审计”中，不再建立单独的发布文档。合并到 `main` 只采纳离线基线，不解除 safe stop。
 
 ## 4. 实施阶段
 

@@ -19,6 +19,11 @@
 - 本分支进入 safe stop，不继续新增 Mode/Skill/Tool。下一前置为 M3-008 Trace Schema/validator/fixture；完成前不启动 M7-005/006/014 的真实比较。
 - M2-003/004/007/008 从误导性的 `IN_PROGRESS` 转为 `PARKED`：保留历史原型、垂直切片和来源库存，但只能由 Mode-derived Need 与 Trace Gate 重新激活。
 
+### Integration review
+
+- 远端/主线合并审计确认分支相对最新 `origin/main` 为 `0 behind / 9 ahead`，工作区干净，159 项测试与补丁检查通过，建议合并离线基线并保留原分支历史。
+- 合并不解除 M0-007 许可证阻断，不构成 Skill 效果、科研价值、API 执行或对外发布结论；下一节点必须从更新后的 `main` 另建 Task/分支。
+
 ## 2026-08-19 — Skill lifecycle 与精确版本回放
 
 ### Added

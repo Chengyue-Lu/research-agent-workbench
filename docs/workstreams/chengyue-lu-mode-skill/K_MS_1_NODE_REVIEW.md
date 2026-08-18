@@ -171,6 +171,7 @@ tokens 合计 125,709。结果只支持 `revise-compact`：8 条短约束在本�
 | `c9f1c4e` | 冻结 5 张 Tool cards 与 8 个 Task 路由 fixture |
 | `2821600` | 按 Mode action 迁移三个 0.1.0 原型 |
 | `0be3982` | 实现 active/legacy/deprecated lifecycle 和精确 replay |
+| `3cdaf85` | 完成 K-MS-1 九项评审、正式 Decision 与 safe stop |
 
 ## 6. 当前能做与不能做
 
@@ -188,7 +189,7 @@ tokens 合计 125,709。结果只支持 `revise-compact`：8 条短约束在本�
 - 声称 H1/H2、完整 Trace 或多 Agent 已节省成本；
 - 自动执行 Tool card、MCP/API 或模型；
 - 证明 evidence/simulation 之外的学科模式已经合理；
-- 公开发布、解决许可证或承诺跨平台/模型兼容；
+- 对外发布包、解决许可证或承诺跨平台/模型兼容；
 - 把当前 159 个测试解释为科学正确性。
 
 ## 7. 交接与停止点
@@ -204,3 +205,21 @@ tokens 合计 125,709。结果只支持 `revise-compact`：8 条短约束在本�
 
 本分支到 K-MS-1 后应进入 safe stop。下一次继续开发不应再从“搜索更多 Skill”开始，而应从
 Trace 前置、获批真实 Task family 或明确的 Human Decision 开始。
+
+## 8. 远端提交与主线合并审计（2026-08-19）
+
+审计基线为 `3cdaf85`，结论是：**建议把本分支合并到 `main`，但合并仅表示仓库采用这套离线
+选择/治理基线，不代表 Skill 效果、科研价值或对外发布已经获批。**
+
+| 检查项 | 结果 | 含义 |
+|---|---|---|
+| 主线关系 | `0 behind / 9 ahead` against `origin/main` | 无主线漂移，不需要先重放或解决冲突 |
+| 工作区 | clean | 没有未提交或无关文件混入 |
+| 回归 | 159 tests PASS | 结构、fixture 与历史 replay 未回归 |
+| 补丁检查 | `git diff --check` PASS | 无已知空白/补丁格式错误 |
+| 责任边界 | 无 Provider/API/session/live conformance 实现 | 未侵入黄毅负责的执行侧工作流 |
+| 节点边界 | K-MS-1 Decision 已接受并 safe stop | 合并后不会自动开启 M3-008 或真实 trial |
+| 发布边界 | M0-007 许可证问题仍存在 | 可以合并源码与文档，但不能据此发布 Skill 包 |
+
+合并后的权威状态以 `main` 为准；原特性分支保留作为提交序列与调查历史，不继续在其上堆叠
+下一节点工作。M3-008 应从更新后的 `main` 新建独立 Task/分支，并由其责任边界另行评审。
