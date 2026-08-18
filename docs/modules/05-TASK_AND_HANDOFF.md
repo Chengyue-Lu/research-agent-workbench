@@ -15,7 +15,7 @@ goal: Extract evidence for the bounded question.
 question_refs: [Q-001@3]
 active_modes: [evidence-synthesis]
 required_capabilities: [evidence-extraction, citation-location]
-required_skills: [literature-evidence-extraction]
+required_skills: [literature-evidence-extraction@0.1.0]
 forbidden_skills: [final-synthesis]
 agent_profile: evidence-scout
 input_refs:
@@ -50,6 +50,11 @@ stale_if:
 ```
 
 Task 必须可在有限时间内完成。`goal` 不能写成“完成整个研究”或“确保论文正确”。
+
+`required_skills` 可以写唯一 active Skill ID，或写精确的 `skill-id@semver`。新 Assignment 只接受
+active lifecycle；legacy/deprecated 版本只允许在明确的 historical replay 中使用精确 selector。
+Resolver 写入 Assignment 时始终固定版本、内容哈希和包哈希。上例引用当前仓库的历史 fixture，
+重新解析时必须显式使用 replay 模式，不代表它仍可用于新任务。
 
 Task Packet 同时是 Atomic Work Unit/ExecutionContract，不另建平行契约。`atomic_boundary` 说明可安全切换的最小边界；`completion_checks` 是机器完成权；`safe_pause_conditions` 说明何时允许持久化后停止。上下文不足只能进入 `safe-paused`，不能把未通过的检查包装成 `completed`。
 

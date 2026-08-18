@@ -1,6 +1,7 @@
 from research_workbench.capability.catalog import (
     AcceptedSkillEntry,
     AcceptedSkillRegistry,
+    SkillRegistrySelectionError,
     filter_candidates,
     load_candidates,
 )
@@ -18,6 +19,7 @@ __all__ = [
     "AgentProfile",
     "AcceptedSkillEntry",
     "AcceptedSkillRegistry",
+    "SkillRegistrySelectionError",
     "SkillLock",
     "SkillManifest",
     "ResolvedTask",

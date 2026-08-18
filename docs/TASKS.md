@@ -105,7 +105,8 @@
 | M7-012 | DONE | 建立 project-internal Skill Need 路线与候选占位 | M7-001, M7-011 | 与 Mode-derived 路线分离；交互、输出、恢复和 Gate 候选先比较 Protocol/template/Tool；未新增 Skill/Registry/Runtime |
 | M7-013 | DONE | 为两个优先 project-internal Need 建 direct baseline、failure fixture 与 compact dossier | M7-012, M1-004 | H1 omission 与 H2 semantic reversal 均形成可复验诊断；两项结论均为 `hold-no-skill`；未修改自动 Trace/API |
 | M7-014 | PARKED | 对 project-internal 候选做有 Trace 的困难任务比较 | M7-013, M3-008 | 比较 template/tool/compact Skill 的遗漏、回查、返工和上下文成本；无重复语义增量即退役 |
-| M7-015 | READY | 分离 Skill 历史解析与新分配 lifecycle | M7-004 | Registry/Resolver 表达 active/legacy/deprecated 与精确版本约束；旧 Assignment 可复验，新路由不能选择 legacy/deprecated |
+| M7-015 | DONE | 分离 Skill 历史解析与新分配 lifecycle | M7-004 | Registry/Resolver 表达 active/legacy/deprecated 与精确版本约束；旧 Assignment 可复验，新路由不能选择 legacy/deprecated |
+| M7-016 | READY | 执行 K-MS-1 节点评审并冻结基线 | M7-002..004, M7-008, M7-011..015 | 逐项核对节点条件、未证明内容和后续 Gate；形成 Decision/Handoff 后停止扩张，不自动进入真实 trial |
 
 ## GitHub 执行入口
 
@@ -121,4 +122,4 @@ M1 已建立里程碑与首批可执行 Issues：
 
 ## 当前下一任务
 
-Mode-derived 的 M7-002/003/004/008/011 与 project-internal 的 M7-012/013 已完成需求、Tool、路由和 0.1.0 原型迁移基线。当前唯一下一任务为 M7-015：只分离 Skill 的历史解析与新分配 lifecycle，补精确版本约束后进入 K-MS-1 节点评审。`M3-008 → M7-005/006/014` 属于后续真实评估路径；路诚钺不在本分支补 API、Provider、模型或 live conformance。
+Mode-derived 的 M7-002/003/004/008/011、project-internal 的 M7-012/013 与 lifecycle M7-015 已完成需求、Tool、路由、0.1.0 原型迁移和新分配阻断。当前唯一下一任务为 M7-016：执行 K-MS-1 节点评审并在 Decision/Handoff 后停止扩张。`M3-008 → M7-005/006/014` 属于后续真实评估路径；路诚钺不在本分支补 API、Provider、模型或 live conformance。

@@ -31,9 +31,9 @@ class AcceptedSkillMigrationFixtureTests(unittest.TestCase):
         }
         self.assertEqual(expected, actual)
 
-    def test_migration_does_not_claim_runtime_enforcement_or_new_packages(self) -> None:
+    def test_migration_claims_only_bounded_registry_enforcement_and_no_new_packages(self) -> None:
         self.assertFalse(self.document["formal_contract"])
-        self.assertFalse(self.document["runtime_enforced"])
+        self.assertTrue(self.document["runtime_enforced"])
         self.assertTrue(self.document["policy"]["preserve_historical_resolution"])
         self.assertFalse(self.document["policy"]["allow_in_place_package_mutation"])
         self.assertTrue(all(entry["next_version"] is None for entry in self.entries))

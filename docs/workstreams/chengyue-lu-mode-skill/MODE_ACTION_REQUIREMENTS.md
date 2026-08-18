@@ -148,7 +148,7 @@ Skill 不授予权限，Human Gate 不能由更多 reviewer Agent 代替。
 |---|---|---|
 | `literature-evidence-extraction@0.1.0` | ES-A4，部分 ES-A6/ES-A7 | 冻结原型；先比较 Task+checker 是否足够，再决定拆分或新 trial |
 | `simulation-vv@0.1.0` | SIM-A2–A7 | 范围过宽；冻结原型，按 action 重建需求，不原地扩写 |
-| `handoff-integrity@0.1.0` | 非 Mode action；跨任务交接 | 迁移目标为 Tool/Trace/H2 模板，等待版本化 deprecation |
+| `handoff-integrity@0.1.0` | 非 Mode action；跨任务交接 | 已由 M7-004/015 迁移为 deprecated wrapper；Tool/Trace/H2 模板承接新路由 |
 
 ## 7. 完成 Gate
 

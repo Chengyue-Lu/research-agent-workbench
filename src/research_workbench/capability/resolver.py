@@ -5,9 +5,9 @@ import json
 from dataclasses import dataclass
 from dataclasses import replace
 from itertools import combinations
-from typing import Iterable, Mapping
+from typing import Iterable, Literal, Mapping
 
-from research_workbench.capability.catalog import AcceptedSkillRegistry
+from research_workbench.capability.catalog import AcceptedSkillRegistry, SkillRegistrySelectionError
 from research_workbench.capability.models import AgentProfile, SkillLock, SkillManifest
 from research_workbench.contracts.common import (
     ContractError,
@@ -15,6 +15,7 @@ from research_workbench.contracts.common import (
     mapping_tuple,
     mapping_value,
     optional_string,
+    parse_skill_reference,
     require_string,
     string_tuple,
 )
@@ -43,6 +44,70 @@ class ResolutionError(ValueError):
     def __init__(self, risks: Iterable[ContractRisk]):
         self.risks = tuple(risks)
         super().__init__("task resolution blocked: " + "; ".join(risk.message for risk in self.risks))
+
+
+def _match_required_skills(
+    task: TaskPacket,
+    skills: Iterable[SkillManifest],
+) -> tuple[tuple[SkillManifest, ...], tuple[ContractRisk, ...]]:
+    by_id: dict[str, list[SkillManifest]] = {}
+    for skill in skills:
+        by_id.setdefault(skill.skill_id, []).append(skill)
+
+    selected: list[SkillManifest] = []
+    risks: list[ContractRisk] = []
+    selected_keys: set[tuple[str, str]] = set()
+    for index, raw_reference in enumerate(task.required_skills):
+        try:
+            reference = parse_skill_reference(raw_reference, f"required_skills[{index}]")
+        except ContractError as exc:
+            risks.append(ContractRisk("SKILL-SELECTOR-INVALID", RiskLevel.BLOCK, str(exc)))
+            continue
+        matches = by_id.get(reference.skill_id, [])
+        if reference.version is not None:
+            matches = [skill for skill in matches if skill.version == reference.version]
+        if not matches:
+            risks.append(
+                ContractRisk(
+                    "SKILL-MISSING",
+                    RiskLevel.BLOCK,
+                    f"required Skill is missing: {reference.identifier}",
+                )
+            )
+            continue
+        if len(matches) != 1:
+            versions = ", ".join(sorted(skill.version for skill in matches))
+            risks.append(
+                ContractRisk(
+                    "SKILL-VERSION-AMBIGUOUS",
+                    RiskLevel.BLOCK,
+                    f"Skill selector requires an exact version: {reference.skill_id} ({versions})",
+                )
+            )
+            continue
+        skill = matches[0]
+        key = (skill.skill_id, skill.version)
+        if key in selected_keys:
+            risks.append(
+                ContractRisk(
+                    "SKILL-DUPLICATE",
+                    RiskLevel.BLOCK,
+                    f"Skill is selected more than once: {skill.skill_id}@{skill.version}",
+                )
+            )
+            continue
+        if any(existing.skill_id == skill.skill_id for existing in selected):
+            risks.append(
+                ContractRisk(
+                    "SKILL-VERSION-CONFLICT",
+                    RiskLevel.BLOCK,
+                    f"one Task cannot load multiple versions of Skill {skill.skill_id}",
+                )
+            )
+            continue
+        selected_keys.add(key)
+        selected.append(skill)
+    return tuple(selected), tuple(risks)
 
 
 def _assignment_identifier(
@@ -143,7 +208,9 @@ def check_task_binding(
     skills: Iterable[SkillManifest],
 ) -> list[ContractRisk]:
     risks: list[ContractRisk] = []
-    skills_by_id = {skill.skill_id: skill for skill in skills}
+    skill_list = tuple(skills)
+    selected, selection_risks = _match_required_skills(task, skill_list)
+    risks.extend(selection_risks)
     if task.agent_profile != profile.agent_profile_id:
         risks.append(
             ContractRisk(
@@ -152,17 +219,27 @@ def check_task_binding(
                 f"task requests {task.agent_profile!r}, loaded profile is {profile.agent_profile_id!r}",
             )
         )
-    missing = sorted(set(task.required_skills) - set(skills_by_id))
-    if missing:
-        risks.append(
-            ContractRisk("SKILL-MISSING", RiskLevel.BLOCK, f"required skills are missing: {', '.join(missing)}")
-        )
-    forbidden = sorted(set(task.forbidden_skills) & set(skills_by_id))
+    forbidden: list[str] = []
+    for index, raw_reference in enumerate(task.forbidden_skills):
+        try:
+            reference = parse_skill_reference(raw_reference, f"forbidden_skills[{index}]")
+        except ContractError as exc:
+            risks.append(ContractRisk("SKILL-SELECTOR-INVALID", RiskLevel.BLOCK, str(exc)))
+            continue
+        if any(
+            skill.skill_id == reference.skill_id
+            and (reference.version is None or skill.version == reference.version)
+            for skill in skill_list
+        ):
+            forbidden.append(reference.identifier)
     if forbidden:
         risks.append(
-            ContractRisk("SKILL-FORBIDDEN", RiskLevel.BLOCK, f"forbidden skills are loaded: {', '.join(forbidden)}")
+            ContractRisk(
+                "SKILL-FORBIDDEN",
+                RiskLevel.BLOCK,
+                f"forbidden skills are loaded: {', '.join(sorted(forbidden))}",
+            )
         )
-    selected = [skills_by_id[item] for item in task.required_skills if item in skills_by_id]
     covered_capabilities = {capability for skill in selected for capability in skill.capabilities}
     capability_gaps = sorted(set(task.required_capabilities) - covered_capabilities)
     if capability_gaps:
@@ -208,7 +285,11 @@ def check_task_binding(
                     f"skill {skill.skill_id!r} applies to none of the active modes",
                 )
             )
-        conflicts = sorted(set(skill.incompatible_with) & set(skills_by_id))
+        conflicts = sorted(
+            incompatible
+            for incompatible in skill.incompatible_with
+            if any(loaded.skill_id == incompatible for loaded in skill_list)
+        )
         if conflicts:
             risks.append(
                 ContractRisk(
@@ -292,8 +373,7 @@ def resolve_task(
     blockers = tuple(risk for risk in risks if risk.level == RiskLevel.BLOCK)
     if blockers:
         raise ResolutionError(blockers)
-    selected_by_id = {skill.skill_id: skill for skill in skill_list}
-    selected = tuple(selected_by_id[skill_id] for skill_id in task.required_skills)
+    selected, _ = _match_required_skills(task, skill_list)
     locks = tuple(
         SkillLock(
             skill_id=skill.skill_id,
@@ -373,6 +453,16 @@ def resolve_task(
 CONTEXT_COST_RANK = {"low": 1, "medium": 2, "high": 4, "extreme": 16}
 
 
+def _is_forbidden_by_task(skill: SkillManifest, task: TaskPacket) -> bool:
+    for index, raw_reference in enumerate(task.forbidden_skills):
+        reference = parse_skill_reference(raw_reference, f"forbidden_skills[{index}]")
+        if reference.skill_id == skill.skill_id and (
+            reference.version is None or reference.version == skill.version
+        ):
+            return True
+    return False
+
+
 def _select_minimal_skills(
     task: TaskPacket,
     profile: AgentProfile,
@@ -380,8 +470,8 @@ def _select_minimal_skills(
 ) -> tuple[SkillManifest, ...]:
     candidates = [
         skill
-        for skill in registry.manifests
-        if skill.skill_id not in task.forbidden_skills
+        for skill in registry.active_manifests
+        if not _is_forbidden_by_task(skill, task)
         and (not task.active_modes or set(task.active_modes) & set(skill.applies_to_modes))
         and set(skill.required_tools) <= set(profile.allowed_tool_capabilities)
     ]
@@ -433,15 +523,40 @@ def resolve_task_from_registry(
     registry: AcceptedSkillRegistry,
     *,
     allow_auto_select: bool = False,
+    resolution_purpose: Literal["new-assignment", "historical-replay"] = "new-assignment",
 ) -> ResolvedTask:
+    if resolution_purpose == "historical-replay" and allow_auto_select:
+        raise ResolutionError(
+            [
+                ContractRisk(
+                    "SKILL-REPLAY-AUTOSELECT-FORBIDDEN",
+                    RiskLevel.BLOCK,
+                    "historical replay requires explicit exact Skill versions",
+                )
+            ]
+        )
     if task.required_skills:
-        selected = registry.require(task.required_skills)
-        resolved_task = task
+        try:
+            selected = registry.require(task.required_skills, purpose=resolution_purpose)
+        except SkillRegistrySelectionError as exc:
+            raise ResolutionError([ContractRisk(exc.code, RiskLevel.BLOCK, str(exc))]) from exc
+        resolved_task = replace(
+            task,
+            required_skills=tuple(f"{skill.skill_id}@{skill.version}" for skill in selected),
+        )
     elif allow_auto_select:
         selected = _select_minimal_skills(task, profile, registry)
-        resolved_task = replace(task, required_skills=tuple(skill.skill_id for skill in selected))
+        resolved_task = replace(
+            task,
+            required_skills=tuple(f"{skill.skill_id}@{skill.version}" for skill in selected),
+        )
     else:
         raise ResolutionError(
             [ContractRisk("SKILL-IMPLICIT-CRITICAL", RiskLevel.BLOCK, "Task Packet does not explicitly name Skills")]
         )
-    return resolve_task(resolved_task, profile, selected, registry_digest=registry.digest)
+    assignment = resolve_task(resolved_task, profile, selected, registry_digest=registry.digest)
+    return replace(
+        assignment,
+        resolution_reason=assignment.resolution_reason
+        + (f"skill selection purpose: {resolution_purpose}",),
+    )

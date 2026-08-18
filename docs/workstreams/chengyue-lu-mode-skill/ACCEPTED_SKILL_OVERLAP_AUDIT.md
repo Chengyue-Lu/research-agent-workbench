@@ -103,7 +103,7 @@ Task 模板与 Tool；在此之前保留并缩短，不扩大为全工程验证 
 3. 保留一个按需 reference，解释结构 PASS 不等于科学正确性、何时需要人工抽样；它不是
    standing Skill。
 4. 新路由将当前 wrapper 判为 `deprecated-wrapper`；历史版本继续可解析，不原地改写。
-   Registry/Resolver 的 lifecycle enforcement 由 `M7-015` 单独完成。
+   Registry/Resolver 的 lifecycle enforcement 已由 `M7-015` 完成。
 
 该结论直接回应主 Agent 上下文克制原则：确定性失败只回传错误码与工件路径，只有风险触发
 时才回读原始消息或加载语义 reference，不能让每个子 Agent 都生成并互审一套完整审计链。
@@ -117,6 +117,6 @@ Task 模板与 Tool；在此之前保留并缩短，不扩大为全工程验证 
 - [x] 逐项冻结历史正文/manifest/hash，并决定不在缺少困难任务证据时创建占位新版本。
 - [x] 在 `M7-008` 的 `research-contract-check` Tool card 后完成 wrapper 的新路由退役决定。
 - [x] 迁移夹具覆盖历史解析、new-assignment 决定、action baseline 与版本 Gate。
-- [ ] `M7-015` 实现 historical/active/deprecated lifecycle 与精确版本约束。
+- [x] `M7-015` 实现 historical/active/deprecated lifecycle 与精确版本约束。
 - [ ] 真实 with/without 价值判断等待 M3-008 Trace validator 与困难任务，不把本审计当成
   forward-test 证据。

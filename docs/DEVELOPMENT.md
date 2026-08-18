@@ -2,7 +2,7 @@
 
 状态：当前协作入口
 
-日期：2026-08-17
+日期：2026-08-19
 
 ## 1. 实名维护边界
 
@@ -25,14 +25,18 @@ Agent 不是责任主体。每个运行中的 Agent 使用稳定 `actor_id`，�
 2. 为每个 action 选择最小充分机制：Mode/Task/Tool/Skill Need/Human/blocked，不从来源候选反推需求；
 3. 只为已确认的 action gap 建 provider-neutral Tool capability card 和 Task 路由 fixture；
 4. 按 Mode action 版本化复核三个 0.1.0 Skill 原型，不原地改义；
-5. 在真实 Agent forward test 前完成最小 Attempt Archive/Trace validator，再比较 no-Skill/direct-tool/compact trial 与 H0/H1/H2 成本；
-6. 到达节点后做保留、拆分、降级和退役评审。
+5. 分离历史 Skill 解析与新分配 lifecycle，默认只选择 active，历史 replay 必须显式精确版本；
+6. 在真实 Agent forward test 前完成最小 Attempt Archive/Trace validator，再比较 no-Skill/direct-tool/compact trial 与 H0/H1/H2 成本；
+7. 到达节点后做保留、拆分、降级和退役评审。
 
 并行维护一条 project-internal Skill Need 路线，只处理本项目交接、恢复与 Human Gate 准备中的
 可复用语义动作。它先比较 Protocol/template/Tool 基线，不把交互留痕、受控读取、输出 Schema
 或权限包装成可选 Skill；当前候选与停止条件见[项目内生协议 Skill 规划](workstreams/chengyue-lu-mode-skill/PROJECT_INTERNAL_SKILLS.md)。
 
 达到上述节点后暂停评审，不批量新增 Mode/Skill/Tool，也不在此分支修改 API 实现。详细顺序见[路诚钺 Mode–Skill 分支计划](workstreams/chengyue-lu-mode-skill/README.md)，状态以[任务清单](TASKS.md)为准。
+
+截至 2026-08-19，前五项离线基线已完成，三个历史 `0.1.0` 原型均为 legacy/deprecated，当前
+active accepted Skill 为零。唯一下一动作是 M7-016 K-MS-1 节点评审；零 active 不触发补包。
 
 ## 3. 开始一个开发 Task
 
@@ -82,5 +86,5 @@ H1/H2 的差异是回传主上下文和审查强度，不是“是否保存过�
 - Attempt Archive、Agent Trace Envelope 和自动捕获尚未实现 Schema/CLI；当前只能先按文档约定和模板留存。
 - API session 与平台 Adapter 的自动 Trace 写入属于黄毅的执行实现范围；Trace 语义、最小字段和 Mode/Skill 评估消费方式由双方共同冻结。
 - 尚无真实运行数据证明 H1/H2 的净收益；不能把消息数量、Trace 完整度或审计工件数量当作质量本身。
-- 当前只有两个正式 Mode、三个 accepted Skills，且真实 with/without 证据不足。
+- 当前只有两个正式 Mode、三个历史 accepted Skill 条目且 active 为零；真实 with/without 证据不足。
 - 黄毅的 GitHub 身份尚未登记在本文件；登记后应替换占位说明，不应猜测账号。

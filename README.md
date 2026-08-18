@@ -42,12 +42,14 @@ rwb validate examples registry
 rwb schema list
 rwb task resolve examples/task-evidence.yaml `
   --profile registry/agents/evidence-scout.yaml `
-  --registry registry/skills/accepted.json
+  --registry registry/skills/accepted.json `
+  --historical-replay
 rwb skills accepted --root .
 rwb runtime codex validate --root .
 rwb runtime codex render examples/task-evidence.yaml `
   --profile registry/agents/evidence-scout.yaml `
-  --root .
+  --root . `
+  --historical-replay
 rwb handoff validate examples/handoff-evidence.yaml `
   --task examples/task-evidence.yaml
 rwb handoff audit-transfer examples/handoff-transfer-audit-evidence.yaml `
@@ -80,6 +82,10 @@ rwb context resume-check examples/continuity/main-state-safe-pause.yaml `
 rwb execution assess examples/observability/execution-evidence-contract.yaml `
   --protocol examples/project-protocol.yaml --root .
 ```
+
+`task-evidence.yaml` 是锁定 `0.1.0` 原型的历史垂直切片，因此示例显式使用
+`--historical-replay`。新 Assignment 默认只接受 accepted Registry 中的 `active` Skill；当前三个
+原型均为 legacy/deprecated，不会因仍可回放而进入新任务。
 
 `validate` 会检查 Schema、实际文件、SHA-256 与 Registry 引用等机器可判定条件，但不代表科学正确性。`handoff audit-transfer` 的 `structurally-ready` 只表示条目和引用覆盖，不表示语义等价；关键风险或 Task policy 会要求独立人工抽查。`task resolve` 和 `runtime codex render` 不启动 Agent。`skills audit-archive` 不解压、不执行、不联网；`skills eval assess` 不自动准入候选。`context assess` 的字符/回合是压力代理；只有同单位的 `remaining >= next atomic + closeout + safety margin` 才支持继续一个 AWU。外部 Skill 的 `discovered`、`triage`、`reference` 和 `quarantine` 均不等于已安装或已准入。
 

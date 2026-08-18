@@ -2,7 +2,7 @@
 
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 分支：`agent/mode-skill-selection-baseline`
-- 状态：Mode-derived 路由和 0.1.0 原型迁移基线已完成；等待 lifecycle seam
+- 状态：Mode-derived 路由、原型迁移与 lifecycle seam 已完成；等待 K-MS-1 节点评审
 - 日期：2026-08-18
 - 目标节点：`K-MS-1 Mode–Skill Selection Baseline`
 
@@ -80,8 +80,9 @@ Project-internal 路线与 P3/P4 并行：先为 `NEED-INT-COMPACT-HANDOFF` 和
 
 截至 M7-002/003/008，五张 Tool cards 与八个路由 fixtures 也已完成并通过覆盖测试。M7-004
 进一步冻结了三个原型的逐项迁移：历史包保留解析，新 Task 不再默认分配，且没有为填补库存创建
-`0.2.0` 占位包。当前唯一下一任务为 M7-015，用一个独立 lifecycle seam 区分“历史可解析”和
-“新分配可选择”，然后进入 K-MS-1 节点评审。
+`0.2.0` 占位包。M7-015 已用独立 lifecycle seam 区分“历史可解析”和“新分配可选择”：当前
+三个原型均非 active，普通新任务会被阻断，只有精确版本的显式 historical replay 可解析。
+当前唯一下一任务为 M7-016 K-MS-1 节点评审；该评审只冻结节点结论，不继续扩张库存。
 
 ## 5. 首批处理顺序
 

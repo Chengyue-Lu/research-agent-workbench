@@ -76,4 +76,4 @@ M7-002/M7-003 在诊断层完成意味着：
 4. 没有 Provider、模型、Runtime、Adapter、MCP/CLI 实现或 accepted Skill 绑定；
 5. 测试只固定 fixture 自洽和覆盖，不把预期路由宣称为真实科研效果。
 
-下一步 M7-004 只能按这些 action/route 重新审计三个 0.1.0 Skill 原型；不得回到来源驱动选择。
+M7-004/015 已按这些 action/route 迁移三个 0.1.0 Skill 原型并落实 lifecycle；后续不得回到来源驱动选择。

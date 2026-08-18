@@ -67,7 +67,7 @@ flowchart TB
         RM["Research Mode Decision\n触发、非触发、组合约束"]
         CR["Capability Resolver\n能力 → Profile + Skill Assignment"]
         RP["Resolved Task\n内容允许集 + 写入范围 + Handoff 等级"]
-        SE["Skill Evaluation & Registry\ntrial / accepted / deprecated"]
+        SE["Skill Evaluation & Registry\nadmission + active / legacy / deprecated"]
     end
 
     subgraph EXEC["黄毅：API Execution；或可选平台"]
@@ -200,8 +200,9 @@ sequenceDiagram
 
 路由的硬规则：
 
-- `required_skills` 必须显式调用，不能只期待隐式 description 匹配；
-- 每次任务冻结 Skill 版本或内容哈希；
+- `required_skills` 必须显式调用，不能只期待隐式 description 匹配；新分配只选择 `active`，
+  `legacy/deprecated` 仅允许显式精确版本的历史回放；
+- 每次任务把 Skill selector 归一化为精确版本、内容哈希和包哈希；同 ID 多版本时不猜测；
 - Skill 不能扩大 Agent Profile 或 Task Packet 授予的权限；
 - 默认不超过两个主 Skill，可附加一个验证 Skill；超过时应拆任务；
 - 任务声明的 `forbidden_skills` 优先级高于推荐；

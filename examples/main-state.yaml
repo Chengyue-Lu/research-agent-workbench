@@ -25,8 +25,8 @@ machine_state_refs:
   - path: examples/project-protocol.yaml
     sha256: ec82e730b020c9e78ed9c00985cc37cac867e954c81f8ce8220a1021bdb0c209
   - path: examples/task-simulation.yaml
-    sha256: fdc5b46774d903b2330940add700ce1d4ab709e36a3609a76655b400e7f56158
+    sha256: 00d7fad37690a5b519d135fb612e6835945cae9fe9b2b7a4ed106cddc77f617f
 rollover_reason: Synthetic checkpoint fixture.
 created_at: "2026-08-13T01:01:00Z"
 context_snapshot_ref: examples/observability/context-main-warn.yaml
-checkpoint_digest: 03290b606f7ac5ec6a6de6be4746aff08da9fe752171a80de6ed9f8e5e1f3ab3
+checkpoint_digest: a120be0b722ff63d62e2c4b0dc1c3fcc2374dea22bfc480317a01abf2e32577f

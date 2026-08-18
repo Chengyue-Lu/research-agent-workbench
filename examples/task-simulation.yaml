@@ -9,7 +9,7 @@ required_capabilities:
   - convergence-analysis
   - sensitivity-analysis
 required_skills:
-  - simulation-vv
+  - simulation-vv@0.1.0
 forbidden_skills:
   - experimental-validation
 agent_profile: simulation-auditor

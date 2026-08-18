@@ -5,6 +5,7 @@ from typing import Iterable
 
 from research_workbench.artifacts.integrity import ReferenceStatus, check_file_reference
 from research_workbench.capability.resolver import ResolvedTask
+from research_workbench.contracts.common import parse_skill_reference
 from research_workbench.contracts.risks import ContractRisk, RiskLevel
 from research_workbench.protocol.models import ProjectProtocol
 from research_workbench.tasks.models import FileReference, HandoffPacket, TaskPacket
@@ -30,8 +31,19 @@ def check_handoff_against_task(
                 f"handoff task {handoff.task_id!r} does not match {task.task_id!r}",
             )
         )
-    locked_skills = {_skill_id_from_lock(value) for value in handoff.skill_lock}
-    missing_skills = sorted(set(task.required_skills) - locked_skills)
+    locked_skill_ids = {_skill_id_from_lock(value) for value in handoff.skill_lock}
+    locked_skill_versions = set(handoff.skill_lock)
+    missing_skills = []
+    for index, raw_reference in enumerate(task.required_skills):
+        reference = parse_skill_reference(raw_reference, f"required_skills[{index}]")
+        present = (
+            reference.identifier in locked_skill_versions
+            if reference.version is not None
+            else reference.skill_id in locked_skill_ids
+        )
+        if not present:
+            missing_skills.append(reference.identifier)
+    missing_skills.sort()
     if missing_skills:
         risks.append(
             ContractRisk(

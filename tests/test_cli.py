@@ -179,6 +179,28 @@ class CliTests(unittest.TestCase):
         self.assertEqual(["work/EVID-001"], resolved["effective_permissions"]["allowed_roots"])
         self.assertEqual(64, len(resolved["skill_lock"][0]["content_hash"]))
 
+    def test_registry_resolution_requires_explicit_historical_replay(self) -> None:
+        arguments = [
+            "task",
+            "resolve",
+            str(ROOT / "examples" / "task-evidence.yaml"),
+            "--profile",
+            str(ROOT / "registry" / "agents" / "evidence-scout.yaml"),
+            "--registry",
+            str(ROOT / "registry" / "skills" / "accepted.json"),
+            "--root",
+            str(ROOT),
+        ]
+        code, output = run_cli(arguments)
+        self.assertEqual(1, code)
+        self.assertIn("SKILL-INACTIVE", output)
+
+        replay_code, replay_output = run_cli([*arguments, "--historical-replay"])
+        self.assertEqual(0, replay_code)
+        resolved = json.loads(replay_output)
+        self.assertEqual("literature-evidence-extraction", resolved["skill_lock"][0]["skill_id"])
+        self.assertIn("historical-replay", resolved["resolution_reason"][-1])
+
     def test_handoff_check_matches_task_and_live_input(self) -> None:
         code, output = run_cli(
             [

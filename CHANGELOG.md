@@ -2,6 +2,23 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
+## 2026-08-19 — Skill lifecycle 与精确版本回放
+
+### Added
+
+- ADR-0015 分离 accepted 准入历史与 `active | legacy | deprecated` 分配 lifecycle，并复用 `skill-id@semver` 作为 Task 精确版本 selector。
+- Registry/Resolver 默认只允许 active Skill 进入新 Assignment；historical replay 必须显式指定、使用精确版本且禁止 auto-select。
+- CLI 增加 `--historical-replay`，accepted 列表显示 lifecycle；测试覆盖新分配阻断、精确历史回放、多版本歧义、旧 Assignment 自校验和版本化 Handoff lock。
+
+### Changed
+
+- literature/simulation `0.1.0` 标为 legacy，handoff wrapper 标为 deprecated；当前 active accepted Skill 为零，不自动创建替代包。
+- 两个历史 Task fixture 改用精确版本，并同步更新引用它们的 Transfer Audit、Main State hash 与 checkpoint digest。
+
+### Boundaries
+
+- 未修改锁定 Skill 包或 manifests，未创建新 Skill；未修改 Provider/API/session/Adapter、模型路由或 live conformance。直接 `--skill <manifest>` 仍是本地开发输入，不代表 Registry 准入。
+
 ## 2026-08-18 — Accepted Skill 0.1.0 迁移基线
 
 ### Decided

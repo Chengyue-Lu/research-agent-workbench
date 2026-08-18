@@ -1,7 +1,7 @@
 suite_id: accepted-skill-migration-v1
-status: governance-migration-baseline
+status: lifecycle-enforced
 formal_contract: false
-runtime_enforced: false
+runtime_enforced: true
 source_registry: registry/skills/accepted.json
 policy:
   preserve_historical_resolution: true
@@ -81,4 +81,4 @@ coverage_claims:
   - historical resolution is preserved without mutating a locked Skill package.
   - new mode-action routes assign none of the three legacy Skill IDs.
   - no placeholder replacement Skill or next version is created without hard-task Trace evidence.
-  - runtime lifecycle enforcement remains an explicit follow-up and is not claimed by this fixture.
+  - accepted Registry new-assignment resolution blocks legacy and deprecated entries; replay remains explicit and exact-version only.

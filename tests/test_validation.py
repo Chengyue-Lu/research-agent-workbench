@@ -54,6 +54,44 @@ class ValidationTests(unittest.TestCase):
         issues = validate_documents({Path("task.json"): document})
         self.assertIn("SKILL-CONFLICT", {issue.code for issue in issues})
 
+    def test_unversioned_forbidden_skill_conflicts_with_exact_required_version(self) -> None:
+        document = {
+            "schema_version": "0.1.0",
+            "task_id": "T-1",
+            "goal": "test",
+            "required_capabilities": [],
+            "required_skills": ["same@1.2.3"],
+            "forbidden_skills": ["same"],
+            "agent_profile": "test",
+            "input_refs": [],
+            "write_scope": ["work/T-1/**"],
+            "required_outputs": [],
+            "permissions": {},
+            "delegation": {"allowed": False},
+            "stop_conditions": ["done"],
+        }
+        issues = validate_documents({Path("task.json"): document})
+        self.assertIn("SKILL-CONFLICT", {issue.code for issue in issues})
+
+    def test_invalid_skill_selector_is_an_error(self) -> None:
+        document = {
+            "schema_version": "0.1.0",
+            "task_id": "T-1",
+            "goal": "test",
+            "required_capabilities": [],
+            "required_skills": ["same@latest"],
+            "forbidden_skills": [],
+            "agent_profile": "test",
+            "input_refs": [],
+            "write_scope": ["work/T-1/**"],
+            "required_outputs": [],
+            "permissions": {},
+            "delegation": {"allowed": False},
+            "stop_conditions": ["done"],
+        }
+        issues = validate_documents({Path("task.json"): document})
+        self.assertIn("SKILL-SELECTOR-INVALID", {issue.code for issue in issues})
+
     def test_absolute_write_scope_is_an_error_on_any_host(self) -> None:
         document = {
             "schema_version": "0.1.0",

@@ -2,7 +2,7 @@ schema_version: 0.1.0
 audit_id: HTA-PIH-0002
 task_ref:
   path: examples/task-evidence.yaml
-  sha256: 9e01e1567498df687655c8776a33c39edba883637908919b694fa23e9e61679f
+  sha256: 50c015db236576ff8bfdcf615e0d96b814b493df5ab946be1b563666b905a218
 handoff_ref:
   path: examples/evals/project-internal-handoff/visible/pih-02-h2-semantic-distortion-handoff.yaml
   sha256: 35fbea07373a45f9b978f713b8f2eb3d5cfb0bddfa1106f8882f71a6d3fb3151

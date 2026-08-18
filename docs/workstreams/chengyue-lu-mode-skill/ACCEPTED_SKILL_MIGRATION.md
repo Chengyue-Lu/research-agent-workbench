@@ -3,7 +3,7 @@
 - 责任人：路诚钺
 - 日期：2026-08-18
 - 对应任务：`M7-004`
-- 状态：迁移决策基线完成；历史包冻结，新分配按 Mode action 停用
+- 状态：迁移与 Registry/Resolver lifecycle enforcement 完成
 - 机器夹具：[`accepted-skill-migration-v1.yaml.txt`](../../../examples/mode-skill-routing/accepted-skill-migration-v1.yaml.txt)
 
 本文把三个早期 accepted Skill 从“可用库存”重新解释为“历史可解析原型”。决定只影响新的
@@ -18,10 +18,10 @@ Task 规划与路由，不原地改写已被内容哈希和包哈希锁定的 `0
 | `simulation-vv@0.1.0` | `legacy-frozen`，保留历史 Assignment 解析 | 不分配宽泛 bundle | SIM-A2/A6 为 Tool；SIM-A3/A4 为两个独立 Need；SIM-A5/A7 为 Mode/Task/checker/Human Gate | 不创建 `0.2.0`；禁止把 A2–A7 重新捆成单一 Skill |
 | `handoff-integrity@0.1.0` | `deprecated-wrapper`，历史包暂留 Registry | 禁止分配 | 结构检查归入 `research-contract-check`；H2 语义转移义务归 Task/Trace/Human sample | 无替代 Skill 版本；wrapper 退役 |
 
-这里的“不分配”是新的 Mode-action 路由政策，不是当前 Runtime 已执行的 lifecycle 状态。现有
-accepted Registry 只接受 `status: accepted`，Task 只写 Skill ID，不支持精确版本约束，而且同一
-Skill ID 不能并存多个版本。因此，本次若直接写 `deprecated`、增加 `0.2.0` 或删除条目，会破坏
-Registry 加载或历史 Assignment 的可解析性。
+这里的“不分配”已经由 accepted Registry/Resolver enforcement 落实：准入历史仍写
+`status: accepted`，eligibility 单独写 `active | legacy | deprecated`；Task 支持精确
+`skill-id@version`，同 ID 可并存历史版本但最多一个 active。新分配默认只看 active，历史回放
+必须显式且精确。
 
 ## 2. 不原地改包的理由
 
@@ -84,19 +84,20 @@ revision、引用是否存在、hash 是否匹配”这些检查。迁移后的�
 
 这是一项 wrapper deprecation，而不是删除 checker，也不创建新的“交接 Skill”换名替代。
 
-## 4. 当前生命周期缺口
+## 4. 生命周期缺口已由 M7-015 收束
 
-当前代码把“包是否存在且哈希有效”和“新 Task 是否仍可选择”合并在同一个 accepted Registry。
-完成真正的 Runtime lifecycle 还需要一个独立小切面：
+M7-004 识别出“包是否存在且哈希有效”和“新 Task 是否仍可选择”被合并的问题。M7-015 已用
+一个独立小切面完成：
 
-1. 保留可解析的历史版本，同时为新 Assignment 表达 `active | legacy | deprecated` eligibility；
-2. Task/Assignment 使用 `skill_id@version` 或等价精确约束，不能只凭 ID 取唯一版本；
-3. 自动选择只能看 `active`，显式选择 legacy/deprecated 必须有迁移或 replay 意图；
-4. 旧 Assignment 的 Registry digest、Skill locks 与工件 hash 继续可验证；
-5. migration fixture 同时覆盖 historical replay、new assignment block 和 version ambiguity。
+1. accepted 条目保留 `status: accepted` 准入历史，并增加 `active | legacy | deprecated` lifecycle；
+2. Task selector 支持 `skill_id@version`，历史 replay 强制精确版本；
+3. 新分配与自动选择只能看 `active`，legacy/deprecated 默认返回 `SKILL-INACTIVE`；
+4. 旧 Assignment 继续用内嵌 Registry digest、Skill locks 与工件 hash 自校验；
+5. CLI 的 `--historical-replay` 显式暴露回放意图，不提供静默 fallback。
 
-这个缺口记为 `M7-015`。它属于 Skill Registry/Resolver 语义，不涉及 Provider、API、模型或 Runtime
-Adapter。完成前，本文与机器夹具是规划 Gate，不能声称代码已经阻止所有旧 Skill 新分配。
+该 enforcement 只覆盖 accepted Registry/Resolver 路径。直接 `--skill <manifest>` 是明确的本地
+开发输入，不读取 Registry lifecycle，不能宣称为准入或发布路径。详细语义见
+[ADR-0015](../../decisions/0015-SKILL-LIFECYCLE-AND-EXACT-VERSION.md)。
 
 ## 5. 完成与未证明边界
 
@@ -105,8 +106,6 @@ Need 路径和版本决定；迁移夹具可确定校核。未完成、也未宣
 
 - 真实模型 with/without 增量；
 - `0.2.0` Skill 的 authoring、准入或发布；
-- Runtime lifecycle enforcement；
 - API、Provider、MCP、外部 Tool 绑定与 live conformance。
 
-下一步只做 `M7-015` 的 Registry/Resolver lifecycle seam，然后在 K-MS-1 节点评审停止扩张。真实
-Skill 比较仍等待 `M3-008` Trace 前置条件。
+下一步进入 K-MS-1 节点评审并停止扩张。真实 Skill 比较仍等待 `M3-008` Trace 前置条件。
