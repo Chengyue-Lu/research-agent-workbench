@@ -2,7 +2,7 @@
 
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 分支：`agent/mode-skill-selection-baseline`
-- 状态：Mode-derived 路由、原型迁移与 lifecycle seam 已完成；等待 K-MS-1 节点评审
+- 状态：`K-MS-1` 已通过离线节点评审；本分支 safe stop
 - 日期：2026-08-18
 - 目标节点：`K-MS-1 Mode–Skill Selection Baseline`
 
@@ -39,6 +39,7 @@ project-internal Need 占位。它们先比较 Protocol/template/Tool 基线，�
 
 ## 3. 本目录
 
+- [K-MS-1 节点评审与本分支总览](K_MS_1_NODE_REVIEW.md)
 - [Skill 整理、独立重写与准入计划](SKILL_CURATION.md)
 - [Mode Action Requirements](MODE_ACTION_REQUIREMENTS.md)
 - [项目内生协议 Skill 规划](PROJECT_INTERNAL_SKILLS.md)
@@ -82,7 +83,8 @@ Project-internal 路线与 P3/P4 并行：先为 `NEED-INT-COMPACT-HANDOFF` 和
 进一步冻结了三个原型的逐项迁移：历史包保留解析，新 Task 不再默认分配，且没有为填补库存创建
 `0.2.0` 占位包。M7-015 已用独立 lifecycle seam 区分“历史可解析”和“新分配可选择”：当前
 三个原型均非 active，普通新任务会被阻断，只有精确版本的显式 historical replay 可解析。
-当前唯一下一任务为 M7-016 K-MS-1 节点评审；该评审只冻结节点结论，不继续扩张库存。
+M7-016 已确认 K-MS-1 九项条件全部满足，并将结论限制为离线选择/治理基线。当前分支停止扩张；
+跨节点的唯一前置任务为 M3-008 Trace Schema/validator/fixture，完成前不启动真实 Skill/Handoff 比较。
 
 ## 5. 首批处理顺序
 
@@ -143,3 +145,6 @@ work/<task>/<attempt>/                  # 实际评估的完整 Attempt Archive
 在项目 LICENSE 和候选来源许可未解决前，候选最高进入内部 `trial`，不能宣称可公开再分发。
 
 达到这些条件后停止扩张并评审，不自动进入公开发布或大规模真实案例。
+
+M7-016 的逐项证据见 [`K_MS_1_NODE_REVIEW.md`](K_MS_1_NODE_REVIEW.md)。评审结论为九项 PASS，
+但不包含真实模型增量、科学正确性、H1/H2 成本、API 执行或发布就绪度。

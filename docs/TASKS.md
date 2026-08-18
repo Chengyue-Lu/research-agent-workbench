@@ -36,12 +36,12 @@
 |---|---|---|---|---|
 | M2-001 | DONE | 实现 Skill Registry 与 Resolver | M1 | accepted Registry、最小覆盖、显式选择、冲突、权限交集、版本/哈希锁与确定性 Assignment 已测试 |
 | M2-002 | DONE | 定义四个 Agent Profiles | M2-001 | coordinator/evidence/simulation/reviewer 的权限、工具、输出和上下文边界可验证 |
-| M2-003 | IN_PROGRESS | 创建 literature-evidence-extraction Skill | M2-001 | 结构、正例、stale source 和 dispatch 注入隔离通过；真实 Agent 前向测试待执行 |
-| M2-004 | IN_PROGRESS | 创建 simulation-vv Skill | M2-001 | V&V 结构、版本锁和 Claim ceiling 正反例通过；真实数值案例待执行 |
+| M2-003 | PARKED | 创建 literature-evidence-extraction Skill | M2-001 | `0.1.0` 已冻结为 legacy；结构证据保留，不再作为新任务默认 Skill，后续只由 Mode-derived Need + Trace 重新激活 |
+| M2-004 | PARKED | 创建 simulation-vv Skill | M2-001 | `0.1.0` 已冻结为 legacy 并按 action 拆分；真实数值案例不得继续验证 broad bundle |
 | M2-005 | DONE | 创建 handoff-integrity 检查 | M1 | 确定性脚本已验证 Task/input/Skill/artifact 交接边界，不宣称科学正确性 |
 | M2-006 | PARKED | 扩展 Codex Runtime Adapter | M2-002..005 | 已有 Agent/Skill 发现、验证和显式 dispatch 保留；平台 launch/collect 不在当前 Mode–Skill 关键路径 |
-| M2-007 | IN_PROGRESS | 执行首个双 Skill 垂直切片 | M7-002..006, M7-008 | 离线契约切片已证明 Skills 不同；路诚钺先完成 Skill 整理、Mode/Skill/Tool 选择、读取计划和 H1/H2 成本基线，真实执行证据由黄毅负责的执行工作流提供 |
-| M2-008 | IN_PROGRESS | 建立外部 Skill 发现、隔离评估与准入 Registry | M1 | ZIP 审计、18/18 追溯、非发现候选和 provider-neutral 双臂评估契约/CLI 已落地；首批 9 个固定来源、54 个入口均已完成逐项哈希与 `triage`/`reference`/`quarantine`/`rejected` 留痕；dossier、真实 with/without 与 trial/accepted 仍待完成 |
+| M2-007 | PARKED | 执行首个双 Skill 垂直切片 | M7-002..006, M7-008 | 历史离线切片可精确 replay，但两个 broad Skill 均已 legacy；真实执行改由 Need + M3-008 路径重新定义 |
+| M2-008 | PARKED | 建立外部 Skill 发现、隔离评估与准入 Registry | M1 | 73 条候选和 11 个来源的可追溯库存已形成；停止来源驱动扩张，后续 dossier/trial 只由 Mode-derived Need 与 Trace Gate 激活 |
 
 ## M3：上下文与风险
 
@@ -106,7 +106,7 @@
 | M7-013 | DONE | 为两个优先 project-internal Need 建 direct baseline、failure fixture 与 compact dossier | M7-012, M1-004 | H1 omission 与 H2 semantic reversal 均形成可复验诊断；两项结论均为 `hold-no-skill`；未修改自动 Trace/API |
 | M7-014 | PARKED | 对 project-internal 候选做有 Trace 的困难任务比较 | M7-013, M3-008 | 比较 template/tool/compact Skill 的遗漏、回查、返工和上下文成本；无重复语义增量即退役 |
 | M7-015 | DONE | 分离 Skill 历史解析与新分配 lifecycle | M7-004 | Registry/Resolver 表达 active/legacy/deprecated 与精确版本约束；旧 Assignment 可复验，新路由不能选择 legacy/deprecated |
-| M7-016 | READY | 执行 K-MS-1 节点评审并冻结基线 | M7-002..004, M7-008, M7-011..015 | 逐项核对节点条件、未证明内容和后续 Gate；形成 Decision/Handoff 后停止扩张，不自动进入真实 trial |
+| M7-016 | DONE | 执行 K-MS-1 节点评审并冻结基线 | M7-002..004, M7-008, M7-011..015 | 九项条件逐项 PASS；Decision 接受离线选择/治理基线并 safe stop，不自动进入真实 trial |
 
 ## GitHub 执行入口
 
@@ -122,4 +122,4 @@ M1 已建立里程碑与首批可执行 Issues：
 
 ## 当前下一任务
 
-Mode-derived 的 M7-002/003/004/008/011、project-internal 的 M7-012/013 与 lifecycle M7-015 已完成需求、Tool、路由、0.1.0 原型迁移和新分配阻断。当前唯一下一任务为 M7-016：执行 K-MS-1 节点评审并在 Decision/Handoff 后停止扩张。`M3-008 → M7-005/006/014` 属于后续真实评估路径；路诚钺不在本分支补 API、Provider、模型或 live conformance。
+`K-MS-1` 已由 M7-016 接受为离线 Mode–Skill–Tool 选择/治理基线，本分支进入 safe stop。下一唯一跨节点前置任务为 M3-008 Trace Envelope/Index/Event Schema、validator 与手工 fixture；其后才可解锁 M7-005/006/014 的真实评估。路诚钺不在本分支补 API、Provider、模型或 live conformance。

@@ -19,7 +19,7 @@ Agent 不是责任主体。每个运行中的 Agent 使用稳定 `actor_id`，�
 
 ## 2. 当前开发节点
 
-路诚钺当前维护分支为 `agent/mode-skill-selection-baseline`，目标节点是 `K-MS-1 Mode–Skill Selection Baseline`：
+路诚钺维护分支 `agent/mode-skill-selection-baseline` 已到达 `K-MS-1 Mode–Skill Selection Baseline`：
 
 1. 从 `evidence-synthesis` 与 `simulation` 推导可选 Mode actions、失败、Artifact、停止条件和 Human Gate；
 2. 为每个 action 选择最小充分机制：Mode/Task/Tool/Skill Need/Human/blocked，不从来源候选反推需求；
@@ -35,8 +35,9 @@ Agent 不是责任主体。每个运行中的 Agent 使用稳定 `actor_id`，�
 
 达到上述节点后暂停评审，不批量新增 Mode/Skill/Tool，也不在此分支修改 API 实现。详细顺序见[路诚钺 Mode–Skill 分支计划](workstreams/chengyue-lu-mode-skill/README.md)，状态以[任务清单](TASKS.md)为准。
 
-截至 2026-08-19，前五项离线基线已完成，三个历史 `0.1.0` 原型均为 legacy/deprecated，当前
-active accepted Skill 为零。唯一下一动作是 M7-016 K-MS-1 节点评审；零 active 不触发补包。
+截至 2026-08-19，M7-016 已逐项确认九个节点条件并写入正式 Decision。三个历史 `0.1.0` 原型
+均为 legacy/deprecated，当前 active accepted Skill 为零；零 active 不触发补包。该分支进入
+safe stop，唯一下一前置为 M3-008 Trace Schema/validator/fixture。
 
 ## 3. 开始一个开发 Task
 

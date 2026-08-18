@@ -465,7 +465,7 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 | 产品边界和总体架构 | 已形成 Charter、Architecture、模块和 ADR | 可复用 |
 | Schema、模型和确定性验证 | 本地测试和全部示例/Registry 校验通过 | 技术 alpha 可用 |
 | CLI | 可 init、validate、resolve、render、audit、checkpoint | 技术 alpha 可用 |
-| Agent—Skill 路由 | Mode/action/Tool/Need 矩阵、八个 fixture 与 lifecycle enforcement 已完成 | 待 K-MS-1 节点评审；真实增量价值证据仍缺 |
+| Agent—Skill 路由 | Mode/action/Tool/Need 矩阵、八个 fixture、lifecycle 与 K-MS-1 评审已完成 | 离线基线到达；真实增量价值证据仍缺 |
 | API Session 内核 | 显式模型槽、有界工具循环和无 fallback 已测试 | Task-to-API 与真实调用由黄毅维护 |
 | Codex Runtime Adapter | 布局、能力和 dispatch 已实现 | 可选路径，不在当前关键路径 |
 | 上下文连续性 | SAFE_PAUSE、哈希、digest、Git 冲突和恢复 fixture 已实现 | 缺真实跨会话恢复 |
@@ -527,13 +527,12 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 
 发布关键路径应保持克制：
 
-1. 执行 M7-016 K-MS-1 节点评审，冻结 Mode/action/Tool/Need、原型迁移与 lifecycle 结论；
-2. 在真实 Agent forward test 前完成 Attempt Archive、实名 actor 与 Agent Trace 的手工 fixture/validator；
-3. 比较 with/without Skill、H1/H2 与内容读取扩展成本，删减没有改变决策的控制项；
-4. 黄毅独立推进 Task-to-API、恢复、自动 Trace 捕获和真实模型证据；路诚钺只消费正式脱敏工件；
-5. 同步确定 LICENSE 和完整项目 scaffold 方案；
-6. 再进入两个真实科研案例、M4 工件 promotion/复现和对照评估；
-7. 只有文件式连续性 benchmark 出现可复现瓶颈时，才评估 SQLite/FTS；图层只能作为 Index，不能成为事实源。
+1. K-MS-1 已冻结；先完成 M3-008 Trace Envelope/Index/Event Schema、validator 与手工 fixture；
+2. Trace 可用后，比较 with/without Skill、H1/H2 与内容读取扩展成本，删减没有改变决策的控制项；
+3. 黄毅独立推进 Task-to-API、恢复、自动 Trace 捕获和真实模型证据；路诚钺只消费正式脱敏工件；
+4. 同步确定 LICENSE 和完整项目 scaffold 方案；
+5. 再进入两个真实科研案例、M4 工件 promotion/复现和对照评估；
+6. 只有文件式连续性 benchmark 出现可复现瓶颈时，才评估 SQLite/FTS；图层只能作为 Index，不能成为事实源。
 
 不要把增加 Supervisor、数据库、Agent 数量或 reviewer 层数当作发布进度。每个新增机制都应有真实故障、消费方、成本和删除条件。
 

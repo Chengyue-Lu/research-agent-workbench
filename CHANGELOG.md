@@ -2,6 +2,23 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
+## 2026-08-19 — K-MS-1 节点评审与分支收束
+
+### Reviewed
+
+- K-MS-1 九项条件逐项通过：两个 Mode 的 action/机制、每个 Mode 不超过两个 Need、八个 Task fixture、五张 Tool cards、三个原型迁移、来源/项目内生边界和非扩张约束均有可复验工件。
+- 正式 Decision 接受 K-MS-1 为离线 Mode–Skill–Tool 选择/治理基线；明确不包含真实模型增量、科学正确性、H1/H2 成本、API 执行或发布就绪度。
+
+### Consolidated
+
+- `K_MS_1_NODE_REVIEW.md` 归纳本分支的来源筛选、GLM 困难任务诊断、Mode-first 转向、project-internal 路线、Tool/路由、原型迁移、lifecycle、测试和提交序列。
+- 当前库存快照为 73 个 candidate、11 个来源、3 个历史 accepted 条目且 0 active；这些数量不被当作质量或待开发清单。
+
+### Stopped
+
+- 本分支进入 safe stop，不继续新增 Mode/Skill/Tool。下一前置为 M3-008 Trace Schema/validator/fixture；完成前不启动 M7-005/006/014 的真实比较。
+- M2-003/004/007/008 从误导性的 `IN_PROGRESS` 转为 `PARKED`：保留历史原型、垂直切片和来源库存，但只能由 Mode-derived Need 与 Trace Gate 重新激活。
+
 ## 2026-08-19 — Skill lifecycle 与精确版本回放
 
 ### Added

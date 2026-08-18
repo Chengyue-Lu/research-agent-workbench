@@ -1,0 +1,28 @@
+schema_version: 0.1.0
+object_type: decision
+object_id: D-K-MS-1-BASELINE
+revision: 1
+status: accepted
+decision: Accept K-MS-1 as the offline Mode-Skill-Tool selection and governance baseline, stop branch scope expansion, and require M3-008 Trace evidence before any real Skill or Handoff comparison.
+scope:
+  - mode-skill-selection
+  - tool-capability-boundaries
+  - accepted-skill-lifecycle
+  - project-internal-skill-needs
+reason_refs:
+  - docs/workstreams/chengyue-lu-mode-skill/K_MS_1_NODE_REVIEW.md
+  - docs/decisions/0013-MODE-FIRST-SKILL-DERIVATION.md
+  - docs/decisions/0014-PROJECT-INTERNAL-SKILL-LANE.md
+  - docs/decisions/0015-SKILL-LIFECYCLE-AND-EXACT-VERSION.md
+actor: 路诚钺
+timestamp: "2026-08-19T00:00:00+08:00"
+metadata:
+  recorded_by: Codex under M7-016
+  evidence_kind: offline-contract-fixture-and-regression
+  scientific_correctness_claimed: false
+  active_accepted_skill_count: 0
+  next_gate: M3-008
+  forbidden_automatic_next_steps:
+    - create-replacement-skill
+    - resume-bulk-source-search
+    - start-real-forward-test-without-trace
