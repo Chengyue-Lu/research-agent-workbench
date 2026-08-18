@@ -1,0 +1,84 @@
+suite_id: accepted-skill-migration-v1
+status: lifecycle-enforced
+formal_contract: false
+runtime_enforced: true
+source_registry: registry/skills/accepted.json
+policy:
+  preserve_historical_resolution: true
+  allow_in_place_package_mutation: false
+  allow_placeholder_next_version: false
+  new_task_default: mode-action-routing
+entries:
+  - skill_id: literature-evidence-extraction
+    version: 0.1.0
+    content_hash: c0a080ea9c4743a599000bc6978386a8dcbb8aaa09e1ed4c0e54a4deadca780b
+    package_hash: 60c8b11adc147fbcb3c0d1c79d05c441d3143f446502a5b12c73f1b8b04895cb
+    lifecycle_decision: legacy-frozen
+    historical_resolution: preserve
+    new_assignment: do-not-select
+    next_version: null
+    next_version_gate: mode-derived-hard-task-with-trace
+    action_routes:
+      - action_ids: [ES-A3]
+        mechanism: tool-and-artifact-contract
+        tools: [document-read]
+        skill_needs: []
+      - action_ids: [ES-A4]
+        mechanism: task-contract-plus-checker
+        tools: [research-contract-check]
+        skill_needs: []
+      - action_ids: [ES-A6]
+        mechanism: skill-need-plus-checker
+        tools: [research-contract-check]
+        skill_needs: [NEED-ES-CONFLICT-SYNTHESIS]
+    prohibited_routes: [fixed-transfer-manifest, fixed-handoff-skill, implicit-skill-assignment]
+
+  - skill_id: simulation-vv
+    version: 0.1.0
+    content_hash: 2a3c19b5af6288c4d5eab6e2fc2557231cc684f0ec9b6ec8bb5b864d126a99c4
+    package_hash: e71c2977b8b839b7b7edc3e3af8b5a923f46c96ad44d30adc23c965bf8f96040
+    lifecycle_decision: legacy-frozen
+    historical_resolution: preserve
+    new_assignment: do-not-select-broad-bundle
+    next_version: null
+    next_version_gate: independent-mode-derived-hard-tasks-with-trace
+    action_routes:
+      - action_ids: [SIM-A2, SIM-A6]
+        mechanism: tool-and-artifact-contract
+        tools: [bounded-compute, research-contract-check]
+        skill_needs: []
+      - action_ids: [SIM-A3]
+        mechanism: skill-need-plus-tool
+        tools: [bounded-compute]
+        skill_needs: [NEED-SIM-CONVERGENCE-STUDY]
+      - action_ids: [SIM-A4]
+        mechanism: skill-need-plus-tool
+        tools: [bounded-compute]
+        skill_needs: [NEED-SIM-SENSITIVITY-UQ]
+      - action_ids: [SIM-A5, SIM-A7]
+        mechanism: mode-task-checker-human-gate
+        tools: [research-contract-check]
+        skill_needs: []
+    prohibited_routes: [engineering-validation-mode, exit-zero-means-converged, bundled-a2-through-a7-skill]
+
+  - skill_id: handoff-integrity
+    version: 0.1.0
+    content_hash: 2a4c727eb7462628e9f246a5363a8add1ba244c05b6c7b7e7b2ad450befabbf7
+    package_hash: 7ef583e26e3759705ae2c4b75f978e80cce01b5307f858570601fb44fcd5d1cd
+    lifecycle_decision: deprecated-wrapper
+    historical_resolution: preserve
+    new_assignment: forbidden
+    next_version: null
+    next_version_gate: none-tool-template-and-human-gate-replace-wrapper
+    action_routes:
+      - action_ids: [project-internal-closeout]
+        mechanism: task-template-tool-and-risk-triggered-human-sample
+        tools: [research-contract-check]
+        skill_needs: []
+    prohibited_routes: [standing-handoff-skill, structure-pass-means-semantic-pass, mandatory-h2-for-all-tasks]
+coverage_claims:
+  - every accepted 0.1.0 entry is pinned to its current content and package hashes.
+  - historical resolution is preserved without mutating a locked Skill package.
+  - new mode-action routes assign none of the three legacy Skill IDs.
+  - no placeholder replacement Skill or next version is created without hard-task Trace evidence.
+  - accepted Registry new-assignment resolution blocks legacy and deprecated entries; replay remains explicit and exact-version only.

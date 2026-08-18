@@ -1,0 +1,73 @@
+fixture_contract: diagnostic-fixture-set/0.1
+fixture_set_id: CLAIM-PRESERVING-DIAGNOSTIC-V1
+candidate_id: rwb-claim-preserving-rewrite
+skill_id: claim-preserving-rewrite
+status: exploratory-stage1-executed
+accountable_owner: 路诚钺
+synthetic_material: true
+model_executed: true
+planned_runtime:
+  adapter: opencode
+  version: 1.18.18
+  provider: zhipuai-coding-plan
+  model: glm-5.3
+arm_design:
+  - arm_id: baseline
+    added_context: []
+  - arm_id: compact-contract
+    added_context:
+      - path: arms/compact-contract.md
+        sha256: 5fa54b69cdf364c75c92e31971d903a042e8787674d45c1db645cae663905b06
+  - arm_id: full-skill
+    added_context:
+      - path: skill-lab/candidates/claim-preserving-rewrite/SKILL.md
+        sha256: 0e9f0753cdfdf02104b1539656c2dc7b261713162be07c902abf6bb9bc6069af
+executor_read_policy:
+  allowed_per_case:
+    - visible/<case>-task.md
+    - visible/<case>-input.md
+    - arm-specific context explicitly listed above
+  forbidden:
+    - REVIEW_PACKET.md
+    - manifest.yaml.txt
+    - review-only/**
+    - other cases
+cases:
+  - case_id: CPD-01
+    case_kind: trigger
+    task_ref: {path: visible/cpd-01-task.md, sha256: fd2eaede8b563ab80d0570a8eb3f3c3c3df7485eadf62cbd7f1784ef6010f55c}
+    input_ref: {path: visible/cpd-01-input.md, sha256: 6a11b3af6ca7480e92362763a3569d74104da6d87defd7e77d1c1f2b19dac4e6}
+    review_ref: {path: review-only/cpd-01-ledger.yaml.txt, sha256: 73a40b484a09b55944a3f8ab0265d5bbab417cd696396c78e8a643d9b905df1d}
+  - case_id: CPD-02
+    case_kind: adversarial
+    task_ref: {path: visible/cpd-02-task.md, sha256: 52262bd9e53f27f3b97cc060c23817ca4dcc27f31ee97230bd438ee629fb5587}
+    input_ref: {path: visible/cpd-02-input.md, sha256: dc6b1dd2945930e4a585944af61b2a6ee6a452b63223a70659073c1a7521dd0b}
+    review_ref: {path: review-only/cpd-02-ledger.yaml.txt, sha256: 3cc3c7a3e8a7aa50a030eaae2309a45fc5da635138234d934a6eec22c0ddca75}
+  - case_id: CPD-03
+    case_kind: boundary
+    secondary_case_kind: missing-input
+    task_ref: {path: visible/cpd-03-task.md, sha256: 19b22a0d8978f35fa80293a6781d3e152d46e77deac71e18ab978cfe6bd008fc}
+    input_ref: {path: visible/cpd-03-input.md, sha256: fcea33abcedf1de258d533610f3737712f1138be761eb2fc906732aa3602790c}
+    review_ref: {path: review-only/cpd-03-ledger.yaml.txt, sha256: 5e49ffcbb6677c4bdc63a795038ff16a82576b1965cc130e692fc9f0bb59b8cb}
+human_review:
+  status: approved-for-exploratory-stage1
+  reviewer: 路诚钺
+  approved_at: "2026-08-16"
+  approval_basis: current collaboration conversation
+  form_ref: review-only/human-preflight.md
+execution_gate:
+  exploratory_stage1_allowed: true
+  admission_evidence_allowed: false
+  formal_blockers:
+    - M3-008 minimum Trace validator is not available; manual capture must be declared.
+execution_evidence:
+  attempt_id: A-20260816-001
+  frozen_manifest_path: work/SKILL-EVAL-CLAIM-DIAG-001/A-20260816-001/snapshots/frozen-fixture-manifest.yaml
+  frozen_manifest_sha256: e4974de42ce5c618d839fa9e97c93b967900dc4f462f0b39744bdfcfbd20875f
+  tracked_result_path: docs/workstreams/chengyue-lu-mode-skill/STAGE1_DIAGNOSTIC_RESULTS.md
+  provisional_decision: revise-compact
+limitations:
+  - No ideal rewrites are included.
+  - The frozen pre-dispatch manifest is archived by hash; this post-run index only updates auxiliary file suffixes and execution status.
+  - Manual Trace means results cannot be promoted directly to admission evidence.
+  - These cases test one writing-integrity Skill and do not generalize to other disciplinary methods.

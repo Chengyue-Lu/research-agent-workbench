@@ -2,7 +2,7 @@
 
 - 文档状态：面向首次使用者的当前实现指南
 - 适用版本：`0.1.x` 开发快照
-- 更新日期：2026-08-14
+- 更新日期：2026-08-15
 
 ## 1. 先说结论
 
@@ -54,7 +54,7 @@ flowchart LR
 | Project Protocol | 本项目允许什么、禁止什么，谁拥有最终决定 | [`examples/project-protocol.yaml`](../examples/project-protocol.yaml) |
 | Research Mode | 当前活动是证据综合、仿真、推导还是其他方法模式 | [`registry/modes`](../registry/modes) |
 | Agent Profile | 执行者的用途、工具和最高权限 | [`registry/agents`](../registry/agents) |
-| Skill | 完成某类任务的可复用方法，不持有项目状态 | [`.agents/skills`](../.agents/skills) |
+| Skill | 完成某类任务的可复用方法，不持有项目状态；新分配只使用 active lifecycle | [`.agents/skills`](../.agents/skills) |
 | Task Packet | 这一次具体要完成的一个原子工作单元 | [`examples/task-evidence.yaml`](../examples/task-evidence.yaml) |
 | Skill Assignment | Resolver 固定下来的 Agent、Skill、权限和内容哈希 | [`examples/vertical-slice/evidence-assignment.yaml`](../examples/vertical-slice/evidence-assignment.yaml) |
 | Model Slot | 显式选择主模型、平价工作模型或特定能力模型 | [`registry/models/pool.example.yaml`](../registry/models/pool.example.yaml) |
@@ -144,6 +144,7 @@ New-Item -ItemType Directory -Force work/quickstart | Out-Null
 rwb task resolve examples/task-evidence.yaml `
   --profile registry/agents/evidence-scout.yaml `
   --registry registry/skills/accepted.json `
+  --historical-replay `
   --root . `
   --output work/quickstart/evidence-assignment.yaml
 ```
@@ -155,6 +156,11 @@ Resolver 会检查：
 - Skill 内容、包和 Registry 哈希；
 - 输出契约、工具、冲突和禁止项。
 
+这里的 `task-evidence.yaml` 是历史垂直切片，精确锁定
+`literature-evidence-extraction@0.1.0`，所以必须显式使用 `--historical-replay`。普通新 Task
+不要添加该参数：新分配只选择 lifecycle 为 active 的 accepted Skill，legacy/deprecated 不会
+静默回退。历史 replay 也禁止 auto-select。
+
 相同输入应生成相同 Assignment ID。修改 Task revision、Skill 内容、工具或权限后应重新解析，不能沿用旧 Assignment。
 
 ### 4.4 生成最小 dispatch
@@ -163,6 +169,7 @@ Resolver 会检查：
 rwb runtime codex render examples/task-evidence.yaml `
   --profile registry/agents/evidence-scout.yaml `
   --registry registry/skills/accepted.json `
+  --historical-replay `
   --root . `
   --output work/quickstart/evidence-dispatch.txt
 ```
@@ -258,7 +265,7 @@ Task Packet 的关键字段：
 |---|---|
 | `goal` | 这一次具体要得到什么 |
 | `active_modes` | 使用什么研究方法约束 |
-| `required_capabilities` / `required_skills` | 需要哪些能力和方法 |
+| `required_capabilities` / `required_skills` | 需要哪些能力和方法；Skill 可写 `id` 或精确 `id@semver` |
 | `input_refs` | 允许读取哪些固定输入 |
 | `write_scope` | 只能写到哪里 |
 | `permissions` | 文件、网络和外部写权限 |
@@ -268,7 +275,9 @@ Task Packet 的关键字段：
 | `safe_pause_conditions` | 什么情况下允许持久化后暂停 |
 | `stop_conditions` | 何时停止继续扩张 |
 
-证据任务的完整写法见 [`examples/task-evidence.yaml`](../examples/task-evidence.yaml)，仿真任务见 [`examples/task-simulation.yaml`](../examples/task-simulation.yaml)。
+历史证据/仿真垂直切片见 [`examples/task-evidence.yaml`](../examples/task-evidence.yaml) 与
+[`examples/task-simulation.yaml`](../examples/task-simulation.yaml)。它们用于 replay 和契约测试，
+不是当前新任务的默认 Skill 路由范本。
 
 ### 6.3 固定输入哈希
 
@@ -456,14 +465,14 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 | 产品边界和总体架构 | 已形成 Charter、Architecture、模块和 ADR | 可复用 |
 | Schema、模型和确定性验证 | 本地测试和全部示例/Registry 校验通过 | 技术 alpha 可用 |
 | CLI | 可 init、validate、resolve、render、audit、checkpoint | 技术 alpha 可用 |
-| Agent—Skill 路由 | 两条不同 Skill 的离线切片可重放 | 路诚钺尚缺 Mode 决策卡、选择矩阵和增量价值证据 |
+| Agent—Skill 路由 | Mode/action/Tool/Need 矩阵、八个 fixture、lifecycle 与 K-MS-1 评审已完成 | 离线基线到达；真实增量价值证据仍缺 |
 | API Session 内核 | 显式模型槽、有界工具循环和无 fallback 已测试 | Task-to-API 与真实调用由黄毅维护 |
 | Codex Runtime Adapter | 布局、能力和 dispatch 已实现 | 可选路径，不在当前关键路径 |
 | 上下文连续性 | SAFE_PAUSE、哈希、digest、Git 冲突和恢复 fixture 已实现 | 缺真实跨会话恢复 |
 | Handoff 压缩审计 | Manifest/Audit 和风险触发抽样契约已实现 | 路诚钺尚缺 H1/H2 成本对照与真实材料样本 |
 | Agent 过程留痕 | 已冻结实名 actor、Attempt Archive 和按需读取规则 | Trace Schema/validator 与运行时自动捕获尚未实现 |
 | Provider Adapters | OpenAI、Anthropic、Gemini 离线合同和有界 runner 已实现 | 由黄毅继续维护 |
-| Skill 供应链 | 候选隔离、静态审计、paired evaluation 契约已实现 | accepted Skills 仍标记 `project-original-unlicensed` |
+| Skill 供应链 | 候选隔离、静态审计、paired evaluation 与 lifecycle 已实现 | 三个历史条目均非 active 且仍为 `project-original-unlicensed` |
 | 工件 promotion 和 Run 复现 | 已有架构与任务 | 核心实现未完成 |
 | 科研价值 | 有指标和对照计划 | 尚无两个真实案例，也未证明多 Agent 净收益 |
 | 分发与法律 | 有 `pyproject.toml` | 无 LICENSE、正式 release、wheel/PyPI 和兼容性承诺 |
@@ -518,14 +527,12 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 
 发布关键路径应保持克制：
 
-1. 先完成 Attempt Archive、实名 actor 与 Agent Trace 的手工 fixture/validator，使后续试验可以回放；
-2. 完成 `K-MS-1`：Mode 决策卡、6 个边界 fixtures、Task-to-Skill 选择矩阵和 accepted Skill 边界审计；
-3. 为同类任务比较 H1/H2 与内容读取扩展成本，删减没有改变决策的控制项；
-4. 对一个 triage candidate 作 reject/retain-reference/continue-trial 决定；
-5. 黄毅独立推进 Task-to-API、恢复、自动 Trace 捕获和真实模型证据；路诚钺只消费正式脱敏工件；
-6. 同步确定 LICENSE 和完整项目 scaffold 方案；
-7. 再进入两个真实科研案例、M4 工件 promotion/复现和对照评估；
-8. 只有文件式连续性 benchmark 出现可复现瓶颈时，才评估 SQLite/FTS；图层只能作为 Index，不能成为事实源。
+1. K-MS-1 已冻结；先完成 M3-008 Trace Envelope/Index/Event Schema、validator 与手工 fixture；
+2. Trace 可用后，比较 with/without Skill、H1/H2 与内容读取扩展成本，删减没有改变决策的控制项；
+3. 黄毅独立推进 Task-to-API、恢复、自动 Trace 捕获和真实模型证据；路诚钺只消费正式脱敏工件；
+4. 同步确定 LICENSE 和完整项目 scaffold 方案；
+5. 再进入两个真实科研案例、M4 工件 promotion/复现和对照评估；
+6. 只有文件式连续性 benchmark 出现可复现瓶颈时，才评估 SQLite/FTS；图层只能作为 Index，不能成为事实源。
 
 不要把增加 Supervisor、数据库、Agent 数量或 reviewer 层数当作发布进度。每个新增机制都应有真实故障、消费方、成本和删除条件。
 
@@ -533,6 +540,7 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 
 - [文档导航](README.md)
 - [开发协作指南](DEVELOPMENT.md)
+- [路诚钺 Mode–Skill–Tool 分支计划](workstreams/chengyue-lu-mode-skill/README.md)
 - [项目章程](PROJECT_CHARTER.md)
 - [总体架构](ARCHITECTURE.md)
 - [Task 与 Handoff](modules/05-TASK_AND_HANDOFF.md)

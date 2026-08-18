@@ -38,7 +38,16 @@ Source snapshot
 - K-Dense Scientific Agent Skills；
 - Academic Research Agent Skill；
 - agent-research-skills；
-- Anthropic Skills 与 OpenAI Skills（只作为结构和平台规范参考）。
+- GitHub awesome-copilot 与 Superpowers；
+- Agent Skills 格式规范；
+- OpenAI Skills、Anthropic Skills 与 Google Workspace CLI（作为一方结构、平台和工具规范参考）。
+
+首批 9 个固定来源及 revision、许可和归档哈希见
+[Skill 来源搜集、隔离与筛选](../workstreams/chengyue-lu-mode-skill/SKILL_SOURCE_INTAKE.md)；
+OpenAI、Anthropic、Google 19 个入口的逐项处置见
+[一方 Skill 逐项筛选结论](../workstreams/chengyue-lu-mode-skill/FIRST_PARTY_SKILL_TRIAGE.md)；
+其他来源 35 个入口的逐项语义处置见
+[社区 Skill 人工筛选结论](../workstreams/chengyue-lu-mode-skill/COMMUNITY_SKILL_TRIAGE.md)。
 
 `research-copilot.zip` 的归档 SHA-256 为 `c69471fdec7164595b5d28a613a5421d549472585d8ace0f89b745b801ebe940`。清点得到 1005 个归档条目、18 个 `SKILL.md` 和 392 个 Python 文件。该归档未执行、未安装、未把脚本复制进本仓库。
 
@@ -76,12 +85,16 @@ rwb skills audit-archive <archive-path> `
 
 ## 4. 首轮判断
 
+截至 2026-08-16，本分支已完成首批 54 个外部 Skill 入口的逐项哈希和人工 Decision；下一步为 evidence map、citation integrity、experimental design、scientific visualization 建立四份 dossier，再同时维护最多两个新 candidate packages。详细顺序见[路诚钺 Mode–Skill 分支计划](../workstreams/chengyue-lu-mode-skill/README.md)。
+
 首轮优先推进：
 
-- `experiment-design`：提炼成实验模式下的最小设计 Skill，保留随机化/功效/DoE 的确定性脚本，但需要统计假设审查。
-- `papercheck`：优先提取引用定位与 Claim-Source 的确定性检查，语义正确性不由脚本宣布。
 - 本项目派生的 `claim-preserving-rewrite`：已在非发现路径实现最小 Skill 和数字、引用、否定、证据强度、因果措辞的表层确定性 Gate；仍须通过真实 with/without 与语义漂移评估后才能进入 `trial`。
-- K-Dense `citation-management` 与 lingzhi `backward-traceability`：先做逐文件许可、网络和脚本审计。
+- `papercheck`、K-Dense `citation-management` 与 lingzhi `backward-traceability`：先审计许可/脚本，只从问题定义独立设计最小 citation/claim locator；语义正确性不由脚本宣布。
+
+延后：
+
+- `experiment-design`：等待真实 experiment Task、Mode 准入证据和统计方法审查；不因已有候选就先建空 Mode。
 
 只作参考：
 
@@ -97,7 +110,7 @@ rwb skills audit-archive <archive-path> `
 
 继续 triage：
 
-- `giiisp-paper-search-apis` 的请求规划、失败分类和结果归一化可以提炼；外部数据出口必须经过 provider-neutral Tool Adapter 与 Data Policy 协商，不能默认绑定该服务。
+- `giiisp-paper-search-apis` 的请求规划、失败分类和结果归一化可以提炼为 provider-neutral Tool capability；外部数据出口必须经过 Data Policy 协商，不能默认绑定该服务，也不在本分支实现 API Adapter。
 
 隔离或排除：
 

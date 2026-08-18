@@ -4,7 +4,7 @@
 
 状态：实施基线
 
-日期：2026-08-14
+日期：2026-08-15
 
 ## 1. 架构结论
 
@@ -67,7 +67,7 @@ flowchart TB
         RM["Research Mode Decision\n触发、非触发、组合约束"]
         CR["Capability Resolver\n能力 → Profile + Skill Assignment"]
         RP["Resolved Task\n内容允许集 + 写入范围 + Handoff 等级"]
-        SE["Skill Evaluation & Registry\ntrial / accepted / deprecated"]
+        SE["Skill Evaluation & Registry\nadmission + active / legacy / deprecated"]
     end
 
     subgraph EXEC["黄毅：API Execution；或可选平台"]
@@ -131,7 +131,7 @@ Project Protocol 声明当前问题、激活模式、Claim ceiling、人工 Gate
 
 ### L3：Agent 与 Skill 能力层
 
-Agent Profile 描述执行容器；Skill 描述可复用工作方法；Capability Resolver 按任务的硬约束选择最小组合，生成不可变的 Skill Assignment。
+Agent Profile 描述执行容器；Skill 描述可复用工作方法；Capability Resolver 按任务的硬约束选择最小组合，生成不可变的 Skill Assignment。Skill Need 可以来自 Research Mode action，也可以来自本项目特有的交接、恢复和 Gate 准备动作；后者继承上游 Mode/Project 边界，不改变科研方法或 Claim ceiling。
 
 详见[Agent 运行模型](modules/03-AGENT_RUNTIME.md)与[Skill 系统](modules/04-SKILL_SYSTEM.md)。
 
@@ -200,13 +200,15 @@ sequenceDiagram
 
 路由的硬规则：
 
-- `required_skills` 必须显式调用，不能只期待隐式 description 匹配；
-- 每次任务冻结 Skill 版本或内容哈希；
+- `required_skills` 必须显式调用，不能只期待隐式 description 匹配；新分配只选择 `active`，
+  `legacy/deprecated` 仅允许显式精确版本的历史回放；
+- 每次任务把 Skill selector 归一化为精确版本、内容哈希和包哈希；同 ID 多版本时不猜测；
 - Skill 不能扩大 Agent Profile 或 Task Packet 授予的权限；
 - 默认不超过两个主 Skill，可附加一个验证 Skill；超过时应拆任务；
 - 任务声明的 `forbidden_skills` 优先级高于推荐；
 - 路由不确定、Skill 冲突或缺少验证时，返回阻塞/人工决定，而不是猜测；
 - 主 Agent 只读取 Skill 元数据和路由结果，不默认加载所有 Skill 正文。
+- Project-internal Skill 不全局加载、不获得额外上下文配额，也不能替代 Project Protocol、Schema、Tool 或 Runtime Trace。
 - Agent 对仓库内容采用默认拒绝：允许路径元数据发现，但读取新增正文必须扩展 Task 允许集。
 - 普通跨 Agent 返回使用 H1；H2 仅由风险、压缩、副作用、promotion、争议或明确策略触发。
 - H0/H1/H2 都有 Attempt Archive；H1/H2 的每条可见跨 Agent 传递必须留存，但不会因此自动进入主 Agent 上下文。
@@ -313,4 +315,4 @@ Codex、OpenCode、Claude Code 或其他平台可以把同一个已解析 Task �
 
 ## 12. 文档与实施关系
 
-本文件定义稳定关系和不变量；模块文件定义各自的职责、接口、风险和验收；[开发协作指南](DEVELOPMENT.md)定义实名维护边界与运行纪律；[Mode–Skill 计划](implementation/MODE_SKILL_WORKSTREAM_PLAN.md)定义路诚钺的下一节点；[任务清单](TASKS.md)是当前执行状态的唯一入口。软件交付阶段不是研究工作的强制顺序。
+本文件定义稳定关系和不变量；模块文件定义各自的职责、接口、风险和验收；[开发协作指南](DEVELOPMENT.md)定义实名维护边界与运行纪律；[路诚钺分支计划](workstreams/chengyue-lu-mode-skill/README.md)定义当前 Mode–Skill–Tool 实施顺序；[任务清单](TASKS.md)是当前执行状态的唯一入口。软件交付阶段不是研究工作的强制顺序。

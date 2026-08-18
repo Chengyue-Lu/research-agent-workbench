@@ -355,6 +355,7 @@ def _skill_accepted(args: argparse.Namespace) -> int:
                             "content_hash": entry.content_hash,
                             "package_hash": entry.package_hash,
                             "license_status": entry.license_status,
+                            "lifecycle": entry.lifecycle,
                         }
                         for entry in registry.entries
                     ],
@@ -364,9 +365,12 @@ def _skill_accepted(args: argparse.Namespace) -> int:
             )
         )
         return 0
-    print("skill\tversion\tlicense\tcontent_hash")
+    print("skill\tversion\tlifecycle\tlicense\tcontent_hash")
     for entry in registry.entries:
-        print(f"{entry.skill_id}\t{entry.version}\t{entry.license_status}\t{entry.content_hash}")
+        print(
+            f"{entry.skill_id}\t{entry.version}\t{entry.lifecycle}\t"
+            f"{entry.license_status}\t{entry.content_hash}"
+        )
     print(f"registry_digest\t{registry.digest}")
     return 0
 
@@ -529,6 +533,9 @@ def _task_resolve(args: argparse.Namespace) -> int:
                 profile,
                 registry,
                 allow_auto_select=args.auto_select,
+                resolution_purpose=(
+                    "historical-replay" if args.historical_replay else "new-assignment"
+                ),
             )
         else:
             if not args.skill:
@@ -565,7 +572,14 @@ def _runtime_codex_render(args: argparse.Namespace) -> int:
     profile = AgentProfile.from_mapping(_load_valid(args.profile, "agent_profile"))
     registry = AcceptedSkillRegistry.load(args.registry, project_root=args.root)
     try:
-        assignment = resolve_task_from_registry(task, profile, registry)
+        assignment = resolve_task_from_registry(
+            task,
+            profile,
+            registry,
+            resolution_purpose=(
+                "historical-replay" if args.historical_replay else "new-assignment"
+            ),
+        )
     except ResolutionError as exc:
         return _print_risks(exc.risks)
     adapter = CodexRuntimeAdapter(args.root, platform_version=args.platform_version)
@@ -1151,6 +1165,11 @@ def build_parser() -> argparse.ArgumentParser:
     task_resolve.add_argument("--registry")
     task_resolve.add_argument("--root", default=".")
     task_resolve.add_argument("--auto-select", action="store_true")
+    task_resolve.add_argument(
+        "--historical-replay",
+        action="store_true",
+        help="resolve exact legacy/deprecated Skill versions for an intentional historical replay",
+    )
     task_resolve.add_argument("--output")
     task_resolve.set_defaults(handler=_task_resolve)
 
@@ -1168,6 +1187,11 @@ def build_parser() -> argparse.ArgumentParser:
     codex_render.add_argument("--registry", default=str(DEFAULT_ACCEPTED))
     codex_render.add_argument("--root", default=".")
     codex_render.add_argument("--platform-version", default="unprobed")
+    codex_render.add_argument(
+        "--historical-replay",
+        action="store_true",
+        help="render an intentional replay using exact legacy/deprecated Skill versions",
+    )
     codex_render.add_argument("--output")
     codex_render.set_defaults(handler=_runtime_codex_render)
 

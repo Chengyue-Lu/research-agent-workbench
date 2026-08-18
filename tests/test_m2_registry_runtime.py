@@ -13,6 +13,8 @@ from research_workbench.capability import (
     AcceptedSkillRegistry,
     AgentProfile,
     ResolvedTask,
+    ResolutionError,
+    resolve_task,
     resolve_task_from_registry,
 )
 from research_workbench.contracts import ContractError, to_plain
@@ -30,6 +32,72 @@ class AcceptedRegistryTests(unittest.TestCase):
         self.assertEqual(3, len(registry.entries))
         self.assertEqual(64, len(registry.digest))
         self.assertNotIn("rc-papercheck", {entry.skill_id for entry in registry.entries})
+        self.assertEqual(
+            {
+                "literature-evidence-extraction": "legacy",
+                "simulation-vv": "legacy",
+                "handoff-integrity": "deprecated",
+            },
+            {entry.skill_id: entry.lifecycle for entry in registry.entries},
+        )
+        self.assertEqual((), registry.active_manifests)
+
+    def test_new_assignment_cannot_select_legacy_or_deprecated_skill(self) -> None:
+        registry = AcceptedSkillRegistry.load(project_root=ROOT)
+        task = TaskPacket.from_mapping(load_document(ROOT / "examples/task-evidence.yaml"))
+        profile = AgentProfile.from_mapping(load_document(ROOT / "registry/agents/evidence-scout.yaml"))
+        with self.assertRaises(ResolutionError) as context:
+            resolve_task_from_registry(task, profile, registry)
+        self.assertEqual({"SKILL-INACTIVE"}, {risk.code for risk in context.exception.risks})
+
+    def test_historical_replay_requires_exact_version(self) -> None:
+        registry = AcceptedSkillRegistry.load(project_root=ROOT)
+        exact_task = TaskPacket.from_mapping(load_document(ROOT / "examples/task-evidence.yaml"))
+        unversioned_task = replace(
+            exact_task,
+            required_skills=("literature-evidence-extraction",),
+        )
+        profile = AgentProfile.from_mapping(load_document(ROOT / "registry/agents/evidence-scout.yaml"))
+        with self.assertRaises(ResolutionError) as context:
+            resolve_task_from_registry(
+                unversioned_task,
+                profile,
+                registry,
+                resolution_purpose="historical-replay",
+            )
+        self.assertEqual(
+            {"SKILL-VERSION-REQUIRED"},
+            {risk.code for risk in context.exception.risks},
+        )
+
+    def test_existing_assignment_remains_self_verifiable(self) -> None:
+        document = load_document(ROOT / "examples/vertical-slice/evidence-assignment.yaml")
+        assignment = ResolvedTask.from_mapping(document)
+        self.assertEqual("literature-evidence-extraction@0.1.0", assignment.skill_lock[0].identifier)
+        self.assertEqual([], SchemaCatalog().validate("skill_assignment", document))
+
+    def test_unversioned_direct_resolution_blocks_multiple_manifest_versions(self) -> None:
+        registry = AcceptedSkillRegistry.load(project_root=ROOT)
+        manifest = next(
+            entry.manifest
+            for entry in registry.entries
+            if entry.skill_id == "literature-evidence-extraction"
+        )
+        newer = replace(manifest, version="0.2.0")
+        exact_task = TaskPacket.from_mapping(load_document(ROOT / "examples/task-evidence.yaml"))
+        unversioned_task = replace(
+            exact_task,
+            required_skills=("literature-evidence-extraction",),
+        )
+        profile = AgentProfile.from_mapping(load_document(ROOT / "registry/agents/evidence-scout.yaml"))
+        with self.assertRaises(ResolutionError) as context:
+            resolve_task(unversioned_task, profile, (manifest, newer))
+        self.assertIn(
+            "SKILL-VERSION-AMBIGUOUS",
+            {risk.code for risk in context.exception.risks},
+        )
+        resolved = resolve_task(exact_task, profile, (manifest, newer))
+        self.assertEqual("literature-evidence-extraction@0.1.0", resolved.skill_lock[0].identifier)
 
     def test_live_skill_drift_is_blocked(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -57,9 +125,15 @@ class AcceptedRegistryTests(unittest.TestCase):
         simulation_task = TaskPacket.from_mapping(load_document(ROOT / "examples/task-simulation.yaml"))
         evidence_profile = AgentProfile.from_mapping(load_document(ROOT / "registry/agents/evidence-scout.yaml"))
         simulation_profile = AgentProfile.from_mapping(load_document(ROOT / "registry/agents/simulation-auditor.yaml"))
-        evidence = resolve_task_from_registry(evidence_task, evidence_profile, registry)
-        repeated = resolve_task_from_registry(evidence_task, evidence_profile, registry)
-        simulation = resolve_task_from_registry(simulation_task, simulation_profile, registry)
+        evidence = resolve_task_from_registry(
+            evidence_task, evidence_profile, registry, resolution_purpose="historical-replay"
+        )
+        repeated = resolve_task_from_registry(
+            evidence_task, evidence_profile, registry, resolution_purpose="historical-replay"
+        )
+        simulation = resolve_task_from_registry(
+            simulation_task, simulation_profile, registry, resolution_purpose="historical-replay"
+        )
         self.assertEqual(evidence.assignment_id, repeated.assignment_id)
         self.assertNotEqual(evidence.assignment_id, simulation.assignment_id)
         self.assertEqual("literature-evidence-extraction", evidence.skill_lock[0].skill_id)
@@ -70,7 +144,11 @@ class AcceptedRegistryTests(unittest.TestCase):
         registry = AcceptedSkillRegistry.load(project_root=ROOT)
         task = TaskPacket.from_mapping(load_document(ROOT / "examples/task-evidence.yaml"))
         profile = AgentProfile.from_mapping(load_document(ROOT / "registry/agents/evidence-scout.yaml"))
-        document = to_plain(resolve_task_from_registry(task, profile, registry))
+        document = to_plain(
+            resolve_task_from_registry(
+                task, profile, registry, resolution_purpose="historical-replay"
+            )
+        )
         document["output_contracts"] = ["unrelated-output"]
         with self.assertRaises(ContractError):
             ResolvedTask.from_mapping(document)
@@ -79,7 +157,9 @@ class AcceptedRegistryTests(unittest.TestCase):
         registry = AcceptedSkillRegistry.load(project_root=ROOT)
         task = TaskPacket.from_mapping(load_document(ROOT / "examples/task-evidence.yaml"))
         profile = AgentProfile.from_mapping(load_document(ROOT / "registry/agents/evidence-scout.yaml"))
-        assignment = resolve_task_from_registry(task, profile, registry)
+        assignment = resolve_task_from_registry(
+            task, profile, registry, resolution_purpose="historical-replay"
+        )
         handoff = HandoffPacket.from_mapping(load_document(ROOT / "examples/handoff-evidence.yaml"))
         drifted = replace(handoff, skill_lock=("simulation-vv@0.1.0",))
         risks = check_handoff_against_task(task, drifted, project_root=ROOT, assignment=assignment)
@@ -100,7 +180,9 @@ class CodexAdapterTests(unittest.TestCase):
         registry = AcceptedSkillRegistry.load(project_root=ROOT)
         task = TaskPacket.from_mapping(load_document(ROOT / "examples/task-evidence.yaml"))
         profile = AgentProfile.from_mapping(load_document(ROOT / "registry/agents/evidence-scout.yaml"))
-        assignment = resolve_task_from_registry(task, profile, registry)
+        assignment = resolve_task_from_registry(
+            task, profile, registry, resolution_purpose="historical-replay"
+        )
         prompt = adapter.render_task_prompt(task, profile, assignment)
         raw_source = (ROOT / "examples/fixtures/paper-001.txt").read_text(encoding="utf-8")
         self.assertIn("$literature-evidence-extraction", prompt)
@@ -123,7 +205,9 @@ class CodexAdapterTests(unittest.TestCase):
             ),
         )
         profile = AgentProfile.from_mapping(load_document(ROOT / "registry/agents/evidence-scout.yaml"))
-        assignment = resolve_task_from_registry(task, profile, registry)
+        assignment = resolve_task_from_registry(
+            task, profile, registry, resolution_purpose="historical-replay"
+        )
         prompt = adapter.render_task_prompt(task, profile, assignment)
         self.assertIn("source-prompt-injection.txt", prompt)
         self.assertNotIn("Ignore the Task Packet", prompt)

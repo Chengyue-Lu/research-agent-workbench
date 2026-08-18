@@ -24,6 +24,18 @@
 
 首版不强制在目录层面区分四类，但 Registry 必须记录 `kind`。
 
+### 适用范围轴
+
+`kind` 描述 Skill 做什么；Need 来源另有一条正交的适用范围轴：
+
+- `mode-derived`：由 Research Mode action 的非平凡语义缺口产生；
+- `project-internal`：只为本项目的 Assignment、Handoff、恢复或 Human Gate 准备等协议动作服务。
+
+项目内生不构成第五种 `kind`，也不意味着全局加载。权限、受控读取、交互留痕、字段格式和 hash
+校验仍分别属于 Project Protocol、Task/Profile、Schema/template 和 Tool/checker。只有这些基线不足
+以处理可复用语义判断时，才建立 project-internal Skill Need。候选阶段不借
+`applies_to_modes: [all]` 伪造 Mode 适用性；是否增加最小 `scope` 元数据需另行通过 Schema 决策。
+
 ## 3. Skill Manifest
 
 除平台需要的 `SKILL.md` 外，项目维护可机器读取的元数据：
@@ -122,6 +134,7 @@ Codex 等平台可以根据 description 隐式激活 Skill，但本项目分三�
 - 子 Agent 只加载本次 required/optional Skills；
 - Skill 正文采用渐进披露：`SKILL.md` 保持可执行，长参考进入 `references/`，脚本进入 `scripts/`；
 - 一个任务默认最多两个主 Skill和一个校验 Skill；
+- project-internal Skill 计入同一上限，默认最多选择一个，不获得额外槽位；
 - Skill 指令总量超预算时必须拆任务，不能压缩成含混“大综合 Skill”；
 - 频繁同时出现的一组 Skills 只有在真实数据证明稳定后才能形成 Bundle。
 - Agent 只能读取本次选中 Skill 的 `SKILL.md` 和其中为当前步骤显式引用的 references；不得借 Skill 发现递归读取其他候选 Skill 或整个 reference 树。
@@ -196,10 +209,14 @@ Skill 若要求超出上层边界的动作，Resolver 必须阻断或裁剪，�
 
 ## 13. 当前实现快照
 
-截至 2026-08-13，`registry/skills/accepted.json` 是唯一可执行 Skill 索引；`.agents/skills` 中的三个原创 Skill 均由版本、来源路径、`SKILL.md` 内容哈希和整个 Skill 目录包哈希锁定。`.gitattributes` 固定可哈希文本为 LF，避免跨 Windows/Linux 的伪漂移。Resolver 默认要求 Task 显式列出 `required_skills`；自动最小覆盖只在调用方明确允许时启用，等价候选会返回 `SKILL-AMBIGUOUS` 而不是猜测。
+`registry/skills/accepted.json` 是 accepted Skill 的唯一索引；条目的 `status: accepted` 保存准入历史，`lifecycle: active | legacy | deprecated` 单独控制新分配资格。`.agents/skills` 中的包由版本、来源路径、`SKILL.md` 内容哈希和整个目录包哈希锁定；`.gitattributes` 固定可哈希文本为 LF，避免跨 Windows/Linux 的伪漂移。
+
+Task 的 `required_skills` 支持 `skill-id` 或精确 `skill-id@semver`。新 Assignment 默认只选择唯一 active 版本并归一化为精确 Skill lock；historical replay 必须显式声明且带精确版本，禁止 auto-select。相同 ID 可保存多个历史版本，但最多一个 active。详细决定见 [ADR-0015](../decisions/0015-SKILL-LIFECYCLE-AND-EXACT-VERSION.md)。
 
 外部来源继续保存在 `registry/skills/candidates.json`，不会因下载、发现或 `reference` 状态进入 accepted Registry。Codex 只在 dispatch 中显式调用本次 Assignment 的 `$skill-name`；未选择 Skill 的正文和 references 不进入任务上下文。
 
 独立派生但尚未准入的实现放在 `skill-lab/candidates/`。该路径不是平台 Skill 发现路径，也不进入 accepted Registry；它用于保存短指令、确定性脚本、fixtures、内容/包哈希和 with/without 评估证据。首个包 `claim-preserving-rewrite` 只验证数字、引用、否定、证据强度、因果措辞与显式保护词等表层不变量，并明确不宣称语义或科学等价。
 
-截至 2026-08-14，路诚钺的下一工作不是扩大 accepted 数量，而是完成 Task-to-Skill 选择矩阵：先判断确定性工具/no-Skill 是否足够，再比较 accepted candidates；歧义时拆 Task 或进入 Human Gate。候选优先级、停止点和黄毅负责的 API 边界见 [Mode–Skill 工作流计划](../implementation/MODE_SKILL_WORKSTREAM_PLAN.md)。
+截至 2026-08-17，Skill Need 分两条路线：从 `evidence-synthesis`、`simulation` action 推导的 Mode-derived Need，以及只服务本项目交接、恢复和 Gate 准备的 project-internal Need。两者都必须先比较 Protocol/Task/template/Tool/no-Skill 基线，并共享 Skill 数量与上下文上限。外部候选只作按 Need 检索的参考库存；项目内生候选只保留占位，不进入 Registry 或 Runtime。候选优先级、停止点和黄毅负责的 API 边界见[路诚钺 Mode–Skill 分支计划](../workstreams/chengyue-lu-mode-skill/README.md)与[项目内生协议 Skill 规划](../workstreams/chengyue-lu-mode-skill/PROJECT_INTERNAL_SKILLS.md)。
+
+截至 2026-08-19，三个 `0.1.0` 原型均不再 active：literature/simulation 为 legacy，handoff wrapper 为 deprecated。新任务因此不会从 accepted Registry 自动或显式加载它们；旧示例只通过精确版本和显式 historical replay 重新解析。当前 active 数量为零不构成缺失修复任务。

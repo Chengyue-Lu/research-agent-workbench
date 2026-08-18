@@ -1,19 +1,22 @@
 {
   "schema_version": "0.1.0",
   "registry_kind": "skill_accepted",
-  "generated_at": "2026-08-13",
+  "generated_at": "2026-08-19",
   "policy": {
     "default_invocation": "explicit",
     "maximum_primary_skills_per_task": 2,
     "maximum_integrity_skills_per_task": 1,
     "external_candidates_are_executable": false,
-    "note": "Directory membership is not sufficient; every entry is pinned to a manifest, source path, version, and content hash."
+    "new_assignment_lifecycle": "active-only",
+    "historical_replay": "explicit-exact-version-only",
+    "note": "Admission history and assignment eligibility are separate. Every entry remains hash-pinned; only active entries can enter new assignments."
   },
   "entries": [
     {
       "skill_id": "literature-evidence-extraction",
       "version": "0.1.0",
       "status": "accepted",
+      "lifecycle": "legacy",
       "manifest_path": "registry/skills/accepted/literature-evidence-extraction.yaml",
       "source_path": ".agents/skills/literature-evidence-extraction/SKILL.md",
       "content_hash": "sha256:c0a080ea9c4743a599000bc6978386a8dcbb8aaa09e1ed4c0e54a4deadca780b",
@@ -30,6 +33,7 @@
       "skill_id": "simulation-vv",
       "version": "0.1.0",
       "status": "accepted",
+      "lifecycle": "legacy",
       "manifest_path": "registry/skills/accepted/simulation-vv.yaml",
       "source_path": ".agents/skills/simulation-vv/SKILL.md",
       "content_hash": "sha256:2a3c19b5af6288c4d5eab6e2fc2557231cc684f0ec9b6ec8bb5b864d126a99c4",
@@ -46,6 +50,7 @@
       "skill_id": "handoff-integrity",
       "version": "0.1.0",
       "status": "accepted",
+      "lifecycle": "deprecated",
       "manifest_path": "registry/skills/accepted/handoff-integrity.yaml",
       "source_path": ".agents/skills/handoff-integrity/SKILL.md",
       "content_hash": "sha256:2a4c727eb7462628e9f246a5363a8add1ba244c05b6c7b7e7b2ad450befabbf7",

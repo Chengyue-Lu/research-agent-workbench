@@ -1,0 +1,33 @@
+schema_version: 0.1.0
+audit_id: HTA-PIH-0002
+task_ref:
+  path: examples/task-evidence.yaml
+  sha256: 50c015db236576ff8bfdcf615e0d96b814b493df5ab946be1b563666b905a218
+handoff_ref:
+  path: examples/evals/project-internal-handoff/visible/pih-02-h2-semantic-distortion-handoff.yaml
+  sha256: 35fbea07373a45f9b978f713b8f2eb3d5cfb0bddfa1106f8882f71a6d3fb3151
+manifest_ref:
+  path: examples/handoff-transfer-evidence.yaml
+  sha256: 778342a900bb30ea58ad83a40ca62f40915ad813c3ac4c71264d99519bc53de0
+generated_at: "2026-08-18T00:00:00Z"
+mappings:
+  - item_id: HTI-EVID-FACT-001
+    status: carried
+    handoff_locator: /result/facts/0
+  - item_id: HTI-EVID-INFERENCE-001
+    status: carried
+    handoff_locator: /result/inferences/0
+  - item_id: HTI-EVID-LIMITATION-001
+    status: carried
+    handoff_locator: /limitations/0
+  - item_id: HTI-EVID-UNRESOLVED-001
+    status: carried
+    handoff_locator: /unresolved/0
+review:
+  status: pending
+  reviewer_kind: none
+  reviewer_independent: false
+  sampled_item_ids: []
+  findings: []
+limitations:
+  - This fixture intentionally preserves structural mappings while reversing one inference; it has not been semantically reviewed.

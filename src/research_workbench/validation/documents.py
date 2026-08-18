@@ -14,6 +14,7 @@ from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any, Iterable, Mapping
 
 from research_workbench.io import load_document
+from research_workbench.contracts.common import ContractError, parse_skill_reference
 from research_workbench.validation.schemas import SchemaCatalog
 
 
@@ -240,6 +241,7 @@ def _validate_registry(
             if candidate.get("status") == "accepted" and "content_hash" not in candidate:
                 issues.append(ValidationIssue(path, "CANDIDATE-UNPINNED", f"accepted candidate lacks content_hash: {candidate_id}"))
     elif kind == "skill_accepted":
+        active_ids: set[str] = set()
         seen = set()
         for index, entry in enumerate(document.get("entries", [])):
             if not isinstance(entry, Mapping):
@@ -253,6 +255,7 @@ def _validate_registry(
                         "skill_id", "version", "status", "manifest_path", "source_path",
                         "content_hash", "license_status", "admission",
                         "package_hash",
+                        "lifecycle",
                     ),
                 )
             )
@@ -262,6 +265,22 @@ def _validate_registry(
             seen.add(key)
             if entry.get("status") != "accepted":
                 issues.append(ValidationIssue(path, "ACCEPTED-STATUS", f"entries[{index}] is not accepted"))
+            lifecycle = entry.get("lifecycle")
+            if lifecycle not in {"active", "legacy", "deprecated"}:
+                issues.append(
+                    ValidationIssue(path, "ACCEPTED-LIFECYCLE", f"invalid lifecycle at entries[{index}]")
+                )
+            skill_id = entry.get("skill_id")
+            if lifecycle == "active" and isinstance(skill_id, str):
+                if skill_id in active_ids:
+                    issues.append(
+                        ValidationIssue(
+                            path,
+                            "ACCEPTED-ACTIVE-DUPLICATE",
+                            f"multiple active versions for Skill: {skill_id}",
+                        )
+                    )
+                active_ids.add(skill_id)
     elif kind == "provider_baselines":
         for provider in document.get("providers", []):
             if isinstance(provider, Mapping):
@@ -319,9 +338,27 @@ def _validate_task(path: Path, document: Mapping[str, Any], kind: str) -> list[V
     if kind != "task_packet":
         return []
     issues: list[ValidationIssue] = []
-    required = set(document.get("required_skills", []))
-    forbidden = set(document.get("forbidden_skills", []))
-    overlap = sorted(required & forbidden)
+    required = []
+    forbidden = []
+    for field, destination in (("required_skills", required), ("forbidden_skills", forbidden)):
+        for index, raw_reference in enumerate(document.get(field, [])):
+            if not isinstance(raw_reference, str):
+                continue
+            try:
+                destination.append(parse_skill_reference(raw_reference, f"{field}[{index}]"))
+            except ContractError as exc:
+                issues.append(ValidationIssue(path, "SKILL-SELECTOR-INVALID", str(exc)))
+    overlap = sorted(
+        required_reference.identifier
+        for required_reference in required
+        for forbidden_reference in forbidden
+        if required_reference.skill_id == forbidden_reference.skill_id
+        and (
+            required_reference.version is None
+            or forbidden_reference.version is None
+            or required_reference.version == forbidden_reference.version
+        )
+    )
     if overlap:
         issues.append(ValidationIssue(path, "SKILL-CONFLICT", f"skills are both required and forbidden: {', '.join(overlap)}"))
     for scope in document.get("write_scope", []):

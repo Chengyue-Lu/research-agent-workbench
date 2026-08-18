@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from dataclasses import asdict, dataclass, is_dataclass
 from pathlib import PurePosixPath, PureWindowsPath
 from typing import Any, Iterable, Mapping, TypeVar
@@ -9,6 +10,28 @@ class ContractError(ValueError):
     def __init__(self, field: str, message: str):
         self.field = field
         super().__init__(f"{field}: {message}")
+
+
+SKILL_REFERENCE_RE = re.compile(
+    r"^(?P<skill_id>[0-9A-Za-z][0-9A-Za-z._-]*)(?:@(?P<version>[0-9]+\.[0-9]+\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?))?$"
+)
+
+
+@dataclass(frozen=True, slots=True)
+class SkillReference:
+    skill_id: str
+    version: str | None = None
+
+    @property
+    def identifier(self) -> str:
+        return f"{self.skill_id}@{self.version}" if self.version else self.skill_id
+
+
+def parse_skill_reference(value: str, field: str = "skill") -> SkillReference:
+    match = SKILL_REFERENCE_RE.fullmatch(value)
+    if match is None:
+        raise ContractError(field, "must be a Skill ID or exact skill_id@semver selector")
+    return SkillReference(match.group("skill_id"), match.group("version"))
 
 
 def require_string(data: Mapping[str, Any], field: str) -> str:

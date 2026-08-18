@@ -7,9 +7,11 @@ from typing import Any, Mapping
 from research_workbench.contracts.common import (
     ContractError,
     PermissionPolicy,
+    ensure_unique,
     mapping_tuple,
     mapping_value,
     optional_string,
+    parse_skill_reference,
     require_relative_path,
     require_string,
     string_tuple,
@@ -153,6 +155,20 @@ class TaskPacket:
         if not isinstance(revision, int) or revision < 1:
             raise ContractError("revision", "must be a positive integer")
         budget_data = mapping_value(data, "budget")
+        required_skills = ensure_unique(
+            string_tuple(data, "required_skills", required=True),
+            "required_skills",
+        )
+        forbidden_skills = ensure_unique(
+            string_tuple(data, "forbidden_skills"),
+            "forbidden_skills",
+        )
+        for field, references in (
+            ("required_skills", required_skills),
+            ("forbidden_skills", forbidden_skills),
+        ):
+            for index, reference in enumerate(references):
+                parse_skill_reference(reference, f"{field}[{index}]")
         return cls(
             schema_version=require_string(data, "schema_version"),
             task_id=require_string(data, "task_id"),
@@ -160,8 +176,8 @@ class TaskPacket:
             question_refs=string_tuple(data, "question_refs"),
             active_modes=string_tuple(data, "active_modes"),
             required_capabilities=string_tuple(data, "required_capabilities", required=True),
-            required_skills=string_tuple(data, "required_skills", required=True),
-            forbidden_skills=string_tuple(data, "forbidden_skills"),
+            required_skills=required_skills,
+            forbidden_skills=forbidden_skills,
             agent_profile=require_string(data, "agent_profile"),
             input_refs=tuple(FileReference.from_mapping(item) for item in mapping_tuple(data, "input_refs")),
             write_scope=scopes,

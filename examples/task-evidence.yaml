@@ -9,7 +9,7 @@ required_capabilities:
   - evidence-extraction
   - citation-location
 required_skills:
-  - literature-evidence-extraction
+  - literature-evidence-extraction@0.1.0
 forbidden_skills:
   - final-synthesis
 agent_profile: evidence-scout

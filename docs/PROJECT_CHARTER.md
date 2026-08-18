@@ -1,10 +1,10 @@
 # 项目章程
 
-版本：0.4
+版本：0.5
 
 状态：实施基线
 
-日期：2026-08-14
+日期：2026-08-15
 
 ## 1. 使命
 
@@ -98,6 +98,6 @@ M2：由路诚钺建立不同 Mode—Skill 的显式选择、边界测试和准�
 
 M3：完成上下文换届、完整但按需读取的 Agent Trace、风险预警和两个真实案例评估。
 
-路诚钺当前下一关键节点为 `K-MS-1`：完成 Mode–Skill 选择基线、受控读取计划、Attempt Archive 和分级 Handoff 对照。黄毅负责的 API backlog 保留在共享仓库，但不作为路诚钺的退出条件。
+路诚钺当前下一关键节点为 `K-MS-1`：先从两个正式 Mode 推导 action、失败、Artifact、Human Gate 和最小机制，再为已确认的 action gap 建 Tool cards、路由 fixtures，并版本化复核现有 Skill 原型。外部候选仅作为按 Need 检索的参考库。黄毅负责的 API backlog 保留在共享仓库，但不作为路诚钺的退出条件。
 
 详细顺序见[实施计划](implementation/IMPLEMENTATION_PLAN.md)与[任务清单](TASKS.md)。

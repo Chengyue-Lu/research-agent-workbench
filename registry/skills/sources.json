@@ -1,7 +1,7 @@
 {
   "schema_version": "0.1.0",
   "registry_kind": "skill_sources",
-  "generated_at": "2026-08-13",
+  "generated_at": "2026-08-16",
   "sources": [
     {
       "source_id": "research-copilot-archive-1.0.0",
@@ -13,12 +13,31 @@
       "notes": "Pinned archive contains 18 SKILL.md files, 392 Python files, and 1005 entries. The bounded static audit scanned 647 text files (4,197,764 bytes) and registered all 18 Skill entrypoints; one oversized 1391-entry catalog JSON was skipped by policy. Nothing was extracted, executed, installed, or sent over the network."
     },
     {
+      "source_id": "agentskills-spec",
+      "origin": "github",
+      "locator": "https://github.com/agentskills/agentskills",
+      "revision": "69ef37e9424c0a7ea9dd2293b559e43ec8176379",
+      "license_status": "Apache-2.0-repository-level",
+      "trust": "open-format-specification",
+      "notes": "Format specification only; it contains no candidate Skill entrypoint in this intake."
+    },
+    {
       "source_id": "k-dense-scientific-agent-skills",
       "origin": "github",
       "locator": "https://github.com/K-Dense-AI/scientific-agent-skills",
-      "revision": "5ad4aae76bc40257b914367afacc6fd686a282d5",
+      "revision": "43a3e619a1dd8f053abdeb258c87ce81c53b424f",
       "license_status": "MIT-repository-level",
-      "trust": "external-untrusted"
+      "trust": "external-untrusted",
+      "notes": "Nine selected Skill entrypoints were pinned, statically audited, and manually triaged. No downloaded script was executed or admitted."
+    },
+    {
+      "source_id": "github-awesome-copilot",
+      "origin": "github",
+      "locator": "https://github.com/github/awesome-copilot",
+      "revision": "a80885b76044550770f60f360f8a0e5ae3524a31",
+      "license_status": "MIT-repository-level",
+      "trust": "official-hosted-community-content",
+      "notes": "GitHub hosts the repository, but individual community contributions are not treated as GitHub-authored guidance. Ten selected Skill entrypoints were reviewed independently."
     },
     {
       "source_id": "ngtiendong-academic-research-agent-skill",
@@ -34,13 +53,23 @@
       "locator": "https://github.com/lingzhi227/agent-research-skills",
       "revision": "9e6c085d65e313e475e921fdfe795ac11eb7589e",
       "license_status": "not-detected",
-      "trust": "external-untrusted"
+      "trust": "external-untrusted",
+      "notes": "Twelve selected Skill entrypoints are reference-only, quarantined, or rejected. No text or script may be copied without a resolved license."
+    },
+    {
+      "source_id": "superpowers",
+      "origin": "github",
+      "locator": "https://github.com/obra/superpowers",
+      "revision": "b36e0829c6d0140e93cfef2ca599b1b07d4a7797",
+      "license_status": "MIT-repository-level",
+      "trust": "external-untrusted",
+      "notes": "Three meta-engineering Skill entrypoints were reviewed as method references or runtime-contract inputs; none was admitted wholesale."
     },
     {
       "source_id": "anthropic-skills",
       "origin": "github",
       "locator": "https://github.com/anthropics/skills",
-      "revision": "f17010c9bb483898c1d9c9f42dde2b3a98889434",
+      "revision": "f6656c1256d5a8adfa37db9110046ef20bac644c",
       "license_status": "file-level-mixed-review-required",
       "trust": "external-reference"
     },
@@ -51,6 +80,15 @@
       "revision": "49f948faa9258a0c61caceaf225e179651397431",
       "license_status": "file-level-review-required",
       "trust": "external-reference"
+    },
+    {
+      "source_id": "googleworkspace-cli",
+      "origin": "github",
+      "locator": "https://github.com/googleworkspace/cli",
+      "revision": "a3768d0e82ad83cca2da97724e46bea4ff0e6dbd",
+      "license_status": "Apache-2.0-repository-level",
+      "trust": "official-reference",
+      "notes": "Eight selected entrypoints were reviewed as shared safety policy, generated API references, narrow tool recipes, or an excluded broad persona."
     },
     {
       "source_id": "rwb-derived-claim-preserving-rewrite-0.1.0",

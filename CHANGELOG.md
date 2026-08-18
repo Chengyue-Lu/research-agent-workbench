@@ -2,6 +2,219 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
+## 2026-08-19 — K-MS-1 节点评审与分支收束
+
+### Reviewed
+
+- K-MS-1 九项条件逐项通过：两个 Mode 的 action/机制、每个 Mode 不超过两个 Need、八个 Task fixture、五张 Tool cards、三个原型迁移、来源/项目内生边界和非扩张约束均有可复验工件。
+- 正式 Decision 接受 K-MS-1 为离线 Mode–Skill–Tool 选择/治理基线；明确不包含真实模型增量、科学正确性、H1/H2 成本、API 执行或发布就绪度。
+
+### Consolidated
+
+- `K_MS_1_NODE_REVIEW.md` 归纳本分支的来源筛选、GLM 困难任务诊断、Mode-first 转向、project-internal 路线、Tool/路由、原型迁移、lifecycle、测试和提交序列。
+- 当前库存快照为 73 个 candidate、11 个来源、3 个历史 accepted 条目且 0 active；这些数量不被当作质量或待开发清单。
+
+### Stopped
+
+- 本分支进入 safe stop，不继续新增 Mode/Skill/Tool。下一前置为 M3-008 Trace Schema/validator/fixture；完成前不启动 M7-005/006/014 的真实比较。
+- M2-003/004/007/008 从误导性的 `IN_PROGRESS` 转为 `PARKED`：保留历史原型、垂直切片和来源库存，但只能由 Mode-derived Need 与 Trace Gate 重新激活。
+
+### Integration review
+
+- 远端/主线合并审计确认分支相对最新 `origin/main` 为 `0 behind / 9 ahead`，工作区干净，159 项测试与补丁检查通过，建议合并离线基线并保留原分支历史。
+- 合并不解除 M0-007 许可证阻断，不构成 Skill 效果、科研价值、API 执行或对外发布结论；下一节点必须从更新后的 `main` 另建 Task/分支。
+
+## 2026-08-19 — Skill lifecycle 与精确版本回放
+
+### Added
+
+- ADR-0015 分离 accepted 准入历史与 `active | legacy | deprecated` 分配 lifecycle，并复用 `skill-id@semver` 作为 Task 精确版本 selector。
+- Registry/Resolver 默认只允许 active Skill 进入新 Assignment；historical replay 必须显式指定、使用精确版本且禁止 auto-select。
+- CLI 增加 `--historical-replay`，accepted 列表显示 lifecycle；测试覆盖新分配阻断、精确历史回放、多版本歧义、旧 Assignment 自校验和版本化 Handoff lock。
+
+### Changed
+
+- literature/simulation `0.1.0` 标为 legacy，handoff wrapper 标为 deprecated；当前 active accepted Skill 为零，不自动创建替代包。
+- 两个历史 Task fixture 改用精确版本，并同步更新引用它们的 Transfer Audit、Main State hash 与 checkpoint digest。
+
+### Boundaries
+
+- 未修改锁定 Skill 包或 manifests，未创建新 Skill；未修改 Provider/API/session/Adapter、模型路由或 live conformance。直接 `--skill <manifest>` 仍是本地开发输入，不代表 Registry 准入。
+
+## 2026-08-18 — Accepted Skill 0.1.0 迁移基线
+
+### Decided
+
+- 三个 accepted `0.1.0` 包保持内容与包哈希冻结，只用于历史 Assignment 解析；新的 Mode-action 路由不再默认分配这些原型。
+- `literature-evidence-extraction` 回到 ES-A4 的 Task+checker 基线和 ES-A6 的窄 Need；`simulation-vv` 拆回 Tool、两个方法 Need、Mode/Human Gate，不创建新的宽泛 V&V bundle。
+- `handoff-integrity` 判为 `deprecated-wrapper`：确定性检查归入现有 `research-contract-check` card，H2 语义义务仍由 Task/Trace/Human sample 决定，不创建换名 Skill。
+- 当前 accepted Registry 缺少 historical/active/deprecated lifecycle、精确版本约束且禁止同 ID 多版本；该 enforcement 缺口独立记为 M7-015，不在文档层假称已实现。
+
+### Added
+
+- `ACCEPTED_SKILL_MIGRATION.md` 与机器可读迁移夹具，逐项固定 action、direct baseline、content/package hash、new-assignment 决定和 next-version Gate。
+- 确定性测试核对夹具与实际 accepted Registry/包哈希一致，并阻止迁移文件暗示占位新版本或 Runtime enforcement。
+
+### Boundaries
+
+- 未修改三个历史 Skill 包、accepted manifests/Registry、Schema、Provider/API/Runtime/Adapter、模型路由或 live conformance；没有创建或准入新 Skill。
+
+## 2026-08-18 — Action-driven Tool 与路由 fixtures
+
+### Added
+
+- 五张 provider-neutral Tool capability card：`document-read`、`literature-search`、`citation-resolve`、`bounded-compute` 与 `research-contract-check`；逐项声明数据出口、权限、副作用、预算、失败、验证、fallback、Action 消费者和责任边界。
+- 八个 Task–Mode–Action–Mechanism 诊断 fixture，覆盖 evidence/simulation trigger、no-Mode、candidate Mode、组合拆分、内部 Handoff、tool-only、no-Skill、Skill Need、Human Gate、capability gap 与 blocked。
+- 六项 fixture 覆盖测试；`.yaml.txt` 明确不是 Runtime Schema，不因规划测试创建新的正式契约。
+
+### Decided
+
+- Tool card 只从已确认 Action gap 产生；没有 Runtime 消费者前不建立 `registry/tools/`。具体 CLI/MCP/API 只是 Adapter 候选，不能反向定义 Mode 或 Skill。
+- Skill Need 不自动形成 Assignment。三个尚未实现的 Mode-derived Need 在 fixture 中保持 Need/Human Gate，两个 tool-only 场景明确不加载额外 Skill。
+- candidate observational Mode 的子任务被拆分并阻断，不强塞进 evidence-synthesis 或 simulation。
+
+### Boundaries
+
+- 未实现、选择、安装、探测或调用任何 Adapter/MCP/CLI/API；未读取凭据，未修改 Registry、Schema、Resolver、Runtime、Provider 或模型路由。
+
+## 2026-08-18 — Project-internal Handoff direct baseline
+
+### Added
+
+- `PROJECT_INTERNAL_SKILL_DOSSIERS.md`：为 Compact Handoff 与 H2 Audited Transfer 建立 trigger/non-trigger、direct baseline、边界、compact candidate hypothesis 和进入条件。
+- `examples/evals/project-internal-handoff/`：保存 H1 negative omission 与 H2 semantic reversal 两个诊断样例；review-only challenge ledger 与 worker 可见输入分离。
+- 两项 fixture 测试，固定“结构检查通过但语义问题仍存在”的预期行为，防止未来把结构 PASS 误报为语义等价。
+
+### Decided
+
+- 两个 project-internal Need 均保持 `hold-no-skill`。合成 fixture 只证明 Schema/结构 mapping 的已知边界，不能证明 Skill 优于 Task policy、template、Tool 或 Human sample。
+- M7-013 完成后，主线返回 M7-008/M7-003；project-internal 的真实比较继续等待独立 Task family 与 M3-008，不初始化 Skill 包。
+
+### Boundaries
+
+- 未修改 Handoff/Transfer Schema、assessor、Registry、Skill package、Runtime、Provider/API 或模型路由；未调用模型或外部系统。
+
+## 2026-08-17 — 转为 Mode-first Skill 需求推导
+
+### Decided
+
+- ADR-0013 冻结新顺序：Research Mode → 可选 Action → Failure/Artifact/Human Gate → 最小机制 → Skill Need；禁止从外部来源候选直接反推项目 Skill。
+- 四份来源候选 dossier 保留为历史探索，本轮选择 0 个来源候选直接重写；后续 dossier 以 `need_id` 汇总多来源参考、真实失败和 no-Skill/direct-tool 基线。
+- 三个 0.1.0 accepted Skill 作为历史原型冻结，不立即删除或原地扩写；后续按 Mode action 创建新版本或显式 deprecation。
+- ADR-0014 增加与 Mode-derived Need 并行的 project-internal Need 来源，用于本项目特有的交接、恢复和 Human Gate 准备语义；强制交互留痕、读取边界、输出 Schema 和确定性校验仍不是 Skill。
+
+### Added
+
+- `MODE_ACTION_REQUIREMENTS.md`：为 `evidence-synthesis` 与 `simulation` 建立 Action–Failure–Artifact–Gate 和机制分配，首批每个 Mode 最多保留两个 Skill Need 入口。
+- M7-011 Mode-derived requirement baseline 完成，并显式加入 `blocked/capability gap` 出口；M7-004/M7-005 暂停到 Need/Tool/Trace 前置条件满足，M7-010 以零直接重写对象完成。
+- `PROJECT_INTERNAL_SKILLS.md`：预留五个 project-only Need，其中只允许 Compact Handoff 与 H2 Transfer 两项进入首批 dossier；没有创建 Skill 包、Registry 记录或全局 bundle。
+- M7-012 项目内生 Skill 规划完成；M7-013 可与 Mode-derived Tool/路由工作并行，真实比较 M7-014 继续等待 M3-008。
+
+### Boundaries
+
+- 未新增 Mode、Skill、Tool Registry 条目，未修改 API/Provider/Runtime、模型路由或 live conformance；未安装、执行或注册 GLM 采集到的外部内容。
+- GLM 第二批的 14 个 Tool/MCP 与 6 个 Skill 条目继续留在 Attempt Archive，只在已确认 action gap 下作为 reference inventory 使用。
+- project-internal Skill 计入现有 Skill 数量和上下文预算，默认最多一个；不能授予权限、改变 Mode/Claim 或替代 Runtime Trace。
+
+## 2026-08-16 — Accepted Skill 重叠审计与首轮 Dossier
+
+### Audited
+
+- `literature-evidence-extraction` 与 `simulation-vv` 结论为 `retain-revise`：保留方法语义，但 Transfer Manifest/`handoff-integrity` 从固定依赖改为 Task/H2 风险触发。
+- `handoff-integrity` 结论为 `deprecate-wrapper`：确定性部分迁移为 `handoff-validation` Tool capability，H2 语义义务进入 Task/Trace 模板；Tool card 和 Resolver 迁移前不直接删除 accepted 条目。
+
+### Triaged
+
+- 完成 `build-evidence-map`、K-Dense citation management、experimental design、scientific visualization 四份 dossier，均包含 no-Skill/direct-tool、上下文、学科、Tool/权限、Human Gate、停止与重叠判断。
+- evidence map 下沉为项目 Artifact/validator，scientific visualization 先拆 figure spec 与 Tool capability；两者不占当前重写名额。
+- 建议只让极小 `citation-claim-integrity` 与 gated `experiment-design-checkpoint` 进入下一 Human Gate；该建议不是 `trial` 或 `accepted` 决定。
+
+### Delegated discovery
+
+- 通过原 OpenCode/GLM 5.3 会话派发第二批 S5/S6/S1/S2 候选采集；输出被限制在忽略的 Attempt Archive，不得修改 Registry、受控文档、commit 或 push，且新增模型预算目标不超过 30,000 tokens。
+
+## 2026-08-16 — 多来源 Skill 摄取与首批机器筛选
+
+### Changed
+
+- Skill 方向从优先重复单个候选的高成本模型测试，调整为先建立多来源隔离候选池，再执行机器初筛、人工语义筛选和小规模困难任务验证。
+- 工具/文件格式类以标准组织和官方仓库为优先；科研方法类按学科与研究形态比较多个来源，不接受全流程“大总管”作为默认架构。
+- 高成本 GLM 搜索改为分片候选发现；GitHub 元数据、Tree、revision、许可和下载由主 Agent 独立核验。
+
+### Added
+
+- 首批固定 9 个来源；8 个筛选归档包含 54 个 `SKILL.md`，覆盖格式工具、证据、完整性、实验统计、理论推导和元技能。
+- 只读静态初筛报告：140 个脚本文件、0 个不安全 ZIP 路径、0 个跳过文本；所有风险命中保留为人工定位信号，不解释为漏洞数量。
+- [Skill 来源搜集、隔离与筛选](docs/workstreams/chengyue-lu-mode-skill/SKILL_SOURCE_INTAKE.md)：来源层级、开放分类轴、机器/人工 Gate、首批快照和 `K-MS-SOURCE-1`。
+
+### Known gaps
+
+- GLM 5.3 source scout 因抓取大型渲染页面至少消耗 82,966 reported tokens，超过 30,000 预算且未形成 JSON handoff；会话已终止并留存 capture gap。
+- OpenAI/Anthropic/Google 的 19 个一方入口和其他来源的 35 个入口均已完成人工处置；6 个仅进入 `triage` 候选池，详细 dossier、困难任务和正式准入仍待完成。没有下载内容被安装、执行或写入 accepted Registry。
+
+### Screened
+
+- 补入 Google `gws-shared` 前置 Skill，修正首批 Google 工具选择缺少认证、dry-run、写前确认和输出规则的问题。
+- OpenAI 的 Notebook/PDF/Skill authoring 进入 portable-core/authoring baseline；截图和图像生成转为 Tool/specialist Adapter 参考。
+- Anthropic 的 `docx/pdf/pptx/xlsx` 按限制性 source-available 保持 reference-only；`skill-creator` 只吸收 Apache-2.0 评估结构。
+- Google 广泛 API 目录降为按需 reference，窄 read/write recipe 转入 capability card，`persona-researcher` 因宽泛人格和跨工具写操作被拒绝为架构 Skill。
+- 跨 GPT/Claude/GLM 采用公共 Skill core、薄 runtime binding 和测试生成的 model conformance policy，不维护三套完整分叉。
+- GitHub、K-Dense、Academic Research Agent、lingzhi 与 Superpowers 的 35 个入口已逐项固定哈希并写入候选 Registry：6 个 `triage`、21 个 `reference`、3 个 `quarantine`、5 个 `rejected`。
+- `build-evidence-map` 与 K-Dense citation/experiment/peer-review/visualization/power 组成 dossier 候选池；转换、上下文请求和完成前验证下沉为 Tool/模板/运行时契约，单体研究总管和递归 reviewer 工作流不进入当前架构。
+- 补齐 OpenAI 5、Anthropic 6、Google 8 个一方入口的逐项 Registry 记录，替换两条无内容哈希的早期占位引用；结果为 18 个 `reference` 和 1 个 `rejected`，没有一方条目进入 `triage`、`trial` 或 `accepted`。
+- M7-009 多来源筛选 Gate 完成；下一任务 M7-010 固定为四份 dossier，并在 accepted Skill 重叠审计后最多选择两个独立重写或困难任务对象。
+
+## 2026-08-16 — `claim-preserving-rewrite` 探索性 Stage 1
+
+### Tested
+
+- 用 9 个隔离 OpenCode/GLM 5.3 会话完成 CPD-01..03 的 baseline、compact contract、full Skill 三臂诊断；总 reported tokens 125,709，无 worker 工具调用或外部副作用。
+- CPD-02/03 产生可解释的硬失败差异：compact contract 两案均通过，baseline 分别发生 Claim 遗漏与无据机制生成，full Skill 在 CPD-03 仍越过术语/应用边界。
+- CPD-01 三臂均保留 Claim，但只压缩 7.4%–10.0%，未达到约 25% Task 目标，因此不把“内容更完整”误记为任务成功。
+
+### Decided
+
+- 候选暂定 `revise-compact`：完整 Skill 暂未证明比 8 条最小约束更有价值，不进入 `accepted`。
+- 暂不直接使用真实研究材料；先修复 checker 并只复验有区分的 CPD-02/03，差异可重复后再申请脱敏真实片段。
+
+### Known gaps
+
+- surface checker 把 Markdown case ID、列表编号当作科研数字，且中文 polarity/strength 正则存在编码问题；当前报告只能作诊断，不能作准入 Gate。
+- CPD-03/full 超过单臂 120 秒和 20,000 token 边界；Attempt 只有手工 Trace，仍缺 M3-008 validator 与独立盲评。
+- 诊断辅助 manifest/ledger 改用 `.yaml.txt`，避免被正式 `examples/` 对象的 Schema validator 误收；执行前 manifest 以原始 SHA-256 单独归档。
+
+## 2026-08-16 — Skill 诊断性困难任务测试计划
+
+### Changed
+
+- 简单、单约束 fixture 降为结构/checker 冒烟，不再单独作为 Skill 增量价值证据。
+- 首轮评估改为 baseline、compact contract、完整 Skill 三臂诊断；存在 checker 重叠时再做 direct-tool/full-Skill 配对，以区分普通提示、确定性 Tool 与 Skill workflow 的贡献。
+- 测试采用分层预算：先运行少量高辨识度案例，只重复出现实质差异的案例；没有区分度时停止并优先缩短、降级或删除。
+
+### Added
+
+- 路诚钺维护的 Skill 诊断性困难任务计划：定义学科/动作相关压力类型、隐藏 challenge ledger、GLM 5.3 隔离执行、盲评、硬失败、上下文/协调成本和停止规则。
+- `claim-preserving-rewrite` 首轮 CPD-01..03：高密度跨段 Claim、诱导增强/提示注入、混合意图/术语边界，共 9 个 Stage 1 会话的冻结计划。
+- `examples/evals/claim-preserving-rewrite/diagnostic-v1/`：三份合成困难题、隔离的 review-only ledgers、8 条 compact contract、draft hash manifest 与人类预审表；尚未调用模型或写入理想答案。
+
+## 2026-08-15 — 路诚钺 Mode–Skill–Tool 分支计划
+
+### Changed
+
+- 当前分支顺序调整为：先审计 accepted Skills、独立整理/重写最多两个明确候选并定义 Tool capabilities，再完善 Mode/Skill/Tool 路由；Attempt Trace validator 保留为真实 forward test 的前置条件。
+- `handoff-integrity` 必须与 direct-tool/no-Skill 基线比较，不再因 accepted 状态默认保留 Skill wrapper。
+- 外部 Tool 在本分支只冻结 provider-neutral 能力、数据出口、副作用、失败、验证与调用规则；Adapter、凭据和 API 测试仍由黄毅负责。
+
+### Added
+
+- `docs/workstreams/chengyue-lu-mode-skill/`：以实名责任人命名的分支计划目录。
+- Skill 来源/许可、独立重写、渐进披露、首批候选队列和停止条件。
+- Mode–Skill–Tool 路由 Mermaid、Tool Capability Card、首批 Tool 能力和 8 个路由 fixture 规划。
+
+### Consolidated
+
+- 原 `docs/implementation/MODE_SKILL_WORKSTREAM_PLAN.md` 已并入新的实名分支计划目录，避免维护两份当前专项计划。
+
 ## 2026-08-14 — 实名责任、完整 Agent Trace 与文档归并
 
 ### Changed
