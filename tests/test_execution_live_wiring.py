@@ -223,8 +223,13 @@ class ExecuteTaskWiringTests(unittest.TestCase):
         self.assertFalse((self.root / "work").exists())
 
     def test_local_configs_in_repo_parse(self) -> None:
+        # These are git-ignored live-testing configs that only exist on the
+        # developer's machine; a fresh checkout (CI) must skip, not fail.
         for name in ("provider-adapters.local.yaml", "execution-pool.local.yaml"):
-            document = load_document(ROOT / ".rwb" / name)
+            path = ROOT / ".rwb" / name
+            if not path.exists():
+                self.skipTest(f"{name} is a local-only config (git-ignored)")
+            document = load_document(path)
             self.assertTrue(document, name)
 
 
