@@ -35,43 +35,12 @@ class ValidationIssue:
 
 
 COMMON_REQUIRED = ("schema_version",)
+# Required fields of schema-backed kinds (SCHEMA_KINDS) come from their JSON
+# schema, which is authoritative; they are intentionally not repeated here.
+# The entries below cover only registry kinds that have no schema file, so
+# this table stays their explicit structural declaration (per-entry checks
+# live in _validate_registry).
 DOCUMENT_REQUIRED: dict[str, tuple[str, ...]] = {
-    "project_protocol": (
-        "project_id",
-        "question_refs",
-        "active_modes",
-        "claim_ceiling",
-        "required_human_gates",
-        "budgets",
-        "context_policy",
-        "data_boundary",
-    ),
-    "task_packet": (
-        "task_id",
-        "goal",
-        "required_capabilities",
-        "required_skills",
-        "agent_profile",
-        "input_refs",
-        "write_scope",
-        "required_outputs",
-        "permissions",
-        "delegation",
-        "atomic_boundary",
-        "completion_checks",
-        "safe_pause_conditions",
-        "stop_conditions",
-    ),
-    "handoff_packet": (
-        "task_id",
-        "attempt_id",
-        "status",
-        "skill_lock",
-        "result",
-        "artifact_refs",
-        "limitations",
-        "unresolved",
-    ),
     "skill_sources": ("registry_kind", "sources"),
     "skill_candidates": ("registry_kind", "candidates"),
     "skill_accepted": ("registry_kind", "entries", "policy"),
@@ -80,26 +49,11 @@ DOCUMENT_REQUIRED: dict[str, tuple[str, ...]] = {
     "model_pool": ("registry_kind", "pool_id", "selection_policy", "slots"),
 }
 
-SCHEMA_KINDS = {
-    "deterministic_check_report",
-    "project_protocol",
-    "provider_conformance_report",
-    "research_mode",
-    "agent_profile",
-    "skill_manifest",
-    "skill_assignment",
-    "skill_archive_audit",
-    "skill_evaluation",
-    "task_packet",
-    "attempt",
-    "handoff_packet",
-    "handoff_transfer_audit",
-    "handoff_transfer_manifest",
-    "main_state",
-    "context_snapshot",
-    "execution_receipt",
-    "research_object",
-}
+# Derived from the schemas SchemaCatalog actually loads, so the schema files
+# stay the single source of truth for schema-backed kinds; adding a schema
+# file requires no edit here. Kinds without a schema file are declared in
+# DOCUMENT_REQUIRED above.
+SCHEMA_KINDS = frozenset(SchemaCatalog().document_kinds)
 
 
 def infer_document_kind(document: Mapping[str, Any]) -> str | None:
@@ -323,8 +277,10 @@ def _validate_registry(
                     )
                 seen.add(adapter_id)
     elif kind == "model_pool":
-        # Import locally to keep the generic validation module independent of
-        # adapter initialization at import time.
+        # Known layering inversion: the generic validation layer imports the
+        # adapter pool contract. The local import only keeps module import
+        # free of adapter initialization; untangling the dependency direction
+        # needs an ADR, not an ad-hoc move.
         from research_workbench.adapters.models.pool import ModelPool
 
         try:

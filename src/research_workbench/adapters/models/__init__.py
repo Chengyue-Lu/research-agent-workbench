@@ -31,6 +31,7 @@ from research_workbench.adapters.models.pool import (
     ModelPool,
     ModelSlotConfig,
     load_model_pool,
+    validate_pool_adapters,
 )
 from research_workbench.adapters.models.port import (
     Capability,
@@ -118,4 +119,5 @@ __all__ = [
     "probe_provider_adapters",
     "required_capabilities",
     "run_provider_conformance",
+    "validate_pool_adapters",
 ]

@@ -31,6 +31,8 @@ class CliTests(unittest.TestCase):
                     "probe",
                     "--config",
                     str(ROOT / "registry" / "models" / "pool.example.yaml"),
+                    "--adapters",
+                    str(ROOT / "registry" / "providers" / "adapters.yaml"),
                     "--json",
                 ]
             )
@@ -40,6 +42,28 @@ class CliTests(unittest.TestCase):
         self.assertIs(document["environment_checked"], False)
         self.assertTrue(all(slot["model_status"] == "unchecked" for slot in document["slots"]))
         self.assertNotIn(model_marker, output)
+
+    def test_model_pool_probe_rejects_capability_adapter_mismatch(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            pool = Path(directory) / "pool.yaml"
+            source = (ROOT / "registry" / "models" / "pool.example.yaml").read_text(encoding="utf-8")
+            pool.write_text(
+                source.replace("[text, tools, parallel_tools]", "[text, images]"),
+                encoding="utf-8",
+            )
+            code, output = run_cli(
+                [
+                    "models",
+                    "probe",
+                    "--config",
+                    str(pool),
+                    "--adapters",
+                    str(ROOT / "registry" / "providers" / "adapters.yaml"),
+                ]
+            )
+        self.assertEqual(2, code)
+        self.assertIn("not implemented", output)
+        self.assertNotIn("Traceback", output)
 
     def test_provider_probe_defaults_to_config_only_and_never_prints_values(self) -> None:
         secret = "must-never-appear-in-cli-output"
@@ -215,6 +239,40 @@ class CliTests(unittest.TestCase):
         )
         self.assertEqual(0, code)
         self.assertIn("no blocking", output)
+
+    def test_reference_check_rejects_non_mapping_document(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            document = Path(directory) / "list-document.json"
+            document.write_text('["not", "an", "object"]', encoding="utf-8")
+            code, output = run_cli(["reference", "check", str(document), "--root", str(ROOT)])
+        self.assertEqual(2, code)
+        self.assertIn("document must be an object", output)
+        self.assertNotIn("Traceback", output)
+
+    def test_task_resolve_blocks_on_missing_registry_skill(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            task = Path(directory) / "task-missing-skill.yaml"
+            source = (ROOT / "examples" / "task-evidence.yaml").read_text(encoding="utf-8")
+            task.write_text(
+                source.replace("literature-evidence-extraction", "no-such-skill"),
+                encoding="utf-8",
+            )
+            code, output = run_cli(
+                [
+                    "task",
+                    "resolve",
+                    str(task),
+                    "--profile",
+                    str(ROOT / "examples" / "profiles" / "evidence-scout.yaml"),
+                    "--registry",
+                    str(ROOT / "registry" / "skills" / "accepted.json"),
+                    "--root",
+                    str(ROOT),
+                ]
+            )
+        self.assertEqual(1, code)
+        self.assertIn("SKILL-MISSING", output)
+        self.assertNotIn("Traceback", output)
 
     def test_init_and_checkpoint_create_valid_non_overwriting_files(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

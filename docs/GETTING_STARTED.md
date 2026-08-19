@@ -87,12 +87,11 @@ PowerShell：
 ```powershell
 git clone https://github.com/Chengyue-Lu/research-agent-workbench.git
 Set-Location research-agent-workbench
-git switch agent/m1-provider-neutral-foundation
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e .
 ```
 
-上面的分支名是本指南编写时承载当前实现的开发分支；合并或正式发布后应改用对应的 `main`、tag 或固定 commit。如果已激活虚拟环境，也可以直接运行 `python -m pip install -e .`。当前没有正式发布的 wheel 或 PyPI 版本，推荐从固定 Git commit 或 tag 安装，不要无版本地依赖移动分支。
+当前实现已合并到主分支 `main`，clone 后默认就在 `main`，无需切换开发分支；路诚钺当前的 Mode–Skill 基线工作在 `agent/mode-skill-selection-baseline` 分支进行，不属于首次安装路径。如果已激活虚拟环境，也可以直接运行 `python -m pip install -e .`。当前没有正式发布的 wheel 或 PyPI 版本，推荐从固定 Git commit 或 tag 安装，不要无版本地依赖移动分支。
 
 ### 3.3 验证安装
 
@@ -104,7 +103,7 @@ python -m venv .venv
 当前仓库快照的预期摘要是：
 
 ```text
-validated=<current count> errors=0 warnings=0
+validated=58 errors=0 warnings=0
 ```
 
 这个命令只读取本地文件，检查 Schema、引用、内容哈希和 Registry 关系，不会启动 Agent，也不会调用模型 API。

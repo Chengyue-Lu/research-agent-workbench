@@ -109,6 +109,13 @@ class PermissionPolicy:
         return cls(filesystem, network, external, roots)
 
 
+def ensure_unique(values: Iterable[str], field: str) -> tuple[str, ...]:
+    result = tuple(values)
+    if len(result) != len(set(result)):
+        raise ContractError(field, "must not contain duplicates")
+    return result
+
+
 T = TypeVar("T")
 
 
@@ -124,10 +131,3 @@ def to_plain(value: T) -> Any:
     if isinstance(value, list):
         return [to_plain(item) for item in value]
     return value
-
-
-def ensure_unique(values: Iterable[str], field: str) -> tuple[str, ...]:
-    result = tuple(values)
-    if len(result) != len(set(result)):
-        raise ContractError(field, "must not contain duplicates")
-    return result

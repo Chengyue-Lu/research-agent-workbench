@@ -488,7 +488,7 @@ def _provider_conformance(args: argparse.Namespace) -> int:
 
 
 def _model_pool_probe(args: argparse.Namespace) -> int:
-    pool = load_model_pool(args.config)
+    pool = load_model_pool(args.config, adapters_path=args.adapters)
     environment = os.environ if args.check_environment else None
     report = pool.probe(environment=environment)
     if args.json:
@@ -542,11 +542,15 @@ def _task_resolve(args: argparse.Namespace) -> int:
                 raise ValueError("task resolution requires --registry or at least one --skill")
             skills = [SkillManifest.from_mapping(_load_valid(path, "skill_manifest")) for path in args.skill]
             resolved = resolve_task(task, profile, skills)
-    except (KeyError, ResolutionError) as exc:
-        if isinstance(exc, KeyError):
-            print(f"BLOCK   SKILL-MISSING                {exc}")
-            return 1
+    except ResolutionError as exc:
         return _print_risks(exc.risks)
+    except (KeyError, ContractError) as exc:
+        # Registry drift/malformation raises ContractError with other fields and
+        # must keep the exit-2 contract-error channel via main().
+        if isinstance(exc, ContractError) and exc.field != "required_skills":
+            raise
+        print(f"BLOCK   SKILL-MISSING                {exc}")
+        return 1
     document = to_plain(resolved)
     if args.output:
         _write_yaml(Path(args.output), document)
@@ -669,6 +673,8 @@ def _handoff_audit_transfer(args: argparse.Namespace) -> int:
 
 def _reference_check(args: argparse.Namespace) -> int:
     document = load_document(args.document)
+    if not isinstance(document, Mapping):
+        raise ValueError(f"{args.document}: document must be an object")
     return _print_risks(_document_reference_risks(document, Path(args.root).resolve()))
 
 
@@ -832,6 +838,7 @@ def _context_resume_check(args: argparse.Namespace) -> int:
             capture_output=True,
             text=True,
             check=False,
+            timeout=10,
         )
         actual_head = completed.stdout.strip().lower() if completed.returncode == 0 else None
         if actual_head is None:
@@ -1013,6 +1020,7 @@ def _context_checkpoint(args: argparse.Namespace) -> int:
             capture_output=True,
             text=True,
             check=False,
+            timeout=10,
         )
         if completed.returncode != 0:
             raise ValueError("cannot capture Git HEAD from the checkpoint root")
@@ -1148,6 +1156,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="validate model slots without choosing, ranking, or calling a model",
     )
     model_probe.add_argument("--config", default="registry/models/pool.example.yaml")
+    model_probe.add_argument(
+        "--adapters",
+        default="registry/providers/adapters.yaml",
+        help="provider adapter registry used to cross-check slot adapters and capabilities",
+    )
     model_probe.add_argument(
         "--check-environment",
         action="store_true",

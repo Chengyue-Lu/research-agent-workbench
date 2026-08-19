@@ -138,7 +138,7 @@ def preflight(request: ModelRequest, snapshot: ProviderCapabilities) -> None:
             if block.kind in {"tool_call", "tool_result"} and not isinstance(block.data, Mapping):
                 raise ProviderError(ProviderErrorCategory.INVALID_REQUEST, f"{block.kind} block lacks data")
             if block.kind == "tool_call" and isinstance(block.data, Mapping):
-                if not _nonempty_string(block.data.get("call_id")) or not _nonempty_string(block.data.get("name")):
+                if not _has_text(block.data.get("call_id")) or not _has_text(block.data.get("name")):
                     raise ProviderError(
                         ProviderErrorCategory.INVALID_REQUEST,
                         "tool_call block requires non-empty call_id and name",
@@ -149,7 +149,7 @@ def preflight(request: ModelRequest, snapshot: ProviderCapabilities) -> None:
                         "tool_call block requires object arguments",
                     )
             if block.kind == "tool_result" and isinstance(block.data, Mapping):
-                if not _nonempty_string(block.data.get("call_id")) or "output" not in block.data:
+                if not _has_text(block.data.get("call_id")) or "output" not in block.data:
                     raise ProviderError(
                         ProviderErrorCategory.INVALID_REQUEST,
                         "tool_result block requires non-empty call_id and output",
@@ -371,5 +371,22 @@ def require_list(value: object, *, provider: str, field: str) -> list[Any]:
     return value
 
 
-def _nonempty_string(value: object) -> bool:
+def _has_text(value: object) -> bool:
     return isinstance(value, str) and bool(value.strip())
+
+
+def _nonempty_string(value: object, field: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(f"{field} must be a non-empty string")
+    return value.strip()
+
+
+def _environment_name(value: object, field: str) -> str:
+    name = _nonempty_string(value, field)
+    if not name.replace("_", "").isalnum():
+        raise ValueError(f"{field} must contain only letters, digits, and underscores")
+    return name
+
+
+def _integer(value: object) -> int | None:
+    return value if isinstance(value, int) and not isinstance(value, bool) else None

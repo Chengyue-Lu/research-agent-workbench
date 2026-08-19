@@ -21,6 +21,11 @@ from research_workbench.adapters.models import (
     conformance_plan,
     run_provider_conformance,
 )
+from research_workbench.adapters.models.configuration import (
+    IMPLEMENTED_CAPABILITIES,
+    PROVIDER_ADAPTERS,
+    SUPPORTED_PROVIDERS,
+)
 from research_workbench.validation import SchemaCatalog
 
 
@@ -117,6 +122,14 @@ class ConformancePlanTests(unittest.TestCase):
             provider = build_live_provider(config(enabled=True))
         self.assertIsInstance(provider, AnthropicMessagesProvider)
         self.assertEqual(("claude-synthetic",), provider.capabilities().models)
+
+
+class ProviderAdapterRegistryTests(unittest.TestCase):
+    def test_registry_is_derived_from_adapter_classes(self) -> None:
+        self.assertEqual(SUPPORTED_PROVIDERS, frozenset(PROVIDER_ADAPTERS))
+        for name, adapter in PROVIDER_ADAPTERS.items():
+            self.assertEqual(name, adapter.provider_name)
+            self.assertEqual(IMPLEMENTED_CAPABILITIES[name], adapter.implemented_capabilities)
 
 
 class ConformanceRunnerTests(unittest.TestCase):
