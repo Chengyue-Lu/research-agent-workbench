@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import math
 from typing import Any, Mapping
 
 from jsonschema import Draft202012Validator
@@ -139,7 +138,7 @@ def preflight(request: ModelRequest, snapshot: ProviderCapabilities) -> None:
             if block.kind in {"tool_call", "tool_result"} and not isinstance(block.data, Mapping):
                 raise ProviderError(ProviderErrorCategory.INVALID_REQUEST, f"{block.kind} block lacks data")
             if block.kind == "tool_call" and isinstance(block.data, Mapping):
-                if not _nonempty_string(block.data.get("call_id")) or not _nonempty_string(block.data.get("name")):
+                if not _has_text(block.data.get("call_id")) or not _has_text(block.data.get("name")):
                     raise ProviderError(
                         ProviderErrorCategory.INVALID_REQUEST,
                         "tool_call block requires non-empty call_id and name",
@@ -150,7 +149,7 @@ def preflight(request: ModelRequest, snapshot: ProviderCapabilities) -> None:
                         "tool_call block requires object arguments",
                     )
             if block.kind == "tool_result" and isinstance(block.data, Mapping):
-                if not _nonempty_string(block.data.get("call_id")) or "output" not in block.data:
+                if not _has_text(block.data.get("call_id")) or "output" not in block.data:
                     raise ProviderError(
                         ProviderErrorCategory.INVALID_REQUEST,
                         "tool_result block requires non-empty call_id and output",
@@ -248,21 +247,6 @@ def raise_provider_http_error(
     )
 
 
-def decode_strict_json_value(text: str) -> Any:
-    """Decode RFC-style JSON while rejecting non-finite or oversized numbers."""
-
-    def finite_float(value: str) -> float:
-        parsed = float(value)
-        if not math.isfinite(parsed):
-            raise ValueError("JSON number must be finite")
-        return parsed
-
-    def reject_constant(_value: str) -> None:
-        raise ValueError("non-standard JSON numeric constant")
-
-    return json.loads(text, parse_float=finite_float, parse_constant=reject_constant)
-
-
 def validate_structured_response(request: ModelRequest, response: ModelResponse) -> ModelResponse:
     if request.response_format.kind != "json_schema" or response.finish_reason not in {
         FinishReason.COMPLETE,
@@ -273,8 +257,8 @@ def validate_structured_response(request: ModelRequest, response: ModelResponse)
     assert isinstance(schema, Mapping)
     text = "".join(block.text or "" for block in response.output if block.kind == "text")
     try:
-        value = decode_strict_json_value(text)
-    except ValueError as exc:
+        value = json.loads(text)
+    except json.JSONDecodeError as exc:
         raise ProviderError(
             ProviderErrorCategory.CONTRACT_VIOLATION,
             f"{response.provider} returned invalid JSON for structured output",
@@ -295,42 +279,9 @@ def validate_structured_response(request: ModelRequest, response: ModelResponse)
 def validate_response_contract(request: ModelRequest, response: ModelResponse) -> ModelResponse:
     """Apply provider-independent checks before output can reach a tool runner."""
 
-    if not isinstance(response, ModelResponse):
-        raise ProviderError(
-            ProviderErrorCategory.CONTRACT_VIOLATION,
-            "Provider adapter returned a value that is not a ModelResponse",
-        )
-    for field in ("response_id", "provider", "model"):
-        value = getattr(response, field)
-        if not isinstance(value, str) or not value.strip():
-            raise ProviderError(
-                ProviderErrorCategory.CONTRACT_VIOLATION,
-                f"Provider adapter returned an invalid non-empty response.{field}",
-            )
-    if not isinstance(response.finish_reason, FinishReason):
-        raise ProviderError(
-            ProviderErrorCategory.CONTRACT_VIOLATION,
-            "Provider adapter returned an invalid response.finish_reason",
-        )
-    _validate_response_usage(response)
     definitions = {tool.name: tool for tool in request.tools}
     seen_ids: set[str] = set()
     for call in response.tool_calls:
-        if not isinstance(call.call_id, str) or not call.call_id.strip():
-            raise ProviderError(
-                ProviderErrorCategory.CONTRACT_VIOLATION,
-                f"{response.provider} returned a tool call without a stable non-empty id",
-            )
-        if not isinstance(call.name, str) or not call.name.strip():
-            raise ProviderError(
-                ProviderErrorCategory.CONTRACT_VIOLATION,
-                f"{response.provider} returned a tool call without a non-empty name",
-            )
-        if not isinstance(call.arguments, Mapping):
-            raise ProviderError(
-                ProviderErrorCategory.CONTRACT_VIOLATION,
-                f"{response.provider} returned non-object arguments for tool {call.name!r}",
-            )
         if call.call_id in seen_ids:
             raise ProviderError(
                 ProviderErrorCategory.CONTRACT_VIOLATION,
@@ -382,46 +333,6 @@ def validate_response_contract(request: ModelRequest, response: ModelResponse) -
     return validate_structured_response(request, response)
 
 
-def _validate_response_usage(response: ModelResponse) -> None:
-    usage = response.usage
-    for field in (
-        "input_tokens",
-        "output_tokens",
-        "cached_input_tokens",
-        "reasoning_tokens",
-    ):
-        value = getattr(usage, field)
-        if value is not None and (
-            isinstance(value, bool) or not isinstance(value, int) or value < 0
-        ):
-            raise ProviderError(
-                ProviderErrorCategory.CONTRACT_VIOLATION,
-                f"{response.provider} returned invalid non-negative integer usage.{field}",
-            )
-    cost = usage.provider_reported_cost
-    if cost is not None and (
-        isinstance(cost, bool)
-        or not isinstance(cost, (int, float))
-        or not math.isfinite(cost)
-        or cost < 0
-    ):
-        raise ProviderError(
-            ProviderErrorCategory.CONTRACT_VIOLATION,
-            f"{response.provider} returned invalid non-negative finite usage.provider_reported_cost",
-        )
-    currency = usage.currency
-    if currency is not None and (not isinstance(currency, str) or not currency.strip()):
-        raise ProviderError(
-            ProviderErrorCategory.CONTRACT_VIOLATION,
-            f"{response.provider} returned invalid usage.currency",
-        )
-    if (cost is None) != (currency is None):
-        raise ProviderError(
-            ProviderErrorCategory.CONTRACT_VIOLATION,
-            f"{response.provider} must report usage cost and currency together",
-        )
-
-
 def text_from_output(value: object) -> str:
     if isinstance(value, str):
         return value
@@ -460,8 +371,21 @@ def require_list(value: object, *, provider: str, field: str) -> list[Any]:
     return value
 
 
-def _nonempty_string(value: object) -> bool:
+def _has_text(value: object) -> bool:
     return isinstance(value, str) and bool(value.strip())
+
+
+def _nonempty_string(value: object, field: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(f"{field} must be a non-empty string")
+    return value.strip()
+
+
+def _environment_name(value: object, field: str) -> str:
+    name = _nonempty_string(value, field)
+    if not name.replace("_", "").isalnum():
+        raise ValueError(f"{field} must contain only letters, digits, and underscores")
+    return name
 
 
 def _integer(value: object) -> int | None:

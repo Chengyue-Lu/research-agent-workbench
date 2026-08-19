@@ -8,12 +8,11 @@ and never changes provider or model automatically.
 from __future__ import annotations
 
 import json
-import math
 import time
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass, replace
 from enum import StrEnum
-from typing import Any, Protocol
+from typing import Any
 
 from research_workbench.adapters.models.base import validate_response_contract
 from research_workbench.adapters.models.port import (
@@ -22,9 +21,6 @@ from research_workbench.adapters.models.port import (
     Message,
     ModelRequest,
     ModelResponse,
-    ProviderCapabilities,
-    ProviderError,
-    ProviderErrorCategory,
     ProviderRegistry,
     ToolCall,
     ToolDefinition,
@@ -51,54 +47,30 @@ class ApiSessionLimits:
     max_total_tokens: int | None = None
     max_provider_reported_cost: float | None = None
     allowed_tool_side_effects: frozenset[str] = frozenset({"read-only"})
-    max_compute_values_per_call: int = 256
 
     def __post_init__(self) -> None:
-        positive_integers = {
+        positive = {
             "max_model_turns": self.max_model_turns,
             "max_tool_result_chars": self.max_tool_result_chars,
             "max_output_tokens_per_turn": self.max_output_tokens_per_turn,
+            "max_seconds": self.max_seconds,
         }
-        for field, value in positive_integers.items():
-            if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
-                raise ValueError(f"{field} must be a positive integer")
-        if (
-            isinstance(self.max_compute_values_per_call, bool)
-            or not isinstance(self.max_compute_values_per_call, int)
-            or self.max_compute_values_per_call <= 0
-        ):
-            raise ValueError("max_compute_values_per_call must be a positive integer")
+        for field, value in positive.items():
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or value <= 0:
+                raise ValueError(f"{field} must be positive")
         for field, value in {
             "max_tool_calls": self.max_tool_calls,
             "max_parallel_tool_calls": self.max_parallel_tool_calls,
         }.items():
             if isinstance(value, bool) or not isinstance(value, int) or value < 0:
                 raise ValueError(f"{field} must be a non-negative integer")
-        if (
-            isinstance(self.max_seconds, bool)
-            or not isinstance(self.max_seconds, (int, float))
-            or not math.isfinite(self.max_seconds)
-            or self.max_seconds <= 0
-        ):
-            raise ValueError("max_seconds must be a positive finite number")
         if self.max_tool_calls and not self.max_parallel_tool_calls:
             raise ValueError("max_parallel_tool_calls must be positive when tools are allowed")
-        if self.max_total_tokens is not None and (
-            isinstance(self.max_total_tokens, bool)
-            or not isinstance(self.max_total_tokens, int)
-            or self.max_total_tokens <= 0
-        ):
-            raise ValueError("max_total_tokens must be a positive integer when supplied")
-        if self.max_provider_reported_cost is not None and (
-            isinstance(self.max_provider_reported_cost, bool)
-            or not isinstance(self.max_provider_reported_cost, (int, float))
-            or not math.isfinite(self.max_provider_reported_cost)
-            or self.max_provider_reported_cost < 0
-        ):
-            raise ValueError(
-                "max_provider_reported_cost must be a non-negative finite number when supplied"
-            )
-        supported_side_effects = {"none", "read-only", "local-write", "external-write"}
+        if self.max_total_tokens is not None and self.max_total_tokens <= 0:
+            raise ValueError("max_total_tokens must be positive when supplied")
+        if self.max_provider_reported_cost is not None and self.max_provider_reported_cost < 0:
+            raise ValueError("max_provider_reported_cost must be non-negative when supplied")
+        supported_side_effects = {"read-only", "local-write", "external-write"}
         unknown_side_effects = sorted(set(self.allowed_tool_side_effects) - supported_side_effects)
         if unknown_side_effects:
             raise ValueError("unknown allowed tool side effects: " + ", ".join(unknown_side_effects))
@@ -109,61 +81,6 @@ class ClientTool:
     definition: ToolDefinition
     execute: Callable[[Mapping[str, Any]], object]
     side_effect: str = "read-only"
-    trace_result: bool = False
-
-
-class ApiSessionObserver(Protocol):
-    """Sanitized lifecycle observer for one isolated session.
-
-    The runner exposes only boundary identities and counts.  It never passes
-    prompts, response bodies, tool arguments/results, native call IDs,
-    credentials, exception messages, or model reasoning to the observer.
-    Observer failures propagate so execution fails closed.
-    """
-
-    def provider_call_started(
-        self,
-        *,
-        call_number: int,
-        provider_identity: str,
-        model: str,
-    ) -> None: ...
-
-    def provider_call_finished(
-        self,
-        *,
-        call_number: int,
-        status: str,
-    ) -> None: ...
-
-    def tool_call_started(
-        self,
-        *,
-        call_number: int,
-        tool_name: str,
-    ) -> None: ...
-
-    def tool_call_finished(
-        self,
-        *,
-        call_number: int,
-        tool_name: str,
-        status: str,
-        result_char_count: int,
-        result_entered_context: bool,
-        frozen_read_path: str | None,
-        frozen_read_sha256: str | None,
-        captured_result: object | None,
-    ) -> None: ...
-
-
-@dataclass(frozen=True, slots=True)
-class ToolFailureSummary:
-    """Minimal failure metadata retained after the transient transcript is gone."""
-
-    tool_name: str
-    call_number: int
-    error_type: str
 
 
 @dataclass(frozen=True, slots=True)
@@ -184,8 +101,6 @@ class AggregateUsage:
 
 @dataclass(frozen=True, slots=True)
 class ApiSessionResult:
-    """Session result whose ``provider`` is the canonical provider identity."""
-
     status: ApiSessionStatus
     stop_reason: str
     provider: str
@@ -196,20 +111,10 @@ class ApiSessionResult:
     usage: AggregateUsage
     final_response: ModelResponse | None
     warnings: tuple[str, ...]
-    model_request_counts: tuple[tuple[str, int], ...] = ()
-    tool_failures: tuple[ToolFailureSummary, ...] = ()
-
-    @property
-    def tool_failure_count(self) -> int:
-        return len(self.tool_failures)
 
 
 class IsolatedApiSessionRunner:
-    """Execute one fresh API child session with bounded call/response guards.
-
-    The runner cannot cancel an in-flight Provider or tool call. Tool-call
-    fan-out is capped per turn, while client handlers currently run serially.
-    """
+    """Execute one fresh API child session under hard local limits."""
 
     def __init__(
         self,
@@ -217,32 +122,20 @@ class IsolatedApiSessionRunner:
         *,
         tools: tuple[ClientTool, ...] = (),
         clock: Callable[[], float] = time.monotonic,
-        observer: ApiSessionObserver | None = None,
     ) -> None:
         self._providers = providers
         self._tools = {tool.definition.name: tool for tool in tools}
         if len(self._tools) != len(tools):
             raise ValueError("client tool names must be unique")
         self._clock = clock
-        self._observer = observer
 
     def run(
         self,
         *,
-        provider_name: str | None = None,
+        provider_name: str,
         request: ModelRequest,
         limits: ApiSessionLimits,
-        expected_capabilities: ProviderCapabilities | None = None,
-        adapter_id: str | None = None,
     ) -> ApiSessionResult:
-        """Run one request through an explicit adapter registry key.
-
-        ``adapter_id`` is the preferred lookup argument. ``provider_name`` is
-        retained as a compatibility alias and must not be confused with the
-        canonical provider identity in the capability snapshot and response.
-        """
-
-        selected_adapter_id = _resolve_adapter_id(adapter_id, provider_name)
         declared = {tool.name for tool in request.tools}
         missing_handlers = sorted(declared - set(self._tools))
         unused_handlers = sorted(set(self._tools) - declared)
@@ -272,83 +165,37 @@ class IsolatedApiSessionRunner:
                 limits.max_output_tokens_per_turn,
             ),
         )
-        provider, active_capabilities = self._providers.require_with_capabilities(
-            selected_adapter_id,
-            bounded_request,
-            expected_capabilities=expected_capabilities,
-        )
-        canonical_provider = active_capabilities.provider
+        provider = self._providers.require(provider_name, bounded_request)
         started = self._clock()
         messages = list(bounded_request.messages)
         responses: list[ModelResponse] = []
         tool_call_count = 0
         warnings: list[str] = []
-        tool_failures: list[ToolFailureSummary] = []
 
         while True:
             if len(responses) >= limits.max_model_turns:
                 return self._result(
                     ApiSessionStatus.SAFE_PAUSED,
                     "model-turn-budget",
-                    canonical_provider,
+                    provider_name,
                     request.model,
                     responses,
                     tool_call_count,
                     warnings,
-                    tool_failures,
                 )
             if self._clock() - started >= limits.max_seconds:
                 return self._result(
                     ApiSessionStatus.SAFE_PAUSED,
                     "wall-time-budget",
-                    canonical_provider,
+                    provider_name,
                     request.model,
                     responses,
                     tool_call_count,
                     warnings,
-                    tool_failures,
                 )
 
             current = replace(bounded_request, messages=tuple(messages))
-            provider_call_number = len(responses) + 1
-            if self._observer is not None:
-                self._observer.provider_call_started(
-                    call_number=provider_call_number,
-                    provider_identity=canonical_provider,
-                    model=request.model,
-                )
-            try:
-                response = validate_response_contract(current, provider.generate(current))
-            except Exception:
-                if self._observer is not None:
-                    self._observer.provider_call_finished(
-                        call_number=provider_call_number,
-                        status="failed",
-                    )
-                raise
-            if self._observer is not None:
-                self._observer.provider_call_finished(
-                    call_number=provider_call_number,
-                    status="succeeded",
-                )
-            if response.provider != canonical_provider:
-                raise ProviderError(
-                    ProviderErrorCategory.CONTRACT_VIOLATION,
-                    "Provider response identity differs from the approved capability snapshot",
-                )
-            if response.model != request.model:
-                responses.append(response)
-                warnings.extend(response.warnings)
-                return self._result(
-                    ApiSessionStatus.FAILED,
-                    "model-identity-mismatch",
-                    canonical_provider,
-                    request.model,
-                    responses,
-                    tool_call_count,
-                    warnings,
-                    tool_failures,
-                )
+            response = validate_response_contract(current, provider.generate(current))
             responses.append(response)
             warnings.extend(response.warnings)
 
@@ -357,23 +204,21 @@ class IsolatedApiSessionRunner:
                 return self._result(
                     ApiSessionStatus.SAFE_PAUSED,
                     budget_reason,
-                    canonical_provider,
+                    provider_name,
                     request.model,
                     responses,
                     tool_call_count,
                     warnings,
-                    tool_failures,
                 )
             if self._clock() - started >= limits.max_seconds:
                 return self._result(
                     ApiSessionStatus.SAFE_PAUSED,
                     "wall-time-budget",
-                    canonical_provider,
+                    provider_name,
                     request.model,
                     responses,
                     tool_call_count,
                     warnings,
-                    tool_failures,
                 )
 
             if response.tool_calls:
@@ -381,23 +226,21 @@ class IsolatedApiSessionRunner:
                     return self._result(
                         ApiSessionStatus.SAFE_PAUSED,
                         "parallel-tool-budget",
-                        canonical_provider,
+                        provider_name,
                         request.model,
                         responses,
                         tool_call_count,
                         warnings,
-                        tool_failures,
                     )
                 if tool_call_count + len(response.tool_calls) > limits.max_tool_calls:
                     return self._result(
                         ApiSessionStatus.SAFE_PAUSED,
                         "tool-call-budget",
-                        canonical_provider,
+                        provider_name,
                         request.model,
                         responses,
                         tool_call_count,
                         warnings,
-                        tool_failures,
                     )
                 assistant_blocks = [
                     *response.output,
@@ -405,103 +248,23 @@ class IsolatedApiSessionRunner:
                 ]
                 tool_blocks: list[ContentBlock] = []
                 for call in response.tool_calls:
-                    if self._clock() - started >= limits.max_seconds:
-                        return self._result(
-                            ApiSessionStatus.SAFE_PAUSED,
-                            "wall-time-budget",
-                            canonical_provider,
-                            request.model,
-                            responses,
-                            tool_call_count,
-                            warnings,
-                            tool_failures,
-                        )
                     binding = self._tools[call.name]
-                    tool_call_count += 1
-                    if self._observer is not None:
-                        self._observer.tool_call_started(
-                            call_number=tool_call_count,
-                            tool_name=call.name,
-                        )
                     try:
                         output = binding.execute(call.arguments)
                         is_error = False
                     except Exception as exc:  # Tool failures return only their exception type.
-                        error_type = type(exc).__name__
-                        output = {"error": error_type}
+                        output = {"error": type(exc).__name__}
                         is_error = True
-                        tool_failures.append(
-                            ToolFailureSummary(
-                                tool_name=call.name,
-                                call_number=tool_call_count,
-                                error_type=error_type,
-                            )
-                        )
                     rendered = _render_tool_output(output)
-                    frozen_read_path: str | None = None
-                    frozen_read_sha256: str | None = None
-                    if (
-                        binding.side_effect == "read-only"
-                        and isinstance(output, Mapping)
-                        and isinstance(output.get("path"), str)
-                        and isinstance(output.get("sha256"), str)
-                    ):
-                        frozen_read_path = str(output["path"])
-                        frozen_read_sha256 = str(output["sha256"])
-                    if self._clock() - started >= limits.max_seconds:
-                        if self._observer is not None:
-                            self._observer.tool_call_finished(
-                                call_number=tool_call_count,
-                                tool_name=call.name,
-                                status="failed" if is_error else "succeeded",
-                                result_char_count=len(rendered),
-                                result_entered_context=False,
-                                frozen_read_path=frozen_read_path,
-                                frozen_read_sha256=frozen_read_sha256,
-                                captured_result=(output if is_error or binding.trace_result else None),
-                            )
-                        return self._result(
-                            ApiSessionStatus.SAFE_PAUSED,
-                            "wall-time-budget",
-                            canonical_provider,
-                            request.model,
-                            responses,
-                            tool_call_count,
-                            warnings,
-                            tool_failures,
-                        )
                     if len(rendered) > limits.max_tool_result_chars:
-                        if self._observer is not None:
-                            self._observer.tool_call_finished(
-                                call_number=tool_call_count,
-                                tool_name=call.name,
-                                status="failed" if is_error else "succeeded",
-                                result_char_count=len(rendered),
-                                result_entered_context=False,
-                                frozen_read_path=frozen_read_path,
-                                frozen_read_sha256=frozen_read_sha256,
-                                captured_result=(output if is_error or binding.trace_result else None),
-                            )
                         return self._result(
                             ApiSessionStatus.SAFE_PAUSED,
                             "tool-result-size-budget",
-                            canonical_provider,
+                            provider_name,
                             request.model,
                             responses,
                             tool_call_count,
                             warnings,
-                            tool_failures,
-                        )
-                    if self._observer is not None:
-                        self._observer.tool_call_finished(
-                            call_number=tool_call_count,
-                            tool_name=call.name,
-                            status="failed" if is_error else "succeeded",
-                            result_char_count=len(rendered),
-                            result_entered_context=True,
-                            frozen_read_path=frozen_read_path,
-                            frozen_read_sha256=frozen_read_sha256,
-                            captured_result=(output if is_error or binding.trace_result else None),
                         )
                     tool_blocks.append(
                         ContentBlock(
@@ -514,6 +277,7 @@ class IsolatedApiSessionRunner:
                             },
                         )
                     )
+                    tool_call_count += 1
                 messages.append(Message("assistant", tuple(assistant_blocks)))
                 messages.append(Message("tool", tuple(tool_blocks)))
                 continue
@@ -522,12 +286,11 @@ class IsolatedApiSessionRunner:
             return self._result(
                 status,
                 reason,
-                canonical_provider,
+                provider_name,
                 request.model,
                 responses,
                 tool_call_count,
                 warnings,
-                tool_failures,
             )
 
     @staticmethod
@@ -539,12 +302,8 @@ class IsolatedApiSessionRunner:
         responses: list[ModelResponse],
         tool_calls: int,
         warnings: list[str],
-        tool_failures: list[ToolFailureSummary],
     ) -> ApiSessionResult:
         observed = tuple(dict.fromkeys(response.model for response in responses))
-        request_counts: dict[str, int] = {}
-        for response in responses:
-            request_counts[response.model] = request_counts.get(response.model, 0) + 1
         if observed and any(model != requested_model for model in observed):
             warnings.append("provider-reported-model-differs-from-request")
         return ApiSessionResult(
@@ -558,22 +317,7 @@ class IsolatedApiSessionRunner:
             usage=_aggregate_usage(response.usage for response in responses),
             final_response=responses[-1] if responses else None,
             warnings=tuple(dict.fromkeys(warnings)),
-            model_request_counts=tuple(request_counts.items()),
-            tool_failures=tuple(tool_failures),
         )
-
-
-def _resolve_adapter_id(adapter_id: str | None, provider_name: str | None) -> str:
-    if adapter_id is not None and provider_name is not None and adapter_id != provider_name:
-        raise ValueError("adapter_id and legacy provider_name select different adapters")
-    selected = adapter_id if adapter_id is not None else provider_name
-    if (
-        not isinstance(selected, str)
-        or not selected.strip()
-        or selected != selected.strip()
-    ):
-        raise ValueError("adapter_id must be a non-empty normalized registry lookup key")
-    return selected
 
 
 def _tool_call_block(call: ToolCall) -> ContentBlock:

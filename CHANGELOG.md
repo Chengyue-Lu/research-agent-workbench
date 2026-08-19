@@ -2,39 +2,6 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
-## 2026-08-15 — closeout/pipeline 行为不变重构
-
-### Changed
-
-- `execution/closeout.py`（2463 行）拆分为 `execution/closeout/` 包：`errors`（错误与值类型）、`paths`（路径布局）、`documents`（文档读写与 schema 校验）、`verify`（视图校验与漂移核验）、`builders`（纯文档构造）、`stage`（stage 树与执行 intent）、`publish`（五入口）。公共 API 经包 `__init__.py` 原名重导出，三个下游导入方零改动。
-- commit-last 协议的四个世界状态检查点（stage 视图 → outputs 已发布 → hash 校验后 → Main State 发布后重读盘）收敛为 `_ViewCheck`：检查点次数、相对顺序与全部 fault-injection 点名逐一保留，仅消除 9 处 11 关键字参数的搬运样板。
-- `pipeline.run_task_api_attempt` 的 6 组失败 closeout 样板收敛为局部 `closeout_terminal` 闭包（11 个不变参数闭合捕获，编译前后阶段差异经显式覆盖）；本地 `_REQUIRED_ACTIONS` 常量改为共享 `TERMINAL_STATUSES`。
-- 三个 Provider Adapter 中逐字重复的 `_integer` 上移 `adapters/models/base.py` 一份。
-
-### Scope
-
-- 纯行为保持重构：校验调用次数、错误码、fault 点、公共 API 与全部 227 项测试零变化；未合并任何校验语义。
-- `output.py` 与 `context/handoff_transfer.py` 的两个 `_resolve_pointer` 经逐行核对语义不同（空指针返回与数组下标 token 严格度不同，位于不同信任边界），有意保留不合并。
-- 验证：每步后执行域/adapter 域门禁测试，最终全量 pytest 通过。
-
-## 2026-08-15 — K-API-2 H2 fake-local 文件关闭切片
-
-### Added
-
-- 新增 Task/Profile/Skill Assignment/显式模型槽到最小 API 请求、限制与精确 `document-read` handler 的纯编译边界；Protocol、合同、Skill、输入和 previous Main State 在 Provider 调用前按精确字节冻结。
-- 新增 `completed`、`safe-paused`、`incomplete`、`failed`、`blocked` 五种终态的文件关闭路径；成功路径生成研究工件、Manifest/Audit、Handoff、Snapshots、Receipt 和 Main State，非成功终态不伪造科研工件。
-- 新增执行 intent、可验证 stage 续发、排他发布、Main State 最后提交、已提交身份核验和 fresh Python 子进程恢复检查。
-
-### Hardened
-
-- 模型控制的 JSON、locator、object ID、Provider/Model identity、usage、动态输出路径和 contract/input/Skill 漂移均在完成宣称前 fail-closed；同 Attempt 不自动重放未知外部执行。
-- Provider Adapter ID 与规范 Provider identity 分离记录；预算文案明确为请求前、调用边界与响应后 guard，不宣称可取消 in-flight 调用。
-
-### Scope
-
-- 当前实现只接受明确要求 Transfer Manifest 的 H2 evidence Task，并用 fake Provider/合成 fixture 验证；普通 H1/risk-tier closeout、完整 Attempt Archive/Agent Trace 自动捕获、真实 Provider/Windows、科研语义等价和科学正确性均未证明。
-- 主线已将当前唯一节点调整为 `K-MS-1`。本切片不恢复已归并的旧交接文档，也不授权启动 `M6-004` 或 `M6-006`。
-
 ## 2026-08-14 — 实名责任、完整 Agent Trace 与文档归并
 
 ### Changed

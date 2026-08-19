@@ -3,11 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Iterable
 
-from research_workbench.artifacts.integrity import (
-    ReferenceStatus,
-    check_file_reference,
-    resolve_within_root,
-)
+from research_workbench.artifacts.integrity import ReferenceStatus, check_file_reference
 from research_workbench.capability.resolver import ResolvedTask
 from research_workbench.contracts.risks import ContractRisk, RiskLevel
 from research_workbench.protocol.models import ProjectProtocol
@@ -125,32 +121,18 @@ def check_handoff_against_task(
                 "waiting Handoff must identify the human decision being awaited",
             )
         )
-    transfer_material_exists = bool(handoff.artifact_refs)
-    completed_transfer = handoff.status in {"completed", "stage-completed"}
-    if (
-        task.handoff_policy.require_transfer_manifest
-        and (transfer_material_exists or completed_transfer)
-        and not handoff.transfer_manifest_ref
-    ):
+    if task.handoff_policy.require_transfer_manifest and not handoff.transfer_manifest_ref:
         risks.append(
             ContractRisk(
                 "HANDOFF-TRANSFER-MANIFEST-MISSING",
                 RiskLevel.BLOCK,
-                "Task requires a Handoff Transfer Manifest for completed or persisted research artifacts",
+                "Task requires a Handoff Transfer Manifest but the Handoff does not reference one",
             )
         )
     if project_root is not None:
         if handoff.skill_assignment_ref:
-            assignment_path = resolve_within_root(project_root, handoff.skill_assignment_ref)
-            if assignment_path is None:
-                risks.append(
-                    ContractRisk(
-                        "HANDOFF-REF-OUTSIDE-ROOT",
-                        RiskLevel.BLOCK,
-                        f"Skill Assignment escapes project root: {handoff.skill_assignment_ref}",
-                    )
-                )
-            elif not assignment_path.is_file():
+            assignment_path = Path(project_root).resolve() / handoff.skill_assignment_ref
+            if not assignment_path.is_file():
                 risks.append(
                     ContractRisk(
                         "HANDOFF-ASSIGNMENT-MISSING",
@@ -169,16 +151,7 @@ def check_handoff_against_task(
                     )
                 )
         for artifact in handoff.artifact_refs:
-            artifact_path = resolve_within_root(project_root, artifact)
-            if artifact_path is None:
-                risks.append(
-                    ContractRisk(
-                        "HANDOFF-REF-OUTSIDE-ROOT",
-                        RiskLevel.BLOCK,
-                        f"artifact escapes project root: {artifact}",
-                    )
-                )
-            elif not artifact_path.is_file():
+            if not (Path(project_root).resolve() / artifact).is_file():
                 risks.append(
                     ContractRisk(
                         "HANDOFF-MISSING-OUTPUT",
@@ -187,39 +160,13 @@ def check_handoff_against_task(
                     )
                 )
         if handoff.transfer_manifest_ref:
-            manifest_path = resolve_within_root(project_root, handoff.transfer_manifest_ref)
-            if manifest_path is None:
-                risks.append(
-                    ContractRisk(
-                        "HANDOFF-REF-OUTSIDE-ROOT",
-                        RiskLevel.BLOCK,
-                        f"Handoff Transfer Manifest escapes project root: {handoff.transfer_manifest_ref}",
-                    )
-                )
-            elif not manifest_path.is_file():
+            manifest_path = Path(project_root).resolve() / handoff.transfer_manifest_ref
+            if not manifest_path.is_file():
                 risks.append(
                     ContractRisk(
                         "HANDOFF-TRANSFER-MANIFEST-MISSING",
                         RiskLevel.BLOCK,
                         f"Handoff Transfer Manifest does not exist: {handoff.transfer_manifest_ref}",
-                    )
-                )
-        for validation_ref in handoff.validation_refs:
-            validation_path = resolve_within_root(project_root, validation_ref)
-            if validation_path is None:
-                risks.append(
-                    ContractRisk(
-                        "HANDOFF-REF-OUTSIDE-ROOT",
-                        RiskLevel.BLOCK,
-                        f"validation reference escapes project root: {validation_ref}",
-                    )
-                )
-            elif not validation_path.is_file():
-                risks.append(
-                    ContractRisk(
-                        "HANDOFF-VALIDATION-MISSING",
-                        RiskLevel.BLOCK,
-                        f"validation reference does not exist: {validation_ref}",
                     )
                 )
     return risks

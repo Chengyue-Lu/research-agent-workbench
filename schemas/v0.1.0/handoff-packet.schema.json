@@ -63,10 +63,7 @@
   "additionalProperties": false,
   "allOf": [
     {
-      "if": {
-        "properties": { "status": { "enum": ["completed", "stage-completed"] } },
-        "required": ["status"]
-      },
+      "if": { "properties": { "status": { "const": "completed" } }, "required": ["status"] },
       "then": { "properties": { "artifact_refs": { "minItems": 1 } } }
     }
   ]

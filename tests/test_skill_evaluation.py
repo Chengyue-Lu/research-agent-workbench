@@ -4,6 +4,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from research_workbench.artifacts.integrity import hash_directory, hash_file
 from research_workbench.capability import SkillLock
@@ -22,6 +23,22 @@ from research_workbench.validation import SchemaCatalog
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+# Loading a SchemaCatalog re-validates every schema with jsonschema, and the
+# evaluator constructs a fresh default catalog per checked document. Parse
+# once per test run and share the parsed state across default constructions.
+_CATALOG = SchemaCatalog()
+_CATALOG_INIT = SchemaCatalog.__init__
+
+
+def _shared_catalog_init(
+    self: SchemaCatalog, root: str | Path | None = None, version: str = "0.1.0"
+) -> None:
+    if root is None and version == _CATALOG.version:
+        self.__dict__.update(_CATALOG.__dict__)
+        return
+    _CATALOG_INIT(self, root, version)
 
 
 def _write_json(path: Path, value: object) -> None:
@@ -222,10 +239,6 @@ def _receipt(
             "finished_at": "2026-08-13T06:00:01Z",
             "status": "completed",
             "runtime": {"name": "fixture-runtime", "version": "1", "adapter_version": "0.1.0"},
-            "model_binding": {
-                "provider_adapter_id": "fixture-adapter",
-                "requested_model": model,
-            },
             "model_usage_status": "measured",
             "model_usage": [
                 {
@@ -448,6 +461,12 @@ def _live_evaluation(root: Path) -> dict[str, object]:
 
 
 class SkillEvaluationTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        patcher = mock.patch.object(SchemaCatalog, "__init__", _shared_catalog_init)
+        patcher.start()
+        cls.addClassCleanup(patcher.stop)
+
     def test_complete_live_pair_is_only_eligible_for_human_decision(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

@@ -53,8 +53,8 @@
 | M3-004 | IN_PROGRESS | review loop/fanout/write race 检查 | M2 | 并发预算、review loop、协调成本与既有 write race 检查已落地；真实停止行为待验证 |
 | M3-005 | IN_PROGRESS | 敏感 trace 策略 | M2 | 外部/完整/敏感 trace 会阻断或警告；真实脱敏器与密钥 fixture 待实现 |
 | M3-006 | IN_PROGRESS | SAFE_PAUSE 与机器完成权 | M3-001..003 | AWU/完成/暂停条件、stage/safe-pause/waiting、执行结束与 `contract-satisfied` 分离、失败报告覆盖显式完成宣称和可恢复 pause fixture 已实现；真实 Task rollover 待演练 |
-| M3-007 | DONE | 冻结实名 actor、Attempt Archive 与完整 Agent Trace 规则 | M3-003..006 | ADR-0012、目录、消息信封、写前捕获、capture gap、按需读取和 Worklog 关系已冻结；负责人明确为路诚钺/黄毅 |
-| M3-008 | DONE | 实现 Trace Envelope/Index/Event Schema、validator 与 fixture | M3-007 | Schema/validator/CLI 与正反 fixture 已能检测 message/event sequence、hash、actor owner、capture gap、未声明删减、越界正文/工具、瞬时结果丢失和过程产物覆盖；不保存 Chain-of-Thought |
+| M3-007 | IN_PROGRESS | 冻结实名 actor、Attempt Archive 与完整 Agent Trace 规则 | M3-003..006 | ADR-0012、目录、消息信封、写前捕获、capture gap、按需读取和 Worklog 关系一致；负责人明确为路诚钺/黄毅 |
+| M3-008 | READY | 实现 Trace Envelope/Index/Event Schema、validator 与手工 fixture | M3-007 | 能检测 message/event sequence、hash、actor owner、capture gap、未声明删减、越界正文/工具、瞬时结果丢失和过程产物覆盖；不保存 Chain-of-Thought |
 
 ## M4：工件与复现
 
@@ -80,12 +80,12 @@
 
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
-| M6-001 | EXTERNAL | OpenAI/Anthropic/Gemini/Zhipu 薄 Model Provider Adapters | M1-008 | 黄毅维护；Zhipu 标准 API text/structured/tools 与有界私有 reasoning handback 已离线通过，live 及货币成本证据仍 pending；路诚钺不修改实现或测试 |
+| M6-001 | EXTERNAL | OpenAI/Anthropic/Gemini 薄 Model Provider Adapters | M1-008 | 黄毅维护；路诚钺不修改实现或测试 |
 | M6-002 | DONE | 显式模型池与隔离 API session kernel（`K-API-1`） | M6-001 | primary/worker/specialist 槽只可显式绑定；轮次、工具、并行、工具结果、输出、token/成本/time 有硬边界；无自动 fallback；离线测试通过 |
-| M6-003 | IN_PROGRESS | Task-to-API 文件闭环（`K-API-2`） | M1-008, M2-001..005, M6-002 | evidence/H2 与 simulation/H1 双合同路径已离线通过：受控 Tool Registry、Model Assignment、五终态、commit-last、自动诚实 gapped Trace 与 H1/H2 fresh-process 恢复均有 fake-local 证据；节点仍等待 M6-004 真实 OpenAI Gate，不声称科研正确性 |
-| M6-004 | EXTERNAL | 选定模型槽的真实 Windows conformance 与一次 evidence 调用 | M6-001..003 | 待黄毅在授权环境执行并返回脱敏工件；当前机器缺少 `OPENAI_API_KEY` 和 `RWB_WORKER_MODEL`，状态为 pending/not-run，不得伪造通过 |
+| M6-003 | EXTERNAL | Task-to-API 文件闭环（`K-API-2`） | M1-008, M2-001..005, M6-002 | 黄毅维护；路诚钺只提供冻结 Task/Mode/Skill/read/handoff 接口 |
+| M6-004 | EXTERNAL | 选定模型槽的真实 Windows conformance 与一次 evidence 调用 | M6-001..003 | 黄毅执行并返回脱敏工件 |
 | M6-005 | PARKED | streaming/multimodal/server tools 与平台 Adapter | 真实案例或平台选择 | 黄毅决定执行端启动条件；没有真实需求不启动 |
-| M6-006 | DONE | API/平台执行时自动写入 Agent Trace | M3-008, M6-003 | 执行边界已自动生成 validator-compatible Trace；不可得捕获显式记为 gap 而不伪装 complete，密钥、provider response ID、正文与隐藏推理不入 Trace |
+| M6-006 | EXTERNAL | API/平台执行时自动写入 Agent Trace | M3-008, M6-003 | 黄毅实现消息写前捕获/导出与 capture-gap 报告；不得把密钥或隐藏推理写入 Trace |
 
 ## M7：Mode–Skill 选择与协调成本
 
@@ -113,6 +113,4 @@ M1 已建立里程碑与首批可执行 Issues：
 
 ## 当前下一任务
 
-路诚钺的 `K-MS-1` 实现不属于当前 API 分支。本分支只保留共享 Task/Handoff/Trace/Receipt 接口；Mode 决策卡、Task-to-Skill 选择、Skill 审计与 Handoff 成本对照仍按 `M7-002..006` 由其独立工作流推进。黄毅不在本分支补写或宣称完成这些工件。
-
-`M6-003` 的 evidence/H2 与 simulation/H1 双合同、受控 Tool Registry、Model Assignment、自动诚实 gapped Trace 与 fresh-process/commit-last 已有离线证据；`M6-006` 因此已完成。`M6-003` 仍为 `IN_PROGRESS`，关闭条件仍是 `M6-004` 真实 OpenAI 调用；当前机器缺少 `OPENAI_API_KEY` 和 `RWB_WORKER_MODEL`，必须保持 `EXTERNAL`/pending。额外的 Zhipu 项目准备度 Gate 已实现但尚未真实执行；它不在无新 ADR 的情况下静默替代 `M6-004`。
+当前关键路径是 `M3-007..008 → M7-002..006 / K-MS-1`：先让每次 Agent 试验能够用实名 actor 和 Attempt Archive 完整留痕，再为现有两个 Mode 建立边界 fixtures，形成 Task-to-Skill 选择矩阵，审计 accepted Skills，处理一个 triage candidate，并为每个任务给出内容允许集与 H0/H1/H2。到达可解释、可回放、可删减的选择基线后暂停评审；路诚钺不在本分支补 API、Provider、模型或 live conformance。

@@ -1,8 +1,8 @@
 # 多提供商模型 API 实施计划
 
-状态：`K-API-2` evidence/H2 与 simulation/H1 双合同离线闭环完成；Zhipu 标准 API text/structured/tools Adapter 已离线通过；真实项目 Gate 待运行
+状态：离线合同切片完成；后续由黄毅维护
 
-日期：2026-08-16
+日期：2026-08-14
 
 维护边界：黄毅负责本计划的 Provider Adapter、API session、live conformance、自动 Trace 捕获和相关测试。路诚钺只消费公开的 Task/Assignment/Handoff/Receipt/Trace 接口和脱敏执行证据。共享接口变更按 [开发协作指南](../DEVELOPMENT.md)由两人共同确认。
 
@@ -18,11 +18,9 @@ flowchart LR
   Gate --> OA["OpenAI Responses Adapter"]
   Gate --> AN["Anthropic Messages Adapter"]
   Gate --> GE["Gemini generateContent Adapter"]
-  Gate --> ZP["Zhipu standard Chat Adapter"]
   OA --> Result["ModelResponse + Usage + Warnings"]
   AN --> Result
   GE --> Result
-  ZP --> Result
   Result --> Receipt["Execution Receipt / Handoff"]
 ```
 
@@ -33,37 +31,32 @@ flowchart LR
 - `port.py`：稳定请求、响应、能力、数据策略和标准错误；
 - `http.py`：可注入的有界 HTTPS Transport 与延迟凭据解析；
 - `base.py`：共同 preflight、本地结构化校验和错误边界；
-- `openai.py`、`anthropic.py`、`gemini.py`、`zhipu_chat.py`：四套独立映射；其中 Zhipu 声明标准 API text、本地校验的 structured output，以及仅 `auto`、每轮单调用的 client tools；
+- `openai.py`、`anthropic.py`、`gemini.py`：三套独立映射；
 - `configuration.py`：非秘密配置解析和存在性探测；
 - `conformance.py`：固定合成提示、硬预算和脱敏报告的 live conformance runner；
-- `pool.py`：显式模型槽配置、不可变 Model Assignment 与延迟模型 ID 绑定，不做评分、自动选择或 fallback；
+- `pool.py`：显式模型槽配置与延迟模型 ID 绑定，不做评分或自动选择；
 - `session.py`：fresh context 的 provider-neutral 有界工具循环，不保存跨 Attempt 会话；
-- `execution/contracts.py` 与 `execution/compiler.py`：按精确签名选择 evidence/H2 或 simulation/H1 合同，冻结 Task/Profile/Assignment/Skill/输入并编译最小请求；
-- `execution/tool_registry.py` 与 `execution/tools.py`：把合同工具和 Assignment 允许集求交，只构造哈希锁定读取与无代码执行的有限数值原语；
-- `execution/output.py`：把模型输出当作不可信数据，做 Schema、来源哈希、locator 和跨工件语义一致性预检；
-- `execution/pipeline.py` 与 `execution/closeout/`：执行 intent、防重放、五终态、排他发布、Main State 最后提交和文件恢复；
-- `observability/trace_recorder.py`：在调用前冻结允许集，自动记录脱敏边界事件，并对未保存的 Provider/工具正文诚实声明 capture gap；
 - `registry/providers/adapters.yaml`：禁用状态的环境变量引用模板；
-- `tests/test_provider_adapters.py` 与 `tests/test_k_api_2_pipeline.py` 等：官方响应形状和 fake-local 文件闭环的离线合同 fixture。
+- `tests/test_provider_adapters.py`：官方响应形状的离线合同 fixture。
 
 ## 3. 已实现的语义
 
-| 规范语义 | OpenAI | Anthropic | Gemini | Zhipu 标准 API |
-|---|---|---|---|---|
-| 系统指令 | system/developer input | top-level `system` | `systemInstruction` | Chat `system` message |
-| 客户端工具定义 | Responses function tool | `tools[].input_schema` | `functionDeclarations` | Chat `tools[].function.parameters` |
-| 工具调用 | `function_call` | `tool_use` | `functionCall` | 单个 `tool_calls[].function` |
-| 工具结果 | `function_call_output` | `tool_result` | `functionResponse` | `role=tool` + exact call id |
-| JSON Schema 输出 | `text.format` | `output_config.format` | `generationConfig.responseJsonSchema` | `json_object` + 本地完整校验 |
-| 暂停/拒绝 | status/refusal | `pause_turn`/`refusal` | finish reason / prompt block | finish reason / sensitive filter |
-| 用量 | input/output + cached/reasoning | input/output + cache read | prompt/candidate/cache | prompt/completion/cache；无货币 cost |
-| 指定工具 | Responses `tool_choice` function | `tool_choice.type=tool` | `functionCallingConfig=ANY` + allowlist | 只支持 `auto`；返回名称必须通过本地验收 |
+| 规范语义 | OpenAI | Anthropic | Gemini |
+|---|---|---|---|
+| 系统指令 | system/developer input | top-level `system` | `systemInstruction` |
+| 客户端工具定义 | Responses function tool | `tools[].input_schema` | `functionDeclarations` |
+| 工具调用 | `function_call` | `tool_use` | `functionCall` |
+| 工具结果 | `function_call_output` | `tool_result` | `functionResponse` |
+| JSON Schema 输出 | `text.format` | `output_config.format` | `generationConfig.responseJsonSchema` |
+| 暂停/拒绝 | status/refusal | `pause_turn`/`refusal` | finish reason / prompt block |
+| 用量 | input/output + cached/reasoning | input/output + cache read | prompt/candidate/cache |
+| 指定工具 | Responses `tool_choice` function | `tool_choice.type=tool` | `functionCallingConfig=ANY` + allowlist |
 
 统一只发生在确有共同含义的字段。Anthropic 的 `pause_turn` 保留为 `paused`，Gemini 的并行调用要求显式 `parallel_tools`，服务端工具不映射为普通客户端工具。
 
 ## 4. 凭据与真实 Windows 边界
 
-仓库只提交变量名：`OPENAI_API_KEY`、`ANTHROPIC_API_KEY`、`GEMINI_API_KEY`、`ZHIPU_API_KEY` 和对应模型变量名。代码遵循以下顺序：
+仓库只提交变量名：`OPENAI_API_KEY`、`ANTHROPIC_API_KEY`、`GEMINI_API_KEY` 和三个模型变量名。代码遵循以下顺序：
 
 1. 构造 Adapter 时保存 credential source，不解析值；
 2. capability/model/data policy 预检失败时不接触凭据；
@@ -109,9 +102,9 @@ rwb providers probe --config registry/providers/adapters.yaml --check-environmen
 
 冻结 canonical request/response、能力、data policy、错误与停止原因；缺口在出站前阻断。
 
-### P1：非流式薄 Adapter（完成；Zhipu 工具面离线完成）
+### P1：三家非流式薄 Adapter（完成）
 
-OpenAI、Anthropic、Gemini 实现 text、client tools、structured output 和可得 usage 映射；Zhipu 标准 API 实现 text、`json_object` + 本地 Schema 校验、token usage 和单调用 client-tool 循环。GLM 工具轮所需的 `reasoning_content` 只在单 Attempt 的有界私有内存中原样续传，不进入共享端口或项目记录。用注入 Transport 的离线 fixture 覆盖正反路径。ToolChoice、本地工具参数复验、conformance runner 和 CLI 安全边界均纳入全仓回归；不在文档中固定易漂移的测试数量。GLM-5.3 的标准 API、key 类型、工具与 reasoning handback 边界见 [GLM Runbook](GLM_LIVE_GATE_RUNBOOK.md)。
+实现 text、client tools、structured output 和可得 usage 映射；用注入 Transport 的离线 fixture 覆盖正反路径。ToolChoice、本地工具参数复验、conformance runner 和 CLI 安全边界均纳入全仓回归；不在文档中固定易漂移的测试数量。
 
 ### P2：真实 Windows live conformance（Runner 已完成，执行待完成）
 
@@ -149,15 +142,9 @@ rwb providers conformance `
 
 该阶段达到 `K-API-1`，但还没有把 Task/Skill Assignment 自动编译为请求，也没有自动生成 Attempt/Execution Receipt，因此不是完整 Task 执行器。
 
-### P4：Task-to-API 文件闭环（离线实现完成，真实 Gate 待运行）
+### P4：Task-to-API 文件闭环（API 工作流的 external 节点）
 
-当前已完成两个精确合同。`evidence-h2@0.1.0` 处理明确要求 Transfer Manifest 的 evidence Task，产出 Evidence、Compact Handoff、Manifest/Audit；`simulation-h1@0.1.0` 产出 Simulation V&V Report、Compact Handoff 和只证明结构/引用/Claim 边界的 deterministic check report，不伪造 Manifest/Audit。未知或歧义签名在 Provider discovery 前 fail closed，不做排名、默认合同或 fallback。
-
-两条路径都在首次 Provider 调用前冻结 Task、Profile、Assignment、Skill、输入、Execution Contract 和 Model Assignment，只从受控 Tool Registry 构造合同与 Assignment 允许集的精确交集。runner 保留 `completed`、`stage-completed`、`safe-paused`、`incomplete`、`failed`、`blocked` 的合同化关闭语义；`stage-completed` 只表示模型阶段和结构检查完成，必须转入 Human Gate，不能宣称科研接受。closeout 采用执行 intent、排他发布和 Main State 最后提交；H1/H2 的四个故障注入检查点均验证同 Attempt 恢复不会重放 Provider。
-
-Agent Trace 现已自动生成。由于默认不持久化完整 prompt、响应正文、工具参数和工具结果正文，Trace 会以声明的 policy-omission capture gap 诚实标记 `gapped`，而不是伪装 `complete`。Attempt、Receipt、Trace、Model Assignment、Handoff 等级和 Main State 相互锁定引用与哈希；删除临时运行状态后，H1/H2 均可由 fresh Python 子进程恢复。该恢复是文件级执行/审计链证据，不是已运行的真实主模型会话，也不证明科研正确性。
-
-因此 `M3-007`、`M3-008` 和 `M6-006` 已完成，`M6-003` 仍为 `IN_PROGRESS`。项目级 K-API-2 的剩余关闭条件是 `M6-004` OpenAI 单家真实 Gate；当前机器缺少 `OPENAI_API_KEY` 与 `RWB_WORKER_MODEL`，只能保留为 `EXTERNAL`/pending/not-run，不能因 fake-local fixture 通过而标成 passed。
+把已解析 Task、Agent Profile、Skill Assignment、内容允许集、Handoff 等级和显式模型槽编译成最小初始消息与工具 allowlist；执行期间将全部可见 Agent 传递写入 Attempt Archive；结束或安全暂停时写入正式工件和 Task 要求的 H1/H2 交接工件。删除临时平台会话后做一次恢复检查。具体实现与自动捕获由黄毅负责。
 
 ### P5：按真实消费者扩展
 

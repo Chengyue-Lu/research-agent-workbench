@@ -1,7 +1,14 @@
+import json
+import tempfile
 import unittest
 from pathlib import Path
 
-from research_workbench.capability.catalog import filter_candidates, load_candidates
+from research_workbench.capability.catalog import (
+    AcceptedSkillRegistry,
+    filter_candidates,
+    load_candidates,
+)
+from research_workbench.contracts import ContractError
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -54,6 +61,43 @@ class CandidateCatalogTests(unittest.TestCase):
             expected,
             {candidate_id: by_id[candidate_id]["status"] for candidate_id in expected},
         )
+
+
+class RegistryContractErrorTests(unittest.TestCase):
+    def test_accepted_registry_rejects_wrong_registry_kind(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            index = Path(directory) / "accepted.json"
+            index.write_text(
+                json.dumps({"registry_kind": "skill_candidates", "entries": []}),
+                encoding="utf-8",
+            )
+            with self.assertRaises(ContractError) as caught:
+                AcceptedSkillRegistry.load(index, project_root=directory)
+        self.assertEqual("registry_kind", caught.exception.field)
+
+    def test_accepted_registry_rejects_entry_lacking_required_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            index = Path(directory) / "accepted.json"
+            document = {"registry_kind": "skill_accepted", "entries": [{"skill_id": "x"}]}
+            index.write_text(json.dumps(document), encoding="utf-8")
+            with self.assertRaises(ContractError) as caught:
+                AcceptedSkillRegistry.load(index, project_root=directory)
+        self.assertEqual("entries[0]", caught.exception.field)
+
+    def test_require_reports_missing_skills_as_contract_error(self) -> None:
+        registry = AcceptedSkillRegistry.load(project_root=ROOT)
+        with self.assertRaises(ContractError) as caught:
+            registry.require(["literature-evidence-extraction", "no-such-skill"])
+        self.assertEqual("required_skills", caught.exception.field)
+        self.assertIn("no-such-skill", str(caught.exception))
+
+    def test_candidate_registry_rejects_wrong_registry_kind(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "candidates.json"
+            path.write_text(json.dumps({"registry_kind": "skill_accepted"}), encoding="utf-8")
+            with self.assertRaises(ContractError) as caught:
+                load_candidates(path)
+        self.assertEqual("registry_kind", caught.exception.field)
 
 
 if __name__ == "__main__":

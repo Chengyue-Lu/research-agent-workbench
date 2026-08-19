@@ -13,7 +13,7 @@
     "schema_version": { "const": "0.1.0" },
     "report_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "adapter_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
-    "provider": { "enum": ["openai", "anthropic", "google", "zhipu"] },
+    "provider": { "enum": ["openai", "anthropic", "google"] },
     "adapter_version": { "$ref": "common.schema.json#/$defs/semver" },
     "execution_context": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "requested_model": { "$ref": "common.schema.json#/$defs/nonEmptyString" },

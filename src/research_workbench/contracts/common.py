@@ -1,33 +1,14 @@
 from __future__ import annotations
 
-import re
 from dataclasses import asdict, dataclass, is_dataclass
 from pathlib import PurePosixPath, PureWindowsPath
-from typing import Any, Iterable, Mapping, TypeVar
+from typing import Any, Mapping, TypeVar
 
 
 class ContractError(ValueError):
     def __init__(self, field: str, message: str):
         self.field = field
         super().__init__(f"{field}: {message}")
-
-
-_PATH_SAFE_IDENTIFIER = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
-_WINDOWS_RESERVED_BASENAMES = frozenset(
-    {"CON", "PRN", "AUX", "NUL", "CLOCK$"}
-    | {f"COM{index}" for index in range(1, 10)}
-    | {f"LPT{index}" for index in range(1, 10)}
-)
-
-
-def is_path_safe_identifier(value: object) -> bool:
-    """Return whether one identifier is a portable filesystem segment."""
-
-    if not isinstance(value, str) or not _PATH_SAFE_IDENTIFIER.fullmatch(value):
-        return False
-    if value.endswith((".", " ")):
-        return False
-    return value.split(".", 1)[0].upper() not in _WINDOWS_RESERVED_BASENAMES
 
 
 def require_string(data: Mapping[str, Any], field: str) -> str:
@@ -72,8 +53,7 @@ def mapping_tuple(data: Mapping[str, Any], field: str) -> tuple[Mapping[str, Any
 
 
 def require_relative_path(value: str, field: str) -> str:
-    windows_path = PureWindowsPath(value)
-    if PurePosixPath(value).is_absolute() or windows_path.is_absolute() or windows_path.drive:
+    if PurePosixPath(value).is_absolute() or PureWindowsPath(value).is_absolute():
         raise ContractError(field, "must be repository-relative")
     if ".." in PurePosixPath(value.replace("\\", "/")).parts:
         raise ContractError(field, "must not escape the project root")
@@ -121,10 +101,3 @@ def to_plain(value: T) -> Any:
     if isinstance(value, list):
         return [to_plain(item) for item in value]
     return value
-
-
-def ensure_unique(values: Iterable[str], field: str) -> tuple[str, ...]:
-    result = tuple(values)
-    if len(result) != len(set(result)):
-        raise ContractError(field, "must not contain duplicates")
-    return result

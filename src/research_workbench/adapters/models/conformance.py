@@ -13,13 +13,10 @@ import time
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Callable, Sequence
+from typing import Any, Callable, Mapping, Sequence
 
-from research_workbench.adapters.models.anthropic import AnthropicMessagesProvider
-from research_workbench.adapters.models.configuration import ProviderAdapterConfig
-from research_workbench.adapters.models.gemini import GeminiGenerateContentProvider
+from research_workbench.adapters.models.configuration import PROVIDER_ADAPTERS, ProviderAdapterConfig
 from research_workbench.adapters.models.http import EnvironmentCredential, HttpTransport
-from research_workbench.adapters.models.openai import OpenAIResponsesProvider
 from research_workbench.adapters.models.port import (
     Capability,
     ContentBlock,
@@ -34,7 +31,7 @@ from research_workbench.adapters.models.port import (
     ToolDefinition,
     Usage,
 )
-from research_workbench.adapters.models.zhipu_chat import ZhipuChatCompletionsProvider
+
 
 CHECK_ORDER = ("text", "structured", "tools")
 CHECK_CAPABILITIES = {
@@ -231,15 +228,10 @@ def build_live_provider(
     }
     if transport is not None:
         common["transport"] = transport
-    if config.provider == "openai":
-        return OpenAIResponsesProvider(**common)
-    if config.provider == "anthropic":
-        return AnthropicMessagesProvider(**common)
-    if config.provider == "google":
-        return GeminiGenerateContentProvider(**common)
-    if config.provider == "zhipu":
-        return ZhipuChatCompletionsProvider(**common)
-    raise ValueError(f"unsupported provider adapter: {config.provider}")
+    adapter_type = PROVIDER_ADAPTERS.get(config.provider)
+    if adapter_type is None:
+        raise ValueError(f"unsupported provider adapter: {config.provider}")
+    return adapter_type(**common)
 
 
 def run_provider_conformance(
@@ -250,7 +242,6 @@ def run_provider_conformance(
     checks: Sequence[str],
     max_provider_invocations: int,
     max_output_tokens: int,
-    tool_choice_override: ToolChoice | None = None,
     now: Callable[[], datetime] | None = None,
     monotonic: Callable[[], float] = time.monotonic,
 ) -> ProviderConformanceReport:
@@ -288,12 +279,7 @@ def run_provider_conformance(
         if stopped:
             results.append(ConformanceCheckResult(check=check, status="not-run", failure_code="prior_failure"))
             continue
-        request = _request_for(
-            check,
-            snapshot.models[0],
-            max_output_tokens,
-            tool_choice_override=tool_choice_override,
-        )
+        request = _request_for(check, snapshot.models[0], max_output_tokens)
         invocations += 1
         try:
             response = provider.generate(request)
@@ -357,13 +343,7 @@ def run_provider_conformance(
     )
 
 
-def _request_for(
-    check: str,
-    model: str,
-    max_output_tokens: int,
-    *,
-    tool_choice_override: ToolChoice | None = None,
-) -> ModelRequest:
+def _request_for(check: str, model: str, max_output_tokens: int) -> ModelRequest:
     system = Message(
         "system",
         (
@@ -420,11 +400,7 @@ def _request_for(
                 ),
             ),
             tools=(tool,),
-            tool_choice=(
-                tool_choice_override
-                if tool_choice_override is not None
-                else ToolChoice(kind="specific", name=tool.name)
-            ),
+            tool_choice=ToolChoice(kind="specific", name=tool.name),
             max_output_tokens=max_output_tokens,
         )
     raise ValueError(f"unknown conformance check: {check}")

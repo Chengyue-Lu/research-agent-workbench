@@ -1,19 +1,9 @@
 * text=auto
 
 *.json text eol=lf
-*.jsonl text eol=lf
 *.md text eol=lf
 *.py text eol=lf
 *.toml text eol=lf
 *.txt text eol=lf
 *.yaml text eol=lf
 *.yml text eol=lf
-
-docker/codex-coding-plan/Dockerfile text eol=lf
-docker/codex-coding-plan/*.mjs text eol=lf
-docker/codex-coding-plan/*.sha256 text eol=lf
-docker/codex-egress-proxy/Dockerfile text eol=lf
-docker/codex-egress-proxy/*.py text eol=lf
-docker/codex-egress-proxy/*.json text eol=lf
-docker/codex-egress-proxy/*.sha256 text eol=lf
-docker/codex-egress-proxy/*.dockerignore text eol=lf

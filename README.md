@@ -6,7 +6,7 @@
 
 ## 项目阶段
 
-当前为内部技术 alpha：最小契约、离线 Agent—Skill 切片、文件式上下文治理、`K-API-1` 隔离 API session，以及 `K-API-2` 的 evidence/H2 与 simulation/H1 双合同 fake-local 路径已经形成。离线证据覆盖受控 Tool Registry、Model Assignment、自动诚实 gapped Agent Trace、H1/H2 commit-last 和 fresh-process 恢复。真实 OpenAI Gate 仍未运行；当前机器缺少 `OPENAI_API_KEY` 和 `RWB_WORKER_MODEL`，所以只能记为 pending/not-run。这些工程验证不证明科研正确性，也不表示项目已达到外部 pilot。路诚钺负责 Research Mode、Skill 选择/评估/准入、受控读取和 Handoff/Trace 成本验证；黄毅负责 API Adapter、Task-to-API、live conformance 及其测试。逐项状态以[任务清单](docs/TASKS.md)为准。
+当前为内部技术 alpha：最小契约、离线 Agent—Skill 切片、文件式上下文治理和 `K-API-1` 隔离 API session 基础已经形成。路诚钺负责 Research Mode、Skill 选择/评估/准入、受控读取和 Handoff/Trace 成本验证；黄毅负责 API Adapter、Task-to-API、live conformance 及其测试。逐项状态和唯一下一节点以[任务清单](docs/TASKS.md)为准。
 
 ## 核心判断
 
@@ -20,7 +20,7 @@
 - 模型只按 `primary`、`worker` 和少量 `specialist` 槽显式绑定，不建设复杂自动 Router。
 - Agent 对文件内容采用任务级允许集；可以先发现路径元数据，但不能因为拥有工作区权限就递归读取无关文档。
 - 普通委派默认只返回 Compact Handoff；完整 Manifest/Audit/Receipt 由风险、压缩、外部副作用或明确策略触发。
-- 所有 Agent 间实际传递的可见内容，以及运行时可观察的读取、工具、命令和文件 revision，按 Trace 合同进入 Attempt Archive或声明 capture gap；当前自动 API recorder 覆盖 Provider/工具边界、受控读取结果和 closeout revision，不把未自动捕获的前置命令/读取伪装为完整。主 Agent 默认只读取索引与 Handoff，完整 Trace 仅在评估或排障时按需回放。
+- 所有 Agent 间实际传递的可见内容，以及运行时可观察的读取、工具、命令和文件 revision 进入 Attempt Archive；主 Agent 默认只读取索引与 Handoff，完整 Trace 仅在评估或排障时按需回放。
 
 ## 文档入口
 
@@ -83,8 +83,6 @@ rwb execution assess examples/observability/execution-evidence-contract.yaml `
 
 `validate` 会检查 Schema、实际文件、SHA-256 与 Registry 引用等机器可判定条件，但不代表科学正确性。`handoff audit-transfer` 的 `structurally-ready` 只表示条目和引用覆盖，不表示语义等价；关键风险或 Task policy 会要求独立人工抽查。`task resolve` 和 `runtime codex render` 不启动 Agent。`skills audit-archive` 不解压、不执行、不联网；`skills eval assess` 不自动准入候选。`context assess` 的字符/回合是压力代理；只有同单位的 `remaining >= next atomic + closeout + safety margin` 才支持继续一个 AWU。外部 Skill 的 `discovered`、`triage`、`reference` 和 `quarantine` 均不等于已安装或已准入。
 
-`research_workbench.execution.run_task_api_attempt` 是当前窄线 Python 入口：它已用 fake Provider 对 evidence/H2 与 simulation/H1 两类契约验证冻结编译、受控只读工具、Model Assignment、五种终态、自动诚实 gapped Trace、commit-last 文件关闭和 fresh-process 恢复。它仍不是稳定 Task-to-API CLI，离线通过也不替代真实 OpenAI Gate。
-
 ## 第一条验证路线
 
 首个离线契约切片已验证两个能力差异明显的子 Agent 配置：
@@ -92,7 +90,7 @@ rwb execution assess examples/observability/execution-evidence-contract.yaml `
 1. `evidence-scout` + `literature-evidence-extraction` Skill：源材料只读、任务区受限写的检索、证据定位和引用交接。
 2. `simulation-auditor` + `simulation-vv` Skill：读取模型与运行工件，检查版本、参数、收敛和敏感性。
 
-两者共享最小科研内核与 Task/Handoff 契约，但使用不同的输入、权限、Skill、输出和质量检查。离线证据见 [双 Skill 契约切片](examples/vertical-slice/SLICE_REPORT.md)。该切片和新增 API fake-local Gate 只证明绑定、隔离、H1/H2 关闭与 Trace 校验可重放，不证明多 Agent 更强。Mode 触发边界、Task-to-Skill 选择矩阵和 Handoff 成本对照仍由路诚钺在独立工作流中维护，不属于当前 API 分支的完成声明。
+两者共享最小科研内核与 Task/Handoff 契约，但使用不同的输入、权限、Skill、输出和质量检查。离线证据见 [双 Skill 契约切片](examples/vertical-slice/SLICE_REPORT.md)。该切片只证明绑定、隔离与校验可重放，不证明多 Agent 更强。下一步先完善 Mode 触发边界、Task-to-Skill 选择矩阵和轻量/审计 Handoff 对照；执行证据由相应运行工作流提供。
 
 ## 近期交付边界
 
@@ -100,8 +98,7 @@ rwb execution assess examples/observability/execution-evidence-contract.yaml `
 
 - 最小 Schema 与确定性验证器；
 - 一个本地 CLI；
-- 纯 API 隔离会话内核、显式模型槽与 evidence/H2 + simulation/H1 双合同 fake-local 文件关闭；
-- 受控 Tool Registry、Model Assignment 与自动诚实 gapped Agent Trace；
+- 纯 API 隔离会话内核与显式模型槽；
 - 可选的 Codex Runtime Adapter 映射；
 - 四个 Agent Profile、三个仓库级 Skill 与 accepted Registry；
 - 主状态包、Task Packet 和 Handoff Packet；

@@ -19,15 +19,6 @@
     "task_revision": { "type": "integer", "minimum": 1 },
     "agent_profile_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
     "skill_assignment_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
-    "model_assignment_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
-    "provider_conformance_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
-    "execution_contract": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
-    "handoff_tier": { "enum": ["H0", "H1", "H2"] },
-    "handoff_tier_reasons": {
-      "type": "array", "minItems": 1, "uniqueItems": true,
-      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
-    },
-    "agent_trace_index_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
     "context_snapshot_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
     "started_at": { "type": "string", "format": "date-time" },
     "finished_at": { "type": "string", "format": "date-time" },
@@ -38,15 +29,6 @@
       ]
     },
     "completion_claim": { "enum": ["execution-only", "contract-satisfied"] },
-    "model_binding": {
-      "type": "object",
-      "required": ["provider_adapter_id", "requested_model"],
-      "properties": {
-        "provider_adapter_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
-        "requested_model": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
-      },
-      "additionalProperties": false
-    },
     "runtime": {
       "type": "object",
       "required": ["name", "version", "adapter_version"],
@@ -119,13 +101,6 @@
     "limitations": { "$ref": "common.schema.json#/$defs/stringArray" }
   },
   "allOf": [
-    {
-      "if": {
-        "properties": { "execution_kind": { "const": "model-api" } },
-        "required": ["execution_kind"]
-      },
-      "then": { "required": ["model_binding"] }
-    },
     {
       "if": {
         "properties": { "completion_claim": { "const": "contract-satisfied" } },

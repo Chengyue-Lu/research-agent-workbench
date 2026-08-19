@@ -4,7 +4,6 @@ from research_workbench.validation.documents import (
     validate_documents,
 )
 from research_workbench.validation.schemas import SchemaCatalog
-from research_workbench.validation.trace import validate_agent_trace
 from research_workbench.capability.resolver import check_task_binding
 from research_workbench.contracts.risks import ContractRisk, RiskLevel
 from research_workbench.validation.relationships import (
@@ -26,5 +25,4 @@ __all__ = [
     "check_task_binding",
     "check_write_scope_overlap",
     "validate_documents",
-    "validate_agent_trace",
 ]

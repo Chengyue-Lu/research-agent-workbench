@@ -1,8 +1,0 @@
-{
-  "distributions": [],
-  "python": {
-    "implementation": "CPython",
-    "version": "3.12.14"
-  },
-  "schema": "rwb-python-dependencies-lock/0.1"
-}

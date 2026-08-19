@@ -62,36 +62,6 @@
       ]
     },
     {
-      "provider": "zhipu",
-      "api_surface": "Standard Chat Completions API",
-      "adapter_status": "offline-contract-tested-live-pending",
-      "capabilities": ["text", "tools", "structured_output", "reasoning"],
-      "deferred_capabilities": [
-        "parallel_tools",
-        "streaming",
-        "images",
-        "files",
-        "server_tools"
-      ],
-      "semantic_notes": [
-        "The adapter targets the standard API at /api/paas/v4/chat/completions and must not be pointed at a Coding Plan endpoint.",
-        "GLM-5.3 standard Model API availability is still marked as forthcoming by the official model page; an API key alone is not availability evidence.",
-        "Structured output is prompt-enforced with a bounded schema instruction, uses provider json_object mode, and is locally validated; it is not provider-native strict JSON Schema.",
-        "Canonical Task, Assignment, and execution-contract metadata remains local and is not transmitted in the provider payload.",
-        "The adapter requires an exact returned model match and never accepts automatic routing from another requested model as fallback.",
-        "Client function tools use tool_choice=auto only and permit at most one function call per turn; parallel and provider-hosted tools are rejected.",
-        "GLM thinking remains enabled with an explicit low, high, or max reasoning effort; tool-turn reasoning_content is retained only in bounded adapter-private memory for exact handback and is never normalized into ModelResponse or project records.",
-        "Each Attempt requires a fresh single-active adapter instance and an explicit final discard of its ephemeral continuation state.",
-        "Provider-reported monetary cost is unavailable and must never be inferred from a tariff. The Zhipu technical-readiness Gate uses explicit token, call, turn, tool, output, and time ceilings and records monetary accounting as unavailable; any Task or policy that requires a monetary ceiling must still fail closed."
-      ],
-      "sources": [
-        "https://docs.bigmodel.cn/cn/guide/models/text/glm-5.3",
-        "https://docs.bigmodel.cn/cn/api/introduction",
-        "https://docs.bigmodel.cn/api-reference/模型-api/对话补全",
-        "https://docs.bigmodel.cn/cn/coding-plan/overview"
-      ]
-    },
-    {
       "provider": "openrouter",
       "api_surface": "OpenAI-compatible chat completions gateway",
       "adapter_status": "planned-optional-gateway",

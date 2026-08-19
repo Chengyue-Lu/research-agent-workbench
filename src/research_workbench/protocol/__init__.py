@@ -3,4 +3,5 @@ from research_workbench.protocol.models import (
     ProjectProtocol,
     ResearchMode,
 )
+
 __all__ = ["ProjectBudget", "ProjectProtocol", "ResearchMode"]

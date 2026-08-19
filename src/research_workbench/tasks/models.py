@@ -211,11 +211,6 @@ class AttemptRecord:
     skill_assignment_ref: str | None
     runtime_snapshot_ref: str | None
     execution_receipt_ref: str | None
-    agent_trace_index_ref: FileReference | None
-    model_assignment_ref: FileReference | None
-    provider_conformance_ref: FileReference | None
-    handoff_tier: str | None
-    handoff_tier_reasons: tuple[str, ...]
     artifact_refs: tuple[str, ...]
     handoff_ref: str | None
     failure: Mapping[str, Any] | None
@@ -229,35 +224,6 @@ class AttemptRecord:
         receipt_ref = optional_string(data, "execution_receipt_ref")
         handoff_ref = optional_string(data, "handoff_ref")
         assignment_ref = optional_string(data, "skill_assignment_ref")
-        raw_trace_ref = data.get("agent_trace_index_ref")
-        if raw_trace_ref is None:
-            trace_ref = None
-        elif isinstance(raw_trace_ref, Mapping):
-            trace_ref = FileReference.from_mapping(raw_trace_ref)
-        else:
-            raise ContractError("agent_trace_index_ref", "must be a file reference")
-        raw_model_assignment_ref = data.get("model_assignment_ref")
-        if raw_model_assignment_ref is None:
-            model_assignment_ref = None
-        elif isinstance(raw_model_assignment_ref, Mapping):
-            model_assignment_ref = FileReference.from_mapping(raw_model_assignment_ref)
-        else:
-            raise ContractError("model_assignment_ref", "must be a file reference")
-        raw_provider_conformance_ref = data.get("provider_conformance_ref")
-        if raw_provider_conformance_ref is None:
-            provider_conformance_ref = None
-        elif isinstance(raw_provider_conformance_ref, Mapping):
-            provider_conformance_ref = FileReference.from_mapping(raw_provider_conformance_ref)
-        else:
-            raise ContractError("provider_conformance_ref", "must be a file reference")
-        handoff_tier = optional_string(data, "handoff_tier")
-        if handoff_tier not in {None, "H0", "H1", "H2"}:
-            raise ContractError("handoff_tier", "has unsupported value")
-        handoff_tier_reasons = string_tuple(data, "handoff_tier_reasons")
-        if handoff_tier is None and handoff_tier_reasons:
-            raise ContractError("handoff_tier_reasons", "requires handoff_tier")
-        if handoff_tier is not None and not handoff_tier_reasons:
-            raise ContractError("handoff_tier_reasons", "is required with handoff_tier")
         for field, value in (
             ("skill_assignment_ref", assignment_ref),
             ("runtime_snapshot_ref", runtime_ref),
@@ -289,11 +255,6 @@ class AttemptRecord:
             skill_assignment_ref=assignment_ref,
             runtime_snapshot_ref=runtime_ref,
             execution_receipt_ref=receipt_ref,
-            agent_trace_index_ref=trace_ref,
-            model_assignment_ref=model_assignment_ref,
-            provider_conformance_ref=provider_conformance_ref,
-            handoff_tier=handoff_tier,
-            handoff_tier_reasons=handoff_tier_reasons,
             artifact_refs=artifact_refs,
             handoff_ref=handoff_ref,
             failure=dict(failure) if failure else None,
@@ -338,14 +299,6 @@ class HandoffPacket:
         transfer_manifest_ref = optional_string(data, "transfer_manifest_ref")
         if transfer_manifest_ref is not None:
             require_relative_path(transfer_manifest_ref, "transfer_manifest_ref")
-        artifact_refs = string_tuple(data, "artifact_refs", required=True)
-        validation_refs = string_tuple(data, "validation_refs")
-        for field, references in (
-            ("artifact_refs", artifact_refs),
-            ("validation_refs", validation_refs),
-        ):
-            for index, reference in enumerate(references):
-                require_relative_path(reference, f"{field}[{index}]")
         return cls(
             schema_version=require_string(data, "schema_version"),
             task_id=require_string(data, "task_id"),
@@ -355,8 +308,8 @@ class HandoffPacket:
             skill_lock=string_tuple(data, "skill_lock", required=True),
             skill_assignment_ref=assignment_ref,
             result=HandoffResult.from_mapping(mapping_value(data, "result", required=True)),
-            artifact_refs=artifact_refs,
-            validation_refs=validation_refs,
+            artifact_refs=string_tuple(data, "artifact_refs", required=True),
+            validation_refs=string_tuple(data, "validation_refs"),
             limitations=string_tuple(data, "limitations", required=True),
             conflicts=mapping_tuple(data, "conflicts"),
             unresolved=string_tuple(data, "unresolved", required=True),

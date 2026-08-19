@@ -6,17 +6,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from research_workbench.adapters.models import (
-    ApiSessionLimits,
-    Capability,
-    DataPolicy,
-    ModelAssignment,
-    ModelBinding,
-)
-from research_workbench.artifacts.integrity import hash_file
 from research_workbench.cli import main
-from research_workbench.io import load_document, write_yaml_exclusive
-from research_workbench.tasks import FileReference
+from research_workbench.io import load_document
 from research_workbench.validation import SchemaCatalog
 
 
@@ -40,6 +31,8 @@ class CliTests(unittest.TestCase):
                     "probe",
                     "--config",
                     str(ROOT / "registry" / "models" / "pool.example.yaml"),
+                    "--adapters",
+                    str(ROOT / "registry" / "providers" / "adapters.yaml"),
                     "--json",
                 ]
             )
@@ -48,11 +41,29 @@ class CliTests(unittest.TestCase):
         self.assertEqual("explicit-slot-only", document["selection_policy"])
         self.assertIs(document["environment_checked"], False)
         self.assertTrue(all(slot["model_status"] == "unchecked" for slot in document["slots"]))
-        zhipu = next(slot for slot in document["slots"] if slot["slot_id"] == "zhipu-worker")
-        self.assertEqual("zhipu-chat-completions", zhipu["provider_adapter"])
-        self.assertIs(zhipu["enabled"], False)
-        self.assertEqual("low", zhipu["reasoning_effort"])
         self.assertNotIn(model_marker, output)
+
+    def test_model_pool_probe_rejects_capability_adapter_mismatch(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            pool = Path(directory) / "pool.yaml"
+            source = (ROOT / "registry" / "models" / "pool.example.yaml").read_text(encoding="utf-8")
+            pool.write_text(
+                source.replace("[text, tools, parallel_tools]", "[text, images]"),
+                encoding="utf-8",
+            )
+            code, output = run_cli(
+                [
+                    "models",
+                    "probe",
+                    "--config",
+                    str(pool),
+                    "--adapters",
+                    str(ROOT / "registry" / "providers" / "adapters.yaml"),
+                ]
+            )
+        self.assertEqual(2, code)
+        self.assertIn("not implemented", output)
+        self.assertNotIn("Traceback", output)
 
     def test_provider_probe_defaults_to_config_only_and_never_prints_values(self) -> None:
         secret = "must-never-appear-in-cli-output"
@@ -119,31 +130,6 @@ class CliTests(unittest.TestCase):
         self.assertIs(document["environment_read"], False)
         self.assertEqual(0, document["network_requests"])
 
-    def test_zhipu_conformance_plan_is_three_check_zero_network(self) -> None:
-        secret = "zhipu-secret-must-not-appear"
-        with patch.dict(
-            "os.environ",
-            {"ZHIPU_API_KEY": secret, "RWB_ZHIPU_MODEL": "glm-5.3"},
-            clear=True,
-        ):
-            code, output = run_cli(
-                [
-                    "providers",
-                    "conformance",
-                    "--config",
-                    str(ROOT / "registry" / "providers" / "adapters.yaml"),
-                    "--adapter",
-                    "zhipu-chat-completions",
-                ]
-            )
-        self.assertEqual(0, code)
-        document = json.loads(output)
-        self.assertEqual(["text", "structured", "tools"], document["checks"])
-        self.assertIs(document["environment_read"], False)
-        self.assertEqual(0, document["network_requests"])
-        self.assertNotIn(secret, output)
-        self.assertNotIn("glm-5.3", output)
-
     def test_provider_conformance_execute_rejects_disabled_template_before_environment(self) -> None:
         secret = "must-not-be-read-or-printed"
         with tempfile.TemporaryDirectory() as temporary:
@@ -186,51 +172,6 @@ class CliTests(unittest.TestCase):
         )
         self.assertEqual(0, code)
         self.assertIn("errors=0 warnings=0", output)
-
-    def test_validate_model_assignment_detects_profile_hash_drift(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            profile = root / "profile.yaml"
-            profile.write_text("profile: original\n", encoding="utf-8")
-            assignment = ModelAssignment.create(
-                attempt_id="A-CLI-MODEL-REF",
-                task_id="TASK-CLI",
-                task_revision=1,
-                agent_profile_ref=FileReference("profile.yaml", hash_file(profile)),
-                pool_id="cli-test-pool",
-                pool_config_hash="0" * 64,
-                binding=ModelBinding(
-                    slot_id="worker",
-                    role="worker",
-                    provider_adapter="fake-local",
-                    model="fixture-model",
-                    capabilities=frozenset({Capability.TEXT}),
-                    reasoning_effort=None,
-                    specialties=(),
-                ),
-                selection_source="profile-default",
-                selection_reason="Validate the hash-pinned Agent Profile reference.",
-                effective_data_policy=DataPolicy(local_only=True),
-                execution_limits=ApiSessionLimits(
-                    max_model_turns=1,
-                    max_tool_calls=0,
-                    max_parallel_tool_calls=1,
-                    max_tool_result_chars=256,
-                    max_output_tokens_per_turn=64,
-                    max_seconds=10,
-                    max_total_tokens=128,
-                ),
-            )
-            assignment_path = root / "model-assignment.yaml"
-            write_yaml_exclusive(assignment_path, assignment.to_mapping())
-            profile.write_text("profile: drifted\n", encoding="utf-8")
-
-            code, output = run_cli(
-                ["validate", str(assignment_path), "--root", str(root)]
-            )
-
-        self.assertEqual(1, code)
-        self.assertIn("REF-HASH-MISMATCH", output)
 
     def test_invalid_fixture_returns_nonzero_with_local_pointer(self) -> None:
         code, output = run_cli(
@@ -276,6 +217,40 @@ class CliTests(unittest.TestCase):
         )
         self.assertEqual(0, code)
         self.assertIn("no blocking", output)
+
+    def test_reference_check_rejects_non_mapping_document(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            document = Path(directory) / "list-document.json"
+            document.write_text('["not", "an", "object"]', encoding="utf-8")
+            code, output = run_cli(["reference", "check", str(document), "--root", str(ROOT)])
+        self.assertEqual(2, code)
+        self.assertIn("document must be an object", output)
+        self.assertNotIn("Traceback", output)
+
+    def test_task_resolve_blocks_on_missing_registry_skill(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            task = Path(directory) / "task-missing-skill.yaml"
+            source = (ROOT / "examples" / "task-evidence.yaml").read_text(encoding="utf-8")
+            task.write_text(
+                source.replace("literature-evidence-extraction", "no-such-skill"),
+                encoding="utf-8",
+            )
+            code, output = run_cli(
+                [
+                    "task",
+                    "resolve",
+                    str(task),
+                    "--profile",
+                    str(ROOT / "examples" / "profiles" / "evidence-scout.yaml"),
+                    "--registry",
+                    str(ROOT / "registry" / "skills" / "accepted.json"),
+                    "--root",
+                    str(ROOT),
+                ]
+            )
+        self.assertEqual(1, code)
+        self.assertIn("SKILL-MISSING", output)
+        self.assertNotIn("Traceback", output)
 
     def test_init_and_checkpoint_create_valid_non_overwriting_files(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

@@ -551,7 +551,6 @@ class MainStatePacket:
     next_actions: tuple[str, ...]
     artifact_index_refs: tuple[str, ...]
     machine_state_refs: tuple[FileReference, ...]
-    agent_trace_index_refs: tuple[FileReference, ...] = ()
     git_head: str | None = None
     rollover_reason: str | None = None
     created_at: str | None = None
@@ -598,14 +597,6 @@ class MainStatePacket:
             raise ContractError("machine_state_refs", "must contain at least one machine reference")
         if len({reference.path for reference in machine_state_refs}) != len(machine_state_refs):
             raise ContractError("machine_state_refs", "must not repeat a path")
-        agent_trace_index_refs = tuple(
-            FileReference.from_mapping(item)
-            for item in mapping_tuple(data, "agent_trace_index_refs")
-        )
-        if len({reference.path for reference in agent_trace_index_refs}) != len(
-            agent_trace_index_refs
-        ):
-            raise ContractError("agent_trace_index_refs", "must not repeat a path")
         return cls(
             schema_version=require_string(data, "schema_version"),
             checkpoint_id=require_string(data, "checkpoint_id"),
@@ -623,7 +614,6 @@ class MainStatePacket:
             next_actions=string_tuple(data, "next_actions", required=True),
             artifact_index_refs=index_refs,
             machine_state_refs=machine_state_refs,
-            agent_trace_index_refs=agent_trace_index_refs,
             git_head=git_head,
             rollover_reason=optional_string(data, "rollover_reason"),
             created_at=optional_string(data, "created_at"),

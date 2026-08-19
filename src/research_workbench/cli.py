@@ -4,21 +4,20 @@ import argparse
 import json
 import os
 import subprocess
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+import yaml
+
 from research_workbench.adapters import CodexRuntimeAdapter
 from research_workbench.adapters.models import (
-    ModelAssignment,
-    ToolChoice,
     build_live_provider,
     conformance_plan,
     get_provider_adapter_config,
     load_model_pool,
     probe_provider_adapters,
-    run_openai_gate,
-    run_zhipu_gate,
     run_provider_conformance,
 )
 from research_workbench.artifacts.integrity import hash_directory, hash_file, resolve_within_root
@@ -44,20 +43,9 @@ from research_workbench.context import (
     MainStatePacket,
     checkpoint_digest,
 )
-from research_workbench.contracts import (
-    ContractError,
-    ContractRisk,
-    RiskLevel,
-    is_path_safe_identifier,
-    to_plain,
-)
+from research_workbench.contracts import ContractError, ContractRisk, RiskLevel, to_plain
 from research_workbench.evaluation import assess_skill_evaluation
-from research_workbench.io import (
-    iter_documents,
-    load_document,
-    write_text_exclusive,
-    write_yaml_exclusive,
-)
+from research_workbench.io import iter_documents, load_document
 from research_workbench.observability import ExecutionReceipt, check_execution_receipt
 from research_workbench.protocol import ProjectProtocol
 from research_workbench.tasks import AttemptRecord, FileReference, HandoffPacket, TaskPacket
@@ -66,24 +54,45 @@ from research_workbench.validation import (
     check_claim_ceiling,
     check_handoff_against_task,
     check_references,
-    validate_agent_trace,
 )
 from research_workbench.validation.documents import (
     Severity,
-    ValidationIssue,
     infer_document_kind,
     load_and_validate,
 )
 
 
 def _write_yaml(path: Path, document: Mapping[str, Any]) -> None:
-    # Pass the module attribute so existing CLI failure-injection tests can
-    # replace ``research_workbench.cli.os.link`` at this compatibility wrapper.
-    write_yaml_exclusive(path, document, _link=os.link)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            newline="\n",
+            dir=path.parent,
+            prefix=f".{path.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as stream:
+            temporary_path = Path(stream.name)
+            yaml.safe_dump(dict(document), stream, sort_keys=False, allow_unicode=True)
+            stream.flush()
+            os.fsync(stream.fileno())
+
+        # Linking publishes a fully flushed inode only when the destination is
+        # still absent. It preserves the previous exclusive-create behaviour
+        # without exposing a partially written checkpoint as the final path.
+        os.link(temporary_path, path)
+    finally:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
 
 
 def _write_text(path: Path, content: str) -> None:
-    write_text_exclusive(path, content, _link=os.link)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("x", encoding="utf-8", newline="\n") as stream:
+        stream.write(content)
 
 
 def _print_risks(risks) -> int:
@@ -94,84 +103,6 @@ def _print_risks(risks) -> int:
         print(f"{risk.level.upper():7} {risk.code:28} {risk.message}")
     blockers = sum(risk.level == RiskLevel.BLOCK for risk in risks)
     return 1 if blockers else 0
-
-
-def _zhipu_gate_decision_relationship_risks(
-    decision: Mapping[str, Any], root: Path
-) -> list[ContractRisk]:
-    report_ref_value = decision.get("gate_report_ref")
-    if not isinstance(report_ref_value, Mapping):
-        return []
-    report_ref = FileReference.from_mapping(report_ref_value)
-    report_path = resolve_within_root(root, report_ref.path)
-    if report_path is None or not report_path.is_file():
-        return []
-    report = load_document(report_path)
-    if not isinstance(report, Mapping) or report.get("report_kind") != "zhipu_live_gate":
-        return [
-            ContractRisk(
-                "ZHIPU-GATE-DECISION-MISMATCH",
-                RiskLevel.BLOCK,
-                "Zhipu Gate Decision does not reference a Zhipu Gate report",
-            )
-        ]
-
-    mismatches: list[str] = []
-    for decision_key, report_key in (
-        ("gate_id", "gate_id"),
-        ("gate_status", "status"),
-        ("reason", "reason"),
-    ):
-        if decision.get(decision_key) != report.get(report_key):
-            mismatches.append(decision_key)
-    expected_decision = {
-        "passed": "accept",
-        "safe-paused": "defer",
-        "failed": "reject",
-        "not-run": "not-run",
-    }.get(report.get("status"))
-    if decision.get("decision") != expected_decision:
-        mismatches.append("decision")
-
-    split_fields = ("status_scope", "monetary_cost")
-    report_uses_split = any(key in report for key in split_fields)
-    decision_uses_split = any(key in decision for key in split_fields)
-    if report_uses_split:
-        for key in split_fields:
-            if (
-                key not in report
-                or key not in decision
-                or decision[key] != report[key]
-            ):
-                mismatches.append(key)
-    elif decision_uses_split:
-        mismatches.extend(key for key in split_fields if key in decision)
-
-    conformance = report.get("conformance")
-    expected_refs: dict[str, object] = {}
-    if isinstance(conformance, Mapping) and isinstance(conformance.get("check_ref"), Mapping):
-        expected_refs["conformance_check_ref"] = conformance["check_ref"]
-    e2e = report.get("e2e")
-    if isinstance(e2e, Mapping):
-        for key in ("main_state_ref", "receipt_ref", "trace_ref"):
-            if isinstance(e2e.get(key), Mapping):
-                expected_refs[key] = e2e[key]
-    for key in ("conformance_check_ref", "main_state_ref", "receipt_ref", "trace_ref"):
-        actual = decision.get(key)
-        expected = expected_refs.get(key)
-        if actual != expected:
-            mismatches.append(key)
-
-    if not mismatches:
-        return []
-    return [
-        ContractRisk(
-            "ZHIPU-GATE-DECISION-MISMATCH",
-            RiskLevel.BLOCK,
-            "Zhipu Gate Decision differs from its hash-bound report: "
-            + ", ".join(sorted(set(mismatches))),
-        )
-    ]
 
 
 def _document_reference_risks(document: Mapping[str, Any], root: Path):
@@ -219,20 +150,9 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
                                 f"Skill package drift: {lock.identifier} expected={expected} actual={actual}",
                             )
                         )
-    elif kind == "model_assignment":
-        model_assignment = ModelAssignment.from_mapping(document)
-        references = (model_assignment.agent_profile_ref,)
-        if model_assignment.selection_ref is not None:
-            references += (model_assignment.selection_ref,)
     elif kind == "attempt":
         attempt = AttemptRecord.from_mapping(document)
         references = attempt.input_lock
-        if attempt.agent_trace_index_ref:
-            references += (attempt.agent_trace_index_ref,)
-        if attempt.model_assignment_ref:
-            references += (attempt.model_assignment_ref,)
-        if attempt.provider_conformance_ref:
-            references += (attempt.provider_conformance_ref,)
         path_only.extend(attempt.artifact_refs)
         if attempt.handoff_ref:
             path_only.append(attempt.handoff_ref)
@@ -240,38 +160,19 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
             path_only.append(attempt.execution_receipt_ref)
     elif kind == "main_state":
         state = MainStatePacket.from_mapping(document)
-        references = state.machine_state_refs + state.agent_trace_index_refs
+        references = state.machine_state_refs
         path_only.extend(item.ref for item in state.recent_handoffs)
         path_only.extend(state.artifact_index_refs)
         if state.previous_checkpoint_ref:
             path_only.append(state.previous_checkpoint_ref)
         if state.context_snapshot_ref:
             path_only.append(state.context_snapshot_ref)
-        for trace_ref in state.agent_trace_index_refs:
-            trace_path = resolve_within_root(root, trace_ref.path)
-            if trace_path is None or not trace_path.is_file():
-                continue
-            trace_document = load_document(trace_path)
-            if not isinstance(trace_document, Mapping) or trace_document.get("trace_status") != "frozen":
-                extra_risks.append(
-                    ContractRisk(
-                        "TRACE-NOT-FROZEN",
-                        RiskLevel.BLOCK,
-                        f"Main State references a Trace Index that is not frozen: {trace_ref.path}",
-                    )
-                )
     elif kind == "context_snapshot":
         snapshot = ContextSnapshot.from_mapping(document)
         if snapshot.handoff_audit_ref:
             path_only.append(snapshot.handoff_audit_ref)
     elif kind == "execution_receipt":
         receipt = ExecutionReceipt.from_mapping(document)
-        if receipt.agent_trace_index_ref:
-            references = (receipt.agent_trace_index_ref,)
-        if receipt.model_assignment_ref:
-            references += (receipt.model_assignment_ref,)
-        if receipt.provider_conformance_ref:
-            references += (receipt.provider_conformance_ref,)
         path_only.extend(
             (
                 receipt.attempt_ref,
@@ -285,40 +186,6 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
             path_only.append(receipt.context_snapshot_ref)
         if receipt.runtime.capability_snapshot_ref:
             path_only.append(receipt.runtime.capability_snapshot_ref)
-    elif kind in {"openai_live_gate_report", "zhipu_live_gate_report"}:
-        archive = document.get("archive")
-        if isinstance(archive, Mapping):
-            for key in ("intent_ref", "model_assignment_ref", "conformance_check_ref"):
-                reference = archive.get(key)
-                if isinstance(reference, Mapping):
-                    references += (FileReference.from_mapping(reference),)
-        conformance = document.get("conformance")
-        if isinstance(conformance, Mapping) and isinstance(
-            conformance.get("check_ref"), Mapping
-        ):
-            references += (FileReference.from_mapping(conformance["check_ref"]),)
-        e2e = document.get("e2e")
-        if isinstance(e2e, Mapping):
-            for key in ("main_state_ref", "receipt_ref", "trace_ref"):
-                reference = e2e.get(key)
-                if isinstance(reference, Mapping):
-                    references += (FileReference.from_mapping(reference),)
-            for reference in e2e.get("published_refs", []):
-                if isinstance(reference, Mapping):
-                    references += (FileReference.from_mapping(reference),)
-    elif kind in {"openai_live_gate_decision", "zhipu_live_gate_decision"}:
-        for key in (
-            "gate_report_ref",
-            "conformance_check_ref",
-            "main_state_ref",
-            "receipt_ref",
-            "trace_ref",
-        ):
-            reference = document.get(key)
-            if isinstance(reference, Mapping):
-                references += (FileReference.from_mapping(reference),)
-        if kind == "zhipu_live_gate_decision":
-            extra_risks.extend(_zhipu_gate_decision_relationship_risks(document, root))
     elif kind == "deterministic_check_report":
         checker = document.get("checker")
         if isinstance(checker, Mapping) and isinstance(checker.get("source_ref"), Mapping):
@@ -368,24 +235,6 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
         admission = document.get("admission")
         if isinstance(admission, Mapping) and isinstance(admission.get("decision_ref"), str):
             path_only.append(str(admission["decision_ref"]))
-            for item in arm.get("artifact_refs", []):
-                if isinstance(item, Mapping):
-                    references += (FileReference.from_mapping(item),)
-    elif kind == "simulation_vv_report":
-        references = tuple(
-            FileReference.from_mapping(item)
-            for item in document.get("input_lock", [])
-            if isinstance(item, Mapping)
-        )
-        checks = document.get("checks")
-        if isinstance(checks, Mapping):
-            for check in checks.values():
-                if isinstance(check, Mapping):
-                    path_only.extend(
-                        str(value)
-                        for value in check.get("evidence_refs", [])
-                        if isinstance(value, str)
-                    )
     risks = check_references(root, references)
     risks.extend(extra_risks)
     for relative in path_only:
@@ -422,16 +271,6 @@ def _validate(args: argparse.Namespace) -> int:
             if path in error_paths or not isinstance(document, Mapping):
                 continue
             try:
-                if infer_document_kind(document) == "agent_trace_index":
-                    bundle_issues = validate_agent_trace(path, root=Path(args.root).resolve())
-                    for issue in bundle_issues:
-                        print(
-                            f"{issue.severity.upper():7} {issue.code:20} "
-                            f"{issue.path}: {issue.message}"
-                        )
-                    errors += sum(issue.severity == Severity.ERROR for issue in bundle_issues)
-                    warnings += sum(issue.severity == Severity.WARNING for issue in bundle_issues)
-                    continue
                 reference_risks.extend(_document_reference_risks(document, Path(args.root).resolve()))
             except ContractError as exc:
                 print(f"ERROR   CONTRACT-INVALID     {path}: {exc}")
@@ -623,22 +462,14 @@ def _provider_conformance(args: argparse.Namespace) -> int:
     if not args.output:
         raise ValueError("--execute requires --output")
     provider = build_live_provider(config)
-    try:
-        report = run_provider_conformance(
-            provider,
-            adapter_id=config.adapter_id,
-            execution_context=args.execution_context,
-            checks=tuple(plan["checks"]),
-            max_provider_invocations=args.max_provider_invocations,
-            max_output_tokens=args.max_output_tokens,
-            tool_choice_override=(
-                ToolChoice(kind="auto") if config.provider == "zhipu" else None
-            ),
-        )
-    finally:
-        discard = getattr(provider, "discard_ephemeral_continuation", None)
-        if callable(discard):
-            discard()
+    report = run_provider_conformance(
+        provider,
+        adapter_id=config.adapter_id,
+        execution_context=args.execution_context,
+        checks=tuple(plan["checks"]),
+        max_provider_invocations=args.max_provider_invocations,
+        max_output_tokens=args.max_output_tokens,
+    )
     document = report.to_mapping()
     schema_errors = SchemaCatalog().validate("provider_conformance_report", document)
     if schema_errors:
@@ -652,66 +483,8 @@ def _provider_conformance(args: argparse.Namespace) -> int:
     return 0 if report.status == "passed" else 1
 
 
-def _provider_openai_gate(args: argparse.Namespace) -> int:
-    if args.execute and not args.report:
-        raise ValueError("--execute requires --report")
-    report = run_openai_gate(
-        execute=args.execute,
-        root=args.root,
-        attempt_id=args.attempt_id,
-        accountable_owner=args.accountable_owner,
-        report_path=args.report,
-    )
-    if args.report:
-        target = Path(args.report)
-        suffix = target.suffix.lower()
-        if suffix not in {".json", ".yaml", ".yml"}:
-            raise ValueError("--report must use a .json, .yaml, or .yml suffix")
-        if not args.execute:
-            if suffix == ".json":
-                _write_text(target, json.dumps(report, ensure_ascii=False, indent=2) + "\n")
-            else:
-                _write_yaml(target, report)
-        print(
-            f"OpenAI live gate {report['status']}: reason={report['reason']} "
-            f"report={target}"
-        )
-    else:
-        print(json.dumps(report, ensure_ascii=False, indent=2))
-    return 0 if report["status"] in {"passed", "not-run"} else 1
-
-
-def _provider_zhipu_gate(args: argparse.Namespace) -> int:
-    if args.execute and not args.report:
-        raise ValueError("--execute requires --report")
-    report = run_zhipu_gate(
-        execute=args.execute,
-        root=args.root,
-        attempt_id=args.attempt_id,
-        accountable_owner=args.accountable_owner,
-        report_path=args.report,
-    )
-    if args.report:
-        target = Path(args.report)
-        suffix = target.suffix.lower()
-        if suffix not in {".json", ".yaml", ".yml"}:
-            raise ValueError("--report must use a .json, .yaml, or .yml suffix")
-        if not args.execute:
-            if suffix == ".json":
-                _write_text(target, json.dumps(report, ensure_ascii=False, indent=2) + "\n")
-            else:
-                _write_yaml(target, report)
-        print(
-            f"Zhipu live readiness gate {report['status']}: "
-            f"reason={report['reason']} report={target}"
-        )
-    else:
-        print(json.dumps(report, ensure_ascii=False, indent=2))
-    return 0 if report["status"] in {"passed", "not-run"} else 1
-
-
 def _model_pool_probe(args: argparse.Namespace) -> int:
-    pool = load_model_pool(args.config)
+    pool = load_model_pool(args.config, adapters_path=args.adapters)
     environment = os.environ if args.check_environment else None
     report = pool.probe(environment=environment)
     if args.json:
@@ -762,11 +535,15 @@ def _task_resolve(args: argparse.Namespace) -> int:
                 raise ValueError("task resolution requires --registry or at least one --skill")
             skills = [SkillManifest.from_mapping(_load_valid(path, "skill_manifest")) for path in args.skill]
             resolved = resolve_task(task, profile, skills)
-    except (KeyError, ResolutionError) as exc:
-        if isinstance(exc, KeyError):
-            print(f"BLOCK   SKILL-MISSING                {exc}")
-            return 1
+    except ResolutionError as exc:
         return _print_risks(exc.risks)
+    except (KeyError, ContractError) as exc:
+        # Registry drift/malformation raises ContractError with other fields and
+        # must keep the exit-2 contract-error channel via main().
+        if isinstance(exc, ContractError) and exc.field != "required_skills":
+            raise
+        print(f"BLOCK   SKILL-MISSING                {exc}")
+        return 1
     document = to_plain(resolved)
     if args.output:
         _write_yaml(Path(args.output), document)
@@ -774,133 +551,6 @@ def _task_resolve(args: argparse.Namespace) -> int:
     else:
         print(json.dumps(document, ensure_ascii=False, indent=2))
     return 0
-
-
-def _discover_trace_link_documents(
-    index_path: Path,
-    *,
-    root: Path,
-    attempt_path: str | None,
-    receipt_path: str | None,
-    state_path: str | None,
-) -> tuple[dict[str, str | Path | None], list[ValidationIssue]]:
-    """Find unambiguous Trace link documents without leaving ``root``."""
-
-    paths: dict[str, str | Path | None] = {
-        "attempt_path": attempt_path,
-        "receipt_path": receipt_path,
-        "state_path": state_path,
-    }
-    if all(value is not None for value in paths.values()):
-        return paths, []
-
-    resolved_index = index_path.resolve()
-    try:
-        resolved_index.relative_to(root)
-    except ValueError:
-        # The bundle validator reports the target escape without reading it.
-        return paths, []
-
-    try:
-        loaded_index = load_document(resolved_index)
-    except (OSError, ValueError):
-        # Parsing and missing-file diagnostics remain owned by the bundle validator.
-        return paths, []
-    if not isinstance(loaded_index, Mapping):
-        return paths, []
-
-    candidate_directories = [resolved_index.parent]
-    task_id = loaded_index.get("task_id")
-    attempt_id = loaded_index.get("attempt_id")
-    if is_path_safe_identifier(task_id) and is_path_safe_identifier(attempt_id):
-        candidate_directories.append(root / "work" / str(task_id) / str(attempt_id))
-
-    filenames = {
-        "attempt_path": "attempt.yaml",
-        "receipt_path": "execution-receipt.yaml",
-        "state_path": "main-state.yaml",
-    }
-    issues: list[ValidationIssue] = []
-    for field, filename in filenames.items():
-        if paths[field] is not None:
-            continue
-        candidates: dict[Path, Path] = {}
-        escaped: set[Path] = set()
-        for directory in candidate_directories:
-            raw_candidate = directory / filename
-            resolved_candidate = raw_candidate.resolve()
-            try:
-                resolved_candidate.relative_to(root)
-            except ValueError:
-                escaped.add(raw_candidate)
-                continue
-            if resolved_candidate.is_file():
-                candidates.setdefault(resolved_candidate, raw_candidate)
-        for escaped_candidate in sorted(escaped, key=str):
-            issues.append(
-                ValidationIssue(
-                    resolved_index,
-                    "TRACE-REF-OUTSIDE-ROOT",
-                    f"automatic {filename} candidate resolves outside root: {escaped_candidate}",
-                )
-            )
-        if len(candidates) == 1:
-            paths[field] = next(iter(candidates))
-        elif len(candidates) > 1:
-            rendered = ", ".join(
-                candidate.relative_to(root).as_posix() for candidate in sorted(candidates, key=str)
-            )
-            issues.append(
-                ValidationIssue(
-                    resolved_index,
-                    "TRACE-LINK-AMBIGUOUS",
-                    f"multiple {filename} candidates were found: {rendered}",
-                )
-            )
-    return paths, issues
-
-
-def _trace_validate(args: argparse.Namespace) -> int:
-    root = Path(args.root).resolve()
-    target = Path(args.target)
-    if not target.is_absolute():
-        target = root / target
-    if target.is_dir():
-        target = target / "INDEX.yaml"
-    link_paths, discovery_issues = _discover_trace_link_documents(
-        target,
-        root=root,
-        attempt_path=args.attempt,
-        receipt_path=args.receipt,
-        state_path=args.state,
-    )
-    issues = discovery_issues + validate_agent_trace(
-        target,
-        root=root,
-        attempt_path=link_paths["attempt_path"],
-        receipt_path=link_paths["receipt_path"],
-        state_path=link_paths["state_path"],
-    )
-    for issue in issues:
-        print(f"{issue.severity.upper():7} {issue.code:32} {issue.path}: {issue.message}")
-    errors = sum(issue.severity == Severity.ERROR for issue in issues)
-    warnings = sum(issue.severity == Severity.WARNING for issue in issues)
-    try:
-        resolved_target = target.resolve()
-        resolved_target.relative_to(root)
-        loaded_index = load_document(resolved_target)
-    except (OSError, ValueError):
-        loaded_index = {}
-    index = loaded_index if isinstance(loaded_index, Mapping) else {}
-    messages = index.get("messages", [])
-    ledger = index.get("event_ledger")
-    event_count = ledger.get("event_count", 0) if isinstance(ledger, Mapping) else 0
-    print(
-        f"trace={index.get('trace_id', 'unknown')} messages={len(messages) if isinstance(messages, list) else 0} "
-        f"events={event_count} errors={errors} warnings={warnings} "
-        f"completeness={index.get('completeness', 'unknown')}"
-    )
-    return 1 if errors else 0
 
 
 def _runtime_codex_validate(args: argparse.Namespace) -> int:
@@ -1009,6 +659,8 @@ def _handoff_audit_transfer(args: argparse.Namespace) -> int:
 
 def _reference_check(args: argparse.Namespace) -> int:
     document = load_document(args.document)
+    if not isinstance(document, Mapping):
+        raise ValueError(f"{args.document}: document must be an object")
     return _print_risks(_document_reference_risks(document, Path(args.root).resolve()))
 
 
@@ -1172,6 +824,7 @@ def _context_resume_check(args: argparse.Namespace) -> int:
             capture_output=True,
             text=True,
             check=False,
+            timeout=10,
         )
         actual_head = completed.stdout.strip().lower() if completed.returncode == 0 else None
         if actual_head is None:
@@ -1310,11 +963,6 @@ def _context_checkpoint(args: argparse.Namespace) -> int:
         for item in base.get("machine_state_refs", [])
         if isinstance(item, Mapping) and isinstance(item.get("path"), str)
     }
-    trace_refs_by_path: dict[str, Mapping[str, Any]] = {
-        str(item.get("path")): item
-        for item in base.get("agent_trace_index_refs", [])
-        if isinstance(item, Mapping) and isinstance(item.get("path"), str)
-    }
 
     def freeze_machine_state(raw_path: str | Path) -> None:
         path = Path(raw_path)
@@ -1324,24 +972,11 @@ def _context_checkpoint(args: argparse.Namespace) -> int:
             raise ValueError(f"machine state reference does not exist: {relative}")
         machine_refs_by_path[relative] = {"path": relative, "sha256": hash_file(resolved)}
 
-    def freeze_agent_trace(raw_path: str | Path) -> None:
-        path = Path(raw_path)
-        relative = _project_relative(path, root, "Agent Trace index")
-        resolved = resolve_within_root(root, relative)
-        if resolved is None or not resolved.is_file():
-            raise ValueError(f"Agent Trace index does not exist: {relative}")
-        trace_document = _load_valid(resolved, "agent_trace_index")
-        if trace_document.get("trace_status") != "frozen":
-            raise ValueError(f"Agent Trace index must be frozen before checkpoint: {relative}")
-        trace_refs_by_path[relative] = {"path": relative, "sha256": hash_file(resolved)}
-
     freeze_machine_state(protocol_path)
     if args.snapshot:
         freeze_machine_state(args.snapshot)
     for raw_ref in args.machine_state_ref:
         freeze_machine_state(raw_ref)
-    for raw_ref in args.agent_trace_index_ref:
-        freeze_agent_trace(raw_ref)
 
     document = {
         "schema_version": "0.1.0",
@@ -1361,10 +996,6 @@ def _context_checkpoint(args: argparse.Namespace) -> int:
         "rollover_reason": args.rollover_reason,
         "created_at": args.created_at or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
     }
-    if trace_refs_by_path:
-        document["agent_trace_index_refs"] = [
-            trace_refs_by_path[path] for path in sorted(trace_refs_by_path)
-        ]
     if previous_ref:
         document["previous_checkpoint_ref"] = previous_ref
     if snapshot_ref:
@@ -1375,6 +1006,7 @@ def _context_checkpoint(args: argparse.Namespace) -> int:
             capture_output=True,
             text=True,
             check=False,
+            timeout=10,
         )
         if completed.returncode != 0:
             raise ValueError("cannot capture Git HEAD from the checkpoint root")
@@ -1502,50 +1134,6 @@ def build_parser() -> argparse.ArgumentParser:
     )
     provider_conformance.add_argument("--output", help="new YAML report path; required with --execute")
     provider_conformance.set_defaults(handler=_provider_conformance)
-    provider_openai_gate = provider_subparsers.add_parser(
-        "openai-gate",
-        help="run the fixed OpenAI Responses live gate or emit deterministic not-run evidence",
-    )
-    provider_openai_gate.add_argument(
-        "--execute",
-        action="store_true",
-        help="authorize the fixed live requests; without this flag no environment or network is used",
-    )
-    provider_openai_gate.add_argument(
-        "--report",
-        help="atomically create a redacted JSON or YAML report; defaults to JSON on stdout",
-    )
-    provider_openai_gate.add_argument("--root", help="project root containing the public Gate fixture")
-    provider_openai_gate.add_argument("--attempt-id", help="new path-safe Attempt identifier")
-    provider_openai_gate.add_argument(
-        "--accountable-owner",
-        help="real person accountable for the live Gate Attempt and Agent Trace",
-    )
-    provider_openai_gate.set_defaults(handler=_provider_openai_gate)
-    provider_zhipu_gate = provider_subparsers.add_parser(
-        "zhipu-gate",
-        help="run the fixed Zhipu standard-API readiness gate or emit not-run evidence",
-    )
-    provider_zhipu_gate.add_argument(
-        "--execute",
-        action="store_true",
-        help="authorize fixed live requests; without this flag no environment or network is used",
-    )
-    provider_zhipu_gate.add_argument(
-        "--report",
-        help="atomically create a redacted JSON or YAML report; defaults to JSON on stdout",
-    )
-    provider_zhipu_gate.add_argument(
-        "--root", help="project root containing the public Gate fixture"
-    )
-    provider_zhipu_gate.add_argument(
-        "--attempt-id", help="new path-safe Attempt identifier"
-    )
-    provider_zhipu_gate.add_argument(
-        "--accountable-owner",
-        help="real person accountable for the live Gate Attempt and Agent Trace",
-    )
-    provider_zhipu_gate.set_defaults(handler=_provider_zhipu_gate)
 
     models = subparsers.add_parser("models", help="inspect the explicit local model pool")
     model_subparsers = models.add_subparsers(dest="models_command", required=True)
@@ -1554,6 +1142,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="validate model slots without choosing, ranking, or calling a model",
     )
     model_probe.add_argument("--config", default="registry/models/pool.example.yaml")
+    model_probe.add_argument(
+        "--adapters",
+        default="registry/providers/adapters.yaml",
+        help="provider adapter registry used to cross-check slot adapters and capabilities",
+    )
     model_probe.add_argument(
         "--check-environment",
         action="store_true",
@@ -1573,6 +1166,7 @@ def build_parser() -> argparse.ArgumentParser:
     task_resolve.add_argument("--auto-select", action="store_true")
     task_resolve.add_argument("--output")
     task_resolve.set_defaults(handler=_task_resolve)
+
     runtime = subparsers.add_parser("runtime", help="inspect native runtime mappings")
     runtime_subparsers = runtime.add_subparsers(dest="runtime_command", required=True)
     codex = runtime_subparsers.add_parser("codex", help="inspect the Codex native adapter")
@@ -1605,16 +1199,6 @@ def build_parser() -> argparse.ArgumentParser:
     handoff_audit.add_argument("audit")
     handoff_audit.add_argument("--root", default=".")
     handoff_audit.set_defaults(handler=_handoff_audit_transfer)
-
-    trace = subparsers.add_parser("trace", help="validate a replayable Agent Trace bundle")
-    trace_subparsers = trace.add_subparsers(dest="trace_command", required=True)
-    trace_validate = trace_subparsers.add_parser("validate")
-    trace_validate.add_argument("target", help="Agent Trace INDEX.yaml or its Attempt archive directory")
-    trace_validate.add_argument("--root", default=".")
-    trace_validate.add_argument("--attempt")
-    trace_validate.add_argument("--receipt")
-    trace_validate.add_argument("--state")
-    trace_validate.set_defaults(handler=_trace_validate)
 
     reference = subparsers.add_parser("reference", help="check live file and hash references")
     reference_subparsers = reference.add_subparsers(dest="reference_command", required=True)
@@ -1682,7 +1266,6 @@ def build_parser() -> argparse.ArgumentParser:
         default="active",
     )
     checkpoint.add_argument("--machine-state-ref", action="append", default=[])
-    checkpoint.add_argument("--agent-trace-index-ref", action="append", default=[])
     checkpoint.add_argument("--capture-git-head", action="store_true")
     checkpoint.add_argument("--rollover-reason", default="manual checkpoint")
     checkpoint.add_argument(

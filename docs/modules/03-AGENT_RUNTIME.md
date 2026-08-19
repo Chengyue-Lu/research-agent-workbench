@@ -105,15 +105,10 @@ Profile 不包含完整 Skill 指令，也不固定厂商模型。`default_slot`
 
 - coordinator 默认使用 `primary` 槽；其他首批 Profile 默认使用 `worker` 槽；
 - 每个子任务建立一个 fresh context，不继承主 Agent 的完整消息历史；
-- Protocol、Task、Profile、Skill Assignment、Model Assignment 和可选 previous Main State 在 Provider 调用前按精确字节冻结并校验 Schema；
-- 纯编译边界只把冻结 Task、选中 Skill、输入引用、显式模型槽和各层权限/预算交集变成请求、限制与精确工具 handler；工具只能由受控 Tool Registry 按 Execution Contract 与 Assignment 的精确交集构建；
-- `K-API-2` 已用 fake Provider 对 evidence/H2 与 simulation/H1 双合同路径验证 hash-locked 只读工具，不注入主 Agent 全历史、未选 Skill 或预读的源正文；
-- 工具循环在请求前、调用边界和响应后检查轮次、调用数、结果大小、token/成本与 wall time；它不能中断正在进行的 Provider/工具调用；
-- `max_parallel_tool_calls` 只是每轮 fan-out 上限，首版客户端 handler 串行执行；
+- Task、Skill Assignment、输入引用、输出契约和预算组成唯一启动材料；
+- 工具循环在本地受轮次、调用数、结果大小、token/成本和 wall time 限制；
 - provider/model 不满足能力或数据政策时阻断，不换槽、不换 Provider；
-- 临时 API transcript 不是权威状态；`completed` 通过 stage → validate → 排他发布并最后提交 Main State，其他终态只写恢复/审计文件，不伪造科研工件；
-- Provider 调用前排他记录 Attempt intent；已验证 stage 只续发文件，未知执行结果同 Attempt fail-closed，不自动重放副作用。
-- H1/H2 均自动生成 validator-compatible Agent Trace；无法在边界前可靠捕获的过程显式记为 gap，不得伪装 `complete`。
+- 临时 API transcript 不是权威状态，退出前必须固化工件与 Handoff。
 
 ### 可选 Codex 映射
 
@@ -134,7 +129,7 @@ Profile 不包含完整 Skill 指令，也不固定厂商模型。`default_slot`
 | 输入版本变化 | 标记 `stale_input`，阻止合并 |
 | Skill 缺失或版本不符 | `BLOCK`，重新解析能力 |
 | 权限不足 | 返回 capability gap，不自动扩大权限 |
-| API 输出或科研工件契约不合格 | `K-API-2` H1/H2 路径均写 failed closeout；定向修复必须使用新 Attempt，不在原 Attempt 内自动重放 |
+| 输出 Schema 不合格 | 一次定向修复；再次失败升级给主 Agent |
 | 结果冲突 | 并列保存，主 Agent提出可判别的下一步，不做多数投票 |
 | 写入冲突 | 阻止合并，重新划分 write scope |
 
@@ -161,4 +156,3 @@ Profile 不包含完整 Skill 指令，也不固定厂商模型。`default_slot`
 - 同一受限 Task 可以通过纯 API fresh session 执行，不依赖特定平台；
 - 更换运行时只需实现 Adapter，不修改科研对象；
 - 模型槽选择显式，Receipt 能核对实际 Provider/Model，没有自动 fallback。
-- evidence/H2 与 simulation/H1 均能离线完成 fresh-process/commit-last 恢复并保留诚实 gapped Trace；真实 OpenAI Gate 仍单独记为 pending。

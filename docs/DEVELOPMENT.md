@@ -2,7 +2,7 @@
 
 状态：当前协作入口
 
-日期：2026-08-16
+日期：2026-08-14
 
 ## 1. 实名维护边界
 
@@ -30,8 +30,6 @@ Agent 不是责任主体。每个运行中的 Agent 使用稳定 `actor_id`，�
 
 达到上述节点后暂停评审，不批量新增 Mode/Skill，也不在此分支修改 API 实现。详细验收见 [Mode–Skill 实施计划](implementation/MODE_SKILL_WORKSTREAM_PLAN.md)，状态以[任务清单](TASKS.md)为准。
 
-黄毅的 API 工作流已在离线 fake-local Gate 中完成 `K-API-2` 的 evidence/H2 与 simulation/H1 双合同路径：冻结 Task/Profile/Skill/输入和 Model Assignment，只通过受控 Tool Registry 构建工具，持久化五种终态，自动生成诚实声明 capture gap 的 Trace，以 Main State 最后提交，并在 H1/H2 fresh Python 子进程中恢复。Zhipu 标准 API 的 text/structured/tools、单 Attempt 有界私有 reasoning handback 与可审计准备度 Gate 也已离线实现；它仍等待账户/授权/live/货币成本证据，且不静默替代 ADR-0013 的 OpenAI Gate。`M3-007`、`M3-008` 和 `M6-006` 已完成；`M6-003` 仍为 `IN_PROGRESS`，真实 Provider Gate 尚未通过。离线通过不等于真实 Provider 或科研正确性证据，也不构成路诚钺工作流的完成证据。
-
 ## 3. 开始一个开发 Task
 
 1. 读取根目录 `AGENTS.md`、本文件和 `TASKS.md`。
@@ -42,8 +40,6 @@ Agent 不是责任主体。每个运行中的 Agent 使用稳定 `actor_id`，�
 6. 完成时写 Handoff、验证证据和紧凑 `WORKLOG.md`；Worklog 是导航摘要，不是完整 Trace 的替代品。
 
 完整目录与消息信封见[工件与溯源](modules/07-ARTIFACTS_AND_PROVENANCE.md)，H0/H1/H2 规则见[Task 与 Handoff](modules/05-TASK_AND_HANDOFF.md)。
-
-当前自动 API recorder 已覆盖 Assignment/Handoff、Provider/工具边界、受控读取结果和 closeout revision；它不自动观察启动前的所有文件读取、shell 命令或平台消息。调用方必须捕获这些事件，或在不可得时以明确的 capture gap 关闭，不能仅因 INDEX 结构有效就宣称 Trace `complete`。
 
 ## 4. 完整留存与克制读取
 
@@ -79,8 +75,8 @@ H1/H2 的差异是回传主上下文和审查强度，不是“是否保存过�
 
 ## 7. 当前已知缺口
 
-- Agent Trace Envelope/Index/Event Schema、validator/CLI 和 API 自动捕获已离线通过；不可得过程必须保持显式 gap，不得伪装 complete。Trace 语义、最小字段和 Mode/Skill 评估消费方式仍由双方共同维护。
-- 真实 OpenAI Gate 仍未执行；当前机器没有 `OPENAI_API_KEY` 和 `RWB_WORKER_MODEL`，所以只能记为 pending/not-run，不能从离线 fixture 推断真实兼容。
+- Attempt Archive、Agent Trace Envelope 和自动捕获尚未实现 Schema/CLI；当前只能先按文档约定和模板留存。
+- API session 与平台 Adapter 的自动 Trace 写入属于黄毅的执行实现范围；Trace 语义、最小字段和 Mode/Skill 评估消费方式由双方共同冻结。
 - 尚无真实运行数据证明 H1/H2 的净收益；不能把消息数量、Trace 完整度或审计工件数量当作质量本身。
 - 当前只有两个正式 Mode、三个 accepted Skills，且真实 with/without 证据不足。
 - 黄毅的 GitHub 身份尚未登记在本文件；登记后应替换占位说明，不应猜测账号。

@@ -6,8 +6,6 @@
 
 2026-08-14 维护说明：本 ADR 的架构决定继续有效；`K-API-2` 及 API 实现/测试由黄毅负责，不再是路诚钺当前 Mode–Skill 节点。
 
-2026-08-16 实现说明：evidence/H2 与 simulation/H1 双合同、受控 Tool Registry、Model Assignment、自动诚实 gapped Trace 和 H1/H2 fresh-process/commit-last 已有离线 fake-local 证据。这不改变本 ADR 对真实 Provider Gate 和人类责任的边界。
-
 ## 背景
 
 ADR-0001 在项目早期选择“原生 Agent 运行时优先”，目的是避免重新实现 Codex、Claude Code 等平台已经提供的线程、子 Agent、权限和 Skill 能力。后续实现证明，科研契约、文件式连续性和 Provider-neutral Model Port 可以独立于这些平台存在；同时，项目未来使用的平台尚未确定，若继续把真实垂直切片绑定到 Codex 或 OpenCode，会使平台选择提前成为核心依赖。
@@ -27,8 +25,6 @@ ADR-0001 在项目早期选择“原生 Agent 运行时优先”，目的是避�
 7. 若平台路径执行，仍必须固定同一模型槽并在 Receipt 中核对实际 Provider/Model，防止平台继承或二次路由。
 8. 本 ADR 取代 ADR-0001 中“真实执行首先依赖原生平台”的优先级；ADR-0001 关于不建设通用 Supervisor、固定 DAG 和会话数据库的限制继续有效。
 
-实现解释（2026-08-14）：上述“单轮并行调用数”在首版实现中是每轮 fan-out 上限，客户端 handler 串行执行；token/成本与 wall time 是请求前、调用边界和响应后 guard，不能取消 in-flight 调用。“硬预算不可测”只授权在下一次调用前停止或安全暂停，不构成对在途 transport/tool 的强制中断声明。
-
 ## 当前关键节点
 
 `K-API-1` 定义为：
@@ -40,11 +36,9 @@ ADR-0001 在项目早期选择“原生 Agent 运行时优先”，目的是避�
 
 该节点只是执行缝合点，不是产品交付点。它不要求真实科研 Task、GUI、平台 Adapter 或公开发布。
 
-## 文件闭环节点
+## 下一关键节点
 
-`K-API-2` 的完整目标是风险分级的 Task-to-API 文件闭环：将一个已解析 Task 和 Skill Assignment 编译为隔离 API 子会话，按 Task 的 H1/H2 要求产生 Attempt、正式输出、Handoff、Execution Receipt、Main State 和完整 Attempt Archive/Agent Trace；删除临时会话后，新主会话从明确文件引用恢复到正确下一动作。真实 API 调用只在已授权的 Windows 用户上下文执行。
-
-实现状态（2026-08-16）：evidence/H2 与 simulation/H1 已通过 fake-local 文件关闭 Gate。两条路径均冻结双合同与 Model Assignment，只从受控 Tool Registry 构建精确工具，持久化五种终态，自动生成 validator-compatible Agent Trace，并以 Main State 最后发布的 commit-last 协议在 fresh Python 子进程中验证恢复。H2 `completed` 增加 Transfer Manifest/Audit，H1 不伪造这两份工件；非 completed 终态不伪造研究工件。Trace 对不可得捕获显式声明 gap，不伪装 `complete`。Provider Adapter ID 与规范 Provider identity 分别用于 Registry 请求绑定和 capability/响应核验。`M3-007`、`M3-008` 与 `M6-006` 已完成；`M6-003` 仍为 `IN_PROGRESS`，唯一未跑的 API Gate 是 `M6-004` 真实 OpenAI 调用。当前机器缺少 `OPENAI_API_KEY` 和 `RWB_WORKER_MODEL`，所以必须保持 `EXTERNAL`/pending/not-run。离线恢复不是已运行的真实主模型会话，也不证明科研正确性或外部 pilot 就绪。
+`K-API-2` 是一次完整的 Task-to-API 文件闭环：将一个已解析 Task 和 Skill Assignment 编译为隔离 API 子会话，产生 Attempt、研究工件、Transfer Manifest、Handoff、Execution Receipt 和 Main State；删除临时会话后，新主会话只凭文件恢复到正确下一动作。真实 API 调用只在已授权的 Windows 用户上下文执行。
 
 ## 后果
 

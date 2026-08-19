@@ -282,20 +282,6 @@ class ExecutionReceiptTests(unittest.TestCase):
         self.assertEqual([], [risk for risk in risks if risk.level == "block"])
         self.assertIn("HANDOFF-SEMANTIC-UNREVIEWED", {risk.code for risk in risks})
 
-    def test_model_api_receipt_requires_explicit_requested_binding(self) -> None:
-        document = copy.deepcopy(load_document(self.receipt_path))
-        document["execution_kind"] = "model-api"
-        with self.assertRaisesRegex(ContractError, "model_binding"):
-            ExecutionReceipt.from_mapping(document)
-
-        document["model_binding"] = {
-            "provider_adapter_id": "fixture-responses",
-            "requested_model": "fixture-model",
-        }
-        receipt = ExecutionReceipt.from_mapping(document)
-        self.assertEqual("fixture-responses", receipt.model_binding.provider_adapter_id)
-        self.assertEqual("fixture-model", receipt.model_binding.requested_model)
-
     def test_cost_fanout_review_and_trace_faults_are_visible(self) -> None:
         document = copy.deepcopy(load_document(self.receipt_path))
         document["execution_kind"] = "native-agent"
@@ -464,6 +450,67 @@ class ExecutionReceiptTests(unittest.TestCase):
         document["status"] = "safe-paused"
         with self.assertRaises(ContractError):
             ExecutionReceipt.from_mapping(document)
+
+    def test_malformed_referenced_documents_emit_structured_block(self) -> None:
+        receipt = ExecutionReceipt.from_mapping(load_document(self.receipt_path))
+        references = {
+            "attempt_ref": receipt.attempt_ref,
+            "skill_assignment_ref": receipt.skill_assignment_ref,
+            "agent_profile_ref": receipt.agent_profile_ref,
+            "context_snapshot_ref": str(receipt.context_snapshot_ref),
+        }
+        for field, relative in references.items():
+            with self.subTest(field=field), tempfile.TemporaryDirectory() as directory:
+                target = Path(directory) / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(yaml.safe_dump({"unexpected": "shape"}), encoding="utf-8")
+                risks = check_execution_receipt(receipt, self.protocol, root=directory)
+                invalid = [risk for risk in risks if risk.code == "RECEIPT-REF-INVALID"]
+                self.assertEqual(1, len(invalid))
+                self.assertEqual("block", invalid[0].level)
+                self.assertIn(relative, invalid[0].message)
+
+    def test_malformed_handoff_output_emits_structured_block(self) -> None:
+        document = copy.deepcopy(load_document(self.receipt_path))
+        document["output_refs"] = ["work/handoff.yaml"]
+        document["validation_refs"] = []
+        document["completion_claim"] = "execution-only"
+        receipt = ExecutionReceipt.from_mapping(document)
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / "work/handoff.yaml"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(
+                yaml.safe_dump({"result": {"summary": "partial"}, "attempt_id": "A-1"}),
+                encoding="utf-8",
+            )
+            risks = check_execution_receipt(receipt, self.protocol, root=directory)
+        invalid = [risk for risk in risks if risk.code == "RECEIPT-REF-INVALID"]
+        self.assertEqual(1, len(invalid))
+        self.assertIn("work/handoff.yaml", invalid[0].message)
+
+    def test_assess_cli_reports_invalid_reference_as_block_not_error(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            project = Path(directory)
+            shutil.copy2(ROOT / "examples/project-protocol.yaml", project / "protocol.yaml")
+            receipt_path = project / "receipts/receipt.yaml"
+            receipt_path.parent.mkdir(parents=True)
+            shutil.copy2(self.receipt_path, receipt_path)
+            attempt_path = project / "examples/attempt-evidence.yaml"
+            attempt_path.parent.mkdir(parents=True)
+            attempt_path.write_text(yaml.safe_dump({"unexpected": "shape"}), encoding="utf-8")
+            code, output = run_cli(
+                [
+                    "execution",
+                    "assess",
+                    str(receipt_path),
+                    "--protocol",
+                    str(project / "protocol.yaml"),
+                    "--root",
+                    str(project),
+                ]
+            )
+        self.assertEqual(1, code)
+        self.assertIn("RECEIPT-REF-INVALID", output)
 
 
 if __name__ == "__main__":
