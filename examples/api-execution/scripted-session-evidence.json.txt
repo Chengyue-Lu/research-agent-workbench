@@ -1,0 +1,53 @@
+{
+  "responses": [
+    {
+      "response_id": "scripted-evidence-001",
+      "provider": "openai",
+      "model": "scripted-offline",
+      "output": [
+        {
+          "kind": "text",
+          "text": "Reading the bounded source, then writing the Evidence record into the attempt outputs."
+        }
+      ],
+      "finish_reason": "tool_call",
+      "tool_calls": [
+        {
+          "call_id": "call-read-file-1",
+          "name": "read_file",
+          "arguments": {
+            "path": "examples/fixtures/paper-001.txt"
+          }
+        },
+        {
+          "call_id": "call-write-artifact-1",
+          "name": "write_artifact",
+          "arguments": {
+            "name": "evidence-record.yaml",
+            "content": "schema_version: 0.1.0\nobject_type: evidence\nobject_id: EVID-001-API-01\nrevision: 1\nstatus: drafted\ncontent_hash: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67\nkind: bounded-text-excerpt\nsource_ref: INPUT-SYNTHETIC-001@1\nlocator: lines 1-2\nstatement: The bounded source explicitly identifies itself as a synthetic structural fixture.\nquality_flags: [synthetic_fixture, not_scientific_evidence]\nmetadata:\n  generated_by: scripted-offline\n"
+          }
+        }
+      ],
+      "usage": {
+        "input_tokens": 900,
+        "output_tokens": 220
+      }
+    },
+    {
+      "response_id": "scripted-evidence-002",
+      "provider": "openai",
+      "model": "scripted-offline",
+      "output": [
+        {
+          "kind": "text",
+          "text": "{\"status\": \"completed\", \"summary\": \"Extracted one bounded Evidence record from the synthetic source and wrote evidence-record.yaml.\", \"limitations\": [\"The source is a synthetic structural fixture, not scientific evidence.\"], \"unresolved\": []}"
+        }
+      ],
+      "finish_reason": "complete",
+      "usage": {
+        "input_tokens": 1200,
+        "output_tokens": 120
+      }
+    }
+  ]
+}

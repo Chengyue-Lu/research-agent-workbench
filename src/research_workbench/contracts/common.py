@@ -5,6 +5,8 @@ from dataclasses import asdict, dataclass, is_dataclass
 from pathlib import PurePosixPath, PureWindowsPath
 from typing import Any, Iterable, Mapping, TypeVar
 
+from research_workbench.contracts.risks import ContractRisk
+
 
 class ContractError(ValueError):
     def __init__(self, field: str, message: str):

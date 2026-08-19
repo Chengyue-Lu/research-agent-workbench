@@ -2,6 +2,20 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
+## 2026-08-19 — K-API-2 Task-to-API 文件闭环（离线）
+
+### Added
+
+- `src/research_workbench/execution/`：`compile_execution` → `execute_plan` → `closeout` → `verify_attempt` 的推倒重写实现，把已冻结 Task Packet + Skill Assignment 编译成有界隔离 API 会话，并以原子发布落盘 execution-plan、session-transcript、outputs、attempt、execution-receipt、handoff 与 check-report；closeout 终态为 completed/safe-paused/incomplete/failed，确定性检查 BLOCK 不伪造完成。
+- CLI 新增 `rwb execute task` 与 `rwb execute verify`：`--scripted-session FILE` 与 `--allow-live` 互斥必选；脚本化路径以 `model_override=scripted-offline` 离线复现，live 路径只从环境变量取模型名与凭据且缺失时不半程执行。
+- `examples/api-execution/`：两轮脚本化会话 fixture（read_file→write_artifact→completed，`.json.txt` 后缀不进入文档校验）与用法 README。
+- 风险码 EXEC-TASK-ASSIGNMENT-MISMATCH、EXEC-PROFILE-MISMATCH、EXEC-INPUT-STALE、EXEC-SKILL-DRIFT、EXEC-MODEL-UNBOUND、EXEC-ADAPTER-MISMATCH、EXEC-WRITESCOPE-INVALID、EXEC-CLOSEOUT-INVALID、EXEC-CLOSEOUT-SUMMARY、EXEC-LIVE-NOT-ALLOWED 登记入 `contracts/risk_codes.py`。
+- 离线测试：编译期风险码反向分支、脚本化工具全链路、四终态、Receipt 用量对账、verify 幂等与篡改检出、CLI e2e 与假凭据标记不泄漏。
+
+### Boundaries
+
+- 未新增共享 Schema 文档种类，未修改 Task/Mode/Skill/read/Handoff/Receipt 冻结接口；live 真实 Windows 验收属于 M6-004，仓库内不保存任何 key/url/model 名。
+
 ## 2026-08-19 — K-MS-1 节点评审与分支收束
 
 ### Reviewed

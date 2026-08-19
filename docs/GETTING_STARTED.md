@@ -210,7 +210,7 @@ rwb context resume-check `
 
 ## 5. 当前怎样实际运行一个子 Agent
 
-当前仓库已经有 fresh API session 内核，但尚未提供完整的 Task-to-API CLI 和自动 Trace 捕获。因此过渡期有两种受控方式：开发者直接调用该内核进行离线/集成测试，或使用现有 Codex dispatch 作为人工平台入口。无论采用哪种方式，Workbench 都使用同一套契约和 Attempt Archive；黄毅负责执行端实现，路诚钺负责 Mode/Skill/Trace 方法与评估。
+当前仓库已经有 fresh API session 内核和 `rwb execute task` / `rwb execute verify` 的 Task-to-API 文件闭环（离线脚本化路径已验收，live 真实调用属 M6-004），但尚未提供自动 Trace 捕获。因此过渡期有两种受控方式：开发者用 `--scripted-session` 离线复现或 `--allow-live` 显式发起真实调用，或使用现有 Codex dispatch 作为人工平台入口。无论采用哪种方式，Workbench 都使用同一套契约和 Attempt Archive；黄毅负责执行端实现，路诚钺负责 Mode/Skill/Trace 方法与评估。
 
 1. 人类批准 Project Protocol 和本次 Task 边界；
 2. 用 `rwb task resolve` 生成不可变 Assignment；

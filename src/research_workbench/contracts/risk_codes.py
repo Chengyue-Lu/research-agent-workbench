@@ -43,6 +43,7 @@ class RiskCodeEntry:
 _CLI = "research_workbench.cli"
 _CAPABILITY = "research_workbench.capability.resolver"
 _CATALOG = "research_workbench.capability.catalog"
+_EXECUTION = "research_workbench.execution"
 _CONTEXT = "research_workbench.context.models"
 _HANDOFF_TRANSFER = "research_workbench.context.handoff_transfer"
 _EVALUATION = "research_workbench.evaluation.skill_evaluation"
@@ -286,6 +287,16 @@ RISK_CODE_REGISTRY: tuple[RiskCodeEntry, ...] = (
     # The registry admits status="pending" entries so a code can be referenced
     # before its emission lands; none are pending at the moment.
     RiskCodeEntry("RECEIPT-REF-INVALID", "block", (_OBSERVABILITY,), "Execution Receipt file reference is invalid"),
+    RiskCodeEntry("EXEC-TASK-ASSIGNMENT-MISMATCH", "block", (_EXECUTION,), "Skill Assignment does not match the Task identity or revision"),
+    RiskCodeEntry("EXEC-PROFILE-MISMATCH", "block", (_EXECUTION,), "Skill Assignment names a different or unloadable Agent Profile"),
+    RiskCodeEntry("EXEC-INPUT-STALE", "block", (_EXECUTION,), "Task input reference content hash differs from the live file"),
+    RiskCodeEntry("EXEC-SKILL-DRIFT", "block", (_EXECUTION,), "locked Skill manifest or source hash differs from the Registry files"),
+    RiskCodeEntry("EXEC-MODEL-UNBOUND", "block", (_EXECUTION,), "model slot is missing, disabled, or has no model bound"),
+    RiskCodeEntry("EXEC-ADAPTER-MISMATCH", "block", (_EXECUTION,), "model slot references an unknown adapter or unimplemented capabilities"),
+    RiskCodeEntry("EXEC-WRITESCOPE-INVALID", "block", (_EXECUTION,), "Task write scope is empty or escapes the project root"),
+    RiskCodeEntry("EXEC-CLOSEOUT-INVALID", "block", (_EXECUTION,), "a published closeout artifact failed schema validation"),
+    RiskCodeEntry("EXEC-CLOSEOUT-SUMMARY", "block", (_EXECUTION,), "closeout check-report summary row; fails when any blocking risk was recorded"),
+    RiskCodeEntry("EXEC-LIVE-NOT-ALLOWED", "block", (_CLI,), "live provider execution requires the explicit allow-live flag"),
 )
 
 # Emitted codes that no module doc table registers yet. Alignment with the
@@ -379,6 +390,16 @@ DOCUMENTED_GAP: tuple[str, ...] = (
     "EVAL-VALIDATION-STATUS-DRIFT",
     "EVAL-VALIDATION-SUBJECT-DRIFT",
     "EVAL-WITH-SKILL-CHECK",
+    "EXEC-ADAPTER-MISMATCH",
+    "EXEC-CLOSEOUT-INVALID",
+    "EXEC-CLOSEOUT-SUMMARY",
+    "EXEC-INPUT-STALE",
+    "EXEC-LIVE-NOT-ALLOWED",
+    "EXEC-MODEL-UNBOUND",
+    "EXEC-PROFILE-MISMATCH",
+    "EXEC-SKILL-DRIFT",
+    "EXEC-TASK-ASSIGNMENT-MISMATCH",
+    "EXEC-WRITESCOPE-INVALID",
     "FIELD-MISSING",
     "HANDOFF-ASSIGNMENT-MISSING",
     "HANDOFF-ASSIGNMENT-PROFILE-DRIFT",
