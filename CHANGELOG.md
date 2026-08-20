@@ -2,6 +2,31 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
+## 2026-08-20 — 第二轮架构审计与全局文档重整
+
+### Decided
+
+- ADR-0016 将 RWB 定位为版本化、方法感知的科研控制平面，采用 Integrity、Research State、
+  Method、Capability/Strategy、Execution 五个逻辑平面。
+- `Method Resolution` 成为 Task 到 Execution 的目标中间语义；Mode/Protocol/Strategy/Skill/Tool/
+  Capability 保持正交，Execution 不拥有科研语义解释权。
+- M3-008 保留为 Execution/Archive Trace 基线，Method Trace 使用后续独立 Task；外部项目声明本轮
+  未重新核验，未被提升为产品能力证据。
+
+### Consolidated
+
+- 新增 `ROADMAP.md`、第二轮审计吸收记录与 M8 Method Core 任务组；唯一下一任务调整为 M8-002
+  Mode Action first-class contract。
+- 重写 Charter/Architecture，并更新开发入口、模块边界、使用指南和根 README；旧总实施计划
+  缩减为历史映射，实时状态继续只由 `TASKS.md` 维护。
+- K-MS-1 workstream 保留为历史证据，不再承担当前开发入口；真实 Skill/H1/H2 对照在 Method
+  Resolution 和相应 Trace/Evaluation contract 前保持 parked。
+
+### Boundaries
+
+- 本次只修改文档，不实现 Schema、Resolver、Research State、Trace 或 Runtime；不验证、安装或
+  调用审计材料中的外部项目。
+
 ## 2026-08-19 — K-MS-1 节点评审与分支收束
 
 ### Reviewed

@@ -103,6 +103,16 @@ capture_status: complete
 
 该账本用于确认 Agent 是否越界读取或执行，而不是要求主 Agent 浏览全部操作。validator 应能用 `read_allowlist` 检测越界；人工只在排障 Task 中按 event ID 调取请求/结果正文。
 
+### Execution Trace 与 Method Trace
+
+M3-008 只负责上述可观察执行/Archive 事实。后续 Method Trace 独立记录为何提出/接受 Mode、选择
+Action/Mechanism、拒绝哪个替代、如何解析 Capability、发生什么 Human Gate，以及何种 Evidence
+导致 Claim/Failure/Frontier 变化。两层通过稳定 ID 关联，不把方法解释塞进 Tool debug 字段，也
+不复制消息正文。
+
+Method Trace 依赖正式 Mode Action、Method Resolution 和 Decision Authority；在这些契约完成前，
+手写理由只算过程文档，不能假称可验证 Method Trace。
+
 ## 4. 原始来源接纳
 
 `sources/inbox` 中的内容默认不可信、可变且不可引用。接纳到 `sources/raw` 时记录：

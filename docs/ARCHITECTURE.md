@@ -1,318 +1,218 @@
 # 总体架构
 
-版本：0.4
+版本：0.5
 
-状态：实施基线
+状态：目标架构与迁移基线
 
-日期：2026-08-15
+日期：2026-08-20
 
 ## 1. 架构结论
 
-系统采用“最小科研内核 + 方法模式包 + 能力绑定 + 受限执行接口 + 工件与验证”的分层结构。路诚钺维护的 Mode–Skill 工作流决定方法与能力边界；黄毅维护的 API Execution 工作流或可选平台只负责执行已冻结的任务，不反向决定科研方法。
+Research Agent Workbench 是放在研究者与可替换 AI 执行能力之间的科研控制平面。它不拥有
+研究问题，不取代人的科学判断，也不重新实现通用 Agent Runtime。它长期保存科研语义、研究
+状态、证据关系、方法决定、失败与关键 Trace；Model、Runtime、Tool、Skill、Strategy 和 prompt
+都属于可替换实现。
 
-真正的运行单位不是“某个永久角色”，而是一次已解析的任务绑定：
+核心原则是：
 
-```text
-Resolved Task
-= Project Protocol
-+ Research Mode constraints
-+ Task Packet
-+ Agent Profile
-+ Skill Assignment
-+ Tool/permission boundary
-+ Output contract
-```
+> Research semantics and history should outlive models, runtimes, tools and skills.
 
-进入执行前由执行工作流增加一个很小的显式模型绑定：
+当前仓库已经实现最小对象、Task/Handoff、Skill Assignment、上下文治理、部分 Execution 接口和
+离线 Mode-first fixture；尚未实现正式 Mode Action、Method Resolution、长期 Research State、
+Capability Snapshot 或 Method Trace。本文同时写明目标关系与当前迁移状态，不能把规划字段误报为
+已有能力。
 
-```text
-Execution Instance
-= Resolved Task
-+ explicit Model/Runtime binding
-+ bounded fresh context
-+ execution budget
-```
-
-这一区分解决了两个常见问题：
-
-1. “文献 Agent”“仿真 Agent”等角色不应被理解为拥有固定、无限的能力；其能力来自本次任务加载的 Skills 和工具。
-2. Skills 不应成为隐式魔法。高风险或可复现任务必须记录实际加载的 Skill ID、版本、来源和输出契约。
-
-## 2. 核心概念不得混用
-
-| 概念 | 回答的问题 | 不负责什么 |
-|---|---|---|
-| Research Mode | 当前研究活动受什么方法约束 | 不决定由哪个 Agent 执行 |
-| Agent Profile | 谁以什么模型、权限和行为边界执行 | 不定义完整研究方法 |
-| Skill | 如何可靠完成一类可复用任务 | 不持有项目状态，不自行升级权限 |
-| Tool / MCP / CLI | 可访问什么数据或执行什么动作 | 不定义研究质量标准 |
-| Task Packet | 这一次具体要做什么 | 不成为长期记忆 |
-| Handoff Packet | 正式交付了什么、证据在哪里 | 不复制完整会话 |
-| Project Protocol | 本项目允许什么、禁止什么 | 不规定唯一研究顺序 |
-| Model Slot | 本次使用主模型、工作模型还是特定能力模型 | 不评分、不自动路由、不决定科研方法 |
-| API Session | 在全新上下文中执行一个受限 Task | 不成为长期状态或全局调度器 |
-| Runtime Adapter | 将同一契约映射到 Codex、OpenCode 等平台 | 不拥有模型策略或项目真值 |
-
-## 3. 逻辑架构
+## 2. 五个逻辑平面
 
 ```mermaid
 flowchart TB
-    H["Human Researcher\n问题、方法、解释、关键决定"]
-    PP["Project Protocol\nClaim ceiling、数据边界、Human Gates"]
-    MA["Main Agent\n目标、冲突、索引、下一动作"]
-    MS["Main State\n小、可恢复"]
+    H["Human Researcher<br/>问题、方法承诺、关键解释与批准"]
 
-    subgraph OWN["路诚钺：Mode–Skill 维护"]
-        TD["Task Design\n目标路径、Atomic Work Unit、风险"]
-        RM["Research Mode Decision\n触发、非触发、组合约束"]
-        CR["Capability Resolver\n能力 → Profile + Skill Assignment"]
-        RP["Resolved Task\n内容允许集 + 写入范围 + Handoff 等级"]
-        SE["Skill Evaluation & Registry\nadmission + active / legacy / deprecated"]
+    subgraph P5["5. Execution Hosts — 可替换"]
+        API["Fresh API Session"]
+        HOST["Codex / Claude / OpenCode / other runtimes"]
     end
 
-    subgraph EXEC["黄毅：API Execution；或可选平台"]
-        EB["Execution Boundary\n显式模型/平台绑定"]
-        TW["Bounded Task Workspace\n只读允许内容 + 独占写入"]
+    subgraph P4["4. Capability & Strategy Plane"]
+        CRQ["Capability Requirement"]
+        CS["Frozen Capability Snapshot"]
+        IMPL["Skill / Tool / External Agent"]
+        STR["Research Strategy<br/>direct by default"]
     end
 
-    DG{"Delegate?"}
-    L0["H0 Same-context Work\nWorklog + formal output"]
-    AR["Formal Artifacts\nEvidence / Run / Claim / Decision"]
-    HC{"Handoff Risk Classifier"}
-    H1["H1 Compact Handoff\nPacket only"]
-    H2["H2 Audited Handoff\nManifest / Audit / Receipt as triggered"]
-    TA["Attempt Archive\nactors + messages + read/tool events + revisions + decisions + outputs"]
-    DV["Deterministic Validators\nSchema / hash / refs / boundaries"]
-    RG["Risk Review & Human Gates"]
+    subgraph P3["3. Method Plane"]
+        MODE["Research Mode"]
+        ACT["Mode Action"]
+        MR["Method Resolution"]
+        PRO["Protocol Profile"]
+        NEED["Skill Need / Human Gate / Blocked"]
+    end
 
-    H <--> PP
-    PP --> MA
-    MS <--> MA
-    MA --> TD
-    TD --> RM --> CR --> RP
-    SE <--> CR
-    RP --> DG
-    DG -->|"no"| L0 --> AR
-    DG -->|"yes"| EB --> TW --> AR
-    TW -.->|"需要新正文：申请扩大允许集"| MA
-    RP --> TA
-    L0 --> TA
-    TW --> TA
-    AR --> HC
-    HC -->|"无跨上下文转移"| DV
-    HC -->|"普通任务"| H1
-    HC -->|"压缩、高风险、副作用、争议"| H2
-    H1 --> DV
-    H2 --> DV
-    H1 --> TA
-    H2 --> TA
-    DV --> TA
-    TA -.->|"默认只加载 INDEX + Handoff"| MA
-    DV --> RG --> MA --> H
+    subgraph P2["2. Research State Plane"]
+        STATE["Question / Evidence / Claim"]
+        OPEN["Unknown / Contradiction / Assumption"]
+        HIST["Attempt / Failure / Frontier / Decision / Artifact"]
+    end
+
+    subgraph P1["1. Integrity Kernel — 最稳定"]
+        INT["ID / Schema / Hash / Version / Migration"]
+        GOV["Permission / Lineage / Trace / Validation"]
+    end
+
+    H <--> STATE
+    STATE --> MODE --> ACT --> MR
+    PRO --> MR
+    MR --> NEED
+    MR --> CRQ --> CS --> IMPL
+    MR --> STR
+    CS --> API
+    CS --> HOST
+    API --> HIST
+    HOST --> HIST
+    HIST --> STATE
+    INT --> STATE
+    INT --> MR
+    GOV --> CS
+    GOV --> HIST
+    STATE --> H
 ```
 
-## 4. 分层职责
+稳定性方向是从上到下消费、从下到上约束：Execution 可以被替换，不能反向定义 Mode、Claim、
+Skill Need、权限放宽或 Human Gate。
 
-### L0：人类治理层
+## 3. 核心解析链
 
-拥有研究问题、方法承诺、伦理与安全、关键异常排除、主要 Claim 和外部发布的最终责任。系统只减少信息整理负担，不转移责任。
-
-### L1：最小科研内核
-
-定义 Question、Hypothesis/Proposition、Method、Run、Evidence、Claim、Decision 及其可追溯关系。内核不包含“生物学”“物理学”等学科词汇，也不包含特定模型提供商。
-
-详见[最小科研内核](modules/01-RESEARCH_KERNEL.md)。
-
-### L2：项目协议与研究模式
-
-Project Protocol 声明当前问题、激活模式、Claim ceiling、人工 Gate、数据边界和预算。Research Mode Pack 为实验、仿真、推导、观察统计和证据综合等活动添加方法约束。
-
-详见[项目协议与研究模式](modules/02-PROTOCOL_AND_MODES.md)。
-
-### L3：Agent 与 Skill 能力层
-
-Agent Profile 描述执行容器；Skill 描述可复用工作方法；Capability Resolver 按任务的硬约束选择最小组合，生成不可变的 Skill Assignment。Skill Need 可以来自 Research Mode action，也可以来自本项目特有的交接、恢复和 Gate 准备动作；后者继承上游 Mode/Project 边界，不改变科研方法或 Claim ceiling。
-
-详见[Agent 运行模型](modules/03-AGENT_RUNTIME.md)与[Skill 系统](modules/04-SKILL_SYSTEM.md)。
-
-### L4：任务与上下文层
-
-Task Packet 是委派边界，Handoff Packet 是返回边界，Main State Packet 是主 Agent 的可恢复最小状态。每个 Attempt Archive 留存 actor、全部可见 Agent 消息、Decision、检查和输出；主 Agent 默认只读取其索引与 Handoff。压缩前由 Transfer Manifest 声明必须传递的条目和来源，Transfer Audit 再核对它们在 Handoff 中的位置，并在风险触发时要求有界独立抽样。原始资料和 Trace 留在工件层，按需拉取。
-
-详见[Task 与 Handoff](modules/05-TASK_AND_HANDOFF.md)及[上下文治理](modules/06-CONTEXT_GOVERNANCE.md)。
-
-### L5：工件、验证与风险层
-
-以文件、稳定 ID、内容哈希和版本引用保存正式事实；确定性验证器检查机器可以判断的部分；专项 Agent 只检查明确风险；Human Gate 处理不可逆或科学解释问题。
-
-详见[工件与溯源](modules/07-ARTIFACTS_AND_PROVENANCE.md)及[验证、风险与 Gate](modules/08-VALIDATION_RISK_AND_GATES.md)。
-
-### L6：适配与观测层
-
-Model Provider Adapter 和有界 API Session Runner 构成可移植执行基线；Runtime Adapter 可把同一契约映射到 Codex、OpenCode 等原生能力；Tool Adapter 接入检索、引用、仿真、统计和版本工具；观测层只记录决策所需的 trace、成本和质量指标。
-
-详见[适配器](modules/09-ADAPTERS_AND_INTEGRATIONS.md)及[观测、成本与评估](modules/10-OBSERVABILITY_EVALUATION_COST.md)。
-
-## 5. Agent—Skill 绑定流程
+一个 Atomic Task 在执行前应经过以下 provider-neutral 链：
 
 ```mermaid
-sequenceDiagram
-    participant H as Human
-    participant M as Main Agent
-    participant R as Capability Resolver
-    participant E as API/Platform Execution
-    participant S as Bounded Subagent
-    participant A as Attempt Archive
-    participant V as Validator
-
-    H->>M: 批准 Project Protocol / 当前目标
-    M->>R: Task 特征 + 目标路径 + active modes + risk
-    R->>R: 选择/组合 Mode，推导能力与 Claim 限制
-    R->>R: 先判断确定性工具或 no-Skill 是否足够
-    R->>R: 过滤权限、冲突、上下文成本和候选 Skill
-    R-->>M: Resolved Task + Skill lock + 内容允许集 + H0/H1/H2
-    alt H0：不委派
-        M->>A: 写 Task/actors/输出/检查与 Worklog
-        M->>M: 在当前上下文完成 AWU
-        M->>V: 正式工件 + 确定性检查
-    else H1/H2：受限委派
-        M->>A: 发送前保存 Assignment 消息
-        M->>E: 交付冻结接口，不传主会话全历史
-        E->>A: 登记 Runtime actor 与实际 dispatch
-        E->>S: Task + 选定 Skill + 明确输入/写入范围
-        S->>A: 追加可观察的读取/工具/文件事件
-        S->>S: 路径元数据发现；长结果写工件
-        opt 需要读取允许集之外的正文
-            S->>A: 保存 read-scope request
-            S-->>M: 说明原因并请求扩展
-            M->>R: 修订输入或保持拒绝
-            M->>A: 保存实名 scope decision
-        end
-        S->>A: 保存可见进度、输出和 Handoff 原文
-        S-->>V: H1 Packet 或风险触发的 H2 审计链
-    end
-    V->>V: 结构/边界检查 + 必要时有界语义抽样
-    V->>A: 保存检查与 review/accept/reject
-    V-->>M: 结构结果、风险与缺口
-    M->>A: 保存接收决定；只按需读取历史消息
-    M-->>H: 决策摘要或 Human Gate
+flowchart LR
+    T["Task Packet"] --> M["Mode Resolution"]
+    M --> A["Selected Mode Actions"]
+    A --> O["Method Obligations"]
+    O --> R["Method Resolution"]
+    R --> K{"Minimal Mechanism"}
+    K --> N["No-Skill / Task Template"]
+    K --> C["Capability Requirement"]
+    K --> S["Skill Need"]
+    K --> G["Human Gate"]
+    K --> B["Split / Blocked"]
+    C --> F["Frozen Capability Snapshot"]
+    S --> F
+    F --> E["Execution Contract"]
 ```
 
-路由的硬规则：
+`Method Resolution` 解释为什么选择这些 Action 和机制、拒绝了哪些替代、哪里存在歧义。它不包含
+Provider、Model 或 Host 字段。`Capability Snapshot` 才绑定具体 Tool/Skill/Adapter 版本、hash、
+权限、数据出口和副作用。
 
-- `required_skills` 必须显式调用，不能只期待隐式 description 匹配；新分配只选择 `active`，
-  `legacy/deprecated` 仅允许显式精确版本的历史回放；
-- 每次任务把 Skill selector 归一化为精确版本、内容哈希和包哈希；同 ID 多版本时不猜测；
-- Skill 不能扩大 Agent Profile 或 Task Packet 授予的权限；
-- 默认不超过两个主 Skill，可附加一个验证 Skill；超过时应拆任务；
-- 任务声明的 `forbidden_skills` 优先级高于推荐；
-- 路由不确定、Skill 冲突或缺少验证时，返回阻塞/人工决定，而不是猜测；
-- 主 Agent 只读取 Skill 元数据和路由结果，不默认加载所有 Skill 正文。
-- Project-internal Skill 不全局加载、不获得额外上下文配额，也不能替代 Project Protocol、Schema、Tool 或 Runtime Trace。
-- Agent 对仓库内容采用默认拒绝：允许路径元数据发现，但读取新增正文必须扩展 Task 允许集。
-- 普通跨 Agent 返回使用 H1；H2 仅由风险、压缩、副作用、promotion、争议或明确策略触发。
-- H0/H1/H2 都有 Attempt Archive；H1/H2 的每条可见跨 Agent 传递必须留存，但不会因此自动进入主 Agent 上下文。
+当前 `Resolved Task + Skill Assignment` 是已有执行视图。在 Method Resolution 正式化前继续
+保留，但不得再作为完整方法解释。迁移必须创建新版本和显式映射，不能原地改义。
 
-## 6. 上下文架构
+## 4. 概念边界
 
-### 主 Agent 保存
-
-- 当前问题、目标和 Claim ceiling；
-- 不可破坏的约束；
-- 已接受决策及理由；
-- 活跃任务索引；
-- 未解决冲突与风险；
-- 最近 Handoff 的短摘要和工件引用；
-- 下一步动作与停止条件。
-
-### 主 Agent 不保存
-
-- 完整论文正文、网页或数据集；
-- 原始命令日志、测试日志和长堆栈；
-- 所有子 Agent 对话；
-- 已被正式工件替代的探索笔记；
-- 全部 Skill 正文。
-
-### 子 Agent 输入
-
-仅包含 Task Packet、选定 Agent Profile、明确的 Skill Assignment、必要输入引用、目标模块、写入范围、Handoff 等级和输出 Schema。正文读取以该允许集为边界；文件名、目录名、大小和哈希可用于发现，但不能据此递归加载内容。Task Packet 同时声明 Atomic Work Unit、完成检查和安全暂停条件。子 Agent 压缩只有在正式工件已写入且 H2 可验证时才可接受；预算不足时持久化 `safe-paused`，不得伪造完成。
-
-## 7. 状态与真值
-
-采用三类真值，而不是继续扩张控制面；Continuity State 是这三类真值的最小投影，不是第四种事实裁决源：
-
-| 真值 | 载体 | 示例 |
+| 概念 | 回答的问题 | 不负责什么 |
 |---|---|---|
-| 科研工件真值 | 版本化文件与哈希 | Evidence、Run、Claim、Decision |
-| 机器验证真值 | 可重跑检查输出 | Schema、引用、哈希、测试 |
-| 会话工作状态 | Main State / Task / Handoff | 当前目标、未决问题、下一步 |
+| Project Protocol | 本项目允许、禁止和必须由谁批准什么 | 不定义唯一研究顺序 |
+| Research Mode | 当前研究活动受什么通用方法约束 | 不绑定 Skill、Tool、Host 或 Strategy |
+| Mode Action | 本 Task 触发了哪项可验证方法动作 | 不等于固定阶段或全局 DAG |
+| Protocol Profile | 需要遵守什么领域/社区/项目方法标准 | 不代替 Mode，也不包装为 Skill |
+| Method Resolution | 为什么选择这些义务和最小机制 | 不绑定 Provider/Model |
+| Skill Need | 哪个跨任务语义缺口可能值得复用 | 不表示已有或已准入 Skill |
+| Skill | 如何完成一类可复用语义动作 | 不持有 Research State，不升级权限 |
+| Capability Requirement | 执行需要什么能力与边界 | 不指定厂商品牌 |
+| Capability Snapshot | 本次确切绑定了哪个实现 | 不改变 Method contract |
+| Research Strategy | direct/tree/review 等执行策略 | 不改变 Mode 或 Claim 语义 |
+| Agent Profile | 执行者的行为和权限上限 | 不定义完整科研方法 |
+| Research State | 跨 Task/Runtime 延续的研究事实和开放问题 | 不等于聊天记忆或 Runtime state |
+| Task/Handoff | 一次工作边界与正式交付 | 不成为长期科研真值 |
 
-聊天总结、Agent 自评和 Markdown 中的“PASS”都不是独立真值。Human Gate 是正式 Decision 工件，不是自然语言中的一句同意。
+## 5. Research State
 
-## 8. 预警模型
+长期状态按文件、稳定 ID、revision 和 hash 保存，初始候选包括：
 
-预警在离散边界触发，而非由常驻 Supervisor 轮询：
+- Question、Evidence、Claim；
+- Unknown、Contradiction、Assumption；
+- Method、Run、Artifact；
+- Attempt、Failure、Frontier item；
+- Decision 与 Human Gate result。
 
-- Task 创建前；
-- Skill Assignment 解析后；
-- 子 Agent Handoff 时；
-- 工件合并或 Claim 升级时；
-- 主 Agent checkpoint / rollover 时；
-- 外部发布前。
+Failure 不是日志垃圾，至少应记录目标、方法、结果、失败原因、学到什么与 revisit condition。
+Frontier 是 compact index，不是要求主 Agent加载全部历史。新 Runtime 应能从冻结 Research State
+建立下一 Atomic Task，而无需恢复旧对话或 Python 对象。
 
-预警级别为 `INFO / WARN / BLOCK / HUMAN`。只有结构损坏、权限越界、缺失必需证据、数据边界冲突等问题可以自动阻断；方法合理性和科学解释进入 Human Gate。
+Evidence–Claim 关系长期从简单 Mode ceiling 演进到 `provenance → relation → composition →
+admissibility`。确定性检查只验证结构和可定位性；科学解释与高风险 promotion 保留给 Human Gate。
 
-## 9. 执行接口与维护边界
+## 6. Trace、上下文与验证
 
-### API Execution 工作流
+Trace 分两层：
 
-- 每个子任务从空白会话开始，只加载 Task、Skill Assignment、必要输入和输出契约；
-- 主 Agent 使用 `primary` 槽，普通子任务使用 `worker` 槽，独特能力显式使用一个 `specialist` 槽；
-- 模型槽只做显式映射，不建设复杂 Router、价格数据库或自动 fallback；
-- API Runner 限制轮次、工具调用、工具结果、token/成本和 wall time；
-- 会话关闭后只依赖 Attempt Archive、正式工件、Handoff 和恢复状态；全部可见 Agent 传递已归档，但 Receipt/Manifest/Audit 不对普通任务默认强制。
+1. **Execution/Archive Trace**：actor、消息、读取、Tool、文件 revision、外部动作、状态、Receipt；
+2. **Method Trace**：Mode/Action/Mechanism 的选择与拒绝、Capability resolution、Human Gate、
+   Evidence/Claim 变化、Failure 与 reopen condition。
 
-上述实现和测试由黄毅维护。路诚钺只冻结 Mode、Skill Assignment、内容允许集、输出契约、Handoff/Trace 等级与评估接口，不修改 Provider 或 session 实现。
+两层通过 Task/Attempt/actor/object ID 关联，但不互相复制全文。主 Agent 默认只读取 Task、Research
+State compact index、Method Resolution、风险和 Handoff；原始材料、完整消息与事件账本按显式
+引用和 Task 权限拉取。子 Agent 压缩可以容忍，主 Agent 非计划压缩应通过 safe pause/rollover
+避免。
 
-### 可选：平台适配与人工新窗口
+验证仍分为 deterministic、targeted semantic review 和 Human Gate。Trace 完整、Schema PASS、
+多 Agent 一致或 benchmark 得分都不能单独证明 scientific correctness。
 
-Codex、OpenCode、Claude Code 或其他平台可以把同一个已解析 Task 映射到原生 Agent、Skill、权限和窗口；也可以由人工在新窗口粘贴最小 dispatch。平台路径是便利层和兜底，不改变公共契约，也不得暗中继承或替换已经选择的模型。
+## 7. 决策权
 
-具体决策见 [ADR-0010](decisions/0010-API-FIRST-ISOLATED-EXECUTION.md)。
+| 决策 | Agent | Deterministic Resolver/Validator | Human |
+|---|---|---|---|
+| Mode/Action 候选 | 可提出 | 校验 catalog、trigger 与冲突 | 歧义/高风险确认 |
+| 最小机制 | 可建议 | 在允许机制中解析 | 歧义或方法承诺确认 |
+| Skill/Tool binding | 不得自由 fallback | 按 Need/Capability/权限冻结 | 高风险或能力缺口决定 |
+| Claim proposal | 可提出 | 校验 provenance 与 method rule | 科学解释/promotion |
+| 数据、来源或权限放宽 | 不得批准 | 不得静默放宽 | 必须明确批准 |
+| 外部副作用/发布 | 可执行已授权动作 | 检查授权与 Receipt | 必须按风险批准 |
 
-## 10. 架构不变量
+具体可执行 contract 在 Phase A 的 Decision Authority Task 中冻结；本表是架构边界，不表示当前
+Resolver 已实现全部判定。
 
-1. Agent Profile、Skill、Mode、Tool 不得合并成一个大角色配置。
-2. Skill 和 Agent 都不能自行提高 Claim ceiling。
-3. 主 Agent 不得成为原始资料存储层。
-4. 任何正式 Claim 必须有可定位依据或明确标记为 unresolved。
-5. 任何关键人工决定必须形成 Decision 工件。
-6. 确定性检查不得宣称科学正确性。
-7. 原始证据、负结果和冲突不得因摘要而消失。
-8. API Provider 与 Runtime Adapter 都可替换，公共内核不得绑定厂商 SDK 或平台私有会话格式。
-9. 不得默认递归委派；子 Agent 再委派需要 Task Packet 明确允许并受深度/预算限制。
-10. 新全局机制必须由真实事故或已量化风险支持。
-11. 模型只能按显式槽位选择；任何升级、降级或跨 Provider 重试都必须形成新的可审计 Attempt。
-12. 工作区可见性不等于内容读取授权；正文读取必须来自 Task 允许集或显式扩展。
-13. Handoff 的复杂度必须由转移风险决定，不能为了流程完整而默认生成全部审计工件。
-14. 每次跨 Agent 可见传递必须进入 Attempt Archive；完整留存不等于默认加载。
-15. 工作流、Agent、模型和平台名称不能替代实名责任人；共享接口必须有明确的人类 owner。
+## 8. 执行与适配边界
 
-## 11. 首个垂直切片
+纯 API fresh session 是“只要有 API 即可执行”的可移植基线；Codex、OpenCode、Claude Code 或
+其他平台是可选 Host。Runtime/Provider Adapter 负责能力声明、配置翻译、执行、取消、用量和
+Receipt，不负责 Mode、Claim、Skill Need 或 methodology fallback。
 
-首版选择证据综合和仿真 V&V，是因为二者在数据、工具、输出与评价标准上差异足够大：
+上层请求 provider-neutral capability；执行前冻结具体 snapshot。能力不存在、权限不匹配或数据
+政策不允许时返回 gap/blocked/Human Gate，不静默模拟或跨 Provider fallback。
 
-| 项目 | Evidence Scout | Simulation Auditor |
+## 9. 演化与评测
+
+外部或自动生成的 Skill/Tool/Method/Protocol/Strategy 只能进入 candidate。Promotion 必须绑定
+来源/许可/安全审计、冻结环境、困难 Task、简单 baseline、限制和 Human Decision。
+
+永久基线为 Plain Agent、Plain+Tool、Mode+no-Skill/direct-tool 和 Mode+candidate Skill。复杂机制
+没有改变错误、返工、Claim、provenance、人类纠正距离或成本时，应被删除、降级或保持 candidate。
+
+## 10. 当前迁移边界
+
+| 能力 | 当前状态 | 下一契约 |
 |---|---|---|
-| Agent Profile | 源只读、任务区受限写、检索密集 | 工件读取、任务区受限计算 |
-| 主 Skill | 文献证据提取 | 仿真验证与确认 |
-| 输入 | 问题、语料/检索边界 | 模型、参数、运行清单 |
-| 输出 | Evidence records、引用缺口 | V&V report、Run 风险 |
-| 主要风险 | 引用漂移、来源注入、过度概括 | 版本陈旧、收敛不足、模型越界 |
-| Human Gate | 来源权重和综合解释 | 模型代表性和误差可接受性 |
+| Mode Action | 文档/fixture 基线 | 正式 Schema、Registry 与 stable ID |
+| Method Resolution | 尚无正式对象 | provider-neutral 中间语义 |
+| Research Mode | v0.1 含 legacy capability recommendation | v0.2 Need-first + 显式 migration seam |
+| Skill Need | dossier/规划约定 | 版本化 Need 与 evaluation refs |
+| Capability | Tool cards/Provider capability 分散存在 | Requirement + frozen Snapshot |
+| Research State | 七类对象、Attempt/Main State 分散存在 | compact State/Frontier 与 Failure memory |
+| Trace | ADR/手工规则；M3-008 待实现 | Execution baseline 后再加 Method Trace |
+| Evaluation | paired Skill contract 与指标已有 | 统一 Manifest 和四臂 baseline harness |
 
-如果二者必须共享大量方法专用字段，说明公共内核过窄；如果为了兼容二者产生大量空字段，说明公共内核过宽。
+实时状态和唯一下一 Task 见 [`TASKS.md`](TASKS.md)；阶段依赖见 [`ROADMAP.md`](ROADMAP.md)；
+实名维护边界见 [`DEVELOPMENT.md`](DEVELOPMENT.md)。
 
-## 12. 文档与实施关系
+## 11. 架构不变量
 
-本文件定义稳定关系和不变量；模块文件定义各自的职责、接口、风险和验收；[开发协作指南](DEVELOPMENT.md)定义实名维护边界与运行纪律；[路诚钺分支计划](workstreams/chengyue-lu-mode-skill/README.md)定义当前 Mode–Skill–Tool 实施顺序；[任务清单](TASKS.md)是当前执行状态的唯一入口。软件交付阶段不是研究工作的强制顺序。
+- 人类拥有研究问题、方法承诺、关键解释、Claim promotion 与外部发布；
+- 不建立全局 Supervisor、固定科研 DAG、长期聊天记忆或常驻 continuity 服务；
+- 核心对象、Method Resolution 和 Research State 不依赖 Provider/Host；
+- Mode 不固定绑定 Skill，发现不等于准入，no-Skill 是正常结果；
+- 主 Agent 只维持决策、风险、索引与下一动作；
+- 写入采用独占 scope 和不可变 revision，失败/反证不被 promotion 删除；
+- 未知成本、缺失 Trace 和 capability gap 必须显式保留，不能填零或静默降级；
+- 每个新增控制机制有消费者、baseline、成本和删除条件。

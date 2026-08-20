@@ -2,7 +2,7 @@
 
 状态：当前协作入口
 
-日期：2026-08-19
+日期：2026-08-20
 
 ## 1. 实名维护边界
 
@@ -10,34 +10,31 @@
 
 | 责任人 | 稳定身份 | 负责维护 | 不负责维护 |
 |---|---|---|---|
-| 路诚钺 | GitHub `Chengyue-Lu` | Research Mode 语义、组合与准入；能力词汇；Skill 发现、选择、评估、准入和退役；Resolver 选择理由；受控读取；Handoff/Agent Trace 的方法与评估规则；相关 fixtures 和文档 | Provider SDK、认证、HTTP transport、模型槽实现、API session loop、live API conformance 和 API 专用测试 |
+| 路诚钺 | GitHub `Chengyue-Lu` | Method/Core 语义；Mode/Action/Method Resolution；能力词汇；Skill Need、选择、评估、准入和退役；Research State/Claim/Method Trace 方法规则；受控读取及相关 fixtures/docs | Provider SDK、认证、HTTP transport、模型槽实现、API session loop、live API conformance 和 API 专用测试 |
 | 黄毅 | GitHub 身份由本人登记 | Provider Adapter、模型能力协商、模型槽、隔离 API session、并行与工具调用、Task-to-API 编译、执行关闭事务、真实账户/模型 conformance 和 API 测试 | 代替研究者批准 Claim、单方面改变 Mode/Skill 语义、擅自准入 Skill 或降低 Human Gate |
 
-共享接口包括 Task Packet、Resolved Task、Skill Assignment、Handoff Packet、Execution Receipt、Agent Trace Envelope、Capability/Data Policy 和错误/停止状态。共享接口变更必须由路诚钺与黄毅共同确认 owner、迁移影响和合并顺序；不能用“本侧”“同伴侧”作为审批主体。
+共享接口包括 Task Packet、未来的 Method Resolution/Capability Snapshot、兼容期 Resolved Task/Skill
+Assignment、Handoff、Execution Receipt、Agent/Method Trace、Capability/Data Policy 和错误/停止状态。
+共享 Schema 变更必须单独说明 owner、语义版本、迁移影响、消费方和合并顺序；路诚钺与黄毅共同
+确认跨 Method/Execution 边界的修改。不能用“本侧”“同伴侧”作为审批主体。
 
 Agent 不是责任主体。每个运行中的 Agent 使用稳定 `actor_id`，并在 Attempt Archive 中绑定 `accountable_owner: 路诚钺 | 黄毅 | <其他实名>`。模型名、窗口名或临时 Agent 昵称不能替代人类负责人。
 
 ## 2. 当前开发节点
 
-路诚钺维护分支 `agent/mode-skill-selection-baseline` 已到达 `K-MS-1 Mode–Skill Selection Baseline`：
+`K-MS-1` 已冻结为历史离线选择/治理基线。第二轮审计后，全局进入
+`K-METHOD-1 Method Core Formalization`：
 
-1. 从 `evidence-synthesis` 与 `simulation` 推导可选 Mode actions、失败、Artifact、停止条件和 Human Gate；
-2. 为每个 action 选择最小充分机制：Mode/Task/Tool/Skill Need/Human/blocked，不从来源候选反推需求；
-3. 只为已确认的 action gap 建 provider-neutral Tool capability card 和 Task 路由 fixture；
-4. 按 Mode action 版本化复核三个 0.1.0 Skill 原型，不原地改义；
-5. 分离历史 Skill 解析与新分配 lifecycle，默认只选择 active，历史 replay 必须显式精确版本；
-6. 在真实 Agent forward test 前完成最小 Attempt Archive/Trace validator，再比较 no-Skill/direct-tool/compact trial 与 H0/H1/H2 成本；
-7. 到达节点后做保留、拆分、降级和退役评审。
+1. M8-001 重整稳定架构、文档真值与依赖路线；
+2. M8-002 正式化两个现有 Mode 的 Action；
+3. M8-003 建立 provider-neutral Method Resolution，并转换八个 routing fixtures；
+4. M8-004 通过最小 migration seam 迁移 Research Mode v0.1 → v0.2，删除直接 Skill recommendation；
+5. M8-005 冻结 Decision Authority 并接入 validator/preflight；
+6. 到达 K-METHOD-1 后再启动统一 Evaluation Manifest、Method Trace 或 Skill trial。
 
-并行维护一条 project-internal Skill Need 路线，只处理本项目交接、恢复与 Human Gate 准备中的
-可复用语义动作。它先比较 Protocol/template/Tool 基线，不把交互留痕、受控读取、输出 Schema
-或权限包装成可选 Skill；当前候选与停止条件见[项目内生协议 Skill 规划](workstreams/chengyue-lu-mode-skill/PROJECT_INTERNAL_SKILLS.md)。
-
-达到上述节点后暂停评审，不批量新增 Mode/Skill/Tool，也不在此分支修改 API 实现。详细顺序见[路诚钺 Mode–Skill 分支计划](workstreams/chengyue-lu-mode-skill/README.md)，状态以[任务清单](TASKS.md)为准。
-
-截至 2026-08-19，M7-016 已逐项确认九个节点条件并写入正式 Decision。三个历史 `0.1.0` 原型
-均为 legacy/deprecated，当前 active accepted Skill 为零；零 active 不触发补包。该分支进入
-safe stop，唯一下一前置为 M3-008 Trace Schema/validator/fixture。
+当前文档调整按用户决定直接提交 `main`；它不修改 M3-008 分支的 Trace 实现。`K-MS-1` 的原始
+计划和 dossier 保持只读历史，不再作为当前开发入口。阶段依赖见[架构路线图](ROADMAP.md)，实时
+状态只见[任务清单](TASKS.md)。
 
 ## 3. 开始一个开发 Task
 
@@ -75,7 +72,7 @@ H1/H2 的差异是回传主上下文和审查强度，不是“是否保存过�
 ## 6. 分支、写入与交付
 
 - `main` 只保存双方确认的稳定文档、接口与已验收实现。
-- 路诚钺的 Mode–Skill 工作使用 `agent/mode-skill-*`；黄毅的 API 工作使用独立、可识别的分支，并在 PR 中写明姓名与范围。
+- 路诚钺的 Method/Core 工作使用 `agent/method-*`；历史 `agent/mode-skill-*` 不继续扩张。黄毅的 API 工作使用独立、可识别的分支，并在 PR 中写明姓名与范围。
 - 同一时间只有明确的接口 owner 修改共享 Schema、`cli.py` 或同一 Registry 索引。
 - 并行 Task 必须声明互斥写入路径；无法隔离的修改串行完成。
 - Handoff 必须给出基线提交、实际修改路径、验证证据、未证明内容和唯一下一动作。
@@ -84,8 +81,9 @@ H1/H2 的差异是回传主上下文和审查强度，不是“是否保存过�
 
 ## 7. 当前已知缺口
 
-- Attempt Archive、Agent Trace Envelope 和自动捕获尚未实现 Schema/CLI；当前只能先按文档约定和模板留存。
-- API session 与平台 Adapter 的自动 Trace 写入属于黄毅的执行实现范围；Trace 语义、最小字段和 Mode/Skill 评估消费方式由双方共同冻结。
+- M3-008 的 Execution/Archive Trace Schema/CLI 仍在独立分支；Method Trace 必须等待 M8-003/005，不能塞回同一事件层假装完成。
+- API session 与平台 Adapter 的自动 Trace 写入属于黄毅的执行实现范围；执行端只消费冻结接口，不自定义 Mode/Claim/Skill fallback。
+- Mode Action、Method Resolution、Decision Authority、Capability Snapshot 和长期 Research State 尚未实现正式 Schema/validator。
 - 尚无真实运行数据证明 H1/H2 的净收益；不能把消息数量、Trace 完整度或审计工件数量当作质量本身。
 - 当前只有两个正式 Mode、三个历史 accepted Skill 条目且 active 为零；真实 with/without 证据不足。
 - 黄毅的 GitHub 身份尚未登记在本文件；登记后应替换占位说明，不应猜测账号。

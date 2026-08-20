@@ -6,7 +6,10 @@
 - 日期：2026-08-19
 - 目标节点：`K-MS-1 Mode–Skill Selection Baseline`
 
-本目录是路诚钺当前分支的唯一专项计划入口。逐项状态仍以 [`docs/TASKS.md`](../../TASKS.md) 为准；稳定架构仍以 [`docs/ARCHITECTURE.md`](../../ARCHITECTURE.md) 和模块文档为准。本目录不建立第二套全局架构。
+维护说明（2026-08-20）：本目录是已完成 K-MS-1 的历史 workstream，不再是当前开发入口。
+第二轮审计后的稳定架构见 [`docs/ARCHITECTURE.md`](../../ARCHITECTURE.md)，依赖路线见
+[`docs/ROADMAP.md`](../../ROADMAP.md)，实时状态只见 [`docs/TASKS.md`](../../TASKS.md)。下文保留
+当时的范围、顺序和证据，不按新架构回写历史。
 
 ## 1. 当前任务
 

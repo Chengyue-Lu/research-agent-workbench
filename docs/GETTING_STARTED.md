@@ -26,28 +26,25 @@ Research Agent Workbench（下文简称 Workbench）不是自动运行整个课�
 
 ## 2. 用五分钟理解架构
 
-一次工作由以下链条组成：
+目标架构中的一次工作由以下链条组成：
 
 ```mermaid
 flowchart LR
     H["Human Researcher<br/>问题、边界、关键决定"]
-    P["Project Protocol<br/>模式、预算、数据边界"]
+    RS["Research State<br/>问题、证据、未知、失败与决定"]
     T["Task Packet<br/>一个原子工作单元"]
-    R["Resolver<br/>Agent + Skill + 权限"]
-    S["Explicit Model Slot<br/>primary / worker / specialist"]
-    N["Fresh API Session<br/>portable baseline"]
-    O["Optional Runtime Adapter<br/>Codex / OpenCode / others"]
-    A["Artifacts + Handoff<br/>正式结果与限制"]
-    V["Validators<br/>Schema、哈希、引用、预算"]
-    M["Main State<br/>最小可恢复状态"]
+    MR["Method Resolution<br/>Mode → Action → 最小机制"]
+    C["Capability Snapshot<br/>Skill / Tool / 权限 / 版本"]
+    E["Execution Host<br/>API / Codex / OpenCode / others"]
+    A["Artifacts + Handoff + Trace"]
+    V["Validator + Human Gate"]
 
-    H --> P --> T --> R --> S --> N --> A --> V --> M
-    S -.-> O -.-> A
+    H <--> RS
+    RS --> T --> MR --> C --> E --> A --> V --> RS
     V --> H
-    M --> T
 ```
 
-初次使用只需理解九个概念：
+当前可执行示例仍使用下列九个兼容期概念：
 
 | 概念 | 用一句话解释 | 仓库示例 |
 |---|---|---|
@@ -70,6 +67,10 @@ flowchart LR
 
 不要为每个学科创建一个全能 Agent。新增差异应优先落在 Mode、Skill 或 Tool Adapter 中，公共内核只保存跨研究活动都需要的最小对象。
 
+`Mode Action`、`Method Resolution`、`Capability Snapshot` 和完整 `Research State` 是已接受但尚未
+实现的下一代契约。当前 `Resolved Task/Skill Assignment` 可以执行和回放，但不能回答完整的
+“为什么选择此方法机制”。不要手写规划字段并称其已受 Schema 保护。
+
 ## 3. 安装与首次自检
 
 ### 3.1 前置条件
@@ -87,12 +88,12 @@ PowerShell：
 ```powershell
 git clone https://github.com/Chengyue-Lu/research-agent-workbench.git
 Set-Location research-agent-workbench
-git switch agent/m1-provider-neutral-foundation
+git switch main
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e .
 ```
 
-上面的分支名是本指南编写时承载当前实现的开发分支；合并或正式发布后应改用对应的 `main`、tag 或固定 commit。如果已激活虚拟环境，也可以直接运行 `python -m pip install -e .`。当前没有正式发布的 wheel 或 PyPI 版本，推荐从固定 Git commit 或 tag 安装，不要无版本地依赖移动分支。
+协作者使用 `main`；可复现实验应记录固定 commit，正式发布后优先使用 tag。如果已激活虚拟环境，也可以直接运行 `python -m pip install -e .`。当前没有正式发布的 wheel 或 PyPI 版本，不要无版本地依赖移动开发分支。
 
 ### 3.3 验证安装
 
@@ -176,7 +177,7 @@ rwb runtime codex render examples/task-evidence.yaml `
 
 dispatch 只包含 Task 边界、输入路径与哈希、写入范围、显式 Skill、完成检查和暂停条件。它不会嵌入论文全文、其他 Skill 正文或主会话历史。
 
-到这里仍然没有启动 Agent。这是已有的可选 Codex dispatch 路径。Task-to-API 文件桥接由黄毅维护；路诚钺当前主线是 Mode–Skill 选择、Agent Trace 与上下文成本，不依赖该桥接完成后才开始。
+到这里仍然没有启动 Agent。这是已有的可选 Codex dispatch 路径。Task-to-API 文件桥接由黄毅维护；路诚钺当前主线是 Method/Core 正式化，不依赖该桥接完成后才开始。
 
 ### 4.5 检查一份已有 Handoff
 
@@ -462,10 +463,12 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 
 | 能力 | 当前状态 | 判断 |
 |---|---|---|
-| 产品边界和总体架构 | 已形成 Charter、Architecture、模块和 ADR | 可复用 |
+| 产品边界和总体架构 | 五平面控制平面、ADR-0016 与路线图已形成 | 方向可复用；新契约仍待实现 |
 | Schema、模型和确定性验证 | 本地测试和全部示例/Registry 校验通过 | 技术 alpha 可用 |
 | CLI | 可 init、validate、resolve、render、audit、checkpoint | 技术 alpha 可用 |
 | Agent—Skill 路由 | Mode/action/Tool/Need 矩阵、八个 fixture、lifecycle 与 K-MS-1 评审已完成 | 离线基线到达；真实增量价值证据仍缺 |
+| Method Resolution | ADR、字段边界和迁移顺序已冻结 | 尚无 Schema/validator；当前最高优先级 |
+| Research State | 七类对象、Attempt/Main State 已分散实现 | Unknown/Failure/Frontier 与长期 State 尚未正式化 |
 | API Session 内核 | 显式模型槽、有界工具循环和无 fallback 已测试 | Task-to-API 与真实调用由黄毅维护 |
 | Codex Runtime Adapter | 布局、能力和 dispatch 已实现 | 可选路径，不在当前关键路径 |
 | 上下文连续性 | SAFE_PAUSE、哈希、digest、Git 冲突和恢复 fixture 已实现 | 缺真实跨会话恢复 |
@@ -487,7 +490,7 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 
 至少还需关闭六个发布 Gate：
 
-1. 路诚钺完成 `K-MS-1` Mode–Skill/Trace 选择基线；黄毅并行完成 Task-to-API 闭环；
+1. 完成 `K-METHOD-1`：Mode Action、Method Resolution、Mode v0.2 与 Decision Authority；黄毅的 Task-to-API 线保持独立；
 2. 完成一次真实 `safe-paused → 新主会话 → 正确下一动作` 恢复；
 3. 把 `rwb init` 升级为可选择的完整项目模板，或提供受支持的 template repository；
 4. 选择并加入项目 LICENSE，同时清理 accepted Skills 的许可状态；
@@ -527,12 +530,13 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 
 发布关键路径应保持克制：
 
-1. K-MS-1 已冻结；先完成 M3-008 Trace Envelope/Index/Event Schema、validator 与手工 fixture；
-2. Trace 可用后，比较 with/without Skill、H1/H2 与内容读取扩展成本，删减没有改变决策的控制项；
-3. 黄毅独立推进 Task-to-API、恢复、自动 Trace 捕获和真实模型证据；路诚钺只消费正式脱敏工件；
-4. 同步确定 LICENSE 和完整项目 scaffold 方案；
-5. 再进入两个真实科研案例、M4 工件 promotion/复现和对照评估；
-6. 只有文件式连续性 benchmark 出现可复现瓶颈时，才评估 SQLite/FTS；图层只能作为 Index，不能成为事实源。
+1. 先完成 M8-002 Mode Action 正式契约；
+2. 再建立 Method Resolution，并无损转换八个既有 routing fixtures；
+3. 通过最小 migration seam 迁移 Mode v0.1 → v0.2，同时冻结 Decision Authority；
+4. M3-008 只完成 Execution/Archive Trace；Method Trace 在上述契约后独立推进；
+5. 尽早建立四臂 Evaluation Manifest/baseline，再决定是否恢复 Skill/H1/H2 真实比较；
+6. 黄毅独立推进执行工作；共享接口稳定后再做 Runtime reintegration；
+7. 同步处理 LICENSE、完整 scaffold 和两个真实科研案例。
 
 不要把增加 Supervisor、数据库、Agent 数量或 reviewer 层数当作发布进度。每个新增机制都应有真实故障、消费方、成本和删除条件。
 
@@ -540,7 +544,8 @@ Workbench 默认不覆盖正式 YAML。为新的 Attempt、报告或 checkpoint 
 
 - [文档导航](README.md)
 - [开发协作指南](DEVELOPMENT.md)
-- [路诚钺 Mode–Skill–Tool 分支计划](workstreams/chengyue-lu-mode-skill/README.md)
+- [架构演进路线图](ROADMAP.md)
+- [第二轮审计吸收记录](references/SECOND_ROUND_AUDIT_ADOPTION.md)
 - [项目章程](PROJECT_CHARTER.md)
 - [总体架构](ARCHITECTURE.md)
 - [Task 与 Handoff](modules/05-TASK_AND_HANDOFF.md)

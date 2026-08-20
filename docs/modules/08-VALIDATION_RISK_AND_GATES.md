@@ -118,7 +118,16 @@ Gate 必须包含：
 
 Gate 长期不改变任何结果时应删除或降级。人工批准频率高但阅读时间极短，是 `HUMAN-FATIGUE` 的信号。
 
-## 7. 防止控制面递归增长
+## 7. Decision Authority
+
+目标 contract 必须分别表达：Agent 可提出什么、Resolver/Validator 可决定什么、何时必须 Human
+Gate。Mode suggestion、Action selection、Mechanism、Skill/Tool binding、Claim promotion、数据/
+权限放宽不能共用一个模糊的 `approved` 字段。
+
+在 M8-005 完成前，下列硬边界已经有效：Agent 和执行层不能批准权限/数据放宽，不能自定义
+methodology fallback，也不能把结构 PASS 提升为科学 Claim；歧义返回 Human Gate/split/blocked。
+
+## 8. 防止控制面递归增长
 
 任何新增全局检查、Supervisor、Canary、恢复数据库或治理层前必须有：
 
@@ -129,7 +138,7 @@ Gate 长期不改变任何结果时应删除或降级。人工批准频率高但
 - 删除/停止条件；
 - 先作为局部 Skill、脚本或 Mode 规则试验的结果。
 
-## 8. 验收条件
+## 9. 验收条件
 
 - 大多数检查由确定性工具完成；
 - reviewer 都有具体风险和停止条件；

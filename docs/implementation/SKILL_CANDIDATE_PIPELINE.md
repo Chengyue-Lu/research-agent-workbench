@@ -85,7 +85,10 @@ rwb skills audit-archive <archive-path> `
 
 ## 4. 首轮判断
 
-截至 2026-08-16，本分支已完成首批 54 个外部 Skill 入口的逐项哈希和人工 Decision；下一步为 evidence map、citation integrity、experimental design、scientific visualization 建立四份 dossier，再同时维护最多两个新 candidate packages。详细顺序见[路诚钺 Mode–Skill 分支计划](../workstreams/chengyue-lu-mode-skill/README.md)。
+截至 2026-08-16，本流程已完成首批 54 个外部 Skill 入口的逐项哈希和人工 Decision。该来源驱动
+路线随后被 ADR-0013 的 Need-first 决定取代；四份 dossier 和 candidate package 只保留历史证据，
+不构成当前下一任务。未来 discovery 只有在正式 Skill Need 与 Evaluation baseline 已存在时才能
+重新激活，顺序见[架构路线图](../ROADMAP.md)。
 
 首轮优先推进：
 

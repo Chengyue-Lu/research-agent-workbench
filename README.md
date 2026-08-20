@@ -2,17 +2,19 @@
 
 一个由研究者主导、按研究活动组合、以证据和可复现性为中心的 AI 科研辅助框架。
 
-本项目不是“自动课题组”，也不试图重新实现 Codex、Claude Code 或其他平台已有的子 Agent 调度。它提供的是平台之上的轻量科研契约层：把研究问题、研究模式、Agent 边界、Skill 选择、工件、证据、交接与人工决策组织成可审查、可替换的结构。
+本项目不是“自动课题组”，也不试图重新实现 Codex、Claude Code 或其他平台已有的子 Agent 调度。它提供的是平台之上的方法感知科研控制平面：让研究语义、状态、证据、失败与决定长期保存，同时允许 Model、Runtime、Tool、Skill 和执行策略替换。
 
 ## 项目阶段
 
-当前为内部技术 alpha：最小契约、离线 Agent—Skill 切片、文件式上下文治理和 `K-API-1` 隔离 API session 基础已经形成。路诚钺负责 Research Mode、Skill 选择/评估/准入、受控读取和 Handoff/Trace 成本验证；黄毅负责 API Adapter、Task-to-API、live conformance 及其测试。逐项状态和唯一下一节点以[任务清单](docs/TASKS.md)为准。
+当前为内部技术 alpha：最小契约、K-MS-1 Mode-first 离线基线、文件式上下文治理和 `K-API-1` 隔离 API session 基础已经形成。第二轮架构审计后进入 `K-METHOD-1`，优先正式化 Mode Action、Method Resolution、Mode v0.2 与 Decision Authority。逐项状态和唯一下一节点以[任务清单](docs/TASKS.md)为准。
 
 ## 核心判断
 
 - 主 Agent 是决策工作区，不是长期存储，也不是所有工作的执行者。
 - 子 Agent 只接收窄任务；其过程可以被压缩，但正式工件和交接契约不能丢失。
 - Agent Profile、Skill、Research Mode 和 Tool 是四个不同概念，必须在单次 Task Packet 中显式组合。
+- Mode、Protocol、Strategy、Skill、Tool 和 Capability 是正交概念；未来由 Method Resolution 解释最小机制，再冻结具体执行绑定。
+- Research State 的生命周期长于任何 Agent 会话、模型、Runtime、Tool 或 Skill；聊天不是长期事实源。
 - 不同子 Agent 应按任务加载不同 Skill；关键任务不能只依赖模型的隐式 Skill 匹配。
 - 研究差异按实验、仿真、推导、观察统计、证据综合等“研究模式”表达，不按学科建立全局固定流程。
 - 确定性校验优先于第二个 Agent；Agent 复核只针对明确风险；关键科学判断保留给人。
@@ -28,6 +30,7 @@
 - [开发协作指南](docs/DEVELOPMENT.md)：实名责任、当前节点、分支、读取与完整 Trace 规则。
 - [项目章程](docs/PROJECT_CHARTER.md)：使命、非目标和人的最终责任。
 - [总体架构](docs/ARCHITECTURE.md)：稳定关系、Mermaid 流程与架构不变量。
+- [架构路线图](docs/ROADMAP.md)：Method/Core、Research State、Evaluation 与 Execution reintegration 的依赖和停止 Gate。
 - [任务清单](docs/TASKS.md)：当前状态的唯一权威入口。
 - [零基础使用指南](docs/GETTING_STARTED.md)：安装、离线演练与发布就绪度。
 - [Changelog](CHANGELOG.md)：已经落地的变更。
@@ -96,7 +99,7 @@ rwb execution assess examples/observability/execution-evidence-contract.yaml `
 1. `evidence-scout` + `literature-evidence-extraction` Skill：源材料只读、任务区受限写的检索、证据定位和引用交接。
 2. `simulation-auditor` + `simulation-vv` Skill：读取模型与运行工件，检查版本、参数、收敛和敏感性。
 
-两者共享最小科研内核与 Task/Handoff 契约，但使用不同的输入、权限、Skill、输出和质量检查。离线证据见 [双 Skill 契约切片](examples/vertical-slice/SLICE_REPORT.md)。该切片只证明绑定、隔离与校验可重放，不证明多 Agent 更强。下一步先完善 Mode 触发边界、Task-to-Skill 选择矩阵和轻量/审计 Handoff 对照；执行证据由相应运行工作流提供。
+两者共享最小科研内核与 Task/Handoff 契约，但使用不同的输入、权限、Skill、输出和质量检查。离线证据见 [双 Skill 契约切片](examples/vertical-slice/SLICE_REPORT.md)。该切片现在只作为历史绑定/隔离证据；两个 Skill 均非 active，也不证明多 Agent 更强。下一步先把既有 Mode Action 和 routing fixture 迁移为正式 Method Resolution 契约。
 
 ## 近期交付边界
 

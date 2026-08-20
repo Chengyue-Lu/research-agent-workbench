@@ -76,13 +76,17 @@ Handoff 成本对照按 H0/H1/H2 分组，至少记录工件数、总字符、�
 
 ## 6. 对照评估
 
-首批真实案例采用三种条件：
+正式 Method/Skill 比较采用四种条件：
 
-1. 基线：单 Agent，无本框架；
-2. 轻量：单 Agent + 最小科研工件/Skill；
-3. 目标：主 Agent + 一个或少量不同 Skill 的子 Agent。
+1. Plain Agent；
+2. Plain Agent + Tool；
+3. Mode + no-Skill/direct-tool；
+4. Mode + candidate Skill。
 
-比较相同问题下的证据定位、错误、遗漏、人工纠正、完成时间、token 和可恢复性。不能只比较生成文本的主观“看起来更完整”。
+Evaluation Manifest 必须冻结同一 Task/input、Host、Model、Tool/Capability Snapshot、budget 和
+context。比较 method violation、Claim overreach、provenance error、反证遗漏、人工纠正距离、
+返工、时间、token/成本和可恢复性，不能只比较文本“更完整”。多 Agent/H1/H2 是可增加的机制
+变量，不是默认优胜组。
 
 ## 7. Skill 评估
 
@@ -102,7 +106,9 @@ Skill 的价值由任务成功、错误率、上下文成本和结果采纳率�
 
 ## 8. Trace 政策
 
-Trace 分为两类：核心协作 Trace 保存实际 Agent 传递、可观察的读取/工具/文件事件、Decision、Handoff 和过程产物，是可恢复性与排障所必需；可选运行遥测记录 token 级、内部调试或平台细节。两者都不是科研证据本身。
+Trace 分为三个职责层：Execution/Archive Trace 保存实际 Agent 传递、可观察读取/工具/文件事件、
+Handoff 和过程产物；Method Trace 保存 Mode/Action/Mechanism/Human Gate/Evidence/Claim 的关键决定；
+可选运行遥测记录 token 级、内部调试或平台细节。三者通过引用关联，但都不是科研证据本身。
 
 默认策略：
 

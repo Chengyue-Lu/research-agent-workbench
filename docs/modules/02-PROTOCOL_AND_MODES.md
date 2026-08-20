@@ -33,7 +33,7 @@ data_boundary:
 
 ## 3. Research Mode Pack
 
-Mode Pack 的最小声明：
+当前 v0.1 Mode Pack 的过渡声明仍包含 `recommended_skill_capabilities`：
 
 ```yaml
 mode_id: simulation
@@ -56,7 +56,22 @@ risk_rules:
   - CLAIM-OVERREACH
 ```
 
-Mode Pack 推荐能力标签，不直接绑定某个 Agent 或某个具体 Skill。具体 Skill 由 Capability Resolver 根据版本、工具、权限和预算选择。
+该字段只应被理解为旧执行解析输入，不能继续作为 Mode 的稳定语义。目标 v0.2 改为引用正式
+`Mode Action`：
+
+```yaml
+mode_id: simulation
+version: 0.2.0
+action_refs:
+  - simulation.check-convergence@1
+  - simulation.assess-sensitivity@1
+claim_rules: {...}
+human_decisions: [...]
+```
+
+Action 声明 trigger/non-trigger、failure、required artifact、claim effect、Human Gate、stop 与
+blocked condition。`Action → Method Resolution` 再选择 no-Skill/Task/Tool/Skill Need/Human/blocked；
+Mode 本身不推荐或绑定 Skill。v0.1 到 v0.2 必须通过显式 migration seam，不能原地覆盖。
 
 ## 4. 首批模式
 
@@ -123,9 +138,11 @@ conflict_policy:
 
 若新增 Mode 只改变 Agent 名称、提示语或推荐 Skill，不改变方法约束，则不准入。`experiment`、`theory`、`observational-statistics` 与 `engineering-validation` 当前均是规划分类，不是正式 Registry 承诺。
 
-## 8. 当前打磨重点
+## 8. 当前正式化重点
 
-`K-MS-1` 先为 `evidence-synthesis` 与 `simulation` 建立同构决策卡、组合 fixture 和 no-Mode/ambiguous 边界。目标不是扩充 Mode 数量，而是让主 Agent 能用少量任务特征解释：为什么选择、为什么不选择、冲突时为何阻断。
+`K-MS-1` 已提供 `evidence-synthesis` 与 `simulation` 的 Action/fixture 离线基线。当前 M8-002
+将其变成有 stable ID/version/hash 的正式对象；随后 Method Resolution 才把选择理由、义务、
+alternatives rejected、Human Gate 和 blocked 变成可回放契约。此阶段不新增 Mode。
 
 ## 9. 验收条件
 

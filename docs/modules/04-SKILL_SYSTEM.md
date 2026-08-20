@@ -73,6 +73,14 @@ source:
 
 ## 4. Capability Resolver
 
+长期解析分两步：Method Resolution 先产生 `Skill Need` 或 `Capability Requirement`，Capability
+Resolver 再绑定具体 Skill/Tool/Adapter Snapshot。当前 Resolver 直接从 Task/Profile/Mode 处理
+Skill Assignment，是兼容期执行视图，不应被解释为完整方法路由。
+
+正式 Skill Need 至少需要 trigger/non-trigger、semantic gap、no-Skill/direct-tool baseline、
+expected increment、trial 前证据和已知 domain variants。一个 Need 可对应多个 candidate；没有
+候选时保持 gap，不自动生成 accepted Skill。
+
 输入：
 
 - Task 类型和目标；
@@ -217,6 +225,10 @@ Task 的 `required_skills` 支持 `skill-id` 或精确 `skill-id@semver`。新 A
 
 独立派生但尚未准入的实现放在 `skill-lab/candidates/`。该路径不是平台 Skill 发现路径，也不进入 accepted Registry；它用于保存短指令、确定性脚本、fixtures、内容/包哈希和 with/without 评估证据。首个包 `claim-preserving-rewrite` 只验证数字、引用、否定、证据强度、因果措辞与显式保护词等表层不变量，并明确不宣称语义或科学等价。
 
-截至 2026-08-17，Skill Need 分两条路线：从 `evidence-synthesis`、`simulation` action 推导的 Mode-derived Need，以及只服务本项目交接、恢复和 Gate 准备的 project-internal Need。两者都必须先比较 Protocol/Task/template/Tool/no-Skill 基线，并共享 Skill 数量与上下文上限。外部候选只作按 Need 检索的参考库存；项目内生候选只保留占位，不进入 Registry 或 Runtime。候选优先级、停止点和黄毅负责的 API 边界见[路诚钺 Mode–Skill 分支计划](../workstreams/chengyue-lu-mode-skill/README.md)与[项目内生协议 Skill 规划](../workstreams/chengyue-lu-mode-skill/PROJECT_INTERNAL_SKILLS.md)。
+截至 2026-08-17，Skill Need 已形成 Mode-derived 与 project-internal 两条历史规划路线；两者都
+先比较 Protocol/Task/template/Tool/no-Skill 基线。外部候选只作按 Need 检索的参考库存，项目内生
+候选不进入 Registry/Runtime。K-MS-1 原计划现为历史证据；下一步不是继续写 Skill，而是按
+[ADR-0016](../decisions/0016-METHOD-AWARE-RESEARCH-CONTROL-PLANE.md)先正式化 Mode Action 与
+Method Resolution。
 
 截至 2026-08-19，三个 `0.1.0` 原型均不再 active：literature/simulation 为 legacy，handoff wrapper 为 deprecated。新任务因此不会从 accepted Registry 自动或显式加载它们；旧示例只通过精确版本和显式 historical replay 重新解析。当前 active 数量为零不构成缺失修复任务。

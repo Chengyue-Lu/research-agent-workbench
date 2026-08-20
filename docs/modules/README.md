@@ -15,4 +15,6 @@
 
 模块之间只通过版本化契约连接。若一个模块必须读取另一个模块的内部会话或私有状态才能工作，应视为架构泄漏。
 
-实名维护分工和当前开发入口见[开发协作指南](../DEVELOPMENT.md)；路诚钺的 Mode–Skill–Tool 下一节点见[分支计划](../workstreams/chengyue-lu-mode-skill/README.md)。
+实名维护分工和当前开发入口见[开发协作指南](../DEVELOPMENT.md)；跨模块目标关系见
+[总体架构](../ARCHITECTURE.md)，演进依赖见[架构路线图](../ROADMAP.md)。历史 Mode–Skill 计划
+不再承担当前入口。

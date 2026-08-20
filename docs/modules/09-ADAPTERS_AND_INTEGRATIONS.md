@@ -6,6 +6,10 @@
 
 本模块的 API 实现与测试由黄毅维护。路诚钺只提供冻结的 Mode/Skill/read/handoff/trace 接口并消费脱敏结果，不在自己的分支上补 Provider 或 session 功能。
 
+目标输入边界是 `Task + Method Resolution + Capability Requirement + Data/Permission Policy`；执行
+前再生成冻结 Capability Snapshot。当前 `Resolved Task + Skill Assignment` 在迁移期继续可用，
+但 Adapter 不得据此反向定义 Mode、Claim、Skill Need 或 methodology fallback。
+
 ## 2. API-first 执行接口
 
 首版 API 执行只需要三类对象：
@@ -103,6 +107,7 @@ Runtime session permission
 ∩ API session/tool allowlist
 ∩ Agent Profile permission ceiling
 ∩ Task Packet permission
+∩ Capability Snapshot permission/data boundary
 ∩ Skill permission ceiling
 ∩ Project data boundary
 ```

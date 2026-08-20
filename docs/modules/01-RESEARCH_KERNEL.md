@@ -34,6 +34,15 @@
 
 表示正式接受、拒绝、修改、暂停、排除或发布决定。最低字段：`id`、`decision`、`scope`、`reason_refs`、`actor`、`timestamp`、`supersedes`。
 
+### Research State 扩展候选
+
+第二轮架构基线增加 `Unknown`、`Contradiction`、`Assumption`、`Attempt`、`Failure` 与 `Frontier`
+作为长期状态候选。它们尚未进入当前七类核心对象 Schema；只有 evidence-synthesis 与 simulation
+真实案例共同证明字段稳定后才逐项正式化，不能一次扩成统一知识图谱。
+
+Failure 至少应保留 `goal`、`method`、`outcome`、`failure_reason`、`what_was_learned` 和
+`revisit_condition`，避免新 Runtime 因缺少聊天历史重复已知失败。
+
 ## 3. 关系而非固定流程
 
 允许以下关系：
@@ -71,9 +80,9 @@ Mode Pack 决定每种强度需要什么工件。Agent 不能越过 Project Prot
 - 原始 Evidence 不原地修改；解析、翻译和摘要是带来源关系的新工件。
 - `stale`、`superseded`、`invalidated`、`withdrawn` 和 `archived` 语义不同。
 
-## 6. 计划接口
+## 6. 当前接口与演进边界
 
-M1 计划提供：
+当前已提供或规划中的 CLI 表面包括：
 
 ```text
 rwb object validate <path>
@@ -83,6 +92,8 @@ rwb decision create --from <template>
 ```
 
 首版使用 YAML/JSON 文件、dataclass 契约与 Draft 2020-12 JSON Schema 验证，不建设数据库和事件总线。
+未来 Research State 仍以 schema-first 文件和 compact index 为事实源，不绑定 Python object 或
+conversation memory。迁移必须保留原/新 hash 与实现版本。
 
 ## 7. 主要风险
 

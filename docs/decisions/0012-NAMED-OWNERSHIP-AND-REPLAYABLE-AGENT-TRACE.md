@@ -4,6 +4,10 @@
 
 日期：2026-08-14
 
+2026-08-20 维护说明：实名责任与 Trace 决定继续有效；“Mode–Skill 负责人”已在 ADR-0016 后扩展为
+Method/Core 负责人。Execution/Archive Trace 与后续 Method Trace 分层，实时分工见
+[`DEVELOPMENT.md`](../DEVELOPMENT.md)。
+
 ## 背景
 
 原文档使用“本侧”“同伴侧”和工作流名称表达维护关系。该写法在两人以上协作、人员变更、PR 评审或故障追责时无法回答谁应作决定。原有 Worklog 只保留关键摘要，也不能重放 Agent 之间究竟传递了什么，因此难以判断问题来自 Task、路由、上下文、Handoff 改写还是执行实现。

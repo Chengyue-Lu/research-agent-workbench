@@ -26,6 +26,8 @@
 - Canonical Profile → Codex config；
 - Skill Manifest → `SKILL.md` metadata；
 - Task → Resolved Task；
+- Task + Mode Action → Method Resolution（M8-003 目标，尚未实现）；
+- Capability Requirement → frozen Snapshot（Roadmap Phase B 目标，尚未实现）；
 - Handoff → promotion eligibility；
 - Runtime capability snapshot；
 - 工具 Adapter 输入/输出。
@@ -42,6 +44,9 @@
 ### Skill Evals
 
 每个 Skill 至少覆盖：正确触发、不应触发、缺工具、恶意来源、输出缺字段、版本回归、上下文过量、越权请求。
+
+正式增量评测必须冻结 Evaluation Manifest，并比较 Plain Agent、Plain+Tool、Mode+no-Skill/
+direct-tool、Mode+candidate Skill；单一 with/without fixture 只能提供局部证据。
 
 ### Human Evaluation
 
