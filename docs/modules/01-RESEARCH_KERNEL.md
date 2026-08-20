@@ -43,6 +43,11 @@
 Failure 至少应保留 `goal`、`method`、`outcome`、`failure_reason`、`what_was_learned` 和
 `revisit_condition`，避免新 Runtime 因缺少聊天历史重复已知失败。
 
+当前 `Attempt` 已有明确的 execution-attempt 含义：一次 Task 的一次执行，并关联
+`work/<task>/<attempt>/`、Attempt Archive 与 Execution Receipt。Phase C 若需要表达包含多个执行
+Attempt 的 research-level/method trial，应采用独立对象名或显式关系，不复用或静默改变现有
+`Attempt` 语义。
+
 ## 3. 关系而非固定流程
 
 允许以下关系：

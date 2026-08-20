@@ -12,7 +12,9 @@
 - 判断任务是否值得委派；
 - 创建 Task Packet 并请求能力解析；
 - 比较 Handoff、处理冲突和识别 Human Gate；
-- 控制 Claim 强度、成本和停止时机；
+- 维护并执行当前 Claim ceiling，提出 Claim 升级/降级候选，并识别 promotion 所需的 Evidence、
+  Method rule 与 Human Gate；不得自行批准高风险或主要 Claim promotion；
+- 控制执行成本和停止时机；
 - 在上下文压力前写 Main State 并主动 rollover。
 - 给出目标路径和初始内容允许集；需要扩大正文读取范围时负责修订 Task。
 
@@ -127,7 +129,7 @@ Profile 不包含完整 Skill 指令，也不固定厂商模型。`default_slot`
 |---|---|
 | Agent 超时 | 写 incomplete Handoff，保留已有工件，不自动无限重试 |
 | 输入版本变化 | 标记 `stale_input`，阻止合并 |
-| Skill 缺失或版本不符 | `BLOCK`，重新解析能力 |
+| 已冻结 Skill 缺失、版本漂移或 hash 不符 | `BLOCK`，重新解析能力；正式 no-Skill/direct-tool 不触发该错误 |
 | 权限不足 | 返回 capability gap，不自动扩大权限 |
 | 输出 Schema 不合格 | 一次定向修复；再次失败升级给主 Agent |
 | 结果冲突 | 并列保存，主 Agent提出可判别的下一步，不做多数投票 |
@@ -148,10 +150,10 @@ Profile 不包含完整 Skill 指令，也不固定厂商模型。`default_slot`
 
 ## 10. 验收条件
 
-- 两个子 Agent 使用不同 Profile 和 Skills 完成任务；
+- 同一冻结 Method contract 可映射到不同的允许 Agent Profile/Execution Host，而不改变科研语义或权限边界；
 - 主 Agent 只接收结构化 Handoff 和必要索引；
 - 权限由 Profile、Task 和平台三者取交集；
-- Skill 缺失时任务失败关闭，而非退化成无声明通用执行；
+- 只有已冻结 Skill binding 缺失、版本漂移或 hash 不一致时才阻断；正式 no-Skill/direct-tool 是合法解析结果；
 - 并行写入不允许重叠路径；
 - 同一受限 Task 可以通过纯 API fresh session 执行，不依赖特定平台；
 - 更换运行时只需实现 Adapter，不修改科研对象；

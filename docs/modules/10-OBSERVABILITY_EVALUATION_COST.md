@@ -83,7 +83,7 @@ Handoff 成本对照按 H0/H1/H2 分组，至少记录工件数、总字符、�
 3. Mode + no-Skill/direct-tool；
 4. Mode + candidate Skill。
 
-Evaluation Manifest 必须冻结同一 Task/input、Host、Model、Tool/Capability Snapshot、budget 和
+Evaluation Manifest 必须冻结同一 Task/input、Host、Model、Tool/Resolved Capability Snapshot、budget 和
 context。比较 method violation、Claim overreach、provenance error、反证遗漏、人工纠正距离、
 返工、时间、token/成本和可恢复性，不能只比较文本“更完整”。多 Agent/H1/H2 是可增加的机制
 变量，不是默认优胜组。

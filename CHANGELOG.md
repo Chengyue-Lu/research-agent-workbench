@@ -17,6 +17,8 @@
 
 - 新增 `ROADMAP.md`、第二轮审计吸收记录与 M8 Method Core 任务组；唯一下一任务调整为 M8-002
   Mode Action first-class contract。
+- 按 Issue #12 完成 M8-002 前的 docs semantic freeze：正式/候选 Mode 分离，Task/Method/Resolved
+  Capability/Execution 边界、Skill 状态轴、no-Skill 及 Claim promotion 权限统一到 ADR-0016。
 - 重写 Charter/Architecture，并更新开发入口、模块边界、使用指南和根 README；旧总实施计划
   缩减为历史映射，实时状态继续只由 `TASKS.md` 维护。
 - K-MS-1 workstream 保留为历史证据，不再承担当前开发入口；真实 Skill/H1/H2 对照在 Method

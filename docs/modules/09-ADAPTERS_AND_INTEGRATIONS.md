@@ -7,8 +7,19 @@
 本模块的 API 实现与测试由黄毅维护。路诚钺只提供冻结的 Mode/Skill/read/handoff/trace 接口并消费脱敏结果，不在自己的分支上补 Provider 或 session 功能。
 
 目标输入边界是 `Task + Method Resolution + Capability Requirement + Data/Permission Policy`；执行
-前再生成冻结 Capability Snapshot。当前 `Resolved Task + Skill Assignment` 在迁移期继续可用，
+前再生成 Resolved Capability Snapshot。当前 `Resolved Task + Skill Assignment` 在迁移期继续可用，
 但 Adapter 不得据此反向定义 Mode、Claim、Skill Need 或 methodology fallback。
+
+Capability 名称分为 demand、available supply 与本次 resolved binding：
+
+```text
+Capability Requirement = provider-neutral demand
+Host Capability Report / Tool Capability Card / Provider Capability Report = available supply
+Resolved Capability Snapshot = this Attempt's frozen implementation binding
+```
+
+现有代码类型 `RuntimeCapabilitySnapshot` 是 Host Capability Report 的兼容实现名，不表示本次
+Attempt 已完成 Skill/Tool/Adapter 绑定；在正式 Schema 迁移前保留该类型名。
 
 ## 2. API-first 执行接口
 
@@ -27,7 +38,7 @@ IsolatedApiSessionRunner.run(request, limits) -> ApiSessionResult
 ## 3. Runtime Adapter 接口（可选平台路径）
 
 ```text
-capabilities() -> RuntimeCapabilitySnapshot
+capabilities() -> HostCapabilityReport
 resolve_agent(profile_ref) -> RuntimeAgentConfig
 resolve_skills(skill_assignment) -> RuntimeSkillBinding
 launch(resolved_task) -> RuntimeExecutionRef
@@ -107,7 +118,7 @@ Runtime session permission
 ∩ API session/tool allowlist
 ∩ Agent Profile permission ceiling
 ∩ Task Packet permission
-∩ Capability Snapshot permission/data boundary
+∩ Resolved Capability Snapshot permission/data boundary
 ∩ Skill permission ceiling
 ∩ Project data boundary
 ```
@@ -116,7 +127,7 @@ Runtime session permission
 
 ## 9. 平台与模型漂移
 
-运行前记录 `RuntimeCapabilitySnapshot`：
+运行前记录 Host Capability Report（当前代码类型为 `RuntimeCapabilitySnapshot`）：
 
 - runtime 名称与版本；
 - Agent 配置发现路径；
@@ -141,7 +152,7 @@ API 路径额外记录所选模型槽、请求模型和 Provider 实际返回模
 
 ## 11. 验收条件
 
-- Codex Adapter 能把两个 Profile 和两个 Skill 映射到原生配置；
+- Codex Adapter 能把冻结 Profile 与可选 Skill binding 映射到原生配置，并保留合法 no-Skill 路径；
 - Adapter 不保存自己的权威项目状态；
 - capability gap 可以清晰报告；
 - 平台升级后可通过 contract test 发现关键行为漂移；

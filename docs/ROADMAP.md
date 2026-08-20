@@ -12,7 +12,7 @@
 | Phase | 目标 | 主要产物 | 启动条件 |
 |---|---|---|---|
 | A — Core Formalization | 把 Mode-first 方法论变成正式语义 | Mode Action、Method Resolution、Mode v0.2、Decision Authority | ADR-0013/0016 |
-| B — Evolution Foundation | 支持可迁移、可评测的能力演化 | Skill Need、Lifecycle v2、Migration、Protocol、Capability Snapshot | Phase A 稳定接口 |
+| B — Evolution Foundation | 支持可迁移、可评测的能力演化 | Skill Need、Lifecycle v2、Migration、Protocol、Resolved Capability Snapshot | Phase A 稳定接口 |
 | C — Research State & Verification | 保存跨 Runtime 的研究意义 | State/Frontier、Failure、Evidence–Claim relation、Method Trace | A；部分依赖 B |
 | D — Evaluation Loop | 证明新增机制的净增量 | Evaluation Manifest、baseline harness、method/skill metrics | A 后尽早启动 |
 | E — Strategy & Governed Evolution | 有界吸收新策略和外部候选 | Strategy interface、candidate pipeline、merge/prune/promotion | B+C+D |
@@ -68,7 +68,7 @@ pause、failure 与 reopen condition。
 3. Mode + no-Skill/direct-tool；
 4. Mode + candidate Skill。
 
-Evaluation Manifest 冻结 Task、Model、Host、Tool/Capability Snapshot、预算与上下文。指标优先包括
+Evaluation Manifest 冻结 Task、Model、Host、Tool/Resolved Capability Snapshot、预算与上下文。指标优先包括
 method violation、Claim overreach、provenance error、counterevidence omission、human correction
 distance、rework、context、cost 和 completion time。确定性评分与盲化人工样本分层；单次成功不
 构成 promotion。

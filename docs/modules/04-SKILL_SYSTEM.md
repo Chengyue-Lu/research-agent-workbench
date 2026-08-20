@@ -18,6 +18,11 @@
 
 指导 Agent 使用某个工具或连接器完成稳定流程，例如 Zotero 读取、DVC Run 定位、Quarto 构建。工具本身仍由 MCP/CLI/API 提供。
 
+“流程可复用”本身不足以形成 Tool-use Skill。只有 direct Tool + Task instruction/template 基线不足，
+并存在跨任务、非平凡、可复用的语义判断缺口时，Method Resolution 才可产生 Tool-use Skill Need。
+API/MCP/CLI 的普通调用说明、参数映射和环境配置优先属于 Tool Capability Card、Adapter documentation、
+Task template 或 deterministic checker。
+
 ### Output Skill
 
 指导生成特定工件，例如 Evidence Matrix、V&V Report、Decision Brief。它不能改变内容所需的证据标准。
@@ -148,11 +153,19 @@ Codex 等平台可以根据 description 隐式激活 Skill，但本项目分三�
 - Agent 只能读取本次选中 Skill 的 `SKILL.md` 和其中为当前步骤显式引用的 references；不得借 Skill 发现递归读取其他候选 Skill 或整个 reference 树。
 - 对未选 Skill 只允许读取 Registry 元数据；需要比较正文时，应创建独立的 Skill 评估 Task，而不是在业务 Task 中临时展开。
 
-## 8. 生命周期与供应链
+## 8. 发现、评测、准入与运行资格
 
-Skill 状态：`draft → trial → accepted → deprecated → retired`。
+Skill 治理不是单一状态机，至少包含四个正交维度：
 
-进入 `accepted` 前需要：
+| 维度 | 回答的问题 | 当前/候选词汇示例 |
+|---|---|---|
+| Source / Intake State | 来源材料处于库存的什么位置 | `reference / candidate / rejected` |
+| Evaluation State | 候选经过了什么验证 | `untested / trial / evaluated / shadow` |
+| Admission Decision | 人类是否批准其进入项目 Registry | `accepted / rejected / pending` |
+| Runtime Lifecycle / Eligibility | 哪些已准入版本可用于新 Assignment 或仅供回放 | `active / superseded / legacy / deprecated / retired` |
+
+这些词汇不是本阶段新增的正式 enum；Phase B 再冻结转换规则。尤其 `accepted` 是准入决定，不与
+runtime lifecycle 混成同一轴。进入 accepted Registry 前需要：
 
 - 明确 trigger 和 non-trigger；
 - 输入/输出契约；
@@ -181,7 +194,7 @@ Skill 若要求超出上层边界的动作，Resolver 必须阻断或裁剪，�
 
 | 代码 | 含义 | 默认等级 |
 |---|---|---|
-| SKILL-MISSING | required Skill 不存在 | BLOCK |
+| SKILL-MISSING | 已冻结 Skill binding 不存在；正式 no-Skill/direct-tool 不适用 | BLOCK |
 | SKILL-VERSION-DRIFT | 执行版本与 Assignment 不一致 | BLOCK |
 | SKILL-CONTEXT-FLOOD | Skill 总上下文超预算 | WARN/BLOCK |
 | SKILL-CONFLICT | Skills 或输出契约冲突 | BLOCK |
@@ -207,7 +220,7 @@ Skill 若要求超出上层边界的动作，Resolver 必须阻断或裁剪，�
 
 ## 12. 验收条件
 
-- 两个子 Agent 的 required Skills 不同且实际加载记录可查；
+- frozen Skill binding（如有）的实际加载记录可查，no-Skill/direct-tool 不伪造 Skill lock；
 - Resolver 能解释为什么选择/排除某个 Skill；
 - Skill 不能扩大权限或 Claim ceiling；
 - Skill 更新不会静默改变历史任务解释；

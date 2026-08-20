@@ -19,7 +19,7 @@ Research Agent Workbench 是放在研究者与可替换 AI 执行能力之间的
 
 当前仓库已经实现最小对象、Task/Handoff、Skill Assignment、上下文治理、部分 Execution 接口和
 离线 Mode-first fixture；尚未实现正式 Mode Action、Method Resolution、长期 Research State、
-Capability Snapshot 或 Method Trace。本文同时写明目标关系与当前迁移状态，不能把规划字段误报为
+Resolved Capability Snapshot 或 Method Trace。本文同时写明目标关系与当前迁移状态，不能把规划字段误报为
 已有能力。
 
 ## 2. 五个逻辑平面
@@ -35,7 +35,7 @@ flowchart TB
 
     subgraph P4["4. Capability & Strategy Plane"]
         CRQ["Capability Requirement"]
-        CS["Frozen Capability Snapshot"]
+        CS["Resolved Capability Snapshot"]
         IMPL["Skill / Tool / External Agent"]
         STR["Research Strategy<br/>direct by default"]
     end
@@ -77,8 +77,9 @@ flowchart TB
     STATE --> H
 ```
 
-稳定性方向是从上到下消费、从下到上约束：Execution 可以被替换，不能反向定义 Mode、Claim、
-Skill Need、权限放宽或 Human Gate。
+Execution 层消费由 Method、Research State 与 Integrity 层冻结的契约；越稳定的科研语义约束越
+可替换的执行实现。Execution 不能反向定义 Mode、Claim、Skill Need、权限放宽或 Human Gate；
+执行结果经过验证后才回写 Research State。
 
 ## 3. 核心解析链
 
@@ -96,13 +97,14 @@ flowchart LR
     K --> S["Skill Need"]
     K --> G["Human Gate"]
     K --> B["Split / Blocked"]
-    C --> F["Frozen Capability Snapshot"]
+    C --> F["Resolved Capability Snapshot"]
     S --> F
     F --> E["Execution Contract"]
 ```
 
 `Method Resolution` 解释为什么选择这些 Action 和机制、拒绝了哪些替代、哪里存在歧义。它不包含
-Provider、Model 或 Host 字段。`Capability Snapshot` 才绑定具体 Tool/Skill/Adapter 版本、hash、
+Provider、Model 或 Host 字段。`Resolved Capability Snapshot` 才绑定本次 Attempt 的具体
+Tool/Skill/Adapter 版本、hash、
 权限、数据出口和副作用。
 
 当前 `Resolved Task + Skill Assignment` 是已有执行视图。在 Method Resolution 正式化前继续
@@ -120,7 +122,7 @@ Provider、Model 或 Host 字段。`Capability Snapshot` 才绑定具体 Tool/Sk
 | Skill Need | 哪个跨任务语义缺口可能值得复用 | 不表示已有或已准入 Skill |
 | Skill | 如何完成一类可复用语义动作 | 不持有 Research State，不升级权限 |
 | Capability Requirement | 执行需要什么能力与边界 | 不指定厂商品牌 |
-| Capability Snapshot | 本次确切绑定了哪个实现 | 不改变 Method contract |
+| Resolved Capability Snapshot | 本次 Attempt 确切绑定了哪个实现 | 不等于 Host/Provider 能力报告，不改变 Method contract |
 | Research Strategy | direct/tree/review 等执行策略 | 不改变 Mode 或 Claim 语义 |
 | Agent Profile | 执行者的行为和权限上限 | 不定义完整科研方法 |
 | Research State | 跨 Task/Runtime 延续的研究事实和开放问题 | 不等于聊天记忆或 Runtime state |
@@ -133,12 +135,15 @@ Provider、Model 或 Host 字段。`Capability Snapshot` 才绑定具体 Tool/Sk
 - Question、Evidence、Claim；
 - Unknown、Contradiction、Assumption；
 - Method、Run、Artifact；
-- Attempt、Failure、Frontier item；
+- execution Attempt、Failure、Frontier item；
 - Decision 与 Human Gate result。
 
 Failure 不是日志垃圾，至少应记录目标、方法、结果、失败原因、学到什么与 revisit condition。
 Frontier 是 compact index，不是要求主 Agent加载全部历史。新 Runtime 应能从冻结 Research State
 建立下一 Atomic Task，而无需恢复旧对话或 Python 对象。
+
+当前 `Attempt` 专指一次 Task execution attempt。Phase C 若需要表达包含多个执行 Attempt 的
+research-level/method trial，应使用独立对象名或显式关系，不覆盖现有 Attempt/Archive/Receipt 语义。
 
 Evidence–Claim 关系长期从简单 Mode ceiling 演进到 `provenance → relation → composition →
 admissibility`。确定性检查只验证结构和可定位性；科学解释与高风险 promotion 保留给 Human Gate。
@@ -198,7 +203,7 @@ Receipt，不负责 Mode、Claim、Skill Need 或 methodology fallback。
 | Method Resolution | 尚无正式对象 | provider-neutral 中间语义 |
 | Research Mode | v0.1 含 legacy capability recommendation | v0.2 Need-first + 显式 migration seam |
 | Skill Need | dossier/规划约定 | 版本化 Need 与 evaluation refs |
-| Capability | Tool cards/Provider capability 分散存在 | Requirement + frozen Snapshot |
+| Capability | Tool cards/Provider/Host capability supply 分散存在 | Requirement + Resolved Capability Snapshot |
 | Research State | 七类对象、Attempt/Main State 分散存在 | compact State/Frontier 与 Failure memory |
 | Trace | ADR/手工规则；M3-008 待实现 | Execution baseline 后再加 Method Trace |
 | Evaluation | paired Skill contract 与指标已有 | 统一 Manifest 和四臂 baseline harness |

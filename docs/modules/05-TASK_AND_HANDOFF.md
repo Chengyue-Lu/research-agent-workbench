@@ -56,20 +56,36 @@ active lifecycle；legacy/deprecated 版本只允许在明确的 historical repl
 Resolver 写入 Assignment 时始终固定版本、内容哈希和包哈希。上例引用当前仓库的历史 fixture，
 重新解析时必须显式使用 replay 模式，不代表它仍可用于新任务。
 
-Task Packet 同时是 Atomic Work Unit/ExecutionContract，不另建平行契约。`atomic_boundary` 说明可安全切换的最小边界；`completion_checks` 是机器完成权；`safe_pause_conditions` 说明何时允许持久化后停止。上下文不足只能进入 `safe-paused`，不能把未通过的检查包装成 `completed`。
+Task Packet 表达 research intent、Atomic Work Unit、输入/输出约束、权限和预算；它不是最终冻结的
+Execution Contract。`atomic_boundary` 说明可安全切换的最小边界；`completion_checks` 是机器完成权；
+`safe_pause_conditions` 说明何时允许持久化后停止。上下文不足只能进入 `safe-paused`，不能把未通过
+的检查包装成 `completed`。
+
+目标关系为：
+
+```text
+Task Packet = research intent + atomic boundary + input/output constraints + permissions/budget
+Method Resolution = provider-neutral methodology decision
+Resolved Capability Snapshot = frozen Skill/Tool/Adapter/version/hash/permission binding
+Resolved Execution View = Task + Method Resolution + Resolved Capability Snapshot + execution limits
+```
+
+这些层次共用引用和派生关系，不建立互相竞争的 execution truth。本阶段只冻结文档边界，不新增 Schema。
 
 ## 3. Resolved Task
 
-Capability Resolver 在执行前添加：
+当前 Capability Resolver 在执行前添加：
 
 - Agent Profile revision；
 - Skill Assignment ID 与 lock；
-- Runtime Adapter 和 capability snapshot；
+- Runtime Adapter 和当前兼容 capability snapshot；
 - effective permissions；
 - 实际输出路径；
 - 冲突/例外。
 
-Resolved Task 不修改原始 Task；它是一次带版本的执行视图。
+Resolved Task 不修改原始 Task；它是当前一次带版本的兼容 execution view。未来它由
+`Task + Method Resolution + Resolved Capability Snapshot` 派生；在迁移完成前继续兼容已有字段，
+不另建第二套权威执行对象。
 
 ## 4. Handoff Packet
 

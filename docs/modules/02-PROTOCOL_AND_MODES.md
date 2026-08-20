@@ -73,16 +73,25 @@ Action 声明 trigger/non-trigger、failure、required artifact、claim effect�
 blocked condition。`Action → Method Resolution` 再选择 no-Skill/Task/Tool/Skill Need/Human/blocked；
 Mode 本身不推荐或绑定 Skill。v0.1 到 v0.2 必须通过显式 migration seam，不能原地覆盖。
 
-## 4. 首批模式
+## 4. 正式 Mode 与候选分类
 
-| Mode | 关键关注 | 典型 Skills | 人类保留责任 |
+### Formal Modes
+
+| Mode | 关键关注 | Action/方法义务基线 | 人类保留责任 |
 |---|---|---|---|
-| experiment | 协议、对照、校准、重复、原始数据 | protocol-check、lab-log-normalize、statistical-analysis | 实际操作、安全伦理、异常排除、解释 |
-| simulation | 模型、参数、误差、V&V、收敛 | simulation-run、convergence-check、sensitivity-analysis | 模型代表性、误差接受、物理解释 |
-| theory | 定义、假设、引理、边界、反例 | symbolic-check、lemma-review、counterexample-search | 命题价值、关键思路、最终证明责任 |
-| observational-statistics | 采样、偏差、识别、缺失、稳健性 | data-quality、analysis-plan、robustness-check | 变量依据、因果解释、外推边界 |
-| evidence-synthesis | 检索、纳排、来源质量、冲突 | search-strategy、evidence-extraction、citation-audit | 来源权重、解释框架、综合结论 |
-| engineering-validation | 需求、工况、失效、安全裕量 | test-plan、failure-analysis、coverage-check | 需求确认、风险接受、部署决定 |
+| simulation | 模型、参数、误差、V&V、收敛 | 模型/输入版本、收敛、敏感性、基准比较、Claim ceiling | 模型代表性、误差接受、物理解释 |
+| evidence-synthesis | 检索、纳排、来源质量、冲突 | 检索边界、可定位 Evidence、反证/限制、来源与引用完整性 | 来源权重、解释框架、综合结论 |
+
+### Candidate Mode Categories
+
+以下名称只是用于发现潜在方法差异的规划分类，不是正式 Registry 契约，也不预设对应 Skill：
+
+| 候选分类 | 只有出现何种新增差异才值得正式化 | 当前状态 |
+|---|---|---|
+| experiment | 协议、对照、校准、重复、原始数据及安全/伦理 Gate 无法由现有 Mode 组合表达 | candidate |
+| theory | 定义、假设、引理、适用边界、反例及证明责任形成独立义务 | candidate |
+| observational-statistics | 采样、偏差、识别、缺失、稳健性与因果/外推边界形成独立 Claim rule | candidate |
+| engineering-validation | 需求、工况、失效、安全裕量与风险接受形成独立 Artifact/Gate | candidate |
 
 ## 5. 模式组合
 
@@ -102,7 +111,8 @@ conflict_policy:
 
 组合规则：
 
-- 权限、数据边界和 Claim ceiling 取更严格约束；
+- 权限、数据边界取更严格约束；v0.x 的 Claim ceiling 也使用 `take_stricter`，但这只是防止
+  组合 Mode 自动升级 Claim 的保守 fail-closed 上界，不是最终 Evidence/Claim composition 语义；
 - Human Gate 取并集，除非有明确、经批准的替代关系；
 - 同名字段语义冲突时阻断，不静默覆盖；
 - Mode 可在项目中切换，但 Claim 不随模式切换自动升级；
@@ -111,16 +121,16 @@ conflict_policy:
 ## 6. Mode 与 Skill 的边界
 
 - Mode 表达“什么样的证据足以支持什么强度的 Claim”。
-- Skill 表达“如何执行检索、检查收敛、构造反例等具体工作”。
-- 一个 Mode 可推荐多个可替换 Skills。
-- 一个 Skill 可服务多个 Mode，例如 citation-audit 同时服务证据综合和论文输出。
-- Mode 的方法约束优先于 Skill 的便利性；Skill 不能降低 Gate。
+- 一个 Mode 可以产生多个 Mode Action；Mode Action 是 Mode 到 Method Resolution 的正式下一层。
+- 不同 Action 可以产生不同 Skill Need 或 Capability Requirement；Mode 本身不推荐或绑定具体 Skill。
+- 一个经解析的 Skill 可以服务多个 Action/Mode，但这种复用来自 Need/Capability 匹配，不反向定义 Mode。
+- Mode/Action 的方法约束优先于 Skill 的便利性；Skill 不能降低 Gate。
 
 ## 7. 主要风险
 
 - 把 Mode 重新做成学科模板；
 - 混合 Mode 产生规则爆炸；
-- Mode 推荐 Skill 演化为固定绑定；
+- Action catalog 被实现便利性反向塑造成固定 Skill/Tool 绑定；
 - 为覆盖少见方法提前建设大量空模式；
 - 使用者为绕过限制选择错误 Mode。
 
@@ -136,7 +146,7 @@ conflict_policy:
 - 至少一个正例、一个边界例和一个反例；
 - 没有真实案例时为何不能继续停留在候选分类。
 
-若新增 Mode 只改变 Agent 名称、提示语或推荐 Skill，不改变方法约束，则不准入。`experiment`、`theory`、`observational-statistics` 与 `engineering-validation` 当前均是规划分类，不是正式 Registry 承诺。
+若新增 Mode 只改变 Agent 名称、提示语或换用具体 Skill/Tool，不改变方法约束，则不准入。`experiment`、`theory`、`observational-statistics` 与 `engineering-validation` 当前均是规划分类，不是正式 Registry 承诺。
 
 ## 8. 当前正式化重点
 
@@ -146,7 +156,7 @@ alternatives rejected、Human Gate 和 blocked 变成可回放契约。此阶段
 
 ## 9. 验收条件
 
-- 两个首批 Mode 共享内核但具有不同 Required Artifacts、风险和 Human Gate；
+- 两个正式 Mode 共享内核但具有不同 Required Artifacts、风险和 Human Gate；
 - 更换 Skill 实现不需修改 Mode Schema；
 - 混合模式冲突可以确定性检测；
 - 轻量探索不会被迫创建完整流程；

@@ -2,7 +2,7 @@
 
 - 文档状态：面向首次使用者的当前实现指南
 - 适用版本：`0.1.x` 开发快照
-- 更新日期：2026-08-15
+- 更新日期：2026-08-20
 
 ## 1. 先说结论
 
@@ -34,7 +34,7 @@ flowchart LR
     RS["Research State<br/>问题、证据、未知、失败与决定"]
     T["Task Packet<br/>一个原子工作单元"]
     MR["Method Resolution<br/>Mode → Action → 最小机制"]
-    C["Capability Snapshot<br/>Skill / Tool / 权限 / 版本"]
+    C["Resolved Capability Snapshot<br/>Skill / Tool / 权限 / 版本"]
     E["Execution Host<br/>API / Codex / OpenCode / others"]
     A["Artifacts + Handoff + Trace"]
     V["Validator + Human Gate"]
@@ -67,7 +67,7 @@ flowchart LR
 
 不要为每个学科创建一个全能 Agent。新增差异应优先落在 Mode、Skill 或 Tool Adapter 中，公共内核只保存跨研究活动都需要的最小对象。
 
-`Mode Action`、`Method Resolution`、`Capability Snapshot` 和完整 `Research State` 是已接受但尚未
+`Mode Action`、`Method Resolution`、`Resolved Capability Snapshot` 和完整 `Research State` 是已接受但尚未
 实现的下一代契约。当前 `Resolved Task/Skill Assignment` 可以执行和回放，但不能回答完整的
 “为什么选择此方法机制”。不要手写规划字段并称其已受 Schema 保护。
 

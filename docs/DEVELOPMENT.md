@@ -13,7 +13,7 @@
 | 路诚钺 | GitHub `Chengyue-Lu` | Method/Core 语义；Mode/Action/Method Resolution；能力词汇；Skill Need、选择、评估、准入和退役；Research State/Claim/Method Trace 方法规则；受控读取及相关 fixtures/docs | Provider SDK、认证、HTTP transport、模型槽实现、API session loop、live API conformance 和 API 专用测试 |
 | 黄毅 | GitHub 身份由本人登记 | Provider Adapter、模型能力协商、模型槽、隔离 API session、并行与工具调用、Task-to-API 编译、执行关闭事务、真实账户/模型 conformance 和 API 测试 | 代替研究者批准 Claim、单方面改变 Mode/Skill 语义、擅自准入 Skill 或降低 Human Gate |
 
-共享接口包括 Task Packet、未来的 Method Resolution/Capability Snapshot、兼容期 Resolved Task/Skill
+共享接口包括 Task Packet、未来的 Method Resolution/Resolved Capability Snapshot、兼容期 Resolved Task/Skill
 Assignment、Handoff、Execution Receipt、Agent/Method Trace、Capability/Data Policy 和错误/停止状态。
 共享 Schema 变更必须单独说明 owner、语义版本、迁移影响、消费方和合并顺序；路诚钺与黄毅共同
 确认跨 Method/Execution 边界的修改。不能用“本侧”“同伴侧”作为审批主体。
@@ -83,7 +83,7 @@ H1/H2 的差异是回传主上下文和审查强度，不是“是否保存过�
 
 - M3-008 的 Execution/Archive Trace Schema/CLI 仍在独立分支；Method Trace 必须等待 M8-003/005，不能塞回同一事件层假装完成。
 - API session 与平台 Adapter 的自动 Trace 写入属于黄毅的执行实现范围；执行端只消费冻结接口，不自定义 Mode/Claim/Skill fallback。
-- Mode Action、Method Resolution、Decision Authority、Capability Snapshot 和长期 Research State 尚未实现正式 Schema/validator。
+- Mode Action、Method Resolution、Decision Authority、Resolved Capability Snapshot 和长期 Research State 尚未实现正式 Schema/validator。
 - 尚无真实运行数据证明 H1/H2 的净收益；不能把消息数量、Trace 完整度或审计工件数量当作质量本身。
 - 当前只有两个正式 Mode、三个历史 accepted Skill 条目且 active 为零；真实 with/without 证据不足。
 - 黄毅的 GitHub 身份尚未登记在本文件；登记后应替换占位说明，不应猜测账号。
