@@ -14,6 +14,7 @@ import json
 import os
 import re
 import tempfile
+from collections import Counter
 from dataclasses import asdict, dataclass, is_dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -895,7 +896,6 @@ def validate_attempt_trace(root: str | Path, attempt: str | Path) -> TraceValida
             )
 
     for collection_name in (
-        "tool_event_refs",
         "handoff_refs",
         "decision_refs",
         "output_refs",
@@ -1033,6 +1033,8 @@ def validate_attempt_trace(root: str | Path, attempt: str | Path) -> TraceValida
                     )
                 )
         _validate_event_boundary(attempt_dir, index, event, risks)
+
+    _validate_tool_result_provenance(attempt_dir, index, events, risks)
 
     status_events = [event for event in events if event.get("event_type") == "attempt-status"]
     current_status = "planned"
@@ -1374,16 +1376,29 @@ def _validate_event_boundary(
                     detail="tool-outside-scope",
                 )
             )
-        if payload.get("result_entered_context") and not payload.get("result_origin"):
+        result_entered_context = payload.get("result_entered_context") is True
+        result_origin = payload.get("result_origin")
+        has_result_ref = "result_ref" in payload
+        if result_entered_context and result_origin != "transient":
+            detail = "result-origin-missing" if result_origin is None else "result-origin-invalid"
             risks.append(
                 _risk(
                     _RISK_TRANSIENT_RESULT_MISSING,
                     RiskLevel.BLOCK,
-                    "tool result entered context without a declared origin",
-                    detail="result-origin-missing",
+                    "tool result entered context without transient provenance",
+                    detail=detail,
                 )
             )
-        if payload.get("result_origin") == "transient":
+        if not result_entered_context and (result_origin is not None or has_result_ref):
+            risks.append(
+                _risk(
+                    _RISK_TRANSIENT_RESULT_MISSING,
+                    RiskLevel.BLOCK,
+                    "tool result provenance is present although the result did not enter context",
+                    detail="tool-result-provenance-unexpected",
+                )
+            )
+        if result_origin == "transient":
             if not isinstance(payload.get("result_ref"), Mapping):
                 risks.append(
                     _risk(
@@ -1392,15 +1407,6 @@ def _validate_event_boundary(
                         "transient tool result has no result_ref",
                         detail="transient-result-ref-missing",
                     )
-                )
-            else:
-                _checked_ref(
-                    attempt_dir,
-                    payload.get("result_ref"),
-                    "transient tool result",
-                    risks,
-                    missing_code=_RISK_TRANSIENT_RESULT_MISSING,
-                    detail="transient-result-ref",
                 )
     if event_type == "file-revision":
         raw_path = str(payload.get("path", ""))
@@ -1436,6 +1442,105 @@ def _validate_event_boundary(
             risks,
             detail="external-action-receipt",
         )
+
+
+def _trace_ref_key(reference: Mapping[str, Any]) -> str:
+    return json.dumps(_plain(reference), sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+
+
+def _validate_tool_result_provenance(
+    attempt_dir: Path,
+    index: Mapping[str, Any],
+    events: Sequence[Mapping[str, Any]],
+    risks: list[ContractRisk],
+) -> None:
+    event_refs: list[Any] = []
+    for event in events:
+        if event.get("event_type") != "tool-call":
+            continue
+        payload = event.get("payload", {})
+        if isinstance(payload, Mapping) and payload.get("result_origin") == "transient":
+            event_refs.append(payload.get("result_ref"))
+
+    raw_index_refs = index.get("tool_event_refs", [])
+    index_refs = raw_index_refs if isinstance(raw_index_refs, list) else []
+    event_mappings = [reference for reference in event_refs if isinstance(reference, Mapping)]
+    index_mappings = [reference for reference in index_refs if isinstance(reference, Mapping)]
+    event_counts = Counter(_trace_ref_key(reference) for reference in event_mappings)
+    index_counts = Counter(_trace_ref_key(reference) for reference in index_mappings)
+    event_by_key = {_trace_ref_key(reference): reference for reference in event_mappings}
+    index_by_key = {_trace_ref_key(reference): reference for reference in index_mappings}
+
+    for key, missing_count in (event_counts - index_counts).items():
+        reference = event_by_key[key]
+        risks.append(
+            _risk(
+                _RISK_TRANSIENT_RESULT_MISSING,
+                RiskLevel.BLOCK,
+                f"event result_ref is absent from INDEX.tool_event_refs "
+                f"({missing_count} unmatched): {reference.get('path')}",
+                detail="tool-result-index-missing",
+            )
+        )
+    for key, extra_count in (index_counts - event_counts).items():
+        reference = index_by_key[key]
+        risks.append(
+            _risk(
+                _RISK_TRANSIENT_RESULT_MISSING,
+                RiskLevel.BLOCK,
+                f"INDEX.tool_event_refs has no matching transient event "
+                f"({extra_count} unmatched): {reference.get('path')}",
+                detail="tool-result-index-extra",
+            )
+        )
+
+    referenced_paths: set[str] = set()
+    checked_keys: set[str] = set()
+    for source, references in (("event", event_refs), ("index", index_refs)):
+        for position, reference in enumerate(references, start=1):
+            if isinstance(reference, Mapping):
+                key = _trace_ref_key(reference)
+                raw_path = reference.get("path")
+                if isinstance(raw_path, str):
+                    normalized_path = raw_path.replace("\\", "/")
+                    referenced_paths.add(normalized_path)
+                    if not normalized_path.startswith(f"{TRACE_TOOL_EVENTS_DIRNAME}/"):
+                        risks.append(
+                            _risk(
+                                _RISK_TRANSIENT_RESULT_MISSING,
+                                RiskLevel.BLOCK,
+                                f"{source} tool result ref is outside {TRACE_TOOL_EVENTS_DIRNAME}/: {raw_path}",
+                                detail="tool-result-path-outside-tool-events",
+                            )
+                        )
+                if key in checked_keys:
+                    continue
+                checked_keys.add(key)
+            _checked_ref(
+                attempt_dir,
+                reference,
+                f"{source} transient tool result[{position}]",
+                risks,
+                missing_code=_RISK_TRANSIENT_RESULT_MISSING,
+                detail=f"tool-result-{source}-ref",
+            )
+
+    tool_events_dir = attempt_dir / TRACE_TOOL_EVENTS_DIRNAME
+    if tool_events_dir.is_dir():
+        stored_paths = {
+            path.relative_to(attempt_dir).as_posix()
+            for path in tool_events_dir.rglob("*")
+            if path.is_file()
+        }
+        for orphan in sorted(stored_paths - referenced_paths):
+            risks.append(
+                _risk(
+                    _RISK_TRANSIENT_RESULT_MISSING,
+                    RiskLevel.BLOCK,
+                    f"tool result file is not referenced by an event or INDEX: {orphan}",
+                    detail="tool-result-unindexed",
+                )
+            )
 
 
 def _validate_message_capture_events(

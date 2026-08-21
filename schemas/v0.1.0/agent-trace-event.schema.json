@@ -64,7 +64,7 @@
           "status": { "enum": ["attempted", "succeeded", "failed", "cancelled", "delivered", "unknown"] },
           "arguments": { "type": "object" },
           "result_entered_context": { "type": "boolean" },
-          "result_origin": { "enum": ["stable-source", "transient"] },
+          "result_origin": { "const": "transient" },
           "result_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
           "error_type": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
         },
@@ -74,14 +74,15 @@
               "properties": { "result_entered_context": { "const": true } },
               "required": ["result_entered_context"]
             },
-            "then": { "required": ["result_origin"] }
-          },
-          {
-            "if": {
-              "properties": { "result_origin": { "const": "transient" } },
-              "required": ["result_origin"]
-            },
-            "then": { "required": ["result_ref"] }
+            "then": { "required": ["result_origin", "result_ref"] },
+            "else": {
+              "not": {
+                "anyOf": [
+                  { "required": ["result_origin"] },
+                  { "required": ["result_ref"] }
+                ]
+              }
+            }
           }
         ],
         "additionalProperties": false

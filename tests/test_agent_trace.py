@@ -569,6 +569,97 @@ class AgentTraceTests(unittest.TestCase):
         self.assertIn("TRACE-TRANSIENT-RESULT-MISSING", {risk.code for risk in risks})
         self.assertTrue(any("[transient-result-ref-missing]" in risk.message for risk in risks))
 
+    def test_stable_source_tool_result_provenance_is_rejected_in_v01(self) -> None:
+        recorder = self.recorder()
+        recorder.record_tool_call(
+            operation_id="op-stable-source",
+            tool_name="read_file",
+            status="delivered",
+            arguments={"path": "inputs/a.txt"},
+            result="entered context",
+            result_entered_context=True,
+        )
+        recorder.seal("safe-paused")
+        events = [
+            json.loads(line)
+            for line in (self.attempt / "events.jsonl").read_text(encoding="utf-8").splitlines()
+        ]
+        tool_event = next(event for event in events if event["event_type"] == "tool-call")
+        tool_event["payload"]["result_origin"] = "stable-source"
+        self.assertTrue(SchemaCatalog().validate("agent_trace_event", tool_event))
+        self.rewrite_events([json.dumps(event) for event in events])
+
+        risks = validate_attempt_trace(self.root, self.attempt).risks
+        self.assertIn("TRACE-TRANSIENT-RESULT-MISSING", {risk.code for risk in risks})
+        self.assertTrue(any("[result-origin-invalid]" in risk.message for risk in risks))
+
+    def test_transient_event_ref_missing_from_index_is_blocking(self) -> None:
+        recorder = self.recorder()
+        recorder.record_tool_call(
+            operation_id="op-index-missing",
+            tool_name="read_file",
+            status="delivered",
+            arguments={"path": "inputs/a.txt"},
+            result="entered context",
+            result_entered_context=True,
+        )
+        recorder.seal("safe-paused")
+        self.rewrite_index(lambda index: index.update({"tool_event_refs": []}))
+
+        risks = validate_attempt_trace(self.root, self.attempt).risks
+        self.assertTrue(any("[tool-result-index-missing]" in risk.message for risk in risks))
+
+    def test_index_tool_result_ref_without_event_is_blocking(self) -> None:
+        recorder = self.recorder()
+        recorder.record_tool_call(
+            operation_id="op-index-extra-base",
+            tool_name="read_file",
+            status="delivered",
+            arguments={"path": "inputs/a.txt"},
+            result="entered context",
+            result_entered_context=True,
+        )
+        recorder.seal("safe-paused")
+        extra_path = self.attempt / "tool-events" / "extra.json"
+        extra_path.write_text('{"extra":true}\n', encoding="utf-8")
+        extra_ref = {
+            "path": "tool-events/extra.json",
+            "sha256": __import__("hashlib").sha256(extra_path.read_bytes()).hexdigest(),
+        }
+        self.rewrite_index(lambda index: index["tool_event_refs"].append(extra_ref))
+
+        risks = validate_attempt_trace(self.root, self.attempt).risks
+        self.assertTrue(any("[tool-result-index-extra]" in risk.message for risk in risks))
+
+    def test_orphan_tool_result_file_is_blocking(self) -> None:
+        recorder = self.recorder()
+        recorder.seal("safe-paused")
+        (self.attempt / "tool-events" / "orphan.json").write_text(
+            '{"orphan":true}\n',
+            encoding="utf-8",
+        )
+
+        risks = validate_attempt_trace(self.root, self.attempt).risks
+        self.assertTrue(any("[tool-result-unindexed]" in risk.message for risk in risks))
+
+    def test_transient_tool_result_ref_remains_hash_checked(self) -> None:
+        recorder = self.recorder()
+        recorder.record_tool_call(
+            operation_id="op-hash-tamper",
+            tool_name="read_file",
+            status="delivered",
+            arguments={"path": "inputs/a.txt"},
+            result="entered context",
+            result_entered_context=True,
+        )
+        recorder.seal("safe-paused")
+        result_path = next((self.attempt / "tool-events").iterdir())
+        result_path.write_bytes(result_path.read_bytes() + b"tamper")
+
+        risks = validate_attempt_trace(self.root, self.attempt).risks
+        self.assertIn("TRACE-HASH-MISMATCH", {risk.code for risk in risks})
+        self.assertTrue(any("[tool-result-event-ref-hash]" in risk.message for risk in risks))
+
     def test_capture_gap_index_message_and_completeness_are_bidirectional(self) -> None:
         recorder = self.recorder()
         recorder.record("provider-request", {"request": {"model": "test"}})

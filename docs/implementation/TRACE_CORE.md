@@ -23,7 +23,10 @@ Every event payload passes through the same credential/hidden-reasoning
 sanitizer before append. Event-level `redactions` preserve category, reason,
 and field path without retaining the removed value. `result_entered_context`
 requires a declared result origin, and transient results additionally require
-a hash-checked `result_ref`.
+a hash-checked `result_ref`. In v0.1, entered-context results are always
+persisted transient results: event refs, `INDEX.tool_event_refs`, and files in
+`tool-events/` must form the same closed set; stable-source provenance is not
+part of this contract.
 
 ## Explicit non-scope
 
