@@ -937,6 +937,32 @@ def _trace_validate(args: argparse.Namespace) -> int:
     return _print_risks(validate_attempt_trace(args.root, args.attempt).risks)
 
 
+def _execute_verify(args: argparse.Namespace) -> int:
+    from research_workbench.execution import verify_execution_archive
+
+    return _print_risks(
+        verify_execution_archive(
+            args.attempt,
+            root=args.root,
+            protocol=args.protocol,
+        )
+    )
+
+
+def _execute_recovery_check(args: argparse.Namespace) -> int:
+    from research_workbench.execution import prepare_recovery_attempt
+
+    result = prepare_recovery_attempt(
+        root=args.root,
+        previous_attempt_dir=args.previous_attempt,
+        main_state=args.main_state,
+        protocol=args.protocol,
+        new_attempt_id=args.new_attempt_id,
+        new_attempt_dir=args.new_attempt_dir,
+    )
+    return _print_risks(result.risks)
+
+
 def _context_checkpoint(args: argparse.Namespace) -> int:
     protocol_path = Path(args.protocol)
     protocol = ProjectProtocol.from_mapping(_load_valid(protocol_path, "project_protocol"))
@@ -1237,6 +1263,22 @@ def build_parser() -> argparse.ArgumentParser:
     trace_validate.add_argument("--attempt", required=True, help="Attempt directory or INDEX.yaml")
     trace_validate.add_argument("--root", default=".")
     trace_validate.set_defaults(handler=_trace_validate)
+
+    execute = subparsers.add_parser("execute", help="verify a committed execution archive")
+    execute_subparsers = execute.add_subparsers(dest="execute_command", required=True)
+    execute_verify = execute_subparsers.add_parser("verify")
+    execute_verify.add_argument("--attempt", required=True)
+    execute_verify.add_argument("--protocol", required=True)
+    execute_verify.add_argument("--root", default=".")
+    execute_verify.set_defaults(handler=_execute_verify)
+    execute_recovery = execute_subparsers.add_parser("recovery-check")
+    execute_recovery.add_argument("--previous-attempt", required=True)
+    execute_recovery.add_argument("--main-state", required=True)
+    execute_recovery.add_argument("--new-attempt-id", required=True)
+    execute_recovery.add_argument("--new-attempt-dir", required=True)
+    execute_recovery.add_argument("--protocol", required=True)
+    execute_recovery.add_argument("--root", default=".")
+    execute_recovery.set_defaults(handler=_execute_recovery_check)
 
     context = subparsers.add_parser("context", help="create and validate recoverable Main State")
     context_subparsers = context.add_subparsers(dest="context_command", required=True)

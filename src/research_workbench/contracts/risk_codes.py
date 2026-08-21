@@ -67,4 +67,82 @@ TRACE_RISK_CODE_REGISTRY = (
 
 TRACE_RISK_CODES = frozenset(entry.code for entry in TRACE_RISK_CODE_REGISTRY)
 
-__all__ = ["RiskCodeEntry", "TRACE_RISK_CODE_REGISTRY", "TRACE_RISK_CODES"]
+EXECUTION_TRACE_RISK_CODE_REGISTRY = (
+    RiskCodeEntry(
+        "RECEIPT-TRACE-IDENTITY",
+        "BLOCK",
+        "Trace identity differs from its Execution Receipt or Attempt.",
+    ),
+    RiskCodeEntry(
+        "RECEIPT-TRACE-MISMATCH",
+        "BLOCK",
+        "Attempt and Execution Receipt pin different Trace indexes.",
+    ),
+    RiskCodeEntry(
+        "RECEIPT-TRACE-STATUS",
+        "BLOCK",
+        "Trace status differs from its Execution Receipt.",
+    ),
+)
+
+EXECUTION_TRACE_RISK_CODES = frozenset(
+    entry.code for entry in EXECUTION_TRACE_RISK_CODE_REGISTRY
+)
+
+EXECUTION_ARCHIVE_RISK_CODE_REGISTRY = (
+    RiskCodeEntry(
+        "EXEC-ARCHIVE-INCOMPLETE",
+        "BLOCK",
+        "A committed execution archive lacks a required file.",
+    ),
+    RiskCodeEntry(
+        "EXEC-ARCHIVE-INVALID",
+        "BLOCK",
+        "An execution archive contract or project boundary is invalid.",
+    ),
+    RiskCodeEntry(
+        "EXEC-COMPLETION-MARKER-INVALID",
+        "BLOCK",
+        "The marker-last manifest is invalid or does not match the archive.",
+    ),
+    RiskCodeEntry(
+        "EXEC-COMPLETION-MARKER-MISSING",
+        "BLOCK",
+        "The Attempt has not published its marker-last manifest.",
+    ),
+    RiskCodeEntry(
+        "EXEC-TRANSCRIPT-DRIFT",
+        "BLOCK",
+        "The compatibility transcript differs from its Trace-derived view.",
+    ),
+)
+
+EXECUTION_ARCHIVE_RISK_CODES = frozenset(
+    entry.code for entry in EXECUTION_ARCHIVE_RISK_CODE_REGISTRY
+)
+
+RECOVERY_RISK_CODE_REGISTRY = (
+    RiskCodeEntry("RECOVERY-ATTEMPT-REUSE", "BLOCK", "Recovery would reuse an Attempt ID or directory."),
+    RiskCodeEntry("RECOVERY-HANDOFF-MISMATCH", "BLOCK", "Handoff facts differ from the previous Attempt."),
+    RiskCodeEntry("RECOVERY-HANDOFF-MISSING", "BLOCK", "The previous Attempt has no readable Handoff."),
+    RiskCodeEntry("RECOVERY-PREVIOUS-INVALID", "BLOCK", "The previous execution archive fails replay."),
+    RiskCodeEntry("RECOVERY-READY", "INFO", "Frozen files can seed a distinct new Attempt."),
+    RiskCodeEntry("RECOVERY-SOURCE-INVALID", "BLOCK", "A recovery source file is structurally invalid."),
+    RiskCodeEntry("RECOVERY-STATE-MISMATCH", "BLOCK", "Main State does not bind the paused Task and Handoff."),
+    RiskCodeEntry("RECOVERY-STATE-MISSING", "BLOCK", "Main State is missing or outside the project root."),
+    RiskCodeEntry("RECOVERY-STATUS-INVALID", "BLOCK", "The previous Attempt is not safe-paused."),
+)
+
+RECOVERY_RISK_CODES = frozenset(entry.code for entry in RECOVERY_RISK_CODE_REGISTRY)
+
+__all__ = [
+    "EXECUTION_TRACE_RISK_CODE_REGISTRY",
+    "EXECUTION_TRACE_RISK_CODES",
+    "EXECUTION_ARCHIVE_RISK_CODE_REGISTRY",
+    "EXECUTION_ARCHIVE_RISK_CODES",
+    "RiskCodeEntry",
+    "RECOVERY_RISK_CODE_REGISTRY",
+    "RECOVERY_RISK_CODES",
+    "TRACE_RISK_CODE_REGISTRY",
+    "TRACE_RISK_CODES",
+]

@@ -62,6 +62,7 @@ from research_workbench.adapters.models.session import (
     ApiSessionStatus,
     ClientTool,
     IsolatedApiSessionRunner,
+    SessionEventSink,
 )
 
 __all__ = [
@@ -105,6 +106,7 @@ __all__ = [
     "ProviderErrorCategory",
     "ProviderRegistry",
     "ResponseFormat",
+    "SessionEventSink",
     "ToolCall",
     "ToolChoice",
     "ToolDefinition",

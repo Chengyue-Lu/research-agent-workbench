@@ -4,7 +4,12 @@ import re
 import unittest
 from pathlib import Path
 
-from research_workbench.contracts.risk_codes import TRACE_RISK_CODES
+from research_workbench.contracts.risk_codes import (
+    EXECUTION_ARCHIVE_RISK_CODES,
+    EXECUTION_TRACE_RISK_CODES,
+    RECOVERY_RISK_CODES,
+    TRACE_RISK_CODES,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -35,6 +40,27 @@ class TraceRiskCodeTests(unittest.TestCase):
             "skill_assignment_ref",
         ):
             self.assertNotIn(forbidden, source)
+
+    def test_every_execution_trace_link_code_is_registered_separately(self) -> None:
+        source = (ROOT / "src/research_workbench/observability/models.py").read_text(
+            encoding="utf-8"
+        )
+        emitted = frozenset(re.findall(r'"(RECEIPT-TRACE-[A-Z0-9-]+)"', source))
+        self.assertEqual(EXECUTION_TRACE_RISK_CODES, emitted)
+
+    def test_every_execution_archive_code_is_registered_separately(self) -> None:
+        source = (ROOT / "src/research_workbench/execution/archive.py").read_text(
+            encoding="utf-8"
+        )
+        emitted = frozenset(re.findall(r'"(EXEC-[A-Z0-9-]+)"', source))
+        self.assertEqual(EXECUTION_ARCHIVE_RISK_CODES, emitted)
+
+    def test_every_recovery_code_is_registered_separately(self) -> None:
+        source = (ROOT / "src/research_workbench/execution/recovery.py").read_text(
+            encoding="utf-8"
+        )
+        emitted = frozenset(re.findall(r'"(RECOVERY-[A-Z0-9-]+)"', source))
+        self.assertEqual(RECOVERY_RISK_CODES, emitted)
 
 
 if __name__ == "__main__":

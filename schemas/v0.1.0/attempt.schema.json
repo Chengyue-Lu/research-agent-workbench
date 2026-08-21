@@ -31,6 +31,7 @@
     },
     "skill_assignment_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
     "runtime_snapshot_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
+    "trace_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
     "execution_receipt_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
     "artifact_refs": {
       "type": "array",
