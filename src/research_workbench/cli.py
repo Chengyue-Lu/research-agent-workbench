@@ -931,6 +931,12 @@ def _execution_assess(args: argparse.Namespace) -> int:
     )
 
 
+def _trace_validate(args: argparse.Namespace) -> int:
+    from research_workbench.observability.trace import validate_attempt_trace
+
+    return _print_risks(validate_attempt_trace(args.root, args.attempt).risks)
+
+
 def _context_checkpoint(args: argparse.Namespace) -> int:
     protocol_path = Path(args.protocol)
     protocol = ProjectProtocol.from_mapping(_load_valid(protocol_path, "project_protocol"))
@@ -1224,6 +1230,13 @@ def build_parser() -> argparse.ArgumentParser:
     claim_trace.add_argument("claim")
     claim_trace.add_argument("--protocol")
     claim_trace.set_defaults(handler=_claim_trace)
+
+    trace = subparsers.add_parser("trace", help="validate a file-authoritative Attempt trace")
+    trace_subparsers = trace.add_subparsers(dest="trace_command", required=True)
+    trace_validate = trace_subparsers.add_parser("validate")
+    trace_validate.add_argument("--attempt", required=True, help="Attempt directory or INDEX.yaml")
+    trace_validate.add_argument("--root", default=".")
+    trace_validate.set_defaults(handler=_trace_validate)
 
     context = subparsers.add_parser("context", help="create and validate recoverable Main State")
     context_subparsers = context.add_subparsers(dest="context_command", required=True)
