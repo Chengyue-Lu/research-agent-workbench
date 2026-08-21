@@ -417,7 +417,11 @@ class AgentTraceRecorder:
         elif kind == "tool-attempted":
             self._record_tool(payload, status="attempted", result_entered_context=False)
         elif kind == "tool-result":
-            self._record_tool(payload, status=str(payload.get("status", "unknown")), result_entered_context=True)
+            self._record_tool(
+                payload,
+                status=str(payload.get("status", "unknown")),
+                result_entered_context=bool(payload.get("result_entered_context", False)),
+            )
         elif kind == "session-status":
             status = str(payload.get("status", "incomplete"))
             mapped = "safe-paused" if status == "safe_paused" else status.replace("_", "-")

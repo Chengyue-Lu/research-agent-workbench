@@ -103,6 +103,7 @@ class AgentTraceTests(unittest.TestCase):
                 "status": "succeeded",
                 "arguments": {"path": "inputs/a.txt"},
                 "result": "bounded content",
+                "result_entered_context": True,
             },
         )
         recorder.record("session-status", {"status": "completed", "reason": "bounded session complete"})
@@ -121,6 +122,28 @@ class AgentTraceTests(unittest.TestCase):
         self.assertIn("[OMITTED:hidden-reasoning]", package)
         result = validate_attempt_trace(self.root, self.attempt)
         self.assertFalse(result.blocked, result.risks)
+
+    def test_generic_tool_result_does_not_claim_context_delivery_implicitly(self) -> None:
+        recorder = self.recorder()
+        recorder.record(
+            "tool-result",
+            {
+                "call_id": "call-1",
+                "name": "read_file",
+                "status": "succeeded",
+                "arguments": {"path": "inputs/a.txt"},
+                "result": "observed but not delivered",
+            },
+        )
+        recorder.seal("safe-paused")
+        events = [
+            json.loads(line)
+            for line in (self.attempt / "events.jsonl").read_text(encoding="utf-8").splitlines()
+        ]
+        tool_event = next(event for event in events if event["event_type"] == "tool-call")
+        self.assertFalse(tool_event["payload"]["result_entered_context"])
+        self.assertNotIn("result_ref", tool_event["payload"])
+        self.assertEqual([], list((self.attempt / "tool-events").iterdir()))
 
     def test_typed_fact_events_form_a_valid_trace(self) -> None:
         recorder = self.recorder()
