@@ -1,0 +1,5 @@
+schema_version: 0.1.0
+task_id: TRACE-FIXTURE
+task_revision: 1
+attempt_id: AT-FIXTURE
+actors: []

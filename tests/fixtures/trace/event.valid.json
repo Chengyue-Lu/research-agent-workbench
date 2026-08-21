@@ -1,0 +1,1 @@
+{"schema_version":"0.1.0","event_id":"EVT-0001","task_id":"TRACE-FIXTURE","task_revision":1,"attempt_id":"AT-FIXTURE","sequence":1,"event_type":"attempt-status","actor_id":"runtime-fixture","occurred_at":"2026-08-21T00:00:00Z","payload":{"to_status":"running","reason":"fixture initialized"}}
