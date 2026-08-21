@@ -2,6 +2,23 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
+## 2026-08-21 — Issue #13 集成真值对齐
+
+### Changed
+
+- `TASKS.md` 将责任归属从状态中分离，统一使用 `DONE / IN_PROGRESS / READY / BLOCKED /
+  PARKED`，并为每个任务增加 Owner。
+- M6 将离线已验收的薄 Adapter 与模型池标记为 `DONE`；Task-to-API 与 live conformance 保持
+  `IN_PROGRESS`；M6-006 在 M3-008 语义审查和合并前明确为 `BLOCKED`。
+- M8-002～005 保持当前 `main` 的 `READY / PARKED / PARKED / PARKED`，没有因 Execution 分支依赖
+  而提前修改 Method/Core 任务真值。
+
+### Evidence boundary
+
+- 2026-08-19 的 `AT-API-009` 只是 DeepSeek/Anthropic-compatible 的历史 live 诊断；它早于当前
+  Method/Capability/Trace 契约且缺执行计划，不作为当前 M6-004 PASS。
+- 分支候选、历史 live 结果和未合并测试不自动提升为 `main` 的完成状态。
+
 ## 2026-08-20 — 第二轮架构审计与全局文档重整
 
 ### Decided
