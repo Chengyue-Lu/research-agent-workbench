@@ -2,6 +2,25 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
+## 2026-08-21 — K-INTEGRATION-1 Method / Execution Shared Seam Freeze
+
+### Integrated
+
+- 冻结 M3-008 file-authoritative Execution/Archive Trace Core：四个 Trace Schema、append-only recorder、
+  deterministic validator、tool-result provenance、Trace CLI、覆盖率与 packaging Gate 已形成闭环。
+- 冻结 legacy M6-006 Trace Adapter：SessionEventSink、traced runner、archive closeout、file-only verify、
+  recovery preflight，以及 v0.1 Attempt/Receipt 的可选 `trace_ref` 已接入；原 Skill lock 未删除或放松。
+- PR #15 作为统一集成分支包含 PR #14 Core 与 Part B Adapter；PR #16 的全表 Owner 重写不进入主线，
+  仅吸收状态轴与当前任务真值的必要同步。
+
+### Boundaries
+
+- 当前 legacy 路径保持 Task + Skill Assignment → M6 Adapter → M3-008 Trace；future Method-first 路径
+  继续由 M8-002/M8-003 定义 Mode Action、Method Resolution、Capability Resolution 与执行桥接。
+- OpenAI live conformance、EVID/SIM SIR、process-kill recovery 与 Method-dependent Part C 不属于本同步点
+  的 merge gate，继续分别由 M6-004、M3-001/M3-006、M8-002/M8-003 跟踪。
+- `K-INTEGRATION-1` 不声明科学正确性，不改变 Method/Core、Claim 或 Human Gate 语义。
+
 ## 2026-08-20 — 第二轮架构审计与全局文档重整
 
 ### Decided
