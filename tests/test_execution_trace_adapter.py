@@ -169,8 +169,7 @@ class ExecutionTraceLinkTests(unittest.TestCase):
             root = Path(directory)
             _, _, _, receipt = self.build_project(root)
             risks = self.assess(root, receipt)
-        self.assertEqual([], [risk for risk in risks if risk.level == "block"])
-        self.assertIn("TRACE-VALID", {risk.code for risk in risks})
+        self.assertEqual([], risks)
 
     def test_attempt_receipt_trace_mismatch_is_blocked(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -320,7 +319,10 @@ class ExecutionArchiveCloseoutTests(unittest.TestCase):
                 protocol="protocol.yaml",
             )
             self.assertTrue(result.blocked)
-            self.assertIn("TRACE-INDEX-MISSING", {risk.code for risk in result.risks})
+            self.assertIn("TRACE-EVENT-MISSING", {risk.code for risk in result.risks})
+            self.assertTrue(
+                any("[index-missing]" in risk.message for risk in result.risks)
+            )
             self.assertEqual([], list(attempt_dir.iterdir()))
 
     def test_transcript_tamper_and_unrecorded_file_are_blocking(self) -> None:
