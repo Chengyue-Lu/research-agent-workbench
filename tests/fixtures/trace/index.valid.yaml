@@ -1,0 +1,25 @@
+schema_version: 0.1.0
+trace_id: TRACE-AT-FIXTURE
+task_id: TRACE-FIXTURE
+task_revision: 1
+attempt_id: AT-FIXTURE
+archive_root: AT-FIXTURE
+baseline: fixture
+owner_actor_id: runtime-fixture
+owner: Fixture Owner
+attempt_status: safe-paused
+trace_status: frozen
+completeness: complete
+task_ref: {path: TASK.yaml, sha256: "0000000000000000000000000000000000000000000000000000000000000000"}
+actors_ref: {path: ACTORS.yaml, sha256: "0000000000000000000000000000000000000000000000000000000000000000"}
+read_allowlist: [inputs/**]
+write_scope: [outputs/**]
+tool_allowlist: [read_file]
+messages: []
+event_ledger: {path: events.jsonl, sha256: "0000000000000000000000000000000000000000000000000000000000000000", event_count: 1}
+tool_event_refs: []
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs: []
+capture_gaps: []

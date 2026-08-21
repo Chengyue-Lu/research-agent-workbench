@@ -180,6 +180,7 @@ class ExecutionReceipt:
     agent_profile_ref: str
     skill_assignment_ref: str
     context_snapshot_ref: str | None
+    trace_ref: FileReference | None
     started_at: str
     finished_at: str
     status: str
@@ -242,6 +243,14 @@ class ExecutionReceipt:
             "skill_assignment_ref": require_string(data, "skill_assignment_ref"),
             "context_snapshot_ref": optional_string(data, "context_snapshot_ref"),
         }
+        trace_mapping = data.get("trace_ref")
+        if trace_mapping is not None and not isinstance(trace_mapping, Mapping):
+            raise ContractError("trace_ref", "must be a file reference")
+        trace_ref = (
+            FileReference.from_mapping(trace_mapping)
+            if isinstance(trace_mapping, Mapping)
+            else None
+        )
         for field, value in refs.items():
             if value is not None:
                 require_relative_path(value, field)
@@ -268,6 +277,7 @@ class ExecutionReceipt:
             agent_profile_ref=str(refs["agent_profile_ref"]),
             skill_assignment_ref=str(refs["skill_assignment_ref"]),
             context_snapshot_ref=refs["context_snapshot_ref"],
+            trace_ref=trace_ref,
             started_at=started_at,
             finished_at=finished_at,
             status=status,
@@ -376,6 +386,14 @@ def check_execution_receipt(
                     "execution receipt status does not match Attempt",
                 )
             )
+        if attempt.trace_ref != receipt.trace_ref:
+            risks.append(
+                ContractRisk(
+                    "RECEIPT-TRACE-MISMATCH",
+                    RiskLevel.BLOCK,
+                    "Attempt and Execution Receipt point to different Trace indexes",
+                )
+            )
 
     _, assignment_document = _load_reference(project_root, receipt.skill_assignment_ref)
     if assignment_document is None:
@@ -443,6 +461,41 @@ def check_execution_receipt(
             path = resolve_within_root(project_root, relative)
             if path is None or not path.is_file():
                 missing(field, relative)
+
+    if receipt.trace_ref is not None:
+        risks.extend(check_references(project_root, (receipt.trace_ref,)))
+        from research_workbench.observability.trace import validate_attempt_trace
+
+        trace_validation = validate_attempt_trace(project_root, receipt.trace_ref.path)
+        risks.extend(trace_validation.risks)
+        trace_path = resolve_within_root(project_root, receipt.trace_ref.path)
+        if not trace_validation.blocked and trace_path is not None and trace_path.is_file():
+            trace_index = load_document(trace_path)
+            if isinstance(trace_index, Mapping):
+                expected_attempt_id = attempt.attempt_id if attempt_document is not None else None
+                if (
+                    trace_index.get("task_id") != receipt.task_id
+                    or trace_index.get("task_revision") != receipt.task_revision
+                    or (
+                        expected_attempt_id is not None
+                        and trace_index.get("attempt_id") != expected_attempt_id
+                    )
+                ):
+                    risks.append(
+                        ContractRisk(
+                            "RECEIPT-TRACE-IDENTITY",
+                            RiskLevel.BLOCK,
+                            "Trace identity does not match the Execution Receipt and Attempt",
+                        )
+                    )
+                if trace_index.get("attempt_status") != receipt.status:
+                    risks.append(
+                        ContractRisk(
+                            "RECEIPT-TRACE-STATUS",
+                            RiskLevel.BLOCK,
+                            "Trace Attempt status does not match the Execution Receipt",
+                        )
+                    )
 
     interpreted_validations = 0
     for relative in receipt.validation_refs:

@@ -1,0 +1,5 @@
+schema_version: 0.1.0
+trace_id: invalid
+attempt_status: completed
+trace_status: active
+completeness: complete

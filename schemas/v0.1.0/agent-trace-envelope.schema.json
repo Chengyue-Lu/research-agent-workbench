@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/agent-trace-envelope.schema.json",
+  "title": "Agent Trace Message Envelope",
+  "x-rwb-document-kind": "agent_trace_envelope",
+  "type": "object",
+  "required": [
+    "schema_version", "message_id", "task_id", "task_revision", "attempt_id",
+    "sequence", "kind", "sender_actor_id", "receiver_actor_ids", "accountable_owner",
+    "created_at", "content_sha256", "attachment_refs", "redactions", "capture_status"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "message_id": { "type": "string", "pattern": "^MSG-[0-9]{4,}$" },
+    "task_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "task_revision": { "type": "integer", "minimum": 1 },
+    "attempt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "sequence": { "type": "integer", "minimum": 1 },
+    "kind": {
+      "enum": [
+        "assignment", "clarification-request", "clarification-response", "read-scope-request",
+        "scope-decision", "scope-change", "progress", "handoff", "review", "acceptance",
+        "rejection", "acknowledgement", "failure", "error", "cancellation", "safe-pause",
+        "provider-request", "provider-response", "tool-result"
+      ]
+    },
+    "sender_actor_id": { "$ref": "agent-trace-actors.schema.json#/$defs/actorId" },
+    "receiver_actor_ids": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": { "$ref": "agent-trace-actors.schema.json#/$defs/actorId" }
+    },
+    "accountable_owner": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "in_reply_to": { "type": "string", "pattern": "^MSG-[0-9]{4,}$" },
+    "content_sha256": { "$ref": "common.schema.json#/$defs/sha256" },
+    "attachment_refs": {
+      "type": "array", "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/fileRef" }
+    },
+    "redactions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/redaction" }
+    },
+    "capture_status": { "enum": ["complete", "delayed", "partial", "unavailable"] },
+    "capture_gap_event_id": { "type": "string", "pattern": "^EVT-[0-9]{4,}$" }
+  },
+  "$defs": {
+    "redaction": {
+      "type": "object",
+      "required": ["redaction_id", "category", "reason", "field_path"],
+      "properties": {
+        "redaction_id": { "type": "string", "pattern": "^RED-[0-9]{4,}$" },
+        "category": { "enum": ["credential", "personal-data", "restricted-data", "legal-policy", "hidden-reasoning", "other"] },
+        "reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "field_path": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "capture_status": { "enum": ["partial", "unavailable"] } }, "required": ["capture_status"] },
+      "then": { "required": ["capture_gap_event_id"] },
+      "else": { "not": { "required": ["capture_gap_event_id"] } }
+    }
+  ],
+  "additionalProperties": false
+}

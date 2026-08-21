@@ -6,6 +6,13 @@ from research_workbench.observability.models import (
     TracePolicyRecord,
     check_execution_receipt,
 )
+from research_workbench.observability.trace import (
+    AgentTraceRecorder,
+    TraceValidationResult,
+    derive_session_transcript,
+    sanitize_trace_value,
+    validate_attempt_trace,
+)
 
 __all__ = [
     "CoordinationUsage",
@@ -13,5 +20,10 @@ __all__ = [
     "ExecutionRuntime",
     "ModelUsageRecord",
     "TracePolicyRecord",
+    "AgentTraceRecorder",
+    "TraceValidationResult",
     "check_execution_receipt",
+    "derive_session_transcript",
+    "sanitize_trace_value",
+    "validate_attempt_trace",
 ]

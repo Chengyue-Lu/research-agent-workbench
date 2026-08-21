@@ -1,6 +1,6 @@
 # 实施任务清单
 
-状态：`DONE / IN_PROGRESS / READY / BLOCKED / PARKED / EXTERNAL`
+状态：`DONE / IN_PROGRESS / READY / BLOCKED / PARKED`
 
 当前责任人：路诚钺维护 Method/Core、Mode/Action、Skill Need/evaluation、Research State/Claim 与
 Method Trace 语义；黄毅维护 M6 的 API/Runtime 执行实现与测试。共享接口变更按
@@ -54,9 +54,9 @@ Method Trace 语义；黄毅维护 M6 的 API/Runtime 执行实现与测试。�
 | M3-003 | IN_PROGRESS | Handoff loss/stale/summary 抽查 | M2 | Transfer Manifest/Audit、负面区段覆盖、风险触发抽查、Context/Receipt 绑定已实现；真实 H1/H2 成本与人工样本仍待执行 |
 | M3-004 | IN_PROGRESS | review loop/fanout/write race 检查 | M2 | 并发预算、review loop、协调成本与既有 write race 检查已落地；真实停止行为待验证 |
 | M3-005 | IN_PROGRESS | 敏感 trace 策略 | M2 | 外部/完整/敏感 trace 会阻断或警告；真实脱敏器与密钥 fixture 待实现 |
-| M3-006 | IN_PROGRESS | SAFE_PAUSE 与机器完成权 | M3-001..003 | AWU/完成/暂停条件、stage/safe-pause/waiting、执行结束与 `contract-satisfied` 分离、失败报告覆盖显式完成宣称和可恢复 pause fixture 已实现；真实 Task rollover 待演练 |
+| M3-006 | IN_PROGRESS | SAFE_PAUSE 与机器完成权 | M3-001..003 | AWU/完成/暂停条件、stage/safe-pause/waiting、执行结束与 `contract-satisfied` 分离、失败报告覆盖显式完成宣称和可恢复 pause fixture 已实现；进程级 kill 与真实新进程/新 Attempt 恢复待演练 |
 | M3-007 | IN_PROGRESS | 冻结实名 actor、Attempt Archive 与完整 Agent Trace 规则 | M3-003..006 | ADR-0012、目录、消息信封、写前捕获、capture gap、按需读取和 Worklog 关系一致；负责人明确为路诚钺/黄毅 |
-| M3-008 | READY | 实现 Trace Envelope/Index/Event Schema、validator 与手工 fixture | M3-007 | 能检测 message/event sequence、hash、actor owner、capture gap、未声明删减、越界正文/工具、瞬时结果丢失和过程产物覆盖；不保存 Chain-of-Thought |
+| M3-008 | DONE | 实现 Trace Envelope/Index/Event Schema、validator 与手工 fixture | M3-007 | 文件权威 Trace Core、确定性 validator、瞬时 tool-result provenance、Python 3.11/3.13 CI、覆盖率、Registry、wheel 与干净安装 Gate 均通过；不保存 Chain-of-Thought |
 | M3-009 | PARKED | 在 Execution Trace 之上增加 Method-aware Trace | M3-008, M8-003, M8-005 | 记录 Mode/Action/Mechanism/Capability/Human Gate/Evidence/Claim/Failure 决定；与执行事件分层关联，不复制正文 |
 
 ## M4：工件与复现
@@ -83,12 +83,15 @@ Method Trace 语义；黄毅维护 M6 的 API/Runtime 执行实现与测试。�
 
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
-| M6-001 | EXTERNAL | OpenAI/Anthropic/Gemini 薄 Model Provider Adapters | M1-008 | 黄毅维护；路诚钺不修改实现或测试 |
+| M6-001 | DONE | OpenAI/Anthropic/Gemini 薄 Model Provider Adapters | M1-008 | 三家 provider-neutral 薄 Adapter 的离线 contract 测试已通过；live conformance 单独由 M6-004 验收 |
 | M6-002 | DONE | 显式模型池与隔离 API session kernel（`K-API-1`） | M6-001 | primary/worker/specialist 槽只可显式绑定；轮次、工具、并行、工具结果、输出、token/成本/time 有硬边界；无自动 fallback；离线测试通过 |
-| M6-003 | EXTERNAL | Task-to-API 文件闭环（`K-API-2`） | M1-008, M2-001..005, M6-002 | 黄毅维护；路诚钺只提供冻结 Task/Mode/Skill/read/handoff 接口 |
-| M6-004 | EXTERNAL | 选定模型槽的真实 Windows conformance 与一次 evidence 调用 | M6-001..003 | 黄毅执行并返回脱敏工件 |
+| M6-003 | IN_PROGRESS | Task-to-API 文件闭环（`K-API-2`） | M1-008, M2-001..005, M6-002 | legacy compatibility seam 已形成；Method→Capability→Execution bridge 等待 M8-003，不由 execution 层抢先定义 |
+| M6-004 | IN_PROGRESS | 选定模型槽的真实 Windows conformance 与一次 evidence 调用 | M6-001..003 | 当前版本的 OpenAI text/structured/tool、EVID/SIM SIR 脱敏证据与 live Gate 仍待授权 Windows 环境重放 |
 | M6-005 | PARKED | streaming/multimodal/server tools 与平台 Adapter | 真实案例或平台选择 | 黄毅决定执行端启动条件；没有真实需求不启动 |
-| M6-006 | EXTERNAL | API/平台执行时自动写入 Agent Trace | M3-008, M6-003 | 黄毅实现消息写前捕获/导出与 capture-gap 报告；不得把密钥或隐藏推理写入 Trace |
+| M6-006 | DONE | API/平台执行时自动写入 Agent Trace | M3-008, M6-003 | legacy Skill-bound execution 已完成 SessionEventSink、traced runner、archive closeout、file-only verify、recovery preflight 与 Attempt/Receipt Trace linkage；Method-dependent Part C 等待 M8-003 |
+
+2026-08-19 的历史 live 诊断不替代当前 M6-004 Gate；OpenAI live conformance、EVID/SIM SIR 与
+process-kill recovery 均不作为 `K-INTEGRATION-1` 的合并阻塞项。
 
 ## M7：Mode–Skill 选择与协调成本
 
@@ -135,7 +138,8 @@ Method Trace 语义；黄毅维护 M6 的 API/Runtime 执行实现与测试。�
 
 ## 当前下一任务
 
-全局当前唯一下一任务为 **M8-002 Mode Action first-class contract**。M3-008 可在其独立分支继续
-Execution/Archive Trace 基线，但不扩写 Method 语义；M8-002 完成后才启动 M8-003。M7-005/006/014
-的真实比较继续 parked，直到 Method Resolution 与相应 Trace/Evaluation Manifest 稳定。路诚钺不在
-Method/Core 任务中补 API、Provider、模型、自动捕获或 live conformance。
+全局当前唯一下一任务为 **M8-002 Mode Action first-class contract**。`K-INTEGRATION-1` 已冻结
+M3-008 Execution/Archive Trace Core 与 legacy M6-006 Trace Adapter；M8-002 完成后启动 M8-003，
+再建立 Method→Capability→Execution bridge。M6-003/M6-004 与 M3-001/M3-006 的未完成项继续按各自
+任务跟踪；M7-005/006/014 的真实比较继续 parked，直到 Method Resolution 与相应 Trace/Evaluation
+Manifest 稳定。
