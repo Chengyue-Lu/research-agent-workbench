@@ -1,0 +1,13 @@
+schema_version: 0.1.0
+action_id: SIM-A7
+mode_id: simulation
+version: 1.0.0
+trigger: [A simulation-supported claim is proposed for acceptance or promotion.]
+non_trigger: [The run is still incomplete and no scientific interpretation is requested.]
+failure_conditions: [Numerical verification is promoted to physical validation.]
+required_artifact_types: [claim-audit, limitation, decision]
+claim_effects: [Only an approved decision can promote a simulation-supported claim.]
+human_gates: [accept-supported-simulation-claim]
+stop_conditions: [The claim is accepted, rejected, revised, or left explicitly unresolved.]
+blocked_conditions: [Required numerical evidence, model limitations, or human approval is missing.]
+allowed_mechanisms: [mode-invariant, deterministic-tool, human-gate, blocked]

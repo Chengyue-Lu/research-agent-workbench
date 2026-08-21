@@ -1,0 +1,16 @@
+schema_version: 0.1.0
+object_type: question
+object_id: Q-SIR-001
+revision: 1
+status: active
+text: What assumptions are explicitly stated in the bounded 1927 source excerpt, and do fixed-step SIR runs satisfy their declared numerical checks?
+scope:
+  - bounded-source-assumption-extraction
+  - fixed-parameter-numerical-verification
+  - no-real-epidemic-prediction
+known_ambiguities:
+  - The historical source model and the public numerical fixture are related but not identical scientific objects.
+  - Passing numerical checks does not validate applicability to any real population.
+metadata:
+  public_canary: true
+  claim_ceiling: Evidence supports only source-stated assumptions; simulation supports only fixed-fixture numerical properties.

@@ -1,0 +1,27 @@
+schema_version: 0.1.0
+snapshot_id: RCS-SIM-SIR-001
+task_ref: {path: examples/public-canaries/task-sim-sir.yaml, sha256: 555aeca5a8bd83914b232c0ed88e7fca8d20322497d6b3549b0f3bb8d8eec2dd}
+method_resolution_ref: {path: examples/method-resolutions/MR-SIM-SIR-001.yaml, sha256: 23d36e077aad5af1db3cc7abfacd5691267f0844d24cd8e723b8991062350cb3}
+status: resolved
+bindings:
+  - {requirement_id: CAP-CONVERGENCE, capability_id: convergence-analysis, origin: method, implementation_kind: task-contract, implementation_id: SIM-SIR-001-fixed-verification-contract, permissions: {data_egress: none, side_effects: [read-only]}, binding_details: {reference: RK4-dt-0.01, error_metric: final-state-L1}}
+  - {requirement_id: CAP-SENSITIVITY, capability_id: sensitivity-analysis, origin: method, implementation_kind: task-contract, implementation_id: SIM-SIR-001-fixed-verification-contract, permissions: {data_egress: none, side_effects: [read-only]}, binding_details: {parameter: beta, perturbation: plus-minus-10-percent}}
+  - {requirement_id: CAP-BOUNDED-COMPUTE, capability_id: bounded-compute, origin: method, implementation_kind: client-tool, implementation_id: research_workbench.examples.sir_canary, permissions: {data_egress: none, side_effects: [read-only]}, binding_details: {runtime_dependency: python-standard-library-only}}
+  - requirement_id: EXEC-LOCAL-FILE-TOOLS
+    capability_id: bounded-local-file-tools
+    origin: execution
+    implementation_kind: client-tool
+    implementation_id: K-API-2-file-tools
+    permissions: {data_egress: none, side_effects: [read-only, local-write]}
+    binding_details: {tool_ids: [read_file, write_artifact, list_outputs]}
+  - requirement_id: EXEC-PROVIDER-ADAPTER
+    capability_id: isolated-api-session
+    origin: execution
+    implementation_kind: provider-adapter
+    implementation_id: openai-responses
+    source_ref: {path: registry/providers/adapters.yaml, sha256: 37cf052a4e62d0df51c3ce541d204f0938653c30a9d933d84915c65f221ab8f5}
+    permissions: {data_egress: external, side_effects: []}
+    binding_details: {slot_id: primary, provider_adapter: openai-responses, adapter_selection: explicit-only}
+unresolved_requirement_ids: []
+resolved_by: resolver
+resolved_at: "2026-08-21T00:00:00Z"

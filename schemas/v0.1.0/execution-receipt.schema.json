@@ -20,6 +20,7 @@
     "agent_profile_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
     "skill_assignment_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
     "context_snapshot_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
+    "trace_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
     "started_at": { "type": "string", "format": "date-time" },
     "finished_at": { "type": "string", "format": "date-time" },
     "status": {

@@ -14,6 +14,7 @@ from research_workbench.capability import (
     AgentProfile,
     ResolvedTask,
     ResolutionError,
+    SkillManifest,
     resolve_task,
     resolve_task_from_registry,
 )
@@ -106,7 +107,7 @@ class AcceptedRegistryTests(unittest.TestCase):
             shutil.copytree(ROOT / ".agents", root / ".agents")
             path = root / ".agents" / "skills" / "simulation-vv" / "SKILL.md"
             path.write_text(path.read_text(encoding="utf-8") + "\n", encoding="utf-8")
-            with self.assertRaisesRegex(ValueError, "source content drift"):
+            with self.assertRaisesRegex(ContractError, "source content drift"):
                 AcceptedSkillRegistry.load(project_root=root)
 
     def test_script_only_drift_is_blocked_by_package_hash(self) -> None:
@@ -116,7 +117,7 @@ class AcceptedRegistryTests(unittest.TestCase):
             shutil.copytree(ROOT / ".agents", root / ".agents")
             path = root / ".agents" / "skills" / "simulation-vv" / "scripts" / "check_vv_report.py"
             path.write_text(path.read_text(encoding="utf-8") + "\n", encoding="utf-8")
-            with self.assertRaisesRegex(ValueError, "package drift"):
+            with self.assertRaisesRegex(ContractError, "package drift"):
                 AcceptedSkillRegistry.load(project_root=root)
 
     def test_two_vertical_slices_have_distinct_deterministic_assignments(self) -> None:
@@ -164,6 +165,31 @@ class AcceptedRegistryTests(unittest.TestCase):
         drifted = replace(handoff, skill_lock=("simulation-vv@0.1.0",))
         risks = check_handoff_against_task(task, drifted, project_root=ROOT, assignment=assignment)
         self.assertIn("HANDOFF-ASSIGNMENT-SKILL-DRIFT", {risk.code for risk in risks})
+
+    def test_missing_required_skill_is_a_resolution_block(self) -> None:
+        registry = AcceptedSkillRegistry.load(project_root=ROOT)
+        task = TaskPacket.from_mapping(load_document(ROOT / "examples/task-evidence.yaml"))
+        profile = AgentProfile.from_mapping(load_document(ROOT / "registry/agents/evidence-scout.yaml"))
+        drifted = replace(task, required_skills=("no-such-skill",))
+        with self.assertRaises(ResolutionError) as caught:
+            resolve_task_from_registry(drifted, profile, registry)
+        risks = caught.exception.risks
+        self.assertIn("SKILL-MISSING", {risk.code for risk in risks})
+        self.assertIn("no-such-skill", str(risks[0]))
+
+
+class ResolverContractErrorTests(unittest.TestCase):
+    def test_unknown_permission_value_is_a_contract_error(self) -> None:
+        task = TaskPacket.from_mapping(load_document(ROOT / "examples/task-evidence.yaml"))
+        profile = AgentProfile.from_mapping(load_document(ROOT / "registry/agents/evidence-scout.yaml"))
+        skills = [
+            SkillManifest.from_mapping(load_document(ROOT / "examples/skills/literature-evidence-extraction.yaml"))
+        ]
+        drifted = replace(profile, permission_ceiling=replace(profile.permission_ceiling, filesystem="read-write"))
+        with self.assertRaises(ContractError) as caught:
+            resolve_task(task, drifted, skills)
+        self.assertEqual("filesystem", caught.exception.field)
+        self.assertIn("read-write", str(caught.exception))
 
 
 class CodexAdapterTests(unittest.TestCase):

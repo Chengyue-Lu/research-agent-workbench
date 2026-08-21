@@ -1,0 +1,13 @@
+schema_version: 0.1.0
+action_id: ES-A8
+mode_id: evidence-synthesis
+version: 1.0.0
+trigger: [A synthesis claim is proposed for promotion, rejection, or revision.]
+non_trigger: [Evidence collection is incomplete and no claim decision is requested.]
+failure_conditions: [Structural validity is treated as scientific correctness or the evidence ceiling is exceeded.]
+required_artifact_types: [claim, decision]
+claim_effects: [Only a human-approved decision can promote the synthesis claim.]
+human_gates: [approve-or-reject-claim-promotion]
+stop_conditions: [The claim is approved, rejected, revised, or explicitly left unresolved.]
+blocked_conditions: [Required evidence, counterevidence, or human approval is missing.]
+allowed_mechanisms: [mode-invariant, deterministic-tool, human-gate, blocked]

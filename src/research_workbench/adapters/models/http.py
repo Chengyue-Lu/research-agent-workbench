@@ -107,12 +107,21 @@ class UrllibTransport:
                 body = self._read_bounded(response)
                 return HttpResponse(int(response.status), dict(response.headers.items()), body)
         except urllib.error.HTTPError as exc:
-            body = exc.read(self.max_response_bytes + 1)
+            with exc:
+                body = exc.read(self.max_response_bytes + 1)
+                status_code = int(exc.code)
+                response_headers = dict(exc.headers.items()) if exc.headers else {}
             if len(body) > self.max_response_bytes:
-                raise HttpTransportError("provider error response exceeded size limit", retryable=False) from exc
-            return HttpResponse(int(exc.code), dict(exc.headers.items()) if exc.headers else {}, body)
+                # Do not retain urllib's traceback: its frames can keep the
+                # native request (including credentials/body) and TLS socket
+                # alive after the provider-neutral error crosses this boundary.
+                raise HttpTransportError(
+                    "provider error response exceeded size limit", retryable=False
+                ) from None
+            return HttpResponse(status_code, response_headers, body)
         except (urllib.error.URLError, TimeoutError, socket.timeout) as exc:
-            raise HttpTransportError("provider transport failed", retryable=True) from exc
+            del exc
+            raise HttpTransportError("provider transport failed", retryable=True) from None
 
     def _read_bounded(self, response) -> bytes:
         body = response.read(self.max_response_bytes + 1)

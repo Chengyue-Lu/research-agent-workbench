@@ -1,0 +1,32 @@
+schema_version: 0.1.0
+task_id: SIM-SIR-001
+goal: Verify conservation, non-negativity, Euler convergence toward RK4, and beta sensitivity for the fixed public SIR fixture.
+question_refs: [Q-SIR-001@1]
+active_modes: [simulation]
+required_capabilities: [convergence-analysis, sensitivity-analysis]
+required_skills: []
+forbidden_skills: [experimental-validation, final-synthesis]
+agent_profile: simulation-auditor
+input_refs:
+  - path: examples/public-canaries/SIM-SIR-001-run-spec.txt
+    sha256: 249a92b2f208761ec1c9e9716f0d33010a2bb940fceaa0807b1974b8e5680683
+write_scope: [work/SIM-SIR-001/**]
+required_outputs: [simulation-vv-report, handoff-packet]
+permissions:
+  filesystem: worktree-write
+  external_write: false
+  allowed_roots: [work/SIM-SIR-001]
+delegation: {allowed: false}
+budget: {max_turns: 5, max_output_tokens: 900, max_seconds: 120}
+atomic_boundary: One fixed deterministic SIR parameter set and its declared discretization/sensitivity matrix are verified.
+completion_checks:
+  - Population conservation, non-negativity, Euler error trend, and beta sensitivity ordering pass deterministic checks.
+  - Claims remain limited to this numerical fixture; any real-world extrapolation is sent to a Human Gate.
+safe_pause_conditions:
+  - A run parameter, implementation identity, fixed reference, or remaining closeout budget is unavailable.
+stop_conditions: [required_checks_complete, input_version_changed, human_judgment_required]
+stale_if: [any_input_hash_changes]
+handoff_policy:
+  require_transfer_manifest: false
+  semantic_review: risk-triggered
+  minimum_semantic_samples: 1

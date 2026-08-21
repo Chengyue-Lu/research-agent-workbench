@@ -2,6 +2,55 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
+## 2026-08-21 — Execution Trace 与 API closeout 集成候选（未合入）
+
+### Added
+
+- 四类 v0.1 Execution/Archive Trace Schema、单 Attempt/单写者 `AgentTraceRecorder`、结构化
+  validator 和 `rwb trace validate --attempt`。
+- API session 单一事件 sink：Provider 请求写前捕获、响应验证后捕获、工具 attempted/result、
+  transient result 固化、终态与 capture-gap；凭据与 hidden reasoning fail-closed 脱敏。
+- Attempt/Execution Receipt 的可选 hash-bound `trace_ref`，以及 closeout marker 前 Trace Gate 和
+  `execute verify` 的纯文件重放；兼容 transcript 改由 Trace 派生。
+
+### Evidence and boundaries
+
+- 本节只描述当前未提交的集成候选；本地故障矩阵已通过，但 M3-008/M6-006 仍待
+  shared Schema/no-Skill Assignment 语义审查、Windows OpenAI live 与公开 EVID/SIM
+  canary，因此不标 DONE、不构成已合入主线或发布声明。
+- Windows/Python 3.12 隔离环境全量回归为 296 项通过；全仓 branch coverage 81%、Trace
+  branch coverage 95%；Hypothesis sequence/hash/path 性质测试已包含在全量回归中；92 个
+  examples/registry 对象为 0 error/0 warning；wheel 已在干净 venv 安装并重放 CLI。
+- 2026-08-19 的 DeepSeek/Anthropic-compatible `AT-API-009` 仅保留为历史 live 诊断：它早于现行
+  Method/Capability/Trace 契约且缺 execution plan，不能替代当前 M6-004 PASS。
+- 下列 2026-08-20 记录是当时版本边界；其中“未完成 M3-008”不回写历史，只由本节说明后续变化。
+
+## 2026-08-20 — Method-to-Execution 集成候选（待双方审查）
+
+### Added
+
+- 16 个版本化 Mode Action、8 个 provider-neutral Method Resolution 诊断 fixture、Research Mode
+  v0.1→v0.2 migration seam 与 Decision Authority Matrix。
+- `Resolved Capability Snapshot` 与 `Resolved Execution View`：冻结 Task、Assignment、Method、
+  Capability binding、可选 Main State 前序、模型槽、权限/副作用和确定性 execution identity。
+- `K-API-2` strict closeout：Evidence 精确 Task input 绑定、工具调用/副作用在 invocation 时计账、
+  cooperative cancel、Provider deadline 收紧、marker-last completion manifest 与 file-only replay。
+
+### Integrated
+
+- 从黄毅的 API 分支选择性重放 Provider Adapter、模型池、isolated session、compiler/runner/closeout
+  和离线测试；从路诚钺最新 `main` 保留 M8 文档语义、Mode-first 历史与 shared-interface 边界。
+- 旧 `Resolved Task + Skill Assignment` 保留为兼容路径；严格 CLI 路径显式要求 Method Resolution
+  与 Capability Snapshot 成对输入，不允许 Provider/执行层反向改写 Method。
+
+### Evidence and boundaries
+
+- Windows/Python 3.12 全量 `unittest` 为 270 项通过；`rwb validate examples registry` 验证 85 个
+  对象且 0 error/0 warning；strict CLI、from-state、completion replay、hash drift/越权/缺源/预算/
+  取消与 `git diff --check` 均通过。CI 的 Python 3.11/3.13 结果仍须由 PR 重放。
+- 本节描述独立集成分支，不等于已合入 `main`；未调用真实 Provider、未生成新的 live conformance
+  证据、未完成 M3-008/Method Trace、长期 Research State、真实科研案例、LICENSE 或发布 Gate。
+
 ## 2026-08-20 — 第二轮架构审计与全局文档重整
 
 ### Decided

@@ -6,14 +6,14 @@
 
 ## 项目阶段
 
-当前为内部技术 alpha：最小契约、K-MS-1 Mode-first 离线基线、文件式上下文治理和 `K-API-1` 隔离 API session 基础已经形成。第二轮架构审计后进入 `K-METHOD-1`，优先正式化 Mode Action、Method Resolution、Mode v0.2 与 Decision Authority。逐项状态和唯一下一节点以[任务清单](docs/TASKS.md)为准。
+当前为内部技术 alpha：独立集成分支已把 Mode Action、Method Resolution、Mode v0.2、Decision Authority、Resolved Capability Snapshot 与 `K-API-2` strict file loop 串成首个离线闭环；双方审查和 live conformance 前不视为主线稳定能力。逐项状态和唯一下一节点以[任务清单](docs/TASKS.md)为准。
 
 ## 核心判断
 
 - 主 Agent 是决策工作区，不是长期存储，也不是所有工作的执行者。
 - 子 Agent 只接收窄任务；其过程可以被压缩，但正式工件和交接契约不能丢失。
 - Agent Profile、Skill、Research Mode 和 Tool 是四个不同概念，必须在单次 Task Packet 中显式组合。
-- Mode、Protocol、Strategy、Skill、Tool 和 Capability 是正交概念；未来由 Method Resolution 解释最小机制，再冻结具体执行绑定。
+- Mode、Protocol、Strategy、Skill、Tool 和 Capability 是正交概念；Method Resolution 解释最小机制，Resolved Capability Snapshot 冻结具体执行绑定。
 - Research State 的生命周期长于任何 Agent 会话、模型、Runtime、Tool 或 Skill；聊天不是长期事实源。
 - 不同子 Agent 应按任务加载不同 Skill；关键任务不能只依赖模型的隐式 Skill 匹配。
 - 研究差异按实验、仿真、推导、观察统计、证据综合等“研究模式”表达，不按学科建立全局固定流程。
@@ -99,7 +99,7 @@ rwb execution assess examples/observability/execution-evidence-contract.yaml `
 1. `evidence-scout` + `literature-evidence-extraction` Skill：源材料只读、任务区受限写的检索、证据定位和引用交接。
 2. `simulation-auditor` + `simulation-vv` Skill：读取模型与运行工件，检查版本、参数、收敛和敏感性。
 
-两者共享最小科研内核与 Task/Handoff 契约，但使用不同的输入、权限、Skill、输出和质量检查。离线证据见 [双 Skill 契约切片](examples/vertical-slice/SLICE_REPORT.md)。该切片现在只作为历史绑定/隔离证据；两个 Skill 均非 active，也不证明多 Agent 更强。下一步先把既有 Mode Action 和 routing fixture 迁移为正式 Method Resolution 契约。
+两者共享最小科研内核与 Task/Handoff 契约，但使用不同的输入、权限、Skill、输出和质量检查。离线证据见 [双 Skill 契约切片](examples/vertical-slice/SLICE_REPORT.md)。该切片现在只作为历史绑定/隔离证据；两个 Skill 均非 active，也不证明多 Agent 更强。新的严格路径与合并边界见[Method-to-Execution 初版闭环](docs/implementation/METHOD_EXECUTION_LOOP.md)。
 
 ## 近期交付边界
 

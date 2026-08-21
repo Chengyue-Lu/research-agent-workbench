@@ -1,0 +1,13 @@
+schema_version: 0.1.0
+action_id: ES-A3
+mode_id: evidence-synthesis
+version: 1.0.0
+trigger: [Sources must be acquired, pinned, hashed, and given stable locators.]
+non_trigger: [All required source snapshots and locators are already frozen and verified.]
+failure_conditions: [Version drift, wrong full text, unstable locator, or prohibited data egress.]
+required_artifact_types: [source-snapshot, source-reference]
+claim_effects: [No evidence claim may exceed the pinned source content.]
+human_gates: [approve-exceptional-source-access]
+stop_conditions: [Every admitted source has a revision, hash, and locator.]
+blocked_conditions: [The source cannot be pinned or accessed within the approved data boundary.]
+allowed_mechanisms: [task-contract, deterministic-tool, capability, human-gate, blocked]

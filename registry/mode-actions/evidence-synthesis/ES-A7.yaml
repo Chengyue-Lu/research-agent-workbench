@@ -1,0 +1,13 @@
+schema_version: 0.1.0
+action_id: ES-A7
+mode_id: evidence-synthesis
+version: 1.0.0
+trigger: [A claim and citation locator must be checked together.]
+non_trigger: [No citation-backed claim is created or modified.]
+failure_conditions: [The identifier resolves but does not support the nearby claim, or correction status is missed.]
+required_artifact_types: [citation-ledger, resolver-receipt]
+claim_effects: [Citation validity alone cannot increase claim support.]
+human_gates: [judge-support-strength-or-replacement]
+stop_conditions: [Every cited claim has a verified locator and support judgment.]
+blocked_conditions: [The cited version or correction status cannot be established.]
+allowed_mechanisms: [deterministic-tool, capability, human-gate, blocked]

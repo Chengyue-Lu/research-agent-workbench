@@ -70,7 +70,9 @@ Resolved Capability Snapshot = frozen Skill/Tool/Adapter/version/hash/permission
 Resolved Execution View = Task + Method Resolution + Resolved Capability Snapshot + execution limits
 ```
 
-这些层次共用引用和派生关系，不建立互相竞争的 execution truth。本阶段只冻结文档边界，不新增 Schema。
+这些层次共用引用和派生关系，不建立互相竞争的 execution truth。集成分支已为 Method Resolution、
+Resolved Capability Snapshot 和 marker-last completion 增加 Schema；主线稳定性仍以双方 shared-interface
+review 和 `TASKS.md` 为准。
 
 ## 3. Resolved Task
 
@@ -83,9 +85,9 @@ Resolved Execution View = Task + Method Resolution + Resolved Capability Snapsho
 - 实际输出路径；
 - 冲突/例外。
 
-Resolved Task 不修改原始 Task；它是当前一次带版本的兼容 execution view。未来它由
-`Task + Method Resolution + Resolved Capability Snapshot` 派生；在迁移完成前继续兼容已有字段，
-不另建第二套权威执行对象。
+Resolved Task 不修改原始 Task；它是当前一次带版本的兼容 execution view。严格集成路径已由
+`Task + Method Resolution + Resolved Capability Snapshot` 派生 `Resolved Execution View`；在迁移
+完成前继续兼容已有字段，且两条路径不能成为互相竞争的 execution truth。
 
 ## 4. Handoff Packet
 

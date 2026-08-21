@@ -14,6 +14,7 @@ from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any, Iterable, Mapping
 
 from research_workbench.io import load_document
+from research_workbench.artifacts.integrity import hash_file
 from research_workbench.contracts.common import ContractError, parse_skill_reference
 from research_workbench.validation.schemas import SchemaCatalog
 
@@ -35,43 +36,10 @@ class ValidationIssue:
 
 
 COMMON_REQUIRED = ("schema_version",)
+# Required fields for schema-backed documents come only from their JSON
+# schemas. This table covers registry documents that intentionally have no
+# dedicated schema.
 DOCUMENT_REQUIRED: dict[str, tuple[str, ...]] = {
-    "project_protocol": (
-        "project_id",
-        "question_refs",
-        "active_modes",
-        "claim_ceiling",
-        "required_human_gates",
-        "budgets",
-        "context_policy",
-        "data_boundary",
-    ),
-    "task_packet": (
-        "task_id",
-        "goal",
-        "required_capabilities",
-        "required_skills",
-        "agent_profile",
-        "input_refs",
-        "write_scope",
-        "required_outputs",
-        "permissions",
-        "delegation",
-        "atomic_boundary",
-        "completion_checks",
-        "safe_pause_conditions",
-        "stop_conditions",
-    ),
-    "handoff_packet": (
-        "task_id",
-        "attempt_id",
-        "status",
-        "skill_lock",
-        "result",
-        "artifact_refs",
-        "limitations",
-        "unresolved",
-    ),
     "skill_sources": ("registry_kind", "sources"),
     "skill_candidates": ("registry_kind", "candidates"),
     "skill_accepted": ("registry_kind", "entries", "policy"),
@@ -80,26 +48,8 @@ DOCUMENT_REQUIRED: dict[str, tuple[str, ...]] = {
     "model_pool": ("registry_kind", "pool_id", "selection_policy", "slots"),
 }
 
-SCHEMA_KINDS = {
-    "deterministic_check_report",
-    "project_protocol",
-    "provider_conformance_report",
-    "research_mode",
-    "agent_profile",
-    "skill_manifest",
-    "skill_assignment",
-    "skill_archive_audit",
-    "skill_evaluation",
-    "task_packet",
-    "attempt",
-    "handoff_packet",
-    "handoff_transfer_audit",
-    "handoff_transfer_manifest",
-    "main_state",
-    "context_snapshot",
-    "execution_receipt",
-    "research_object",
-}
+# Schema files are the single source of truth for schema-backed kinds.
+SCHEMA_KINDS = frozenset(SchemaCatalog().document_kinds)
 
 
 def infer_document_kind(document: Mapping[str, Any]) -> str | None:
@@ -111,12 +61,22 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
             return "handoff_packet"
         if "started_at" in document and "task_revision" in document:
             return "attempt"
+    if "completion_id" in document and "transaction_semantics" in document:
+        return "attempt_completion_manifest"
     if "goal" in document and "task_id" in document:
         return "task_packet"
     if "project_id" in document and "active_modes" in document:
         return "project_protocol"
     if "mode_id" in document and "claim_rules" in document:
         return "research_mode"
+    if "action_id" in document and "allowed_mechanisms" in document:
+        return "mode_action"
+    if "resolution_id" in document and "mechanism_resolutions" in document:
+        return "method_resolution"
+    if "snapshot_id" in document and "method_resolution_ref" in document and "bindings" in document:
+        return "resolved_capability_snapshot"
+    if "matrix_id" in document and "rules" in document:
+        return "decision_authority"
     if "agent_profile_id" in document and "permission_ceiling" in document:
         return "agent_profile"
     if "skill_id" in document and "capabilities" in document:
@@ -367,6 +327,102 @@ def _validate_task(path: Path, document: Mapping[str, Any], kind: str) -> list[V
     return issues
 
 
+def _resolve_contract_reference(document_path: Path, relative_path: str) -> Path | None:
+    normalized = Path(*PurePosixPath(relative_path.replace("\\", "/")).parts)
+    for ancestor in (document_path.parent, *document_path.parents):
+        candidate = ancestor / normalized
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def _validate_pinned_contract_references(
+    path: Path, document: Mapping[str, Any], kind: str
+) -> list[ValidationIssue]:
+    issues: list[ValidationIssue] = []
+    references: list[Mapping[str, Any]] = []
+    path_key = "path"
+    if kind == "research_mode" and document.get("schema_version") == "0.2.0":
+        references = [item for item in document.get("action_refs", []) if isinstance(item, Mapping)]
+    elif kind == "method_resolution":
+        references = [
+            item
+            for item in document.get("action_selections", [])
+            if isinstance(item, Mapping) and item.get("status") == "selected"
+        ]
+        path_key = "source_path"
+
+    for index, reference in enumerate(references):
+        relative_path = reference.get(path_key)
+        expected_hash = reference.get("sha256")
+        if not isinstance(relative_path, str) or not isinstance(expected_hash, str):
+            continue
+        resolved = _resolve_contract_reference(path, relative_path)
+        pointer = "action_refs" if kind == "research_mode" else "action_selections"
+        if resolved is None:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "METHOD-ACTION-REF-MISSING",
+                    f"{pointer}[{index}] cannot resolve {relative_path}",
+                )
+            )
+            continue
+        actual_hash = hash_file(resolved)
+        if actual_hash != expected_hash.removeprefix("sha256:").lower():
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "METHOD-ACTION-REF-DRIFT",
+                    f"{pointer}[{index}] hash differs for {relative_path}",
+                )
+            )
+            continue
+        referenced = load_document(resolved)
+        for field in ("action_id", "mode_id", "version"):
+            expected = reference.get(field)
+            if expected is not None and referenced.get(field) != expected:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "METHOD-ACTION-REF-IDENTITY",
+                        f"{pointer}[{index}] {field} differs from {relative_path}",
+                    )
+                )
+    if kind == "resolved_capability_snapshot":
+        snapshot_refs: list[tuple[str, Mapping[str, Any]]] = []
+        for field in ("task_ref", "method_resolution_ref"):
+            value = document.get(field)
+            if isinstance(value, Mapping):
+                snapshot_refs.append((field, value))
+        for index, binding in enumerate(document.get("bindings", [])):
+            if isinstance(binding, Mapping) and isinstance(binding.get("source_ref"), Mapping):
+                snapshot_refs.append((f"bindings[{index}].source_ref", binding["source_ref"]))
+        for pointer, reference in snapshot_refs:
+            relative_path = reference.get("path")
+            expected_hash = reference.get("sha256")
+            if not isinstance(relative_path, str) or not isinstance(expected_hash, str):
+                continue
+            resolved = _resolve_contract_reference(path, relative_path)
+            if resolved is None:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "CAPABILITY-SNAPSHOT-REF-MISSING",
+                        f"{pointer} cannot resolve {relative_path}",
+                    )
+                )
+            elif hash_file(resolved) != expected_hash.removeprefix("sha256:").lower():
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "CAPABILITY-SNAPSHOT-REF-DRIFT",
+                        f"{pointer} hash differs for {relative_path}",
+                    )
+                )
+    return issues
+
+
 def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     source_ids: set[str] = set()
@@ -400,6 +456,7 @@ def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
         issues.extend(_validate_hashes(path, document))
         issues.extend(_validate_registry(path, document, kind, source_ids))
         issues.extend(_validate_task(path, document, kind))
+        issues.extend(_validate_pinned_contract_references(path, document, kind))
     return issues
 
 

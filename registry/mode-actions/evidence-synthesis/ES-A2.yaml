@@ -1,0 +1,13 @@
+schema_version: 0.1.0
+action_id: ES-A2
+mode_id: evidence-synthesis
+version: 1.0.0
+trigger: [An open question needs a bounded and replayable literature search.]
+non_trigger: [The source set is already frozen or only a known identifier must be resolved.]
+failure_conditions: [Query bias, source coverage mismatch, query drift, or no stopping rule.]
+required_artifact_types: [search-plan, query-ledger, stop-rule]
+claim_effects: [Search coverage limits must remain visible in later synthesis claims.]
+human_gates: [approve-source-boundary-and-coverage-risk]
+stop_conditions: [The query plan and stopping rule are replayable.]
+blocked_conditions: [No approved bibliographic source or data-egress path is available.]
+allowed_mechanisms: [task-contract, capability, skill-need, human-gate, blocked]

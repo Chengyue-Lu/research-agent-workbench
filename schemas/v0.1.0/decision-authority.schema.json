@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/decision-authority.schema.json",
+  "x-rwb-document-kind": "decision_authority",
+  "title": "Decision Authority Matrix",
+  "type": "object",
+  "required": ["schema_version", "matrix_id", "version", "rules"],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "matrix_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "version": { "$ref": "common.schema.json#/$defs/semver" },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["decision_type", "agent", "resolver", "human"],
+        "properties": {
+          "decision_type": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "agent": { "enum": ["propose", "execute-approved", "decide", "forbidden"] },
+          "resolver": { "enum": ["validate", "decide", "forbidden"] },
+          "human": { "enum": ["optional", "required", "final"] }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

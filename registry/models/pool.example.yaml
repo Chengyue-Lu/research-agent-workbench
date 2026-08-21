@@ -20,10 +20,10 @@ slots:
     model_env: RWB_WORKER_MODEL
     enabled: false
     capabilities: [text, tools, structured_output]
-  - slot_id: multimodal
+  - slot_id: parallel-tools
     role: specialist
     provider_adapter: google-generate-content
-    model_env: RWB_MULTIMODAL_MODEL
+    model_env: RWB_PARALLEL_TOOLS_MODEL
     enabled: false
-    capabilities: [text, images]
-    specialties: [images]
+    capabilities: [text, tools, parallel_tools]
+    specialties: [parallel_tools]

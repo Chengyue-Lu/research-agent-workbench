@@ -1,6 +1,16 @@
 import unittest
+from pathlib import Path
 
-from research_workbench.adapters.models import Capability, ModelPool
+from research_workbench.adapters.models import (
+    Capability,
+    ModelPool,
+    load_model_pool,
+    load_provider_adapter_configs,
+    validate_pool_adapters,
+)
+
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def pool_document() -> dict:
@@ -70,6 +80,37 @@ class ModelPoolTests(unittest.TestCase):
         document["slots"][1]["reasoning_effort"] = "low"
         with self.assertRaisesRegex(ValueError, "without reasoning capability"):
             ModelPool.from_mapping(document)
+
+
+class PoolAdapterCrossValidationTests(unittest.TestCase):
+    def adapters(self) -> tuple:
+        return load_provider_adapter_configs(ROOT / "registry" / "providers" / "adapters.yaml")
+
+    def test_example_pool_is_consistent_with_provider_adapter_registry(self) -> None:
+        pool = load_model_pool(
+            ROOT / "registry" / "models" / "pool.example.yaml",
+            adapters_path=ROOT / "registry" / "providers" / "adapters.yaml",
+        )
+        self.assertEqual("local-explicit-pool", pool.pool_id)
+
+    def test_slot_referencing_unknown_adapter_is_rejected(self) -> None:
+        document = pool_document()
+        document["slots"][0]["provider_adapter"] = "missing-adapter"
+        pool = ModelPool.from_mapping(document)
+        with self.assertRaisesRegex(ValueError, "unknown provider adapter"):
+            validate_pool_adapters(pool, self.adapters())
+
+    def test_slot_cannot_claim_capabilities_the_adapter_does_not_implement(self) -> None:
+        document = pool_document()
+        # The google-generate-content adapter does not implement images.
+        document["slots"][2]["capabilities"] = ["text", "images"]
+        pool = ModelPool.from_mapping(document)
+        with self.assertRaisesRegex(ValueError, "not implemented"):
+            validate_pool_adapters(pool, self.adapters())
+
+    def test_cross_validation_is_opt_in(self) -> None:
+        pool = load_model_pool(ROOT / "registry" / "models" / "pool.example.yaml")
+        self.assertEqual("local-explicit-pool", pool.pool_id)
 
 
 if __name__ == "__main__":

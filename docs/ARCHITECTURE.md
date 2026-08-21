@@ -1,6 +1,6 @@
 # 总体架构
 
-版本：0.5
+版本：0.6-integration-candidate
 
 状态：目标架构与迁移基线
 
@@ -17,10 +17,10 @@ Research Agent Workbench 是放在研究者与可替换 AI 执行能力之间的
 
 > Research semantics and history should outlive models, runtimes, tools and skills.
 
-当前仓库已经实现最小对象、Task/Handoff、Skill Assignment、上下文治理、部分 Execution 接口和
-离线 Mode-first fixture；尚未实现正式 Mode Action、Method Resolution、长期 Research State、
-Resolved Capability Snapshot 或 Method Trace。本文同时写明目标关系与当前迁移状态，不能把规划字段误报为
-已有能力。
+当前集成分支已经在最新 `main` 上实现最小对象、Task/Handoff、Skill Assignment、上下文治理、
+Mode Action、provider-neutral Method Resolution、Mode v0.2 migration、Decision Authority、Resolved
+Capability Snapshot 与 strict API file loop；这些新增项在双方审查并合入 `main` 前仍是 candidate，
+不能误报为主线稳定能力。长期 Research State、Execution/Method Trace、真实科研案例和发布 Gate 仍未完成。
 
 ## 2. 五个逻辑平面
 
@@ -107,8 +107,10 @@ Provider、Model 或 Host 字段。`Resolved Capability Snapshot` 才绑定本�
 Tool/Skill/Adapter 版本、hash、
 权限、数据出口和副作用。
 
-当前 `Resolved Task + Skill Assignment` 是已有执行视图。在 Method Resolution 正式化前继续
-保留，但不得再作为完整方法解释。迁移必须创建新版本和显式映射，不能原地改义。
+`Resolved Task + Skill Assignment` 继续作为兼容输入；严格路径由
+`Task + Assignment + Method Resolution + Resolved Capability Snapshot + optional predecessor Main State`
+派生 `Resolved Execution View`。兼容路径不得被解释为完整方法证明；迁移使用新版本和显式映射，
+不原地改义。
 
 ## 4. 概念边界
 
@@ -175,8 +177,8 @@ State compact index、Method Resolution、风险和 Handoff；原始材料、完
 | 数据、来源或权限放宽 | 不得批准 | 不得静默放宽 | 必须明确批准 |
 | 外部副作用/发布 | 可执行已授权动作 | 检查授权与 Receipt | 必须按风险批准 |
 
-具体可执行 contract 在 Phase A 的 Decision Authority Task 中冻结；本表是架构边界，不表示当前
-Resolver 已实现全部判定。
+Decision Authority Matrix 已在集成分支冻结并接入 Method/execution preflight；它能 fail closed
+处理未治理决定、执行层越权、Provider 污染和未批准 Gate，但仍不替代 Human 的科学判断。
 
 ## 8. 执行与适配边界
 
@@ -199,11 +201,11 @@ Receipt，不负责 Mode、Claim、Skill Need 或 methodology fallback。
 
 | 能力 | 当前状态 | 下一契约 |
 |---|---|---|
-| Mode Action | 文档/fixture 基线 | 正式 Schema、Registry 与 stable ID |
-| Method Resolution | 尚无正式对象 | provider-neutral 中间语义 |
-| Research Mode | v0.1 含 legacy capability recommendation | v0.2 Need-first + 显式 migration seam |
+| Mode Action | 集成候选：16 个 Schema-backed Action | 双方审查后冻结 Registry/stable hash |
+| Method Resolution | 集成候选：八个 routing fixture + EVID-001 | 主线合并后接 Trace/Evaluation |
+| Research Mode | v0.1 兼容 + v0.2 action refs | 双方确认 migration seam |
 | Skill Need | dossier/规划约定 | 版本化 Need 与 evaluation refs |
-| Capability | Tool cards/Provider/Host capability supply 分散存在 | Requirement + Resolved Capability Snapshot |
+| Capability | 集成候选：Requirement + Resolved Capability Snapshot + Execution View | live conformance 与更多真实绑定 |
 | Research State | 七类对象、Attempt/Main State 分散存在 | compact State/Frontier 与 Failure memory |
 | Trace | ADR/手工规则；M3-008 待实现 | Execution baseline 后再加 Method Trace |
 | Evaluation | paired Skill contract 与指标已有 | 统一 Manifest 和四臂 baseline harness |

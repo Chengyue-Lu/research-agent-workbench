@@ -15,11 +15,8 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Callable, Mapping, Sequence
 
-from research_workbench.adapters.models.anthropic import AnthropicMessagesProvider
-from research_workbench.adapters.models.configuration import ProviderAdapterConfig
-from research_workbench.adapters.models.gemini import GeminiGenerateContentProvider
+from research_workbench.adapters.models.configuration import PROVIDER_ADAPTERS, ProviderAdapterConfig
 from research_workbench.adapters.models.http import EnvironmentCredential, HttpTransport
-from research_workbench.adapters.models.openai import OpenAIResponsesProvider
 from research_workbench.adapters.models.port import (
     Capability,
     ContentBlock,
@@ -231,13 +228,10 @@ def build_live_provider(
     }
     if transport is not None:
         common["transport"] = transport
-    if config.provider == "openai":
-        return OpenAIResponsesProvider(**common)
-    if config.provider == "anthropic":
-        return AnthropicMessagesProvider(**common)
-    if config.provider == "google":
-        return GeminiGenerateContentProvider(**common)
-    raise ValueError(f"unsupported provider adapter: {config.provider}")
+    adapter_type = PROVIDER_ADAPTERS.get(config.provider)
+    if adapter_type is None:
+        raise ValueError(f"unsupported provider adapter: {config.provider}")
+    return adapter_type(**common)
 
 
 def run_provider_conformance(

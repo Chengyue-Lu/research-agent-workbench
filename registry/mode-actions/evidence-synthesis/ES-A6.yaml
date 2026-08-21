@@ -1,0 +1,13 @@
+schema_version: 0.1.0
+action_id: ES-A6
+mode_id: evidence-synthesis
+version: 1.0.0
+trigger: [Multiple evidence records must be related as support, conflict, limitation, or unknown.]
+non_trigger: [A single source is being extracted without cross-evidence interpretation.]
+failure_conditions: [Majority opinion replaces analysis, scope differences appear as conflicts, or unknowns disappear.]
+required_artifact_types: [claim-evidence-relation-map, synthesis-draft]
+claim_effects: [Synthesis claims must expose support, counterevidence, scope, and unresolved unknowns.]
+human_gates: [approve-synthesis-interpretation]
+stop_conditions: [Every material evidence relation and unknown is represented.]
+blocked_conditions: [Evidence scopes cannot be reconciled without a human methodological decision.]
+allowed_mechanisms: [task-contract, deterministic-tool, skill-need, human-gate, blocked]

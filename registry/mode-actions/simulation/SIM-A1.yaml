@@ -1,0 +1,13 @@
+schema_version: 0.1.0
+action_id: SIM-A1
+mode_id: simulation
+version: 1.0.0
+trigger: [A simulation model purpose, assumptions, and parameter boundary must be frozen.]
+non_trigger: [A fully frozen run is replayed without changing interpretation.]
+failure_conditions: [The model is treated as reality, extrapolated beyond scope, or has no clear purpose.]
+required_artifact_types: [method, assumption-ledger, parameter-boundary]
+claim_effects: [Simulation claims remain within the approved model purpose and assumptions.]
+human_gates: [approve-model-purpose-and-assumptions]
+stop_conditions: [Purpose, assumptions, parameters, and claim ceiling are frozen.]
+blocked_conditions: [The researcher has not approved the model interpretation boundary.]
+allowed_mechanisms: [mode-invariant, task-contract, human-gate, blocked]

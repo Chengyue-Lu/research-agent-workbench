@@ -14,6 +14,10 @@ from research_workbench.capability.resolver import (
     resolve_task,
     resolve_task_from_registry,
 )
+from research_workbench.capability.snapshot import (
+    CapabilityBinding,
+    ResolvedCapabilitySnapshot,
+)
 
 __all__ = [
     "AgentProfile",
@@ -23,6 +27,8 @@ __all__ = [
     "SkillLock",
     "SkillManifest",
     "ResolvedTask",
+    "CapabilityBinding",
+    "ResolvedCapabilitySnapshot",
     "ResolutionError",
     "filter_candidates",
     "audit_skill_archive",

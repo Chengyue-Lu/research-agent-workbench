@@ -1,0 +1,13 @@
+schema_version: 0.1.0
+action_id: SIM-A2
+mode_id: simulation
+version: 1.0.0
+trigger: [Code, environment, inputs, seed, and outputs must be frozen for a run.]
+non_trigger: [The task does not execute or compare computational results.]
+failure_conditions: [Dependency drift, input mismatch, missing seed, or unpinned outputs.]
+required_artifact_types: [run-manifest, input-lock, environment-receipt]
+claim_effects: [Unreproducible runs cannot support a promoted claim.]
+human_gates: []
+stop_conditions: [The run inputs and environment are replayable and hash-pinned.]
+blocked_conditions: [The execution environment or required input cannot be frozen.]
+allowed_mechanisms: [task-contract, deterministic-tool, capability, blocked]

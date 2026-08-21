@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/attempt-completion-manifest.schema.json",
+  "x-rwb-document-kind": "attempt_completion_manifest",
+  "title": "Attempt Completion Manifest",
+  "type": "object",
+  "required": [
+    "schema_version", "completion_id", "attempt_id", "status", "files",
+    "transaction_semantics", "committed_at"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "completion_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "attempt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "status": { "enum": ["completed", "safe-paused", "incomplete", "failed"] },
+    "execution_identity": { "$ref": "common.schema.json#/$defs/sha256" },
+    "files": {
+      "type": "array",
+      "minItems": 6,
+      "items": { "$ref": "common.schema.json#/$defs/fileRef" }
+    },
+    "transaction_semantics": { "const": "marker-last" },
+    "committed_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

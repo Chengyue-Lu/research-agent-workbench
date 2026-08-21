@@ -1,12 +1,25 @@
-schema_version: 0.1.0
+schema_version: 0.2.0
 mode_id: evidence-synthesis
-version: 0.1.0
+version: 0.2.0
 applies_when:
   - Evidence is primarily obtained from a bounded source set.
-required_artifact_types: [question, evidence, claim]
-recommended_skill_capabilities: [evidence-extraction, citation-location]
+action_refs:
+  - {action_id: ES-A1, mode_id: evidence-synthesis, version: 1.0.0, path: registry/mode-actions/evidence-synthesis/ES-A1.yaml, sha256: 398ae3b0f0e782c89ccb0e69f32ddee66de6b36cc5ae4a5feaa63a6f2a3fd8ed}
+  - {action_id: ES-A2, mode_id: evidence-synthesis, version: 1.0.0, path: registry/mode-actions/evidence-synthesis/ES-A2.yaml, sha256: cdccd82c62a028a375e3e9bc80a6c269287a1f6083731c8efcf9dd22cd7a5dbd}
+  - {action_id: ES-A3, mode_id: evidence-synthesis, version: 1.0.0, path: registry/mode-actions/evidence-synthesis/ES-A3.yaml, sha256: bed25492d35fc69e97bba8ced29fc96491384a32287700fc39bc7f70e71819d3}
+  - {action_id: ES-A4, mode_id: evidence-synthesis, version: 1.0.0, path: registry/mode-actions/evidence-synthesis/ES-A4.yaml, sha256: 05b5f5788bb0ddce523243475c7cba22725d2898c12667344424f12d2128b5fe}
+  - {action_id: ES-A5, mode_id: evidence-synthesis, version: 1.0.0, path: registry/mode-actions/evidence-synthesis/ES-A5.yaml, sha256: a0e0898a4b29386fd10e5f728be9f0ef6bdd87d99cdf122774cbcaf5361192bf}
+  - {action_id: ES-A6, mode_id: evidence-synthesis, version: 1.0.0, path: registry/mode-actions/evidence-synthesis/ES-A6.yaml, sha256: 968c49fac7ef1cbd75f31cdf44e11de874fe7fedea7c50ff22500a330494747b}
+  - {action_id: ES-A7, mode_id: evidence-synthesis, version: 1.0.0, path: registry/mode-actions/evidence-synthesis/ES-A7.yaml, sha256: 826dd7de97afc6fcd243ccd4c122ff672a653aec79e7955524ee6b2e5f470464}
+  - {action_id: ES-A8, mode_id: evidence-synthesis, version: 1.0.0, path: registry/mode-actions/evidence-synthesis/ES-A8.yaml, sha256: c9dc1d5dce46535a03b0f6747699b60daa80903320e3345e506a95923d86ac59}
 claim_rules:
   allows: [source_reported, synthesis_supported]
   forbids_without_other_mode: [experimentally_supported]
 human_decisions: [approve_source_weight, approve_synthesis_claim]
 risk_rules: [CITATION-DRIFT, CLAIM-OVERREACH]
+migration:
+  migration_id: MIG-MODE-EVIDENCE-SYNTHESIS-0.1-0.2
+  source_schema_version: 0.1.0
+  source_mode_version: 0.1.0
+  source_hash: dabadec063274cea3dfad4eba25e6c871f24d082c9acae16b146e8f46ffb2e87
+  implementation: research_workbench.method.migration:migrate_research_mode_v01_to_v02

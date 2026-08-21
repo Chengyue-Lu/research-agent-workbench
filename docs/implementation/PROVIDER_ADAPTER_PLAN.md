@@ -140,11 +140,16 @@ rwb providers conformance `
 
 已在 Adapter 之上新增独立 runner，限制最大模型轮次、工具调用数、单轮并行数、单工具输出大小、单轮输出、累计 token/可得成本和 wall time。工具调用需要本地声明和 handler，不接受模型临时发明工具；未知硬预算会安全暂停。Runner 每次从调用方提供的消息开始，不复用 provider response ID，不自动 fallback。
 
-该阶段达到 `K-API-1`，但还没有把 Task/Skill Assignment 自动编译为请求，也没有自动生成 Attempt/Execution Receipt，因此不是完整 Task 执行器。
+该阶段达到 `K-API-1`。集成分支已在 P4 把 Task/Assignment/Method/Snapshot 编译为请求并生成
+Attempt/Receipt/Handoff/marker；P3 本身仍只是 session kernel。
 
-### P4：Task-to-API 文件闭环（API 工作流的 external 节点）
+### P4：Task-to-API 文件闭环（integration candidate）
 
-把已解析 Task、Agent Profile、Skill Assignment、内容允许集、Handoff 等级和显式模型槽编译成最小初始消息与工具 allowlist；执行期间将全部可见 Agent 传递写入 Attempt Archive；结束或安全暂停时写入正式工件和 Task 要求的 H1/H2 交接工件。删除临时平台会话后做一次恢复检查。具体实现与自动捕获由黄毅负责。
+当前候选把已解析 Task、Agent Profile、Skill Assignment、Method Resolution、Capability Snapshot、
+内容允许集、Handoff 等级和显式模型槽编译成最小初始消息与工具 allowlist；结束或安全暂停时写入
+Attempt/Receipt/Handoff/Transfer/check 工件，并最后发布 completion manifest。它已覆盖 exact Evidence
+source binding、from-state identity、tool accounting、cancel/deadline 与 file-only replay。完整 Agent
+Trace 自动捕获仍属 M6-006，由黄毅负责；双方审查和 live conformance 前不标记主线完成。
 
 ### P5：按真实消费者扩展
 

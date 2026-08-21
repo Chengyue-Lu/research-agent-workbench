@@ -1,0 +1,13 @@
+schema_version: 0.1.0
+action_id: SIM-A3
+mode_id: simulation
+version: 1.0.0
+trigger: [Discretization, time step, tolerance, or stochastic error may limit a run claim.]
+non_trigger: [A frozen run is replayed or sufficient approved convergence evidence already exists.]
+failure_conditions: [Only one resolution is tested, the error metric is invalid, or resource limits are hidden.]
+required_artifact_types: [convergence-plan, convergence-report]
+claim_effects: [Error-bounded claims require an approved convergence interpretation.]
+human_gates: [approve-error-metric-and-resource-threshold]
+stop_conditions: [The convergence criterion is met, rejected, or bounded by an explicit limitation.]
+blocked_conditions: [Resources or solver access cannot support the minimum planned refinement.]
+allowed_mechanisms: [task-contract, capability, skill-need, human-gate, blocked]

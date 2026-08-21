@@ -1,0 +1,14 @@
+schema_version: 0.1.0
+matrix_id: RWB-DECISION-AUTHORITY
+version: 1.0.0
+rules:
+  - {decision_type: mode_action_selection, agent: propose, resolver: decide, human: optional}
+  - {decision_type: minimal_mechanism, agent: propose, resolver: decide, human: optional}
+  - {decision_type: skill_tool_binding, agent: forbidden, resolver: decide, human: optional}
+  - {decision_type: methodology_fallback, agent: forbidden, resolver: forbidden, human: required}
+  - {decision_type: claim_proposal, agent: propose, resolver: validate, human: optional}
+  - {decision_type: claim_promotion, agent: forbidden, resolver: forbidden, human: final}
+  - {decision_type: source_boundary_relaxation, agent: forbidden, resolver: forbidden, human: required}
+  - {decision_type: data_permission_relaxation, agent: forbidden, resolver: forbidden, human: required}
+  - {decision_type: external_side_effect, agent: execute-approved, resolver: validate, human: required}
+  - {decision_type: publication, agent: forbidden, resolver: forbidden, human: final}

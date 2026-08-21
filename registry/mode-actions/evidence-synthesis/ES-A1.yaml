@@ -1,0 +1,13 @@
+schema_version: 0.1.0
+action_id: ES-A1
+mode_id: evidence-synthesis
+version: 1.0.0
+trigger: [A research question or source boundary must be frozen before evidence work.]
+non_trigger: [The task only reformats an already accepted artifact.]
+failure_conditions: [The question is not answerable, the scope drifts, or unapproved sources enter the task.]
+required_artifact_types: [question, source-boundary]
+claim_effects: [Freeze the maximum claim scope before retrieval.]
+human_gates: [approve-question-and-source-boundary]
+stop_conditions: [The question, boundary, and claim ceiling are frozen.]
+blocked_conditions: [The researcher has not approved the research question or source boundary.]
+allowed_mechanisms: [mode-invariant, task-contract, human-gate, blocked]

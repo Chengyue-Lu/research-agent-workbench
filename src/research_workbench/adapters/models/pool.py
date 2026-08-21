@@ -10,8 +10,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Iterable, Mapping
 
+from research_workbench.adapters.models.base import _environment_name, _nonempty_string
+from research_workbench.adapters.models.configuration import (
+    IMPLEMENTED_CAPABILITIES,
+    ProviderAdapterConfig,
+    load_provider_adapter_configs,
+)
 from research_workbench.adapters.models.port import Capability
 from research_workbench.io import load_document
 
@@ -198,7 +204,7 @@ class ModelPool:
         }
 
 
-def load_model_pool(path: str | Path) -> ModelPool:
+def load_model_pool(path: str | Path, *, adapters_path: str | Path | None = None) -> ModelPool:
     document = load_document(path)
     if not isinstance(document, Mapping):
         raise ValueError("model pool config must be an object")
@@ -206,17 +212,31 @@ def load_model_pool(path: str | Path) -> ModelPool:
     unknown = sorted(set(document) - allowed)
     if unknown:
         raise ValueError("model pool config has unknown fields: " + ", ".join(unknown))
-    return ModelPool.from_mapping(document)
+    pool = ModelPool.from_mapping(document)
+    if adapters_path is not None:
+        validate_pool_adapters(pool, load_provider_adapter_configs(adapters_path))
+    return pool
 
 
-def _nonempty_string(value: object, field: str) -> str:
-    if not isinstance(value, str) or not value.strip():
-        raise ValueError(f"{field} must be a non-empty string")
-    return value.strip()
+def validate_pool_adapters(pool: ModelPool, adapters: Iterable[ProviderAdapterConfig]) -> None:
+    """Cross-check each slot against the provider adapter registry.
 
+    A slot must reference a configured adapter and may only claim capabilities
+    that the adapter actually implements.
+    """
 
-def _environment_name(value: object, field: str) -> str:
-    name = _nonempty_string(value, field)
-    if not name.replace("_", "").isalnum():
-        raise ValueError(f"{field} must contain only letters, digits, and underscores")
-    return name
+    known = {adapter.adapter_id: adapter for adapter in adapters}
+    for slot in pool.slots:
+        adapter = known.get(slot.provider_adapter)
+        if adapter is None:
+            raise ValueError(
+                f"model slot {slot.slot_id!r} references unknown provider adapter: "
+                f"{slot.provider_adapter}"
+            )
+        unimplemented = sorted(slot.capabilities - IMPLEMENTED_CAPABILITIES[adapter.provider], key=str)
+        if unimplemented:
+            raise ValueError(
+                f"model slot {slot.slot_id!r} claims capabilities not implemented by "
+                f"adapter {slot.provider_adapter!r}: "
+                + ", ".join(str(item) for item in unimplemented)
+            )

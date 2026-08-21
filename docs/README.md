@@ -11,7 +11,7 @@
 | 修改 Method/Core | [总体架构](ARCHITECTURE.md) | [架构路线图](ROADMAP.md)、ADR-0013/0016、Task 指向的模块 |
 | 查询历史 Mode–Skill 基线 | [K-MS-1 节点评审](workstreams/chengyue-lu-mode-skill/K_MS_1_NODE_REVIEW.md) | [ADR-0013](decisions/0013-MODE-FIRST-SKILL-DERIVATION.md) |
 | 修改 Agent、Task 或上下文 | [Task 与 Handoff](modules/05-TASK_AND_HANDOFF.md) | [上下文治理](modules/06-CONTEXT_GOVERNANCE.md)、[工件与溯源](modules/07-ARTIFACTS_AND_PROVENANCE.md) |
-| 修改 API 执行 | [开发协作指南](DEVELOPMENT.md) | [Provider 计划](implementation/PROVIDER_ADAPTER_PLAN.md)、相关 ADR；该范围由黄毅维护 |
+| 修改 API 执行 | [开发协作指南](DEVELOPMENT.md) | [Method-to-Execution 初版闭环](implementation/METHOD_EXECUTION_LOOP.md)、[Provider 计划](implementation/PROVIDER_ADAPTER_PLAN.md)、相关 ADR；Provider 范围由黄毅维护，共享接口由双方审查 |
 | 查询当前状态 | [任务清单](TASKS.md) | 对应分支、Issue 和 Attempt Archive |
 
 ## 文档层级

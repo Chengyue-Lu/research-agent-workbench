@@ -1,0 +1,27 @@
+schema_version: 0.1.0
+resolution_id: MR-ROUTE-ES-FROZEN-001
+task_ref: mode-action-routing-v1#ROUTE-ES-FROZEN-001
+status: resolved
+mode_decision: {status: selected, primary_mode: evidence-synthesis, reason: Frozen local sources require evidence-synthesis.}
+action_selections:
+  - {action_id: ES-A3, status: selected, mode_id: evidence-synthesis, version: 1.0.0, source_path: registry/mode-actions/evidence-synthesis/ES-A3.yaml, sha256: bed25492d35fc69e97bba8ced29fc96491384a32287700fc39bc7f70e71819d3}
+  - {action_id: ES-A4, status: selected, mode_id: evidence-synthesis, version: 1.0.0, source_path: registry/mode-actions/evidence-synthesis/ES-A4.yaml, sha256: 05b5f5788bb0ddce523243475c7cba22725d2898c12667344424f12d2128b5fe}
+  - {action_id: NEED-INT-COMPACT-HANDOFF, status: inherited}
+method_obligations:
+  - {action_id: ES-A3, obligation: Pin and locate the two admitted sources.}
+  - {action_id: ES-A4, obligation: Produce atomic evidence without claim promotion.}
+mechanism_resolutions:
+  - {action_id: ES-A3, selected: tool-only, reason: Deterministic document reading and contract checks are sufficient., capability_requirement_refs: [CAP-DOCUMENT-READ, CAP-RESEARCH-CONTRACT-CHECK]}
+  - {action_id: ES-A4, selected: task-contract, reason: The bounded extraction contract is sufficient.}
+  - {action_id: NEED-INT-COMPACT-HANDOFF, selected: task-template, reason: Ordinary H1 handoff needs no Skill.}
+capability_requirements:
+  - {requirement_id: CAP-DOCUMENT-READ, capability_id: document-read, data_egress: none}
+  - {requirement_id: CAP-RESEARCH-CONTRACT-CHECK, capability_id: research-contract-check, data_egress: none}
+human_gates: []
+rejected_alternatives:
+  - {alternative: literature-search, reason: Sources are already frozen.}
+  - {alternative: project-internal-skill, reason: A task template is sufficient.}
+decision_records:
+  - {decision_type: mode_action_selection, decided_by: resolver, outcome: selected, reason: Catalog triggers match the task.}
+  - {decision_type: minimal_mechanism, decided_by: resolver, outcome: tool-and-task, reason: No reusable semantic gap remains.}
+unresolved: []

@@ -14,6 +14,8 @@ from research_workbench.adapters.models import (
     ModelRequest,
     ModelResponse,
     ProviderCapabilities,
+    ProviderError,
+    ProviderErrorCategory,
     ProviderRegistry,
     ToolCall,
     ToolDefinition,
@@ -41,6 +43,32 @@ class ScriptedProvider:
         if not self.responses:
             raise AssertionError("unexpected provider call")
         return self.responses.pop(0)
+
+
+class FailingProvider(ScriptedProvider):
+    """Plays scripted responses, then raises one fixed ProviderError."""
+
+    def __init__(self, error: ProviderError, *responses: ModelResponse) -> None:
+        super().__init__(*responses)
+        self.error = error
+
+    def generate(self, request: ModelRequest) -> ModelResponse:
+        if self.responses:
+            return super().generate(request)
+        self.requests.append(request)
+        raise self.error
+
+
+class RecordingSink:
+    def __init__(self, fail_once_on: str | None = None) -> None:
+        self.events: list[tuple[str, object]] = []
+        self.fail_once_on = fail_once_on
+
+    def record(self, kind: str, payload) -> None:
+        if self.fail_once_on == kind:
+            self.fail_once_on = None
+            raise OSError(f"injected {kind} persistence failure")
+        self.events.append((kind, payload))
 
 
 def lookup_definition() -> ToolDefinition:
@@ -101,6 +129,68 @@ def response(
 
 
 class ApiSessionRunnerTests(unittest.TestCase):
+    def test_request_capture_failure_blocks_before_provider_call(self) -> None:
+        provider = ScriptedProvider(response("r1", FinishReason.COMPLETE, text="done"))
+        registry = ProviderRegistry()
+        registry.register("worker", provider)
+        runner = IsolatedApiSessionRunner(
+            registry,
+            tools=(ClientTool(lookup_definition(), lambda arguments: {}),),
+        )
+        with self.assertRaises(OSError):
+            runner.run(
+                provider_name="worker",
+                request=request(),
+                limits=limits(),
+                event_sink=RecordingSink("provider-request"),
+            )
+        self.assertEqual([], provider.requests)
+
+    def test_post_provider_capture_failure_records_gap_and_safe_pauses(self) -> None:
+        provider = ScriptedProvider(response("r1", FinishReason.COMPLETE, text="done"))
+        registry = ProviderRegistry()
+        registry.register("worker", provider)
+        sink = RecordingSink("provider-response")
+        runner = IsolatedApiSessionRunner(
+            registry,
+            tools=(ClientTool(lookup_definition(), lambda arguments: {}),),
+        )
+        result = runner.run(
+            provider_name="worker",
+            request=request(),
+            limits=limits(),
+            event_sink=sink,
+        )
+        self.assertEqual(ApiSessionStatus.SAFE_PAUSED, result.status)
+        self.assertEqual("trace-capture-gap", result.stop_reason)
+        self.assertEqual(1, len(provider.requests))
+        self.assertEqual(
+            ["provider-request", "capture-gap", "session-status"],
+            [kind for kind, _ in sink.events],
+        )
+
+    def test_capture_gap_failure_propagates_and_forbids_closeout(self) -> None:
+        class BrokenSink:
+            def record(self, kind: str, payload) -> None:
+                if kind in {"provider-response", "capture-gap"}:
+                    raise OSError("trace storage unavailable")
+
+        provider = ScriptedProvider(response("r1", FinishReason.COMPLETE, text="done"))
+        registry = ProviderRegistry()
+        registry.register("worker", provider)
+        runner = IsolatedApiSessionRunner(
+            registry,
+            tools=(ClientTool(lookup_definition(), lambda arguments: {}),),
+        )
+        with self.assertRaises(OSError):
+            runner.run(
+                provider_name="worker",
+                request=request(),
+                limits=limits(),
+                event_sink=BrokenSink(),
+            )
+        self.assertEqual(1, len(provider.requests))
+
     def test_runs_bounded_tool_loop_in_fresh_message_history(self) -> None:
         provider = ScriptedProvider(
             response(
@@ -183,6 +273,25 @@ class ApiSessionRunnerTests(unittest.TestCase):
         self.assertEqual(ApiSessionStatus.SAFE_PAUSED, result.status)
         self.assertEqual("tool-result-size-budget", result.stop_reason)
         self.assertEqual(1, result.model_turns)
+        self.assertEqual(1, result.tool_calls)
+
+    def test_cancellation_before_first_turn_makes_no_provider_call(self) -> None:
+        provider = ScriptedProvider(response("r1", FinishReason.COMPLETE, text="done"))
+        registry = ProviderRegistry()
+        registry.register("worker", provider)
+        runner = IsolatedApiSessionRunner(
+            registry,
+            tools=(ClientTool(lookup_definition(), lambda arguments: {}),),
+        )
+        result = runner.run(
+            provider_name="worker",
+            request=request(),
+            limits=limits(),
+            cancel_requested=lambda: True,
+        )
+        self.assertEqual(ApiSessionStatus.SAFE_PAUSED, result.status)
+        self.assertEqual("cancellation-requested", result.stop_reason)
+        self.assertEqual([], provider.requests)
 
     def test_hard_token_budget_requires_usage(self) -> None:
         provider = ScriptedProvider(
@@ -237,6 +346,54 @@ class ApiSessionRunnerTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "side-effect"):
             runner.run(provider_name="worker", request=request(), limits=limits())
         self.assertEqual([], provider.requests)
+
+    def test_provider_error_fails_session_and_preserves_partial_state(self) -> None:
+        provider = FailingProvider(
+            ProviderError(
+                ProviderErrorCategory.CONTRACT_VIOLATION,
+                "fake returned invalid JSON for structured output",
+            ),
+            response(
+                "r1",
+                FinishReason.TOOL_CALL,
+                tool_calls=(ToolCall("call-1", "lookup", {"id": "A"}),),
+            ),
+        )
+        registry = ProviderRegistry()
+        registry.register("worker", provider)
+        seen: list[str] = []
+        runner = IsolatedApiSessionRunner(
+            registry,
+            tools=(
+                ClientTool(
+                    lookup_definition(),
+                    lambda arguments: seen.append(str(arguments["id"])) or {"value": 7},
+                ),
+            ),
+        )
+
+        result = runner.run(provider_name="worker", request=request(), limits=limits())
+
+        self.assertEqual(ApiSessionStatus.FAILED, result.status)
+        self.assertEqual("provider-error:contract_violation", result.stop_reason)
+        self.assertEqual(1, result.model_turns)
+        self.assertEqual(1, result.tool_calls)
+        self.assertEqual(["A"], seen)
+        self.assertTrue(any("contract_violation" in warning for warning in result.warnings))
+
+    def test_provider_cancellation_is_a_safe_pause_not_a_failure(self) -> None:
+        provider = FailingProvider(
+            ProviderError(ProviderErrorCategory.CANCELLED, "cancelled by deadline")
+        )
+        registry = ProviderRegistry()
+        registry.register("worker", provider)
+        runner = IsolatedApiSessionRunner(
+            registry,
+            tools=(ClientTool(lookup_definition(), lambda arguments: {}),),
+        )
+        result = runner.run(provider_name="worker", request=request(), limits=limits())
+        self.assertEqual(ApiSessionStatus.SAFE_PAUSED, result.status)
+        self.assertEqual("provider-cancelled", result.stop_reason)
 
 
 if __name__ == "__main__":

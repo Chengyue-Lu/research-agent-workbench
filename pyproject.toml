@@ -15,6 +15,13 @@ dependencies = [
   "rfc3339-validator>=0.1.4,<0.2",
 ]
 
+[project.optional-dependencies]
+test = [
+  "build>=1.2,<2",
+  "coverage>=7.6,<8",
+  "hypothesis>=6.112,<7",
+]
+
 [project.scripts]
 rwb = "research_workbench.cli:main"
 
@@ -23,3 +30,12 @@ where = ["src"]
 
 [tool.setuptools.data-files]
 "share/research-agent-workbench/schemas/v0.1.0" = ["schemas/v0.1.0/*.schema.json"]
+"share/research-agent-workbench/schemas/v0.2.0" = ["schemas/v0.2.0/*.schema.json"]
+
+[tool.coverage.run]
+branch = true
+source = ["research_workbench"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 80

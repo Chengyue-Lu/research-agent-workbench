@@ -26,8 +26,8 @@
 - Canonical Profile → Codex config；
 - Skill Manifest → `SKILL.md` metadata；
 - Task → Resolved Task；
-- Task + Mode Action → Method Resolution（M8-003 目标，尚未实现）；
-- Capability Requirement → frozen Snapshot（Roadmap Phase B 目标，尚未实现）；
+- Task + Mode Action → Method Resolution（集成分支已有八个诊断 fixture 与 EVID-001）；
+- Capability Requirement → frozen Snapshot → Resolved Execution View（集成分支已有严格 preflight）；
 - Handoff → promotion eligibility；
 - Runtime capability snapshot；
 - 工具 Adapter 输入/输出。
@@ -40,6 +40,11 @@
 - 主 Agent读取两个 Handoff；
 - checkpoint → 新会话恢复；
 - input 修改 → stale 阻断。
+- Method/Action/Snapshot hash 漂移 → 执行前阻断；
+- exact Main State predecessor → 新 Attempt identity；
+- closeout 全文件 → marker-last completion manifest → file-only replay；
+- Evidence 缺少精确 Task input `{path, sha256}` → 不得 completed；
+- 工具失败或结果过大仍计入调用与副作用，cancel/deadline 进入显式停止状态。
 
 ### Skill Evals
 

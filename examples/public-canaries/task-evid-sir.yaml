@@ -1,0 +1,32 @@
+schema_version: 0.1.0
+task_id: EVID-SIR-001
+goal: Extract only the explicitly stated assumption from the bounded Kermack-McKendrick 1927 source record with DOI and locator intact.
+question_refs: [Q-SIR-001@1]
+active_modes: [evidence-synthesis]
+required_capabilities: [evidence-extraction, citation-location]
+required_skills: []
+forbidden_skills: [final-synthesis]
+agent_profile: evidence-scout
+input_refs:
+  - path: examples/public-canaries/EVID-SIR-001-source.txt
+    sha256: eccc6b84616786aec03c1ee3bac3ff041eb730a267f2e633742df7c0371ee3cc
+write_scope: [work/EVID-SIR-001/**]
+required_outputs: [evidence-record, handoff-transfer-manifest, handoff-packet]
+permissions:
+  filesystem: worktree-write
+  external_write: false
+  allowed_roots: [work/EVID-SIR-001]
+delegation: {allowed: false}
+budget: {max_turns: 5, max_output_tokens: 900, max_seconds: 120}
+atomic_boundary: One bounded public source record is inspected and one source-faithful Evidence record is closed out.
+completion_checks:
+  - Evidence retains DOI, locator, exact source file hash, and the source-stated-assumption ceiling.
+  - No statement is upgraded into a forecast or claim about a real epidemic.
+safe_pause_conditions:
+  - The source identity, locator, permission, or remaining closeout budget is unavailable.
+stop_conditions: [required_outputs_complete, source_boundary_exhausted, human_judgment_required]
+stale_if: [any_input_hash_changes]
+handoff_policy:
+  require_transfer_manifest: true
+  semantic_review: risk-triggered
+  minimum_semantic_samples: 1

@@ -5,6 +5,7 @@ from typing import Any, Mapping
 
 from research_workbench.contracts.common import (
     ContractError,
+    mapping_tuple,
     mapping_value,
     require_string,
     string_tuple,
@@ -71,6 +72,7 @@ class ResearchMode:
     applies_when: tuple[str, ...]
     required_artifact_types: tuple[str, ...]
     recommended_skill_capabilities: tuple[str, ...]
+    action_refs: tuple[Mapping[str, Any], ...]
     claim_allows: tuple[str, ...]
     claim_forbids_without_other_mode: tuple[str, ...]
     human_decisions: tuple[str, ...]
@@ -80,13 +82,34 @@ class ResearchMode:
     @classmethod
     def from_mapping(cls, data: Mapping[str, Any]) -> "ResearchMode":
         claim_rules = mapping_value(data, "claim_rules", required=True)
+        schema_version = require_string(data, "schema_version")
+        if schema_version not in {"0.1.0", "0.2.0"}:
+            raise ContractError("schema_version", "must be 0.1.0 or 0.2.0")
+        recommended = string_tuple(
+            data,
+            "recommended_skill_capabilities",
+            required=schema_version == "0.1.0",
+        )
+        action_refs = mapping_tuple(data, "action_refs")
+        if schema_version == "0.2.0" and not action_refs:
+            raise ContractError("action_refs", "Research Mode v0.2 requires frozen Mode Actions")
+        if schema_version == "0.2.0" and recommended:
+            raise ContractError(
+                "recommended_skill_capabilities",
+                "Research Mode v0.2 must derive needs from Mode Actions",
+            )
         return cls(
-            schema_version=require_string(data, "schema_version"),
+            schema_version=schema_version,
             mode_id=require_string(data, "mode_id"),
             version=require_string(data, "version"),
             applies_when=string_tuple(data, "applies_when", required=True),
-            required_artifact_types=string_tuple(data, "required_artifact_types", required=True),
-            recommended_skill_capabilities=string_tuple(data, "recommended_skill_capabilities", required=True),
+            required_artifact_types=string_tuple(
+                data,
+                "required_artifact_types",
+                required=schema_version == "0.1.0",
+            ),
+            recommended_skill_capabilities=recommended,
+            action_refs=action_refs,
             claim_allows=string_tuple(claim_rules, "allows", required=True),
             claim_forbids_without_other_mode=string_tuple(claim_rules, "forbids_without_other_mode"),
             human_decisions=string_tuple(data, "human_decisions", required=True),

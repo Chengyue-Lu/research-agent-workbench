@@ -1,0 +1,50 @@
+schema_version: 0.1.0
+snapshot_id: RCS-EVID-001
+task_ref:
+  path: examples/task-evidence.yaml
+  sha256: 50c015db236576ff8bfdcf615e0d96b814b493df5ab946be1b563666b905a218
+method_resolution_ref:
+  path: examples/method-resolutions/MR-EVID-001.yaml
+  sha256: e5a95a7ddf457fbb60e9a76bf5bc1c6702f72a63c43a9789867fb796b7f93b13
+status: resolved
+bindings:
+  - requirement_id: CAP-EVIDENCE-EXTRACTION
+    capability_id: evidence-extraction
+    origin: method
+    implementation_kind: accepted-skill
+    implementation_id: literature-evidence-extraction@0.1.0
+    source_ref:
+      path: .agents/skills/literature-evidence-extraction/SKILL.md
+      sha256: c0a080ea9c4743a599000bc6978386a8dcbb8aaa09e1ed4c0e54a4deadca780b
+    permissions: {data_egress: none, side_effects: [read-only]}
+    binding_details: {assignment_lock_required: true}
+  - requirement_id: CAP-CITATION-LOCATION
+    capability_id: citation-location
+    origin: method
+    implementation_kind: accepted-skill
+    implementation_id: literature-evidence-extraction@0.1.0
+    source_ref:
+      path: .agents/skills/literature-evidence-extraction/SKILL.md
+      sha256: c0a080ea9c4743a599000bc6978386a8dcbb8aaa09e1ed4c0e54a4deadca780b
+    permissions: {data_egress: none, side_effects: [read-only]}
+    binding_details: {assignment_lock_required: true}
+  - requirement_id: EXEC-LOCAL-FILE-TOOLS
+    capability_id: bounded-local-file-tools
+    origin: execution
+    implementation_kind: client-tool
+    implementation_id: K-API-2-file-tools
+    permissions: {data_egress: none, side_effects: [read-only, local-write]}
+    binding_details: {tool_ids: [read_file, write_artifact, list_outputs]}
+  - requirement_id: EXEC-PROVIDER-ADAPTER
+    capability_id: isolated-api-session
+    origin: execution
+    implementation_kind: provider-adapter
+    implementation_id: explicit-model-pool-slot
+    source_ref:
+      path: registry/providers/adapters.yaml
+      sha256: 37cf052a4e62d0df51c3ce541d204f0938653c30a9d933d84915c65f221ab8f5
+    permissions: {data_egress: external, side_effects: []}
+    binding_details: {slot_id: primary, adapter_selection: explicit-only}
+unresolved_requirement_ids: []
+resolved_by: resolver
+resolved_at: "2026-08-20T00:00:00Z"

@@ -1,0 +1,13 @@
+schema_version: 0.1.0
+action_id: SIM-A8
+mode_id: simulation
+version: 1.0.0
+trigger: [A simulation figure is generated or materially changed.]
+non_trigger: [No visual artifact is created or changed.]
+failure_conditions: [Color scale, interpolation, truncation, or missing provenance misleads interpretation.]
+required_artifact_types: [figure-spec, rendered-artifact, lineage]
+claim_effects: [A figure cannot strengthen a claim beyond its source runs and approved transformations.]
+human_gates: [approve-final-scientific-expression]
+stop_conditions: [The figure, lineage, and interpretation boundaries are reviewable.]
+blocked_conditions: [The source run, transformation, or visual encoding cannot be established.]
+allowed_mechanisms: [task-contract, deterministic-tool, capability, human-gate, blocked]

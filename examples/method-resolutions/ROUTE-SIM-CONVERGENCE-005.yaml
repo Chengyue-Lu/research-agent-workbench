@@ -1,0 +1,26 @@
+schema_version: 0.1.0
+resolution_id: MR-ROUTE-SIM-CONVERGENCE-005
+task_ref: mode-action-routing-v1#ROUTE-SIM-CONVERGENCE-005
+status: human-required
+mode_decision: {status: selected, primary_mode: simulation, reason: The proposed claim depends on numerical verification choices.}
+action_selections:
+  - {action_id: SIM-A3, status: selected, mode_id: simulation, version: 1.0.0, source_path: registry/mode-actions/simulation/SIM-A3.yaml, sha256: 27fe38bcf6bd04e073ea93e34fb2e4e647745476c61e36f42a5988cde7ca05f3}
+  - {action_id: SIM-A7, status: selected, mode_id: simulation, version: 1.0.0, source_path: registry/mode-actions/simulation/SIM-A7.yaml, sha256: 2cde6d6c3d8d1188a9d28785e622bfb7be6c938d6ecbb6aab1917d818ebfe0ca}
+method_obligations:
+  - {action_id: SIM-A3, obligation: Design a defensible refinement and error study.}
+  - {action_id: SIM-A7, obligation: Prevent numerical convergence from implying physical validation.}
+mechanism_resolutions:
+  - {action_id: SIM-A3, selected: skill-need, reason: Refinement and error-metric design is a reusable semantic gap., capability_requirement_refs: [CAP-BOUNDED-COMPUTE], skill_need_refs: [NEED-SIM-CONVERGENCE-STUDY], human_gate_refs: [HG-SIM-ERROR-BOUND]}
+  - {action_id: SIM-A7, selected: human-gate, reason: Claim acceptance is reserved for the researcher., capability_requirement_refs: [CAP-RESEARCH-CONTRACT-CHECK], human_gate_refs: [HG-SIM-CLAIM]}
+capability_requirements:
+  - {requirement_id: CAP-BOUNDED-COMPUTE, capability_id: bounded-compute, data_egress: none}
+  - {requirement_id: CAP-RESEARCH-CONTRACT-CHECK, capability_id: research-contract-check, data_egress: none}
+human_gates:
+  - {gate_id: HG-SIM-ERROR-BOUND, decision_type: minimal_mechanism, status: pending}
+  - {gate_id: HG-SIM-CLAIM, decision_type: claim_promotion, status: pending}
+rejected_alternatives:
+  - {alternative: exit-zero-means-converged, reason: Process success is not numerical evidence.}
+decision_records:
+  - {decision_type: mode_action_selection, decided_by: resolver, outcome: selected, reason: SIM-A3 and SIM-A7 triggers match.}
+  - {decision_type: minimal_mechanism, decided_by: resolver, outcome: skill-need-and-human-gate, reason: Study design and claim approval remain unresolved.}
+unresolved: [A convergence-study implementation and both human decisions are required.]

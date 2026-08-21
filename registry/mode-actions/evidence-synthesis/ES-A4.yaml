@@ -1,0 +1,13 @@
+schema_version: 0.1.0
+action_id: ES-A4
+mode_id: evidence-synthesis
+version: 1.0.0
+trigger: [A pinned source must be converted into atomic evidence records.]
+non_trigger: [The task only searches for sources or promotes a completed synthesis claim.]
+failure_conditions: [Inference is presented as source fact, counterevidence is omitted, or meaning is over-extracted.]
+required_artifact_types: [evidence]
+claim_effects: [Evidence strength is limited to what the source locator directly supports.]
+human_gates: [sample-high-risk-extractions]
+stop_conditions: [Each evidence record has provenance, locator, scope, and limitations.]
+blocked_conditions: [The source text or locator needed to verify the record is unavailable.]
+allowed_mechanisms: [task-contract, deterministic-tool, human-gate, blocked]

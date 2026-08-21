@@ -1,0 +1,38 @@
+schema_version: 0.1.0
+snapshot_id: RCS-EVID-SIR-001
+task_ref: {path: examples/public-canaries/task-evid-sir.yaml, sha256: 8a6e35949686ea4a7696e822be0f4e19242892f423f25552313d5c5767e3f5ee}
+method_resolution_ref: {path: examples/method-resolutions/MR-EVID-SIR-001.yaml, sha256: 1c003fc707c863f9e0fed44f050339e930ad1a20426305dc0acf2f343c87c539}
+status: resolved
+bindings:
+  - requirement_id: CAP-EVIDENCE-EXTRACTION
+    capability_id: evidence-extraction
+    origin: method
+    implementation_kind: task-contract
+    implementation_id: EVID-SIR-001-task-contract
+    permissions: {data_egress: none, side_effects: [read-only]}
+    binding_details: {skill_required: false, claim_ceiling: source-stated-assumption-only}
+  - requirement_id: CAP-CITATION-LOCATION
+    capability_id: citation-location
+    origin: method
+    implementation_kind: task-contract
+    implementation_id: EVID-SIR-001-task-contract
+    permissions: {data_egress: none, side_effects: [read-only]}
+    binding_details: {doi_required: true, locator_required: true}
+  - requirement_id: EXEC-LOCAL-FILE-TOOLS
+    capability_id: bounded-local-file-tools
+    origin: execution
+    implementation_kind: client-tool
+    implementation_id: K-API-2-file-tools
+    permissions: {data_egress: none, side_effects: [read-only, local-write]}
+    binding_details: {tool_ids: [read_file, write_artifact, list_outputs]}
+  - requirement_id: EXEC-PROVIDER-ADAPTER
+    capability_id: isolated-api-session
+    origin: execution
+    implementation_kind: provider-adapter
+    implementation_id: openai-responses
+    source_ref: {path: registry/providers/adapters.yaml, sha256: 37cf052a4e62d0df51c3ce541d204f0938653c30a9d933d84915c65f221ab8f5}
+    permissions: {data_egress: external, side_effects: []}
+    binding_details: {slot_id: primary, provider_adapter: openai-responses, adapter_selection: explicit-only}
+unresolved_requirement_ids: []
+resolved_by: resolver
+resolved_at: "2026-08-21T00:00:00Z"

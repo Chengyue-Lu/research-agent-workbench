@@ -16,7 +16,7 @@ class KernelObjectTests(unittest.TestCase):
             support_refs=[supporting.ref],
             counterevidence_refs=[opposing.ref],
         )
-        self.assertEqual([ObjectRef("E-001", 1)], claim.evidence_refs)
+        self.assertEqual([ObjectRef("E-001", 1)], claim.support_refs)
         self.assertEqual([ObjectRef("E-002", 1)], claim.counterevidence_refs)
 
 

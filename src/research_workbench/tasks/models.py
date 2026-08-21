@@ -226,6 +226,7 @@ class AttemptRecord:
     skill_lock: tuple[str, ...]
     skill_assignment_ref: str | None
     runtime_snapshot_ref: str | None
+    trace_ref: FileReference | None
     execution_receipt_ref: str | None
     artifact_refs: tuple[str, ...]
     handoff_ref: str | None
@@ -240,6 +241,10 @@ class AttemptRecord:
         receipt_ref = optional_string(data, "execution_receipt_ref")
         handoff_ref = optional_string(data, "handoff_ref")
         assignment_ref = optional_string(data, "skill_assignment_ref")
+        trace_mapping = data.get("trace_ref")
+        if trace_mapping is not None and not isinstance(trace_mapping, Mapping):
+            raise ContractError("trace_ref", "must be a file reference")
+        trace_ref = FileReference.from_mapping(trace_mapping) if isinstance(trace_mapping, Mapping) else None
         for field, value in (
             ("skill_assignment_ref", assignment_ref),
             ("runtime_snapshot_ref", runtime_ref),
@@ -270,6 +275,7 @@ class AttemptRecord:
             skill_lock=string_tuple(data, "skill_lock", required=True),
             skill_assignment_ref=assignment_ref,
             runtime_snapshot_ref=runtime_ref,
+            trace_ref=trace_ref,
             execution_receipt_ref=receipt_ref,
             artifact_refs=artifact_refs,
             handoff_ref=handoff_ref,

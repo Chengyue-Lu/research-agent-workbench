@@ -1,0 +1,24 @@
+schema_version: 0.1.0
+resolution_id: MR-ROUTE-ES-CONFLICT-003
+task_ref: mode-action-routing-v1#ROUTE-ES-CONFLICT-003
+status: human-required
+mode_decision: {status: selected, primary_mode: evidence-synthesis, reason: Existing evidence must be related to a bounded synthesis claim.}
+action_selections:
+  - {action_id: ES-A6, status: selected, mode_id: evidence-synthesis, version: 1.0.0, source_path: registry/mode-actions/evidence-synthesis/ES-A6.yaml, sha256: 968c49fac7ef1cbd75f31cdf44e11de874fe7fedea7c50ff22500a330494747b}
+  - {action_id: ES-A8, status: selected, mode_id: evidence-synthesis, version: 1.0.0, source_path: registry/mode-actions/evidence-synthesis/ES-A8.yaml, sha256: c9dc1d5dce46535a03b0f6747699b60daa80903320e3345e506a95923d86ac59}
+method_obligations:
+  - {action_id: ES-A6, obligation: Distinguish conflict from population or measurement-scope differences.}
+  - {action_id: ES-A8, obligation: Keep final interpretation under human authority.}
+mechanism_resolutions:
+  - {action_id: ES-A6, selected: skill-need, reason: Cross-evidence semantic reconciliation is not a deterministic graph check., capability_requirement_refs: [CAP-RESEARCH-CONTRACT-CHECK], skill_need_refs: [NEED-ES-CONFLICT-SYNTHESIS]}
+  - {action_id: ES-A8, selected: human-gate, reason: Claim promotion is a human decision., human_gate_refs: [HG-ES-SYNTHESIS]}
+capability_requirements:
+  - {requirement_id: CAP-RESEARCH-CONTRACT-CHECK, capability_id: research-contract-check, data_egress: none}
+human_gates:
+  - {gate_id: HG-ES-SYNTHESIS, decision_type: claim_promotion, status: pending}
+rejected_alternatives:
+  - {alternative: majority-vote-synthesis, reason: Vote count cannot resolve evidence scope.}
+decision_records:
+  - {decision_type: mode_action_selection, decided_by: resolver, outcome: selected, reason: Conflict synthesis and claim decision are both triggered.}
+  - {decision_type: minimal_mechanism, decided_by: resolver, outcome: skill-need-and-human-gate, reason: Interpretation is semantic and promotion is reserved.}
+unresolved: [A candidate implementation and human synthesis decision are required.]

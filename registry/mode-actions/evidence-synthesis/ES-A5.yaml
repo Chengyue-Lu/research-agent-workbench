@@ -1,0 +1,13 @@
+schema_version: 0.1.0
+action_id: ES-A5
+mode_id: evidence-synthesis
+version: 1.0.0
+trigger: [Source applicability or methodological quality changes its weight in synthesis.]
+non_trigger: [Only bibliographic metadata or deterministic locator integrity is being checked.]
+failure_conditions: [Venue rank is treated as absolute quality or discipline-specific limitations are ignored.]
+required_artifact_types: [appraisal-note, quality-flag]
+claim_effects: [Claim support must preserve source applicability and quality limitations.]
+human_gates: [decide-source-weight]
+stop_conditions: [The source weight and its rationale are explicitly recorded.]
+blocked_conditions: [Required disciplinary appraisal criteria are absent or disputed.]
+allowed_mechanisms: [task-contract, human-gate, blocked]

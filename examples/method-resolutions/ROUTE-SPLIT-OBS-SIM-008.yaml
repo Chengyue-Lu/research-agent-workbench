@@ -1,0 +1,24 @@
+schema_version: 0.1.0
+resolution_id: MR-ROUTE-SPLIT-OBS-SIM-008
+task_ref: mode-action-routing-v1#ROUTE-SPLIT-OBS-SIM-008
+status: split-required
+mode_decision: {status: ambiguous-blocked, primary_mode: simulation, unresolved_mode: observational-statistics, reason: The admitted simulation Mode does not cover observational identification and bias.}
+action_selections:
+  - {action_id: SIM-A1, status: selected, mode_id: simulation, version: 1.0.0, source_path: registry/mode-actions/simulation/SIM-A1.yaml, sha256: 90144e9b2135d382bbc599f49f5ef5a2a122b07509aa1f54ab4923bb1a02165c}
+  - {action_id: observational-identification, status: candidate-gap}
+method_obligations:
+  - {action_id: SIM-A1, obligation: Freeze simulation assumptions independently of observational inference.}
+  - {action_id: observational-identification, obligation: Preserve the unrepresented identification and bias problem.}
+mechanism_resolutions:
+  - {action_id: SIM-A1, selected: task-contract, reason: The admitted simulation subtask can be bounded independently.}
+  - {action_id: observational-identification, selected: split-and-block, reason: No admitted Mode defines the required claim rules., human_gate_refs: [HG-OBS-MODE]}
+capability_requirements: []
+human_gates:
+  - {gate_id: HG-OBS-MODE, decision_type: methodology_fallback, status: pending}
+rejected_alternatives:
+  - {alternative: force-fit-evidence-synthesis, reason: Source synthesis does not define causal identification.}
+  - {alternative: force-fit-simulation, reason: Simulation validation does not define observational bias control.}
+decision_records:
+  - {decision_type: mode_action_selection, decided_by: resolver, outcome: candidate-gap, reason: One required method action is not admitted.}
+  - {decision_type: minimal_mechanism, decided_by: resolver, outcome: split-and-block, reason: The valid simulation subtask must be separated.}
+unresolved: [Observational Mode admission and the combined real-world claim boundary require human resolution.]

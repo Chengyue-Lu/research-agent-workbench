@@ -33,7 +33,7 @@ IsolatedApiSessionRunner.run(request, limits) -> ApiSessionResult
 
 模型池固定为 `explicit-slot-only`。初始约定为一个 `primary`、一个 `worker` 和按需的少量 `specialist` 槽；允许多个槽暂时指向同一模型，也允许没有 specialist。不实现价格抓取、综合评分、LLM Router 或自动降级。
 
-每次 `run` 都是新隔离会话；Runner 不保存跨调用消息、不把 provider response ID 当状态，也不跨 Provider fallback。它当前提供模型轮次、工具调用、单轮并行、工具副作用类别、工具结果字符、单轮输出、累计 token/可得成本与 wall time 硬边界。`K-API-1` 只证明该执行缝可离线工作；Task/Assignment 到 Attempt/Handoff/Receipt 的文件桥接属于 `K-API-2`。
+每次 `run` 都是新隔离会话；Runner 不保存跨调用消息、不把 provider response ID 当状态，也不跨 Provider fallback。它当前提供模型轮次、工具调用、单轮并行、工具副作用类别、工具结果字符、单轮输出、累计 token/可得成本与 wall time 硬边界。集成分支的 `K-API-2` 已把 Task/Assignment/Method/Snapshot 编译到 Attempt/Handoff/Receipt，并以 marker-last manifest 提供 file-only replay；live 结果仍与离线证据分开。
 
 ## 3. Runtime Adapter 接口（可选平台路径）
 
@@ -162,3 +162,6 @@ API 路径额外记录所选模型槽、请求模型和 Provider 实际返回模
 - 一个显式 `worker` 槽可以启动 fresh API session，完成一次有界客户端工具往返；
 - 未知槽、缺少模型、data-policy gap、工具预算和不可测硬预算会在本地失败或安全暂停；
 - API Runner 不保存跨 Attempt 会话，也不自动更换 Provider/Model。
+- 严格执行在调用 Provider 前验证 Method Authority、Capability binding、前序 Main State 与全部 pin；
+- Evidence 精确绑定 Task input，工具 invocation（含失败/超大结果）记录预算与副作用；
+- cancel/deadline 有显式停止语义，半发布批次没有 completion marker 就不能视为已提交。

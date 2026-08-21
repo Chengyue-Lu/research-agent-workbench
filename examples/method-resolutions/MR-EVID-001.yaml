@@ -1,0 +1,49 @@
+schema_version: 0.1.0
+resolution_id: MR-EVID-001
+task_ref: examples/task-evidence.yaml
+status: resolved
+mode_decision:
+  status: selected
+  primary_mode: evidence-synthesis
+  reason: The frozen Task requests bounded evidence extraction from a pinned local source.
+action_selections:
+  - action_id: ES-A4
+    status: selected
+    mode_id: evidence-synthesis
+    version: 1.0.0
+    source_path: registry/mode-actions/evidence-synthesis/ES-A4.yaml
+    sha256: 05b5f5788bb0ddce523243475c7cba22725d2898c12667344424f12d2128b5fe
+method_obligations:
+  - action_id: ES-A4
+    obligation: Preserve exact source identity and locator while producing atomic Evidence.
+mechanism_resolutions:
+  - action_id: ES-A4
+    selected: skill-need
+    reason: The accepted extraction Skill supplies reusable semantic procedure beyond file reading.
+    capability_requirement_refs: [CAP-EVIDENCE-EXTRACTION, CAP-CITATION-LOCATION]
+    skill_need_refs: [literature-evidence-extraction]
+capability_requirements:
+  - requirement_id: CAP-EVIDENCE-EXTRACTION
+    capability_id: evidence-extraction
+    data_egress: none
+  - requirement_id: CAP-CITATION-LOCATION
+    capability_id: citation-location
+    data_egress: none
+human_gates: []
+rejected_alternatives:
+  - alternative: unconstrained literature search
+    reason: The Task freezes a single local source and forbids boundary expansion.
+decision_records:
+  - decision_type: mode_action_selection
+    decided_by: resolver
+    outcome: selected
+    reason: The Task active mode and ES-A4 trigger both require atomic evidence extraction.
+  - decision_type: minimal_mechanism
+    decided_by: resolver
+    outcome: accepted-skill
+    reason: One accepted Skill plus bounded client tools is the smallest sufficient mechanism.
+  - decision_type: skill_tool_binding
+    decided_by: resolver
+    outcome: literature-evidence-extraction@0.1.0
+    reason: The Skill lock and Task capability requirements match without fallback.
+unresolved: []

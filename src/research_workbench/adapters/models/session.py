@@ -12,7 +12,7 @@ import time
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass, replace
 from enum import StrEnum
-from typing import Any
+from typing import Any, Protocol
 
 from research_workbench.adapters.models.base import validate_response_contract
 from research_workbench.adapters.models.port import (
@@ -21,6 +21,8 @@ from research_workbench.adapters.models.port import (
     Message,
     ModelRequest,
     ModelResponse,
+    ProviderError,
+    ProviderErrorCategory,
     ProviderRegistry,
     ToolCall,
     ToolDefinition,
@@ -83,6 +85,12 @@ class ClientTool:
     side_effect: str = "read-only"
 
 
+class SessionEventSink(Protocol):
+    """One provider-neutral durability boundary for session events."""
+
+    def record(self, kind: str, payload: Mapping[str, Any]) -> None: ...
+
+
 @dataclass(frozen=True, slots=True)
 class AggregateUsage:
     input_tokens: int | None
@@ -135,6 +143,8 @@ class IsolatedApiSessionRunner:
         provider_name: str,
         request: ModelRequest,
         limits: ApiSessionLimits,
+        cancel_requested: Callable[[], bool] | None = None,
+        event_sink: SessionEventSink | None = None,
     ) -> ApiSessionResult:
         declared = {tool.name for tool in request.tools}
         missing_handlers = sorted(declared - set(self._tools))
@@ -171,10 +181,22 @@ class IsolatedApiSessionRunner:
         responses: list[ModelResponse] = []
         tool_call_count = 0
         warnings: list[str] = []
+        cancelled = cancel_requested or (lambda: False)
 
         while True:
+            if cancelled():
+                return self._finish(
+                    ApiSessionStatus.SAFE_PAUSED,
+                    "cancellation-requested",
+                    provider_name,
+                    request.model,
+                    responses,
+                    tool_call_count,
+                    warnings,
+                    event_sink,
+                )
             if len(responses) >= limits.max_model_turns:
-                return self._result(
+                return self._finish(
                     ApiSessionStatus.SAFE_PAUSED,
                     "model-turn-budget",
                     provider_name,
@@ -182,9 +204,10 @@ class IsolatedApiSessionRunner:
                     responses,
                     tool_call_count,
                     warnings,
+                    event_sink,
                 )
             if self._clock() - started >= limits.max_seconds:
-                return self._result(
+                return self._finish(
                     ApiSessionStatus.SAFE_PAUSED,
                     "wall-time-budget",
                     provider_name,
@@ -192,16 +215,72 @@ class IsolatedApiSessionRunner:
                     responses,
                     tool_call_count,
                     warnings,
+                    event_sink,
                 )
 
             current = replace(bounded_request, messages=tuple(messages))
-            response = validate_response_contract(current, provider.generate(current))
+            try:
+                if event_sink is not None:
+                    event_sink.record("provider-request", {"request": current})
+                response = validate_response_contract(current, provider.generate(current))
+                if event_sink is not None:
+                    try:
+                        event_sink.record("provider-response", {"response": response})
+                    except Exception as exc:
+                        event_sink.record(
+                            "capture-gap",
+                            {"stream": "messages", "reason": f"post-provider response capture failed: {type(exc).__name__}"},
+                        )
+                        return self._finish(
+                            ApiSessionStatus.SAFE_PAUSED,
+                            "trace-capture-gap",
+                            provider_name,
+                            request.model,
+                            responses,
+                            tool_call_count,
+                            warnings,
+                            event_sink,
+                        )
+            except ProviderError as exc:
+                # A provider that misbehaves mid-loop ends the session honestly
+                # instead of crashing it; partial turn state is preserved.
+                warnings.append(f"provider error ({exc.category}): {exc}")
+                return self._finish(
+                    (
+                        ApiSessionStatus.SAFE_PAUSED
+                        if exc.category == ProviderErrorCategory.CANCELLED
+                        else ApiSessionStatus.FAILED
+                    ),
+                    (
+                        "provider-cancelled"
+                        if exc.category == ProviderErrorCategory.CANCELLED
+                        else f"provider-error:{exc.category}"
+                    ),
+                    provider_name,
+                    request.model,
+                    responses,
+                    tool_call_count,
+                    warnings,
+                    event_sink,
+                )
             responses.append(response)
             warnings.extend(response.warnings)
 
+            if cancelled():
+                return self._finish(
+                    ApiSessionStatus.SAFE_PAUSED,
+                    "cancellation-requested",
+                    provider_name,
+                    request.model,
+                    responses,
+                    tool_call_count,
+                    warnings,
+                    event_sink,
+                )
+
             budget_reason = _usage_budget_reason(responses, limits)
             if budget_reason is not None:
-                return self._result(
+                return self._finish(
                     ApiSessionStatus.SAFE_PAUSED,
                     budget_reason,
                     provider_name,
@@ -209,9 +288,10 @@ class IsolatedApiSessionRunner:
                     responses,
                     tool_call_count,
                     warnings,
+                    event_sink,
                 )
             if self._clock() - started >= limits.max_seconds:
-                return self._result(
+                return self._finish(
                     ApiSessionStatus.SAFE_PAUSED,
                     "wall-time-budget",
                     provider_name,
@@ -219,11 +299,12 @@ class IsolatedApiSessionRunner:
                     responses,
                     tool_call_count,
                     warnings,
+                    event_sink,
                 )
 
             if response.tool_calls:
                 if len(response.tool_calls) > limits.max_parallel_tool_calls:
-                    return self._result(
+                    return self._finish(
                         ApiSessionStatus.SAFE_PAUSED,
                         "parallel-tool-budget",
                         provider_name,
@@ -231,9 +312,10 @@ class IsolatedApiSessionRunner:
                         responses,
                         tool_call_count,
                         warnings,
+                        event_sink,
                     )
                 if tool_call_count + len(response.tool_calls) > limits.max_tool_calls:
-                    return self._result(
+                    return self._finish(
                         ApiSessionStatus.SAFE_PAUSED,
                         "tool-call-budget",
                         provider_name,
@@ -241,6 +323,7 @@ class IsolatedApiSessionRunner:
                         responses,
                         tool_call_count,
                         warnings,
+                        event_sink,
                     )
                 assistant_blocks = [
                     *response.output,
@@ -248,7 +331,27 @@ class IsolatedApiSessionRunner:
                 ]
                 tool_blocks: list[ContentBlock] = []
                 for call in response.tool_calls:
+                    if cancelled():
+                        return self._finish(
+                            ApiSessionStatus.SAFE_PAUSED,
+                            "cancellation-requested",
+                            provider_name,
+                            request.model,
+                            responses,
+                            tool_call_count,
+                            warnings,
+                            event_sink,
+                        )
                     binding = self._tools[call.name]
+                    # Invocation is the accounting boundary: failures and
+                    # oversized results still consumed a call and may have
+                    # produced an observable side effect.
+                    tool_call_count += 1
+                    if event_sink is not None:
+                        event_sink.record(
+                            "tool-attempted",
+                            {"call_id": call.call_id, "name": call.name, "arguments": dict(call.arguments)},
+                        )
                     try:
                         output = binding.execute(call.arguments)
                         is_error = False
@@ -256,8 +359,35 @@ class IsolatedApiSessionRunner:
                         output = {"error": type(exc).__name__}
                         is_error = True
                     rendered = _render_tool_output(output)
+                    if event_sink is not None:
+                        try:
+                            event_sink.record(
+                                "tool-result",
+                                {
+                                    "call_id": call.call_id,
+                                    "name": call.name,
+                                    "arguments": dict(call.arguments),
+                                    "status": "failed" if is_error else "succeeded",
+                                    "result": output,
+                                },
+                            )
+                        except Exception as exc:
+                            event_sink.record(
+                                "capture-gap",
+                                {"stream": "tool-results", "reason": f"post-tool result capture failed: {type(exc).__name__}"},
+                            )
+                            return self._finish(
+                                ApiSessionStatus.SAFE_PAUSED,
+                                "trace-capture-gap",
+                                provider_name,
+                                request.model,
+                                responses,
+                                tool_call_count,
+                                warnings,
+                                event_sink,
+                            )
                     if len(rendered) > limits.max_tool_result_chars:
-                        return self._result(
+                        return self._finish(
                             ApiSessionStatus.SAFE_PAUSED,
                             "tool-result-size-budget",
                             provider_name,
@@ -265,6 +395,7 @@ class IsolatedApiSessionRunner:
                             responses,
                             tool_call_count,
                             warnings,
+                            event_sink,
                         )
                     tool_blocks.append(
                         ContentBlock(
@@ -277,13 +408,12 @@ class IsolatedApiSessionRunner:
                             },
                         )
                     )
-                    tool_call_count += 1
                 messages.append(Message("assistant", tuple(assistant_blocks)))
                 messages.append(Message("tool", tuple(tool_blocks)))
                 continue
 
             status, reason = _terminal_status(response.finish_reason)
-            return self._result(
+            return self._finish(
                 status,
                 reason,
                 provider_name,
@@ -291,7 +421,27 @@ class IsolatedApiSessionRunner:
                 responses,
                 tool_call_count,
                 warnings,
+                event_sink,
             )
+
+    @classmethod
+    def _finish(
+        cls,
+        status: ApiSessionStatus,
+        stop_reason: str,
+        provider: str,
+        requested_model: str,
+        responses: list[ModelResponse],
+        tool_calls: int,
+        warnings: list[str],
+        event_sink: SessionEventSink | None,
+    ) -> ApiSessionResult:
+        if event_sink is not None:
+            event_sink.record(
+                "session-status",
+                {"status": status.value, "reason": stop_reason},
+            )
+        return cls._result(status, stop_reason, provider, requested_model, responses, tool_calls, warnings)
 
     @staticmethod
     def _result(

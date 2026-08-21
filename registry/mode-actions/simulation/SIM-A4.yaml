@@ -1,0 +1,13 @@
+schema_version: 0.1.0
+action_id: SIM-A4
+mode_id: simulation
+version: 1.0.0
+trigger: [A conclusion depends on uncertain inputs or parameter ranges.]
+non_trigger: [The task is a single-parameter debug run or repeats fixed inputs.]
+failure_conditions: [Ranges are arbitrary, local sensitivity is generalized, or input uncertainty is omitted.]
+required_artifact_types: [sensitivity-plan, run-set, uncertainty-report]
+claim_effects: [Sensitivity and uncertainty claims are limited to the approved design and distributions.]
+human_gates: [approve-parameter-distributions-and-importance-interpretation]
+stop_conditions: [The planned uncertainty questions are answered within declared limits.]
+blocked_conditions: [Parameter distributions or model uncertainty cannot be responsibly specified.]
+allowed_mechanisms: [task-contract, capability, skill-need, human-gate, blocked]

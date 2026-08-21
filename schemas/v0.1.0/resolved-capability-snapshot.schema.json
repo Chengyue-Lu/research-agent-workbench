@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/resolved-capability-snapshot.schema.json",
+  "x-rwb-document-kind": "resolved_capability_snapshot",
+  "title": "Resolved Capability Snapshot",
+  "type": "object",
+  "required": [
+    "schema_version", "snapshot_id", "task_ref", "method_resolution_ref",
+    "status", "bindings", "unresolved_requirement_ids", "resolved_by", "resolved_at"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "snapshot_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "task_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "method_resolution_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "status": { "enum": ["resolved", "blocked"] },
+    "bindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "requirement_id", "capability_id", "origin", "implementation_kind",
+          "implementation_id", "permissions", "binding_details"
+        ],
+        "properties": {
+          "requirement_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "capability_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "origin": { "enum": ["method", "execution"] },
+          "implementation_kind": {
+            "enum": [
+              "no-skill", "task-contract", "task-template", "client-tool",
+              "accepted-skill", "provider-adapter", "host-capability", "human-gate"
+            ]
+          },
+          "implementation_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "source_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+          "permissions": {
+            "type": "object",
+            "required": ["data_egress", "side_effects"],
+            "properties": {
+              "data_egress": { "enum": ["none", "local", "external"] },
+              "side_effects": {
+                "type": "array",
+                "items": { "enum": ["read-only", "local-write", "external-write"] },
+                "uniqueItems": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "binding_details": { "type": "object" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "unresolved_requirement_ids": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "resolved_by": { "enum": ["resolver", "human"] },
+    "resolved_at": { "type": "string", "format": "date-time" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "resolved" } } },
+      "then": { "properties": { "unresolved_requirement_ids": { "maxItems": 0 } } }
+    },
+    {
+      "if": { "properties": { "status": { "const": "blocked" } } },
+      "then": { "properties": { "unresolved_requirement_ids": { "minItems": 1 } } }
+    }
+  ],
+  "additionalProperties": false
+}

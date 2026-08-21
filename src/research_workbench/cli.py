@@ -5,6 +5,7 @@ import json
 import os
 import subprocess
 import tempfile
+from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -13,6 +14,7 @@ import yaml
 
 from research_workbench.adapters import CodexRuntimeAdapter
 from research_workbench.adapters.models import (
+    ProviderRegistry,
     build_live_provider,
     conformance_plan,
     get_provider_adapter_config,
@@ -488,7 +490,7 @@ def _provider_conformance(args: argparse.Namespace) -> int:
 
 
 def _model_pool_probe(args: argparse.Namespace) -> int:
-    pool = load_model_pool(args.config)
+    pool = load_model_pool(args.config, adapters_path=args.adapters)
     environment = os.environ if args.check_environment else None
     report = pool.probe(environment=environment)
     if args.json:
@@ -542,11 +544,15 @@ def _task_resolve(args: argparse.Namespace) -> int:
                 raise ValueError("task resolution requires --registry or at least one --skill")
             skills = [SkillManifest.from_mapping(_load_valid(path, "skill_manifest")) for path in args.skill]
             resolved = resolve_task(task, profile, skills)
-    except (KeyError, ResolutionError) as exc:
-        if isinstance(exc, KeyError):
-            print(f"BLOCK   SKILL-MISSING                {exc}")
-            return 1
+    except ResolutionError as exc:
         return _print_risks(exc.risks)
+    except (KeyError, ContractError) as exc:
+        # Registry drift/malformation raises ContractError with other fields and
+        # must keep the exit-2 contract-error channel via main().
+        if isinstance(exc, ContractError) and exc.field != "required_skills":
+            raise
+        print(f"BLOCK   SKILL-MISSING                {exc}")
+        return 1
     document = to_plain(resolved)
     if args.output:
         _write_yaml(Path(args.output), document)
@@ -669,6 +675,8 @@ def _handoff_audit_transfer(args: argparse.Namespace) -> int:
 
 def _reference_check(args: argparse.Namespace) -> int:
     document = load_document(args.document)
+    if not isinstance(document, Mapping):
+        raise ValueError(f"{args.document}: document must be an object")
     return _print_risks(_document_reference_risks(document, Path(args.root).resolve()))
 
 
@@ -832,6 +840,7 @@ def _context_resume_check(args: argparse.Namespace) -> int:
             capture_output=True,
             text=True,
             check=False,
+            timeout=10,
         )
         actual_head = completed.stdout.strip().lower() if completed.returncode == 0 else None
         if actual_head is None:
@@ -931,6 +940,77 @@ def _execution_assess(args: argparse.Namespace) -> int:
     )
 
 
+def _trace_validate(args: argparse.Namespace) -> int:
+    from research_workbench.observability.trace import validate_attempt_trace
+
+    return _print_risks(validate_attempt_trace(args.root, args.attempt).risks)
+
+
+def _execute_task(args: argparse.Namespace) -> int:
+    # The K-API-2 execution package is imported at the use site so this module
+    # stays importable while the package lands incrementally.
+    from research_workbench.execution import ExecutionPlanError
+    from research_workbench.execution.closeout import closeout
+    from research_workbench.execution.compiler import compile_execution
+    from research_workbench.execution.runner import execute_plan
+    from research_workbench.execution.testing import load_scripted_provider
+
+    try:
+        plan = compile_execution(
+            args.task,
+            args.assignment,
+            slot=args.slot,
+            pool_path=args.pool,
+            adapters_path=args.adapters,
+            root=args.root,
+            attempt_id=args.attempt_id,
+            environment=os.environ if args.allow_live else None,
+            model_override="scripted-offline" if args.scripted_session else None,
+            method_resolution_path=args.method_resolution,
+            capability_snapshot_path=args.capability_snapshot,
+            from_state_path=args.from_state,
+            authority_path=args.authority,
+            accountable_owner=args.accountable_owner,
+            actor_id=args.actor_id,
+        )
+    except ExecutionPlanError as exc:
+        return _print_risks(exc.risks)
+    providers = ProviderRegistry()
+    if args.scripted_session:
+        providers.register(plan.provider, load_scripted_provider(args.scripted_session))
+    else:
+        # Live execution binds the model from the slot's model_env and the
+        # credential from the adapter's credential_env; both are environment
+        # variables whose values are never printed. All checks happen before
+        # any provider call so a missing value fails without a partial run.
+        adapter = get_provider_adapter_config(args.adapters, plan.model_binding.provider_adapter)
+        slot = load_model_pool(args.pool, adapters_path=args.adapters).get(args.slot)
+        live_config = replace(adapter, model_env=slot.model_env)
+        if not os.environ.get(live_config.credential_env):
+            raise ValueError(f"credential is unavailable from env:{live_config.credential_env}")
+        providers.register(plan.provider, build_live_provider(live_config))
+    run = execute_plan(plan, providers=providers)
+    result = closeout(plan, run, root=args.root)
+    print(f"status\t{result.status}")
+    print(f"attempt\t{result.attempt_path}")
+    print(f"receipt\t{result.receipt_path}")
+    print(f"handoff\t{result.handoff_path}")
+    print(f"check_report\t{result.check_report_path}")
+    if plan.resolved_view is not None:
+        print(f"execution_identity\t{plan.resolved_view.identity_sha256}")
+    if result.completion_manifest_path is not None:
+        print(f"completion_manifest\t{result.completion_manifest_path}")
+    for risk in result.risks:
+        print(f"{risk.level.upper():7} {risk.code:28} {risk.message}")
+    return 0 if result.status == "completed" else 1
+
+
+def _execute_verify(args: argparse.Namespace) -> int:
+    from research_workbench.execution.closeout import verify_attempt
+
+    return _print_risks(verify_attempt(args.attempt, root=args.root))
+
+
 def _context_checkpoint(args: argparse.Namespace) -> int:
     protocol_path = Path(args.protocol)
     protocol = ProjectProtocol.from_mapping(_load_valid(protocol_path, "project_protocol"))
@@ -1013,6 +1093,7 @@ def _context_checkpoint(args: argparse.Namespace) -> int:
             capture_output=True,
             text=True,
             check=False,
+            timeout=10,
         )
         if completed.returncode != 0:
             raise ValueError("cannot capture Git HEAD from the checkpoint root")
@@ -1149,6 +1230,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     model_probe.add_argument("--config", default="registry/models/pool.example.yaml")
     model_probe.add_argument(
+        "--adapters",
+        default="registry/providers/adapters.yaml",
+        help="provider adapter registry used to cross-check slot adapters and capabilities",
+    )
+    model_probe.add_argument(
         "--check-environment",
         action="store_true",
         help="explicitly check named model variables without printing their values",
@@ -1225,6 +1311,16 @@ def build_parser() -> argparse.ArgumentParser:
     claim_trace.add_argument("--protocol")
     claim_trace.set_defaults(handler=_claim_trace)
 
+    trace = subparsers.add_parser("trace", help="validate file-authoritative Attempt traces")
+    trace_subparsers = trace.add_subparsers(dest="trace_command", required=True)
+    trace_validate = trace_subparsers.add_parser(
+        "validate",
+        help="validate schemas, sequences, hashes, actors, capture gaps, and boundaries",
+    )
+    trace_validate.add_argument("--attempt", required=True, help="Attempt directory or INDEX.yaml")
+    trace_validate.add_argument("--root", default=".", help="project root containing the Attempt")
+    trace_validate.set_defaults(handler=_trace_validate)
+
     context = subparsers.add_parser("context", help="create and validate recoverable Main State")
     context_subparsers = context.add_subparsers(dest="context_command", required=True)
     assess = context_subparsers.add_parser("assess", help="record deterministic context-pressure proxies")
@@ -1296,6 +1392,68 @@ def build_parser() -> argparse.ArgumentParser:
     execution_assess.add_argument("--protocol", required=True)
     execution_assess.add_argument("--root", default=".")
     execution_assess.set_defaults(handler=_execution_assess)
+
+    execute = subparsers.add_parser(
+        "execute",
+        help="compile a frozen Task into a bounded isolated session and close it out to files",
+    )
+    execute_subparsers = execute.add_subparsers(dest="execute_command", required=True)
+    execute_task = execute_subparsers.add_parser(
+        "task",
+        help="compile, run, and close out one frozen Task Packet + Skill Assignment",
+    )
+    execute_task.add_argument("--task", required=True, help="frozen Task Packet path")
+    execute_task.add_argument("--assignment", required=True, help="frozen Skill Assignment path")
+    execute_task.add_argument("--slot", required=True, help="explicit model pool slot id")
+    execute_task.add_argument("--pool", default="registry/models/pool.example.yaml")
+    execute_task.add_argument("--adapters", default="registry/providers/adapters.yaml")
+    execute_task.add_argument("--root", default=".")
+    execute_task.add_argument("--attempt-id", help="explicit Attempt id; generated when omitted")
+    execute_task.add_argument(
+        "--accountable-owner",
+        required=True,
+        help="human accountable owner recorded in the execution Trace",
+    )
+    execute_task.add_argument(
+        "--actor-id",
+        help="explicit runtime actor id; defaults to Profile + Attempt derived identity",
+    )
+    execute_task.add_argument(
+        "--method-resolution",
+        help="frozen Method Resolution; requires --capability-snapshot",
+    )
+    execute_task.add_argument(
+        "--capability-snapshot",
+        help="frozen Resolved Capability Snapshot; requires --method-resolution",
+    )
+    execute_task.add_argument(
+        "--from-state",
+        help="exact Main State predecessor for a resumed governed attempt",
+    )
+    execute_task.add_argument(
+        "--authority",
+        default="registry/method/decision-authority.yaml",
+        help="Decision Authority Matrix path",
+    )
+    execute_provider = execute_task.add_mutually_exclusive_group(required=True)
+    execute_provider.add_argument(
+        "--scripted-session",
+        metavar="FILE",
+        help="offline scripted Provider session file; reproducible and reads no environment",
+    )
+    execute_provider.add_argument(
+        "--allow-live",
+        action="store_true",
+        help="explicitly allow one live Provider call using env-supplied model and credential",
+    )
+    execute_task.set_defaults(handler=_execute_task)
+    execute_verify = execute_subparsers.add_parser(
+        "verify",
+        help="replay all deterministic closeout checks from one attempt directory",
+    )
+    execute_verify.add_argument("--attempt", required=True, metavar="DIR")
+    execute_verify.add_argument("--root", default=".")
+    execute_verify.set_defaults(handler=_execute_verify)
     return parser
 
 

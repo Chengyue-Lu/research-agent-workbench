@@ -7,6 +7,7 @@ from collections.abc import Mapping
 from typing import Any
 
 from research_workbench.adapters.models.base import (
+    _integer,
     perform_json_request,
     preflight,
     provider_extension,
@@ -346,7 +347,3 @@ class OpenAIResponsesProvider:
             provider_code=provider_code,
             category_override=override,
         )
-
-
-def _integer(value: object) -> int | None:
-    return value if isinstance(value, int) and not isinstance(value, bool) else None

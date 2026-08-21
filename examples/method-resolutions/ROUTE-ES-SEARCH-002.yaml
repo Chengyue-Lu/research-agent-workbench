@@ -1,0 +1,24 @@
+schema_version: 0.1.0
+resolution_id: MR-ROUTE-ES-SEARCH-002
+task_ref: mode-action-routing-v1#ROUTE-ES-SEARCH-002
+status: human-required
+mode_decision: {status: selected, primary_mode: evidence-synthesis, reason: The task creates a bounded source set for synthesis.}
+action_selections:
+  - {action_id: ES-A1, status: selected, mode_id: evidence-synthesis, version: 1.0.0, source_path: registry/mode-actions/evidence-synthesis/ES-A1.yaml, sha256: 398ae3b0f0e782c89ccb0e69f32ddee66de6b36cc5ae4a5feaa63a6f2a3fd8ed}
+  - {action_id: ES-A2, status: selected, mode_id: evidence-synthesis, version: 1.0.0, source_path: registry/mode-actions/evidence-synthesis/ES-A2.yaml, sha256: cdccd82c62a028a375e3e9bc80a6c269287a1f6083731c8efcf9dd22cd7a5dbd}
+method_obligations:
+  - {action_id: ES-A1, obligation: Freeze the question and approved bibliographic sources.}
+  - {action_id: ES-A2, obligation: Preserve query coverage and a replayable stopping rule.}
+mechanism_resolutions:
+  - {action_id: ES-A1, selected: task-contract, reason: Project and task constraints can freeze the boundary., human_gate_refs: [HG-ES-SEARCH-BOUNDARY]}
+  - {action_id: ES-A2, selected: skill-need, reason: Search design has a reusable semantic gap., capability_requirement_refs: [CAP-LITERATURE-SEARCH], skill_need_refs: [NEED-ES-SEARCH-PLAN], human_gate_refs: [HG-ES-SEARCH-BOUNDARY]}
+capability_requirements:
+  - {requirement_id: CAP-LITERATURE-SEARCH, capability_id: literature-search, data_egress: approved-query-only}
+human_gates:
+  - {gate_id: HG-ES-SEARCH-BOUNDARY, decision_type: source_boundary_relaxation, status: pending}
+rejected_alternatives:
+  - {alternative: automatic-skill-assignment, reason: A Need is not an admitted Skill.}
+decision_records:
+  - {decision_type: mode_action_selection, decided_by: resolver, outcome: selected, reason: ES-A1 and ES-A2 triggers match.}
+  - {decision_type: minimal_mechanism, decided_by: resolver, outcome: skill-need-and-tool, reason: Direct search alone does not resolve query design.}
+unresolved: [Human approval and a future evaluated implementation for NEED-ES-SEARCH-PLAN are required.]

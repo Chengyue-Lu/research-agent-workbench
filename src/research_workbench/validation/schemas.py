@@ -87,6 +87,12 @@ class SchemaCatalog:
             raise KeyError(f"no schema for document kind: {kind}") from exc
 
     def validate(self, kind: str, instance: Any) -> list[SchemaValidationError]:
+        if isinstance(instance, Mapping):
+            instance_version = instance.get("schema_version")
+            if isinstance(instance_version, str) and instance_version != self.version:
+                version_directory = self.root / f"v{instance_version}"
+                if version_directory.is_dir():
+                    return SchemaCatalog(self.root, instance_version).validate(kind, instance)
         schema = self.schema_for_kind(kind)
         validation_schema: Mapping[str, Any] = schema
         if kind == "research_object" and isinstance(instance, Mapping):

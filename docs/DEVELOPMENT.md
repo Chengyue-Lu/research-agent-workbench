@@ -13,7 +13,7 @@
 | 路诚钺 | GitHub `Chengyue-Lu` | Method/Core 语义；Mode/Action/Method Resolution；能力词汇；Skill Need、选择、评估、准入和退役；Research State/Claim/Method Trace 方法规则；受控读取及相关 fixtures/docs | Provider SDK、认证、HTTP transport、模型槽实现、API session loop、live API conformance 和 API 专用测试 |
 | 黄毅 | GitHub 身份由本人登记 | Provider Adapter、模型能力协商、模型槽、隔离 API session、并行与工具调用、Task-to-API 编译、执行关闭事务、真实账户/模型 conformance 和 API 测试 | 代替研究者批准 Claim、单方面改变 Mode/Skill 语义、擅自准入 Skill 或降低 Human Gate |
 
-共享接口包括 Task Packet、未来的 Method Resolution/Resolved Capability Snapshot、兼容期 Resolved Task/Skill
+共享接口包括 Task Packet、集成候选 Method Resolution/Resolved Capability Snapshot、兼容期 Resolved Task/Skill
 Assignment、Handoff、Execution Receipt、Agent/Method Trace、Capability/Data Policy 和错误/停止状态。
 共享 Schema 变更必须单独说明 owner、语义版本、迁移影响、消费方和合并顺序；路诚钺与黄毅共同
 确认跨 Method/Execution 边界的修改。不能用“本侧”“同伴侧”作为审批主体。
@@ -32,9 +32,9 @@ Agent 不是责任主体。每个运行中的 Agent 使用稳定 `actor_id`，�
 5. M8-005 冻结 Decision Authority 并接入 validator/preflight；
 6. 到达 K-METHOD-1 后再启动统一 Evaluation Manifest、Method Trace 或 Skill trial。
 
-当前文档调整按用户决定直接提交 `main`；它不修改 M3-008 分支的 Trace 实现。`K-MS-1` 的原始
-计划和 dossier 保持只读历史，不再作为当前开发入口。阶段依赖见[架构路线图](ROADMAP.md)，实时
-状态只见[任务清单](TASKS.md)。
+M8-002..006、M6-003 与黄毅侧 M3-008/M6-006 当前只在同一独立集成候选中，不得绕过双方
+shared-interface review 直推 `main`。Execution/Archive Trace 与 Method Trace 仍严格分层；`K-MS-1` 的原始计划和 dossier 保持只读历史，不再
+作为当前开发入口。阶段依赖见[架构路线图](ROADMAP.md)，实时状态只见[任务清单](TASKS.md)。
 
 ## 3. 开始一个开发 Task
 
@@ -81,9 +81,9 @@ H1/H2 的差异是回传主上下文和审查强度，不是“是否保存过�
 
 ## 7. 当前已知缺口
 
-- M3-008 的 Execution/Archive Trace Schema/CLI 仍在独立分支；Method Trace 必须等待 M8-003/005，不能塞回同一事件层假装完成。
+- M3-008 的四类 Execution/Archive Trace Schema、单写者 recorder、validator 与 CLI 已在本地集成候选实现；仍须由路诚钺审查 shared 语义并通过故障矩阵，Method Trace 继续等待 M8-003/005，不能塞回同一事件层假装完成。
 - API session 与平台 Adapter 的自动 Trace 写入属于黄毅的执行实现范围；执行端只消费冻结接口，不自定义 Mode/Claim/Skill fallback。
-- Mode Action、Method Resolution、Decision Authority、Resolved Capability Snapshot 和长期 Research State 尚未实现正式 Schema/validator。
+- Mode Action、Method Resolution、Decision Authority 与 Resolved Capability Snapshot 已有集成候选 Schema/validator，但尚未共同审查合入；长期 Research State 仍未实现。
 - 尚无真实运行数据证明 H1/H2 的净收益；不能把消息数量、Trace 完整度或审计工件数量当作质量本身。
 - 当前只有两个正式 Mode、三个历史 accepted Skill 条目且 active 为零；真实 with/without 证据不足。
 - 黄毅的 GitHub 身份尚未登记在本文件；登记后应替换占位说明，不应猜测账号。

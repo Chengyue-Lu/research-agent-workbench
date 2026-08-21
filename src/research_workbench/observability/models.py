@@ -180,6 +180,7 @@ class ExecutionReceipt:
     agent_profile_ref: str
     skill_assignment_ref: str
     context_snapshot_ref: str | None
+    trace_ref: FileReference | None
     started_at: str
     finished_at: str
     status: str
@@ -242,6 +243,10 @@ class ExecutionReceipt:
             "skill_assignment_ref": require_string(data, "skill_assignment_ref"),
             "context_snapshot_ref": optional_string(data, "context_snapshot_ref"),
         }
+        trace_mapping = data.get("trace_ref")
+        if trace_mapping is not None and not isinstance(trace_mapping, Mapping):
+            raise ContractError("trace_ref", "must be a file reference")
+        trace_ref = FileReference.from_mapping(trace_mapping) if isinstance(trace_mapping, Mapping) else None
         for field, value in refs.items():
             if value is not None:
                 require_relative_path(value, field)
@@ -268,6 +273,7 @@ class ExecutionReceipt:
             agent_profile_ref=str(refs["agent_profile_ref"]),
             skill_assignment_ref=str(refs["skill_assignment_ref"]),
             context_snapshot_ref=refs["context_snapshot_ref"],
+            trace_ref=trace_ref,
             started_at=started_at,
             finished_at=finished_at,
             status=status,
@@ -308,11 +314,25 @@ def check_execution_receipt(
             ContractRisk("REF-MISSING", RiskLevel.BLOCK, f"{field} does not resolve within project: {relative}")
         )
 
+    def invalid(field: str, relative: str, error: ContractError) -> None:
+        risks.append(
+            ContractRisk(
+                "RECEIPT-REF-INVALID",
+                RiskLevel.BLOCK,
+                f"{field} is not a valid document: {relative}: {error}",
+            )
+        )
+
+    attempt: AttemptRecord | None = None
     _, attempt_document = _load_reference(project_root, receipt.attempt_ref)
     if attempt_document is None:
         missing("attempt_ref", receipt.attempt_ref)
     else:
-        attempt = AttemptRecord.from_mapping(attempt_document)
+        try:
+            attempt = AttemptRecord.from_mapping(attempt_document)
+        except ContractError as exc:
+            invalid("attempt_ref", receipt.attempt_ref, exc)
+    if attempt is not None:
         if (attempt.task_id, attempt.task_revision) != (receipt.task_id, receipt.task_revision):
             risks.append(
                 ContractRisk(
@@ -376,12 +396,25 @@ def check_execution_receipt(
                     "execution receipt status does not match Attempt",
                 )
             )
+        if attempt.trace_ref != receipt.trace_ref:
+            risks.append(
+                ContractRisk(
+                    "RECEIPT-TRACE-MISMATCH",
+                    RiskLevel.BLOCK,
+                    "Attempt and Execution Receipt point to different Trace indexes",
+                )
+            )
 
+    assignment: ResolvedTask | None = None
     _, assignment_document = _load_reference(project_root, receipt.skill_assignment_ref)
     if assignment_document is None:
         missing("skill_assignment_ref", receipt.skill_assignment_ref)
     else:
-        assignment = ResolvedTask.from_mapping(assignment_document)
+        try:
+            assignment = ResolvedTask.from_mapping(assignment_document)
+        except ContractError as exc:
+            invalid("skill_assignment_ref", receipt.skill_assignment_ref, exc)
+    if assignment is not None:
         if (assignment.task_id, assignment.task_revision) != (receipt.task_id, receipt.task_revision):
             risks.append(
                 ContractRisk(
@@ -391,29 +424,37 @@ def check_execution_receipt(
                 )
             )
 
+    profile: AgentProfile | None = None
     _, profile_document = _load_reference(project_root, receipt.agent_profile_ref)
     if profile_document is None:
         missing("agent_profile_ref", receipt.agent_profile_ref)
     else:
-        profile = AgentProfile.from_mapping(profile_document)
-        if assignment_document is not None:
-            assignment = ResolvedTask.from_mapping(assignment_document)
-            profile_identifier = f"{profile.agent_profile_id}@{profile.version}"
-            if profile_identifier != assignment.agent_profile:
-                risks.append(
-                    ContractRisk(
-                        "RECEIPT-PROFILE-MISMATCH",
-                        RiskLevel.BLOCK,
-                        "Agent Profile does not match Skill Assignment",
-                    )
+        try:
+            profile = AgentProfile.from_mapping(profile_document)
+        except ContractError as exc:
+            invalid("agent_profile_ref", receipt.agent_profile_ref, exc)
+    if profile is not None and assignment is not None:
+        profile_identifier = f"{profile.agent_profile_id}@{profile.version}"
+        if profile_identifier != assignment.agent_profile:
+            risks.append(
+                ContractRisk(
+                    "RECEIPT-PROFILE-MISMATCH",
+                    RiskLevel.BLOCK,
+                    "Agent Profile does not match Skill Assignment",
                 )
+            )
 
     if receipt.context_snapshot_ref:
+        snapshot: ContextSnapshot | None = None
         _, snapshot_document = _load_reference(project_root, receipt.context_snapshot_ref)
         if snapshot_document is None:
             missing("context_snapshot_ref", receipt.context_snapshot_ref)
         else:
-            snapshot = ContextSnapshot.from_mapping(snapshot_document)
+            try:
+                snapshot = ContextSnapshot.from_mapping(snapshot_document)
+            except ContractError as exc:
+                invalid("context_snapshot_ref", receipt.context_snapshot_ref, exc)
+        if snapshot is not None:
             if snapshot.scope == "task" and snapshot.owner_ref not in {None, receipt.task_id, receipt.attempt_ref}:
                 risks.append(
                     ContractRisk(
@@ -443,6 +484,8 @@ def check_execution_receipt(
             path = resolve_within_root(project_root, relative)
             if path is None or not path.is_file():
                 missing(field, relative)
+    if receipt.trace_ref is not None:
+        risks.extend(check_references(project_root, (receipt.trace_ref,)))
 
     interpreted_validations = 0
     for relative in receipt.validation_refs:
@@ -537,23 +580,27 @@ def check_execution_receipt(
             continue
         document = load_document(path) if path.suffix.lower() in {".json", ".yaml", ".yml"} else None
         if isinstance(document, Mapping) and "result" in document and "attempt_id" in document:
-            handoff = HandoffPacket.from_mapping(document)
-            if handoff.task_id != receipt.task_id:
-                risks.append(
-                    ContractRisk(
-                        "RECEIPT-HANDOFF-TASK-MISMATCH",
-                        RiskLevel.BLOCK,
-                        f"Handoff output {relative} belongs to a different Task",
+            try:
+                handoff = HandoffPacket.from_mapping(document)
+            except ContractError as exc:
+                invalid("output_refs", relative, exc)
+            else:
+                if handoff.task_id != receipt.task_id:
+                    risks.append(
+                        ContractRisk(
+                            "RECEIPT-HANDOFF-TASK-MISMATCH",
+                            RiskLevel.BLOCK,
+                            f"Handoff output {relative} belongs to a different Task",
+                        )
                     )
-                )
-            if receipt_ref and handoff.execution_receipt_ref != receipt_ref:
-                risks.append(
-                    ContractRisk(
-                        "RECEIPT-HANDOFF-BACKREF",
-                        RiskLevel.BLOCK,
-                        f"Handoff output {relative} does not point back to this Execution Receipt",
+                if receipt_ref and handoff.execution_receipt_ref != receipt_ref:
+                    risks.append(
+                        ContractRisk(
+                            "RECEIPT-HANDOFF-BACKREF",
+                            RiskLevel.BLOCK,
+                            f"Handoff output {relative} does not point back to this Execution Receipt",
+                        )
                     )
-                )
 
     if receipt.status in {"completed", "stage-completed"} and not receipt.output_refs:
         risks.append(
@@ -561,23 +608,35 @@ def check_execution_receipt(
         )
     if receipt.status == "safe-paused":
         if receipt.context_snapshot_ref is None:
-            risks.append(
-                ContractRisk(
-                    "RECEIPT-SAFE-PAUSE-CONTEXT-MISSING",
-                    RiskLevel.BLOCK,
-                    "safe-paused execution must pin the Context Snapshot that triggered closeout",
-                )
+            trace_pinned = receipt.execution_kind == "model-api" and receipt.trace_ref is not None
+            transcript_pinned = receipt.execution_kind == "model-api" and any(
+                reference.endswith("/session-transcript.json")
+                for reference in receipt.output_refs
             )
-        if attempt_document is not None:
-            attempt = AttemptRecord.from_mapping(attempt_document)
-            if attempt.handoff_ref is None:
+            if trace_pinned or transcript_pinned:
                 risks.append(
                     ContractRisk(
-                        "RECEIPT-SAFE-PAUSE-HANDOFF-MISSING",
-                        RiskLevel.BLOCK,
-                        "safe-paused execution must persist a recoverable Handoff",
+                        "RECEIPT-SAFE-PAUSE-CONTEXT-DEFERRED",
+                        RiskLevel.WARNING,
+                        "model-api safe pause pins its execution Trace, but measured Context Snapshot capture is deferred",
                     )
                 )
+            else:
+                risks.append(
+                    ContractRisk(
+                        "RECEIPT-SAFE-PAUSE-CONTEXT-MISSING",
+                        RiskLevel.BLOCK,
+                        "safe-paused execution must pin the Context Snapshot that triggered closeout",
+                    )
+                )
+        if attempt is not None and attempt.handoff_ref is None:
+            risks.append(
+                ContractRisk(
+                    "RECEIPT-SAFE-PAUSE-HANDOFF-MISSING",
+                    RiskLevel.BLOCK,
+                    "safe-paused execution must persist a recoverable Handoff",
+                )
+            )
     if receipt.execution_kind in {"native-agent", "model-api"} and receipt.model_usage_status == "unavailable":
         risks.append(
             ContractRisk(

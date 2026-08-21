@@ -1,0 +1,22 @@
+schema_version: 0.1.0
+resolution_id: MR-ROUTE-BLOCK-PRIVATE-006
+task_ref: mode-action-routing-v1#ROUTE-BLOCK-PRIVATE-006
+status: blocked
+mode_decision: {status: selected, primary_mode: evidence-synthesis, reason: The task extracts evidence but violates its data boundary.}
+action_selections:
+  - {action_id: ES-A3, status: selected, mode_id: evidence-synthesis, version: 1.0.0, source_path: registry/mode-actions/evidence-synthesis/ES-A3.yaml, sha256: bed25492d35fc69e97bba8ced29fc96491384a32287700fc39bc7f70e71819d3}
+method_obligations:
+  - {action_id: ES-A3, obligation: Keep the confidential manuscript inside the approved boundary.}
+mechanism_resolutions:
+  - {action_id: ES-A3, selected: blocked, reason: No approved local parser or remote data path exists., capability_requirement_refs: [CAP-PRIVATE-DOCUMENT-READ], human_gate_refs: [HG-ALTERNATIVE-DATA-PATH]}
+capability_requirements:
+  - {requirement_id: CAP-PRIVATE-DOCUMENT-READ, capability_id: document-read, data_egress: forbidden, status: gap}
+human_gates:
+  - {gate_id: HG-ALTERNATIVE-DATA-PATH, decision_type: data_permission_relaxation, status: pending}
+rejected_alternatives:
+  - {alternative: remote-upload, reason: Project data policy forbids it.}
+  - {alternative: silent-local-to-remote-fallback, reason: Runtime fallback cannot relax data policy.}
+decision_records:
+  - {decision_type: mode_action_selection, decided_by: resolver, outcome: selected, reason: ES-A3 is triggered.}
+  - {decision_type: minimal_mechanism, decided_by: resolver, outcome: blocked, reason: Required capability is unavailable within policy.}
+unresolved: [An approved local capability or explicit human data-path decision is required.]

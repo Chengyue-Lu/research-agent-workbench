@@ -1,0 +1,13 @@
+schema_version: 0.1.0
+action_id: SIM-A6
+mode_id: simulation
+version: 1.0.0
+trigger: [A bounded local or approved external computation must be executed.]
+non_trigger: [The task only designs or reviews a computation without running it.]
+failure_conditions: [Wall time or output is unbounded, resource policy is absent, or failed runs disappear.]
+required_artifact_types: [run, execution-log, execution-receipt]
+claim_effects: [Successful process exit alone cannot support a scientific claim.]
+human_gates: [approve-high-cost-or-external-execution]
+stop_conditions: [The run finishes, fails, is cancelled, or reaches a declared resource bound.]
+blocked_conditions: [The requested execution exceeds approved resources, permissions, or data policy.]
+allowed_mechanisms: [deterministic-tool, capability, human-gate, blocked]

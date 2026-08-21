@@ -1,0 +1,24 @@
+schema_version: 0.1.0
+resolution_id: MR-ROUTE-SIM-REPLAY-004
+task_ref: mode-action-routing-v1#ROUTE-SIM-REPLAY-004
+status: resolved
+mode_decision: {status: selected, primary_mode: simulation, reason: A frozen computational model is replayed.}
+action_selections:
+  - {action_id: SIM-A2, status: selected, mode_id: simulation, version: 1.0.0, source_path: registry/mode-actions/simulation/SIM-A2.yaml, sha256: d3180ff9dcd4e4263fdbd55b2d80059d169ef139761b6237aeb18186cb2061f8}
+  - {action_id: SIM-A6, status: selected, mode_id: simulation, version: 1.0.0, source_path: registry/mode-actions/simulation/SIM-A6.yaml, sha256: 7ca88520e4ca3db8c2665e5434e79eff7b023da6190aa63bdccc7836aec0c937}
+method_obligations:
+  - {action_id: SIM-A2, obligation: Pin code, environment, inputs, seed, and outputs.}
+  - {action_id: SIM-A6, obligation: Execute within fixed resource and output bounds.}
+mechanism_resolutions:
+  - {action_id: SIM-A2, selected: tool-only, reason: Artifact and hash checks are sufficient., capability_requirement_refs: [CAP-BOUNDED-COMPUTE, CAP-RESEARCH-CONTRACT-CHECK]}
+  - {action_id: SIM-A6, selected: tool-only, reason: No new numerical design is requested., capability_requirement_refs: [CAP-BOUNDED-COMPUTE]}
+capability_requirements:
+  - {requirement_id: CAP-BOUNDED-COMPUTE, capability_id: bounded-compute, data_egress: none}
+  - {requirement_id: CAP-RESEARCH-CONTRACT-CHECK, capability_id: research-contract-check, data_egress: none}
+human_gates: []
+rejected_alternatives:
+  - {alternative: simulation-vv-skill, reason: A frozen replay has no unresolved method-design gap.}
+decision_records:
+  - {decision_type: mode_action_selection, decided_by: resolver, outcome: selected, reason: SIM-A2 and SIM-A6 triggers match.}
+  - {decision_type: minimal_mechanism, decided_by: resolver, outcome: tool-only, reason: Deterministic execution and validation are sufficient.}
+unresolved: []

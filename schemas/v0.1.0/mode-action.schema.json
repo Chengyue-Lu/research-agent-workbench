@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/mode-action.schema.json",
+  "x-rwb-document-kind": "mode_action",
+  "title": "Mode Action",
+  "type": "object",
+  "required": [
+    "schema_version", "action_id", "mode_id", "version", "trigger", "non_trigger",
+    "failure_conditions", "required_artifact_types", "claim_effects", "human_gates",
+    "stop_conditions", "blocked_conditions", "allowed_mechanisms"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "action_id": { "type": "string", "pattern": "^(?:ES|SIM)-A[1-9][0-9]*$" },
+    "mode_id": { "enum": ["evidence-synthesis", "simulation"] },
+    "version": { "$ref": "common.schema.json#/$defs/semver" },
+    "trigger": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "non_trigger": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "failure_conditions": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "required_artifact_types": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "claim_effects": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "human_gates": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "stop_conditions": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "blocked_conditions": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "allowed_mechanisms": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "mode-invariant", "task-contract", "task-template", "deterministic-tool",
+          "capability", "skill-need", "human-gate", "split", "blocked"
+        ]
+      }
+    }
+  },
+  "additionalProperties": false
+}

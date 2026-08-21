@@ -7,6 +7,7 @@ from typing import Any
 from urllib.parse import quote
 
 from research_workbench.adapters.models.base import (
+    _integer,
     perform_json_request,
     preflight,
     provider_extension,
@@ -378,7 +379,3 @@ _ERROR_STATUSES: dict[str | None, ProviderErrorCategory] = {
     "UNAVAILABLE": ProviderErrorCategory.TRANSIENT,
     "DEADLINE_EXCEEDED": ProviderErrorCategory.TRANSIENT,
 }
-
-
-def _integer(value: object) -> int | None:
-    return value if isinstance(value, int) and not isinstance(value, bool) else None

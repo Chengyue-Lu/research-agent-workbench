@@ -1,0 +1,13 @@
+schema_version: 0.1.0
+action_id: SIM-A5
+mode_id: simulation
+version: 1.0.0
+trigger: [A benchmark, calibration, or external validation claim is required.]
+non_trigger: [Only numerical replay or internal consistency is being checked.]
+failure_conditions: [The benchmark is irrelevant, calibration leaks into validation, or validation terms are conflated.]
+required_artifact_types: [benchmark-reference, calibration-evidence, validation-evidence]
+claim_effects: [Calibration and validation claims must remain distinct and dataset-bound.]
+human_gates: [approve-benchmark-and-validation-interpretation]
+stop_conditions: [Benchmark relevance and calibration/validation separation are decided.]
+blocked_conditions: [No admissible benchmark or independent validation evidence exists.]
+allowed_mechanisms: [task-contract, human-gate, blocked]

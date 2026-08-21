@@ -20,6 +20,9 @@
 
 Phase 不是一条科研 DAG。它只表示框架接口的构建依赖；真实 Task 仍按 Mode/Action 选择路径。
 
+当前独立集成分支同时实现了 Phase A 的最小契约、Phase B 的 Snapshot/migration seam 与 Phase F 的
+首个 strict API loop，目的是验证边界能闭合，不代表 C/D/E 已跳过或 Phase Gate 已通过。
+
 ## 2. Phase A：Core Formalization
 
 1. 把两个正式 Mode 的 Action Catalog 转成版本化、可引用文档；
@@ -78,9 +81,10 @@ distance、rework、context、cost 和 completion time。确定性评分与盲�
 第一版 Strategy 只需 `direct` 加至多一个实验策略，且 direct 永远保留为基线。外部发现、自动
 生成、repair/merge/prune 只作用于 candidate。
 
-Execution reintegration 不授权 Runtime 定义 Mode、Claim、Skill fallback 或权限放宽。接入前必须
-解决 from-state predecessor、严格 completion marker、Evidence source binding、Tool side-effect
-accounting、deadline/cancellation 和 current-main fixture 再生等已知问题。
+Execution reintegration 不授权 Runtime 定义 Mode、Claim、Skill fallback 或权限放宽。集成候选已为
+from-state predecessor、严格 completion marker、Evidence source binding、Tool side-effect accounting、
+deadline/cancellation 和 current-main fixture 再生提供实现与离线测试；主线 Gate 仍要求双方审查、
+全量重放与黄毅的脱敏 live conformance。
 
 ## 7. 不在近期关键路径
 
