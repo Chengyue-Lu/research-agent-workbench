@@ -6,7 +6,7 @@
   "type": "object",
   "required": [
     "schema_version", "event_id", "task_id", "task_revision", "attempt_id",
-    "sequence", "event_type", "actor_id", "occurred_at", "payload"
+    "sequence", "event_type", "actor_id", "occurred_at", "payload", "redactions"
   ],
   "properties": {
     "schema_version": { "const": "0.1.0" },
@@ -20,7 +20,11 @@
     },
     "actor_id": { "$ref": "agent-trace-actors.schema.json#/$defs/actorId" },
     "occurred_at": { "type": "string", "format": "date-time" },
-    "payload": { "type": "object" }
+    "payload": { "type": "object" },
+    "redactions": {
+      "type": "array",
+      "items": { "$ref": "agent-trace-envelope.schema.json#/$defs/redaction" }
+    }
   },
   "$defs": {
     "attemptStatus": {
@@ -53,18 +57,34 @@
     {
       "if": { "properties": { "event_type": { "const": "tool-call" } } },
       "then": { "properties": { "payload": {
-        "type": "object", "required": ["operation_id", "tool_name", "status", "arguments", "redactions", "result_entered_context"],
+        "type": "object", "required": ["operation_id", "tool_name", "status", "arguments", "result_entered_context"],
         "properties": {
           "operation_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
           "tool_name": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
           "status": { "enum": ["attempted", "succeeded", "failed", "cancelled", "delivered", "unknown"] },
           "arguments": { "type": "object" },
-          "redactions": { "type": "array", "items": { "$ref": "agent-trace-envelope.schema.json#/$defs/redaction" } },
           "result_entered_context": { "type": "boolean" },
           "result_origin": { "enum": ["stable-source", "transient"] },
           "result_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
           "error_type": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
-        }, "additionalProperties": false
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": { "result_entered_context": { "const": true } },
+              "required": ["result_entered_context"]
+            },
+            "then": { "required": ["result_origin"] }
+          },
+          {
+            "if": {
+              "properties": { "result_origin": { "const": "transient" } },
+              "required": ["result_origin"]
+            },
+            "then": { "required": ["result_ref"] }
+          }
+        ],
+        "additionalProperties": false
       } } }
     },
     {
@@ -96,7 +116,7 @@
     {
       "if": { "properties": { "event_type": { "const": "attempt-status" } } },
       "then": { "properties": { "payload": {
-        "type": "object", "required": ["to_status", "reason"],
+        "type": "object", "required": ["from_status", "to_status", "reason"],
         "properties": {
           "from_status": { "$ref": "#/$defs/attemptStatus" },
           "to_status": { "$ref": "#/$defs/attemptStatus" },

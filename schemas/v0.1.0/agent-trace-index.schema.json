@@ -46,6 +46,16 @@
           "capture_status": { "enum": ["complete", "delayed", "partial", "unavailable"] },
           "capture_gap_event_id": { "type": "string", "pattern": "^EVT-[0-9]{4,}$" }
         },
+        "allOf": [
+          {
+            "if": {
+              "properties": { "capture_status": { "enum": ["partial", "unavailable"] } },
+              "required": ["capture_status"]
+            },
+            "then": { "required": ["capture_gap_event_id"] },
+            "else": { "not": { "required": ["capture_gap_event_id"] } }
+          }
+        ],
         "additionalProperties": false
       }
     },
@@ -64,6 +74,7 @@
     "check_refs": { "$ref": "#/$defs/fileRefs" },
     "capture_gaps": {
       "type": "array",
+      "uniqueItems": true,
       "items": {
         "type": "object", "required": ["event_id", "affected_stream"],
         "properties": {

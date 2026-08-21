@@ -60,7 +60,8 @@
   "allOf": [
     {
       "if": { "properties": { "capture_status": { "enum": ["partial", "unavailable"] } }, "required": ["capture_status"] },
-      "then": { "required": ["capture_gap_event_id"] }
+      "then": { "required": ["capture_gap_event_id"] },
+      "else": { "not": { "required": ["capture_gap_event_id"] } }
     }
   ],
   "additionalProperties": false

@@ -46,6 +46,16 @@ _HIDDEN_REASONING_KEY = re.compile(
     re.IGNORECASE,
 )
 _REDACTION_MARKERS = ("[REDACTED:credential]", "[OMITTED:hidden-reasoning]")
+_RISK_MESSAGE_MISSING = "TRACE-MESSAGE-MISSING"
+_RISK_SEQUENCE_GAP = "TRACE-SEQUENCE-GAP"
+_RISK_ACTOR_UNOWNED = "TRACE-ACTOR-UNOWNED"
+_RISK_HASH_MISMATCH = "TRACE-HASH-MISMATCH"
+_RISK_CAPTURE_DELAYED = "TRACE-CAPTURE-DELAYED"
+_RISK_REDACTION_UNDECLARED = "TRACE-REDACTION-UNDECLARED"
+_RISK_READ_OUTSIDE_SCOPE = "TRACE-READ-OUTSIDE-SCOPE"
+_RISK_EVENT_MISSING = "TRACE-EVENT-MISSING"
+_RISK_TRANSIENT_RESULT_MISSING = "TRACE-TRANSIENT-RESULT-MISSING"
+_RISK_PROCESS_ARTIFACT_OVERWRITTEN = "TRACE-PROCESS-ARTIFACT-OVERWRITTEN"
 _PROTECTED_TRACE_PATHS = {
     TRACE_TASK_FILENAME,
     TRACE_ACTORS_FILENAME,
@@ -290,7 +300,14 @@ class AgentTraceRecorder:
             "check_refs": [],
             "capture_gaps": self._capture_gaps,
         }
-        self._append_event("attempt-status", {"to_status": "running", "reason": "trace initialized before provider execution"})
+        self._append_event(
+            "attempt-status",
+            {
+                "from_status": "planned",
+                "to_status": "running",
+                "reason": "trace initialized before provider execution",
+            },
+        )
         _create_exclusive(self.attempt_dir / TRACE_INDEX_FILENAME, _yaml_bytes(self._index))
 
     @property
@@ -435,14 +452,39 @@ class AgentTraceRecorder:
                 },
             )
         elif kind == "capture-gap":
-            self.record_capture_gap(str(payload.get("stream", "events")), str(payload.get("reason", "capture failure")))
+            raw_affected_ids = payload.get("affected_ids", ())
+            affected_ids = (
+                tuple(str(item) for item in raw_affected_ids)
+                if isinstance(raw_affected_ids, (list, tuple))
+                else ()
+            )
+            self.record_capture_gap(
+                str(payload.get("stream", "events")),
+                str(payload.get("reason", "capture failure")),
+                reason_category=str(payload.get("reason_category", "capture-failure")),
+                affected_ids=affected_ids,
+            )
         else:
             raise ValueError(f"unsupported trace event kind: {kind}")
 
-    def record_capture_gap(self, stream: str, reason: str) -> None:
+    def record_capture_gap(
+        self,
+        stream: str,
+        reason: str,
+        *,
+        reason_category: str = "capture-failure",
+        affected_ids: Sequence[str] = (),
+    ) -> None:
+        payload: dict[str, Any] = {
+            "affected_stream": stream,
+            "reason_category": reason_category,
+            "reason": reason,
+        }
+        if affected_ids:
+            payload["affected_ids"] = list(affected_ids)
         event = self._append_event(
             "capture-gap",
-            {"affected_stream": stream, "reason_category": "capture-failure", "reason": reason},
+            payload,
         )
         self._capture_gaps.append({"event_id": event["event_id"], "affected_stream": stream})
         self._index["completeness"] = "gapped"
@@ -523,7 +565,6 @@ class AgentTraceRecorder:
             "tool_name": tool_name,
             "status": status if status in {"attempted", "succeeded", "failed", "cancelled", "delivered", "unknown"} else "unknown",
             "arguments": cleaned.get("arguments", {}) if isinstance(cleaned, Mapping) else {},
-            "redactions": list(redactions),
             "result_entered_context": result_entered_context,
         }
         if result_entered_context:
@@ -535,14 +576,30 @@ class AgentTraceRecorder:
             result_ref = _ref(result_path, relative)
             self._tool_refs.append(result_ref)
             event_payload.update({"result_origin": "transient", "result_ref": result_ref})
-        self._append_event("tool-call", event_payload)
+        self._append_event("tool-call", event_payload, inherited_redactions=redactions)
 
-    def _append_event(self, event_type: str, payload: Mapping[str, Any]) -> Mapping[str, Any]:
+    def _append_event(
+        self,
+        event_type: str,
+        payload: Mapping[str, Any],
+        *,
+        inherited_redactions: Sequence[Mapping[str, str]] = (),
+    ) -> Mapping[str, Any]:
         if self._sealed:
             raise RuntimeError("trace is already sealed")
+        cleaned_payload, local_redactions = sanitize_trace_value(payload)
+        combined_redactions = [
+            {key: str(value) for key, value in redaction.items() if key != "redaction_id"}
+            for redaction in (*inherited_redactions, *local_redactions)
+        ]
+        event_redactions = [
+            {"redaction_id": f"RED-{index:04d}", **redaction}
+            for index, redaction in enumerate(combined_redactions, start=1)
+        ]
+        self._redaction_count += len(local_redactions)
         self._event_sequence += 1
         if event_type == "attempt-status":
-            self._status = str(payload["to_status"])
+            self._status = str(cleaned_payload["to_status"])
         event = {
             "schema_version": "0.1.0",
             "event_id": f"EVT-{self._event_sequence:04d}",
@@ -553,7 +610,8 @@ class AgentTraceRecorder:
             "event_type": event_type,
             "actor_id": self.actor_id,
             "occurred_at": _now(),
-            "payload": dict(payload),
+            "payload": dict(cleaned_payload),
+            "redactions": event_redactions,
         }
         line = json.dumps(event, sort_keys=True, ensure_ascii=False, separators=(",", ":")) + "\n"
         with (self.attempt_dir / TRACE_EVENTS_FILENAME).open("a", encoding="utf-8", newline="\n") as stream:
@@ -631,8 +689,10 @@ def derive_session_transcript(attempt_dir: str | Path) -> tuple[Mapping[str, Any
     return tuple(pairs)
 
 
-def _risk(code: str, level: RiskLevel, message: str) -> ContractRisk:
-    return ContractRisk(code, level, message)
+def _risk(code: str, level: RiskLevel, message: str, *, detail: str) -> ContractRisk:
+    """Emit one canonical public code with a stable internal detail subcode."""
+
+    return ContractRisk(code, level, f"[{detail}] {message}")
 
 
 def _load_mapping(path: Path) -> Mapping[str, Any]:
@@ -666,59 +726,173 @@ def validate_attempt_trace(root: str | Path, attempt: str | Path) -> TraceValida
     try:
         attempt_dir.relative_to(project_root)
     except ValueError:
-        return TraceValidationResult(attempt_dir, (_risk("TRACE-PATH-ESCAPE", RiskLevel.BLOCK, "attempt is outside the validation root"),))
+        return TraceValidationResult(
+            attempt_dir,
+            (
+                _risk(
+                    _RISK_READ_OUTSIDE_SCOPE,
+                    RiskLevel.BLOCK,
+                    "attempt is outside the validation root",
+                    detail="attempt-path-escape",
+                ),
+            ),
+        )
     index_path = attempt_dir / TRACE_INDEX_FILENAME
     if not index_path.is_file():
-        return TraceValidationResult(attempt_dir, (_risk("TRACE-INDEX-MISSING", RiskLevel.BLOCK, f"missing {TRACE_INDEX_FILENAME}"),))
+        return TraceValidationResult(
+            attempt_dir,
+            (
+                _risk(
+                    _RISK_EVENT_MISSING,
+                    RiskLevel.BLOCK,
+                    f"missing {TRACE_INDEX_FILENAME}",
+                    detail="index-missing",
+                ),
+            ),
+        )
     try:
         index = _load_mapping(index_path)
     except (OSError, ValueError, yaml.YAMLError) as exc:
-        return TraceValidationResult(attempt_dir, (_risk("TRACE-INDEX-INVALID", RiskLevel.BLOCK, str(exc)),))
+        return TraceValidationResult(
+            attempt_dir,
+            (
+                _risk(
+                    _RISK_EVENT_MISSING,
+                    RiskLevel.BLOCK,
+                    str(exc),
+                    detail="index-invalid",
+                ),
+            ),
+        )
     catalog = SchemaCatalog()
     for error in catalog.validate("agent_trace_index", index):
-        risks.append(_risk("TRACE-SCHEMA-INVALID", RiskLevel.BLOCK, f"INDEX{error.pointer}: {error.message}"))
+        risks.append(
+            _risk(
+                _RISK_EVENT_MISSING,
+                RiskLevel.BLOCK,
+                f"INDEX{error.pointer}: {error.message}",
+                detail="index-schema-invalid",
+            )
+        )
 
     actors: Mapping[str, Any] = {}
     actors_ref = index.get("actors_ref", {})
-    actors_path = _checked_ref(attempt_dir, actors_ref, "actors", risks)
+    actors_path = _checked_ref(attempt_dir, actors_ref, "actors", risks, detail="actors-ref")
     if actors_path:
         try:
             actors = _load_mapping(actors_path)
             for error in catalog.validate("agent_trace_actors", actors):
-                risks.append(_risk("TRACE-SCHEMA-INVALID", RiskLevel.BLOCK, f"ACTORS{error.pointer}: {error.message}"))
+                risks.append(
+                    _risk(
+                        _RISK_ACTOR_UNOWNED,
+                        RiskLevel.BLOCK,
+                        f"ACTORS{error.pointer}: {error.message}",
+                        detail="actors-schema-invalid",
+                    )
+                )
         except (OSError, ValueError, yaml.YAMLError) as exc:
-            risks.append(_risk("TRACE-ACTORS-INVALID", RiskLevel.BLOCK, str(exc)))
-    task_path = _checked_ref(attempt_dir, index.get("task_ref", {}), "task", risks)
+            risks.append(
+                _risk(
+                    _RISK_ACTOR_UNOWNED,
+                    RiskLevel.BLOCK,
+                    str(exc),
+                    detail="actors-invalid",
+                )
+            )
+    task_path = _checked_ref(attempt_dir, index.get("task_ref", {}), "task", risks, detail="task-ref")
     if task_path:
         try:
             task_snapshot = _load_mapping(task_path)
             if "task_id" in task_snapshot and task_snapshot.get("task_id") != index.get("task_id"):
-                risks.append(_risk("TRACE-IDENTITY-DRIFT", RiskLevel.BLOCK, "Task snapshot task_id differs from INDEX"))
+                risks.append(
+                    _risk(
+                        _RISK_EVENT_MISSING,
+                        RiskLevel.BLOCK,
+                        "Task snapshot task_id differs from INDEX",
+                        detail="task-identity-drift",
+                    )
+                )
             if "revision" in task_snapshot and task_snapshot.get("revision") != index.get("task_revision"):
-                risks.append(_risk("TRACE-IDENTITY-DRIFT", RiskLevel.BLOCK, "Task snapshot revision differs from INDEX"))
+                risks.append(
+                    _risk(
+                        _RISK_EVENT_MISSING,
+                        RiskLevel.BLOCK,
+                        "Task snapshot revision differs from INDEX",
+                        detail="task-revision-drift",
+                    )
+                )
         except (OSError, ValueError, yaml.YAMLError) as exc:
-            risks.append(_risk("TRACE-TASK-INVALID", RiskLevel.BLOCK, str(exc)))
+            risks.append(
+                _risk(
+                    _RISK_EVENT_MISSING,
+                    RiskLevel.BLOCK,
+                    str(exc),
+                    detail="task-invalid",
+                )
+            )
     actor_entries = actors.get("actors", [])
     if not isinstance(actor_entries, list):
         actor_entries = []
-    known_actors = {
-        str(actor.get("actor_id"))
-        for actor in actor_entries
-        if isinstance(actor, Mapping)
-    }
     declared_actor_ids = [
         str(actor.get("actor_id"))
         for actor in actor_entries
         if isinstance(actor, Mapping) and actor.get("actor_id") is not None
     ]
+    actor_owners = {
+        str(actor.get("actor_id")): str(actor.get("accountable_owner", ""))
+        for actor in actor_entries
+        if isinstance(actor, Mapping) and actor.get("actor_id") is not None
+    }
+    known_actors = set(actor_owners)
     if len(declared_actor_ids) != len(set(declared_actor_ids)):
-        risks.append(_risk("TRACE-ACTORS-INVALID", RiskLevel.BLOCK, "ACTORS contains duplicate actor_id values"))
+        risks.append(
+            _risk(
+                _RISK_ACTOR_UNOWNED,
+                RiskLevel.BLOCK,
+                "ACTORS contains duplicate actor_id values",
+                detail="duplicate-actor-id",
+            )
+        )
     identities = (index.get("task_id"), index.get("task_revision"), index.get("attempt_id"))
     actor_identities = (actors.get("task_id"), actors.get("task_revision"), actors.get("attempt_id"))
     if actors and actor_identities != identities:
-        risks.append(_risk("TRACE-IDENTITY-DRIFT", RiskLevel.BLOCK, "ACTORS identity differs from INDEX"))
-    if index.get("owner_actor_id") not in known_actors:
-        risks.append(_risk("TRACE-ACTOR-UNKNOWN", RiskLevel.BLOCK, "INDEX owner_actor_id is not registered"))
+        risks.append(
+            _risk(
+                _RISK_EVENT_MISSING,
+                RiskLevel.BLOCK,
+                "ACTORS identity differs from INDEX",
+                detail="actors-identity-drift",
+            )
+        )
+    owner_actor_id = index.get("owner_actor_id")
+    if owner_actor_id not in known_actors:
+        risks.append(
+            _risk(
+                _RISK_ACTOR_UNOWNED,
+                RiskLevel.BLOCK,
+                "INDEX owner_actor_id is not registered",
+                detail="owner-actor-unregistered",
+            )
+        )
+    elif actor_owners.get(str(owner_actor_id)) != index.get("owner"):
+        risks.append(
+            _risk(
+                _RISK_ACTOR_UNOWNED,
+                RiskLevel.BLOCK,
+                "INDEX owner differs from owner_actor_id accountable_owner",
+                detail="owner-drift",
+            )
+        )
+    for actor_id, accountable_owner in actor_owners.items():
+        if not accountable_owner.strip():
+            risks.append(
+                _risk(
+                    _RISK_ACTOR_UNOWNED,
+                    RiskLevel.BLOCK,
+                    f"actor {actor_id} has no accountable_owner",
+                    detail="actor-owner-missing",
+                )
+            )
 
     for collection_name in (
         "tool_event_refs",
@@ -730,119 +904,435 @@ def validate_attempt_trace(root: str | Path, attempt: str | Path) -> TraceValida
         references = index.get(collection_name, [])
         if isinstance(references, list):
             for position, reference in enumerate(references, start=1):
-                _checked_ref(attempt_dir, reference, f"{collection_name}[{position}]", risks)
+                _checked_ref(
+                    attempt_dir,
+                    reference,
+                    f"{collection_name}[{position}]",
+                    risks,
+                    detail=f"{collection_name}-ref",
+                )
 
     ledger = index.get("event_ledger", {})
-    event_path = _checked_ref(attempt_dir, ledger, "event ledger", risks)
+    event_path = _checked_ref(attempt_dir, ledger, "event ledger", risks, detail="event-ledger-ref")
     events: list[Mapping[str, Any]] = []
     if event_path:
         try:
             event_lines = event_path.read_text(encoding="utf-8").splitlines()
         except (OSError, UnicodeError) as exc:
-            risks.append(_risk("TRACE-EVENT-INVALID", RiskLevel.BLOCK, f"cannot read event ledger: {exc}"))
+            risks.append(
+                _risk(
+                    _RISK_EVENT_MISSING,
+                    RiskLevel.BLOCK,
+                    f"cannot read event ledger: {exc}",
+                    detail="event-ledger-unreadable",
+                )
+            )
             event_lines = []
         for line_number, line in enumerate(event_lines, start=1):
             if not line.strip():
-                risks.append(_risk("TRACE-EVENT-BLANK", RiskLevel.BLOCK, f"blank event line {line_number}"))
+                risks.append(
+                    _risk(
+                        _RISK_EVENT_MISSING,
+                        RiskLevel.BLOCK,
+                        f"blank event line {line_number}",
+                        detail="event-blank",
+                    )
+                )
                 continue
             try:
                 event = json.loads(line)
             except json.JSONDecodeError as exc:
-                risks.append(_risk("TRACE-EVENT-INVALID", RiskLevel.BLOCK, f"line {line_number}: {exc}"))
+                risks.append(
+                    _risk(
+                        _RISK_EVENT_MISSING,
+                        RiskLevel.BLOCK,
+                        f"line {line_number}: {exc}",
+                        detail="event-json-invalid",
+                    )
+                )
                 continue
             if not isinstance(event, Mapping):
-                risks.append(_risk("TRACE-EVENT-INVALID", RiskLevel.BLOCK, f"line {line_number} is not an object"))
+                risks.append(
+                    _risk(
+                        _RISK_EVENT_MISSING,
+                        RiskLevel.BLOCK,
+                        f"line {line_number} is not an object",
+                        detail="event-object-invalid",
+                    )
+                )
                 continue
             events.append(event)
             for error in catalog.validate("agent_trace_event", event):
-                risks.append(_risk("TRACE-SCHEMA-INVALID", RiskLevel.BLOCK, f"event {line_number}{error.pointer}: {error.message}"))
+                risks.append(
+                    _risk(
+                        _RISK_EVENT_MISSING,
+                        RiskLevel.BLOCK,
+                        f"event {line_number}{error.pointer}: {error.message}",
+                        detail="event-schema-invalid",
+                    )
+                )
     expected_event_sequences = list(range(1, len(events) + 1))
     actual_event_sequences = [event.get("sequence") for event in events]
     if actual_event_sequences != expected_event_sequences:
-        risks.append(_risk("TRACE-EVENT-SEQUENCE", RiskLevel.BLOCK, "event sequence has a gap, duplicate, or reorder"))
+        risks.append(
+            _risk(
+                _RISK_SEQUENCE_GAP,
+                RiskLevel.BLOCK,
+                "event sequence has a gap, duplicate, or reorder",
+                detail="event-sequence",
+            )
+        )
+    event_ids = [event.get("event_id") for event in events if isinstance(event.get("event_id"), str)]
+    if len(event_ids) != len(set(event_ids)):
+        risks.append(
+            _risk(
+                _RISK_SEQUENCE_GAP,
+                RiskLevel.BLOCK,
+                "event_id values are not unique",
+                detail="duplicate-event-id",
+            )
+        )
     if isinstance(ledger, Mapping) and ledger.get("event_count") != len(events):
-        risks.append(_risk("TRACE-EVENT-COUNT", RiskLevel.BLOCK, "INDEX event_count does not match events.jsonl"))
+        risks.append(
+            _risk(
+                _RISK_EVENT_MISSING,
+                RiskLevel.BLOCK,
+                "INDEX event_count does not match events.jsonl",
+                detail="event-count-drift",
+            )
+        )
     for event in events:
         if event.get("actor_id") not in known_actors:
-            risks.append(_risk("TRACE-ACTOR-UNKNOWN", RiskLevel.BLOCK, f"event {event.get('event_id')} uses an unregistered actor"))
+            risks.append(
+                _risk(
+                    _RISK_ACTOR_UNOWNED,
+                    RiskLevel.BLOCK,
+                    f"event {event.get('event_id')} uses an unregistered actor",
+                    detail="event-actor-unregistered",
+                )
+            )
         if (event.get("task_id"), event.get("task_revision"), event.get("attempt_id")) != identities:
-            risks.append(_risk("TRACE-IDENTITY-DRIFT", RiskLevel.BLOCK, f"event {event.get('event_id')} identity differs from INDEX"))
+            risks.append(
+                _risk(
+                    _RISK_EVENT_MISSING,
+                    RiskLevel.BLOCK,
+                    f"event {event.get('event_id')} identity differs from INDEX",
+                    detail="event-identity-drift",
+                )
+            )
+        payload = event.get("payload", {})
+        if isinstance(payload, Mapping):
+            rendered_payload = json.dumps(payload, ensure_ascii=False, sort_keys=True)
+            if any(marker in rendered_payload for marker in _REDACTION_MARKERS) and not event.get("redactions"):
+                risks.append(
+                    _risk(
+                        _RISK_REDACTION_UNDECLARED,
+                        RiskLevel.BLOCK,
+                        f"event {event.get('event_id')} contains an undeclared redaction marker",
+                        detail="event-redaction-metadata-missing",
+                    )
+                )
         _validate_event_boundary(attempt_dir, index, event, risks)
+
+    status_events = [event for event in events if event.get("event_type") == "attempt-status"]
+    current_status = "planned"
+    if not status_events:
+        risks.append(
+            _risk(
+                _RISK_EVENT_MISSING,
+                RiskLevel.BLOCK,
+                "trace has no attempt-status event",
+                detail="attempt-status-missing",
+            )
+        )
+    for event in status_events:
+        payload = event.get("payload", {})
+        if not isinstance(payload, Mapping):
+            continue
+        if payload.get("from_status") != current_status:
+            risks.append(
+                _risk(
+                    _RISK_EVENT_MISSING,
+                    RiskLevel.BLOCK,
+                    f"attempt status {event.get('event_id')} starts at "
+                    f"{payload.get('from_status')!r}, expected {current_status!r}",
+                    detail="attempt-status-chain-drift",
+                )
+            )
+        if isinstance(payload.get("to_status"), str):
+            current_status = str(payload["to_status"])
+    if index.get("attempt_status") != current_status:
+        risks.append(
+            _risk(
+                _RISK_EVENT_MISSING,
+                RiskLevel.BLOCK,
+                "INDEX attempt_status does not match the final attempt-status event",
+                detail="attempt-status-index-drift",
+            )
+        )
 
     messages = index.get("messages", [])
     if not isinstance(messages, list):
         messages = []
     sequences = [item.get("sequence") for item in messages if isinstance(item, Mapping)]
     if sequences != list(range(1, len(messages) + 1)):
-        risks.append(_risk("TRACE-MESSAGE-SEQUENCE", RiskLevel.BLOCK, "message sequence has a gap, duplicate, or reorder"))
+        risks.append(
+            _risk(
+                _RISK_SEQUENCE_GAP,
+                RiskLevel.BLOCK,
+                "message sequence has a gap, duplicate, or reorder",
+                detail="message-sequence",
+            )
+        )
+    indexed_message_ids = [
+        entry.get("message_id")
+        for entry in messages
+        if isinstance(entry, Mapping) and isinstance(entry.get("message_id"), str)
+    ]
+    if len(indexed_message_ids) != len(set(indexed_message_ids)):
+        risks.append(
+            _risk(
+                _RISK_SEQUENCE_GAP,
+                RiskLevel.BLOCK,
+                "INDEX message_id values are not unique",
+                detail="duplicate-message-id",
+            )
+        )
     indexed_paths: set[str] = set()
+    parsed_messages: list[tuple[Mapping[str, Any], Mapping[str, Any], Path]] = []
+    envelope_message_ids: list[str] = []
     for entry in messages:
         if not isinstance(entry, Mapping):
             continue
-        path = _checked_ref(attempt_dir, entry, f"message {entry.get('message_id')}", risks)
+        path = _checked_ref(
+            attempt_dir,
+            entry,
+            f"message {entry.get('message_id')}",
+            risks,
+            missing_code=_RISK_MESSAGE_MISSING,
+            detail="message-ref",
+        )
         if not path:
             continue
         indexed_paths.add(path.relative_to(attempt_dir).as_posix())
         try:
             envelope, body = _parse_message(path)
         except (OSError, ValueError, yaml.YAMLError) as exc:
-            risks.append(_risk("TRACE-MESSAGE-INVALID", RiskLevel.BLOCK, f"{path.name}: {exc}"))
+            risks.append(
+                _risk(
+                    _RISK_MESSAGE_MISSING,
+                    RiskLevel.BLOCK,
+                    f"{path.name}: {exc}",
+                    detail="message-envelope-invalid",
+                )
+            )
             continue
         try:
             json.loads(body.decode("utf-8"))
         except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-            risks.append(_risk("TRACE-MESSAGE-INVALID", RiskLevel.BLOCK, f"{path.name} body: {exc}"))
+            risks.append(
+                _risk(
+                    _RISK_MESSAGE_MISSING,
+                    RiskLevel.BLOCK,
+                    f"{path.name} body: {exc}",
+                    detail="message-body-invalid",
+                )
+            )
         for error in catalog.validate("agent_trace_envelope", envelope):
-            risks.append(_risk("TRACE-SCHEMA-INVALID", RiskLevel.BLOCK, f"{path.name}{error.pointer}: {error.message}"))
+            risks.append(
+                _risk(
+                    _RISK_MESSAGE_MISSING,
+                    RiskLevel.BLOCK,
+                    f"{path.name}{error.pointer}: {error.message}",
+                    detail="message-envelope-schema-invalid",
+                )
+            )
+        parsed_messages.append((entry, envelope, path))
+        if isinstance(envelope.get("message_id"), str):
+            envelope_message_ids.append(str(envelope["message_id"]))
         if _sha256_bytes(body) != str(entry.get("content_sha256", "")).removeprefix("sha256:"):
-            risks.append(_risk("TRACE-CONTENT-HASH", RiskLevel.BLOCK, f"message body hash drift: {path.name}"))
+            risks.append(
+                _risk(
+                    _RISK_HASH_MISMATCH,
+                    RiskLevel.BLOCK,
+                    f"message body hash drift: {path.name}",
+                    detail="message-content-hash",
+                )
+            )
         if envelope.get("content_sha256") != entry.get("content_sha256"):
-            risks.append(_risk("TRACE-ENVELOPE-DRIFT", RiskLevel.BLOCK, f"envelope/index content hash differs: {path.name}"))
+            risks.append(
+                _risk(
+                    _RISK_HASH_MISMATCH,
+                    RiskLevel.BLOCK,
+                    f"envelope/index content hash differs: {path.name}",
+                    detail="message-index-content-hash",
+                )
+            )
+        for field in (
+            "message_id",
+            "sequence",
+            "kind",
+            "sender_actor_id",
+            "receiver_actor_ids",
+            "created_at",
+            "capture_status",
+            "capture_gap_event_id",
+        ):
+            if envelope.get(field) != entry.get(field):
+                risks.append(
+                    _risk(
+                        _RISK_MESSAGE_MISSING,
+                        RiskLevel.BLOCK,
+                        f"envelope/index {field} differs: {path.name}",
+                        detail="message-index-envelope-drift",
+                    )
+                )
         if (envelope.get("task_id"), envelope.get("task_revision"), envelope.get("attempt_id")) != identities:
-            risks.append(_risk("TRACE-IDENTITY-DRIFT", RiskLevel.BLOCK, f"message identity differs from INDEX: {path.name}"))
+            risks.append(
+                _risk(
+                    _RISK_MESSAGE_MISSING,
+                    RiskLevel.BLOCK,
+                    f"message identity differs from INDEX: {path.name}",
+                    detail="message-identity-drift",
+                )
+            )
         receiver_ids = envelope.get("receiver_actor_ids", [])
         if not isinstance(receiver_ids, list):
             receiver_ids = []
         actor_ids = {envelope.get("sender_actor_id"), *receiver_ids}
         if not actor_ids.issubset(known_actors):
-            risks.append(_risk("TRACE-ACTOR-UNKNOWN", RiskLevel.BLOCK, f"message uses an unregistered actor: {path.name}"))
+            risks.append(
+                _risk(
+                    _RISK_ACTOR_UNOWNED,
+                    RiskLevel.BLOCK,
+                    f"message uses an unregistered actor: {path.name}",
+                    detail="message-actor-unregistered",
+                )
+            )
+        sender = envelope.get("sender_actor_id")
+        if sender in actor_owners and envelope.get("accountable_owner") != actor_owners[str(sender)]:
+            risks.append(
+                _risk(
+                    _RISK_ACTOR_UNOWNED,
+                    RiskLevel.BLOCK,
+                    f"message accountable_owner differs from sender actor owner: {path.name}",
+                    detail="message-owner-drift",
+                )
+            )
         if any(marker.encode() in body for marker in _REDACTION_MARKERS) and not envelope.get("redactions"):
-            risks.append(_risk("TRACE-REDACTION-UNDECLARED", RiskLevel.BLOCK, f"message contains an undeclared redaction marker: {path.name}"))
+            risks.append(
+                _risk(
+                    _RISK_REDACTION_UNDECLARED,
+                    RiskLevel.BLOCK,
+                    f"message contains an undeclared redaction marker: {path.name}",
+                    detail="message-redaction-metadata-missing",
+                )
+            )
+    if len(envelope_message_ids) != len(set(envelope_message_ids)):
+        risks.append(
+            _risk(
+                _RISK_SEQUENCE_GAP,
+                RiskLevel.BLOCK,
+                "hash-bound envelope message_id values are not unique",
+                detail="duplicate-envelope-message-id",
+            )
+        )
     message_dir = attempt_dir / TRACE_MESSAGES_DIRNAME
     if message_dir.is_dir():
-        extras = {path.relative_to(attempt_dir).as_posix() for path in message_dir.iterdir() if path.is_file()} - indexed_paths
+        extras = {
+            path.relative_to(attempt_dir).as_posix()
+            for path in message_dir.iterdir()
+            if path.is_file()
+        } - indexed_paths
         if extras:
-            risks.append(_risk("TRACE-MESSAGE-UNINDEXED", RiskLevel.BLOCK, "unindexed message files: " + ", ".join(sorted(extras))))
+            risks.append(
+                _risk(
+                    _RISK_MESSAGE_MISSING,
+                    RiskLevel.BLOCK,
+                    "unindexed message files: " + ", ".join(sorted(extras)),
+                    detail="message-unindexed",
+                )
+            )
 
-    gaps = index.get("capture_gaps", [])
-    if not isinstance(gaps, list):
-        gaps = []
-    if gaps:
-        level = RiskLevel.BLOCK if index.get("attempt_status") in {"completed", "stage-completed"} else RiskLevel.WARNING
-        risks.append(_risk("TRACE-CAPTURE-GAP", level, f"trace declares {len(gaps)} capture gap(s)"))
-    if index.get("completeness") == "complete" and gaps:
-        risks.append(_risk("TRACE-FALSE-COMPLETE", RiskLevel.BLOCK, "complete trace cannot contain capture gaps"))
+    _validate_message_capture_events(events, indexed_message_ids, risks)
+    has_gap, has_delay = _validate_capture_consistency(index, events, parsed_messages, risks)
+    if has_gap or has_delay:
+        level = (
+            RiskLevel.BLOCK
+            if index.get("attempt_status") in {"completed", "stage-completed"}
+            else RiskLevel.WARNING
+        )
+        detail = "capture-gap" if has_gap else "capture-delayed"
+        risks.append(
+            _risk(
+                _RISK_CAPTURE_DELAYED,
+                level,
+                "trace declares incomplete or delayed capture",
+                detail=detail,
+            )
+        )
     if index.get("attempt_status") in {"completed", "stage-completed"} and index.get("trace_status") != "frozen":
-        risks.append(_risk("TRACE-FALSE-COMPLETE", RiskLevel.BLOCK, "completed attempt trace is not frozen"))
-    if not risks:
-        risks.append(_risk("TRACE-VALID", RiskLevel.INFO, "trace schema, identities, hashes, sequences, and boundaries are valid"))
+        risks.append(
+            _risk(
+                _RISK_EVENT_MISSING,
+                RiskLevel.BLOCK,
+                "completed attempt trace is not frozen",
+                detail="completed-trace-not-frozen",
+            )
+        )
     return TraceValidationResult(attempt_dir, tuple(risks))
 
 
-def _checked_ref(attempt_dir: Path, reference: Any, label: str, risks: list[ContractRisk]) -> Path | None:
+def _checked_ref(
+    attempt_dir: Path,
+    reference: Any,
+    label: str,
+    risks: list[ContractRisk],
+    *,
+    missing_code: str = _RISK_EVENT_MISSING,
+    detail: str,
+) -> Path | None:
     if not isinstance(reference, Mapping) or not isinstance(reference.get("path"), str):
-        risks.append(_risk("TRACE-REF-INVALID", RiskLevel.BLOCK, f"{label} reference is missing or invalid"))
+        risks.append(
+            _risk(
+                missing_code,
+                RiskLevel.BLOCK,
+                f"{label} reference is missing or invalid",
+                detail=f"{detail}-invalid",
+            )
+        )
         return None
     path = resolve_within_root(attempt_dir, str(reference["path"]))
     if path is None:
-        risks.append(_risk("TRACE-PATH-ESCAPE", RiskLevel.BLOCK, f"{label} reference escapes the attempt directory"))
+        risks.append(
+            _risk(
+                missing_code,
+                RiskLevel.BLOCK,
+                f"{label} reference escapes the attempt directory",
+                detail=f"{detail}-path-escape",
+            )
+        )
         return None
     if not path.is_file():
-        risks.append(_risk("TRACE-REF-MISSING", RiskLevel.BLOCK, f"{label} file is missing: {reference['path']}"))
+        risks.append(
+            _risk(
+                missing_code,
+                RiskLevel.BLOCK,
+                f"{label} file is missing: {reference['path']}",
+                detail=f"{detail}-missing",
+            )
+        )
         return None
     expected = str(reference.get("sha256", "")).lower().removeprefix("sha256:")
     if hash_file(path) != expected:
-        risks.append(_risk("TRACE-HASH-DRIFT", RiskLevel.BLOCK, f"{label} hash differs: {reference['path']}"))
+        risks.append(
+            _risk(
+                _RISK_HASH_MISMATCH,
+                RiskLevel.BLOCK,
+                f"{label} hash differs: {reference['path']}",
+                detail=f"{detail}-hash",
+            )
+        )
     return path
 
 
@@ -866,19 +1356,312 @@ def _validate_event_boundary(
     if not isinstance(tool_allowlist, list):
         tool_allowlist = []
     if event_type == "content-read" and not _matches(str(payload.get("path", "")), read_allowlist):
-        risks.append(_risk("TRACE-READ-OUTSIDE-ALLOWLIST", RiskLevel.BLOCK, f"read outside declared boundary: {payload.get('path')}"))
+        risks.append(
+            _risk(
+                _RISK_READ_OUTSIDE_SCOPE,
+                RiskLevel.BLOCK,
+                f"read outside declared boundary: {payload.get('path')}",
+                detail="content-read-outside-scope",
+            )
+        )
     if event_type == "tool-call":
         if str(payload.get("tool_name", "")) not in tool_allowlist:
-            risks.append(_risk("TRACE-TOOL-OUTSIDE-ALLOWLIST", RiskLevel.BLOCK, f"tool outside declared boundary: {payload.get('tool_name')}"))
-        if payload.get("result_entered_context") and payload.get("result_origin") == "transient":
-            _checked_ref(attempt_dir, payload.get("result_ref", {}), "transient tool result", risks)
+            risks.append(
+                _risk(
+                    _RISK_READ_OUTSIDE_SCOPE,
+                    RiskLevel.BLOCK,
+                    f"tool outside declared boundary: {payload.get('tool_name')}",
+                    detail="tool-outside-scope",
+                )
+            )
+        if payload.get("result_entered_context") and not payload.get("result_origin"):
+            risks.append(
+                _risk(
+                    _RISK_TRANSIENT_RESULT_MISSING,
+                    RiskLevel.BLOCK,
+                    "tool result entered context without a declared origin",
+                    detail="result-origin-missing",
+                )
+            )
+        if payload.get("result_origin") == "transient":
+            if not isinstance(payload.get("result_ref"), Mapping):
+                risks.append(
+                    _risk(
+                        _RISK_TRANSIENT_RESULT_MISSING,
+                        RiskLevel.BLOCK,
+                        "transient tool result has no result_ref",
+                        detail="transient-result-ref-missing",
+                    )
+                )
+            else:
+                _checked_ref(
+                    attempt_dir,
+                    payload.get("result_ref"),
+                    "transient tool result",
+                    risks,
+                    missing_code=_RISK_TRANSIENT_RESULT_MISSING,
+                    detail="transient-result-ref",
+                )
     if event_type == "file-revision":
         raw_path = str(payload.get("path", ""))
         normalized = raw_path.replace("\\", "/")
-        if normalized in _PROTECTED_TRACE_PATHS or normalized.startswith(f"{TRACE_MESSAGES_DIRNAME}/") or normalized.startswith(f"{TRACE_TOOL_EVENTS_DIRNAME}/"):
+        if (
+            normalized in _PROTECTED_TRACE_PATHS
+            or normalized.startswith(f"{TRACE_MESSAGES_DIRNAME}/")
+            or normalized.startswith(f"{TRACE_TOOL_EVENTS_DIRNAME}/")
+        ):
             if payload.get("action") in {"modified", "deleted"}:
-                risks.append(_risk("TRACE-PROCESS-ARTIFACT-OVERWRITE", RiskLevel.BLOCK, f"trace process artifact was overwritten: {raw_path}"))
+                risks.append(
+                    _risk(
+                        _RISK_PROCESS_ARTIFACT_OVERWRITTEN,
+                        RiskLevel.BLOCK,
+                        f"trace process artifact was overwritten: {raw_path}",
+                        detail="protected-trace-artifact-overwrite",
+                    )
+                )
         elif not _matches(raw_path, write_scope):
-            risks.append(_risk("TRACE-WRITE-OUTSIDE-SCOPE", RiskLevel.BLOCK, f"file revision outside declared write scope: {raw_path}"))
+            risks.append(
+                _risk(
+                    _RISK_READ_OUTSIDE_SCOPE,
+                    RiskLevel.BLOCK,
+                    f"file revision outside declared write scope: {raw_path}",
+                    detail="write-outside-scope",
+                )
+            )
     if event_type == "external-action" and "receipt_ref" in payload:
-        _checked_ref(attempt_dir, payload.get("receipt_ref"), "external action receipt", risks)
+        _checked_ref(
+            attempt_dir,
+            payload.get("receipt_ref"),
+            "external action receipt",
+            risks,
+            detail="external-action-receipt",
+        )
+
+
+def _validate_message_capture_events(
+    events: Sequence[Mapping[str, Any]],
+    indexed_message_ids: Sequence[str],
+    risks: list[ContractRisk],
+) -> None:
+    indexed = set(indexed_message_ids)
+    captured: set[str] = set()
+    for event in events:
+        if event.get("event_type") != "message-capture":
+            continue
+        payload = event.get("payload", {})
+        if not isinstance(payload, Mapping) or not isinstance(payload.get("message_id"), str):
+            continue
+        message_id = str(payload["message_id"])
+        captured.add(message_id)
+        if message_id not in indexed:
+            risks.append(
+                _risk(
+                    _RISK_MESSAGE_MISSING,
+                    RiskLevel.BLOCK,
+                    f"message-capture event references absent message {message_id}",
+                    detail="message-capture-target-missing",
+                )
+            )
+    for message_id in sorted(indexed - captured):
+        risks.append(
+            _risk(
+                _RISK_EVENT_MISSING,
+                RiskLevel.BLOCK,
+                f"indexed message {message_id} has no message-capture event",
+                detail="message-capture-event-missing",
+            )
+        )
+
+
+def _validate_capture_consistency(
+    index: Mapping[str, Any],
+    events: Sequence[Mapping[str, Any]],
+    parsed_messages: Sequence[tuple[Mapping[str, Any], Mapping[str, Any], Path]],
+    risks: list[ContractRisk],
+) -> tuple[bool, bool]:
+    event_gaps = [event for event in events if event.get("event_type") == "capture-gap"]
+    event_gap_by_id = {
+        str(event.get("event_id")): event
+        for event in event_gaps
+        if isinstance(event.get("event_id"), str)
+    }
+    raw_index_gaps = index.get("capture_gaps", [])
+    index_gaps = (
+        [gap for gap in raw_index_gaps if isinstance(gap, Mapping)]
+        if isinstance(raw_index_gaps, list)
+        else []
+    )
+    index_gap_ids = [str(gap.get("event_id")) for gap in index_gaps if isinstance(gap.get("event_id"), str)]
+    if len(index_gap_ids) != len(set(index_gap_ids)):
+        risks.append(
+            _risk(
+                _RISK_CAPTURE_DELAYED,
+                RiskLevel.BLOCK,
+                "INDEX capture_gaps contains duplicate event_id values",
+                detail="duplicate-index-capture-gap",
+            )
+        )
+    index_gap_by_id = {
+        str(gap.get("event_id")): gap
+        for gap in index_gaps
+        if isinstance(gap.get("event_id"), str)
+    }
+    for event_id, event in event_gap_by_id.items():
+        payload = event.get("payload", {})
+        stream = payload.get("affected_stream") if isinstance(payload, Mapping) else None
+        gap = index_gap_by_id.get(event_id)
+        if gap is None:
+            risks.append(
+                _risk(
+                    _RISK_CAPTURE_DELAYED,
+                    RiskLevel.BLOCK,
+                    f"capture-gap event {event_id} is absent from INDEX.capture_gaps",
+                    detail="capture-gap-event-unindexed",
+                )
+            )
+        elif gap.get("affected_stream") != stream:
+            risks.append(
+                _risk(
+                    _RISK_CAPTURE_DELAYED,
+                    RiskLevel.BLOCK,
+                    f"capture-gap stream differs for {event_id}",
+                    detail="capture-gap-stream-drift",
+                )
+            )
+    for event_id, gap in index_gap_by_id.items():
+        event = event_gap_by_id.get(event_id)
+        if event is None:
+            risks.append(
+                _risk(
+                    _RISK_CAPTURE_DELAYED,
+                    RiskLevel.BLOCK,
+                    f"INDEX capture gap {event_id} has no ledger event",
+                    detail="indexed-capture-gap-event-missing",
+                )
+            )
+            continue
+        payload = event.get("payload", {})
+        if isinstance(payload, Mapping) and gap.get("affected_stream") != payload.get("affected_stream"):
+            risks.append(
+                _risk(
+                    _RISK_CAPTURE_DELAYED,
+                    RiskLevel.BLOCK,
+                    f"INDEX capture gap stream differs for {event_id}",
+                    detail="indexed-capture-gap-stream-drift",
+                )
+            )
+
+    message_entries = {
+        str(entry.get("message_id")): entry
+        for entry, _envelope, _path in parsed_messages
+        if isinstance(entry.get("message_id"), str)
+    }
+    capture_actions: dict[str, set[str]] = {}
+    for event in events:
+        if event.get("event_type") != "message-capture":
+            continue
+        payload = event.get("payload", {})
+        if not isinstance(payload, Mapping) or not isinstance(payload.get("message_id"), str):
+            continue
+        capture_actions.setdefault(str(payload["message_id"]), set()).add(str(payload.get("action", "")))
+    statuses = [entry.get("capture_status") for entry in message_entries.values()]
+    for message_id, entry in message_entries.items():
+        status = entry.get("capture_status")
+        gap_event_id = entry.get("capture_gap_event_id")
+        if status == "delayed" and "exported-delayed" not in capture_actions.get(message_id, set()):
+            risks.append(
+                _risk(
+                    _RISK_CAPTURE_DELAYED,
+                    RiskLevel.BLOCK,
+                    f"delayed message {message_id} lacks an exported-delayed capture event",
+                    detail="message-delay-event-missing",
+                )
+            )
+        if status in {"partial", "unavailable"}:
+            event = event_gap_by_id.get(str(gap_event_id)) if gap_event_id is not None else None
+            if event is None:
+                risks.append(
+                    _risk(
+                        _RISK_CAPTURE_DELAYED,
+                        RiskLevel.BLOCK,
+                        f"message {message_id} has no valid capture-gap event",
+                        detail="message-capture-gap-event-missing",
+                    )
+                )
+                continue
+            payload = event.get("payload", {})
+            if not isinstance(payload, Mapping) or payload.get("affected_stream") != "messages":
+                risks.append(
+                    _risk(
+                        _RISK_CAPTURE_DELAYED,
+                        RiskLevel.BLOCK,
+                        f"message {message_id} points to a non-message capture gap",
+                        detail="message-capture-gap-stream-drift",
+                    )
+                )
+            affected_ids = payload.get("affected_ids", []) if isinstance(payload, Mapping) else []
+            if not isinstance(affected_ids, list) or message_id not in affected_ids:
+                risks.append(
+                    _risk(
+                        _RISK_CAPTURE_DELAYED,
+                        RiskLevel.BLOCK,
+                        f"capture gap {gap_event_id} does not name message {message_id}",
+                        detail="message-capture-gap-id-drift",
+                    )
+                )
+        elif gap_event_id is not None:
+            risks.append(
+                _risk(
+                    _RISK_CAPTURE_DELAYED,
+                    RiskLevel.BLOCK,
+                    f"message {message_id} declares a gap while capture_status is {status!r}",
+                    detail="message-capture-status-drift",
+                )
+            )
+        if status != "delayed" and "exported-delayed" in capture_actions.get(message_id, set()):
+            risks.append(
+                _risk(
+                    _RISK_CAPTURE_DELAYED,
+                    RiskLevel.BLOCK,
+                    f"message {message_id} has exported-delayed event but status {status!r}",
+                    detail="message-delay-status-drift",
+                )
+            )
+
+    for event_id, event in event_gap_by_id.items():
+        payload = event.get("payload", {})
+        if not isinstance(payload, Mapping) or payload.get("affected_stream") != "messages":
+            continue
+        affected_ids = payload.get("affected_ids", [])
+        if not isinstance(affected_ids, list):
+            continue
+        for message_id in affected_ids:
+            entry = message_entries.get(str(message_id))
+            if entry is None:
+                continue
+            if (
+                entry.get("capture_status") not in {"partial", "unavailable"}
+                or entry.get("capture_gap_event_id") != event_id
+            ):
+                risks.append(
+                    _risk(
+                        _RISK_CAPTURE_DELAYED,
+                        RiskLevel.BLOCK,
+                        f"capture gap {event_id} and message {message_id} disagree",
+                        detail="capture-gap-message-drift",
+                    )
+                )
+
+    has_gap = bool(event_gaps or index_gaps or any(status in {"partial", "unavailable"} for status in statuses))
+    has_delay = any(status == "delayed" for status in statuses)
+    expected_completeness = "gapped" if has_gap else "delayed" if has_delay else "complete"
+    if index.get("completeness") != expected_completeness:
+        risks.append(
+            _risk(
+                _RISK_CAPTURE_DELAYED,
+                RiskLevel.BLOCK,
+                f"INDEX completeness is {index.get('completeness')!r}, expected {expected_completeness!r}",
+                detail="capture-completeness-drift",
+            )
+        )
+    return has_gap, has_delay

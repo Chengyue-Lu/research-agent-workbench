@@ -14,6 +14,17 @@ file revision, external action, Attempt status, and capture gap. A shell
 command is a tool call with `tool_name: shell`; it is not a new reasoning or
 authority concept.
 
+Public validator results use only the canonical Trace vocabulary in
+`docs/modules/07-ARTIFACTS_AND_PROVENANCE.md`. Stable bracketed detail
+subcodes distinguish schema, identity, ownership, boundary, and consistency
+failure classes without creating a second public risk-code registry.
+
+Every event payload passes through the same credential/hidden-reasoning
+sanitizer before append. Event-level `redactions` preserve category, reason,
+and field path without retaining the removed value. `result_entered_context`
+requires a declared result origin, and transient results additionally require
+a hash-checked `result_ref`.
+
 ## Explicit non-scope
 
 This module does not resolve Method, Mode, Skill, Claim, or Human-Gate

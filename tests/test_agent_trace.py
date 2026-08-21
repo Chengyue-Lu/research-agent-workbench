@@ -81,6 +81,20 @@ class AgentTraceTests(unittest.TestCase):
             )
         )
 
+    def rewrite_message(self, position: int, mutate_envelope, mutate_entry=lambda _entry: None) -> None:
+        index_path = self.attempt / "INDEX.yaml"
+        index = yaml.safe_load(index_path.read_text(encoding="utf-8"))
+        entry = index["messages"][position]
+        message_path = self.attempt / entry["path"]
+        envelope, body = _parse_message(message_path)
+        envelope = dict(envelope)
+        mutate_envelope(envelope)
+        content = b"---\n" + yaml.safe_dump(envelope, sort_keys=False).encode() + b"---\n" + body + b"\n"
+        message_path.write_bytes(content)
+        entry["sha256"] = __import__("hashlib").sha256(content).hexdigest()
+        mutate_entry(entry)
+        index_path.write_text(yaml.safe_dump(index, sort_keys=False), encoding="utf-8")
+
     def test_recorder_captures_before_send_redacts_and_validates(self) -> None:
         recorder = self.recorder()
         recorder.record(
@@ -211,11 +225,7 @@ class AgentTraceTests(unittest.TestCase):
         recorder.seal("safe-paused")
         codes = {risk.code for risk in validate_attempt_trace(self.root, self.attempt).risks}
         self.assertTrue(
-            {
-                "TRACE-READ-OUTSIDE-ALLOWLIST",
-                "TRACE-TOOL-OUTSIDE-ALLOWLIST",
-                "TRACE-WRITE-OUTSIDE-SCOPE",
-            }.issubset(codes)
+            {"TRACE-READ-OUTSIDE-SCOPE"}.issubset(codes)
         )
 
     def test_typed_tool_result_requires_content_before_context_delivery(self) -> None:
@@ -238,7 +248,7 @@ class AgentTraceTests(unittest.TestCase):
         message.write_bytes(message.read_bytes() + b"tamper")
         result = validate_attempt_trace(self.root, self.attempt)
         self.assertTrue(result.blocked)
-        self.assertIn("TRACE-HASH-DRIFT", {risk.code for risk in result.risks})
+        self.assertIn("TRACE-HASH-MISMATCH", {risk.code for risk in result.risks})
 
     def test_completed_trace_with_capture_gap_is_blocking(self) -> None:
         recorder = self.recorder()
@@ -248,7 +258,7 @@ class AgentTraceTests(unittest.TestCase):
         result = validate_attempt_trace(self.root, self.attempt)
         codes = {risk.code for risk in result.risks}
         self.assertTrue(result.blocked)
-        self.assertIn("TRACE-CAPTURE-GAP", codes)
+        self.assertIn("TRACE-CAPTURE-DELAYED", codes)
 
     def test_index_path_escape_is_blocking(self) -> None:
         recorder = self.recorder()
@@ -259,7 +269,7 @@ class AgentTraceTests(unittest.TestCase):
         index["task_ref"]["path"] = "../outside.yaml"
         index_path.write_text(yaml.safe_dump(index, sort_keys=False), encoding="utf-8")
         result = validate_attempt_trace(self.root, self.attempt)
-        self.assertIn("TRACE-PATH-ESCAPE", {risk.code for risk in result.risks})
+        self.assertIn("TRACE-EVENT-MISSING", {risk.code for risk in result.risks})
 
     def test_event_sequence_and_unknown_actor_are_blocking(self) -> None:
         recorder = self.recorder()
@@ -278,8 +288,8 @@ class AgentTraceTests(unittest.TestCase):
         index_path.write_text(yaml.safe_dump(index, sort_keys=False), encoding="utf-8")
         result = validate_attempt_trace(self.root, self.attempt)
         codes = {risk.code for risk in result.risks}
-        self.assertIn("TRACE-EVENT-SEQUENCE", codes)
-        self.assertIn("TRACE-ACTOR-UNKNOWN", codes)
+        self.assertIn("TRACE-SEQUENCE-GAP", codes)
+        self.assertIn("TRACE-ACTOR-UNOWNED", codes)
 
     def test_existing_trace_artifact_is_not_overwritten(self) -> None:
         self.attempt.mkdir(parents=True)
@@ -315,7 +325,7 @@ class AgentTraceTests(unittest.TestCase):
         self.assertEqual(previous, index_path.read_bytes())
         self.assertFalse(list(self.attempt.glob(".INDEX.yaml.*.tmp")))
         codes = {risk.code for risk in validate_attempt_trace(self.root, self.attempt).risks}
-        self.assertIn("TRACE-HASH-DRIFT", codes)
+        self.assertIn("TRACE-HASH-MISMATCH", codes)
 
     def test_sanitizer_catches_key_and_value_shapes(self) -> None:
         cleaned, redactions = sanitize_trace_value(
@@ -347,12 +357,12 @@ class AgentTraceTests(unittest.TestCase):
     def test_missing_invalid_and_outside_index_fail_closed(self) -> None:
         missing = self.root / "work/missing"
         missing.mkdir(parents=True)
-        self.assertIn("TRACE-INDEX-MISSING", {risk.code for risk in validate_attempt_trace(self.root, missing).risks})
+        self.assertIn("TRACE-EVENT-MISSING", {risk.code for risk in validate_attempt_trace(self.root, missing).risks})
         outside = self.root.parent / "outside-attempt"
-        self.assertIn("TRACE-PATH-ESCAPE", {risk.code for risk in validate_attempt_trace(self.root, outside).risks})
+        self.assertIn("TRACE-READ-OUTSIDE-SCOPE", {risk.code for risk in validate_attempt_trace(self.root, outside).risks})
         self.attempt.mkdir(parents=True)
         (self.attempt / "INDEX.yaml").write_text("- not\n- a mapping\n", encoding="utf-8")
-        self.assertIn("TRACE-INDEX-INVALID", {risk.code for risk in validate_attempt_trace(self.root, self.attempt).risks})
+        self.assertIn("TRACE-EVENT-MISSING", {risk.code for risk in validate_attempt_trace(self.root, self.attempt).risks})
 
     def test_invalid_actor_and_reference_shapes_are_structured_blocks(self) -> None:
         recorder = self.recorder()
@@ -367,11 +377,11 @@ class AgentTraceTests(unittest.TestCase):
             )
         )
         codes = {risk.code for risk in validate_attempt_trace(self.root, self.attempt).risks}
-        self.assertIn("TRACE-ACTORS-INVALID", codes)
-        self.assertIn("TRACE-REF-MISSING", codes)
+        self.assertIn("TRACE-ACTOR-UNOWNED", codes)
+        self.assertIn("TRACE-EVENT-MISSING", codes)
         self.rewrite_index(lambda index: index.update({"actors_ref": {}}))
         codes = {risk.code for risk in validate_attempt_trace(self.root, self.attempt).risks}
-        self.assertIn("TRACE-REF-INVALID", codes)
+        self.assertIn("TRACE-EVENT-MISSING", codes)
 
     def test_identity_drift_and_malformed_index_values_fail_as_structured_risks(self) -> None:
         recorder = self.recorder()
@@ -398,10 +408,8 @@ class AgentTraceTests(unittest.TestCase):
         result = validate_attempt_trace(self.root, self.attempt)
         codes = {risk.code for risk in result.risks}
         self.assertTrue(result.blocked)
-        self.assertIn("TRACE-SCHEMA-INVALID", codes)
-        self.assertIn("TRACE-IDENTITY-DRIFT", codes)
-        self.assertIn("TRACE-ACTOR-UNKNOWN", codes)
-        self.assertIn("TRACE-ACTORS-INVALID", codes)
+        self.assertIn("TRACE-EVENT-MISSING", codes)
+        self.assertIn("TRACE-ACTOR-UNOWNED", codes)
 
     def test_event_ledger_fault_matrix_and_boundaries(self) -> None:
         recorder = self.recorder()
@@ -428,10 +436,11 @@ class AgentTraceTests(unittest.TestCase):
         self.rewrite_events(lines, event_count=99)
         codes = {risk.code for risk in validate_attempt_trace(self.root, self.attempt).risks}
         expected = {
-            "TRACE-EVENT-BLANK", "TRACE-EVENT-INVALID", "TRACE-EVENT-COUNT",
-            "TRACE-SCHEMA-INVALID", "TRACE-ACTOR-UNKNOWN", "TRACE-IDENTITY-DRIFT",
-            "TRACE-READ-OUTSIDE-ALLOWLIST", "TRACE-TOOL-OUTSIDE-ALLOWLIST",
-            "TRACE-REF-INVALID", "TRACE-PROCESS-ARTIFACT-OVERWRITE", "TRACE-WRITE-OUTSIDE-SCOPE",
+            "TRACE-EVENT-MISSING",
+            "TRACE-ACTOR-UNOWNED",
+            "TRACE-READ-OUTSIDE-SCOPE",
+            "TRACE-TRANSIENT-RESULT-MISSING",
+            "TRACE-PROCESS-ARTIFACT-OVERWRITTEN",
         }
         self.assertTrue(expected.issubset(codes), expected - codes)
 
@@ -451,9 +460,11 @@ class AgentTraceTests(unittest.TestCase):
         (self.attempt / "messages" / "unindexed.trace").write_text("extra", encoding="utf-8")
         codes = {risk.code for risk in validate_attempt_trace(self.root, self.attempt).risks}
         expected = {
-            "TRACE-MESSAGE-SEQUENCE", "TRACE-CONTENT-HASH", "TRACE-ENVELOPE-DRIFT",
-            "TRACE-IDENTITY-DRIFT", "TRACE-ACTOR-UNKNOWN", "TRACE-REDACTION-UNDECLARED",
-            "TRACE-MESSAGE-UNINDEXED", "TRACE-SCHEMA-INVALID",
+            "TRACE-SEQUENCE-GAP",
+            "TRACE-HASH-MISMATCH",
+            "TRACE-MESSAGE-MISSING",
+            "TRACE-ACTOR-UNOWNED",
+            "TRACE-REDACTION-UNDECLARED",
         }
         self.assertTrue(expected.issubset(codes), expected - codes)
 
@@ -492,7 +503,7 @@ class AgentTraceTests(unittest.TestCase):
             )
         )
         codes = {risk.code for risk in validate_attempt_trace(self.root, self.attempt).risks}
-        self.assertIn("TRACE-MESSAGE-INVALID", codes)
+        self.assertIn("TRACE-MESSAGE-MISSING", codes)
 
     def test_false_complete_unfrozen_and_unknown_record_kind(self) -> None:
         recorder = self.recorder()
@@ -501,12 +512,214 @@ class AgentTraceTests(unittest.TestCase):
         recorder.record("session-status", {"status": "completed", "reason": "fixture"})
         self.rewrite_index(lambda index: index.update({"trace_status": "active"}))
         codes = {risk.code for risk in validate_attempt_trace(self.root, self.attempt).risks}
-        self.assertIn("TRACE-FALSE-COMPLETE", codes)
+        self.assertIn("TRACE-EVENT-MISSING", codes)
         recorder.seal()
         with self.assertRaises(RuntimeError):
             recorder.record("provider-request", {"request": {}})
         with self.assertRaises(RuntimeError):
             recorder.record_file_revision("outputs/late.txt", action="created")
+
+    def test_actor_owner_and_message_owner_drift_are_canonical_blocks(self) -> None:
+        recorder = self.recorder()
+        recorder.record("provider-request", {"request": {"model": "test"}})
+        recorder.seal("safe-paused")
+        self.rewrite_index(lambda index: index.update({"owner": "Other Owner"}))
+        self.rewrite_message(
+            0,
+            lambda envelope: envelope.update({"accountable_owner": "Other Owner"}),
+        )
+
+        risks = validate_attempt_trace(self.root, self.attempt).risks
+        self.assertIn("TRACE-ACTOR-UNOWNED", {risk.code for risk in risks})
+        details = {risk.message.split("]", 1)[0] + "]" for risk in risks}
+        self.assertIn("[owner-drift]", details)
+        self.assertIn("[message-owner-drift]", details)
+
+    def test_transient_result_origin_and_ref_mutations_fail_closed(self) -> None:
+        recorder = self.recorder()
+        recorder.record_tool_call(
+            operation_id="op-transient",
+            tool_name="read_file",
+            status="delivered",
+            arguments={"path": "inputs/a.txt"},
+            result="entered context",
+            result_entered_context=True,
+        )
+        recorder.seal("safe-paused")
+        original = [
+            json.loads(line)
+            for line in (self.attempt / "events.jsonl").read_text(encoding="utf-8").splitlines()
+        ]
+        tool_position = next(
+            position for position, event in enumerate(original) if event["event_type"] == "tool-call"
+        )
+
+        without_origin = json.loads(json.dumps(original))
+        without_origin[tool_position]["payload"].pop("result_origin")
+        without_origin[tool_position]["payload"].pop("result_ref")
+        self.rewrite_events([json.dumps(event) for event in without_origin])
+        risks = validate_attempt_trace(self.root, self.attempt).risks
+        self.assertIn("TRACE-TRANSIENT-RESULT-MISSING", {risk.code for risk in risks})
+        self.assertTrue(any("[result-origin-missing]" in risk.message for risk in risks))
+
+        without_ref = json.loads(json.dumps(original))
+        without_ref[tool_position]["payload"].pop("result_ref")
+        self.rewrite_events([json.dumps(event) for event in without_ref])
+        risks = validate_attempt_trace(self.root, self.attempt).risks
+        self.assertIn("TRACE-TRANSIENT-RESULT-MISSING", {risk.code for risk in risks})
+        self.assertTrue(any("[transient-result-ref-missing]" in risk.message for risk in risks))
+
+    def test_capture_gap_index_message_and_completeness_are_bidirectional(self) -> None:
+        recorder = self.recorder()
+        recorder.record("provider-request", {"request": {"model": "test"}})
+        recorder.record_capture_gap(
+            "messages",
+            "injected partial export",
+            affected_ids=("MSG-0001",),
+        )
+        recorder.seal("safe-paused")
+        gap_id = self.rewrite_index(lambda _index: None)["capture_gaps"][0]["event_id"]
+        self.rewrite_message(
+            0,
+            lambda envelope: envelope.update(
+                {"capture_status": "partial", "capture_gap_event_id": gap_id}
+            ),
+            lambda entry: entry.update(
+                {"capture_status": "partial", "capture_gap_event_id": gap_id}
+            ),
+        )
+        result = validate_attempt_trace(self.root, self.attempt)
+        self.assertFalse(result.blocked, result.risks)
+        self.assertIn("TRACE-CAPTURE-DELAYED", {risk.code for risk in result.risks})
+
+        self.rewrite_index(
+            lambda index: index.update({"capture_gaps": [], "completeness": "complete"})
+        )
+        risks = validate_attempt_trace(self.root, self.attempt).risks
+        self.assertTrue(any(risk.level.value == "block" for risk in risks))
+        self.assertTrue(any("[capture-gap-event-unindexed]" in risk.message for risk in risks))
+        self.assertTrue(any("[capture-completeness-drift]" in risk.message for risk in risks))
+
+    def test_delayed_message_requires_delayed_completeness_without_gap_ref(self) -> None:
+        recorder = self.recorder()
+        recorder.record("provider-request", {"request": {"model": "test"}})
+        recorder.seal("safe-paused")
+        self.rewrite_message(
+            0,
+            lambda envelope: envelope.update({"capture_status": "delayed"}),
+            lambda entry: entry.update({"capture_status": "delayed"}),
+        )
+        self.rewrite_index(lambda index: index.update({"completeness": "delayed"}))
+        events = [
+            json.loads(line)
+            for line in (self.attempt / "events.jsonl").read_text(encoding="utf-8").splitlines()
+        ]
+        capture = next(event for event in events if event["event_type"] == "message-capture")
+        capture["payload"]["action"] = "exported-delayed"
+        self.rewrite_events([json.dumps(event) for event in events])
+        result = validate_attempt_trace(self.root, self.attempt)
+        self.assertFalse(result.blocked, result.risks)
+        self.assertIn("TRACE-CAPTURE-DELAYED", {risk.code for risk in result.risks})
+
+        self.rewrite_index(lambda index: index.update({"completeness": "complete"}))
+        risks = validate_attempt_trace(self.root, self.attempt).risks
+        self.assertTrue(any("[capture-completeness-drift]" in risk.message for risk in risks))
+
+    def test_attempt_status_chain_and_index_final_status_are_bound(self) -> None:
+        recorder = self.recorder()
+        recorder.seal("safe-paused")
+        events = [
+            json.loads(line)
+            for line in (self.attempt / "events.jsonl").read_text(encoding="utf-8").splitlines()
+        ]
+        events[-1]["payload"]["from_status"] = "planned"
+        events[-1]["payload"]["to_status"] = "failed"
+        self.rewrite_events([json.dumps(event) for event in events])
+
+        risks = validate_attempt_trace(self.root, self.attempt).risks
+        self.assertTrue(any("[attempt-status-chain-drift]" in risk.message for risk in risks))
+        self.assertTrue(any("[attempt-status-index-drift]" in risk.message for risk in risks))
+
+    def test_index_message_projection_matches_every_hash_bound_envelope_field(self) -> None:
+        recorder = self.recorder()
+        recorder.record("provider-request", {"request": {"model": "test"}})
+        recorder.seal("safe-paused")
+        index_path = self.attempt / "INDEX.yaml"
+        original = index_path.read_text(encoding="utf-8")
+        mutations = {
+            "message_id": "MSG-9999",
+            "sequence": 9,
+            "kind": "provider-response",
+            "sender_actor_id": "provider-openai-responses",
+            "receiver_actor_ids": ["runtime-AT-0001"],
+            "created_at": "2026-08-21T01:00:00Z",
+            "capture_status": "delayed",
+            "capture_gap_event_id": "EVT-9999",
+        }
+        for field, value in mutations.items():
+            with self.subTest(field=field):
+                index = yaml.safe_load(original)
+                index["messages"][0][field] = value
+                index_path.write_text(yaml.safe_dump(index, sort_keys=False), encoding="utf-8")
+                risks = validate_attempt_trace(self.root, self.attempt).risks
+                self.assertTrue(
+                    any("[message-index-envelope-drift]" in risk.message for risk in risks),
+                    risks,
+                )
+        index_path.write_text(original, encoding="utf-8")
+
+    def test_event_and_message_ids_must_be_unique(self) -> None:
+        recorder = self.recorder()
+        recorder.record("provider-request", {"request": {"model": "one"}})
+        recorder.record("provider-request", {"request": {"model": "two"}})
+        recorder.seal("safe-paused")
+        events = [
+            json.loads(line)
+            for line in (self.attempt / "events.jsonl").read_text(encoding="utf-8").splitlines()
+        ]
+        events[1]["event_id"] = events[0]["event_id"]
+        self.rewrite_events([json.dumps(event) for event in events])
+        self.rewrite_index(
+            lambda index: index["messages"][1].update(
+                {"message_id": index["messages"][0]["message_id"]}
+            )
+        )
+        risks = validate_attempt_trace(self.root, self.attempt).risks
+        self.assertTrue(any("[duplicate-event-id]" in risk.message for risk in risks))
+        self.assertTrue(any("[duplicate-message-id]" in risk.message for risk in risks))
+
+    def test_all_runtime_event_payloads_are_sanitized_with_metadata(self) -> None:
+        recorder = self.recorder()
+        recorder.record_file_revision(
+            "outputs/result.txt",
+            action="created",
+            reason="token=revision-secret-value",
+        )
+        recorder.record_external_action(
+            action_id="external-1",
+            target_category="fixture",
+            authorization_basis="Bearer external-secret-value",
+            side_effect_status="planned",
+        )
+        recorder.record("session-status", {"status": "waiting", "reason": "api_key=session-secret-value"})
+        recorder.record_capture_gap("events", "secret=capture-secret-value")
+        recorder.seal()
+        rendered = (self.attempt / "events.jsonl").read_text(encoding="utf-8")
+        for secret in (
+            "revision-secret-value",
+            "external-secret-value",
+            "session-secret-value",
+            "capture-secret-value",
+        ):
+            self.assertNotIn(secret, rendered)
+        events = [json.loads(line) for line in rendered.splitlines()]
+        redacted_types = {
+            event["event_type"] for event in events if event.get("redactions")
+        }
+        self.assertTrue(
+            {"file-revision", "external-action", "attempt-status", "capture-gap"}.issubset(redacted_types)
+        )
+        self.assertFalse(validate_attempt_trace(self.root, self.attempt).blocked)
 
     def test_plain_supports_to_mapping_and_object_dict(self) -> None:
         class WithMapping:

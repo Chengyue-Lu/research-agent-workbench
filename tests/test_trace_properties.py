@@ -66,7 +66,7 @@ class TracePropertyTests(unittest.TestCase):
             index["event_ledger"]["sha256"] = hashlib.sha256(events_path.read_bytes()).hexdigest()
             index_path.write_text(yaml.safe_dump(index, sort_keys=False), encoding="utf-8")
             codes = {risk.code for risk in validate_attempt_trace(root, recorder.attempt_dir).risks}
-            self.assertIn("TRACE-EVENT-SEQUENCE", codes)
+            self.assertIn("TRACE-SEQUENCE-GAP", codes)
 
     @settings(max_examples=20, deadline=None)
     @given(st.integers(min_value=1, max_value=8))
@@ -80,7 +80,7 @@ class TracePropertyTests(unittest.TestCase):
             index["task_ref"]["path"] = "../" * depth + "outside.yaml"
             index_path.write_text(yaml.safe_dump(index, sort_keys=False), encoding="utf-8")
             codes = {risk.code for risk in validate_attempt_trace(root, recorder.attempt_dir).risks}
-            self.assertIn("TRACE-PATH-ESCAPE", codes)
+            self.assertIn("TRACE-EVENT-MISSING", codes)
 
     @settings(max_examples=20, deadline=None)
     @given(st.binary(min_size=1, max_size=32))
@@ -93,7 +93,7 @@ class TracePropertyTests(unittest.TestCase):
             message = next((recorder.attempt_dir / "messages").iterdir())
             message.write_bytes(message.read_bytes() + suffix)
             codes = {risk.code for risk in validate_attempt_trace(root, recorder.attempt_dir).risks}
-            self.assertIn("TRACE-HASH-DRIFT", codes)
+            self.assertIn("TRACE-HASH-MISMATCH", codes)
 
 
 if __name__ == "__main__":
