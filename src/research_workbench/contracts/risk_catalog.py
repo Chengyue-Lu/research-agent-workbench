@@ -524,8 +524,9 @@ NOT_YET_EMITTED: tuple[RiskCodeEntry, ...] = (
     RiskCodeEntry("HANDOFF-CLAIM-UPGRADE", "", (), "Handoff exceeds the Claim ceiling", (_DOC_05,), "not_yet_emitted"),
     RiskCodeEntry("HANDOFF-OVERHEAD", "", (), "audit artifact cost grows without changing accept, rework, or Gate decisions", (_DOC_05,), "not_yet_emitted"),
     RiskCodeEntry("TASK-READ-OUTSIDE-SCOPE", "", (), "Agent reads undeclared content without a Task scope-extension record", (_DOC_05,), "not_yet_emitted"),
-    RiskCodeEntry("TRACE-MESSAGE-MISSING", "", (), "a cross-agent transmission has no matching message in the Attempt Archive", (_DOC_05,), "not_yet_emitted"),
-    RiskCodeEntry("TRACE-ACTOR-UNOWNED", "", (), "an agent actor is not bound to a named accountable human", (_DOC_05,), "not_yet_emitted"),
+    # TRACE-MESSAGE-MISSING and TRACE-ACTOR-UNOWNED moved from doc-only to
+    # emitted when the file-authoritative Trace Core landed; they are
+    # registered in contracts/risk_codes.py with operational severities.
     RiskCodeEntry("CTX-MAIN-PRESSURE", "", (), "main context noise is growing", (_DOC_06,), "not_yet_emitted"),
     RiskCodeEntry("CTX-SUMMARY-DISTORTION", "", (), "a summary changes the qualifying conditions of its source", (_DOC_06,), "not_yet_emitted"),
     RiskCodeEntry("CTX-STALE", "", (), "context references a stale revision", (_DOC_06,), "not_yet_emitted"),
