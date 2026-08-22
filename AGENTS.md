@@ -34,3 +34,12 @@
 - Validate internal Markdown links after documentation changes.
 - When implementation begins, prefer deterministic schema, hash, reference, and output checks before LLM-based review.
 - A passing validator means structural validity only; never label it scientific correctness.
+
+## Documentation Surface Discipline
+
+- Stable surfaces (`README`, Charter, Architecture, Modules, Development) describe the accepted system positively and do not own live milestones, implementation snapshots, or migration diaries.
+- `docs/STATUS.md` is the authority for current maturity and implementation coverage; `docs/TASKS.md` owns live item status; `docs/ROADMAP.md` owns dependency direction and gates.
+- Compatibility behavior, including historical replay, belongs under `docs/compatibility/` and must never appear as the default happy path.
+- ADRs, workstreams, audit inputs, migration records, and the detailed devlog preserve how and why the system changed; keep them discoverable but outside first-contact navigation.
+- Canonical examples must use current supported and recommended semantics. Historical fixtures must be clearly labeled and linked from compatibility or history surfaces.
+- Documentation tests should enforce ownership and leakage boundaries with narrow structural checks, not broad bans on ordinary words.

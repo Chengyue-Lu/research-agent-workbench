@@ -2,163 +2,106 @@
 
 ## 1. 目标
 
-将平台中立的 Project Protocol、Agent Profile、Skill Assignment、Task 和 Handoff 映射到模型 API、可选 Agent 平台与科研工具。纯 API 隔离会话是可移植基线；平台 Adapter 是便利层。任何 Adapter 都只能执行映射，不能改变科研状态或批准 Gate。
+把平台中立的 Task、Method Resolution、Resolved Capability Snapshot 和权限策略映射到模型 API、Agent Runtime 与科研工具。纯 API 隔离会话是可移植兜底；平台 Adapter 是可替换便利层。Adapter 只执行映射，不能改变研究状态或批准 Gate。
 
-本模块的 API 实现与测试由黄毅维护。路诚钺只提供冻结的 Mode/Skill/read/handoff/trace 接口并消费脱敏结果，不在自己的分支上补 Provider 或 session 功能。
+Provider / Runtime 实现由黄毅维护；Method、Mode、Skill、受控读取、Handoff 与 Trace 语义由路诚钺维护。跨边界对象需要双方审查，执行层不能反向定义方法 fallback。
 
-目标输入边界是 `Task + Method Resolution + Capability Requirement + Data/Permission Policy`；执行
-前再生成 Resolved Capability Snapshot。当前 `Resolved Task + Skill Assignment` 在迁移期继续可用，
-但 Adapter 不得据此反向定义 Mode、Claim、Skill Need 或 methodology fallback。
+## 2. 三类适配器
 
-Capability 名称分为 demand、available supply 与本次 resolved binding：
+```mermaid
+flowchart LR
+    C["Resolved control contract"] --> R["Runtime Adapter"]
+    C --> P["Model Provider Adapter"]
+    C --> T["Tool Adapter"]
+    R --> X["Agent platform"]
+    P --> M["Model API"]
+    T --> U["CLI / MCP / local service"]
+    X --> A["Attempt events and artifacts"]
+    M --> A
+    U --> A
+```
+
+- Runtime Adapter 映射完整 Agent 平台的 Profile、Skill、权限、线程与取消语义；
+- Model Provider Adapter 映射程序化模型请求、响应、工具调用和用量；
+- Tool Adapter 映射一个可声明的读取、计算或副作用能力。
+
+三者都报告能力，不拥有研究方法。Skill 可以指导工具使用，但不能授予 Tool 本身没有的权限。
+
+## 3. 能力协商
 
 ```text
 Capability Requirement = provider-neutral demand
-Host Capability Report / Tool Capability Card / Provider Capability Report = available supply
-Resolved Capability Snapshot = this Attempt's frozen implementation binding
+Host / Provider / Tool Capability Report = available supply
+Resolved Capability Snapshot = this Attempt's frozen binding
 ```
 
-现有代码类型 `RuntimeCapabilitySnapshot` 是 Host Capability Report 的兼容实现名，不表示本次
-Attempt 已完成 Skill/Tool/Adapter 绑定；在正式 Schema 迁移前保留该类型名。
+Resolver 在解析凭据和执行外部动作前检查能力、数据边界、权限、预算和输出契约。不满足时返回 capability gap、split、Human Gate 或 blocked；禁止静默换 Provider、换模型、安装工具或扩大网络权限。
 
-## 2. API-first 执行接口
-
-首版 API 执行只需要三类对象：
+## 4. 隔离 API 会话
 
 ```text
 ModelPool.bind(explicit_slot) -> ModelBinding
-ProviderRegistry.require(provider_adapter, request) -> ModelProvider
+ProviderRegistry.require(adapter, request) -> ModelProvider
 IsolatedApiSessionRunner.run(request, limits) -> ApiSessionResult
 ```
 
-模型池固定为 `explicit-slot-only`。初始约定为一个 `primary`、一个 `worker` 和按需的少量 `specialist` 槽；允许多个槽暂时指向同一模型，也允许没有 specialist。不实现价格抓取、综合评分、LLM Router 或自动降级。
+模型池只使用少量显式槽位，例如 `primary`、`worker` 和按需 `specialist`。一个槽可以更换具体模型，但必须冻结请求模型、Provider 返回模型与配置。系统不建设动态价格抓取、综合评分 Router 或跨 Provider 自动降级。
 
-每次 `run` 都是新隔离会话；Runner 不保存跨调用消息、不把 provider response ID 当状态，也不跨 Provider fallback。它当前提供模型轮次、工具调用、单轮并行、工具副作用类别、工具结果字符、单轮输出、累计 token/可得成本与 wall time 硬边界。`K-API-1` 只证明该执行缝可离线工作；Task/Assignment 到 Attempt/Handoff/Receipt 的文件桥接属于 `K-API-2`。
+每次 `run` 是独立会话。Runner 不把 response ID 或对话缓存在 Attempt 之间当作状态；工具轮次、并发、结果大小、token / 成本可得性、wall time 和停止原因必须受硬边界约束并写入 Receipt。
 
-## 3. Runtime Adapter 接口（可选平台路径）
+## 5. Runtime Adapter 契约
 
 ```text
 capabilities() -> HostCapabilityReport
 resolve_agent(profile_ref) -> RuntimeAgentConfig
-resolve_skills(skill_assignment) -> RuntimeSkillBinding
-launch(resolved_task) -> RuntimeExecutionRef
+resolve_skills(assignment) -> RuntimeSkillBinding
+launch(resolved_view) -> RuntimeExecutionRef
 collect(execution_ref) -> HandoffCandidate
 cancel(execution_ref) -> CancellationResult
 ```
 
-Adapter 必须暴露：
+Adapter 必须暴露平台版本、Agent / Skill 发现方式、可强制与仅可提示的约束、权限、并发/递归限制、工具/MCP 能力、会话到 Task/Attempt 的映射以及失败/取消语义。
 
-- 支持的 Agent、Skill、权限、工具和并发能力；
-- 平台版本和配置快照；
-- 哪些约束可由平台强制，哪些只能通过提示/验证；
-- 原始会话标识与正式 Task/Attempt 的映射；
-- 失败与取消语义。
+Codex、OpenCode、Claude Code 或其他平台各自实现这一接口；Canonical manifests 不因平台变化。应利用平台原生子 Agent 和 Skill 能力，并在原生能力覆盖项目代码时删除重复机制。
 
-## 4. Codex Adapter（已有可选实现）
+## 6. Model Provider 契约
 
-映射建议：
+Provider 能力必须通过声明与 conformance 证明，不能从厂商品牌推断。结构化响应仍需本地 Schema 验证；工具名称、call ID 和参数在执行前通过 allowlist、唯一性和参数 Schema 检查。
 
-| 平台中立对象 | Codex 表面 |
-|---|---|
-| Repo guidance | `AGENTS.md` |
-| Agent Profile | `.codex/agents/<name>.toml` |
-| Skill | `.agents/skills/<name>/SKILL.md` |
-| Skill metadata | Registry manifest + Skill frontmatter |
-| Skill Assignment | Task Prompt 显式调用 + lock 文件 |
-| Task execution | 原生 subagent thread |
-| Permission ceiling | custom agent config 与会话权限交集 |
-| Handoff | 子 Agent返回 + 仓库工件 |
-| Rollover | Main State + 新主线程/会话 |
+非秘密配置只保存环境变量名称。凭据由真实运行环境延迟读取，不能进入 Task、Handoff、Trace、报告或仓库。离线合同测试与真实账户 live conformance 必须分开标记。
 
-官方能力允许项目级自定义 Agent 设置模型、推理、sandbox、MCP 和 Skill 配置；仓库级 Skill 通过渐进披露加载。平台路径利用这些能力，不包裹一个长期驻留的自建调度进程。
+## 7. Tool / MCP 契约
 
-当前实现依据 OpenAI 官方的 [Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) 与 [Build skills](https://learn.chatgpt.com/docs/build-skills) 文档：项目 Agent 使用 `.codex/agents/*.toml`，仓库 Skill 使用 `.agents/skills/*/SKILL.md`。Canonical Agent Profile 不固定厂商模型；Codex 配置也默认继承会话模型。Task Assignment 通过 dispatch 中的显式 `$skill-name` 调用绑定，而不是把 Skill 永久写死在 Agent Profile 中。
+每个工具提供稳定 capability ID、输入/输出 Schema、读取和写入副作用、数据去向、认证方式、预算、错误与取消语义。MCP 是工具传输方式之一，不成为核心对象。
 
-`CodexRuntimeAdapter` 当前实现 `capabilities`、`resolve_agent`、`resolve_skills`、布局验证和 dispatch 渲染。`launch/collect/cancel` 保留给 Codex 原生线程。它不再位于当前关键路径；OpenCode 或其他平台只有在真实使用选择明确后才增加 Adapter。
+Tool 输出是不可信输入；进入 Agent 上下文的瞬时结果若没有稳定来源，必须脱敏后写入 Trace。外部写动作需要 Project Protocol 与 Task 双重授权。安装依赖、插件、MCP Server 或 Skill 属于供应链变化，需要独立任务或人工批准。
 
-运行后由平台适配器或人工采集器生成平台中立 `Execution Receipt`：原生 thread/response ID 只能进入可选诊断字段，实际模型/提供商、可得用量、Context Snapshot、输出和限制必须映射到统一契约。无法取得 token 或成本时写 `unavailable`，不能由 Adapter 猜测或填零。
-
-## 5. 其他 Runtime
-
-OpenCode、Claude Code 等平台以后按真实选择以独立 Adapter 接入。Canonical manifests 保持不变，Adapter 负责翻译对应的 Agent/Skill 配置、模型槽、权限与显式调用方式。
-
-不得为了“跨平台统一”只保留所有平台的最小公分母。Adapter 应报告 capability gap；上层可以选择降级、换平台或请求人工决定。
-
-## 6. Model Provider Adapter
-
-Runtime Adapter 与 Model Provider Adapter 仍是两层：前者映射完整 Agent 平台，后者处理程序化模型 API。后者现在是首要执行路径的底层端口。当前已实现 OpenAI Responses、Anthropic Messages 和 Gemini `generateContent` 三个模型绑定的薄 Adapter，详见 [多提供商模型 API 实施计划](../implementation/PROVIDER_ADAPTER_PLAN.md)、[ADR-0007](../decisions/0007-THIN-PROVIDER-ADAPTERS.md)与[ADR-0010](../decisions/0010-API-FIRST-ISOLATED-EXECUTION.md)。
-
-首版只声明经过离线合同测试的能力，不根据厂商品牌推断模型能力。真实模型/账户仍需 live conformance；缺少能力、模型不匹配或 data policy 不满足时必须在解析凭据和发送请求前失败。Adapter 不自动重试、不静默 fallback，且结构化响应仍需本地 Schema 校验。
-
-工具选择以公共 `ToolChoice` 表达 auto、none、required 或指定 client tool，但由各 Adapter 映射厂商原生字段。任何返回的工具名称、call ID 和 arguments 都必须在工具执行前通过本地 allowlist、唯一性和 JSON Schema 检查，不能只依赖远端 strict mode。
-
-非秘密配置只保存环境变量名称。`rwb providers probe` 默认不读取环境；真实 Windows 中可显式使用 `--check-environment` 做不回显值的存在性检查。
-
-`rwb providers conformance` 默认同样是零环境、零网络 dry-run。显式 live 执行使用固定合成内容、至多三次请求，并生成 `provider_conformance_report`；该报告可审计预算、停止原因和用量，但禁止保留正文、工具参数、凭据与 provider response ID。
-
-## 7. Tool Adapter
-
-Tool Adapter 提供数据或动作，Skill 提供工作流程：
-
-- 文献：Zotero、Crossref、OpenAlex、PaperQA2；
-- 数据/实验：DVC 或 MLflow（二选一起步）；
-- 报告：Quarto/Jupyter；
-- 推导：CAS/证明助手；
-- 仿真/统计：项目已有 CLI 或 Python/R；
-- 外部资料：Web Search、浏览器、受控 API。
-
-首版不同时接入所有工具。只有首个案例需要且可替换的最小适配器进入实现。
-
-## 8. 权限模型
-
-有效权限是以下交集：
+## 8. 有效权限
 
 ```text
 Runtime session permission
-∩ API session/tool allowlist
-∩ Agent Profile permission ceiling
-∩ Task Packet permission
-∩ Resolved Capability Snapshot permission/data boundary
+∩ API / tool allowlist
+∩ Agent Profile ceiling
+∩ Task permission
+∩ Resolved Capability Snapshot boundary
 ∩ Skill permission ceiling
-∩ Project data boundary
+∩ Project data policy
 ```
 
-任一层缺失不按最宽权限推断。Skill 缺少工具时返回 capability gap；不自动安装、不自动登录、不自动扩大网络或文件权限。
+任一层缺失都不按最宽权限推断。权限冲突在调用前失败；Adapter 不能签署 Human Gate。
 
-## 9. 平台与模型漂移
+## 9. 漂移与验证
 
-运行前记录 Host Capability Report（当前代码类型为 `RuntimeCapabilitySnapshot`）：
+运行前冻结 Host、Provider、Model 和 Tool capability reports。平台或模型版本变化后运行 contract tests；真实账户状态通过独立 live conformance 更新。诊断 ID 可以写入 Receipt，但运行时会话日志不能成为唯一证据。
 
-- runtime 名称与版本；
-- Agent 配置发现路径；
-- Skill 发现/显式调用能力；
-- 并发和递归限制；
-- sandbox/approval 语义；
-- 工具/MCP 可用性；
-- 已知限制。
+具体实现覆盖见[实现状态](../STATUS.md)，Provider seam 见[实现文档](../implementation/PROVIDER_ADAPTER_PLAN.md)，兼容字段见[兼容性说明](../compatibility/README.md)。
 
-版本变化后运行 Adapter contract tests。平台新增原生能力时优先删掉重复代码，而不是保留兼容层。
+## 10. 验收条件
 
-API 路径额外记录所选模型槽、请求模型和 Provider 实际返回模型；三者不一致时进入 Receipt warning 或阻断。模型槽配置只保存环境变量名，不保存 API key；配置变化后重新运行离线合同和目标模型 live conformance。
-
-## 10. 安全边界
-
-- Adapter 不签署 Human Gate；
-- Tool 输出视为不可信数据；
-- 凭据由平台/环境管理，不写入 Task、Handoff、trace 或仓库；
-- 外部写动作需要 Project Protocol 与 Task 双重授权；
-- 安装依赖、插件或 Skill 属于供应链变化，需要明确任务或人工批准；
-- Runtime 会话日志不能成为唯一证据。
-
-## 11. 验收条件
-
-- Codex Adapter 能把冻结 Profile 与可选 Skill binding 映射到原生配置，并保留合法 no-Skill 路径；
-- Adapter 不保存自己的权威项目状态；
-- capability gap 可以清晰报告；
-- 平台升级后可通过 contract test 发现关键行为漂移；
-- 替换 Tool Adapter 不修改科研内核；
-- 所有外部写动作可追溯到授权 Task。
-- 模型 Adapter 的离线合同测试与 live conformance 状态分开记录；未知响应语义不会被静默归一化。
-- 一个显式 `worker` 槽可以启动 fresh API session，完成一次有界客户端工具往返；
-- 未知槽、缺少模型、data-policy gap、工具预算和不可测硬预算会在本地失败或安全暂停；
-- API Runner 不保存跨 Attempt 会话，也不自动更换 Provider/Model。
+- 相同控制契约可映射到不同 Runtime 或直接 API；
+- capability gap 和数据边界冲突在外部调用前暴露；
+- 替换模型、Runtime 或 Tool 不修改科研内核；
+- no-Skill 与 direct-tool 路径无需伪造 Skill binding；
+- 所有外部副作用可追溯到具名授权和 Attempt；
+- 未知用量保持 `unavailable`，不伪装为零；
+- Adapter 不保存自己的权威项目状态，也不自动跨 Provider fallback。

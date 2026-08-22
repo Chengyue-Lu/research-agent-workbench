@@ -15,7 +15,7 @@
 ```yaml
 check_id: CHK-0044
 subject_ref: handoffs/EVID-001.yaml
-ruleset: handoff-integrity@0.1.0
+ruleset: research-contract-check@1
 result: pass
 meaning: structurally_valid
 not_claimed: scientifically_correct
@@ -124,8 +124,8 @@ Gate 长期不改变任何结果时应删除或降级。人工批准频率高但
 Gate。Mode suggestion、Action selection、Mechanism、Skill/Tool binding、Claim promotion、数据/
 权限放宽不能共用一个模糊的 `approved` 字段。
 
-在 M8-005 完成前，下列硬边界已经有效：Agent 和执行层不能批准权限/数据放宽，不能自定义
-methodology fallback，也不能把结构 PASS 提升为科学 Claim；歧义返回 Human Gate/split/blocked。
+Agent 和执行层不能批准权限或数据放宽，不能自定义 methodology fallback，也不能把结构 PASS
+提升为科学 Claim；歧义返回 Human Gate、split 或 blocked。
 
 ## 8. 防止控制面递归增长
 

@@ -34,19 +34,18 @@
 
 表示正式接受、拒绝、修改、暂停、排除或发布决定。最低字段：`id`、`decision`、`scope`、`reason_refs`、`actor`、`timestamp`、`supersedes`。
 
-### Research State 扩展候选
+### Research State 的扩展原则
 
-第二轮架构基线增加 `Unknown`、`Contradiction`、`Assumption`、`Attempt`、`Failure` 与 `Frontier`
-作为长期状态候选。它们尚未进入当前七类核心对象 Schema；只有 evidence-synthesis 与 simulation
-真实案例共同证明字段稳定后才逐项正式化，不能一次扩成统一知识图谱。
+`Unknown`、`Contradiction`、`Assumption`、`Attempt`、`Failure` 与 `Frontier` 用于表达长期研究状态。
+它们只有在跨 Mode 的真实案例证明字段稳定后才逐项进入核心对象，不一次扩成统一知识图谱。
+Schema 覆盖程度由[实现状态](../STATUS.md)说明。
 
 Failure 至少应保留 `goal`、`method`、`outcome`、`failure_reason`、`what_was_learned` 和
 `revisit_condition`，避免新 Runtime 因缺少聊天历史重复已知失败。
 
-当前 `Attempt` 已有明确的 execution-attempt 含义：一次 Task 的一次执行，并关联
-`work/<task>/<attempt>/`、Attempt Archive 与 Execution Receipt。Phase C 若需要表达包含多个执行
-Attempt 的 research-level/method trial，应采用独立对象名或显式关系，不复用或静默改变现有
-`Attempt` 语义。
+`Attempt` 专指一次 Task 的一次执行，并关联 `work/<task>/<attempt>/`、Attempt Archive 与
+Execution Receipt。包含多个执行 Attempt 的 research-level / method trial 必须采用独立对象名或
+显式关系，不能复用或静默改变 `Attempt` 语义。
 
 ## 3. 关系而非固定流程
 
@@ -85,20 +84,11 @@ Mode Pack 决定每种强度需要什么工件。Agent 不能越过 Project Prot
 - 原始 Evidence 不原地修改；解析、翻译和摘要是带来源关系的新工件。
 - `stale`、`superseded`、`invalidated`、`withdrawn` 和 `archived` 语义不同。
 
-## 6. 当前接口与演进边界
+## 6. 表示与演进边界
 
-当前已提供或规划中的 CLI 表面包括：
-
-```text
-rwb object validate <path>
-rwb claim trace <claim-id>
-rwb object supersede <old-id> --with <new-path>
-rwb decision create --from <template>
-```
-
-首版使用 YAML/JSON 文件、dataclass 契约与 Draft 2020-12 JSON Schema 验证，不建设数据库和事件总线。
-未来 Research State 仍以 schema-first 文件和 compact index 为事实源，不绑定 Python object 或
-conversation memory。迁移必须保留原/新 hash 与实现版本。
+Research State 以版本化 YAML/JSON、JSON Schema 和 compact index 为事实源，不绑定 Python object、
+运行时数据库或 conversation memory。对象迁移必须保留原/新 hash、版本和转换器身份；CLI 与库
+只是该契约的消费者，不能成为另一套对象真值。
 
 ## 7. 主要风险
 

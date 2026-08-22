@@ -61,7 +61,7 @@ Profile 不包含完整 Skill 指令，也不固定厂商模型。`default_slot`
 
 ### evidence-scout
 
-源材料只读、任务区受限写的检索密集 Agent。允许搜索、文档阅读、引用解析并写自己的 Task 工件；禁止修改正式 Claim、其他 Task、上传本地敏感材料或生成最终综合结论。路径权限语义见 [ADR-0005](../decisions/0005-SCOPED-WRITE-PERMISSIONS.md)。
+源材料只读、任务区受限写的检索密集 Agent。允许搜索、文档阅读、引用解析并写自己的 Task 工件；禁止修改正式 Claim、其他 Task、上传本地敏感材料或生成最终综合结论。路径权限语义见 [ADR-0017](../decisions/0017-SCOPED-WRITE-PERMISSIONS.md)。
 
 ### simulation-auditor
 

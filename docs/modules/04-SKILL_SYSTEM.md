@@ -46,12 +46,12 @@ Task template 或 deterministic checker。
 除平台需要的 `SKILL.md` 外，项目维护可机器读取的元数据：
 
 ```yaml
-skill_id: literature-evidence-extraction
-version: 0.1.0
+skill_id: example-bounded-method
+version: 1.0.0
 kind: method
-description: Extracts citable evidence records from bounded scientific sources.
+description: Applies one bounded method to a declared input set.
 capabilities: [evidence-search, evidence-extraction, citation-location]
-applies_to_modes: [evidence-synthesis, experiment, theory]
+applies_to_modes: [example-mode]
 excludes:
   - final causal interpretation
 required_tools: [document-read]
@@ -112,11 +112,11 @@ expected increment、trial 前证据和已知 domain variants。一个 Need 可�
 
 ```yaml
 assignment_id: SA-0042
-task_id: EVID-001
+task_id: EXAMPLE-001
 agent_profile: evidence-scout@0.1.0
 required:
-  - skill_id: literature-evidence-extraction
-    version: 0.1.0
+  - skill_id: example-bounded-method
+    version: 1.0.0
     content_hash: "sha256:..."
 optional: []
 forbidden:
@@ -125,7 +125,7 @@ resolved_tools: [document-read, web-search]
 effective_permissions:
   filesystem: worktree-write
   external_write: forbidden
-  allowed_roots: [work/EVID-001]
+  allowed_roots: [work/EXAMPLE-001]
 resolution_reason:
   - covers all required capabilities
   - satisfies source and citation output contracts
@@ -204,19 +204,14 @@ Skill 若要求超出上层边界的动作，Resolver 必须阻断或裁剪，�
 | SKILL-TAXONOMY-GROWTH | Registry 增长但实际复用低 | WARN |
 | SKILL-STALE-EVAL | 版本更新后无回归评估 | WARN |
 
-## 11. 首批 Skills
+## 11. 可准入的 Skill 形态
 
-### literature-evidence-extraction
+- bounded method：为一个明确 Action 补充非平凡、可复用的方法判断；
+- integrity method：在确定性 checker 之外处理明确的语义完整性缺口；
+- tool-use method：direct tool 与模板不足时，约束一个有副作用或领域判断的调用过程；
+- output method：在不降低 Evidence / Claim 标准的前提下形成特定研究工件。
 
-从限定来源提取可定位 Evidence；分开原文事实、Agent 推断和建议；保留页码/段落/DOI/URL、来源版本和冲突证据。
-
-### simulation-vv
-
-检查仿真模型、输入版本、参数范围、数值收敛、敏感性、基准比较和 Claim ceiling；不判断模型是否代表真实世界。
-
-### handoff-integrity
-
-验证必需输出、工件引用、限制、未完成项、输入版本和 Skill lock。它应优先实现为确定性脚本；只有语义项才由 Skill 补充。
+这些是契约形态，不是预置包清单。实际准入与生命周期以 Registry 为准。
 
 ## 12. 验收条件
 
@@ -228,20 +223,10 @@ Skill 若要求超出上层边界的动作，Resolver 必须阻断或裁剪，�
 - 相同 Task + Registry lock 得到相同候选集合；
 - 删除某个低价值 Skill 不需要修改内核或 Agent Runtime。
 
-## 13. 当前实现快照
+## 13. Registry 与生命周期契约
 
-`registry/skills/accepted.json` 是 accepted Skill 的唯一索引；条目的 `status: accepted` 保存准入历史，`lifecycle: active | legacy | deprecated` 单独控制新分配资格。`.agents/skills` 中的包由版本、来源路径、`SKILL.md` 内容哈希和整个目录包哈希锁定；`.gitattributes` 固定可哈希文本为 LF，避免跨 Windows/Linux 的伪漂移。
+`registry/skills/accepted.json` 是准入索引；`status: accepted` 保存人类准入决定，`lifecycle` 独立控制运行资格。包由版本、来源路径、`SKILL.md` 内容哈希和目录包哈希锁定。新 Assignment 只选择唯一 active 版本并归一化为精确 lock；旧版本的显式回放不改变其新任务资格。详细决定见 [ADR-0015](../decisions/0015-SKILL-LIFECYCLE-AND-EXACT-VERSION.md)。
 
-Task 的 `required_skills` 支持 `skill-id` 或精确 `skill-id@semver`。新 Assignment 默认只选择唯一 active 版本并归一化为精确 Skill lock；historical replay 必须显式声明且带精确版本，禁止 auto-select。相同 ID 可保存多个历史版本，但最多一个 active。详细决定见 [ADR-0015](../decisions/0015-SKILL-LIFECYCLE-AND-EXACT-VERSION.md)。
+外部候选留在 candidate inventory；发现、下载或参考状态不会自动进入 accepted Registry。未被 Assignment 选择的 Skill 正文和 references 不进入任务上下文。候选实现与评估工件留在隔离的实验路径，只有通过人工 Gate 才能提升。
 
-外部来源继续保存在 `registry/skills/candidates.json`，不会因下载、发现或 `reference` 状态进入 accepted Registry。Codex 只在 dispatch 中显式调用本次 Assignment 的 `$skill-name`；未选择 Skill 的正文和 references 不进入任务上下文。
-
-独立派生但尚未准入的实现放在 `skill-lab/candidates/`。该路径不是平台 Skill 发现路径，也不进入 accepted Registry；它用于保存短指令、确定性脚本、fixtures、内容/包哈希和 with/without 评估证据。首个包 `claim-preserving-rewrite` 只验证数字、引用、否定、证据强度、因果措辞与显式保护词等表层不变量，并明确不宣称语义或科学等价。
-
-截至 2026-08-17，Skill Need 已形成 Mode-derived 与 project-internal 两条历史规划路线；两者都
-先比较 Protocol/Task/template/Tool/no-Skill 基线。外部候选只作按 Need 检索的参考库存，项目内生
-候选不进入 Registry/Runtime。K-MS-1 原计划现为历史证据；下一步不是继续写 Skill，而是按
-[ADR-0016](../decisions/0016-METHOD-AWARE-RESEARCH-CONTROL-PLANE.md)先正式化 Mode Action 与
-Method Resolution。
-
-截至 2026-08-19，三个 `0.1.0` 原型均不再 active：literature/simulation 为 legacy，handoff wrapper 为 deprecated。新任务因此不会从 accepted Registry 自动或显式加载它们；旧示例只通过精确版本和显式 historical replay 重新解析。当前 active 数量为零不构成缺失修复任务。
+Registry 当前条目和实现限制见[实现状态](../STATUS.md)；旧包身份与回放见[兼容性说明](../compatibility/README.md)；探索过程见[历史与审计](../history/README.md)。

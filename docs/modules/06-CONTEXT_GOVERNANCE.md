@@ -29,7 +29,7 @@
 
 不将具体百分比写死为平台真值。首版用代理指标估计压力：累计读取字符、最近 Handoff 数、未关闭问题数、长工具输出次数、线程持续回合、平台压缩预警以及主 Agent 自检。
 
-当前实现使用 `Context Snapshot` 把每个指标标记为“已测量”或“未知”。缺失数据不能自动填零；字符数只用于本地压力比较，不换算成假精确的 token 余量。默认阈值可由 Project Protocol 覆盖，并随 Snapshot 一起冻结，避免事后改变解释。
+`Context Snapshot` 把每个指标标记为“已测量”或“未知”。缺失数据不能自动填零；字符数只用于本地压力比较，不换算成假精确的 token 余量。默认阈值可由 Project Protocol 覆盖，并随 Snapshot 一起冻结，避免事后改变解释。
 
 在已知同单位预算时，是否开启下一个 Atomic Work Unit 使用更严格的条件：
 
@@ -69,7 +69,9 @@ rollover_reason: approaching soft context budget
 
 Main State 是恢复入口，不是第二套数据库。它只引用正式工件，不复制原始内容。`continuity_status` 区分 active、stage-completed、safe-paused、waiting 与 blocked；`machine_state_refs` 用哈希冻结恢复所需机器证据，可选 `git_head` 用于发现工作树基线冲突。
 
-当前 Main State 还可携带 `created_at`、`previous_checkpoint_ref`、`context_snapshot_ref` 和规范化 `checkpoint_digest`。`rwb context resume-check` 会验证协议 revision、引用、下一动作、活动 Task 的预期 Handoff，以及相邻 checkpoint 是否丢失已固定约束或决定。
+Main State 可携带 `created_at`、`previous_checkpoint_ref`、`context_snapshot_ref` 和规范化
+`checkpoint_digest`。恢复检查验证协议 revision、引用、下一动作、活动 Task 的预期 Handoff，
+以及相邻 checkpoint 是否丢失已固定约束或决定。
 
 ## 5. 主动 checkpoint 与 rollover
 
@@ -150,7 +152,7 @@ rollover 步骤：
 | CTX-HANDOFF-OVERHEAD | Handoff 工件增长但没有改变决策 | 降为 H1、缩小 H2 触发器 |
 | CTX-TRACE-RELOAD | 主 Agent 因 Trace 已存在而批量读回历史消息 | 只读索引和 Handoff，另建排障 Task 扩展消息范围 |
 
-## 9. 当前 CLI
+## 9. 确定性操作
 
 ```text
 rwb context assess ...
@@ -159,7 +161,7 @@ rwb context resume-check ...
 rwb handoff audit-transfer ...
 ```
 
-`assess` 不读取聊天隐式状态，调用方必须传入可测代理指标；若提供动态预算，remaining、next AWU、closeout 和 safety margin 必须同单位。压缩后的 task 若声明 handoff-ready，还要传 `--handoff-audit-ref`。`checkpoint` 可以从上一 Main State 继承状态并冻结机器证据；YAML 采用刷盘后排他发布，不支持原子硬链接时安全失败。`resume-check` 会检查引用哈希、Git HEAD、协议和 digest，是换届门槛，但不启动或管理新会话。Git HEAD 不覆盖未提交工作树，因此应在提交边界创建带 Git 基线的 checkpoint。
+`assess` 不读取聊天隐式状态，调用方必须传入可测代理指标；若提供动态预算，remaining、next AWU、closeout 和 safety margin 必须同单位。压缩后的 Task 若声明 handoff-ready，还要提供 Handoff audit 引用。`checkpoint` 可以从上一 Main State 继承状态并冻结机器证据；`resume-check` 检查引用哈希、Git HEAD、协议和 digest，但不启动或管理新会话。Git HEAD 不覆盖未提交工作树，因此应在提交边界创建带 Git 基线的 checkpoint。
 
 ## 10. 不保存的内容
 

@@ -22,9 +22,9 @@
 
 不保存隐藏 prompt 或 Chain-of-Thought，也不重复复制已经有不可变路径与哈希的工具输出；但实际发送给另一个 Agent 的可见 payload、运行时可观察的调用元数据，以及进入 Agent 上下文却没有稳定来源的瞬时工具结果必须进入 Attempt Archive。
 
-当前 `Execution Receipt` 将上述信息收敛为平台中立文件，并与 Attempt、Agent Profile、Skill Assignment、Context Snapshot 和 Handoff 双向关联。`model_usage_status` 必须是 `measured`、`estimated`、`unavailable` 或 `not-applicable`；未知成本不允许伪装成零。Receipt 的 `status` 是执行生命周期；只有显式的 `completion_claim: contract-satisfied` 才声明结果通过 Task 合同，避免把负对照的“执行完成”误写成“验证通过”。
+`Execution Receipt` 将上述信息收敛为平台中立文件，并与 Attempt、Agent Profile、Skill Assignment、Context Snapshot 和 Handoff 双向关联。`model_usage_status` 必须是 `measured`、`estimated`、`unavailable` 或 `not-applicable`；未知成本不允许伪装成零。Receipt 的 `status` 是执行生命周期；只有显式的 `completion_claim: contract-satisfied` 才声明结果通过 Task 合同，避免把负对照的“执行完成”误写成“验证通过”。
 
-`rwb execution assess` 当前检查：Task/Profile/Assignment/Attempt 一致性、输出存在性、Handoff 回指、时间与状态一致性、协调成本比例、并发上限、review loop、敏感/外部/full trace，以及真实 Agent/API 执行是否缺少用量。它不把 contract-only fixture 计作模型运行。
+Execution assessment 检查 Task/Profile/Assignment/Attempt 一致性、输出存在性、Handoff 回指、时间与状态一致性、协调成本比例、并发上限、review loop、敏感/外部/full trace，以及真实 Agent/API 执行是否缺少用量。它不把 contract-only fixture 计作模型运行。
 
 ## 3. 质量指标
 
@@ -102,7 +102,7 @@ context。比较 method violation、Claim overreach、provenance error、反证�
 
 Skill 的价值由任务成功、错误率、上下文成本和结果采纳率衡量，不以安装次数或描述覆盖范围衡量。
 
-当前 `skill_evaluation` 契约实现 provider-neutral 的 paired same-input 评估：baseline 与 with-Skill 必须冻结 Task/input，控制 provider/model/config，分别引用输出、确定性报告、Execution Receipt 与 Context Snapshot，并在揭示条件前完成人类评分。`rwb skills eval assess` 会阻断 fixture-only、案例不足、输入/模型/配置漂移、with-Skill 确定性失败、上下文不可比和非盲评；它不会自动求总分或批准 Skill。平台无法提供 token 时保留 `unavailable` 并产生警告，仍可使用实测字符数与 wall time，但不得宣称 token 节省。
+`skill_evaluation` 契约采用 provider-neutral 的 paired same-input 评估：baseline 与 with-Skill 必须冻结 Task/input，控制 provider/model/config，分别引用输出、确定性报告、Execution Receipt 与 Context Snapshot，并在揭示条件前完成人类评分。评估器阻断 fixture-only、案例不足、输入/模型/配置漂移、with-Skill 确定性失败、上下文不可比和非盲评；它不会自动求总分或批准 Skill。平台无法提供 token 时保留 `unavailable` 并产生警告，仍可使用实测字符数与 wall time，但不得宣称 token 节省。
 
 ## 8. Trace 政策
 

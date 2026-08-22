@@ -105,7 +105,7 @@ capture_status: complete
 
 ### Execution Trace 与 Method Trace
 
-M3-008 只负责上述可观察执行/Archive 事实。后续 Method Trace 独立记录为何提出/接受 Mode、选择
+Execution Trace 负责上述可观察执行/Archive 事实。Method Trace 独立记录为何提出/接受 Mode、选择
 Action/Mechanism、拒绝哪个替代、如何解析 Capability、发生什么 Human Gate，以及何种 Evidence
 导致 Claim/Failure/Frontier 变化。两层通过稳定 ID 关联，不把方法解释塞进 Tool debug 字段，也
 不复制消息正文。

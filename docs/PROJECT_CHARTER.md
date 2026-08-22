@@ -1,104 +1,55 @@
 # 项目章程
 
-版本：0.6
-
-状态：实施基线
-
-日期：2026-08-20
+版本：0.7
+状态：Stable charter
+更新：2026-08-22
 
 ## 1. 使命
 
-帮助研究者以较低认知负担调用不断变化的 AI 检索、分析、推导、编程和校核能力，同时让研究
-方法、证据关系、失败经验与关键决定保持可理解、可迁移、可验证，并由人对科学解释和最终结论
-负责。
+构建一套轻量、可复核、可演进的研究协作底座：人类保持科学与治理责任，Agent 在明确任务、权限、预算和停止条件内工作，模型与工具可以替换，关键研究状态不依赖单一聊天窗口。
 
-长期定位：
+## 2. 产品定位
 
-> A versioned, method-aware research control plane for continuously evolving AI agents.
+RWB 是研究工作的控制面、契约层和证据链，不是自动替代研究者的“科研全包系统”。它协调任务重写、方法解析、有界执行、工件验证和人类决策，但不规定所有学科共用一条流程。
 
-## 2. 要解决的问题
+## 3. 要解决的问题
 
-现有平台已经能创建 Agent、接入模型和工具。RWB 解决的是平台本身不稳定保存的科研边界：
+- 长任务在窗口压缩、模型切换或人员交接后失去方向；
+- 子 Agent 读取过量材料，回传冗长而难以复核；
+- Task、方法、Skill、工具和模型选择相互混淆；
+- 执行成功被误当成方法适用或科学正确；
+- 过程消息、临时工具结果和版本关系无法事后重建；
+- 平台专属编排成为不可替换的核心依赖。
 
-- 不同研究活动如何采用不同方法，又不被统一流水线固化；
-- 如何从 Mode/Action 推导最小机制，而不是按名称加载 Skill bundle；
-- 如何让 Research State、Evidence/Claim provenance 和失败历史跨 Model/Runtime 延续；
-- 如何限制主 Agent 上下文，同时让正式交付经压缩或换窗后仍可恢复；
-- 如何区分机器结构验证、目标语义复核与人类科学判断；
-- 如何让 Skill、Tool、Protocol 和 Strategy 可演化但不能自动越权；
-- 如何用 baseline 证明复杂机制的净价值，而不是用 Agent/Schema/Trace 数量代替进展。
+## 4. 产品责任
 
-## 3. 产品目标
+RWB 负责：
 
-1. 建立小而稳定的 Integrity Kernel 与科研对象基础；
-2. 正式表达 `Mode → Action → Method Obligation → Method Resolution`；
-3. 将 Mode、Protocol Profile、Research Strategy、Skill 和 Tool 保持正交；
-4. 建立 Capability Requirement 与冻结 Snapshot，使实现可替换而边界不漂移；
-5. 建立跨 session/runtime 的 Research State、Failure 和 Frontier；
-6. 建立文件优先的 Task、Handoff、Artifact、Trace、版本、迁移和 provenance；
-7. 用确定性校验、风险触发复核和少量 Human Gate 管理决策权；
-8. 用四类简单 baseline 评估 Mode、Skill、Strategy 和多 Agent 的增量；
-9. 以纯 API fresh session 作为可移植执行兜底，并允许可选平台 Adapter；
-10. 建立受治理的外部候选发现、审计、trial、评测、退役和历史重放。
+- 定义版本化研究对象及其引用关系；
+- 把目标收束为原子 Task，并显式表达权限、预算、完成与停止条件；
+- 表达 Mode、Action、Method、Capability、Skill、Tool 和 Human Gate 的责任边界；
+- 保存可验证的执行事实、交接消息、输入锁和工件来源；
+- 让确定性校验先于模型评审，让高风险决定回到具名人类；
+- 通过薄适配器连接模型 API、Agent Runtime 和外部工具。
 
-## 4. 长线原则
+具体研究执行者负责提出和检验内容、遵守 Task 范围、声明不确定性并产出约定工件。具名人类负责目标、数据与权限放宽、方法适用性、科学主张、例外和发布。
 
-- Research semantics and history outlive models, runtimes, tools and skills；
-- 越靠近 Integrity/Research State 的对象越稳定，越靠近 Execution 越可替换；
-- 执行层不拥有 Mode、Claim、Skill Need 或权限放宽的解释权；
-- 学科差异优先由 Mode/Protocol/Capability 表达，不扩大公共内核；
-- 主 Agent 保持在目标、冲突、风险、索引和下一动作；
-- 外部 Skill/Tool 发现不等于准入，自动生成永远只进入 candidate；
-- 没有增量价值时允许 no-Skill、单 Agent、direct strategy 或删除控制机制。
+## 5. 设计边界
 
-## 5. 非目标
+- 文件工件是跨会话权威状态；运行时数据库或会话仅作缓存与执行载体。
+- 原生子 Agent 是有界执行能力，不是需要复制的全局 Supervisor。
+- 公共核心保持小型；学科和方法差异进入 Mode Pack、Method 或窄 Skill。
+- no-Skill 和直接工具是一级路径；只有观察到稳定、重复且非确定性的缺口才引入 Skill。
+- 不建立固定科研 DAG、全局消息总线或无限递归审校链。
+- 验证器证明结构与引用一致性，不宣布科学正确性。
 
-- 不自治决定选题价值、伦理边界、异常排除、主要 Claim 或发表策略；
-- 不以端到端自动完成课题或论文作为核心成功条件；
-- 不建立长期模拟课题组职位的 Agent 社会、全局 Supervisor 或固定研究 DAG；
-- 不复制平台线程、worktree、权限、模型和工具调度；
-- 不建设 Tool marketplace、大而全 scientific environment 或 Provider 数量竞赛；
-- 不保存隐藏 Chain-of-Thought，不把长期聊天或报告集合当 Research State；
-- 不一次形式化所有学科的 Evidence composition；
-- 不以 Star、Agent、Skill、Schema、消息或 Trace 数量衡量成熟度。
+## 6. 成功标准
 
-## 6. 核心成功标准
+- 新会话只凭受控文件即可恢复任务边界、已知事实、未决风险和下一动作；
+- 主 Agent 只持有决策所需摘要，原始材料和探索留在有界 Attempt；
+- 相同 Task 可在不同模型或 Runtime 上解析和审计；
+- 每次外部动作、交接和正式工件都能追溯到输入、版本、执行者与决定；
+- 新方法、Skill 或工具必须证明净增量，并能在价值消失时退役；
+- 新参与者能从稳定文档进入系统，不必重放项目开发史。
 
-在至少两个方法差异明显的真实案例中同时达到：
-
-- 新 Runtime 能从冻结文件状态构建正确的下一 Atomic Task，无需旧会话；
-- 关键 Claim 可定位到 Evidence/Run/推导、Method Resolution 与人类决定；
-- Unknown、Contradiction、Failure 和 revisit condition 不因换模型或 promotion 丢失；
-- Tool/Skill replacement 不要求修改 Method contract；
-- 主 Agent 不读取完整语料、聊天或事件账本即可协调；
-- Handoff/Trace 增加的审计成本确实降低遗漏、失真或返工；
-- 框架协调与校核成本不长期超过任务总成本三分之一；
-- 至少删除或简化一项真实数据证明无价值的控制机制。
-
-## 7. 决策权
-
-| 决策 | 默认责任主体 |
-|---|---|
-| 研究问题、价值、伦理与发布 | 人类研究者 |
-| 方法承诺、关键假设和主要 Claim | 人类研究者；Agent 可提出候选 |
-| Mode/Action/Mechanism 建议 | Agent 提议；Resolver 校验；歧义时 Human Gate |
-| Method/Core 语义、Mode 准入与 Skill Need | 路诚钺维护；关键改变由人批准 |
-| Skill/Tool candidate、评测、准入与退役 | 路诚钺维护证据链；promotion 按风险由人批准 |
-| Provider/API/Runtime 实现与 live 测试 | 黄毅；共享接口变更共同确认 |
-| 数据、来源或权限放宽 | 只能由明确 Human Decision 批准 |
-| 结构、引用、hash、版本与边界检查 | 确定性 Validator |
-| 异常数据排除和科学解释 | 人类研究者 |
-
-实名维护细节只在 [`DEVELOPMENT.md`](DEVELOPMENT.md) 更新。
-
-## 8. 当前阶段
-
-M0–M7 已形成最小契约、Mode-first 离线选择基线、Skill 历史/lifecycle、上下文治理与 API execution
-seam；它们是迁移基础，不是最终信息架构。
-
-当前全局下一节点是 `K-METHOD-1 Method Core Formalization`：先把 Mode Action 与 Method
-Resolution 变成正式对象，再完成 Mode v0.2 和 Decision Authority。M3-008 可观察 Trace 基线可按
-独立分支推进；Method-aware Trace 是其后的独立节点。上述契约稳定前不扩 accepted Skill、正式
-Mode、Provider 或真实多 Agent 试验。
-
-阶段依赖见 [`ROADMAP.md`](ROADMAP.md)，实时状态见 [`TASKS.md`](TASKS.md)。
+当前实现程度见[实现状态](STATUS.md)，演进依赖见[路线图](ROADMAP.md)。
