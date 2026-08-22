@@ -1,0 +1,119 @@
+{
+  "schema_version": "0.1.0",
+  "registry_kind": "mode_action_registry",
+  "generated_at": "2026-08-22",
+  "entries": [
+    {
+      "action_id": "ES-A1",
+      "version": "1.0.0",
+      "mode_ref": "evidence-synthesis@0.1.0",
+      "document_path": "registry/modes/actions/evidence-synthesis/ES-A1.yaml",
+      "content_hash": "sha256:690f3568e8e8636e4ecd074b151f99baaaca58792cb9cb1a13ab3924df1bfcb6"
+    },
+    {
+      "action_id": "ES-A2",
+      "version": "1.0.0",
+      "mode_ref": "evidence-synthesis@0.1.0",
+      "document_path": "registry/modes/actions/evidence-synthesis/ES-A2.yaml",
+      "content_hash": "sha256:cd0b17987ded4a4aa4920b2dc09f97cdd642c97b829e0253187eb75b9d3deaa3"
+    },
+    {
+      "action_id": "ES-A3",
+      "version": "1.0.0",
+      "mode_ref": "evidence-synthesis@0.1.0",
+      "document_path": "registry/modes/actions/evidence-synthesis/ES-A3.yaml",
+      "content_hash": "sha256:2fd8f1f32b05cce65f5437845a067fecdb2dddfddaf0aa025f9f741e25ce3610"
+    },
+    {
+      "action_id": "ES-A4",
+      "version": "1.0.0",
+      "mode_ref": "evidence-synthesis@0.1.0",
+      "document_path": "registry/modes/actions/evidence-synthesis/ES-A4.yaml",
+      "content_hash": "sha256:8cb47267e5e7e2578173b62d2eb420cf9f7104e1c56c22facf0c9183299ce46a"
+    },
+    {
+      "action_id": "ES-A5",
+      "version": "1.0.0",
+      "mode_ref": "evidence-synthesis@0.1.0",
+      "document_path": "registry/modes/actions/evidence-synthesis/ES-A5.yaml",
+      "content_hash": "sha256:56fe2ecbf50f3947f86f29e345b9d9c5c9a0501ff7c44786ae8d5db39f29335e"
+    },
+    {
+      "action_id": "ES-A6",
+      "version": "1.0.0",
+      "mode_ref": "evidence-synthesis@0.1.0",
+      "document_path": "registry/modes/actions/evidence-synthesis/ES-A6.yaml",
+      "content_hash": "sha256:cb2554ecd3003b03aaf613d1eca10ba6683be43b3e79c93f84f7d135b7c1aa28"
+    },
+    {
+      "action_id": "ES-A7",
+      "version": "1.0.0",
+      "mode_ref": "evidence-synthesis@0.1.0",
+      "document_path": "registry/modes/actions/evidence-synthesis/ES-A7.yaml",
+      "content_hash": "sha256:9f4125e59b88a1ee604f423852b776286af87751cca83353fef25d8a64dd19ce"
+    },
+    {
+      "action_id": "ES-A8",
+      "version": "1.0.0",
+      "mode_ref": "evidence-synthesis@0.1.0",
+      "document_path": "registry/modes/actions/evidence-synthesis/ES-A8.yaml",
+      "content_hash": "sha256:7a9c06a17dec6f305b8e9ba8f998961cc3ac6e1ed94c8bf82a8274c84f5cf479"
+    },
+    {
+      "action_id": "SIM-A1",
+      "version": "1.0.0",
+      "mode_ref": "simulation@0.1.0",
+      "document_path": "registry/modes/actions/simulation/SIM-A1.yaml",
+      "content_hash": "sha256:4c988cbd9d39570a365a810a173964f72bd88c5b36622e284dab3691130fbad0"
+    },
+    {
+      "action_id": "SIM-A2",
+      "version": "1.0.0",
+      "mode_ref": "simulation@0.1.0",
+      "document_path": "registry/modes/actions/simulation/SIM-A2.yaml",
+      "content_hash": "sha256:514cb529c66602387e5da259c9a2b278f558f9f379a9d6141f85405c4bf12095"
+    },
+    {
+      "action_id": "SIM-A3",
+      "version": "1.0.0",
+      "mode_ref": "simulation@0.1.0",
+      "document_path": "registry/modes/actions/simulation/SIM-A3.yaml",
+      "content_hash": "sha256:e098ffa2bfa1ed8cf8a0a9a6d0aa0759bf554b75862b27b967ce70940fcb15c8"
+    },
+    {
+      "action_id": "SIM-A4",
+      "version": "1.0.0",
+      "mode_ref": "simulation@0.1.0",
+      "document_path": "registry/modes/actions/simulation/SIM-A4.yaml",
+      "content_hash": "sha256:a31703114c301c722e81757259de197cc09129adb06c6402e88f6aca53bc0407"
+    },
+    {
+      "action_id": "SIM-A5",
+      "version": "1.0.0",
+      "mode_ref": "simulation@0.1.0",
+      "document_path": "registry/modes/actions/simulation/SIM-A5.yaml",
+      "content_hash": "sha256:a17aaecc0d459d7c10a0d1a491efbfda3ac8c583155f3f292186b87a3ed246d4"
+    },
+    {
+      "action_id": "SIM-A6",
+      "version": "1.0.0",
+      "mode_ref": "simulation@0.1.0",
+      "document_path": "registry/modes/actions/simulation/SIM-A6.yaml",
+      "content_hash": "sha256:bda2861e24662b011a36ad09108452530c5b3c114af7073e7849ee80c452fc9e"
+    },
+    {
+      "action_id": "SIM-A7",
+      "version": "1.0.0",
+      "mode_ref": "simulation@0.1.0",
+      "document_path": "registry/modes/actions/simulation/SIM-A7.yaml",
+      "content_hash": "sha256:547278c7dd718eaf9607dacbd38549acff03c4d477146276493dfdb6f6e49db3"
+    },
+    {
+      "action_id": "SIM-A8",
+      "version": "1.0.0",
+      "mode_ref": "simulation@0.1.0",
+      "document_path": "registry/modes/actions/simulation/SIM-A8.yaml",
+      "content_hash": "sha256:e0302253f16c41ff5f69a51534365020b0a7eb10969be66b9e165bf3980f937d"
+    }
+  ]
+}

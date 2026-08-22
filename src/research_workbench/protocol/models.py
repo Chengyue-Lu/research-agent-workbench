@@ -93,3 +93,65 @@ class ResearchMode:
             risk_rules=string_tuple(data, "risk_rules", required=True),
             metadata=dict(mapping_value(data, "metadata")),
         )
+
+
+@dataclass(frozen=True, slots=True)
+class ModeActionClaimEffects:
+    may_support: tuple[str, ...]
+    cannot_alone_support: tuple[str, ...]
+    notes: tuple[str, ...]
+
+    @classmethod
+    def from_mapping(cls, data: Mapping[str, Any]) -> "ModeActionClaimEffects":
+        return cls(
+            may_support=string_tuple(data, "may_support", required=True),
+            cannot_alone_support=string_tuple(data, "cannot_alone_support", required=True),
+            notes=string_tuple(data, "notes", required=True),
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class ModeAction:
+    schema_version: str
+    action_id: str
+    version: str
+    mode_ref: str
+    title: str
+    intent: str
+    triggers: tuple[str, ...]
+    non_triggers: tuple[str, ...]
+    failure_modes: tuple[str, ...]
+    required_artifacts: tuple[str, ...]
+    claim_effects: ModeActionClaimEffects
+    human_gates: tuple[str, ...]
+    stop_conditions: tuple[str, ...]
+    blocked_conditions: tuple[str, ...]
+    risk_rules: tuple[str, ...] = ()
+    metadata: Mapping[str, Any] = field(default_factory=dict)
+
+    @property
+    def reference(self) -> str:
+        return f"{self.action_id}@{self.version}"
+
+    @classmethod
+    def from_mapping(cls, data: Mapping[str, Any]) -> "ModeAction":
+        return cls(
+            schema_version=require_string(data, "schema_version"),
+            action_id=require_string(data, "action_id"),
+            version=require_string(data, "version"),
+            mode_ref=require_string(data, "mode_ref"),
+            title=require_string(data, "title"),
+            intent=require_string(data, "intent"),
+            triggers=string_tuple(data, "triggers", required=True),
+            non_triggers=string_tuple(data, "non_triggers", required=True),
+            failure_modes=string_tuple(data, "failure_modes", required=True),
+            required_artifacts=string_tuple(data, "required_artifacts", required=True),
+            claim_effects=ModeActionClaimEffects.from_mapping(
+                mapping_value(data, "claim_effects", required=True)
+            ),
+            human_gates=string_tuple(data, "human_gates", required=True),
+            stop_conditions=string_tuple(data, "stop_conditions", required=True),
+            blocked_conditions=string_tuple(data, "blocked_conditions", required=True),
+            risk_rules=string_tuple(data, "risk_rules"),
+            metadata=dict(mapping_value(data, "metadata")),
+        )

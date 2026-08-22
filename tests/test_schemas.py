@@ -43,6 +43,8 @@ class VersionedSchemaTests(unittest.TestCase):
                 "handoff_transfer_audit",
                 "handoff_transfer_manifest",
                 "main_state",
+                "mode_action",
+                "mode_action_registry",
                 "project_protocol",
                 "provider_conformance_report",
                 "research_mode",

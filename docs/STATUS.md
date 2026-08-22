@@ -14,6 +14,7 @@ RWB 处于**内部技术 alpha**：核心文件契约、解析和确定性验证
 | 能力 | 当前覆盖 |
 |---|---|
 | 版本化对象 | Task、Assignment、Handoff、Evidence、Claim、Decision、Protocol、Receipt 等 Schema 与示例 |
+| Mode Action | 两个正式 Mode 的 16 个版本化 Action、hash-pinned Registry 与 Mode/fixture 引用校验 |
 | 确定性验证 | Schema、引用、哈希、权限交集、Handoff lock、Claim 支持关系 |
 | Task 解析 | Task + Agent Profile + 显式或 Registry Skill 的冻结 Assignment、权限交集与版本锁 |
 | Skill 生命周期 | accepted Registry 的 active / legacy / deprecated 选择边界与精确版本 |
@@ -26,7 +27,7 @@ RWB 处于**内部技术 alpha**：核心文件契约、解析和确定性验证
 
 | 范围 | 限制 |
 |---|---|
-| Method-aware control | Mode Action、Method Resolution 与 Method Trace 的正式可执行对象仍在演进 |
+| Method-aware control | Method Resolution、Mode v0.2 migration、Decision Authority 与 Method Trace 仍在演进 |
 | no-Skill Assignment | Task 契约允许空 `required_skills`，但 alpha CLI 尚不能将其解析为冻结 Assignment |
 | End-to-end research run | 尚无面向普通用户的一键 Task-to-research 闭环；Runtime 集成由开发者显式接入 |
 | 真实外部模型 | 仓库测试不证明各供应商真实账号、配额、工具调用或长期兼容性 |
@@ -37,7 +38,7 @@ RWB 处于**内部技术 alpha**：核心文件契约、解析和确定性验证
 
 ## 支持边界
 
-- 推荐路径：离线校验、no-Skill Task 解析、现有 Trace / Archive 验证、Adapter 开发。
+- 推荐路径：离线校验、no-Skill Task 契约验证、Mode Action 引用、现有 Trace / Archive 验证、Adapter 开发。
 - 兼容路径：旧 Skill-bound 工件可显式读取或回放，但不作为新任务默认模板。
 - 实验路径：真实模型、外部工具和 MCP 接入需要具名授权、独立凭据管理和相应 Trace。
 

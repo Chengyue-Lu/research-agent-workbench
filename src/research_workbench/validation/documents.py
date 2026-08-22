@@ -13,6 +13,7 @@ from enum import StrEnum
 from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any, Iterable, Mapping
 
+from research_workbench.artifacts.integrity import hash_file
 from research_workbench.io import load_document
 from research_workbench.contracts.common import ContractError, parse_skill_reference
 from research_workbench.validation.schemas import SchemaCatalog
@@ -96,6 +97,8 @@ SCHEMA_KINDS = {
     "handoff_transfer_audit",
     "handoff_transfer_manifest",
     "main_state",
+    "mode_action",
+    "mode_action_registry",
     "context_snapshot",
     "execution_receipt",
     "research_object",
@@ -117,6 +120,8 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "project_protocol"
     if "mode_id" in document and "claim_rules" in document:
         return "research_mode"
+    if "action_id" in document and "mode_ref" in document and "claim_effects" in document:
+        return "mode_action"
     if "agent_profile_id" in document and "permission_ceiling" in document:
         return "agent_profile"
     if "skill_id" in document and "capabilities" in document:
@@ -367,6 +372,109 @@ def _validate_task(path: Path, document: Mapping[str, Any], kind: str) -> list[V
     return issues
 
 
+def _matches_repository_path(path: Path, repository_relative: str) -> bool:
+    normalized_path = path.as_posix()
+    normalized_relative = PurePosixPath(repository_relative).as_posix()
+    return normalized_path == normalized_relative or normalized_path.endswith(f"/{normalized_relative}")
+
+
+def _validate_mode_action_registry(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
+    issues: list[ValidationIssue] = []
+    registries = [
+        (path, document)
+        for path, document in documents.items()
+        if isinstance(document, Mapping) and document.get("registry_kind") == "mode_action_registry"
+    ]
+    if not registries:
+        return issues
+
+    modes = {
+        f"{document.get('mode_id')}@{document.get('version')}"
+        for document in documents.values()
+        if isinstance(document, Mapping)
+        and "mode_id" in document
+        and "claim_rules" in document
+    }
+    action_documents: dict[tuple[str, str], tuple[Path, Mapping[str, Any]]] = {}
+    for path, document in documents.items():
+        if not isinstance(document, Mapping) or infer_document_kind(document) != "mode_action":
+            continue
+        key = (str(document.get("action_id")), str(document.get("version")))
+        if key in action_documents:
+            issues.append(
+                ValidationIssue(path, "MODE-ACTION-DUPLICATE", f"duplicate Mode Action document: {key}")
+            )
+        action_documents[key] = (path, document)
+        mode_ref = document.get("mode_ref")
+        if isinstance(mode_ref, str) and mode_ref not in modes:
+            issues.append(
+                ValidationIssue(path, "MODE-ACTION-MODE-MISSING", f"unknown Research Mode: {mode_ref}")
+            )
+
+    indexed: set[tuple[str, str]] = set()
+    for registry_path, registry in registries:
+        for index, entry in enumerate(registry.get("entries", [])):
+            if not isinstance(entry, Mapping):
+                continue
+            key = (str(entry.get("action_id")), str(entry.get("version")))
+            if key in indexed:
+                issues.append(
+                    ValidationIssue(
+                        registry_path,
+                        "MODE-ACTION-REGISTRY-DUPLICATE",
+                        f"duplicate registry entry at entries[{index}]: {key}",
+                    )
+                )
+                continue
+            indexed.add(key)
+            registered = action_documents.get(key)
+            if registered is None:
+                issues.append(
+                    ValidationIssue(
+                        registry_path,
+                        "MODE-ACTION-DOCUMENT-MISSING",
+                        f"registry entry has no loaded Action document: {key}",
+                    )
+                )
+                continue
+            document_path, action = registered
+            expected_path = entry.get("document_path")
+            if not isinstance(expected_path, str) or not _matches_repository_path(document_path, expected_path):
+                issues.append(
+                    ValidationIssue(
+                        registry_path,
+                        "MODE-ACTION-PATH-MISMATCH",
+                        f"registry path does not match Action document for {key}: {expected_path}",
+                    )
+                )
+            if entry.get("mode_ref") != action.get("mode_ref"):
+                issues.append(
+                    ValidationIssue(
+                        registry_path,
+                        "MODE-ACTION-MODE-MISMATCH",
+                        f"registry mode_ref disagrees with Action document for {key}",
+                    )
+                )
+            expected_hash = entry.get("content_hash")
+            if isinstance(expected_hash, str):
+                expected_hash = expected_hash.removeprefix("sha256:").lower()
+                if hash_file(document_path) != expected_hash:
+                    issues.append(
+                        ValidationIssue(
+                            registry_path,
+                            "MODE-ACTION-HASH-MISMATCH",
+                            f"content hash does not match Action document for {key}",
+                        )
+                    )
+
+    for key, (path, _) in action_documents.items():
+        if key not in indexed:
+            issues.append(
+                ValidationIssue(path, "MODE-ACTION-UNINDEXED", f"Action document is not in the registry: {key}")
+            )
+    return issues
+
+
 def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     source_ids: set[str] = set()
@@ -400,6 +508,7 @@ def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
         issues.extend(_validate_hashes(path, document))
         issues.extend(_validate_registry(path, document, kind, source_ids))
         issues.extend(_validate_task(path, document, kind))
+    issues.extend(_validate_mode_action_registry(documents))
     return issues
 
 

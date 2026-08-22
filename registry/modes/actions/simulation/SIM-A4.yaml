@@ -1,0 +1,19 @@
+schema_version: 0.1.0
+action_id: SIM-A4
+version: 1.0.0
+mode_ref: simulation@0.1.0
+title: Design sensitivity and uncertainty analysis
+intent: Relate uncertain inputs and parameter choices to bounded quantities of interest without confusing sensitivity with uncertainty propagation.
+triggers:
+  - The intended conclusion depends on multiple uncertain inputs, ranges, distributions, or interactions.
+non_triggers:
+  - A single fixed-input Run or one-parameter debugging check is requested.
+failure_modes: [arbitrary parameter range, local sensitivity presented as global, input uncertainty omitted]
+required_artifacts: [sensitivity-or-uq-plan, run-set, sensitivity-or-uq-report]
+claim_effects:
+  may_support: [simulation_supported]
+  cannot_alone_support: [experimentally_supported]
+  notes: [Interpretation remains bounded by the approved input distributions and model structure.]
+human_gates: [approve-parameter-distributions-and-importance-interpretation]
+stop_conditions: [Declared quantities, ranges, interactions, and analysis limits are reported.]
+blocked_conditions: [Material input ranges or distributions cannot be justified.]

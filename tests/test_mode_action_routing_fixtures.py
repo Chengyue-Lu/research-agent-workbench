@@ -1,3 +1,4 @@
+import json
 import unittest
 from pathlib import Path
 
@@ -6,6 +7,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "examples/mode-skill-routing/mode-action-routing-v1.yaml.txt"
+ACTION_REGISTRY = ROOT / "registry/modes/actions.json"
 
 
 class ModeActionRoutingFixtureTests(unittest.TestCase):
@@ -13,6 +15,7 @@ class ModeActionRoutingFixtureTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.document = yaml.safe_load(FIXTURE.read_text(encoding="utf-8"))
         cls.cases = cls.document["cases"]
+        cls.action_registry = json.loads(ACTION_REGISTRY.read_text(encoding="utf-8"))
 
     def test_fixture_has_eight_unique_bounded_cases(self) -> None:
         self.assertEqual(8, len(self.cases))
@@ -20,6 +23,24 @@ class ModeActionRoutingFixtureTests(unittest.TestCase):
         self.assertEqual(len(ids), len(set(ids)))
         self.assertEqual("diagnostic-planning-only", self.document["status"])
         self.assertFalse(self.document["formal_contract"])
+        self.assertTrue(self.document["formal_action_refs"])
+        self.assertEqual("registry/modes/actions.json", self.document["formal_action_registry_ref"])
+
+    def test_formal_action_refs_are_versioned_and_hash_pinned(self) -> None:
+        registered = {
+            f"{entry['action_id']}@{entry['version']}": entry
+            for entry in self.action_registry["entries"]
+        }
+        referenced = {
+            action["action_ref"]
+            for case in self.cases
+            for action in case["actions"]
+            if "action_ref" in action
+        }
+        self.assertTrue(referenced)
+        self.assertLessEqual(referenced, registered.keys())
+        for action_ref in referenced:
+            self.assertRegex(registered[action_ref]["content_hash"], r"^sha256:[0-9a-f]{64}$")
 
     def test_only_frozen_tool_capability_ids_are_used(self) -> None:
         allowed = set(self.document["allowed_tool_capabilities"])
@@ -62,7 +83,7 @@ class ModeActionRoutingFixtureTests(unittest.TestCase):
         internal = next(
             action
             for action in case["actions"]
-            if action["action_id"] == "NEED-INT-COMPACT-HANDOFF"
+            if action.get("planning_action_id") == "NEED-INT-COMPACT-HANDOFF"
         )
         self.assertEqual("task-template", internal["mechanism"])
         self.assertIn("no-skill", case["expected_outcomes"])

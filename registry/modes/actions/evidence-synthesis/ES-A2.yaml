@@ -1,0 +1,20 @@
+schema_version: 0.1.0
+action_id: ES-A2
+version: 1.0.0
+mode_ref: evidence-synthesis@0.1.0
+title: Design a bounded search strategy
+intent: Produce a replayable search plan with explicit coverage, bias, and stopping rules.
+triggers:
+  - An open question requires retrieval across one or more approved sources.
+non_triggers:
+  - The source set is already frozen and complete for the Task.
+  - The Task only replays an already approved query.
+failure_modes: [query bias, source coverage mismatch, missing stop rule]
+required_artifacts: [search-plan, query-ledger, stop-rule]
+claim_effects:
+  may_support: []
+  cannot_alone_support: [source_reported, synthesis_supported]
+  notes: [Search coverage constrains later synthesis but does not itself support a scientific Claim.]
+human_gates: [approve-source-boundary-and-coverage-risk]
+stop_conditions: [The search is replayable and its declared stopping rule is satisfied.]
+blocked_conditions: [Approved sources are inaccessible, or coverage risk cannot be bounded.]

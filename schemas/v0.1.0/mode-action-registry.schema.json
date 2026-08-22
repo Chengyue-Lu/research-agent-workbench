@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/mode-action-registry.schema.json",
+  "title": "Mode Action Registry",
+  "x-rwb-document-kind": "mode_action_registry",
+  "type": "object",
+  "required": ["schema_version", "registry_kind", "generated_at", "entries"],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "registry_kind": { "const": "mode_action_registry" },
+    "generated_at": { "type": "string", "format": "date" },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["action_id", "version", "mode_ref", "document_path", "content_hash"],
+        "properties": {
+          "action_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+          },
+          "version": { "$ref": "common.schema.json#/$defs/semver" },
+          "mode_ref": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*@[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+          },
+          "document_path": { "$ref": "common.schema.json#/$defs/relativePath" },
+          "content_hash": { "$ref": "common.schema.json#/$defs/sha256" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
