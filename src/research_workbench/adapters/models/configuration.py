@@ -8,24 +8,28 @@ from pathlib import Path
 from typing import Any, Mapping
 from urllib.parse import urlparse
 
+from research_workbench.adapters.models.anthropic import AnthropicMessagesProvider
+from research_workbench.adapters.models.base import _environment_name, _nonempty_string
+from research_workbench.adapters.models.gemini import GeminiGenerateContentProvider
+from research_workbench.adapters.models.openai import OpenAIResponsesProvider
 from research_workbench.adapters.models.port import Capability
 from research_workbench.io import load_document
 
 
-SUPPORTED_PROVIDERS = frozenset({"openai", "anthropic", "google"})
+# Adapter capabilities are single-sourced from the adapter classes. Adding a
+# provider means registering its class here; conformance.py resolves live
+# providers through this same registry.
+PROVIDER_ADAPTERS = {
+    adapter.provider_name: adapter
+    for adapter in (
+        OpenAIResponsesProvider,
+        AnthropicMessagesProvider,
+        GeminiGenerateContentProvider,
+    )
+}
+SUPPORTED_PROVIDERS = frozenset(PROVIDER_ADAPTERS)
 IMPLEMENTED_CAPABILITIES: dict[str, frozenset[Capability]] = {
-    "openai": frozenset(
-        {Capability.TEXT, Capability.TOOLS, Capability.STRUCTURED_OUTPUT, Capability.REASONING}
-    ),
-    "anthropic": frozenset({Capability.TEXT, Capability.TOOLS, Capability.STRUCTURED_OUTPUT}),
-    "google": frozenset(
-        {
-            Capability.TEXT,
-            Capability.TOOLS,
-            Capability.PARALLEL_TOOLS,
-            Capability.STRUCTURED_OUTPUT,
-        }
-    ),
+    name: adapter.implemented_capabilities for name, adapter in PROVIDER_ADAPTERS.items()
 }
 
 
@@ -171,16 +175,3 @@ def _present(name: str) -> bool:
     # This function is called only after an explicit --check-environment flag.
     # It intentionally collapses the value to a boolean at the boundary.
     return bool(os.environ.get(name))
-
-
-def _nonempty_string(value: object, field: str) -> str:
-    if not isinstance(value, str) or not value.strip():
-        raise ValueError(f"{field} must be a non-empty string")
-    return value.strip()
-
-
-def _environment_name(value: object, field: str) -> str:
-    name = _nonempty_string(value, field)
-    if not name.replace("_", "").isalnum():
-        raise ValueError(f"{field} must contain only letters, digits, and underscores")
-    return name

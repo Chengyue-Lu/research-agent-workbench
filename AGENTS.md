@@ -33,6 +33,7 @@
 
 - Validate internal Markdown links after documentation changes.
 - When implementation begins, prefer deterministic schema, hash, reference, and output checks before LLM-based review.
+- Register every new deterministic check or risk code in `src/research_workbench/contracts/risk_codes.py` and cover it with a corresponding test.
 - A passing validator means structural validity only; never label it scientific correctness.
 
 ## Documentation Surface Discipline

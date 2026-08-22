@@ -30,3 +30,16 @@ adapters:
     model_env: RWB_GEMINI_MODEL
     capabilities: [text, tools, parallel_tools, structured_output]
     live_conformance: pending
+  # DeepSeek's Anthropic-compatible route, reusing the anthropic-messages
+  # adapter. Live conformance passed on Windows 2026-08-19 (attempt AT-API-009,
+  # model deepseek-v4-flash); evidence: docs/implementation/evidence/M6-004/.
+  # Known gap on this route: the endpoint emits thinking blocks by default and
+  # counts them toward output tokens; the adapter skips them with a warning.
+  - adapter_id: deepseek-anthropic
+    provider: anthropic
+    enabled: false
+    base_url: https://api.deepseek.com/anthropic/v1
+    credential_env: DEEPSEEK_API_KEY
+    model_env: RWB_DEEPSEEK_MODEL
+    capabilities: [text, tools, structured_output]
+    live_conformance: passed

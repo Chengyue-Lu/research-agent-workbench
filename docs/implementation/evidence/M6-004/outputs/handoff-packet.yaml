@@ -1,0 +1,50 @@
+schema_version: 0.1.0
+object_type: handoff_packet
+packet_id: HP-EVID-API-001-01
+revision: 1
+status: complete
+task_ref: EVID-API-001@1
+skill_assignment_ref: SA-FF1339D6F7A44206
+question_ref: Q-001
+active_modes: [evidence-synthesis]
+summary: >-
+  Extraction completed against the single admitted source INPUT-SYNTHETIC-001@1
+  (examples/fixtures/paper-001.txt). The source is a synthetic fixture that
+  explicitly identifies itself as such and disclaims scientific status. Both
+  atomic statements were captured as evidence records EVID-001-01 and
+  EVID-001-02. No real scientific claim can be cited from this source.
+artifact_references:
+  - role: source
+    source_ref: INPUT-SYNTHETIC-001@1
+    path: examples/fixtures/paper-001.txt
+    sha256: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
+    admitted: true
+  - role: evidence_record
+    object_id: EVID-001-01
+    locator: lines 1-2
+  - role: evidence_record
+    object_id: EVID-001-02
+    locator: line 2
+  - role: skill_reference
+    path: .agents/skills/literature-evidence-extraction/references/evidence-contract.md
+    sha256: 6150e2249ccfe61a58fb1e34082d55a85d8340db018a2f41b3620bac07539425
+  - role: pinned_example
+    path: examples/objects/evidence/EVID-001-01.yaml
+    sha256: e11a3fa9bc41bf6b1331291d3dbe4567369c576f7df05dd5bc81654fdf3ebc57
+inference:
+  - id: INF-001
+    statement: The admitted source set contains no content usable as scientific evidence; any working proposition for Q-001 cannot be supported from this boundary.
+    source_ref: INPUT-SYNTHETIC-001@1
+    locator: lines 1-2
+recommendations:
+  - id: REC-001
+    statement: Do not cite paper-001.txt for any real scientific claim; treat it as a structural and reference-integrity fixture only.
+    evidence_ref: [EVID-001-01, EVID-001-02]
+limitations:
+  - id: LIM-001
+    statement: Automated validators (scripts/check_evidence_record.py, $handoff-integrity) were not executable in this session; deterministic checks were performed manually against the pinned hashes.
+  - id: LIM-002
+    statement: The full wording of Q-001 was not supplied in the Task Packet; extraction followed the bounded source set and the pinned example record.
+unresolved:
+  - id: UNR-001
+    statement: If Q-001 specifies a concrete proposition, its text is required to test it; the current boundary yields only the source's self-identification and disclaimer.

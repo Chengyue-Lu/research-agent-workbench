@@ -1,0 +1,37 @@
+schema_version: 0.1.0
+audit_id: HTA-AT-API-009
+task_ref:
+  path: examples/api-execution/task-evidence-live.yaml
+  sha256: b9a59e2c7abb94c7e35ee3087abdcc5e427f159add431307f6b58b21c6dc16f7
+handoff_ref:
+  path: work/EVID-API-001/AT-API-009/handoff.yaml
+  sha256: 3a14edd76782ab7787c9bad454ab31ff2a2eb20e9b62525963a5ac911960d98a
+manifest_ref:
+  path: work/EVID-API-001/AT-API-009/transfer-manifest.yaml
+  sha256: cfd9965fb47ef44ec7f5ec1184607eb658afe3b256dd28e9f24692590a69a796
+generated_at: '2026-08-19T13:59:54Z'
+mappings:
+- item_id: HTI-AT-API-009-001
+  status: carried
+  handoff_locator: /result/facts/0
+- item_id: HTI-AT-API-009-002
+  status: carried
+  handoff_locator: /limitations/0
+- item_id: HTI-AT-API-009-003
+  status: carried
+  handoff_locator: /limitations/1
+- item_id: HTI-AT-API-009-004
+  status: carried
+  handoff_locator: /limitations/2
+- item_id: HTI-AT-API-009-005
+  status: carried
+  handoff_locator: /unresolved/0
+review:
+  status: pending
+  reviewer_kind: none
+  reviewer_independent: false
+  sampled_item_ids: []
+  findings: []
+limitations:
+- Structural coverage is generated at closeout; semantic equivalence still requires
+  a bounded human review.

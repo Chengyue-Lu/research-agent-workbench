@@ -5,6 +5,8 @@ from dataclasses import asdict, dataclass, is_dataclass
 from pathlib import PurePosixPath, PureWindowsPath
 from typing import Any, Iterable, Mapping, TypeVar
 
+from research_workbench.contracts.risks import ContractRisk
+
 
 class ContractError(ValueError):
     def __init__(self, field: str, message: str):
@@ -109,6 +111,13 @@ class PermissionPolicy:
         return cls(filesystem, network, external, roots)
 
 
+def ensure_unique(values: Iterable[str], field: str) -> tuple[str, ...]:
+    result = tuple(values)
+    if len(result) != len(set(result)):
+        raise ContractError(field, "must not contain duplicates")
+    return result
+
+
 T = TypeVar("T")
 
 
@@ -124,10 +133,3 @@ def to_plain(value: T) -> Any:
     if isinstance(value, list):
         return [to_plain(item) for item in value]
     return value
-
-
-def ensure_unique(values: Iterable[str], field: str) -> tuple[str, ...]:
-    result = tuple(values)
-    if len(result) != len(set(result)):
-        raise ContractError(field, "must not contain duplicates")
-    return result

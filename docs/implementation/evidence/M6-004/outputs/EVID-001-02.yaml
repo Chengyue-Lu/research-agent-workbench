@@ -1,0 +1,13 @@
+schema_version: 0.1.0
+object_type: evidence
+object_id: EVID-001-02
+revision: 1
+status: admitted-fixture
+content_hash: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
+kind: bounded-text-excerpt
+source_ref: INPUT-SYNTHETIC-001@1
+locator: line 2
+statement: The source states it is not a scientific source and must not support a real claim.
+quality_flags: [synthetic_fixture, not_scientific_evidence]
+metadata:
+  fixture: true

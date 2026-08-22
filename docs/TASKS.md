@@ -85,8 +85,8 @@ Method Trace 语义；黄毅维护 M6 的 API/Runtime 执行实现与测试。�
 |---|---|---|---|---|
 | M6-001 | DONE | OpenAI/Anthropic/Gemini 薄 Model Provider Adapters | M1-008 | 三家 provider-neutral 薄 Adapter 的离线 contract 测试已通过；live conformance 单独由 M6-004 验收 |
 | M6-002 | DONE | 显式模型池与隔离 API session kernel（`K-API-1`） | M6-001 | primary/worker/specialist 槽只可显式绑定；轮次、工具、并行、工具结果、输出、token/成本/time 有硬边界；无自动 fallback；离线测试通过 |
-| M6-003 | IN_PROGRESS | Task-to-API 文件闭环（`K-API-2`） | M1-008, M2-001..005, M6-002 | legacy compatibility seam 已形成；Method→Capability→Execution bridge 等待 M8-003，不由 execution 层抢先定义 |
-| M6-004 | IN_PROGRESS | 选定模型槽的真实 Windows conformance 与一次 evidence 调用 | M6-001..003 | 当前版本的 OpenAI text/structured/tool、EVID/SIM SIR 脱敏证据与 live Gate 仍待授权 Windows 环境重放 |
+| M6-003 | DONE | Task-to-API 文件闭环（`K-API-2`） | M1-008, M2-001..005, M6-002 | 离线 compile/run/closeout/verify 与四终态、脚本化 e2e、Receipt 对账测试通过；live 验收属 M6-004 |
+| M6-004 | DONE | 选定模型槽的真实 Windows conformance 与一次 evidence 调用 | M6-001..003 | `deepseek-v4-flash`（DeepSeek Anthropic 兼容端点，复用 `anthropic-messages` adapter）在 worker 槽完成真实 evidence 调用，AT-API-009 终态 completed、verify 幂等；脱敏工件见 `docs/implementation/evidence/M6-004/`；live 暴露的 4 个实现缺陷已修复并补测试 |
 | M6-005 | PARKED | streaming/multimodal/server tools 与平台 Adapter | 真实案例或平台选择 | 黄毅决定执行端启动条件；没有真实需求不启动 |
 | M6-006 | DONE | API/平台执行时自动写入 Agent Trace | M3-008, M6-003 | legacy Skill-bound execution 已完成 SessionEventSink、traced runner、archive closeout、file-only verify、recovery preflight 与 Attempt/Receipt Trace linkage；Method-dependent Part C 等待 M8-003 |
 

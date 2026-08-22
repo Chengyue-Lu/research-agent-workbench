@@ -321,7 +321,7 @@ def _narrowest(values: Iterable[str], ranks: Mapping[str, int], field: str) -> s
     candidates = [value for value in values if value != "unspecified"]
     unknown = sorted({value for value in candidates if value not in ranks})
     if unknown:
-        raise ValueError(f"unknown {field} permission values: {', '.join(unknown)}")
+        raise ContractError(field, f"has unknown permission values: {', '.join(unknown)}")
     if not candidates:
         return "unspecified"
     return min(candidates, key=lambda value: ranks[value])

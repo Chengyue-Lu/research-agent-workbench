@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from typing import Any, Mapping
 
 from jsonschema import Draft202012Validator
@@ -138,7 +139,7 @@ def preflight(request: ModelRequest, snapshot: ProviderCapabilities) -> None:
             if block.kind in {"tool_call", "tool_result"} and not isinstance(block.data, Mapping):
                 raise ProviderError(ProviderErrorCategory.INVALID_REQUEST, f"{block.kind} block lacks data")
             if block.kind == "tool_call" and isinstance(block.data, Mapping):
-                if not _nonempty_string(block.data.get("call_id")) or not _nonempty_string(block.data.get("name")):
+                if not _has_text(block.data.get("call_id")) or not _has_text(block.data.get("name")):
                     raise ProviderError(
                         ProviderErrorCategory.INVALID_REQUEST,
                         "tool_call block requires non-empty call_id and name",
@@ -149,7 +150,7 @@ def preflight(request: ModelRequest, snapshot: ProviderCapabilities) -> None:
                         "tool_call block requires object arguments",
                     )
             if block.kind == "tool_result" and isinstance(block.data, Mapping):
-                if not _nonempty_string(block.data.get("call_id")) or "output" not in block.data:
+                if not _has_text(block.data.get("call_id")) or "output" not in block.data:
                     raise ProviderError(
                         ProviderErrorCategory.INVALID_REQUEST,
                         "tool_result block requires non-empty call_id and output",
@@ -247,6 +248,19 @@ def raise_provider_http_error(
     )
 
 
+_JSON_FENCE = re.compile(r"^```[^\S\n]*(?:json|JSON)?[^\S\n]*\n(?P<body>.*?)\n?[^\S\n]*```$", re.DOTALL)
+
+
+def _structured_json_text(raw: str) -> str:
+    """Tolerate one surrounding Markdown code fence around the JSON payload."""
+
+    candidate = raw.strip()
+    match = _JSON_FENCE.match(candidate)
+    if match:
+        return match.group("body").strip()
+    return candidate
+
+
 def validate_structured_response(request: ModelRequest, response: ModelResponse) -> ModelResponse:
     if request.response_format.kind != "json_schema" or response.finish_reason not in {
         FinishReason.COMPLETE,
@@ -255,13 +269,16 @@ def validate_structured_response(request: ModelRequest, response: ModelResponse)
         return response
     schema = request.response_format.schema
     assert isinstance(schema, Mapping)
-    text = "".join(block.text or "" for block in response.output if block.kind == "text")
+    text = _structured_json_text(
+        "".join(block.text or "" for block in response.output if block.kind == "text")
+    )
     try:
         value = json.loads(text)
     except json.JSONDecodeError as exc:
         raise ProviderError(
             ProviderErrorCategory.CONTRACT_VIOLATION,
-            f"{response.provider} returned invalid JSON for structured output",
+            f"{response.provider} returned invalid JSON for structured output "
+            f"(first 80 chars: {text[:80]!r})",
         ) from exc
     errors = sorted(Draft202012Validator(schema).iter_errors(value), key=lambda item: list(item.absolute_path))
     if errors:
@@ -371,5 +388,22 @@ def require_list(value: object, *, provider: str, field: str) -> list[Any]:
     return value
 
 
-def _nonempty_string(value: object) -> bool:
+def _has_text(value: object) -> bool:
     return isinstance(value, str) and bool(value.strip())
+
+
+def _nonempty_string(value: object, field: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(f"{field} must be a non-empty string")
+    return value.strip()
+
+
+def _environment_name(value: object, field: str) -> str:
+    name = _nonempty_string(value, field)
+    if not name.replace("_", "").isalnum():
+        raise ValueError(f"{field} must contain only letters, digits, and underscores")
+    return name
+
+
+def _integer(value: object) -> int | None:
+    return value if isinstance(value, int) and not isinstance(value, bool) else None

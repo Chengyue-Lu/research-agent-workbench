@@ -146,6 +146,16 @@ rwb providers conformance `
 
 把已解析 Task、Agent Profile、Skill Assignment、内容允许集、Handoff 等级和显式模型槽编译成最小初始消息与工具 allowlist；执行期间将全部可见 Agent 传递写入 Attempt Archive；结束或安全暂停时写入正式工件和 Task 要求的 H1/H2 交接工件。删除临时平台会话后做一次恢复检查。具体实现与自动捕获由黄毅负责。
 
+### K-API-2：Task-to-API 文件闭环（离线闭环已实现，live 待 M6-004）
+
+设计契约固定在 [K_API_2_FILE_LOOP.md](K_API_2_FILE_LOOP.md)。当前状态：
+
+- `src/research_workbench/execution/` 已实现 `compile_execution`（全部前置检查在编译期 BLOCK）、`execute_plan`（K-API-1 内核 + 受限 `read_file`/`write_artifact`/`list_outputs` 工具）、`closeout`（严格输出校验后原子发布 execution-plan/session-transcript/outputs/attempt/execution-receipt/handoff/check-report）与 `verify_attempt`（仅凭文件幂等重放）；`testing.py` 提供文件驱动的 `ScriptedProvider`。
+- CLI 新增 `rwb execute task`（compile+run+closeout）与 `rwb execute verify`：Provider 二选一且互斥必选——`--scripted-session FILE` 离线脚本化（`model_override=scripted-offline`，豁免 `model_env`，不读环境）或 `--allow-live`（模型名只取槽位 `model_env`、凭据只取 adapters.yaml 的 `credential_env`，缺失时在执行前干净报错）。退出码：`completed`→0，其余终态→1，编译 BLOCK→1，契约/文件错误→2。
+- closeout 终态为 `completed | safe-paused | incomplete | failed`；任何确定性检查 BLOCK 都不会被包装成 `completed`。
+- 离线测试覆盖编译期风险码反向分支、脚本化工具全链路、四终态、Receipt 用量逐字段对账、`verify_attempt` 幂等与篡改检出、CLI 脚本化 e2e（`examples/api-execution/`）与假凭据标记不泄漏。
+- live 路径已完成真实 Windows 验收（M6-004，2026-08-19）：`deepseek-v4-flash` 经 DeepSeek Anthropic 兼容端点复用 `anthropic-messages` adapter，AT-API-009 终态 `completed`；脱敏工件与迭代记录见 [evidence/M6-004/](evidence/M6-004/README.md)。live 暴露并修复了 ProviderError 未捕获、代码栅栏不耐受、并行工具默认上限过低、prompt 未约束最终格式四个缺陷。
+
 ### P5：按真实消费者扩展
 
 只有案例需要时才增加 streaming、图像、文件、prompt caching 或 server tools。每项单独增加 capability、data policy、合同测试和停止/删除条件。

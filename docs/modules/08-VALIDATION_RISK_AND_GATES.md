@@ -44,6 +44,8 @@ Handoff 传递审计也遵循这一边界：确定性验证器先核对 Transfer
 
 ## 4. 核心风险登记
 
+预警码以 `src/research_workbench/contracts/risk_codes.py` 为唯一登记表：任何在代码中发射的预警码必须先在该表登记（由 `tests/test_risk_codes.py` 单向强制，登记允许多于发射），本表及 04/05/06 等模块文档中的预警代码表均为说明性引用。代码已发射但文档未登记的码列入登记表的 `DOCUMENTED_GAP`，文档已登记但代码零发射的码列入 `NOT_YET_EMITTED`；两类清单的语义对齐以及任何预警码语义（含义、等级、归属）变更，均需路诚钺与黄毅共同确认。
+
 | 代码 | 问题 | 默认处置 |
 |---|---|---|
 | CTX-MAIN-PRESSURE | 主上下文过载 | checkpoint / rollover |

@@ -32,6 +32,7 @@ where = ["src"]
 "share/research-agent-workbench/schemas/v0.1.0" = ["schemas/v0.1.0/*.schema.json"]
 
 [tool.coverage.run]
+branch = true
 source = ["research_workbench"]
 
 [tool.coverage.report]

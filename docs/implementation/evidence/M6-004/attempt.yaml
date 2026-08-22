@@ -1,0 +1,26 @@
+schema_version: 0.1.0
+task_id: EVID-API-001
+task_revision: 1
+attempt_id: AT-API-009
+status: completed
+started_at: '2026-08-19T13:58:43.638860Z'
+finished_at: '2026-08-19T13:59:54Z'
+trigger_reason: bounded API task execution
+input_lock:
+- path: examples/fixtures/paper-001.txt
+  sha256: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
+- path: .agents/skills/literature-evidence-extraction/references/evidence-contract.md
+  sha256: 6150e2249ccfe61a58fb1e34082d55a85d8340db018a2f41b3620bac07539425
+- path: examples/objects/evidence/EVID-001-01.yaml
+  sha256: e11a3fa9bc41bf6b1331291d3dbe4567369c576f7df05dd5bc81654fdf3ebc57
+skill_lock:
+- literature-evidence-extraction@0.1.0
+skill_assignment_ref: .rwb/assignment-evidence-live.yaml
+execution_receipt_ref: work/EVID-API-001/AT-API-009/execution-receipt.yaml
+artifact_refs:
+- work/EVID-API-001/AT-API-009/outputs/EVID-001-01.yaml
+- work/EVID-API-001/AT-API-009/outputs/EVID-001-02.yaml
+- work/EVID-API-001/AT-API-009/outputs/handoff-packet.yaml
+- work/EVID-API-001/AT-API-009/outputs/handoff-transfer-manifest.yaml
+- work/EVID-API-001/AT-API-009/transfer-manifest.yaml
+handoff_ref: work/EVID-API-001/AT-API-009/handoff.yaml

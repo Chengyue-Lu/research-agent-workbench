@@ -1,0 +1,62 @@
+schema_version: 0.1.0
+task_id: EVID-API-001
+goal: Extract citable evidence for Q-001 from the bounded source set in one live provider session.
+question_refs:
+  - Q-001@1
+active_modes:
+  - evidence-synthesis
+required_capabilities:
+  - evidence-extraction
+  - citation-location
+required_skills:
+  - literature-evidence-extraction@0.1.0
+forbidden_skills:
+  - final-synthesis
+agent_profile: evidence-scout
+input_refs:
+  - path: examples/fixtures/paper-001.txt
+    sha256: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
+  # The locked Skill instructs the agent to read its output contract before
+  # creating records; declaring it here makes that read legal in the session.
+  - path: .agents/skills/literature-evidence-extraction/references/evidence-contract.md
+    sha256: 6150e2249ccfe61a58fb1e34082d55a85d8340db018a2f41b3620bac07539425
+  # Canonical valid Evidence object: live models comply with field types and
+  # reference shapes far more reliably from one concrete example than from prose.
+  - path: examples/objects/evidence/EVID-001-01.yaml
+    sha256: e11a3fa9bc41bf6b1331291d3dbe4567369c576f7df05dd5bc81654fdf3ebc57
+write_scope:
+  - work/EVID-API-001/**
+required_outputs:
+  - evidence-record
+  - handoff-transfer-manifest
+  - handoff-packet
+permissions:
+  filesystem: worktree-write
+  external_write: false
+  allowed_roots: [work/EVID-API-001]
+delegation:
+  allowed: false
+budget:
+  max_turns: 10
+  # Live variant: thinking-capable models (e.g. deepseek-v4-flash on the
+  # Anthropic-compatible route) emit thinking blocks that count toward the
+  # output budget; 1800 and 8192 tokens both proved insufficient
+  # (stop_reason=length mid-thinking).
+  max_output_tokens: 16384
+atomic_boundary: One bounded source set is inspected and its Evidence, Claim boundary, Transfer Manifest, and Handoff are persisted.
+completion_checks:
+  - Required Evidence and Handoff contracts exist and pass deterministic reference checks.
+  - The Handoff Transfer Audit has no blocking risk.
+safe_pause_conditions:
+  - Context budget cannot safely cover the next bounded source plus closeout reserve.
+  - A required source, permission, or human decision is unavailable.
+stop_conditions:
+  - required_outputs_complete
+  - source_boundary_exhausted
+  - human_judgment_required
+stale_if:
+  - any_input_hash_changes
+handoff_policy:
+  require_transfer_manifest: true
+  semantic_review: risk-triggered
+  minimum_semantic_samples: 1
