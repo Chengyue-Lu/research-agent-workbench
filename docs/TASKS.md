@@ -89,6 +89,7 @@ Method Trace 语义；黄毅维护 M6 的 API/Runtime 执行实现与测试。�
 | M6-004 | IN_PROGRESS | 选定模型槽的真实 Windows conformance 与一次 evidence 调用 | M6-001..003 | 当前版本的 OpenAI text/structured/tool、EVID/SIM SIR 脱敏证据与 live Gate 仍待授权 Windows 环境重放 |
 | M6-005 | PARKED | streaming/multimodal/server tools 与平台 Adapter | 真实案例或平台选择 | 黄毅决定执行端启动条件；没有真实需求不启动 |
 | M6-006 | DONE | API/平台执行时自动写入 Agent Trace | M3-008, M6-003 | legacy Skill-bound execution 已完成 SessionEventSink、traced runner、archive closeout、file-only verify、recovery preflight 与 Attempt/Receipt Trace linkage；Method-dependent Part C 等待 M8-003 |
+| M6-007 | IN_PROGRESS | Execution Host 缝显式化：trace schema 导出与能力快照冻结（Issue #21） | M6-001, M6-006 | `rwb trace export-schema` 导出与 `rwb-agent-trace-v0.1` baseline 绑定、sha256 钉定的 schema bundle，外部消费者可脱离源码机器校验真实 trace；schema 与 baseline 变更同 PR 由测试强制；provider 能力快照冻结固化为 conformance 不变量；API session 线 enforceable/advisory 对齐待 PR #23 合入后单独交付 |
 
 2026-08-19 的历史 live 诊断不替代当前 M6-004 Gate；OpenAI live conformance、EVID/SIM SIR 与
 process-kill recovery 均不作为 `K-INTEGRATION-1` 的合并阻塞项。

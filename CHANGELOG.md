@@ -2,6 +2,12 @@
 
 本文件只记录被主线接受、会影响使用者理解的基线变化。逐任务、分支和实验过程保存在[详细开发日志](DEVELOPMENT_HISTORY.md)。
 
+## 2026-08-22 — Trace schema export and capability freeze
+
+- `rwb trace export-schema` 导出与 `rwb-agent-trace-v0.1` baseline 绑定、sha256 钉定的 trace schema bundle，外部消费者可脱离工作台源码机器校验 Attempt trace；
+- trace schema 文档变更必须与 baseline 版本变更同一提交，由哈希钉定测试强制；
+- provider 能力快照在 `require()` 握手后不随请求内容变化的冻结语义固化为 conformance 不变量测试。
+
 ## 2026-08-22 — Documentation surface baseline
 
 - 分离 stable、status、planning、compatibility 与 history 文档权威；

@@ -937,6 +937,16 @@ def _trace_validate(args: argparse.Namespace) -> int:
     return _print_risks(validate_attempt_trace(args.root, args.attempt).risks)
 
 
+def _trace_export_schema(args: argparse.Namespace) -> int:
+    from research_workbench.observability.trace import TRACE_BASELINE
+    from research_workbench.observability.trace_schema import export_trace_schema_bundle
+
+    manifest_path = export_trace_schema_bundle(args.out, schema_version=args.schema_version)
+    print(f"baseline\t{TRACE_BASELINE}")
+    print(f"manifest\t{manifest_path}")
+    return 0
+
+
 def _execute_verify(args: argparse.Namespace) -> int:
     from research_workbench.execution import verify_execution_archive
 
@@ -1263,6 +1273,13 @@ def build_parser() -> argparse.ArgumentParser:
     trace_validate.add_argument("--attempt", required=True, help="Attempt directory or INDEX.yaml")
     trace_validate.add_argument("--root", default=".")
     trace_validate.set_defaults(handler=_trace_validate)
+    trace_export = trace_subparsers.add_parser(
+        "export-schema",
+        help="export the trace JSON Schemas as a baseline-bound bundle for external consumers",
+    )
+    trace_export.add_argument("--out", required=True, help="fresh target directory for the bundle")
+    trace_export.add_argument("--schema-version", default="0.1.0")
+    trace_export.set_defaults(handler=_trace_export_schema)
 
     execute = subparsers.add_parser("execute", help="verify a committed execution archive")
     execute_subparsers = execute.add_subparsers(dest="execute_command", required=True)

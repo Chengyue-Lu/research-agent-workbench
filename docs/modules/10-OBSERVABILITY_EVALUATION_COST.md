@@ -122,6 +122,12 @@ Handoff 和过程产物；Method Trace 保存 Mode/Action/Mechanism/Human Gate/E
 
 Trace 完整度不是越高越好。禁止通过记录隐藏推理、密钥或无界工具输出追求“全量”；也禁止用 Worklog 摘要替换已经发生的 Agent 间原始传递。
 
+Trace 格式由版本化 JSON Schema 描述（INDEX、ACTORS、event、envelope 四文档 + 共享定义）。
+`rwb trace export-schema --out <dir>` 导出与 baseline（当前 `rwb-agent-trace-v0.1`）绑定的
+schema bundle：manifest 按 sha256 钉定每个文件并声明各文档治理的物理工件，外部消费者无需
+读取工作台源码即可独立机器校验一份 Attempt trace。schema 文档的任何变更必须与 baseline
+版本变更同一提交（由测试强制），已导出的 bundle 不会被静默改写。
+
 ## 9. 反指标异化
 
 - 指标必须关联一个决策；无消费方则删除；

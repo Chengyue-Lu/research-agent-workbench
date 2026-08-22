@@ -32,6 +32,10 @@ TRACE_INDEX_FILENAME = "INDEX.yaml"
 TRACE_EVENTS_FILENAME = "events.jsonl"
 TRACE_MESSAGES_DIRNAME = "messages"
 TRACE_TOOL_EVENTS_DIRNAME = "tool-events"
+# Baseline identity of the trace format. Schema changes to the four
+# agent-trace-*.schema.json documents must ship a baseline bump in the
+# same change; the exported schema bundle pins this identifier.
+TRACE_BASELINE = "rwb-agent-trace-v0.1"
 
 _SECRET_KEY = re.compile(
     r"(?:authorization|proxy[-_]?authorization|cookie|set[-_]?cookie|api[-_]?key|"
@@ -214,7 +218,7 @@ class AgentTraceRecorder:
         read_allowlist: Sequence[str],
         write_scope: Sequence[str],
         tool_allowlist: Sequence[str],
-        baseline: str = "rwb-agent-trace-v0.1",
+        baseline: str = TRACE_BASELINE,
         created_at: str | None = None,
     ) -> None:
         self.attempt_dir = Path(attempt_dir).resolve()

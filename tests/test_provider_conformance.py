@@ -1,21 +1,27 @@
 import copy
 import json
 import unittest
+from dataclasses import FrozenInstanceError, replace
 from datetime import datetime, timezone
 from unittest.mock import patch
 
 from research_workbench.adapters.models import (
     AnthropicMessagesProvider,
     Capability,
+    CapabilityGap,
     ContentBlock,
     FinishReason,
+    Message,
     ModelRequest,
     ModelResponse,
     ProviderAdapterConfig,
     ProviderCapabilities,
     ProviderError,
     ProviderErrorCategory,
+    ProviderRegistry,
+    ResponseFormat,
     ToolCall,
+    ToolDefinition,
     Usage,
     build_live_provider,
     conformance_plan,
@@ -179,6 +185,80 @@ class ConformanceRunnerTests(unittest.TestCase):
         self.assertEqual("authentication", report.checks[0].error_category)
         self.assertNotIn("sensitive-provider-message", json.dumps(document))
         self.assertEqual([], SchemaCatalog().validate("provider_conformance_report", document))
+
+
+class CapabilitySnapshotFreezeTests(unittest.TestCase):
+    """Issue #21 deliverable 2: the capability snapshot is frozen at the
+    require()-handshake and never varies with request content, mirroring
+    the handshake-time capability freeze Codex App Server guarantees."""
+
+    def test_snapshot_is_stable_across_diverse_generated_requests(self) -> None:
+        provider = SyntheticProvider()
+        before = provider.capabilities()
+        report = run_provider_conformance(
+            provider,
+            adapter_id="openai-synthetic",
+            execution_context="offline-freeze-test",
+            checks=("text", "structured", "tools"),
+            max_provider_invocations=3,
+            max_output_tokens=64,
+        )
+        self.assertEqual("passed", report.status)
+        self.assertEqual(3, len(provider.requests), "diverse requests must have flowed through")
+        self.assertEqual(before, provider.capabilities())
+
+    def test_registry_require_returns_one_frozen_snapshot(self) -> None:
+        provider = SyntheticProvider()
+        registry = ProviderRegistry()
+        registry.register("synthetic", provider)
+        base = ModelRequest(
+            model="synthetic-model",
+            messages=(Message(role="user", content=(ContentBlock(kind="text", text="probe"),)),),
+        )
+        requests = (
+            base,
+            replace(base, tools=(ToolDefinition(name="probe", description="", input_schema={}),)),
+            replace(base, response_format=ResponseFormat(kind="json_schema", schema={"type": "object"})),
+        )
+        snapshots = [registry.require("synthetic", request).capabilities() for request in requests]
+        expected = provider.capabilities()
+        self.assertTrue(all(snapshot == expected for snapshot in snapshots))
+        self.assertEqual((expected,), registry.snapshots())
+
+    def test_rejected_request_leaves_the_snapshot_unchanged(self) -> None:
+        provider = SyntheticProvider()
+        registry = ProviderRegistry()
+        registry.register("synthetic", provider)
+        before = provider.capabilities()
+        reasoning_request = ModelRequest(
+            model="synthetic-model",
+            messages=(Message(role="user", content=(ContentBlock(kind="text", text="probe"),)),),
+            reasoning_effort="high",
+        )
+        with self.assertRaises(CapabilityGap):
+            registry.require("synthetic", reasoning_request)
+        self.assertEqual(before, provider.capabilities())
+
+    def test_snapshot_exposes_no_mutable_surface(self) -> None:
+        snapshot = SyntheticProvider().capabilities()
+        with self.assertRaises(FrozenInstanceError):
+            snapshot.models = ("another-model",)  # type: ignore[misc]
+        with self.assertRaises(FrozenInstanceError):
+            snapshot.supported = frozenset()  # type: ignore[misc]
+        self.assertIsInstance(snapshot.supported, frozenset)
+        self.assertIsInstance(snapshot.models, tuple)
+        self.assertIsInstance(snapshot.data_controls, frozenset)
+        self.assertIsInstance(snapshot.known_gaps, tuple)
+
+    def test_live_adapter_snapshot_is_stable_for_one_configuration(self) -> None:
+        with patch.dict("os.environ", {"RWB_ANTHROPIC_MODEL": "claude-synthetic"}, clear=True):
+            provider = build_live_provider(config(enabled=True))
+            first = provider.capabilities()
+            second = provider.capabilities()
+        self.assertEqual(first, second)
+        self.assertEqual(("claude-synthetic",), first.models)
+        with self.assertRaises(FrozenInstanceError):
+            first.models = ("other-model",)  # type: ignore[misc]
 
 
 if __name__ == "__main__":
