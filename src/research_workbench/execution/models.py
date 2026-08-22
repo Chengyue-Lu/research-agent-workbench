@@ -60,6 +60,12 @@ class ExecutionPlan:
     profile_ref: str
     handoff_policy: HandoffPolicy
     started_at: str
+    # Main State seeding this attempt, validated and hashed at compile time
+    # (before any provider call) so a missing or divergent state never spends
+    # tokens. The pinned repository-relative path is the immediate
+    # predecessor link; successor Main States stay in the context plane
+    # (`rwb context checkpoint --from-state`).
+    base_state: FileReference | None = None
 
     @property
     def provider(self) -> str:

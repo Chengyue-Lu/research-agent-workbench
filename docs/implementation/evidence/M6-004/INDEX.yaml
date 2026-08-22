@@ -1,0 +1,63 @@
+# M6-004 evidence index: every artifact in this package is hash-pinned so an
+# independent reviewer can detect any post-hoc modification without trusting
+# the prose. tests/test_evidence_index.py re-hashes this list on every run.
+schema_version: 0.1.0
+index_kind: evidence-index
+milestone: M6-004
+task_id: EVID-API-001
+attempt_id: AT-API-009
+recorded_at: "2026-08-19"
+claim: >
+  One real evidence call on the worker slot via the DeepSeek
+  Anthropic-compatible endpoint ended completed, passed
+  `rwb execute verify` with exit code 0, kept requested and observed models
+  identical, and reconciled usage (4 requests, output 10254 tokens).
+verification:
+  - Re-hash every artifact below and compare against its pinned sha256
+    (tests/test_evidence_index.py does exactly this).
+  - The two evidence outputs pin content_hash 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67,
+    which is the sha256 of the frozen task input examples/fixtures/paper-001.txt
+    declared in examples/api-execution/task-evidence-live.yaml.
+  - No key, URL credential value, or environment secret appears in any
+    artifact; only environment variable NAMES are recorded.
+omissions:
+  - >
+    execution-plan.yaml is not committed because it pins machine-local
+    absolute paths; every fact needed for replay lives in the artifacts below.
+artifacts:
+  - path: README.md
+    sha256: f933dd751945403c3ab83822a72d6d152770f562d4c139a23cc8c122989aff1c
+    role: run parameters and package description
+  - path: attempt.yaml
+    sha256: 0a442c6639bfc60650649a8fbdecc77eee9810aea13a6dc801757989768ac183
+    role: Attempt record
+  - path: execution-receipt.yaml
+    sha256: 1b0c04d212fc19162b82115d69712105fba72877b1323d29c082ad4cfa416603
+    role: Execution Receipt with usage reconciliation
+  - path: handoff.yaml
+    sha256: 3a14edd76782ab7787c9bad454ab31ff2a2eb20e9b62525963a5ac911960d98a
+    role: Handoff record
+  - path: check-report.yaml
+    sha256: 5d35266f2d3c873159a15bab74c0843c57c542ded769dc3bf2245612eeb251d5
+    role: deterministic check report
+  - path: transfer-manifest.yaml
+    sha256: cfd9965fb47ef44ec7f5ec1184607eb658afe3b256dd28e9f24692590a69a796
+    role: Transfer Manifest
+  - path: handoff-transfer-audit.yaml
+    sha256: 27b9c177a76ab4e57e9d4fc7b0d5051f9450b4e632966aaab5989849ab2c65c8
+    role: Transfer Audit
+  - path: session-transcript.json
+    sha256: 15971235133a8061073f8d32b9e69118bf49aea33e446de5beffb1bb70a98402
+    role: credential-free provider transcript
+  - path: outputs/EVID-001-01.yaml
+    sha256: e11a3fa9bc41bf6b1331291d3dbe4567369c576f7df05dd5bc81654fdf3ebc57
+    role: evidence output 1 of 2
+  - path: outputs/EVID-001-02.yaml
+    sha256: 4c33c9940ea0a899942d07e4b282507708ddd02519fbceee316dc7cc1f90ee3e
+    role: evidence output 2 of 2
+  - path: outputs/handoff-packet.yaml
+    sha256: 95a7cef54de3940cd21d5ee3911c1e743327d431c1f9524c86e632dc2b9e3485
+    role: model-authored handoff packet output
+  - path: outputs/handoff-transfer-manifest.yaml
+    sha256: d2e1e718378ab7fba0a94d929261e1b36c0b7a82dfc37f8842ffa2a707ee42fb
+    role: model-authored transfer manifest output

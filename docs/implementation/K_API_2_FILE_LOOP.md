@@ -22,12 +22,14 @@ Task Packet + Skill Assignment + Agent Profile + Model Pool 槽位
   → verify_attempt()           仅凭文件重放全部确定性检查（幂等）
 ```
 
-CLI：`rwb execute task`（compile+run+closeout）与 `rwb execute verify --attempt <dir>`。
+CLI：`rwb execute task`（compile+run+closeout）与 `rwb execute verify --attempt <dir>`（按目录形态分发：K-API-2 Attempt 含 execution-plan.yaml 时走 `verify_attempt`；否则视为 legacy execution archive，须给 `--protocol` 走 `verify_execution_archive`）。
 
 执行器 Provider 二选一，显式互斥：
 - `--scripted-session <file.json>`：离线脚本化 Provider（文件即证据，可复现，测试与示例用）；
 - `--allow-live`：经 `build_live_provider` 走真实 Provider，模型名/凭据只来自 pool 槽位的 `model_env` 与 adapters.yaml 的 `credential_env` 环境变量；仓库内不保存任何 key/url/model 名。
 - 两者都不给 → exit 2。
+
+可选 `--from-state <FILE>`：把一份 Main State 作为受验证的执行输入。编译期（任何 provider 调用之前）解析、过 main_state schema、按 sha256 哈希，并钉进 ExecutionPlan 的 `base_state`（仓库相对路径 + 哈希）；其路径同时进入 readable_inputs，会话可按需读取。直接前驱即该钉定路径；后继 Main State 的生成保持在 context 平面（`rwb context checkpoint --from-state`），execution 不生成 Main State。`verify_attempt` 重放时会重新哈希该文件，漂移 → EXEC-BASE-STATE-STALE。
 
 ## 3. 模块契约（src/research_workbench/execution/）
 
@@ -56,6 +58,10 @@ CLI：`rwb execute task`（compile+run+closeout）与 `rwb execute verify --atte
 | EXEC-MODEL-UNBOUND | 槽位不存在/未启用/model_env 未设置（脚本化 Provider 注入时豁免 model_env） |
 | EXEC-ADAPTER-MISMATCH | 槽位 provider_adapter 不在 adapters.yaml 或能力超集（复用 validate_pool_adapters） |
 | EXEC-WRITESCOPE-INVALID | write_scope 为空或含越界/绝对路径 |
+| EXEC-BASE-STATE-INVALID | `--from-state` 给的 Main State 缺失、越界或不过 main_state schema |
+| EXEC-BASE-STATE-STALE | verify 重放时 plan 钉定的 base_state 哈希与活文件不一致 |
+| EXEC-EVIDENCE-SOURCE-UNFROZEN | evidence 输出的 content_hash 不在冻结输入集内（引用了冻结边界外的材料） |
+| EXEC-EVIDENCE-SOURCE-MALFORMED | evidence 输出的 source_ref 不是 id@revision、locator 为空或缺 content_hash |
 
 编译产物要点：
 - limits：task.budget 映射（max_turns→max_model_turns、max_output_tokens→max_output_tokens_per_turn、max_seconds），缺省 max_tool_calls=12、max_parallel_tool_calls=4、max_tool_result_chars=8000；allowed_tool_side_effects={read-only, local-write}（external_write=false 时不含 external-write）。
@@ -88,7 +94,8 @@ CLI：`rwb execute task`（compile+run+closeout）与 `rwb execute verify --atte
   - handoff.yaml（HandoffPacket：completed 含摘要/工件引用/限制/未决；非 completed 一律 incomplete Handoff 并附原因）
   - check-report.yaml（本次全部确定性检查结果的汇总内部工件）
 - task.handoff_policy.require_transfer_manifest 时：先写 transfer-manifest 再跑 assess_handoff_transfer，BLOCK → 状态降级 incomplete。
-- `verify_attempt(attempt_dir, *, root)`：仅凭文件重跑——plan/attempt/receipt/handoff schema 校验、outputs 哈希对账、check_execution_receipt、check_handoff_against_task；幂等，返回风险列表。
+- evidence 输出的来源绑定：object_type=evidence 的输出必须以 content_hash 钉住冻结输入集中某个输入的哈希、source_ref 为合法 id@revision、locator 非空；违规 → EXEC-EVIDENCE-SOURCE-* BLOCK，参与"不得伪造完成"降级。多输入任务可在冻结集内自由选择被引输入，集外引用一律拒绝。
+- `verify_attempt(attempt_dir, *, root)`：仅凭文件重跑——plan/attempt/receipt/handoff schema 校验、outputs 哈希对账、check_execution_receipt、check_handoff_against_task、base_state 哈希复核、evidence 来源绑定复核；幂等，返回风险列表。
 
 ### testing.py
 
@@ -109,7 +116,7 @@ work/<TASK-ID>/<ATTEMPT-ID>/
 
 ## 5. 风险码（新增，须登记 contracts/risk_codes.py 并配测试）
 
-EXEC-TASK-ASSIGNMENT-MISMATCH、EXEC-PROFILE-MISMATCH、EXEC-INPUT-STALE、EXEC-SKILL-DRIFT、EXEC-MODEL-UNBOUND、EXEC-ADAPTER-MISMATCH、EXEC-WRITESCOPE-INVALID（以上编译期 BLOCK）、EXEC-CLOSEOUT-INVALID（发布工件不过 Schema，BLOCK）、EXEC-CLOSEOUT-SUMMARY（check-report 汇总行，存在 BLOCK 风险时判 fail）、EXEC-LIVE-NOT-ALLOWED（未显式允许却尝试 live，BLOCK）。编译期 malformed 文件仍走 ContractError → CLI exit 2。
+EXEC-TASK-ASSIGNMENT-MISMATCH、EXEC-PROFILE-MISMATCH、EXEC-INPUT-STALE、EXEC-SKILL-DRIFT、EXEC-MODEL-UNBOUND、EXEC-ADAPTER-MISMATCH、EXEC-WRITESCOPE-INVALID（以上编译期 BLOCK）、EXEC-BASE-STATE-INVALID（编译期 base state 预检 BLOCK）、EXEC-BASE-STATE-STALE（verify 重放 BLOCK）、EXEC-EVIDENCE-SOURCE-UNFROZEN、EXEC-EVIDENCE-SOURCE-MALFORMED（closeout/verify BLOCK）、EXEC-CLOSEOUT-INVALID（发布工件不过 Schema，BLOCK）、EXEC-CLOSEOUT-SUMMARY（check-report 汇总行，存在 BLOCK 风险时判 fail）、EXEC-LIVE-NOT-ALLOWED（未显式允许却尝试 live，BLOCK）。编译期 malformed 文件仍走 ContractError → CLI exit 2。
 
 ## 6. 测试策略（全离线、无网络、无凭据）
 
@@ -122,5 +129,5 @@ EXEC-TASK-ASSIGNMENT-MISMATCH、EXEC-PROFILE-MISMATCH、EXEC-INPUT-STALE、EXEC-
 ## 7. 与路诚钺侧的合并接口
 
 - 输入只消费冻结工件：Task Packet、Skill Assignment（historical-replay 语义，legacy 可重放）、Agent Profile、Registry。
-- 不新增共享 Schema 种类、不改 Task/Handoff/Receipt/Trace 语义；新增文件仅 execution/ 包、tests、examples/api-execution fixtures、本文件；共享文件仅 cli.py（新增 execute 命令组）与 contracts/risk_codes.py（登记新码）与 CHANGELOG/TASKS（黄毅行）。
+- 不新增共享 Schema 种类、不改 Task/Handoff/Receipt/Trace 语义；新增文件仅 execution/ 包、tests、examples/api-execution fixtures、本文件；共享文件仅 cli.py（execute 命令组与 main 的 Trace Core 线合并为一个命令组）、contracts/risk_catalog.py（工作台全局发射码目录；M3-008 的 contracts/risk_codes.py 属 Trace Core 线，内容不动）与 CHANGELOG/TASKS（黄毅行）。
 - live 所需 key/url/model 全部经环境变量注入，仓库留空；需要 live 验证（M6-004）时由黄毅提供。

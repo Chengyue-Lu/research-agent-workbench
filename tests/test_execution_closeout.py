@@ -58,13 +58,13 @@ ATTEMPT_ID = "A-001"
 ATTEMPT_DIR = f"work/{TASK_ID}/{ATTEMPT_ID}"
 STARTED_AT = "2026-08-19T00:00:00Z"
 
-EVIDENCE_RECORD = """\
+EVIDENCE_RECORD_TEMPLATE = """\
 schema_version: 0.1.0
 object_type: evidence
 object_id: EVID-T-001-01
 revision: 1
 status: drafted
-content_hash: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
+content_hash: {content_hash}
 kind: bounded-text-excerpt
 source_ref: INPUT-SYNTHETIC-001@1
 locator: lines 1-2
@@ -73,6 +73,10 @@ quality_flags: [synthetic_fixture, not_scientific_evidence]
 metadata:
   generated_by: closeout-test
 """
+
+
+def _evidence_record(content_hash: str) -> str:
+    return EVIDENCE_RECORD_TEMPLATE.format(content_hash=content_hash)
 
 FINAL_COMPLETED = json.dumps(
     {
@@ -251,7 +255,13 @@ class CloseoutWorkspace:
             started_at=STARTED_AT,
         )
 
-    def write_output(self, name: str = "evidence-record.yaml", content: str = EVIDENCE_RECORD) -> Path:
+    def write_output(
+        self, name: str = "evidence-record.yaml", content: str | None = None
+    ) -> Path:
+        # By default the record quotes the frozen input, so its pinned
+        # content hash stays inside the frozen input set.
+        if content is None:
+            content = _evidence_record(self.input_ref.sha256)
         return _write(self.root, f"{ATTEMPT_DIR}/outputs/{name}", content)
 
     def run(
@@ -522,7 +532,9 @@ class CloseoutTests(unittest.TestCase):
         result = closeout(workspace.plan(), workspace.run(), root=self.root)
         self.assertEqual("completed", result.status, [str(risk) for risk in result.risks])
         output_path.write_text(
-            EVIDENCE_RECORD.replace("synthetic structural fixture", "tampered statement"),
+            _evidence_record(workspace.input_ref.sha256).replace(
+                "synthetic structural fixture", "tampered statement"
+            ),
             encoding="utf-8",
         )
         first = verify_attempt(self.root / ATTEMPT_DIR, root=self.root)

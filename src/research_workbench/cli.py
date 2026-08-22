@@ -966,6 +966,7 @@ def _execute_task(args: argparse.Namespace) -> int:
             attempt_id=args.attempt_id,
             environment=os.environ if args.allow_live else None,
             model_override="scripted-offline" if args.scripted_session else None,
+            base_state_path=args.from_state,
         )
     except ExecutionPlanError as exc:
         return _print_risks(exc.risks)
@@ -1429,6 +1430,11 @@ def build_parser() -> argparse.ArgumentParser:
     execute_task.add_argument("--adapters", default="registry/providers/adapters.yaml")
     execute_task.add_argument("--root", default=".")
     execute_task.add_argument("--attempt-id", help="explicit Attempt id; generated when omitted")
+    execute_task.add_argument(
+        "--from-state",
+        metavar="FILE",
+        help="Main State seeding this attempt; validated, hashed, and pinned before the provider call",
+    )
     execute_provider = execute_task.add_mutually_exclusive_group(required=True)
     execute_provider.add_argument(
         "--scripted-session",

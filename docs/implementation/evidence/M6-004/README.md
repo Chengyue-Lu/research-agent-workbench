@@ -17,6 +17,8 @@
 
 ## 本包内容
 
+- `INDEX.yaml`：本包每个工件的 sha256 钉定索引；`tests/test_evidence_index.py`
+  在每次 CI 中重哈希核对，任何事后改动都会使测试失败。独立复核从它开始。
 - `attempt.yaml`、`execution-receipt.yaml`、`handoff.yaml`、`check-report.yaml`、
   `transfer-manifest.yaml`、`handoff-transfer-audit.yaml`：closeout 原子发布的
   完整闭环链。

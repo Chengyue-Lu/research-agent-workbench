@@ -21,6 +21,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
@@ -29,7 +30,11 @@ from typing import Any, Mapping
 import yaml
 
 from research_workbench import __version__
-from research_workbench.artifacts.integrity import hash_file, resolve_within_root
+from research_workbench.artifacts.integrity import (
+    check_file_reference,
+    hash_file,
+    resolve_within_root,
+)
 from research_workbench.capability.models import AgentProfile
 from research_workbench.capability.resolver import ResolvedTask
 from research_workbench.context.handoff_transfer import assess_handoff_transfer
@@ -156,6 +161,14 @@ def closeout(plan: ExecutionPlan, run: ExecutionRunResult, *, root: str | Path) 
     handoff = HandoffPacket.from_mapping(handoff_mapping)
     risks: list[ContractRisk] = list(
         check_handoff_against_task(task, handoff, project_root=root_path, assignment=assignment)
+    )
+    # Evidence provenance participates in the completion decision: an output
+    # quoting material outside the frozen input set must never close as
+    # completed, so this runs before the status-bearing publishes below.
+    risks.extend(
+        _check_evidence_provenance(
+            frozenset(reference.sha256 for reference in plan.input_lock), outputs
+        )
     )
     predicted: list[ContractRisk] = []
     if manifest_required and not task_is_real:
@@ -304,6 +317,41 @@ def verify_attempt(attempt_dir: str | Path, *, root: str | Path) -> tuple[Contra
     plan_document = _load_mapping_quiet(attempt_path / PLAN_FILENAME)
     if plan_document is None:
         risks.append(_block("EXEC-CLOSEOUT-INVALID", f"closeout artifact does not parse: {PLAN_FILENAME}"))
+    else:
+        # Replay the pinned base state: the same hash the compiler verified
+        # before the provider call must still resolve to the same content.
+        base_state = plan_document.get("base_state")
+        if isinstance(base_state, Mapping):
+            try:
+                state_reference = FileReference.from_mapping(base_state)
+            except ContractError:
+                risks.append(
+                    _block(
+                        "EXEC-BASE-STATE-INVALID",
+                        "execution plan base_state is not a valid file reference",
+                    )
+                )
+            else:
+                state_check = check_file_reference(root_path, state_reference)
+                if not state_check.valid:
+                    risks.append(
+                        _block(
+                            "EXEC-BASE-STATE-STALE",
+                            f"base state {state_reference.path}: {state_check.status}",
+                        )
+                    )
+        # Replay evidence provenance against the plan's frozen input hashes.
+        frozen_input_lock = tuple(
+            FileReference.from_mapping(item)
+            for item in plan_document.get("input_lock", [])
+            if isinstance(item, Mapping)
+        )
+        risks.extend(
+            _check_evidence_provenance(
+                frozenset(reference.sha256 for reference in frozen_input_lock),
+                _scan_outputs(attempt_path),
+            )
+        )
 
     report = documents.get("deterministic_check_report")
     if report is not None:
@@ -448,6 +496,63 @@ def _scan_outputs(attempt_dir: Path) -> tuple[Path, ...]:
     return tuple(
         path for path in sorted(outputs_dir.iterdir(), key=lambda item: item.name) if path.is_file()
     )
+
+
+_EVIDENCE_OBJECT_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]+@\d+$")
+
+
+def _check_evidence_provenance(
+    frozen_hashes: frozenset[str],
+    outputs: tuple[Path, ...],
+) -> tuple[ContractRisk, ...]:
+    """Evidence outputs must cite material inside the frozen input set.
+
+    An evidence record pins its cited source content with ``content_hash``;
+    that hash must equal one of the attempt's frozen input hashes, the
+    ``source_ref`` must be a well-formed ``id@revision`` object reference,
+    and the locator must be non-empty. Together this binds each evidence
+    output to the exact input it quotes, replayable from files alone.
+    """
+
+    risks: list[ContractRisk] = []
+    for path in outputs:
+        if path.suffix.lower() not in {".json", ".yaml", ".yml"}:
+            continue
+        document = _load_mapping_quiet(path)
+        if not isinstance(document, Mapping) or document.get("object_type") != "evidence":
+            continue
+        content_hash = str(document.get("content_hash", ""))
+        if not content_hash:
+            risks.append(
+                _block(
+                    "EXEC-EVIDENCE-SOURCE-MALFORMED",
+                    f"{path.name}: evidence record carries no content_hash",
+                )
+            )
+        elif content_hash not in frozen_hashes:
+            risks.append(
+                _block(
+                    "EXEC-EVIDENCE-SOURCE-UNFROZEN",
+                    f"{path.name}: content_hash matches no frozen task input; "
+                    "evidence must quote material inside the frozen input set",
+                )
+            )
+        source_ref = str(document.get("source_ref", ""))
+        if not _EVIDENCE_OBJECT_REF.match(source_ref):
+            risks.append(
+                _block(
+                    "EXEC-EVIDENCE-SOURCE-MALFORMED",
+                    f"{path.name}: source_ref {source_ref!r} is not an id@revision object reference",
+                )
+            )
+        if not str(document.get("locator", "")).strip():
+            risks.append(
+                _block(
+                    "EXEC-EVIDENCE-SOURCE-MALFORMED",
+                    f"{path.name}: locator is empty",
+                )
+            )
+    return tuple(risks)
 
 
 def _missing_required_outputs(

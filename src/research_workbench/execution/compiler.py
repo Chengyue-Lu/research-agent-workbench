@@ -28,7 +28,11 @@ from research_workbench.adapters.models.port import (
     ToolDefinition,
 )
 from research_workbench.adapters.models.session import ApiSessionLimits
-from research_workbench.artifacts.integrity import check_file_reference, resolve_within_root
+from research_workbench.artifacts.integrity import (
+    check_file_reference,
+    hash_file,
+    resolve_within_root,
+)
 from research_workbench.capability.catalog import AcceptedSkillRegistry, SkillRegistrySelectionError
 from research_workbench.capability.models import AgentProfile, SkillManifest
 from research_workbench.capability.resolver import ResolvedTask
@@ -36,7 +40,8 @@ from research_workbench.contracts.common import ContractError, require_relative_
 from research_workbench.contracts.risks import ContractRisk, RiskLevel
 from research_workbench.execution.models import ExecutionPlan, ExecutionPlanError, ModelBinding
 from research_workbench.io import load_document
-from research_workbench.tasks.models import TaskPacket
+from research_workbench.tasks.models import FileReference, TaskPacket
+from research_workbench.validation.schemas import SchemaCatalog
 
 # Budget fields the Task Packet does not pin fall back to these defaults;
 # the tool-call ceilings are fixed by the K-API-2 contract.
@@ -113,6 +118,7 @@ def compile_execution(
     environment: Mapping[str, str] | None = None,
     started_at: str | None = None,
     model_override: str | None = None,
+    base_state_path: str | Path | None = None,
 ) -> ExecutionPlan:
     """Compile frozen inputs into one bounded plan or raise ExecutionPlanError."""
 
@@ -142,6 +148,36 @@ def compile_execution(
             risks.append(_block("EXEC-INPUT-STALE", detail))
 
     manifests = _check_skill_lock(assignment, root_path, risks)
+
+    # A supplied Main State is a validated execution input: it is resolved,
+    # schema-checked, and hashed here at compile time, strictly before any
+    # provider call, so a missing or malformed state can never spend tokens
+    # or leave a claimed-but-unseeded attempt behind.
+    base_state: FileReference | None = None
+    if base_state_path is not None:
+        resolved_state = resolve_within_root(root_path, str(base_state_path))
+        if resolved_state is None or not resolved_state.is_file():
+            risks.append(
+                _block(
+                    "EXEC-BASE-STATE-INVALID",
+                    f"base state {base_state_path} is missing or outside the project root",
+                )
+            )
+        else:
+            state_errors = SchemaCatalog().validate("main_state", _load_mapping(resolved_state))
+            if state_errors:
+                first = state_errors[0]
+                risks.append(
+                    _block(
+                        "EXEC-BASE-STATE-INVALID",
+                        f"base state fails main_state schema at {first.pointer}: {first.message}",
+                    )
+                )
+            else:
+                base_state = FileReference(
+                    path=resolved_state.resolve().relative_to(root_path).as_posix(),
+                    sha256=hash_file(resolved_state),
+                )
 
     slot_config = None
     pool = load_model_pool(pool_path)
@@ -242,7 +278,10 @@ def compile_execution(
         request=request,
         limits=limits,
         input_lock=task.input_refs,
-        readable_inputs=tuple(reference.path for reference in task.input_refs),
+        readable_inputs=(
+            tuple(reference.path for reference in task.input_refs)
+            + ((base_state.path,) if base_state is not None else ())
+        ),
         write_scope=task.write_scope,
         required_outputs=required_outputs,
         skill_lock=tuple(lock.identifier for lock in assignment.skill_lock),
@@ -250,6 +289,7 @@ def compile_execution(
         profile_ref=profile_ref,
         handoff_policy=task.handoff_policy,
         started_at=started,
+        base_state=base_state,
     )
 
 
