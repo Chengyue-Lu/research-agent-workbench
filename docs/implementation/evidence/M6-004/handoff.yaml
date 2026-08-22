@@ -1,0 +1,74 @@
+schema_version: 0.1.0
+task_id: EVID-API-001
+attempt_id: AT-API-009
+status: completed
+input_lock:
+- path: examples/fixtures/paper-001.txt
+  sha256: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
+- path: .agents/skills/literature-evidence-extraction/references/evidence-contract.md
+  sha256: 6150e2249ccfe61a58fb1e34082d55a85d8340db018a2f41b3620bac07539425
+- path: examples/objects/evidence/EVID-001-01.yaml
+  sha256: e11a3fa9bc41bf6b1331291d3dbe4567369c576f7df05dd5bc81654fdf3ebc57
+skill_lock:
+- literature-evidence-extraction@0.1.0
+skill_assignment_ref: .rwb/assignment-evidence-live.yaml
+result:
+  summary: 'Extracted all source-grounded evidence for Q-001 from the single admitted
+    source INPUT-SYNTHETIC-001@1 (examples/fixtures/paper-001.txt, sha256 verified
+    82ea6f0d...). The source is a synthetic structural fixture that explicitly disclaims
+    scientific status, so both atomic statements were captured as evidence records:
+    EVID-001-01 (source identifies itself as a synthetic structural fixture, lines
+    1-2, matching the pinned example verbatim) and EVID-001-02 (source states it is
+    not a scientific source and must not support a real claim, line 2), each with
+    content_hash equal to the pinned source hash, kind bounded-text-excerpt, and quality_flags
+    [synthetic_fixture, not_scientific_evidence]. Wrote handoff-transfer-manifest.yaml
+    (material facts, boundaries, negative results, limitations, unresolved items all
+    IDed and linked to frozen source artifacts/locators; transfer audit passed with
+    no blocking risks) and handoff-packet.yaml (summary, artifact references, inference,
+    recommendation, limitations, unresolved). All four outputs are in the write scope
+    work/EVID-API-001/** and declare schema_version 0.1.0 plus their contract object_type
+    (evidence / handoff_transfer_manifest / handoff_packet).'
+  facts:
+  - 'Extracted all source-grounded evidence for Q-001 from the single admitted source
+    INPUT-SYNTHETIC-001@1 (examples/fixtures/paper-001.txt, sha256 verified 82ea6f0d...).
+    The source is a synthetic structural fixture that explicitly disclaims scientific
+    status, so both atomic statements were captured as evidence records: EVID-001-01
+    (source identifies itself as a synthetic structural fixture, lines 1-2, matching
+    the pinned example verbatim) and EVID-001-02 (source states it is not a scientific
+    source and must not support a real claim, line 2), each with content_hash equal
+    to the pinned source hash, kind bounded-text-excerpt, and quality_flags [synthetic_fixture,
+    not_scientific_evidence]. Wrote handoff-transfer-manifest.yaml (material facts,
+    boundaries, negative results, limitations, unresolved items all IDed and linked
+    to frozen source artifacts/locators; transfer audit passed with no blocking risks)
+    and handoff-packet.yaml (summary, artifact references, inference, recommendation,
+    limitations, unresolved). All four outputs are in the write scope work/EVID-API-001/**
+    and declare schema_version 0.1.0 plus their contract object_type (evidence / handoff_transfer_manifest
+    / handoff_packet).'
+  inferences: []
+  recommendations: []
+artifact_refs:
+- work/EVID-API-001/AT-API-009/outputs/EVID-001-01.yaml
+- work/EVID-API-001/AT-API-009/outputs/EVID-001-02.yaml
+- work/EVID-API-001/AT-API-009/outputs/handoff-packet.yaml
+- work/EVID-API-001/AT-API-009/outputs/handoff-transfer-manifest.yaml
+- work/EVID-API-001/AT-API-009/session-transcript.json
+validation_refs:
+- work/EVID-API-001/AT-API-009/handoff-transfer-audit.yaml
+limitations:
+- 'Automated validators (scripts/check_evidence_record.py, $handoff-integrity) were
+  not available in this session; deterministic reference checks were performed manually:
+  content_hash equality with the pinned source sha256, locator stability within the
+  2-line source, and statement not exceeding the located passage.'
+- The Task Packet did not include the full wording of Q-001; extraction was bounded
+  to the admitted source set and the pinned example record.
+- The sole admitted source is a synthetic fixture and is not scientific evidence;
+  no real claim can be cited from it.
+conflicts: []
+unresolved:
+- If Q-001 specifies a concrete proposition, its text is required to test it; the
+  current source boundary yields only the source's self-identification and its disclaimer
+  that it must not support a real claim.
+human_decision_required: []
+recommended_next_actions: []
+execution_receipt_ref: work/EVID-API-001/AT-API-009/execution-receipt.yaml
+transfer_manifest_ref: work/EVID-API-001/AT-API-009/transfer-manifest.yaml

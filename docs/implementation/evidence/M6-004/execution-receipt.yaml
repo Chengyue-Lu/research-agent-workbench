@@ -1,0 +1,46 @@
+schema_version: 0.1.0
+receipt_id: XR-AT-API-009
+execution_kind: model-api
+attempt_ref: work/EVID-API-001/AT-API-009/attempt.yaml
+task_id: EVID-API-001
+task_revision: 1
+agent_profile_ref: registry/agents/evidence-scout.yaml
+skill_assignment_ref: .rwb/assignment-evidence-live.yaml
+started_at: '2026-08-19T13:58:43.638860Z'
+finished_at: '2026-08-19T13:59:54Z'
+status: completed
+completion_claim: execution-only
+runtime:
+  name: anthropic
+  version: 0.1.0
+  adapter_version: deepseek-anthropic
+  native_execution_id: 874c9c1b-85fb-4ac9-9721-e8ba42f6d103
+model_usage_status: measured
+model_usage:
+- provider: anthropic
+  model: deepseek-v4-flash
+  requests: 4
+  input_tokens: 1443
+  output_tokens: 10254
+  cached_input_tokens: 27520
+coordination:
+  delegated_attempts: 0
+  handoff_count: 1
+  review_rounds: 0
+  max_parallel_observed: 0
+trace:
+  mode: minimal
+  external: false
+  sensitive_data_detected: false
+  redactions_applied: 0
+output_refs:
+- work/EVID-API-001/AT-API-009/handoff.yaml
+- work/EVID-API-001/AT-API-009/outputs/EVID-001-01.yaml
+- work/EVID-API-001/AT-API-009/outputs/EVID-001-02.yaml
+- work/EVID-API-001/AT-API-009/outputs/handoff-packet.yaml
+- work/EVID-API-001/AT-API-009/outputs/handoff-transfer-manifest.yaml
+- work/EVID-API-001/AT-API-009/transfer-manifest.yaml
+validation_refs:
+- work/EVID-API-001/AT-API-009/handoff-transfer-audit.yaml
+limitations:
+- 'session warning: ignored Anthropic content type: ''thinking'''

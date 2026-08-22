@@ -44,7 +44,7 @@ DEFAULT_MAX_MODEL_TURNS = 8
 DEFAULT_MAX_OUTPUT_TOKENS_PER_TURN = 4096
 DEFAULT_MAX_SECONDS = 900.0
 DEFAULT_MAX_TOOL_CALLS = 12
-DEFAULT_MAX_PARALLEL_TOOL_CALLS = 4
+DEFAULT_MAX_PARALLEL_TOOL_CALLS = 8
 DEFAULT_MAX_TOOL_RESULT_CHARS = 8000
 MAX_SKILL_SOURCE_CHARS = 20000
 
@@ -440,6 +440,12 @@ def _user_message(
     )
     lines.append("Required outputs:")
     lines.extend(f"- {item}" for item in required_outputs)
+    lines.append(
+        "Each required output file must explicitly declare its contract identity "
+        "(schema_version plus the contract's own identity fields, e.g. object_type for "
+        "research objects) so it passes the repository schema for that contract; "
+        "write one object per file."
+    )
     lines.append("Completion checks:")
     lines.extend(f"- {condition}" for condition in task.completion_checks)
     lines.append("Safe-pause conditions:")
@@ -449,5 +455,11 @@ def _user_message(
     lines.append(
         "Do not expand the Task, load other Skills, read undeclared files, or request "
         "main-context history; none is provided."
+    )
+    lines.append(
+        'Final message contract: once you stop calling tools, your last message must be '
+        'exactly one JSON object {"status": "completed"|"safe-paused", "summary": string, '
+        '"limitations": [string], "unresolved": [string]} and nothing else — no prose, '
+        "no Markdown code fence, no text before or after it."
     )
     return Message("user", (ContentBlock(kind="text", text="\n".join(lines) + "\n"),))

@@ -312,6 +312,83 @@ class OpenAIAdapterTests(unittest.TestCase):
         payload = json.loads(transport.requests[0].body)
         self.assertEqual("json_schema", payload["text"]["format"]["type"])
 
+    def test_structured_output_tolerates_one_code_fence(self) -> None:
+        transport = ScriptedTransport(
+            response(
+                200,
+                {
+                    "id": "resp_fenced",
+                    "status": "completed",
+                    "output": [
+                        {
+                            "type": "message",
+                            "content": [
+                                {"type": "output_text", "text": "```json\n{\"n\": 1}\n```"}
+                            ],
+                        }
+                    ],
+                },
+            )
+        )
+        provider = OpenAIResponsesProvider(
+            model="test-model",
+            credential=StaticCredential(),
+            transport=transport,
+            supported=frozenset({Capability.TEXT, Capability.STRUCTURED_OUTPUT}),
+        )
+        request = ModelRequest(
+            model="test-model",
+            messages=(Message("user", (ContentBlock(kind="text", text="number"),)),),
+            response_format=ResponseFormat(
+                kind="json_schema",
+                name="number",
+                schema={"type": "object", "properties": {"n": {"type": "integer"}}, "required": ["n"]},
+            ),
+        )
+
+        result = provider.generate(request)
+        self.assertEqual("resp_fenced", result.response_id)
+
+    def test_structured_output_invalid_json_reports_bounded_preview(self) -> None:
+        transport = ScriptedTransport(
+            response(
+                200,
+                {
+                    "id": "resp_prose",
+                    "status": "completed",
+                    "output": [
+                        {
+                            "type": "message",
+                            "content": [
+                                {"type": "output_text", "text": "Sure! Here is the JSON you asked for."}
+                            ],
+                        }
+                    ],
+                },
+            )
+        )
+        provider = OpenAIResponsesProvider(
+            model="test-model",
+            credential=StaticCredential(),
+            transport=transport,
+            supported=frozenset({Capability.TEXT, Capability.STRUCTURED_OUTPUT}),
+        )
+        request = ModelRequest(
+            model="test-model",
+            messages=(Message("user", (ContentBlock(kind="text", text="number"),)),),
+            response_format=ResponseFormat(
+                kind="json_schema",
+                name="number",
+                schema={"type": "object", "properties": {"n": {"type": "integer"}}, "required": ["n"]},
+            ),
+        )
+
+        with self.assertRaises(ProviderError) as caught:
+            provider.generate(request)
+        self.assertEqual(ProviderErrorCategory.CONTRACT_VIOLATION, caught.exception.category)
+        self.assertIn("first 80 chars", str(caught.exception))
+        self.assertIn("Sure!", str(caught.exception))
+
     def test_rate_limit_is_normalized_without_retry(self) -> None:
         transport = ScriptedTransport(
             response(429, {"error": {"type": "rate_limit_error", "message": "slow down"}})

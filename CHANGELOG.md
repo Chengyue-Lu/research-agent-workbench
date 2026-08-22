@@ -2,6 +2,25 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
+## 2026-08-19 — M6-004 live 验收（deepseek-v4-flash，Windows）
+
+### Live evidence（与离线记录分开）
+
+- `worker` 槽经 DeepSeek Anthropic 兼容端点完成一次真实 evidence 调用：AT-API-009 终态 `completed`，`rwb execute verify` 退出码 0；requested/observed 模型一致，用量可入账（4 请求，output 10254 tokens）。脱敏工件入库于 `docs/implementation/evidence/M6-004/`（execution-plan.yaml 因钉本机绝对路径按约定不提交）。
+- `registry/providers/adapters.yaml` 新增 `deepseek-anthropic` 条目（enabled: false，`live_conformance: passed`，指向证据包）。
+
+### Fixed（全部由 live 验收暴露，各配测试）
+
+- 会话内核未捕获 `ProviderError`：provider 契约违约会从 CLI 栈溢出、不落任何工件；现在转为 `failed` 终态并保留已完成轮次的用量与 transcript。
+- 结构化输出不耐受 Markdown 代码栅栏：剥一层 fence 再校验；错误信息附前 80 字符有界预览。
+- 编译器默认并行工具上限 4 过低（真实模型单轮批量调用常见 5+）：调至 8，总工具数上限不变。
+- 编译期 prompt 未约束最终消息格式/输出自封包：user 消息末尾新增最终 JSON 契约与"每文件一个对象、显式声明契约身份"要求。
+- `examples/api-execution/task-evidence-live.yaml`：新增 live 任务（output 预算 16384，声明输出契约与正例为输入）。
+
+### Known issues（已登记，见 PENDING_ADJUDICATIONS.md）
+
+- safe-paused 终态触发 `RECEIPT-SAFE-PAUSE-CONTEXT-MISSING`：API 会话尚无 Context Snapshot 可钉，语义待裁定。
+
 ## 2026-08-19 — K-API-2 Task-to-API 文件闭环（离线）
 
 ### Added

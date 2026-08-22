@@ -14,6 +14,8 @@ from research_workbench.adapters.models import (
     ModelRequest,
     ModelResponse,
     ProviderCapabilities,
+    ProviderError,
+    ProviderErrorCategory,
     ProviderRegistry,
     ToolCall,
     ToolDefinition,
@@ -41,6 +43,20 @@ class ScriptedProvider:
         if not self.responses:
             raise AssertionError("unexpected provider call")
         return self.responses.pop(0)
+
+
+class FailingProvider(ScriptedProvider):
+    """Plays scripted responses, then raises one fixed ProviderError."""
+
+    def __init__(self, error: ProviderError, *responses: ModelResponse) -> None:
+        super().__init__(*responses)
+        self.error = error
+
+    def generate(self, request: ModelRequest) -> ModelResponse:
+        if self.responses:
+            return super().generate(request)
+        self.requests.append(request)
+        raise self.error
 
 
 def lookup_definition() -> ToolDefinition:
@@ -237,6 +253,40 @@ class ApiSessionRunnerTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "side-effect"):
             runner.run(provider_name="worker", request=request(), limits=limits())
         self.assertEqual([], provider.requests)
+
+    def test_provider_error_fails_session_and_preserves_partial_state(self) -> None:
+        provider = FailingProvider(
+            ProviderError(
+                ProviderErrorCategory.CONTRACT_VIOLATION,
+                "fake returned invalid JSON for structured output",
+            ),
+            response(
+                "r1",
+                FinishReason.TOOL_CALL,
+                tool_calls=(ToolCall("call-1", "lookup", {"id": "A"}),),
+            ),
+        )
+        registry = ProviderRegistry()
+        registry.register("worker", provider)
+        seen: list[str] = []
+        runner = IsolatedApiSessionRunner(
+            registry,
+            tools=(
+                ClientTool(
+                    lookup_definition(),
+                    lambda arguments: seen.append(str(arguments["id"])) or {"value": 7},
+                ),
+            ),
+        )
+
+        result = runner.run(provider_name="worker", request=request(), limits=limits())
+
+        self.assertEqual(ApiSessionStatus.FAILED, result.status)
+        self.assertEqual("provider-error:contract_violation", result.stop_reason)
+        self.assertEqual(1, result.model_turns)
+        self.assertEqual(1, result.tool_calls)
+        self.assertEqual(["A"], seen)
+        self.assertTrue(any("contract_violation" in warning for warning in result.warnings))
 
 
 if __name__ == "__main__":

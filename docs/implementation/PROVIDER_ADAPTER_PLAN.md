@@ -154,7 +154,7 @@ rwb providers conformance `
 - CLI 新增 `rwb execute task`（compile+run+closeout）与 `rwb execute verify`：Provider 二选一且互斥必选——`--scripted-session FILE` 离线脚本化（`model_override=scripted-offline`，豁免 `model_env`，不读环境）或 `--allow-live`（模型名只取槽位 `model_env`、凭据只取 adapters.yaml 的 `credential_env`，缺失时在执行前干净报错）。退出码：`completed`→0，其余终态→1，编译 BLOCK→1，契约/文件错误→2。
 - closeout 终态为 `completed | safe-paused | incomplete | failed`；任何确定性检查 BLOCK 都不会被包装成 `completed`。
 - 离线测试覆盖编译期风险码反向分支、脚本化工具全链路、四终态、Receipt 用量逐字段对账、`verify_attempt` 幂等与篡改检出、CLI 脚本化 e2e（`examples/api-execution/`）与假凭据标记不泄漏。
-- live 路径已接线但未做真实 Windows 验收；真实凭据/模型的一次 evidence 调用属于 M6-004。
+- live 路径已完成真实 Windows 验收（M6-004，2026-08-19）：`deepseek-v4-flash` 经 DeepSeek Anthropic 兼容端点复用 `anthropic-messages` adapter，AT-API-009 终态 `completed`；脱敏工件与迭代记录见 [evidence/M6-004/](evidence/M6-004/README.md)。live 暴露并修复了 ProviderError 未捕获、代码栅栏不耐受、并行工具默认上限过低、prompt 未约束最终格式四个缺陷。
 
 ### P5：按真实消费者扩展
 

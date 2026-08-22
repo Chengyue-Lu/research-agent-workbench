@@ -1,0 +1,68 @@
+schema_version: 0.1.0
+object_type: handoff_transfer_manifest
+manifest_id: HTM-EVID-API-001-01
+revision: 1
+status: complete
+task_ref: EVID-API-001@1
+skill_assignment_ref: SA-FF1339D6F7A44206
+question_ref: Q-001
+source_boundary:
+  - source_ref: INPUT-SYNTHETIC-001@1
+    path: examples/fixtures/paper-001.txt
+    sha256: 82ea6f0d2455b97cf98786d01b8b461953e1badba4491f168a04471b39820b67
+    admitted: true
+material_facts:
+  - id: FACT-001
+    statement: The admitted source explicitly identifies itself as a synthetic structural fixture.
+    evidence_ref: EVID-001-01
+    source_ref: INPUT-SYNTHETIC-001@1
+    locator: lines 1-2
+  - id: FACT-002
+    statement: The admitted source states it is not a scientific source and must not support a real claim.
+    evidence_ref: EVID-001-02
+    source_ref: INPUT-SYNTHETIC-001@1
+    locator: line 2
+boundaries:
+  - id: BND-001
+    statement: The source boundary for Q-001 is exactly one admitted file (INPUT-SYNTHETIC-001@1); no other source was admitted.
+    source_ref: INPUT-SYNTHETIC-001@1
+    locator: lines 1-2
+  - id: BND-002
+    statement: Active mode is evidence-synthesis; only source-grounded statements are produced, no causal or evaluative synthesis.
+    evidence_ref: null
+    source_ref: null
+    locator: none
+negative_results:
+  - id: NEG-001
+    statement: The source contains no scientific findings, data, or results and cannot support a real claim.
+    evidence_ref: EVID-001-02
+    source_ref: INPUT-SYNTHETIC-001@1
+    locator: line 2
+limitations:
+  - id: LIM-001
+    statement: Automated validators (scripts/check_evidence_record.py, $handoff-integrity) were not available in this session; deterministic reference checks were performed manually (content_hash equality with the pinned source hash, locator stability, statement does not exceed the located passage).
+    evidence_ref: null
+    source_ref: null
+    locator: none
+  - id: LIM-002
+    statement: The Task Packet did not include the full wording of Q-001; extraction was bounded to the admitted source set and the pinned example record.
+    evidence_ref: null
+    source_ref: null
+    locator: none
+unresolved:
+  - id: UNR-001
+    statement: If Q-001 names a specific proposition, it cannot be tested against this source set because the sole source is explicitly non-scientific.
+    evidence_ref: EVID-001-02
+    source_ref: INPUT-SYNTHETIC-001@1
+    locator: line 2
+audit:
+  status: passed
+  blocking_risks: []
+  evidence_records_covered: [EVID-001-01, EVID-001-02]
+  coverage:
+    material_facts: complete
+    boundaries: complete
+    negative_results: complete
+    limitations: complete
+    unresolved: complete
+  checker_note: Manual deterministic audit; scripted checkers not available in this session.

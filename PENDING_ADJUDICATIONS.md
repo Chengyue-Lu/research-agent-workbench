@@ -93,3 +93,21 @@
 ## 附：顺手发现的小问题
 
 - `docs/decisions/` 存在两个 0005 编号（0005-ASSIGNMENT-REFERENCE-IN-HANDOFF 与 0005-SCOPED-WRITE-PERMISSIONS），建议裁定结果落成新 ADR 时一并重编号。
+
+## 裁决项 5（M6-004 live 新发现）：safe-paused 终态与 Context Snapshot 的契约关系
+
+**现象**：live 运行 AT-API-008 因并行工具预算安全暂停，closeout 诚实发布，但 Receipt 关系校验 BLOCK：`RECEIPT-SAFE-PAUSE-CONTEXT-MISSING`（"safe-paused execution must pin the Context Snapshot that triggered closeout"）。K-API-2 的 API 会话没有 Context Snapshot 机制（自动 Trace/上下文捕获属 M6-006），导致任何 safe-paused 的 API Attempt 目前都无法通过关系校验。
+
+**二选一**：
+
+- 规则放宽（**黄毅建议**）：`execution_kind=model-api` 且尚无上下文捕获时，safe-paused 的 Receipt 改钉 `session-transcript.json` 作为触发现场，该校验降级为 WARN；M6-006 落地后再恢复 BLOCK。
+- 维持 BLOCK：safe-paused 的 API Attempt 一律视为不可发布终态，直到 M6-006。
+
+裁定后动作：按结论改 `validation/relationships` 对应规则与测试。
+
+## 裁决项 6（M6-004 live 新发现）：Skill 包内容两处待修（路诚钺 lane）
+
+- `literature-evidence-extraction` 的 `references/evidence-contract.md` 只有字段散文，真实模型字段级合规率不稳定；建议内嵌一个最小合法 Evidence YAML 示例（本次 live 靠把 `examples/objects/evidence/EVID-001-01.yaml` 列为任务输入才稳定达标）。
+- 同 Skill 的 SKILL.md 第 8 步引用 `scripts/check_evidence_record.py`，仓库中不存在该脚本；建议删除该引用或补脚本。
+
+注意：接受态 Skill 的任何内容修改都会改变 package hash，需走 Skill admission 流程重新钉版本（本次未动）。

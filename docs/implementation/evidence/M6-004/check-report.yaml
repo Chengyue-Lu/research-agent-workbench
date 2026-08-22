@@ -1,0 +1,46 @@
+schema_version: 0.1.0
+report_id: DCR-AT-API-009
+checker:
+  checker_id: execution-closeout
+  version: 0.1.0
+  source_ref: &id001
+    path: work/EVID-API-001/AT-API-009/execution-plan.yaml
+    sha256: 919878e026a8109283b45de2e4d2aca2eacd6d6632b7c5c9f4c2b2c739739ffb
+subject_refs:
+- *id001
+- path: work/EVID-API-001/AT-API-009/session-transcript.json
+  sha256: 15971235133a8061073f8d32b9e69118bf49aea33e446de5beffb1bb70a98402
+- path: work/EVID-API-001/AT-API-009/transfer-manifest.yaml
+  sha256: cfd9965fb47ef44ec7f5ec1184607eb658afe3b256dd28e9f24692590a69a796
+- path: work/EVID-API-001/AT-API-009/handoff.yaml
+  sha256: 3a14edd76782ab7787c9bad454ab31ff2a2eb20e9b62525963a5ac911960d98a
+- path: work/EVID-API-001/AT-API-009/handoff-transfer-audit.yaml
+  sha256: 27b9c177a76ab4e57e9d4fc7b0d5051f9450b4e632966aaab5989849ab2c65c8
+- path: work/EVID-API-001/AT-API-009/attempt.yaml
+  sha256: 0a442c6639bfc60650649a8fbdecc77eee9810aea13a6dc801757989768ac183
+- path: work/EVID-API-001/AT-API-009/execution-receipt.yaml
+  sha256: 1b0c04d212fc19162b82115d69712105fba72877b1323d29c082ad4cfa416603
+- path: work/EVID-API-001/AT-API-009/outputs/EVID-001-01.yaml
+  sha256: 028afef862d6451e57cf7c26c78f91b5b9c0987107e77f7c42b465ffe054d44e
+- path: work/EVID-API-001/AT-API-009/outputs/EVID-001-02.yaml
+  sha256: 1e94a3bd195f33ddeaa7a809f2e32f3c91a32c46120059b66ae2d20df7591aa3
+- path: work/EVID-API-001/AT-API-009/outputs/handoff-packet.yaml
+  sha256: 5d029f69100316fd19d5e2d956251d3411446bf5b0f29025058c83d335144b09
+- path: work/EVID-API-001/AT-API-009/outputs/handoff-transfer-manifest.yaml
+  sha256: f14e1ff46063975f88fca528f9874a4f20f1ed363d2041dffd625d1839df857f
+status: pass
+checks:
+- code: EXEC-CLOSEOUT-SUMMARY
+  status: pass
+  detail: closeout status=completed; blocking risks=0
+- code: HANDOFF-SEMANTIC-UNREVIEWED
+  status: pass
+  detail: 'warning: structural coverage passed without a semantic-equivalence claim'
+- code: HANDOFF-SEMANTIC-UNREVIEWED
+  status: pass
+  detail: 'warning: structural coverage passed without a semantic-equivalence claim'
+scope: closeout of attempt AT-API-009 for task EVID-API-001@1
+limitations:
+- checker.source_ref pins the frozen execution plan, not the closeout module source,
+  which lives outside the project root.
+- A pass establishes structural closeout validity only, never scientific correctness.

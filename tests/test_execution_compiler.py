@@ -146,7 +146,7 @@ class CompileExecutionTests(unittest.TestCase):
         self.assertEqual(1800, limits.max_output_tokens_per_turn)
         self.assertEqual(900.0, limits.max_seconds)
         self.assertEqual(12, limits.max_tool_calls)
-        self.assertEqual(4, limits.max_parallel_tool_calls)
+        self.assertEqual(8, limits.max_parallel_tool_calls)
         self.assertEqual(8000, limits.max_tool_result_chars)
         self.assertEqual({"read-only", "local-write"}, set(limits.allowed_tool_side_effects))
 

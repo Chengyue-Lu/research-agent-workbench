@@ -1,0 +1,71 @@
+schema_version: 0.1.0
+manifest_id: HTM-AT-API-009
+task_id: EVID-API-001
+task_revision: 1
+attempt_id: AT-API-009
+generated_at: '2026-08-19T13:59:54Z'
+declared_by: task-agent
+source_artifact_refs:
+- &id001
+  path: work/EVID-API-001/AT-API-009/session-transcript.json
+  sha256: 15971235133a8061073f8d32b9e69118bf49aea33e446de5beffb1bb70a98402
+items:
+- item_id: HTI-AT-API-009-001
+  kind: fact
+  criticality: material
+  required_for_handoff: true
+  statement: 'Extracted all source-grounded evidence for Q-001 from the single admitted
+    source INPUT-SYNTHETIC-001@1 (examples/fixtures/paper-001.txt, sha256 verified
+    82ea6f0d...). The source is a synthetic structural fixture that explicitly disclaims
+    scientific status, so both atomic statements were captured as evidence records:
+    EVID-001-01 (source identifies itself as a synthetic structural fixture, lines
+    1-2, matching the pinned example verbatim) and EVID-001-02 (source states it is
+    not a scientific source and must not support a real claim, line 2), each with
+    content_hash equal to the pinned source hash, kind bounded-text-excerpt, and quality_flags
+    [synthetic_fixture, not_scientific_evidence]. Wrote handoff-transfer-manifest.yaml
+    (material facts, boundaries, negative results, limitations, unresolved items all
+    IDed and linked to frozen source artifacts/locators; transfer audit passed with
+    no blocking risks) and handoff-packet.yaml (summary, artifact references, inference,
+    recommendation, limitations, unresolved). All four outputs are in the write scope
+    work/EVID-API-001/** and declare schema_version 0.1.0 plus their contract object_type
+    (evidence / handoff_transfer_manifest / handoff_packet).'
+  source_ref: *id001
+  source_locator: /final_message/summary
+- item_id: HTI-AT-API-009-002
+  kind: limitation
+  criticality: material
+  required_for_handoff: true
+  statement: 'Automated validators (scripts/check_evidence_record.py, $handoff-integrity)
+    were not available in this session; deterministic reference checks were performed
+    manually: content_hash equality with the pinned source sha256, locator stability
+    within the 2-line source, and statement not exceeding the located passage.'
+  source_ref: *id001
+  source_locator: /final_message/limitations/0
+- item_id: HTI-AT-API-009-003
+  kind: limitation
+  criticality: material
+  required_for_handoff: true
+  statement: The Task Packet did not include the full wording of Q-001; extraction
+    was bounded to the admitted source set and the pinned example record.
+  source_ref: *id001
+  source_locator: /final_message/limitations/1
+- item_id: HTI-AT-API-009-004
+  kind: limitation
+  criticality: material
+  required_for_handoff: true
+  statement: The sole admitted source is a synthetic fixture and is not scientific
+    evidence; no real claim can be cited from it.
+  source_ref: *id001
+  source_locator: /final_message/limitations/2
+- item_id: HTI-AT-API-009-005
+  kind: unresolved
+  criticality: material
+  required_for_handoff: true
+  statement: If Q-001 specifies a concrete proposition, its text is required to test
+    it; the current source boundary yields only the source's self-identification and
+    its disclaimer that it must not support a real claim.
+  source_ref: *id001
+  source_locator: /final_message/unresolved/0
+limitations:
+- The manifest is generated at closeout from the session transcript; it declares transfer
+  coverage and does not claim semantic review.

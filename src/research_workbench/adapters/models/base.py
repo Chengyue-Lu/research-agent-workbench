@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from typing import Any, Mapping
 
 from jsonschema import Draft202012Validator
@@ -247,6 +248,19 @@ def raise_provider_http_error(
     )
 
 
+_JSON_FENCE = re.compile(r"^```[^\S\n]*(?:json|JSON)?[^\S\n]*\n(?P<body>.*?)\n?[^\S\n]*```$", re.DOTALL)
+
+
+def _structured_json_text(raw: str) -> str:
+    """Tolerate one surrounding Markdown code fence around the JSON payload."""
+
+    candidate = raw.strip()
+    match = _JSON_FENCE.match(candidate)
+    if match:
+        return match.group("body").strip()
+    return candidate
+
+
 def validate_structured_response(request: ModelRequest, response: ModelResponse) -> ModelResponse:
     if request.response_format.kind != "json_schema" or response.finish_reason not in {
         FinishReason.COMPLETE,
@@ -255,13 +269,16 @@ def validate_structured_response(request: ModelRequest, response: ModelResponse)
         return response
     schema = request.response_format.schema
     assert isinstance(schema, Mapping)
-    text = "".join(block.text or "" for block in response.output if block.kind == "text")
+    text = _structured_json_text(
+        "".join(block.text or "" for block in response.output if block.kind == "text")
+    )
     try:
         value = json.loads(text)
     except json.JSONDecodeError as exc:
         raise ProviderError(
             ProviderErrorCategory.CONTRACT_VIOLATION,
-            f"{response.provider} returned invalid JSON for structured output",
+            f"{response.provider} returned invalid JSON for structured output "
+            f"(first 80 chars: {text[:80]!r})",
         ) from exc
     errors = sorted(Draft202012Validator(schema).iter_errors(value), key=lambda item: list(item.absolute_path))
     if errors:

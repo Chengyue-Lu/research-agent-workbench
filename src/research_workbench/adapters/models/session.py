@@ -21,6 +21,7 @@ from research_workbench.adapters.models.port import (
     Message,
     ModelRequest,
     ModelResponse,
+    ProviderError,
     ProviderRegistry,
     ToolCall,
     ToolDefinition,
@@ -195,7 +196,21 @@ class IsolatedApiSessionRunner:
                 )
 
             current = replace(bounded_request, messages=tuple(messages))
-            response = validate_response_contract(current, provider.generate(current))
+            try:
+                response = validate_response_contract(current, provider.generate(current))
+            except ProviderError as exc:
+                # A provider that misbehaves mid-loop ends the session honestly
+                # instead of crashing it; partial turn state is preserved.
+                warnings.append(f"provider error ({exc.category}): {exc}")
+                return self._result(
+                    ApiSessionStatus.FAILED,
+                    f"provider-error:{exc.category}",
+                    provider_name,
+                    request.model,
+                    responses,
+                    tool_call_count,
+                    warnings,
+                )
             responses.append(response)
             warnings.extend(response.warnings)
 
