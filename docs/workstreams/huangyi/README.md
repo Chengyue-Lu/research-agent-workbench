@@ -1,6 +1,6 @@
 # 黄毅 Workstream 入口
 
-owner：黄毅（GitHub `let778750-cpu`）
+owner：黄毅（GitHub 主名 `let778750-cpu`；昵称/界面名 `huangyi855`，二者为同一账户）
 
 本目录是黄毅负责的 Provider/API/Execution 相关优化与跨边界审计的过程入口。每个独立修改使用
 `docs/workstreams/huangyi/<task-id-or-slug>/`，在同一 workstream 中持续更新范围、证据、风险和

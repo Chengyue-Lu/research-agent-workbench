@@ -1,6 +1,6 @@
 # Execution–Runtime–Recovery 恢复开发审计
 
-- 责任人：黄毅（GitHub `let778750-cpu`）
+- 责任人：黄毅（GitHub 主名 `let778750-cpu`；昵称/界面名 `huangyi855`，二者为同一账户）
 - 必需审查人：路诚钺（GitHub `Chengyue-Lu`）
 - 审计 ID：`AUDIT-EXEC-RUNTIME-001`
 - 状态：审计与采纳提案；不是 Stable Architecture、TASKS 状态或已批准 ADR

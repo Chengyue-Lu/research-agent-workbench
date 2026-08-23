@@ -10,7 +10,7 @@
 | 责任人 | 稳定身份 | 负责维护 | 不负责维护 |
 |---|---|---|---|
 | 路诚钺 | GitHub `Chengyue-Lu` | Method/Core 语义；Mode/Action/Method Resolution；能力词汇；Skill Need、评估、准入和退役；Research State/Claim/Method Trace 规则；受控读取及相关 fixtures/docs | Provider SDK、认证、HTTP transport、模型槽实现、API session loop、live API conformance 与 API 专用测试 |
-| 黄毅 | GitHub `let778750-cpu` | Provider Adapter、模型能力协商、隔离 API session、Task-to-API 编译、执行关闭事务、真实账户/模型 conformance 与 API 测试 | 代替研究者批准 Claim、单方面改变 Mode/Skill 语义、擅自准入 Skill 或降低 Human Gate |
+| 黄毅 | GitHub 主名 `let778750-cpu`；昵称/界面名 `huangyi855`（同一账户） | Provider Adapter、模型能力协商、隔离 API session、Task-to-API 编译、执行关闭事务、真实账户/模型 conformance 与 API 测试 | 代替研究者批准 Claim、单方面改变 Mode/Skill 语义、擅自准入 Skill 或降低 Human Gate |
 
 Agent 不是责任主体。每个 Agent 使用稳定 `actor_id`，并在 Attempt Archive 中绑定具名 `accountable_owner`；模型名、窗口名和临时昵称不能替代人类负责人。
 
