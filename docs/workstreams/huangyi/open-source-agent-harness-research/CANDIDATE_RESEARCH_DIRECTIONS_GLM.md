@@ -44,9 +44,11 @@ M8-003 之后的候选研究问题，本笔记仅登记，不启动实现。
 **假设**（会话提出）：高质量开源 harness/agent 工具的 agent team 模式是主 agent 派发
 结构化任务给子 agent，子 agent 完成验证后反馈结果给主 agent；子 agent 之间不存在联系。
 
-**核查结论（FACT）**：该假设对**生产级 coding harness** 成立，对整个 agent 生态不成立。
+**核查结论（INFERENCE）**：在本次列出的 production-facing coding harness 样本中，该假设大体
+成立；研究框架与协议样本则包含 peer、群聊、handoff 和共享状态等其他拓扑。该有限样本不能代表
+整个生产生态。
 
-#### 生产级 harness：星型 orchestrator-worker 是主流（FACT）
+#### 本次 production-facing harness 样本：星型 orchestrator-worker 较常见（FACT + INFERENCE）
 
 | 系统 | 拓扑 | 子 agent 间直接联系 | 依据 |
 |---|---|---|---|
@@ -56,7 +58,7 @@ M8-003 之后的候选研究问题，本笔记仅登记，不启动实现。
 | Cline（squad） | 主 agent + 只读 subagent | 否 | 本 workstream SYNTHESIS.md |
 | Anthropic 多 agent 研究系统 | lead 并行派 3–5 个 subagent | 半例外：不直接对话，但写入**共享 markdown 记忆文件**供 lead 读取（经共享工件的间接可见性） | [Anthropic 工程博客](https://www.anthropic.com/engineering/multi-agent-research-system) |
 
-生产级选择星型的工程理由（FACT，各家公开表述一致）：上下文隔离与预算可控；权限边界清晰；
+这些公开材料中支持星型设计的工程理由包括：上下文隔离与预算可控；权限边界清晰；
 确定性与可调试性；成本（Anthropic 实测多 agent 消耗约 **15 倍** token，编排模型选择贡献
 大部分性能方差）；以及 [Cognition《Don't Build Multi-Agents》](https://cognition.ai/blog/dont-build-multi-agents)
 两条原则——上下文要共享、动作携带隐含决策。
@@ -105,8 +107,8 @@ M8-003 之后的候选研究问题，本笔记仅登记，不启动实现。
    [More Agents Is All You Need（TMLR）](https://arxiv.org/abs/2402.05120)提示部分
    「多 agent 收益」只是采样+投票的测试时计算收益。
 
-**小结（INFERENCE）**：自由聊天式互联=负收益；结构化、受验证、带置信度与证据绑定的
-有限互联=特定任务下正收益。分界线是治理。
+**小结（INFERENCE）**：自由聊天式互联会增加冗余、稀释和错误传播风险；结构化、受验证、带
+置信度与证据绑定的有限互联可能在特定任务下降低这些风险。是否产生净收益仍需同任务对照。
 
 ### 1.3 RWB 现状映射（INFERENCE，基于仓库事实）
 
@@ -131,9 +133,9 @@ auto-routing 的不变量，同样适用于我们自己想加的 peer 通道。
 
 ### 1.4 候选提案：Communication as Evidence（PROPOSAL）
 
-**空白点（INFERENCE）**：没有任何现有框架提供「证据级、可审计、带预算与人类门控的
-agent 间通信契约」。现有系统的 peer 消息是自由文本：无 provenance、无哈希钉定、无数据
-出口控制、无级联检测。
+**候选空白（INFERENCE）**：本次有限检索尚未发现同时提供「证据级、可审计、带预算与人类门控」
+通信契约的框架；已观察系统只覆盖其中部分维度。该判断不是穷尽性新颖性检索，需要后续系统综述
+和逐实现核查。
 
 **提案要点**：每条 inter-agent 消息是 hash 钉定的 evidence-grade artifact——
 
@@ -149,8 +151,9 @@ agent 间通信契约」。现有系统的 peer 消息是自由文本：无 prov
 
 **验收语言**：不用「效率/性能」，用既有指标——遗漏率、返工率、回查率、级联率、
 H2 抽样失真率（复用 M5-003 单 Agent/轻量/多 Agent 对照与 M7-014 框架）。
-**meta 定位**：RWB 的 Trace/Attempt/Receipt 是全生态唯一能精确测量「互联 vs 隔离对
-研究质量影响」的仪器——「用 RWB 实证回答 peer 直连何时值得」本身即可发表。
+**meta 定位（PROPOSAL）**：RWB 的 Trace/Attempt/Receipt 可作为测量「互联 vs 隔离对研究质量
+影响」的候选仪器；“peer 直连何时值得”是可检验研究问题。其新颖性、测量有效性和发表价值均
+尚未建立。
 
 ### 1.5 纪律与前提（PROPOSAL 的执行边界）
 
@@ -169,7 +172,7 @@ H2 抽样失真率（复用 M5-003 单 Agent/轻量/多 Agent 对照与 M7-014 �
 
 ### 2.1 项目定性（FACT，经仓库逐文件核查）
 
-[anysearch-ai/anysearch-skill](https://github.com/anysearch-ai/anysearch-skill)（2026-04
+[anysearch-ai/anysearch-skill@4d6cef9](https://github.com/anysearch-ai/anysearch-skill/tree/4d6cef918e9338c9deef43b81ac0f7e22606825f)（2026-04
 创建，5.9k stars / 353 forks，Apache-2.0 仅覆盖客户端代码，168KB）**不是学术意义上的
 agent 搜索机制研究**——仓库无 benchmark/eval/实验文档，只有 CLI 测试与代码生成器。真实
 身份：面向 Claude Code/OpenCode/Cursor/OpenClaw 生态的生产级搜索 skill，商业 API
@@ -213,13 +216,13 @@ agent 搜索机制研究**——仓库无 benchmark/eval/实验文档，只有 C
 ### 2.4 候选提案：Evidence-grade Retrieval（PROPOSAL）
 
 对 RWB 而言不是「接入一个搜索工具」，而是补上 commodity 搜索 API ↔ Evidence Plane 之间
-缺失的治理层。四个可发表构件：
+缺失的治理层。四个待验证构件：
 
 1. **Retrieval Manifest**：每次搜索产出哈希钉定工件——精确请求（query/params/endpoint/
    zone/language）、时间戳、响应全文哈希、逐结果（URL+标题+摘要）哈希与 rank 位——
-   检索可审计回放。把 INDEX.yaml 文化延伸到检索环，**全生态无人做**。
+   检索可审计回放。把 INDEX.yaml 文化延伸到检索环；本次样本未证明该组合具有新颖性。
 2. **Query Egress Policy**：I4 用于出站查询——研究问题敏感度分级、目标服务白名单、
-   查询最小化/改写脱敏。**查询侧 egress 治理是真空白**（业界只防内容进来，不防意图出去）。
+   查询最小化/改写脱敏。本次样本对查询侧 egress 治理覆盖不足，但不能据此断言业界空白。
 3. **Source Admission Gate**：M4-001 具体化——域注册表、可信度分级、准入 Decision 带
    provenance，准入后才可产生 EVID。
 4. **搜索策略入 Method Plane**：把 Path1/2/hybrid 决策流升格为 evidence-synthesis Mode
@@ -310,21 +313,21 @@ Source Admission 而非会话。再次印证 file-first 哲学。
 - **A2A**（Linux 基金会）：agent↔agent 的 HTTP/JSON-RPC 标准，Agent Card 自描述发现 +
   任务委托——跨信任边界通信；与进程内通信是两个世界。
 
-### 3.4 开源模型生态：通信层的刻意空缺（FACT + INFERENCE）
+### 3.4 开源模型生态样本：模型层与通信框架分离的倾向（FACT + INFERENCE）
 
 | 模型（厂商） | 官方 agent 通信设施 | 现状 |
 |---|---|---|
 | DeepSeek | 无官方框架 | 通信层由第三方建（本 harness 的父子+mailbox+共享工作区；AutoGen/CrewAI 接为 provider） |
-| Qwen（阿里） | AgentScope + Qwen-Agent | **唯一例外**：Msg/Pipeline/MsgHub 最完整——但以框架部门而非模型部门姿态 |
+| Qwen（阿里） | AgentScope + Qwen-Agent | 本次样本中的显著例外：提供 Msg/Pipeline/MsgHub，但不能据此作全生态完备度排名 |
 | GLM（智谱） | AutoGLM（端侧单 agent） | 无官方多 agent 通信框架；生态借道 THUNLP 系（ChatDev/XAgent/AgentVerse 常以 GLM 为主力模型）——模型与框架分离 |
 | Kimi K2（月之暗面） | kimi-cli / provider 抽象 | 无官方多 agent 框架 |
 | Llama（Meta） | 无 | 由 llama-agents（消息队列）/LangGraph 承接 |
 | gpt-oss（OpenAI） | Codex 生态承接 | 结构化子代理 |
 
-**判断（INFERENCE）**：开源模型厂商的共识是**模型层专注单体 agentic 能力（工具调用
-可靠性、长上下文、指令跟随），通信层交给框架/协议生态**。对 RWB 的信号：把通信做成
-治理层不会与模型厂商路线冲突，反而填补它们刻意留出的空档——RWB 的 provider-neutral
-原则（ADR-0003/M1-008）在通信层同样成立。
+**判断（INFERENCE）**：本次检索到的开源模型厂商样本呈现一种倾向：**模型层专注单体
+agentic 能力（工具调用可靠性、长上下文、指令跟随），通信层交给框架/协议生态**。这支持
+RWB 继续保持 provider-neutral（ADR-0003/M1-008），但不能据此推断所有厂商的内部路线或
+宣称通信治理存在确定的市场空白。
 
 ### 3.5 顶会研究的收敛结论（FACT）
 
@@ -385,21 +388,22 @@ Source Admission 而非会话。再次印证 file-first 哲学。
 
 #### 3.6.4 与议题一/二的衔接（修订后的创新点表述）
 
-七个介质层级 × 五个维度核查后，议题一的空白判断从「一个想法」夯实为「全谱系确认」：
-**通信介质已被做全，通信治理无人做**。具体到 RWB 可发表的三个表述：
+七个介质层级 × 五个维度的有限样本核查支持一个候选方向：通信介质已有大量实现，而 provenance、
+预算、准入和 Human Gate 的组合治理在本次样本中覆盖不足。它不能证明“全谱系”或“无人做”。
+具体到 RWB，可进一步检验三个候选贡献：
 
-1. **分类学贡献**：首个带治理维度的 agent 通信分类学（第五维可见性 + provenance/预算/
+1. **分类学候选**：带治理维度的 agent 通信分类学（第五维可见性 + provenance/预算/
    准入三治理轴）；
 2. **机制贡献**：Communication as Evidence（议题一）——把第五维做实；
-3. **实证贡献**：用 M5-003 对照测「何种研究任务下受控推送优于纯拉取」——回应顶会
-   结论 2 的任务依赖性，在科研工作流场景（文献明确空白，见第 5 节 CAPTURE_GAP）。
+3. **实证候选**：用 M5-003 对照测「何种研究任务下受控推送优于纯拉取」——回应拓扑收益的
+   任务依赖性；本次检索尚未找到充分的科研工作流对照证据，见第 5 节 CAPTURE_GAP。
 
 ### 3.7 增补：ruflo（ruvnet/ruflo）核查与分类学修订（FACT + INFERENCE）
 
 #### 3.7.1 项目定性：两副面孔的 mega-harness
 
-[ruvnet/ruflo](https://github.com/ruvnet/ruflo)（MIT，TypeScript，2025-06 创建，68,968
-stars / 8,269 forks，`claude-flow` 后继，自称 "The original agent meta-harness"）：
+[ruvnet/ruflo@d065b15](https://github.com/ruvnet/ruflo/tree/d065b15927c6ba7318623e8af123e7980e4c6681)
+（MIT，TypeScript，`claude-flow` 后继，自称 "The original agent meta-harness"）：
 33 个原生 Claude Code 插件 + 21 个 npm 插件的市场化 harness 生态，覆盖 swarm 协调、
 记忆、自学习、MCP server、联邦通信。按本 workstream 证据纪律分层核查：
 
@@ -423,26 +427,25 @@ ruflo 的核心贡献是把 agent 间协调从「消息问题」重构为「编�
 
 > **一手同构证据**：本调研所用 DeepSeek Harness 的 workflow 工具与这套四钩子 API 形状
 > 完全相同（agent+schema / pipeline 无 barrier / parallel 有 barrier / phase）。两个
-> 独立生产 harness 收敛到同一原语集——「编排脚本作为协调介质」已成生产范式。分类学
+> 独立 harness 样本出现相同原语集——「编排脚本作为协调介质」是值得继续验证的工程模式。分类学
 > 由七层扩为**九层**（+编排脚本、+持久化状态机工作流），并新增「拓扑载体」维度：
 > 拓扑=Method 决策，其载体（图/定义/代码/隐式/无）决定可解释性与可审查性——ruflo
-> 的「脚本即拓扑」是「拓扑可架构审查」的生产验证，支持 RWB 把 routing authority 放
+> 的「脚本即拓扑」提供了“拓扑可进入代码审查”的工程例子，支持继续评估 RWB 把 routing authority 放
 > 进 Resolution；但 ruflo 拓扑仍无证据绑定（脚本管协调不管 provenance）——治理空白依旧。
 
 **（b）声明式持久化状态机（MCP `workflow_*`，ADR-0001）**：`created → running ↔
 paused → completed/cancelled` 生命周期 + **approval gates（人工审批暂停点）** + 跨会话
-可恢复（`workflows-state` namespace）+ 无状态旁路（`workflow_execute`）。这是 RWB
-SAFE_PAUSE + Human Gate + M3-001 checkpoint/resume 的**生产级同构物**，且同样区分
-「长时命人工门控管道」与「一次性确定性 fan-out」两条路径——与 H0/H1/H2 分级直觉一致。
+可恢复（`workflows-state` namespace）+ 无状态旁路（`workflow_execute`）。这与 RWB
+SAFE_PAUSE、Human Gate 和 M3-001 checkpoint/resume 存在局部工程类比，但 authority、证据与
+恢复语义并不等价；它同样区分「长时命人工门控管道」与「一次性确定性 fan-out」两条路径。
 
 #### 3.7.3 对三议题的具体补充
 
 **议题一（peer 通信）四条**：
-1. **schema-validated 结构化返回是生产标准**（`agent(prompt,{schema})`）——议题一提案
-   的「白名单消息类型+结构化工件」可行性获生产实践背书，与 MetaGPT 顶会结论形成
-   学术-工程双确认；
+1. **schema-validated 结构化返回已有 production-facing 实例**（`agent(prompt,{schema})`）——
+   为议题一的「白名单消息类型+结构化工件」提供工程可行性样本，但不证明它是通用标准；
 2. **fan-out/pipeline 是「无消息通道协作」的极致形态**：barrier(`parallel`) vs 无
-   barrier(`pipeline`) 两原语覆盖几乎所有 fan-out 场景，agent 间零直接消息——议题二
+   barrier(`pipeline`) 两原语覆盖若干常见 fan-out 场景，agent 间零直接消息——议题二
    「工件即协调媒介」又一例证；**汇合语义（何时 barrier）变成显式编程决定**——
    「汇合点显式化」应进 Communication as Evidence 提案：**barrier 处正是综合失真风险
    点，应触发 H2 抽样**；
@@ -469,9 +472,10 @@ SAFE_PAUSE + Human Gate + M3-001 checkpoint/resume 的**生产级同构物**，�
 
 #### 3.7.4 克制面（Adoption Matrix 视角）
 
-69k-star mega-harness 同时是「功能全开」路线的成本展示：540MB 仓库、100+ agent、12 个
+该 mega-harness 同时是「功能全开」路线的成本样本：其 README 声称 100+ agent、12 个
 自动后台 worker、联邦/神经/自学习大量未验证主张——对照「先证明失败模式」纪律，ruflo
-恰是 **REJECT/ADAPT 大样本库**：它证明这些机制「能做」，也证明没人给它们配治理。
+可作为 **REJECT/ADAPT 候选样本库**；它展示了这些机制的公开声明与部分工程表面，但不能证明
+全部能力已经实现，也不能证明其他系统没有相应治理。
 零信任联邦 comms layer（跨机器/org agent 通信）若真实现，是 A2A 类通信的另一生产
 数据点，但按 README 口径无法确认治理深度，标 CLAIM 留待深挖。
 
@@ -497,8 +501,8 @@ SAFE_PAUSE + Human Gate + M3-001 checkpoint/resume 的**生产级同构物**，�
 - DeepSeek Harness subagent 语义基于一手使用观察，无公开文档可引，标注为本会话证据；
 - 议题三的通信机制描述多数来自官方文档/源码快照而非长期运行经验；AutoGen 0.2→0.4、
   LangGraph 等框架迭代快，快照可能过时（检索于 2026-08-23）；
-- 多数 multi-agent 通信论文基于问答/推理 benchmark，**科研工作流场景的通信对照实验
-  是文献明确空白**——这既是 CAPTURE_GAP 也是议题三实证贡献的机会；
+- 多数本次检索到的 multi-agent 通信论文基于问答/推理 benchmark；本次检索尚未找到充分的
+  科研工作流通信对照实验。这是 CAPTURE_GAP，不是对全体文献的空白证明；
 - GLM/Kimi/Llama 生态的「无官方通信框架」判断基于公开仓库检索，不排除内部或未发布
   项目；AgentScope 是否代表阿里模型组路线未经官方声明核实；
 - ruflo 的 swarm consensus / 联邦 comms / SONA self-learning / ReasoningBank 均为
@@ -535,10 +539,10 @@ SAFE_PAUSE + Human Gate + M3-001 checkpoint/resume 的**生产级同构物**，�
 - [Multi-Agent Design（Google Research）](https://research.google/pubs/multi-agent-design-optimizing-agents-with-better-prompts-and-topologies/)
 
 **议题二（检索接入）**
-- [anysearch-ai/anysearch-skill 仓库](https://github.com/anysearch-ai/anysearch-skill)（含 SKILL.md、scripts/shared/doc_spec.md、scripts/shared/constants.json、SECURITY.md，2026-08-23 快照核查）
+- [anysearch-ai/anysearch-skill@4d6cef9](https://github.com/anysearch-ai/anysearch-skill/tree/4d6cef918e9338c9deef43b81ac0f7e22606825f)（含 SKILL.md、scripts/shared/doc_spec.md、scripts/shared/constants.json、SECURITY.md，2026-08-23 快照核查）
 
 **议题三（通信机制分类学与模型生态）**
-- [ruflo 仓库](https://github.com/ruvnet/ruflo) ·
+- [ruflo@d065b15](https://github.com/ruvnet/ruflo/tree/d065b15927c6ba7318623e8af123e7980e4c6681) ·
   [ADR-0001 workflows 契约](https://github.com/ruvnet/ruflo/blob/d065b15927c6ba7318623e8af123e7980e4c6681/plugins/ruflo-workflows/docs/adrs/0001-workflows-contract.md) ·
   [ADR-0002 原生编排双表面](https://github.com/ruvnet/ruflo/blob/d065b15927c6ba7318623e8af123e7980e4c6681/plugins/ruflo-workflows/docs/adrs/0002-native-workflow-orchestration.md)
 - [AgentScope — Pipeline 教程](https://doc.agentscope.io/tutorial/task_pipeline.html) ·

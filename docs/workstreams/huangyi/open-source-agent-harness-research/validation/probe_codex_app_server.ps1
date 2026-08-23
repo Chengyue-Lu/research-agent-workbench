@@ -41,14 +41,14 @@ function Assert-WithinAttempt {
     return $full
 }
 
-$requiredSegment = [System.IO.Path]::Combine(
-    "docs", "workstreams", "huangyi", "open-source-agent-harness-research",
-    "validation", "attempts"
-)
-if ($AttemptRoot.IndexOf(
-        $requiredSegment,
+$approvedAttemptsRoot = [System.IO.Path]::GetFullPath(
+    (Join-Path $PSScriptRoot "attempts")
+).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
+$approvedAttemptsPrefix = $approvedAttemptsRoot + [System.IO.Path]::DirectorySeparatorChar
+if (-not $AttemptRoot.StartsWith(
+        $approvedAttemptsPrefix,
         [System.StringComparison]::OrdinalIgnoreCase
-    ) -lt 0) {
+    )) {
     throw "AttemptRoot is outside the approved Huang Yi validation workstream"
 }
 

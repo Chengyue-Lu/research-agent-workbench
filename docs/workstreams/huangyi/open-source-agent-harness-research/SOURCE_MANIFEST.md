@@ -42,6 +42,16 @@ verification_scope: "canonical repository, default-branch HEAD and path-scoped l
 | `HARNESS-OPENHANDS-001` | [OpenHands](https://github.com/OpenHands/OpenHands) | `main` | evidence `4bf8dd3aaf1217916b2ce8a6f9168fa7633a26f8`；[HEAD `2f5bd24f00e3111449ec6b1f6e6b4ec1033f3a59`](https://github.com/OpenHands/OpenHands/tree/2f5bd24f00e3111449ec6b1f6e6b4ec1033f3a59) | [根目录 MIT](https://github.com/OpenHands/OpenHands/blob/2f5bd24f00e3111449ec6b1f6e6b4ec1033f3a59/LICENSE)；[`enterprise/` 为 PolyForm Free Trial](https://github.com/OpenHands/OpenHands/blob/2f5bd24f00e3111449ec6b1f6e6b4ec1033f3a59/enterprise/LICENSE) | `VERIFIED_HEAD_MOVED_SCOPED_LICENSE` |
 | `HARNESS-OPENSCIENCE-001` | Open Science | 未确定 | 原稿 SHA `b51714d007834053c7d0c0dbd1794478ebde931e`，不登记 HEAD | 不登记 | `UNVERIFIED_IDENTITY_MISMATCH` |
 
+## 候选方向新增来源
+
+以下来源只支持 `CANDIDATE_RESEARCH_DIRECTIONS_GLM.md` 的候选分析，不因此进入采纳矩阵或
+获得 Skill/Tool/Runtime 准入：
+
+| Source ID | 项目 | 默认分支 | Evidence commit | 许可证 | 状态 |
+|---|---|---|---|---|---|
+| `CANDIDATE-ANYSEARCH-001` | [anysearch-skill](https://github.com/anysearch-ai/anysearch-skill) | `main` | [`4d6cef918e9338c9deef43b81ac0f7e22606825f`](https://github.com/anysearch-ai/anysearch-skill/tree/4d6cef918e9338c9deef43b81ac0f7e22606825f) | [Apache-2.0](https://github.com/anysearch-ai/anysearch-skill/blob/4d6cef918e9338c9deef43b81ac0f7e22606825f/LICENSE) | `VERIFIED_SNAPSHOT`；未执行 CLI，后端数据政策未知 |
+| `CANDIDATE-RUFLO-001` | [ruflo](https://github.com/ruvnet/ruflo) | `main` | [`d065b15927c6ba7318623e8af123e7980e4c6681`](https://github.com/ruvnet/ruflo/tree/d065b15927c6ba7318623e8af123e7980e4c6681) | [MIT](https://github.com/ruvnet/ruflo/blob/d065b15927c6ba7318623e8af123e7980e4c6681/LICENSE) | `VERIFIED_SNAPSHOT`；README 能力主张未独立复现 |
+
 ## Open Science 身份冲突
 
 原稿没有记录规范 URL。其 SHA 可以解析到
