@@ -3,7 +3,7 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 必需审查人：黄毅（GitHub 主名 `let778750-cpu`）
 - Task：`M8-002`
-- 状态：feature implementation complete；等待跨负责人审查与独立 task closeout
+- 状态：feature implementation complete；等待跨负责人审查，未合并
 - 目标 base：`develop`
 - 基线 commit：`5991cafdb7f536cd7b871508de9055d02b558728`
 - 工作分支：`agent/method-m8-002-mode-action-contract`
@@ -57,6 +57,10 @@ Action 只回答“哪个原子研究动作需要约束”，不能选择执行�
 ownership，也不要求 Execution/Receipt 立即迁移。后续消费者必须显式引用 `action_id@version`；需要
 冻结具体内容时同时保存 Registry 中的 `content_hash`。
 
+已发布的 `action_id@version` 是 immutable identity；语义、Mode、路径或内容变化必须发布新版本。
+Claim effect 复用 canonical Claim strength，Gate 只保存 opaque ID，且 Action 不开放任意 metadata
+作为实现绑定或 authority 逃生口。
+
 ## 5. 证据与风险
 
 - [风险台账](RISK_LEDGER.md)：记录语义越权、跨线耦合、Registry drift 和治理断层；
@@ -67,12 +71,12 @@ ownership，也不要求 Execution/Receipt 立即迁移。后续消费者必须�
 
 ## 6. 合并与停止条件
 
-feature PR 以 `develop` 为目标并使用 squash merge。本 PR 不把 M8-002 置为 `DONE`，也不提前启动
-M8-003。实现合入 `develop` 并完成集成验证后，另建 `task-closeout` PR 更新 TASKS、Changelog、
-验证/历史证据；只有 closeout 合并后 M8-003 才可进入 READY。
+feature PR 以 `develop` 为目标并使用 squash merge。本分支当前不把 M8-002 置为 `DONE`，也不提前
+激活 M8-003。M8-002 的完成与后继 M8-003 的激活按照合并时有效的 TASKS governance policy 执行；
+本 PR 不预设独立 closeout PR、逐 Task History 或其他尚未生效的流程结构。
 
 停止条件：16 个 Action、Registry、Schema、正式 fixture 引用和确定性负面测试形成闭集；任何需要
 修改 Method Resolution、Execution View、Runtime 或 Human Authority 的发现都登记并转交后续 Task，
 不在本分支扩张。
 
-合入 `main` 后，在 `docs/history/` 新建具名 M8-002 closeout，原 workstream 路径冻结保留。
+只有达到当前 History 触发条件时才建立长期 closeout；原 workstream 路径保持可追溯。

@@ -389,7 +389,7 @@ def _validate_mode_action_registry(documents: Mapping[Path, Any]) -> list[Valida
         return issues
 
     modes = {
-        f"{document.get('mode_id')}@{document.get('version')}"
+        f"{document.get('mode_id')}@{document.get('version')}": document
         for document in documents.values()
         if isinstance(document, Mapping)
         and "mode_id" in document
@@ -410,6 +410,32 @@ def _validate_mode_action_registry(documents: Mapping[Path, Any]) -> list[Valida
             issues.append(
                 ValidationIssue(path, "MODE-ACTION-MODE-MISSING", f"unknown Research Mode: {mode_ref}")
             )
+        claim_effects = document.get("claim_effects")
+        if isinstance(claim_effects, Mapping):
+            may_support = set(claim_effects.get("may_support", []))
+            cannot_alone_support = set(claim_effects.get("cannot_alone_support", []))
+            overlap = sorted(may_support & cannot_alone_support)
+            if overlap:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "MODE-ACTION-CLAIM-EFFECT-CONFLICT",
+                        "claim strengths cannot be both may_support and cannot_alone_support: "
+                        + ", ".join(overlap),
+                    )
+                )
+            if isinstance(mode_ref, str) and mode_ref in modes:
+                claim_rules = modes[mode_ref].get("claim_rules", {})
+                allowed = set(claim_rules.get("allows", [])) if isinstance(claim_rules, Mapping) else set()
+                outside_mode = sorted(may_support - allowed - {"unresolved", "withdrawn"})
+                if outside_mode:
+                    issues.append(
+                        ValidationIssue(
+                            path,
+                            "MODE-ACTION-CLAIM-NOT-ALLOWED",
+                            f"may_support exceeds {mode_ref} claim rules: {', '.join(outside_mode)}",
+                        )
+                    )
 
     indexed: set[tuple[str, str]] = set()
     for registry_path, registry in registries:
