@@ -1,6 +1,6 @@
 # GOV-V2-001 验证记录
 
-状态：实现与本地完整 suite 已通过；最终 PR event、远端 CI/ruleset 与 R2 审查尚未收束。
+状态：实现与本地完整 suite 已通过；Draft PR #27 已提交，远端 CI、ruleset 与 R2 审查尚未收束。
 
 最低矩阵：
 

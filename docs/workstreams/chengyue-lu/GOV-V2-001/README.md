@@ -5,7 +5,7 @@
 - Audit ID：`GOV-V2-001`
 - 基线：`develop@5991cafdb7f536cd7b871508de9055d02b558728`
 - 分支：`governance/v2-risk-based-merge-boundary`
-- 状态：implementation；未审查、未合并、远端 ruleset 未修改
+- 状态：Draft PR #27；未请求审查、未合并、远端 ruleset 未修改
 
 ## 目标与非目标
 
@@ -14,7 +14,8 @@
 风险自动升级、条件 workstream/Risk Ledger 与可解释输出。
 
 本分支不修改研究对象运行时语义，不替代 Method/Claim/Human Gate authority，也不在政策合并前
-写远端 ruleset。PR #25 的历史事实不重写；PR #26 的 Action 契约阻塞项在其原分支独立修复。
+写远端 ruleset。PR #25 的历史事实不重写；PR #26 已撤回且未合并，M8 Action 与 Resolution 作为
+独立的统一节点维护。
 
 ## 输入与边界
 
