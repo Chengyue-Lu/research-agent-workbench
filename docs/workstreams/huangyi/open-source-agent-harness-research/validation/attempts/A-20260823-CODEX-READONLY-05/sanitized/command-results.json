@@ -1,0 +1,14 @@
+[
+  {
+    "scenario": "schema-stable",
+    "exit_code": 0,
+    "stdout_file": "raw/stdout/schema-stable.jsonl",
+    "stderr_file": "raw/stderr/schema-stable.log"
+  },
+  {
+    "scenario": "schema-experimental",
+    "exit_code": 0,
+    "stdout_file": "raw/stdout/schema-experimental.jsonl",
+    "stderr_file": "raw/stderr/schema-experimental.log"
+  }
+]
