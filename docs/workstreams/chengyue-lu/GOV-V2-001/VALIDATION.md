@@ -22,3 +22,7 @@
 - 以 `origin/develop`、实现 commit、R2 body、owner/workstream 构造的本地 PR event 通过；输出
   declared/inferred/effective `R2`、具体路径原因和全部 requirements，无 Finding；
 - 没有安装新的在线依赖。
+
+2026-08-24 新增 `develop` → `main` 发布合并规范后重新执行：完整 suite `273 passed, 3 skipped`；
+repository validation `59 valid, 0 errors, 0 warnings`；documentation suite 包含在完整 suite 中并通过；
+`git diff --check` 通过。远端 Python 3.11/3.13 与 governance CI 以 PR 最新 head 为准。

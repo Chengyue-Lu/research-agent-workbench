@@ -27,6 +27,9 @@
 写入限于治理 policy/script/template/CODEOWNERS、对应测试、ADR、开发治理文档和本 workstream。
 GitHub ruleset 是合并后的外部 rollout，不由未接受分支抢先改变。
 
+本 PR 同时新增稳定的 [`develop` → `main` 发布合并规范](../../../DEVELOP_TO_MAIN_RELEASE.md)，把
+release 拓扑、前置检查、元数据、审查、merge commit 与发布后边界集中为单一入口。
+
 ## 证据与停止条件
 
 - [风险台账](RISK_LEDGER.md)

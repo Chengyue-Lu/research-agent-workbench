@@ -56,6 +56,7 @@ Agent 不是责任主体。每个 Agent 使用稳定 `actor_id`，并在 Attempt
   只产生 warning，实际冲突或共享契约不兼容仍阻断合并；
 - 一个完整 workstream 在 `develop` 完成集成验证后，只通过同仓库 `develop → main` PR 发布，
   该发布使用 merge commit 形成清晰边界；`main` 不接受其他来源分支；
+- 创建、审查与合并 release PR 时必须遵守独立的 [`develop` → `main` 发布合并规范](DEVELOP_TO_MAIN_RELEASE.md)；
 - 紧急变更仍走 `feature → develop → main`，不得绕过 CI 或 authority gate；可以压缩普通过程文档，
   并在安全恢复后补齐被明确推迟的记录；
 - [`docs/workstreams/`](workstreams/README.md) 按风险和复杂度触发，不再是每个 PR 的必需附件；
