@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://research-agent-workbench.local/schemas/v0.1.0/mode-action.schema.json",
   "title": "Mode Action",
+  "$comment": "A published action_id@version is immutable. Semantic changes require a new version and Registry entry.",
   "x-rwb-document-kind": "mode_action",
   "type": "object",
   "required": [
@@ -61,13 +62,34 @@
       "type": "object",
       "required": ["may_support", "cannot_alone_support", "notes"],
       "properties": {
-        "may_support": { "$ref": "common.schema.json#/$defs/stringArray" },
-        "cannot_alone_support": { "$ref": "common.schema.json#/$defs/stringArray" },
-        "notes": { "$ref": "common.schema.json#/$defs/stringArray" }
+        "may_support": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/claimStrength" },
+          "uniqueItems": true
+        },
+        "cannot_alone_support": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/claimStrength" },
+          "uniqueItems": true
+        },
+        "notes": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "minItems": 1,
+          "uniqueItems": true
+        }
       },
       "additionalProperties": false
     },
-    "human_gates": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "human_gates": {
+      "description": "Opaque identifiers of required Human Gates. This field does not define decisions, actors, scope, duration, or approval vocabulary.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+      },
+      "uniqueItems": true
+    },
     "stop_conditions": {
       "type": "array",
       "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
@@ -80,8 +102,7 @@
       "minItems": 1,
       "uniqueItems": true
     },
-    "risk_rules": { "$ref": "common.schema.json#/$defs/stringArray" },
-    "metadata": { "type": "object" }
+    "risk_rules": { "$ref": "common.schema.json#/$defs/stringArray" }
   },
   "additionalProperties": false
 }

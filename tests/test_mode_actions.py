@@ -109,6 +109,53 @@ class ModeActionContractTests(unittest.TestCase):
         action["triggers"] = []
         self.assertTrue(self.catalog.validate("mode_action", action))
 
+    def test_claim_effects_use_only_canonical_claim_strengths(self) -> None:
+        action = copy.deepcopy(self.actions[0])
+        action["claim_effects"]["may_support"] = ["looks-convincing"]
+        self.assertTrue(self.catalog.validate("mode_action", action))
+
+    def test_claim_effect_sides_are_disjoint(self) -> None:
+        documents = {
+            path: load_document(path)
+            for path in iter_documents([ROOT / "registry"])
+        }
+        action_path = self.action_paths[0]
+        action = copy.deepcopy(documents[action_path])
+        action["claim_effects"]["may_support"] = ["source_reported"]
+        documents[action_path] = action
+        codes = {issue.code for issue in validate_documents(documents)}
+        self.assertIn("MODE-ACTION-CLAIM-EFFECT-CONFLICT", codes)
+
+    def test_action_cannot_support_strength_forbidden_by_its_mode(self) -> None:
+        documents = {
+            path: load_document(path)
+            for path in iter_documents([ROOT / "registry"])
+        }
+        action_path = self.action_paths[0]
+        action = copy.deepcopy(documents[action_path])
+        action["claim_effects"]["may_support"] = ["simulation_supported"]
+        documents[action_path] = action
+        codes = {issue.code for issue in validate_documents(documents)}
+        self.assertIn("MODE-ACTION-CLAIM-NOT-ALLOWED", codes)
+
+    def test_human_gate_is_an_opaque_identifier_not_embedded_decision_data(self) -> None:
+        action = copy.deepcopy(self.actions[0])
+        action["human_gates"] = ["approve:alice:forever"]
+        self.assertTrue(self.catalog.validate("mode_action", action))
+
+    def test_arbitrary_metadata_extension_is_rejected(self) -> None:
+        action = copy.deepcopy(self.actions[0])
+        action["metadata"] = {"approved": True}
+        self.assertTrue(self.catalog.validate("mode_action", action))
+
+    def test_published_identity_is_declared_append_only(self) -> None:
+        action_schema = load_document(ROOT / "schemas/v0.1.0/mode-action.schema.json")
+        registry_schema = load_document(
+            ROOT / "schemas/v0.1.0/mode-action-registry.schema.json"
+        )
+        self.assertIn("immutable", action_schema["$comment"])
+        self.assertIn("append-only", registry_schema["$comment"])
+
 
 if __name__ == "__main__":
     unittest.main()
