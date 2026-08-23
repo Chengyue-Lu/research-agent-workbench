@@ -66,8 +66,36 @@ class DocumentationTests(unittest.TestCase):
             ROOT / "docs" / "implementation" / "README.md",
             ROOT / "docs" / "compatibility" / "README.md",
             ROOT / "docs" / "history" / "README.md",
+            ROOT / "docs" / "workstreams" / "README.md",
+            ROOT / "docs" / "workstreams" / "huangyi" / "README.md",
+            ROOT / ".github" / "CODEOWNERS",
+            ROOT / ".github" / "pull_request_template.md",
+            ROOT / ".github" / "scripts" / "check_pr_governance.py",
         )
         self.assertEqual([], [str(path.relative_to(ROOT)) for path in required if not path.is_file()])
+
+    def test_execution_runtime_audit_keeps_private_sources_out_of_git(self) -> None:
+        audit = (
+            ROOT
+            / "docs"
+            / "workstreams"
+            / "huangyi"
+            / "execution-runtime-recovery-audit"
+        )
+        required = (
+            "README.md",
+            "SOURCE_MANIFEST.md",
+            "CLAIM_LEDGER.md",
+            "ADOPTION.md",
+            "RECOVERY_GATE_PROPOSAL.md",
+            "GITHUB_GOVERNANCE_ROLLOUT.md",
+        )
+        self.assertEqual([], [name for name in required if not (audit / name).is_file()])
+        combined = "\n".join(
+            (audit / name).read_text(encoding="utf-8") for name in required
+        )
+        self.assertIsNone(re.search(r"\b[A-Za-z]:[\\/]", combined))
+        self.assertFalse((audit / "RWB_4-5部分恢复开发风险审计.md").exists())
 
     def test_adr_numbers_are_unique(self) -> None:
         numbers: list[str] = []

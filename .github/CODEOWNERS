@@ -1,0 +1,3 @@
+# Both accountable owners cover the repository. With required Code Owner review,
+# the PR author cannot approve their own change, so the counterpart must review it.
+* @Chengyue-Lu @let778750-cpu
