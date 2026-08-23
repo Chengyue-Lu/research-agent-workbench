@@ -6,6 +6,8 @@ M8-002 `def0689` 的 canonical Claim strength、Claim effect、opaque Gate、met
 Action identity hardening 已传播到本分支；Action 原始 YAML 未改变，因此 Resolution 中固定的 Action
 content hashes 无需重写。接入 `develop@51c8607` 后的完整 suite 已重新执行：`298` passed、`3`
 skipped；repository validation 为 `84` valid、`0` errors、`0` warnings，工作树 diff check 通过。
+Governance v2 synthetic PR preflight 推导 effective risk 为 R2，验证两个 Task 状态转换、owner-matched
+workstream/Risk Ledger、authority basis 与 adversarial evidence 后 PASS。
 
 当前已验证：
 

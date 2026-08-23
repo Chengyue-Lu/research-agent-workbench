@@ -37,12 +37,12 @@ git diff --check develop...HEAD
 opaque Human Gate ID、metadata rejection 与 published identity/append-only contract 声明。跨 commit
 immutability 必须由合并边界比较 base/head Registry；静态 Schema/validator 不冒充历史证明。
 
-完整 suite、focused suite、repository validation 与工作树 `git diff --check` 均在同一集成工作树
-重新执行通过；最终提交级 diff 与 PR governance preflight 在节点提交后再次复核。
+完整 suite、focused suite、repository validation 与 `git diff --check develop...HEAD` 均在同一集成
+工作树重新执行通过；Governance v2 synthetic PR preflight 推导 R2，并确认 M8-002 READY→DONE、
+M8-003 PARKED→READY 均为合法转换，结果为 PASS。
 
 ## 统一节点 PR 前仍需执行
 
-- 以最终提交重跑 Governance v2 synthetic PR preflight；
 - 由更新后的远端 CI 重跑 Python 3.11/3.13、coverage、wheel 和 clean-install checks；
 - 核对统一分支同时包含原 M8-002 与 M8-003 历史，并按 R2 边界完成跨负责人审查。
 
