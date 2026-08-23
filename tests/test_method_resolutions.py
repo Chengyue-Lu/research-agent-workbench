@@ -10,6 +10,7 @@ from research_workbench.validation import SchemaCatalog, validate_documents
 ROOT = Path(__file__).resolve().parents[1]
 RESOLUTION_ROOT = ROOT / "examples/method-resolutions"
 ACTION_REGISTRY = ROOT / "registry/modes/actions.json"
+MODE_ROOT = ROOT / "registry/modes"
 
 
 class MethodResolutionTests(unittest.TestCase):
@@ -26,12 +27,12 @@ class MethodResolutionTests(unittest.TestCase):
                 ROOT / entry["document_path"]: load_document(ROOT / entry["document_path"])
                 for entry in cls.action_registry["entries"]
             },
-            ROOT / "examples/modes/evidence-synthesis.yaml": load_document(
-                ROOT / "examples/modes/evidence-synthesis.yaml"
-            ),
-            ROOT / "examples/modes/simulation.yaml": load_document(
-                ROOT / "examples/modes/simulation.yaml"
-            ),
+            **{
+                path: load_document(path)
+                for path in sorted(
+                    [*MODE_ROOT.glob("*.yaml"), *MODE_ROOT.glob("v*/*.yaml")]
+                )
+            },
         }
 
     def test_all_eight_resolutions_are_schema_valid_and_provider_neutral(self) -> None:

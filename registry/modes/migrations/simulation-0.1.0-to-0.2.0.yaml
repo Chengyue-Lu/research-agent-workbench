@@ -1,0 +1,96 @@
+schema_version: 0.1.0
+migration_kind: research_mode_migration
+migration_id: RM-MIG-SIMULATION-001
+migration_version: 1.0.0
+implementation:
+  id: research-mode-v0.1-to-v0.2
+  version: 1.0.0
+source_mode:
+  ref: simulation@0.1.0
+  document_path: registry/modes/simulation.yaml
+  content_hash: sha256:6d59427b7b303693575f13c4213d84e42c2e7a968dda3c2fe5bf6a06591ecf27
+target_mode:
+  ref: simulation@0.2.0
+  document_path: registry/modes/v0.2.0/simulation.yaml
+  content_hash: sha256:7c11d3d72e1df41bce0d53961ffe73ba655e93eb208033fc7b81ede8fb924765
+action_migrations:
+- source:
+    ref: SIM-A1@1.0.0
+    document_path: registry/modes/actions/simulation/SIM-A1.yaml
+    content_hash: sha256:4c988cbd9d39570a365a810a173964f72bd88c5b36622e284dab3691130fbad0
+  target:
+    ref: SIM-A1@2.0.0
+    document_path: registry/modes/actions/simulation/v0.2.0/SIM-A1.yaml
+    content_hash: sha256:6c7398983e13c81e8ecfc7a38b8101b4f9f37f2e14ce161a0f5b83343f0d71ee
+- source:
+    ref: SIM-A2@1.0.0
+    document_path: registry/modes/actions/simulation/SIM-A2.yaml
+    content_hash: sha256:514cb529c66602387e5da259c9a2b278f558f9f379a9d6141f85405c4bf12095
+  target:
+    ref: SIM-A2@2.0.0
+    document_path: registry/modes/actions/simulation/v0.2.0/SIM-A2.yaml
+    content_hash: sha256:e1d736cf098c00c4bb5856a0095eaa3da82952137c16869d22c043da4ceb8c1e
+- source:
+    ref: SIM-A3@1.0.0
+    document_path: registry/modes/actions/simulation/SIM-A3.yaml
+    content_hash: sha256:e098ffa2bfa1ed8cf8a0a9a6d0aa0759bf554b75862b27b967ce70940fcb15c8
+  target:
+    ref: SIM-A3@2.0.0
+    document_path: registry/modes/actions/simulation/v0.2.0/SIM-A3.yaml
+    content_hash: sha256:ee957328751e4e1bcdb8dd9dcdacd19c2d34c02f3d5f46e344bce220beab4491
+- source:
+    ref: SIM-A4@1.0.0
+    document_path: registry/modes/actions/simulation/SIM-A4.yaml
+    content_hash: sha256:a31703114c301c722e81757259de197cc09129adb06c6402e88f6aca53bc0407
+  target:
+    ref: SIM-A4@2.0.0
+    document_path: registry/modes/actions/simulation/v0.2.0/SIM-A4.yaml
+    content_hash: sha256:150aaa35e21e0826460cea47dbd14d3af67c4017a3c300ae26db61a6c54ff737
+- source:
+    ref: SIM-A5@1.0.0
+    document_path: registry/modes/actions/simulation/SIM-A5.yaml
+    content_hash: sha256:a17aaecc0d459d7c10a0d1a491efbfda3ac8c583155f3f292186b87a3ed246d4
+  target:
+    ref: SIM-A5@2.0.0
+    document_path: registry/modes/actions/simulation/v0.2.0/SIM-A5.yaml
+    content_hash: sha256:4ff93b46737b9cb73169da82cb6007254c949ca51118955467d581b91ff6bbac
+- source:
+    ref: SIM-A6@1.0.0
+    document_path: registry/modes/actions/simulation/SIM-A6.yaml
+    content_hash: sha256:bda2861e24662b011a36ad09108452530c5b3c114af7073e7849ee80c452fc9e
+  target:
+    ref: SIM-A6@2.0.0
+    document_path: registry/modes/actions/simulation/v0.2.0/SIM-A6.yaml
+    content_hash: sha256:b7ca8201636624fac4c912863bcf89f79daedd35eed2452f75634e628e50af06
+- source:
+    ref: SIM-A7@1.0.0
+    document_path: registry/modes/actions/simulation/SIM-A7.yaml
+    content_hash: sha256:547278c7dd718eaf9607dacbd38549acff03c4d477146276493dfdb6f6e49db3
+  target:
+    ref: SIM-A7@2.0.0
+    document_path: registry/modes/actions/simulation/v0.2.0/SIM-A7.yaml
+    content_hash: sha256:6f99c1584fbbccfd1a64e6b23c85216bb44768d3176c7f186ec4b2a87dc660ae
+- source:
+    ref: SIM-A8@1.0.0
+    document_path: registry/modes/actions/simulation/SIM-A8.yaml
+    content_hash: sha256:e0302253f16c41ff5f69a51534365020b0a7eb10969be66b9e165bf3980f937d
+  target:
+    ref: SIM-A8@2.0.0
+    document_path: registry/modes/actions/simulation/v0.2.0/SIM-A8.yaml
+    content_hash: sha256:72feacf6e3b75a82a6f9f34404387890ba1d52ed16bcf80458050eac4bbe172e
+preserved_fields:
+- schema_version
+- mode_id
+- applies_when
+- required_artifact_types
+- claim_rules
+- human_decisions
+- risk_rules
+removed_fields:
+- recommended_skill_capabilities
+added_fields:
+- action_refs
+limitations:
+- The migration records structural lineage only and does not prove scientific validity.
+- Historical Method Resolutions remain pinned to Research Mode v0.1 and Action v1
+  documents.

@@ -26,7 +26,7 @@
 - Canonical Profile → Codex config；
 - Skill Manifest → `SKILL.md` metadata；
 - Task → Resolved Task；
-- Task + Mode Action → Method Resolution（M8-003 目标，尚未实现）；
+- Task + Mode Action → Method Resolution（已实现 provider-neutral 决定工件与正反 fixture）；
 - Capability Requirement → frozen Snapshot（Roadmap Phase B 目标，尚未实现）；
 - Handoff → promotion eligibility；
 - Runtime capability snapshot；

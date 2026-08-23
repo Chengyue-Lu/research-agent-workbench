@@ -1,10 +1,10 @@
 schema_version: 0.1.0
 mode_id: evidence-synthesis
-version: 0.2.0
+version: 0.1.0
 applies_when:
   - Evidence is primarily obtained from a bounded source set.
 required_artifact_types: [question, evidence, claim]
-action_refs: [ES-A1@2.0.0, ES-A2@2.0.0, ES-A3@2.0.0, ES-A4@2.0.0, ES-A5@2.0.0, ES-A6@2.0.0, ES-A7@2.0.0, ES-A8@2.0.0]
+recommended_skill_capabilities: [evidence-extraction, citation-location]
 claim_rules:
   allows: [source_reported, synthesis_supported]
   forbids_without_other_mode: [experimentally_supported]

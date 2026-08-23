@@ -11,7 +11,15 @@
 
 ## Mode 与 Method
 
-Research Mode v0.1 中的直接 Skill recommendation 是兼容字段。已接受架构以 Mode Action 和 Method Resolution 分离“要做的研究动作”与“用什么执行能力”；在正式迁移器可用前，旧字段保持可读但不扩展其语义。
+Research Mode v0.1 中的直接 Skill recommendation 是兼容字段。v0.1 文件继续原样保留并可验证，但不再
+作为新 Mode 的推荐写法。Research Mode v0.2 使用显式 `action_refs`，由 Mode Action 和 Method
+Resolution 分离“要做的研究动作”与“用什么执行能力”。
+
+仓库提供具名的 v0.1→v0.2 迁移 seam 和 hash-pinned migration record。迁移必须由调用方显式触发，
+不会在读取历史文件时自动发生，也不会把旧 recommendation 转换成 Skill、Tool、Provider 或 Runtime
+binding。因为 Action 的 `mode_ref` 精确拥有 Mode revision，v0.2 Mode 引用新的 Action version；v0.1
+Action 和历史 Method Resolution 保持可解释。实现和验证边界见
+[Research Mode migration](../implementation/RESEARCH_MODE_MIGRATION.md)。
 
 ## Execution Trace
 

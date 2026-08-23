@@ -21,18 +21,23 @@ class ModeActionContractTests(unittest.TestCase):
         cls.actions = [load_document(path) for path in cls.action_paths]
         cls.registry = load_document(REGISTRY_PATH)
 
-    def test_two_formal_modes_have_eight_unique_actions_each(self) -> None:
-        self.assertEqual(16, len(self.actions))
+    def test_two_formal_modes_preserve_eight_actions_across_two_revisions(self) -> None:
+        self.assertEqual(32, len(self.actions))
         by_mode: dict[str, list[dict]] = {}
         for action in self.actions:
             by_mode.setdefault(action["mode_ref"], []).append(action)
         self.assertEqual(
-            {"evidence-synthesis@0.1.0", "simulation@0.1.0"},
+            {
+                "evidence-synthesis@0.1.0",
+                "evidence-synthesis@0.2.0",
+                "simulation@0.1.0",
+                "simulation@0.2.0",
+            },
             set(by_mode),
         )
         self.assertTrue(all(len(actions) == 8 for actions in by_mode.values()))
         references = {f"{action['action_id']}@{action['version']}" for action in self.actions}
-        self.assertEqual(16, len(references))
+        self.assertEqual(32, len(references))
 
     def test_every_action_has_complete_method_boundary_fields(self) -> None:
         required_nonempty = (
@@ -62,7 +67,7 @@ class ModeActionContractTests(unittest.TestCase):
             (entry["action_id"], entry["version"]): entry
             for entry in self.registry["entries"]
         }
-        self.assertEqual(16, len(indexed))
+        self.assertEqual(32, len(indexed))
         for path, action in zip(self.action_paths, self.actions, strict=True):
             entry = indexed[(action["action_id"], action["version"])]
             self.assertEqual(hash_file(path), entry["content_hash"].removeprefix("sha256:"))

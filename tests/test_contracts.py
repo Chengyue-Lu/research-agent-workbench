@@ -20,6 +20,9 @@ class ContractParsingTests(unittest.TestCase):
         evidence_mode = ResearchMode.from_mapping(self.load("examples/modes/evidence-synthesis.yaml"))
         self.assertEqual("dual-mode-demo", protocol.project_id)
         self.assertIn("source_reported", evidence_mode.claim_allows)
+        self.assertEqual("0.2.0", evidence_mode.version)
+        self.assertEqual(8, len(evidence_mode.action_refs))
+        self.assertEqual((), evidence_mode.recommended_skill_capabilities)
 
     def test_mode_action_parses_as_a_first_class_contract(self) -> None:
         action = ModeAction.from_mapping(

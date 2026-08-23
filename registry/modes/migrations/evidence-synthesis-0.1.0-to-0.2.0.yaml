@@ -1,0 +1,96 @@
+schema_version: 0.1.0
+migration_kind: research_mode_migration
+migration_id: RM-MIG-EVIDENCE-SYNTHESIS-001
+migration_version: 1.0.0
+implementation:
+  id: research-mode-v0.1-to-v0.2
+  version: 1.0.0
+source_mode:
+  ref: evidence-synthesis@0.1.0
+  document_path: registry/modes/evidence-synthesis.yaml
+  content_hash: sha256:198d4445fdb80de45d9b2819bbcef9a0c14df7d3e27b23ecad282491b5fcd499
+target_mode:
+  ref: evidence-synthesis@0.2.0
+  document_path: registry/modes/v0.2.0/evidence-synthesis.yaml
+  content_hash: sha256:d4cd57eee244b6c7a7b215f87b93c8a2152e8dc1f974270817a12e12baeddaee
+action_migrations:
+- source:
+    ref: ES-A1@1.0.0
+    document_path: registry/modes/actions/evidence-synthesis/ES-A1.yaml
+    content_hash: sha256:690f3568e8e8636e4ecd074b151f99baaaca58792cb9cb1a13ab3924df1bfcb6
+  target:
+    ref: ES-A1@2.0.0
+    document_path: registry/modes/actions/evidence-synthesis/v0.2.0/ES-A1.yaml
+    content_hash: sha256:8c9b503394bdc38a6e261f49e44d1b06f9b5ad6baadc8908259405f194e41338
+- source:
+    ref: ES-A2@1.0.0
+    document_path: registry/modes/actions/evidence-synthesis/ES-A2.yaml
+    content_hash: sha256:cd0b17987ded4a4aa4920b2dc09f97cdd642c97b829e0253187eb75b9d3deaa3
+  target:
+    ref: ES-A2@2.0.0
+    document_path: registry/modes/actions/evidence-synthesis/v0.2.0/ES-A2.yaml
+    content_hash: sha256:ffb22926df53fffe7a3a9632d2b0978e94c788764383adc659f505601a0f5435
+- source:
+    ref: ES-A3@1.0.0
+    document_path: registry/modes/actions/evidence-synthesis/ES-A3.yaml
+    content_hash: sha256:2fd8f1f32b05cce65f5437845a067fecdb2dddfddaf0aa025f9f741e25ce3610
+  target:
+    ref: ES-A3@2.0.0
+    document_path: registry/modes/actions/evidence-synthesis/v0.2.0/ES-A3.yaml
+    content_hash: sha256:935227b3fcbaa9d2a7f438899097c14910e6a6df552db3651c0a9ca96cb9bf03
+- source:
+    ref: ES-A4@1.0.0
+    document_path: registry/modes/actions/evidence-synthesis/ES-A4.yaml
+    content_hash: sha256:8cb47267e5e7e2578173b62d2eb420cf9f7104e1c56c22facf0c9183299ce46a
+  target:
+    ref: ES-A4@2.0.0
+    document_path: registry/modes/actions/evidence-synthesis/v0.2.0/ES-A4.yaml
+    content_hash: sha256:1f6ae92fb2505115a1ad61c4069974147f8ba49dfbd75698949b1e6ad7b1a54e
+- source:
+    ref: ES-A5@1.0.0
+    document_path: registry/modes/actions/evidence-synthesis/ES-A5.yaml
+    content_hash: sha256:56fe2ecbf50f3947f86f29e345b9d9c5c9a0501ff7c44786ae8d5db39f29335e
+  target:
+    ref: ES-A5@2.0.0
+    document_path: registry/modes/actions/evidence-synthesis/v0.2.0/ES-A5.yaml
+    content_hash: sha256:ea5ec921181f502d1f39631266c0719cfa498c36766e72d2aa6c6296f35203b6
+- source:
+    ref: ES-A6@1.0.0
+    document_path: registry/modes/actions/evidence-synthesis/ES-A6.yaml
+    content_hash: sha256:cb2554ecd3003b03aaf613d1eca10ba6683be43b3e79c93f84f7d135b7c1aa28
+  target:
+    ref: ES-A6@2.0.0
+    document_path: registry/modes/actions/evidence-synthesis/v0.2.0/ES-A6.yaml
+    content_hash: sha256:572230ba92c8efb3c2f436bbcaabfde048d91316d9016b1c6c520d3b9929cb18
+- source:
+    ref: ES-A7@1.0.0
+    document_path: registry/modes/actions/evidence-synthesis/ES-A7.yaml
+    content_hash: sha256:9f4125e59b88a1ee604f423852b776286af87751cca83353fef25d8a64dd19ce
+  target:
+    ref: ES-A7@2.0.0
+    document_path: registry/modes/actions/evidence-synthesis/v0.2.0/ES-A7.yaml
+    content_hash: sha256:bdb300429df4486a34412e362804a792682308ebc87f821cb68fdfdcb8bcde95
+- source:
+    ref: ES-A8@1.0.0
+    document_path: registry/modes/actions/evidence-synthesis/ES-A8.yaml
+    content_hash: sha256:7a9c06a17dec6f305b8e9ba8f998961cc3ac6e1ed94c8bf82a8274c84f5cf479
+  target:
+    ref: ES-A8@2.0.0
+    document_path: registry/modes/actions/evidence-synthesis/v0.2.0/ES-A8.yaml
+    content_hash: sha256:538d1c7a34fa6bfdcd59d6ba5ee949b777e6207be092735cffa51946ba3a061b
+preserved_fields:
+- schema_version
+- mode_id
+- applies_when
+- required_artifact_types
+- claim_rules
+- human_decisions
+- risk_rules
+removed_fields:
+- recommended_skill_capabilities
+added_fields:
+- action_refs
+limitations:
+- The migration records structural lineage only and does not prove scientific validity.
+- Historical Method Resolutions remain pinned to Research Mode v0.1 and Action v1
+  documents.

@@ -1,0 +1,19 @@
+schema_version: 0.1.0
+action_id: SIM-A3
+version: 2.0.0
+mode_ref: simulation@0.2.0
+title: Design a numerical convergence study
+intent: Select meaningful refinements, error quantities, and stopping criteria for the numerical method.
+triggers:
+  - Discretization, time step, solver tolerance, or sampling error may limit the intended Claim.
+non_triggers:
+  - The Task only replays a Run with already approved convergence evidence.
+failure_modes: [single-resolution inference, invalid error metric, resource exhaustion mislabeled as convergence]
+required_artifacts: [convergence-plan, convergence-report]
+claim_effects:
+  may_support: [simulation_supported]
+  cannot_alone_support: [experimentally_supported]
+  notes: [Convergence supports numerical verification, not physical validation.]
+human_gates: [approve-error-metric-and-resource-threshold]
+stop_conditions: [The declared convergence criterion is met or a bounded negative result is recorded.]
+blocked_conditions: [No adjustable refinement or meaningful error quantity is available.]

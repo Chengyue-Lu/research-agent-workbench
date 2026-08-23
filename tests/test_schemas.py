@@ -49,6 +49,7 @@ class VersionedSchemaTests(unittest.TestCase):
                 "project_protocol",
                 "provider_conformance_report",
                 "research_mode",
+                "research_mode_migration",
                 "research_object",
                 "skill_manifest",
                 "skill_assignment",

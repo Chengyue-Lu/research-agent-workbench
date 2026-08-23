@@ -16,6 +16,11 @@ from typing import Any, Iterable, Mapping
 from research_workbench.artifacts.integrity import hash_file
 from research_workbench.io import load_document
 from research_workbench.contracts.common import ContractError, parse_skill_reference
+from research_workbench.protocol.migrations import (
+    RESEARCH_MODE_MIGRATION_ID,
+    RESEARCH_MODE_MIGRATION_VERSION,
+    migrate_research_mode_v01_to_v02,
+)
 from research_workbench.validation.schemas import SchemaCatalog
 
 
@@ -86,6 +91,7 @@ SCHEMA_KINDS = {
     "project_protocol",
     "provider_conformance_report",
     "research_mode",
+    "research_mode_migration",
     "agent_profile",
     "skill_manifest",
     "skill_assignment",
@@ -121,6 +127,12 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "project_protocol"
     if "mode_id" in document and "claim_rules" in document:
         return "research_mode"
+    if (
+        document.get("migration_kind") == "research_mode_migration"
+        and "source_mode" in document
+        and "target_mode" in document
+    ):
+        return "research_mode_migration"
     if "action_id" in document and "mode_ref" in document and "claim_effects" in document:
         return "mode_action"
     if "resolution_id" in document and "mode_resolution" in document and "action_decisions" in document:
@@ -673,6 +685,258 @@ def _validate_method_resolutions(documents: Mapping[Path, Any]) -> list[Validati
     return issues
 
 
+def _loaded_document_at(
+    documents: Mapping[Path, Any], repository_relative: object
+) -> tuple[Path, Mapping[str, Any]] | None:
+    if not isinstance(repository_relative, str):
+        return None
+    for path, document in documents.items():
+        if isinstance(document, Mapping) and _matches_repository_path(path, repository_relative):
+            return path, document
+    return None
+
+
+def _validate_research_mode_migrations(
+    documents: Mapping[Path, Any]
+) -> list[ValidationIssue]:
+    issues: list[ValidationIssue] = []
+    action_entries: dict[str, Mapping[str, Any]] = {}
+    action_registry: Mapping[str, Any] | None = None
+    for document in documents.values():
+        if not isinstance(document, Mapping) or document.get("registry_kind") != "mode_action_registry":
+            continue
+        action_registry = document
+        for entry in document.get("entries", []):
+            if isinstance(entry, Mapping):
+                action_entries[f"{entry.get('action_id')}@{entry.get('version')}"] = entry
+
+    seen_migrations: set[tuple[str, str]] = set()
+    for path, migration in documents.items():
+        if not isinstance(migration, Mapping) or infer_document_kind(migration) != "research_mode_migration":
+            continue
+        identity = (
+            str(migration.get("migration_id")),
+            str(migration.get("migration_version")),
+        )
+        if identity in seen_migrations:
+            issues.append(
+                ValidationIssue(path, "MODE-MIGRATION-DUPLICATE", f"duplicate migration identity: {identity}")
+            )
+        seen_migrations.add(identity)
+
+        implementation = migration.get("implementation")
+        if (
+            not isinstance(implementation, Mapping)
+            or implementation.get("id") != RESEARCH_MODE_MIGRATION_ID
+            or implementation.get("version") != RESEARCH_MODE_MIGRATION_VERSION
+            or migration.get("migration_version") != RESEARCH_MODE_MIGRATION_VERSION
+        ):
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "MODE-MIGRATION-IMPLEMENTATION-MISMATCH",
+                    "migration and implementation versions must match the supported migration seam",
+                )
+            )
+
+        loaded_modes: dict[str, tuple[Path, Mapping[str, Any]]] = {}
+        for side in ("source_mode", "target_mode"):
+            reference = migration.get(side)
+            if not isinstance(reference, Mapping):
+                continue
+            loaded = _loaded_document_at(documents, reference.get("document_path"))
+            if loaded is None:
+                issues.append(
+                    ValidationIssue(path, "MODE-MIGRATION-DOCUMENT-MISSING", f"{side} document is not loaded")
+                )
+                continue
+            document_path, mode = loaded
+            loaded_modes[side] = loaded
+            actual_ref = f"{mode.get('mode_id')}@{mode.get('version')}"
+            if reference.get("ref") != actual_ref:
+                issues.append(
+                    ValidationIssue(path, "MODE-MIGRATION-REF-MISMATCH", f"{side}.ref does not match its document")
+                )
+            expected_hash = reference.get("content_hash")
+            if isinstance(expected_hash, str) and hash_file(document_path) != expected_hash.removeprefix("sha256:").lower():
+                issues.append(
+                    ValidationIssue(path, "MODE-MIGRATION-HASH-MISMATCH", f"{side}.content_hash does not match its document")
+                )
+
+        source_loaded = loaded_modes.get("source_mode")
+        target_loaded = loaded_modes.get("target_mode")
+        if source_loaded is None or target_loaded is None:
+            continue
+        _, source_mode = source_loaded
+        _, target_mode = target_loaded
+        if source_mode.get("mode_id") != target_mode.get("mode_id"):
+            issues.append(
+                ValidationIssue(path, "MODE-MIGRATION-ID-MISMATCH", "source and target must retain the same mode_id")
+            )
+        if source_mode.get("version") != "0.1.0" or target_mode.get("version") != "0.2.0":
+            issues.append(
+                ValidationIssue(path, "MODE-MIGRATION-VERSION-MISMATCH", "migration must be v0.1.0 to v0.2.0")
+            )
+
+        if action_registry is not None:
+            try:
+                expected_target = migrate_research_mode_v01_to_v02(
+                    source_mode, action_registry
+                )
+            except ContractError as error:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "MODE-MIGRATION-DETERMINISM-BLOCKED",
+                        f"supported migration could not resolve: {error}",
+                    )
+                )
+            else:
+                if dict(target_mode) != expected_target:
+                    issues.append(
+                        ValidationIssue(
+                            path,
+                            "MODE-MIGRATION-TARGET-MISMATCH",
+                            "target Mode does not match the supported deterministic migration",
+                        )
+                    )
+
+        expected_preserved = set(source_mode) - {
+            "version",
+            "recommended_skill_capabilities",
+        }
+        if set(migration.get("preserved_fields", [])) != expected_preserved:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "MODE-MIGRATION-FIELD-DECLARATION-MISMATCH",
+                    "preserved_fields must exactly declare the supported migration",
+                )
+            )
+        if set(migration.get("removed_fields", [])) != {
+            "recommended_skill_capabilities"
+        } or set(migration.get("added_fields", [])) != {"action_refs"}:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "MODE-MIGRATION-FIELD-DECLARATION-MISMATCH",
+                    "removed_fields and added_fields must exactly declare the supported migration",
+                )
+            )
+
+        for field in migration.get("preserved_fields", []):
+            if isinstance(field, str) and source_mode.get(field) != target_mode.get(field):
+                issues.append(
+                    ValidationIssue(path, "MODE-MIGRATION-PRESERVATION-MISMATCH", f"field was not preserved: {field}")
+                )
+        for field in migration.get("removed_fields", []):
+            if isinstance(field, str) and (field not in source_mode or field in target_mode):
+                issues.append(
+                    ValidationIssue(path, "MODE-MIGRATION-REMOVAL-MISMATCH", f"field was not removed exactly: {field}")
+                )
+        for field in migration.get("added_fields", []):
+            if isinstance(field, str) and (field in source_mode or field not in target_mode):
+                issues.append(
+                    ValidationIssue(path, "MODE-MIGRATION-ADDITION-MISMATCH", f"field was not added exactly: {field}")
+                )
+
+        source_mode_ref = f"{source_mode.get('mode_id')}@{source_mode.get('version')}"
+        target_mode_ref = f"{target_mode.get('mode_id')}@{target_mode.get('version')}"
+        source_action_refs: set[str] = set()
+        target_action_refs: set[str] = set()
+        for index, action_migration in enumerate(migration.get("action_migrations", [])):
+            if not isinstance(action_migration, Mapping):
+                continue
+            side_values: dict[str, tuple[str, Mapping[str, Any]]] = {}
+            for side, expected_mode_ref in (("source", source_mode_ref), ("target", target_mode_ref)):
+                reference = action_migration.get(side)
+                if not isinstance(reference, Mapping):
+                    continue
+                action_ref = reference.get("ref")
+                entry = action_entries.get(action_ref) if isinstance(action_ref, str) else None
+                if entry is None:
+                    issues.append(
+                        ValidationIssue(
+                            path,
+                            "MODE-MIGRATION-ACTION-MISSING",
+                            f"action_migrations[{index}].{side} is not in the Action Registry",
+                        )
+                    )
+                    continue
+                side_values[side] = (action_ref, entry)
+                if entry.get("mode_ref") != expected_mode_ref:
+                    issues.append(
+                        ValidationIssue(
+                            path,
+                            "MODE-MIGRATION-ACTION-MODE-MISMATCH",
+                            f"action_migrations[{index}].{side} belongs to the wrong Mode revision",
+                        )
+                    )
+                if reference.get("document_path") != entry.get("document_path") or reference.get("content_hash") != entry.get("content_hash"):
+                    issues.append(
+                        ValidationIssue(
+                            path,
+                            "MODE-MIGRATION-ACTION-PIN-MISMATCH",
+                            f"action_migrations[{index}].{side} path/hash differs from the Registry",
+                        )
+                    )
+            if "source" in side_values and "target" in side_values:
+                source_ref, source_entry = side_values["source"]
+                target_ref, target_entry = side_values["target"]
+                if source_ref in source_action_refs or target_ref in target_action_refs:
+                    issues.append(
+                        ValidationIssue(
+                            path,
+                            "MODE-MIGRATION-ACTION-DUPLICATE",
+                            f"action_migrations[{index}] repeats a source or target Action",
+                        )
+                    )
+                source_action_refs.add(source_ref)
+                target_action_refs.add(target_ref)
+                if source_entry.get("action_id") != target_entry.get("action_id") or source_ref == target_ref:
+                    issues.append(
+                        ValidationIssue(
+                            path,
+                            "MODE-MIGRATION-ACTION-LINEAGE-MISMATCH",
+                            f"action_migrations[{index}] must retain action_id and publish a new version",
+                        )
+                    )
+
+        declared_target_refs = {
+            value for value in target_mode.get("action_refs", []) if isinstance(value, str)
+        }
+        if declared_target_refs != target_action_refs:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "MODE-MIGRATION-ACTION-CLOSURE",
+                    "target Mode action_refs must exactly match migration targets",
+                )
+            )
+        expected_source_refs = {
+            action_ref
+            for action_ref, entry in action_entries.items()
+            if entry.get("mode_ref") == source_mode_ref
+        }
+        expected_target_refs = {
+            action_ref
+            for action_ref, entry in action_entries.items()
+            if entry.get("mode_ref") == target_mode_ref
+        }
+        if (
+            source_action_refs != expected_source_refs
+            or target_action_refs != expected_target_refs
+        ):
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "MODE-MIGRATION-ACTION-REGISTRY-CLOSURE",
+                    "migration mappings must close exactly over both Mode revisions in the Action Registry",
+                )
+            )
+    return issues
+
+
 def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     source_ids: set[str] = set()
@@ -708,6 +972,7 @@ def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
         issues.extend(_validate_task(path, document, kind))
     issues.extend(_validate_mode_action_registry(documents))
     issues.extend(_validate_method_resolutions(documents))
+    issues.extend(_validate_research_mode_migrations(documents))
     return issues
 
 

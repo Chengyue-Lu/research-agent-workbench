@@ -6,7 +6,8 @@
 
 - Schema：`schemas/v0.1.0/mode-action.schema.json`；
 - Registry Schema：`schemas/v0.1.0/mode-action-registry.schema.json`；
-- Action documents：`registry/modes/actions/<mode>/<action-id>.yaml`；
+- legacy v0.1 Action documents：`registry/modes/actions/<mode>/<action-id>.yaml`；
+- v0.2+ Action documents：`registry/modes/actions/<mode>/v<mode-version>/<action-id>.yaml`；
 - hash-pinned index：`registry/modes/actions.json`。
 
 设计来源保留在历史 workstream，但不再是 Action 字段或身份的唯一真值。
@@ -22,6 +23,11 @@ append-only 检查属于合并边界治理；单次静态文档验证不能伪�
 
 `mode_ref` 使用 `mode-id@version`，明确 Action 属于哪一个正式 Mode revision。Action version 变化不
 自动升级 Mode、Task、Method Resolution 或历史 fixture；消费者必须显式采用新版本。
+
+因此 Research Mode 从 v0.1 升到 v0.2 时，即使 Action 的研究义务正文未改变，也要发布新的 Action
+version，使其 `mode_ref` 精确指向 v0.2。v1/v2 Action documents 与 Registry entries 并存；这不是
+实现绑定变化，而是 revision ownership 的可审计迁移。迁移记录见
+[Research Mode migration](RESEARCH_MODE_MIGRATION.md)。
 
 ## 3. 语义边界
 
@@ -48,7 +54,7 @@ Action 不提供任意 `metadata` 扩展口，避免把 binding 或 authority �
 ## 5. 非目标
 
 - 不定义 Method Resolution 或 rejected alternatives；
-- 不迁移 Research Mode v0.1；
+- 不由 Action 契约本身迁移 Research Mode；迁移由独立、具名的 migration seam 负责；
 - 不创建 Skill Need、Skill Assignment 或 Tool binding；
 - 不定义 Human Gate decision vocabulary；
 - 不在 Action metadata 中扩展实现绑定或权威语义；

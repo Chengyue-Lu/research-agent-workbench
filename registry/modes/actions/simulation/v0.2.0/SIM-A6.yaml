@@ -1,0 +1,19 @@
+schema_version: 0.1.0
+action_id: SIM-A6
+version: 2.0.0
+mode_ref: simulation@0.2.0
+title: Execute bounded computation
+intent: Run an approved computational plan under explicit resource, output, and side-effect limits while preserving failures.
+triggers:
+  - An approved simulation or analysis plan requires computation.
+non_triggers:
+  - Method design or result interpretation is requested without execution.
+failure_modes: [unbounded resource use, output flood, failed run discarded, unauthorized external execution]
+required_artifacts: [run, execution-log, execution-receipt]
+claim_effects:
+  may_support: []
+  cannot_alone_support: [simulation_supported]
+  notes: [Successful process exit is not a convergence, sensitivity, or validity Claim.]
+human_gates: [approve-high-cost-or-external-execution]
+stop_conditions: [The approved plan reaches its limit and all outputs or failures are archived.]
+blocked_conditions: [Required compute exceeds the approved budget, permissions, or data boundary.]

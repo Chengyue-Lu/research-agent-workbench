@@ -72,6 +72,7 @@ class ResearchMode:
     version: str
     applies_when: tuple[str, ...]
     required_artifact_types: tuple[str, ...]
+    action_refs: tuple[str, ...]
     recommended_skill_capabilities: tuple[str, ...]
     claim_allows: tuple[str, ...]
     claim_forbids_without_other_mode: tuple[str, ...]
@@ -81,14 +82,36 @@ class ResearchMode:
 
     @classmethod
     def from_mapping(cls, data: Mapping[str, Any]) -> "ResearchMode":
+        version = require_string(data, "version")
+        action_refs = string_tuple(data, "action_refs")
+        recommended_skill_capabilities = string_tuple(data, "recommended_skill_capabilities")
+        if version == "0.1.0":
+            if not recommended_skill_capabilities:
+                raise ContractError(
+                    "recommended_skill_capabilities",
+                    "is required for Research Mode v0.1.0",
+                )
+            if action_refs:
+                raise ContractError("action_refs", "is not allowed for Research Mode v0.1.0")
+        elif version == "0.2.0":
+            if not action_refs:
+                raise ContractError("action_refs", "is required for Research Mode v0.2.0")
+            if recommended_skill_capabilities:
+                raise ContractError(
+                    "recommended_skill_capabilities",
+                    "is not allowed for Research Mode v0.2.0",
+                )
+        else:
+            raise ContractError("version", "supported Research Mode versions are 0.1.0 and 0.2.0")
         claim_rules = mapping_value(data, "claim_rules", required=True)
         return cls(
             schema_version=require_string(data, "schema_version"),
             mode_id=require_string(data, "mode_id"),
-            version=require_string(data, "version"),
+            version=version,
             applies_when=string_tuple(data, "applies_when", required=True),
             required_artifact_types=string_tuple(data, "required_artifact_types", required=True),
-            recommended_skill_capabilities=string_tuple(data, "recommended_skill_capabilities", required=True),
+            action_refs=action_refs,
+            recommended_skill_capabilities=recommended_skill_capabilities,
             claim_allows=string_tuple(claim_rules, "allows", required=True),
             claim_forbids_without_other_mode=string_tuple(claim_rules, "forbids_without_other_mode"),
             human_decisions=string_tuple(data, "human_decisions", required=True),

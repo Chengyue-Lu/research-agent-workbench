@@ -12,6 +12,13 @@ from research_workbench.protocol.models import (
     RejectedMethodAlternative,
     ResearchMode,
 )
+from research_workbench.protocol.migrations import (
+    RESEARCH_MODE_MIGRATION_ID,
+    RESEARCH_MODE_MIGRATION_VERSION,
+    build_research_mode_migration_record,
+    migrate_research_mode_v01_to_v02,
+    research_mode_action_migrations,
+)
 
 __all__ = [
     "MethodActionDecision",
@@ -26,4 +33,9 @@ __all__ = [
     "ProjectProtocol",
     "RejectedMethodAlternative",
     "ResearchMode",
+    "RESEARCH_MODE_MIGRATION_ID",
+    "RESEARCH_MODE_MIGRATION_VERSION",
+    "build_research_mode_migration_record",
+    "migrate_research_mode_v01_to_v02",
+    "research_mode_action_migrations",
 ]
