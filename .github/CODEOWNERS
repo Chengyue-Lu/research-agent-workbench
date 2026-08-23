@@ -1,3 +1,15 @@
-# Both accountable owners cover the repository. With required Code Owner review,
-# the PR author cannot approve their own change, so the counterpart must review it.
-* @Chengyue-Lu @let778750-cpu
+# Governance v2 has no repository-wide wildcard. Routine R0 changes do not
+# require a Code Owner review. Shared-contract and authority-sensitive paths do.
+/.github/ @Chengyue-Lu @let778750-cpu
+/AGENTS.md @Chengyue-Lu @let778750-cpu
+/docs/ARCHITECTURE.md @Chengyue-Lu @let778750-cpu
+/docs/PROJECT_CHARTER.md @Chengyue-Lu @let778750-cpu
+/docs/decisions/ @Chengyue-Lu @let778750-cpu
+/docs/compatibility/ @Chengyue-Lu @let778750-cpu
+/schemas/ @Chengyue-Lu @let778750-cpu
+/registry/ @Chengyue-Lu @let778750-cpu
+/src/research_workbench/cli.py @Chengyue-Lu @let778750-cpu
+/src/research_workbench/protocol/ @Chengyue-Lu @let778750-cpu
+/src/research_workbench/contracts/ @Chengyue-Lu @let778750-cpu
+/src/research_workbench/governance/ @Chengyue-Lu @let778750-cpu
+/src/research_workbench/security/ @Chengyue-Lu @let778750-cpu

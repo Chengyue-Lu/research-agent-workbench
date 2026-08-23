@@ -11,11 +11,13 @@
 
 当前系统从[文档导航](../README.md)进入；架构决定从[ADR 索引](../decisions/README.md)查找。
 
-## 新 workstream 的 closeout
+## History 触发与 closeout
 
-细粒度证据在原 `docs/workstreams/<owner>/<workstream>/` 目录冻结，不移动目录，以免破坏已有
-链接。workstream 合并到 `main` 后，在本目录新建
-`YYYY-MM-DD-<task-id-or-audit-id>-<slug>.md`，至少记录：
+Git PR 与 commit 是普通 Task 的充分历史，不要求为每个 Task 自动创建 closeout 文件。只有重要
+workstream、major migration、架构/治理决定、release milestone 或关键失败/反例需要在此建立
+`YYYY-MM-DD-<task-id-or-audit-id>-<slug>.md`。细粒度证据仍在原 workstream 目录冻结，以免断链。
+
+被触发的 History 至少记录：
 
 - owner、cross-owner reviewer、feature PR、`develop` integration commit 与 release PR；
 - 最终范围、clean-checkout 验证命令和已提交证据；
