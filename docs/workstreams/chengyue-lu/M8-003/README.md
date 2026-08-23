@@ -3,10 +3,11 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 必需审查人：黄毅（GitHub 主名 `let778750-cpu`）
 - Task：`M8-003`
-- 状态：stacked implementation；节点完成前不请求审查、不合并
+- 状态：implementation complete；已与 M8-002 收束为单一活动节点分支，未合并
 - 实际开发基线：M8-002 feature lineage，已同步其 `def0689` contract hardening
-- 最终目标 base：M8-002 squash merge 后的最新 `develop`
-- 工作分支：`agent/method-m8-003-method-resolution`
+- 最终目标 base：Governance v2 生效后的最新 `develop`
+- 活动工作分支：`agent/method-m8-action-resolution-node`
+- 历史分支：`agent/method-m8-003-method-resolution`（保留引用，不再继续开发）
 
 ## 1. 阶段节点
 
@@ -19,8 +20,8 @@ Mode
 → no-Skill / Tool / Skill Need / Human / blocked / split
 ```
 
-这是本轮连续开发的审查节点。PR #26 仅保留为 Draft 快照；M8-003 完成验证后再统一整理 M8-002、
-M8-003 的审查和合并顺序。
+这是本轮连续开发的审查节点。原 PR #26 已撤回且未合并；M8-002 与 M8-003 的提交历史已正式合流，
+后续只在统一活动分支继续节点级整理。
 
 ## 2. 目标
 
@@ -59,9 +60,10 @@ workstream 与相应 implementation/module/status/TASKS 文档。公共契约新
 并形成 Action-to-Resolution compact handoff。任何需要修改 Execution View、Capability Snapshot、Mode
 migration 或 Decision Authority 的发现登记后推迟，不在本分支扩张。
 
-M8-002 合并前不为本堆叠分支创建正式 `develop` PR；节点审查通过前不合并或宣告 Task 完成。
+Governance v2 生效且统一分支形成合法 Task 状态快照前，不创建 M8 节点的 `develop` PR；节点审查
+通过前不合并或宣告 Task 完成。
 
 按 proposed Governance v2，本分支因 Method Resolution authority surface 至少为 R2：正式 PR 必须提供
 authority basis、adversarial evidence、cross-owner authority review 与本 workstream/Risk Ledger。
-当前 stacked `M8-003: IN_PROGRESS` 只描述隔离分支工作状态，不是可合并的 TASKS snapshot；创建 PR
-前必须先在有效治理下让 M8-002 `DONE`、M8-003 `READY`，再形成合法 `READY → DONE/IN_PROGRESS`。
+当前统一分支的 `M8-003: IN_PROGRESS` 只描述隔离开发状态，不是可合并的 TASKS snapshot；创建 PR
+前必须在有效治理下让 M8-002 `DONE`、M8-003 `READY`，避免以 `PARKED → IN_PROGRESS` 越过状态机。

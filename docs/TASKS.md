@@ -138,8 +138,9 @@ process-kill recovery 均不作为 `K-INTEGRATION-1` 的合并阻塞项。
 
 ## 当前下一任务
 
-当前 Method/Core 工作段为 **M8-002 → M8-003 Action-to-Resolution contract node**。M8-002 feature
-快照保持 Draft、未合并；M8-003 在其上堆叠开发，节点闭合前不请求正式审查，也不进入 Resolved
-Execution View。M6-003/M6-004 与 M3-001/M3-006 的未完成项继续按各自
+当前 Method/Core 工作段为 **M8-002 → M8-003 Action-to-Resolution contract node**。两个 Task 的
+开发历史已收束到单一活动分支 `agent/method-m8-action-resolution-node`；原 M8-002 PR #26 已撤回且
+未合并，原两条分支只保留为历史引用。该节点在 Governance v2 生效并形成合法的 Task 状态快照前
+不创建合并 PR，也不进入 Resolved Execution View。M6-003/M6-004 与 M3-001/M3-006 的未完成项继续按各自
 任务跟踪；M7-005/006/014 的真实比较继续 parked，直到 Method Resolution 与相应 Trace/Evaluation
 Manifest 稳定。

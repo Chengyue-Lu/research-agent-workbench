@@ -1,11 +1,12 @@
 # M8-002 验证证据
 
-状态：feature 实现与既有远端 CI 已通过；本轮契约阻塞项完成本地 focused 验证，等待完整重跑与审查。
+状态：feature 实现、既有远端 CI 与本轮完整验证已通过；已纳入统一节点分支，等待节点审查。
 
 ## 基线与环境
 
 - 目标 base：`develop@5991cafdb7f536cd7b871508de9055d02b558728`；
-- 分支：`agent/method-m8-002-mode-action-contract`；
+- 活动分支：`agent/method-m8-action-resolution-node`；
+- 历史分支：`agent/method-m8-002-mode-action-contract`，原 Draft PR #26 已撤回且未合并；
 - Python：本地 Python 3.14，使用仓库 `src/` 作为 `PYTHONPATH`；
 - 未安装新的在线依赖；Hypothesis 属性测试按项目既有条件跳过。
 
@@ -37,9 +38,10 @@ immutability 必须由合并边界比较 base/head Registry；静态 Schema/vali
 本轮 focused contract/schema checks：`20` tests passed；完整 suite、repository validation 与
 `git diff --check` 均在同一工作树重新执行通过。
 
-## PR 前仍需执行
+## 统一节点 PR 前仍需执行
 
+- Governance v2 生效后，将统一节点更新到最新 `develop` 并形成合法 Task 状态快照；
 - 由更新后的远端 CI 重跑 Python 3.11/3.13、coverage、wheel 和 clean-install checks；
-- 核对远端分支 ancestry 与 PR 目标确为 `develop`，并按合并时有效治理执行 Task 状态转换。
+- 核对统一分支同时包含原 M8-002 与 M8-003 历史，并按 R2 边界完成跨负责人审查。
 
 这些结果不证明真实研究方法有效、外部 Provider 兼容或 Skill/Action 具有净收益。

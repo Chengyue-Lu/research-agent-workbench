@@ -25,11 +25,12 @@ Mode result
 | 层级 | 分支 / 提交 | 状态 |
 |---|---|---|
 | 目标基线 | `develop@5991cafdb7f536cd7b871508de9055d02b558728` | 未改动 |
-| M8-002 | `agent/method-m8-002-mode-action-contract@def0689` | PR #26 Draft，无 review request，未合并；审计阻塞项已修复 |
-| M8-003 | `agent/method-m8-003-method-resolution`（含 `db17d67` 传播提交） | 堆叠在 M8-002 上，未创建 PR |
+| 统一活动节点 | `agent/method-m8-action-resolution-node` | 正式合流原 M8-002 与 M8-003 历史；后续 M8 工作只落到此分支 |
+| M8-002 历史引用 | `agent/method-m8-002-mode-action-contract@def0689` | PR #26 已撤回、未合并；分支保留但停止开发 |
+| M8-003 历史引用 | `agent/method-m8-003-method-resolution@1610d87` | 分支保留但停止开发 |
 
-M8-003 的提交基点是 M8-002 快照，不是当前 `develop`。这保留了连续契约开发所需的上下文，但在
-M8-002 合并前不应直接把 M8-003 作为 `develop` PR 审查或合并。
+统一分支从 M8-003 完整实现 head 建立，并通过 merge commit 纳入原 M8-002 最终 head，因此两个旧
+head 都是统一分支的祖先。该拓扑保留连续契约开发上下文，也消除了两个活动交付分支之间的漂移。
 
 ## 3. 验证摘要
 
@@ -53,18 +54,17 @@ M8-002 合并前不应直接把 M8-003 作为 `develop` PR 审查或合并。
 
 审查不要求在这一步决定具体 Skill、Tool、模型、供应商或宿主平台。
 
-## 5. 审查后的合并顺序
+## 5. 审查与合并顺序
 
-1. 对 Action→Resolution 节点进行一次概念与契约审查；需要修改时分别落到所属分支；
-2. 先按当前有效政策审查并合并 PR #26（M8-002 implementation，保持 IN_PROGRESS）；
-3. 独立审查并合并 Governance v2 R2 PR，再按 rollout 启用远端 ruleset；
-4. 用新 `feature` 状态机完成 `M8-002: IN_PROGRESS → DONE`，并在同一 head 激活
-   `M8-003: PARKED → READY`；这不是独立 `task-closeout` class，也不自动制造 History；
-5. 将 M8-003 变基到该 `develop`，形成合法 `READY → DONE/IN_PROGRESS`，重跑完整验证并创建 R2 PR；
-6. M8-003 PR 只需确认节点审查修改、重排 diff、authority/adversarial evidence 与 CI 完整保留。
+1. 以统一分支对 Action→Resolution 节点进行一次概念与契约审查；所有修改只落到统一分支；
+2. 独立审查并合并 Governance v2 R2 PR，再按 rollout 启用远端 ruleset；
+3. 将统一 M8 分支更新到新的 `develop`，完成 `M8-002: IN_PROGRESS → DONE`，并把
+   `M8-003: PARKED → READY` 作为可合并快照；这不自动宣告 M8-003 完成；
+4. 重跑完整验证并创建一个统一的 M8 R2 PR，保留 authority/adversarial evidence 与跨负责人审查；
+5. M8-003 的 `READY → DONE` 仅在节点验收成立后由后续合法状态推进完成。
 
-上述 PR 可以共享一次节点级概念审查，但仍按所属分支和风险分别落地。未经审查不合并；旧
-`task-closeout`、人工 base SHA 和逐 Task History 不再作为未来结构。
+Governance 与 M8 仍是两个独立风险边界；M8-002/M8-003 则只保留一个活动实现分支和一个未来 PR。
+未经审查不合并；旧 `task-closeout`、人工 base SHA 和逐 Task History 不再作为未来结构。
 
 ## 6. 下一边界
 
