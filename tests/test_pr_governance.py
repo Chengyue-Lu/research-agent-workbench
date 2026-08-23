@@ -144,6 +144,27 @@ class RiskInferenceTests(unittest.TestCase):
         )
         self.assertEqual("R2", risk)
 
+    def test_authority_protocol_is_r2(self) -> None:
+        for path in (
+            "src/research_workbench/protocol/authority.py",
+            "registry/authority/decision-authority-matrix.yaml",
+            "schemas/v0.1.0/decision-authority-matrix.schema.json",
+            "docs/implementation/DECISION_AUTHORITY.md",
+        ):
+            with self.subTest(path=path):
+                risk, _ = governance.infer_minimum_risk(
+                    [path], shared_contract=False, authority_impact=False
+                )
+                self.assertEqual("R2", risk)
+
+    def test_implementation_docs_and_status_are_at_least_r1(self) -> None:
+        for path in ("docs/implementation/METHOD_RESOLUTION.md", "docs/STATUS.md"):
+            with self.subTest(path=path):
+                risk, _ = governance.infer_minimum_risk(
+                    [path], shared_contract=False, authority_impact=False
+                )
+                self.assertIn(risk, {"R1", "R2"})
+
     def test_declared_r0_is_automatically_upgraded(self) -> None:
         report = governance.GovernanceReport()
         effective = governance.resolve_effective_risk("R0", "R1", report)
@@ -245,14 +266,21 @@ class TasksAuthorityTests(unittest.TestCase):
         pr_class: str = "feature",
         declared: set[str] | None = None,
         changed_paths: tuple[str, ...] = ("docs/TASKS.md",),
+        verification_evidence: str | None = None,
     ) -> object:
+        declared_ids = declared or set()
         report = governance.GovernanceReport()
         governance.validate_task_changes(
             base_text=BASE_TASKS,
             head_text=head,
             pr_class=pr_class,
             changed_paths=changed_paths,
-            declared_task_ids=declared or set(),
+            declared_task_ids=declared_ids,
+            verification_evidence=(
+                verification_evidence
+                if verification_evidence is not None
+                else "verified " + " ".join(sorted(declared_ids))
+            ),
             report=report,
         )
         return report
@@ -275,6 +303,58 @@ class TasksAuthorityTests(unittest.TestCase):
         )
         report = self.validate(head, declared={"M8-002", "M8-003"})
         self.assertFalse(report.has_errors, report.findings)
+
+    def test_atomic_dependency_chain_can_complete_in_one_stage(self) -> None:
+        base = """# Tasks
+| ID | 状态 | 任务 | 依赖 | 验收 |
+|---|---|---|---|---|
+| M8-001 | DONE | Foundation | M0 | Existing acceptance |
+| M8-002 | READY | Action | M8-001 | Action evidence |
+| M8-003 | PARKED | Resolution | M8-002 | Resolution evidence |
+| M8-004 | PARKED | Migration | M8-003 | Migration evidence |
+| M8-005 | PARKED | Authority | M8-004 | Authority evidence |
+"""
+        head = base.replace("M8-002 | READY", "M8-002 | DONE")
+        for task_id in ("M8-003", "M8-004", "M8-005"):
+            head = head.replace(f"{task_id} | PARKED", f"{task_id} | DONE")
+        report = governance.GovernanceReport()
+        governance.validate_task_changes(
+            base_text=base,
+            head_text=head,
+            pr_class="feature",
+            changed_paths=("docs/TASKS.md",),
+            declared_task_ids={"M8-002", "M8-003", "M8-004", "M8-005"},
+            verification_evidence="M8-002 pass; M8-003 pass; M8-004 pass; M8-005 pass",
+            report=report,
+        )
+        self.assertFalse(report.has_errors, report.findings)
+        self.assertIn("TASK-ATOMIC-COMPLETION", codes(report, "INFO"))
+
+    def test_atomic_completion_fails_when_dependency_is_missing(self) -> None:
+        base = BASE_TASKS.replace("M8-003 | PARKED", "M8-003 | PARKED").replace(
+            "M8-002 | IN_PROGRESS", "M8-002 | PARKED"
+        )
+        head = base.replace("M8-003 | PARKED", "M8-003 | DONE")
+        report = governance.GovernanceReport()
+        governance.validate_task_changes(
+            base_text=base,
+            head_text=head,
+            pr_class="feature",
+            changed_paths=("docs/TASKS.md",),
+            declared_task_ids={"M8-003"},
+            verification_evidence="M8-003 pass",
+            report=report,
+        )
+        self.assertIn("TASK-DEPENDENCY-NOT-DONE", codes(report, "ERROR"))
+
+    def test_each_completed_task_requires_named_evidence(self) -> None:
+        head = BASE_TASKS.replace("M8-002 | IN_PROGRESS", "M8-002 | DONE")
+        report = self.validate(
+            head,
+            declared={"M8-002"},
+            verification_evidence="full suite passed",
+        )
+        self.assertIn("TASK-DONE-EVIDENCE-MISSING", codes(report, "ERROR"))
 
     def test_dependency_must_be_done_for_ready(self) -> None:
         report = self.validate(
@@ -386,6 +466,55 @@ class PublishedActionIdentityTests(unittest.TestCase):
             "ACTION-IDENTITY-REMOVED",
             codes(self.validate({"entries": []}), "ERROR"),
         )
+
+
+class PublishedDocumentIdentityTests(unittest.TestCase):
+    CASES = {
+        "registry/modes/actions/simulation/SIM-A3.yaml": (
+            "mode-action",
+            "action_id: SIM-A3\nversion: 2.0.0\nsummary: original\n",
+            "action_id: SIM-A3\nversion: 2.1.0\nsummary: appended\n",
+        ),
+        "registry/modes/simulation.yaml": (
+            "research-mode",
+            "mode_id: simulation\nversion: 0.2.0\nsummary: original\n",
+            "mode_id: simulation\nversion: 0.3.0\nsummary: appended\n",
+        ),
+        "registry/authority/decision-authority-matrix.yaml": (
+            "decision-authority-matrix",
+            "matrix_id: default\nversion: 1.0.0\nsummary: original\n",
+            "matrix_id: default\nversion: 1.1.0\nsummary: appended\n",
+        ),
+        "registry/modes/migrations/simulation-v01-v02.yaml": (
+            "research-mode-migration",
+            "migration_id: simulation-v01-v02\nmigration_version: 1.0.0\nsummary: original\n",
+            "migration_id: simulation-v01-v02\nmigration_version: 1.1.0\nsummary: appended\n",
+        ),
+    }
+
+    def test_same_version_rewrite_fails_for_every_published_kind(self) -> None:
+        for path, (kind, original, _) in self.CASES.items():
+            with self.subTest(kind=kind):
+                report = governance.GovernanceReport()
+                governance.validate_published_identity_history(
+                    {path: original},
+                    {path: original.replace("original", "rewritten")},
+                    report,
+                )
+                self.assertIn("PUBLISHED-IDENTITY-MUTATED", codes(report, "ERROR"))
+
+    def test_new_version_append_preserves_old_identity(self) -> None:
+        for path, (kind, original, appended) in self.CASES.items():
+            with self.subTest(kind=kind):
+                suffix = ".json" if path.endswith(".json") else ".yaml"
+                appended_path = path.removesuffix(suffix) + "-next" + suffix
+                report = governance.GovernanceReport()
+                governance.validate_published_identity_history(
+                    {path: original},
+                    {path: original, appended_path: appended},
+                    report,
+                )
+                self.assertFalse(report.has_errors, report.findings)
 
 
 if __name__ == "__main__":
