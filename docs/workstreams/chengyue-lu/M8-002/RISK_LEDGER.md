@@ -11,7 +11,7 @@
 | M8A-CLAIM-001 | fact | 自由字符串或相互冲突的 Claim effect 会建立第二套 Claim vocabulary，或越过 Mode claim rules。 | 复用 canonical Claim strength；validator 阻断 effect overlap 和 `may_support` 越界。 | controlled |
 | M8A-GATE-001 | fact | `human_gates` 若在 Action 中定义批准结果、持续性或 authority，会抢占 M8-005。 | 本契约只保存 Gate ID；decision vocabulary 与 authority matrix 明确排除。 | controlled |
 | M8A-CROSS-001 | fact | Execution/Receipt 仍存在 legacy Skill Assignment 耦合；在 M8-002 中修补会跨越两线 owner 和任务边界。 | 不修改 Execution/Receipt；等待 M8-003 后的独立 Resolved Execution View/Execution Boundary Task。 | deferred |
-| M8A-GOV-001 | fact | 把工作流文案绑定到某一版 closeout 机制，会在治理更新后再次产生流程死结。 | 本分支保持非 DONE；完成与后继激活引用合并时有效 policy，不预设独立 closeout。 | controlled |
+| M8A-GOV-001 | fact | 把工作流文案绑定到某一版 closeout 机制，会在治理更新后再次产生流程死结。 | 按已生效 Governance v2，在同一 feature 快照完成 M8-002 并激活 M8-003；不恢复独立 closeout。 | controlled |
 | M8A-COMPAT-001 | inference | 后续 Mode v0.2 migration 可能误把 Action 引用变化描述成自动升级历史 v0.1 对象。 | v0.1 保持只读兼容；迁移需独立 M8-004、原/新 hash 与版本证据。 | deferred |
 | M8A-VALUE-001 | proposal | 16 个 Action 可能只增加分类元数据，而未减少真实 method violation。 | M8-002 只建立可评估契约；净增量由 M8-003 后真实 forward cases 判断。 | deferred |
 

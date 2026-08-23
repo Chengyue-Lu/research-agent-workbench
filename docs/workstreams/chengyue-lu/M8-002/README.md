@@ -3,11 +3,12 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 必需审查人：黄毅（GitHub 主名 `let778750-cpu`）
 - Task：`M8-002`
-- 状态：implementation complete；已纳入统一 Action-to-Resolution 节点，未合并
+- 状态：implementation complete；当前 feature 快照将 Task 置为 DONE，等待统一节点 R2 审查
 - 目标 base：`develop`
-- 基线 commit：`5991cafdb7f536cd7b871508de9055d02b558728`
+- 当前集成基线：`develop@51c86072c986826f1abc7ca3b17018169b7ca75d`
+- 原实现基线：`5991cafdb7f536cd7b871508de9055d02b558728`
 - 活动工作分支：`agent/method-m8-action-resolution-node`
-- 历史分支：`agent/method-m8-002-mode-action-contract`（保留引用，不再继续开发）
+- 历史提交：`def0689`（原 M8-002 分支已删除，提交由统一分支祖先关系保留）
 
 ## 1. 目标
 
@@ -73,11 +74,12 @@ Claim effect 复用 canonical Claim strength，Gate 只保存 opaque ID，且 Ac
 ## 6. 合并与停止条件
 
 原独立 Draft PR #26 已撤回且未合并。M8-002 与 M8-003 现作为一个连续的 Action-to-Resolution
-审查节点维护；节点分支不把当前隔离开发状态直接当成可合并的 TASKS snapshot。Governance v2
-生效后，统一节点 PR 必须先形成合法的依赖与状态转换，再以 `develop` 为目标接受 R2 审查。
+审查节点维护。Governance v2 已在 `develop` 生效；统一节点当前以 `M8-002: READY → DONE` 和
+`M8-003: PARKED → READY` 形成合法 feature 快照，再以 `develop` 为目标接受 R2 审查。DONE 是
+具名 owner 对本 Task 验收条件的完成判断；测试仍只证明结构、引用与边界资格。
 
 停止条件：16 个 Action、Registry、Schema、正式 fixture 引用和确定性负面测试形成闭集；任何需要
 修改 Method Resolution、Execution View、Runtime 或 Human Authority 的发现都登记并转交后续 Task，
 不在本分支扩张。
 
-只有达到当前 History 触发条件时才建立长期 closeout；原 workstream、PR #26 与旧分支均保持可追溯。
+只有达到当前 History 触发条件时才建立长期 closeout；原 workstream、PR #26 与旧分支提交均保持可追溯。

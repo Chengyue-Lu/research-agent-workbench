@@ -119,8 +119,8 @@ process-kill recovery 均不作为 `K-INTEGRATION-1` 的合并阻塞项。
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
 | M8-001 | DONE | 按第二轮审计重整全局架构文档与路线 | M7-016 | ADR-0016、五平面架构、ROADMAP、审计吸收记录和单一真值导航一致；未验证外部项目或实现新 Schema |
-| M8-002 | IN_PROGRESS | 将 Mode Action 正式化为一等契约 | M7-011, M8-001 | 两个正式 Mode 的 Action 有 stable ID/version/hash、trigger/non-trigger、failure/artifact/claim/gate/stop/blocked；既有 fixture 无损引用 |
-| M8-003 | IN_PROGRESS | 建立版本化 Method Resolution | M8-002 | 八个 routing fixture 转成 provider-neutral Resolution；正式表达 no-Skill/tool/Skill Need/Human/split/blocked 与 rejected alternatives |
+| M8-002 | DONE | 将 Mode Action 正式化为一等契约 | M7-011, M8-001 | 两个正式 Mode 的 Action 有 stable ID/version/hash、trigger/non-trigger、failure/artifact/claim/gate/stop/blocked；既有 fixture 无损引用 |
+| M8-003 | READY | 建立版本化 Method Resolution | M8-002 | 八个 routing fixture 转成 provider-neutral Resolution；正式表达 no-Skill/tool/Skill Need/Human/split/blocked 与 rejected alternatives |
 | M8-004 | PARKED | 建立最小 migration seam 并迁移 Research Mode v0.1 → v0.2 | M8-002, M8-003 | v0.2 删除直接 Skill recommendation；v0.1 仍可验证/历史解释；迁移保留原/新 hash 与实现版本 |
 | M8-005 | PARKED | 冻结 Decision Authority Matrix 并映射 validation/preflight | M8-002, M8-003 | Agent proposal、deterministic resolution、Human Gate、权限放宽和 Claim promotion 权限有正反 fixture |
 
@@ -138,9 +138,10 @@ process-kill recovery 均不作为 `K-INTEGRATION-1` 的合并阻塞项。
 
 ## 当前下一任务
 
-当前 Method/Core 工作段为 **M8-002 → M8-003 Action-to-Resolution contract node**。两个 Task 的
-开发历史已收束到单一活动分支 `agent/method-m8-action-resolution-node`；原 M8-002 PR #26 已撤回且
-未合并，原两条分支只保留为历史引用。该节点在 Governance v2 生效并形成合法的 Task 状态快照前
-不创建合并 PR，也不进入 Resolved Execution View。M6-003/M6-004 与 M3-001/M3-006 的未完成项继续按各自
-任务跟踪；M7-005/006/014 的真实比较继续 parked，直到 Method Resolution 与相应 Trace/Evaluation
-Manifest 稳定。
+当前 Method/Core 工作段为 **M8-002 → M8-003 Action-to-Resolution contract node**。Governance v2
+已在 `develop` 生效；统一分支 `agent/method-m8-action-resolution-node` 以合法合并快照完成 M8-002，
+并将依赖已满足的 M8-003 激活为 READY。原 M8-002 PR #26 已撤回且未合并，旧分支已删除，历史提交
+仍由统一分支祖先关系保留。本节点以一个 R2 PR 接受 Action→Resolution 连续契约审查；该 PR 不把
+M8-003 宣告为 DONE，也不进入 M8-004/M8-005、Resolved Execution View 或 API/Runtime 工作。
+M6-003/M6-004 与 M3-001/M3-006 的未完成项继续按各自任务跟踪；M7-005/006/014 的真实比较继续
+parked，直到 Method Resolution 与相应 Trace/Evaluation Manifest 稳定。
