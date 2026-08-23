@@ -12,7 +12,8 @@ docs/workstreams/<owner>/<task-id-or-slug>/
 ```
 
 既有 `chengyue-lu-mode-skill/` 是历史目录，保持原路径，不为统一外观重写历史。
-黄毅维护的当前入口见 [`huangyi/README.md`](huangyi/README.md)；进行中材料放在具名子目录，
+路诚钺维护的当前入口见 [`chengyue-lu/README.md`](chengyue-lu/README.md)，黄毅维护的当前入口见
+[`huangyi/README.md`](huangyi/README.md)；进行中材料放在具名子目录，
 不把多个独立优化作为散落文件混在 owner 根目录。
 
 每个新目录的 `README.md` 至少声明：

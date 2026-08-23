@@ -2,13 +2,6 @@
 
 本文件只记录被主线接受、会影响使用者理解的基线变化。逐任务、分支和实验过程保存在[详细开发日志](DEVELOPMENT_HISTORY.md)。
 
-## 2026-08-22 — First-class Mode Action contracts
-
-- 为 `evidence-synthesis` 与 `simulation` 固定 16 个版本化 Mode Action；
-- 新增 hash-pinned Action Registry，确定性校验 Action、Mode、路径和内容哈希闭集；
-- routing fixtures 改用 `action-id@version`，同时保持 project-internal / candidate action 为 planning-only；
-- 不引入 Method Resolution、Mode migration、Skill binding、Human Gate decision vocabulary 或 Runtime 行为。
-
 ## 2026-08-22 — Documentation surface baseline
 
 - 分离 stable、status、planning、compatibility 与 history 文档权威；
