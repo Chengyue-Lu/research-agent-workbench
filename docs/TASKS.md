@@ -138,10 +138,11 @@ process-kill recovery 均不作为 `K-INTEGRATION-1` 的合并阻塞项。
 
 ## 当前下一任务
 
-当前 Method/Core 工作段为 **M8-002 → M8-003 Action-to-Resolution contract node**。Governance v2
-已在 `develop` 生效；统一分支 `agent/method-m8-action-resolution-node` 以合法合并快照完成 M8-002，
-并将依赖已满足的 M8-003 激活为 READY。原 M8-002 PR #26 已撤回且未合并，旧分支已删除，历史提交
-仍由统一分支祖先关系保留。本节点以一个 R2 PR 接受 Action→Resolution 连续契约审查；该 PR 不把
-M8-003 宣告为 DONE，也不进入 M8-004/M8-005、Resolved Execution View 或 API/Runtime 工作。
+当前 Method/Core 工作段为 **M8 Method Control Stage**。统一分支
+`agent/method-m8-action-resolution-node` 连续承载 Action、Method Resolution、Mode v0.2 migration 与
+Decision Authority 实现，以 PR #30 接受一次 R2 审查；不再为每个 M8 小节点新建分支或 Handoff。
+相对 `develop` 的合法 merge snapshot 仍只完成 M8-002 并激活 M8-003；由于状态机禁止同一 head 把
+M8-003 从 PARKED 越级置 DONE，M8-004/M8-005 的隔离实现不在本 PR 中伪造共享 Task 激活或完成。
+Resolved Execution View、Method Trace 与 API/Runtime consumer 仍不进入本阶段。
 M6-003/M6-004 与 M3-001/M3-006 的未完成项继续按各自任务跟踪；M7-005/006/014 的真实比较继续
 parked，直到 Method Resolution 与相应 Trace/Evaluation Manifest 稳定。

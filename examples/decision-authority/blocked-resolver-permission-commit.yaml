@@ -1,0 +1,18 @@
+schema_version: 0.1.0
+preflight_id: DAP-RESOLVER-PERMISSION-COMMIT-NEG-001
+matrix_ref:
+  ref: rwb-decision-authority@1.0.0
+  document_path: registry/authority/decision-authority-matrix.yaml
+  content_hash: sha256:e9ba8aad12d2dd5164d2ed989fd9c2eb93885f3c58b5e5f23330971602038020
+decision_kind: permission-relaxation
+operation: commit
+actor_class: deterministic-resolver
+subject_refs: [TASK-PRIVATE-DATA-001]
+presented_facts: [requested-scope-explicit, revised-task-or-protocol, risk-review-complete]
+requested_effect: Let deterministic validation expand a frozen permission boundary.
+result:
+  status: blocked
+  code: AUTHORITY-DENIED
+  disposition: human-gate
+  reason: deterministic-resolver has no commit authority for permission-relaxation.
+limitations: [Structural validation cannot authorize a permission expansion.]

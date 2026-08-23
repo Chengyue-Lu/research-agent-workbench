@@ -1,0 +1,19 @@
+schema_version: 0.1.0
+preflight_id: DAP-HUMAN-CLAIM-COMMIT-001
+matrix_ref:
+  ref: rwb-decision-authority@1.0.0
+  document_path: registry/authority/decision-authority-matrix.yaml
+  content_hash: sha256:e9ba8aad12d2dd5164d2ed989fd9c2eb93885f3c58b5e5f23330971602038020
+decision_kind: claim-promotion
+operation: commit
+actor_class: human-gate
+subject_refs: [CLAIM-SIM-001, EVIDENCE-SIM-001]
+presented_facts: [evidence-chain-structurally-valid, claim-ceiling-allows, limitations-reviewed]
+requested_effect: Accept a Claim promotion within the frozen Mode ceiling.
+human_gate_ref: accept-supported-claim
+result:
+  status: allowed
+  code: AUTHORITY-ALLOWED
+  disposition: proceed
+  reason: human-gate may commit claim-promotion under the frozen Matrix and presented facts.
+limitations: [Authority eligibility does not prove the promoted Claim is scientifically correct.]

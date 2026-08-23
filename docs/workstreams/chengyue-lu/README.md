@@ -9,3 +9,4 @@
 - [`M8-002/`](M8-002/README.md)：将两个正式 Research Mode 的 Mode Action 正式化为一等契约。
 - [`M8-003/`](M8-003/README.md)：将 Action-to-mechanism 决定正式化为版本化 Method Resolution。
 - [`M8-004/`](M8-004/README.md)：在不覆盖 v0.1 的前提下建立 Research Mode v0.2 最小迁移 seam。
+- [`M8-005/`](M8-005/README.md)：冻结 Agent、Resolver 与 Human Gate 的 Decision Authority Matrix 和 preflight。

@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/decision-authority-preflight.schema.json",
+  "title": "Decision Authority Preflight",
+  "$comment": "A recomputable authority check. Allowed means the actor may perform the declared operation within the frozen facts; it is not scientific approval.",
+  "x-rwb-document-kind": "decision_authority_preflight",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "preflight_id",
+    "matrix_ref",
+    "decision_kind",
+    "operation",
+    "actor_class",
+    "subject_refs",
+    "presented_facts",
+    "requested_effect",
+    "result",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "preflight_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "matrix_ref": {
+      "type": "object",
+      "required": ["ref", "document_path", "content_hash"],
+      "properties": {
+        "ref": { "const": "rwb-decision-authority@1.0.0" },
+        "document_path": { "$ref": "common.schema.json#/$defs/relativePath" },
+        "content_hash": { "$ref": "common.schema.json#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    },
+    "decision_kind": {
+      "enum": [
+        "mode-selection",
+        "action-selection",
+        "mechanism-selection",
+        "skill-tool-binding",
+        "permission-relaxation",
+        "data-boundary-relaxation",
+        "claim-promotion"
+      ]
+    },
+    "operation": { "enum": ["propose", "validate", "commit"] },
+    "actor_class": { "enum": ["agent", "deterministic-resolver", "human-gate"] },
+    "subject_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "uniqueItems": true
+    },
+    "presented_facts": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "requested_effect": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "human_gate_ref": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "result": {
+      "type": "object",
+      "required": ["status", "code", "disposition", "reason"],
+      "properties": {
+        "status": { "enum": ["allowed", "blocked"] },
+        "code": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "disposition": { "enum": ["proceed", "blocked", "human-gate"] },
+        "reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "additionalProperties": false
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": false
+}

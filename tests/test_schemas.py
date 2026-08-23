@@ -38,6 +38,8 @@ class VersionedSchemaTests(unittest.TestCase):
                 "attempt_completion_manifest",
                 "context_snapshot",
                 "deterministic_check_report",
+                "decision_authority_matrix",
+                "decision_authority_preflight",
                 "execution_receipt",
                 "handoff_packet",
                 "handoff_transfer_audit",

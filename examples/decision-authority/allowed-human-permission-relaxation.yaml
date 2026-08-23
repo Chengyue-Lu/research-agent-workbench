@@ -1,0 +1,19 @@
+schema_version: 0.1.0
+preflight_id: DAP-HUMAN-PERMISSION-COMMIT-001
+matrix_ref:
+  ref: rwb-decision-authority@1.0.0
+  document_path: registry/authority/decision-authority-matrix.yaml
+  content_hash: sha256:e9ba8aad12d2dd5164d2ed989fd9c2eb93885f3c58b5e5f23330971602038020
+decision_kind: permission-relaxation
+operation: commit
+actor_class: human-gate
+subject_refs: [TASK-PRIVATE-DATA-001, PROTOCOL-PRIVATE-DATA-002]
+presented_facts: [requested-scope-explicit, revised-task-or-protocol, risk-review-complete]
+requested_effect: Authorize a bounded permission revision recorded in a new Task or Protocol revision.
+human_gate_ref: approve-bounded-permission-revision
+result:
+  status: allowed
+  code: AUTHORITY-ALLOWED
+  disposition: proceed
+  reason: human-gate may commit permission-relaxation under the frozen Matrix and presented facts.
+limitations: [Authorization cannot waive external policy or mutate the prior Task revision.]

@@ -49,7 +49,9 @@ Resolver 或全局 Registry。
 
 这些检查不判断 Action/Mode 是否科学适用，不批准义务是否在语义上完成，也不把 Human Gate 变成
 机器批准。`assessment` 只标识需要 deterministic、semantic review、human decision 或当前 unavailable，
-不定义 M8-005 的 Decision vocabulary。
+不在 Resolution 内嵌批准语义。actor/operation 权威由独立的
+[Decision Authority Matrix](DECISION_AUTHORITY.md) preflight 判断，Resolution 中的 Gate ref 仍是
+opaque ID。
 
 ## 5. 状态与下游边界
 
@@ -59,5 +61,5 @@ Resolver 或全局 Registry。
 - `split-and-block`：只允许重新签发的有界子 Task 继续，受影响部分保持阻断。
 
 Method Resolution 不等于 Resolved Execution View，不选择 Agent/Profile、权限交集、Tool endpoint、
-Provider 或 Model，也不创建 Attempt、Receipt 或 Trace。上述接口在 M8-002/M8-003 节点审查后进入独立
-Task，不能通过本契约的字段扩张提前实现。
+Provider 或 Model，也不创建 Attempt、Receipt 或 Trace。上述接口必须由后续独立 Task 消费当前阶段
+契约，不能通过本契约的字段扩张提前实现。

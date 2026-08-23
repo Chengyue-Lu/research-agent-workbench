@@ -19,6 +19,16 @@ from research_workbench.protocol.migrations import (
     migrate_research_mode_v01_to_v02,
     research_mode_action_migrations,
 )
+from research_workbench.protocol.authority import (
+    DECISION_AUTHORITY_MATRIX_ID,
+    DECISION_AUTHORITY_MATRIX_PATH,
+    DECISION_AUTHORITY_MATRIX_REF,
+    DECISION_AUTHORITY_MATRIX_VERSION,
+    DecisionAuthorityEntry,
+    DecisionAuthorityMatrix,
+    DecisionAuthorityRule,
+    evaluate_decision_authority_preflight,
+)
 
 __all__ = [
     "MethodActionDecision",
@@ -38,4 +48,12 @@ __all__ = [
     "build_research_mode_migration_record",
     "migrate_research_mode_v01_to_v02",
     "research_mode_action_migrations",
+    "DECISION_AUTHORITY_MATRIX_ID",
+    "DECISION_AUTHORITY_MATRIX_PATH",
+    "DECISION_AUTHORITY_MATRIX_REF",
+    "DECISION_AUTHORITY_MATRIX_VERSION",
+    "DecisionAuthorityEntry",
+    "DecisionAuthorityMatrix",
+    "DecisionAuthorityRule",
+    "evaluate_decision_authority_preflight",
 ]

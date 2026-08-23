@@ -27,6 +27,7 @@
 - Skill Manifest → `SKILL.md` metadata；
 - Task → Resolved Task；
 - Task + Mode Action → Method Resolution（已实现 provider-neutral 决定工件与正反 fixture）；
+- Decision operation + actor + frozen facts → Authority preflight（已实现 Matrix hash 与结果重算）；
 - Capability Requirement → frozen Snapshot（Roadmap Phase B 目标，尚未实现）；
 - Handoff → promotion eligibility；
 - Runtime capability snapshot；
@@ -66,6 +67,8 @@ direct-tool、Mode+candidate Skill；单一 with/without fixture 只能提供局
 - 外部来源携带提示注入文字；
 - reviewer 给出与原 Agent 一致但无新证据的“共识”；
 - trace 中出现敏感字段。
+- Agent/Resolver 越权 commit permission/data relaxation 或 Claim promotion；
+- Authority Matrix hash、commit facts、Human Gate ref 或 recorded result 漂移。
 
 M3 首批已自动化的故障注入包括：主上下文原始材料、隐藏决定、子 Agent 压缩但未固化 Handoff/Audit、Manifest 条目遗漏、负面区段无映射、来源哈希/定位漂移、抽查发现 summary distortion、伪造 Context assessment、checkpoint digest 篡改、高 coordination ratio、超并发、重复 review、敏感/外部/full trace。fixture 只证明风险代码生效；真实摘要失真率、Manifest 源头遗漏和 secret redaction 仍需真实定向案例。
 

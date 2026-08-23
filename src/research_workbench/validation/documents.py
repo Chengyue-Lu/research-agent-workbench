@@ -21,6 +21,10 @@ from research_workbench.protocol.migrations import (
     RESEARCH_MODE_MIGRATION_VERSION,
     migrate_research_mode_v01_to_v02,
 )
+from research_workbench.protocol.authority import (
+    DecisionAuthorityMatrix,
+    evaluate_decision_authority_preflight,
+)
 from research_workbench.validation.schemas import SchemaCatalog
 
 
@@ -88,6 +92,8 @@ DOCUMENT_REQUIRED: dict[str, tuple[str, ...]] = {
 
 SCHEMA_KINDS = {
     "deterministic_check_report",
+    "decision_authority_matrix",
+    "decision_authority_preflight",
     "project_protocol",
     "provider_conformance_report",
     "research_mode",
@@ -133,6 +139,10 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         and "target_mode" in document
     ):
         return "research_mode_migration"
+    if "matrix_id" in document and "authority_classes" in document and "entries" in document:
+        return "decision_authority_matrix"
+    if "preflight_id" in document and "matrix_ref" in document and "result" in document:
+        return "decision_authority_preflight"
     if "action_id" in document and "mode_ref" in document and "claim_effects" in document:
         return "mode_action"
     if "resolution_id" in document and "mode_resolution" in document and "action_decisions" in document:
@@ -937,6 +947,98 @@ def _validate_research_mode_migrations(
     return issues
 
 
+def _validate_decision_authority(
+    documents: Mapping[Path, Any]
+) -> list[ValidationIssue]:
+    issues: list[ValidationIssue] = []
+    matrices: dict[str, tuple[Path, Mapping[str, Any]]] = {}
+    for path, document in documents.items():
+        if not isinstance(document, Mapping) or infer_document_kind(document) != "decision_authority_matrix":
+            continue
+        try:
+            matrix = DecisionAuthorityMatrix.from_mapping(document)
+        except ContractError as error:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "DECISION-AUTHORITY-MATRIX-INVALID",
+                    str(error),
+                )
+            )
+            continue
+        if matrix.reference in matrices:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "DECISION-AUTHORITY-MATRIX-DUPLICATE",
+                    f"duplicate Matrix identity: {matrix.reference}",
+                )
+            )
+        matrices[matrix.reference] = (path, document)
+
+    seen_preflights: set[str] = set()
+    for path, document in documents.items():
+        if not isinstance(document, Mapping) or infer_document_kind(document) != "decision_authority_preflight":
+            continue
+        preflight_id = str(document.get("preflight_id"))
+        if preflight_id in seen_preflights:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "DECISION-AUTHORITY-PREFLIGHT-DUPLICATE",
+                    f"duplicate preflight_id: {preflight_id}",
+                )
+            )
+        seen_preflights.add(preflight_id)
+        matrix_ref = document.get("matrix_ref")
+        if not isinstance(matrix_ref, Mapping):
+            continue
+        loaded = _loaded_document_at(documents, matrix_ref.get("document_path"))
+        if loaded is None:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "DECISION-AUTHORITY-MATRIX-MISSING",
+                    "preflight Matrix document is not loaded",
+                )
+            )
+            continue
+        matrix_path, matrix_document = loaded
+        if matrices.get(str(matrix_ref.get("ref"))) != (matrix_path, matrix_document):
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "DECISION-AUTHORITY-MATRIX-REF-MISMATCH",
+                    "preflight Matrix ref does not match the loaded Matrix",
+                )
+            )
+            continue
+        try:
+            expected = evaluate_decision_authority_preflight(
+                document,
+                matrix_document,
+                matrix_content_hash=hash_file(matrix_path),
+            )
+        except ContractError as error:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "DECISION-AUTHORITY-PREFLIGHT-INVALID",
+                    str(error),
+                )
+            )
+            continue
+        if document.get("result") != expected:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "DECISION-AUTHORITY-RESULT-MISMATCH",
+                    "recorded preflight result does not match deterministic authority evaluation",
+                )
+            )
+    return issues
+
+
 def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     source_ids: set[str] = set()
@@ -973,6 +1075,7 @@ def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     issues.extend(_validate_mode_action_registry(documents))
     issues.extend(_validate_method_resolutions(documents))
     issues.extend(_validate_research_mode_migrations(documents))
+    issues.extend(_validate_decision_authority(documents))
     return issues
 
 

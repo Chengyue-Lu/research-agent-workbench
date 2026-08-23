@@ -7,6 +7,7 @@
 - [Mode Action contract and registry](MODE_ACTION_CONTRACT.md)
 - [Method Resolution contract](METHOD_RESOLUTION_CONTRACT.md)
 - [Research Mode v0.1 to v0.2 migration](RESEARCH_MODE_MIGRATION.md)
+- [Decision Authority Matrix and preflight](DECISION_AUTHORITY.md)
 - [File-authoritative Trace Core](TRACE_CORE.md)
 - [Execution Trace Adapter](EXECUTION_TRACE_ADAPTER.md)
 - [Provider Adapter plan and seam](PROVIDER_ADAPTER_PLAN.md)
