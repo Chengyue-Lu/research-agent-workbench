@@ -268,11 +268,12 @@ Source Admission 而非会话。再次印证 file-first 哲学。
 
 | 维度 | 取值谱系 |
 |---|---|
-| 传输介质 | 进程内函数调用 → 消息队列 → 黑板/共享池 → 群聊广播 → 共享文件/git → 开放协议（HTTP/JSON-RPC） |
+| 传输介质 | 进程内函数调用 → 消息队列 → 黑板/共享池 → 群聊广播 → 共享文件/git → 开放协议（HTTP/JSON-RPC）→ **编排脚本（代码即拓扑）→ 持久化状态机工作流**（后两层经 ruflo 核查补入，见 3.7） |
 | 寻址方式 | 角色名 / agent 实例 ID / topic 订阅 / 图的边 / 中心路由器指定 |
 | 同步性 | 同步调用（阻塞等结果）/ 异步邮箱（投递后继续） |
 | 负载格式 | 自由自然语言 / 半结构化文本 / 结构化 JSON / 工件+哈希 |
 | 可见性 | 点对点（仅收发方）/ 广播（全员）/ 共享状态（公共区可读） |
+| **拓扑载体**（ruflo 补入） | 数据结构（LangGraph 图）/ 持久化定义（MCP workflow）/ **代码（git 内编排脚本）** / 隐式（LLM 发言人选择）/ 无（星型） |
 
 **关键观察（INFERENCE）**：五个维度中，前四个已被各系统充分探索（见 3.3），**第五维
 （可见性）与「治理」整体缺席**——没有任何系统对消息做来源、授权、预算、证据绑定。
@@ -393,6 +394,87 @@ Source Admission 而非会话。再次印证 file-first 哲学。
 3. **实证贡献**：用 M5-003 对照测「何种研究任务下受控推送优于纯拉取」——回应顶会
    结论 2 的任务依赖性，在科研工作流场景（文献明确空白，见第 5 节 CAPTURE_GAP）。
 
+### 3.7 增补：ruflo（ruvnet/ruflo）核查与分类学修订（FACT + INFERENCE）
+
+#### 3.7.1 项目定性：两副面孔的 mega-harness
+
+[ruvnet/ruflo](https://github.com/ruvnet/ruflo)（MIT，TypeScript，2025-06 创建，68,968
+stars / 8,269 forks，`claude-flow` 后继，自称 "The original agent meta-harness"）：
+33 个原生 Claude Code 插件 + 21 个 npm 插件的市场化 harness 生态，覆盖 swarm 协调、
+记忆、自学习、MCP server、联邦通信。按本 workstream 证据纪律分层核查：
+
+| 面孔 | 证据（FACT） |
+|---|---|
+| 营销面（标 CLAIM，未逐项验证实现） | "100+ Agents"、"零信任联邦 Comms Layer"、"SONA 神经模式 self-learning"、"swarm consensus"（README 主张） |
+| 工程面（可验证硬货） | ① 33 个插件全部有 ADR-0001 契约 + smoke 测试 + namespace 协调声明（ADR-0001 原文："This ADR completes the plugin-contract retrofit across the entire ruflo plugin family"）；② [ADR-0002](https://github.com/ruvnet/ruflo/blob/d065b15927c6ba7318623e8af123e7980e4c6681/plugins/ruflo-workflows/docs/adrs/0002-native-workflow-orchestration.md) 诚实记录 tradeoff（"Negative: two surfaces means contributors must pick the right one"）；③ 性能主张带测量与边界（向量记忆标注 "ANN wins above the crossover, **ties/loses at small N**" + 自有 audit 链接）；④ ADR 作者署名 `coder (Claude Code)`——agent 作者身份显式声明 |
+
+**判断（INFERENCE）**：其「插件契约化 + smoke-as-contract + 诚实负面前提」的工程面
+与 RWB 治理风格同源；mega-harness 规模同时是「功能全开」路线成本的反面教材（见
+3.7.4）。
+
+#### 3.7.2 对分类学的修订：介质九层 + 「拓扑载体」维度
+
+ruflo 的核心贡献是把 agent 间协调从「消息问题」重构为「编排问题」，补入两个介质层：
+
+**（a）确定性编排脚本作为介质（ADR-0002）**：`.claude/workflows/*.js` 用四钩子 API
+编排子 agent——`agent(prompt, opts)`（`opts.schema` 结构化校验返回）、`parallel(thunks)`
+（barrier）、`pipeline(items, ...stages)`（**无 barrier** 逐项流过全部阶段）、
+`phase/log`（进度分组）。**拓扑本身是 git 里的代码**——可 review、可 diff、可版本化。
+
+> **一手同构证据**：本调研所用 DeepSeek Harness 的 workflow 工具与这套四钩子 API 形状
+> 完全相同（agent+schema / pipeline 无 barrier / parallel 有 barrier / phase）。两个
+> 独立生产 harness 收敛到同一原语集——「编排脚本作为协调介质」已成生产范式。分类学
+> 由七层扩为**九层**（+编排脚本、+持久化状态机工作流），并新增「拓扑载体」维度：
+> 拓扑=Method 决策，其载体（图/定义/代码/隐式/无）决定可解释性与可审查性——ruflo
+> 的「脚本即拓扑」是「拓扑可架构审查」的生产验证，支持 RWB 把 routing authority 放
+> 进 Resolution；但 ruflo 拓扑仍无证据绑定（脚本管协调不管 provenance）——治理空白依旧。
+
+**（b）声明式持久化状态机（MCP `workflow_*`，ADR-0001）**：`created → running ↔
+paused → completed/cancelled` 生命周期 + **approval gates（人工审批暂停点）** + 跨会话
+可恢复（`workflows-state` namespace）+ 无状态旁路（`workflow_execute`）。这是 RWB
+SAFE_PAUSE + Human Gate + M3-001 checkpoint/resume 的**生产级同构物**，且同样区分
+「长时命人工门控管道」与「一次性确定性 fan-out」两条路径——与 H0/H1/H2 分级直觉一致。
+
+#### 3.7.3 对三议题的具体补充
+
+**议题一（peer 通信）四条**：
+1. **schema-validated 结构化返回是生产标准**（`agent(prompt,{schema})`）——议题一提案
+   的「白名单消息类型+结构化工件」可行性获生产实践背书，与 MetaGPT 顶会结论形成
+   学术-工程双确认；
+2. **fan-out/pipeline 是「无消息通道协作」的极致形态**：barrier(`parallel`) vs 无
+   barrier(`pipeline`) 两原语覆盖几乎所有 fan-out 场景，agent 间零直接消息——议题二
+   「工件即协调媒介」又一例证；**汇合语义（何时 barrier）变成显式编程决定**——
+   「汇合点显式化」应进 Communication as Evidence 提案：**barrier 处正是综合失真风险
+   点，应触发 H2 抽样**；
+3. **重放语义**：`resumeFromRunId` + per-run journal + 未变更 `agent()` 返回缓存 =
+   audit replay 的工程实现——与 file-only verify 同向，但 journal 私有（非文件权威），
+   I9 的对照样本；
+4. **反面印证**：mesh/adaptive + consensus swarm（CLAIM）是自由互联路线的存在证明；
+   无反证绑定的 consensus 恰是 `ECHO-CONSENSUS-NO-EVIDENCE` 风险的规模化样本。
+
+**议题二（证据级检索）一条**：ReasoningBank / trajectory learning / HNSW 向量记忆
+（CLAIM）指向检索的另一半——**团队记忆的检索**：Evidence Pool 增长后「哪个 agent 曾
+验证过什么」本身需要检索；Retrieval Manifest 可延伸为 *Memory Manifest*（团队记忆
+条目带 provenance 检索）——提案的自然扩展方向。
+
+**治理层启发（对 RWB 最直接可用）**：
+
+| ruflo 实践 | RWB 对应/启示 |
+|---|---|
+| 插件级 ADR + smoke-as-contract（33 插件全覆盖） | RWB 的 ADR 纪律可下沉为「每个 capability card 附最小契约测试」——议题二借鉴 1（capability card 机器化）的具体做法 |
+| namespace 协调声明（`workflows-state` 归属声明） | ≈ PR 流程的 owned/shared files 声明；Registry namespace 可借鉴显式 claim 机制 |
+| ADR 署名 `coder (Claude Code)` | RWB actor_id + accountable_owner 绑定的非正式先例——RWB 正式化并强制实名是明确优势 |
+| 33 插件 smoke 契约用一个 fan-out workflow 自审 | 与 test_pr_governance 审自己 PR 同型；可扩展为「用 RWB trace 审计 RWB CI」的自证闭环 |
+| 双 surface 决策表（MCP vs native） | 「决策表而非替代关系」值得在 future Execution Host seam 文档采用 |
+
+#### 3.7.4 克制面（Adoption Matrix 视角）
+
+69k-star mega-harness 同时是「功能全开」路线的成本展示：540MB 仓库、100+ agent、12 个
+自动后台 worker、联邦/神经/自学习大量未验证主张——对照「先证明失败模式」纪律，ruflo
+恰是 **REJECT/ADAPT 大样本库**：它证明这些机制「能做」，也证明没人给它们配治理。
+零信任联邦 comms layer（跨机器/org agent 通信）若真实现，是 A2A 类通信的另一生产
+数据点，但按 README 口径无法确认治理深度，标 CLAIM 留待深挖。
+
 ## 4. 与主线的相容性声明（INFERENCE）
 
 - M8-002 Mode Action first-class contract 仍是全局唯一下一任务；本文三议题均为
@@ -418,7 +500,10 @@ Source Admission 而非会话。再次印证 file-first 哲学。
 - 多数 multi-agent 通信论文基于问答/推理 benchmark，**科研工作流场景的通信对照实验
   是文献明确空白**——这既是 CAPTURE_GAP 也是议题三实证贡献的机会；
 - GLM/Kimi/Llama 生态的「无官方通信框架」判断基于公开仓库检索，不排除内部或未发布
-  项目；AgentScope 是否代表阿里模型组路线未经官方声明核实。
+  项目；AgentScope 是否代表阿里模型组路线未经官方声明核实；
+- ruflo 的 swarm consensus / 联邦 comms / SONA self-learning / ReasoningBank 均为
+  README 主张（CLAIM），未读实现源码；「DSH workflow 与 ruflo 四钩子同构」基于一手
+  使用观察非源码比对；其向量记忆 benchmark 为其自测数字，未独立复现。
 
 ## 6. 参考文献
 
@@ -453,6 +538,9 @@ Source Admission 而非会话。再次印证 file-first 哲学。
 - [anysearch-ai/anysearch-skill 仓库](https://github.com/anysearch-ai/anysearch-skill)（含 SKILL.md、scripts/shared/doc_spec.md、scripts/shared/constants.json、SECURITY.md，2026-08-23 快照核查）
 
 **议题三（通信机制分类学与模型生态）**
+- [ruflo 仓库](https://github.com/ruvnet/ruflo) ·
+  [ADR-0001 workflows 契约](https://github.com/ruvnet/ruflo/blob/d065b15927c6ba7318623e8af123e7980e4c6681/plugins/ruflo-workflows/docs/adrs/0001-workflows-contract.md) ·
+  [ADR-0002 原生编排双表面](https://github.com/ruvnet/ruflo/blob/d065b15927c6ba7318623e8af123e7980e4c6681/plugins/ruflo-workflows/docs/adrs/0002-native-workflow-orchestration.md)
 - [AgentScope — Pipeline 教程](https://doc.agentscope.io/tutorial/task_pipeline.html) ·
   [MsgHub 消息中心](https://java.agentscope.io/v1/zh/docs/task/msghub.html)
 - [llama-agents 官方博客](https://www.llamaindex.ai/blog/introducing-llama-agents-a-powerful-framework-for-building-production-multi-agent-ai-systems) ·
