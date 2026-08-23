@@ -5,7 +5,9 @@ from typing import Any, Mapping
 
 from research_workbench.contracts.common import (
     ContractError,
+    mapping_tuple,
     mapping_value,
+    optional_string,
     require_string,
     string_tuple,
 )
@@ -154,4 +156,172 @@ class ModeAction:
             blocked_conditions=string_tuple(data, "blocked_conditions", required=True),
             risk_rules=string_tuple(data, "risk_rules"),
             metadata=dict(mapping_value(data, "metadata")),
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class MethodTaskRef:
+    task_id: str
+    revision: int
+    sha256: str | None = None
+
+    @classmethod
+    def from_mapping(cls, data: Mapping[str, Any]) -> "MethodTaskRef":
+        revision = data.get("revision")
+        if not isinstance(revision, int) or revision < 1:
+            raise ContractError("task_ref.revision", "must be a positive integer")
+        return cls(
+            task_id=require_string(data, "task_id"),
+            revision=revision,
+            sha256=optional_string(data, "sha256"),
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class MethodModeResolution:
+    status: str
+    selected_mode_refs: tuple[str, ...]
+    unresolved_mode_ids: tuple[str, ...]
+    reason: str
+
+    @classmethod
+    def from_mapping(cls, data: Mapping[str, Any]) -> "MethodModeResolution":
+        return cls(
+            status=require_string(data, "status"),
+            selected_mode_refs=string_tuple(data, "selected_mode_refs", required=True),
+            unresolved_mode_ids=string_tuple(data, "unresolved_mode_ids", required=True),
+            reason=require_string(data, "reason"),
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class MethodObligation:
+    obligation_id: str
+    statement: str
+    assessment: str
+    required_evidence: tuple[str, ...]
+
+    @classmethod
+    def from_mapping(cls, data: Mapping[str, Any]) -> "MethodObligation":
+        return cls(
+            obligation_id=require_string(data, "obligation_id"),
+            statement=require_string(data, "statement"),
+            assessment=require_string(data, "assessment"),
+            required_evidence=string_tuple(data, "required_evidence", required=True),
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class MethodActionDecision:
+    decision_id: str
+    action_ref: str | None
+    action_content_hash: str | None
+    planning_action_id: str | None
+    obligations: tuple[MethodObligation, ...]
+    mechanisms: tuple[str, ...]
+    capability_requirements: tuple[str, ...]
+    skill_need_refs: tuple[str, ...]
+    human_gate_refs: tuple[str, ...]
+    blocked_conditions: tuple[str, ...]
+    rationale: str
+
+    @classmethod
+    def from_mapping(cls, data: Mapping[str, Any]) -> "MethodActionDecision":
+        return cls(
+            decision_id=require_string(data, "decision_id"),
+            action_ref=optional_string(data, "action_ref"),
+            action_content_hash=optional_string(data, "action_content_hash"),
+            planning_action_id=optional_string(data, "planning_action_id"),
+            obligations=tuple(
+                MethodObligation.from_mapping(item)
+                for item in mapping_tuple(data, "obligations")
+            ),
+            mechanisms=string_tuple(data, "mechanisms", required=True),
+            capability_requirements=string_tuple(
+                data, "capability_requirements", required=True
+            ),
+            skill_need_refs=string_tuple(data, "skill_need_refs", required=True),
+            human_gate_refs=string_tuple(data, "human_gate_refs", required=True),
+            blocked_conditions=string_tuple(data, "blocked_conditions", required=True),
+            rationale=require_string(data, "rationale"),
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class MethodSkillDisposition:
+    status: str
+    need_refs: tuple[str, ...]
+    reason: str
+
+    @classmethod
+    def from_mapping(cls, data: Mapping[str, Any]) -> "MethodSkillDisposition":
+        return cls(
+            status=require_string(data, "status"),
+            need_refs=string_tuple(data, "need_refs", required=True),
+            reason=require_string(data, "reason"),
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class RejectedMethodAlternative:
+    alternative_id: str
+    disposition: str
+    reason: str
+
+    @classmethod
+    def from_mapping(cls, data: Mapping[str, Any]) -> "RejectedMethodAlternative":
+        return cls(
+            alternative_id=require_string(data, "alternative_id"),
+            disposition=require_string(data, "disposition"),
+            reason=require_string(data, "reason"),
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class MethodResolution:
+    schema_version: str
+    resolution_id: str
+    revision: int
+    task_ref: MethodTaskRef
+    source_case_id: str
+    mode_resolution: MethodModeResolution
+    action_decisions: tuple[MethodActionDecision, ...]
+    skill_disposition: MethodSkillDisposition
+    human_gate_refs: tuple[str, ...]
+    blocked_conditions: tuple[str, ...]
+    rejected_alternatives: tuple[RejectedMethodAlternative, ...]
+    resolution_status: str
+    limitations: tuple[str, ...]
+
+    @classmethod
+    def from_mapping(cls, data: Mapping[str, Any]) -> "MethodResolution":
+        revision = data.get("revision")
+        if not isinstance(revision, int) or revision < 1:
+            raise ContractError("revision", "must be a positive integer")
+        return cls(
+            schema_version=require_string(data, "schema_version"),
+            resolution_id=require_string(data, "resolution_id"),
+            revision=revision,
+            task_ref=MethodTaskRef.from_mapping(
+                mapping_value(data, "task_ref", required=True)
+            ),
+            source_case_id=require_string(data, "source_case_id"),
+            mode_resolution=MethodModeResolution.from_mapping(
+                mapping_value(data, "mode_resolution", required=True)
+            ),
+            action_decisions=tuple(
+                MethodActionDecision.from_mapping(item)
+                for item in mapping_tuple(data, "action_decisions")
+            ),
+            skill_disposition=MethodSkillDisposition.from_mapping(
+                mapping_value(data, "skill_disposition", required=True)
+            ),
+            human_gate_refs=string_tuple(data, "human_gate_refs", required=True),
+            blocked_conditions=string_tuple(data, "blocked_conditions", required=True),
+            rejected_alternatives=tuple(
+                RejectedMethodAlternative.from_mapping(item)
+                for item in mapping_tuple(data, "rejected_alternatives")
+            ),
+            resolution_status=require_string(data, "resolution_status"),
+            limitations=string_tuple(data, "limitations", required=True),
         )

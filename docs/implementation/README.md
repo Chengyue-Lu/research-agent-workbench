@@ -5,6 +5,7 @@
 ## Active implementation contracts
 
 - [Mode Action contract and registry](MODE_ACTION_CONTRACT.md)
+- [Method Resolution contract](METHOD_RESOLUTION_CONTRACT.md)
 - [File-authoritative Trace Core](TRACE_CORE.md)
 - [Execution Trace Adapter](EXECUTION_TRACE_ADAPTER.md)
 - [Provider Adapter plan and seam](PROVIDER_ADAPTER_PLAN.md)

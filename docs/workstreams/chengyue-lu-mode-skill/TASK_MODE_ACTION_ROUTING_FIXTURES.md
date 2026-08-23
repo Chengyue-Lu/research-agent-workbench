@@ -6,9 +6,10 @@
 - 机器可读诊断输入：[mode-action-routing-v1](../../../examples/mode-skill-routing/mode-action-routing-v1.yaml.txt)
 - Tool 边界：[Action-driven Tool Capability Cards](TOOL_CAPABILITY_CARDS.md)
 
-这些 fixture 验证选择理由的覆盖面，不是 Resolver runtime Schema，也不证明科研方法正确。路由文件
-仍使用 `.yaml.txt`，但其中正式 Mode Action 已改用 `action-id@version`，并解析到 hash-pinned
-[`Mode Action Registry`](../../../registry/modes/actions.json)。项目内部或候选动作继续使用
+这些 fixture 验证选择理由的覆盖面，不是 Resolver runtime，也不证明科研方法正确。路由文件仍使用
+`.yaml.txt`；正式 Mode Action 解析到 hash-pinned [`Mode Action Registry`](../../../registry/modes/actions.json)，
+每个 case 进一步以 path+hash 引用一个独立、Schema-valid 的
+[`Method Resolution`](../../implementation/METHOD_RESOLUTION_CONTRACT.md)。项目内部或候选动作继续使用
 `planning_action_id`，不能冒充已准入 Mode Action。
 
 ## 1. 路由顺序
@@ -79,3 +80,7 @@ M7-002/M7-003 在诊断层完成意味着：
 5. 测试只固定 fixture 自洽和覆盖，不把预期路由宣称为真实科研效果。
 
 M7-004/015 已按这些 action/route 迁移三个 0.1.0 Skill 原型并落实 lifecycle；后续不得回到来源驱动选择。
+
+M8-003 不删除本诊断输入，而是把八个 case 一一转换到 `examples/method-resolutions/`。测试固定 Task、
+Mode、Action、Capability、Skill Need、Human Gate、status 与 forbidden route 的无损映射；正式 Resolution
+额外补充 bounded obligations、Action content hash、最小机制 rationale 和 rejected alternative disposition。

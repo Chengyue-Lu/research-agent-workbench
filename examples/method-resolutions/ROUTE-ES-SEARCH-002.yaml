@@ -1,0 +1,51 @@
+schema_version: 0.1.0
+resolution_id: MR-ROUTE-ES-SEARCH-002
+revision: 1
+task_ref: {task_id: ROUTE-ES-SEARCH-002, revision: 1}
+source_case_id: ROUTE-ES-SEARCH-002
+mode_resolution:
+  status: selected
+  selected_mode_refs: [evidence-synthesis@0.1.0]
+  unresolved_mode_ids: []
+  reason: The Task creates a bounded source set for later synthesis.
+action_decisions:
+  - decision_id: MRD-ES-SEARCH-BOUNDARY
+    action_ref: ES-A1@1.0.0
+    action_content_hash: sha256:690f3568e8e8636e4ecd074b151f99baaaca58792cb9cb1a13ab3924df1bfcb6
+    obligations:
+      - obligation_id: MRO-ES-SEARCH-BOUNDARY
+        statement: Freeze the question, admissible sources, coverage limits, and Claim ceiling before search.
+        assessment: human-decision
+        required_evidence: [question-ref, source-boundary, claim-ceiling]
+    mechanisms: [mode-invariant, human-gate]
+    capability_requirements: []
+    skill_need_refs: []
+    human_gate_refs: [approve-source-boundary-and-coverage-risk]
+    blocked_conditions: []
+    rationale: Source coverage and acceptable risk remain named human decisions.
+  - decision_id: MRD-ES-SEARCH-PLAN
+    action_ref: ES-A2@1.0.0
+    action_content_hash: sha256:cd0b17987ded4a4aa4920b2dc09f97cdd642c97b829e0253187eb75b9d3deaa3
+    obligations:
+      - obligation_id: MRO-ES-SEARCH-PLAN
+        statement: Record replayable queries, source coverage, date bounds, and stopping rules.
+        assessment: semantic-review
+        required_evidence: [search-plan, search-log]
+    mechanisms: [tool, skill-need]
+    capability_requirements: [literature-search]
+    skill_need_refs: [NEED-ES-SEARCH-PLAN]
+    human_gate_refs: []
+    blocked_conditions: []
+    rationale: A recurring non-trivial search-planning gap is declared, not assigned to a Skill implementation.
+skill_disposition:
+  status: skill-need
+  need_refs: [NEED-ES-SEARCH-PLAN]
+  reason: The direct search Tool does not itself preserve the required replayable planning semantics.
+human_gate_refs: [approve-source-boundary-and-coverage-risk]
+blocked_conditions: []
+rejected_alternatives:
+  - {alternative_id: silent-query-expansion, disposition: rejected, reason: Query expansion changes the frozen search boundary.}
+  - {alternative_id: silent-source-fallback, disposition: rejected, reason: Alternate sources require a new boundary decision.}
+  - {alternative_id: automatic-skill-assignment, disposition: rejected, reason: A Skill Need is not an admitted Skill binding.}
+resolution_status: need-not-implemented
+limitations: [No candidate Skill has been selected, trialed, or admitted by this resolution.]

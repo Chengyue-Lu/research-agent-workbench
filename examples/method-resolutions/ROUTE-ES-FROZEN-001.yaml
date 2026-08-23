@@ -1,0 +1,64 @@
+schema_version: 0.1.0
+resolution_id: MR-ROUTE-ES-FROZEN-001
+revision: 1
+task_ref: {task_id: ROUTE-ES-FROZEN-001, revision: 1}
+source_case_id: ROUTE-ES-FROZEN-001
+mode_resolution:
+  status: selected
+  selected_mode_refs: [evidence-synthesis@0.1.0]
+  unresolved_mode_ids: []
+  reason: Evidence is extracted from a bounded, frozen source set.
+action_decisions:
+  - decision_id: MRD-ES-FROZEN-SOURCE
+    action_ref: ES-A3@1.0.0
+    action_content_hash: sha256:2fd8f1f32b05cce65f5437845a067fecdb2dddfddaf0aa025f9f741e25ce3610
+    obligations:
+      - obligation_id: MRO-ES-FROZEN-SOURCE
+        statement: Every consumed source remains bound to an approved locator and content identity.
+        assessment: deterministic
+        required_evidence: [source-snapshot-or-ref, content-hash, locator]
+    mechanisms: [tool, no-skill]
+    capability_requirements: [document-read]
+    skill_need_refs: []
+    human_gate_refs: []
+    blocked_conditions: []
+    rationale: Direct bounded reading is sufficient; no reusable semantic gap is present.
+  - decision_id: MRD-ES-FROZEN-EVIDENCE
+    action_ref: ES-A4@1.0.0
+    action_content_hash: sha256:8cb47267e5e7e2578173b62d2eb420cf9f7104e1c56c22facf0c9183299ce46a
+    obligations:
+      - obligation_id: MRO-ES-FROZEN-EVIDENCE
+        statement: Source statements, agent inference, limitations, and locators remain distinguishable.
+        assessment: deterministic
+        required_evidence: [evidence-record]
+    mechanisms: [tool, task-instruction, no-skill]
+    capability_requirements: [research-contract-check]
+    skill_need_refs: []
+    human_gate_refs: []
+    blocked_conditions: []
+    rationale: A checker and bounded Task instruction cover the extraction contract.
+  - decision_id: MRD-ES-FROZEN-HANDOFF
+    planning_action_id: NEED-INT-COMPACT-HANDOFF
+    obligations:
+      - obligation_id: MRO-ES-FROZEN-HANDOFF
+        statement: Produce an H1 handoff without introducing a second semantic transformation layer.
+        assessment: deterministic
+        required_evidence: [handoff-packet]
+    mechanisms: [task-template, no-skill]
+    capability_requirements: []
+    skill_need_refs: []
+    human_gate_refs: []
+    blocked_conditions: []
+    rationale: The existing compact template is sufficient; a project-internal Skill is not justified.
+skill_disposition:
+  status: no-skill
+  need_refs: []
+  reason: Tool and template baselines satisfy all declared obligations.
+human_gate_refs: []
+blocked_conditions: []
+rejected_alternatives:
+  - {alternative_id: literature-search, disposition: rejected, reason: Sources are already frozen and search would expand scope.}
+  - {alternative_id: project-internal-skill, disposition: rejected, reason: The H1 template closes the handoff gap directly.}
+  - {alternative_id: claim-promotion, disposition: rejected, reason: Extraction does not authorize Claim promotion.}
+resolution_status: proceed
+limitations: [This fixture does not prove semantic extraction quality on a real corpus.]

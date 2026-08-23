@@ -74,6 +74,24 @@ Mode 本身不推荐或绑定 Skill。旧字段及迁移约束见[兼容性说�
 Action 文档不绑定 Skill、Tool、Agent、模型、Provider 或 Runtime；这些选择属于后续 Method / Capability
 解析。`human_gates` 只标识所需 Gate，不在本契约中预先定义批准词汇、作用域或持续性。
 
+### 4.1 Method Resolution
+
+[`Method Resolution`](../implementation/METHOD_RESOLUTION_CONTRACT.md) 是按 Task 产生的版本化决定工件：
+
+```text
+Task ref
+→ Mode resolution
+→ Action ref + hash / planning action
+→ bounded obligations
+→ minimal mechanisms
+→ no-Skill / Capability / Skill Need / Human / blocked / split
+→ rejected alternatives + status
+```
+
+Resolution 不建立全局 catalog，也不绑定实现。它把诊断 fixture 中的选择理由变成可独立验证和归档的
+正式对象；只有后续 Capability/Execution 解析才能把需求映射到具体实现。`proceed` 只表示方法控制面
+允许进入下一层，不等于 Runtime 完成、Task contract 满足或 Claim 接受。
+
 ## 5. 正式 Mode 与候选分类
 
 ### Formal Modes
@@ -158,3 +176,5 @@ conflict_policy:
 - 新 Mode 可作为独立包加入，不修改内核代码。
 - 没有方法差异证据时，候选 Mode 不会因分类表已有名称而自动进入 Registry。
 - Action 的版本、路径和内容哈希漂移可以确定性阻断。
+- 八个 routing case 可以一一解析为 provider-neutral Method Resolution，并保留 no-Skill、Tool、
+  Skill Need、Human Gate、blocked、split 与 rejected alternatives。

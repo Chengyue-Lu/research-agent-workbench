@@ -3,6 +3,8 @@ status: diagnostic-planning-only
 formal_contract: false
 formal_action_refs: true
 formal_action_registry_ref: registry/modes/actions.json
+formal_method_resolution_refs: true
+method_resolution_schema_ref: schemas/v0.1.0/method-resolution.schema.json
 allowed_tool_capabilities:
   - document-read
   - literature-search
@@ -11,6 +13,9 @@ allowed_tool_capabilities:
   - research-contract-check
 cases:
   - case_id: ROUTE-ES-FROZEN-001
+    method_resolution_ref:
+      path: examples/method-resolutions/ROUTE-ES-FROZEN-001.yaml
+      sha256: 0e4bbb35068b843a77e482d597a2b28b2413a2818d0234f14140b66f67dc2bd1
     task_summary: Extract specified evidence fields from two frozen local sources and return an ordinary H1 Handoff.
     boundary_tags: [mode-trigger, frozen-source, project-internal-merge]
     mode_decision:
@@ -34,6 +39,9 @@ cases:
     forbidden_routes: [literature-search, project-internal-skill, claim-promotion]
 
   - case_id: ROUTE-ES-SEARCH-002
+    method_resolution_ref:
+      path: examples/method-resolutions/ROUTE-ES-SEARCH-002.yaml
+      sha256: ae5a9d137790711731437012ad205576a3821350da708cea10536503cc185106
     task_summary: Design and execute a replayable search for an open question across two approved bibliographic sources.
     boundary_tags: [mode-trigger, open-search]
     mode_decision:
@@ -55,6 +63,9 @@ cases:
     forbidden_routes: [silent-query-expansion, silent-source-fallback, automatic-skill-assignment]
 
   - case_id: ROUTE-ES-CONFLICT-003
+    method_resolution_ref:
+      path: examples/method-resolutions/ROUTE-ES-CONFLICT-003.yaml
+      sha256: d110c0e9630ca2c18fd3fc0debed243a6df5d3ff8474504d1485ecfcf24849dd
     task_summary: Reconcile conflicting Evidence records whose populations and measurement windows differ.
     boundary_tags: [mode-trigger, semantic-conflict]
     mode_decision:
@@ -76,6 +87,9 @@ cases:
     forbidden_routes: [majority-vote-synthesis, automatic-claim-acceptance]
 
   - case_id: ROUTE-SIM-REPLAY-004
+    method_resolution_ref:
+      path: examples/method-resolutions/ROUTE-SIM-REPLAY-004.yaml
+      sha256: 9e7647aa9f422d588bdb581801cbf7a8fff42a0fab057f5581f2d9630aa18ad9
     task_summary: Re-run a frozen simulation command with locked inputs, environment, seed, and outputs.
     boundary_tags: [mode-trigger, reproducibility]
     mode_decision:
@@ -97,6 +111,9 @@ cases:
     forbidden_routes: [package-install, network-enable, convergence-claim, model-validity-claim]
 
   - case_id: ROUTE-SIM-CONVERGENCE-005
+    method_resolution_ref:
+      path: examples/method-resolutions/ROUTE-SIM-CONVERGENCE-005.yaml
+      sha256: 596dfda7b3b63161b353b1d0caf58b00cd13c742dd193b3f7ff6e5f97aa02e5c
     task_summary: Design a mesh and time-step convergence study for a solver before making an error-bounded Claim.
     boundary_tags: [mode-trigger, numerical-design]
     mode_decision:
@@ -118,6 +135,9 @@ cases:
     forbidden_routes: [exit-zero-means-converged, automatic-error-acceptance]
 
   - case_id: ROUTE-BLOCK-PRIVATE-006
+    method_resolution_ref:
+      path: examples/method-resolutions/ROUTE-BLOCK-PRIVATE-006.yaml
+      sha256: 8f6b0ef9387648bed1dc80811eb337a4ab8dd963c05910f50b247139c0945960
     task_summary: Send a confidential unpublished manuscript to an unapproved remote parser and search service.
     boundary_tags: [mode-trigger, data-boundary, capability-gap]
     mode_decision:
@@ -137,6 +157,9 @@ cases:
     forbidden_routes: [remote-upload, silent-local-to-remote-fallback, credential-request, scope-relaxation]
 
   - case_id: ROUTE-NO-MODE-FORMAT-007
+    method_resolution_ref:
+      path: examples/method-resolutions/ROUTE-NO-MODE-FORMAT-007.yaml
+      sha256: cbb28283f2dfb0d7947e9a7b3f4c023337c4938ef1aff3acc9307aa767cf20da
     task_summary: Reformat an already accepted report into Markdown without changing claims, data, citations, or figures.
     boundary_tags: [mode-non-trigger, output-only]
     mode_decision:
@@ -156,6 +179,9 @@ cases:
     forbidden_routes: [evidence-synthesis-mode, output-skill-by-default, claim-rewrite]
 
   - case_id: ROUTE-SPLIT-OBS-SIM-008
+    method_resolution_ref:
+      path: examples/method-resolutions/ROUTE-SPLIT-OBS-SIM-008.yaml
+      sha256: 93848fc7d4d0ad89aef022831be52e38f5ef29c39cc4bbcc931f6596ae2f8444
     task_summary: Estimate a causal effect from observational data, calibrate a simulation, and issue one combined real-world conclusion.
     boundary_tags: [mode-ambiguous, candidate-mode, multi-mode, split-task]
     mode_decision:

@@ -97,6 +97,7 @@ SCHEMA_KINDS = {
     "handoff_transfer_audit",
     "handoff_transfer_manifest",
     "main_state",
+    "method_resolution",
     "mode_action",
     "mode_action_registry",
     "context_snapshot",
@@ -122,6 +123,8 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "research_mode"
     if "action_id" in document and "mode_ref" in document and "claim_effects" in document:
         return "mode_action"
+    if "resolution_id" in document and "mode_resolution" in document and "action_decisions" in document:
+        return "method_resolution"
     if "agent_profile_id" in document and "permission_ceiling" in document:
         return "agent_profile"
     if "skill_id" in document and "capabilities" in document:
@@ -475,6 +478,175 @@ def _validate_mode_action_registry(documents: Mapping[Path, Any]) -> list[Valida
     return issues
 
 
+def _validate_method_resolutions(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
+    issues: list[ValidationIssue] = []
+    modes = {
+        f"{document.get('mode_id')}@{document.get('version')}"
+        for document in documents.values()
+        if isinstance(document, Mapping)
+        and "mode_id" in document
+        and "claim_rules" in document
+    }
+    action_entries: dict[str, Mapping[str, Any]] = {}
+    for document in documents.values():
+        if not isinstance(document, Mapping) or document.get("registry_kind") != "mode_action_registry":
+            continue
+        for entry in document.get("entries", []):
+            if isinstance(entry, Mapping):
+                action_entries[f"{entry.get('action_id')}@{entry.get('version')}"] = entry
+
+    seen_resolutions: set[tuple[str, int]] = set()
+    for path, document in documents.items():
+        if not isinstance(document, Mapping) or infer_document_kind(document) != "method_resolution":
+            continue
+        revision = document.get("revision")
+        resolution_key = (
+            str(document.get("resolution_id")),
+            revision if isinstance(revision, int) else 0,
+        )
+        if resolution_key in seen_resolutions:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "METHOD-RESOLUTION-DUPLICATE",
+                    f"duplicate Method Resolution identity: {resolution_key}",
+                )
+            )
+        seen_resolutions.add(resolution_key)
+
+        mode_resolution = document.get("mode_resolution", {})
+        if modes and isinstance(mode_resolution, Mapping):
+            for mode_ref in mode_resolution.get("selected_mode_refs", []):
+                if isinstance(mode_ref, str) and mode_ref not in modes:
+                    issues.append(
+                        ValidationIssue(
+                            path,
+                            "METHOD-RESOLUTION-MODE-MISSING",
+                            f"unknown selected Research Mode: {mode_ref}",
+                        )
+                    )
+
+        decision_ids: set[str] = set()
+        obligation_ids: set[str] = set()
+        skill_need_refs: set[str] = set()
+        human_gate_refs: set[str] = set()
+        blocked_conditions: set[str] = set()
+        for index, decision in enumerate(document.get("action_decisions", [])):
+            if not isinstance(decision, Mapping):
+                continue
+            decision_id = decision.get("decision_id")
+            if isinstance(decision_id, str):
+                if decision_id in decision_ids:
+                    issues.append(
+                        ValidationIssue(
+                            path,
+                            "METHOD-RESOLUTION-DECISION-DUPLICATE",
+                            f"duplicate action decision ID: {decision_id}",
+                        )
+                    )
+                decision_ids.add(decision_id)
+            action_ref = decision.get("action_ref")
+            if isinstance(action_ref, str) and action_entries:
+                entry = action_entries.get(action_ref)
+                if entry is None:
+                    issues.append(
+                        ValidationIssue(
+                            path,
+                            "METHOD-RESOLUTION-ACTION-MISSING",
+                            f"action_decisions[{index}] references unknown Action: {action_ref}",
+                        )
+                    )
+                elif decision.get("action_content_hash") != entry.get("content_hash"):
+                    issues.append(
+                        ValidationIssue(
+                            path,
+                            "METHOD-RESOLUTION-ACTION-HASH-MISMATCH",
+                            f"action_decisions[{index}] hash does not match Registry for {action_ref}",
+                        )
+                    )
+            for obligation in decision.get("obligations", []):
+                if not isinstance(obligation, Mapping):
+                    continue
+                obligation_id = obligation.get("obligation_id")
+                if isinstance(obligation_id, str):
+                    if obligation_id in obligation_ids:
+                        issues.append(
+                            ValidationIssue(
+                                path,
+                                "METHOD-RESOLUTION-OBLIGATION-DUPLICATE",
+                                f"duplicate obligation ID: {obligation_id}",
+                            )
+                        )
+                    obligation_ids.add(obligation_id)
+            skill_need_refs.update(
+                value for value in decision.get("skill_need_refs", []) if isinstance(value, str)
+            )
+            human_gate_refs.update(
+                value for value in decision.get("human_gate_refs", []) if isinstance(value, str)
+            )
+            blocked_conditions.update(
+                value for value in decision.get("blocked_conditions", []) if isinstance(value, str)
+            )
+
+        skill_disposition = document.get("skill_disposition", {})
+        declared_skill_needs = (
+            {
+                value
+                for value in skill_disposition.get("need_refs", [])
+                if isinstance(value, str)
+            }
+            if isinstance(skill_disposition, Mapping)
+            else set()
+        )
+        closure_checks = (
+            (
+                declared_skill_needs,
+                skill_need_refs,
+                "METHOD-RESOLUTION-SKILL-NEED-CLOSURE",
+                "skill_disposition.need_refs",
+            ),
+            (
+                {value for value in document.get("human_gate_refs", []) if isinstance(value, str)},
+                human_gate_refs,
+                "METHOD-RESOLUTION-HUMAN-GATE-CLOSURE",
+                "human_gate_refs",
+            ),
+            (
+                {value for value in document.get("blocked_conditions", []) if isinstance(value, str)},
+                blocked_conditions,
+                "METHOD-RESOLUTION-BLOCK-CLOSURE",
+                "blocked_conditions",
+            ),
+        )
+        for declared, derived, code, field in closure_checks:
+            if declared != derived:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        code,
+                        f"{field} must exactly match action decision references: "
+                        f"declared={sorted(declared)}, derived={sorted(derived)}",
+                    )
+                )
+
+        alternatives: set[str] = set()
+        for alternative in document.get("rejected_alternatives", []):
+            if not isinstance(alternative, Mapping):
+                continue
+            alternative_id = alternative.get("alternative_id")
+            if isinstance(alternative_id, str):
+                if alternative_id in alternatives:
+                    issues.append(
+                        ValidationIssue(
+                            path,
+                            "METHOD-RESOLUTION-ALTERNATIVE-DUPLICATE",
+                            f"duplicate rejected alternative: {alternative_id}",
+                        )
+                    )
+                alternatives.add(alternative_id)
+    return issues
+
+
 def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     source_ids: set[str] = set()
@@ -509,6 +681,7 @@ def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
         issues.extend(_validate_registry(path, document, kind, source_ids))
         issues.extend(_validate_task(path, document, kind))
     issues.extend(_validate_mode_action_registry(documents))
+    issues.extend(_validate_method_resolutions(documents))
     return issues
 
 

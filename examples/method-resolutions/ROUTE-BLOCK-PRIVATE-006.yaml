@@ -1,0 +1,38 @@
+schema_version: 0.1.0
+resolution_id: MR-ROUTE-BLOCK-PRIVATE-006
+revision: 1
+task_ref: {task_id: ROUTE-BLOCK-PRIVATE-006, revision: 1}
+source_case_id: ROUTE-BLOCK-PRIVATE-006
+mode_resolution:
+  status: selected
+  selected_mode_refs: [evidence-synthesis@0.1.0]
+  unresolved_mode_ids: []
+  reason: Evidence extraction is in scope, but the proposed remote path violates the data boundary.
+action_decisions:
+  - decision_id: MRD-BLOCK-PRIVATE-SOURCE
+    action_ref: ES-A3@1.0.0
+    action_content_hash: sha256:2fd8f1f32b05cce65f5437845a067fecdb2dddfddaf0aa025f9f741e25ce3610
+    obligations:
+      - obligation_id: MRO-BLOCK-PRIVATE-SOURCE
+        statement: Confidential source bytes must remain inside the approved data boundary.
+        assessment: unavailable
+        required_evidence: [approved-data-path, source-snapshot-or-ref]
+    mechanisms: [capability-gap, blocked, human-gate, no-skill]
+    capability_requirements: [document-read, literature-search]
+    skill_need_refs: []
+    human_gate_refs: [approve-an-alternative-data-path-if-one-exists]
+    blocked_conditions: [No approved capability can read and search the confidential source without external data egress.]
+    rationale: Missing authorization cannot be repaired by a different model, Tool, or Skill.
+skill_disposition:
+  status: no-skill
+  need_refs: []
+  reason: The gap is authorization and data-path availability, not missing reusable Skill semantics.
+human_gate_refs: [approve-an-alternative-data-path-if-one-exists]
+blocked_conditions: [No approved capability can read and search the confidential source without external data egress.]
+rejected_alternatives:
+  - {alternative_id: remote-upload, disposition: blocked, reason: The destination is outside the approved data boundary.}
+  - {alternative_id: silent-local-to-remote-fallback, disposition: rejected, reason: Runtime fallback cannot relax data policy.}
+  - {alternative_id: credential-request, disposition: rejected, reason: Credentials do not create data-export authorization.}
+  - {alternative_id: scope-relaxation, disposition: rejected, reason: Only a named human decision may revise scope or policy.}
+resolution_status: blocked
+limitations: [A future approved local path requires a new Method Resolution or revision.]

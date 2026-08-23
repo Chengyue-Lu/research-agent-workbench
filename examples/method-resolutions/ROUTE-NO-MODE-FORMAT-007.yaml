@@ -1,0 +1,36 @@
+schema_version: 0.1.0
+resolution_id: MR-ROUTE-NO-MODE-FORMAT-007
+revision: 1
+task_ref: {task_id: ROUTE-NO-MODE-FORMAT-007, revision: 1}
+source_case_id: ROUTE-NO-MODE-FORMAT-007
+mode_resolution:
+  status: no-new-mode
+  selected_mode_refs: []
+  unresolved_mode_ids: []
+  reason: Representation-only work inherits the parent Claim, citation, and data boundaries.
+action_decisions:
+  - decision_id: MRD-NO-MODE-FORMAT
+    planning_action_id: output-format
+    obligations:
+      - obligation_id: MRO-NO-MODE-FORMAT
+        statement: Preserve accepted claims, data, citations, and figures while changing representation only.
+        assessment: deterministic
+        required_evidence: [formatted-output, content-preservation-check]
+    mechanisms: [task-instruction, no-skill]
+    capability_requirements: []
+    skill_need_refs: []
+    human_gate_refs: []
+    blocked_conditions: []
+    rationale: An ordinary bounded instruction is sufficient and does not justify a new Mode or Skill.
+skill_disposition:
+  status: no-skill
+  need_refs: []
+  reason: No repeated non-trivial semantic gap is present.
+human_gate_refs: []
+blocked_conditions: []
+rejected_alternatives:
+  - {alternative_id: evidence-synthesis-mode, disposition: rejected, reason: No Evidence relationship changes.}
+  - {alternative_id: output-skill-by-default, disposition: rejected, reason: Formatting alone does not justify Skill context and lifecycle cost.}
+  - {alternative_id: claim-rewrite, disposition: rejected, reason: The Task forbids semantic Claim changes.}
+resolution_status: proceed
+limitations: [The parent Task remains authoritative for all inherited boundaries.]

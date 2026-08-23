@@ -4,7 +4,7 @@ from pathlib import Path
 from research_workbench.capability import AgentProfile, SkillManifest
 from research_workbench.context import MainStatePacket
 from research_workbench.io import load_document
-from research_workbench.protocol import ModeAction, ProjectProtocol, ResearchMode
+from research_workbench.protocol import MethodResolution, ModeAction, ProjectProtocol, ResearchMode
 from research_workbench.tasks import AttemptRecord, HandoffPacket, TaskPacket
 
 
@@ -28,6 +28,15 @@ class ContractParsingTests(unittest.TestCase):
         self.assertEqual("ES-A4@1.0.0", action.reference)
         self.assertEqual("evidence-synthesis@0.1.0", action.mode_ref)
         self.assertIn("evidence-record", action.required_artifacts)
+
+    def test_method_resolution_parses_without_execution_bindings(self) -> None:
+        resolution = MethodResolution.from_mapping(
+            self.load("examples/method-resolutions/ROUTE-SIM-CONVERGENCE-005.yaml")
+        )
+        self.assertEqual("MR-ROUTE-SIM-CONVERGENCE-005", resolution.resolution_id)
+        self.assertEqual("skill-need", resolution.skill_disposition.status)
+        self.assertEqual("need-not-implemented", resolution.resolution_status)
+        self.assertFalse(hasattr(resolution, "provider"))
 
     def test_profiles_and_skills_parse_without_provider_types(self) -> None:
         profile = AgentProfile.from_mapping(self.load("examples/profiles/evidence-scout.yaml"))
