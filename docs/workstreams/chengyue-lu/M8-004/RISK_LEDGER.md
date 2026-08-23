@@ -8,5 +8,5 @@
 | M8M-HASH-001 | fact | 只记录结构值而不固定文件字节，无法证明迁移针对哪个原件。 | migration record 固定 source/target/action path 与 raw-byte SHA-256。 | controlled |
 | M8M-SILENT-001 | fact | 自动发现并升级旧 Mode 会改变历史 Task 语义。 | migration 必须显式调用；缺失映射、hash drift 或未知版本均 fail closed。 | controlled |
 | M8M-FRAMEWORK-001 | inference | 为两个 Mode 先建通用 migration engine 会放大复杂度。 | 只实现一个 versioned v0.1→v0.2 seam；新的对象类型或版本另行证明需求。 | controlled |
-| M8M-STACK-001 | fact | PR #30 尚未完成审查，M8-004 依赖尚未成为共享基线。 | 分支从 #30 head 堆叠；不创建 develop PR、不修改 #30、不宣告共享 Task 已激活。 | controlled |
+| M8M-STAGE-001 | fact | 为每个 M8 小节点建立分支和交接会造成分支/文档 churn，并重复同一 R2 审查。 | M8-004 合入统一 M8 阶段分支与 PR #30；不保留独立小节点分支或 handoff。 | controlled |
 | M8M-VALUE-001 | limitation | 离线迁移 fixture 不能证明真实研究质量提升。 | 仅声称兼容与边界完整；净收益留给后续 forward case/evaluation。 | accepted limitation |

@@ -1,6 +1,6 @@
 # M8-004 验证记录
 
-状态：本地 stacked implementation 验证完成；正式 PR/CI 待依赖落地。
+状态：本地实现验证完成；已纳入统一 M8 阶段 PR #30，远端 CI 待更新 head 后复核。
 
 ## 已完成
 
@@ -23,12 +23,11 @@
 ## 尚待正式 PR CI
 
 当前本机 Python 环境未安装 `coverage` 与 `build` 模块，因此没有为本任务在线安装或改变系统环境。
-wheel 已通过现有 `pip/setuptools` 路径构建；以下项目保留到依赖 PR #30 合并、分支重建并创建正式 PR 后
-由既有 CI 执行：
+wheel 已通过现有 `pip/setuptools` 路径构建；以下项目由更新后的 PR #30 既有 CI 执行：
 
 - Python 3.11 / 3.13 matrix；
 - coverage 总阈值与 Trace module 阈值；
 - CI 的 `python -m build --wheel`；
 - 隔离 venv 的 declared-dependency clean-install smoke。
 
-上述待办是合并验证，不否定当前本地实现；在它们通过前不得宣告 M8-004 已进入共享基线。
+上述待办是合并验证，不否定当前本地实现；在 PR #30 合并前不得宣告 M8-004 已进入共享基线。

@@ -3,10 +3,9 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 跨负责人审查人：黄毅（GitHub `let778750-cpu`）
 - Task：`M8-004`
-- 当前状态：stacked implementation complete；共享 `develop` 中仍为 PARKED
-- 堆叠基线：PR #30 head `732390a284974208ded0588411af87ecf27482ff`
-- 工作分支：`agent/m8-004-mode-v02-migration`
-- 最终目标 base：PR #30 合并后的 `develop`
+- 当前状态：implementation complete；已纳入统一 M8 阶段 PR #30
+- 阶段分支：`agent/method-m8-action-resolution-node`
+- 阶段 base：`develop`
 
 ## 1. 目标
 
@@ -21,7 +20,7 @@
 
 ## 2. 非目标
 
-- 不完成或合并 PR #30，不把跨负责人审查视为已发生；
+- 不把 PR #30 的跨负责人审查视为已发生；
 - 不把 M8-004 在共享任务快照中提前置为 READY/IN_PROGRESS/DONE；
 - 不迁移历史 Method Resolution、Assignment、Receipt、Trace 或 Attempt；
 - 不实现 Resolved Execution View、Capability binding 或具体 Skill/Tool/Model/Provider/Runtime；
@@ -50,11 +49,10 @@
 
 ## 5. 停止与交付边界
 
-本开发段在以下条件满足时停止：两个正式 Mode 均有可复验迁移、原/新 hash 闭合、v0.1/v0.2 正反
-Schema 与关系测试通过、完整仓库验证通过，并形成 compact handoff。PR #30 未合并前只推送堆叠分支，
-不创建面向 `develop` 的 M8-004 PR；之后必须重新基于最新共享 Task 状态形成合法 merge snapshot。
+M8-004 在以下条件满足时停止：两个正式 Mode 均有可复验迁移、原/新 hash 闭合、v0.1/v0.2 正反
+Schema 与关系测试通过、完整仓库验证通过。该节点不再维护独立开发分支或接手文档；实现随统一 M8
+阶段 PR #30 接受一次 R2 审查。
 
 结构验证不证明 Mode v0.2 对真实科研任务具有净收益。
 
-实现结果、验证证据和依赖落地后的续接顺序分别见 [`VALIDATION.md`](VALIDATION.md) 与
-[`HANDOFF.md`](HANDOFF.md)。
+实现结果与验证证据见 [`VALIDATION.md`](VALIDATION.md)。
