@@ -11,6 +11,7 @@ build/
 dist/
 *.egg-info/
 .coverage
+coverage.json
 htmlcov/
 
 # Local runtime material
