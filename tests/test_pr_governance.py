@@ -17,39 +17,61 @@ BASE_SHA = "a" * 40
 
 
 def valid_body(pr_class: str = "feature") -> str:
-    return f"""## Governance metadata
+    return f"""## 治理元数据
 
-- **PR class**: {pr_class}
-- **Task ID(s)**: AUDIT-EXEC-RUNTIME-001
-- **Workstream**: docs/workstreams/huangyi/execution-runtime-recovery-audit
-- **Accountable owner**: @let778750-cpu
-- **Cross-owner reviewer**: @Chengyue-Lu
-- **Base SHA**: {BASE_SHA}
+- **PR 类型**: {pr_class}
+- **任务 ID**: AUDIT-EXEC-RUNTIME-001
+- **工作流目录**: docs/workstreams/huangyi/execution-runtime-recovery-audit
+- **责任人**: @let778750-cpu
+- **跨负责人审查人**: @Chengyue-Lu
+- **基线 SHA**: {BASE_SHA}
 
-## Scope and non-goals
+## 范围与非目标
 
-Bounded documentation change; no runtime implementation.
+有边界的文档变更；不实现运行时功能。
 
-## Contract and authority impact
+## 契约与权限影响
 
-None — audit material is explicitly non-normative.
+无——审计材料被明确标记为非规范性材料。
 
-## TASKS transition
+## TASKS 状态变更
 
-No TASKS change.
+本 PR 不修改 TASKS。
 
-## Risk ledger
+## 风险台账
 
-See the committed claim ledger.
+见已提交的主张台账。
 
-## Verification evidence
+## 验证证据
 
-Unit tests and clean-checkout validation.
+已完成单元测试与干净检出验证。
 
-## Closeout and history
+## 收尾与历史记录
 
-The workstream README records the closeout condition.
+工作流 README 记录了收尾条件。
 """
+
+
+def legacy_english_body(pr_class: str = "feature") -> str:
+    body = valid_body(pr_class)
+    replacements = {
+        "治理元数据": "Governance metadata",
+        "PR 类型": "PR class",
+        "任务 ID": "Task ID(s)",
+        "工作流目录": "Workstream",
+        "责任人": "Accountable owner",
+        "跨负责人审查人": "Cross-owner reviewer",
+        "基线 SHA": "Base SHA",
+        "范围与非目标": "Scope and non-goals",
+        "契约与权限影响": "Contract and authority impact",
+        "TASKS 状态变更": "TASKS transition",
+        "风险台账": "Risk ledger",
+        "验证证据": "Verification evidence",
+        "收尾与历史记录": "Closeout and history",
+    }
+    for chinese, english in replacements.items():
+        body = body.replace(chinese, english)
+    return body
 
 
 BASE_TASKS = """# Tasks
@@ -67,10 +89,14 @@ class PullRequestBodyTests(unittest.TestCase):
         self.assertEqual("let778750-cpu", metadata["Accountable owner"])
         self.assertEqual("Chengyue-Lu", metadata["Cross-owner reviewer"])
 
+    def test_legacy_english_body_is_still_parsed(self) -> None:
+        metadata = governance.validate_body(legacy_english_body(), BASE_SHA)
+        self.assertEqual("feature", metadata["PR class"])
+
     def test_missing_section_fails(self) -> None:
         with self.assertRaisesRegex(governance.GovernanceError, "missing or empty"):
             governance.validate_body(
-                valid_body().replace("Unit tests and clean-checkout validation.", ""),
+                valid_body().replace("已完成单元测试与干净检出验证。", ""),
                 BASE_SHA,
             )
 

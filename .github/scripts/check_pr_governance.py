@@ -36,6 +36,22 @@ REQUIRED_SECTIONS = (
     "Verification evidence",
     "Closeout and history",
 )
+FIELD_ALIASES = {
+    "PR 类型": "PR class",
+    "任务 ID": "Task ID(s)",
+    "工作流目录": "Workstream",
+    "责任人": "Accountable owner",
+    "跨负责人审查人": "Cross-owner reviewer",
+    "基线 SHA": "Base SHA",
+}
+SECTION_ALIASES = {
+    "范围与非目标": "Scope and non-goals",
+    "契约与权限影响": "Contract and authority impact",
+    "TASKS 状态变更": "TASKS transition",
+    "风险台账": "Risk ledger",
+    "验证证据": "Verification evidence",
+    "收尾与历史记录": "Closeout and history",
+}
 CLOSEOUT_ALLOWED_EXACT = {
     "CHANGELOG.md",
     "DEVELOPMENT_HISTORY.md",
@@ -61,22 +77,26 @@ def _clean_value(value: str) -> str:
 
 
 def parse_metadata(body: str) -> dict[str, str]:
-    """Parse bold list fields from the repository PR template."""
+    """Parse bold list fields and normalize Chinese labels to stable keys."""
     result: dict[str, str] = {}
     for line in body.splitlines():
         match = re.match(r"^\s*-\s+\*\*(.+?)\*\*:\s*(.*)$", line)
         if match:
-            result[match.group(1).strip()] = _clean_value(match.group(2))
+            label = match.group(1).strip()
+            result[FIELD_ALIASES.get(label, label)] = _clean_value(match.group(2))
     return result
 
 
 def parse_sections(body: str) -> dict[str, str]:
-    """Return level-two section bodies with HTML guidance removed."""
+    """Return normalized level-two section bodies with guidance removed."""
     headings = list(re.finditer(r"(?m)^##\s+(.+?)\s*$", body))
     sections: dict[str, str] = {}
     for index, match in enumerate(headings):
         end = headings[index + 1].start() if index + 1 < len(headings) else len(body)
-        sections[match.group(1).strip()] = _clean_value(body[match.end() : end])
+        heading = match.group(1).strip()
+        sections[SECTION_ALIASES.get(heading, heading)] = _clean_value(
+            body[match.end() : end]
+        )
     return sections
 
 
