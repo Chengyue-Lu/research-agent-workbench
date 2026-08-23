@@ -19,4 +19,6 @@
 - 完整 suite：`273` tests passed，`3` Hypothesis tests skipped；
 - repository validation：`59` valid，`0` errors，`0` warnings；
 - documentation links 与 `git diff --check` 通过；
+- 以 `origin/develop`、实现 commit、R2 body、owner/workstream 构造的本地 PR event 通过；输出
+  declared/inferred/effective `R2`、具体路径原因和全部 requirements，无 Finding；
 - 没有安装新的在线依赖。

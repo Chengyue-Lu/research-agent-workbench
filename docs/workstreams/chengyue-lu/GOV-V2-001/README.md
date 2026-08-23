@@ -31,6 +31,7 @@ GitHub ruleset 是合并后的外部 rollout，不由未接受分支抢先改变
 - [风险台账](RISK_LEDGER.md)
 - [验证记录](VALIDATION.md)
 - [远端 rollout](ROLLOUT.md)
+- [下一 AI 窗口接手](HANDOFF.md)
 - [ADR-0018](../../../decisions/0018-RISK-BASED-DEVELOPMENT-GOVERNANCE.md)
 
 停止条件：规定的 R0/R1/R2、Task、dependency、topology、warning、template 与 CODEOWNERS 正反矩阵
