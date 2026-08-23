@@ -1,7 +1,9 @@
 import importlib.util
+import json
 import sys
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -13,144 +15,226 @@ sys.modules[SPEC.name] = governance
 SPEC.loader.exec_module(governance)
 
 
-BASE_SHA = "a" * 40
-
-
-def valid_body(pr_class: str = "feature") -> str:
+def valid_body(
+    *,
+    pr_class: str = "feature",
+    task_ids: str = "none",
+    risk: str = "R0",
+    owner: str = "@Chengyue-Lu",
+    workstream: str = "none",
+    shared_contract: str = "no",
+    authority_impact: str = "no",
+    authority_basis: str = "not applicable",
+    adversarial_evidence: str = "not applicable",
+) -> str:
     return f"""## 治理元数据
 
 - **PR 类型**: {pr_class}
-- **任务 ID**: AUDIT-EXEC-RUNTIME-001
-- **工作流目录**: docs/workstreams/huangyi/execution-runtime-recovery-audit
-- **责任人**: @let778750-cpu
-- **跨负责人审查人**: @Chengyue-Lu
-- **基线 SHA**: {BASE_SHA}
+- **任务 ID**: {task_ids}
+- **风险等级**: {risk}
+- **责任人**: {owner}
+- **工作流目录**: {workstream}
 
 ## 范围与非目标
 
-有边界的文档变更；不实现运行时功能。
+有边界的修改；不改变未声明接口。
 
 ## 契约与权威影响
 
-无——审计材料被明确标记为非规范性材料。
+- **共享契约**: {shared_contract}
+- **权威、权限或数据边界**: {authority_impact}
+
+给出分类理由。
 
 ## TASKS 状态变更
 
-本 PR 不修改 TASKS。
-
-## 风险台账
-
-见已提交的主张台账。
+none
 
 ## 验证证据
 
-已完成单元测试与干净检出验证。
+单元测试通过。
 
-## 收尾与历史记录
+## 剩余风险与后续
 
-工作流 README 记录了收尾条件。
+none
+
+## 权威依据
+
+{authority_basis}
+
+## 对抗性证据
+
+{adversarial_evidence}
 """
-
-
-def legacy_english_body(pr_class: str = "feature") -> str:
-    body = valid_body(pr_class)
-    replacements = {
-        "治理元数据": "Governance metadata",
-        "PR 类型": "PR class",
-        "任务 ID": "Task ID(s)",
-        "工作流目录": "Workstream",
-        "责任人": "Accountable owner",
-        "跨负责人审查人": "Cross-owner reviewer",
-        "基线 SHA": "Base SHA",
-        "范围与非目标": "Scope and non-goals",
-        "契约与权威影响": "Contract and authority impact",
-        "TASKS 状态变更": "TASKS transition",
-        "风险台账": "Risk ledger",
-        "验证证据": "Verification evidence",
-        "收尾与历史记录": "Closeout and history",
-    }
-    for chinese, english in replacements.items():
-        body = body.replace(chinese, english)
-    return body
 
 
 BASE_TASKS = """# Tasks
-| ID | 状态 | 任务 | 验收 |
-|---|---|---|---|
-| M1-001 | DONE | Frozen | Existing acceptance |
-| M8-002 | READY | Action contract | Test it |
-| M8-003 | PARKED | Resolution | Test that |
+| ID | 状态 | 任务 | 依赖 | 验收 |
+|---|---|---|---|---|
+| M8-001 | DONE | Frozen | M0 | Existing acceptance |
+| M8-002 | IN_PROGRESS | Action contract | M8-001 | Test it |
+| M8-003 | PARKED | Resolution | M8-002 | Test that |
+| M8-004 | READY | Migration | M8-001 | Migrate it |
+| M8-005 | BLOCKED | Authority | M8-001 | Gate it |
 """
 
 
+def codes(report: object, severity: str | None = None) -> set[str]:
+    return {
+        item.code
+        for item in report.findings
+        if severity is None or item.severity == severity
+    }
+
+
 class PullRequestBodyTests(unittest.TestCase):
-    def test_valid_body_is_parsed(self) -> None:
-        metadata = governance.validate_body(valid_body(), BASE_SHA)
-        self.assertEqual("let778750-cpu", metadata["Accountable owner"])
-        self.assertEqual("Chengyue-Lu", metadata["Cross-owner reviewer"])
+    def test_minimal_r0_body_does_not_require_sha_reviewer_or_workstream(self) -> None:
+        report = governance.GovernanceReport()
+        metadata, sections, shared, authority = governance.validate_body(valid_body(), report)
+        self.assertFalse(report.has_errors)
+        self.assertEqual("none", metadata["Workstream"])
+        self.assertEqual("none", metadata["Task ID(s)"])
+        self.assertFalse(shared)
+        self.assertFalse(authority)
+        self.assertIn("Verification evidence", sections)
 
-    def test_legacy_english_body_is_still_parsed(self) -> None:
-        metadata = governance.validate_body(legacy_english_body(), BASE_SHA)
-        self.assertEqual("feature", metadata["PR class"])
+    def test_missing_required_section_is_a_finding(self) -> None:
+        report = governance.GovernanceReport()
+        governance.validate_body(valid_body().replace("单元测试通过。", ""), report)
+        self.assertIn("SECTION-MISSING", codes(report, "ERROR"))
 
-    def test_missing_section_fails(self) -> None:
-        with self.assertRaisesRegex(governance.GovernanceError, "missing or empty"):
-            governance.validate_body(
-                valid_body().replace("已完成单元测试与干净检出验证。", ""),
-                BASE_SHA,
-            )
+    def test_contract_flags_must_be_explicit(self) -> None:
+        report = governance.GovernanceReport()
+        governance.validate_body(valid_body(shared_contract="maybe"), report)
+        self.assertIn("META-BOOLEAN", codes(report, "ERROR"))
 
-    def test_wrong_base_sha_fails(self) -> None:
-        with self.assertRaisesRegex(governance.GovernanceError, "does not match"):
-            governance.validate_body(valid_body(), "b" * 40)
+    def test_unknown_owner_is_rejected(self) -> None:
+        report = governance.GovernanceReport()
+        governance.validate_body(valid_body(owner="@unknown"), report)
+        self.assertIn("OWNER-UNKNOWN", codes(report, "ERROR"))
 
-    def test_same_owner_and_reviewer_fails(self) -> None:
-        body = valid_body().replace("@Chengyue-Lu", "@let778750-cpu")
-        with self.assertRaisesRegex(governance.GovernanceError, "cross-owner"):
-            governance.validate_body(body, BASE_SHA)
 
-    def test_workstream_owner_path_must_match_accountable_owner(self) -> None:
-        body = valid_body().replace(
-            "docs/workstreams/huangyi/", "docs/workstreams/chengyue-lu/"
+class RiskInferenceTests(unittest.TestCase):
+    def test_test_only_change_is_r0(self) -> None:
+        risk, reasons = governance.infer_minimum_risk(
+            ["tests/test_widget.py"], shared_contract=False, authority_impact=False
         )
-        with self.assertRaisesRegex(governance.GovernanceError, "requires accountable owner"):
-            governance.validate_body(body, BASE_SHA)
+        self.assertEqual("R0", risk)
+        self.assertEqual([], reasons)
 
-    def test_unknown_workstream_owner_path_fails(self) -> None:
-        body = valid_body().replace("docs/workstreams/huangyi/", "docs/workstreams/shared/")
-        with self.assertRaisesRegex(governance.GovernanceError, "unknown workstream owner"):
-            governance.validate_body(body, BASE_SHA)
+    def test_schema_change_is_r1(self) -> None:
+        risk, _ = governance.infer_minimum_risk(
+            ["schemas/v0.1.0/task.schema.json"],
+            shared_contract=False,
+            authority_impact=False,
+        )
+        self.assertEqual("R1", risk)
+
+    def test_architecture_change_is_r2(self) -> None:
+        risk, _ = governance.infer_minimum_risk(
+            ["docs/ARCHITECTURE.md"], shared_contract=False, authority_impact=False
+        )
+        self.assertEqual("R2", risk)
+
+    def test_method_resolution_schema_is_r2_not_r1(self) -> None:
+        risk, _ = governance.infer_minimum_risk(
+            ["schemas/v0.1.0/method-resolution.schema.json"],
+            shared_contract=False,
+            authority_impact=False,
+        )
+        self.assertEqual("R2", risk)
+
+    def test_declared_r0_is_automatically_upgraded(self) -> None:
+        report = governance.GovernanceReport()
+        effective = governance.resolve_effective_risk("R0", "R1", report)
+        self.assertEqual("R1", effective)
+        self.assertIn("RISK-AUTO-UPGRADE", codes(report, "WARNING"))
+
+    def test_declared_r2_is_never_downgraded(self) -> None:
+        report = governance.GovernanceReport()
+        self.assertEqual("R2", governance.resolve_effective_risk("R2", "R0", report))
+
+
+class RiskRequirementTests(unittest.TestCase):
+    def test_r2_requires_authority_and_adversarial_sections(self) -> None:
+        report = governance.GovernanceReport()
+        governance.validate_risk_requirements(
+            effective_risk="R2",
+            sections={"Authority basis": "none", "Adversarial evidence": "n/a"},
+            raw_task_ids="GOV-V2-001",
+            report=report,
+        )
+        self.assertEqual(
+            {"R2-AUTHORITY-BASIS", "R2-ADVERSARIAL-EVIDENCE"},
+            codes(report, "ERROR"),
+        )
+
+    def test_r1_requires_task_or_audit_id(self) -> None:
+        report = governance.GovernanceReport()
+        governance.validate_risk_requirements(
+            effective_risk="R1", sections={}, raw_task_ids="none", report=report
+        )
+        self.assertIn("TASK-ID-RISK", codes(report, "ERROR"))
+
+
+class WorkstreamTests(unittest.TestCase):
+    def test_r0_and_r1_can_omit_workstream(self) -> None:
+        r0 = governance.GovernanceReport()
+        governance.validate_workstream(
+            raw_workstream="none", owner="Chengyue-Lu", effective_risk="R0", head_sha="x", report=r0
+        )
+        self.assertFalse(r0.has_errors)
+
+        r1 = governance.GovernanceReport()
+        governance.validate_workstream(
+            raw_workstream="none", owner="Chengyue-Lu", effective_risk="R1", head_sha="x", report=r1
+        )
+        self.assertFalse(r1.has_errors)
+        self.assertIn("WORKSTREAM-R1", codes(r1, "WARNING"))
+
+    def test_r2_requires_workstream(self) -> None:
+        report = governance.GovernanceReport()
+        governance.validate_workstream(
+            raw_workstream="none", owner="Chengyue-Lu", effective_risk="R2", head_sha="x", report=report
+        )
+        self.assertIn("WORKSTREAM-R2", codes(report, "ERROR"))
+
+    @mock.patch.object(governance, "_read_blob", return_value="ok")
+    def test_provided_workstream_must_match_owner(self, _: mock.Mock) -> None:
+        report = governance.GovernanceReport()
+        governance.validate_workstream(
+            raw_workstream="docs/workstreams/huangyi/example",
+            owner="Chengyue-Lu",
+            effective_risk="R1",
+            head_sha="x",
+            report=report,
+        )
+        self.assertIn("WORKSTREAM-OWNER-MISMATCH", codes(report, "ERROR"))
 
 
 class TopologyTests(unittest.TestCase):
-    def test_develop_to_main_release_passes(self) -> None:
-        governance.validate_topology(
-            base_ref="main",
-            head_ref="develop",
-            base_repository="org/repo",
-            head_repository="org/repo",
-            pr_class="release",
+    def check(self, **kwargs: str) -> object:
+        report = governance.GovernanceReport()
+        governance.validate_topology(report=report, **kwargs)
+        return report
+
+    def test_feature_to_develop_passes(self) -> None:
+        report = self.check(
+            base_ref="develop", head_ref="feature/x", base_repository="org/repo", head_repository="org/repo", pr_class="feature"
         )
+        self.assertFalse(report.has_errors)
+
+    def test_develop_to_main_release_passes(self) -> None:
+        report = self.check(
+            base_ref="main", head_ref="develop", base_repository="org/repo", head_repository="org/repo", pr_class="release"
+        )
+        self.assertFalse(report.has_errors)
 
     def test_feature_to_main_fails(self) -> None:
-        with self.assertRaisesRegex(governance.GovernanceError, "main accepts only"):
-            governance.validate_topology(
-                base_ref="main",
-                head_ref="feature/x",
-                base_repository="org/repo",
-                head_repository="org/repo",
-                pr_class="feature",
-            )
-
-    def test_release_to_develop_fails(self) -> None:
-        with self.assertRaisesRegex(governance.GovernanceError, "must target main"):
-            governance.validate_topology(
-                base_ref="develop",
-                head_ref="feature/x",
-                base_repository="org/repo",
-                head_repository="org/repo",
-                pr_class="release",
-            )
+        report = self.check(
+            base_ref="main", head_ref="feature/x", base_repository="org/repo", head_repository="org/repo", pr_class="feature"
+        )
+        self.assertIn("TOPOLOGY-MAIN-SOURCE", codes(report, "ERROR"))
 
 
 class TasksAuthorityTests(unittest.TestCase):
@@ -159,126 +243,149 @@ class TasksAuthorityTests(unittest.TestCase):
         head: str,
         *,
         pr_class: str = "feature",
-        labels: set[str] | None = None,
-        changed_paths: tuple[str, ...] = ("docs/TASKS.md",),
         declared: set[str] | None = None,
-    ) -> None:
+        changed_paths: tuple[str, ...] = ("docs/TASKS.md",),
+    ) -> object:
+        report = governance.GovernanceReport()
         governance.validate_task_changes(
             base_text=BASE_TASKS,
             head_text=head,
             pr_class=pr_class,
-            labels=labels or set(),
             changed_paths=changed_paths,
-            declared_task_ids=declared or {"M8-002"},
-            base_ref="develop",
+            declared_task_ids=declared or set(),
+            report=report,
         )
+        return report
 
-    def test_feature_may_change_non_done_status(self) -> None:
-        self.validate(BASE_TASKS.replace("M8-002 | READY", "M8-002 | IN_PROGRESS"))
+    def test_legal_feature_transitions_pass(self) -> None:
+        cases = (
+            ("M8-004 | READY", "M8-004 | IN_PROGRESS", {"M8-004"}),
+            ("M8-002 | IN_PROGRESS", "M8-002 | DONE", {"M8-002"}),
+            ("M8-005 | BLOCKED", "M8-005 | IN_PROGRESS", {"M8-005"}),
+            ("M8-004 | READY", "M8-004 | DONE", {"M8-004"}),
+        )
+        for old, new, declared in cases:
+            with self.subTest(new=new):
+                report = self.validate(BASE_TASKS.replace(old, new), declared=declared)
+                self.assertFalse(report.has_errors, report.findings)
 
-    def test_feature_must_declare_changed_task(self) -> None:
-        with self.assertRaisesRegex(governance.GovernanceError, "must be declared"):
-            self.validate(
-                BASE_TASKS.replace("M8-003 | PARKED", "M8-003 | READY"),
-                declared={"M8-002"},
-            )
+    def test_combined_completion_and_dependency_activation_passes(self) -> None:
+        head = BASE_TASKS.replace("M8-002 | IN_PROGRESS", "M8-002 | DONE").replace(
+            "M8-003 | PARKED", "M8-003 | READY"
+        )
+        report = self.validate(head, declared={"M8-002", "M8-003"})
+        self.assertFalse(report.has_errors, report.findings)
 
-    def test_feature_cannot_set_done(self) -> None:
-        with self.assertRaisesRegex(governance.GovernanceError, "cannot set DONE"):
-            self.validate(BASE_TASKS.replace("M8-002 | READY", "M8-002 | DONE"))
+    def test_dependency_must_be_done_for_ready(self) -> None:
+        report = self.validate(
+            BASE_TASKS.replace("M8-003 | PARKED", "M8-003 | READY"),
+            declared={"M8-003"},
+        )
+        self.assertIn("TASK-DEPENDENCY-NOT-DONE", codes(report, "ERROR"))
+
+    def test_undeclared_status_change_fails(self) -> None:
+        report = self.validate(BASE_TASKS.replace("M8-004 | READY", "M8-004 | DONE"))
+        self.assertIn("TASK-STATUS-UNDECLARED", codes(report, "ERROR"))
+
+    def test_done_task_is_immutable(self) -> None:
+        report = self.validate(BASE_TASKS.replace("Existing acceptance", "Rewritten"), declared={"M8-001"})
+        self.assertIn("TASK-DONE-IMMUTABLE", codes(report, "ERROR"))
 
     def test_feature_cannot_rewrite_acceptance(self) -> None:
-        with self.assertRaisesRegex(governance.GovernanceError, "cannot redefine"):
-            self.validate(BASE_TASKS.replace("Action contract", "Changed requirement"))
+        report = self.validate(BASE_TASKS.replace("Test it", "Changed acceptance"), declared={"M8-002"})
+        self.assertIn("TASK-DEFINITION-REWRITE", codes(report, "ERROR"))
 
-    def test_completed_row_is_immutable(self) -> None:
-        with self.assertRaisesRegex(governance.GovernanceError, "completed TASKS row"):
-            self.validate(BASE_TASKS.replace("Existing acceptance", "Rewritten"))
-
-    def test_closeout_requires_label(self) -> None:
-        with self.assertRaisesRegex(governance.GovernanceError, "requires"):
-            self.validate(
-                BASE_TASKS.replace("M8-002 | READY", "M8-002 | DONE"),
-                pr_class="task-closeout",
-            )
-
-    def test_docs_only_closeout_passes(self) -> None:
-        self.validate(
-            BASE_TASKS.replace("M8-002 | READY", "M8-002 | DONE"),
-            pr_class="task-closeout",
-            labels={"governance/task-closeout"},
-            changed_paths=(
-                "docs/TASKS.md",
-                "docs/history/2026-08-23-M8-002.md",
-                "docs/workstreams/chengyue-lu/M8-002/README.md",
-            ),
-            declared={"M8-002"},
+    def test_illegal_transition_fails(self) -> None:
+        report = self.validate(
+            BASE_TASKS.replace("M8-003 | PARKED", "M8-003 | IN_PROGRESS"),
+            declared={"M8-003"},
         )
+        self.assertIn("TASK-TRANSITION", codes(report, "ERROR"))
 
-    def test_task_definition_cannot_complete_task(self) -> None:
-        with self.assertRaisesRegex(governance.GovernanceError, "cannot set DONE"):
-            self.validate(
-                BASE_TASKS.replace("M8-002 | READY", "M8-002 | DONE"),
-                pr_class="task-definition",
-                labels={"governance/task-definition"},
-            )
+    def test_task_definition_must_match_declared_ids(self) -> None:
+        changed = BASE_TASKS.replace("Action contract", "Revised contract")
+        valid = self.validate(changed, pr_class="task-definition", declared={"M8-002"})
+        self.assertFalse(valid.has_errors, valid.findings)
+        invalid = self.validate(changed, pr_class="task-definition", declared={"M8-003"})
+        self.assertIn("TASK-DECLARATION-CLOSURE", codes(invalid, "ERROR"))
 
-    def test_task_definition_cannot_remove_task(self) -> None:
-        without_m8_003 = BASE_TASKS.replace(
-            "| M8-003 | PARKED | Resolution | Test that |\n", ""
+
+class PolicyAndCodeownersTests(unittest.TestCase):
+    def test_policy_has_three_by_three_model(self) -> None:
+        policy = json.loads((ROOT / ".github" / "governance-policy.json").read_text(encoding="utf-8"))
+        self.assertEqual(["feature", "task-definition", "release"], policy["pr_classes"])
+        self.assertEqual(["R0", "R1", "R2"], policy["risk_order"])
+        self.assertEqual(["INFO", "WARNING", "ERROR"], policy["finding_severities"])
+
+    def test_codeowners_has_no_global_wildcard_and_keeps_sensitive_paths(self) -> None:
+        lines = [
+            line.strip()
+            for line in (ROOT / ".github" / "CODEOWNERS").read_text(encoding="utf-8").splitlines()
+            if line.strip() and not line.lstrip().startswith("#")
+        ]
+        self.assertFalse(any(line.split()[0] == "*" for line in lines))
+        patterns = {line.split()[0] for line in lines}
+        self.assertTrue({"/.github/", "/docs/ARCHITECTURE.md", "/schemas/", "/registry/"} <= patterns)
+
+    def test_template_omits_machine_known_and_retired_fields(self) -> None:
+        template = (ROOT / ".github" / "pull_request_template.md").read_text(encoding="utf-8")
+        self.assertNotIn("基线 SHA", template)
+        self.assertNotIn("跨负责人审查人", template)
+        self.assertNotIn("task-closeout", template)
+        for required in ("风险等级", "共享契约", "权威依据", "对抗性证据"):
+            self.assertIn(required, template)
+
+    def test_pr25_rollout_is_retained_and_marked_superseded(self) -> None:
+        rollout = (
+            ROOT
+            / "docs/workstreams/huangyi/execution-runtime-recovery-audit/GITHUB_GOVERNANCE_ROLLOUT.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("superseded", rollout.lower())
+        self.assertIn("不改写历史事实", rollout)
+
+
+class PublishedActionIdentityTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.base = {
+            "entries": [
+                {
+                    "action_id": "ES-A1",
+                    "version": "1.0.0",
+                    "mode_ref": "evidence-synthesis@0.1.0",
+                    "document_path": "registry/modes/actions/evidence-synthesis/ES-A1.yaml",
+                    "content_hash": "sha256:" + "a" * 64,
+                }
+            ]
+        }
+
+    def validate(self, head: dict) -> object:
+        report = governance.GovernanceReport()
+        governance.validate_mode_action_registry_history(self.base, head, report)
+        return report
+
+    def test_existing_action_entry_is_append_only(self) -> None:
+        head = json.loads(json.dumps(self.base))
+        head["entries"].append(
+            {
+                "action_id": "ES-A1",
+                "version": "1.1.0",
+                "mode_ref": "evidence-synthesis@0.1.0",
+                "document_path": "registry/modes/actions/evidence-synthesis/ES-A1-1.1.0.yaml",
+                "content_hash": "sha256:" + "b" * 64,
+            }
         )
-        with self.assertRaisesRegex(governance.GovernanceError, "TASKS row removed"):
-            self.validate(
-                without_m8_003,
-                pr_class="task-definition",
-                labels={"governance/task-definition"},
-            )
+        self.assertFalse(self.validate(head).has_errors)
 
-    def test_task_definition_may_insert_before_done_row(self) -> None:
-        inserted = BASE_TASKS.replace(
-            "| M1-001 | DONE",
-            "| M0-999 | READY | New task | New acceptance |\n| M1-001 | DONE",
+    def test_same_identity_cannot_change_hash(self) -> None:
+        head = json.loads(json.dumps(self.base))
+        head["entries"][0]["content_hash"] = "sha256:" + "b" * 64
+        self.assertIn("ACTION-IDENTITY-MUTATED", codes(self.validate(head), "ERROR"))
+
+    def test_published_identity_cannot_be_removed(self) -> None:
+        self.assertIn(
+            "ACTION-IDENTITY-REMOVED",
+            codes(self.validate({"entries": []}), "ERROR"),
         )
-        self.validate(
-            inserted,
-            pr_class="task-definition",
-            labels={"governance/task-definition"},
-            declared={"M0-999"},
-        )
-
-    def test_task_definition_must_declare_changed_task(self) -> None:
-        changed = BASE_TASKS.replace("Action contract", "Revised action contract")
-        with self.assertRaisesRegex(governance.GovernanceError, "must equal task-definition"):
-            self.validate(
-                changed,
-                pr_class="task-definition",
-                labels={"governance/task-definition"},
-                declared={"M8-003"},
-            )
-
-    def test_task_definition_cannot_overdeclare_unchanged_task(self) -> None:
-        changed = BASE_TASKS.replace("Action contract", "Revised action contract")
-        with self.assertRaisesRegex(governance.GovernanceError, "must equal task-definition"):
-            self.validate(
-                changed,
-                pr_class="task-definition",
-                labels={"governance/task-definition"},
-                declared={"M8-002", "M8-003"},
-            )
-
-    def test_task_definition_requires_an_actual_definition_change(self) -> None:
-        with self.assertRaisesRegex(governance.GovernanceError, "at least one Task ID"):
-            self.validate(
-                BASE_TASKS,
-                pr_class="task-definition",
-                labels={"governance/task-definition"},
-                declared={"M8-002"},
-            )
-
-    def test_duplicate_task_id_fails(self) -> None:
-        duplicate = BASE_TASKS + "| M8-002 | READY | Duplicate | Nope |\n"
-        with self.assertRaisesRegex(governance.GovernanceError, "duplicate"):
-            self.validate(duplicate)
 
 
 if __name__ == "__main__":

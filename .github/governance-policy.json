@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "risk_order": ["R0", "R1", "R2"],
+  "finding_severities": ["INFO", "WARNING", "ERROR"],
+  "pr_classes": ["feature", "task-definition", "release"],
+  "task_statuses": ["DONE", "IN_PROGRESS", "READY", "BLOCKED", "PARKED"],
+  "task_transitions": {
+    "PARKED": ["READY"],
+    "READY": ["IN_PROGRESS", "DONE", "BLOCKED"],
+    "IN_PROGRESS": ["DONE", "BLOCKED"],
+    "BLOCKED": ["READY", "IN_PROGRESS", "DONE"],
+    "DONE": []
+  },
+  "owners": {
+    "Chengyue-Lu": "chengyue-lu",
+    "let778750-cpu": "huangyi"
+  },
+  "minimum_risk_paths": {
+    "R1": [
+      "schemas/**",
+      "registry/**",
+      "docs/compatibility/**",
+      "src/research_workbench/cli.py",
+      "src/research_workbench/protocol/**",
+      "src/research_workbench/contracts/**"
+    ],
+    "R2": [
+      ".github/**",
+      "AGENTS.md",
+      "docs/ARCHITECTURE.md",
+      "docs/PROJECT_CHARTER.md",
+      "docs/decisions/**",
+      "schemas/**/method-resolution.schema.json",
+      "schemas/**/claim*.schema.json",
+      "schemas/**/decision*.schema.json",
+      "schemas/**/human-gate*.schema.json",
+      "schemas/**/permission*.schema.json",
+      "schemas/**/data-policy*.schema.json",
+      "src/research_workbench/governance/**",
+      "src/research_workbench/security/**"
+    ]
+  }
+}
