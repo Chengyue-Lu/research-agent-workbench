@@ -290,25 +290,25 @@ class DecisionAuthorityMatrix:
         )
 
 
-def evaluate_decision_authority_preflight(
-    preflight: Mapping[str, Any],
+def evaluate_authority_rule_eligibility(
+    eligibility: Mapping[str, Any],
     matrix_document: Mapping[str, Any],
     *,
     matrix_content_hash: str,
 ) -> dict[str, str]:
     matrix = DecisionAuthorityMatrix.from_mapping(matrix_document)
-    matrix_ref = mapping_value(preflight, "matrix_ref", required=True)
+    matrix_ref = mapping_value(eligibility, "matrix_ref", required=True)
     if matrix_ref.get("ref") != matrix.reference:
         return _blocked(
             "AUTHORITY-MATRIX-REF-MISMATCH",
             "blocked",
-            "The preflight does not reference the loaded Matrix identity.",
+            "The eligibility record does not reference the loaded Matrix identity.",
         )
     if matrix_ref.get("document_path") != DECISION_AUTHORITY_MATRIX_PATH:
         return _blocked(
             "AUTHORITY-MATRIX-PATH-MISMATCH",
             "blocked",
-            "The preflight does not reference the canonical Matrix path.",
+            "The eligibility record does not reference the canonical Matrix path.",
         )
     normalized_hash = matrix_content_hash.removeprefix("sha256:").lower()
     recorded_hash = str(matrix_ref.get("content_hash", "")).removeprefix("sha256:").lower()
@@ -316,14 +316,14 @@ def evaluate_decision_authority_preflight(
         return _blocked(
             "AUTHORITY-MATRIX-HASH-MISMATCH",
             "blocked",
-            "The preflight Matrix hash does not match the loaded raw document bytes.",
+            "The eligibility Matrix hash does not match the loaded raw document bytes.",
         )
 
-    decision_kind = require_string(preflight, "decision_kind")
-    operation = require_string(preflight, "operation")
-    actor_class = require_string(preflight, "actor_class")
-    facts = set(string_tuple(preflight, "presented_facts", required=True))
-    human_gate_ref = optional_string(preflight, "human_gate_ref")
+    decision_kind = require_string(eligibility, "decision_kind")
+    operation = require_string(eligibility, "operation")
+    actor_class = require_string(eligibility, "actor_class")
+    facts = set(string_tuple(eligibility, "asserted_facts", required=True))
+    human_gate_ref = optional_string(eligibility, "human_gate_ref")
     entry = matrix.entry_for(decision_kind)
     if entry is None:
         return _blocked(
@@ -334,36 +334,36 @@ def evaluate_decision_authority_preflight(
     rule = entry.rule_for(operation, actor_class)
     if rule is None:
         return _blocked(
-            "AUTHORITY-DENIED",
+            "AUTHORITY-RULE-DENIED",
             entry.denied_disposition,
-            f"{actor_class} has no {operation} authority for {decision_kind}.",
+            f"{actor_class} is not eligible for the {operation} rule for {decision_kind}.",
         )
     if rule.human_gate_required and human_gate_ref is None:
         return _blocked(
             "AUTHORITY-HUMAN-GATE-REQUIRED",
             "human-gate",
-            "This binding decision requires an explicit Human Gate reference.",
+            "Eligibility for this commit rule requires an explicit Human Gate reference; the reference does not prove approval.",
         )
     if not rule.human_gate_required and human_gate_ref is not None:
         return _blocked(
             "AUTHORITY-HUMAN-GATE-NOT-CONSUMED",
             "blocked",
-            "This authority path cannot consume a Human Gate as cosmetic approval.",
+            "This eligibility path cannot consume a Human Gate as cosmetic approval.",
         )
     missing = sorted(set(rule.required_facts) - facts)
     if missing:
         return _blocked(
-            "AUTHORITY-FACTS-MISSING",
+            "AUTHORITY-ASSERTED-FACTS-MISSING",
             "blocked",
-            f"Required authority facts are missing: {', '.join(missing)}.",
+            f"Required asserted facts are missing: {', '.join(missing)}.",
         )
     return {
-        "status": "allowed",
-        "code": "AUTHORITY-ALLOWED",
-        "disposition": "proceed",
+        "status": "eligible",
+        "code": "AUTHORITY-RULE-ELIGIBLE",
+        "disposition": "eligible-for-decision",
         "reason": (
-            f"{actor_class} may {operation} {decision_kind} under the frozen Matrix "
-            "and presented facts."
+            f"Assuming the asserted facts are true, {actor_class} is eligible for the "
+            f"{operation} rule for {decision_kind}; no decision or authority effect is executed."
         ),
     }
 

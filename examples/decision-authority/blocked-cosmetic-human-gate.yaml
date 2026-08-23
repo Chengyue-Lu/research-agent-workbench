@@ -1,19 +1,19 @@
 schema_version: 0.1.0
-preflight_id: DAP-COSMETIC-GATE-NEG-001
+eligibility_id: DAE-COSMETIC-GATE-NEG-001
 matrix_ref:
   ref: rwb-decision-authority@1.0.0
   document_path: registry/authority/decision-authority-matrix.yaml
-  content_hash: sha256:e9ba8aad12d2dd5164d2ed989fd9c2eb93885f3c58b5e5f23330971602038020
+  content_hash: sha256:960c95754f8a78fe39b3f2583414ca9c7006b1274c9267db0149558c321f5e45
 decision_kind: mode-selection
 operation: propose
 actor_class: agent
 subject_refs: [TASK-MODE-001]
-presented_facts: []
+asserted_facts: []
 requested_effect: Attach a Human Gate label to an Agent proposal as cosmetic approval.
 human_gate_ref: approve-mode-selection
 result:
   status: blocked
   code: AUTHORITY-HUMAN-GATE-NOT-CONSUMED
   disposition: blocked
-  reason: This authority path cannot consume a Human Gate as cosmetic approval.
+  reason: This eligibility path cannot consume a Human Gate as cosmetic approval.
 limitations: [A Gate reference cannot upgrade an Agent proposal into a binding decision.]

@@ -1,7 +1,7 @@
 schema_version: 0.1.0
 resolution_id: MR-ROUTE-ES-CONFLICT-003
 revision: 1
-task_ref: {task_id: ROUTE-ES-CONFLICT-003, revision: 1}
+task_ref: {task_id: TASK-MR-ES-CONFLICT-003, revision: 1, sha256: 08049ec3f70c9bc581f1444118ba7e51dbccbdd1362d607c074aaa2c5fbacbbb}
 source_case_id: ROUTE-ES-CONFLICT-003
 mode_resolution:
   status: selected
@@ -16,12 +16,13 @@ action_decisions:
       - obligation_id: MRO-ES-CONFLICT-MAP
         statement: Preserve population, measure, window, support, counterevidence, and limitation differences.
         assessment: semantic-review
-        required_evidence: [conflict-map, evidence-refs]
-    mechanisms: [tool, skill-need]
+        required_evidence: [claim-evidence-relation-map, synthesis-draft, conflict-map, evidence-refs]
+    mechanisms: [tool, skill-need, human-gate]
     capability_requirements: [research-contract-check]
     skill_need_refs: [NEED-ES-CONFLICT-SYNTHESIS]
-    human_gate_refs: []
-    blocked_conditions: []
+    human_gate_refs: [approve-synthesis-interpretation]
+    stop_conditions: [Support, conflict, limitations, and unknowns are all represented and linked.]
+    blocked_conditions: [Evidence scopes cannot be reconciled without an unapproved interpretive assumption.]
     rationale: Conflict-preserving synthesis is a repeated semantic gap beyond a structural checker.
   - decision_id: MRD-ES-CONFLICT-CLAIM
     action_ref: ES-A8@1.0.0
@@ -30,21 +31,22 @@ action_decisions:
       - obligation_id: MRO-ES-CONFLICT-CLAIM
         statement: A named human decides whether the bounded synthesis interpretation is acceptable.
         assessment: human-decision
-        required_evidence: [claim-audit, conflict-map, decision]
+        required_evidence: [claim, claim-audit, conflict-map, decision]
     mechanisms: [mode-invariant, human-gate]
     capability_requirements: []
     skill_need_refs: []
-    human_gate_refs: [approve-synthesis-interpretation]
-    blocked_conditions: []
+    human_gate_refs: [approve-or-reject-synthesis-claim, approve-synthesis-interpretation]
+    stop_conditions: [A named human records a bounded decision with reasons and unresolved limits.]
+    blocked_conditions: [Required Evidence review is incomplete or decision authority is unavailable.]
     rationale: A checker may expose conflicts but cannot approve their scientific interpretation.
 skill_disposition:
   status: skill-need
   need_refs: [NEED-ES-CONFLICT-SYNTHESIS]
   reason: Structural checks alone cannot reliably preserve cross-source semantic differences.
-human_gate_refs: [approve-synthesis-interpretation]
-blocked_conditions: []
+human_gate_refs: [approve-or-reject-synthesis-claim, approve-synthesis-interpretation]
+blocked_conditions: [Evidence scopes cannot be reconciled without an unapproved interpretive assumption., Required Evidence review is incomplete or decision authority is unavailable.]
 rejected_alternatives:
   - {alternative_id: majority-vote-synthesis, disposition: rejected, reason: Source count cannot resolve population or measurement incompatibility.}
   - {alternative_id: automatic-claim-acceptance, disposition: rejected, reason: Claim interpretation remains human authority.}
-resolution_status: need-not-implemented
-limitations: [The declared Need has no admitted implementation and cannot produce an Assignment.]
+resolution_status: proceed
+limitations: [The declared Need is stable even when Capability Resolution later reports no admitted implementation.]

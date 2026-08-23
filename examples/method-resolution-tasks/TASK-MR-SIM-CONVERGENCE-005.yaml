@@ -1,0 +1,21 @@
+schema_version: 0.1.0
+task_id: TASK-MR-SIM-CONVERGENCE-005
+revision: 1
+goal: Resolve a convergence-study method and its bounded Claim review obligations.
+question_refs: [Q-MR-SIM-CONVERGENCE-005]
+active_modes: [simulation]
+required_capabilities: [bounded-compute, research-contract-check]
+required_skills: []
+forbidden_skills: []
+agent_profile: method-resolver
+input_refs: []
+write_scope: [work/TASK-MR-SIM-CONVERGENCE-005]
+required_outputs: [method-resolution]
+permissions: {filesystem: worktree-write, network: forbidden, external_write: false, allowed_roots: [work/TASK-MR-SIM-CONVERGENCE-005]}
+delegation: {allowed: false}
+budget: {max_turns: 6}
+atomic_boundary: Resolve convergence and Claim-review obligations without executing simulation.
+completion_checks: [The Method Resolution is hash-bound to this Task revision.]
+safe_pause_conditions: [An error threshold or Claim decision needs a Human Gate.]
+stop_conditions: [A bounded Method Resolution is recorded.]
+stale_if: [task-revision-or-content-changes]

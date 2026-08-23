@@ -9,7 +9,6 @@
     "resolution_id",
     "revision",
     "task_ref",
-    "source_case_id",
     "mode_resolution",
     "action_decisions",
     "skill_disposition",
@@ -25,7 +24,7 @@
     "revision": { "type": "integer", "minimum": 1 },
     "task_ref": {
       "type": "object",
-      "required": ["task_id", "revision"],
+      "required": ["task_id", "revision", "sha256"],
       "properties": {
         "task_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
         "revision": { "type": "integer", "minimum": 1 },
@@ -49,7 +48,7 @@
       "items": { "$ref": "#/$defs/rejectedAlternative" }
     },
     "resolution_status": {
-      "enum": ["proceed", "need-not-implemented", "blocked", "split-and-block"]
+      "enum": ["proceed", "blocked", "split-and-block"]
     },
     "limitations": { "$ref": "common.schema.json#/$defs/stringArray" }
   },
@@ -124,6 +123,7 @@
         "capability_requirements",
         "skill_need_refs",
         "human_gate_refs",
+        "stop_conditions",
         "blocked_conditions",
         "rationale"
       ],
@@ -150,7 +150,6 @@
               "no-skill",
               "skill-need",
               "human-gate",
-              "capability-gap",
               "blocked",
               "split-task"
             ]
@@ -159,6 +158,7 @@
         "capability_requirements": { "$ref": "common.schema.json#/$defs/stringArray" },
         "skill_need_refs": { "$ref": "common.schema.json#/$defs/stringArray" },
         "human_gate_refs": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "stop_conditions": { "$ref": "common.schema.json#/$defs/stringArray" },
         "blocked_conditions": { "$ref": "common.schema.json#/$defs/stringArray" },
         "rationale": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
       },
@@ -188,7 +188,7 @@
           "else": { "properties": { "human_gate_refs": { "maxItems": 0 } } }
         },
         {
-          "if": { "properties": { "mechanisms": { "contains": { "enum": ["blocked", "capability-gap"] } } }, "required": ["mechanisms"] },
+          "if": { "properties": { "mechanisms": { "contains": { "const": "blocked" } } }, "required": ["mechanisms"] },
           "then": { "properties": { "blocked_conditions": { "minItems": 1 } } }
         }
       ],

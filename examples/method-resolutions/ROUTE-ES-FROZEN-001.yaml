@@ -1,7 +1,7 @@
 schema_version: 0.1.0
 resolution_id: MR-ROUTE-ES-FROZEN-001
 revision: 1
-task_ref: {task_id: ROUTE-ES-FROZEN-001, revision: 1}
+task_ref: {task_id: TASK-MR-ES-FROZEN-001, revision: 1, sha256: a72229692e6e0258dc2fc53096505f5c10b6c743ab1c5ec528588cad8b92865f}
 source_case_id: ROUTE-ES-FROZEN-001
 mode_resolution:
   status: selected
@@ -17,11 +17,12 @@ action_decisions:
         statement: Every consumed source remains bound to an approved locator and content identity.
         assessment: deterministic
         required_evidence: [source-snapshot-or-ref, content-hash, locator]
-    mechanisms: [tool, no-skill]
+    mechanisms: [tool, no-skill, human-gate]
     capability_requirements: [document-read]
     skill_need_refs: []
-    human_gate_refs: []
-    blocked_conditions: []
+    human_gate_refs: [approve-alternative-data-path-on-policy-exception]
+    stop_conditions: [Every consumed source has a stable reference, hash, and locator.]
+    blocked_conditions: [Required content is unavailable or cannot be accessed within the approved data policy.]
     rationale: Direct bounded reading is sufficient; no reusable semantic gap is present.
   - decision_id: MRD-ES-FROZEN-EVIDENCE
     action_ref: ES-A4@1.0.0
@@ -31,11 +32,12 @@ action_decisions:
         statement: Source statements, agent inference, limitations, and locators remain distinguishable.
         assessment: deterministic
         required_evidence: [evidence-record]
-    mechanisms: [tool, task-instruction, no-skill]
+    mechanisms: [tool, task-instruction, no-skill, human-gate]
     capability_requirements: [research-contract-check]
     skill_need_refs: []
-    human_gate_refs: []
-    blocked_conditions: []
+    human_gate_refs: [sample-high-risk-extraction]
+    stop_conditions: [All in-scope records pass locator and source-separation checks.]
+    blocked_conditions: [The relevant passage cannot be located in an approved frozen source.]
     rationale: A checker and bounded Task instruction cover the extraction contract.
   - decision_id: MRD-ES-FROZEN-HANDOFF
     planning_action_id: NEED-INT-COMPACT-HANDOFF
@@ -48,14 +50,15 @@ action_decisions:
     capability_requirements: []
     skill_need_refs: []
     human_gate_refs: []
+    stop_conditions: [The compact handoff is emitted without a second semantic transformation layer.]
     blocked_conditions: []
     rationale: The existing compact template is sufficient; a project-internal Skill is not justified.
 skill_disposition:
   status: no-skill
   need_refs: []
   reason: Tool and template baselines satisfy all declared obligations.
-human_gate_refs: []
-blocked_conditions: []
+human_gate_refs: [approve-alternative-data-path-on-policy-exception, sample-high-risk-extraction]
+blocked_conditions: [Required content is unavailable or cannot be accessed within the approved data policy., The relevant passage cannot be located in an approved frozen source.]
 rejected_alternatives:
   - {alternative_id: literature-search, disposition: rejected, reason: Sources are already frozen and search would expand scope.}
   - {alternative_id: project-internal-skill, disposition: rejected, reason: The H1 template closes the handoff gap directly.}

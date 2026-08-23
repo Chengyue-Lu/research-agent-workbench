@@ -14,9 +14,9 @@ RWB 处于**内部技术 alpha**：核心文件契约、解析和确定性验证
 | 能力 | 当前覆盖 |
 |---|---|
 | 版本化对象 | Task、Assignment、Handoff、Evidence、Claim、Decision、Protocol、Receipt 等 Schema 与示例 |
-| Method-aware control | 两个正式 Mode 的 16 个逻辑 Action、跨 v0.1/v0.2 的 32 个版本化 Action 文档、hash-pinned Registry，以及八个按 Task 产生、provider-neutral 的 Method Resolution |
-| Mode compatibility | v0.1/v0.2 Mode 并存，显式 v0.1→v0.2 迁移器与两个 hash-pinned migration record；历史对象不自动升级 |
-| Decision Authority | v1 Matrix 冻结 Agent proposal、deterministic validation/commit 与 Human Gate commit 边界；九个 hash-pinned preflight 覆盖允许与阻断路径 |
+| Method-aware control | 两个正式 Mode 的 16 个逻辑 Action、跨 v0.1/v0.2 的 32 个版本化 Action 文档、hash-pinned Registry，以及八组 `diagnostic case → bounded TaskPacket → Method Resolution`；Resolution 继承 Action Gate/Artifact/stop/block 且不绑定供应实现 |
+| Mode compatibility | v0.1/v0.2 Mode 并存，显式 v0.1→v0.2 迁移器与两个 exact-pin migration record；Registry 追加同 Action 新版本不改变旧 migration replay |
+| Authority Rule Eligibility | v1 Matrix 与九个 hash-pinned eligibility record 只判断“假设 asserted facts 成立时 actor 是否匹配 operation rule”；不证明事实、不记录 Human approval、不授予 Permission、不提升 Claim、不执行决定 |
 | 确定性验证 | Schema、引用、哈希、权限交集、Handoff lock、Claim 支持关系 |
 | Task 解析 | Task + Agent Profile + 显式或 Registry Skill 的冻结 Assignment、权限交集与版本锁 |
 | Skill 生命周期 | accepted Registry 的 active / legacy / deprecated 选择边界与精确版本 |
@@ -29,7 +29,7 @@ RWB 处于**内部技术 alpha**：核心文件契约、解析和确定性验证
 
 | 范围 | 限制 |
 |---|---|
-| Method-aware control continuation | Resolved Execution View 与 Method Trace 仍在演进；现有 Mode migration 不迁移历史 Resolution 或执行记录，Authority preflight 也不执行决定 |
+| Method-aware control continuation | Resolved Execution View、Capability binding 与 Method Trace 尚未实现；现有 Mode migration 不迁移历史 Resolution 或执行记录，Authority Rule Eligibility 也不执行决定 |
 | no-Skill Assignment | Task 契约允许空 `required_skills`，但 alpha CLI 尚不能将其解析为冻结 Assignment |
 | End-to-end research run | 尚无面向普通用户的一键 Task-to-research 闭环；Runtime 集成由开发者显式接入 |
 | 真实外部模型 | 仓库测试不证明各供应商真实账号、配额、工具调用或长期兼容性 |

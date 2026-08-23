@@ -12,10 +12,22 @@ from research_workbench.protocol.models import ResearchMode
 
 RESEARCH_MODE_MIGRATION_ID = "research-mode-v0.1-to-v0.2"
 RESEARCH_MODE_MIGRATION_VERSION = "1.0.0"
+RESEARCH_MODE_ACTION_REF_MIGRATIONS_V1: dict[
+    str, tuple[tuple[str, str], ...]
+] = {
+    mode_id: tuple(
+        (f"{prefix}-A{index}@1.0.0", f"{prefix}-A{index}@2.0.0")
+        for index in range(1, 9)
+    )
+    for mode_id, prefix in (
+        ("evidence-synthesis", "ES"),
+        ("simulation", "SIM"),
+    )
+}
 
 
-def _action_entries_for_mode(
-    action_registry: Mapping[str, Any], mode_ref: str
+def _action_entries_by_ref(
+    action_registry: Mapping[str, Any]
 ) -> dict[str, Mapping[str, Any]]:
     if action_registry.get("registry_kind") != "mode_action_registry":
         raise ContractError("action_registry", "must be a Mode Action Registry")
@@ -26,8 +38,6 @@ def _action_entries_for_mode(
     for index, entry in enumerate(entries):
         if not isinstance(entry, Mapping):
             raise ContractError(f"action_registry.entries[{index}]", "must be an object")
-        if entry.get("mode_ref") != mode_ref:
-            continue
         action_id = entry.get("action_id")
         version = entry.get("version")
         if not isinstance(action_id, str) or not action_id or not isinstance(version, str):
@@ -35,11 +45,12 @@ def _action_entries_for_mode(
                 f"action_registry.entries[{index}]",
                 "must contain action_id and version",
             )
-        if action_id in result:
-            raise ContractError("action_registry.entries", f"duplicate action_id for {mode_ref}: {action_id}")
-        result[action_id] = entry
+        action_ref = f"{action_id}@{version}"
+        if action_ref in result:
+            raise ContractError("action_registry.entries", f"duplicate Action ref: {action_ref}")
+        result[action_ref] = entry
     if not result:
-        raise ContractError("action_registry.entries", f"no actions found for {mode_ref}")
+        raise ContractError("action_registry.entries", "must contain at least one Action")
     return result
 
 
@@ -48,52 +59,58 @@ def research_mode_action_migrations(
     target_mode_ref: str,
     action_registry: Mapping[str, Any],
 ) -> tuple[tuple[Mapping[str, Any], Mapping[str, Any]], ...]:
-    source_entries = _action_entries_for_mode(action_registry, source_mode_ref)
-    target_entries = _action_entries_for_mode(action_registry, target_mode_ref)
-    if set(source_entries) != set(target_entries):
-        raise ContractError(
-            "action_registry.entries",
-            "source and target Mode revisions must expose the same Action IDs",
-        )
+    source_mode_id = source_mode_ref.partition("@")[0]
+    target_mode_id = target_mode_ref.partition("@")[0]
+    if source_mode_id != target_mode_id:
+        raise ContractError("mode_ref", "source and target Mode IDs must match")
+    pairs = RESEARCH_MODE_ACTION_REF_MIGRATIONS_V1.get(source_mode_id)
+    if pairs is None:
+        raise ContractError("mode_ref", f"unsupported Research Mode migration: {source_mode_id}")
+    entries = _action_entries_by_ref(action_registry)
     result: list[tuple[Mapping[str, Any], Mapping[str, Any]]] = []
-    for action_id in sorted(source_entries):
-        source = source_entries[action_id]
-        target = target_entries[action_id]
-        if source.get("version") == target.get("version"):
+    for source_ref, target_ref in pairs:
+        source = entries.get(source_ref)
+        target = entries.get(target_ref)
+        if source is None or target is None:
             raise ContractError(
                 "action_registry.entries",
-                f"Action {action_id} must publish a new version for the target Mode revision",
+                f"migration-pinned Action is missing: {source_ref} -> {target_ref}",
             )
+        if source.get("mode_ref") != source_mode_ref or target.get("mode_ref") != target_mode_ref:
+            raise ContractError("action_registry.entries", "migration-pinned Action belongs to the wrong Mode revision")
         result.append((source, target))
     return tuple(result)
 
 
 def migrate_research_mode_v01_to_v02(
-    source_mode: Mapping[str, Any], action_registry: Mapping[str, Any]
+    source_mode: Mapping[str, Any],
+    target_action_refs: list[str] | tuple[str, ...],
+    action_registry: Mapping[str, Any],
 ) -> dict[str, Any]:
     parsed = ResearchMode.from_mapping(source_mode)
     if parsed.version != "0.1.0":
         raise ContractError("version", "migration source must be Research Mode v0.1.0")
-    source_ref = f"{parsed.mode_id}@0.1.0"
     target_ref = f"{parsed.mode_id}@0.2.0"
-    action_migrations = research_mode_action_migrations(
-        source_ref, target_ref, action_registry
-    )
-    target_action_refs = [
-        f"{target['action_id']}@{target['version']}"
-        for _, target in action_migrations
-    ]
+    entries = _action_entries_by_ref(action_registry)
+    if not target_action_refs or len(target_action_refs) != len(set(target_action_refs)):
+        raise ContractError("target_action_refs", "must be a non-empty unique exact Action ref list")
+    for action_ref in target_action_refs:
+        entry = entries.get(action_ref)
+        if entry is None:
+            raise ContractError("target_action_refs", f"Action is not in the Registry: {action_ref}")
+        if entry.get("mode_ref") != target_ref:
+            raise ContractError("target_action_refs", f"Action belongs to the wrong Mode revision: {action_ref}")
 
     target: dict[str, Any] = {}
     for key, value in source_mode.items():
         if key == "version":
             target[key] = "0.2.0"
         elif key == "recommended_skill_capabilities":
-            target["action_refs"] = target_action_refs
+            target["action_refs"] = list(target_action_refs)
         else:
             target[key] = deepcopy(value)
     if "action_refs" not in target:
-        target["action_refs"] = target_action_refs
+        target["action_refs"] = list(target_action_refs)
     ResearchMode.from_mapping(target)
     return target
 
@@ -127,7 +144,14 @@ def build_research_mode_migration_record(
         raise ContractError("mode", "source and target Mode documents must be objects")
     if not isinstance(action_registry, Mapping):
         raise ContractError("action_registry", "must be an object")
-    expected_target = migrate_research_mode_v01_to_v02(source_mode, action_registry)
+    target_action_refs = target_mode.get("action_refs")
+    if not isinstance(target_action_refs, list) or not all(
+        isinstance(value, str) for value in target_action_refs
+    ):
+        raise ContractError("target_mode.action_refs", "must be an exact Action ref list")
+    expected_target = migrate_research_mode_v01_to_v02(
+        source_mode, target_action_refs, action_registry
+    )
     if dict(target_mode) != expected_target:
         raise ContractError("target_mode", "does not match the deterministic migration result")
 

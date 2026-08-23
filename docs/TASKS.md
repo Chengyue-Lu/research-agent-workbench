@@ -120,9 +120,9 @@ process-kill recovery 均不作为 `K-INTEGRATION-1` 的合并阻塞项。
 |---|---|---|---|---|
 | M8-001 | DONE | 按第二轮审计重整全局架构文档与路线 | M7-016 | ADR-0016、五平面架构、ROADMAP、审计吸收记录和单一真值导航一致；未验证外部项目或实现新 Schema |
 | M8-002 | DONE | 将 Mode Action 正式化为一等契约 | M7-011, M8-001 | 两个正式 Mode 的 Action 有 stable ID/version/hash、trigger/non-trigger、failure/artifact/claim/gate/stop/blocked；既有 fixture 无损引用 |
-| M8-003 | READY | 建立版本化 Method Resolution | M8-002 | 八个 routing fixture 转成 provider-neutral Resolution；正式表达 no-Skill/tool/Skill Need/Human/split/blocked 与 rejected alternatives |
-| M8-004 | PARKED | 建立最小 migration seam 并迁移 Research Mode v0.1 → v0.2 | M8-002, M8-003 | v0.2 删除直接 Skill recommendation；v0.1 仍可验证/历史解释；迁移保留原/新 hash 与实现版本 |
-| M8-005 | PARKED | 冻结 Decision Authority Matrix 并映射 validation/preflight | M8-002, M8-003 | Agent proposal、deterministic resolution、Human Gate、权限放宽和 Claim promotion 权限有正反 fixture |
+| M8-003 | DONE | 建立版本化 Method Resolution | M8-002 | 八个 routing fixture 转成 provider-neutral Resolution；正式表达 no-Skill/tool/Skill Need/Human/split/blocked 与 rejected alternatives |
+| M8-004 | DONE | 建立最小 migration seam 并迁移 Research Mode v0.1 → v0.2 | M8-002, M8-003 | v0.2 删除直接 Skill recommendation；v0.1 仍可验证/历史解释；迁移保留原/新 hash 与实现版本 |
+| M8-005 | DONE | 冻结 Decision Authority Matrix 并映射 validation/preflight | M8-002, M8-003 | Agent proposal、deterministic resolution、Human Gate、权限放宽和 Claim promotion 权限有正反 fixture |
 
 ## 历史 GitHub Issues
 
@@ -141,8 +141,8 @@ process-kill recovery 均不作为 `K-INTEGRATION-1` 的合并阻塞项。
 当前 Method/Core 工作段为 **M8 Method Control Stage**。统一分支
 `agent/method-m8-action-resolution-node` 连续承载 Action、Method Resolution、Mode v0.2 migration 与
 Decision Authority 实现，以 PR #30 接受一次 R2 审查；不再为每个 M8 小节点新建分支或 Handoff。
-相对 `develop` 的合法 merge snapshot 仍只完成 M8-002 并激活 M8-003；由于状态机禁止同一 head 把
-M8-003 从 PARKED 越级置 DONE，M8-004/M8-005 的隔离实现不在本 PR 中伪造共享 Task 激活或完成。
+PR #30 使用 Governance v2 的 atomic dependency closure：M8-002～005 全部显式声明，Task 定义、依赖
+与验收未修改；治理器按 dependency DAG 验证同一 Stage 内的完成顺序，并要求四项各自具名验收证据。
 Resolved Execution View、Method Trace 与 API/Runtime consumer 仍不进入本阶段。
 M6-003/M6-004 与 M3-001/M3-006 的未完成项继续按各自任务跟踪；M7-005/006/014 的真实比较继续
 parked，直到 Method Resolution 与相应 Trace/Evaluation Manifest 稳定。

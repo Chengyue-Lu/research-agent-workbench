@@ -157,6 +157,6 @@ entries:
         effect: binding-decision
     denied_disposition: human-gate
 limitations:
-  - Authority preflight does not prove that a Mode, Action, mechanism, binding, permission change, or Claim is scientifically appropriate.
+  - Authority Rule Eligibility assumes asserted facts and does not prove them, record Human approval, grant Permission, promote a Claim, or execute a decision.
   - Human authority cannot waive Schema validity, missing provenance, illegal data handling, or a stricter external policy.
-  - Skill and Tool binding rules define authority only; concrete binding and execution remain outside this Matrix.
+  - Matrix effects describe the contemplated operation class only; concrete decisions, binding, provenance, and execution remain outside this Matrix.

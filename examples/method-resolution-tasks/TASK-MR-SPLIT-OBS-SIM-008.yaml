@@ -1,0 +1,21 @@
+schema_version: 0.1.0
+task_id: TASK-MR-SPLIT-OBS-SIM-008
+revision: 1
+goal: Split admitted simulation work from an unsupported observational-identification method.
+question_refs: [Q-MR-SPLIT-OBS-SIM-008]
+active_modes: [simulation]
+required_capabilities: []
+required_skills: []
+forbidden_skills: []
+agent_profile: method-resolver
+input_refs: []
+write_scope: [work/TASK-MR-SPLIT-OBS-SIM-008]
+required_outputs: [method-resolution]
+permissions: {filesystem: worktree-write, network: forbidden, external_write: false, allowed_roots: [work/TASK-MR-SPLIT-OBS-SIM-008]}
+delegation: {allowed: false}
+budget: {max_turns: 6}
+atomic_boundary: Resolve the simulation lane and block the unsupported observational lane.
+completion_checks: [The Method Resolution is hash-bound to this Task revision.]
+safe_pause_conditions: [A Research Mode or Claim boundary is missing.]
+stop_conditions: [A bounded split-and-block Method Resolution is recorded.]
+stale_if: [task-revision-or-content-changes]

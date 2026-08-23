@@ -1,7 +1,9 @@
 import copy
+import tempfile
 import unittest
 from pathlib import Path
 
+from research_workbench.artifacts.integrity import hash_file
 from research_workbench.contracts.common import ContractError
 from research_workbench.io import iter_documents, load_document
 from research_workbench.protocol import (
@@ -64,7 +66,9 @@ class ResearchModeMigrationTests(unittest.TestCase):
                 target = load_document(ROOT / f"registry/modes/v0.2.0/{mode_id}.yaml")
                 self.assertEqual(
                     target,
-                    migrate_research_mode_v01_to_v02(source, self.action_registry),
+                    migrate_research_mode_v01_to_v02(
+                        source, target["action_refs"], self.action_registry
+                    ),
                 )
                 self.assertNotIn("recommended_skill_capabilities", target)
                 self.assertTrue(all(ref.endswith("@2.0.0") for ref in target["action_refs"]))
@@ -114,7 +118,51 @@ class ResearchModeMigrationTests(unittest.TestCase):
         documents[migration_path] = mutated
         codes = {issue.code for issue in validate_documents(documents)}
         self.assertIn("MODE-MIGRATION-ACTION-CLOSURE", codes)
-        self.assertIn("MODE-MIGRATION-ACTION-REGISTRY-CLOSURE", codes)
+
+    def test_pinned_action_hash_drift_is_blocked(self) -> None:
+        documents = {
+            path: load_document(path)
+            for path in iter_documents([ROOT / "registry"])
+        }
+        migration_path = ROOT / "registry/modes/migrations/simulation-0.1.0-to-0.2.0.yaml"
+        documents[migration_path]["action_migrations"][2]["target"]["content_hash"] = (
+            "sha256:" + "0" * 64
+        )
+        codes = {issue.code for issue in validate_documents(documents)}
+        self.assertIn("MODE-MIGRATION-ACTION-PIN-MISMATCH", codes)
+
+    def test_appending_new_action_version_does_not_break_old_migration(self) -> None:
+        documents = {
+            path: load_document(path)
+            for path in iter_documents([ROOT / "registry"])
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            action_path = (
+                Path(directory)
+                / "registry/modes/actions/simulation/v0.2.0/SIM-A3-2.1.0.yaml"
+            )
+            action_path.parent.mkdir(parents=True)
+            source_text = (
+                ROOT / "registry/modes/actions/simulation/v0.2.0/SIM-A3.yaml"
+            ).read_text(encoding="utf-8")
+            action_path.write_text(
+                source_text.replace("version: 2.0.0", "version: 2.1.0", 1),
+                encoding="utf-8",
+            )
+            appended = load_document(action_path)
+            documents[action_path] = appended
+            registry = copy.deepcopy(documents[REGISTRY_PATH])
+            registry["entries"].append(
+                {
+                    "action_id": "SIM-A3",
+                    "version": "2.1.0",
+                    "mode_ref": "simulation@0.2.0",
+                    "document_path": "registry/modes/actions/simulation/v0.2.0/SIM-A3-2.1.0.yaml",
+                    "content_hash": f"sha256:{hash_file(action_path)}",
+                }
+            )
+            documents[REGISTRY_PATH] = registry
+            self.assertEqual([], validate_documents(documents))
 
     def test_implementation_and_field_declaration_drift_are_blocked(self) -> None:
         documents = {
@@ -150,7 +198,7 @@ class ResearchModeMigrationTests(unittest.TestCase):
         self.assertLessEqual(
             {
                 "MODE-MIGRATION-ACTION-DUPLICATE",
-                "MODE-MIGRATION-ACTION-REGISTRY-CLOSURE",
+                "MODE-MIGRATION-DETERMINISM-BLOCKED",
                 "MODE-MIGRATION-ACTION-CLOSURE",
             },
             codes,
@@ -165,7 +213,11 @@ class ResearchModeMigrationTests(unittest.TestCase):
             if entry["mode_ref"] != "evidence-synthesis@0.2.0"
         ]
         with self.assertRaises(ContractError):
-            migrate_research_mode_v01_to_v02(source, registry)
+            migrate_research_mode_v01_to_v02(
+                source,
+                ["ES-A1@2.0.0"],
+                registry,
+            )
 
 
 if __name__ == "__main__":

@@ -186,7 +186,7 @@ class ModeAction:
 class MethodTaskRef:
     task_id: str
     revision: int
-    sha256: str | None = None
+    sha256: str
 
     @classmethod
     def from_mapping(cls, data: Mapping[str, Any]) -> "MethodTaskRef":
@@ -196,7 +196,7 @@ class MethodTaskRef:
         return cls(
             task_id=require_string(data, "task_id"),
             revision=revision,
-            sha256=optional_string(data, "sha256"),
+            sha256=require_string(data, "sha256"),
         )
 
 
@@ -245,6 +245,7 @@ class MethodActionDecision:
     capability_requirements: tuple[str, ...]
     skill_need_refs: tuple[str, ...]
     human_gate_refs: tuple[str, ...]
+    stop_conditions: tuple[str, ...]
     blocked_conditions: tuple[str, ...]
     rationale: str
 
@@ -265,6 +266,7 @@ class MethodActionDecision:
             ),
             skill_need_refs=string_tuple(data, "skill_need_refs", required=True),
             human_gate_refs=string_tuple(data, "human_gate_refs", required=True),
+            stop_conditions=string_tuple(data, "stop_conditions", required=True),
             blocked_conditions=string_tuple(data, "blocked_conditions", required=True),
             rationale=require_string(data, "rationale"),
         )
@@ -306,7 +308,7 @@ class MethodResolution:
     resolution_id: str
     revision: int
     task_ref: MethodTaskRef
-    source_case_id: str
+    source_case_id: str | None
     mode_resolution: MethodModeResolution
     action_decisions: tuple[MethodActionDecision, ...]
     skill_disposition: MethodSkillDisposition
@@ -328,7 +330,7 @@ class MethodResolution:
             task_ref=MethodTaskRef.from_mapping(
                 mapping_value(data, "task_ref", required=True)
             ),
-            source_case_id=require_string(data, "source_case_id"),
+            source_case_id=optional_string(data, "source_case_id"),
             mode_resolution=MethodModeResolution.from_mapping(
                 mapping_value(data, "mode_resolution", required=True)
             ),

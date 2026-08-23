@@ -38,7 +38,8 @@ class ContractParsingTests(unittest.TestCase):
         )
         self.assertEqual("MR-ROUTE-SIM-CONVERGENCE-005", resolution.resolution_id)
         self.assertEqual("skill-need", resolution.skill_disposition.status)
-        self.assertEqual("need-not-implemented", resolution.resolution_status)
+        self.assertEqual("proceed", resolution.resolution_status)
+        self.assertEqual(64, len(resolution.task_ref.sha256))
         self.assertFalse(hasattr(resolution, "provider"))
 
     def test_profiles_and_skills_parse_without_provider_types(self) -> None:

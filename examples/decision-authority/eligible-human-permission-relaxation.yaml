@@ -1,0 +1,19 @@
+schema_version: 0.1.0
+eligibility_id: DAE-HUMAN-PERMISSION-COMMIT-001
+matrix_ref:
+  ref: rwb-decision-authority@1.0.0
+  document_path: registry/authority/decision-authority-matrix.yaml
+  content_hash: sha256:960c95754f8a78fe39b3f2583414ca9c7006b1274c9267db0149558c321f5e45
+decision_kind: permission-relaxation
+operation: commit
+actor_class: human-gate
+subject_refs: [TASK-PRIVATE-DATA-001, PROTOCOL-PRIVATE-DATA-002]
+asserted_facts: [requested-scope-explicit, revised-task-or-protocol, risk-review-complete]
+requested_effect: Authorize a bounded permission revision recorded in a new Task or Protocol revision.
+human_gate_ref: approve-bounded-permission-revision
+result:
+  status: eligible
+  code: AUTHORITY-RULE-ELIGIBLE
+  disposition: eligible-for-decision
+  reason: Assuming the asserted facts are true, human-gate is eligible for the commit rule for permission-relaxation; no decision or authority effect is executed.
+limitations: [Eligibility grants no permission and cannot waive external policy or mutate the prior Task revision.]

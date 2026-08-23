@@ -23,7 +23,7 @@ from research_workbench.protocol.migrations import (
 )
 from research_workbench.protocol.authority import (
     DecisionAuthorityMatrix,
-    evaluate_decision_authority_preflight,
+    evaluate_authority_rule_eligibility,
 )
 from research_workbench.validation.schemas import SchemaCatalog
 
@@ -93,7 +93,7 @@ DOCUMENT_REQUIRED: dict[str, tuple[str, ...]] = {
 SCHEMA_KINDS = {
     "deterministic_check_report",
     "decision_authority_matrix",
-    "decision_authority_preflight",
+    "authority_rule_eligibility",
     "project_protocol",
     "provider_conformance_report",
     "research_mode",
@@ -141,8 +141,8 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "research_mode_migration"
     if "matrix_id" in document and "authority_classes" in document and "entries" in document:
         return "decision_authority_matrix"
-    if "preflight_id" in document and "matrix_ref" in document and "result" in document:
-        return "decision_authority_preflight"
+    if "eligibility_id" in document and "matrix_ref" in document and "result" in document:
+        return "authority_rule_eligibility"
     if "action_id" in document and "mode_ref" in document and "claim_effects" in document:
         return "mode_action"
     if "resolution_id" in document and "mode_resolution" in document and "action_decisions" in document:
@@ -536,6 +536,27 @@ def _validate_method_resolutions(documents: Mapping[Path, Any]) -> list[Validati
         and "claim_rules" in document
     }
     action_entries: dict[str, Mapping[str, Any]] = {}
+    action_documents: dict[str, tuple[Path, Mapping[str, Any]]] = {}
+    task_documents: dict[tuple[str, int], tuple[Path, Mapping[str, Any]]] = {}
+    for path, document in documents.items():
+        if not isinstance(document, Mapping):
+            continue
+        kind = infer_document_kind(document)
+        if kind == "mode_action":
+            action_documents[
+                f"{document.get('action_id')}@{document.get('version')}"
+            ] = (path, document)
+        elif kind == "task_packet" and isinstance(document.get("revision"), int):
+            key = (str(document.get("task_id")), int(document["revision"]))
+            if key in task_documents:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "METHOD-RESOLUTION-TASK-DUPLICATE",
+                        f"duplicate Task identity available to Method Resolution: {key}",
+                    )
+                )
+            task_documents[key] = (path, document)
     for document in documents.values():
         if not isinstance(document, Mapping) or document.get("registry_kind") != "mode_action_registry":
             continue
@@ -562,7 +583,40 @@ def _validate_method_resolutions(documents: Mapping[Path, Any]) -> list[Validati
             )
         seen_resolutions.add(resolution_key)
 
+        task_ref = document.get("task_ref")
+        if isinstance(task_ref, Mapping):
+            task_revision = task_ref.get("revision")
+            task_key = (
+                str(task_ref.get("task_id")),
+                task_revision if isinstance(task_revision, int) else 0,
+            )
+            loaded_task = task_documents.get(task_key)
+            if loaded_task is None:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "METHOD-RESOLUTION-TASK-MISSING",
+                        f"no loaded TaskPacket matches task_id and revision: {task_key}",
+                    )
+                )
+            else:
+                task_path, _ = loaded_task
+                recorded_hash = str(task_ref.get("sha256", "")).removeprefix("sha256:").lower()
+                if recorded_hash != hash_file(task_path):
+                    issues.append(
+                        ValidationIssue(
+                            path,
+                            "METHOD-RESOLUTION-TASK-HASH-MISMATCH",
+                            f"task_ref hash does not match TaskPacket bytes for {task_key}",
+                        )
+                    )
+
         mode_resolution = document.get("mode_resolution", {})
+        selected_mode_refs = {
+            value
+            for value in mode_resolution.get("selected_mode_refs", [])
+            if isinstance(value, str)
+        } if isinstance(mode_resolution, Mapping) else set()
         if modes and isinstance(mode_resolution, Mapping):
             for mode_ref in mode_resolution.get("selected_mode_refs", []):
                 if isinstance(mode_ref, str) and mode_ref not in modes:
@@ -594,6 +648,14 @@ def _validate_method_resolutions(documents: Mapping[Path, Any]) -> list[Validati
                     )
                 decision_ids.add(decision_id)
             action_ref = decision.get("action_ref")
+            if "claim_effects" in decision:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "METHOD-RESOLUTION-CLAIM-EFFECT-OVERRIDE",
+                        f"action_decisions[{index}] cannot redefine Action claim effects",
+                    )
+                )
             if isinstance(action_ref, str) and action_entries:
                 entry = action_entries.get(action_ref)
                 if entry is None:
@@ -612,6 +674,79 @@ def _validate_method_resolutions(documents: Mapping[Path, Any]) -> list[Validati
                             f"action_decisions[{index}] hash does not match Registry for {action_ref}",
                         )
                     )
+                else:
+                    if entry.get("mode_ref") not in selected_mode_refs:
+                        issues.append(
+                            ValidationIssue(
+                                path,
+                                "METHOD-RESOLUTION-ACTION-MODE-MISMATCH",
+                                f"action_decisions[{index}] Action mode_ref is not selected: {entry.get('mode_ref')}",
+                            )
+                        )
+                    loaded_action = action_documents.get(action_ref)
+                    if loaded_action is None:
+                        issues.append(
+                            ValidationIssue(
+                                path,
+                                "METHOD-RESOLUTION-ACTION-DOCUMENT-MISSING",
+                                f"Action document is not loaded for {action_ref}",
+                            )
+                        )
+                    else:
+                        _, action_document = loaded_action
+                        decision_gates = {
+                            value for value in decision.get("human_gate_refs", []) if isinstance(value, str)
+                        }
+                        action_gates = {
+                            value for value in action_document.get("human_gates", []) if isinstance(value, str)
+                        }
+                        missing_gates = sorted(action_gates - decision_gates)
+                        if missing_gates:
+                            issues.append(
+                                ValidationIssue(
+                                    path,
+                                    "METHOD-RESOLUTION-ACTION-GATE-MISSING",
+                                    f"action_decisions[{index}] drops or renames required Action gates: {missing_gates}",
+                                )
+                            )
+                        evidence_plan = {
+                            value
+                            for obligation in decision.get("obligations", [])
+                            if isinstance(obligation, Mapping)
+                            for value in obligation.get("required_evidence", [])
+                            if isinstance(value, str)
+                        }
+                        required_artifacts = {
+                            value for value in action_document.get("required_artifacts", []) if isinstance(value, str)
+                        }
+                        missing_artifacts = sorted(required_artifacts - evidence_plan)
+                        if missing_artifacts:
+                            issues.append(
+                                ValidationIssue(
+                                    path,
+                                    "METHOD-RESOLUTION-ACTION-ARTIFACT-MISSING",
+                                    f"action_decisions[{index}] evidence plan omits Action artifacts: {missing_artifacts}",
+                                )
+                            )
+                        for field, code in (
+                            ("stop_conditions", "METHOD-RESOLUTION-ACTION-STOP-MISSING"),
+                            ("blocked_conditions", "METHOD-RESOLUTION-ACTION-BLOCK-MISSING"),
+                        ):
+                            inherited = {
+                                value for value in action_document.get(field, []) if isinstance(value, str)
+                            }
+                            resolved = {
+                                value for value in decision.get(field, []) if isinstance(value, str)
+                            }
+                            missing = sorted(inherited - resolved)
+                            if missing:
+                                issues.append(
+                                    ValidationIssue(
+                                        path,
+                                        code,
+                                        f"action_decisions[{index}] drops Action {field}: {missing}",
+                                    )
+                                )
             for obligation in decision.get("obligations", []):
                 if not isinstance(obligation, Mapping):
                     continue
@@ -790,8 +925,15 @@ def _validate_research_mode_migrations(
 
         if action_registry is not None:
             try:
+                recorded_target_refs = [
+                    target.get("ref")
+                    for item in migration.get("action_migrations", [])
+                    if isinstance(item, Mapping)
+                    for target in [item.get("target")]
+                    if isinstance(target, Mapping) and isinstance(target.get("ref"), str)
+                ]
                 expected_target = migrate_research_mode_v01_to_v02(
-                    source_mode, action_registry
+                    source_mode, recorded_target_refs, action_registry
                 )
             except ContractError as error:
                 issues.append(
@@ -923,27 +1065,6 @@ def _validate_research_mode_migrations(
                     "target Mode action_refs must exactly match migration targets",
                 )
             )
-        expected_source_refs = {
-            action_ref
-            for action_ref, entry in action_entries.items()
-            if entry.get("mode_ref") == source_mode_ref
-        }
-        expected_target_refs = {
-            action_ref
-            for action_ref, entry in action_entries.items()
-            if entry.get("mode_ref") == target_mode_ref
-        }
-        if (
-            source_action_refs != expected_source_refs
-            or target_action_refs != expected_target_refs
-        ):
-            issues.append(
-                ValidationIssue(
-                    path,
-                    "MODE-MIGRATION-ACTION-REGISTRY-CLOSURE",
-                    "migration mappings must close exactly over both Mode revisions in the Action Registry",
-                )
-            )
     return issues
 
 
@@ -976,20 +1097,20 @@ def _validate_decision_authority(
             )
         matrices[matrix.reference] = (path, document)
 
-    seen_preflights: set[str] = set()
+    seen_eligibility_records: set[str] = set()
     for path, document in documents.items():
-        if not isinstance(document, Mapping) or infer_document_kind(document) != "decision_authority_preflight":
+        if not isinstance(document, Mapping) or infer_document_kind(document) != "authority_rule_eligibility":
             continue
-        preflight_id = str(document.get("preflight_id"))
-        if preflight_id in seen_preflights:
+        eligibility_id = str(document.get("eligibility_id"))
+        if eligibility_id in seen_eligibility_records:
             issues.append(
                 ValidationIssue(
                     path,
-                    "DECISION-AUTHORITY-PREFLIGHT-DUPLICATE",
-                    f"duplicate preflight_id: {preflight_id}",
+                    "AUTHORITY-RULE-ELIGIBILITY-DUPLICATE",
+                    f"duplicate eligibility_id: {eligibility_id}",
                 )
             )
-        seen_preflights.add(preflight_id)
+        seen_eligibility_records.add(eligibility_id)
         matrix_ref = document.get("matrix_ref")
         if not isinstance(matrix_ref, Mapping):
             continue
@@ -999,7 +1120,7 @@ def _validate_decision_authority(
                 ValidationIssue(
                     path,
                     "DECISION-AUTHORITY-MATRIX-MISSING",
-                    "preflight Matrix document is not loaded",
+                    "eligibility Matrix document is not loaded",
                 )
             )
             continue
@@ -1009,12 +1130,12 @@ def _validate_decision_authority(
                 ValidationIssue(
                     path,
                     "DECISION-AUTHORITY-MATRIX-REF-MISMATCH",
-                    "preflight Matrix ref does not match the loaded Matrix",
+                    "eligibility Matrix ref does not match the loaded Matrix",
                 )
             )
             continue
         try:
-            expected = evaluate_decision_authority_preflight(
+            expected = evaluate_authority_rule_eligibility(
                 document,
                 matrix_document,
                 matrix_content_hash=hash_file(matrix_path),
@@ -1023,7 +1144,7 @@ def _validate_decision_authority(
             issues.append(
                 ValidationIssue(
                     path,
-                    "DECISION-AUTHORITY-PREFLIGHT-INVALID",
+                    "AUTHORITY-RULE-ELIGIBILITY-INVALID",
                     str(error),
                 )
             )
@@ -1033,7 +1154,7 @@ def _validate_decision_authority(
                 ValidationIssue(
                     path,
                     "DECISION-AUTHORITY-RESULT-MISMATCH",
-                    "recorded preflight result does not match deterministic authority evaluation",
+                    "recorded result does not match deterministic rule-eligibility evaluation",
                 )
             )
     return issues

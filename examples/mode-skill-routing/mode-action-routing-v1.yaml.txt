@@ -13,9 +13,12 @@ allowed_tool_capabilities:
   - research-contract-check
 cases:
   - case_id: ROUTE-ES-FROZEN-001
+    task_ref:
+      path: examples/method-resolution-tasks/TASK-MR-ES-FROZEN-001.yaml
+      sha256: a72229692e6e0258dc2fc53096505f5c10b6c743ab1c5ec528588cad8b92865f
     method_resolution_ref:
       path: examples/method-resolutions/ROUTE-ES-FROZEN-001.yaml
-      sha256: 0e4bbb35068b843a77e482d597a2b28b2413a2818d0234f14140b66f67dc2bd1
+      sha256: cf3e041887c9558a775027e5e254486973322ad763f3b15d2eb8504d185608e1
     task_summary: Extract specified evidence fields from two frozen local sources and return an ordinary H1 Handoff.
     boundary_tags: [mode-trigger, frozen-source, project-internal-merge]
     mode_decision:
@@ -32,16 +35,19 @@ cases:
     tool_capabilities: [document-read, research-contract-check]
     skill_needs: []
     skill_assignments: []
-    human_gates: []
+    human_gates: [approve-alternative-data-path-on-policy-exception, sample-high-risk-extraction]
     handoff_level: H1
     route_status: proceed
     expected_outcomes: [tool-only, no-skill]
     forbidden_routes: [literature-search, project-internal-skill, claim-promotion]
 
   - case_id: ROUTE-ES-SEARCH-002
+    task_ref:
+      path: examples/method-resolution-tasks/TASK-MR-ES-SEARCH-002.yaml
+      sha256: f52f2f7b287bc79c0674e97d0b034a00fc7670f89fd00f6dd40dcbdf32a2ea17
     method_resolution_ref:
       path: examples/method-resolutions/ROUTE-ES-SEARCH-002.yaml
-      sha256: ae5a9d137790711731437012ad205576a3821350da708cea10536503cc185106
+      sha256: 680346ab222ff800d1b6a1ff67a627d6c44a61a018467bc38732678bc46f3ea2
     task_summary: Design and execute a replayable search for an open question across two approved bibliographic sources.
     boundary_tags: [mode-trigger, open-search]
     mode_decision:
@@ -56,16 +62,19 @@ cases:
     tool_capabilities: [literature-search]
     skill_needs: [NEED-ES-SEARCH-PLAN]
     skill_assignments: []
-    human_gates: [approve-source-boundary-and-coverage-risk]
+    human_gates: [approve-question-and-source-boundary, approve-source-boundary-and-coverage-risk]
     handoff_level: H1
-    route_status: need-not-implemented
+    route_status: proceed
     expected_outcomes: [skill-need, human-gate]
     forbidden_routes: [silent-query-expansion, silent-source-fallback, automatic-skill-assignment]
 
   - case_id: ROUTE-ES-CONFLICT-003
+    task_ref:
+      path: examples/method-resolution-tasks/TASK-MR-ES-CONFLICT-003.yaml
+      sha256: 08049ec3f70c9bc581f1444118ba7e51dbccbdd1362d607c074aaa2c5fbacbbb
     method_resolution_ref:
       path: examples/method-resolutions/ROUTE-ES-CONFLICT-003.yaml
-      sha256: d110c0e9630ca2c18fd3fc0debed243a6df5d3ff8474504d1485ecfcf24849dd
+      sha256: 19268d1cbb9c74c840cb5c79725bca93eea67d5a582aa751061dd3306cca0b0f
     task_summary: Reconcile conflicting Evidence records whose populations and measurement windows differ.
     boundary_tags: [mode-trigger, semantic-conflict]
     mode_decision:
@@ -80,16 +89,19 @@ cases:
     tool_capabilities: [research-contract-check]
     skill_needs: [NEED-ES-CONFLICT-SYNTHESIS]
     skill_assignments: []
-    human_gates: [approve-synthesis-interpretation]
+    human_gates: [approve-or-reject-synthesis-claim, approve-synthesis-interpretation]
     handoff_level: H1
-    route_status: need-not-implemented
+    route_status: proceed
     expected_outcomes: [skill-need, human-gate]
     forbidden_routes: [majority-vote-synthesis, automatic-claim-acceptance]
 
   - case_id: ROUTE-SIM-REPLAY-004
+    task_ref:
+      path: examples/method-resolution-tasks/TASK-MR-SIM-REPLAY-004.yaml
+      sha256: b352f30905909d68572b7267c3a919ecbe6273e2fdd820890996ad513a90b6c7
     method_resolution_ref:
       path: examples/method-resolutions/ROUTE-SIM-REPLAY-004.yaml
-      sha256: 9e7647aa9f422d588bdb581801cbf7a8fff42a0fab057f5581f2d9630aa18ad9
+      sha256: 773b9bb2cd80b66287cc2a5a7fc99121402730b966b3df973e513fb36759e01f
     task_summary: Re-run a frozen simulation command with locked inputs, environment, seed, and outputs.
     boundary_tags: [mode-trigger, reproducibility]
     mode_decision:
@@ -104,16 +116,19 @@ cases:
     tool_capabilities: [bounded-compute, research-contract-check]
     skill_needs: []
     skill_assignments: []
-    human_gates: []
+    human_gates: [approve-high-cost-or-external-execution]
     handoff_level: H1
     route_status: proceed
     expected_outcomes: [tool-only, no-skill]
     forbidden_routes: [package-install, network-enable, convergence-claim, model-validity-claim]
 
   - case_id: ROUTE-SIM-CONVERGENCE-005
+    task_ref:
+      path: examples/method-resolution-tasks/TASK-MR-SIM-CONVERGENCE-005.yaml
+      sha256: 2eb5967ba3d875a6cc8dd84f76f56f5c8a844888f48e015c9741185cc51ad46c
     method_resolution_ref:
       path: examples/method-resolutions/ROUTE-SIM-CONVERGENCE-005.yaml
-      sha256: 596dfda7b3b63161b353b1d0caf58b00cd13c742dd193b3f7ff6e5f97aa02e5c
+      sha256: f96426797ae692d0b8f3e4f4493b2f80f329ae3ca833f55cbb4bdfcbe3f65e2d
     task_summary: Design a mesh and time-step convergence study for a solver before making an error-bounded Claim.
     boundary_tags: [mode-trigger, numerical-design]
     mode_decision:
@@ -128,18 +143,21 @@ cases:
     tool_capabilities: [bounded-compute, research-contract-check]
     skill_needs: [NEED-SIM-CONVERGENCE-STUDY]
     skill_assignments: []
-    human_gates: [approve-error-metric-and-resource-threshold, accept-supported-claim]
+    human_gates: [approve-error-metric-and-resource-threshold, accept-simulation-supported-claim]
     handoff_level: H2
-    route_status: need-not-implemented
+    route_status: proceed
     expected_outcomes: [skill-need, human-gate]
     forbidden_routes: [exit-zero-means-converged, automatic-error-acceptance]
 
   - case_id: ROUTE-BLOCK-PRIVATE-006
+    task_ref:
+      path: examples/method-resolution-tasks/TASK-MR-BLOCK-PRIVATE-006.yaml
+      sha256: 5cabd3d05e3a72c8b425ff96f70c1d5ca39c257fc9f5ea6fe1b34451c0ce3aa8
     method_resolution_ref:
       path: examples/method-resolutions/ROUTE-BLOCK-PRIVATE-006.yaml
-      sha256: 8f6b0ef9387648bed1dc80811eb337a4ab8dd963c05910f50b247139c0945960
+      sha256: 8f1d1436939898f81054c2b0fae04f4de53b5fd79c276df07ee9730ff873473f
     task_summary: Send a confidential unpublished manuscript to an unapproved remote parser and search service.
-    boundary_tags: [mode-trigger, data-boundary, capability-gap]
+    boundary_tags: [mode-trigger, data-boundary, capability-requirement]
     mode_decision:
       status: selected
       primary_mode: evidence-synthesis
@@ -150,16 +168,19 @@ cases:
     tool_capabilities: [document-read, literature-search]
     skill_needs: []
     skill_assignments: []
-    human_gates: [approve-an-alternative-data-path-if-one-exists]
+    human_gates: [approve-alternative-data-path-on-policy-exception]
     handoff_level: H1
     route_status: blocked
-    expected_outcomes: [capability-gap, blocked, human-gate]
+    expected_outcomes: [capability-requirement, blocked, human-gate]
     forbidden_routes: [remote-upload, silent-local-to-remote-fallback, credential-request, scope-relaxation]
 
   - case_id: ROUTE-NO-MODE-FORMAT-007
+    task_ref:
+      path: examples/method-resolution-tasks/TASK-MR-NO-MODE-FORMAT-007.yaml
+      sha256: 6b8e9c3275438c3dd7bc6678fb65d0b5cfa9edfc32c7228327f096facd49a41c
     method_resolution_ref:
       path: examples/method-resolutions/ROUTE-NO-MODE-FORMAT-007.yaml
-      sha256: cbb28283f2dfb0d7947e9a7b3f4c023337c4938ef1aff3acc9307aa767cf20da
+      sha256: 616a83f98d59661fa1b1b4ea8149b04bbc680b58932a14f9571510d0e7f31be9
     task_summary: Reformat an already accepted report into Markdown without changing claims, data, citations, or figures.
     boundary_tags: [mode-non-trigger, output-only]
     mode_decision:
@@ -179,9 +200,12 @@ cases:
     forbidden_routes: [evidence-synthesis-mode, output-skill-by-default, claim-rewrite]
 
   - case_id: ROUTE-SPLIT-OBS-SIM-008
+    task_ref:
+      path: examples/method-resolution-tasks/TASK-MR-SPLIT-OBS-SIM-008.yaml
+      sha256: 9cac202d97f8f6a68a7bc42a36204fa63533b43b2a583363ce9fc6d2aa7cc718
     method_resolution_ref:
       path: examples/method-resolutions/ROUTE-SPLIT-OBS-SIM-008.yaml
-      sha256: 93848fc7d4d0ad89aef022831be52e38f5ef29c39cc4bbcc931f6596ae2f8444
+      sha256: 7035e6a3eb9f02259c19e0999584e7a8e4617edb05570ee72da6c9e9614eb159
     task_summary: Estimate a causal effect from observational data, calibrate a simulation, and issue one combined real-world conclusion.
     boundary_tags: [mode-ambiguous, candidate-mode, multi-mode, split-task]
     mode_decision:
@@ -197,7 +221,7 @@ cases:
     tool_capabilities: []
     skill_needs: []
     skill_assignments: []
-    human_gates: [decide-observational-mode-admission-and-claim-boundary]
+    human_gates: [approve-model-purpose-and-assumptions, decide-observational-mode-admission-and-claim-boundary]
     handoff_level: H1
     route_status: split-and-block
     expected_outcomes: [ambiguous-mode, split-task, blocked, human-gate]
@@ -206,5 +230,5 @@ coverage_claims:
   - formal Modes trigger on evidence-synthesis and simulation Tasks.
   - representation-only work creates no new Mode.
   - a candidate Mode gap blocks only the affected subtask and forces an explicit split.
-  - Tool-only, no-Skill, Skill Need, Human Gate, capability gap, blocked, and split-task outcomes are represented.
+  - Tool-only, no-Skill, Skill Need, Human Gate, capability requirement, blocked, and split-task outcomes are represented.
   - no case binds a Provider, model, Runtime, Adapter, MCP, CLI implementation, or accepted Skill.

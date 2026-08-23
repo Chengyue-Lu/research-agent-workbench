@@ -1,7 +1,7 @@
 schema_version: 0.1.0
 resolution_id: MR-ROUTE-SIM-CONVERGENCE-005
 revision: 1
-task_ref: {task_id: ROUTE-SIM-CONVERGENCE-005, revision: 1}
+task_ref: {task_id: TASK-MR-SIM-CONVERGENCE-005, revision: 1, sha256: 2eb5967ba3d875a6cc8dd84f76f56f5c8a844888f48e015c9741185cc51ad46c}
 source_case_id: ROUTE-SIM-CONVERGENCE-005
 mode_resolution:
   status: selected
@@ -16,12 +16,13 @@ action_decisions:
       - obligation_id: MRO-SIM-CONVERGENCE-DESIGN
         statement: Define meaningful refinement, observable, error metric, resource bound, and stop condition.
         assessment: human-decision
-        required_evidence: [convergence-plan]
+        required_evidence: [convergence-plan, convergence-report]
     mechanisms: [tool, skill-need, human-gate]
     capability_requirements: [bounded-compute]
     skill_need_refs: [NEED-SIM-CONVERGENCE-STUDY]
     human_gate_refs: [approve-error-metric-and-resource-threshold]
-    blocked_conditions: []
+    stop_conditions: [The declared convergence criterion is met or a bounded negative result is recorded.]
+    blocked_conditions: [No adjustable refinement or meaningful error quantity is available.]
     rationale: The recurring convergence-design gap exceeds direct compute while thresholds remain human authority.
   - decision_id: MRD-SIM-CONVERGENCE-CLAIM
     action_ref: SIM-A7@1.0.0
@@ -34,17 +35,18 @@ action_decisions:
     mechanisms: [tool, mode-invariant, human-gate]
     capability_requirements: [research-contract-check]
     skill_need_refs: []
-    human_gate_refs: [accept-supported-claim]
-    blocked_conditions: []
+    human_gate_refs: [accept-simulation-supported-claim]
+    stop_conditions: [A named human records the Claim disposition, ceiling, and material limitations.]
+    blocked_conditions: [Required convergence, sensitivity, or validation evidence is incomplete.]
     rationale: A checker can enforce the declared ceiling, but only a human can accept the bounded Claim.
 skill_disposition:
   status: skill-need
   need_refs: [NEED-SIM-CONVERGENCE-STUDY]
   reason: Direct compute does not supply the repeated convergence-study design semantics.
-human_gate_refs: [approve-error-metric-and-resource-threshold, accept-supported-claim]
-blocked_conditions: []
+human_gate_refs: [approve-error-metric-and-resource-threshold, accept-simulation-supported-claim]
+blocked_conditions: [No adjustable refinement or meaningful error quantity is available., Required convergence, sensitivity, or validation evidence is incomplete.]
 rejected_alternatives:
   - {alternative_id: exit-zero-means-converged, disposition: rejected, reason: Successful execution is not convergence evidence.}
   - {alternative_id: automatic-error-acceptance, disposition: rejected, reason: Acceptable error and resources remain human decisions.}
-resolution_status: need-not-implemented
-limitations: [This resolution does not implement or admit a convergence Skill.]
+resolution_status: proceed
+limitations: [This resolution declares a stable Skill Need; Capability Resolution decides implementation availability.]

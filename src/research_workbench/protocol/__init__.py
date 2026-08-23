@@ -27,7 +27,7 @@ from research_workbench.protocol.authority import (
     DecisionAuthorityEntry,
     DecisionAuthorityMatrix,
     DecisionAuthorityRule,
-    evaluate_decision_authority_preflight,
+    evaluate_authority_rule_eligibility,
 )
 
 __all__ = [
@@ -55,5 +55,5 @@ __all__ = [
     "DecisionAuthorityEntry",
     "DecisionAuthorityMatrix",
     "DecisionAuthorityRule",
-    "evaluate_decision_authority_preflight",
+    "evaluate_authority_rule_eligibility",
 ]

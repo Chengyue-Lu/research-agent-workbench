@@ -1,0 +1,21 @@
+schema_version: 0.1.0
+task_id: TASK-MR-ES-CONFLICT-003
+revision: 1
+goal: Resolve a conflict-preserving synthesis method for a bounded evidence set.
+question_refs: [Q-MR-ES-CONFLICT-003]
+active_modes: [evidence-synthesis]
+required_capabilities: [research-contract-check]
+required_skills: []
+forbidden_skills: []
+agent_profile: method-resolver
+input_refs: []
+write_scope: [work/TASK-MR-ES-CONFLICT-003]
+required_outputs: [method-resolution]
+permissions: {filesystem: worktree-write, network: forbidden, external_write: false, allowed_roots: [work/TASK-MR-ES-CONFLICT-003]}
+delegation: {allowed: false}
+budget: {max_turns: 6}
+atomic_boundary: Resolve method obligations without accepting a synthesis Claim.
+completion_checks: [The Method Resolution is hash-bound to this Task revision.]
+safe_pause_conditions: [A required synthesis interpretation needs a Human Gate.]
+stop_conditions: [A bounded Method Resolution is recorded.]
+stale_if: [task-revision-or-content-changes]

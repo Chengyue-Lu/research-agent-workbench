@@ -1,26 +1,26 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/decision-authority-preflight.schema.json",
-  "title": "Decision Authority Preflight",
-  "$comment": "A recomputable authority check. Allowed means the actor may perform the declared operation within the frozen facts; it is not scientific approval.",
-  "x-rwb-document-kind": "decision_authority_preflight",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/authority-rule-eligibility.schema.json",
+  "title": "Authority Rule Eligibility",
+  "$comment": "A recomputable rule-eligibility check over asserted facts. Eligible does not prove facts, record Human approval, grant permission, promote a Claim, or execute a decision.",
+  "x-rwb-document-kind": "authority_rule_eligibility",
   "type": "object",
   "required": [
     "schema_version",
-    "preflight_id",
+    "eligibility_id",
     "matrix_ref",
     "decision_kind",
     "operation",
     "actor_class",
     "subject_refs",
-    "presented_facts",
+    "asserted_facts",
     "requested_effect",
     "result",
     "limitations"
   ],
   "properties": {
     "schema_version": { "const": "0.1.0" },
-    "preflight_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "eligibility_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "matrix_ref": {
       "type": "object",
       "required": ["ref", "document_path", "content_hash"],
@@ -50,7 +50,7 @@
       "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
       "uniqueItems": true
     },
-    "presented_facts": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "asserted_facts": { "$ref": "common.schema.json#/$defs/stringArray" },
     "requested_effect": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "human_gate_ref": {
       "type": "string",
@@ -60,9 +60,9 @@
       "type": "object",
       "required": ["status", "code", "disposition", "reason"],
       "properties": {
-        "status": { "enum": ["allowed", "blocked"] },
+        "status": { "enum": ["eligible", "blocked"] },
         "code": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
-        "disposition": { "enum": ["proceed", "blocked", "human-gate"] },
+        "disposition": { "enum": ["eligible-for-decision", "blocked", "human-gate"] },
         "reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
       },
       "additionalProperties": false

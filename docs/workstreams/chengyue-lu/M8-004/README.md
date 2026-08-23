@@ -3,7 +3,7 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 跨负责人审查人：黄毅（GitHub `let778750-cpu`）
 - Task：`M8-004`
-- 当前状态：implementation complete；已纳入统一 M8 阶段 PR #30
+- 当前状态：DONE；已纳入统一 M8 阶段 PR #30，等待合并审查
 - 阶段分支：`agent/method-m8-action-resolution-node`
 - 阶段 base：`develop`
 
@@ -21,7 +21,6 @@
 ## 2. 非目标
 
 - 不把 PR #30 的跨负责人审查视为已发生；
-- 不把 M8-004 在共享任务快照中提前置为 READY/IN_PROGRESS/DONE；
 - 不迁移历史 Method Resolution、Assignment、Receipt、Trace 或 Attempt；
 - 不实现 Resolved Execution View、Capability binding 或具体 Skill/Tool/Model/Provider/Runtime；
 - 不定义 Decision Authority 或 Human Gate decision vocabulary；
@@ -36,6 +35,7 @@
 5. migration record 的 source/target/action hashes 必须与仓库原始文件字节一致；
 6. migration implementation 只重写被声明的 Mode/Action 引用，不补造 Method、Evidence、Claim 或执行事实；
 7. 失败必须显式阻断，不能回退到 v0.1 Skill recommendation。
+8. migration 只重放自身固定的 exact Action ref/path/hash；同一 mode/action ID 追加新版本不改变旧记录。
 
 ## 4. 允许写入范围
 

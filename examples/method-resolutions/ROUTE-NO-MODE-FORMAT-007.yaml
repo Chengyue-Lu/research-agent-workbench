@@ -1,7 +1,7 @@
 schema_version: 0.1.0
 resolution_id: MR-ROUTE-NO-MODE-FORMAT-007
 revision: 1
-task_ref: {task_id: ROUTE-NO-MODE-FORMAT-007, revision: 1}
+task_ref: {task_id: TASK-MR-NO-MODE-FORMAT-007, revision: 1, sha256: 6b8e9c3275438c3dd7bc6678fb65d0b5cfa9edfc32c7228327f096facd49a41c}
 source_case_id: ROUTE-NO-MODE-FORMAT-007
 mode_resolution:
   status: no-new-mode
@@ -20,6 +20,7 @@ action_decisions:
     capability_requirements: []
     skill_need_refs: []
     human_gate_refs: []
+    stop_conditions: [The representation changes while parent semantic boundaries remain unchanged.]
     blocked_conditions: []
     rationale: An ordinary bounded instruction is sufficient and does not justify a new Mode or Skill.
 skill_disposition:

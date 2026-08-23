@@ -1,7 +1,7 @@
 schema_version: 0.1.0
 resolution_id: MR-ROUTE-BLOCK-PRIVATE-006
 revision: 1
-task_ref: {task_id: ROUTE-BLOCK-PRIVATE-006, revision: 1}
+task_ref: {task_id: TASK-MR-BLOCK-PRIVATE-006, revision: 1, sha256: 5cabd3d05e3a72c8b425ff96f70c1d5ca39c257fc9f5ea6fe1b34451c0ce3aa8}
 source_case_id: ROUTE-BLOCK-PRIVATE-006
 mode_resolution:
   status: selected
@@ -16,19 +16,20 @@ action_decisions:
       - obligation_id: MRO-BLOCK-PRIVATE-SOURCE
         statement: Confidential source bytes must remain inside the approved data boundary.
         assessment: unavailable
-        required_evidence: [approved-data-path, source-snapshot-or-ref]
-    mechanisms: [capability-gap, blocked, human-gate, no-skill]
+        required_evidence: [approved-data-path, source-snapshot-or-ref, content-hash, locator]
+    mechanisms: [blocked, human-gate, no-skill]
     capability_requirements: [document-read, literature-search]
     skill_need_refs: []
-    human_gate_refs: [approve-an-alternative-data-path-if-one-exists]
-    blocked_conditions: [No approved capability can read and search the confidential source without external data egress.]
+    human_gate_refs: [approve-alternative-data-path-on-policy-exception]
+    stop_conditions: [Every consumed source has a stable reference, hash, and locator.]
+    blocked_conditions: [Required content is unavailable or cannot be accessed within the approved data policy., No approved capability can read and search the confidential source without external data egress.]
     rationale: Missing authorization cannot be repaired by a different model, Tool, or Skill.
 skill_disposition:
   status: no-skill
   need_refs: []
   reason: The gap is authorization and data-path availability, not missing reusable Skill semantics.
-human_gate_refs: [approve-an-alternative-data-path-if-one-exists]
-blocked_conditions: [No approved capability can read and search the confidential source without external data egress.]
+human_gate_refs: [approve-alternative-data-path-on-policy-exception]
+blocked_conditions: [Required content is unavailable or cannot be accessed within the approved data policy., No approved capability can read and search the confidential source without external data egress.]
 rejected_alternatives:
   - {alternative_id: remote-upload, disposition: blocked, reason: The destination is outside the approved data boundary.}
   - {alternative_id: silent-local-to-remote-fallback, disposition: rejected, reason: Runtime fallback cannot relax data policy.}

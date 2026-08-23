@@ -1,7 +1,7 @@
 schema_version: 0.1.0
 resolution_id: MR-ROUTE-ES-SEARCH-002
 revision: 1
-task_ref: {task_id: ROUTE-ES-SEARCH-002, revision: 1}
+task_ref: {task_id: TASK-MR-ES-SEARCH-002, revision: 1, sha256: f52f2f7b287bc79c0674e97d0b034a00fc7670f89fd00f6dd40dcbdf32a2ea17}
 source_case_id: ROUTE-ES-SEARCH-002
 mode_resolution:
   status: selected
@@ -20,8 +20,9 @@ action_decisions:
     mechanisms: [mode-invariant, human-gate]
     capability_requirements: []
     skill_need_refs: []
-    human_gate_refs: [approve-source-boundary-and-coverage-risk]
-    blocked_conditions: []
+    human_gate_refs: [approve-question-and-source-boundary]
+    stop_conditions: [The question, boundary, and claim ceiling are versioned and approved.]
+    blocked_conditions: [The question remains ambiguous, or no lawful source boundary can be defined.]
     rationale: Source coverage and acceptable risk remain named human decisions.
   - decision_id: MRD-ES-SEARCH-PLAN
     action_ref: ES-A2@1.0.0
@@ -30,22 +31,23 @@ action_decisions:
       - obligation_id: MRO-ES-SEARCH-PLAN
         statement: Record replayable queries, source coverage, date bounds, and stopping rules.
         assessment: semantic-review
-        required_evidence: [search-plan, search-log]
-    mechanisms: [tool, skill-need]
+        required_evidence: [search-plan, query-ledger, stop-rule, search-log]
+    mechanisms: [tool, skill-need, human-gate]
     capability_requirements: [literature-search]
     skill_need_refs: [NEED-ES-SEARCH-PLAN]
-    human_gate_refs: []
-    blocked_conditions: []
+    human_gate_refs: [approve-source-boundary-and-coverage-risk]
+    stop_conditions: [The search is replayable and its declared stopping rule is satisfied.]
+    blocked_conditions: [Approved sources are inaccessible, or coverage risk cannot be bounded.]
     rationale: A recurring non-trivial search-planning gap is declared, not assigned to a Skill implementation.
 skill_disposition:
   status: skill-need
   need_refs: [NEED-ES-SEARCH-PLAN]
   reason: The direct search Tool does not itself preserve the required replayable planning semantics.
-human_gate_refs: [approve-source-boundary-and-coverage-risk]
-blocked_conditions: []
+human_gate_refs: [approve-question-and-source-boundary, approve-source-boundary-and-coverage-risk]
+blocked_conditions: [The question remains ambiguous, or no lawful source boundary can be defined., Approved sources are inaccessible, or coverage risk cannot be bounded.]
 rejected_alternatives:
   - {alternative_id: silent-query-expansion, disposition: rejected, reason: Query expansion changes the frozen search boundary.}
   - {alternative_id: silent-source-fallback, disposition: rejected, reason: Alternate sources require a new boundary decision.}
   - {alternative_id: automatic-skill-assignment, disposition: rejected, reason: A Skill Need is not an admitted Skill binding.}
-resolution_status: need-not-implemented
-limitations: [No candidate Skill has been selected, trialed, or admitted by this resolution.]
+resolution_status: proceed
+limitations: [No candidate Skill is selected here; Capability Resolution may later report available or gap.]

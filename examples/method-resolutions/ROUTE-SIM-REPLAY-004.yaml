@@ -1,7 +1,7 @@
 schema_version: 0.1.0
 resolution_id: MR-ROUTE-SIM-REPLAY-004
 revision: 1
-task_ref: {task_id: ROUTE-SIM-REPLAY-004, revision: 1}
+task_ref: {task_id: TASK-MR-SIM-REPLAY-004, revision: 1, sha256: b352f30905909d68572b7267c3a919ecbe6273e2fdd820890996ad513a90b6c7}
 source_case_id: ROUTE-SIM-REPLAY-004
 mode_resolution:
   status: selected
@@ -16,12 +16,13 @@ action_decisions:
       - obligation_id: MRO-SIM-REPLAY-FREEZE
         statement: Preserve the code, environment, command, input, seed, and output identities used by the Run.
         assessment: deterministic
-        required_evidence: [run-manifest, code-ref, environment-ref, input-hash]
+        required_evidence: [run-manifest, input-lock, environment-receipt, code-ref, environment-ref, input-hash]
     mechanisms: [tool, task-instruction, no-skill]
     capability_requirements: [research-contract-check]
     skill_need_refs: []
     human_gate_refs: []
-    blocked_conditions: []
+    stop_conditions: [All executable inputs and expected outputs are frozen by version or hash.]
+    blocked_conditions: [A material executable input or environment component cannot be identified.]
     rationale: Hash and manifest checks are sufficient for the frozen replay boundary.
   - decision_id: MRD-SIM-REPLAY-RUN
     action_ref: SIM-A6@1.0.0
@@ -30,19 +31,20 @@ action_decisions:
       - obligation_id: MRO-SIM-REPLAY-RUN
         statement: Execute only the frozen command within the approved resource and side-effect limits.
         assessment: deterministic
-        required_evidence: [run-record, output-hashes]
-    mechanisms: [tool, no-skill]
+        required_evidence: [run, execution-log, execution-receipt, run-record, output-hashes]
+    mechanisms: [tool, no-skill, human-gate]
     capability_requirements: [bounded-compute]
     skill_need_refs: []
-    human_gate_refs: []
-    blocked_conditions: []
+    human_gate_refs: [approve-high-cost-or-external-execution]
+    stop_conditions: [The approved plan reaches its limit and all outputs or failures are archived.]
+    blocked_conditions: [Required compute exceeds the approved budget, permissions, or data boundary.]
     rationale: A bounded compute Tool satisfies execution without adding convergence semantics.
 skill_disposition:
   status: no-skill
   need_refs: []
   reason: Frozen manifest checks and bounded compute are sufficient.
-human_gate_refs: []
-blocked_conditions: []
+human_gate_refs: [approve-high-cost-or-external-execution]
+blocked_conditions: [A material executable input or environment component cannot be identified., Required compute exceeds the approved budget, permissions, or data boundary.]
 rejected_alternatives:
   - {alternative_id: package-install, disposition: rejected, reason: The frozen environment cannot be changed during replay.}
   - {alternative_id: network-enable, disposition: rejected, reason: Network access is outside the frozen Run contract.}

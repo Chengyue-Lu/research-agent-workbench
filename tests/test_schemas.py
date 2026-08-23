@@ -39,7 +39,7 @@ class VersionedSchemaTests(unittest.TestCase):
                 "context_snapshot",
                 "deterministic_check_report",
                 "decision_authority_matrix",
-                "decision_authority_preflight",
+                "authority_rule_eligibility",
                 "execution_receipt",
                 "handoff_packet",
                 "handoff_transfer_audit",

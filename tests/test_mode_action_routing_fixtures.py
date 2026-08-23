@@ -47,7 +47,13 @@ class ModeActionRoutingFixtureTests(unittest.TestCase):
             self.assertEqual(reference["sha256"], hash_file(path))
             resolution = load_document(path)
             self.assertEqual(case["case_id"], resolution["source_case_id"])
-            self.assertEqual(case["case_id"], resolution["task_ref"]["task_id"])
+            task_reference = case["task_ref"]
+            task_path = ROOT / task_reference["path"]
+            self.assertEqual(task_reference["sha256"], hash_file(task_path))
+            task = load_document(task_path)
+            self.assertEqual(task["task_id"], resolution["task_ref"]["task_id"])
+            self.assertEqual(task["revision"], resolution["task_ref"]["revision"])
+            self.assertEqual(task_reference["sha256"], resolution["task_ref"]["sha256"])
             referenced.add(path.as_posix())
         self.assertEqual(set(self.resolutions), referenced)
 
@@ -127,7 +133,7 @@ class ModeActionRoutingFixtureTests(unittest.TestCase):
                 "no-skill",
                 "skill-need",
                 "human-gate",
-                "capability-gap",
+                "capability-requirement",
                 "blocked",
                 "no-new-mode",
                 "ambiguous-mode",

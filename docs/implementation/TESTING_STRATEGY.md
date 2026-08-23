@@ -27,7 +27,7 @@
 - Skill Manifest → `SKILL.md` metadata；
 - Task → Resolved Task；
 - Task + Mode Action → Method Resolution（已实现 provider-neutral 决定工件与正反 fixture）；
-- Decision operation + actor + frozen facts → Authority preflight（已实现 Matrix hash 与结果重算）；
+- Decision operation + actor + asserted facts → Authority Rule Eligibility（已实现 Matrix hash 与结果重算，但不证明 facts 或产生授权）；
 - Capability Requirement → frozen Snapshot（Roadmap Phase B 目标，尚未实现）；
 - Handoff → promotion eligibility；
 - Runtime capability snapshot；

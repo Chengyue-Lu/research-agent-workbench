@@ -1,0 +1,18 @@
+schema_version: 0.1.0
+eligibility_id: DAE-RESOLVER-ACTION-COMMIT-001
+matrix_ref:
+  ref: rwb-decision-authority@1.0.0
+  document_path: registry/authority/decision-authority-matrix.yaml
+  content_hash: sha256:960c95754f8a78fe39b3f2583414ca9c7006b1274c9267db0149558c321f5e45
+decision_kind: action-selection
+operation: commit
+actor_class: deterministic-resolver
+subject_refs: [MR-ROUTE-SIM-REPLAY-004]
+asserted_facts: [action-registry-closed, trigger-match-unambiguous]
+requested_effect: Commit exact registered Action revisions for an unambiguous Method Resolution.
+result:
+  status: eligible
+  code: AUTHORITY-RULE-ELIGIBLE
+  disposition: eligible-for-decision
+  reason: Assuming the asserted facts are true, deterministic-resolver is eligible for the commit rule for action-selection; no decision or authority effect is executed.
+limitations: [Eligibility neither proves the facts nor executes the Action selection.]

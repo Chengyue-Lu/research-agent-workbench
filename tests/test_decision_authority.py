@@ -8,7 +8,7 @@ from research_workbench.io import iter_documents, load_document
 from research_workbench.protocol import (
     DECISION_AUTHORITY_MATRIX_REF,
     DecisionAuthorityMatrix,
-    evaluate_decision_authority_preflight,
+    evaluate_authority_rule_eligibility,
 )
 from research_workbench.validation import SchemaCatalog, validate_documents
 
@@ -24,9 +24,9 @@ class DecisionAuthorityTests(unittest.TestCase):
         cls.catalog = SchemaCatalog(ROOT / "schemas")
         cls.matrix_document = load_document(MATRIX_PATH)
         cls.matrix_hash = hash_file(MATRIX_PATH)
-        cls.preflight_paths = sorted(PREFLIGHT_ROOT.glob("*.yaml"))
-        cls.preflights = {
-            path: load_document(path) for path in cls.preflight_paths
+        cls.eligibility_paths = sorted(PREFLIGHT_ROOT.glob("*.yaml"))
+        cls.eligibility_records = {
+            path: load_document(path) for path in cls.eligibility_paths
         }
 
     def test_matrix_is_the_exact_v1_closed_set(self) -> None:
@@ -46,25 +46,25 @@ class DecisionAuthorityTests(unittest.TestCase):
             {entry.decision_kind for entry in matrix.entries},
         )
 
-    def test_matrix_and_preflights_are_schema_valid(self) -> None:
+    def test_matrix_and_eligibility_records_are_schema_valid(self) -> None:
         self.assertEqual(
             [],
             self.catalog.validate("decision_authority_matrix", self.matrix_document),
         )
-        self.assertEqual(9, len(self.preflights))
-        for path, document in self.preflights.items():
+        self.assertEqual(9, len(self.eligibility_records))
+        for path, document in self.eligibility_records.items():
             with self.subTest(path=path.name):
                 self.assertEqual(
                     [],
-                    self.catalog.validate("decision_authority_preflight", document),
+                    self.catalog.validate("authority_rule_eligibility", document),
                 )
 
     def test_all_recorded_results_are_deterministically_recomputed(self) -> None:
         statuses: list[str] = []
         codes: set[str] = set()
-        for path, document in self.preflights.items():
+        for path, document in self.eligibility_records.items():
             with self.subTest(path=path.name):
-                expected = evaluate_decision_authority_preflight(
+                expected = evaluate_authority_rule_eligibility(
                     document,
                     self.matrix_document,
                     matrix_content_hash=self.matrix_hash,
@@ -72,20 +72,20 @@ class DecisionAuthorityTests(unittest.TestCase):
                 self.assertEqual(expected, document["result"])
                 statuses.append(expected["status"])
                 codes.add(expected["code"])
-        self.assertEqual(4, statuses.count("allowed"))
+        self.assertEqual(4, statuses.count("eligible"))
         self.assertEqual(5, statuses.count("blocked"))
         self.assertLessEqual(
             {
-                "AUTHORITY-ALLOWED",
-                "AUTHORITY-DENIED",
-                "AUTHORITY-FACTS-MISSING",
+                "AUTHORITY-RULE-ELIGIBLE",
+                "AUTHORITY-RULE-DENIED",
+                "AUTHORITY-ASSERTED-FACTS-MISSING",
                 "AUTHORITY-HUMAN-GATE-REQUIRED",
                 "AUTHORITY-HUMAN-GATE-NOT-CONSUMED",
             },
             codes,
         )
 
-    def test_repository_validation_recomputes_every_preflight(self) -> None:
+    def test_repository_validation_recomputes_every_eligibility_record(self) -> None:
         documents = {
             path: load_document(path)
             for path in iter_documents([ROOT / "examples", ROOT / "registry"])
@@ -93,13 +93,13 @@ class DecisionAuthorityTests(unittest.TestCase):
         self.assertEqual([], validate_documents(documents))
 
     def test_agent_and_resolver_cannot_commit_reserved_decisions(self) -> None:
-        agent = self.preflights[PREFLIGHT_ROOT / "blocked-agent-claim-commit.yaml"]
-        resolver = self.preflights[
+        agent = self.eligibility_records[PREFLIGHT_ROOT / "blocked-agent-claim-commit.yaml"]
+        resolver = self.eligibility_records[
             PREFLIGHT_ROOT / "blocked-resolver-permission-commit.yaml"
         ]
-        self.assertEqual("AUTHORITY-DENIED", agent["result"]["code"])
+        self.assertEqual("AUTHORITY-RULE-DENIED", agent["result"]["code"])
         self.assertEqual("human-gate", agent["result"]["disposition"])
-        self.assertEqual("AUTHORITY-DENIED", resolver["result"]["code"])
+        self.assertEqual("AUTHORITY-RULE-DENIED", resolver["result"]["code"])
         self.assertEqual("human-gate", resolver["result"]["disposition"])
 
     def test_matrix_cannot_grant_resolver_commit_for_claim_or_permission(self) -> None:
@@ -126,22 +126,41 @@ class DecisionAuthorityTests(unittest.TestCase):
     def test_hash_and_recorded_result_drift_are_blocking(self) -> None:
         documents = {
             MATRIX_PATH: self.matrix_document,
-            **copy.deepcopy(self.preflights),
+            **copy.deepcopy(self.eligibility_records),
         }
-        path = PREFLIGHT_ROOT / "allowed-resolver-action-commit.yaml"
+        path = PREFLIGHT_ROOT / "eligible-resolver-action-commit.yaml"
         documents[path]["matrix_ref"]["content_hash"] = "sha256:" + "0" * 64
         codes = {issue.code for issue in validate_documents(documents)}
         self.assertIn("DECISION-AUTHORITY-RESULT-MISMATCH", codes)
 
-    def test_duplicate_preflight_identity_is_blocking(self) -> None:
+    def test_duplicate_eligibility_identity_is_blocking(self) -> None:
         documents = {
             MATRIX_PATH: self.matrix_document,
-            **copy.deepcopy(self.preflights),
+            **copy.deepcopy(self.eligibility_records),
         }
-        first, second = self.preflight_paths[:2]
-        documents[second]["preflight_id"] = documents[first]["preflight_id"]
+        first, second = self.eligibility_paths[:2]
+        documents[second]["eligibility_id"] = documents[first]["eligibility_id"]
         codes = {issue.code for issue in validate_documents(documents)}
-        self.assertIn("DECISION-AUTHORITY-PREFLIGHT-DUPLICATE", codes)
+        self.assertIn("AUTHORITY-RULE-ELIGIBILITY-DUPLICATE", codes)
+
+    def test_eligibility_has_no_permission_claim_human_or_execution_effect(self) -> None:
+        document = self.eligibility_records[
+            PREFLIGHT_ROOT / "eligible-human-permission-relaxation.yaml"
+        ]
+        result = evaluate_authority_rule_eligibility(
+            document,
+            self.matrix_document,
+            matrix_content_hash=self.matrix_hash,
+        )
+        self.assertEqual("eligible", result["status"])
+        self.assertEqual("eligible-for-decision", result["disposition"])
+        for forbidden_effect in (
+            "permission_granted",
+            "claim_promoted",
+            "human_approval",
+            "decision_executed",
+        ):
+            self.assertNotIn(forbidden_effect, result)
 
 
 if __name__ == "__main__":

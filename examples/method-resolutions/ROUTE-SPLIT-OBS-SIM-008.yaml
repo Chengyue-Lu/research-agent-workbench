@@ -1,7 +1,7 @@
 schema_version: 0.1.0
 resolution_id: MR-ROUTE-SPLIT-OBS-SIM-008
 revision: 1
-task_ref: {task_id: ROUTE-SPLIT-OBS-SIM-008, revision: 1}
+task_ref: {task_id: TASK-MR-SPLIT-OBS-SIM-008, revision: 1, sha256: 9cac202d97f8f6a68a7bc42a36204fa63533b43b2a583363ce9fc6d2aa7cc718}
 source_case_id: ROUTE-SPLIT-OBS-SIM-008
 mode_resolution:
   status: ambiguous-blocked
@@ -16,12 +16,13 @@ action_decisions:
       - obligation_id: MRO-SPLIT-SIMULATION
         statement: Freeze the simulation purpose and assumptions without using it to answer the observational identification question.
         assessment: semantic-review
-        required_evidence: [model-purpose, assumption-register, claim-boundary]
-    mechanisms: [mode-invariant, task-instruction, no-skill]
+        required_evidence: [method, assumption-ledger, parameter-boundary, model-purpose, assumption-register, claim-boundary]
+    mechanisms: [mode-invariant, task-instruction, no-skill, human-gate]
     capability_requirements: []
     skill_need_refs: []
-    human_gate_refs: []
-    blocked_conditions: []
+    human_gate_refs: [approve-model-purpose-and-assumptions]
+    stop_conditions: [Purpose, assumptions, and parameter boundary are versioned and approved.]
+    blocked_conditions: [The intended use or material assumptions remain unresolved.]
     rationale: The admitted simulation subtask can be bounded independently.
   - decision_id: MRD-SPLIT-OBSERVATIONAL
     planning_action_id: observational-identification
@@ -34,14 +35,15 @@ action_decisions:
     capability_requirements: []
     skill_need_refs: []
     human_gate_refs: [decide-observational-mode-admission-and-claim-boundary]
+    stop_conditions: [The unsupported observational lane is split into a new bounded Task or remains blocked.]
     blocked_conditions: [The observational identification subtask lacks an admitted Mode and Claim boundary.]
     rationale: A Task split preserves the valid simulation lane without force-fitting the unsupported lane.
 skill_disposition:
   status: no-skill
   need_refs: []
   reason: A Skill cannot substitute for a missing Mode and human Claim-boundary decision.
-human_gate_refs: [decide-observational-mode-admission-and-claim-boundary]
-blocked_conditions: [The observational identification subtask lacks an admitted Mode and Claim boundary.]
+human_gate_refs: [approve-model-purpose-and-assumptions, decide-observational-mode-admission-and-claim-boundary]
+blocked_conditions: [The intended use or material assumptions remain unresolved., The observational identification subtask lacks an admitted Mode and Claim boundary.]
 rejected_alternatives:
   - {alternative_id: force-fit-evidence-synthesis, disposition: rejected, reason: Evidence synthesis does not define observational identification rules.}
   - {alternative_id: force-fit-simulation, disposition: rejected, reason: Simulation semantics cannot authorize a causal observational Claim.}
