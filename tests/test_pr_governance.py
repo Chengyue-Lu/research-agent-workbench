@@ -265,6 +265,7 @@ class TasksAuthorityTests(unittest.TestCase):
         *,
         pr_class: str = "feature",
         declared: set[str] | None = None,
+        effective_risk: str = "R0",
         changed_paths: tuple[str, ...] = ("docs/TASKS.md",),
         verification_evidence: str | None = None,
     ) -> object:
@@ -276,6 +277,7 @@ class TasksAuthorityTests(unittest.TestCase):
             pr_class=pr_class,
             changed_paths=changed_paths,
             declared_task_ids=declared_ids,
+            effective_risk=effective_risk,
             verification_evidence=(
                 verification_evidence
                 if verification_evidence is not None
@@ -324,6 +326,7 @@ class TasksAuthorityTests(unittest.TestCase):
             pr_class="feature",
             changed_paths=("docs/TASKS.md",),
             declared_task_ids={"M8-002", "M8-003", "M8-004", "M8-005"},
+            effective_risk="R2",
             verification_evidence="M8-002 pass; M8-003 pass; M8-004 pass; M8-005 pass",
             report=report,
         )
@@ -342,10 +345,202 @@ class TasksAuthorityTests(unittest.TestCase):
             pr_class="feature",
             changed_paths=("docs/TASKS.md",),
             declared_task_ids={"M8-003"},
+            effective_risk="R2",
             verification_evidence="M8-003 pass",
             report=report,
         )
         self.assertIn("TASK-DEPENDENCY-NOT-DONE", codes(report, "ERROR"))
+
+    def test_r2_connected_linear_stage_chain_passes(self) -> None:
+        base = """# Tasks
+| ID | 状态 | 任务 | 依赖 | 验收 |
+|---|---|---|---|---|
+| M8-001 | DONE | Foundation | M0 | Existing acceptance |
+| M8-002 | READY | Anchor | M8-001 | Anchor evidence |
+| M8-003 | PARKED | Middle | M8-002 | Middle evidence |
+| M8-004 | PARKED | Leaf | M8-003 | Leaf evidence |
+"""
+        head = base.replace("M8-002 | READY", "M8-002 | DONE")
+        head = head.replace("M8-003 | PARKED", "M8-003 | DONE")
+        head = head.replace("M8-004 | PARKED", "M8-004 | DONE")
+        report = governance.GovernanceReport()
+        governance.validate_task_changes(
+            base_text=base,
+            head_text=head,
+            pr_class="feature",
+            changed_paths=("docs/TASKS.md",),
+            declared_task_ids={"M8-002", "M8-003", "M8-004"},
+            effective_risk="R2",
+            verification_evidence="M8-002 anchor pass; M8-003 middle pass; M8-004 leaf pass",
+            report=report,
+        )
+        self.assertFalse(report.has_errors, report.findings)
+
+    def test_r2_branching_dag_reachable_from_anchor_passes(self) -> None:
+        base = """# Tasks
+| ID | 状态 | 任务 | 依赖 | 验收 |
+|---|---|---|---|---|
+| M8-001 | DONE | Foundation | M0 | Existing acceptance |
+| M8-002 | IN_PROGRESS | Anchor | M8-001 | Anchor evidence |
+| M8-003 | PARKED | Left | M8-002 | Left evidence |
+| M8-004 | PARKED | Right | M8-002 | Right evidence |
+| M8-005 | PARKED | Join | M8-003, M8-004 | Join evidence |
+"""
+        head = base.replace("M8-002 | IN_PROGRESS", "M8-002 | DONE")
+        for task_id in ("M8-003", "M8-004", "M8-005"):
+            head = head.replace(f"{task_id} | PARKED", f"{task_id} | DONE")
+        report = governance.GovernanceReport()
+        governance.validate_task_changes(
+            base_text=base,
+            head_text=head,
+            pr_class="feature",
+            changed_paths=("docs/TASKS.md",),
+            declared_task_ids={"M8-002", "M8-003", "M8-004", "M8-005"},
+            effective_risk="R2",
+            verification_evidence="M8-002 pass; M8-003 pass; M8-004 pass; M8-005 pass",
+            report=report,
+        )
+        self.assertFalse(report.has_errors, report.findings)
+
+    def test_r1_parked_to_done_chain_fails(self) -> None:
+        head = BASE_TASKS.replace("M8-002 | IN_PROGRESS", "M8-002 | DONE").replace(
+            "M8-003 | PARKED", "M8-003 | DONE"
+        )
+        report = self.validate(
+            head,
+            declared={"M8-002", "M8-003"},
+            effective_risk="R1",
+        )
+        self.assertIn("TASK-ATOMIC-RISK", codes(report, "ERROR"))
+        self.assertIn("TASK-TRANSITION", codes(report, "ERROR"))
+
+    def test_single_parked_completion_with_base_done_dependency_fails(self) -> None:
+        base = BASE_TASKS.replace("M8-002 | IN_PROGRESS", "M8-002 | DONE")
+        head = base.replace("M8-003 | PARKED", "M8-003 | DONE")
+        report = governance.GovernanceReport()
+        governance.validate_task_changes(
+            base_text=base,
+            head_text=head,
+            pr_class="feature",
+            changed_paths=("docs/TASKS.md",),
+            declared_task_ids={"M8-003"},
+            effective_risk="R2",
+            verification_evidence="M8-003 verified",
+            report=report,
+        )
+        self.assertIn("TASK-ATOMIC-ANCHOR-MISSING", codes(report, "ERROR"))
+        self.assertIn("TASK-ATOMIC-DISCONNECTED", codes(report, "ERROR"))
+
+    def test_disconnected_parked_completion_component_fails(self) -> None:
+        base = """# Tasks
+| ID | 状态 | 任务 | 依赖 | 验收 |
+|---|---|---|---|---|
+| M8-001 | DONE | Foundation | M0 | Existing acceptance |
+| M8-002 | READY | Anchor | M8-001 | Anchor evidence |
+| M8-003 | PARKED | Connected | M8-002 | Connected evidence |
+| M9-999 | PARKED | Disconnected | M8-001 | Disconnected evidence |
+"""
+        head = base.replace("M8-002 | READY", "M8-002 | DONE")
+        head = head.replace("M8-003 | PARKED", "M8-003 | DONE")
+        head = head.replace("M9-999 | PARKED", "M9-999 | DONE")
+        report = governance.GovernanceReport()
+        governance.validate_task_changes(
+            base_text=base,
+            head_text=head,
+            pr_class="feature",
+            changed_paths=("docs/TASKS.md",),
+            declared_task_ids={"M8-002", "M8-003", "M9-999"},
+            effective_risk="R2",
+            verification_evidence="M8-002 pass; M8-003 pass; M9-999 pass",
+            report=report,
+        )
+        self.assertIn("TASK-ATOMIC-DISCONNECTED", codes(report, "ERROR"))
+
+    def test_atomic_completion_without_anchor_fails(self) -> None:
+        base = """# Tasks
+| ID | 状态 | 任务 | 依赖 | 验收 |
+|---|---|---|---|---|
+| M8-001 | DONE | Foundation | M0 | Existing acceptance |
+| M8-002 | PARKED | First | M8-001 | First evidence |
+| M8-003 | PARKED | Second | M8-002 | Second evidence |
+"""
+        head = base.replace("M8-002 | PARKED", "M8-002 | DONE").replace(
+            "M8-003 | PARKED", "M8-003 | DONE"
+        )
+        report = governance.GovernanceReport()
+        governance.validate_task_changes(
+            base_text=base,
+            head_text=head,
+            pr_class="feature",
+            changed_paths=("docs/TASKS.md",),
+            declared_task_ids={"M8-002", "M8-003"},
+            effective_risk="R2",
+            verification_evidence="M8-002 pass; M8-003 pass",
+            report=report,
+        )
+        self.assertIn("TASK-ATOMIC-ANCHOR-MISSING", codes(report, "ERROR"))
+
+    def test_atomic_completion_with_undeclared_intermediate_fails(self) -> None:
+        base = """# Tasks
+| ID | 状态 | 任务 | 依赖 | 验收 |
+|---|---|---|---|---|
+| M8-001 | DONE | Foundation | M0 | Existing acceptance |
+| M8-002 | READY | Anchor | M8-001 | Anchor evidence |
+| M8-003 | PARKED | Middle | M8-002 | Middle evidence |
+| M8-004 | PARKED | Leaf | M8-003 | Leaf evidence |
+"""
+        head = base.replace("M8-002 | READY", "M8-002 | DONE")
+        head = head.replace("M8-003 | PARKED", "M8-003 | DONE")
+        head = head.replace("M8-004 | PARKED", "M8-004 | DONE")
+        report = governance.GovernanceReport()
+        governance.validate_task_changes(
+            base_text=base,
+            head_text=head,
+            pr_class="feature",
+            changed_paths=("docs/TASKS.md",),
+            declared_task_ids={"M8-002", "M8-004"},
+            effective_risk="R2",
+            verification_evidence="M8-002 pass; M8-003 pass; M8-004 pass",
+            report=report,
+        )
+        self.assertIn("TASK-STATUS-UNDECLARED", codes(report, "ERROR"))
+
+    def test_atomic_completion_missing_per_task_evidence_fails(self) -> None:
+        head = BASE_TASKS.replace("M8-002 | IN_PROGRESS", "M8-002 | DONE").replace(
+            "M8-003 | PARKED", "M8-003 | DONE"
+        )
+        report = self.validate(
+            head,
+            declared={"M8-002", "M8-003"},
+            effective_risk="R2",
+            verification_evidence="M8-002 anchor passed",
+        )
+        self.assertIn("TASK-DONE-EVIDENCE-MISSING", codes(report, "ERROR"))
+
+    def test_atomic_completion_cyclic_dag_fails(self) -> None:
+        base = """# Tasks
+| ID | 状态 | 任务 | 依赖 | 验收 |
+|---|---|---|---|---|
+| M8-001 | DONE | Foundation | M0 | Existing acceptance |
+| M8-002 | READY | Anchor | M8-001 | Anchor evidence |
+| M8-003 | PARKED | Cycle A | M8-002, M8-004 | A evidence |
+| M8-004 | PARKED | Cycle B | M8-003 | B evidence |
+"""
+        head = base.replace("M8-002 | READY", "M8-002 | DONE")
+        head = head.replace("M8-003 | PARKED", "M8-003 | DONE")
+        head = head.replace("M8-004 | PARKED", "M8-004 | DONE")
+        report = governance.GovernanceReport()
+        governance.validate_task_changes(
+            base_text=base,
+            head_text=head,
+            pr_class="feature",
+            changed_paths=("docs/TASKS.md",),
+            declared_task_ids={"M8-002", "M8-003", "M8-004"},
+            effective_risk="R2",
+            verification_evidence="M8-002 pass; M8-003 pass; M8-004 pass",
+            report=report,
+        )
+        self.assertIn("TASK-DEPENDENCY-CYCLE", codes(report, "ERROR"))
 
     def test_each_completed_task_requires_named_evidence(self) -> None:
         head = BASE_TASKS.replace("M8-002 | IN_PROGRESS", "M8-002 | DONE")
@@ -396,6 +591,22 @@ class PolicyAndCodeownersTests(unittest.TestCase):
         self.assertEqual(["feature", "task-definition", "release"], policy["pr_classes"])
         self.assertEqual(["R0", "R1", "R2"], policy["risk_order"])
         self.assertEqual(["INFO", "WARNING", "ERROR"], policy["finding_severities"])
+
+    def test_published_identity_policy_declares_all_protected_kinds(self) -> None:
+        policy = json.loads((ROOT / ".github" / "governance-policy.json").read_text(encoding="utf-8"))
+        declarations = {
+            item["kind"]: tuple(item["identity_fields"])
+            for item in policy["published_identities"]
+        }
+        self.assertEqual(
+            {
+                "mode-action": ("action_id", "version"),
+                "research-mode": ("mode_id", "version"),
+                "decision-authority-matrix": ("matrix_id", "version"),
+                "research-mode-migration": ("migration_id", "migration_version"),
+            },
+            declarations,
+        )
 
     def test_codeowners_has_no_global_wildcard_and_keeps_sensitive_paths(self) -> None:
         lines = [
@@ -515,6 +726,120 @@ class PublishedDocumentIdentityTests(unittest.TestCase):
                     report,
                 )
                 self.assertFalse(report.has_errors, report.findings)
+
+    def assert_move_out_fails(self, protected_path: str, content: str, archive_path: str) -> None:
+        report = governance.GovernanceReport()
+        governance.validate_published_identity_history(
+            {protected_path: content},
+            {archive_path: content},
+            report,
+        )
+        self.assertIn("PUBLISHED-IDENTITY-REMOVED", codes(report, "ERROR"))
+
+    def test_research_mode_move_outside_registry_fails(self) -> None:
+        _, content, _ = self.CASES["registry/modes/simulation.yaml"]
+        self.assert_move_out_fails(
+            "registry/modes/simulation.yaml",
+            content,
+            "archive/simulation.yaml",
+        )
+
+    def test_authority_matrix_move_outside_registry_fails(self) -> None:
+        path = "registry/authority/decision-authority-matrix.yaml"
+        _, content, _ = self.CASES[path]
+        self.assert_move_out_fails(path, content, "archive/decision-authority-matrix.yaml")
+
+    def test_migration_move_outside_registry_fails(self) -> None:
+        path = "registry/modes/migrations/simulation-v01-v02.yaml"
+        _, content, _ = self.CASES[path]
+        self.assert_move_out_fails(path, content, "archive/simulation-v01-v02.yaml")
+
+    def test_action_move_outside_protected_tree_fails(self) -> None:
+        path = "registry/modes/actions/simulation/SIM-A3.yaml"
+        _, content, _ = self.CASES[path]
+        self.assert_move_out_fails(path, content, "archive/SIM-A3.yaml")
+
+    def test_published_action_deletion_fails(self) -> None:
+        path = "registry/modes/actions/simulation/SIM-A3.yaml"
+        _, content, _ = self.CASES[path]
+        report = governance.GovernanceReport()
+        governance.validate_published_identity_history({path: content}, {}, report)
+        self.assertIn("PUBLISHED-IDENTITY-REMOVED", codes(report, "ERROR"))
+
+    def test_same_identity_relocation_inside_protected_tree_fails(self) -> None:
+        path = "registry/modes/simulation.yaml"
+        _, content, _ = self.CASES[path]
+        report = governance.GovernanceReport()
+        governance.validate_published_identity_history(
+            {path: content},
+            {"registry/modes/simulation-relocated.yaml": content},
+            report,
+        )
+        self.assertIn("PUBLISHED-IDENTITY-MUTATED", codes(report, "ERROR"))
+
+    def test_new_version_append_with_old_path_retained_passes(self) -> None:
+        path = "registry/modes/simulation.yaml"
+        _, original, appended = self.CASES[path]
+        report = governance.GovernanceReport()
+        governance.validate_published_identity_history(
+            {path: original},
+            {
+                path: original,
+                "registry/modes/simulation-v0.3.yaml": appended,
+            },
+            report,
+        )
+        self.assertFalse(report.has_errors, report.findings)
+
+    def test_unrelated_archive_file_addition_passes(self) -> None:
+        path = "registry/modes/simulation.yaml"
+        _, content, _ = self.CASES[path]
+        report = governance.GovernanceReport()
+        governance.validate_published_identity_history(
+            {path: content},
+            {
+                path: content,
+                "archive/notes.yaml": "summary: unrelated archive material\n",
+            },
+            report,
+        )
+        self.assertFalse(report.has_errors, report.findings)
+
+
+class PublishedIdentityIntegrationTests(unittest.TestCase):
+    def test_move_out_is_detected_when_changed_path_is_not_published(self) -> None:
+        base_path = "registry/modes/simulation.yaml"
+        content = "mode_id: simulation\nversion: 0.2.0\nsummary: original\n"
+        event = {
+            "pull_request": {
+                "base": {
+                    "sha": "a" * 40,
+                    "ref": "develop",
+                    "repo": {"full_name": "org/repo"},
+                },
+                "head": {
+                    "sha": "b" * 40,
+                    "ref": "feature/move-out",
+                    "repo": {"full_name": "org/repo"},
+                },
+                "body": valid_body(),
+                "mergeable": True,
+            }
+        }
+        with (
+            mock.patch.object(governance, "_changed_paths", return_value=["archive/simulation.yaml"]),
+            mock.patch.object(governance, "_merge_base", return_value="a" * 40),
+            mock.patch.object(governance, "_read_blob", return_value=BASE_TASKS),
+            mock.patch.object(
+                governance,
+                "_published_documents_at",
+                side_effect=[{base_path: content}, {}],
+            ) as published_documents,
+        ):
+            report = governance.check_pull_request(event)
+
+        self.assertEqual(2, published_documents.call_count)
+        self.assertIn("PUBLISHED-IDENTITY-REMOVED", codes(report, "ERROR"))
 
 
 if __name__ == "__main__":
