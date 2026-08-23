@@ -30,6 +30,7 @@ WORKSTREAM_OWNERS = {slug: owner for owner, slug in OWNER_SLUGS.items()}
 MINIMUM_RISK_PATHS = {
     risk: tuple(patterns) for risk, patterns in POLICY["minimum_risk_paths"].items()
 }
+PUBLISHED_IDENTITIES = tuple(POLICY["published_identities"])
 
 ALLOWED_BASES = {"develop", "main"}
 TASK_ID_RE = re.compile(r"^M\d+-\d+$")
@@ -130,6 +131,14 @@ class TaskRow:
     remainder: tuple[str, ...]
     dependencies: str
     line_number: int
+
+
+@dataclass(frozen=True)
+class PublishedDocument:
+    kind: str
+    identity: tuple[str, ...]
+    path: str
+    content: str
 
 
 def _clean_value(value: str) -> str:
@@ -342,6 +351,130 @@ def _validate_dependencies(
                 )
 
 
+def _validate_atomic_completion_dag(
+    completed_ids: set[str],
+    parked_completed_ids: set[str],
+    base_rows: Mapping[str, TaskRow],
+    head_rows: Mapping[str, TaskRow],
+    effective_risk: str,
+    verification_evidence: str,
+    report: GovernanceReport,
+) -> None:
+    if not completed_ids:
+        return
+    completion_valid = True
+    for task_id in sorted(completed_ids):
+        if re.search(rf"\b{re.escape(task_id)}\b", verification_evidence) is None:
+            completion_valid = False
+            report.add(
+                "ERROR",
+                "TASK-DONE-EVIDENCE-MISSING",
+                f"{task_id} enters DONE without task-specific verification evidence",
+            )
+
+    dependencies_within_chain: dict[str, set[str]] = {
+        task_id: set() for task_id in completed_ids
+    }
+    dependents: dict[str, set[str]] = {task_id: set() for task_id in completed_ids}
+    for task_id in sorted(completed_ids):
+        row = head_rows[task_id]
+        for dependency in sorted(_dependency_ids(row.dependencies)):
+            dependency_row = head_rows.get(dependency)
+            if dependency_row is None:
+                completion_valid = False
+                report.add(
+                    "ERROR",
+                    "TASK-DEPENDENCY-UNKNOWN",
+                    f"{task_id} references unknown dependency {dependency}",
+                )
+                continue
+            if dependency_row.status != "DONE":
+                completion_valid = False
+                report.add(
+                    "ERROR",
+                    "TASK-DEPENDENCY-NOT-DONE",
+                    f"{task_id} cannot enter DONE while {dependency} is {dependency_row.status}",
+                )
+                continue
+            if dependency in completed_ids:
+                dependencies_within_chain[task_id].add(dependency)
+                dependents[dependency].add(task_id)
+            elif base_rows.get(dependency) is None or base_rows[dependency].status != "DONE":
+                completion_valid = False
+                report.add(
+                    "ERROR",
+                    "TASK-DEPENDENCY-NOT-ATOMIC",
+                    f"{task_id} depends on {dependency}, which was not DONE in base or completed in this Stage",
+                )
+
+    anchor_ids = {
+        task_id
+        for task_id in completed_ids
+        if base_rows[task_id].status in {"READY", "IN_PROGRESS", "BLOCKED"}
+    }
+    if parked_completed_ids and effective_risk != "R2":
+        completion_valid = False
+        report.add(
+            "ERROR",
+            "TASK-ATOMIC-RISK",
+            "PARKED -> DONE is allowed only for an R2 Stage atomic completion",
+        )
+    if parked_completed_ids and not anchor_ids:
+        completion_valid = False
+        report.add(
+            "ERROR",
+            "TASK-ATOMIC-ANCHOR-MISSING",
+            "PARKED -> DONE requires a READY, IN_PROGRESS, or BLOCKED Task completing as the Stage anchor",
+        )
+
+    reachable = set(anchor_ids)
+    frontier = sorted(anchor_ids)
+    while frontier:
+        task_id = frontier.pop(0)
+        for dependent in sorted(dependents[task_id]):
+            if dependent not in reachable:
+                reachable.add(dependent)
+                frontier.append(dependent)
+    disconnected = sorted(parked_completed_ids - reachable)
+    if disconnected:
+        completion_valid = False
+        report.add(
+            "ERROR",
+            "TASK-ATOMIC-DISCONNECTED",
+            "PARKED completions are not dependency-reachable from a Stage anchor: "
+            + ", ".join(disconnected),
+        )
+
+    ready = sorted(
+        task_id
+        for task_id, dependencies in dependencies_within_chain.items()
+        if not dependencies
+    )
+    order: list[str] = []
+    while ready:
+        task_id = ready.pop(0)
+        order.append(task_id)
+        for dependent in sorted(dependents[task_id]):
+            dependencies_within_chain[dependent].discard(task_id)
+            if not dependencies_within_chain[dependent] and dependent not in order and dependent not in ready:
+                ready.append(dependent)
+        ready.sort()
+    if len(order) != len(completed_ids):
+        completion_valid = False
+        unresolved = sorted(completed_ids - set(order))
+        report.add(
+            "ERROR",
+            "TASK-DEPENDENCY-CYCLE",
+            f"atomic completion dependency graph is cyclic or unresolved: {unresolved}",
+        )
+    elif parked_completed_ids and completion_valid:
+        report.add(
+            "INFO",
+            "TASK-ATOMIC-COMPLETION",
+            "validated completion order: " + " -> ".join(order),
+        )
+
+
 def validate_mode_action_registry_history(
     base_registry: Mapping[str, object],
     head_registry: Mapping[str, object],
@@ -380,6 +513,95 @@ def validate_mode_action_registry_history(
             )
 
 
+def _published_identity_spec(path: str) -> tuple[str, tuple[str, ...]] | None:
+    normalized = path.replace("\\", "/")
+    candidate = PurePosixPath(normalized)
+    for declaration in PUBLISHED_IDENTITIES:
+        patterns = tuple(str(pattern) for pattern in declaration.get("patterns", ()))
+        if any(candidate.match(pattern) for pattern in patterns):
+            return (
+                str(declaration["kind"]),
+                tuple(str(field) for field in declaration["identity_fields"]),
+            )
+    return None
+
+
+def _top_level_scalar(document: str, field_name: str) -> str | None:
+    stripped = document.lstrip()
+    if stripped.startswith("{"):
+        try:
+            value = json.loads(document).get(field_name)
+        except (json.JSONDecodeError, AttributeError):
+            return None
+        return value if isinstance(value, str) and value else None
+    match = re.search(
+        rf"(?m)^{re.escape(field_name)}:\s*([^#\r\n]+?)\s*$",
+        document,
+    )
+    if match is None:
+        return None
+    value = match.group(1).strip().strip("'\"")
+    return value or None
+
+
+def _index_published_documents(
+    documents: Mapping[str, str], report: GovernanceReport
+) -> dict[tuple[str, tuple[str, ...]], PublishedDocument]:
+    indexed: dict[tuple[str, tuple[str, ...]], PublishedDocument] = {}
+    for path, content in sorted(documents.items()):
+        spec = _published_identity_spec(path)
+        if spec is None:
+            continue
+        kind, fields = spec
+        identity_values = tuple(_top_level_scalar(content, field) or "" for field in fields)
+        if any(not value for value in identity_values):
+            report.add(
+                "ERROR",
+                "PUBLISHED-IDENTITY-SHAPE",
+                f"{path} lacks published identity fields {fields}",
+            )
+            continue
+        key = (kind, identity_values)
+        if key in indexed:
+            report.add(
+                "ERROR",
+                "PUBLISHED-IDENTITY-DUPLICATE",
+                f"duplicate {kind} identity: {'@'.join(identity_values)}",
+            )
+            continue
+        indexed[key] = PublishedDocument(kind, identity_values, path, content)
+    return indexed
+
+
+def validate_published_identity_history(
+    base_documents: Mapping[str, str],
+    head_documents: Mapping[str, str],
+    report: GovernanceReport,
+) -> None:
+    """Reject removal, relocation, or content mutation of any published identity."""
+
+    before = _index_published_documents(base_documents, report)
+    after = _index_published_documents(head_documents, report)
+    for key, old_document in before.items():
+        new_document = after.get(key)
+        reference = "@".join(old_document.identity)
+        if new_document is None:
+            report.add(
+                "ERROR",
+                "PUBLISHED-IDENTITY-REMOVED",
+                f"published {old_document.kind} removed: {reference}",
+            )
+        elif (
+            new_document.path != old_document.path
+            or new_document.content != old_document.content
+        ):
+            report.add(
+                "ERROR",
+                "PUBLISHED-IDENTITY-MUTATED",
+                f"published {old_document.kind} changed in place: {reference}; publish a new version",
+            )
+
+
 def validate_task_changes(
     *,
     base_text: str,
@@ -387,6 +609,8 @@ def validate_task_changes(
     pr_class: str,
     changed_paths: Sequence[str],
     declared_task_ids: set[str],
+    effective_risk: str,
+    verification_evidence: str,
     report: GovernanceReport,
 ) -> None:
     try:
@@ -460,10 +684,32 @@ def validate_task_changes(
     for task_id in sorted(status_changes):
         before = base_rows[task_id].status
         after = head_rows[task_id].status
-        if after not in TASK_TRANSITIONS.get(before, set()):
+        parked_completion = before == "PARKED" and after == "DONE"
+        atomic_completion = parked_completion and effective_risk == "R2"
+        if after not in TASK_TRANSITIONS.get(before, set()) and not atomic_completion:
             report.add("ERROR", "TASK-TRANSITION", f"illegal transition {task_id}: {before} -> {after}")
         else:
-            report.add("INFO", "TASK-TRANSITION", f"valid transition {task_id}: {before} -> {after}")
+            transition_kind = "atomic completion" if atomic_completion else "valid transition"
+            report.add("INFO", "TASK-TRANSITION", f"{transition_kind} {task_id}: {before} -> {after}")
+    completed_ids = {
+        task_id
+        for task_id in status_changes
+        if head_rows[task_id].status == "DONE" and base_rows[task_id].status != "DONE"
+    }
+    parked_completed_ids = {
+        task_id
+        for task_id in completed_ids
+        if base_rows[task_id].status == "PARKED"
+    }
+    _validate_atomic_completion_dag(
+        completed_ids,
+        parked_completed_ids,
+        base_rows,
+        head_rows,
+        effective_risk,
+        verification_evidence,
+        report,
+    )
     _validate_dependencies(status_changes, head_rows, report)
 
 
@@ -564,6 +810,20 @@ def _changed_paths(base_sha: str, head_sha: str) -> list[str]:
     return [line for line in _git("diff", "--name-only", f"{base_sha}...{head_sha}").splitlines() if line]
 
 
+def _published_documents_at(commit: str) -> dict[str, str]:
+    paths = [
+        line
+        for line in _git(
+            "ls-tree",
+            "-r",
+            "--name-only",
+            commit,
+        ).splitlines()
+        if _published_identity_spec(line) is not None
+    ]
+    return {path: _read_blob(commit, path) for path in paths}
+
+
 def check_pull_request(event: Mapping[str, object]) -> GovernanceReport:
     report = GovernanceReport()
     pull_request = event.get("pull_request")
@@ -635,6 +895,8 @@ def check_pull_request(event: Mapping[str, object]) -> GovernanceReport:
             pr_class=metadata.get("PR class", ""),
             changed_paths=changed_paths,
             declared_task_ids=task_ids_from_metadata(metadata.get("Task ID(s)", "none")),
+            effective_risk=effective,
+            verification_evidence=sections.get("Verification evidence", ""),
             report=report,
         )
     except GovernanceError as exc:
@@ -653,6 +915,15 @@ def check_pull_request(event: Mapping[str, object]) -> GovernanceReport:
                 )
             except (GovernanceError, json.JSONDecodeError) as exc:
                 report.add("ERROR", "ACTION-REGISTRY-READ", str(exc))
+
+    try:
+        validate_published_identity_history(
+            _published_documents_at(merge_base),
+            _published_documents_at(head_sha),
+            report,
+        )
+    except GovernanceError as exc:
+        report.add("ERROR", "PUBLISHED-IDENTITY-READ", str(exc))
 
     if pull_request.get("mergeable") is False:
         report.add("ERROR", "MERGE-CONFLICT", "GitHub reports that the PR is not mergeable")

@@ -97,12 +97,23 @@ Task 状态机允许 `PARKED → READY → IN_PROGRESS → DONE`、`READY/IN_PRO
 时，head snapshot 中列明的 Task 依赖必须全部 `DONE`。同一 feature PR 可以完成当前 Task 并激活
 依赖已满足的后继 Task；所有变化 ID 都必须在 PR 中声明。`DONE` 行是终态且定义不可变。
 
+同一 Stage feature PR 也可以原子完成一条已声明的依赖链，包括把后继 Task 从 `PARKED` 直接置为
+`DONE`。治理器按 head snapshot 的 dependency DAG 拓扑验证顺序：每个依赖必须已在 base 中 `DONE`，
+或在同一 PR 的完成集合中先行闭合；每个进入 `DONE` 的 Task 必须在 Verification evidence 中有具名
+证据。Task 定义、依赖和验收不得随实现 PR 改写，依赖缺失或未闭合仍然阻断。该机制只消除人为的
+状态推进 PR，不放松完成证据或 `DONE` 不可变性。
+
 R0 maintenance 可以填写 `Task ID(s): none`，前提是 `TASKS.md` 不变；R1/R2 必须有正式 Task 或
 Audit ID。feature 置 `DONE` 只代表机器确认结构资格、证据字段和 CI，完成判断仍由具名 owner 承担。
 不再创建独立 `task-closeout` PR。
 
 PR 模板不再人工复制 Git 已知的 base SHA，也不要求填写 reviewer。Cross-owner review 由有效风险、
 CODEOWNERS 和 ruleset 决定。
+
+已经进入 `develop` 的版本化 Registry 文档按 identity append-only：Mode Action
+`action_id + version`、Research Mode `mode_id + version`、Decision Authority Matrix
+`matrix_id + version`、Research Mode Migration `migration_id + migration_version` 均不得同版本改写、
+移除或换路径。语义变化发布新版本，旧 identity 必须继续保留并可验证。
 
 ### 5.3 Workstream、History 与远端门禁
 

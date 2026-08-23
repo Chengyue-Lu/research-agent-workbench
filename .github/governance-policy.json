@@ -20,6 +20,8 @@
       "schemas/**",
       "registry/**",
       "docs/compatibility/**",
+      "docs/implementation/**",
+      "docs/STATUS.md",
       "src/research_workbench/cli.py",
       "src/research_workbench/protocol/**",
       "src/research_workbench/contracts/**"
@@ -30,6 +32,10 @@
       "docs/ARCHITECTURE.md",
       "docs/PROJECT_CHARTER.md",
       "docs/decisions/**",
+      "docs/implementation/DECISION_AUTHORITY.md",
+      "registry/authority/**",
+      "src/research_workbench/protocol/authority.py",
+      "schemas/**/decision-authority*.schema.json",
       "schemas/**/method-resolution.schema.json",
       "schemas/**/claim*.schema.json",
       "schemas/**/decision*.schema.json",
@@ -39,5 +45,46 @@
       "src/research_workbench/governance/**",
       "src/research_workbench/security/**"
     ]
-  }
+  },
+  "published_identities": [
+    {
+      "kind": "mode-action",
+      "patterns": [
+        "registry/modes/actions/*.yaml",
+        "registry/modes/actions/*.yml",
+        "registry/modes/actions/**/*.yaml",
+        "registry/modes/actions/**/*.yml"
+      ],
+      "identity_fields": ["action_id", "version"]
+    },
+    {
+      "kind": "research-mode",
+      "patterns": [
+        "registry/modes/*.yaml",
+        "registry/modes/*.yml",
+        "registry/modes/v*/*.yaml",
+        "registry/modes/v*/*.yml"
+      ],
+      "identity_fields": ["mode_id", "version"]
+    },
+    {
+      "kind": "decision-authority-matrix",
+      "patterns": [
+        "registry/authority/decision-authority-matrix*.yaml",
+        "registry/authority/decision-authority-matrix*.yml",
+        "registry/authority/decision-authority-matrix*.json"
+      ],
+      "identity_fields": ["matrix_id", "version"]
+    },
+    {
+      "kind": "research-mode-migration",
+      "patterns": [
+        "registry/modes/migrations/*.yaml",
+        "registry/modes/migrations/*.yml",
+        "registry/modes/migrations/**/*.yaml",
+        "registry/modes/migrations/**/*.yml"
+      ],
+      "identity_fields": ["migration_id", "migration_version"]
+    }
+  ]
 }
