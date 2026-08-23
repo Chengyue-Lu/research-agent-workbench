@@ -4,7 +4,7 @@
 - 必需审查人：黄毅（GitHub 主名 `let778750-cpu`）
 - Task：`M8-003`
 - 状态：stacked implementation；节点完成前不请求审查、不合并
-- 实际开发基线：`agent/method-m8-002-mode-action-contract@5af1e27ba45e9954d2e1d077349da14ab06114ab`
+- 实际开发基线：M8-002 feature lineage，已同步其 `def0689` contract hardening
 - 最终目标 base：M8-002 squash merge 后的最新 `develop`
 - 工作分支：`agent/method-m8-003-method-resolution`
 
@@ -59,4 +59,9 @@ workstream 与相应 implementation/module/status/TASKS 文档。公共契约新
 并形成 Action-to-Resolution compact handoff。任何需要修改 Execution View、Capability Snapshot、Mode
 migration 或 Decision Authority 的发现登记后推迟，不在本分支扩张。
 
-M8-002 合并前不为本堆叠分支创建正式 `develop` PR；节点审查通过前不合并或 closeout。
+M8-002 合并前不为本堆叠分支创建正式 `develop` PR；节点审查通过前不合并或宣告 Task 完成。
+
+按 proposed Governance v2，本分支因 Method Resolution authority surface 至少为 R2：正式 PR 必须提供
+authority basis、adversarial evidence、cross-owner authority review 与本 workstream/Risk Ledger。
+当前 stacked `M8-003: IN_PROGRESS` 只描述隔离分支工作状态，不是可合并的 TASKS snapshot；创建 PR
+前必须先在有效治理下让 M8-002 `DONE`、M8-003 `READY`，再形成合法 `READY → DONE/IN_PROGRESS`。

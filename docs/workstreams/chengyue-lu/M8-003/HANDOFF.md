@@ -25,8 +25,8 @@ Mode result
 | 层级 | 分支 / 提交 | 状态 |
 |---|---|---|
 | 目标基线 | `develop@5991cafdb7f536cd7b871508de9055d02b558728` | 未改动 |
-| M8-002 | `agent/method-m8-002-mode-action-contract@5af1e27ba45e9954d2e1d077349da14ab06114ab` | PR #26 Draft，无 review request，未合并 |
-| M8-003 | `agent/method-m8-003-method-resolution@1393234e2e06a705b0b8d4090e0c794cc49a8252` | 堆叠在 M8-002 上，远端已同步，未创建 PR |
+| M8-002 | `agent/method-m8-002-mode-action-contract@def0689` | PR #26 Draft，无 review request，未合并；审计阻塞项已修复 |
+| M8-003 | `agent/method-m8-003-method-resolution`（含 `db17d67` 传播提交） | 堆叠在 M8-002 上，未创建 PR |
 
 M8-003 的提交基点是 M8-002 快照，不是当前 `develop`。这保留了连续契约开发所需的上下文，但在
 M8-002 合并前不应直接把 M8-003 作为 `develop` PR 审查或合并。
@@ -55,13 +55,16 @@ M8-002 合并前不应直接把 M8-003 作为 `develop` PR 审查或合并。
 
 ## 5. 审查后的合并顺序
 
-1. 对本节点进行一次概念与契约审查；需要修改时分别落到所属分支；
-2. 审查通过后先将 PR #26（M8-002）合并到最新 `develop`；
-3. 将 M8-003 变基到合并后的 `develop`，解决 hash/文档基线变化并重跑完整验证；
-4. 再为 M8-003 创建独立 PR，只确认重排后的 diff、CI 与节点审查修改已完整保留；
-5. 两个实现 PR 均合并后，再用一个 docs-only closeout 批量更新两项 Task 状态。
+1. 对 Action→Resolution 节点进行一次概念与契约审查；需要修改时分别落到所属分支；
+2. 先按当前有效政策审查并合并 PR #26（M8-002 implementation，保持 IN_PROGRESS）；
+3. 独立审查并合并 Governance v2 R2 PR，再按 rollout 启用远端 ruleset；
+4. 用新 `feature` 状态机完成 `M8-002: IN_PROGRESS → DONE`，并在同一 head 激活
+   `M8-003: PARKED → READY`；这不是独立 `task-closeout` class，也不自动制造 History；
+5. 将 M8-003 变基到该 `develop`，形成合法 `READY → DONE/IN_PROGRESS`，重跑完整验证并创建 R2 PR；
+6. M8-003 PR 只需确认节点审查修改、重排 diff、authority/adversarial evidence 与 CI 完整保留。
 
-在完成上述节点审查前，不请求正式 review、不合并，也不关闭 M8-002/M8-003。
+上述 PR 可以共享一次节点级概念审查，但仍按所属分支和风险分别落地。未经审查不合并；旧
+`task-closeout`、人工 base SHA 和逐 Task History 不再作为未来结构。
 
 ## 6. 下一边界
 

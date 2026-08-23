@@ -11,3 +11,5 @@
 | M8R-TASKREF-001 | limitation | 八个诊断 case 没有完整冻结 Task Packet，因此 fixture task_ref 只有 ID/revision。 | 正式受控执行要求后续 Task snapshot/hash；本节点不伪造 Task bytes。 | accepted limitation |
 | M8R-XLINE-001 | fact | 直接把 Resolution 塞进 Assignment/Receipt 会跨越 owner 和 Architecture Hold。 | Resolved Execution View 进入节点审查后的独立共享接口 Task。 | deferred |
 | M8R-STACK-001 | fact | M8-003 堆叠在未合并 M8-002 上，直接向 develop 开 PR 会混淆 diff。 | 先完成节点；M8-002 squash 后将 M8-003 rebase 到最新 develop，再创建独立 PR。 | controlled |
+| M8R-GOV2-001 | fact | 当前 stacked branch 从 PARKED 直接显示 IN_PROGRESS；若把它原样作为 Governance v2 merge snapshot，会违反 dependency/state machine。 | 分支内允许连续实现；合并边界前先让 M8-002 DONE、M8-003 READY，再 rebase 并采用合法 transition。 | controlled |
+| M8R-RISK-001 | fact | Method Resolution 决定机制、Claim/Gate 控制条件，不能只按普通 Schema 视为 R1。 | Governance v2 将该 Schema/path 归为 R2；要求 authority basis、adversarial evidence、workstream/Risk Ledger 与 cross-owner review。 | controlled |
