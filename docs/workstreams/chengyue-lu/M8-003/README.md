@@ -52,6 +52,7 @@ workstream 与相应 implementation/module/status/TASKS 文档。公共契约新
 
 - [风险台账](RISK_LEDGER.md)；
 - [验证证据](VALIDATION.md)；
+- [节点交接](HANDOFF.md)；
 - [实现合同](../../../implementation/METHOD_RESOLUTION_CONTRACT.md)。
 
 停止条件：八个 Resolution 无损覆盖既有边界结果，正反 Schema/relationship tests 和完整仓库验证通过，

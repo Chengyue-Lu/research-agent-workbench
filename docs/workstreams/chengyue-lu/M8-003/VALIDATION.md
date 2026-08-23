@@ -1,6 +1,6 @@
 # M8-003 验证证据
 
-状态：stacked branch 本地证据；远端分支与节点 handoff 尚未收束。
+状态：stacked branch 实现、验证、远端同步与节点 handoff 已收束；等待节点级审查，未合并。
 
 当前已验证：
 
@@ -17,4 +17,5 @@
 已覆盖 duplicate identity/decision/obligation/alternative、Action hash drift、Need/Gate/block closure drift、
 implicit Assignment/provider field 与 formal/planning selector 混用负面测试。
 
-节点收束前还需：最终 diff/link 检查、远端分支 ancestry 验证，以及不触发正式 review 的 compact handoff。
+分支 ancestry、远端同步与 Draft PR 状态已在节点收束时复核。审查范围和后续合并顺序见
+[M8-002 → M8-003 节点交接](HANDOFF.md)。
