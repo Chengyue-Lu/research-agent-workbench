@@ -61,7 +61,9 @@
       "kind": "research-mode",
       "patterns": [
         "registry/modes/*.yaml",
-        "registry/modes/*.yml"
+        "registry/modes/*.yml",
+        "registry/modes/v*/*.yaml",
+        "registry/modes/v*/*.yml"
       ],
       "identity_fields": ["mode_id", "version"]
     },

@@ -608,6 +608,14 @@ class PolicyAndCodeownersTests(unittest.TestCase):
             declarations,
         )
 
+    def test_versioned_research_mode_directory_is_protected(self) -> None:
+        self.assertEqual(
+            ("research-mode", ("mode_id", "version")),
+            governance._published_identity_spec(
+                "registry/modes/v0.2.0/simulation.yaml"
+            ),
+        )
+
     def test_codeowners_has_no_global_wildcard_and_keeps_sensitive_paths(self) -> None:
         lines = [
             line.strip()
@@ -742,6 +750,14 @@ class PublishedDocumentIdentityTests(unittest.TestCase):
             "registry/modes/simulation.yaml",
             content,
             "archive/simulation.yaml",
+        )
+
+    def test_versioned_research_mode_move_outside_registry_fails(self) -> None:
+        content = "mode_id: simulation\nversion: 0.2.0\nsummary: original\n"
+        self.assert_move_out_fails(
+            "registry/modes/v0.2.0/simulation.yaml",
+            content,
+            "archive/v0.2.0/simulation.yaml",
         )
 
     def test_authority_matrix_move_outside_registry_fails(self) -> None:
