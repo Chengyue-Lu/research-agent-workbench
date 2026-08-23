@@ -55,6 +55,8 @@ Host Adapter”。它不支持在 Core 中增加全局 Supervisor、第二套科
 - [ADOPTION_MATRIX.md](ADOPTION_MATRIX.md)：`COVERED / ADAPT / DEFER / REJECT`；
 - [CONFORMANCE_PLAN.md](CONFORMANCE_PLAN.md)：未来 Host 机制对照与验证 Gate；
 - [SYNTHESIS.md](SYNTHESIS.md)：面向 RWB 的综合结论与 PR #20 差异；
+- [CANDIDATE_RESEARCH_DIRECTIONS_GLM.md](CANDIDATE_RESEARCH_DIRECTIONS_GLM.md)：GLM 联合调研的
+  三议题候选研究方向（peer 通信治理、证据级检索、通信机制分类学与 RWB 映射）；
 - [validation/](validation/README.md)：只读探针、Attempt 索引和脱敏 fixture；
 - [history/](history/README.md)：本工作流过程记录与未来 closeout。
 

@@ -10,6 +10,8 @@ owner：黄毅（GitHub 主名 `let778750-cpu`；昵称/界面名 `huangyi855`�
 
 - [`execution-runtime-recovery-audit/`](execution-runtime-recovery-audit/README.md)：
   Execution/Runtime 可恢复审计、PR #23 hard-block 证据及治理 rollout。
+- [`open-source-agent-harness-research/`](open-source-agent-harness-research/README.md)：
+  开源 Agent Harness 调研、Codex 只读协议验证与候选研究方向（`RESEARCH-HARNESS-001`）。
 
 ## 文件生命周期
 
