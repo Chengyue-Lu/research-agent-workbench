@@ -1,0 +1,103 @@
+{
+  "schema": "rwb.codex-app-server-schema-summary.v1",
+  "runtime": {
+    "version": "codex-cli 0.149.0-alpha.4.1",
+    "sha256": "73d6d4a082a7cad601a446a45b1b3fa9b77aff9d3996052b74d9003d7947d515"
+  },
+  "stable_method_count": 181,
+  "experimental_method_count": 237,
+  "experimental_only_methods": [
+    "account/bedrock/discover",
+    "account/bedrock/setup",
+    "collaborationMode/list",
+    "currentTime/read",
+    "environment/add",
+    "environment/info",
+    "environment/status",
+    "fuzzyFileSearch/sessionStart",
+    "fuzzyFileSearch/sessionStop",
+    "fuzzyFileSearch/sessionUpdate",
+    "memory/reset",
+    "mock/experimentalMethod",
+    "plugin/search",
+    "process/kill",
+    "process/resizePty",
+    "process/spawn",
+    "process/writeStdin",
+    "project/create",
+    "project/delete",
+    "project/import",
+    "project/list",
+    "project/move",
+    "project/read",
+    "project/update",
+    "remoteControl/client/list",
+    "remoteControl/client/revoke",
+    "remoteControl/disable",
+    "remoteControl/enable",
+    "remoteControl/pairing/start",
+    "remoteControl/pairing/status",
+    "remoteControl/status/read",
+    "server/diagnostics",
+    "thread/backgroundTerminals/clean",
+    "thread/backgroundTerminals/list",
+    "thread/backgroundTerminals/terminate",
+    "thread/decrement_elicitation",
+    "thread/increment_elicitation",
+    "thread/items/list",
+    "thread/memoryMode/set",
+    "thread/queue/add",
+    "thread/queue/delete",
+    "thread/queue/list",
+    "thread/queue/reorder",
+    "thread/queue/start",
+    "thread/queue/update",
+    "thread/realtime/appendAudio",
+    "thread/realtime/appendSpeech",
+    "thread/realtime/appendText",
+    "thread/realtime/listVoices",
+    "thread/realtime/start",
+    "thread/realtime/stop",
+    "thread/revert",
+    "thread/search",
+    "thread/searchOccurrences",
+    "thread/settings/update",
+    "thread/turns/list"
+  ],
+  "bundles": [
+    {
+      "name": "stable",
+      "file_count": 291,
+      "total_bytes": 3023451,
+      "manifest_sha256": "e5df81fad467611699c63230dbcc98a48cb5c7283f4f9fc110b07f67cc3331d5"
+    },
+    {
+      "name": "experimental",
+      "file_count": 401,
+      "total_bytes": 3778968,
+      "manifest_sha256": "8ee3c0f2335ae824dabdd6cd1991b633112d6ceec2a9fae41c4b3ef2eb3fd81c"
+    }
+  ],
+  "key_files": [
+    {
+      "path": "stable/ClientRequest.json",
+      "sha256": "1024db9d23b156e04b020a5d101982841dab158b84ecc9ecec399ab119ac9a1f",
+      "bytes": 186599
+    },
+    {
+      "path": "stable/codex_app_server_protocol.schemas.json",
+      "sha256": "02a4c63a638fdae4a5f6c3ad32a41a377b642c66f3abc84f6fc47c7f3d6074df",
+      "bytes": 628432
+    },
+    {
+      "path": "experimental/ClientRequest.json",
+      "sha256": "51cb1b3c21b123ce591b54ffbdf2d9032b6dfee7f8d5595579ba584f5285b274",
+      "bytes": 265405
+    },
+    {
+      "path": "experimental/codex_app_server_protocol.schemas.json",
+      "sha256": "4f4a8d8f53f971b97f818639f58c8d26bb68bfcdfa2d2f20572cb97e6761ab91",
+      "bytes": 762136
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "schema": "rwb.codex-app-server-readonly-probe.v1",
+  "safety": {
+    "model_requests_sent": 0,
+    "thread_methods_sent": 0,
+    "turn_methods_sent": 0,
+    "tool_methods_sent": 0,
+    "proxy_fail_closed_guard": "127.0.0.1:9",
+    "os_network_block_proven": false,
+    "external_write_absence_proven": false
+  },
+  "preinitialize": {
+    "scenario": "protocol-preinit",
+    "error_received": true,
+    "error_message": "Not initialized",
+    "observed_tcp_connection_count": 4,
+    "observed_tcp_states": [
+      "Bound",
+      "SynSent"
+    ],
+    "observed_loopback_proxy_count": 2,
+    "observed_non_loopback_remote_count": 0,
+    "exit_code": 0
+  },
+  "handshake": {
+    "scenario": "protocol-handshake",
+    "initialized": true,
+    "codex_home_matches_isolated_root": true,
+    "result_keys": [
+      "codexHome",
+      "platformFamily",
+      "platformOs",
+      "userAgent"
+    ],
+    "platform_family": "windows",
+    "platform_os": "windows",
+    "duplicate_initialize_rejected": true,
+    "duplicate_initialize_error_code": -32600,
+    "duplicate_initialize_error": "Already initialized",
+    "unknown_method_rejected": true,
+    "unknown_method_error_code": -32600,
+    "unknown_method_error_class": "unknown-variant",
+    "observed_tcp_connection_count": 4,
+    "observed_tcp_states": [
+      "Bound",
+      "SynSent"
+    ],
+    "observed_loopback_proxy_count": 2,
+    "observed_non_loopback_remote_count": 0,
+    "exit_code": 0
+  },
+  "experimental_gate": {
+    "scenario": "protocol-experimental-gate",
+    "initialized": true,
+    "codex_home_matches_isolated_root": true,
+    "experimental_api": false,
+    "gated_method": "server/diagnostics",
+    "gate_error_code": -32600,
+    "gate_error": "server/diagnostics requires experimentalApi capability",
+    "observed_tcp_connection_count": 4,
+    "observed_tcp_states": [
+      "Bound",
+      "SynSent"
+    ],
+    "observed_loopback_proxy_count": 2,
+    "observed_non_loopback_remote_count": 0,
+    "exit_code": 0
+  }
+}

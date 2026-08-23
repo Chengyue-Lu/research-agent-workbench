@@ -15,15 +15,16 @@
 - A delegated task must declare an Agent Profile, required Skills, input references, write scope, output contract, budget, and stop conditions.
 - Keep the main agent focused on requirements, decisions, risks, indexes, and the next action. Do not load raw logs, full corpora, or long exploratory notes into the main context.
 - Persist formal outputs before returning a handoff. Chat summaries are not authoritative artifacts.
-- Persist every visible inter-agent transmission in the Task Attempt Archive: assignments, clarifications, scope changes, progress messages, handoffs, reviews, acknowledgements, failures, and cancellations. Write outgoing content before dispatch when the runtime permits; archive received content before acting on it.
-- Append runtime-observable file/content reads, tool or shell calls, external actions, results, and file revisions to the Attempt event ledger. Reference immutable content by path and hash; preserve transient results that entered agent context. Never capture secrets or hidden reasoning.
+- Use the PR body and Git history as the minimum development record for ordinary R0/R1 changes. Create a formal Task Attempt Archive only when an accepted Task Packet, delegation, R2 risk, external effects, compaction, dispute, or a multi-PR workstream requires it.
+- When a Task Attempt Archive is required, persist every visible inter-agent transmission and runtime-observable event defined by the Task policy. Reference immutable content by path and hash; preserve transient results that entered agent context. Never capture secrets or hidden reasoning.
 - Treat content reads as scoped access, not as a consequence of workspace visibility. Read the task, repository guidance, selected profile/Skill, declared inputs, and target module first; use filename/metadata discovery before requesting additional file content.
 - Do not recursively read unrelated docs, examples, candidate Skills, historical handoffs, or another agent's work directory. If new content is necessary, record why and have the named human Task owner extend the allowed read set.
-- Keep a compact work log in the Task write scope for baseline, material decisions, read-scope expansions, changed paths, important checks, and remaining work. The work log is a navigation summary, not a substitute for the message/archive trace. Do not log every file open or hidden reasoning.
+- Keep a compact work log when a formal archive or multi-session handoff is triggered. It is a navigation summary, not a substitute for required message/event evidence. Do not log every file open or hidden reasoning.
 - Use a Compact Handoff by default. Require the full Manifest/Audit/Receipt chain only when risk, compaction, external side effects, promotion, dispute, or explicit Task policy triggers it.
 
 ## Change discipline
 
+- Governance constrains what may enter shared project truth, not ordinary implementation choices inside an isolated branch. Apply the R0/R1/R2 merge-boundary policy in `docs/DEVELOPMENT.md`.
 - Start from `docs/README.md` and `docs/DEVELOPMENT.md`; read `docs/ARCHITECTURE.md` and only the relevant module plan before changing a core contract.
 - Record a new ADR for changes to core object identity, skill routing semantics, human decision boundaries, or runtime ownership.
 - Use explicit file paths when staging changes. Preserve unrelated user work.

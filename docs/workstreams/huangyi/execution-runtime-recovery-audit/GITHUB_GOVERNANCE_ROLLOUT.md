@@ -1,5 +1,8 @@
 # GitHub 治理 rollout
 
+> Workflow policy superseded by proposed [ADR-0018 Governance v2](../../../decisions/0018-RISK-BASED-DEVELOPMENT-GOVERNANCE.md).
+> 本文继续保存 PR #25 当时的实施与远端快照，不作为当前流程模板，也不改写历史事实。
+
 状态：`PARTIAL — PR #23 hard-block complete; rulesets / merge settings / retarget pending`。
 远端状态以 2026-08-23 核对为准；完成每项后记录链接或规则 revision，不能把仓库内配置文件
 误写成 GitHub 已启用的保护。
