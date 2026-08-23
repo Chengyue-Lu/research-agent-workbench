@@ -12,7 +12,7 @@
 | 最小脱敏结果 | canonical Attempt 的 `sanitized/` | tracked |
 | 复用 fixture | `fixtures/codex/` | tracked |
 | 综合报告 | `reports/` | tracked |
-| 覆盖率、wheel、源码构建快照 | `attempts/A-20260823-REPO-CHECKS/raw/` | ignored |
+| 覆盖率、wheel、源码构建快照 | `attempts/A-20260823-REPO-CHECKS*/raw/` | ignored |
 
 raw 目录中的 `.gitignore` 固定为：
 
@@ -77,6 +77,8 @@ python docs/workstreams/huangyi/open-source-agent-harness-research/validation/ve
 Attempt 状态见 [INDEX.md](INDEX.md)，最终结论见
 [CODEX_READ_ONLY_SPIKE.md](reports/CODEX_READ_ONLY_SPIKE.md)。
 
-RWB 仓库回归、覆盖率、wheel 和 clean-install 记录见
-[`A-20260823-REPO-CHECKS`](attempts/A-20260823-REPO-CHECKS/RESULTS.md)。该 Attempt
-与 Codex App Server 协议验证分离，也不能代替目标 PR 的 Python 3.11/3.13 CI。
+初始 RWB 仓库回归见
+[`A-20260823-REPO-CHECKS`](attempts/A-20260823-REPO-CHECKS/RESULTS.md)；PR #25 合入并
+rebase 后的治理、覆盖率、wheel 和 clean-install 见
+[`A-20260823-REPO-CHECKS-02`](attempts/A-20260823-REPO-CHECKS-02/RESULTS.md)。两者都与
+Codex App Server 协议验证分离，也不能代替目标 PR 的 Python 3.11/3.13 和真实 PR event CI。

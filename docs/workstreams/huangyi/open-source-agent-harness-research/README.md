@@ -3,15 +3,16 @@
 - 状态：Working paper；不是 Stable Architecture、TASKS 或 Runtime 实施授权
 - 责任人：黄毅（GitHub 主名 `let778750-cpu`，昵称 `huangyi855`）
 - 必需审查人：路诚钺（GitHub `Chengyue-Lu`）
-- 研究基线：`develop@b1d5a5a5850e0e7541e4c460f15384cd45357ab2`
+- 代码证据基线：`main@b1d5a5a5850e0e7541e4c460f15384cd45357ab2`
+- 当前集成基线：`develop@5991cafdb7f536cd7b871508de9055d02b558728`
 - 证据截止：`2026-08-23T19:20:00+08:00`
 
 ## 1. 结论先行
 
-`main/develop@b1d5a5a` 已具备文件权威、方法感知研究控制、隔离 API
-基线和窄范围单 Attempt Trace，但仍是 internal alpha。规范已经接受 no-Skill 和
-direct-tool 路径，正式 CLI、Registry、Receipt 与 archive 链尚未形成诚实的 no-Skill
-闭环。
+`main@b1d5a5a` 已具备文件权威、方法感知研究控制、隔离 API 基线和窄范围单 Attempt
+Trace，但仍是 internal alpha。`develop@5991caf` 在此代码基线上增加 PR #25 的治理、
+审计和 CI 门禁，没有改变 Runtime 实际行为。规范已经接受 no-Skill 和 direct-tool 路径，
+正式 CLI、Registry、Receipt 与 archive 链尚未形成诚实的 no-Skill 闭环。
 
 本调研支持的目标形态是“可移植研究控制与证据内核 + 最小 API 参考执行 + 可替换
 Host Adapter”。它不支持在 Core 中增加全局 Supervisor、第二套科研状态数据库或固定
@@ -69,10 +70,10 @@ Host Adapter”。它不支持在 Core 中增加全局 Supervisor、第二套科
 
 ## 6. 分支与发布门禁
 
-工作分支为 `codex/open-source-agent-harness-research`，起点是上述 develop 基线。PR #25
-尚未进入 develop 时，本分支可以完成本地研究，但不得绕过 PR #25 的跨 owner 审查。
-发布前必须重新获取 develop、rebase、运行完整检查，并以 `RESEARCH-HARNESS-001` 向
-develop 提交独立 PR。
+工作分支为 `codex/open-source-agent-harness-research`。它最初从 `develop@b1d5a5a` 创建，
+在 PR #25 以 `5991caf` 合入后已 rebase 到该最新 develop。目标 PR 的基线必须填写完整
+`5991caf...`，并以 `RESEARCH-HARNESS-001` 向 develop 提交；后续 develop 若再次移动，
+仍须重新获取、rebase 和验证。
 
 合并 develop 后，本材料随完整 workstream 经 `develop → main` 发布。公共
 `docs/history/` 最多增加索引；验证材料的唯一规范位置仍是本目录。

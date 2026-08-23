@@ -2,7 +2,8 @@
 
 ```yaml
 retrieved_at: "2026-08-23T18:05:24+08:00"
-rwb_baseline: "b1d5a5a5850e0e7541e4c460f15384cd45357ab2"
+rwb_main_evidence_baseline: "b1d5a5a5850e0e7541e4c460f15384cd45357ab2"
+rwb_develop_integration_baseline: "5991cafdb7f536cd7b871508de9055d02b558728"
 head_semantics: "retrieval snapshot only; claim evidence remains pinned to evidence_commit"
 verification_scope: "canonical repository, default-branch HEAD and path-scoped license"
 ```
@@ -14,7 +15,8 @@ verification_scope: "canonical repository, default-branch HEAD and path-scoped l
 
 | Source ID | Scope | Revision | Authority | 用途与限制 |
 |---|---|---|---|---|
-| `RWB-MAIN-001` | main + develop | `b1d5a5a5850e0e7541e4c460f15384cd45357ab2` | accepted docs、planning、implementation 各按自身表面解释 | 本工作流的规范和实际行为基线 |
+| `RWB-MAIN-001` | main | `b1d5a5a5850e0e7541e4c460f15384cd45357ab2` | accepted docs、planning、implementation 各按自身表面解释 | Runtime 和研究控制实际行为证据基线 |
+| `RWB-DEVELOP-001` | develop | `5991cafdb7f536cd7b871508de9055d02b558728` | PR #25 已集成的治理候选线 | 当前目标 PR 基线；新增治理/审计/CI，不代表 Runtime 行为变化 |
 | `RWB-PR20-001` | candidate only | head `a908bc2cf32eac0bff48a0e9b06d76743e1708bd`；matrix `734a4e77283c6b3fc3a91b02f89975c87dc4959e`；reconstruction `af71534` | PR 候选证据 | 不能证明 main 已具备 request reconstruction |
 | `RWB-M8-002-CANDIDATE` | candidate only | `d3f3407` | 未合并实现候选 | 仅正式化 Mode Action；不含 Method Resolution、Skill/Tool binding 或 Runtime |
 | `RWB-HUANGYI-DRAFT-001` | private working paper | SHA-256 `4C33CF931AE660EB42627D450794A905674C92B653A7E7ED8767288F5101FB79` | human-attested working paper | 只提炼主张；原文不提交，不能改变项目状态 |

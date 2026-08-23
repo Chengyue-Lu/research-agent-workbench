@@ -8,6 +8,7 @@
 | [`A-20260823-CODEX-READONLY-04`](attempts/A-20260823-CODEX-READONLY-04/ATTEMPT_MANIFEST.md) | `VALID_SUPERSEDED` | 完整协议验证 | 否 | 结果有效，但 sanitized unknown-method 字段过宽；由 Attempt 05 最小化替代 |
 | [`A-20260823-CODEX-READONLY-05`](attempts/A-20260823-CODEX-READONLY-05/ATTEMPT_MANIFEST.md) | `PASS_WITH_CAPTURE_GAPS` | 完整计划范围 | 是 | 181 stable、237 experimental、56 experimental-only；最小 fixture |
 | [`A-20260823-REPO-CHECKS`](attempts/A-20260823-REPO-CHECKS/ATTEMPT_MANIFEST.md) | `PASS_LOCAL_WITH_MATRIX_PENDING` | 仓库回归、wheel、clean install | 否 | Python 3.12 本地通过；3.11/3.13 等待目标 PR CI |
+| [`A-20260823-REPO-CHECKS-02`](attempts/A-20260823-REPO-CHECKS-02/ATTEMPT_MANIFEST.md) | `PASS_LOCAL_WITH_MATRIX_PENDING` | PR #25 后的治理、264 tests、wheel | 否 | 基于 `develop@5991caf`；3.11/3.13 与 PR event 等待 CI |
 
 Attempt 03/04 的自动 sanitized 文件被各自 `.gitignore` 保留在本地但不提交；其历史结论由
 `RESULTS.md` 记录。Attempt 05 是唯一可用于本工作流正式结论和公共 fixture 的运行。

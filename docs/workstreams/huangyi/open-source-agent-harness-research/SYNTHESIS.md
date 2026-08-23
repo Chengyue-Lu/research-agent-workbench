@@ -3,8 +3,10 @@
 ## 1. 当前项目的真实位置
 
 RWB 的优势不是再实现一个通用 coding agent，而是把 Task、Method、Evidence、Claim、
-Human Gate、Trace 和文件恢复放在平台之上。`main/develop@b1d5a5a` 的 API traced path 已有
-扎实基础，但项目仍是 internal alpha：没有普通用户 E2E，也没有可执行 Agent Team。
+Human Gate、Trace 和文件恢复放在平台之上。`main@b1d5a5a` 的 API traced path 已有扎实
+基础，但项目仍是 internal alpha：没有普通用户 E2E，也没有可执行 Agent Team。
+`develop@5991caf` 已增加 PR #25 的治理基线；它改善合入纪律，不把候选功能变成 main
+事实，也不改变以下 Runtime 缺口判断。
 
 当前最具体的结构性断点是：规范已接受 no-Skill/direct-tool，正式执行与归档仍耦合 legacy
 Skill Assignment。该缺口不能用 dummy Skill 绕过，也不能借增加 Team 调度掩盖。它应在

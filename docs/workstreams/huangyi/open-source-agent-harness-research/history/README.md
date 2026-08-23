@@ -5,6 +5,7 @@
 ## 基线与责任
 
 - 起始基线：`develop@b1d5a5a5850e0e7541e4c460f15384cd45357ab2`
+- 当前集成基线：`develop@5991cafdb7f536cd7b871508de9055d02b558728`
 - 工作分支：`codex/open-source-agent-harness-research`
 - Owner：黄毅（`let778750-cpu` / `huangyi855`）
 - Reviewer：路诚钺（`Chengyue-Lu`）
@@ -24,6 +25,12 @@
 - 将 ignored 临时 Home 无损压缩，避免上游 bundled Markdown 干扰本项目文档测试；
 - 新建独立 `A-20260823-REPO-CHECKS`，本地完成 237 项无跳过测试、83.2174% 总覆盖率、
   92.9577% Trace 覆盖率、wheel 构建、clean install、24 个 Schema 和 59 个对象验证；
+- PR #25 以 `5991caf` 合入 develop 后，重新获取远端并将研究分支成功 rebase 到该提交；
+- 保留旧 Attempt 的 `b1d5a5a` 运行事实，另建 `A-20260823-REPO-CHECKS-02` 验证
+  `5991caf` 新增的治理与文档测试，不把新结果伪装成旧运行；
+- `REPO-CHECKS-02` 在 Python 3.12.13 下完成 264 项无跳过测试、24 项治理单测、
+  83.2174% 总覆盖率、92.9577% Trace 覆盖率、wheel 与 clean install；
+- 修正 canonical tracked JSON 的 CRLF 工作副本哈希，使其绑定 Git 中 LF 规范字节；
 - 没有修改 TASKS、STATUS、ROADMAP、ADR、Schema、Registry 或 Runtime。
 
 ## 关键决定
@@ -32,12 +39,11 @@
 - raw 物理保存在本 workstream，Git 只跟踪最小脱敏证据；
 - Host/Team/Capability Snapshot v2只保留为 post-M8-003 提案；
 - PR #20 只吸收经核验差异，不吸收整个研究包；
-- PR #25 未经对方 owner 审查前，不绕过其 develop 治理门禁。
+- PR #25 已进入 develop；本工作流继续服从其 PR 模板、跨 owner 审查和 CI 门禁。
 
 ## 待 closeout
 
-- rebase 到 PR #25 合并后的最新 develop；
-- 在 PR #25 合并并 rebase 后，由目标 PR CI 运行 Python 3.11/3.13 与治理检查；
+- 由目标 PR CI 运行 Python 3.11/3.13 与真实 PR event 治理检查；
 - 完成跨 owner review；
 - squash merge 到 develop，并随完整 workstream 发布到 main；
 - 发布后记录 merge SHA、最终验证与 PR #20 delta 状态。
