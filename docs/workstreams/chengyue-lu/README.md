@@ -1,7 +1,6 @@
 # 路诚钺维护工作流
 
 责任人：路诚钺（GitHub `Chengyue-Lu`）。工作流目录只描述技术范围，不能替代具名责任。
-历史 `docs/workstreams/chengyue-lu-mode-skill/` 保持原路径，不迁移到本目录。
 
 当前工作流：
 
