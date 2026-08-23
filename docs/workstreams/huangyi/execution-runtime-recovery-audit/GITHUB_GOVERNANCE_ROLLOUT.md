@@ -37,7 +37,8 @@
 - `.github/CODEOWNERS`：两位 accountable owner 共同覆盖；
 - `.github/pull_request_template.md`：强制 Task、workstream、base、契约、风险和验证字段；
 - `.github/scripts/check_pr_governance.py`：验证 `feature → develop → main` 拓扑、最新 base、
-  workstream 存在、跨 owner、TASKS 不被 feature 重定义/置 DONE，以及独立 task-definition/closeout；
+  workstream 存在、目录 owner 与责任人一致、跨 owner、TASKS 不被 feature 重定义/置 DONE，
+  task-definition 的实际变更 Task ID 与 PR 声明精确一致，以及独立 task-definition/closeout；
 - CI `governance`、Python 3.11/3.13、Schema/Registry、coverage、wheel 与 clean-install checks。
 
 这些文件先经 `develop`/`main` 正常发布；随后才能把新 `governance` check 设为 required，避免

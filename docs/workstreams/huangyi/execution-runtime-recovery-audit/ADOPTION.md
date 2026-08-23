@@ -3,7 +3,7 @@
 状态：提案。这里记录审计内容如何进入或不进入项目，不是实时任务状态，也不授权修改 Stable
 Architecture、Schema 或 [`TASKS.md`](../../../TASKS.md)。
 
-## SATISFIED：既有正式防线
+## ACCEPTED：架构权威已接受，不等于实现已验证
 
 - Runtime 结束不等于 Task contract 满足，Task 满足也不等于 Research acceptance；
 - Main State 不是第二数据库，Handoff 不是 Evidence/Claim 的自动接受通道；
@@ -11,7 +11,10 @@ Architecture、Schema 或 [`TASKS.md`](../../../TASKS.md)。
 - 不允许自动 Provider fallback；audit replay 不等于模型逐比特重放；
 - ADR-0010 的 API-first isolated baseline 已完成，外部调查不重开 Gate F。
 
-这些内容保留为回归不变量；除非代码或测试与其冲突，不为同一语义重复建立 ADR。
+这些内容保留为架构回归不变量；除非代码或测试与其冲突，不为同一语义重复建立 ADR。
+但 `accepted` 只回答“规范要求什么”，不回答“每条 Runtime 路径是否已强制”。实现保证必须引用
+固定 commit 上的 preventive/detective test；缺少证据时标记 `partial` 或 `missing`，不得沿用
+“既有正式防线”措辞暗示已经端到端生效。
 
 ## ADOPT：直接进入后续设计输入
 
@@ -25,8 +28,9 @@ Architecture、Schema 或 [`TASKS.md`](../../../TASKS.md)。
 
 - M8-003 后定义 `Resolved Execution View`，它由 Task、Method Resolution、Resolved Capability
   Snapshot 与执行限制派生，Runtime 不能反向改 Method；
-- Skill binding 改为条件引用：Skill 路径引用真实 Assignment；no-Skill/tool-only 路径不生成
-  虚假空 Assignment；旧 v0.1.0 工件只读兼容；
+- Skill binding 改为条件引用：三条路径都必须生成 Resolved Execution View；Skill 路径引用真实
+  Assignment，no-Skill/tool-only 路径冻结 Capability Snapshot 与执行限制，但不生成或引用虚假空
+  Assignment；旧 v0.1.0 工件只读兼容；
 - Architecture Hold 只暂停 Runtime/Router/fallback/multi-agent/复杂恢复扩张和 Execution 重接入，
   不暂停 M8、安全修复、测试、Trace、hash/ref、archive 与 file-only verification；
 - Receipt 分开记录 requested/observed model、实际工具与副作用、Trace 完整度；普通执行漂移

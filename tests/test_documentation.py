@@ -97,6 +97,33 @@ class DocumentationTests(unittest.TestCase):
         self.assertIsNone(re.search(r"\b[A-Za-z]:[\\/]", combined))
         self.assertFalse((audit / "RWB_4-5部分恢复开发风险审计.md").exists())
 
+    def test_recovery_gate_separates_authority_from_implementation_evidence(self) -> None:
+        proposal = (
+            ROOT
+            / "docs"
+            / "workstreams"
+            / "huangyi"
+            / "execution-runtime-recovery-audit"
+            / "RECOVERY_GATE_PROPOSAL.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("架构权威", proposal)
+        self.assertIn("固定基线实现证明", proposal)
+        self.assertIn("accepted", proposal)
+        self.assertIn("missing", proposal)
+        self.assertIn("不能写成 runtime-enforced guarantee", proposal)
+
+    def test_no_skill_path_requires_execution_view_without_assignment(self) -> None:
+        proposal = (
+            ROOT
+            / "docs"
+            / "workstreams"
+            / "huangyi"
+            / "execution-runtime-recovery-audit"
+            / "RECOVERY_GATE_PROPOSAL.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("三者都必须有 Resolved Execution View", proposal)
+        self.assertIn("前两者不得引用或生成 Skill Assignment", proposal)
+
     def test_adr_numbers_are_unique(self) -> None:
         numbers: list[str] = []
         for path in (ROOT / "docs" / "decisions").glob("[0-9][0-9][0-9][0-9]-*.md"):

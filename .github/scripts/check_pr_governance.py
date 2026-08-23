@@ -14,6 +14,10 @@ from typing import Iterable, Mapping, Sequence
 
 ROOT = Path(__file__).resolve().parents[2]
 OWNER_HANDLES = ("Chengyue-Lu", "let778750-cpu")
+WORKSTREAM_OWNER_HANDLES = {
+    "chengyue-lu": "Chengyue-Lu",
+    "huangyi": "let778750-cpu",
+}
 ALLOWED_BASES = {"develop", "main"}
 VALID_STATUSES = {"DONE", "IN_PROGRESS", "READY", "BLOCKED", "PARKED"}
 PR_CLASSES = {"feature", "task-definition", "task-closeout", "release"}
@@ -149,6 +153,15 @@ def validate_body(body: str, expected_base_sha: str) -> dict[str, str]:
         raise GovernanceError(
             "Workstream must be docs/workstreams/<owner>/<task-id-or-slug>/"
         )
+    owner_slug = workstream.parts[2]
+    expected_owner = WORKSTREAM_OWNER_HANDLES.get(owner_slug)
+    if expected_owner is None:
+        raise GovernanceError(f"unknown workstream owner path: {owner_slug!r}")
+    if owner != expected_owner:
+        raise GovernanceError(
+            f"Workstream owner path {owner_slug!r} requires accountable owner "
+            f"@{expected_owner}, not @{owner}"
+        )
     metadata["Workstream"] = workstream.as_posix()
     metadata["Accountable owner"] = owner
     metadata["Cross-owner reviewer"] = reviewer
@@ -280,6 +293,21 @@ def validate_task_changes(
             before = base_rows.get(task_id)
             if after.status == "DONE" and (before is None or before.status != "DONE"):
                 raise GovernanceError(f"task-definition PR cannot set DONE: {task_id}")
+        changed_definitions = {
+            task_id
+            for task_id, after in head_rows.items()
+            if (before := base_rows.get(task_id)) is None
+            or before.status != after.status
+            or before.remainder != after.remainder
+        }
+        if not changed_definitions:
+            raise GovernanceError("task-definition PR must define or revise at least one Task ID")
+        if changed_definitions != declared_task_ids:
+            raise GovernanceError(
+                "declared Task ID(s) must equal task-definition changes: "
+                f"declared={sorted(declared_task_ids)}, "
+                f"changed={sorted(changed_definitions)}"
+            )
         return
 
     missing = set(base_rows) - set(head_rows)

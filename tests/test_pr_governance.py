@@ -109,6 +109,18 @@ class PullRequestBodyTests(unittest.TestCase):
         with self.assertRaisesRegex(governance.GovernanceError, "cross-owner"):
             governance.validate_body(body, BASE_SHA)
 
+    def test_workstream_owner_path_must_match_accountable_owner(self) -> None:
+        body = valid_body().replace(
+            "docs/workstreams/huangyi/", "docs/workstreams/chengyue-lu/"
+        )
+        with self.assertRaisesRegex(governance.GovernanceError, "requires accountable owner"):
+            governance.validate_body(body, BASE_SHA)
+
+    def test_unknown_workstream_owner_path_fails(self) -> None:
+        body = valid_body().replace("docs/workstreams/huangyi/", "docs/workstreams/shared/")
+        with self.assertRaisesRegex(governance.GovernanceError, "unknown workstream owner"):
+            governance.validate_body(body, BASE_SHA)
+
 
 class TopologyTests(unittest.TestCase):
     def test_develop_to_main_release_passes(self) -> None:
@@ -231,7 +243,37 @@ class TasksAuthorityTests(unittest.TestCase):
             inserted,
             pr_class="task-definition",
             labels={"governance/task-definition"},
+            declared={"M0-999"},
         )
+
+    def test_task_definition_must_declare_changed_task(self) -> None:
+        changed = BASE_TASKS.replace("Action contract", "Revised action contract")
+        with self.assertRaisesRegex(governance.GovernanceError, "must equal task-definition"):
+            self.validate(
+                changed,
+                pr_class="task-definition",
+                labels={"governance/task-definition"},
+                declared={"M8-003"},
+            )
+
+    def test_task_definition_cannot_overdeclare_unchanged_task(self) -> None:
+        changed = BASE_TASKS.replace("Action contract", "Revised action contract")
+        with self.assertRaisesRegex(governance.GovernanceError, "must equal task-definition"):
+            self.validate(
+                changed,
+                pr_class="task-definition",
+                labels={"governance/task-definition"},
+                declared={"M8-002", "M8-003"},
+            )
+
+    def test_task_definition_requires_an_actual_definition_change(self) -> None:
+        with self.assertRaisesRegex(governance.GovernanceError, "at least one Task ID"):
+            self.validate(
+                BASE_TASKS,
+                pr_class="task-definition",
+                labels={"governance/task-definition"},
+                declared={"M8-002"},
+            )
 
     def test_duplicate_task_id_fails(self) -> None:
         duplicate = BASE_TASKS + "| M8-002 | READY | Duplicate | Nope |\n"

@@ -14,20 +14,24 @@ Resolution 之前。
 
 ## 2. 候选不变量 I1–I12
 
-| ID | 不变量 | 最低证明方式 |
-|---|---|---|
-| I1 | Runtime 只能消费已解析 Method，不能覆盖或补写 Method。 | schema validation + negative integration test |
-| I2 | frozen binding 缺失或失配必须停止，不能静默重选 Skill/Tool/Model。 | hash/ref mismatch test |
-| I3 | 未声明的 Skill、Tool、Agent 或 side effect 不得执行。 | preventive policy test + Trace absence |
-| I4 | 每次远程数据出口都要核对 source、classification、destination、authorization、transformation/redaction、retention；策略缺失默认 BLOCK。 | two-call Tool Result adversarial fixture |
-| I5 | Capability/Execution View 必须版本化、可 hash、可追溯到输入，不依赖隐藏平台状态。 | schema + canonical digest test |
-| I6 | Session termination、Attempt/Receipt lifecycle、Task contract satisfaction、Research acceptance 四层分离。 | state-transition tests |
-| I7 | no-Skill、tool-only、Skill 是一等路径；前两者不得生成虚假 Assignment。 | three independent end-to-end fixtures |
-| I8 | Receipt 记录 requested/observed model、实际工具、side effects 与 Trace completeness，不用计划值冒充观察值。 | provider drift and side-effect tests |
-| I9 | 隐藏/远端 session 不能成为长期 authority；恢复依赖已提交 canonical artifacts。 | clean-checkout/file-only verification |
-| I10 | Runtime 不能批准 Claim、Method、权限放宽、Human Gate 或 Research acceptance。 | permission/state negative tests |
-| I11 | immutable input pin、resume-check、clean resume 与 salvage recovery 必须分别命名和测试。 | distinct CLI/schema/test assertions |
-| I12 | 每项保障标注 `preventive / detective / advisory / unknown`；没有测试或观测证据不得写成 enforceable。 | enforcement matrix review + CI |
+“架构权威”与“实现证明”是两个独立维度：`accepted` 表示已有 Stable Architecture/ADR 支持，
+`proposal` 表示仍需独立采纳；`verified / partial / missing` 只描述固定基线上的代码与测试证据。
+任何 accepted 项在实现证据不足时都不能写成 runtime-enforced guarantee。
+
+| ID | 候选不变量 | 架构权威 | 固定基线实现证明 | 达到 verified 的最低证明方式 |
+|---|---|---|---|---|
+| I1 | Runtime 只能消费已解析 Method，不能覆盖或补写 Method。 | accepted | missing | schema validation + negative integration test |
+| I2 | frozen binding 缺失或失配必须停止，不能静默重选 Skill/Tool/Model。 | accepted | partial | hash/ref mismatch test across every execution path |
+| I3 | 未声明的 Skill、Tool、Agent 或 side effect 不得执行。 | accepted | partial | preventive policy test + Trace absence |
+| I4 | 每次远程数据出口都要核对 source、classification、destination、authorization、transformation/redaction、retention；策略缺失默认 BLOCK。 | proposal | missing | two-call Tool Result adversarial fixture |
+| I5 | Capability/Execution View 必须版本化、可 hash、可追溯到输入，不依赖隐藏平台状态。 | accepted | missing | schema + canonical digest test |
+| I6 | Session termination、Attempt/Receipt lifecycle、Task contract satisfaction、Research acceptance 四层分离。 | accepted | partial | state-transition tests across the four layers |
+| I7 | no-Skill、tool-only、Skill 是一等路径；三者都必须有 Resolved Execution View，前两者不得引用或生成 Skill Assignment。 | accepted | missing | three independent end-to-end fixtures with conditional Assignment refs |
+| I8 | Receipt 记录 requested/observed model、实际工具、side effects 与 Trace completeness，不用计划值冒充观察值。 | proposal | missing | provider drift and side-effect tests |
+| I9 | 隐藏/远端 session 不能成为长期 authority；恢复依赖已提交 canonical artifacts。 | accepted | partial | clean-checkout/file-only verification for each Runtime path |
+| I10 | Runtime 不能批准 Claim、Method、权限放宽、Human Gate 或 Research acceptance。 | accepted | partial | permission/state negative tests at every promotion boundary |
+| I11 | immutable input pin、resume-check、clean resume 与 salvage recovery 必须分别命名和测试。 | accepted boundary | partial | distinct CLI/schema/test assertions |
+| I12 | 每项保障标注 `preventive / detective / advisory / unknown`；没有测试或观测证据不得写成 enforceable。 | proposal | partial in PR governance only | enforcement matrix review + CI |
 
 ## 3. 分阶段 Gate
 
@@ -70,7 +74,8 @@ Resolution 之前。
 1. 未授权本地 Tool Result 在第二次 Provider 调用前被阻断，且不进入 transcript/archive；
 2. 获批出口只保留脱敏必要内容，并记录 destination、authorization、transformation、retention；
 3. read-only 或 allowed-roots/write-scope 不覆盖 Attempt 输出目录时，创建文件前阻断；
-4. no-Skill、tool-only、Skill 三条端到端 fixture 独立通过，前两者无虚假 Assignment；
+4. no-Skill、tool-only、Skill 三条端到端 fixture 独立通过，均产出 Resolved Execution View；前两者
+   不创建、不引用 Skill Assignment，Capability Snapshot 与执行限制仍被冻结；
 5. Provider `COMPLETE` 但机器检查失败时，Handoff 不得 completed，Receipt 不得
    `contract-satisfied`；
 6. summary 不自动成为 fact，H2 semantic reversal 能被抽查或 Human Gate 捕获；
