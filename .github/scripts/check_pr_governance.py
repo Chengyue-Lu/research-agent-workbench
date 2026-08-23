@@ -47,6 +47,7 @@ FIELD_ALIASES = {
 SECTION_ALIASES = {
     "范围与非目标": "Scope and non-goals",
     "契约与权限影响": "Contract and authority impact",
+    "契约与权威影响": "Contract and authority impact",
     "TASKS 状态变更": "TASKS transition",
     "风险台账": "Risk ledger",
     "验证证据": "Verification evidence",

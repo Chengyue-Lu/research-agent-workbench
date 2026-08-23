@@ -30,7 +30,7 @@ def valid_body(pr_class: str = "feature") -> str:
 
 有边界的文档变更；不实现运行时功能。
 
-## 契约与权限影响
+## 契约与权威影响
 
 无——审计材料被明确标记为非规范性材料。
 
@@ -63,7 +63,7 @@ def legacy_english_body(pr_class: str = "feature") -> str:
         "跨负责人审查人": "Cross-owner reviewer",
         "基线 SHA": "Base SHA",
         "范围与非目标": "Scope and non-goals",
-        "契约与权限影响": "Contract and authority impact",
+        "契约与权威影响": "Contract and authority impact",
         "TASKS 状态变更": "TASKS transition",
         "风险台账": "Risk ledger",
         "验证证据": "Verification evidence",
