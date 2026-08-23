@@ -48,6 +48,26 @@ attribution / authority / supported claims / limitations / verification`。
 | `src/research_workbench/execution/runner.py` | `09ed434c4fda8f0d68bdbc85c14d3fac7128e524` |
 | `src/research_workbench/execution/closeout.py` | `8f712ddd49c1ddce1661e8da3bf2e56f8dcd59ad` |
 
+## `SRC-PR23-GOVERNANCE-20260823`
+
+- 类型：mutable GitHub PR governance metadata snapshot
+- logical locator：<https://github.com/Chengyue-Lu/research-agent-workbench/pull/23>
+- observed_at：`2026-08-23T07:51:44Z`
+- base/head：`main@b1d5a5a5850e0e7541e4c460f15384cd45357ab2` /
+  `agent/k-api-2-rework@57b3d24a8383ec3618dd29b4d5c52ee7ff9fcbef`
+- observed state：open、Draft；labels 为 `blocked` 与 `do-not-merge`
+- reviewer state：已向 `Chengyue-Lu` 发出 reviewer request；submitted reviews 为 `0`
+- hard-block comment：
+  <https://github.com/Chengyue-Lu/research-agent-workbench/pull/23#issuecomment-5384190781>
+- actor：PR author、comment author 与治理提交的 canonical GitHub login 均为 `let778750-cpu`
+- authority：只证明该观测时刻的远端治理状态；不替代 `SRC-PR23` 的 commit-pinned 代码证据
+- limitation：PR metadata 可变；每次依赖该状态采取动作前必须重新获取，不能从 reviewer request
+  推导出已完成 review 或 approval
+- identity attestation：黄毅于 2026-08-23 本人确认 `huangyi855` 是昵称/界面名，
+  `let778750-cpu` 是同一账户的主名。远端 API 只显示 canonical login `let778750-cpu`，因此别名映射
+  属于 human-attested fact，不能由 GitHub API 独立证明，也不能把 `huangyi855` 当成第二个可请求
+  review 或写入 CODEOWNERS 的 handle
+
 ## `SRC-MEETING-MINUTES`
 
 - 类型：private local meeting summary

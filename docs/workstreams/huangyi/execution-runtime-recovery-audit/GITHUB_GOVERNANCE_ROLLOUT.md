@@ -1,7 +1,8 @@
 # GitHub 治理 rollout
 
-状态：执行清单。远端状态以 2026-08-23 只读核对为准；完成每项后记录链接或规则 revision，
-不能把仓库内配置文件误写成 GitHub 已启用的保护。
+状态：`PARTIAL — PR #23 hard-block complete; rulesets / merge settings / retarget pending`。
+远端状态以 2026-08-23 核对为准；完成每项后记录链接或规则 revision，不能把仓库内配置文件
+误写成 GitHub 已启用的保护。
 
 ## 1. 初始核对结果（操作前快照）
 
@@ -18,12 +19,15 @@
   `main@b1d5a5a`、head `57b3d24`，并已转为 Draft；
 - PR #23 已添加 `blocked` 与 `do-not-merge`；后者颜色为 `B60205`，说明为
   `Must not merge until a clean replacement satisfies canonical TASKS and architecture review`；
-- PR #23 已请求 `Chengyue-Lu` 审查，并发布了固定 base/head 的
+- PR #23 已向 `Chengyue-Lu` 发出 reviewer request；截至
+  `2026-08-23T07:51:44Z`，submitted reviews 仍为 `0`。同时已发布固定 base/head 的
   [hard-block 说明](https://github.com/Chengyue-Lu/research-agent-workbench/pull/23#issuecomment-5384190781)；
 - [PR #24](https://github.com/Chengyue-Lu/research-agent-workbench/pull/24) 已删除“待 PR #23
   合入”的错误依赖，改为 M8-003 后独立的 Execution Boundary Contract / K-API-2 修复边界；base
   仍为 `main`，尚未 retarget；
-- branch ruleset 与 merge settings 仍需 `Chengyue-Lu` 或 Repo Admin 在治理检查发布后配置，当前
+- 当前 `main`/`develop` 仍为 `protected=false`，required checks 为空；治理提交尚未进入
+  `develop`/`main`，因此不能先把尚不存在于目标分支的 `governance` check 设为 required；
+- 治理检查发布后，branch ruleset 与 merge settings 仍需 `Chengyue-Lu` 或 Repo Admin 配置，当前
   不得写成已保护。
 
 ## 3. 仓库内门禁
@@ -79,6 +83,7 @@
 
 ## 7. 完成证据
 
-PR #23 Draft 与 labels/comment/reviewer 已有可回读证据，但远端 rollout 只有在本治理 workstream 的
-develop/main PR 与 commit、两份 ruleset revision、merge settings 截图或 API 回读，以及 PR #20/#24
-的新 base SHA 齐全后才能标为完成。缺少 Admin 权限是待外部授权动作，不得伪造 PASS。
+PR #23 Draft、labels、comment 与 reviewer request 已有可回读证据；实际 review/approval 仍未发生。
+远端 rollout 只有在本治理 workstream 的 develop/main PR 与 commit、两份 ruleset revision、merge
+settings 截图或 API 回读，以及 PR #20/#24 的新 base SHA 齐全后才能标为完成。缺少 Admin 权限是
+待外部授权动作，不得伪造 PASS。
