@@ -1,6 +1,6 @@
 # ISSUE-35 Authority Basis
 
-状态：Proposed；等待路诚钺与黄毅的 R2 cross-owner acceptance
+状态：Accepted；cross-owner architecture acceptance 已完成；final-state merge gate 由 PR #36 记录
 
 ## 1. 具名责任
 
@@ -48,5 +48,7 @@ Execution detects failure/change
 路诚钺的接受只覆盖 Method/Capability/Skill 语义，不代替黄毅对 Runtime 可实现性、Provider/API 边界和
 读取闭包的判断。黄毅的接受只覆盖 Runtime 侧契约，不授权其改变 Need/Evaluation/Admission 或科学权威。
 
-ADR-0019 只有在两位 owner 对上述 ceiling 无未解决异议时才能从 `Proposed` 改为 `Accepted`。状态变更
-后的最终文档 diff 仍须由黄毅复核，避免接受后再引入 Runtime ownership 漂移。
+两位 owner 对上述 ceiling 的 architecture acceptance 已完成；ADR-0019 已从 `Proposed` 收口为
+`Accepted`。接受证据为 [PR #36 architecture APPROVE](https://github.com/Chengyue-Lu/research-agent-workbench/pull/36#pullrequestreview-5012526099)，绑定 `c09dd69d9a8f7d1c4f70c93e6909a61e72d52e79`。
+本次 final state diff 仍须由黄毅复核，避免状态同步重新引入 Runtime ownership 漂移；该复核不修改上方
+authority matrix。

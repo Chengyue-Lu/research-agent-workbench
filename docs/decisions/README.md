@@ -22,6 +22,6 @@ ADR 保存已接受架构决定及其理由；当前系统说明仍以[总体架
 | [0016](0016-METHOD-AWARE-RESEARCH-CONTROL-PLANE.md) | Accepted | 方法感知科研控制平面 |
 | [0017](0017-SCOPED-WRITE-PERMISSIONS.md) | Accepted | 源只读、任务区受限写 |
 | [0018](0018-RISK-BASED-DEVELOPMENT-GOVERNANCE.md) | Proposed | 基于风险的开发治理与共享真值边界 |
-| [0019](0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md) | Proposed | Skill Evolution 作为可选 Maintainer 外环 |
+| [0019](0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md) | Accepted | Skill Evolution 作为可选 Maintainer 外环 |
 
 `0017` 原文件曾与 Assignment Handoff 决定重复使用编号 `0005`；2026-08-22 只修正文件名和标题，Git 历史保留原路径与内容关系。

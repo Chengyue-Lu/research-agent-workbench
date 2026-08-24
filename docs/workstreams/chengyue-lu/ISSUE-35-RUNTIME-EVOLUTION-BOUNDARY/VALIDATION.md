@@ -1,6 +1,6 @@
 # ISSUE-35 Validation and Adversarial Evidence
 
-状态：PR 基线确定性验证通过；本轮 docs-only blocker 修复的静态与独立架构复审通过；R2 final review 尚未完成
+状态：architecture accepted；Accepted state-sync 完成；final-state reconfirmation 与 CI 证据由 PR #36 记录
 
 ## 1. Deterministic checks
 
@@ -48,7 +48,7 @@ Python 进程中把当前 worktree `src` 置于 import 首位；repository valid
 | Runtime bundle 是否读取 Evolution 对象 | 否；不读取 Need/Candidate/Evaluation/Lifecycle |
 | CapabilityDiagnostic 当前定位 | future、local-by-default、optional seam；不自动上传或生成 Need |
 | docs-only 范围 | 仅 `docs/`；不修改 src/Schema/Registry/fixture/tests/TASKS/STATUS |
-| ADR-0019 状态 | `Proposed`；与当前 CHANGES_REQUESTED 后待 final review 的 R2 状态一致 |
+| ADR-0019 状态 | `Accepted`；architecture approval 已绑定 `c09dd69`；final state diff 须经 Runtime owner reconfirmation |
 
 ## 4. Deferred executable evidence
 

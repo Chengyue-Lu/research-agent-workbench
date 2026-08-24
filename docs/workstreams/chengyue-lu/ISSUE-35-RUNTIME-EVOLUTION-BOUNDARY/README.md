@@ -7,7 +7,7 @@
 - 基线：`develop@aeca805e4dbb43b356c7f6da8c1262c9f6220569`
 - 目标 base：`develop`
 - 工作分支：`codex/issue-35-runtime-evolution-boundary`
-- 状态：PR #36 两项 architecture blocker 已按 owner review 收紧；静态 diff 与独立架构复审通过；ADR 保持 Proposed，等待 final architecture review
+- 状态：architecture accepted；ADR-0019、index 与 workstream 状态已收口为 Accepted；final-state merge gate 由 PR #36 记录
 - 对应讨论：[Issue #35](https://github.com/Chengyue-Lu/research-agent-workbench/issues/35)
 - 前置集成：[PR #33](https://github.com/Chengyue-Lu/research-agent-workbench/pull/33)
 
@@ -85,13 +85,15 @@ ADR 的 Kubernetes、OPA、OCI、TUF、in-toto 与 Toolformer 链接均为 2026-
 
 ## 7. 接受与停止条件
 
-本分支只完成 docs-only R2 设计。以下条件满足前不得合并 Stable 文档：
+本分支只完成 docs-only R2 设计。Cross-owner architecture acceptance 已在
+[PR #36 APPROVE](https://github.com/Chengyue-Lu/research-agent-workbench/pull/36#pullrequestreview-5012526099)
+完成，绑定 `c09dd69d9a8f7d1c4f70c93e6909a61e72d52e79`。ADR-0019、decisions index、Authority Basis 与
+workstream 状态已进入 Accepted state-sync。以下 final governance Gate 满足前不得合并：
 
-1. 文档链接、governance tests、完整 Python tests、repository validation 与 diff checks 通过；
-2. 路诚钺确认 Capability/Skill/Need/Evaluation/Admission 权威；
-3. 黄毅确认 Runtime 读取面与 Provider/Adapter/API 责任未被 Evolution 侵入；
-4. 两位 owner 接受 [Authority Basis](AUTHORITY_BASIS.md)及对抗性证据；
-5. ADR-0019 从 `Proposed` 改为 `Accepted` 后，黄毅再次确认最终 diff。
+1. final diff 只包含预期的状态同步、PR metadata 同步与完整 Capability chain wording；
+2. ADR、index、Authority Basis 与 workstream 状态一致；
+3. Runtime owner 黄毅对 final state diff 完成具名 reconfirmation；
+4. 最新 head GitHub CI 全绿。
 
 停止于文档边界；后续实现分为两条 lane：Runtime Bundle/Profile 是 Topic 4 Core 前置，稳定后 Core 可为
 no-Skill、direct Tool、procedure 与 Adapter/Provider 独立实现 supply-neutral Resolved Execution View；Skill
@@ -101,6 +103,5 @@ Phase C Failure/Trace 与 privacy 语义稳定。
 
 ## 8. 下一动作
 
-在修复提交上请求 final architecture review；在具名接受前保持 ADR-0019 为 `Proposed`，不在本 workstream
-开始后续代码实现，也不直接合并。owner 接受修复后的边界后，另做 `Proposed → Accepted` 状态同步，
-并再次请求黄毅确认最终状态 diff。
+提交最小 Accepted state-sync，更新 PR body，并请求黄毅对 final state diff reconfirmation；等待最新 head
+GitHub CI 全绿。此步骤不直接合并，也不开始 Runtime、Release Projection 或 Skill Evolution 实现。

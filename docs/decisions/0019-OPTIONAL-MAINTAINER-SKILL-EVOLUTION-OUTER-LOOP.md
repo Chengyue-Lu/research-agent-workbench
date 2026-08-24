@@ -1,8 +1,10 @@
 # ADR-0019：将 Skill Evolution 作为可选 Maintainer 外环
 
-状态：Proposed — pending R2 cross-owner review
+状态：Accepted
 
 日期：2026-08-25
+
+接受证据：[PR #36 architecture APPROVE](https://github.com/Chengyue-Lu/research-agent-workbench/pull/36#pullrequestreview-5012526099)，绑定 `c09dd69d9a8f7d1c4f70c93e6909a61e72d52e79`。合并前仍须由 Runtime owner 复核 final state diff，并等待最新 head CI 全绿。
 
 ## 背景
 
@@ -133,8 +135,9 @@ Execution detects failure/change
 
 - Method Resolution v0.1、既有 `skill_need_refs`、Skill Need Registry 和 Lifecycle v2 原字节保持不变；
 - 它们继续用于 `maintainer-full`、发布审计与历史重放；
-- Runtime bundle Core 通过 Capability Requirement、Supply Report 与 Snapshot 闭合，不递归解引用 Method
-  的 Skill Need；只有 Skill-bearing extension 额外消费发布投影；
+- Runtime bundle Core 通过 `Capability Requirement → Capability Supply Report → Capability Resolution →
+  Resolved Capability Snapshot` 闭合，不递归解引用 Method 的 Skill Need；只有 Skill-bearing extension
+  额外消费发布投影；
 - 既有 Skill Supply→Lifecycle 引用只形成 Maintainer 侧结构资格，不能成为新的 Runtime 依赖。
 
 ## 后果
