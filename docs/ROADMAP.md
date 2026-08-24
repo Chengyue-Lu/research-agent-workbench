@@ -2,7 +2,7 @@
 
 状态：方向与依赖基线；不记录逐项实时状态
 
-日期：2026-08-20
+更新：2026-08-24
 
 逐项状态和唯一下一任务只在 [`TASKS.md`](TASKS.md) 更新。本文件说明依赖顺序、阶段 Gate 与
 停止条件，不是工期承诺，也不是研究项目必须遵循的固定流程。
@@ -36,14 +36,34 @@ Phase 不是一条科研 DAG。它只表示框架接口的构建依赖；真实 
 - 新 Mode 不再隐式携带 Skill；
 - 在 Gate 通过前不新增 accepted Skill 或正式 Mode。
 
+### Phase A 收口判定（2026-08-24）
+
+**PASS — Core contract closure。** M8-001～005 已在 PR #30 接受 R2 跨负责人审查，并以
+`develop@ead1270` 形成集成边界：Mode Action、Task-bound Method Resolution、Research Mode v0.2
+migration 与 Authority Rule Eligibility 均有版本化对象、确定性验证和正反 fixture。
+
+这里的 `Task → Method Resolution → Execution` Gate 指稳定的输出/消费接口已经明确：Method
+Resolution 只产生需求、Gate、blocked 与最小机制语义，供后续 Capability / Execution 层消费；它不表示
+Capability binding、Resolved Execution View、Receipt migration 或 Runtime consumer 已实现。后者继续属于
+Phase B/F，不能反向写成 Phase A 未完成，也不能借 Phase A 收口宣称端到端执行闭环。
+
 ## 3. Phase B：Evolution Foundation
 
-- Skill Need 成为版本化对象，绑定 direct/no-Skill baseline 与预期增量；
-- lifecycle 扩展到 trial、superseded、retired，并以 Evaluation evidence 驱动 promotion；
-- 建立不覆盖原文档的 migration chain，先演示 Mode v0.1 → v0.2；
-- Protocol Profile 独立表达 PRISMA、V&V 或项目方法标准；
-- Method Plane 请求 Capability Requirement，执行前冻结 provider/adapter/version/hash/permission/
-  data-egress/side-effect Snapshot。
+Phase B 保持“需求语义先于供给绑定”的顺序：
+
+1. `Capability Requirement` 先成为 provider-neutral 的需求侧契约，不表达 available/gap 或具体供给；
+2. `Skill Need` 成为版本化对象，绑定 direct/no-Skill baseline、预期增量和 trial 前证据；
+3. lifecycle 扩展到 trial、superseded、retired，并以 Evaluation evidence 驱动 promotion；
+4. Protocol Profile 独立表达 PRISMA、V&V 或项目方法标准，不复制 Mode Action 或固定研究 DAG；
+5. 执行前由 Resolved Capability Snapshot 冻结 Tool/Skill/Adapter/version/hash/permission/data-egress/
+   side-effect；Snapshot 是共享接口，不授权 Method 层选择 Provider；
+6. migration 保持 append-only 和显式调用。Phase A 的 Mode v0.1→v0.2 是首个已完成 exemplar，Phase B
+   不重造通用 migration framework，只在新增对象确有版本迁移需求时扩展。
+
+`Capability Requirement` 与 `Skill Need` 可在冻结共同引用语义后顺序推进；Protocol Profile 可在不修改
+相同 Schema/Registry 的前提下并行研究。Resolved Capability Snapshot 涉及 Method 与 Provider 两侧，
+必须跨负责人审查：路诚钺维护需求词汇和 authority boundary，黄毅维护 Adapter/Provider 的真实供给
+映射与 conformance。Phase B 不接管 API/Runtime 实现。
 
 停止 Gate：Tool Provider 可替换而不修改 Method contract；旧研究对象仍可解释和重放。
 

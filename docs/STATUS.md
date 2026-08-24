@@ -9,6 +9,9 @@
 
 RWB 处于**内部技术 alpha**：核心文件契约、解析和确定性验证可供开发与集成试验使用；尚不构成面向普通研究者的完整产品，也不对科研结果作质量保证。
 
+Phase A / M8 Core Formalization 已在 `develop@ead1270` 完成契约收口；当前进入 Phase B 准备期。
+“Phase A 完成”不表示 Method→Capability→Execution 已贯通，下面列出的 continuation gap 仍是真实缺口。
+
 ## 已实现
 
 | 能力 | 当前覆盖 |

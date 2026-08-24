@@ -3,11 +3,11 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 必需审查人：黄毅（GitHub 主名 `let778750-cpu`）
 - Task：`M8-002`
-- 状态：DONE；与 M8-003～005 在 PR #30 中按 dependency DAG 原子闭合，等待合并审查
+- 状态：DONE；与 M8-003～005 在 PR #30 中按 dependency DAG 原子闭合，已合入 `develop@ead1270`
 - 目标 base：`develop`
-- 当前集成基线：`develop@51c86072c986826f1abc7ca3b17018169b7ca75d`
+- 最终集成提交：`develop@ead1270d0461b870b8030450b4186f8d62f1eeb7`
 - 原实现基线：`5991cafdb7f536cd7b871508de9055d02b558728`
-- 活动工作分支：`agent/method-m8-action-resolution-node`
+- 已合并阶段分支：`agent/method-m8-action-resolution-node`
 - 历史提交：`def0689`（原 M8-002 分支已删除，提交由统一分支祖先关系保留）
 
 ## 1. 目标

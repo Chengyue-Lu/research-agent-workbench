@@ -3,8 +3,8 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 跨负责人审查人：黄毅（GitHub `let778750-cpu`）
 - Task：`M8-004`
-- 当前状态：DONE；已纳入统一 M8 阶段 PR #30，等待合并审查
-- 阶段分支：`agent/method-m8-action-resolution-node`
+- 当前状态：DONE；已随统一 M8 阶段 PR #30 合入 `develop@ead1270`
+- 已合并阶段分支：`agent/method-m8-action-resolution-node`
 - 阶段 base：`develop`
 
 ## 1. 目标
@@ -20,7 +20,7 @@
 
 ## 2. 非目标
 
-- 不把 PR #30 的跨负责人审查视为已发生；
+- 节点实现阶段不预先把 PR #30 的跨负责人审查视为已发生；最终审查事实见 Phase A closeout；
 - 不迁移历史 Method Resolution、Assignment、Receipt、Trace 或 Attempt；
 - 不实现 Resolved Execution View、Capability binding 或具体 Skill/Tool/Model/Provider/Runtime；
 - 不定义 Decision Authority 或 Human Gate decision vocabulary；

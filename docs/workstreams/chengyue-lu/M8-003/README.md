@@ -3,10 +3,10 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 必需审查人：黄毅（GitHub 主名 `let778750-cpu`）
 - Task：`M8-003`
-- 状态：DONE；PR #30 中与 M8-002、M8-004、M8-005 原子闭合，等待合并审查
+- 状态：DONE；PR #30 中与 M8-002、M8-004、M8-005 原子闭合，已合入 `develop@ead1270`
 - 实际开发基线：M8-002 feature lineage，已同步其 `def0689` contract hardening
-- 当前集成基线：`develop@51c86072c986826f1abc7ca3b17018169b7ca75d`
-- 活动工作分支：`agent/method-m8-action-resolution-node`
+- 最终集成提交：`develop@ead1270d0461b870b8030450b4186f8d62f1eeb7`
+- 已合并阶段分支：`agent/method-m8-action-resolution-node`
 - 历史提交：`1610d87`（原 M8-003 分支已删除，提交由统一分支祖先关系保留）
 
 ## 1. 阶段节点
@@ -60,7 +60,7 @@ workstream 与相应 implementation/module/status/TASKS 文档。公共契约新
 migration 或 Decision Authority 的发现登记后推迟，不在本分支扩张。
 
 Governance v2 已生效，统一分支以真实 TaskPacket/hash 绑定、Action 继承关系与 supply-side 分层完成
-M8-003 验收；节点审查通过前不合并。
+M8-003 验收；PR #30 已通过节点审查并合并。
 
 按 Governance v2，本分支因 Method Resolution authority surface 至少为 R2：正式 PR 必须提供
 authority basis、adversarial evidence、cross-owner authority review 与本 workstream/Risk Ledger。

@@ -1,9 +1,9 @@
 # M8-005 Decision Authority Matrix
 
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
-- 跨负责人审查：统一 M8 阶段 PR #30 的 R2 Code Owner review
-- 阶段分支：`agent/method-m8-action-resolution-node`
-- 状态：DONE；已纳入统一 M8 阶段 PR #30，等待合并审查
+- 跨负责人审查：黄毅（`let778750-cpu`）已在 PR #30 完成 R2 Code Owner review
+- 已合并阶段分支：`agent/method-m8-action-resolution-node`
+- 状态：DONE；已随 PR #30 合入 `develop@ead1270`
 
 ## 目标
 
