@@ -78,6 +78,17 @@ API/Runtime 实现。
 将 Supply A/Snapshot A 替换为 Supply B/Snapshot B；permission、data-egress 与 side-effect ceiling 不放宽，
 Runtime 不获得 Method authority，旧研究对象仍可解释和重放。
 
+### Phase B 实现判定（2026-08-24）
+
+**IMPLEMENTED — R2 acceptance pending。** M9-001～006 已在 PR #33 形成完整实现：Requirement、Need、
+lifecycle v2、两个 bounded Protocol Profile、Report→Resolution→Snapshot Core 与 Skill Supply Extension
+均有版本化 Schema、fixture、确定性验证和负面测试。M9-006 Gate 固定同一 Task/Mode/Action/Method/
+Requirement，并证明 Supply A→B 只改变 exact supply，三类 ceiling 保持一致；Research Mode 与 Skill
+lifecycle migration 均保持 exact-pin replay。
+
+此判定不证明 live Provider 可用、Skill 科研净收益、Human Decision 或真实执行。Topic 4 只有在 PR #33
+通过跨负责人 R2 审查并合入 `develop` 后才按下述 thin-layer 范围解除；Topic 5 仍保持冻结。
+
 ### Topic 4 thin-layer Architecture Hold
 
 以下四项全部稳定并接受后，Topic 4 才可解除：

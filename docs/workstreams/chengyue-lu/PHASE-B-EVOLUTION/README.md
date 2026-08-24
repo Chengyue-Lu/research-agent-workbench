@@ -6,7 +6,7 @@
 - 基线：`develop@ead1270d0461b870b8030450b4186f8d62f1eeb7`
 - 目标 base：`develop`
 - 阶段分支：`agent/phase-b-evolution-foundation`
-- 当前状态：Phase A 已收口；M9-001 由阶段 PR 承载；其接受后 M9-002、M9-004 与 M9-005 Snapshot Core 可并行推进
+- 当前状态：M9-001～006 已实现并完成本地验证；PR #33 等待 R2 跨负责人审查与 CI 接受
 - 风险触发：跨多个公共契约、Registry migration 与 Method/Provider 共享接口
 
 ## 1. 阶段目标
@@ -195,3 +195,17 @@ Phase B 只有在以下条件均有证据时收口：
 
 上述 Gate 证明契约、迁移和替换边界，不证明 Skill 有科研净收益、外部 Provider 真实可用或端到端产品
 已经完成。
+
+## 9. Task-specific verification evidence
+
+| Task | 实现证据 | 主要验证 |
+|---|---|---|
+| M9-001 | Capability Requirement Schema、四份 immutable Requirement、path/hash index、Task↔Method closure | demand-only 字段负面测试；八组 Method Resolution 引用闭合 |
+| M9-002 | Skill Need Schema、三份 Need 与 index | actual result/supply/admission 字段被拒绝；no-Skill/direct-tool baseline 保留 |
+| M9-003 | lifecycle v2 Record/Index/Migration 与 Skill Supply eligibility seam | 五轴不变量、旧 accepted entry append-stability、非 eligible Skill Supply 阻断 |
+| M9-004 | 两份 bounded PRISMA/V&V Protocol Profile 与 index | Mode/Skill/Provider/Runtime/global-DAG 越界字段被拒绝 |
+| M9-005 | Supply Report、Resolution、Snapshot、conformance Schema 与三条 Core chain | satisfied/gap/ambiguous/blocked 重算；no-Skill、Tool、Adapter/Provider、Skill eligibility 正反测试 |
+| M9-006 | `PHASE-B-M9-CLOSEOUT-001` Gate manifest | stable contract hash、A/B exact-supply replacement、三类 ceiling、两类 migration replay 与越权声明负面测试 |
+
+这六项在同一 R2 Stage PR 中构成连通 atomic completion DAG。每项 DONE 均在 PR body 具名列出上述
+证据；最终接受仍以远端 governance、Python 3.11/3.13、repository validation 与跨负责人审查为准。
