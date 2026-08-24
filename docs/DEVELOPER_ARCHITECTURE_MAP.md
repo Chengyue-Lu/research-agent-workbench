@@ -972,7 +972,7 @@ Projection missing
 
 ## 9.4 View producer 不拥有 selection
 
-View producer 接收已经冻结的 selection，计算 final constraints 并冻结 exact executable binding。如果 freshness 或 policy preflight 失败，它只能拒绝并请求上游 re-resolution；不能在这一层把 Supply A 替换为 B。
+View producer 接收已经冻结的 selection，计算 final constraints 并冻结 exact executable binding。如果 freshness 或 policy preflight 失败，View producer 必须 fail closed。若恢复执行需要更换 Supply，则请求上游 re-resolution，并生成新的 `Capability Resolution → Snapshot → Resolved Execution View`；不得在当前 View 内自行替换 Supply。
 
 ## 9.5 最值得验证的问题
 
@@ -1378,7 +1378,7 @@ Human Gate 表示某类变化必须由具名、具权人类决定；Decision Aut
 
 ```text
 谁可以 proposal
-谁可以 deterministic commit
+谁满足 deterministic commit-rule eligibility
 谁可以放宽 permission
 谁可以 Claim promotion
 缺少 asserted facts / Gate 时为何阻断
@@ -1511,13 +1511,16 @@ Capability Requirement
 → Capability Resolution
 → structural Resolved Capability Snapshot
 
-parallel Maintainer foundation:
+parallel Maintainer foundations:
+
 Skill Need
 → Lifecycle v2
-→ bounded Protocol Profile
+
+Protocol Profile
+(independent / parallel)
 ```
 
-Phase B 已完成 structural contract。它把断点后移到 Runtime consumer；三条 Snapshot 全部不可执行。
+M9-004 Protocol Profile 与 M9-002/M9-003 并行，不依赖 Lifecycle，也不阻塞 M9-005。Phase B 已完成 structural contract。它把断点后移到 Runtime consumer；三条 Snapshot 全部不可执行。
 
 ## 18.3 ADR-0019：两个环的 Accepted 边界
 
