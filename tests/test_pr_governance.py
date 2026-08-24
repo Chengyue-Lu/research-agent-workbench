@@ -170,6 +170,19 @@ class RiskInferenceTests(unittest.TestCase):
                 )
                 self.assertEqual("R2", risk)
 
+    def test_protocol_profile_contract_surface_is_r2(self) -> None:
+        for path in (
+            "schemas/v0.1.0/protocol-profile.schema.json",
+            "registry/protocol-profiles.json",
+            "registry/protocol-profiles/simulation-vv-assurance-1.0.0.yaml",
+            "src/research_workbench/protocol/profiles.py",
+        ):
+            with self.subTest(path=path):
+                risk, _ = governance.infer_minimum_risk(
+                    [path], shared_contract=False, authority_impact=False
+                )
+                self.assertEqual("R2", risk)
+
     def test_authority_protocol_is_r2(self) -> None:
         for path in (
             "src/research_workbench/protocol/authority.py",
@@ -633,6 +646,7 @@ class PolicyAndCodeownersTests(unittest.TestCase):
                 "research-mode-migration": ("migration_id", "migration_version"),
                 "capability-requirement": ("requirement_id",),
                 "skill-need": ("need_id", "version"),
+                "protocol-profile": ("profile_id", "version"),
             },
             declarations,
         )
@@ -747,6 +761,11 @@ class PublishedDocumentIdentityTests(unittest.TestCase):
             "skill-need",
             "need_id: evidence-search-plan\nversion: 1.0.0\nsummary: original\n",
             "need_id: evidence-search-plan\nversion: 1.1.0\nsummary: appended\n",
+        ),
+        "registry/protocol-profiles/simulation-vv-assurance-1.0.0.yaml": (
+            "protocol-profile",
+            "profile_id: simulation-vv-assurance\nversion: 1.0.0\nsummary: original\n",
+            "profile_id: simulation-vv-assurance\nversion: 1.1.0\nsummary: appended\n",
         ),
     }
 

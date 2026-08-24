@@ -46,6 +46,10 @@
       "registry/skill-needs.json",
       "registry/skill-needs/**",
       "src/research_workbench/capability/skill_needs.py",
+      "schemas/**/protocol-profile*.schema.json",
+      "registry/protocol-profiles.json",
+      "registry/protocol-profiles/**",
+      "src/research_workbench/protocol/profiles.py",
       "schemas/**/claim*.schema.json",
       "schemas/**/decision*.schema.json",
       "schemas/**/human-gate*.schema.json",
@@ -114,6 +118,16 @@
         "registry/skill-needs/**/*.yml"
       ],
       "identity_fields": ["need_id", "version"]
+    },
+    {
+      "kind": "protocol-profile",
+      "patterns": [
+        "registry/protocol-profiles/*.yaml",
+        "registry/protocol-profiles/*.yml",
+        "registry/protocol-profiles/**/*.yaml",
+        "registry/protocol-profiles/**/*.yml"
+      ],
+      "identity_fields": ["profile_id", "version"]
     }
   ]
 }

@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/protocol-profile.schema.json",
+  "title": "Protocol Profile",
+  "$comment": "A published profile_id@version is immutable. A Profile adds bounded method-standard obligations without defining a global DAG or binding execution supply.",
+  "x-rwb-document-kind": "protocol_profile",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "profile_id",
+    "version",
+    "title",
+    "method_standard",
+    "applicability",
+    "compatible_mode_refs",
+    "scoped_actions",
+    "method_obligations",
+    "evidence_expectations",
+    "gate_expectations",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "profile_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "version": { "$ref": "common.schema.json#/$defs/semver" },
+    "title": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "method_standard": {
+      "type": "object",
+      "required": ["family", "edition", "profile_scope", "compliance_claim", "notes"],
+      "properties": {
+        "family": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "edition": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "profile_scope": { "const": "bounded-subset" },
+        "compliance_claim": { "const": "not-established" },
+        "notes": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "applicability": {
+      "type": "object",
+      "required": ["applicable_when", "not_applicable_when"],
+      "properties": {
+        "applicable_when": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "not_applicable_when": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "compatible_mode_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*@[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "scoped_actions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["action_ref", "content_hash"],
+        "properties": {
+          "action_ref": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*@[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+          },
+          "content_hash": { "$ref": "common.schema.json#/$defs/sha256" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "method_obligations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "obligation_id",
+          "statement",
+          "applies_to_action_refs",
+          "evidence_expectation_refs",
+          "gate_expectation_refs"
+        ],
+        "properties": {
+          "obligation_id": {
+            "type": "string",
+            "pattern": "^[A-Z0-9]+(?:-[A-Z0-9]+)*$"
+          },
+          "statement": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "applies_to_action_refs": {
+            "type": "array",
+            "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "evidence_expectation_refs": {
+            "type": "array",
+            "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "gate_expectation_refs": {
+            "type": "array",
+            "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+            "uniqueItems": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "evidence_expectations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["expectation_id", "statement", "evidence_classes"],
+        "properties": {
+          "expectation_id": {
+            "type": "string",
+            "pattern": "^[A-Z0-9]+(?:-[A-Z0-9]+)*$"
+          },
+          "statement": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "evidence_classes": {
+            "type": "array",
+            "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "gate_expectations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["gate_ref", "effect", "rationale"],
+        "properties": {
+          "gate_ref": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "effect": { "const": "additive-only" },
+          "rationale": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "boundaries": {
+      "type": "object",
+      "required": [
+        "defines_global_dag",
+        "copies_mode_action_contract",
+        "binds_skill",
+        "binds_tool",
+        "binds_provider",
+        "binds_runtime",
+        "owns_routing",
+        "grants_claim_effect",
+        "grants_human_decision"
+      ],
+      "properties": {
+        "defines_global_dag": { "const": false },
+        "copies_mode_action_contract": { "const": false },
+        "binds_skill": { "const": false },
+        "binds_tool": { "const": false },
+        "binds_provider": { "const": false },
+        "binds_runtime": { "const": false },
+        "owns_routing": { "const": false },
+        "grants_claim_effect": { "const": false },
+        "grants_human_decision": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

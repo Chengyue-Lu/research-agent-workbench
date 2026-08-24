@@ -8,6 +8,7 @@
 - [Method Resolution contract](METHOD_RESOLUTION_CONTRACT.md)
 - [Capability Requirement demand contract](CAPABILITY_REQUIREMENT_CONTRACT.md)
 - [Skill Need requirements contract](SKILL_NEED_CONTRACT.md)
+- [Protocol Profile contract](PROTOCOL_PROFILE_CONTRACT.md)
 - [Research Mode v0.1 to v0.2 migration](RESEARCH_MODE_MIGRATION.md)
 - [Decision Authority Matrix and Authority Rule Eligibility](DECISION_AUTHORITY.md)
 - [File-authoritative Trace Core](TRACE_CORE.md)

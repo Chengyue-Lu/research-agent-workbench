@@ -93,6 +93,8 @@ DOCUMENT_REQUIRED: dict[str, tuple[str, ...]] = {
 SCHEMA_KINDS = {
     "capability_requirement",
     "capability_requirement_index",
+    "protocol_profile",
+    "protocol_profile_index",
     "skill_need",
     "skill_need_index",
     "deterministic_check_report",
@@ -155,6 +157,8 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "capability_requirement"
     if "need_id" in document and "semantic_gap" in document and "evaluation_requirements" in document:
         return "skill_need"
+    if "profile_id" in document and "method_standard" in document and "method_obligations" in document:
+        return "protocol_profile"
     if "agent_profile_id" in document and "permission_ceiling" in document:
         return "agent_profile"
     if "skill_id" in document and "capabilities" in document:
@@ -1011,6 +1015,333 @@ def _validate_skill_need_set(documents: Mapping[Path, Any]) -> list[ValidationIs
     return issues
 
 
+def _protocol_profile_indices(
+    documents: Mapping[Path, Any],
+) -> list[tuple[Path, Mapping[str, Any]]]:
+    return [
+        (path, document)
+        for path, document in documents.items()
+        if isinstance(document, Mapping)
+        and document.get("registry_kind") == "protocol_profile_index"
+    ]
+
+
+def _validate_protocol_profile_set(
+    documents: Mapping[Path, Any],
+) -> list[ValidationIssue]:
+    issues: list[ValidationIssue] = []
+    indices = _protocol_profile_indices(documents)
+    profile_documents = [
+        (path, document)
+        for path, document in documents.items()
+        if isinstance(document, Mapping) and infer_document_kind(document) == "protocol_profile"
+    ]
+    if not indices:
+        if profile_documents:
+            issues.append(
+                ValidationIssue(
+                    profile_documents[0][0],
+                    "PROTOCOL-PROFILE-INDEX-MISSING",
+                    "Protocol Profile documents require one closed integrity index",
+                )
+            )
+        return issues
+    if len(indices) > 1:
+        for path, _ in indices[1:]:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "PROTOCOL-PROFILE-INDEX-DUPLICATE",
+                    "only one Protocol Profile integrity index may be loaded",
+                )
+            )
+        return issues
+
+    index_path, index = indices[0]
+    modes = {
+        f"{document.get('mode_id')}@{document.get('version')}"
+        for document in documents.values()
+        if isinstance(document, Mapping) and "mode_id" in document and "claim_rules" in document
+    }
+    action_entries: dict[str, Mapping[str, Any]] = {}
+    for document in documents.values():
+        if not isinstance(document, Mapping) or document.get("registry_kind") != "mode_action_registry":
+            continue
+        for entry in document.get("entries", []):
+            if isinstance(entry, Mapping):
+                action_entries[f"{entry.get('action_id')}@{entry.get('version')}"] = entry
+
+    indexed: dict[str, tuple[str, Mapping[str, Any]]] = {}
+    seen_identities: set[tuple[str, str]] = set()
+    seen_paths: set[str] = set()
+    for position, entry in enumerate(index.get("entries", [])):
+        if not isinstance(entry, Mapping):
+            continue
+        profile_ref = entry.get("profile_ref")
+        profile_id = entry.get("profile_id")
+        version = entry.get("version")
+        document_path = entry.get("document_path")
+        if not all(
+            isinstance(value, str)
+            for value in (profile_ref, profile_id, version, document_path)
+        ):
+            continue
+        identity = (str(profile_id), str(version))
+        if profile_ref in indexed:
+            issues.append(
+                ValidationIssue(
+                    index_path,
+                    "PROTOCOL-PROFILE-REFERENCE-DUPLICATE",
+                    f"duplicate Profile reference at entries[{position}]: {profile_ref}",
+                )
+            )
+            continue
+        if identity in seen_identities:
+            issues.append(
+                ValidationIssue(
+                    index_path,
+                    "PROTOCOL-PROFILE-IDENTITY-DUPLICATE",
+                    f"duplicate Profile identity at entries[{position}]: {profile_id}@{version}",
+                )
+            )
+            continue
+        if document_path in seen_paths:
+            issues.append(
+                ValidationIssue(
+                    index_path,
+                    "PROTOCOL-PROFILE-PATH-DUPLICATE",
+                    f"duplicate Profile document path at entries[{position}]: {document_path}",
+                )
+            )
+            continue
+        indexed[str(profile_ref)] = (str(document_path), entry)
+        seen_identities.add(identity)
+        seen_paths.add(str(document_path))
+
+        loaded = _loaded_document_at(documents, document_path)
+        if loaded is None:
+            issues.append(
+                ValidationIssue(
+                    index_path,
+                    "PROTOCOL-PROFILE-DOCUMENT-MISSING",
+                    f"indexed Protocol Profile document is not loaded: {document_path}",
+                )
+            )
+            continue
+        loaded_path, profile = loaded
+        if infer_document_kind(profile) != "protocol_profile":
+            issues.append(
+                ValidationIssue(
+                    loaded_path,
+                    "PROTOCOL-PROFILE-DOCUMENT-KIND",
+                    f"indexed document is not a Protocol Profile: {document_path}",
+                )
+            )
+            continue
+        if (
+            f"{profile.get('profile_id')}@{profile.get('version')}",
+            profile.get("profile_id"),
+            profile.get("version"),
+        ) != (profile_ref, profile_id, version):
+            issues.append(
+                ValidationIssue(
+                    loaded_path,
+                    "PROTOCOL-PROFILE-IDENTITY-MISMATCH",
+                    f"index and document identities disagree: {profile_ref}",
+                )
+            )
+        expected_hash = entry.get("content_hash")
+        if isinstance(expected_hash, str) and loaded_path.is_file():
+            if hash_file(loaded_path) != expected_hash.removeprefix("sha256:").lower():
+                issues.append(
+                    ValidationIssue(
+                        index_path,
+                        "PROTOCOL-PROFILE-HASH-MISMATCH",
+                        f"content hash does not match Protocol Profile document: {profile_ref}",
+                    )
+                )
+
+        compatible_modes = {
+            value for value in profile.get("compatible_mode_refs", []) if isinstance(value, str)
+        }
+        for mode_ref in compatible_modes:
+            if modes and mode_ref not in modes:
+                issues.append(
+                    ValidationIssue(
+                        loaded_path,
+                        "PROTOCOL-PROFILE-MODE-MISSING",
+                        f"Profile references an unknown Research Mode: {mode_ref}",
+                    )
+                )
+
+        scoped_action_refs: set[str] = set()
+        for action in profile.get("scoped_actions", []):
+            if not isinstance(action, Mapping):
+                continue
+            action_ref = action.get("action_ref")
+            if not isinstance(action_ref, str):
+                continue
+            if action_ref in scoped_action_refs:
+                issues.append(
+                    ValidationIssue(
+                        loaded_path,
+                        "PROTOCOL-PROFILE-ACTION-DUPLICATE",
+                        f"duplicate scoped Action reference: {action_ref}",
+                    )
+                )
+            scoped_action_refs.add(action_ref)
+            registered = action_entries.get(action_ref)
+            if action_entries and registered is None:
+                issues.append(
+                    ValidationIssue(
+                        loaded_path,
+                        "PROTOCOL-PROFILE-ACTION-MISSING",
+                        f"Profile references an unknown Mode Action: {action_ref}",
+                    )
+                )
+            elif registered is not None:
+                if action.get("content_hash") != registered.get("content_hash"):
+                    issues.append(
+                        ValidationIssue(
+                            loaded_path,
+                            "PROTOCOL-PROFILE-ACTION-HASH-MISMATCH",
+                            f"Profile Action hash does not match Registry: {action_ref}",
+                        )
+                    )
+                if registered.get("mode_ref") not in compatible_modes:
+                    issues.append(
+                        ValidationIssue(
+                            loaded_path,
+                            "PROTOCOL-PROFILE-ACTION-MODE-MISMATCH",
+                            f"Profile Action mode is outside compatible_mode_refs: {action_ref}",
+                        )
+                    )
+
+        evidence_refs: set[str] = set()
+        for evidence in profile.get("evidence_expectations", []):
+            if not isinstance(evidence, Mapping) or not isinstance(evidence.get("expectation_id"), str):
+                continue
+            expectation_id = str(evidence["expectation_id"])
+            if expectation_id in evidence_refs:
+                issues.append(
+                    ValidationIssue(
+                        loaded_path,
+                        "PROTOCOL-PROFILE-EVIDENCE-DUPLICATE",
+                        f"duplicate evidence expectation: {expectation_id}",
+                    )
+                )
+            evidence_refs.add(expectation_id)
+
+        gate_refs: set[str] = set()
+        for gate in profile.get("gate_expectations", []):
+            if not isinstance(gate, Mapping) or not isinstance(gate.get("gate_ref"), str):
+                continue
+            gate_ref = str(gate["gate_ref"])
+            if gate_ref in gate_refs:
+                issues.append(
+                    ValidationIssue(
+                        loaded_path,
+                        "PROTOCOL-PROFILE-GATE-DUPLICATE",
+                        f"duplicate Gate expectation: {gate_ref}",
+                    )
+                )
+            gate_refs.add(gate_ref)
+
+        obligation_ids: set[str] = set()
+        covered_action_refs: set[str] = set()
+        for obligation in profile.get("method_obligations", []):
+            if not isinstance(obligation, Mapping):
+                continue
+            obligation_id = obligation.get("obligation_id")
+            if isinstance(obligation_id, str):
+                if obligation_id in obligation_ids:
+                    issues.append(
+                        ValidationIssue(
+                            loaded_path,
+                            "PROTOCOL-PROFILE-OBLIGATION-DUPLICATE",
+                            f"duplicate method obligation: {obligation_id}",
+                        )
+                    )
+                obligation_ids.add(obligation_id)
+            action_refs = {
+                value
+                for value in obligation.get("applies_to_action_refs", [])
+                if isinstance(value, str)
+            }
+            covered_action_refs.update(action_refs)
+            unknown_actions = sorted(action_refs - scoped_action_refs)
+            unknown_evidence = sorted(
+                {
+                    value
+                    for value in obligation.get("evidence_expectation_refs", [])
+                    if isinstance(value, str)
+                }
+                - evidence_refs
+            )
+            unknown_gates = sorted(
+                {
+                    value
+                    for value in obligation.get("gate_expectation_refs", [])
+                    if isinstance(value, str)
+                }
+                - gate_refs
+            )
+            if unknown_actions:
+                issues.append(
+                    ValidationIssue(
+                        loaded_path,
+                        "PROTOCOL-PROFILE-OBLIGATION-ACTION-MISSING",
+                        f"obligation references Actions outside Profile scope: {unknown_actions}",
+                    )
+                )
+            if unknown_evidence:
+                issues.append(
+                    ValidationIssue(
+                        loaded_path,
+                        "PROTOCOL-PROFILE-OBLIGATION-EVIDENCE-MISSING",
+                        f"obligation references unknown evidence expectations: {unknown_evidence}",
+                    )
+                )
+            if unknown_gates:
+                issues.append(
+                    ValidationIssue(
+                        loaded_path,
+                        "PROTOCOL-PROFILE-OBLIGATION-GATE-MISSING",
+                        f"obligation references unknown Gate expectations: {unknown_gates}",
+                    )
+                )
+        uncovered = sorted(scoped_action_refs - covered_action_refs)
+        if uncovered:
+            issues.append(
+                ValidationIssue(
+                    loaded_path,
+                    "PROTOCOL-PROFILE-ACTION-UNCOVERED",
+                    f"scoped Actions are not covered by a method obligation: {uncovered}",
+                )
+            )
+
+    for path, profile in profile_documents:
+        profile_ref = f"{profile.get('profile_id')}@{profile.get('version')}"
+        indexed_entry = indexed.get(profile_ref)
+        if indexed_entry is None:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "PROTOCOL-PROFILE-UNINDEXED",
+                    f"Protocol Profile document is not in the integrity index: {profile_ref}",
+                )
+            )
+        elif not _matches_repository_path(path, indexed_entry[0]):
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "PROTOCOL-PROFILE-PATH-MISMATCH",
+                    f"Protocol Profile document path disagrees with the index: {profile_ref}",
+                )
+            )
+    return issues
+
+
 def _validate_method_resolutions(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     capability_indices = _capability_requirement_indices(documents)
@@ -1713,6 +2044,7 @@ def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     issues.extend(_validate_mode_action_registry(documents))
     issues.extend(_validate_capability_requirement_set(documents))
     issues.extend(_validate_skill_need_set(documents))
+    issues.extend(_validate_protocol_profile_set(documents))
     issues.extend(_validate_method_resolutions(documents))
     issues.extend(_validate_research_mode_migrations(documents))
     issues.extend(_validate_decision_authority(documents))

@@ -29,6 +29,18 @@ from research_workbench.protocol.authority import (
     DecisionAuthorityRule,
     evaluate_authority_rule_eligibility,
 )
+from research_workbench.protocol.profiles import (
+    ProtocolActionReference,
+    ProtocolApplicability,
+    ProtocolEvidenceExpectation,
+    ProtocolGateExpectation,
+    ProtocolMethodObligation,
+    ProtocolMethodStandard,
+    ProtocolProfile,
+    ProtocolProfileBoundaries,
+    ProtocolProfileEntry,
+    ProtocolProfileSet,
+)
 
 __all__ = [
     "MethodActionDecision",
@@ -56,4 +68,14 @@ __all__ = [
     "DecisionAuthorityMatrix",
     "DecisionAuthorityRule",
     "evaluate_authority_rule_eligibility",
+    "ProtocolActionReference",
+    "ProtocolApplicability",
+    "ProtocolEvidenceExpectation",
+    "ProtocolGateExpectation",
+    "ProtocolMethodObligation",
+    "ProtocolMethodStandard",
+    "ProtocolProfile",
+    "ProtocolProfileBoundaries",
+    "ProtocolProfileEntry",
+    "ProtocolProfileSet",
 ]

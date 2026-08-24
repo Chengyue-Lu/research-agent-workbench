@@ -1,0 +1,101 @@
+schema_version: 0.1.0
+profile_id: simulation-vv-assurance
+version: 1.0.0
+title: Bounded simulation verification and validation assurance
+method_standard:
+  family: Simulation V&V
+  edition: project-selected
+  profile_scope: bounded-subset
+  compliance_claim: not-established
+  notes:
+    - This Profile separates numerical verification, model validation, and intended-use adequacy without certifying compliance with a named industry standard.
+    - A project may publish a later domain-specific version that pins an applicable V&V standard and adds stricter obligations.
+applicability:
+  applicable_when:
+    - A simulation-supported Claim depends on numerical accuracy, uncertainty treatment, or comparison with an external benchmark or observation.
+    - The Task must judge whether a computational model is adequate for a declared intended use.
+  not_applicable_when:
+    - The Task only checks syntax, installation, visualization formatting, or execution status without a scientific adequacy Claim.
+    - An accepted Run is copied unchanged and no model, input, error, uncertainty, validation, or Claim boundary is reopened.
+compatible_mode_refs: [simulation@0.2.0]
+scoped_actions:
+  - action_ref: SIM-A1@2.0.0
+    content_hash: sha256:6c7398983e13c81e8ecfc7a38b8101b4f9f37f2e14ce161a0f5b83343f0d71ee
+  - action_ref: SIM-A2@2.0.0
+    content_hash: sha256:e1d736cf098c00c4bb5856a0095eaa3da82952137c16869d22c043da4ceb8c1e
+  - action_ref: SIM-A3@2.0.0
+    content_hash: sha256:ee957328751e4e1bcdb8dd9dcdacd19c2d34c02f3d5f46e344bce220beab4491
+  - action_ref: SIM-A4@2.0.0
+    content_hash: sha256:150aaa35e21e0826460cea47dbd14d3af67c4017a3c300ae26db61a6c54ff737
+  - action_ref: SIM-A5@2.0.0
+    content_hash: sha256:4ff93b46737b9cb73169da82cb6007254c949ca51118955467d581b91ff6bbac
+  - action_ref: SIM-A7@2.0.0
+    content_hash: sha256:6f99c1584fbbccfd1a64e6b23c85216bb44768d3176c7f186ec4b2a87dc660ae
+method_obligations:
+  - obligation_id: VV-INTENDED-USE
+    statement: Freeze intended use, validation domain, assumptions, quantities of interest, and adequacy criteria before interpreting V&V evidence.
+    applies_to_action_refs: [SIM-A1@2.0.0]
+    evidence_expectation_refs: [VV-PURPOSE-EVIDENCE]
+    gate_expectation_refs: [approve-vv-plan]
+  - obligation_id: VV-CONFIGURATION
+    statement: Preserve the code, model, environment, input, seed, solver, and output identities needed to interpret verification and validation results.
+    applies_to_action_refs: [SIM-A2@2.0.0]
+    evidence_expectation_refs: [VV-CONFIGURATION-EVIDENCE]
+    gate_expectation_refs: []
+  - obligation_id: VV-NUMERICAL-VERIFICATION
+    statement: Assess relevant discretization, iteration, sampling, or solver error against declared convergence and adequacy criteria.
+    applies_to_action_refs: [SIM-A3@2.0.0]
+    evidence_expectation_refs: [VV-NUMERICAL-EVIDENCE]
+    gate_expectation_refs: [approve-vv-error-criteria]
+  - obligation_id: VV-UNCERTAINTY-VALIDATION
+    statement: Separate uncertainty and sensitivity evidence from external validation comparisons and state their applicable domains and limits.
+    applies_to_action_refs: [SIM-A4@2.0.0, SIM-A5@2.0.0]
+    evidence_expectation_refs: [VV-UNCERTAINTY-EVIDENCE, VV-VALIDATION-EVIDENCE]
+    gate_expectation_refs: [accept-vv-evidence-boundary]
+  - obligation_id: VV-CLAIM-ADEQUACY
+    statement: Judge the assembled V&V evidence against the intended-use criteria without promoting the scientific Claim automatically.
+    applies_to_action_refs: [SIM-A7@2.0.0]
+    evidence_expectation_refs: [VV-ADEQUACY-EVIDENCE]
+    gate_expectation_refs: [accept-vv-claim-adequacy]
+evidence_expectations:
+  - expectation_id: VV-PURPOSE-EVIDENCE
+    statement: Evidence identifies intended use, validation domain, assumptions, quantities of interest, and quantitative or qualitative adequacy criteria.
+    evidence_classes: [intended-use-record, validation-domain, assumption-ledger, adequacy-criteria]
+  - expectation_id: VV-CONFIGURATION-EVIDENCE
+    statement: Evidence pins the computational configuration and preserves the lineage needed to reproduce or bound the assessed results.
+    evidence_classes: [model-version-ref, code-hash, environment-ref, input-lock, solver-configuration]
+  - expectation_id: VV-NUMERICAL-EVIDENCE
+    statement: Evidence records the study design, comparison levels, observed convergence behavior, residual errors, and failure or stop conditions.
+    evidence_classes: [convergence-study, error-estimate, convergence-limitation]
+  - expectation_id: VV-UNCERTAINTY-EVIDENCE
+    statement: Evidence records uncertain inputs, ranges or distributions, sensitivity method, propagation method, and material interactions or omissions.
+    evidence_classes: [uncertainty-model, sensitivity-record, uncertainty-propagation-result]
+  - expectation_id: VV-VALIDATION-EVIDENCE
+    statement: Evidence identifies external comparison data, calibration separation, comparison metrics, discrepancies, and the validated domain.
+    evidence_classes: [benchmark-or-observation-ref, calibration-boundary, validation-comparison, discrepancy-record]
+  - expectation_id: VV-ADEQUACY-EVIDENCE
+    statement: Evidence maps verification, uncertainty, and validation findings to the intended-use criteria and exposes unresolved limitations.
+    evidence_classes: [vv-adequacy-map, limitation-record, human-decision-ref]
+gate_expectations:
+  - gate_ref: approve-vv-plan
+    effect: additive-only
+    rationale: A Human approves intended use, validation domain, and adequacy criteria before V&V evidence is interpreted.
+  - gate_ref: approve-vv-error-criteria
+    effect: additive-only
+    rationale: A Human approves the error measures, refinement boundary, and resource-aware stopping criteria.
+  - gate_ref: accept-vv-evidence-boundary
+    effect: additive-only
+    rationale: A Human accepts the uncertainty and external-validation boundary, including unresolved discrepancy and extrapolation risk.
+  - gate_ref: accept-vv-claim-adequacy
+    effect: additive-only
+    rationale: A Human judges adequacy for intended use; the Profile itself does not grant or promote a Claim.
+boundaries:
+  defines_global_dag: false
+  copies_mode_action_contract: false
+  binds_skill: false
+  binds_tool: false
+  binds_provider: false
+  binds_runtime: false
+  owns_routing: false
+  grants_claim_effect: false
+  grants_human_decision: false

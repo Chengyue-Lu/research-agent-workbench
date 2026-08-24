@@ -51,6 +51,8 @@ class VersionedSchemaTests(unittest.TestCase):
                 "mode_action",
                 "mode_action_registry",
                 "project_protocol",
+                "protocol_profile",
+                "protocol_profile_index",
                 "provider_conformance_report",
                 "research_mode",
                 "research_mode_migration",
