@@ -20,7 +20,7 @@ required_artifacts:
   - deterministic-check-report
 constraints:
   permission_ceiling:
-    filesystem: task-scope-write
+    filesystem: worktree-write
     network: forbidden
     external_write: false
   data_egress:

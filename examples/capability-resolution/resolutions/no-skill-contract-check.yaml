@@ -1,6 +1,8 @@
 schema_version: 0.1.0
 resolution_id: CR-NO-SKILL-CONTRACT-CHECK
 revision: 1
+qualification: structural-replay
+evaluated_at: "2026-08-24T00:00:01Z"
 method_resolution_ref:
   ref: MR-ROUTE-ES-FROZEN-001@r1
   document_path: examples/method-resolutions/ROUTE-ES-FROZEN-001.yaml
@@ -8,11 +10,11 @@ method_resolution_ref:
 requirement_ref:
   requirement_id: research-contract-check
   document_path: registry/capabilities/requirements/research-contract-check.yaml
-  content_hash: sha256:b21b0be0f43921015a7b3bd37d66429635bfb0b876cc5fba6ff9e26e4ed7ca31
+  content_hash: sha256:c536ad2aec7a93adb90cccb44dbfbc20c68a80e1882c74ae3143c2ac5230b925
 candidate_supply_report_refs:
   - ref: supply-no-skill-contract-check@1.0.0
     document_path: examples/capability-resolution/supply-reports/no-skill-contract-check.yaml
-    content_hash: sha256:5ded8111c1b8852a572282c5d1861e11452f08633fcb423b8adf6531750aa2cb
+    content_hash: sha256:60408de3bf8c8f22e3fe5e15cba9945efe976b3bff6cea5fb4e24c8786e9ba5c
 comparisons:
   - supply_report_ref: supply-no-skill-contract-check@1.0.0
     checks:
@@ -23,20 +25,12 @@ comparisons:
       - {check: permission, status: pass, reason: Supply permissions are within the Requirement ceiling.}
       - {check: data-egress, status: pass, reason: Supply data-egress behavior is within the Requirement ceiling.}
       - {check: side-effects, status: pass, reason: Supply side effects are within the Requirement ceiling.}
-      - {check: deterministic-conformance, status: pass, reason: At least one deterministic conformance record reports pass.}
-      - {check: availability, status: pass, reason: Supply availability is reported as 'available' within scope 'fixture-only'.}
+      - {check: conformance-evidence, status: pass, reason: "A typed, hash-bound conformance artifact proves the required capability."}
+      - {check: availability, status: pass, reason: Supply reports availability in scope 'fixture-only'.}
       - {check: skill-runtime-eligibility, status: not-applicable, reason: This Core supply is not a Skill and needs no Skill lifecycle decision.}
     eligible: true
 resolution_status: satisfied
 selected_supply_report_ref: supply-no-skill-contract-check@1.0.0
-authority_basis:
-  matrix_ref:
-    ref: rwb-decision-authority@1.0.0
-    document_path: registry/authority/decision-authority-matrix.yaml
-    content_hash: sha256:960c95754f8a78fe39b3f2583414ca9c7006b1274c9267db0149558c321f5e45
-  decision_kind: skill-tool-binding
-  selection_effect: candidate-for-snapshot
-  eligibility_required_after_snapshot: true
 limitations:
   - Satisfaction preserves the no-Skill route and proves only structural matching in a synthetic fixture.
 boundaries:

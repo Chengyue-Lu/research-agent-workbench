@@ -43,7 +43,7 @@
       "type": "object",
       "required": ["supply_kind", "implementation_ref", "implementation_version", "content_hash", "components"],
       "properties": {
-        "supply_kind": { "enum": ["no-skill", "tool", "adapter-provider", "skill"] },
+        "supply_kind": { "enum": ["procedure", "tool", "adapter-provider", "skill"] },
         "implementation_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
         "implementation_version": { "$ref": "common.schema.json#/$defs/semver" },
         "content_hash": { "$ref": "common.schema.json#/$defs/sha256" },
@@ -96,7 +96,7 @@
             "permission",
             "data-egress",
             "side-effects",
-            "deterministic-conformance",
+            "conformance-evidence",
             "availability",
             "skill-runtime-eligibility"
           ]

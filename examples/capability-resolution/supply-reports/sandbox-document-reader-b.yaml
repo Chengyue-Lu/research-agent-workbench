@@ -21,7 +21,7 @@ supported_inputs: [source-reference, expected-source-hash, read-boundary, data-b
 supported_outputs: [bounded-document-fragments, stable-source-locators, observed-source-hash]
 produced_artifacts: [read-receipt]
 required_permissions:
-  filesystem: read-approved-inputs-and-write-task-artifacts
+  filesystem: worktree-write
   network: forbidden
   external_write: false
 data_egress_behavior:
@@ -34,16 +34,22 @@ side_effects:
 conformance_evidence:
   - evidence_id: CONF-SANDBOX-DOCUMENT-READER-B
     evidence_class: deterministic
-    status: pass
+    artifact_kind: capability-conformance-evidence
     artifact_ref:
       path: examples/capability-resolution/conformance/sandbox-document-reader-b.json
-      sha256: 39713bbe778965e519a290e65caed78e92d0d9f590ab8acc2f5bbf9d88c1cdb7
+      sha256: e7b45117a74823be85be36346824fb34c8ba6ac08b6d512dbcd2682397c6e9cc
 availability:
   status: available
-  scope: fixture-only
+  scope:
+    scope_kind: fixture-only
+    fixture_id: CONF-SANDBOX-DOCUMENT-READER-B
   observed_at: "2026-08-24T00:00:00Z"
+  valid_until: "2099-12-31T23:59:59Z"
   facts:
     - The synthetic fixture declares one local Adapter and Provider pair for replacement-boundary tests.
+limits:
+  known: []
+  unknown: [account, host, region, model, runtime]
 limitations:
   - Fixture-only availability is not live Provider conformance or API evidence.
   - The Report states supply facts and cannot select itself.

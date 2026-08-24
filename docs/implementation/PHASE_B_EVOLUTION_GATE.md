@@ -27,9 +27,9 @@ Snapshot A/B 必须保留同一 Method 和 Requirement，只允许 exact supply 
 当前 bounded fixture 将本地 Tool A 替换为 Adapter/Provider B，并要求：
 
 - selected Supply Report 与 frozen supply identity 确实不同；
-- `effective_permissions` 完全相同；
-- `data_egress` 完全相同；
-- `side_effects` 完全相同；
+- `supply_required_permissions` 完全相同；
+- `supply_data_egress` 完全相同；
+- `supply_side_effects` 完全相同；
 - Snapshot 继续声明无 Method、permission、Claim、Human Decision 或 fallback authority。
 
 这里采用“边界完全相同”作为首版 Gate，比仅判断“不放宽”更保守。以后若需要合法收紧，必须新增

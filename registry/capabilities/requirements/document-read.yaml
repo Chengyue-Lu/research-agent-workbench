@@ -20,7 +20,7 @@ required_artifacts:
   - read-receipt
 constraints:
   permission_ceiling:
-    filesystem: read-approved-inputs-and-write-task-artifacts
+    filesystem: worktree-write
     network: forbidden
     external_write: false
   data_egress:

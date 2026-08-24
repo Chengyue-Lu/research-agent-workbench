@@ -4,8 +4,10 @@ from dataclasses import dataclass
 from typing import Any, Callable, Mapping, Sequence
 
 from research_workbench.capability.requirements import CapabilityRequirement
+from research_workbench.capability.resolver import permission_policy_covers
 from research_workbench.contracts.common import (
     ContractError,
+    PermissionPolicy,
     mapping_value,
     require_string,
     string_tuple,
@@ -20,18 +22,12 @@ CHECK_ORDER = (
     "permission",
     "data-egress",
     "side-effects",
-    "deterministic-conformance",
+    "conformance-evidence",
     "availability",
     "skill-runtime-eligibility",
 )
 
-_FILESYSTEM_RANK = {
-    "forbidden": 0,
-    "write-task-artifacts": 1,
-    "read-approved-inputs-and-write-task-artifacts": 2,
-    "task-scope-write": 3,
-}
-_NETWORK_RANK = {"forbidden": 0, "approved-external-read": 1}
+SUPPLY_KINDS = {"procedure", "tool", "adapter-provider", "skill"}
 
 
 def _mapping_tuple(data: Mapping[str, Any], key: str) -> tuple[Mapping[str, Any], ...]:
@@ -75,14 +71,34 @@ class SupplyIdentity:
 
     @classmethod
     def from_mapping(cls, data: Mapping[str, Any]) -> "SupplyIdentity":
+        supply_kind = require_string(data, "supply_kind")
         skill_lifecycle_ref = data.get("skill_lifecycle_ref")
         runtime_eligibility_ref = data.get("runtime_eligibility_ref")
         if skill_lifecycle_ref is not None and not isinstance(skill_lifecycle_ref, str):
             raise ContractError("skill_lifecycle_ref", "must be a string")
         if runtime_eligibility_ref is not None and not isinstance(runtime_eligibility_ref, str):
             raise ContractError("runtime_eligibility_ref", "must be a string")
+        if supply_kind not in SUPPLY_KINDS:
+            raise ContractError(
+                "supply_kind",
+                f"must be one of {sorted(SUPPLY_KINDS)}; no-Skill is a binding disposition, not a Supply",
+            )
+        if supply_kind == "skill":
+            if not skill_lifecycle_ref:
+                raise ContractError(
+                    "skill_lifecycle_ref", "is required for a Skill Supply"
+                )
+            if not runtime_eligibility_ref:
+                raise ContractError(
+                    "runtime_eligibility_ref", "is required for a Skill Supply"
+                )
+        elif skill_lifecycle_ref is not None or runtime_eligibility_ref is not None:
+            raise ContractError(
+                "supply_identity",
+                "Skill lifecycle and runtime eligibility references are forbidden for non-Skill Supplies",
+            )
         return cls(
-            supply_kind=require_string(data, "supply_kind"),
+            supply_kind=supply_kind,
             implementation_ref=require_string(data, "implementation_ref"),
             implementation_version=require_string(data, "implementation_version"),
             content_hash=require_string(data, "content_hash"),
@@ -111,6 +127,7 @@ class CapabilitySupplyReport:
     side_effects: Mapping[str, Any]
     conformance_evidence: tuple[Mapping[str, Any], ...]
     availability: Mapping[str, Any]
+    limits: Mapping[str, Any]
     limitations: tuple[str, ...]
 
     @property
@@ -142,6 +159,7 @@ class CapabilitySupplyReport:
             side_effects=dict(mapping_value(data, "side_effects", required=True)),
             conformance_evidence=_mapping_tuple(data, "conformance_evidence"),
             availability=dict(mapping_value(data, "availability", required=True)),
+            limits=dict(mapping_value(data, "limits", required=True)),
             limitations=string_tuple(data, "limitations", required=True),
         )
 
@@ -166,14 +184,14 @@ def _check(name: str, status: str, reason: str) -> dict[str, str]:
 
 def _permission_check(requirement: CapabilityRequirement, report: CapabilitySupplyReport) -> dict[str, str]:
     ceiling = requirement.constraints.permission_ceiling
-    supply = report.required_permissions
-    valid = (
-        _FILESYSTEM_RANK.get(str(supply.get("filesystem")), 999)
-        <= _FILESYSTEM_RANK.get(ceiling.filesystem, -1)
-        and _NETWORK_RANK.get(str(supply.get("network")), 999)
-        <= _NETWORK_RANK.get(ceiling.network, -1)
-        and not (bool(supply.get("external_write")) and not ceiling.external_write)
+    ceiling_policy = PermissionPolicy(
+        filesystem=ceiling.filesystem,
+        network=ceiling.network,
+        external_write=ceiling.external_write,
+        allowed_roots=(),
     )
+    supply_policy = PermissionPolicy.from_mapping(report.required_permissions)
+    valid = permission_policy_covers(ceiling_policy, supply_policy)
     return _check(
         "permission",
         "pass" if valid else "fail",
@@ -223,50 +241,108 @@ def _side_effect_check(requirement: CapabilityRequirement, report: CapabilitySup
     )
 
 
+def _qualification_check(
+    report: CapabilitySupplyReport,
+    *,
+    qualification: str,
+) -> dict[str, str]:
+    scope = report.availability.get("scope")
+    scope_mapping = scope if isinstance(scope, Mapping) else {}
+    scope_kind = str(scope_mapping.get("scope_kind"))
+    status = str(report.availability.get("status"))
+    if qualification == "runtime-execution":
+        if (
+            report.observation_scope == "synthetic-bounded-fixture"
+            or scope_kind == "fixture-only"
+        ):
+            return _check(
+                "availability",
+                "fail",
+                "Synthetic or fixture-only Supply facts can qualify structural replay only.",
+            )
+        if status == "available":
+            return _check(
+                "availability",
+                "pass",
+                f"Supply reports non-fixture availability in scope {scope_kind!r}; final Runtime admission remains external.",
+            )
+        return _check(
+            "availability",
+            "fail" if status == "unavailable" else "unknown",
+            f"Supply reports availability status {status!r} in scope {scope_kind!r}.",
+        )
+    if status == "available":
+        return _check(
+            "availability",
+            "pass",
+            f"Supply reports availability in scope {scope_kind!r}.",
+        )
+    return _check(
+        "availability",
+        "fail" if status == "unavailable" else "unknown",
+        f"Supply reports availability status {status!r} in scope {scope_kind!r}.",
+    )
+
+
 def assess_supply(
     requirement: CapabilityRequirement,
     report: CapabilitySupplyReport,
     *,
+    evaluated_at: object | None = None,
+    qualification: str = "structural-replay",
+    evidence_check: Callable[[SupplyIdentity, Mapping[str, Any], str], str] | None = None,
     runtime_eligibility_check: Callable[[str, str], bool] | None = None,
 ) -> SupplyAssessment:
+    if qualification not in {"structural-replay", "runtime-execution"}:
+        raise ValueError(f"unknown capability qualification: {qualification}")
+    # Kept as a compatibility input for persisted Resolution callers. Phase B
+    # records the timestamp but does not use it as an availability admission
+    # clock; real execution freshness belongs to the Runtime producer/consumer.
+    _ = evaluated_at
     required_inputs = set(requirement.required_inputs)
     required_outputs = set(requirement.required_outputs)
     supported_inputs = set(report.supported_inputs)
     supported_outputs = set(report.supported_outputs)
     produced_artifacts = set(report.produced_artifacts)
-    evidence = tuple(report.conformance_evidence)
-    deterministic = [
-        item for item in evidence if item.get("evidence_class") == "deterministic"
+    eligible_evidence_class = "live" if qualification == "runtime-execution" else "deterministic"
+    relevant_evidence = [
+        item
+        for item in report.conformance_evidence
+        if item.get("evidence_class") == eligible_evidence_class
     ]
-    if any(item.get("status") == "fail" for item in deterministic):
+    verified = [
+        evidence_check(report.supply_identity, item, requirement.requirement_id)
+        if evidence_check is not None
+        else "unknown"
+        for item in relevant_evidence
+    ]
+    if any(status == "fail" for status in verified):
         conformance_status = "fail"
-        conformance_reason = "At least one deterministic conformance record reports failure."
-    elif any(item.get("status") == "pass" for item in deterministic):
+        conformance_reason = "A typed conformance artifact fails or does not match its declared subject."
+    elif any(status == "pass" for status in verified):
         conformance_status = "pass"
-        conformance_reason = "At least one deterministic conformance record reports pass."
+        conformance_reason = "A typed, hash-bound conformance artifact proves the required capability."
     else:
         conformance_status = "unknown"
-        conformance_reason = "No passing deterministic conformance record is reported."
-
-    availability = str(report.availability.get("status"))
-    availability_status = (
-        "pass" if availability == "available" else "fail" if availability == "unavailable" else "unknown"
-    )
+        conformance_reason = "No typed, verified conformance artifact proves the required capability."
     if report.supply_identity.supply_kind == "skill":
         lifecycle_ref = report.supply_identity.skill_lifecycle_ref
         eligibility_ref = report.supply_identity.runtime_eligibility_ref
-        eligible = bool(
+        lifecycle_reports_eligible = bool(
             runtime_eligibility_check
             and lifecycle_ref
             and eligibility_ref
             and runtime_eligibility_check(lifecycle_ref, eligibility_ref)
         )
-        skill_status = "pass" if eligible else "unknown"
-        skill_reason = (
-            "Skill lifecycle and runtime eligibility references resolve to a current eligible record."
-            if eligible
-            else "Skill runtime eligibility is absent, unknown, or not current in lifecycle v2."
-        )
+        if qualification == "structural-replay":
+            skill_status = "not-applicable"
+            skill_reason = "Structural replay does not create a new Skill binding."
+        elif lifecycle_reports_eligible:
+            skill_status = "pass"
+            skill_reason = "The caller verified lifecycle evidence and Human-decision provenance for this new binding."
+        else:
+            skill_status = "unknown"
+            skill_reason = "Skill new-binding eligibility is absent or unverified and remains fail-closed."
     else:
         skill_status = "not-applicable"
         skill_reason = "This Core supply is not a Skill and needs no Skill lifecycle decision."
@@ -303,11 +379,10 @@ def assess_supply(
         _permission_check(requirement, report),
         _data_egress_check(requirement, report),
         _side_effect_check(requirement, report),
-        _check("deterministic-conformance", conformance_status, conformance_reason),
-        _check(
-            "availability",
-            availability_status,
-            f"Supply availability is reported as {availability!r} within scope {report.availability.get('scope')!r}.",
+        _check("conformance-evidence", conformance_status, conformance_reason),
+        _qualification_check(
+            report,
+            qualification=qualification,
         ),
         _check("skill-runtime-eligibility", skill_status, skill_reason),
     )
@@ -320,7 +395,7 @@ def resolve_status(assessments: Sequence[SupplyAssessment]) -> tuple[str, str | 
     if len(eligible) == 1:
         return "satisfied", eligible[0]
     if len(eligible) > 1:
-        return "requires-decision", None
+        return "ambiguous", None
     ceiling_checks = {"permission", "data-egress", "side-effects"}
     if any(
         check["check"] in ceiling_checks and check["status"] == "fail"
@@ -328,4 +403,4 @@ def resolve_status(assessments: Sequence[SupplyAssessment]) -> tuple[str, str | 
         for check in assessment.checks
     ):
         return "blocked", None
-    return "unsatisfied-gap", None
+    return "gap", None

@@ -9,12 +9,13 @@
     "schema_version",
     "resolution_id",
     "revision",
+    "qualification",
+    "evaluated_at",
     "method_resolution_ref",
     "requirement_ref",
     "candidate_supply_report_refs",
     "comparisons",
     "resolution_status",
-    "authority_basis",
     "limitations",
     "boundaries"
   ],
@@ -22,6 +23,8 @@
     "schema_version": { "const": "0.1.0" },
     "resolution_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "revision": { "type": "integer", "minimum": 1 },
+    "qualification": { "enum": ["structural-replay", "runtime-execution"] },
+    "evaluated_at": { "type": "string", "format": "date-time" },
     "method_resolution_ref": {
       "allOf": [
         { "$ref": "capability-supply-common.schema.json#/$defs/versionedDocumentRef" },
@@ -63,28 +66,10 @@
       }
     },
     "resolution_status": {
-      "enum": ["satisfied", "unsatisfied-gap", "requires-decision", "blocked"]
+      "enum": ["satisfied", "gap", "ambiguous", "blocked"]
     },
     "selected_supply_report_ref": {
       "$ref": "common.schema.json#/$defs/nonEmptyString"
-    },
-    "authority_basis": {
-      "type": "object",
-      "required": [
-        "matrix_ref",
-        "decision_kind",
-        "selection_effect",
-        "eligibility_required_after_snapshot"
-      ],
-      "properties": {
-        "matrix_ref": {
-          "$ref": "capability-supply-common.schema.json#/$defs/versionedDocumentRef"
-        },
-        "decision_kind": { "const": "skill-tool-binding" },
-        "selection_effect": { "const": "candidate-for-snapshot" },
-        "eligibility_required_after_snapshot": { "const": true }
-      },
-      "additionalProperties": false
     },
     "limitations": {
       "type": "array",

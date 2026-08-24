@@ -20,6 +20,7 @@
     "side_effects",
     "conformance_evidence",
     "availability",
+    "limits",
     "limitations",
     "authority_boundaries"
   ],
@@ -74,11 +75,13 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["evidence_id", "evidence_class", "status", "artifact_ref"],
+        "required": ["evidence_id", "evidence_class", "artifact_kind", "artifact_ref"],
         "properties": {
           "evidence_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
           "evidence_class": { "enum": ["deterministic", "live"] },
-          "status": { "enum": ["pass", "fail", "not-observed"] },
+          "artifact_kind": {
+            "enum": ["capability-conformance-evidence", "provider-conformance-report"]
+          },
           "artifact_ref": { "$ref": "common.schema.json#/$defs/fileRef" }
         },
         "additionalProperties": false
@@ -89,12 +92,57 @@
       "required": ["status", "scope", "observed_at", "facts"],
       "properties": {
         "status": { "enum": ["available", "unavailable", "unknown"] },
-        "scope": { "enum": ["fixture-only", "local-environment", "declared-runtime"] },
+        "scope": {
+          "type": "object",
+          "required": ["scope_kind"],
+          "properties": {
+            "scope_kind": { "enum": ["fixture-only", "local-environment", "provider-observation"] },
+            "fixture_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+            "scope_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "scope_kind": { "const": "fixture-only" } }, "required": ["scope_kind"] },
+              "then": { "required": ["fixture_id"] }
+            },
+            {
+              "if": {
+                "properties": {
+                  "scope_kind": {
+                    "enum": ["local-environment", "provider-observation"]
+                  }
+                },
+                "required": ["scope_kind"]
+              },
+              "then": { "required": ["scope_ref"] }
+            }
+          ],
+          "additionalProperties": false
+        },
         "observed_at": { "type": "string", "format": "date-time" },
+        "valid_until": { "type": "string", "format": "date-time" },
         "facts": {
           "type": "array",
           "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
           "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "limits": {
+      "description": "Stable known limits and explicitly unknown producer facts; never a price or routing table.",
+      "type": "object",
+      "required": ["known", "unknown"],
+      "properties": {
+        "known": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "uniqueItems": true
+        },
+        "unknown": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
           "uniqueItems": true
         }
       },

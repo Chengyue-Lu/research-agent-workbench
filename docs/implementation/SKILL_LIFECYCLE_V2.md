@@ -29,16 +29,22 @@ Lifecycle Record 不保存 actual trial result、evaluation result、benchmark m
 - `runtime_eligibility`：`ineligible / trial-only / eligible / historical-replay-only`；
 - `lifecycle`：`current / superseded / retired / legacy-preserved`。
 
-`eligible` 不是 admission 的别名。一个 Skill 只有同时满足以下条件，才能成为 M9-005 Skill Supply：
+`eligible` 不是 admission 的别名。状态字段最多形成结构资格；一个 Skill 只有同时满足以下条件，才可进入
+M9-005 的新绑定验证：
 
 - `record_scope = current`；
 - evaluation 为 `evidence-ready`；
+- `trial_ref`、`evaluation_record_ref` 与非空 `promotion_evidence_refs` 均存在；
 - admission 为 Human `accepted` 且有 `decision_ref`；
-- runtime eligibility 为 `eligible`；
+- runtime eligibility 为 `eligible` 且 scopes 明确包含 `new-binding`；
 - lifecycle 为 `current`；
 - Supply Report 的 `skill_lifecycle_ref` 与 `runtime_eligibility_ref` 精确匹配。
 
-`trial-only` 只能服务隔离 trial，不能进入普通 Snapshot；superseded / retired 不能保持当前 runtime
+真正 Runtime eligibility 还必须由外部 evidence resolver 解析 baseline/trial/evaluation/promotion refs，并由
+Human-decision resolver 解析 `decision_ref`。Lifecycle Record 不证明这些引用的内容；未提供任一 resolver
+时 `runtime_eligible()` 默认返回 false，Phase B 不借状态字段实现 Phase D 或 Human Decision。
+
+`trial-only` 只能服务隔离 trial，不能通过普通 new-binding 检查；superseded / retired 不能保持当前 runtime
 eligibility。Lifecycle 本身不授予 permission、Claim 或 Human Gate。
 
 ## Legacy migration
@@ -66,9 +72,12 @@ entry 时，旧 migration 仍可重放；已映射 entry 的 identity/hash 被�
 - index/path/hash/identity 漂移或未入索引的 Lifecycle Record；
 - legacy source entry 或 migration target 漂移；
 - trial admission 缺少 trial ref 或 trial-only eligibility；
-- runtime eligibility 绕过 evaluation / Human admission；
 - superseded/retired 仍声称 current runtime eligibility；
 - Skill Supply 引用不存在、不匹配或非 current 的 lifecycle eligibility。
+
+一般 `eligible` 状态即使使用其他 scope 或缺少 promotion 引用，也可作为结构文档被解析；
+`eligible_for_new_binding()` 会返回 false。Repository validator 不借此实现 Phase D evidence 或 Human
+Decision 解析。
 
 本轮不重新设计 accepted Skill package、Assignment、benchmark、trial runner、Provider/Runtime 或 Human
 Decision provenance。旧 Assignment 的精确历史回放继续由现有 accepted Registry 兼容 seam 负责。

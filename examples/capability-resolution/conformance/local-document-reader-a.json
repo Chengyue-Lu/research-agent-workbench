@@ -1,8 +1,13 @@
 {
-  "fixture_kind": "synthetic-capability-conformance",
-  "fixture_id": "CONF-LOCAL-DOCUMENT-READER-A",
-  "implementation_ref": "fixture-local-document-reader-a@1.0.0",
-  "scope": "synthetic-bounded-fixture",
+  "evidence_kind": "deterministic-fixture",
+  "evidence_id": "CONF-LOCAL-DOCUMENT-READER-A",
+  "implementation_ref": "fixture-local-document-reader-a",
+  "implementation_version": "1.0.0",
+  "capability_ids": ["document-read"],
+  "scope": {
+    "scope_kind": "synthetic-bounded-fixture",
+    "fixture_id": "CONF-LOCAL-DOCUMENT-READER-A"
+  },
   "checks": [
     "accepts every document-read input class",
     "emits every document-read output class",

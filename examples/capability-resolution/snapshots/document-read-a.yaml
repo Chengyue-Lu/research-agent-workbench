@@ -1,10 +1,15 @@
 schema_version: 0.1.0
 snapshot_id: RCS-DOCUMENT-READ-A
 revision: 1
+qualification: structural-replay
+task_ref:
+  ref: TASK-MR-ES-FROZEN-001@r1
+  document_path: examples/method-resolution-tasks/TASK-MR-ES-FROZEN-001.yaml
+  content_hash: sha256:a72229692e6e0258dc2fc53096505f5c10b6c743ab1c5ec528588cad8b92865f
 resolution_ref:
   ref: CR-DOCUMENT-READ-A@r1
   document_path: examples/capability-resolution/resolutions/document-read-a.yaml
-  content_hash: sha256:3fe6131c9696083f1fe01a8991e4479db1530936ef3ca663c1f1ab33ae222580
+  content_hash: sha256:038a4e37e85be9999bbc5a65695b0043031c08a0e9c88a897c1a580b51115d92
 method_resolution_ref:
   ref: MR-ROUTE-ES-FROZEN-001@r1
   document_path: examples/method-resolutions/ROUTE-ES-FROZEN-001.yaml
@@ -12,11 +17,11 @@ method_resolution_ref:
 requirement_ref:
   requirement_id: document-read
   document_path: registry/capabilities/requirements/document-read.yaml
-  content_hash: sha256:7cf374c2cbc8fbe9d0698fd3bdf209d7a3fc015c1fe485e06f8450cd7a38e916
+  content_hash: sha256:69828f931297fbaef030d51362aba95ef06f5dd1027e4077872ffbbcb52ea4cc
 selected_supply_report_ref:
   ref: supply-local-document-reader-a@1.0.0
   document_path: examples/capability-resolution/supply-reports/local-document-reader-a.yaml
-  content_hash: sha256:a49f94cad3ecb356cce80ae718fd43dce67ba8e7f491c7a8266cb264702e5ed1
+  content_hash: sha256:5a4619b8bb253b078dc02bf3e61e719d119697cfe3a6310b368a7c77651bfa21
 supply_identity:
   supply_kind: tool
   implementation_ref: fixture-local-document-reader-a
@@ -27,31 +32,25 @@ supply_identity:
       component_ref: fixture-local-document-reader-a
       version: 1.0.0
       content_hash: sha256:689b45bd23e29f097c4387b1c50adf55c335ff5ebf72f45c5f825c40bf5e228e
-effective_permissions:
-  filesystem: read-approved-inputs-and-write-task-artifacts
+supply_required_permissions:
+  filesystem: worktree-write
   network: forbidden
   external_write: false
-data_egress:
+supply_data_egress:
   policy: forbidden
   allowed_payloads: []
   forbidden_payloads: [private-full-text, unpublished-results, unrelated-project-context]
-side_effects:
+supply_side_effects:
   policy: allowlisted-only
   allowed_effects: [task-local-read-cache]
 conformance_evidence_refs:
   - path: examples/capability-resolution/conformance/local-document-reader-a.json
-    sha256: 689b45bd23e29f097c4387b1c50adf55c335ff5ebf72f45c5f825c40bf5e228e
-authority_eligibility:
-  decision_kind: skill-tool-binding
-  operation: validate
-  actor_class: deterministic-resolver
-  required_asserted_facts: [capability-snapshot-frozen, permission-intersection-satisfied]
-  effect: eligibility-not-authorization
+    sha256: 273c80a8de9357146612aba1846315a6d0b2c1027a4ae5ec75791890ac25ee78
 limitations:
-  - This Snapshot is an execution input only after external policy and authority requirements are satisfied.
+  - This structural Snapshot freezes Supply-side facts only and is not a Runtime execution input.
   - Fixture-only availability is not a live execution fact.
 boundaries:
-  execution_input: true
+  execution_input: false
   method_decision: false
   permission_grant: false
   claim_effect: false

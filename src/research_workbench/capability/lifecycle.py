@@ -2,16 +2,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable, Mapping
+from typing import Any, Callable, Iterable, Mapping
 
-from research_workbench.artifacts.integrity import hash_file, resolve_within_root
+from research_workbench.artifacts.integrity import hash_bytes, resolve_within_root
 from research_workbench.contracts.common import (
     ContractError,
     mapping_value,
     require_string,
     string_tuple,
 )
-from research_workbench.io import load_document
+from research_workbench.io import load_document, load_document_bytes
 
 
 DEFAULT_SKILL_LIFECYCLE_INDEX = Path("registry/skills/lifecycle-v2.json")
@@ -155,10 +155,45 @@ class SkillLifecycleRecord:
         return (
             self.record_scope == "current"
             and self.evaluation.state == "evidence-ready"
+            and self.evaluation.trial_ref is not None
+            and self.evaluation.evaluation_record_ref is not None
+            and bool(self.evaluation.promotion_evidence_refs)
             and self.admission.state == "accepted"
             and self.admission.decision_owner == "human"
+            and self.admission.decision_ref is not None
             and self.runtime_eligibility.state == "eligible"
+            and "new-binding" in self.runtime_eligibility.scopes
             and self.lifecycle.state == "current"
+        )
+
+    def externally_verified_for_new_binding(
+        self,
+        *,
+        evidence_resolver: Callable[[str], bool],
+        decision_resolver: Callable[[str], bool],
+    ) -> bool:
+        """Require external evidence and Human-decision verification.
+
+        Lifecycle v2 records only carry references. Their state fields can establish
+        structural eligibility, but cannot prove Phase D evidence or a Human Decision.
+        """
+
+        if not self.eligible_for_new_binding():
+            return False
+        evidence_refs = (
+            self.evaluation.baseline_ref,
+            self.evaluation.trial_ref,
+            self.evaluation.evaluation_record_ref,
+            *self.evaluation.promotion_evidence_refs,
+        )
+        decision_ref = self.admission.decision_ref
+        return (
+            all(
+                reference is not None and evidence_resolver(reference)
+                for reference in evidence_refs
+            )
+            and decision_ref is not None
+            and decision_resolver(decision_ref)
         )
 
     @classmethod
@@ -252,9 +287,10 @@ class SkillLifecycleSet:
             resolved = resolve_within_root(root, document_path)
             if resolved is None or not resolved.is_file():
                 raise ValueError(f"Skill Lifecycle path is missing or escapes root: {document_path}")
-            if hash_file(resolved) != content_hash:
+            content = resolved.read_bytes()
+            if hash_bytes(content) != content_hash:
                 raise ValueError(f"Skill Lifecycle content drift: {lifecycle_ref}")
-            document = load_document(resolved)
+            document = load_document_bytes(resolved, content)
             if not isinstance(document, Mapping):
                 raise ValueError(f"Skill Lifecycle is not an object: {document_path}")
             record = SkillLifecycleRecord.from_mapping(document)
@@ -295,9 +331,17 @@ class SkillLifecycleSet:
         self,
         lifecycle_ref: str,
         eligibility_ref: str,
+        *,
+        evidence_resolver: Callable[[str], bool] | None = None,
+        decision_resolver: Callable[[str], bool] | None = None,
     ) -> bool:
         record = self.require((lifecycle_ref,))[0]
+        if evidence_resolver is None or decision_resolver is None:
+            return False
         return (
             record.runtime_eligibility.eligibility_ref == eligibility_ref
-            and record.eligible_for_new_binding()
+            and record.externally_verified_for_new_binding(
+                evidence_resolver=evidence_resolver,
+                decision_resolver=decision_resolver,
+            )
         )

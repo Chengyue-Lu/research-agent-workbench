@@ -9,11 +9,12 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from datetime import datetime
 from enum import StrEnum
 from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any, Iterable, Mapping
 
-from research_workbench.artifacts.integrity import hash_file
+from research_workbench.artifacts.integrity import hash_bytes, hash_file
 from research_workbench.capability.requirements import CapabilityRequirement
 from research_workbench.capability.supply import (
     CapabilitySupplyReport,
@@ -21,8 +22,11 @@ from research_workbench.capability.supply import (
     resolve_status,
 )
 from research_workbench.capability.lifecycle import SkillLifecycleRecord
-from research_workbench.io import load_document
-from research_workbench.contracts.common import ContractError, parse_skill_reference
+from research_workbench.io import load_document_bytes
+from research_workbench.contracts.common import (
+    ContractError,
+    parse_skill_reference,
+)
 from research_workbench.protocol.migrations import (
     RESEARCH_MODE_MIGRATION_ID,
     RESEARCH_MODE_MIGRATION_VERSION,
@@ -49,6 +53,52 @@ class ValidationIssue:
     code: str
     message: str
     severity: Severity = Severity.ERROR
+
+
+class LoadedDocuments(dict[Path, Any]):
+    """Parsed documents bound to SHA-256 digests from the same byte reads."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._sha256_by_path: dict[Path, str] = {}
+
+    def add(self, path: Path, document: Any, *, sha256: str) -> None:
+        self[path] = document
+        self._sha256_by_path[path] = sha256
+
+    def sha256_for(self, path: Path) -> str | None:
+        return self._sha256_by_path.get(path)
+
+
+def _document_hash(documents: Mapping[Path, Any], path: Path) -> str:
+    """Return the digest of the bytes that produced the loaded mapping.
+
+    ``load_and_validate`` always supplies ``LoadedDocuments`` so reference and
+    identity checks cannot re-read a path after parsing. Plain mappings remain
+    supported for in-memory unit tests and existing direct callers.
+    """
+
+    if isinstance(documents, LoadedDocuments):
+        return documents.sha256_for(path) or ""
+    return hash_file(path)
+
+
+def _document_has_loaded_bytes(documents: Mapping[Path, Any], path: Path) -> bool:
+    if isinstance(documents, LoadedDocuments):
+        return documents.sha256_for(path) is not None
+    return path.is_file()
+
+
+def _aware_datetime(value: Any) -> datetime | None:
+    if not isinstance(value, str):
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        return None
+    return parsed
 
 
 COMMON_REQUIRED = ("schema_version",)
@@ -170,7 +220,11 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "method_resolution"
     if "requirement_id" in document and "constraints" in document and "unsatisfied_requirement" in document:
         return "capability_requirement"
-    if document.get("fixture_kind") == "synthetic-capability-conformance":
+    if document.get("evidence_kind") in {
+        "deterministic-fixture",
+        "local-conformance",
+        "live-conformance",
+    }:
         return "capability_conformance_evidence"
     if "need_id" in document and "semantic_gap" in document and "evaluation_requirements" in document:
         return "skill_need"
@@ -550,7 +604,7 @@ def _validate_mode_action_registry(documents: Mapping[Path, Any]) -> list[Valida
             expected_hash = entry.get("content_hash")
             if isinstance(expected_hash, str):
                 expected_hash = expected_hash.removeprefix("sha256:").lower()
-                if hash_file(document_path) != expected_hash:
+                if _document_hash(documents, document_path) != expected_hash:
                     issues.append(
                         ValidationIssue(
                             registry_path,
@@ -691,8 +745,8 @@ def _validate_capability_requirement_set(
                 )
             )
         expected_hash = entry.get("content_hash")
-        if isinstance(expected_hash, str) and loaded_path.is_file():
-            if hash_file(loaded_path) != expected_hash.removeprefix("sha256:").lower():
+        if isinstance(expected_hash, str) and _document_has_loaded_bytes(documents, loaded_path):
+            if _document_hash(documents, loaded_path) != expected_hash.removeprefix("sha256:").lower():
                 issues.append(
                     ValidationIssue(
                         index_path,
@@ -876,8 +930,8 @@ def _validate_skill_need_set(documents: Mapping[Path, Any]) -> list[ValidationIs
                 )
             )
         expected_hash = entry.get("content_hash")
-        if isinstance(expected_hash, str) and loaded_path.is_file():
-            if hash_file(loaded_path) != expected_hash.removeprefix("sha256:").lower():
+        if isinstance(expected_hash, str) and _document_has_loaded_bytes(documents, loaded_path):
+            if _document_hash(documents, loaded_path) != expected_hash.removeprefix("sha256:").lower():
                 issues.append(
                     ValidationIssue(
                         index_path,
@@ -1180,8 +1234,8 @@ def _validate_protocol_profile_set(
                 )
             )
         expected_hash = entry.get("content_hash")
-        if isinstance(expected_hash, str) and loaded_path.is_file():
-            if hash_file(loaded_path) != expected_hash.removeprefix("sha256:").lower():
+        if isinstance(expected_hash, str) and _document_has_loaded_bytes(documents, loaded_path):
+            if _document_hash(documents, loaded_path) != expected_hash.removeprefix("sha256:").lower():
                 issues.append(
                     ValidationIssue(
                         index_path,
@@ -1504,8 +1558,8 @@ def _validate_skill_lifecycle_v2(
                 )
             )
         expected_hash = entry.get("content_hash")
-        if isinstance(expected_hash, str) and loaded_path.is_file():
-            if hash_file(loaded_path) != expected_hash.removeprefix("sha256:").lower():
+        if isinstance(expected_hash, str) and _document_has_loaded_bytes(documents, loaded_path):
+            if _document_hash(documents, loaded_path) != expected_hash.removeprefix("sha256:").lower():
                 issues.append(
                     ValidationIssue(
                         index_path,
@@ -1568,14 +1622,6 @@ def _validate_skill_lifecycle_v2(
                     loaded_path,
                     "SKILL-LIFECYCLE-TRIAL-INCONSISTENT",
                     "trial admission requires a trial_ref and trial-only runtime eligibility",
-                )
-            )
-        if runtime_state == "eligible" and not record.eligible_for_new_binding():
-            issues.append(
-                ValidationIssue(
-                    loaded_path,
-                    "SKILL-LIFECYCLE-RUNTIME-ELIGIBILITY-INCONSISTENT",
-                    "eligible runtime state requires current scope, evidence-ready evaluation, Human accepted admission, and current lifecycle",
                 )
             )
         if runtime_state == "trial-only" and (
@@ -1774,7 +1820,14 @@ def _validate_capability_supply_chain(
         return bool(
             record
             and record.runtime_eligibility.eligibility_ref == eligibility_ref
-            and record.eligible_for_new_binding()
+            and record.externally_verified_for_new_binding(
+                # Phase B has no authoritative Phase D evidence or Human
+                # Decision document resolver.  Lifecycle state and reference
+                # strings therefore remain structural facts and must fail
+                # closed for a new Runtime binding.
+                evidence_resolver=lambda _reference: False,
+                decision_resolver=lambda _reference: False,
+            )
         )
 
     def loaded_ref(
@@ -1785,10 +1838,20 @@ def _validate_capability_supply_chain(
         hash_code: str,
     ) -> tuple[Path, Mapping[str, Any]] | None:
         if not isinstance(reference, Mapping):
+            issues.append(
+                ValidationIssue(owner_path, missing_code, "reference must be an object")
+            )
             return None
         document_path = reference.get("document_path")
         expected_hash = reference.get("content_hash")
         if not isinstance(document_path, str):
+            issues.append(
+                ValidationIssue(
+                    owner_path,
+                    missing_code,
+                    "reference has no repository-relative document_path",
+                )
+            )
             return None
         loaded = _loaded_document_at(documents, document_path)
         if loaded is None:
@@ -1801,8 +1864,8 @@ def _validate_capability_supply_chain(
             )
             return None
         loaded_path, document = loaded
-        if isinstance(expected_hash, str) and loaded_path.is_file():
-            if hash_file(loaded_path) != expected_hash.removeprefix("sha256:").lower():
+        if isinstance(expected_hash, str) and _document_has_loaded_bytes(documents, loaded_path):
+            if _document_hash(documents, loaded_path) != expected_hash.removeprefix("sha256:").lower():
                 issues.append(
                     ValidationIssue(
                         owner_path,
@@ -1811,6 +1874,187 @@ def _validate_capability_supply_chain(
                     )
                 )
         return loaded_path, document
+
+    def validate_evidence(
+        identity: Any,
+        evidence: Mapping[str, Any],
+        required_capability: str | None,
+        *,
+        owner_path: Path | None = None,
+    ) -> str:
+        """Validate evidence semantics and return pass/fail/unknown.
+
+        Provider conformance checks prove only low-level adapter behavior.  They
+        therefore remain ``unknown`` for a high-level M9 Requirement even when
+        the provider report itself passed.
+        """
+
+        artifact_ref = evidence.get("artifact_ref")
+        if not isinstance(artifact_ref, Mapping):
+            return "fail"
+        artifact_path = artifact_ref.get("path")
+        artifact_hash = artifact_ref.get("sha256")
+        if not isinstance(artifact_path, str):
+            return "fail"
+        loaded = _loaded_document_at(documents, artifact_path)
+        if loaded is None:
+            return "fail"
+        loaded_path, artifact = loaded
+        if not isinstance(artifact_hash, str) or (
+            _document_has_loaded_bytes(documents, loaded_path)
+            and _document_hash(documents, loaded_path) != artifact_hash.removeprefix("sha256:").lower()
+        ):
+            return "fail"
+
+        declared_kind = evidence.get("artifact_kind")
+        expected_kind = {
+            "capability-conformance-evidence": "capability_conformance_evidence",
+            "provider-conformance-report": "provider_conformance_report",
+        }.get(str(declared_kind))
+        actual_kind = infer_document_kind(artifact)
+        if expected_kind is None or actual_kind != expected_kind:
+            if owner_path is not None:
+                issues.append(
+                    ValidationIssue(
+                        owner_path,
+                        "CAPABILITY-SUPPLY-EVIDENCE-KIND-MISMATCH",
+                        f"declared artifact kind {declared_kind!r} does not match {actual_kind!r}",
+                    )
+                )
+            return "fail"
+
+        evidence_id = evidence.get("evidence_id")
+        if expected_kind == "capability_conformance_evidence":
+            valid = True
+            checks: tuple[tuple[bool, str, str], ...] = (
+                (
+                    evidence_id == artifact.get("evidence_id"),
+                    "CAPABILITY-SUPPLY-EVIDENCE-IDENTITY-MISMATCH",
+                    "evidence_id does not match the capability evidence identity",
+                ),
+                (
+                    artifact.get("implementation_ref") == identity.implementation_ref,
+                    "CAPABILITY-SUPPLY-EVIDENCE-IMPLEMENTATION-MISMATCH",
+                    "capability evidence implementation does not match Supply identity",
+                ),
+                (
+                    artifact.get("implementation_version") == identity.implementation_version,
+                    "CAPABILITY-SUPPLY-EVIDENCE-VERSION-MISMATCH",
+                    "capability evidence version does not match Supply identity",
+                ),
+            )
+            for passed, code, message in checks:
+                if not passed:
+                    valid = False
+                    if owner_path is not None:
+                        issues.append(ValidationIssue(owner_path, code, message))
+            capabilities = artifact.get("capability_ids")
+            if required_capability is not None and (
+                not isinstance(capabilities, list)
+                or required_capability not in capabilities
+            ):
+                valid = False
+                if owner_path is not None:
+                    issues.append(
+                        ValidationIssue(
+                            owner_path,
+                            "CAPABILITY-SUPPLY-EVIDENCE-CAPABILITY-MISMATCH",
+                            f"capability evidence does not prove {required_capability!r}",
+                        )
+                    )
+            evidence_kind = artifact.get("evidence_kind")
+            evidence_class = evidence.get("evidence_class")
+            if (
+                (evidence_class == "deterministic" and evidence_kind != "deterministic-fixture")
+                or (
+                    evidence_class == "live"
+                    and evidence_kind not in {"local-conformance", "live-conformance"}
+                )
+            ):
+                valid = False
+                if owner_path is not None:
+                    issues.append(
+                        ValidationIssue(
+                            owner_path,
+                            "CAPABILITY-SUPPLY-EVIDENCE-CLASS-MISMATCH",
+                            "Supply evidence_class does not match the typed evidence_kind",
+                        )
+                    )
+            if not valid or artifact.get("result") == "fail":
+                if owner_path is not None and artifact.get("result") == "fail":
+                    issues.append(
+                        ValidationIssue(
+                            owner_path,
+                            "CAPABILITY-SUPPLY-EVIDENCE-RESULT-FAILED",
+                            "referenced capability evidence records a failed result",
+                        )
+                    )
+                return "fail"
+            return "pass" if artifact.get("result") == "pass" else "unknown"
+
+        adapter_components = [
+            component
+            for component in identity.components
+            if component.component_kind == "adapter"
+        ]
+        adapter_matches = any(
+            component.component_ref == artifact.get("adapter_id")
+            and component.version == artifact.get("adapter_version")
+            for component in adapter_components
+        )
+        provider_components = [
+            component
+            for component in identity.components
+            if component.component_kind == "provider"
+        ]
+        provider_matches = any(
+            component.component_ref == artifact.get("provider")
+            for component in provider_components
+        )
+        valid = True
+        provider_checks: tuple[tuple[bool, str, str], ...] = (
+            (
+                evidence_id == artifact.get("report_id"),
+                "CAPABILITY-SUPPLY-EVIDENCE-IDENTITY-MISMATCH",
+                "evidence_id does not match ProviderConformanceReport.report_id",
+            ),
+            (
+                evidence.get("evidence_class") == "live",
+                "CAPABILITY-SUPPLY-EVIDENCE-CLASS-MISMATCH",
+                "ProviderConformanceReport must be referenced as live evidence",
+            ),
+            (
+                adapter_matches,
+                "CAPABILITY-SUPPLY-EVIDENCE-IMPLEMENTATION-MISMATCH",
+                "ProviderConformanceReport adapter identity/version does not match a Supply component",
+            ),
+            (
+                provider_matches,
+                "CAPABILITY-SUPPLY-EVIDENCE-IMPLEMENTATION-MISMATCH",
+                "ProviderConformanceReport provider identity does not match a Supply component",
+            ),
+        )
+        for passed, code, message in provider_checks:
+            if not passed:
+                valid = False
+                if owner_path is not None:
+                    issues.append(ValidationIssue(owner_path, code, message))
+        if not valid or artifact.get("status") == "failed":
+            if owner_path is not None and artifact.get("status") == "failed":
+                issues.append(
+                    ValidationIssue(
+                        owner_path,
+                        "CAPABILITY-SUPPLY-EVIDENCE-RESULT-FAILED",
+                        "referenced ProviderConformanceReport records a failed result",
+                    )
+                )
+            return "fail"
+        # text/structured/tools checks are intentionally not a proof of a
+        # scientific or method-level Capability Requirement.
+        return "unknown"
+
+    def evidence_check(identity: Any, evidence: Mapping[str, Any], requirement_id: str) -> str:
+        return validate_evidence(identity, evidence, requirement_id)
 
     for path, document in documents.items():
         if not isinstance(document, Mapping) or infer_document_kind(document) != "capability_supply_report":
@@ -1835,7 +2079,7 @@ def _validate_capability_supply_chain(
 
         component_kinds = {component.component_kind for component in parsed.supply_identity.components}
         required_kinds = {
-            "no-skill": {"procedure"},
+            "procedure": {"procedure"},
             "tool": {"tool"},
             "adapter-provider": {"adapter", "provider"},
             "skill": {"skill"},
@@ -1848,21 +2092,9 @@ def _validate_capability_supply_chain(
                     f"{parsed.supply_identity.supply_kind} supply requires component kinds {sorted(required_kinds)}",
                 )
             )
-        if parsed.supply_identity.supply_kind == "skill":
-            lifecycle_ref = parsed.supply_identity.skill_lifecycle_ref
-            eligibility_ref = parsed.supply_identity.runtime_eligibility_ref
-            if not (
-                lifecycle_ref
-                and eligibility_ref
-                and runtime_eligibility_check(lifecycle_ref, eligibility_ref)
-            ):
-                issues.append(
-                    ValidationIssue(
-                        path,
-                        "CAPABILITY-SKILL-SUPPLY-NOT-ELIGIBLE",
-                        "Skill supply requires a current lifecycle v2 record with matching runtime eligibility",
-                    )
-                )
+        # A Report only states supply facts.  Skill lifecycle and external
+        # admission evidence are evaluated by Resolution for a requested
+        # qualification; they do not make the Report itself invalid.
         component_keys = [
             (component.component_kind, component.component_ref, component.version)
             for component in parsed.supply_identity.components
@@ -1873,6 +2105,41 @@ def _validate_capability_supply_chain(
                     path,
                     "CAPABILITY-SUPPLY-COMPONENT-DUPLICATE",
                     "Supply Report component identities must be unique",
+                )
+            )
+        availability_scope = parsed.availability.get("scope")
+        expected_scope_kind = {
+            "synthetic-bounded-fixture": "fixture-only",
+            "deterministic-local": "local-environment",
+            "live-observation": "provider-observation",
+        }.get(parsed.observation_scope)
+        if (
+            not isinstance(availability_scope, Mapping)
+            or availability_scope.get("scope_kind") != expected_scope_kind
+        ):
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "CAPABILITY-SUPPLY-OBSERVATION-SCOPE-MISMATCH",
+                    "Report observation_scope does not match its provider-neutral availability scope",
+                )
+            )
+        observed_at = _aware_datetime(parsed.availability.get("observed_at"))
+        valid_until_value = parsed.availability.get("valid_until")
+        valid_until = (
+            _aware_datetime(valid_until_value)
+            if valid_until_value is not None
+            else None
+        )
+        if observed_at is None or (
+            valid_until_value is not None
+            and (valid_until is None or observed_at > valid_until)
+        ):
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "CAPABILITY-SUPPLY-AVAILABILITY-TIME-INVALID",
+                    "availability timestamps must be timezone-aware and valid_until cannot precede observed_at",
                 )
             )
         evidence_ids: set[str] = set()
@@ -1904,13 +2171,59 @@ def _validate_capability_supply_chain(
                         f"conformance evidence artifact is not loaded: {artifact_path}",
                     )
                 )
-            elif isinstance(artifact_hash, str) and loaded[0].is_file():
-                if hash_file(loaded[0]) != artifact_hash.removeprefix("sha256:").lower():
+            elif isinstance(artifact_hash, str) and _document_has_loaded_bytes(documents, loaded[0]):
+                if _document_hash(documents, loaded[0]) != artifact_hash.removeprefix("sha256:").lower():
                     issues.append(
                         ValidationIssue(
                             path,
                             "CAPABILITY-SUPPLY-EVIDENCE-HASH-MISMATCH",
                             f"conformance evidence hash does not match: {artifact_path}",
+                        )
+                    )
+            # Check typed identity and result independently of the status text
+            # carried by the Supply Report.  Report fields never override the
+            # referenced artifact.
+            validate_evidence(parsed.supply_identity, evidence, None, owner_path=path)
+            loaded_artifact = _loaded_document_at(documents, artifact_path)
+            if loaded_artifact is not None and evidence.get("artifact_kind") == "capability-conformance-evidence":
+                capabilities = loaded_artifact[1].get("capability_ids")
+                if isinstance(capabilities, list) and not set(capabilities) <= set(parsed.provided_capabilities):
+                    issues.append(
+                        ValidationIssue(
+                            path,
+                            "CAPABILITY-SUPPLY-EVIDENCE-CAPABILITY-DRIFT",
+                            "capability evidence claims capabilities absent from the Supply Report",
+                        )
+                    )
+                artifact_scope = loaded_artifact[1].get("scope")
+                availability_scope = parsed.availability.get("scope")
+                scope_matches = False
+                if isinstance(artifact_scope, Mapping) and isinstance(
+                    availability_scope, Mapping
+                ):
+                    if evidence.get("evidence_class") == "deterministic":
+                        scope_matches = (
+                            artifact_scope.get("scope_kind")
+                            == "synthetic-bounded-fixture"
+                            and availability_scope.get("scope_kind") == "fixture-only"
+                            and artifact_scope.get("fixture_id")
+                            == availability_scope.get("fixture_id")
+                        )
+                    else:
+                        scope_matches = (
+                            artifact_scope.get("scope_kind")
+                            == availability_scope.get("scope_kind")
+                            and artifact_scope.get("scope_kind")
+                            in {"local-environment", "provider-observation"}
+                            and artifact_scope.get("scope_ref")
+                            == availability_scope.get("scope_ref")
+                        )
+                if not scope_matches:
+                    issues.append(
+                        ValidationIssue(
+                            path,
+                            "CAPABILITY-SUPPLY-EVIDENCE-SCOPE-MISMATCH",
+                            "typed evidence observation scope does not match the Supply availability scope",
                         )
                     )
 
@@ -1997,6 +2310,11 @@ def _validate_capability_supply_chain(
         candidate_refs = document.get("candidate_supply_report_refs", [])
         candidate_ids: list[str] = []
         candidate_reports: list[CapabilitySupplyReport] = []
+        method_is_no_skill = (
+            method_document is not None
+            and isinstance(method_document.get("skill_disposition"), Mapping)
+            and method_document["skill_disposition"].get("status") == "no-skill"
+        )
         for candidate in candidate_refs:
             if not isinstance(candidate, Mapping) or not isinstance(candidate.get("ref"), str):
                 continue
@@ -2026,7 +2344,25 @@ def _validate_capability_supply_chain(
                         f"candidate path does not identify Supply Report: {candidate_ref}",
                     )
                 )
-            candidate_reports.append(registered[2])
+            candidate_report = registered[2]
+            candidate_identity = candidate_report.supply_identity
+            if method_is_no_skill and (
+                candidate_identity.supply_kind == "skill"
+                or any(
+                    component.component_kind == "skill"
+                    for component in candidate_identity.components
+                )
+                or candidate_identity.skill_lifecycle_ref is not None
+                or candidate_identity.runtime_eligibility_ref is not None
+            ):
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "CAPABILITY-RESOLUTION-NO-SKILL-SUPPLY",
+                        "a Method with no-skill disposition cannot resolve through a Skill Supply, Skill component, or Skill lifecycle binding",
+                    )
+                )
+            candidate_reports.append(candidate_report)
         if len(candidate_ids) != len(set(candidate_ids)):
             issues.append(
                 ValidationIssue(
@@ -2036,28 +2372,14 @@ def _validate_capability_supply_chain(
                 )
             )
 
-        matrix_loaded = loaded_ref(
-            path,
-            document.get("authority_basis", {}).get("matrix_ref"),
-            missing_code="CAPABILITY-RESOLUTION-AUTHORITY-MATRIX-MISSING",
-            hash_code="CAPABILITY-RESOLUTION-AUTHORITY-MATRIX-HASH-MISMATCH",
-        )
-        if matrix_loaded is not None:
-            expected_matrix_ref = f"{matrix_loaded[1].get('matrix_id')}@{matrix_loaded[1].get('version')}"
-            if document.get("authority_basis", {}).get("matrix_ref", {}).get("ref") != expected_matrix_ref:
-                issues.append(
-                    ValidationIssue(
-                        path,
-                        "CAPABILITY-RESOLUTION-AUTHORITY-MATRIX-IDENTITY-MISMATCH",
-                        f"Authority Matrix identity does not match: {expected_matrix_ref}",
-                    )
-                )
-
         if requirement is not None and len(candidate_reports) == len(candidate_ids):
             assessments = [
                 assess_supply(
                     requirement,
                     report,
+                    evaluated_at=document.get("evaluated_at"),
+                    qualification=str(document.get("qualification")),
+                    evidence_check=evidence_check,
                     runtime_eligibility_check=runtime_eligibility_check,
                 )
                 for report in candidate_reports
@@ -2130,6 +2452,15 @@ def _validate_capability_supply_chain(
                     "Snapshot requires a satisfied Capability Resolution",
                 )
             )
+        qualification = document.get("qualification")
+        if qualification != resolution.get("qualification"):
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "RESOLVED-CAPABILITY-SNAPSHOT-QUALIFICATION-DRIFT",
+                    "Snapshot qualification does not match Capability Resolution",
+                )
+            )
         for field in ("method_resolution_ref", "requirement_ref"):
             if document.get(field) != resolution.get(field):
                 issues.append(
@@ -2139,6 +2470,65 @@ def _validate_capability_supply_chain(
                         f"Snapshot {field} does not match Capability Resolution",
                     )
                 )
+
+        method_loaded = loaded_ref(
+            path,
+            document.get("method_resolution_ref"),
+            missing_code="RESOLVED-CAPABILITY-SNAPSHOT-METHOD-MISSING",
+            hash_code="RESOLVED-CAPABILITY-SNAPSHOT-METHOD-HASH-MISMATCH",
+        )
+        task_loaded = loaded_ref(
+            path,
+            document.get("task_ref"),
+            missing_code="RESOLVED-CAPABILITY-SNAPSHOT-TASK-MISSING",
+            hash_code="RESOLVED-CAPABILITY-SNAPSHOT-TASK-HASH-MISMATCH",
+        )
+        task_document: Mapping[str, Any] | None = None
+        if method_loaded is not None:
+            expected_method_ref = f"{method_loaded[1].get('resolution_id')}@r{method_loaded[1].get('revision')}"
+            if document.get("method_resolution_ref", {}).get("ref") != expected_method_ref:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "RESOLVED-CAPABILITY-SNAPSHOT-METHOD-IDENTITY-MISMATCH",
+                        f"Snapshot Method identity does not match {expected_method_ref}",
+                    )
+                )
+        if task_loaded is not None:
+            task_path, task_document = task_loaded
+            task_revision = task_document.get("revision", 1)
+            expected_task_ref = f"{task_document.get('task_id')}@r{task_revision}"
+            if document.get("task_ref", {}).get("ref") != expected_task_ref:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "RESOLVED-CAPABILITY-SNAPSHOT-TASK-IDENTITY-MISMATCH",
+                        f"Snapshot Task identity does not match {expected_task_ref}",
+                    )
+                )
+            if method_loaded is not None:
+                method_task_ref = method_loaded[1].get("task_ref")
+                expected_hash = (
+                    _document_hash(documents, task_path)
+                    if _document_has_loaded_bytes(documents, task_path)
+                    else None
+                )
+                if not isinstance(method_task_ref, Mapping) or (
+                    method_task_ref.get("task_id") != task_document.get("task_id")
+                    or method_task_ref.get("revision") != task_revision
+                    or (
+                        expected_hash is not None
+                        and str(method_task_ref.get("sha256", "")).removeprefix("sha256:").lower()
+                        != expected_hash
+                    )
+                ):
+                    issues.append(
+                        ValidationIssue(
+                            path,
+                            "RESOLVED-CAPABILITY-SNAPSHOT-TASK-METHOD-LINEAGE-DRIFT",
+                            "Snapshot Task does not match the Task frozen by Method Resolution",
+                        )
+                    )
 
         selected = document.get("selected_supply_report_ref")
         selected_ref = selected.get("ref") if isinstance(selected, Mapping) else None
@@ -2168,13 +2558,13 @@ def _validate_capability_supply_chain(
                 )
             )
         supply_document = supply_entry[1]
-        copied_fields = {
+        copied_supply_fields = {
             "supply_identity": "supply_identity",
-            "effective_permissions": "required_permissions",
-            "data_egress": "data_egress_behavior",
-            "side_effects": "side_effects",
+            "supply_required_permissions": "required_permissions",
+            "supply_data_egress": "data_egress_behavior",
+            "supply_side_effects": "side_effects",
         }
-        for snapshot_field, report_field in copied_fields.items():
+        for snapshot_field, report_field in copied_supply_fields.items():
             if document.get(snapshot_field) != supply_document.get(report_field):
                 issues.append(
                     ValidationIssue(
@@ -2202,6 +2592,78 @@ def _validate_capability_supply_chain(
                     path,
                     "RESOLVED-CAPABILITY-SNAPSHOT-RESOLUTION-PATH-MISMATCH",
                     f"Snapshot path does not identify Capability Resolution: {resolution_ref}",
+                )
+            )
+
+        if qualification == "structural-replay":
+            if document.get("boundaries", {}).get("execution_input") is not False:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "RESOLVED-CAPABILITY-SNAPSHOT-STRUCTURAL-EXECUTION-FORBIDDEN",
+                        "structural-replay Snapshot cannot be an execution input",
+                    )
+                )
+            continue
+
+        if qualification != "runtime-execution":
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "RESOLVED-CAPABILITY-SNAPSHOT-QUALIFICATION-UNKNOWN",
+                    f"unsupported Snapshot qualification: {qualification!r}",
+                )
+            )
+            continue
+
+        if document.get("boundaries", {}).get("execution_input") is not True:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "RESOLVED-CAPABILITY-SNAPSHOT-RUNTIME-EXECUTION-REQUIRED",
+                    "runtime-execution Snapshot must be marked as an execution input",
+                )
+            )
+        parsed_report = supply_entry[2]
+        required_capability = document.get("requirement_ref", {}).get("requirement_id")
+        live_typed_evidence = False
+        for evidence in parsed_report.conformance_evidence:
+            if evidence.get("evidence_class") != "live":
+                continue
+            artifact_ref = evidence.get("artifact_ref")
+            artifact_loaded = (
+                _loaded_document_at(documents, artifact_ref.get("path"))
+                if isinstance(artifact_ref, Mapping)
+                else None
+            )
+            if (
+                artifact_loaded is not None
+                and isinstance(required_capability, str)
+                and validate_evidence(
+                    parsed_report.supply_identity,
+                    evidence,
+                    required_capability,
+                )
+                == "pass"
+            ):
+                live_typed_evidence = True
+        availability_scope = parsed_report.availability.get("scope")
+        fixture_only = (
+            parsed_report.observation_scope == "synthetic-bounded-fixture"
+            or (
+                isinstance(availability_scope, Mapping)
+                and availability_scope.get("scope_kind") == "fixture-only"
+            )
+        )
+        if (
+            fixture_only
+            or not live_typed_evidence
+        ):
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "RESOLVED-CAPABILITY-SNAPSHOT-RUNTIME-EVIDENCE-INELIGIBLE",
+                    "runtime Snapshot requires non-fixture live typed capability evidence",
                 )
             )
     return issues
@@ -2286,7 +2748,7 @@ def _validate_method_resolutions(documents: Mapping[Path, Any]) -> list[Validati
             else:
                 task_path, task_document = loaded_task
                 recorded_hash = str(task_ref.get("sha256", "")).removeprefix("sha256:").lower()
-                if recorded_hash != hash_file(task_path):
+                if recorded_hash != _document_hash(documents, task_path):
                     issues.append(
                         ValidationIssue(
                             path,
@@ -2623,7 +3085,7 @@ def _validate_phase_b_evolution_gates(
                         )
                     )
                 expected_hash = str(reference.get("content_hash", "")).removeprefix("sha256:").lower()
-                if hash_file(document_path) != expected_hash:
+                if _document_hash(documents, document_path) != expected_hash:
                     issues.append(
                         ValidationIssue(
                             gate_path,
@@ -2672,7 +3134,7 @@ def _validate_phase_b_evolution_gates(
             if not isinstance(method_task_ref, Mapping) or (
                 f"{method_task_ref.get('task_id')}@r{method_task_ref.get('revision')}" != task_ref
                 or str(method_task_ref.get("sha256", "")).removeprefix("sha256:").lower()
-                != hash_file(task_path)
+                != _document_hash(documents, task_path)
             ):
                 issues.append(
                     ValidationIssue(
@@ -2696,7 +3158,7 @@ def _validate_phase_b_evolution_gates(
                     )
                 )
             expected_actions = {
-                ref: hash_file(path)
+                ref: _document_hash(documents, path)
                 for ref, path, _document, _reference in loaded_contracts.get("mode-action", [])
             }
             actual_actions = {
@@ -2764,7 +3226,7 @@ def _validate_phase_b_evolution_gates(
                             f"replacement Snapshot identity drifted: {snapshot_ref.get('ref')}",
                         )
                     )
-                if hash_file(snapshot_path) != expected_hash:
+                if _document_hash(documents, snapshot_path) != expected_hash:
                     issues.append(
                         ValidationIssue(
                             gate_path,
@@ -2814,19 +3276,53 @@ def _validate_phase_b_evolution_gates(
                             "Snapshot A and B must bind different exact supplies",
                         )
                     )
-                for field, code in (
-                    ("effective_permissions", "PHASE-B-GATE-PERMISSION-RELAXED"),
-                    ("data_egress", "PHASE-B-GATE-DATA-EGRESS-RELAXED"),
-                    ("side_effects", "PHASE-B-GATE-SIDE-EFFECT-RELAXED"),
+                for field in (
+                    "task_ref",
+                    "supply_required_permissions",
+                    "supply_data_egress",
+                    "supply_side_effects",
                 ):
                     if snapshot_a.get(field) != snapshot_b.get(field):
                         issues.append(
                             ValidationIssue(
                                 gate_path,
-                                code,
-                                f"supply replacement changed the frozen {field} boundary",
+                                "PHASE-B-GATE-SNAPSHOT-CONTROL-DRIFT",
+                                f"supply replacement changed the structural Snapshot {field}",
                             )
                         )
+                supply_documents: list[Mapping[str, Any]] = []
+                for snapshot in snapshots:
+                    supply_ref = snapshot.get("selected_supply_report_ref")
+                    loaded_supply = (
+                        _loaded_document_at(documents, supply_ref.get("document_path"))
+                        if isinstance(supply_ref, Mapping)
+                        else None
+                    )
+                    if loaded_supply is None or infer_document_kind(loaded_supply[1]) != "capability_supply_report":
+                        issues.append(
+                            ValidationIssue(
+                                gate_path,
+                                "PHASE-B-GATE-SUPPLY-MISSING",
+                                "replacement Snapshot does not resolve to a Supply Report",
+                            )
+                        )
+                        continue
+                    supply_documents.append(loaded_supply[1])
+                if len(supply_documents) == 2:
+                    supply_a, supply_b = supply_documents
+                    for field, code in (
+                        ("required_permissions", "PHASE-B-GATE-PERMISSION-RELAXED"),
+                        ("data_egress_behavior", "PHASE-B-GATE-DATA-EGRESS-RELAXED"),
+                        ("side_effects", "PHASE-B-GATE-SIDE-EFFECT-RELAXED"),
+                    ):
+                        if supply_a.get(field) != supply_b.get(field):
+                            issues.append(
+                                ValidationIssue(
+                                    gate_path,
+                                    code,
+                                    f"supply replacement changed the frozen {field} boundary fact",
+                                )
+                            )
 
         migration_kinds: set[str] = set()
         replay_refs = gate.get("replay_migration_refs")
@@ -2861,7 +3357,7 @@ def _validate_phase_b_evolution_gates(
                         )
                     )
                 expected_hash = str(reference.get("content_hash", "")).removeprefix("sha256:").lower()
-                if hash_file(migration_path) != expected_hash:
+                if _document_hash(documents, migration_path) != expected_hash:
                     issues.append(
                         ValidationIssue(
                             gate_path,
@@ -2943,7 +3439,7 @@ def _validate_research_mode_migrations(
                     ValidationIssue(path, "MODE-MIGRATION-REF-MISMATCH", f"{side}.ref does not match its document")
                 )
             expected_hash = reference.get("content_hash")
-            if isinstance(expected_hash, str) and hash_file(document_path) != expected_hash.removeprefix("sha256:").lower():
+            if isinstance(expected_hash, str) and _document_hash(documents, document_path) != expected_hash.removeprefix("sha256:").lower():
                 issues.append(
                     ValidationIssue(path, "MODE-MIGRATION-HASH-MISMATCH", f"{side}.content_hash does not match its document")
                 )
@@ -3178,7 +3674,7 @@ def _validate_decision_authority(
             expected = evaluate_authority_rule_eligibility(
                 document,
                 matrix_document,
-                matrix_content_hash=hash_file(matrix_path),
+                matrix_content_hash=_document_hash(documents, matrix_path),
             )
         except ContractError as error:
             issues.append(
@@ -3246,12 +3742,17 @@ def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     return issues
 
 
-def load_and_validate(paths: Iterable[Path]) -> tuple[dict[Path, Any], list[ValidationIssue]]:
-    documents: dict[Path, Any] = {}
+def load_and_validate(paths: Iterable[Path]) -> tuple[LoadedDocuments, list[ValidationIssue]]:
+    documents = LoadedDocuments()
     issues: list[ValidationIssue] = []
     for path in paths:
         try:
-            documents[path] = load_document(path)
+            content = path.read_bytes()
+            documents.add(
+                path,
+                load_document_bytes(path, content),
+                sha256=hash_bytes(content),
+            )
         except Exception as exc:  # parse errors are validation results at the CLI boundary
             issues.append(ValidationIssue(path, "PARSE-ERROR", str(exc)))
     issues.extend(validate_documents(documents))

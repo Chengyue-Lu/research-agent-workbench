@@ -1,8 +1,13 @@
 {
-  "fixture_kind": "synthetic-capability-conformance",
-  "fixture_id": "CONF-NO-SKILL-CONTRACT-CHECK",
-  "implementation_ref": "fixture-no-skill-contract-check@1.0.0",
-  "scope": "synthetic-bounded-fixture",
+  "evidence_kind": "deterministic-fixture",
+  "evidence_id": "CONF-NO-SKILL-CONTRACT-CHECK",
+  "implementation_ref": "fixture-no-skill-contract-check",
+  "implementation_version": "1.0.0",
+  "capability_ids": ["research-contract-check"],
+  "scope": {
+    "scope_kind": "synthetic-bounded-fixture",
+    "fixture_id": "CONF-NO-SKILL-CONTRACT-CHECK"
+  },
   "checks": [
     "accepts every research-contract-check input class",
     "emits every research-contract-check output class",

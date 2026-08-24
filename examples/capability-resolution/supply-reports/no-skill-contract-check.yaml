@@ -3,7 +3,7 @@ report_id: supply-no-skill-contract-check
 version: 1.0.0
 observation_scope: synthetic-bounded-fixture
 supply_identity:
-  supply_kind: no-skill
+  supply_kind: procedure
   implementation_ref: fixture-no-skill-contract-check
   implementation_version: 1.0.0
   content_hash: sha256:a24d9b37a1c1408553df720edd69b7e6f4a2f781c1364444ca8fed4f9092b98d
@@ -17,7 +17,7 @@ supported_inputs: [document-references, schema-and-checker-version, checked-subj
 supported_outputs: [deterministic-findings, checked-subject-hashes, declared-risk-codes]
 produced_artifacts: [deterministic-check-report]
 required_permissions:
-  filesystem: write-task-artifacts
+  filesystem: worktree-write
   network: forbidden
   external_write: false
 data_egress_behavior:
@@ -30,19 +30,25 @@ side_effects:
 conformance_evidence:
   - evidence_id: CONF-NO-SKILL-CONTRACT-CHECK
     evidence_class: deterministic
-    status: pass
+    artifact_kind: capability-conformance-evidence
     artifact_ref:
       path: examples/capability-resolution/conformance/no-skill-contract-check.json
-      sha256: a24d9b37a1c1408553df720edd69b7e6f4a2f781c1364444ca8fed4f9092b98d
+      sha256: 6cb14288099dfe03a755b8bd2fe7bfbd948eb4dba8816a6cc87c14e6956e42b9
 availability:
   status: available
-  scope: fixture-only
+  scope:
+    scope_kind: fixture-only
+    fixture_id: CONF-NO-SKILL-CONTRACT-CHECK
   observed_at: "2026-08-24T00:00:00Z"
+  valid_until: "2099-12-31T23:59:59Z"
   facts:
     - The synthetic fixture declares a frozen direct procedure and no Skill package.
+limits:
+  known: []
+  unknown: [installed checker, host limits, runtime limits]
 limitations:
   - Fixture-only availability does not execute or certify a real checker.
-  - The no-Skill path remains subject to the same Requirement and authority boundaries.
+  - The Method's no-Skill path remains subject to the same Requirement and later execution boundaries.
 authority_boundaries:
   selects_itself: false
   owns_method_authority: false

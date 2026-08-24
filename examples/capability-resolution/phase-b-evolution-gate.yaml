@@ -26,15 +26,15 @@ stable_contract_refs:
   - kind: capability-requirement
     ref: document-read
     document_path: registry/capabilities/requirements/document-read.yaml
-    content_hash: sha256:7cf374c2cbc8fbe9d0698fd3bdf209d7a3fc015c1fe485e06f8450cd7a38e916
+    content_hash: sha256:69828f931297fbaef030d51362aba95ef06f5dd1027e4077872ffbbcb52ea4cc
 replacement:
   snapshot_refs:
     - ref: RCS-DOCUMENT-READ-A@r1
       document_path: examples/capability-resolution/snapshots/document-read-a.yaml
-      content_hash: sha256:e6ddbb2a7b521b557cf868ee24c1689ae113117789965c4735633a0e62e67391
+      content_hash: sha256:2c0a948dd76e420892e911bb729f776de38da39abbbfc92e46eaffcc1b928039
     - ref: RCS-DOCUMENT-READ-B@r1
       document_path: examples/capability-resolution/snapshots/document-read-b.yaml
-      content_hash: sha256:0da71d328de1b6a7478238adee469fd3cade0cde5ac1a30930cf2156205e5e78
+      content_hash: sha256:b83fba680c372d40e8bdc3264db56aa63ddee1b93a0e84a5b93f1edde56b859c
   required_invariants:
     - task-unchanged
     - mode-unchanged

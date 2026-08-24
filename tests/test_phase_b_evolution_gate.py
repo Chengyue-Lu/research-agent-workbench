@@ -11,6 +11,8 @@ ROOT = Path(__file__).resolve().parents[1]
 GATE_PATH = ROOT / "examples/capability-resolution/phase-b-evolution-gate.yaml"
 SNAPSHOT_A_PATH = ROOT / "examples/capability-resolution/snapshots/document-read-a.yaml"
 SNAPSHOT_B_PATH = ROOT / "examples/capability-resolution/snapshots/document-read-b.yaml"
+SUPPLY_A_PATH = ROOT / "examples/capability-resolution/supply-reports/local-document-reader-a.yaml"
+SUPPLY_B_PATH = ROOT / "examples/capability-resolution/supply-reports/sandbox-document-reader-b.yaml"
 
 
 def repository_documents() -> dict[Path, object]:
@@ -61,8 +63,17 @@ class PhaseBEvolutionGateTests(unittest.TestCase):
             snapshot_a["method_resolution_ref"], snapshot_b["method_resolution_ref"]
         )
         self.assertEqual(snapshot_a["requirement_ref"], snapshot_b["requirement_ref"])
-        for field in ("effective_permissions", "data_egress", "side_effects"):
+        for field in (
+            "task_ref",
+            "supply_required_permissions",
+            "supply_data_egress",
+            "supply_side_effects",
+        ):
             self.assertEqual(snapshot_a[field], snapshot_b[field])
+        supply_a = self.documents[SUPPLY_A_PATH]
+        supply_b = self.documents[SUPPLY_B_PATH]
+        for field in ("required_permissions", "data_egress_behavior", "side_effects"):
+            self.assertEqual(supply_a[field], supply_b[field])
 
     def test_stable_contract_and_snapshot_hash_drift_are_blocking(self) -> None:
         for mutate, expected in (
@@ -97,14 +108,14 @@ class PhaseBEvolutionGateTests(unittest.TestCase):
     def test_permission_data_and_side_effect_boundary_drift_are_blocking(self) -> None:
         mutations = (
             (
-                lambda snapshot: snapshot["effective_permissions"].__setitem__(
-                    "network", "approved-external-read"
+                lambda supply: supply["required_permissions"].__setitem__(
+                    "network", "allowed"
                 ),
                 "PHASE-B-GATE-PERMISSION-RELAXED",
             ),
             (
-                lambda snapshot: snapshot["data_egress"].__setitem__(
-                    "policy", "allowlisted"
+                lambda supply: supply["data_egress_behavior"].__setitem__(
+                    "policy", "allowlisted-only"
                 ),
                 "PHASE-B-GATE-DATA-EGRESS-RELAXED",
             ),
@@ -118,7 +129,7 @@ class PhaseBEvolutionGateTests(unittest.TestCase):
         for mutate, expected in mutations:
             with self.subTest(expected=expected):
                 documents = copy.deepcopy(self.documents)
-                mutate(documents[SNAPSHOT_B_PATH])
+                mutate(documents[SUPPLY_B_PATH])
                 codes = {issue.code for issue in _validate_phase_b_evolution_gates(documents)}
                 self.assertIn(expected, codes)
 

@@ -1,5 +1,8 @@
 import copy
+import hashlib
 import json
+import shutil
+import tempfile
 import unittest
 from collections import Counter
 from pathlib import Path
@@ -146,6 +149,36 @@ class CapabilityRequirementTests(unittest.TestCase):
         codes = {issue.code for issue in validate_documents(documents)}
         self.assertIn("CAPABILITY-REQUIREMENT-UNINDEXED", codes)
         self.assertIn(removed["requirement_id"], {doc["requirement_id"] for doc in self.requirements.values()})
+
+    def test_public_loader_rejects_unknown_fields_even_after_hash_is_recomputed(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project_root = Path(temp)
+            shutil.copytree(ROOT / "schemas", project_root / "schemas")
+            shutil.copytree(
+                ROOT / "registry/capabilities",
+                project_root / "registry/capabilities",
+            )
+            document_path = project_root / "registry/capabilities/requirements/document-read.yaml"
+            document = load_document(document_path)
+            document["provider"] = "forbidden-supply-injection"
+            import yaml
+
+            document_path.write_text(
+                yaml.safe_dump(document, sort_keys=False, allow_unicode=True),
+                encoding="utf-8",
+            )
+            digest = hashlib.sha256(document_path.read_bytes()).hexdigest()
+            index_path = project_root / "registry/capabilities/requirements.json"
+            index = json.loads(index_path.read_text(encoding="utf-8"))
+            next(
+                entry for entry in index["entries"] if entry["requirement_id"] == "document-read"
+            )["content_hash"] = f"sha256:{digest}"
+            index_path.write_text(
+                json.dumps(index, indent=2, ensure_ascii=False) + "\n",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "schema invalid"):
+                CapabilityRequirementSet.load(project_root=project_root)
 
 
 if __name__ == "__main__":

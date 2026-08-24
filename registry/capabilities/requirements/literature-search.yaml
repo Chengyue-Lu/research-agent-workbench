@@ -20,8 +20,8 @@ required_artifacts:
   - query-receipt
 constraints:
   permission_ceiling:
-    filesystem: write-task-artifacts
-    network: approved-external-read
+    filesystem: worktree-write
+    network: search-and-fetch
     external_write: false
   data_egress:
     policy: allowlisted-only

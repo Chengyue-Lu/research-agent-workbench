@@ -2,23 +2,24 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://research-agent-workbench.local/schemas/v0.1.0/resolved-capability-snapshot.schema.json",
   "title": "Resolved Capability Snapshot",
-  "$comment": "A frozen execution input derived from a satisfied Capability Resolution. It does not itself grant permission, complete a Human decision, select fallback, or alter Method and Claim semantics.",
+  "$comment": "A hash-pinned structural replay record or qualified frozen supply record. It preserves selected supply facts and never grants final execution permission, routes, falls back, or alters Method, Claim, Gate, or Human authority.",
   "x-rwb-document-kind": "resolved_capability_snapshot",
   "type": "object",
   "required": [
     "schema_version",
     "snapshot_id",
     "revision",
+    "qualification",
+    "task_ref",
     "resolution_ref",
     "method_resolution_ref",
     "requirement_ref",
     "selected_supply_report_ref",
     "supply_identity",
-    "effective_permissions",
-    "data_egress",
-    "side_effects",
+    "supply_required_permissions",
+    "supply_data_egress",
+    "supply_side_effects",
     "conformance_evidence_refs",
-    "authority_eligibility",
     "limitations",
     "boundaries"
   ],
@@ -26,78 +27,27 @@
     "schema_version": { "const": "0.1.0" },
     "snapshot_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "revision": { "type": "integer", "minimum": 1 },
-    "resolution_ref": {
-      "allOf": [
-        { "$ref": "capability-supply-common.schema.json#/$defs/versionedDocumentRef" },
-        {
-          "properties": {
-            "ref": {
-              "type": "string",
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*@r[1-9][0-9]*$"
-            }
-          }
-        }
-      ]
-    },
-    "method_resolution_ref": {
-      "allOf": [
-        { "$ref": "capability-supply-common.schema.json#/$defs/versionedDocumentRef" },
-        {
-          "properties": {
-            "ref": {
-              "type": "string",
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*@r[1-9][0-9]*$"
-            }
-          }
-        }
-      ]
-    },
-    "requirement_ref": {
-      "$ref": "capability-supply-common.schema.json#/$defs/requirementRef"
-    },
-    "selected_supply_report_ref": {
-      "$ref": "capability-supply-common.schema.json#/$defs/versionedDocumentRef"
-    },
-    "supply_identity": {
-      "$ref": "capability-supply-common.schema.json#/$defs/supplyIdentity"
-    },
-    "effective_permissions": {
+    "qualification": { "enum": ["structural-replay", "runtime-execution"] },
+    "task_ref": { "$ref": "#/$defs/revisionedRef" },
+    "resolution_ref": { "$ref": "#/$defs/revisionedRef" },
+    "method_resolution_ref": { "$ref": "#/$defs/revisionedRef" },
+    "requirement_ref": { "$ref": "capability-supply-common.schema.json#/$defs/requirementRef" },
+    "selected_supply_report_ref": { "$ref": "capability-supply-common.schema.json#/$defs/versionedDocumentRef" },
+    "supply_identity": { "$ref": "capability-supply-common.schema.json#/$defs/supplyIdentity" },
+    "supply_required_permissions": {
       "$ref": "capability-supply-common.schema.json#/$defs/permissionBoundary"
     },
-    "data_egress": {
+    "supply_data_egress": {
       "$ref": "capability-supply-common.schema.json#/$defs/dataEgressBoundary"
     },
-    "side_effects": {
+    "supply_side_effects": {
       "$ref": "capability-supply-common.schema.json#/$defs/sideEffectBoundary"
     },
     "conformance_evidence_refs": {
       "type": "array",
       "items": { "$ref": "common.schema.json#/$defs/fileRef" },
-      "minItems": 1
-    },
-    "authority_eligibility": {
-      "type": "object",
-      "required": ["decision_kind", "operation", "actor_class", "required_asserted_facts", "effect"],
-      "properties": {
-        "decision_kind": { "const": "skill-tool-binding" },
-        "operation": { "const": "validate" },
-        "actor_class": { "const": "deterministic-resolver" },
-        "required_asserted_facts": {
-          "type": "array",
-          "minItems": 2,
-          "maxItems": 2,
-          "uniqueItems": true,
-          "items": {
-            "enum": ["capability-snapshot-frozen", "permission-intersection-satisfied"]
-          },
-          "allOf": [
-            { "contains": { "const": "capability-snapshot-frozen" } },
-            { "contains": { "const": "permission-intersection-satisfied" } }
-          ]
-        },
-        "effect": { "const": "eligibility-not-authorization" }
-      },
-      "additionalProperties": false
+      "minItems": 1,
+      "uniqueItems": true
     },
     "limitations": {
       "type": "array",
@@ -107,16 +57,9 @@
     },
     "boundaries": {
       "type": "object",
-      "required": [
-        "execution_input",
-        "method_decision",
-        "permission_grant",
-        "claim_effect",
-        "human_decision",
-        "fallback_authority"
-      ],
+      "required": ["execution_input", "method_decision", "permission_grant", "claim_effect", "human_decision", "fallback_authority"],
       "properties": {
-        "execution_input": { "const": true },
+        "execution_input": { "type": "boolean" },
         "method_decision": { "const": false },
         "permission_grant": { "const": false },
         "claim_effect": { "const": false },
@@ -126,5 +69,32 @@
       "additionalProperties": false
     }
   },
-  "additionalProperties": false
+  "allOf": [
+    {
+      "if": { "properties": { "qualification": { "const": "structural-replay" } }, "required": ["qualification"] },
+      "then": {
+        "properties": {
+          "boundaries": { "properties": { "execution_input": { "const": false } } }
+        }
+      },
+      "else": {
+        "properties": {
+          "boundaries": { "properties": { "execution_input": { "const": true } } }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "revisionedRef": {
+      "allOf": [
+        { "$ref": "capability-supply-common.schema.json#/$defs/versionedDocumentRef" },
+        {
+          "properties": {
+            "ref": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*@r[1-9][0-9]*$" }
+          }
+        }
+      ]
+    }
+  }
 }

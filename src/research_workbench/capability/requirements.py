@@ -4,14 +4,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
-from research_workbench.artifacts.integrity import hash_file, resolve_within_root
+from research_workbench.artifacts.integrity import hash_bytes, resolve_within_root
 from research_workbench.contracts.common import (
     ContractError,
     mapping_value,
     require_string,
     string_tuple,
 )
-from research_workbench.io import load_document
+from research_workbench.io import load_document, load_document_bytes
 
 
 DEFAULT_CAPABILITY_REQUIREMENTS = Path("registry/capabilities/requirements.json")
@@ -177,8 +177,18 @@ class CapabilityRequirementSet:
         if not index_path.is_absolute():
             index_path = root / index_path
         index = load_document(index_path)
+        # Import lazily to keep the capability value objects independent from
+        # validation package initialization while still making this public
+        # loader a schema-validating, fail-closed consumer boundary.
+        from research_workbench.validation.schemas import SchemaCatalog
+
+        catalog = SchemaCatalog(root / "schemas")
         if not isinstance(index, Mapping) or index.get("registry_kind") != "capability_requirement_index":
             raise ValueError(f"not a Capability Requirement integrity index: {index_path}")
+        index_errors = catalog.validate("capability_requirement_index", index)
+        if index_errors:
+            details = "; ".join(f"{error.pointer}: {error.message}" for error in index_errors)
+            raise ValueError(f"Capability Requirement index schema invalid: {details}")
         raw_entries = index.get("entries")
         if not isinstance(raw_entries, list):
             raise ValueError(f"Capability Requirement index has no entries list: {index_path}")
@@ -202,11 +212,20 @@ class CapabilityRequirementSet:
             resolved = resolve_within_root(root, document_path)
             if resolved is None or not resolved.is_file():
                 raise ValueError(f"Capability Requirement path is missing or escapes root: {document_path}")
-            if hash_file(resolved) != content_hash:
+            content = resolved.read_bytes()
+            if hash_bytes(content) != content_hash:
                 raise ValueError(f"Capability Requirement content drift: {requirement_id}")
-            document = load_document(resolved)
+            document = load_document_bytes(resolved, content)
             if not isinstance(document, Mapping):
                 raise ValueError(f"Capability Requirement is not an object: {document_path}")
+            schema_errors = catalog.validate("capability_requirement", document)
+            if schema_errors:
+                details = "; ".join(
+                    f"{error.pointer}: {error.message}" for error in schema_errors
+                )
+                raise ValueError(
+                    f"Capability Requirement schema invalid: {requirement_id}: {details}"
+                )
             requirement = CapabilityRequirement.from_mapping(document)
             if requirement.requirement_id != requirement_id:
                 raise ValueError(f"Capability Requirement identity mismatch: {requirement_id}")

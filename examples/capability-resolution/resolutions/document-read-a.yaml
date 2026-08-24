@@ -1,6 +1,8 @@
 schema_version: 0.1.0
 resolution_id: CR-DOCUMENT-READ-A
 revision: 1
+qualification: structural-replay
+evaluated_at: "2026-08-24T00:00:01Z"
 method_resolution_ref:
   ref: MR-ROUTE-ES-FROZEN-001@r1
   document_path: examples/method-resolutions/ROUTE-ES-FROZEN-001.yaml
@@ -8,11 +10,11 @@ method_resolution_ref:
 requirement_ref:
   requirement_id: document-read
   document_path: registry/capabilities/requirements/document-read.yaml
-  content_hash: sha256:7cf374c2cbc8fbe9d0698fd3bdf209d7a3fc015c1fe485e06f8450cd7a38e916
+  content_hash: sha256:69828f931297fbaef030d51362aba95ef06f5dd1027e4077872ffbbcb52ea4cc
 candidate_supply_report_refs:
   - ref: supply-local-document-reader-a@1.0.0
     document_path: examples/capability-resolution/supply-reports/local-document-reader-a.yaml
-    content_hash: sha256:a49f94cad3ecb356cce80ae718fd43dce67ba8e7f491c7a8266cb264702e5ed1
+    content_hash: sha256:5a4619b8bb253b078dc02bf3e61e719d119697cfe3a6310b368a7c77651bfa21
 comparisons:
   - supply_report_ref: supply-local-document-reader-a@1.0.0
     checks:
@@ -23,20 +25,12 @@ comparisons:
       - {check: permission, status: pass, reason: Supply permissions are within the Requirement ceiling.}
       - {check: data-egress, status: pass, reason: Supply data-egress behavior is within the Requirement ceiling.}
       - {check: side-effects, status: pass, reason: Supply side effects are within the Requirement ceiling.}
-      - {check: deterministic-conformance, status: pass, reason: At least one deterministic conformance record reports pass.}
-      - {check: availability, status: pass, reason: Supply availability is reported as 'available' within scope 'fixture-only'.}
+      - {check: conformance-evidence, status: pass, reason: "A typed, hash-bound conformance artifact proves the required capability."}
+      - {check: availability, status: pass, reason: Supply reports availability in scope 'fixture-only'.}
       - {check: skill-runtime-eligibility, status: not-applicable, reason: This Core supply is not a Skill and needs no Skill lifecycle decision.}
     eligible: true
 resolution_status: satisfied
 selected_supply_report_ref: supply-local-document-reader-a@1.0.0
-authority_basis:
-  matrix_ref:
-    ref: rwb-decision-authority@1.0.0
-    document_path: registry/authority/decision-authority-matrix.yaml
-    content_hash: sha256:960c95754f8a78fe39b3f2583414ca9c7006b1274c9267db0149558c321f5e45
-  decision_kind: skill-tool-binding
-  selection_effect: candidate-for-snapshot
-  eligibility_required_after_snapshot: true
 limitations:
   - Satisfaction means one structurally eligible fixture supply; it does not prove source interpretation quality or grant execution permission.
 boundaries:

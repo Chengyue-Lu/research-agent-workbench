@@ -4,6 +4,7 @@ import unittest
 from pathlib import Path
 
 from research_workbench.capability import SkillLifecycleRecord, SkillLifecycleSet
+from research_workbench.capability.lifecycle import SkillLifecycleEntry
 from research_workbench.io import iter_documents, load_document
 from research_workbench.validation import SchemaCatalog, validate_documents
 from research_workbench.validation import documents as document_validation
@@ -170,7 +171,99 @@ class SkillLifecycleV2Tests(unittest.TestCase):
             "reason": "The accepted version is current.",
         }
         self.assertEqual([], self.catalog.validate("skill_lifecycle_record", accepted))
-        self.assertTrue(SkillLifecycleRecord.from_mapping(accepted).eligible_for_new_binding())
+        accepted_record = SkillLifecycleRecord.from_mapping(accepted)
+        self.assertTrue(accepted_record.eligible_for_new_binding())
+
+        lifecycle_set = SkillLifecycleSet(
+            index_path=INDEX_PATH,
+            project_root=ROOT,
+            entries=(
+                SkillLifecycleEntry(
+                    lifecycle_ref=accepted_record.reference,
+                    lifecycle_id=accepted_record.lifecycle_id,
+                    lifecycle_version=accepted_record.lifecycle_version,
+                    document_path="fixtures/synthetic-skill-lifecycle.yaml",
+                    content_hash="1" * 64,
+                    record=accepted_record,
+                ),
+            ),
+        )
+        eligibility_ref = accepted_record.runtime_eligibility.eligibility_ref
+        self.assertFalse(
+            lifecycle_set.runtime_eligible(accepted_record.reference, eligibility_ref)
+        )
+        verified_evidence = {
+            "BASELINE-SYNTHETIC",
+            "TRIAL-SYNTHETIC",
+            "EVAL-SYNTHETIC",
+        }
+        self.assertTrue(
+            lifecycle_set.runtime_eligible(
+                accepted_record.reference,
+                eligibility_ref,
+                evidence_resolver=lambda reference: reference in verified_evidence,
+                decision_resolver=lambda reference: (
+                    reference == "DECISION-ACCEPT-SYNTHETIC"
+                ),
+            )
+        )
+        self.assertFalse(
+            lifecycle_set.runtime_eligible(
+                accepted_record.reference,
+                eligibility_ref,
+                evidence_resolver=lambda reference: reference != "TRIAL-SYNTHETIC",
+                decision_resolver=lambda reference: (
+                    reference == "DECISION-ACCEPT-SYNTHETIC"
+                ),
+            )
+        )
+        self.assertFalse(
+            lifecycle_set.runtime_eligible(
+                accepted_record.reference,
+                eligibility_ref,
+                evidence_resolver=lambda reference: reference in verified_evidence,
+                decision_resolver=lambda reference: False,
+            )
+        )
+
+        new_binding_failures = (
+            (
+                "wrong-scope",
+                lambda document: document["runtime_eligibility"].__setitem__(
+                    "scopes", ["isolated-trial"]
+                ),
+            ),
+            (
+                "missing-trial",
+                lambda document: document["evaluation"].pop("trial_ref"),
+            ),
+            (
+                "missing-evaluation",
+                lambda document: document["evaluation"].pop("evaluation_record_ref"),
+            ),
+            (
+                "missing-promotion-evidence",
+                lambda document: document["evaluation"].__setitem__(
+                    "promotion_evidence_refs", []
+                ),
+            ),
+            (
+                "missing-human-decision",
+                lambda document: document["admission"].pop("decision_ref"),
+            ),
+        )
+        for name, mutate in new_binding_failures:
+            with self.subTest(new_binding_failure=name):
+                invalid = copy.deepcopy(accepted)
+                mutate(invalid)
+                errors = self.catalog.validate("skill_lifecycle_record", invalid)
+                if not errors:
+                    self.assertFalse(
+                        SkillLifecycleRecord.from_mapping(invalid).eligible_for_new_binding()
+                    )
+                self.assertFalse(
+                    SkillLifecycleRecord.from_mapping(invalid).eligible_for_new_binding()
+                )
 
         superseded = copy.deepcopy(accepted)
         superseded["runtime_eligibility"]["state"] = "ineligible"
@@ -249,19 +342,20 @@ class SkillLifecycleV2Tests(unittest.TestCase):
                     },
                 )
 
-    def test_runtime_eligibility_cannot_bypass_evaluation_admission_or_end_state(self) -> None:
+    def test_runtime_state_does_not_itself_authorize_new_binding(self) -> None:
         source_path = LIFECYCLE_ROOT / "literature-evidence-extraction-0.1.0-lifecycle-1.0.0.yaml"
         documents = copy.deepcopy(self.registry_documents)
         record = documents[source_path]
         record["runtime_eligibility"]["state"] = "eligible"
         record["runtime_eligibility"]["scopes"] = ["new-binding"]
-        self.assertIn(
+        self.assertNotIn(
             "SKILL-LIFECYCLE-RUNTIME-ELIGIBILITY-INCONSISTENT",
             {
                 issue.code
                 for issue in document_validation._validate_skill_lifecycle_v2(documents)
             },
         )
+        self.assertFalse(SkillLifecycleRecord.from_mapping(record).eligible_for_new_binding())
 
 
 if __name__ == "__main__":

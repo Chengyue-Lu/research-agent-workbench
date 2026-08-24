@@ -4,14 +4,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
-from research_workbench.artifacts.integrity import hash_file, resolve_within_root
+from research_workbench.artifacts.integrity import hash_bytes, resolve_within_root
 from research_workbench.contracts.common import (
     ContractError,
     mapping_value,
     require_string,
     string_tuple,
 )
-from research_workbench.io import load_document
+from research_workbench.io import load_document, load_document_bytes
 
 
 DEFAULT_SKILL_NEEDS = Path("registry/skill-needs.json")
@@ -326,9 +326,10 @@ class SkillNeedSet:
             resolved = resolve_within_root(root, document_path)
             if resolved is None or not resolved.is_file():
                 raise ValueError(f"Skill Need path is missing or escapes root: {document_path}")
-            if hash_file(resolved) != content_hash:
+            content = resolved.read_bytes()
+            if hash_bytes(content) != content_hash:
                 raise ValueError(f"Skill Need content drift: {need_ref}")
-            document = load_document(resolved)
+            document = load_document_bytes(resolved, content)
             if not isinstance(document, Mapping):
                 raise ValueError(f"Skill Need is not an object: {document_path}")
             need = SkillNeed.from_mapping(document)

@@ -55,13 +55,13 @@
         "filesystem": {
           "enum": [
             "forbidden",
-            "write-task-artifacts",
-            "read-approved-inputs-and-write-task-artifacts",
-            "task-scope-write"
+            "read-only",
+            "worktree-write",
+            "workspace-write"
           ]
         },
         "network": {
-          "enum": ["forbidden", "approved-external-read"]
+          "enum": ["forbidden", "search-and-fetch", "allowed"]
         },
         "external_write": { "const": false }
       },

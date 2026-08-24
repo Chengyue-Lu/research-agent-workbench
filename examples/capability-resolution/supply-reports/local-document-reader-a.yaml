@@ -17,7 +17,7 @@ supported_inputs: [source-reference, expected-source-hash, read-boundary, data-b
 supported_outputs: [bounded-document-fragments, stable-source-locators, observed-source-hash]
 produced_artifacts: [read-receipt]
 required_permissions:
-  filesystem: read-approved-inputs-and-write-task-artifacts
+  filesystem: worktree-write
   network: forbidden
   external_write: false
 data_egress_behavior:
@@ -30,16 +30,22 @@ side_effects:
 conformance_evidence:
   - evidence_id: CONF-LOCAL-DOCUMENT-READER-A
     evidence_class: deterministic
-    status: pass
+    artifact_kind: capability-conformance-evidence
     artifact_ref:
       path: examples/capability-resolution/conformance/local-document-reader-a.json
-      sha256: 689b45bd23e29f097c4387b1c50adf55c335ff5ebf72f45c5f825c40bf5e228e
+      sha256: 273c80a8de9357146612aba1846315a6d0b2c1027a4ae5ec75791890ac25ee78
 availability:
   status: available
-  scope: fixture-only
+  scope:
+    scope_kind: fixture-only
+    fixture_id: CONF-LOCAL-DOCUMENT-READER-A
   observed_at: "2026-08-24T00:00:00Z"
+  valid_until: "2099-12-31T23:59:59Z"
   facts:
     - The synthetic fixture declares one local direct-Tool implementation for deterministic contract tests.
+limits:
+  known: []
+  unknown: [installed executable, host limits, runtime limits]
 limitations:
   - Fixture-only availability is not evidence that a corresponding executable exists in a user environment.
   - The Report states supply facts and cannot select itself.
