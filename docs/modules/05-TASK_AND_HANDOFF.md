@@ -58,7 +58,9 @@ Execution Contract。`atomic_boundary` 说明可安全切换的最小边界；`c
 ```text
 Task Packet = research intent + atomic boundary + input/output constraints + permissions/budget
 Method Resolution = provider-neutral methodology decision
-Resolved Capability Snapshot = frozen Skill/Tool/Adapter/version/hash/permission binding
+Capability Supply Report = one implementation's reported capability and boundary facts, without selection authority
+Capability Resolution = Requirement-to-Report comparison under existing authority and ceilings
+Resolved Capability Snapshot = frozen exact Skill/Tool/Adapter/Provider/version/hash/permission binding
 Resolved Execution View = Task + Method Resolution + Resolved Capability Snapshot + execution limits
 ```
 
@@ -66,17 +68,21 @@ Resolved Execution View = Task + Method Resolution + Resolved Capability Snapsho
 
 ## 3. Resolved Execution View
 
-Capability Resolver 在执行前冻结：
+Capability Resolver 在执行前先比较零个或多个 Supply Report，再由 Snapshot 冻结：
 
 - Agent Profile revision；
 - Skill Assignment ID 与 lock；
 - Runtime Adapter 和 capability snapshot；
+- exact Tool/Skill/Adapter/Provider implementation version/hash 与 conformance evidence refs；
 - effective permissions；
+- effective data-egress 与 side-effect boundary；
 - 实际输出路径；
 - 冲突/例外。
 
-Resolved Execution View 不修改原始 Task；它由 `Task + Method Resolution + Resolved Capability Snapshot`
-派生，不另建第二套权威研究意图。兼容期字段映射见[兼容性说明](../compatibility/README.md)。
+Supply Report 不能选择自身，Resolution 不能放宽 Requirement/Task ceiling，Snapshot 也不拥有 Method、
+Claim、Human Gate 或 fallback authority。Resolved Execution View 不修改原始 Task；它由
+`Task + Method Resolution + Resolved Capability Snapshot` 派生，不另建第二套权威研究意图。兼容期字段
+映射见[兼容性说明](../compatibility/README.md)。
 
 ## 4. Handoff Packet
 

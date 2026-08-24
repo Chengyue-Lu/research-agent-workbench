@@ -51,6 +51,11 @@ IsolatedApiSessionRunner.run(request, limits) -> ApiSessionResult
 
 ## 5. Runtime Adapter 契约
 
+Adapter/Provider/Tool 的探测结果先形成 Capability Supply Report：它报告 implementation identity、
+version/hash、provided capability、I/O、permissions、data-egress、side effects、deterministic/live
+conformance、availability facts 与 limitations，但不能选择自身、声明 fallback 或放宽 Method/Task
+边界。Capability Resolution 比较这些 Report，Runtime 只消费随后冻结的 Resolved Capability Snapshot。
+
 ```text
 capabilities() -> HostCapabilityReport
 resolve_agent(profile_ref) -> RuntimeAgentConfig
@@ -92,7 +97,9 @@ Runtime session permission
 
 ## 9. 漂移与验证
 
-运行前冻结 Host、Provider、Model 和 Tool capability reports。平台或模型版本变化后运行 contract tests；真实账户状态通过独立 live conformance 更新。诊断 ID 可以写入 Receipt，但运行时会话日志不能成为唯一证据。
+运行前通过 Supply Report 描述 Host、Provider、Model、Adapter 和 Tool 的供给事实，再在 Resolved
+Capability Snapshot 中冻结实际选择。平台或模型版本变化后运行 contract tests；真实账户状态通过独立
+live conformance 更新。诊断 ID 可以写入 Receipt，但运行时会话日志不能成为唯一证据。
 
 具体实现覆盖见[实现状态](../STATUS.md)，Provider seam 见[实现文档](../implementation/PROVIDER_ADAPTER_PLAN.md)，兼容字段见[兼容性说明](../compatibility/README.md)。
 
