@@ -1,0 +1,58 @@
+schema_version: 0.1.0
+report_id: supply-local-document-reader-a
+version: 1.0.0
+observation_scope: synthetic-bounded-fixture
+supply_identity:
+  supply_kind: tool
+  implementation_ref: fixture-local-document-reader-a
+  implementation_version: 1.0.0
+  content_hash: sha256:689b45bd23e29f097c4387b1c50adf55c335ff5ebf72f45c5f825c40bf5e228e
+  components:
+    - component_kind: tool
+      component_ref: fixture-local-document-reader-a
+      version: 1.0.0
+      content_hash: sha256:689b45bd23e29f097c4387b1c50adf55c335ff5ebf72f45c5f825c40bf5e228e
+provided_capabilities: [document-read]
+supported_inputs: [source-reference, expected-source-hash, read-boundary, data-boundary]
+supported_outputs: [bounded-document-fragments, stable-source-locators, observed-source-hash]
+produced_artifacts: [read-receipt]
+required_permissions:
+  filesystem: worktree-write
+  network: forbidden
+  external_write: false
+data_egress_behavior:
+  policy: forbidden
+  allowed_payloads: []
+  forbidden_payloads: [private-full-text, unpublished-results, unrelated-project-context]
+side_effects:
+  policy: allowlisted-only
+  allowed_effects: [task-local-read-cache]
+conformance_evidence:
+  - evidence_id: CONF-LOCAL-DOCUMENT-READER-A
+    evidence_class: deterministic
+    artifact_kind: capability-conformance-evidence
+    artifact_ref:
+      path: examples/capability-resolution/conformance/local-document-reader-a.json
+      sha256: 273c80a8de9357146612aba1846315a6d0b2c1027a4ae5ec75791890ac25ee78
+availability:
+  status: available
+  scope:
+    scope_kind: fixture-only
+    fixture_id: CONF-LOCAL-DOCUMENT-READER-A
+  observed_at: "2026-08-24T00:00:00Z"
+  valid_until: "2099-12-31T23:59:59Z"
+  facts:
+    - The synthetic fixture declares one local direct-Tool implementation for deterministic contract tests.
+limits:
+  known: []
+  unknown: [installed executable, host limits, runtime limits]
+limitations:
+  - Fixture-only availability is not evidence that a corresponding executable exists in a user environment.
+  - The Report states supply facts and cannot select itself.
+authority_boundaries:
+  selects_itself: false
+  owns_method_authority: false
+  relaxes_permissions: false
+  owns_fallback: false
+  grants_claim_effect: false
+  satisfies_human_gate: false

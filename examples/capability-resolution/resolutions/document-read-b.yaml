@@ -1,0 +1,41 @@
+schema_version: 0.1.0
+resolution_id: CR-DOCUMENT-READ-B
+revision: 1
+qualification: structural-replay
+evaluated_at: "2026-08-24T00:00:01Z"
+method_resolution_ref:
+  ref: MR-ROUTE-ES-FROZEN-001@r1
+  document_path: examples/method-resolutions/ROUTE-ES-FROZEN-001.yaml
+  content_hash: sha256:cf3e041887c9558a775027e5e254486973322ad763f3b15d2eb8504d185608e1
+requirement_ref:
+  requirement_id: document-read
+  document_path: registry/capabilities/requirements/document-read.yaml
+  content_hash: sha256:69828f931297fbaef030d51362aba95ef06f5dd1027e4077872ffbbcb52ea4cc
+candidate_supply_report_refs:
+  - ref: supply-sandbox-document-reader-b@1.0.0
+    document_path: examples/capability-resolution/supply-reports/sandbox-document-reader-b.yaml
+    content_hash: sha256:62f86d20f09effb710bca6da650978cd1b9251efa5a907e6b3498b747f462103
+comparisons:
+  - supply_report_ref: supply-sandbox-document-reader-b@1.0.0
+    checks:
+      - {check: capability, status: pass, reason: Supply reports the required capability.}
+      - {check: inputs, status: pass, reason: Supply covers every required input class.}
+      - {check: outputs, status: pass, reason: Supply covers every required output class.}
+      - {check: artifacts, status: pass, reason: Supply produces every required artifact class.}
+      - {check: permission, status: pass, reason: Supply permissions are within the Requirement ceiling.}
+      - {check: data-egress, status: pass, reason: Supply data-egress behavior is within the Requirement ceiling.}
+      - {check: side-effects, status: pass, reason: Supply side effects are within the Requirement ceiling.}
+      - {check: conformance-evidence, status: pass, reason: "A typed, hash-bound conformance artifact proves the required capability."}
+      - {check: availability, status: pass, reason: Supply reports availability in scope 'fixture-only'.}
+      - {check: skill-runtime-eligibility, status: not-applicable, reason: This Core supply is not a Skill and needs no Skill lifecycle decision.}
+    eligible: true
+resolution_status: satisfied
+selected_supply_report_ref: supply-sandbox-document-reader-b@1.0.0
+limitations:
+  - Satisfaction means one structurally eligible fixture supply; it does not prove live Provider availability or grant execution permission.
+boundaries:
+  method_contract: unchanged
+  automatic_fallback: false
+  permission_grant: false
+  claim_effect: false
+  human_decision: false

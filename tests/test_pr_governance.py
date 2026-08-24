@@ -144,6 +144,84 @@ class RiskInferenceTests(unittest.TestCase):
         )
         self.assertEqual("R2", risk)
 
+    def test_capability_requirement_contract_surface_is_r2(self) -> None:
+        for path in (
+            "schemas/v0.1.0/capability-requirement.schema.json",
+            "registry/capabilities/requirements.json",
+            "registry/capabilities/requirements/document-read.yaml",
+            "src/research_workbench/capability/requirements.py",
+        ):
+            with self.subTest(path=path):
+                risk, _ = governance.infer_minimum_risk(
+                    [path], shared_contract=False, authority_impact=False
+                )
+                self.assertEqual("R2", risk)
+
+    def test_skill_need_contract_surface_is_r2(self) -> None:
+        for path in (
+            "schemas/v0.1.0/skill-need.schema.json",
+            "registry/skill-needs.json",
+            "registry/skill-needs/evidence-search-plan-1.0.0.yaml",
+            "src/research_workbench/capability/skill_needs.py",
+        ):
+            with self.subTest(path=path):
+                risk, _ = governance.infer_minimum_risk(
+                    [path], shared_contract=False, authority_impact=False
+                )
+                self.assertEqual("R2", risk)
+
+    def test_protocol_profile_contract_surface_is_r2(self) -> None:
+        for path in (
+            "schemas/v0.1.0/protocol-profile.schema.json",
+            "registry/protocol-profiles.json",
+            "registry/protocol-profiles/simulation-vv-assurance-1.0.0.yaml",
+            "src/research_workbench/protocol/profiles.py",
+        ):
+            with self.subTest(path=path):
+                risk, _ = governance.infer_minimum_risk(
+                    [path], shared_contract=False, authority_impact=False
+                )
+                self.assertEqual("R2", risk)
+
+    def test_capability_resolution_contract_surface_is_r2(self) -> None:
+        for path in (
+            "schemas/v0.1.0/capability-supply-report.schema.json",
+            "schemas/v0.1.0/capability-resolution.schema.json",
+            "schemas/v0.1.0/resolved-capability-snapshot.schema.json",
+            "src/research_workbench/capability/supply.py",
+            "examples/capability-resolution/snapshots/document-read-a.yaml",
+        ):
+            with self.subTest(path=path):
+                risk, _ = governance.infer_minimum_risk(
+                    [path], shared_contract=False, authority_impact=False
+                )
+                self.assertEqual("R2", risk)
+
+    def test_phase_b_evolution_gate_is_r2(self) -> None:
+        for path in (
+            "schemas/v0.1.0/phase-b-evolution-gate.schema.json",
+            "examples/capability-resolution/phase-b-evolution-gate.yaml",
+        ):
+            with self.subTest(path=path):
+                risk, _ = governance.infer_minimum_risk(
+                    [path], shared_contract=False, authority_impact=False
+                )
+                self.assertEqual("R2", risk)
+
+    def test_skill_lifecycle_contract_surface_is_r2(self) -> None:
+        for path in (
+            "schemas/v0.1.0/skill-lifecycle-record.schema.json",
+            "registry/skills/lifecycle-v2.json",
+            "registry/skills/lifecycle/simulation-vv-0.1.0-lifecycle-1.0.0.yaml",
+            "registry/skills/lifecycle-migrations/accepted-v1-to-lifecycle-v2.yaml",
+            "src/research_workbench/capability/lifecycle.py",
+        ):
+            with self.subTest(path=path):
+                risk, _ = governance.infer_minimum_risk(
+                    [path], shared_contract=False, authority_impact=False
+                )
+                self.assertEqual("R2", risk)
+
     def test_authority_protocol_is_r2(self) -> None:
         for path in (
             "src/research_workbench/protocol/authority.py",
@@ -605,6 +683,11 @@ class PolicyAndCodeownersTests(unittest.TestCase):
                 "research-mode": ("mode_id", "version"),
                 "decision-authority-matrix": ("matrix_id", "version"),
                 "research-mode-migration": ("migration_id", "migration_version"),
+                "capability-requirement": ("requirement_id",),
+                "skill-need": ("need_id", "version"),
+                "protocol-profile": ("profile_id", "version"),
+                "skill-lifecycle-record": ("lifecycle_id", "lifecycle_version"),
+                "skill-lifecycle-migration": ("migration_id", "migration_version"),
             },
             declarations,
         )
@@ -709,6 +792,31 @@ class PublishedDocumentIdentityTests(unittest.TestCase):
             "research-mode-migration",
             "migration_id: simulation-v01-v02\nmigration_version: 1.0.0\nsummary: original\n",
             "migration_id: simulation-v01-v02\nmigration_version: 1.1.0\nsummary: appended\n",
+        ),
+        "registry/capabilities/requirements/document-read.yaml": (
+            "capability-requirement",
+            "requirement_id: document-read\nsummary: original\n",
+            "requirement_id: document-read-v2\nsummary: appended\n",
+        ),
+        "registry/skill-needs/evidence-search-plan-1.0.0.yaml": (
+            "skill-need",
+            "need_id: evidence-search-plan\nversion: 1.0.0\nsummary: original\n",
+            "need_id: evidence-search-plan\nversion: 1.1.0\nsummary: appended\n",
+        ),
+        "registry/protocol-profiles/simulation-vv-assurance-1.0.0.yaml": (
+            "protocol-profile",
+            "profile_id: simulation-vv-assurance\nversion: 1.0.0\nsummary: original\n",
+            "profile_id: simulation-vv-assurance\nversion: 1.1.0\nsummary: appended\n",
+        ),
+        "registry/skills/lifecycle/simulation-vv-0.1.0-lifecycle-1.0.0.yaml": (
+            "skill-lifecycle-record",
+            "lifecycle_id: simulation-vv\nlifecycle_version: 1.0.0\nsummary: original\n",
+            "lifecycle_id: simulation-vv\nlifecycle_version: 1.1.0\nsummary: appended\n",
+        ),
+        "registry/skills/lifecycle-migrations/accepted-v1-to-lifecycle-v2.yaml": (
+            "skill-lifecycle-migration",
+            "migration_id: accepted-v1-to-lifecycle-v2\nmigration_version: 1.0.0\nsummary: original\n",
+            "migration_id: accepted-v1-to-lifecycle-v2\nmigration_version: 1.1.0\nsummary: appended\n",
         ),
     }
 

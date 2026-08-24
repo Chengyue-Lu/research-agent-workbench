@@ -6,6 +6,12 @@
 
 - [Mode Action contract and registry](MODE_ACTION_CONTRACT.md)
 - [Method Resolution contract](METHOD_RESOLUTION_CONTRACT.md)
+- [Capability Requirement demand contract](CAPABILITY_REQUIREMENT_CONTRACT.md)
+- [Skill Need requirements contract](SKILL_NEED_CONTRACT.md)
+- [Skill lifecycle v2](SKILL_LIFECYCLE_V2.md)
+- [Protocol Profile contract](PROTOCOL_PROFILE_CONTRACT.md)
+- [Capability Resolution and Snapshot Core](CAPABILITY_RESOLUTION_CONTRACT.md)
+- [Phase B migration/replay/replacement Gate](PHASE_B_EVOLUTION_GATE.md)
 - [Research Mode v0.1 to v0.2 migration](RESEARCH_MODE_MIGRATION.md)
 - [Decision Authority Matrix and Authority Rule Eligibility](DECISION_AUTHORITY.md)
 - [File-authoritative Trace Core](TRACE_CORE.md)

@@ -53,6 +53,8 @@ suite 本身仍不是 Runtime Resolver 或全局 Registry。
 - Action `human_gates` 只能保留或追加，不能删除/换名；Action required artifacts 必须被 obligation
   evidence plan 覆盖；Action stop/blocked conditions 必须保留；Resolution 不能重定义 Action claim effects；
 - Skill Need、Human Gate 和 blocked condition 顶层集合与 action decisions 精确闭合；
+- 每个 Capability Requirement ID 解析到需求侧完整性索引；Task `required_capabilities` 与所有 action
+  decisions 的 Requirement 并集精确相等；
 - no-Skill 与 Skill Need 不会生成或引用 Assignment；
 - planning action 不能同时伪装成 formal Action。
 
@@ -61,6 +63,10 @@ suite 本身仍不是 Runtime Resolver 或全局 Registry。
 不在 Resolution 内嵌批准语义。actor/operation 权威由独立的
 [Authority Rule Eligibility](DECISION_AUTHORITY.md) 判断，Resolution 中的 Gate ref 仍是
 opaque ID。
+
+Capability Requirement 的正式字段、不可变 identity 和 path/hash 闭合见
+[Capability Requirement contract](CAPABILITY_REQUIREMENT_CONTRACT.md)。Resolution 继续保存 M8 的精确
+字符串 ID，不内嵌供给状态，也不因 M9-001 改写自身 identity 或原始字节。
 
 ## 5. 状态与下游边界
 

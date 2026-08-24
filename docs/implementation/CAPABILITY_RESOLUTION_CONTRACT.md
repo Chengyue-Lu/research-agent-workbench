@@ -1,0 +1,91 @@
+# Capability Resolution and Snapshot Core
+
+M9-005 在需求与执行之间固定单向关系：
+
+```text
+Capability Requirement
+        ↓
+Capability Supply Report(s)
+        ↓ deterministic comparison at evaluated_at
+Capability Resolution
+        ↓ satisfied + exact selected report
+Resolved Capability Snapshot
+        ├─ structural-replay（Phase B fixture）
+        └─ runtime-execution（供 Topic 4 继续准入的非 fixture 供给记录）
+```
+
+本阶段不建立全局供给 Registry，也不实现 Provider discovery、API session、Runtime consumer、自动
+fallback 或模型路由。调用方必须显式提供候选 Report；低层 Provider conformance 不能自动证明高层科研
+Capability Requirement。
+
+## Supply Report
+
+Report 只陈述一个供给的事实：
+
+- exact implementation/component identity、version/hash；Provider/Model/Runtime/Host 的最终绑定由 Topic 4
+  producer/consumer 另行冻结；
+- provided capability、supported I/O、produced artifacts、limits 与 known unknowns；
+- 所需 permission、data-egress 与 side effects；这些是供给侧事实，不是最终执行授权；
+- typed conformance artifact ref；evidence 必须绑定 artifact path/hash、kind/class、ID、implementation
+  ref/version、capability、observation scope 与 result，Report 不得自报 evidence `status` 覆盖引用制品；
+- scoped availability observation 与 `observed_at`；`valid_until` 可作为 producer metadata，但 Phase B
+  不用当前时钟完成 Runtime freshness 准入。
+
+Report 不能选择自己、放宽边界、持有 Method/fallback/Claim/Human Gate authority，不能保存凭据、价格路由
+或隐藏 fallback。当前 checked-in 报告全部是 fixture，availability 只属于 `fixture-only`。
+
+## Capability Resolution
+
+Resolver 计算 capability、I/O、artifacts、permission、data-egress、side-effects、typed conformance、
+availability 与 Skill runtime eligibility 十类检查。结果只有：
+
+- 一个合格供给：`satisfied`；
+- 无合格供给：`gap`；
+- 多个合格供给：`ambiguous`，不得自动排序或 fallback；
+- permission / egress / side-effect 越界：`blocked`。
+
+Resolution 固定 `qualification` 和 `evaluated_at`。Repository validator 从引用 artifact 的真实 result、
+identity、scope 与 capability 重新计算 checks/status/selection；Report 内字段不能覆盖引用证据。Resolution
+不创建 Authority eligibility、permission grant 或最终 Runtime binding。
+
+## Snapshot 两级资格
+
+所有 Snapshot 固定 exact Task、Method Resolution、Requirement、Resolution、Supply Report、Supply identity、
+三类 Supply-side boundary facts 与 conformance refs。Task ref 必须与 Method Resolution 内的 Task
+identity/revision/hash 一致。
+
+### structural-replay
+
+当前三条 fixture 全部属于此级：
+
+- `supply_required_permissions`、`supply_data_egress`、`supply_side_effects` 与选中 Report 精确一致；
+- 不含 Assignment、Agent Profile、最终 effective permissions、execution boundaries 或 Authority eligibility；
+- `boundaries.execution_input: false`。
+
+因此 fixture、no-Skill、尚无规范 Assignment 的 direct Tool 和 Adapter/Provider 不能被 Runtime 消费。它们只
+证明 schema、hash、replay 与供给替换边界。
+
+### runtime-execution
+
+Phase B 只定义这一资格词汇与 fail-closed seam。形成该类 Snapshot 至少要求唯一 satisfied runtime
+Resolution、非 fixture availability、与高层 Requirement 匹配的 `local-conformance` / `live-conformance`
+typed evidence，以及全部 schema、未知字段、path/hash、identity 与 transitive closure 检查通过。
+
+这仍不是最终执行授权。外部 Snapshot pin、执行时 freshness、account/host/region、精确
+Provider/Adapter/Model/Runtime、credentials/quota、Task/Profile/Skill/Assignment 权限交集、DataPolicy preflight
+和 side-effect enforcement 均由 Topic 4/M6 的 Resolved Execution View 或等价 consumer 完成。Phase B
+trusted loader 接受可选 external hash（提供时必须匹配同一批解析字节），但不要求 `execution_at`。
+
+## Skill Supply Extension
+
+Lifecycle state 只形成结构资格。`new-binding` scope、trial/evaluation/promotion refs 与 Human decision ref 均
+必须存在；Runtime eligibility 还必须由外部 evidence resolver 和 Human-decision resolver 解析成功。Phase B
+不实现 Phase D evidence 或 Human Decision 系统，repository validator 默认以拒绝型 resolver 处理新绑定。
+Skill Supply Report 仍可陈述事实；只有 runtime Resolution/Snapshot 资格被拒绝，Report 事实层不会冒充准入层。
+
+## Replacement fixture
+
+`examples/capability-resolution/` 的 direct Tool、Adapter/Provider，以及 Method `no-Skill` 对应的
+`procedure` 三条 synthetic chain 都是 `structural-replay`。A/B replacement 保持 Task、Mode、Action、
+Method、Requirement 和三类 Supply boundary facts 不变，只替换 exact Supply/Snapshot。它不证明真实
+Provider 可用、Runtime 已实现或科研结果有效。

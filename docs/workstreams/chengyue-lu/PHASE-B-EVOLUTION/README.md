@@ -3,10 +3,10 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 跨负责人共享接口审查：黄毅（GitHub `let778750-cpu`）
 - Tasks：`M9-001`～`M9-006`
-- 基线：`develop@ead1270d0461b870b8030450b4186f8d62f1eeb7`
+- 基线：`develop@a3b6d174a6f3da7f2b890eb40883c4b378e92e16`
 - 目标 base：`develop`
 - 阶段分支：`agent/phase-b-evolution-foundation`
-- 当前状态：Phase A 已收口；M9-001 由阶段 PR 承载；其接受后 M9-002、M9-004 与 M9-005 Snapshot Core 可并行推进
+- 当前状态：M9-001～006 的结构契约及系统一致性修复已实现；Runtime execution 仍无合格 checked-in fixture
 - 风险触发：跨多个公共契约、Registry migration 与 Method/Provider 共享接口
 
 ## 1. 阶段目标
@@ -36,7 +36,6 @@ flowchart LR
     CR --> PP
     CR --> SR
     SR --> RS
-    DA --> RS
     RS --> CS
     LC --> SE
     SE --> SR
@@ -52,8 +51,8 @@ flowchart LR
 Method 说明需要什么与为何需要
 → Supply Report 只报告实际供给事实
 → Capability Resolution 在既有 ceiling 内比较、判定并选择
-→ Snapshot 冻结本次执行输入
-→ Execution 只消费 Snapshot，不反向改写 Method
+→ Snapshot 先区分 structural replay 与供 Topic 4 继续准入的 runtime execution
+→ Execution 只消费 validated runtime-execution Snapshot，不反向改写 Method
 ```
 
 ## 2. 第一节点：M9-001
@@ -103,19 +102,24 @@ Resolved Capability Snapshot
 
 - **Capability Requirement**：只声明需求、验证期待和 permission/data-egress/side-effect ceiling；
 - **Capability Supply Report**：陈述 supply identity，Tool/Skill/Adapter/Provider implementation identity，
-  version/hash、provided capability、supported I/O、permissions、data-egress、side effects、deterministic/live
-  conformance evidence、availability facts 与 limitations；它不能选择自己，也没有 Method、permission
+  version/hash、provided capability、supported I/O、permissions、data-egress、side effects、typed
+  conformance artifact、scoped availability 与 limits；typed evidence 必须绑定 artifact path/hash、kind/class、
+  ID、implementation ref/version、capability、observation scope 与 result；它不能用自报 status 覆盖
+  引用制品，不能选择自己，也没有 Method、permission
   relaxation、fallback、Claim 或 Human Gate authority；
-- **Capability Resolution**：比较零个或多个 Report，输出 `satisfied`、`unsatisfied/gap`、
-  `ambiguous/requires-decision` 或 `blocked`；选择具体供给时必须满足 Requirement、Task 与既有 Authority
-  Matrix 的 ceiling，歧义不能伪装成 automatic fallback；
-- **Resolved Capability Snapshot**：冻结本次执行消费的 exact Tool/Skill/Adapter/Provider ref、version/hash、
-  permissions、data-egress、side effects、相关 conformance evidence 与 Requirement refs。它是执行输入，
-  不是 Method decision。
+- **Capability Resolution**：比较零个或多个 Report，输出 `satisfied`、`gap`、`ambiguous` 或 `blocked`；
+  比较固定 `evaluated_at`，选择具体供给时必须满足 Requirement ceiling，歧义不能伪装成 automatic
+  fallback；
+- **Resolved Capability Snapshot**：所有级别冻结 exact Task/Method/Requirement/Resolution/Supply refs、
+  Supply-side boundary facts 与 evidence refs；`structural-replay` 不是执行输入，`runtime-execution` 只证明
+  非 fixture typed-evidence 资格并留给 Topic 4 继续准入。Snapshot 不计算 Task/Profile/Skill/Assignment
+  最终权限，不建立 exact Provider binding 或 Authority eligibility，也不是 Method decision 或 permission grant。
 
-Snapshot Core 只依赖 M9-001 与 M8 Decision Authority，先支持 no-Skill、direct Tool、Adapter/Provider
-supply facts 和边界绑定。Skill Supply Extension 额外依赖 M9-003；只有 lifecycle 明确 runtime eligibility
-的 Skill 才能成为合法 Report/Snapshot 候选。M9-004 Protocol Profile 与这两条路径正交并行，不阻塞 Core。
+Snapshot Core 只依赖 M9-001 与 M8 Decision Authority 的既有 ceiling，先支持 Method no-Skill 对应的
+procedure、direct Tool、Adapter/Provider 供给事实的 structural replay。Skill Supply Extension 额外依赖 M9-003；lifecycle 状态只形成结构资格，
+真正新绑定还要外部 evidence/Human-decision resolver；Report 可陈述 Skill 供给事实，但缺 resolver 时
+Resolution/Snapshot new-binding eligibility 默认拒绝。三条 fixture 均不得升格为 runtime execution。
+M9-004 Protocol Profile 与这两条路径正交并行，不阻塞 Core。
 
 ### 3.3 Protocol Profile 正交边界
 
@@ -171,8 +175,9 @@ Phase D 的 minimal Evaluation Manifest 可在 M9-002 稳定后并行启动，�
 
 Topic 4 thin-layer Architecture Hold 只在 Capability Requirement、Capability Supply Report、Capability
 Resolution boundary 均稳定且 Resolved Capability Snapshot Core 被接受后解除。届时只允许 Runtime
-消费 Snapshot、Provider/Adapter binding、actual execution fact reporting 与 permission/data-egress/
-side-effect enforcement。automatic fallback、model auto-routing、multi-Agent orchestration、critic voting、
+在 Topic 4 内补齐 external pin、freshness、精确 Provider/Adapter/Model/Runtime、最终权限/DataPolicy 交集后，
+消费 closure-valid 的 `runtime-execution` Snapshot、报告 actual execution facts，并执行 permission/data-egress/
+side-effect boundary。automatic fallback、model auto-routing、multi-Agent orchestration、critic voting、
 hidden routing，以及 Runtime 修改 Method/Claim/Gate 继续禁止。
 
 Topic 5 继续冻结，直到 Phase C 至少完成 minimal Research State、Failure/Attempt semantics 与 Method
@@ -189,9 +194,24 @@ Phase B 只有在以下条件均有证据时收口：
 3. 旧发布对象与历史 Assignment 仍可解释，不被新 Registry 静默重写；
 4. 至少一个合成 Tool/Provider replacement fixture 保持 Task/Mode/Action/Method/Requirement 不变，只将
    Supply A/Snapshot A 替换为 Supply B/Snapshot B；
-5. Supply Report 不选择自身，Resolution 不越过 ceiling；Snapshot 精确固定 supply 与权限/数据/副作用
-   边界，但不拥有 Method、Claim、Gate 或 fallback authority；
+5. Supply Report 不选择自身或自报 evidence 结果，Resolution 不越过 ceiling；structural Snapshot 不声明
+   final effective boundary/eligibility，runtime Snapshot 只形成 Topic 4 的 provider-neutral 供给输入，且
+   两者都不拥有 Method、Claim、Gate、permission grant 或 fallback authority；
 6. 完整 repository validation、测试、CI 与跨负责人共享接口审查通过。
 
 上述 Gate 证明契约、迁移和替换边界，不证明 Skill 有科研净收益、外部 Provider 真实可用或端到端产品
 已经完成。
+
+## 9. Task-specific verification evidence
+
+| Task | 实现证据 | 主要验证 |
+|---|---|---|
+| M9-001 | Capability Requirement Schema、四份 immutable Requirement、path/hash index、Task↔Method closure | demand-only 字段负面测试；八组 Method Resolution 引用闭合 |
+| M9-002 | Skill Need Schema、三份 Need 与 index | actual result/supply/admission 字段被拒绝；no-Skill/direct-tool baseline 保留 |
+| M9-003 | lifecycle v2 Record/Index/Migration 与 Skill Supply eligibility seam | 五轴不变量、旧 accepted entry append-stability、非 eligible Skill Supply 阻断 |
+| M9-004 | 两份 bounded PRISMA/V&V Protocol Profile 与 index | Mode/Skill/Provider/Runtime/global-DAG 越界字段被拒绝 |
+| M9-005 | typed Supply Report、Resolution、两级 Snapshot、validated consumer 与三条 Core chain | satisfied/gap/ambiguous/blocked 重算；evidence identity/result、fixture、permission 与 routing/fallback 绕过测试；Method no-Skill→procedure、Tool、Adapter/Provider 的 structural chain，以及非 fixture typed-evidence seam |
+| M9-006 | `PHASE-B-M9-CLOSEOUT-001` Gate manifest | stable contract hash、A/B exact-supply replacement、三类 ceiling、两类 migration replay 与越权声明负面测试 |
+
+这六项在同一 R2 Stage PR 中构成连通 atomic completion DAG。每项 DONE 均在 PR body 具名列出上述
+证据；最终接受仍以远端 governance、Python 3.11/3.13、repository validation 与跨负责人审查为准。

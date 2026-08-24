@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/capability-supply-report.schema.json",
+  "title": "Capability Supply Report",
+  "$comment": "A factual, versioned report about one supply. It cannot select itself, relax boundaries, route execution, or claim scientific authority.",
+  "x-rwb-document-kind": "capability_supply_report",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "report_id",
+    "version",
+    "observation_scope",
+    "supply_identity",
+    "provided_capabilities",
+    "supported_inputs",
+    "supported_outputs",
+    "produced_artifacts",
+    "required_permissions",
+    "data_egress_behavior",
+    "side_effects",
+    "conformance_evidence",
+    "availability",
+    "limits",
+    "limitations",
+    "authority_boundaries"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "report_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "version": { "$ref": "common.schema.json#/$defs/semver" },
+    "observation_scope": {
+      "enum": ["synthetic-bounded-fixture", "deterministic-local", "live-observation"]
+    },
+    "supply_identity": {
+      "$ref": "capability-supply-common.schema.json#/$defs/supplyIdentity"
+    },
+    "provided_capabilities": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "supported_inputs": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "supported_outputs": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "produced_artifacts": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "required_permissions": {
+      "$ref": "capability-supply-common.schema.json#/$defs/permissionBoundary"
+    },
+    "data_egress_behavior": {
+      "$ref": "capability-supply-common.schema.json#/$defs/dataEgressBoundary"
+    },
+    "side_effects": {
+      "$ref": "capability-supply-common.schema.json#/$defs/sideEffectBoundary"
+    },
+    "conformance_evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["evidence_id", "evidence_class", "artifact_kind", "artifact_ref"],
+        "properties": {
+          "evidence_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "evidence_class": { "enum": ["deterministic", "live"] },
+          "artifact_kind": {
+            "enum": ["capability-conformance-evidence", "provider-conformance-report"]
+          },
+          "artifact_ref": { "$ref": "common.schema.json#/$defs/fileRef" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "availability": {
+      "type": "object",
+      "required": ["status", "scope", "observed_at", "facts"],
+      "properties": {
+        "status": { "enum": ["available", "unavailable", "unknown"] },
+        "scope": {
+          "type": "object",
+          "required": ["scope_kind"],
+          "properties": {
+            "scope_kind": { "enum": ["fixture-only", "local-environment", "provider-observation"] },
+            "fixture_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+            "scope_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "scope_kind": { "const": "fixture-only" } }, "required": ["scope_kind"] },
+              "then": { "required": ["fixture_id"] }
+            },
+            {
+              "if": {
+                "properties": {
+                  "scope_kind": {
+                    "enum": ["local-environment", "provider-observation"]
+                  }
+                },
+                "required": ["scope_kind"]
+              },
+              "then": { "required": ["scope_ref"] }
+            }
+          ],
+          "additionalProperties": false
+        },
+        "observed_at": { "type": "string", "format": "date-time" },
+        "valid_until": { "type": "string", "format": "date-time" },
+        "facts": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "limits": {
+      "description": "Stable known limits and explicitly unknown producer facts; never a price or routing table.",
+      "type": "object",
+      "required": ["known", "unknown"],
+      "properties": {
+        "known": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "uniqueItems": true
+        },
+        "unknown": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "limitations": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "authority_boundaries": {
+      "type": "object",
+      "required": [
+        "selects_itself",
+        "owns_method_authority",
+        "relaxes_permissions",
+        "owns_fallback",
+        "grants_claim_effect",
+        "satisfies_human_gate"
+      ],
+      "properties": {
+        "selects_itself": { "const": false },
+        "owns_method_authority": { "const": false },
+        "relaxes_permissions": { "const": false },
+        "owns_fallback": { "const": false },
+        "grants_claim_effect": { "const": false },
+        "satisfies_human_gate": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

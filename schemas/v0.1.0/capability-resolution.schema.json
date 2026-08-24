@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/capability-resolution.schema.json",
+  "title": "Capability Resolution",
+  "$comment": "A deterministic comparison of one Requirement against zero or more Supply Reports. Selection is a bounded input to Snapshot construction, not permission, fallback, Method, Claim, or Human authority.",
+  "x-rwb-document-kind": "capability_resolution",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "resolution_id",
+    "revision",
+    "qualification",
+    "evaluated_at",
+    "method_resolution_ref",
+    "requirement_ref",
+    "candidate_supply_report_refs",
+    "comparisons",
+    "resolution_status",
+    "limitations",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "resolution_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "revision": { "type": "integer", "minimum": 1 },
+    "qualification": { "enum": ["structural-replay", "runtime-execution"] },
+    "evaluated_at": { "type": "string", "format": "date-time" },
+    "method_resolution_ref": {
+      "allOf": [
+        { "$ref": "capability-supply-common.schema.json#/$defs/versionedDocumentRef" },
+        {
+          "properties": {
+            "ref": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*@r[1-9][0-9]*$"
+            }
+          }
+        }
+      ]
+    },
+    "requirement_ref": {
+      "$ref": "capability-supply-common.schema.json#/$defs/requirementRef"
+    },
+    "candidate_supply_report_refs": {
+      "type": "array",
+      "items": { "$ref": "capability-supply-common.schema.json#/$defs/versionedDocumentRef" }
+    },
+    "comparisons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["supply_report_ref", "checks", "eligible"],
+        "properties": {
+          "supply_report_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "checks": {
+            "type": "array",
+            "minItems": 10,
+            "maxItems": 10,
+            "items": {
+              "$ref": "capability-supply-common.schema.json#/$defs/comparisonResult"
+            }
+          },
+          "eligible": { "type": "boolean" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "resolution_status": {
+      "enum": ["satisfied", "gap", "ambiguous", "blocked"]
+    },
+    "selected_supply_report_ref": {
+      "$ref": "common.schema.json#/$defs/nonEmptyString"
+    },
+    "limitations": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "boundaries": {
+      "type": "object",
+      "required": [
+        "method_contract",
+        "automatic_fallback",
+        "permission_grant",
+        "claim_effect",
+        "human_decision"
+      ],
+      "properties": {
+        "method_contract": { "const": "unchanged" },
+        "automatic_fallback": { "const": false },
+        "permission_grant": { "const": false },
+        "claim_effect": { "const": false },
+        "human_decision": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "resolution_status": { "const": "satisfied" } }, "required": ["resolution_status"] },
+      "then": { "required": ["selected_supply_report_ref"] },
+      "else": { "not": { "required": ["selected_supply_report_ref"] } }
+    }
+  ],
+  "additionalProperties": false
+}

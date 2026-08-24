@@ -38,6 +38,30 @@
       "schemas/**/decision-authority*.schema.json",
       "schemas/**/authority-rule-eligibility.schema.json",
       "schemas/**/method-resolution.schema.json",
+      "schemas/**/capability-requirement*.schema.json",
+      "registry/capabilities/requirements.json",
+      "registry/capabilities/requirements/**",
+      "src/research_workbench/capability/requirements.py",
+      "schemas/**/skill-need*.schema.json",
+      "registry/skill-needs.json",
+      "registry/skill-needs/**",
+      "src/research_workbench/capability/skill_needs.py",
+      "schemas/**/capability-supply*.schema.json",
+      "schemas/**/capability-resolution.schema.json",
+      "schemas/**/resolved-capability-snapshot.schema.json",
+      "schemas/**/capability-conformance-evidence.schema.json",
+      "schemas/**/phase-b-evolution-gate.schema.json",
+      "src/research_workbench/capability/supply.py",
+      "examples/capability-resolution/**",
+      "schemas/**/skill-lifecycle*.schema.json",
+      "registry/skills/lifecycle-v2.json",
+      "registry/skills/lifecycle/**",
+      "registry/skills/lifecycle-migrations/**",
+      "src/research_workbench/capability/lifecycle.py",
+      "schemas/**/protocol-profile*.schema.json",
+      "registry/protocol-profiles.json",
+      "registry/protocol-profiles/**",
+      "src/research_workbench/protocol/profiles.py",
       "schemas/**/claim*.schema.json",
       "schemas/**/decision*.schema.json",
       "schemas/**/human-gate*.schema.json",
@@ -84,6 +108,56 @@
         "registry/modes/migrations/*.yml",
         "registry/modes/migrations/**/*.yaml",
         "registry/modes/migrations/**/*.yml"
+      ],
+      "identity_fields": ["migration_id", "migration_version"]
+    },
+    {
+      "kind": "capability-requirement",
+      "patterns": [
+        "registry/capabilities/requirements/*.yaml",
+        "registry/capabilities/requirements/*.yml",
+        "registry/capabilities/requirements/**/*.yaml",
+        "registry/capabilities/requirements/**/*.yml"
+      ],
+      "identity_fields": ["requirement_id"]
+    },
+    {
+      "kind": "skill-need",
+      "patterns": [
+        "registry/skill-needs/*.yaml",
+        "registry/skill-needs/*.yml",
+        "registry/skill-needs/**/*.yaml",
+        "registry/skill-needs/**/*.yml"
+      ],
+      "identity_fields": ["need_id", "version"]
+    },
+    {
+      "kind": "protocol-profile",
+      "patterns": [
+        "registry/protocol-profiles/*.yaml",
+        "registry/protocol-profiles/*.yml",
+        "registry/protocol-profiles/**/*.yaml",
+        "registry/protocol-profiles/**/*.yml"
+      ],
+      "identity_fields": ["profile_id", "version"]
+    },
+    {
+      "kind": "skill-lifecycle-record",
+      "patterns": [
+        "registry/skills/lifecycle/*.yaml",
+        "registry/skills/lifecycle/*.yml",
+        "registry/skills/lifecycle/**/*.yaml",
+        "registry/skills/lifecycle/**/*.yml"
+      ],
+      "identity_fields": ["lifecycle_id", "lifecycle_version"]
+    },
+    {
+      "kind": "skill-lifecycle-migration",
+      "patterns": [
+        "registry/skills/lifecycle-migrations/*.yaml",
+        "registry/skills/lifecycle-migrations/*.yml",
+        "registry/skills/lifecycle-migrations/**/*.yaml",
+        "registry/skills/lifecycle-migrations/**/*.yml"
       ],
       "identity_fields": ["migration_id", "migration_version"]
     }

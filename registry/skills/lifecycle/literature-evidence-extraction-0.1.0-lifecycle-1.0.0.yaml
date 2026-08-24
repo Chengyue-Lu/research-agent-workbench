@@ -1,0 +1,38 @@
+schema_version: 0.1.0
+lifecycle_id: literature-evidence-extraction
+lifecycle_version: 1.0.0
+record_scope: migrated-legacy
+skill_ref:
+  skill_id: literature-evidence-extraction
+  version: 0.1.0
+  manifest_path: registry/skills/accepted/literature-evidence-extraction.yaml
+  content_hash: sha256:c0a080ea9c4743a599000bc6978386a8dcbb8aaa09e1ed4c0e54a4deadca780b
+  package_hash: sha256:60c8b11adc147fbcb3c0d1c79d05c441d3143f446502a5b12c73f1b8b04895cb
+need_refs: []
+intake:
+  state: legacy-import
+  source_refs: [registry/skills/accepted.json#literature-evidence-extraction@0.1.0]
+  reason: The package predates Need-first intake and is preserved without reconstructing missing source-review history.
+evaluation:
+  state: not-reconstructable
+  promotion_evidence_refs: []
+  reason: Historical admission flags do not constitute a v2 baseline, trial, or Evaluation Record.
+admission:
+  state: legacy-imported
+  decision_owner: unknown-legacy
+  reason: The accepted v0.1 entry is preserved, but no v2 Human Decision is inferred.
+runtime_eligibility:
+  state: historical-replay-only
+  eligibility_ref: RTE-LEGACY-LITERATURE-EVIDENCE-EXTRACTION-0.1.0
+  scopes: [historical-exact-version-replay]
+  reason: New assignments require a later v2 evaluation and Human admission decision.
+lifecycle:
+  state: legacy-preserved
+  superseded_by_refs: []
+  reason: The exact package remains interpretable for historical Assignment replay.
+boundaries:
+  stores_trial_results: false
+  stores_evaluation_results: false
+  defines_benchmark_metrics: false
+  grants_permission: false
+  promotes_claim: false

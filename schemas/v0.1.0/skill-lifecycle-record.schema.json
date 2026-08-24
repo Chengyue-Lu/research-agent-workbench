@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/skill-lifecycle-record.schema.json",
+  "title": "Skill Lifecycle Record v2",
+  "$comment": "A versioned control record that separates intake, evaluation, admission, runtime eligibility, and lifecycle disposition. It references evidence but never stores trial or evaluation results.",
+  "x-rwb-document-kind": "skill_lifecycle_record",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "lifecycle_id",
+    "lifecycle_version",
+    "record_scope",
+    "skill_ref",
+    "need_refs",
+    "intake",
+    "evaluation",
+    "admission",
+    "runtime_eligibility",
+    "lifecycle",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "lifecycle_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "lifecycle_version": { "$ref": "common.schema.json#/$defs/semver" },
+    "record_scope": { "enum": ["current", "migrated-legacy", "synthetic-fixture"] },
+    "skill_ref": {
+      "type": "object",
+      "required": ["skill_id", "version", "manifest_path", "content_hash", "package_hash"],
+      "properties": {
+        "skill_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "version": { "$ref": "common.schema.json#/$defs/semver" },
+        "manifest_path": { "$ref": "common.schema.json#/$defs/relativePath" },
+        "content_hash": { "$ref": "common.schema.json#/$defs/sha256" },
+        "package_hash": { "$ref": "common.schema.json#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    },
+    "need_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^NEED-[A-Z0-9]+(?:-[A-Z0-9]+)*$"
+      },
+      "uniqueItems": true
+    },
+    "intake": {
+      "type": "object",
+      "required": ["state", "source_refs", "reason"],
+      "properties": {
+        "state": { "enum": ["recorded", "screened", "candidate", "legacy-import"] },
+        "source_refs": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "additionalProperties": false
+    },
+    "evaluation": {
+      "type": "object",
+      "required": ["state", "promotion_evidence_refs", "reason"],
+      "properties": {
+        "state": {
+          "enum": ["not-planned", "planned", "in-progress", "evidence-ready", "blocked", "not-reconstructable"]
+        },
+        "baseline_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "trial_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "evaluation_record_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "promotion_evidence_refs": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "uniqueItems": true
+        },
+        "reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "state": { "const": "evidence-ready" } }, "required": ["state"] },
+          "then": { "required": ["baseline_ref", "evaluation_record_ref"] }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "admission": {
+      "type": "object",
+      "required": ["state", "decision_owner", "reason"],
+      "properties": {
+        "state": { "enum": ["pending", "trial", "accepted", "rejected", "legacy-imported"] },
+        "decision_owner": { "enum": ["human", "unknown-legacy"] },
+        "decision_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "state": { "enum": ["trial", "accepted", "rejected"] } },
+            "required": ["state"]
+          },
+          "then": {
+            "required": ["decision_ref"],
+            "properties": { "decision_owner": { "const": "human" } }
+          }
+        },
+        {
+          "if": { "properties": { "state": { "const": "legacy-imported" } }, "required": ["state"] },
+          "then": { "properties": { "decision_owner": { "const": "unknown-legacy" } } }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "runtime_eligibility": {
+      "type": "object",
+      "required": ["state", "eligibility_ref", "scopes", "reason"],
+      "properties": {
+        "state": { "enum": ["ineligible", "trial-only", "eligible", "historical-replay-only"] },
+        "eligibility_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "scopes": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "uniqueItems": true
+        },
+        "reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "state": { "const": "eligible" } }, "required": ["state"] },
+          "then": { "properties": { "scopes": { "minItems": 1 } } }
+        },
+        {
+          "if": { "properties": { "state": { "const": "trial-only" } }, "required": ["state"] },
+          "then": { "properties": { "scopes": { "minItems": 1 } } }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "lifecycle": {
+      "type": "object",
+      "required": ["state", "superseded_by_refs", "reason"],
+      "properties": {
+        "state": { "enum": ["current", "superseded", "retired", "legacy-preserved"] },
+        "superseded_by_refs": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "uniqueItems": true
+        },
+        "reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "state": { "const": "superseded" } }, "required": ["state"] },
+          "then": { "properties": { "superseded_by_refs": { "minItems": 1 } } }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "boundaries": {
+      "type": "object",
+      "required": [
+        "stores_trial_results",
+        "stores_evaluation_results",
+        "defines_benchmark_metrics",
+        "grants_permission",
+        "promotes_claim"
+      ],
+      "properties": {
+        "stores_trial_results": { "const": false },
+        "stores_evaluation_results": { "const": false },
+        "defines_benchmark_metrics": { "const": false },
+        "grants_permission": { "const": false },
+        "promotes_claim": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

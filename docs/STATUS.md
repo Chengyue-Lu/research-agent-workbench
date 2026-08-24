@@ -1,7 +1,7 @@
 # 实现状态
 
 状态：Current implementation authority
-更新：2026-08-24
+更新：2026-08-25
 
 本页只回答“仓库现在实现到哪里”。实时任务状态由 [`TASKS.md`](TASKS.md) 维护，依赖方向由 [`ROADMAP.md`](ROADMAP.md) 维护。
 
@@ -9,8 +9,9 @@
 
 RWB 处于**内部技术 alpha**：核心文件契约、解析和确定性验证可供开发与集成试验使用；尚不构成面向普通研究者的完整产品，也不对科研结果作质量保证。
 
-Phase A / M8 Core Formalization 已在 `develop@ead1270` 完成契约收口；当前进入 Phase B 准备期。
-“Phase A 完成”不表示 Method→Capability→Execution 已贯通，下面列出的 continuation gap 仍是真实缺口。
+Phase A / M8 Core Formalization 已完成契约收口。Phase B / M9-001～006 的需求、供给、生命周期、
+Protocol、两级 Snapshot 与 migration/replacement 结构契约已经实现。这里的“完成”不表示真实 Provider、
+规范 Runtime Assignment、Human Decision、科学有效性或端到端研究运行已经证明。
 
 ## 已实现
 
@@ -20,9 +21,14 @@ Phase A / M8 Core Formalization 已在 `develop@ead1270` 完成契约收口；�
 | Method-aware control | 两个正式 Mode 的 16 个逻辑 Action、跨 v0.1/v0.2 的 32 个版本化 Action 文档、hash-pinned Registry，以及八组 `diagnostic case → bounded TaskPacket → Method Resolution`；Resolution 继承 Action Gate/Artifact/stop/block 且不绑定供应实现 |
 | Mode compatibility | v0.1/v0.2 Mode 并存，显式 v0.1→v0.2 迁移器与两个 exact-pin migration record；Registry 追加同 Action 新版本不改变旧 migration replay |
 | Authority Rule Eligibility | v1 Matrix 与九个 hash-pinned eligibility record 只判断“假设 asserted facts 成立时 actor 是否匹配 operation rule”；不证明事实、不记录 Human approval、不授予 Permission、不提升 Claim、不执行决定 |
+| Capability Requirement | 四个被八组 Method Resolution 复用的需求 ID 已成为不可变、hash-indexed 的需求侧契约；Task↔Method↔Requirement 引用可闭合，且契约拒绝 Provider/Model/Adapter、供给状态与 fallback |
+| Skill Need / lifecycle v2 | 三个版本化 Need 只声明 gap、baseline、expected increment 与证据要求；lifecycle 分离 intake/evaluation/Human admission/runtime eligibility；`eligible_for_new_binding()` 要求 new-binding scope、trial/evaluation/promotion/Human refs，真正新绑定还须外部 evidence 与 decision resolver |
+| Protocol Profile | 两个有界 PRISMA/V&V profile 只增加 method obligation 与 Gate/evidence expectation，不复制 Mode、不绑定 Skill/Tool/Provider，也不建立全局研究 DAG |
+| Capability supply / Snapshot | typed Report→Resolution→Snapshot 拒绝自报 evidence status、artifact/identity/version/capability/result 漂移和 routing/fallback；structural Snapshot 不是执行输入，Snapshot 只冻结 Supply-side permission/data-egress/side-effect facts，不生成最终权限、Provider binding 或 Authority eligibility |
+| Phase B Gate | hash-bound Gate 固定 Task/Mode/Action/Method/Requirement、A/B structural Snapshot 与两类 migration；供给替换保持三类 Supply boundary facts，不赋予 Runtime Method authority |
 | 确定性验证 | Schema、引用、哈希、权限交集、Handoff lock、Claim 支持关系 |
 | Task 解析 | Task + Agent Profile + 显式或 Registry Skill 的冻结 Assignment、权限交集与版本锁 |
-| Skill 生命周期 | accepted Registry 的 active / legacy / deprecated 选择边界与精确版本 |
+| Legacy Skill 兼容 | accepted Registry 的 active / legacy / deprecated 历史选择边界与精确版本继续可验证；新绑定使用 lifecycle v2 eligibility |
 | 文件式连续性 | Main State、checkpoint、resume-check、受控 Handoff 与归档约定 |
 | Execution Trace | Envelope、Index、append-only events、工具结果持久化与闭集校验 |
 | Legacy execution bridge | 既有 Skill-bound Assignment 到 Trace / Receipt 的适配和恢复检查 |
@@ -32,8 +38,9 @@ Phase A / M8 Core Formalization 已在 `develop@ead1270` 完成契约收口；�
 
 | 范围 | 限制 |
 |---|---|
-| Method-aware control continuation | Resolved Execution View、Capability binding 与 Method Trace 尚未实现；现有 Mode migration 不迁移历史 Resolution 或执行记录，Authority Rule Eligibility 也不执行决定 |
+| Method-aware control continuation | M6-003 thin Runtime consumer 与 Method Trace 尚未实现；M6-003 仍受既有 M2-001..005 依赖约束，其中 M2-003/M2-004 为 PARKED；当前三条 Snapshot 都是 `structural-replay` 且 `execution_input=false`；Mode/lifecycle migration 不迁移历史 Resolution、Assignment、Receipt 或 Trace，Authority Rule Eligibility 也不执行决定 |
 | no-Skill Assignment | Task 契约允许空 `required_skills`，但 alpha CLI 尚不能将其解析为冻结 Assignment |
+| Runtime Snapshot | 仓库没有 checked-in `runtime-execution` Snapshot；fixture 不得被 Runtime 接受。Phase B 只定义非 fixture typed-evidence 资格，external pin、freshness、精确 Provider/Model/Runtime、最终权限/DataPolicy 交集和 Authority 判断留给 Topic 4/M6 |
 | End-to-end research run | 尚无面向普通用户的一键 Task-to-research 闭环；Runtime 集成由开发者显式接入 |
 | 真实外部模型 | 仓库测试不证明各供应商真实账号、配额、工具调用或长期兼容性 |
 | 科学有效性 | Validator 不评判方法适用、证据质量或 Claim 正确性 |

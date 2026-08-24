@@ -84,6 +84,12 @@ Capability Resolution 在既有 authority 与 permission/data-egress/side-effect
 最终由 Resolved Capability Snapshot 冻结本次执行输入。当前 Resolver 直接从 Task/Profile/Mode 处理
 Skill Assignment，是兼容期执行视图，不应被解释为完整方法路由。
 
+M9-001 已将 Capability Requirement 冻结为独立需求侧契约：现有八个 Resolution 的四个重复 ID 经
+`registry/capabilities/requirements.json` 闭合到唯一 path/hash 文档，且 Task 与 Method 引用必须精确
+相等。该 index 只负责需求完整性，不发现供给，也不表达 available/gap/blocked；同一 Requirement
+可以被后续不同供给候选消费而不修改 Method identity。详见
+[`CAPABILITY_REQUIREMENT_CONTRACT.md`](../implementation/CAPABILITY_REQUIREMENT_CONTRACT.md)。
+
 正式 Skill Need 至少需要 trigger/non-trigger、semantic gap、no-Skill/direct-tool baseline、
 expected increment、evaluation criteria、required evidence classes 和已知 domain scope/variants。
 它只说明未来什么证据足以进入 trial/promotion，不保存实际 trial/evaluation/promotion result。实际结果

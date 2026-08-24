@@ -60,16 +60,18 @@ Phase B 保持“需求语义先于供给绑定”的顺序：
    expectations，不复制 Mode Action、不固定研究 DAG，也不绑定 Skill/Tool/Provider；
 5. M9-005 建立显式供给缝：`Capability Requirement → Capability Supply Report(s) → Capability Resolution
    → Resolved Capability Snapshot`。Report 只陈述 supply identity、实现版本/hash、能力、I/O、权限、
-   data-egress、副作用、conformance/availability facts 与限制，不拥有选择、fallback、Method、Claim 或
+   data-egress、副作用、typed conformance artifact、scoped availability 与限制，不拥有选择、fallback、Method、Claim 或
    Human Gate authority；Resolution 比较零个或多个 Report 并给出 satisfied/gap/ambiguous/blocked；
-   Snapshot 只冻结本次执行消费的 exact supply 与 Requirement refs；
+   Snapshot 区分不具执行资格的 `structural-replay` 与具有非 fixture typed-evidence 资格、仍待 Topic 4
+   完成最终执行准入的 `runtime-execution`；
 6. migration 保持 append-only 和显式调用。Phase A 的 Mode v0.1→v0.2 是首个已完成 exemplar，Phase B
    不重造通用 migration framework，只在新增对象确有版本迁移需求时扩展。
 
 `Capability Requirement` 与 `Skill Need` 可在冻结共同引用语义后顺序推进；M9-004 Protocol Profile
 与 M9-002/003 并行，不阻塞 M9-005。M9-005 的 Snapshot Core 只依赖 M9-001 与 M8 Decision Authority，
-先覆盖 no-Skill、direct Tool、Adapter/Provider supply report 和 permission/data-egress/side-effect binding；
-Skill 作为合法供给候选的扩展额外等待 M9-003 runtime eligibility。Resolved Capability Snapshot 涉及
+先覆盖 Method no-Skill 对应的 procedure、direct Tool、Adapter/Provider supply facts 的 structural replay；
+fixture 不得声明 final effective boundary 或 execution eligibility。Skill 作为合法供给候选的扩展额外等待
+M9-003，并且新绑定还必须解析独立 evidence 与 Human decision。Resolved Capability Snapshot 涉及
 Method 与 Provider 两侧，必须跨负责人审查：路诚钺维护需求词汇、Resolution/Snapshot authority ceiling
 与 provider-neutral fixture，黄毅维护 Adapter/Provider 的真实供给映射与 conformance。Phase B 不接管
 API/Runtime 实现。
@@ -77,6 +79,18 @@ API/Runtime 实现。
 停止 Gate：至少一个 fixture 在 Task、Mode、Action、Method Resolution 与 Capability Requirement 均不变时，
 将 Supply A/Snapshot A 替换为 Supply B/Snapshot B；permission、data-egress 与 side-effect ceiling 不放宽，
 Runtime 不获得 Method authority，旧研究对象仍可解释和重放。
+
+### Phase B 实现判定（2026-08-25）
+
+**IMPLEMENTED AS STRUCTURAL CONTRACT。** M9-001～006 已形成 Requirement、Need、lifecycle v2、两个
+bounded Protocol Profile、typed Report→Resolution→两级 Snapshot、validated consumer 与 Skill Supply
+Extension。M9-006 Gate 固定同一 Task/Mode/Action/Method/Requirement，并证明 Supply A→B 只改变 exact
+supply，三类 Supply boundary facts 保持一致；Research Mode 与 Skill lifecycle
+migration 均保持 exact-pin replay。
+
+此判定不证明 live Provider 可用、Skill 科研净收益、Human Decision 或真实执行。当前三条 fixture 都是
+`structural-replay`；Topic 4 thin consumer 只能接受未来完整验证的 `runtime-execution` Snapshot。Topic 5
+仍保持冻结。
 
 ### Topic 4 thin-layer Architecture Hold
 
@@ -87,8 +101,10 @@ Runtime 不获得 Method authority，旧研究对象仍可解释和重放。
 - Capability Resolution boundary；
 - Resolved Capability Snapshot Core。
 
-解冻范围只包括 Runtime 消费 Snapshot、Provider/Adapter binding、actual execution fact reporting，以及
-permission/data-egress/side-effect enforcement。automatic fallback、model auto-routing、multi-Agent
+解冻范围只包括 Runtime 在 Topic 4 内补齐 external hash pin、执行时 freshness、精确
+Provider/Adapter/Model/Runtime binding、Task/Profile/Skill/Assignment 与 DataPolicy 的最终交集后，消费
+schema-valid、closure-valid 的 `runtime-execution` Snapshot、报告 actual execution facts，并执行
+permission/data-egress/side-effect boundary。automatic fallback、model auto-routing、multi-Agent
 orchestration、critic voting、hidden routing，以及 Runtime 修改 Method、Claim 或 Gate 继续禁止。
 
 ## 4. Phase C：Research State 与 Verification

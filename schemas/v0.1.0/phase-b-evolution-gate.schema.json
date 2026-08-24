@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/phase-b-evolution-gate.schema.json",
+  "title": "Phase B Evolution Gate",
+  "$comment": "A deterministic closeout-evidence manifest for migration replay and supply replacement. It is not an execution authorization, scientific evaluation, or Runtime contract.",
+  "x-rwb-document-kind": "phase_b_evolution_gate",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "gate_id",
+    "revision",
+    "scope",
+    "stable_contract_refs",
+    "replacement",
+    "replay_migration_refs",
+    "boundary_assertions",
+    "verification_status",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "gate_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "revision": { "type": "integer", "minimum": 1 },
+    "scope": { "const": "phase-b-evolution" },
+    "stable_contract_refs": {
+      "type": "array",
+      "minItems": 6,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/pinnedContractRef" }
+    },
+    "replacement": {
+      "type": "object",
+      "required": ["snapshot_refs", "required_invariants"],
+      "properties": {
+        "snapshot_refs": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/pinnedSnapshotRef" }
+        },
+        "required_invariants": {
+          "type": "array",
+          "minItems": 8,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "task-unchanged",
+              "mode-unchanged",
+              "action-set-unchanged",
+              "method-resolution-unchanged",
+              "capability-requirement-unchanged",
+              "permission-ceiling-not-relaxed",
+              "data-egress-ceiling-not-relaxed",
+              "side-effect-ceiling-not-relaxed"
+            ]
+          },
+          "allOf": [
+            { "contains": { "const": "task-unchanged" } },
+            { "contains": { "const": "mode-unchanged" } },
+            { "contains": { "const": "action-set-unchanged" } },
+            { "contains": { "const": "method-resolution-unchanged" } },
+            { "contains": { "const": "capability-requirement-unchanged" } },
+            { "contains": { "const": "permission-ceiling-not-relaxed" } },
+            { "contains": { "const": "data-egress-ceiling-not-relaxed" } },
+            { "contains": { "const": "side-effect-ceiling-not-relaxed" } }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "replay_migration_refs": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/pinnedMigrationRef" },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "properties": { "migration_kind": { "const": "research-mode-migration" } },
+            "required": ["migration_kind"]
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": { "migration_kind": { "const": "skill-lifecycle-migration" } },
+            "required": ["migration_kind"]
+          }
+        }
+      ]
+    },
+    "boundary_assertions": {
+      "type": "object",
+      "required": [
+        "runtime_method_authority",
+        "automatic_fallback",
+        "claim_or_gate_effect",
+        "execution_performed",
+        "live_provider_conformance_proven",
+        "skill_net_benefit_proven"
+      ],
+      "properties": {
+        "runtime_method_authority": { "const": false },
+        "automatic_fallback": { "const": false },
+        "claim_or_gate_effect": { "const": false },
+        "execution_performed": { "const": false },
+        "live_provider_conformance_proven": { "const": false },
+        "skill_net_benefit_proven": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "verification_status": { "const": "deterministic-pass" },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+    }
+  },
+  "$defs": {
+    "pinnedContractRef": {
+      "type": "object",
+      "required": ["kind", "ref", "document_path", "content_hash"],
+      "properties": {
+        "kind": {
+          "enum": [
+            "task-packet",
+            "research-mode",
+            "mode-action",
+            "method-resolution",
+            "capability-requirement"
+          ]
+        },
+        "ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "document_path": { "$ref": "common.schema.json#/$defs/relativePath" },
+        "content_hash": { "$ref": "common.schema.json#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    },
+    "pinnedSnapshotRef": {
+      "type": "object",
+      "required": ["ref", "document_path", "content_hash"],
+      "properties": {
+        "ref": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*@r[1-9][0-9]*$"
+        },
+        "document_path": { "$ref": "common.schema.json#/$defs/relativePath" },
+        "content_hash": { "$ref": "common.schema.json#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    },
+    "pinnedMigrationRef": {
+      "type": "object",
+      "required": ["migration_kind", "ref", "document_path", "content_hash"],
+      "properties": {
+        "migration_kind": {
+          "enum": ["research-mode-migration", "skill-lifecycle-migration"]
+        },
+        "ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "document_path": { "$ref": "common.schema.json#/$defs/relativePath" },
+        "content_hash": { "$ref": "common.schema.json#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

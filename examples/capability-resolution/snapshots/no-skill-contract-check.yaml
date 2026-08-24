@@ -1,0 +1,58 @@
+schema_version: 0.1.0
+snapshot_id: RCS-NO-SKILL-CONTRACT-CHECK
+revision: 1
+qualification: structural-replay
+task_ref:
+  ref: TASK-MR-ES-FROZEN-001@r1
+  document_path: examples/method-resolution-tasks/TASK-MR-ES-FROZEN-001.yaml
+  content_hash: sha256:a72229692e6e0258dc2fc53096505f5c10b6c743ab1c5ec528588cad8b92865f
+resolution_ref:
+  ref: CR-NO-SKILL-CONTRACT-CHECK@r1
+  document_path: examples/capability-resolution/resolutions/no-skill-contract-check.yaml
+  content_hash: sha256:e6a9eaa373a156e121a27e3752a940fc0a0718f637e98134c046d065fe5fc234
+method_resolution_ref:
+  ref: MR-ROUTE-ES-FROZEN-001@r1
+  document_path: examples/method-resolutions/ROUTE-ES-FROZEN-001.yaml
+  content_hash: sha256:cf3e041887c9558a775027e5e254486973322ad763f3b15d2eb8504d185608e1
+requirement_ref:
+  requirement_id: research-contract-check
+  document_path: registry/capabilities/requirements/research-contract-check.yaml
+  content_hash: sha256:c536ad2aec7a93adb90cccb44dbfbc20c68a80e1882c74ae3143c2ac5230b925
+selected_supply_report_ref:
+  ref: supply-no-skill-contract-check@1.0.0
+  document_path: examples/capability-resolution/supply-reports/no-skill-contract-check.yaml
+  content_hash: sha256:60408de3bf8c8f22e3fe5e15cba9945efe976b3bff6cea5fb4e24c8786e9ba5c
+supply_identity:
+  supply_kind: procedure
+  implementation_ref: fixture-no-skill-contract-check
+  implementation_version: 1.0.0
+  content_hash: sha256:a24d9b37a1c1408553df720edd69b7e6f4a2f781c1364444ca8fed4f9092b98d
+  components:
+    - component_kind: procedure
+      component_ref: fixture-no-skill-contract-check
+      version: 1.0.0
+      content_hash: sha256:a24d9b37a1c1408553df720edd69b7e6f4a2f781c1364444ca8fed4f9092b98d
+supply_required_permissions:
+  filesystem: worktree-write
+  network: forbidden
+  external_write: false
+supply_data_egress:
+  policy: forbidden
+  allowed_payloads: []
+  forbidden_payloads: [checked-documents, project-context, validation-results]
+supply_side_effects:
+  policy: allowlisted-only
+  allowed_effects: [task-local-check-report]
+conformance_evidence_refs:
+  - path: examples/capability-resolution/conformance/no-skill-contract-check.json
+    sha256: 6cb14288099dfe03a755b8bd2fe7bfbd948eb4dba8816a6cc87c14e6956e42b9
+limitations:
+  - This structural Snapshot preserves the Method's no-Skill path and is not a Runtime execution input.
+  - Fixture-only availability is not a real execution fact.
+boundaries:
+  execution_input: false
+  method_decision: false
+  permission_grant: false
+  claim_effect: false
+  human_decision: false
+  fallback_authority: false

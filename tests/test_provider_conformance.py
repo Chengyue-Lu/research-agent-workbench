@@ -141,6 +141,8 @@ class ConformanceRunnerTests(unittest.TestCase):
         )
         document = report.to_mapping()
         self.assertEqual("passed", report.status)
+        self.assertEqual("synthetic-model", report.requested_model)
+        self.assertEqual(("synthetic-model-version",), report.observed_models)
         self.assertEqual(3, report.budget.provider_invocations)
         self.assertEqual(3, report.budget.successful_responses)
         self.assertEqual(["passed", "passed", "passed"], [item.status for item in report.checks])

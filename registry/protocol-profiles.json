@@ -1,0 +1,21 @@
+{
+  "schema_version": "0.1.0",
+  "registry_kind": "protocol_profile_index",
+  "generated_at": "2026-08-24",
+  "entries": [
+    {
+      "profile_ref": "prisma-systematic-review-reporting@1.0.0",
+      "profile_id": "prisma-systematic-review-reporting",
+      "version": "1.0.0",
+      "document_path": "registry/protocol-profiles/prisma-systematic-review-reporting-1.0.0.yaml",
+      "content_hash": "sha256:3a42455cdec48f8e72e8648def646a31a107faab554f33d981990e81ebdfc1cf"
+    },
+    {
+      "profile_ref": "simulation-vv-assurance@1.0.0",
+      "profile_id": "simulation-vv-assurance",
+      "version": "1.0.0",
+      "document_path": "registry/protocol-profiles/simulation-vv-assurance-1.0.0.yaml",
+      "content_hash": "sha256:ed68d5d0bfc9538d75898d0522147d97a645e7ab2d63caa652ef382c89c459ef"
+    }
+  ]
+}
