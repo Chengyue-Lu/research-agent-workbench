@@ -170,24 +170,24 @@ flowchart TB
     T --> MA[Mode Action]
     MA --> MR[Method Resolution]
     MR --> CR[Capability Requirement]
-    CR --> SR[Capability Supply Report(s)]
-    SR --> RES[Capability Resolution<br/>only Supply selection owner]
-    RES --> SNAP[Resolved Capability Snapshot<br/>exact + frozen]
+    CR --> SR["Capability Supply Report(s)"]
+    SR --> RES["Capability Resolution<br>only Supply selection owner"]
+    RES --> SNAP["Resolved Capability Snapshot<br>exact + frozen"]
 
-    RB[Runtime Bundle/Profile<br/>allowed reading surface] -. explicit closure .-> VIEW
-    SNAP --> VIEW[Resolved Execution View<br/>final frozen execution contract]
-    VIEW --> HOST[Execution Host<br/>exact consumer]
+    RB["Runtime Bundle/Profile<br>allowed reading surface"] -. explicit closure .-> VIEW
+    SNAP --> VIEW["Resolved Execution View<br>final frozen execution contract"]
+    VIEW --> HOST[Execution Host<br>exact consumer]
     HOST --> TR[Trace + Artifacts]
     TR --> VAL[Deterministic Validation]
     VAL --> RCP[Execution Receipt]
     RCP --> RS
-    RS --> HD[Human Decision / Gate]
+    RS --> HD["Human Decision / Gate"]
     HD --> Q
 
     subgraph ME[Optional Maintainer Skill Evolution outer loop]
         TRIAGE[Maintainer triage] --> NEED[Skill Need]
         NEED --> CAND[Candidate]
-        CAND --> EVAL[Trial / Evaluation]
+        CAND --> EVAL["Trial / Evaluation"]
         EVAL --> ADM[Named Human Admission]
         ADM --> LIFE[Lifecycle]
         LIFE --> REL[Immutable Release]
@@ -196,7 +196,7 @@ flowchart TB
     end
 
     SSR -. optional Skill Supply .-> SR
-    HOST -. bounded, local, consented diagnostic .-> TRIAGE
+    HOST -. "bounded, local, consented diagnostic" .-> TRIAGE
 ```
 
 图中虚线很重要：
