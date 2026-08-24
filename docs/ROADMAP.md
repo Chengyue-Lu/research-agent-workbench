@@ -14,9 +14,9 @@
 | A — Core Formalization | 把 Mode-first 方法论变成正式语义 | Mode Action、Method Resolution、Mode v0.2、Decision Authority | ADR-0013/0016 |
 | B — Evolution Foundation | 支持可迁移、可评测的能力演化 | Skill Need、Lifecycle v2、Migration、Protocol、Resolved Capability Snapshot | Phase A 稳定接口 |
 | C — Research State & Verification | 保存跨 Runtime 的研究意义 | State/Frontier、Failure、Evidence–Claim relation、Method Trace | A；部分依赖 B |
-| D — Evaluation Loop | 证明新增机制的净增量 | Evaluation Manifest、baseline harness、method/skill metrics | A 后尽早启动 |
+| D — Evaluation Loop | 证明新增机制的净增量 | Evaluation Manifest、baseline harness、method/skill metrics | A；minimal Manifest 在 M9-002 稳定后并行启动 |
 | E — Strategy & Governed Evolution | 有界吸收新策略和外部候选 | Strategy interface、candidate pipeline、merge/prune/promotion | B+C+D |
-| F — Execution Reintegration | 让 Runtime 消费冻结科研契约 | resolved execution、Capability binding、Trace/Receipt integration | A+C 与 Capability contract |
+| F — Execution Reintegration | 让 Runtime 消费冻结科研契约 | resolved execution、Capability binding、Trace/Receipt integration | M9-005 Core 可解除 Topic 4 thin layer；Phase C minimum 再解除 Topic 5 |
 
 Phase 不是一条科研 DAG。它只表示框架接口的构建依赖；真实 Task 仍按 Mode/Action 选择路径。
 
@@ -52,20 +52,44 @@ Phase B/F，不能反向写成 Phase A 未完成，也不能借 Phase A 收口�
 Phase B 保持“需求语义先于供给绑定”的顺序：
 
 1. `Capability Requirement` 先成为 provider-neutral 的需求侧契约，不表达 available/gap 或具体供给；
-2. `Skill Need` 成为版本化对象，绑定 direct/no-Skill baseline、预期增量和 trial 前证据；
-3. lifecycle 扩展到 trial、superseded、retired，并以 Evaluation evidence 驱动 promotion；
-4. Protocol Profile 独立表达 PRISMA、V&V 或项目方法标准，不复制 Mode Action 或固定研究 DAG；
-5. 执行前由 Resolved Capability Snapshot 冻结 Tool/Skill/Adapter/version/hash/permission/data-egress/
-   side-effect；Snapshot 是共享接口，不授权 Method 层选择 Provider；
+2. `Skill Need` 成为版本化对象，定义 gap、direct/no-Skill baseline、预期增量、evaluation criteria、
+   required evidence classes 与 domain scope/variants；它不累积实际 trial/evaluation/promotion 结果；
+3. lifecycle v2 分离 intake、evaluation state、admission 与 runtime eligibility，引用 baseline/trial/
+   evaluation record/decision 和 promotion evidence；完整 benchmark/metric/experiment framework 留在 Phase D；
+4. Protocol Profile 独立表达 PRISMA、V&V 或项目方法标准的适用性、method obligations 与 Gate/evidence
+   expectations，不复制 Mode Action、不固定研究 DAG，也不绑定 Skill/Tool/Provider；
+5. M9-005 建立显式供给缝：`Capability Requirement → Capability Supply Report(s) → Capability Resolution
+   → Resolved Capability Snapshot`。Report 只陈述 supply identity、实现版本/hash、能力、I/O、权限、
+   data-egress、副作用、conformance/availability facts 与限制，不拥有选择、fallback、Method、Claim 或
+   Human Gate authority；Resolution 比较零个或多个 Report 并给出 satisfied/gap/ambiguous/blocked；
+   Snapshot 只冻结本次执行消费的 exact supply 与 Requirement refs；
 6. migration 保持 append-only 和显式调用。Phase A 的 Mode v0.1→v0.2 是首个已完成 exemplar，Phase B
    不重造通用 migration framework，只在新增对象确有版本迁移需求时扩展。
 
-`Capability Requirement` 与 `Skill Need` 可在冻结共同引用语义后顺序推进；Protocol Profile 可在不修改
-相同 Schema/Registry 的前提下并行研究。Resolved Capability Snapshot 涉及 Method 与 Provider 两侧，
-必须跨负责人审查：路诚钺维护需求词汇和 authority boundary，黄毅维护 Adapter/Provider 的真实供给
-映射与 conformance。Phase B 不接管 API/Runtime 实现。
+`Capability Requirement` 与 `Skill Need` 可在冻结共同引用语义后顺序推进；M9-004 Protocol Profile
+与 M9-002/003 并行，不阻塞 M9-005。M9-005 的 Snapshot Core 只依赖 M9-001 与 M8 Decision Authority，
+先覆盖 no-Skill、direct Tool、Adapter/Provider supply report 和 permission/data-egress/side-effect binding；
+Skill 作为合法供给候选的扩展额外等待 M9-003 runtime eligibility。Resolved Capability Snapshot 涉及
+Method 与 Provider 两侧，必须跨负责人审查：路诚钺维护需求词汇、Resolution/Snapshot authority ceiling
+与 provider-neutral fixture，黄毅维护 Adapter/Provider 的真实供给映射与 conformance。Phase B 不接管
+API/Runtime 实现。
 
-停止 Gate：Tool Provider 可替换而不修改 Method contract；旧研究对象仍可解释和重放。
+停止 Gate：至少一个 fixture 在 Task、Mode、Action、Method Resolution 与 Capability Requirement 均不变时，
+将 Supply A/Snapshot A 替换为 Supply B/Snapshot B；permission、data-egress 与 side-effect ceiling 不放宽，
+Runtime 不获得 Method authority，旧研究对象仍可解释和重放。
+
+### Topic 4 thin-layer Architecture Hold
+
+以下四项全部稳定并接受后，Topic 4 才可解除：
+
+- Capability Requirement；
+- Capability Supply Report；
+- Capability Resolution boundary；
+- Resolved Capability Snapshot Core。
+
+解冻范围只包括 Runtime 消费 Snapshot、Provider/Adapter binding、actual execution fact reporting，以及
+permission/data-egress/side-effect enforcement。automatic fallback、model auto-routing、multi-Agent
+orchestration、critic voting、hidden routing，以及 Runtime 修改 Method、Claim 或 Gate 继续禁止。
 
 ## 4. Phase C：Research State 与 Verification
 
@@ -73,11 +97,16 @@ Phase B 保持“需求语义先于供给绑定”的顺序：
 Failure 和 Frontier item。Failure 至少记录 learned result 与 revisit condition。
 
 Method Trace 在 M3-008 可观察执行 Trace 之上增加：Mode proposed/resolved、Action selected、Mechanism
-selected/rejected、Capability resolved、Human Gate、Evidence change、Claim promotion/rejection、safe
-pause、failure 与 reopen condition。
+selected/rejected、Capability resolved、actual capability/supply binding、Human Gate、Evidence change、
+Claim promotion/rejection、safe pause、failure 与 reopen condition。M3-009 等待 M9-005；在 Snapshot
+contract 稳定前不得自建临时 Capability-resolved event schema。
 
 不一次建设统一知识图谱。先用 evidence-synthesis 与 simulation 两个真实案例证明 compact index、
 跨 Runtime 恢复和 reviewer-facing verification 有用。
+
+Topic 5 继续冻结，直到 minimal Research State、Failure/Attempt semantics 与 Method Trace v0.1 均完成。
+该 Gate 通过后才恢复 Handoff、context rollover、safe pause、recovery 与 salvage/clean recovery 的后续
+扩展；M9-005 或 Topic 4 的解冻不能替代 Phase C 的状态与失败语义。
 
 ## 5. Phase D：Evaluation Loop
 
@@ -87,6 +116,10 @@ pause、failure 与 reopen condition。
 2. Plain Agent + Tool；
 3. Mode + no-Skill/direct-tool；
 4. Mode + candidate Skill。
+
+M9-002 的 Skill Need 稳定后即可并行启动最小 Evaluation Manifest；它保存实际 baseline/trial/evaluation
+条件与结果，Need 本体只声明 evaluation criteria 和 required evidence classes。M9-003 lifecycle 引用这些
+record，不在 Phase B 重建完整 benchmark、metric 或 experiment framework。
 
 Evaluation Manifest 冻结 Task、Model、Host、Tool/Resolved Capability Snapshot、预算与上下文。指标优先包括
 method violation、Claim overreach、provenance error、counterevidence omission、human correction

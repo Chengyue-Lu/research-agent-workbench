@@ -3,10 +3,10 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 跨负责人共享接口审查：黄毅（GitHub `let778750-cpu`）
 - Tasks：`M9-001`～`M9-006`
-- 基线：`develop@8825d9a`
+- 基线：`develop@ead1270d0461b870b8030450b4186f8d62f1eeb7`
 - 目标 base：`develop`
 - 阶段分支：`agent/phase-b-evolution-foundation`
-- 当前状态：Phase A 已收口；M9-001 已实现并进入 R2 验证，M9-002 READY
+- 当前状态：Phase A 已收口；M9-001 由阶段 PR 承载；其接受后 M9-002、M9-004 与 M9-005 Snapshot Core 可并行推进
 - 风险触发：跨多个公共契约、Registry migration 与 Method/Provider 共享接口
 
 ## 1. 阶段目标
@@ -17,18 +17,29 @@ Phase B 把 M8 已冻结的需求表达推进为可迁移、可评测且可由�
 flowchart LR
     MR["Method Resolution\n已在 Phase A 冻结"]
     CR["M9-001\nCapability Requirement"]
+    DA["M8-005\nDecision Authority boundary"]
     SN["M9-002\nSkill Need"]
     LC["M9-003\nLifecycle v2"]
+    EM["Phase D\nminimal Evaluation Manifest"]
     PP["M9-004\nProtocol Profile"]
-    CS["M9-005\nResolved Capability Snapshot"]
+    SR["M9-005\nCapability Supply Report(s)"]
+    RS["M9-005\nCapability Resolution"]
+    CS["M9-005\nResolved Capability Snapshot Core"]
+    SE["M9-005\nSkill Supply Extension"]
     G["M9-006\nMigration / replay / replacement Gate"]
 
     MR --> CR
     CR --> SN
     SN --> LC
+    SN -. "criteria / required evidence" .-> EM
+    LC -. "references records when present" .-> EM
     CR --> PP
-    CR --> CS
-    LC --> CS
+    CR --> SR
+    SR --> RS
+    DA --> RS
+    RS --> CS
+    LC --> SE
+    SE --> SR
     SN --> G
     LC --> G
     PP --> G
@@ -39,7 +50,9 @@ flowchart LR
 
 ```text
 Method 说明需要什么与为何需要
-→ Capability 层判断由什么已冻结供给满足
+→ Supply Report 只报告实际供给事实
+→ Capability Resolution 在既有 ceiling 内比较、判定并选择
+→ Snapshot 冻结本次执行输入
 → Execution 只消费 Snapshot，不反向改写 Method
 ```
 
@@ -63,19 +76,62 @@ Resolution 的引用与复用需求作证。默认不新增全局 Registry，除
 M9-001 的停止条件是：至少覆盖现有八个 Method Resolution 中的 capability need，正反 fixture 可证明
 同一 Requirement 能被不同供给候选消费，并且没有改变 M8 的 Task/Mode/Action/Resolution identity。
 
-实现审计确认八个 Resolution 只复用四个 Requirement ID，且每个 Task 的 `required_capabilities` 与其
-Resolution 聚合结果精确相等。由此采用四份不可变需求文档和一个 path/hash 完整性 index；不增加
-supply discovery、active/latest 或 fallback Registry。M8 Resolution 原始字节保持不变，实际供给
-conformance 与 provider replacement 证据仍留给 M9-005/M9-006。
+## 3. M9-002～005 的职责边界
 
-## 3. 责任与写入边界
+### 3.1 Skill Need 与实际证据分离
+
+Skill Need 只定义：need identity、trigger/non-trigger、semantic gap、no-Skill/direct-tool baseline、
+expected increment、evaluation criteria、required evidence classes 与 domain scope/variants。它回答
+“为什么需要 Skill，以及未来什么证据足以进入 trial/promotion”，不是持续追加实验结果的日志。
+
+实际 trial/evaluation result 写入独立 Evaluation/Trial Record；M9-003 lifecycle 只保存 intake、evaluation
+state、admission、runtime eligibility、trial/superseded/retired 状态，以及 `baseline_ref`、`trial_ref`、
+`evaluation_record_ref`、`decision_ref` 和 promotion evidence references。Phase B 不设计完整 benchmark、
+metric 或 experiment framework；M9-002 稳定后，Phase D 可并行启动 minimal Evaluation Manifest。
+
+### 3.2 M9-005 的 supply-side seam
+
+```text
+Capability Requirement
+        ↓
+Capability Supply Report(s)
+        ↓
+Capability Resolution
+        ↓
+Resolved Capability Snapshot
+```
+
+- **Capability Requirement**：只声明需求、验证期待和 permission/data-egress/side-effect ceiling；
+- **Capability Supply Report**：陈述 supply identity，Tool/Skill/Adapter/Provider implementation identity，
+  version/hash、provided capability、supported I/O、permissions、data-egress、side effects、deterministic/live
+  conformance evidence、availability facts 与 limitations；它不能选择自己，也没有 Method、permission
+  relaxation、fallback、Claim 或 Human Gate authority；
+- **Capability Resolution**：比较零个或多个 Report，输出 `satisfied`、`unsatisfied/gap`、
+  `ambiguous/requires-decision` 或 `blocked`；选择具体供给时必须满足 Requirement、Task 与既有 Authority
+  Matrix 的 ceiling，歧义不能伪装成 automatic fallback；
+- **Resolved Capability Snapshot**：冻结本次执行消费的 exact Tool/Skill/Adapter/Provider ref、version/hash、
+  permissions、data-egress、side effects、相关 conformance evidence 与 Requirement refs。它是执行输入，
+  不是 Method decision。
+
+Snapshot Core 只依赖 M9-001 与 M8 Decision Authority，先支持 no-Skill、direct Tool、Adapter/Provider
+supply facts 和边界绑定。Skill Supply Extension 额外依赖 M9-003；只有 lifecycle 明确 runtime eligibility
+的 Skill 才能成为合法 Report/Snapshot 候选。M9-004 Protocol Profile 与这两条路径正交并行，不阻塞 Core。
+
+### 3.3 Protocol Profile 正交边界
+
+M9-004 只表达 PRISMA、V&V 等方法标准的 applicable/not applicable、required method obligations，以及
+Gate/evidence expectations。它不复制 Mode Action、不固定全局研究 DAG、不绑定 Skill/Tool/Provider，
+也不承担 Runtime routing。
+
+## 4. 责任与写入边界
 
 路诚钺维护：
 
 - Capability Requirement、Skill Need、Protocol Profile 的语义、Schema、Registry 和 fixture；
 - Skill lifecycle/admission/evaluation vocabulary 与迁移；
 - Method Resolution 到上述对象的引用和确定性关系验证；
-- Resolved Capability Snapshot 的 Method-side requirements 与 authority ceiling。
+- Capability Supply Report/Resolution/Snapshot 的 provider-neutral 契约、Method-side requirements 与 authority
+  ceiling；不伪造真实 Provider 可用性或 live conformance。
 
 黄毅维护：
 
@@ -83,11 +139,12 @@ conformance 与 provider replacement 证据仍留给 M9-005/M9-006。
 - API session、认证、HTTP transport、模型能力探测与 live conformance；
 - Runtime 消费 Snapshot 时的实现和 API 专用测试。
 
-共享的 Resolved Capability Snapshot Schema 在双方确认 producer/consumer 字段、迁移影响和合并顺序前
-不得进入实现。任何一方都不能用自己的实现便利修改对方 authority：Method 不选 Provider，Runtime
-不改 Mode/Action/Claim/Gate/permission ceiling。
+共享的 Capability Supply Report、Capability Resolution 与 Resolved Capability Snapshot Schema 在双方
+确认 producer/consumer 字段、迁移影响和合并顺序前不得视为接受。任何一方都不能用自己的实现便利
+修改对方 authority：Report 不选择自身，Method 不指定 Provider，Runtime 不改 Mode/Action/Claim/Gate
+或 permission/data-egress/side-effect ceiling。
 
-## 4. 非目标
+## 5. 非目标
 
 本阶段不实现：
 
@@ -98,10 +155,10 @@ conformance 与 provider replacement 证据仍留给 M9-005/M9-006。
 - 自动 fallback、模型路由、multi-Agent Supervisor 或固定研究 DAG；
 - 没有真实对象版本需求的通用 migration framework。
 
-Phase D 的 baseline/evaluation 设计可以在 M9-001/002 稳定后并行启动，但其结果不能绕过 Human
-admission，也不能为了方便评测反向修改 Phase B 契约。
+Phase D 的 minimal Evaluation Manifest 可在 M9-002 稳定后并行启动，但实际 trial/evaluation result
+不得写回 Need，也不能绕过 Human admission 或为了方便评测反向修改 Phase B 契约。
 
-## 5. 读取与记录纪律
+## 6. 读取与记录纪律
 
 默认读取集限于：`TASKS.md`、`ROADMAP.md`、ADR-0013/0015/0016、modules 02/04/08、M8 contract
 文档、现有八个 Method Resolution，以及当前 Task 明确涉及的 Capability/Skill Schema、Registry 和测试。
@@ -110,15 +167,30 @@ admission，也不能为了方便评测反向修改 Phase B 契约。
 本 workstream 因跨 PR、migration 和共享接口持续保留 README 与[风险台账](RISK_LEDGER.md)；普通
 实现过程由 PR body 和 Git 历史记录，不为每个 M9 子节点创建新分支、Handoff 或重复 closeout 文档。
 
-## 6. 阶段 Gate
+## 7. Topic 4 / Topic 5 Gate
+
+Topic 4 thin-layer Architecture Hold 只在 Capability Requirement、Capability Supply Report、Capability
+Resolution boundary 均稳定且 Resolved Capability Snapshot Core 被接受后解除。届时只允许 Runtime
+消费 Snapshot、Provider/Adapter binding、actual execution fact reporting 与 permission/data-egress/
+side-effect enforcement。automatic fallback、model auto-routing、multi-Agent orchestration、critic voting、
+hidden routing，以及 Runtime 修改 Method/Claim/Gate 继续禁止。
+
+Topic 5 继续冻结，直到 Phase C 至少完成 minimal Research State、Failure/Attempt semantics 与 Method
+Trace v0.1；之后才恢复 Handoff、context rollover、safe pause、recovery 和 salvage/clean recovery 的
+后续扩展。M9-005 或 Topic 4 的解冻不构成 Topic 5 的替代 Gate。
+
+## 8. 阶段 Gate
 
 Phase B 只有在以下条件均有证据时收口：
 
-1. Need/Requirement、candidate、admission 与 runtime eligibility 不再混成一套状态；
-2. Skill promotion 必须引用 baseline/trial/evaluation evidence；
+1. Need/Requirement、actual evaluation result、candidate、admission 与 runtime eligibility 不再混成一套状态；
+2. Skill Need 只声明 evaluation criteria/evidence classes；Skill promotion 必须引用独立的
+   baseline/trial/evaluation record 与 decision；
 3. 旧发布对象与历史 Assignment 仍可解释，不被新 Registry 静默重写；
-4. 至少一个合成 Tool provider replacement fixture 不修改 Task/Mode/Action/Method contract；
-5. Snapshot 精确固定 supply 与权限/数据/副作用边界，但不拥有科学决定权；
+4. 至少一个合成 Tool/Provider replacement fixture 保持 Task/Mode/Action/Method/Requirement 不变，只将
+   Supply A/Snapshot A 替换为 Supply B/Snapshot B；
+5. Supply Report 不选择自身，Resolution 不越过 ceiling；Snapshot 精确固定 supply 与权限/数据/副作用
+   边界，但不拥有 Method、Claim、Gate 或 fallback authority；
 6. 完整 repository validation、测试、CI 与跨负责人共享接口审查通过。
 
 上述 Gate 证明契约、迁移和替换边界，不证明 Skill 有科研净收益、外部 Provider 真实可用或端到端产品

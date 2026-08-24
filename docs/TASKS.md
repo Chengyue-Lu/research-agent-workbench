@@ -57,7 +57,7 @@ Method Trace 语义；黄毅维护 M6 的 API/Runtime 执行实现与测试。�
 | M3-006 | IN_PROGRESS | SAFE_PAUSE 与机器完成权 | M3-001..003 | AWU/完成/暂停条件、stage/safe-pause/waiting、执行结束与 `contract-satisfied` 分离、失败报告覆盖显式完成宣称和可恢复 pause fixture 已实现；进程级 kill 与真实新进程/新 Attempt 恢复待演练 |
 | M3-007 | IN_PROGRESS | 冻结实名 actor、Attempt Archive 与完整 Agent Trace 规则 | M3-003..006 | ADR-0012、目录、消息信封、写前捕获、capture gap、按需读取和 Worklog 关系一致；负责人明确为路诚钺/黄毅 |
 | M3-008 | DONE | 实现 Trace Envelope/Index/Event Schema、validator 与手工 fixture | M3-007 | 文件权威 Trace Core、确定性 validator、瞬时 tool-result provenance、Python 3.11/3.13 CI、覆盖率、Registry、wheel 与干净安装 Gate 均通过；不保存 Chain-of-Thought |
-| M3-009 | PARKED | 在 Execution Trace 之上增加 Method-aware Trace | M3-008, M8-003, M8-005 | 记录 Mode/Action/Mechanism/Capability/Human Gate/Evidence/Claim/Failure 决定；与执行事件分层关联，不复制正文 |
+| M3-009 | PARKED | 在 Execution Trace 之上增加 Method-aware Trace | M3-008, M8-003, M8-005, M9-005 | 记录 Mode/Action/Mechanism、Capability resolved 与 actual supply binding、Human Gate/Evidence/Claim/Failure 决定；通过 Snapshot 引用与执行事件分层关联，不复制正文；Snapshot contract 稳定前不自建临时 capability-resolved event |
 
 ## M4：工件与复现
 
@@ -85,7 +85,7 @@ Method Trace 语义；黄毅维护 M6 的 API/Runtime 执行实现与测试。�
 |---|---|---|---|---|
 | M6-001 | DONE | OpenAI/Anthropic/Gemini 薄 Model Provider Adapters | M1-008 | 三家 provider-neutral 薄 Adapter 的离线 contract 测试已通过；live conformance 单独由 M6-004 验收 |
 | M6-002 | DONE | 显式模型池与隔离 API session kernel（`K-API-1`） | M6-001 | primary/worker/specialist 槽只可显式绑定；轮次、工具、并行、工具结果、输出、token/成本/time 有硬边界；无自动 fallback；离线测试通过 |
-| M6-003 | IN_PROGRESS | Task-to-API 文件闭环（`K-API-2`） | M1-008, M2-001..005, M6-002 | legacy compatibility seam 已形成；Method→Capability→Execution bridge 等待 M8-003，不由 execution 层抢先定义 |
+| M6-003 | BLOCKED | Task-to-API 文件闭环（`K-API-2`） | M1-008, M2-001..005, M6-002, M9-005 | legacy compatibility seam 已形成；Method→Capability→Execution thin bridge 的恢复 Gate 已改为 M9-005 Snapshot Core，execution 层只消费冻结 Snapshot，不抢先定义 supply resolution 或改写 Method |
 | M6-004 | IN_PROGRESS | 选定模型槽的真实 Windows conformance 与一次 evidence 调用 | M6-001..003 | 当前版本的 OpenAI text/structured/tool、EVID/SIM SIR 脱敏证据与 live Gate 仍待授权 Windows 环境重放 |
 | M6-005 | PARKED | streaming/multimodal/server tools 与平台 Adapter | 真实案例或平台选择 | 黄毅决定执行端启动条件；没有真实需求不启动 |
 | M6-006 | DONE | API/平台执行时自动写入 Agent Trace | M3-008, M6-003 | legacy Skill-bound execution 已完成 SessionEventSink、traced runner、archive closeout、file-only verify、recovery preflight 与 Attempt/Receipt Trace linkage；Method-dependent Part C 等待 M8-003 |
@@ -132,12 +132,12 @@ Human Decision 或端到端研究执行已经实现。
 
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
-| M9-001 | DONE | 将 Capability Requirement 正式化为需求侧契约 | M8-003, M8-005 | 可表达目标能力、输入/输出、permission/data-egress/side-effect/验证约束；不含 Provider/Model/Adapter、可用性或具体供给绑定；Method Resolution 引用可闭合验证 |
-| M9-002 | READY | 将 Skill Need 正式化为版本化对象 | M8-003, M9-001 | trigger/non-trigger、semantic gap、no-Skill/direct-tool baseline、expected increment、trial evidence 与 domain variants 可验证；Need 不等于 candidate/accepted Skill |
-| M9-003 | PARKED | 建立 Skill lifecycle v2 与显式迁移 | M7-015, M9-002 | intake、evaluation、admission、runtime eligibility 四轴分离；trial/superseded/retired 与 promotion evidence 可表达；旧 accepted Registry identity 和历史 Assignment 继续可解释 |
-| M9-004 | PARKED | 建立最小 Protocol Profile 契约 | M8-004, M9-001 | 以两个有界 PRISMA/V&V profile 证明 Mode、Protocol、Skill 职责不重叠；不形成固定全局研究流程 |
-| M9-005 | PARKED | 冻结 Resolved Capability Snapshot 共享接口 | M9-001, M9-003, M8-005 | Snapshot 固定实际 Tool/Skill/Adapter/version/hash、permission、data-egress 与 side-effect 边界；供给变化不修改 Method contract；不在本 Task 实现 API session 或 Runtime |
-| M9-006 | PARKED | 完成 Phase B migration/replay 与替换性 Gate | M9-002..005 | 已发布旧对象经显式 migration 继续解释；至少一个 Tool provider 替换 fixture 不改 Task/Mode/Action/Method 语义；Phase B Stop Gate 有逐项证据 |
+| M9-001 | READY | 将 Capability Requirement 正式化为需求侧契约 | M8-003, M8-005 | 可表达目标能力、输入/输出、permission/data-egress/side-effect/验证约束；不含 Provider/Model/Adapter、可用性或具体供给绑定；Method Resolution 引用可闭合验证 |
+| M9-002 | PARKED | 将 Skill Need 正式化为版本化对象 | M8-003, M9-001 | need identity、trigger/non-trigger、semantic gap、no-Skill/direct-tool baseline、expected increment、evaluation criteria、required evidence classes 与 domain scope/variants 可验证；Need 只声明未来 trial/promotion 所需证据，不保存实际结果，也不等于 candidate/accepted Skill |
+| M9-003 | PARKED | 建立 Skill lifecycle v2 与显式迁移 | M7-015, M9-002 | intake、evaluation state、admission、runtime eligibility 四轴分离；可表达 trial/superseded/retired 并引用 baseline/trial/evaluation record/decision 与 promotion evidence；不重建完整 benchmark/metric/experiment framework；旧 Registry identity 和历史 Assignment 继续可解释 |
+| M9-004 | PARKED | 建立最小 Protocol Profile 契约 | M8-004, M9-001 | M9-001 接受后可与 M9-002/003 并行；以两个有界 PRISMA/V&V profile 表达 applicable/not applicable、method obligations、Gate/evidence expectations，并证明 Mode、Protocol、Skill 职责不重叠；不固定全局 DAG，不绑定 Skill/Tool/Provider/Runtime |
+| M9-005 | PARKED | 建立 Capability Supply Report、Capability Resolution 与 Resolved Capability Snapshot 共享接口 | M9-001, M8-005 | M9-001 接受后 Core 可独立 READY，支持 no-Skill、direct Tool、Adapter/Provider supply facts 与受 ceiling 约束的 resolution/snapshot；Report 不选择自身，Resolution 区分 satisfied/gap/ambiguous/blocked，Snapshot 冻结 exact supply/version/hash/permission/data-egress/side-effect/conformance refs；Skill Supply Extension 仅在 M9-003 runtime eligibility 稳定后接入；不实现 API session 或 Runtime consumer |
+| M9-006 | PARKED | 完成 Phase B migration/replay 与替换性 Gate | M9-002..005 | 已发布旧对象经显式 migration 继续解释；同一 Task/Mode/Action/Method/Requirement 在 Supply A→B 替换时只生成不同 Snapshot，且 permission/data-egress/side-effect ceiling 均不放宽、Runtime 不获得 Method authority；Phase B Stop Gate 有逐项证据 |
 
 ## 历史 GitHub Issues
 
@@ -153,14 +153,29 @@ Human Decision 或端到端研究执行已经实现。
 
 ## 当前下一任务
 
-M9-001 已在阶段分支完成需求 Schema、四个不可变 Requirement、path/hash index、Python contract、
-Task↔Method↔Requirement 闭合和对抗测试。当前唯一下一任务为 **M9-002 Skill Need versioned object**；
-供给侧 Snapshot 仍按依赖 parked，不得把 Provider availability、具体 Tool/Skill binding 或 fallback 状态
-提前写回 Method Resolution。
+Phase A / M8 已在 `develop@ead1270` 收口。当前任务为 **M9-001 Capability Requirement demand
+contract**，由阶段 PR #33 承载。M9-001 接受后，M9-002 Skill Need、M9-004 Protocol Profile 与 M9-005
+Snapshot Core 可分别转为 READY，并在互斥写入面上并行。M9-005 不等待完整 lifecycle 即可处理
+no-Skill、direct Tool 与 Adapter/Provider supply facts，但 Skill Supply Extension 必须等待 M9-003 的
+runtime eligibility。任何 available/gap、具体供给选择或 fallback 状态都不得写回 Method Resolution。
 
 Phase B 期间，路诚钺维护 Capability 词汇、Skill Need/lifecycle、Protocol 与相应 Schema/fixture；
 Resolved Capability Snapshot 是跨负责人共享接口，黄毅维护 Provider/Adapter 字段的真实供给映射与
 API conformance。本分支不修改 Provider SDK、认证、API session loop、Runtime 或 API 专用测试。
 
-M6-003/M6-004 与 M3-001/M3-006 的未完成项继续按各自任务跟踪；M7-005/006/014 的真实比较继续
-parked，直到 Method Resolution 与相应 Trace/Evaluation Manifest 稳定。
+M6-003/M6-004 与 M3-001/M3-006 的未完成项继续按各自任务跟踪；M6-003 的 legacy seam 可继续维护，
+但 Method bridge 在 M9-005 前保持 Architecture Hold。M6-006 行中的 “Part C 等待 M8-003” 是 DONE
+验收的历史快照，不再定义当前恢复 Gate。M7-005/006/014 的真实比较继续 parked，直到 Method
+Resolution 与相应 Trace/Evaluation Manifest 稳定。
+
+## Topic 4 / Topic 5 解冻 Gate
+
+Topic 4 thin-layer Architecture Hold 只在 Capability Requirement、Capability Supply Report、Capability
+Resolution boundary 均稳定且 M9-005 Resolved Capability Snapshot Core 被接受后解除。解除范围仅包括
+Runtime 消费 Snapshot、Provider/Adapter binding、actual execution fact reporting，以及 permission、
+data-egress、side-effect enforcement；automatic fallback、model auto-routing、multi-Agent orchestration、
+critic voting、hidden routing，以及 Runtime 修改 Method/Claim/Gate 仍被禁止。
+
+Topic 5 继续冻结，直到 Phase C 至少完成 minimal Research State、Failure/Attempt semantics 与 Method
+Trace v0.1。只有该 Gate 通过后，Handoff、context rollover、safe pause、recovery 和 salvage/clean
+recovery 的后续扩展才可恢复；M9-005 Snapshot Core 不单独解除 Topic 5。

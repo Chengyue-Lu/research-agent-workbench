@@ -78,8 +78,10 @@ source:
 
 ## 4. Capability Resolver
 
-长期解析分两步：Method Resolution 先产生 `Skill Need` 或 `Capability Requirement`，Capability
-Resolver 再绑定具体 Skill/Tool/Adapter Snapshot。当前 Resolver 直接从 Task/Profile/Mode 处理
+长期解析保持需求、供给事实、选择与执行冻结分层：Method Resolution 先产生 `Skill Need` 或
+`Capability Requirement`；实际 Tool/Skill/Adapter/Provider 各自形成 Capability Supply Report；
+Capability Resolution 在既有 authority 与 permission/data-egress/side-effect ceiling 内比较 Report；
+最终由 Resolved Capability Snapshot 冻结本次执行输入。当前 Resolver 直接从 Task/Profile/Mode 处理
 Skill Assignment，是兼容期执行视图，不应被解释为完整方法路由。
 
 M9-001 已将 Capability Requirement 冻结为独立需求侧契约：现有八个 Resolution 的四个重复 ID 经
@@ -89,8 +91,10 @@ M9-001 已将 Capability Requirement 冻结为独立需求侧契约：现有八�
 [`CAPABILITY_REQUIREMENT_CONTRACT.md`](../implementation/CAPABILITY_REQUIREMENT_CONTRACT.md)。
 
 正式 Skill Need 至少需要 trigger/non-trigger、semantic gap、no-Skill/direct-tool baseline、
-expected increment、trial 前证据和已知 domain variants。一个 Need 可对应多个 candidate；没有
-候选时保持 gap，不自动生成 accepted Skill。
+expected increment、evaluation criteria、required evidence classes 和已知 domain scope/variants。
+它只说明未来什么证据足以进入 trial/promotion，不保存实际 trial/evaluation/promotion result。实际结果
+进入独立 Evaluation/Trial Record，lifecycle 通过 reference 消费。一个 Need 可对应多个 candidate；
+没有候选时保持 gap，不自动生成 accepted Skill。
 
 输入：
 
