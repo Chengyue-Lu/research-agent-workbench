@@ -132,8 +132,8 @@ Human Decision 或端到端研究执行已经实现。
 
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
-| M9-001 | READY | 将 Capability Requirement 正式化为需求侧契约 | M8-003, M8-005 | 可表达目标能力、输入/输出、permission/data-egress/side-effect/验证约束；不含 Provider/Model/Adapter、可用性或具体供给绑定；Method Resolution 引用可闭合验证 |
-| M9-002 | PARKED | 将 Skill Need 正式化为版本化对象 | M8-003, M9-001 | trigger/non-trigger、semantic gap、no-Skill/direct-tool baseline、expected increment、trial evidence 与 domain variants 可验证；Need 不等于 candidate/accepted Skill |
+| M9-001 | DONE | 将 Capability Requirement 正式化为需求侧契约 | M8-003, M8-005 | 可表达目标能力、输入/输出、permission/data-egress/side-effect/验证约束；不含 Provider/Model/Adapter、可用性或具体供给绑定；Method Resolution 引用可闭合验证 |
+| M9-002 | READY | 将 Skill Need 正式化为版本化对象 | M8-003, M9-001 | trigger/non-trigger、semantic gap、no-Skill/direct-tool baseline、expected increment、trial evidence 与 domain variants 可验证；Need 不等于 candidate/accepted Skill |
 | M9-003 | PARKED | 建立 Skill lifecycle v2 与显式迁移 | M7-015, M9-002 | intake、evaluation、admission、runtime eligibility 四轴分离；trial/superseded/retired 与 promotion evidence 可表达；旧 accepted Registry identity 和历史 Assignment 继续可解释 |
 | M9-004 | PARKED | 建立最小 Protocol Profile 契约 | M8-004, M9-001 | 以两个有界 PRISMA/V&V profile 证明 Mode、Protocol、Skill 职责不重叠；不形成固定全局研究流程 |
 | M9-005 | PARKED | 冻结 Resolved Capability Snapshot 共享接口 | M9-001, M9-003, M8-005 | Snapshot 固定实际 Tool/Skill/Adapter/version/hash、permission、data-egress 与 side-effect 边界；供给变化不修改 Method contract；不在本 Task 实现 API session 或 Runtime |
@@ -153,10 +153,10 @@ Human Decision 或端到端研究执行已经实现。
 
 ## 当前下一任务
 
-Phase A / M8 已在 `develop@ead1270` 收口。当前唯一下一任务为 **M9-001 Capability Requirement
-demand contract**，由阶段分支 `agent/phase-b-evolution-foundation` 承载。先冻结 Method 输出的需求语义，
-再启动 Skill Need 与供给侧 Snapshot；不得把 Provider availability、具体 Tool/Skill binding 或 fallback
-状态提前写回 Method Resolution。
+M9-001 已在阶段分支完成需求 Schema、四个不可变 Requirement、path/hash index、Python contract、
+Task↔Method↔Requirement 闭合和对抗测试。当前唯一下一任务为 **M9-002 Skill Need versioned object**；
+供给侧 Snapshot 仍按依赖 parked，不得把 Provider availability、具体 Tool/Skill binding 或 fallback 状态
+提前写回 Method Resolution。
 
 Phase B 期间，路诚钺维护 Capability 词汇、Skill Need/lifecycle、Protocol 与相应 Schema/fixture；
 Resolved Capability Snapshot 是跨负责人共享接口，黄毅维护 Provider/Adapter 字段的真实供给映射与

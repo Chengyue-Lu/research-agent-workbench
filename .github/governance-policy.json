@@ -38,6 +38,10 @@
       "schemas/**/decision-authority*.schema.json",
       "schemas/**/authority-rule-eligibility.schema.json",
       "schemas/**/method-resolution.schema.json",
+      "schemas/**/capability-requirement*.schema.json",
+      "registry/capabilities/requirements.json",
+      "registry/capabilities/requirements/**",
+      "src/research_workbench/capability/requirements.py",
       "schemas/**/claim*.schema.json",
       "schemas/**/decision*.schema.json",
       "schemas/**/human-gate*.schema.json",
@@ -86,6 +90,16 @@
         "registry/modes/migrations/**/*.yml"
       ],
       "identity_fields": ["migration_id", "migration_version"]
+    },
+    {
+      "kind": "capability-requirement",
+      "patterns": [
+        "registry/capabilities/requirements/*.yaml",
+        "registry/capabilities/requirements/*.yml",
+        "registry/capabilities/requirements/**/*.yaml",
+        "registry/capabilities/requirements/**/*.yml"
+      ],
+      "identity_fields": ["requirement_id"]
     }
   ]
 }

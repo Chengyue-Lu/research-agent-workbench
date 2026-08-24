@@ -1,0 +1,50 @@
+schema_version: 0.1.0
+requirement_id: bounded-compute
+objective: Execute an approved local computation within frozen input, environment, work-scope, and resource boundaries.
+applies_when:
+  - The method contains an approved command or parameterized run that produces bounded artifacts.
+  - Inputs, environment, work directory, resource budget, and seed policy can be frozen.
+not_applicable_when:
+  - The method still needs scientific design of convergence, calibration, or parameter distributions.
+  - Execution would require undeclared installation, network access, or a remote environment.
+required_inputs:
+  - command-or-script-reference
+  - input-lock
+  - environment-lock
+  - parameters-and-seed-policy
+  - work-scope-and-resource-budget
+required_outputs:
+  - run-manifest
+  - stdout-and-stderr-reference
+  - hashed-output-references
+required_artifacts:
+  - execution-receipt
+constraints:
+  permission_ceiling:
+    filesystem: task-scope-write
+    network: forbidden
+    external_write: false
+  data_egress:
+    policy: forbidden
+    allowed_payloads: []
+    forbidden_payloads:
+      - inputs
+      - outputs
+      - telemetry
+  side_effects:
+    policy: allowlisted-only
+    allowed_effects:
+      - task-scope-files
+      - bounded-cpu-memory-and-disk-consumption
+verification_expectations:
+  deterministic:
+    - The command, input, environment, seed, exit status, and output hashes are recorded.
+    - Observed resource use remains within the declared resource budget.
+  semantic:
+    - Successful execution is not represented as proof of convergence, calibration, or model validity.
+  human:
+    - Installation, network enablement, remote execution, or resource-boundary expansion requires a separate Human decision.
+unsatisfied_requirement:
+  method_contract: unchanged
+  supply_binding: prohibited
+  next_stage: capability-resolution

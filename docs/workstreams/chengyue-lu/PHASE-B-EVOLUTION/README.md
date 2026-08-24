@@ -3,10 +3,10 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 跨负责人共享接口审查：黄毅（GitHub `let778750-cpu`）
 - Tasks：`M9-001`～`M9-006`
-- 基线：`develop@ead1270d0461b870b8030450b4186f8d62f1eeb7`
+- 基线：`develop@8825d9a`
 - 目标 base：`develop`
 - 阶段分支：`agent/phase-b-evolution-foundation`
-- 当前状态：Phase A 已收口；M9-001 READY，其余按依赖 PARKED
+- 当前状态：Phase A 已收口；M9-001 已实现并进入 R2 验证，M9-002 READY
 - 风险触发：跨多个公共契约、Registry migration 与 Method/Provider 共享接口
 
 ## 1. 阶段目标
@@ -62,6 +62,11 @@ Resolution 的引用与复用需求作证。默认不新增全局 Registry，除
 
 M9-001 的停止条件是：至少覆盖现有八个 Method Resolution 中的 capability need，正反 fixture 可证明
 同一 Requirement 能被不同供给候选消费，并且没有改变 M8 的 Task/Mode/Action/Resolution identity。
+
+实现审计确认八个 Resolution 只复用四个 Requirement ID，且每个 Task 的 `required_capabilities` 与其
+Resolution 聚合结果精确相等。由此采用四份不可变需求文档和一个 path/hash 完整性 index；不增加
+supply discovery、active/latest 或 fallback Registry。M8 Resolution 原始字节保持不变，实际供给
+conformance 与 provider replacement 证据仍留给 M9-005/M9-006。
 
 ## 3. 责任与写入边界
 

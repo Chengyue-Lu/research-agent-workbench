@@ -2,6 +2,13 @@
 
 本文件只记录被主线接受、会影响使用者理解的基线变化。逐任务、分支和实验过程保存在[详细开发日志](DEVELOPMENT_HISTORY.md)。
 
+## 2026-08-24 — Capability Requirement demand contract
+
+- 将八个 Method Resolution 复用的四个 Capability Requirement 冻结为不可变需求侧契约；
+- 用小型 path/hash 完整性索引闭合 Task→Method→Requirement 引用，同时保持 M8 工件原始字节不变；
+- 显式拒绝 Provider/Model/Adapter、具体供给、availability/gap/blocked、fallback 与价格路由进入需求层；
+- 将 Capability Requirement Schema、实现和发布身份纳入 R2 治理与 append-only 保护。
+
 ## 2026-08-22 — Documentation surface baseline
 
 - 分离 stable、status、planning、compatibility 与 history 文档权威；

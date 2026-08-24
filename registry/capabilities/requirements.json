@@ -1,0 +1,27 @@
+{
+  "schema_version": "0.1.0",
+  "registry_kind": "capability_requirement_index",
+  "generated_at": "2026-08-24",
+  "entries": [
+    {
+      "requirement_id": "bounded-compute",
+      "document_path": "registry/capabilities/requirements/bounded-compute.yaml",
+      "content_hash": "sha256:d658734852d0c7b14f2b556179426c20920714d73666b61448e06c16250f864b"
+    },
+    {
+      "requirement_id": "document-read",
+      "document_path": "registry/capabilities/requirements/document-read.yaml",
+      "content_hash": "sha256:7cf374c2cbc8fbe9d0698fd3bdf209d7a3fc015c1fe485e06f8450cd7a38e916"
+    },
+    {
+      "requirement_id": "literature-search",
+      "document_path": "registry/capabilities/requirements/literature-search.yaml",
+      "content_hash": "sha256:d0685feb254d9bd02afbb792cacc354e151c434ce0853385c934b3d154c8af43"
+    },
+    {
+      "requirement_id": "research-contract-check",
+      "document_path": "registry/capabilities/requirements/research-contract-check.yaml",
+      "content_hash": "sha256:b21b0be0f43921015a7b3bd37d66429635bfb0b876cc5fba6ff9e26e4ed7ca31"
+    }
+  ]
+}

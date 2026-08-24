@@ -144,6 +144,19 @@ class RiskInferenceTests(unittest.TestCase):
         )
         self.assertEqual("R2", risk)
 
+    def test_capability_requirement_contract_surface_is_r2(self) -> None:
+        for path in (
+            "schemas/v0.1.0/capability-requirement.schema.json",
+            "registry/capabilities/requirements.json",
+            "registry/capabilities/requirements/document-read.yaml",
+            "src/research_workbench/capability/requirements.py",
+        ):
+            with self.subTest(path=path):
+                risk, _ = governance.infer_minimum_risk(
+                    [path], shared_contract=False, authority_impact=False
+                )
+                self.assertEqual("R2", risk)
+
     def test_authority_protocol_is_r2(self) -> None:
         for path in (
             "src/research_workbench/protocol/authority.py",
@@ -605,6 +618,7 @@ class PolicyAndCodeownersTests(unittest.TestCase):
                 "research-mode": ("mode_id", "version"),
                 "decision-authority-matrix": ("matrix_id", "version"),
                 "research-mode-migration": ("migration_id", "migration_version"),
+                "capability-requirement": ("requirement_id",),
             },
             declarations,
         )
@@ -709,6 +723,11 @@ class PublishedDocumentIdentityTests(unittest.TestCase):
             "research-mode-migration",
             "migration_id: simulation-v01-v02\nmigration_version: 1.0.0\nsummary: original\n",
             "migration_id: simulation-v01-v02\nmigration_version: 1.1.0\nsummary: appended\n",
+        ),
+        "registry/capabilities/requirements/document-read.yaml": (
+            "capability-requirement",
+            "requirement_id: document-read\nsummary: original\n",
+            "requirement_id: document-read-v2\nsummary: appended\n",
         ),
     }
 

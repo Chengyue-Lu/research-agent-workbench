@@ -91,6 +91,8 @@ DOCUMENT_REQUIRED: dict[str, tuple[str, ...]] = {
 }
 
 SCHEMA_KINDS = {
+    "capability_requirement",
+    "capability_requirement_index",
     "deterministic_check_report",
     "decision_authority_matrix",
     "authority_rule_eligibility",
@@ -147,6 +149,8 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "mode_action"
     if "resolution_id" in document and "mode_resolution" in document and "action_decisions" in document:
         return "method_resolution"
+    if "requirement_id" in document and "constraints" in document and "unsatisfied_requirement" in document:
+        return "capability_requirement"
     if "agent_profile_id" in document and "permission_ceiling" in document:
         return "agent_profile"
     if "skill_id" in document and "capabilities" in document:
@@ -526,8 +530,166 @@ def _validate_mode_action_registry(documents: Mapping[Path, Any]) -> list[Valida
     return issues
 
 
+def _capability_requirement_indices(
+    documents: Mapping[Path, Any],
+) -> list[tuple[Path, Mapping[str, Any]]]:
+    return [
+        (path, document)
+        for path, document in documents.items()
+        if isinstance(document, Mapping)
+        and document.get("registry_kind") == "capability_requirement_index"
+    ]
+
+
+def _capability_requirement_entries(documents: Mapping[Path, Any]) -> dict[str, Mapping[str, Any]]:
+    indices = _capability_requirement_indices(documents)
+    if len(indices) != 1:
+        return {}
+    entries: dict[str, Mapping[str, Any]] = {}
+    for entry in indices[0][1].get("entries", []):
+        if not isinstance(entry, Mapping) or not isinstance(entry.get("requirement_id"), str):
+            continue
+        entries[str(entry["requirement_id"])] = entry
+    return entries
+
+
+def _validate_capability_requirement_set(
+    documents: Mapping[Path, Any],
+) -> list[ValidationIssue]:
+    issues: list[ValidationIssue] = []
+    indices = _capability_requirement_indices(documents)
+    requirement_documents = [
+        (path, document)
+        for path, document in documents.items()
+        if isinstance(document, Mapping) and infer_document_kind(document) == "capability_requirement"
+    ]
+    method_references = [
+        value
+        for document in documents.values()
+        if isinstance(document, Mapping) and infer_document_kind(document) == "method_resolution"
+        for decision in document.get("action_decisions", [])
+        if isinstance(decision, Mapping)
+        for value in decision.get("capability_requirements", [])
+        if isinstance(value, str)
+    ]
+    if not indices:
+        if requirement_documents or method_references:
+            anchor = requirement_documents[0][0] if requirement_documents else Path("capability-requirements")
+            issues.append(
+                ValidationIssue(
+                    anchor,
+                    "CAPABILITY-REQUIREMENT-INDEX-MISSING",
+                    "Capability Requirement documents and Method references require one closed integrity index",
+                )
+            )
+        return issues
+    if len(indices) > 1:
+        for path, _ in indices[1:]:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "CAPABILITY-REQUIREMENT-INDEX-DUPLICATE",
+                    "only one Capability Requirement integrity index may be loaded",
+                )
+            )
+        return issues
+
+    index_path, index = indices[0]
+    indexed: dict[str, tuple[str, Mapping[str, Any]]] = {}
+    seen_paths: set[str] = set()
+    for position, entry in enumerate(index.get("entries", [])):
+        if not isinstance(entry, Mapping):
+            continue
+        requirement_id = entry.get("requirement_id")
+        document_path = entry.get("document_path")
+        if not isinstance(requirement_id, str) or not isinstance(document_path, str):
+            continue
+        if requirement_id in indexed:
+            issues.append(
+                ValidationIssue(
+                    index_path,
+                    "CAPABILITY-REQUIREMENT-IDENTITY-DUPLICATE",
+                    f"duplicate Requirement identity at entries[{position}]: {requirement_id}",
+                )
+            )
+            continue
+        if document_path in seen_paths:
+            issues.append(
+                ValidationIssue(
+                    index_path,
+                    "CAPABILITY-REQUIREMENT-PATH-DUPLICATE",
+                    f"duplicate Requirement document path at entries[{position}]: {document_path}",
+                )
+            )
+            continue
+        indexed[requirement_id] = (document_path, entry)
+        seen_paths.add(document_path)
+
+        loaded = _loaded_document_at(documents, document_path)
+        if loaded is None:
+            issues.append(
+                ValidationIssue(
+                    index_path,
+                    "CAPABILITY-REQUIREMENT-DOCUMENT-MISSING",
+                    f"indexed Requirement document is not loaded: {document_path}",
+                )
+            )
+            continue
+        loaded_path, requirement = loaded
+        if infer_document_kind(requirement) != "capability_requirement":
+            issues.append(
+                ValidationIssue(
+                    loaded_path,
+                    "CAPABILITY-REQUIREMENT-DOCUMENT-KIND",
+                    f"indexed document is not a Capability Requirement: {document_path}",
+                )
+            )
+            continue
+        if requirement.get("requirement_id") != requirement_id:
+            issues.append(
+                ValidationIssue(
+                    loaded_path,
+                    "CAPABILITY-REQUIREMENT-IDENTITY-MISMATCH",
+                    f"index and document identities disagree: {requirement_id}",
+                )
+            )
+        expected_hash = entry.get("content_hash")
+        if isinstance(expected_hash, str) and loaded_path.is_file():
+            if hash_file(loaded_path) != expected_hash.removeprefix("sha256:").lower():
+                issues.append(
+                    ValidationIssue(
+                        index_path,
+                        "CAPABILITY-REQUIREMENT-HASH-MISMATCH",
+                        f"content hash does not match Requirement document: {requirement_id}",
+                    )
+                )
+
+    for path, requirement in requirement_documents:
+        requirement_id = requirement.get("requirement_id")
+        indexed_entry = indexed.get(str(requirement_id))
+        if indexed_entry is None:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "CAPABILITY-REQUIREMENT-UNINDEXED",
+                    f"Requirement document is not in the integrity index: {requirement_id}",
+                )
+            )
+        elif not _matches_repository_path(path, indexed_entry[0]):
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "CAPABILITY-REQUIREMENT-PATH-MISMATCH",
+                    f"Requirement document path disagrees with the index: {requirement_id}",
+                )
+            )
+    return issues
+
+
 def _validate_method_resolutions(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
+    capability_indices = _capability_requirement_indices(documents)
+    capability_entries = _capability_requirement_entries(documents)
     modes = {
         f"{document.get('mode_id')}@{document.get('version')}"
         for document in documents.values()
@@ -583,6 +745,7 @@ def _validate_method_resolutions(documents: Mapping[Path, Any]) -> list[Validati
             )
         seen_resolutions.add(resolution_key)
 
+        task_document: Mapping[str, Any] | None = None
         task_ref = document.get("task_ref")
         if isinstance(task_ref, Mapping):
             task_revision = task_ref.get("revision")
@@ -600,7 +763,7 @@ def _validate_method_resolutions(documents: Mapping[Path, Any]) -> list[Validati
                     )
                 )
             else:
-                task_path, _ = loaded_task
+                task_path, task_document = loaded_task
                 recorded_hash = str(task_ref.get("sha256", "")).removeprefix("sha256:").lower()
                 if recorded_hash != hash_file(task_path):
                     issues.append(
@@ -631,6 +794,7 @@ def _validate_method_resolutions(documents: Mapping[Path, Any]) -> list[Validati
         decision_ids: set[str] = set()
         obligation_ids: set[str] = set()
         skill_need_refs: set[str] = set()
+        capability_requirement_refs: set[str] = set()
         human_gate_refs: set[str] = set()
         blocked_conditions: set[str] = set()
         for index, decision in enumerate(document.get("action_decisions", [])):
@@ -764,6 +928,18 @@ def _validate_method_resolutions(documents: Mapping[Path, Any]) -> list[Validati
             skill_need_refs.update(
                 value for value in decision.get("skill_need_refs", []) if isinstance(value, str)
             )
+            for requirement_id in decision.get("capability_requirements", []):
+                if not isinstance(requirement_id, str):
+                    continue
+                capability_requirement_refs.add(requirement_id)
+                if capability_indices and requirement_id not in capability_entries:
+                    issues.append(
+                        ValidationIssue(
+                            path,
+                            "METHOD-RESOLUTION-CAPABILITY-REQUIREMENT-MISSING",
+                            f"action_decisions[{index}] references an unknown Capability Requirement: {requirement_id}",
+                        )
+                    )
             human_gate_refs.update(
                 value for value in decision.get("human_gate_refs", []) if isinstance(value, str)
             )
@@ -809,6 +985,22 @@ def _validate_method_resolutions(documents: Mapping[Path, Any]) -> list[Validati
                         code,
                         f"{field} must exactly match action decision references: "
                         f"declared={sorted(declared)}, derived={sorted(derived)}",
+                    )
+                )
+
+        if task_document is not None:
+            task_requirements = {
+                value
+                for value in task_document.get("required_capabilities", [])
+                if isinstance(value, str)
+            }
+            if task_requirements != capability_requirement_refs:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "METHOD-RESOLUTION-CAPABILITY-REQUIREMENT-CLOSURE",
+                        "Task required_capabilities must exactly match action decision Capability Requirements: "
+                        f"task={sorted(task_requirements)}, method={sorted(capability_requirement_refs)}",
                     )
                 )
 
@@ -1194,6 +1386,7 @@ def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
         issues.extend(_validate_registry(path, document, kind, source_ids))
         issues.extend(_validate_task(path, document, kind))
     issues.extend(_validate_mode_action_registry(documents))
+    issues.extend(_validate_capability_requirement_set(documents))
     issues.extend(_validate_method_resolutions(documents))
     issues.extend(_validate_research_mode_migrations(documents))
     issues.extend(_validate_decision_authority(documents))

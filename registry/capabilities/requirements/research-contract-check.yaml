@@ -1,0 +1,48 @@
+schema_version: 0.1.0
+requirement_id: research-contract-check
+objective: Deterministically check declared schemas, hashes, references, coverage, and state transitions without making scientific judgments.
+applies_when:
+  - The method requires reproducible structural or referential validation of declared research artifacts.
+  - The checker version, schemas, and checked subjects can be frozen.
+not_applicable_when:
+  - The method needs semantic entailment, scientific correctness, or source-quality judgment.
+  - The requested result is a Human approval or Claim promotion.
+required_inputs:
+  - document-references
+  - schema-and-checker-version
+  - checked-subject-hashes
+  - project-root-boundary
+required_outputs:
+  - deterministic-findings
+  - checked-subject-hashes
+  - declared-risk-codes
+required_artifacts:
+  - deterministic-check-report
+constraints:
+  permission_ceiling:
+    filesystem: task-scope-write
+    network: forbidden
+    external_write: false
+  data_egress:
+    policy: forbidden
+    allowed_payloads: []
+    forbidden_payloads:
+      - checked-documents
+      - project-context
+      - validation-results
+  side_effects:
+    policy: allowlisted-only
+    allowed_effects:
+      - task-local-check-report
+verification_expectations:
+  deterministic:
+    - The report records checker identity and checked subject hashes.
+    - Repeating the same checker over the same bytes yields the same structural findings.
+  semantic:
+    - A structural pass is not represented as scientific validity, Evidence correctness, or Claim acceptance.
+  human:
+    - A proposal to waive a deterministic failure requires separate authority and cannot be granted by this requirement.
+unsatisfied_requirement:
+  method_contract: unchanged
+  supply_binding: prohibited
+  next_stage: capability-resolution

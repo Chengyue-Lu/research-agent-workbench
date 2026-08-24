@@ -2,7 +2,8 @@
 
 | ID | 类型 | 风险 | 当前控制 | 状态 |
 |---|---|---|---|---|
-| PBE-DEMAND-001 | fact | Capability Requirement 若包含 available/gap、Provider 或具体 Tool/Skill，会把供给状态提前写回 Method。 | M9-001 只允许需求、边界和验证期望；供给结果由 Snapshot/Resolver 单独表达。 | controlled by scope |
+| PBE-DEMAND-001 | fact | Capability Requirement 若包含 available/gap、Provider 或具体 Tool/Skill，会把供给状态提前写回 Method。 | M9-001 Schema additionalProperties=false；对抗测试拒绝 supply/binding/routing 字段；供给结果由 Snapshot/Resolver 单独表达。 | controlled by implementation evidence |
+| PBE-IDENTITY-001 | fact | 裸 Requirement ID 若解析到 active/latest 或可变 Registry，会静默改变旧 Method 的含义。 | 四个 M8 ID 直接映射到唯一不可变文档；index 固定 path/hash；published identity policy 禁止同 ID 改写、移动或删除。 | controlled by governance and closure tests |
 | PBE-SKILL-001 | fact | Skill Need、candidate、accepted 与 active 若混成一个状态机会绕过证据准入。 | M9-002/003 分离 Need identity、intake、evaluation、admission 和 runtime eligibility。 | open until M9-003 |
 | PBE-SNAPSHOT-001 | fact | Snapshot 若由单侧定义，可能让 Method 选择 Provider，或让 Runtime 放宽 Method/permission/data ceiling。 | M9-005 作为跨负责人共享 R2 接口，先冻结 producer/consumer 与 authority，再实现。 | open until M9-005 |
 | PBE-MIGRATION-001 | fact | 原位扩展 lifecycle 或 Registry identity 会改变历史 Assignment 解释。 | published identity append-only；语义变化升版；迁移显式、hash-bound、可重放。 | open until M9-003/006 |

@@ -7,6 +7,17 @@ from research_workbench.capability.catalog import (
 )
 from research_workbench.capability.archive_audit import audit_skill_archive
 from research_workbench.capability.models import AgentProfile, SkillLock, SkillManifest
+from research_workbench.capability.requirements import (
+    CapabilityConstraints,
+    CapabilityRequirement,
+    CapabilityRequirementEntry,
+    CapabilityRequirementSet,
+    DataEgressConstraint,
+    RequirementPermissionCeiling,
+    SideEffectConstraint,
+    UnsatisfiedRequirementBoundary,
+    VerificationExpectations,
+)
 from research_workbench.capability.resolver import (
     ResolvedTask,
     ResolutionError,
@@ -19,9 +30,18 @@ __all__ = [
     "AgentProfile",
     "AcceptedSkillEntry",
     "AcceptedSkillRegistry",
+    "CapabilityConstraints",
+    "CapabilityRequirement",
+    "CapabilityRequirementEntry",
+    "CapabilityRequirementSet",
+    "DataEgressConstraint",
+    "RequirementPermissionCeiling",
+    "SideEffectConstraint",
     "SkillRegistrySelectionError",
     "SkillLock",
     "SkillManifest",
+    "UnsatisfiedRequirementBoundary",
+    "VerificationExpectations",
     "ResolvedTask",
     "ResolutionError",
     "filter_candidates",

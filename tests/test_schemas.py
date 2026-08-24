@@ -36,6 +36,8 @@ class VersionedSchemaTests(unittest.TestCase):
                 "agent_trace_index",
                 "attempt",
                 "attempt_completion_manifest",
+                "capability_requirement",
+                "capability_requirement_index",
                 "context_snapshot",
                 "deterministic_check_report",
                 "decision_authority_matrix",

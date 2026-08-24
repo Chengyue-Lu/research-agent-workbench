@@ -12,6 +12,8 @@ RESOLUTION_ROOT = ROOT / "examples/method-resolutions"
 TASK_ROOT = ROOT / "examples/method-resolution-tasks"
 ACTION_REGISTRY = ROOT / "registry/modes/actions.json"
 MODE_ROOT = ROOT / "registry/modes"
+CAPABILITY_REQUIREMENT_INDEX = ROOT / "registry/capabilities/requirements.json"
+CAPABILITY_REQUIREMENT_ROOT = ROOT / "registry/capabilities/requirements"
 
 
 class MethodResolutionTests(unittest.TestCase):
@@ -23,10 +25,19 @@ class MethodResolutionTests(unittest.TestCase):
         cls.task_documents = {path: load_document(path) for path in cls.task_paths}
         cls.catalog = SchemaCatalog(ROOT / "schemas")
         cls.action_registry = json.loads(ACTION_REGISTRY.read_text(encoding="utf-8"))
+        cls.capability_requirement_index = json.loads(
+            CAPABILITY_REQUIREMENT_INDEX.read_text(encoding="utf-8")
+        )
+        cls.capability_requirement_documents = {
+            path: load_document(path)
+            for path in sorted(CAPABILITY_REQUIREMENT_ROOT.glob("*.yaml"))
+        }
         cls.validation_documents = {
             **cls.documents,
             **cls.task_documents,
             ACTION_REGISTRY: cls.action_registry,
+            CAPABILITY_REQUIREMENT_INDEX: cls.capability_requirement_index,
+            **cls.capability_requirement_documents,
             **{
                 ROOT / entry["document_path"]: load_document(ROOT / entry["document_path"])
                 for entry in cls.action_registry["entries"]
@@ -82,6 +93,28 @@ class MethodResolutionTests(unittest.TestCase):
 
     def test_document_validation_closes_actions_needs_gates_and_blocks(self) -> None:
         self.assertEqual([], validate_documents(self.validation_documents))
+
+    def test_unknown_capability_requirement_is_blocking(self) -> None:
+        documents = copy.deepcopy(self.validation_documents)
+        path = RESOLUTION_ROOT / "ROUTE-SIM-REPLAY-004.yaml"
+        documents[path]["action_decisions"][0]["capability_requirements"] = [
+            "unknown-requirement"
+        ]
+        codes = {issue.code for issue in validate_documents(documents)}
+        self.assertIn("METHOD-RESOLUTION-CAPABILITY-REQUIREMENT-MISSING", codes)
+
+    def test_task_and_method_capability_requirement_drift_is_blocking(self) -> None:
+        documents = copy.deepcopy(self.validation_documents)
+        path = RESOLUTION_ROOT / "ROUTE-SIM-REPLAY-004.yaml"
+        documents[path]["action_decisions"][0]["capability_requirements"] = []
+        codes = {issue.code for issue in validate_documents(documents)}
+        self.assertIn("METHOD-RESOLUTION-CAPABILITY-REQUIREMENT-CLOSURE", codes)
+
+    def test_capability_requirement_index_is_required_for_method_closure(self) -> None:
+        documents = copy.deepcopy(self.validation_documents)
+        documents.pop(CAPABILITY_REQUIREMENT_INDEX)
+        codes = {issue.code for issue in validate_documents(documents)}
+        self.assertIn("CAPABILITY-REQUIREMENT-INDEX-MISSING", codes)
 
     def test_action_hash_drift_is_blocking(self) -> None:
         documents = copy.deepcopy(self.validation_documents)
