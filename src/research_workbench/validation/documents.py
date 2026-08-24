@@ -93,6 +93,8 @@ DOCUMENT_REQUIRED: dict[str, tuple[str, ...]] = {
 SCHEMA_KINDS = {
     "capability_requirement",
     "capability_requirement_index",
+    "skill_need",
+    "skill_need_index",
     "deterministic_check_report",
     "decision_authority_matrix",
     "authority_rule_eligibility",
@@ -151,6 +153,8 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "method_resolution"
     if "requirement_id" in document and "constraints" in document and "unsatisfied_requirement" in document:
         return "capability_requirement"
+    if "need_id" in document and "semantic_gap" in document and "evaluation_requirements" in document:
+        return "skill_need"
     if "agent_profile_id" in document and "permission_ceiling" in document:
         return "agent_profile"
     if "skill_id" in document and "capabilities" in document:
@@ -681,6 +685,327 @@ def _validate_capability_requirement_set(
                     path,
                     "CAPABILITY-REQUIREMENT-PATH-MISMATCH",
                     f"Requirement document path disagrees with the index: {requirement_id}",
+                )
+            )
+    return issues
+
+
+def _skill_need_indices(
+    documents: Mapping[Path, Any],
+) -> list[tuple[Path, Mapping[str, Any]]]:
+    return [
+        (path, document)
+        for path, document in documents.items()
+        if isinstance(document, Mapping) and document.get("registry_kind") == "skill_need_index"
+    ]
+
+
+def _skill_need_entries(documents: Mapping[Path, Any]) -> dict[str, Mapping[str, Any]]:
+    indices = _skill_need_indices(documents)
+    if len(indices) != 1:
+        return {}
+    entries: dict[str, Mapping[str, Any]] = {}
+    for entry in indices[0][1].get("entries", []):
+        if not isinstance(entry, Mapping) or not isinstance(entry.get("need_ref"), str):
+            continue
+        entries[str(entry["need_ref"])] = entry
+    return entries
+
+
+def _validate_skill_need_set(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
+    issues: list[ValidationIssue] = []
+    indices = _skill_need_indices(documents)
+    need_documents = [
+        (path, document)
+        for path, document in documents.items()
+        if isinstance(document, Mapping) and infer_document_kind(document) == "skill_need"
+    ]
+    method_references = [
+        value
+        for document in documents.values()
+        if isinstance(document, Mapping) and infer_document_kind(document) == "method_resolution"
+        for decision in document.get("action_decisions", [])
+        if isinstance(decision, Mapping)
+        for value in decision.get("skill_need_refs", [])
+        if isinstance(value, str)
+    ]
+    if not indices:
+        if need_documents or method_references:
+            anchor = need_documents[0][0] if need_documents else Path("skill-needs")
+            issues.append(
+                ValidationIssue(
+                    anchor,
+                    "SKILL-NEED-INDEX-MISSING",
+                    "Skill Need documents and Method references require one closed integrity index",
+                )
+            )
+        return issues
+    if len(indices) > 1:
+        for path, _ in indices[1:]:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "SKILL-NEED-INDEX-DUPLICATE",
+                    "only one Skill Need integrity index may be loaded",
+                )
+            )
+        return issues
+
+    index_path, index = indices[0]
+    modes = {
+        f"{document.get('mode_id')}@{document.get('version')}"
+        for document in documents.values()
+        if isinstance(document, Mapping) and "mode_id" in document and "claim_rules" in document
+    }
+    action_entries: dict[str, Mapping[str, Any]] = {}
+    for document in documents.values():
+        if not isinstance(document, Mapping) or document.get("registry_kind") != "mode_action_registry":
+            continue
+        for entry in document.get("entries", []):
+            if isinstance(entry, Mapping):
+                action_entries[f"{entry.get('action_id')}@{entry.get('version')}"] = entry
+    capability_entries = _capability_requirement_entries(documents)
+
+    indexed: dict[str, tuple[str, Mapping[str, Any]]] = {}
+    seen_identities: set[tuple[str, str]] = set()
+    seen_paths: set[str] = set()
+    for position, entry in enumerate(index.get("entries", [])):
+        if not isinstance(entry, Mapping):
+            continue
+        need_ref = entry.get("need_ref")
+        need_id = entry.get("need_id")
+        version = entry.get("version")
+        document_path = entry.get("document_path")
+        if not all(isinstance(value, str) for value in (need_ref, need_id, version, document_path)):
+            continue
+        identity = (str(need_id), str(version))
+        if need_ref in indexed:
+            issues.append(
+                ValidationIssue(
+                    index_path,
+                    "SKILL-NEED-REFERENCE-DUPLICATE",
+                    f"duplicate Need reference at entries[{position}]: {need_ref}",
+                )
+            )
+            continue
+        if identity in seen_identities:
+            issues.append(
+                ValidationIssue(
+                    index_path,
+                    "SKILL-NEED-IDENTITY-DUPLICATE",
+                    f"duplicate Need identity at entries[{position}]: {need_id}@{version}",
+                )
+            )
+            continue
+        if document_path in seen_paths:
+            issues.append(
+                ValidationIssue(
+                    index_path,
+                    "SKILL-NEED-PATH-DUPLICATE",
+                    f"duplicate Need document path at entries[{position}]: {document_path}",
+                )
+            )
+            continue
+        indexed[str(need_ref)] = (str(document_path), entry)
+        seen_identities.add(identity)
+        seen_paths.add(str(document_path))
+
+        loaded = _loaded_document_at(documents, document_path)
+        if loaded is None:
+            issues.append(
+                ValidationIssue(
+                    index_path,
+                    "SKILL-NEED-DOCUMENT-MISSING",
+                    f"indexed Skill Need document is not loaded: {document_path}",
+                )
+            )
+            continue
+        loaded_path, need = loaded
+        if infer_document_kind(need) != "skill_need":
+            issues.append(
+                ValidationIssue(
+                    loaded_path,
+                    "SKILL-NEED-DOCUMENT-KIND",
+                    f"indexed document is not a Skill Need: {document_path}",
+                )
+            )
+            continue
+        if (
+            need.get("need_ref"),
+            need.get("need_id"),
+            need.get("version"),
+        ) != (need_ref, need_id, version):
+            issues.append(
+                ValidationIssue(
+                    loaded_path,
+                    "SKILL-NEED-IDENTITY-MISMATCH",
+                    f"index and document identities disagree: {need_ref}",
+                )
+            )
+        expected_hash = entry.get("content_hash")
+        if isinstance(expected_hash, str) and loaded_path.is_file():
+            if hash_file(loaded_path) != expected_hash.removeprefix("sha256:").lower():
+                issues.append(
+                    ValidationIssue(
+                        index_path,
+                        "SKILL-NEED-HASH-MISMATCH",
+                        f"content hash does not match Skill Need document: {need_ref}",
+                    )
+                )
+
+        for mode_ref in need.get("mode_refs", []):
+            if isinstance(mode_ref, str) and modes and mode_ref not in modes:
+                issues.append(
+                    ValidationIssue(
+                        loaded_path,
+                        "SKILL-NEED-MODE-MISSING",
+                        f"Skill Need references an unknown Research Mode: {mode_ref}",
+                    )
+                )
+        seen_action_refs: set[str] = set()
+        for action in need.get("origin_actions", []):
+            if not isinstance(action, Mapping):
+                continue
+            action_ref = action.get("action_ref")
+            if isinstance(action_ref, str):
+                if action_ref in seen_action_refs:
+                    issues.append(
+                        ValidationIssue(
+                            loaded_path,
+                            "SKILL-NEED-ACTION-DUPLICATE",
+                            f"duplicate origin Action reference: {action_ref}",
+                        )
+                    )
+                seen_action_refs.add(action_ref)
+            registered = action_entries.get(str(action_ref))
+            if action_entries and registered is None:
+                issues.append(
+                    ValidationIssue(
+                        loaded_path,
+                        "SKILL-NEED-ACTION-MISSING",
+                        f"Skill Need references an unknown Mode Action: {action_ref}",
+                    )
+                )
+            elif registered is not None:
+                if action.get("content_hash") != registered.get("content_hash"):
+                    issues.append(
+                        ValidationIssue(
+                            loaded_path,
+                            "SKILL-NEED-ACTION-HASH-MISMATCH",
+                            f"Skill Need Action hash does not match Registry: {action_ref}",
+                        )
+                    )
+                if registered.get("mode_ref") not in set(need.get("mode_refs", [])):
+                    issues.append(
+                        ValidationIssue(
+                            loaded_path,
+                            "SKILL-NEED-ACTION-MODE-MISMATCH",
+                            f"Skill Need Action mode is outside mode_refs: {action_ref}",
+                        )
+                    )
+        baseline = need.get("baseline", {})
+        if isinstance(baseline, Mapping):
+            for requirement_ref in baseline.get("capability_requirement_refs", []):
+                if (
+                    isinstance(requirement_ref, str)
+                    and capability_entries
+                    and requirement_ref not in capability_entries
+                ):
+                    issues.append(
+                        ValidationIssue(
+                            loaded_path,
+                            "SKILL-NEED-CAPABILITY-REQUIREMENT-MISSING",
+                            f"baseline references an unknown Capability Requirement: {requirement_ref}",
+                        )
+                    )
+        evaluation = need.get("evaluation_requirements", {})
+        if isinstance(evaluation, Mapping):
+            evidence_classes: set[str] = set()
+            for item in evaluation.get("required_evidence_classes", []):
+                if not isinstance(item, Mapping) or not isinstance(item.get("evidence_class_id"), str):
+                    continue
+                evidence_class_id = str(item["evidence_class_id"])
+                if evidence_class_id in evidence_classes:
+                    issues.append(
+                        ValidationIssue(
+                            loaded_path,
+                            "SKILL-NEED-EVIDENCE-CLASS-DUPLICATE",
+                            f"duplicate required evidence class: {evidence_class_id}",
+                        )
+                    )
+                evidence_classes.add(evidence_class_id)
+            criterion_ids: set[str] = set()
+            for criterion in evaluation.get("criteria", []):
+                if not isinstance(criterion, Mapping):
+                    continue
+                criterion_id = criterion.get("criterion_id")
+                if isinstance(criterion_id, str):
+                    if criterion_id in criterion_ids:
+                        issues.append(
+                            ValidationIssue(
+                                loaded_path,
+                                "SKILL-NEED-CRITERION-DUPLICATE",
+                                f"duplicate evaluation criterion: {criterion_id}",
+                            )
+                        )
+                    criterion_ids.add(criterion_id)
+                unknown = sorted(
+                    value
+                    for value in criterion.get("evidence_class_refs", [])
+                    if isinstance(value, str) and value not in evidence_classes
+                )
+                if unknown:
+                    issues.append(
+                        ValidationIssue(
+                            loaded_path,
+                            "SKILL-NEED-EVIDENCE-CLASS-MISSING",
+                            f"criterion references unknown evidence classes: {unknown}",
+                        )
+                    )
+        domain_scope = need.get("domain_scope", {})
+        if isinstance(domain_scope, Mapping):
+            variant_ids: set[str] = set()
+            for variant in domain_scope.get("variants", []):
+                if not isinstance(variant, Mapping) or not isinstance(variant.get("variant_id"), str):
+                    continue
+                variant_id = str(variant["variant_id"])
+                if variant_id in variant_ids:
+                    issues.append(
+                        ValidationIssue(
+                            loaded_path,
+                            "SKILL-NEED-DOMAIN-VARIANT-DUPLICATE",
+                            f"duplicate domain variant: {variant_id}",
+                        )
+                    )
+                variant_ids.add(variant_id)
+
+    for path, need in need_documents:
+        need_ref = need.get("need_ref")
+        indexed_entry = indexed.get(str(need_ref))
+        if indexed_entry is None:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "SKILL-NEED-UNINDEXED",
+                    f"Skill Need document is not in the integrity index: {need_ref}",
+                )
+            )
+        elif not _matches_repository_path(path, indexed_entry[0]):
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "SKILL-NEED-PATH-MISMATCH",
+                    f"Skill Need document path disagrees with the index: {need_ref}",
+                )
+            )
+
+    for need_ref in method_references:
+        if need_ref not in indexed:
+            issues.append(
+                ValidationIssue(
+                    index_path,
+                    "METHOD-RESOLUTION-SKILL-NEED-MISSING",
+                    f"Method Resolution references an unknown Skill Need: {need_ref}",
                 )
             )
     return issues
@@ -1387,6 +1712,7 @@ def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
         issues.extend(_validate_task(path, document, kind))
     issues.extend(_validate_mode_action_registry(documents))
     issues.extend(_validate_capability_requirement_set(documents))
+    issues.extend(_validate_skill_need_set(documents))
     issues.extend(_validate_method_resolutions(documents))
     issues.extend(_validate_research_mode_migrations(documents))
     issues.extend(_validate_decision_authority(documents))

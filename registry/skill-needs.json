@@ -1,0 +1,28 @@
+{
+  "schema_version": "0.1.0",
+  "registry_kind": "skill_need_index",
+  "generated_at": "2026-08-24",
+  "entries": [
+    {
+      "need_ref": "NEED-ES-CONFLICT-SYNTHESIS",
+      "need_id": "evidence-conflict-synthesis",
+      "version": "1.0.0",
+      "document_path": "registry/skill-needs/evidence-conflict-synthesis-1.0.0.yaml",
+      "content_hash": "sha256:9cf42f7d2b5561be91fd95d04df3b02ee1e6cef96b88478dfec60668a3f06765"
+    },
+    {
+      "need_ref": "NEED-ES-SEARCH-PLAN",
+      "need_id": "evidence-search-plan",
+      "version": "1.0.0",
+      "document_path": "registry/skill-needs/evidence-search-plan-1.0.0.yaml",
+      "content_hash": "sha256:f770954e0eaadd1f181f9033ed3b980ffedf662f5780c91c3c74476a43bffc2e"
+    },
+    {
+      "need_ref": "NEED-SIM-CONVERGENCE-STUDY",
+      "need_id": "simulation-convergence-study",
+      "version": "1.0.0",
+      "document_path": "registry/skill-needs/simulation-convergence-study-1.0.0.yaml",
+      "content_hash": "sha256:c93fca4be98b613c1df2e12220990bd0c7a7068c32a0c9e1baf7d0031e2a6c7f"
+    }
+  ]
+}

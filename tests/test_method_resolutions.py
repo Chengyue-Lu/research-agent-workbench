@@ -14,6 +14,8 @@ ACTION_REGISTRY = ROOT / "registry/modes/actions.json"
 MODE_ROOT = ROOT / "registry/modes"
 CAPABILITY_REQUIREMENT_INDEX = ROOT / "registry/capabilities/requirements.json"
 CAPABILITY_REQUIREMENT_ROOT = ROOT / "registry/capabilities/requirements"
+SKILL_NEED_INDEX = ROOT / "registry/skill-needs.json"
+SKILL_NEED_ROOT = ROOT / "registry/skill-needs"
 
 
 class MethodResolutionTests(unittest.TestCase):
@@ -32,12 +34,19 @@ class MethodResolutionTests(unittest.TestCase):
             path: load_document(path)
             for path in sorted(CAPABILITY_REQUIREMENT_ROOT.glob("*.yaml"))
         }
+        cls.skill_need_index = json.loads(SKILL_NEED_INDEX.read_text(encoding="utf-8"))
+        cls.skill_need_documents = {
+            path: load_document(path)
+            for path in sorted(SKILL_NEED_ROOT.glob("*.yaml"))
+        }
         cls.validation_documents = {
             **cls.documents,
             **cls.task_documents,
             ACTION_REGISTRY: cls.action_registry,
             CAPABILITY_REQUIREMENT_INDEX: cls.capability_requirement_index,
             **cls.capability_requirement_documents,
+            SKILL_NEED_INDEX: cls.skill_need_index,
+            **cls.skill_need_documents,
             **{
                 ROOT / entry["document_path"]: load_document(ROOT / entry["document_path"])
                 for entry in cls.action_registry["entries"]

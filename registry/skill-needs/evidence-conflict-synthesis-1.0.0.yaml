@@ -1,0 +1,100 @@
+schema_version: 0.1.0
+need_ref: NEED-ES-CONFLICT-SYNTHESIS
+need_id: evidence-conflict-synthesis
+version: 1.0.0
+title: Scope-preserving evidence conflict synthesis
+mode_refs: [evidence-synthesis@0.1.0]
+origin_actions:
+  - action_ref: ES-A6@1.0.0
+    content_hash: sha256:cb2554ecd3003b03aaf613d1eca10ba6683be43b3e79c93f84f7d135b7c1aa28
+triggers:
+  - Admitted evidence contains apparently conflicting findings whose populations, measurements, time windows, or assumptions differ.
+  - A synthesis must preserve support, counterevidence, limitation, and unknown relations without resolving them by source count.
+non_triggers:
+  - The task only extracts claims and locators from a frozen source set.
+  - Differences are already explained by an approved scope mapping and require no new synthesis judgment.
+semantic_gap:
+  missing_judgment: Distinguish substantive contradiction from scope, measurement, population, timing, or assumption differences while preserving unresolved uncertainty.
+  failure_if_unaddressed: A direct summary can collapse incompatible scopes, vote by source count, or erase counterevidence and unknowns.
+  why_not_mode_or_task: Mode and Task define claim ceilings and artifacts but do not provide reusable conflict-classification judgment.
+  why_not_direct_tool: A checker can detect field mismatches but cannot decide whether they explain a scientific conflict.
+baseline:
+  route: mode-plus-direct-tool
+  capability_requirement_refs: [research-contract-check]
+  procedure:
+    - Build a claim-evidence table with locators and declared scopes.
+    - Run structural contract checks for missing population, measurement, time, assumption, and limitation fields.
+    - Have a human reviewer classify conflicts and approve any synthesis interpretation.
+  known_limitations:
+    - Structural mismatch detection does not determine whether a conflict is scientifically substantive.
+    - Manual synthesis often loses minority counterevidence or leaves the basis for reconciliation implicit.
+expected_increment:
+  outcomes:
+    - Preserve traceable support, counterevidence, limitation, and unknown relations in the synthesis.
+    - Reduce false contradictions caused by scope or measurement mismatch.
+    - Make unresolved interpretation and required Human Gates explicit.
+  non_goals:
+    - Decide scientific truth from source prestige or vote counts.
+    - Promote a Claim or sign a Human Gate.
+    - Replace source admission or provenance validation.
+  minimum_decision_rule: A candidate is worth trial only if it reduces conflict-classification and omission errors over the structured no-Skill baseline without increasing claim overreach.
+evaluation_requirements:
+  comparison_arms:
+    - plain-agent
+    - plain-plus-capability
+    - mode-plus-no-skill
+    - mode-plus-candidate-skill
+  required_evidence_classes:
+    - evidence_class_id: frozen-evidence-set
+      description: Identical admitted Evidence records, locators, scope fields, and Claim ceiling for every arm.
+    - evidence_class_id: relation-map-output
+      description: Produced support, counterevidence, limitation, unknown, and conflict-classification relations.
+    - evidence_class_id: deterministic-provenance-check
+      description: Machine report for locator preservation, closed-set evidence references, and missing mandatory fields.
+    - evidence_class_id: blinded-synthesis-review
+      description: Blind human assessment of conflict classification, omission, uncertainty preservation, and claim overreach.
+    - evidence_class_id: context-cost-record
+      description: Comparable context, rework, human-correction, and completion-cost measurements.
+  criteria:
+    - criterion_id: conflict-classification-error
+      description: Substantive contradictions and explainable scope differences are not confused.
+      assessment: lower-is-better
+      evidence_class_refs: [relation-map-output, blinded-synthesis-review]
+    - criterion_id: counterevidence-omission
+      description: Minority counterevidence, limitations, and unknowns remain visible and traceable.
+      assessment: lower-is-better
+      evidence_class_refs: [relation-map-output, deterministic-provenance-check, blinded-synthesis-review]
+    - criterion_id: claim-ceiling-compliance
+      description: The synthesis does not promote a stronger claim than the frozen Task and Mode permit.
+      assessment: pass-fail
+      evidence_class_refs: [frozen-evidence-set, blinded-synthesis-review]
+  coverage_requirements:
+    - Include population, measurement-definition, time-window, and assumption conflicts.
+    - Include at least one non-trigger extraction-only case.
+    - Include an adversarial majority-vote case with important minority counterevidence.
+  stop_conditions:
+    - The candidate resolves conflicts by source count, prestige, or unstated assumptions.
+    - It drops locators, counterevidence, limitations, or unknown relations.
+    - Any apparent benefit depends on a higher Claim ceiling or extra unrecorded source material.
+domain_scope:
+  included:
+    - Evidence synthesis over admitted, locator-bound research evidence.
+    - Conflicts that require semantic comparison across scope and measurement fields.
+  excluded:
+    - Source discovery, source admission, or full-text extraction.
+    - Human approval of causal, clinical, policy, or safety conclusions.
+  variants:
+    - variant_id: population-window-conflict
+      applies_when: Findings differ across populations, exposure windows, or follow-up periods.
+      variation: Evaluation must preserve each population and time window before judging comparability.
+    - variant_id: measurement-definition-conflict
+      applies_when: Sources use related labels with materially different outcome or exposure definitions.
+      variation: Evaluation must expose definition mismatch and prohibit silent normalization.
+boundaries:
+  records_trial_results: false
+  records_evaluation_results: false
+  records_promotion_evidence: false
+  records_runtime_eligibility: false
+  is_candidate: false
+  is_assignment: false
+  promotion_owner: human

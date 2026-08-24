@@ -42,6 +42,10 @@
       "registry/capabilities/requirements.json",
       "registry/capabilities/requirements/**",
       "src/research_workbench/capability/requirements.py",
+      "schemas/**/skill-need*.schema.json",
+      "registry/skill-needs.json",
+      "registry/skill-needs/**",
+      "src/research_workbench/capability/skill_needs.py",
       "schemas/**/claim*.schema.json",
       "schemas/**/decision*.schema.json",
       "schemas/**/human-gate*.schema.json",
@@ -100,6 +104,16 @@
         "registry/capabilities/requirements/**/*.yml"
       ],
       "identity_fields": ["requirement_id"]
+    },
+    {
+      "kind": "skill-need",
+      "patterns": [
+        "registry/skill-needs/*.yaml",
+        "registry/skill-needs/*.yml",
+        "registry/skill-needs/**/*.yaml",
+        "registry/skill-needs/**/*.yml"
+      ],
+      "identity_fields": ["need_id", "version"]
     }
   ]
 }

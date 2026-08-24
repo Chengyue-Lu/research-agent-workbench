@@ -1,0 +1,101 @@
+schema_version: 0.1.0
+need_ref: NEED-SIM-CONVERGENCE-STUDY
+need_id: simulation-convergence-study
+version: 1.0.0
+title: Bounded simulation convergence-study design
+mode_refs: [simulation@0.1.0]
+origin_actions:
+  - action_ref: SIM-A3@1.0.0
+    content_hash: sha256:e098ffa2bfa1ed8cf8a0a9a6d0aa0759bf554b75862b27b967ce70940fcb15c8
+triggers:
+  - A simulation claim depends on numerical resolution, sampling effort, solver tolerance, or stochastic convergence choices.
+  - The task requires a bounded convergence plan whose adequacy cannot be inferred from one successful run.
+non_triggers:
+  - The task only replays an already approved run manifest with pinned inputs and software.
+  - A software unit test checks deterministic code behavior without supporting a scientific convergence claim.
+semantic_gap:
+  missing_judgment: Select convergence dimensions, observables, error measures, resource bounds, and stop rules appropriate to the model and intended claim.
+  failure_if_unaddressed: Successful execution or monotone outputs can be mistaken for convergence, while relevant discretization or sampling error remains untested.
+  why_not_mode_or_task: Mode and Task require convergence evidence but do not encode reusable study-design judgment for each numerical regime.
+  why_not_direct_tool: A compute tool runs configurations but cannot justify the resolution ladder, diagnostic observable, or adequacy threshold.
+baseline:
+  route: mode-plus-direct-tool
+  capability_requirement_refs: [bounded-compute]
+  procedure:
+    - Freeze model purpose, assumptions, parameters, observables, Claim ceiling, and compute budget.
+    - Manually define a bounded resolution or sample-size ladder and execute it with approved compute capability.
+    - Compare diagnostics against human-approved thresholds and record unresolved error sources.
+  known_limitations:
+    - Manual plans often test only one convenient convergence dimension.
+    - Resource exhaustion can be misreported as scientific convergence or hidden by post-hoc thresholds.
+expected_increment:
+  outcomes:
+    - Increase detection of missing convergence dimensions and unsuitable diagnostics.
+    - Produce a replayable plan linking each run family to observables, thresholds, budget, and stop rules.
+    - Distinguish adequate evidence, bounded inconclusive results, and blocked resource conditions.
+  non_goals:
+    - Guarantee physical validity or correctness of the simulated model.
+    - Select a compute Provider, numerical library, or runtime environment.
+    - Relax approved resource, permission, data-egress, or Claim boundaries.
+  minimum_decision_rule: A candidate is worth trial only if it improves convergence-plan completeness and detects false convergence over the direct-compute baseline within the same budget and claim ceiling.
+evaluation_requirements:
+  comparison_arms:
+    - plain-agent
+    - plain-plus-capability
+    - mode-plus-no-skill
+    - mode-plus-candidate-skill
+  required_evidence_classes:
+    - evidence_class_id: frozen-simulation-contract
+      description: Identical model purpose, assumptions, inputs, observables, resource budget, and Claim ceiling for every arm.
+    - evidence_class_id: convergence-plan-output
+      description: Resolution or sampling ladder, diagnostics, thresholds, run budget, stop rules, and expected failure interpretations.
+    - evidence_class_id: deterministic-plan-check
+      description: Machine report for required fields, monotone resource bounds, pinned inputs, and prohibited boundary changes.
+    - evidence_class_id: blinded-vv-review
+      description: Blind human assessment of missing dimensions, diagnostic adequacy, false convergence, and overclaiming.
+    - evidence_class_id: context-cost-record
+      description: Comparable context, compute planning effort, retries, corrections, and wall-time measurements.
+  criteria:
+    - criterion_id: convergence-dimension-coverage
+      description: The plan tests all convergence dimensions material to the intended claim or explicitly justifies exclusions.
+      assessment: blinded-human-judgment
+      evidence_class_refs: [frozen-simulation-contract, convergence-plan-output, blinded-vv-review]
+    - criterion_id: false-convergence-detection
+      description: The plan rejects successful execution, monotone output, or one-resolution agreement as sufficient evidence.
+      assessment: pass-fail
+      evidence_class_refs: [convergence-plan-output, blinded-vv-review]
+    - criterion_id: resource-boundary-compliance
+      description: The plan stays within the frozen compute budget and reports inconclusive or blocked outcomes rather than relaxing limits.
+      assessment: pass-fail
+      evidence_class_refs: [frozen-simulation-contract, deterministic-plan-check]
+  coverage_requirements:
+    - Include deterministic discretization and stochastic estimation cases.
+    - Include at least one non-trigger replay or software-test case.
+    - Include an adversarial case where a successful run is not converged.
+    - Include a resource-limited case that must remain inconclusive or blocked.
+  stop_conditions:
+    - The candidate treats successful execution or monotone output as sufficient convergence evidence.
+    - It changes the Claim ceiling, solver, Provider, input assumptions, or compute budget to obtain a pass.
+    - It cannot improve completeness over the mode-plus-no-skill baseline without disproportionate context cost.
+domain_scope:
+  included:
+    - Bounded numerical simulation studies whose claims depend on discretization, solver tolerance, or sampling convergence.
+    - Plans with explicit observables, resource budgets, and Human-approved adequacy thresholds.
+  excluded:
+    - Physical model validation, experimental calibration, or final scientific Claim approval.
+    - Unbounded parameter search, production scheduling, or Provider selection.
+  variants:
+    - variant_id: deterministic-discretization
+      applies_when: Error is dominated by mesh, timestep, order, or solver-tolerance choices.
+      variation: Evaluation must check resolution ratios, asymptotic indicators, and observable-specific error measures.
+    - variant_id: stochastic-estimation
+      applies_when: Error is dominated by sampling, random seeds, chains, or ensemble size.
+      variation: Evaluation must distinguish sampling uncertainty, independence assumptions, and deterministic discretization error.
+boundaries:
+  records_trial_results: false
+  records_evaluation_results: false
+  records_promotion_evidence: false
+  records_runtime_eligibility: false
+  is_candidate: false
+  is_assignment: false
+  promotion_owner: human

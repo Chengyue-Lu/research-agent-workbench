@@ -59,6 +59,8 @@ class VersionedSchemaTests(unittest.TestCase):
                 "skill_assignment",
                 "skill_archive_audit",
                 "skill_evaluation",
+                "skill_need",
+                "skill_need_index",
                 "task_packet",
             },
             set(catalog.document_kinds),

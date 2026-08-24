@@ -1,0 +1,100 @@
+schema_version: 0.1.0
+need_ref: NEED-ES-SEARCH-PLAN
+need_id: evidence-search-plan
+version: 1.0.0
+title: Replayable evidence-search planning
+mode_refs: [evidence-synthesis@0.1.0]
+origin_actions:
+  - action_ref: ES-A2@1.0.0
+    content_hash: sha256:cd0b17987ded4a4aa4920b2dc09f97cdd642c97b829e0253187eb75b9d3deaa3
+triggers:
+  - An open evidence question requires bounded query design across declared sources, dates, languages, or disciplines.
+  - Coverage and stopping decisions must be replayable rather than reconstructed from retrieved results.
+non_triggers:
+  - A previously approved search plan is replayed without changing its scope or query logic.
+  - The task only resolves identifiers or retrieves a known document through a direct tool call.
+semantic_gap:
+  missing_judgment: Translate a bounded research question into auditable query families, coverage checks, and stop rules without silently changing the scope.
+  failure_if_unaddressed: Direct searching can overfit early hits, omit terminology variants, or stop without a defensible coverage reason.
+  why_not_mode_or_task: Mode and Task state the question and boundary but do not supply reusable judgment for query diversification and stopping.
+  why_not_direct_tool: A search tool executes queries but cannot justify why those queries or stopping conditions are adequate.
+baseline:
+  route: mode-plus-direct-tool
+  capability_requirement_refs: [literature-search]
+  procedure:
+    - Restate the approved question, source boundary, date range, and exclusions.
+    - Manually draft query families, execute them with the approved search capability, and record query/result counts.
+    - Apply a human-approved stop rule and document unresolved coverage gaps.
+  known_limitations:
+    - Manual query diversification is inconsistent across terminology-rich domains.
+    - Search stopping rationales are often incomplete or reconstructed after retrieval.
+expected_increment:
+  outcomes:
+    - Reduce omitted terminology families while preserving the approved scope.
+    - Produce a replayable search ledger with explicit coverage and stop reasoning.
+    - Detect when the task should return to a Human Gate instead of expanding search silently.
+  non_goals:
+    - Guarantee that every relevant source is retrievable.
+    - Rank or admit a particular search provider.
+    - Authorize access outside the Task data boundary.
+  minimum_decision_rule: A candidate is worth trial only if it improves coverage and replayability over the direct-tool baseline without increasing scope violations or unsupported stopping claims.
+evaluation_requirements:
+  comparison_arms:
+    - plain-agent
+    - plain-plus-capability
+    - mode-plus-no-skill
+    - mode-plus-candidate-skill
+  required_evidence_classes:
+    - evidence_class_id: frozen-task-input
+      description: Exact Task, question, approved source boundary, and input hashes shared by every arm.
+    - evidence_class_id: query-and-stop-ledger
+      description: Queries, terminology families, result counts, exclusions, stop rationale, and unresolved coverage gaps.
+    - evidence_class_id: deterministic-boundary-check
+      description: Machine report for source, date, language, duplicate, and prohibited-egress constraints.
+    - evidence_class_id: blinded-method-review
+      description: Blind human assessment of scope fidelity, coverage reasoning, and unsupported search claims.
+    - evidence_class_id: context-cost-record
+      description: Comparable context, wall-time, tool-call, retry, and human-correction measurements.
+  criteria:
+    - criterion_id: coverage-reasoning
+      description: Query families cover declared terminology and source variants with explicit residual gaps.
+      assessment: blinded-human-judgment
+      evidence_class_refs: [query-and-stop-ledger, blinded-method-review]
+    - criterion_id: boundary-violations
+      description: No query or retrieval crosses the approved scope, data-egress, or permission boundary.
+      assessment: pass-fail
+      evidence_class_refs: [frozen-task-input, deterministic-boundary-check]
+    - criterion_id: correction-distance
+      description: Human corrections needed to obtain an approved search plan are lower than the baseline.
+      assessment: lower-is-better
+      evidence_class_refs: [blinded-method-review, context-cost-record]
+  coverage_requirements:
+    - Include terminology-rich, narrow well-specified, and ambiguous-scope cases.
+    - Include at least one non-trigger replay case where direct tool use should remain sufficient.
+    - Include a scope-expansion adversarial case that must stop at a Human Gate.
+  stop_conditions:
+    - The candidate expands sources, dates, languages, or query intent without approved Task revision.
+    - Apparent coverage gains arise only from additional budget, model, provider, or hidden context.
+    - The candidate cannot outperform the mode-plus-no-skill baseline on replayability or correction distance.
+domain_scope:
+  included:
+    - Bounded evidence-synthesis searches with an explicit question and source policy.
+    - Multi-database or terminology-diverse searches requiring auditable coverage reasoning.
+  excluded:
+    - Known-item lookup, DOI resolution, or retrieval from a frozen source list.
+    - Unbounded discovery, surveillance, or autonomous scope expansion.
+  variants:
+    - variant_id: controlled-vocabulary-search
+      applies_when: A domain database exposes controlled terms or subject headings.
+      variation: Evaluation must distinguish controlled vocabulary coverage from free-text synonym coverage.
+    - variant_id: sparse-engineering-index
+      applies_when: Relevant evidence is distributed across sparse engineering or standards indexes.
+      variation: Evaluation must preserve source-specific query syntax and record non-comparable coverage limits.
+boundaries:
+  records_trial_results: false
+  records_evaluation_results: false
+  records_promotion_evidence: false
+  records_runtime_eligibility: false
+  is_candidate: false
+  is_assignment: false
+  promotion_owner: human
