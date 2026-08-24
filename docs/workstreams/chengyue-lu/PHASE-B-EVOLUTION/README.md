@@ -8,6 +8,7 @@
 - 阶段分支：`agent/phase-b-evolution-foundation`
 - 当前状态：M9-001～006 的结构契约及系统一致性修复已实现；Runtime execution 仍无合格 checked-in fixture
 - 风险触发：跨多个公共契约、Registry migration 与 Method/Provider 共享接口
+- 后续边界澄清：[ADR-0019](../../../decisions/0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md)
 
 ## 1. 阶段目标
 
@@ -215,3 +216,19 @@ Phase B 只有在以下条件均有证据时收口：
 
 这六项在同一 R2 Stage PR 中构成连通 atomic completion DAG。每项 DONE 均在 PR body 具名列出上述
 证据；最终接受仍以远端 governance、Python 3.11/3.13、repository validation 与跨负责人审查为准。
+
+## 10. ADR-0019 后续澄清
+
+本 workstream 保存 PR #33 的 Phase B 结构基础与当时实施证据，不回写其历史完成判断。ADR-0019 对消费
+边界作前向限定：
+
+- 图中的 `Capability Requirement → Skill Need` 表示 Phase B 建设和 Maintainer triage 关系，不是
+  Research Runtime 的数据依赖；capability gap/failure 不自动创建 Need；
+- `load_validated_capability_snapshot()` 是 repository-wide `maintainer-full` 结构验证 helper，不是最终
+  Runtime bundle API；
+- Skill Supply→Lifecycle 只形成 Maintainer 侧结构资格；Runtime 新绑定未来只消费已发布、不可变的
+  `SkillReleaseProjection`；
+- no-Skill、direct Tool、procedure 与 Adapter/Provider 必须在零 Skill、零 Evolution Registry 时闭合；
+- Topic 4 Core 的 runtime-bundle 与 supply-neutral Resolved Execution View 属于后续实现；release projection
+  是独立、可并行的 Skill-bearing extension，只 Gate Skill new-binding。二者均不改变 M9-001～006 已完成的
+  Schema、fixture、migration 或 replay 证据。

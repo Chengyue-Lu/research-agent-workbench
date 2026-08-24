@@ -19,4 +19,7 @@
 | PBE-EVAL-001 | fact | Schema/fixture 通过可能被误写成 Skill 或 Capability 的科研净收益，或让 lifecycle 膨胀为第二套评测框架。 | Phase B 只声称契约、状态和引用闭合；minimal Evaluation Manifest 可在 M9-002 后并行，完整 metrics/experiment 与净增量判断留给 Phase D。 | accepted limitation |
 | PBE-HOLD-001 | fact | 把 Snapshot Core 接受误写成全面 Runtime/Recovery 解冻，会绕过 Research State、Failure/Attempt 与 Method Trace。 | Topic 4 只解冻 thin-layer Snapshot 消费与边界 enforcement；Topic 5 继续等待 Phase C minimum，且两组允许/禁止项显式列出。 | controlled by roadmap gate |
 | PBE-SCOPE-001 | fact | 把 Execution View、Receipt、API/Runtime 或 Method Trace 纳入 Phase B 会重新形成跨线大爆炸。 | 非目标显式排除；共享 Snapshot 只冻结供给，不执行任务。 | controlled by scope |
+| PBE-RUNTIME-CLOSURE-001 | fact | repository-wide consumer 若被当成 Runtime API，会递归引入 Need、Candidate、Evaluation、Lifecycle 与无关 Registry 故障。 | ADR-0019 将当前 loader 定性为 `maintainer-full` helper；后续 `runtime-bundle` 必须显式最小闭包、禁止目录输入与 Evolution import。 | boundary accepted; implementation deferred to Topic 4 |
+| PBE-RELEASE-PROJECTION-001 | fact | Runtime 直接解析完整 Lifecycle 会泄露治理历史，并把结构 eligibility 误作执行授权。 | ADR-0019 要求从不可变 Release 确定性派生窄 `SkillReleaseProjection`；metadata 只声明 ceiling，最终权限留给 Resolved Execution View。 | boundary accepted; publisher deferred |
+| PBE-GAP-NEED-001 | fact | capability gap/failure 自动创建 Skill Need 会让执行者取得 Evolution 与 promotion 入口。 | `Capability Gap != Skill Need`；Runtime 最多产生默认本地的 bounded Diagnostic，只有具名 Maintainer triage 才能发布 Need。 | boundary accepted; enforcement deferred |
 | PBE-CONTEXT-001 | inference | Phase B 文档和候选材料较多，主 Agent 全量读取会造成上下文超载和错误引用。 | 按 Task 白名单读取；主上下文只保留契约、风险、索引和下一动作。 | controlled by process |

@@ -4,6 +4,7 @@
 
 当前工作流：
 
+- [`ISSUE-35-RUNTIME-EVOLUTION-BOUNDARY/`](ISSUE-35-RUNTIME-EVOLUTION-BOUNDARY/README.md)：R2 Skill Evolution 可选 Maintainer 外环与 Runtime 消费边界。
 - [`PHASE-B-EVOLUTION/`](PHASE-B-EVOLUTION/README.md)：Phase B 的 Capability Requirement、Skill Need、lifecycle、Protocol 与共享 Snapshot 演化基础。
 - [`GOV-V2-001/`](GOV-V2-001/)：R2 风险比例化开发治理与共享真值边界。
 - [`GOV-V2-STAGE-CLOSURE/`](GOV-V2-STAGE-CLOSURE/)：R2 路径补全、通用 published identity 与 Stage 原子依赖闭合。

@@ -25,7 +25,19 @@ Need 的 `boundaries` 将 `records_trial_results`、`records_evaluation_results`
 `false`。Schema 使用 `additionalProperties: false`，所以实际结果、Provider/Tool/Skill binding、availability
 或 fallback 不能被附加到 Need。
 
-## 2. Identity 与兼容引用
+## 2. Maintainer authority 与创建边界
+
+Skill Need 属于 Method/Maintainer evolution，不属于 Research Runtime。Runtime 对 capability gap、blocked
+或 execution failure 最多产生 bounded `CapabilityDiagnostic`；Diagnostic 默认本地、不是 Need，也不能
+触发 Candidate、Trial、Promotion 或 Release。
+
+创建或修订 Need 必须由具名 Maintainer 完成独立 triage，证明缺口跨任务复用、需要非平凡语义判断，且
+no-Skill/direct Tool/Task template/checker 基线不足。没有该判断时保持 capability gap，不为填充 Registry
+自动生成 Need。Runtime bundle 不读取 Need 正文或 Registry；v0.1 Method→Need closure 只属于
+`maintainer-full` 和历史重放。参见
+[ADR-0019](../decisions/0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md)。
+
+## 3. Identity 与兼容引用
 
 - 发布身份是 `need_id + version`；相同身份的内容、路径或 hash 不可原位改写；
 - `need_ref` 是 M8 Method Resolution 已发布的精确引用别名，不是 `active/latest` selector；
@@ -43,7 +55,7 @@ Need 的 `boundaries` 将 `records_trial_results`、`records_evaluation_results`
 
 没有 Method 引用的候选不会为了填充 Registry 被创建。
 
-## 3. 需求内容
+## 4. 需求内容
 
 每个 Need 必须包含：
 
@@ -58,7 +70,7 @@ Need 的 `boundaries` 将 `records_trial_results`、`records_evaluation_results`
 这些字段规定未来评测必须收集什么，不证明任何 candidate 已执行或产生增量。实际 Evaluation Manifest、
 metric、Trial Record 与盲评结果属于 Phase D；M9-003 lifecycle 只引用相应 record/decision。
 
-## 4. 确定性闭合
+## 5. 确定性闭合
 
 Repository validation 必须阻断：
 
@@ -71,7 +83,7 @@ Repository validation 必须阻断：
 
 通过这些检查只证明结构、引用和职责边界闭合，不证明 Skill 的科研净收益。
 
-## 5. 非目标
+## 6. 非目标
 
 M9-002 不实现 candidate discovery、trial runner、Evaluation Record、promotion、retirement、runtime
 eligibility、Capability Supply Report、Snapshot、Provider/Adapter/API 或 Runtime。即使当前不存在任何

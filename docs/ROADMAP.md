@@ -2,7 +2,7 @@
 
 状态：方向与依赖基线；不记录逐项实时状态
 
-更新：2026-08-24
+更新：2026-08-25
 
 逐项状态和唯一下一任务只在 [`TASKS.md`](TASKS.md) 更新。本文件说明依赖顺序、阶段 Gate 与
 停止条件，不是工期承诺，也不是研究项目必须遵循的固定流程。
@@ -16,7 +16,7 @@
 | C — Research State & Verification | 保存跨 Runtime 的研究意义 | State/Frontier、Failure、Evidence–Claim relation、Method Trace | A；部分依赖 B |
 | D — Evaluation Loop | 证明新增机制的净增量 | Evaluation Manifest、baseline harness、method/skill metrics | A；minimal Manifest 在 M9-002 稳定后并行启动 |
 | E — Strategy & Governed Evolution | 有界吸收新策略和外部候选 | Strategy interface、candidate pipeline、merge/prune/promotion | B+C+D |
-| F — Execution Reintegration | 让 Runtime 消费冻结科研契约 | resolved execution、Capability binding、Trace/Receipt integration | M9-005 Core 可解除 Topic 4 thin layer；Phase C minimum 再解除 Topic 5 |
+| F — Execution Reintegration | 让 Runtime 消费冻结科研契约 | Core：runtime bundle、supply-neutral resolved execution、Trace/Receipt integration；可选 Skill Extension：release projection、Skill-bearing binding | ADR-0019；M9-005 Core；Phase C minimum 再解除 Topic 5；release projection 不 Gate Topic 4 Core |
 
 Phase 不是一条科研 DAG。它只表示框架接口的构建依赖；真实 Task 仍按 Mode/Action 选择路径。
 
@@ -52,7 +52,8 @@ Phase B/F，不能反向写成 Phase A 未完成，也不能借 Phase A 收口�
 Phase B 保持“需求语义先于供给绑定”的顺序：
 
 1. `Capability Requirement` 先成为 provider-neutral 的需求侧契约，不表达 available/gap 或具体供给；
-2. `Skill Need` 成为版本化对象，定义 gap、direct/no-Skill baseline、预期增量、evaluation criteria、
+2. 具名 Maintainer 可在独立 triage 后把可复用语义缺口发布为版本化 `Skill Need`，定义 gap、
+   direct/no-Skill baseline、预期增量、evaluation criteria、
    required evidence classes 与 domain scope/variants；它不累积实际 trial/evaluation/promotion 结果；
 3. lifecycle v2 分离 intake、evaluation state、admission 与 runtime eligibility，引用 baseline/trial/
    evaluation record/decision 和 promotion evidence；完整 benchmark/metric/experiment framework 留在 Phase D；
@@ -67,7 +68,9 @@ Phase B 保持“需求语义先于供给绑定”的顺序：
 6. migration 保持 append-only 和显式调用。Phase A 的 Mode v0.1→v0.2 是首个已完成 exemplar，Phase B
    不重造通用 migration framework，只在新增对象确有版本迁移需求时扩展。
 
-`Capability Requirement` 与 `Skill Need` 可在冻结共同引用语义后顺序推进；M9-004 Protocol Profile
+`Capability Requirement` 是 Runtime 主链的需求入口；它只有在具名 Maintainer 独立 triage 后才可形成
+`Skill Need`，capability gap/failure 不自动完成该转换。两者可在冻结共同引用语义后顺序推进；M9-004
+Protocol Profile
 与 M9-002/003 并行，不阻塞 M9-005。M9-005 的 Snapshot Core 只依赖 M9-001 与 M8 Decision Authority，
 先覆盖 Method no-Skill 对应的 procedure、direct Tool、Adapter/Provider supply facts 的 structural replay；
 fixture 不得声明 final effective boundary 或 execution eligibility。Skill 作为合法供给候选的扩展额外等待
@@ -83,7 +86,8 @@ Runtime 不获得 Method authority，旧研究对象仍可解释和重放。
 ### Phase B 实现判定（2026-08-25）
 
 **IMPLEMENTED AS STRUCTURAL CONTRACT。** M9-001～006 已形成 Requirement、Need、lifecycle v2、两个
-bounded Protocol Profile、typed Report→Resolution→两级 Snapshot、validated consumer 与 Skill Supply
+bounded Protocol Profile、typed Report→Resolution→两级 Snapshot、repository-wide structural consumer 与
+Skill Supply
 Extension。M9-006 Gate 固定同一 Task/Mode/Action/Method/Requirement，并证明 Supply A→B 只改变 exact
 supply，三类 Supply boundary facts 保持一致；Research Mode 与 Skill lifecycle
 migration 均保持 exact-pin replay。
@@ -94,18 +98,42 @@ migration 均保持 exact-pin replay。
 
 ### Topic 4 thin-layer Architecture Hold
 
-以下四项全部稳定并接受后，Topic 4 才可解除：
+以下四项是 Phase B 已接受的供给侧前置契约：
 
 - Capability Requirement；
 - Capability Supply Report；
 - Capability Resolution boundary；
 - Resolved Capability Snapshot Core。
 
-解冻范围只包括 Runtime 在 Topic 4 内补齐 external hash pin、执行时 freshness、精确
-Provider/Adapter/Model/Runtime binding、Task/Profile/Skill/Assignment 与 DataPolicy 的最终交集后，消费
-schema-valid、closure-valid 的 `runtime-execution` Snapshot、报告 actual execution facts，并执行
-permission/data-egress/side-effect boundary。automatic fallback、model auto-routing、multi-Agent
-orchestration、critic voting、hidden routing，以及 Runtime 修改 Method、Claim 或 Gate 继续禁止。
+依据 [ADR-0019](decisions/0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md)，Topic 4 将 Core 与可选
+Skill Runtime Extension 拆成两条依赖。
+
+**Topic 4 Core Gate**：
+
+- `runtime-bundle` 使用显式 closure manifest，不接受目录输入，不递归扫描 `registry/examples`，import
+  graph 不包含 Skill Need、Candidate、Evaluation 或 Lifecycle validator；
+- no-Skill、direct Tool、procedure 与 Adapter/Provider 可以在零 Skill、零 Evolution Registry 情况下形成
+  Resolved Execution View；
+- 供给更新创建新的 Resolution/Snapshot/View，不能改变运行中的冻结输入；gap/failure 不自动创建 Skill Need。
+
+Runtime Bundle/Profile 是 Issue #35 对 Topic 4 Core 的前置。M9-005 accepted contracts 与该 profile 稳定后，
+Core 可以独立实现 supply-neutral Resolved Execution View 并推进 no-Skill/direct Tool/procedure/
+Adapter-Provider 路径，不等待 SkillReleaseProjection。
+
+**Skill Runtime Extension Gate**：
+
+- Skill new-binding 只消费不可变、exact hash-pinned 的 `SkillReleaseProjection`；
+- Projection contract 被接受且 exact-pin validation 可用后，才启用 Skill-bearing binding；
+- 投影未实现、缺失、stale 或不匹配时，Skill new-binding fail closed，且不得回退读取完整 Lifecycle；
+- Skill Extension 可与 Topic 4 Core 并行推进，不阻塞任何非 Skill Core 路径。
+
+解冻范围只包括 Topic 4 的上游 Research Control / View producer 冻结 external hash pin、执行时 freshness、
+精确 Provider/Adapter/Model/Runtime/Host binding，以及 Task/Profile/DataPolicy/Host policy 与 selected supply
+ceilings 的最终收紧交集；仅在 Skill Extension 存在时加入可选 Skill/Assignment。Execution Host 只消费
+schema-valid、closure-valid 的 `runtime-execution` Snapshot 与 exact frozen View、报告 actual execution facts，
+并执行 permission/data-egress/side-effect boundary。它不得重新选择 Supply、在当前 View 内 rebind 或执行
+automatic fallback；model auto-routing、multi-Agent orchestration、critic voting、hidden routing，以及
+Runtime 修改 Method、Claim 或 Gate 继续禁止。
 
 ## 4. Phase C：Research State 与 Verification
 
@@ -147,9 +175,14 @@ distance、rework、context、cost 和 completion time。确定性评分与盲�
 第一版 Strategy 只需 `direct` 加至多一个实验策略，且 direct 永远保留为基线。外部发现、自动
 生成、repair/merge/prune 只作用于 candidate。
 
-Execution reintegration 不授权 Runtime 定义 Mode、Claim、Skill fallback 或权限放宽。接入前必须
+Execution reintegration 不授权 Runtime 定义 Mode、Claim、supply/Skill fallback、rebinding、silent
+replacement 或权限放宽。接入前必须
 解决 from-state predecessor、严格 completion marker、Evidence source binding、Tool side-effect
 accounting、deadline/cancellation 和 current-main fixture 再生等已知问题。
+
+Runtime 也不创建 Skill Need/Candidate、不执行 Trial/Evaluation/Promotion、不读取完整 Lifecycle。Skill
+供给通过已发布投影进入 Capability Supply Report；no-Skill/direct Tool 路径不依赖该投影。可选
+Capability Diagnostic/feedback bridge 等待 Phase C Failure/Trace 与 privacy 语义稳定，不阻塞 Topic 4。
 
 ## 7. 不在近期关键路径
 

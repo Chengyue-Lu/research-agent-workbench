@@ -4,6 +4,10 @@
 
 日期：2026-08-17
 
+> [ADR-0019](0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md) 澄清：本 ADR 中“产生
+> Skill Need”是 Method/Maintainer 控制面的正式需求推导，不是 Research Runtime 在遇到 capability
+> gap 或失败时自动创建 Need。Runtime 只消费 Capability-first 执行链与已发布 Skill 投影。
+
 ## 背景
 
 首批工作固定并筛选了 73 个外部或本地 Skill 候选，随后为四个社区候选建立了详细 dossier。
