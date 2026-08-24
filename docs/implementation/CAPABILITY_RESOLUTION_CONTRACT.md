@@ -18,6 +18,10 @@ Resolved Capability Snapshot
 fallback 或模型路由。调用方必须显式提供候选 Report；低层 Provider conformance 不能自动证明高层科研
 Capability Requirement。
 
+当前 `load_validated_capability_snapshot()` 会递归收集 repository 的 `registry/` 与 `examples/`，并调用
+包含 Method→Skill Need、Lifecycle 和 Phase B Gate 在内的完整文档验证。它是 `maintainer-full` 仓库结构
+验证 helper，不是最终 Runtime bundle API，也不能因名称中的 `validated` 被解释为执行授权。
+
 ## Supply Report
 
 Report 只陈述一个供给的事实：
@@ -82,6 +86,39 @@ Lifecycle state 只形成结构资格。`new-binding` scope、trial/evaluation/p
 必须存在；Runtime eligibility 还必须由外部 evidence resolver 和 Human-decision resolver 解析成功。Phase B
 不实现 Phase D evidence 或 Human Decision 系统，repository validator 默认以拒绝型 resolver 处理新绑定。
 Skill Supply Report 仍可陈述事实；只有 runtime Resolution/Snapshot 资格被拒绝，Report 事实层不会冒充准入层。
+
+现有 Supply→Lifecycle 引用属于 Maintainer/repository validation closure。未来 Runtime 不直接解析完整
+Lifecycle，而只消费从已准入不可变 Release 确定性派生的 `SkillReleaseProjection`。该投影至少 exact-pin
+Skill ID/version、content/package digest、capabilities、I/O、依赖/compatibility、permission/data-egress/
+side-effect ceiling、scoped eligibility 与最小 Release/Human Admission provenance；不得包含 Need 正文、
+Candidate、Trial/Evaluation 结果、评分、审议过程或完整 Lifecycle history。
+
+在发布投影尚未实现前，Skill runtime binding 必须 fail closed；no-Skill/direct Tool/procedure 与
+Adapter/Provider Core 不依赖该投影。
+
+## Consumer profiles
+
+本契约定义两个不同消费者，不能再由同一个隐式目录扫描承担：
+
+| Profile | 输入与闭包 | 允许读取 | 禁止行为 |
+|---|---|---|---|
+| `maintainer-full` | repository roots 与完整发布/历史闭包 | Method、Need、Lifecycle、Gate、fixtures | 把结构通过宣称为 Runtime authorization |
+| `runtime-bundle` | 显式 closure manifest 与最小传递依赖 | Task/Method ref、Requirement、Reports、Resolution、Snapshot、可选 Release Projection | 目录输入、`rglob(registry, examples)`、Evolution validator/import、隐式 fallback |
+
+`runtime-bundle` 必须在 Evolution Registry 不存在时支持零 Skill no-Skill/direct Tool 路径。任一无关
+Registry 文档损坏不得影响只引用显式 bundle 的执行解析。Profile、closure manifest 和 import-graph test
+由后续 Topic 4 Task 实现；Issue #35 不新增 Schema 或 Python API。
+
+## Resolved Execution View boundary
+
+`runtime-execution` Snapshot 仍只是 Topic 4 的合格输入。最终 consumer 必须另行冻结 external hash pin、
+execution-time freshness、exact Provider/Adapter/Model/Runtime/Host、credentials/quota preflight，以及 Task、
+Profile、可选 Skill、DataPolicy 与 Host policy 的权限交集。Release metadata、Lifecycle eligibility、Supply
+Report 和 Snapshot 均只能收紧或声明 ceiling，不能授予权限。
+
+Supply、Release 或 Registry 更新不能改变运行中的 Snapshot。替换供给必须创建新的 Resolution、Snapshot
+revision 与 Resolved Execution View。完整边界见
+[ADR-0019](../decisions/0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md)。
 
 ## Replacement fixture
 

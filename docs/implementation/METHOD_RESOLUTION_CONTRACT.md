@@ -68,7 +68,22 @@ Capability Requirement 的正式字段、不可变 identity 和 path/hash 闭合
 [Capability Requirement contract](CAPABILITY_REQUIREMENT_CONTRACT.md)。Resolution 继续保存 M8 的精确
 字符串 ID，不内嵌供给状态，也不因 M9-001 改写自身 identity 或原始字节。
 
-## 5. 状态与下游边界
+## 5. Maintainer closure 与 Runtime 读取边界
+
+v0.1 Method Resolution 的 `skill_need_refs` 与现有 Repository validation closure 保持原样，用于
+`maintainer-full`、发布完整性检查和历史重放。它们不构成未来 Runtime bundle 的传递依赖：
+
+- Runtime 从 Method/Task 进入 `Capability Requirement → Supply Report → Resolution → Snapshot`；
+- Runtime bundle 不解析 Skill Need Registry，也不因 Method 引用了 Need 而要求加载 Candidate、Evaluation
+  或 Lifecycle；
+- capability gap 或 execution failure 不修改 Method Resolution，也不自动创建 Skill Need；
+- 需要新 Need 时，由具名 Maintainer 在 Runtime 之外完成 triage，并发布新的精确 Need identity；
+- no-Skill/direct Tool 路径允许 Skill Need、Skill package 与 Lifecycle 完全缺席。
+
+这一区分只限定 consumer profile，不修改 v0.1 Schema、八份 fixture 或 exact replay。双环决定见
+[ADR-0019](../decisions/0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md)。
+
+## 6. 状态与下游边界
 
 - `proceed`：Method 层允许进入后续 Capability/Execution 解析，不表示 Task 已完成；
 - `blocked`：当前 Task 不具备合法方法/能力/权限路径；

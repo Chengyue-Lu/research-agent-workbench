@@ -47,6 +47,28 @@ Human-decision resolver 解析 `decision_ref`。Lifecycle Record 不证明这些
 `trial-only` 只能服务隔离 trial，不能通过普通 new-binding 检查；superseded / retired 不能保持当前 runtime
 eligibility。Lifecycle 本身不授予 permission、Claim 或 Human Gate。
 
+## Published runtime projection
+
+完整 Lifecycle Record 是 Maintainer truth，不是 Runtime catalog。当前 Skill Supply 对
+`skill_lifecycle_ref` / `runtime_eligibility_ref` 的直接引用只形成 `maintainer-full` 结构资格；未来
+Research Runtime 不加载本记录、Need、Trial/Evaluation 或 Human deliberation。
+
+已准入、不可变 Release 由独立 publisher 确定性派生 `SkillReleaseProjection`。投影只保留：
+
+- exact Skill ID/version、Release identity、content/package digest；
+- capabilities、I/O、依赖与 compatibility；
+- permission、data-egress、side-effect ceiling；
+- 指定用途的 runtime eligibility；
+- 最小 Release 与 named Human Admission provenance。
+
+投影不是第二套可写 Registry，不能保存 Need 正文、Candidate、Trial/Evaluation 结果、评分、审议过程或
+完整 Lifecycle history。Runtime 可由投影构造 Capability Supply Report，但仍须经过 Requirement、
+Resolution、冻结 Snapshot 与 Resolved Execution View；eligibility 和 metadata 不构成 permission grant。
+
+发布投影实现前，Skill new-binding 路径 fail closed。no-Skill/direct Tool/procedure 与 Adapter/Provider 路径
+不依赖 Lifecycle 或投影。参见
+[ADR-0019](../decisions/0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md)。
+
 ## Legacy migration
 
 [`accepted-v1-to-lifecycle-v2`](../../registry/skills/lifecycle-migrations/accepted-v1-to-lifecycle-v2.yaml)

@@ -4,6 +4,10 @@
 
 日期：2026-08-20
 
+> [ADR-0019](0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md) 澄清：Method Plane 可以拥有
+> Skill Need 与演化语义，Execution Host 不拥有。Runtime 不递归读取 Need/Candidate/Evaluation/Lifecycle，
+> 只消费 Capability Resolution、冻结 Snapshot 与已发布 Skill 投影。
+
 ## 背景
 
 ADR-0013 已把 Skill 选择从“来源优先”改为 `Mode → Action → 最小机制 → Skill Need`，但该链路

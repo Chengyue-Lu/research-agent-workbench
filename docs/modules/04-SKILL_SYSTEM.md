@@ -78,11 +78,25 @@ source:
 
 ## 4. Capability Resolver
 
-长期解析保持需求、供给事实、选择与执行冻结分层：Method Resolution 先产生 `Skill Need` 或
-`Capability Requirement`；实际 Tool/Skill/Adapter/Provider 各自形成 Capability Supply Report；
-Capability Resolution 在既有 authority 与 permission/data-egress/side-effect ceiling 内比较 Report；
-最终由 Resolved Capability Snapshot 冻结本次执行输入。当前 Resolver 直接从 Task/Profile/Mode 处理
-Skill Assignment，是兼容期执行视图，不应被解释为完整方法路由。
+长期 Runtime 解析以 `Capability Requirement` 为唯一供给中立的需求入口。Method Resolution 可以在
+Maintainer/历史语义中同时精确引用既有 `Skill Need`，但 Runtime bundle 不沿该引用读取 Need。实际
+Tool/Skill/Adapter/Provider 各自形成 Capability Supply Report；Capability Resolution 在既有 authority
+与 permission/data-egress/side-effect ceiling 内比较 Report；Resolved Capability Snapshot 冻结供给侧
+选择，再由 Resolved Execution View 完成 exact execution binding 和最终权限交集。
+
+```text
+Runtime: Capability Requirement → Supply Report → Resolution → Snapshot → Execution View
+
+Maintainer: triage → Skill Need → Candidate → Evaluation → Human Admission
+            → immutable Release → SkillReleaseProjection → Skill Supply Report
+```
+
+`Capability Gap != Skill Need`。Runtime gap 或 execution failure 不创建 Skill Need，最多产生默认本地、
+脱敏且需同意才能外送的 bounded Diagnostic；Need 只能由具名 Maintainer 独立 triage 后正式发布。完整
+边界见 [ADR-0019](../decisions/0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md)。
+
+当前 Resolver 直接从 Task/Profile/Mode 处理 Skill Assignment，是兼容期执行视图，不应被解释为完整
+方法路由。现有 repository-wide validated consumer 也只承担仓库结构闭包验证，不是最终 Runtime bundle。
 
 M9-001 已将 Capability Requirement 冻结为独立需求侧契约：现有八个 Resolution 的四个重复 ID 经
 `registry/capabilities/requirements.json` 闭合到唯一 path/hash 文档，且 Task 与 Method 引用必须精确
@@ -90,7 +104,7 @@ M9-001 已将 Capability Requirement 冻结为独立需求侧契约：现有八�
 可以被后续不同供给候选消费而不修改 Method identity。详见
 [`CAPABILITY_REQUIREMENT_CONTRACT.md`](../implementation/CAPABILITY_REQUIREMENT_CONTRACT.md)。
 
-正式 Skill Need 至少需要 trigger/non-trigger、semantic gap、no-Skill/direct-tool baseline、
+正式 Skill Need 由 Maintainer triage 产生，至少需要 trigger/non-trigger、semantic gap、no-Skill/direct-tool baseline、
 expected increment、evaluation criteria、required evidence classes 和已知 domain scope/variants。
 它只说明未来什么证据足以进入 trial/promotion，不保存实际 trial/evaluation/promotion result。实际结果
 进入独立 Evaluation/Trial Record，lifecycle 通过 reference 消费。一个 Need 可对应多个 candidate；
@@ -105,20 +119,25 @@ expected increment、evaluation criteria、required evidence classes 和已知 d
 - 数据边界；
 - Agent Profile 权限与工具能力；
 - token/context/时间预算；
-- 平台已安装 Skills 与版本。
+- 显式候选 Capability Supply Reports；
+- 已发布、exact-pin 的 SkillReleaseProjection（仅 Skill-bearing 路径）。
 
 处理顺序：
 
-1. 读取 Skill 元数据，不加载所有正文；
-2. 应用硬过滤：权限、数据边界、工具、输入/输出契约、Mode 排除；
-3. 满足 Task 的 `required_capabilities`；
-4. 在候选中选择上下文成本最低的最小覆盖集；
-5. 检查依赖、冲突和版本；
-6. 若存在多个等价候选，按项目偏好或人工选择，不由角色名称猜测；
-7. 生成 `Skill Assignment` 并冻结版本/哈希；
-8. Runtime Adapter 以显式调用方式交给子 Agent。
+1. 从 Task/Method 读取 Capability Requirement，不读取 Evolution Registry；
+2. 消费调用方显式提供的 Supply Reports，并应用 capability、I/O、artifact、permission、data-egress、
+   side-effect、evidence 与 availability 硬过滤；
+3. no-Skill、direct Tool、procedure 与 Adapter/Provider 可以在零 Skill 情况下形成最小覆盖；
+4. Skill-bearing 路径只读取已发布 SkillReleaseProjection，不读取 Need、Candidate、Evaluation 或 Lifecycle；
+5. 在合格候选中选择最小覆盖集；多个等价候选保持 ambiguous 或进入人工选择，不静默 fallback；
+6. 检查依赖、冲突、exact version/hash 与 freshness；
+7. 仅在选中 Skill 时生成 `Skill Assignment`，并冻结版本/哈希；
+8. 生成 supply-neutral Resolved Execution View，由 Runtime Adapter 显式执行。
 
 ## 5. Skill Assignment
+
+Skill Assignment 只属于实际选中 Skill 的路径。no-Skill、direct Tool、procedure 与纯 Adapter/Provider
+路径仍必须生成 Resolved Execution View，但不得创建、引用或伪造 Skill Assignment。
 
 ```yaml
 assignment_id: SA-0042
@@ -161,11 +180,13 @@ Codex 等平台可以根据 description 隐式激活 Skill，但本项目分三�
 - Skill 指令总量超预算时必须拆任务，不能压缩成含混“大综合 Skill”；
 - 频繁同时出现的一组 Skills 只有在真实数据证明稳定后才能形成 Bundle。
 - Agent 只能读取本次选中 Skill 的 `SKILL.md` 和其中为当前步骤显式引用的 references；不得借 Skill 发现递归读取其他候选 Skill 或整个 reference 树。
-- 对未选 Skill 只允许读取 Registry 元数据；需要比较正文时，应创建独立的 Skill 评估 Task，而不是在业务 Task 中临时展开。
+- Runtime 对未选 Skill 只读取发布投影元数据；Maintainer 如需比较候选正文，应创建独立的 Skill 评估
+  Task，而不是在业务 Task 中临时展开。
 
-## 8. 发现、评测、准入与运行资格
+## 8. Maintainer 发现、评测、准入与运行资格
 
-Skill 治理不是单一状态机，至少包含四个正交维度：
+以下过程属于可选 Maintainer Evolution 外环，不在普通 Research Runtime 中执行。Skill 治理不是单一
+状态机，至少包含四个正交维度：
 
 | 维度 | 回答的问题 | 当前/候选词汇示例 |
 |---|---|---|
@@ -186,6 +207,10 @@ runtime lifecycle 混成同一轴。进入 accepted Registry 前需要：
 - 来源、许可证和内容哈希。
 
 外部 Skill 默认不可信。引入前检查脚本、命令、网络行为、数据上传、提示注入面和许可证。Skill 更新会使旧 Assignment 保持旧版本，不自动重解释历史结果。
+
+Runtime 不直接读取上述状态轴或完整治理历史。已准入版本只有在形成不可变 Release 和窄
+SkillReleaseProjection 后，才可作为 Skill Supply Report 的来源；projection 中的 eligibility 和 boundary
+只声明供给资格与 ceiling，不授予权限。
 
 ## 9. 指令冲突
 
@@ -229,13 +254,22 @@ Skill 若要求超出上层边界的动作，Resolver 必须阻断或裁剪，�
 - Resolver 能解释为什么选择/排除某个 Skill；
 - Skill 不能扩大权限或 Claim ceiling；
 - Skill 更新不会静默改变历史任务解释；
+- Runtime 在 Evolution Registry 完全缺席时仍能闭合 no-Skill/direct-tool 执行路径；
+- Runtime gap/failure 不会自动创建 Skill Need；
 - 未加载的 Skills 不占用子 Agent 正文上下文；
 - 相同 Task + Registry lock 得到相同候选集合；
 - 删除某个低价值 Skill 不需要修改内核或 Agent Runtime。
 
 ## 13. Registry 与生命周期契约
 
-`registry/skills/accepted.json` 是准入索引；`status: accepted` 保存人类准入决定，`lifecycle` 独立控制运行资格。包由版本、来源路径、`SKILL.md` 内容哈希和目录包哈希锁定。新 Assignment 只选择唯一 active 版本并归一化为精确 lock；旧版本的显式回放不改变其新任务资格。详细决定见 [ADR-0015](../decisions/0015-SKILL-LIFECYCLE-AND-EXACT-VERSION.md)。
+当前 Maintainer/兼容路径以 `registry/skills/accepted.json` 为准入索引；`status: accepted` 保存人类准入
+决定，`lifecycle` 独立控制运行资格。包由版本、来源路径、`SKILL.md` 内容哈希和目录包哈希锁定。
+publisher 只为唯一 active、已准入的版本生成精确投影；旧版本的显式回放不改变其新任务资格。详细决定见
+[ADR-0015](../decisions/0015-SKILL-LIFECYCLE-AND-EXACT-VERSION.md)。
+
+accepted Registry 与完整 Lifecycle 是 Maintainer truth，不是 Runtime catalog。未来 publisher 从已准入、
+不可变 Release 确定性派生 SkillReleaseProjection；Runtime 通过该投影构造 Supply Report，并在冻结
+Snapshot/Execution View 中 exact-pin。投影不得复制 Need、Trial/Evaluation 或审议历史。
 
 外部候选留在 candidate inventory；发现、下载或参考状态不会自动进入 accepted Registry。未被 Assignment 选择的 Skill 正文和 references 不进入任务上下文。候选实现与评估工件留在隔离的实验路径，只有通过人工 Gate 才能提升。
 
