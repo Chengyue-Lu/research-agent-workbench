@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/research-mode-migration.schema.json",
+  "title": "Research Mode Migration",
+  "$comment": "An explicit immutable record for one bounded Research Mode revision migration. It records facts and does not authorize automatic upgrade.",
+  "x-rwb-document-kind": "research_mode_migration",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "migration_kind",
+    "migration_id",
+    "migration_version",
+    "implementation",
+    "source_mode",
+    "target_mode",
+    "action_migrations",
+    "preserved_fields",
+    "removed_fields",
+    "added_fields",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "migration_kind": { "const": "research_mode_migration" },
+    "migration_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "migration_version": { "$ref": "common.schema.json#/$defs/semver" },
+    "implementation": {
+      "type": "object",
+      "required": ["id", "version"],
+      "properties": {
+        "id": { "const": "research-mode-v0.1-to-v0.2" },
+        "version": { "$ref": "common.schema.json#/$defs/semver" }
+      },
+      "additionalProperties": false
+    },
+    "source_mode": { "$ref": "#/$defs/documentRef" },
+    "target_mode": { "$ref": "#/$defs/documentRef" },
+    "action_migrations": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/actionMigration" }
+    },
+    "preserved_fields": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "removed_fields": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "added_fields": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "limitations": { "$ref": "common.schema.json#/$defs/stringArray" }
+  },
+  "$defs": {
+    "versionedRef": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*@[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+    },
+    "documentRef": {
+      "type": "object",
+      "required": ["ref", "document_path", "content_hash"],
+      "properties": {
+        "ref": { "$ref": "#/$defs/versionedRef" },
+        "document_path": { "$ref": "common.schema.json#/$defs/relativePath" },
+        "content_hash": { "$ref": "common.schema.json#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    },
+    "actionMigration": {
+      "type": "object",
+      "required": ["source", "target"],
+      "properties": {
+        "source": { "$ref": "#/$defs/documentRef" },
+        "target": { "$ref": "#/$defs/documentRef" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

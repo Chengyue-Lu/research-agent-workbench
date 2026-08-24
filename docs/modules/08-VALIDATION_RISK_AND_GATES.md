@@ -127,6 +127,12 @@ Gate。Mode suggestion、Action selection、Mechanism、Skill/Tool binding、Cla
 Agent 和执行层不能批准权限或数据放宽，不能自定义 methodology fallback，也不能把结构 PASS
 提升为科学 Claim；歧义返回 Human Gate、split 或 blocked。
 
+当前实现以版本化 [Decision Authority Matrix](../implementation/DECISION_AUTHORITY.md) 冻结三类
+authority class 与七类决定。Agent 只产生 non-binding proposal；Resolver 只作结构 validation，或在
+矩阵要求的事实闭合且无歧义时 commit Mode/Action/Mechanism/Binding；权限放宽、数据边界放宽和
+Claim promotion 的 commit rule 只允许具名 Human Gate 角色进入下一决策层。Eligibility 结果可重算，
+但不证明 asserted facts、不记录 Human approval，也不提升 Claim 或执行决定。
+
 ## 8. 防止控制面递归增长
 
 任何新增全局检查、Supervisor、Canary、恢复数据库或治理层前必须有：

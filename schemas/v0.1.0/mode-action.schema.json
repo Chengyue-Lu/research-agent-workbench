@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/mode-action.schema.json",
+  "title": "Mode Action",
+  "$comment": "A published action_id@version is immutable. Semantic changes require a new version and Registry entry.",
+  "x-rwb-document-kind": "mode_action",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "action_id",
+    "version",
+    "mode_ref",
+    "title",
+    "intent",
+    "triggers",
+    "non_triggers",
+    "failure_modes",
+    "required_artifacts",
+    "claim_effects",
+    "human_gates",
+    "stop_conditions",
+    "blocked_conditions"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "action_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "version": { "$ref": "common.schema.json#/$defs/semver" },
+    "mode_ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*@[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+    },
+    "title": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "intent": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "triggers": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "non_triggers": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "failure_modes": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "required_artifacts": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "claim_effects": {
+      "type": "object",
+      "required": ["may_support", "cannot_alone_support", "notes"],
+      "properties": {
+        "may_support": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/claimStrength" },
+          "uniqueItems": true
+        },
+        "cannot_alone_support": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/claimStrength" },
+          "uniqueItems": true
+        },
+        "notes": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "human_gates": {
+      "description": "Opaque identifiers of required Human Gates. This field does not define decisions, actors, scope, duration, or approval vocabulary.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+      },
+      "uniqueItems": true
+    },
+    "stop_conditions": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "blocked_conditions": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "risk_rules": { "$ref": "common.schema.json#/$defs/stringArray" }
+  },
+  "additionalProperties": false
+}

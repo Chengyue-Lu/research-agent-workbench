@@ -1,0 +1,21 @@
+schema_version: 0.1.0
+task_id: TASK-MR-BLOCK-PRIVATE-006
+revision: 1
+goal: Resolve a bounded method for confidential-source evidence without relaxing the approved data boundary.
+question_refs: [Q-MR-BLOCK-PRIVATE-006]
+active_modes: [evidence-synthesis]
+required_capabilities: [document-read, literature-search]
+required_skills: []
+forbidden_skills: []
+agent_profile: method-resolver
+input_refs: []
+write_scope: [work/TASK-MR-BLOCK-PRIVATE-006]
+required_outputs: [method-resolution]
+permissions: {filesystem: worktree-write, network: forbidden, external_write: false, allowed_roots: [work/TASK-MR-BLOCK-PRIVATE-006]}
+delegation: {allowed: false}
+budget: {max_turns: 6}
+atomic_boundary: Resolve method obligations and stop if the approved data path is unavailable.
+completion_checks: [The Method Resolution is hash-bound to this Task revision.]
+safe_pause_conditions: [A required data-boundary decision is unavailable.]
+stop_conditions: [A bounded Method Resolution or explicit block is recorded.]
+stale_if: [task-revision-or-content-changes]

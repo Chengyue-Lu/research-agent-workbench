@@ -1,0 +1,21 @@
+schema_version: 0.1.0
+task_id: TASK-MR-NO-MODE-FORMAT-007
+revision: 1
+goal: Resolve a representation-only formatting method that preserves parent semantics.
+question_refs: [Q-MR-NO-MODE-FORMAT-007]
+active_modes: []
+required_capabilities: []
+required_skills: []
+forbidden_skills: []
+agent_profile: method-resolver
+input_refs: []
+write_scope: [work/TASK-MR-NO-MODE-FORMAT-007]
+required_outputs: [method-resolution]
+permissions: {filesystem: worktree-write, network: forbidden, external_write: false, allowed_roots: [work/TASK-MR-NO-MODE-FORMAT-007]}
+delegation: {allowed: false}
+budget: {max_turns: 4}
+atomic_boundary: Resolve representation changes without changing Claim or Evidence semantics.
+completion_checks: [The Method Resolution is hash-bound to this Task revision.]
+safe_pause_conditions: [The requested change becomes semantic.]
+stop_conditions: [A bounded Method Resolution is recorded.]
+stale_if: [task-revision-or-content-changes]

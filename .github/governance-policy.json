@@ -36,6 +36,7 @@
       "registry/authority/**",
       "src/research_workbench/protocol/authority.py",
       "schemas/**/decision-authority*.schema.json",
+      "schemas/**/authority-rule-eligibility.schema.json",
       "schemas/**/method-resolution.schema.json",
       "schemas/**/claim*.schema.json",
       "schemas/**/decision*.schema.json",

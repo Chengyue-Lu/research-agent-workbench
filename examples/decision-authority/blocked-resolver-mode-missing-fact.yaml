@@ -1,0 +1,18 @@
+schema_version: 0.1.0
+eligibility_id: DAE-RESOLVER-MODE-FACT-NEG-001
+matrix_ref:
+  ref: rwb-decision-authority@1.0.0
+  document_path: registry/authority/decision-authority-matrix.yaml
+  content_hash: sha256:960c95754f8a78fe39b3f2583414ca9c7006b1274c9267db0149558c321f5e45
+decision_kind: mode-selection
+operation: commit
+actor_class: deterministic-resolver
+subject_refs: [TASK-MODE-AMBIGUOUS-001]
+asserted_facts: [mode-candidates-registered]
+requested_effect: Commit a Mode selection while the choice remains ambiguous.
+result:
+  status: blocked
+  code: AUTHORITY-ASSERTED-FACTS-MISSING
+  disposition: blocked
+  reason: "Required asserted facts are missing: selection-unambiguous."
+limitations: [Ambiguity requires a separate Human Gate eligibility record or a blocked result.]

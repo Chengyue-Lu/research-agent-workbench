@@ -139,7 +139,8 @@ Jupyter、MCP 或项目仿真 CLI 只能作为既有卡的 Adapter 候选，不�
 [Task–Mode–Action–Mechanism Routing Fixtures](TASK_MODE_ACTION_ROUTING_FIXTURES.md)。机器输入使用
 `.yaml.txt` 并声明 `formal_contract: false`；测试只固定 case 自洽、Tool ID 和结果覆盖。
 
-这些 fixture 均不调用外部 API。Tool 不可用或数据策略不允许时得到明确 `capability-gap/blocked`；
+这些 fixture 均不调用外部 API。Method 层只保留 capability requirement；数据策略不允许时明确 `blocked`，
+而供应侧 available/gap 留给 Capability Resolution；
 Skill Need 尚未实现时保留 Need 和 Human Gate，不伪造 Assignment。
 
 ## 9. 与 API 执行的接口

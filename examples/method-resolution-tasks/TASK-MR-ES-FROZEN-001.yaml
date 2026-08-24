@@ -1,0 +1,21 @@
+schema_version: 0.1.0
+task_id: TASK-MR-ES-FROZEN-001
+revision: 1
+goal: Resolve evidence extraction from a bounded and frozen source set.
+question_refs: [Q-MR-ES-FROZEN-001]
+active_modes: [evidence-synthesis]
+required_capabilities: [document-read, research-contract-check]
+required_skills: []
+forbidden_skills: []
+agent_profile: method-resolver
+input_refs: []
+write_scope: [work/TASK-MR-ES-FROZEN-001]
+required_outputs: [method-resolution]
+permissions: {filesystem: worktree-write, network: forbidden, external_write: false, allowed_roots: [work/TASK-MR-ES-FROZEN-001]}
+delegation: {allowed: false}
+budget: {max_turns: 6}
+atomic_boundary: Resolve only extraction and compact handoff obligations for the frozen source set.
+completion_checks: [The Method Resolution is hash-bound to this Task revision.]
+safe_pause_conditions: [A source identity or locator is unavailable.]
+stop_conditions: [A bounded Method Resolution is recorded.]
+stale_if: [task-revision-or-content-changes]

@@ -1,0 +1,19 @@
+schema_version: 0.1.0
+action_id: SIM-A7
+version: 1.0.0
+mode_ref: simulation@0.1.0
+title: Audit the simulation-supported Claim ceiling
+intent: Determine which bounded Claims the numerical, sensitivity, and validation evidence can support without upgrading model output into real-world truth.
+triggers:
+  - Simulation results are proposed as support for a formal Claim.
+non_triggers:
+  - Only Run execution status or artifact integrity is checked.
+failure_modes: [numerical verification promoted to physical validation, limitations omitted, error bound unapproved]
+required_artifacts: [claim-audit, limitations, decision]
+claim_effects:
+  may_support: [simulation_supported, unresolved, withdrawn]
+  cannot_alone_support: [experimentally_supported]
+  notes: [Only the Human Gate changes formal Claim status.]
+human_gates: [accept-simulation-supported-claim]
+stop_conditions: [A named human records the Claim disposition, ceiling, and material limitations.]
+blocked_conditions: [Required convergence, sensitivity, or validation evidence is incomplete.]

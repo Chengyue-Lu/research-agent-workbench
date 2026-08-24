@@ -1,0 +1,229 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/method-resolution.schema.json",
+  "title": "Method Resolution",
+  "x-rwb-document-kind": "method_resolution",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "resolution_id",
+    "revision",
+    "task_ref",
+    "mode_resolution",
+    "action_decisions",
+    "skill_disposition",
+    "human_gate_refs",
+    "blocked_conditions",
+    "rejected_alternatives",
+    "resolution_status",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "resolution_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "revision": { "type": "integer", "minimum": 1 },
+    "task_ref": {
+      "type": "object",
+      "required": ["task_id", "revision", "sha256"],
+      "properties": {
+        "task_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "revision": { "type": "integer", "minimum": 1 },
+        "sha256": { "$ref": "common.schema.json#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    },
+    "source_case_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "mode_resolution": { "$ref": "#/$defs/modeResolution" },
+    "action_decisions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/actionDecision" }
+    },
+    "skill_disposition": { "$ref": "#/$defs/skillDisposition" },
+    "human_gate_refs": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "blocked_conditions": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "rejected_alternatives": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/rejectedAlternative" }
+    },
+    "resolution_status": {
+      "enum": ["proceed", "blocked", "split-and-block"]
+    },
+    "limitations": { "$ref": "common.schema.json#/$defs/stringArray" }
+  },
+  "$defs": {
+    "versionedRef": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*@[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+    },
+    "modeResolution": {
+      "type": "object",
+      "required": ["status", "selected_mode_refs", "unresolved_mode_ids", "reason"],
+      "properties": {
+        "status": { "enum": ["selected", "no-new-mode", "ambiguous-blocked"] },
+        "selected_mode_refs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/versionedRef" },
+          "uniqueItems": true
+        },
+        "unresolved_mode_ids": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "selected" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "selected_mode_refs": { "minItems": 1 },
+              "unresolved_mode_ids": { "maxItems": 0 }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "no-new-mode" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "selected_mode_refs": { "maxItems": 0 },
+              "unresolved_mode_ids": { "maxItems": 0 }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "ambiguous-blocked" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "selected_mode_refs": { "minItems": 1 },
+              "unresolved_mode_ids": { "minItems": 1 }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "obligation": {
+      "type": "object",
+      "required": ["obligation_id", "statement", "assessment", "required_evidence"],
+      "properties": {
+        "obligation_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "statement": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "assessment": {
+          "enum": ["deterministic", "semantic-review", "human-decision", "unavailable"]
+        },
+        "required_evidence": { "$ref": "common.schema.json#/$defs/stringArray" }
+      },
+      "additionalProperties": false
+    },
+    "actionDecision": {
+      "type": "object",
+      "required": [
+        "decision_id",
+        "obligations",
+        "mechanisms",
+        "capability_requirements",
+        "skill_need_refs",
+        "human_gate_refs",
+        "stop_conditions",
+        "blocked_conditions",
+        "rationale"
+      ],
+      "properties": {
+        "decision_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "action_ref": { "$ref": "#/$defs/versionedRef" },
+        "action_content_hash": { "$ref": "common.schema.json#/$defs/sha256" },
+        "planning_action_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "obligations": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/obligation" }
+        },
+        "mechanisms": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "mode-invariant",
+              "task-instruction",
+              "task-template",
+              "tool",
+              "no-skill",
+              "skill-need",
+              "human-gate",
+              "blocked",
+              "split-task"
+            ]
+          }
+        },
+        "capability_requirements": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "skill_need_refs": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "human_gate_refs": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "stop_conditions": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "blocked_conditions": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "rationale": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "oneOf": [
+        {
+          "required": ["action_ref", "action_content_hash"],
+          "not": { "required": ["planning_action_id"] }
+        },
+        {
+          "required": ["planning_action_id"],
+          "not": { "anyOf": [{ "required": ["action_ref"] }, { "required": ["action_content_hash"] }] }
+        }
+      ],
+      "allOf": [
+        {
+          "if": { "properties": { "mechanisms": { "contains": { "const": "tool" } } }, "required": ["mechanisms"] },
+          "then": { "properties": { "capability_requirements": { "minItems": 1 } } }
+        },
+        {
+          "if": { "properties": { "mechanisms": { "contains": { "const": "skill-need" } } }, "required": ["mechanisms"] },
+          "then": { "properties": { "skill_need_refs": { "minItems": 1 } } },
+          "else": { "properties": { "skill_need_refs": { "maxItems": 0 } } }
+        },
+        {
+          "if": { "properties": { "mechanisms": { "contains": { "const": "human-gate" } } }, "required": ["mechanisms"] },
+          "then": { "properties": { "human_gate_refs": { "minItems": 1 } } },
+          "else": { "properties": { "human_gate_refs": { "maxItems": 0 } } }
+        },
+        {
+          "if": { "properties": { "mechanisms": { "contains": { "const": "blocked" } } }, "required": ["mechanisms"] },
+          "then": { "properties": { "blocked_conditions": { "minItems": 1 } } }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "skillDisposition": {
+      "type": "object",
+      "required": ["status", "need_refs", "reason"],
+      "properties": {
+        "status": { "enum": ["no-skill", "skill-need", "mixed"] },
+        "need_refs": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "no-skill" } }, "required": ["status"] },
+          "then": { "properties": { "need_refs": { "maxItems": 0 } } }
+        },
+        {
+          "if": { "properties": { "status": { "enum": ["skill-need", "mixed"] } }, "required": ["status"] },
+          "then": { "properties": { "need_refs": { "minItems": 1 } } }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "rejectedAlternative": {
+      "type": "object",
+      "required": ["alternative_id", "disposition", "reason"],
+      "properties": {
+        "alternative_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "disposition": { "enum": ["rejected", "deferred", "blocked"] },
+        "reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

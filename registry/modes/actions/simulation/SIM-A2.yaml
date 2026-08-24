@@ -1,0 +1,19 @@
+schema_version: 0.1.0
+action_id: SIM-A2
+version: 1.0.0
+mode_ref: simulation@0.1.0
+title: Freeze code, environment, inputs, seed, and outputs
+intent: Make a simulation Run identifiable and replayable before interpreting its result.
+triggers:
+  - A simulation Run will be executed or replayed.
+non_triggers:
+  - Only a conceptual model description is being reviewed.
+failure_modes: [dependency drift, input mismatch, missing seed, output identity loss]
+required_artifacts: [run-manifest, input-lock, environment-receipt]
+claim_effects:
+  may_support: []
+  cannot_alone_support: [simulation_supported]
+  notes: [Reproducibility metadata does not establish numerical convergence or model validity.]
+human_gates: []
+stop_conditions: [All executable inputs and expected outputs are frozen by version or hash.]
+blocked_conditions: [A material executable input or environment component cannot be identified.]

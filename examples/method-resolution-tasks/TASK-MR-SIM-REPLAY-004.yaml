@@ -1,0 +1,21 @@
+schema_version: 0.1.0
+task_id: TASK-MR-SIM-REPLAY-004
+revision: 1
+goal: Resolve a frozen simulation replay method without adding convergence or validity claims.
+question_refs: [Q-MR-SIM-REPLAY-004]
+active_modes: [simulation]
+required_capabilities: [bounded-compute, research-contract-check]
+required_skills: []
+forbidden_skills: []
+agent_profile: method-resolver
+input_refs: []
+write_scope: [work/TASK-MR-SIM-REPLAY-004]
+required_outputs: [method-resolution]
+permissions: {filesystem: worktree-write, network: forbidden, external_write: false, allowed_roots: [work/TASK-MR-SIM-REPLAY-004]}
+delegation: {allowed: false}
+budget: {max_turns: 6}
+atomic_boundary: Resolve only frozen replay and execution-record obligations.
+completion_checks: [The Method Resolution is hash-bound to this Task revision.]
+safe_pause_conditions: [The frozen executable environment cannot be reproduced.]
+stop_conditions: [A bounded Method Resolution is recorded.]
+stale_if: [task-revision-or-content-changes]

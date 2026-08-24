@@ -6,8 +6,11 @@
 - 机器可读诊断输入：[mode-action-routing-v1](../../../examples/mode-skill-routing/mode-action-routing-v1.yaml.txt)
 - Tool 边界：[Action-driven Tool Capability Cards](TOOL_CAPABILITY_CARDS.md)
 
-这些 fixture 验证选择理由的覆盖面，不是 Resolver runtime Schema，也不证明科研方法正确。文件使用
-`.yaml.txt`，避免被仓库当作已支持的正式对象；后续只有真实消费者需要时才申请公共 Schema。
+这些 fixture 验证选择理由的覆盖面，不是 Resolver runtime，也不证明科研方法正确。路由文件仍使用
+`.yaml.txt`；正式 Mode Action 解析到 hash-pinned [`Mode Action Registry`](../../../registry/modes/actions.json)，
+每个 case 进一步以 path+hash 引用一个独立、Schema-valid 的
+[`Method Resolution`](../../implementation/METHOD_RESOLUTION_CONTRACT.md)。项目内部或候选动作继续使用
+`planning_action_id`，不能冒充已准入 Mode Action。
 
 ## 1. 路由顺序
 
@@ -45,14 +48,14 @@ Skill Need 不是 Skill Assignment。只要候选尚未实现或准入，路由�
 
 | Case | Mode / 边界 | Actions | Tool cards | 预期机制 |
 |---|---|---|---|---|
-| ROUTE-ES-FROZEN-001 | evidence-synthesis；冻结来源 | ES-A3/A4 + Compact Handoff | document-read、research-contract-check | tool-only + no-Skill；H1 模板 |
-| ROUTE-ES-SEARCH-002 | evidence-synthesis；开放检索 | ES-A1/A2 | literature-search | Search Plan Skill Need + Human Gate |
-| ROUTE-ES-CONFLICT-003 | evidence-synthesis；范围差异冲突 | ES-A6/A8 | research-contract-check | Conflict Synthesis Skill Need + Human Gate |
-| ROUTE-SIM-REPLAY-004 | simulation；冻结 Run 重放 | SIM-A2/A6 | bounded-compute、research-contract-check | tool-only + no-Skill |
-| ROUTE-SIM-CONVERGENCE-005 | simulation；数值设计 | SIM-A3/A7 | bounded-compute、research-contract-check | Convergence Skill Need + Human Gate |
-| ROUTE-BLOCK-PRIVATE-006 | evidence-synthesis；数据边界冲突 | ES-A3 | document-read、literature-search | capability gap + blocked；无 fallback |
+| ROUTE-ES-FROZEN-001 | evidence-synthesis；冻结来源 | ES-A3@1.0.0 / ES-A4@1.0.0 + Compact Handoff | document-read、research-contract-check | tool-only + no-Skill；H1 模板 |
+| ROUTE-ES-SEARCH-002 | evidence-synthesis；开放检索 | ES-A1@1.0.0 / ES-A2@1.0.0 | literature-search | Search Plan Skill Need + Human Gate |
+| ROUTE-ES-CONFLICT-003 | evidence-synthesis；范围差异冲突 | ES-A6@1.0.0 / ES-A8@1.0.0 | research-contract-check | Conflict Synthesis Skill Need + Human Gate |
+| ROUTE-SIM-REPLAY-004 | simulation；冻结 Run 重放 | SIM-A2@1.0.0 / SIM-A6@1.0.0 | bounded-compute、research-contract-check | tool-only + no-Skill |
+| ROUTE-SIM-CONVERGENCE-005 | simulation；数值设计 | SIM-A3@1.0.0 / SIM-A7@1.0.0 | bounded-compute、research-contract-check | Convergence Skill Need + Human Gate |
+| ROUTE-BLOCK-PRIVATE-006 | evidence-synthesis；数据边界冲突 | ES-A3@1.0.0 | document-read、literature-search | capability gap + blocked；无 fallback |
 | ROUTE-NO-MODE-FORMAT-007 | representation-only | output-format | 无 | no new Mode + no-Skill |
-| ROUTE-SPLIT-OBS-SIM-008 | simulation + 未准入 observational | SIM-A1 + identification gap | 无 | split Task + ambiguous/blocked + Human Gate |
+| ROUTE-SPLIT-OBS-SIM-008 | simulation + 未准入 observational | SIM-A1@1.0.0 + identification gap | 无 | split Task + ambiguous/blocked + Human Gate |
 
 ## 3. 关键解释
 
@@ -77,3 +80,7 @@ M7-002/M7-003 在诊断层完成意味着：
 5. 测试只固定 fixture 自洽和覆盖，不把预期路由宣称为真实科研效果。
 
 M7-004/015 已按这些 action/route 迁移三个 0.1.0 Skill 原型并落实 lifecycle；后续不得回到来源驱动选择。
+
+M8-003 不删除本诊断输入，而是把八个 case 一一转换到 `examples/method-resolutions/`。测试固定 Task、
+Mode、Action、Capability、Skill Need、Human Gate、status 与 forbidden route 的无损映射；正式 Resolution
+额外补充 bounded obligations、Action content hash、最小机制 rationale 和 rejected alternative disposition。

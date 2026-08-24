@@ -1,0 +1,162 @@
+schema_version: 0.1.0
+matrix_id: rwb-decision-authority
+version: 1.0.0
+authority_classes: [agent, deterministic-resolver, human-gate]
+entries:
+  - decision_kind: mode-selection
+    description: Select the Research Mode revision that governs a bounded Task.
+    rules:
+      - operation: propose
+        actor_class: agent
+        required_facts: []
+        human_gate_required: false
+        effect: non-binding-proposal
+      - operation: validate
+        actor_class: deterministic-resolver
+        required_facts: [mode-candidates-registered]
+        human_gate_required: false
+        effect: structural-validation
+      - operation: commit
+        actor_class: deterministic-resolver
+        required_facts: [mode-candidates-registered, selection-unambiguous]
+        human_gate_required: false
+        effect: binding-decision
+      - operation: commit
+        actor_class: human-gate
+        required_facts: [mode-candidates-registered, ambiguity-disclosed]
+        human_gate_required: true
+        effect: binding-decision
+    denied_disposition: human-gate
+  - decision_kind: action-selection
+    description: Select exact Mode Action revisions for an already selected Mode revision.
+    rules:
+      - operation: propose
+        actor_class: agent
+        required_facts: []
+        human_gate_required: false
+        effect: non-binding-proposal
+      - operation: validate
+        actor_class: deterministic-resolver
+        required_facts: [action-registry-closed]
+        human_gate_required: false
+        effect: structural-validation
+      - operation: commit
+        actor_class: deterministic-resolver
+        required_facts: [action-registry-closed, trigger-match-unambiguous]
+        human_gate_required: false
+        effect: binding-decision
+      - operation: commit
+        actor_class: human-gate
+        required_facts: [action-registry-closed, ambiguity-disclosed]
+        human_gate_required: true
+        effect: binding-decision
+    denied_disposition: human-gate
+  - decision_kind: mechanism-selection
+    description: Select the minimal mechanism that satisfies frozen Method obligations.
+    rules:
+      - operation: propose
+        actor_class: agent
+        required_facts: []
+        human_gate_required: false
+        effect: non-binding-proposal
+      - operation: validate
+        actor_class: deterministic-resolver
+        required_facts: [method-obligations-closed]
+        human_gate_required: false
+        effect: structural-validation
+      - operation: commit
+        actor_class: deterministic-resolver
+        required_facts: [method-obligations-closed, minimal-mechanism-unambiguous]
+        human_gate_required: false
+        effect: binding-decision
+      - operation: commit
+        actor_class: human-gate
+        required_facts: [method-obligations-closed, ambiguity-disclosed]
+        human_gate_required: true
+        effect: binding-decision
+    denied_disposition: human-gate
+  - decision_kind: skill-tool-binding
+    description: Bind a frozen capability requirement to an eligible Skill or Tool without changing Method semantics.
+    rules:
+      - operation: propose
+        actor_class: agent
+        required_facts: []
+        human_gate_required: false
+        effect: non-binding-proposal
+      - operation: validate
+        actor_class: deterministic-resolver
+        required_facts: [capability-snapshot-frozen, permission-intersection-satisfied]
+        human_gate_required: false
+        effect: structural-validation
+      - operation: commit
+        actor_class: deterministic-resolver
+        required_facts: [capability-snapshot-frozen, permission-intersection-satisfied, binding-unambiguous]
+        human_gate_required: false
+        effect: binding-decision
+      - operation: commit
+        actor_class: human-gate
+        required_facts: [capability-snapshot-frozen, permission-intersection-satisfied, ambiguity-disclosed]
+        human_gate_required: true
+        effect: binding-decision
+    denied_disposition: human-gate
+  - decision_kind: permission-relaxation
+    description: Expand filesystem, network, external-write, or other granted permission beyond a frozen boundary.
+    rules:
+      - operation: propose
+        actor_class: agent
+        required_facts: []
+        human_gate_required: false
+        effect: non-binding-proposal
+      - operation: validate
+        actor_class: deterministic-resolver
+        required_facts: [requested-scope-explicit]
+        human_gate_required: false
+        effect: structural-validation
+      - operation: commit
+        actor_class: human-gate
+        required_facts: [requested-scope-explicit, revised-task-or-protocol, risk-review-complete]
+        human_gate_required: true
+        effect: binding-decision
+    denied_disposition: human-gate
+  - decision_kind: data-boundary-relaxation
+    description: Permit data movement, disclosure, or processing outside a frozen data boundary.
+    rules:
+      - operation: propose
+        actor_class: agent
+        required_facts: []
+        human_gate_required: false
+        effect: non-binding-proposal
+      - operation: validate
+        actor_class: deterministic-resolver
+        required_facts: [requested-scope-explicit, data-destination-explicit]
+        human_gate_required: false
+        effect: structural-validation
+      - operation: commit
+        actor_class: human-gate
+        required_facts: [requested-scope-explicit, data-destination-explicit, revised-task-or-protocol, risk-review-complete]
+        human_gate_required: true
+        effect: binding-decision
+    denied_disposition: human-gate
+  - decision_kind: claim-promotion
+    description: Promote a Claim to a stronger accepted support level within the applicable Mode ceiling.
+    rules:
+      - operation: propose
+        actor_class: agent
+        required_facts: []
+        human_gate_required: false
+        effect: non-binding-proposal
+      - operation: validate
+        actor_class: deterministic-resolver
+        required_facts: [evidence-chain-structurally-valid, claim-ceiling-checked]
+        human_gate_required: false
+        effect: structural-validation
+      - operation: commit
+        actor_class: human-gate
+        required_facts: [evidence-chain-structurally-valid, claim-ceiling-allows, limitations-reviewed]
+        human_gate_required: true
+        effect: binding-decision
+    denied_disposition: human-gate
+limitations:
+  - Authority Rule Eligibility assumes asserted facts and does not prove them, record Human approval, grant Permission, promote a Claim, or execute a decision.
+  - Human authority cannot waive Schema validity, missing provenance, illegal data handling, or a stricter external policy.
+  - Matrix effects describe the contemplated operation class only; concrete decisions, binding, provenance, and execution remain outside this Matrix.

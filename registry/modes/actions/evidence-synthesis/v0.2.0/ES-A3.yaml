@@ -1,0 +1,19 @@
+schema_version: 0.1.0
+action_id: ES-A3
+version: 2.0.0
+mode_ref: evidence-synthesis@0.2.0
+title: Acquire, freeze, and locate sources
+intent: Bind every consumed source to a stable version, hash, and locator within the approved data boundary.
+triggers:
+  - A source must enter the bounded evidence set.
+non_triggers:
+  - A previously frozen source is only referenced without new content access.
+failure_modes: [version drift, full-text mismatch, unstable locator, data-boundary violation]
+required_artifacts: [source-snapshot-or-ref, content-hash, locator]
+claim_effects:
+  may_support: []
+  cannot_alone_support: [source_reported, synthesis_supported]
+  notes: [Source availability and identity do not establish entailment.]
+human_gates: [approve-alternative-data-path-on-policy-exception]
+stop_conditions: [Every consumed source has a stable reference, hash, and locator.]
+blocked_conditions: [Required content is unavailable or cannot be accessed within the approved data policy.]

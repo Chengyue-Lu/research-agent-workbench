@@ -1,0 +1,18 @@
+schema_version: 0.1.0
+eligibility_id: DAE-HUMAN-CLAIM-GATE-NEG-001
+matrix_ref:
+  ref: rwb-decision-authority@1.0.0
+  document_path: registry/authority/decision-authority-matrix.yaml
+  content_hash: sha256:960c95754f8a78fe39b3f2583414ca9c7006b1274c9267db0149558c321f5e45
+decision_kind: claim-promotion
+operation: commit
+actor_class: human-gate
+subject_refs: [CLAIM-SIM-001]
+asserted_facts: [evidence-chain-structurally-valid, claim-ceiling-allows, limitations-reviewed]
+requested_effect: Commit a Claim promotion without identifying the deciding Human Gate.
+result:
+  status: blocked
+  code: AUTHORITY-HUMAN-GATE-REQUIRED
+  disposition: human-gate
+  reason: Eligibility for this commit rule requires an explicit Human Gate reference; the reference does not prove approval.
+limitations: [A role label without a Gate reference is not a recorded human decision.]

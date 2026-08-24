@@ -1,0 +1,21 @@
+schema_version: 0.1.0
+task_id: TASK-MR-ES-SEARCH-002
+revision: 1
+goal: Resolve a bounded and replayable evidence-search method.
+question_refs: [Q-MR-ES-SEARCH-002]
+active_modes: [evidence-synthesis]
+required_capabilities: [literature-search]
+required_skills: []
+forbidden_skills: []
+agent_profile: method-resolver
+input_refs: []
+write_scope: [work/TASK-MR-ES-SEARCH-002]
+required_outputs: [method-resolution]
+permissions: {filesystem: worktree-write, network: allowed, external_write: false, allowed_roots: [work/TASK-MR-ES-SEARCH-002]}
+delegation: {allowed: false}
+budget: {max_turns: 6}
+atomic_boundary: Resolve search obligations without selecting a Skill implementation.
+completion_checks: [The Method Resolution is hash-bound to this Task revision.]
+safe_pause_conditions: [The source boundary or coverage decision is unavailable.]
+stop_conditions: [A bounded Method Resolution is recorded.]
+stale_if: [task-revision-or-content-changes]

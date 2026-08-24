@@ -149,6 +149,7 @@ class RiskInferenceTests(unittest.TestCase):
             "src/research_workbench/protocol/authority.py",
             "registry/authority/decision-authority-matrix.yaml",
             "schemas/v0.1.0/decision-authority-matrix.schema.json",
+            "schemas/v0.1.0/authority-rule-eligibility.schema.json",
             "docs/implementation/DECISION_AUTHORITY.md",
         ):
             with self.subTest(path=path):

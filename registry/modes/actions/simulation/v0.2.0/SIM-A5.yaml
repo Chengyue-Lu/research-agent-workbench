@@ -1,0 +1,19 @@
+schema_version: 0.1.0
+action_id: SIM-A5
+version: 2.0.0
+mode_ref: simulation@0.2.0
+title: Benchmark, calibrate, and validate externally
+intent: Distinguish benchmark verification, calibration, and external validation using independent and applicable evidence.
+triggers:
+  - A Claim depends on comparison with benchmark, calibration, or real-world validation data.
+non_triggers:
+  - Only internal numerical convergence or software correctness is at issue.
+failure_modes: [irrelevant benchmark, calibration leakage, verification confused with validation]
+required_artifacts: [benchmark-ref, calibration-or-validation-evidence]
+claim_effects:
+  may_support: [simulation_supported]
+  cannot_alone_support: [experimentally_supported]
+  notes: [Simulation Mode cannot upgrade a Claim to experimental support without another admitted Mode.]
+human_gates: [approve-benchmark-calibration-and-validation-boundary]
+stop_conditions: [Each comparison is labeled by purpose, independence, applicability, and limitation.]
+blocked_conditions: [Independent applicable data are unavailable or were consumed during calibration.]

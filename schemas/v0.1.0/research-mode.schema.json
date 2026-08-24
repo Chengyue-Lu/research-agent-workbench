@@ -2,19 +2,29 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://research-agent-workbench.local/schemas/v0.1.0/research-mode.schema.json",
   "title": "Research Mode",
+  "$comment": "Mode v0.1 remains readable for compatibility. New Mode v0.2 documents replace direct Skill recommendations with exact Action references.",
   "x-rwb-document-kind": "research_mode",
   "type": "object",
   "required": [
     "schema_version", "mode_id", "version", "applies_when", "required_artifact_types",
-    "recommended_skill_capabilities", "claim_rules", "human_decisions", "risk_rules"
+    "claim_rules", "human_decisions", "risk_rules"
   ],
   "properties": {
     "schema_version": { "const": "0.1.0" },
     "mode_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
-    "version": { "$ref": "common.schema.json#/$defs/semver" },
+    "version": { "enum": ["0.1.0", "0.2.0"] },
     "applies_when": { "$ref": "common.schema.json#/$defs/stringArray" },
     "required_artifact_types": { "$ref": "common.schema.json#/$defs/stringArray" },
     "recommended_skill_capabilities": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "action_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*@[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
     "claim_rules": {
       "type": "object",
       "required": ["allows"],
@@ -28,5 +38,21 @@
     "risk_rules": { "$ref": "common.schema.json#/$defs/stringArray" },
     "metadata": { "type": "object" }
   },
+  "allOf": [
+    {
+      "if": { "properties": { "version": { "const": "0.1.0" } }, "required": ["version"] },
+      "then": {
+        "required": ["recommended_skill_capabilities"],
+        "not": { "required": ["action_refs"] }
+      }
+    },
+    {
+      "if": { "properties": { "version": { "const": "0.2.0" } }, "required": ["version"] },
+      "then": {
+        "required": ["action_refs"],
+        "not": { "required": ["recommended_skill_capabilities"] }
+      }
+    }
+  ],
   "additionalProperties": false
 }
