@@ -124,6 +124,21 @@ process-kill recovery 均不作为 `K-INTEGRATION-1` 的合并阻塞项。
 | M8-004 | DONE | 建立最小 migration seam 并迁移 Research Mode v0.1 → v0.2 | M8-002, M8-003 | v0.2 删除直接 Skill recommendation；v0.1 仍可验证/历史解释；迁移保留原/新 hash 与实现版本 |
 | M8-005 | DONE | 冻结 Decision Authority Matrix 并映射 validation/preflight | M8-002, M8-003 | Agent proposal、deterministic resolution、Human Gate、权限放宽和 Claim promotion 权限有正反 fixture |
 
+M8 / Phase A 已通过 PR #30 的 R2 跨负责人审查并于 `develop@ead1270` 收口。这里的完成含义是
+Method/Core 契约和下游消费边界稳定，不表示 Capability binding、Resolved Execution View、Method Trace、
+Human Decision 或端到端研究执行已经实现。
+
+## M9：Phase B Evolution Foundation
+
+| ID | 状态 | 任务 | 依赖 | 验收 |
+|---|---|---|---|---|
+| M9-001 | READY | 将 Capability Requirement 正式化为需求侧契约 | M8-003, M8-005 | 可表达目标能力、输入/输出、permission/data-egress/side-effect/验证约束；不含 Provider/Model/Adapter、可用性或具体供给绑定；Method Resolution 引用可闭合验证 |
+| M9-002 | PARKED | 将 Skill Need 正式化为版本化对象 | M8-003, M9-001 | trigger/non-trigger、semantic gap、no-Skill/direct-tool baseline、expected increment、trial evidence 与 domain variants 可验证；Need 不等于 candidate/accepted Skill |
+| M9-003 | PARKED | 建立 Skill lifecycle v2 与显式迁移 | M7-015, M9-002 | intake、evaluation、admission、runtime eligibility 四轴分离；trial/superseded/retired 与 promotion evidence 可表达；旧 accepted Registry identity 和历史 Assignment 继续可解释 |
+| M9-004 | PARKED | 建立最小 Protocol Profile 契约 | M8-004, M9-001 | 以两个有界 PRISMA/V&V profile 证明 Mode、Protocol、Skill 职责不重叠；不形成固定全局研究流程 |
+| M9-005 | PARKED | 冻结 Resolved Capability Snapshot 共享接口 | M9-001, M9-003, M8-005 | Snapshot 固定实际 Tool/Skill/Adapter/version/hash、permission、data-egress 与 side-effect 边界；供给变化不修改 Method contract；不在本 Task 实现 API session 或 Runtime |
+| M9-006 | PARKED | 完成 Phase B migration/replay 与替换性 Gate | M9-002..005 | 已发布旧对象经显式 migration 继续解释；至少一个 Tool provider 替换 fixture 不改 Task/Mode/Action/Method 语义；Phase B Stop Gate 有逐项证据 |
+
 ## 历史 GitHub Issues
 
 首批 Issues 已在后续实现与架构调整后关闭；本节只保留任务来源追溯，不再作为当前执行入口：
@@ -138,11 +153,14 @@ process-kill recovery 均不作为 `K-INTEGRATION-1` 的合并阻塞项。
 
 ## 当前下一任务
 
-当前 Method/Core 工作段为 **M8 Method Control Stage**。统一分支
-`agent/method-m8-action-resolution-node` 连续承载 Action、Method Resolution、Mode v0.2 migration 与
-Decision Authority 实现，以 PR #30 接受一次 R2 审查；不再为每个 M8 小节点新建分支或 Handoff。
-PR #30 使用 Governance v2 的 atomic dependency closure：M8-002～005 全部显式声明，Task 定义、依赖
-与验收未修改；治理器按 dependency DAG 验证同一 Stage 内的完成顺序，并要求四项各自具名验收证据。
-Resolved Execution View、Method Trace 与 API/Runtime consumer 仍不进入本阶段。
+Phase A / M8 已在 `develop@ead1270` 收口。当前唯一下一任务为 **M9-001 Capability Requirement
+demand contract**，由阶段分支 `agent/phase-b-evolution-foundation` 承载。先冻结 Method 输出的需求语义，
+再启动 Skill Need 与供给侧 Snapshot；不得把 Provider availability、具体 Tool/Skill binding 或 fallback
+状态提前写回 Method Resolution。
+
+Phase B 期间，路诚钺维护 Capability 词汇、Skill Need/lifecycle、Protocol 与相应 Schema/fixture；
+Resolved Capability Snapshot 是跨负责人共享接口，黄毅维护 Provider/Adapter 字段的真实供给映射与
+API conformance。本分支不修改 Provider SDK、认证、API session loop、Runtime 或 API 专用测试。
+
 M6-003/M6-004 与 M3-001/M3-006 的未完成项继续按各自任务跟踪；M7-005/006/014 的真实比较继续
 parked，直到 Method Resolution 与相应 Trace/Evaluation Manifest 稳定。
