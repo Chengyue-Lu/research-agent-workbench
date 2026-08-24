@@ -50,6 +50,7 @@
       "schemas/**/capability-resolution.schema.json",
       "schemas/**/resolved-capability-snapshot.schema.json",
       "schemas/**/capability-conformance-evidence.schema.json",
+      "schemas/**/phase-b-evolution-gate.schema.json",
       "src/research_workbench/capability/supply.py",
       "examples/capability-resolution/**",
       "schemas/**/skill-lifecycle*.schema.json",

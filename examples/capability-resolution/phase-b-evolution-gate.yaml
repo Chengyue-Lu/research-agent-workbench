@@ -1,0 +1,66 @@
+schema_version: 0.1.0
+gate_id: PHASE-B-M9-CLOSEOUT-001
+revision: 1
+scope: phase-b-evolution
+stable_contract_refs:
+  - kind: task-packet
+    ref: TASK-MR-ES-FROZEN-001@r1
+    document_path: examples/method-resolution-tasks/TASK-MR-ES-FROZEN-001.yaml
+    content_hash: sha256:a72229692e6e0258dc2fc53096505f5c10b6c743ab1c5ec528588cad8b92865f
+  - kind: research-mode
+    ref: evidence-synthesis@0.1.0
+    document_path: registry/modes/evidence-synthesis.yaml
+    content_hash: sha256:198d4445fdb80de45d9b2819bbcef9a0c14df7d3e27b23ecad282491b5fcd499
+  - kind: mode-action
+    ref: ES-A3@1.0.0
+    document_path: registry/modes/actions/evidence-synthesis/ES-A3.yaml
+    content_hash: sha256:2fd8f1f32b05cce65f5437845a067fecdb2dddfddaf0aa025f9f741e25ce3610
+  - kind: mode-action
+    ref: ES-A4@1.0.0
+    document_path: registry/modes/actions/evidence-synthesis/ES-A4.yaml
+    content_hash: sha256:8cb47267e5e7e2578173b62d2eb420cf9f7104e1c56c22facf0c9183299ce46a
+  - kind: method-resolution
+    ref: MR-ROUTE-ES-FROZEN-001@r1
+    document_path: examples/method-resolutions/ROUTE-ES-FROZEN-001.yaml
+    content_hash: sha256:cf3e041887c9558a775027e5e254486973322ad763f3b15d2eb8504d185608e1
+  - kind: capability-requirement
+    ref: document-read
+    document_path: registry/capabilities/requirements/document-read.yaml
+    content_hash: sha256:7cf374c2cbc8fbe9d0698fd3bdf209d7a3fc015c1fe485e06f8450cd7a38e916
+replacement:
+  snapshot_refs:
+    - ref: RCS-DOCUMENT-READ-A@r1
+      document_path: examples/capability-resolution/snapshots/document-read-a.yaml
+      content_hash: sha256:e6ddbb2a7b521b557cf868ee24c1689ae113117789965c4735633a0e62e67391
+    - ref: RCS-DOCUMENT-READ-B@r1
+      document_path: examples/capability-resolution/snapshots/document-read-b.yaml
+      content_hash: sha256:0da71d328de1b6a7478238adee469fd3cade0cde5ac1a30930cf2156205e5e78
+  required_invariants:
+    - task-unchanged
+    - mode-unchanged
+    - action-set-unchanged
+    - method-resolution-unchanged
+    - capability-requirement-unchanged
+    - permission-ceiling-not-relaxed
+    - data-egress-ceiling-not-relaxed
+    - side-effect-ceiling-not-relaxed
+replay_migration_refs:
+  - migration_kind: research-mode-migration
+    ref: RM-MIG-EVIDENCE-SYNTHESIS-001@1.0.0
+    document_path: registry/modes/migrations/evidence-synthesis-0.1.0-to-0.2.0.yaml
+    content_hash: sha256:4140920d49e720b4a3d2f53d6c7ad44fe2c1684873a7b689b6dca21e9102b83c
+  - migration_kind: skill-lifecycle-migration
+    ref: accepted-v1-to-lifecycle-v2@1.0.0
+    document_path: registry/skills/lifecycle-migrations/accepted-v1-to-lifecycle-v2.yaml
+    content_hash: sha256:2fb1b1cf063a065824a1ab8ffe13cdbc7eaca86a53b331f25ebdda3f0a536035
+boundary_assertions:
+  runtime_method_authority: false
+  automatic_fallback: false
+  claim_or_gate_effect: false
+  execution_performed: false
+  live_provider_conformance_proven: false
+  skill_net_benefit_proven: false
+verification_status: deterministic-pass
+limitations:
+  - The gate proves contract identity, replay closure, and bounded synthetic supply replacement only.
+  - It does not authorize execution, prove live Provider availability, or establish scientific benefit.

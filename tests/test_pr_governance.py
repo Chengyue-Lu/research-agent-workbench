@@ -197,6 +197,17 @@ class RiskInferenceTests(unittest.TestCase):
                 )
                 self.assertEqual("R2", risk)
 
+    def test_phase_b_evolution_gate_is_r2(self) -> None:
+        for path in (
+            "schemas/v0.1.0/phase-b-evolution-gate.schema.json",
+            "examples/capability-resolution/phase-b-evolution-gate.yaml",
+        ):
+            with self.subTest(path=path):
+                risk, _ = governance.infer_minimum_risk(
+                    [path], shared_contract=False, authority_impact=False
+                )
+                self.assertEqual("R2", risk)
+
     def test_skill_lifecycle_contract_surface_is_r2(self) -> None:
         for path in (
             "schemas/v0.1.0/skill-lifecycle-record.schema.json",
