@@ -13,7 +13,7 @@
 
 | 你要做什么 | 首选入口 | 后续入口 |
 |---|---|---|
-| 理解核心概念 | [总体架构](ARCHITECTURE.md) | [模块设计](modules/) |
+| 理解核心概念 | [总体架构](ARCHITECTURE.md) | [开发者架构地图](DEVELOPER_ARCHITECTURE_MAP.md)、[模块设计](modules/) |
 | 运行或排错 | [上手指南](GETTING_STARTED.md) | [实现状态](STATUS.md) |
 | 参与开发 | [开发协作指南](DEVELOPMENT.md) | [发布合并规范](DEVELOP_TO_MAIN_RELEASE.md)、[任务清单](TASKS.md)、[路线图](ROADMAP.md) |
 | 查看实现协议 | [实现文档索引](implementation/README.md) | 对应实现说明与测试 |
