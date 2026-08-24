@@ -1,0 +1,17 @@
+{
+  "fixture_kind": "synthetic-capability-conformance",
+  "fixture_id": "CONF-SANDBOX-DOCUMENT-READER-B",
+  "implementation_ref": "fixture-sandbox-document-reader-b@1.0.0",
+  "scope": "synthetic-bounded-fixture",
+  "checks": [
+    "accepts every document-read input class",
+    "emits every document-read output class",
+    "adapter and provider remain local and content-addressed",
+    "performs no network or external write",
+    "emits a deterministic read receipt"
+  ],
+  "result": "pass",
+  "limitations": [
+    "This fixture proves provider replacement boundaries only and does not report live Provider availability."
+  ]
+}

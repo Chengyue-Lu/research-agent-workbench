@@ -1,0 +1,17 @@
+{
+  "fixture_kind": "synthetic-capability-conformance",
+  "fixture_id": "CONF-NO-SKILL-CONTRACT-CHECK",
+  "implementation_ref": "fixture-no-skill-contract-check@1.0.0",
+  "scope": "synthetic-bounded-fixture",
+  "checks": [
+    "accepts every research-contract-check input class",
+    "emits every research-contract-check output class",
+    "uses a frozen deterministic procedure rather than a Skill",
+    "performs no network or external write",
+    "does not represent structural validation as scientific judgment"
+  ],
+  "result": "pass",
+  "limitations": [
+    "This fixture proves the no-Skill contract path and does not execute a real checker."
+  ]
+}

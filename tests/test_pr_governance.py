@@ -183,6 +183,20 @@ class RiskInferenceTests(unittest.TestCase):
                 )
                 self.assertEqual("R2", risk)
 
+    def test_capability_resolution_contract_surface_is_r2(self) -> None:
+        for path in (
+            "schemas/v0.1.0/capability-supply-report.schema.json",
+            "schemas/v0.1.0/capability-resolution.schema.json",
+            "schemas/v0.1.0/resolved-capability-snapshot.schema.json",
+            "src/research_workbench/capability/supply.py",
+            "examples/capability-resolution/snapshots/document-read-a.yaml",
+        ):
+            with self.subTest(path=path):
+                risk, _ = governance.infer_minimum_risk(
+                    [path], shared_contract=False, authority_impact=False
+                )
+                self.assertEqual("R2", risk)
+
     def test_authority_protocol_is_r2(self) -> None:
         for path in (
             "src/research_workbench/protocol/authority.py",

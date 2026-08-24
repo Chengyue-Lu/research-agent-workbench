@@ -1,0 +1,52 @@
+schema_version: 0.1.0
+report_id: supply-no-skill-contract-check
+version: 1.0.0
+observation_scope: synthetic-bounded-fixture
+supply_identity:
+  supply_kind: no-skill
+  implementation_ref: fixture-no-skill-contract-check
+  implementation_version: 1.0.0
+  content_hash: sha256:a24d9b37a1c1408553df720edd69b7e6f4a2f781c1364444ca8fed4f9092b98d
+  components:
+    - component_kind: procedure
+      component_ref: fixture-no-skill-contract-check
+      version: 1.0.0
+      content_hash: sha256:a24d9b37a1c1408553df720edd69b7e6f4a2f781c1364444ca8fed4f9092b98d
+provided_capabilities: [research-contract-check]
+supported_inputs: [document-references, schema-and-checker-version, checked-subject-hashes, project-root-boundary]
+supported_outputs: [deterministic-findings, checked-subject-hashes, declared-risk-codes]
+produced_artifacts: [deterministic-check-report]
+required_permissions:
+  filesystem: write-task-artifacts
+  network: forbidden
+  external_write: false
+data_egress_behavior:
+  policy: forbidden
+  allowed_payloads: []
+  forbidden_payloads: [checked-documents, project-context, validation-results]
+side_effects:
+  policy: allowlisted-only
+  allowed_effects: [task-local-check-report]
+conformance_evidence:
+  - evidence_id: CONF-NO-SKILL-CONTRACT-CHECK
+    evidence_class: deterministic
+    status: pass
+    artifact_ref:
+      path: examples/capability-resolution/conformance/no-skill-contract-check.json
+      sha256: a24d9b37a1c1408553df720edd69b7e6f4a2f781c1364444ca8fed4f9092b98d
+availability:
+  status: available
+  scope: fixture-only
+  observed_at: "2026-08-24T00:00:00Z"
+  facts:
+    - The synthetic fixture declares a frozen direct procedure and no Skill package.
+limitations:
+  - Fixture-only availability does not execute or certify a real checker.
+  - The no-Skill path remains subject to the same Requirement and authority boundaries.
+authority_boundaries:
+  selects_itself: false
+  owns_method_authority: false
+  relaxes_permissions: false
+  owns_fallback: false
+  grants_claim_effect: false
+  satisfies_human_gate: false

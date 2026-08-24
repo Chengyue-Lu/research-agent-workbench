@@ -33,6 +33,15 @@ from research_workbench.capability.skill_needs import (
     SkillNeedSemanticGap,
     SkillNeedSet,
 )
+from research_workbench.capability.supply import (
+    CHECK_ORDER,
+    CapabilitySupplyReport,
+    SupplyAssessment,
+    SupplyComponent,
+    SupplyIdentity,
+    assess_supply,
+    resolve_status,
+)
 from research_workbench.capability.resolver import (
     ResolvedTask,
     ResolutionError,
@@ -65,6 +74,13 @@ __all__ = [
     "SkillNeedExpectedIncrement",
     "SkillNeedSemanticGap",
     "SkillNeedSet",
+    "CHECK_ORDER",
+    "CapabilitySupplyReport",
+    "SupplyAssessment",
+    "SupplyComponent",
+    "SupplyIdentity",
+    "assess_supply",
+    "resolve_status",
     "SkillRegistrySelectionError",
     "SkillLock",
     "SkillManifest",

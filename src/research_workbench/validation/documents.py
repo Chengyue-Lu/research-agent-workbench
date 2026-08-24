@@ -14,6 +14,12 @@ from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any, Iterable, Mapping
 
 from research_workbench.artifacts.integrity import hash_file
+from research_workbench.capability.requirements import CapabilityRequirement
+from research_workbench.capability.supply import (
+    CapabilitySupplyReport,
+    assess_supply,
+    resolve_status,
+)
 from research_workbench.io import load_document
 from research_workbench.contracts.common import ContractError, parse_skill_reference
 from research_workbench.protocol.migrations import (
@@ -93,6 +99,9 @@ DOCUMENT_REQUIRED: dict[str, tuple[str, ...]] = {
 SCHEMA_KINDS = {
     "capability_requirement",
     "capability_requirement_index",
+    "capability_conformance_evidence",
+    "capability_resolution",
+    "capability_supply_report",
     "protocol_profile",
     "protocol_profile_index",
     "skill_need",
@@ -104,6 +113,7 @@ SCHEMA_KINDS = {
     "provider_conformance_report",
     "research_mode",
     "research_mode_migration",
+    "resolved_capability_snapshot",
     "agent_profile",
     "skill_manifest",
     "skill_assignment",
@@ -155,10 +165,18 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "method_resolution"
     if "requirement_id" in document and "constraints" in document and "unsatisfied_requirement" in document:
         return "capability_requirement"
+    if document.get("fixture_kind") == "synthetic-capability-conformance":
+        return "capability_conformance_evidence"
     if "need_id" in document and "semantic_gap" in document and "evaluation_requirements" in document:
         return "skill_need"
     if "profile_id" in document and "method_standard" in document and "method_obligations" in document:
         return "protocol_profile"
+    if "report_id" in document and "supply_identity" in document and "availability" in document:
+        return "capability_supply_report"
+    if "snapshot_id" in document and "selected_supply_report_ref" in document:
+        return "resolved_capability_snapshot"
+    if "resolution_id" in document and "requirement_ref" in document and "comparisons" in document:
+        return "capability_resolution"
     if "agent_profile_id" in document and "permission_ceiling" in document:
         return "agent_profile"
     if "skill_id" in document and "capabilities" in document:
@@ -1342,6 +1360,429 @@ def _validate_protocol_profile_set(
     return issues
 
 
+def _validate_capability_supply_chain(
+    documents: Mapping[Path, Any],
+) -> list[ValidationIssue]:
+    issues: list[ValidationIssue] = []
+    reports: dict[str, tuple[Path, Mapping[str, Any], CapabilitySupplyReport]] = {}
+    resolutions: dict[str, tuple[Path, Mapping[str, Any]]] = {}
+
+    def loaded_ref(
+        owner_path: Path,
+        reference: Any,
+        *,
+        missing_code: str,
+        hash_code: str,
+    ) -> tuple[Path, Mapping[str, Any]] | None:
+        if not isinstance(reference, Mapping):
+            return None
+        document_path = reference.get("document_path")
+        expected_hash = reference.get("content_hash")
+        if not isinstance(document_path, str):
+            return None
+        loaded = _loaded_document_at(documents, document_path)
+        if loaded is None:
+            issues.append(
+                ValidationIssue(
+                    owner_path,
+                    missing_code,
+                    f"referenced document is not loaded: {document_path}",
+                )
+            )
+            return None
+        loaded_path, document = loaded
+        if isinstance(expected_hash, str) and loaded_path.is_file():
+            if hash_file(loaded_path) != expected_hash.removeprefix("sha256:").lower():
+                issues.append(
+                    ValidationIssue(
+                        owner_path,
+                        hash_code,
+                        f"referenced document hash does not match: {document_path}",
+                    )
+                )
+        return loaded_path, document
+
+    for path, document in documents.items():
+        if not isinstance(document, Mapping) or infer_document_kind(document) != "capability_supply_report":
+            continue
+        try:
+            parsed = CapabilitySupplyReport.from_mapping(document)
+        except ContractError as exc:
+            issues.append(
+                ValidationIssue(path, "CAPABILITY-SUPPLY-CONTRACT", str(exc))
+            )
+            continue
+        if parsed.reference in reports:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "CAPABILITY-SUPPLY-IDENTITY-DUPLICATE",
+                    f"duplicate Supply Report identity: {parsed.reference}",
+                )
+            )
+            continue
+        reports[parsed.reference] = (path, document, parsed)
+
+        component_kinds = {component.component_kind for component in parsed.supply_identity.components}
+        required_kinds = {
+            "no-skill": {"procedure"},
+            "tool": {"tool"},
+            "adapter-provider": {"adapter", "provider"},
+            "skill": {"skill"},
+        }.get(parsed.supply_identity.supply_kind, set())
+        if not required_kinds <= component_kinds:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "CAPABILITY-SUPPLY-COMPONENT-INCOMPLETE",
+                    f"{parsed.supply_identity.supply_kind} supply requires component kinds {sorted(required_kinds)}",
+                )
+            )
+        if parsed.supply_identity.supply_kind == "skill":
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "CAPABILITY-SKILL-SUPPLY-EXTENSION-PARKED",
+                    "Skill supply cannot be resolved until M9-003 runtime eligibility is validated",
+                )
+            )
+        component_keys = [
+            (component.component_kind, component.component_ref, component.version)
+            for component in parsed.supply_identity.components
+        ]
+        if len(component_keys) != len(set(component_keys)):
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "CAPABILITY-SUPPLY-COMPONENT-DUPLICATE",
+                    "Supply Report component identities must be unique",
+                )
+            )
+        evidence_ids: set[str] = set()
+        for evidence in parsed.conformance_evidence:
+            evidence_id = evidence.get("evidence_id")
+            if isinstance(evidence_id, str):
+                if evidence_id in evidence_ids:
+                    issues.append(
+                        ValidationIssue(
+                            path,
+                            "CAPABILITY-SUPPLY-EVIDENCE-DUPLICATE",
+                            f"duplicate conformance evidence identity: {evidence_id}",
+                        )
+                    )
+                evidence_ids.add(evidence_id)
+            artifact_ref = evidence.get("artifact_ref")
+            if not isinstance(artifact_ref, Mapping):
+                continue
+            artifact_path = artifact_ref.get("path")
+            artifact_hash = artifact_ref.get("sha256")
+            if not isinstance(artifact_path, str):
+                continue
+            loaded = _loaded_document_at(documents, artifact_path)
+            if loaded is None:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "CAPABILITY-SUPPLY-EVIDENCE-MISSING",
+                        f"conformance evidence artifact is not loaded: {artifact_path}",
+                    )
+                )
+            elif isinstance(artifact_hash, str) and loaded[0].is_file():
+                if hash_file(loaded[0]) != artifact_hash.removeprefix("sha256:").lower():
+                    issues.append(
+                        ValidationIssue(
+                            path,
+                            "CAPABILITY-SUPPLY-EVIDENCE-HASH-MISMATCH",
+                            f"conformance evidence hash does not match: {artifact_path}",
+                        )
+                    )
+
+    for path, document in documents.items():
+        if not isinstance(document, Mapping) or infer_document_kind(document) != "capability_resolution":
+            continue
+        resolution_id = document.get("resolution_id")
+        revision = document.get("revision")
+        if not isinstance(resolution_id, str) or not isinstance(revision, int):
+            continue
+        resolution_ref = f"{resolution_id}@r{revision}"
+        if resolution_ref in resolutions:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "CAPABILITY-RESOLUTION-IDENTITY-DUPLICATE",
+                    f"duplicate Capability Resolution identity: {resolution_ref}",
+                )
+            )
+            continue
+        resolutions[resolution_ref] = (path, document)
+
+        method_loaded = loaded_ref(
+            path,
+            document.get("method_resolution_ref"),
+            missing_code="CAPABILITY-RESOLUTION-METHOD-MISSING",
+            hash_code="CAPABILITY-RESOLUTION-METHOD-HASH-MISMATCH",
+        )
+        method_document: Mapping[str, Any] | None = None
+        if method_loaded is not None:
+            _, method_document = method_loaded
+            expected_method_ref = f"{method_document.get('resolution_id')}@r{method_document.get('revision')}"
+            if document.get("method_resolution_ref", {}).get("ref") != expected_method_ref:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "CAPABILITY-RESOLUTION-METHOD-IDENTITY-MISMATCH",
+                        f"Method Resolution identity does not match referenced document: {expected_method_ref}",
+                    )
+                )
+
+        requirement_loaded = loaded_ref(
+            path,
+            document.get("requirement_ref"),
+            missing_code="CAPABILITY-RESOLUTION-REQUIREMENT-MISSING",
+            hash_code="CAPABILITY-RESOLUTION-REQUIREMENT-HASH-MISMATCH",
+        )
+        requirement: CapabilityRequirement | None = None
+        requirement_id = None
+        if requirement_loaded is not None:
+            requirement_path, requirement_document = requirement_loaded
+            requirement_id = requirement_document.get("requirement_id")
+            if document.get("requirement_ref", {}).get("requirement_id") != requirement_id:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "CAPABILITY-RESOLUTION-REQUIREMENT-IDENTITY-MISMATCH",
+                        f"Requirement identity does not match referenced document: {requirement_id}",
+                    )
+                )
+            try:
+                requirement = CapabilityRequirement.from_mapping(requirement_document)
+            except ContractError as exc:
+                issues.append(
+                    ValidationIssue(requirement_path, "CAPABILITY-REQUIREMENT-CONTRACT", str(exc))
+                )
+        if method_document is not None and isinstance(requirement_id, str):
+            method_requirements = {
+                value
+                for decision in method_document.get("action_decisions", [])
+                if isinstance(decision, Mapping)
+                for value in decision.get("capability_requirements", [])
+                if isinstance(value, str)
+            }
+            if requirement_id not in method_requirements:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "CAPABILITY-RESOLUTION-METHOD-REQUIREMENT-MISSING",
+                        f"Method Resolution does not require capability: {requirement_id}",
+                    )
+                )
+
+        candidate_refs = document.get("candidate_supply_report_refs", [])
+        candidate_ids: list[str] = []
+        candidate_reports: list[CapabilitySupplyReport] = []
+        for candidate in candidate_refs:
+            if not isinstance(candidate, Mapping) or not isinstance(candidate.get("ref"), str):
+                continue
+            candidate_ref = str(candidate["ref"])
+            candidate_ids.append(candidate_ref)
+            loaded = loaded_ref(
+                path,
+                candidate,
+                missing_code="CAPABILITY-RESOLUTION-SUPPLY-MISSING",
+                hash_code="CAPABILITY-RESOLUTION-SUPPLY-HASH-MISMATCH",
+            )
+            registered = reports.get(candidate_ref)
+            if registered is None:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "CAPABILITY-RESOLUTION-SUPPLY-IDENTITY-MISSING",
+                        f"candidate Supply Report identity is not loaded: {candidate_ref}",
+                    )
+                )
+                continue
+            if loaded is not None and loaded[0] != registered[0]:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "CAPABILITY-RESOLUTION-SUPPLY-PATH-MISMATCH",
+                        f"candidate path does not identify Supply Report: {candidate_ref}",
+                    )
+                )
+            candidate_reports.append(registered[2])
+        if len(candidate_ids) != len(set(candidate_ids)):
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "CAPABILITY-RESOLUTION-SUPPLY-DUPLICATE",
+                    "candidate Supply Report references must be unique",
+                )
+            )
+
+        matrix_loaded = loaded_ref(
+            path,
+            document.get("authority_basis", {}).get("matrix_ref"),
+            missing_code="CAPABILITY-RESOLUTION-AUTHORITY-MATRIX-MISSING",
+            hash_code="CAPABILITY-RESOLUTION-AUTHORITY-MATRIX-HASH-MISMATCH",
+        )
+        if matrix_loaded is not None:
+            expected_matrix_ref = f"{matrix_loaded[1].get('matrix_id')}@{matrix_loaded[1].get('version')}"
+            if document.get("authority_basis", {}).get("matrix_ref", {}).get("ref") != expected_matrix_ref:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "CAPABILITY-RESOLUTION-AUTHORITY-MATRIX-IDENTITY-MISMATCH",
+                        f"Authority Matrix identity does not match: {expected_matrix_ref}",
+                    )
+                )
+
+        if requirement is not None and len(candidate_reports) == len(candidate_ids):
+            assessments = [assess_supply(requirement, report) for report in candidate_reports]
+            expected_comparisons = [assessment.to_mapping() for assessment in assessments]
+            if document.get("comparisons") != expected_comparisons:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "CAPABILITY-RESOLUTION-COMPARISON-DRIFT",
+                        "recorded supply comparisons do not match deterministic recomputation",
+                    )
+                )
+            expected_status, expected_selected = resolve_status(assessments)
+            if document.get("resolution_status") != expected_status:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "CAPABILITY-RESOLUTION-STATUS-DRIFT",
+                        f"recorded status does not match deterministic result: {expected_status}",
+                    )
+                )
+            if document.get("selected_supply_report_ref") != expected_selected:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "CAPABILITY-RESOLUTION-SELECTION-DRIFT",
+                        f"recorded selection does not match deterministic result: {expected_selected}",
+                    )
+                )
+
+    snapshot_ids: set[str] = set()
+    for path, document in documents.items():
+        if not isinstance(document, Mapping) or infer_document_kind(document) != "resolved_capability_snapshot":
+            continue
+        snapshot_ref = f"{document.get('snapshot_id')}@r{document.get('revision')}"
+        if snapshot_ref in snapshot_ids:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "RESOLVED-CAPABILITY-SNAPSHOT-IDENTITY-DUPLICATE",
+                    f"duplicate Resolved Capability Snapshot identity: {snapshot_ref}",
+                )
+            )
+            continue
+        snapshot_ids.add(snapshot_ref)
+        resolution_loaded = loaded_ref(
+            path,
+            document.get("resolution_ref"),
+            missing_code="RESOLVED-CAPABILITY-SNAPSHOT-RESOLUTION-MISSING",
+            hash_code="RESOLVED-CAPABILITY-SNAPSHOT-RESOLUTION-HASH-MISMATCH",
+        )
+        if resolution_loaded is None:
+            continue
+        resolution_path, resolution = resolution_loaded
+        resolution_ref = f"{resolution.get('resolution_id')}@r{resolution.get('revision')}"
+        if document.get("resolution_ref", {}).get("ref") != resolution_ref:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "RESOLVED-CAPABILITY-SNAPSHOT-RESOLUTION-IDENTITY-MISMATCH",
+                    f"Resolution identity does not match referenced document: {resolution_ref}",
+                )
+            )
+        if resolution.get("resolution_status") != "satisfied":
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "RESOLVED-CAPABILITY-SNAPSHOT-UNSATISFIED",
+                    "Snapshot requires a satisfied Capability Resolution",
+                )
+            )
+        for field in ("method_resolution_ref", "requirement_ref"):
+            if document.get(field) != resolution.get(field):
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "RESOLVED-CAPABILITY-SNAPSHOT-LINEAGE-DRIFT",
+                        f"Snapshot {field} does not match Capability Resolution",
+                    )
+                )
+
+        selected = document.get("selected_supply_report_ref")
+        selected_ref = selected.get("ref") if isinstance(selected, Mapping) else None
+        if selected_ref != resolution.get("selected_supply_report_ref"):
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "RESOLVED-CAPABILITY-SNAPSHOT-SELECTION-DRIFT",
+                    "Snapshot supply selection does not match Capability Resolution",
+                )
+            )
+        loaded_supply = loaded_ref(
+            path,
+            selected,
+            missing_code="RESOLVED-CAPABILITY-SNAPSHOT-SUPPLY-MISSING",
+            hash_code="RESOLVED-CAPABILITY-SNAPSHOT-SUPPLY-HASH-MISMATCH",
+        )
+        supply_entry = reports.get(str(selected_ref))
+        if loaded_supply is None or supply_entry is None:
+            continue
+        if loaded_supply[0] != supply_entry[0]:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "RESOLVED-CAPABILITY-SNAPSHOT-SUPPLY-PATH-MISMATCH",
+                    f"Snapshot path does not identify Supply Report: {selected_ref}",
+                )
+            )
+        supply_document = supply_entry[1]
+        copied_fields = {
+            "supply_identity": "supply_identity",
+            "effective_permissions": "required_permissions",
+            "data_egress": "data_egress_behavior",
+            "side_effects": "side_effects",
+        }
+        for snapshot_field, report_field in copied_fields.items():
+            if document.get(snapshot_field) != supply_document.get(report_field):
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "RESOLVED-CAPABILITY-SNAPSHOT-SUPPLY-FACT-DRIFT",
+                        f"Snapshot {snapshot_field} does not match selected Supply Report",
+                    )
+                )
+        expected_evidence_refs = [
+            item.get("artifact_ref")
+            for item in supply_document.get("conformance_evidence", [])
+            if isinstance(item, Mapping)
+        ]
+        if document.get("conformance_evidence_refs") != expected_evidence_refs:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "RESOLVED-CAPABILITY-SNAPSHOT-EVIDENCE-DRIFT",
+                    "Snapshot conformance evidence refs do not match selected Supply Report",
+                )
+            )
+        if resolution_path != resolutions.get(resolution_ref, (None, None))[0]:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "RESOLVED-CAPABILITY-SNAPSHOT-RESOLUTION-PATH-MISMATCH",
+                    f"Snapshot path does not identify Capability Resolution: {resolution_ref}",
+                )
+            )
+    return issues
+
+
 def _validate_method_resolutions(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     capability_indices = _capability_requirement_indices(documents)
@@ -2046,6 +2487,7 @@ def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     issues.extend(_validate_skill_need_set(documents))
     issues.extend(_validate_protocol_profile_set(documents))
     issues.extend(_validate_method_resolutions(documents))
+    issues.extend(_validate_capability_supply_chain(documents))
     issues.extend(_validate_research_mode_migrations(documents))
     issues.extend(_validate_decision_authority(documents))
     return issues

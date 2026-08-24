@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/capability-supply-common.schema.json",
+  "title": "Capability supply shared definitions",
+  "$defs": {
+    "versionedDocumentRef": {
+      "type": "object",
+      "required": ["ref", "document_path", "content_hash"],
+      "properties": {
+        "ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "document_path": { "$ref": "common.schema.json#/$defs/relativePath" },
+        "content_hash": { "$ref": "common.schema.json#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    },
+    "requirementRef": {
+      "type": "object",
+      "required": ["requirement_id", "document_path", "content_hash"],
+      "properties": {
+        "requirement_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "document_path": { "$ref": "common.schema.json#/$defs/relativePath" },
+        "content_hash": { "$ref": "common.schema.json#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    },
+    "component": {
+      "type": "object",
+      "required": ["component_kind", "component_ref", "version", "content_hash"],
+      "properties": {
+        "component_kind": {
+          "enum": ["procedure", "tool", "skill", "adapter", "provider"]
+        },
+        "component_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "version": { "$ref": "common.schema.json#/$defs/semver" },
+        "content_hash": { "$ref": "common.schema.json#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    },
+    "supplyIdentity": {
+      "type": "object",
+      "required": ["supply_kind", "implementation_ref", "implementation_version", "content_hash", "components"],
+      "properties": {
+        "supply_kind": { "enum": ["no-skill", "tool", "adapter-provider", "skill"] },
+        "implementation_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "implementation_version": { "$ref": "common.schema.json#/$defs/semver" },
+        "content_hash": { "$ref": "common.schema.json#/$defs/sha256" },
+        "components": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/component" }
+        },
+        "skill_lifecycle_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "runtime_eligibility_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "supply_kind": { "const": "skill" } },
+            "required": ["supply_kind"]
+          },
+          "then": { "required": ["skill_lifecycle_ref", "runtime_eligibility_ref"] },
+          "else": {
+            "not": {
+              "anyOf": [
+                { "required": ["skill_lifecycle_ref"] },
+                { "required": ["runtime_eligibility_ref"] }
+              ]
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "permissionBoundary": {
+      "$ref": "capability-requirement.schema.json#/$defs/permissionCeiling"
+    },
+    "dataEgressBoundary": {
+      "$ref": "capability-requirement.schema.json#/$defs/dataEgress"
+    },
+    "sideEffectBoundary": {
+      "$ref": "capability-requirement.schema.json#/$defs/sideEffects"
+    },
+    "comparisonResult": {
+      "type": "object",
+      "required": ["check", "status", "reason"],
+      "properties": {
+        "check": {
+          "enum": [
+            "capability",
+            "inputs",
+            "outputs",
+            "artifacts",
+            "permission",
+            "data-egress",
+            "side-effects",
+            "deterministic-conformance",
+            "availability",
+            "skill-runtime-eligibility"
+          ]
+        },
+        "status": { "enum": ["pass", "fail", "unknown", "not-applicable"] },
+        "reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

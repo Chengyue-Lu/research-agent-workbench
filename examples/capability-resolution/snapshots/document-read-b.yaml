@@ -1,0 +1,63 @@
+schema_version: 0.1.0
+snapshot_id: RCS-DOCUMENT-READ-B
+revision: 1
+resolution_ref:
+  ref: CR-DOCUMENT-READ-B@r1
+  document_path: examples/capability-resolution/resolutions/document-read-b.yaml
+  content_hash: sha256:c4828f01b012e40d4ba8d175b3044be51f87d9f945e604a5c3a1c47730f171cc
+method_resolution_ref:
+  ref: MR-ROUTE-ES-FROZEN-001@r1
+  document_path: examples/method-resolutions/ROUTE-ES-FROZEN-001.yaml
+  content_hash: sha256:cf3e041887c9558a775027e5e254486973322ad763f3b15d2eb8504d185608e1
+requirement_ref:
+  requirement_id: document-read
+  document_path: registry/capabilities/requirements/document-read.yaml
+  content_hash: sha256:7cf374c2cbc8fbe9d0698fd3bdf209d7a3fc015c1fe485e06f8450cd7a38e916
+selected_supply_report_ref:
+  ref: supply-sandbox-document-reader-b@1.0.0
+  document_path: examples/capability-resolution/supply-reports/sandbox-document-reader-b.yaml
+  content_hash: sha256:6f065a53c486040ff4643d87bf2c67acdff76bb5f240c2b7e6e1ddc17149b009
+supply_identity:
+  supply_kind: adapter-provider
+  implementation_ref: fixture-sandbox-document-reader-b
+  implementation_version: 1.0.0
+  content_hash: sha256:39713bbe778965e519a290e65caed78e92d0d9f590ab8acc2f5bbf9d88c1cdb7
+  components:
+    - component_kind: adapter
+      component_ref: fixture-document-adapter-b
+      version: 1.0.0
+      content_hash: sha256:39713bbe778965e519a290e65caed78e92d0d9f590ab8acc2f5bbf9d88c1cdb7
+    - component_kind: provider
+      component_ref: fixture-local-sandbox-provider-b
+      version: 1.0.0
+      content_hash: sha256:39713bbe778965e519a290e65caed78e92d0d9f590ab8acc2f5bbf9d88c1cdb7
+effective_permissions:
+  filesystem: read-approved-inputs-and-write-task-artifacts
+  network: forbidden
+  external_write: false
+data_egress:
+  policy: forbidden
+  allowed_payloads: []
+  forbidden_payloads: [private-full-text, unpublished-results, unrelated-project-context]
+side_effects:
+  policy: allowlisted-only
+  allowed_effects: [task-local-read-cache]
+conformance_evidence_refs:
+  - path: examples/capability-resolution/conformance/sandbox-document-reader-b.json
+    sha256: 39713bbe778965e519a290e65caed78e92d0d9f590ab8acc2f5bbf9d88c1cdb7
+authority_eligibility:
+  decision_kind: skill-tool-binding
+  operation: validate
+  actor_class: deterministic-resolver
+  required_asserted_facts: [capability-snapshot-frozen, permission-intersection-satisfied]
+  effect: eligibility-not-authorization
+limitations:
+  - This Snapshot is an execution input only after external policy and authority requirements are satisfied.
+  - Fixture-only availability is not live Provider conformance.
+boundaries:
+  execution_input: true
+  method_decision: false
+  permission_grant: false
+  claim_effect: false
+  human_decision: false
+  fallback_authority: false

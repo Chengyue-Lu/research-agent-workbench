@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/resolved-capability-snapshot.schema.json",
+  "title": "Resolved Capability Snapshot",
+  "$comment": "A frozen execution input derived from a satisfied Capability Resolution. It does not itself grant permission, complete a Human decision, select fallback, or alter Method and Claim semantics.",
+  "x-rwb-document-kind": "resolved_capability_snapshot",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "snapshot_id",
+    "revision",
+    "resolution_ref",
+    "method_resolution_ref",
+    "requirement_ref",
+    "selected_supply_report_ref",
+    "supply_identity",
+    "effective_permissions",
+    "data_egress",
+    "side_effects",
+    "conformance_evidence_refs",
+    "authority_eligibility",
+    "limitations",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "snapshot_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "revision": { "type": "integer", "minimum": 1 },
+    "resolution_ref": {
+      "allOf": [
+        { "$ref": "capability-supply-common.schema.json#/$defs/versionedDocumentRef" },
+        {
+          "properties": {
+            "ref": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*@r[1-9][0-9]*$"
+            }
+          }
+        }
+      ]
+    },
+    "method_resolution_ref": {
+      "allOf": [
+        { "$ref": "capability-supply-common.schema.json#/$defs/versionedDocumentRef" },
+        {
+          "properties": {
+            "ref": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*@r[1-9][0-9]*$"
+            }
+          }
+        }
+      ]
+    },
+    "requirement_ref": {
+      "$ref": "capability-supply-common.schema.json#/$defs/requirementRef"
+    },
+    "selected_supply_report_ref": {
+      "$ref": "capability-supply-common.schema.json#/$defs/versionedDocumentRef"
+    },
+    "supply_identity": {
+      "$ref": "capability-supply-common.schema.json#/$defs/supplyIdentity"
+    },
+    "effective_permissions": {
+      "$ref": "capability-supply-common.schema.json#/$defs/permissionBoundary"
+    },
+    "data_egress": {
+      "$ref": "capability-supply-common.schema.json#/$defs/dataEgressBoundary"
+    },
+    "side_effects": {
+      "$ref": "capability-supply-common.schema.json#/$defs/sideEffectBoundary"
+    },
+    "conformance_evidence_refs": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/fileRef" },
+      "minItems": 1
+    },
+    "authority_eligibility": {
+      "type": "object",
+      "required": ["decision_kind", "operation", "actor_class", "required_asserted_facts", "effect"],
+      "properties": {
+        "decision_kind": { "const": "skill-tool-binding" },
+        "operation": { "const": "validate" },
+        "actor_class": { "const": "deterministic-resolver" },
+        "required_asserted_facts": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["capability-snapshot-frozen", "permission-intersection-satisfied"]
+          },
+          "allOf": [
+            { "contains": { "const": "capability-snapshot-frozen" } },
+            { "contains": { "const": "permission-intersection-satisfied" } }
+          ]
+        },
+        "effect": { "const": "eligibility-not-authorization" }
+      },
+      "additionalProperties": false
+    },
+    "limitations": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "boundaries": {
+      "type": "object",
+      "required": [
+        "execution_input",
+        "method_decision",
+        "permission_grant",
+        "claim_effect",
+        "human_decision",
+        "fallback_authority"
+      ],
+      "properties": {
+        "execution_input": { "const": true },
+        "method_decision": { "const": false },
+        "permission_grant": { "const": false },
+        "claim_effect": { "const": false },
+        "human_decision": { "const": false },
+        "fallback_authority": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

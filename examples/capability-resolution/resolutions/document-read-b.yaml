@@ -1,0 +1,47 @@
+schema_version: 0.1.0
+resolution_id: CR-DOCUMENT-READ-B
+revision: 1
+method_resolution_ref:
+  ref: MR-ROUTE-ES-FROZEN-001@r1
+  document_path: examples/method-resolutions/ROUTE-ES-FROZEN-001.yaml
+  content_hash: sha256:cf3e041887c9558a775027e5e254486973322ad763f3b15d2eb8504d185608e1
+requirement_ref:
+  requirement_id: document-read
+  document_path: registry/capabilities/requirements/document-read.yaml
+  content_hash: sha256:7cf374c2cbc8fbe9d0698fd3bdf209d7a3fc015c1fe485e06f8450cd7a38e916
+candidate_supply_report_refs:
+  - ref: supply-sandbox-document-reader-b@1.0.0
+    document_path: examples/capability-resolution/supply-reports/sandbox-document-reader-b.yaml
+    content_hash: sha256:6f065a53c486040ff4643d87bf2c67acdff76bb5f240c2b7e6e1ddc17149b009
+comparisons:
+  - supply_report_ref: supply-sandbox-document-reader-b@1.0.0
+    checks:
+      - {check: capability, status: pass, reason: Supply reports the required capability.}
+      - {check: inputs, status: pass, reason: Supply covers every required input class.}
+      - {check: outputs, status: pass, reason: Supply covers every required output class.}
+      - {check: artifacts, status: pass, reason: Supply produces every required artifact class.}
+      - {check: permission, status: pass, reason: Supply permissions are within the Requirement ceiling.}
+      - {check: data-egress, status: pass, reason: Supply data-egress behavior is within the Requirement ceiling.}
+      - {check: side-effects, status: pass, reason: Supply side effects are within the Requirement ceiling.}
+      - {check: deterministic-conformance, status: pass, reason: At least one deterministic conformance record reports pass.}
+      - {check: availability, status: pass, reason: Supply availability is reported as 'available' within scope 'fixture-only'.}
+      - {check: skill-runtime-eligibility, status: not-applicable, reason: This Core supply is not a Skill and needs no Skill lifecycle decision.}
+    eligible: true
+resolution_status: satisfied
+selected_supply_report_ref: supply-sandbox-document-reader-b@1.0.0
+authority_basis:
+  matrix_ref:
+    ref: rwb-decision-authority@1.0.0
+    document_path: registry/authority/decision-authority-matrix.yaml
+    content_hash: sha256:960c95754f8a78fe39b3f2583414ca9c7006b1274c9267db0149558c321f5e45
+  decision_kind: skill-tool-binding
+  selection_effect: candidate-for-snapshot
+  eligibility_required_after_snapshot: true
+limitations:
+  - Satisfaction means one structurally eligible fixture supply; it does not prove live Provider availability or grant execution permission.
+boundaries:
+  method_contract: unchanged
+  automatic_fallback: false
+  permission_grant: false
+  claim_effect: false
+  human_decision: false
