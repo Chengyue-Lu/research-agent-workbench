@@ -25,15 +25,21 @@ Skill Need。若 Runtime 可以把失败自动升级为 Need、Candidate 或新�
 ### 1. Capability-first Runtime 与可选 Maintainer Evolution 分成两个环
 
 ```text
-Runtime inner loop
-Task / Method
-  → Capability Requirement
-  → Capability Supply Report(s)
-  → Capability Resolution
-  → frozen Resolved Capability Snapshot
-  → Resolved Execution View
-  → Execution
-  → Trace / Receipt / bounded Capability Diagnostic
+Capability-first inner loop
+Research Control / Capability Resolver
+  Task / Method
+    → Capability Requirement
+    → explicitly supplied Capability Supply Report(s)
+    → compare / qualify / resolve / select
+    → Capability Resolution
+    → frozen Resolved Capability Snapshot
+    → Resolved Execution View
+
+Execution Host / Runtime consumer
+  exact frozen Snapshot + Resolved Execution View
+    → Execution
+    → actual facts / Trace / Receipt
+    → bounded Capability Diagnostic or re-resolution request
 
 Maintainer evolution outer loop
 Maintainer triage
@@ -47,9 +53,10 @@ Maintainer triage
   → Capability Supply Report
 ```
 
-Runtime 内环必须能在 Skill Need、Candidate、Trial、Evaluation、Admission 和完整 Lifecycle 全部缺席时
-闭合。no-Skill、direct Tool、procedure 与 Adapter/Provider 是一等供给路径，不创建占位 Skill 或 Skill
-Assignment。
+Capability-first 内环必须能在 Skill Need、Candidate、Trial、Evaluation、Admission 和完整 Lifecycle 全部
+缺席时闭合。no-Skill、direct Tool、procedure 与 Adapter/Provider 是一等供给路径，不创建占位 Skill 或
+Skill Assignment。Capability Resolver 是唯一 Supply selection owner；Execution Host 不拥有第二套选择、
+replanning、fallback 或 rebinding authority。
 
 ### 2. 两个环只通过两个有界单向端口连接
 
@@ -65,8 +72,10 @@ Assignment。
 - 最小 Release 与 named Human Admission provenance。
 
 投影明确排除 Need 正文、Candidate、Trial/Evaluation 结果、评分指标、审议过程与完整 Lifecycle 历史。
-Runtime-side catalog 可以从投影构造 Skill 类型的 Capability Supply Report；Execution Host 只消费冻结
-Snapshot 与 Resolved Execution View，不直接解析 Lifecycle。
+Runtime-side catalog 可以从投影构造 Skill 类型的候选 Capability Supply Report；是否选择该 Report 仍由
+Capability Resolver 决定。Execution Host 只消费冻结 Snapshot 与 Resolved Execution View，不直接解析
+Lifecycle。`SkillReleaseProjection` 只属于 Skill-bearing Runtime Extension，不是 no-Skill、direct Tool、
+procedure 或 Adapter/Provider Core 的全局输入。
 
 **Runtime → Maintainer：`CapabilityDiagnostic`**
 
@@ -79,7 +88,8 @@ Candidate、Trial、Promotion、Release 或安装。只有具名 Maintainer 完�
 
 | 参与方 | 可以 | 不可以 |
 |---|---|---|
-| Runtime / Execution Host | 消费已发布供给；在冻结 Task/Method/permission 内检索、选择和局部重规划；记录 Trace、Receipt 与 bounded Diagnostic | 创建 Need/Candidate；执行 admission/promotion；改写 Release/Lifecycle；自动安装/升级 Skill；扩大权限；修改当前 Task、Method、Claim、Gate 或 Snapshot |
+| Research Control / Capability Resolver | 接收显式候选 Supply Reports；在既有 ceilings 内 compare、qualify、resolve、select；生成新的 Resolution 与 Snapshot revision，供上游 View producer 按 frozen selection 生成 Resolved Execution View | 自动排序或 fallback；创建 Need/Candidate；扩大 permission/data-egress/side-effect ceiling；把 ambiguous 伪装为 selection |
+| Execution Host / Runtime consumer | 消费 exact frozen Snapshot 与 Resolved Execution View；执行已冻结调用；报告 actual facts；记录 Trace、Receipt、bounded Diagnostic 或 re-resolution request；在不改变 Capability/Supply binding 时进行非语义执行调度 | 自行重新选择 Supply；把 Supply A 静默替换成 Supply B；在当前 Snapshot/View 内 rebind；automatic fallback；以“局部重规划”修改冻结执行输入；创建 Need/Candidate；执行 admission/promotion；改写 Release/Lifecycle；扩大权限或修改当前 Task/Method/Claim/Gate/Snapshot |
 | Maintainer Evolution | 维护 Need；隔离地 trial/evaluate Candidate；由具名人类决定 admission；发布不可变 Release 与投影 | 控制当前执行；回写运行中的 Task/Method/Claim/Gate/Snapshot；以 eligibility 或 metadata 授予权限 |
 | Release metadata | 声明 supply capability、依赖、compatibility 和权限/副作用上限 | 取代 Task/Profile/DataPolicy/Host authority，或把 ceiling 解释为 grant |
 
@@ -93,15 +103,28 @@ binding、permission grant 或 execution authorization。`Resolved Execution Vie
 Provider/Adapter/Model/Runtime/Host、external pin、freshness，以及 Task、Profile、可选 Skill、DataPolicy
 与 Host policy 的权限交集。
 
-供给、Release 或 Registry 变化不能静默改变运行中的 Snapshot。需要替换供给时，必须产生新的
-Capability Resolution、Snapshot revision 与 Resolved Execution View。
+供给、Release 或 Registry 变化不能静默改变运行中的 Snapshot。Execution Host 检测到当前供给失败或
+变化时，只能报告 bounded Diagnostic / re-resolution request；需要替换供给时必须走完整上游流程：
+
+```text
+Execution detects failure/change
+  → bounded Diagnostic / re-resolution request
+  → Research Control / Capability Resolver
+  → new Capability Resolution
+  → new Snapshot revision
+  → new Resolved Execution View
+  → Execution Host
+```
+
+当前 Snapshot/View 内不存在 Supply 替换、rebinding 或 automatic fallback seam。
 
 ### 5. 两种验证边界
 
 - `maintainer-full`：保留当前 repository-wide Need/Lifecycle/Gate 闭包、发布身份检查和历史重放；v0.1
   Method→Need closure 属于此 profile。
 - `runtime-bundle`：未来只接受显式 closure manifest 和最小传递闭包；禁止把目录作为隐式输入、禁止
-  `rglob(registry, examples)`、禁止导入 Need/Candidate/Evaluation/Lifecycle validator，并允许零 Skill。
+  `rglob(registry, examples)`、禁止导入 Need/Candidate/Evaluation/Lifecycle validator，并允许零 Skill；
+  Release Projection 只在 manifest 明确请求 Skill-bearing extension 时出现。
 
 现有 `load_validated_capability_snapshot()` 归类为 `maintainer-full` 的仓库结构验证 helper，不是最终
 `runtime-bundle` API。Issue #35 只冻结这两个 profile 的语义与验收，不在本 ADR 中新增 Schema 或代码。
@@ -110,8 +133,8 @@ Capability Resolution、Snapshot revision 与 Resolved Execution View。
 
 - Method Resolution v0.1、既有 `skill_need_refs`、Skill Need Registry 和 Lifecycle v2 原字节保持不变；
 - 它们继续用于 `maintainer-full`、发布审计与历史重放；
-- Runtime bundle 通过 Capability Requirement、Supply Report、Snapshot 和发布投影闭合，不递归解引用
-  Method 的 Skill Need；
+- Runtime bundle Core 通过 Capability Requirement、Supply Report 与 Snapshot 闭合，不递归解引用 Method
+  的 Skill Need；只有 Skill-bearing extension 额外消费发布投影；
 - 既有 Skill Supply→Lifecycle 引用只形成 Maintainer 侧结构资格，不能成为新的 Runtime 依赖。
 
 ## 后果
@@ -119,6 +142,7 @@ Capability Resolution、Snapshot revision 与 Resolved Execution View。
 优点：
 
 - Runtime 可以独立部署 no-Skill/direct Tool/Adapter 路径；
+- Topic 4 Core 只依赖 Runtime Bundle/Profile 与已接受的 supply-neutral 契约，不被 Skill 发布机制阻塞；
 - Skill 治理历史不再进入普通执行读取面，减小上下文、隐私和供应链暴露；
 - 发布身份、hash 与最小 provenance 仍可审计；
 - 执行失败与产品演化之间保留具名人类 triage，避免自批准和在线语义漂移。
@@ -131,10 +155,15 @@ Capability Resolution、Snapshot revision 与 Resolved Execution View。
 
 ## 实施顺序
 
-1. 本 ADR 与相关稳定/实现文档先完成 R2 cross-owner review；
-2. Runtime Bundle/Profile 与 Skill Release Projection/Publisher 可在两个独立 PR 中并行实现；
-3. 两者都稳定后，Topic 4 才接入 Resolved Execution View；
-4. Capability Diagnostic/feedback bridge 等待 Failure/Trace 与 privacy 语义稳定，不阻塞 Topic 4。
+1. ADR-0019 与相关稳定/实现文档完成 R2 cross-owner acceptance；
+2. 实现 Runtime Bundle/Profile；这是 Topic 4 Core 的 Issue #35 前置；
+3. Runtime Bundle/Profile 稳定后，Topic 4 Core 可以为 no-Skill、direct Tool、procedure 与
+   Adapter/Provider 实现 supply-neutral Resolved Execution View，不等待 Skill 发布机制；
+4. Skill Release Projection/Publisher 作为独立 Skill Runtime Extension 实现，可与 Topic 4 Core 并行；
+5. 只有 Projection contract 已接受且 exact-pin validation 可用后，才启用 Skill-bearing Runtime binding；
+   Projection 缺失或不匹配时只对 Skill new-binding fail closed，禁止回退读取完整 Lifecycle；
+6. Capability Diagnostic/feedback bridge 等待 Failure/Trace 与 privacy 语义稳定，保持 PARKED，不阻塞
+   Topic 4 Core。
 
 ## 非目标
 
@@ -159,4 +188,7 @@ Release service、中央 Registry、数据库、telemetry、provider/model routi
 - 路诚钺确认 Capability/Skill、Need/Evaluation/Admission 语义及保留权威；
 - 黄毅确认 Runtime 读取面、Provider/Adapter/API 责任和 Topic 4 接口未被 Maintainer 外环侵入；
 - 两位 owner 均确认 eligibility、Snapshot 和 Release metadata 不构成执行授权；
+- 两位 owner 均确认 Capability Resolver 是唯一 Supply selection owner，Execution Host 不能在冻结输入内
+  重新选择、rebind 或 fallback；
+- 两位 owner 均确认 Skill Release Projection 只 Gate Skill-bearing path，不 Gate Topic 4 Core；
 - 对抗性证据证明 Runtime 概念主链可在 Evolution 对象完全缺席时闭合。

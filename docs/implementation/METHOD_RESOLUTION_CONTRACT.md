@@ -73,7 +73,8 @@ Capability Requirement 的正式字段、不可变 identity 和 path/hash 闭合
 v0.1 Method Resolution 的 `skill_need_refs` 与现有 Repository validation closure 保持原样，用于
 `maintainer-full`、发布完整性检查和历史重放。它们不构成未来 Runtime bundle 的传递依赖：
 
-- Runtime 从 Method/Task 进入 `Capability Requirement → Supply Report → Resolution → Snapshot`；
+- Research Control / Capability Resolver 从 Method/Task 进入 `Capability Requirement → Supply Report →
+  Resolution → Snapshot`；Runtime consumer 从 exact frozen Snapshot 与 Resolved Execution View 开始；
 - Runtime bundle 不解析 Skill Need Registry，也不因 Method 引用了 Need 而要求加载 Candidate、Evaluation
   或 Lifecycle；
 - capability gap 或 execution failure 不修改 Method Resolution，也不自动创建 Skill Need；

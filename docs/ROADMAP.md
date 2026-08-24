@@ -16,7 +16,7 @@
 | C — Research State & Verification | 保存跨 Runtime 的研究意义 | State/Frontier、Failure、Evidence–Claim relation、Method Trace | A；部分依赖 B |
 | D — Evaluation Loop | 证明新增机制的净增量 | Evaluation Manifest、baseline harness、method/skill metrics | A；minimal Manifest 在 M9-002 稳定后并行启动 |
 | E — Strategy & Governed Evolution | 有界吸收新策略和外部候选 | Strategy interface、candidate pipeline、merge/prune/promotion | B+C+D |
-| F — Execution Reintegration | 让 Runtime 消费冻结科研契约 | runtime bundle、release projection、resolved execution、Trace/Receipt integration | ADR-0019；M9-005 Core；Phase C minimum 再解除 Topic 5 |
+| F — Execution Reintegration | 让 Runtime 消费冻结科研契约 | Core：runtime bundle、supply-neutral resolved execution、Trace/Receipt integration；可选 Skill Extension：release projection、Skill-bearing binding | ADR-0019；M9-005 Core；Phase C minimum 再解除 Topic 5；release projection 不 Gate Topic 4 Core |
 
 Phase 不是一条科研 DAG。它只表示框架接口的构建依赖；真实 Task 仍按 Mode/Action 选择路径。
 
@@ -105,22 +105,35 @@ migration 均保持 exact-pin replay。
 - Capability Resolution boundary；
 - Resolved Capability Snapshot Core。
 
-依据 [ADR-0019](decisions/0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md)，Topic 4 进入实现还必须
-分别满足以下 Runtime-side Gate：
+依据 [ADR-0019](decisions/0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md)，Topic 4 将 Core 与可选
+Skill Runtime Extension 拆成两条依赖。
+
+**Topic 4 Core Gate**：
 
 - `runtime-bundle` 使用显式 closure manifest，不接受目录输入，不递归扫描 `registry/examples`，import
   graph 不包含 Skill Need、Candidate、Evaluation 或 Lifecycle validator；
 - no-Skill、direct Tool、procedure 与 Adapter/Provider 可以在零 Skill、零 Evolution Registry 情况下形成
   Resolved Execution View；
-- Skill new-binding 只消费不可变、exact hash-pinned 的 `SkillReleaseProjection`；投影未实现或不匹配时
-  fail closed，不回退到完整 Lifecycle；
 - 供给更新创建新的 Resolution/Snapshot/View，不能改变运行中的冻结输入；gap/failure 不自动创建 Skill Need。
 
-解冻范围只包括 Runtime 在 Topic 4 内补齐 external hash pin、执行时 freshness、精确
-Provider/Adapter/Model/Runtime binding、Task/Profile/Skill/Assignment 与 DataPolicy 的最终交集后，消费
-schema-valid、closure-valid 的 `runtime-execution` Snapshot、报告 actual execution facts，并执行
-permission/data-egress/side-effect boundary。automatic fallback、model auto-routing、multi-Agent
-orchestration、critic voting、hidden routing，以及 Runtime 修改 Method、Claim 或 Gate 继续禁止。
+Runtime Bundle/Profile 是 Issue #35 对 Topic 4 Core 的前置。M9-005 accepted contracts 与该 profile 稳定后，
+Core 可以独立实现 supply-neutral Resolved Execution View 并推进 no-Skill/direct Tool/procedure/
+Adapter-Provider 路径，不等待 SkillReleaseProjection。
+
+**Skill Runtime Extension Gate**：
+
+- Skill new-binding 只消费不可变、exact hash-pinned 的 `SkillReleaseProjection`；
+- Projection contract 被接受且 exact-pin validation 可用后，才启用 Skill-bearing binding；
+- 投影未实现、缺失、stale 或不匹配时，Skill new-binding fail closed，且不得回退读取完整 Lifecycle；
+- Skill Extension 可与 Topic 4 Core 并行推进，不阻塞任何非 Skill Core 路径。
+
+解冻范围只包括 Topic 4 的上游 Research Control / View producer 冻结 external hash pin、执行时 freshness、
+精确 Provider/Adapter/Model/Runtime/Host binding，以及 Task/Profile/DataPolicy/Host policy 与 selected supply
+ceilings 的最终收紧交集；仅在 Skill Extension 存在时加入可选 Skill/Assignment。Execution Host 只消费
+schema-valid、closure-valid 的 `runtime-execution` Snapshot 与 exact frozen View、报告 actual execution facts，
+并执行 permission/data-egress/side-effect boundary。它不得重新选择 Supply、在当前 View 内 rebind 或执行
+automatic fallback；model auto-routing、multi-Agent orchestration、critic voting、hidden routing，以及
+Runtime 修改 Method、Claim 或 Gate 继续禁止。
 
 ## 4. Phase C：Research State 与 Verification
 
@@ -162,7 +175,8 @@ distance、rework、context、cost 和 completion time。确定性评分与盲�
 第一版 Strategy 只需 `direct` 加至多一个实验策略，且 direct 永远保留为基线。外部发现、自动
 生成、repair/merge/prune 只作用于 candidate。
 
-Execution reintegration 不授权 Runtime 定义 Mode、Claim、Skill fallback 或权限放宽。接入前必须
+Execution reintegration 不授权 Runtime 定义 Mode、Claim、supply/Skill fallback、rebinding、silent
+replacement 或权限放宽。接入前必须
 解决 from-state predecessor、严格 completion marker、Evidence source binding、Tool side-effect
 accounting、deadline/cancellation 和 current-main fixture 再生等已知问题。
 

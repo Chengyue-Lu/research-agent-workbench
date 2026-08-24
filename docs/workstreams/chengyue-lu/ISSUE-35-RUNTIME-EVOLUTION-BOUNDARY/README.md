@@ -7,7 +7,7 @@
 - 基线：`develop@aeca805e4dbb43b356c7f6da8c1262c9f6220569`
 - 目标 base：`develop`
 - 工作分支：`codex/issue-35-runtime-evolution-boundary`
-- 状态：docs-only 实现与本地确定性验证已完成；等待 R2 cross-owner acceptance
+- 状态：PR #36 两项 architecture blocker 已按 owner review 收紧；静态 diff 与独立架构复审通过；ADR 保持 Proposed，等待 final architecture review
 - 对应讨论：[Issue #35](https://github.com/Chengyue-Lu/research-agent-workbench/issues/35)
 - 前置集成：[PR #33](https://github.com/Chengyue-Lu/research-agent-workbench/pull/33)
 
@@ -63,7 +63,8 @@ PR #33 最终 head `4d86c4b6d1c2acf94e87a833bfe38ba57a15ffbc` 与合并后的 `d
 - ADR-0019：双环、单向端口、authority matrix、兼容边界与实施顺序；
 - Stable Architecture / Skill System：Capability-first Runtime 的正向系统模型；
 - Method/Capability/Need/Lifecycle contracts：`maintainer-full` 与 future `runtime-bundle` 的读取边界；
-- Roadmap Topic 4 Gate：最小闭包、零 Skill、release projection 与 frozen-view 要求；
+- Roadmap Topic 4 Core Gate 与独立 Skill Runtime Extension Gate：最小闭包、零 Skill、条件发布投影与
+  frozen-view 要求；
 - [Authority Basis](AUTHORITY_BASIS.md)、[Risk Ledger](RISK_LEDGER.md)与[Validation](VALIDATION.md)。
 
 ## 5. 外部证据使用边界
@@ -92,11 +93,14 @@ ADR 的 Kubernetes、OPA、OCI、TUF、in-toto 与 Toolformer 链接均为 2026-
 4. 两位 owner 接受 [Authority Basis](AUTHORITY_BASIS.md)及对抗性证据；
 5. ADR-0019 从 `Proposed` 改为 `Accepted` 后，黄毅再次确认最终 diff。
 
-停止于文档边界；后续代码拆为 Runtime Bundle/Profile、Skill Release Projection/Publisher 和 Topic 4
-Resolved Execution Integration 三个有依赖顺序的实现任务。Capability Diagnostic/feedback bridge 保持
-PARKED，等待 Phase C Failure/Trace 与 privacy 语义稳定。
+停止于文档边界；后续实现分为两条 lane：Runtime Bundle/Profile 是 Topic 4 Core 前置，稳定后 Core 可为
+no-Skill、direct Tool、procedure 与 Adapter/Provider 独立实现 supply-neutral Resolved Execution View；Skill
+Release Projection/Publisher 是可并行的独立 Extension，只 Gate Skill-bearing binding。Projection 缺失时
+Skill new-binding fail closed，但不阻塞 Core。Capability Diagnostic/feedback bridge 保持 PARKED，等待
+Phase C Failure/Trace 与 privacy 语义稳定。
 
 ## 8. 下一动作
 
-提交 R2 cross-owner review；在具名接受前保持 ADR-0019 为 `Proposed`，不在本 workstream 开始后续
-代码实现。
+在修复提交上请求 final architecture review；在具名接受前保持 ADR-0019 为 `Proposed`，不在本 workstream
+开始后续代码实现，也不直接合并。owner 接受修复后的边界后，另做 `Proposed → Accepted` 状态同步，
+并再次请求黄毅确认最终状态 diff。

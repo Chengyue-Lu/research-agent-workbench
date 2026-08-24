@@ -229,5 +229,6 @@ Phase B 只有在以下条件均有证据时收口：
 - Skill Supply→Lifecycle 只形成 Maintainer 侧结构资格；Runtime 新绑定未来只消费已发布、不可变的
   `SkillReleaseProjection`；
 - no-Skill、direct Tool、procedure 与 Adapter/Provider 必须在零 Skill、零 Evolution Registry 时闭合；
-- Topic 4 的 runtime-bundle、release projection 与 Resolved Execution View 属于后续独立实现，不改变
-  M9-001～006 已完成的 Schema、fixture、migration 或 replay 证据。
+- Topic 4 Core 的 runtime-bundle 与 supply-neutral Resolved Execution View 属于后续实现；release projection
+  是独立、可并行的 Skill-bearing extension，只 Gate Skill new-binding。二者均不改变 M9-001～006 已完成的
+  Schema、fixture、migration 或 replay 证据。

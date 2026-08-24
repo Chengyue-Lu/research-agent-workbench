@@ -40,8 +40,9 @@ flowchart TB
 | Skill | 经证明有净增量的窄方法程序 | Agent 执行；不拥有任务或科学决定 |
 | Tool | 具有权限与副作用元数据的可调用能力 | Agent / Adapter |
 | Capability Requirement | 与具体 Skill、Tool、Adapter 或 Provider 无关的需求与 ceiling | Supply Report、Capability Resolution |
-| Capability Supply Report | 一个具体供给的 identity、能力、I/O、边界与证据事实 | Capability Resolution |
-| Resolved Capability Snapshot | 一次确定性比较所冻结的需求、供给、证据与 supply-side boundary | Resolved Execution View |
+| Capability Supply Report | 一个具体供给的 identity、能力、I/O、边界与证据事实；不能选择自身 | Research Control / Capability Resolver |
+| Capability Resolution | Resolver 对显式候选的 deterministic compare、qualification 与唯一 selection；或 gap/ambiguous/blocked | Resolved Capability Snapshot |
+| Resolved Capability Snapshot | Resolver 对一次确定性选择所冻结的需求、供给、证据与 supply-side boundary | Resolved Execution View |
 | SkillReleaseProjection | 已准入不可变 Skill Release 的窄、只读发布视图 | Skill Supply Report；不暴露演化历史 |
 | Resolved Execution View | Snapshot 与 exact Host/Provider/Adapter/Model、freshness、DataPolicy 和权限交集 | Execution Host |
 | Assignment | 仅 Skill-bearing 路径所需的 Task、Profile、Skill 精确锁定；no-Skill/direct Tool 不创建 | Resolved Execution View |
@@ -82,14 +83,14 @@ Research Runtime 以 Capability-first 的内环执行任务；Skill Evolution �
 
 ```mermaid
 flowchart LR
-    subgraph R["Runtime inner loop"]
+    subgraph R["Capability-first inner loop"]
         TM["Task / Method"] --> CR["Capability Requirement"]
-        CR --> SR["Supply Report(s)"]
-        SR --> RS["Resolution"]
-        RS --> SS["Frozen Snapshot"]
+        CR --> SR["Explicit Supply Report(s)"]
+        SR --> RS["Research Control / Capability Resolver<br/>compare · qualify · resolve · select"]
+        RS --> SS["Frozen Resolution / Snapshot"]
         SS --> EV["Resolved Execution View"]
-        EV --> EX["Execution"]
-        EX --> TR["Trace / Receipt / bounded Diagnostic"]
+        EV --> EX["Execution Host<br/>consume exact frozen input"]
+        EX --> TR["actual facts / Trace / Receipt<br/>bounded Diagnostic or re-resolution request"]
     end
 
     subgraph M["Optional Maintainer evolution outer loop"]
@@ -105,9 +106,28 @@ flowchart LR
     TR -. "optional, local-by-default, redacted and consented" .-> MT
 ```
 
-Runtime 可以在冻结边界内检索供给、选择和局部重规划，但不能创建 Need/Candidate、评测、晋升或改写
-Skill。Maintainer 可以隔离地评测并发布 Release，但不能控制当前 Task、Method、Claim、Gate、权限或
-Snapshot。Release metadata 和 runtime eligibility 只声明供给事实与 ceiling，不能授予执行权限。
+Research Control / Capability Resolver 是唯一 Supply selection owner：它接收显式候选 Reports，在既有
+ceilings 内 compare、qualify、resolve、select，并生成新的 Resolution 与 Snapshot revision；上游 View
+producer 只能按该 frozen selection 生成 Resolved Execution View，不能再次选择。Execution Host / Runtime
+consumer 只消费 exact frozen Snapshot 与 View；它可以在不改变
+Capability/Supply binding 时做非语义执行调度，但不能重新选择、静默替换、rebind、automatic fallback，
+也不能用“局部重规划”修改当前 frozen execution input。
+
+当当前供给失效或变化时，Execution Host 只产生 bounded Diagnostic / re-resolution request；替换必须由
+上游 Resolver 生成全新的链：
+
+```text
+Execution detects failure/change
+  → bounded Diagnostic / re-resolution request
+  → Research Control / Capability Resolver
+  → new Capability Resolution
+  → new Snapshot revision
+  → new Resolved Execution View
+  → Execution Host
+```
+
+Maintainer 可以隔离地评测并发布 Release，但不能控制当前 Task、Method、Claim、Gate、权限或 Snapshot。
+Release metadata 和 runtime eligibility 只声明供给事实与 ceiling，不能授予执行权限。
 
 no-Skill、direct Tool、procedure 与 Adapter/Provider 路径在 Evolution 对象完全缺席时仍必须闭合。
 Runtime 对 gap/failure 最多形成 `CapabilityDiagnostic`；只有具名 Maintainer 的独立 triage 才能提出
@@ -127,9 +147,11 @@ Skill Need。完整决定见 [ADR-0019](decisions/0019-OPTIONAL-MAINTAINER-SKILL
 
 ## 7. 可替换执行边界
 
-核心只依赖 provider-neutral 的 Task、Capability Requirement/Snapshot、Resolved Execution View、可选
-Assignment、事件和工件接口。模型 API、Codex/OpenCode 等 Agent Runtime、MCP、CLI 或本地程序通过薄
-Adapter 接入。Adapter 映射能力和执行事实，不重新定义研究语义，也不把平台会话 ID 变成长期权威。
+Topic 4 Core 只依赖 provider-neutral 的 Task、Capability Requirement/Snapshot、Runtime Bundle/Profile、
+Resolved Execution View、事件和工件接口。no-Skill、direct Tool、procedure 与 Adapter/Provider 不依赖
+SkillReleaseProjection；可选 Assignment 与发布投影只属于 Skill-bearing extension。模型 API、
+Codex/OpenCode 等 Agent Runtime、MCP、CLI 或本地程序通过薄 Adapter 接入。Adapter 映射能力和执行事实，
+不重新定义研究语义，也不把平台会话 ID 变成长期权威。
 
 ## 8. 演进不变量
 
@@ -139,7 +161,8 @@ Adapter 接入。Adapter 映射能力和执行事实，不重新定义研究语�
 4. 高风险决定不能由执行者自批；
 5. Trace 记录事实，不记录隐藏推理，不保存秘密；
 6. Runtime 不读取完整 Need/Candidate/Evaluation/Lifecycle；Skill 路径只消费不可变发布投影；
-7. Supply、Release 或 Registry 变化只能产生新的 Resolution/Snapshot revision，不能改写运行中的执行输入；
+7. Supply、Release 或 Registry 变化只能由上游 Resolver 产生新的 Resolution/Snapshot/View；Execution Host
+   不能改写运行中的执行输入或在其中 rebind/fallback；
 8. 任何机制都可以在未证明价值或增加负担时被降级、替换或退役。
 
 当前实现覆盖见[实现状态](STATUS.md)，旧契约边界见[兼容性说明](compatibility/README.md)，概念细节见[模块设计](modules/)。

@@ -15,11 +15,11 @@ Agent、Runtime、validator、PR 作者或模型都不是 authority holder。
 
 | Actor / object | 可读 | 可写或决定 | 明确禁止 |
 |---|---|---|---|
-| Research Runtime | Task/Method refs、Requirement、Supply Reports、Resolution、Snapshot、可选 Release Projection | 冻结边界内选择供给、局部重规划、Trace/Receipt、bounded Diagnostic | Need/Candidate/Evaluation/Lifecycle/Release mutation；Admission/Promotion；Task/Method/Claim/Gate/permission expansion |
+| Research Control / Capability Resolver | Task/Method refs、Requirement、显式候选 Supply Reports、既有 ceilings | 作为唯一 Supply selection owner 执行 deterministic compare/qualification/resolution/selection；生成新的 Resolution 与 Snapshot revision | 自动排序或 fallback；把 ambiguous 伪装为 selection；创建 Need；扩大 permission/data-egress/side-effect ceiling |
+| Research Control / Resolved Execution View producer | exact Resolution/Snapshot、Task/Profile/DataPolicy/Host policy 与 execution identities | 按 frozen selection 冻结 exact View 和最终收紧交集 | 重新选择或替换 Supply；改变 Resolution；扩大任何 ceiling |
+| Execution Host / Runtime consumer | exact frozen Snapshot/Resolved Execution View 与 exact artifacts | 执行已冻结调用；报告 actual facts；写 Trace/Receipt、bounded Diagnostic 或 re-resolution request；不改变 binding 的非语义执行调度 | 自行重新选择 Supply；Supply A→B 静默替换；当前 Snapshot/View 内 rebinding；automatic fallback；通过局部重规划修改 frozen input；读取完整 Evolution Registry；Need/Candidate/Evaluation/Lifecycle/Release mutation；Admission/Promotion；Task/Method/Claim/Gate/permission expansion |
 | Maintainer Evolution | Need、Candidate、Trial/Evaluation refs、Admission、Lifecycle、Release | 隔离 trial/evaluation；具名 Human Admission；发布 immutable Release/Projection | 修改运行中的 Task/Method/Claim/Gate/Snapshot；把 eligibility 当成 authorization |
 | Release publisher | 已接受 Admission/Lifecycle 与 immutable package | 确定性派生只读 projection | 建立第二套可写真值；省略或改写 package hash；授予权限 |
-| Capability Resolver | Requirement、显式 Supply Reports、既有 ceilings | deterministic qualification、satisfied/gap/ambiguous/blocked、冻结 selection | 自动 fallback；创建 Need；扩大 permission/data-egress/side-effect ceiling |
-| Execution Host | frozen Snapshot/Execution View 与 exact artifacts | 执行已授权调用并报告实际事实 | 读取完整 Evolution Registry；按 active/latest 静默更新；改写冻结 View |
 
 ## 3. 决定规则
 
@@ -28,7 +28,20 @@ Agent、Runtime、validator、PR 作者或模型都不是 authority holder。
 3. 最终执行权限是 Task、Profile、DataPolicy、Host policy 与供给 ceilings 的收紧交集，任一输入不能单独放宽。
 4. no-Skill/direct Tool/procedure/Adapter 路径不得创建 Skill Assignment 或依赖 Evolution Registry。
 5. Skill path 只消费 exact version/hash 的发布投影；缺失、stale、mismatch 或 unsupported scope 一律 fail closed。
-6. Supply/Release/Registry 变化必须产生新的 Resolution/Snapshot/View，不能改变正在运行的 frozen input。
+6. SkillReleaseProjection 只 Gate Skill-bearing path；Topic 4 Core 的 no-Skill/direct Tool/procedure/
+   Adapter-Provider 路径不得等待该投影。
+7. Supply/Release/Registry 变化必须由唯一 selection owner 产生新的 Resolution/Snapshot/View，不能改变正在
+   运行的 frozen input。Execution Host 只能请求 re-resolution，不能原地 rebind 或 fallback。
+
+```text
+Execution detects failure/change
+  → bounded Diagnostic / re-resolution request
+  → Research Control / Capability Resolver
+  → new Capability Resolution
+  → new Snapshot revision
+  → new Resolved Execution View
+  → Execution Host
+```
 
 ## 4. Cross-owner acceptance
 

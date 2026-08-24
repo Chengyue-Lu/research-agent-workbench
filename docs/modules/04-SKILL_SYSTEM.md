@@ -78,18 +78,26 @@ source:
 
 ## 4. Capability Resolver
 
-长期 Runtime 解析以 `Capability Requirement` 为唯一供给中立的需求入口。Method Resolution 可以在
+长期 Capability 解析以 `Capability Requirement` 为唯一供给中立的需求入口。Method Resolution 可以在
 Maintainer/历史语义中同时精确引用既有 `Skill Need`，但 Runtime bundle 不沿该引用读取 Need。实际
 Tool/Skill/Adapter/Provider 各自形成 Capability Supply Report；Capability Resolution 在既有 authority
 与 permission/data-egress/side-effect ceiling 内比较 Report；Resolved Capability Snapshot 冻结供给侧
 选择，再由 Resolved Execution View 完成 exact execution binding 和最终权限交集。
 
 ```text
-Runtime: Capability Requirement → Supply Report → Resolution → Snapshot → Execution View
+Research Control / Capability Resolver:
+  Capability Requirement → explicit Supply Reports → Resolution/selection → Snapshot → Execution View
+
+Execution Host / Runtime consumer:
+  exact frozen Snapshot + Execution View → Execution → actual facts / Diagnostic / re-resolution request
 
 Maintainer: triage → Skill Need → Candidate → Evaluation → Human Admission
             → immutable Release → SkillReleaseProjection → Skill Supply Report
 ```
+
+Capability Resolver 是唯一 Supply selection owner。Execution Host 不得在冻结 Snapshot/View 内重新选择、
+rebind、静默替换或 automatic fallback；供给失效只产生 re-resolution request，由上游生成新的
+Resolution/Snapshot/View。
 
 `Capability Gap != Skill Need`。Runtime gap 或 execution failure 不创建 Skill Need，最多产生默认本地、
 脱敏且需同意才能外送的 bounded Diagnostic；Need 只能由具名 Maintainer 独立 triage 后正式发布。完整
@@ -122,7 +130,7 @@ expected increment、evaluation criteria、required evidence classes 和已知 d
 - 显式候选 Capability Supply Reports；
 - 已发布、exact-pin 的 SkillReleaseProjection（仅 Skill-bearing 路径）。
 
-处理顺序：
+以下处理顺序属于 Research Control / Capability Resolver；Runtime consumer 不重复执行 selection：
 
 1. 从 Task/Method 读取 Capability Requirement，不读取 Evolution Registry；
 2. 消费调用方显式提供的 Supply Reports，并应用 capability、I/O、artifact、permission、data-egress、
@@ -132,7 +140,8 @@ expected increment、evaluation criteria、required evidence classes 和已知 d
 5. 在合格候选中选择最小覆盖集；多个等价候选保持 ambiguous 或进入人工选择，不静默 fallback；
 6. 检查依赖、冲突、exact version/hash 与 freshness；
 7. 仅在选中 Skill 时生成 `Skill Assignment`，并冻结版本/哈希；
-8. 生成 supply-neutral Resolved Execution View，由 Runtime Adapter 显式执行。
+8. 由上游 producer 生成 supply-neutral、exact-bound 的 Resolved Execution View；Runtime Adapter 只消费
+   冻结 View 并显式执行。
 
 ## 5. Skill Assignment
 
@@ -255,6 +264,7 @@ Skill 若要求超出上层边界的动作，Resolver 必须阻断或裁剪，�
 - Skill 不能扩大权限或 Claim ceiling；
 - Skill 更新不会静默改变历史任务解释；
 - Runtime 在 Evolution Registry 完全缺席时仍能闭合 no-Skill/direct-tool 执行路径；
+- Execution Host 不能在冻结 Snapshot/View 内重新选择、rebind 或 fallback；
 - Runtime gap/failure 不会自动创建 Skill Need；
 - 未加载的 Skills 不占用子 Agent 正文上下文；
 - 相同 Task + Registry lock 得到相同候选集合；
@@ -268,8 +278,9 @@ publisher 只为唯一 active、已准入的版本生成精确投影；旧版本
 [ADR-0015](../decisions/0015-SKILL-LIFECYCLE-AND-EXACT-VERSION.md)。
 
 accepted Registry 与完整 Lifecycle 是 Maintainer truth，不是 Runtime catalog。未来 publisher 从已准入、
-不可变 Release 确定性派生 SkillReleaseProjection；Runtime 通过该投影构造 Supply Report，并在冻结
-Snapshot/Execution View 中 exact-pin。投影不得复制 Need、Trial/Evaluation 或审议历史。
+不可变 Release 确定性派生 SkillReleaseProjection；仅 Skill-bearing extension 的 runtime-side catalog 通过
+该投影构造候选 Supply Report，Capability Resolver 选择后由上游 View producer 在 Snapshot/Execution View
+中 exact-pin，Execution Host 只消费。投影不得复制 Need、Trial/Evaluation 或审议历史。
 
 外部候选留在 candidate inventory；发现、下载或参考状态不会自动进入 accepted Registry。未被 Assignment 选择的 Skill 正文和 references 不进入任务上下文。候选实现与评估工件留在隔离的实验路径，只有通过人工 Gate 才能提升。
 

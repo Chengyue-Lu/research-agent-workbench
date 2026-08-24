@@ -62,8 +62,10 @@ Research Runtime 不加载本记录、Need、Trial/Evaluation 或 Human delibera
 - 最小 Release 与 named Human Admission provenance。
 
 投影不是第二套可写 Registry，不能保存 Need 正文、Candidate、Trial/Evaluation 结果、评分、审议过程或
-完整 Lifecycle history。Runtime 可由投影构造 Capability Supply Report，但仍须经过 Requirement、
-Resolution、冻结 Snapshot 与 Resolved Execution View；eligibility 和 metadata 不构成 permission grant。
+完整 Lifecycle history。仅 Skill-bearing extension 的 runtime-side catalog 可由投影构造候选 Capability
+Supply Report；Capability Resolver 仍是唯一 selection owner，并须经过 Requirement、Resolution、冻结
+Snapshot 与 Resolved Execution View。Execution Host 不从投影重新选择或 rebind；eligibility 和 metadata
+不构成 permission grant。
 
 发布投影实现前，Skill new-binding 路径 fail closed。no-Skill/direct Tool/procedure 与 Adapter/Provider 路径
 不依赖 Lifecycle 或投影。参见
