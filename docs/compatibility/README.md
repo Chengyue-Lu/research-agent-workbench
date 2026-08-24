@@ -9,6 +9,11 @@
 - CLI 的 `--historical-replay` 只用于具名旧工件的精确回放，禁止静默 fallback；
 - 新 Task 可使用 no-Skill、直接工具或后续 Method Resolution，不应复制旧 Skill ID 作为默认示例。
 
+M9-003 增加 append-stable 的 lifecycle v2 migration。它逐项固定旧 accepted entry，而不固定整个
+`accepted.json` 的唯一 hash，因此未来追加新条目不会使旧 migration 失效。旧 `legacy` / `deprecated`
+条目映射为 `historical-replay-only` Lifecycle Record，不会被静默提升为新任务可绑定的 Skill Supply；
+详情见 [Skill lifecycle v2](../implementation/SKILL_LIFECYCLE_V2.md)。
+
 ## Mode 与 Method
 
 Research Mode v0.1 中的直接 Skill recommendation 是兼容字段。v0.1 文件继续原样保留并可验证，但不再

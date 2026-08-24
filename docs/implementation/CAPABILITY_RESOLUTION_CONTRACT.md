@@ -66,10 +66,11 @@ Eligibility 的输入要求；它不证明 facts，不产生 authorization，也
 
 ## Skill Supply Extension
 
-Schema 为 `skill` 供给预留 `skill_lifecycle_ref` 与 `runtime_eligibility_ref`，但当前 resolver 将其
-eligibility 置为 `unknown`，repository validator 同时给出
-`CAPABILITY-SKILL-SUPPLY-EXTENSION-PARKED`。只有 M9-003 lifecycle v2 能验证 runtime eligibility 后，
-Skill 才能进入合法 Resolution / Snapshot；这不会阻塞 no-Skill、Tool 和 Adapter/Provider Core。
+Schema 为 `skill` 供给要求 `skill_lifecycle_ref` 与 `runtime_eligibility_ref`。没有 lifecycle v2 检查器时，
+resolver 将 eligibility 保持为 `unknown`；repository validator 会要求引用的 lifecycle record 同时满足
+evidence-ready evaluation、Human accepted admission、current lifecycle 与 exact runtime eligibility。
+不满足时给出 `CAPABILITY-SKILL-SUPPLY-NOT-ELIGIBLE`，且不会阻塞 no-Skill、Tool 和
+Adapter/Provider Core。
 
 ## Replacement fixture
 

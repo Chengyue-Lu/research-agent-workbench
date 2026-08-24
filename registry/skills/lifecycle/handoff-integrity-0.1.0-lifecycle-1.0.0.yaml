@@ -1,0 +1,38 @@
+schema_version: 0.1.0
+lifecycle_id: handoff-integrity
+lifecycle_version: 1.0.0
+record_scope: migrated-legacy
+skill_ref:
+  skill_id: handoff-integrity
+  version: 0.1.0
+  manifest_path: registry/skills/accepted/handoff-integrity.yaml
+  content_hash: sha256:2a4c727eb7462628e9f246a5363a8add1ba244c05b6c7b7e7b2ad450befabbf7
+  package_hash: sha256:7ef583e26e3759705ae2c4b75f978e80cce01b5307f858570601fb44fcd5d1cd
+need_refs: []
+intake:
+  state: legacy-import
+  source_refs: [registry/skills/accepted.json#handoff-integrity@0.1.0]
+  reason: The wrapper predates Need-first intake and is retained only for historical interpretation.
+evaluation:
+  state: not-reconstructable
+  promotion_evidence_refs: []
+  reason: Historical admission flags do not constitute a v2 baseline, trial, or Evaluation Record.
+admission:
+  state: legacy-imported
+  decision_owner: unknown-legacy
+  reason: The historical accepted state is preserved without inventing a v2 Human Decision.
+runtime_eligibility:
+  state: historical-replay-only
+  eligibility_ref: RTE-LEGACY-HANDOFF-INTEGRITY-0.1.0
+  scopes: [historical-exact-version-replay]
+  reason: New assignments use the Task template and Human boundary rather than this wrapper.
+lifecycle:
+  state: retired
+  superseded_by_refs: [task-template:H1, human-boundary:handoff-transfer-audit]
+  reason: The wrapper added no stable semantic increment over the direct template and Human transfer boundary.
+boundaries:
+  stores_trial_results: false
+  stores_evaluation_results: false
+  defines_benchmark_metrics: false
+  grants_permission: false
+  promotes_claim: false

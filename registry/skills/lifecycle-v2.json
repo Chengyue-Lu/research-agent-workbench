@@ -1,0 +1,28 @@
+{
+  "schema_version": "0.1.0",
+  "registry_kind": "skill_lifecycle_index",
+  "generated_at": "2026-08-24",
+  "entries": [
+    {
+      "lifecycle_ref": "handoff-integrity@0.1.0/lifecycle@1.0.0",
+      "lifecycle_id": "handoff-integrity",
+      "lifecycle_version": "1.0.0",
+      "document_path": "registry/skills/lifecycle/handoff-integrity-0.1.0-lifecycle-1.0.0.yaml",
+      "content_hash": "sha256:96c9acf0bc4626bf9a400ebcb3a6330ae60eb17cfda70a917c816a5b01c8ef88"
+    },
+    {
+      "lifecycle_ref": "literature-evidence-extraction@0.1.0/lifecycle@1.0.0",
+      "lifecycle_id": "literature-evidence-extraction",
+      "lifecycle_version": "1.0.0",
+      "document_path": "registry/skills/lifecycle/literature-evidence-extraction-0.1.0-lifecycle-1.0.0.yaml",
+      "content_hash": "sha256:ab2d2a14861e1a2e30b3911bc5624d292dc50b462622538dff7271f0f1f9f468"
+    },
+    {
+      "lifecycle_ref": "simulation-vv@0.1.0/lifecycle@1.0.0",
+      "lifecycle_id": "simulation-vv",
+      "lifecycle_version": "1.0.0",
+      "document_path": "registry/skills/lifecycle/simulation-vv-0.1.0-lifecycle-1.0.0.yaml",
+      "content_hash": "sha256:5c3936d1a0d062c3aa4a052779559066720971b085e39081c56931e553a7fbc7"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+schema_version: 0.1.0
+lifecycle_id: simulation-vv
+lifecycle_version: 1.0.0
+record_scope: migrated-legacy
+skill_ref:
+  skill_id: simulation-vv
+  version: 0.1.0
+  manifest_path: registry/skills/accepted/simulation-vv.yaml
+  content_hash: sha256:2a3c19b5af6288c4d5eab6e2fc2557231cc684f0ec9b6ec8bb5b864d126a99c4
+  package_hash: sha256:e71c2977b8b839b7b7edc3e3af8b5a923f46c96ad44d30adc23c965bf8f96040
+need_refs: []
+intake:
+  state: legacy-import
+  source_refs: [registry/skills/accepted.json#simulation-vv@0.1.0]
+  reason: The package predates Need-first intake and is preserved without reconstructing missing source-review history.
+evaluation:
+  state: not-reconstructable
+  promotion_evidence_refs: []
+  reason: Historical admission flags do not constitute a v2 baseline, trial, or Evaluation Record.
+admission:
+  state: legacy-imported
+  decision_owner: unknown-legacy
+  reason: The accepted v0.1 entry is preserved, but no v2 Human Decision is inferred.
+runtime_eligibility:
+  state: historical-replay-only
+  eligibility_ref: RTE-LEGACY-SIMULATION-VV-0.1.0
+  scopes: [historical-exact-version-replay]
+  reason: New assignments require a later v2 evaluation and Human admission decision.
+lifecycle:
+  state: legacy-preserved
+  superseded_by_refs: []
+  reason: The exact package remains interpretable for historical Assignment replay.
+boundaries:
+  stores_trial_results: false
+  stores_evaluation_results: false
+  defines_benchmark_metrics: false
+  grants_permission: false
+  promotes_claim: false

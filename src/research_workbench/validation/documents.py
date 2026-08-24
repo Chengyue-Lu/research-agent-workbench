@@ -20,6 +20,7 @@ from research_workbench.capability.supply import (
     assess_supply,
     resolve_status,
 )
+from research_workbench.capability.lifecycle import SkillLifecycleRecord
 from research_workbench.io import load_document
 from research_workbench.contracts.common import ContractError, parse_skill_reference
 from research_workbench.protocol.migrations import (
@@ -106,6 +107,9 @@ SCHEMA_KINDS = {
     "protocol_profile_index",
     "skill_need",
     "skill_need_index",
+    "skill_lifecycle_index",
+    "skill_lifecycle_migration",
+    "skill_lifecycle_record",
     "deterministic_check_report",
     "decision_authority_matrix",
     "authority_rule_eligibility",
@@ -169,6 +173,10 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "capability_conformance_evidence"
     if "need_id" in document and "semantic_gap" in document and "evaluation_requirements" in document:
         return "skill_need"
+    if "lifecycle_id" in document and "skill_ref" in document and "runtime_eligibility" in document:
+        return "skill_lifecycle_record"
+    if "migration_id" in document and "source_registry_path" in document and "target_index_path" in document:
+        return "skill_lifecycle_migration"
     if "profile_id" in document and "method_standard" in document and "method_obligations" in document:
         return "protocol_profile"
     if "report_id" in document and "supply_identity" in document and "availability" in document:
@@ -1360,12 +1368,411 @@ def _validate_protocol_profile_set(
     return issues
 
 
+def _validate_skill_lifecycle_v2(
+    documents: Mapping[Path, Any],
+) -> list[ValidationIssue]:
+    issues: list[ValidationIssue] = []
+    indices = [
+        (path, document)
+        for path, document in documents.items()
+        if isinstance(document, Mapping)
+        and document.get("registry_kind") == "skill_lifecycle_index"
+    ]
+    records = [
+        (path, document)
+        for path, document in documents.items()
+        if isinstance(document, Mapping)
+        and infer_document_kind(document) == "skill_lifecycle_record"
+    ]
+    migrations = [
+        (path, document)
+        for path, document in documents.items()
+        if isinstance(document, Mapping)
+        and infer_document_kind(document) == "skill_lifecycle_migration"
+    ]
+    if not indices:
+        if records or migrations:
+            anchor = records[0][0] if records else migrations[0][0]
+            issues.append(
+                ValidationIssue(
+                    anchor,
+                    "SKILL-LIFECYCLE-INDEX-MISSING",
+                    "Skill Lifecycle records and migrations require one closed integrity index",
+                )
+            )
+        return issues
+    if len(indices) > 1:
+        for path, _ in indices[1:]:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "SKILL-LIFECYCLE-INDEX-DUPLICATE",
+                    "only one Skill Lifecycle v2 integrity index may be loaded",
+                )
+            )
+        return issues
+
+    index_path, index = indices[0]
+    accepted_documents = [
+        (path, document)
+        for path, document in documents.items()
+        if isinstance(document, Mapping) and document.get("registry_kind") == "skill_accepted"
+    ]
+    accepted_entries: dict[tuple[str, str], Mapping[str, Any]] = {}
+    if len(accepted_documents) == 1:
+        for entry in accepted_documents[0][1].get("entries", []):
+            if isinstance(entry, Mapping):
+                accepted_entries[(str(entry.get("skill_id")), str(entry.get("version")))] = entry
+    need_refs = set(_skill_need_entries(documents))
+
+    indexed: dict[str, tuple[str, Mapping[str, Any], SkillLifecycleRecord]] = {}
+    seen_identities: set[tuple[str, str]] = set()
+    seen_paths: set[str] = set()
+    for position, entry in enumerate(index.get("entries", [])):
+        if not isinstance(entry, Mapping):
+            continue
+        lifecycle_ref = entry.get("lifecycle_ref")
+        lifecycle_id = entry.get("lifecycle_id")
+        lifecycle_version = entry.get("lifecycle_version")
+        document_path = entry.get("document_path")
+        if not all(
+            isinstance(value, str)
+            for value in (lifecycle_ref, lifecycle_id, lifecycle_version, document_path)
+        ):
+            continue
+        identity = (str(lifecycle_id), str(lifecycle_version))
+        if lifecycle_ref in indexed:
+            issues.append(
+                ValidationIssue(
+                    index_path,
+                    "SKILL-LIFECYCLE-REFERENCE-DUPLICATE",
+                    f"duplicate lifecycle reference at entries[{position}]: {lifecycle_ref}",
+                )
+            )
+            continue
+        if identity in seen_identities:
+            issues.append(
+                ValidationIssue(
+                    index_path,
+                    "SKILL-LIFECYCLE-IDENTITY-DUPLICATE",
+                    f"duplicate lifecycle identity at entries[{position}]: {lifecycle_id}@{lifecycle_version}",
+                )
+            )
+            continue
+        if document_path in seen_paths:
+            issues.append(
+                ValidationIssue(
+                    index_path,
+                    "SKILL-LIFECYCLE-PATH-DUPLICATE",
+                    f"duplicate lifecycle path at entries[{position}]: {document_path}",
+                )
+            )
+            continue
+        seen_identities.add(identity)
+        seen_paths.add(str(document_path))
+        loaded = _loaded_document_at(documents, str(document_path))
+        if loaded is None:
+            issues.append(
+                ValidationIssue(
+                    index_path,
+                    "SKILL-LIFECYCLE-DOCUMENT-MISSING",
+                    f"indexed lifecycle document is not loaded: {document_path}",
+                )
+            )
+            continue
+        loaded_path, document = loaded
+        try:
+            record = SkillLifecycleRecord.from_mapping(document)
+        except ContractError as exc:
+            issues.append(
+                ValidationIssue(loaded_path, "SKILL-LIFECYCLE-CONTRACT", str(exc))
+            )
+            continue
+        if (
+            record.reference,
+            record.lifecycle_id,
+            record.lifecycle_version,
+        ) != (lifecycle_ref, lifecycle_id, lifecycle_version):
+            issues.append(
+                ValidationIssue(
+                    loaded_path,
+                    "SKILL-LIFECYCLE-IDENTITY-MISMATCH",
+                    f"index and lifecycle identities disagree: {lifecycle_ref}",
+                )
+            )
+        expected_hash = entry.get("content_hash")
+        if isinstance(expected_hash, str) and loaded_path.is_file():
+            if hash_file(loaded_path) != expected_hash.removeprefix("sha256:").lower():
+                issues.append(
+                    ValidationIssue(
+                        index_path,
+                        "SKILL-LIFECYCLE-HASH-MISMATCH",
+                        f"lifecycle content hash does not match: {lifecycle_ref}",
+                    )
+                )
+        indexed[str(lifecycle_ref)] = (str(document_path), entry, record)
+
+        if record.lifecycle_id != record.skill_ref.skill_id:
+            issues.append(
+                ValidationIssue(
+                    loaded_path,
+                    "SKILL-LIFECYCLE-SKILL-IDENTITY-MISMATCH",
+                    "lifecycle_id must equal the governed skill_id",
+                )
+            )
+        unknown_needs = sorted(set(record.need_refs) - need_refs) if need_refs else []
+        if unknown_needs:
+            issues.append(
+                ValidationIssue(
+                    loaded_path,
+                    "SKILL-LIFECYCLE-NEED-MISSING",
+                    f"lifecycle references unknown Skill Needs: {unknown_needs}",
+                )
+            )
+        if record.record_scope == "migrated-legacy":
+            accepted = accepted_entries.get((record.skill_ref.skill_id, record.skill_ref.version))
+            if accepted_entries and accepted is None:
+                issues.append(
+                    ValidationIssue(
+                        loaded_path,
+                        "SKILL-LIFECYCLE-LEGACY-SOURCE-MISSING",
+                        "migrated legacy lifecycle has no matching accepted Registry entry",
+                    )
+                )
+            elif accepted is not None:
+                expected = {
+                    "manifest_path": record.skill_ref.manifest_path,
+                    "content_hash": record.skill_ref.content_hash,
+                    "package_hash": record.skill_ref.package_hash,
+                }
+                if any(accepted.get(key) != value for key, value in expected.items()):
+                    issues.append(
+                        ValidationIssue(
+                            loaded_path,
+                            "SKILL-LIFECYCLE-LEGACY-SOURCE-DRIFT",
+                            "migrated lifecycle no longer matches the accepted Registry source entry",
+                        )
+                    )
+
+        admission_state = record.admission.state
+        runtime_state = record.runtime_eligibility.state
+        lifecycle_state = record.lifecycle.state
+        if admission_state == "trial" and (
+            record.evaluation.trial_ref is None or runtime_state != "trial-only"
+        ):
+            issues.append(
+                ValidationIssue(
+                    loaded_path,
+                    "SKILL-LIFECYCLE-TRIAL-INCONSISTENT",
+                    "trial admission requires a trial_ref and trial-only runtime eligibility",
+                )
+            )
+        if runtime_state == "eligible" and not record.eligible_for_new_binding():
+            issues.append(
+                ValidationIssue(
+                    loaded_path,
+                    "SKILL-LIFECYCLE-RUNTIME-ELIGIBILITY-INCONSISTENT",
+                    "eligible runtime state requires current scope, evidence-ready evaluation, Human accepted admission, and current lifecycle",
+                )
+            )
+        if runtime_state == "trial-only" and (
+            admission_state != "trial" or lifecycle_state != "current"
+        ):
+            issues.append(
+                ValidationIssue(
+                    loaded_path,
+                    "SKILL-LIFECYCLE-TRIAL-ELIGIBILITY-INCONSISTENT",
+                    "trial-only runtime eligibility requires trial admission and current lifecycle",
+                )
+            )
+        if runtime_state == "historical-replay-only" and (
+            record.record_scope != "migrated-legacy"
+            or admission_state != "legacy-imported"
+            or lifecycle_state not in {"legacy-preserved", "retired", "superseded"}
+        ):
+            issues.append(
+                ValidationIssue(
+                    loaded_path,
+                    "SKILL-LIFECYCLE-HISTORICAL-ELIGIBILITY-INCONSISTENT",
+                    "historical replay eligibility is reserved for migrated legacy records",
+                )
+            )
+        if lifecycle_state in {"retired", "superseded"} and runtime_state in {
+            "eligible",
+            "trial-only",
+        }:
+            issues.append(
+                ValidationIssue(
+                    loaded_path,
+                    "SKILL-LIFECYCLE-ENDED-BUT-ELIGIBLE",
+                    f"{lifecycle_state} lifecycle cannot remain eligible for current runtime binding",
+                )
+            )
+
+    for path, document in records:
+        lifecycle_ref = (
+            f"{document.get('skill_ref', {}).get('skill_id')}@"
+            f"{document.get('skill_ref', {}).get('version')}/lifecycle@"
+            f"{document.get('lifecycle_version')}"
+        )
+        indexed_entry = indexed.get(lifecycle_ref)
+        if indexed_entry is None:
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "SKILL-LIFECYCLE-UNINDEXED",
+                    f"lifecycle document is not in the integrity index: {lifecycle_ref}",
+                )
+            )
+        elif not _matches_repository_path(path, indexed_entry[0]):
+            issues.append(
+                ValidationIssue(
+                    path,
+                    "SKILL-LIFECYCLE-PATH-MISMATCH",
+                    f"lifecycle document path disagrees with the index: {lifecycle_ref}",
+                )
+            )
+
+    for migration_path, migration in migrations:
+        source_registry_path = migration.get("source_registry_path")
+        target_index_path = migration.get("target_index_path")
+        source_loaded = (
+            _loaded_document_at(documents, source_registry_path)
+            if isinstance(source_registry_path, str)
+            else None
+        )
+        target_loaded = (
+            _loaded_document_at(documents, target_index_path)
+            if isinstance(target_index_path, str)
+            else None
+        )
+        if source_loaded is None:
+            issues.append(
+                ValidationIssue(
+                    migration_path,
+                    "SKILL-LIFECYCLE-MIGRATION-SOURCE-MISSING",
+                    f"migration source Registry is not loaded: {source_registry_path}",
+                )
+            )
+            continue
+        if target_loaded is None or target_loaded[0] != index_path:
+            issues.append(
+                ValidationIssue(
+                    migration_path,
+                    "SKILL-LIFECYCLE-MIGRATION-TARGET-MISSING",
+                    f"migration target is not the loaded lifecycle index: {target_index_path}",
+                )
+            )
+        current_entries = {
+            (str(item.get("skill_id")), str(item.get("version"))): item
+            for item in source_loaded[1].get("entries", [])
+            if isinstance(item, Mapping)
+        }
+        seen_sources: set[tuple[str, str]] = set()
+        seen_targets: set[str] = set()
+        for item in migration.get("entries", []):
+            if not isinstance(item, Mapping):
+                continue
+            source = item.get("source", {})
+            target = item.get("target", {})
+            if not isinstance(source, Mapping) or not isinstance(target, Mapping):
+                continue
+            source_identity = (str(source.get("skill_id")), str(source.get("version")))
+            target_ref = str(target.get("lifecycle_ref"))
+            if source_identity in seen_sources:
+                issues.append(
+                    ValidationIssue(
+                        migration_path,
+                        "SKILL-LIFECYCLE-MIGRATION-SOURCE-DUPLICATE",
+                        f"migration source identity is duplicated: {source_identity}",
+                    )
+                )
+            if target_ref in seen_targets:
+                issues.append(
+                    ValidationIssue(
+                        migration_path,
+                        "SKILL-LIFECYCLE-MIGRATION-TARGET-DUPLICATE",
+                        f"migration target is duplicated: {target_ref}",
+                    )
+                )
+            seen_sources.add(source_identity)
+            seen_targets.add(target_ref)
+            current = current_entries.get(source_identity)
+            source_fields = (
+                "manifest_path",
+                "content_hash",
+                "package_hash",
+                "lifecycle",
+            )
+            source_values = (
+                source.get("manifest_path"),
+                source.get("content_hash"),
+                source.get("package_hash"),
+                source.get("legacy_lifecycle"),
+            )
+            if current is None or tuple(current.get(key) for key in source_fields) != source_values:
+                issues.append(
+                    ValidationIssue(
+                        migration_path,
+                        "SKILL-LIFECYCLE-MIGRATION-SOURCE-DRIFT",
+                        f"pinned source entry does not match accepted Registry: {source_identity}",
+                    )
+                )
+            indexed_target = indexed.get(target_ref)
+            if indexed_target is None:
+                issues.append(
+                    ValidationIssue(
+                        migration_path,
+                        "SKILL-LIFECYCLE-MIGRATION-TARGET-UNKNOWN",
+                        f"migration target is not indexed: {target_ref}",
+                    )
+                )
+                continue
+            if (
+                target.get("document_path") != indexed_target[0]
+                or target.get("content_hash") != indexed_target[1].get("content_hash")
+            ):
+                issues.append(
+                    ValidationIssue(
+                        migration_path,
+                        "SKILL-LIFECYCLE-MIGRATION-TARGET-DRIFT",
+                        f"migration target path/hash does not match index: {target_ref}",
+                    )
+                )
+            if item.get("disposition") != indexed_target[2].lifecycle.state:
+                issues.append(
+                    ValidationIssue(
+                        migration_path,
+                        "SKILL-LIFECYCLE-MIGRATION-DISPOSITION-DRIFT",
+                        f"migration disposition does not match lifecycle record: {target_ref}",
+                    )
+                )
+    return issues
+
+
 def _validate_capability_supply_chain(
     documents: Mapping[Path, Any],
 ) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     reports: dict[str, tuple[Path, Mapping[str, Any], CapabilitySupplyReport]] = {}
     resolutions: dict[str, tuple[Path, Mapping[str, Any]]] = {}
+    lifecycle_records: dict[str, SkillLifecycleRecord] = {}
+    for document in documents.values():
+        if not isinstance(document, Mapping) or infer_document_kind(document) != "skill_lifecycle_record":
+            continue
+        try:
+            record = SkillLifecycleRecord.from_mapping(document)
+        except ContractError:
+            continue
+        lifecycle_records[record.reference] = record
+
+    def runtime_eligibility_check(lifecycle_ref: str, eligibility_ref: str) -> bool:
+        record = lifecycle_records.get(lifecycle_ref)
+        return bool(
+            record
+            and record.runtime_eligibility.eligibility_ref == eligibility_ref
+            and record.eligible_for_new_binding()
+        )
 
     def loaded_ref(
         owner_path: Path,
@@ -1439,13 +1846,20 @@ def _validate_capability_supply_chain(
                 )
             )
         if parsed.supply_identity.supply_kind == "skill":
-            issues.append(
-                ValidationIssue(
-                    path,
-                    "CAPABILITY-SKILL-SUPPLY-EXTENSION-PARKED",
-                    "Skill supply cannot be resolved until M9-003 runtime eligibility is validated",
+            lifecycle_ref = parsed.supply_identity.skill_lifecycle_ref
+            eligibility_ref = parsed.supply_identity.runtime_eligibility_ref
+            if not (
+                lifecycle_ref
+                and eligibility_ref
+                and runtime_eligibility_check(lifecycle_ref, eligibility_ref)
+            ):
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "CAPABILITY-SKILL-SUPPLY-NOT-ELIGIBLE",
+                        "Skill supply requires a current lifecycle v2 record with matching runtime eligibility",
+                    )
                 )
-            )
         component_keys = [
             (component.component_kind, component.component_ref, component.version)
             for component in parsed.supply_identity.components
@@ -1637,7 +2051,14 @@ def _validate_capability_supply_chain(
                 )
 
         if requirement is not None and len(candidate_reports) == len(candidate_ids):
-            assessments = [assess_supply(requirement, report) for report in candidate_reports]
+            assessments = [
+                assess_supply(
+                    requirement,
+                    report,
+                    runtime_eligibility_check=runtime_eligibility_check,
+                )
+                for report in candidate_reports
+            ]
             expected_comparisons = [assessment.to_mapping() for assessment in assessments]
             if document.get("comparisons") != expected_comparisons:
                 issues.append(
@@ -2487,6 +2908,7 @@ def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     issues.extend(_validate_skill_need_set(documents))
     issues.extend(_validate_protocol_profile_set(documents))
     issues.extend(_validate_method_resolutions(documents))
+    issues.extend(_validate_skill_lifecycle_v2(documents))
     issues.extend(_validate_capability_supply_chain(documents))
     issues.extend(_validate_research_mode_migrations(documents))
     issues.extend(_validate_decision_authority(documents))

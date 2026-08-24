@@ -42,6 +42,17 @@ from research_workbench.capability.supply import (
     assess_supply,
     resolve_status,
 )
+from research_workbench.capability.lifecycle import (
+    LifecycleAdmission,
+    LifecycleDisposition,
+    LifecycleEvaluation,
+    LifecycleIntake,
+    LifecycleSkillReference,
+    RuntimeEligibility,
+    SkillLifecycleEntry,
+    SkillLifecycleRecord,
+    SkillLifecycleSet,
+)
 from research_workbench.capability.resolver import (
     ResolvedTask,
     ResolutionError,
@@ -81,6 +92,15 @@ __all__ = [
     "SupplyIdentity",
     "assess_supply",
     "resolve_status",
+    "LifecycleAdmission",
+    "LifecycleDisposition",
+    "LifecycleEvaluation",
+    "LifecycleIntake",
+    "LifecycleSkillReference",
+    "RuntimeEligibility",
+    "SkillLifecycleEntry",
+    "SkillLifecycleRecord",
+    "SkillLifecycleSet",
     "SkillRegistrySelectionError",
     "SkillLock",
     "SkillManifest",

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/skill-lifecycle-index.schema.json",
+  "title": "Skill Lifecycle v2 Integrity Index",
+  "x-rwb-document-kind": "skill_lifecycle_index",
+  "type": "object",
+  "required": ["schema_version", "registry_kind", "generated_at", "entries"],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "registry_kind": { "const": "skill_lifecycle_index" },
+    "generated_at": { "type": "string", "format": "date" },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["lifecycle_ref", "lifecycle_id", "lifecycle_version", "document_path", "content_hash"],
+        "properties": {
+          "lifecycle_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "lifecycle_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "lifecycle_version": { "$ref": "common.schema.json#/$defs/semver" },
+          "document_path": { "$ref": "common.schema.json#/$defs/relativePath" },
+          "content_hash": { "$ref": "common.schema.json#/$defs/sha256" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -197,6 +197,20 @@ class RiskInferenceTests(unittest.TestCase):
                 )
                 self.assertEqual("R2", risk)
 
+    def test_skill_lifecycle_contract_surface_is_r2(self) -> None:
+        for path in (
+            "schemas/v0.1.0/skill-lifecycle-record.schema.json",
+            "registry/skills/lifecycle-v2.json",
+            "registry/skills/lifecycle/simulation-vv-0.1.0-lifecycle-1.0.0.yaml",
+            "registry/skills/lifecycle-migrations/accepted-v1-to-lifecycle-v2.yaml",
+            "src/research_workbench/capability/lifecycle.py",
+        ):
+            with self.subTest(path=path):
+                risk, _ = governance.infer_minimum_risk(
+                    [path], shared_contract=False, authority_impact=False
+                )
+                self.assertEqual("R2", risk)
+
     def test_authority_protocol_is_r2(self) -> None:
         for path in (
             "src/research_workbench/protocol/authority.py",
@@ -661,6 +675,8 @@ class PolicyAndCodeownersTests(unittest.TestCase):
                 "capability-requirement": ("requirement_id",),
                 "skill-need": ("need_id", "version"),
                 "protocol-profile": ("profile_id", "version"),
+                "skill-lifecycle-record": ("lifecycle_id", "lifecycle_version"),
+                "skill-lifecycle-migration": ("migration_id", "migration_version"),
             },
             declarations,
         )
@@ -780,6 +796,16 @@ class PublishedDocumentIdentityTests(unittest.TestCase):
             "protocol-profile",
             "profile_id: simulation-vv-assurance\nversion: 1.0.0\nsummary: original\n",
             "profile_id: simulation-vv-assurance\nversion: 1.1.0\nsummary: appended\n",
+        ),
+        "registry/skills/lifecycle/simulation-vv-0.1.0-lifecycle-1.0.0.yaml": (
+            "skill-lifecycle-record",
+            "lifecycle_id: simulation-vv\nlifecycle_version: 1.0.0\nsummary: original\n",
+            "lifecycle_id: simulation-vv\nlifecycle_version: 1.1.0\nsummary: appended\n",
+        ),
+        "registry/skills/lifecycle-migrations/accepted-v1-to-lifecycle-v2.yaml": (
+            "skill-lifecycle-migration",
+            "migration_id: accepted-v1-to-lifecycle-v2\nmigration_version: 1.0.0\nsummary: original\n",
+            "migration_id: accepted-v1-to-lifecycle-v2\nmigration_version: 1.1.0\nsummary: appended\n",
         ),
     }
 

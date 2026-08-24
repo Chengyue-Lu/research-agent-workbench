@@ -207,10 +207,24 @@ class CapabilityResolutionTests(unittest.TestCase):
         self.assertEqual("unknown", check["status"])
         self.assertEqual(("unsatisfied-gap", None), resolve_status([assessment]))
 
+        eligible = assess_supply(
+            requirement,
+            parsed,
+            runtime_eligibility_check=lambda lifecycle_ref, eligibility_ref: (
+                lifecycle_ref == "synthetic-skill@1.0.0"
+                and eligibility_ref == "ELIG-SYNTHETIC-SKILL"
+            ),
+        )
+        skill_check = next(
+            item for item in eligible.checks if item["check"] == "skill-runtime-eligibility"
+        )
+        self.assertEqual("pass", skill_check["status"])
+        self.assertEqual(("satisfied", parsed.reference), resolve_status([eligible]))
+
         documents = copy.deepcopy(self.validation_documents)
         documents[REPORT_ROOT / "synthetic-skill.yaml"] = skill
         self.assertIn(
-            "CAPABILITY-SKILL-SUPPLY-EXTENSION-PARKED",
+            "CAPABILITY-SKILL-SUPPLY-NOT-ELIGIBLE",
             {issue.code for issue in validate_documents(documents)},
         )
 

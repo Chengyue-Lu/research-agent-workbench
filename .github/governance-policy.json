@@ -52,6 +52,11 @@
       "schemas/**/capability-conformance-evidence.schema.json",
       "src/research_workbench/capability/supply.py",
       "examples/capability-resolution/**",
+      "schemas/**/skill-lifecycle*.schema.json",
+      "registry/skills/lifecycle-v2.json",
+      "registry/skills/lifecycle/**",
+      "registry/skills/lifecycle-migrations/**",
+      "src/research_workbench/capability/lifecycle.py",
       "schemas/**/protocol-profile*.schema.json",
       "registry/protocol-profiles.json",
       "registry/protocol-profiles/**",
@@ -134,6 +139,26 @@
         "registry/protocol-profiles/**/*.yml"
       ],
       "identity_fields": ["profile_id", "version"]
+    },
+    {
+      "kind": "skill-lifecycle-record",
+      "patterns": [
+        "registry/skills/lifecycle/*.yaml",
+        "registry/skills/lifecycle/*.yml",
+        "registry/skills/lifecycle/**/*.yaml",
+        "registry/skills/lifecycle/**/*.yml"
+      ],
+      "identity_fields": ["lifecycle_id", "lifecycle_version"]
+    },
+    {
+      "kind": "skill-lifecycle-migration",
+      "patterns": [
+        "registry/skills/lifecycle-migrations/*.yaml",
+        "registry/skills/lifecycle-migrations/*.yml",
+        "registry/skills/lifecycle-migrations/**/*.yaml",
+        "registry/skills/lifecycle-migrations/**/*.yml"
+      ],
+      "identity_fields": ["migration_id", "migration_version"]
     }
   ]
 }

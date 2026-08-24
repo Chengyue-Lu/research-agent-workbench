@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Mapping, Sequence
+from typing import Any, Callable, Mapping, Sequence
 
 from research_workbench.capability.requirements import CapabilityRequirement
 from research_workbench.contracts.common import (
@@ -226,6 +226,8 @@ def _side_effect_check(requirement: CapabilityRequirement, report: CapabilitySup
 def assess_supply(
     requirement: CapabilityRequirement,
     report: CapabilitySupplyReport,
+    *,
+    runtime_eligibility_check: Callable[[str, str], bool] | None = None,
 ) -> SupplyAssessment:
     required_inputs = set(requirement.required_inputs)
     required_outputs = set(requirement.required_outputs)
@@ -251,8 +253,20 @@ def assess_supply(
         "pass" if availability == "available" else "fail" if availability == "unavailable" else "unknown"
     )
     if report.supply_identity.supply_kind == "skill":
-        skill_status = "unknown"
-        skill_reason = "Skill runtime eligibility requires the M9-003 lifecycle extension."
+        lifecycle_ref = report.supply_identity.skill_lifecycle_ref
+        eligibility_ref = report.supply_identity.runtime_eligibility_ref
+        eligible = bool(
+            runtime_eligibility_check
+            and lifecycle_ref
+            and eligibility_ref
+            and runtime_eligibility_check(lifecycle_ref, eligibility_ref)
+        )
+        skill_status = "pass" if eligible else "unknown"
+        skill_reason = (
+            "Skill lifecycle and runtime eligibility references resolve to a current eligible record."
+            if eligible
+            else "Skill runtime eligibility is absent, unknown, or not current in lifecycle v2."
+        )
     else:
         skill_status = "not-applicable"
         skill_reason = "This Core supply is not a Skill and needs no Skill lifecycle decision."
