@@ -20,21 +20,63 @@
 
 Phase 不是一条科研 DAG。它只表示框架接口的构建依赖；真实 Task 仍按 Mode/Action 选择路径。
 
-### 1.1 Phase / Topic 与 M Task
+### 1.1 Phase / Topic / M-group / M Task
 
 本文件只回答 Phase 的 macro maturity、Topic responsibility、architecture Gate 以及为什么某类工作允许或
 冻结。日常施工的 status、hard dependency、owner、scope、negative acceptance 与 evidence 只由
 [`TASKS.md`](TASKS.md) 的 M Task 控制：
 
 ```text
-Phase = when / macro Gate
-Topic = responsibility navigation
-M Task = what to build / branch / PR / CI identity
+Phase   = macro maturity / architecture Gate
+Topic   = architecture responsibility / authority domain
+M-group = implementation family / development route
+Mxx-yyy = atomic executable Task / branch / PR / CI identity
 ```
 
-一个 Phase 聚合多个 M Task，一个 M Task 可以跨多个 Topic。ROADMAP 中出现但 TASKS 中没有 ID 的近期
+一个 Phase 聚合多个 M-group 与 M Task，一个 M Task 可以跨多个 Topic。ROADMAP 中出现但 TASKS 中没有 ID 的近期
 工作不能直接实现；必须先建立 docs-only `task-definition`。若两者对当前施工顺序表述冲突，TASKS 控制
 implementation scheduling，ROADMAP 的 architecture freeze 仍是上限，Task 必须据此标为 BLOCKED/PARKED。
+
+日常施工只使用 M-series。完整的 M-group 与原子 Task 导航见
+[`M_SERIES_IMPLEMENTATION_MAP.md`](M_SERIES_IMPLEMENTATION_MAP.md)；本文件中的 Phase/Topic mapping 只解释
+family 为什么存在、由什么 authority boundary 约束、何时允许启动，不是第二套 queue。
+
+### 1.2 Architecture Map：Phase / Topic → M-group
+
+| Architecture area | Responsibility / authority boundary | M-group aggregation | Freeze / unlock Gate |
+|---|---|---|---|
+| Foundation / pre-A | Repository、Core contract、Trace、Provider 与 Mode–Skill baseline；各层 authority 分离 | M0、M1、M2、M3、M6、M7 | 已接受的 historical foundation；未完成项仍按 TASKS |
+| Phase A | Method/Core 与 Authority Rule Eligibility；不产生执行或 Human Decision | M8 | 已收口 |
+| Phase B | Capability demand/supply、Skill evolution、Protocol；不授予 Runtime authority | M9 | 已收口 |
+| Phase C | Research State、Failure、Method Trace 与 bounded verification | M10，复用历史 `M3-009`；M4 为 provenance support | M10 DAG + Human/R2 closeout |
+| Phase D | Evaluation record、baseline 与 net increment；不自动 promotion | M5；部分 M7 experiments 仍 PARKED | 真实案例、provenance 与 evaluation prerequisites |
+| Phase E | Strategy candidate 与 governed evolution；不得自动修改 Core | 既有 M2/M7；M13 仅 **RESERVED** | Phase C/D evidence 证明旧 group 不足后另行接受 |
+| Phase F / Topic 4 | Agent/Model/Provider/Runtime 消费 frozen contract；不拥有 Method/Claim/Gate/fallback authority | M11 Core 与 optional extension；M6 live conformance | ADR-0019、M9-005；每个 Task 仍按 DAG |
+| Topic 5 residual | Handoff、context rollover、safe pause/resume、recovery/continuation | M12 仅 **RESERVED** | Phase C closeout + 独立 Topic 5 R2 review/task-definition |
+| Product / release closure | Ordinary-user E2E、package/runtime/release governance | M14 仅 **RESERVED** | Runtime/Evaluation/release maturity 且 M1/M11 被证明不足 |
+
+```mermaid
+flowchart LR
+    A["Phase A<br/>Method/Core Gate"] --> M8["M8"]
+    B["Phase B<br/>Evolution Gate"] --> M9["M9"]
+    C["Phase C<br/>Research meaning Gate"] --> M10["M10 + historical M3-009"]
+    D["Phase D<br/>Evaluation evidence"] --> M5["M5"]
+    E["Phase E<br/>Strategy boundary"] -. "future activation only" .-> M13["M13 — RESERVED"]
+    F["Phase F / Topic 4<br/>thin execution ceiling"] --> M11["M11"]
+    T5["Topic 5<br/>continuity/recovery frozen"] -. "Phase C closeout + R2 Gate" .-> M12["M12 — RESERVED"]
+    Release["Product/release maturity Gate"] -. "future activation only" .-> M14["M14 — RESERVED"]
+
+    M8 --> M9
+    M9 --> C
+    C --> D
+    M10 -. "evidence" .-> T5
+    M11 -. "maturity evidence" .-> Release
+    M5 -. "maturity evidence" .-> Release
+```
+
+实线表达已接受的 architecture aggregation，虚线表达尚未授予 implementation authority 的 activation
+condition。M12/M13/M14 没有 Task 状态、owner、dependency、acceptance 或 Schema；不创建
+`M12-001`、`M13-001`、`M14-001`，也不继续推测 M15+。
 
 ## 2. Phase A：Core Formalization
 

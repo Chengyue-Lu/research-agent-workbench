@@ -133,6 +133,19 @@ Capability/Skill Evolution、Topic 4（Agent/Model/Provider/Runtime）、Topic 5
 bounded vertical Gate 是 generic linkage 的验收证据，不另造纯 closeout Task。M11 Core 每个 dependency
 layer 独立提交；R2 atomic completion exception 不用于跨 Bundle/View/Host/Receipt surface。
 
+### 3.1 Future M-series reservations（非 Task）
+
+| Reserved M-group | Expected family | Activation condition | Confidence |
+|---|---|---|---|
+| M12 — RESERVED | Execution Continuity & Recovery | Phase C closeout + independent Topic 5 R2 architecture review / docs-only task-definition | High |
+| M13 — RESERVED | Strategy & Governed Evolution | Phase C/D evidence 证明 M2/M7 不能自然承载新的 coherent family | Medium–High |
+| M14 — RESERVED | Product / Release Closure | Runtime/Evaluation/release readiness 成熟，且 M1/M11 被证明不足以闭合产品/发布 | Medium |
+
+这三行不进入 85 个 Task 的 inventory：没有状态，不创建 `M12-001`/`M13-001`/`M14-001`，不冻结
+owner、risk、dependency、acceptance 或 Schema，也不授予实现或架构 authority。满足 accepted activation
+Gate、旧 M-group 不足的证据和独立 docs-only `task-definition` 后，才可转成正式 group。完整施工导航见
+[`M_SERIES_IMPLEMENTATION_MAP.md`](../../../M_SERIES_IMPLEMENTATION_MAP.md)。
+
 ## 4. Split / supersession lineage
 
 | Historical Task | Finding | Normalized lineage | Identity preserved? | Authority unchanged? |
@@ -192,10 +205,12 @@ M6-004 也不依赖 M11-004。M11 Core 按图中每一 dependency layer 分 PR �
 | B | M9-001～006 | 已完成 structural evolution closure |
 | C | M10-001 → M10-002 → M3-009 → M10-003；M4-001～004 为 provenance support | Phase C Gate 不等于 Topic 5 implementation approval |
 | D | M5-003；M5-001/002 → M5-004 → M5-005；M7-005/006/014 optional | Evaluation records 与 net increment，不回写 Need 本体 |
-| E | M2-003/004/007/008、M7-007 等 PARKED candidate work | 无真实 Need/Gate 时不进入队列 |
+| E | M2-003/004/007/008、M7-007 等 PARKED candidate work；M13 RESERVED | 无真实 Need/Gate 时不进入队列；reservation 不等于 strategy approval |
 | F Provider conformance | M6-004 | M6-001/002 后的独立 live 授权 Gate；不证明 Runtime E2E |
 | F Core | M11-001 → 002 → 003 → 004 | supply-neutral execution reintegration；一 dependency layer 一 PR |
 | F optional Skill supply | M11-005 → M11-006 | publication + View/Capability-owned unified mapping；不 Gate Core，不形成 Runtime seam |
+| post-C Topic 5 residual | M12 RESERVED | Phase C closeout + 独立 Topic 5 R2 Gate 前不 task-definition、不解冻 |
+| future product/release closure | M14 RESERVED | 只在 maturity evidence 与 existing-group insufficiency 成立后激活 |
 
 ## 7. Topic / responsibility mapping
 
@@ -233,4 +248,5 @@ M6-004 也不依赖 M11-004。M11 Core 按图中每一 dependency layer 分 PR �
 - M6-003、M3 legacy scope 均有 lineage，未借拆分扩大 Runtime/Recovery authority；
 - ROADMAP 只聚合 Phase/Gate，TASKS 控制 implementation scheduling；
 - Topic 5 保持冻结；M11-003/004 不属于 Topic 5，未创建 recovery/multi-Agent/fallback READY Task；
-- M11 producer/consumer chain 采用一 dependency layer 一 PR，不使用 R2 atomic exception 跨层收口。
+- M11 producer/consumer chain 采用一 dependency layer 一 PR，不使用 R2 atomic exception 跨层收口；
+- M12/M13/M14 只作 M-group reservation，未进入 Task inventory、状态机或 architecture acceptance。

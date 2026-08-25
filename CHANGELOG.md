@@ -7,7 +7,8 @@
 - 将 `TASKS.md` 固定为 Task status、hard dependency、owner、scope 与 implementation scheduling 的唯一真值，ROADMAP 只保留 Phase/Topic/Gate 聚合；
 - 对 develop 中 M0～M10 的 79 个 Task 做全量审计，修正 M3/M4/M5/M6/M10 的长期或依赖不一致状态，同时保持 DONE 行与历史 ID 不变；
 - 将 M6-003 的未来 Runtime umbrella 拆为 M11-001～006：Core 的 Bundle→View→Host→Trace/Receipt 与 optional Skill supply projection/mapping 两条不互相阻塞的路径，并按一 dependency layer 一 PR 验收；
-- 明确 Topic 5 仍冻结，M11 thin execution 不属于 Topic 5，Skill mapping 保留在统一 View/Capability 语义，Task 拆分不授予 Runtime fallback、Supply selection、Method、Claim、Gate 或 Recovery authority。
+- 明确 Topic 5 仍冻结，M11 thin execution 不属于 Topic 5，Skill mapping 保留在统一 View/Capability 语义，Task 拆分不授予 Runtime fallback、Supply selection、Method、Claim、Gate 或 Recovery authority；
+- 固定 Phase/Topic/M-group/M Task 四层词汇，新增由 TASKS 派生的 M-series-only 施工图，并将 M12 Continuity/Recovery、M13 Strategy/Evolution、M14 Product/Release 仅登记为无状态、无原子 Task、无 implementation authority 的 future namespace reservation。
 
 ## 2026-08-24 — Phase B evolution contracts
 

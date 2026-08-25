@@ -9,8 +9,20 @@ State/Claim/Method Trace，以及 Resolved Execution View/Skill supply mapping �
 [开发协作指南](DEVELOPMENT.md)进行跨负责人独立架构审查；具名 Task owner 仍对各自行的完成判断负责。
 
 本文件是唯一 implementation-level source of truth。Phase 只表示宏观成熟度与解冻 Gate，Topic 只表示
-架构责任域；branch、PR、CI 和验收必须绑定 M Task。若架构文档出现近期工作而本文件没有对应 Task，
+架构责任域，M-group 表示 implementation family / development route，`Mxx-yyy` 才是可执行的原子 Task；
+branch、PR、CI 和验收必须绑定 M Task。若架构文档出现近期工作而本文件没有对应 Task，
 实现者必须停止并先走 `task-definition`，不能从 Phase/Topic prose 自行生成施工范围。
+
+```text
+Phase   = macro maturity / architecture Gate
+Topic   = architecture responsibility / authority domain
+M-group = implementation family / development route
+Mxx-yyy = atomic executable Task
+```
+
+M-group reservation 只预留未来可能使用的 family namespace，不是 Task，也不属于下述状态机。施工总览见
+[M-series Implementation / Construction Map](M_SERIES_IMPLEMENTATION_MAP.md)；精确状态与依赖仍只看本文件的
+Task 行。
 
 状态严格解释为：`READY` 的全部 hard dependencies 已 `DONE`、现在即可合法开始；`BLOCKED` 仍在计划
 路径但至少一个 hard/external condition 未满足；`PARKED` 不在当前执行队列；`IN_PROGRESS` 必须确有
@@ -183,6 +195,24 @@ Core（M11-001～004）必须在零 Skill、零 Evolution Registry 下闭合；S
 | M11-004 | BLOCKED | 建立 generic execution Trace/Receipt linkage 与 Core vertical Gate | 黄毅 | R2 | F / Topic 4 + Artifact/Trace | M3-008, M11-003 | no-Skill 与 direct-tool bounded path 可从 Task/View/Host 到 Trace、Artifact、Validation、generic Receipt 闭合；复用 observability contract 不构成 Topic 5 membership；不伪造 Skill Assignment，不把 execution completion 写成 Claim/Human acceptance，并保留 legacy Receipt replay |
 | M11-005 | PARKED | 发布不可变 SkillReleaseProjection | 路诚钺 | R2 | F / Capability/Skill Evolution + Topic 4 | M9-003 | 只发布 accepted immutable Skill Release 的 runtime-minimal identity/version/hash/capability/boundary facts；不暴露 Need/Evaluation/Lifecycle 历史，不授予选择或执行权限；缺失只阻断 Skill new-binding |
 | M11-006 | PARKED | 将 eligible Skill supply 映射进统一 Resolved Execution View 语义 | 路诚钺 | R2 | F / Research Control + Capability/Skill Evolution + Topic 4 | M11-002, M11-005 | projection-derived Skill 与 Tool/procedure/Adapter 使用同一 Report→Resolution→Snapshot→View 语义；Capability Resolver 仍是唯一 selector，View/Host 保持 supply-kind neutral；不得形成 Skill-specific Runtime dispatcher/session/fallback seam，projection 缺失/stale/mismatch 时仅该候选 fail closed |
+
+## Future M-series reservations
+
+以下条目只是 expected implementation-family namespace，不是 Task：没有 `READY / BLOCKED / PARKED / IN_PROGRESS / DONE`
+状态，不创建 future 原子 ID，也不冻结 owner、risk、dependency、acceptance 或
+Schema。Reservation 不授权 implementation，不代表 architecture acceptance 或解冻；若未来证明既有
+M-group 足以承载，可直接取消且不产生历史 Task identity。当前不推测 M15+。
+
+| Reserved M-group | Expected implementation family | Activation condition | Confidence |
+|---|---|---|---|
+| **M12 — RESERVED** | Execution Continuity & Recovery：Handoff、context rollover、safe pause/resume、recovery、clean/salvage recovery 等 Topic 5 residual implementation | Phase C closeout，且完成独立 Topic 5 R2 architecture review 与 docs-only task-definition | High |
+| **M13 — RESERVED** | Strategy & Governed Evolution：strategy interface、candidate strategy、bounded experimentation、merge/prune/governed evolution | Phase C/D evidence 证明现有 M2/M7 无法自然承载一个新的 coherent implementation family | Medium–High |
+| **M14 — RESERVED** | Product / Release Closure：ordinary-user E2E、release projection、package/runtime closure、main release governance 与外部可消费性 | Runtime/Evaluation/release readiness 足够成熟，且现有 M1/M11 不足以形成完整产品/发布闭环 | Medium |
+
+Reservation 只有在对应 architecture activation Gate 已接受、已有 M-group 不足已有证据、独立 docs-only
+`task-definition` 完成后，才可转换为正式 M-group，并在当时定义具体 `Mxx-yyy`、owner、risk、dependency、
+acceptance 与 negative boundaries。因此：M12 reservation 不等于 Topic 5 thaw 或 implementation approval；
+M13 不等于 strategy framework approval；M14 不等于 release implementation approval。
 
 ## 未完成 Task 的责任与阶段索引
 

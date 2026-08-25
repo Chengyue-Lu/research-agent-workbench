@@ -15,7 +15,7 @@
 |---|---|---|
 | 理解核心概念 | [总体架构](ARCHITECTURE.md) | [开发者架构地图](DEVELOPER_ARCHITECTURE_MAP.md)、[模块设计](modules/) |
 | 运行或排错 | [上手指南](GETTING_STARTED.md) | [实现状态](STATUS.md) |
-| 参与开发 | [开发协作指南](DEVELOPMENT.md) | [发布合并规范](DEVELOP_TO_MAIN_RELEASE.md)、[任务清单](TASKS.md)、[路线图](ROADMAP.md) |
+| 参与开发 | [开发协作指南](DEVELOPMENT.md) | [M-series 施工图](M_SERIES_IMPLEMENTATION_MAP.md)、[任务清单](TASKS.md)、[路线图](ROADMAP.md)、[发布合并规范](DEVELOP_TO_MAIN_RELEASE.md) |
 | 查看实现协议 | [实现文档索引](implementation/README.md) | 对应实现说明与测试 |
 | 理解架构决定 | [ADR 索引](decisions/README.md) | 对应 ADR |
 | 理解旧对象或回放 | [兼容性说明](compatibility/README.md) | [历史与审计](history/README.md) |
@@ -27,6 +27,7 @@
 | Stable | 系统是什么、概念如何协作、长期规则是什么 | `README`、Charter、Architecture、Modules、Development |
 | Status | 当前实现和成熟度如何 | [STATUS.md](STATUS.md) |
 | Task planning | exact M Task、owner、hard dependency、scope、验收和实时状态 | [TASKS.md](TASKS.md) |
+| Construction navigation | M-group 施工路线、已定义原子链与 future reservation | [M_SERIES_IMPLEMENTATION_MAP.md](M_SERIES_IMPLEMENTATION_MAP.md)；状态/依赖仍以 TASKS 为准 |
 | Architecture planning | Phase/Topic、macro dependency 与 architecture Gate | [ROADMAP.md](ROADMAP.md) |
 | Compatibility | 旧契约如何显式读取、迁移或回放 | [compatibility/](compatibility/README.md) |
 | Audit / History | 为什么改变、曾经如何推进、证据在哪里 | [decisions/](decisions/README.md)、[history/](history/README.md) |

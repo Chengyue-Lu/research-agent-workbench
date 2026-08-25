@@ -6,7 +6,7 @@
 - PR class：`task-definition`
 - 基线：`develop@73dcb03b4d4152f36fef5b2dadb3ae0f11d7de7b`
 - 分支：`docs/issue-41-m-series-normalization`
-- 状态：M0～M10 inventory 与 normalization proposal 完成；PR #42 R2 review remediation 已纳入，等待 CI/re-review
+- 状态：M0～M10 inventory、M11 task-definition、PR #42 review remediation 与 Issue #41 follow-up 的 M-group reservation / 双图更新均已纳入并完成本地验证，等待 R2 re-review
 
 ## 1. 目标
 
@@ -14,8 +14,9 @@
 
 ```text
 Phase = macro maturity / architecture Gate
-Topic = architecture responsibility
-M Task = implementation identity, dependency and acceptance
+Topic = architecture responsibility / authority domain
+M-group = implementation family / development route
+Mxx-yyy = atomic implementation identity, dependency and acceptance
 ```
 
 完成后，普通开发应能仅通过 `TASKS.md`、当前 Task workstream 和 Task 引用的 accepted contract/ADR
@@ -28,6 +29,7 @@ M Task = implementation identity, dependency and acceptance
 - normalization matrix；
 - `KEEP / REFINE / SPLIT / SUPERSEDE / STATUS-FIX / PARK / ADD-MISSING-TASK` 清单；
 - Phase→M 与 Topic→M 映射；
+- M12～M14 future family reservation 与 canonical M-series-only construction map；
 - corrected dependency DAG 与 READY/BLOCKED/PARKED 状态；
 - oversized umbrella 与 historical lineage 表；
 - 更新后的 `TASKS.md`，以及必要的 ROADMAP/developer navigation 对齐。
@@ -106,6 +108,7 @@ feature implementation 混合。
   使用 Trace/Receipt 但不属于 Topic 5；
 - M11-006 由 View/Capability semantic owner 维护，不形成 Skill-specific Runtime seam；
 - `TASKS.md` 成为唯一 implementation scheduling truth；
+- Phase/Topic architecture map 与 M-series-only construction map 用途分离，reservation 不进入 Task 状态机；
 - docs-only governance、链接与 CI 通过，并完成独立 R2 review。
 
 ## 8. 当前验证证据
@@ -129,3 +132,16 @@ implementation、live Provider、Phase C 科学表示或 Topic 5 recovery 已完
 | M11-006 形成 Skill-specific Runtime seam | owner 改为路诚钺；Task 改成 eligible Skill supply 到统一 View/Capability 语义的映射，Host 无 Skill 特例 |
 | M6-004 是否 hard-depend M11-004 | 否；它只依赖 M6-001/002 与 external live authorization，验证 Provider/session 而非 Runtime E2E |
 | TASKS owner 总述过时 | 补齐 M4/M5/M10、View/Capability semantics 与 M11 Runtime implementation 的具名分工 |
+
+## 10. Issue #41 latest comment：future M-group reservation 与双图
+
+本轮将施工词汇补成 `Phase → Topic → M-group → Mxx-yyy` 四层，但没有建立第四套 planning truth：
+
+- `ROADMAP.md` / Developer Architecture Map 只解释 Phase、Topic、authority、Gate 与 M-group aggregation；
+- `M_SERIES_IMPLEMENTATION_MAP.md` 只用 M-group 展示普通施工路线，并展开已定义的原子 Task DAG；
+- `TASKS.md` 仍是状态、exact dependency、owner、scope 与 acceptance 的唯一真值；
+- M12 Execution Continuity & Recovery、M13 Strategy & Governed Evolution、M14 Product / Release Closure
+  只作 namespace reservation，没有状态或原子 Task；
+- reservation 必须经 accepted activation Gate、existing-group insufficiency evidence 与独立 docs-only
+  `task-definition` 才能激活；当前不解冻 Topic 5、Strategy、Release，不扩大任何 authority，也不推测 M15+；
+- construction map 保留跨 group 的 `M3-009` 历史 identity，不为编号连续而重命名。

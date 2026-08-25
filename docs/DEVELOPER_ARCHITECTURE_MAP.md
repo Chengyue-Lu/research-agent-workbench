@@ -1569,6 +1569,63 @@ Phase C 与 Topic 4 可以在边界清楚后并行推进：Topic 4 让 frozen co
 
 Topic 5 继续受 Phase C minimum 与 Method Trace Gate 约束，不能因 Snapshot Core 或 Topic 4 解冻而提前宣称成立。
 
+## 18.6 Canonical Architecture Map：Phase / Topic → M-group
+
+这张 architecture map 解释 implementation family 的存在理由、语义 owner 与 activation ceiling；它不是
+Task queue。普通施工只读取 [M-series Implementation / Construction Map](M_SERIES_IMPLEMENTATION_MAP.md)
+定位 M-group，再以 [TASKS.md](TASKS.md) 的原子 Task 为准。
+
+```mermaid
+flowchart TB
+    subgraph Macro["Macro maturity / architecture Gates"]
+        PA["Phase A<br/>Method/Core formalization"]
+        PB["Phase B<br/>Evolution foundation"]
+        PC["Phase C<br/>Research State & verification"]
+        PD["Phase D<br/>Evaluation evidence"]
+        PE["Phase E<br/>Strategy boundary"]
+        PF["Phase F<br/>Execution reintegration"]
+    end
+
+    subgraph Responsibility["Responsibility / authority domains"]
+        RC["Research Control / Method<br/>no execution or Claim authority"]
+        CAP["Capability / Skill Evolution<br/>Need and supply lifecycle"]
+        T4["Topic 4<br/>Agent / Model / Provider / Runtime<br/>consume frozen contracts only"]
+        T5["Topic 5 — FROZEN<br/>Handoff / context / pause / recovery"]
+        STATE["Research State / Claim / Human Decision<br/>validator is not decision authority"]
+        EVAL["Artifact / Trace / Evaluation<br/>evidence is not promotion"]
+    end
+
+    PA --> M8["M8"]
+    PB --> M9["M9"]
+    PC --> M10["M10 + M3-009 historical identity"]
+    PC --> M4["M4 provenance support"]
+    PD --> M5["M5"]
+    PE --> M2M7["M2 / M7 existing candidate paths"]
+    PF --> M11["M11"]
+    PF --> M6["M6 Provider conformance"]
+
+    RC --- M8
+    CAP --- M9
+    STATE --- M10
+    EVAL --- M5
+    T4 --- M11
+
+    PC -. "closeout + independent R2 task-definition" .-> T5
+    T5 -. "namespace only" .-> M12["M12 — RESERVED<br/>Continuity & Recovery"]
+    PE -. "C/D evidence proves M2/M7 insufficient" .-> M13["M13 — RESERVED<br/>Strategy & Evolution"]
+    M11 -. "Runtime/Evaluation/release maturity" .-> M14["M14 — RESERVED<br/>Product / Release Closure"]
+    M5 -. "maturity evidence" .-> M14
+```
+
+稳定词汇为：Phase = macro maturity / architecture Gate；Topic = architecture responsibility / authority
+domain；M-group = implementation family / development route；`Mxx-yyy` = atomic executable Task。一个
+Task 可以跨 responsibility，但只有一个 canonical identity；`M3-009` 因此继续位于 M10 施工链而不改名。
+
+M12、M13、M14 只是 expected namespace reservation：没有 Task state，不冻结 owner/dependency/acceptance/
+Schema，不构成 architecture acceptance 或 implementation approval，也不解冻 Topic 5、Strategy、Release。
+只有 accepted activation Gate、既有 M-group 不足的证据与独立 docs-only `task-definition` 都成立后，才可
+建立具体 `Mxx-yyy`。当前不推测 M15+。
+
 ---
 
 # 19. 当前最值得打磨的创新点

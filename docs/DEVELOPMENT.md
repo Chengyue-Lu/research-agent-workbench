@@ -24,9 +24,10 @@ Agent 不是责任主体。每个 Agent 使用稳定 `actor_id`，并在 Attempt
    压缩或争议触发时，才在 `work/<task-id>/<attempt-id>/` 建立 Task Archive；
 5. 完成时提交必要的验证证据；跨窗口、跨 Agent 或跨 PR 时再写 Compact Handoff 和 `WORKLOG.md`。
 
-Task status、hard dependency 与 implementation scheduling 只在 [`TASKS.md`](TASKS.md) 更新；Phase/Topic
+Task status、hard dependency 与 implementation scheduling 只在 [`TASKS.md`](TASKS.md) 更新；M-group
+施工导航由 [`M_SERIES_IMPLEMENTATION_MAP.md`](M_SERIES_IMPLEMENTATION_MAP.md) 从 TASKS 派生；Phase/Topic
 聚合、macro dependency 与 architecture Gate 只在 [`ROADMAP.md`](ROADMAP.md) 维护；实现覆盖只在
-[`STATUS.md`](STATUS.md) 汇总。Phase/Topic 不是 branch 或 PR 的 scope identity。若 accepted architecture
+[`STATUS.md`](STATUS.md) 汇总。Phase/Topic/M-group reservation 不是 branch 或 PR 的 scope identity。若 accepted architecture
 出现近期工作但 `TASKS.md` 没有对应 M Task，立即停止实现并先提交 docs-only `task-definition`。
 
 ## 3. 留存与克制读取
