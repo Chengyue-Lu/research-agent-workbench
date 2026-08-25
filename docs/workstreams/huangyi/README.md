@@ -12,6 +12,12 @@ owner：黄毅（GitHub 主名 `let778750-cpu`；昵称/界面名 `huangyi855`�
   Execution/Runtime 可恢复审计、PR #23 hard-block 证据及治理 rollout。
 - [`open-source-agent-harness-research/`](open-source-agent-harness-research/README.md)：
   开源 Agent Harness 调研、Codex 只读协议验证与候选研究方向（`RESEARCH-HARNESS-001`）。
+- [`M4-ARTIFACTS-PROVENANCE/`](M4-ARTIFACTS-PROVENANCE/README.md)：
+  M4 工件与复现（M4-001..004）阶段 workstream：source admission、promotion、
+  Claim trace、Run manifest 与复现检查。
+- [`M5-EVALUATION-BASELINE/`](M5-EVALUATION-BASELINE/README.md)：
+  M5 分阶段 workstream：本阶段仅 M5-003 对照框架与固定指标表；记录 M5-001/002/004/005
+  解锁条件与三臂/四臂映射口径。
 
 ## 文件生命周期
 
