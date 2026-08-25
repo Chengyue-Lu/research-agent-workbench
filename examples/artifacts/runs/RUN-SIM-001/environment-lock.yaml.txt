@@ -1,0 +1,5 @@
+# Frozen environment lock for RUN-SIM-001 (fixture)
+platform: windows-fixture
+runtime: python-3.11
+dependencies:
+  - stdlib-csv-only

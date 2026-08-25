@@ -1,0 +1,3 @@
+# Frozen parameters for RUN-SIM-001 (fixture)
+rounding: 2
+channels: [A, B]

@@ -21,6 +21,10 @@ htmlcov/
 .rwb/
 work/
 runs/
+# Committed structural fixtures under examples/ re-enter the work/ and runs/
+# zones on purpose: they are hash-pinned validation inputs, not runtime output.
+!examples/artifacts/work/
+!examples/artifacts/runs/
 
 # Editors and OS
 .idea/

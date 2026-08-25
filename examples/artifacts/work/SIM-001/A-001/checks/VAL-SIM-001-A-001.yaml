@@ -1,0 +1,24 @@
+schema_version: 0.1.0
+report_id: VAL-SIM-001-A-001
+checker:
+  checker_id: promotion-gate
+  version: 1.0.0
+  source_ref:
+    path: examples/artifacts/work/SIM-001/A-001/checks/promotion-gate.md
+    sha256: b2a5c0d582afc0e5a6f84355ef29446c11ffab52b341c74fa3298288928df4b0
+subject_refs:
+- path: examples/artifacts/work/SIM-001/A-001/outputs/channel-means.csv
+  sha256: 3f61896e76d7eb0a7a52f72773df348c321abe42364f2ff9eeaec1d3c85cd0bc
+- path: examples/artifacts/work/SIM-001/A-001/outputs/negative-findings.md
+  sha256: f47f7fd10509a01698c9a733f5a1e844c415cc1d5ddc8437b794fb2575d37475
+status: pass
+checks:
+- code: csv-structure
+  status: pass
+  detail: channel-means parses with the expected header
+- code: negative-finding-present
+  status: pass
+  detail: negative-findings.md is non-empty
+scope: SIM-001 attempt A-001 outputs
+limitations:
+- structural fixture check only; no scientific validity

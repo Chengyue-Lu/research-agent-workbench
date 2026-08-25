@@ -1,0 +1,29 @@
+schema_version: 0.1.0
+run_id: RUN-SIM-001
+method_ref: METH-001@1
+input_refs:
+- path: examples/artifacts/sources/raw/synthetic-sensor-log.csv
+  sha256: 5e55c955907c6b8b7568d5f0284308f6fc1ff45b364a68fbbd06e460dd0b93a5
+- path: examples/artifacts/runs/RUN-SIM-001/model.py
+  sha256: 62cd9300c7e0e85ab7903f8f020f11f9d0798cc0ff8ed420960b85b01cce2c77
+parameters_ref:
+  path: examples/artifacts/runs/RUN-SIM-001/params.yaml.txt
+  sha256: 5a8db4568b8ef2700bce7020017d71fa65e9a6cee90fec223384cc3ec9141d53
+environment:
+  platform: windows-fixture
+  runtime: python-3.11
+  lock_ref:
+    path: examples/artifacts/runs/RUN-SIM-001/environment-lock.yaml.txt
+    sha256: 48db3471859efd6e42e79966af6a84beaac2fdad2a6a6f997ad1406df4d93994
+agent_execution:
+  task_ref: examples/artifacts/tasks/SIM-001.yaml
+  profile_ref: evidence-scout
+status: completed
+outputs:
+- path: examples/artifacts/runs/RUN-SIM-001/outputs/channel-means.csv
+  sha256: 3f61896e76d7eb0a7a52f72773df348c321abe42364f2ff9eeaec1d3c85cd0bc
+limitations:
+- synthetic fixture run; no scientific validity claimed
+- 'no-Skill path: skill_assignment_ref intentionally omitted'
+metadata:
+  fixture: true
