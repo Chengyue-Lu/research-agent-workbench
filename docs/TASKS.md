@@ -57,7 +57,7 @@ Method Trace 语义；黄毅维护 M6 的 API/Runtime 执行实现与测试。�
 | M3-006 | IN_PROGRESS | SAFE_PAUSE 与机器完成权 | M3-001..003 | AWU/完成/暂停条件、stage/safe-pause/waiting、执行结束与 `contract-satisfied` 分离、失败报告覆盖显式完成宣称和可恢复 pause fixture 已实现；进程级 kill 与真实新进程/新 Attempt 恢复待演练 |
 | M3-007 | IN_PROGRESS | 冻结实名 actor、Attempt Archive 与完整 Agent Trace 规则 | M3-003..006 | ADR-0012、目录、消息信封、写前捕获、capture gap、按需读取和 Worklog 关系一致；负责人明确为路诚钺/黄毅 |
 | M3-008 | DONE | 实现 Trace Envelope/Index/Event Schema、validator 与手工 fixture | M3-007 | 文件权威 Trace Core、确定性 validator、瞬时 tool-result provenance、Python 3.11/3.13 CI、覆盖率、Registry、wheel 与干净安装 Gate 均通过；不保存 Chain-of-Thought |
-| M3-009 | PARKED | 在 Execution Trace 之上增加 Method-aware Trace | M3-008, M8-003, M8-005, M9-005 | 记录 Mode/Action/Mechanism、Capability resolved 与 actual supply binding、Human Gate/Evidence/Claim/Failure 决定；通过 Snapshot 引用与执行事件分层关联，不复制正文；Snapshot contract 稳定前不自建临时 capability-resolved event |
+| M3-009 | PARKED | 在 Execution Trace 之上增加 Method-aware Trace | M3-008, M8-003, M8-005, M9-005, M10-001, M10-002 | 建立独立、ref-only 的 Method Trace v0.1，记录 applied Method/Human Decision/State/path disposition；没有 accepted execution fact producer 时显式记录 actual-binding gap，且不得把 selected Snapshot 当作 actual execution 或把 gap-valid 写成 coverage-complete |
 
 ## M4：工件与复现
 
@@ -139,6 +139,14 @@ Human Decision 或端到端研究执行已经实现。
 | M9-005 | DONE | 建立 Capability Supply Report、Capability Resolution 与 Resolved Capability Snapshot 共享接口 | M9-001, M8-005 | M9-001 接受后 Core 可独立 READY，支持 no-Skill、direct Tool、Adapter/Provider supply facts 与受 ceiling 约束的 resolution/snapshot；Report 不选择自身，Resolution 区分 satisfied/gap/ambiguous/blocked，Snapshot 冻结 exact supply/version/hash/permission/data-egress/side-effect/conformance refs；Skill Supply Extension 仅在 M9-003 runtime eligibility 稳定后接入；不实现 API session 或 Runtime consumer |
 | M9-006 | DONE | 完成 Phase B migration/replay 与替换性 Gate | M9-002..005 | 已发布旧对象经显式 migration 继续解释；同一 Task/Mode/Action/Method/Requirement 在 Supply A→B 替换时只生成不同 Snapshot，且 permission/data-egress/side-effect ceiling 均不放宽、Runtime 不获得 Method authority；Phase B Stop Gate 有逐项证据 |
 
+## M10：Phase C Research State & Verification
+
+| ID | 状态 | 任务 | 依赖 | 验收 |
+|---|---|---|---|---|
+| M10-001 | READY | 建立并审计最小 durable Research State composition candidate | M1-002, M8-005, M9-005 | 用两个 bounded case 与反例检验最弱表示；当前 Unknown/Assumption item、Contradiction relation、derived Frontier、provenance-bearing Human Decision 与 Evidence relation 都是 implementation hypothesis，不预冻结最终 Schema；exact ref 结构可确定验证，科学判断与最终表示须 Human/R2 接受 |
+| M10-002 | PARKED | 建立 Attempt / Research Failure 语义与独立 lineage candidate | M1-004, M10-001 | Attempt 分离 from-State、optional predecessor Attempt 与 reopen justification；多个 Attempt 可共享 State，State 可由 Evidence/Human Decision 独立演化；Research Failure universal minimum 仅冻结 learned result/revisit condition，当前 source Attempt/observed/uncertainty 是 bounded profile candidate，并与 execution failure、negative Evidence、Capability Gap、Skill Need 分离 |
+| M10-003 | PARKED | 完成 Phase C bounded continuity / verification Gate | M10-001, M10-002, M3-009 | evidence-synthesis 与 synthetic simulation-negative 两案在 staged 新进程中只读 compact State、Method Trace 与 runner-owned exact closure；private oracle 只检查 exact output/read surface/fixture predicates 与 known-failure behavior，不能证明 reviewer reconstruction或科学正确性；具名 Human semantic review 与 R2 closeout 独立，Gate 不授权 Topic 5 实现 |
+
 ## 历史 GitHub Issues
 
 首批 Issues 已在后续实现与架构调整后关闭；本节只保留任务来源追溯，不再作为当前执行入口：
@@ -154,9 +162,12 @@ Human Decision 或端到端研究执行已经实现。
 ## 当前下一任务
 
 M9-001～006 已形成连通 dependency DAG 的原子完成集，每项均有独立 Schema/fixture/validator/test
-证据。Phase B checked-in fixtures 只具 `structural-replay` 资格，不是 Runtime input。M6-003 还依赖
-M2-001..005，其中 M2-003/M2-004 仍为 PARKED；下一动作是以独立 R2 task-definition 决策澄清其
-依赖与解冻边界，不因 M9 完成提前启动 M6-003、Phase C 或 Topic 5 实现。
+证据。Phase B checked-in fixtures 只具 `structural-replay` 资格，不是 Runtime input。Issue #38 的 R2
+planning review 只授权 bounded Task 草拟与 implementation exploration，没有使本分支的 M10 行或最终表示
+成为 canonical acceptance。这些 Task 行必须先经独立 **docs-only task-definition PR** 进入 `develop`；
+implementation feature PR 不得同时改写 Task 定义/依赖/验收。草案中的唯一 Phase C 入口是
+M10-001，后续 M10-002、M3-009 与 M10-003 按依赖推进。M6-003 仍受自身既有依赖约束，Topic 5 继续冻结，
+不能因 Issue、Task 草案、局部 Schema 或机器 Gate 通过而启动。
 
 Phase B 期间，路诚钺维护 Capability 词汇、Skill Need/lifecycle、Protocol 与相应 Schema/fixture；
 Resolved Capability Snapshot 是跨负责人共享接口，黄毅维护 Provider/Adapter 字段的真实供给映射与
@@ -178,5 +189,6 @@ data-egress、side-effect boundary；automatic fallback、model auto-routing、m
 critic voting、hidden routing，以及 Runtime 修改 Method/Claim/Gate 仍被禁止。
 
 Topic 5 继续冻结，直到 Phase C 至少完成 minimal Research State、Failure/Attempt semantics 与 Method
-Trace v0.1。只有该 Gate 通过后，Handoff、context rollover、safe pause、recovery 和 salvage/clean
-recovery 的后续扩展才可恢复；M9-005 Snapshot Core 不单独解除 Topic 5。
+Trace v0.1 并经 Human/R2 closeout。该 Gate 只允许 Topic 5 重新进入**独立架构设计审查**；Handoff、context
+rollover、safe pause、recovery、salvage/clean recovery 的实现仍保持 PARKED，必须另有 task-definition 与
+R2 acceptance。M9-005 Snapshot Core 不单独解除 Topic 5。

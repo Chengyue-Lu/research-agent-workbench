@@ -1,0 +1,22 @@
+# Phase C Research State & Verification 风险台账
+
+| ID | 类型 | 风险 | 控制 | 状态 |
+|---|---|---|---|---|
+| PCRS-IDENTITY-001 | fact | 原位扩写 v0.1 Attempt/Decision/Trace 会改变旧工件解释。 | Phase C candidate 使用新版本 Schema；旧 fixtures 继续跑 compatibility regression。 | planned; pending feature PR/R2 |
+| PCRS-ONTOLOGY-001 | inference | 为 Unknown、Contradiction、Assumption、Frontier 各建对象会膨胀为知识图谱。 | 当前候选使用 Unknown/Assumption State item、Contradiction relation、derived Frontier；最终表示仍待 bounded counterexample 与 R2。 | pending representation R2 |
+| PCRS-FAILURE-001 | fact | Attempt `failed`、异常文本或 negative Evidence 可能冒充 durable Research Failure。 | 当前 bounded execution-originated profile 强制 source Attempt、learned result、revisit condition；Evidence/Artifact 是适用时的可选 provenance，不是 universal minimum。 | planned; pending feature PR/R2 |
+| PCRS-LINEAGE-001 | fact | predecessor Attempt 与 from-State 混同会伪造一对一 State transition，或从另一 State lineage 拼接同名 item。 | 三种关系使用不同字段与负面/多对一 fixtures；Attempt/State/Failure 检查 Question、时间、source lineage 与 durable item identity/meaning。 | planned; pending feature PR/R2 |
+| PCRS-REOPEN-001 | fact | revisit condition 或 reopen ref 可能被 Runtime 当成 retry/replan 授权。 | 契约与 validator 明确 refs 仅解释，不产生控制权限；无自动执行 API。 | planned; pending feature PR/R2 |
+| PCRS-DECISION-001 | fact | Authority eligibility 可能被误写成人类批准或 State effect。 | actual Human Decision candidate 单独记录 actor/provenance/scope/refs/effect；eligibility wrong-kind fixture 必须失败。 | planned; pending feature PR/R2 |
+| PCRS-SCIENCE-001 | fact | 结构 validator 可能越权声明 support/contradict 的科学真实性。 | 只验证 ref/hash/type/relation shape；Human rubric 独立。 | accepted limitation |
+| PCRS-TRACE-001 | fact | 把 Method Trace 塞入 Execution Trace 会混淆科研轨迹与 operational events。 | 独立 ref-only contract；Execution Trace 不改。 | planned; pending feature PR/R2 |
+| PCRS-BINDING-001 | fact | selected Snapshot 被误作 actual supply binding，或既有 gap 被 revision 重分类为 not-applicable/captured。 | gap-only 与 coverage-complete 互斥；Snapshot 始终绑定 Trace Task/applied Method；没有 accepted producer 时 capture/reclassification fail closed。 | planned; pending feature PR/R2 |
+| PCRS-SESSION-001 | fact | session/thread/runtime identity 被当作 durable State。 | State identity/revision 独立，schema 禁止 session fields，fresh-process case 不提供 session history。 | planned; pending feature PR/R2 |
+| PCRS-GATE-001 | fact | Schema happy path、caller-forged report、弱 oracle 或 lookalike case 被误报为 Phase C 或 Topic 5 完成。 | aggregate 只重跑两条 canonical path 并绑定 identity/kind；runner-owned oracle minimum、ordered path multiplicity、exact authority limits、fresh process/read log 与具名 Human/R2 review均须满足。 | pending R2 closeout |
+| PCRS-TOPIC5-001 | fact | Phase C 合并被解释为自动批准 recovery/salvage/multi-Agent。 | closeout 只允许 Topic 5 重新进入设计审查；实现仍冻结。 | controlled by docs and status |
+| PCRS-HEAD-001 | fact | 被 revoked/superseded 的 Decision 或 Failure 旧 revision 仍被 consumer 当作 current authority。 | State 只保留每个 identity 的 current head；direct successor replacement、Decision status 与 Failure disposition 都有负测。 | planned; representation pending R2 |
+| PCRS-FIXTURE-001 | fact | planning-only Method Task 或 synthetic fixture 被误写成真实 scientific/execution activity。 | 两案使用独立 bounded fixture Task/Method Resolution；Evidence inputs、Question 与 State exact-chain，simulation 只消费 pre-recorded synthetic observation，并明确不证明 live execution/actual binding。 | planned; pending feature PR/R2 |
+| PCRS-FIXTURE-ACTOR-001 | fact | representative Human Decision fixture 冒用真实 owner 身份，被误读为实际 approval/closeout。 | fixture 使用明确 synthetic human-reviewer identity，并声明不代表具名 owner；实际 Human/R2 result 继续 pending 且必须另有 exact ref。 | planned; pending feature PR/R2 |
+| PCRS-ISOLATION-001 | fact | fresh actor 读取 oracle/session 或覆盖 staged input。 | runner-owned deny policy、runtime/data/output 三根隔离、Python open audit hook、fresh output 与 write-deny tests；不声称 OS sandbox。 | planned; pending feature PR/R2 |
+| PCRS-CAUSAL-SPLICE-001 | fact | 各自真实但无关的 Task、Attempt、Failure、State transition、Evidence relation 或 Decision 被拼成 Gate PASS，或一个完整 Failure 掩盖同 Task 下另一残缺 Failure。 | 两案强制 Method→Decision→State→disposition 次序与 Task/Question；simulation 对每个 matching Failure 分别绑定 input/Evidence/Failure/全部 Assumption，evidence 再绑定 source inputs/同一 active qualifying Decision。 | planned; pending feature PR/R2 |
+| PCRS-PROVENANCE-ERASURE-001 | fact | State item 或 Failure successor 静默丢弃 source/resolution/Evidence/disposition provenance。 | refs 单调保留；closed status 不原地重开；open→closed 必须 exact admitted cause。 | planned; pending feature PR/R2 |
