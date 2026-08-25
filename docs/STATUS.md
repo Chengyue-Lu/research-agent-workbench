@@ -27,6 +27,7 @@ Protocol、两级 Snapshot 与 migration/replacement 结构契约已经实现。
 | Capability supply / Snapshot | typed Report→Resolution→Snapshot 拒绝自报 evidence status、artifact/identity/version/capability/result 漂移和 routing/fallback；structural Snapshot 不是执行输入，Snapshot 只冻结 Supply-side permission/data-egress/side-effect facts，不生成最终权限、Provider binding 或 Authority eligibility |
 | Phase B Gate | hash-bound Gate 固定 Task/Mode/Action/Method/Requirement、A/B structural Snapshot 与两类 migration；供给替换保持三类 Supply boundary facts，不赋予 Runtime Method authority |
 | 确定性验证 | Schema、引用、哈希、权限交集、Handoff lock、Claim 支持关系 |
+| 工件与溯源（M4） | inbox 引用全局阻断；`sources/raw` admission sidecar（origin/acquired_at/operator/许可/解析器/敏感性/衍生物）；只有通过确定性检查报告的 work 产物可提升，accepted 不原地覆盖、负结果不得丢弃；`rwb claim trace` 将支持/反证/限制一次定位到路径与版本并校验引用级 pin；Run manifest 冻结输入/参数/环境锁/输出哈希并支持 rerun 字节比对（[契约](implementation/ARTIFACT_PROVENANCE_CONTRACT.md)） |
 | Task 解析 | Task + Agent Profile + 显式或 Registry Skill 的冻结 Assignment、权限交集与版本锁 |
 | Legacy Skill 兼容 | accepted Registry 的 active / legacy / deprecated 历史选择边界与精确版本继续可验证；新绑定使用 lifecycle v2 eligibility |
 | 文件式连续性 | Main State、checkpoint、resume-check、受控 Handoff 与归档约定 |
@@ -44,6 +45,7 @@ Protocol、两级 Snapshot 与 migration/replacement 结构契约已经实现。
 | End-to-end research run | 尚无面向普通用户的一键 Task-to-research 闭环；Runtime 集成由开发者显式接入 |
 | 真实外部模型 | 仓库测试不证明各供应商真实账号、配额、工具调用或长期兼容性 |
 | 科学有效性 | Validator 不评判方法适用、证据质量或 Claim 正确性 |
+| 工件与溯源（M4） | admission 不抓取网页/API 快照（origin 定位字段由维护者如实填写）；promotion 只消费确定性检查报告；run 复现检查覆盖机器可测子集（哈希闭合与 rerun 字节比对），不证明语义可理解性；DVC spike 仍 PARKED |
 | Skill 价值 | 现有 Registry 条目不构成已证明的普适研究增益；新任务可优先 no-Skill / direct-tool |
 | 发布 | 仓库缺少最终许可证选择，原创 Skill 许可状态仍阻断正式发布 |
 | 产品体验 | 初始化、可视化、协作 UI、安装包和运维流程仍是开发者级别 |

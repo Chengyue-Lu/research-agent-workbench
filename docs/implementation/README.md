@@ -14,6 +14,7 @@
 - [Phase B migration/replay/replacement Gate](PHASE_B_EVOLUTION_GATE.md)
 - [Research Mode v0.1 to v0.2 migration](RESEARCH_MODE_MIGRATION.md)
 - [Decision Authority Matrix and Authority Rule Eligibility](DECISION_AUTHORITY.md)
+- [Artifact provenance contract (M4)](ARTIFACT_PROVENANCE_CONTRACT.md)
 - [File-authoritative Trace Core](TRACE_CORE.md)
 - [Execution Trace Adapter](EXECUTION_TRACE_ADAPTER.md)
 - [Provider Adapter plan and seam](PROVIDER_ADAPTER_PLAN.md)
