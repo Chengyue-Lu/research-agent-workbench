@@ -186,6 +186,9 @@ SCHEMA_KINDS = {
     "context_snapshot",
     "execution_receipt",
     "research_object",
+    "source_admission",
+    "promotion_record",
+    "run_manifest",
 }
 
 
@@ -266,6 +269,12 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "skill_archive_audit"
     if "evaluation_id" in document and "candidate_id" in document and "cases" in document:
         return "skill_evaluation"
+    if "admission_id" in document and "acquisition" in document and "admitted_path" in document:
+        return "source_admission"
+    if "promotion_id" in document and "source_workspace" in document and "entries" in document:
+        return "promotion_record"
+    if "run_id" in document and "input_refs" in document and "environment" in document and "outputs" in document:
+        return "run_manifest"
     if "object_type" in document and "object_id" in document:
         return "research_object"
     return None

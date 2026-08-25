@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/run-manifest.schema.json",
+  "title": "Run Manifest",
+  "x-rwb-document-kind": "run_manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "run_id",
+    "method_ref",
+    "input_refs",
+    "parameters_ref",
+    "environment",
+    "agent_execution",
+    "status",
+    "outputs"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "run_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "method_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+    "input_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "common.schema.json#/$defs/fileRef" }
+    },
+    "parameters_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "environment": {
+      "type": "object",
+      "required": ["platform", "runtime", "lock_ref"],
+      "properties": {
+        "platform": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "runtime": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "lock_ref": { "$ref": "common.schema.json#/$defs/fileRef" }
+      },
+      "additionalProperties": false
+    },
+    "agent_execution": {
+      "type": "object",
+      "required": ["task_ref", "profile_ref"],
+      "properties": {
+        "task_ref": { "$ref": "common.schema.json#/$defs/relativePath" },
+        "profile_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "skill_assignment_ref": {
+          "description": "Optional legacy compatibility field; omitted on no-Skill paths instead of faked.",
+          "$ref": "common.schema.json#/$defs/relativePath"
+        }
+      },
+      "additionalProperties": false
+    },
+    "status": { "enum": ["planned", "running", "completed", "incomplete", "failed"] },
+    "outputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "common.schema.json#/$defs/fileRef" }
+    },
+    "limitations": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "metadata": { "type": "object" }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "completed" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "outputs": { "minItems": 1 }
+        }
+      }
+    }
+  ]
+}
