@@ -1568,6 +1568,9 @@ Research State composition
 Phase C 与 Topic 4 可以在边界清楚后并行推进：Topic 4 让 frozen contracts 可执行；Phase C 让执行结果形成 durable research meaning。任何一边都不能替代另一边。
 
 Topic 5 继续受 Phase C minimum 与 Method Trace Gate 约束，不能因 Snapshot Core 或 Topic 4 解冻而提前宣称成立。
+Phase C 的 M10-001→M10-002→M3-009→M10-003 是 Topic 5 activation prerequisites，不是 Topic 5
+members；它们建立 research meaning 与可验证前提，不实施 Handoff、context rollover、safe pause/resume、
+recovery 或 continuation。
 
 ## 18.6 Canonical Architecture Map：Phase / Topic → M-group
 

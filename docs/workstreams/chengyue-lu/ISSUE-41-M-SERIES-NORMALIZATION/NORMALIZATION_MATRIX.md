@@ -58,7 +58,7 @@ Capability/Skill Evolution、Topic 4（Agent/Model/Provider/Runtime）、Topic 5
 | M3-006 | IN_PROGRESS → PARKED | SAFE_PAUSE/machine completion | foundation + post-C future | Topic 5 | unmet range; no active work | no: contract + process recovery | STATUS-FIX; PARK |
 | M3-007 | IN_PROGRESS → PARKED | actor/archive/Agent Trace rules | foundation + post-C future | Topic 5 + Artifact/Trace | unmet range; no active work | no: rules + future coverage | STATUS-FIX; PARK |
 | M3-008 | DONE → DONE | Execution Trace Core | foundation | Artifact/Trace + Topic 5 | historical | yes | KEEP |
-| M3-009 | PARKED → BLOCKED | Method Trace v0.1 | C | Research State + Topic 5 + Trace | M10-001/002 unmet | yes | STATUS-FIX; REFINE metadata |
+| M3-009 | PARKED → BLOCKED | Method Trace v0.1 | C | Research Control + Research State + Trace | M10-001/002 unmet | yes | STATUS-FIX; REFINE metadata；Topic 5 prerequisite, not member |
 | M4-001 | READY → READY | source admission/provenance | C support | Artifact/Trace + Research State | satisfied but broad | yes | REFINE dependency/acceptance |
 | M4-002 | READY → BLOCKED | object/run promotion | C support | Artifact/Trace + Research State | missing M4-001 closure | yes | STATUS-FIX; REFINE dependency |
 | M4-003 | READY → BLOCKED | Claim/counterevidence trace | C support | Research State/Claim + Trace | missing provenance/promotion | yes | STATUS-FIX; REFINE dependency |
@@ -113,8 +113,8 @@ Capability/Skill Evolution、Topic 4（Agent/Model/Provider/Runtime）、Topic 5
 | M9-005 | DONE → DONE | Report/Resolution/Snapshot | B | Research Control + Capability + Topic 4 | historical | yes | KEEP |
 | M9-006 | DONE → DONE | migration/replacement Gate | B | Capability + Validation | historical | yes | KEEP |
 | M10-001 | READY → READY | minimal Research State candidate | C | Research State/Claim/Human | yes | yes | KEEP |
-| M10-002 | PARKED → BLOCKED | Attempt/Research Failure | C | Research State + Topic 5 | M10-001 unmet | yes | STATUS-FIX |
-| M10-003 | PARKED → BLOCKED | bounded Phase C Gate | C | Research State + Topic 5 + Validation | M10-001/002/M3-009 unmet | yes | STATUS-FIX |
+| M10-002 | PARKED → BLOCKED | Attempt/Research Failure | C | Research State / Attempt / Failure | M10-001 unmet | yes | STATUS-FIX；Topic 5 prerequisite, not member |
+| M10-003 | PARKED → BLOCKED | bounded Phase C Gate | C | Research State + Validation | M10-001/002/M3-009 unmet | yes | STATUS-FIX；Topic 5 prerequisite, not member |
 
 审计覆盖 baseline 全部 79 个 Task；没有使用未合并实现或候选状态。
 
@@ -220,11 +220,13 @@ M6-004 也不依赖 M11-004。M11 Core 按图中每一 dependency layer 分 PR �
 | Research Control / Method | M1-003/007, M7, M8-002～004, M9-001/004/005, M3-009 | 不执行 Provider selection/fallback |
 | Capability / Skill Evolution | M2, M7-004/005/008～015, M9-001～003/005/006, M11-005/006 | Need/lifecycle 不控制 current Runtime；M11-006 保持 unified View semantics |
 | Topic 4 — Agent/Model/Provider/Runtime | M1-008, M2-002/006, M6, M9-005, M11 | Host 不重选 Supply、不改 Method/Claim/Gate |
-| Topic 5 — Execution/Context/Handoff/Recovery | M1-004, M2-005, M3, M6-003/006, M10-002/003 | 只收改变 Handoff/context/safe-pause/recovery/continuation semantics 的 Task；M11-003/004 不属于 Topic 5 |
+| Topic 5 — Execution/Context/Handoff/Recovery | M1-004, M2-005, M3-001～008, M6-003/006；future M12 仅 RESERVED | 只收改变 Handoff/context/safe-pause/recovery/continuation semantics 的 Task；Phase C chain 与 M11-003/004 都不属于 Topic 5 |
 | Research State / Claim / Human Decision | M1-002/007, M4-003, M8-005, M10, M3-009 | validator/eligibility 不产生科研决定 |
 | Artifact / Trace / Validation / Evaluation | M1-005/007, M3-005/007～009, M4, M5, M7-006/013/014, M9-002/004/006, M11-004 | execution/evaluation evidence 不自动 promotion |
 
 一个 Task 可跨多个 responsibility，仍只有一个 canonical ID；例如 M3-009 与 M11-004 不按 Topic 复制。
+`M10-001 → M10-002 → M3-009 → M10-003` 只作为 Topic 5 activation prerequisite；该依赖关系不赋予
+这些 Phase C Task Topic 5 membership 或 recovery/continuation authority。
 
 ## 8. State correction summary
 
@@ -237,7 +239,7 @@ M6-004 也不依赖 M11-004。M11 Core 按图中每一 dependency layer 分 PR �
 | M10-002/M3-009/M10-003 属于 active Phase C chain 但被写成 PARKED | 依赖未满足，统一 BLOCKED |
 | Topic 4 已解冻但没有 implementation Task | 新增 M11-001 READY 与后继 BLOCKED DAG |
 | Optional Skill extension 可能变成 Skill-specific Runtime seam 或反向 Gate Core | M11-005/006 PARKED；M11-006 由 View/Capability semantic owner 维护并保持 supply-kind-neutral |
-| Trace/Receipt 使用被误判为 Topic 5 membership | membership 按 Handoff/context/recovery/continuation objective 判定；M11-003/004 明确留在 Topic 4/Artifact-Trace |
+| Phase C prerequisite 或 Trace/Receipt 使用被误判为 Topic 5 membership | membership 按 Handoff/context/recovery/continuation objective 判定；M10-001/002、M3-009、M10-003 是 Topic 5 prerequisites，M11-003/004 留在 Topic 4/Artifact-Trace，均不是 Topic 5 member |
 | M6-004 被错误串到 Runtime Core Gate 后才允许 live conformance | 只保留 M6-001/002 hard dependencies；M11-004 E2E closure 独立验收 |
 
 ## 9. Completion checks
@@ -247,6 +249,6 @@ M6-004 也不依赖 M11-004。M11 Core 按图中每一 dependency layer 分 PR �
 - READY 仅保留 hard dependencies 已 DONE 或纯 Human-independent 可启动项；
 - M6-003、M3 legacy scope 均有 lineage，未借拆分扩大 Runtime/Recovery authority；
 - ROADMAP 只聚合 Phase/Gate，TASKS 控制 implementation scheduling；
-- Topic 5 保持冻结；M11-003/004 不属于 Topic 5，未创建 recovery/multi-Agent/fallback READY Task；
+- Topic 5 保持冻结；Phase C chain 只是 activation prerequisite，M11-003/004 也不属于 Topic 5；未创建 recovery/multi-Agent/fallback READY Task；
 - M11 producer/consumer chain 采用一 dependency layer 一 PR，不使用 R2 atomic exception 跨层收口；
 - M12/M13/M14 只作 M-group reservation，未进入 Task inventory、状态机或 architecture acceptance。

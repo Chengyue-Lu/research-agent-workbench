@@ -104,8 +104,8 @@ feature implementation 混合。
 - 长期 IN_PROGRESS 和 oversized umbrella 均有明确结论；
 - DONE identity/definition 不变，split/supersede/refine lineage 可追踪；
 - Topic 5 未解冻，Runtime/Method/Capability/Claim/Human authority 未扩大；
-- Topic 5 membership 只覆盖改变 Handoff/context/safe-pause/recovery/continuation 语义的 Task；M11-003/004
-  使用 Trace/Receipt 但不属于 Topic 5；
+- Topic 5 membership 只覆盖改变 Handoff/context/safe-pause/recovery/continuation 语义的 Task；Phase C
+  chain 是 activation prerequisite 而非 member，M11-003/004 使用 Trace/Receipt 但也不属于 Topic 5；
 - M11-006 由 View/Capability semantic owner 维护，不形成 Skill-specific Runtime seam；
 - `TASKS.md` 成为唯一 implementation scheduling truth；
 - Phase/Topic architecture map 与 M-series-only construction map 用途分离，reservation 不进入 Task 状态机；
@@ -128,7 +128,7 @@ implementation、live Provider、Phase C 科学表示或 Topic 5 recovery 已完
 | Review finding | Decision |
 |---|---|
 | atomic completion 只限 R2 或逐层 PR | 保留 Governance v2 的既有 R2 exception；Issue #41 全部新增/规范化 DAG 选择一 dependency layer 一 feature PR，尤其禁止 M11 跨层 atomic completion |
-| Topic 5 membership/freeze 歧义 | membership 只按 Handoff/context/safe-pause/recovery/continuation objective；M11-003/004 明确不属于 Topic 5 |
+| Topic 5 membership/freeze 歧义 | Phase C chain 只作 activation prerequisite；membership 只按 Handoff/context/safe-pause/recovery/continuation objective；M11-003/004 也明确不属于 Topic 5 |
 | M11-006 形成 Skill-specific Runtime seam | owner 改为路诚钺；Task 改成 eligible Skill supply 到统一 View/Capability 语义的映射，Host 无 Skill 特例 |
 | M6-004 是否 hard-depend M11-004 | 否；它只依赖 M6-001/002 与 external live authorization，验证 Provider/session 而非 Runtime E2E |
 | TASKS owner 总述过时 | 补齐 M4/M5/M10、View/Capability semantics 与 M11 Runtime implementation 的具名分工 |

@@ -224,6 +224,10 @@ Topic 5 继续冻结，直到 minimal Research State、Failure/Attempt semantics
 该 Gate 通过后才恢复 Handoff、context rollover、safe pause、recovery 与 salvage/clean recovery 的后续
 扩展；M9-005 或 Topic 4 的解冻不能替代 Phase C 的状态与失败语义。
 
+Phase C 的 `M10-001 → M10-002 → M3-009 → M10-003` 是 Topic 5 的 activation prerequisite chain，
+不是 Topic 5 membership。完成这些 Task 只使独立 Topic 5 R2 architecture review/task-definition 可以开始，
+不会自动授权 Handoff、context、pause/resume、recovery 或 continuation implementation。
+
 Topic membership 按 Task objective 判断：只有改变 Handoff、context rollover、safe pause、recovery、
 salvage/clean recovery 或 continuation semantics 的 Task 才属于 Topic 5。M11-003/004 仅实现 Topic 4
 Thin Host、actual fact reporting 和通用 observability closure；使用 Trace/Receipt 不使其成为 Topic 5

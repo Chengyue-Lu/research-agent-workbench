@@ -226,7 +226,7 @@ M13 不等于 strategy framework approval；M14 不等于 release implementation
 | `M2-003, M2-004, M2-007, M2-008` | 路诚钺 | R1～R2 | E / optional evaluation | Capability / Skill Evolution | legacy 或来源驱动路线，保持 PARKED |
 | `M2-006` | 黄毅 | R1 | F / optional platform | Topic 4 | 无真实平台需求，保持 PARKED |
 | `M3-001～007` | 路诚钺、黄毅按既有边界 | R2 | pre-A bounded slice；post-C future | Topic 5 + Artifact/Trace | 无 active implementation，future residual 等待 Phase C closeout 后重新 task-definition |
-| `M3-009` | 路诚钺 | R2 | C | Research State + Topic 5 + Artifact/Trace | active-path BLOCKED；复用唯一 Method Trace identity |
+| `M3-009` | 路诚钺 | R2 | C | Research Control + Research State + Artifact/Trace | active-path BLOCKED；复用唯一 Method Trace identity；是 Topic 5 activation prerequisite，不是 Topic 5 member |
 | `M4-001～004` | 路诚钺 | R1；M4-003 R2 | C / D | Research State + Artifact/Trace | M4-001 READY；后继按 provenance DAG BLOCKED |
 | `M4-005` | 路诚钺 | R1 | deferred | Artifact/Trace | 只在真实大文件需求出现时恢复 |
 | `M5-001～005` | 路诚钺 | R1；Human decisions R2 | D | Evaluation + Research State | M5-003 READY；真实案例与删减链 BLOCKED |
@@ -235,7 +235,7 @@ M13 不等于 strategy framework approval；M14 不等于 release implementation
 | `M6-005` | 黄毅 | R1～R2 | deferred F | Topic 4 | 真实需求/平台选择前 PARKED |
 | `M7-005, M7-006, M7-014` | 路诚钺 | R2 | D | Research Control + Evaluation + Skill Evolution | evidence-driven trials PARKED |
 | `M7-007` | 路诚钺 | R2 | E | Research Control / Mode | 真实案例证明 Mode gap 前 PARKED |
-| `M10-001～003` | 路诚钺 | R2 | C | Research State / Claim / Human Decision + Topic 5 | M10-001 READY，其余按 DAG BLOCKED |
+| `M10-001～003` | 路诚钺 | R2 | C | Research State / Claim / Human Decision + Artifact/Trace/Validation | M10-001 READY，其余按 DAG BLOCKED；整条 Phase C chain 是 Topic 5 activation prerequisite，不是 Topic 5 member |
 | `M11-001～006` | 各行具名 | R2 | F | Topic 4；部分跨 Research Control、Artifact/Trace、Skill Evolution；不属于 Topic 5 | Core 与 optional Skill supply publication/mapping 分离；一 dependency layer 一 PR |
 
 ## 历史 GitHub Issues
@@ -286,7 +286,8 @@ voting、hidden routing，以及 Runtime 修改 Method/Claim/Gate 仍被禁止�
 Topic 5 继续冻结，直到 Phase C 至少完成 minimal Research State、Failure/Attempt semantics 与 Method
 Trace v0.1 并经 Human/R2 closeout。该 Gate 只允许 Topic 5 重新进入**独立架构设计审查**；Handoff、context
 rollover、safe pause、recovery、salvage/clean recovery 的实现仍保持 PARKED，必须另有 task-definition 与
-R2 acceptance。Topic 5 membership 只授予会改变 Handoff、context rollover、safe pause、recovery、
+R2 acceptance。`M10-001 → M10-002 → M3-009 → M10-003` 是上述解冻 Gate 的 prerequisite chain，
+不属于 Topic 5，也不因完成而自动获得 Topic 5 implementation authority。Topic 5 membership 只授予会改变 Handoff、context rollover、safe pause、recovery、
 salvage/clean recovery 或 continuation semantics 的 Task；仅消费 Trace/Receipt 或报告 execution facts
 不构成 membership。因此 M11-003/004 属于 Topic 4/Artifact-Trace integration，明确不属于 Topic 5，
 也不获得其恢复/编排 authority；M9-005 Snapshot Core 同样不解除 Topic 5。

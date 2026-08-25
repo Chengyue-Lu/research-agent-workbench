@@ -6,7 +6,7 @@
 | MSN-HISTORY-001 | fact | 为整齐而重编号、删除或改写历史 Task，破坏 PR/ADR/fixture 引用。 | 已发布 Task ID 保留；只用 refine/split/supersede lineage；DONE 定义不可变。 | controlled by rule; audit pending |
 | MSN-STATE-001 | fact | READY/BLOCKED/PARKED/IN_PROGRESS 继续表达愿望或历史债务，而非严格状态。 | 已逐项修正 M3、M4、M5、M6 与 M10；最终 R2 review/CI 继续检查。 | proposed control |
 | MSN-UMBRELLA-001 | inference | M3/M6 umbrella 拆分时顺手重设 Runtime、Recovery 或 Method authority。 | Task 拆分只描述实施契约；涉及 authority 变化立即 STOP 并转独立 R2 architecture decision。 | active stop condition |
-| MSN-TOPIC5-001 | fact | 为补齐 future Task，或仅因使用 Trace/Receipt 就把 M11 thin execution 计入 Topic 5，造成 membership/freeze 歧义与事实解冻。 | membership 只按 Handoff/context/safe-pause/recovery/continuation objective 判定；M11-003/004 明确属于 Topic 4/Artifact-Trace；M12 只作 reservation，Phase C closeout与独立 R2 Gate 前不创建 Topic 5 Task。 | controlled by explicit ceiling |
+| MSN-TOPIC5-001 | fact | 把 Phase C prerequisites 或使用 Trace/Receipt 的 M11 thin execution 计入 Topic 5，造成 membership/freeze 歧义与事实解冻。 | M10-001/002、M3-009、M10-003 只作为 activation prerequisites；membership 只按 Handoff/context/safe-pause/recovery/continuation objective 判定；M11-003/004 属于 Topic 4/Artifact-Trace；M12 只作 reservation。 | controlled by explicit ceiling |
 | MSN-INFLATION-001 | inference | 把每个 Research State 概念或架构名词机械变成 Task，导致 Task DAG 失去可执行性。 | 只新增六个已有 accepted producer/consumer surface；字段、Provider、State 概念和纯 closeout 不单独建 Task。 | proposed control |
 | MSN-DUPLICATE-001 | fact | 跨 Topic 工作被复制为多个语义重复 Task。 | 一个 canonical Task 可列多个 Topic；M3-009 与 M11-004 等跨域 Task 均保持单一 identity。 | proposed control |
 | MSN-OWNER-001 | fact | workstream/Phase/Topic 名称替代具名 owner，跨 owner contract 无审查责任。 | 每个 active-path Task 明确 owner/risk/topics；共享接口保留 cross-owner review。 | audit pending |
