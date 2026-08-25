@@ -6,7 +6,7 @@
 - PR class：`task-definition`
 - 基线：`develop@73dcb03b4d4152f36fef5b2dadb3ae0f11d7de7b`
 - 分支：`docs/issue-41-m-series-normalization`
-- 状态：准备完成；允许开始只读 inventory，canonical Task diff 尚未形成
+- 状态：M0～M10 inventory、normalization proposal 与本地验证完成；等待独立 R2 review
 
 ## 1. 目标
 
@@ -81,19 +81,14 @@ decision，接受后再返回 normalization。
 8. 运行文档链接、Governance focused tests 与 repository validation；
 9. 以 docs-only `task-definition` PR 请求独立 R2/cross-owner review。
 
-## 6. 并发与合并顺序
+## 6. 事实基线与合并顺序
 
-准备时存在以下并发写入：
+本轮只审计 `develop@73dcb03b4d4152f36fef5b2dadb3ae0f11d7de7b` 已合并内容。开放 PR、远端
+feature branch、候选 fixture 和其中声称的 Task transition 均不进入 matrix，也不预留 canonical 状态。
 
-| 工作 | 状态 | 与 Issue #41 的重叠 | 处理 |
-|---|---|---|---|
-| PR #39 / `agent/m4-artifacts-provenance` | open | `TASKS.md`、`STATUS.md` | inventory 可参考；最终 diff 前重新同步，未合并状态不进入 canonical truth |
-| `agent/m5-evaluation-baseline` | remote branch，无 open PR | `TASKS.md`、`STATUS.md` 与 M4/M5 workstream | 仅登记冲突风险，不假设其 Task transition 已接受 |
-| Phase C task-definition #40 | 已进入当前 `develop` | M10 与 M3-009 | 作为当前 canonical input 审计，不回退其 accepted Task identity |
-
-Issue #41 的最终 PR 不与 feature PR 同时改 Task definition。若并发 feature 先合并，应 rebase/merge 最新
-`develop` 并重新计算状态；若 normalization 先进入 review，则相关 feature PR 必须在合并前验证其 Task ID、
-状态和 acceptance 仍与 normalization 一致。
+最终 PR 前重新同步当时最新 `develop`，但只吸收已经合并的事实；发生 `TASKS.md` 冲突时重新执行全量
+状态/依赖检查，而不是用未合并分支补丁预测结果。Issue #41 保持 docs-only `task-definition`，不能与
+feature implementation 混合。
 
 ## 7. 完成 Gate
 
@@ -105,3 +100,15 @@ Issue #41 的最终 PR 不与 feature PR 同时改 Task definition。若并发 f
 - Topic 5 未解冻，Runtime/Method/Capability/Claim/Human authority 未扩大；
 - `TASKS.md` 成为唯一 implementation scheduling truth；
 - docs-only governance、链接与 CI 通过，并完成独立 R2 review。
+
+## 8. 当前验证证据
+
+- baseline 79 个 Task 与 matrix 79 个 Task exact-set 一致；新增 M11-001～006 后共 85 个唯一 Task；
+- DONE 行相对 baseline 零修改；未知 dependency 为 0；READY dependency violation 为 0；
+- `tests.test_documentation` + `tests.test_pr_governance`：76 tests PASS；
+- full repository suite：432 tests PASS，3 skipped；
+- repository validation：154 documents validated，0 errors，0 warnings；
+- `git diff --check`：PASS。
+
+这些结果证明文档闭包、Task DAG 结构和现有仓库回归通过，不替代独立 R2 review，也不证明 M11
+implementation、live Provider、Phase C 科学表示或 Topic 5 recovery 已完成。

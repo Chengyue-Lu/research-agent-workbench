@@ -38,7 +38,7 @@ Protocol、两级 Snapshot 与 migration/replacement 结构契约已经实现。
 
 | 范围 | 限制 |
 |---|---|
-| Method-aware control continuation | M6-003 thin Runtime consumer 与 Method Trace 尚未实现；M6-003 仍受既有 M2-001..005 依赖约束，其中 M2-003/M2-004 为 PARKED；当前三条 Snapshot 都是 `structural-replay` 且 `execution_input=false`；Mode/lifecycle migration 不迁移历史 Resolution、Assignment、Receipt 或 Trace，Authority Rule Eligibility 也不执行决定 |
+| Method-aware control continuation | M6-003 只保留 legacy Task-to-API compatibility seam；未来主链已规范化为 M11-001 Runtime Bundle/Profile → M11-002 Resolved Execution View → M11-003 Thin Host → M11-004 generic Trace/Receipt Gate，均尚未实现；Method Trace 也尚未实现。当前三条 Snapshot 都是 `structural-replay` 且 `execution_input=false`；Mode/lifecycle migration 不迁移历史 Resolution、Assignment、Receipt 或 Trace，Authority Rule Eligibility 也不执行决定 |
 | no-Skill Assignment | Task 契约允许空 `required_skills`，但 alpha CLI 尚不能将其解析为冻结 Assignment |
 | Runtime Snapshot | 仓库没有 checked-in `runtime-execution` Snapshot；fixture 不得被 Runtime 接受。Phase B 只定义非 fixture typed-evidence 资格，external pin、freshness、精确 Provider/Model/Runtime、最终权限/DataPolicy 交集和 Authority 判断留给 Topic 4/M6 |
 | End-to-end research run | 尚无面向普通用户的一键 Task-to-research 闭环；Runtime 集成由开发者显式接入 |

@@ -1542,7 +1542,10 @@ Runtime Bundle/Profile
 → generic Trace / Receipt linkage
 ```
 
-M9-005 的供给侧前置已经满足，但 Runtime Bundle/Profile 尚未实现；M6-003 在 `TASKS.md` 中仍是 BLOCKED，且继续受其既有 M2 dependencies 与独立 R2 task-definition 决策约束，不能被简化成“只差 bundle”或由本文改写状态。
+M9-005 的供给侧前置已经满足，但 Runtime Bundle/Profile 尚未实现。Issue #41 已将 implementation
+vocabulary 规范化为 M11-001 Runtime Bundle/Profile → M11-002 Resolved Execution View → M11-003 Thin
+Execution Host → M11-004 generic Trace/Receipt Gate；M6-003 只保留 PARKED 的 legacy compatibility identity。
+这些 Task ID 只是施工契约，不扩大 Runtime authority。
 
 ```text
 Skill Runtime Extension
@@ -1730,10 +1733,10 @@ Phase A 已完成 Method-aware Core contract；Phase B 已完成 Requirement →
 当前真正尚未闭合的是：
 
 ```text
-Runtime Bundle/Profile
-→ supply-neutral Resolved Execution View
-→ thin Execution Host consumption
-→ generic Receipt linkage
+M11-001 Runtime Bundle/Profile
+→ M11-002 supply-neutral Resolved Execution View
+→ M11-003 thin Execution Host consumption
+→ M11-004 generic Trace/Receipt linkage
 ```
 
 以及并行的 Phase C：

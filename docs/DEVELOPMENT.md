@@ -17,13 +17,17 @@ Agent 不是责任主体。每个 Agent 使用稳定 `actor_id`，并在 Attempt
 ## 2. 开始一个开发 Task
 
 1. 读取根目录 `AGENTS.md`、本文件和 [`TASKS.md`](TASKS.md)；
-2. 确认基线提交、负责人、原子边界、允许读取集、写入范围、输出和停止条件；
+2. 选择 exact M Task，并确认其状态为 `READY`（或属于同一 R2 Stage 的合法 atomic completion set）、
+   hard dependencies、负责人、风险、Phase/Topic 导航、原子边界、允许读取集、写入范围、输出和停止条件；
 3. 只读取 Task 指向的模块、计划、Profile、Skill 与输入，不从全仓扫描恢复上下文；
 4. R0/R1 普通单 PR 默认以 PR body 与 Git 记录留痕；只有 Task policy、委派、R2、跨 PR、外部副作用、
    压缩或争议触发时，才在 `work/<task-id>/<attempt-id>/` 建立 Task Archive；
 5. 完成时提交必要的验证证据；跨窗口、跨 Agent 或跨 PR 时再写 Compact Handoff 和 `WORKLOG.md`。
 
-实时工作项只在 [`TASKS.md`](TASKS.md) 更新；依赖和阶段 Gate 只在 [`ROADMAP.md`](ROADMAP.md) 维护；实现覆盖只在 [`STATUS.md`](STATUS.md) 汇总。
+Task status、hard dependency 与 implementation scheduling 只在 [`TASKS.md`](TASKS.md) 更新；Phase/Topic
+聚合、macro dependency 与 architecture Gate 只在 [`ROADMAP.md`](ROADMAP.md) 维护；实现覆盖只在
+[`STATUS.md`](STATUS.md) 汇总。Phase/Topic 不是 branch 或 PR 的 scope identity。若 accepted architecture
+出现近期工作但 `TASKS.md` 没有对应 M Task，立即停止实现并先提交 docs-only `task-definition`。
 
 ## 3. 留存与克制读取
 
@@ -61,6 +65,10 @@ Agent 不是责任主体。每个 Agent 使用稳定 `actor_id`，并在 Attempt
   并在安全恢复后补齐被明确推迟的记录；
 - [`docs/workstreams/`](workstreams/README.md) 按风险和复杂度触发，不再是每个 PR 的必需附件；
 - Handoff 给出基线提交、修改路径、验证证据、未证明内容和下一动作。
+
+分支和 PR 以 Task 为主键：单 Task 推荐 `agent/m10-002-research-failure`；只有强耦合、可由 dependency
+DAG 原子证明的 Stage 才使用覆盖多个 Task 的阶段名。PR 必须列出 exact `M*` IDs 与每项 transition，
+不能只写“Phase C implementation”“Topic 4 work”或“Runtime improvements”。
 
 执行便利性与方法、权限或数据边界冲突时，采用更严格边界并请求人类决定；任何一侧不得替另一侧静默定义 fallback。
 

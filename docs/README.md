@@ -26,7 +26,8 @@
 |---|---|---|
 | Stable | 系统是什么、概念如何协作、长期规则是什么 | `README`、Charter、Architecture、Modules、Development |
 | Status | 当前实现和成熟度如何 | [STATUS.md](STATUS.md) |
-| Planning | 接下来改什么、依赖和实时状态如何 | [ROADMAP.md](ROADMAP.md)、[TASKS.md](TASKS.md) |
+| Task planning | exact M Task、owner、hard dependency、scope、验收和实时状态 | [TASKS.md](TASKS.md) |
+| Architecture planning | Phase/Topic、macro dependency 与 architecture Gate | [ROADMAP.md](ROADMAP.md) |
 | Compatibility | 旧契约如何显式读取、迁移或回放 | [compatibility/](compatibility/README.md) |
 | Audit / History | 为什么改变、曾经如何推进、证据在哪里 | [decisions/](decisions/README.md)、[history/](history/README.md) |
 

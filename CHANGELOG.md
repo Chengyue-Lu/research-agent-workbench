@@ -2,6 +2,13 @@
 
 本文件只记录被主线接受、会影响使用者理解的基线变化。逐任务、分支和实验过程保存在[详细开发日志](DEVELOPMENT_HISTORY.md)。
 
+## 2026-08-26 — M-series implementation vocabulary normalization
+
+- 将 `TASKS.md` 固定为 Task status、hard dependency、owner、scope 与 implementation scheduling 的唯一真值，ROADMAP 只保留 Phase/Topic/Gate 聚合；
+- 对 develop 中 M0～M10 的 79 个 Task 做全量审计，修正 M3/M4/M5/M6/M10 的长期或依赖不一致状态，同时保持 DONE 行与历史 ID 不变；
+- 将 M6-003 的未来 Runtime umbrella 拆为 M11-001～006：Core 的 Bundle→View→Host→Trace/Receipt 与 optional Skill Extension 两条不互相阻塞的路径；
+- 明确 Topic 5 仍冻结，Task 拆分不授予 Runtime fallback、Supply selection、Method、Claim、Gate 或 Recovery authority。
+
 ## 2026-08-24 — Phase B evolution contracts
 
 - 将 Skill Need 与 actual trial/evaluation result 分离，并建立 intake、evaluation、Human admission、runtime eligibility 与 lifecycle disposition 正交的 lifecycle v2；
