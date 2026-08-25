@@ -16,7 +16,7 @@
 | C — Research State & Verification | 保存跨 Runtime 的研究意义 | State/Frontier、Failure、Evidence–Claim relation、Method Trace | A；部分依赖 B |
 | D — Evaluation Loop | 证明新增机制的净增量 | Evaluation Manifest、baseline harness、method/skill metrics | A；minimal Manifest 在 M9-002 稳定后并行启动 |
 | E — Strategy & Governed Evolution | 有界吸收新策略和外部候选 | Strategy interface、candidate pipeline、merge/prune/promotion | B+C+D |
-| F — Execution Reintegration | 让 Runtime 消费冻结科研契约 | M11 Core：runtime bundle、supply-neutral resolved execution、Thin Host、Trace/Receipt integration；可选 Skill Extension：release projection、Skill-bearing binding | ADR-0019；M9-005 Core；Phase C minimum 再解除 Topic 5；release projection 不 Gate Topic 4 Core |
+| F — Execution Reintegration | 让 Runtime 消费冻结科研契约 | M11 Core：runtime bundle、supply-neutral resolved execution、Thin Host、Trace/Receipt integration；可选 Skill supply：release projection、统一 View semantic mapping | ADR-0019；M9-005 Core；Phase C minimum 再解除 Topic 5；release projection 不 Gate Topic 4 Core |
 
 Phase 不是一条科研 DAG。它只表示框架接口的构建依赖；真实 Task 仍按 Mode/Action 选择路径。
 
@@ -135,15 +135,17 @@ Skill Runtime Extension 拆成两条依赖。
 Topic 4 的 implementation vocabulary 已落到 M11：M11-001 Runtime Bundle/Profile → M11-002
 supply-neutral Resolved Execution View → M11-003 Thin Execution Host → M11-004 generic Trace/Receipt Core
 Gate。M9-005 accepted contracts 允许 M11-001 READY；Core 按依赖推进 no-Skill/direct Tool/procedure/
-Adapter-Provider 路径，不等待 SkillReleaseProjection。
+Adapter-Provider 路径，不等待 SkillReleaseProjection。四层是可独立验收的 producer/consumer contracts，
+按一 dependency layer 一 feature PR 推进，不使用 R2 atomic completion 跨层合并。
 
 **Skill Runtime Extension Gate**：
 
 - M11-005 SkillReleaseProjection 只发布不可变、exact hash-pinned 的 Skill Release；
 - Projection contract 被接受且 exact-pin validation 可用后，才启用 Skill-bearing binding；
 - 投影未实现、缺失、stale 或不匹配时，Skill new-binding fail closed，且不得回退读取完整 Lifecycle；
-- M11-006 Skill-bearing View Extension 可在明确需求出现后与 Topic 4 Core 并行推进，不阻塞任何非 Skill
-  Core 路径；当前两项均 PARKED。
+- M11-006 由 View/Capability semantic owner 将 eligible Skill supply 映射进统一、supply-kind-neutral 的
+  Resolved Execution View；不建立 Skill-specific Runtime seam。它可在明确需求出现后与 Topic 4 Core
+  分层推进，不阻塞任何非 Skill Core 路径；M11-005/006 当前均 PARKED。
 
 解冻范围只包括 Topic 4 的上游 Research Control / View producer 冻结 external hash pin、执行时 freshness、
 精确 Provider/Adapter/Model/Runtime/Host binding，以及 Task/Profile/DataPolicy/Host policy 与 selected supply
@@ -180,6 +182,11 @@ Topic 5 继续冻结，直到 minimal Research State、Failure/Attempt semantics
 该 Gate 通过后才恢复 Handoff、context rollover、safe pause、recovery 与 salvage/clean recovery 的后续
 扩展；M9-005 或 Topic 4 的解冻不能替代 Phase C 的状态与失败语义。
 
+Topic membership 按 Task objective 判断：只有改变 Handoff、context rollover、safe pause、recovery、
+salvage/clean recovery 或 continuation semantics 的 Task 才属于 Topic 5。M11-003/004 仅实现 Topic 4
+Thin Host、actual fact reporting 和通用 observability closure；使用 Trace/Receipt 不使其成为 Topic 5
+Task，也不绕过上述 freeze。
+
 ## 5. Phase D：Evaluation Loop
 
 正式比较至少包含：
@@ -212,9 +219,10 @@ Runtime 也不创建 Skill Need/Candidate、不执行 Trial/Evaluation/Promotion
 供给通过已发布投影进入 Capability Supply Report；no-Skill/direct Tool 路径不依赖该投影。可选
 Capability Diagnostic/feedback bridge 等待 Phase C Failure/Trace 与 privacy 语义稳定，不阻塞 Topic 4。
 
-Phase F 实施只按 M11-001～004 Core 与 M11-005～006 optional Skill Extension 推进；M6-003 保留为历史
-compatibility seam，不再充当未来执行 umbrella。真实 Provider conformance 仍由 M6-004 在 M11-004 与
-具名 live authorization 均满足后验收。
+Phase F 实施只按 M11-001～004 Core 与 M11-005～006 optional Skill supply publication/mapping 推进；M6-003 保留为历史
+compatibility seam，不再充当未来执行 umbrella。M6-004 只验证 Provider/isolated session 的 live
+conformance，在 M6-001/002 后由具名 live authorization 解阻；它不 hard-depend M11-004，也不替代
+M11-004 的 Task→View→Host→generic Receipt Gate。
 
 ## 7. 不在近期关键路径
 

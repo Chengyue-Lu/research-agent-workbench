@@ -2,9 +2,11 @@
 
 状态：`DONE / IN_PROGRESS / READY / BLOCKED / PARKED`
 
-当前责任人：路诚钺维护 Method/Core、Mode/Action、Skill Need/evaluation、Research State/Claim 与
-Method Trace 语义；黄毅维护 M6 的 API/Runtime 执行实现与测试。共享接口变更按
-[开发协作指南](DEVELOPMENT.md)进行独立架构审查。
+当前责任人：路诚钺维护 Method/Core、Mode/Action、Capability/Skill Evolution、Evaluation、Research
+State/Claim/Method Trace，以及 Resolved Execution View/Skill supply mapping 的语义（M11-002/005/006）；
+黄毅维护 Provider Adapter、API session、Runtime Bundle、Thin Execution Host 与执行 Trace/Receipt 集成
+（M6、M11-001/003/004）。M11 的 Capability↔Runtime 交界是共享接口，按
+[开发协作指南](DEVELOPMENT.md)进行跨负责人独立架构审查；具名 Task owner 仍对各自行的完成判断负责。
 
 本文件是唯一 implementation-level source of truth。Phase 只表示宏观成熟度与解冻 Gate，Topic 只表示
 架构责任域；branch、PR、CI 和验收必须绑定 M Task。若架构文档出现近期工作而本文件没有对应 Task，
@@ -104,7 +106,7 @@ M3-001～007 的 `PARKED` 表示当前没有 active implementation，并非抹�
 | M6-001 | DONE | OpenAI/Anthropic/Gemini 薄 Model Provider Adapters | M1-008 | 三家 provider-neutral 薄 Adapter 的离线 contract 测试已通过；live conformance 单独由 M6-004 验收 |
 | M6-002 | DONE | 显式模型池与隔离 API session kernel（`K-API-1`） | M6-001 | primary/worker/specialist 槽只可显式绑定；轮次、工具、并行、工具结果、输出、token/成本/time 有硬边界；无自动 fallback；离线测试通过 |
 | M6-003 | PARKED | 保留 Task-to-API 文件闭环（`K-API-2`）历史兼容 seam | M1-008, M2-001, M2-002, M2-005, M6-002, M9-005 | legacy compatibility seam 继续可解释；未来 Runtime Bundle、Resolved Execution View、Thin Execution Host 与 generic Trace/Receipt 主链由 M11-001～004 承担，本 Task 不再作为新 execution umbrella |
-| M6-004 | BLOCKED | 选定模型槽的真实 Windows conformance 与一次 evidence 调用 | M6-001, M6-002, M11-004 | 当前版本的 OpenAI text/structured/tool、EVID/SIM SIR 脱敏证据与 live Gate 仍待授权 Windows 环境重放；不以离线 fixture 代替真实账户/模型事实 |
+| M6-004 | BLOCKED | 选定模型槽的真实 Windows Provider/session conformance | M6-001, M6-002 | 当前版本的 OpenAI text/structured/tool 与 bounded evidence-shaped 调用仍待授权 Windows 环境重放；该调用只验证 Provider/isolated session，不依赖 M11-004，也不冒充 Task→View→Host→generic Receipt 的端到端 Gate |
 | M6-005 | PARKED | streaming/multimodal/server tools 与平台 Adapter | 真实案例或平台选择 | 黄毅决定执行端启动条件；没有真实需求不启动 |
 | M6-006 | DONE | API/平台执行时自动写入 Agent Trace | M3-008, M6-003 | legacy Skill-bound execution 已完成 SessionEventSink、traced runner、archive closeout、file-only verify、recovery preflight 与 Attempt/Receipt Trace linkage；Method-dependent Part C 等待 M8-003 |
 
@@ -168,17 +170,19 @@ Human Decision 或端到端研究执行已经实现。
 ## M11：Phase F Execution Reintegration
 
 M11 把 M6-003 的未来 umbrella scope 拆成可独立失败、审查和验收的 producer/consumer contracts。
-Core（M11-001～004）必须在零 Skill、零 Evolution Registry 下闭合；Skill Extension（M11-005～006）
-是可选支线，不阻塞 Core。
+Core（M11-001～004）必须在零 Skill、零 Evolution Registry 下闭合；Skill supply publication/mapping
+（M11-005～006）是可选支线，不阻塞 Core。M11-001→002→003→004 跨越不同 producer/consumer surface，本项目明确选择
+**一 dependency layer 一 feature PR**；不得借 R2 atomic completion exception 在一个 PR 中跳过中间层的
+独立验收。M11-005/006 也分别提交。
 
 | ID | 状态 | 任务 | 责任人 | 风险 | Phase / Topic | 依赖 | 验收 |
 |---|---|---|---|---|---|---|---|
 | M11-001 | READY | 建立 Runtime Bundle / Consumer Profile | 黄毅 | R2 | F / Topic 4 | M9-005 | 以显式 closure manifest 固定 Runtime 可读取的 exact objects/hash/import graph；拒绝目录输入、递归扫描 Registry/examples、Evolution validator import 与 fixture-only `structural-replay`；零 Skill/零 Evolution Registry 路径通过 |
 | M11-002 | BLOCKED | 建立 supply-neutral Resolved Execution View Core | 路诚钺 | R2 | F / Research Control + Topic 4 | M9-005, M11-001 | 从 frozen selection 计算并冻结 exact Host/Provider/Adapter/Model、external pin/freshness、Task/Profile/DataPolicy/Host policy 与 permission/data-egress/side-effect 最严交集；fail closed，不重新选择 Supply、不 fallback、不要求 SkillReleaseProjection |
-| M11-003 | BLOCKED | 建立 Thin Execution Host 与 actual execution fact report | 黄毅 | R2 | F / Topic 4 + Topic 5 | M3-008, M6-002, M11-002 | Host 只消费 exact closure-valid Snapshot/View，执行冻结调用并报告 actual facts、bounded Diagnostic 或 re-resolution request；不能 reselect/rebind/fallback、修改 Method/Claim/Gate 或扩大边界 |
-| M11-004 | BLOCKED | 建立 generic execution Trace/Receipt linkage 与 Core vertical Gate | 黄毅 | R2 | F / Topic 4 + Topic 5 + Artifact/Trace | M3-008, M11-003 | no-Skill 与 direct-tool bounded path 可从 Task/View/Host 到 Trace、Artifact、Validation、generic Receipt 闭合；不伪造 Skill Assignment，不把 execution completion 写成 Claim/Human acceptance，并保留 legacy Receipt replay |
+| M11-003 | BLOCKED | 建立 Thin Execution Host 与 actual execution fact report | 黄毅 | R2 | F / Topic 4 | M3-008, M6-002, M11-002 | Host 只消费 exact closure-valid Snapshot/View，执行冻结调用并报告 actual facts、bounded Diagnostic 或 re-resolution request；不能 reselect/rebind/fallback、修改 Method/Claim/Gate 或扩大边界；不实现 Topic 5 的 Handoff/context/recovery 语义 |
+| M11-004 | BLOCKED | 建立 generic execution Trace/Receipt linkage 与 Core vertical Gate | 黄毅 | R2 | F / Topic 4 + Artifact/Trace | M3-008, M11-003 | no-Skill 与 direct-tool bounded path 可从 Task/View/Host 到 Trace、Artifact、Validation、generic Receipt 闭合；复用 observability contract 不构成 Topic 5 membership；不伪造 Skill Assignment，不把 execution completion 写成 Claim/Human acceptance，并保留 legacy Receipt replay |
 | M11-005 | PARKED | 发布不可变 SkillReleaseProjection | 路诚钺 | R2 | F / Capability/Skill Evolution + Topic 4 | M9-003 | 只发布 accepted immutable Skill Release 的 runtime-minimal identity/version/hash/capability/boundary facts；不暴露 Need/Evaluation/Lifecycle 历史，不授予选择或执行权限；缺失只阻断 Skill new-binding |
-| M11-006 | PARKED | 接入 Skill-bearing Resolved Execution View extension | 黄毅 | R2 | F / Topic 4 + Capability/Skill Evolution | M11-002, M11-005 | 只从 exact Projection 形成候选 Skill Supply/可选 Assignment binding；仍由 Capability Resolver 选择，Core 无 Skill 路径不变；projection 缺失/stale/mismatch 时仅 Skill path fail closed |
+| M11-006 | PARKED | 将 eligible Skill supply 映射进统一 Resolved Execution View 语义 | 路诚钺 | R2 | F / Research Control + Capability/Skill Evolution + Topic 4 | M11-002, M11-005 | projection-derived Skill 与 Tool/procedure/Adapter 使用同一 Report→Resolution→Snapshot→View 语义；Capability Resolver 仍是唯一 selector，View/Host 保持 supply-kind neutral；不得形成 Skill-specific Runtime dispatcher/session/fallback seam，projection 缺失/stale/mismatch 时仅该候选 fail closed |
 
 ## 未完成 Task 的责任与阶段索引
 
@@ -197,12 +201,12 @@ Core（M11-001～004）必须在零 Skill、零 Evolution Registry 下闭合；S
 | `M4-005` | 路诚钺 | R1 | deferred | Artifact/Trace | 只在真实大文件需求出现时恢复 |
 | `M5-001～005` | 路诚钺 | R1；Human decisions R2 | D | Evaluation + Research State | M5-003 READY；真实案例与删减链 BLOCKED |
 | `M6-003` | 黄毅 | R2 | historical / F compatibility | Topic 4 + Topic 5 | legacy seam PARKED；mainline superseded by M11-001～004 |
-| `M6-004` | 黄毅 | R2 | F | Topic 4 | 等 M11-004 与 live authorization，BLOCKED |
+| `M6-004` | 黄毅 | R2 | F | Topic 4 | 只等具名 live authorization；与 M11-004 无 hard dependency，BLOCKED |
 | `M6-005` | 黄毅 | R1～R2 | deferred F | Topic 4 | 真实需求/平台选择前 PARKED |
 | `M7-005, M7-006, M7-014` | 路诚钺 | R2 | D | Research Control + Evaluation + Skill Evolution | evidence-driven trials PARKED |
 | `M7-007` | 路诚钺 | R2 | E | Research Control / Mode | 真实案例证明 Mode gap 前 PARKED |
 | `M10-001～003` | 路诚钺 | R2 | C | Research State / Claim / Human Decision + Topic 5 | M10-001 READY，其余按 DAG BLOCKED |
-| `M11-001～006` | 各行具名 | R2 | F | Topic 4；部分跨 Topic 5、Research Control、Artifact/Trace、Skill Evolution | Core 与 optional Skill Extension 分离 |
+| `M11-001～006` | 各行具名 | R2 | F | Topic 4；部分跨 Research Control、Artifact/Trace、Skill Evolution；不属于 Topic 5 | Core 与 optional Skill supply publication/mapping 分离；一 dependency layer 一 PR |
 
 ## 历史 GitHub Issues
 
@@ -224,15 +228,19 @@ Runtime Bundle，不互相冒充优先级；资源排序由具名 owner 决定�
 
 M10-001 是 Phase C 的入口；随后是 M10-002 → M3-009 → M10-003。M11-001 是 Topic 4 Core 的入口；
 随后是 M11-002 → M11-003 → M11-004。两条线可以按共享接口边界并行，Phase C 不依赖 live Runtime，
-Topic 4 也不能替代 Research State/Failure/Method Trace。M11-005～006 是 optional Skill Extension，
-保持 PARKED，不阻塞零 Skill Core。
+Topic 4 也不能替代 Research State/Failure/Method Trace。M11-005～006 是 optional Skill supply
+publication/mapping，保持 PARKED，不阻塞零 Skill Core，也不建立第二条 Runtime consumer path。
+
+Issue #41 新增或规范化的 M4、M5、M10、M11 dependency chains 全部采用一 dependency layer 一
+feature PR；本轮不为它们声明 atomic completion set。Governance v2 的 R2 atomic exception 只保留给其他
+已经被 task-definition 明确证明为不可独立验收的同一 Stage，不能从“风险同为 R2”自行推导适用。
 
 Phase B 期间，路诚钺维护 Capability 词汇、Skill Need/lifecycle、Protocol 与相应 Schema/fixture；
 Resolved Capability Snapshot 是跨负责人共享接口，黄毅维护 Provider/Adapter 字段的真实供给映射与
 API conformance。本分支不修改 Provider SDK、认证、API session loop、Runtime 或 API 专用测试。
 
-M6-003 只保留历史 compatibility identity，未来主链由 M11-001～004 承担；M6-004 等待该 Core Gate
-与独立 live 授权。M3-001～007 不再用 `IN_PROGRESS` 表示未排期债务。M6-006 行中的 “Part C 等待
+M6-003 只保留历史 compatibility identity，未来主链由 M11-001～004 承担；M6-004 只等待独立 live
+授权，可与 M11 Core 分开验证。M3-001～007 不再用 `IN_PROGRESS` 表示未排期债务。M6-006 行中的 “Part C 等待
 M8-003” 是不可改写的 DONE 历史快照，不再定义当前恢复 Gate。M7-005/006/014 的真实比较继续
 PARKED，直到相应 Trace/Evaluation Manifest 与真实需求稳定。
 
@@ -248,5 +256,7 @@ voting、hidden routing，以及 Runtime 修改 Method/Claim/Gate 仍被禁止�
 Topic 5 继续冻结，直到 Phase C 至少完成 minimal Research State、Failure/Attempt semantics 与 Method
 Trace v0.1 并经 Human/R2 closeout。该 Gate 只允许 Topic 5 重新进入**独立架构设计审查**；Handoff、context
 rollover、safe pause、recovery、salvage/clean recovery 的实现仍保持 PARKED，必须另有 task-definition 与
-R2 acceptance。M11-003/004 只实现 Phase F 所需的 thin Host、actual facts 与 generic closure，不获得
-Topic 5 的恢复/编排 authority；M9-005 Snapshot Core 也不单独解除 Topic 5。
+R2 acceptance。Topic 5 membership 只授予会改变 Handoff、context rollover、safe pause、recovery、
+salvage/clean recovery 或 continuation semantics 的 Task；仅消费 Trace/Receipt 或报告 execution facts
+不构成 membership。因此 M11-003/004 属于 Topic 4/Artifact-Trace integration，明确不属于 Topic 5，
+也不获得其恢复/编排 authority；M9-005 Snapshot Core 同样不解除 Topic 5。

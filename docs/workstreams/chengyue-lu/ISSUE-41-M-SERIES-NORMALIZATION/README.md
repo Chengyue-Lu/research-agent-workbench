@@ -6,7 +6,7 @@
 - PR class：`task-definition`
 - 基线：`develop@73dcb03b4d4152f36fef5b2dadb3ae0f11d7de7b`
 - 分支：`docs/issue-41-m-series-normalization`
-- 状态：M0～M10 inventory、normalization proposal 与本地验证完成；等待独立 R2 review
+- 状态：M0～M10 inventory 与 normalization proposal 完成；PR #42 R2 review remediation 已纳入，等待 CI/re-review
 
 ## 1. 目标
 
@@ -81,6 +81,10 @@ decision，接受后再返回 normalization。
 8. 运行文档链接、Governance focused tests 与 repository validation；
 9. 以 docs-only `task-definition` PR 请求独立 R2/cross-owner review。
 
+后续 feature 实施采用一 dependency layer 一 PR。特别是 M11-001→002→003→004 的 Bundle、View、Host、
+Trace/Receipt 属于不同 producer/consumer surface，不能以 R2 atomic completion 一次跨层完成；
+M11-005/006 同样分别验收。R2 atomic exception 仅保留给真正不可独立验收的同一 Stage。
+
 ## 6. 事实基线与合并顺序
 
 本轮只审计 `develop@73dcb03b4d4152f36fef5b2dadb3ae0f11d7de7b` 已合并内容。开放 PR、远端
@@ -98,6 +102,9 @@ feature implementation 混合。
 - 长期 IN_PROGRESS 和 oversized umbrella 均有明确结论；
 - DONE identity/definition 不变，split/supersede/refine lineage 可追踪；
 - Topic 5 未解冻，Runtime/Method/Capability/Claim/Human authority 未扩大；
+- Topic 5 membership 只覆盖改变 Handoff/context/safe-pause/recovery/continuation 语义的 Task；M11-003/004
+  使用 Trace/Receipt 但不属于 Topic 5；
+- M11-006 由 View/Capability semantic owner 维护，不形成 Skill-specific Runtime seam；
 - `TASKS.md` 成为唯一 implementation scheduling truth；
 - docs-only governance、链接与 CI 通过，并完成独立 R2 review。
 
@@ -112,3 +119,13 @@ feature implementation 混合。
 
 这些结果证明文档闭包、Task DAG 结构和现有仓库回归通过，不替代独立 R2 review，也不证明 M11
 implementation、live Provider、Phase C 科学表示或 Topic 5 recovery 已完成。
+
+## 9. PR #42 R2 review remediation
+
+| Review finding | Decision |
+|---|---|
+| atomic completion 只限 R2 或逐层 PR | 保留 Governance v2 的既有 R2 exception；Issue #41 全部新增/规范化 DAG 选择一 dependency layer 一 feature PR，尤其禁止 M11 跨层 atomic completion |
+| Topic 5 membership/freeze 歧义 | membership 只按 Handoff/context/safe-pause/recovery/continuation objective；M11-003/004 明确不属于 Topic 5 |
+| M11-006 形成 Skill-specific Runtime seam | owner 改为路诚钺；Task 改成 eligible Skill supply 到统一 View/Capability 语义的映射，Host 无 Skill 特例 |
+| M6-004 是否 hard-depend M11-004 | 否；它只依赖 M6-001/002 与 external live authorization，验证 Provider/session 而非 Runtime E2E |
+| TASKS owner 总述过时 | 补齐 M4/M5/M10、View/Capability semantics 与 M11 Runtime implementation 的具名分工 |

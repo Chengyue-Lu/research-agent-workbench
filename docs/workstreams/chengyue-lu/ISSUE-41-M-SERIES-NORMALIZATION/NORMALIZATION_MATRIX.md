@@ -77,7 +77,7 @@ Capability/Skill Evolution、Topic 4（Agent/Model/Provider/Runtime）、Topic 5
 | M6-001 | DONE → DONE | Provider Adapters | foundation/F | Topic 4 | historical | yes | KEEP |
 | M6-002 | DONE → DONE | model pool/API session kernel | foundation/F | Topic 4 | historical | yes | KEEP |
 | M6-003 | BLOCKED → PARKED | Task-to-API umbrella | historical/F | Topic 4 + Topic 5 | includes parked Skill tasks; future surfaces separable | no | SUPERSEDE future scope by M11-001～004; preserve legacy seam |
-| M6-004 | BLOCKED → BLOCKED | live Windows conformance/evidence call | F | Topic 4 | old umbrella dependency invalid | yes | REFINE dependency to M11-004 |
+| M6-004 | BLOCKED → BLOCKED | live Windows Provider/session conformance | F | Topic 4 | M6-001/002 DONE；external Human authorization missing | yes | REFINE；remove false M11-004 hard dependency |
 | M6-005 | PARKED → PARKED | streaming/multimodal/platform adapters | deferred F | Topic 4 | no real demand | yes | PARK |
 | M6-006 | DONE → DONE | legacy execution Trace bridge | historical/F | Topic 4 + Topic 5 + Trace | historical | yes | KEEP immutable; stale prose is history |
 | M7-001 | DONE → DONE | owner/read/Handoff policy | pre-A | Governance + Topic 5 | historical | yes | KEEP |
@@ -124,13 +124,14 @@ Capability/Skill Evolution、Topic 4（Agent/Model/Provider/Runtime）、Topic 5
 |---|---|---|---|---|---|---|
 | M11-001 | READY | Runtime Bundle / Consumer Profile | 黄毅 | M9-005 | Runtime allowed-read closure 可独立 fail/review | 不产生 View、不选 Supply |
 | M11-002 | BLOCKED | Resolved Execution View Core | 路诚钺 | M9-005, M11-001 | final binding/policy intersection 是独立 producer contract | 不执行、不 fallback、不依赖 Skill projection |
-| M11-003 | BLOCKED | Thin Execution Host/actual facts | 黄毅 | M3-008, M6-002, M11-002 | exact consumer 与 producer 可独立验收 | 不重选 Supply、不改 Method/Claim/Gate |
-| M11-004 | BLOCKED | generic Trace/Receipt linkage + Core Gate | 黄毅 | M3-008, M11-003 | execution closeout/legacy compatibility 是独立 surface | 不证明科研正确或 live Provider |
+| M11-003 | BLOCKED | Thin Execution Host/actual facts | 黄毅 | M3-008, M6-002, M11-002 | exact consumer 与 producer 可独立验收 | Topic 4 only；不重选 Supply、不改 Method/Claim/Gate、不实现 Topic 5 recovery |
+| M11-004 | BLOCKED | generic Trace/Receipt linkage + Core Gate | 黄毅 | M3-008, M11-003 | execution closeout/legacy compatibility 是独立 surface | Topic 4 + Artifact/Trace；复用 Receipt 不构成 Topic 5 membership |
 | M11-005 | PARKED | SkillReleaseProjection | 路诚钺 | M9-003 | Maintainer→Runtime 发布端口独立于 Core | 不控制当前 Task，不暴露 lifecycle history |
-| M11-006 | PARKED | Skill-bearing View extension | 黄毅 | M11-002, M11-005 | optional consumer 不能污染 no-Skill Core | 不改 Capability selection，不自动 fallback |
+| M11-006 | PARKED | eligible Skill supply → unified View semantics | 路诚钺 | M11-002, M11-005 | View/Capability semantic mapping 独立于 Runtime consumer | supply-kind neutral；不建立 Skill-specific Runtime seam |
 
 没有为 Runtime Bundle 的每个字段、Research State 的每个概念或每种 Provider 建 Task。M11-004 的
-bounded vertical Gate 是 generic linkage 的验收证据，不另造纯 closeout Task。
+bounded vertical Gate 是 generic linkage 的验收证据，不另造纯 closeout Task。M11 Core 每个 dependency
+layer 独立提交；R2 atomic completion exception 不用于跨 Bundle/View/Host/Receipt surface。
 
 ## 4. Split / supersession lineage
 
@@ -170,14 +171,17 @@ flowchart LR
     M1101 --> M1102["M11-002 BLOCKED"]
     M1102 --> M1103["M11-003 BLOCKED"]
     M1103 --> M1104["M11-004 BLOCKED"]
-    M1104 --> M6004["M6-004 BLOCKED<br/>live authorization also required"]
+
+    M6001["M6-001 DONE"] --> M6004["M6-004 BLOCKED<br/>live authorization required"]
+    M6002["M6-002 DONE"] --> M6004
 
     M9003["M9-003 DONE"] --> M1105["M11-005 PARKED"]
     M1102 --> M1106["M11-006 PARKED"]
     M1105 --> M1106
 ```
 
-图只显示未完成关键路径；DONE 历史边保持在各 Task 行中。PARKED Skill Extension 不阻塞 M11 Core。
+图只显示未完成关键路径；DONE 历史边保持在各 Task 行中。PARKED Skill Extension 不阻塞 M11 Core，
+M6-004 也不依赖 M11-004。M11 Core 按图中每一 dependency layer 分 PR 验收。
 
 ## 6. Phase aggregation
 
@@ -189,8 +193,9 @@ flowchart LR
 | C | M10-001 → M10-002 → M3-009 → M10-003；M4-001～004 为 provenance support | Phase C Gate 不等于 Topic 5 implementation approval |
 | D | M5-003；M5-001/002 → M5-004 → M5-005；M7-005/006/014 optional | Evaluation records 与 net increment，不回写 Need 本体 |
 | E | M2-003/004/007/008、M7-007 等 PARKED candidate work | 无真实 Need/Gate 时不进入队列 |
-| F Core | M11-001 → 002 → 003 → 004 → M6-004 live conformance | supply-neutral execution reintegration |
-| F Skill Extension | M11-005 → M11-006 | optional；不 Gate Core |
+| F Provider conformance | M6-004 | M6-001/002 后的独立 live 授权 Gate；不证明 Runtime E2E |
+| F Core | M11-001 → 002 → 003 → 004 | supply-neutral execution reintegration；一 dependency layer 一 PR |
+| F optional Skill supply | M11-005 → M11-006 | publication + View/Capability-owned unified mapping；不 Gate Core，不形成 Runtime seam |
 
 ## 7. Topic / responsibility mapping
 
@@ -198,9 +203,9 @@ flowchart LR
 |---|---|---|
 | Repository / Governance / Product | M0, M1-001/006/009, M8-001/005 | 不替代 Method/Human authority |
 | Research Control / Method | M1-003/007, M7, M8-002～004, M9-001/004/005, M3-009 | 不执行 Provider selection/fallback |
-| Capability / Skill Evolution | M2, M7-004/005/008～015, M9-001～003/005/006, M11-005/006 | Need/lifecycle 不控制 current Runtime |
+| Capability / Skill Evolution | M2, M7-004/005/008～015, M9-001～003/005/006, M11-005/006 | Need/lifecycle 不控制 current Runtime；M11-006 保持 unified View semantics |
 | Topic 4 — Agent/Model/Provider/Runtime | M1-008, M2-002/006, M6, M9-005, M11 | Host 不重选 Supply、不改 Method/Claim/Gate |
-| Topic 5 — Execution/Context/Handoff/Recovery | M1-004, M2-005, M3, M6-003/006, M10-002/003, M11-003/004 | M11 thin execution 不解冻 recovery/orchestration |
+| Topic 5 — Execution/Context/Handoff/Recovery | M1-004, M2-005, M3, M6-003/006, M10-002/003 | 只收改变 Handoff/context/safe-pause/recovery/continuation semantics 的 Task；M11-003/004 不属于 Topic 5 |
 | Research State / Claim / Human Decision | M1-002/007, M4-003, M8-005, M10, M3-009 | validator/eligibility 不产生科研决定 |
 | Artifact / Trace / Validation / Evaluation | M1-005/007, M3-005/007～009, M4, M5, M7-006/013/014, M9-002/004/006, M11-004 | execution/evaluation evidence 不自动 promotion |
 
@@ -216,7 +221,9 @@ flowchart LR
 | M6-003 umbrella 被 parked Skill 依赖永久阻断 | 历史 seam PARKED；未来 scope 明确 supersede 到 M11 Core |
 | M10-002/M3-009/M10-003 属于 active Phase C chain 但被写成 PARKED | 依赖未满足，统一 BLOCKED |
 | Topic 4 已解冻但没有 implementation Task | 新增 M11-001 READY 与后继 BLOCKED DAG |
-| Optional Skill Runtime extension 可能反向 Gate Core | M11-005/006 PARKED 且与 Core 依赖断开 |
+| Optional Skill extension 可能变成 Skill-specific Runtime seam 或反向 Gate Core | M11-005/006 PARKED；M11-006 由 View/Capability semantic owner 维护并保持 supply-kind-neutral |
+| Trace/Receipt 使用被误判为 Topic 5 membership | membership 按 Handoff/context/recovery/continuation objective 判定；M11-003/004 明确留在 Topic 4/Artifact-Trace |
+| M6-004 被错误串到 Runtime Core Gate 后才允许 live conformance | 只保留 M6-001/002 hard dependencies；M11-004 E2E closure 独立验收 |
 
 ## 9. Completion checks
 
@@ -225,4 +232,5 @@ flowchart LR
 - READY 仅保留 hard dependencies 已 DONE 或纯 Human-independent 可启动项；
 - M6-003、M3 legacy scope 均有 lineage，未借拆分扩大 Runtime/Recovery authority；
 - ROADMAP 只聚合 Phase/Gate，TASKS 控制 implementation scheduling；
-- Topic 5 保持冻结；未创建 recovery/multi-Agent/fallback READY Task。
+- Topic 5 保持冻结；M11-003/004 不属于 Topic 5，未创建 recovery/multi-Agent/fallback READY Task；
+- M11 producer/consumer chain 采用一 dependency layer 一 PR，不使用 R2 atomic exception 跨层收口。

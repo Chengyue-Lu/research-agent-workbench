@@ -9,15 +9,15 @@
 
 | 责任人 | 稳定身份 | 负责维护 | 不负责维护 |
 |---|---|---|---|
-| 路诚钺 | GitHub `Chengyue-Lu` | Method/Core 语义；Mode/Action/Method Resolution；能力词汇；Skill Need、评估、准入和退役；Research State/Claim/Method Trace 规则；受控读取及相关 fixtures/docs | Provider SDK、认证、HTTP transport、模型槽实现、API session loop、live API conformance 与 API 专用测试 |
-| 黄毅 | GitHub 主名 `let778750-cpu`；昵称/界面名 `huangyi855`（同一账户） | Provider Adapter、模型能力协商、隔离 API session、Task-to-API 编译、执行关闭事务、真实账户/模型 conformance 与 API 测试 | 代替研究者批准 Claim、单方面改变 Mode/Skill 语义、擅自准入 Skill 或降低 Human Gate |
+| 路诚钺 | GitHub `Chengyue-Lu` | Method/Core 语义；Mode/Action/Method Resolution；能力词汇；Skill Need、评估、准入和退役；Research State/Claim/Method Trace；Resolved Execution View 与 Skill supply mapping 语义；受控读取及相关 fixtures/docs | Provider SDK、认证、HTTP transport、模型槽实现、API session loop、Thin Host、live API conformance 与 API 专用测试 |
+| 黄毅 | GitHub 主名 `let778750-cpu`；昵称/界面名 `huangyi855`（同一账户） | Provider Adapter、模型能力协商、隔离 API session、Runtime Bundle、Thin Execution Host、执行 Trace/Receipt 集成、真实账户/模型 conformance 与 API 测试 | 代替研究者批准 Claim、单方面改变 Mode/Skill/View/Capability 语义、擅自准入 Skill 或降低 Human Gate |
 
 Agent 不是责任主体。每个 Agent 使用稳定 `actor_id`，并在 Attempt Archive 中绑定具名 `accountable_owner`；模型名、窗口名和临时昵称不能替代人类负责人。
 
 ## 2. 开始一个开发 Task
 
 1. 读取根目录 `AGENTS.md`、本文件和 [`TASKS.md`](TASKS.md)；
-2. 选择 exact M Task，并确认其状态为 `READY`（或属于同一 R2 Stage 的合法 atomic completion set）、
+2. 选择 exact M Task，并确认其状态为 `READY`、
    hard dependencies、负责人、风险、Phase/Topic 导航、原子边界、允许读取集、写入范围、输出和停止条件；
 3. 只读取 Task 指向的模块、计划、Profile、Skill 与输入，不从全仓扫描恢复上下文；
 4. R0/R1 普通单 PR 默认以 PR body 与 Git 记录留痕；只有 Task policy、委派、R2、跨 PR、外部副作用、
@@ -110,6 +110,13 @@ Task 状态机允许 `PARKED → READY → IN_PROGRESS → DONE`、`READY/IN_PRO
 或在同一 PR 的完成集合中先行闭合；每个进入 `DONE` 的 Task 必须在 Verification evidence 中有具名
 证据。Task 定义、依赖和验收不得随实现 PR 改写，依赖缺失或未闭合仍然阻断。该机制只消除人为的
 状态推进 PR，不放松完成证据或 `DONE` 不可变性。
+
+上述 `PARKED → DONE` atomic exception 仍只适用于 R2 的同一强耦合 Stage，不推广到 R0/R1。默认及
+Issue #41 所有新增/规范化 dependency chain 均采用 **一 dependency layer 一 feature PR**：前一 Task
+合并并成为 `DONE` 后，下一 Task 才能激活和实施。尤其不得仅因 M11 全链均为 R2，就在一个 PR 中
+跨层完成 Bundle、View、Host 与 Receipt。其他链如需使用 exception，必须先在对应
+task-definition/workstream 中明确声明 atomic completion set，并证明它确属一个不可独立验收的 Stage，
+而不是用风险等级或 atomic completion 绕过依赖审查。
 
 R0 maintenance 可以填写 `Task ID(s): none`，前提是 `TASKS.md` 不变；R1/R2 必须有正式 Task 或
 Audit ID。feature 置 `DONE` 只代表机器确认结构资格、证据字段和 CI，完成判断仍由具名 owner 承担。
