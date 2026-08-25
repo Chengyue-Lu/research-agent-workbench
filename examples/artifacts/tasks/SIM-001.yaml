@@ -1,0 +1,39 @@
+schema_version: 0.1.0
+task_id: SIM-001
+revision: 1
+goal: Compute per-channel summary statistics from the admitted sensor fixture.
+question_refs: []
+active_modes: []
+required_capabilities: []
+required_skills: []
+forbidden_skills: []
+agent_profile: evidence-scout
+input_refs:
+- path: examples/artifacts/sources/raw/synthetic-sensor-log.csv
+  sha256: 5e55c955907c6b8b7568d5f0284308f6fc1ff45b364a68fbbd06e460dd0b93a5
+write_scope:
+- work/SIM-001/**
+required_outputs:
+- channel-means
+permissions:
+  filesystem: worktree-write
+  network: forbidden
+  external_write: false
+  allowed_roots:
+  - work/SIM-001
+delegation:
+  allowed: false
+  max_depth: 0
+  max_parallel: 0
+budget:
+  max_turns: 4
+  max_output_tokens: 800
+atomic_boundary: One bounded summary table plus its negative finding.
+completion_checks:
+- Summary table passes deterministic validation.
+safe_pause_conditions:
+- Required input or human decision is unavailable.
+stop_conditions:
+- required_outputs_complete
+stale_if:
+- any_input_hash_changes

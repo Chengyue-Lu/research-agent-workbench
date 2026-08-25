@@ -1,0 +1,24 @@
+schema_version: 0.1.0
+promotion_id: PR-SIM-001-A-001
+source_workspace: examples/artifacts/work/SIM-001/A-001
+validation_report:
+  path: examples/artifacts/work/SIM-001/A-001/checks/VAL-SIM-001-A-001.yaml
+  sha256: ba42dcd95d47e54c1f886908d40cb9f7ac6f07278ee96b69b76fe8140924e165
+decided_by: huangyi
+decided_at: '2026-08-25T12:00:00+08:00'
+entries:
+- artifact:
+    path: examples/artifacts/work/SIM-001/A-001/outputs/channel-means.csv
+    sha256: 3f61896e76d7eb0a7a52f72773df348c321abe42364f2ff9eeaec1d3c85cd0bc
+  disposition: promoted
+  negative_result: false
+  target: examples/artifacts/objects/evidence/CHANNEL-MEANS-SIM-001.csv
+- artifact:
+    path: examples/artifacts/work/SIM-001/A-001/outputs/negative-findings.md
+    sha256: f47f7fd10509a01698c9a733f5a1e844c415cc1d5ddc8437b794fb2575d37475
+  disposition: retained-in-work
+  negative_result: true
+  reason: negative finding kept in work for revisit; promoting it is a separate future
+    decision
+limitations:
+- fixture promotion; the promoted target file is intentionally absent in the repository

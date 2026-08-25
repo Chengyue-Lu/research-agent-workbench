@@ -21,6 +21,15 @@ from research_workbench.adapters.models import (
     run_provider_conformance,
 )
 from research_workbench.artifacts.integrity import hash_directory, hash_file, resolve_within_root
+from research_workbench.artifacts.admission import (
+    build_admission_mapping,
+    check_source_admission,
+    inbox_citation_risk,
+    path_cites_inbox,
+    sidecar_path_for,
+)
+from research_workbench.artifacts.promotion import check_promotion, execute_promotion
+from research_workbench.artifacts.repro import check_run_manifest
 from research_workbench.capability import (
     AcceptedSkillRegistry,
     AgentProfile,
@@ -235,10 +244,22 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
         admission = document.get("admission")
         if isinstance(admission, Mapping) and isinstance(admission.get("decision_ref"), str):
             path_only.append(str(admission["decision_ref"]))
+    elif kind == "source_admission":
+        extra_risks.extend(check_source_admission(root, document))
+    elif kind == "promotion_record":
+        extra_risks.extend(check_promotion(root, document))
+    elif kind == "run_manifest":
+        extra_risks.extend(check_run_manifest(root, document))
     risks = check_references(root, references)
     risks.extend(extra_risks)
+    for reference in references:
+        if path_cites_inbox(reference.path):
+            risks.append(inbox_citation_risk(reference.path))
     for relative in path_only:
         resolved = resolve_within_root(root, relative)
+        if path_cites_inbox(relative):
+            risks.append(inbox_citation_risk(relative))
+            continue
         if resolved is None:
             risks.append(ContractRisk("REF-OUTSIDE-ROOT", RiskLevel.BLOCK, f"reference escapes root: {relative}"))
         elif not resolved.is_file():
@@ -255,6 +276,102 @@ def _load_valid(path: str | Path, kind: str) -> Mapping[str, Any]:
         rendered = "; ".join(f"{error.pointer}: {error.message}" for error in errors[:5])
         raise ValueError(f"{path}: schema validation failed: {rendered}")
     return document
+
+
+def _source_admit(args: argparse.Namespace) -> int:
+    root = Path(args.root).resolve()
+    source_path = Path(args.file)
+    if not source_path.is_file():
+        raise FileNotFoundError(source_path)
+    content = source_path.read_bytes()
+    admitted_path = args.admitted_path or f"sources/raw/{source_path.name}"
+    origin = {"uri": args.origin_uri, "doi": args.doi, "device": args.device}
+    mapping = build_admission_mapping(
+        original_filename=source_path.name,
+        admitted_path=admitted_path,
+        content=content,
+        origin=origin,
+        acquired_at=args.acquired_at,
+        operator=args.operator,
+        license_or_data_use=args.license,
+        parser_name=args.parser_name,
+        parser_version=args.parser_version,
+        sensitivity=args.sensitivity,
+        egress_restriction=args.egress_restriction,
+        admission_id=args.id,
+    )
+    sidecar = sidecar_path_for(mapping["admitted_path"])
+    if args.execute:
+        target = resolve_within_root(root, mapping["admitted_path"])
+        if target is None:
+            raise ValueError(f"admitted_path escapes root: {mapping['admitted_path']}")
+        if target.exists():
+            raise FileExistsError(f"refusing to overwrite existing admitted bytes: {target}")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(content)
+        _write_yaml(resolve_within_root(root, sidecar), mapping)
+        print(f"admitted: {mapping['admitted_path']}")
+        print(f"sidecar:  {sidecar}")
+    else:
+        print(yaml.safe_dump(mapping, sort_keys=False, allow_unicode=True), end="")
+        print(f"(dry run; pass --execute to copy bytes and write {sidecar})")
+    return 0
+
+
+def _source_check(args: argparse.Namespace) -> int:
+    document = load_document(args.admission)
+    if not isinstance(document, Mapping):
+        print("ERROR   DOCUMENT-INVALID              admission document must be an object")
+        return 1
+    errors = SchemaCatalog().validate("source_admission", document)
+    for error in errors:
+        print(f"ERROR   SCHEMA-INVALID               {error.pointer}: {error.message}")
+    if errors:
+        return 1
+    return _print_risks(check_source_admission(Path(args.root).resolve(), document))
+
+
+def _promotion_validate(args: argparse.Namespace) -> int:
+    document = load_document(args.record)
+    if not isinstance(document, Mapping):
+        print("ERROR   DOCUMENT-INVALID              promotion record must be an object")
+        return 1
+    errors = SchemaCatalog().validate("promotion_record", document)
+    for error in errors:
+        print(f"ERROR   SCHEMA-INVALID               {error.pointer}: {error.message}")
+    if errors:
+        return 1
+    return _print_risks(check_promotion(Path(args.root).resolve(), document))
+
+
+def _promotion_execute(args: argparse.Namespace) -> int:
+    document = load_document(args.record)
+    if not isinstance(document, Mapping):
+        print("ERROR   DOCUMENT-INVALID              promotion record must be an object")
+        return 1
+    errors = SchemaCatalog().validate("promotion_record", document)
+    for error in errors:
+        print(f"ERROR   SCHEMA-INVALID               {error.pointer}: {error.message}")
+    if errors:
+        return 1
+    copied = execute_promotion(Path(args.root).resolve(), document)
+    for target in copied:
+        print(f"promoted: {target}")
+    return 0
+
+
+def _repro_check(args: argparse.Namespace) -> int:
+    document = load_document(args.manifest)
+    if not isinstance(document, Mapping):
+        print("ERROR   DOCUMENT-INVALID              run manifest must be an object")
+        return 1
+    errors = SchemaCatalog().validate("run_manifest", document)
+    for error in errors:
+        print(f"ERROR   SCHEMA-INVALID               {error.pointer}: {error.message}")
+    if errors:
+        return 1
+    rerun_dir = Path(args.rerun_dir).resolve() if args.rerun_dir else None
+    return _print_risks(check_run_manifest(Path(args.root).resolve(), document, rerun_dir))
 
 
 def _validate(args: argparse.Namespace) -> int:
@@ -672,6 +789,96 @@ def _reference_check(args: argparse.Namespace) -> int:
     return _print_risks(_document_reference_risks(document, Path(args.root).resolve()))
 
 
+def _parse_object_ref(raw: Any) -> tuple[str, int | None, str | None]:
+    """Return (object_id, revision, declared_sha256) for an object reference."""
+
+    if isinstance(raw, str):
+        object_id, separator, revision = raw.partition("@")
+        if not separator:
+            return object_id, None, None
+        try:
+            return object_id, int(revision), None
+        except ValueError as exc:
+            raise ValueError(f"invalid object reference revision: {raw}") from exc
+    if isinstance(raw, Mapping):
+        object_id = _require_non_empty(str(raw.get("object_id", "")), "object_id")
+        revision = raw.get("revision")
+        if revision is not None and (not isinstance(revision, int) or revision < 1):
+            raise ValueError(f"invalid object reference revision: {raw!r}")
+        return object_id, revision, raw.get("sha256")
+    raise ValueError(f"unsupported object reference: {raw!r}")
+
+
+def _require_non_empty(value: str, field: str) -> str:
+    if not value:
+        raise ValueError(f"{field} must not be empty")
+    return value
+
+
+def _object_index(objects_dir: Path) -> dict[str, list[dict[str, Any]]]:
+    """Index research objects under a directory by object_id."""
+
+    index: dict[str, list[dict[str, Any]]] = {}
+    if not objects_dir.is_dir():
+        return index
+    for path in iter_documents([objects_dir]):
+        try:
+            document = load_document(path)
+        except Exception:
+            continue
+        if not isinstance(document, Mapping):
+            continue
+        if document.get("object_type") and document.get("object_id") and isinstance(
+            document.get("revision"), int
+        ):
+            index.setdefault(str(document["object_id"]), []).append(
+                {"revision": int(document["revision"]), "path": path, "document": document}
+            )
+    for entries in index.values():
+        entries.sort(key=lambda item: item["revision"])
+    return index
+
+
+def _resolve_object_ref(
+    raw: Any, index: dict[str, list[dict[str, Any]]], root: Path
+) -> dict[str, Any]:
+    object_id, revision, declared_sha256 = _parse_object_ref(raw)
+    resolved: dict[str, Any] = {
+        "requested": raw if isinstance(raw, str) else dict(raw),
+        "object_id": object_id,
+        "revision": revision,
+        "path": None,
+        "status": "ok",
+        "declared_sha256": declared_sha256,
+    }
+    candidates = index.get(object_id)
+    if not candidates:
+        resolved["status"] = "missing"
+        return resolved
+    if revision is None:
+        resolved["status"] = "unversioned"
+        entry = candidates[-1]
+    else:
+        entry = next((item for item in candidates if item["revision"] == revision), None)
+        if entry is None:
+            resolved["status"] = "missing"
+            return resolved
+    resolved["revision"] = entry["revision"]
+    try:
+        resolved["path"] = entry["path"].resolve().relative_to(root).as_posix()
+    except ValueError:
+        resolved["path"] = entry["path"].resolve().as_posix()
+    declared_content_hash = entry["document"].get("content_hash")
+    if (
+        declared_sha256 is not None
+        and declared_content_hash is not None
+        and str(declared_sha256).removeprefix("sha256:").lower()
+        != str(declared_content_hash).removeprefix("sha256:").lower()
+    ):
+        resolved["status"] = "hash_mismatch"
+    return resolved
+
+
 def _claim_trace(args: argparse.Namespace) -> int:
     document = load_document(args.claim)
     if not isinstance(document, Mapping):
@@ -684,19 +891,56 @@ def _claim_trace(args: argparse.Namespace) -> int:
         if document.get("object_type") != "claim":
             print("ERROR   OBJECT-NOT-CLAIM             document object_type is not claim")
         return 1
+    root = Path(args.root).resolve()
+    objects_dir = Path(args.objects).resolve() if args.objects else root
+    index = _object_index(objects_dir)
+    risks: list[ContractRisk] = []
+    located_support = [
+        _resolve_object_ref(raw, index, root) for raw in document.get("support_refs", [])
+    ]
+    located_counterevidence = [
+        _resolve_object_ref(raw, index, root) for raw in document.get("counterevidence_refs", [])
+    ]
+    for located in (*located_support, *located_counterevidence):
+        if located["status"] == "missing":
+            risks.append(
+                ContractRisk(
+                    "REF-MISSING",
+                    RiskLevel.BLOCK,
+                    f"claim references an unresolvable object: {located['object_id']}",
+                )
+            )
+        elif located["status"] == "unversioned":
+            risks.append(
+                ContractRisk(
+                    "ARTIFACT-UNVERSIONED-REF",
+                    RiskLevel.WARNING,
+                    f"claim reference lacks a revision; latest assumed: {located['object_id']}",
+                )
+            )
+        elif located["status"] == "hash_mismatch":
+            risks.append(
+                ContractRisk(
+                    "ARTIFACT-HASH-MISMATCH",
+                    RiskLevel.BLOCK,
+                    f"referenced object content_hash drifted: {located['object_id']}",
+                )
+            )
     trace = {
         "claim_id": document["object_id"],
         "revision": document["revision"],
         "strength": document["strength"],
-        "support_refs": document["support_refs"],
-        "counterevidence_refs": document["counterevidence_refs"],
+        "support": located_support,
+        "counterevidence": located_counterevidence,
         "limitations": document["limitations"],
     }
     print(json.dumps(trace, ensure_ascii=False, indent=2))
+    exit_code = _print_risks(risks)
     if args.protocol:
         protocol = ProjectProtocol.from_mapping(_load_valid(args.protocol, "project_protocol"))
-        return _print_risks(check_claim_ceiling(protocol, str(document["strength"])))
-    return 0
+        protocol_code = _print_risks(check_claim_ceiling(protocol, str(document["strength"])))
+        exit_code = exit_code or protocol_code
+    return exit_code
 
 
 def _project_relative(path: str | Path, root: Path, field: str) -> str:
@@ -1252,10 +1496,75 @@ def build_parser() -> argparse.ArgumentParser:
 
     claim = subparsers.add_parser("claim", help="inspect Claim support and counterevidence")
     claim_subparsers = claim.add_subparsers(dest="claim_command", required=True)
-    claim_trace = claim_subparsers.add_parser("trace")
+    claim_trace = claim_subparsers.add_parser(
+        "trace",
+        help="one-shot localization of support, counterevidence, and limitations",
+    )
     claim_trace.add_argument("claim")
     claim_trace.add_argument("--protocol")
+    claim_trace.add_argument("--root", default=".", help="project root for object localization")
+    claim_trace.add_argument(
+        "--objects",
+        help="directory holding research objects; defaults to the project root",
+    )
     claim_trace.set_defaults(handler=_claim_trace)
+
+    source = subparsers.add_parser("source", help="admit raw sources with provenance sidecars")
+    source_subparsers = source.add_subparsers(dest="source_command", required=True)
+    source_admit = source_subparsers.add_parser(
+        "admit", help="build (and optionally execute) a source admission sidecar"
+    )
+    source_admit.add_argument("file", help="bytes to admit, e.g. an inbox file")
+    source_admit.add_argument("--root", default=".")
+    source_admit.add_argument("--admitted-path", help="target path under sources/raw/")
+    source_admit.add_argument("--origin-uri")
+    source_admit.add_argument("--doi")
+    source_admit.add_argument("--device")
+    source_admit.add_argument("--acquired-at", required=True, help="explicit ISO-8601 timestamp")
+    source_admit.add_argument("--operator", required=True, help="named accountable operator")
+    source_admit.add_argument("--license", required=True, help="license or data-use boundary")
+    source_admit.add_argument("--parser-name", required=True)
+    source_admit.add_argument("--parser-version", required=True)
+    source_admit.add_argument("--sensitivity", required=True)
+    source_admit.add_argument("--egress-restriction", required=True)
+    source_admit.add_argument("--id", help="explicit admission_id; defaults to a hash-derived id")
+    source_admit.add_argument(
+        "--execute",
+        action="store_true",
+        help="copy the bytes into sources/raw and write the sidecar; default is a dry run",
+    )
+    source_admit.set_defaults(handler=_source_admit)
+    source_check = source_subparsers.add_parser("check", help="verify an admission sidecar")
+    source_check.add_argument("admission")
+    source_check.add_argument("--root", default=".")
+    source_check.set_defaults(handler=_source_check)
+
+    promotion = subparsers.add_parser("promotion", help="promote validated work artifacts")
+    promotion_subparsers = promotion.add_subparsers(dest="promotion_command", required=True)
+    promotion_validate = promotion_subparsers.add_parser(
+        "validate", help="check promotion eligibility without mutating anything"
+    )
+    promotion_validate.add_argument("record")
+    promotion_validate.add_argument("--root", default=".")
+    promotion_validate.set_defaults(handler=_promotion_validate)
+    promotion_execute = promotion_subparsers.add_parser(
+        "execute", help="copy promoted artifacts after a fail-closed eligibility check"
+    )
+    promotion_execute.add_argument("record")
+    promotion_execute.add_argument("--root", default=".")
+    promotion_execute.set_defaults(handler=_promotion_execute)
+
+    repro = subparsers.add_parser("repro", help="verify run manifests and reproduction")
+    repro_subparsers = repro.add_subparsers(dest="repro_command", required=True)
+    repro_check_cmd = repro_subparsers.add_parser(
+        "check", help="verify declared inputs, lock, and outputs; optionally compare a rerun"
+    )
+    repro_check_cmd.add_argument("manifest")
+    repro_check_cmd.add_argument("--root", default=".")
+    repro_check_cmd.add_argument(
+        "--rerun-dir", help="directory of freshly rerun outputs to compare byte-for-byte"
+    )
+    repro_check_cmd.set_defaults(handler=_repro_check)
 
     trace = subparsers.add_parser("trace", help="validate a file-authoritative Attempt trace")
     trace_subparsers = trace.add_subparsers(dest="trace_command", required=True)
