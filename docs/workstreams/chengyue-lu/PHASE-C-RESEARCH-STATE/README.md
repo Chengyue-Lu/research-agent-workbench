@@ -3,7 +3,7 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 跨负责人执行事实接口审查：黄毅（GitHub `let778750-cpu`）
 - Tasks：`M10-001`～`M10-003`、`M3-009`
-- authority basis：[Issue #38](https://github.com/Chengyue-Lu/research-agent-workbench/issues/38) 的 `R2 architecture review — ACCEPT`
+- planning authority basis：[Issue #38](https://github.com/Chengyue-Lu/research-agent-workbench/issues/38) 的 `R2 architecture review — ACCEPT`；只授权 bounded task drafting/implementation exploration，不接受最终表示
 - 基线：`develop@4ce83bcf286feb085f4807df40f110ca98057c0c`
 - 目标 base：`develop`
 - 阶段分支：`codex/phase-c-implementation`
@@ -23,13 +23,14 @@ exact-ref Research State
 它不建设知识图谱、数据库、通用 workflow DAG、策略引擎、自动科研、Runtime Bundle、Resolved
 Execution View、Provider binding、Skill evolution、multi-Agent recovery 或 Topic 5 实现。
 
-## 2. 表示选择约束
+## 2. 待 R2 验证的表示假设
 
 - 既有 `v0.1.0` ResearchObject、Attempt、Decision、Execution Trace 保持可重放，不原位改写其 Schema identity；
-- Phase C 新语义使用显式新版本契约；只有需要 durable identity/revision 的 State、Failure、Human Decision
-  和 Method Trace 成为独立文档；
-- Unknown 与可跨 Attempt 引用的 Assumption 使用 State 内轻量 item；Contradiction 是 declared Evidence–Claim
-  relation，Frontier 是 open item、active Failure 与 next Task 的 derived projection；
+- Phase C candidate 使用显式新版本契约；当前把需要 durable identity/revision 的 State、Failure、Human
+  Decision 和 Method Trace 建成独立文档；这不是预先接受的最终 Schema；
+- 当前候选把 Unknown 与可跨 Attempt 引用的 Assumption 表为 State 内轻量 item、Contradiction 表为
+  declared Evidence–Claim relation、Frontier 表为 derived projection。每项都必须用两个 bounded case、
+  反例和 R2 review 证明其为足够弱的表示后，才能进入 accepted architecture；
 - exact refs 只验证 identity/revision/path/hash/type closure，不复制被引用正文；
 - validator 只验证声明形状和 authority ceiling，不判断 Evidence 科学上是否支持 Claim。
 
@@ -52,12 +53,20 @@ Resolved Capability Snapshot 推断真实执行，也不把 Topic 4 变成 State
 
 ## 5. Verification
 
-两份 bounded case 都必须在新进程中只读取显式 allowlist，并输出实际 read surface。private oracle 检查
-exact refs、known Failure、Decision effect、revisit condition 与下一 Frontier/Task；独立人类 rubric 评价
-科研/控制解释。机器 Gate 与人类 review 分开，任一缺失都不能宣称完整 Phase C closeout。
+两份 bounded fixture 都必须在 staged 新进程中只读取 runner-owned allowlist，并输出实际 read surface。
+private oracle 只能检查 exact outputs、read surface、known-failure fixture behavior 与声明 predicate；它不能
+证明 reviewer reconstruction 或科学正确性。独立人类 rubric 评价科研/控制解释，R2 owner 再决定最终表示。
+机器 Gate、Human review 与 R2 closeout 分开，任一缺失都不能宣称完整 Phase C closeout。
 
 ## 6. Stop condition
 
 实现分支可以形成可审查的 contracts、fixtures、validators 与 tests；只有 task-definition 进入 `develop`、
 全套 CI/negative/adversarial evidence 通过且具名 R2 closeout 接受后，才可在 canonical 状态中标记 Phase C
 完成并允许 Topic 5 重新进入架构设计。通过 Phase C 绝不自动批准 Topic 5 实现。
+
+## 7. PR sequencing
+
+仓库治理要求 task-definition 与 feature 分离：本 workstream 的 Task 草案必须先作为 **docs-only
+task-definition PR** 独立接受；Issue #38 本身没有使这些行成为 canonical Task。之后 implementation changes
+才能基于已进入 `develop` 的 Task definition 形成 feature PR。不得把 Task 定义调整与实现合并到同一 PR，
+也不得在 feature PR 中借机冻结最终 representation。

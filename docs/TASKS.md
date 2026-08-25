@@ -143,9 +143,9 @@ Human Decision 或端到端研究执行已经实现。
 
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
-| M10-001 | READY | 建立最小 durable Research State composition | M1-002, M8-005, M9-005 | 新版本 State composition 只保存 exact identity/revision/path/hash refs 与最小 Unknown/Assumption item；Contradiction 和 Frontier 保持 declared relation/derived projection；provenance-bearing Human Decision 与 support/contradict/qualify/unknown 关系可结构验证，但 validator 不声明科学正确性 |
-| M10-002 | PARKED | 建立 Attempt / Research Failure 语义与独立 lineage | M1-004, M10-001 | 新版本 Attempt 分离 from-State、optional predecessor Attempt 与 reopen justification；多个 Attempt 可共享 State，State 可由 Evidence/Human Decision 独立演化；Research Failure 强制 learned result 与 revisit condition，并与 execution failure、negative Evidence、Capability Gap、Skill Need 分离 |
-| M10-003 | PARKED | 完成 Phase C bounded continuity / verification Gate | M10-001, M10-002, M3-009 | evidence-synthesis 与 simulation-negative 两案在隔离新进程中只读 compact State、Method Trace 与 allowlisted exact refs；确定性 oracle 证明 known-failure avoidance 和 reviewer reconstruction，保存实际 read surface；Human semantic review 仍由具名 reviewer 独立完成，Gate 不授权 Topic 5 实现 |
+| M10-001 | READY | 建立并审计最小 durable Research State composition candidate | M1-002, M8-005, M9-005 | 用两个 bounded case 与反例检验最弱表示；当前 Unknown/Assumption item、Contradiction relation、derived Frontier、provenance-bearing Human Decision 与 Evidence relation 都是 implementation hypothesis，不预冻结最终 Schema；exact ref 结构可确定验证，科学判断与最终表示须 Human/R2 接受 |
+| M10-002 | PARKED | 建立 Attempt / Research Failure 语义与独立 lineage candidate | M1-004, M10-001 | Attempt 分离 from-State、optional predecessor Attempt 与 reopen justification；多个 Attempt 可共享 State，State 可由 Evidence/Human Decision 独立演化；Research Failure universal minimum 仅冻结 learned result/revisit condition，当前 source Attempt/observed/uncertainty 是 bounded profile candidate，并与 execution failure、negative Evidence、Capability Gap、Skill Need 分离 |
+| M10-003 | PARKED | 完成 Phase C bounded continuity / verification Gate | M10-001, M10-002, M3-009 | evidence-synthesis 与 synthetic simulation-negative 两案在 staged 新进程中只读 compact State、Method Trace 与 runner-owned exact closure；private oracle 只检查 exact output/read surface/fixture predicates 与 known-failure behavior，不能证明 reviewer reconstruction或科学正确性；具名 Human semantic review 与 R2 closeout 独立，Gate 不授权 Topic 5 实现 |
 
 ## 历史 GitHub Issues
 
@@ -162,10 +162,12 @@ Human Decision 或端到端研究执行已经实现。
 ## 当前下一任务
 
 M9-001～006 已形成连通 dependency DAG 的原子完成集，每项均有独立 Schema/fixture/validator/test
-证据。Phase B checked-in fixtures 只具 `structural-replay` 资格，不是 Runtime input。Issue #38 的
-R2 planning review 已接受 Phase C bounded implementation task-definition；当前唯一 Phase C 入口是
-M10-001，后续 M10-002、M3-009 与 M10-003 按依赖推进。M6-003 仍受自身既有依赖约束，Topic 5
-继续冻结，不能因 M10 task-definition 或局部 Schema 通过而启动。
+证据。Phase B checked-in fixtures 只具 `structural-replay` 资格，不是 Runtime input。Issue #38 的 R2
+planning review 只授权 bounded Task 草拟与 implementation exploration，没有使本分支的 M10 行或最终表示
+成为 canonical acceptance。这些 Task 行必须先经独立 **docs-only task-definition PR** 进入 `develop`；
+implementation feature PR 不得同时改写 Task 定义/依赖/验收。草案中的唯一 Phase C 入口是
+M10-001，后续 M10-002、M3-009 与 M10-003 按依赖推进。M6-003 仍受自身既有依赖约束，Topic 5 继续冻结，
+不能因 Issue、Task 草案、局部 Schema 或机器 Gate 通过而启动。
 
 Phase B 期间，路诚钺维护 Capability 词汇、Skill Need/lifecycle、Protocol 与相应 Schema/fixture；
 Resolved Capability Snapshot 是跨负责人共享接口，黄毅维护 Provider/Adapter 字段的真实供给映射与
@@ -187,5 +189,6 @@ data-egress、side-effect boundary；automatic fallback、model auto-routing、m
 critic voting、hidden routing，以及 Runtime 修改 Method/Claim/Gate 仍被禁止。
 
 Topic 5 继续冻结，直到 Phase C 至少完成 minimal Research State、Failure/Attempt semantics 与 Method
-Trace v0.1。只有该 Gate 通过后，Handoff、context rollover、safe pause、recovery 和 salvage/clean
-recovery 的后续扩展才可恢复；M9-005 Snapshot Core 不单独解除 Topic 5。
+Trace v0.1 并经 Human/R2 closeout。该 Gate 只允许 Topic 5 重新进入**独立架构设计审查**；Handoff、context
+rollover、safe pause、recovery、salvage/clean recovery 的实现仍保持 PARKED，必须另有 task-definition 与
+R2 acceptance。M9-005 Snapshot Core 不单独解除 Topic 5。
