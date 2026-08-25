@@ -57,7 +57,7 @@ Method Trace 语义；黄毅维护 M6 的 API/Runtime 执行实现与测试。�
 | M3-006 | IN_PROGRESS | SAFE_PAUSE 与机器完成权 | M3-001..003 | AWU/完成/暂停条件、stage/safe-pause/waiting、执行结束与 `contract-satisfied` 分离、失败报告覆盖显式完成宣称和可恢复 pause fixture 已实现；进程级 kill 与真实新进程/新 Attempt 恢复待演练 |
 | M3-007 | IN_PROGRESS | 冻结实名 actor、Attempt Archive 与完整 Agent Trace 规则 | M3-003..006 | ADR-0012、目录、消息信封、写前捕获、capture gap、按需读取和 Worklog 关系一致；负责人明确为路诚钺/黄毅 |
 | M3-008 | DONE | 实现 Trace Envelope/Index/Event Schema、validator 与手工 fixture | M3-007 | 文件权威 Trace Core、确定性 validator、瞬时 tool-result provenance、Python 3.11/3.13 CI、覆盖率、Registry、wheel 与干净安装 Gate 均通过；不保存 Chain-of-Thought |
-| M3-009 | PARKED | 在 Execution Trace 之上增加 Method-aware Trace | M3-008, M8-003, M8-005, M9-005 | 记录 Mode/Action/Mechanism、Capability resolved 与 actual supply binding、Human Gate/Evidence/Claim/Failure 决定；通过 Snapshot 引用与执行事件分层关联，不复制正文；Snapshot contract 稳定前不自建临时 capability-resolved event |
+| M3-009 | PARKED | 在 Execution Trace 之上增加 Method-aware Trace | M3-008, M8-003, M8-005, M9-005, M10-001, M10-002 | 建立独立、ref-only 的 Method Trace v0.1，记录 applied Method/Human Decision/State/path disposition；没有 accepted execution fact producer 时显式记录 actual-binding gap，且不得把 selected Snapshot 当作 actual execution 或把 gap-valid 写成 coverage-complete |
 
 ## M4：工件与复现
 
@@ -139,6 +139,14 @@ Human Decision 或端到端研究执行已经实现。
 | M9-005 | DONE | 建立 Capability Supply Report、Capability Resolution 与 Resolved Capability Snapshot 共享接口 | M9-001, M8-005 | M9-001 接受后 Core 可独立 READY，支持 no-Skill、direct Tool、Adapter/Provider supply facts 与受 ceiling 约束的 resolution/snapshot；Report 不选择自身，Resolution 区分 satisfied/gap/ambiguous/blocked，Snapshot 冻结 exact supply/version/hash/permission/data-egress/side-effect/conformance refs；Skill Supply Extension 仅在 M9-003 runtime eligibility 稳定后接入；不实现 API session 或 Runtime consumer |
 | M9-006 | DONE | 完成 Phase B migration/replay 与替换性 Gate | M9-002..005 | 已发布旧对象经显式 migration 继续解释；同一 Task/Mode/Action/Method/Requirement 在 Supply A→B 替换时只生成不同 Snapshot，且 permission/data-egress/side-effect ceiling 均不放宽、Runtime 不获得 Method authority；Phase B Stop Gate 有逐项证据 |
 
+## M10：Phase C Research State & Verification
+
+| ID | 状态 | 任务 | 依赖 | 验收 |
+|---|---|---|---|---|
+| M10-001 | READY | 建立最小 durable Research State composition | M1-002, M8-005, M9-005 | 新版本 State composition 只保存 exact identity/revision/path/hash refs 与最小 Unknown/Assumption item；Contradiction 和 Frontier 保持 declared relation/derived projection；provenance-bearing Human Decision 与 support/contradict/qualify/unknown 关系可结构验证，但 validator 不声明科学正确性 |
+| M10-002 | PARKED | 建立 Attempt / Research Failure 语义与独立 lineage | M1-004, M10-001 | 新版本 Attempt 分离 from-State、optional predecessor Attempt 与 reopen justification；多个 Attempt 可共享 State，State 可由 Evidence/Human Decision 独立演化；Research Failure 强制 learned result 与 revisit condition，并与 execution failure、negative Evidence、Capability Gap、Skill Need 分离 |
+| M10-003 | PARKED | 完成 Phase C bounded continuity / verification Gate | M10-001, M10-002, M3-009 | evidence-synthesis 与 simulation-negative 两案在隔离新进程中只读 compact State、Method Trace 与 allowlisted exact refs；确定性 oracle 证明 known-failure avoidance 和 reviewer reconstruction，保存实际 read surface；Human semantic review 仍由具名 reviewer 独立完成，Gate 不授权 Topic 5 实现 |
+
 ## 历史 GitHub Issues
 
 首批 Issues 已在后续实现与架构调整后关闭；本节只保留任务来源追溯，不再作为当前执行入口：
@@ -154,9 +162,10 @@ Human Decision 或端到端研究执行已经实现。
 ## 当前下一任务
 
 M9-001～006 已形成连通 dependency DAG 的原子完成集，每项均有独立 Schema/fixture/validator/test
-证据。Phase B checked-in fixtures 只具 `structural-replay` 资格，不是 Runtime input。M6-003 还依赖
-M2-001..005，其中 M2-003/M2-004 仍为 PARKED；下一动作是以独立 R2 task-definition 决策澄清其
-依赖与解冻边界，不因 M9 完成提前启动 M6-003、Phase C 或 Topic 5 实现。
+证据。Phase B checked-in fixtures 只具 `structural-replay` 资格，不是 Runtime input。Issue #38 的
+R2 planning review 已接受 Phase C bounded implementation task-definition；当前唯一 Phase C 入口是
+M10-001，后续 M10-002、M3-009 与 M10-003 按依赖推进。M6-003 仍受自身既有依赖约束，Topic 5
+继续冻结，不能因 M10 task-definition 或局部 Schema 通过而启动。
 
 Phase B 期间，路诚钺维护 Capability 词汇、Skill Need/lifecycle、Protocol 与相应 Schema/fixture；
 Resolved Capability Snapshot 是跨负责人共享接口，黄毅维护 Provider/Adapter 字段的真实供给映射与
