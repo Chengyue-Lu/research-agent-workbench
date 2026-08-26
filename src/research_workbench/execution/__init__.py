@@ -14,6 +14,12 @@ from research_workbench.execution.runtime_bundle import (
     ValidatedRuntimeBundle,
     load_runtime_bundle,
 )
+from research_workbench.execution.execution_view import (
+    ExecutionViewIssue,
+    ExecutionViewValidationError,
+    PinnedExecutionInput,
+    produce_resolved_execution_view,
+)
 from research_workbench.execution.recovery import (
     RecoveryPreparation,
     RecoverySeed,
@@ -36,5 +42,9 @@ __all__ = [
     "RuntimeBundleValidationError",
     "ValidatedRuntimeBundle",
     "load_runtime_bundle",
+    "ExecutionViewIssue",
+    "ExecutionViewValidationError",
+    "PinnedExecutionInput",
+    "produce_resolved_execution_view",
     "verify_execution_archive",
 ]

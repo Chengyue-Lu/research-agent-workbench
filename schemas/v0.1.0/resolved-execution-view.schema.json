@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/resolved-execution-view.schema.json",
+  "title": "Resolved Execution View",
+  "$comment": "The final supply-neutral frozen execution contract produced from an exact Runtime Bundle, binding, Profile, DataPolicy and Host policy. It consumes a frozen selection and does not grant permission or own fallback.",
+  "x-rwb-document-kind": "resolved_execution_view",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "view_id",
+    "revision",
+    "execution_at",
+    "runtime_bundle_ref",
+    "task_ref",
+    "method_resolution_ref",
+    "capability_resolution_ref",
+    "snapshot_ref",
+    "selected_supply_report_ref",
+    "agent_profile_ref",
+    "data_policy_ref",
+    "host_policy_ref",
+    "execution_binding_ref",
+    "binding",
+    "freshness",
+    "effective_constraints",
+    "required_outputs",
+    "completion_checks",
+    "safe_pause_conditions",
+    "stop_conditions",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "view_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "revision": { "type": "integer", "minimum": 1 },
+    "execution_at": { "type": "string", "format": "date-time" },
+    "runtime_bundle_ref": { "$ref": "#/$defs/revisionedFileRef" },
+    "task_ref": { "$ref": "#/$defs/revisionedFileRef" },
+    "method_resolution_ref": { "$ref": "#/$defs/revisionedFileRef" },
+    "capability_resolution_ref": { "$ref": "#/$defs/revisionedFileRef" },
+    "snapshot_ref": { "$ref": "#/$defs/revisionedFileRef" },
+    "selected_supply_report_ref": { "$ref": "#/$defs/versionedFileRef" },
+    "agent_profile_ref": { "$ref": "#/$defs/versionedFileRef" },
+    "data_policy_ref": { "$ref": "#/$defs/versionedFileRef" },
+    "host_policy_ref": { "$ref": "#/$defs/versionedFileRef" },
+    "execution_binding_ref": { "$ref": "#/$defs/revisionedFileRef" },
+    "binding": {
+      "type": "object",
+      "required": ["provider", "adapter", "model", "runtime", "host"],
+      "properties": {
+        "provider": { "$ref": "execution-binding.schema.json#/$defs/componentBinding" },
+        "adapter": { "$ref": "execution-binding.schema.json#/$defs/componentBinding" },
+        "model": { "$ref": "execution-binding.schema.json#/$defs/componentBinding" },
+        "runtime": { "$ref": "execution-binding.schema.json#/$defs/componentBinding" },
+        "host": { "$ref": "execution-binding.schema.json#/$defs/componentBinding" }
+      },
+      "additionalProperties": false
+    },
+    "freshness": {
+      "type": "object",
+      "required": ["supply_observed_at", "supply_valid_until", "data_policy_valid_until", "host_policy_valid_until"],
+      "properties": {
+        "supply_observed_at": { "type": "string", "format": "date-time" },
+        "supply_valid_until": { "type": "string", "format": "date-time" },
+        "data_policy_valid_until": { "type": "string", "format": "date-time" },
+        "host_policy_valid_until": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "effective_constraints": {
+      "type": "object",
+      "required": ["permissions", "data_egress", "side_effects", "budget"],
+      "properties": {
+        "permissions": { "$ref": "execution-policy.schema.json#/$defs/permissionCeiling" },
+        "data_egress": { "$ref": "capability-requirement.schema.json#/$defs/dataEgress" },
+        "side_effects": { "$ref": "capability-requirement.schema.json#/$defs/sideEffects" },
+        "budget": { "$ref": "execution-policy.schema.json#/$defs/budget" }
+      },
+      "additionalProperties": false
+    },
+    "required_outputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          {
+            "type": "object",
+            "required": ["contract"],
+            "properties": {
+              "contract": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+              "min_count": { "type": "integer", "minimum": 0 }
+            },
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "completion_checks": { "allOf": [{ "$ref": "common.schema.json#/$defs/stringArray" }, { "minItems": 1 }] },
+    "safe_pause_conditions": { "allOf": [{ "$ref": "common.schema.json#/$defs/stringArray" }, { "minItems": 1 }] },
+    "stop_conditions": { "allOf": [{ "$ref": "common.schema.json#/$defs/stringArray" }, { "minItems": 1 }] },
+    "boundaries": {
+      "type": "object",
+      "required": [
+        "supply_selection",
+        "automatic_fallback",
+        "permission_grant",
+        "method_decision",
+        "claim_effect",
+        "human_decision",
+        "execution"
+      ],
+      "properties": {
+        "supply_selection": { "const": false },
+        "automatic_fallback": { "const": false },
+        "permission_grant": { "const": false },
+        "method_decision": { "const": false },
+        "claim_effect": { "const": false },
+        "human_decision": { "const": false },
+        "execution": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "revisionedFileRef": {
+      "type": "object",
+      "required": ["ref", "path", "sha256"],
+      "properties": {
+        "ref": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*@r[1-9][0-9]*$" },
+        "path": { "$ref": "common.schema.json#/$defs/relativePath" },
+        "sha256": { "$ref": "common.schema.json#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    },
+    "versionedFileRef": {
+      "type": "object",
+      "required": ["ref", "path", "sha256"],
+      "properties": {
+        "ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "path": { "$ref": "common.schema.json#/$defs/relativePath" },
+        "sha256": { "$ref": "common.schema.json#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -34,14 +34,15 @@ Protocol、两级 Snapshot 与 migration/replacement 结构契约已经实现。
 | Legacy execution bridge | 既有 Skill-bound Assignment 到 Trace / Receipt 的适配和恢复检查 |
 | Provider seam | provider-neutral 的隔离会话接口、离线 probe 与合成 conformance 基础 |
 | Runtime Bundle/Profile | M11-001 显式 manifest 固定 exact Task→Method→Requirement→Supply→Resolution→Snapshot closure；Runtime loader 拒绝目录、递归 Registry/examples scan、未声明引用、hash/identity/import 漂移、Skill/Evolution dependency 与 `structural-replay` |
+| Resolved Execution View | M11-002 supply-neutral producer 固定 exact Provider/Adapter/Model/Runtime/Host、external bundle/input pins、execution-time freshness，并计算 Task/Profile/Supply/DataPolicy/Host 的最严 permission/data-egress/side-effect/budget intersection；不重新选择 Supply、不 fallback、不执行 |
 
 ## 受限或尚不可用
 
 | 范围 | 限制 |
 |---|---|
-| Method-aware control continuation | M6-003 只保留 legacy Task-to-API compatibility seam；M11-001 Runtime Bundle/Profile 已实现，后续 M11-002 Resolved Execution View → M11-003 Thin Host → M11-004 generic Trace/Receipt Gate 尚未实现；Method Trace 也尚未实现。当前 checked-in 三条 Snapshot 都是 `structural-replay` 且 `execution_input=false`；Mode/lifecycle migration 不迁移历史 Resolution、Assignment、Receipt 或 Trace，Authority Rule Eligibility 也不执行决定 |
+| Method-aware control continuation | M6-003 只保留 legacy Task-to-API compatibility seam；M11-001 Runtime Bundle/Profile 与 M11-002 Resolved Execution View Core 已实现，后续 M11-003 Thin Host → M11-004 generic Trace/Receipt Gate 尚未实现；Method Trace 也尚未实现。当前 checked-in 三条 Snapshot 都是 `structural-replay` 且 `execution_input=false`；Mode/lifecycle migration 不迁移历史 Resolution、Assignment、Receipt 或 Trace，Authority Rule Eligibility 也不执行决定 |
 | no-Skill Assignment | Task 契约允许空 `required_skills`，但 alpha CLI 尚不能将其解析为冻结 Assignment |
-| Runtime Snapshot | 仓库没有 checked-in `runtime-execution` Snapshot；测试只在临时目录构造 bounded local input，fixture 不得被 Runtime 接受。M11-001 证明 exact closure consumer，不形成最终授权；external pin、freshness、精确 Provider/Model/Runtime、最终权限/DataPolicy 交集和 Authority 判断留给 M11-002 |
+| Runtime Snapshot | 仓库没有 checked-in `runtime-execution` Snapshot/View；测试只在临时目录构造 bounded local input，fixture 不得被 Runtime 接受。M11-001/002 证明 exact closure 与 deterministic View producer，不形成 permission grant 或真实 Provider readiness；实际消费与执行留给 M11-003 |
 | End-to-end research run | 尚无面向普通用户的一键 Task-to-research 闭环；Runtime 集成由开发者显式接入 |
 | 真实外部模型 | 仓库测试不证明各供应商真实账号、配额、工具调用或长期兼容性 |
 | 科学有效性 | Validator 不评判方法适用、证据质量或 Claim 正确性 |

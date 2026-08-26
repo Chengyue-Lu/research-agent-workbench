@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/execution-policy.schema.json",
+  "title": "Execution Policy",
+  "$comment": "A hash-pinned DataPolicy or Host policy ceiling consumed by the Resolved Execution View producer. It cannot grant permission.",
+  "x-rwb-document-kind": "execution_policy",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "policy_id",
+    "version",
+    "policy_kind",
+    "valid_from",
+    "valid_until",
+    "permission_ceiling",
+    "data_egress",
+    "side_effects",
+    "budget_ceiling",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "policy_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "version": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "policy_kind": { "enum": ["data-policy", "host-policy"] },
+    "valid_from": { "type": "string", "format": "date-time" },
+    "valid_until": { "type": "string", "format": "date-time" },
+    "permission_ceiling": { "$ref": "#/$defs/permissionCeiling" },
+    "data_egress": { "$ref": "capability-requirement.schema.json#/$defs/dataEgress" },
+    "side_effects": { "$ref": "capability-requirement.schema.json#/$defs/sideEffects" },
+    "budget_ceiling": { "$ref": "#/$defs/budget" },
+    "boundaries": {
+      "type": "object",
+      "required": ["permission_grant", "supply_selection", "fallback_authority"],
+      "properties": {
+        "permission_grant": { "const": false },
+        "supply_selection": { "const": false },
+        "fallback_authority": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "permissionCeiling": {
+      "type": "object",
+      "required": ["filesystem", "network", "external_write", "allowed_roots"],
+      "properties": {
+        "filesystem": { "enum": ["forbidden", "read-only", "worktree-write", "workspace-write"] },
+        "network": { "enum": ["forbidden", "search-and-fetch", "allowed"] },
+        "external_write": { "const": false },
+        "allowed_roots": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/relativePath" },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "budget": {
+      "type": "object",
+      "properties": {
+        "max_turns": { "type": "integer", "minimum": 1 },
+        "max_output_tokens": { "type": "integer", "minimum": 1 },
+        "max_seconds": { "type": "integer", "minimum": 1 }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    }
+  }
+}

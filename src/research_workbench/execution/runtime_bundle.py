@@ -48,6 +48,7 @@ class RuntimeBundleValidationError(ValueError):
 class ValidatedRuntimeBundle:
     project_root: Path
     manifest_path: Path
+    manifest_sha256: str
     manifest: Mapping[str, Any]
     documents: Mapping[Path, Mapping[str, Any]]
 
@@ -387,7 +388,8 @@ def load_runtime_bundle(
 
     catalog = SchemaCatalog(schema_root)
     try:
-        manifest_raw = load_document_bytes(candidate, candidate.read_bytes())
+        manifest_content = candidate.read_bytes()
+        manifest_raw = load_document_bytes(candidate, manifest_content)
     except Exception as exc:
         raise RuntimeBundleValidationError(
             (RuntimeBundleIssue(candidate, "RUNTIME-BUNDLE-MANIFEST-PARSE", str(exc)),)
@@ -507,7 +509,13 @@ def load_runtime_bundle(
     )
     frozen_manifest = _read_only(manifest_raw)
     assert isinstance(frozen_manifest, Mapping)
-    return ValidatedRuntimeBundle(root, candidate, frozen_manifest, frozen_documents)
+    return ValidatedRuntimeBundle(
+        root,
+        candidate,
+        hash_bytes(manifest_content),
+        frozen_manifest,
+        frozen_documents,
+    )
 
 
 __all__ = [

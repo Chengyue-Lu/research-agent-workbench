@@ -170,6 +170,9 @@ SCHEMA_KINDS = {
     "research_mode_migration",
     "resolved_capability_snapshot",
     "runtime_bundle_manifest",
+    "execution_binding",
+    "execution_policy",
+    "resolved_execution_view",
     "agent_profile",
     "skill_manifest",
     "skill_assignment",
@@ -241,6 +244,12 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "resolved_capability_snapshot"
     if document.get("profile") == "runtime-bundle" and "bundle_id" in document and "documents" in document:
         return "runtime_bundle_manifest"
+    if "binding_id" in document and "selected_supply_report_ref" in document and "host" in document:
+        return "execution_binding"
+    if "policy_id" in document and "policy_kind" in document and "permission_ceiling" in document:
+        return "execution_policy"
+    if "view_id" in document and "execution_binding_ref" in document and "effective_constraints" in document:
+        return "resolved_execution_view"
     if "resolution_id" in document and "requirement_ref" in document and "comparisons" in document:
         return "capability_resolution"
     if document.get("scope") == "phase-b-evolution" and "gate_id" in document:

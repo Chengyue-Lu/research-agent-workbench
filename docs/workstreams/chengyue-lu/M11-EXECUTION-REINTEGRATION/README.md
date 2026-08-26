@@ -51,6 +51,20 @@ M11-001 Runtime Bundle/Profile
 - 从 frozen selection 形成 supply-neutral View，并计算最严 policy intersection；
 - 不执行、不 fallback、不依赖 SkillReleaseProjection。
 
+实现证据（本阶段第二层）：
+
+- Schema：`execution-binding`、`execution-policy`、`resolved-execution-view`；
+- producer：`produce_resolved_execution_view()` 只消费 M11-001 bundle 与四个 explicit pins；
+- exact binding：Provider/Adapter/Model/Runtime/Host ref/version/config hash 全部冻结；
+- deterministic preflight：external bundle/input pins、Profile identity、Supply selection、availability、typed
+  evidence、execution-time freshness 与 policy intersection fail closed；
+- focused negative tests：Supply reselection、Profile/hash drift、stale/unavailable、disjoint write roots、bundle
+  pin drift；source test 禁止 execution/fallback/Skill Evolution imports；
+- focused governance/runtime/view/schema tests：`Ran 81 tests ... OK`；
+- repository validation：`validated=154 errors=0 warnings=0`；
+- full unit suite：`Ran 443 tests ... OK (skipped=3)`；三个 skip 均为当前环境未安装 Hypothesis 的既有可选测试；
+- 结论：M11-002 验收闭合，状态 `READY→DONE`；只解锁 M11-003 为 `READY`，尚未执行任何 Provider/Tool。
+
 ### M11-003
 
 - 仅消费 exact closure-valid Snapshot/View；
