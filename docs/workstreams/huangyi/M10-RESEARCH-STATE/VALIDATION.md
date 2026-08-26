@@ -23,3 +23,14 @@
 | `rwb validate examples/phase-c --root .` | validated=10, errors=0, warnings=0 |
 | `rwb validate examples registry --root .` | validated=164, errors=0, warnings=0 |
 | 最终全量 | 447 passed, 3 skipped |
+
+## Owner review remediation matrix
+
+| Review finding | M10-001 head evidence |
+|---|---|
+| dependency chain mixed four Tasks | PR diff now changes only M10-001 to DONE；all downstream statuses remain BLOCKED |
+| duplicate/ambiguous identity | `duplicate_identities` + ambiguous resolver tests |
+| pinned ref without target hash | `hash-unverifiable` negative test |
+| State role not type-bound | explicit role→semantic-type map + mismatch negative test |
+| parallel Human Decision representation | kernel `object_type: decision` fixture; no new Human Decision Schema |
+| fresh actor and Method Trace defects | downstream M10-003/M3-009 implementations absent from this layer |
