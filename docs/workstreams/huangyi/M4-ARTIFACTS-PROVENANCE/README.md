@@ -3,11 +3,14 @@
 - 责任人：黄毅（GitHub 主名 `let778750-cpu`；昵称/界面名 `huangyi855`，同一账户）
 - 必需审查人：路诚钺（GitHub `Chengyue-Lu`）
 - Tasks：`M4-001`、`M4-002`、`M4-003`、`M4-004`（`M4-005` 保持 PARKED，无真实大文件需求不启动）
-- 基线：`develop@4ce83bcf286feb085f4807df40f110ca98057c0c`
+- 基线：`develop@4ce83bc`（原实现基线）；Issue #41 M-series 规范化（PR #42）合入后已 rebase 至
+  `develop@6b16129`，M4 行采用其精化的依赖与验收定义，仅状态列按本 workstream 证据置 DONE
 - 目标 base：`develop`
 - 阶段分支：`agent/m4-artifacts-provenance`
-- 当前状态：实现中；结构契约、validator、CLI、fixtures 与测试按 M4-001→004 顺序在同一分支推进
-- 风险触发：跨多个公共契约（新增 Schema、CLI 命令、风险码与 validator）、后继 M5-003 跨 PR 消费；R1 共享契约面
+- 当前状态：实现完成；M4-003 按[实现映射](../../../M_SERIES_IMPLEMENTATION_MAP.md)为 R2 任务
+  （Claim/counterevidence 语义面归路诚钺），PR 按 R2 提交并等待其跨负责人审查
+- 风险触发：跨多个公共契约（新增 Schema、CLI 命令、风险码与 validator）、后继 M5-003 跨 PR 消费；
+  M4-003 触发 R2（Claim 语义消费面）
 
 ## 1. 目标
 
