@@ -1,58 +1,27 @@
 schema_version: 0.1.0
 manifest_id: EVAL-MANIFEST-M5-003-001
 status: planned
-arm_map:
-  single-agent: plain-agent
-  lightweight: plain-agent-tool
-  multi-agent: mode-candidate-skill
 arms:
 - arm_id: plain-agent
-  task_packet_refs:
-  - path: examples/quickstart/task-no-skill.yaml
-    sha256: 62920ee816005668346067bbb397ef036a2258a555a6c057e010be98c74b51a1
-  model_pool_ref:
-    path: registry/models/pool.example.yaml
-    sha256: f36099d3a69ffaa4e67a5fe87911d0fc3ec92aae9638904c7f623ebd721ebd49
-  budget:
-    max_turns: 8
-    max_output_tokens: 2000
-    max_parallel: 0
 - arm_id: plain-agent-tool
-  task_packet_refs:
-  - path: examples/quickstart/task-no-skill.yaml
-    sha256: 62920ee816005668346067bbb397ef036a2258a555a6c057e010be98c74b51a1
-  model_pool_ref:
-    path: registry/models/pool.example.yaml
-    sha256: f36099d3a69ffaa4e67a5fe87911d0fc3ec92aae9638904c7f623ebd721ebd49
-  budget:
-    max_turns: 8
-    max_output_tokens: 2000
-    max_parallel: 1
+  capability_snapshot_refs:
+  - path: examples/capability-resolution/snapshots/document-read-a.yaml
+    sha256: 2c0a948dd76e420892e911bb729f776de38da39abbbfc92e46eaffcc1b928039
 - arm_id: mode-no-skill
-  task_packet_refs:
-  - path: examples/quickstart/task-no-skill.yaml
-    sha256: 62920ee816005668346067bbb397ef036a2258a555a6c057e010be98c74b51a1
-  model_pool_ref:
-    path: registry/models/pool.example.yaml
-    sha256: f36099d3a69ffaa4e67a5fe87911d0fc3ec92aae9638904c7f623ebd721ebd49
-  budget:
-    max_turns: 8
-    max_output_tokens: 2000
-    max_parallel: 1
+  capability_snapshot_refs:
+  - path: examples/capability-resolution/snapshots/no-skill-contract-check.yaml
+    sha256: 30b177db7f0d9d76d87ec7623056f19554495f707f160ac22671b5f9a659544c
 - arm_id: mode-candidate-skill
-  task_packet_refs:
-  - path: examples/quickstart/task-no-skill.yaml
-    sha256: 62920ee816005668346067bbb397ef036a2258a555a6c057e010be98c74b51a1
-  model_pool_ref:
-    path: registry/models/pool.example.yaml
-    sha256: f36099d3a69ffaa4e67a5fe87911d0fc3ec92aae9638904c7f623ebd721ebd49
+  skill_binding:
+    skill_id: claim-preserving-rewrite
+    version: 0.1.0
+    content_hash: 11d1673ab7c5200552dc95383c2fc30c4c6a04c38f171a0e1a80f67531576809
+    source_ref:
+      path: skill-lab/candidates/claim-preserving-rewrite/SKILL.md
+      sha256: 0e9f0753cdfdf02104b1539656c2dc7b261713162be07c902abf6bb9bc6069af
   skill_evaluation_ref:
     path: examples/evals/claim-preserving-rewrite/fixture-evaluation.yaml
     sha256: a4293ab1ddc2f762c2579372f849d96c6084ec42ebc3052b813277f58e99d89c
-  budget:
-    max_turns: 8
-    max_output_tokens: 2000
-    max_parallel: 2
 metric_set:
 - metric_id: method-violation
   definition: Count of steps that violate the frozen Method Resolution obligations.
@@ -109,13 +78,33 @@ metric_set:
   unit: minutes
   direction: lower-is-better
 frozen_conditions:
-  host: windows-fixture
-  context_policy_ref:
-    path: examples/project-protocol.yaml
-    sha256: ec82e730b020c9e78ed9c00985cc37cac867e954c81f8ce8220a1021bdb0c209
-  data_policy_ref:
-    path: examples/project-protocol.yaml
-    sha256: ec82e730b020c9e78ed9c00985cc37cac867e954c81f8ce8220a1021bdb0c209
+  task_packet_refs:
+  - path: examples/method-resolution-tasks/TASK-MR-ES-FROZEN-001.yaml
+    sha256: a72229692e6e0258dc2fc53096505f5c10b6c743ab1c5ec528588cad8b92865f
+  model:
+    pool_ref:
+      path: registry/models/pool.example.yaml
+      sha256: f36099d3a69ffaa4e67a5fe87911d0fc3ec92aae9638904c7f623ebd721ebd49
+    slot_id: primary
+    provider_adapter: openai-responses
+    model_id: fixture-exact-model-not-live
+  host:
+    host_id: windows-fixture
+    platform: windows
+    runtime: python-3.11-fixture
+  budget:
+    max_turns: 8
+    max_output_tokens: 2000
+    max_parallel: 0
+  context:
+    policy_ref:
+      path: examples/project-protocol.yaml
+      sha256: ec82e730b020c9e78ed9c00985cc37cac867e954c81f8ce8220a1021bdb0c209
+    data_policy_ref:
+      path: examples/project-protocol.yaml
+      sha256: ec82e730b020c9e78ed9c00985cc37cac867e954c81f8ce8220a1021bdb0c209
+    max_input_tokens: 4000
+    initial_context_refs: []
   evidence_classes:
   - deterministic-check-report
   - execution-receipt
@@ -124,12 +113,10 @@ frozen_conditions:
   - human-correction-log
   notes:
   - 'fixture-only manifest: no live run is authorized or claimed'
-  - single frozen model pool across all four arms
-  - 'mode-no-skill arm is configured but unmapped: the manifest expresses the full
-    Phase D four-arm comparison'
+  - exact Task, Model, Host, budget, and context are shared by all four treatments
 limitations:
 - structural fixture; metrics vocabulary fixed, no results recorded
-- lightweight arm placement follows the Method Resolution of the sample task
+- candidate relevance and scientific validity remain subject to Human review
 metadata:
   fixture: true
   m5_task: M5-003

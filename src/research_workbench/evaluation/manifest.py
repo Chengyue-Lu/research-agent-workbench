@@ -1,17 +1,21 @@
-"""Evaluation manifest metric vocabulary and cross-checks (M5-003).
+"""Evaluation manifest and deterministic baseline-plan checks (M5-003).
 
-The metric set is *fixed*: a manifest must carry the canonical vocabulary
-verbatim.  The M5 three arms (single-agent / lightweight / multi-agent) are
-mapped onto the Phase D four-arm comparison vocabulary, and both vocabularies
-stop drifting apart because the mapping is part of the frozen manifest.
+Phase D treatment arms are canonical. Coordination topology is intentionally
+absent: it is an orthogonal future experimental variable, not an arm alias.
 """
 
 from __future__ import annotations
 
+import copy
+import hashlib
+import json
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Mapping
 
-M5_ARMS = ("single-agent", "lightweight", "multi-agent")
+from research_workbench.artifacts.integrity import check_file_reference
+from research_workbench.io import load_document
+from research_workbench.tasks.models import FileReference
 
 PHASE_D_ARMS = (
     "plain-agent",
@@ -29,9 +33,8 @@ class MetricDefinition:
     direction: str
 
 
-#: Fixed metric vocabulary: ROADMAP Phase D metrics merged with the
-#: execution-recovery audit metrics (omission / rework / lookup / H2
-#: distortion / cascade).  A manifest must reproduce this table verbatim.
+#: M5-003 v0.1 comparison vocabulary. A manifest at this contract version must
+#: reproduce the table verbatim; this is not a global metric ontology.
 FIXED_METRIC_SET: tuple[MetricDefinition, ...] = (
     MetricDefinition(
         "method-violation",
@@ -155,38 +158,35 @@ def check_metric_set(metric_set: Any) -> list[str]:
     return drifts
 
 
-def check_arm_map_and_arms(document: Mapping[str, Any]) -> list[str]:
-    """Verify the M5-to-Phase-D arm mapping and arm coverage."""
+def check_treatment_arms(document: Mapping[str, Any]) -> list[str]:
+    """Require each canonical Phase D treatment exactly once."""
 
-    problems: list[str] = []
-    arm_map = document.get("arm_map")
-    if not isinstance(arm_map, Mapping):
-        return ["arm_map must be an object"]
-    referenced: set[str] = set()
-    for m5_arm in M5_ARMS:
-        target = arm_map.get(m5_arm)
-        if target not in PHASE_D_ARMS:
-            problems.append(
-                f"arm_map.{m5_arm} must map to a Phase D arm, got {target!r}"
-            )
-        elif target in PHASE_D_ARMS:
-            referenced.add(target)
+    legacy_problems = (
+        ["arm_map is forbidden: coordination topology is not a treatment mapping"]
+        if "arm_map" in document
+        else []
+    )
     arms = document.get("arms")
-    if not isinstance(arms, list) or not arms:
-        problems.append("arms must be a non-empty array")
-        return problems
-    configured: set[str] = set()
+    if not isinstance(arms, list):
+        return [*legacy_problems, "arms must be an array"]
+    problems: list[str] = list(legacy_problems)
+    counts = {arm_id: 0 for arm_id in PHASE_D_ARMS}
     for arm in arms:
-        if isinstance(arm, Mapping) and arm.get("arm_id") in PHASE_D_ARMS:
-            configured.add(arm["arm_id"])
-        else:
-            problems.append("arms contain an invalid arm_id")
-    for missing in sorted(referenced - configured):
-        problems.append(f"arm_map references an unconfigured arm: {missing}")
-    # Extra Phase D arms beyond the mapped three are allowed: the manifest
-    # must be able to express the full four-arm comparison (plain-agent /
-    # plain-agent-tool / mode-no-skill / mode-candidate-skill) even though
-    # the M5 vocabulary names only three arms.
+        if not isinstance(arm, Mapping):
+            problems.append("arms contain a non-object entry")
+            continue
+        arm_id = arm.get("arm_id")
+        if arm_id not in PHASE_D_ARMS:
+            problems.append(f"arms contain an invalid arm_id: {arm_id!r}")
+            continue
+        counts[str(arm_id)] += 1
+    for arm_id, count in counts.items():
+        if count == 0:
+            problems.append(f"canonical Phase D arm missing: {arm_id}")
+        elif count > 1:
+            problems.append(f"duplicate canonical Phase D arm: {arm_id}")
+    if len(arms) != len(PHASE_D_ARMS):
+        problems.append("arms must contain exactly the four canonical Phase D treatments")
     return problems
 
 
@@ -206,26 +206,75 @@ def check_evidence_classes(document: Mapping[str, Any]) -> list[str]:
 
 
 def check_frozen_conditions(document: Mapping[str, Any]) -> list[str]:
-    """Frozen comparison conditions must pin model pool per arm."""
+    """Require one exact, shared comparison envelope for every treatment."""
 
     problems: list[str] = []
-    arms = document.get("arms")
-    if not isinstance(arms, list):
-        return problems
-    pools = {
-        arm.get("model_pool_ref", {}).get("path")
-        if isinstance(arm.get("model_pool_ref"), Mapping)
-        else None
-        for arm in arms
-        if isinstance(arm, Mapping)
+    frozen = document.get("frozen_conditions")
+    if not isinstance(frozen, Mapping):
+        return ["frozen_conditions must be an object"]
+    task_refs = frozen.get("task_packet_refs")
+    if not isinstance(task_refs, list) or not task_refs:
+        problems.append("frozen_conditions.task_packet_refs must pin a non-empty Task set")
+    model = frozen.get("model")
+    if not isinstance(model, Mapping) or any(
+        not isinstance(model.get(key), str) or not model.get(key)
+        for key in ("slot_id", "provider_adapter", "model_id")
+    ):
+        problems.append("frozen_conditions.model must pin slot, adapter, and exact model_id")
+    elif not isinstance(model.get("pool_ref"), Mapping):
+        problems.append("frozen_conditions.model.pool_ref must pin the model pool file")
+    for key in ("host", "budget", "context"):
+        if not isinstance(frozen.get(key), Mapping):
+            problems.append(f"frozen_conditions.{key} must be an exact shared object")
+
+    controlled_keys = {
+        "task_packet_refs",
+        "model",
+        "model_binding",
+        "model_pool_ref",
+        "host",
+        "budget",
+        "context",
+        "context_policy_ref",
+        "data_policy_ref",
     }
-    pools.discard(None)
-    if len(pools) == 0:
-        problems.append("no arm pins a model_pool_ref; comparison is not frozen")
-    elif len(pools) > 1:
-        problems.append(
-            "arms pin different model pools; cross-arm comparison requires one frozen pool"
-        )
+    for arm in document.get("arms", []):
+        if not isinstance(arm, Mapping):
+            continue
+        for key in sorted(controlled_keys.intersection(arm)):
+            problems.append(
+                f"arm {arm.get('arm_id')!r} overrides shared controlled condition {key!r}"
+            )
+    return problems
+
+
+def check_treatment_bindings(document: Mapping[str, Any]) -> list[str]:
+    """Require exact Tool/Snapshot and candidate-Skill treatment bindings."""
+
+    problems: list[str] = []
+    for arm in document.get("arms", []):
+        if not isinstance(arm, Mapping):
+            continue
+        arm_id = arm.get("arm_id")
+        snapshots = arm.get("capability_snapshot_refs")
+        if arm_id in {"plain-agent-tool", "mode-no-skill"} and (
+            not isinstance(snapshots, list) or not snapshots
+        ):
+            problems.append(f"{arm_id} requires at least one frozen Capability Snapshot")
+        if arm_id == "plain-agent" and any(
+            key in arm for key in ("capability_snapshot_refs", "skill_binding", "skill_evaluation_ref")
+        ):
+            problems.append("plain-agent must not carry Tool/Snapshot or Skill treatment bindings")
+        if arm_id == "mode-candidate-skill":
+            binding = arm.get("skill_binding")
+            if not isinstance(binding, Mapping) or any(
+                not binding.get(key) for key in ("skill_id", "version", "content_hash", "source_ref")
+            ):
+                problems.append("mode-candidate-skill requires an exact skill_binding")
+            if not isinstance(arm.get("skill_evaluation_ref"), Mapping):
+                problems.append("mode-candidate-skill requires skill_evaluation_ref")
+        elif any(key in arm for key in ("skill_binding", "skill_evaluation_ref")):
+            problems.append(f"{arm_id} must not carry candidate-Skill treatment fields")
     return problems
 
 
@@ -234,7 +283,126 @@ def check_evaluation_manifest(document: Mapping[str, Any]) -> list[str]:
 
     return [
         *check_metric_set(document.get("metric_set")),
-        *check_arm_map_and_arms(document),
+        *check_treatment_arms(document),
         *check_frozen_conditions(document),
         *check_evidence_classes(document),
+        *check_treatment_bindings(document),
     ]
+
+
+def compile_baseline_plan(document: Mapping[str, Any]) -> dict[str, Any]:
+    """Compile a deterministic, non-executing four-arm baseline harness plan."""
+
+    from research_workbench.validation.schemas import SchemaCatalog
+
+    schema_errors = SchemaCatalog().validate("evaluation_manifest", document)
+    problems = check_evaluation_manifest(document)
+    if schema_errors or problems:
+        schema_messages = [f"{item.pointer}: {item.message}" for item in schema_errors]
+        raise ValueError(
+            "invalid evaluation manifest: " + "; ".join([*schema_messages, *problems])
+        )
+    frozen = copy.deepcopy(document["frozen_conditions"])
+    encoded = json.dumps(frozen, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    frozen_digest = hashlib.sha256(encoded).hexdigest()
+    by_id = {str(arm["arm_id"]): arm for arm in document["arms"]}
+    return {
+        "schema_version": "0.1.0",
+        "manifest_id": document["manifest_id"],
+        "status": "compiled-not-executed",
+        "frozen_conditions_sha256": frozen_digest,
+        "frozen_conditions": frozen,
+        "arms": [
+            {
+                "arm_id": arm_id,
+                "frozen_conditions_sha256": frozen_digest,
+                "treatment": copy.deepcopy(by_id[arm_id]),
+            }
+            for arm_id in PHASE_D_ARMS
+        ],
+        "limitations": [
+            "This plan freezes inputs and treatments; it does not authorize or report execution."
+        ],
+    }
+
+
+def check_reference_closure(root: str | Path, document: Mapping[str, Any]) -> list[str]:
+    """Bind treatment references to the frozen Task and exact Skill identity."""
+
+    problems: list[str] = []
+    frozen = document.get("frozen_conditions")
+    if not isinstance(frozen, Mapping):
+        return problems
+    task_paths = {
+        str(reference.get("path"))
+        for reference in frozen.get("task_packet_refs", [])
+        if isinstance(reference, Mapping) and reference.get("path")
+    }
+    model = frozen.get("model")
+    if isinstance(model, Mapping) and isinstance(model.get("pool_ref"), Mapping):
+        check = check_file_reference(root, FileReference.from_mapping(model["pool_ref"]))
+        if check.valid and check.resolved_path is not None:
+            pool = load_document(check.resolved_path)
+            slots = pool.get("slots", []) if isinstance(pool, Mapping) else []
+            selected = next(
+                (
+                    slot
+                    for slot in slots
+                    if isinstance(slot, Mapping) and slot.get("slot_id") == model.get("slot_id")
+                ),
+                None,
+            )
+            if selected is None:
+                problems.append(
+                    f"exact Model slot_id {model.get('slot_id')!r} is absent from pinned model pool"
+                )
+            elif selected.get("provider_adapter") != model.get("provider_adapter"):
+                problems.append(
+                    "exact Model provider_adapter does not match the selected pinned pool slot"
+                )
+    for arm in document.get("arms", []):
+        if not isinstance(arm, Mapping):
+            continue
+        for raw_ref in arm.get("capability_snapshot_refs", []):
+            if not isinstance(raw_ref, Mapping):
+                continue
+            check = check_file_reference(root, FileReference.from_mapping(raw_ref))
+            if not check.valid or check.resolved_path is None:
+                continue
+            snapshot = load_document(check.resolved_path)
+            snapshot_task = (
+                snapshot.get("task_ref", {}).get("document_path")
+                if isinstance(snapshot, Mapping)
+                else None
+            )
+            if snapshot_task not in task_paths:
+                problems.append(
+                    f"{arm.get('arm_id')} Capability Snapshot binds Task {snapshot_task!r}, "
+                    "outside frozen_conditions.task_packet_refs"
+                )
+
+        if arm.get("arm_id") != "mode-candidate-skill":
+            continue
+        binding = arm.get("skill_binding")
+        raw_evaluation_ref = arm.get("skill_evaluation_ref")
+        if not isinstance(binding, Mapping) or not isinstance(raw_evaluation_ref, Mapping):
+            continue
+        check = check_file_reference(root, FileReference.from_mapping(raw_evaluation_ref))
+        if not check.valid or check.resolved_path is None:
+            continue
+        evaluation = load_document(check.resolved_path)
+        if not isinstance(evaluation, Mapping):
+            problems.append("skill_evaluation_ref must resolve to an object")
+            continue
+        expected = {
+            "skill_id": evaluation.get("skill_id"),
+            "version": evaluation.get("skill_version"),
+            "content_hash": evaluation.get("skill_package_hash"),
+            "source_ref": evaluation.get("skill_source_ref"),
+        }
+        for key, value in expected.items():
+            if binding.get(key) != value:
+                problems.append(
+                    f"mode-candidate-skill binding {key} does not match pinned Skill Evaluation"
+                )
+    return problems

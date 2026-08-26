@@ -246,25 +246,42 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
     elif kind == "source_admission":
         extra_risks.extend(check_source_admission(root, document))
     elif kind == "evaluation_manifest":
+        from research_workbench.evaluation.manifest import check_reference_closure
+
         frozen = document.get("frozen_conditions")
         if isinstance(frozen, Mapping):
-            for key in ("context_policy_ref", "data_policy_ref"):
-                reference = frozen.get(key)
-                if isinstance(reference, Mapping):
-                    references += (FileReference.from_mapping(reference),)
+            for task_ref in frozen.get("task_packet_refs", []):
+                if isinstance(task_ref, Mapping):
+                    references += (FileReference.from_mapping(task_ref),)
+            model = frozen.get("model")
+            if isinstance(model, Mapping) and isinstance(model.get("pool_ref"), Mapping):
+                references += (FileReference.from_mapping(model["pool_ref"]),)
+            context = frozen.get("context")
+            if isinstance(context, Mapping):
+                for key in ("policy_ref", "data_policy_ref"):
+                    reference = context.get(key)
+                    if isinstance(reference, Mapping):
+                        references += (FileReference.from_mapping(reference),)
+                for reference in context.get("initial_context_refs", []):
+                    if isinstance(reference, Mapping):
+                        references += (FileReference.from_mapping(reference),)
         for arm in document.get("arms", []):
             if not isinstance(arm, Mapping):
                 continue
-            pool_ref = arm.get("model_pool_ref")
-            if isinstance(pool_ref, Mapping):
-                references += (FileReference.from_mapping(pool_ref),)
-            for task_ref in arm.get("task_packet_refs", []):
-                if isinstance(task_ref, Mapping):
-                    references += (FileReference.from_mapping(task_ref),)
-            for key in ("capability_snapshot_ref", "skill_evaluation_ref"):
+            for reference in arm.get("capability_snapshot_refs", []):
+                if isinstance(reference, Mapping):
+                    references += (FileReference.from_mapping(reference),)
+            for key in ("skill_evaluation_ref",):
                 reference = arm.get(key)
                 if isinstance(reference, Mapping):
                     references += (FileReference.from_mapping(reference),)
+            binding = arm.get("skill_binding")
+            if isinstance(binding, Mapping) and isinstance(binding.get("source_ref"), Mapping):
+                references += (FileReference.from_mapping(binding["source_ref"]),)
+        for problem in check_reference_closure(root, document):
+            extra_risks.append(
+                ContractRisk("EVAL-MANIFEST-INVALID", RiskLevel.BLOCK, problem)
+            )
     risks = check_references(root, references)
     risks.extend(extra_risks)
     for reference in references:
@@ -375,6 +392,15 @@ def _eval_check(args: argparse.Namespace) -> int:
     exit_code = _print_risks(reference_risks)
     print("metric set: fixed vocabulary verified (13 metrics)")
     return exit_code
+
+
+def _eval_plan(args: argparse.Namespace) -> int:
+    document = _load_valid(args.manifest, "evaluation_manifest")
+    from research_workbench.evaluation.manifest import compile_baseline_plan
+
+    plan = compile_baseline_plan(document)
+    print(json.dumps(plan, ensure_ascii=False, indent=2, sort_keys=True))
+    return 0
 
 
 def _validate(args: argparse.Namespace) -> int:
@@ -1479,6 +1505,11 @@ def build_parser() -> argparse.ArgumentParser:
     eval_check.add_argument("manifest")
     eval_check.add_argument("--root", default=".")
     eval_check.set_defaults(handler=_eval_check)
+    eval_plan = evaluation_subparsers.add_parser(
+        "plan", help="compile the non-executing deterministic four-arm baseline plan"
+    )
+    eval_plan.add_argument("manifest")
+    eval_plan.set_defaults(handler=_eval_plan)
 
     execute = subparsers.add_parser("execute", help="verify a committed execution archive")
     execute_subparsers = execute.add_subparsers(dest="execute_command", required=True)
