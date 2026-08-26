@@ -30,15 +30,26 @@ def plain(value):
 
 
 class RecordingDriver:
-    def __init__(self, root: Path, binding: object, result: ExecutionDriverResult | None = None):
+    def __init__(
+        self,
+        root: Path,
+        binding: object,
+        result: ExecutionDriverResult | None = None,
+        supply_ref: str = "supply-no-skill-contract-check@1.0.0",
+    ):
         self.root = root
         self._binding = plain(binding)
         self.result = result
+        self._supply_ref = supply_ref
         self.calls = 0
 
     @property
     def binding(self):
         return self._binding
+
+    @property
+    def selected_supply_report_ref(self):
+        return self._supply_ref
 
     def execute(self, request):
         self.calls += 1
@@ -50,6 +61,7 @@ class RecordingDriver:
         return ExecutionDriverResult(
             status="completed",
             actual_binding=self._binding,
+            actual_supply_report_ref=self._supply_ref,
             turns=1,
             output_tokens=64,
             elapsed_seconds=0.5,
@@ -153,6 +165,7 @@ class ExecutionHostTests(unittest.TestCase):
     def test_post_call_binding_boundary_budget_and_output_drift_fail_closed(self) -> None:
         cases = [
             ("binding", "HOST-ACTUAL-BINDING-DRIFT"),
+            ("supply", "HOST-ACTUAL-SUPPLY-DRIFT"),
             ("egress", "HOST-DATA-EGRESS-VIOLATION"),
             ("side-effect", "HOST-SIDE-EFFECT-VIOLATION"),
             ("budget", "HOST-BUDGET-VIOLATION"),
@@ -191,6 +204,11 @@ class ExecutionHostTests(unittest.TestCase):
                 result = ExecutionDriverResult(
                     status="completed",
                     actual_binding=actual_binding,
+                    actual_supply_report_ref=(
+                        "supply-other@1.0.0"
+                        if mutation == "supply"
+                        else "supply-no-skill-contract-check@1.0.0"
+                    ),
                     turns=5 if mutation == "budget" else 1,
                     data_egress_payloads=("project-context",) if mutation == "egress" else (),
                     side_effects=("undeclared-effect",) if mutation == "side-effect" else (),
@@ -201,7 +219,7 @@ class ExecutionHostTests(unittest.TestCase):
                 self.assertEqual(1, driver.calls)
                 self.assertEqual("failed", report["status"])
                 self.assertEqual(expected_code, report["diagnostic"]["code"])
-                if mutation == "binding":
+                if mutation in {"binding", "supply"}:
                     self.assertEqual("re-resolution", report["diagnostic"]["recommended_next"])
 
     def test_driver_exception_is_one_call_content_free_capture_gap_not_recovery(self) -> None:

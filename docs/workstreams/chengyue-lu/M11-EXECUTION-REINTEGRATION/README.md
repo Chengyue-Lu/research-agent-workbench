@@ -91,6 +91,20 @@ M11-001 Runtime Bundle/Profile
 - execution completion 不等于 Claim/Human acceptance；
 - legacy Receipt 仍可解释；不伪造 Skill Assignment。
 
+实现证据（本阶段第四层）：
+
+- `generic_execution_receipt`：exact View/Host/Trace/Artifact/validation closed set，completion claim 固定为
+  `execution-only`，无 Skill Assignment/Claim/Human/Topic 5 字段；
+- deterministic replay：Receipt refs 全部重载、View 重算、Trace validation、validation subject exact set；
+- `execution_core_gate`：独立 no-Skill 与 direct-tool bounded vertical fixtures 均从 Bundle→View→Host→
+  Trace/Artifact/Validation→Receipt replay 闭合；
+- legacy `execution_receipt` schema/model/checked-in fixture 保持不变；
+- negative tests：validation/Trace pin drift、Skill/Claim/Human/Recovery 字段注入、actual Supply drift；
+- focused M11/governance tests：`Ran 91 tests ... OK`；
+- repository validation：`validated=154 errors=0 warnings=0`；
+- full unit suite：`Ran 453 tests ... OK (skipped=3)`；三个 skip 均为当前环境未安装 Hypothesis 的既有可选测试；
+- 结论：M11-004 验收闭合，状态 `READY→DONE`；M11-001～004 dependency chain 全部完成，M11-005/006 仍 PARKED。
+
 ## 明确非目标
 
 - M11-005/006 Skill Runtime Extension；
@@ -102,6 +116,6 @@ M11-001 Runtime Bundle/Profile
 
 ## 验证与合并 Gate
 
-每层至少执行 focused unit tests、repository validation、`git diff --check`。最终执行 Python 3.11/3.13 CI、
-coverage、wheel/clean-install，并由两位具名 owner 完成 cross-owner R2 review。只有全部四项 Task-specific
-evidence 成立后，才在同一 PR 中按 dependency DAG 置 DONE；任一层失败则后继层保持未实现并停止。
+每层已执行 focused unit tests、repository validation、`git diff --check`。M11-001～004 已按依赖分别形成
+独立 commit 与 task-specific evidence；最终仍须等待 Python 3.11/3.13 CI、coverage、wheel/clean-install，并
+由两位具名 owner 完成 cross-owner R2 review 后才可合并。

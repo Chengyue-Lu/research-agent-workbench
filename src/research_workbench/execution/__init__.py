@@ -29,6 +29,14 @@ from research_workbench.execution.host import (
     execute_frozen_view,
     load_resolved_execution_view,
 )
+from research_workbench.execution.generic_closeout import (
+    CloseoutPin,
+    GenericCloseoutValidationError,
+    ValidatedGenericReceipt,
+    build_execution_core_gate,
+    build_generic_execution_receipt,
+    validate_generic_execution_receipt,
+)
 from research_workbench.execution.recovery import (
     RecoveryPreparation,
     RecoverySeed,
@@ -62,5 +70,11 @@ __all__ = [
     "ValidatedExecutionView",
     "execute_frozen_view",
     "load_resolved_execution_view",
+    "CloseoutPin",
+    "GenericCloseoutValidationError",
+    "ValidatedGenericReceipt",
+    "build_execution_core_gate",
+    "build_generic_execution_receipt",
+    "validate_generic_execution_receipt",
     "verify_execution_archive",
 ]

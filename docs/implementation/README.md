@@ -15,6 +15,7 @@
 - [Runtime Bundle / Consumer Profile](RUNTIME_BUNDLE_PROFILE.md)
 - [Resolved Execution View Core](RESOLVED_EXECUTION_VIEW.md)
 - [Thin Execution Host](THIN_EXECUTION_HOST.md)
+- [Generic Execution Closeout and M11 Core Gate](GENERIC_EXECUTION_CLOSEOUT.md)
 - [Research Mode v0.1 to v0.2 migration](RESEARCH_MODE_MIGRATION.md)
 - [Decision Authority Matrix and Authority Rule Eligibility](DECISION_AUTHORITY.md)
 - [File-authoritative Trace Core](TRACE_CORE.md)

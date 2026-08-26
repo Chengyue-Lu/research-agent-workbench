@@ -40,6 +40,7 @@ class FrozenExecutionRequest:
 class ExecutionDriverResult:
     status: str
     actual_binding: Mapping[str, Any]
+    actual_supply_report_ref: str
     turns: int = 0
     output_tokens: int = 0
     elapsed_seconds: float = 0.0
@@ -58,6 +59,9 @@ class ExecutionDriverResult:
 class FrozenExecutionDriver(Protocol):
     @property
     def binding(self) -> Mapping[str, Any]: ...
+
+    @property
+    def selected_supply_report_ref(self) -> str: ...
 
     def execute(self, request: FrozenExecutionRequest) -> ExecutionDriverResult: ...
 
@@ -213,6 +217,7 @@ def _base_report(
     completed_at: str,
     status: str,
     actual_binding: Mapping[str, Any],
+    actual_supply_report_ref: str,
     facts: Mapping[str, Any],
     artifacts: Sequence[Mapping[str, str]],
 ) -> dict[str, Any]:
@@ -225,6 +230,7 @@ def _base_report(
         "started_at": started_at,
         "completed_at": completed_at,
         "status": status,
+        "actual_supply_report_ref": actual_supply_report_ref,
         "actual_binding": _plain(actual_binding),
         "actual_facts": _plain(facts),
         "artifacts": _plain(artifacts),
@@ -312,6 +318,8 @@ def _result_violation(view: Mapping[str, Any], result: ExecutionDriverResult) ->
         return "HOST-DRIVER-STATUS-INVALID"
     if result.actual_binding != view["binding"]:
         return "HOST-ACTUAL-BINDING-DRIFT"
+    if result.actual_supply_report_ref != view["selected_supply_report_ref"]["ref"]:
+        return "HOST-ACTUAL-SUPPLY-DRIFT"
     if not result.facts_complete or result.capture_gaps:
         return "HOST-FACT-CAPTURE-GAP"
     constraints = view["effective_constraints"]
@@ -363,8 +371,10 @@ def execute_frozen_view(
     if _timestamp(completed_at, "completed_at") < _timestamp(started_at, "started_at"):
         raise ExecutionHostValidationError("completed_at precedes started_at")
     declared_binding = _plain(driver.binding)
+    declared_supply_ref = driver.selected_supply_report_ref
     expected_binding = _plain(view.document["binding"])
-    if declared_binding != expected_binding:
+    expected_supply_ref = str(view.document["selected_supply_report_ref"]["ref"])
+    if declared_binding != expected_binding or declared_supply_ref != expected_supply_ref:
         report = _base_report(
             view,
             report_id=report_id,
@@ -373,6 +383,7 @@ def execute_frozen_view(
             completed_at=completed_at,
             status="blocked",
             actual_binding=declared_binding,
+            actual_supply_report_ref=declared_supply_ref,
             facts=_zero_facts(complete=True),
             artifacts=(),
         )
@@ -396,6 +407,7 @@ def execute_frozen_view(
                 completed_at=completed_at,
                 status="failed",
                 actual_binding=declared_binding,
+                actual_supply_report_ref=declared_supply_ref,
                 facts=_zero_facts(complete=False, capture_gaps=("driver-exception",)),
                 artifacts=(),
             )
@@ -441,6 +453,7 @@ def execute_frozen_view(
                 completed_at=completed_at,
                 status=status,
                 actual_binding=result.actual_binding,
+                actual_supply_report_ref=result.actual_supply_report_ref,
                 facts=facts,
                 artifacts=result.artifacts,
             )
@@ -449,6 +462,7 @@ def execute_frozen_view(
                 code = proposed_code if _DIAGNOSTIC_CODE.fullmatch(proposed_code) else "HOST-DRIVER-FAILED"
                 re_resolution = result.re_resolution_required or code in {
                     "HOST-ACTUAL-BINDING-DRIFT",
+                    "HOST-ACTUAL-SUPPLY-DRIFT",
                     "HOST-BINDING-MISMATCH",
                 }
                 _add_diagnostic(

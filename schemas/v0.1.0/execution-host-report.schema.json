@@ -14,6 +14,7 @@
     "started_at",
     "completed_at",
     "status",
+    "actual_supply_report_ref",
     "actual_binding",
     "actual_facts",
     "artifacts",
@@ -28,6 +29,7 @@
     "started_at": { "type": "string", "format": "date-time" },
     "completed_at": { "type": "string", "format": "date-time" },
     "status": { "enum": ["completed", "failed", "blocked"] },
+    "actual_supply_report_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "actual_binding": {
       "type": "object",
       "required": ["provider", "adapter", "model", "runtime", "host"],

@@ -172,7 +172,9 @@ SCHEMA_KINDS = {
     "runtime_bundle_manifest",
     "execution_binding",
     "execution_host_report",
+    "execution_core_gate",
     "execution_policy",
+    "generic_execution_receipt",
     "resolved_execution_view",
     "agent_profile",
     "skill_manifest",
@@ -249,6 +251,10 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "execution_binding"
     if "report_id" in document and "actual_binding" in document and "actual_facts" in document:
         return "execution_host_report"
+    if document.get("scope") == "m11-core" and "gate_id" in document and "paths" in document:
+        return "execution_core_gate"
+    if "receipt_id" in document and "host_report_ref" in document and "view_ref" in document:
+        return "generic_execution_receipt"
     if "policy_id" in document and "policy_kind" in document and "permission_ceiling" in document:
         return "execution_policy"
     if "view_id" in document and "execution_binding_ref" in document and "effective_constraints" in document:
