@@ -143,6 +143,7 @@ SCHEMA_KINDS = {
     "context_snapshot",
     "execution_receipt",
     "research_object",
+    "evaluation_manifest",
     "research_attempt_lineage",
     "research_failure",
     "research_state",
@@ -1743,6 +1744,18 @@ def _validate_research_mode_migrations(
     return issues
 
 
+def _validate_evaluation_manifests(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
+    from research_workbench.evaluation.manifest import check_evaluation_manifest
+
+    issues: list[ValidationIssue] = []
+    for path, document in documents.items():
+        if not isinstance(document, Mapping):
+            continue
+        if infer_document_kind(document) != "evaluation_manifest":
+            continue
+        for problem in check_evaluation_manifest(document):
+            issues.append(ValidationIssue(path, "EVAL-MANIFEST-INVALID", problem))
+    return issues
 def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     source_ids: set[str] = set()
@@ -1787,6 +1800,7 @@ def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     issues.extend(_validate_research_mode_migrations(documents))
     issues.extend(validate_decision_authority(documents))
     issues.extend(validate_research_state_set(documents))
+    issues.extend(_validate_evaluation_manifests(documents))
     return issues
 
 

@@ -45,6 +45,7 @@ class VersionedSchemaTests(unittest.TestCase):
                 "deterministic_check_report",
                 "decision_authority_matrix",
                 "authority_rule_eligibility",
+                "evaluation_manifest",
                 "execution_receipt",
                 "execution_binding",
                 "execution_trace_fact",

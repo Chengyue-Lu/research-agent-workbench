@@ -1,0 +1,135 @@
+schema_version: 0.1.0
+manifest_id: EVAL-MANIFEST-M5-003-001
+status: planned
+arm_map:
+  single-agent: plain-agent
+  lightweight: plain-agent-tool
+  multi-agent: mode-candidate-skill
+arms:
+- arm_id: plain-agent
+  task_packet_refs:
+  - path: examples/quickstart/task-no-skill.yaml
+    sha256: 62920ee816005668346067bbb397ef036a2258a555a6c057e010be98c74b51a1
+  model_pool_ref:
+    path: registry/models/pool.example.yaml
+    sha256: f36099d3a69ffaa4e67a5fe87911d0fc3ec92aae9638904c7f623ebd721ebd49
+  budget:
+    max_turns: 8
+    max_output_tokens: 2000
+    max_parallel: 0
+- arm_id: plain-agent-tool
+  task_packet_refs:
+  - path: examples/quickstart/task-no-skill.yaml
+    sha256: 62920ee816005668346067bbb397ef036a2258a555a6c057e010be98c74b51a1
+  model_pool_ref:
+    path: registry/models/pool.example.yaml
+    sha256: f36099d3a69ffaa4e67a5fe87911d0fc3ec92aae9638904c7f623ebd721ebd49
+  budget:
+    max_turns: 8
+    max_output_tokens: 2000
+    max_parallel: 1
+- arm_id: mode-no-skill
+  task_packet_refs:
+  - path: examples/quickstart/task-no-skill.yaml
+    sha256: 62920ee816005668346067bbb397ef036a2258a555a6c057e010be98c74b51a1
+  model_pool_ref:
+    path: registry/models/pool.example.yaml
+    sha256: f36099d3a69ffaa4e67a5fe87911d0fc3ec92aae9638904c7f623ebd721ebd49
+  budget:
+    max_turns: 8
+    max_output_tokens: 2000
+    max_parallel: 1
+- arm_id: mode-candidate-skill
+  task_packet_refs:
+  - path: examples/quickstart/task-no-skill.yaml
+    sha256: 62920ee816005668346067bbb397ef036a2258a555a6c057e010be98c74b51a1
+  model_pool_ref:
+    path: registry/models/pool.example.yaml
+    sha256: f36099d3a69ffaa4e67a5fe87911d0fc3ec92aae9638904c7f623ebd721ebd49
+  skill_evaluation_ref:
+    path: examples/evals/claim-preserving-rewrite/fixture-evaluation.yaml
+    sha256: a4293ab1ddc2f762c2579372f849d96c6084ec42ebc3052b813277f58e99d89c
+  budget:
+    max_turns: 8
+    max_output_tokens: 2000
+    max_parallel: 2
+metric_set:
+- metric_id: method-violation
+  definition: Count of steps that violate the frozen Method Resolution obligations.
+  unit: count
+  direction: lower-is-better
+- metric_id: claim-overreach
+  definition: Count of claims stated beyond the allowed Claim ceiling.
+  unit: count
+  direction: lower-is-better
+- metric_id: provenance-error
+  definition: Count of outputs whose provenance chain fails deterministic checks.
+  unit: count
+  direction: lower-is-better
+- metric_id: counterevidence-omission
+  definition: Count of known counter-evidence items dropped from outputs.
+  unit: count
+  direction: lower-is-better
+- metric_id: human-correction-distance
+  definition: Number of human corrections needed before an output is acceptable.
+  unit: count
+  direction: lower-is-better
+- metric_id: omission-rate
+  definition: Share of required facts the arm failed to surface (audit omission metric).
+  unit: ratio
+  direction: lower-is-better
+- metric_id: rework-count
+  definition: Number of regenerated or redone work units (audit rework metric).
+  unit: count
+  direction: lower-is-better
+- metric_id: lookup-count
+  definition: Number of re-reads of already-delivered material (audit lookup metric).
+  unit: count
+  direction: lower-is-better
+- metric_id: h2-distortion-rate
+  definition: Share of sampled compact handoffs with semantic distortion (H2 audit
+    metric).
+  unit: ratio
+  direction: lower-is-better
+- metric_id: cascade-rate
+  definition: Share of errors that propagate into later work units (audit cascade
+    metric).
+  unit: ratio
+  direction: lower-is-better
+- metric_id: context-loaded
+  definition: Total context characters or tokens loaded by the arm.
+  unit: characters-or-tokens
+  direction: lower-is-better
+- metric_id: cost
+  definition: Monetary cost of the arm run.
+  unit: currency
+  direction: lower-is-better
+- metric_id: completion-time
+  definition: Wall-clock completion time of the arm run.
+  unit: minutes
+  direction: lower-is-better
+frozen_conditions:
+  host: windows-fixture
+  context_policy_ref:
+    path: examples/project-protocol.yaml
+    sha256: ec82e730b020c9e78ed9c00985cc37cac867e954c81f8ce8220a1021bdb0c209
+  data_policy_ref:
+    path: examples/project-protocol.yaml
+    sha256: ec82e730b020c9e78ed9c00985cc37cac867e954c81f8ce8220a1021bdb0c209
+  evidence_classes:
+  - deterministic-check-report
+  - execution-receipt
+  - claim-object-with-counterevidence
+  - run-manifest
+  - human-correction-log
+  notes:
+  - 'fixture-only manifest: no live run is authorized or claimed'
+  - single frozen model pool across all four arms
+  - 'mode-no-skill arm is configured but unmapped: the manifest expresses the full
+    Phase D four-arm comparison'
+limitations:
+- structural fixture; metrics vocabulary fixed, no results recorded
+- lightweight arm placement follows the Method Resolution of the sample task
+metadata:
+  fixture: true
+  m5_task: M5-003

@@ -245,6 +245,26 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
             path_only.append(str(admission["decision_ref"]))
     elif kind == "source_admission":
         extra_risks.extend(check_source_admission(root, document))
+    elif kind == "evaluation_manifest":
+        frozen = document.get("frozen_conditions")
+        if isinstance(frozen, Mapping):
+            for key in ("context_policy_ref", "data_policy_ref"):
+                reference = frozen.get(key)
+                if isinstance(reference, Mapping):
+                    references += (FileReference.from_mapping(reference),)
+        for arm in document.get("arms", []):
+            if not isinstance(arm, Mapping):
+                continue
+            pool_ref = arm.get("model_pool_ref")
+            if isinstance(pool_ref, Mapping):
+                references += (FileReference.from_mapping(pool_ref),)
+            for task_ref in arm.get("task_packet_refs", []):
+                if isinstance(task_ref, Mapping):
+                    references += (FileReference.from_mapping(task_ref),)
+            for key in ("capability_snapshot_ref", "skill_evaluation_ref"):
+                reference = arm.get(key)
+                if isinstance(reference, Mapping):
+                    references += (FileReference.from_mapping(reference),)
     risks = check_references(root, references)
     risks.extend(extra_risks)
     for reference in references:
@@ -334,6 +354,27 @@ def _source_check(args: argparse.Namespace) -> int:
     if errors:
         return 1
     return _print_risks(check_source_admission(Path(args.root).resolve(), document))
+
+
+def _eval_check(args: argparse.Namespace) -> int:
+    document = load_document(args.manifest)
+    if not isinstance(document, Mapping):
+        print("ERROR   DOCUMENT-INVALID              evaluation manifest must be an object")
+        return 1
+    errors = SchemaCatalog().validate("evaluation_manifest", document)
+    for error in errors:
+        print(f"ERROR   SCHEMA-INVALID               {error.pointer}: {error.message}")
+    from research_workbench.evaluation.manifest import check_evaluation_manifest
+
+    problems = check_evaluation_manifest(document)
+    for problem in problems:
+        print(f"ERROR   EVAL-MANIFEST-INVALID        {problem}")
+    if errors or problems:
+        return 1
+    reference_risks = _document_reference_risks(document, Path(args.root).resolve())
+    exit_code = _print_risks(reference_risks)
+    print("metric set: fixed vocabulary verified (13 metrics)")
+    return exit_code
 
 
 def _validate(args: argparse.Namespace) -> int:
@@ -1429,6 +1470,15 @@ def build_parser() -> argparse.ArgumentParser:
     trace_validate.add_argument("--attempt", required=True, help="Attempt directory or INDEX.yaml")
     trace_validate.add_argument("--root", default=".")
     trace_validate.set_defaults(handler=_trace_validate)
+
+    evaluation = subparsers.add_parser("eval", help="inspect comparison evaluation manifests")
+    evaluation_subparsers = evaluation.add_subparsers(dest="eval_command", required=True)
+    eval_check = evaluation_subparsers.add_parser(
+        "check", help="verify a fixed-metric evaluation manifest and its frozen arms"
+    )
+    eval_check.add_argument("manifest")
+    eval_check.add_argument("--root", default=".")
+    eval_check.set_defaults(handler=_eval_check)
 
     execute = subparsers.add_parser("execute", help="verify a committed execution archive")
     execute_subparsers = execute.add_subparsers(dest="execute_command", required=True)
