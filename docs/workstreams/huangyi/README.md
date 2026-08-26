@@ -14,6 +14,8 @@ owner：黄毅（GitHub 主名 `let778750-cpu`；昵称/界面名 `huangyi855`�
   开源 Agent Harness 调研、Codex 只读协议验证与候选研究方向（`RESEARCH-HARNESS-001`）。
 - [`M10-RESEARCH-STATE/`](M10-RESEARCH-STATE/README.md)：
   M10 Phase C State、Attempt/Failure、Method Trace 与 bounded Gate 的逐层实现和 R2 审查证据。
+- [`M4-ARTIFACTS-PROVENANCE/`](M4-ARTIFACTS-PROVENANCE/README.md)：
+  M4-001 bounded source-admission workstream；不预先约束后继 M4 Task 的 PR 集成粒度。
 
 ## 文件生命周期
 

@@ -146,6 +146,7 @@ SCHEMA_KINDS = {
     "research_attempt_lineage",
     "research_failure",
     "research_state",
+    "source_admission",
 }
 
 

@@ -85,6 +85,7 @@ class VersionedSchemaTests(unittest.TestCase):
                 "skill_lifecycle_record",
                 "skill_need",
                 "skill_need_index",
+                "source_admission",
                 "task_packet",
             },
             set(catalog.document_kinds),

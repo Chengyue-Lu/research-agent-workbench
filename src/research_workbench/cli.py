@@ -21,6 +21,13 @@ from research_workbench.adapters.models import (
     run_provider_conformance,
 )
 from research_workbench.artifacts.integrity import hash_directory, hash_file, resolve_within_root
+from research_workbench.artifacts.admission import (
+    build_admission_mapping,
+    check_source_admission,
+    inbox_citation_risk,
+    path_cites_inbox,
+    sidecar_path_for,
+)
 from research_workbench.capability import (
     AcceptedSkillRegistry,
     AgentProfile,
@@ -235,10 +242,18 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
         admission = document.get("admission")
         if isinstance(admission, Mapping) and isinstance(admission.get("decision_ref"), str):
             path_only.append(str(admission["decision_ref"]))
+    elif kind == "source_admission":
+        extra_risks.extend(check_source_admission(root, document))
     risks = check_references(root, references)
     risks.extend(extra_risks)
+    for reference in references:
+        if path_cites_inbox(reference.path):
+            risks.append(inbox_citation_risk(reference.path))
     for relative in path_only:
         resolved = resolve_within_root(root, relative)
+        if path_cites_inbox(relative):
+            risks.append(inbox_citation_risk(relative))
+            continue
         if resolved is None:
             risks.append(ContractRisk("REF-OUTSIDE-ROOT", RiskLevel.BLOCK, f"reference escapes root: {relative}"))
         elif not resolved.is_file():
@@ -255,6 +270,59 @@ def _load_valid(path: str | Path, kind: str) -> Mapping[str, Any]:
         rendered = "; ".join(f"{error.pointer}: {error.message}" for error in errors[:5])
         raise ValueError(f"{path}: schema validation failed: {rendered}")
     return document
+
+
+def _source_admit(args: argparse.Namespace) -> int:
+    root = Path(args.root).resolve()
+    source_path = Path(args.file)
+    if not source_path.is_file():
+        raise FileNotFoundError(source_path)
+    content = source_path.read_bytes()
+    admitted_path = args.admitted_path or f"sources/raw/{source_path.name}"
+    mapping = build_admission_mapping(
+        original_filename=source_path.name,
+        admitted_path=admitted_path,
+        content=content,
+        origin={"uri": args.origin_uri, "doi": args.doi, "device": args.device},
+        acquired_at=args.acquired_at,
+        operator=args.operator,
+        license_or_data_use=args.license,
+        parser_name=args.parser_name,
+        parser_version=args.parser_version,
+        sensitivity=args.sensitivity,
+        egress_restriction=args.egress_restriction,
+        admission_id=args.id,
+    )
+    sidecar = sidecar_path_for(mapping["admitted_path"])
+    if args.execute:
+        target = resolve_within_root(root, mapping["admitted_path"])
+        sidecar_target = resolve_within_root(root, sidecar)
+        if target is None or sidecar_target is None:
+            raise ValueError(f"admitted_path escapes root: {mapping['admitted_path']}")
+        if target.exists() or sidecar_target.exists():
+            raise FileExistsError("refusing to overwrite admitted bytes or provenance sidecar")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(content)
+        _write_yaml(sidecar_target, mapping)
+        print(f"admitted: {mapping['admitted_path']}")
+        print(f"sidecar:  {sidecar}")
+    else:
+        print(yaml.safe_dump(mapping, sort_keys=False, allow_unicode=True), end="")
+        print(f"(dry run; pass --execute to copy bytes and write {sidecar})")
+    return 0
+
+
+def _source_check(args: argparse.Namespace) -> int:
+    document = load_document(args.admission)
+    if not isinstance(document, Mapping):
+        print("ERROR   DOCUMENT-INVALID              admission document must be an object")
+        return 1
+    errors = SchemaCatalog().validate("source_admission", document)
+    for error in errors:
+        print(f"ERROR   SCHEMA-INVALID               {error.pointer}: {error.message}")
+    if errors:
+        return 1
+    return _print_risks(check_source_admission(Path(args.root).resolve(), document))
 
 
 def _validate(args: argparse.Namespace) -> int:
@@ -1313,6 +1381,36 @@ def build_parser() -> argparse.ArgumentParser:
     claim_trace.add_argument("claim")
     claim_trace.add_argument("--protocol")
     claim_trace.set_defaults(handler=_claim_trace)
+
+    source = subparsers.add_parser("source", help="admit raw sources with provenance sidecars")
+    source_subparsers = source.add_subparsers(dest="source_command", required=True)
+    source_admit = source_subparsers.add_parser(
+        "admit", help="build (and optionally execute) a source admission sidecar"
+    )
+    source_admit.add_argument("file", help="bytes to admit, e.g. an inbox file")
+    source_admit.add_argument("--root", default=".")
+    source_admit.add_argument("--admitted-path", help="target path under sources/raw/")
+    source_admit.add_argument("--origin-uri")
+    source_admit.add_argument("--doi")
+    source_admit.add_argument("--device")
+    source_admit.add_argument("--acquired-at", required=True, help="explicit ISO-8601 timestamp")
+    source_admit.add_argument("--operator", required=True, help="named accountable operator")
+    source_admit.add_argument("--license", required=True, help="license or data-use boundary")
+    source_admit.add_argument("--parser-name", required=True)
+    source_admit.add_argument("--parser-version", required=True)
+    source_admit.add_argument("--sensitivity", required=True)
+    source_admit.add_argument("--egress-restriction", required=True)
+    source_admit.add_argument("--id", help="explicit admission_id; defaults to a hash-derived id")
+    source_admit.add_argument(
+        "--execute",
+        action="store_true",
+        help="copy the bytes into sources/raw and write the sidecar; default is a dry run",
+    )
+    source_admit.set_defaults(handler=_source_admit)
+    source_check = source_subparsers.add_parser("check", help="verify an admission sidecar")
+    source_check.add_argument("admission")
+    source_check.add_argument("--root", default=".")
+    source_check.set_defaults(handler=_source_check)
 
     trace = subparsers.add_parser("trace", help="validate a file-authoritative Attempt trace")
     trace_subparsers = trace.add_subparsers(dest="trace_command", required=True)
