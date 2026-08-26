@@ -26,6 +26,7 @@ Protocol、两级 Snapshot 与 migration/replacement 结构契约已经实现。
 | Protocol Profile | 两个有界 PRISMA/V&V profile 只增加 method obligation 与 Gate/evidence expectation，不复制 Mode、不绑定 Skill/Tool/Provider，也不建立全局研究 DAG |
 | Capability supply / Snapshot | typed Report→Resolution→Snapshot 拒绝自报 evidence status、artifact/identity/version/capability/result 漂移和 routing/fallback；structural Snapshot 不是执行输入，Snapshot 只冻结 Supply-side permission/data-egress/side-effect facts，不生成最终权限、Provider binding 或 Authority eligibility |
 | Phase B Gate | hash-bound Gate 固定 Task/Mode/Action/Method/Requirement、A/B structural Snapshot 与两类 migration；供给替换保持三类 Supply boundary facts，不赋予 Runtime Method authority |
+| Phase C candidate（M10/M3-009） | bounded candidate：exact-ref Research State composition（supersede lineage/staleness/pin 闭合）、Research Failure（learned/revisit 强制，与 execution failure 分离）、provenance-bearing Human Decision Record、ref-only Method Trace v0.1（六族事件+显式 actual-binding gap）；两个 bounded case 的 staged 新进程 fresh-actor gate（known-failure 回避、forbidden-read 排除、pin 漂移 fail-closed）；最终表示与 Topic 5 解冻仍待 R2（[契约](implementation/PHASE_C_RESEARCH_STATE_CONTRACT.md)） |
 | 确定性验证 | Schema、引用、哈希、权限交集、Handoff lock、Claim 支持关系 |
 | Task 解析 | Task + Agent Profile + 显式或 Registry Skill 的冻结 Assignment、权限交集与版本锁 |
 | Legacy Skill 兼容 | accepted Registry 的 active / legacy / deprecated 历史选择边界与精确版本继续可验证；新绑定使用 lifecycle v2 eligibility |
