@@ -42,6 +42,7 @@ from research_workbench.validation.document_core import (
 from research_workbench.validation.document_kinds import infer_document_kind
 from research_workbench.validation.method_resolution_registry import validate_method_resolutions
 from research_workbench.validation.phase_b_gate import validate_phase_b_evolution_gates
+from research_workbench.validation.research_state_registry import validate_research_state_set
 
 
 SHA256_RE = re.compile(r"^[0-9a-fA-F]{64}$")
@@ -139,6 +140,7 @@ SCHEMA_KINDS = {
     "context_snapshot",
     "execution_receipt",
     "research_object",
+    "research_state",
 }
 
 
@@ -1778,6 +1780,7 @@ def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     issues.extend(validate_phase_b_evolution_gates(documents))
     issues.extend(_validate_research_mode_migrations(documents))
     issues.extend(validate_decision_authority(documents))
+    issues.extend(validate_research_state_set(documents))
     return issues
 
 

@@ -18,6 +18,7 @@
 - [Generic Execution Closeout and M11 Core Gate](GENERIC_EXECUTION_CLOSEOUT.md)
 - [Research Mode v0.1 to v0.2 migration](RESEARCH_MODE_MIGRATION.md)
 - [Decision Authority Matrix and Authority Rule Eligibility](DECISION_AUTHORITY.md)
+- [Durable Research State composition candidate (M10-001)](RESEARCH_STATE_CANDIDATE_CONTRACT.md)
 - [File-authoritative Trace Core](TRACE_CORE.md)
 - [Execution Trace Adapter](EXECUTION_TRACE_ADAPTER.md)
 - [Provider Adapter plan and seam](PROVIDER_ADAPTER_PLAN.md)

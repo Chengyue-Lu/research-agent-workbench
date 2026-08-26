@@ -672,6 +672,32 @@ def _reference_check(args: argparse.Namespace) -> int:
     return _print_risks(_document_reference_risks(document, Path(args.root).resolve()))
 
 
+def _research_state_validate(args: argparse.Namespace) -> int:
+    from research_workbench.research_state import ClosureIndex, check_research_state
+
+    document_path = Path(args.document)
+    document = load_document(document_path)
+    if not isinstance(document, Mapping) or infer_document_kind(document) != "research_state":
+        print("ERROR   DOCUMENT-UNKNOWN              not a Research State document")
+        return 1
+    errors = SchemaCatalog().validate("research_state", document)
+    for error in errors:
+        print(f"ERROR   SCHEMA-INVALID               {error.pointer}: {error.message}")
+    if errors:
+        return 1
+    closure_paths = list(iter_documents(args.closure))
+    if document_path not in closure_paths:
+        closure_paths.append(document_path)
+    index = ClosureIndex.from_paths(closure_paths)
+    problems = check_research_state(document, index)
+    for problem in problems:
+        print(f"ERROR   RESEARCH-STATE-CLOSURE-INVALID {problem}")
+    if problems:
+        return 1
+    print(f"closure: ok (research_state; explicit_documents={len(closure_paths)})")
+    return 0
+
+
 def _claim_trace(args: argparse.Namespace) -> int:
     document = load_document(args.claim)
     if not isinstance(document, Mapping):
@@ -1351,6 +1377,23 @@ def build_parser() -> argparse.ArgumentParser:
     execution_assess.add_argument("--protocol", required=True)
     execution_assess.add_argument("--root", default=".")
     execution_assess.set_defaults(handler=_execution_assess)
+    research_state_cmd = subparsers.add_parser(
+        "research-state", help="validate one M10-001 Research State against an explicit closure"
+    )
+    research_state_subparsers = research_state_cmd.add_subparsers(
+        dest="research_state_command", required=True
+    )
+    research_state_validate = research_state_subparsers.add_parser(
+        "validate", help="validate schema and exact refs without scanning the repository"
+    )
+    research_state_validate.add_argument("document")
+    research_state_validate.add_argument(
+        "--closure",
+        action="append",
+        required=True,
+        help="explicit closure file or directory; repeat for multiple roots",
+    )
+    research_state_validate.set_defaults(handler=_research_state_validate)
     return parser
 
 

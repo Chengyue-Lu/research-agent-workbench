@@ -67,6 +67,7 @@ class VersionedSchemaTests(unittest.TestCase):
                 "research_mode",
                 "research_mode_migration",
                 "research_object",
+                "research_state",
                 "resolved_capability_snapshot",
                 "resolved_execution_view",
                 "runtime_bundle_manifest",

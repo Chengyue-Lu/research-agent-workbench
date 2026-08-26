@@ -1,0 +1,8 @@
+schema_version: 0.1.0
+object_type: question
+object_id: Q-PC-A
+revision: 1
+status: admitted-fixture
+text: Does the synthetic fixture support a causal reading?
+scope: [m10-001-bounded-fixture]
+known_ambiguities: [fixture-only data]

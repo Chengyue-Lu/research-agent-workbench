@@ -98,6 +98,8 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "skill_archive_audit"
     if "evaluation_id" in document and "candidate_id" in document and "cases" in document:
         return "skill_evaluation"
+    if "state_id" in document and "entries" in document and "open_items" in document:
+        return "research_state"
     if "object_type" in document and "object_id" in document:
         return "research_object"
     return None
