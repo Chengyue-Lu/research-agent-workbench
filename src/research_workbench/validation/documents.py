@@ -186,6 +186,10 @@ SCHEMA_KINDS = {
     "context_snapshot",
     "execution_receipt",
     "research_object",
+    "research_state",
+    "research_failure",
+    "human_decision_record",
+    "method_trace",
 }
 
 
@@ -266,6 +270,14 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "skill_archive_audit"
     if "evaluation_id" in document and "candidate_id" in document and "cases" in document:
         return "skill_evaluation"
+    if "state_id" in document and "entries" in document and "open_items" in document:
+        return "research_state"
+    if "failure_id" in document and "learned_result" in document and "revisit_condition" in document:
+        return "research_failure"
+    if "decision_id" in document and "decision_kind" in document and "authority_basis" in document:
+        return "human_decision_record"
+    if "trace_id" in document and "subject_state_ref" in document and "events" in document:
+        return "method_trace"
     if "object_type" in document and "object_id" in document:
         return "research_object"
     return None
@@ -3696,6 +3708,33 @@ def _validate_decision_authority(
     return issues
 
 
+def _validate_phase_c_set(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
+    from research_workbench.research_state import ClosureIndex, check_phase_c_document
+
+    phase_c_kinds = {
+        "research_state",
+        "research_failure",
+        "human_decision_record",
+        "method_trace",
+    }
+    if not any(
+        isinstance(document, Mapping) and infer_document_kind(document) in phase_c_kinds
+        for document in documents.values()
+    ):
+        return []
+    index = ClosureIndex.from_documents(documents)
+    issues: list[ValidationIssue] = []
+    for path, document in documents.items():
+        if not isinstance(document, Mapping):
+            continue
+        kind = infer_document_kind(document)
+        if kind not in phase_c_kinds:
+            continue
+        for problem in check_phase_c_document(kind, document, index):
+            issues.append(ValidationIssue(path, "PHASE-C-CLOSURE-INVALID", problem))
+    return issues
+
+
 def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     source_ids: set[str] = set()
@@ -3739,6 +3778,7 @@ def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     issues.extend(_validate_phase_b_evolution_gates(documents))
     issues.extend(_validate_research_mode_migrations(documents))
     issues.extend(_validate_decision_authority(documents))
+    issues.extend(_validate_phase_c_set(documents))
     return issues
 
 

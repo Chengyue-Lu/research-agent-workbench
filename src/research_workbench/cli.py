@@ -672,6 +672,98 @@ def _reference_check(args: argparse.Namespace) -> int:
     return _print_risks(_document_reference_risks(document, Path(args.root).resolve()))
 
 
+_PHASE_C_SCHEMA_KINDS = {
+    "research_state": "research_state",
+    "research_failure": "research_failure",
+    "human_decision_record": "human_decision_record",
+    "method_trace": "method_trace",
+}
+
+
+def _research_state_validate(args: argparse.Namespace) -> int:
+    from research_workbench.research_state import ClosureIndex, check_phase_c_document
+
+    document = load_document(args.document)
+    if not isinstance(document, Mapping):
+        print("ERROR   DOCUMENT-INVALID              document must be an object")
+        return 1
+    kind = infer_document_kind(document)
+    schema_name = _PHASE_C_SCHEMA_KINDS.get(kind or "")
+    if schema_name is None:
+        print(
+            "ERROR   DOCUMENT-UNKNOWN              not a Phase C composition, "
+            "failure, decision, or method-trace document"
+        )
+        return 1
+    errors = SchemaCatalog().validate(schema_name, document)
+    for error in errors:
+        print(f"ERROR   SCHEMA-INVALID               {error.pointer}: {error.message}")
+    if errors:
+        return 1
+    root = Path(args.root).resolve()
+    scan_paths = [
+        path
+        for path in iter_documents([root])
+        if path.resolve() != Path(args.document).resolve()
+    ] + [Path(args.document)]
+    index = ClosureIndex.from_paths(scan_paths)
+    problems = check_phase_c_document(kind, document, index)
+    exit_code = 0
+    for problem in problems:
+        print(f"ERROR   PHASE-C-CLOSURE-INVALID      {problem}")
+        exit_code = 1
+    if not problems:
+        print(f"closure: ok ({kind})")
+    return exit_code
+
+
+def _research_state_gate(args: argparse.Namespace) -> int:
+    import subprocess
+    import sys as _sys
+
+    case_dir = Path(args.case).resolve()
+    # the .txt suffix keeps the gate answer out of repository document
+    # discovery: it is runner output, not a schema document
+    answer_path = Path(args.answer) if args.answer else case_dir / "gate-answer.json.txt"
+    completed = subprocess.run(
+        [
+            _sys.executable,
+            "-m",
+            "research_workbench.research_state.fresh_actor",
+            str(case_dir),
+            str(answer_path),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    if completed.returncode != 0:
+        print(f"gate: BLOCKED (fresh actor exited {completed.returncode})")
+        if completed.stderr:
+            print(completed.stderr.strip())
+        return 1
+    answer = json.loads(answer_path.read_text(encoding="utf-8"))
+    expected_path = case_dir / "oracle-expected.yaml.txt"
+    if expected_path.is_file():
+        import yaml as _yaml
+
+        expected = _yaml.safe_load(expected_path.read_text(encoding="utf-8")) or {}
+        failures: list[str] = []
+        for key, value in (expected.get("assert_exact") or {}).items():
+            if answer.get(key) != value:
+                failures.append(f"{key}: expected {value!r}, got {answer.get(key)!r}")
+        for forbidden in expected.get("forbidden_reads") or []:
+            if forbidden in answer.get("read_surface", []):
+                failures.append(f"forbidden read surfaced: {forbidden}")
+        if failures:
+            print("gate: FAIL (oracle predicates)")
+            for failure in failures:
+                print(f"ERROR   GATE-PREDICATE               {failure}")
+            return 1
+    print(f"gate: PASS ({answer.get('active_state')})")
+    print(f"answer:  {answer_path}")
+    return 0
+
+
 def _claim_trace(args: argparse.Namespace) -> int:
     document = load_document(args.claim)
     if not isinstance(document, Mapping):
@@ -1351,6 +1443,24 @@ def build_parser() -> argparse.ArgumentParser:
     execution_assess.add_argument("--protocol", required=True)
     execution_assess.add_argument("--root", default=".")
     execution_assess.set_defaults(handler=_execution_assess)
+    research_state_cmd = subparsers.add_parser(
+        "research-state", help="validate Phase C compositions and run fresh-actor gates"
+    )
+    research_state_subparsers = research_state_cmd.add_subparsers(
+        dest="research_state_command", required=True
+    )
+    research_state_validate = research_state_subparsers.add_parser(
+        "validate", help="schema and exact-ref closure checks for one Phase C document"
+    )
+    research_state_validate.add_argument("document")
+    research_state_validate.add_argument("--root", default=".")
+    research_state_validate.set_defaults(handler=_research_state_validate)
+    research_state_gate = research_state_subparsers.add_parser(
+        "gate", help="run the staged fresh-actor behavioral gate for a bounded case"
+    )
+    research_state_gate.add_argument("--case", required=True)
+    research_state_gate.add_argument("--answer")
+    research_state_gate.set_defaults(handler=_research_state_gate)
     return parser
 
 
