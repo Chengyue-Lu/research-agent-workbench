@@ -1,0 +1,12 @@
+schema_version: 0.1.0
+object_type: evidence
+object_id: EVID-PC-A-02
+revision: 1
+status: admitted-fixture
+content_hash: 7c3b7c3b7c3b7c3b7c3b7c3b7c3b7c3b7c3b7c3b7c3b7c3b7c3b7c3b7c3b7c3b
+kind: bounded-text-excerpt
+source_ref: INPUT-PC-A@1
+locator: lines 3-4
+statement: 'Counter excerpt: the fixture forbids causal claims about coupling.'
+quality_flags:
+- synthetic_fixture

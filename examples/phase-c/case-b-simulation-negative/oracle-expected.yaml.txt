@@ -1,0 +1,15 @@
+assert_exact:
+  active_state: RSTATE-PC-B@2
+  invalidated_items:
+  - ASSUM-PC-B-01
+  recommended_action: refine-resolution
+  choices:
+  - choice_id: rerun-coarse-grid
+    classification: known-failed-avoid
+  - choice_id: refine-resolution
+    classification: recommendable
+  - choice_id: switch-closure
+    classification: recommendable
+forbidden_reads:
+- original-chat.md
+- oracle/notes.md

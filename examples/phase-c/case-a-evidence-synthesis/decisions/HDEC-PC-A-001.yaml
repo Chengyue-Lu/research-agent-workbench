@@ -1,0 +1,23 @@
+schema_version: 0.1.0
+decision_id: HDEC-PC-A-001
+revision: 1
+status: recorded
+actor: 黄毅
+decision_kind: qualify-claim
+scope:
+- phase-c-bounded-fixture
+subject_refs:
+- object_id: CLAIM-PC-A
+  revision: 1
+- object_id: EVID-PC-A-02
+  revision: 1
+asserted_fact_refs:
+- object_id: EVID-PC-A-02
+  revision: 1
+authority_basis: 'fixture project protocol: claim qualification is a named-human decision'
+decided_at: '2026-08-26T10:00:00+08:00'
+state_effect_ref:
+  object_id: RSTATE-PC-A
+  revision: 2
+rationale: Counter excerpt forbids causal reading; the claim stays qualified and the
+  unknown closes.

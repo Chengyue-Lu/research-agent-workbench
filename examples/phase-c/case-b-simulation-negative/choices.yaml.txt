@@ -1,0 +1,8 @@
+choices:
+  - choice_id: rerun-coarse-grid
+    description: Rerun the same coarse-grid simulation unchanged.
+    repeats_failure_ref: RFAIL-PC-B-001
+  - choice_id: refine-resolution
+    description: Re-run at 4x grid resolution with the frozen model.
+  - choice_id: switch-closure
+    description: Switch to an alternative turbulence closure.

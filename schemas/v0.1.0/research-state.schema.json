@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/research-state.schema.json",
+  "title": "Research State Composition",
+  "x-rwb-document-kind": "research_state",
+  "type": "object",
+  "required": [
+    "schema_version", "state_id", "revision", "status", "entries", "open_items", "limitations"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "state_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "revision": { "type": "integer", "minimum": 1 },
+    "status": { "enum": ["active", "superseded"] },
+    "supersedes": { "$ref": "common.schema.json#/$defs/objectRef" },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["role", "ref", "disposition"],
+        "properties": {
+          "role": {
+            "enum": ["question", "hypothesis", "evidence", "claim", "decision", "run", "task", "failure", "human-decision"]
+          },
+          "ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+          "disposition": { "enum": ["current", "superseded"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "open_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["item_id", "kind", "statement", "status"],
+        "properties": {
+          "item_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "kind": { "enum": ["unknown", "assumption"] },
+          "statement": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "status": { "enum": ["open", "resolved", "invalidated"] },
+          "provenance_refs": {
+            "type": "array",
+            "items": { "$ref": "common.schema.json#/$defs/objectRef" }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "revisit_refs": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/objectRef" }
+    },
+    "limitations": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "metadata": { "type": "object" }
+  },
+  "additionalProperties": false
+}

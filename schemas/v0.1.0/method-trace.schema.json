@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/method-trace.schema.json",
+  "title": "Method Trace v0.1",
+  "x-rwb-document-kind": "method_trace",
+  "type": "object",
+  "required": [
+    "schema_version", "trace_id", "revision", "status",
+    "subject_state_ref", "events", "limitations"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "trace_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "revision": { "type": "integer", "minimum": 1 },
+    "status": { "enum": ["active", "superseded"] },
+    "subject_state_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+    "events": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["sequence", "family", "recorded_at", "rationale"],
+        "properties": {
+          "sequence": { "type": "integer", "minimum": 1 },
+          "family": {
+            "enum": [
+              "method-resolution-applied",
+              "execution-fact-recorded",
+              "human-decision-applied",
+              "research-state-changed",
+              "failure-rationale-recorded",
+              "reopen-reviewable"
+            ]
+          },
+          "recorded_at": { "type": "string", "format": "date-time" },
+          "rationale": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "actual_binding_gap": {
+            "type": "boolean",
+            "description": "Explicitly record that no accepted execution-fact producer exists yet; must not be combined with refs.execution_ref, and a gap is never coverage-complete."
+          },
+          "refs": {
+            "type": "object",
+            "properties": {
+              "method_resolution_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+              "execution_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+              "decision_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+              "state_before_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+              "state_after_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+              "failure_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+              "evidence_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+              "task_ref": { "$ref": "common.schema.json#/$defs/objectRef" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "limitations": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "metadata": { "type": "object" }
+  },
+  "additionalProperties": false
+}

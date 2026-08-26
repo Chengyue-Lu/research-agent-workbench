@@ -1,0 +1,3 @@
+# Original chat (never part of the gate read surface)
+
+private reasoning ...

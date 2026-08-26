@@ -1,0 +1,42 @@
+schema_version: 0.1.0
+state_id: RSTATE-PC-A
+revision: 2
+status: active
+supersedes:
+  object_id: RSTATE-PC-A
+  revision: 1
+entries:
+- role: question
+  ref:
+    object_id: Q-PC-A
+    revision: 1
+  disposition: current
+- role: evidence
+  ref:
+    object_id: EVID-PC-A-01
+    revision: 1
+    sha256: 5d1a5d1a5d1a5d1a5d1a5d1a5d1a5d1a5d1a5d1a5d1a5d1a5d1a5d1a5d1a5d1a
+  disposition: current
+- role: evidence
+  ref:
+    object_id: EVID-PC-A-02
+    revision: 1
+    sha256: 7c3b7c3b7c3b7c3b7c3b7c3b7c3b7c3b7c3b7c3b7c3b7c3b7c3b7c3b7c3b7c3b
+  disposition: current
+- role: claim
+  ref:
+    object_id: CLAIM-PC-A
+    revision: 1
+    sha256: 1a2b1a2b1a2b1a2b1a2b1a2b1a2b1a2b1a2b1a2b1a2b1a2b1a2b1a2b1a2b1a2b
+  disposition: current
+open_items:
+- item_id: UNKNOWN-PC-A-01
+  kind: unknown
+  statement: Whether any causal reading survives the counter excerpt.
+  status: resolved
+  provenance_refs:
+  - object_id: HDEC-PC-A-001
+    revision: 1
+revisit_refs: []
+limitations:
+- fixture-only state

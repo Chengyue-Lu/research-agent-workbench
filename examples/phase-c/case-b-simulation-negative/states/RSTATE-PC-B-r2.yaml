@@ -1,0 +1,41 @@
+schema_version: 0.1.0
+state_id: RSTATE-PC-B
+revision: 2
+status: active
+supersedes:
+  object_id: RSTATE-PC-B
+  revision: 1
+entries:
+- role: hypothesis
+  ref:
+    object_id: HYP-PC-B
+    revision: 1
+  disposition: current
+- role: run
+  ref:
+    object_id: RUN-PC-B
+    revision: 1
+  disposition: current
+- role: evidence
+  ref:
+    object_id: EVID-PC-B-01
+    revision: 1
+    sha256: 9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e
+  disposition: current
+open_items:
+- item_id: ASSUM-PC-B-01
+  kind: assumption
+  statement: Coarse grid resolves the instability onset.
+  status: invalidated
+  provenance_refs:
+  - object_id: RFAIL-PC-B-001
+    revision: 1
+- item_id: UNKNOWN-PC-B-01
+  kind: unknown
+  statement: Whether 4x resolution changes the sign of the onset estimate.
+  status: open
+revisit_refs:
+- object_id: RFAIL-PC-B-001
+  revision: 1
+limitations:
+- fixture-only state

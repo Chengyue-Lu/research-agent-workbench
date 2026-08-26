@@ -1,0 +1,10 @@
+schema_version: 0.1.0
+object_type: question
+object_id: Q-PC-A
+revision: 1
+status: admitted-fixture
+text: Does the synthetic fixture support a causal reading of channel coupling?
+scope:
+- phase-c-bounded-fixture
+known_ambiguities:
+- fixture-only data

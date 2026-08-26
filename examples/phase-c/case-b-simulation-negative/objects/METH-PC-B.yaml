@@ -1,0 +1,12 @@
+schema_version: 0.1.0
+object_type: method
+object_id: METH-PC-B
+revision: 1
+status: admitted-fixture
+kind: coarse-grid-simulation
+spec_ref:
+  object_id: HYP-PC-B
+  revision: 1
+version: 0.1.0
+limitations:
+- coarse grid only

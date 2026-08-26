@@ -1,0 +1,10 @@
+assert_exact:
+  active_state: RSTATE-PC-A@2
+  key_evidence_refs:
+  - EVID-PC-A-01@1
+  - EVID-PC-A-02@1
+  invalidated_items: []
+  recommended_action: survey-counterevidence
+forbidden_reads:
+- original-chat.md
+- oracle/notes.md

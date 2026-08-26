@@ -1,0 +1,48 @@
+schema_version: 0.1.0
+trace_id: MTRACE-PC-B
+revision: 1
+status: active
+subject_state_ref:
+  object_id: RSTATE-PC-B
+  revision: 2
+events:
+- sequence: 1
+  family: research-state-changed
+  recorded_at: '2026-08-25T09:00:00+08:00'
+  rationale: Negative evidence entered; assumption invalidated; failure recorded.
+  refs:
+    state_before_ref:
+      object_id: RSTATE-PC-B
+      revision: 1
+    state_after_ref:
+      object_id: RSTATE-PC-B
+      revision: 2
+    evidence_ref:
+      object_id: EVID-PC-B-01
+      revision: 1
+- sequence: 2
+  family: failure-rationale-recorded
+  recorded_at: '2026-08-25T09:05:00+08:00'
+  rationale: Execution succeeded; the research hypothesis failed.
+  refs:
+    failure_ref:
+      object_id: RFAIL-PC-B-001
+      revision: 1
+- sequence: 3
+  family: reopen-reviewable
+  recorded_at: '2026-08-25T09:06:00+08:00'
+  rationale: Revisit condition unmet; the failed path must not be rerun, only reviewed
+    when the condition changes.
+  refs:
+    failure_ref:
+      object_id: RFAIL-PC-B-001
+      revision: 1
+- sequence: 4
+  family: execution-fact-recorded
+  recorded_at: '2026-08-25T09:10:00+08:00'
+  rationale: No accepted execution-fact producer exists in this bounded fixture; the
+    actual-binding gap is recorded explicitly and is not coverage-complete.
+  actual_binding_gap: true
+  refs: {}
+limitations:
+- fixture-only trace; no execution-layer facts recorded

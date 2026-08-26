@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/research-failure.schema.json",
+  "title": "Research Failure",
+  "x-rwb-document-kind": "research_failure",
+  "type": "object",
+  "required": [
+    "schema_version", "failure_id", "revision", "status",
+    "learned_result", "revisit_condition", "limitations"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "failure_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "revision": { "type": "integer", "minimum": 1 },
+    "status": { "enum": ["recorded", "superseded"] },
+    "observed_result": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "learned_result": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "remaining_uncertainty": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "revisit_condition": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "execution_outcome": { "enum": ["execution-succeeded", "execution-failed", "not-recorded"] },
+    "from_state_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+    "source_attempt_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+    "evidence_refs": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/objectRef" }
+    },
+    "invalidated_assumption_refs": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/objectRef" }
+    },
+    "limitations": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "metadata": { "type": "object" }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/human-decision-record.schema.json",
+  "title": "Human Decision Record",
+  "x-rwb-document-kind": "human_decision_record",
+  "type": "object",
+  "required": [
+    "schema_version", "decision_id", "revision", "status", "actor",
+    "decision_kind", "scope", "subject_refs", "authority_basis",
+    "decided_at", "state_effect_ref", "rationale"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "decision_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "revision": { "type": "integer", "minimum": 1 },
+    "status": { "enum": ["recorded", "superseded"] },
+    "actor": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "decision_kind": {
+      "enum": ["accept-evidence", "qualify-claim", "record-failure", "close-unknown", "reopen-review", "other"]
+    },
+    "scope": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "subject_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "common.schema.json#/$defs/objectRef" }
+    },
+    "asserted_fact_refs": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/objectRef" }
+    },
+    "authority_basis": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "decided_at": { "type": "string", "format": "date-time" },
+    "state_effect_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+    "decision_object_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+    "rationale": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "limitations": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "metadata": { "type": "object" }
+  },
+  "additionalProperties": false
+}

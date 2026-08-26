@@ -1,0 +1,13 @@
+schema_version: 0.1.0
+object_type: evidence
+object_id: EVID-PC-B-01
+revision: 1
+status: admitted-fixture
+content_hash: 9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e
+kind: negative-run-result
+source_ref: RUN-PC-B@1
+locator: metrics column delta
+statement: The coarse-grid run shows no instability onset; the assumed signal is absent.
+quality_flags:
+- synthetic_fixture
+- negative_result

@@ -1,0 +1,29 @@
+schema_version: 0.1.0
+trace_id: MTRACE-PC-A
+revision: 1
+status: active
+subject_state_ref:
+  object_id: RSTATE-PC-A
+  revision: 2
+events:
+- sequence: 1
+  family: research-state-changed
+  recorded_at: '2026-08-26T09:58:00+08:00'
+  rationale: Evidence pair and qualified claim entered the state; unknown resolved.
+  refs:
+    state_before_ref:
+      object_id: RSTATE-PC-A
+      revision: 1
+    state_after_ref:
+      object_id: RSTATE-PC-A
+      revision: 2
+- sequence: 2
+  family: human-decision-applied
+  recorded_at: '2026-08-26T10:00:00+08:00'
+  rationale: Named human qualified the claim and closed the unknown.
+  refs:
+    decision_ref:
+      object_id: HDEC-PC-A-001
+      revision: 1
+limitations:
+- fixture-only trace

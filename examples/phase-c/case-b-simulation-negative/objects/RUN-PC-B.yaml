@@ -1,0 +1,18 @@
+schema_version: 0.1.0
+object_type: run
+object_id: RUN-PC-B
+revision: 1
+status: completed-fixture
+method_ref:
+  object_id: METH-PC-B
+  revision: 1
+input_refs:
+- object_id: HYP-PC-B
+  revision: 1
+environment_ref:
+  object_id: METH-PC-B
+  revision: 1
+started_at: '2026-08-25T08:00:00+08:00'
+output_refs:
+- object_id: EVID-PC-B-01
+  revision: 1

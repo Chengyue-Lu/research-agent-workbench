@@ -1,0 +1,22 @@
+schema_version: 0.1.0
+state_id: RSTATE-PC-B
+revision: 1
+status: superseded
+entries:
+- role: hypothesis
+  ref:
+    object_id: HYP-PC-B
+    revision: 1
+  disposition: current
+- role: run
+  ref:
+    object_id: RUN-PC-B
+    revision: 1
+  disposition: current
+open_items:
+- item_id: ASSUM-PC-B-01
+  kind: assumption
+  statement: Coarse grid resolves the instability onset.
+  status: open
+limitations:
+- fixture-only state

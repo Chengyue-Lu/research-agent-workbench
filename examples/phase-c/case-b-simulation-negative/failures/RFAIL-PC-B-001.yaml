@@ -1,0 +1,23 @@
+schema_version: 0.1.0
+failure_id: RFAIL-PC-B-001
+revision: 1
+status: recorded
+observed_result: Coarse-grid run completed with no instability onset signal.
+learned_result: The coarse-grid regime does not resolve the coupling instability;
+  repeating it unchanged cannot produce new information.
+remaining_uncertainty: Whether finer resolution or another closure changes the onset
+  estimate.
+revisit_condition: The regime is re-tested at 4x resolution or an alternative turbulence
+  closure becomes available.
+execution_outcome: execution-succeeded
+from_state_ref:
+  object_id: RSTATE-PC-B
+  revision: 1
+evidence_refs:
+- object_id: EVID-PC-B-01
+  revision: 1
+invalidated_assumption_refs:
+- object_id: HYP-PC-B
+  revision: 1
+limitations:
+- fixture-only failure record

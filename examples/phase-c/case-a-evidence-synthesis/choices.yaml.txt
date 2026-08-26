@@ -1,0 +1,3 @@
+choices:
+  - choice_id: survey-counterevidence
+    description: Survey one further counter-evidence source before any claim change.
