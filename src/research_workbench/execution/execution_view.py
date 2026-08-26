@@ -278,6 +278,18 @@ def _plain(value: Any) -> Any:
     return copy.deepcopy(value)
 
 
+def _required_output_contracts(required: Sequence[Any]) -> set[str]:
+    contracts: set[str] = set()
+    for item in required:
+        if isinstance(item, str):
+            contracts.add(item)
+        elif isinstance(item, Mapping) and isinstance(item.get("contract"), str):
+            contracts.add(str(item["contract"]))
+        else:
+            raise ValueError("Task required_outputs contains an unsupported contract")
+    return contracts
+
+
 def produce_resolved_execution_view(
     bundle: ValidatedRuntimeBundle,
     *,
@@ -357,6 +369,88 @@ def produce_resolved_execution_view(
                     profile_path,
                     "EXECUTION-VIEW-PROFILE-IDENTITY-MISMATCH",
                     f"Task requires Agent Profile {task.get('agent_profile')}",
+                ),
+            )
+        )
+
+    required_capabilities = {
+        item for item in task.get("required_capabilities", ()) if isinstance(item, str)
+    }
+    allowed_tool_capabilities = {
+        item for item in profile.get("allowed_tool_capabilities", ()) if isinstance(item, str)
+    }
+    supply_kind = supply.get("supply_identity", {}).get("supply_kind")
+    selected_tool_capabilities = (
+        {
+            item
+            for item in supply.get("provided_capabilities", ())
+            if isinstance(item, str)
+        }
+        if supply_kind == "tool"
+        else set()
+    )
+    required_tool_capabilities = required_capabilities | selected_tool_capabilities
+    if not required_tool_capabilities.issubset(allowed_tool_capabilities):
+        raise ExecutionViewValidationError(
+            (
+                ExecutionViewIssue(
+                    profile_path,
+                    "EXECUTION-VIEW-PROFILE-TOOL-CAPABILITY",
+                    "Task/selected Tool capabilities exceed Agent Profile allowed_tool_capabilities",
+                ),
+            )
+        )
+    try:
+        required_output_contracts = _required_output_contracts(task.get("required_outputs", ()))
+    except ValueError as exc:
+        raise ExecutionViewValidationError(
+            (ExecutionViewIssue(profile_path, "EXECUTION-VIEW-PROFILE-OUTPUT-CONTRACT", str(exc)),)
+        ) from exc
+    profile_output_contracts = {
+        item for item in profile.get("output_contracts", ()) if isinstance(item, str)
+    }
+    if not required_output_contracts.issubset(profile_output_contracts):
+        raise ExecutionViewValidationError(
+            (
+                ExecutionViewIssue(
+                    profile_path,
+                    "EXECUTION-VIEW-PROFILE-OUTPUT-CONTRACT",
+                    "Task required outputs exceed Agent Profile output_contracts",
+                ),
+            )
+        )
+    model_policy = profile.get("model_policy", {})
+    model_binding = binding.get("model", {})
+    required_model_capabilities = {
+        item for item in model_policy.get("required_capabilities", ()) if isinstance(item, str)
+    }
+    bound_model_capabilities = {
+        item for item in model_binding.get("capabilities", ()) if isinstance(item, str)
+    }
+    if (
+        model_binding.get("model_class") != model_policy.get("class")
+        or (
+            model_policy.get("default_slot") is not None
+            and model_binding.get("slot") != model_policy.get("default_slot")
+        )
+        or not required_model_capabilities.issubset(bound_model_capabilities)
+    ):
+        raise ExecutionViewValidationError(
+            (
+                ExecutionViewIssue(
+                    binding_path,
+                    "EXECUTION-VIEW-PROFILE-MODEL-POLICY",
+                    "bound Model does not satisfy Agent Profile class/slot/capabilities",
+                ),
+            )
+        )
+    if host.get("subject_host") != binding.get("host"):
+        raise ExecutionViewValidationError(
+            (
+                ExecutionViewIssue(
+                    host_path,
+                    "EXECUTION-VIEW-HOST-POLICY-SUBJECT",
+                    "Host policy subject does not equal the exact bound Host",
                 ),
             )
         )
@@ -512,8 +606,15 @@ def produce_resolved_execution_view(
         "freshness": {
             "supply_observed_at": availability["observed_at"],
             "supply_valid_until": availability["valid_until"],
+            "data_policy_valid_from": data["valid_from"],
             "data_policy_valid_until": data["valid_until"],
+            "host_policy_valid_from": host["valid_from"],
             "host_policy_valid_until": host["valid_until"],
+        },
+        "profile_constraints": {
+            "required_tool_capabilities": sorted(required_tool_capabilities),
+            "required_output_contracts": sorted(required_output_contracts),
+            "model": _plain(model_binding),
         },
         "effective_constraints": {
             "permissions": effective_permissions,

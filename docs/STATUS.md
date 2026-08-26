@@ -1,7 +1,7 @@
 # 实现状态
 
 状态：Current implementation authority
-更新：2026-08-26
+更新：2026-08-27
 
 本页只回答“仓库现在实现到哪里”。实时任务状态由 [`TASKS.md`](TASKS.md) 维护，依赖方向由 [`ROADMAP.md`](ROADMAP.md) 维护。
 
@@ -33,10 +33,10 @@ Protocol、两级 Snapshot 与 migration/replacement 结构契约已经实现。
 | Execution Trace | Envelope、Index、append-only events、工具结果持久化与闭集校验 |
 | Legacy execution bridge | 既有 Skill-bound Assignment 到 Trace / Receipt 的适配和恢复检查 |
 | Provider seam | provider-neutral 的隔离会话接口、离线 probe 与合成 conformance 基础 |
-| Runtime Bundle/Profile | M11-001 显式 manifest 固定 exact Task→Method→Requirement→Supply→Resolution→Snapshot closure；Runtime loader 拒绝目录、递归 Registry/examples scan、未声明引用、hash/identity/import 漂移、Skill/Evolution dependency 与 `structural-replay` |
-| Resolved Execution View | M11-002 supply-neutral producer 固定 exact Provider/Adapter/Model/Runtime/Host、external bundle/input pins、execution-time freshness，并计算 Task/Profile/Supply/DataPolicy/Host 的最严 permission/data-egress/side-effect/budget intersection；不重新选择 Supply、不 fallback、不执行 |
-| Thin Execution Host | M11-003 exact View consumer 以确定性重算阻断 hash-valid rewrite；single-binding Driver 只调用一次，前后校验 binding，并把 budget/egress/side-effect/write-root/output/capture-gap 事实写入独立 Host report；无 retry/fallback/Topic 5 recovery |
-| Generic execution closeout | M11-004 将 exact View、Host facts、frozen Trace、Artifacts 与 deterministic validation closed set 连接成可重算的 execution-only Receipt；no-Skill/direct Tool Core Gate 通过，Skill Assignment/Claim/Human/Recovery 字段被拒绝，legacy Skill-bound Receipt 保持原样 |
+| Runtime Bundle/Profile | M11-001 显式 manifest 固定 exact Task→Method→Requirement→selected Supply→Resolution→Snapshot closure；多候选 Resolution 只把最终 selected Supply 导入 Runtime，loader 拒绝目录、递归 Registry/examples scan、未声明引用、hash/identity/import 漂移、Skill/Evolution dependency 与 `structural-replay` |
+| Resolved Execution View | M11-002 supply-neutral producer 固定 exact Provider/Adapter/Model/Runtime/Host、external bundle/input pins、Profile Tool/output/Model constraints、Host subject 与 freshness windows，并计算 Task/Profile/Supply/DataPolicy/Host 的最严 permission/data-egress/side-effect/budget intersection；不重新选择 Supply、不 fallback、不执行 |
+| Thin Execution Host | M11-003 exact View consumer 绑定同一 Runtime Bundle，以确定性重算和调用前重载阻断 hash-valid rewrite/受控文件 TOCTOU；single-binding Driver 只调用一次，调用前 preventive、调用后 detective 检查分离，并把 actual binding/Supply/tool facts 写入 Host report；无 retry/fallback/Topic 5 recovery |
+| Generic execution closeout | M11-004 将 exact View、Host facts、frozen Trace、Artifacts 与 deterministic validation closed set 连接成可重算 Receipt；replay 独立验证 actual binding/Supply、Provider/Tool Trace facts及 selected-Supply component，completed 为 execution-only，failed/blocked 不宣称 completion；Skill Assignment/Claim/Human/Recovery 字段被拒绝，legacy Skill-bound Receipt 保持原样 |
 
 ## 受限或尚不可用
 

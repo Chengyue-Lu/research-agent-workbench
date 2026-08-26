@@ -15,6 +15,10 @@ from research_workbench.execution.execution_view import (
     produce_resolved_execution_view,
 )
 from research_workbench.execution.runtime_bundle import ValidatedRuntimeBundle
+from research_workbench.execution.runtime_bundle import (
+    RuntimeBundleValidationError,
+    load_runtime_bundle,
+)
 from research_workbench.io import load_document_bytes
 from research_workbench.validation.schemas import SchemaCatalog
 
@@ -28,6 +32,7 @@ class ValidatedExecutionView:
     view_path: Path
     view_sha256: str
     document: Mapping[str, Any]
+    runtime_bundle: ValidatedRuntimeBundle
 
 
 @dataclass(frozen=True, slots=True)
@@ -46,6 +51,7 @@ class ExecutionDriverResult:
     elapsed_seconds: float = 0.0
     provider_invocations: int = 0
     tool_invocations: int = 0
+    tool_refs: tuple[str, ...] = ()
     external_write: bool = False
     data_egress_payloads: tuple[str, ...] = ()
     side_effects: tuple[str, ...] = ()
@@ -181,7 +187,7 @@ def load_resolved_execution_view(
         raise ExecutionHostValidationError("Resolved Execution View deterministic recomputation drift")
     frozen = _read_only(document)
     assert isinstance(frozen, Mapping)
-    return ValidatedExecutionView(root, path, digest, frozen)
+    return ValidatedExecutionView(root, path, digest, frozen, bundle)
 
 
 def _zero_facts(*, complete: bool, capture_gaps: Sequence[str] = ()) -> dict[str, Any]:
@@ -193,6 +199,7 @@ def _zero_facts(*, complete: bool, capture_gaps: Sequence[str] = ()) -> dict[str
         "elapsed_seconds": 0.0,
         "provider_invocations": 0,
         "tool_invocations": 0,
+        "tool_refs": [],
         "external_write": False,
         "data_egress_payloads": [],
         "side_effects": [],
@@ -226,6 +233,7 @@ def _base_report(
         "report_id": report_id,
         "attempt_id": attempt_id,
         "view_ref": _view_ref(view),
+        "runtime_bundle_ref": _plain(view.document["runtime_bundle_ref"]),
         "task_ref": _plain(view.document["task_ref"]),
         "started_at": started_at,
         "completed_at": completed_at,
@@ -234,6 +242,24 @@ def _base_report(
         "actual_binding": _plain(actual_binding),
         "actual_facts": _plain(facts),
         "artifacts": _plain(artifacts),
+        "enforcement": {
+            "preventive_controls": [
+                "binding-preflight",
+                "freshness",
+                "runtime-bundle-integrity",
+            ],
+            "detective_controls": [
+                "binding-postflight",
+                "fact-completeness",
+                "external-write",
+                "data-egress",
+                "side-effects",
+                "budget",
+                "artifact-scope",
+                "output-contract",
+            ],
+            "driver_claims_trusted": False,
+        },
         "boundaries": {
             "actual_facts_only": True,
             "supply_selection": False,
@@ -316,12 +342,16 @@ def _required_outputs_satisfied(
 def _result_violation(view: Mapping[str, Any], result: ExecutionDriverResult) -> str | None:
     if result.status not in {"completed", "failed"}:
         return "HOST-DRIVER-STATUS-INVALID"
-    if result.actual_binding != view["binding"]:
+    if _plain(result.actual_binding) != _plain(view["binding"]):
         return "HOST-ACTUAL-BINDING-DRIFT"
     if result.actual_supply_report_ref != view["selected_supply_report_ref"]["ref"]:
         return "HOST-ACTUAL-SUPPLY-DRIFT"
     if not result.facts_complete or result.capture_gaps:
         return "HOST-FACT-CAPTURE-GAP"
+    if result.tool_invocations == 0 and result.tool_refs:
+        return "HOST-TOOL-FACT-MISMATCH"
+    if result.tool_invocations > 0 and not result.tool_refs:
+        return "HOST-TOOL-FACT-MISMATCH"
     constraints = view["effective_constraints"]
     permissions = constraints["permissions"]
     if result.external_write and not permissions["external_write"]:
@@ -357,7 +387,6 @@ def _result_violation(view: Mapping[str, Any], result: ExecutionDriverResult) ->
 
 def execute_frozen_view(
     view: ValidatedExecutionView,
-    bundle: ValidatedRuntimeBundle,
     driver: FrozenExecutionDriver,
     *,
     report_id: str,
@@ -374,7 +403,42 @@ def execute_frozen_view(
     declared_supply_ref = driver.selected_supply_report_ref
     expected_binding = _plain(view.document["binding"])
     expected_supply_ref = str(view.document["selected_supply_report_ref"]["ref"])
+    preflight_code: str | None = None
     if declared_binding != expected_binding or declared_supply_ref != expected_supply_ref:
+        preflight_code = "HOST-BINDING-MISMATCH"
+    else:
+        started = _timestamp(started_at, "started_at")
+        freshness = view.document["freshness"]
+        if not (
+            _timestamp(str(freshness["supply_observed_at"]), "supply_observed_at")
+            <= started
+            <= _timestamp(str(freshness["supply_valid_until"]), "supply_valid_until")
+            and _timestamp(str(freshness["data_policy_valid_from"]), "data_policy_valid_from")
+            <= started
+            <= _timestamp(str(freshness["data_policy_valid_until"]), "data_policy_valid_until")
+            and _timestamp(str(freshness["host_policy_valid_from"]), "host_policy_valid_from")
+            <= started
+            <= _timestamp(str(freshness["host_policy_valid_until"]), "host_policy_valid_until")
+        ):
+            preflight_code = "HOST-FRESHNESS-EXPIRED"
+    if preflight_code is None:
+        bound_bundle = view.runtime_bundle
+        try:
+            current_bundle = load_runtime_bundle(
+                bound_bundle.manifest_path,
+                project_root=bound_bundle.project_root,
+                schema_root=schema_root,
+            )
+        except (OSError, ValueError, RuntimeBundleValidationError):
+            preflight_code = "HOST-RUNTIME-BUNDLE-DRIFT"
+        else:
+            if (
+                current_bundle.manifest_sha256 != bound_bundle.manifest_sha256
+                or current_bundle.manifest != bound_bundle.manifest
+                or current_bundle.documents != bound_bundle.documents
+            ):
+                preflight_code = "HOST-RUNTIME-BUNDLE-DRIFT"
+    if preflight_code is not None:
         report = _base_report(
             view,
             report_id=report_id,
@@ -390,12 +454,16 @@ def execute_frozen_view(
         _add_diagnostic(
             report,
             view,
-            code="HOST-BINDING-MISMATCH",
+            code=preflight_code,
             category="preflight",
-            re_resolution=True,
+            re_resolution=preflight_code in {
+                "HOST-BINDING-MISMATCH",
+                "HOST-FRESHNESS-EXPIRED",
+                "HOST-RUNTIME-BUNDLE-DRIFT",
+            },
         )
     else:
-        request = FrozenExecutionRequest(view.document, bundle.documents)
+        request = FrozenExecutionRequest(view.document, view.runtime_bundle.documents)
         try:
             result = driver.execute(request)
         except Exception:
@@ -427,6 +495,7 @@ def execute_frozen_view(
                 "elapsed_seconds": result.elapsed_seconds,
                 "provider_invocations": result.provider_invocations,
                 "tool_invocations": result.tool_invocations,
+                "tool_refs": list(result.tool_refs),
                 "external_write": result.external_write,
                 "data_egress_payloads": list(result.data_egress_payloads),
                 "side_effects": list(result.side_effects),

@@ -37,14 +37,18 @@ class ExecutionViewTests(unittest.TestCase):
             "agent_profile_id": "method-resolver",
             "version": "1.0.0",
             "purpose": "Bounded no-Skill method execution.",
-            "model_policy": {"class": "bounded", "default_slot": "worker"},
+            "model_policy": {
+                "class": "bounded",
+                "default_slot": "worker",
+                "required_capabilities": ["structured-output"],
+            },
             "permission_ceiling": {
                 "filesystem": "worktree-write",
                 "network": "search-and-fetch",
                 "external_write": "forbidden",
                 "allowed_roots": ["work"],
             },
-            "allowed_tool_capabilities": ["research-contract-check"],
+            "allowed_tool_capabilities": ["document-read", "research-contract-check"],
             "default_context_policy": "isolated-task",
             "delegation": {"allowed": False},
             "output_contracts": ["method-resolution"],
@@ -92,7 +96,14 @@ class ExecutionViewTests(unittest.TestCase):
             "selected_supply_report_ref": "supply-no-skill-contract-check@1.0.0",
             "provider": {"ref": "local", "version": "1", "content_hash": digest},
             "adapter": {"ref": "local-procedure", "version": "1.0.0", "content_hash": digest},
-            "model": {"ref": "none", "version": "not-applicable", "content_hash": digest},
+            "model": {
+                "ref": "bounded-local-model",
+                "version": "1.0.0",
+                "content_hash": digest,
+                "model_class": "bounded",
+                "slot": "worker",
+                "capabilities": ["structured-output"],
+            },
             "runtime": {"ref": "python", "version": "3.11+", "content_hash": digest},
             "host": {"ref": "bounded-test-host", "version": "1", "content_hash": digest},
             "boundaries": {
@@ -102,6 +113,7 @@ class ExecutionViewTests(unittest.TestCase):
                 "method_decision": False,
             },
         }
+        host_policy["subject_host"] = copy.deepcopy(binding["host"])
         return {
             "agent_profile": self._write(root, "view/profile.yaml", profile),
             "data_policy": self._write(root, "view/data-policy.yaml", data_policy),
@@ -156,6 +168,14 @@ class ExecutionViewTests(unittest.TestCase):
             self.assertEqual(
                 "supply-no-skill-contract-check@1.0.0",
                 view["selected_supply_report_ref"]["ref"],
+            )
+            self.assertEqual(
+                ["document-read", "research-contract-check"],
+                view["profile_constraints"]["required_tool_capabilities"],
+            )
+            self.assertEqual(
+                ["method-resolution"],
+                view["profile_constraints"]["required_output_contracts"],
             )
             self.assertEqual(
                 {
@@ -278,6 +298,42 @@ class ExecutionViewTests(unittest.TestCase):
                     schema_root=ROOT / "schemas",
                 )
             self.assertIn("EXECUTION-VIEW-PREFLIGHT-BLOCKED", self._codes(raised))
+
+    def test_profile_tool_output_model_and_host_subject_mismatch_fail_closed(self) -> None:
+        cases = (
+            (
+                "agent_profile",
+                lambda document: document.update({"allowed_tool_capabilities": []}),
+                "EXECUTION-VIEW-PROFILE-TOOL-CAPABILITY",
+            ),
+            (
+                "agent_profile",
+                lambda document: document.update({"output_contracts": []}),
+                "EXECUTION-VIEW-PROFILE-OUTPUT-CONTRACT",
+            ),
+            (
+                "execution_binding",
+                lambda document: document["model"].update({"model_class": "unbounded"}),
+                "EXECUTION-VIEW-PROFILE-MODEL-POLICY",
+            ),
+            (
+                "host_policy",
+                lambda document: document["subject_host"].update({"ref": "other-host"}),
+                "EXECUTION-VIEW-HOST-POLICY-SUBJECT",
+            ),
+        )
+        for input_name, mutate, expected_code in cases:
+            with self.subTest(input_name=input_name, expected_code=expected_code):
+                with tempfile.TemporaryDirectory() as temp:
+                    root = Path(temp)
+                    bundle, inputs = self._build(root)
+                    path = root / inputs[input_name].path
+                    document = load_document(path)
+                    mutate(document)
+                    inputs[input_name] = self._write(root, inputs[input_name].path, document)
+                    with self.assertRaises(ExecutionViewValidationError) as raised:
+                        self._produce(root, bundle, inputs)
+                    self.assertIn(expected_code, self._codes(raised))
 
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)

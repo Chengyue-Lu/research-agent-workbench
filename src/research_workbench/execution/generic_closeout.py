@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
@@ -97,6 +99,175 @@ def _validate_artifact_refs(root: Path, artifacts: Sequence[Mapping[str, Any]]) 
             raise GenericCloseoutValidationError("Host artifact hash mismatch")
 
 
+def _timestamp(value: object, field: str) -> datetime:
+    if not isinstance(value, str):
+        raise GenericCloseoutValidationError(f"{field} is not an RFC3339 timestamp")
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise GenericCloseoutValidationError(f"{field} is not an RFC3339 timestamp") from exc
+    if parsed.tzinfo is None:
+        raise GenericCloseoutValidationError(f"{field} lacks a timezone")
+    return parsed
+
+
+def _validate_host_view_closure(
+    host: Mapping[str, Any], view: ValidatedExecutionView
+) -> None:
+    expected_view_ref = {
+        "ref": f"{view.document['view_id']}@r{view.document['revision']}",
+        "path": view.view_path.relative_to(view.project_root).as_posix(),
+        "sha256": view.view_sha256,
+    }
+    if (
+        host.get("view_ref") != expected_view_ref
+        or host.get("runtime_bundle_ref") != view.document.get("runtime_bundle_ref")
+        or host.get("task_ref") != view.document.get("task_ref")
+    ):
+        raise GenericCloseoutValidationError("Host report View/Bundle/Task lineage mismatch")
+    if host.get("actual_binding") != _plain(view.document.get("binding")):
+        raise GenericCloseoutValidationError("Host actual binding does not equal frozen View binding")
+    if host.get("actual_supply_report_ref") != view.document.get(
+        "selected_supply_report_ref", {}
+    ).get("ref"):
+        raise GenericCloseoutValidationError(
+            "Host actual Supply does not equal frozen View selected Supply"
+        )
+    if _timestamp(host.get("completed_at"), "host.completed_at") < _timestamp(
+        host.get("started_at"), "host.started_at"
+    ):
+        raise GenericCloseoutValidationError("Host report time interval is reversed")
+
+
+def _trace_relative_pin(
+    root: Path, trace_path: Path, reference: Mapping[str, Any]
+) -> CloseoutPin:
+    path = resolve_within_root(trace_path.parent, reference.get("path", ""))
+    if path is None:
+        raise GenericCloseoutValidationError("Execution Trace child reference escapes its archive")
+    try:
+        relative = path.relative_to(root).as_posix()
+    except ValueError as exc:
+        raise GenericCloseoutValidationError(
+            "Execution Trace child reference escapes project root"
+        ) from exc
+    return CloseoutPin(relative, str(reference.get("sha256", "")))
+
+
+def _load_trace_events(
+    root: Path, trace_path: Path, trace: Mapping[str, Any]
+) -> tuple[Mapping[str, Any], ...]:
+    ledger = trace.get("event_ledger", {})
+    path = resolve_within_root(trace_path.parent, ledger.get("path", ""))
+    if path is None or not path.is_file():
+        raise GenericCloseoutValidationError("Execution Trace event ledger is missing")
+    content = path.read_bytes()
+    if _normalized_hash(ledger.get("sha256")) != hash_bytes(content):
+        raise GenericCloseoutValidationError("Execution Trace event ledger hash mismatch")
+    try:
+        events = tuple(
+            json.loads(line)
+            for line in content.decode("utf-8").splitlines()
+            if line.strip()
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise GenericCloseoutValidationError("Execution Trace event ledger is not parseable") from exc
+    if len(events) != ledger.get("event_count") or not all(
+        isinstance(item, Mapping) for item in events
+    ):
+        raise GenericCloseoutValidationError("Execution Trace event ledger count/shape mismatch")
+    return events
+
+
+def _validate_host_trace_facts(
+    root: Path,
+    host: Mapping[str, Any],
+    trace_path: Path,
+    trace: Mapping[str, Any],
+    supply: Mapping[str, Any],
+    *,
+    catalog: SchemaCatalog,
+) -> None:
+    actors_ref = trace.get("actors_ref", {})
+    _, actors = _load_pin(
+        root,
+        _trace_relative_pin(root, trace_path, actors_ref),
+        kind="agent_trace_actors",
+        catalog=catalog,
+    )
+    provider_identities = [
+        item.get("runtime_identity")
+        for item in actors.get("actors", ())
+        if isinstance(item, Mapping) and item.get("actor_type") == "model-provider"
+    ]
+    runtime_identities = [
+        item.get("runtime_identity")
+        for item in actors.get("actors", ())
+        if isinstance(item, Mapping) and item.get("actor_type") == "runtime-adapter"
+    ]
+    actual_binding = host.get("actual_binding", {})
+    expected_provider = (
+        actual_binding.get("provider", {}).get("ref")
+        if isinstance(actual_binding, Mapping)
+        else None
+    )
+    expected_runtime = (
+        actual_binding.get("runtime", {}).get("ref")
+        if isinstance(actual_binding, Mapping)
+        else None
+    )
+    if provider_identities != [expected_provider]:
+        raise GenericCloseoutValidationError(
+            "Execution Trace provider actor does not equal Host actual provider binding"
+        )
+    if runtime_identities != [expected_runtime]:
+        raise GenericCloseoutValidationError(
+            "Execution Trace runtime actor does not equal Host actual runtime binding"
+        )
+
+    events = _load_trace_events(root, trace_path, trace)
+    provider_invocations = sum(
+        1 for item in trace.get("messages", ()) if item.get("kind") == "provider-request"
+    )
+    tool_operations: dict[str, str] = {}
+    for event in events:
+        if event.get("event_type") != "tool-call":
+            continue
+        payload = event.get("payload", {})
+        operation_id = payload.get("operation_id")
+        tool_name = payload.get("tool_name")
+        if isinstance(operation_id, str) and isinstance(tool_name, str):
+            existing = tool_operations.get(operation_id)
+            if existing is not None and existing != tool_name:
+                raise GenericCloseoutValidationError(
+                    "Execution Trace reuses one tool operation identity for different tools"
+                )
+            tool_operations[operation_id] = tool_name
+    facts = host.get("actual_facts", {})
+    if facts.get("provider_invocations") != provider_invocations:
+        raise GenericCloseoutValidationError(
+            "Host provider invocation count does not match Execution Trace"
+        )
+    if facts.get("tool_invocations") != len(tool_operations):
+        raise GenericCloseoutValidationError(
+            "Host tool invocation count does not match Execution Trace"
+        )
+    trace_tool_refs = set(tool_operations.values())
+    if set(facts.get("tool_refs", ())) != trace_tool_refs:
+        raise GenericCloseoutValidationError(
+            "Host actual tool identities do not match Execution Trace"
+        )
+    selected_tool_refs = {
+        item.get("component_ref")
+        for item in supply.get("supply_identity", {}).get("components", ())
+        if isinstance(item, Mapping) and item.get("component_kind") == "tool"
+    }
+    if not trace_tool_refs.issubset(selected_tool_refs):
+        raise GenericCloseoutValidationError(
+            "Execution Trace tool identity is outside the selected Supply"
+        )
+
+
 def build_generic_execution_receipt(
     view: ValidatedExecutionView,
     bundle: ValidatedRuntimeBundle,
@@ -114,15 +285,17 @@ def build_generic_execution_receipt(
         raise GenericCloseoutValidationError("View and Runtime Bundle roots differ")
     catalog = SchemaCatalog(schema_root)
     host_path, host = _load_pin(root, host_report, kind="execution_host_report", catalog=catalog)
-    if host.get("status") != "completed" or host.get("actual_facts", {}).get("complete") is not True:
-        raise GenericCloseoutValidationError("only a completed, fact-complete Host report can close successfully")
+    host_status = host.get("status")
+    if host_status not in {"completed", "failed", "blocked"}:
+        raise GenericCloseoutValidationError("Host report has an unsupported lifecycle status")
+    if host_status == "completed" and host.get("actual_facts", {}).get("complete") is not True:
+        raise GenericCloseoutValidationError("a completed Host report must be fact-complete")
     expected_view_ref = {
         "ref": f"{view.document['view_id']}@r{view.document['revision']}",
         "path": view.view_path.relative_to(root).as_posix(),
         "sha256": view.view_sha256,
     }
-    if host.get("view_ref") != expected_view_ref or host.get("task_ref") != view.document.get("task_ref"):
-        raise GenericCloseoutValidationError("Host report View/Task lineage mismatch")
+    _validate_host_view_closure(host, view)
 
     trace_path, trace = _load_pin(root, trace_index, kind="agent_trace_index", catalog=catalog)
     trace_result = validate_attempt_trace(root, trace_path)
@@ -136,14 +309,16 @@ def build_generic_execution_receipt(
         trace.get("task_id") != str(task_ref["ref"]).split("@r", 1)[0]
         or trace.get("task_revision") != int(str(task_ref["ref"]).rsplit("@r", 1)[1])
         or trace.get("attempt_id") != host.get("attempt_id")
-        or trace.get("attempt_status") != "completed"
+        or trace.get("attempt_status") != host_status
         or trace.get("trace_status") != "frozen"
         or trace.get("completeness") != "complete"
     ):
         raise GenericCloseoutValidationError("Execution Trace identity/status/completeness mismatch")
 
     artifacts = host.get("artifacts", ())
-    if not isinstance(artifacts, Sequence) or isinstance(artifacts, (str, bytes)) or not artifacts:
+    if not isinstance(artifacts, Sequence) or isinstance(artifacts, (str, bytes)):
+        raise GenericCloseoutValidationError("Host artifacts must be an array")
+    if host_status == "completed" and not artifacts:
         raise GenericCloseoutValidationError("completed Host report requires artifacts")
     _validate_artifact_refs(root, artifacts)
     expected_subjects = {
@@ -199,13 +374,16 @@ def build_generic_execution_receipt(
     }.get(supply_kind)
     if execution_kind is None:
         raise GenericCloseoutValidationError("Skill Supply is outside M11 Core closeout")
+    _validate_host_trace_facts(
+        root, host, trace_path, trace, supply, catalog=catalog
+    )
     receipt = {
         "schema_version": "0.1.0",
         "receipt_id": receipt_id,
         "attempt_id": host["attempt_id"],
         "execution_kind": execution_kind,
-        "status": "completed",
-        "completion_claim": "execution-only",
+        "status": host_status,
+        "completion_claim": "execution-only" if host_status == "completed" else "none",
         "task_ref": _plain(view.document["task_ref"]),
         "view_ref": expected_view_ref,
         "host_report_ref": _file_ref(root, host_path),

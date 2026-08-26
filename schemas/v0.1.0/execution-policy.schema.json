@@ -29,6 +29,7 @@
     "data_egress": { "$ref": "capability-requirement.schema.json#/$defs/dataEgress" },
     "side_effects": { "$ref": "capability-requirement.schema.json#/$defs/sideEffects" },
     "budget_ceiling": { "$ref": "#/$defs/budget" },
+    "subject_host": { "$ref": "execution-binding.schema.json#/$defs/componentBinding" },
     "boundaries": {
       "type": "object",
       "required": ["permission_grant", "supply_selection", "fallback_authority"],
@@ -40,6 +41,16 @@
       "additionalProperties": false
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "policy_kind": { "const": "host-policy" } },
+        "required": ["policy_kind"]
+      },
+      "then": { "required": ["subject_host"] },
+      "else": { "not": { "required": ["subject_host"] } }
+    }
+  ],
   "additionalProperties": false,
   "$defs": {
     "permissionCeiling": {

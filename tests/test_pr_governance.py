@@ -410,7 +410,7 @@ class TasksAuthorityTests(unittest.TestCase):
             report=report,
         )
         self.assertFalse(report.has_errors, report.findings)
-        self.assertIn("TASK-ATOMIC-COMPLETION", codes(report, "INFO"))
+        self.assertIn("TASK-MODULE-COMPLETION", codes(report, "INFO"))
 
     def test_atomic_completion_fails_when_dependency_is_missing(self) -> None:
         base = BASE_TASKS.replace("M8-003 | PARKED", "M8-003 | PARKED").replace(
@@ -460,12 +460,12 @@ class TasksAuthorityTests(unittest.TestCase):
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
 | M8-001 | DONE | Foundation | M0 | Existing acceptance |
-| M8-002 | IN_PROGRESS | Anchor | M8-001 | Anchor evidence |
+| M8-002 | READY | Anchor | M8-001 | Anchor evidence |
 | M8-003 | PARKED | Left | M8-002 | Left evidence |
 | M8-004 | PARKED | Right | M8-002 | Right evidence |
 | M8-005 | PARKED | Join | M8-003, M8-004 | Join evidence |
 """
-        head = base.replace("M8-002 | IN_PROGRESS", "M8-002 | DONE")
+        head = base.replace("M8-002 | READY", "M8-002 | DONE")
         for task_id in ("M8-003", "M8-004", "M8-005"):
             head = head.replace(f"{task_id} | PARKED", f"{task_id} | DONE")
         report = governance.GovernanceReport()
@@ -508,7 +508,7 @@ class TasksAuthorityTests(unittest.TestCase):
             report=report,
         )
         self.assertIn("TASK-ATOMIC-ANCHOR-MISSING", codes(report, "ERROR"))
-        self.assertIn("TASK-ATOMIC-DISCONNECTED", codes(report, "ERROR"))
+        self.assertIn("TASK-MODULE-DAG-DISCONNECTED", codes(report, "ERROR"))
 
     def test_disconnected_parked_completion_component_fails(self) -> None:
         base = """# Tasks
@@ -533,7 +533,88 @@ class TasksAuthorityTests(unittest.TestCase):
             verification_evidence="M8-002 pass; M8-003 pass; M9-999 pass",
             report=report,
         )
-        self.assertIn("TASK-ATOMIC-DISCONNECTED", codes(report, "ERROR"))
+        self.assertIn("TASK-MODULE-DAG-DISCONNECTED", codes(report, "ERROR"))
+
+    def test_module_level_ready_to_blocked_dependency_chain_passes(self) -> None:
+        base = """# Tasks
+| ID | 状态 | 任务 | 依赖 | 验收 |
+|---|---|---|---|---|
+| M11-000 | DONE | Foundation | M0 | Existing acceptance |
+| M11-001 | READY | Bundle | M11-000 | Bundle evidence |
+| M11-002 | BLOCKED | View | M11-001 | View evidence |
+| M11-003 | BLOCKED | Host | M11-002 | Host evidence |
+| M11-004 | BLOCKED | Receipt | M11-003 | Receipt evidence |
+"""
+        head = base
+        for task_id in ("M11-001", "M11-002", "M11-003", "M11-004"):
+            head = head.replace(
+                f"{task_id} | {'READY' if task_id == 'M11-001' else 'BLOCKED'}",
+                f"{task_id} | DONE",
+            )
+        report = governance.GovernanceReport()
+        governance.validate_task_changes(
+            base_text=base,
+            head_text=head,
+            pr_class="feature",
+            changed_paths=("docs/TASKS.md",),
+            declared_task_ids={"M11-001", "M11-002", "M11-003", "M11-004"},
+            effective_risk="R2",
+            verification_evidence=(
+                "M11-001 commit/evidence; M11-002 commit/evidence; "
+                "M11-003 commit/evidence; M11-004 commit/evidence"
+            ),
+            report=report,
+        )
+        self.assertFalse(report.has_errors, report.findings)
+        self.assertIn("TASK-MODULE-COMPLETION", codes(report, "INFO"))
+
+    def test_disconnected_blocked_completion_cannot_hide_in_module_pr(self) -> None:
+        base = """# Tasks
+| ID | 状态 | 任务 | 依赖 | 验收 |
+|---|---|---|---|---|
+| M11-000 | DONE | Foundation | M0 | Existing acceptance |
+| M11-001 | READY | Entry | M11-000 | Entry evidence |
+| M11-002 | BLOCKED | Connected | M11-001 | Connected evidence |
+| M12-001 | BLOCKED | Disconnected | M11-000 | Disconnected evidence |
+"""
+        head = base.replace("M11-001 | READY", "M11-001 | DONE")
+        head = head.replace("M11-002 | BLOCKED", "M11-002 | DONE")
+        head = head.replace("M12-001 | BLOCKED", "M12-001 | DONE")
+        report = governance.GovernanceReport()
+        governance.validate_task_changes(
+            base_text=base,
+            head_text=head,
+            pr_class="feature",
+            changed_paths=("docs/TASKS.md",),
+            declared_task_ids={"M11-001", "M11-002", "M12-001"},
+            effective_risk="R2",
+            verification_evidence="M11-001 pass; M11-002 pass; M12-001 pass",
+            report=report,
+        )
+        self.assertIn("TASK-MODULE-DAG-DISCONNECTED", codes(report, "ERROR"))
+
+    def test_module_level_completion_requires_ready_entry(self) -> None:
+        base = """# Tasks
+| ID | 状态 | 任务 | 依赖 | 验收 |
+|---|---|---|---|---|
+| M11-000 | DONE | Foundation | M0 | Existing acceptance |
+| M11-001 | IN_PROGRESS | Entry | M11-000 | Entry evidence |
+| M11-002 | BLOCKED | Connected | M11-001 | Connected evidence |
+"""
+        head = base.replace("M11-001 | IN_PROGRESS", "M11-001 | DONE")
+        head = head.replace("M11-002 | BLOCKED", "M11-002 | DONE")
+        report = governance.GovernanceReport()
+        governance.validate_task_changes(
+            base_text=base,
+            head_text=head,
+            pr_class="feature",
+            changed_paths=("docs/TASKS.md",),
+            declared_task_ids={"M11-001", "M11-002"},
+            effective_risk="R2",
+            verification_evidence="M11-001 pass; M11-002 pass",
+            report=report,
+        )
+        self.assertIn("TASK-MODULE-DAG-DISCONNECTED", codes(report, "ERROR"))
 
     def test_atomic_completion_without_anchor_fails(self) -> None:
         base = """# Tasks

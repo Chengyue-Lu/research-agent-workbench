@@ -36,11 +36,13 @@ class RecordingDriver:
         binding: object,
         result: ExecutionDriverResult | None = None,
         supply_ref: str = "supply-no-skill-contract-check@1.0.0",
+        tool_refs: tuple[str, ...] = (),
     ):
         self.root = root
         self._binding = plain(binding)
         self.result = result
         self._supply_ref = supply_ref
+        self._tool_refs = tool_refs
         self.calls = 0
 
     @property
@@ -65,7 +67,8 @@ class RecordingDriver:
             turns=1,
             output_tokens=64,
             elapsed_seconds=0.5,
-            tool_invocations=1,
+            tool_invocations=len(self._tool_refs),
+            tool_refs=self._tool_refs,
             side_effects=("task-local-check-report",),
             artifacts=(
                 {
@@ -103,7 +106,6 @@ class ExecutionHostTests(unittest.TestCase):
     def _execute(self, bundle, view, driver):
         return execute_frozen_view(
             view,
-            bundle,
             driver,
             report_id="HOST-REPORT-001",
             attempt_id="ATTEMPT-001",
@@ -123,13 +125,16 @@ class ExecutionHostTests(unittest.TestCase):
             self.assertEqual(1, driver.calls)
             self.assertEqual("completed", report["status"])
             self.assertTrue(report["actual_facts"]["complete"])
-            self.assertEqual(1, report["actual_facts"]["tool_invocations"])
+            self.assertEqual(0, report["actual_facts"]["tool_invocations"])
             self.assertEqual("method-resolution", report["artifacts"][0]["contract"])
             self.assertEqual(
                 [], SchemaCatalog(ROOT / "schemas").validate("execution_host_report", report)
             )
             self.assertFalse(report["boundaries"]["automatic_fallback"])
             self.assertFalse(report["boundaries"]["topic5_recovery"])
+            self.assertIn("freshness", report["enforcement"]["preventive_controls"])
+            self.assertIn("data-egress", report["enforcement"]["detective_controls"])
+            self.assertFalse(report["enforcement"]["driver_claims_trusted"])
 
     def test_hash_valid_view_rewrite_is_rejected_by_deterministic_recomputation(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -147,6 +152,38 @@ class ExecutionHostTests(unittest.TestCase):
                     bundle=bundle,
                     schema_root=ROOT / "schemas",
                 )
+
+    def test_started_at_freshness_and_bound_bundle_drift_prevent_driver_call(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            bundle, view = self._build(root)
+            driver = RecordingDriver(root, view.document["binding"])
+            report = execute_frozen_view(
+                view,
+                driver,
+                report_id="HOST-STALE",
+                attempt_id="ATTEMPT-STALE",
+                started_at="2100-01-01T00:00:00Z",
+                completed_at="2100-01-01T00:00:01Z",
+                schema_root=ROOT / "schemas",
+            )
+            self.assertEqual(0, driver.calls)
+            self.assertEqual("blocked", report["status"])
+            self.assertEqual("HOST-FRESHNESS-EXPIRED", report["diagnostic"]["code"])
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            bundle, view = self._build(root)
+            task_path = next(path for path in bundle.documents if path.name == "task.yaml")
+            task_path.write_bytes(task_path.read_bytes() + b"\n# post-view drift\n")
+            driver = RecordingDriver(root, view.document["binding"])
+            report = self._execute(bundle, view, driver)
+            self.assertEqual(0, driver.calls)
+            self.assertEqual("blocked", report["status"])
+            self.assertEqual("HOST-RUNTIME-BUNDLE-DRIFT", report["diagnostic"]["code"])
+            self.assertEqual(
+                view.document["runtime_bundle_ref"], report["runtime_bundle_ref"]
+            )
 
     def test_preflight_binding_mismatch_blocks_without_call_and_requests_reresolution(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

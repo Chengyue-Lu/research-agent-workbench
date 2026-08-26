@@ -3,7 +3,7 @@
 M11-003 实现一个 supply-neutral、single-binding、single-attempt 的窄 Host：
 
 ```text
-exact Runtime Bundle + hash-pinned Resolved Execution View
+hash-pinned Resolved Execution View（内部绑定 exact Runtime Bundle）
   ↓ deterministic View recomputation
 one pre-bound FrozenExecutionDriver
   ↓ exactly one call
@@ -20,10 +20,12 @@ Host 不接收候选 Driver 列表，不访问模型池，不选择 Provider/Too
 - 校验 View→Runtime Bundle identity/path/hash；
 - 从 View 中恢复 Profile、DataPolicy、Host policy、Execution Binding 的 exact pins；
 - 调用 M11-002 producer 作确定性重算，并要求结果逐字段相等；
-- 返回深层只读 `ValidatedExecutionView`。
+- 返回深层只读 `ValidatedExecutionView`，其中保留这次重算使用的 exact `ValidatedRuntimeBundle`。
 
 因此，即使攻击者重写 View 并同步更新文件 hash，也不能静默修改 Model、Host、policy intersection 或
-frozen Supply selection。任何上游 policy/binding 文件漂移也会在重算前被各自 hash pin 阻断。
+frozen Supply selection。任何上游 policy/binding 文件漂移也会在重算前被各自 hash pin 阻断。执行 API
+不再接受第二个可替换 Bundle 参数；在 Driver 调用前，Host 会按 View 绑定的 manifest pin 重载 manifest 与
+全部 document，并与已验证 Bundle 比较，从而在可控文件边界内阻断 validate/use 间的 Bundle 漂移。
 
 ## Driver port
 
@@ -32,26 +34,35 @@ frozen Supply selection。任何上游 policy/binding 文件漂移也会在重�
 - `binding`：Driver 声明自己实际使用的 Provider/Adapter/Model/Runtime/Host identity；
 - `execute(FrozenExecutionRequest)`：接收只读 View 与 bundle documents，返回 `ExecutionDriverResult`。
 
-Host 在调用前要求 Driver binding 与 View 完全一致；不一致则零调用、`blocked`，并输出指向当前
-Snapshot/View 的 re-resolution request。调用后仍比较 actual binding，防止 Driver 静默 rebind。
+Host 在调用前要求 Driver binding 与 View 完全一致，并要求 actual `started_at` 仍落在冻结的 Supply、
+DataPolicy 与 Host-policy 三组有效期内；不一致或过期则零调用、`blocked`，并输出指向当前 Snapshot/View
+的 re-resolution request。调用后仍比较 actual binding，检测 Driver 静默 rebind。
 
 ## Boundary enforcement 与 facts
 
 Driver 必须报告：
 
-- turns、output tokens、elapsed seconds、Provider/Tool invocation counts；
+- turns、output tokens、elapsed seconds、Provider/Tool invocation counts 与实际 Tool identity 集合；
 - external write、data-egress payload classes、side effects；
 - output artifacts 的 contract/path/hash；
 - fact capture 是否完整及 capture gaps。
 
-Host 将 actual facts 与 View 的 effective permission、egress、side-effect、budget、write roots、required
-outputs 逐项比较。越界、缺失 output、artifact path/hash 漂移或事实捕获缺口均转为 `failed`，不会写成
-completion。Driver exception 只产生 content-free `HOST-DRIVER-EXCEPTION` 与 `driver-exception` capture gap；
-异常正文不会进入 report，Host 也不会重试。
+Host report 明确区分两类 enforcement：
+
+- `preventive_controls`：Driver 调用前可判定的 exact binding、freshness 与 Runtime Bundle integrity；失败时
+  Driver 零调用，因此可称 prevented；
+- `detective_controls`：调用返回后对 actual binding、事实完整性、external write、egress、side effects、
+  budget、artifact scope 与 outputs 的核对；这些只能称 detected，不能声称外部副作用已被沙箱阻止。
+
+越界、缺失 output、artifact path/hash 漂移或事实捕获缺口均转为 `failed`，不会写成 completion。
+`driver_claims_trusted: false` 明确 Driver 自报事实仍需 Trace/Receipt 后续闭合。Driver exception 只产生
+content-free `HOST-DRIVER-EXCEPTION` 与 `driver-exception` capture gap；异常正文不会进入 report，Host 也
+不会重试。
 
 ## Report 不是 Receipt
 
-`execution_host_report` 只说明一次 Host 调用实际发生了什么。其 boundary 固定：
+`execution_host_report` 还固定本次 `runtime_bundle_ref`、View、Task、actual Supply 与 actual binding，说明
+一次 Host 调用实际发生了什么。其 boundary 固定：
 
 - `actual_facts_only: true`；
 - 不拥有 Supply selection、rebinding、automatic fallback；
@@ -64,5 +75,5 @@ completion。Driver exception 只产生 content-free `HOST-DRIVER-EXCEPTION` 与
 ## 当前适用范围
 
 测试使用 bounded local no-Skill procedure Driver，证明接口与边界，不证明任何真实 Provider 账号、模型、
-SDK 或网络调用可用。现有 M6 Provider/session 可以在后续通过薄 Driver 适配，但 M11-003 不修改其 SDK、认证
-或 live conformance。
+SDK、网络调用或 OS 级副作用隔离可用。TOCTOU 防线覆盖受 pin 的仓库文件重载，不等同于锁定外部服务状态。
+现有 M6 Provider/session 可以在后续通过薄 Driver 适配，但 M11-003 不修改其 SDK、认证或 live conformance。

@@ -22,6 +22,7 @@
     "execution_binding_ref",
     "binding",
     "freshness",
+    "profile_constraints",
     "effective_constraints",
     "required_outputs",
     "completion_checks",
@@ -50,7 +51,7 @@
       "properties": {
         "provider": { "$ref": "execution-binding.schema.json#/$defs/componentBinding" },
         "adapter": { "$ref": "execution-binding.schema.json#/$defs/componentBinding" },
-        "model": { "$ref": "execution-binding.schema.json#/$defs/componentBinding" },
+        "model": { "$ref": "execution-binding.schema.json#/$defs/modelBinding" },
         "runtime": { "$ref": "execution-binding.schema.json#/$defs/componentBinding" },
         "host": { "$ref": "execution-binding.schema.json#/$defs/componentBinding" }
       },
@@ -58,12 +59,28 @@
     },
     "freshness": {
       "type": "object",
-      "required": ["supply_observed_at", "supply_valid_until", "data_policy_valid_until", "host_policy_valid_until"],
+      "required": [
+        "supply_observed_at", "supply_valid_until",
+        "data_policy_valid_from", "data_policy_valid_until",
+        "host_policy_valid_from", "host_policy_valid_until"
+      ],
       "properties": {
         "supply_observed_at": { "type": "string", "format": "date-time" },
         "supply_valid_until": { "type": "string", "format": "date-time" },
+        "data_policy_valid_from": { "type": "string", "format": "date-time" },
         "data_policy_valid_until": { "type": "string", "format": "date-time" },
+        "host_policy_valid_from": { "type": "string", "format": "date-time" },
         "host_policy_valid_until": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "profile_constraints": {
+      "type": "object",
+      "required": ["required_tool_capabilities", "required_output_contracts", "model"],
+      "properties": {
+        "required_tool_capabilities": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "required_output_contracts": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "model": { "$ref": "execution-binding.schema.json#/$defs/modelBinding" }
       },
       "additionalProperties": false
     },

@@ -122,8 +122,15 @@ def _derived_edges(
                     (document.get("requirement_ref"), "resolution-requirement", "document_path", "content_hash"),
                 ]
             )
+            # A Resolution may have compared many candidates.  Runtime consumes
+            # only the already-selected closure; non-selected candidate Reports
+            # remain upstream Resolution history and are not Runtime imports.
+            selected_ref = document.get("selected_supply_report_ref")
             for value in document.get("candidate_supply_report_refs", ()):
-                refs.append((value, "resolution-candidate-supply", "document_path", "content_hash"))
+                if isinstance(value, Mapping) and value.get("ref") == selected_ref:
+                    refs.append(
+                        (value, "resolution-candidate-supply", "document_path", "content_hash")
+                    )
         elif kind == "capability_supply_report":
             for evidence in document.get("conformance_evidence", ()):
                 if isinstance(evidence, Mapping):
@@ -240,12 +247,37 @@ def _validate_lineage(
                 str(expected_requirement_id),
             )
         )
-    if candidate_identities != {expected_supply_ref}:
+    selected_candidates = [
+        item
+        for item in candidate_refs
+        if isinstance(item, Mapping) and item.get("ref") == expected_supply_ref
+    ]
+    comparison_refs = {
+        item.get("supply_report_ref")
+        for item in resolution.get("comparisons", ())
+        if isinstance(item, Mapping)
+    }
+    selected_comparisons = [
+        item
+        for item in resolution.get("comparisons", ())
+        if isinstance(item, Mapping) and item.get("supply_report_ref") == expected_supply_ref
+    ]
+    if expected_supply_ref not in candidate_identities or len(selected_candidates) != 1:
         issues.append(
             RuntimeBundleIssue(
                 root / resolution_path,
                 "RUNTIME-BUNDLE-SUPPLY-IDENTITY-MISMATCH",
-                expected_supply_ref,
+                f"selected Runtime Supply must occur exactly once in candidates: {expected_supply_ref}",
+            )
+        )
+    if comparison_refs != candidate_identities or len(selected_comparisons) != 1 or not selected_comparisons[0].get(
+        "eligible"
+    ):
+        issues.append(
+            RuntimeBundleIssue(
+                root / resolution_path,
+                "RUNTIME-BUNDLE-RESOLUTION-COMPARISON-MISMATCH",
+                "Resolution comparisons must cover every candidate and mark the selected Supply eligible",
             )
         )
     if resolution.get("resolution_status") != "satisfied" or resolution.get("selected_supply_report_ref") != expected_supply_ref:

@@ -10,6 +10,7 @@
     "report_id",
     "attempt_id",
     "view_ref",
+    "runtime_bundle_ref",
     "task_ref",
     "started_at",
     "completed_at",
@@ -18,6 +19,7 @@
     "actual_binding",
     "actual_facts",
     "artifacts",
+    "enforcement",
     "boundaries"
   ],
   "properties": {
@@ -25,6 +27,7 @@
     "report_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "attempt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "view_ref": { "$ref": "#/$defs/revisionedFileRef" },
+    "runtime_bundle_ref": { "$ref": "#/$defs/revisionedFileRef" },
     "task_ref": { "$ref": "#/$defs/revisionedFileRef" },
     "started_at": { "type": "string", "format": "date-time" },
     "completed_at": { "type": "string", "format": "date-time" },
@@ -36,7 +39,7 @@
       "properties": {
         "provider": { "$ref": "execution-binding.schema.json#/$defs/componentBinding" },
         "adapter": { "$ref": "execution-binding.schema.json#/$defs/componentBinding" },
-        "model": { "$ref": "execution-binding.schema.json#/$defs/componentBinding" },
+        "model": { "$ref": "execution-binding.schema.json#/$defs/modelBinding" },
         "runtime": { "$ref": "execution-binding.schema.json#/$defs/componentBinding" },
         "host": { "$ref": "execution-binding.schema.json#/$defs/componentBinding" }
       },
@@ -52,6 +55,7 @@
         "elapsed_seconds",
         "provider_invocations",
         "tool_invocations",
+        "tool_refs",
         "external_write",
         "data_egress_payloads",
         "side_effects"
@@ -64,6 +68,7 @@
         "elapsed_seconds": { "type": "number", "minimum": 0 },
         "provider_invocations": { "type": "integer", "minimum": 0 },
         "tool_invocations": { "type": "integer", "minimum": 0 },
+        "tool_refs": { "$ref": "common.schema.json#/$defs/stringArray" },
         "external_write": { "type": "boolean" },
         "data_egress_payloads": { "$ref": "common.schema.json#/$defs/stringArray" },
         "side_effects": { "$ref": "common.schema.json#/$defs/stringArray" }
@@ -75,6 +80,32 @@
           "else": { "properties": { "capture_gaps": { "minItems": 1 } } }
         }
       ],
+      "additionalProperties": false
+    },
+    "enforcement": {
+      "type": "object",
+      "required": ["preventive_controls", "detective_controls", "driver_claims_trusted"],
+      "properties": {
+        "preventive_controls": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": ["binding-preflight", "freshness", "runtime-bundle-integrity"]
+          }
+        },
+        "detective_controls": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "binding-postflight", "fact-completeness", "external-write",
+              "data-egress", "side-effects", "budget", "artifact-scope",
+              "output-contract"
+            ]
+          }
+        },
+        "driver_claims_trusted": { "const": false }
+      },
       "additionalProperties": false
     },
     "artifacts": {

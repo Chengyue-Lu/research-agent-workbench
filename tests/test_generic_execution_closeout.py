@@ -105,9 +105,14 @@ class GenericExecutionCloseoutTests(unittest.TestCase):
     def _validated_receipt(self, root: Path, path_kind: str):
         bundle, view = self._bundle_and_view(root, path_kind)
         driver = host_fixtures.RecordingDriver(root, view.document["binding"])
+        if path_kind == "direct-tool":
+            driver = host_fixtures.RecordingDriver(
+                root,
+                view.document["binding"],
+                tool_refs=("bounded-contract-check-tool",),
+            )
         host_report = execute_frozen_view(
             view,
-            bundle,
             driver,
             report_id=f"HOST-{path_kind}",
             attempt_id=f"ATTEMPT-{path_kind}",
@@ -243,6 +248,155 @@ class GenericExecutionCloseoutTests(unittest.TestCase):
                     bundle=bundle,
                     schema_root=ROOT / "schemas",
                 )
+
+    def _rewrite_closeout_subject(
+        self,
+        root: Path,
+        receipt_document: dict,
+        subject_path: str,
+        subject_document: dict,
+    ) -> CloseoutPin:
+        subject_pin = self._write(root, subject_path, subject_document)
+        validation_ref = receipt_document["validation_refs"][0]
+        validation = load_document(root / validation_ref["path"])
+        for item in validation["subject_refs"]:
+            if item["path"] == subject_path:
+                item["sha256"] = subject_pin.sha256
+        validation_pin = self._write(root, validation_ref["path"], validation)
+        receipt_document["host_report_ref"]["sha256"] = subject_pin.sha256
+        receipt_document["validation_refs"][0]["sha256"] = validation_pin.sha256
+        return self._write(root, "closeout/receipt-rewritten.yaml", receipt_document)
+
+    def test_receipt_replay_rejects_rehashed_host_binding_and_supply_substitution(self) -> None:
+        cases = (
+            lambda host: host["actual_binding"]["provider"].update({"ref": "substituted"}),
+            lambda host: host.update({"actual_supply_report_ref": "supply-substituted@1.0.0"}),
+        )
+        for mutate in cases:
+            with self.subTest(mutation=mutate.__code__.co_firstlineno):
+                with tempfile.TemporaryDirectory() as temp:
+                    root = Path(temp)
+                    bundle, validated = self._validated_receipt(root, "no-skill")
+                    receipt = copy.deepcopy(validated.document)
+                    host_path = receipt["host_report_ref"]["path"]
+                    host = load_document(root / host_path)
+                    mutate(host)
+                    self.assertEqual(
+                        [],
+                        SchemaCatalog(ROOT / "schemas").validate(
+                            "execution_host_report", host
+                        ),
+                    )
+                    rewritten = self._rewrite_closeout_subject(
+                        root, receipt, host_path, host
+                    )
+                    with self.assertRaises(GenericCloseoutValidationError):
+                        validate_generic_execution_receipt(
+                            rewritten.path,
+                            expected_sha256=rewritten.sha256,
+                            bundle=bundle,
+                            schema_root=ROOT / "schemas",
+                        )
+
+    def test_host_tool_fact_without_trace_operation_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            bundle, validated = self._validated_receipt(root, "no-skill")
+            receipt = copy.deepcopy(validated.document)
+            host_path = receipt["host_report_ref"]["path"]
+            host = load_document(root / host_path)
+            host["actual_facts"]["tool_invocations"] = 1
+            host["actual_facts"]["tool_refs"] = ["untraced-tool"]
+            self.assertEqual(
+                [],
+                SchemaCatalog(ROOT / "schemas").validate("execution_host_report", host),
+            )
+            rewritten = self._rewrite_closeout_subject(root, receipt, host_path, host)
+            with self.assertRaises(GenericCloseoutValidationError) as raised:
+                validate_generic_execution_receipt(
+                    rewritten.path,
+                    expected_sha256=rewritten.sha256,
+                    bundle=bundle,
+                    schema_root=ROOT / "schemas",
+                )
+            self.assertIn("tool invocation count", str(raised.exception))
+
+    def test_host_provider_count_without_trace_request_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            bundle, validated = self._validated_receipt(root, "no-skill")
+            receipt = copy.deepcopy(validated.document)
+            host_path = receipt["host_report_ref"]["path"]
+            host = load_document(root / host_path)
+            host["actual_facts"]["provider_invocations"] = 1
+            rewritten = self._rewrite_closeout_subject(root, receipt, host_path, host)
+            with self.assertRaises(GenericCloseoutValidationError) as raised:
+                validate_generic_execution_receipt(
+                    rewritten.path,
+                    expected_sha256=rewritten.sha256,
+                    bundle=bundle,
+                    schema_root=ROOT / "schemas",
+                )
+            self.assertIn("provider invocation count", str(raised.exception))
+
+    def test_trace_provider_and_runtime_actor_identity_must_match_host_binding(self) -> None:
+        actor_types = ("model-provider", "runtime-adapter")
+        for actor_type in actor_types:
+            with self.subTest(actor_type=actor_type):
+                with tempfile.TemporaryDirectory() as temp:
+                    root = Path(temp)
+                    bundle, validated = self._validated_receipt(root, "no-skill")
+                    receipt = copy.deepcopy(validated.document)
+                    trace_path = receipt["trace_ref"]["path"]
+                    trace = load_document(root / trace_path)
+                    actors_relative = trace["actors_ref"]["path"]
+                    actors_path = (
+                        (root / trace_path).parent / actors_relative
+                    ).relative_to(root).as_posix()
+                    actors = load_document(root / actors_path)
+                    actor = next(
+                        item for item in actors["actors"] if item["actor_type"] == actor_type
+                    )
+                    actor["runtime_identity"] = "substituted-runtime-identity"
+                    actors_pin = self._write(root, actors_path, actors)
+                    trace["actors_ref"]["sha256"] = actors_pin.sha256
+                    trace_pin = self._write(root, trace_path, trace)
+
+                    validation_ref = receipt["validation_refs"][0]
+                    validation = load_document(root / validation_ref["path"])
+                    next(
+                        item
+                        for item in validation["subject_refs"]
+                        if item["path"] == trace_path
+                    )["sha256"] = trace_pin.sha256
+                    validation_pin = self._write(root, validation_ref["path"], validation)
+                    receipt["trace_ref"]["sha256"] = trace_pin.sha256
+                    receipt["validation_refs"][0]["sha256"] = validation_pin.sha256
+                    rewritten = self._write(root, "closeout/receipt-rewritten.yaml", receipt)
+
+                    with self.assertRaises(GenericCloseoutValidationError) as raised:
+                        validate_generic_execution_receipt(
+                            rewritten.path,
+                            expected_sha256=rewritten.sha256,
+                            bundle=bundle,
+                            schema_root=ROOT / "schemas",
+                        )
+                    self.assertIn("actor does not equal Host actual", str(raised.exception))
+
+    def test_receipt_schema_distinguishes_completed_from_failed_or_blocked(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            _, validated = self._validated_receipt(root, "no-skill")
+            catalog = SchemaCatalog(ROOT / "schemas")
+            for status in ("failed", "blocked"):
+                document = copy.deepcopy(validated.document)
+                document["status"] = status
+                document["completion_claim"] = "none"
+                document["artifact_refs"] = []
+                self.assertEqual([], catalog.validate("generic_execution_receipt", document))
+            invalid = copy.deepcopy(validated.document)
+            invalid["status"] = "failed"
+            self.assertTrue(catalog.validate("generic_execution_receipt", invalid))
 
     def test_generic_receipt_rejects_skill_claim_human_and_recovery_fields(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

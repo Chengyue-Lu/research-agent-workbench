@@ -297,6 +297,82 @@ class RuntimeBundleTests(unittest.TestCase):
             self.assertIn("RUNTIME-BUNDLE-SNAPSHOT-IDENTITY-MISMATCH", self._codes(raised))
             self.assertIn("RUNTIME-BUNDLE-SUPPLY-FACT-DRIFT", self._codes(raised))
 
+    def test_multi_candidate_resolution_loads_only_selected_runtime_closure(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            manifest_path = self._build_bundle(root)
+            resolution_path = root / "bundle/resolution.yaml"
+            resolution = load_document(resolution_path)
+            resolution["candidate_supply_report_refs"].append(
+                {
+                    "ref": "supply-not-selected@1.0.0",
+                    "document_path": "maintainer-history/not-selected.yaml",
+                    "content_hash": "sha256:" + "9" * 64,
+                }
+            )
+            rejected_checks = copy.deepcopy(resolution["comparisons"][0]["checks"])
+            rejected_checks[0] = {
+                **rejected_checks[0],
+                "status": "fail",
+                "reason": "The upstream candidate was compared but not selected.",
+            }
+            resolution["comparisons"].append(
+                {
+                    "supply_report_ref": "supply-not-selected@1.0.0",
+                    "checks": rejected_checks,
+                    "eligible": False,
+                }
+            )
+            resolution_hash = self._write(root, "bundle/resolution.yaml", resolution)
+            snapshot = load_document(root / "bundle/snapshot.yaml")
+            snapshot["resolution_ref"]["content_hash"] = "sha256:" + resolution_hash
+            snapshot_hash = self._write(root, "bundle/snapshot.yaml", snapshot)
+            manifest = load_document(manifest_path)
+            manifest["entrypoint"]["sha256"] = snapshot_hash
+            for item in manifest["documents"]:
+                if item["path"] == "bundle/resolution.yaml":
+                    item["sha256"] = resolution_hash
+                elif item["path"] == "bundle/snapshot.yaml":
+                    item["sha256"] = snapshot_hash
+            self._write(root, "bundle/manifest.yaml", manifest)
+
+            validated = load_runtime_bundle(
+                manifest_path, project_root=root, schema_root=ROOT / "schemas"
+            )
+            self.assertEqual(7, len(validated.documents))
+            self.assertFalse((root / "maintainer-history/not-selected.yaml").exists())
+
+    def test_selected_supply_must_remain_in_resolution_candidates(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            manifest_path = self._build_bundle(root)
+            resolution = load_document(root / "bundle/resolution.yaml")
+            resolution["candidate_supply_report_refs"][0]["ref"] = "supply-other@1.0.0"
+            resolution["comparisons"][0]["supply_report_ref"] = "supply-other@1.0.0"
+            resolution_hash = self._write(root, "bundle/resolution.yaml", resolution)
+            snapshot = load_document(root / "bundle/snapshot.yaml")
+            snapshot["resolution_ref"]["content_hash"] = "sha256:" + resolution_hash
+            snapshot_hash = self._write(root, "bundle/snapshot.yaml", snapshot)
+            manifest = load_document(manifest_path)
+            manifest["entrypoint"]["sha256"] = snapshot_hash
+            for item in manifest["documents"]:
+                if item["path"] == "bundle/resolution.yaml":
+                    item["sha256"] = resolution_hash
+                elif item["path"] == "bundle/snapshot.yaml":
+                    item["sha256"] = snapshot_hash
+            # The selected-only import can no longer be derived.
+            manifest["imports"] = [
+                item
+                for item in manifest["imports"]
+                if item["relation"] != "resolution-candidate-supply"
+            ]
+            self._write(root, "bundle/manifest.yaml", manifest)
+            with self.assertRaises(RuntimeBundleValidationError) as raised:
+                load_runtime_bundle(
+                    manifest_path, project_root=root, schema_root=ROOT / "schemas"
+                )
+            self.assertIn("RUNTIME-BUNDLE-SUPPLY-IDENTITY-MISMATCH", self._codes(raised))
+
     def test_runtime_module_has_no_recursive_or_evolution_imports(self) -> None:
         from research_workbench.execution import runtime_bundle
 

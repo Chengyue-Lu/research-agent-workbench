@@ -16,14 +16,13 @@
     "attempt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "execution_kind": { "enum": ["no-skill", "direct-tool", "adapter-provider"] },
     "status": { "enum": ["completed", "failed", "blocked"] },
-    "completion_claim": { "const": "execution-only" },
+    "completion_claim": { "enum": ["execution-only", "none"] },
     "task_ref": { "$ref": "#/$defs/revisionedFileRef" },
     "view_ref": { "$ref": "#/$defs/revisionedFileRef" },
     "host_report_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
     "trace_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
     "artifact_refs": {
       "type": "array",
-      "minItems": 1,
       "items": {
         "type": "object",
         "required": ["contract", "path", "sha256"],
@@ -55,6 +54,23 @@
       "additionalProperties": false
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "status": { "const": "completed" } },
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "completion_claim": { "const": "execution-only" },
+          "artifact_refs": { "minItems": 1 }
+        }
+      },
+      "else": {
+        "properties": { "completion_claim": { "const": "none" } }
+      }
+    }
+  ],
   "additionalProperties": false,
   "$defs": {
     "revisionedFileRef": {

@@ -23,9 +23,9 @@ View producer 是 frozen-selection consumer，不是第二个 Capability Resolve
 
 - Agent Profile：identity/version/path/hash 必须与 Task 的 `agent_profile` 一致；
 - DataPolicy：声明 permission、data-egress、side-effect、budget ceiling 和有效期；
-- Host policy：声明同类 Host ceiling 和有效期；
+- Host policy：声明同类 Host ceiling、有效期以及它唯一约束的 exact Host identity；
 - Execution Binding：固定 Provider、Adapter、Model、Runtime、Host 的 exact ref/version/config digest，并
-  必须保留 Snapshot 已选择的 Supply Report identity。
+  必须保留 Snapshot 已选择的 Supply Report identity。Model 还必须声明 model class、slot 与 capability set。
 
 调用方还必须提供 Runtime Bundle manifest 的 external SHA-256 pin 和显式 `execution_at`。producer 不读取
 环境变量、不扫描 Registry，也不使用当前时钟替代该时间点。
@@ -56,6 +56,7 @@ Report、Profile、两份 policy 与 Execution Binding，并冻结：
 
 - Provider / Adapter / Model / Runtime / Host ref、version、content/config hash；
 - Supply availability observation、Supply/DataPolicy/Host policy validity windows；
+- Profile 对 Tool capability、required output contract 与 Model class/slot/capability 的最终约束；
 - Task、Profile、Supply、DataPolicy、Host policy 的最严 permission intersection；
 - Supply、DataPolicy、Host policy 的 data-egress 与 side-effect intersection；
 - Task、DataPolicy、Host policy 的最小 budget ceilings；
@@ -63,11 +64,14 @@ Report、Profile、两份 policy 与 Execution Binding，并冻结：
 
 文件系统和网络采用显式有序 ceiling；write roots 采用路径包含关系求交并保留更窄的可写根。Data egress
 取 allowed payload 交集与 forbidden payload 并集；side effects 取 allowlist 交集；budget 对每个已声明维度
-取最小值。无法形成合法交集即 fail closed。
+取最小值。Task/selected Supply 需要的 Tool capability 必须包含于 Profile allowlist，Task required outputs
+必须包含于 Profile output contracts；Binding 的 Model 必须满足 Profile 的 class、default slot 与 required
+capabilities。Host policy 的 subject 必须等于 Binding 中 exact Host。无法形成合法交集即 fail closed。
 
 ## Freshness 与供给资格
 
-`execution_at` 必须同时位于 Supply availability、DataPolicy 和 Host policy 的窗口内。selected Supply 必须
+`execution_at` 必须同时位于 Supply availability、DataPolicy 和 Host policy 的窗口内；View 同时冻结各窗口
+的起止点，供 Host 在真正调用前以 actual `started_at` 再次判定。selected Supply 必须
 仍为 `available`，且 explicit closure 内的 typed evidence 必须：
 
 - 为 `local-conformance` 或 `live-conformance`；
@@ -92,4 +96,5 @@ M11 Core 不依赖 SkillReleaseProjection、Need、Evaluation 或 Lifecycle。M1
 ## 当前停止点
 
 M11-002 只生成并 schema-check View mapping；不写执行文件、不解析凭据、不调用 Provider、不产生 Trace 或
-Receipt。M11-003 才实现只消费 exact View 的 Thin Execution Host。
+Receipt。其 Profile/Policy/Binding narrowing 是最终静态执行契约，但不是运行时新鲜度或字节不漂移的保证；
+M11-003 还必须绑定并在调用前重载同一个 exact Runtime Bundle。
