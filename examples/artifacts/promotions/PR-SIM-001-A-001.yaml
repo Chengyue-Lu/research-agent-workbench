@@ -3,7 +3,7 @@ promotion_id: PR-SIM-001-A-001
 source_workspace: examples/artifacts/work/SIM-001/A-001
 validation_report:
   path: examples/artifacts/work/SIM-001/A-001/checks/VAL-SIM-001-A-001.yaml
-  sha256: ba42dcd95d47e54c1f886908d40cb9f7ac6f07278ee96b69b76fe8140924e165
+  sha256: 838b6795d593d9ff9f74cab47e91949d989d73d1d2741df1da59f4ba26ee209b
 decided_by: huangyi
 decided_at: '2026-08-25T12:00:00+08:00'
 entries:
