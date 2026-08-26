@@ -47,6 +47,7 @@ class VersionedSchemaTests(unittest.TestCase):
                 "authority_rule_eligibility",
                 "execution_receipt",
                 "execution_binding",
+                "execution_host_report",
                 "execution_policy",
                 "handoff_packet",
                 "handoff_transfer_audit",

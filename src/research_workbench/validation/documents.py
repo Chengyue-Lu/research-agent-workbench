@@ -171,6 +171,7 @@ SCHEMA_KINDS = {
     "resolved_capability_snapshot",
     "runtime_bundle_manifest",
     "execution_binding",
+    "execution_host_report",
     "execution_policy",
     "resolved_execution_view",
     "agent_profile",
@@ -246,6 +247,8 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "runtime_bundle_manifest"
     if "binding_id" in document and "selected_supply_report_ref" in document and "host" in document:
         return "execution_binding"
+    if "report_id" in document and "actual_binding" in document and "actual_facts" in document:
+        return "execution_host_report"
     if "policy_id" in document and "policy_kind" in document and "permission_ceiling" in document:
         return "execution_policy"
     if "view_id" in document and "execution_binding_ref" in document and "effective_constraints" in document:

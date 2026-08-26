@@ -71,6 +71,20 @@ M11-001 Runtime Bundle/Profile
 - 报告 actual execution facts 或 bounded failure/re-resolution request；
 - 不 reselect/rebind、修改 Method/Claim/Gate 或实现 Topic 5 recovery。
 
+实现证据（本阶段第三层）：
+
+- exact View loader：external pin + Bundle lineage + M11-002 deterministic recomputation；
+- single-binding Driver port：preflight/postflight binding equality，最多且恰好一次调用，无候选或 fallback；
+- fact report：完整性、调用/预算、egress、side effects、external write、artifacts/output contract；
+- bounded failure：Driver exception 不泄露正文、不 retry；capture gap 不伪装 completion；binding drift 只请求
+  上游 re-resolution；
+- focused negative tests：hash-valid View rewrite、pre/post binding drift、egress/effect/budget/write-scope/output
+  violation、exception capture gap、forbidden routing/recovery imports；
+- focused Host/View/Bundle/schema tests：`Ran 20 tests ... OK`；
+- repository validation：`validated=154 errors=0 warnings=0`；
+- full unit suite：`Ran 449 tests ... OK (skipped=3)`；三个 skip 均为当前环境未安装 Hypothesis 的既有可选测试；
+- 结论：M11-003 验收闭合，状态 `READY→DONE`；只解锁 M11-004 为 `READY`，尚未生成 generic Receipt。
+
 ### M11-004
 
 - no-Skill/direct Tool 路径闭合 Task→View→Host→Trace/Artifact/Validation/generic Receipt；

@@ -20,6 +20,15 @@ from research_workbench.execution.execution_view import (
     PinnedExecutionInput,
     produce_resolved_execution_view,
 )
+from research_workbench.execution.host import (
+    ExecutionDriverResult,
+    ExecutionHostValidationError,
+    FrozenExecutionDriver,
+    FrozenExecutionRequest,
+    ValidatedExecutionView,
+    execute_frozen_view,
+    load_resolved_execution_view,
+)
 from research_workbench.execution.recovery import (
     RecoveryPreparation,
     RecoverySeed,
@@ -46,5 +55,12 @@ __all__ = [
     "ExecutionViewValidationError",
     "PinnedExecutionInput",
     "produce_resolved_execution_view",
+    "ExecutionDriverResult",
+    "ExecutionHostValidationError",
+    "FrozenExecutionDriver",
+    "FrozenExecutionRequest",
+    "ValidatedExecutionView",
+    "execute_frozen_view",
+    "load_resolved_execution_view",
     "verify_execution_archive",
 ]
