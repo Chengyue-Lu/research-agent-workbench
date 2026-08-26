@@ -34,6 +34,17 @@ M11-001 Runtime Bundle/Profile
 - zero-Skill、零 Evolution Registry 的 no-Skill/direct Tool Core 可验证；
 - 不产生 Resolved Execution View，不选择或替换 Supply。
 
+实现证据（本阶段第一层）：
+
+- Schema：`runtime-bundle-manifest.schema.json`；
+- Runtime API：`research_workbench.execution.load_runtime_bundle()`；
+- focused tests：`tests.test_runtime_bundle` 与 schema catalog tests；
+- 正路径在临时 project root 中不创建 Registry，未声明坏文件不影响结果；
+- 负路径覆盖 directory/hash/undeclared import/structural replay/import graph/identity/Supply-fact drift；
+- repository validation：`validated=154 errors=0 warnings=0`；
+- full unit suite：`Ran 438 tests ... OK (skipped=3)`；三个 skip 均为当前环境未安装 Hypothesis 的既有可选测试；
+- 结论：M11-001 验收闭合，状态 `READY→DONE`；只解锁 M11-002 为 `READY`，尚未实现其 View 语义。
+
 ### M11-002
 
 - 仅在 M11-001 证据闭合后开始；

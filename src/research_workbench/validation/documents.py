@@ -169,6 +169,7 @@ SCHEMA_KINDS = {
     "research_mode",
     "research_mode_migration",
     "resolved_capability_snapshot",
+    "runtime_bundle_manifest",
     "agent_profile",
     "skill_manifest",
     "skill_assignment",
@@ -238,6 +239,8 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "capability_supply_report"
     if "snapshot_id" in document and "selected_supply_report_ref" in document:
         return "resolved_capability_snapshot"
+    if document.get("profile") == "runtime-bundle" and "bundle_id" in document and "documents" in document:
+        return "runtime_bundle_manifest"
     if "resolution_id" in document and "requirement_ref" in document and "comparisons" in document:
         return "capability_resolution"
     if document.get("scope") == "phase-b-evolution" and "gate_id" in document:

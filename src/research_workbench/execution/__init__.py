@@ -8,6 +8,12 @@ from research_workbench.execution.archive import (
     verify_execution_archive,
 )
 from research_workbench.execution.runner import TracedSessionResult, run_traced_session
+from research_workbench.execution.runtime_bundle import (
+    RuntimeBundleIssue,
+    RuntimeBundleValidationError,
+    ValidatedRuntimeBundle,
+    load_runtime_bundle,
+)
 from research_workbench.execution.recovery import (
     RecoveryPreparation,
     RecoverySeed,
@@ -26,5 +32,9 @@ __all__ = [
     "finalize_execution_archive",
     "prepare_recovery_attempt",
     "run_traced_session",
+    "RuntimeBundleIssue",
+    "RuntimeBundleValidationError",
+    "ValidatedRuntimeBundle",
+    "load_runtime_bundle",
     "verify_execution_archive",
 ]
