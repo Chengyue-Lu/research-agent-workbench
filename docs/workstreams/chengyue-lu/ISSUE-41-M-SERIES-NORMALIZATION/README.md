@@ -83,9 +83,10 @@ decision，接受后再返回 normalization。
 8. 运行文档链接、Governance focused tests 与 repository validation；
 9. 以 docs-only `task-definition` PR 请求独立 R2/cross-owner review。
 
-后续 feature 实施采用一 dependency layer 一 PR。特别是 M11-001→002→003→004 的 Bundle、View、Host、
-Trace/Receipt 属于不同 producer/consumer surface，不能以 R2 atomic completion 一次跨层完成；
-M11-005/006 同样分别验收。R2 atomic exception 仅保留给真正不可独立验收的同一 Stage。
+后续 feature 实施保持一 dependency layer 一组独立 implementation/acceptance evidence，但 PR 是
+integration/review unit，不要求与 Task 1:1。M11-001→002→003→004 的 Bundle、View、Host、
+Trace/Receipt 可在同一强耦合 module workstream 中按 dependency DAG、独立 commit/evidence 和相关
+owner review 原子集成。`PARKED → DONE` 的 R2 exception 仍只用于满足 canonical module-level 条件的 DAG。
 
 ## 6. 事实基线与合并顺序
 
@@ -127,7 +128,7 @@ implementation、live Provider、Phase C 科学表示或 Topic 5 recovery 已完
 
 | Review finding | Decision |
 |---|---|
-| atomic completion 只限 R2 或逐层 PR | 保留 Governance v2 的既有 R2 exception；Issue #41 全部新增/规范化 DAG 选择一 dependency layer 一 feature PR，尤其禁止 M11 跨层 atomic completion |
+| Task 与 PR 粒度 | Task 保持 implementation/acceptance identity；PR 是 integration/review unit。同一强耦合 module/workstream 的预定义 DAG 可按 canonical module-level 条件原子集成，不再专门禁止 M11-001→004 同 PR |
 | Topic 5 membership/freeze 歧义 | Phase C chain 只作 activation prerequisite；membership 只按 Handoff/context/safe-pause/recovery/continuation objective；M11-003/004 也明确不属于 Topic 5 |
 | M11-006 形成 Skill-specific Runtime seam | owner 改为路诚钺；Task 改成 eligible Skill supply 到统一 View/Capability 语义的映射，Host 无 Skill 特例 |
 | M6-004 是否 hard-depend M11-004 | 否；它只依赖 M6-001/002 与 external live authorization，验证 Provider/session 而非 Runtime E2E |
