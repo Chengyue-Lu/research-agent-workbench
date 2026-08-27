@@ -13,6 +13,8 @@ jobs:
   governance:
     runs-on: ubuntu-latest
     steps:
+      - name: Start wall-time clock
+        run: echo "RWB_JOB_STARTED_AT=$(date +%s)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -20,13 +22,32 @@ jobs:
         with:
           python-version: "3.11"
       - run: python .github/scripts/check_pr_governance.py
+      - name: Report job wall time
+        if: always()
+        run: |
+          ended_at="$(date +%s)"
+          wall_seconds="$((ended_at - RWB_JOB_STARTED_AT))"
+          echo "governance job_wall_seconds=${wall_seconds}"
+          printf '### Job wall time\n\n- job: governance\n- wall_seconds: %s\n' "$wall_seconds" >> "$GITHUB_STEP_SUMMARY"
 
   test:
+    name: test (${{ matrix.python-version }})
+    needs: package_smoke
+    if: always()
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python-version: ["3.11", "3.13"]
+        include:
+          - python-version: "3.11"
+            coverage: true
+          - python-version: "3.13"
+            coverage: false
     steps:
+      - name: Start wall-time clock
+        run: echo "RWB_JOB_STARTED_AT=$(date +%s)" >> "$GITHUB_ENV"
+      - name: Require package-smoke Gate
+        run: test "${{ needs.package_smoke.result }}" = "success"
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -34,20 +55,54 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install -e ".[test]"
-      - run: python -m unittest discover -s tests -v
-      - run: coverage run -m unittest discover -s tests
-      - run: coverage report --fail-under=80
-      - run: coverage json -o coverage.json
+      - name: Run full unittest suite with coverage
+        if: matrix.coverage
+        run: coverage run -m unittest discover -s tests
+      - name: Run full unittest suite
+        if: matrix.coverage == false
+        run: python -m unittest discover -s tests -v
+      - if: matrix.coverage
+        run: coverage report --fail-under=80
+      - if: matrix.coverage
+        run: coverage json -o coverage.json
       - name: Enforce Trace module coverage
+        if: matrix.coverage
         run: >-
           python -c "import json; data=json.load(open('coverage.json', encoding='utf-8'));
           trace=next(item for path,item in data['files'].items()
           if path.replace(chr(92),'/').endswith('src/research_workbench/observability/trace.py'));
           value=trace['summary']['percent_covered'];
           print(f'trace coverage={value:.2f}%'); assert value >= 90"
-      - run: rwb validate examples registry
+      - name: Report job wall time
+        if: always()
+        run: |
+          ended_at="$(date +%s)"
+          wall_seconds="$((ended_at - RWB_JOB_STARTED_AT))"
+          echo "test (${{ matrix.python-version }}) job_wall_seconds=${wall_seconds}"
+          printf '### Job wall time\n\n- job: test (%s)\n- wall_seconds: %s\n' "${{ matrix.python-version }}" "$wall_seconds" >> "$GITHUB_STEP_SUMMARY"
+
+  package_smoke:
+    name: package-smoke (3.11)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start wall-time clock
+        run: echo "RWB_JOB_STARTED_AT=$(date +%s)" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install "build>=1.2,<2"
       - run: python -m build --wheel
       - run: python -m venv .venv-smoke
       - run: .venv-smoke/bin/python -m pip install dist/*.whl
       - run: .venv-smoke/bin/rwb schema list
       - run: .venv-smoke/bin/rwb validate examples registry
+      - name: Report job wall time
+        if: always()
+        run: |
+          ended_at="$(date +%s)"
+          wall_seconds="$((ended_at - RWB_JOB_STARTED_AT))"
+          echo "package-smoke (3.11) job_wall_seconds=${wall_seconds}"
+          printf '### Job wall time\n\n- job: package-smoke (3.11)\n- wall_seconds: %s\n' "$wall_seconds" >> "$GITHUB_STEP_SUMMARY"
