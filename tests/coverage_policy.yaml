@@ -1,0 +1,165 @@
+policy_id: rwb-coverage-policy
+version: 2.0.0
+source_root: src/research_workbench
+
+suites:
+  coverage-quality:
+    description: >-
+      Deterministic unit, contract, and validator tests used as code-path
+      evidence. Behavioral compatibility remains owned by the full suites.
+    modules:
+      - test_agent_trace
+      - test_api_session_runner
+      - test_capability_consumer
+      - test_capability_requirements
+      - test_capability_resolution
+      - test_catalog
+      - test_cli
+      - test_contracts
+      - test_coverage_policy
+      - test_decision_authority
+      - test_execution_host
+      - test_execution_view
+      - test_generic_execution_closeout
+      - test_handoff_transfer
+      - test_integrity
+      - test_kernel
+      - test_method_resolutions
+      - test_mode_action_routing_fixtures
+      - test_mode_actions
+      - test_model_pool
+      - test_protocol_profiles
+      - test_pr_governance
+      - test_provider_adapters
+      - test_provider_conformance
+      - test_provider_port
+      - test_relationships
+      - test_research_mode_migration
+      - test_runtime_bundle
+      - test_schemas
+      - test_skill_archive_audit
+      - test_skill_evaluation
+      - test_skill_lifecycle
+      - test_skill_needs
+      - test_trace_risk_codes
+    omitted_modules:
+      - module: test_accepted_skill_migration_fixtures
+        reason: repository fixture replay belongs to the behavioral suite
+      - module: test_candidate_claim_rewrite
+        reason: subprocess integration belongs to the behavioral suite
+      - module: test_documentation
+        reason: documentation ownership belongs to the behavioral and governance suites
+      - module: test_execution_trace_adapter
+        reason: repeated subprocess and archive integration belongs to the behavioral suite
+      - module: test_m2_registry_runtime
+        reason: script subprocess integration belongs to the behavioral suite
+      - module: test_m3_context_observability
+        reason: cross-surface archive integration belongs to the behavioral suite
+      - module: test_phase_b_evolution_gate
+        reason: repository-wide phase fixture validation belongs to the behavioral suite
+      - module: test_project_internal_handoff_fixtures
+        reason: repository fixture validation belongs to the behavioral suite
+      - module: test_trace_properties
+        reason: high-iteration property stress belongs to the behavioral suite
+      - module: test_validation
+        reason: repository-wide validation is already owned by package-smoke and the behavioral suite
+
+thresholds:
+  global:
+    line: 90
+  critical:
+    line: 95
+    branch: 90
+
+critical_modules:
+  - .github/scripts/check_pr_governance.py
+  - src/research_workbench/protocol/authority.py
+  - src/research_workbench/capability/requirements.py
+  - src/research_workbench/capability/resolver.py
+  - src/research_workbench/capability/supply.py
+  - src/research_workbench/execution/runtime_bundle.py
+  - src/research_workbench/execution/execution_view.py
+  - src/research_workbench/execution/host.py
+  - src/research_workbench/observability/trace.py
+  - src/research_workbench/execution/generic_closeout.py
+  - src/research_workbench/artifacts/integrity.py
+  - src/research_workbench/kernel/objects.py
+  - src/research_workbench/validation/relationships.py
+
+negative_acceptance:
+  - surface: repository-governance-validator
+    modules:
+      - .github/scripts/check_pr_governance.py
+    positive_tests:
+      - test_pr_governance.TopologyTests.test_feature_to_develop_passes
+      - test_pr_governance.TasksAuthorityTests.test_r2_connected_linear_stage_chain_passes
+    negative_tests:
+      - test_pr_governance.TopologyTests.test_feature_to_main_fails
+      - test_pr_governance.TasksAuthorityTests.test_done_task_is_immutable
+      - test_pr_governance.PublishedIdentityIntegrationTests.test_move_out_is_detected_when_changed_path_is_not_published
+  - surface: authority-rule-eligibility
+    modules:
+      - src/research_workbench/protocol/authority.py
+    positive_tests:
+      - test_decision_authority.DecisionAuthorityTests.test_all_recorded_results_are_deterministically_recomputed
+    negative_tests:
+      - test_decision_authority.DecisionAuthorityTests.test_agent_and_resolver_cannot_commit_reserved_decisions
+      - test_decision_authority.DecisionAuthorityTests.test_hash_and_recorded_result_drift_are_blocking
+  - surface: capability-demand-resolution-snapshot
+    modules:
+      - src/research_workbench/capability/requirements.py
+      - src/research_workbench/capability/resolver.py
+      - src/research_workbench/capability/supply.py
+    positive_tests:
+      - test_capability_resolution.CapabilityResolutionTests.test_supply_resolution_snapshot_chain_is_closed_and_recomputed
+    negative_tests:
+      - test_capability_requirements.CapabilityRequirementTests.test_wrong_index_hash_is_blocking
+      - test_capability_resolution.CapabilityResolutionTests.test_snapshot_lineage_supply_facts_and_evidence_drift_are_blocking
+  - surface: runtime-bundle-closure
+    modules:
+      - src/research_workbench/execution/runtime_bundle.py
+    positive_tests:
+      - test_runtime_bundle.RuntimeBundleTests.test_zero_skill_bundle_uses_only_explicit_exact_closure
+    negative_tests:
+      - test_runtime_bundle.RuntimeBundleTests.test_hash_drift_and_undeclared_import_fail_closed
+      - test_runtime_bundle.RuntimeBundleTests.test_blocked_or_split_method_resolution_cannot_enter_runtime
+  - surface: resolved-execution-view
+    modules:
+      - src/research_workbench/execution/execution_view.py
+    positive_tests:
+      - test_execution_view.ExecutionViewTests.test_supply_neutral_view_freezes_exact_binding_and_tightest_intersection
+    negative_tests:
+      - test_execution_view.ExecutionViewTests.test_supply_reselection_profile_drift_and_input_hash_drift_fail_closed
+      - test_execution_view.ExecutionViewTests.test_stale_supply_or_policy_and_bundle_pin_drift_fail_closed
+  - surface: thin-execution-host
+    modules:
+      - src/research_workbench/execution/host.py
+    positive_tests:
+      - test_execution_host.ExecutionHostTests.test_exact_view_load_and_single_driver_execution_report_actual_facts
+    negative_tests:
+      - test_execution_host.ExecutionHostTests.test_preflight_binding_mismatch_blocks_without_call_and_requests_reresolution
+      - test_execution_host.ExecutionHostTests.test_host_clock_blocks_actual_timeout_when_driver_underreports_duration
+  - surface: trace-and-receipt-closure
+    modules:
+      - src/research_workbench/observability/trace.py
+      - src/research_workbench/execution/generic_closeout.py
+    positive_tests:
+      - test_agent_trace.AgentTraceTests.test_typed_fact_events_form_a_valid_trace
+      - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_completed_failed_and_preflight_blocked_lifecycle_replay_end_to_end
+    negative_tests:
+      - test_agent_trace.AgentTraceTests.test_hash_tamper_is_blocking
+      - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_receipt_replay_rejects_rehashed_host_binding_and_supply_substitution
+  - surface: artifact-integrity-source-admission-and-research-state
+    modules:
+      - src/research_workbench/artifacts/integrity.py
+      - src/research_workbench/kernel/objects.py
+      - src/research_workbench/validation/relationships.py
+    positive_tests:
+      - test_integrity.IntegrityTests.test_directory_hash_uses_host_independent_posix_order
+      - test_kernel.KernelObjectTests.test_revision_is_part_of_object_reference
+      - test_relationships.RelationshipValidationTests.test_handoff_matches_task_and_live_input_hash
+    negative_tests:
+      - test_relationships.RelationshipValidationTests.test_changed_file_marks_reference_stale
+      - test_relationships.RelationshipValidationTests.test_claim_above_project_ceiling_is_blocked
+
+justified_exclusions: []

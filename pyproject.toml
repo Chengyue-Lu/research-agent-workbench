@@ -32,8 +32,8 @@ where = ["src"]
 "share/research-agent-workbench/schemas/v0.1.0" = ["schemas/v0.1.0/*.schema.json"]
 
 [tool.coverage.run]
-source = ["research_workbench"]
+source = ["research_workbench", ".github/scripts"]
+branch = true
 
 [tool.coverage.report]
 show_missing = true
-fail_under = 80
