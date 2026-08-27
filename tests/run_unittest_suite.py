@@ -80,7 +80,13 @@ def _suite_for(args: argparse.Namespace) -> unittest.TestSuite:
     modules = suite.get("modules", [])
     if not isinstance(modules, list) or not modules or not all(isinstance(item, str) for item in modules):
         raise ValueError("coverage-quality suite must declare a non-empty modules list")
-    return loader.loadTestsFromNames(modules)
+    test_ids = suite.get("test_ids", [])
+    if not isinstance(test_ids, list) or not all(isinstance(item, str) for item in test_ids):
+        raise ValueError("coverage-quality test_ids must be an array of unittest names")
+    names = [*modules, *test_ids]
+    if len(names) != len(set(names)):
+        raise ValueError("coverage-quality suite contains duplicate module/test names")
+    return loader.loadTestsFromNames(names)
 
 
 def _percentile(values: list[float], percentile: float) -> float:

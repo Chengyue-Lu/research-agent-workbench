@@ -1,8 +1,14 @@
 from __future__ import annotations
 
+import argparse
 import importlib.util
 from pathlib import Path
+import tempfile
 import unittest
+
+import yaml
+
+from tests import run_unittest_suite
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -99,6 +105,27 @@ class CoveragePolicyCheckerTests(unittest.TestCase):
         report["files"].pop(MODULE)
         failures = CHECKER.check_policy(policy(), report, results())
         self.assertTrue(any("critical module missing" in item for item in failures))
+
+    def test_coverage_suite_supports_exact_test_selectors_without_duplicates(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "policy.yaml"
+            document = {
+                "suites": {
+                    "coverage-quality": {
+                        "modules": ["test_integrity"],
+                        "test_ids": [
+                            "test_kernel.KernelObjectTests.test_revision_is_part_of_object_reference"
+                        ],
+                    }
+                }
+            }
+            path.write_text(yaml.safe_dump(document), encoding="utf-8")
+            args = argparse.Namespace(suite="coverage-quality", policy=path)
+            self.assertEqual(2, run_unittest_suite._suite_for(args).countTestCases())
+            document["suites"]["coverage-quality"]["test_ids"] = ["test_integrity"]
+            path.write_text(yaml.safe_dump(document), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "duplicate"):
+                run_unittest_suite._suite_for(args)
 
     def test_policy_cannot_downgrade_the_quality_floor(self) -> None:
         manifest = policy()

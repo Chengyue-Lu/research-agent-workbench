@@ -276,6 +276,48 @@ class CriticalCapabilityBranchTests(unittest.TestCase):
         self.assertFalse(assess_supply(requirement, unavailable).eligible)
         self.assertFalse(assess_supply(requirement, unknown, qualification="runtime-execution").eligible)
 
+    def test_supply_ceiling_and_availability_branch_matrix_is_explicit(self) -> None:
+        requirement_raw = load_document(REQUIREMENT_PATH)
+        requirement_raw["constraints"]["data_egress"] = {
+            "policy": "allowlisted-only",
+            "allowed_payloads": ["abstract"],
+            "forbidden_payloads": ["private-full-text"],
+        }
+        requirement_raw["constraints"]["side_effects"] = {
+            "policy": "none",
+            "allowed_effects": [],
+        }
+        requirement = CapabilityRequirement.from_mapping(requirement_raw)
+        report_raw = load_document(SUPPLY_PATH)
+        report_raw["observation_scope"] = "deterministic-local"
+        report_raw["data_egress_behavior"] = {
+            "policy": "allowlisted-only",
+            "allowed_payloads": ["abstract"],
+            "forbidden_payloads": [],
+        }
+        report_raw["side_effects"] = {"policy": "none", "allowed_effects": []}
+        report_raw["availability"] = {
+            "status": "available",
+            "scope": {"scope_kind": "local-environment"},
+        }
+        report = CapabilitySupplyReport.from_mapping(report_raw)
+        structural = assess_supply(requirement, report)
+        runtime = assess_supply(requirement, report, qualification="runtime-execution")
+        self.assertEqual("pass", structural.checks[8]["status"])
+        self.assertEqual("pass", runtime.checks[8]["status"])
+
+        exceeded = copy.deepcopy(report_raw)
+        exceeded["data_egress_behavior"]["allowed_payloads"] = ["full-text"]
+        assessment = assess_supply(
+            requirement, CapabilitySupplyReport.from_mapping(exceeded)
+        )
+        self.assertEqual("fail", assessment.checks[5]["status"])
+        unavailable = replace(
+            report,
+            availability={"status": "unavailable", "scope": {"scope_kind": "local"}},
+        )
+        self.assertEqual("fail", assess_supply(requirement, unavailable).checks[8]["status"])
+
 
 class CriticalRelationshipBranchTests(unittest.TestCase):
     @classmethod
