@@ -226,13 +226,16 @@ def _load_trace_events(
     return events
 
 
-def _validate_trace_execution_scope(
+def _validate_trace_execution_records(
     root: Path,
     trace_path: Path,
     trace: Mapping[str, Any],
     host: Mapping[str, Any],
+    *,
+    catalog: SchemaCatalog,
 ) -> None:
-    records: list[Mapping[str, Any]] = []
+    scope_records: list[Mapping[str, Any]] = []
+    execution_facts: list[Mapping[str, Any]] = []
     for reference in trace.get("decision_refs", ()):
         if not isinstance(reference, Mapping):
             continue
@@ -244,17 +247,48 @@ def _validate_trace_execution_scope(
         if _normalized_hash(pin.sha256) != hash_bytes(content):
             raise GenericCloseoutValidationError("Trace decision reference hash mismatch")
         document = load_document_bytes(path, content)
-        if isinstance(document, Mapping) and document.get("record_kind") == "execution-scope-binding":
-            records.append(document)
+        if not isinstance(document, Mapping):
+            continue
+        if document.get("record_kind") == "execution-scope-binding":
+            scope_records.append(document)
+        elif document.get("record_kind") == "actual-execution-binding":
+            errors = catalog.validate("execution_trace_fact", document)
+            if errors:
+                detail = "; ".join(f"{item.pointer}: {item.message}" for item in errors)
+                raise GenericCloseoutValidationError(
+                    "Execution Trace actual-binding fact is schema-invalid: " + detail
+                )
+            execution_facts.append(document)
     expected = {
         "schema_version": "0.1.0",
         "record_kind": "execution-scope-binding",
         "view_ref": _plain(host["view_ref"]),
         "execution_scope": _plain(host["execution_scope"]),
     }
-    if records != [expected]:
+    if scope_records != [expected]:
         raise GenericCloseoutValidationError(
             "Execution Trace must bind exactly one matching execution-scope decision record"
+        )
+    if host.get("execution_phase") == "post-call":
+        if len(execution_facts) != 1:
+            raise GenericCloseoutValidationError(
+                "post-call Receipt requires exactly one typed hash-pinned Trace actual execution fact"
+            )
+        fact = execution_facts[0]
+        if (
+            fact.get("attempt_id") != host.get("attempt_id")
+            or fact.get("view_ref") != _plain(host.get("view_ref"))
+            or fact.get("execution_phase") != "post-call"
+            or fact.get("actual_binding") != _plain(host.get("actual_binding"))
+            or fact.get("actual_supply_report_ref")
+            != host.get("actual_supply_report_ref")
+        ):
+            raise GenericCloseoutValidationError(
+                "Execution Trace actual execution fact does not corroborate Host binding and Supply"
+            )
+    elif execution_facts:
+        raise GenericCloseoutValidationError(
+            "pre-call Trace cannot claim an actual execution binding or Supply"
         )
 
 
@@ -404,7 +438,9 @@ def build_generic_execution_receipt(
         or trace.get("completeness") != "complete"
     ):
         raise GenericCloseoutValidationError("Execution Trace identity/status/completeness mismatch")
-    _validate_trace_execution_scope(root, trace_path, trace, host)
+    _validate_trace_execution_records(
+        root, trace_path, trace, host, catalog=catalog
+    )
 
     artifacts = host.get("artifacts", ())
     if not isinstance(artifacts, Sequence) or isinstance(artifacts, (str, bytes)):

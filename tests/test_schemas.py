@@ -47,6 +47,7 @@ class VersionedSchemaTests(unittest.TestCase):
                 "authority_rule_eligibility",
                 "execution_receipt",
                 "execution_binding",
+                "execution_trace_fact",
                 "execution_host_report",
                 "execution_core_gate",
                 "execution_policy",

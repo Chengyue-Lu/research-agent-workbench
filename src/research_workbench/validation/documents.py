@@ -171,6 +171,7 @@ SCHEMA_KINDS = {
     "resolved_capability_snapshot",
     "runtime_bundle_manifest",
     "execution_binding",
+    "execution_trace_fact",
     "execution_host_report",
     "execution_core_gate",
     "execution_policy",
@@ -249,6 +250,8 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "runtime_bundle_manifest"
     if "binding_id" in document and "selected_supply_report_ref" in document and "host" in document:
         return "execution_binding"
+    if document.get("record_kind") == "actual-execution-binding" and "actual_binding" in document:
+        return "execution_trace_fact"
     if "report_id" in document and "actual_binding" in document and "actual_facts" in document:
         return "execution_host_report"
     if document.get("scope") == "m11-core" and "gate_id" in document and "paths" in document:

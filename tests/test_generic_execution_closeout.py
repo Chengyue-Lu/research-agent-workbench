@@ -105,7 +105,12 @@ class GenericExecutionCloseoutTests(unittest.TestCase):
         return bundle, validated_view
 
     def _validated_receipt(
-        self, root: Path, path_kind: str, lifecycle: str = "completed"
+        self,
+        root: Path,
+        path_kind: str,
+        lifecycle: str = "completed",
+        *,
+        include_execution_fact: bool = True,
     ):
         bundle, view = self._bundle_and_view(root, path_kind)
         driver = host_fixtures.RecordingDriver(root, view.document["binding"])
@@ -182,6 +187,13 @@ class GenericExecutionCloseoutTests(unittest.TestCase):
                 "execution_scope": host_report["execution_scope"],
             },
         )
+        if host_report["execution_phase"] == "post-call" and include_execution_fact:
+            recorder.record_execution_fact(
+                fact_id=f"EXECUTION-FACT-{path_kind}",
+                view_ref=host_report["view_ref"],
+                actual_binding=host_report["actual_binding"],
+                actual_supply_report_ref=host_report["actual_supply_report_ref"],
+            )
         if path_kind == "direct-tool" and lifecycle == "completed":
             recorder.record_tool_call(
                 operation_id="contract-check",
@@ -274,6 +286,44 @@ class GenericExecutionCloseoutTests(unittest.TestCase):
                     self.assertNotIn("actual_binding", host)
                     self.assertNotIn("actual_supply_report_ref", host)
                     self.assertEqual("none", receipt.document["completion_claim"])
+
+    def test_failed_post_call_receipt_requires_hash_pinned_trace_execution_fact(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            with self.assertRaises(GenericCloseoutValidationError) as raised:
+                self._validated_receipt(
+                    Path(temp),
+                    "no-skill",
+                    "failed",
+                    include_execution_fact=False,
+                )
+            self.assertIn("typed hash-pinned Trace actual execution fact", str(raised.exception))
+
+    def test_failed_receipt_trace_fact_covers_every_binding_component_and_supply(self) -> None:
+        for component in ("provider", "adapter", "model", "runtime", "host", "supply"):
+            with self.subTest(component=component), tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                bundle, validated = self._validated_receipt(root, "no-skill", "failed")
+                receipt = copy.deepcopy(validated.document)
+                host_path = receipt["host_report_ref"]["path"]
+                host = load_document(root / host_path)
+                if component == "supply":
+                    host["actual_supply_report_ref"] = "untraced-supply@9.9.9"
+                else:
+                    host["actual_binding"][component]["ref"] = f"untraced-{component}"
+                rewritten = self._rewrite_closeout_subject(
+                    root, receipt, host_path, host
+                )
+                with self.assertRaises(GenericCloseoutValidationError) as raised:
+                    validate_generic_execution_receipt(
+                        rewritten.path,
+                        expected_sha256=rewritten.sha256,
+                        bundle=bundle,
+                        schema_root=ROOT / "schemas",
+                    )
+                self.assertIn(
+                    "Trace actual execution fact does not corroborate Host binding and Supply",
+                    str(raised.exception),
+                )
 
     def test_no_skill_and_direct_tool_close_and_form_core_gate_without_assignment(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

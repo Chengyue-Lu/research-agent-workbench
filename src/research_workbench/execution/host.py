@@ -209,13 +209,18 @@ def load_resolved_execution_view(
     return ValidatedExecutionView(root, path, digest, frozen, bundle)
 
 
-def _zero_facts(*, complete: bool, capture_gaps: Sequence[str] = ()) -> dict[str, Any]:
+def _zero_facts(
+    *,
+    complete: bool,
+    capture_gaps: Sequence[str] = (),
+    elapsed_seconds: float = 0.0,
+) -> dict[str, Any]:
     return {
         "complete": complete,
         "capture_gaps": list(capture_gaps),
         "turns": 0,
         "output_tokens": 0,
-        "elapsed_seconds": 0.0,
+        "elapsed_seconds": elapsed_seconds,
         "provider_invocations": 0,
         "tool_invocations": 0,
         "tool_refs": [],
@@ -369,7 +374,12 @@ def _required_outputs_satisfied(
     return True
 
 
-def _result_violation(view: Mapping[str, Any], result: ExecutionDriverResult) -> str | None:
+def _result_violation(
+    view: Mapping[str, Any],
+    result: ExecutionDriverResult,
+    *,
+    host_elapsed_seconds: float,
+) -> str | None:
     if result.status not in {"completed", "failed"}:
         return "HOST-DRIVER-STATUS-INVALID"
     if _plain(result.actual_binding) != _plain(view["binding"]):
@@ -408,7 +418,7 @@ def _result_violation(view: Mapping[str, Any], result: ExecutionDriverResult) ->
     actual_budget = {
         "max_turns": result.turns,
         "max_output_tokens": result.output_tokens,
-        "max_seconds": result.elapsed_seconds,
+        "max_seconds": host_elapsed_seconds,
     }
     if any(key in budget and value > budget[key] for key, value in actual_budget.items()):
         return "HOST-BUDGET-VIOLATION"
@@ -470,6 +480,7 @@ def execute_frozen_view(
         completed, completed_at = _observe_time(trusted_clock, "completed_at")
         if completed < started:
             raise ExecutionHostValidationError("Host clock moved backwards during execution")
+        host_elapsed_seconds = (completed - started).total_seconds()
         report = _base_report(
             view,
             report_id=report_id,
@@ -482,7 +493,9 @@ def execute_frozen_view(
             requested_supply_report_ref=declared_supply_ref,
             actual_binding=None,
             actual_supply_report_ref=None,
-            facts=_zero_facts(complete=True),
+            facts=_zero_facts(
+                complete=True, elapsed_seconds=host_elapsed_seconds
+            ),
             artifacts=(),
         )
         _add_diagnostic(
@@ -504,6 +517,7 @@ def execute_frozen_view(
             completed, completed_at = _observe_time(trusted_clock, "completed_at")
             if completed < started:
                 raise ExecutionHostValidationError("Host clock moved backwards during execution")
+            host_elapsed_seconds = (completed - started).total_seconds()
             report = _base_report(
                 view,
                 report_id=report_id,
@@ -516,7 +530,11 @@ def execute_frozen_view(
                 requested_supply_report_ref=declared_supply_ref,
                 actual_binding=None,
                 actual_supply_report_ref=None,
-                facts=_zero_facts(complete=False, capture_gaps=("driver-exception",)),
+                facts=_zero_facts(
+                    complete=False,
+                    capture_gaps=("driver-exception",),
+                    elapsed_seconds=host_elapsed_seconds,
+                ),
                 artifacts=(),
             )
             _add_diagnostic(
@@ -530,12 +548,13 @@ def execute_frozen_view(
             completed, completed_at = _observe_time(trusted_clock, "completed_at")
             if completed < started:
                 raise ExecutionHostValidationError("Host clock moved backwards during execution")
+            host_elapsed_seconds = (completed - started).total_seconds()
             facts = {
                 "complete": result.facts_complete,
                 "capture_gaps": list(result.capture_gaps),
                 "turns": result.turns,
                 "output_tokens": result.output_tokens,
-                "elapsed_seconds": result.elapsed_seconds,
+                "elapsed_seconds": host_elapsed_seconds,
                 "provider_invocations": result.provider_invocations,
                 "tool_invocations": result.tool_invocations,
                 "tool_refs": list(result.tool_refs),
@@ -543,7 +562,11 @@ def execute_frozen_view(
                 "data_egress_payloads": list(result.data_egress_payloads),
                 "side_effects": list(result.side_effects),
             }
-            violation = _result_violation(view.document, result)
+            violation = _result_violation(
+                view.document,
+                result,
+                host_elapsed_seconds=host_elapsed_seconds,
+            )
             if violation is None:
                 violation = _validate_artifacts(
                     view.project_root,

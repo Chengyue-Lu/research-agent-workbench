@@ -218,6 +218,14 @@ def _validate_lineage(
                 expected_task_ref,
             )
         )
+    if method.get("resolution_status") != "proceed":
+        issues.append(
+            RuntimeBundleIssue(
+                root / method_path,
+                "RUNTIME-BUNDLE-METHOD-NOT-PROCEED",
+                "Runtime Core accepts only a Method Resolution whose resolution_status is proceed",
+            )
+        )
 
     expected_method_ref = _revisioned_identity(method, "resolution_id")
     expected_resolution_ref = _revisioned_identity(resolution, "resolution_id")
@@ -305,6 +313,17 @@ def _validate_lineage(
         for item in decision.get("capability_requirements", ())
         if isinstance(item, str)
     }
+    required_capabilities = {
+        item for item in task.get("required_capabilities", ()) if isinstance(item, str)
+    }
+    if method_requirements != required_capabilities:
+        issues.append(
+            RuntimeBundleIssue(
+                root / method_path,
+                "RUNTIME-BUNDLE-TASK-METHOD-CAPABILITY-MISMATCH",
+                "Task required_capabilities must equal the union of Method Action capability_requirements",
+            )
+        )
     if expected_requirement_id not in method_requirements:
         issues.append(
             RuntimeBundleIssue(
@@ -319,9 +338,6 @@ def _validate_lineage(
     # receipt cannot be mistaken for whole-Task completion.
     execution_scope = manifest.get("execution_scope", {})
     closure = execution_scope.get("task_capability_closure", {})
-    required_capabilities = {
-        item for item in task.get("required_capabilities", ()) if isinstance(item, str)
-    }
     declared_required = {
         item for item in closure.get("required", ()) if isinstance(item, str)
     }
@@ -354,12 +370,12 @@ def _validate_lineage(
                 "execution_scope must bind the exact Method Action, Requirement, full Task demand, and singleton closed capability",
             )
         )
-    if closure.get("task_completion") is True and declared_closed != required_capabilities:
+    if closure.get("task_completion") is not False:
         issues.append(
             RuntimeBundleIssue(
                 root,
-                "RUNTIME-BUNDLE-TASK-CAPABILITY-UNRESOLVED",
-                "whole-Task completion is forbidden while any required capability remains outside the closed set",
+                "RUNTIME-BUNDLE-TASK-COMPLETION-AUTHORITY",
+                "M11 Core reports capability-slice closure only and never Task completion",
             )
         )
 

@@ -138,6 +138,7 @@ class ExecutionHostTests(unittest.TestCase):
             self.assertEqual("completed", report["status"])
             self.assertTrue(report["actual_facts"]["complete"])
             self.assertEqual(0, report["actual_facts"]["tool_invocations"])
+            self.assertEqual(1.0, report["actual_facts"]["elapsed_seconds"])
             self.assertEqual(
                 "deterministic-check-report", report["artifacts"][0]["contract"]
             )
@@ -276,6 +277,36 @@ class ExecutionHostTests(unittest.TestCase):
                 self.assertEqual(expected_code, report["diagnostic"]["code"])
                 if mutation in {"binding", "supply"}:
                     self.assertEqual("re-resolution", report["diagnostic"]["recommended_next"])
+
+    def test_host_clock_blocks_actual_timeout_when_driver_underreports_duration(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            _, view = self._build(root)
+            driver = RecordingDriver(
+                root,
+                view.document["binding"],
+                ExecutionDriverResult(
+                    status="completed",
+                    actual_binding=plain(view.document["binding"]),
+                    actual_supply_report_ref="supply-no-skill-contract-check@1.0.0",
+                    elapsed_seconds=0.001,
+                    facts_complete=True,
+                ),
+            )
+            report = execute_frozen_view(
+                view,
+                driver,
+                report_id="HOST-UNDERREPORTED-TIME",
+                attempt_id="ATTEMPT-UNDERREPORTED-TIME",
+                clock=SequenceClock(
+                    "2026-08-26T00:00:01Z", "2026-08-26T00:02:02Z"
+                ),
+                schema_root=ROOT / "schemas",
+            )
+            self.assertEqual(1, driver.calls)
+            self.assertEqual("failed", report["status"])
+            self.assertEqual("HOST-BUDGET-VIOLATION", report["diagnostic"]["code"])
+            self.assertEqual(121.0, report["actual_facts"]["elapsed_seconds"])
 
     def test_driver_exception_is_one_call_content_free_capture_gap_not_recovery(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

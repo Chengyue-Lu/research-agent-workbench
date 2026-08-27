@@ -22,13 +22,15 @@ Generic Execution Receipt
   facts capture 必须完整，completed 还至少有
   一个输出 Artifact，failed/blocked 时不得宣称 execution completion；
 - completed：Host actual binding/Supply 必须等于 View；detected post-call failed：保留可能不相等的 actual
-  binding/Supply，并由 diagnostic + Trace actual actor facts 共同佐证；preflight blocked：actual binding/Supply
+  binding/Supply，并由 diagnostic + typed hash-pinned Trace execution fact 共同佐证；preflight blocked：actual binding/Supply
   必须不存在且 Trace 不得含 Provider/Tool 调用；
 - Trace 通过既有 M3-008 validator，identity/status/frozen/completeness 对齐，且 provider-request 与 tool
   operation 的实际次数/identity 分别闭合到 Host facts；Trace Actor 的 Provider/Runtime identity 闭合到
-  Host actual binding（Model/Adapter 仍由 Host↔View equality 闭合），实际 Tool 必须属于 selected Supply
-  的 Tool component；
-- Trace `decision_refs` 必须恰好含一个 hash-pinned execution-scope binding record，与 View/Host scope 一致；
+  Host actual binding，实际 Tool 必须属于 selected Supply 的 Tool component；
+- Trace `decision_refs` 必须恰好含一个 hash-pinned execution-scope binding record；每个 post-call Trace 还必须
+  恰好含一个符合 `execution_trace_fact` Schema 的 actual-execution-binding record，逐字段闭合
+  Provider/Adapter/Model/Runtime/Host 和 actual Supply；preflight-blocked Trace 禁止该 fact。这里复用 v0.1
+  的 immutable file-ref envelope，不把 execution fact 解释成 Method 或 Supply decision；
 - Artifact path/hash 与 Host report 一致；
 - deterministic validation 为 `pass`，checker source hash 有效；
 - validation subject closed set 精确等于 Host report + Trace INDEX + Artifacts，无遗漏或偷渡；
@@ -37,9 +39,10 @@ Generic Execution Receipt
 completed Receipt 固定 `completion_claim: action-capability-slice-only`；failed/blocked Receipt 只能为
 `none`，且所有状态均固定 `task_completion: false`。Schema 排除
 `skill_assignment_ref`、Claim、Human approval、recovery 等字段。`validate_generic_execution_receipt()` 从
-Receipt 自身 refs 重新加载 View、Host report、Trace、Actors、event ledger、Artifacts 和 validation，独立重做
-actual binding/Supply、provider/tool facts 与 selected-Supply component 等 cross-object invariant，再调用同一
-builder 逐字段重算；单纯同步改写 Host 与 hash 不能绕过 replay。
+Receipt 自身 refs 重新加载 View、Host report、Trace、Actors、event ledger、hash-pinned execution fact、
+Artifacts 和 validation，独立重做完整 actual binding/Supply、provider/tool facts 与 selected-Supply component
+等 cross-object invariant，再调用同一 builder 逐字段重算。failed post-call 若缺少该 fact，或任一
+Provider/Adapter/Model/Runtime/Host/Supply 字段不能被 Trace 独立闭合，就不具备 replay-valid Receipt 资格。
 
 ## 为什么不改 legacy Receipt
 

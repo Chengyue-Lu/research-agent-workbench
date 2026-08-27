@@ -14,7 +14,7 @@ M11-001 为 Runtime 建立一个显式、hash-pinned、supply-neutral 的读取�
 
 - `entrypoint`：唯一 `resolved_capability_snapshot` 的 path/hash；
 - `execution_scope`：唯一 `Action + Capability Requirement` 执行切片，并同时声明 Task 的完整
-  capability demand、当前 singleton closed set 与 `task_completion`；
+  capability demand、当前 singleton closed set；`task_completion` 在 M11 Core 中固定为 `false`；
 - `documents`：Task、Method Resolution、Capability Requirement、typed conformance evidence、Supply
   Report、Capability Resolution 与 Snapshot 的 exact path/kind/hash；
 - `imports`：上述对象之间完整且无额外边的 import graph；
@@ -29,9 +29,12 @@ eligible candidate；ambiguity 不能伪装为 `satisfied`。所有传递引用�
 在 manifest 内声明并 hash 对齐；所有 manifest document 又必须从 entrypoint 可达，因此不能把未选供给或
 其他无关文件塞进 closure。
 
-M11 v0.1 不把上述 singleton closure 冒充 whole-Task closure。`execution_scope.action_ref` 必须精确命中
-Method Action，`requirement_id` 必须属于该 Action，`closed` 必须只含当前 Requirement，而 `required` 必须
-等于 Task 的完整 capability set。只要还有未闭合能力，`task_completion: true` 就会被阻断。
+M11 v0.1 不把上述 singleton closure 冒充 whole-Task closure。`Method Resolution.resolution_status` 必须为
+`proceed`，`blocked` 与 `split-and-block` 均 fail closed；Task `required_capabilities` 必须严格等于全部
+Method Action `capability_requirements` 的并集。`execution_scope.action_ref` 必须精确命中 Method Action，
+`requirement_id` 必须属于该 Action，`closed` 必须只含当前 Requirement，而 `required` 必须等于 Task 的完整
+capability set。无论当前切片是否恰好覆盖全部 capability，M11 Core 都固定 `task_completion: false`，只报告
+capability-slice closure fact。
 
 ## Runtime loader
 
@@ -67,7 +70,7 @@ producer 预先构造的最小闭包。二者不能互相替代：
 
 - 只接受 `qualification: runtime-execution`；Phase B 的 `structural-replay` fixture 不能执行；
 - Core 只接受 Method `skill_disposition.status: no-skill`，且 Supply 不得含 Skill identity/component；
-- Snapshot 与 Resolution 必须为 satisfied、身份/引用/供给复制事实闭合；
+- Method Resolution 必须为 `proceed`；Capability Resolution/Snapshot 必须为 `satisfied`，且身份、引用与供给复制事实闭合；
 - non-fixture availability 与 live typed evidence 是输入资格，但仍不等于最终 permission 或 Human approval；
 - manifest 不保存凭据，不执行调用，不实现 fallback、routing、recovery、Trace 或 Receipt；
 - M11-005/006 才能定义可选 Skill Runtime Extension，且不得改变本 Core loader 的 zero-Skill 可用性。
@@ -77,5 +80,5 @@ producer 预先构造的最小闭包。二者不能互相替代：
 `tests/test_runtime_bundle.py` 覆盖：zero-Skill/无 Registry 正路径、多候选 Resolution 只导入 selected Supply、
 selected Supply 缺失候选、未声明无关坏文件隔离、目录输入、hash 漂移、未声明传递引用、
 `structural-replay`、import graph 漂移、hash-valid identity substitution、Supply fact 漂移、双 eligible
-ambiguity、未闭合 Task capability 冒充 Task completion、深层只读结果，
+ambiguity、Method blocked/split-and-block、Task/Method capability set 漂移、任何 Task completion 声明、深层只读结果，
 以及 Runtime 模块无递归/Evolution imports。

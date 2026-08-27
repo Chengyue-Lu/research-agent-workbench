@@ -203,6 +203,34 @@ class RuntimeBundleTests(unittest.TestCase):
     def _codes(self, raised: object) -> set[str]:
         return {issue.code for issue in raised.exception.issues}
 
+    def _rewrite_method_chain(self, root: Path, mutate) -> Path:
+        manifest_path = root / "bundle/manifest.yaml"
+        method = load_document(root / "bundle/method.yaml")
+        mutate(method)
+        method_hash = self._write(root, "bundle/method.yaml", method)
+
+        resolution = load_document(root / "bundle/resolution.yaml")
+        resolution["method_resolution_ref"]["content_hash"] = "sha256:" + method_hash
+        resolution_hash = self._write(root, "bundle/resolution.yaml", resolution)
+
+        snapshot = load_document(root / "bundle/snapshot.yaml")
+        snapshot["method_resolution_ref"]["content_hash"] = "sha256:" + method_hash
+        snapshot["resolution_ref"]["content_hash"] = "sha256:" + resolution_hash
+        snapshot_hash = self._write(root, "bundle/snapshot.yaml", snapshot)
+
+        manifest = load_document(manifest_path)
+        manifest["entrypoint"]["sha256"] = snapshot_hash
+        changed = {
+            "bundle/method.yaml": method_hash,
+            "bundle/resolution.yaml": resolution_hash,
+            "bundle/snapshot.yaml": snapshot_hash,
+        }
+        for item in manifest["documents"]:
+            if item["path"] in changed:
+                item["sha256"] = changed[item["path"]]
+        self._write(root, "bundle/manifest.yaml", manifest)
+        return manifest_path
+
     def test_zero_skill_bundle_uses_only_explicit_exact_closure(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
@@ -399,8 +427,39 @@ class RuntimeBundleTests(unittest.TestCase):
                 load_runtime_bundle(
                     manifest_path, project_root=root, schema_root=ROOT / "schemas"
                 )
+            self.assertIn("RUNTIME-BUNDLE-MANIFEST-SCHEMA", self._codes(raised))
+
+    def test_blocked_or_split_method_resolution_cannot_enter_runtime(self) -> None:
+        for status in ("blocked", "split-and-block"):
+            with self.subTest(status=status), tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                self._build_bundle(root)
+                manifest_path = self._rewrite_method_chain(
+                    root, lambda method: method.update({"resolution_status": status})
+                )
+                with self.assertRaises(RuntimeBundleValidationError) as raised:
+                    load_runtime_bundle(
+                        manifest_path, project_root=root, schema_root=ROOT / "schemas"
+                    )
+                self.assertIn("RUNTIME-BUNDLE-METHOD-NOT-PROCEED", self._codes(raised))
+
+    def test_task_capabilities_must_equal_method_action_requirement_union(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self._build_bundle(root)
+
+            def add_undeclared_requirement(method):
+                method["action_decisions"][0]["capability_requirements"].append(
+                    "undeclared-runtime-capability"
+                )
+
+            manifest_path = self._rewrite_method_chain(root, add_undeclared_requirement)
+            with self.assertRaises(RuntimeBundleValidationError) as raised:
+                load_runtime_bundle(
+                    manifest_path, project_root=root, schema_root=ROOT / "schemas"
+                )
             self.assertIn(
-                "RUNTIME-BUNDLE-TASK-CAPABILITY-UNRESOLVED", self._codes(raised)
+                "RUNTIME-BUNDLE-TASK-METHOD-CAPABILITY-MISMATCH", self._codes(raised)
             )
 
     def test_selected_supply_must_remain_in_resolution_candidates(self) -> None:

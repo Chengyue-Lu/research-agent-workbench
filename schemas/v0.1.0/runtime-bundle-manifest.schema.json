@@ -51,7 +51,7 @@
               "uniqueItems": true,
               "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
             },
-            "task_completion": { "type": "boolean" }
+            "task_completion": { "const": false }
           },
           "additionalProperties": false
         }

@@ -37,13 +37,16 @@ frozen Supply selection。任何上游 policy/binding 文件漂移也会在重�
 Host 在调用前要求 Driver binding 与 View 完全一致，并由 Host 自有 `SystemHostClock` 或测试注入的 trusted
 `HostClock` 观察 start/end；执行调用方不能提交或回填时间戳。Host-observed `started_at` 必须仍落在冻结的 Supply、
 DataPolicy 与 Host-policy 三组有效期内；不一致或过期则零调用、`blocked`，并输出指向当前 Snapshot/View
-的 re-resolution request。调用后仍比较 actual binding，检测 Driver 静默 rebind。
+的 re-resolution request。`actual_facts.elapsed_seconds` 由 Host 的 end-start observation 计算，`max_seconds`
+也只使用该 Host-observed duration；Driver 的同名自报值不参与预算授权。调用后仍比较 actual binding，检测
+Driver 静默 rebind。
 
 ## Boundary enforcement 与 facts
 
 Driver 必须报告：
 
-- turns、output tokens、elapsed seconds、Provider/Tool invocation counts 与实际 Tool identity 集合；
+- turns、output tokens、Provider/Tool invocation counts 与实际 Tool identity 集合；Driver 可携带 elapsed
+  observation，但 Host report 与 `max_seconds` enforcement 不信任该值；
 - external write、data-egress payload classes、side effects；
 - output artifacts 的 contract/path/hash；
 - fact capture 是否完整及 capture gaps。

@@ -429,6 +429,44 @@ class AgentTraceRecorder:
         self._refresh_index()
         return reference
 
+    def record_execution_fact(
+        self,
+        *,
+        fact_id: str,
+        view_ref: Mapping[str, Any],
+        actual_binding: Mapping[str, Any],
+        actual_supply_report_ref: str,
+    ) -> Mapping[str, str]:
+        """Pin one typed post-call fact without granting execution authority.
+
+        Trace v0.1 reuses its existing immutable ``decision_refs`` file-ref
+        envelope.  ``record_kind`` and the dedicated Schema keep this factual
+        record distinct from a Method, Claim, Human, or Supply decision.
+        """
+
+        return self.record_decision_snapshot(
+            f"execution-fact-{fact_id}",
+            {
+                "schema_version": "0.1.0",
+                "fact_id": fact_id,
+                "record_kind": "actual-execution-binding",
+                "attempt_id": self.attempt_id,
+                "view_ref": dict(view_ref),
+                "execution_phase": "post-call",
+                "actual_binding": dict(actual_binding),
+                "actual_supply_report_ref": actual_supply_report_ref,
+                "boundaries": {
+                    "actual_fact": True,
+                    "supply_selection": False,
+                    "rebinding": False,
+                    "method_decision": False,
+                    "task_completion": False,
+                    "claim_effect": False,
+                    "human_decision": False,
+                },
+            },
+        )
+
     def record_attempt_status(
         self,
         to_status: str,
