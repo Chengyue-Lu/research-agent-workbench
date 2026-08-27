@@ -25,7 +25,6 @@ suites:
       - test_execution_contract_helpers
       - test_execution_trace_adapter
       - test_execution_view
-      - test_generic_execution_closeout
       - test_governance_helper_branches
       - test_handoff_transfer
       - test_integrity
@@ -47,12 +46,22 @@ suites:
       - test_runtime_bundle
       - test_schemas
       - test_skill_archive_audit
-      - test_skill_evaluation
       - test_skill_lifecycle
       - test_skill_needs
       - test_trace_risk_codes
       - test_phase_b_evolution_gate
       - test_validation
+    test_ids:
+      - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_legacy_execution_receipt_schema_and_model_remain_unchanged
+      - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_failed_post_call_receipt_requires_hash_pinned_trace_execution_fact
+      - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_generic_receipt_rejects_skill_claim_human_and_recovery_fields
+      - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_no_skill_and_direct_tool_close_and_form_core_gate_without_assignment
+      - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_receipt_replay_rejects_rehashed_host_binding_and_supply_substitution
+      - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_completed_failed_and_preflight_blocked_lifecycle_replay_end_to_end
+      - test_skill_evaluation.SkillEvaluationTests.test_check_report_status_must_match_its_findings
+      - test_skill_evaluation.SkillEvaluationTests.test_fixture_example_is_valid_but_not_admission_evidence
+      - test_skill_evaluation.SkillEvaluationTests.test_complete_live_pair_is_only_eligible_for_human_decision
+      - test_skill_evaluation.SkillEvaluationTests.test_human_decision_must_bind_the_evaluation_candidate_and_outcome
     omitted_modules:
       - module: test_documentation
         reason: documentation ownership belongs to the behavioral and governance suites
