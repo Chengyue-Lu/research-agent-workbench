@@ -131,7 +131,8 @@ Capability/Skill Evolution、Topic 4（Agent/Model/Provider/Runtime）、Topic 5
 
 没有为 Runtime Bundle 的每个字段、Research State 的每个概念或每种 Provider 建 Task。M11-004 的
 bounded vertical Gate 是 generic linkage 的验收证据，不另造纯 closeout Task。M11 Core 每个 dependency
-layer 独立提交；R2 atomic completion exception 不用于跨 Bundle/View/Host/Receipt surface。
+layer 保持独立 implementation slice/commit/evidence；同一强耦合 module PR 可按拓扑原子集成，不合并
+Task identity 或 authority。
 
 ### 3.1 Future M-series reservations（非 Task）
 
@@ -194,7 +195,8 @@ flowchart LR
 ```
 
 图只显示未完成关键路径；DONE 历史边保持在各 Task 行中。PARKED Skill Extension 不阻塞 M11 Core，
-M6-004 也不依赖 M11-004。M11 Core 按图中每一 dependency layer 分 PR 验收。
+M6-004 也不依赖 M11-004。M11 Core 按图中每一 dependency layer 独立验收；PR 可按通用
+module-level DAG 规则集成。
 
 ## 6. Phase aggregation
 
@@ -207,7 +209,7 @@ M6-004 也不依赖 M11-004。M11 Core 按图中每一 dependency layer 分 PR �
 | D | M5-003；M5-001/002 → M5-004 → M5-005；M7-005/006/014 optional | Evaluation records 与 net increment，不回写 Need 本体 |
 | E | M2-003/004/007/008、M7-007 等 PARKED candidate work；M13 RESERVED | 无真实 Need/Gate 时不进入队列；reservation 不等于 strategy approval |
 | F Provider conformance | M6-004 | M6-001/002 后的独立 live 授权 Gate；不证明 Runtime E2E |
-| F Core | M11-001 → 002 → 003 → 004 | supply-neutral execution reintegration；一 dependency layer 一 PR |
+| F Core | M11-001 → 002 → 003 → 004 | supply-neutral execution reintegration；Task 分层验收，PR 可按通用 module-level DAG 规则集成 |
 | F optional Skill supply | M11-005 → M11-006 | publication + View/Capability-owned unified mapping；不 Gate Core，不形成 Runtime seam |
 | post-C Topic 5 residual | M12 RESERVED | Phase C closeout + 独立 Topic 5 R2 Gate 前不 task-definition、不解冻 |
 | future product/release closure | M14 RESERVED | 只在 maturity evidence 与 existing-group insufficiency 成立后激活 |
@@ -250,5 +252,5 @@ M6-004 也不依赖 M11-004。M11 Core 按图中每一 dependency layer 分 PR �
 - M6-003、M3 legacy scope 均有 lineage，未借拆分扩大 Runtime/Recovery authority；
 - ROADMAP 只聚合 Phase/Gate，TASKS 控制 implementation scheduling；
 - Topic 5 保持冻结；Phase C chain 只是 activation prerequisite，M11-003/004 也不属于 Topic 5；未创建 recovery/multi-Agent/fallback READY Task；
-- M11 producer/consumer chain 采用一 dependency layer 一 PR，不使用 R2 atomic exception 跨层收口；
+- M11 producer/consumer chain 保持逐层 Task evidence；同一 module PR 仅在入口、外部依赖、连通 DAG、独立 commit/evidence 与 owner review 全满足时原子集成；
 - M12/M13/M14 只作 M-group reservation，未进入 Task inventory、状态机或 architecture acceptance。
