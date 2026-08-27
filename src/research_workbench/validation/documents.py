@@ -169,6 +169,14 @@ SCHEMA_KINDS = {
     "research_mode",
     "research_mode_migration",
     "resolved_capability_snapshot",
+    "runtime_bundle_manifest",
+    "execution_binding",
+    "execution_trace_fact",
+    "execution_host_report",
+    "execution_core_gate",
+    "execution_policy",
+    "generic_execution_receipt",
+    "resolved_execution_view",
     "agent_profile",
     "skill_manifest",
     "skill_assignment",
@@ -238,6 +246,22 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "capability_supply_report"
     if "snapshot_id" in document and "selected_supply_report_ref" in document:
         return "resolved_capability_snapshot"
+    if document.get("profile") == "runtime-bundle" and "bundle_id" in document and "documents" in document:
+        return "runtime_bundle_manifest"
+    if "binding_id" in document and "selected_supply_report_ref" in document and "host" in document:
+        return "execution_binding"
+    if document.get("record_kind") == "actual-execution-binding" and "actual_binding" in document:
+        return "execution_trace_fact"
+    if "report_id" in document and "actual_binding" in document and "actual_facts" in document:
+        return "execution_host_report"
+    if document.get("scope") == "m11-core" and "gate_id" in document and "paths" in document:
+        return "execution_core_gate"
+    if "receipt_id" in document and "host_report_ref" in document and "view_ref" in document:
+        return "generic_execution_receipt"
+    if "policy_id" in document and "policy_kind" in document and "permission_ceiling" in document:
+        return "execution_policy"
+    if "view_id" in document and "execution_binding_ref" in document and "effective_constraints" in document:
+        return "resolved_execution_view"
     if "resolution_id" in document and "requirement_ref" in document and "comparisons" in document:
         return "capability_resolution"
     if document.get("scope") == "phase-b-evolution" and "gate_id" in document:

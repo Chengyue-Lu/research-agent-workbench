@@ -1,7 +1,7 @@
 # 实现状态
 
 状态：Current implementation authority
-更新：2026-08-25
+更新：2026-08-27
 
 本页只回答“仓库现在实现到哪里”。实时任务状态由 [`TASKS.md`](TASKS.md) 维护，依赖方向由 [`ROADMAP.md`](ROADMAP.md) 维护。
 
@@ -33,14 +33,18 @@ Protocol、两级 Snapshot 与 migration/replacement 结构契约已经实现。
 | Execution Trace | Envelope、Index、append-only events、工具结果持久化与闭集校验 |
 | Legacy execution bridge | 既有 Skill-bound Assignment 到 Trace / Receipt 的适配和恢复检查 |
 | Provider seam | provider-neutral 的隔离会话接口、离线 probe 与合成 conformance 基础 |
+| Runtime Bundle/Profile | M11-001 显式 manifest 固定 exact Task→Method→Requirement→selected Supply→Resolution→Snapshot closure，并声明 exact Action/Capability slice 与完整 Task demand；多候选 Resolution 只导入最终 selected Supply、要求唯一 eligible，未闭合 capability 不得冒充 Task completion |
+| Resolved Execution View | M11-002 supply-neutral producer固定 exact execution slice 与 Provider/Adapter/Model/Runtime/Host，Profile Tool allowlist 只约束真实 Tool Supply；最严 permission/data-egress/side-effect 交集后还必须证明 selected Supply 仍可运行，否则 fail closed |
+| Thin Execution Host | M11-003 exact View consumer 绑定同一 Runtime Bundle，以 Host-owned/injected trusted clock 和调用前重载阻断 backdating 与受控文件 TOCTOU；preflight requested facts 与 post-call actual facts 分离，preventive/detective 语义不混淆；无 retry/fallback/Topic 5 recovery |
+| Generic execution closeout | M11-004 对 completed/post-call failed/preflight blocked 作 status-aware replay；Trace 显式 pin execution slice，actual binding/Supply 与 Provider/Tool facts按生命周期交叉闭合；completed 只声明 Action/Capability-slice completion，永不声明 Task/Claim/Human completion |
 
 ## 受限或尚不可用
 
 | 范围 | 限制 |
 |---|---|
-| Method-aware control continuation | M6-003 只保留 legacy Task-to-API compatibility seam；未来主链已规范化为 M11-001 Runtime Bundle/Profile → M11-002 Resolved Execution View → M11-003 Thin Host → M11-004 generic Trace/Receipt Gate，均尚未实现；Method Trace 也尚未实现。当前三条 Snapshot 都是 `structural-replay` 且 `execution_input=false`；Mode/lifecycle migration 不迁移历史 Resolution、Assignment、Receipt 或 Trace，Authority Rule Eligibility 也不执行决定 |
+| Method-aware control continuation | M6-003 只保留 legacy Task-to-API compatibility seam；M11-001～004 Core 已实现 bounded no-Skill/direct Tool vertical Gate；Method Trace 仍未实现。当前 checked-in 三条 Snapshot 都是 `structural-replay` 且 `execution_input=false`，M11 vertical fixtures 仅在临时项目中构造 runtime-execution 输入；Mode/lifecycle migration 不迁移历史 Resolution、Assignment、Receipt 或 Trace，Authority Rule Eligibility 也不执行决定 |
 | no-Skill Assignment | Task 契约允许空 `required_skills`，但 alpha CLI 尚不能将其解析为冻结 Assignment |
-| Runtime Snapshot | 仓库没有 checked-in `runtime-execution` Snapshot；fixture 不得被 Runtime 接受。Phase B 只定义非 fixture typed-evidence 资格，external pin、freshness、精确 Provider/Model/Runtime、最终权限/DataPolicy 交集和 Authority 判断留给 Topic 4/M6 |
+| Runtime Snapshot | 仓库没有 checked-in `runtime-execution` Snapshot/View/Receipt；测试只在临时目录构造 bounded local Core Gate，既有 structural fixture 不得被 Runtime 接受。M11-001～004 证明 exact closure、deterministic View、bounded Thin Host 与 execution-only replay，不形成 permission grant、真实 Provider readiness、scientific Claim 或 Human acceptance |
 | End-to-end research run | 尚无面向普通用户的一键 Task-to-research 闭环；Runtime 集成由开发者显式接入 |
 | 真实外部模型 | 仓库测试不证明各供应商真实账号、配额、工具调用或长期兼容性 |
 | 科学有效性 | Validator 不评判方法适用、证据质量或 Claim 正确性 |

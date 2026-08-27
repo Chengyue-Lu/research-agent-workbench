@@ -1,0 +1,236 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/execution-host-report.schema.json",
+  "title": "Execution Host Fact Report",
+  "$comment": "A bounded report of what one Thin Execution Host attempt actually did. It is not a Receipt, Claim, Human Decision, fallback decision, or recovery record.",
+  "x-rwb-document-kind": "execution_host_report",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "report_id",
+    "attempt_id",
+    "view_ref",
+    "runtime_bundle_ref",
+    "task_ref",
+    "execution_scope",
+    "started_at",
+    "completed_at",
+    "status",
+    "execution_phase",
+    "requested_supply_report_ref",
+    "requested_binding",
+    "actual_facts",
+    "artifacts",
+    "enforcement",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "report_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "attempt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "view_ref": { "$ref": "#/$defs/revisionedFileRef" },
+    "runtime_bundle_ref": { "$ref": "#/$defs/revisionedFileRef" },
+    "task_ref": { "$ref": "#/$defs/revisionedFileRef" },
+    "execution_scope": { "$ref": "runtime-bundle-manifest.schema.json#/properties/execution_scope" },
+    "started_at": { "type": "string", "format": "date-time" },
+    "completed_at": { "type": "string", "format": "date-time" },
+    "status": { "enum": ["completed", "failed", "blocked"] },
+    "execution_phase": { "enum": ["preflight-blocked", "post-call", "driver-exception"] },
+    "requested_supply_report_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "requested_binding": { "$ref": "#/properties/actual_binding" },
+    "actual_supply_report_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "actual_binding": {
+      "type": "object",
+      "required": ["provider", "adapter", "model", "runtime", "host"],
+      "properties": {
+        "provider": { "$ref": "execution-binding.schema.json#/$defs/componentBinding" },
+        "adapter": { "$ref": "execution-binding.schema.json#/$defs/componentBinding" },
+        "model": { "$ref": "execution-binding.schema.json#/$defs/modelBinding" },
+        "runtime": { "$ref": "execution-binding.schema.json#/$defs/componentBinding" },
+        "host": { "$ref": "execution-binding.schema.json#/$defs/componentBinding" }
+      },
+      "additionalProperties": false
+    },
+    "actual_facts": {
+      "type": "object",
+      "required": [
+        "complete",
+        "capture_gaps",
+        "turns",
+        "output_tokens",
+        "elapsed_seconds",
+        "provider_invocations",
+        "tool_invocations",
+        "tool_refs",
+        "external_write",
+        "data_egress_payloads",
+        "side_effects"
+      ],
+      "properties": {
+        "complete": { "type": "boolean" },
+        "capture_gaps": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "turns": { "type": "integer", "minimum": 0 },
+        "output_tokens": { "type": "integer", "minimum": 0 },
+        "elapsed_seconds": { "type": "number", "minimum": 0 },
+        "provider_invocations": { "type": "integer", "minimum": 0 },
+        "tool_invocations": { "type": "integer", "minimum": 0 },
+        "tool_refs": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "external_write": { "type": "boolean" },
+        "data_egress_payloads": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "side_effects": { "$ref": "common.schema.json#/$defs/stringArray" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "complete": { "const": true } }, "required": ["complete"] },
+          "then": { "properties": { "capture_gaps": { "maxItems": 0 } } },
+          "else": { "properties": { "capture_gaps": { "minItems": 1 } } }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "enforcement": {
+      "type": "object",
+      "required": ["preventive_controls", "detective_controls", "driver_claims_trusted"],
+      "properties": {
+        "preventive_controls": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": ["binding-preflight", "freshness", "runtime-bundle-integrity"]
+          }
+        },
+        "detective_controls": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "binding-postflight", "fact-completeness", "external-write",
+              "data-egress", "side-effects", "budget", "artifact-scope",
+              "output-contract"
+            ]
+          }
+        },
+        "driver_claims_trusted": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["contract", "path", "sha256"],
+        "properties": {
+          "contract": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "path": { "$ref": "common.schema.json#/$defs/relativePath" },
+          "sha256": { "$ref": "common.schema.json#/$defs/sha256" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "diagnostic": {
+      "type": "object",
+      "required": ["code", "category", "recommended_next"],
+      "properties": {
+        "code": { "type": "string", "pattern": "^[A-Z][A-Z0-9-]*$" },
+        "category": { "enum": ["preflight", "driver", "contract", "boundary"] },
+        "recommended_next": { "enum": ["stop", "re-resolution"] }
+      },
+      "additionalProperties": false
+    },
+    "re_resolution_request": {
+      "type": "object",
+      "required": ["required", "reason_code", "snapshot_ref", "view_ref"],
+      "properties": {
+        "required": { "const": true },
+        "reason_code": { "type": "string", "pattern": "^[A-Z][A-Z0-9-]*$" },
+        "snapshot_ref": { "$ref": "#/$defs/revisionedFileRef" },
+        "view_ref": { "$ref": "#/$defs/revisionedFileRef" }
+      },
+      "additionalProperties": false
+    },
+    "boundaries": {
+      "type": "object",
+      "required": [
+        "actual_facts_only",
+        "supply_selection",
+        "rebinding",
+        "automatic_fallback",
+        "method_decision",
+        "claim_effect",
+        "human_decision",
+        "topic5_recovery",
+        "task_completion"
+      ],
+      "properties": {
+        "actual_facts_only": { "const": true },
+        "supply_selection": { "const": false },
+        "rebinding": { "const": false },
+        "automatic_fallback": { "const": false },
+        "method_decision": { "const": false },
+        "claim_effect": { "const": false },
+        "human_decision": { "const": false },
+        "topic5_recovery": { "const": false },
+        "task_completion": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "completed" } }, "required": ["status"] },
+      "then": {
+        "properties": { "execution_phase": { "const": "post-call" } },
+        "required": ["actual_binding", "actual_supply_report_ref"],
+        "not": {
+          "anyOf": [
+            { "required": ["diagnostic"] },
+            { "required": ["re_resolution_request"] }
+          ]
+        }
+      },
+      "else": {
+        "required": ["diagnostic"],
+        "allOf": [
+          {
+            "if": { "properties": { "status": { "const": "blocked" } }, "required": ["status"] },
+            "then": {
+              "properties": { "execution_phase": { "const": "preflight-blocked" } },
+              "not": {
+                "anyOf": [
+                  { "required": ["actual_binding"] },
+                  { "required": ["actual_supply_report_ref"] }
+                ]
+              }
+            },
+            "else": {
+              "if": { "properties": { "execution_phase": { "const": "post-call" } }, "required": ["execution_phase"] },
+              "then": { "required": ["actual_binding", "actual_supply_report_ref"] },
+              "else": {
+                "properties": { "execution_phase": { "const": "driver-exception" } },
+                "not": {
+                  "anyOf": [
+                    { "required": ["actual_binding"] },
+                    { "required": ["actual_supply_report_ref"] }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "revisionedFileRef": {
+      "type": "object",
+      "required": ["ref", "path", "sha256"],
+      "properties": {
+        "ref": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*@r[1-9][0-9]*$" },
+        "path": { "$ref": "common.schema.json#/$defs/relativePath" },
+        "sha256": { "$ref": "common.schema.json#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

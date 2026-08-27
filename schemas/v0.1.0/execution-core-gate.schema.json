@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/execution-core-gate.schema.json",
+  "title": "Execution Core Vertical Gate",
+  "$comment": "A deterministic M11 Core acceptance record proving separate no-Skill and direct-Tool Action/Capability-slice receipts without creating whole-Task completion, Skill Assignment, Claim, Human Decision, fallback, or Topic 5 semantics.",
+  "x-rwb-document-kind": "execution_core_gate",
+  "type": "object",
+  "required": ["schema_version", "gate_id", "scope", "status", "paths", "invariants", "boundaries"],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "gate_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "scope": { "const": "m11-core" },
+    "status": { "const": "pass" },
+    "paths": {
+      "type": "array", "minItems": 2, "maxItems": 2,
+      "items": {
+        "type": "object", "required": ["path_kind", "receipt_ref"],
+        "properties": {
+          "path_kind": { "enum": ["no-skill", "direct-tool"] },
+          "receipt_ref": { "$ref": "common.schema.json#/$defs/fileRef" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "invariants": {
+      "type": "object",
+      "required": ["exact_replay", "skill_assignment_absent", "execution_only", "legacy_receipt_unchanged"],
+      "properties": {
+        "exact_replay": { "const": true },
+        "skill_assignment_absent": { "const": true },
+        "execution_only": { "const": true },
+        "legacy_receipt_unchanged": { "const": true }
+      },
+      "additionalProperties": false
+    },
+    "boundaries": {
+      "type": "object",
+      "required": ["claim_effect", "human_decision", "fallback", "topic5_recovery", "task_completion"],
+      "properties": {
+        "claim_effect": { "const": false },
+        "human_decision": { "const": false },
+        "fallback": { "const": false },
+        "topic5_recovery": { "const": false },
+        "task_completion": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "properties": {
+        "paths": {
+          "contains": { "properties": { "path_kind": { "const": "no-skill" } }, "required": ["path_kind"] }
+        }
+      }
+    },
+    {
+      "properties": {
+        "paths": {
+          "contains": { "properties": { "path_kind": { "const": "direct-tool" } }, "required": ["path_kind"] }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

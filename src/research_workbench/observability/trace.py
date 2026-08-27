@@ -32,6 +32,7 @@ TRACE_INDEX_FILENAME = "INDEX.yaml"
 TRACE_EVENTS_FILENAME = "events.jsonl"
 TRACE_MESSAGES_DIRNAME = "messages"
 TRACE_TOOL_EVENTS_DIRNAME = "tool-events"
+TRACE_DECISIONS_DIRNAME = "decisions"
 
 _SECRET_KEY = re.compile(
     r"(?:authorization|proxy[-_]?authorization|cookie|set[-_]?cookie|api[-_]?key|"
@@ -406,6 +407,65 @@ class AgentTraceRecorder:
         if receipt_ref is not None:
             payload["receipt_ref"] = dict(receipt_ref)
         self._append_event("external-action", payload)
+
+    def record_decision_snapshot(
+        self, decision_id: str, document: Mapping[str, Any]
+    ) -> Mapping[str, str]:
+        """Register one immutable, hash-pinned decision fact in this Trace."""
+
+        if self._sealed:
+            raise RuntimeError("trace is already sealed")
+        relative = f"{TRACE_DECISIONS_DIRNAME}/{_safe_id(decision_id)}.yaml"
+        path = self.attempt_dir / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        cleaned, redactions = sanitize_trace_value(document)
+        if redactions:
+            raise ValueError("decision snapshots cannot contain redacted values")
+        if not isinstance(cleaned, Mapping):
+            raise ValueError("decision snapshot must be an object")
+        _create_exclusive(path, _yaml_bytes(cleaned))
+        reference = _ref(path, relative)
+        self._index["decision_refs"].append(reference)
+        self._refresh_index()
+        return reference
+
+    def record_execution_fact(
+        self,
+        *,
+        fact_id: str,
+        view_ref: Mapping[str, Any],
+        actual_binding: Mapping[str, Any],
+        actual_supply_report_ref: str,
+    ) -> Mapping[str, str]:
+        """Pin one typed post-call fact without granting execution authority.
+
+        Trace v0.1 reuses its existing immutable ``decision_refs`` file-ref
+        envelope.  ``record_kind`` and the dedicated Schema keep this factual
+        record distinct from a Method, Claim, Human, or Supply decision.
+        """
+
+        return self.record_decision_snapshot(
+            f"execution-fact-{fact_id}",
+            {
+                "schema_version": "0.1.0",
+                "fact_id": fact_id,
+                "record_kind": "actual-execution-binding",
+                "attempt_id": self.attempt_id,
+                "view_ref": dict(view_ref),
+                "execution_phase": "post-call",
+                "actual_binding": dict(actual_binding),
+                "actual_supply_report_ref": actual_supply_report_ref,
+                "boundaries": {
+                    "actual_fact": True,
+                    "supply_selection": False,
+                    "rebinding": False,
+                    "method_decision": False,
+                    "task_completion": False,
+                    "claim_effect": False,
+                    "human_decision": False,
+                },
+            },
+        )
 
     def record_attempt_status(
         self,
