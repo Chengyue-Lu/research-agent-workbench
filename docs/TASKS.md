@@ -183,10 +183,9 @@ Human Decision 或端到端研究执行已经实现。
 
 M11 把 M6-003 的未来 umbrella scope 拆成可独立失败、审查和验收的 producer/consumer contracts。
 Core（M11-001～004）必须在零 Skill、零 Evolution Registry 下闭合；Skill supply publication/mapping
-（M11-005～006）是可选支线，不阻塞 Core。M11-001→002→003→004 保持四个独立 implementation /
-acceptance identity；它们可按 `DEVELOPMENT.md` 的通用 module-level PR 规则，在一个强耦合
-Execution Reintegration PR 中依拓扑顺序原子集成。PR 粒度不合并 Task identity，也不允许跳过逐 Task
-implementation slice、commit、evidence、owner review 或 hard dependency。
+（M11-005～006）是可选支线，不阻塞 Core。M11-001→002→003→004 跨越不同 producer/consumer surface，本项目明确选择
+**一 dependency layer 一 feature PR**；不得借 R2 atomic completion exception 在一个 PR 中跳过中间层的
+独立验收。M11-005/006 也分别提交。
 
 | ID | 状态 | 任务 | 责任人 | 风险 | Phase / Topic | 依赖 | 验收 |
 |---|---|---|---|---|---|---|---|
@@ -237,7 +236,7 @@ M13 不等于 strategy framework approval；M14 不等于 release implementation
 | `M7-005, M7-006, M7-014` | 路诚钺 | R2 | D | Research Control + Evaluation + Skill Evolution | evidence-driven trials PARKED |
 | `M7-007` | 路诚钺 | R2 | E | Research Control / Mode | 真实案例证明 Mode gap 前 PARKED |
 | `M10-001～003` | 路诚钺 | R2 | C | Research State / Claim / Human Decision + Artifact/Trace/Validation | M10-001 READY，其余按 DAG BLOCKED；整条 Phase C chain 是 Topic 5 activation prerequisite，不是 Topic 5 member |
-| `M11-001～006` | 各行具名 | R2 | F | Topic 4；部分跨 Research Control、Artifact/Trace、Skill Evolution；不属于 Topic 5 | Core 与 optional Skill supply publication/mapping 分离；PR 可按通用 module-level DAG 规则集成，Task 验收保持独立 |
+| `M11-001～006` | 各行具名 | R2 | F | Topic 4；部分跨 Research Control、Artifact/Trace、Skill Evolution；不属于 Topic 5 | Core 与 optional Skill supply publication/mapping 分离；一 dependency layer 一 PR |
 
 ## 历史 GitHub Issues
 
@@ -262,9 +261,8 @@ M10-001 是 Phase C 的入口；随后是 M10-002 → M3-009 → M10-003。M11-0
 Topic 4 也不能替代 Research State/Failure/Method Trace。M11-005～006 是 optional Skill supply
 publication/mapping，保持 PARKED，不阻塞零 Skill Core，也不建立第二条 Runtime consumer path。
 
-Issue #41 新增或规范化的 M4、M5、M10、M11 dependency chains 保持逐 Task implementation /
-acceptance identity；PR 组织统一遵守 `DEVELOPMENT.md` 的 module-level DAG 规则。Governance v2 的
-`PARKED → DONE` R2 exception 只保留给
+Issue #41 新增或规范化的 M4、M5、M10、M11 dependency chains 全部采用一 dependency layer 一
+feature PR；本轮不为它们声明 atomic completion set。Governance v2 的 R2 atomic exception 只保留给其他
 已经被 task-definition 明确证明为不可独立验收的同一 Stage，不能从“风险同为 R2”自行推导适用。
 
 Phase B 期间，路诚钺维护 Capability 词汇、Skill Need/lifecycle、Protocol 与相应 Schema/fixture；

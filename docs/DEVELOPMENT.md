@@ -1,7 +1,7 @@
 # 开发协作指南
 
 状态：Stable contributor rules
-更新：2026-08-27
+更新：2026-08-23
 
 ## 1. 实名维护边界
 
@@ -67,11 +67,9 @@ Task status、hard dependency 与 implementation scheduling 只在 [`TASKS.md`](
 - [`docs/workstreams/`](workstreams/README.md) 按风险和复杂度触发，不再是每个 PR 的必需附件；
 - Handoff 给出基线提交、修改路径、验证证据、未证明内容和下一动作。
 
-M Task 是 implementation / acceptance identity；PR 是 integration / review unit，二者不要求 1:1。
-单 Task 分支仍推荐 `agent/m10-002-research-failure`。同一强耦合 module/workstream 的预定义 dependency
-DAG 可以使用 module-level 分支和 PR 原子集成，但 PR 必须列出 exact `M*` IDs、每项 transition、独立
-implementation slice/commit/evidence 与拓扑顺序，不能只写“Phase C implementation”“Topic 4 work”或
-“Runtime improvements”。Phase、Topic、M-group 或 PR 都不能替代 M Task 的验收 identity。
+分支和 PR 以 Task 为主键：单 Task 推荐 `agent/m10-002-research-failure`；只有强耦合、可由 dependency
+DAG 原子证明的 Stage 才使用覆盖多个 Task 的阶段名。PR 必须列出 exact `M*` IDs 与每项 transition，
+不能只写“Phase C implementation”“Topic 4 work”或“Runtime improvements”。
 
 执行便利性与方法、权限或数据边界冲突时，采用更严格边界并请求人类决定；任何一侧不得替另一侧静默定义 fallback。
 
@@ -108,22 +106,18 @@ Task 状态机允许 `PARKED → READY → IN_PROGRESS → DONE`、`READY/IN_PRO
 时，head snapshot 中列明的 Task 依赖必须全部 `DONE`。同一 feature PR 可以完成当前 Task 并激活
 依赖已满足的后继 Task；所有变化 ID 都必须在 PR 中声明。`DONE` 行是终态且定义不可变。
 
-同一强耦合 module/workstream 的 feature PR 可以原子完成一条预定义依赖 DAG，包括在满足附加条件时
-把后继 Task 从 `PARKED` 直接置为 `DONE`。该规则是稳定的 module-level PR 治理，不是针对某个 PR 的
-人类豁免。必须同时满足：
+同一 Stage feature PR 也可以原子完成一条已声明的依赖链，包括把后继 Task 从 `PARKED` 直接置为
+`DONE`。治理器按 head snapshot 的 dependency DAG 拓扑验证顺序：每个依赖必须已在 base 中 `DONE`，
+或在同一 PR 的完成集合中先行闭合；每个进入 `DONE` 的 Task 必须在 Verification evidence 中有具名
+证据。Task 定义、依赖和验收不得随实现 PR 改写，依赖缺失或未闭合仍然阻断。该机制只消除人为的
+状态推进 PR，不放松完成证据或 `DONE` 不可变性。
 
-1. Task、dependency 和 acceptance 已在 base 中定义，feature PR 不得改写；
-2. 至少一个入口 Task 在 base 中已为 `READY`；
-3. 所有外部 hard dependency 已在 base 中 `DONE`；内部 dependency DAG 无环，并从入口 Task 可达；
-4. 所有成员 Task 均在 PR 中声明，且各有独立 implementation slice、可定位 commit 和 task-specific
-   Verification evidence；
-5. 每个依赖要么在 base 中已 `DONE`，要么在同一 PR 的拓扑序中先行闭合；
-6. PR risk 取所有成员及 changed paths 推导风险的最高值，相关 owner/cross-owner review 不因合并 PR 而减少。
-
-治理器验证声明闭包、定义不可改写、外部依赖、入口可达性、DAG 顺序和逐 Task 证据；reviewer 复核
-implementation slice/commit 是否确实可独立审查。断连 Task、未声明中间层、缺少证据或外部依赖未满足
-均阻断。`PARKED → DONE` 仍只允许 R2 module-level completion；R0/R1 必须先正常激活。该机制只改变
-集成与审查粒度，不合并 Task identity、不放松 `DONE` 不可变性，也不要求所有依赖链必须放在一个 PR。
+上述 `PARKED → DONE` atomic exception 仍只适用于 R2 的同一强耦合 Stage，不推广到 R0/R1。默认及
+Issue #41 所有新增/规范化 dependency chain 均采用 **一 dependency layer 一 feature PR**：前一 Task
+合并并成为 `DONE` 后，下一 Task 才能激活和实施。尤其不得仅因 M11 全链均为 R2，就在一个 PR 中
+跨层完成 Bundle、View、Host 与 Receipt。其他链如需使用 exception，必须先在对应
+task-definition/workstream 中明确声明 atomic completion set，并证明它确属一个不可独立验收的 Stage，
+而不是用风险等级或 atomic completion 绕过依赖审查。
 
 R0 maintenance 可以填写 `Task ID(s): none`，前提是 `TASKS.md` 不变；R1/R2 必须有正式 Task 或
 Audit ID。feature 置 `DONE` 只代表机器确认结构资格、证据字段和 CI，完成判断仍由具名 owner 承担。

@@ -108,9 +108,8 @@ flowchart LR
 ```
 
 上图保留 `M3-009 Method Trace` 的历史 identity，即使它位于 M10 的 canonical implementation chain；
-不得为了图形连续性 cosmetic renumber。M11 Core 的每个 producer/consumer layer 保持独立 Task 验收，
-可按通用 module-level PR 规则在同一 workstream 中依 DAG 集成；optional Skill supply 不阻塞 Core。
-图中省略的 hard dependencies（包括 Human/external Gate）仍须
+不得为了图形连续性 cosmetic renumber。M11 Core 的每个 producer/consumer dependency layer 分 PR
+验收；optional Skill supply 不阻塞 Core。图中省略的 hard dependencies（包括 Human/external Gate）仍须
 从 `TASKS.md` 读取，不能由图推断。
 
 ## 4. Reservation activation

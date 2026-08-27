@@ -177,9 +177,8 @@ Skill Runtime Extension 拆成两条依赖。
 Topic 4 的 implementation vocabulary 已落到 M11：M11-001 Runtime Bundle/Profile → M11-002
 supply-neutral Resolved Execution View → M11-003 Thin Execution Host → M11-004 generic Trace/Receipt Core
 Gate。M9-005 accepted contracts 允许 M11-001 READY；Core 按依赖推进 no-Skill/direct Tool/procedure/
-Adapter-Provider 路径，不等待 SkillReleaseProjection。四层保持可独立验收的 producer/consumer
-Task identity；同一强耦合 Execution Reintegration workstream 可按通用 module-level PR 规则，在一个 PR
-中以独立 commit/evidence 和 dependency DAG 顺序集成，不因此合并 Task authority 或验收。
+Adapter-Provider 路径，不等待 SkillReleaseProjection。四层是可独立验收的 producer/consumer contracts，
+按一 dependency layer 一 feature PR 推进，不使用 R2 atomic completion 跨层合并。
 
 **Skill Runtime Extension Gate**：
 

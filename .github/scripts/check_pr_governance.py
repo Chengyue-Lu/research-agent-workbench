@@ -407,8 +407,10 @@ def _validate_atomic_completion_dag(
                     f"{task_id} depends on {dependency}, which was not DONE in base or completed in this Stage",
                 )
 
-    entry_anchor_ids = {
-        task_id for task_id in completed_ids if base_rows[task_id].status == "READY"
+    anchor_ids = {
+        task_id
+        for task_id in completed_ids
+        if base_rows[task_id].status in {"READY", "IN_PROGRESS", "BLOCKED"}
     }
     if parked_completed_ids and effective_risk != "R2":
         completion_valid = False
@@ -417,32 +419,29 @@ def _validate_atomic_completion_dag(
             "TASK-ATOMIC-RISK",
             "PARKED -> DONE is allowed only for an R2 Stage atomic completion",
         )
-    if parked_completed_ids and not entry_anchor_ids:
+    if parked_completed_ids and not anchor_ids:
         completion_valid = False
         report.add(
             "ERROR",
             "TASK-ATOMIC-ANCHOR-MISSING",
-            "PARKED -> DONE requires a READY entry Task completing as the module anchor",
+            "PARKED -> DONE requires a READY, IN_PROGRESS, or BLOCKED Task completing as the Stage anchor",
         )
 
-    reachable = set(entry_anchor_ids)
-    frontier = sorted(entry_anchor_ids)
+    reachable = set(anchor_ids)
+    frontier = sorted(anchor_ids)
     while frontier:
         task_id = frontier.pop(0)
         for dependent in sorted(dependents[task_id]):
             if dependent not in reachable:
                 reachable.add(dependent)
                 frontier.append(dependent)
-    connectivity_required = len(completed_ids) > 1
-    disconnected = sorted(
-        (completed_ids if connectivity_required else parked_completed_ids) - reachable
-    )
+    disconnected = sorted(parked_completed_ids - reachable)
     if disconnected:
         completion_valid = False
         report.add(
             "ERROR",
-            "TASK-MODULE-DAG-DISCONNECTED",
-            "completed Tasks are not dependency-reachable from a READY module entry: "
+            "TASK-ATOMIC-DISCONNECTED",
+            "PARKED completions are not dependency-reachable from a Stage anchor: "
             + ", ".join(disconnected),
         )
 
@@ -468,11 +467,11 @@ def _validate_atomic_completion_dag(
             "TASK-DEPENDENCY-CYCLE",
             f"atomic completion dependency graph is cyclic or unresolved: {unresolved}",
         )
-    elif connectivity_required and completion_valid:
+    elif parked_completed_ids and completion_valid:
         report.add(
             "INFO",
-            "TASK-MODULE-COMPLETION",
-            "validated module completion order: " + " -> ".join(order),
+            "TASK-ATOMIC-COMPLETION",
+            "validated completion order: " + " -> ".join(order),
         )
 
 
