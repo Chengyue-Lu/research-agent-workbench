@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/research-failure.schema.json",
+  "title": "Research Failure Candidate",
+  "x-rwb-document-kind": "research_failure",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "failure_id",
+    "revision",
+    "content_hash",
+    "learned_result",
+    "revisit_condition"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "failure_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "revision": { "type": "integer", "minimum": 1 },
+    "content_hash": { "$ref": "common.schema.json#/$defs/sha256" },
+    "learned_result": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "revisit_condition": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "execution_profile": {
+      "type": "object",
+      "required": ["source_attempt_ref", "observed_result", "uncertainty"],
+      "properties": {
+        "source_attempt_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+        "observed_result": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "uncertainty": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "additionalProperties": false
+    },
+    "limitations": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "metadata": { "type": "object" }
+  },
+  "additionalProperties": false
+}

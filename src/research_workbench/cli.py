@@ -673,14 +673,25 @@ def _reference_check(args: argparse.Namespace) -> int:
 
 
 def _research_state_validate(args: argparse.Namespace) -> int:
-    from research_workbench.research_state import ClosureIndex, check_research_state
+    from research_workbench.research_state import (
+        ClosureIndex,
+        check_research_attempt_lineage,
+        check_research_failure,
+        check_research_state,
+    )
 
     document_path = Path(args.document)
     document = load_document(document_path)
-    if not isinstance(document, Mapping) or infer_document_kind(document) != "research_state":
-        print("ERROR   DOCUMENT-UNKNOWN              not a Research State document")
+    checkers = {
+        "research_state": check_research_state,
+        "research_attempt_lineage": check_research_attempt_lineage,
+        "research_failure": check_research_failure,
+    }
+    kind = infer_document_kind(document) if isinstance(document, Mapping) else None
+    if kind not in checkers:
+        print("ERROR   DOCUMENT-UNKNOWN              not a bounded Phase C document")
         return 1
-    errors = SchemaCatalog().validate("research_state", document)
+    errors = SchemaCatalog().validate(kind, document)
     for error in errors:
         print(f"ERROR   SCHEMA-INVALID               {error.pointer}: {error.message}")
     if errors:
@@ -689,12 +700,12 @@ def _research_state_validate(args: argparse.Namespace) -> int:
     if document_path not in closure_paths:
         closure_paths.append(document_path)
     index = ClosureIndex.from_paths(closure_paths)
-    problems = check_research_state(document, index)
+    problems = checkers[kind](document, index)
     for problem in problems:
-        print(f"ERROR   RESEARCH-STATE-CLOSURE-INVALID {problem}")
+        print(f"ERROR   PHASE-C-CLOSURE-INVALID       {problem}")
     if problems:
         return 1
-    print(f"closure: ok (research_state; explicit_documents={len(closure_paths)})")
+    print(f"closure: ok ({kind}; explicit_documents={len(closure_paths)})")
     return 0
 
 
@@ -1378,7 +1389,7 @@ def build_parser() -> argparse.ArgumentParser:
     execution_assess.add_argument("--root", default=".")
     execution_assess.set_defaults(handler=_execution_assess)
     research_state_cmd = subparsers.add_parser(
-        "research-state", help="validate one M10-001 Research State against an explicit closure"
+        "research-state", help="validate one bounded Phase C document against an explicit closure"
     )
     research_state_subparsers = research_state_cmd.add_subparsers(
         dest="research_state_command", required=True

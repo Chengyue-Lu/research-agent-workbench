@@ -1,0 +1,20 @@
+schema_version: 0.1.0
+lineage_id: RATTEMPT-PC-A-02
+attempt_id: A-PC-A-02
+revision: 1
+content_hash: a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2
+status: active
+execution_attempt_ref:
+  path: examples/phase-c/m10-002-case-a/attempts/A-PC-A-02.yaml
+  sha256: 1d0c5e96caf7f5bccafe18877d0924ce2bf1e9092e7315a0ed64b6d0c06bf024
+state_ref: {object_id: RSTATE-PC-A, revision: 1}
+predecessor_attempt_ref:
+  object_id: RATTEMPT-PC-A-01
+  revision: 1
+  sha256: a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1
+reopen_justification:
+  statement: New evidence was admitted after the predecessor Attempt closed.
+  basis_refs: [{object_id: D-PC-A, revision: 1}]
+  changed_conditions: [A new evidence admission decision is present.]
+failure_refs: []
+limitations: [bounded lineage candidate]

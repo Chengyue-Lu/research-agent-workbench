@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/research-attempt-lineage.schema.json",
+  "title": "Research Attempt Lineage Candidate",
+  "x-rwb-document-kind": "research_attempt_lineage",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "lineage_id",
+    "attempt_id",
+    "revision",
+    "content_hash",
+    "status",
+    "execution_attempt_ref",
+    "state_ref",
+    "failure_refs",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "lineage_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "attempt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "revision": { "type": "integer", "minimum": 1 },
+    "content_hash": { "$ref": "common.schema.json#/$defs/sha256" },
+    "status": { "enum": ["active", "superseded"] },
+    "execution_attempt_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "state_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+    "predecessor_attempt_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+    "reopen_justification": { "$ref": "#/$defs/reopenJustification" },
+    "failure_refs": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/objectRef" },
+      "uniqueItems": true
+    },
+    "limitations": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "metadata": { "type": "object" }
+  },
+  "$defs": {
+    "reopenJustification": {
+      "type": "object",
+      "required": ["statement", "basis_refs", "changed_conditions"],
+      "properties": {
+        "statement": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "basis_refs": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/objectRef" },
+          "uniqueItems": true
+        },
+        "changed_conditions": { "$ref": "common.schema.json#/$defs/stringArray" }
+      },
+      "anyOf": [
+        { "properties": { "basis_refs": { "minItems": 1 } } },
+        { "properties": { "changed_conditions": { "minItems": 1 } } }
+      ],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

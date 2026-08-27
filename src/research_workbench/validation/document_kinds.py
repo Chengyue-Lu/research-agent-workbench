@@ -100,6 +100,10 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "skill_evaluation"
     if "state_id" in document and "entries" in document and "open_items" in document:
         return "research_state"
+    if "lineage_id" in document and "execution_attempt_ref" in document and "state_ref" in document:
+        return "research_attempt_lineage"
+    if "failure_id" in document and "learned_result" in document and "revisit_condition" in document:
+        return "research_failure"
     if "object_type" in document and "object_id" in document:
         return "research_object"
     return None

@@ -176,7 +176,7 @@ Human Decision 或端到端研究执行已经实现。
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
 | M10-001 | DONE | 建立并审计最小 durable Research State composition candidate | M1-002, M8-005, M9-005 | 用两个 bounded case 与反例检验最弱表示；当前 Unknown/Assumption item、Contradiction relation、derived Frontier、provenance-bearing Human Decision 与 Evidence relation 都是 implementation hypothesis，不预冻结最终 Schema；exact ref 结构可确定验证，科学判断与最终表示须 Human/R2 接受 |
-| M10-002 | BLOCKED | 建立 Attempt / Research Failure 语义与独立 lineage candidate | M1-004, M10-001 | Attempt 分离 from-State、optional predecessor Attempt 与 reopen justification；多个 Attempt 可共享 State，State 可由 Evidence/Human Decision 独立演化；Research Failure universal minimum 仅冻结 learned result/revisit condition，当前 source Attempt/observed/uncertainty 是 bounded profile candidate，并与 execution failure、negative Evidence、Capability Gap、Skill Need 分离 |
+| M10-002 | DONE | 建立 Attempt / Research Failure 语义与独立 lineage candidate | M1-004, M10-001 | Attempt 分离 from-State、optional predecessor Attempt 与 reopen justification；多个 Attempt 可共享 State，State 可由 Evidence/Human Decision 独立演化；Research Failure universal minimum 仅冻结 learned result/revisit condition，当前 source Attempt/observed/uncertainty 是 bounded profile candidate，并与 execution failure、negative Evidence、Capability Gap、Skill Need 分离 |
 | M10-003 | BLOCKED | 完成 Phase C bounded continuity / verification Gate | M10-001, M10-002, M3-009 | evidence-synthesis 与 synthetic simulation-negative 两案在 staged 新进程中只读 compact State、Method Trace 与 runner-owned exact closure；private oracle 只检查 exact output/read surface/fixture predicates 与 known-failure behavior，不能证明 reviewer reconstruction或科学正确性；具名 Human semantic review 与 R2 closeout 独立，Gate 不授权 Topic 5 实现 |
 
 ## M11：Phase F Execution Reintegration

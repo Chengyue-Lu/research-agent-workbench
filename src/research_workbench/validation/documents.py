@@ -140,6 +140,8 @@ SCHEMA_KINDS = {
     "context_snapshot",
     "execution_receipt",
     "research_object",
+    "research_attempt_lineage",
+    "research_failure",
     "research_state",
 }
 

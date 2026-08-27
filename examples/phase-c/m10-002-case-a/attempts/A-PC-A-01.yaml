@@ -1,0 +1,11 @@
+schema_version: 0.1.0
+task_id: M10-CASE-A
+task_revision: 1
+attempt_id: A-PC-A-01
+status: completed
+started_at: "2026-08-25T08:00:00Z"
+finished_at: "2026-08-25T08:01:00Z"
+trigger_reason: initial bounded evidence synthesis
+input_lock: []
+skill_lock: [fixture-method@0.1.0]
+artifact_refs: []

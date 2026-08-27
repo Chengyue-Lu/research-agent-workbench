@@ -1,4 +1,4 @@
-# M10-001 验证证据
+# M10 Phase C 验证证据
 
 状态：PR #44 review 整改；基线 `develop@6b16129`。
 
@@ -13,16 +13,28 @@
   role/type mismatch、stale current、cross-lineage/non-incremental supersession、closed item without
   provenance，以及 downstream role/field schema rejection。
 
+- **M10-002** Schemas：`research-attempt-lineage.schema.json`、`research-failure.schema.json`；
+- legacy boundary：`attempt.schema.json`、archive/recovery/Receipt 均未改写；
+- exact execution pin：explicit closure 唯一路径、execution type、attempt_id 与 loaded-byte SHA-256；
+- bounded cases：`examples/phase-c/m10-002-case-a` 与 `m10-002-case-b`，并复用 M10-001 State closure；
+- independence evidence：两个 Attempt 共享 State r1，而 State r2 由 Evidence/Human Decision 独立演化；
+- negative evidence：wrong/missing/drifted execution pin、predecessor self-loop/unversioned/type mismatch、
+  reopen basis empty/type mismatch、predecessor/reopen 双向独立、duplicate lineage identity、Failure source
+  type mismatch、partial profile，以及
+  execution failure/negative Evidence/Capability Gap/Skill Need 平行字段拒绝。
+
 ## Re-run
 
 | 项 | 结果 |
 |---|---|
 | `test_research_state_candidate.py` | 15 passed |
+| `test_research_attempt_failure.py` | 18 passed |
 | `test_schemas.py` | 3 passed |
 | 两个 explicit-closure CLI checks | PASS（6 / 4 explicit documents） |
-| `rwb validate examples/phase-c --root .` | validated=10, errors=0, warnings=0 |
-| `rwb validate examples registry --root .` | validated=164, errors=0, warnings=0 |
-| 最终全量 | 447 passed, 3 skipped |
+| M10-002 explicit-closure CLI check | PASS（M10-001 + M10-002 显式 roots） |
+| `rwb validate examples/phase-c --root .` | validated=17, errors=0, warnings=0 |
+| `rwb validate examples registry --root .` | validated=171, errors=0, warnings=0 |
+| 最终全量 | 465 passed, 3 skipped |
 
 ## Owner review remediation matrix
 
@@ -34,3 +46,14 @@
 | State role not type-bound | explicit role→semantic-type map + mismatch negative test |
 | parallel Human Decision representation | kernel `object_type: decision` fixture; no new Human Decision Schema |
 | fresh actor and Method Trace defects | downstream M10-003/M3-009 implementations absent from this layer |
+
+## M10-002 acceptance matrix
+
+| Task acceptance | Evidence |
+|---|---|
+| Attempt 分离 from-State | versioned lineage sidecar 不改 legacy Attempt；state exact ref 独立 |
+| optional predecessor + independent reopen justification | 双向独立正例；predecessor distinct/type/exact；reopen ref/type/changed-condition 反例 |
+| 多 Attempt 共享 State，State 独立演化 | Case A 两个 lineage 同指 r1；既有 State r2 独立 supersede |
+| Failure universal minimum | minimal fixture test 只需 learned/revisit semantic content |
+| source/observed/uncertainty 仅 bounded profile | optional all-or-nothing `execution_profile` |
+| 与其他 failure/gap/need 分离 | additionalProperties fail-closed 与四项字段拒绝测试 |

@@ -1,4 +1,4 @@
-"""Exact-ref closure for the M10-001 Research State candidate."""
+"""Exact-ref closure for the bounded Phase C state and lineage candidates."""
 
 from __future__ import annotations
 
@@ -6,7 +6,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
-from research_workbench.io import load_document
+from research_workbench.artifacts.integrity import hash_bytes, hash_file
+from research_workbench.io import load_document_bytes
 
 
 STATE_ROLE_TYPES: dict[str, tuple[str, ...]] = {
@@ -28,6 +29,7 @@ class IndexedDocument:
     revision: int
     path: Path | None
     document: Mapping[str, Any]
+    file_sha256: str | None = None
 
     @property
     def content_hash(self) -> str | None:
@@ -43,34 +45,59 @@ class ClosureIndex:
     duplicate_identities: set[tuple[str, int]] = field(default_factory=set)
 
     @classmethod
-    def from_documents(
-        cls, documents: Mapping[Path, Any] | Iterable[tuple[Path, Any]]
-    ) -> "ClosureIndex":
+    def _from_indexed(cls, entries: Iterable[IndexedDocument]) -> "ClosureIndex":
         index = cls()
-        items = documents.items() if isinstance(documents, Mapping) else documents
         seen: set[tuple[str, int]] = set()
-        for path, document in items:
-            entry = _index_document(Path(path), document)
-            if entry is None:
-                continue
+        for entry in entries:
             identity = (entry.identifier, entry.revision)
             if identity in seen:
                 index.duplicate_identities.add(identity)
             seen.add(identity)
             index.by_id.setdefault(entry.identifier, []).append(entry)
-        for entries in index.by_id.values():
-            entries.sort(key=lambda item: (item.revision, item.path.as_posix() if item.path else ""))
+        for values in index.by_id.values():
+            values.sort(
+                key=lambda item: (
+                    item.revision,
+                    item.path.as_posix() if item.path else "",
+                )
+            )
         return index
 
     @classmethod
+    def from_documents(
+        cls, documents: Mapping[Path, Any] | Iterable[tuple[Path, Any]]
+    ) -> "ClosureIndex":
+        items = documents.items() if isinstance(documents, Mapping) else documents
+        entries: list[IndexedDocument] = []
+        for path, document in items:
+            normalized_path = Path(path)
+            entry = _index_document(
+                normalized_path,
+                document,
+                file_sha256=_document_file_hash(documents, normalized_path),
+            )
+            if entry is not None:
+                entries.append(entry)
+        return cls._from_indexed(entries)
+
+    @classmethod
     def from_paths(cls, paths: Iterable[Path]) -> "ClosureIndex":
-        loaded: dict[Path, Any] = {}
+        entries: list[IndexedDocument] = []
         for path in paths:
             try:
-                loaded[Path(path)] = load_document(Path(path))
+                normalized_path = Path(path)
+                content = normalized_path.read_bytes()
+                document = load_document_bytes(normalized_path, content)
             except Exception:
                 continue
-        return cls.from_documents(loaded)
+            entry = _index_document(
+                normalized_path,
+                document,
+                file_sha256=hash_bytes(content),
+            )
+            if entry is not None:
+                entries.append(entry)
+        return cls._from_indexed(entries)
 
     def identity_problems(self) -> list[str]:
         return [
@@ -125,8 +152,74 @@ class ClosureIndex:
         candidates = self.by_id.get(identifier)
         return max((item.revision for item in candidates), default=None) if candidates else None
 
+    def resolve_file_ref(
+        self, raw_ref: Any, *, expected_types: tuple[str, ...] = ()
+    ) -> dict[str, Any]:
+        """Resolve one fileRef inside the explicit closure and verify its byte pin."""
 
-def _index_document(path: Path | None, document: Any) -> IndexedDocument | None:
+        if not isinstance(raw_ref, Mapping):
+            raise ValueError("file reference must be an object")
+        relative = raw_ref.get("path")
+        declared_sha256 = raw_ref.get("sha256")
+        if not isinstance(relative, str) or not relative:
+            raise ValueError("file reference path must not be empty")
+        normalized = relative.replace("\\", "/")
+        parts = normalized.split("/")
+        if normalized.startswith("/") or ":" in parts[0] or ".." in parts:
+            raise ValueError("file reference path must be repository-relative")
+        if not isinstance(declared_sha256, str) or not declared_sha256:
+            raise ValueError("file reference sha256 must not be empty")
+
+        candidates: list[IndexedDocument] = []
+        for entries in self.by_id.values():
+            for entry in entries:
+                if entry.path is None:
+                    continue
+                indexed_path = entry.path.as_posix().replace("\\", "/")
+                if indexed_path == normalized or indexed_path.endswith(f"/{normalized}"):
+                    candidates.append(entry)
+        result: dict[str, Any] = {
+            "path": normalized,
+            "status": "ok",
+            "declared_sha256": declared_sha256,
+            "entry": None,
+        }
+        if not candidates:
+            result["status"] = "missing"
+            return result
+        if len(candidates) > 1:
+            result["status"] = "ambiguous"
+            return result
+        entry = candidates[0]
+        result["entry"] = entry
+        if expected_types and entry.semantic_type not in expected_types:
+            result["status"] = "type-mismatch"
+            result["semantic_type"] = entry.semantic_type
+        elif entry.file_sha256 is None:
+            result["status"] = "hash-unverifiable"
+        elif (
+            declared_sha256.removeprefix("sha256:").lower()
+            != entry.file_sha256.removeprefix("sha256:").lower()
+        ):
+            result["status"] = "hash-mismatch"
+        return result
+
+
+def _document_file_hash(documents: Mapping[Path, Any], path: Path) -> str | None:
+    digest_getter = getattr(documents, "sha256_for", None)
+    if callable(digest_getter):
+        digest = digest_getter(path)
+        if isinstance(digest, str) and digest:
+            return digest
+    try:
+        return hash_file(path) if path.is_file() else None
+    except OSError:
+        return None
+
+
+def _index_document(
+    path: Path | None, document: Any, *, file_sha256: str | None = None
+) -> IndexedDocument | None:
     if not isinstance(document, Mapping):
         return None
     if "state_id" in document:
@@ -134,7 +227,41 @@ def _index_document(path: Path | None, document: Any) -> IndexedDocument | None:
         revision = document.get("revision")
         if isinstance(identifier, str) and identifier and isinstance(revision, int):
             return IndexedDocument(
-                "research_state", "research_state", identifier, revision, path, document
+                "research_state",
+                "research_state",
+                identifier,
+                revision,
+                path,
+                document,
+                file_sha256,
+            )
+        return None
+    if "lineage_id" in document and "execution_attempt_ref" in document:
+        identifier = document.get("lineage_id")
+        revision = document.get("revision")
+        if isinstance(identifier, str) and identifier and isinstance(revision, int):
+            return IndexedDocument(
+                "research_attempt_lineage",
+                "research_attempt_lineage",
+                identifier,
+                revision,
+                path,
+                document,
+                file_sha256,
+            )
+        return None
+    if "failure_id" in document and "learned_result" in document:
+        identifier = document.get("failure_id")
+        revision = document.get("revision")
+        if isinstance(identifier, str) and identifier and isinstance(revision, int):
+            return IndexedDocument(
+                "research_failure",
+                "research_failure",
+                identifier,
+                revision,
+                path,
+                document,
+                file_sha256,
             )
         return None
     if "task_id" in document and "goal" in document:
@@ -142,7 +269,26 @@ def _index_document(path: Path | None, document: Any) -> IndexedDocument | None:
         revision = document.get("revision", 1)
         if isinstance(identifier, str) and identifier and isinstance(revision, int):
             return IndexedDocument(
-                "task_packet", "task_packet", identifier, revision, path, document
+                "task_packet",
+                "task_packet",
+                identifier,
+                revision,
+                path,
+                document,
+                file_sha256,
+            )
+        return None
+    if "attempt_id" in document and "started_at" in document and "task_revision" in document:
+        identifier = document.get("attempt_id")
+        if isinstance(identifier, str) and identifier:
+            return IndexedDocument(
+                "attempt",
+                "execution_attempt",
+                identifier,
+                1,
+                path,
+                document,
+                file_sha256,
             )
         return None
     if (
@@ -157,6 +303,7 @@ def _index_document(path: Path | None, document: Any) -> IndexedDocument | None:
             int(document["revision"]),
             path,
             document,
+            file_sha256,
         )
     return None
 
@@ -229,6 +376,34 @@ def _ref_problems(
     return problems
 
 
+def _file_ref_problems(
+    index: ClosureIndex,
+    raw_ref: Any,
+    label: str,
+    *,
+    expected_types: tuple[str, ...] = (),
+) -> tuple[list[str], IndexedDocument | None]:
+    try:
+        resolved = index.resolve_file_ref(raw_ref, expected_types=expected_types)
+    except ValueError as exc:
+        return [f"{label}: {exc}"], None
+    status = resolved["status"]
+    if status == "missing":
+        return [f"{label}: file is absent from the explicit closure ({resolved['path']})"], None
+    if status == "ambiguous":
+        return [f"{label}: file path is ambiguous in the explicit closure ({resolved['path']})"], None
+    if status == "type-mismatch":
+        return [
+            f"{label}: role/type mismatch; target is {resolved.get('semantic_type')}, "
+            f"expected {' or '.join(expected_types)}"
+        ], None
+    if status == "hash-unverifiable":
+        return [f"{label}: file sha256 cannot be verified ({resolved['path']})"], None
+    if status == "hash-mismatch":
+        return [f"{label}: pinned sha256 drifts from loaded file bytes ({resolved['path']})"], None
+    return [], resolved.get("entry")
+
+
 def check_research_state(document: Mapping[str, Any], index: ClosureIndex) -> list[str]:
     """M10-001 closure, lineage, staleness, role/type, and open-item rules."""
 
@@ -288,4 +463,102 @@ def check_research_state(document: Mapping[str, Any], index: ClosureIndex) -> li
             problems.extend(
                 _ref_problems(index, ref, f"{label}.provenance_refs[{ref_position}]")
             )
+    return problems
+
+
+def check_research_attempt_lineage(
+    document: Mapping[str, Any], index: ClosureIndex
+) -> list[str]:
+    """Validate separation, exact execution pin, predecessor, and failure refs."""
+
+    problems = index.identity_problems()
+    file_problems, execution_attempt = _file_ref_problems(
+        index,
+        document.get("execution_attempt_ref"),
+        "execution_attempt_ref",
+        expected_types=("execution_attempt",),
+    )
+    problems.extend(file_problems)
+    if execution_attempt is not None and execution_attempt.identifier != document.get("attempt_id"):
+        problems.append(
+            "execution_attempt_ref: target attempt_id does not match lineage attempt_id"
+        )
+
+    problems.extend(
+        _ref_problems(
+            index,
+            document.get("state_ref"),
+            "state_ref",
+            expected_types=("research_state",),
+        )
+    )
+
+    predecessor = document.get("predecessor_attempt_ref")
+    justification = document.get("reopen_justification")
+    if predecessor is not None:
+        problems.extend(
+            _ref_problems(
+                index,
+                predecessor,
+                "predecessor_attempt_ref",
+                expected_types=("research_attempt_lineage",),
+            )
+        )
+        try:
+            resolved = index.resolve(predecessor)
+        except ValueError:
+            resolved = {"status": "invalid"}
+        if resolved.get("status") == "ok" and resolved.get("object_id") == document.get(
+            "lineage_id"
+        ):
+            problems.append(
+                "predecessor_attempt_ref: must identify a distinct predecessor Attempt"
+            )
+    if justification is not None:
+        if not isinstance(justification, Mapping):
+            problems.append("reopen_justification: must be a structured independent relation")
+        else:
+            for position, ref in enumerate(justification.get("basis_refs", [])):
+                problems.extend(
+                    _ref_problems(
+                        index,
+                        ref,
+                        f"reopen_justification.basis_refs[{position}]",
+                        expected_types=(
+                            "research_failure",
+                            "decision",
+                            "evidence",
+                            "research_state",
+                        ),
+                    )
+                )
+
+    for position, ref in enumerate(document.get("failure_refs", [])):
+        problems.extend(
+            _ref_problems(
+                index,
+                ref,
+                f"failure_refs[{position}]",
+                expected_types=("research_failure",),
+            )
+        )
+    return problems
+
+
+def check_research_failure(
+    document: Mapping[str, Any], index: ClosureIndex
+) -> list[str]:
+    """Validate only the optional bounded execution profile of a Research Failure."""
+
+    problems = index.identity_problems()
+    profile = document.get("execution_profile")
+    if isinstance(profile, Mapping):
+        problems.extend(
+            _ref_problems(
+                index,
+                profile.get("source_attempt_ref"),
+                "execution_profile.source_attempt_ref",
+                expected_types=("research_attempt_lineage",),
+            )
+        )
     return problems

@@ -1,0 +1,12 @@
+schema_version: 0.1.0
+lineage_id: RATTEMPT-PC-A-01
+attempt_id: A-PC-A-01
+revision: 1
+content_hash: a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1
+status: active
+execution_attempt_ref:
+  path: examples/phase-c/m10-002-case-a/attempts/A-PC-A-01.yaml
+  sha256: 4bfc49854a3a6f002e2506ff9746fe1745898a6ed0927ccf8b845b187f43b9a9
+state_ref: {object_id: RSTATE-PC-A, revision: 1}
+failure_refs: []
+limitations: [bounded lineage candidate]

@@ -1,0 +1,14 @@
+schema_version: 0.1.0
+failure_id: RFAIL-PC-B-001
+revision: 1
+content_hash: f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1
+learned_result: The coarse-grid run cannot resolve the synthetic boundary effect.
+revisit_condition: Revisit only after a higher-resolution input is admitted by Human review.
+execution_profile:
+  source_attempt_ref:
+    object_id: RATTEMPT-PC-B-01
+    revision: 1
+    sha256: b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1
+  observed_result: The coarse grid produced an unstable boundary estimate.
+  uncertainty: It is unknown whether resolution alone explains the instability.
+limitations: [synthetic bounded profile; not an execution-failure record]

@@ -13,7 +13,7 @@ owner：黄毅（GitHub 主名 `let778750-cpu`；昵称/界面名 `huangyi855`�
 - [`open-source-agent-harness-research/`](open-source-agent-harness-research/README.md)：
   开源 Agent Harness 调研、Codex 只读协议验证与候选研究方向（`RESEARCH-HARNESS-001`）。
 - [`M10-RESEARCH-STATE/`](M10-RESEARCH-STATE/README.md)：
-  M10-001 durable Research State candidate 单层实现与 R2 审查证据。
+  M10 Phase C State、Attempt/Failure、Method Trace 与 bounded Gate 的逐层实现和 R2 审查证据。
 
 ## 文件生命周期
 
