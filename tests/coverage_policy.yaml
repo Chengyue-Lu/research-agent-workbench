@@ -75,7 +75,6 @@ critical_modules:
   - .github/scripts/check_pr_governance.py
   - src/research_workbench/protocol/authority.py
   - src/research_workbench/capability/requirements.py
-  - src/research_workbench/capability/resolver.py
   - src/research_workbench/capability/supply.py
   - src/research_workbench/execution/runtime_bundle.py
   - src/research_workbench/execution/execution_view.py
@@ -108,7 +107,6 @@ negative_acceptance:
   - surface: capability-demand-resolution-snapshot
     modules:
       - src/research_workbench/capability/requirements.py
-      - src/research_workbench/capability/resolver.py
       - src/research_workbench/capability/supply.py
     positive_tests:
       - test_capability_resolution.CapabilityResolutionTests.test_supply_resolution_snapshot_chain_is_closed_and_recomputed

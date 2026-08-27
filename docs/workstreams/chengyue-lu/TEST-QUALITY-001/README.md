@@ -44,13 +44,16 @@ total；随后逐文件检查 critical line/branch，并确认声明的 positive
 coverage-quality execution 中真实 PASS。缺文件、缺 branch data、缺 evidence、阈值下调或 wildcard
 exclusion 均 fail closed。
 
+每次 hosted run 将 `coverage.json` 与 `coverage-test-results.json` 保留为 14 天的具名 artifact，供
+R2 reviewer 校核逐行/逐 branch 缺口与 slowest evidence；artifact 是审计输入，不改变 Gate 结果。
+
 ## Critical Surface 映射
 
 | Semantic surface | Exact measured implementation |
 |---|---|
 | Governance-sensitive validator | `.github/scripts/check_pr_governance.py` |
 | Authority Rule Eligibility | `protocol/authority.py` |
-| Capability Requirement / Resolution / Snapshot | `capability/requirements.py`, `resolver.py`, `supply.py` |
+| Capability Requirement / Resolution / Snapshot | `capability/requirements.py`, `supply.py`，以及 Runtime Bundle 对 Resolution/Snapshot exact closure 的验证 |
 | Runtime Bundle / Resolved Execution View / Thin Host | `execution/runtime_bundle.py`, `execution_view.py`, `host.py` |
 | Trace / Generic Receipt closeout | `observability/trace.py`, `execution/generic_closeout.py` |
 | exact-ref / hash / provenance | `artifacts/integrity.py`, `validation/relationships.py` |
@@ -59,6 +62,11 @@ exclusion 均 fail closed。
 
 Coverage percentage 只说明路径被执行。每个可能改变 allow/block/authority/permission/hash/binding/Receipt
 closure 的 critical surface 仍必须有显式正反验收；R2/DONE 不能只引用百分比。
+
+`capability/resolver.py` 是历史 Task→Skill Assignment resolver，不是 M9 的 Capability Resolution；首轮
+baseline 暴露命名歧义后已从 critical inventory 移除，但仍计入 repository global coverage。该修正不排除
+实际 M9 Resolution/Snapshot：它们由 `capability/supply.py` 的 demand/supply assessment 与
+`execution/runtime_bundle.py` 的 exact selected closure 共同覆盖。
 
 ## Suite 职责
 

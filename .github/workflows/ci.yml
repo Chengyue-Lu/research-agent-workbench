@@ -101,6 +101,14 @@ jobs:
           --json-output coverage-test-results.json --slowest 20
       - name: Export coverage evidence
         run: python -m coverage json -o coverage.json
+      - name: Preserve coverage and duration evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-quality-evidence
+          path: |
+            coverage.json
+            coverage-test-results.json
+          retention-days: 14
       - name: Enforce Coverage Policy v2
         run: >-
           python .github/scripts/check_coverage_policy.py
