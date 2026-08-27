@@ -9,6 +9,8 @@ from research_workbench.artifacts.integrity import hash_file
 from research_workbench.execution import (
     CloseoutPin,
     GenericCloseoutValidationError,
+    ExecutionDriverResult,
+    ExecutionViewValidationError,
     build_execution_core_gate,
     build_generic_execution_receipt,
     execute_frozen_view,
@@ -102,7 +104,9 @@ class GenericExecutionCloseoutTests(unittest.TestCase):
         )
         return bundle, validated_view
 
-    def _validated_receipt(self, root: Path, path_kind: str):
+    def _validated_receipt(
+        self, root: Path, path_kind: str, lifecycle: str = "completed"
+    ):
         bundle, view = self._bundle_and_view(root, path_kind)
         driver = host_fixtures.RecordingDriver(root, view.document["binding"])
         if path_kind == "direct-tool":
@@ -111,13 +115,33 @@ class GenericExecutionCloseoutTests(unittest.TestCase):
                 view.document["binding"],
                 tool_refs=("bounded-contract-check-tool",),
             )
+        if lifecycle == "blocked":
+            requested = host_fixtures.plain(view.document["binding"])
+            requested["model"]["ref"] = "preflight-mismatched-model"
+            driver = host_fixtures.RecordingDriver(root, requested)
+        elif lifecycle == "failed":
+            actual = host_fixtures.plain(view.document["binding"])
+            actual["provider"]["ref"] = "observed-drift-provider"
+            driver = host_fixtures.RecordingDriver(
+                root,
+                view.document["binding"],
+                result=ExecutionDriverResult(
+                    status="completed",
+                    actual_binding=actual,
+                    actual_supply_report_ref=(
+                        "supply-no-skill-contract-check@1.0.0"
+                    ),
+                    facts_complete=True,
+                ),
+            )
         host_report = execute_frozen_view(
             view,
             driver,
             report_id=f"HOST-{path_kind}",
             attempt_id=f"ATTEMPT-{path_kind}",
-            started_at="2026-08-26T00:00:01Z",
-            completed_at="2026-08-26T00:00:02Z",
+            clock=host_fixtures.SequenceClock(
+                "2026-08-26T00:00:01Z", "2026-08-26T00:00:02Z"
+            ),
             schema_root=ROOT / "schemas",
         )
         host_pin = self._write(root, "closeout/host-report.yaml", host_report)
@@ -137,7 +161,10 @@ class GenericExecutionCloseoutTests(unittest.TestCase):
             accountable_owner="M11 bounded test owner",
             actor_id="runtime-host",
             runtime_identity=view.document["binding"]["runtime"]["ref"],
-            provider=view.document["binding"]["provider"]["ref"],
+            provider=(
+                host_report.get("actual_binding")
+                or host_report["requested_binding"]
+            )["provider"]["ref"],
             read_allowlist=[],
             write_scope=[
                 str(item).rstrip("/") + "/**"
@@ -146,7 +173,16 @@ class GenericExecutionCloseoutTests(unittest.TestCase):
             tool_allowlist=["bounded-contract-check-tool"] if path_kind == "direct-tool" else [],
             created_at="2026-08-26T00:00:00Z",
         )
-        if path_kind == "direct-tool":
+        recorder.record_decision_snapshot(
+            "execution-scope-binding",
+            {
+                "schema_version": "0.1.0",
+                "record_kind": "execution-scope-binding",
+                "view_ref": host_report["view_ref"],
+                "execution_scope": host_report["execution_scope"],
+            },
+        )
+        if path_kind == "direct-tool" and lifecycle == "completed":
             recorder.record_tool_call(
                 operation_id="contract-check",
                 tool_name="bounded-contract-check-tool",
@@ -154,7 +190,9 @@ class GenericExecutionCloseoutTests(unittest.TestCase):
                 arguments={},
                 result={"status": "pass"},
             )
-        recorder.record_attempt_status("completed", reason="bounded Host report completed")
+        recorder.record_attempt_status(
+            host_report["status"], reason=f"bounded Host report {host_report['status']}"
+        )
         recorder.seal()
         trace_pin = CloseoutPin(
             trace_dir.joinpath("INDEX.yaml").relative_to(root).as_posix(),
@@ -213,6 +251,30 @@ class GenericExecutionCloseoutTests(unittest.TestCase):
         )
         return bundle, validated
 
+    def test_completed_failed_and_preflight_blocked_lifecycle_replay_end_to_end(self) -> None:
+        for lifecycle in ("completed", "failed", "blocked"):
+            with self.subTest(lifecycle=lifecycle), tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                _, receipt = self._validated_receipt(root, "no-skill", lifecycle)
+                self.assertEqual(lifecycle, receipt.document["status"])
+                host = load_document(root / receipt.document["host_report_ref"]["path"])
+                if lifecycle == "completed":
+                    self.assertEqual("post-call", host["execution_phase"])
+                    self.assertEqual(
+                        "action-capability-slice-only",
+                        receipt.document["completion_claim"],
+                    )
+                elif lifecycle == "failed":
+                    self.assertEqual("post-call", host["execution_phase"])
+                    self.assertEqual("HOST-ACTUAL-BINDING-DRIFT", host["diagnostic"]["code"])
+                    self.assertNotEqual(host["requested_binding"], host["actual_binding"])
+                    self.assertEqual("none", receipt.document["completion_claim"])
+                else:
+                    self.assertEqual("preflight-blocked", host["execution_phase"])
+                    self.assertNotIn("actual_binding", host)
+                    self.assertNotIn("actual_supply_report_ref", host)
+                    self.assertEqual("none", receipt.document["completion_claim"])
+
     def test_no_skill_and_direct_tool_close_and_form_core_gate_without_assignment(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             base = Path(temp)
@@ -229,11 +291,30 @@ class GenericExecutionCloseoutTests(unittest.TestCase):
             )
             self.assertEqual({"no-skill", "direct-tool"}, {item["path_kind"] for item in gate["paths"]})
             for receipt in (no_skill.document, direct_tool.document):
-                self.assertEqual("execution-only", receipt["completion_claim"])
+                self.assertEqual(
+                    "action-capability-slice-only", receipt["completion_claim"]
+                )
+                self.assertFalse(receipt["boundaries"]["task_completion"])
                 self.assertEqual("absent", receipt["boundaries"]["skill_assignment"])
                 self.assertNotIn("skill_assignment_ref", receipt)
                 self.assertFalse(receipt["boundaries"]["claim_effect"])
                 self.assertFalse(receipt["boundaries"]["human_decision"])
+
+    def test_agent_profile_tool_allowlist_applies_to_actual_tool_supply(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            bundle = self._direct_tool_bundle(root)
+            helper = view_fixtures.ExecutionViewTests(methodName="runTest")
+            inputs = helper._inputs(root)
+            profile_path = root / inputs["agent_profile"].path
+            profile = load_document(profile_path)
+            profile["allowed_tool_capabilities"] = []
+            inputs["agent_profile"] = helper._write(
+                root, inputs["agent_profile"].path, profile
+            )
+            with self.assertRaises(ExecutionViewValidationError) as raised:
+                helper._produce(root, bundle, inputs)
+            self.assertIn("EXECUTION-VIEW-PROFILE-TOOL-CAPABILITY", str(raised.exception))
 
     def test_trace_or_validation_tamper_blocks_file_replay(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

@@ -31,6 +31,7 @@ Runtime/Capability authority。
 ### M11-001
 
 - 显式 closure manifest；只读取列出的 exact path/hash；
+- 明确 `action-capability-slice`，同时暴露完整 Task capability demand 与当前 closed set；未闭合能力时不得声明 Task completion；
 - 拒绝目录输入、root scan、未声明传递引用和 `structural-replay`；
 - Runtime import graph 不包含 Skill Need/Candidate/Evaluation/Lifecycle validators；
 - zero-Skill、零 Evolution Registry 的 no-Skill/direct Tool Core 可验证；
@@ -62,6 +63,8 @@ Runtime/Capability authority。
   evidence、execution-time freshness 与 policy intersection fail closed；
 - final narrowing：Profile 的 Tool capability/output contract/Model class-slot-capability 与 Host policy 的 exact
   Host subject 都必须覆盖最终 Binding；View 冻结三组 freshness windows；
+- Profile Tool allowlist 只作用于真实 Tool Supply；final intersection 后必须反证 selected Supply 的
+  permission/data-egress/side-effect operating boundary 仍可满足；
 - focused negative tests：Supply reselection、Profile/hash drift、tool/output/model/host-subject mismatch、
   stale/unavailable、disjoint write roots、bundle pin drift；source test 禁止 execution/fallback/Skill Evolution imports；
 - focused governance/runtime/view/schema tests：`Ran 81 tests ... OK`；
@@ -80,8 +83,9 @@ Runtime/Capability authority。
 - exact View loader：external pin + Bundle lineage + M11-002 deterministic recomputation，并把同一 validated
   Bundle 绑定进 View consumer；
 - single-binding Driver port：preflight/postflight binding equality，最多且恰好一次调用，无候选或 fallback；
-- 调用前防线：actual started-at freshness + exact Bundle manifest/document reload；失败时 Driver 零调用；
-- fact report：actual binding/Supply/Tool identity、完整性、调用/预算、egress、side effects、external write、
+- 调用前防线：Host-owned/injected trusted clock 的 actual started-at freshness + exact Bundle
+  manifest/document reload；失败时 Driver 零调用，调用方不能 backdate；
+- fact report：requested binding/Supply 与 post-call actual binding/Supply 分离，并记录 Tool identity、完整性、调用/预算、egress、side effects、external write、
   artifacts/output contract；preventive 与 detective enforcement 分栏且不信任 Driver 自报；
 - bounded failure：Driver exception 不泄露正文、不 retry；capture gap 不伪装 completion；binding drift 只请求
   上游 re-resolution；
@@ -100,8 +104,8 @@ Runtime/Capability authority。
 
 实现证据（本阶段第四层）：
 
-- `generic_execution_receipt`：exact View/Host/Trace/Artifact/validation closed set，completion claim 固定为
-  `execution-only`，无 Skill Assignment/Claim/Human/Topic 5 字段；
+- `generic_execution_receipt`：exact execution slice/View/Host/Trace/Artifact/validation closed set，completed
+  claim 固定为 `action-capability-slice-only`，所有状态均无 Task/Skill Assignment/Claim/Human/Topic 5 effect；
 - deterministic replay：Receipt refs 全部重载、View 重算、Trace validation、validation subject exact set，并
   独立闭合 Host actual binding/Supply、Trace provider/tool identity/count 与 selected-Supply component；
 - `execution_core_gate`：独立 no-Skill 与 direct-tool bounded vertical fixtures 均从 Bundle→View→Host→
@@ -121,22 +125,26 @@ Runtime/Capability authority。
 
 | Review blocker | 修复与对抗证据 |
 |---|---|
-| multi-candidate Resolution | Runtime 验证完整 candidate/comparison 关系，但 manifest 只导入 selected Supply；多候选 selected-only 正例与 selected-candidate 缺失负例 |
-| Profile/Host/binding final narrowing | Profile Tool/output/Model 与 Host subject 均闭合到最终 Binding；四类 mismatch 负例 |
-| freshness / Bundle TOCTOU | View 绑定 validated Bundle；Host 以 actual `started_at` 重验三组 freshness，并在 Driver 调用前重载 exact manifest/documents；过期与文件漂移均零调用 |
+| full Task capability closure | Core 显式选择 Action/Capability-slice 语义；manifest 公开完整 Task demand 与 singleton closed set，View/Host/Trace/Receipt 全程 pin 同一 slice；unresolved capability + Task completion 负例 |
+| multi-candidate Resolution | Runtime 验证完整 candidate/comparison 关系但只导入 selected Supply；`satisfied` 必须唯一 eligible；双 eligible 负例 |
+| Profile/Host/binding final narrowing | Profile Tool allowlist 只约束真实 Tool Supply；output/Model/Host subject 闭合；final intersection 低于 Supply permission/egress/effect demand 时 fail closed |
+| freshness / Bundle TOCTOU | View 绑定 validated Bundle；Host-owned/injected trusted clock 重验三组 freshness，调用方不能 backdate；Driver 调用前重载 exact manifest/documents |
 | prevented / detected | Host report 分列 preventive 与 detective controls，固定 `driver_claims_trusted=false`；文档不把 post-hoc 检测描述为沙箱预防 |
 | Host↔Trace actual facts | Attempt/status、Provider/Runtime actor identity、Provider/Tool count、Tool identity 与 selected-Supply Tool component 交叉闭合；缺失 Trace operation、provider request 与 actor substitution 负例 |
-| Receipt independent replay | 重放独立验证 Host actual binding/Supply 等于 View，并重做 Trace cross-object invariants；rehashed substitution 仍失败；completed/failed/blocked completion claim 由 Schema 区分 |
-| module-level PR governance | 入口必须在 base 为 READY；外部依赖 base-DONE、内部 DAG 可达/无环、逐 Task evidence、最高风险与 owner review 均保留；断连 BLOCKED Task 与非 READY 入口负例 |
+| Receipt lifecycle replay | completed 要求 actual==View；post-call failed 保留 drift 并由 diagnostic+Trace actual actors 佐证；preflight blocked 无 actual binding且 Trace 零调用；三态 Host→Trace→Receipt→replay E2E |
+| module-level PR governance | 不在 PR #45 内自我授权；稳定规则已拆到独立 PR #46，须先经独立接受/合并，随后 #45 rebase 并按 accepted base 复核 |
 
 最终本地证据：
 
-- focused M11 + governance + schema：`Ran 103 tests ... OK`；
-- full suite：`Ran 465 tests ... OK (skipped=3)`；三个 skip 为未安装 Hypothesis 的既有可选 property tests；
+- focused Runtime Bundle/View/Host/Closeout：`Ran 38 tests ... OK`（其中最终新增的 egress/effect
+  satisfiability adversarial test 单独复核通过）；
+- Governance focused：`Ran 67 tests ... OK`；
+- full suite：`Ran 470 tests ... OK (skipped=3)`；三个 skip 为本机缺少可选 Hypothesis；
 - repository validation：`validated=154 errors=0 warnings=0`；
-- `git diff --check`：PASS；
-- 本轮新增 12 个具名 adversarial/closure tests；
-- 远端 latest-head Python 3.11/3.13、coverage、wheel/clean-install、governance 与 cross-owner R2 review 仍是合并 Gate。
+- wheel build、隔离 venv install、installed `rwb schema list` 与 installed repository validation：PASS；
+- 本机 Python 环境没有 `coverage` 包，未临时修改系统环境；coverage 由 latest-head CI 的 3.11/3.13 jobs 执行；
+- PR #46 独立接受/合并、#45 rebase、latest-head Python 3.11/3.13、coverage、wheel/clean-install、
+  governance 与 cross-owner R2 review 仍是合并 Gate。
 
 ## 明确非目标
 
@@ -152,4 +160,5 @@ Runtime/Capability authority。
 每层已执行 focused unit tests、repository validation、`git diff --check`。M11-001～004 已按依赖分别形成
 独立 implementation commit 与 task-specific evidence；review 整改以一个额外聚合 commit 收紧共享
 contract，不重写四层历史。最终仍须等待 Python 3.11/3.13 CI、coverage、wheel/clean-install，并由两位
-具名 owner 完成 cross-owner R2 review 后才可合并。
+具名 owner 完成 cross-owner R2 review 后才可合并。PR #45 还必须先等待独立 governance PR #46 被接受，
+再 rebase 到包含该规则的 `develop`；当前分支不把 PR #46 的 head checker 当自我授权证据。

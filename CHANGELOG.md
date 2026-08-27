@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-27 — PR #45 second R2 contract remediation
+
+- 将 M11 Runtime Core 明确限定为 exact Action/Capability execution slice：manifest 同时公开完整 Task demand 与 singleton closed set，阻断 unresolved capability 下的 whole-Task completion；
+- `satisfied` Capability Resolution 现在要求唯一 eligible candidate；View 的 Tool allowlist 只约束真实 Tool Supply，并在最终 policy intersection 后验证 selected Supply 仍可运行；
+- Thin Host 改用 Host-owned/injected trusted clock，分离 requested 与 actual binding；Generic Receipt 对 completed、post-call failed、preflight blocked 作端到端 status-aware replay，并将 completion claim 收窄为 slice-only；
+- PR #45 不再携带用于授权自身的 module-level governance 改动；该规则独立保留在 PR #46，须独立接受后再 rebase。
+
 本文件只记录被主线接受、会影响使用者理解的基线变化。逐任务、分支和实验过程保存在[详细开发日志](DEVELOPMENT_HISTORY.md)。
 
 ## 2026-08-26 — M-series implementation vocabulary normalization

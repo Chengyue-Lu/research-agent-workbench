@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from types import MappingProxyType
 from typing import Any, Mapping, Protocol, Sequence
@@ -72,6 +72,17 @@ class FrozenExecutionDriver(Protocol):
     def execute(self, request: FrozenExecutionRequest) -> ExecutionDriverResult: ...
 
 
+class HostClock(Protocol):
+    def now(self) -> datetime: ...
+
+
+class SystemHostClock:
+    """Production clock owned by the Host, not by the execution caller."""
+
+    def now(self) -> datetime:
+        return datetime.now(timezone.utc)
+
+
 class ExecutionHostValidationError(ValueError):
     pass
 
@@ -113,6 +124,14 @@ def _timestamp(value: str, field: str) -> datetime:
     if parsed.tzinfo is None:
         raise ExecutionHostValidationError(f"{field} must include a timezone")
     return parsed
+
+
+def _observe_time(clock: HostClock, field: str) -> tuple[datetime, str]:
+    observed = clock.now()
+    if not isinstance(observed, datetime) or observed.tzinfo is None:
+        raise ExecutionHostValidationError(f"{field} clock observation must be timezone-aware")
+    normalized = observed.astimezone(timezone.utc)
+    return normalized, normalized.isoformat().replace("+00:00", "Z")
 
 
 def load_resolved_execution_view(
@@ -223,23 +242,28 @@ def _base_report(
     started_at: str,
     completed_at: str,
     status: str,
-    actual_binding: Mapping[str, Any],
-    actual_supply_report_ref: str,
+    execution_phase: str,
+    requested_binding: Mapping[str, Any],
+    requested_supply_report_ref: str,
+    actual_binding: Mapping[str, Any] | None,
+    actual_supply_report_ref: str | None,
     facts: Mapping[str, Any],
     artifacts: Sequence[Mapping[str, str]],
 ) -> dict[str, Any]:
-    return {
+    report = {
         "schema_version": "0.1.0",
         "report_id": report_id,
         "attempt_id": attempt_id,
         "view_ref": _view_ref(view),
         "runtime_bundle_ref": _plain(view.document["runtime_bundle_ref"]),
         "task_ref": _plain(view.document["task_ref"]),
+        "execution_scope": _plain(view.document["execution_scope"]),
         "started_at": started_at,
         "completed_at": completed_at,
         "status": status,
-        "actual_supply_report_ref": actual_supply_report_ref,
-        "actual_binding": _plain(actual_binding),
+        "execution_phase": execution_phase,
+        "requested_supply_report_ref": requested_supply_report_ref,
+        "requested_binding": _plain(requested_binding),
         "actual_facts": _plain(facts),
         "artifacts": _plain(artifacts),
         "enforcement": {
@@ -269,8 +293,14 @@ def _base_report(
             "claim_effect": False,
             "human_decision": False,
             "topic5_recovery": False,
+            "task_completion": False,
         },
     }
+    if actual_binding is not None:
+        report["actual_binding"] = _plain(actual_binding)
+    if actual_supply_report_ref is not None:
+        report["actual_supply_report_ref"] = actual_supply_report_ref
+    return report
 
 
 def _add_diagnostic(
@@ -391,14 +421,13 @@ def execute_frozen_view(
     *,
     report_id: str,
     attempt_id: str,
-    started_at: str,
-    completed_at: str,
+    clock: HostClock | None = None,
     schema_root: str | Path | None = None,
 ) -> dict[str, Any]:
     """Execute exactly once through one pre-bound driver and report facts."""
 
-    if _timestamp(completed_at, "completed_at") < _timestamp(started_at, "started_at"):
-        raise ExecutionHostValidationError("completed_at precedes started_at")
+    trusted_clock = clock or SystemHostClock()
+    started, started_at = _observe_time(trusted_clock, "started_at")
     declared_binding = _plain(driver.binding)
     declared_supply_ref = driver.selected_supply_report_ref
     expected_binding = _plain(view.document["binding"])
@@ -407,7 +436,6 @@ def execute_frozen_view(
     if declared_binding != expected_binding or declared_supply_ref != expected_supply_ref:
         preflight_code = "HOST-BINDING-MISMATCH"
     else:
-        started = _timestamp(started_at, "started_at")
         freshness = view.document["freshness"]
         if not (
             _timestamp(str(freshness["supply_observed_at"]), "supply_observed_at")
@@ -439,6 +467,9 @@ def execute_frozen_view(
             ):
                 preflight_code = "HOST-RUNTIME-BUNDLE-DRIFT"
     if preflight_code is not None:
+        completed, completed_at = _observe_time(trusted_clock, "completed_at")
+        if completed < started:
+            raise ExecutionHostValidationError("Host clock moved backwards during execution")
         report = _base_report(
             view,
             report_id=report_id,
@@ -446,8 +477,11 @@ def execute_frozen_view(
             started_at=started_at,
             completed_at=completed_at,
             status="blocked",
-            actual_binding=declared_binding,
-            actual_supply_report_ref=declared_supply_ref,
+            execution_phase="preflight-blocked",
+            requested_binding=declared_binding,
+            requested_supply_report_ref=declared_supply_ref,
+            actual_binding=None,
+            actual_supply_report_ref=None,
             facts=_zero_facts(complete=True),
             artifacts=(),
         )
@@ -467,6 +501,9 @@ def execute_frozen_view(
         try:
             result = driver.execute(request)
         except Exception:
+            completed, completed_at = _observe_time(trusted_clock, "completed_at")
+            if completed < started:
+                raise ExecutionHostValidationError("Host clock moved backwards during execution")
             report = _base_report(
                 view,
                 report_id=report_id,
@@ -474,8 +511,11 @@ def execute_frozen_view(
                 started_at=started_at,
                 completed_at=completed_at,
                 status="failed",
-                actual_binding=declared_binding,
-                actual_supply_report_ref=declared_supply_ref,
+                execution_phase="driver-exception",
+                requested_binding=declared_binding,
+                requested_supply_report_ref=declared_supply_ref,
+                actual_binding=None,
+                actual_supply_report_ref=None,
                 facts=_zero_facts(complete=False, capture_gaps=("driver-exception",)),
                 artifacts=(),
             )
@@ -487,6 +527,9 @@ def execute_frozen_view(
                 re_resolution=False,
             )
         else:
+            completed, completed_at = _observe_time(trusted_clock, "completed_at")
+            if completed < started:
+                raise ExecutionHostValidationError("Host clock moved backwards during execution")
             facts = {
                 "complete": result.facts_complete,
                 "capture_gaps": list(result.capture_gaps),
@@ -521,6 +564,9 @@ def execute_frozen_view(
                 started_at=started_at,
                 completed_at=completed_at,
                 status=status,
+                execution_phase="post-call",
+                requested_binding=declared_binding,
+                requested_supply_report_ref=declared_supply_ref,
                 actual_binding=result.actual_binding,
                 actual_supply_report_ref=result.actual_supply_report_ref,
                 facts=facts,
@@ -553,6 +599,8 @@ __all__ = [
     "ExecutionHostValidationError",
     "FrozenExecutionDriver",
     "FrozenExecutionRequest",
+    "HostClock",
+    "SystemHostClock",
     "ValidatedExecutionView",
     "execute_frozen_view",
     "load_resolved_execution_view",

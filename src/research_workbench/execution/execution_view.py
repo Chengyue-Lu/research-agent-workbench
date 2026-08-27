@@ -266,6 +266,48 @@ def _intersect_budget(sources: Sequence[Mapping[str, Any]]) -> dict[str, int]:
     return result
 
 
+def _require_supply_satisfiable(
+    supply_permissions: Mapping[str, Any],
+    supply_egress: Mapping[str, Any],
+    supply_effects: Mapping[str, Any],
+    effective_permissions: Mapping[str, Any],
+    effective_egress: Mapping[str, Any],
+    effective_effects: Mapping[str, Any],
+) -> None:
+    """Reject a final intersection that makes the selected Supply unusable."""
+
+    if _FILESYSTEM_ORDER[str(effective_permissions["filesystem"])] < _FILESYSTEM_ORDER[
+        str(supply_permissions["filesystem"])
+    ]:
+        raise ValueError("effective filesystem boundary is below selected Supply requirements")
+    if _NETWORK_ORDER[str(effective_permissions["network"])] < _NETWORK_ORDER[
+        str(supply_permissions["network"])
+    ]:
+        raise ValueError("effective network boundary is below selected Supply requirements")
+    if bool(supply_permissions["external_write"]) and not bool(
+        effective_permissions["external_write"]
+    ):
+        raise ValueError("effective external-write boundary is below selected Supply requirements")
+
+    supply_payloads = set(supply_egress.get("allowed_payloads", ()))
+    effective_payloads = set(effective_egress.get("allowed_payloads", ()))
+    if supply_egress.get("policy") == "allowlisted-only" and (
+        effective_egress.get("policy") != "allowlisted-only"
+        or not supply_payloads.issubset(effective_payloads)
+    ):
+        raise ValueError("effective data-egress boundary excludes selected Supply behavior")
+    if supply_payloads.intersection(effective_egress.get("forbidden_payloads", ())):
+        raise ValueError("effective data-egress forbidden set conflicts with selected Supply behavior")
+
+    supply_allowed_effects = set(supply_effects.get("allowed_effects", ()))
+    effective_allowed_effects = set(effective_effects.get("allowed_effects", ()))
+    if supply_effects.get("policy") == "allowlisted-only" and (
+        effective_effects.get("policy") != "allowlisted-only"
+        or not supply_allowed_effects.issubset(effective_allowed_effects)
+    ):
+        raise ValueError("effective side-effect boundary excludes selected Supply behavior")
+
+
 def _file_ref(ref: str, path: str, digest: str) -> dict[str, str]:
     return {"ref": ref, "path": path, "sha256": digest}
 
@@ -373,9 +415,6 @@ def produce_resolved_execution_view(
             )
         )
 
-    required_capabilities = {
-        item for item in task.get("required_capabilities", ()) if isinstance(item, str)
-    }
     allowed_tool_capabilities = {
         item for item in profile.get("allowed_tool_capabilities", ()) if isinstance(item, str)
     }
@@ -389,19 +428,21 @@ def produce_resolved_execution_view(
         if supply_kind == "tool"
         else set()
     )
-    required_tool_capabilities = required_capabilities | selected_tool_capabilities
+    required_tool_capabilities = selected_tool_capabilities
     if not required_tool_capabilities.issubset(allowed_tool_capabilities):
         raise ExecutionViewValidationError(
             (
                 ExecutionViewIssue(
                     profile_path,
                     "EXECUTION-VIEW-PROFILE-TOOL-CAPABILITY",
-                    "Task/selected Tool capabilities exceed Agent Profile allowed_tool_capabilities",
+                    "selected Tool capabilities exceed Agent Profile allowed_tool_capabilities",
                 ),
             )
         )
     try:
-        required_output_contracts = _required_output_contracts(task.get("required_outputs", ()))
+        required_output_contracts = _required_output_contracts(
+            requirement.get("required_artifacts", ())
+        )
     except ValueError as exc:
         raise ExecutionViewValidationError(
             (ExecutionViewIssue(profile_path, "EXECUTION-VIEW-PROFILE-OUTPUT-CONTRACT", str(exc)),)
@@ -546,6 +587,14 @@ def produce_resolved_execution_view(
         effective_budget = _intersect_budget(
             [task.get("budget", {}), data["budget_ceiling"], host["budget_ceiling"]]
         )
+        _require_supply_satisfiable(
+            permission_sources[2],
+            snapshot["supply_data_egress"],
+            snapshot["supply_side_effects"],
+            effective_permissions,
+            effective_egress,
+            effective_effects,
+        )
     except (KeyError, TypeError, ValueError) as exc:
         raise ExecutionViewValidationError(
             (ExecutionViewIssue(bundle.manifest_path, "EXECUTION-VIEW-PREFLIGHT-BLOCKED", str(exc)),)
@@ -562,6 +611,7 @@ def produce_resolved_execution_view(
             _relative(root, bundle.manifest_path),
             bundle_hash,
         ),
+        "execution_scope": _plain(bundle.manifest["execution_scope"]),
         "task_ref": _file_ref(
             f"{task['task_id']}@r{task_revision}", str(task_entry["path"]), str(task_entry["sha256"])
         ),
@@ -622,10 +672,26 @@ def produce_resolved_execution_view(
             "side_effects": effective_effects,
             "budget": effective_budget,
         },
-        "required_outputs": _plain(task["required_outputs"]),
-        "completion_checks": _plain(task["completion_checks"]),
-        "safe_pause_conditions": _plain(task["safe_pause_conditions"]),
-        "stop_conditions": _plain(task["stop_conditions"]),
+        "required_outputs": _plain(requirement["required_artifacts"]),
+        "completion_checks": _plain(
+            requirement["verification_expectations"]["deterministic"]
+        ),
+        "safe_pause_conditions": _plain(
+            next(
+                decision["blocked_conditions"]
+                for decision in method["action_decisions"]
+                if decision.get("action_ref")
+                == bundle.manifest["execution_scope"]["action_ref"]
+            )
+        ),
+        "stop_conditions": _plain(
+            next(
+                decision["stop_conditions"]
+                for decision in method["action_decisions"]
+                if decision.get("action_ref")
+                == bundle.manifest["execution_scope"]["action_ref"]
+            )
+        ),
         "boundaries": {
             "supply_selection": False,
             "automatic_fallback": False,
@@ -633,6 +699,7 @@ def produce_resolved_execution_view(
             "method_decision": False,
             "claim_effect": False,
             "human_decision": False,
+            "task_completion": False,
             "execution": False,
         },
     }

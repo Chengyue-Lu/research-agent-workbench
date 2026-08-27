@@ -11,6 +11,7 @@
     "revision",
     "execution_at",
     "runtime_bundle_ref",
+    "execution_scope",
     "task_ref",
     "method_resolution_ref",
     "capability_resolution_ref",
@@ -36,6 +37,9 @@
     "revision": { "type": "integer", "minimum": 1 },
     "execution_at": { "type": "string", "format": "date-time" },
     "runtime_bundle_ref": { "$ref": "#/$defs/revisionedFileRef" },
+    "execution_scope": {
+      "$ref": "runtime-bundle-manifest.schema.json#/properties/execution_scope"
+    },
     "task_ref": { "$ref": "#/$defs/revisionedFileRef" },
     "method_resolution_ref": { "$ref": "#/$defs/revisionedFileRef" },
     "capability_resolution_ref": { "$ref": "#/$defs/revisionedFileRef" },
@@ -125,6 +129,7 @@
         "method_decision",
         "claim_effect",
         "human_decision",
+        "task_completion",
         "execution"
       ],
       "properties": {
@@ -134,6 +139,7 @@
         "method_decision": { "const": false },
         "claim_effect": { "const": false },
         "human_decision": { "const": false },
+        "task_completion": { "const": false },
         "execution": { "const": false }
       },
       "additionalProperties": false

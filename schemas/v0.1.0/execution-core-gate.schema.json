@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://research-agent-workbench.local/schemas/v0.1.0/execution-core-gate.schema.json",
   "title": "Execution Core Vertical Gate",
-  "$comment": "A deterministic M11 Core acceptance record proving separate no-Skill and direct-Tool execution-only receipts without creating Skill Assignment, Claim, Human Decision, fallback, or Topic 5 semantics.",
+  "$comment": "A deterministic M11 Core acceptance record proving separate no-Skill and direct-Tool Action/Capability-slice receipts without creating whole-Task completion, Skill Assignment, Claim, Human Decision, fallback, or Topic 5 semantics.",
   "x-rwb-document-kind": "execution_core_gate",
   "type": "object",
   "required": ["schema_version", "gate_id", "scope", "status", "paths", "invariants", "boundaries"],
@@ -35,12 +35,13 @@
     },
     "boundaries": {
       "type": "object",
-      "required": ["claim_effect", "human_decision", "fallback", "topic5_recovery"],
+      "required": ["claim_effect", "human_decision", "fallback", "topic5_recovery", "task_completion"],
       "properties": {
         "claim_effect": { "const": false },
         "human_decision": { "const": false },
         "fallback": { "const": false },
-        "topic5_recovery": { "const": false }
+        "topic5_recovery": { "const": false },
+        "task_completion": { "const": false }
       },
       "additionalProperties": false
     }

@@ -34,7 +34,8 @@ frozen Supply selection。任何上游 policy/binding 文件漂移也会在重�
 - `binding`：Driver 声明自己实际使用的 Provider/Adapter/Model/Runtime/Host identity；
 - `execute(FrozenExecutionRequest)`：接收只读 View 与 bundle documents，返回 `ExecutionDriverResult`。
 
-Host 在调用前要求 Driver binding 与 View 完全一致，并要求 actual `started_at` 仍落在冻结的 Supply、
+Host 在调用前要求 Driver binding 与 View 完全一致，并由 Host 自有 `SystemHostClock` 或测试注入的 trusted
+`HostClock` 观察 start/end；执行调用方不能提交或回填时间戳。Host-observed `started_at` 必须仍落在冻结的 Supply、
 DataPolicy 与 Host-policy 三组有效期内；不一致或过期则零调用、`blocked`，并输出指向当前 Snapshot/View
 的 re-resolution request。调用后仍比较 actual binding，检测 Driver 静默 rebind。
 
@@ -61,13 +62,16 @@ content-free `HOST-DRIVER-EXCEPTION` 与 `driver-exception` capture gap；异常
 
 ## Report 不是 Receipt
 
-`execution_host_report` 还固定本次 `runtime_bundle_ref`、View、Task、actual Supply 与 actual binding，说明
-一次 Host 调用实际发生了什么。其 boundary 固定：
+`execution_host_report` 固定本次 `runtime_bundle_ref`、View、Task 与 exact Action/Capability slice，并把
+`requested_binding`/`requested_supply_report_ref` 和调用后的 actual facts 分开：preflight 零调用时没有
+actual binding；post-call 成功或失败都保留 Driver 返回的 actual binding/Supply；driver exception 也不伪造
+actual binding。其 boundary 固定：
 
 - `actual_facts_only: true`；
 - 不拥有 Supply selection、rebinding、automatic fallback；
 - 不产生 Method decision、Claim effect 或 Human decision；
 - 不实现 Topic 5 recovery。
+- 不宣称 whole-Task completion。
 
 失败时可包含 bounded Diagnostic。只有 binding 需要变化时才生成 re-resolution request；这不是 Host 自己
 执行 re-resolution。M11-004 才把 fact report 连接到通用 Trace/Artifact/Validation/Receipt。

@@ -168,6 +168,7 @@ def _versioned_identity(document: Mapping[str, Any], identity_key: str) -> str:
 
 def _validate_lineage(
     root: Path,
+    manifest: Mapping[str, Any],
     documents: Mapping[str, Mapping[str, Any]],
     kinds: Mapping[str, str],
 ) -> list[RuntimeBundleIssue]:
@@ -270,14 +271,22 @@ def _validate_lineage(
                 f"selected Runtime Supply must occur exactly once in candidates: {expected_supply_ref}",
             )
         )
-    if comparison_refs != candidate_identities or len(selected_comparisons) != 1 or not selected_comparisons[0].get(
-        "eligible"
+    eligible_comparisons = [
+        item
+        for item in resolution.get("comparisons", ())
+        if isinstance(item, Mapping) and item.get("eligible") is True
+    ]
+    if (
+        comparison_refs != candidate_identities
+        or len(selected_comparisons) != 1
+        or len(eligible_comparisons) != 1
+        or eligible_comparisons[0].get("supply_report_ref") != expected_supply_ref
     ):
         issues.append(
             RuntimeBundleIssue(
                 root / resolution_path,
                 "RUNTIME-BUNDLE-RESOLUTION-COMPARISON-MISMATCH",
-                "Resolution comparisons must cover every candidate and mark the selected Supply eligible",
+                "Resolution comparisons must cover every candidate and have exactly one eligible selected Supply",
             )
         )
     if resolution.get("resolution_status") != "satisfied" or resolution.get("selected_supply_report_ref") != expected_supply_ref:
@@ -302,6 +311,55 @@ def _validate_lineage(
                 root / requirement_path,
                 "RUNTIME-BUNDLE-METHOD-REQUIREMENT-MISSING",
                 str(expected_requirement_id),
+            )
+        )
+
+    # Runtime Core consumes one exact Action/Capability slice.  The manifest
+    # exposes the complete Task demand and the singleton closed set so a slice
+    # receipt cannot be mistaken for whole-Task completion.
+    execution_scope = manifest.get("execution_scope", {})
+    closure = execution_scope.get("task_capability_closure", {})
+    required_capabilities = {
+        item for item in task.get("required_capabilities", ()) if isinstance(item, str)
+    }
+    declared_required = {
+        item for item in closure.get("required", ()) if isinstance(item, str)
+    }
+    declared_closed = {
+        item for item in closure.get("closed", ()) if isinstance(item, str)
+    }
+    action_ref = execution_scope.get("action_ref")
+    matching_actions = [
+        decision
+        for decision in method.get("action_decisions", ())
+        if isinstance(decision, Mapping) and decision.get("action_ref") == action_ref
+    ]
+    if (
+        execution_scope.get("kind") != "action-capability-slice"
+        or execution_scope.get("requirement_id") != expected_requirement_id
+        or declared_required != required_capabilities
+        or declared_closed != {expected_requirement_id}
+        or len(matching_actions) != 1
+        or expected_requirement_id
+        not in {
+            item
+            for item in matching_actions[0].get("capability_requirements", ())
+            if isinstance(item, str)
+        }
+    ):
+        issues.append(
+            RuntimeBundleIssue(
+                root,
+                "RUNTIME-BUNDLE-EXECUTION-SLICE-MISMATCH",
+                "execution_scope must bind the exact Method Action, Requirement, full Task demand, and singleton closed capability",
+            )
+        )
+    if closure.get("task_completion") is True and declared_closed != required_capabilities:
+        issues.append(
+            RuntimeBundleIssue(
+                root,
+                "RUNTIME-BUNDLE-TASK-CAPABILITY-UNRESOLVED",
+                "whole-Task completion is forbidden while any required capability remains outside the closed set",
             )
         )
 
@@ -506,7 +564,7 @@ def load_runtime_bundle(
         if kind == "method_resolution" and document.get("skill_disposition", {}).get("status") != "no-skill":
             issues.append(RuntimeBundleIssue(root / relative, "RUNTIME-BUNDLE-SKILL-FORBIDDEN", "Core requires no-skill Method disposition"))
 
-    issues.extend(_validate_lineage(root, documents, kinds))
+    issues.extend(_validate_lineage(root, manifest_raw, documents, kinds))
 
     derived_edges, pins = _derived_edges(documents, kinds)
     declared_edges = {

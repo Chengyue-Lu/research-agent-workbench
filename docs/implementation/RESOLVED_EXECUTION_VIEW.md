@@ -54,19 +54,26 @@ view = produce_resolved_execution_view(
 View 精确引用 Runtime Bundle、Task、Method Resolution、Capability Resolution、Snapshot、selected Supply
 Report、Profile、两份 policy 与 Execution Binding，并冻结：
 
+- manifest 已验证的 exact Action/Capability execution slice 与完整 Task demand/closed-set 声明；
 - Provider / Adapter / Model / Runtime / Host ref、version、content/config hash；
 - Supply availability observation、Supply/DataPolicy/Host policy validity windows；
 - Profile 对 Tool capability、required output contract 与 Model class/slot/capability 的最终约束；
 - Task、Profile、Supply、DataPolicy、Host policy 的最严 permission intersection；
 - Supply、DataPolicy、Host policy 的 data-egress 与 side-effect intersection；
 - Task、DataPolicy、Host policy 的最小 budget ceilings；
-- Task required outputs、completion checks、safe-pause 与 stop constraints。
+- 当前 Capability Requirement 的 required artifacts/verification checks，以及所属 Method Action 的
+  blocked/stop constraints；不复制整项 Task 的 completion claim。
 
 文件系统和网络采用显式有序 ceiling；write roots 采用路径包含关系求交并保留更窄的可写根。Data egress
 取 allowed payload 交集与 forbidden payload 并集；side effects 取 allowlist 交集；budget 对每个已声明维度
-取最小值。Task/selected Supply 需要的 Tool capability 必须包含于 Profile allowlist，Task required outputs
+取最小值。只有 selected Supply 确实是 Tool 时，其 provided capabilities 才必须包含于 Profile Tool
+allowlist；procedure/no-Skill 的通用 Task capability 不得被误当成 Tool。当前 Requirement required artifacts
 必须包含于 Profile output contracts；Binding 的 Model 必须满足 Profile 的 class、default slot 与 required
 capabilities。Host policy 的 subject 必须等于 Binding 中 exact Host。无法形成合法交集即 fail closed。
+
+收紧交集之后还必须反向证明 selected Supply 仍可在 effective permission、data-egress 和 side-effect
+boundary 内运行；Supply 声明的操作需求/行为不能被静默“交掉”。若 final intersection 低于 Supply 所需
+filesystem/network，或排除了其 egress/effect 行为，View fail closed 并要求上游重新 Resolution。
 
 ## Freshness 与供给资格
 
@@ -88,7 +95,7 @@ Resolution→Snapshot→View；producer 不做 local fallback。
 View 是 Host 后续要消费的 final frozen contract，但它自身仍不是 permission grant 或 Human Decision。
 `boundaries` 固定声明其不拥有 Supply selection、automatic fallback、permission grant、Method decision、
 Claim effect、Human decision 或 execution。effective constraints 只能收紧上游已声明 ceiling，不能创造新
-authority。
+authority；`task_completion` 固定为 false。
 
 M11 Core 不依赖 SkillReleaseProjection、Need、Evaluation 或 Lifecycle。M11-005/006 的 Skill extension 只能
 增加一种合法 Supply 来源，不能改变该 View 的 supply-neutral 语义。

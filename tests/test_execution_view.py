@@ -51,7 +51,7 @@ class ExecutionViewTests(unittest.TestCase):
             "allowed_tool_capabilities": ["document-read", "research-contract-check"],
             "default_context_policy": "isolated-task",
             "delegation": {"allowed": False},
-            "output_contracts": ["method-resolution"],
+            "output_contracts": ["deterministic-check-report"],
         }
         common_policy = {
             "schema_version": "0.1.0",
@@ -170,11 +170,11 @@ class ExecutionViewTests(unittest.TestCase):
                 view["selected_supply_report_ref"]["ref"],
             )
             self.assertEqual(
-                ["document-read", "research-contract-check"],
+                [],
                 view["profile_constraints"]["required_tool_capabilities"],
             )
             self.assertEqual(
-                ["method-resolution"],
+                ["deterministic-check-report"],
                 view["profile_constraints"]["required_output_contracts"],
             )
             self.assertEqual(
@@ -185,6 +185,7 @@ class ExecutionViewTests(unittest.TestCase):
                     "method_decision": False,
                     "claim_effect": False,
                     "human_decision": False,
+                    "task_completion": False,
                     "execution": False,
                 },
                 view["boundaries"],
@@ -303,11 +304,6 @@ class ExecutionViewTests(unittest.TestCase):
         cases = (
             (
                 "agent_profile",
-                lambda document: document.update({"allowed_tool_capabilities": []}),
-                "EXECUTION-VIEW-PROFILE-TOOL-CAPABILITY",
-            ),
-            (
-                "agent_profile",
                 lambda document: document.update({"output_contracts": []}),
                 "EXECUTION-VIEW-PROFILE-OUTPUT-CONTRACT",
             ),
@@ -345,6 +341,73 @@ class ExecutionViewTests(unittest.TestCase):
             with self.assertRaises(ExecutionViewValidationError) as raised:
                 self._produce(root, bundle, inputs)
             self.assertIn("EXECUTION-VIEW-PREFLIGHT-BLOCKED", self._codes(raised))
+
+    def test_procedure_supply_does_not_treat_task_capabilities_as_tools(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            bundle, inputs = self._build(root)
+            profile_path = root / inputs["agent_profile"].path
+            profile = load_document(profile_path)
+            profile["allowed_tool_capabilities"] = []
+            inputs["agent_profile"] = self._write(
+                root, inputs["agent_profile"].path, profile
+            )
+            view = self._produce(root, bundle, inputs)
+            self.assertEqual([], view["profile_constraints"]["required_tool_capabilities"])
+
+    def test_final_policy_intersection_must_still_satisfy_selected_supply(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            bundle, inputs = self._build(root)
+            host_path = root / inputs["host_policy"].path
+            host = load_document(host_path)
+            host["permission_ceiling"]["filesystem"] = "read-only"
+            inputs["host_policy"] = self._write(root, inputs["host_policy"].path, host)
+            with self.assertRaises(ExecutionViewValidationError) as raised:
+                self._produce(root, bundle, inputs)
+            self.assertIn("EXECUTION-VIEW-PREFLIGHT-BLOCKED", self._codes(raised))
+            self.assertIn("below selected Supply", str(raised.exception))
+
+    def test_supply_satisfiability_covers_egress_and_side_effects(self) -> None:
+        from research_workbench.execution import execution_view
+
+        permissions = {
+            "filesystem": "read-only",
+            "network": "forbidden",
+            "external_write": False,
+            "allowed_roots": [],
+        }
+        forbidden_egress = {
+            "policy": "forbidden",
+            "allowed_payloads": [],
+            "forbidden_payloads": ["project-context"],
+        }
+        no_effects = {"policy": "none", "allowed_effects": []}
+        with self.assertRaisesRegex(ValueError, "data-egress"):
+            execution_view._require_supply_satisfiable(
+                permissions,
+                {
+                    "policy": "allowlisted-only",
+                    "allowed_payloads": ["public-query"],
+                    "forbidden_payloads": ["project-context"],
+                },
+                no_effects,
+                permissions,
+                forbidden_egress,
+                no_effects,
+            )
+        with self.assertRaisesRegex(ValueError, "side-effect"):
+            execution_view._require_supply_satisfiable(
+                permissions,
+                forbidden_egress,
+                {
+                    "policy": "allowlisted-only",
+                    "allowed_effects": ["temporary-cache"],
+                },
+                permissions,
+                forbidden_egress,
+                no_effects,
+            )
 
     def test_view_producer_has_no_execution_fallback_or_skill_evolution_imports(self) -> None:
         from research_workbench.execution import execution_view

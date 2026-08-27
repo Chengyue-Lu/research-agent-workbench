@@ -1,10 +1,10 @@
 # Generic Execution Closeout 与 M11 Core Gate
 
 M11-004 在不修改 legacy Skill-bound Receipt 的前提下，为 no-Skill/direct Tool Core 增加独立、可文件重放的
-execution-only closeout：
+Action/Capability-slice closeout：
 
 ```text
-Task + Resolved Execution View
+Task + exact Action/Capability slice + Resolved Execution View
   ↓ Thin Host
 Execution Host Fact Report
   + frozen Agent Trace
@@ -18,19 +18,24 @@ Generic Execution Receipt
 
 `build_generic_execution_receipt()` 只接受 exact pins，并验证：
 
-- Host report 的 View/Runtime Bundle/Task/Attempt lineage 对齐；completed 时 facts capture 必须完整且至少有
+- Host report 的 View/Runtime Bundle/Task/execution-slice/Attempt lineage 对齐；receipt-eligible 生命周期的
+  facts capture 必须完整，completed 还至少有
   一个输出 Artifact，failed/blocked 时不得宣称 execution completion；
-- Host actual binding 与 View binding、Host actual Supply 与 View selected Supply 独立相等；
+- completed：Host actual binding/Supply 必须等于 View；detected post-call failed：保留可能不相等的 actual
+  binding/Supply，并由 diagnostic + Trace actual actor facts 共同佐证；preflight blocked：actual binding/Supply
+  必须不存在且 Trace 不得含 Provider/Tool 调用；
 - Trace 通过既有 M3-008 validator，identity/status/frozen/completeness 对齐，且 provider-request 与 tool
   operation 的实际次数/identity 分别闭合到 Host facts；Trace Actor 的 Provider/Runtime identity 闭合到
   Host actual binding（Model/Adapter 仍由 Host↔View equality 闭合），实际 Tool 必须属于 selected Supply
   的 Tool component；
+- Trace `decision_refs` 必须恰好含一个 hash-pinned execution-scope binding record，与 View/Host scope 一致；
 - Artifact path/hash 与 Host report 一致；
 - deterministic validation 为 `pass`，checker source hash 有效；
 - validation subject closed set 精确等于 Host report + Trace INDEX + Artifacts，无遗漏或偷渡；
 - selected Supply kind 属于 procedure/no-Skill、direct Tool 或 Adapter/Provider Core，而不是 Skill。
 
-completed Receipt 固定 `completion_claim: execution-only`；failed/blocked Receipt 只能为 `none`。Schema 排除
+completed Receipt 固定 `completion_claim: action-capability-slice-only`；failed/blocked Receipt 只能为
+`none`，且所有状态均固定 `task_completion: false`。Schema 排除
 `skill_assignment_ref`、Claim、Human approval、recovery 等字段。`validate_generic_execution_receipt()` 从
 Receipt 自身 refs 重新加载 View、Host report、Trace、Actors、event ledger、Artifacts 和 validation，独立重做
 actual binding/Supply、provider/tool facts 与 selected-Supply component 等 cross-object invariant，再调用同一
@@ -48,9 +53,10 @@ archive/replay。M11 新路径使用 `generic_execution_receipt`，避免把“�
 
 - exact replay；
 - Skill Assignment absent；
-- execution-only；
+- Action/Capability-slice execution only；
 - legacy Receipt unchanged；
 - 无 Claim/Human/fallback/Topic 5 effect。
+- 无 whole-Task completion effect。
 
 测试中的两个独立 bounded project fixture 都经过：
 

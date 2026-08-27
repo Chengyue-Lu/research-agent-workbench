@@ -165,6 +165,16 @@ class RuntimeBundleTests(unittest.TestCase):
             "bundle_id": "RB-NO-SKILL-LOCAL-001",
             "revision": 1,
             "profile": "runtime-bundle",
+            "execution_scope": {
+                "kind": "action-capability-slice",
+                "action_ref": "ES-A4@1.0.0",
+                "requirement_id": "research-contract-check",
+                "task_capability_closure": {
+                    "required": ["document-read", "research-contract-check"],
+                    "closed": ["research-contract-check"],
+                    "task_completion": False,
+                },
+            },
             "entrypoint": {
                 "kind": "resolved_capability_snapshot",
                 "path": snapshot_path,
@@ -341,6 +351,57 @@ class RuntimeBundleTests(unittest.TestCase):
             )
             self.assertEqual(7, len(validated.documents))
             self.assertFalse((root / "maintainer-history/not-selected.yaml").exists())
+
+    def test_satisfied_resolution_with_two_eligible_candidates_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            manifest_path = self._build_bundle(root)
+            resolution = load_document(root / "bundle/resolution.yaml")
+            resolution["candidate_supply_report_refs"].append(
+                {
+                    "ref": "supply-also-eligible@1.0.0",
+                    "document_path": "maintainer-history/also-eligible.yaml",
+                    "content_hash": "sha256:" + "8" * 64,
+                }
+            )
+            comparison = copy.deepcopy(resolution["comparisons"][0])
+            comparison["supply_report_ref"] = "supply-also-eligible@1.0.0"
+            comparison["eligible"] = True
+            resolution["comparisons"].append(comparison)
+            resolution_hash = self._write(root, "bundle/resolution.yaml", resolution)
+            snapshot = load_document(root / "bundle/snapshot.yaml")
+            snapshot["resolution_ref"]["content_hash"] = "sha256:" + resolution_hash
+            snapshot_hash = self._write(root, "bundle/snapshot.yaml", snapshot)
+            manifest = load_document(manifest_path)
+            manifest["entrypoint"]["sha256"] = snapshot_hash
+            for item in manifest["documents"]:
+                if item["path"] == "bundle/resolution.yaml":
+                    item["sha256"] = resolution_hash
+                elif item["path"] == "bundle/snapshot.yaml":
+                    item["sha256"] = snapshot_hash
+            self._write(root, "bundle/manifest.yaml", manifest)
+            with self.assertRaises(RuntimeBundleValidationError) as raised:
+                load_runtime_bundle(
+                    manifest_path, project_root=root, schema_root=ROOT / "schemas"
+                )
+            self.assertIn(
+                "RUNTIME-BUNDLE-RESOLUTION-COMPARISON-MISMATCH", self._codes(raised)
+            )
+
+    def test_unresolved_task_capability_cannot_claim_task_completion(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            manifest_path = self._build_bundle(root)
+            manifest = load_document(manifest_path)
+            manifest["execution_scope"]["task_capability_closure"]["task_completion"] = True
+            self._write(root, "bundle/manifest.yaml", manifest)
+            with self.assertRaises(RuntimeBundleValidationError) as raised:
+                load_runtime_bundle(
+                    manifest_path, project_root=root, schema_root=ROOT / "schemas"
+                )
+            self.assertIn(
+                "RUNTIME-BUNDLE-TASK-CAPABILITY-UNRESOLVED", self._codes(raised)
+            )
 
     def test_selected_supply_must_remain_in_resolution_candidates(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

@@ -2,6 +2,7 @@ import copy
 import inspect
 import tempfile
 import unittest
+from datetime import datetime
 from pathlib import Path
 
 import yaml
@@ -19,6 +20,16 @@ from tests import test_execution_view as execution_view_fixtures
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+class SequenceClock:
+    def __init__(self, *timestamps: str):
+        self._values = [
+            datetime.fromisoformat(value.replace("Z", "+00:00")) for value in timestamps
+        ]
+
+    def now(self):
+        return self._values.pop(0)
 
 
 def plain(value):
@@ -72,7 +83,7 @@ class RecordingDriver:
             side_effects=("task-local-check-report",),
             artifacts=(
                 {
-                    "contract": "method-resolution",
+                    "contract": "deterministic-check-report",
                     "path": "work/TASK-MR-ES-FROZEN-001/method-resolution.yaml",
                     "sha256": hash_file(artifact),
                 },
@@ -109,8 +120,9 @@ class ExecutionHostTests(unittest.TestCase):
             driver,
             report_id="HOST-REPORT-001",
             attempt_id="ATTEMPT-001",
-            started_at="2026-08-26T00:00:01Z",
-            completed_at="2026-08-26T00:00:02Z",
+            clock=SequenceClock(
+                "2026-08-26T00:00:01Z", "2026-08-26T00:00:02Z"
+            ),
             schema_root=ROOT / "schemas",
         )
 
@@ -126,7 +138,9 @@ class ExecutionHostTests(unittest.TestCase):
             self.assertEqual("completed", report["status"])
             self.assertTrue(report["actual_facts"]["complete"])
             self.assertEqual(0, report["actual_facts"]["tool_invocations"])
-            self.assertEqual("method-resolution", report["artifacts"][0]["contract"])
+            self.assertEqual(
+                "deterministic-check-report", report["artifacts"][0]["contract"]
+            )
             self.assertEqual(
                 [], SchemaCatalog(ROOT / "schemas").validate("execution_host_report", report)
             )
@@ -153,7 +167,7 @@ class ExecutionHostTests(unittest.TestCase):
                     schema_root=ROOT / "schemas",
                 )
 
-    def test_started_at_freshness_and_bound_bundle_drift_prevent_driver_call(self) -> None:
+    def test_host_clock_freshness_and_bound_bundle_drift_prevent_driver_call(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             bundle, view = self._build(root)
@@ -163,8 +177,9 @@ class ExecutionHostTests(unittest.TestCase):
                 driver,
                 report_id="HOST-STALE",
                 attempt_id="ATTEMPT-STALE",
-                started_at="2100-01-01T00:00:00Z",
-                completed_at="2100-01-01T00:00:01Z",
+                clock=SequenceClock(
+                    "2100-01-01T00:00:00Z", "2100-01-01T00:00:01Z"
+                ),
                 schema_root=ROOT / "schemas",
             )
             self.assertEqual(0, driver.calls)
@@ -198,6 +213,9 @@ class ExecutionHostTests(unittest.TestCase):
             self.assertEqual("blocked", report["status"])
             self.assertEqual("HOST-BINDING-MISMATCH", report["diagnostic"]["code"])
             self.assertTrue(report["re_resolution_request"]["required"])
+            self.assertEqual(wrong, report["requested_binding"])
+            self.assertNotIn("actual_binding", report)
+            self.assertNotIn("actual_supply_report_ref", report)
 
     def test_post_call_binding_boundary_budget_and_output_drift_fail_closed(self) -> None:
         cases = [
@@ -222,7 +240,7 @@ class ExecutionHostTests(unittest.TestCase):
                 artifact.write_text("status: bounded\n", encoding="utf-8")
                 artifacts = (
                     {
-                        "contract": "method-resolution",
+                        "contract": "deterministic-check-report",
                         "path": "work/TASK-MR-ES-FROZEN-001/method-resolution.yaml",
                         "sha256": hash_file(artifact),
                     },
@@ -233,7 +251,7 @@ class ExecutionHostTests(unittest.TestCase):
                     outside.write_text("status: bounded\n", encoding="utf-8")
                     artifacts = (
                         {
-                            "contract": "method-resolution",
+                            "contract": "deterministic-check-report",
                             "path": "outside/result.yaml",
                             "sha256": hash_file(outside),
                         },
@@ -272,6 +290,12 @@ class ExecutionHostTests(unittest.TestCase):
             self.assertNotIn("private provider response", str(report))
             self.assertNotIn("re_resolution_request", report)
             self.assertFalse(report["boundaries"]["topic5_recovery"])
+            self.assertNotIn("actual_binding", report)
+
+    def test_execution_caller_cannot_supply_or_backdate_host_timestamps(self) -> None:
+        parameters = inspect.signature(execute_frozen_view).parameters
+        self.assertNotIn("started_at", parameters)
+        self.assertNotIn("completed_at", parameters)
 
     def test_host_source_has_no_retry_fallback_routing_or_recovery_dependency(self) -> None:
         from research_workbench.execution import host

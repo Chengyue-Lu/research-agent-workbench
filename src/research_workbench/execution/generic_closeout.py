@@ -123,16 +123,63 @@ def _validate_host_view_closure(
         host.get("view_ref") != expected_view_ref
         or host.get("runtime_bundle_ref") != view.document.get("runtime_bundle_ref")
         or host.get("task_ref") != view.document.get("task_ref")
+        or host.get("execution_scope") != _plain(view.document.get("execution_scope"))
     ):
-        raise GenericCloseoutValidationError("Host report View/Bundle/Task lineage mismatch")
-    if host.get("actual_binding") != _plain(view.document.get("binding")):
-        raise GenericCloseoutValidationError("Host actual binding does not equal frozen View binding")
-    if host.get("actual_supply_report_ref") != view.document.get(
-        "selected_supply_report_ref", {}
-    ).get("ref"):
         raise GenericCloseoutValidationError(
-            "Host actual Supply does not equal frozen View selected Supply"
+            "Host report View/Bundle/Task/execution-slice lineage mismatch"
         )
+    status = host.get("status")
+    phase = host.get("execution_phase")
+    actual_present = "actual_binding" in host or "actual_supply_report_ref" in host
+    if status == "completed":
+        if phase != "post-call":
+            raise GenericCloseoutValidationError("completed Host report is not post-call")
+        if host.get("actual_binding") != _plain(view.document.get("binding")):
+            raise GenericCloseoutValidationError(
+                "completed Host actual binding does not equal frozen View binding"
+            )
+        if host.get("actual_supply_report_ref") != view.document.get(
+            "selected_supply_report_ref", {}
+        ).get("ref"):
+            raise GenericCloseoutValidationError(
+                "completed Host actual Supply does not equal frozen View selected Supply"
+            )
+    elif status == "blocked":
+        if phase != "preflight-blocked" or actual_present:
+            raise GenericCloseoutValidationError(
+                "preflight-blocked Host report must not contain actual execution binding"
+            )
+    elif status == "failed":
+        if phase == "post-call":
+            if not isinstance(host.get("actual_binding"), Mapping) or not isinstance(
+                host.get("actual_supply_report_ref"), str
+            ):
+                raise GenericCloseoutValidationError(
+                    "post-call failed Host report must preserve actual binding and Supply"
+                )
+            diagnostic_code = host.get("diagnostic", {}).get("code")
+            if (
+                diagnostic_code == "HOST-ACTUAL-BINDING-DRIFT"
+                and host.get("actual_binding") == _plain(view.document.get("binding"))
+            ):
+                raise GenericCloseoutValidationError(
+                    "Host binding-drift diagnostic is not supported by actual binding facts"
+                )
+            if (
+                diagnostic_code == "HOST-ACTUAL-SUPPLY-DRIFT"
+                and host.get("actual_supply_report_ref")
+                == view.document.get("selected_supply_report_ref", {}).get("ref")
+            ):
+                raise GenericCloseoutValidationError(
+                    "Host Supply-drift diagnostic is not supported by actual Supply facts"
+                )
+        elif phase == "driver-exception":
+            if actual_present:
+                raise GenericCloseoutValidationError(
+                    "driver-exception Host report cannot invent actual binding"
+                )
+        else:
+            raise GenericCloseoutValidationError("failed Host report has an invalid phase")
     if _timestamp(host.get("completed_at"), "host.completed_at") < _timestamp(
         host.get("started_at"), "host.started_at"
     ):
@@ -179,6 +226,38 @@ def _load_trace_events(
     return events
 
 
+def _validate_trace_execution_scope(
+    root: Path,
+    trace_path: Path,
+    trace: Mapping[str, Any],
+    host: Mapping[str, Any],
+) -> None:
+    records: list[Mapping[str, Any]] = []
+    for reference in trace.get("decision_refs", ()):
+        if not isinstance(reference, Mapping):
+            continue
+        pin = _trace_relative_pin(root, trace_path, reference)
+        path = resolve_within_root(root, pin.path)
+        if path is None or not path.is_file():
+            raise GenericCloseoutValidationError("Trace decision reference is missing")
+        content = path.read_bytes()
+        if _normalized_hash(pin.sha256) != hash_bytes(content):
+            raise GenericCloseoutValidationError("Trace decision reference hash mismatch")
+        document = load_document_bytes(path, content)
+        if isinstance(document, Mapping) and document.get("record_kind") == "execution-scope-binding":
+            records.append(document)
+    expected = {
+        "schema_version": "0.1.0",
+        "record_kind": "execution-scope-binding",
+        "view_ref": _plain(host["view_ref"]),
+        "execution_scope": _plain(host["execution_scope"]),
+    }
+    if records != [expected]:
+        raise GenericCloseoutValidationError(
+            "Execution Trace must bind exactly one matching execution-scope decision record"
+        )
+
+
 def _validate_host_trace_facts(
     root: Path,
     host: Mapping[str, Any],
@@ -205,6 +284,7 @@ def _validate_host_trace_facts(
         for item in actors.get("actors", ())
         if isinstance(item, Mapping) and item.get("actor_type") == "runtime-adapter"
     ]
+    phase = host.get("execution_phase")
     actual_binding = host.get("actual_binding", {})
     expected_provider = (
         actual_binding.get("provider", {}).get("ref")
@@ -216,11 +296,11 @@ def _validate_host_trace_facts(
         if isinstance(actual_binding, Mapping)
         else None
     )
-    if provider_identities != [expected_provider]:
+    if phase == "post-call" and provider_identities != [expected_provider]:
         raise GenericCloseoutValidationError(
             "Execution Trace provider actor does not equal Host actual provider binding"
         )
-    if runtime_identities != [expected_runtime]:
+    if phase == "post-call" and runtime_identities != [expected_runtime]:
         raise GenericCloseoutValidationError(
             "Execution Trace runtime actor does not equal Host actual runtime binding"
         )
@@ -266,6 +346,12 @@ def _validate_host_trace_facts(
         raise GenericCloseoutValidationError(
             "Execution Trace tool identity is outside the selected Supply"
         )
+    if phase == "preflight-blocked" and (
+        provider_invocations != 0 or tool_operations or facts.get("provider_invocations") != 0
+    ):
+        raise GenericCloseoutValidationError(
+            "preflight-blocked Trace contains execution activity"
+        )
 
 
 def build_generic_execution_receipt(
@@ -288,8 +374,12 @@ def build_generic_execution_receipt(
     host_status = host.get("status")
     if host_status not in {"completed", "failed", "blocked"}:
         raise GenericCloseoutValidationError("Host report has an unsupported lifecycle status")
-    if host_status == "completed" and host.get("actual_facts", {}).get("complete") is not True:
-        raise GenericCloseoutValidationError("a completed Host report must be fact-complete")
+    if host.get("execution_phase") == "driver-exception":
+        raise GenericCloseoutValidationError(
+            "driver-exception lacks complete actual facts and is not receipt-eligible"
+        )
+    if host.get("actual_facts", {}).get("complete") is not True:
+        raise GenericCloseoutValidationError("receipt-eligible Host report must be fact-complete")
     expected_view_ref = {
         "ref": f"{view.document['view_id']}@r{view.document['revision']}",
         "path": view.view_path.relative_to(root).as_posix(),
@@ -314,6 +404,7 @@ def build_generic_execution_receipt(
         or trace.get("completeness") != "complete"
     ):
         raise GenericCloseoutValidationError("Execution Trace identity/status/completeness mismatch")
+    _validate_trace_execution_scope(root, trace_path, trace, host)
 
     artifacts = host.get("artifacts", ())
     if not isinstance(artifacts, Sequence) or isinstance(artifacts, (str, bytes)):
@@ -383,8 +474,11 @@ def build_generic_execution_receipt(
         "attempt_id": host["attempt_id"],
         "execution_kind": execution_kind,
         "status": host_status,
-        "completion_claim": "execution-only" if host_status == "completed" else "none",
+        "completion_claim": (
+            "action-capability-slice-only" if host_status == "completed" else "none"
+        ),
         "task_ref": _plain(view.document["task_ref"]),
+        "execution_scope": _plain(view.document["execution_scope"]),
         "view_ref": expected_view_ref,
         "host_report_ref": _file_ref(root, host_path),
         "trace_ref": _file_ref(root, trace_path),
@@ -401,6 +495,7 @@ def build_generic_execution_receipt(
             "claim_effect": False,
             "human_decision": False,
             "topic5_recovery": False,
+            "task_completion": False,
         },
     }
     if catalog.validate("generic_execution_receipt", receipt):
@@ -491,6 +586,7 @@ def build_execution_core_gate(
             "human_decision": False,
             "fallback": False,
             "topic5_recovery": False,
+            "task_completion": False,
         },
     }
     if SchemaCatalog(schema_root).validate("execution_core_gate", gate):

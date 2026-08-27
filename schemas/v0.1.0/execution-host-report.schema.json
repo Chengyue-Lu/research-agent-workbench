@@ -12,11 +12,13 @@
     "view_ref",
     "runtime_bundle_ref",
     "task_ref",
+    "execution_scope",
     "started_at",
     "completed_at",
     "status",
-    "actual_supply_report_ref",
-    "actual_binding",
+    "execution_phase",
+    "requested_supply_report_ref",
+    "requested_binding",
     "actual_facts",
     "artifacts",
     "enforcement",
@@ -29,9 +31,13 @@
     "view_ref": { "$ref": "#/$defs/revisionedFileRef" },
     "runtime_bundle_ref": { "$ref": "#/$defs/revisionedFileRef" },
     "task_ref": { "$ref": "#/$defs/revisionedFileRef" },
+    "execution_scope": { "$ref": "runtime-bundle-manifest.schema.json#/properties/execution_scope" },
     "started_at": { "type": "string", "format": "date-time" },
     "completed_at": { "type": "string", "format": "date-time" },
     "status": { "enum": ["completed", "failed", "blocked"] },
+    "execution_phase": { "enum": ["preflight-blocked", "post-call", "driver-exception"] },
+    "requested_supply_report_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "requested_binding": { "$ref": "#/properties/actual_binding" },
     "actual_supply_report_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "actual_binding": {
       "type": "object",
@@ -152,7 +158,8 @@
         "method_decision",
         "claim_effect",
         "human_decision",
-        "topic5_recovery"
+        "topic5_recovery",
+        "task_completion"
       ],
       "properties": {
         "actual_facts_only": { "const": true },
@@ -162,7 +169,8 @@
         "method_decision": { "const": false },
         "claim_effect": { "const": false },
         "human_decision": { "const": false },
-        "topic5_recovery": { "const": false }
+        "topic5_recovery": { "const": false },
+        "task_completion": { "const": false }
       },
       "additionalProperties": false
     }
@@ -171,6 +179,8 @@
     {
       "if": { "properties": { "status": { "const": "completed" } }, "required": ["status"] },
       "then": {
+        "properties": { "execution_phase": { "const": "post-call" } },
+        "required": ["actual_binding", "actual_supply_report_ref"],
         "not": {
           "anyOf": [
             { "required": ["diagnostic"] },
@@ -178,7 +188,36 @@
           ]
         }
       },
-      "else": { "required": ["diagnostic"] }
+      "else": {
+        "required": ["diagnostic"],
+        "allOf": [
+          {
+            "if": { "properties": { "status": { "const": "blocked" } }, "required": ["status"] },
+            "then": {
+              "properties": { "execution_phase": { "const": "preflight-blocked" } },
+              "not": {
+                "anyOf": [
+                  { "required": ["actual_binding"] },
+                  { "required": ["actual_supply_report_ref"] }
+                ]
+              }
+            },
+            "else": {
+              "if": { "properties": { "execution_phase": { "const": "post-call" } }, "required": ["execution_phase"] },
+              "then": { "required": ["actual_binding", "actual_supply_report_ref"] },
+              "else": {
+                "properties": { "execution_phase": { "const": "driver-exception" } },
+                "not": {
+                  "anyOf": [
+                    { "required": ["actual_binding"] },
+                    { "required": ["actual_supply_report_ref"] }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
     }
   ],
   "additionalProperties": false,

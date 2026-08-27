@@ -13,6 +13,8 @@ M11-001 为 Runtime 建立一个显式、hash-pinned、supply-neutral 的读取�
 `runtime_bundle_manifest` 只接受单个文件，并显式固定：
 
 - `entrypoint`：唯一 `resolved_capability_snapshot` 的 path/hash；
+- `execution_scope`：唯一 `Action + Capability Requirement` 执行切片，并同时声明 Task 的完整
+  capability demand、当前 singleton closed set 与 `task_completion`；
 - `documents`：Task、Method Resolution、Capability Requirement、typed conformance evidence、Supply
   Report、Capability Resolution 与 Snapshot 的 exact path/kind/hash；
 - `imports`：上述对象之间完整且无额外边的 import graph；
@@ -22,9 +24,14 @@ M11-001 为 Runtime 建立一个显式、hash-pinned、supply-neutral 的读取�
 Core bundle 要求 Task、Method、Requirement、Resolution、Snapshot 与 **Resolution 最终选择的** Supply
 Report 各一个，conformance evidence 可以有一个或多个。Resolution 可以保留多个候选及其比较事实，但
 Runtime closure 不导入未选候选的 Supply Report；否则 manifest 会把 Resolution 历史误当成本次可执行供给。
-所选 Supply 必须在候选中恰好出现一次、对应 comparison 恰好出现一次且为 eligible。所有传递引用都必须
+所选 Supply 必须在候选中恰好出现一次、对应 comparison 恰好出现一次，且全部 comparisons 中只能有这一个
+eligible candidate；ambiguity 不能伪装为 `satisfied`。所有传递引用都必须
 在 manifest 内声明并 hash 对齐；所有 manifest document 又必须从 entrypoint 可达，因此不能把未选供给或
 其他无关文件塞进 closure。
+
+M11 v0.1 不把上述 singleton closure 冒充 whole-Task closure。`execution_scope.action_ref` 必须精确命中
+Method Action，`requirement_id` 必须属于该 Action，`closed` 必须只含当前 Requirement，而 `required` 必须
+等于 Task 的完整 capability set。只要还有未闭合能力，`task_completion: true` 就会被阻断。
 
 ## Runtime loader
 
@@ -69,5 +76,6 @@ producer 预先构造的最小闭包。二者不能互相替代：
 
 `tests/test_runtime_bundle.py` 覆盖：zero-Skill/无 Registry 正路径、多候选 Resolution 只导入 selected Supply、
 selected Supply 缺失候选、未声明无关坏文件隔离、目录输入、hash 漂移、未声明传递引用、
-`structural-replay`、import graph 漂移、hash-valid identity substitution、Supply fact 漂移、深层只读结果，
+`structural-replay`、import graph 漂移、hash-valid identity substitution、Supply fact 漂移、双 eligible
+ambiguity、未闭合 Task capability 冒充 Task completion、深层只读结果，
 以及 Runtime 模块无递归/Evolution imports。
