@@ -16,15 +16,18 @@ suites:
       - test_catalog
       - test_cli
       - test_contracts
+      - test_critical_contract_branches
       - test_coverage_policy
       - test_decision_authority
       - test_execution_host
+      - test_execution_trace_adapter
       - test_execution_view
       - test_generic_execution_closeout
       - test_handoff_transfer
       - test_integrity
       - test_kernel
       - test_method_resolutions
+      - test_m3_context_observability
       - test_mode_action_routing_fixtures
       - test_mode_actions
       - test_model_pool
@@ -42,6 +45,8 @@ suites:
       - test_skill_lifecycle
       - test_skill_needs
       - test_trace_risk_codes
+      - test_phase_b_evolution_gate
+      - test_validation
     omitted_modules:
       - module: test_accepted_skill_migration_fixtures
         reason: repository fixture replay belongs to the behavioral suite
@@ -49,20 +54,12 @@ suites:
         reason: subprocess integration belongs to the behavioral suite
       - module: test_documentation
         reason: documentation ownership belongs to the behavioral and governance suites
-      - module: test_execution_trace_adapter
-        reason: repeated subprocess and archive integration belongs to the behavioral suite
       - module: test_m2_registry_runtime
         reason: script subprocess integration belongs to the behavioral suite
-      - module: test_m3_context_observability
-        reason: cross-surface archive integration belongs to the behavioral suite
-      - module: test_phase_b_evolution_gate
-        reason: repository-wide phase fixture validation belongs to the behavioral suite
       - module: test_project_internal_handoff_fixtures
         reason: repository fixture validation belongs to the behavioral suite
       - module: test_trace_properties
         reason: high-iteration property stress belongs to the behavioral suite
-      - module: test_validation
-        reason: repository-wide validation is already owned by package-smoke and the behavioral suite
 
 thresholds:
   global:
