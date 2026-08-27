@@ -3,9 +3,16 @@
 from __future__ import annotations
 
 import copy
+import io
+import json
+import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 
+import yaml
+
+from research_workbench.cli import main
 from research_workbench.evaluation.manifest import (
     FIXED_METRIC_SET,
     PHASE_D_ARMS,
@@ -14,6 +21,7 @@ from research_workbench.evaluation.manifest import (
     check_frozen_conditions,
     check_metric_set,
     check_reference_closure,
+    check_snapshot_treatment_semantics,
     check_treatment_arms,
     check_treatment_bindings,
     compile_baseline_plan,
@@ -36,6 +44,20 @@ def _schema_errors(document: dict):
 
 def _arm(document: dict, arm_id: str) -> dict:
     return next(arm for arm in document["arms"] if arm["arm_id"] == arm_id)
+
+
+def _run_plan(document: dict) -> tuple[int, str]:
+    with tempfile.TemporaryDirectory() as directory:
+        manifest_path = Path(directory) / "manifest.yaml"
+        manifest_path.write_text(
+            yaml.safe_dump(document, sort_keys=False), encoding="utf-8"
+        )
+        output = io.StringIO()
+        with redirect_stdout(output):
+            exit_code = main(
+                ["eval", "plan", str(manifest_path), "--root", str(ROOT)]
+            )
+    return exit_code, output.getvalue()
 
 
 class FixedVocabularyTest(unittest.TestCase):
@@ -148,6 +170,51 @@ class TreatmentBindingTest(unittest.TestCase):
     def test_fixture_treatments_are_exact(self) -> None:
         self.assertEqual(check_treatment_bindings(_manifest()), [])
 
+    def test_plain_arms_suppress_and_mode_arms_freeze_control(self) -> None:
+        manifest = _manifest()
+        self.assertEqual(
+            _arm(manifest, "plain-agent")["treatment_control"]["mode_method_control"],
+            "suppressed",
+        )
+        self.assertEqual(
+            _arm(manifest, "plain-agent-tool")["treatment_control"]["mode_method_control"],
+            "suppressed",
+        )
+        for arm_id in ("mode-no-skill", "mode-candidate-skill"):
+            with self.subTest(arm_id=arm_id):
+                control = _arm(manifest, arm_id)["treatment_control"]
+                self.assertEqual(control["mode_method_control"], "exact")
+                self.assertEqual(control["mode_refs"], ["evidence-synthesis@0.1.0"])
+                self.assertEqual(len(control["method_resolution_refs"]), 1)
+
+    def test_plain_arm_cannot_claim_mode_method_control(self) -> None:
+        manifest = _manifest()
+        _arm(manifest, "plain-agent")["treatment_control"] = {
+            "mode_method_control": "exact",
+            "mode_refs": ["evidence-synthesis@0.1.0"],
+            "method_resolution_refs": copy.deepcopy(
+                _arm(manifest, "mode-no-skill")["treatment_control"][
+                    "method_resolution_refs"
+                ]
+            ),
+        }
+        self.assertTrue(
+            any("suppressed" in item for item in check_treatment_bindings(manifest))
+        )
+
+    def test_mode_arm_requires_exact_control_refs(self) -> None:
+        manifest = _manifest()
+        del _arm(manifest, "mode-no-skill")["treatment_control"][
+            "method_resolution_refs"
+        ]
+        self.assertNotEqual(_schema_errors(manifest), [])
+        self.assertTrue(
+            any(
+                "method_resolution_refs" in item
+                for item in check_treatment_bindings(manifest)
+            )
+        )
+
     def test_plain_agent_tool_requires_snapshot(self) -> None:
         manifest = _manifest()
         _arm(manifest, "plain-agent-tool").pop("capability_snapshot_refs")
@@ -192,6 +259,48 @@ class TreatmentBindingTest(unittest.TestCase):
             }
         ]
         self.assertTrue(any("outside frozen_conditions" in item for item in check_reference_closure(ROOT, manifest)))
+
+    def test_plain_agent_tool_rejects_non_tool_snapshot(self) -> None:
+        manifest = _manifest()
+        _arm(manifest, "plain-agent-tool")["capability_snapshot_refs"] = [
+            {
+                "path": "examples/capability-resolution/snapshots/no-skill-contract-check.yaml",
+                "sha256": "30b177db7f0d9d76d87ec7623056f19554495f707f160ac22671b5f9a659544c",
+            }
+        ]
+        self.assertTrue(
+            any(
+                "exact Tool supply" in item
+                for item in check_reference_closure(ROOT, manifest)
+            )
+        )
+
+    def test_mode_no_skill_rejects_skill_supply(self) -> None:
+        snapshot = {
+            "supply_identity": {
+                "supply_kind": "tool",
+                "components": [
+                    {"component_kind": "skill", "component_ref": "hidden-skill"}
+                ],
+            }
+        }
+        self.assertTrue(
+            any(
+                "must not expose Skill" in item
+                for item in check_snapshot_treatment_semantics(
+                    "mode-no-skill", snapshot
+                )
+            )
+        )
+
+    def test_mode_control_must_match_pinned_method_resolution(self) -> None:
+        manifest = _manifest()
+        _arm(manifest, "mode-candidate-skill")["treatment_control"]["mode_refs"] = [
+            "simulation@0.1.0"
+        ]
+        problems = check_reference_closure(ROOT, manifest)
+        self.assertTrue(any("frozen Task active_modes" in item for item in problems))
+        self.assertTrue(any("pinned Method Resolution" in item for item in problems))
 
     def test_skill_binding_must_match_pinned_evaluation(self) -> None:
         manifest = _manifest()
@@ -239,6 +348,30 @@ class BaselineHarnessTest(unittest.TestCase):
         manifest["arms"].pop()
         with self.assertRaises(ValueError):
             compile_baseline_plan(manifest)
+
+    def test_eval_plan_uses_exact_reference_closure(self) -> None:
+        exit_code, output = _run_plan(_manifest())
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(json.loads(output)["status"], "compiled-not-executed")
+
+    def test_eval_plan_rejects_missing_reference(self) -> None:
+        manifest = _manifest()
+        manifest["frozen_conditions"]["task_packet_refs"][0] = {
+            "path": "examples/missing-task.yaml",
+            "sha256": "0" * 64,
+        }
+        exit_code, output = _run_plan(manifest)
+        self.assertEqual(exit_code, 1)
+        self.assertIn("REF-MISSING", output)
+        self.assertNotIn("compiled-not-executed", output)
+
+    def test_eval_plan_rejects_hash_drift(self) -> None:
+        manifest = _manifest()
+        manifest["frozen_conditions"]["task_packet_refs"][0]["sha256"] = "0" * 64
+        exit_code, output = _run_plan(manifest)
+        self.assertEqual(exit_code, 1)
+        self.assertIn("REF-HASH-MISMATCH", output)
+        self.assertNotIn("compiled-not-executed", output)
 
 
 class SchemaAndCrossValidationTest(unittest.TestCase):

@@ -24,6 +24,13 @@ PHASE_D_ARMS = (
     "mode-candidate-skill",
 )
 
+MODE_METHOD_CONTROL = {
+    "plain-agent": "suppressed",
+    "plain-agent-tool": "suppressed",
+    "mode-no-skill": "exact",
+    "mode-candidate-skill": "exact",
+}
+
 
 @dataclass(frozen=True, slots=True)
 class MetricDefinition:
@@ -249,13 +256,33 @@ def check_frozen_conditions(document: Mapping[str, Any]) -> list[str]:
 
 
 def check_treatment_bindings(document: Mapping[str, Any]) -> list[str]:
-    """Require exact Tool/Snapshot and candidate-Skill treatment bindings."""
+    """Require exact control exposure, Tool/Snapshot, and Skill bindings."""
 
     problems: list[str] = []
     for arm in document.get("arms", []):
         if not isinstance(arm, Mapping):
             continue
         arm_id = arm.get("arm_id")
+        control = arm.get("treatment_control")
+        expected_control = MODE_METHOD_CONTROL.get(str(arm_id))
+        if not isinstance(control, Mapping):
+            problems.append(f"{arm_id} requires an explicit treatment_control")
+        elif control.get("mode_method_control") != expected_control:
+            problems.append(
+                f"{arm_id} requires mode_method_control={expected_control!r}"
+            )
+        elif expected_control == "exact":
+            if not isinstance(control.get("mode_refs"), list) or not control.get("mode_refs"):
+                problems.append(f"{arm_id} requires exact mode_refs")
+            if (
+                not isinstance(control.get("method_resolution_refs"), list)
+                or not control.get("method_resolution_refs")
+            ):
+                problems.append(f"{arm_id} requires exact method_resolution_refs")
+        elif any(key in control for key in ("mode_refs", "method_resolution_refs")):
+            problems.append(
+                f"{arm_id} suppresses Mode/Method control and must not expose control refs"
+            )
         snapshots = arm.get("capability_snapshot_refs")
         if arm_id in {"plain-agent-tool", "mode-no-skill"} and (
             not isinstance(snapshots, list) or not snapshots
@@ -275,6 +302,34 @@ def check_treatment_bindings(document: Mapping[str, Any]) -> list[str]:
                 problems.append("mode-candidate-skill requires skill_evaluation_ref")
         elif any(key in arm for key in ("skill_binding", "skill_evaluation_ref")):
             problems.append(f"{arm_id} must not carry candidate-Skill treatment fields")
+    return problems
+
+
+def check_snapshot_treatment_semantics(
+    arm_id: str, snapshot: Mapping[str, Any]
+) -> list[str]:
+    """Validate the Supply projection exposed by a treatment Snapshot."""
+
+    problems: list[str] = []
+    identity = snapshot.get("supply_identity")
+    if not isinstance(identity, Mapping):
+        return [f"{arm_id} Capability Snapshot lacks supply_identity"]
+    supply_kind = identity.get("supply_kind")
+    components = identity.get("components")
+    component_values = components if isinstance(components, list) else []
+    component_kinds = {
+        component.get("component_kind")
+        for component in component_values
+        if isinstance(component, Mapping)
+    }
+    if arm_id == "plain-agent-tool" and supply_kind != "tool":
+        problems.append(
+            "plain-agent-tool Capability Snapshot must expose exact Tool supply"
+        )
+    if arm_id == "mode-no-skill" and (
+        supply_kind == "skill" or "skill" in component_kinds
+    ):
+        problems.append("mode-no-skill Capability Snapshot must not expose Skill supply")
     return problems
 
 
@@ -338,6 +393,23 @@ def check_reference_closure(root: str | Path, document: Mapping[str, Any]) -> li
         for reference in frozen.get("task_packet_refs", [])
         if isinstance(reference, Mapping) and reference.get("path")
     }
+    task_documents: list[Mapping[str, Any]] = []
+    expected_tasks: set[tuple[Any, Any, str]] = set()
+    for raw_ref in frozen.get("task_packet_refs", []):
+        if not isinstance(raw_ref, Mapping):
+            continue
+        check = check_file_reference(root, FileReference.from_mapping(raw_ref))
+        if check.valid and check.resolved_path is not None:
+            task = load_document(check.resolved_path)
+            if isinstance(task, Mapping):
+                task_documents.append(task)
+                expected_tasks.add(
+                    (
+                        task.get("task_id"),
+                        task.get("revision"),
+                        str(raw_ref.get("sha256", "")).removeprefix("sha256:"),
+                    )
+                )
     model = frozen.get("model")
     if isinstance(model, Mapping) and isinstance(model.get("pool_ref"), Mapping):
         check = check_file_reference(root, FileReference.from_mapping(model["pool_ref"]))
@@ -370,6 +442,10 @@ def check_reference_closure(root: str | Path, document: Mapping[str, Any]) -> li
             if not check.valid or check.resolved_path is None:
                 continue
             snapshot = load_document(check.resolved_path)
+            if isinstance(snapshot, Mapping):
+                problems.extend(
+                    check_snapshot_treatment_semantics(str(arm.get("arm_id")), snapshot)
+                )
             snapshot_task = (
                 snapshot.get("task_ref", {}).get("document_path")
                 if isinstance(snapshot, Mapping)
@@ -380,6 +456,81 @@ def check_reference_closure(root: str | Path, document: Mapping[str, Any]) -> li
                     f"{arm.get('arm_id')} Capability Snapshot binds Task {snapshot_task!r}, "
                     "outside frozen_conditions.task_packet_refs"
                 )
+
+            control = arm.get("treatment_control")
+            if arm.get("arm_id") == "mode-no-skill" and isinstance(control, Mapping):
+                control_paths = {
+                    str(reference.get("path"))
+                    for reference in control.get("method_resolution_refs", [])
+                    if isinstance(reference, Mapping)
+                }
+                snapshot_method_path = (
+                    snapshot.get("method_resolution_ref", {}).get("document_path")
+                    if isinstance(snapshot, Mapping)
+                    and isinstance(snapshot.get("method_resolution_ref"), Mapping)
+                    else None
+                )
+                if snapshot_method_path not in control_paths:
+                    problems.append(
+                        "mode-no-skill Capability Snapshot is not bound to its exact "
+                        "treatment Method Resolution"
+                    )
+
+        control = arm.get("treatment_control")
+        if isinstance(control, Mapping) and control.get("mode_method_control") == "exact":
+            mode_refs = control.get("mode_refs", [])
+            active_mode_ids = {
+                str(mode_id)
+                for task in task_documents
+                for mode_id in task.get("active_modes", [])
+                if isinstance(mode_id, str)
+            }
+            controlled_mode_ids = {
+                str(mode_ref).partition("@")[0]
+                for mode_ref in mode_refs
+                if isinstance(mode_ref, str)
+            }
+            if controlled_mode_ids != active_mode_ids:
+                problems.append(
+                    f"{arm.get('arm_id')} exact mode_refs do not match the frozen Task active_modes"
+                )
+            for raw_ref in control.get("method_resolution_refs", []):
+                if not isinstance(raw_ref, Mapping):
+                    continue
+                check = check_file_reference(root, FileReference.from_mapping(raw_ref))
+                if not check.valid or check.resolved_path is None:
+                    continue
+                resolution = load_document(check.resolved_path)
+                if not isinstance(resolution, Mapping):
+                    problems.append("method_resolution_ref must resolve to an object")
+                    continue
+                mode_resolution = resolution.get("mode_resolution")
+                selected_modes = (
+                    mode_resolution.get("selected_mode_refs")
+                    if isinstance(mode_resolution, Mapping)
+                    else None
+                )
+                if not isinstance(selected_modes, list) or {
+                    str(value) for value in selected_modes
+                } != {str(value) for value in mode_refs}:
+                    problems.append(
+                        f"{arm.get('arm_id')} treatment mode_refs do not match the pinned "
+                        "Method Resolution"
+                    )
+                task_ref = resolution.get("task_ref")
+                actual_task = (
+                    (
+                        task_ref.get("task_id"),
+                        task_ref.get("revision"),
+                        str(task_ref.get("sha256", "")).removeprefix("sha256:"),
+                    )
+                    if isinstance(task_ref, Mapping)
+                    else None
+                )
+                if actual_task not in expected_tasks:
+                    problems.append(
+                        f"{arm.get('arm_id')} Method Resolution is not bound to a frozen Task"
+                    )
 
         if arm.get("arm_id") != "mode-candidate-skill":
             continue

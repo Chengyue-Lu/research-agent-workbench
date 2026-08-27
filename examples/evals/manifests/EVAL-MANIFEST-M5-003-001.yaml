@@ -3,15 +3,31 @@ manifest_id: EVAL-MANIFEST-M5-003-001
 status: planned
 arms:
 - arm_id: plain-agent
+  treatment_control:
+    mode_method_control: suppressed
 - arm_id: plain-agent-tool
+  treatment_control:
+    mode_method_control: suppressed
   capability_snapshot_refs:
   - path: examples/capability-resolution/snapshots/document-read-a.yaml
     sha256: 2c0a948dd76e420892e911bb729f776de38da39abbbfc92e46eaffcc1b928039
 - arm_id: mode-no-skill
+  treatment_control:
+    mode_method_control: exact
+    mode_refs: [evidence-synthesis@0.1.0]
+    method_resolution_refs:
+    - path: examples/method-resolutions/ROUTE-ES-FROZEN-001.yaml
+      sha256: cf3e041887c9558a775027e5e254486973322ad763f3b15d2eb8504d185608e1
   capability_snapshot_refs:
   - path: examples/capability-resolution/snapshots/no-skill-contract-check.yaml
     sha256: 30b177db7f0d9d76d87ec7623056f19554495f707f160ac22671b5f9a659544c
 - arm_id: mode-candidate-skill
+  treatment_control:
+    mode_method_control: exact
+    mode_refs: [evidence-synthesis@0.1.0]
+    method_resolution_refs:
+    - path: examples/method-resolutions/ROUTE-ES-FROZEN-001.yaml
+      sha256: cf3e041887c9558a775027e5e254486973322ad763f3b15d2eb8504d185608e1
   skill_binding:
     skill_id: claim-preserving-rewrite
     version: 0.1.0

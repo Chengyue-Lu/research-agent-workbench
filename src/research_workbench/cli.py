@@ -278,6 +278,11 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
             binding = arm.get("skill_binding")
             if isinstance(binding, Mapping) and isinstance(binding.get("source_ref"), Mapping):
                 references += (FileReference.from_mapping(binding["source_ref"]),)
+            control = arm.get("treatment_control")
+            if isinstance(control, Mapping):
+                for reference in control.get("method_resolution_refs", []):
+                    if isinstance(reference, Mapping):
+                        references += (FileReference.from_mapping(reference),)
         for problem in check_reference_closure(root, document):
             extra_risks.append(
                 ContractRisk("EVAL-MANIFEST-INVALID", RiskLevel.BLOCK, problem)
@@ -398,6 +403,9 @@ def _eval_plan(args: argparse.Namespace) -> int:
     document = _load_valid(args.manifest, "evaluation_manifest")
     from research_workbench.evaluation.manifest import compile_baseline_plan
 
+    reference_risks = _document_reference_risks(document, Path(args.root).resolve())
+    if reference_risks and _print_risks(reference_risks):
+        return 1
     plan = compile_baseline_plan(document)
     print(json.dumps(plan, ensure_ascii=False, indent=2, sort_keys=True))
     return 0
@@ -1509,6 +1517,7 @@ def build_parser() -> argparse.ArgumentParser:
         "plan", help="compile the non-executing deterministic four-arm baseline plan"
     )
     eval_plan.add_argument("manifest")
+    eval_plan.add_argument("--root", default=".")
     eval_plan.set_defaults(handler=_eval_plan)
 
     execute = subparsers.add_parser("execute", help="verify a committed execution archive")
