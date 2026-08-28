@@ -1,7 +1,7 @@
 # M10 Phase C 验证证据
 
-状态：PR #44 final-contract review 整改；已语义 rebase 到 `develop@aa4e7ee`（accepted M11 Core），
-latest-head 全量/CI 证据待本地全量通过后更新。
+状态：PR #44 final-contract review 整改；已语义 rebase 到 `develop@aa4e7ee`（accepted M11 Core）。
+latest-base 本地全量测试已通过；双 Python、coverage、wheel clean-install 证据等待当前 HEAD 远端 CI。
 
 ## Task-specific evidence
 
@@ -66,8 +66,8 @@ latest-head 全量/CI 证据待本地全量通过后更新。
 | M10-002 explicit-closure CLI check | PASS（M10-001 + M10-002 显式 roots） |
 | `rwb validate examples/phase-c --root .` | validated=26, errors=0, warnings=0 |
 | `rwb validate examples registry --root .` | validated=180, errors=0, warnings=0 |
-| previous-head coverage full unittest | 500 passed；TOTAL 83%（threshold 80%）；Trace 92.96%（threshold 90%） |
-| latest-base full/coverage/dual-Python CI | PENDING（在 M11 semantic rebase 与 #47 CI 基线落地后重跑） |
+| latest-base full unittest | 552 passed，3 skipped（本地未安装可选 Hypothesis）；818.723s |
+| latest-base coverage/dual-Python/wheel clean-install CI | PENDING（当前 HEAD 推送后由远端 CI 验证） |
 
 ## Owner review remediation matrix
 
