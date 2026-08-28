@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from dataclasses import replace
 from datetime import datetime, timezone
 import json
@@ -15,6 +16,8 @@ from research_workbench.execution import generic_closeout as closeout_module
 from research_workbench.execution import host as host_module
 from research_workbench.execution import runtime_bundle as bundle_module
 from research_workbench.observability import trace as trace_module
+from research_workbench.io import load_document
+from tests.test_runtime_bundle import RuntimeBundleTests
 
 
 class _Catalog:
@@ -332,6 +335,79 @@ class RuntimeBundleHelperTests(unittest.TestCase):
         self.assertIsNone(bundle_module._ref_edge("source.yaml", {**valid, "content_hash": "bad"}, "task"))
         self.assertEqual("TASK@r1", bundle_module._revisioned_identity({"task_id": "TASK", "revision": 1}, "task_id"))
         self.assertEqual("MODE@2.0.0", bundle_module._versioned_identity({"mode_id": "MODE", "version": "2.0.0"}, "mode_id"))
+
+    def test_lineage_mutation_matrix_exercises_each_runtime_authority_boundary(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            manifest_path = RuntimeBundleTests(methodName="runTest")._build_bundle(root)
+            manifest = load_document(manifest_path)
+            kinds = {
+                item["path"]: item["kind"] for item in manifest["documents"]
+            }
+            documents = {
+                path: load_document(root / path) for path in kinds
+            }
+
+            def mutate_method_task(docs, _manifest):
+                docs["bundle/method.yaml"]["task_ref"]["task_id"] = "OTHER"
+
+            def mutate_resolution_method(docs, _manifest):
+                docs["bundle/resolution.yaml"]["method_resolution_ref"]["ref"] = "OTHER@r1"
+
+            def mutate_resolution_requirement(docs, _manifest):
+                docs["bundle/resolution.yaml"]["requirement_ref"]["requirement_id"] = "other"
+
+            def mutate_resolution_status(docs, _manifest):
+                docs["bundle/resolution.yaml"]["resolution_status"] = "blocked"
+
+            def mutate_method_requirement(docs, _manifest):
+                for decision in docs["bundle/method.yaml"]["action_decisions"]:
+                    decision["capability_requirements"] = ["document-read"]
+
+            def mutate_execution_slice(_docs, changed_manifest):
+                changed_manifest["execution_scope"]["kind"] = "task"
+
+            def mutate_task_completion(_docs, changed_manifest):
+                changed_manifest["execution_scope"]["task_capability_closure"]["task_completion"] = True
+
+            def mutate_snapshot_task(docs, _manifest):
+                docs["bundle/snapshot.yaml"]["task_ref"]["ref"] = "OTHER@r1"
+
+            def mutate_snapshot_requirement(docs, _manifest):
+                docs["bundle/snapshot.yaml"]["requirement_ref"]["requirement_id"] = "other"
+
+            def mutate_snapshot_supply(docs, _manifest):
+                docs["bundle/snapshot.yaml"]["selected_supply_report_ref"]["ref"] = "other@1.0.0"
+
+            def mutate_snapshot_lineage(docs, _manifest):
+                docs["bundle/snapshot.yaml"]["method_resolution_ref"]["document_path"] = "other.yaml"
+
+            def mutate_snapshot_evidence(docs, _manifest):
+                docs["bundle/snapshot.yaml"]["conformance_evidence_refs"] = []
+
+            cases = (
+                ("RUNTIME-BUNDLE-TASK-IDENTITY-MISMATCH", mutate_method_task),
+                ("RUNTIME-BUNDLE-METHOD-IDENTITY-MISMATCH", mutate_resolution_method),
+                ("RUNTIME-BUNDLE-REQUIREMENT-IDENTITY-MISMATCH", mutate_resolution_requirement),
+                ("RUNTIME-BUNDLE-RESOLUTION-NOT-SATISFIED", mutate_resolution_status),
+                ("RUNTIME-BUNDLE-METHOD-REQUIREMENT-MISSING", mutate_method_requirement),
+                ("RUNTIME-BUNDLE-EXECUTION-SLICE-MISMATCH", mutate_execution_slice),
+                ("RUNTIME-BUNDLE-TASK-COMPLETION-AUTHORITY", mutate_task_completion),
+                ("RUNTIME-BUNDLE-SNAPSHOT-IDENTITY-MISMATCH", mutate_snapshot_task),
+                ("RUNTIME-BUNDLE-SNAPSHOT-IDENTITY-MISMATCH", mutate_snapshot_requirement),
+                ("RUNTIME-BUNDLE-SNAPSHOT-IDENTITY-MISMATCH", mutate_snapshot_supply),
+                ("RUNTIME-BUNDLE-SNAPSHOT-LINEAGE-DRIFT", mutate_snapshot_lineage),
+                ("RUNTIME-BUNDLE-EVIDENCE-LINEAGE-DRIFT", mutate_snapshot_evidence),
+            )
+            for expected, mutate in cases:
+                with self.subTest(code=expected):
+                    changed_documents = copy.deepcopy(documents)
+                    changed_manifest = copy.deepcopy(manifest)
+                    mutate(changed_documents, changed_manifest)
+                    issues = bundle_module._validate_lineage(
+                        root, changed_manifest, changed_documents, kinds
+                    )
+                    self.assertIn(expected, {issue.code for issue in issues})
 
 
 class GenericCloseoutHelperTests(unittest.TestCase):
