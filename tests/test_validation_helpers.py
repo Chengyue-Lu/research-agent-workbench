@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import tempfile
 import unittest
 
 from research_workbench.validation import documents as documents_module
@@ -46,6 +47,39 @@ class ValidationHelperTests(unittest.TestCase):
         self.assertEqual(
             {"HASH-PLACEHOLDER", "HASH-INVALID"}, {issue.code for issue in issues}
         )
+
+    def test_document_dispatch_and_parse_boundaries_report_structured_issues(self) -> None:
+        documents = {
+            Path("scalar.yaml"): [],
+            Path("unknown.yaml"): {"schema_version": "0.1.0"},
+            Path("sources.yaml"): {
+                "registry_kind": "skill_sources",
+                "sources": ["ignored", {"source_id": 1}, {"source_id": "source-a"}],
+            },
+            Path("view.yaml"): {
+                "schema_version": "0.1.0",
+                "view_id": "V",
+                "execution_binding_ref": {},
+                "effective_constraints": {},
+            },
+        }
+        issues = documents_module.validate_documents(documents)
+        codes = {issue.code for issue in issues}
+        self.assertLessEqual({"DOCUMENT-INVALID", "DOCUMENT-UNKNOWN", "SCHEMA-INVALID"}, codes)
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            invalid = root / "invalid.yaml"
+            invalid.write_text("not: [yaml", encoding="utf-8")
+            loaded, issues = documents_module.load_and_validate((invalid,))
+            self.assertEqual({}, loaded)
+            self.assertEqual(["PARSE-ERROR"], [issue.code for issue in issues])
+
+            valid = root / "valid.json"
+            valid.write_text('{"schema_version":"0.1.0"}', encoding="utf-8")
+            loaded, issues = documents_module.load_and_validate((valid,))
+            self.assertIsNotNone(loaded.sha256_for(valid))
+            self.assertIn("DOCUMENT-UNKNOWN", {issue.code for issue in issues})
 
 
 if __name__ == "__main__":

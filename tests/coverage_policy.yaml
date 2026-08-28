@@ -13,16 +13,17 @@ suites:
       - test_api_session_runner
       - test_capability_consumer
       - test_capability_requirements
+      - test_capability_resolver_branches
       - test_capability_resolution
       - test_candidate_claim_rewrite
       - test_catalog
       - test_cli
       - test_cli_command_branches
       - test_contracts
+      - test_context_model_branches
       - test_critical_contract_branches
       - test_coverage_policy
       - test_decision_authority
-      - test_execution_host
       - test_execution_contract_helpers
       - test_execution_trace_adapter
       - test_execution_view
@@ -36,12 +37,14 @@ suites:
       - test_mode_action_routing_fixtures
       - test_mode_actions
       - test_model_pool
+      - test_observability_model_branches
       - test_protocol_profiles
       - test_pr_governance
       - test_provider_adapters
       - test_provider_conformance
       - test_provider_contract_branches
       - test_provider_port
+      - test_registry_require_branches
       - test_project_internal_handoff_fixtures
       - test_relationships
       - test_research_mode_migration
@@ -62,10 +65,17 @@ suites:
       - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_no_skill_and_direct_tool_close_and_form_core_gate_without_assignment
       - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_receipt_replay_rejects_rehashed_host_binding_and_supply_substitution
       - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_completed_failed_and_preflight_blocked_lifecycle_replay_end_to_end
+      - test_execution_host.ExecutionHostTests.test_host_clock_freshness_and_bound_bundle_drift_prevent_driver_call
+      - test_execution_host.ExecutionHostTests.test_exact_view_load_and_single_driver_execution_report_actual_facts
+      - test_execution_host.ExecutionHostTests.test_driver_exception_is_one_call_content_free_capture_gap_not_recovery
+      - test_execution_host.ExecutionHostTests.test_host_clock_blocks_actual_timeout_when_driver_underreports_duration
+      - test_execution_host.ExecutionHostTests.test_preflight_binding_mismatch_blocks_without_call_and_requests_reresolution
+      - test_execution_host.ExecutionHostTests.test_hash_valid_view_rewrite_is_rejected_by_deterministic_recomputation
+      - test_execution_host.ExecutionHostTests.test_host_source_has_no_retry_fallback_routing_or_recovery_dependency
+      - test_execution_host.ExecutionHostTests.test_execution_caller_cannot_supply_or_backdate_host_timestamps
       - test_skill_evaluation.SkillEvaluationTests.test_check_report_status_must_match_its_findings
       - test_skill_evaluation.SkillEvaluationTests.test_fixture_example_is_valid_but_not_admission_evidence
       - test_skill_evaluation.SkillEvaluationTests.test_complete_live_pair_is_only_eligible_for_human_decision
-      - test_skill_evaluation.SkillEvaluationTests.test_human_decision_must_bind_the_evaluation_candidate_and_outcome
     omitted_modules:
       - module: test_documentation
         reason: documentation ownership belongs to the behavioral and governance suites

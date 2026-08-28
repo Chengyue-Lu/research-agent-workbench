@@ -26,6 +26,14 @@ from research_workbench.adapters.models import (
 )
 from research_workbench.adapters.models import base as base_module
 from research_workbench.adapters.models import http as http_module
+from research_workbench.adapters.models import openai as openai_module
+from research_workbench.adapters.models import anthropic as anthropic_module
+from research_workbench.adapters.models import gemini as gemini_module
+from research_workbench.adapters.models import (
+    AnthropicMessagesProvider,
+    GeminiGenerateContentProvider,
+    OpenAIResponsesProvider,
+)
 from research_workbench.adapters import CodexRuntimeAdapter
 from research_workbench.capability import AcceptedSkillRegistry, AgentProfile, resolve_task_from_registry
 from research_workbench.io import load_document
@@ -209,6 +217,83 @@ class HttpTransportBranchTests(unittest.TestCase):
         oversized = SimpleNamespace(read=lambda _size: b"four")
         with self.assertRaises(http_module.HttpTransportError):
             transport._read_bounded(oversized)
+
+
+class ProviderSpecificBranchTests(unittest.TestCase):
+    def _credential(self):
+        return SimpleNamespace(label="fixture", available=lambda: True, resolve=lambda: "secret")
+
+    def test_tool_call_parsers_are_strict_and_gemini_id_synthesis_is_visible(self) -> None:
+        openai = OpenAIResponsesProvider(model="model-a", credential=self._credential())
+        anthropic = AnthropicMessagesProvider(model="model-a", credential=self._credential())
+        gemini = GeminiGenerateContentProvider(model="model-a", credential=self._credential())
+        for item in (
+            {},
+            {"call_id": "call", "name": "lookup", "arguments": "not-json"},
+            {"call_id": "call", "name": "lookup", "arguments": []},
+        ):
+            with self.assertRaises(ProviderError):
+                openai._parse_tool_call(item, 0)
+        self.assertEqual(
+            {"id": "A"},
+            openai._parse_tool_call(
+                {"call_id": "call", "name": "lookup", "arguments": '{"id":"A"}'}, 0
+            ).arguments,
+        )
+        with self.assertRaises(ProviderError):
+            anthropic._parse_tool_call({"id": "call", "name": "lookup", "input": []}, 0)
+        warnings: list[str] = []
+        call = gemini._parse_tool_call(
+            {"name": "lookup", "args": {"id": "A"}}, "response", 2, warnings
+        )
+        self.assertEqual("gemini-response-2", call.call_id)
+        self.assertTrue(warnings)
+        with self.assertRaises(ProviderError):
+            gemini._parse_tool_call({"name": "", "args": []}, "response", 0, [])
+
+    def test_finish_usage_integer_and_api_error_mappings_cover_provider_edges(self) -> None:
+        openai = OpenAIResponsesProvider(model="model-a", credential=self._credential())
+        anthropic = AnthropicMessagesProvider(model="model-a", credential=self._credential())
+        gemini = GeminiGenerateContentProvider(model="model-a", credential=self._credential())
+        self.assertEqual(FinishReason.TOOL_CALL, openai._finish_reason({}, has_calls=True, refused=False))
+        self.assertEqual(FinishReason.REFUSAL, openai._finish_reason({}, has_calls=False, refused=True))
+        self.assertEqual(FinishReason.ERROR, openai._finish_reason({"status": "cancelled"}, has_calls=False, refused=False))
+        self.assertEqual(
+            FinishReason.LENGTH,
+            openai._finish_reason(
+                {"status": "incomplete", "incomplete_details": {"reason": "max_output_tokens"}},
+                has_calls=False,
+                refused=False,
+            ),
+        )
+        self.assertEqual(
+            FinishReason.REFUSAL,
+            openai._finish_reason(
+                {"status": "incomplete", "incomplete_details": {"reason": "safety"}},
+                has_calls=False,
+                refused=False,
+            ),
+        )
+        self.assertEqual(FinishReason.UNKNOWN, openai._finish_reason({}, has_calls=False, refused=False))
+        for integer in (openai_module._integer, anthropic_module._integer, gemini_module._integer):
+            self.assertEqual(1, integer(1))
+            self.assertIsNone(integer(True))
+            self.assertIsNone(integer("1"))
+        self.assertIsNone(openai._usage(None).input_tokens)
+        self.assertIsNone(anthropic._usage(None).input_tokens)
+        self.assertIsNone(gemini._usage(None).input_tokens)
+        self.assertEqual("fallback", gemini._model({}, _request(model="fallback")))
+
+        cases = (
+            (openai, 400, {"error": {"code": "context_length_exceeded", "message": "large"}}),
+            (openai, 400, {"error": {"type": "safety"}}),
+            (anthropic, 429, {"error": {"type": "rate_limit_error", "message": "slow"}}),
+            (gemini, 503, {"error": {"status": "UNAVAILABLE", "message": "retry"}}),
+            (gemini, 400, {"error": "unknown"}),
+        )
+        for provider, status, document in cases:
+            with self.subTest(provider=provider.provider_name), self.assertRaises(ProviderError):
+                provider._raise_api_error(status, document)
 
 
 class CodexAdapterBranchTests(unittest.TestCase):

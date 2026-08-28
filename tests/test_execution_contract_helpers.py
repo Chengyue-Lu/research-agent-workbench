@@ -18,6 +18,7 @@ from research_workbench.execution import runtime_bundle as bundle_module
 from research_workbench.observability import trace as trace_module
 from research_workbench.io import load_document
 from tests.test_runtime_bundle import RuntimeBundleTests
+from tests.test_execution_view import ExecutionViewTests
 
 
 class _Catalog:
@@ -151,6 +152,13 @@ class ExecutionViewHelperTests(unittest.TestCase):
             ))["policy"],
         )
         self.assertEqual(
+            "none",
+            view_module._intersect_side_effects((
+                {"policy": "allowlisted-only", "allowed_effects": ("write",)},
+                {"policy": "allowlisted-only", "allowed_effects": ("notify",)},
+            ))["policy"],
+        )
+        self.assertEqual(
             "allowlisted-only",
             view_module._intersect_side_effects((
                 {"policy": "allowlisted-only", "allowed_effects": ("write", "notify")},
@@ -208,6 +216,20 @@ class ExecutionViewHelperTests(unittest.TestCase):
         )))
         with self.assertRaises(ValueError):
             view_module._required_output_contracts((42,))
+
+    def test_policy_kind_drift_is_rejected_after_exact_pin_validation(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            helper = ExecutionViewTests(methodName="runTest")
+            bundle, inputs = helper._build(root)
+            policy_path = root / inputs["data_policy"].path
+            policy = load_document(policy_path)
+            policy["policy_kind"] = "host-policy"
+            inputs["data_policy"] = helper._write(root, inputs["data_policy"].path, policy)
+            with mock.patch.object(view_module, "SchemaCatalog", return_value=_Catalog()):
+                with self.assertRaises(view_module.ExecutionViewValidationError) as raised:
+                    helper._produce(root, bundle, inputs)
+            self.assertIn("EXECUTION-VIEW-POLICY-KIND", {item.code for item in raised.exception.issues})
 
 
 class ExecutionHostHelperTests(unittest.TestCase):
@@ -311,6 +333,17 @@ class ExecutionHostHelperTests(unittest.TestCase):
             self._result(data_egress_payloads=("public",), side_effects=("notify",)),
             host_elapsed_seconds=1,
         ))
+        self.assertEqual(
+            "HOST-DATA-EGRESS-VIOLATION",
+            host_module._result_violation(
+                allowed, self._result(data_egress_payloads=("secret",)), host_elapsed_seconds=1
+            ),
+        )
+        allowed["effective_constraints"]["data_egress"] = {
+            "policy": "allowlisted-only",
+            "allowed_payloads": ["secret"],
+            "forbidden_payloads": ["secret"],
+        }
         self.assertEqual(
             "HOST-DATA-EGRESS-VIOLATION",
             host_module._result_violation(
@@ -490,6 +523,65 @@ class RuntimeBundleHelperTests(unittest.TestCase):
                         root, changed_manifest, changed_documents, kinds
                     )
                     self.assertIn(expected, {issue.code for issue in issues})
+
+    def test_manifest_document_policy_reports_all_fail_closed_categories(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            helper = RuntimeBundleTests(methodName="runTest")
+            manifest_path = helper._build_bundle(root)
+            manifest = load_document(manifest_path)
+
+            evidence_path = root / "bundle/conformance.yaml"
+            evidence = load_document(evidence_path)
+            evidence["evidence_kind"] = "deterministic-fixture"
+            evidence_hash = helper._write(root, "bundle/conformance.yaml", evidence)
+
+            supply_path = root / "bundle/supply.yaml"
+            supply = load_document(supply_path)
+            supply["supply_identity"]["supply_kind"] = "skill"
+            supply["availability"]["scope"]["scope_kind"] = "fixture-only"
+            supply_hash = helper._write(root, "bundle/supply.yaml", supply)
+
+            method_path = root / "bundle/method.yaml"
+            method = load_document(method_path)
+            method["skill_disposition"]["status"] = "required"
+            method_hash = helper._write(root, "bundle/method.yaml", method)
+
+            replacements = {
+                "bundle/conformance.yaml": evidence_hash,
+                "bundle/supply.yaml": supply_hash,
+                "bundle/method.yaml": method_hash,
+            }
+            for reference in manifest["documents"]:
+                if reference["path"] in replacements:
+                    reference["sha256"] = replacements[reference["path"]]
+            manifest["entrypoint"]["sha256"] = "0" * 64
+            manifest["documents"].extend(
+                [
+                    copy.deepcopy(manifest["documents"][0]),
+                    {"kind": "forbidden-kind", "path": "bundle/forbidden.yaml", "sha256": "0" * 64},
+                    {"kind": "task_packet", "path": "../escape.yaml", "sha256": "0" * 64},
+                ]
+            )
+            helper._write(root, "bundle/manifest.yaml", manifest)
+
+            with mock.patch.object(bundle_module.SchemaCatalog, "validate", return_value=[]):
+                with self.assertRaises(bundle_module.RuntimeBundleValidationError) as raised:
+                    bundle_module.load_runtime_bundle(
+                        "bundle/manifest.yaml", project_root=root
+                    )
+            codes = {issue.code for issue in raised.exception.issues}
+            self.assertTrue(
+                {
+                    "RUNTIME-BUNDLE-DUPLICATE-PATH",
+                    "RUNTIME-BUNDLE-KIND-FORBIDDEN",
+                    "RUNTIME-BUNDLE-PATH-ESCAPE",
+                    "RUNTIME-BUNDLE-ENTRYPOINT-MISMATCH",
+                    "RUNTIME-BUNDLE-FIXTURE-EVIDENCE",
+                    "RUNTIME-BUNDLE-SKILL-FORBIDDEN",
+                    "RUNTIME-BUNDLE-FIXTURE-AVAILABILITY",
+                }.issubset(codes)
+            )
 
 
 class GenericCloseoutHelperTests(unittest.TestCase):
@@ -833,8 +925,223 @@ class GenericCloseoutHelperTests(unittest.TestCase):
                     with self.assertRaises(closeout_module.GenericCloseoutValidationError):
                         closeout_module._validate_host_view_closure(host, view)
 
+    def test_receipt_builder_rejects_each_unclosed_lifecycle_and_evidence_boundary(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            for relative in ("host.yaml", "trace.yaml", "validation.yaml", "checker.py", "artifact.txt"):
+                (root / relative).write_text(relative, encoding="utf-8")
+            view = self._validated_view(root)
+            supply = {
+                "supply_identity": {"supply_kind": "procedure", "components": []}
+            }
+            bundle = bundle_module.ValidatedRuntimeBundle(
+                root,
+                root / "bundle.yaml",
+                "b" * 64,
+                MappingProxyType(
+                    {
+                        "documents": (
+                            MappingProxyType(
+                                {
+                                    "kind": "capability_supply_report",
+                                    "path": "supply.yaml",
+                                }
+                            ),
+                        )
+                    }
+                ),
+                MappingProxyType({(root / "supply.yaml").resolve(): supply}),
+            )
+            host_pin = closeout_module.CloseoutPin("host.yaml", "1" * 64)
+            trace_pin = closeout_module.CloseoutPin("trace.yaml", "2" * 64)
+            validation_pin = closeout_module.CloseoutPin("validation.yaml", "3" * 64)
+            artifact_hash = hash_bytes((root / "artifact.txt").read_bytes())
+            host = {
+                **self._host(view),
+                "attempt_id": "ATTEMPT",
+                "actual_facts": {"complete": True},
+                "artifacts": ({"path": "artifact.txt", "sha256": artifact_hash},),
+            }
+            trace = {
+                "task_id": "TASK",
+                "task_revision": 1,
+                "attempt_id": "ATTEMPT",
+                "attempt_status": "completed",
+                "trace_status": "frozen",
+                "completeness": "complete",
+            }
+            subjects = [
+                {"path": "host.yaml", "sha256": "1" * 64},
+                {"path": "trace.yaml", "sha256": "2" * 64},
+                {"path": "artifact.txt", "sha256": artifact_hash},
+            ]
+            validation = {
+                "status": "pass",
+                "subject_refs": subjects,
+                "checker": {
+                    "source_ref": {
+                        "path": "checker.py",
+                        "sha256": hash_bytes((root / "checker.py").read_bytes()),
+                    }
+                },
+            }
+
+            def build(
+                *,
+                changed_host=None,
+                changed_trace=None,
+                changed_validation=None,
+                validations=(validation_pin,),
+                trace_blocked=False,
+                catalog_errors=False,
+            ):
+                documents = {
+                    "execution_host_report": (root / "host.yaml", changed_host or host),
+                    "agent_trace_index": (root / "trace.yaml", changed_trace or trace),
+                    "deterministic_check_report": (
+                        root / "validation.yaml",
+                        changed_validation or validation,
+                    ),
+                }
+
+                def load_pin(_root, _pin, *, kind, catalog):
+                    return documents[kind]
+
+                catalog = SimpleNamespace(
+                    validate=lambda kind, _document: (
+                        [SimpleNamespace(pointer="$", message="bad")]
+                        if catalog_errors and kind == "generic_execution_receipt"
+                        else []
+                    )
+                )
+                with (
+                    mock.patch.object(closeout_module, "_load_pin", side_effect=load_pin),
+                    mock.patch.object(closeout_module, "SchemaCatalog", return_value=catalog),
+                    mock.patch.object(closeout_module, "_validate_host_view_closure"),
+                    mock.patch.object(closeout_module, "_validate_trace_execution_records"),
+                    mock.patch.object(closeout_module, "_validate_artifact_refs"),
+                    mock.patch.object(closeout_module, "_validate_host_trace_facts"),
+                    mock.patch.object(
+                        closeout_module,
+                        "validate_attempt_trace",
+                        return_value=SimpleNamespace(
+                            blocked=trace_blocked,
+                            risks=(SimpleNamespace(code="TRACE-BLOCK", message="blocked"),),
+                        ),
+                    ),
+                ):
+                    return closeout_module.build_generic_execution_receipt(
+                        view,
+                        bundle,
+                        host_report=host_pin,
+                        trace_index=trace_pin,
+                        validations=validations,
+                        receipt_id="RECEIPT",
+                    )
+
+            self.assertEqual("no-skill", build()["execution_kind"])
+            cases = []
+            changed = copy.deepcopy(host); changed["status"] = "unknown"; cases.append({"changed_host": changed})
+            changed = copy.deepcopy(host); changed["execution_phase"] = "driver-exception"; cases.append({"changed_host": changed})
+            changed = copy.deepcopy(host); changed["actual_facts"]["complete"] = False; cases.append({"changed_host": changed})
+            cases.append({"trace_blocked": True})
+            changed = copy.deepcopy(trace); changed["task_id"] = "OTHER"; cases.append({"changed_trace": changed})
+            changed = copy.deepcopy(host); changed["artifacts"] = "not-an-array"; cases.append({"changed_host": changed})
+            changed = copy.deepcopy(host); changed["artifacts"] = []; cases.append({"changed_host": changed})
+            cases.append({"validations": ()})
+            changed = copy.deepcopy(validation); changed["status"] = "fail"; cases.append({"changed_validation": changed})
+            changed = copy.deepcopy(validation); changed["checker"]["source_ref"]["sha256"] = "0" * 64; cases.append({"changed_validation": changed})
+            changed = copy.deepcopy(validation); changed["subject_refs"] = []; cases.append({"changed_validation": changed})
+            cases.append({"catalog_errors": True})
+            for index, kwargs in enumerate(cases):
+                with self.subTest(case=index), self.assertRaises(
+                    closeout_module.GenericCloseoutValidationError
+                ):
+                    build(**kwargs)
+
+            supply["supply_identity"]["supply_kind"] = "skill"
+            with self.assertRaises(closeout_module.GenericCloseoutValidationError):
+                build()
+
+    def test_core_gate_rejects_incomplete_or_skill_bound_receipts(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            for kind in ("no-skill", "direct-tool"):
+                (root / f"{kind}.yaml").write_text(kind, encoding="utf-8")
+
+            def receipt(kind: str, *, status: str = "completed", skill: str = "absent"):
+                return closeout_module.ValidatedGenericReceipt(
+                    root,
+                    root / f"{kind}.yaml",
+                    "0" * 64,
+                    {"execution_kind": kind, "status": status, "boundaries": {"skill_assignment": skill}},
+                )
+
+            with self.assertRaises(closeout_module.GenericCloseoutValidationError):
+                closeout_module.build_execution_core_gate(
+                    receipt("no-skill", status="failed"), receipt("direct-tool"), gate_id="GATE"
+                )
+            with self.assertRaises(closeout_module.GenericCloseoutValidationError):
+                closeout_module.build_execution_core_gate(
+                    receipt("no-skill", skill="present"), receipt("direct-tool"), gate_id="GATE"
+                )
+            invalid_catalog = SimpleNamespace(validate=lambda _kind, _document: ["invalid"])
+            with mock.patch.object(closeout_module, "SchemaCatalog", return_value=invalid_catalog):
+                with self.assertRaises(closeout_module.GenericCloseoutValidationError):
+                    closeout_module.build_execution_core_gate(
+                        receipt("no-skill"), receipt("direct-tool"), gate_id="GATE"
+                    )
+
 
 class TraceHelperBranchTests(unittest.TestCase):
+
+    def test_event_boundary_normalizes_invalid_lists_and_rejects_unbound_provenance(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            attempt = Path(temporary)
+            risks = []
+            index = {
+                "read_allowlist": "invalid",
+                "write_scope": "invalid",
+                "tool_allowlist": "invalid",
+            }
+            trace_module._validate_event_boundary(
+                attempt,
+                index,
+                {
+                    "event_type": "tool-call",
+                    "payload": {
+                        "tool_name": "outside",
+                        "result_entered_context": False,
+                        "result_origin": "transient",
+                        "result_ref": {},
+                    },
+                },
+                risks,
+            )
+            trace_module._validate_event_boundary(
+                attempt,
+                index,
+                {
+                    "event_type": "file-revision",
+                    "payload": {"path": "INDEX.yaml", "action": "modified"},
+                },
+                risks,
+            )
+            trace_module._validate_event_boundary(
+                attempt,
+                index,
+                {
+                    "event_type": "external-action",
+                    "payload": {
+                        "receipt_ref": {"path": "missing.yaml", "sha256": "0" * 64}
+                    },
+                },
+                risks,
+            )
+            messages = {risk.message for risk in risks}
+            self.assertTrue(any("tool-result-provenance-unexpected" in item for item in messages))
+            self.assertTrue(any("protected-trace-artifact-overwrite" in item for item in messages))
+            self.assertTrue(any("external-action-receipt-missing" in item for item in messages))
     def _recorder(self, root: Path) -> trace_module.AgentTraceRecorder:
         return trace_module.AgentTraceRecorder(
             root / "attempt",
