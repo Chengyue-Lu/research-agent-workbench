@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
 from research_workbench.artifacts.integrity import hash_file
 from research_workbench.evaluation import skill_evaluation as evaluation_module
@@ -252,6 +253,27 @@ class SkillEvaluationHelperTests(unittest.TestCase):
                     project_protocol=None,
                 )[2][0].code,
             )
+
+    def test_project_protocol_loader_distinguishes_schema_and_contract_failures(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            protocol = root / "protocol.yaml"
+            protocol.write_text("{}\n", encoding="utf-8")
+            evaluation = {
+                "project_protocol_ref": {
+                    "path": protocol.name,
+                    "sha256": hash_file(protocol),
+                }
+            }
+            loaded, risks = evaluation_module._load_project_protocol(root, evaluation)
+            self.assertIsNone(loaded)
+            self.assertEqual("EVAL-PROJECT-PROTOCOL-INVALID", risks[-1].code)
+            with mock.patch.object(
+                evaluation_module.SchemaCatalog, "validate", return_value=[]
+            ):
+                loaded, risks = evaluation_module._load_project_protocol(root, evaluation)
+            self.assertIsNone(loaded)
+            self.assertEqual("EVAL-PROJECT-PROTOCOL-INVALID", risks[-1].code)
 
 
 if __name__ == "__main__":

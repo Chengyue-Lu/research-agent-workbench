@@ -94,7 +94,7 @@ full suite 08:37；全局 line 83%，Trace line 92.87%。这证明单靠 suite �
 - package-smoke、repository validation 与 governance PASS；
 - hosted critical path 进入约 12–15 分钟，或用 slowest/p50/p95 给出明确事实原因。
 
-迭代 hosted evidence 已把 global line 从 79.31% 提高到 89.26%；runs 33179905452 / 33181391418 均证明
-全部 12 个 critical file 越过逐文件 95/90 Gate。后者唯一未满足的 policy 项是 global line 尚差 79 行；
-当前 head 又增加 integrity-index cardinality、Context pressure 与 Skill Evaluation fail-closed tests，最终
-状态仍只以新 head hosted artifact 为准。
+迭代 hosted evidence 已把 global line 从 79.31% 提高到 89.66%；runs 33179905452 / 33181391418 /
+33183258709 均证明全部 12 个 critical file 越过逐文件 95/90 Gate。最新 run 唯一未满足的 policy 项是
+global line 尚差 36 行；当前 head 又增加通用 contract primitive、Task/Handoff 与 Context late-validation
+fail-closed tests，最终状态仍只以新 head hosted artifact 为准。

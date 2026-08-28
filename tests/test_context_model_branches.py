@@ -127,6 +127,49 @@ class ContextModelBranchTests(unittest.TestCase):
         self.assertEqual("TASK", rendered["owner_ref"])
         self.assertEqual("handoff/audit.yaml", rendered["handoff_audit_ref"])
 
+    def test_snapshot_and_main_state_late_validation_branches_are_reachable(self) -> None:
+        snapshot = load_document(
+            ROOT / "examples" / "observability" / "context-main-warn.yaml"
+        )
+        mutations = (
+            ("scope", "unknown"),
+            ("measurement_source", "unknown"),
+            ("metrics", {"unknown": 1}),
+            ("unknown_metrics", ["unknown"]),
+            ("handoff_ready", "yes"),
+        )
+        for field, value in mutations:
+            changed = copy.deepcopy(snapshot)
+            changed[field] = value
+            with self.subTest(field=field), self.assertRaises(ContractError):
+                models_module.ContextSnapshot.from_mapping(changed)
+
+        changed = copy.deepcopy(snapshot)
+        measured = next(iter(changed["metrics"]))
+        changed["unknown_metrics"] = [measured]
+        with self.assertRaises(ContractError):
+            models_module.ContextSnapshot.from_mapping(changed)
+        changed = copy.deepcopy(snapshot)
+        changed["metrics"] = {}
+        changed["unknown_metrics"] = []
+        with self.assertRaises(ContractError):
+            models_module.ContextSnapshot.from_mapping(changed)
+
+        state = load_document(ROOT / "examples" / "main-state.yaml")
+        for field, value, remove in (
+            ("git_head", "bad", False),
+            ("machine_state_refs", None, True),
+            ("machine_state_refs", [], False),
+        ):
+            changed = copy.deepcopy(state)
+            changed.pop("checkpoint_digest", None)
+            if remove:
+                changed.pop(field, None)
+            else:
+                changed[field] = value
+            with self.subTest(field=field, remove=remove), self.assertRaises(ContractError):
+                models_module.MainStatePacket.from_mapping(changed)
+
 
 if __name__ == "__main__":
     unittest.main()

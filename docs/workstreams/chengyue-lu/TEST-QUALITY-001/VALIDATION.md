@@ -82,3 +82,11 @@ global quality floor 从 83% 目标提升到机器阻断的 90%、critical floor
   7.824s；本 PR 不以删除这些 behavioral/replay 证据换取稳定时长；
 - 当前 head 再增加 1 秒级的 integrity-index cardinality、Context pressure/raw-material/compaction 与
   Skill Evaluation protocol/case/review/Receipt boundary tests，目标覆盖余下 79 行。
+
+### Final-gap baseline — run 33183258709
+
+- coverage-quality：553 tests PASS，suite wall 949.507 秒，p50 0.016 秒，p95 7.008 秒；
+- global line：89.66%，距离 policy floor 还差 36 行；全部 critical files 继续 PASS；
+- Python 3.11/3.13 full suite、governance、package-smoke 与 repository validation PASS；
+- 当前 head 增加 0.03 秒级的 common contract primitive、Task budget/delegation/lifecycle、Context Snapshot
+  late-validation 与 Project Protocol loader 错误分支，覆盖预算为 36 行缺口外另留安全余量。
