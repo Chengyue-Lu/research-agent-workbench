@@ -318,8 +318,90 @@ class ExecutionHostHelperTests(unittest.TestCase):
             ),
         )
 
+    def test_view_loader_rejects_path_parse_schema_and_lineage_faults(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            bundle = SimpleNamespace(
+                project_root=root,
+                manifest={"bundle_id": "BUNDLE", "revision": 1},
+                manifest_path=root / "bundle.yaml",
+                manifest_sha256="a" * 64,
+            )
+            outside = root.parent / "outside-view.yaml"
+            with self.assertRaises(host_module.ExecutionHostValidationError):
+                host_module.load_resolved_execution_view(
+                    outside, expected_sha256="0" * 64, bundle=bundle
+                )
+            directory = root / "directory"
+            directory.mkdir()
+            with self.assertRaises(host_module.ExecutionHostValidationError):
+                host_module.load_resolved_execution_view(
+                    directory, expected_sha256="0" * 64, bundle=bundle
+                )
+            with self.assertRaises(FileNotFoundError):
+                host_module.load_resolved_execution_view(
+                    "missing.yaml", expected_sha256="0" * 64, bundle=bundle
+                )
+
+            view = root / "view.yaml"
+            view.write_text("not: [yaml", encoding="utf-8")
+            with self.assertRaises(host_module.ExecutionHostValidationError):
+                host_module.load_resolved_execution_view(
+                    view, expected_sha256=hash_bytes(view.read_bytes()), bundle=bundle
+                )
+            view.write_text("{}\n", encoding="utf-8")
+            with self.assertRaises(host_module.ExecutionHostValidationError):
+                host_module.load_resolved_execution_view(
+                    view, expected_sha256=hash_bytes(view.read_bytes()), bundle=bundle
+                )
+            view.write_text("[]\n", encoding="utf-8")
+            with mock.patch.object(host_module.SchemaCatalog, "validate", return_value=[]):
+                with self.assertRaises(host_module.ExecutionHostValidationError):
+                    host_module.load_resolved_execution_view(
+                        view, expected_sha256=hash_bytes(view.read_bytes()), bundle=bundle
+                    )
+
+            lineage = {
+                "runtime_bundle_ref": {
+                    "ref": "OTHER@r1",
+                    "path": "bundle.yaml",
+                    "sha256": "a" * 64,
+                }
+            }
+            view.write_text(json.dumps(lineage), encoding="utf-8")
+            with mock.patch.object(host_module.SchemaCatalog, "validate", return_value=[]):
+                with self.assertRaisesRegex(
+                    host_module.ExecutionHostValidationError, "lineage mismatch"
+                ):
+                    host_module.load_resolved_execution_view(
+                        view, expected_sha256=hash_bytes(view.read_bytes()), bundle=bundle
+                    )
+
 
 class RuntimeBundleHelperTests(unittest.TestCase):
+    def test_manifest_loader_rejects_external_missing_parse_and_shape_inputs(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            outside = root.parent / "outside-manifest.yaml"
+            with self.assertRaises(ValueError):
+                bundle_module.load_runtime_bundle(outside, project_root=root)
+            with self.assertRaises(FileNotFoundError):
+                bundle_module.load_runtime_bundle("missing.yaml", project_root=root)
+            directory = root / "bundle"
+            directory.mkdir()
+            with self.assertRaises(bundle_module.RuntimeBundleValidationError):
+                bundle_module.load_runtime_bundle(directory, project_root=root)
+            manifest = root / "manifest.yaml"
+            manifest.write_text("not: [yaml", encoding="utf-8")
+            with self.assertRaises(bundle_module.RuntimeBundleValidationError):
+                bundle_module.load_runtime_bundle(manifest, project_root=root)
+            manifest.write_text("[]\n", encoding="utf-8")
+            with self.assertRaises(bundle_module.RuntimeBundleValidationError):
+                bundle_module.load_runtime_bundle(manifest, project_root=root)
+            manifest.write_text("{}\n", encoding="utf-8")
+            with self.assertRaises(bundle_module.RuntimeBundleValidationError):
+                bundle_module.load_runtime_bundle(manifest, project_root=root)
+
     def test_hash_ref_and_identity_helpers_reject_ambiguous_values(self) -> None:
         digest = "c" * 64
         self.assertEqual(digest, bundle_module._normalized_hash("sha256:" + digest))
@@ -485,6 +567,252 @@ class GenericCloseoutHelperTests(unittest.TestCase):
             with self.assertRaises(closeout_module.GenericCloseoutValidationError):
                 closeout_module._load_trace_events(root, trace_path, malformed)
 
+    def test_closeout_pin_loader_rejects_every_file_boundary(self) -> None:
+        catalog = SimpleNamespace(validate=lambda _kind, _document: [])
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            document = root / "document.json"
+            document.write_text("{}\n", encoding="utf-8")
+            valid = closeout_module.CloseoutPin(
+                document.name, hash_bytes(document.read_bytes())
+            )
+            path, loaded = closeout_module._load_pin(
+                root, valid, kind="fixture", catalog=catalog
+            )
+            self.assertEqual(document, path)
+            self.assertEqual({}, loaded)
+            for pin in (
+                closeout_module.CloseoutPin("missing", "0" * 64),
+                closeout_module.CloseoutPin(document.name, "0" * 64),
+            ):
+                with self.assertRaises(closeout_module.GenericCloseoutValidationError):
+                    closeout_module._load_pin(root, pin, kind="fixture", catalog=catalog)
+
+            document.write_text("not: [json", encoding="utf-8")
+            with self.assertRaises(closeout_module.GenericCloseoutValidationError):
+                closeout_module._load_pin(
+                    root,
+                    closeout_module.CloseoutPin(document.name, hash_bytes(document.read_bytes())),
+                    kind="fixture",
+                    catalog=catalog,
+                )
+            document.write_text("{}\n", encoding="utf-8")
+            rejecting = SimpleNamespace(validate=lambda _kind, _document: ["invalid"])
+            with self.assertRaises(closeout_module.GenericCloseoutValidationError):
+                closeout_module._load_pin(
+                    root,
+                    closeout_module.CloseoutPin(document.name, hash_bytes(document.read_bytes())),
+                    kind="fixture",
+                    catalog=rejecting,
+                )
+            document.write_text("[]\n", encoding="utf-8")
+            with self.assertRaises(closeout_module.GenericCloseoutValidationError):
+                closeout_module._load_pin(
+                    root,
+                    closeout_module.CloseoutPin(document.name, hash_bytes(document.read_bytes())),
+                    kind="fixture",
+                    catalog=catalog,
+                )
+            self.assertEqual(
+                {"items": [1, {"value": 2}]},
+                closeout_module._plain({"items": (1, {"value": 2})}),
+            )
+
+    def test_trace_execution_record_shapes_are_independently_closed(self) -> None:
+        catalog = SimpleNamespace(validate=lambda _kind, _document: [])
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            trace_dir = root / "trace"
+            trace_dir.mkdir()
+            trace_path = trace_dir / "INDEX.yaml"
+            trace_path.write_text("{}", encoding="utf-8")
+
+            with tempfile.TemporaryDirectory() as outside_temporary:
+                outside_trace = Path(outside_temporary) / "INDEX.yaml"
+                outside_trace.write_text("{}", encoding="utf-8")
+                child = outside_trace.parent / "child.json"
+                child.write_text("{}", encoding="utf-8")
+                with self.assertRaises(closeout_module.GenericCloseoutValidationError):
+                    closeout_module._trace_relative_pin(
+                        root, outside_trace, {"path": child.name, "sha256": "0" * 64}
+                    )
+
+            host = {
+                "attempt_id": "ATTEMPT",
+                "view_ref": {"ref": "VIEW@r1"},
+                "execution_scope": {"kind": "slice"},
+                "execution_phase": "post-call",
+                "actual_binding": {"provider": {"ref": "provider"}},
+                "actual_supply_report_ref": "supply@1",
+            }
+            with self.assertRaises(closeout_module.GenericCloseoutValidationError):
+                closeout_module._validate_trace_execution_records(
+                    root, trace_path, {"decision_refs": []}, host, catalog=catalog
+                )
+
+            def reference(name: str, value: object) -> dict[str, str]:
+                path = trace_dir / name
+                path.write_text(json.dumps(value), encoding="utf-8")
+                return {"path": name, "sha256": hash_bytes(path.read_bytes())}
+
+            scope = {
+                "schema_version": "0.1.0",
+                "record_kind": "execution-scope-binding",
+                "view_ref": host["view_ref"],
+                "execution_scope": host["execution_scope"],
+            }
+            scope_ref = reference("scope.json", scope)
+            actual = {
+                "record_kind": "actual-execution-binding",
+                "attempt_id": "ATTEMPT",
+                "view_ref": host["view_ref"],
+                "execution_phase": "post-call",
+                "actual_binding": host["actual_binding"],
+                "actual_supply_report_ref": "supply@1",
+            }
+            actual_ref = reference("actual.json", actual)
+            trace = {"decision_refs": [scope_ref, actual_ref, "ignored"]}
+            closeout_module._validate_trace_execution_records(
+                root, trace_path, trace, host, catalog=catalog
+            )
+
+            drifted = dict(host)
+            drifted["actual_supply_report_ref"] = "other"
+            with self.assertRaises(closeout_module.GenericCloseoutValidationError):
+                closeout_module._validate_trace_execution_records(
+                    root, trace_path, trace, drifted, catalog=catalog
+                )
+            preflight = dict(host)
+            preflight["execution_phase"] = "preflight-blocked"
+            with self.assertRaises(closeout_module.GenericCloseoutValidationError):
+                closeout_module._validate_trace_execution_records(
+                    root, trace_path, trace, preflight, catalog=catalog
+                )
+
+            invalid_catalog = SimpleNamespace(validate=lambda _kind, _document: [SimpleNamespace(pointer="$", message="bad")])
+            with self.assertRaises(closeout_module.GenericCloseoutValidationError):
+                closeout_module._validate_trace_execution_records(
+                    root, trace_path, trace, host, catalog=invalid_catalog
+                )
+
+            missing_ref = dict(actual_ref)
+            missing_ref["path"] = "missing.json"
+            with self.assertRaises(closeout_module.GenericCloseoutValidationError):
+                closeout_module._validate_trace_execution_records(
+                    root, trace_path, {"decision_refs": [scope_ref, missing_ref]}, host, catalog=catalog
+                )
+            bad_hash = dict(actual_ref)
+            bad_hash["sha256"] = "0" * 64
+            with self.assertRaises(closeout_module.GenericCloseoutValidationError):
+                closeout_module._validate_trace_execution_records(
+                    root, trace_path, {"decision_refs": [scope_ref, bad_hash]}, host, catalog=catalog
+                )
+
+    def test_host_trace_fact_matrix_detects_actor_tool_and_activity_drift(self) -> None:
+        catalog = SimpleNamespace(validate=lambda _kind, _document: [])
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            trace_dir = root / "trace"
+            trace_dir.mkdir()
+            trace_path = trace_dir / "INDEX.yaml"
+            trace_path.write_text("{}", encoding="utf-8")
+            actors_path = trace_dir / "actors.json"
+            actors = {
+                "actors": [
+                    {"actor_type": "model-provider", "runtime_identity": "provider"},
+                    {"actor_type": "runtime-adapter", "runtime_identity": "runtime"},
+                ]
+            }
+            actors_path.write_text(json.dumps(actors), encoding="utf-8")
+            actors_ref = {"path": "actors.json", "sha256": hash_bytes(actors_path.read_bytes())}
+
+            ledger = trace_dir / "events.jsonl"
+
+            def trace(events: list[dict[str, object]], messages: list[dict[str, object]] | None = None):
+                ledger.write_text(
+                    "".join(json.dumps(item) + "\n" for item in events), encoding="utf-8"
+                )
+                return {
+                    "actors_ref": actors_ref,
+                    "messages": messages or [],
+                    "event_ledger": {
+                        "path": "events.jsonl",
+                        "sha256": hash_bytes(ledger.read_bytes()),
+                        "event_count": len(events),
+                    },
+                }
+
+            host = {
+                "execution_phase": "post-call",
+                "actual_binding": {
+                    "provider": {"ref": "provider"},
+                    "runtime": {"ref": "runtime"},
+                },
+                "actual_facts": {
+                    "provider_invocations": 0,
+                    "tool_invocations": 0,
+                    "tool_refs": [],
+                },
+            }
+            supply = {"supply_identity": {"components": []}}
+            closeout_module._validate_host_trace_facts(
+                root, host, trace_path, trace([]), supply, catalog=catalog
+            )
+
+            for field, value in (("provider", "other"), ("runtime", "other")):
+                changed = json.loads(json.dumps(host))
+                changed["actual_binding"][field]["ref"] = value
+                with self.subTest(field=field), self.assertRaises(
+                    closeout_module.GenericCloseoutValidationError
+                ):
+                    closeout_module._validate_host_trace_facts(
+                        root, changed, trace_path, trace([]), supply, catalog=catalog
+                    )
+
+            provider_trace = trace([], [{"kind": "provider-request"}])
+            with self.assertRaises(closeout_module.GenericCloseoutValidationError):
+                closeout_module._validate_host_trace_facts(
+                    root, host, trace_path, provider_trace, supply, catalog=catalog
+                )
+
+            duplicate_tools = trace(
+                [
+                    {"event_type": "tool-call", "payload": {"operation_id": "op", "tool_name": "a"}},
+                    {"event_type": "tool-call", "payload": {"operation_id": "op", "tool_name": "b"}},
+                ]
+            )
+            with self.assertRaises(closeout_module.GenericCloseoutValidationError):
+                closeout_module._validate_host_trace_facts(
+                    root, host, trace_path, duplicate_tools, supply, catalog=catalog
+                )
+
+            tool_trace = trace(
+                [{"event_type": "tool-call", "payload": {"operation_id": "op", "tool_name": "tool"}}]
+            )
+            for facts in (
+                {"provider_invocations": 0, "tool_invocations": 0, "tool_refs": []},
+                {"provider_invocations": 0, "tool_invocations": 1, "tool_refs": ["other"]},
+                {"provider_invocations": 0, "tool_invocations": 1, "tool_refs": ["tool"]},
+            ):
+                changed = json.loads(json.dumps(host))
+                changed["actual_facts"] = facts
+                with self.assertRaises(closeout_module.GenericCloseoutValidationError):
+                    closeout_module._validate_host_trace_facts(
+                        root, changed, trace_path, tool_trace, supply, catalog=catalog
+                    )
+
+            blocked = json.loads(json.dumps(host))
+            blocked["execution_phase"] = "preflight-blocked"
+            blocked["actual_facts"] = {
+                "provider_invocations": 1,
+                "tool_invocations": 0,
+                "tool_refs": [],
+            }
+            with self.assertRaises(closeout_module.GenericCloseoutValidationError):
+                closeout_module._validate_host_trace_facts(
+                    root, blocked, trace_path, provider_trace, supply, catalog=catalog
+                )
+
     def test_host_view_lifecycle_closure_rejects_unsupported_facts(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -561,6 +889,57 @@ class TraceHelperBranchTests(unittest.TestCase):
             second.seal()
             with self.assertRaisesRegex(ValueError, "no preceding request"):
                 trace_module.derive_session_transcript(second.attempt_dir)
+
+    def test_uninitialized_refresh_and_non_mapping_transcript_entries_are_safe(self) -> None:
+        recorder = trace_module.AgentTraceRecorder.__new__(trace_module.AgentTraceRecorder)
+        self.assertIsNone(recorder._refresh_index())
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            attempt = root / "attempt"
+            attempt.mkdir()
+            (attempt / trace_module.TRACE_INDEX_FILENAME).write_bytes(
+                trace_module._yaml_bytes({"messages": ["ignored"]})
+            )
+            self.assertEqual((), trace_module.derive_session_transcript(attempt))
+
+    def test_trace_loader_reports_actor_task_and_ledger_storage_corruption(self) -> None:
+        def sealed(root: Path):
+            recorder = self._recorder(root)
+            recorder.seal()
+            index_path = recorder.index_path
+            return index_path, load_document(index_path)
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            index_path, index = sealed(root)
+            actors = index_path.parent / index["actors_ref"]["path"]
+            actors.write_text(json.dumps({"actors": "not-a-list"}), encoding="utf-8")
+            index["actors_ref"]["sha256"] = hash_bytes(actors.read_bytes())
+            index_path.write_bytes(trace_module._yaml_bytes(index))
+            result = trace_module.validate_attempt_trace(root, index_path)
+            self.assertTrue(result.blocked)
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            index_path, index = sealed(root)
+            task = index_path.parent / index["task_ref"]["path"]
+            task_document = load_document(task)
+            task_document["revision"] = 999
+            task.write_bytes(trace_module._yaml_bytes(task_document))
+            index["task_ref"]["sha256"] = hash_bytes(task.read_bytes())
+            index_path.write_bytes(trace_module._yaml_bytes(index))
+            result = trace_module.validate_attempt_trace(root, index_path)
+            self.assertTrue(any("revision" in risk.message for risk in result.risks))
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            index_path, index = sealed(root)
+            ledger = index_path.parent / index["event_ledger"]["path"]
+            ledger.write_bytes(b"\xff")
+            index["event_ledger"]["sha256"] = hash_bytes(ledger.read_bytes())
+            index_path.write_bytes(trace_module._yaml_bytes(index))
+            result = trace_module.validate_attempt_trace(root, index_path)
+            self.assertTrue(any("cannot read event ledger" in risk.message for risk in result.risks))
 
 
 if __name__ == "__main__":

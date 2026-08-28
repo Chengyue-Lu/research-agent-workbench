@@ -7,6 +7,8 @@ from types import SimpleNamespace
 import tempfile
 import unittest
 from unittest import mock
+import contextlib
+import io
 
 from tests.test_pr_governance import BASE_TASKS, governance, valid_body
 
@@ -16,6 +18,28 @@ def _codes(report: object) -> set[str]:
 
 
 class GovernanceHelperBranchTests(unittest.TestCase):
+    def test_report_emission_covers_pass_warning_and_error_outcomes(self) -> None:
+        reports = (
+            governance.GovernanceReport(),
+            governance.GovernanceReport(
+                findings=[governance.Finding("WARNING", "WARN", "warning")],
+                risk_reasons=["bounded reason"],
+                requirements=["bounded requirement"],
+            ),
+            governance.GovernanceReport(
+                findings=[governance.Finding("ERROR", "FAIL", "failure")]
+            ),
+        )
+        output = io.StringIO()
+        errors = io.StringIO()
+        with contextlib.redirect_stdout(output), contextlib.redirect_stderr(errors):
+            for report in reports:
+                report.emit()
+        self.assertIn("governance: PASS", output.getvalue())
+        self.assertIn("PASS WITH 1 WARNING", output.getvalue())
+        self.assertIn("bounded requirement", output.getvalue())
+        self.assertIn("governance: FAIL", errors.getvalue())
+
     def test_report_body_and_risk_parsers_cover_invalid_and_upgrade_paths(self) -> None:
         report = governance.GovernanceReport()
         with self.assertRaises(governance.GovernanceError):
@@ -201,6 +225,51 @@ class GovernanceHelperBranchTests(unittest.TestCase):
                 clear=True,
             ):
                 self.assertEqual(2, governance.main())
+
+    def test_pull_request_orchestrator_fails_closed_at_each_external_boundary(self) -> None:
+        self.assertIn("EVENT-PR", _codes(governance.check_pull_request({})))
+        self.assertIn(
+            "EVENT-REFS",
+            _codes(governance.check_pull_request({"pull_request": {}})),
+        )
+
+        event = {
+            "pull_request": {
+                "body": valid_body(),
+                "base": {"ref": "develop", "sha": "a" * 40},
+                "head": {"ref": "feature", "sha": "b" * 40},
+                "mergeable": False,
+            }
+        }
+        with mock.patch.object(
+            governance, "_changed_paths", side_effect=governance.GovernanceError("diff")
+        ), mock.patch.object(
+            governance, "_read_blob", side_effect=governance.GovernanceError("read")
+        ), mock.patch.object(
+            governance, "_published_documents_at", side_effect=governance.GovernanceError("published")
+        ):
+            report = governance.check_pull_request(event)
+        self.assertLessEqual(
+            {
+                "EVENT-REPOSITORY",
+                "GIT-DIFF",
+                "TASK-READ",
+                "PUBLISHED-IDENTITY-READ",
+                "MERGE-CONFLICT",
+            },
+            _codes(report),
+        )
+
+        complete = json.loads(json.dumps(event))
+        complete["pull_request"]["base"]["repo"] = {"full_name": "owner/repo"}
+        complete["pull_request"]["head"]["repo"] = {"full_name": "owner/repo"}
+        with mock.patch.object(governance, "_changed_paths", return_value=[]), mock.patch.object(
+            governance, "_merge_base", return_value="c" * 40
+        ), mock.patch.object(governance, "_read_blob", return_value=BASE_TASKS), mock.patch.object(
+            governance, "_published_documents_at", return_value={}
+        ):
+            report = governance.check_pull_request(complete)
+        self.assertIn("BASE-STALE", _codes(report))
 
 
 if __name__ == "__main__":

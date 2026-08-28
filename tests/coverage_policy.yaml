@@ -54,6 +54,7 @@ suites:
       - test_trace_risk_codes
       - test_phase_b_evolution_gate
       - test_validation
+      - test_validation_helpers
     test_ids:
       - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_legacy_execution_receipt_schema_and_model_remain_unchanged
       - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_failed_post_call_receipt_requires_hash_pinned_trace_execution_fact
