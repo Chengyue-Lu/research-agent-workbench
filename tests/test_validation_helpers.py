@@ -370,6 +370,92 @@ class ValidationHelperTests(unittest.TestCase):
             codes,
         )
 
+    def test_integrity_index_cardinality_and_entry_shape_fail_closed(self) -> None:
+        requirement_index = {"registry_kind": "capability_requirement_index", "entries": []}
+        requirement_issues = documents_module._validate_capability_requirement_set(
+            {
+                Path("requirements-a.json"): requirement_index,
+                Path("requirements-b.json"): requirement_index,
+            }
+        )
+        self.assertIn(
+            "CAPABILITY-REQUIREMENT-INDEX-DUPLICATE",
+            {issue.code for issue in requirement_issues},
+        )
+        self.assertEqual(
+            {},
+            documents_module._capability_requirement_entries(
+                {
+                    Path("requirements-a.json"): requirement_index,
+                    Path("requirements-b.json"): requirement_index,
+                }
+            ),
+        )
+        self.assertEqual(
+            {},
+            documents_module._capability_requirement_entries(
+                {
+                    Path("requirements.json"): {
+                        "registry_kind": "capability_requirement_index",
+                        "entries": ["bad", {"requirement_id": 1}],
+                    }
+                }
+            ),
+        )
+
+        need_index = {"registry_kind": "skill_need_index", "entries": []}
+        need_issues = documents_module._validate_skill_need_set(
+            {Path("needs-a.json"): need_index, Path("needs-b.json"): need_index}
+        )
+        self.assertIn("SKILL-NEED-INDEX-DUPLICATE", {issue.code for issue in need_issues})
+        self.assertEqual(
+            {},
+            documents_module._skill_need_entries(
+                {
+                    Path("needs.json"): {
+                        "registry_kind": "skill_need_index",
+                        "entries": ["bad", {"need_ref": 1}],
+                    }
+                }
+            ),
+        )
+
+        profile = {
+            "profile_id": "P",
+            "version": "1.0.0",
+            "method_standard": {},
+            "method_obligations": [],
+        }
+        missing_issues = documents_module._validate_protocol_profile_set(
+            {Path("profiles/p.yaml"): profile}
+        )
+        self.assertIn(
+            "PROTOCOL-PROFILE-INDEX-MISSING",
+            {issue.code for issue in missing_issues},
+        )
+        profile_index = {"registry_kind": "protocol_profile_index", "entries": []}
+        duplicate_issues = documents_module._validate_protocol_profile_set(
+            {
+                Path("profiles-a.json"): profile_index,
+                Path("profiles-b.json"): profile_index,
+            }
+        )
+        self.assertIn(
+            "PROTOCOL-PROFILE-INDEX-DUPLICATE",
+            {issue.code for issue in duplicate_issues},
+        )
+        self.assertEqual(
+            [],
+            documents_module._validate_protocol_profile_set(
+                {
+                    Path("profiles.json"): {
+                        "registry_kind": "protocol_profile_index",
+                        "entries": ["bad", {"profile_ref": 1}],
+                    }
+                }
+            ),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

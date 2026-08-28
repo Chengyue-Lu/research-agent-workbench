@@ -85,6 +85,48 @@ class ContextModelBranchTests(unittest.TestCase):
             with self.subTest(index=index), self.assertRaises(ContractError):
                 models_module.MainStatePacket.from_mapping(document)
 
+    def test_assessment_exercises_pressure_raw_material_compaction_and_hidden_state(self) -> None:
+        policy = models_module.ContextPolicySnapshot.from_mapping(
+            {
+                "proactive_checkpoint": True,
+                "main_raw_material": "on-demand",
+                "thresholds": models_module.DEFAULT_CONTEXT_THRESHOLDS,
+            }
+        )
+        metric = next(iter(models_module.THRESHOLDED_CONTEXT_METRICS))
+        metrics = {
+            metric: policy.thresholds[metric].rollover,
+            "raw_material_chars": 1,
+            "compaction_events": 1,
+            "hidden_decisions": 1,
+        }
+        assessment = models_module.assess_context(
+            scope="main",
+            metrics=metrics,
+            unknown_metrics=(),
+            handoff_ready=None,
+            context_budget=models_module.ContextBudgetEstimate("unavailable"),
+            policy=policy,
+        )
+        self.assertEqual("block", assessment.level)
+        self.assertLessEqual(
+            {
+                "CTX-MAIN-RAW-MATERIAL-ON-DEMAND",
+                "CTX-AUTO-COMPACTION",
+                "CTX-HIDDEN-STATE",
+                "CTX-NEXT-AWU-COST-UNKNOWN",
+            },
+            set(assessment.triggered_rules),
+        )
+
+        base = load_document(ROOT / "examples" / "observability" / "context-main-warn.yaml")
+        base["owner_ref"] = "TASK"
+        base["handoff_audit_ref"] = "handoff/audit.yaml"
+        snapshot = models_module.ContextSnapshot.from_mapping(base)
+        rendered = snapshot.to_mapping()
+        self.assertEqual("TASK", rendered["owner_ref"])
+        self.assertEqual("handoff/audit.yaml", rendered["handoff_audit_ref"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -70,3 +70,15 @@ intersection、trace-boundary、Receipt lifecycle/evidence closed-set tests。�
 相对 CI-PERF-001 run 33089933787 的 28:48 关键路径，本轮可比 coverage job 已降到 12:29，同时把
 global quality floor 从 83% 目标提升到机器阻断的 90%、critical floor 提升到逐文件 95/90。最终新 head
 仍需重新证明 global line 与完整 CI 全绿。
+
+### Global closure baseline / hosted variance — run 33181391418
+
+- coverage-quality：549 tests PASS，suite wall 1063.954 秒，p50 0.017 秒，p95 7.824 秒；
+- global line：89.26%，较前一 head 增加 78 covered lines，距离 90% 还差 79 行；
+- 全部 12 个 critical file 继续 PASS；Python 3.11/3.13 full suite、governance、package-smoke 与
+  repository validation 均 PASS；legacy aggregate Gate 按 global failure 正确阻断；
+- 同一 hosted 拓扑在相邻 runs 的 coverage job wall 从 12:29 波动到约 18:05。slowest 仍由三个完整
+  Generic Receipt/Trace 文件重放占据（61.22s、57.93s、45.30s），其余长尾使 p95 从 5.386s 波动到
+  7.824s；本 PR 不以删除这些 behavioral/replay 证据换取稳定时长；
+- 当前 head 再增加 1 秒级的 integrity-index cardinality、Context pressure/raw-material/compaction 与
+  Skill Evaluation protocol/case/review/Receipt boundary tests，目标覆盖余下 79 行。

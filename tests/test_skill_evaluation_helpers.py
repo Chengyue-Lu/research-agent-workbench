@@ -135,6 +135,124 @@ class SkillEvaluationHelperTests(unittest.TestCase):
             self.assertEqual({}, evaluation_module._mapping(None))
             self.assertEqual("abcd", evaluation_module._normalized_hash("sha256:ABCD"))
 
+    def test_live_evaluation_reports_missing_protocol_case_review_and_admission_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            skill_dir = root / "skill"
+            skill_dir.mkdir()
+            skill_source = skill_dir / "SKILL.md"
+            skill_source.write_text("bounded skill", encoding="utf-8")
+            document = {
+                "evaluation_id": "EVAL-ADVERSARIAL",
+                "candidate_id": "candidate-a",
+                "skill_id": "skill-a",
+                "evaluation_scope": "live-forward-test",
+                "skill_source_ref": {
+                    "path": "skill/SKILL.md",
+                    "sha256": hash_file(skill_source),
+                },
+                "skill_package_hash": "0" * 64,
+                "project_protocol_ref": {},
+                "model_config_ref": {},
+                "protocol": {
+                    "required_case_kinds": ["required-kind"],
+                    "minimum_live_cases": 3,
+                    "required_review_criteria": ["quality"],
+                },
+                "cases": [
+                    {
+                        "case_id": "CASE",
+                        "case_kind": "other-kind",
+                        "arms": {"baseline": {}, "with_skill": {}},
+                        "review": {
+                            "status": "completed",
+                            "reviewer_kind": "agent",
+                            "reviewer_independent": False,
+                            "blinded": False,
+                            "order_revealed_after_scoring": False,
+                            "criteria": [],
+                        },
+                    },
+                    {
+                        "case_id": "CASE",
+                        "case_kind": "other-kind",
+                        "arms": {"baseline": {}, "with_skill": {}},
+                        "review": {"status": "pending"},
+                    },
+                ],
+                "admission": {
+                    "status": "human-decided",
+                    "decision_ref": "missing-decision.yaml",
+                },
+            }
+            assessment = evaluation_module.assess_skill_evaluation(document, root=root)
+            codes = {risk.code for risk in assessment.risks}
+            self.assertLessEqual(
+                {
+                    "EVAL-SKILL-PACKAGE-DRIFT",
+                    "EVAL-LIVE-CASE-COUNT",
+                    "EVAL-CASE-DUPLICATE",
+                    "EVAL-WITH-SKILL-CHECK",
+                    "EVAL-BASELINE-CONTAMINATED",
+                    "EVAL-SKILL-NOT-LOADED",
+                    "EVAL-CONTEXT-UNMEASURED",
+                    "EVAL-REVIEW-PENDING",
+                    "EVAL-HUMAN-REVIEW-MISSING",
+                    "EVAL-REVIEW-NOT-INDEPENDENT",
+                    "EVAL-REVIEW-UNBLINDED",
+                    "EVAL-REVIEW-CRITERIA",
+                    "EVAL-STATUS-OVERCLAIM",
+                    "EVAL-DECISION-MISSING",
+                },
+                codes,
+            )
+
+    def test_receipt_loader_rejects_missing_scalar_and_schema_invalid_documents(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            base = {
+                "execution_receipt_ref": "missing.yaml",
+            }
+            self.assertEqual(
+                "EVAL-RECEIPT-MISSING",
+                evaluation_module._load_receipt(
+                    root,
+                    base,
+                    "CASE",
+                    "baseline",
+                    evaluation={},
+                    project_protocol=None,
+                )[2][0].code,
+            )
+            scalar = root / "scalar.yaml"
+            scalar.write_text("[]\n", encoding="utf-8")
+            base["execution_receipt_ref"] = scalar.name
+            self.assertEqual(
+                "EVAL-RECEIPT-INVALID",
+                evaluation_module._load_receipt(
+                    root,
+                    base,
+                    "CASE",
+                    "baseline",
+                    evaluation={},
+                    project_protocol=None,
+                )[2][0].code,
+            )
+            invalid = root / "invalid.yaml"
+            invalid.write_text("{}\n", encoding="utf-8")
+            base["execution_receipt_ref"] = invalid.name
+            self.assertEqual(
+                "EVAL-RECEIPT-INVALID",
+                evaluation_module._load_receipt(
+                    root,
+                    base,
+                    "CASE",
+                    "baseline",
+                    evaluation={},
+                    project_protocol=None,
+                )[2][0].code,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
