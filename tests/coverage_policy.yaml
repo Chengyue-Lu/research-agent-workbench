@@ -25,14 +25,11 @@ suites:
       - test_coverage_policy
       - test_decision_authority
       - test_execution_contract_helpers
-      - test_execution_trace_adapter
       - test_execution_view
       - test_governance_helper_branches
-      - test_handoff_transfer
       - test_integrity
       - test_kernel
       - test_method_resolutions
-      - test_m3_context_observability
       - test_m2_registry_runtime
       - test_mode_action_routing_fixtures
       - test_mode_actions
@@ -57,30 +54,26 @@ suites:
       - test_trace_risk_codes
       - test_phase_b_evolution_gate
       - test_validation
+      - test_validation_critical_surfaces
       - test_validation_helpers
-    test_ids:
-      - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_legacy_execution_receipt_schema_and_model_remain_unchanged
-      - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_failed_post_call_receipt_requires_hash_pinned_trace_execution_fact
-      - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_generic_receipt_rejects_skill_claim_human_and_recovery_fields
-      - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_no_skill_and_direct_tool_close_and_form_core_gate_without_assignment
-      - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_receipt_replay_rejects_rehashed_host_binding_and_supply_substitution
-      - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_completed_failed_and_preflight_blocked_lifecycle_replay_end_to_end
-      - test_execution_host.ExecutionHostTests.test_host_clock_freshness_and_bound_bundle_drift_prevent_driver_call
-      - test_execution_host.ExecutionHostTests.test_exact_view_load_and_single_driver_execution_report_actual_facts
-      - test_execution_host.ExecutionHostTests.test_driver_exception_is_one_call_content_free_capture_gap_not_recovery
-      - test_execution_host.ExecutionHostTests.test_host_clock_blocks_actual_timeout_when_driver_underreports_duration
-      - test_execution_host.ExecutionHostTests.test_preflight_binding_mismatch_blocks_without_call_and_requests_reresolution
-      - test_execution_host.ExecutionHostTests.test_hash_valid_view_rewrite_is_rejected_by_deterministic_recomputation
-      - test_execution_host.ExecutionHostTests.test_host_source_has_no_retry_fallback_routing_or_recovery_dependency
-      - test_execution_host.ExecutionHostTests.test_execution_caller_cannot_supply_or_backdate_host_timestamps
-      - test_skill_evaluation.SkillEvaluationTests.test_check_report_status_must_match_its_findings
-      - test_skill_evaluation.SkillEvaluationTests.test_fixture_example_is_valid_but_not_admission_evidence
-      - test_skill_evaluation.SkillEvaluationTests.test_complete_live_pair_is_only_eligible_for_human_decision
+    test_ids: []
     omitted_modules:
       - module: test_documentation
         reason: documentation ownership belongs to the behavioral and governance suites
       - module: test_trace_properties
         reason: high-iteration property stress belongs to the behavioral suite
+      - module: test_generic_execution_closeout
+        reason: Generic Receipt and Trace replay E2E belongs to the behavioral suites
+      - module: test_execution_host
+        reason: long Host integration belongs to the behavioral suites; deterministic Host helpers remain covered
+      - module: test_execution_trace_adapter
+        reason: archive closeout and recovery replay belong to the behavioral suites
+      - module: test_m3_context_observability
+        reason: checkpoint, recovery, and receipt replay belong to the behavioral suites
+      - module: test_handoff_transfer
+        reason: Handoff transfer replay belongs to the behavioral suites
+      - module: test_skill_evaluation
+        reason: live-pair evaluation flows belong to the behavioral suites; deterministic evaluation helpers remain covered
 
 thresholds:
   global:
@@ -102,6 +95,9 @@ critical_modules:
   - src/research_workbench/artifacts/integrity.py
   - src/research_workbench/kernel/objects.py
   - src/research_workbench/validation/relationships.py
+  - src/research_workbench/validation/capability.py
+  - src/research_workbench/validation/capability_registry.py
+  - src/research_workbench/validation/document_core.py
 
 negative_acceptance:
   - surface: repository-governance-validator
@@ -154,21 +150,19 @@ negative_acceptance:
     modules:
       - src/research_workbench/execution/host.py
     positive_tests:
-      - test_execution_host.ExecutionHostTests.test_exact_view_load_and_single_driver_execution_report_actual_facts
+      - test_execution_contract_helpers.ExecutionHostHelperTests.test_clock_hash_and_output_helpers_are_closed
     negative_tests:
-      - test_execution_host.ExecutionHostTests.test_preflight_binding_mismatch_blocks_without_call_and_requests_reresolution
-      - test_execution_host.ExecutionHostTests.test_host_clock_blocks_actual_timeout_when_driver_underreports_duration
       - test_execution_contract_helpers.ExecutionHostHelperTests.test_driver_result_violation_matrix_is_fail_closed
+      - test_execution_contract_helpers.ExecutionHostHelperTests.test_view_loader_rejects_path_parse_schema_and_lineage_faults
   - surface: trace-and-receipt-closure
     modules:
       - src/research_workbench/observability/trace.py
       - src/research_workbench/execution/generic_closeout.py
     positive_tests:
       - test_agent_trace.AgentTraceTests.test_typed_fact_events_form_a_valid_trace
-      - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_completed_failed_and_preflight_blocked_lifecycle_replay_end_to_end
+      - test_execution_contract_helpers.GenericCloseoutHelperTests.test_trace_execution_record_shapes_are_independently_closed
     negative_tests:
       - test_agent_trace.AgentTraceTests.test_hash_tamper_is_blocking
-      - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_receipt_replay_rejects_rehashed_host_binding_and_supply_substitution
       - test_execution_contract_helpers.GenericCloseoutHelperTests.test_host_view_lifecycle_closure_rejects_unsupported_facts
   - surface: artifact-integrity-source-admission-and-research-state
     modules:
@@ -182,5 +176,24 @@ negative_acceptance:
     negative_tests:
       - test_relationships.RelationshipValidationTests.test_changed_file_marks_reference_stale
       - test_relationships.RelationshipValidationTests.test_claim_above_project_ceiling_is_blocked
+  - surface: capability-snapshot-consumer
+    modules:
+      - src/research_workbench/validation/capability.py
+    positive_tests:
+      - test_validation_critical_surfaces.CapabilitySnapshotConsumerCriticalTests.test_positive_runtime_snapshot_is_hash_pinned_and_deep_read_only
+    negative_tests:
+      - test_validation_critical_surfaces.CapabilitySnapshotConsumerCriticalTests.test_hash_input_and_validator_digest_fail_closed
+      - test_validation_critical_surfaces.CapabilitySnapshotConsumerCriticalTests.test_paths_roots_kind_and_runtime_eligibility_fail_closed
+  - surface: capability-requirement-registry-closure
+    modules:
+      - src/research_workbench/validation/capability_registry.py
+      - src/research_workbench/validation/document_core.py
+    positive_tests:
+      - test_validation_critical_surfaces.CapabilityRequirementRegistryCriticalTests.test_positive_closed_registry_and_method_reference_pass
+      - test_validation_critical_surfaces.DocumentCoreCriticalTests.test_byte_binding_and_repository_path_helpers_cover_all_storage_modes
+    negative_tests:
+      - test_validation_critical_surfaces.CapabilityRequirementRegistryCriticalTests.test_missing_and_duplicate_index_fail_closed
+      - test_validation_critical_surfaces.CapabilityRequirementRegistryCriticalTests.test_entry_identity_path_kind_and_hash_guards_fail_closed
+      - test_validation_critical_surfaces.CapabilityRequirementRegistryCriticalTests.test_malformed_unindexed_and_relocated_requirements_cannot_bypass_closure
 
 justified_exclusions: []

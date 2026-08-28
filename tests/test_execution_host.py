@@ -2,7 +2,6 @@ import copy
 import inspect
 import tempfile
 import unittest
-from datetime import datetime
 from pathlib import Path
 
 import yaml
@@ -16,90 +15,21 @@ from research_workbench.execution import (
 )
 from research_workbench.io import load_document
 from research_workbench.validation import SchemaCatalog
-from tests import test_execution_view as execution_view_fixtures
+from tests.execution_fixtures import (
+    ExecutionViewFixture,
+    RaisingDriver,
+    RecordingDriver,
+    SequenceClock,
+    plain,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
-class SequenceClock:
-    def __init__(self, *timestamps: str):
-        self._values = [
-            datetime.fromisoformat(value.replace("Z", "+00:00")) for value in timestamps
-        ]
-
-    def now(self):
-        return self._values.pop(0)
-
-
-def plain(value):
-    if hasattr(value, "items"):
-        return {key: plain(item) for key, item in value.items()}
-    if isinstance(value, (list, tuple)):
-        return [plain(item) for item in value]
-    return copy.deepcopy(value)
-
-
-class RecordingDriver:
-    def __init__(
-        self,
-        root: Path,
-        binding: object,
-        result: ExecutionDriverResult | None = None,
-        supply_ref: str = "supply-no-skill-contract-check@1.0.0",
-        tool_refs: tuple[str, ...] = (),
-    ):
-        self.root = root
-        self._binding = plain(binding)
-        self.result = result
-        self._supply_ref = supply_ref
-        self._tool_refs = tool_refs
-        self.calls = 0
-
-    @property
-    def binding(self):
-        return self._binding
-
-    @property
-    def selected_supply_report_ref(self):
-        return self._supply_ref
-
-    def execute(self, request):
-        self.calls += 1
-        if self.result is not None:
-            return self.result
-        artifact = self.root / "work/TASK-MR-ES-FROZEN-001/method-resolution.yaml"
-        artifact.parent.mkdir(parents=True, exist_ok=True)
-        artifact.write_text("status: bounded\n", encoding="utf-8")
-        return ExecutionDriverResult(
-            status="completed",
-            actual_binding=self._binding,
-            actual_supply_report_ref=self._supply_ref,
-            turns=1,
-            output_tokens=64,
-            elapsed_seconds=0.5,
-            tool_invocations=len(self._tool_refs),
-            tool_refs=self._tool_refs,
-            side_effects=("task-local-check-report",),
-            artifacts=(
-                {
-                    "contract": "deterministic-check-report",
-                    "path": "work/TASK-MR-ES-FROZEN-001/method-resolution.yaml",
-                    "sha256": hash_file(artifact),
-                },
-            ),
-        )
-
-
-class RaisingDriver(RecordingDriver):
-    def execute(self, request):
-        self.calls += 1
-        raise RuntimeError("private provider response must not enter the report")
-
-
 class ExecutionHostTests(unittest.TestCase):
     def _build(self, root: Path):
-        helper = execution_view_fixtures.ExecutionViewTests(methodName="runTest")
+        helper = ExecutionViewFixture()
         bundle, inputs = helper._build(root)
         view = helper._produce(root, bundle, inputs)
         view_path = root / "view/resolved-view.yaml"
@@ -154,7 +84,7 @@ class ExecutionHostTests(unittest.TestCase):
     def test_hash_valid_view_rewrite_is_rejected_by_deterministic_recomputation(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
-            helper = execution_view_fixtures.ExecutionViewTests(methodName="runTest")
+            helper = ExecutionViewFixture()
             bundle, inputs = helper._build(root)
             view = helper._produce(root, bundle, inputs)
             view["binding"]["model"]["ref"] = "silently-rebound-model"

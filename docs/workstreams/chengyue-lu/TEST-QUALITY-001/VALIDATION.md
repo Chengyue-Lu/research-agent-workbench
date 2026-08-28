@@ -8,10 +8,10 @@ python -m unittest tests.test_coverage_policy -v
 python tests/run_unittest_suite.py --suite coverage-quality --json-output <temporary> --verbosity 0 --slowest 10
 ```
 
-- checker adversarial tests：9 PASS；
-- 当前新增/修改的 policy、critical branch、provider、validation、registry、context 与 observability focused
-  tests：90 PASS；
-- dedicated suite discovery：546 tests，无 `_FailedTest`；
+- checker adversarial tests：11 PASS；
+- fixture extraction、Capability consumer/registry validator 与相关 execution contract focused tests：71 PASS；
+- dedicated suite：492 tests PASS，492/492 canonical unique，local wall 148.663 秒；
+- full discovery：576/576 canonical unique；
 - 该分类 run 未启用 coverage instrumentation，仅证明选择与 runner 语义可执行；
 - 本机解释器无 coverage module，未安装网络依赖或修改系统环境。
 
@@ -90,3 +90,25 @@ global quality floor 从 83% 目标提升到机器阻断的 90%、critical floor
 - Python 3.11/3.13 full suite、governance、package-smoke 与 repository validation PASS；
 - 当前 head 增加 0.03 秒级的 common contract primitive、Task budget/delegation/lifecycle、Context Snapshot
   late-validation 与 Project Protocol loader 错误分支，覆盖预算为 36 行缺口外另留安全余量。
+
+### Superseded heavy closure — run 33185024911
+
+- coverage-quality：557 tests PASS，suite wall 1086.391 秒，global line 90.16%；
+- 原 12 个 critical files 全部越过 95/90，双 Python full suite、governance、package-smoke 与 aggregate
+  Gates 全部 PASS；
+- 实际 canonical identity 审计发现 21 个测试因 `test_*` / `tests.test_*` 模块别名重复执行；
+- slowest 由 Generic Receipt/Trace replay、archive/recovery 与 Host integration 主导，因此该绿灯仅证明旧
+  policy 可达阈值，不满足 final remediation 的 suite 结构与时长要求。
+
+### Final remediation candidate
+
+- coverage manifest 移除 Generic closeout E2E、长 Host integration、archive/recovery、Handoff 与 live Skill
+  evaluation；上述测试完整保留在双 Python behavioral suite；
+- Runtime Bundle / View / Host 共用 fixture 已迁出 discovery，runner 对实际 canonical test identity fail closed；
+- 新增 `validation/capability.py` critical inventory，并把 `documents.py` 中 Capability Requirement
+  identity/path/hash/Method-reference 闭包拆为 `validation/capability_registry.py`；共用 byte/path primitives
+  同步拆为 `validation/document_core.py`，两者都受逐文件 Gate；
+- 新模块具备独立 positive closed-set 与 missing/duplicate/kind/identity/path/hash negative evidence；
+- 无 coverage instrumentation 的新 selection 为 492 tests / 148.663 秒；最终 492-test head
+  的 90/95/90 与 hosted wall
+  仍需新 head CI artifact 确认。

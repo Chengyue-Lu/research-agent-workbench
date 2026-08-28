@@ -22,9 +22,13 @@ from research_workbench.io import load_document
 from research_workbench.observability import ExecutionReceipt
 from research_workbench.observability.trace import AgentTraceRecorder
 from research_workbench.validation import SchemaCatalog
-from tests import test_execution_host as host_fixtures
-from tests import test_execution_view as view_fixtures
-from tests import test_runtime_bundle as bundle_fixtures
+from tests.execution_fixtures import (
+    ExecutionViewFixture,
+    RecordingDriver,
+    RuntimeBundleFixture,
+    SequenceClock,
+    plain,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -40,7 +44,7 @@ class GenericExecutionCloseoutTests(unittest.TestCase):
         return CloseoutPin(relative, hash_file(path))
 
     def _direct_tool_bundle(self, root: Path):
-        bundle_helper = bundle_fixtures.RuntimeBundleTests(methodName="runTest")
+        bundle_helper = RuntimeBundleFixture()
         manifest_path = bundle_helper._build_bundle(root)
         evidence = load_document(root / "bundle/conformance.yaml")
         evidence["implementation_ref"] = "runtime-direct-tool-contract-check"
@@ -88,7 +92,7 @@ class GenericExecutionCloseoutTests(unittest.TestCase):
         )
 
     def _bundle_and_view(self, root: Path, path_kind: str):
-        helper = view_fixtures.ExecutionViewTests(methodName="runTest")
+        helper = ExecutionViewFixture()
         if path_kind == "no-skill":
             bundle, inputs = helper._build(root)
         else:
@@ -113,21 +117,21 @@ class GenericExecutionCloseoutTests(unittest.TestCase):
         include_execution_fact: bool = True,
     ):
         bundle, view = self._bundle_and_view(root, path_kind)
-        driver = host_fixtures.RecordingDriver(root, view.document["binding"])
+        driver = RecordingDriver(root, view.document["binding"])
         if path_kind == "direct-tool":
-            driver = host_fixtures.RecordingDriver(
+            driver = RecordingDriver(
                 root,
                 view.document["binding"],
                 tool_refs=("bounded-contract-check-tool",),
             )
         if lifecycle == "blocked":
-            requested = host_fixtures.plain(view.document["binding"])
+            requested = plain(view.document["binding"])
             requested["model"]["ref"] = "preflight-mismatched-model"
-            driver = host_fixtures.RecordingDriver(root, requested)
+            driver = RecordingDriver(root, requested)
         elif lifecycle == "failed":
-            actual = host_fixtures.plain(view.document["binding"])
+            actual = plain(view.document["binding"])
             actual["provider"]["ref"] = "observed-drift-provider"
-            driver = host_fixtures.RecordingDriver(
+            driver = RecordingDriver(
                 root,
                 view.document["binding"],
                 result=ExecutionDriverResult(
@@ -144,7 +148,7 @@ class GenericExecutionCloseoutTests(unittest.TestCase):
             driver,
             report_id=f"HOST-{path_kind}",
             attempt_id=f"ATTEMPT-{path_kind}",
-            clock=host_fixtures.SequenceClock(
+            clock=SequenceClock(
                 "2026-08-26T00:00:01Z", "2026-08-26T00:00:02Z"
             ),
             schema_root=ROOT / "schemas",
@@ -152,7 +156,7 @@ class GenericExecutionCloseoutTests(unittest.TestCase):
         host_pin = self._write(root, "closeout/host-report.yaml", host_report)
 
         task = next(
-            host_fixtures.plain(document)
+            plain(document)
             for path, document in bundle.documents.items()
             if path.name == "task.yaml"
         )
@@ -354,7 +358,7 @@ class GenericExecutionCloseoutTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             bundle = self._direct_tool_bundle(root)
-            helper = view_fixtures.ExecutionViewTests(methodName="runTest")
+            helper = ExecutionViewFixture()
             inputs = helper._inputs(root)
             profile_path = root / inputs["agent_profile"].path
             profile = load_document(profile_path)

@@ -12,6 +12,7 @@ from tests import run_unittest_suite
 
 
 ROOT = Path(__file__).resolve().parents[1]
+POLICY = ROOT / "tests" / "coverage_policy.yaml"
 SCRIPT = ROOT / ".github" / "scripts" / "check_coverage_policy.py"
 SPEC = importlib.util.spec_from_file_location("check_coverage_policy", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None
@@ -127,11 +128,49 @@ class CoveragePolicyCheckerTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "duplicate"):
                 run_unittest_suite._suite_for(args)
 
+    def test_coverage_suite_rejects_same_canonical_test_loaded_through_module_aliases(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "policy.yaml"
+            document = {
+                "suites": {
+                    "coverage-quality": {
+                        "modules": ["test_kernel"],
+                        "test_ids": ["tests.test_kernel"],
+                    }
+                }
+            }
+            path.write_text(yaml.safe_dump(document), encoding="utf-8")
+            args = argparse.Namespace(suite="coverage-quality", policy=path)
+            with self.assertRaisesRegex(ValueError, "duplicate canonical tests"):
+                run_unittest_suite._suite_for(args)
+
     def test_policy_cannot_downgrade_the_quality_floor(self) -> None:
         manifest = policy()
         manifest["thresholds"]["critical"]["branch"] = 89
         failures = CHECKER.check_policy(manifest, coverage(), results())
         self.assertTrue(any("cannot be lower" in item for item in failures))
+
+    def test_repository_policy_covers_bounded_capability_validation_surfaces(self) -> None:
+        manifest = yaml.safe_load(POLICY.read_text(encoding="utf-8"))
+        critical = set(manifest["critical_modules"])
+        self.assertIn("src/research_workbench/validation/capability.py", critical)
+        self.assertIn(
+            "src/research_workbench/validation/capability_registry.py", critical
+        )
+        self.assertIn("src/research_workbench/validation/document_core.py", critical)
+        self.assertNotIn("src/research_workbench/validation/documents.py", critical)
+        omitted = {
+            item["module"]
+            for item in manifest["suites"]["coverage-quality"]["omitted_modules"]
+        }
+        self.assertTrue(
+            {
+                "test_generic_execution_closeout",
+                "test_execution_host",
+                "test_execution_trace_adapter",
+                "test_m3_context_observability",
+            }.issubset(omitted)
+        )
 
     def test_exclusion_requires_exact_auditable_location(self) -> None:
         manifest = policy()

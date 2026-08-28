@@ -8,13 +8,11 @@ next stage of review.
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
 from datetime import datetime
-from enum import StrEnum
 from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any, Iterable, Mapping
 
-from research_workbench.artifacts.integrity import hash_bytes, hash_file
+from research_workbench.artifacts.integrity import hash_bytes
 from research_workbench.capability.requirements import CapabilityRequirement
 from research_workbench.capability.supply import (
     CapabilitySupplyReport,
@@ -37,56 +35,24 @@ from research_workbench.protocol.authority import (
     evaluate_authority_rule_eligibility,
 )
 from research_workbench.validation.schemas import SchemaCatalog
+from research_workbench.validation.capability_registry import (
+    capability_requirement_entries as _capability_requirement_entries,
+    capability_requirement_indices as _capability_requirement_indices,
+    validate_capability_requirement_set as _validate_capability_requirement_set,
+)
+from research_workbench.validation.document_core import (
+    LoadedDocuments,
+    Severity,
+    ValidationIssue,
+    document_has_loaded_bytes as _document_has_loaded_bytes,
+    document_hash as _document_hash,
+    loaded_document_at as _loaded_document_at,
+    matches_repository_path as _matches_repository_path,
+)
+from research_workbench.validation.document_kinds import infer_document_kind
 
 
 SHA256_RE = re.compile(r"^[0-9a-fA-F]{64}$")
-
-
-class Severity(StrEnum):
-    ERROR = "error"
-    WARNING = "warning"
-
-
-@dataclass(frozen=True, slots=True)
-class ValidationIssue:
-    path: Path
-    code: str
-    message: str
-    severity: Severity = Severity.ERROR
-
-
-class LoadedDocuments(dict[Path, Any]):
-    """Parsed documents bound to SHA-256 digests from the same byte reads."""
-
-    def __init__(self) -> None:
-        super().__init__()
-        self._sha256_by_path: dict[Path, str] = {}
-
-    def add(self, path: Path, document: Any, *, sha256: str) -> None:
-        self[path] = document
-        self._sha256_by_path[path] = sha256
-
-    def sha256_for(self, path: Path) -> str | None:
-        return self._sha256_by_path.get(path)
-
-
-def _document_hash(documents: Mapping[Path, Any], path: Path) -> str:
-    """Return the digest of the bytes that produced the loaded mapping.
-
-    ``load_and_validate`` always supplies ``LoadedDocuments`` so reference and
-    identity checks cannot re-read a path after parsing. Plain mappings remain
-    supported for in-memory unit tests and existing direct callers.
-    """
-
-    if isinstance(documents, LoadedDocuments):
-        return documents.sha256_for(path) or ""
-    return hash_file(path)
-
-
-def _document_has_loaded_bytes(documents: Mapping[Path, Any], path: Path) -> bool:
-    if isinstance(documents, LoadedDocuments):
-        return documents.sha256_for(path) is not None
-    return path.is_file()
 
 
 def _aware_datetime(value: Any) -> datetime | None:
@@ -195,104 +161,6 @@ SCHEMA_KINDS = {
     "execution_receipt",
     "research_object",
 }
-
-
-def infer_document_kind(document: Mapping[str, Any]) -> str | None:
-    registry_kind = document.get("registry_kind")
-    if isinstance(registry_kind, str):
-        return registry_kind
-    if "attempt_id" in document and "task_id" in document:
-        if "result" in document:
-            return "handoff_packet"
-        if "started_at" in document and "task_revision" in document:
-            return "attempt"
-    if "goal" in document and "task_id" in document:
-        return "task_packet"
-    if "project_id" in document and "active_modes" in document:
-        return "project_protocol"
-    if "mode_id" in document and "claim_rules" in document:
-        return "research_mode"
-    if (
-        document.get("migration_kind") == "research_mode_migration"
-        and "source_mode" in document
-        and "target_mode" in document
-    ):
-        return "research_mode_migration"
-    if "matrix_id" in document and "authority_classes" in document and "entries" in document:
-        return "decision_authority_matrix"
-    if "eligibility_id" in document and "matrix_ref" in document and "result" in document:
-        return "authority_rule_eligibility"
-    if "action_id" in document and "mode_ref" in document and "claim_effects" in document:
-        return "mode_action"
-    if "resolution_id" in document and "mode_resolution" in document and "action_decisions" in document:
-        return "method_resolution"
-    if "requirement_id" in document and "constraints" in document and "unsatisfied_requirement" in document:
-        return "capability_requirement"
-    if document.get("evidence_kind") in {
-        "deterministic-fixture",
-        "local-conformance",
-        "live-conformance",
-    }:
-        return "capability_conformance_evidence"
-    if "need_id" in document and "semantic_gap" in document and "evaluation_requirements" in document:
-        return "skill_need"
-    if "lifecycle_id" in document and "skill_ref" in document and "runtime_eligibility" in document:
-        return "skill_lifecycle_record"
-    if "migration_id" in document and "source_registry_path" in document and "target_index_path" in document:
-        return "skill_lifecycle_migration"
-    if "profile_id" in document and "method_standard" in document and "method_obligations" in document:
-        return "protocol_profile"
-    if "report_id" in document and "supply_identity" in document and "availability" in document:
-        return "capability_supply_report"
-    if "snapshot_id" in document and "selected_supply_report_ref" in document:
-        return "resolved_capability_snapshot"
-    if document.get("profile") == "runtime-bundle" and "bundle_id" in document and "documents" in document:
-        return "runtime_bundle_manifest"
-    if "binding_id" in document and "selected_supply_report_ref" in document and "host" in document:
-        return "execution_binding"
-    if document.get("record_kind") == "actual-execution-binding" and "actual_binding" in document:
-        return "execution_trace_fact"
-    if "report_id" in document and "actual_binding" in document and "actual_facts" in document:
-        return "execution_host_report"
-    if document.get("scope") == "m11-core" and "gate_id" in document and "paths" in document:
-        return "execution_core_gate"
-    if "receipt_id" in document and "host_report_ref" in document and "view_ref" in document:
-        return "generic_execution_receipt"
-    if "policy_id" in document and "policy_kind" in document and "permission_ceiling" in document:
-        return "execution_policy"
-    if "view_id" in document and "execution_binding_ref" in document and "effective_constraints" in document:
-        return "resolved_execution_view"
-    if "resolution_id" in document and "requirement_ref" in document and "comparisons" in document:
-        return "capability_resolution"
-    if document.get("scope") == "phase-b-evolution" and "gate_id" in document:
-        return "phase_b_evolution_gate"
-    if "agent_profile_id" in document and "permission_ceiling" in document:
-        return "agent_profile"
-    if "skill_id" in document and "capabilities" in document:
-        return "skill_manifest"
-    if "assignment_id" in document and "skill_lock" in document:
-        return "skill_assignment"
-    if "checkpoint_id" in document and "project_protocol_ref" in document:
-        return "main_state"
-    if "snapshot_id" in document and "assessment" in document and "metrics" in document:
-        return "context_snapshot"
-    if "receipt_id" in document and "execution_kind" in document and "attempt_ref" in document:
-        return "execution_receipt"
-    if "audit_id" in document and "manifest_ref" in document and "mappings" in document:
-        return "handoff_transfer_audit"
-    if "manifest_id" in document and "source_artifact_refs" in document and "items" in document:
-        return "handoff_transfer_manifest"
-    if "report_id" in document and "adapter_id" in document and "checks" in document:
-        return "provider_conformance_report"
-    if "report_id" in document and "checker" in document and "checks" in document:
-        return "deterministic_check_report"
-    if "report_id" in document and "source_id" in document and "archive_signals" in document:
-        return "skill_archive_audit"
-    if "evaluation_id" in document and "candidate_id" in document and "cases" in document:
-        return "skill_evaluation"
-    if "object_type" in document and "object_id" in document:
-        return "research_object"
-    return None
 
 
 def _require_fields(
@@ -516,12 +384,6 @@ def _validate_task(path: Path, document: Mapping[str, Any], kind: str) -> list[V
     return issues
 
 
-def _matches_repository_path(path: Path, repository_relative: str) -> bool:
-    normalized_path = path.as_posix()
-    normalized_relative = PurePosixPath(repository_relative).as_posix()
-    return normalized_path == normalized_relative or normalized_path.endswith(f"/{normalized_relative}")
-
-
 def _validate_mode_action_registry(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     registries = [
@@ -641,162 +503,6 @@ def _validate_mode_action_registry(documents: Mapping[Path, Any]) -> list[Valida
         if key not in indexed:
             issues.append(
                 ValidationIssue(path, "MODE-ACTION-UNINDEXED", f"Action document is not in the registry: {key}")
-            )
-    return issues
-
-
-def _capability_requirement_indices(
-    documents: Mapping[Path, Any],
-) -> list[tuple[Path, Mapping[str, Any]]]:
-    return [
-        (path, document)
-        for path, document in documents.items()
-        if isinstance(document, Mapping)
-        and document.get("registry_kind") == "capability_requirement_index"
-    ]
-
-
-def _capability_requirement_entries(documents: Mapping[Path, Any]) -> dict[str, Mapping[str, Any]]:
-    indices = _capability_requirement_indices(documents)
-    if len(indices) != 1:
-        return {}
-    entries: dict[str, Mapping[str, Any]] = {}
-    for entry in indices[0][1].get("entries", []):
-        if not isinstance(entry, Mapping) or not isinstance(entry.get("requirement_id"), str):
-            continue
-        entries[str(entry["requirement_id"])] = entry
-    return entries
-
-
-def _validate_capability_requirement_set(
-    documents: Mapping[Path, Any],
-) -> list[ValidationIssue]:
-    issues: list[ValidationIssue] = []
-    indices = _capability_requirement_indices(documents)
-    requirement_documents = [
-        (path, document)
-        for path, document in documents.items()
-        if isinstance(document, Mapping) and infer_document_kind(document) == "capability_requirement"
-    ]
-    method_references = [
-        value
-        for document in documents.values()
-        if isinstance(document, Mapping) and infer_document_kind(document) == "method_resolution"
-        for decision in document.get("action_decisions", [])
-        if isinstance(decision, Mapping)
-        for value in decision.get("capability_requirements", [])
-        if isinstance(value, str)
-    ]
-    if not indices:
-        if requirement_documents or method_references:
-            anchor = requirement_documents[0][0] if requirement_documents else Path("capability-requirements")
-            issues.append(
-                ValidationIssue(
-                    anchor,
-                    "CAPABILITY-REQUIREMENT-INDEX-MISSING",
-                    "Capability Requirement documents and Method references require one closed integrity index",
-                )
-            )
-        return issues
-    if len(indices) > 1:
-        for path, _ in indices[1:]:
-            issues.append(
-                ValidationIssue(
-                    path,
-                    "CAPABILITY-REQUIREMENT-INDEX-DUPLICATE",
-                    "only one Capability Requirement integrity index may be loaded",
-                )
-            )
-        return issues
-
-    index_path, index = indices[0]
-    indexed: dict[str, tuple[str, Mapping[str, Any]]] = {}
-    seen_paths: set[str] = set()
-    for position, entry in enumerate(index.get("entries", [])):
-        if not isinstance(entry, Mapping):
-            continue
-        requirement_id = entry.get("requirement_id")
-        document_path = entry.get("document_path")
-        if not isinstance(requirement_id, str) or not isinstance(document_path, str):
-            continue
-        if requirement_id in indexed:
-            issues.append(
-                ValidationIssue(
-                    index_path,
-                    "CAPABILITY-REQUIREMENT-IDENTITY-DUPLICATE",
-                    f"duplicate Requirement identity at entries[{position}]: {requirement_id}",
-                )
-            )
-            continue
-        if document_path in seen_paths:
-            issues.append(
-                ValidationIssue(
-                    index_path,
-                    "CAPABILITY-REQUIREMENT-PATH-DUPLICATE",
-                    f"duplicate Requirement document path at entries[{position}]: {document_path}",
-                )
-            )
-            continue
-        indexed[requirement_id] = (document_path, entry)
-        seen_paths.add(document_path)
-
-        loaded = _loaded_document_at(documents, document_path)
-        if loaded is None:
-            issues.append(
-                ValidationIssue(
-                    index_path,
-                    "CAPABILITY-REQUIREMENT-DOCUMENT-MISSING",
-                    f"indexed Requirement document is not loaded: {document_path}",
-                )
-            )
-            continue
-        loaded_path, requirement = loaded
-        if infer_document_kind(requirement) != "capability_requirement":
-            issues.append(
-                ValidationIssue(
-                    loaded_path,
-                    "CAPABILITY-REQUIREMENT-DOCUMENT-KIND",
-                    f"indexed document is not a Capability Requirement: {document_path}",
-                )
-            )
-            continue
-        if requirement.get("requirement_id") != requirement_id:
-            issues.append(
-                ValidationIssue(
-                    loaded_path,
-                    "CAPABILITY-REQUIREMENT-IDENTITY-MISMATCH",
-                    f"index and document identities disagree: {requirement_id}",
-                )
-            )
-        expected_hash = entry.get("content_hash")
-        if isinstance(expected_hash, str) and _document_has_loaded_bytes(documents, loaded_path):
-            if _document_hash(documents, loaded_path) != expected_hash.removeprefix("sha256:").lower():
-                issues.append(
-                    ValidationIssue(
-                        index_path,
-                        "CAPABILITY-REQUIREMENT-HASH-MISMATCH",
-                        f"content hash does not match Requirement document: {requirement_id}",
-                    )
-                )
-
-    for path, requirement in requirement_documents:
-        requirement_id = requirement.get("requirement_id")
-        indexed_entry = indexed.get(str(requirement_id))
-        if indexed_entry is None:
-            issues.append(
-                ValidationIssue(
-                    path,
-                    "CAPABILITY-REQUIREMENT-UNINDEXED",
-                    f"Requirement document is not in the integrity index: {requirement_id}",
-                )
-            )
-        elif not _matches_repository_path(path, indexed_entry[0]):
-            issues.append(
-                ValidationIssue(
-                    path,
-                    "CAPABILITY-REQUIREMENT-PATH-MISMATCH",
-                    f"Requirement document path disagrees with the index: {requirement_id}",
-                )
             )
     return issues
 
@@ -3027,17 +2733,6 @@ def _validate_method_resolutions(documents: Mapping[Path, Any]) -> list[Validati
                     )
                 alternatives.add(alternative_id)
     return issues
-
-
-def _loaded_document_at(
-    documents: Mapping[Path, Any], repository_relative: object
-) -> tuple[Path, Mapping[str, Any]] | None:
-    if not isinstance(repository_relative, str):
-        return None
-    for path, document in documents.items():
-        if isinstance(document, Mapping) and _matches_repository_path(path, repository_relative):
-            return path, document
-    return None
 
 
 def _phase_b_gate_identity(kind: str, document: Mapping[str, Any]) -> str | None:

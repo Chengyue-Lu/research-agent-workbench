@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import inspect
 import json
 import math
 import os
@@ -11,7 +12,7 @@ import statistics
 import sys
 import time
 import unittest
-from typing import Any
+from typing import Any, Iterable
 
 import yaml
 
@@ -65,6 +66,49 @@ def _load_policy(path: Path) -> dict[str, Any]:
     return raw
 
 
+def _iter_tests(suite: unittest.TestSuite) -> Iterable[unittest.case.TestCase]:
+    for item in suite:
+        if isinstance(item, unittest.TestSuite):
+            yield from _iter_tests(item)
+        else:
+            yield item
+
+
+def _canonical_test_id(test: unittest.case.TestCase) -> str:
+    """Identify one test independently of the module alias used to load it."""
+
+    source = inspect.getsourcefile(test.__class__)
+    source_identity = (
+        str(Path(source).resolve()).casefold()
+        if source is not None
+        else f"module:{test.__class__.__module__}"
+    )
+    method = getattr(test, "_testMethodName", test.id())
+    return f"{source_identity}::{test.__class__.__qualname__}.{method}"
+
+
+def _assert_unique_tests(suite: unittest.TestSuite) -> None:
+    runtime_ids: set[str] = set()
+    by_canonical_id: dict[str, str] = {}
+    failures: list[str] = []
+    for test in _iter_tests(suite):
+        runtime_id = test.id()
+        canonical_id = _canonical_test_id(test)
+        if runtime_id in runtime_ids:
+            failures.append(f"runtime:{runtime_id}")
+        runtime_ids.add(runtime_id)
+        previous = by_canonical_id.get(canonical_id)
+        if previous is not None:
+            failures.append(f"{canonical_id}: {previous}, {runtime_id}")
+        else:
+            by_canonical_id[canonical_id] = runtime_id
+    if failures:
+        raise ValueError(
+            "coverage-quality suite contains duplicate canonical tests: "
+            + "; ".join(dict.fromkeys(failures))
+        )
+
+
 def _suite_for(args: argparse.Namespace) -> unittest.TestSuite:
     loader = unittest.TestLoader()
     if str(ROOT) not in sys.path:
@@ -74,7 +118,9 @@ def _suite_for(args: argparse.Namespace) -> unittest.TestSuite:
     if str(TESTS) not in sys.path:
         sys.path.insert(0, str(TESTS))
     if args.suite == "full":
-        return loader.discover(str(TESTS), pattern="test_*.py", top_level_dir=str(TESTS))
+        loaded = loader.discover(str(TESTS), pattern="test_*.py", top_level_dir=str(TESTS))
+        _assert_unique_tests(loaded)
+        return loaded
     policy = _load_policy(args.policy)
     suite = policy.get("suites", {}).get("coverage-quality", {})
     modules = suite.get("modules", [])
@@ -86,7 +132,9 @@ def _suite_for(args: argparse.Namespace) -> unittest.TestSuite:
     names = [*modules, *test_ids]
     if len(names) != len(set(names)):
         raise ValueError("coverage-quality suite contains duplicate module/test names")
-    return loader.loadTestsFromNames(names)
+    loaded = loader.loadTestsFromNames(names)
+    _assert_unique_tests(loaded)
+    return loaded
 
 
 def _percentile(values: list[float], percentile: float) -> float:

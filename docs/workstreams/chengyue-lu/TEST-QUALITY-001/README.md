@@ -57,6 +57,8 @@ R2 reviewer 校核逐行/逐 branch 缺口与 slowest evidence；artifact 是审
 | Runtime Bundle / Resolved Execution View / Thin Host | `execution/runtime_bundle.py`, `execution_view.py`, `host.py` |
 | Trace / Generic Receipt closeout | `observability/trace.py`, `execution/generic_closeout.py` |
 | exact-ref / hash / provenance | `artifacts/integrity.py`, `validation/relationships.py` |
+| Capability Snapshot consumer | `validation/capability.py` |
+| Capability Requirement registry closure | `validation/capability_registry.py`, `validation/document_core.py`；通用 dispatch 留在 `validation/documents.py`，不把整个大型调度文件机械纳入 95/90 |
 | 当前最小 Research State object lineage | `kernel/objects.py` |
 | Source Admission 边界 | 当前尚无独立 accepted Source Admission producer；先由 artifact integrity + provenance relationship fail-closed surface 承担，未来新增 producer 必须 append 到 policy |
 
@@ -75,9 +77,15 @@ repository fixture replay 与 integration。Coverage-quality suite 只包含 det
 modules；具名 omitted modules 没有被删除，仍在两套 behavioral suites 中运行。
 
 原生 unittest runner 记录 suite wall time、test count、slowest 20、p50、p95，并生成机器可读 JSON；不引入
-pytest、sharding、test selection framework 或 cache。Coverage suite 通过 manifest 显式组合 module 与少量
-具名 integration test ID：移出 coverage 路径的慢测试仍由 3.11/3.13 full discovery 执行，不能因此被删除或
-视为已被较快 helper test 取代。当前 head 可加载 546 tests，且无 `_FailedTest`。
+pytest、sharding、test selection framework 或 cache。Coverage suite 只组合 deterministic
+unit/contract/validator modules；Generic Receipt/Trace replay E2E、长 Host integration、archive/recovery replay、
+Handoff replay 与 live Skill evaluation 仍由 3.11/3.13 full discovery 执行，不能因此被删除或视为已被较快
+helper test 取代。
+
+共享 Runtime Bundle / View / Host fixture 已迁到不匹配 `test_*.py` 的 `tests/execution_fixtures.py`；测试模块
+不再 import 其他测试模块的 `TestCase`。runner 在执行前按“源码文件 + TestCase qualname + method”核对
+canonical identity，字符串清单不同但实际测试相同也会 fail closed。当前 head 的 coverage selection 为
+492/492 unique canonical tests，full discovery 为 576/576 unique canonical tests。
 
 ## 前置基线与验收
 
@@ -90,11 +98,12 @@ full suite 08:37；全局 line 83%，Trace line 92.87%。这证明单靠 suite �
 - 两版本 plain full suite 全部 PASS；
 - coverage-quality global line `>=90%`；
 - 每个 critical file line `>=95%`、branch `>=90%`；
+- coverage-quality 中不存在 duplicate canonical test execution；
 - policy checker 的阈值、branch、文件、evidence 与 exclusion 对抗测试 PASS；
 - package-smoke、repository validation 与 governance PASS；
 - hosted critical path 进入约 12–15 分钟，或用 slowest/p50/p95 给出明确事实原因。
 
-迭代 hosted evidence 已把 global line 从 79.31% 提高到 89.66%；runs 33179905452 / 33181391418 /
-33183258709 均证明全部 12 个 critical file 越过逐文件 95/90 Gate。最新 run 唯一未满足的 policy 项是
-global line 尚差 36 行；当前 head 又增加通用 contract primitive、Task/Handoff 与 Context late-validation
-fail-closed tests，最终状态仍只以新 head hosted artifact 为准。
+重型 head 的 run 33185024911 已证明 global line 90.16% 与原 12 个 critical files 95/90 全部 PASS，但
+coverage suite 557 tests / 1086.391 秒，且含 21 个 canonical duplicate，不能作为最终结构验收。本轮 final
+remediation 已缩减为 490 个唯一 deterministic tests，并新增 `validation/capability.py` 与拆出的
+`validation/capability_registry.py` critical Gate；最终状态只以新 head hosted artifact 为准。

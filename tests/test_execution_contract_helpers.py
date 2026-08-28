@@ -17,8 +17,7 @@ from research_workbench.execution import host as host_module
 from research_workbench.execution import runtime_bundle as bundle_module
 from research_workbench.observability import trace as trace_module
 from research_workbench.io import load_document
-from tests.test_runtime_bundle import RuntimeBundleTests
-from tests.test_execution_view import ExecutionViewTests
+from tests.execution_fixtures import ExecutionViewFixture, RuntimeBundleFixture
 
 
 class _Catalog:
@@ -220,7 +219,7 @@ class ExecutionViewHelperTests(unittest.TestCase):
     def test_policy_kind_drift_is_rejected_after_exact_pin_validation(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            helper = ExecutionViewTests(methodName="runTest")
+            helper = ExecutionViewFixture()
             bundle, inputs = helper._build(root)
             policy_path = root / inputs["data_policy"].path
             policy = load_document(policy_path)
@@ -454,7 +453,7 @@ class RuntimeBundleHelperTests(unittest.TestCase):
     def test_lineage_mutation_matrix_exercises_each_runtime_authority_boundary(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            manifest_path = RuntimeBundleTests(methodName="runTest")._build_bundle(root)
+            manifest_path = RuntimeBundleFixture()._build_bundle(root)
             manifest = load_document(manifest_path)
             kinds = {
                 item["path"]: item["kind"] for item in manifest["documents"]
@@ -527,7 +526,7 @@ class RuntimeBundleHelperTests(unittest.TestCase):
     def test_manifest_document_policy_reports_all_fail_closed_categories(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            helper = RuntimeBundleTests(methodName="runTest")
+            helper = RuntimeBundleFixture()
             manifest_path = helper._build_bundle(root)
             manifest = load_document(manifest_path)
 

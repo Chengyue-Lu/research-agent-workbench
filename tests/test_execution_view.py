@@ -4,8 +4,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import yaml
-
 from research_workbench.artifacts.integrity import hash_file
 from research_workbench.execution import (
     ExecutionViewValidationError,
@@ -15,130 +13,13 @@ from research_workbench.execution import (
 )
 from research_workbench.io import load_document
 from research_workbench.validation import SchemaCatalog
-from tests import test_runtime_bundle as runtime_bundle_fixtures
+from tests.execution_fixtures import ExecutionViewFixture
 
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
-class ExecutionViewTests(unittest.TestCase):
-    def _write(self, root: Path, relative: str, document: object) -> PinnedExecutionInput:
-        path = root / relative
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(
-            yaml.safe_dump(document, sort_keys=False, allow_unicode=True),
-            encoding="utf-8",
-        )
-        return PinnedExecutionInput(relative, hash_file(path))
-
-    def _inputs(self, root: Path) -> dict[str, PinnedExecutionInput]:
-        profile = {
-            "schema_version": "0.1.0",
-            "agent_profile_id": "method-resolver",
-            "version": "1.0.0",
-            "purpose": "Bounded no-Skill method execution.",
-            "model_policy": {
-                "class": "bounded",
-                "default_slot": "worker",
-                "required_capabilities": ["structured-output"],
-            },
-            "permission_ceiling": {
-                "filesystem": "worktree-write",
-                "network": "search-and-fetch",
-                "external_write": "forbidden",
-                "allowed_roots": ["work"],
-            },
-            "allowed_tool_capabilities": ["document-read", "research-contract-check"],
-            "default_context_policy": "isolated-task",
-            "delegation": {"allowed": False},
-            "output_contracts": ["deterministic-check-report"],
-        }
-        common_policy = {
-            "schema_version": "0.1.0",
-            "version": "1.0.0",
-            "valid_from": "2026-01-01T00:00:00Z",
-            "valid_until": "2027-01-01T00:00:00Z",
-            "permission_ceiling": {
-                "filesystem": "worktree-write",
-                "network": "search-and-fetch",
-                "external_write": False,
-                "allowed_roots": ["work"],
-            },
-            "data_egress": {
-                "policy": "allowlisted-only",
-                "allowed_payloads": ["public-query"],
-                "forbidden_payloads": ["project-context"],
-            },
-            "side_effects": {
-                "policy": "allowlisted-only",
-                "allowed_effects": ["task-local-check-report", "temporary-cache"],
-            },
-            "budget_ceiling": {"max_turns": 10, "max_seconds": 120},
-            "boundaries": {
-                "permission_grant": False,
-                "supply_selection": False,
-                "fallback_authority": False,
-            },
-        }
-        data_policy = copy.deepcopy(common_policy)
-        data_policy.update({"policy_id": "DP-LOCAL", "policy_kind": "data-policy"})
-        host_policy = copy.deepcopy(common_policy)
-        host_policy.update({"policy_id": "HP-LOCAL", "policy_kind": "host-policy"})
-        host_policy["permission_ceiling"]["allowed_roots"] = [
-            "work/TASK-MR-ES-FROZEN-001"
-        ]
-        host_policy["budget_ceiling"] = {"max_turns": 4, "max_output_tokens": 2048}
-        digest = "1" * 64
-        binding = {
-            "schema_version": "0.1.0",
-            "binding_id": "BIND-LOCAL-001",
-            "revision": 1,
-            "selected_supply_report_ref": "supply-no-skill-contract-check@1.0.0",
-            "provider": {"ref": "local", "version": "1", "content_hash": digest},
-            "adapter": {"ref": "local-procedure", "version": "1.0.0", "content_hash": digest},
-            "model": {
-                "ref": "bounded-local-model",
-                "version": "1.0.0",
-                "content_hash": digest,
-                "model_class": "bounded",
-                "slot": "worker",
-                "capabilities": ["structured-output"],
-            },
-            "runtime": {"ref": "python", "version": "3.11+", "content_hash": digest},
-            "host": {"ref": "bounded-test-host", "version": "1", "content_hash": digest},
-            "boundaries": {
-                "supply_selection": False,
-                "automatic_fallback": False,
-                "permission_grant": False,
-                "method_decision": False,
-            },
-        }
-        host_policy["subject_host"] = copy.deepcopy(binding["host"])
-        return {
-            "agent_profile": self._write(root, "view/profile.yaml", profile),
-            "data_policy": self._write(root, "view/data-policy.yaml", data_policy),
-            "host_policy": self._write(root, "view/host-policy.yaml", host_policy),
-            "execution_binding": self._write(root, "view/binding.yaml", binding),
-        }
-
-    def _build(self, root: Path) -> tuple[object, dict[str, PinnedExecutionInput]]:
-        helper = runtime_bundle_fixtures.RuntimeBundleTests(methodName="runTest")
-        manifest_path = helper._build_bundle(root)
-        bundle = load_runtime_bundle(
-            manifest_path, project_root=root, schema_root=ROOT / "schemas"
-        )
-        return bundle, self._inputs(root)
-
-    def _produce(self, root: Path, bundle: object, inputs: dict[str, PinnedExecutionInput]):
-        return produce_resolved_execution_view(
-            bundle,
-            **inputs,
-            execution_at="2026-08-26T00:00:00Z",
-            view_id="VIEW-LOCAL-001",
-            expected_bundle_sha256=hash_file(bundle.manifest_path),
-            schema_root=ROOT / "schemas",
-        )
-
+class ExecutionViewTests(ExecutionViewFixture, unittest.TestCase):
     def _codes(self, raised: object) -> set[str]:
         return {item.code for item in raised.exception.issues}
 
