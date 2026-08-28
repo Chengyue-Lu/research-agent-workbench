@@ -34,7 +34,7 @@
       "machine-gate-does-not-authorize-topic-5"
     ]
   },
-  "exact_read_surface": [
+  "exact_case_data_read_surface": [
     "actor-manifest.json",
     "inputs/examples/phase-c/m10-001-case-b/objects/EVID-PC-B.yaml",
     "inputs/examples/phase-c/m10-001-case-b/objects/HYP-PC-B.yaml",

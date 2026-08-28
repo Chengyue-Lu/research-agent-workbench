@@ -51,7 +51,7 @@
       "alias": "failure",
       "kind": "research_failure",
       "identity": {"object_id": "RFAIL-PC-B-001", "revision": 1},
-      "source_ref": {"path": "examples/phase-c/m10-002-case-b/failures/RFAIL-PC-B-001.yaml", "sha256": "a47141c89eba0813e8a39b4fce45ddf02d5f7ade84ed744cd9bea840a2d6a92c"}
+      "source_ref": {"path": "examples/phase-c/m10-002-case-b/failures/RFAIL-PC-B-001.yaml", "sha256": "28d9f3481888f7f643824bdf1c19b92dffe9a54e241e555a10a5b88492e8ca3a"}
     },
     {
       "alias": "task",

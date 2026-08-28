@@ -7,6 +7,7 @@
   "required": [
     "schema_version",
     "gate_id",
+    "gate_input_sha256",
     "machine_gate",
     "human_semantic_review",
     "r2_closeout",
@@ -16,6 +17,7 @@
   "properties": {
     "schema_version": { "const": "0.1.0" },
     "gate_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "gate_input_sha256": { "$ref": "common.schema.json#/$defs/sha256" },
     "machine_gate": {
       "type": "object",
       "required": ["status", "cases"],
@@ -38,12 +40,14 @@
       "required": [
         "reviewer_reconstruction_proven",
         "scientific_correctness_proven",
-        "topic_5_authorized"
+        "topic_5_authorized",
+        "complete_process_read_surface_proven"
       ],
       "properties": {
         "reviewer_reconstruction_proven": { "const": false },
         "scientific_correctness_proven": { "const": false },
-        "topic_5_authorized": { "const": false }
+        "topic_5_authorized": { "const": false },
+        "complete_process_read_surface_proven": { "const": false }
       },
       "additionalProperties": false
     }
@@ -57,7 +61,11 @@
         "status",
         "actor_pid",
         "answer_sha256",
-        "read_surface",
+        "source_manifest_sha256",
+        "private_oracle_sha256",
+        "input_closure_sha256",
+        "case_data_read_surface",
+        "trusted_runtime_schema_surface",
         "oracle_checks"
       ],
       "properties": {
@@ -66,10 +74,44 @@
         "status": { "enum": ["pass", "fail"] },
         "actor_pid": { "type": ["integer", "null"], "minimum": 1 },
         "answer_sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
-        "read_surface": {
+        "source_manifest_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "private_oracle_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "input_closure_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "case_data_read_surface": {
           "type": "array",
           "items": { "$ref": "common.schema.json#/$defs/relativePath" },
           "uniqueItems": true
+        },
+        "trusted_runtime_schema_surface": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "prefixItems": [
+            {
+              "const": {
+                "kind": "runtime",
+                "locator": "python-and-research-workbench-preloaded-runtime",
+                "assurance": "declared-preloaded"
+              }
+            },
+            {
+              "const": {
+                "kind": "schema",
+                "locator": "schema-catalog:v0.1.0",
+                "assurance": "read-only-allowlisted"
+              }
+            }
+          ],
+          "items": false
         },
         "oracle_checks": {
           "type": "array",
@@ -87,7 +129,10 @@
             "properties": {
               "actor_pid": { "type": "integer", "minimum": 1 },
               "answer_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
-              "read_surface": { "minItems": 1 },
+              "source_manifest_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+              "private_oracle_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+              "input_closure_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+              "case_data_read_surface": { "minItems": 1 },
               "oracle_checks": { "minItems": 1 }
             }
           },

@@ -20,6 +20,9 @@ from research_workbench.io import load_document_bytes
 from research_workbench.research_state import GateCase, run_gate_case, run_phase_c_gate
 from research_workbench.research_state import gate as gate_module
 from research_workbench.research_state import fresh_actor
+from research_workbench.research_state.boundaries import (
+    TRUSTED_RUNTIME_SCHEMA_SURFACE,
+)
 from research_workbench.validation.schemas import SchemaCatalog
 
 
@@ -96,9 +99,56 @@ class CanonicalGateTest(unittest.TestCase):
     def test_actor_read_surface_is_exact_and_excludes_private_oracle(self) -> None:
         for result in self.report["machine_gate"]["cases"]:
             with self.subTest(case=result["case_id"]):
-                self.assertEqual(result["read_surface"], sorted(result["read_surface"]))
-                self.assertTrue(all("oracle" not in path for path in result["read_surface"]))
+                case_surface = result["case_data_read_surface"]
+                self.assertEqual(case_surface, sorted(case_surface))
+                self.assertTrue(all("oracle" not in path for path in case_surface))
+                self.assertEqual(
+                    result["trusted_runtime_schema_surface"],
+                    TRUSTED_RUNTIME_SCHEMA_SURFACE,
+                )
                 self.assertIn("exact:no-input-writes", result["oracle_checks"])
+
+    def test_report_hash_binds_each_exact_gate_input(self) -> None:
+        by_case = {
+            item["case_id"]: item for item in self.report["machine_gate"]["cases"]
+        }
+        for manifest_path, oracle_path in (
+            (CASE_A_MANIFEST, CASE_A_ORACLE),
+            (CASE_B_MANIFEST, CASE_B_ORACLE),
+        ):
+            manifest = _manifest(manifest_path)
+            result = by_case[manifest["case_id"]]
+            self.assertEqual(
+                result["source_manifest_sha256"],
+                hash_bytes(manifest_path.read_bytes()),
+            )
+            self.assertEqual(
+                result["private_oracle_sha256"],
+                hash_bytes(oracle_path.read_bytes()),
+            )
+            self.assertRegex(result["input_closure_sha256"], r"^[0-9a-f]{64}$")
+        digest_input = [
+            {
+                key: item[key]
+                for key in (
+                    "case_id",
+                    "profile",
+                    "source_manifest_sha256",
+                    "private_oracle_sha256",
+                    "input_closure_sha256",
+                )
+            }
+            for item in self.report["machine_gate"]["cases"]
+        ]
+        expected_digest = hash_bytes(
+            json.dumps(
+                digest_input,
+                ensure_ascii=False,
+                separators=(",", ":"),
+                sort_keys=True,
+            ).encode("utf-8")
+        )
+        self.assertEqual(self.report["gate_input_sha256"], expected_digest)
 
     def test_negative_case_avoids_the_known_failed_path(self) -> None:
         negative = next(
@@ -119,7 +169,31 @@ class CanonicalGateTest(unittest.TestCase):
         self.assertFalse(self.report["boundaries"]["reviewer_reconstruction_proven"])
         self.assertFalse(self.report["boundaries"]["scientific_correctness_proven"])
         self.assertFalse(self.report["boundaries"]["topic_5_authorized"])
+        self.assertFalse(
+            self.report["boundaries"]["complete_process_read_surface_proven"]
+        )
         self.assertEqual(SchemaCatalog().validate("phase_c_gate_report", self.report), [])
+
+    def test_report_schema_rejects_missing_pins_and_read_surface_overclaim(self) -> None:
+        missing_pin = copy.deepcopy(self.report)
+        missing_pin["machine_gate"]["cases"][0].pop("private_oracle_sha256")
+        self.assertNotEqual(
+            SchemaCatalog().validate("phase_c_gate_report", missing_pin), []
+        )
+
+        overclaim = copy.deepcopy(self.report)
+        overclaim["boundaries"]["complete_process_read_surface_proven"] = True
+        self.assertNotEqual(
+            SchemaCatalog().validate("phase_c_gate_report", overclaim), []
+        )
+
+        duplicate_runtime = copy.deepcopy(self.report)
+        duplicate_runtime["machine_gate"]["cases"][0][
+            "trusted_runtime_schema_surface"
+        ][1] = copy.deepcopy(TRUSTED_RUNTIME_SCHEMA_SURFACE[0])
+        self.assertNotEqual(
+            SchemaCatalog().validate("phase_c_gate_report", duplicate_runtime), []
+        )
 
     def test_consumer_logic_is_independently_replayable_from_staged_bytes(self) -> None:
         for manifest_path, oracle_path in (
@@ -129,7 +203,12 @@ class CanonicalGateTest(unittest.TestCase):
             with self.subTest(manifest=manifest_path.name), tempfile.TemporaryDirectory() as temporary:
                 manifest = gate_module._load_json_object(manifest_path)
                 actor_root = Path(temporary)
-                actor_manifest, answer_path, expected_surface = gate_module._stage_case(
+                (
+                    actor_manifest,
+                    answer_path,
+                    expected_surface,
+                    input_closure_sha256,
+                ) = gate_module._stage_case(
                     manifest,
                     project_root=ROOT,
                     actor_root=actor_root,
@@ -138,8 +217,40 @@ class CanonicalGateTest(unittest.TestCase):
                 with mock.patch.object(fresh_actor.FileAccessPolicy, "install"):
                     answer = fresh_actor.run_actor(actor_manifest, answer_path)
                 self.assertEqual(answer["status"], "ok")
-                self.assertEqual(answer["read_surface"], expected_surface)
+                self.assertEqual(answer["case_data_read_surface"], expected_surface)
+                self.assertEqual(
+                    answer["trusted_runtime_schema_surface"],
+                    TRUSTED_RUNTIME_SCHEMA_SURFACE,
+                )
+                self.assertRegex(input_closure_sha256, r"^[0-9a-f]{64}$")
                 self.assertEqual(answer["input_write_surface"], [])
+
+    def test_semantically_equal_replacement_inputs_are_hash_distinguishable(self) -> None:
+        canonical = next(
+            item
+            for item in self.report["machine_gate"]["cases"]
+            if item["case_id"] == "M10-003-EVIDENCE-SYNTHESIS"
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            replacement = _materialize_case(
+                root,
+                CASE_A_MANIFEST,
+                CASE_A_ORACLE,
+            )
+            oracle = json.loads(replacement.oracle.read_text(encoding="utf-8"))
+            _write_json(replacement.oracle, oracle)
+            result = run_gate_case(replacement, project_root=root)
+        self.assertEqual(result["status"], "pass", result)
+        self.assertNotEqual(
+            result["source_manifest_sha256"], canonical["source_manifest_sha256"]
+        )
+        self.assertNotEqual(
+            result["private_oracle_sha256"], canonical["private_oracle_sha256"]
+        )
+        self.assertEqual(
+            result["input_closure_sha256"], canonical["input_closure_sha256"]
+        )
 
 
 class RunnerOwnedClosureTest(unittest.TestCase):

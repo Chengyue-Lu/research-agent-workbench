@@ -10,7 +10,10 @@ from typing import Any, Mapping
 
 from research_workbench.artifacts.integrity import hash_bytes
 from research_workbench.io import load_document_bytes
-from research_workbench.research_state.boundaries import AUTHORITY_LIMITS
+from research_workbench.research_state.boundaries import (
+    AUTHORITY_LIMITS,
+    TRUSTED_RUNTIME_SCHEMA_SURFACE,
+)
 from research_workbench.research_state.closure import _parse_object_ref
 from research_workbench.validation.documents import (
     LoadedDocuments,
@@ -29,7 +32,7 @@ def _is_write_mode(raw_mode: Any) -> bool:
 
 
 class FileAccessPolicy:
-    """Process-local deny-by-default data-file policy with an auditable surface."""
+    """Deny undeclared data files and record the exact case-data surface."""
 
     def __init__(
         self,
@@ -43,7 +46,7 @@ class FileAccessPolicy:
         self.allowed_reads = {path.resolve() for path in allowed_reads}
         self.allowed_writes = {path.resolve() for path in allowed_writes}
         self.trusted_read_roots = tuple(path.resolve() for path in trusted_read_roots)
-        self.read_surface: set[str] = set()
+        self.case_data_read_surface: set[str] = set()
         self.input_write_surface: set[str] = set()
 
     def _relative(self, path: Path) -> str:
@@ -56,7 +59,7 @@ class FileAccessPolicy:
         resolved = path.resolve()
         if resolved not in self.allowed_reads:
             raise PermissionError("actor manifest is not in the read allowlist")
-        self.read_surface.add(self._relative(resolved))
+        self.case_data_read_surface.add(self._relative(resolved))
 
     def read_bytes(self, path: Path) -> bytes:
         """Read one staged input through the explicit allowlist.
@@ -68,7 +71,7 @@ class FileAccessPolicy:
         resolved = path.resolve()
         if resolved not in self.allowed_reads:
             raise PermissionError(f"actor read outside runner-owned allowlist: {resolved}")
-        self.read_surface.add(self._relative(resolved))
+        self.case_data_read_surface.add(self._relative(resolved))
         return resolved.read_bytes()
 
     def _audit(self, event: str, args: tuple[Any, ...]) -> None:
@@ -86,7 +89,7 @@ class FileAccessPolicy:
                 raise PermissionError(f"actor write outside output allowlist: {path}")
             return
         if path in self.allowed_reads:
-            self.read_surface.add(self._relative(path))
+            self.case_data_read_surface.add(self._relative(path))
             return
         if self._trusted_read(path):
             return
@@ -392,7 +395,10 @@ def run_actor(manifest_path: Path, output_path: Path) -> dict[str, Any]:
             trace.get("actual_binding", {}).get("coverage", "")
         ),
         "authority_limits": AUTHORITY_LIMITS,
-        "read_surface": sorted(policy.read_surface),
+        "case_data_read_surface": sorted(policy.case_data_read_surface),
+        "trusted_runtime_schema_surface": [
+            dict(item) for item in TRUSTED_RUNTIME_SCHEMA_SURFACE
+        ],
         "input_write_surface": sorted(policy.input_write_surface),
     }
     return answer

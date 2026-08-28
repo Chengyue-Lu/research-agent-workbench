@@ -51,7 +51,7 @@
       "alias": "lineage-current",
       "kind": "research_attempt_lineage",
       "identity": {"object_id": "RATTEMPT-PC-A-02", "revision": 1},
-      "source_ref": {"path": "examples/phase-c/m10-002-case-a/attempt-lineage/A-PC-A-02.yaml", "sha256": "b4f43b3cc18b8ce1d0b1ca03f73b15c84fd931b4f99092efb6d82421c4e61d52"}
+      "source_ref": {"path": "examples/phase-c/m10-002-case-a/attempt-lineage/A-PC-A-02.yaml", "sha256": "5c2afd53714d1dd3fcd4fb96481c5e3de0c12054789b9d3df2d313125d25b45d"}
     },
     {
       "alias": "attempt-first",

@@ -13,7 +13,10 @@ from typing import Any, Mapping, Sequence
 
 from research_workbench.artifacts.integrity import hash_bytes
 from research_workbench.io import load_document_bytes
-from research_workbench.research_state.boundaries import AUTHORITY_LIMITS
+from research_workbench.research_state.boundaries import (
+    AUTHORITY_LIMITS,
+    TRUSTED_RUNTIME_SCHEMA_SURFACE,
+)
 from research_workbench.validation.documents import (
     LoadedDocuments,
     infer_document_kind,
@@ -62,6 +65,16 @@ def _load_json_object(path: Path) -> Mapping[str, Any]:
     return value
 
 
+def _canonical_sha256(value: Any) -> str:
+    content = json.dumps(
+        value,
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    ).encode("utf-8")
+    return hash_bytes(content)
+
+
 def _safe_source_path(root: Path, relative: str) -> Path:
     normalized = relative.replace("\\", "/")
     if not normalized or normalized.startswith("/"):
@@ -104,7 +117,7 @@ def _identity(kind: str, document: Mapping[str, Any]) -> tuple[str, int]:
 
 def _stage_case(
     manifest: Mapping[str, Any], *, project_root: Path, actor_root: Path, oracle: Path
-) -> tuple[Path, Path, list[str]]:
+) -> tuple[Path, Path, list[str], str]:
     entries = manifest.get("documents", [])
     aliases: set[str] = set()
     identities: set[tuple[str, int]] = set()
@@ -203,20 +216,37 @@ def _stage_case(
         "actor-manifest.json",
         *sorted(entry["path"] for entry in actor_entries),
     ]
-    return actor_manifest_path, answer_path, expected_surface
+    input_closure_sha256 = _canonical_sha256(
+        {"documents": sorted(actor_entries, key=lambda item: item["alias"])}
+    )
+    return actor_manifest_path, answer_path, expected_surface, input_closure_sha256
 
 
-def _load_oracle(oracle_path: Path) -> Mapping[str, Any]:
-    oracle = _load_json_object(oracle_path)
-    required = {"case_id", "exact_output", "exact_read_surface", "predicates"}
+def _load_oracle(oracle_path: Path) -> tuple[Mapping[str, Any], str]:
+    oracle_bytes = oracle_path.read_bytes()
+    oracle_sha256 = hash_bytes(oracle_bytes)
+    oracle = json.loads(oracle_bytes.decode("utf-8"))
+    if not isinstance(oracle, Mapping):
+        raise ValueError(f"expected a JSON object: {oracle_path}")
+    required = {
+        "case_id",
+        "exact_output",
+        "exact_case_data_read_surface",
+        "predicates",
+    }
     if set(oracle) != required:
-        raise ValueError("private oracle must contain exactly case_id/exact_output/exact_read_surface/predicates")
+        raise ValueError(
+            "private oracle must contain exactly case_id/exact_output/"
+            "exact_case_data_read_surface/predicates"
+        )
     exact_output = oracle.get("exact_output")
     if not isinstance(exact_output, Mapping) or set(exact_output) != REQUIRED_ORACLE_FIELDS:
         raise ValueError("private oracle exact_output does not satisfy the runner-owned minimum")
-    surface = oracle.get("exact_read_surface")
+    surface = oracle.get("exact_case_data_read_surface")
     if not isinstance(surface, list) or not surface or not all(isinstance(item, str) for item in surface):
-        raise ValueError("private oracle exact_read_surface must be a non-empty string list")
+        raise ValueError(
+            "private oracle exact_case_data_read_surface must be a non-empty string list"
+        )
     predicates = oracle.get("predicates")
     if (
         not isinstance(predicates, list)
@@ -227,7 +257,7 @@ def _load_oracle(oracle_path: Path) -> Mapping[str, Any]:
         raise ValueError("private oracle predicates are empty, duplicated, or outside the fixed vocabulary")
     if "topic-5-remains-unauthorized" not in predicates:
         raise ValueError("private oracle must retain the Topic 5 authority ceiling")
-    return oracle
+    return oracle, oracle_sha256
 
 
 def _check_predicate(name: str, answer: Mapping[str, Any]) -> bool:
@@ -257,11 +287,15 @@ def _evaluate_oracle(
 ) -> list[str]:
     if oracle.get("case_id") != answer.get("case_id"):
         raise ValueError("private oracle case_id does not match actor output")
-    declared_surface = list(oracle.get("exact_read_surface", []))
+    declared_surface = list(oracle.get("exact_case_data_read_surface", []))
     if declared_surface != expected_surface:
-        raise ValueError("private oracle read surface does not match the runner-owned staged closure")
-    if answer.get("read_surface") != expected_surface:
-        raise ValueError("fresh actor read surface differs from the exact allowlist")
+        raise ValueError(
+            "private oracle case-data read surface does not match the runner-owned staged closure"
+        )
+    if answer.get("case_data_read_surface") != expected_surface:
+        raise ValueError("fresh actor case-data read surface differs from the exact allowlist")
+    if answer.get("trusted_runtime_schema_surface") != TRUSTED_RUNTIME_SCHEMA_SURFACE:
+        raise ValueError("fresh actor trusted runtime/schema surface declaration drifted")
     if answer.get("input_write_surface") != []:
         raise ValueError("fresh actor attempted to write an input or unlisted path")
 
@@ -270,7 +304,7 @@ def _evaluate_oracle(
         if answer.get(field) != expected:
             raise ValueError(f"private oracle exact output mismatch: {field}")
     checks = [f"exact:{field}" for field in sorted(exact_output)]
-    checks.append("exact:read-surface")
+    checks.append("exact:case-data-read-surface")
     checks.append("exact:no-input-writes")
     for predicate in oracle.get("predicates", []):
         if not _check_predicate(str(predicate), answer):
@@ -279,14 +313,28 @@ def _evaluate_oracle(
     return checks
 
 
-def _failure_result(case_id: str, profile: str, problem: str) -> dict[str, Any]:
+def _failure_result(
+    case_id: str,
+    profile: str,
+    problem: str,
+    *,
+    source_manifest_sha256: str | None = None,
+    private_oracle_sha256: str | None = None,
+    input_closure_sha256: str | None = None,
+) -> dict[str, Any]:
     return {
         "case_id": case_id,
         "profile": profile,
         "status": "fail",
         "actor_pid": None,
         "answer_sha256": None,
-        "read_surface": [],
+        "source_manifest_sha256": source_manifest_sha256,
+        "private_oracle_sha256": private_oracle_sha256,
+        "input_closure_sha256": input_closure_sha256,
+        "case_data_read_surface": [],
+        "trusted_runtime_schema_surface": [
+            dict(item) for item in TRUSTED_RUNTIME_SCHEMA_SURFACE
+        ],
         "oracle_checks": [f"blocked:{problem}"],
     }
 
@@ -294,17 +342,28 @@ def _failure_result(case_id: str, profile: str, problem: str) -> dict[str, Any]:
 def run_gate_case(case: GateCase, *, project_root: Path) -> dict[str, Any]:
     """Run one manifest in a fresh actor, then and only then read its private oracle."""
 
-    manifest = _load_json_object(case.manifest.resolve())
+    manifest_bytes = case.manifest.resolve().read_bytes()
+    manifest_sha256 = hash_bytes(manifest_bytes)
+    manifest = json.loads(manifest_bytes.decode("utf-8"))
+    if not isinstance(manifest, Mapping):
+        raise ValueError(f"expected a JSON object: {case.manifest.resolve()}")
     case_id = str(manifest.get("case_id", ""))
     profile = str(manifest.get("profile", ""))
     errors = _manifest_errors(manifest)
     if errors:
-        return _failure_result(case_id, profile, "manifest schema: " + "; ".join(errors[:4]))
+        return _failure_result(
+            case_id,
+            profile,
+            "manifest schema: " + "; ".join(errors[:4]),
+            source_manifest_sha256=manifest_sha256,
+        )
 
+    input_closure_sha256: str | None = None
+    private_oracle_sha256: str | None = None
     try:
         with tempfile.TemporaryDirectory(prefix="rwb-phase-c-") as temporary:
             actor_root = Path(temporary).resolve()
-            actor_manifest, answer_path, expected_surface = _stage_case(
+            actor_manifest, answer_path, expected_surface, input_closure_sha256 = _stage_case(
                 manifest,
                 project_root=project_root.resolve(),
                 actor_root=actor_root,
@@ -342,7 +401,7 @@ def run_gate_case(case: GateCase, *, project_root: Path) -> dict[str, Any]:
                 raise ValueError("fresh actor authority limits drifted")
 
             # This is intentionally the first private-oracle read in the case path.
-            oracle = _load_oracle(case.oracle.resolve())
+            oracle, private_oracle_sha256 = _load_oracle(case.oracle.resolve())
             checks = _evaluate_oracle(oracle, answer, expected_surface=expected_surface)
             return {
                 "case_id": case_id,
@@ -350,11 +409,24 @@ def run_gate_case(case: GateCase, *, project_root: Path) -> dict[str, Any]:
                 "status": "pass",
                 "actor_pid": actor_pid,
                 "answer_sha256": hash_bytes(answer_bytes),
-                "read_surface": answer["read_surface"],
+                "source_manifest_sha256": manifest_sha256,
+                "private_oracle_sha256": private_oracle_sha256,
+                "input_closure_sha256": input_closure_sha256,
+                "case_data_read_surface": answer["case_data_read_surface"],
+                "trusted_runtime_schema_surface": answer[
+                    "trusted_runtime_schema_surface"
+                ],
                 "oracle_checks": checks,
             }
     except Exception as exc:
-        return _failure_result(case_id, profile, str(exc))
+        return _failure_result(
+            case_id,
+            profile,
+            str(exc),
+            source_manifest_sha256=manifest_sha256,
+            private_oracle_sha256=private_oracle_sha256,
+            input_closure_sha256=input_closure_sha256,
+        )
 
 
 def run_phase_c_gate(cases: Sequence[GateCase], *, project_root: Path) -> dict[str, Any]:
@@ -375,6 +447,21 @@ def run_phase_c_gate(cases: Sequence[GateCase], *, project_root: Path) -> dict[s
     report = {
         "schema_version": "0.1.0",
         "gate_id": "PHASE-C-M10-003-BOUNDED-GATE",
+        "gate_input_sha256": _canonical_sha256(
+            [
+                {
+                    key: item[key]
+                    for key in (
+                        "case_id",
+                        "profile",
+                        "source_manifest_sha256",
+                        "private_oracle_sha256",
+                        "input_closure_sha256",
+                    )
+                }
+                for item in results
+            ]
+        ),
         "machine_gate": {
             "status": "pass" if all(item["status"] == "pass" for item in results) else "fail",
             "cases": results,
@@ -394,6 +481,7 @@ def run_phase_c_gate(cases: Sequence[GateCase], *, project_root: Path) -> dict[s
             "reviewer_reconstruction_proven": False,
             "scientific_correctness_proven": False,
             "topic_5_authorized": False,
+            "complete_process_read_surface_proven": False,
         },
     }
     errors = SchemaCatalog().validate("phase_c_gate_report", report)
