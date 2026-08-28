@@ -9,6 +9,7 @@
     "failure_id",
     "revision",
     "content_hash",
+    "origin_kind",
     "learned_result",
     "revisit_condition"
   ],
@@ -17,6 +18,7 @@
     "failure_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "revision": { "type": "integer", "minimum": 1 },
     "content_hash": { "$ref": "common.schema.json#/$defs/sha256" },
+    "origin_kind": { "enum": ["execution", "non-execution"] },
     "learned_result": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "revisit_condition": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "execution_profile": {
@@ -32,5 +34,15 @@
     "limitations": { "$ref": "common.schema.json#/$defs/stringArray" },
     "metadata": { "type": "object" }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "origin_kind": { "const": "execution" } },
+        "required": ["origin_kind"]
+      },
+      "then": { "required": ["execution_profile"] },
+      "else": { "not": { "required": ["execution_profile"] } }
+    }
+  ],
   "additionalProperties": false
 }

@@ -80,6 +80,7 @@ class FixtureContractTest(unittest.TestCase):
             "failure_id": "RFAIL-MIN",
             "revision": 1,
             "content_hash": "12" * 32,
+            "origin_kind": "non-execution",
             "learned_result": "The tested path does not distinguish the alternatives.",
             "revisit_condition": "A discriminating observation becomes available.",
         }
@@ -164,6 +165,39 @@ class ExactLineageClosureTest(unittest.TestCase):
             SchemaCatalog().validate("research_attempt_lineage", mutated), []
         )
 
+    def test_changed_condition_only_is_exact_and_provenance_bearing(self) -> None:
+        changed_only = copy.deepcopy(self.reopened)
+        changed_only["reopen_justification"]["basis_refs"] = []
+        changed_only["reopen_justification"]["changed_conditions"] = [
+            {
+                "statement": "A new evidence admission decision is present.",
+                "provenance_refs": [{"object_id": "D-PC-A", "revision": 1}],
+            }
+        ]
+        self.assertEqual(
+            SchemaCatalog().validate("research_attempt_lineage", changed_only), []
+        )
+        self.assertEqual(check_research_attempt_lineage(changed_only, self.index), [])
+
+        missing_provenance = copy.deepcopy(changed_only)
+        missing_provenance["reopen_justification"]["changed_conditions"][0][
+            "provenance_refs"
+        ] = []
+        self.assertNotEqual(
+            SchemaCatalog().validate("research_attempt_lineage", missing_provenance), []
+        )
+
+        wrong_type = copy.deepcopy(changed_only)
+        wrong_type["reopen_justification"]["changed_conditions"][0][
+            "provenance_refs"
+        ] = [{"object_id": "Q-PC-A", "revision": 1}]
+        self.assertTrue(
+            any(
+                "role/type mismatch" in item
+                for item in check_research_attempt_lineage(wrong_type, self.index)
+            )
+        )
+
     def test_reopen_basis_is_type_bound(self) -> None:
         mutated = copy.deepcopy(self.reopened)
         mutated["reopen_justification"]["basis_refs"] = [
@@ -181,7 +215,12 @@ class ExactLineageClosureTest(unittest.TestCase):
         mutated["reopen_justification"] = {
             "statement": "invalid self-loop",
             "basis_refs": [],
-            "changed_conditions": ["synthetic self-loop"],
+            "changed_conditions": [
+                {
+                    "statement": "synthetic self-loop",
+                    "provenance_refs": [{"object_id": "D-PC-A", "revision": 1}],
+                }
+            ],
         }
         problems = check_research_attempt_lineage(mutated, self.index)
         self.assertTrue(any("distinct predecessor" in item for item in problems))
@@ -219,6 +258,31 @@ class ExactLineageClosureTest(unittest.TestCase):
 
 
 class FailureProfileClosureTest(unittest.TestCase):
+    def test_origin_kind_makes_execution_provenance_non_optional(self) -> None:
+        execution_failure = load_document(
+            LINEAGE_B / "failures" / "RFAIL-PC-B-001.yaml"
+        )
+        execution_failure.pop("execution_profile")
+        self.assertNotEqual(
+            SchemaCatalog().validate("research_failure", execution_failure), []
+        )
+        self.assertTrue(
+            any(
+                "requires execution_profile" in item
+                for item in check_research_failure(
+                    execution_failure, _index(STATE_B, LINEAGE_B)
+                )
+            )
+        )
+
+        non_execution = load_document(
+            LINEAGE_B / "failures" / "RFAIL-PC-B-001.yaml"
+        )
+        non_execution["origin_kind"] = "non-execution"
+        self.assertNotEqual(
+            SchemaCatalog().validate("research_failure", non_execution), []
+        )
+
     def test_profile_source_must_be_attempt_lineage(self) -> None:
         failure = load_document(LINEAGE_B / "failures" / "RFAIL-PC-B-001.yaml")
         failure["execution_profile"]["source_attempt_ref"] = {

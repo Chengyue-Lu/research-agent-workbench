@@ -28,7 +28,8 @@ Receipt 路径不被改写。
 
 `predecessor_attempt_ref` 是可选的 Research Attempt lineage exact ref，且不得自环。`reopen_justification`
 是与 predecessor 独立的第三条关系：它可 exact-ref Failure、kernel Decision、Evidence 或 State（State ref
-可承载 Unknown item 所在 revision），也可记录 changed condition；至少一种 basis 必须存在。justification
+可承载 Unknown item 所在 revision）；changed condition 也必须逐项携带上述 exact provenance refs，而不能
+只靠自由文本声明。至少一种 basis 必须存在。justification
 只记录为何重新开启可审查，不产生 reopen authority。存在 predecessor 不强制产生 justification，存在
 justification 也不要求 predecessor。
 
@@ -39,9 +40,10 @@ Research Failure 的 universal semantic minimum 只有：
 - `learned_result`：这条研究路径实际教会了什么；
 - `revisit_condition`：出现什么新条件后才值得重访。
 
-`failure_id@revision` 与 `content_hash` 是引用完整性元数据，不扩张其研究语义。`execution_profile` 是
-可选且 all-or-nothing 的 bounded profile candidate，仅包含 source Research Attempt、observed result 和
-uncertainty。它不冻结为所有 Research Failure 必须具备的字段。
+`failure_id@revision` 与 `content_hash` 是引用完整性元数据，不扩张其研究语义。`origin_kind` 明确区分
+`execution` 与 `non-execution`：前者必须携带 all-or-nothing `execution_profile`，精确引用 source Research
+Attempt 并记录 observed result/uncertainty；后者不得伪带该 profile。最小 non-execution Failure 仍只需
+universal semantic minimum，不把执行字段冻结为所有 Research Failure 的共同语义。
 
 Research Failure 不是 execution failure、negative Evidence、Capability Gap 或 Skill Need；Schema 明确
 拒绝这些平行字段。执行是否异常不能单独推出 Research Failure，执行成功也不阻止记录研究路径无信息增量。

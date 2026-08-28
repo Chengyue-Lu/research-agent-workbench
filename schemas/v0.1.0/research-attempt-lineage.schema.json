@@ -46,12 +46,30 @@
           "items": { "$ref": "common.schema.json#/$defs/objectRef" },
           "uniqueItems": true
         },
-        "changed_conditions": { "$ref": "common.schema.json#/$defs/stringArray" }
+        "changed_conditions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/changedCondition" },
+          "uniqueItems": true
+        }
       },
       "anyOf": [
         { "properties": { "basis_refs": { "minItems": 1 } } },
         { "properties": { "changed_conditions": { "minItems": 1 } } }
       ],
+      "additionalProperties": false
+    },
+    "changedCondition": {
+      "type": "object",
+      "required": ["statement", "provenance_refs"],
+      "properties": {
+        "statement": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "provenance_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "common.schema.json#/$defs/objectRef" },
+          "uniqueItems": true
+        }
+      },
       "additionalProperties": false
     }
   },

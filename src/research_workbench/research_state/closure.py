@@ -587,6 +587,26 @@ def check_research_attempt_lineage(
                         ),
                     )
                 )
+            for condition_position, condition in enumerate(
+                justification.get("changed_conditions", [])
+            ):
+                if not isinstance(condition, Mapping):
+                    continue
+                for ref_position, ref in enumerate(condition.get("provenance_refs", [])):
+                    problems.extend(
+                        _ref_problems(
+                            index,
+                            ref,
+                            "reopen_justification.changed_conditions"
+                            f"[{condition_position}].provenance_refs[{ref_position}]",
+                            expected_types=(
+                                "research_failure",
+                                "decision",
+                                "evidence",
+                                "research_state",
+                            ),
+                        )
+                    )
 
     for position, ref in enumerate(document.get("failure_refs", [])):
         problems.extend(
@@ -606,7 +626,12 @@ def check_research_failure(
     """Validate only the optional bounded execution profile of a Research Failure."""
 
     problems = index.identity_problems()
+    origin_kind = document.get("origin_kind")
     profile = document.get("execution_profile")
+    if origin_kind == "execution" and not isinstance(profile, Mapping):
+        problems.append("execution-origin Research Failure requires execution_profile")
+    if origin_kind == "non-execution" and profile is not None:
+        problems.append("non-execution Research Failure must not carry execution_profile")
     if isinstance(profile, Mapping):
         problems.extend(
             _ref_problems(

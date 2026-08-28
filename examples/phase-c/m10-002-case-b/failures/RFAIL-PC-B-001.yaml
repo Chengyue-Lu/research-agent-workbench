@@ -2,6 +2,7 @@ schema_version: 0.1.0
 failure_id: RFAIL-PC-B-001
 revision: 1
 content_hash: f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1
+origin_kind: execution
 learned_result: The coarse-grid run cannot resolve the synthetic boundary effect.
 revisit_condition: Revisit only after a higher-resolution input is admitted by Human review.
 execution_profile:

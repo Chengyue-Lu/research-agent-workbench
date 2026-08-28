@@ -15,6 +15,8 @@ predecessor_attempt_ref:
 reopen_justification:
   statement: New evidence was admitted after the predecessor Attempt closed.
   basis_refs: [{object_id: D-PC-A, revision: 1}]
-  changed_conditions: [A new evidence admission decision is present.]
+  changed_conditions:
+    - statement: A new evidence admission decision is present.
+      provenance_refs: [{object_id: D-PC-A, revision: 1}]
 failure_refs: []
 limitations: [bounded lineage candidate]
