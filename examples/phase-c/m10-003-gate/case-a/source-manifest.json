@@ -81,7 +81,7 @@
       "alias": "method-trace",
       "kind": "method_trace",
       "identity": {"object_id": "MTRACE-PC-A", "revision": 1},
-      "source_ref": {"path": "examples/phase-c/m3-009-case-a/traces/MTRACE-PC-A.yaml", "sha256": "920b15a4327a0206689479785e965ee655c1c565b578b306d52bc9f5481db37f"}
+      "source_ref": {"path": "examples/phase-c/m3-009-case-a/traces/MTRACE-PC-A.yaml", "sha256": "2a5257d8d921764d35f428afda2d12f284f1c83af4ae60ccdd3f21347a7ab11f"}
     }
   ],
   "candidate_paths": [

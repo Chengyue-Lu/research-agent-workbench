@@ -69,7 +69,7 @@
       "alias": "method-trace",
       "kind": "method_trace",
       "identity": {"object_id": "MTRACE-PC-B", "revision": 1},
-      "source_ref": {"path": "examples/phase-c/m10-003-gate/case-b/closure/traces/MTRACE-PC-B.yaml", "sha256": "6de486b76c8e30b266132933c582ac72b08b73d2f8bebbc9034764e1d81fbef3"}
+      "source_ref": {"path": "examples/phase-c/m10-003-gate/case-b/closure/traces/MTRACE-PC-B.yaml", "sha256": "71a39eabd1db33df2104123d73b9c317f163ce9afd314d7cb6f9d3acafbdcccd"}
     }
   ],
   "candidate_paths": [

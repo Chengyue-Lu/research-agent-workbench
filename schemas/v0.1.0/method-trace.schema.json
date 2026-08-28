@@ -101,7 +101,8 @@
         "decision_refs",
         "evidence_refs",
         "failure_refs",
-        "state_refs"
+        "state_refs",
+        "execution_fact_refs"
       ],
       "properties": {
         "action_decision_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
@@ -125,8 +126,28 @@
           "type": "array",
           "items": { "$ref": "common.schema.json#/$defs/objectRef" },
           "uniqueItems": true
+        },
+        "execution_fact_refs": {
+          "type": "array",
+          "maxItems": 1,
+          "items": { "$ref": "common.schema.json#/$defs/fileRef" },
+          "uniqueItems": true
         }
       },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "execution_fact_refs": { "minItems": 1 } },
+            "required": ["execution_fact_refs"]
+          },
+          "then": {
+            "properties": {
+              "disposition": { "const": "applied" },
+              "state_refs": { "minItems": 1 }
+            }
+          }
+        }
+      ],
       "additionalProperties": false
     },
     "unavailableBinding": {
@@ -134,7 +155,7 @@
       "required": ["status", "reason", "coverage"],
       "properties": {
         "status": { "const": "unavailable" },
-        "reason": { "const": "no-accepted-execution-fact-producer" },
+        "reason": { "const": "no-authoritative-execution-fact-for-attempt" },
         "coverage": { "const": "gap-only" }
       },
       "additionalProperties": false
@@ -146,7 +167,7 @@
         "status": { "const": "captured" },
         "producer_kind": { "const": "execution_trace_fact" },
         "execution_fact_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
-        "coverage": { "const": "coverage-complete" }
+        "coverage": { "const": "fact-bound-path-effect" }
       },
       "additionalProperties": false
     }

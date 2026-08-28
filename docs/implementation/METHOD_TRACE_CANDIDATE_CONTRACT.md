@@ -2,7 +2,7 @@
 
 状态：Bounded implementation candidate；最终表示待 Human/R2 接受
 
-更新：2026-08-27
+更新：2026-08-28
 
 ## 1. 单层范围
 
@@ -40,17 +40,20 @@ semantic type 检查；Human Decision 继续复用 kernel `decision` object。
 
 ## 4. Actual-binding boundary
 
-当前 #44 基线没有已合并的 accepted execution-layer actual-binding fact producer。正面 fixture 因此只能记录：
+当前基线已包含 M11 `execution_trace_fact` producer。Method Trace 必须区分“producer 存在”与“本 Attempt
+是否有 authoritative fact”。没有本 Attempt fact 时只能记录：
 
 ```yaml
 status: unavailable
-reason: no-accepted-execution-fact-producer
+reason: no-authoritative-execution-fact-for-attempt
 coverage: gap-only
 ```
 
-该结构只证明缺口被诚实表达，绝不等于 `coverage-complete`。Schema 预留 `captured` 形状，但 validator 只有
-在当前 Schema catalog 已包含 accepted `execution_trace_fact` 后才允许继续校验；fact 必须在 runner 显式
-closure 中以 path+loaded-byte SHA-256 精确绑定、自身 schema-valid，并属于同一 Attempt。
+该结构只证明 per-Attempt 缺口被诚实表达，所有 path 的 `execution_fact_refs` 必须为空。captured 分支只接受
+M11 producer 生成、在显式 closure 中以 path+loaded-byte SHA-256 精确绑定、schema-valid 且属于同一
+Attempt 的 `execution_trace_fact`。顶层 fact 必须在至少一个 path disposition 中以完全相同的 FileReference
+重复绑定；该 path 必须为 `applied` 且携带 State effect ref。coverage 仅为
+`fact-bound-path-effect`，不声称整条 Method、科学结论或 reviewer reconstruction 完整。
 
 Resolved Capability Snapshot 无论是 structural-replay 还是未来 runtime-execution，都不是 actual execution
 fact；wrong-kind Snapshot fixture 必须阻断。Method Trace 不从 selected Snapshot、Receipt 或 gap-valid 状态
@@ -58,7 +61,10 @@ fact；wrong-kind Snapshot fixture 必须阻断。Method Trace 不从 selected S
 
 ## 5. 证据边界
 
-Case A 只证明一条 synthetic evidence-synthesis path 的 exact ref/identity/type/byte-pin closure 和 gap honesty。
+Case A 证明一条 synthetic evidence-synthesis path 的 exact ref/identity/type/byte-pin closure 和 per-Attempt
+gap honesty；captured 正例由 M11 `AgentTraceRecorder.record_execution_fact()` 生成正式 fact，并验证其与
+同一 Attempt、applied path 和 State effect 的 exact 绑定。
 专项反例覆盖 Method Resolution 缺失/错类型/错 Task/坏 Schema/坏 Task pin、Mode drift、Action disposition
 缺失/重复、Attempt/Task/State/Question 拼接、Human/Evidence 错类型、duplicate Trace、gap overclaim、
-captured-without-producer 与 Snapshot-as-actual。最终 Method Trace 表示和语义仍须具名 Human/R2 接受。
+captured fact 缺失/Attempt 错配/path 未绑定/ref 漂移、unavailable 夹带 fact 与 Snapshot-as-actual。最终
+Method Trace 表示和语义仍须具名 Human/R2 接受。

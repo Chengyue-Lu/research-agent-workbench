@@ -22,9 +22,10 @@ path_dispositions:
     evidence_refs: [{object_id: EVID-PC-B, revision: 1}]
     failure_refs: [{object_id: RFAIL-PC-B-001, revision: 1}]
     state_refs: [{object_id: RSTATE-PC-B, revision: 2}]
+    execution_fact_refs: []
 actual_binding:
   status: unavailable
-  reason: no-accepted-execution-fact-producer
+  reason: no-authoritative-execution-fact-for-attempt
   coverage: gap-only
 limitations:
   - This is a pre-recorded synthetic negative observation, not a live execution.

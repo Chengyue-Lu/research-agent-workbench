@@ -835,6 +835,9 @@ def check_method_trace(document: Mapping[str, Any], index: ClosureIndex) -> list
         "failure_refs": ("research_failure",),
         "state_refs": ("research_state",),
     }
+    path_fact_bindings: list[
+        tuple[int, Mapping[str, Any], Any, IndexedDocument | None]
+    ] = []
     for path_position, disposition in enumerate(document.get("path_dispositions", [])):
         if not isinstance(disposition, Mapping):
             continue
@@ -848,6 +851,18 @@ def check_method_trace(document: Mapping[str, Any], index: ClosureIndex) -> list
                         expected_types=expected_types,
                     )
                 )
+        for ref_position, ref in enumerate(disposition.get("execution_fact_refs", [])):
+            fact_problems, fact_entry = _file_ref_problems(
+                index,
+                ref,
+                "path_dispositions"
+                f"[{path_position}].execution_fact_refs[{ref_position}]",
+                expected_types=("execution_trace_fact",),
+            )
+            problems.extend(fact_problems)
+            path_fact_bindings.append(
+                (path_position, disposition, ref, fact_entry)
+            )
 
     if task_entry is not None and state_documents:
         task_questions = {
@@ -866,31 +881,59 @@ def check_method_trace(document: Mapping[str, Any], index: ClosureIndex) -> list
 
     actual_binding = document.get("actual_binding")
     if isinstance(actual_binding, Mapping) and actual_binding.get("status") == "captured":
-        fact_schema_accepted = "execution_trace_fact" in catalog.document_kinds
-        if not fact_schema_accepted:
-            problems.append(
-                "actual_binding: no accepted execution fact producer exists in this schema baseline"
-            )
+        execution_fact_ref = actual_binding.get("execution_fact_ref")
         file_problems, fact_entry = _file_ref_problems(
             index,
-            actual_binding.get("execution_fact_ref"),
+            execution_fact_ref,
             "actual_binding.execution_fact_ref",
             expected_types=("execution_trace_fact",),
         )
         problems.extend(file_problems)
-        if fact_entry is not None and attempt_entry is not None:
-            fact_errors = (
-                catalog.validate("execution_trace_fact", fact_entry.document)
-                if fact_schema_accepted
-                else []
-            )
+        if fact_entry is not None:
+            fact_errors = catalog.validate("execution_trace_fact", fact_entry.document)
             for error in fact_errors:
                 problems.append(
                     "actual_binding.execution_fact_ref: referenced execution fact "
                     f"is schema-invalid at {error.pointer}: {error.message}"
                 )
-            if fact_entry.document.get("attempt_id") != attempt_entry.document.get("attempt_id"):
+            if (
+                attempt_entry is not None
+                and fact_entry.document.get("attempt_id")
+                != attempt_entry.document.get("attempt_id")
+            ):
                 problems.append("actual_binding: execution fact belongs to a different Attempt")
+        exact_path_bindings = 0
+        for path_position, disposition, path_fact_ref, _ in path_fact_bindings:
+            if not (
+                isinstance(path_fact_ref, Mapping)
+                and isinstance(execution_fact_ref, Mapping)
+                and dict(path_fact_ref) == dict(execution_fact_ref)
+            ):
+                problems.append(
+                    "path_dispositions"
+                    f"[{path_position}].execution_fact_refs must exactly equal "
+                    "actual_binding.execution_fact_ref"
+                )
+                continue
+            exact_path_bindings += 1
+            if disposition.get("disposition") != "applied":
+                problems.append(
+                    "captured execution fact may only explain an applied path disposition"
+                )
+            if not disposition.get("state_refs"):
+                problems.append(
+                    "captured execution fact path binding requires a State effect ref"
+                )
+        if exact_path_bindings == 0:
+            problems.append(
+                "actual_binding.execution_fact_ref must bind at least one exact "
+                "applied path/state effect"
+            )
+    elif isinstance(actual_binding, Mapping) and actual_binding.get("status") == "unavailable":
+        if path_fact_bindings:
+            problems.append(
+                "unavailable per-Attempt actual binding cannot claim path execution facts"
+            )
 
     if document.get("supersedes") is not None:
         problems.extend(

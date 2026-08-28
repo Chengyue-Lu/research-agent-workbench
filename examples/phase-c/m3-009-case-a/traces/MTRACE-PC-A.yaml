@@ -22,9 +22,10 @@ path_dispositions:
     evidence_refs: [{object_id: EVID-PC-A, revision: 1}]
     failure_refs: []
     state_refs: [{object_id: RSTATE-PC-A, revision: 2}]
+    execution_fact_refs: []
 actual_binding:
   status: unavailable
-  reason: no-accepted-execution-fact-producer
+  reason: no-authoritative-execution-fact-for-attempt
   coverage: gap-only
 limitations:
   - Gap-valid is not coverage-complete.

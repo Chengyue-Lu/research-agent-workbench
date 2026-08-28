@@ -3,7 +3,7 @@
 - 实现责任人：黄毅（GitHub `let778750-cpu`）
 - Task owner / R2 审查人：路诚钺（GitHub `Chengyue-Lu`）
 - Tasks：`M10-001 → M10-002 → M3-009 → M10-003`（当前 PR 沿完整 module chain 推进）
-- 基线：`develop@6b16129`
+- 基线：`develop@aa4e7ee`（包含 accepted M11 Core）
 - 分支：`agent/m10-research-state`
 - Authority basis：Issue #38 的 `R2 architecture review — ACCEPT`，只授权 bounded implementation
 
@@ -16,7 +16,8 @@ PR #44 先按 normalized governance 收缩并独立接受 M10-001；owner 随后
 当前四层包含 M10-001 Research State、M10-002 Research Attempt lineage / Research Failure、
 M3-009 ref-only Method Trace，以及 M10-003 runner-owned fresh-process bounded Gate。
 M10-002 不修改 legacy Attempt，而以 sidecar 精确 pin 已有归档；M3-009 Method Trace 与 M10-003
-fresh-process Gate 分层；当前 Method Trace 在无 accepted actual-fact producer 的基线上只允许 gap-only，
+fresh-process Gate 分层；Method Trace 在本 Attempt 没有 authoritative M11 fact 时记录 gap-only，captured
+fact 必须 exact 绑定同一 Attempt 的 applied path 与 State effect，
 M10-003 只闭合两份 synthetic fixture 的 machine Gate；Human semantic review、R2/Phase C closeout 与
 Topic 5 authority 均保持 pending/false。
 

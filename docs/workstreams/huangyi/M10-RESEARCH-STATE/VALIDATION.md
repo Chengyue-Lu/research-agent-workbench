@@ -1,7 +1,7 @@
 # M10 Phase C 验证证据
 
-状态：PR #44 final-contract review 整改中；当前 feature head `ab9ceae`，merge-base
-`develop@6b16129`，待在 M4/CI 前置合并后语义 rebase 到 current `develop@aa4e7ee`。
+状态：PR #44 final-contract review 整改；已语义 rebase 到 `develop@aa4e7ee`（accepted M11 Core），
+latest-head 全量/CI 证据待本地全量通过后更新。
 
 ## Task-specific evidence
 
@@ -29,11 +29,13 @@
 - exact Method：正式索引 `resolution_id@revision`，并验证 MR Schema、Task identity 与 Task byte pin；
 - ref-only closure：Attempt、Task、Mode ref、Action decision id、State、kernel Decision、typed path basis；
 - bounded case：`examples/phase-c/m3-009-case-a`，复用 M10-001/002 exact closure；
-- actual-binding：当前 pre-rebase fixture 仍为 unavailable/gap-only；M11 已在 develop 提供 accepted
-  `execution_trace_fact`，captured 正例及 fact→path/state effect 绑定列为 final semantic rebase 必做项；
+- actual-binding：本 Attempt 无 authoritative fact 时固定 unavailable/gap-only 且 path fact 为空；captured
+  正例由 M11 `AgentTraceRecorder.record_execution_fact()` 生成，exact fact 必须绑定同一 Attempt、至少一个
+  applied disposition 与 State effect，coverage 只声明 `fact-bound-path-effect`；
 - negative evidence：MR missing/wrong-kind/wrong-task/malformed/bad-pin、Mode drift、Action path missing/
   duplicate/disposition drift、Attempt Task mismatch、from-State mismatch、Question causal splice、Human/Evidence
-  wrong type、duplicate Trace、gap overclaim、missing producer 与 selected Snapshot as actual。
+  wrong type、duplicate Trace、gap overclaim、fact missing/ref drift/Attempt mismatch/path-effect unbound、
+  unavailable-with-fact 与 selected Snapshot as actual。
 
 - **M10-003** Schemas：`phase-c-gate-manifest.schema.json`、`phase-c-gate-report.schema.json`；
 - runner-owned source：manifest exact path/hash/kind/identity，保持原 repository-relative path staging；
@@ -57,7 +59,7 @@
 |---|---|
 | `test_research_state_candidate.py` | 15 passed |
 | `test_research_attempt_failure.py` | 20 passed（latest owner-review delta） |
-| `test_method_trace_candidate.py` | 20 passed |
+| `test_method_trace_candidate.py` | 24 passed（M11 semantic integration） |
 | `test_phase_c_gate.py` | 18 passed（latest owner-review delta） |
 | `test_schemas.py` | 3 passed |
 | 两个 explicit-closure CLI checks | PASS（6 / 4 explicit documents） |
@@ -69,7 +71,7 @@
 
 ## Owner review remediation matrix
 
-| Review finding | M10-001 head evidence |
+| Review finding | Evidence |
 |---|---|
 | dependency chain mixed four Tasks | PR diff now changes only M10-001 to DONE；all downstream statuses remain BLOCKED |
 | duplicate/ambiguous identity | `duplicate_identities` + ambiguous resolver tests |
@@ -77,6 +79,10 @@
 | State role not type-bound | explicit role→semantic-type map + mismatch negative test |
 | parallel Human Decision representation | kernel `object_type: decision` fixture; no new Human Decision Schema |
 | fresh actor and Method Trace defects | M3-009 以独立 ref-only contract 修复；M10-003 以 runner-owned exact staging、新进程 deny policy、post-exit private oracle 与 stale-trace 反例闭合 |
+| reopen changed condition / execution Failure provenance | changed condition 逐项 exact provenance；`origin_kind` 强制 execution source Attempt、分离 minimal non-execution Failure |
+| M11 execution facts | per-Attempt gap reason；M11 producer-generated captured 正例；fact exact 绑定 applied path/State effect |
+| Gate case/oracle identity | 每案 manifest/oracle/closure pins + 顶层 digest；等价替换仍 hash-distinguishable |
+| complete read-surface overclaim | exact case-data 与 declared trusted runtime/schema 分栏；Schema 固定完整进程读面为 false |
 
 ## M10-002 acceptance matrix
 
@@ -96,9 +102,10 @@
 | 独立 ref-only Method Trace | 新 Schema/validator；Execution Trace 与被引用正文不改 |
 | applied Method / Mode / Action disposition | exact MR ref、selected mode equality、Action decision 全覆盖与 applied equality |
 | Human Decision / State / path | kernel Decision 和 typed basis refs；Attempt from-State 与 Task Question causal closure |
-| 无 producer 时显式 gap | unavailable + fixed reason + gap-only positive fixture |
+| 当前 Attempt 无 fact 时显式 gap | `no-authoritative-execution-fact-for-attempt` + gap-only；path fact 必须为空 |
+| M11 captured actual fact | producer-generated 正例；exact loaded-byte pin、同 Attempt、applied path 与 State effect 绑定 |
 | Snapshot 不等于 actual execution | captured fact kind/file pin 限制 + structural Snapshot wrong-kind 反例 |
-| gap-valid 不得 coverage-complete | mutually exclusive Schema branches 与负面测试 |
+| gap-valid 不得 fact-bound | mutually exclusive Schema branches；captured 只声明 `fact-bound-path-effect` |
 
 ## M10-003 acceptance matrix
 
