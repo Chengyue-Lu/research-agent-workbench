@@ -84,7 +84,7 @@ active implementation；`DONE` 只表示既有验收及证据已经接受，且�
 | M3-006 | PARKED | SAFE_PAUSE 与机器完成权 | M3-001, M3-002, M3-003 | AWU/完成/暂停条件、stage/safe-pause/waiting、执行结束与 `contract-satisfied` 分离、失败报告覆盖显式完成宣称和可恢复 pause fixture 已实现；进程级 kill 与真实新进程/新 Attempt 恢复待演练 |
 | M3-007 | PARKED | 冻结实名 actor、Attempt Archive 与完整 Agent Trace 规则 | M3-003, M3-004, M3-005, M3-006 | ADR-0012、目录、消息信封、写前捕获、capture gap、按需读取和 Worklog 关系一致；负责人明确为路诚钺/黄毅 |
 | M3-008 | DONE | 实现 Trace Envelope/Index/Event Schema、validator 与手工 fixture | M3-007 | 文件权威 Trace Core、确定性 validator、瞬时 tool-result provenance、Python 3.11/3.13 CI、覆盖率、Registry、wheel 与干净安装 Gate 均通过；不保存 Chain-of-Thought |
-| M3-009 | BLOCKED | 在 Execution Trace 之上增加 Method-aware Trace | M3-008, M8-003, M8-005, M9-005, M10-001, M10-002 | 建立独立、ref-only 的 Method Trace v0.1，记录 applied Method/Human Decision/State/path disposition；没有 accepted execution fact producer 时显式记录 actual-binding gap，且不得把 selected Snapshot 当作 actual execution 或把 gap-valid 写成 coverage-complete |
+| M3-009 | DONE | 在 Execution Trace 之上增加 Method-aware Trace | M3-008, M8-003, M8-005, M9-005, M10-001, M10-002 | 建立独立、ref-only 的 Method Trace v0.1，记录 applied Method/Human Decision/State/path disposition；没有 accepted execution fact producer 时显式记录 actual-binding gap，且不得把 selected Snapshot 当作 actual execution 或把 gap-valid 写成 coverage-complete |
 
 M3-001～007 的 `PARKED` 表示当前没有 active implementation，并非抹去已经进入仓库的 bounded v0.x
 能力。各行同时混有已实现 contract slice、真实运行校准和未来 Topic 5 扩展，不能继续用无限期

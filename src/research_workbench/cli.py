@@ -678,6 +678,7 @@ def _research_state_validate(args: argparse.Namespace) -> int:
         check_research_attempt_lineage,
         check_research_failure,
         check_research_state,
+        check_method_trace,
     )
 
     document_path = Path(args.document)
@@ -686,6 +687,7 @@ def _research_state_validate(args: argparse.Namespace) -> int:
         "research_state": check_research_state,
         "research_attempt_lineage": check_research_attempt_lineage,
         "research_failure": check_research_failure,
+        "method_trace": check_method_trace,
     }
     kind = infer_document_kind(document) if isinstance(document, Mapping) else None
     if kind not in checkers:

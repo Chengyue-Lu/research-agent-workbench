@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/method-trace.schema.json",
+  "title": "Method Trace v0.1 Candidate",
+  "x-rwb-document-kind": "method_trace",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "trace_id",
+    "revision",
+    "content_hash",
+    "status",
+    "attempt_ref",
+    "task_ref",
+    "method_application",
+    "state_refs",
+    "human_decision_refs",
+    "path_dispositions",
+    "actual_binding",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "trace_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "revision": { "type": "integer", "minimum": 1 },
+    "content_hash": { "$ref": "common.schema.json#/$defs/sha256" },
+    "status": { "enum": ["active", "superseded"] },
+    "supersedes": { "$ref": "common.schema.json#/$defs/objectRef" },
+    "attempt_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+    "task_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+    "method_application": { "$ref": "#/$defs/methodApplication" },
+    "state_refs": {
+      "type": "array",
+      "minItems": 1,
+      "contains": {
+        "type": "object",
+        "properties": { "role": { "const": "from-state" } },
+        "required": ["role"]
+      },
+      "minContains": 1,
+      "maxContains": 1,
+      "items": { "$ref": "#/$defs/stateRef" }
+    },
+    "human_decision_refs": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/objectRef" },
+      "uniqueItems": true
+    },
+    "path_dispositions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/pathDisposition" }
+    },
+    "actual_binding": {
+      "oneOf": [
+        { "$ref": "#/$defs/unavailableBinding" },
+        { "$ref": "#/$defs/capturedBinding" }
+      ]
+    },
+    "limitations": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "metadata": { "type": "object" }
+  },
+  "$defs": {
+    "versionedRef": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*@[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+    },
+    "methodApplication": {
+      "type": "object",
+      "required": ["resolution_ref", "mode_refs", "action_decision_ids"],
+      "properties": {
+        "resolution_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+        "mode_refs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/versionedRef" },
+          "uniqueItems": true
+        },
+        "action_decision_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "stateRef": {
+      "type": "object",
+      "required": ["role", "ref"],
+      "properties": {
+        "role": { "enum": ["from-state", "current", "result", "superseded"] },
+        "ref": { "$ref": "common.schema.json#/$defs/objectRef" }
+      },
+      "additionalProperties": false
+    },
+    "pathDisposition": {
+      "type": "object",
+      "required": [
+        "action_decision_id",
+        "disposition",
+        "decision_refs",
+        "evidence_refs",
+        "failure_refs",
+        "state_refs"
+      ],
+      "properties": {
+        "action_decision_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "disposition": { "enum": ["applied", "rejected", "deferred", "blocked"] },
+        "decision_refs": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/objectRef" },
+          "uniqueItems": true
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/objectRef" },
+          "uniqueItems": true
+        },
+        "failure_refs": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/objectRef" },
+          "uniqueItems": true
+        },
+        "state_refs": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/objectRef" },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "unavailableBinding": {
+      "type": "object",
+      "required": ["status", "reason", "coverage"],
+      "properties": {
+        "status": { "const": "unavailable" },
+        "reason": { "const": "no-accepted-execution-fact-producer" },
+        "coverage": { "const": "gap-only" }
+      },
+      "additionalProperties": false
+    },
+    "capturedBinding": {
+      "type": "object",
+      "required": ["status", "producer_kind", "execution_fact_ref", "coverage"],
+      "properties": {
+        "status": { "const": "captured" },
+        "producer_kind": { "const": "execution_trace_fact" },
+        "execution_fact_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+        "coverage": { "const": "coverage-complete" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

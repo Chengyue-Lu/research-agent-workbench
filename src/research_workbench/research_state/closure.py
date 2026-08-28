@@ -264,6 +264,61 @@ def _index_document(
                 file_sha256,
             )
         return None
+    if "trace_id" in document and "method_application" in document:
+        identifier = document.get("trace_id")
+        revision = document.get("revision")
+        if isinstance(identifier, str) and identifier and isinstance(revision, int):
+            return IndexedDocument(
+                "method_trace",
+                "method_trace",
+                identifier,
+                revision,
+                path,
+                document,
+                file_sha256,
+            )
+        return None
+    if "resolution_id" in document and "mode_resolution" in document:
+        identifier = document.get("resolution_id")
+        revision = document.get("revision")
+        if isinstance(identifier, str) and identifier and isinstance(revision, int):
+            return IndexedDocument(
+                "method_resolution",
+                "method_resolution",
+                identifier,
+                revision,
+                path,
+                document,
+                file_sha256,
+            )
+        return None
+    if document.get("record_kind") == "actual-execution-binding" and "fact_id" in document:
+        identifier = document.get("fact_id")
+        if isinstance(identifier, str) and identifier:
+            return IndexedDocument(
+                "execution_trace_fact",
+                "execution_trace_fact",
+                identifier,
+                1,
+                path,
+                document,
+                file_sha256,
+            )
+        return None
+    if "snapshot_id" in document and "selected_supply_report_ref" in document:
+        identifier = document.get("snapshot_id")
+        revision = document.get("revision")
+        if isinstance(identifier, str) and identifier and isinstance(revision, int):
+            return IndexedDocument(
+                "resolved_capability_snapshot",
+                "resolved_capability_snapshot",
+                identifier,
+                revision,
+                path,
+                document,
+                file_sha256,
+            )
+        return None
     if "task_id" in document and "goal" in document:
         identifier = document.get("task_id")
         revision = document.get("revision", 1)
@@ -561,4 +616,270 @@ def check_research_failure(
                 expected_types=("research_attempt_lineage",),
             )
         )
+    return problems
+
+
+def _resolved_entry(index: ClosureIndex, raw_ref: Any) -> IndexedDocument | None:
+    try:
+        resolved = index.resolve(raw_ref)
+    except ValueError:
+        return None
+    if resolved.get("status") != "ok":
+        return None
+    candidates = index.by_id.get(str(resolved.get("object_id")), [])
+    exact = [item for item in candidates if item.revision == resolved.get("revision")]
+    return exact[0] if len(exact) == 1 else None
+
+
+def _ref_identity(raw_ref: Any) -> tuple[str, int | None] | None:
+    try:
+        identifier, revision, _ = _parse_object_ref(raw_ref)
+    except ValueError:
+        return None
+    return identifier, revision
+
+
+def check_method_trace(document: Mapping[str, Any], index: ClosureIndex) -> list[str]:
+    """Validate the ref-only Method Trace and its honest actual-binding boundary."""
+
+    from research_workbench.validation.schemas import SchemaCatalog
+
+    problems = index.identity_problems()
+    catalog = SchemaCatalog()
+    attempt_ref = document.get("attempt_ref")
+    task_ref = document.get("task_ref")
+    method_application = document.get("method_application", {})
+    resolution_ref = (
+        method_application.get("resolution_ref")
+        if isinstance(method_application, Mapping)
+        else None
+    )
+
+    problems.extend(
+        _ref_problems(
+            index,
+            attempt_ref,
+            "attempt_ref",
+            expected_types=("research_attempt_lineage",),
+        )
+    )
+    problems.extend(
+        _ref_problems(index, task_ref, "task_ref", expected_types=("task_packet",))
+    )
+    problems.extend(
+        _ref_problems(
+            index,
+            resolution_ref,
+            "method_application.resolution_ref",
+            expected_types=("method_resolution",),
+        )
+    )
+
+    task_entry = _resolved_entry(index, task_ref)
+    attempt_entry = _resolved_entry(index, attempt_ref)
+    resolution_entry = _resolved_entry(index, resolution_ref)
+    if task_entry is not None and resolution_entry is not None:
+        for error in catalog.validate("method_resolution", resolution_entry.document):
+            problems.append(
+                "method_application.resolution_ref: referenced Method Resolution "
+                f"is schema-invalid at {error.pointer}: {error.message}"
+            )
+        resolution_task = resolution_entry.document.get("task_ref")
+        resolution_identity = None
+        if isinstance(resolution_task, Mapping):
+            resolution_identity = (
+                str(resolution_task.get("task_id", "")),
+                resolution_task.get("revision"),
+            )
+        if resolution_identity != (task_entry.identifier, task_entry.revision):
+            problems.append(
+                "method_application.resolution_ref: Method Resolution binds a different Task"
+            )
+        elif isinstance(resolution_task, Mapping):
+            declared_hash = str(resolution_task.get("sha256", "")).removeprefix(
+                "sha256:"
+            ).lower()
+            if task_entry.file_sha256 is None:
+                problems.append(
+                    "method_application.resolution_ref: Method Resolution Task pin "
+                    "cannot be verified"
+                )
+            elif declared_hash != task_entry.file_sha256.removeprefix("sha256:").lower():
+                problems.append(
+                    "method_application.resolution_ref: Method Resolution Task byte pin drifts"
+                )
+
+    if attempt_entry is not None and task_entry is not None:
+        file_problems, execution_attempt = _file_ref_problems(
+            index,
+            attempt_entry.document.get("execution_attempt_ref"),
+            "attempt_ref.execution_attempt_ref",
+            expected_types=("execution_attempt",),
+        )
+        problems.extend(file_problems)
+        if (
+            execution_attempt is not None
+            and execution_attempt.document.get("task_id") != task_entry.identifier
+        ):
+            problems.append("attempt_ref: execution Attempt binds a different Task")
+
+    if resolution_entry is not None and isinstance(method_application, Mapping):
+        mode_resolution = resolution_entry.document.get("mode_resolution", {})
+        expected_modes = (
+            list(mode_resolution.get("selected_mode_refs", []))
+            if isinstance(mode_resolution, Mapping)
+            else []
+        )
+        if list(method_application.get("mode_refs", [])) != expected_modes:
+            problems.append(
+                "method_application.mode_refs must exactly match Method Resolution selected modes"
+            )
+
+        resolution_decisions = [
+            item
+            for item in resolution_entry.document.get("action_decisions", [])
+            if isinstance(item, Mapping)
+        ]
+        expected_ids = [str(item.get("decision_id", "")) for item in resolution_decisions]
+        dispositions = [
+            item
+            for item in document.get("path_dispositions", [])
+            if isinstance(item, Mapping)
+        ]
+        disposition_ids = [str(item.get("action_decision_id", "")) for item in dispositions]
+        if len(disposition_ids) != len(set(disposition_ids)):
+            problems.append("path_dispositions contain duplicate action_decision_id")
+        if set(disposition_ids) != set(expected_ids):
+            problems.append(
+                "path_dispositions must cover each Method Resolution action decision exactly once"
+            )
+        applied_ids = {
+            str(item.get("action_decision_id", ""))
+            for item in dispositions
+            if item.get("disposition") == "applied"
+        }
+        if set(method_application.get("action_decision_ids", [])) != applied_ids:
+            problems.append(
+                "method_application.action_decision_ids must exactly match applied path dispositions"
+            )
+        if resolution_entry.document.get("resolution_status") != "proceed" and applied_ids:
+            problems.append("a non-proceed Method Resolution cannot be recorded as applied")
+
+    state_documents: list[Mapping[str, Any]] = []
+    from_state_identity: tuple[str, int | None] | None = None
+    seen_state_roles: set[str] = set()
+    for position, state_ref in enumerate(document.get("state_refs", [])):
+        if not isinstance(state_ref, Mapping):
+            continue
+        role = str(state_ref.get("role", ""))
+        if role in seen_state_roles:
+            problems.append(f"state_refs contain duplicate role {role}")
+        seen_state_roles.add(role)
+        ref = state_ref.get("ref")
+        problems.extend(
+            _ref_problems(
+                index,
+                ref,
+                f"state_refs[{position}]",
+                expected_types=("research_state",),
+            )
+        )
+        entry = _resolved_entry(index, ref)
+        if entry is not None:
+            state_documents.append(entry.document)
+        if role == "from-state":
+            from_state_identity = _ref_identity(ref)
+
+    if attempt_entry is not None:
+        if from_state_identity != _ref_identity(attempt_entry.document.get("state_ref")):
+            problems.append("state_refs.from-state must equal the Attempt lineage state_ref")
+
+    for position, ref in enumerate(document.get("human_decision_refs", [])):
+        problems.extend(
+            _ref_problems(
+                index,
+                ref,
+                f"human_decision_refs[{position}]",
+                expected_types=("decision",),
+            )
+        )
+
+    path_ref_types = {
+        "decision_refs": ("decision",),
+        "evidence_refs": ("evidence",),
+        "failure_refs": ("research_failure",),
+        "state_refs": ("research_state",),
+    }
+    for path_position, disposition in enumerate(document.get("path_dispositions", [])):
+        if not isinstance(disposition, Mapping):
+            continue
+        for field_name, expected_types in path_ref_types.items():
+            for ref_position, ref in enumerate(disposition.get(field_name, [])):
+                problems.extend(
+                    _ref_problems(
+                        index,
+                        ref,
+                        f"path_dispositions[{path_position}].{field_name}[{ref_position}]",
+                        expected_types=expected_types,
+                    )
+                )
+
+    if task_entry is not None and state_documents:
+        task_questions = {
+            str(value).split("@", 1)[0]
+            for value in task_entry.document.get("question_refs", [])
+        }
+        state_questions: set[str] = set()
+        for state in state_documents:
+            for entry in state.get("entries", []):
+                if isinstance(entry, Mapping) and entry.get("role") == "question":
+                    identity = _ref_identity(entry.get("ref"))
+                    if identity is not None:
+                        state_questions.add(identity[0])
+        if state_questions and not task_questions.intersection(state_questions):
+            problems.append("Task question_refs do not intersect Method Trace State questions")
+
+    actual_binding = document.get("actual_binding")
+    if isinstance(actual_binding, Mapping) and actual_binding.get("status") == "captured":
+        fact_schema_accepted = "execution_trace_fact" in catalog.document_kinds
+        if not fact_schema_accepted:
+            problems.append(
+                "actual_binding: no accepted execution fact producer exists in this schema baseline"
+            )
+        file_problems, fact_entry = _file_ref_problems(
+            index,
+            actual_binding.get("execution_fact_ref"),
+            "actual_binding.execution_fact_ref",
+            expected_types=("execution_trace_fact",),
+        )
+        problems.extend(file_problems)
+        if fact_entry is not None and attempt_entry is not None:
+            fact_errors = (
+                catalog.validate("execution_trace_fact", fact_entry.document)
+                if fact_schema_accepted
+                else []
+            )
+            for error in fact_errors:
+                problems.append(
+                    "actual_binding.execution_fact_ref: referenced execution fact "
+                    f"is schema-invalid at {error.pointer}: {error.message}"
+                )
+            if fact_entry.document.get("attempt_id") != attempt_entry.document.get("attempt_id"):
+                problems.append("actual_binding: execution fact belongs to a different Attempt")
+
+    if document.get("supersedes") is not None:
+        problems.extend(
+            _ref_problems(
+                index,
+                document["supersedes"],
+                "supersedes",
+                expected_types=("method_trace",),
+            )
+        )
+        identity = _ref_identity(document["supersedes"])
+        if identity is not None:
+            if identity[0] != document.get("trace_id"):
+                problems.append("supersedes: must reference the same Method Trace lineage")
+            if not isinstance(identity[1], int) or identity[1] >= document.get("revision", 0):
+                problems.append("supersedes: must reference a strictly earlier Method Trace revision")
     return problems

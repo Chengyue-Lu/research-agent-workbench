@@ -16,3 +16,8 @@
 | predecessor 与 reopen justification 被耦合为同一关系 | 两字段独立；predecessor exact/type-bound/distinct，reopen basis exact/type-bound 或 changed condition | 已锁定 |
 | Research Failure 复制 execution failure / Evidence / Gap / Need | universal minimum 只含 learned/revisit；bounded execution profile 可选且 Schema 拒绝平行字段 | 已锁定 |
 | M10-002 被误当自动 reopen 或科学判断 | 文档与 fixture 明确仅为 candidate；Human semantic review/R2 独立 | 保留边界 |
+| Method Trace 复制 Execution Trace/Method/State 正文 | 独立 Schema 只保存 stable refs、decision IDs 与 disposition；operational Trace 不改 | 已锁定 |
+| Method Resolution 未索引或 Trace 绑定 lookalike | `resolution_id@revision` 入 exact index；Schema、Task identity 与 Task byte pin 二次验证 | 已锁定 |
+| Trace 把无关 Task/Attempt/State 拼接 | execution Attempt/Task/Resolution 三方 identity 与 Task question↔State Question 交集检查 | 已锁定 |
+| selected Snapshot 被写成 actual execution | captured 只接受正式 `execution_trace_fact` file pin；Snapshot wrong-kind 反例 | 已锁定 |
+| gap-valid 被重分类为 coverage-complete | unavailable 固定 `gap-only`；captured 在 producer 未接受时 fail closed | 已锁定 |

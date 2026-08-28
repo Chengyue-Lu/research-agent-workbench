@@ -10,6 +10,7 @@ from research_workbench.research_state import (
     check_research_attempt_lineage,
     check_research_failure,
     check_research_state,
+    check_method_trace,
 )
 from research_workbench.validation.document_core import ValidationIssue
 from research_workbench.validation.document_kinds import infer_document_kind
@@ -30,6 +31,7 @@ def validate_research_state_set(
             check_research_failure,
             "RESEARCH-FAILURE-CLOSURE-INVALID",
         ),
+        "method_trace": (check_method_trace, "METHOD-TRACE-CLOSURE-INVALID"),
     }
     if not any(
         isinstance(document, Mapping) and infer_document_kind(document) in checkers

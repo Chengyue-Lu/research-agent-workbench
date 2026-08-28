@@ -3,6 +3,7 @@
 from research_workbench.research_state.closure import (
     ClosureIndex,
     IndexedDocument,
+    check_method_trace,
     check_research_attempt_lineage,
     check_research_failure,
     check_research_state,
@@ -11,6 +12,7 @@ from research_workbench.research_state.closure import (
 __all__ = [
     "ClosureIndex",
     "IndexedDocument",
+    "check_method_trace",
     "check_research_attempt_lineage",
     "check_research_failure",
     "check_research_state",

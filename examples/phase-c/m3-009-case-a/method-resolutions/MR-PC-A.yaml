@@ -1,0 +1,41 @@
+schema_version: 0.1.0
+resolution_id: MR-PC-A
+revision: 1
+task_ref:
+  task_id: M10-CASE-A
+  revision: 1
+  sha256: 75417c55e7b37190887fa001875ff8a9d10fac9df7fa0ea0f499f1d36497018a
+source_case_id: M3-009-PC-A
+mode_resolution:
+  status: selected
+  selected_mode_refs: [evidence-synthesis@0.1.0]
+  unresolved_mode_ids: []
+  reason: The bounded case records Evidence against an explicit research question.
+action_decisions:
+  - decision_id: MRD-PC-A-EXTRACT
+    action_ref: ES-A4@1.0.0
+    action_content_hash: sha256:8cb47267e5e7e2578173b62d2eb420cf9f7104e1c56c22facf0c9183299ce46a
+    obligations:
+      - obligation_id: MRO-PC-A-EVIDENCE
+        statement: Preserve the Evidence locator and separate source statements from inference.
+        assessment: deterministic
+        required_evidence: [evidence-record]
+    mechanisms: [task-instruction, no-skill, human-gate]
+    capability_requirements: []
+    skill_need_refs: []
+    human_gate_refs: [sample-high-risk-extraction]
+    stop_conditions: [All in-scope records pass locator and source-separation checks.]
+    blocked_conditions: [The relevant passage cannot be located in an approved frozen source.]
+    rationale: The existing bounded checker and Human sample Gate cover this fixture path.
+skill_disposition:
+  status: no-skill
+  need_refs: []
+  reason: No additional reusable Skill semantics are required for the fixture.
+human_gate_refs: [sample-high-risk-extraction]
+blocked_conditions: [The relevant passage cannot be located in an approved frozen source.]
+rejected_alternatives:
+  - alternative_id: infer-actual-binding-from-snapshot
+    disposition: rejected
+    reason: A selected structural Snapshot is not an actual execution fact.
+resolution_status: proceed
+limitations: [Synthetic bounded Method Resolution; no live execution is claimed.]
