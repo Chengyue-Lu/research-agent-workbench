@@ -1,0 +1,89 @@
+{
+  "schema_version": "0.1.0",
+  "case_id": "M10-003-SIMULATION-NEGATIVE",
+  "profile": "simulation-negative",
+  "state_alias": "state-current",
+  "method_trace_alias": "method-trace",
+  "documents": [
+    {
+      "alias": "evidence",
+      "kind": "research_object",
+      "identity": {"object_id": "EVID-PC-B", "revision": 1},
+      "source_ref": {"path": "examples/phase-c/m10-001-case-b/objects/EVID-PC-B.yaml", "sha256": "9ed5731a7353b1fb82ebbac3af6140e48db64ba729bdd2872947a0a023f82aee"}
+    },
+    {
+      "alias": "decision",
+      "kind": "research_object",
+      "identity": {"object_id": "D-PC-B", "revision": 1},
+      "source_ref": {"path": "examples/phase-c/m10-003-gate/case-b/closure/objects/D-PC-B.yaml", "sha256": "d265d393e0ced9865326b0ac34f5afa4ea304617d3c42a726f81975321a449ce"}
+    },
+    {
+      "alias": "hypothesis",
+      "kind": "research_object",
+      "identity": {"object_id": "HYP-PC-B", "revision": 1},
+      "source_ref": {"path": "examples/phase-c/m10-001-case-b/objects/HYP-PC-B.yaml", "sha256": "52fddc9870e5e720859bfed2310f6a647a7c2cf0970de58a89bfe6914ee2fb37"}
+    },
+    {
+      "alias": "state-from",
+      "kind": "research_state",
+      "identity": {"object_id": "RSTATE-PC-B", "revision": 1},
+      "source_ref": {"path": "examples/phase-c/m10-001-case-b/states/RSTATE-PC-B-r1.yaml", "sha256": "14a3091db734a7beb4a80a21a8e7e6cbf37593e4926492164778275c1916f316"}
+    },
+    {
+      "alias": "state-current",
+      "kind": "research_state",
+      "identity": {"object_id": "RSTATE-PC-B", "revision": 2},
+      "source_ref": {"path": "examples/phase-c/m10-001-case-b/states/RSTATE-PC-B-r2.yaml", "sha256": "3c02bd1592ed4573a4f9b77e29bffcfcb3288268330e569ae60e7aa3badf94e4"}
+    },
+    {
+      "alias": "lineage",
+      "kind": "research_attempt_lineage",
+      "identity": {"object_id": "RATTEMPT-PC-B-01", "revision": 1},
+      "source_ref": {"path": "examples/phase-c/m10-002-case-b/attempt-lineage/A-PC-B-01.yaml", "sha256": "2c409024435567acf47cba0735ba4e27a79e3e9c5cc53367ae4a7cbd4ed9411f"}
+    },
+    {
+      "alias": "attempt",
+      "kind": "attempt",
+      "identity": {"object_id": "A-PC-B-01", "revision": 1},
+      "source_ref": {"path": "examples/phase-c/m10-002-case-b/attempts/A-PC-B-01.yaml", "sha256": "d1e8ac4aaa8995346037c0062677fcf460a91cb14dddab8adfc3fcd33a091d85"}
+    },
+    {
+      "alias": "failure",
+      "kind": "research_failure",
+      "identity": {"object_id": "RFAIL-PC-B-001", "revision": 1},
+      "source_ref": {"path": "examples/phase-c/m10-002-case-b/failures/RFAIL-PC-B-001.yaml", "sha256": "a47141c89eba0813e8a39b4fce45ddf02d5f7ade84ed744cd9bea840a2d6a92c"}
+    },
+    {
+      "alias": "task",
+      "kind": "task_packet",
+      "identity": {"object_id": "M10-CASE-B", "revision": 1},
+      "source_ref": {"path": "examples/phase-c/m10-003-gate/case-b/closure/tasks/M10-CASE-B.yaml", "sha256": "cc4bb0d17415c9b7a8c2892b52e5047e2636092cf501b571b182d1580627ac5b"}
+    },
+    {
+      "alias": "method-resolution",
+      "kind": "method_resolution",
+      "identity": {"object_id": "MR-PC-B", "revision": 1},
+      "source_ref": {"path": "examples/phase-c/m10-003-gate/case-b/closure/method-resolutions/MR-PC-B.yaml", "sha256": "7dbebf1ec5983f81edbf23edcaae4a606c7f5899c67eb4275f1c69153d12c539"}
+    },
+    {
+      "alias": "method-trace",
+      "kind": "method_trace",
+      "identity": {"object_id": "MTRACE-PC-B", "revision": 1},
+      "source_ref": {"path": "examples/phase-c/m10-003-gate/case-b/closure/traces/MTRACE-PC-B.yaml", "sha256": "6de486b76c8e30b266132933c582ac72b08b73d2f8bebbc9034764e1d81fbef3"}
+    }
+  ],
+  "candidate_paths": [
+    {
+      "path_id": "repeat-coarse-grid",
+      "repeats_failure_ref": {"object_id": "RFAIL-PC-B-001", "revision": 1},
+      "reopen_basis_refs": []
+    },
+    {"path_id": "inspect-higher-resolution-input", "reopen_basis_refs": []}
+  ],
+  "boundaries": {
+    "runner_owned_exact_closure": true,
+    "fresh_process": true,
+    "oracle_in_actor_scope": false,
+    "topic_5_authorized": false
+  }
+}

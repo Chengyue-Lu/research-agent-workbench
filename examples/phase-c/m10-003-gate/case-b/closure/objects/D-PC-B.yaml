@@ -1,0 +1,14 @@
+schema_version: 0.1.0
+object_type: decision
+object_id: D-PC-B
+revision: 1
+status: accepted-fixture
+decision: Admit the synthetic convergence metric and resource ceiling for this bounded fixture only.
+scope: [m10-003-simulation-negative-fixture]
+reason_refs: [EVID-PC-B@1]
+actor: synthetic-human-reviewer-fixture
+timestamp: '2026-08-28T09:00:00+08:00'
+metadata:
+  authority_basis: synthetic fixture protocol only
+  represents_named_owner_approval: false
+  scientific_correctness_claimed: false

@@ -1,0 +1,47 @@
+{
+  "case_id": "M10-003-EVIDENCE-SYNTHESIS",
+  "exact_output": {
+    "status": "ok",
+    "case_id": "M10-003-EVIDENCE-SYNTHESIS",
+    "profile": "evidence-synthesis",
+    "active_state": "RSTATE-PC-A@2",
+    "method_trace": "MTRACE-PC-A@1",
+    "applied_modes": ["evidence-synthesis@0.1.0"],
+    "applied_actions": ["MRD-PC-A-EXTRACT"],
+    "current_evidence_refs": ["EVID-PC-A@1"],
+    "human_decision_refs": ["D-PC-A@1"],
+    "open_items": [],
+    "invalidated_items": [],
+    "candidate_paths": [
+      {"path_id": "retain-bounded-evidence-synthesis", "classification": "recommendable"}
+    ],
+    "recommended_path": "retain-bounded-evidence-synthesis",
+    "known_failures": [],
+    "actual_binding_status": "unavailable",
+    "actual_binding_coverage": "gap-only",
+    "authority_limits": [
+      "machine-gate-does-not-prove-reviewer-reconstruction",
+      "machine-gate-does-not-prove-scientific-correctness",
+      "machine-gate-does-not-complete-human-semantic-review",
+      "machine-gate-does-not-complete-r2-closeout",
+      "machine-gate-does-not-authorize-topic-5"
+    ]
+  },
+  "exact_read_surface": [
+    "actor-manifest.json",
+    "inputs/examples/phase-c/m10-001-case-a/objects/CLAIM-PC-A.yaml",
+    "inputs/examples/phase-c/m10-001-case-a/objects/D-PC-A.yaml",
+    "inputs/examples/phase-c/m10-001-case-a/objects/EVID-PC-A.yaml",
+    "inputs/examples/phase-c/m10-001-case-a/objects/Q-PC-A.yaml",
+    "inputs/examples/phase-c/m10-001-case-a/states/RSTATE-PC-A-r1.yaml",
+    "inputs/examples/phase-c/m10-001-case-a/states/RSTATE-PC-A-r2.yaml",
+    "inputs/examples/phase-c/m10-002-case-a/attempt-lineage/A-PC-A-01.yaml",
+    "inputs/examples/phase-c/m10-002-case-a/attempt-lineage/A-PC-A-02.yaml",
+    "inputs/examples/phase-c/m10-002-case-a/attempts/A-PC-A-01.yaml",
+    "inputs/examples/phase-c/m10-002-case-a/attempts/A-PC-A-02.yaml",
+    "inputs/examples/phase-c/m3-009-case-a/method-resolutions/MR-PC-A.yaml",
+    "inputs/examples/phase-c/m3-009-case-a/tasks/M10-CASE-A.yaml",
+    "inputs/examples/phase-c/m3-009-case-a/traces/MTRACE-PC-A.yaml"
+  ],
+  "predicates": ["topic-5-remains-unauthorized"]
+}

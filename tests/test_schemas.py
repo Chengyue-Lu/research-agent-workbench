@@ -61,6 +61,8 @@ class VersionedSchemaTests(unittest.TestCase):
                 "mode_action",
                 "mode_action_registry",
                 "phase_b_evolution_gate",
+                "phase_c_gate_manifest",
+                "phase_c_gate_report",
                 "project_protocol",
                 "protocol_profile",
                 "protocol_profile_index",

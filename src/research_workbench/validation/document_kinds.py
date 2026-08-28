@@ -74,6 +74,10 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "capability_resolution"
     if document.get("scope") == "phase-b-evolution" and "gate_id" in document:
         return "phase_b_evolution_gate"
+    if "case_id" in document and "state_alias" in document and "method_trace_alias" in document:
+        return "phase_c_gate_manifest"
+    if "gate_id" in document and "machine_gate" in document and "phase_c_closeout" in document:
+        return "phase_c_gate_report"
     if "agent_profile_id" in document and "permission_ceiling" in document:
         return "agent_profile"
     if "skill_id" in document and "capabilities" in document:

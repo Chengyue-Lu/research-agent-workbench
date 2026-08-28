@@ -1,0 +1,56 @@
+{
+  "case_id": "M10-003-SIMULATION-NEGATIVE",
+  "exact_output": {
+    "status": "ok",
+    "case_id": "M10-003-SIMULATION-NEGATIVE",
+    "profile": "simulation-negative",
+    "active_state": "RSTATE-PC-B@2",
+    "method_trace": "MTRACE-PC-B@1",
+    "applied_modes": ["simulation@0.1.0"],
+    "applied_actions": ["MRD-PC-B-CONVERGENCE"],
+    "current_evidence_refs": ["EVID-PC-B@1"],
+    "human_decision_refs": ["D-PC-B@1"],
+    "open_items": ["UNKNOWN-PC-B-01"],
+    "invalidated_items": ["ASSUM-PC-B-01"],
+    "candidate_paths": [
+      {"path_id": "repeat-coarse-grid", "classification": "known-failed-avoid"},
+      {"path_id": "inspect-higher-resolution-input", "classification": "recommendable"}
+    ],
+    "recommended_path": "inspect-higher-resolution-input",
+    "known_failures": [
+      {
+        "failure_id": "RFAIL-PC-B-001",
+        "learned_result": "The coarse-grid run cannot resolve the synthetic boundary effect.",
+        "revisit_condition": "Revisit only after a higher-resolution input is admitted by Human review."
+      }
+    ],
+    "actual_binding_status": "unavailable",
+    "actual_binding_coverage": "gap-only",
+    "authority_limits": [
+      "machine-gate-does-not-prove-reviewer-reconstruction",
+      "machine-gate-does-not-prove-scientific-correctness",
+      "machine-gate-does-not-complete-human-semantic-review",
+      "machine-gate-does-not-complete-r2-closeout",
+      "machine-gate-does-not-authorize-topic-5"
+    ]
+  },
+  "exact_read_surface": [
+    "actor-manifest.json",
+    "inputs/examples/phase-c/m10-001-case-b/objects/EVID-PC-B.yaml",
+    "inputs/examples/phase-c/m10-001-case-b/objects/HYP-PC-B.yaml",
+    "inputs/examples/phase-c/m10-001-case-b/states/RSTATE-PC-B-r1.yaml",
+    "inputs/examples/phase-c/m10-001-case-b/states/RSTATE-PC-B-r2.yaml",
+    "inputs/examples/phase-c/m10-002-case-b/attempt-lineage/A-PC-B-01.yaml",
+    "inputs/examples/phase-c/m10-002-case-b/attempts/A-PC-B-01.yaml",
+    "inputs/examples/phase-c/m10-002-case-b/failures/RFAIL-PC-B-001.yaml",
+    "inputs/examples/phase-c/m10-003-gate/case-b/closure/method-resolutions/MR-PC-B.yaml",
+    "inputs/examples/phase-c/m10-003-gate/case-b/closure/objects/D-PC-B.yaml",
+    "inputs/examples/phase-c/m10-003-gate/case-b/closure/tasks/M10-CASE-B.yaml",
+    "inputs/examples/phase-c/m10-003-gate/case-b/closure/traces/MTRACE-PC-B.yaml"
+  ],
+  "predicates": [
+    "known-failed-paths-are-avoided",
+    "recommendation-does-not-repeat-known-failure",
+    "topic-5-remains-unauthorized"
+  ]
+}

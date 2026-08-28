@@ -711,6 +711,24 @@ def _research_state_validate(args: argparse.Namespace) -> int:
     return 0
 
 
+def _research_state_gate(args: argparse.Namespace) -> int:
+    from research_workbench.research_state import GateCase, run_phase_c_gate
+
+    output = Path(args.output)
+    if output.exists():
+        raise FileExistsError(f"Phase C Gate output already exists: {output}")
+    cases = [
+        GateCase(Path(manifest), Path(oracle))
+        for manifest, oracle in args.case
+    ]
+    report = run_phase_c_gate(cases, project_root=Path(args.root).resolve())
+    output.parent.mkdir(parents=True, exist_ok=True)
+    _write_text(output, json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
+    status = report["machine_gate"]["status"]
+    print(f"Phase C bounded Gate: {status}; report={output}")
+    return 0 if status == "pass" else 1
+
+
 def _claim_trace(args: argparse.Namespace) -> int:
     document = load_document(args.claim)
     if not isinstance(document, Mapping):
@@ -1407,6 +1425,21 @@ def build_parser() -> argparse.ArgumentParser:
         help="explicit closure file or directory; repeat for multiple roots",
     )
     research_state_validate.set_defaults(handler=_research_state_validate)
+    research_state_gate = research_state_subparsers.add_parser(
+        "gate",
+        help="run the two runner-owned bounded cases in fresh processes",
+    )
+    research_state_gate.add_argument(
+        "--case",
+        action="append",
+        nargs=2,
+        metavar=("MANIFEST", "PRIVATE_ORACLE"),
+        required=True,
+        help="source manifest and private oracle; repeat exactly twice",
+    )
+    research_state_gate.add_argument("--root", default=".")
+    research_state_gate.add_argument("--output", required=True)
+    research_state_gate.set_defaults(handler=_research_state_gate)
     return parser
 
 

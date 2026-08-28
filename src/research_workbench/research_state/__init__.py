@@ -8,6 +8,7 @@ from research_workbench.research_state.closure import (
     check_research_failure,
     check_research_state,
 )
+from research_workbench.research_state.gate import GateCase, run_gate_case, run_phase_c_gate
 
 __all__ = [
     "ClosureIndex",
@@ -16,4 +17,7 @@ __all__ = [
     "check_research_attempt_lineage",
     "check_research_failure",
     "check_research_state",
+    "GateCase",
+    "run_gate_case",
+    "run_phase_c_gate",
 ]

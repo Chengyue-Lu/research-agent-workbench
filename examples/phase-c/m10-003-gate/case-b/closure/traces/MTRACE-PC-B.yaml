@@ -1,0 +1,31 @@
+schema_version: 0.1.0
+trace_id: MTRACE-PC-B
+revision: 1
+content_hash: d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4
+status: active
+attempt_ref: {object_id: RATTEMPT-PC-B-01, revision: 1}
+task_ref: {object_id: M10-CASE-B, revision: 1}
+method_application:
+  resolution_ref: {object_id: MR-PC-B, revision: 1}
+  mode_refs: [simulation@0.1.0]
+  action_decision_ids: [MRD-PC-B-CONVERGENCE]
+state_refs:
+  - role: from-state
+    ref: {object_id: RSTATE-PC-B, revision: 1}
+  - role: current
+    ref: {object_id: RSTATE-PC-B, revision: 2}
+human_decision_refs: [{object_id: D-PC-B, revision: 1}]
+path_dispositions:
+  - action_decision_id: MRD-PC-B-CONVERGENCE
+    disposition: applied
+    decision_refs: [{object_id: D-PC-B, revision: 1}]
+    evidence_refs: [{object_id: EVID-PC-B, revision: 1}]
+    failure_refs: [{object_id: RFAIL-PC-B-001, revision: 1}]
+    state_refs: [{object_id: RSTATE-PC-B, revision: 2}]
+actual_binding:
+  status: unavailable
+  reason: no-accepted-execution-fact-producer
+  coverage: gap-only
+limitations:
+  - This is a pre-recorded synthetic negative observation, not a live execution.
+  - Avoiding a known failed path does not establish scientific correctness.

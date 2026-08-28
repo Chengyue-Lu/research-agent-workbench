@@ -7,7 +7,7 @@
 | State role 与目标对象类型不一致 | role→semantic type 显式映射，错配 BLOCK | 已锁定 |
 | current ref 指向 stale revision | closure 中同 identity 最新 revision 比较 | 已锁定 |
 | 新建 Human Decision 对象复制 kernel Decision | 删除平行 Schema；复用 `object_type: decision` | 已收缩 |
-| 通过目录/文件名猜测 closure | CLI 要求调用者显式给出 closure roots；不提供 fresh-actor runner | 已收缩 |
+| 通过目录/文件名猜测 closure | M10-001～M3-009 CLI 要求显式 roots；M10-003 runner 只消费 source manifest exact path/hash 并按原相对路径 staging，不扫描目录 | 已锁定 |
 | candidate 被误当最终 State ontology 或科学接受 | 文档、STATUS 与 fixture 均标注 bounded/R2 pending | 保留边界 |
 | module PR 扩展后各层证据混淆 | M10-001 与后继 Task 保持独立 commit、契约、fixture 与专项测试；最终整链重审 | 进行中 |
 | 为 lineage 直接改写 legacy Attempt | 使用独立 `lineage_id@revision` sidecar，execution Attempt Schema/恢复/Receipt 不变 | 已锁定 |
@@ -21,3 +21,7 @@
 | Trace 把无关 Task/Attempt/State 拼接 | execution Attempt/Task/Resolution 三方 identity 与 Task question↔State Question 交集检查 | 已锁定 |
 | selected Snapshot 被写成 actual execution | captured 只接受正式 `execution_trace_fact` file pin；Snapshot wrong-kind 反例 | 已锁定 |
 | gap-valid 被重分类为 coverage-complete | unavailable 固定 `gap-only`；captured 在 producer 未接受时 fail closed | 已锁定 |
+| actor 偷读 oracle/session/unlisted data 或覆盖 input | oracle 不进入 actor args/env/staging；audit hook deny-by-default；精确 read surface 与 input-write 反例 | 已锁定（不声称 OS sandbox） |
+| stale Method Trace 与新 State 拼接仍通过 | actor 要求 selected active State 出现在 Trace current/result ref，且 State/Trace lineage 各只有一个 active head | 已锁定 |
+| 弱 oracle 或 caller report 冒充 Gate | runner 固定 oracle minimum/predicate vocabulary；CLI 只重跑两案且拒绝覆盖 output，不消费 caller report | 已锁定 |
+| machine PASS 越权宣称科学正确或解冻 Topic 5 | report 强制 Human/R2/Phase C pending 与三项 false authority boundary | 已锁定 |

@@ -32,6 +32,19 @@
   duplicate/disposition drift、Attempt Task mismatch、from-State mismatch、Question causal splice、Human/Evidence
   wrong type、duplicate Trace、gap overclaim、missing producer 与 selected Snapshot as actual。
 
+- **M10-003** Schemas：`phase-c-gate-manifest.schema.json`、`phase-c-gate-report.schema.json`；
+- runner-owned source：manifest exact path/hash/kind/identity，保持原 repository-relative path staging；
+- fresh actor：两案各用独立 PID，只读生成 manifest、staged allowlist 与 trusted Schema code root，输出实际
+  read/input-write surface；private oracle 在 actor 退出后才首次读取；
+- bounded cases：evidence-synthesis 复用 Case A 全 closure；simulation-negative 增加完整继承 SIM-A3
+  Gate/artifact/stop/block 的 Case B Method Resolution/Trace 与 synthetic reviewer Decision；
+- oracle minimum：exact State/Trace/Mode/Action/Evidence/Decision/open/invalidated/Failure/candidate/binding/
+  authority/read surface，加固定 known-failure predicates；
+- negative evidence：source pin drift、duplicate identity/path、oracle-as-input、unlisted read/input write、stale
+  trace、duplicate candidate、wrong-kind reopen basis、弱 oracle 与 caller output overwrite；
+- authority boundary：machine PASS 时 Human semantic review、R2 closeout、Phase C closeout 仍 pending，
+  reviewer reconstruction/scientific correctness/Topic 5 authority 均为 false。
+
 ## Re-run
 
 | 项 | 结果 |
@@ -39,12 +52,13 @@
 | `test_research_state_candidate.py` | 15 passed |
 | `test_research_attempt_failure.py` | 18 passed |
 | `test_method_trace_candidate.py` | 20 passed |
+| `test_phase_c_gate.py` | 15 passed |
 | `test_schemas.py` | 3 passed |
 | 两个 explicit-closure CLI checks | PASS（6 / 4 explicit documents） |
 | M10-002 explicit-closure CLI check | PASS（M10-001 + M10-002 显式 roots） |
-| `rwb validate examples/phase-c --root .` | validated=20, errors=0, warnings=0 |
-| `rwb validate examples registry --root .` | validated=174, errors=0, warnings=0 |
-| 最终全量 | 485 passed, 3 skipped |
+| `rwb validate examples/phase-c --root .` | validated=26, errors=0, warnings=0 |
+| `rwb validate examples registry --root .` | validated=180, errors=0, warnings=0 |
+| coverage full unittest | 500 passed；TOTAL 83%（threshold 80%）；Trace 92.96%（threshold 90%） |
 
 ## Owner review remediation matrix
 
@@ -55,7 +69,7 @@
 | pinned ref without target hash | `hash-unverifiable` negative test |
 | State role not type-bound | explicit role→semantic-type map + mismatch negative test |
 | parallel Human Decision representation | kernel `object_type: decision` fixture; no new Human Decision Schema |
-| fresh actor and Method Trace defects | M3-009 以独立 ref-only contract 修复；M10-003 runner 仍未实现 |
+| fresh actor and Method Trace defects | M3-009 以独立 ref-only contract 修复；M10-003 以 runner-owned exact staging、新进程 deny policy、post-exit private oracle 与 stale-trace 反例闭合 |
 
 ## M10-002 acceptance matrix
 
@@ -78,3 +92,14 @@
 | 无 producer 时显式 gap | unavailable + fixed reason + gap-only positive fixture |
 | Snapshot 不等于 actual execution | captured fact kind/file pin 限制 + structural Snapshot wrong-kind 反例 |
 | gap-valid 不得 coverage-complete | mutually exclusive Schema branches 与负面测试 |
+
+## M10-003 acceptance matrix
+
+| Task acceptance | Evidence |
+|---|---|
+| 两份 bounded continuity case | exactly one evidence-synthesis + one simulation-negative manifest；case/profile identity 固定 |
+| staged 新进程 | runner 临时 staging；不同 actor PID；output fresh-only |
+| compact State/Method Trace + exact closure | source byte pin/kind/identity/whole closure；actor 不扫描目录；实际 read surface exact |
+| runner-owned private oracle | 不传入 args/env/staging；actor 成功退出后首次读取；minimum fields/predicate vocabulary 固定 |
+| known-failure behavior | repeat-coarse-grid=`known-failed-avoid`；推荐 inspect-higher-resolution-input 且不重复 Failure |
+| Human/R2/Topic 5 独立 | report 固定 pending/false；Schema 与正面/篡改测试均不允许 machine Gate 越权 |
