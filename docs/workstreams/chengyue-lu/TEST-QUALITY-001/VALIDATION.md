@@ -8,8 +8,10 @@ python -m unittest tests.test_coverage_policy -v
 python tests/run_unittest_suite.py --suite coverage-quality --json-output <temporary> --verbosity 0 --slowest 10
 ```
 
-- checker adversarial tests：8 PASS；
-- dedicated suite classification：327 tests PASS，wall 330.515 秒，p50 0.030 秒，p95 4.958 秒；
+- checker adversarial tests：9 PASS；
+- 当前新增/修改的 policy、critical branch、provider、validation、registry、context 与 observability focused
+  tests：90 PASS；
+- dedicated suite discovery：546 tests，无 `_FailedTest`；
 - 该分类 run 未启用 coverage instrumentation，仅证明选择与 runner 语义可执行；
 - 本机解释器无 coverage module，未安装网络依赖或修改系统环境。
 
@@ -39,3 +41,32 @@ python tests/run_unittest_suite.py --suite coverage-quality --json-output <tempo
 
 完整逐文件缺口必须从下一 run 保留的 `coverage-quality-evidence` artifact 读取后再补测试；不以降低
 90/95/90 阈值或增加宽泛 exclusion 处理。
+
+### Iterative closure baseline — runs 33142576963 / 33143275151 / 33143784530
+
+| Run | Coverage tests | Suite wall | p50 | p95 | Global line | 结果 |
+|---|---:|---:|---:|---:|---:|---|
+| 33142576963 | 495 | 964.021s | 0.019s | 8.357s | 85.01% | critical gap inventory |
+| 33143275151 | 508 | 957.835s | 0.019s | 7.053s | 86.52% | provider / CLI / Skill helper closure |
+| 33143784530 | 519 | 1121.152s | 0.019s | 8.160s | 87.12% | eight critical files satisfy policy |
+
+Run 33143784530 的两版本 full suite、governance 与 package-smoke 均 PASS。剩余 critical 缺口是 Runtime
+Bundle、Execution View、Trace、Generic Receipt；当前 head 已增加其 manifest/category、constraint
+intersection、trace-boundary、Receipt lifecycle/evidence closed-set tests。最终 head run 33179905452 负责
+确认这些补测能同时满足 global 与逐文件 90/95/90，并记录精简 coverage selection 后的关键路径。
+
+### Critical closure / performance baseline — run 33179905452
+
+- coverage-quality：546 tests PASS，suite wall 730.009 秒，p50 0.013 秒，p95 5.386 秒；
+- coverage job wall：12 分 29 秒，进入 12–15 分钟目标窗口；
+- global line：88.52%，唯一 policy failure，距离 90% 还差 157 covered lines；
+- 12 个 critical file 全部 PASS，其中最低 line 为 Execution View 95.27%，最低 branch 为 Execution View
+  与 relationships 90.00%；
+- governance、package-smoke 与 Python 3.11 full suite PASS；
+- 当前 head 新增通用文档闭包的 adversarial matrix，覆盖 registry、Mode Action、Capability Requirement、
+  Skill Need 与 Protocol Profile 的 duplicate/missing/path/hash/identity/unknown-reference 分支；这些是
+  repository-wide validator 行为证据，不改变任何产品 contract。
+
+相对 CI-PERF-001 run 33089933787 的 28:48 关键路径，本轮可比 coverage job 已降到 12:29，同时把
+global quality floor 从 83% 目标提升到机器阻断的 90%、critical floor 提升到逐文件 95/90。最终新 head
+仍需重新证明 global line 与完整 CI 全绿。

@@ -4,10 +4,18 @@ from pathlib import Path
 import tempfile
 import unittest
 
+from research_workbench.artifacts.integrity import hash_bytes
 from research_workbench.validation import documents as documents_module
 
 
 class ValidationHelperTests(unittest.TestCase):
+    @staticmethod
+    def _loaded(entries: dict[str, object]) -> documents_module.LoadedDocuments:
+        documents = documents_module.LoadedDocuments()
+        for relative, document in entries.items():
+            documents.add(Path(relative), document, sha256=hash_bytes(relative.encode()))
+        return documents
+
     def test_recent_contract_kinds_are_inferred_without_registry_context(self) -> None:
         cases = (
             ({"profile": "runtime-bundle", "bundle_id": "B", "documents": []}, "runtime_bundle_manifest"),
@@ -80,6 +88,287 @@ class ValidationHelperTests(unittest.TestCase):
             loaded, issues = documents_module.load_and_validate((valid,))
             self.assertIsNotNone(loaded.sha256_for(valid))
             self.assertIn("DOCUMENT-UNKNOWN", {issue.code for issue in issues})
+
+    def test_registry_and_mode_action_adversarial_categories_are_reported(self) -> None:
+        path = Path("registry.yaml")
+        source = {"source_id": "S"}
+        issues = documents_module._validate_registry(
+            path,
+            {"sources": ["bad", source, source]},
+            "skill_sources",
+            set(),
+        )
+        candidate = {
+            "candidate_id": "C",
+            "source_id": "UNKNOWN",
+            "status": "accepted",
+        }
+        issues += documents_module._validate_registry(
+            path,
+            {"candidates": ["bad", candidate, candidate]},
+            "skill_candidates",
+            {"S"},
+        )
+        accepted = {
+            "skill_id": "skill",
+            "version": "1.0.0",
+            "status": "wrong",
+            "lifecycle": "invalid",
+        }
+        active = {**accepted, "status": "accepted", "lifecycle": "active"}
+        issues += documents_module._validate_registry(
+            path,
+            {"entries": ["bad", accepted, accepted, active, active]},
+            "skill_accepted",
+            set(),
+        )
+        adapter = {"adapter_id": "A"}
+        issues += documents_module._validate_registry(
+            path,
+            {"adapters": ["bad", adapter, adapter]},
+            "provider_adapters",
+            set(),
+        )
+        issues += documents_module._validate_registry(
+            path, {"registry_kind": "model_pool", "models": "invalid"}, "model_pool", set()
+        )
+
+        action = {
+            "action_id": "A",
+            "version": "1.0.0",
+            "mode_ref": "MISSING@1.0.0",
+            "claim_effects": {
+                "may_support": ["supported"],
+                "cannot_alone_support": ["supported"],
+            },
+        }
+        registry = {
+            "registry_kind": "mode_action_registry",
+            "entries": [
+                "bad",
+                {
+                    "action_id": "A",
+                    "version": "1.0.0",
+                    "mode_ref": "OTHER@1.0.0",
+                    "document_path": "wrong.yaml",
+                    "content_hash": "0" * 64,
+                },
+                {"action_id": "A", "version": "1.0.0"},
+                {"action_id": "MISSING", "version": "1.0.0"},
+            ],
+        }
+        documents = self._loaded(
+            {
+                "registry/actions.json": registry,
+                "actions/a.yaml": action,
+                "archive/a.yaml": action,
+            }
+        )
+        issues += documents_module._validate_mode_action_registry(documents)
+        codes = {issue.code for issue in issues}
+        self.assertLessEqual(
+            {
+                "SOURCE-INVALID",
+                "SOURCE-DUPLICATE",
+                "CANDIDATE-INVALID",
+                "CANDIDATE-DUPLICATE",
+                "SOURCE-UNKNOWN",
+                "CANDIDATE-UNPINNED",
+                "ACCEPTED-INVALID",
+                "ACCEPTED-DUPLICATE",
+                "ACCEPTED-STATUS",
+                "ACCEPTED-LIFECYCLE",
+                "ACCEPTED-ACTIVE-DUPLICATE",
+                "PROVIDER-ADAPTER-INVALID",
+                "PROVIDER-ADAPTER-DUPLICATE",
+                "MODEL-POOL-INVALID",
+                "MODE-ACTION-DUPLICATE",
+                "MODE-ACTION-REGISTRY-DUPLICATE",
+                "MODE-ACTION-DOCUMENT-MISSING",
+                "MODE-ACTION-PATH-MISMATCH",
+                "MODE-ACTION-MODE-MISMATCH",
+                "MODE-ACTION-HASH-MISMATCH",
+            },
+            codes,
+        )
+
+    def test_requirement_and_skill_need_closed_set_adversarial_matrix(self) -> None:
+        requirement = {
+            "requirement_id": "OTHER",
+            "constraints": {},
+            "unsatisfied_requirement": {},
+        }
+        requirement_index = {
+            "registry_kind": "capability_requirement_index",
+            "entries": [
+                "bad",
+                {"requirement_id": "REQ", "document_path": "requirements/req.yaml", "content_hash": "0" * 64},
+                {"requirement_id": "REQ", "document_path": "requirements/other.yaml"},
+                {"requirement_id": "OTHER-2", "document_path": "requirements/req.yaml"},
+                {"requirement_id": "MISSING", "document_path": "requirements/missing.yaml"},
+                {"requirement_id": "WRONG", "document_path": "requirements/wrong.yaml"},
+            ],
+        }
+        need = {
+            "need_ref": "OTHER@1.0.0",
+            "need_id": "OTHER",
+            "version": "1.0.0",
+            "semantic_gap": {},
+            "mode_refs": ["UNKNOWN-MODE@1.0.0"],
+            "origin_actions": [
+                {"action_ref": "UNKNOWN-A@1.0.0"},
+                {"action_ref": "UNKNOWN-A@1.0.0"},
+            ],
+            "baseline": {"capability_requirement_refs": ["UNKNOWN-REQ"]},
+            "evaluation_requirements": {
+                "required_evidence_classes": [
+                    {"evidence_class_id": "E"},
+                    {"evidence_class_id": "E"},
+                    "bad",
+                ],
+                "criteria": [
+                    {"criterion_id": "C", "evidence_class_refs": ["MISSING"]},
+                    {"criterion_id": "C", "evidence_class_refs": []},
+                    "bad",
+                ],
+            },
+            "domain_scope": {
+                "variants": [
+                    {"variant_id": "V"},
+                    {"variant_id": "V"},
+                    "bad",
+                ]
+            },
+        }
+        need_index = {
+            "registry_kind": "skill_need_index",
+            "entries": [
+                "bad",
+                {"need_ref": "N@1.0.0", "need_id": "N", "version": "1.0.0", "document_path": "needs/n.yaml", "content_hash": "0" * 64},
+                {"need_ref": "N@1.0.0", "need_id": "N2", "version": "1.0.0", "document_path": "needs/n2.yaml"},
+                {"need_ref": "N2@1.0.0", "need_id": "N", "version": "1.0.0", "document_path": "needs/n3.yaml"},
+                {"need_ref": "N3@1.0.0", "need_id": "N3", "version": "1.0.0", "document_path": "needs/n.yaml"},
+                {"need_ref": "MISSING@1.0.0", "need_id": "MISSING", "version": "1.0.0", "document_path": "needs/missing.yaml"},
+                {"need_ref": "WRONG@1.0.0", "need_id": "WRONG", "version": "1.0.0", "document_path": "needs/wrong.yaml"},
+            ],
+        }
+        documents = self._loaded(
+            {
+                "registry/requirements.json": requirement_index,
+                "requirements/req.yaml": requirement,
+                "requirements/wrong.yaml": {"schema_version": "0.1.0"},
+                "registry/needs.json": need_index,
+                "needs/n.yaml": need,
+                "needs/wrong.yaml": {"schema_version": "0.1.0"},
+                "modes/m.yaml": {"mode_id": "M", "version": "1.0.0", "claim_rules": {}},
+                "registry/actions.json": {
+                    "registry_kind": "mode_action_registry",
+                    "entries": [{"action_id": "KNOWN", "version": "1.0.0", "mode_ref": "M@1.0.0"}],
+                },
+            }
+        )
+        issues = documents_module._validate_capability_requirement_set(documents)
+        issues += documents_module._validate_skill_need_set(documents)
+        codes = {issue.code for issue in issues}
+        self.assertLessEqual(
+            {
+                "CAPABILITY-REQUIREMENT-IDENTITY-DUPLICATE",
+                "CAPABILITY-REQUIREMENT-PATH-DUPLICATE",
+                "CAPABILITY-REQUIREMENT-DOCUMENT-MISSING",
+                "CAPABILITY-REQUIREMENT-DOCUMENT-KIND",
+                "CAPABILITY-REQUIREMENT-IDENTITY-MISMATCH",
+                "CAPABILITY-REQUIREMENT-HASH-MISMATCH",
+                "SKILL-NEED-REFERENCE-DUPLICATE",
+                "SKILL-NEED-IDENTITY-DUPLICATE",
+                "SKILL-NEED-PATH-DUPLICATE",
+                "SKILL-NEED-DOCUMENT-MISSING",
+                "SKILL-NEED-DOCUMENT-KIND",
+                "SKILL-NEED-IDENTITY-MISMATCH",
+                "SKILL-NEED-HASH-MISMATCH",
+                "SKILL-NEED-MODE-MISSING",
+                "SKILL-NEED-ACTION-DUPLICATE",
+                "SKILL-NEED-ACTION-MISSING",
+                "SKILL-NEED-CAPABILITY-REQUIREMENT-MISSING",
+                "SKILL-NEED-EVIDENCE-CLASS-DUPLICATE",
+                "SKILL-NEED-CRITERION-DUPLICATE",
+                "SKILL-NEED-EVIDENCE-CLASS-MISSING",
+                "SKILL-NEED-DOMAIN-VARIANT-DUPLICATE",
+            },
+            codes,
+        )
+
+    def test_protocol_profile_closed_set_adversarial_matrix(self) -> None:
+        profile = {
+            "profile_id": "OTHER",
+            "version": "1.0.0",
+            "method_standard": {},
+            "method_obligations": [
+                "bad",
+                {
+                    "obligation_id": "O",
+                    "applies_to_action_refs": ["UNKNOWN-A@1.0.0"],
+                    "evidence_expectation_refs": ["UNKNOWN-E"],
+                    "gate_expectation_refs": ["UNKNOWN-G"],
+                },
+                {"obligation_id": "O", "applies_to_action_refs": []},
+            ],
+            "compatible_mode_refs": ["UNKNOWN-MODE@1.0.0"],
+            "scoped_actions": [
+                "bad",
+                {"action_ref": "UNKNOWN-A@1.0.0"},
+                {"action_ref": "UNKNOWN-A@1.0.0"},
+            ],
+            "evidence_expectations": ["bad", {"expectation_id": "E"}, {"expectation_id": "E"}],
+            "gate_expectations": ["bad", {"gate_ref": "G"}, {"gate_ref": "G"}],
+        }
+        index = {
+            "registry_kind": "protocol_profile_index",
+            "entries": [
+                "bad",
+                {"profile_ref": "P@1.0.0", "profile_id": "P", "version": "1.0.0", "document_path": "profiles/p.yaml", "content_hash": "0" * 64},
+                {"profile_ref": "P@1.0.0", "profile_id": "P2", "version": "1.0.0", "document_path": "profiles/p2.yaml"},
+                {"profile_ref": "P2@1.0.0", "profile_id": "P", "version": "1.0.0", "document_path": "profiles/p3.yaml"},
+                {"profile_ref": "P3@1.0.0", "profile_id": "P3", "version": "1.0.0", "document_path": "profiles/p.yaml"},
+                {"profile_ref": "MISSING@1.0.0", "profile_id": "MISSING", "version": "1.0.0", "document_path": "profiles/missing.yaml"},
+                {"profile_ref": "WRONG@1.0.0", "profile_id": "WRONG", "version": "1.0.0", "document_path": "profiles/wrong.yaml"},
+            ],
+        }
+        documents = self._loaded(
+            {
+                "registry/profiles.json": index,
+                "profiles/p.yaml": profile,
+                "profiles/wrong.yaml": {"schema_version": "0.1.0"},
+                "modes/m.yaml": {"mode_id": "M", "version": "1.0.0", "claim_rules": {}},
+                "registry/actions.json": {
+                    "registry_kind": "mode_action_registry",
+                    "entries": [{"action_id": "KNOWN", "version": "1.0.0", "mode_ref": "M@1.0.0"}],
+                },
+            }
+        )
+        codes = {
+            issue.code
+            for issue in documents_module._validate_protocol_profile_set(documents)
+        }
+        self.assertLessEqual(
+            {
+                "PROTOCOL-PROFILE-REFERENCE-DUPLICATE",
+                "PROTOCOL-PROFILE-IDENTITY-DUPLICATE",
+                "PROTOCOL-PROFILE-PATH-DUPLICATE",
+                "PROTOCOL-PROFILE-DOCUMENT-MISSING",
+                "PROTOCOL-PROFILE-DOCUMENT-KIND",
+                "PROTOCOL-PROFILE-IDENTITY-MISMATCH",
+                "PROTOCOL-PROFILE-HASH-MISMATCH",
+                "PROTOCOL-PROFILE-MODE-MISSING",
+                "PROTOCOL-PROFILE-ACTION-DUPLICATE",
+                "PROTOCOL-PROFILE-ACTION-MISSING",
+                "PROTOCOL-PROFILE-EVIDENCE-DUPLICATE",
+                "PROTOCOL-PROFILE-GATE-DUPLICATE",
+                "PROTOCOL-PROFILE-OBLIGATION-DUPLICATE",
+                "PROTOCOL-PROFILE-OBLIGATION-EVIDENCE-MISSING",
+                "PROTOCOL-PROFILE-OBLIGATION-GATE-MISSING",
+            },
+            codes,
+        )
 
 
 if __name__ == "__main__":

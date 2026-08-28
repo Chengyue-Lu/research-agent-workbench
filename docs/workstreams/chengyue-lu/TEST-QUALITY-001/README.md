@@ -75,9 +75,9 @@ repository fixture replay 与 integration。Coverage-quality suite 只包含 det
 modules；具名 omitted modules 没有被删除，仍在两套 behavioral suites 中运行。
 
 原生 unittest runner 记录 suite wall time、test count、slowest 20、p50、p95，并生成机器可读 JSON；不引入
-pytest、sharding、test selection framework 或 cache。首份本地无 instrumentation 分类验证为 327 tests、
-330.515 秒、p50 0.030 秒、p95 4.958 秒；加入快速 governance checker tests 后的 hosted baseline 以 PR
-首个最终 head run 为准。
+pytest、sharding、test selection framework 或 cache。Coverage suite 通过 manifest 显式组合 module 与少量
+具名 integration test ID：移出 coverage 路径的慢测试仍由 3.11/3.13 full discovery 执行，不能因此被删除或
+视为已被较快 helper test 取代。当前 head 可加载 546 tests，且无 `_FailedTest`。
 
 ## 前置基线与验收
 
@@ -94,4 +94,8 @@ full suite 08:37；全局 line 83%，Trace line 92.87%。这证明单靠 suite �
 - package-smoke、repository validation 与 governance PASS；
 - hosted critical path 进入约 12–15 分钟，或用 slowest/p50/p95 给出明确事实原因。
 
-本文件在最终 hosted baseline 前不把阈值或性能标为已满足。
+迭代 hosted evidence 已把 global line 从 79.31% 提高到 88.52%；run 33179905452 证明全部 12 个 critical
+file 均越过逐文件 95/90 Gate，coverage suite wall 730.009 秒、job wall 12 分 29 秒。该 run 唯一未满足的
+policy 项是 global line 尚差 157 行；当前 head 已增加 registry、Mode Action、Capability Requirement、
+Skill Need 与 Protocol Profile 的 closed-set adversarial matrix，最终状态仍只以新 head hosted artifact
+为准。
