@@ -1,6 +1,7 @@
 # M10 Phase C 验证证据
 
-状态：PR #44 review 整改；基线 `develop@6b16129`。
+状态：PR #44 final-contract review 整改中；当前 feature head `ab9ceae`，merge-base
+`develop@6b16129`，待在 M4/CI 前置合并后语义 rebase 到 current `develop@aa4e7ee`。
 
 ## Task-specific evidence
 
@@ -19,23 +20,28 @@
 - bounded cases：`examples/phase-c/m10-002-case-a` 与 `m10-002-case-b`，并复用 M10-001 State closure；
 - independence evidence：两个 Attempt 共享 State r1，而 State r2 由 Evidence/Human Decision 独立演化；
 - negative evidence：wrong/missing/drifted execution pin、predecessor self-loop/unversioned/type mismatch、
-  reopen basis empty/type mismatch、predecessor/reopen 双向独立、duplicate lineage identity、Failure source
-  type mismatch、partial profile，以及
+  reopen basis empty/type mismatch、changed-condition missing/wrong-type provenance、predecessor/reopen 双向独立、
+  duplicate lineage identity、execution-origin missing source Attempt、non-execution carrying execution profile、
+  Failure source type mismatch、partial profile，以及
   execution failure/negative Evidence/Capability Gap/Skill Need 平行字段拒绝。
 
 - **M3-009** Schema：`method-trace.schema.json`；
 - exact Method：正式索引 `resolution_id@revision`，并验证 MR Schema、Task identity 与 Task byte pin；
 - ref-only closure：Attempt、Task、Mode ref、Action decision id、State、kernel Decision、typed path basis；
 - bounded case：`examples/phase-c/m3-009-case-a`，复用 M10-001/002 exact closure；
-- actual-binding：正例固定 unavailable/gap-only；captured 仅预留给 accepted `execution_trace_fact`；
+- actual-binding：当前 pre-rebase fixture 仍为 unavailable/gap-only；M11 已在 develop 提供 accepted
+  `execution_trace_fact`，captured 正例及 fact→path/state effect 绑定列为 final semantic rebase 必做项；
 - negative evidence：MR missing/wrong-kind/wrong-task/malformed/bad-pin、Mode drift、Action path missing/
   duplicate/disposition drift、Attempt Task mismatch、from-State mismatch、Question causal splice、Human/Evidence
   wrong type、duplicate Trace、gap overclaim、missing producer 与 selected Snapshot as actual。
 
 - **M10-003** Schemas：`phase-c-gate-manifest.schema.json`、`phase-c-gate-report.schema.json`；
 - runner-owned source：manifest exact path/hash/kind/identity，保持原 repository-relative path staging；
-- fresh actor：两案各用独立 PID，只读生成 manifest、staged allowlist 与 trusted Schema code root，输出实际
-  read/input-write surface；private oracle 在 actor 退出后才首次读取；
+- fresh actor：两案各用独立 PID，只读生成 manifest、staged allowlist 与 trusted Schema code root；输出
+  exact case-data read surface、declared trusted runtime/schema surface 与 input-write surface；private oracle
+  在 actor 退出后才首次读取；
+- report pins：每案绑定 source-manifest SHA、private-oracle SHA 与 exact input-closure digest；顶层 digest
+  绑定两案 pins，Schema 精确固定 trusted runtime/schema 二元组并拒绝 complete-process-read overclaim；
 - bounded cases：evidence-synthesis 复用 Case A 全 closure；simulation-negative 增加完整继承 SIM-A3
   Gate/artifact/stop/block 的 Case B Method Resolution/Trace 与 synthetic reviewer Decision；
 - oracle minimum：exact State/Trace/Mode/Action/Evidence/Decision/open/invalidated/Failure/candidate/binding/
@@ -50,15 +56,16 @@
 | 项 | 结果 |
 |---|---|
 | `test_research_state_candidate.py` | 15 passed |
-| `test_research_attempt_failure.py` | 18 passed |
+| `test_research_attempt_failure.py` | 20 passed（latest owner-review delta） |
 | `test_method_trace_candidate.py` | 20 passed |
-| `test_phase_c_gate.py` | 15 passed |
+| `test_phase_c_gate.py` | 18 passed（latest owner-review delta） |
 | `test_schemas.py` | 3 passed |
 | 两个 explicit-closure CLI checks | PASS（6 / 4 explicit documents） |
 | M10-002 explicit-closure CLI check | PASS（M10-001 + M10-002 显式 roots） |
 | `rwb validate examples/phase-c --root .` | validated=26, errors=0, warnings=0 |
 | `rwb validate examples registry --root .` | validated=180, errors=0, warnings=0 |
-| coverage full unittest | 500 passed；TOTAL 83%（threshold 80%）；Trace 92.96%（threshold 90%） |
+| previous-head coverage full unittest | 500 passed；TOTAL 83%（threshold 80%）；Trace 92.96%（threshold 90%） |
+| latest-base full/coverage/dual-Python CI | PENDING（在 M11 semantic rebase 与 #47 CI 基线落地后重跑） |
 
 ## Owner review remediation matrix
 
@@ -76,10 +83,10 @@
 | Task acceptance | Evidence |
 |---|---|
 | Attempt 分离 from-State | versioned lineage sidecar 不改 legacy Attempt；state exact ref 独立 |
-| optional predecessor + independent reopen justification | 双向独立正例；predecessor distinct/type/exact；reopen ref/type/changed-condition 反例 |
+| optional predecessor + independent reopen justification | 双向独立正例；predecessor distinct/type/exact；changed condition 逐项携带 exact/type-bound provenance |
 | 多 Attempt 共享 State，State 独立演化 | Case A 两个 lineage 同指 r1；既有 State r2 独立 supersede |
 | Failure universal minimum | minimal fixture test 只需 learned/revisit semantic content |
-| source/observed/uncertainty 仅 bounded profile | optional all-or-nothing `execution_profile` |
+| source/observed/uncertainty 仅 bounded profile | `origin_kind` 条件化：execution 强制 source Attempt；non-execution 禁止 profile |
 | 与其他 failure/gap/need 分离 | additionalProperties fail-closed 与四项字段拒绝测试 |
 
 ## M3-009 acceptance matrix
@@ -99,7 +106,9 @@
 |---|---|
 | 两份 bounded continuity case | exactly one evidence-synthesis + one simulation-negative manifest；case/profile identity 固定 |
 | staged 新进程 | runner 临时 staging；不同 actor PID；output fresh-only |
-| compact State/Method Trace + exact closure | source byte pin/kind/identity/whole closure；actor 不扫描目录；实际 read surface exact |
+| compact State/Method Trace + exact closure | source byte pin/kind/identity/whole closure；actor 不扫描目录；case-data read surface exact |
 | runner-owned private oracle | 不传入 args/env/staging；actor 成功退出后首次读取；minimum fields/predicate vocabulary 固定 |
+| exact case/oracle 可审计 | manifest/oracle/closure SHA 逐案记录；顶层 digest 独立复算；等价替换输入仍 hash-distinguishable |
+| runtime/schema 信任边界 | report 与 Schema 分离 exact case-data surface 和精确声明的 trusted surface；完整进程读面固定 false |
 | known-failure behavior | repeat-coarse-grid=`known-failed-avoid`；推荐 inspect-higher-resolution-input 且不重复 Failure |
 | Human/R2/Topic 5 独立 | report 固定 pending/false；Schema 与正面/篡改测试均不允许 machine Gate 越权 |
