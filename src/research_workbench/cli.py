@@ -23,6 +23,7 @@ from research_workbench.adapters.models import (
 from research_workbench.artifacts.integrity import hash_directory, hash_file, resolve_within_root
 from research_workbench.artifacts.admission import (
     build_admission_mapping,
+    check_raw_reference_admission,
     check_source_admission,
     inbox_citation_risk,
     path_cites_inbox,
@@ -249,11 +250,21 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
     for reference in references:
         if path_cites_inbox(reference.path):
             risks.append(inbox_citation_risk(reference.path))
+        if kind != "source_admission":
+            risks.extend(
+                check_raw_reference_admission(
+                    root,
+                    reference.path,
+                    reference_sha256=reference.sha256,
+                )
+            )
     for relative in path_only:
         resolved = resolve_within_root(root, relative)
         if path_cites_inbox(relative):
             risks.append(inbox_citation_risk(relative))
             continue
+        if kind != "source_admission":
+            risks.extend(check_raw_reference_admission(root, relative))
         if resolved is None:
             risks.append(ContractRisk("REF-OUTSIDE-ROOT", RiskLevel.BLOCK, f"reference escapes root: {relative}"))
         elif not resolved.is_file():

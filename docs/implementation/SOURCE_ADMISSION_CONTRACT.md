@@ -21,6 +21,9 @@ acquisition locator（URI/DOI/device 至少一项）、带时区时间戳、具�
 - `rwb source check` 与仓库级 `rwb validate` 校验 Schema、路径、字节 pin 和 provenance；
 - 所有已被既有文档提取器识别的 FileReference/path-only 引用若落入完整
   `sources/inbox` 路径段，均以 `ARTIFACT-INBOX-CITED` 阻断；
+- 普通文档引用完整 `sources/raw` 路径段时，必须存在同路径 `<raw-path>.admission.yaml`；
+  sidecar 必须通过 `source_admission` Schema/语义校验、精确声明被引 raw path，并以 admission SHA
+  绑定当前 raw bytes；FileReference 自带 SHA 时还必须与 admission SHA 一致；
 - 分区判断基于规范化的完整路径段，`sources/raw-copy`、`sources/inbox-old` 不会被误判为
   `sources/raw`、`sources/inbox`。
 

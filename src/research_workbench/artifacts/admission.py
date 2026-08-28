@@ -8,16 +8,30 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Mapping
 
-from research_workbench.artifacts.integrity import check_file_reference, hash_bytes
+from research_workbench.artifacts.integrity import (
+    check_file_reference,
+    hash_bytes,
+    resolve_within_root,
+)
 from research_workbench.contracts.common import ContractError, require_relative_path, require_string
 from research_workbench.contracts.risks import ContractRisk, RiskLevel
+from research_workbench.io import load_document
 from research_workbench.tasks.models import FileReference
+from research_workbench.validation.schemas import SchemaCatalog
 
 INBOX_PATH_MARKER = "sources/inbox/"
 RAW_PATH_PREFIX = "sources/raw/"
+
+
+@lru_cache(maxsize=1)
+def _schema_catalog() -> SchemaCatalog:
+    """Load the packaged schema catalog once for reference-side admission checks."""
+
+    return SchemaCatalog()
 
 
 def normalized_relative(path: str) -> str:
@@ -39,6 +53,12 @@ def path_cites_inbox(path: str) -> bool:
     """Return True when a repository-relative path points into the inbox."""
 
     return _within_zone(path, INBOX_PATH_MARKER)
+
+
+def path_cites_raw(path: str) -> bool:
+    """Return True when a repository-relative path points into admitted raw storage."""
+
+    return _within_zone(path, RAW_PATH_PREFIX)
 
 
 def inbox_citation_risk(path: str, field: str = "path") -> ContractRisk:
@@ -162,6 +182,98 @@ def check_source_admission(root: str | Path, data: Mapping[str, Any]) -> list[Co
                     "ARTIFACT-HASH-MISMATCH",
                     RiskLevel.BLOCK,
                     f"derivative bytes differ from declared sha256: {derivative.path}",
+                )
+            )
+    return risks
+
+
+def check_raw_reference_admission(
+    root: str | Path,
+    path: str,
+    *,
+    reference_sha256: str | None = None,
+) -> list[ContractRisk]:
+    """Require a valid exact sidecar for an ordinary citation into ``sources/raw``."""
+
+    normalized = normalized_relative(path)
+    if not path_cites_raw(normalized):
+        return []
+
+    sidecar_relative = sidecar_path_for(normalized)
+    sidecar = resolve_within_root(root, sidecar_relative)
+    if sidecar is None or not sidecar.is_file():
+        return [
+            ContractRisk(
+                "ARTIFACT-MISSING-PROVENANCE",
+                RiskLevel.BLOCK,
+                f"raw reference lacks its admission sidecar: {sidecar_relative}",
+            )
+        ]
+
+    try:
+        document = load_document(sidecar)
+    except Exception as exc:
+        return [
+            ContractRisk(
+                "ARTIFACT-MISSING-PROVENANCE",
+                RiskLevel.BLOCK,
+                f"raw reference admission sidecar cannot be parsed: {sidecar_relative}: {exc}",
+            )
+        ]
+    if not isinstance(document, Mapping):
+        return [
+            ContractRisk(
+                "ARTIFACT-MISSING-PROVENANCE",
+                RiskLevel.BLOCK,
+                f"raw reference admission sidecar is not an object: {sidecar_relative}",
+            )
+        ]
+
+    schema_errors = _schema_catalog().validate("source_admission", document)
+    if schema_errors:
+        rendered = "; ".join(
+            f"{error.pointer}: {error.message}" for error in schema_errors[:4]
+        )
+        return [
+            ContractRisk(
+                "ARTIFACT-MISSING-PROVENANCE",
+                RiskLevel.BLOCK,
+                f"raw reference admission sidecar is schema-invalid: {sidecar_relative}: {rendered}",
+            )
+        ]
+
+    try:
+        admission = SourceAdmission.from_mapping(document)
+    except ContractError as exc:
+        return [
+            ContractRisk(
+                "ARTIFACT-MISSING-PROVENANCE",
+                RiskLevel.BLOCK,
+                f"raw reference admission sidecar is invalid: {sidecar_relative}: {exc}",
+            )
+        ]
+
+    risks: list[ContractRisk] = []
+    if admission.admitted_path != normalized:
+        risks.append(
+            ContractRisk(
+                "ARTIFACT-MISSING-PROVENANCE",
+                RiskLevel.BLOCK,
+                "raw reference admission path mismatch: "
+                f"cited={normalized} admitted={admission.admitted_path}",
+            )
+        )
+    risks.extend(check_source_admission(root, document))
+
+    if reference_sha256 is not None:
+        declared = reference_sha256.removeprefix("sha256:").lower()
+        if declared != admission.sha256:
+            risks.append(
+                ContractRisk(
+                    "ARTIFACT-HASH-MISMATCH",
+                    RiskLevel.BLOCK,
+                    "raw FileReference sha256 differs from admission sha256: "
+                    f"{normalized}",
                 )
             )
     return risks
