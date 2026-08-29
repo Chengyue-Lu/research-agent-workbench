@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import copy
+from dataclasses import replace
 from pathlib import Path
 import unittest
 
 from research_workbench.contracts import ContractError
 from research_workbench.io import load_document
 from research_workbench.observability import models as models_module
+from research_workbench.protocol import ProjectProtocol
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -130,6 +132,42 @@ class ObservabilityModelBranchTests(unittest.TestCase):
         changed["model_usage"] = []
         with self.assertRaises(ContractError):
             models_module.ExecutionReceipt.from_mapping(changed)
+
+    def test_receipt_reference_validator_reports_missing_inputs_without_replay(self) -> None:
+        receipt = models_module.ExecutionReceipt.from_mapping(
+            load_document(ROOT / "examples" / "observability" / "execution-evidence-contract.yaml")
+        )
+        protocol = ProjectProtocol.from_mapping(
+            load_document(ROOT / "examples" / "project-protocol.yaml")
+        )
+        missing = replace(
+            receipt,
+            attempt_ref="missing-attempt.yaml",
+            skill_assignment_ref="missing-assignment.yaml",
+            agent_profile_ref="missing-profile.yaml",
+            context_snapshot_ref="missing-context.yaml",
+            output_refs=("missing-output.txt",),
+            validation_refs=("missing-validation.yaml",),
+            trace_ref=None,
+        )
+        risks = models_module.check_execution_receipt(missing, protocol, root=ROOT)
+        codes = {risk.code for risk in risks}
+        self.assertIn("REF-MISSING", codes)
+        self.assertIn("RECEIPT-MACHINE-VALIDATION-MISSING", codes)
+
+        paused = replace(
+            missing,
+            status="safe-paused",
+            completion_claim="none",
+            context_snapshot_ref=None,
+            output_refs=(),
+            validation_refs=(),
+        )
+        paused_codes = {
+            risk.code
+            for risk in models_module.check_execution_receipt(paused, protocol, root=ROOT)
+        }
+        self.assertIn("RECEIPT-SAFE-PAUSE-CONTEXT-MISSING", paused_codes)
 
 
 if __name__ == "__main__":

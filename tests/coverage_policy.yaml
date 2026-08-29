@@ -25,6 +25,7 @@ suites:
       - test_coverage_policy
       - test_decision_authority
       - test_execution_contract_helpers
+      - test_execution_archive_helpers
       - test_execution_view
       - test_governance_helper_branches
       - test_integrity
