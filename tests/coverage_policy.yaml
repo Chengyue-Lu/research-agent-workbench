@@ -109,6 +109,7 @@ thresholds:
     branch: 90
 
 critical_modules:
+  - .github/scripts/check_coverage_policy.py
   - .github/scripts/check_pr_governance.py
   - src/research_workbench/protocol/authority.py
   - src/research_workbench/capability/requirements.py
@@ -123,9 +124,23 @@ critical_modules:
   - src/research_workbench/validation/relationships.py
   - src/research_workbench/validation/capability.py
   - src/research_workbench/validation/capability_registry.py
+  - src/research_workbench/validation/capability_supply_registry.py
   - src/research_workbench/validation/document_core.py
+  - src/research_workbench/validation/method_resolution_registry.py
+  - src/research_workbench/validation/phase_b_gate.py
+  - src/research_workbench/validation/authority_registry.py
 
 negative_acceptance:
+  - surface: coverage-policy-self-control
+    modules:
+      - .github/scripts/check_coverage_policy.py
+    positive_tests:
+      - test_coverage_policy.CoveragePolicyCheckerTests.test_exact_thresholds_and_positive_negative_evidence_pass
+      - test_coverage_policy.CoveragePolicyCheckerTests.test_declared_exclusions_exactly_match_coverage_json
+    negative_tests:
+      - test_coverage_policy.CoveragePolicyCheckerTests.test_source_root_is_canonical_and_cannot_be_narrowed
+      - test_coverage_policy.CoveragePolicyCheckerTests.test_positive_and_negative_evidence_must_be_disjoint
+      - test_coverage_policy.CoveragePolicyCheckerTests.test_undeclared_actual_and_nonexistent_declared_exclusions_fail
   - surface: repository-governance-validator
     modules:
       - .github/scripts/check_pr_governance.py
@@ -140,20 +155,27 @@ negative_acceptance:
   - surface: authority-rule-eligibility
     modules:
       - src/research_workbench/protocol/authority.py
+      - src/research_workbench/validation/authority_registry.py
     positive_tests:
       - test_decision_authority.DecisionAuthorityTests.test_all_recorded_results_are_deterministically_recomputed
+      - test_decision_authority.DecisionAuthorityTests.test_repository_validation_recomputes_every_eligibility_record
     negative_tests:
       - test_decision_authority.DecisionAuthorityTests.test_agent_and_resolver_cannot_commit_reserved_decisions
       - test_decision_authority.DecisionAuthorityTests.test_hash_and_recorded_result_drift_are_blocking
+      - test_decision_authority.DecisionAuthorityTests.test_authority_registry_reference_and_contract_faults_fail_closed
   - surface: capability-demand-resolution-snapshot
     modules:
       - src/research_workbench/capability/requirements.py
       - src/research_workbench/capability/supply.py
+      - src/research_workbench/validation/capability_supply_registry.py
     positive_tests:
       - test_capability_resolution.CapabilityResolutionTests.test_supply_resolution_snapshot_chain_is_closed_and_recomputed
     negative_tests:
       - test_capability_requirements.CapabilityRequirementTests.test_wrong_index_hash_is_blocking
       - test_capability_resolution.CapabilityResolutionTests.test_snapshot_lineage_supply_facts_and_evidence_drift_are_blocking
+      - test_capability_resolution.CapabilityResolutionTests.test_supply_registry_adversarial_contract_and_evidence_matrix
+      - test_capability_resolution.CapabilityResolutionTests.test_resolution_and_snapshot_registry_adversarial_matrix
+      - test_capability_resolution.CapabilityResolutionTests.test_supply_reference_evidence_and_cross_object_guard_matrix
   - surface: runtime-bundle-closure
     modules:
       - src/research_workbench/execution/runtime_bundle.py
@@ -221,5 +243,33 @@ negative_acceptance:
       - test_validation_critical_surfaces.CapabilityRequirementRegistryCriticalTests.test_missing_and_duplicate_index_fail_closed
       - test_validation_critical_surfaces.CapabilityRequirementRegistryCriticalTests.test_entry_identity_path_kind_and_hash_guards_fail_closed
       - test_validation_critical_surfaces.CapabilityRequirementRegistryCriticalTests.test_malformed_unindexed_and_relocated_requirements_cannot_bypass_closure
+  - surface: method-resolution-document-closure
+    modules:
+      - src/research_workbench/validation/method_resolution_registry.py
+    positive_tests:
+      - test_method_resolutions.MethodResolutionTests.test_document_validation_closes_actions_needs_gates_and_blocks
+      - test_method_resolutions.MethodResolutionTests.test_additive_gate_is_allowed
+    negative_tests:
+      - test_method_resolutions.MethodResolutionTests.test_wrong_task_hash_is_blocking
+      - test_method_resolutions.MethodResolutionTests.test_required_action_gate_missing_or_renamed_is_blocking
+      - test_method_resolutions.MethodResolutionTests.test_action_artifact_stop_block_and_claim_effects_cannot_be_weakened
+      - test_method_resolutions.MethodResolutionTests.test_method_registry_missing_reference_and_shape_branches_fail_closed
+  - surface: phase-b-evolution-gate-closure
+    modules:
+      - src/research_workbench/validation/phase_b_gate.py
+    positive_tests:
+      - test_phase_b_evolution_gate.PhaseBEvolutionGateTests.test_gate_is_schema_valid_and_repository_closed
+    negative_tests:
+      - test_phase_b_evolution_gate.PhaseBEvolutionGateTests.test_permission_data_and_side_effect_boundary_drift_are_blocking
+      - test_phase_b_evolution_gate.PhaseBEvolutionGateTests.test_stable_contract_and_snapshot_hash_drift_are_blocking
+      - test_phase_b_evolution_gate.PhaseBEvolutionGateTests.test_gate_reference_lineage_and_replay_adversarial_matrix
 
-justified_exclusions: []
+justified_exclusions:
+  - path: src/research_workbench/adapters/models/session.py
+    lines: [90, 91, 92, 93]
+    reason: Protocol method declaration has no executable implementation body.
+    owner: Chengyue-Lu
+  - path: src/research_workbench/execution/host.py
+    lines: [66, 67, 68, 69, 70, 71, 72, 73, 74, 76, 77, 78]
+    reason: Protocol property and method declarations have no executable implementation body.
+    owner: Chengyue-Lu

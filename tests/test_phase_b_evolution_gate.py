@@ -4,7 +4,9 @@ from pathlib import Path
 
 from research_workbench.io import load_document
 from research_workbench.validation import SchemaCatalog, validate_documents
-from research_workbench.validation.documents import _validate_phase_b_evolution_gates
+from research_workbench.validation.phase_b_gate import (
+    validate_phase_b_evolution_gates as _validate_phase_b_evolution_gates,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -161,6 +163,130 @@ class PhaseBEvolutionGateTests(unittest.TestCase):
                 gate = copy.deepcopy(self.gate)
                 gate["boundary_assertions"][field] = True
                 self.assertTrue(self.catalog.validate("phase_b_evolution_gate", gate))
+
+    def test_gate_reference_lineage_and_replay_adversarial_matrix(self) -> None:
+        method_path = ROOT / "examples/method-resolutions/ROUTE-ES-FROZEN-001.yaml"
+        cases = (
+            (
+                lambda documents: documents[GATE_PATH]["stable_contract_refs"][0].__setitem__(
+                    "document_path", "examples/missing-task.yaml"
+                ),
+                "PHASE-B-GATE-CONTRACT-MISSING",
+            ),
+            (
+                lambda documents: documents[GATE_PATH]["stable_contract_refs"][0].__setitem__(
+                    "ref", "TASK-WRONG@r1"
+                ),
+                "PHASE-B-GATE-CONTRACT-IDENTITY-DRIFT",
+            ),
+            (
+                lambda documents: documents[GATE_PATH].__setitem__(
+                    "stable_contract_refs",
+                    [
+                        item
+                        for item in documents[GATE_PATH]["stable_contract_refs"]
+                        if item["kind"] != "task-packet"
+                    ],
+                ),
+                "PHASE-B-GATE-CONTRACT-SET-INCOMPLETE",
+            ),
+            (
+                lambda documents: documents[GATE_PATH].__setitem__(
+                    "stable_contract_refs",
+                    [
+                        item
+                        for item in documents[GATE_PATH]["stable_contract_refs"]
+                        if item["kind"] != "mode-action"
+                    ],
+                ),
+                "PHASE-B-GATE-CONTRACT-SET-INCOMPLETE",
+            ),
+            (
+                lambda documents: documents[method_path]["task_ref"].__setitem__(
+                    "task_id", "TASK-WRONG"
+                ),
+                "PHASE-B-GATE-TASK-LINEAGE-DRIFT",
+            ),
+            (
+                lambda documents: documents[method_path]["mode_resolution"].__setitem__(
+                    "selected_mode_refs", []
+                ),
+                "PHASE-B-GATE-MODE-LINEAGE-DRIFT",
+            ),
+            (
+                lambda documents: documents[method_path].__setitem__("action_decisions", []),
+                "PHASE-B-GATE-ACTION-SET-DRIFT",
+            ),
+            (
+                lambda documents: documents[method_path]["action_decisions"][0].__setitem__(
+                    "capability_requirements", []
+                ),
+                "PHASE-B-GATE-REQUIREMENT-LINEAGE-DRIFT",
+            ),
+            (
+                lambda documents: documents[GATE_PATH]["replacement"]["snapshot_refs"][0].__setitem__(
+                    "document_path", "examples/capability-resolution/snapshots/missing.yaml"
+                ),
+                "PHASE-B-GATE-SNAPSHOT-MISSING",
+            ),
+            (
+                lambda documents: documents[GATE_PATH]["replacement"]["snapshot_refs"][0].__setitem__(
+                    "ref", "SNAP-WRONG@r1"
+                ),
+                "PHASE-B-GATE-SNAPSHOT-IDENTITY-DRIFT",
+            ),
+            (
+                lambda documents: documents[SNAPSHOT_A_PATH]["method_resolution_ref"].__setitem__(
+                    "ref", "MR-WRONG@r1"
+                ),
+                "PHASE-B-GATE-SNAPSHOT-METHOD-DRIFT",
+            ),
+            (
+                lambda documents: documents[SNAPSHOT_A_PATH]["requirement_ref"].__setitem__(
+                    "requirement_id", "wrong-requirement"
+                ),
+                "PHASE-B-GATE-SNAPSHOT-REQUIREMENT-DRIFT",
+            ),
+            (
+                lambda documents: documents[SNAPSHOT_B_PATH]["task_ref"].__setitem__(
+                    "ref", "TASK-WRONG@r1"
+                ),
+                "PHASE-B-GATE-SNAPSHOT-CONTROL-DRIFT",
+            ),
+            (
+                lambda documents: documents[SNAPSHOT_A_PATH]["selected_supply_report_ref"].__setitem__(
+                    "document_path", "examples/capability-resolution/supply-reports/missing.yaml"
+                ),
+                "PHASE-B-GATE-SUPPLY-MISSING",
+            ),
+            (
+                lambda documents: documents[GATE_PATH]["replay_migration_refs"][0].__setitem__(
+                    "document_path", "registry/migrations/missing.yaml"
+                ),
+                "PHASE-B-GATE-MIGRATION-MISSING",
+            ),
+            (
+                lambda documents: documents[GATE_PATH]["replay_migration_refs"][0].__setitem__(
+                    "ref", "MIGRATION-WRONG@0.0.0"
+                ),
+                "PHASE-B-GATE-MIGRATION-IDENTITY-DRIFT",
+            ),
+            (
+                lambda documents: documents[GATE_PATH].__setitem__(
+                    "replay_migration_refs",
+                    documents[GATE_PATH]["replay_migration_refs"][:1],
+                ),
+                "PHASE-B-GATE-MIGRATION-SET-INCOMPLETE",
+            ),
+        )
+        for mutate, expected in cases:
+            with self.subTest(expected=expected):
+                documents = copy.deepcopy(self.documents)
+                mutate(documents)
+                codes = {
+                    issue.code for issue in _validate_phase_b_evolution_gates(documents)
+                }
+                self.assertIn(expected, codes)
 
 
 if __name__ == "__main__":

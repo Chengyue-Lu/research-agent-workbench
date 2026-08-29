@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import importlib.util
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -52,6 +53,7 @@ def coverage(*, branch: bool = True, global_covered: int = 90, line_covered: int
         "totals": {"num_statements": 100, "covered_lines": global_covered},
         "files": {
             MODULE: {
+                "excluded_lines": [],
                 "summary": {
                     "num_statements": 100,
                     "covered_lines": line_covered,
@@ -60,6 +62,7 @@ def coverage(*, branch: bool = True, global_covered: int = 90, line_covered: int
                 }
             },
             "src/research_workbench/cli.py": {
+                "excluded_lines": [],
                 "summary": {
                     "num_statements": 100,
                     "covered_lines": noncritical_covered,
@@ -99,6 +102,10 @@ class CoveragePolicyCheckerTests(unittest.TestCase):
 
     def test_missing_negative_acceptance_result_is_blocking(self) -> None:
         failures = CHECKER.check_policy(policy(), coverage(), results(include_negative=False))
+        self.assertTrue(any(NEGATIVE in item for item in failures))
+        failed_result = results()
+        failed_result["tests"][1]["outcome"] = "failed"
+        failures = CHECKER.check_policy(policy(), coverage(), failed_result)
         self.assertTrue(any(NEGATIVE in item for item in failures))
 
     def test_missing_critical_file_is_blocking(self) -> None:
@@ -150,6 +157,87 @@ class CoveragePolicyCheckerTests(unittest.TestCase):
         failures = CHECKER.check_policy(manifest, coverage(), results())
         self.assertTrue(any("cannot be lower" in item for item in failures))
 
+    def test_source_root_is_canonical_and_cannot_be_narrowed(self) -> None:
+        manifest = policy()
+        manifest["source_root"] = "src/research_workbench/protocol"
+        failures = CHECKER.check_policy(manifest, coverage(), results())
+        self.assertTrue(any("source_root must be exactly" in item for item in failures))
+
+    def test_positive_and_negative_evidence_must_be_disjoint(self) -> None:
+        manifest = policy()
+        manifest["negative_acceptance"][0]["negative_tests"] = [POSITIVE]
+        failures = CHECKER.check_policy(manifest, coverage(), results())
+        self.assertTrue(any("reuses tests" in item for item in failures))
+
+    def test_positive_and_negative_evidence_reject_internal_duplicates(self) -> None:
+        manifest = policy()
+        manifest["negative_acceptance"][0]["positive_tests"] = [POSITIVE, POSITIVE]
+        manifest["negative_acceptance"][0]["negative_tests"] = [NEGATIVE, NEGATIVE]
+        failures = CHECKER.check_policy(manifest, coverage(), results())
+        self.assertTrue(any("repeats positive" in item for item in failures))
+        self.assertTrue(any("repeats negative" in item for item in failures))
+
+    def test_positive_and_negative_evidence_must_be_nonempty_lists(self) -> None:
+        manifest = policy()
+        manifest["negative_acceptance"][0]["positive_tests"] = []
+        failures = CHECKER.check_policy(manifest, coverage(), results())
+        self.assertTrue(any("requires modules" in item for item in failures))
+        manifest["negative_acceptance"][0]["positive_tests"] = POSITIVE
+        failures = CHECKER.check_policy(manifest, coverage(), results())
+        self.assertTrue(any("must be lists" in item for item in failures))
+        manifest["negative_acceptance"][0]["positive_tests"] = [""]
+        failures = CHECKER.check_policy(manifest, coverage(), results())
+        self.assertTrue(any("non-empty strings" in item for item in failures))
+
+    def test_declared_exclusions_exactly_match_coverage_json(self) -> None:
+        manifest = policy()
+        manifest["justified_exclusions"] = [
+            {
+                "path": MODULE,
+                "lines": [7, 9],
+                "reason": "Protocol-only declarations have no executable body",
+                "owner": "Chengyue-Lu",
+            }
+        ]
+        report = coverage()
+        report["files"][MODULE]["excluded_lines"] = [7, 9]
+        self.assertEqual(CHECKER.check_policy(manifest, report, results()), [])
+
+    def test_undeclared_actual_and_nonexistent_declared_exclusions_fail(self) -> None:
+        report = coverage()
+        report["files"][MODULE]["excluded_lines"] = [7]
+        failures = CHECKER.check_policy(policy(), report, results())
+        self.assertTrue(any("undeclared excluded line" in item for item in failures))
+
+        manifest = policy()
+        manifest["justified_exclusions"] = [
+            {"path": MODULE, "lines": [8], "reason": "exact", "owner": "Chengyue-Lu"}
+        ]
+        failures = CHECKER.check_policy(manifest, coverage(), results())
+        self.assertTrue(any("absent from coverage data" in item for item in failures))
+
+    def test_exclusion_line_shape_and_duplicates_are_fail_closed(self) -> None:
+        manifest = policy()
+        manifest["justified_exclusions"] = [
+            {"path": MODULE, "lines": [7, 7], "reason": "exact", "owner": "Chengyue-Lu"},
+            {"path": MODULE, "lines": [7], "reason": "exact", "owner": "Chengyue-Lu"},
+            {"path": "src/research_workbench/", "lines": "1-3", "reason": "broad", "owner": "owner"},
+        ]
+        failures = CHECKER.check_policy(manifest, coverage(), results())
+        self.assertTrue(any("lines contain duplicates" in item for item in failures))
+        self.assertTrue(any("declared more than once" in item for item in failures))
+        self.assertTrue(any("non-empty exact integer list" in item for item in failures))
+        self.assertTrue(any("wildcard or directory" in item for item in failures))
+
+    def test_malformed_coverage_exclusions_fail_closed(self) -> None:
+        report = coverage()
+        report["files"][MODULE]["excluded_lines"] = "7"
+        with self.assertRaisesRegex(ValueError, "excluded_lines must be a list"):
+            CHECKER.check_policy(policy(), report, results())
+        report["files"][MODULE]["excluded_lines"] = [True]
+        with self.assertRaisesRegex(ValueError, "positive integer"):
+            CHECKER.check_policy(policy(), report, results())
+
     def test_repository_policy_covers_bounded_capability_validation_surfaces(self) -> None:
         manifest = yaml.safe_load(POLICY.read_text(encoding="utf-8"))
         critical = set(manifest["critical_modules"])
@@ -158,6 +246,15 @@ class CoveragePolicyCheckerTests(unittest.TestCase):
             "src/research_workbench/validation/capability_registry.py", critical
         )
         self.assertIn("src/research_workbench/validation/document_core.py", critical)
+        self.assertIn(".github/scripts/check_coverage_policy.py", critical)
+        self.assertIn("src/research_workbench/validation/authority_registry.py", critical)
+        self.assertIn(
+            "src/research_workbench/validation/capability_supply_registry.py", critical
+        )
+        self.assertIn(
+            "src/research_workbench/validation/method_resolution_registry.py", critical
+        )
+        self.assertIn("src/research_workbench/validation/phase_b_gate.py", critical)
         self.assertNotIn("src/research_workbench/validation/documents.py", critical)
         omitted = {
             item["module"]
@@ -177,13 +274,53 @@ class CoveragePolicyCheckerTests(unittest.TestCase):
         manifest["justified_exclusions"] = [
             {
                 "path": "src/research_workbench/**",
-                "lines": "1-9999",
+                "lines": [1],
                 "reason": "too broad",
                 "owner": "Chengyue-Lu",
             }
         ]
         failures = CHECKER.check_policy(manifest, coverage(), results())
         self.assertTrue(any("not a wildcard" in item for item in failures))
+
+    def test_checker_main_reports_pass_and_fail_without_traceback(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            policy_path = root / "policy.yaml"
+            coverage_path = root / "coverage.json"
+            results_path = root / "results.json"
+            policy_path.write_text(yaml.safe_dump(policy()), encoding="utf-8")
+            coverage_path.write_text(json.dumps(coverage()), encoding="utf-8")
+            results_path.write_text(json.dumps(results()), encoding="utf-8")
+            argv = [
+                "--policy", str(policy_path),
+                "--coverage", str(coverage_path),
+                "--test-results", str(results_path),
+            ]
+            self.assertEqual(0, CHECKER.main(argv))
+            coverage_path.write_text("[]", encoding="utf-8")
+            self.assertEqual(1, CHECKER.main(argv))
+
+    def test_checker_helpers_and_structural_failures_are_explicit(self) -> None:
+        self.assertEqual("a/b.py", CHECKER._normalized_path("./a\\b.py"))
+        self.assertEqual(100.0, CHECKER._line_percent({"num_statements": 0}))
+        self.assertEqual(100.0, CHECKER._branch_percent({"num_branches": 0}))
+        with self.assertRaisesRegex(ValueError, "must be a mapping"):
+            CHECKER._mapping([], "sample")
+        with self.assertRaisesRegex(ValueError, "must be numeric"):
+            CHECKER._number(True, "sample")
+        with self.assertRaisesRegex(ValueError, "no files"):
+            CHECKER._source_line_percent({}, CHECKER.CANONICAL_SOURCE_ROOT)
+
+        manifest = policy()
+        manifest["critical_modules"] = []
+        manifest["negative_acceptance"] = []
+        manifest["justified_exclusions"] = None
+        report = coverage(branch=False, global_covered=89, line_covered=94, branch_covered=89)
+        evidence = {"suite": "wrong", "successful": False, "tests": []}
+        failures = CHECKER.check_policy(manifest, report, evidence)
+        self.assertTrue(any("critical_modules" in item for item in failures))
+        self.assertTrue(any("negative_acceptance" in item for item in failures))
+        self.assertTrue(any("justified_exclusions" in item for item in failures))
 
 
 if __name__ == "__main__":

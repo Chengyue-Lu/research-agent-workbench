@@ -5,6 +5,7 @@ import tempfile
 import unittest
 
 from research_workbench.artifacts.integrity import hash_bytes
+from research_workbench.validation import capability_supply_registry
 from research_workbench.validation import documents as documents_module
 
 
@@ -34,10 +35,12 @@ class ValidationHelperTests(unittest.TestCase):
                 self.assertEqual(expected, documents_module.infer_document_kind(document))
 
     def test_datetime_hash_and_required_field_helpers_fail_closed(self) -> None:
-        self.assertIsNone(documents_module._aware_datetime(None))
-        self.assertIsNone(documents_module._aware_datetime("not-a-date"))
-        self.assertIsNone(documents_module._aware_datetime("2026-01-01T00:00:00"))
-        self.assertIsNotNone(documents_module._aware_datetime("2026-01-01T00:00:00Z"))
+        self.assertIsNone(capability_supply_registry._aware_datetime(None))
+        self.assertIsNone(capability_supply_registry._aware_datetime("not-a-date"))
+        self.assertIsNone(capability_supply_registry._aware_datetime("2026-01-01T00:00:00"))
+        self.assertIsNotNone(
+            capability_supply_registry._aware_datetime("2026-01-01T00:00:00Z")
+        )
 
         path = Path("fixture.yaml")
         issues = documents_module._require_fields(path, {"present": True}, ("present", "missing"))

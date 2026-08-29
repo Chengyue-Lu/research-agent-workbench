@@ -10,6 +10,9 @@ from typing import Any, Mapping
 import yaml
 
 
+CANONICAL_SOURCE_ROOT = "src/research_workbench"
+
+
 def _mapping(value: Any, label: str) -> Mapping[str, Any]:
     if not isinstance(value, Mapping):
         raise ValueError(f"{label} must be a mapping")
@@ -53,6 +56,50 @@ def _source_line_percent(files: Mapping[str, Mapping[str, Any]], source_root: st
     return covered * 100.0 / statements
 
 
+def _actual_exclusions(files: Mapping[str, Mapping[str, Any]]) -> set[tuple[str, int]]:
+    actual: set[tuple[str, int]] = set()
+    for path, item in files.items():
+        excluded_lines = item.get("excluded_lines", [])
+        if not isinstance(excluded_lines, list):
+            raise ValueError(f"coverage excluded_lines must be a list: {path}")
+        for line in excluded_lines:
+            if not isinstance(line, int) or isinstance(line, bool) or line < 1:
+                raise ValueError(f"coverage excluded line must be a positive integer: {path}:{line}")
+            actual.add((path, line))
+    return actual
+
+
+def _declared_exclusions(policy: Mapping[str, Any], failures: list[str]) -> set[tuple[str, int]]:
+    exclusions = policy.get("justified_exclusions")
+    if not isinstance(exclusions, list):
+        failures.append("justified_exclusions must be a list")
+        return set()
+
+    declared: set[tuple[str, int]] = set()
+    for index, exclusion in enumerate(exclusions):
+        item = _mapping(exclusion, f"justified_exclusions[{index}]")
+        if not all(item.get(key) for key in ("path", "lines", "reason", "owner")):
+            failures.append(f"justified_exclusions[{index}] must name path, lines, reason, and owner")
+        path = _normalized_path(str(item.get("path", "")))
+        if any(symbol in path for symbol in ("*", "?", "[", "]", "{")) or path.endswith("/"):
+            failures.append(f"justified_exclusions[{index}] path must be exact, not a wildcard or directory")
+        lines = item.get("lines")
+        if not isinstance(lines, list) or not lines:
+            failures.append(f"justified_exclusions[{index}] lines must be a non-empty exact integer list")
+            continue
+        if any(not isinstance(line, int) or isinstance(line, bool) or line < 1 for line in lines):
+            failures.append(f"justified_exclusions[{index}] lines must contain only positive integers")
+            continue
+        if len(lines) != len(set(lines)):
+            failures.append(f"justified_exclusions[{index}] lines contain duplicates")
+        for line in lines:
+            key = (path, line)
+            if key in declared:
+                failures.append(f"justified exclusion is declared more than once: {path}:{line}")
+            declared.add(key)
+    return declared
+
+
 def check_policy(policy: Mapping[str, Any], coverage: Mapping[str, Any], results: Mapping[str, Any]) -> list[str]:
     failures: list[str] = []
     if coverage.get("meta", {}).get("branch_coverage") is not True:
@@ -71,9 +118,9 @@ def check_policy(policy: Mapping[str, Any], coverage: Mapping[str, Any], results
         for path, item in _mapping(coverage.get("files"), "coverage files").items()
     }
     source_root = policy.get("source_root")
-    if not isinstance(source_root, str) or not source_root:
-        raise ValueError("source_root must be a non-empty path")
-    global_line = _source_line_percent(files, source_root)
+    if source_root != CANONICAL_SOURCE_ROOT:
+        failures.append(f"source_root must be exactly {CANONICAL_SOURCE_ROOT}")
+    global_line = _source_line_percent(files, CANONICAL_SOURCE_ROOT)
     print(f"global line={global_line:.2f}% threshold={global_threshold:.2f}%")
     if global_line + 1e-9 < global_threshold:
         failures.append(f"global line coverage {global_line:.2f}% is below {global_threshold:.2f}%")
@@ -99,16 +146,12 @@ def check_policy(policy: Mapping[str, Any], coverage: Mapping[str, Any], results
         if branch + 1e-9 < critical_branch:
             failures.append(f"{normalized} branch coverage {branch:.2f}% is below {critical_branch:.2f}%")
 
-    exclusions = policy.get("justified_exclusions")
-    if not isinstance(exclusions, list):
-        failures.append("justified_exclusions must be a list")
-    else:
-        for index, exclusion in enumerate(exclusions):
-            item = _mapping(exclusion, f"justified_exclusions[{index}]")
-            if not all(item.get(key) for key in ("path", "lines", "reason", "owner")):
-                failures.append(f"justified_exclusions[{index}] must name path, lines, reason, and owner")
-            if any(symbol in str(item.get("path", "")) for symbol in ("*", "?", "[")):
-                failures.append(f"justified_exclusions[{index}] path must be exact, not a wildcard")
+    declared_exclusions = _declared_exclusions(policy, failures)
+    actual_exclusions = _actual_exclusions(files)
+    for path, line in sorted(actual_exclusions - declared_exclusions):
+        failures.append(f"coverage contains undeclared excluded line: {path}:{line}")
+    for path, line in sorted(declared_exclusions - actual_exclusions):
+        failures.append(f"policy declares an excluded line absent from coverage data: {path}:{line}")
 
     if results.get("suite") != "coverage-quality" or results.get("successful") is not True:
         failures.append("coverage-quality test result must be successful")
@@ -128,9 +171,24 @@ def check_policy(policy: Mapping[str, Any], coverage: Mapping[str, Any], results
         modules = item.get("modules", [])
         positives = item.get("positive_tests", [])
         negatives = item.get("negative_tests", [])
+        if not isinstance(modules, list) or not isinstance(positives, list) or not isinstance(negatives, list):
+            failures.append(f"negative acceptance surface {name} modules and tests must be lists")
+            continue
         if not modules or not positives or not negatives:
             failures.append(f"negative acceptance surface {name} requires modules and positive/negative tests")
             continue
+        if not all(isinstance(value, str) and value for value in [*modules, *positives, *negatives]):
+            failures.append(f"negative acceptance surface {name} modules and tests must be non-empty strings")
+            continue
+        if len(positives) != len(set(positives)):
+            failures.append(f"negative acceptance surface {name} repeats positive test IDs")
+        if len(negatives) != len(set(negatives)):
+            failures.append(f"negative acceptance surface {name} repeats negative test IDs")
+        overlap = sorted(set(positives) & set(negatives))
+        if overlap:
+            failures.append(
+                f"negative acceptance surface {name} reuses tests as positive and negative evidence: {overlap}"
+            )
         covered_by_evidence.update(_normalized_path(str(path)) for path in modules)
         for test_id in [*positives, *negatives]:
             if test_id not in passed:

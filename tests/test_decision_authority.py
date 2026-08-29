@@ -11,6 +11,7 @@ from research_workbench.protocol import (
     evaluate_authority_rule_eligibility,
 )
 from research_workbench.validation import SchemaCatalog, validate_documents
+from research_workbench.validation.authority_registry import validate_decision_authority
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -142,6 +143,66 @@ class DecisionAuthorityTests(unittest.TestCase):
         documents[second]["eligibility_id"] = documents[first]["eligibility_id"]
         codes = {issue.code for issue in validate_documents(documents)}
         self.assertIn("AUTHORITY-RULE-ELIGIBILITY-DUPLICATE", codes)
+
+    def test_authority_registry_reference_and_contract_faults_fail_closed(self) -> None:
+        eligibility_path = PREFLIGHT_ROOT / "eligible-resolver-action-commit.yaml"
+        base = copy.deepcopy(self.eligibility_records[eligibility_path])
+
+        invalid_matrix = copy.deepcopy(self.matrix_document)
+        invalid_matrix["entries"] = []
+        codes = {
+            issue.code
+            for issue in validate_decision_authority(
+                {MATRIX_PATH: invalid_matrix, eligibility_path: base}
+            )
+        }
+        self.assertIn("DECISION-AUTHORITY-MATRIX-INVALID", codes)
+
+        duplicate_matrix_path = MATRIX_PATH.with_name("duplicate-matrix.yaml")
+        codes = {
+            issue.code
+            for issue in validate_decision_authority(
+                {
+                    MATRIX_PATH: self.matrix_document,
+                    duplicate_matrix_path: copy.deepcopy(self.matrix_document),
+                }
+            )
+        }
+        self.assertIn("DECISION-AUTHORITY-MATRIX-DUPLICATE", codes)
+
+        missing_ref = copy.deepcopy(base)
+        missing_ref["matrix_ref"] = "not-an-object"
+        self.assertEqual(
+            [], validate_decision_authority({eligibility_path: missing_ref})
+        )
+
+        missing_matrix = copy.deepcopy(base)
+        missing_matrix["matrix_ref"]["document_path"] = "registry/authority/missing.yaml"
+        codes = {
+            issue.code
+            for issue in validate_decision_authority({eligibility_path: missing_matrix})
+        }
+        self.assertIn("DECISION-AUTHORITY-MATRIX-MISSING", codes)
+
+        wrong_ref = copy.deepcopy(base)
+        wrong_ref["matrix_ref"]["ref"] = "DAM-UNKNOWN@0.0.0"
+        codes = {
+            issue.code
+            for issue in validate_decision_authority(
+                {MATRIX_PATH: self.matrix_document, eligibility_path: wrong_ref}
+            )
+        }
+        self.assertIn("DECISION-AUTHORITY-MATRIX-REF-MISMATCH", codes)
+
+        invalid_eligibility = copy.deepcopy(base)
+        invalid_eligibility["asserted_facts"] = "not-a-list"
+        codes = {
+            issue.code
+            for issue in validate_decision_authority(
+                {MATRIX_PATH: self.matrix_document, eligibility_path: invalid_eligibility}
+            )
+        }
+        self.assertIn("AUTHORITY-RULE-ELIGIBILITY-INVALID", codes)
 
     def test_eligibility_has_no_permission_claim_human_or_execution_effect(self) -> None:
         document = self.eligibility_records[

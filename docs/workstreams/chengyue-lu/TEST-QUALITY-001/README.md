@@ -33,16 +33,21 @@ Gate。在 GitHub ruleset 显式纳入新 check 前，不依赖新增 job “显
 [`tests/coverage_policy.yaml`](../../../../tests/coverage_policy.yaml) 唯一声明：
 
 - dedicated coverage-quality suite 的 exact test modules 与具名 omission reason；
-- global source root 与 line threshold `>=90%`；
+- canonical global source root `src/research_workbench` 与 line threshold `>=90%`；checker 拒绝任何缩窄；
 - critical file exact paths 与逐文件 line `>=95%` / branch `>=90%`；
 - critical allow/block surface 的 positive + negative test IDs；
-- 窄范围、具名、可审计的 justified exclusions（首版为空）。
+- 窄范围、具名、可审计的 justified exclusions，并与 `coverage.json` 的实际 excluded lines 双向 exact 对账。
 
 [`check_coverage_policy.py`](../../../../.github/scripts/check_coverage_policy.py) 从 branch-enabled
 `coverage.json` 重算完整 `src/research_workbench` 的全局 line coverage，不采用包含外部脚本的 aggregate
 total；随后逐文件检查 critical line/branch，并确认声明的 positive/negative tests 在本次
-coverage-quality execution 中真实 PASS。缺文件、缺 branch data、缺 evidence、阈值下调或 wildcard
-exclusion 均 fail closed。
+coverage-quality execution 中真实 PASS。正反 test ID 必须分别非空、内部唯一且互不相交。checker 自身也
+属于 critical module，必须满足 95/90 并具备独立正反证据。缺文件、缺 branch data、缺 evidence、阈值
+下调、source-root 缩窄、wildcard exclusion 或实际/声明 exclusion 不闭合均 fail closed。
+
+当前仅登记 coverage.py 对 Protocol 声明体自动识别的两组 exact exclusions：
+`adapters/models/session.py:90-93` 与 `execution/host.py:66-74,76-78`。每组都固定 path、逐行列表、reason
+和 owner；新增、删除或行号漂移都会由双向对账阻断。
 
 每次 hosted run 将 `coverage.json` 与 `coverage-test-results.json` 保留为 14 天的具名 artifact，供
 R2 reviewer 校核逐行/逐 branch 缺口与 slowest evidence；artifact 是审计输入，不改变 Gate 结果。
@@ -52,18 +57,26 @@ R2 reviewer 校核逐行/逐 branch 缺口与 slowest evidence；artifact 是审
 | Semantic surface | Exact measured implementation |
 |---|---|
 | Governance-sensitive validator | `.github/scripts/check_pr_governance.py` |
+| Coverage quality authority | `.github/scripts/check_coverage_policy.py`；checker 不能豁免自己 |
 | Authority Rule Eligibility | `protocol/authority.py` |
 | Capability Requirement / Resolution / Snapshot | `capability/requirements.py`, `supply.py`，以及 Runtime Bundle 对 Resolution/Snapshot exact closure 的验证 |
 | Runtime Bundle / Resolved Execution View / Thin Host | `execution/runtime_bundle.py`, `execution_view.py`, `host.py` |
 | Trace / Generic Receipt closeout | `observability/trace.py`, `execution/generic_closeout.py` |
 | exact-ref / hash / provenance | `artifacts/integrity.py`, `validation/relationships.py` |
 | Capability Snapshot consumer | `validation/capability.py` |
-| Capability Requirement registry closure | `validation/capability_registry.py`, `validation/document_core.py`；通用 dispatch 留在 `validation/documents.py`，不把整个大型调度文件机械纳入 95/90 |
+| Method / Authority / Capability / Phase B document closure | `validation/method_resolution_registry.py`, `authority_registry.py`, `capability_supply_registry.py`, `phase_b_gate.py` |
+| Capability Requirement registry closure | `validation/capability_registry.py`, `validation/document_core.py` |
 | 当前最小 Research State object lineage | `kernel/objects.py` |
 | Source Admission 边界 | 当前尚无独立 accepted Source Admission producer；先由 artifact integrity + provenance relationship fail-closed surface 承担，未来新增 producer 必须 append 到 policy |
 
 Coverage percentage 只说明路径被执行。每个可能改变 allow/block/authority/permission/hash/binding/Receipt
 closure 的 critical surface 仍必须有显式正反验收；R2/DONE 不能只引用百分比。
+
+`validation/documents.py` 现在负责 SchemaCatalog 调度、通用字段/hash walk、旧 registry/task 校验，以及
+Skill Need、Protocol Profile、Skill lifecycle、Mode migration 等尚未拆分的域校验。它不是“纯 dispatch”，
+也不被整体机械拉到 95/90；本轮明确影响 Method Resolution、Authority、Capability/Supply/Snapshot 与
+Phase B replacement Gate 的实现已迁到上述四个职责模块。后续若剩余域逻辑被提升为 authority-sensitive
+surface，必须先拆分并追加 critical inventory，不能借用 `documents.py` 的 global coverage 代替。
 
 `capability/resolver.py` 是历史 Task→Skill Assignment resolver，不是 M9 的 Capability Resolution；首轮
 baseline 暴露命名歧义后已从 critical inventory 移除，但仍计入 repository global coverage。该修正不排除
@@ -84,9 +97,9 @@ helper test 取代。
 
 共享 Runtime Bundle / View / Host fixture 已迁到不匹配 `test_*.py` 的 `tests/execution_fixtures.py`；测试模块
 不再 import 其他测试模块的 `TestCase`。runner 在执行前按“源码文件 + TestCase qualname + method”核对
-canonical identity，字符串清单不同但实际测试相同也会 fail closed。当前 head 的 coverage selection 为
-527/527 unique canonical tests，full discovery 为 585/585 unique canonical tests（新增 9 个 fast validator
-tests 后）；最终双 Python hosted count 以当前 head CI 为准。
+canonical identity，字符串清单不同但实际测试相同也会 fail closed。当前本地 loader 的 coverage
+selection 为 543/543 unique canonical tests，full discovery 为 604/604 unique canonical tests；最终双
+Python hosted count 以当前 head CI 为准。
 
 ## 前置基线与验收
 
