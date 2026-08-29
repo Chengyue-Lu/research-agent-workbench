@@ -11,8 +11,9 @@ python tests/run_unittest_suite.py --suite coverage-quality --json-output <tempo
 - checker adversarial tests：21 PASS；覆盖 canonical source root、正反证据交集、actual/policy exclusion 双向闭合与 CLI fail-closed；
 - fixture extraction、Capability consumer/registry validator 与相关 execution contract focused tests：71 PASS；
 - dedicated suite 历史基线：518 tests PASS，518/518 canonical unique，local wall 192.768 秒；
-- current loader：coverage-quality 543/543 canonical unique，full discovery 604/604 canonical unique；
-- 该分类 run 未启用 coverage instrumentation，仅证明选择与 runner 语义可执行；
+- final local selection：543 tests PASS，543/543 canonical unique，wall 217.629 秒；
+- final hosted loader：coverage-quality 543/543 canonical unique，Python 3.11/3.13 full discovery 均为 604/604 canonical unique；
+- 上述本地分类 run 未启用 coverage instrumentation，仅证明选择与 runner 语义可执行；
 - 本机解释器无 coverage module，未安装网络依赖或修改系统环境。
 
 ## Required hosted evidence
@@ -100,7 +101,7 @@ global quality floor 从 83% 目标提升到机器阻断的 90%、critical floor
 - slowest 由 Generic Receipt/Trace replay、archive/recovery 与 Host integration 主导，因此该绿灯仅证明旧
   policy 可达阈值，不满足 final remediation 的 suite 结构与时长要求。
 
-### Final remediation candidate — runs 33238653977 / 33244586695 / current head
+### Final remediation candidate — runs 33238653977 / 33244586695
 
 - coverage manifest 移除 Generic closeout E2E、长 Host integration、archive/recovery、Handoff 与 live Skill
   evaluation；上述测试完整保留在双 Python behavioral suite；
@@ -118,11 +119,9 @@ global quality floor 从 83% 目标提升到机器阻断的 90%、critical floor
 - 最后一项 publication failure 负例覆盖独占写失败后的半成品清理，不修改产品 contract；
 - run 33244586695（commit `b123b91`）：527 tests PASS，job wall 733 秒，global line 90.02%；原有 15 个
   critical modules 全部满足 95/90，双 Python full suite、package-smoke、governance 与 aggregate checks PASS；
-- 当前 head 新增 checker self-control、canonical source-root、disjoint evidence、exact exclusion reconciliation，
+- final remediation 新增 checker self-control、canonical source-root、disjoint evidence、exact exclusion reconciliation，
   并把 Method Resolution、Authority、Capability/Supply/Snapshot 与 Phase B Gate validator 从大型
   `documents.py` 拆到独立 critical modules；focused contracts 与 21 个 checker tests PASS；
-- 当前 loader 为 coverage 543/543、full 604/604 canonical unique。新增 checker 与四个 validator 的逐文件
-  95/90、global 90%、双 Python 与 hosted wall time 必须由本次新 HEAD CI 重新证明，不能沿用 b123b91。
 
 ### Coverage Policy self-control diagnostic — run 33253531031
 
@@ -133,6 +132,16 @@ global quality floor 从 83% 目标提升到机器阻断的 90%、critical floor
   artifact refs、typed evidence 与 cross-object path/lineage 分支；
 - Python 3.11 full 603 PASS（743.712 秒），Python 3.13 full 603 PASS（640.531 秒），package-smoke、
   repository validation 与 governance PASS；aggregate checks 只因 coverage Gate 正确传播失败；
-- 当前 head 针对上述 artifact 缺口新增 1 个 0.71 秒的 direct validator adversarial matrix，覆盖 reference
-  shape、evidence kind/class/hash、candidate/snapshot path 与 Task lineage；不改变产品 contract。最终结果以
-  下一 hosted HEAD 为准。
+- 后续提交针对上述 artifact 缺口新增 1 个 0.71 秒的 direct validator adversarial matrix，覆盖 reference
+  shape、evidence kind/class/hash、candidate/snapshot path 与 Task lineage；不改变产品 contract。
+
+### Final fail-closed closure — run 33254218939
+
+- exact commit：`c7f20f2ce5e983da1e6d847c7a282832c70ae53c`，base `develop@1425141`；
+- coverage-quality：543 tests PASS，suite wall 830.067 秒，job wall 842 秒，global source-root line 91.01%；
+- 20 个 critical files 全部满足 line >=95% / branch >=90%；checker 自身 97.24/95.56，Capability Supply
+  registry 97.01/93.00，Method registry 100/93.62，Phase B Gate 96.53/91.86，Authority registry 100/100；
+- Python 3.11 full：604 PASS，suite wall 590.703 秒；Python 3.13 full：604 PASS，suite wall 900.440 秒；
+- package-smoke、repository validation、governance 与 `test (3.11)` / `test (3.13)` aggregate checks PASS；
+- canonical source root、正反 evidence 互斥、actual/policy exclusions 双向闭合、checker self-control 与拆分后的
+  authority-sensitive validator inventory 均由当前精确 HEAD 的 hosted artifact 和对抗测试闭合。
