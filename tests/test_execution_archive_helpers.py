@@ -251,6 +251,34 @@ class ExecutionArchiveHelperTests(unittest.TestCase):
                 )
             self.assertTrue(result.blocked)
 
+            wrong_kind = root / "wrong-kind"
+            wrong_kind.mkdir()
+            (wrong_kind / archive_module.TRACE_INDEX_FILENAME).write_text("{}\n", encoding="utf-8")
+            with (
+                mock.patch.object(
+                    archive_module,
+                    "validate_attempt_trace",
+                    return_value=SimpleNamespace(risks=()),
+                ),
+                mock.patch.object(archive_module, "derive_session_transcript", return_value=()),
+                mock.patch.object(archive_module, "_schema_risks", return_value=[]),
+                mock.patch.object(archive_module.AttemptRecord, "from_mapping", return_value=SimpleNamespace()),
+                mock.patch.object(
+                    archive_module.ExecutionReceipt,
+                    "from_mapping",
+                    return_value=SimpleNamespace(execution_kind="local-tool", status="completed"),
+                ),
+            ):
+                result = archive_module.finalize_execution_archive(
+                    root=root,
+                    attempt_dir=wrong_kind,
+                    attempt_document={"attempt_id": "A", "artifact_refs": []},
+                    receipt_document={"status": "completed", "output_refs": []},
+                    protocol="missing.yaml",
+                )
+            self.assertTrue(result.blocked)
+            self.assertIn("execution_kind=model-api", result.risks[-1].message)
+
             missing_protocol = root / "missing-protocol"
             missing_protocol.mkdir()
             (missing_protocol / archive_module.TRACE_INDEX_FILENAME).write_text("{}\n", encoding="utf-8")
@@ -345,6 +373,10 @@ class RecoveryHelperTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             risks: list[ContractRisk] = []
+            self.assertIsNone(
+                recovery_module._load_mapping(root / "missing.yaml", "state", risks)
+            )
+            self.assertEqual("RECOVERY-SOURCE-INVALID", risks[-1].code)
             scalar = root / "scalar.yaml"
             scalar.write_text("[]\n", encoding="utf-8")
             self.assertIsNone(recovery_module._load_mapping(scalar, "state", risks))
@@ -363,6 +395,31 @@ class RecoveryHelperTests(unittest.TestCase):
                 )
             self.assertTrue(result.blocked)
             self.assertIn("RECOVERY-PREVIOUS-INVALID", {risk.code for risk in result.risks})
+
+    def test_attempt_contract_error_stops_before_handoff_or_state_loading(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            old = root / "old"
+            old.mkdir()
+            (old / recovery_module.ATTEMPT_FILENAME).write_text("{}\n", encoding="utf-8")
+            with (
+                mock.patch.object(recovery_module, "verify_execution_archive", return_value=()),
+                mock.patch.object(
+                    recovery_module.AttemptRecord,
+                    "from_mapping",
+                    side_effect=ContractError("attempt", "invalid"),
+                ),
+            ):
+                result = recovery_module.prepare_recovery_attempt(
+                    root=root,
+                    previous_attempt_dir=old,
+                    main_state="unused.yaml",
+                    protocol="protocol.yaml",
+                    new_attempt_id="NEW",
+                    new_attempt_dir="new",
+                )
+            self.assertTrue(result.blocked)
+            self.assertEqual("RECOVERY-SOURCE-INVALID", result.risks[-1].code)
 
     def test_valid_preflight_builds_a_distinct_seed_from_frozen_facts(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
