@@ -43,11 +43,15 @@ suites:
       - test_provider_contract_branches
       - test_provider_port
       - test_registry_require_branches
+      - test_research_attempt_failure
+      - test_research_state_candidate
       - test_project_internal_handoff_fixtures
       - test_relationships
       - test_research_mode_migration
       - test_runtime_bundle
       - test_schemas
+      - test_method_trace_candidate
+      - test_phase_c_gate
       - test_skill_archive_audit
       - test_skill_evaluation_helpers
       - test_skill_lifecycle
@@ -129,6 +133,12 @@ critical_modules:
   - src/research_workbench/validation/method_resolution_registry.py
   - src/research_workbench/validation/phase_b_gate.py
   - src/research_workbench/validation/authority_registry.py
+  - src/research_workbench/validation/document_kinds.py
+  - src/research_workbench/validation/research_state_registry.py
+  - src/research_workbench/research_state/boundaries.py
+  - src/research_workbench/research_state/closure.py
+  - src/research_workbench/research_state/fresh_actor.py
+  - src/research_workbench/research_state/gate.py
 
 negative_acceptance:
   - surface: coverage-policy-self-control
@@ -263,6 +273,34 @@ negative_acceptance:
       - test_phase_b_evolution_gate.PhaseBEvolutionGateTests.test_permission_data_and_side_effect_boundary_drift_are_blocking
       - test_phase_b_evolution_gate.PhaseBEvolutionGateTests.test_stable_contract_and_snapshot_hash_drift_are_blocking
       - test_phase_b_evolution_gate.PhaseBEvolutionGateTests.test_gate_reference_lineage_and_replay_adversarial_matrix
+  - surface: phase-c-research-state-and-method-trace-closure
+    modules:
+      - src/research_workbench/validation/document_kinds.py
+      - src/research_workbench/validation/research_state_registry.py
+      - src/research_workbench/research_state/closure.py
+    positive_tests:
+      - test_research_state_candidate.FixtureContractTest.test_two_bounded_cases_pass_schema_and_closure
+      - test_research_attempt_failure.FixtureContractTest.test_bounded_lineage_cases_pass_schema_and_closure
+      - test_method_trace_candidate.FixtureContractTest.test_bounded_method_trace_passes_schema_and_exact_closure
+    negative_tests:
+      - test_research_state_candidate.AmbiguousIdentityTest.test_duplicate_exact_ref_resolves_as_ambiguous
+      - test_research_attempt_failure.ExactLineageClosureTest.test_changed_condition_only_is_exact_and_provenance_bearing
+      - test_research_attempt_failure.FailureProfileClosureTest.test_origin_kind_makes_execution_provenance_non_optional
+      - test_method_trace_candidate.ActualBindingBoundaryTest.test_selected_snapshot_is_not_actual_execution
+      - test_method_trace_candidate.ActualBindingBoundaryTest.test_captured_fact_must_bind_the_same_path_effect
+  - surface: phase-c-bounded-gate
+    modules:
+      - src/research_workbench/research_state/boundaries.py
+      - src/research_workbench/research_state/fresh_actor.py
+      - src/research_workbench/research_state/gate.py
+    positive_tests:
+      - test_phase_c_gate.CanonicalGateTest.test_two_bounded_cases_pass_in_distinct_fresh_processes
+      - test_phase_c_gate.CanonicalGateTest.test_consumer_logic_is_independently_replayable_from_staged_bytes
+    negative_tests:
+      - test_phase_c_gate.RunnerOwnedClosureTest.test_source_pin_drift_blocks_before_actor_spawn
+      - test_phase_c_gate.RunnerOwnedClosureTest.test_duplicate_identity_and_source_path_block_before_actor_spawn
+      - test_phase_c_gate.FreshActorAdversarialTest.test_stale_method_trace_is_rejected_in_the_fresh_actor
+      - test_phase_c_gate.FreshActorAdversarialTest.test_wrong_kind_reopen_basis_is_rejected_by_actor
 
 justified_exclusions:
   - path: src/research_workbench/adapters/models/session.py
