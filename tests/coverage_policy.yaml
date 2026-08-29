@@ -56,24 +56,49 @@ suites:
       - test_validation
       - test_validation_critical_surfaces
       - test_validation_helpers
-    test_ids: []
+    test_ids:
+      # Exact deterministic validators retained without loading their parent
+      # behavioral modules (which also contain replay/CLI integration paths).
+      - test_m3_context_observability.ExecutionReceiptTests.test_contract_slice_receipt_has_no_blocking_risk
+      - test_m3_context_observability.ExecutionReceiptTests.test_cost_fanout_review_and_trace_faults_are_visible
+      - test_m3_context_observability.ExecutionReceiptTests.test_safe_pause_receipt_does_not_fabricate_completion
+      - test_m3_context_observability.ExecutionReceiptTests.test_contract_satisfied_claim_requires_completed_lifecycle
+      - test_handoff_transfer.HandoffTransferTests.test_repository_fixture_is_structurally_ready_without_semantic_overclaim
+      - test_handoff_transfer.HandoffTransferTests.test_direct_assessor_rejects_malformed_audit_contract
+      - test_handoff_transfer.HandoffTransferTests.test_completed_independent_human_sample_can_record_transfer_readiness
+      - test_handoff_transfer.HandoffTransferTests.test_distorted_sample_blocks_transfer
+      - test_handoff_transfer.HandoffTransferTests.test_missing_mapping_and_negative_section_are_visible
+      - test_handoff_transfer.HandoffTransferTests.test_critical_manifest_item_requires_review
+      - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_receipt_schema_distinguishes_completed_from_failed_or_blocked
+      - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_generic_receipt_rejects_skill_claim_human_and_recovery_fields
+      - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_legacy_execution_receipt_schema_and_model_remain_unchanged
+      - test_skill_evaluation.SkillEvaluationTests.test_complete_live_pair_is_only_eligible_for_human_decision
+      - test_skill_evaluation.SkillEvaluationTests.test_model_drift_blocks_paired_comparison
+      - test_skill_evaluation.SkillEvaluationTests.test_model_configuration_must_match_frozen_artifact
+      - test_skill_evaluation.SkillEvaluationTests.test_non_skill_context_drift_blocks_paired_comparison
+      - test_skill_evaluation.SkillEvaluationTests.test_checker_drift_blocks_paired_comparison
+      - test_skill_evaluation.SkillEvaluationTests.test_with_skill_arm_requires_candidate_in_actual_assignment
+      - test_skill_evaluation.SkillEvaluationTests.test_receipt_must_bind_validation_report
+      - test_skill_evaluation.SkillEvaluationTests.test_unavailable_tokens_warn_but_do_not_break_provider_neutral_evidence
+      - test_skill_evaluation.SkillEvaluationTests.test_human_decision_must_bind_the_evaluation_candidate_and_outcome
+      - test_skill_evaluation.SkillEvaluationTests.test_check_report_status_must_match_its_findings
     omitted_modules:
       - module: test_documentation
         reason: documentation ownership belongs to the behavioral and governance suites
       - module: test_trace_properties
         reason: high-iteration property stress belongs to the behavioral suite
       - module: test_generic_execution_closeout
-        reason: Generic Receipt and Trace replay E2E belongs to the behavioral suites
+        reason: Generic Receipt and Trace replay E2E belongs to the behavioral suites; only fast schema-contract cases are selected by exact ID
       - module: test_execution_host
         reason: long Host integration belongs to the behavioral suites; deterministic Host helpers remain covered
       - module: test_execution_trace_adapter
         reason: archive closeout and recovery replay belong to the behavioral suites
       - module: test_m3_context_observability
-        reason: checkpoint, recovery, and receipt replay belong to the behavioral suites
+        reason: checkpoint and recovery replay belong to the behavioral suites; only deterministic Execution Receipt validators are selected by exact ID
       - module: test_handoff_transfer
-        reason: Handoff transfer replay belongs to the behavioral suites
+        reason: CLI and broader Handoff behavior belong to the behavioral suites; only direct deterministic assessor cases are selected by exact ID
       - module: test_skill_evaluation
-        reason: live-pair evaluation flows belong to the behavioral suites; deterministic evaluation helpers remain covered
+        reason: CLI integration and fixture-only behavior stay in the behavioral suites; frozen-evidence validator cases are selected by exact ID
 
 thresholds:
   global:

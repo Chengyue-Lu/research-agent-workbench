@@ -253,6 +253,59 @@ class ExecutionHostHelperTests(unittest.TestCase):
         values.update(changes)
         return host_module.ExecutionDriverResult(**values)
 
+    def _frozen_view(self, root: Path) -> host_module.ValidatedExecutionView:
+        view_path = root / "view.yaml"
+        view_path.write_text("view: true\n", encoding="utf-8")
+        bundle_path = root / "bundle.yaml"
+        bundle_path.write_text("bundle: true\n", encoding="utf-8")
+        bundle = SimpleNamespace(
+            project_root=root,
+            manifest_path=bundle_path,
+            manifest_sha256="b" * 64,
+            manifest={"bundle_id": "BUNDLE", "revision": 1},
+            documents=MappingProxyType({}),
+        )
+        document = {
+            "view_id": "VIEW",
+            "revision": 1,
+            "runtime_bundle_ref": {"ref": "BUNDLE@r1"},
+            "task_ref": {"ref": "TASK@r1"},
+            "execution_scope": {"kind": "slice"},
+            "snapshot_ref": {"ref": "SNAPSHOT@r1"},
+            "binding": {"provider": {"ref": "provider-a"}},
+            "selected_supply_report_ref": {"ref": "supply-a@1.0.0"},
+            "freshness": {
+                "supply_observed_at": "2026-01-01T00:00:00Z",
+                "supply_valid_until": "2026-12-31T23:59:59Z",
+                "data_policy_valid_from": "2026-01-01T00:00:00Z",
+                "data_policy_valid_until": "2026-12-31T23:59:59Z",
+                "host_policy_valid_from": "2026-01-01T00:00:00Z",
+                "host_policy_valid_until": "2026-12-31T23:59:59Z",
+            },
+            "effective_constraints": {
+                "permissions": {
+                    "filesystem": "worktree-write",
+                    "external_write": False,
+                    "allowed_roots": ["outputs"],
+                },
+                "data_egress": {
+                    "policy": "forbidden",
+                    "allowed_payloads": [],
+                    "forbidden_payloads": ["secret"],
+                },
+                "side_effects": {"policy": "none", "allowed_effects": []},
+                "budget": {"max_turns": 1, "max_output_tokens": 10, "max_seconds": 2},
+            },
+            "required_outputs": [],
+        }
+        return host_module.ValidatedExecutionView(
+            root,
+            view_path,
+            hash_bytes(view_path.read_bytes()),
+            MappingProxyType(document),
+            bundle,
+        )
+
     def test_clock_hash_and_output_helpers_are_closed(self) -> None:
         digest = "b" * 64
         self.assertEqual(digest, host_module._normalized_hash("sha256:" + digest))
@@ -409,6 +462,163 @@ class ExecutionHostHelperTests(unittest.TestCase):
                         view, expected_sha256=hash_bytes(view.read_bytes()), bundle=bundle
                     )
 
+    def test_execute_frozen_view_covers_success_preflight_driver_and_postflight(self) -> None:
+        class Driver:
+            def __init__(self, binding, supply, outcome):
+                self.binding = binding
+                self.selected_supply_report_ref = supply
+                self.outcome = outcome
+                self.calls = 0
+
+            def execute(self, _request):
+                self.calls += 1
+                if isinstance(self.outcome, Exception):
+                    raise self.outcome
+                return self.outcome
+
+        def run(view, driver, *times):
+            clock = SimpleNamespace(
+                now=mock.Mock(
+                    side_effect=[datetime.fromisoformat(value.replace("Z", "+00:00")) for value in times]
+                )
+            )
+            with (
+                mock.patch.object(host_module, "load_runtime_bundle", return_value=view.runtime_bundle),
+                mock.patch.object(host_module.SchemaCatalog, "validate", return_value=[]),
+            ):
+                return host_module.execute_frozen_view(
+                    view,
+                    driver,
+                    report_id="REPORT",
+                    attempt_id="ATTEMPT",
+                    clock=clock,
+                )
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            view = self._frozen_view(root)
+            binding = host_module._plain(view.document["binding"])
+            supply = str(view.document["selected_supply_report_ref"]["ref"])
+
+            completed = Driver(binding, supply, self._result())
+            report = run(
+                view,
+                completed,
+                "2026-06-01T00:00:00Z",
+                "2026-06-01T00:00:01Z",
+            )
+            self.assertEqual("completed", report["status"])
+            self.assertEqual(1.0, report["actual_facts"]["elapsed_seconds"])
+            self.assertEqual(1, completed.calls)
+
+            mismatch = Driver({"provider": {"ref": "other"}}, supply, self._result())
+            report = run(
+                view,
+                mismatch,
+                "2026-06-01T00:00:00Z",
+                "2026-06-01T00:00:00Z",
+            )
+            self.assertEqual("HOST-BINDING-MISMATCH", report["diagnostic"]["code"])
+            self.assertEqual(0, mismatch.calls)
+            self.assertTrue(report["re_resolution_request"]["required"])
+
+            stale_document = host_module._plain(view.document)
+            stale_document["freshness"]["supply_valid_until"] = "2026-01-02T00:00:00Z"
+            stale = replace(view, document=MappingProxyType(stale_document))
+            report = run(
+                stale,
+                Driver(binding, supply, self._result()),
+                "2026-06-01T00:00:00Z",
+                "2026-06-01T00:00:00Z",
+            )
+            self.assertEqual("HOST-FRESHNESS-EXPIRED", report["diagnostic"]["code"])
+
+            raising = Driver(binding, supply, RuntimeError("private response"))
+            report = run(
+                view,
+                raising,
+                "2026-06-01T00:00:00Z",
+                "2026-06-01T00:00:01Z",
+            )
+            self.assertEqual("driver-exception", report["execution_phase"])
+            self.assertEqual("HOST-DRIVER-EXCEPTION", report["diagnostic"]["code"])
+
+            failed = Driver(
+                binding,
+                supply,
+                self._result(status="failed", failure_code="not a valid code"),
+            )
+            report = run(
+                view,
+                failed,
+                "2026-06-01T00:00:00Z",
+                "2026-06-01T00:00:01Z",
+            )
+            self.assertEqual("HOST-DRIVER-FAILED", report["diagnostic"]["code"])
+
+    def test_execute_frozen_view_fails_closed_on_bundle_drift_clock_and_schema(self) -> None:
+        class Driver:
+            def __init__(self, view):
+                self.binding = host_module._plain(view.document["binding"])
+                self.selected_supply_report_ref = view.document["selected_supply_report_ref"]["ref"]
+
+            def execute(self, _request):
+                return self.result
+
+        def clock(*values):
+            return SimpleNamespace(
+                now=mock.Mock(
+                    side_effect=[datetime.fromisoformat(value.replace("Z", "+00:00")) for value in values]
+                )
+            )
+
+        with tempfile.TemporaryDirectory() as temporary:
+            view = self._frozen_view(Path(temporary))
+            driver = Driver(view)
+            driver.result = self._result(status="failed", failure_code="HOST-RETRY", re_resolution_required=True)
+            drifted = replace(view.runtime_bundle, manifest_sha256="c" * 64) if hasattr(view.runtime_bundle, "__dataclass_fields__") else SimpleNamespace(**{**view.runtime_bundle.__dict__, "manifest_sha256": "c" * 64})
+            with (
+                mock.patch.object(host_module, "load_runtime_bundle", return_value=drifted),
+                mock.patch.object(host_module.SchemaCatalog, "validate", return_value=[]),
+            ):
+                report = host_module.execute_frozen_view(
+                    view,
+                    driver,
+                    report_id="REPORT",
+                    attempt_id="ATTEMPT",
+                    clock=clock("2026-06-01T00:00:00Z", "2026-06-01T00:00:00Z"),
+                )
+            self.assertEqual("HOST-RUNTIME-BUNDLE-DRIFT", report["diagnostic"]["code"])
+
+            with (
+                mock.patch.object(host_module, "load_runtime_bundle", return_value=view.runtime_bundle),
+                mock.patch.object(host_module.SchemaCatalog, "validate", return_value=[]),
+                self.assertRaisesRegex(host_module.ExecutionHostValidationError, "moved backwards"),
+            ):
+                host_module.execute_frozen_view(
+                    view,
+                    driver,
+                    report_id="REPORT",
+                    attempt_id="ATTEMPT",
+                    clock=clock("2026-06-01T00:00:01Z", "2026-06-01T00:00:00Z"),
+                )
+
+            with (
+                mock.patch.object(host_module, "load_runtime_bundle", return_value=view.runtime_bundle),
+                mock.patch.object(
+                    host_module.SchemaCatalog,
+                    "validate",
+                    return_value=[SimpleNamespace(pointer="$", message="bad")],
+                ),
+                self.assertRaisesRegex(host_module.ExecutionHostValidationError, "schema invalid"),
+            ):
+                host_module.execute_frozen_view(
+                    view,
+                    driver,
+                    report_id="REPORT",
+                    attempt_id="ATTEMPT",
+                    clock=clock("2026-06-01T00:00:00Z", "2026-06-01T00:00:01Z"),
+                )
 
 class RuntimeBundleHelperTests(unittest.TestCase):
     def test_manifest_loader_rejects_external_missing_parse_and_shape_inputs(self) -> None:
@@ -1090,6 +1300,66 @@ class GenericCloseoutHelperTests(unittest.TestCase):
                     closeout_module.build_execution_core_gate(
                         receipt("no-skill"), receipt("direct-tool"), gate_id="GATE"
                     )
+
+    def test_receipt_replay_wrapper_and_successful_core_gate_are_deterministic(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            receipt_path = root / "receipt.yaml"
+            receipt_path.write_text("receipt: true\n", encoding="utf-8")
+            receipt = {
+                "receipt_id": "RECEIPT",
+                "view_ref": {"path": "view.yaml", "sha256": "1" * 64},
+                "host_report_ref": {"path": "host.yaml", "sha256": "2" * 64},
+                "trace_ref": {"path": "trace.yaml", "sha256": "3" * 64},
+                "validation_refs": [{"path": "validation.yaml", "sha256": "4" * 64}],
+            }
+            bundle = SimpleNamespace(project_root=root)
+            view = SimpleNamespace(project_root=root)
+            with (
+                mock.patch.object(
+                    closeout_module,
+                    "_load_pin",
+                    return_value=(receipt_path, receipt),
+                ),
+                mock.patch.object(closeout_module, "load_resolved_execution_view", return_value=view),
+                mock.patch.object(closeout_module, "build_generic_execution_receipt", return_value=receipt),
+            ):
+                validated = closeout_module.validate_generic_execution_receipt(
+                    "receipt.yaml", expected_sha256="0" * 64, bundle=bundle
+                )
+            self.assertEqual(hash_bytes(receipt_path.read_bytes()), validated.receipt_sha256)
+
+            drift = dict(receipt)
+            drift["receipt_id"] = "OTHER"
+            with (
+                mock.patch.object(closeout_module, "_load_pin", return_value=(receipt_path, receipt)),
+                mock.patch.object(closeout_module, "load_resolved_execution_view", return_value=view),
+                mock.patch.object(closeout_module, "build_generic_execution_receipt", return_value=drift),
+                self.assertRaisesRegex(closeout_module.GenericCloseoutValidationError, "replay drift"),
+            ):
+                closeout_module.validate_generic_execution_receipt(
+                    receipt_path, expected_sha256="0" * 64, bundle=bundle
+                )
+
+            def gate_receipt(kind: str) -> closeout_module.ValidatedGenericReceipt:
+                path = root / f"{kind}.yaml"
+                path.write_text(kind, encoding="utf-8")
+                return closeout_module.ValidatedGenericReceipt(
+                    root,
+                    path,
+                    hash_bytes(path.read_bytes()),
+                    {
+                        "execution_kind": kind,
+                        "status": "completed",
+                        "boundaries": {"skill_assignment": "absent"},
+                    },
+                )
+
+            with mock.patch.object(closeout_module.SchemaCatalog, "validate", return_value=[]):
+                gate = closeout_module.build_execution_core_gate(
+                    gate_receipt("no-skill"), gate_receipt("direct-tool"), gate_id="GATE"
+                )
+            self.assertEqual("pass", gate["status"])
 
 
 class TraceHelperBranchTests(unittest.TestCase):
