@@ -10,7 +10,8 @@ python tests/run_unittest_suite.py --suite coverage-quality --json-output <tempo
 
 - checker adversarial tests：11 PASS；
 - fixture extraction、Capability consumer/registry validator 与相关 execution contract focused tests：71 PASS；
-- dedicated suite：492 tests PASS，492/492 canonical unique，local wall 148.663 秒；
+- dedicated suite：518 tests PASS，518/518 canonical unique，local wall 192.768 秒；当前 head
+  加入 6 个 isolated validator tests 后，loader 证明 524/524 canonical unique；
 - full discovery：576/576 canonical unique；
 - 该分类 run 未启用 coverage instrumentation，仅证明选择与 runner 语义可执行；
 - 本机解释器无 coverage module，未安装网络依赖或修改系统环境。
@@ -100,7 +101,7 @@ global quality floor 从 83% 目标提升到机器阻断的 90%、critical floor
 - slowest 由 Generic Receipt/Trace replay、archive/recovery 与 Host integration 主导，因此该绿灯仅证明旧
   policy 可达阈值，不满足 final remediation 的 suite 结构与时长要求。
 
-### Final remediation candidate
+### Final remediation candidate — runs 33238653977 / current head
 
 - coverage manifest 移除 Generic closeout E2E、长 Host integration、archive/recovery、Handoff 与 live Skill
   evaluation；上述测试完整保留在双 Python behavioral suite；
@@ -109,6 +110,9 @@ global quality floor 从 83% 目标提升到机器阻断的 90%、critical floor
   identity/path/hash/Method-reference 闭包拆为 `validation/capability_registry.py`；共用 byte/path primitives
   同步拆为 `validation/document_core.py`，两者都受逐文件 Gate；
 - 新模块具备独立 positive closed-set 与 missing/duplicate/kind/identity/path/hash negative evidence；
-- 无 coverage instrumentation 的新 selection 为 492 tests / 148.663 秒；最终 492-test head
-  的 90/95/90 与 hosted wall
-  仍需新 head CI artifact 确认。
+- run 33238653977：518 tests PASS，suite wall 709.359 秒（11 分 49 秒），global line 87.71%；Host
+  97.03% / 92.73%、Generic Receipt 97.95% / 91.14%，新增 capability/document critical validators
+  均为 100% / 100%，所有 critical files 已满足逐文件 Gate；
+- 当前 head 增加 5 个 archive/recovery 隔离 validator 单元测试与 1 个 Receipt 缺失引用负例；它们 mock
+  掉 Trace、协议与完整 replay，只覆盖 fail-closed orchestration，不把重型 replay 放回 coverage；
+- 当前 selection 为 524/524 canonical unique；最终 global 90% 与 hosted wall 仍需当前 head CI artifact 确认。
