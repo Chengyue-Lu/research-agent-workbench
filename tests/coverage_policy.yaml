@@ -1,0 +1,275 @@
+policy_id: rwb-coverage-policy
+version: 2.0.0
+source_root: src/research_workbench
+
+suites:
+  coverage-quality:
+    description: >-
+      Deterministic unit, contract, and validator tests used as code-path
+      evidence. Behavioral compatibility remains owned by the full suites.
+    modules:
+      - test_accepted_skill_migration_fixtures
+      - test_agent_trace
+      - test_api_session_runner
+      - test_capability_consumer
+      - test_capability_requirements
+      - test_capability_resolver_branches
+      - test_capability_resolution
+      - test_candidate_claim_rewrite
+      - test_catalog
+      - test_cli
+      - test_cli_command_branches
+      - test_contracts
+      - test_context_model_branches
+      - test_critical_contract_branches
+      - test_coverage_policy
+      - test_decision_authority
+      - test_execution_contract_helpers
+      - test_execution_archive_helpers
+      - test_execution_view
+      - test_governance_helper_branches
+      - test_integrity
+      - test_kernel
+      - test_method_resolutions
+      - test_m2_registry_runtime
+      - test_mode_action_routing_fixtures
+      - test_mode_actions
+      - test_model_pool
+      - test_observability_model_branches
+      - test_protocol_profiles
+      - test_pr_governance
+      - test_provider_adapters
+      - test_provider_conformance
+      - test_provider_contract_branches
+      - test_provider_port
+      - test_registry_require_branches
+      - test_project_internal_handoff_fixtures
+      - test_relationships
+      - test_research_mode_migration
+      - test_runtime_bundle
+      - test_schemas
+      - test_skill_archive_audit
+      - test_skill_evaluation_helpers
+      - test_skill_lifecycle
+      - test_skill_needs
+      - test_trace_risk_codes
+      - test_phase_b_evolution_gate
+      - test_validation
+      - test_validation_critical_surfaces
+      - test_validation_helpers
+    test_ids:
+      # Exact deterministic validators retained without loading their parent
+      # behavioral modules (which also contain replay/CLI integration paths).
+      - test_m3_context_observability.ExecutionReceiptTests.test_contract_slice_receipt_has_no_blocking_risk
+      - test_m3_context_observability.ExecutionReceiptTests.test_cost_fanout_review_and_trace_faults_are_visible
+      - test_m3_context_observability.ExecutionReceiptTests.test_safe_pause_receipt_does_not_fabricate_completion
+      - test_m3_context_observability.ExecutionReceiptTests.test_contract_satisfied_claim_requires_completed_lifecycle
+      - test_handoff_transfer.HandoffTransferTests.test_repository_fixture_is_structurally_ready_without_semantic_overclaim
+      - test_handoff_transfer.HandoffTransferTests.test_direct_assessor_rejects_malformed_audit_contract
+      - test_handoff_transfer.HandoffTransferTests.test_completed_independent_human_sample_can_record_transfer_readiness
+      - test_handoff_transfer.HandoffTransferTests.test_distorted_sample_blocks_transfer
+      - test_handoff_transfer.HandoffTransferTests.test_missing_mapping_and_negative_section_are_visible
+      - test_handoff_transfer.HandoffTransferTests.test_critical_manifest_item_requires_review
+      - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_receipt_schema_distinguishes_completed_from_failed_or_blocked
+      - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_generic_receipt_rejects_skill_claim_human_and_recovery_fields
+      - test_generic_execution_closeout.GenericExecutionCloseoutTests.test_legacy_execution_receipt_schema_and_model_remain_unchanged
+      - test_skill_evaluation.SkillEvaluationTests.test_complete_live_pair_is_only_eligible_for_human_decision
+      - test_skill_evaluation.SkillEvaluationTests.test_model_drift_blocks_paired_comparison
+      - test_skill_evaluation.SkillEvaluationTests.test_model_configuration_must_match_frozen_artifact
+      - test_skill_evaluation.SkillEvaluationTests.test_non_skill_context_drift_blocks_paired_comparison
+      - test_skill_evaluation.SkillEvaluationTests.test_checker_drift_blocks_paired_comparison
+      - test_skill_evaluation.SkillEvaluationTests.test_with_skill_arm_requires_candidate_in_actual_assignment
+      - test_skill_evaluation.SkillEvaluationTests.test_receipt_must_bind_validation_report
+      - test_skill_evaluation.SkillEvaluationTests.test_unavailable_tokens_warn_but_do_not_break_provider_neutral_evidence
+      - test_skill_evaluation.SkillEvaluationTests.test_human_decision_must_bind_the_evaluation_candidate_and_outcome
+      - test_skill_evaluation.SkillEvaluationTests.test_check_report_status_must_match_its_findings
+    omitted_modules:
+      - module: test_documentation
+        reason: documentation ownership belongs to the behavioral and governance suites
+      - module: test_trace_properties
+        reason: high-iteration property stress belongs to the behavioral suite
+      - module: test_generic_execution_closeout
+        reason: Generic Receipt and Trace replay E2E belongs to the behavioral suites; only fast schema-contract cases are selected by exact ID
+      - module: test_execution_host
+        reason: long Host integration belongs to the behavioral suites; deterministic Host helpers remain covered
+      - module: test_execution_trace_adapter
+        reason: archive closeout and recovery replay belong to the behavioral suites
+      - module: test_m3_context_observability
+        reason: checkpoint and recovery replay belong to the behavioral suites; only deterministic Execution Receipt validators are selected by exact ID
+      - module: test_handoff_transfer
+        reason: CLI and broader Handoff behavior belong to the behavioral suites; only direct deterministic assessor cases are selected by exact ID
+      - module: test_skill_evaluation
+        reason: CLI integration and fixture-only behavior stay in the behavioral suites; frozen-evidence validator cases are selected by exact ID
+
+thresholds:
+  global:
+    line: 90
+  critical:
+    line: 95
+    branch: 90
+
+critical_modules:
+  - .github/scripts/check_coverage_policy.py
+  - .github/scripts/check_pr_governance.py
+  - src/research_workbench/protocol/authority.py
+  - src/research_workbench/capability/requirements.py
+  - src/research_workbench/capability/supply.py
+  - src/research_workbench/execution/runtime_bundle.py
+  - src/research_workbench/execution/execution_view.py
+  - src/research_workbench/execution/host.py
+  - src/research_workbench/observability/trace.py
+  - src/research_workbench/execution/generic_closeout.py
+  - src/research_workbench/artifacts/integrity.py
+  - src/research_workbench/kernel/objects.py
+  - src/research_workbench/validation/relationships.py
+  - src/research_workbench/validation/capability.py
+  - src/research_workbench/validation/capability_registry.py
+  - src/research_workbench/validation/capability_supply_registry.py
+  - src/research_workbench/validation/document_core.py
+  - src/research_workbench/validation/method_resolution_registry.py
+  - src/research_workbench/validation/phase_b_gate.py
+  - src/research_workbench/validation/authority_registry.py
+
+negative_acceptance:
+  - surface: coverage-policy-self-control
+    modules:
+      - .github/scripts/check_coverage_policy.py
+    positive_tests:
+      - test_coverage_policy.CoveragePolicyCheckerTests.test_exact_thresholds_and_positive_negative_evidence_pass
+      - test_coverage_policy.CoveragePolicyCheckerTests.test_declared_exclusions_exactly_match_coverage_json
+    negative_tests:
+      - test_coverage_policy.CoveragePolicyCheckerTests.test_source_root_is_canonical_and_cannot_be_narrowed
+      - test_coverage_policy.CoveragePolicyCheckerTests.test_positive_and_negative_evidence_must_be_disjoint
+      - test_coverage_policy.CoveragePolicyCheckerTests.test_undeclared_actual_and_nonexistent_declared_exclusions_fail
+  - surface: repository-governance-validator
+    modules:
+      - .github/scripts/check_pr_governance.py
+    positive_tests:
+      - test_pr_governance.TopologyTests.test_feature_to_develop_passes
+      - test_pr_governance.TasksAuthorityTests.test_r2_connected_linear_stage_chain_passes
+    negative_tests:
+      - test_pr_governance.TopologyTests.test_feature_to_main_fails
+      - test_pr_governance.TasksAuthorityTests.test_done_task_is_immutable
+      - test_pr_governance.PublishedIdentityIntegrationTests.test_move_out_is_detected_when_changed_path_is_not_published
+      - test_governance_helper_branches.GovernanceHelperBranchTests.test_workstream_risk_git_and_main_boundaries_are_observable
+  - surface: authority-rule-eligibility
+    modules:
+      - src/research_workbench/protocol/authority.py
+      - src/research_workbench/validation/authority_registry.py
+    positive_tests:
+      - test_decision_authority.DecisionAuthorityTests.test_all_recorded_results_are_deterministically_recomputed
+      - test_decision_authority.DecisionAuthorityTests.test_repository_validation_recomputes_every_eligibility_record
+    negative_tests:
+      - test_decision_authority.DecisionAuthorityTests.test_agent_and_resolver_cannot_commit_reserved_decisions
+      - test_decision_authority.DecisionAuthorityTests.test_hash_and_recorded_result_drift_are_blocking
+      - test_decision_authority.DecisionAuthorityTests.test_authority_registry_reference_and_contract_faults_fail_closed
+  - surface: capability-demand-resolution-snapshot
+    modules:
+      - src/research_workbench/capability/requirements.py
+      - src/research_workbench/capability/supply.py
+      - src/research_workbench/validation/capability_supply_registry.py
+    positive_tests:
+      - test_capability_resolution.CapabilityResolutionTests.test_supply_resolution_snapshot_chain_is_closed_and_recomputed
+    negative_tests:
+      - test_capability_requirements.CapabilityRequirementTests.test_wrong_index_hash_is_blocking
+      - test_capability_resolution.CapabilityResolutionTests.test_snapshot_lineage_supply_facts_and_evidence_drift_are_blocking
+      - test_capability_resolution.CapabilityResolutionTests.test_supply_registry_adversarial_contract_and_evidence_matrix
+      - test_capability_resolution.CapabilityResolutionTests.test_resolution_and_snapshot_registry_adversarial_matrix
+      - test_capability_resolution.CapabilityResolutionTests.test_supply_reference_evidence_and_cross_object_guard_matrix
+  - surface: runtime-bundle-closure
+    modules:
+      - src/research_workbench/execution/runtime_bundle.py
+    positive_tests:
+      - test_runtime_bundle.RuntimeBundleTests.test_zero_skill_bundle_uses_only_explicit_exact_closure
+    negative_tests:
+      - test_runtime_bundle.RuntimeBundleTests.test_hash_drift_and_undeclared_import_fail_closed
+      - test_runtime_bundle.RuntimeBundleTests.test_blocked_or_split_method_resolution_cannot_enter_runtime
+      - test_execution_contract_helpers.RuntimeBundleHelperTests.test_hash_ref_and_identity_helpers_reject_ambiguous_values
+  - surface: resolved-execution-view
+    modules:
+      - src/research_workbench/execution/execution_view.py
+    positive_tests:
+      - test_execution_view.ExecutionViewTests.test_supply_neutral_view_freezes_exact_binding_and_tightest_intersection
+    negative_tests:
+      - test_execution_view.ExecutionViewTests.test_supply_reselection_profile_drift_and_input_hash_drift_fail_closed
+      - test_execution_view.ExecutionViewTests.test_stale_supply_or_policy_and_bundle_pin_drift_fail_closed
+      - test_execution_contract_helpers.ExecutionViewHelperTests.test_intersections_cover_tightening_and_unsatisfied_supply
+  - surface: thin-execution-host
+    modules:
+      - src/research_workbench/execution/host.py
+    positive_tests:
+      - test_execution_contract_helpers.ExecutionHostHelperTests.test_clock_hash_and_output_helpers_are_closed
+    negative_tests:
+      - test_execution_contract_helpers.ExecutionHostHelperTests.test_driver_result_violation_matrix_is_fail_closed
+      - test_execution_contract_helpers.ExecutionHostHelperTests.test_view_loader_rejects_path_parse_schema_and_lineage_faults
+  - surface: trace-and-receipt-closure
+    modules:
+      - src/research_workbench/observability/trace.py
+      - src/research_workbench/execution/generic_closeout.py
+    positive_tests:
+      - test_agent_trace.AgentTraceTests.test_typed_fact_events_form_a_valid_trace
+      - test_execution_contract_helpers.GenericCloseoutHelperTests.test_trace_execution_record_shapes_are_independently_closed
+    negative_tests:
+      - test_agent_trace.AgentTraceTests.test_hash_tamper_is_blocking
+      - test_execution_contract_helpers.GenericCloseoutHelperTests.test_host_view_lifecycle_closure_rejects_unsupported_facts
+  - surface: artifact-integrity-source-admission-and-research-state
+    modules:
+      - src/research_workbench/artifacts/integrity.py
+      - src/research_workbench/kernel/objects.py
+      - src/research_workbench/validation/relationships.py
+    positive_tests:
+      - test_integrity.IntegrityTests.test_directory_hash_uses_host_independent_posix_order
+      - test_kernel.KernelObjectTests.test_revision_is_part_of_object_reference
+      - test_relationships.RelationshipValidationTests.test_handoff_matches_task_and_live_input_hash
+    negative_tests:
+      - test_relationships.RelationshipValidationTests.test_changed_file_marks_reference_stale
+      - test_relationships.RelationshipValidationTests.test_claim_above_project_ceiling_is_blocked
+  - surface: capability-snapshot-consumer
+    modules:
+      - src/research_workbench/validation/capability.py
+    positive_tests:
+      - test_validation_critical_surfaces.CapabilitySnapshotConsumerCriticalTests.test_positive_runtime_snapshot_is_hash_pinned_and_deep_read_only
+    negative_tests:
+      - test_validation_critical_surfaces.CapabilitySnapshotConsumerCriticalTests.test_hash_input_and_validator_digest_fail_closed
+      - test_validation_critical_surfaces.CapabilitySnapshotConsumerCriticalTests.test_paths_roots_kind_and_runtime_eligibility_fail_closed
+  - surface: capability-requirement-registry-closure
+    modules:
+      - src/research_workbench/validation/capability_registry.py
+      - src/research_workbench/validation/document_core.py
+    positive_tests:
+      - test_validation_critical_surfaces.CapabilityRequirementRegistryCriticalTests.test_positive_closed_registry_and_method_reference_pass
+      - test_validation_critical_surfaces.DocumentCoreCriticalTests.test_byte_binding_and_repository_path_helpers_cover_all_storage_modes
+    negative_tests:
+      - test_validation_critical_surfaces.CapabilityRequirementRegistryCriticalTests.test_missing_and_duplicate_index_fail_closed
+      - test_validation_critical_surfaces.CapabilityRequirementRegistryCriticalTests.test_entry_identity_path_kind_and_hash_guards_fail_closed
+      - test_validation_critical_surfaces.CapabilityRequirementRegistryCriticalTests.test_malformed_unindexed_and_relocated_requirements_cannot_bypass_closure
+  - surface: method-resolution-document-closure
+    modules:
+      - src/research_workbench/validation/method_resolution_registry.py
+    positive_tests:
+      - test_method_resolutions.MethodResolutionTests.test_document_validation_closes_actions_needs_gates_and_blocks
+      - test_method_resolutions.MethodResolutionTests.test_additive_gate_is_allowed
+    negative_tests:
+      - test_method_resolutions.MethodResolutionTests.test_wrong_task_hash_is_blocking
+      - test_method_resolutions.MethodResolutionTests.test_required_action_gate_missing_or_renamed_is_blocking
+      - test_method_resolutions.MethodResolutionTests.test_action_artifact_stop_block_and_claim_effects_cannot_be_weakened
+      - test_method_resolutions.MethodResolutionTests.test_method_registry_missing_reference_and_shape_branches_fail_closed
+  - surface: phase-b-evolution-gate-closure
+    modules:
+      - src/research_workbench/validation/phase_b_gate.py
+    positive_tests:
+      - test_phase_b_evolution_gate.PhaseBEvolutionGateTests.test_gate_is_schema_valid_and_repository_closed
+    negative_tests:
+      - test_phase_b_evolution_gate.PhaseBEvolutionGateTests.test_permission_data_and_side_effect_boundary_drift_are_blocking
+      - test_phase_b_evolution_gate.PhaseBEvolutionGateTests.test_stable_contract_and_snapshot_hash_drift_are_blocking
+      - test_phase_b_evolution_gate.PhaseBEvolutionGateTests.test_gate_reference_lineage_and_replay_adversarial_matrix
+
+justified_exclusions:
+  - path: src/research_workbench/adapters/models/session.py
+    lines: [90, 91, 92, 93]
+    reason: Protocol method declaration has no executable implementation body.
+    owner: Chengyue-Lu
+  - path: src/research_workbench/execution/host.py
+    lines: [66, 67, 68, 69, 70, 71, 72, 73, 74, 76, 77, 78]
+    reason: Protocol property and method declarations have no executable implementation body.
+    owner: Chengyue-Lu

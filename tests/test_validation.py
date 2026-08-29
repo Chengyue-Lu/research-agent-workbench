@@ -36,7 +36,7 @@ class ValidationTests(unittest.TestCase):
     def test_repository_examples_and_registries_have_no_errors(self) -> None:
         paths = iter_documents([ROOT / "examples", ROOT / "registry"])
         with patch(
-            "research_workbench.validation.documents.hash_file",
+            "research_workbench.validation.document_core.hash_file",
             side_effect=AssertionError("loaded validation must not re-read document paths"),
         ):
             _, issues = load_and_validate(paths)

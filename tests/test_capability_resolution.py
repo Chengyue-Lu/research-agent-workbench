@@ -13,6 +13,10 @@ from research_workbench.capability import (
 from research_workbench.io import load_document
 from research_workbench.artifacts.integrity import hash_file
 from research_workbench.validation import SchemaCatalog, validate_documents
+from research_workbench.validation.capability_supply_registry import (
+    validate_capability_supply_chain,
+)
+from research_workbench.validation.document_core import LoadedDocuments
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -686,6 +690,297 @@ class CapabilityResolutionTests(unittest.TestCase):
         failed[evidence_path]["checks"][0]["error_category"] = "unknown"
         failed_codes = {issue.code for issue in validate_documents(failed)}
         self.assertIn("CAPABILITY-SUPPLY-EVIDENCE-RESULT-FAILED", failed_codes)
+
+    def test_supply_registry_adversarial_contract_and_evidence_matrix(self) -> None:
+        report_path = REPORT_ROOT / "local-document-reader-a.yaml"
+        evidence_path = CONFORMANCE_ROOT / "local-document-reader-a.json"
+        cases = (
+            (
+                lambda documents: documents[report_path]["supply_identity"].__setitem__(
+                    "components", "not-a-list"
+                ),
+                "CAPABILITY-SUPPLY-CONTRACT",
+            ),
+            (
+                lambda documents: documents.__setitem__(
+                    REPORT_ROOT / "duplicate.yaml", copy.deepcopy(documents[report_path])
+                ),
+                "CAPABILITY-SUPPLY-IDENTITY-DUPLICATE",
+            ),
+            (
+                lambda documents: documents[report_path]["supply_identity"].__setitem__(
+                    "supply_kind", "adapter-provider"
+                ),
+                "CAPABILITY-SUPPLY-COMPONENT-INCOMPLETE",
+            ),
+            (
+                lambda documents: documents[report_path]["supply_identity"]["components"].append(
+                    copy.deepcopy(documents[report_path]["supply_identity"]["components"][0])
+                ),
+                "CAPABILITY-SUPPLY-COMPONENT-DUPLICATE",
+            ),
+            (
+                lambda documents: documents[report_path]["availability"]["scope"].__setitem__(
+                    "scope_kind", "provider-observation"
+                ),
+                "CAPABILITY-SUPPLY-OBSERVATION-SCOPE-MISMATCH",
+            ),
+            (
+                lambda documents: documents[report_path]["availability"].__setitem__(
+                    "observed_at", "not-a-date"
+                ),
+                "CAPABILITY-SUPPLY-AVAILABILITY-TIME-INVALID",
+            ),
+            (
+                lambda documents: documents[report_path]["conformance_evidence"].append(
+                    copy.deepcopy(documents[report_path]["conformance_evidence"][0])
+                ),
+                "CAPABILITY-SUPPLY-EVIDENCE-DUPLICATE",
+            ),
+            (
+                lambda documents: documents[report_path]["conformance_evidence"][0][
+                    "artifact_ref"
+                ].__setitem__("path", "examples/capability-resolution/conformance/missing.json"),
+                "CAPABILITY-SUPPLY-EVIDENCE-MISSING",
+            ),
+            (
+                lambda documents: documents[evidence_path]["capability_ids"].append(
+                    "undeclared-capability"
+                ),
+                "CAPABILITY-SUPPLY-EVIDENCE-CAPABILITY-DRIFT",
+            ),
+        )
+        for mutate, expected in cases:
+            with self.subTest(expected=expected):
+                documents = copy.deepcopy(self.validation_documents)
+                mutate(documents)
+                codes = {
+                    issue.code for issue in validate_capability_supply_chain(documents)
+                }
+                self.assertIn(expected, codes)
+
+    def test_resolution_and_snapshot_registry_adversarial_matrix(self) -> None:
+        resolution_path = RESOLUTION_ROOT / "document-read-a.yaml"
+        snapshot_path = SNAPSHOT_ROOT / "document-read-a.yaml"
+        method_path = METHOD_PATH
+        cases = (
+            (
+                lambda documents: documents.__setitem__(
+                    RESOLUTION_ROOT / "duplicate.yaml",
+                    copy.deepcopy(documents[resolution_path]),
+                ),
+                "CAPABILITY-RESOLUTION-IDENTITY-DUPLICATE",
+            ),
+            (
+                lambda documents: documents[resolution_path]["method_resolution_ref"].__setitem__(
+                    "ref", "MR-WRONG@r1"
+                ),
+                "CAPABILITY-RESOLUTION-METHOD-IDENTITY-MISMATCH",
+            ),
+            (
+                lambda documents: documents[resolution_path]["requirement_ref"].__setitem__(
+                    "requirement_id", "wrong-requirement"
+                ),
+                "CAPABILITY-RESOLUTION-REQUIREMENT-IDENTITY-MISMATCH",
+            ),
+            (
+                lambda documents: documents[REQUIREMENT_ROOT / "document-read.yaml"].__setitem__(
+                    "constraints", "not-an-object"
+                ),
+                "CAPABILITY-REQUIREMENT-CONTRACT",
+            ),
+            (
+                lambda documents: documents[method_path]["action_decisions"][0].__setitem__(
+                    "capability_requirements", []
+                ),
+                "CAPABILITY-RESOLUTION-METHOD-REQUIREMENT-MISSING",
+            ),
+            (
+                lambda documents: documents[resolution_path]["candidate_supply_report_refs"][0].__setitem__(
+                    "ref", "supply-unknown@1.0.0"
+                ),
+                "CAPABILITY-RESOLUTION-SUPPLY-IDENTITY-MISSING",
+            ),
+            (
+                lambda documents: documents[resolution_path]["candidate_supply_report_refs"].append(
+                    copy.deepcopy(documents[resolution_path]["candidate_supply_report_refs"][0])
+                ),
+                "CAPABILITY-RESOLUTION-SUPPLY-DUPLICATE",
+            ),
+            (
+                lambda documents: documents.__setitem__(
+                    SNAPSHOT_ROOT / "duplicate.yaml", copy.deepcopy(documents[snapshot_path])
+                ),
+                "RESOLVED-CAPABILITY-SNAPSHOT-IDENTITY-DUPLICATE",
+            ),
+            (
+                lambda documents: documents[snapshot_path]["resolution_ref"].__setitem__(
+                    "document_path", "examples/capability-resolution/resolutions/missing.yaml"
+                ),
+                "RESOLVED-CAPABILITY-SNAPSHOT-RESOLUTION-MISSING",
+            ),
+            (
+                lambda documents: documents[snapshot_path]["resolution_ref"].__setitem__(
+                    "ref", "CR-WRONG@r1"
+                ),
+                "RESOLVED-CAPABILITY-SNAPSHOT-RESOLUTION-IDENTITY-MISMATCH",
+            ),
+            (
+                lambda documents: documents[resolution_path].__setitem__(
+                    "resolution_status", "blocked"
+                ),
+                "RESOLVED-CAPABILITY-SNAPSHOT-UNSATISFIED",
+            ),
+            (
+                lambda documents: documents[snapshot_path].__setitem__(
+                    "qualification", "runtime-execution"
+                ),
+                "RESOLVED-CAPABILITY-SNAPSHOT-QUALIFICATION-DRIFT",
+            ),
+            (
+                lambda documents: documents[snapshot_path]["task_ref"].__setitem__(
+                    "ref", "TASK-WRONG@r1"
+                ),
+                "RESOLVED-CAPABILITY-SNAPSHOT-TASK-IDENTITY-MISMATCH",
+            ),
+            (
+                lambda documents: documents[snapshot_path]["selected_supply_report_ref"].__setitem__(
+                    "document_path", "examples/capability-resolution/supply-reports/missing.yaml"
+                ),
+                "RESOLVED-CAPABILITY-SNAPSHOT-SUPPLY-MISSING",
+            ),
+            (
+                lambda documents: documents[snapshot_path]["boundaries"].__setitem__(
+                    "execution_input", True
+                ),
+                "RESOLVED-CAPABILITY-SNAPSHOT-STRUCTURAL-EXECUTION-FORBIDDEN",
+            ),
+            (
+                lambda documents: (
+                    documents[resolution_path].__setitem__("qualification", "unknown"),
+                    documents[resolution_path].__setitem__(
+                        "candidate_supply_report_refs", [None]
+                    ),
+                    documents[snapshot_path].__setitem__("qualification", "unknown"),
+                ),
+                "RESOLVED-CAPABILITY-SNAPSHOT-QUALIFICATION-UNKNOWN",
+            ),
+        )
+        for mutate, expected in cases:
+            with self.subTest(expected=expected):
+                documents = copy.deepcopy(self.validation_documents)
+                mutate(documents)
+                codes = {
+                    issue.code for issue in validate_capability_supply_chain(documents)
+                }
+                self.assertIn(expected, codes)
+
+    def test_supply_reference_evidence_and_cross_object_guard_matrix(self) -> None:
+        report_path = REPORT_ROOT / "local-document-reader-a.yaml"
+        report_b_path = REPORT_ROOT / "sandbox-document-reader-b.yaml"
+        evidence_path = CONFORMANCE_ROOT / "local-document-reader-a.json"
+        resolution_path = RESOLUTION_ROOT / "document-read-a.yaml"
+        resolution_b_path = RESOLUTION_ROOT / "document-read-b.yaml"
+        snapshot_path = SNAPSHOT_ROOT / "document-read-a.yaml"
+        cases = (
+            (
+                lambda documents: documents[resolution_path].__setitem__(
+                    "method_resolution_ref", "not-an-object"
+                ),
+                "CAPABILITY-RESOLUTION-METHOD-MISSING",
+            ),
+            (
+                lambda documents: documents[resolution_path]["requirement_ref"].__setitem__(
+                    "document_path", None
+                ),
+                "CAPABILITY-RESOLUTION-REQUIREMENT-MISSING",
+            ),
+            (
+                lambda documents: documents[report_path]["conformance_evidence"][0].__setitem__(
+                    "artifact_ref", "not-an-object"
+                ),
+                "CAPABILITY-RESOLUTION-COMPARISON-DRIFT",
+            ),
+            (
+                lambda documents: documents[report_path]["conformance_evidence"][0][
+                    "artifact_ref"
+                ].__setitem__("path", None),
+                "CAPABILITY-RESOLUTION-COMPARISON-DRIFT",
+            ),
+            (
+                lambda documents: (
+                    documents[report_path]["conformance_evidence"][0].__setitem__(
+                        "artifact_kind", "capability-conformance-evidence"
+                    ),
+                    documents[report_path]["conformance_evidence"][0]["artifact_ref"].__setitem__(
+                        "path", "examples/method-resolutions/ROUTE-ES-FROZEN-001.yaml"
+                    ),
+                    documents[report_path]["conformance_evidence"][0]["artifact_ref"].__setitem__(
+                        "sha256", hash_file(METHOD_PATH)
+                    ),
+                ),
+                "CAPABILITY-SUPPLY-EVIDENCE-KIND-MISMATCH",
+            ),
+            (
+                lambda documents: documents[evidence_path].__setitem__(
+                    "capability_ids", ["undeclared-capability"]
+                ),
+                "CAPABILITY-SUPPLY-EVIDENCE-CAPABILITY-DRIFT",
+            ),
+            (
+                lambda documents: documents[report_path]["conformance_evidence"][0].__setitem__(
+                    "evidence_class", "live"
+                ),
+                "CAPABILITY-SUPPLY-EVIDENCE-CLASS-MISMATCH",
+            ),
+            (
+                lambda documents: documents[resolution_path]["candidate_supply_report_refs"][0].__setitem__(
+                    "document_path", str(report_b_path.relative_to(ROOT)).replace("\\", "/")
+                ),
+                "CAPABILITY-RESOLUTION-SUPPLY-PATH-MISMATCH",
+            ),
+            (
+                lambda documents: documents[METHOD_PATH]["task_ref"].__setitem__(
+                    "task_id", "TASK-WRONG"
+                ),
+                "RESOLVED-CAPABILITY-SNAPSHOT-TASK-METHOD-LINEAGE-DRIFT",
+            ),
+            (
+                lambda documents: documents[snapshot_path]["selected_supply_report_ref"].__setitem__(
+                    "document_path", str(report_b_path.relative_to(ROOT)).replace("\\", "/")
+                ),
+                "RESOLVED-CAPABILITY-SNAPSHOT-SUPPLY-PATH-MISMATCH",
+            ),
+            (
+                lambda documents: (
+                    documents.__setitem__(
+                        resolution_b_path, copy.deepcopy(documents[resolution_path])
+                    ),
+                    documents[snapshot_path]["resolution_ref"].__setitem__(
+                        "document_path",
+                        str(resolution_b_path.relative_to(ROOT)).replace("\\", "/"),
+                    ),
+                ),
+                "RESOLVED-CAPABILITY-SNAPSHOT-RESOLUTION-PATH-MISMATCH",
+            ),
+        )
+        for mutate, expected in cases:
+            with self.subTest(expected=expected):
+                documents = copy.deepcopy(self.validation_documents)
+                mutate(documents)
+                codes = {
+                    issue.code for issue in validate_capability_supply_chain(documents)
+                }
+                self.assertIn(expected, codes)
+
+        hash_bound = LoadedDocuments()
+        for path, document in copy.deepcopy(self.validation_documents).items():
+            hash_bound.add(path, document, sha256=hash_file(path))
+        hash_bound[report_path]["conformance_evidence"][0]["artifact_ref"]["sha256"] = (
+            "0" * 64
+        )
+        codes = {issue.code for issue in validate_capability_supply_chain(hash_bound)}
+        self.assertIn("CAPABILITY-SUPPLY-EVIDENCE-HASH-MISMATCH", codes)
 
 
 if __name__ == "__main__":

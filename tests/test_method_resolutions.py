@@ -5,6 +5,9 @@ from pathlib import Path
 
 from research_workbench.io import load_document
 from research_workbench.validation import SchemaCatalog, validate_documents
+from research_workbench.validation.method_resolution_registry import (
+    validate_method_resolutions,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -284,6 +287,64 @@ class MethodResolutionTests(unittest.TestCase):
         document["resolution_status"] = "proceed"
         decision["mechanisms"].append("capability-gap")
         self.assertTrue(self.catalog.validate("method_resolution", document))
+
+    def test_method_registry_missing_reference_and_shape_branches_fail_closed(self) -> None:
+        resolution_path = RESOLUTION_ROOT / "ROUTE-ES-FROZEN-001.yaml"
+        task_path = TASK_ROOT / "TASK-MR-ES-FROZEN-001.yaml"
+        duplicate_task_path = TASK_ROOT / "TASK-MR-ES-SEARCH-002.yaml"
+        action_ref = self.validation_documents[resolution_path]["action_decisions"][0][
+            "action_ref"
+        ]
+        action_entry = next(
+            entry
+            for entry in self.action_registry["entries"]
+            if f"{entry['action_id']}@{entry['version']}" == action_ref
+        )
+        action_path = ROOT / action_entry["document_path"]
+        cases = (
+            (
+                lambda documents: documents.__setitem__(
+                    duplicate_task_path, copy.deepcopy(documents[task_path])
+                ),
+                "METHOD-RESOLUTION-TASK-DUPLICATE",
+            ),
+            (
+                lambda documents: documents[resolution_path]["task_ref"].__setitem__(
+                    "task_id", "TASK-MISSING"
+                ),
+                "METHOD-RESOLUTION-TASK-MISSING",
+            ),
+            (
+                lambda documents: documents[resolution_path]["mode_resolution"].__setitem__(
+                    "selected_mode_refs", ["mode-missing@0.0.0"]
+                ),
+                "METHOD-RESOLUTION-MODE-MISSING",
+            ),
+            (
+                lambda documents: documents[resolution_path]["action_decisions"][0].__setitem__(
+                    "action_ref", "ACTION-MISSING@0.0.0"
+                ),
+                "METHOD-RESOLUTION-ACTION-MISSING",
+            ),
+            (
+                lambda documents: documents.pop(action_path),
+                "METHOD-RESOLUTION-ACTION-DOCUMENT-MISSING",
+            ),
+        )
+        for mutate, expected in cases:
+            with self.subTest(expected=expected):
+                documents = copy.deepcopy(self.validation_documents)
+                mutate(documents)
+                codes = {issue.code for issue in validate_method_resolutions(documents)}
+                self.assertIn(expected, codes)
+
+        malformed = copy.deepcopy(self.validation_documents)
+        document = malformed[resolution_path]
+        document["action_decisions"].append(None)
+        document["action_decisions"][0]["obligations"].append(None)
+        document["action_decisions"][0]["capability_requirements"].append(None)
+        document["rejected_alternatives"].append(None)
+        self.assertIsInstance(validate_method_resolutions(malformed), list)
 
 
 if __name__ == "__main__":

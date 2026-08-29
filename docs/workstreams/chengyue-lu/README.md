@@ -5,6 +5,7 @@
 当前工作流：
 
 - [`CI-PERFORMANCE-MAINTENANCE/`](CI-PERFORMANCE-MAINTENANCE/README.md)：CI full-suite、coverage 与 package-smoke 去重及 hosted-runner wall-time 基线。
+- [`TEST-QUALITY-001/`](TEST-QUALITY-001/README.md)：Issue #48 的分层测试、Coverage Policy v2、critical branch 与 duration evidence。
 - [`M11-EXECUTION-REINTEGRATION/`](M11-EXECUTION-REINTEGRATION/README.md)：M11-001～004 的单 PR、逐依赖层 Execution Reintegration 实施与验证。
 - [`ISSUE-41-M-SERIES-NORMALIZATION/`](ISSUE-41-M-SERIES-NORMALIZATION/README.md)：R2 M-series Task 规范化审计，使 M Task 成为唯一实施层词汇。
 - [`ISSUE-35-RUNTIME-EVOLUTION-BOUNDARY/`](ISSUE-35-RUNTIME-EVOLUTION-BOUNDARY/README.md)：R2 Skill Evolution 可选 Maintainer 外环与 Runtime 消费边界。

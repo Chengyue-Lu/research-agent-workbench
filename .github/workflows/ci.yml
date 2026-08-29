@@ -30,56 +30,98 @@ jobs:
           echo "governance job_wall_seconds=${wall_seconds}"
           printf '### Job wall time\n\n- job: governance\n- wall_seconds: %s\n' "$wall_seconds" >> "$GITHUB_STEP_SUMMARY"
 
-  test:
-    name: test (${{ matrix.python-version }})
-    needs: package_smoke
-    if: always()
+  compatibility_311:
+    name: compatibility (3.11)
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - python-version: "3.11"
-            coverage: true
-          - python-version: "3.13"
-            coverage: false
     steps:
       - name: Start wall-time clock
         run: echo "RWB_JOB_STARTED_AT=$(date +%s)" >> "$GITHUB_ENV"
-      - name: Require package-smoke Gate
-        run: test "${{ needs.package_smoke.result }}" = "success"
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.11"
       - run: python -m pip install -e ".[test]"
-      - name: Run full unittest suite with coverage
-        if: matrix.coverage
-        run: coverage run -m unittest discover -s tests
-      - name: Run full unittest suite
-        if: matrix.coverage == false
-        run: python -m unittest discover -s tests -v
-      - if: matrix.coverage
-        run: coverage report --fail-under=80
-      - if: matrix.coverage
-        run: coverage json -o coverage.json
-      - name: Enforce Trace module coverage
-        if: matrix.coverage
+      - name: Run plain full unittest suite
         run: >-
-          python -c "import json; data=json.load(open('coverage.json', encoding='utf-8'));
-          trace=next(item for path,item in data['files'].items()
-          if path.replace(chr(92),'/').endswith('src/research_workbench/observability/trace.py'));
-          value=trace['summary']['percent_covered'];
-          print(f'trace coverage={value:.2f}%'); assert value >= 90"
+          python tests/run_unittest_suite.py --suite full
+          --json-output full-test-results-3.11.json --slowest 20
       - name: Report job wall time
         if: always()
         run: |
           ended_at="$(date +%s)"
           wall_seconds="$((ended_at - RWB_JOB_STARTED_AT))"
-          echo "test (${{ matrix.python-version }}) job_wall_seconds=${wall_seconds}"
-          printf '### Job wall time\n\n- job: test (%s)\n- wall_seconds: %s\n' "${{ matrix.python-version }}" "$wall_seconds" >> "$GITHUB_STEP_SUMMARY"
+          echo "compatibility (3.11) job_wall_seconds=${wall_seconds}"
+          printf '### Job wall time\n\n- job: compatibility (3.11)\n- wall_seconds: %s\n' "$wall_seconds" >> "$GITHUB_STEP_SUMMARY"
+
+  compatibility_313:
+    name: compatibility (3.13)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start wall-time clock
+        run: echo "RWB_JOB_STARTED_AT=$(date +%s)" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install -e ".[test]"
+      - name: Run plain full unittest suite
+        run: >-
+          python tests/run_unittest_suite.py --suite full
+          --json-output full-test-results-3.13.json --slowest 20
+      - name: Report job wall time
+        if: always()
+        run: |
+          ended_at="$(date +%s)"
+          wall_seconds="$((ended_at - RWB_JOB_STARTED_AT))"
+          echo "compatibility (3.13) job_wall_seconds=${wall_seconds}"
+          printf '### Job wall time\n\n- job: compatibility (3.13)\n- wall_seconds: %s\n' "$wall_seconds" >> "$GITHUB_STEP_SUMMARY"
+
+  coverage_quality:
+    name: coverage-quality (3.11)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start wall-time clock
+        run: echo "RWB_JOB_STARTED_AT=$(date +%s)" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install -e ".[test]"
+      - name: Run dedicated coverage-quality suite with branch measurement
+        run: >-
+          python -m coverage run --branch
+          tests/run_unittest_suite.py --suite coverage-quality
+          --policy tests/coverage_policy.yaml
+          --json-output coverage-test-results.json --slowest 20
+      - name: Export coverage evidence
+        run: python -m coverage json -o coverage.json
+      - name: Preserve coverage and duration evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-quality-evidence
+          path: |
+            coverage.json
+            coverage-test-results.json
+          retention-days: 14
+      - name: Enforce Coverage Policy v2
+        run: >-
+          python .github/scripts/check_coverage_policy.py
+          --policy tests/coverage_policy.yaml
+          --coverage coverage.json
+          --test-results coverage-test-results.json
+      - name: Report job wall time
+        if: always()
+        run: |
+          ended_at="$(date +%s)"
+          wall_seconds="$((ended_at - RWB_JOB_STARTED_AT))"
+          echo "coverage-quality (3.11) job_wall_seconds=${wall_seconds}"
+          printf '### Job wall time\n\n- job: coverage-quality (3.11)\n- wall_seconds: %s\n' "$wall_seconds" >> "$GITHUB_STEP_SUMMARY"
 
   package_smoke:
     name: package-smoke (3.11)
@@ -106,3 +148,27 @@ jobs:
           wall_seconds="$((ended_at - RWB_JOB_STARTED_AT))"
           echo "package-smoke (3.11) job_wall_seconds=${wall_seconds}"
           printf '### Job wall time\n\n- job: package-smoke (3.11)\n- wall_seconds: %s\n' "$wall_seconds" >> "$GITHUB_STEP_SUMMARY"
+
+  required_test_311:
+    name: test (3.11)
+    needs: [compatibility_311, coverage_quality, package_smoke]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Preserve existing required Gate identity
+        run: |
+          test "${{ needs.compatibility_311.result }}" = "success"
+          test "${{ needs.coverage_quality.result }}" = "success"
+          test "${{ needs.package_smoke.result }}" = "success"
+
+  required_test_313:
+    name: test (3.13)
+    needs: [compatibility_313, coverage_quality, package_smoke]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Preserve existing required Gate identity
+        run: |
+          test "${{ needs.compatibility_313.result }}" = "success"
+          test "${{ needs.coverage_quality.result }}" = "success"
+          test "${{ needs.package_smoke.result }}" = "success"

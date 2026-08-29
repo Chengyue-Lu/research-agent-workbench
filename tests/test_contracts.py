@@ -1,11 +1,30 @@
+import copy
 import unittest
 from pathlib import Path
 
 from research_workbench.capability import AgentProfile, SkillManifest
 from research_workbench.context import MainStatePacket
+from research_workbench.contracts import ContractError, PermissionPolicy
+from research_workbench.contracts.common import (
+    mapping_tuple,
+    mapping_value,
+    optional_string,
+    parse_skill_reference,
+    require_relative_path,
+    require_string,
+    string_tuple,
+)
 from research_workbench.io import load_document
 from research_workbench.protocol import MethodResolution, ModeAction, ProjectProtocol, ResearchMode
-from research_workbench.tasks import AttemptRecord, HandoffPacket, TaskPacket
+from research_workbench.tasks import (
+    AttemptRecord,
+    DelegationPolicy,
+    FileReference,
+    HandoffPacket,
+    HandoffPolicy,
+    TaskBudget,
+    TaskPacket,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -60,6 +79,72 @@ class ContractParsingTests(unittest.TestCase):
         self.assertEqual(task.input_refs, handoff.input_lock)
         self.assertEqual("incomplete", incomplete.status)
         self.assertEqual(handoff.attempt_id, attempt.attempt_id)
+
+    def test_common_contract_primitives_reject_invalid_types_and_paths(self) -> None:
+        calls = (
+            lambda: parse_skill_reference("bad@latest"),
+            lambda: require_string({"value": ""}, "value"),
+            lambda: optional_string({"value": 1}, "value"),
+            lambda: string_tuple({"value": [""]}, "value"),
+            lambda: mapping_value({"value": []}, "value"),
+            lambda: mapping_tuple({"value": [1]}, "value"),
+            lambda: require_relative_path("/absolute", "path"),
+            lambda: require_relative_path("../escape", "path"),
+            lambda: PermissionPolicy.from_mapping({"external_write": "unknown"}),
+            lambda: PermissionPolicy.from_mapping({"external_write": 1}),
+            lambda: PermissionPolicy.from_mapping({"allowed_roots": ["../outside"]}),
+            lambda: PermissionPolicy.from_mapping({"filesystem": 1, "network": []}),
+        )
+        for index, call in enumerate(calls):
+            with self.subTest(index=index), self.assertRaises(ContractError):
+                call()
+
+    def test_task_contract_models_reject_invalid_budget_delegation_and_lifecycle_fields(self) -> None:
+        invalid_calls = (
+            lambda: FileReference.from_mapping({"path": "a", "sha256": "bad"}),
+            lambda: FileReference.from_mapping({"path": "a", "sha256": "0" * 64, "revision": 0}),
+            lambda: DelegationPolicy.from_mapping({"allowed": "yes"}),
+            lambda: DelegationPolicy.from_mapping({"allowed": True, "max_depth": -1}),
+            lambda: DelegationPolicy.from_mapping({"allowed": True, "max_parallel": -1}),
+            lambda: DelegationPolicy.from_mapping({"allowed": False, "max_depth": 1}),
+            lambda: DelegationPolicy.from_mapping({"allowed": True, "sub_budget": []}),
+            lambda: TaskBudget.from_mapping({"max_turns": 0}),
+            lambda: HandoffPolicy.from_mapping({"require_transfer_manifest": "yes"}),
+            lambda: HandoffPolicy.from_mapping({"semantic_review": "sometimes"}),
+            lambda: HandoffPolicy.from_mapping({"minimum_semantic_samples": True}),
+        )
+        for index, call in enumerate(invalid_calls):
+            with self.subTest(index=index), self.assertRaises(ContractError):
+                call()
+
+        task = self.load("examples/task-evidence.yaml")
+        for field, value in (("required_outputs", [1]), ("revision", 0)):
+            changed = copy.deepcopy(task)
+            changed[field] = value
+            with self.subTest(task_field=field), self.assertRaises(ContractError):
+                TaskPacket.from_mapping(changed)
+
+        attempt = self.load("examples/attempt-evidence.yaml")
+        for field, value in (
+            ("task_revision", 0),
+            ("trace_ref", "bad"),
+            ("failure", []),
+            ("status", "unknown"),
+        ):
+            changed = copy.deepcopy(attempt)
+            changed[field] = value
+            with self.subTest(attempt_field=field), self.assertRaises(ContractError):
+                AttemptRecord.from_mapping(changed)
+
+        handoff = self.load("examples/handoff-evidence.yaml")
+        changed = copy.deepcopy(handoff)
+        changed["status"] = "running"
+        with self.assertRaises(ContractError):
+            HandoffPacket.from_mapping(changed)
+        changed = copy.deepcopy(handoff)
+        changed["runtime_metadata_ref"] = "../outside"
+        with self.assertRaises(ContractError):
+            HandoffPacket.from_mapping(changed)
 
 
 if __name__ == "__main__":
