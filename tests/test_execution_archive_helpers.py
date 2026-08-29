@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from types import SimpleNamespace
 import tempfile
@@ -38,6 +39,31 @@ class ExecutionArchiveHelperTests(unittest.TestCase):
             self.assertEqual(b"value", target.read_bytes())
             with self.assertRaises(FileExistsError):
                 archive_module._publish_exclusive(target, b"replacement")
+
+            class FailingStream:
+                def __init__(self, descriptor: int) -> None:
+                    self.descriptor = descriptor
+
+                def __enter__(self):
+                    return self
+
+                def __exit__(self, *_exc) -> None:
+                    os.close(self.descriptor)
+
+                def write(self, _payload: bytes) -> None:
+                    raise OSError("injected publication failure")
+
+            failed_target = root / "failed.bin"
+            with (
+                mock.patch.object(
+                    archive_module.os,
+                    "fdopen",
+                    side_effect=lambda descriptor, _mode: FailingStream(descriptor),
+                ),
+                self.assertRaises(OSError),
+            ):
+                archive_module._publish_exclusive(failed_target, b"partial")
+            self.assertFalse(failed_target.exists())
 
             risks: list[ContractRisk] = []
             scalar = root / "scalar.yaml"

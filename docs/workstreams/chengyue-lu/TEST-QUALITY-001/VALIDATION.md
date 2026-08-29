@@ -113,7 +113,8 @@ global quality floor 从 83% 目标提升到机器阻断的 90%、critical floor
 - run 33238653977：518 tests PASS，suite wall 709.359 秒（11 分 49 秒），global line 87.71%；Host
   97.03% / 92.73%、Generic Receipt 97.95% / 91.14%，新增 capability/document critical validators
   均为 100% / 100%，所有 critical files 已满足逐文件 Gate；
-- run 33240019719：526 tests PASS，suite wall 715.237 秒，checker source-root global line 89.92%；
+- run 33240592061：527 tests PASS，suite wall 813.756 秒，checker source-root global line 89.99%；
 - 当前 head 增加 8 个 archive/recovery 隔离 validator 单元测试与 1 个 Receipt 缺失引用负例；它们 mock
   掉 Trace、协议与完整 replay，只覆盖 fail-closed orchestration，不把重型 replay 放回 coverage；
+- 最后一项 publication failure 负例覆盖独占写失败后的半成品清理，不修改产品 contract；
 - 当前 selection 为 527/527 canonical unique；最终 global 90% 仍需当前 head CI artifact 确认。
