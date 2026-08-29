@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from unittest import mock
 
-from research_workbench.contracts import ContractRisk, RiskLevel
+from research_workbench.contracts import ContractError, ContractRisk, RiskLevel
 from research_workbench.execution import archive as archive_module
 from research_workbench.execution import recovery as recovery_module
 from research_workbench.tasks import FileReference
@@ -200,6 +200,143 @@ class ExecutionArchiveHelperTests(unittest.TestCase):
                 )
             self.assertIn("EXEC-ARCHIVE-INVALID", {risk.code for risk in risks})
 
+    def test_finalize_and_verify_exception_branches_remain_structured(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            outside = root.parent / "outside-attempt"
+            with self.assertRaises(ContractError):
+                archive_module.finalize_execution_archive(
+                    root=root,
+                    attempt_dir=outside,
+                    attempt_document={},
+                    receipt_document={},
+                    protocol="missing.yaml",
+                )
+
+            occupied = root / "occupied"
+            occupied.mkdir()
+            (occupied / archive_module.ATTEMPT_FILENAME).write_text("{}\n", encoding="utf-8")
+            with self.assertRaises(FileExistsError):
+                archive_module.finalize_execution_archive(
+                    root=root,
+                    attempt_dir=occupied,
+                    attempt_document={},
+                    receipt_document={},
+                    protocol="missing.yaml",
+                )
+
+            parse_failure = root / "parse-failure"
+            parse_failure.mkdir()
+            (parse_failure / archive_module.TRACE_INDEX_FILENAME).write_text("{}\n", encoding="utf-8")
+            with (
+                mock.patch.object(
+                    archive_module,
+                    "validate_attempt_trace",
+                    return_value=SimpleNamespace(risks=()),
+                ),
+                mock.patch.object(archive_module, "derive_session_transcript", return_value=()),
+                mock.patch.object(archive_module, "_schema_risks", return_value=[]),
+                mock.patch.object(
+                    archive_module.AttemptRecord,
+                    "from_mapping",
+                    side_effect=ContractError("attempt", "invalid"),
+                ),
+            ):
+                result = archive_module.finalize_execution_archive(
+                    root=root,
+                    attempt_dir=parse_failure,
+                    attempt_document={"attempt_id": "A"},
+                    receipt_document={},
+                    protocol="missing.yaml",
+                )
+            self.assertTrue(result.blocked)
+
+            missing_protocol = root / "missing-protocol"
+            missing_protocol.mkdir()
+            (missing_protocol / archive_module.TRACE_INDEX_FILENAME).write_text("{}\n", encoding="utf-8")
+            parsed_receipt = SimpleNamespace(execution_kind="model-api", status="completed")
+            with (
+                mock.patch.object(
+                    archive_module,
+                    "validate_attempt_trace",
+                    return_value=SimpleNamespace(risks=()),
+                ),
+                mock.patch.object(archive_module, "derive_session_transcript", return_value=()),
+                mock.patch.object(archive_module.SchemaCatalog, "validate", return_value=[]),
+                mock.patch.object(archive_module.AttemptRecord, "from_mapping", return_value=SimpleNamespace()),
+                mock.patch.object(
+                    archive_module.ExecutionReceipt, "from_mapping", return_value=parsed_receipt
+                ),
+            ):
+                result = archive_module.finalize_execution_archive(
+                    root=root,
+                    attempt_dir=missing_protocol,
+                    attempt_document={"attempt_id": "A", "artifact_refs": []},
+                    receipt_document={"status": "completed", "output_refs": []},
+                    protocol=root.parent / "outside-protocol.yaml",
+                )
+            self.assertTrue(result.blocked)
+            self.assertIn("Project Protocol is missing", result.risks[-1].message)
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            attempt_dir = root / "attempt"
+            attempt_dir.mkdir()
+            marker_path = attempt_dir / archive_module.COMPLETION_MANIFEST_FILENAME
+            marker_path.write_text("{}\n", encoding="utf-8")
+            with mock.patch.object(archive_module, "_load_mapping", return_value=None):
+                self.assertEqual(
+                    (),
+                    archive_module.verify_execution_archive(
+                        attempt_dir, root=root, protocol="missing.yaml"
+                    ),
+                )
+
+            for name in (
+                archive_module.ATTEMPT_FILENAME,
+                archive_module.RECEIPT_FILENAME,
+                archive_module.TRANSCRIPT_FILENAME,
+                archive_module.TRACE_INDEX_FILENAME,
+            ):
+                (attempt_dir / name).write_text("not-json", encoding="utf-8")
+            marker = {"attempt_id": "OTHER", "status": "failed", "files": []}
+            attempt = SimpleNamespace(attempt_id="A-1")
+            receipt = SimpleNamespace(status="completed")
+
+            def load_mapping(path, _label, _risks):
+                return marker if path.name == archive_module.COMPLETION_MANIFEST_FILENAME else {}
+
+            with (
+                mock.patch.object(archive_module, "_load_mapping", side_effect=load_mapping),
+                mock.patch.object(archive_module.SchemaCatalog, "validate", return_value=[]),
+                mock.patch.object(
+                    archive_module.FileReference,
+                    "from_mapping",
+                    side_effect=ContractError("files", "invalid"),
+                ),
+                mock.patch.object(archive_module, "check_references", return_value=[]),
+                mock.patch.object(archive_module, "_schema_risks", return_value=[]),
+                mock.patch.object(archive_module.AttemptRecord, "from_mapping", return_value=attempt),
+                mock.patch.object(archive_module.ExecutionReceipt, "from_mapping", return_value=receipt),
+                mock.patch.object(
+                    archive_module,
+                    "validate_attempt_trace",
+                    return_value=SimpleNamespace(risks=()),
+                ),
+                mock.patch.object(
+                    archive_module,
+                    "derive_session_transcript",
+                    side_effect=ValueError("invalid trace"),
+                ),
+            ):
+                risks = archive_module.verify_execution_archive(
+                    attempt_dir, root=root, protocol=root.parent / "outside.yaml"
+                )
+            codes = {risk.code for risk in risks}
+            self.assertIn("EXEC-COMPLETION-MARKER-INVALID", codes)
+            self.assertIn("EXEC-TRANSCRIPT-DRIFT", codes)
+            self.assertIn("EXEC-ARCHIVE-INVALID", codes)
+
 
 class RecoveryHelperTests(unittest.TestCase):
     """Exercise recovery preflight decisions without archive replay."""
@@ -287,6 +424,95 @@ class RecoveryHelperTests(unittest.TestCase):
             self.assertFalse(result.blocked)
             self.assertEqual("NEW", result.seed.new_attempt_id)
             self.assertEqual("RECOVERY-READY", result.risks[-1].code)
+
+    def test_invalid_recovery_sources_accumulate_structured_blocks(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            old = root / "old"
+            old.mkdir()
+            (old / recovery_module.ATTEMPT_FILENAME).write_text("{}\n", encoding="utf-8")
+            invalid_attempt = SimpleNamespace(
+                status="completed",
+                handoff_ref=None,
+                task_id="TASK",
+                task_revision=1,
+                attempt_id="OLD",
+                input_lock=(),
+                skill_lock=(),
+                skill_assignment_ref=None,
+                trace_ref=None,
+            )
+            with (
+                mock.patch.object(recovery_module, "verify_execution_archive", return_value=()),
+                mock.patch.object(
+                    recovery_module.AttemptRecord,
+                    "from_mapping",
+                    return_value=invalid_attempt,
+                ),
+            ):
+                result = recovery_module.prepare_recovery_attempt(
+                    root=root,
+                    previous_attempt_dir=old,
+                    main_state="missing-state.yaml",
+                    protocol="protocol.yaml",
+                    new_attempt_id="OLD",
+                    new_attempt_dir=old,
+                )
+            codes = {risk.code for risk in result.risks}
+            self.assertLessEqual(
+                {
+                    "RECOVERY-STATUS-INVALID",
+                    "RECOVERY-HANDOFF-MISSING",
+                    "RECOVERY-STATE-MISSING",
+                    "RECOVERY-ATTEMPT-REUSE",
+                    "RECOVERY-PREVIOUS-INVALID",
+                },
+                codes,
+            )
+
+            handoff = root / "handoff.yaml"
+            handoff.write_text("{}\n", encoding="utf-8")
+            state = root / "state.yaml"
+            state.write_text("{}\n", encoding="utf-8")
+            with (
+                mock.patch.object(recovery_module, "verify_execution_archive", return_value=()),
+                mock.patch.object(
+                    recovery_module.AttemptRecord,
+                    "from_mapping",
+                    return_value=SimpleNamespace(
+                        **{
+                            **invalid_attempt.__dict__,
+                            "status": "safe-paused",
+                            "handoff_ref": "handoff.yaml",
+                            "trace_ref": FileReference("old/INDEX.yaml", "0" * 64),
+                        }
+                    ),
+                ),
+                mock.patch.object(
+                    recovery_module.HandoffPacket,
+                    "from_mapping",
+                    side_effect=ContractError("handoff", "invalid"),
+                ),
+                mock.patch.object(
+                    recovery_module.SchemaCatalog,
+                    "validate",
+                    return_value=[SimpleNamespace(pointer="/", message="invalid")],
+                ),
+                mock.patch.object(
+                    recovery_module.MainStatePacket,
+                    "from_mapping",
+                    side_effect=ContractError("state", "invalid"),
+                ),
+            ):
+                result = recovery_module.prepare_recovery_attempt(
+                    root=root,
+                    previous_attempt_dir=old,
+                    main_state=state,
+                    protocol="protocol.yaml",
+                    new_attempt_id="NEW",
+                    new_attempt_dir="new",
+                )
+            self.assertIn("RECOVERY-SOURCE-INVALID", {risk.code for risk in result.risks})
 
 
 if __name__ == "__main__":

@@ -85,7 +85,7 @@ helper test 取代。
 共享 Runtime Bundle / View / Host fixture 已迁到不匹配 `test_*.py` 的 `tests/execution_fixtures.py`；测试模块
 不再 import 其他测试模块的 `TestCase`。runner 在执行前按“源码文件 + TestCase qualname + method”核对
 canonical identity，字符串清单不同但实际测试相同也会 fail closed。当前 head 的 coverage selection 为
-524/524 unique canonical tests，full discovery 为 582/582 unique canonical tests（新增 6 个 fast validator
+526/526 unique canonical tests，full discovery 为 584/584 unique canonical tests（新增 8 个 fast validator
 tests 后）；最终双 Python hosted count 以当前 head CI 为准。
 
 ## 前置基线与验收
@@ -106,5 +106,5 @@ full suite 08:37；全局 line 83%，Trace line 92.87%。这证明单靠 suite �
 
 重型 head 的 run 33185024911 已证明 global line 90.16% 与原 12 个 critical files 95/90 全部 PASS，但
 coverage suite 557 tests / 1086.391 秒，且含 21 个 canonical duplicate，不能作为最终结构验收。本轮 final
-remediation 已缩减为 524 个唯一 deterministic tests，并新增 `validation/capability.py` 与拆出的
+remediation 已缩减为 526 个唯一 deterministic tests，并新增 `validation/capability.py` 与拆出的
 `validation/capability_registry.py` critical Gate；最终状态只以新 head hosted artifact 为准。
