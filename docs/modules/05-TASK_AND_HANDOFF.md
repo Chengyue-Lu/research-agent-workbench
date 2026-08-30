@@ -106,7 +106,8 @@ freshness/TOCTOU，并通过一个 pre-bound Driver 最多执行一次。它只�
 
 ## 4. Handoff Packet
 
-以下是现行 legacy Handoff Schema 的 Skill-bearing 示例。该 Schema 仍要求非空 `skill_lock`；它不能被
+以下是现行 legacy Handoff Schema 的 Skill-bearing 字段形状示例。`example-legacy-skill@0.0.0` 是不对应
+accepted Registry、不得用于新 Assignment 的纯占位符。该 Schema 仍要求非空 `skill_lock`；它不能被
 用来证明 generic no-Skill Handoff migration 已完成。M11 no-Skill Core 使用独立 generic execution
 closeout，并不伪造 Skill Assignment。
 
@@ -118,7 +119,7 @@ status: completed
 input_lock:
   - path: sources/raw/paper-001.pdf
     sha256: "0000000000000000000000000000000000000000000000000000000000000000"
-skill_lock: [literature-evidence-extraction@1.0.0]
+skill_lock: [example-legacy-skill@0.0.0]
 skill_assignment_ref: assignments/SA-EVID-001.yaml
 result:
   summary: Extracted four evidence records; one source conflicts with the proposed mechanism.
