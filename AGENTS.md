@@ -3,7 +3,7 @@
 ## Project boundary
 
 - This repository builds a human-governed research workbench, not an autonomous research lab.
-- Keep file contracts and provider-neutral isolated API sessions as the portable execution baseline.
+- Keep file contracts and the provider-neutral Runtime Bundle → Resolved Execution View → Thin Host boundary as the portable execution baseline. Isolated API sessions are optional Adapter implementations, not a core prerequisite.
 - Reuse native agent, skill, permission, thread, and tool capabilities through optional adapters; do not make Codex, OpenCode, or another platform a core dependency.
 - Do not introduce a global Supervisor, continuity database, message bus, or fixed research DAG without an accepted ADR backed by a demonstrated failure.
 - Keep the common research kernel small. Method-specific rules belong in Research Mode Packs or Skills.
@@ -12,7 +12,7 @@
 ## Agent use
 
 - Do not spawn subagents by default. Delegate only when the user explicitly asks, or when an accepted Task Packet allows delegation and the work is bounded and independent.
-- A delegated task must declare an Agent Profile, required Skills, input references, write scope, output contract, budget, and stop conditions.
+- A delegated task must declare an Agent Profile, a required-Skills list that may be empty, input references, write scope, output contract, budget, and stop conditions. A Skill binding is optional unless the accepted Task/Method path explicitly requires one.
 - Keep the main agent focused on requirements, decisions, risks, indexes, and the next action. Do not load raw logs, full corpora, or long exploratory notes into the main context.
 - Persist formal outputs before returning a handoff. Chat summaries are not authoritative artifacts.
 - Use the PR body and Git history as the minimum development record for ordinary R0/R1 changes. Create a formal Task Attempt Archive only when an accepted Task Packet, delegation, R2 risk, external effects, compaction, dispute, or a multi-PR workstream requires it.

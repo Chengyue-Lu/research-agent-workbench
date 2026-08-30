@@ -3,9 +3,11 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - Audit ID：`TEST-QUALITY-001`
 - 来源：[Issue #48](https://github.com/Chengyue-Lu/research-agent-workbench/issues/48)
-- 分支：`maintenance/test-quality-v2`
+- 状态：PR #49 已以 `e9a052f` 合入 `develop`；Coverage Policy v2 为当前 accepted CI quality baseline
+- 实施分支（历史）：`maintenance/test-quality-v2`
 - 风险：R2（shared CI / contract-quality policy）
-- 前置：CI-PERF-001 / PR #47 独立收口；本分支在 #47 head 上开发，合并前以最新 `develop` 重新建立基线
+- 前置（历史）：CI-PERF-001 / PR #47 独立收口；本分支在 #47 head 上开发并在合并前以最新
+  `develop` 重新建立基线
 
 ## 本轮边界
 

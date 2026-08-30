@@ -1,7 +1,7 @@
 # 实现状态
 
 状态：Current implementation authority
-更新：2026-08-28
+更新：2026-08-31
 
 本页只回答“仓库现在实现到哪里”。实时任务状态由 [`TASKS.md`](TASKS.md) 维护，依赖方向由 [`ROADMAP.md`](ROADMAP.md) 维护。
 
@@ -11,7 +11,7 @@ RWB 处于**内部技术 alpha**：核心文件契约、解析和确定性验证
 
 Phase A / M8 Core Formalization 已完成契约收口。Phase B / M9-001～006 的需求、供给、生命周期、
 Protocol、两级 Snapshot 与 migration/replacement 结构契约已经实现。这里的“完成”不表示真实 Provider、
-规范 Runtime Assignment、Human Decision、科学有效性或端到端研究运行已经证明。
+production runtime-execution binding、Human Decision、科学有效性或端到端研究运行已经证明。
 
 ## 已实现
 
@@ -33,23 +33,23 @@ Protocol、两级 Snapshot 与 migration/replacement 结构契约已经实现。
 | 评估对照（M5-003） | Evaluation Manifest 直接以四个 Phase D treatment 为 canonical arms；Task、exact Model、Host、budget、context 与 evidence classes 共享冻结，Tool/no-Skill Snapshot 和 candidate Skill binding fail closed；`rwb eval plan` 编译同一条件 digest 的 non-executing baseline plan（[契约](implementation/EVALUATION_MANIFEST_CONTRACT.md)） |
 | 确定性验证 | Schema、引用、哈希、权限交集、Handoff lock、Claim 支持关系 |
 | Source admission（M4-001） | `sources/raw` admission sidecar 固定来源 locator、时间、操作者、许可/数据边界、解析器与 exact byte hash；已提取引用若落入 `sources/inbox` 完整路径段则阻断（[契约](implementation/SOURCE_ADMISSION_CONTRACT.md)） |
-| Task 解析 | Task + Agent Profile + 显式或 Registry Skill 的冻结 Assignment、权限交集与版本锁 |
+| Legacy alpha Task 解析 | 旧 `task resolve` 路径仍以 Task + Agent Profile + 显式或 Registry Skill 生成冻结 Assignment、权限交集与版本锁；它是 Skill-bearing compatibility seam，不是 M11 Runtime Core 的统一入口 |
 | Legacy Skill 兼容 | accepted Registry 的 active / legacy / deprecated 历史选择边界与精确版本继续可验证；新绑定使用 lifecycle v2 eligibility |
 | 文件式连续性 | Main State、checkpoint、resume-check、受控 Handoff 与归档约定 |
 | Execution Trace | Envelope、Index、append-only events、工具结果持久化与闭集校验 |
 | Legacy execution bridge | 既有 Skill-bound Assignment 到 Trace / Receipt 的适配和恢复检查 |
 | Provider seam | provider-neutral 的隔离会话接口、离线 probe 与合成 conformance 基础 |
 | Runtime Bundle/Profile | M11-001 显式 manifest 固定 exact Task→Method→Requirement→selected Supply→Resolution→Snapshot closure，并声明 exact Action/Capability slice 与完整 Task demand；多候选 Resolution 只导入最终 selected Supply、要求唯一 eligible，未闭合 capability 不得冒充 Task completion |
-| Resolved Execution View | M11-002 supply-neutral producer固定 exact execution slice 与 Provider/Adapter/Model/Runtime/Host，Profile Tool allowlist 只约束真实 Tool Supply；最严 permission/data-egress/side-effect 交集后还必须证明 selected Supply 仍可运行，否则 fail closed |
+| Resolved Execution View | M11-002 supply-neutral producer 固定 exact execution slice 与 Provider/Adapter/Model/Runtime/Host，Profile Tool allowlist 只约束真实 Tool Supply；最严 permission/data-egress/side-effect 交集后还必须证明 selected Supply 仍可运行，否则 fail closed |
 | Thin Execution Host | M11-003 exact View consumer 绑定同一 Runtime Bundle，以 Host-owned/injected trusted clock 和调用前重载阻断 backdating 与受控文件 TOCTOU；preflight requested facts 与 post-call actual facts 分离，preventive/detective 语义不混淆；无 retry/fallback/Topic 5 recovery |
-| Generic execution closeout | M11-004 对 completed/post-call failed/preflight blocked 作 status-aware replay；Trace 显式 pin execution slice，actual binding/Supply 与 Provider/Tool facts按生命周期交叉闭合；completed 只声明 Action/Capability-slice completion，永不声明 Task/Claim/Human completion |
+| Generic execution closeout | M11-004 对 completed/post-call failed/preflight blocked 作 status-aware replay；Trace 显式 pin execution slice，actual binding/Supply 与 Provider/Tool facts 按生命周期交叉闭合；completed 只声明 Action/Capability-slice completion，永不声明 Task/Claim/Human completion |
 
 ## 受限或尚不可用
 
 | 范围 | 限制 |
 |---|---|
 | Method-aware control continuation | M6-003 只保留 legacy Task-to-API compatibility seam；M11-001～004 Core 已实现 bounded no-Skill/direct Tool vertical Gate；Method Trace 现为 ref-only candidate，尚不独立证明 actual path/state effect。当前 checked-in 三条 Snapshot 都是 `structural-replay` 且 `execution_input=false`，M11 vertical fixtures 仅在临时项目中构造 runtime-execution 输入；Mode/lifecycle migration 不迁移历史 Resolution、Assignment、Receipt 或 Trace，Authority Rule Eligibility 也不执行决定 |
-| no-Skill Assignment | Task 契约允许空 `required_skills`，但 alpha CLI 尚不能将其解析为冻结 Assignment |
+| Legacy no-Skill Assignment | Task 契约允许空 `required_skills`，但旧 alpha `task resolve` 尚不能将其解析为冻结 Assignment；该缺口不阻塞 M11-001～004 的 no-Skill/direct-tool Core |
 | Runtime Snapshot | 仓库没有 checked-in `runtime-execution` Snapshot/View/Receipt；测试只在临时目录构造 bounded local Core Gate，既有 structural fixture 不得被 Runtime 接受。M11-001～004 证明 exact closure、deterministic View、bounded Thin Host 与 execution-only replay，不形成 permission grant、真实 Provider readiness、scientific Claim 或 Human acceptance |
 | End-to-end research run | 尚无面向普通用户的一键 Task-to-research 闭环；Runtime 集成由开发者显式接入 |
 | 真实外部模型 | 仓库测试不证明各供应商真实账号、配额、工具调用或长期兼容性 |

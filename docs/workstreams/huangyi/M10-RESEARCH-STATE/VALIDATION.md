@@ -1,7 +1,7 @@
 # M10 Phase C 验证证据
 
-状态：PR #44 final-contract review 整改；已语义 rebase 到 `develop@aa4e7ee`（accepted M11 Core）。
-latest-base 本地全量测试已通过；双 Python、coverage、wheel clean-install 证据等待当前 HEAD 远端 CI。
+状态：PR #44 已完成 final-contract review、语义 rebase 与 exact-head hosted CI，并以 `92fcbe5` 合入
+`develop`。以下保留 task-specific、本地与 hosted evidence；Human semantic/R2 closeout 仍是独立 Gate。
 
 ## Task-specific evidence
 
@@ -67,13 +67,13 @@ latest-base 本地全量测试已通过；双 Python、coverage、wheel clean-in
 | `rwb validate examples/phase-c --root .` | validated=26, errors=0, warnings=0 |
 | `rwb validate examples registry --root .` | validated=180, errors=0, warnings=0 |
 | latest-base full unittest | 552 passed，3 skipped（本地未安装可选 Hypothesis）；818.723s |
-| latest-base coverage/dual-Python/wheel clean-install CI | PENDING（当前 HEAD 推送后由远端 CI 验证） |
+| final exact-head hosted CI | run `33296660444`：Python 3.11 700/700 PASS；Python 3.13 700/700 PASS；coverage-quality 639/639 PASS；global line 91.65%；package-smoke、repository validation、governance 与 aggregate Gates PASS |
 
 ## Owner review remediation matrix
 
 | Review finding | Evidence |
 |---|---|
-| dependency chain mixed four Tasks | PR diff now changes only M10-001 to DONE；all downstream statuses remain BLOCKED |
+| dependency chain mixed four Tasks | initial split 先隔离 M10-001；owner 随后按 accepted module-level DAG 允许 M10-002 → M3-009 → M10-003 逐层扩展，四项各有独立 slice/evidence 并在最终 PR 中统一验收为 DONE |
 | duplicate/ambiguous identity | `duplicate_identities` + ambiguous resolver tests |
 | pinned ref without target hash | `hash-unverifiable` negative test |
 | State role not type-bound | explicit role→semantic-type map + mismatch negative test |

@@ -8,7 +8,9 @@
 
 每个 Attempt 记录：
 
-- Task、Agent Profile、Skill Assignment 和 Runtime snapshot；
+- Task、Agent Profile、当前 Action/Capability execution slice，以及适用的 Runtime Bundle/View refs；
+- optional Skill Assignment/Skill binding（仅 Skill-bearing path；no-Skill/direct Tool 不伪造）；
+- requested binding/selected Supply 与 Host-observed actual binding/actual Supply；
 - actor_id 与实名 accountable owner；
 - 开始/结束时间、状态、重试原因；
 - Agent 间每条可见消息的 ID、类型、发送/接收者、时间、内容哈希和附件引用；
@@ -22,9 +24,21 @@
 
 不保存隐藏 prompt 或 Chain-of-Thought，也不重复复制已经有不可变路径与哈希的工具输出；但实际发送给另一个 Agent 的可见 payload、运行时可观察的调用元数据，以及进入 Agent 上下文却没有稳定来源的瞬时工具结果必须进入 Attempt Archive。
 
-`Execution Receipt` 将上述信息收敛为平台中立文件，并与 Attempt、Agent Profile、Skill Assignment、Context Snapshot 和 Handoff 双向关联。`model_usage_status` 必须是 `measured`、`estimated`、`unavailable` 或 `not-applicable`；未知成本不允许伪装成零。Receipt 的 `status` 是执行生命周期；只有显式的 `completion_claim: contract-satisfied` 才声明结果通过 Task 合同，避免把负对照的“执行完成”误写成“验证通过”。
+当前必须区分两类 Receipt。legacy `execution_receipt` 仍要求 Skill Assignment，并保留显式
+`completion_claim: contract-satisfied` 的兼容路径；这不表示 generic no-Skill Attempt/Handoff migration
+已经完成。M11 `generic_execution_receipt` 则 exact-pin execution slice、View、Host report、Trace、Artifact
+和 Validation closed set，固定 Assignment absent、`task_completion: false`；completed 也只声明
+`action-capability-slice-only`。post-call failed Receipt 只有在 typed、hash-pinned Trace fact 能独立佐证完整
+actual binding/Supply 时才可重放，preflight block 不得伪造 actual facts。
 
-Execution assessment 检查 Task/Profile/Assignment/Attempt 一致性、输出存在性、Handoff 回指、时间与状态一致性、协调成本比例、并发上限、review loop、敏感/外部/full trace，以及真实 Agent/API 执行是否缺少用量。它不把 contract-only fixture 计作模型运行。
+两类 Receipt 的 `model_usage_status` 都必须是 `measured`、`estimated`、`unavailable` 或
+`not-applicable`；未知成本不允许伪装成零。任何 execution status 都不自动成为 Task completion、Claim
+promotion、Human acceptance 或科学正确性证明。
+
+Execution assessment 检查 Task/Profile/Attempt、一致的 frozen control refs、可选 Assignment、View/Host/
+Trace/Receipt closure、输出存在性、Handoff 回指、时间与状态、协调成本、并发上限、review loop、敏感/
+外部/full trace，以及真实 Agent/API 执行是否缺少用量。它不把 contract-only fixture 计作模型运行，也
+不把 selected Snapshot/View 当成 actual execution fact。
 
 ## 3. 质量指标
 
@@ -76,17 +90,27 @@ Handoff 成本对照按 H0/H1/H2 分组，至少记录工件数、总字符、�
 
 ## 6. 对照评估
 
-正式 Method/Skill 比较采用四种条件：
+M5-003 已将正式 Method/Skill baseline plan 的 canonical treatment vocabulary 固定为四臂：
 
 1. Plain Agent；
 2. Plain Agent + Tool；
 3. Mode + no-Skill/direct-tool；
 4. Mode + candidate Skill。
 
-Evaluation Manifest 必须冻结同一 Task/input、Host、Model、Tool/Resolved Capability Snapshot、budget 和
-context。比较 method violation、Claim overreach、provenance error、反证遗漏、人工纠正距离、
-返工、时间、token/成本和可恢复性，不能只比较文本“更完整”。多 Agent/H1/H2 是可增加的机制
-变量，不是默认优胜组。
+Evaluation Manifest 顶层只冻结四臂共享的 Task/input、exact Model、Host、budget、context 和 evidence
+classes；Tool、Resolved Capability Snapshot、Mode/Method 与 candidate Skill 是 per-arm exact treatment
+binding，不能误写成四臂共用同一个 Snapshot：
+
+- `plain-agent` suppress Mode/Method control，且不携带 Tool/Snapshot/Skill binding；
+- `plain-agent-tool` suppress Mode/Method control，并 exact-pin Tool Supply Snapshot；
+- `mode-no-skill` exact-pin Mode/Method 与 no-Skill/direct-Tool/procedure Snapshot，拒绝任何 Skill Supply；
+- `mode-candidate-skill` exact-pin Mode/Method、candidate Skill identity/version/hash 与对应 Skill Evaluation。
+
+四种 treatment 必须各出现一次。`rwb eval plan` 复用 `eval check` 的 exact-reference closure，只产生同一
+frozen-condition digest 下的 deterministic `compiled-not-executed` plan；M5-003 不运行真实案例、不保存
+trial/result，也不证明 Skill/Method 已有净收益。未来比较可观察 method violation、Claim overreach、
+provenance error、反证遗漏、人工纠正距离、返工、时间、token/成本和可恢复性，不能只比较文本“更完整”。
+多 Agent/H1/H2 是正交的 coordination 变量，不是旧 arm 名称或默认优胜组。
 
 ## 7. Skill 评估
 
@@ -102,13 +126,23 @@ context。比较 method violation、Claim overreach、provenance error、反证�
 
 Skill 的价值由任务成功、错误率、上下文成本和结果采纳率衡量，不以安装次数或描述覆盖范围衡量。
 
-`skill_evaluation` 契约采用 provider-neutral 的 paired same-input 评估：baseline 与 with-Skill 必须冻结 Task/input，控制 provider/model/config，分别引用输出、确定性报告、Execution Receipt 与 Context Snapshot，并在揭示条件前完成人类评分。评估器阻断 fixture-only、案例不足、输入/模型/配置漂移、with-Skill 确定性失败、上下文不可比和非盲评；它不会自动求总分或批准 Skill。平台无法提供 token 时保留 `unavailable` 并产生警告，仍可使用实测字符数与 wall time，但不得宣称 token 节省。
+既有 `skill_evaluation` 是独立的 provider-neutral paired same-input evaluation record，不是 M5-003
+四臂 Manifest 的替代 treatment vocabulary。baseline 与 with-Skill 必须冻结 Task/input，控制
+provider/model/config，分别引用输出、确定性报告、legacy Execution Receipt 与 Context Snapshot，并在
+揭示条件前完成人类评分。评估器阻断 fixture-only、案例不足、输入/模型/配置漂移、with-Skill 确定性
+失败、上下文不可比和非盲评；它不会自动求总分、批准 Skill、选择 Runtime Supply 或促进 Claim。
+平台无法提供 token 时保留 `unavailable` 并产生警告，仍可使用实测字符数与 wall time，但不得宣称
+token 节省。实际 trial/evaluation result 属于后续 Evaluation/Trial record，不回写 Skill Need 本体。
 
 ## 8. Trace 政策
 
 Trace 分为三个职责层：Execution/Archive Trace 保存实际 Agent 传递、可观察读取/工具/文件事件、
 Handoff 和过程产物；Method Trace 保存 Mode/Action/Mechanism/Human Gate/Evidence/Claim 的关键决定；
 可选运行遥测记录 token 级、内部调试或平台细节。三者通过引用关联，但都不是科研证据本身。
+
+M11 actual execution binding 必须由 Host facts 和 typed、hash-pinned `execution_trace_fact` 记录；计划中的
+Snapshot/View 只能作为 expected binding。M3-009 Method Trace 可以 exact 引用该 fact，或在本 Attempt
+没有 authoritative fact 时显式记录 gap，不能用 runtime log、Snapshot 或 Receipt 文本补造 actual facts。
 
 默认策略：
 
@@ -133,11 +167,12 @@ Trace 完整度不是越高越好。禁止通过记录隐藏推理、密钥或�
 
 ## 10. 验收条件
 
-- 能回答每次结果用了哪个 Agent/Skill/输入/工具；
+- 能回答每次结果用了哪个 Agent、输入、Capability Supply 和工具，以及是否使用了 Skill；
 - 能比较单 Agent 与多 Agent 的净收益；
 - 能识别上下文污染和 review loop 的真实成本；
 - trace 不包含不必要的敏感数据；
 - 任一跨 Agent Attempt 能检测消息序列缺口并定位到实名责任人；
 - 主 Agent 可以只加载 Handoff/索引而不加载完整消息正文；
 - 至少一个低价值机制因指标被删除或降级；
-- 评估结果能支持继续、修改或停止项目，而不是只支持扩张。
+- M5-003 plan 能保持四臂 exact closure 且不触发执行；未来真实评估结果才能支持继续、修改或停止项目，
+  而不是只支持扩张。

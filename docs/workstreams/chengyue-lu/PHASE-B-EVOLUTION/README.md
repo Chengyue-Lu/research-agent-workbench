@@ -6,11 +6,17 @@
 - 基线：`develop@a3b6d174a6f3da7f2b890eb40883c4b378e92e16`
 - 目标 base：`develop`
 - 阶段分支：`agent/phase-b-evolution-foundation`
-- 当前状态：M9-001～006 的结构契约及系统一致性修复已实现；Runtime execution 仍无合格 checked-in fixture
+- 当前状态：M9-001～006 已完成；后续 M11 bounded Runtime Core 与 M5-003 non-executing plan 已集成，
+  Phase C machine chain 也已实现，但仍无 checked-in live runtime-execution fixture，Human/R2 semantic
+  closeout 与 Topic 5 activation 继续独立
 - 风险触发：跨多个公共契约、Registry migration 与 Method/Provider 共享接口
 - 后续边界澄清：[ADR-0019](../../../decisions/0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md)
 
 ## 1. 阶段目标
+
+> 本文主体保留 Phase B 建设与验收时的范围/证据；其中“后续”“不实现”只描述 Phase B 自身的边界，
+> 不覆盖后续已合入事实。当前实现看 [`STATUS.md`](../../../STATUS.md)，实时 Task 看
+> [`TASKS.md`](../../../TASKS.md)，当前 Phase/Topic Gate 看 [`ROADMAP.md`](../../../ROADMAP.md)。
 
 Phase B 把 M8 已冻结的需求表达推进为可迁移、可评测且可由不同供给实现消费的演化基础：
 
@@ -174,16 +180,16 @@ Phase D 的 minimal Evaluation Manifest 可在 M9-002 稳定后并行启动，�
 
 ## 7. Topic 4 / Topic 5 Gate
 
-Topic 4 thin-layer Architecture Hold 只在 Capability Requirement、Capability Supply Report、Capability
-Resolution boundary 均稳定且 Resolved Capability Snapshot Core 被接受后解除。届时只允许 Runtime
-在 Topic 4 内补齐 external pin、freshness、精确 Provider/Adapter/Model/Runtime、最终权限/DataPolicy 交集后，
-消费 closure-valid 的 `runtime-execution` Snapshot、报告 actual execution facts，并执行 permission/data-egress/
-side-effect boundary。automatic fallback、model auto-routing、multi-Agent orchestration、critic voting、
-hidden routing，以及 Runtime 修改 Method/Claim/Gate 继续禁止。
+Topic 4 的 Phase B architecture prerequisites 已满足，后续 M11 Core 已 bounded 实现 Runtime Bundle、
+Resolved Execution View、Thin Host、actual facts 与 generic closeout。该实现不等于 checked-in live
+runtime input、live Provider 或 ordinary-user E2E；automatic fallback、model auto-routing、multi-Agent
+orchestration、critic voting、hidden routing，以及 Runtime 修改 Method/Claim/Gate 继续禁止。
 
-Topic 5 继续冻结，直到 Phase C 至少完成 minimal Research State、Failure/Attempt semantics 与 Method
-Trace v0.1；之后才恢复 Handoff、context rollover、safe pause、recovery 和 salvage/clean recovery 的
-后续扩展。M9-005 或 Topic 4 的解冻不构成 Topic 5 的替代 Gate。
+Topic 5 的 minimal Research State、Failure/Attempt、Method Trace 与 bounded machine Gate prerequisites
+也已实现，但 Human semantic review 与 R2/Phase C closeout 仍 pending，因此继续冻结。closeout 未来即使
+通过，也只允许重新进入独立 Topic 5 architecture review；Handoff、context rollover、safe pause、
+recovery、salvage/clean recovery 或 continuation 实现仍需新的 docs-only task-definition 与 R2 acceptance。
+M9-005 或 Topic 4 Core 均不能替代这些 Gate。
 
 ## 8. 阶段 Gate
 

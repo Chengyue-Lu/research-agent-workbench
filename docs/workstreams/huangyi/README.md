@@ -6,16 +6,22 @@ owner：黄毅（GitHub 主名 `let778750-cpu`；昵称/界面名 `huangyi855`�
 `docs/workstreams/huangyi/<task-id-or-slug>/`，在同一 workstream 中持续更新范围、证据、风险和
 审查，不为每次微调新建分支或散落一个新的顶层 Markdown。
 
-当前具名 workstream：
+当前研究/审计 workstream：
 
 - [`execution-runtime-recovery-audit/`](execution-runtime-recovery-audit/README.md)：
   Execution/Runtime 可恢复审计、PR #23 hard-block 证据及治理 rollout。
 - [`open-source-agent-harness-research/`](open-source-agent-harness-research/README.md)：
   开源 Agent Harness 调研、Codex 只读协议验证与候选研究方向（`RESEARCH-HARNESS-001`）。
+
+已集成、保留审计记录的 implementation workstream：
+
 - [`M10-RESEARCH-STATE/`](M10-RESEARCH-STATE/README.md)：
-  M10 Phase C State、Attempt/Failure、Method Trace 与 bounded Gate 的逐层实现和 R2 审查证据。
+  PR #44 的 Phase C State、Attempt/Failure、Method Trace 与 bounded machine Gate；Human/R2 semantic
+  closeout 仍独立 pending。
 - [`M4-ARTIFACTS-PROVENANCE/`](M4-ARTIFACTS-PROVENANCE/README.md)：
-  M4-001 source admission 当前层 workstream；后继 M4 Task 按 module-level 治理与 owner 顺序推进。
+  PR #39 的 M4-001 source admission；M4-002 已成为下一合法 READY 入口。
+- [`M5-EVALUATION-BASELINE/`](M5-EVALUATION-BASELINE/README.md)：
+  PR #43 的 M5-003 canonical four-arm Evaluation Manifest 与 non-executing baseline plan。
 
 ## 文件生命周期
 

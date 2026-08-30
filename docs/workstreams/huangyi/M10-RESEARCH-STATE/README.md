@@ -2,9 +2,11 @@
 
 - 实现责任人：黄毅（GitHub `let778750-cpu`）
 - Task owner / R2 审查人：路诚钺（GitHub `Chengyue-Lu`）
-- Tasks：`M10-001 → M10-002 → M3-009 → M10-003`（当前 PR 沿完整 module chain 推进）
-- 基线：`develop@aa4e7ee`（包含 accepted M11 Core）
-- 分支：`agent/m10-research-state`
+- Tasks：`M10-001 → M10-002 → M3-009 → M10-003`（均已 DONE）
+- 状态：PR #44 已以 `92fcbe5` 合入 `develop`；machine implementation/CI 已闭合，Human semantic
+  review 与 R2/Phase C closeout 仍 pending
+- 实施基线（历史）：`develop@aa4e7ee`（包含 accepted M11 Core）
+- 实施分支（历史）：`agent/m10-research-state`
 - Authority basis：Issue #38 的 `R2 architecture review — ACCEPT`，只授权 bounded implementation
 
 ## Module progression
@@ -13,7 +15,7 @@ PR #44 先按 normalized governance 收缩并独立接受 M10-001；owner 随后
 按 `M10-002 → M3-009 → M10-003` 逐层扩展，每层保留独立 commit/evidence，最终按完整链重新审查。
 旧完整 head 保存在 `archive/pr44-pre-split-20260826` 仅供审计，不构成 canonical 状态或后续合并来源。
 
-当前四层包含 M10-001 Research State、M10-002 Research Attempt lineage / Research Failure、
+已集成的四层包含 M10-001 Research State、M10-002 Research Attempt lineage / Research Failure、
 M3-009 ref-only Method Trace，以及 M10-003 runner-owned fresh-process bounded Gate。
 M10-002 不修改 legacy Attempt，而以 sidecar 精确 pin 已有归档；M3-009 Method Trace 与 M10-003
 fresh-process Gate 分层；Method Trace 在本 Attempt 没有 authoritative M11 fact 时记录 gap-only，captured
@@ -22,7 +24,8 @@ M10-003 只闭合两份 synthetic fixture 的 machine Gate；Human semantic revi
 Topic 5 authority 均保持 pending/false。
 
 Human Decision 不再使用平行 record Schema，而是复用现有 kernel Decision research object。
-最终表示、科学判断和 DONE 接受仍属于具名 Human/R2 审查。
+四项 implementation Task 的 DONE 已由 PR #44 验收；仍属于具名 Human/R2 审查的是最终 universal
+representation、科学语义与 Phase C closeout，而不是重新判定这些 Task 的实现状态。
 
 详见 [M10-001 契约](../../../implementation/RESEARCH_STATE_CANDIDATE_CONTRACT.md)、
 [M10-002 契约](../../../implementation/RESEARCH_ATTEMPT_FAILURE_CONTRACT.md)、

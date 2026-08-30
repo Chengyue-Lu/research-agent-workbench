@@ -47,10 +47,11 @@ rwb validate examples registry
 - `required_skills` 为空是合法结果；
 - 预算、原子边界和停止条件仍由 Task 约束。
 
-这个文件代表已接受的 no-Skill Task 语义，并会参与仓库验证。alpha CLI 的 `task resolve` 目前仍要求
-显式 Skill 或 Registry 中可选的 active Skill，尚不能为该文件生成 no-Skill Assignment；因此本指南
-不伪造一条解析成功路径。该实现缺口集中记录在[实现状态](STATUS.md)。实际 Runtime 接入后应消费
-冻结 Assignment、在声明范围内产生工件，并把可观察事件写入 Attempt Archive。
+这个文件代表已接受的 no-Skill Task 语义，并会参与仓库验证。legacy alpha CLI 的 `task resolve` 目前仍
+要求显式 Skill 或 Registry 中可选的 active Skill，尚不能为该文件生成 no-Skill Assignment；因此本指南
+不伪造一条解析成功路径。这个兼容实现缺口集中记录在[实现状态](STATUS.md)，但不阻塞 M11 no-Skill /
+direct-tool Core。当前 Runtime 接入应消费经过校验的 Runtime Bundle 与 Resolved Execution View；只有
+Skill-bearing 或 legacy compatibility 路径才额外携带 Assignment。
 
 ## 5. 验证已有 Trace 或执行归档
 
@@ -70,13 +71,17 @@ Trace 校验检查 Envelope、Index、事件、工具结果与文件之间的闭
 
 核心集成顺序是：
 
-1. 把外部系统的能力映射为 Agent、Model、Tool 和权限元数据；
-2. 让 Adapter 消费冻结 Assignment，而不是读取整仓库自行规划；
-3. 将输入、消息、调用、临时结果和正式输出写入 Attempt Archive；
-4. 生成 Handoff / Receipt，并运行确定性验证；
-5. 把方法、权限和 Claim 决定交给相应 Human Gate。
+1. 把外部 Tool、Adapter、Provider 或 procedure 映射为带 exact identity/version/hash、输入输出、权限、
+   data-egress 与 side-effect 事实的 Capability Supply Report；
+2. 由 Capability Resolution 比较 Requirement 与候选供给，并冻结 Resolved Capability Snapshot；供给方和
+   Adapter 不得自行选择自己，也不得放宽上游边界；
+3. 生成 Runtime Bundle 与 Resolved Execution View，再让 Thin Host 只消费该 exact View；no-Skill、
+   direct-tool 和 Skill-bearing 路径共享这一 Core，Skill Assignment 只在需要时附加；
+4. 把 actual execution facts、Trace、Artifact、Validation 与 generic Receipt 写成可重放闭包；
+5. 把方法适用性、Claim 接受和 Human Decision 留给相应的人类 Gate。
 
-Codex、OpenCode、自建 API Runner、MCP 或本地 CLI 都应停留在 Adapter 边界。平台会话可用于执行，但不是跨会话权威状态。
+Codex、OpenCode、自建 API Runner、MCP 或本地 CLI 都应停留在 Adapter/Driver 边界。平台会话可用于执行，
+但不是跨会话权威状态；Host 不得在执行时重新选择 Supply 或静默 fallback。
 
 ## 7. 常见问题
 

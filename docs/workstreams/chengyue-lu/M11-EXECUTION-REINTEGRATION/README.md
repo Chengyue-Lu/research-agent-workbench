@@ -2,10 +2,11 @@
 
 - 协调责任人：路诚钺（GitHub `Chengyue-Lu`）
 - Runtime 实现责任人：黄毅（GitHub `let778750-cpu`）
-- 分支：`agent/m11-execution-reintegration`
+- 状态：M11-001～004 已由 PR #45 合入 `develop@aa4e7ee`；本目录现作为 implementation / R2 review 审计记录
+- 实施分支（历史）：`agent/m11-execution-reintegration`
 - PR：单个 module-level feature PR，按 M11-001→002→003→004 逐层提交与独立验收
 - 风险：R2 shared Runtime / Capability boundary
-- accepted governance 基线：`develop@2b3362ae317c9fae04cbb90690e0699d45c8aa94`（PR #46）
+- accepted governance 实施基线（历史）：`develop@2b3362ae317c9fae04cbb90690e0699d45c8aa94`（PR #46）
 
 ## 目标与顺序
 
@@ -148,9 +149,10 @@ Runtime/Capability authority。
 - full suite：`Ran 475 tests ... OK (skipped=3)`；三个 skip 为本机缺少可选 Hypothesis；
 - repository validation：`validated=154 errors=0 warnings=0`；
 - wheel build、隔离 venv install、installed `rwb schema list` 与 installed repository validation：PASS；
-- 本机 Python 环境没有 `coverage` 包，未临时修改系统环境；coverage 由 latest-head CI 的 3.11/3.13 jobs 执行；
-- PR #46 独立合并与 #45 rebase 已完成；latest-head Python 3.11/3.13、coverage、wheel/clean-install、
-  governance 与 cross-owner R2 review 仍是合并 Gate。
+- 当时本机 Python 环境没有 `coverage` 包，未临时修改系统环境；最终 coverage 由 PR #45 exact-head
+  hosted CI 生成，后续 TEST-QUALITY-001 将 coverage 固定为 Python 3.11 单次执行；
+- PR #46 独立合并与 #45 rebase、双 Python behavioral suite、coverage、wheel/clean-install、governance
+  及 cross-owner R2 review 均在 PR #45 合并前闭合。这里保留的是合并前证据，不是当前待办。
 
 ## 明确非目标
 
@@ -161,10 +163,12 @@ Runtime/Capability authority。
 - Provider SDK、认证或 live conformance 扩张；
 - 改写 Method、Claim、Gate、Human Decision 或 permission grant authority。
 
-## 验证与合并 Gate
+## 验证与合并 Closeout
 
 每层已执行 focused unit tests、repository validation、`git diff --check`。M11-001～004 已按依赖分别形成
 独立 implementation commit 与 task-specific evidence；review 整改以一个额外聚合 commit 收紧共享
-contract，不重写四层历史。PR #46 已独立接受，当前分支已 rebase 到包含该规则的 `develop@2b3362a`。
-最终仍须等待 latest-head Python 3.11/3.13 CI、coverage、wheel/clean-install，并由两位具名 owner完成
-cross-owner R2 review 后才可合并；本 PR 不把历史 head checker 当自我授权证据。
+contract，不重写四层历史。PR #46 已独立接受；PR #45 feature branch 在最终审查前 rebase 到包含该规则的
+`develop@2b3362a`。
+PR #45 的 latest-head Python 3.11/3.13、coverage、wheel/clean-install、governance 与两位具名 owner
+cross-owner R2 review 已完成后合并；本 workstream 不把历史 head checker 当自我授权证据。M11-005/006
+仍由 `TASKS.md` 保持 PARKED，不因 Core closeout 获得实现权限。

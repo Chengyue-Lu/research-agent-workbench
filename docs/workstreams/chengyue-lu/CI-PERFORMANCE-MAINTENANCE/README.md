@@ -2,11 +2,16 @@
 
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - Audit ID：`CI-PERF-001`
-- 分支：`maintenance/ci-performance-topology`
+- 状态：PR #47 已以 `1425141` 合入 `develop`；该去重基线随后由 TEST-QUALITY-001 / PR #49
+  扩展为当前 Coverage Policy v2 topology
+- 实施分支（历史）：`maintenance/ci-performance-topology`
 - 风险：R2（`.github/workflows/**`）
 - 范围：只优化 CI job topology，不改变测试语义、覆盖率阈值或治理 Gate
 
-## 目标拓扑
+以下拓扑、wall-time 与 before/after 表是 PR #47 的实施快照，不是独立于当前 workflow 和
+[`TEST-QUALITY-001`](../TEST-QUALITY-001/README.md) 的第二套 CI 权威。
+
+## PR #47 接受的去重拓扑（历史基线）
 
 ```text
 governance                         独立；规则与命令不变
@@ -47,7 +52,7 @@ head `25a8da2`，2026-08-27。wall time 按 GitHub job `startedAt → completedA
 - full-suite executions：4 次（3.11 plain + coverage，3.13 plain + coverage）；
 - wheel / clean-install / schema-list / repository-validation pipeline：2 次。
 
-## 改造后测量
+## 改造后测量方法（历史）
 
 每个 job 第一条 step 记录 epoch，最后一条 `if: always()` step 将 `job_wall_seconds` 同时写入日志和
 `GITHUB_STEP_SUMMARY`。首个 PR-head 成功 run 用同一口径记录实际 after baseline，并在 PR comment 中给出

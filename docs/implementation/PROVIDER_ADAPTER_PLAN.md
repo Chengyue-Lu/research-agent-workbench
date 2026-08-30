@@ -1,18 +1,21 @@
 # 多提供商模型 API 实施计划
 
-状态：离线合同切片完成；后续由黄毅维护
+状态：离线合同切片完成；作为 legacy API lane 由黄毅维护，当前执行输入遵循 M11 Core
 
-日期：2026-08-14
+日期：2026-08-14；post-integration 对齐：2026-08-31
 
-维护边界：黄毅负责本计划的 Provider Adapter、API session、live conformance、自动 Trace 捕获和相关测试。路诚钺只消费公开的 Task/Assignment/Handoff/Receipt/Trace 接口和脱敏执行证据。共享接口变更按 [开发协作指南](../DEVELOPMENT.md)由两人共同确认。
+维护边界：黄毅负责本计划的 Provider Adapter、API session、live conformance、自动 Trace 捕获和相关测试。路诚钺只消费公开的 Task/Method、Capability/Resolution/Snapshot、Runtime Bundle/View、Handoff/Receipt/Trace 接口和脱敏执行证据；Assignment 只在 Skill-bearing 或 legacy compatibility 路径出现。共享接口变更按 [开发协作指南](../DEVELOPMENT.md)由两人共同确认。
 
 ## 1. 目标与边界
 
-该层现在构成受限 Task 的首要可移植执行路径；Codex、OpenCode、Claude Code 等平台保留为可选交互外壳或兜底入口。它仍不成为全局调度器，只负责：显式模型槽绑定、请求映射、能力预检、错误/停止原因归一化、有界工具往返、用量记录和数据策略前置检查。
+该层提供 provider-neutral 的可移植 Driver/legacy API building block，但尚不是完整 Task 执行主链；当前
+canonical Core 要求上游 Runtime Bundle/View 与下游 actual-fact/closeout 闭包。Codex、OpenCode、Claude
+Code 等平台同样只是可选交互外壳或 Driver。该层不成为全局调度器，只负责：消费显式模型槽、请求映射、
+能力预检、错误/停止原因归一化、有界工具往返、用量记录和数据策略前置检查。
 
 ```mermaid
 flowchart LR
-  Task["Task / Skill Assignment"] --> Slot["Explicit Model Slot"]
+  Input["Runtime Bundle + Resolved Execution View<br/>optional Skill Assignment"] --> Slot["Exact pre-bound Model Slot"]
   Slot --> Port["Provider-neutral ModelRequest"]
   Port --> Gate["Model + Capability + DataPolicy preflight"]
   Gate --> OA["OpenAI Responses Adapter"]
@@ -21,10 +24,11 @@ flowchart LR
   OA --> Result["ModelResponse + Usage + Warnings"]
   AN --> Result
   GE --> Result
-  Result --> Receipt["Execution Receipt / Handoff"]
+  Result --> Facts["actual execution facts"]
+  Facts --> Receipt["Trace / Artifact / Validation / generic Receipt"]
 ```
 
-提供商选择属于执行策略；研究对象和 Claim 不保存 SDK 对象或路由状态。模型池只有 `primary`、`worker` 和按需 specialist 等少量显式槽，不建设动态 Router。跨提供商 fallback 必须是上层的一次新 Attempt，并保留实际 provider/model/data policy，不能在 Adapter 内静默完成。
+Provider 候选的比较与 Supply selection 属于上游 Capability Resolver；本层只消费 View 中已经绑定的显式模型槽。研究对象和 Claim 不保存 SDK 对象或路由状态。模型池只有 `primary`、`worker` 和按需 specialist 等少量显式槽，不建设动态 Router。跨提供商 fallback 必须先回到上游生成新的 Resolution/Snapshot/Bundle/View，并形成一次新 Attempt；不能在 Adapter 内静默完成。
 
 ## 2. 当前文件边界
 
@@ -140,11 +144,17 @@ rwb providers conformance `
 
 已在 Adapter 之上新增独立 runner，限制最大模型轮次、工具调用数、单轮并行数、单工具输出大小、单轮输出、累计 token/可得成本和 wall time。工具调用需要本地声明和 handler，不接受模型临时发明工具；未知硬预算会安全暂停。Runner 每次从调用方提供的消息开始，不复用 provider response ID，不自动 fallback。
 
-该阶段达到 `K-API-1`，但还没有把 Task/Skill Assignment 自动编译为请求，也没有自动生成 Attempt/Execution Receipt，因此不是完整 Task 执行器。
+该阶段达到 `K-API-1`，但还没有消费 M11 的 exact Runtime Bundle/View、自动生成 authoritative execution facts 或闭合 Trace/Artifact/Validation/generic Receipt，因此不是当前 Core 的完整 Task 执行器。Skill-bearing legacy 路径仍可携带 Assignment；no-Skill/direct Tool 路径不得为兼容而伪造 Assignment。
 
-### P4：Task-to-API 文件闭环（API 工作流的 external 节点）
+### P4：Task-to-API 文件闭环（PARKED compatibility proposal）
 
-把已解析 Task、Agent Profile、Skill Assignment、内容允许集、Handoff 等级和显式模型槽编译成最小初始消息与工具 allowlist；执行期间将全部可见 Agent 传递写入 Attempt Archive；结束或安全暂停时写入正式工件和 Task 要求的 H1/H2 交接工件。删除临时平台会话后做一次恢复检查。具体实现与自动捕获由黄毅负责。
+该层对应 legacy `M6-003` compatibility seam，当前保持 `PARKED`，以下仅记录未来接口方向，不构成实施
+授权：把上游已经冻结的 Runtime Bundle 与 Resolved Execution View 编译成最小初始消息、工具 allowlist
+和 exact Provider/Adapter/Model/Host binding；Skill-bearing 路径可附带精确 Assignment，no-Skill/direct
+Tool/procedure/Adapter 路径不创建 Assignment。Host/Adapter 只消费既有 binding，不重选 Supply、不自动
+fallback，也不放宽权限、数据出站或副作用 ceiling。执行期间可见事实只能通过 accepted Trace/Artifact/
+Validation/generic Receipt 契约闭合。任何 Handoff、context rollover、safe pause/resume、会话删除后恢复或
+salvage 语义属于仍冻结的 Topic 5，必须另有 docs-only task-definition 与 R2 acceptance，不能由本 P4 启动。
 
 ### P5：按真实消费者扩展
 

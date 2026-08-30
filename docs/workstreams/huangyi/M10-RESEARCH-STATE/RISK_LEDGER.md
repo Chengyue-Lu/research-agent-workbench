@@ -9,7 +9,7 @@
 | 新建 Human Decision 对象复制 kernel Decision | 删除平行 Schema；复用 `object_type: decision` | 已收缩 |
 | 通过目录/文件名猜测 closure | M10-001～M3-009 CLI 要求显式 roots；M10-003 runner 只消费 source manifest exact path/hash 并按原相对路径 staging，不扫描目录 | 已锁定 |
 | candidate 被误当最终 State ontology 或科学接受 | 文档、STATUS 与 fixture 均标注 bounded/R2 pending | 保留边界 |
-| module PR 扩展后各层证据混淆 | M10-001 与后继 Task 保持独立 commit、契约、fixture 与专项测试；最终整链重审 | 进行中 |
+| module PR 扩展后各层证据混淆 | M10-001 与后继 Task 保持独立 commit、契约、fixture 与专项测试；最终整链重审 | implementation controlled by PR #44；Human semantic closeout separate |
 | 为 lineage 直接改写 legacy Attempt | 使用独立 `lineage_id@revision` sidecar，execution Attempt Schema/恢复/Receipt 不变 | 已锁定 |
 | sidecar 只按路径命中而未验证实际文件 | explicit closure 内唯一 type-bound path + loaded-byte SHA-256 + attempt_id 一致性 | 已锁定 |
 | Attempt 与 State revision 被强制一一演化 | 两个 Attempt 共享同一 State r1，State r2 独立演化的正面测试 | 已锁定 |

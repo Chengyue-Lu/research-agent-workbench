@@ -45,11 +45,14 @@ stale_if:
 
 Task 必须可在有限时间内完成。`goal` 不能写成“完成整个研究”或“确保论文正确”。
 
-`required_skills` 可以为空，也可以写唯一 active Skill ID 或精确 `skill-id@semver`。Resolver 写入
-Assignment 时固定实际版本和哈希；旧版本的回放规则见[兼容性说明](../compatibility/README.md)。
+`required_skills` 可以为空，也可以写唯一 active Skill ID 或精确 `skill-id@semver`。为空时 no-Skill、
+direct Tool、procedure 或 Adapter/Provider supply 路径不得为了满足旧字段而伪造 Assignment；只有
+Skill-bearing execution 才由 Resolver 在 Assignment 中固定实际版本和哈希。旧版本和 legacy surface 的
+回放边界见[兼容性说明](../compatibility/README.md)。
 
 Task Packet 表达 research intent、Atomic Work Unit、输入/输出约束、权限和预算；它不是最终冻结的
-Execution Contract。`atomic_boundary` 说明可安全切换的最小边界；`completion_checks` 是机器完成权；
+Execution Contract。`atomic_boundary` 说明可安全切换的最小边界；`completion_checks` 是 Task 声明的
+deterministic completion criteria，不是 Claim、Human Decision 或科学正确性 authority；
 `safe_pause_conditions` 说明何时允许持久化后停止。上下文不足只能进入 `safe-paused`，不能把未通过
 的检查包装成 `completed`。
 
@@ -58,33 +61,54 @@ Execution Contract。`atomic_boundary` 说明可安全切换的最小边界；`c
 ```text
 Task Packet = research intent + atomic boundary + input/output constraints + permissions/budget
 Method Resolution = provider-neutral methodology decision
+Capability Requirement = provider-neutral demand and ceilings
 Capability Supply Report = one implementation's reported capability and boundary facts, without selection authority
 Capability Resolution = Requirement-to-Report comparison under existing authority and ceilings
-Resolved Capability Snapshot = frozen exact Skill/Tool/Adapter/Provider/version/hash/permission binding
-Resolved Execution View = Task + Method Resolution + Resolved Capability Snapshot + execution limits
+Resolved Capability Snapshot = frozen Requirement/Resolution/selected-Supply facts and supply-side ceilings
+Runtime Bundle = exact Action/Capability-slice document closure for one Runtime consumer
+Resolved Execution View = Bundle + exact Profile/DataPolicy/HostPolicy/ExecutionBinding final narrowing
+Thin Execution Host = consume exact Bundle-bound View and report actual execution facts
 ```
 
 这些层次共用引用和派生关系，不建立互相竞争的 execution truth。
 
-## 3. Resolved Execution View
+## 3. Capability closure、Runtime Bundle 与 Resolved Execution View
 
-Capability Resolver 在执行前先比较零个或多个 Supply Report，再由 Snapshot 冻结：
+Capability Resolver 比较零个或多个显式 Supply Report。Report 不能选择自身；Resolution 只能在既有
+Requirement/Task ceilings 下得到 `satisfied`、`gap`、`ambiguous` 或 `blocked`，并且只有唯一合格候选才能
+形成 selected closure。Snapshot 随后冻结：
 
-- Agent Profile revision；
-- Skill Assignment ID 与 lock；
-- Runtime Adapter 和 capability snapshot；
-- exact Tool/Skill/Adapter/Provider implementation version/hash 与 conformance evidence refs；
-- effective permissions；
-- effective data-egress 与 side-effect boundary；
-- 实际输出路径；
-- 冲突/例外。
+- exact Task、Method Resolution、Capability Requirement 与 Capability Resolution refs；
+- selected Supply Report identity、version/hash 与 supply components；
+- supply-required permission、data-egress、side-effect boundaries；
+- typed conformance evidence refs 与 qualification。
 
-Supply Report 不能选择自身，Resolution 不能放宽 Requirement/Task ceiling，Snapshot 也不拥有 Method、
-Claim、Human Gate 或 fallback authority。Resolved Execution View 不修改原始 Task；它由
-`Task + Method Resolution + Resolved Capability Snapshot` 派生，不另建第二套权威研究意图。兼容期字段
-映射见[兼容性说明](../compatibility/README.md)。
+Snapshot 不冻结最终 Agent Profile、Provider/Adapter/Model/Runtime/Host binding、execution-time freshness 或
+最终 effective permissions。它不是 permission grant、Human Decision、Method decision、Claim effect 或
+fallback authority，也不能作为 actual execution fact。
+
+M11 Runtime Bundle 在 Snapshot 之后建立本次 Runtime 可以读取的 exact document closure，并把范围固定为
+一个 Action/Capability slice。它验证 Method 必须 `proceed`、完整 Task capability demand 与 Method Action
+requirements 一致，但 `task_completion` 固定为 `false`；一个 slice 闭合不能冒充整项 Task 完成。
+
+Resolved Execution View 消费已经验证的 Bundle 和 exact Profile、DataPolicy、Host policy、Execution
+Binding，冻结 Provider、Adapter、Model、Runtime、Host、三组 freshness windows、required outputs，以及
+permission/data-egress/side-effect/budget 的最严交集。View producer 不能重新选择 Supply，交集也不能低于
+selected Supply 的真实运行需求；无法满足时 fail closed 并请求上游形成新的 Resolution→Snapshot→View。
+View 是 Host 的 final frozen execution contract，但仍不创造 permission grant、Claim/Human authority 或
+Task completion。
+
+Thin Execution Host 只消费与同一 Bundle 绑定的 View，使用 trusted clock 和调用前 Bundle reload 重验
+freshness/TOCTOU，并通过一个 pre-bound Driver 最多执行一次。它只能报告 actual facts、bounded diagnostic
+或 re-resolution request，不能 select、rebind 或 fallback。Skill Assignment 只在 Skill-bearing extension
+或 legacy compatibility 中出现；当前 M11 Core 的 no-Skill/direct Tool 路径不创建 Assignment，M11-005/006
+仍为 `PARKED`。兼容期字段映射见[兼容性说明](../compatibility/README.md)。
 
 ## 4. Handoff Packet
+
+以下是现行 legacy Handoff Schema 的 Skill-bearing 示例。该 Schema 仍要求非空 `skill_lock`；它不能被
+用来证明 generic no-Skill Handoff migration 已完成。M11 no-Skill Core 使用独立 generic execution
+closeout，并不伪造 Skill Assignment。
 
 ```yaml
 schema_version: 0.1.0
@@ -92,9 +116,10 @@ task_id: EVID-001
 attempt_id: A-001
 status: completed
 input_lock:
-  - ref: sources/raw/paper-001.pdf
-    sha256: "..."
-skill_lock: []
+  - path: sources/raw/paper-001.pdf
+    sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+skill_lock: [literature-evidence-extraction@1.0.0]
+skill_assignment_ref: assignments/SA-EVID-001.yaml
 result:
   summary: Extracted four evidence records; one source conflicts with the proposed mechanism.
   facts:
@@ -151,11 +176,25 @@ Manifest/Audit 是 H2 工件，不再对所有普通 Handoff 默认要求。Task
 
 ## 6. Attempt 与 Task
 
-一次 Task 可以有多个 Attempt。重试必须使用新 `attempt_id`，记录触发原因、输入是否变化、Skill/模型/工具是否变化。禁止覆盖失败 Attempt。
+一次 Task 可以有多个 Attempt。重试必须使用新 `attempt_id`，记录触发原因、输入是否变化，以及
+Skill（若有）、模型、工具或其他 execution binding 是否变化。禁止覆盖失败 Attempt。
 
-Attempt 可以引用一份 `Execution Receipt`。Receipt 记录实际 Runtime、模型用量状态、协调/执行成本、Context Snapshot 和 trace 策略；Handoff 也回指同一 Receipt。验证器检查这三者的 Task、状态、时间和路径一致性，避免把另一次执行的成本或结果串入当前交接。
+这里存在两类需要明确区分的 Receipt surface：
 
-Receipt 的生命周期 `status: completed` 只表示一次执行已经结束，不等于 Task 合同已满足；这使负对照和失败实验仍能成为合法记录。只有显式声明 `completion_claim: contract-satisfied` 时，Receipt 才必须至少引用一个内核能够解释的机器验证工件。若确定性报告为 `fail`，或其 checker/subject 哈希已漂移，该声明被阻断；Receipt/LLM 文本不能覆盖机器证据。
+- legacy `execution_receipt` 仍要求 `skill_assignment_ref`，并保留显式
+  `completion_claim: contract-satisfied` 的兼容语义；它只能按现有 Schema 回放，不能代表 generic
+  no-Skill migration 已完成；
+- M11 `generic_execution_receipt` exact-pin action/capability slice、View、Host report、Trace、Artifact 和
+  Validation closed set，固定 `skill_assignment: absent`、`task_completion: false`，completed 时也只声明
+  `action-capability-slice-only`。
+
+generic closeout 对 completed、post-call failed 与 preflight-blocked 分开验证。completed 的 actual
+binding/Supply 必须等于 View；post-call failure 只有在 typed、hash-pinned Trace execution fact 能独立佐证
+Provider/Adapter/Model/Runtime/Host 和 actual Supply 时才具有 replay eligibility；preflight block 不得伪造
+actual binding。任何 Receipt status 都不构成 Claim promotion、Human acceptance 或科学正确性证明。
+
+legacy Attempt/Handoff/Receipt 仍带 mandatory Skill 字段，这是当前诚实保留的 compatibility gap；在另有
+implementation task 前，文档不得把它们描述为已经完成通用 no-Skill migration。
 
 重试政策：
 
@@ -175,7 +214,8 @@ Receipt 的生命周期 `status: completed` 只表示一次执行已经结束，
 
 ### Read Set 与工作留痕
 
-- Task、仓库 guidance、选定 Profile/Skill、显式输入和目标模块构成初始内容允许集；
+- Task、仓库 guidance、选定 Profile、相关 frozen control refs、显式输入和目标模块构成初始内容允许集；
+  只有 Skill-bearing path 才加入 exact Assignment/Skill 入口；
 - 允许用文件名、目录名、大小、版本和哈希定位依赖，但不默认读取其他正文；
 - 新正文必须由实名 Task owner 扩展允许集，并在 Task 工作目录记录 scope-decision 消息；
 - 每个 Agent 间实际可见的 Assignment、澄清、范围变化、进度、Handoff、review、确认、失败与取消都进入 `work/<TASK>/<ATTEMPT>/messages/`；
@@ -189,7 +229,8 @@ Receipt 的生命周期 `status: completed` 只表示一次执行已经结束，
 ## 8. 预警
 
 - `TASK-TOO-BROAD`：目标无法在预算内完成；
-- `TASK-SKILL-MISMATCH`：required capability 没有被 Skill 覆盖；
+- `TASK-SKILL-MISMATCH`：Task 明确要求 Skill 时，冻结的 Skill binding 未覆盖该要求；一般 Capability
+  Requirement 无可用供给时属于 capability gap，不得自动改写成 Skill Need；
 - `TASK-WRITE-OVERLAP`：并行写范围重叠；
 - `TASK-STALE-INPUT`：输入 hash/revision 变化；
 - `HANDOFF-MISSING-OUTPUT`：缺失必需工件；

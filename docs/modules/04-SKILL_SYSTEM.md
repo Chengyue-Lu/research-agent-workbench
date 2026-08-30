@@ -86,18 +86,19 @@ Tool/Skill/Adapter/Provider 各自形成 Capability Supply Report；Capability R
 
 ```text
 Research Control / Capability Resolver:
-  Capability Requirement → explicit Supply Reports → Resolution/selection → Snapshot → Execution View
+  Capability Requirement → explicit Supply Reports → Resolution/selection → Snapshot
+  → Runtime Bundle → Resolved Execution View
 
 Execution Host / Runtime consumer:
-  exact frozen Snapshot + Execution View → Execution → actual facts / Diagnostic / re-resolution request
+  exact Bundle-bound View → Execution → actual facts / Diagnostic / re-resolution request
 
 Maintainer: triage → Skill Need → Candidate → Evaluation → Human Admission
             → immutable Release → SkillReleaseProjection → Skill Supply Report
 ```
 
-Capability Resolver 是唯一 Supply selection owner。Execution Host 不得在冻结 Snapshot/View 内重新选择、
-rebind、静默替换或 automatic fallback；供给失效只产生 re-resolution request，由上游生成新的
-Resolution/Snapshot/View。
+Capability Resolver 是唯一 Supply selection owner。Execution Host 不得在冻结
+Resolution/Snapshot/Bundle/View 链内重新选择、rebind、静默替换或 automatic fallback；供给失效只产生
+re-resolution request，由上游生成新的 Resolution/Snapshot/Bundle/View。
 
 `Capability Gap != Skill Need`。Runtime gap 或 execution failure 不创建 Skill Need，最多产生默认本地、
 脱敏且需同意才能外送的 bounded Diagnostic；Need 只能由具名 Maintainer 独立 triage 后正式发布。完整
@@ -264,7 +265,7 @@ Skill 若要求超出上层边界的动作，Resolver 必须阻断或裁剪，�
 - Skill 不能扩大权限或 Claim ceiling；
 - Skill 更新不会静默改变历史任务解释；
 - Runtime 在 Evolution Registry 完全缺席时仍能闭合 no-Skill/direct-tool 执行路径；
-- Execution Host 不能在冻结 Snapshot/View 内重新选择、rebind 或 fallback；
+- Execution Host 不能在冻结 Resolution/Snapshot/Bundle/View 链内重新选择、rebind 或 fallback；
 - Runtime gap/failure 不会自动创建 Skill Need；
 - 未加载的 Skills 不占用子 Agent 正文上下文；
 - 相同 Task + Registry lock 得到相同候选集合；

@@ -12,7 +12,9 @@
 
 ### Task Context
 
-用于一个窄任务。由 Task Packet、Agent Profile、Skill Assignment 和必要输入组成；任务结束后关闭。
+用于一个窄任务。由 Task Packet、相关 frozen control inputs、选定 Agent Profile、声明输入，以及执行路径
+所需的 Runtime Bundle/View 组成；只有 Skill-bearing execution 才额外加载 exact Skill binding/Assignment。
+no-Skill、direct Tool、procedure 与 Adapter/Provider 路径不得为了构造上下文而伪造 Skill。任务结束后关闭。
 
 ### Artifact Context
 
@@ -44,6 +46,7 @@ remaining_context >= next_atomic_cost + closeout_cost + safety_margin
 ```yaml
 schema_version: 0.1.0
 checkpoint_id: MS-0018
+continuity_status: active
 project_protocol_ref: protocol.yaml@4
 current_questions: [Q-001@3]
 pinned_constraints:
@@ -64,6 +67,9 @@ next_actions:
   - ask human to accept model boundary
 artifact_index_refs:
   - indexes/current-claims.yaml
+machine_state_refs:
+  - path: tasks/SIM-007.yaml
+    sha256: "0000000000000000000000000000000000000000000000000000000000000000"
 rollover_reason: approaching soft context budget
 ```
 
@@ -103,7 +109,8 @@ rollover 步骤：
 - 已完成内容已写入正式或 attempt 工件；
 - 尚未完成项明确列出；
 - Facts、inferences、recommendations 已分离；
-- Skill Assignment 和版本仍可定位；
+- frozen capability/execution refs 仍可定位；若本路径实际使用 Skill，则 Assignment、Skill 版本和哈希也
+  必须可定位；
 - 关键中间参数、引用和负结果不只存在于对话；
 - Handoff 可通过结构验证。
 
@@ -127,7 +134,8 @@ rollover 步骤：
 
 按需拉取还必须满足任务级读取边界：
 
-1. 永久允许的控制输入只有当前 Task、`AGENTS.md`、选定 Profile、Skill Assignment 和本次 Skill 入口；
+1. 永久允许的控制输入只有当前 Task、`AGENTS.md`、选定 Profile 和本次相关的 exact frozen control
+   refs；执行路径按需加入 Runtime Bundle/View，只有 Skill-bearing path 才加入 Assignment 和 Skill 入口；
 2. `input_refs`、目标模块及获批扩展构成正文允许集；
 3. 允许先查看路径元数据，禁止默认递归读取全仓库文档、候选 Skills、历史 Handoffs 或其他 Agent 工作目录；
 4. 需要额外正文时先说明它将回答哪个未决问题，由实名 Task owner 扩展范围，并保存 scope-request/scope-decision 消息；
@@ -145,7 +153,7 @@ rollover 步骤：
 | CTX-STALE | 上下文引用旧 revision | BLOCK 合并，刷新输入 |
 | CTX-RECALL-LOOP | 主 Agent频繁回读原始材料 | 重建索引或改进 Handoff，而非扩大上下文 |
 | CTX-PINNED-GROWTH | Pinned 信息只增不减 | 人工/主 Agent清理已失效约束 |
-| CTX-SKILL-POLLUTION | 加载不相关 Skills | 重新解析最小 Skill Assignment |
+| CTX-SKILL-POLLUTION | 加载不相关 Skills | 卸载无关 Skill；仅在 capability resolution 选择合法 Skill supply 时保留最小 exact Assignment |
 | CTX-HIDDEN-STATE | 决定只存在于对话 | 创建 Decision 工件 |
 | CTX-RECOVERY-DRIFT | 新会话恢复后目标改变 | 对比 checkpoint 与下一动作，Human Gate |
 | CTX-READ-SCOPE-DRIFT | Agent 阅读未声明正文或将临时材料当正式输入 | BLOCK 合并，补录范围或重做 |
