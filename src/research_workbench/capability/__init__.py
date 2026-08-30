@@ -53,6 +53,14 @@ from research_workbench.capability.lifecycle import (
     SkillLifecycleRecord,
     SkillLifecycleSet,
 )
+from research_workbench.capability.release_projection import (
+    DEFAULT_SKILL_RELEASE_PROJECTION_INDEX,
+    SkillReleaseProjection,
+    SkillReleaseProjectionEntry,
+    SkillReleaseProjectionSet,
+    build_skill_release_projection,
+    projection_from_verified_release,
+)
 from research_workbench.capability.resolver import (
     ResolvedTask,
     ResolutionError,
@@ -101,6 +109,12 @@ __all__ = [
     "SkillLifecycleEntry",
     "SkillLifecycleRecord",
     "SkillLifecycleSet",
+    "DEFAULT_SKILL_RELEASE_PROJECTION_INDEX",
+    "SkillReleaseProjection",
+    "SkillReleaseProjectionEntry",
+    "SkillReleaseProjectionSet",
+    "build_skill_release_projection",
+    "projection_from_verified_release",
     "SkillRegistrySelectionError",
     "SkillLock",
     "SkillManifest",

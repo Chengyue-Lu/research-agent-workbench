@@ -70,12 +70,15 @@ class SkillManifest:
     source_content_hash: str
     source_locator: str | None = None
     source_package_hash: str | None = None
+    runtime_data_egress_ceiling: Mapping[str, Any] | None = None
+    runtime_side_effect_ceiling: Mapping[str, Any] | None = None
 
     @classmethod
     def from_mapping(cls, data: Mapping[str, Any]) -> "SkillManifest":
         verification = mapping_value(data, "verification", required=True)
         source = mapping_value(data, "source", required=True)
         context_cost = mapping_value(data, "context_cost", required=True)
+        runtime_boundaries = mapping_value(data, "runtime_boundaries")
         if any(not isinstance(key, str) or not isinstance(value, str) for key, value in context_cost.items()):
             raise ContractError("context_cost", "keys and values must be strings")
         return cls(
@@ -101,6 +104,16 @@ class SkillManifest:
             source_content_hash=require_string(source, "content_hash"),
             source_locator=optional_string(source, "locator"),
             source_package_hash=optional_string(source, "package_hash"),
+            runtime_data_egress_ceiling=(
+                dict(mapping_value(runtime_boundaries, "data_egress_ceiling", required=True))
+                if runtime_boundaries
+                else None
+            ),
+            runtime_side_effect_ceiling=(
+                dict(mapping_value(runtime_boundaries, "side_effect_ceiling", required=True))
+                if runtime_boundaries
+                else None
+            ),
         )
 
 

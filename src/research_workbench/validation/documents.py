@@ -43,6 +43,9 @@ from research_workbench.validation.document_kinds import infer_document_kind
 from research_workbench.validation.method_resolution_registry import validate_method_resolutions
 from research_workbench.validation.phase_b_gate import validate_phase_b_evolution_gates
 from research_workbench.validation.research_state_registry import validate_research_state_set
+from research_workbench.validation.skill_release_projection_registry import (
+    validate_skill_release_projections,
+)
 
 
 SHA256_RE = re.compile(r"^[0-9a-fA-F]{64}$")
@@ -109,6 +112,8 @@ SCHEMA_KINDS = {
     "skill_lifecycle_index",
     "skill_lifecycle_migration",
     "skill_lifecycle_record",
+    "skill_release_projection",
+    "skill_release_projection_index",
     "deterministic_check_report",
     "decision_authority_matrix",
     "authority_rule_eligibility",
@@ -1802,6 +1807,7 @@ def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     issues.extend(_validate_protocol_profile_set(documents))
     issues.extend(validate_method_resolutions(documents))
     issues.extend(_validate_skill_lifecycle_v2(documents))
+    issues.extend(validate_skill_release_projections(documents))
     issues.extend(validate_capability_supply_chain(documents))
     issues.extend(validate_phase_b_evolution_gates(documents))
     issues.extend(_validate_research_mode_migrations(documents))

@@ -84,6 +84,8 @@ class VersionedSchemaTests(unittest.TestCase):
                 "skill_lifecycle_index",
                 "skill_lifecycle_migration",
                 "skill_lifecycle_record",
+                "skill_release_projection",
+                "skill_release_projection_index",
                 "skill_need",
                 "skill_need_index",
                 "source_admission",

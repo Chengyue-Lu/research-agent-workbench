@@ -46,6 +46,8 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "skill_need"
     if "lifecycle_id" in document and "skill_ref" in document and "runtime_eligibility" in document:
         return "skill_lifecycle_record"
+    if "projection_id" in document and "release" in document and "runtime_contract" in document:
+        return "skill_release_projection"
     if "migration_id" in document and "source_registry_path" in document and "target_index_path" in document:
         return "skill_lifecycle_migration"
     if "profile_id" in document and "method_standard" in document and "method_obligations" in document:

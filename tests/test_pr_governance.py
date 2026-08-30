@@ -688,6 +688,7 @@ class PolicyAndCodeownersTests(unittest.TestCase):
                 "protocol-profile": ("profile_id", "version"),
                 "skill-lifecycle-record": ("lifecycle_id", "lifecycle_version"),
                 "skill-lifecycle-migration": ("migration_id", "migration_version"),
+                "skill-release-projection": ("projection_id", "projection_version"),
             },
             declarations,
         )
@@ -817,6 +818,11 @@ class PublishedDocumentIdentityTests(unittest.TestCase):
             "skill-lifecycle-migration",
             "migration_id: accepted-v1-to-lifecycle-v2\nmigration_version: 1.0.0\nsummary: original\n",
             "migration_id: accepted-v1-to-lifecycle-v2\nmigration_version: 1.1.0\nsummary: appended\n",
+        ),
+        "registry/skills/release-projections/synthetic-skill-1.0.0.yaml": (
+            "skill-release-projection",
+            "projection_id: synthetic-skill-1.0.0\nprojection_version: 1.0.0\nsummary: original\n",
+            "projection_id: synthetic-skill-1.0.0\nprojection_version: 1.1.0\nsummary: appended\n",
         ),
     }
 
