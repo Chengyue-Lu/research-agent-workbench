@@ -67,7 +67,7 @@ R2 reviewer 校核逐行/逐 branch 缺口与 slowest evidence；artifact 是审
 | Method / Authority / Capability / Phase B document closure | `validation/method_resolution_registry.py`, `authority_registry.py`, `capability_supply_registry.py`, `phase_b_gate.py` |
 | Capability Requirement registry closure | `validation/capability_registry.py`, `validation/document_core.py` |
 | Research State / Attempt / Failure / Method Trace / Phase C Gate | `kernel/objects.py`, `research_state/closure.py`, `fresh_actor.py`, `gate.py`, `validation/research_state_registry.py`；document-kind dispatch 同受 critical Gate |
-| Source Admission 边界 | 当前尚无独立 accepted Source Admission producer；先由 artifact integrity + provenance relationship fail-closed surface 承担，未来新增 producer 必须 append 到 policy |
+| Source Admission producer / raw-reference gate | `artifacts/admission.py`；accepted M4-001 producer 与 ordinary raw-reference sidecar/hash closure 均受独立 95/90 critical Gate 和正反 evidence 约束 |
 
 Coverage percentage 只说明路径被执行。每个可能改变 allow/block/authority/permission/hash/binding/Receipt
 closure 的 critical surface 仍必须有显式正反验收；R2/DONE 不能只引用百分比。

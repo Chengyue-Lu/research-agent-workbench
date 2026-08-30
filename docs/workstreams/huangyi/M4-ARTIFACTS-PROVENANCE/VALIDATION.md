@@ -1,6 +1,7 @@
 # M4-001 验证证据
 
-状态：PR #39 第二轮 review 整改后；latest-base `develop@aa4e7eed`。
+状态：PR #39 基于 PR #44 / TEST-QUALITY-001 后的 latest `develop` 完成语义 rebase；hosted
+exact-HEAD 证据在推送后回填。
 
 ## Task 级证据
 
@@ -18,8 +19,8 @@
 
 | 项 | 命令 | 结果 |
 |---|---|---|
-| M4-001 专项 | `PYTHONPATH=src python -m unittest discover -s tests -p test_artifacts_admission.py` | 20 passed |
+| M4-001 专项 | `PYTHONPATH=src python -m unittest discover -s tests -p test_artifacts_admission.py` | 26 passed（含 raw-reference 与 producer critical 分支） |
 | Schema 目录 | `PYTHONPATH=src python -m unittest discover -s tests -p test_schemas.py` | 3 passed |
-| 全量 coverage 回归（独立 `[test]` 环境） | `python -m coverage run -m unittest discover -s tests` | 495 passed |
-| Coverage Gates | `python -m coverage report --fail-under=80` + Trace exact file check | total=83%；Trace=92.87% |
-| 仓库校验 | `PYTHONPATH=src python -m research_workbench validate examples registry --root .` | validated=155, errors=0, warnings=0 |
+| Coverage Policy | `artifacts/admission.py` 纳入 critical inventory；valid exact-sidecar 与五类 fail-closed 用例作为独立正反 evidence | 待 exact-HEAD hosted run |
+| 双 Python full suite / coverage-quality | 仓库 authoritative CI topology | 待 exact-HEAD hosted run |
+| 仓库校验 / package-smoke / governance | 仓库 authoritative CI topology | 待 exact-HEAD hosted run |

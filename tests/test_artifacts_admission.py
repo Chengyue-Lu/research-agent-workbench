@@ -11,6 +11,7 @@ import yaml
 from research_workbench.cli import _document_reference_risks
 from research_workbench.artifacts.admission import (
     build_admission_mapping,
+    check_raw_reference_admission,
     check_source_admission,
     path_cites_inbox,
     path_cites_raw,
@@ -181,6 +182,25 @@ class RawReferenceAdmissionGateTest(unittest.TestCase):
             )
         )
 
+    def test_non_raw_reference_does_not_require_a_sidecar(self) -> None:
+        self.assertEqual(
+            check_raw_reference_admission(self.root, "artifacts/derived/log.csv"),
+            [],
+        )
+
+    def test_malformed_and_non_object_sidecars_block(self) -> None:
+        for content, expected in (("[unterminated", "cannot be parsed"), ("- one\n- two\n", "not an object")):
+            with self.subTest(expected=expected):
+                self.sidecar.write_text(content, encoding="utf-8")
+                risks = check_raw_reference_admission(self.root, "sources/raw/log.csv")
+                self.assertTrue(
+                    any(
+                        risk.code == "ARTIFACT-MISSING-PROVENANCE"
+                        and expected in risk.message
+                        for risk in risks
+                    )
+                )
+
     def test_schema_invalid_sidecar_blocks(self) -> None:
         invalid = _admission()
         del invalid["acquisition"]["operator"]
@@ -255,6 +275,24 @@ class CheckAdmissionTest(unittest.TestCase):
             any(r.code == "ARTIFACT-HASH-MISMATCH" and r.level == RiskLevel.BLOCK for r in risks)
         )
 
+    def test_missing_admitted_file_blocks(self) -> None:
+        (self.root / "sources" / "raw" / "log.csv").unlink()
+        risks = self._risks(_admission())
+        self.assertTrue(any(r.code == "REF-MISSING" for r in risks))
+
+    def test_non_raw_and_nested_inbox_admitted_paths_block(self) -> None:
+        non_raw = _admission()
+        non_raw["admitted_path"] = "artifacts/log.csv"
+        nested_inbox = _admission()
+        nested_inbox["admitted_path"] = "sources/raw/sources/inbox/log.csv"
+
+        self.assertTrue(
+            any(r.code == "ARTIFACT-MISSING-PROVENANCE" for r in self._risks(non_raw))
+        )
+        self.assertTrue(
+            any(r.code == "ARTIFACT-INBOX-CITED" for r in self._risks(nested_inbox))
+        )
+
     def test_missing_origin_blocks(self) -> None:
         data = _admission()
         data["acquisition"]["origin"] = {}
@@ -266,6 +304,11 @@ class CheckAdmissionTest(unittest.TestCase):
     def test_unparseable_timestamp_blocks(self) -> None:
         data = _admission()
         data["acquisition"]["acquired_at"] = "yesterday"
+        self.assertTrue(any(r.code == "ARTIFACT-MISSING-PROVENANCE" for r in self._risks(data)))
+
+    def test_naive_timestamp_blocks(self) -> None:
+        data = _admission()
+        data["acquisition"]["acquired_at"] = "2026-08-25T10:00:00"
         self.assertTrue(any(r.code == "ARTIFACT-MISSING-PROVENANCE" for r in self._risks(data)))
 
     def test_derivative_hash_mismatch_blocks(self) -> None:
@@ -281,6 +324,19 @@ class CheckAdmissionTest(unittest.TestCase):
             }
         ]
         self.assertTrue(any(r.code == "ARTIFACT-HASH-MISMATCH" for r in self._risks(data)))
+
+    def test_missing_and_inbox_derivatives_block(self) -> None:
+        data = _admission()
+        data["derivatives"] = [
+            {
+                "path": "sources/inbox/missing.txt",
+                "sha256": hash_bytes(b"missing"),
+                "relation": "unadmitted-excerpt",
+            }
+        ]
+        risks = self._risks(data)
+        self.assertTrue(any(r.code == "ARTIFACT-INBOX-CITED" for r in risks))
+        self.assertTrue(any(r.code == "REF-MISSING" for r in risks))
 
     def test_sidecar_roundtrip(self) -> None:
         sidecar = self.root / "sources" / "raw" / "log.csv.admission.yaml"
