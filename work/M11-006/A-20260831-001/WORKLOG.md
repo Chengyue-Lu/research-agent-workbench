@@ -17,5 +17,7 @@
   symlink skip after the single fixture correction.
 - Repository validation, Schema catalog, Governance 67/67 and Coverage Policy self-tests
   21/21 PASS. Full local behavioral suite: 781 tests in 634.437 seconds, PASS with four
-  environment-specific skips. Hosted Python 3.11/3.13, instrumented 90/95/90 coverage and
-  clean-wheel package smoke remain merge-boundary evidence.
+  environment-specific skips. Hosted run `33333387290` passed Python 3.11/3.13,
+  package-smoke and governance, but Coverage Policy blocked insufficient branches in the
+  newly critical projection modules. Projection/Supply focused remediation is 14/14 PASS;
+  the new exact-head 90/95/90 result remains merge-boundary evidence.

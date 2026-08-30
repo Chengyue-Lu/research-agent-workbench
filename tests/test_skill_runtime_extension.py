@@ -374,6 +374,12 @@ class SkillRuntimeExtensionTests(SkillRuntimeBundleFixture, unittest.TestCase):
             ),
             (
                 lambda _projected, report: report["required_permissions"].update(
+                    {"filesystem": "invalid"}
+                ),
+                "SKILL-PROJECTION-SUPPLY-PERMISSION-EXCEEDED",
+            ),
+            (
+                lambda _projected, report: report["required_permissions"].update(
                     {"filesystem": "workspace-write"}
                 ),
                 "SKILL-PROJECTION-SUPPLY-PERMISSION-EXCEEDED",
@@ -397,6 +403,12 @@ class SkillRuntimeExtensionTests(SkillRuntimeBundleFixture, unittest.TestCase):
                 "SKILL-PROJECTION-SUPPLY-EGRESS-EXCEEDED",
             ),
             (
+                lambda _projected, report: report.__setitem__(
+                    "data_egress_behavior", []
+                ),
+                "SKILL-PROJECTION-SUPPLY-EGRESS-EXCEEDED",
+            ),
+            (
                 lambda _projected, report: report.__setitem__("side_effects", []),
                 "SKILL-PROJECTION-SUPPLY-EFFECT-EXCEEDED",
             ),
@@ -406,6 +418,13 @@ class SkillRuntimeExtensionTests(SkillRuntimeBundleFixture, unittest.TestCase):
                         "policy": "allowlisted-only",
                         "allowed_effects": ["external-write"],
                     }
+                ),
+                "SKILL-PROJECTION-SUPPLY-EFFECT-EXCEEDED",
+            ),
+            (
+                lambda _projected, report: report.__setitem__(
+                    "side_effects",
+                    {"policy": "none", "allowed_effects": [["invalid"]]},
                 ),
                 "SKILL-PROJECTION-SUPPLY-EFFECT-EXCEEDED",
             ),
@@ -424,6 +443,31 @@ class SkillRuntimeExtensionTests(SkillRuntimeBundleFixture, unittest.TestCase):
                         )
                     },
                 )
+
+        narrowed_projection = copy.deepcopy(projection)
+        narrowed_supply = copy.deepcopy(supply)
+        narrowed_projection["runtime_contract"]["data_egress_ceiling"] = {
+            "policy": "allowlisted-only",
+            "allowed_payloads": ["checked-documents"],
+            "forbidden_payloads": ["source-content"],
+        }
+        narrowed_projection["runtime_contract"]["side_effect_ceiling"] = {
+            "policy": "none",
+            "allowed_effects": [],
+        }
+        narrowed_supply["data_egress_behavior"] = {
+            "policy": "forbidden",
+            "allowed_payloads": [],
+            "forbidden_payloads": ["source-content"],
+        }
+        narrowed_supply["side_effects"] = {
+            "policy": "none",
+            "allowed_effects": [],
+        }
+        self.assertEqual(
+            (),
+            projection_supply_fact_issues(narrowed_projection, narrowed_supply),
+        )
 
     def test_runtime_and_host_keep_no_skill_specific_dispatch_seam(self) -> None:
         from research_workbench.execution import execution_view, host, runtime_bundle

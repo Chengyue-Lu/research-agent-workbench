@@ -87,7 +87,8 @@ task-specific evidence，但不改写 Task identity、dependency 或 acceptance�
 - synthetic verified Release 可确定性发布；legacy、缺 evidence/decision/runtime boundaries、index/hash/
   provenance/fact drift 均 fail closed；
 - 首轮 focused：projection 5/5、Lifecycle 7/7、catalog 6/6、Schema 3/3、Governance 67/67 PASS；repository
-  validation exit 0。
+  validation exit 0；首个 hosted coverage artifact 暴露新 producer/validator 分支不足后，projection suite
+  已扩展为 8/8，并加入 index/publisher/registry adversarial matrix。
 
 ### M11-006 slice — working tree
 
@@ -103,4 +104,6 @@ task-specific evidence，但不改写 Task identity、dependency 或 acceptance�
 - focused：Skill extension 6/6、Capability Resolution 18/18、Runtime Bundle 12/12、Execution View 9/9、
   Schema 3/3 PASS；Governance 67/67、Coverage Policy self-tests 21/21 与 repository validation PASS；
 - 本地 authoritative full behavioral suite：781 tests / 634.437s，PASS（4 个环境特定 skip）；
-- Python 3.11/3.13、instrumented global/critical coverage 与 clean-wheel package smoke 等待 exact-head hosted CI。
+- 首个 hosted run `33333387290`：Python 3.11/3.13 behavioral、package-smoke、governance PASS，global line
+  90.91%；Coverage Policy 正确阻断三个新 critical module 的逐文件不足。补测后 projection + Skill Runtime
+  extension 14/14 focused PASS；新的 exact-head hosted 90/95/90 结果仍是 merge-boundary evidence。

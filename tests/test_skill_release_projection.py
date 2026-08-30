@@ -2,15 +2,28 @@ import copy
 import json
 import tempfile
 import unittest
+from dataclasses import replace
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 from research_workbench.artifacts.integrity import hash_directory, hash_file
 from research_workbench.capability import (
     SkillReleaseProjectionSet,
     build_skill_release_projection,
 )
+from research_workbench.capability import release_projection as release_projection_module
+from research_workbench.capability.catalog import AcceptedSkillRegistry
+from research_workbench.capability.lifecycle import SkillLifecycleSet
+from research_workbench.capability.release_projection import (
+    projection_from_verified_release,
+)
+from research_workbench.contracts.common import ContractError
 from research_workbench.io import iter_documents, load_document
 from research_workbench.validation import SchemaCatalog, validate_documents
+from research_workbench.validation.skill_release_projection_registry import (
+    validate_skill_release_projections,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -362,6 +375,423 @@ class SkillReleaseProjectionTests(unittest.TestCase):
             injected = copy.deepcopy(documents[projection_path])
             injected["trial_results"] = {"score": 1}
             self.assertTrue(self.catalog.validate("skill_release_projection", injected))
+
+    def test_projection_set_rejects_malformed_or_ambiguous_publication(self) -> None:
+        def duplicate_entry(index: dict, **changes: object) -> None:
+            added = copy.deepcopy(index["entries"][0])
+            added.update(changes)
+            index["entries"].append(added)
+
+        def non_object_projection(root: Path, index: dict) -> None:
+            projection_path = (
+                root
+                / "registry/skills/release-projections/synthetic-skill-1.0.0.yaml"
+            )
+            _write_json(projection_path, [])
+            index["entries"][0]["content_hash"] = f"sha256:{hash_file(projection_path)}"
+
+        cases = (
+            (
+                "not an object",
+                lambda _root, index: index.update({"entries": [None]}),
+            ),
+            (
+                "expected a SHA-256 digest",
+                lambda _root, index: index["entries"][0].update(
+                    {"content_hash": "sha256:short"}
+                ),
+            ),
+            (
+                "expected a SHA-256 digest",
+                lambda _root, index: index["entries"][0].update(
+                    {"content_hash": "sha256:" + "z" * 64}
+                ),
+            ),
+            (
+                "duplicate Skill Release Projection identity",
+                lambda _root, index: duplicate_entry(index),
+            ),
+            (
+                "duplicate Skill Release Projection path",
+                lambda _root, index: duplicate_entry(
+                    index,
+                    projection_ref="other@1.0.0",
+                    projection_id="other",
+                    release_ref="other-skill@1.0.0",
+                ),
+            ),
+            (
+                "multiple current projections",
+                lambda _root, index: duplicate_entry(
+                    index,
+                    projection_ref="other@1.0.0",
+                    projection_id="other",
+                    document_path="registry/skills/release-projections/other.yaml",
+                ),
+            ),
+            (
+                "missing or escapes root",
+                lambda _root, index: index["entries"][0].update(
+                    {"document_path": "../outside.yaml"}
+                ),
+            ),
+            (
+                "content drift",
+                lambda _root, index: index["entries"][0].update(
+                    {"content_hash": "sha256:" + "0" * 64}
+                ),
+            ),
+            ("is not an object", non_object_projection),
+            (
+                "identity mismatch",
+                lambda _root, index: index["entries"][0].update(
+                    {
+                        "projection_ref": "substituted@1.0.0",
+                        "projection_id": "substituted",
+                    }
+                ),
+            ),
+        )
+        for expected, mutate in cases:
+            with self.subTest(expected=expected), tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                _publish_synthetic(root)
+                index_path = root / "registry/skills/release-projections.json"
+                index = load_document(index_path)
+                mutate(root, index)
+                _write_json(index_path, index)
+                with self.assertRaisesRegex(ValueError, expected):
+                    SkillReleaseProjectionSet.load(project_root=root)
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            _publish_synthetic(root)
+            index_path = root / "registry/skills/release-projections.json"
+            absolute = SkillReleaseProjectionSet.load(index_path, project_root=root)
+            reference = "synthetic-skill-1.0.0@1.0.0"
+            self.assertEqual(reference, absolute.require(reference)[0].reference)
+            with self.assertRaisesRegex(ValueError, "selected more than once"):
+                absolute.require((reference, reference))
+            with self.assertRaisesRegex(ValueError, "is not indexed"):
+                absolute.require(("missing@1.0.0",))
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            _publish_synthetic(root)
+            index_path = root / "registry/skills/release-projections.json"
+            for invalid in (
+                [],
+                {"registry_kind": "not-a-projection-index", "entries": []},
+                {"registry_kind": "skill_release_projection_index", "entries": {}},
+            ):
+                with self.subTest(invalid=invalid):
+                    _write_json(index_path, invalid)
+                    with self.assertRaises(ValueError):
+                        SkillReleaseProjectionSet.load(project_root=root)
+
+    def test_publisher_defensive_guards_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            lifecycle_ref, evidence_refs, decision_ref = _synthetic_project(root)
+            common = {
+                "projection_version": "1.0.0",
+                "evidence_resolver": lambda reference: reference in evidence_refs,
+                "decision_resolver": lambda reference: reference == decision_ref,
+                "project_root": root,
+            }
+            with self.assertRaisesRegex(ValueError, "Lifecycle is not indexed"):
+                build_skill_release_projection("missing/lifecycle@1.0.0", **common)
+
+            accepted_path = root / "registry/skills/accepted.json"
+            accepted_document = load_document(accepted_path)
+            accepted_document["entries"][0]["lifecycle"] = "deprecated"
+            _write_json(accepted_path, accepted_document)
+            with self.assertRaisesRegex(ValueError, "active accepted"):
+                build_skill_release_projection(lifecycle_ref, **common)
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            lifecycle_ref, evidence_refs, decision_ref = _synthetic_project(root)
+            lifecycle_path = (
+                root / "registry/skills/lifecycle/synthetic-skill-1.0.0.yaml"
+            )
+            lifecycle_document = load_document(lifecycle_path)
+            lifecycle_document["skill_ref"]["content_hash"] = "sha256:" + "0" * 64
+            _write_json(lifecycle_path, lifecycle_document)
+            lifecycle_index_path = root / "registry/skills/lifecycle-v2.json"
+            lifecycle_index = load_document(lifecycle_index_path)
+            lifecycle_index["entries"][0]["content_hash"] = (
+                f"sha256:{hash_file(lifecycle_path)}"
+            )
+            _write_json(lifecycle_index_path, lifecycle_index)
+            with self.assertRaisesRegex(ValueError, "identity/hash disagree"):
+                build_skill_release_projection(
+                    lifecycle_ref,
+                    projection_version="1.0.0",
+                    evidence_resolver=lambda reference: reference in evidence_refs,
+                    decision_resolver=lambda reference: reference == decision_ref,
+                    project_root=root,
+                )
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            lifecycle_ref, evidence_refs, decision_ref = _synthetic_project(root)
+            lifecycle_entry = SkillLifecycleSet.load(project_root=root).entries[0]
+            accepted_entry = AcceptedSkillRegistry.load(project_root=root).entries[0]
+            no_decision = replace(
+                lifecycle_entry,
+                record=replace(
+                    lifecycle_entry.record,
+                    admission=replace(
+                        lifecycle_entry.record.admission,
+                        decision_ref=None,
+                    ),
+                ),
+            )
+            with self.assertRaisesRegex(ValueError, "no Human admission decision"):
+                projection_from_verified_release(
+                    lifecycle_entry=no_decision,
+                    manifest=accepted_entry.manifest,
+                    manifest_sha256="a" * 64,
+                    projection_version="1.0.0",
+                )
+
+            def call_with_paths(
+                manifest_path: str,
+                *,
+                manifest_document: object | None,
+            ) -> None:
+                changed_record = replace(
+                    lifecycle_entry.record,
+                    skill_ref=replace(
+                        lifecycle_entry.record.skill_ref,
+                        manifest_path=manifest_path,
+                    ),
+                )
+                changed_lifecycle = replace(lifecycle_entry, record=changed_record)
+                changed_release = replace(accepted_entry, manifest_path=manifest_path)
+                if manifest_document is not None:
+                    _write_json(root / manifest_path, manifest_document)
+                with (
+                    patch.object(
+                        release_projection_module.AcceptedSkillRegistry,
+                        "load",
+                        return_value=SimpleNamespace(entries=(changed_release,)),
+                    ),
+                    patch.object(
+                        release_projection_module.SkillLifecycleSet,
+                        "load",
+                        return_value=SimpleNamespace(entries=(changed_lifecycle,)),
+                    ),
+                ):
+                    build_skill_release_projection(
+                        lifecycle_ref,
+                        projection_version="1.0.0",
+                        evidence_resolver=lambda reference: reference in evidence_refs,
+                        decision_resolver=lambda reference: reference == decision_ref,
+                        project_root=root,
+                    )
+
+            with self.assertRaisesRegex(ValueError, "manifest is missing"):
+                call_with_paths("registry/skills/accepted/missing.yaml", manifest_document=None)
+            with self.assertRaisesRegex(ContractError, "must be an object"):
+                call_with_paths("registry/skills/accepted/not-object.yaml", manifest_document=[])
+            mismatched_manifest = load_document(
+                root / "registry/skills/accepted/synthetic-skill.yaml"
+            )
+            mismatched_manifest["skill_id"] = "substituted-skill"
+            with self.assertRaisesRegex(ValueError, "manifest identity disagrees"):
+                call_with_paths(
+                    "registry/skills/accepted/substituted.yaml",
+                    manifest_document=mismatched_manifest,
+                )
+
+    def test_projection_registry_adversarial_surface_is_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            _publish_synthetic(root)
+            documents = {
+                path: load_document(path)
+                for path in iter_documents([root / "registry"])
+            }
+            index_path = root / "registry/skills/release-projections.json"
+            projection_path = (
+                root
+                / "registry/skills/release-projections/synthetic-skill-1.0.0.yaml"
+            )
+            accepted_path = root / "registry/skills/accepted.json"
+            lifecycle_index_path = root / "registry/skills/lifecycle-v2.json"
+            lifecycle_path = (
+                root / "registry/skills/lifecycle/synthetic-skill-1.0.0.yaml"
+            )
+            manifest_path = root / "registry/skills/accepted/synthetic-skill.yaml"
+
+            self.assertEqual([], validate_skill_release_projections({}))
+
+            noise = copy.deepcopy(documents)
+            noise[accepted_path]["entries"].insert(0, [])
+            invalid_lifecycle_path = root / "registry/skills/lifecycle/invalid.yaml"
+            noise[invalid_lifecycle_path] = {"lifecycle_id": "invalid"}
+            noise[lifecycle_index_path]["entries"] = [
+                [],
+                {
+                    "lifecycle_ref": 1,
+                    "document_path": 2,
+                    "content_hash": 3,
+                },
+                {
+                    "lifecycle_ref": "missing/lifecycle@1.0.0",
+                    "lifecycle_id": "missing",
+                    "lifecycle_version": "1.0.0",
+                    "document_path": "registry/skills/lifecycle/missing.yaml",
+                    "content_hash": "sha256:" + "0" * 64,
+                },
+                {
+                    "lifecycle_ref": "invalid/lifecycle@1.0.0",
+                    "lifecycle_id": "invalid",
+                    "lifecycle_version": "1.0.0",
+                    "document_path": "registry/skills/lifecycle/invalid.yaml",
+                    "content_hash": "sha256:" + "0" * 64,
+                },
+                *noise[lifecycle_index_path]["entries"],
+            ]
+            noise[index_path]["entries"] = [
+                [],
+                {
+                    "projection_ref": 1,
+                    "projection_id": 2,
+                    "projection_version": 3,
+                    "release_ref": 4,
+                    "document_path": 5,
+                },
+                *noise[index_path]["entries"],
+            ]
+            self.assertEqual([], validate_skill_release_projections(noise))
+
+            def assert_issue(expected: str, mutate) -> None:
+                changed = copy.deepcopy(documents)
+                mutate(changed)
+                self.assertIn(
+                    expected,
+                    {issue.code for issue in validate_skill_release_projections(changed)},
+                )
+
+            assert_issue(
+                "SKILL-RELEASE-PROJECTION-INDEX-MISSING",
+                lambda values: values.pop(index_path),
+            )
+            assert_issue(
+                "SKILL-RELEASE-PROJECTION-INDEX-DUPLICATE",
+                lambda values: values.__setitem__(
+                    root / "registry/skills/release-projections-copy.json",
+                    copy.deepcopy(values[index_path]),
+                ),
+            )
+
+            def add_index_entry(values: dict, **changes: object) -> None:
+                entry = copy.deepcopy(values[index_path]["entries"][0])
+                entry.update(changes)
+                values[index_path]["entries"].append(entry)
+
+            assert_issue(
+                "SKILL-RELEASE-PROJECTION-IDENTITY-DUPLICATE",
+                lambda values: add_index_entry(values),
+            )
+            assert_issue(
+                "SKILL-RELEASE-PROJECTION-PATH-DUPLICATE",
+                lambda values: add_index_entry(
+                    values,
+                    projection_ref="other@1.0.0",
+                    projection_id="other",
+                    release_ref="other@1.0.0",
+                ),
+            )
+            assert_issue(
+                "SKILL-RELEASE-PROJECTION-RELEASE-DUPLICATE",
+                lambda values: add_index_entry(
+                    values,
+                    projection_ref="other@1.0.0",
+                    projection_id="other",
+                    document_path="registry/skills/release-projections/other.yaml",
+                ),
+            )
+            assert_issue(
+                "SKILL-RELEASE-PROJECTION-DOCUMENT-MISSING",
+                lambda values: values[index_path]["entries"][0].update(
+                    {"document_path": "registry/skills/release-projections/missing.yaml"}
+                ),
+            )
+            assert_issue(
+                "SKILL-RELEASE-PROJECTION-DOCUMENT-KIND",
+                lambda values: values[index_path]["entries"][0].update(
+                    {"document_path": "registry/skills/accepted/synthetic-skill.yaml"}
+                ),
+            )
+            assert_issue(
+                "SKILL-RELEASE-PROJECTION-CONTRACT",
+                lambda values: values[projection_path].pop("projection_version"),
+            )
+            assert_issue(
+                "SKILL-RELEASE-PROJECTION-IDENTITY-MISMATCH",
+                lambda values: values[index_path]["entries"][0].update(
+                    {"release_ref": "substituted@1.0.0"}
+                ),
+            )
+            assert_issue(
+                "SKILL-RELEASE-PROJECTION-UNINDEXED",
+                lambda values: values[index_path].update({"entries": []}),
+            )
+
+            def relocate_projection(values: dict) -> None:
+                relocated = root / "archive/synthetic-projection.yaml"
+                values[relocated] = copy.deepcopy(values[projection_path])
+                values[index_path]["entries"][0]["document_path"] = (
+                    "archive/synthetic-projection.yaml"
+                )
+
+            assert_issue("SKILL-RELEASE-PROJECTION-PATH-MISMATCH", relocate_projection)
+            assert_issue(
+                "SKILL-RELEASE-PROJECTION-RELEASE-INELIGIBLE",
+                lambda values: values[accepted_path]["entries"][0].update(
+                    {"lifecycle": "deprecated"}
+                ),
+            )
+            assert_issue(
+                "SKILL-RELEASE-PROJECTION-LIFECYCLE-MISSING",
+                lambda values: values[projection_path]["admission_provenance"].update(
+                    {"lifecycle_ref": "missing/lifecycle@1.0.0"}
+                ),
+            )
+            assert_issue(
+                "SKILL-RELEASE-PROJECTION-LIFECYCLE-INELIGIBLE",
+                lambda values: values[lifecycle_path]["runtime_eligibility"].update(
+                    {"state": "ineligible"}
+                ),
+            )
+            assert_issue(
+                "SKILL-RELEASE-PROJECTION-RELEASE-DRIFT",
+                lambda values: values[projection_path]["release"].update(
+                    {"skill_id": "substituted-skill"}
+                ),
+            )
+
+            def remove_manifest(values: dict) -> None:
+                missing = "registry/skills/accepted/missing.yaml"
+                values[projection_path]["release"]["manifest_path"] = missing
+                values[accepted_path]["entries"][0]["manifest_path"] = missing
+
+            assert_issue("SKILL-RELEASE-PROJECTION-MANIFEST-MISSING", remove_manifest)
+            assert_issue(
+                "SKILL-RELEASE-PROJECTION-DERIVATION-BLOCKED",
+                lambda values: values.__setitem__(
+                    manifest_path,
+                    {"skill_id": "synthetic-skill"},
+                ),
+            )
+            assert_issue(
+                "SKILL-RELEASE-PROJECTION-CONTRACT",
+                lambda values: values[projection_path].update({"release": []}),
+            )
 
 
 if __name__ == "__main__":
