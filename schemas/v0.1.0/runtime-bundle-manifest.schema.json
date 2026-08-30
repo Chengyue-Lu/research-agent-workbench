@@ -77,7 +77,22 @@
     "skill_extension": {
       "type": "object",
       "required": ["enabled"],
-      "properties": { "enabled": { "const": false } },
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "projection": {
+          "allOf": [
+            { "$ref": "#/$defs/documentRef" },
+            { "properties": { "kind": { "const": "skill_release_projection" } } }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "enabled": { "const": true } }, "required": ["enabled"] },
+          "then": { "required": ["projection"] },
+          "else": { "not": { "required": ["projection"] } }
+        }
+      ],
       "additionalProperties": false
     },
     "boundaries": {
@@ -106,7 +121,8 @@
             "capability_conformance_evidence",
             "capability_supply_report",
             "capability_resolution",
-            "resolved_capability_snapshot"
+            "resolved_capability_snapshot",
+            "skill_release_projection"
           ]
         },
         "path": { "$ref": "common.schema.json#/$defs/relativePath" },
@@ -132,7 +148,8 @@
             "resolution-method",
             "resolution-requirement",
             "resolution-candidate-supply",
-            "supply-conformance"
+            "supply-conformance",
+            "supply-projection"
           ]
         }
       },

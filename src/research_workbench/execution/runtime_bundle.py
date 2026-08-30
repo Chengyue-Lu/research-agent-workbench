@@ -13,6 +13,11 @@ from types import MappingProxyType
 from typing import Any, Iterable, Mapping
 
 from research_workbench.artifacts.integrity import hash_bytes, resolve_within_root
+from research_workbench.capability.projection_supply import (
+    projection_is_runtime_eligible,
+    projection_reference,
+    projection_supply_fact_issues,
+)
 from research_workbench.io import load_document_bytes
 from research_workbench.validation.schemas import SchemaCatalog
 
@@ -26,6 +31,7 @@ ALLOWED_KINDS = frozenset(
         "capability_supply_report",
         "capability_resolution",
         "resolved_capability_snapshot",
+        "skill_release_projection",
     }
 )
 
@@ -132,6 +138,21 @@ def _derived_edges(
                         (value, "resolution-candidate-supply", "document_path", "content_hash")
                     )
         elif kind == "capability_supply_report":
+            identity = document.get("supply_identity")
+            projection_ref = (
+                identity.get("skill_release_projection_ref")
+                if isinstance(identity, Mapping)
+                else None
+            )
+            if projection_ref is not None:
+                refs.append(
+                    (
+                        projection_ref,
+                        "supply-projection",
+                        "document_path",
+                        "content_hash",
+                    )
+                )
             for evidence in document.get("conformance_evidence", ()):
                 if isinstance(evidence, Mapping):
                     refs.append((evidence.get("artifact_ref"), "supply-conformance", "path", "sha256"))
@@ -203,6 +224,20 @@ def _validate_lineage(
     supply_path, supply = by_kind["capability_supply_report"][0]
     resolution_path, resolution = by_kind["capability_resolution"][0]
     snapshot_path, snapshot = by_kind["resolved_capability_snapshot"][0]
+    skill_extension = manifest.get("skill_extension", {})
+    extension_enabled = (
+        isinstance(skill_extension, Mapping)
+        and skill_extension.get("enabled") is True
+    )
+    projection_entries = by_kind["skill_release_projection"]
+    if len(projection_entries) != (1 if extension_enabled else 0):
+        issues.append(
+            RuntimeBundleIssue(
+                root,
+                "RUNTIME-BUNDLE-SKILL-PROJECTION-CARDINALITY",
+                "Skill extension requires exactly one projection; Core requires none",
+            )
+        )
 
     task_revision = task.get("revision", 1)
     expected_task_ref = f"{task.get('task_id')}@r{task_revision}"
@@ -231,6 +266,79 @@ def _validate_lineage(
     expected_resolution_ref = _revisioned_identity(resolution, "resolution_id")
     expected_requirement_id = requirement.get("requirement_id")
     expected_supply_ref = _versioned_identity(supply, "report_id")
+    supply_identity = supply.get("supply_identity", {})
+    supply_kind = (
+        supply_identity.get("supply_kind")
+        if isinstance(supply_identity, Mapping)
+        else None
+    )
+    method_skill_status = method.get("skill_disposition", {}).get("status")
+    if supply_kind == "skill":
+        if not extension_enabled or len(projection_entries) != 1:
+            issues.append(
+                RuntimeBundleIssue(
+                    root / supply_path,
+                    "RUNTIME-BUNDLE-SKILL-PROJECTION-REQUIRED",
+                    "Skill Supply requires the explicit Skill projection extension",
+                )
+            )
+        else:
+            projection_path, projection = projection_entries[0]
+            projection_ref = supply_identity.get("skill_release_projection_ref")
+            manifest_projection = skill_extension.get("projection")
+            expected_projection_ref = projection_reference(projection)
+            if (
+                not isinstance(projection_ref, Mapping)
+                or projection_ref.get("ref") != expected_projection_ref
+                or projection_ref.get("document_path") != projection_path
+                or not isinstance(manifest_projection, Mapping)
+                or manifest_projection.get("path") != projection_path
+                or manifest_projection.get("kind") != "skill_release_projection"
+            ):
+                issues.append(
+                    RuntimeBundleIssue(
+                        root / supply_path,
+                        "RUNTIME-BUNDLE-SKILL-PROJECTION-IDENTITY-MISMATCH",
+                        "manifest, Supply, and projection identities/paths must agree",
+                    )
+                )
+            if not projection_is_runtime_eligible(projection):
+                issues.append(
+                    RuntimeBundleIssue(
+                        root / projection_path,
+                        "RUNTIME-BUNDLE-SKILL-PROJECTION-INELIGIBLE",
+                        "projection is not explicitly eligible for new binding",
+                    )
+                )
+            issues.extend(
+                RuntimeBundleIssue(root / supply_path, code, message)
+                for code, message in projection_supply_fact_issues(projection, supply)
+            )
+        if method_skill_status not in {"skill-need", "mixed"}:
+            issues.append(
+                RuntimeBundleIssue(
+                    root / method_path,
+                    "RUNTIME-BUNDLE-METHOD-SKILL-DISPOSITION-MISMATCH",
+                    "Skill Supply requires a Skill-bearing Method disposition",
+                )
+            )
+    else:
+        if extension_enabled:
+            issues.append(
+                RuntimeBundleIssue(
+                    root / supply_path,
+                    "RUNTIME-BUNDLE-SKILL-EXTENSION-WITHOUT-SKILL",
+                    "Skill extension cannot decorate a non-Skill selected Supply",
+                )
+            )
+        if method_skill_status != "no-skill":
+            issues.append(
+                RuntimeBundleIssue(
+                    root / method_path,
+                    "RUNTIME-BUNDLE-METHOD-SKILL-DISPOSITION-MISMATCH",
+                    "non-Skill Core Supply requires no-skill Method disposition",
+                )
+            )
 
     resolution_method_ref = resolution.get("method_resolution_ref", {})
     resolution_requirement_ref = resolution.get("requirement_ref", {})
@@ -561,6 +669,22 @@ def load_runtime_bundle(
     if kinds.get(entrypoint_path) != "resolved_capability_snapshot" or hashes.get(entrypoint_path) != entrypoint_hash:
         issues.append(RuntimeBundleIssue(candidate, "RUNTIME-BUNDLE-ENTRYPOINT-MISMATCH", entrypoint_path))
 
+    skill_extension = manifest_raw["skill_extension"]
+    if skill_extension["enabled"] is True:
+        projection_pin = skill_extension["projection"]
+        projection_path = str(projection_pin["path"])
+        if (
+            kinds.get(projection_path) != "skill_release_projection"
+            or hashes.get(projection_path) != _normalized_hash(projection_pin["sha256"])
+        ):
+            issues.append(
+                RuntimeBundleIssue(
+                    candidate,
+                    "RUNTIME-BUNDLE-SKILL-PROJECTION-PIN-MISMATCH",
+                    projection_path,
+                )
+            )
+
     for relative, document in documents.items():
         kind = kinds[relative]
         if kind in {"capability_resolution", "resolved_capability_snapshot"} and document.get("qualification") != "runtime-execution":
@@ -570,15 +694,17 @@ def load_runtime_bundle(
         if kind == "capability_supply_report":
             identity = document.get("supply_identity", {})
             availability = document.get("availability", {})
-            if isinstance(identity, Mapping) and (
+            extension_enabled = manifest_raw.get("skill_extension", {}).get("enabled") is True
+            contains_skill = isinstance(identity, Mapping) and (
                 identity.get("supply_kind") == "skill"
                 or any(isinstance(item, Mapping) and item.get("component_kind") == "skill" for item in identity.get("components", ()))
-            ):
+            )
+            if contains_skill and not extension_enabled:
                 issues.append(RuntimeBundleIssue(root / relative, "RUNTIME-BUNDLE-SKILL-FORBIDDEN", "Core bundle is zero-Skill"))
             if isinstance(availability, Mapping) and availability.get("scope", {}).get("scope_kind") == "fixture-only":
                 issues.append(RuntimeBundleIssue(root / relative, "RUNTIME-BUNDLE-FIXTURE-AVAILABILITY", "fixture-only availability is not runtime input"))
-        if kind == "method_resolution" and document.get("skill_disposition", {}).get("status") != "no-skill":
-            issues.append(RuntimeBundleIssue(root / relative, "RUNTIME-BUNDLE-SKILL-FORBIDDEN", "Core requires no-skill Method disposition"))
+        if kind == "skill_release_projection" and manifest_raw.get("skill_extension", {}).get("enabled") is not True:
+            issues.append(RuntimeBundleIssue(root / relative, "RUNTIME-BUNDLE-SKILL-FORBIDDEN", "Core bundle cannot import a Skill projection"))
 
     issues.extend(_validate_lineage(root, manifest_raw, documents, kinds))
 

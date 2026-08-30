@@ -48,9 +48,14 @@ missing, relocated, rewritten or fact-drifted projections.
 ## Consumer boundary
 
 `SkillReleaseProjectionSet` is the runtime-minimal catalog reader. It reads only its explicit index and indexed
-projection files; it does not load Need, Candidate, Evaluation or Lifecycle documents. M11-006 may use an exact
-projection to qualify one Skill Supply candidate through the existing Capability Resolver. Projection metadata is
-a ceiling and eligibility fact, never a final permission or execution grant.
+projection files; it does not load Need, Candidate, Evaluation or Lifecycle documents. M11-006 uses an exact
+projection reference to qualify one Skill Supply candidate through the existing Capability Resolver. Projection
+metadata is a ceiling and eligibility fact, never a final permission or execution grant.
+
+Runtime Bundle does not scan this catalog or import Lifecycle. The producer supplies one exact projection document
+in the manifest closure, and the selected Skill Supply points to the same path/hash. The pure
+`projection_supply_fact_issues()` checker closes Release identity, required Tool dependencies, capability/I/O,
+permission roots, data-egress allow/forbid sets and side-effect ceilings without adding a second selector.
 
 The zero-Skill/no-Skill/direct Tool Core remains valid with an empty projection index or with no projection input
 in a Runtime Bundle.

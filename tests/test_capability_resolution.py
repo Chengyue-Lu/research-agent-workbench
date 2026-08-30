@@ -368,7 +368,7 @@ class CapabilityResolutionTests(unittest.TestCase):
         self.assertFalse(blocked.eligible)
         self.assertEqual(("blocked", None), resolve_status([blocked]))
 
-    def test_skill_supply_stays_parked_until_lifecycle_runtime_eligibility(self) -> None:
+    def test_lifecycle_reference_cannot_authorize_runtime_skill_binding(self) -> None:
         requirement = CapabilityRequirement.from_mapping(
             self.requirements[REQUIREMENT_ROOT / "document-read.yaml"]
         )
@@ -418,7 +418,7 @@ class CapabilityResolutionTests(unittest.TestCase):
         self.assertEqual("unknown", runtime_skill_check["status"])
         self.assertEqual(("gap", None), resolve_status([runtime_blocked]))
 
-        eligible = assess_supply(
+        lifecycle_callback_cannot_authorize = assess_supply(
             requirement,
             parsed,
             evaluated_at=EVALUATED_AT,
@@ -430,12 +430,12 @@ class CapabilityResolutionTests(unittest.TestCase):
             ),
         )
         skill_check = next(
-            item for item in eligible.checks if item["check"] == "skill-runtime-eligibility"
+            item
+            for item in lifecycle_callback_cannot_authorize.checks
+            if item["check"] == "skill-runtime-eligibility"
         )
-        self.assertEqual("pass", skill_check["status"])
-        # This synthetic fixture still cannot satisfy the independent Runtime
-        # availability qualification even when lifecycle provenance is verified.
-        self.assertEqual(("gap", None), resolve_status([eligible]))
+        self.assertEqual("unknown", skill_check["status"])
+        self.assertEqual(("gap", None), resolve_status([lifecycle_callback_cannot_authorize]))
 
         documents = copy.deepcopy(self.validation_documents)
         documents[REPORT_ROOT / "synthetic-skill.yaml"] = skill

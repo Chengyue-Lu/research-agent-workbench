@@ -60,6 +60,23 @@ class SupplyComponent:
 
 
 @dataclass(frozen=True, slots=True)
+class SkillReleaseProjectionReference:
+    ref: str
+    document_path: str
+    content_hash: str
+
+    @classmethod
+    def from_mapping(
+        cls, data: Mapping[str, Any]
+    ) -> "SkillReleaseProjectionReference":
+        return cls(
+            ref=require_string(data, "ref"),
+            document_path=require_string(data, "document_path"),
+            content_hash=require_string(data, "content_hash"),
+        )
+
+
+@dataclass(frozen=True, slots=True)
 class SupplyIdentity:
     supply_kind: str
     implementation_ref: str
@@ -68,34 +85,50 @@ class SupplyIdentity:
     components: tuple[SupplyComponent, ...]
     skill_lifecycle_ref: str | None = None
     runtime_eligibility_ref: str | None = None
+    skill_release_projection_ref: SkillReleaseProjectionReference | None = None
 
     @classmethod
     def from_mapping(cls, data: Mapping[str, Any]) -> "SupplyIdentity":
         supply_kind = require_string(data, "supply_kind")
         skill_lifecycle_ref = data.get("skill_lifecycle_ref")
         runtime_eligibility_ref = data.get("runtime_eligibility_ref")
+        raw_projection_ref = data.get("skill_release_projection_ref")
         if skill_lifecycle_ref is not None and not isinstance(skill_lifecycle_ref, str):
             raise ContractError("skill_lifecycle_ref", "must be a string")
         if runtime_eligibility_ref is not None and not isinstance(runtime_eligibility_ref, str):
             raise ContractError("runtime_eligibility_ref", "must be a string")
+        if raw_projection_ref is not None and not isinstance(raw_projection_ref, Mapping):
+            raise ContractError("skill_release_projection_ref", "must be an object")
+        projection_ref = (
+            SkillReleaseProjectionReference.from_mapping(raw_projection_ref)
+            if isinstance(raw_projection_ref, Mapping)
+            else None
+        )
         if supply_kind not in SUPPLY_KINDS:
             raise ContractError(
                 "supply_kind",
                 f"must be one of {sorted(SUPPLY_KINDS)}; no-Skill is a binding disposition, not a Supply",
             )
         if supply_kind == "skill":
-            if not skill_lifecycle_ref:
+            lifecycle_pair = bool(skill_lifecycle_ref and runtime_eligibility_ref)
+            if bool(skill_lifecycle_ref) != bool(runtime_eligibility_ref):
                 raise ContractError(
-                    "skill_lifecycle_ref", "is required for a Skill Supply"
+                    "supply_identity",
+                    "Skill lifecycle and runtime eligibility references must occur together",
                 )
-            if not runtime_eligibility_ref:
+            if lifecycle_pair == (projection_ref is not None):
                 raise ContractError(
-                    "runtime_eligibility_ref", "is required for a Skill Supply"
+                    "supply_identity",
+                    "a Skill Supply requires exactly one maintainer Lifecycle pair or Runtime projection reference",
                 )
-        elif skill_lifecycle_ref is not None or runtime_eligibility_ref is not None:
+        elif (
+            skill_lifecycle_ref is not None
+            or runtime_eligibility_ref is not None
+            or projection_ref is not None
+        ):
             raise ContractError(
                 "supply_identity",
-                "Skill lifecycle and runtime eligibility references are forbidden for non-Skill Supplies",
+                "Skill Lifecycle/projection references are forbidden for non-Skill Supplies",
             )
         return cls(
             supply_kind=supply_kind,
@@ -108,6 +141,7 @@ class SupplyIdentity:
             ),
             skill_lifecycle_ref=skill_lifecycle_ref,
             runtime_eligibility_ref=runtime_eligibility_ref,
+            skill_release_projection_ref=projection_ref,
         )
 
 
@@ -190,7 +224,16 @@ def _permission_check(requirement: CapabilityRequirement, report: CapabilitySupp
         external_write=ceiling.external_write,
         allowed_roots=(),
     )
-    supply_policy = PermissionPolicy.from_mapping(report.required_permissions)
+    parsed_supply_policy = PermissionPolicy.from_mapping(report.required_permissions)
+    # v0.1 Capability Requirements compare permission classes only.  Optional
+    # Supply roots are frozen for the final View intersection; projection-backed
+    # Skill Supplies additionally prove them against the Release ceiling.
+    supply_policy = PermissionPolicy(
+        filesystem=parsed_supply_policy.filesystem,
+        network=parsed_supply_policy.network,
+        external_write=parsed_supply_policy.external_write,
+        allowed_roots=(),
+    )
     valid = permission_policy_covers(ceiling_policy, supply_policy)
     return _check(
         "permission",
@@ -292,6 +335,8 @@ def assess_supply(
     qualification: str = "structural-replay",
     evidence_check: Callable[[SupplyIdentity, Mapping[str, Any], str], str] | None = None,
     runtime_eligibility_check: Callable[[str, str], bool] | None = None,
+    projection_eligibility_check: Callable[[SkillReleaseProjectionReference], bool]
+    | None = None,
 ) -> SupplyAssessment:
     if qualification not in {"structural-replay", "runtime-execution"}:
         raise ValueError(f"unknown capability qualification: {qualification}")
@@ -326,26 +371,28 @@ def assess_supply(
         conformance_status = "unknown"
         conformance_reason = "No typed, verified conformance artifact proves the required capability."
     if report.supply_identity.supply_kind == "skill":
-        lifecycle_ref = report.supply_identity.skill_lifecycle_ref
-        eligibility_ref = report.supply_identity.runtime_eligibility_ref
-        lifecycle_reports_eligible = bool(
-            runtime_eligibility_check
-            and lifecycle_ref
-            and eligibility_ref
-            and runtime_eligibility_check(lifecycle_ref, eligibility_ref)
+        projection_ref = report.supply_identity.skill_release_projection_ref
+        projection_reports_eligible = bool(
+            projection_eligibility_check
+            and projection_ref is not None
+            and projection_eligibility_check(projection_ref)
         )
         if qualification == "structural-replay":
             skill_status = "not-applicable"
             skill_reason = "Structural replay does not create a new Skill binding."
-        elif lifecycle_reports_eligible:
+        elif projection_reports_eligible:
             skill_status = "pass"
-            skill_reason = "The caller verified lifecycle evidence and Human-decision provenance for this new binding."
+            skill_reason = "The caller verified one exact SkillReleaseProjection for this new binding."
         else:
             skill_status = "unknown"
-            skill_reason = "Skill new-binding eligibility is absent or unverified and remains fail-closed."
+            skill_reason = "An exact eligible SkillReleaseProjection is absent or unverified and remains fail-closed."
     else:
         skill_status = "not-applicable"
         skill_reason = "This Core supply is not a Skill and needs no Skill lifecycle decision."
+
+    # Retained as a source-compatible argument for maintainer callers replaying
+    # historical Resolution records. Runtime new-binding never consults it.
+    _ = runtime_eligibility_check
 
     checks = (
         _check(

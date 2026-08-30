@@ -46,7 +46,8 @@ evidence resolver 与 Human-decision resolver 证明。
 ### M11-006 — unified Skill supply mapping
 
 - Skill Supply Report exact-pin projection identity/path/hash；Runtime qualification 不读取 Lifecycle；
-- projection facts 必须等于 Supply identity、capability、I/O 与三类 boundary facts，Report 只能增加
+- projection facts 必须闭合 Supply identity、required Tool dependencies、capability、I/O 与三类 boundary
+  facts；permission roots 与 data-egress forbidden set 不能在粗粒度 policy 相同的情况下被静默放宽，Report 只能增加
   observation、conformance、availability、limits 和 limitations；
 - Capability Resolver 继续是唯一 selector；projection eligibility 不等于 permission 或 execution grant；
 - Runtime Bundle 仅在 `skill_extension.enabled: true` 时把 exact projection 加入显式 closure；
@@ -76,3 +77,30 @@ task-specific evidence，但不改写 Task identity、dependency 或 acceptance�
   missing/stale/mismatch projection candidate fail-closed、zero-Skill regression 与 Runtime import-graph tests；
 - 新增 authority-sensitive validator 纳入 Coverage Policy，提供独立 positive/negative evidence；
 - focused tests 后运行 full behavioral suites、coverage-quality、repository validation、governance 与 package smoke。
+
+## 当前实现证据
+
+### M11-005 slice — `a4e0ce9`
+
+- projection/index Schema、空生产 index、publisher、runtime-minimal reader、closed validator 与 published
+  identity policy 已实现；
+- synthetic verified Release 可确定性发布；legacy、缺 evidence/decision/runtime boundaries、index/hash/
+  provenance/fact drift 均 fail closed；
+- 首轮 focused：projection 5/5、Lifecycle 7/7、catalog 6/6、Schema 3/3、Governance 67/67 PASS；repository
+  validation exit 0。
+
+### M11-006 slice — working tree
+
+- Skill Supply identity 支持 exact projection ref；旧 Lifecycle pair 只保留 structural/history 兼容；
+- `runtime-execution` 只接受 projection eligibility，Lifecycle callback 不能授权；
+- pure projection→Supply checker 闭合 Release identity/component/required Tools、capability/I/O 与
+  permission（含 roots）/egress allow+forbid/effect ceiling；
+- Runtime Bundle 在 `skill_extension.enabled:true` 时增加唯一 projection 与 `supply-projection` edge；
+- synthetic Skill 已通过同一 Resolution→Snapshot→View→Host 单次执行路径；View/Host 源码没有 projection
+  或 Skill-specific dispatcher；
+- optional Supply roots 进入现有 View permission intersection；未声明 roots 的 Core Report 继续使用 Task
+  roots，没有建立 Skill-specific View 字段；
+- focused：Skill extension 6/6、Capability Resolution 18/18、Runtime Bundle 12/12、Execution View 9/9、
+  Schema 3/3 PASS；Governance 67/67、Coverage Policy self-tests 21/21 与 repository validation PASS；
+- 本地 authoritative full behavioral suite：781 tests / 634.437s，PASS（4 个环境特定 skip）；
+- Python 3.11/3.13、instrumented global/critical coverage 与 clean-wheel package smoke 等待 exact-head hosted CI。

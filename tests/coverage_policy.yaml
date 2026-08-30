@@ -59,6 +59,7 @@ suites:
       - test_skill_evaluation_helpers
       - test_skill_lifecycle
       - test_skill_release_projection
+      - test_skill_runtime_extension
       - test_skill_needs
       - test_trace_risk_codes
       - test_phase_b_evolution_gate
@@ -123,6 +124,7 @@ critical_modules:
   - src/research_workbench/capability/requirements.py
   - src/research_workbench/capability/supply.py
   - src/research_workbench/capability/release_projection.py
+  - src/research_workbench/capability/projection_supply.py
   - src/research_workbench/execution/runtime_bundle.py
   - src/research_workbench/execution/execution_view.py
   - src/research_workbench/execution/host.py
@@ -204,6 +206,19 @@ negative_acceptance:
       - test_skill_release_projection.SkillReleaseProjectionTests.test_publisher_requires_external_evidence_human_decision_and_runtime_boundaries
       - test_skill_release_projection.SkillReleaseProjectionTests.test_legacy_repository_skills_cannot_be_projected
       - test_skill_release_projection.SkillReleaseProjectionTests.test_projection_registry_and_derivation_are_fail_closed
+  - surface: projection-derived-skill-supply-runtime-extension
+    modules:
+      - src/research_workbench/capability/projection_supply.py
+      - src/research_workbench/capability/supply.py
+      - src/research_workbench/validation/capability_supply_registry.py
+      - src/research_workbench/execution/runtime_bundle.py
+    positive_tests:
+      - test_skill_runtime_extension.SkillRuntimeExtensionTests.test_projection_skill_uses_existing_resolution_snapshot_and_view_path
+      - test_skill_runtime_extension.SkillRuntimeExtensionTests.test_projection_supply_report_registry_facts_are_closed
+    negative_tests:
+      - test_skill_runtime_extension.SkillRuntimeExtensionTests.test_runtime_assessment_requires_projection_not_lifecycle_callback
+      - test_skill_runtime_extension.SkillRuntimeExtensionTests.test_runtime_bundle_rejects_projection_and_boundary_drift
+      - test_skill_runtime_extension.SkillRuntimeExtensionTests.test_runtime_and_host_keep_no_skill_specific_dispatch_seam
   - surface: runtime-bundle-closure
     modules:
       - src/research_workbench/execution/runtime_bundle.py

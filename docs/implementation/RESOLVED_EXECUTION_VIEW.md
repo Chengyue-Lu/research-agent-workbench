@@ -97,8 +97,12 @@ View 是 Host 后续要消费的 final frozen contract，但它自身仍不是 p
 Claim effect、Human decision 或 execution。effective constraints 只能收紧上游已声明 ceiling，不能创造新
 authority；`task_completion` 固定为 false。
 
-M11 Core 不依赖 SkillReleaseProjection、Need、Evaluation 或 Lifecycle。M11-005/006 的 Skill extension 只能
-增加一种合法 Supply 来源，不能改变该 View 的 supply-neutral 语义。
+M11 Core 不依赖 SkillReleaseProjection、Need、Evaluation 或 Lifecycle。M11-005/006 的 optional extension
+只在 Runtime Bundle 上游增加一种 projection-qualified Supply 来源；View 仍只冻结同一 selected Supply ref、
+Binding、freshness 和最严 policy intersection。Supply 明确携带 `allowed_roots` 时进入既有通用 permission
+intersection；旧 Report 未携带时继续从 Task roots 取得同一输入，保持 Core 兼容。View Schema、producer 与 Host 没有 Skill-specific 字段或
+dispatcher，也不读取 Projection/Lifecycle。synthetic bounded Skill fixture 通过同一 View→Host 单次调用路径，
+但不构成真实 Skill 效益或 Provider conformance 证据。
 
 ## 当前停止点
 

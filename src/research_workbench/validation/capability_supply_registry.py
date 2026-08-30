@@ -6,9 +6,18 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Mapping
 
-from research_workbench.capability.lifecycle import SkillLifecycleRecord
+from research_workbench.capability.projection_supply import (
+    projection_is_runtime_eligible,
+    projection_reference,
+    projection_supply_fact_issues,
+)
 from research_workbench.capability.requirements import CapabilityRequirement
-from research_workbench.capability.supply import CapabilitySupplyReport, assess_supply, resolve_status
+from research_workbench.capability.supply import (
+    CapabilitySupplyReport,
+    SkillReleaseProjectionReference,
+    assess_supply,
+    resolve_status,
+)
 from research_workbench.contracts.common import ContractError
 from research_workbench.validation.document_core import (
     ValidationIssue,
@@ -37,29 +46,31 @@ def validate_capability_supply_chain(
     issues: list[ValidationIssue] = []
     reports: dict[str, tuple[Path, Mapping[str, Any], CapabilitySupplyReport]] = {}
     resolutions: dict[str, tuple[Path, Mapping[str, Any]]] = {}
-    lifecycle_records: dict[str, SkillLifecycleRecord] = {}
-    for document in documents.values():
-        if not isinstance(document, Mapping) or infer_document_kind(document) != "skill_lifecycle_record":
-            continue
-        try:
-            record = SkillLifecycleRecord.from_mapping(document)
-        except ContractError:
-            continue
-        lifecycle_records[record.reference] = record
+    projections: dict[str, tuple[Path, Mapping[str, Any]]] = {}
+    for path, document in documents.items():
+        if (
+            isinstance(document, Mapping)
+            and infer_document_kind(document) == "skill_release_projection"
+        ):
+            projections[projection_reference(document)] = (path, document)
 
-    def runtime_eligibility_check(lifecycle_ref: str, eligibility_ref: str) -> bool:
-        record = lifecycle_records.get(lifecycle_ref)
+    def projection_eligibility_check(
+        reference: SkillReleaseProjectionReference,
+    ) -> bool:
+        registered = projections.get(reference.ref)
+        if registered is None:
+            return False
+        path, projection = registered
+        loaded = _loaded_document_at(documents, reference.document_path)
         return bool(
-            record
-            and record.runtime_eligibility.eligibility_ref == eligibility_ref
-            and record.externally_verified_for_new_binding(
-                # Phase B has no authoritative Phase D evidence or Human
-                # Decision document resolver.  Lifecycle state and reference
-                # strings therefore remain structural facts and must fail
-                # closed for a new Runtime binding.
-                evidence_resolver=lambda _reference: False,
-                decision_resolver=lambda _reference: False,
+            loaded is not None
+            and loaded[0] == path
+            and (
+                not _document_has_loaded_bytes(documents, path)
+                or _document_hash(documents, path)
+                == reference.content_hash.removeprefix("sha256:").lower()
             )
+            and projection_is_runtime_eligible(projection)
         )
 
     def loaded_ref(
@@ -308,6 +319,40 @@ def validate_capability_supply_chain(
             )
             continue
         reports[parsed.reference] = (path, document, parsed)
+
+        projection_ref = parsed.supply_identity.skill_release_projection_ref
+        if projection_ref is not None:
+            raw_reference = document.get("supply_identity", {}).get(
+                "skill_release_projection_ref"
+            )
+            loaded_projection = loaded_ref(
+                path,
+                raw_reference,
+                missing_code="CAPABILITY-SUPPLY-PROJECTION-MISSING",
+                hash_code="CAPABILITY-SUPPLY-PROJECTION-HASH-MISMATCH",
+            )
+            registered_projection = projections.get(projection_ref.ref)
+            if registered_projection is None:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "CAPABILITY-SUPPLY-PROJECTION-IDENTITY-MISSING",
+                        f"SkillReleaseProjection identity is not loaded: {projection_ref.ref}",
+                    )
+                )
+            elif loaded_projection is not None and loaded_projection[0] != registered_projection[0]:
+                issues.append(
+                    ValidationIssue(
+                        path,
+                        "CAPABILITY-SUPPLY-PROJECTION-PATH-MISMATCH",
+                        f"projection path does not identify {projection_ref.ref}",
+                    )
+                )
+            else:
+                for code, message in projection_supply_fact_issues(
+                    registered_projection[1], document
+                ):
+                    issues.append(ValidationIssue(path, code, message))
 
         component_kinds = {component.component_kind for component in parsed.supply_identity.components}
         required_kinds = {
@@ -586,6 +631,7 @@ def validate_capability_supply_chain(
                 )
                 or candidate_identity.skill_lifecycle_ref is not None
                 or candidate_identity.runtime_eligibility_ref is not None
+                or candidate_identity.skill_release_projection_ref is not None
             ):
                 issues.append(
                     ValidationIssue(
@@ -612,7 +658,7 @@ def validate_capability_supply_chain(
                     evaluated_at=document.get("evaluated_at"),
                     qualification=str(document.get("qualification")),
                     evidence_check=evidence_check,
-                    runtime_eligibility_check=runtime_eligibility_check,
+                    projection_eligibility_check=projection_eligibility_check,
                 )
                 for report in candidate_reports
             ]

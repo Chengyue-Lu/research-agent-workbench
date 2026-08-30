@@ -249,6 +249,7 @@ class CriticalCapabilityBranchTests(unittest.TestCase):
             (lambda value: value.update(components=["bad"]), ContractError),
             (lambda value: value.update(skill_lifecycle_ref=1), ContractError),
             (lambda value: value.update(runtime_eligibility_ref=1), ContractError),
+            (lambda value: value.update(skill_release_projection_ref=1), ContractError),
             (lambda value: value.update(supply_kind="unknown"), ContractError),
             (lambda value: value.update(supply_kind="skill"), ContractError),
             (lambda value: value.update(skill_lifecycle_ref="LIFE@1"), ContractError),
@@ -258,6 +259,7 @@ class CriticalCapabilityBranchTests(unittest.TestCase):
                 changed = copy.deepcopy(identity)
                 changed.pop("skill_lifecycle_ref", None)
                 changed.pop("runtime_eligibility_ref", None)
+                changed.pop("skill_release_projection_ref", None)
                 mutate(changed)
                 with self.assertRaises(error):
                     supply_module.SupplyIdentity.from_mapping(changed)
@@ -266,6 +268,30 @@ class CriticalCapabilityBranchTests(unittest.TestCase):
         non_skill["runtime_eligibility_ref"] = "ELIG@1"
         with self.assertRaises(ContractError):
             supply_module.SupplyIdentity.from_mapping(non_skill)
+        non_skill_projection = copy.deepcopy(identity)
+        non_skill_projection["skill_release_projection_ref"] = {
+            "ref": "synthetic@1.0.0",
+            "document_path": "bundle/projection.yaml",
+            "content_hash": "sha256:" + "1" * 64,
+        }
+        with self.assertRaises(ContractError):
+            supply_module.SupplyIdentity.from_mapping(non_skill_projection)
+
+        skill_with_both_sources = copy.deepcopy(identity)
+        skill_with_both_sources.update(
+            {
+                "supply_kind": "skill",
+                "skill_lifecycle_ref": "LIFE@1",
+                "runtime_eligibility_ref": "ELIG@1",
+                "skill_release_projection_ref": {
+                    "ref": "synthetic@1.0.0",
+                    "document_path": "bundle/projection.yaml",
+                    "content_hash": "sha256:" + "1" * 64,
+                },
+            }
+        )
+        with self.assertRaises(ContractError):
+            supply_module.SupplyIdentity.from_mapping(skill_with_both_sources)
 
         requirement = CapabilityRequirement.from_mapping(load_document(REQUIREMENT_PATH))
         report = CapabilitySupplyReport.from_mapping(raw)

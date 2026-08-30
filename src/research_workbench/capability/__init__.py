@@ -39,6 +39,7 @@ from research_workbench.capability.supply import (
     SupplyAssessment,
     SupplyComponent,
     SupplyIdentity,
+    SkillReleaseProjectionReference,
     assess_supply,
     resolve_status,
 )
@@ -98,6 +99,7 @@ __all__ = [
     "SupplyAssessment",
     "SupplyComponent",
     "SupplyIdentity",
+    "SkillReleaseProjectionReference",
     "assess_supply",
     "resolve_status",
     "LifecycleAdmission",
