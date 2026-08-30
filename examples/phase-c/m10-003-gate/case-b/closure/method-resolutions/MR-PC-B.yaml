@@ -1,0 +1,47 @@
+schema_version: 0.1.0
+resolution_id: MR-PC-B
+revision: 1
+task_ref:
+  task_id: M10-CASE-B
+  revision: 1
+  sha256: cc4bb0d17415c9b7a8c2892b52e5047e2636092cf501b571b182d1580627ac5b
+source_case_id: M3-009-PC-B
+mode_resolution:
+  status: selected
+  selected_mode_refs: [simulation@0.1.0]
+  unresolved_mode_ids: []
+  reason: The bounded case records a synthetic negative simulation result without live execution.
+action_decisions:
+  - decision_id: MRD-PC-B-CONVERGENCE
+    action_ref: SIM-A3@1.0.0
+    action_content_hash: sha256:e098ffa2bfa1ed8cf8a0a9a6d0aa0759bf554b75862b27b967ce70940fcb15c8
+    obligations:
+      - obligation_id: MRO-PC-B-NEGATIVE
+        statement: Preserve the negative result, its known failure, and the bounded revisit condition.
+        assessment: deterministic
+        required_evidence: [convergence-plan, convergence-report, negative-result, research-failure]
+    mechanisms: [task-instruction, no-skill, human-gate]
+    capability_requirements: []
+    skill_need_refs: []
+    human_gate_refs: [approve-error-metric-and-resource-threshold]
+    stop_conditions:
+      - The declared convergence criterion is met or a bounded negative result is recorded.
+      - The known failed path and a non-repeating candidate are explicitly separated.
+    blocked_conditions:
+      - No adjustable refinement or meaningful error quantity is available.
+      - The negative result or its Research Failure cannot be exact-linked.
+    rationale: The fixture only checks deterministic negative-path preservation and does not run a simulation.
+skill_disposition:
+  status: no-skill
+  need_refs: []
+  reason: No reusable Skill semantics are needed to preserve the bounded fixture refs.
+human_gate_refs: [approve-error-metric-and-resource-threshold]
+blocked_conditions:
+  - No adjustable refinement or meaningful error quantity is available.
+  - The negative result or its Research Failure cannot be exact-linked.
+rejected_alternatives:
+  - alternative_id: repeat-coarse-grid-without-new-basis
+    disposition: rejected
+    reason: Repeating a known failed path without a reopen basis would erase the learned result.
+resolution_status: proceed
+limitations: [Synthetic bounded Method Resolution; no live simulation or scientific conclusion is claimed.]

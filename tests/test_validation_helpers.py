@@ -10,6 +10,11 @@ from research_workbench.validation import documents as documents_module
 
 
 class ValidationHelperTests(unittest.TestCase):
+    def test_research_state_registry_does_not_cycle_through_gate_imports(self) -> None:
+        from research_workbench import cli
+
+        self.assertTrue(callable(cli.main))
+
     @staticmethod
     def _loaded(entries: dict[str, object]) -> documents_module.LoadedDocuments:
         documents = documents_module.LoadedDocuments()

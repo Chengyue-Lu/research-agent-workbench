@@ -1,0 +1,11 @@
+schema_version: 0.1.0
+object_type: evidence
+object_id: EVID-PC-B
+revision: 1
+status: admitted-fixture
+content_hash: 9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e
+kind: negative-result
+source_ref: HYP-PC-B@1
+locator: synthetic result B
+statement: The bounded fixture does not show the assumed signal.
+quality_flags: [synthetic_fixture, negative_result]

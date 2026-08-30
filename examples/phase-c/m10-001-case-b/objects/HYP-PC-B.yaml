@@ -1,0 +1,8 @@
+schema_version: 0.1.0
+object_type: hypothesis
+object_id: HYP-PC-B
+revision: 1
+status: admitted-fixture
+statement: Coarse-grid resolution is sufficient to resolve the synthetic signal.
+assumptions: [coarse grid captures the onset]
+applicability: [synthetic fixture regime]

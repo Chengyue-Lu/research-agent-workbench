@@ -1,0 +1,26 @@
+schema_version: 0.1.0
+state_id: RSTATE-PC-B
+revision: 2
+status: active
+supersedes: {object_id: RSTATE-PC-B, revision: 1}
+entries:
+- role: hypothesis
+  ref: {object_id: HYP-PC-B, revision: 1}
+  disposition: current
+- role: evidence
+  ref:
+    object_id: EVID-PC-B
+    revision: 1
+    sha256: 9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e9f0e
+  disposition: current
+open_items:
+- item_id: ASSUM-PC-B-01
+  kind: assumption
+  statement: Coarse-grid resolution is sufficient.
+  status: invalidated
+  provenance_refs: [{object_id: EVID-PC-B, revision: 1}]
+- item_id: UNKNOWN-PC-B-01
+  kind: unknown
+  statement: Whether higher resolution changes the result.
+  status: open
+limitations: [fixture-only state]

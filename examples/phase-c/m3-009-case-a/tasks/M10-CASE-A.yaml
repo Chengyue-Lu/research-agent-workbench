@@ -1,0 +1,25 @@
+schema_version: 0.1.0
+task_id: M10-CASE-A
+revision: 1
+goal: Record the bounded evidence-synthesis method path for the Phase C case.
+question_refs: [Q-PC-A@1]
+active_modes: [evidence-synthesis]
+required_capabilities: []
+required_skills: []
+forbidden_skills: []
+agent_profile: method-trace-fixture
+input_refs: []
+write_scope: [work/M10-CASE-A]
+required_outputs: [method-trace]
+permissions:
+  filesystem: worktree-write
+  network: forbidden
+  external_write: false
+  allowed_roots: [work/M10-CASE-A]
+delegation: {allowed: false}
+budget: {max_turns: 4}
+atomic_boundary: Record refs and dispositions only; do not execute or change scientific state.
+completion_checks: [The Method Trace closes against the explicit fixture set.]
+safe_pause_conditions: [A required exact ref is unavailable.]
+stop_conditions: [The ref-only Method Trace is recorded.]
+stale_if: [task-or-method-resolution-changes]

@@ -1,0 +1,11 @@
+schema_version: 0.1.0
+object_type: evidence
+object_id: EVID-PC-A
+revision: 1
+status: admitted-fixture
+content_hash: 5d1a5d1a5d1a5d1a5d1a5d1a5d1a5d1a5d1a5d1a5d1a5d1a5d1a5d1a5d1a5d1a
+kind: bounded-text-excerpt
+source_ref: Q-PC-A@1
+locator: synthetic excerpt A
+statement: The fixture supports only a bounded structural reading.
+quality_flags: [synthetic_fixture]

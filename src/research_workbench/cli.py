@@ -672,6 +672,63 @@ def _reference_check(args: argparse.Namespace) -> int:
     return _print_risks(_document_reference_risks(document, Path(args.root).resolve()))
 
 
+def _research_state_validate(args: argparse.Namespace) -> int:
+    from research_workbench.research_state import (
+        ClosureIndex,
+        check_research_attempt_lineage,
+        check_research_failure,
+        check_research_state,
+        check_method_trace,
+    )
+
+    document_path = Path(args.document)
+    document = load_document(document_path)
+    checkers = {
+        "research_state": check_research_state,
+        "research_attempt_lineage": check_research_attempt_lineage,
+        "research_failure": check_research_failure,
+        "method_trace": check_method_trace,
+    }
+    kind = infer_document_kind(document) if isinstance(document, Mapping) else None
+    if kind not in checkers:
+        print("ERROR   DOCUMENT-UNKNOWN              not a bounded Phase C document")
+        return 1
+    errors = SchemaCatalog().validate(kind, document)
+    for error in errors:
+        print(f"ERROR   SCHEMA-INVALID               {error.pointer}: {error.message}")
+    if errors:
+        return 1
+    closure_paths = list(iter_documents(args.closure))
+    if document_path not in closure_paths:
+        closure_paths.append(document_path)
+    index = ClosureIndex.from_paths(closure_paths)
+    problems = checkers[kind](document, index)
+    for problem in problems:
+        print(f"ERROR   PHASE-C-CLOSURE-INVALID       {problem}")
+    if problems:
+        return 1
+    print(f"closure: ok ({kind}; explicit_documents={len(closure_paths)})")
+    return 0
+
+
+def _research_state_gate(args: argparse.Namespace) -> int:
+    from research_workbench.research_state import GateCase, run_phase_c_gate
+
+    output = Path(args.output)
+    if output.exists():
+        raise FileExistsError(f"Phase C Gate output already exists: {output}")
+    cases = [
+        GateCase(Path(manifest), Path(oracle))
+        for manifest, oracle in args.case
+    ]
+    report = run_phase_c_gate(cases, project_root=Path(args.root).resolve())
+    output.parent.mkdir(parents=True, exist_ok=True)
+    _write_text(output, json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
+    status = report["machine_gate"]["status"]
+    print(f"Phase C bounded Gate: {status}; report={output}")
+    return 0 if status == "pass" else 1
+
+
 def _claim_trace(args: argparse.Namespace) -> int:
     document = load_document(args.claim)
     if not isinstance(document, Mapping):
@@ -1351,6 +1408,38 @@ def build_parser() -> argparse.ArgumentParser:
     execution_assess.add_argument("--protocol", required=True)
     execution_assess.add_argument("--root", default=".")
     execution_assess.set_defaults(handler=_execution_assess)
+    research_state_cmd = subparsers.add_parser(
+        "research-state", help="validate one bounded Phase C document against an explicit closure"
+    )
+    research_state_subparsers = research_state_cmd.add_subparsers(
+        dest="research_state_command", required=True
+    )
+    research_state_validate = research_state_subparsers.add_parser(
+        "validate", help="validate schema and exact refs without scanning the repository"
+    )
+    research_state_validate.add_argument("document")
+    research_state_validate.add_argument(
+        "--closure",
+        action="append",
+        required=True,
+        help="explicit closure file or directory; repeat for multiple roots",
+    )
+    research_state_validate.set_defaults(handler=_research_state_validate)
+    research_state_gate = research_state_subparsers.add_parser(
+        "gate",
+        help="run the two runner-owned bounded cases in fresh processes",
+    )
+    research_state_gate.add_argument(
+        "--case",
+        action="append",
+        nargs=2,
+        metavar=("MANIFEST", "PRIVATE_ORACLE"),
+        required=True,
+        help="source manifest and private oracle; repeat exactly twice",
+    )
+    research_state_gate.add_argument("--root", default=".")
+    research_state_gate.add_argument("--output", required=True)
+    research_state_gate.set_defaults(handler=_research_state_gate)
     return parser
 
 

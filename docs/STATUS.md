@@ -1,7 +1,7 @@
 # 实现状态
 
 状态：Current implementation authority
-更新：2026-08-27
+更新：2026-08-28
 
 本页只回答“仓库现在实现到哪里”。实时任务状态由 [`TASKS.md`](TASKS.md) 维护，依赖方向由 [`ROADMAP.md`](ROADMAP.md) 维护。
 
@@ -26,6 +26,10 @@ Protocol、两级 Snapshot 与 migration/replacement 结构契约已经实现。
 | Protocol Profile | 两个有界 PRISMA/V&V profile 只增加 method obligation 与 Gate/evidence expectation，不复制 Mode、不绑定 Skill/Tool/Provider，也不建立全局研究 DAG |
 | Capability supply / Snapshot | typed Report→Resolution→Snapshot 拒绝自报 evidence status、artifact/identity/version/capability/result 漂移和 routing/fallback；structural Snapshot 不是执行输入，Snapshot 只冻结 Supply-side permission/data-egress/side-effect facts，不生成最终权限、Provider binding 或 Authority eligibility |
 | Phase B Gate | hash-bound Gate 固定 Task/Mode/Action/Method/Requirement、A/B structural Snapshot 与两类 migration；供给替换保持三类 Supply boundary facts，不赋予 Runtime Method authority |
+| Research State candidate（M10-001） | bounded revisioned composition：exact ref、duplicate identity、pin verifiability、role/type、stale current 与 supersede lineage fail closed；Unknown/Assumption 保持轻量 item，Human Decision 复用 kernel Decision；最终表示仍待 Human/R2（[契约](implementation/RESEARCH_STATE_CANDIDATE_CONTRACT.md)） |
+| Research Attempt / Failure candidate（M10-002） | legacy execution Attempt 保持不变；versioned sidecar 以真实文件 SHA-256 精确绑定 execution Attempt，并分离 State/predecessor/reopen；Research Failure 只冻结 learned result/revisit condition，source/observed/uncertainty 保持可选 bounded profile（[契约](implementation/RESEARCH_ATTEMPT_FAILURE_CONTRACT.md)） |
+| Method Trace v0.1 candidate（M3-009） | 独立 ref-only Trace 精确绑定 Attempt/Task/Method Resolution/Mode/Action disposition/State/kernel Decision；无本 Attempt authoritative M11 fact 时记录 per-Attempt gap，captured fact 必须 exact 绑定 applied path 与 State effect，Snapshot 不得冒充 actual execution（[契约](implementation/METHOD_TRACE_CANDIDATE_CONTRACT.md)） |
+| Phase C bounded Gate（M10-003） | runner 以 source manifest 精确 pin 并 staging 两案 closure；fresh actor 新进程只读生成 manifest 与 allowlist，结束后 runner 才读取 private oracle；machine PASS 仍保持 Human semantic review、R2 closeout 与 Phase C closeout pending，且不授权 Topic 5（[契约](implementation/PHASE_C_BOUNDED_GATE.md)） |
 | 确定性验证 | Schema、引用、哈希、权限交集、Handoff lock、Claim 支持关系 |
 | Task 解析 | Task + Agent Profile + 显式或 Registry Skill 的冻结 Assignment、权限交集与版本锁 |
 | Legacy Skill 兼容 | accepted Registry 的 active / legacy / deprecated 历史选择边界与精确版本继续可验证；新绑定使用 lifecycle v2 eligibility |
@@ -42,12 +46,13 @@ Protocol、两级 Snapshot 与 migration/replacement 结构契约已经实现。
 
 | 范围 | 限制 |
 |---|---|
-| Method-aware control continuation | M6-003 只保留 legacy Task-to-API compatibility seam；M11-001～004 Core 已实现 bounded no-Skill/direct Tool vertical Gate；Method Trace 仍未实现。当前 checked-in 三条 Snapshot 都是 `structural-replay` 且 `execution_input=false`，M11 vertical fixtures 仅在临时项目中构造 runtime-execution 输入；Mode/lifecycle migration 不迁移历史 Resolution、Assignment、Receipt 或 Trace，Authority Rule Eligibility 也不执行决定 |
+| Method-aware control continuation | M6-003 只保留 legacy Task-to-API compatibility seam；M11-001～004 Core 已实现 bounded no-Skill/direct Tool vertical Gate；Method Trace 现为 ref-only candidate，尚不独立证明 actual path/state effect。当前 checked-in 三条 Snapshot 都是 `structural-replay` 且 `execution_input=false`，M11 vertical fixtures 仅在临时项目中构造 runtime-execution 输入；Mode/lifecycle migration 不迁移历史 Resolution、Assignment、Receipt 或 Trace，Authority Rule Eligibility 也不执行决定 |
 | no-Skill Assignment | Task 契约允许空 `required_skills`，但 alpha CLI 尚不能将其解析为冻结 Assignment |
 | Runtime Snapshot | 仓库没有 checked-in `runtime-execution` Snapshot/View/Receipt；测试只在临时目录构造 bounded local Core Gate，既有 structural fixture 不得被 Runtime 接受。M11-001～004 证明 exact closure、deterministic View、bounded Thin Host 与 execution-only replay，不形成 permission grant、真实 Provider readiness、scientific Claim 或 Human acceptance |
 | End-to-end research run | 尚无面向普通用户的一键 Task-to-research 闭环；Runtime 集成由开发者显式接入 |
 | 真实外部模型 | 仓库测试不证明各供应商真实账号、配额、工具调用或长期兼容性 |
 | 科学有效性 | Validator 不评判方法适用、证据质量或 Claim 正确性 |
+| Phase C candidates（M10-001/002 + M3-009 + M10-003） | 两个 synthetic bounded case 只证明 State/Attempt/Failure/Method Trace 的确定性 closure、fresh-process 受控读取和固定 fixture behavior；Human semantic review、R2/Phase C closeout 仍 pending，最终表示与 Topic 5 实现均未获授权 |
 | Skill 价值 | 现有 Registry 条目不构成已证明的普适研究增益；新任务可优先 no-Skill / direct-tool |
 | 发布 | 仓库缺少最终许可证选择，原创 Skill 许可状态仍阻断正式发布 |
 | 产品体验 | 初始化、可视化、协作 UI、安装包和运维流程仍是开发者级别 |

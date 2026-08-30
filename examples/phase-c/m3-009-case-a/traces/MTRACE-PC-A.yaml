@@ -1,0 +1,32 @@
+schema_version: 0.1.0
+trace_id: MTRACE-PC-A
+revision: 1
+content_hash: c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3
+status: active
+attempt_ref: {object_id: RATTEMPT-PC-A-02, revision: 1}
+task_ref: {object_id: M10-CASE-A, revision: 1}
+method_application:
+  resolution_ref: {object_id: MR-PC-A, revision: 1}
+  mode_refs: [evidence-synthesis@0.1.0]
+  action_decision_ids: [MRD-PC-A-EXTRACT]
+state_refs:
+  - role: from-state
+    ref: {object_id: RSTATE-PC-A, revision: 1}
+  - role: current
+    ref: {object_id: RSTATE-PC-A, revision: 2}
+human_decision_refs: [{object_id: D-PC-A, revision: 1}]
+path_dispositions:
+  - action_decision_id: MRD-PC-A-EXTRACT
+    disposition: applied
+    decision_refs: [{object_id: D-PC-A, revision: 1}]
+    evidence_refs: [{object_id: EVID-PC-A, revision: 1}]
+    failure_refs: []
+    state_refs: [{object_id: RSTATE-PC-A, revision: 2}]
+    execution_fact_refs: []
+actual_binding:
+  status: unavailable
+  reason: no-authoritative-execution-fact-for-attempt
+  coverage: gap-only
+limitations:
+  - Gap-valid is not coverage-complete.
+  - A selected Capability Snapshot is not evidence of actual execution.

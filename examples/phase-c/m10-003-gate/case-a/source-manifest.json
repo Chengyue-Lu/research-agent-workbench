@@ -1,0 +1,96 @@
+{
+  "schema_version": "0.1.0",
+  "case_id": "M10-003-EVIDENCE-SYNTHESIS",
+  "profile": "evidence-synthesis",
+  "state_alias": "state-current",
+  "method_trace_alias": "method-trace",
+  "documents": [
+    {
+      "alias": "claim",
+      "kind": "research_object",
+      "identity": {"object_id": "CLAIM-PC-A", "revision": 1},
+      "source_ref": {"path": "examples/phase-c/m10-001-case-a/objects/CLAIM-PC-A.yaml", "sha256": "8e79e407369349b1468e6f240a1a1b53372e456de11c741f965b6b47a5d154f0"}
+    },
+    {
+      "alias": "decision",
+      "kind": "research_object",
+      "identity": {"object_id": "D-PC-A", "revision": 1},
+      "source_ref": {"path": "examples/phase-c/m10-001-case-a/objects/D-PC-A.yaml", "sha256": "26025f0a85ec941840a4d4239af702266b2d14d3abe6396d5ab593d132a6c089"}
+    },
+    {
+      "alias": "evidence",
+      "kind": "research_object",
+      "identity": {"object_id": "EVID-PC-A", "revision": 1},
+      "source_ref": {"path": "examples/phase-c/m10-001-case-a/objects/EVID-PC-A.yaml", "sha256": "9b5884c6b872081c668741c597ad8ceae266e6827fbf0cfc54637fde13dcd0e7"}
+    },
+    {
+      "alias": "question",
+      "kind": "research_object",
+      "identity": {"object_id": "Q-PC-A", "revision": 1},
+      "source_ref": {"path": "examples/phase-c/m10-001-case-a/objects/Q-PC-A.yaml", "sha256": "c4a7ed2b0d15c47f50cdcee4e2d21624a7fdec1e487f2062f4d88181783f9d20"}
+    },
+    {
+      "alias": "state-from",
+      "kind": "research_state",
+      "identity": {"object_id": "RSTATE-PC-A", "revision": 1},
+      "source_ref": {"path": "examples/phase-c/m10-001-case-a/states/RSTATE-PC-A-r1.yaml", "sha256": "3a2009e728b04846a4e534dd87204f959d4ba56e279a9420d35bcefb34b148a9"}
+    },
+    {
+      "alias": "state-current",
+      "kind": "research_state",
+      "identity": {"object_id": "RSTATE-PC-A", "revision": 2},
+      "source_ref": {"path": "examples/phase-c/m10-001-case-a/states/RSTATE-PC-A-r2.yaml", "sha256": "2183bb1c98be7c8ad28feabc0fdf0dba844444da71e131d19af05b810a5fd3b1"}
+    },
+    {
+      "alias": "lineage-first",
+      "kind": "research_attempt_lineage",
+      "identity": {"object_id": "RATTEMPT-PC-A-01", "revision": 1},
+      "source_ref": {"path": "examples/phase-c/m10-002-case-a/attempt-lineage/A-PC-A-01.yaml", "sha256": "2d8c5c6452cce0df5d9d9e134ef375288eba27aa01d7eee588e2bb70338165f0"}
+    },
+    {
+      "alias": "lineage-current",
+      "kind": "research_attempt_lineage",
+      "identity": {"object_id": "RATTEMPT-PC-A-02", "revision": 1},
+      "source_ref": {"path": "examples/phase-c/m10-002-case-a/attempt-lineage/A-PC-A-02.yaml", "sha256": "5c2afd53714d1dd3fcd4fb96481c5e3de0c12054789b9d3df2d313125d25b45d"}
+    },
+    {
+      "alias": "attempt-first",
+      "kind": "attempt",
+      "identity": {"object_id": "A-PC-A-01", "revision": 1},
+      "source_ref": {"path": "examples/phase-c/m10-002-case-a/attempts/A-PC-A-01.yaml", "sha256": "4bfc49854a3a6f002e2506ff9746fe1745898a6ed0927ccf8b845b187f43b9a9"}
+    },
+    {
+      "alias": "attempt-current",
+      "kind": "attempt",
+      "identity": {"object_id": "A-PC-A-02", "revision": 1},
+      "source_ref": {"path": "examples/phase-c/m10-002-case-a/attempts/A-PC-A-02.yaml", "sha256": "1d0c5e96caf7f5bccafe18877d0924ce2bf1e9092e7315a0ed64b6d0c06bf024"}
+    },
+    {
+      "alias": "task",
+      "kind": "task_packet",
+      "identity": {"object_id": "M10-CASE-A", "revision": 1},
+      "source_ref": {"path": "examples/phase-c/m3-009-case-a/tasks/M10-CASE-A.yaml", "sha256": "75417c55e7b37190887fa001875ff8a9d10fac9df7fa0ea0f499f1d36497018a"}
+    },
+    {
+      "alias": "method-resolution",
+      "kind": "method_resolution",
+      "identity": {"object_id": "MR-PC-A", "revision": 1},
+      "source_ref": {"path": "examples/phase-c/m3-009-case-a/method-resolutions/MR-PC-A.yaml", "sha256": "40205cabd97b50fb5680547638df878fbb71bc41f9e1fcb9e45220c03206f42d"}
+    },
+    {
+      "alias": "method-trace",
+      "kind": "method_trace",
+      "identity": {"object_id": "MTRACE-PC-A", "revision": 1},
+      "source_ref": {"path": "examples/phase-c/m3-009-case-a/traces/MTRACE-PC-A.yaml", "sha256": "2a5257d8d921764d35f428afda2d12f284f1c83af4ae60ccdd3f21347a7ab11f"}
+    }
+  ],
+  "candidate_paths": [
+    {"path_id": "retain-bounded-evidence-synthesis", "reopen_basis_refs": []}
+  ],
+  "boundaries": {
+    "runner_owned_exact_closure": true,
+    "fresh_process": true,
+    "oracle_in_actor_scope": false,
+    "topic_5_authorized": false
+  }
+}

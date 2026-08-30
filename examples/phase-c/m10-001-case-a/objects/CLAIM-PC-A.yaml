@@ -1,0 +1,11 @@
+schema_version: 0.1.0
+object_type: claim
+object_id: CLAIM-PC-A
+revision: 1
+status: proposed-fixture
+content_hash: 1a2b1a2b1a2b1a2b1a2b1a2b1a2b1a2b1a2b1a2b1a2b1a2b1a2b1a2b1a2b1a2b
+statement: The fixture supports only a bounded structural reading.
+strength: unresolved
+support_refs: [EVID-PC-A@1]
+counterevidence_refs: []
+limitations: [No causal claim is accepted.]

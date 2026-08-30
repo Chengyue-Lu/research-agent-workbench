@@ -1,0 +1,13 @@
+schema_version: 0.1.0
+object_type: decision
+object_id: D-PC-A
+revision: 1
+status: accepted-fixture
+decision: Keep the Claim qualified and close the bounded unknown.
+scope: [m10-001-bounded-fixture]
+reason_refs: [EVID-PC-A@1]
+actor: human-maintainer-fixture
+timestamp: '2026-08-26T10:00:00+08:00'
+metadata:
+  authority_basis: fixture project protocol
+  scientific_correctness_claimed: false
