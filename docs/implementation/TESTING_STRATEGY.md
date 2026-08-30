@@ -28,12 +28,19 @@
 - Task → Resolved Task；
 - Task + Mode Action → Method Resolution（已实现 provider-neutral 决定工件与正反 fixture）；
 - Decision operation + actor + asserted facts → Authority Rule Eligibility（已实现 Matrix hash 与结果重算，但不证明 facts 或产生授权）；
-- Capability Requirement → frozen Snapshot（Roadmap Phase B 目标，尚未实现）；
-- Handoff → promotion eligibility；
-- Runtime capability snapshot；
+- Capability Requirement → Supply Report(s) → Capability Resolution → frozen Snapshot（Phase B 已实现闭集、替换与负面契约测试；Snapshot 不产生最终执行授权）；
+- Snapshot → Runtime Bundle → Resolved Execution View → Thin Host → actual execution fact → generic Receipt（M11 Core 已有 bounded synthetic positive/negative/replay 验证；不等于 live Provider 或普通用户 E2E）；
+- Research State / Research Attempt / Research Failure → ref-only Method Trace → bounded Phase C machine Gate（candidate contract 已实现；Human/R2 语义 closeout 仍独立）；
+- raw source bytes + exact admission sidecar → Source Admission（M4-001 已实现 fail-closed path/hash gate；不判断科学质量或许可证合法性）；
+- exact four-arm Evaluation Manifest → non-executing evaluation plan（M5-003 已实现；不保存实际 trial result，也不证明净收益）；
+- legacy Handoff/Receipt → transfer 与结构资格（compatibility contract；不等于 M4 object/run promotion 或 Topic 5 activation）；
+- Runtime Bundle/View 的 exact read closure、freshness、permission/data-egress/side-effect narrowing 与 fail-closed drift；
 - 工具 Adapter 输入/输出。
 
-### Integration
+### Integration targets
+
+以下混合已有 legacy/bounded fixture 与未来真实案例目标；列入测试策略不表示相应 Runtime、promotion、
+recovery 或外部执行已经获得 implementation authority：
 
 - 初始化示例项目；
 - evidence-scout 完成 Evidence Handoff；
@@ -92,7 +99,7 @@ CCRML 讨论吸收后新增：下一 AWU 超过剩余预算触发 rollover、收
 Codex Adapter 每次目标版本变化后检查：
 
 - 项目 Agent 配置是否被发现；
-- required Skill 是否可显式调用；
+- Skill-bearing case 声明的 required Skill 是否可显式调用；no-Skill case 不伪造 Skill；
 - sandbox/permission 是否符合交集；
 - 子 Agent是否返回结果并可定位线程；
 - 写范围是否被遵守；
@@ -102,7 +109,9 @@ Codex Adapter 每次目标版本变化后检查：
 
 ## 6. 发布门槛
 
-M1/M2 期间发布只要求结构、契约和示例可重复。只有 M5 后才允许宣称对科研质量或效率有帮助；在此之前文案使用“设计目标”“候选机制”“初步验证”。
+M1/M2 期间发布只要求结构、契约和示例可重复。只有 Phase D 的真实案例评估、独立结果记录与具名
+Human acceptance 形成净增量证据后，才允许宣称对科研质量或效率有帮助；M5-003 的 non-executing
+Manifest/plan 本身不满足该门槛。在此之前文案使用“设计目标”“候选机制”“初步验证”。
 
 ## 7. 测试删减
 

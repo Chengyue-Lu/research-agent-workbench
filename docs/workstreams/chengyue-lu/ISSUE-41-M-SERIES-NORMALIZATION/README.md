@@ -4,9 +4,13 @@
 - Issue：[M-series normalization](https://github.com/Chengyue-Lu/research-agent-workbench/issues/41)
 - 风险：`R2` task architecture / governance normalization
 - PR class：`task-definition`
-- 基线：`develop@73dcb03b4d4152f36fef5b2dadb3ae0f11d7de7b`
-- 分支：`docs/issue-41-m-series-normalization`
-- 状态：M0～M10 inventory、M11 task-definition、PR #42 review remediation 与 Issue #41 follow-up 的 M-group reservation / 双图更新均已纳入并完成本地验证，等待 R2 re-review
+- 审计基线（历史）：`develop@73dcb03b4d4152f36fef5b2dadb3ae0f11d7de7b`
+- 实施分支（历史）：`docs/issue-41-m-series-normalization`
+- 状态：PR #42 已以 `6b16129` 合入 `develop`；M0～M10 inventory、M11 task-definition、review
+  remediation、M-group reservation 与双图规则均已接受，本目录现为 normalization 审计快照
+
+[`NORMALIZATION_MATRIX.md`](NORMALIZATION_MATRIX.md) 固定的是上述审计基线和当时的 before/after proposal，
+其中 `READY/BLOCKED/PARKED` 不是当前状态。实时 Task truth 只读取 [`TASKS.md`](../../../TASKS.md)。
 
 ## 1. 目标
 

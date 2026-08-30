@@ -34,18 +34,28 @@
 
 表示正式接受、拒绝、修改、暂停、排除或发布决定。最低字段：`id`、`decision`、`scope`、`reason_refs`、`actor`、`timestamp`、`supersedes`。
 
-### Research State 的扩展原则
+### Research State candidate 与扩展边界
 
-`Unknown`、`Contradiction`、`Assumption`、`Attempt`、`Failure` 与 `Frontier` 用于表达长期研究状态。
-它们只有在跨 Mode 的真实案例证明字段稳定后才逐项进入核心对象，不一次扩成统一知识图谱。
-Schema 覆盖程度由[实现状态](../STATUS.md)说明。
+M10 已实现 bounded Research State composition candidate、Research Attempt lineage / Research Failure
+candidate、ref-only Method Trace v0.1 和 fresh-process machine Gate。当前 Research State 可以用带 revision
+的 composition 表达轻量 `Unknown` / `Assumption` item、`Contradiction` relation、derived `Frontier`，以及
+对现有 Evidence、Claim 和 kernel Decision 的 exact 引用；引用、身份、哈希与 supersession closure 可由
+机器重算。
 
-Failure 至少应保留 `goal`、`method`、`outcome`、`failure_reason`、`what_was_learned` 和
-`revisit_condition`，避免新 Runtime 因缺少聊天历史重复已知失败。
+这些表示仍是 bounded implementation candidate，不是最终通用 kernel Schema。machine Gate 证明的是
+两份 synthetic case 的确定性 closure 和已声明 fixture behavior，不证明科学正确性，也不完成 Human/R2
+semantic closeout，更不自动授予 Topic 5 implementation authority。当前覆盖与限制见
+[实现状态](../STATUS.md)。
 
-`Attempt` 专指一次 Task 的一次执行，并关联 `work/<task>/<attempt>/`、Attempt Archive 与
-Execution Receipt。包含多个执行 Attempt 的 research-level / method trial 必须采用独立对象名或
-显式关系，不能复用或静默改变 `Attempt` 语义。
+legacy execution `Attempt` 仍专指一次 Task 的一次执行，并关联 `work/<task>/<attempt>/`、Attempt Archive
+与执行记录。M10 的 `research_attempt_lineage` 是独立、版本化的 sidecar：它 exact-pin 既有 execution
+Attempt，并把 from-State、可选 predecessor Attempt 与 reopen justification 分开；它不改写 legacy
+Attempt，也不从 Attempt 自动推导新的 State。
+
+Research Failure 的通用语义最小值只冻结 `learned_result` 和 `revisit_condition`。execution-origin
+Failure 还必须通过一个 all-or-nothing profile 精确引用 source Research Attempt，并记录 observed result
+与 uncertainty；non-execution Failure 不得伪带该 profile。Research Failure 必须继续与 execution
+failure、negative Evidence、Capability Gap 和 Skill Need 分离，不能因名称相近而合并。
 
 ## 3. 关系而非固定流程
 

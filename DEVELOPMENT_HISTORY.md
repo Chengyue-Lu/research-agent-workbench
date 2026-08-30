@@ -2,6 +2,58 @@
 
 本项目遵循“证据先于宣称”：离线契约、fixture 和真实运行结果分开记录。日期按仓库当前开发快照标记。
 
+## 2026-08-30 — M10、M4-001 与 M5-003 顺序集成
+
+### Integrated
+
+- 严格按 PR #44 → PR #39 → PR #43 顺序在每次合并后重新以最新 `develop` 建立下一分支基线；对应
+  merge commits 为 `92fcbe5`、`e5cca23` 与 `9d2f72f`。
+- PR #44 接受 M10-001 → M10-002 → M3-009 → M10-003 的 bounded candidate chain；最终 exact-head
+  hosted evidence 为双 Python 各 700 项、coverage-quality 639 项、global line 91.65%，Phase C critical
+  validators 均满足逐文件 Gate。
+- PR #39 接受 M4-001 Source Admission；最终 exact-head hosted evidence 为双 Python 各 726 项、
+  coverage-quality 665 项、global line 91.47%，`artifacts/admission.py` 为 97.06% line / 95.45% branch。
+- PR #43 接受 M5-003 四臂 Evaluation Manifest 与 compiled-not-executed baseline plan；最终 exact-head
+  hosted evidence 为双 Python 各 770 项、coverage-quality 709 项、global line 91.23%。
+
+### Boundaries
+
+- M10 Task 实现完成不等于最终 Research State ontology、科学正确性或 Phase C Human/R2 semantic
+  closeout；Topic 5 没有因此获得实现权限。
+- M4-001 不实现 promotion、Claim trace 或 Run reproduction；M5-003 不执行真实案例、不保存 trial result，
+  也不构成 Skill/Method 净收益证据。
+
+## 2026-08-29 — CI 去重与 Coverage Policy v2
+
+### Integrated
+
+- PR #47（`1425141`）先把重复 full-suite、coverage 与 package-smoke 调整为职责独立的 CI topology；
+  Python 3.11/3.13 仍各执行完整 behavioral suite，package smoke 与 governance 保持独立。
+- PR #49（`e9a052f`）在此基础上接受 TEST-QUALITY-001：coverage-quality 只运行 deterministic
+  unit/contract/validator tests，global 90% 与 critical 95/90 由单一 policy fail closed。
+- Checker self-control、canonical source root、positive/negative evidence 互斥、exact exclusions 与实际
+  canonical test identity 都成为机器 Gate；重型 E2E 未被删除，继续留在双 Python behavioral suite。
+
+### Boundaries
+
+- 本轮只改变 CI/测试质量控制与 authority-sensitive validator 的职责拆分，不改变 Runtime、Method、
+  Claim、permission 或 Human Decision 语义；TEST-PERF-002 仍是后续独立优化。
+
+## 2026-08-27 — M11 Execution Reintegration Core
+
+### Integrated
+
+- PR #46 先独立接受通用 module-level dependency-DAG integration rule；PR #45 随后基于该治理完成
+  M11-001～004，并以 `aa4e7ee` 合入 `develop`。
+- Runtime Bundle、supply-neutral Resolved Execution View、single-binding Thin Host 与 status-aware generic
+  Trace/Receipt closeout 形成 no-Skill/direct-tool 可闭合的 bounded Core。
+
+### Boundaries
+
+- Core 不依赖 SkillReleaseProjection 或 Evolution Registry，不拥有 Supply reselection、fallback、Method、
+  Claim、Gate、Human Decision 或 Task completion authority。
+- M11-005/006 optional Skill supply publication/mapping 保持 PARKED；M11 不实现 Topic 5 recovery。
+
 ## 2026-08-21 — K-INTEGRATION-1 Method / Execution Shared Seam Freeze
 
 ### Integrated

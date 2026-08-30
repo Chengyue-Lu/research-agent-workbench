@@ -63,20 +63,22 @@ messages/0004-mode-reviewer-to-main-agent-handoff.md
 
 ```yaml
 ---
+schema_version: 0.1.0
 message_id: MSG-0004
 task_id: MODE-001
+task_revision: 1
 attempt_id: A-001
 sequence: 4
 kind: handoff
 sender_actor_id: mode-reviewer
 receiver_actor_ids: [main-agent]
 accountable_owner: 路诚钺
-created_at: 2026-08-14T10:30:00+08:00
+created_at: "2026-08-14T10:30:00+08:00"
 in_reply_to: MSG-0003
-content_sha256: "..."
+content_sha256: "0000000000000000000000000000000000000000000000000000000000000000"
 attachment_refs:
   - path: work/MODE-001/A-001/outputs/mode-card.yaml
-    sha256: "..."
+    sha256: "0000000000000000000000000000000000000000000000000000000000000000"
 redactions: []
 capture_status: complete
 ---
@@ -105,17 +107,21 @@ capture_status: complete
 
 ### Execution Trace 与 Method Trace
 
-Execution Trace 负责上述可观察执行/Archive 事实。Method Trace 独立记录为何提出/接受 Mode、选择
-Action/Mechanism、拒绝哪个替代、如何解析 Capability、发生什么 Human Gate，以及何种 Evidence
-导致 Claim/Failure/Frontier 变化。两层通过稳定 ID 关联，不把方法解释塞进 Tool debug 字段，也
-不复制消息正文。
+Execution Trace 负责上述可观察执行/Archive 事实。M3-009 已实现独立的 ref-only Method Trace v0.1
+candidate，用 exact refs 记录 applied Method Resolution、Mode、Action disposition、Research Attempt、
+from-State、kernel Decision 和 typed path basis。两层通过稳定 ID 关联，不把方法解释塞进 Tool debug
+字段，也不复制消息正文。
 
-Method Trace 依赖正式 Mode Action、Method Resolution 和 Decision Authority；在这些契约完成前，
-手写理由只算过程文档，不能假称可验证 Method Trace。
+Method Trace 必须区分计划中的 selected Snapshot/View 与实际执行事实：Snapshot 不能冒充 actual
+binding；若本 Attempt 没有 authoritative M11 `execution_trace_fact`，Trace 必须显式记录 per-Attempt
+gap，不能声称 coverage complete。若存在 captured fact，它必须 exact-pin 同一 Attempt 的 actual
+binding/Supply，并至少绑定一个 applied path 和 State effect。该 candidate 的确定性 closure 仍不证明
+reviewer reconstruction 或科学正确性，最终语义保持 Human/R2 closeout 独立。
 
-## 4. 原始来源接纳
+## 4. 原始来源接纳（M4-001 已实现）
 
-`sources/inbox` 中的内容默认不可信、可变且不可引用。接纳到 `sources/raw` 时记录：
+`sources/inbox` 中的内容默认不可信、可变且不可引用。M4-001 的 `source_admission` sidecar 在接纳到
+`sources/raw` 时记录：
 
 - 原始文件名与接纳路径；
 - SHA-256；
@@ -125,11 +131,20 @@ Method Trace 依赖正式 Mode Action、Method Resolution 和 Decision Authority
 - 敏感性与外传限制；
 - 与衍生文本、图表、OCR 的 provenance 关系。
 
-网页、API 返回和数据库查询也需要快照或可复现 locator；只保存 URL 不足以保证来源未变化。
+`rwb source admit` 默认 dry-run，只有显式执行才写入，并拒绝覆盖既有 admitted bytes 或 sidecar。
+`rwb source check` 与 repository validation 使用规范化的完整路径段判断 `sources/inbox` / `sources/raw`：
+普通文档引用 raw bytes 时，必须存在同路径 `<raw-path>.admission.yaml`，其 Schema、`admitted_path` 和
+SHA-256 必须与 live bytes 闭合；FileReference 自带 SHA 时还必须与 admission SHA 一致。`raw-copy`、
+`inbox-old` 等相似前缀不构成分区命中。
 
-## 5. Run Manifest
+这套 Gate 只证明 identity/hash/provenance closure，不判断来源真实性、许可证法律效力、内容安全或科学
+质量。网页、API 返回和数据库查询也需要快照或可复现 locator；只保存 URL 不足以保证来源未变化。
+M4-002 promotion、M4-003 Claim trace 与 M4-004 Run reproduction 仍是独立未完成层，M4-001 不替代它们。
 
-每个实验、仿真、统计分析、检索批次或证明检查记录：
+## 5. Run Manifest target（M4-004 尚未实现）
+
+下面只展示未来 Run reproduction contract 需要保留的信息类别，不是已接受 Schema。每个实验、仿真、
+统计分析、检索批次或证明检查最终应记录：
 
 ```yaml
 run_id: RUN-0042
@@ -145,7 +160,7 @@ environment:
 agent_execution:
   task_ref: tasks/SIM-007.yaml
   profile_ref: simulation-auditor@0.1.0
-  skill_assignment_ref: assignments/SA-0043.yaml
+  resolved_execution_view_ref: execution/views/VIEW-SIM-007.yaml
 status: completed
 outputs:
   - path: runs/RUN-0042/metrics.csv
@@ -153,9 +168,12 @@ outputs:
 limitations: []
 ```
 
-模型输出和 Agent 输出都只是工件，必须经过后续 Claim 关系与决策。
+Skill-bearing Run 可以额外引用 exact Assignment；no-Skill/direct Tool/procedure/Adapter 路径不得伪造该
+字段。模型输出和 Agent 输出都只是工件，必须经过后续 Claim 关系与决策。
 
-## 6. 提升与冻结
+## 6. 提升与冻结 target（M4-002 尚未实现）
+
+以下是 promotion 层需要保持的设计边界，不是 M4-001 已经提供的实现能力：
 
 - 子 Agent 先写 `work/<TASK>/<ATTEMPT>`；
 - 校验通过后由 promotion 操作复制/登记到正式区；
@@ -221,14 +239,21 @@ Trace 默认保存在项目工作区，但不等于默认提交 Git：
 
 ## 10. 验收条件
 
-- 任一正式 Evidence 和 Run 可定位到不可变输入或快照；
-- 路径调整不破坏逻辑 ID 与内容引用；
-- 失败和负结果不会因 promotion 被过滤掉；
-- 子 Agent无权直接覆盖 accepted 工件；
-- 外部发送的数据有清单和授权；
-- 一个 Run 可在没有原 Agent 会话的情况下理解与重建；
+当前已实现的 M4-001 验收边界：
+
+- `sources/inbox` 的完整路径段引用被阻断；
+- 每个普通 `sources/raw` 引用可定位到 Schema-valid sidecar、exact admitted path 与当前 live-byte hash；
+- FileReference/admission SHA 漂移、缺失或错误 sidecar 均 fail closed；
+- admission PASS 不被解释为来源可信、许可合法或科学正确。
+
+当前 Agent/Method Trace 可追溯边界：
+
 - 任一跨 Agent Handoff 能定位到发送前后的消息、actor、附件和接收决定；
 - 能从 event ledger 核对每个 Agent 实际读取的正文与执行的工具是否在 Task 边界内；
 - 未采用的中间产物、失败与覆盖尝试仍可沿 revision/tombstone 定位；
 - Worklog 缺失不导致 Trace 消失，Trace 很长也不要求主 Agent 默认加载；
 - capture gap、删减和延迟会显式暴露，不能被误报为完整记录。
+
+以下仍是 M4-002～004 的 target acceptance，不能由 M4-001 的 DONE 状态代替：路径调整不破坏正式对象
+identity、promotion 不丢弃失败/负结果、子 Agent 不能覆盖 accepted 工件、Claim trace 可一次定位支持/反证/
+限制，以及 Run 可在没有原 Agent 会话时按 exact inputs/environment/execution facts 理解与重建。

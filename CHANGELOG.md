@@ -1,5 +1,25 @@
 # Changelog
 
+## 2026-08-30 — Phase C、Source Admission 与 Evaluation 基线
+
+- 接受 M10-001、M10-002、M3-009 与 M10-003 的 bounded candidate chain：durable Research State、
+  Research Attempt/Failure、ref-only Method Trace 与 fresh-process Phase C machine Gate 已进入 `develop`；
+  Human semantic review、R2/Phase C closeout 与 Topic 5 authority 继续独立且仍未完成；
+- 接受 M4-001 Source Admission：`sources/inbox` 保持 mutable/untrusted/non-referenceable，`sources/raw`
+  必须绑定 exact provenance sidecar 与 live-byte hash；promotion、Claim trace、Run reproduction、来源科学
+  质量和许可法律判断均不在本层；
+- 接受 M5-003 canonical four-arm Evaluation Manifest 与 non-executing baseline plan；它冻结可比条件，
+  但没有执行真实案例，也没有证明 Mode、Method 或 Skill 的净收益。
+
+## 2026-08-29 — TEST-QUALITY-001 / Coverage Policy v2
+
+- 将 Python 3.11/3.13 behavioral compatibility、Python 3.11 coverage-quality、package-smoke 与 governance
+  拆为职责独立但能传播到既有 required-check identity 的 Gate；
+- 全包 global line floor 固定为 90%，authority-sensitive critical modules 逐文件固定为 line 95% / branch
+  90%，并要求互斥的 positive/negative acceptance evidence、exact exclusion 对账和 canonical test identity；
+- Coverage checker 自身进入 critical inventory；重型 behavioral E2E 仍完整保留在双 Python full suite，
+  没有通过删测试、降低阈值或修改产品契约换取绿灯。
+
 ## 2026-08-27 — PR #45 R2 contract remediation
 
 - 将 M11 Runtime Core 明确限定为 exact Action/Capability execution slice：manifest 同时公开完整 Task demand 与 singleton closed set，阻断 unresolved capability 下的 whole-Task completion；
@@ -8,7 +28,6 @@
 - Runtime Bundle 仅接受 `Method Resolution.resolution_status=proceed`，校验 Task capability set 等于 Method Action requirement union，并永久固定 `task_completion=false`；
 - Host 的 elapsed 与 `max_seconds` enforcement 改取 trusted clock end-start，Driver 低报耗时不能绕过预算；
 - post-call Trace 新增 typed、hash-pinned actual execution fact，Generic Receipt replay 独立闭合 Provider/Adapter/Model/Runtime/Host 与 actual Supply；缺失或漂移事实不具备 Receipt eligibility；
-- PR #46 已独立合并，PR #45 已 rebase 到 accepted governance base，且不再携带 canonical governance 的历史回退 diff。
 
 本文件只记录被主线接受、会影响使用者理解的基线变化。逐任务、分支和实验过程保存在[详细开发日志](DEVELOPMENT_HISTORY.md)。
 

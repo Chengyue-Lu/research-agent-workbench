@@ -74,7 +74,8 @@ v0.1 Method Resolution 的 `skill_need_refs` 与现有 Repository validation clo
 `maintainer-full`、发布完整性检查和历史重放。它们不构成未来 Runtime bundle 的传递依赖：
 
 - Research Control / Capability Resolver 从 Method/Task 进入 `Capability Requirement → Supply Report →
-  Resolution → Snapshot`；Runtime consumer 从 exact frozen Snapshot 与 Resolved Execution View 开始；
+  Resolution → Snapshot → Runtime Bundle → Resolved Execution View`；Thin Host 只消费 exact Bundle-bound
+  View，上游 Snapshot 不作为并列 executable input；
 - Runtime bundle 不解析 Skill Need Registry，也不因 Method 引用了 Need 而要求加载 Candidate、Evaluation
   或 Lifecycle；
 - capability gap 或 execution failure 不修改 Method Resolution，也不自动创建 Skill Need；

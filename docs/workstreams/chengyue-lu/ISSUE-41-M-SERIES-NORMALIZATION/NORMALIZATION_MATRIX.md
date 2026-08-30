@@ -4,6 +4,9 @@
 `develop@73dcb03b4d4152f36fef5b2dadb3ae0f11d7de7b`。未合并 PR、远端 feature branch 与其中的状态变化
 均不参与审计。
 
+> 历史审计快照：本文中的 `READY/BLOCKED/PARKED` 只描述上述固定基线与当时 proposal，不是当前
+> Task 状态。当前唯一真值见 [`TASKS.md`](../../../TASKS.md)。
+
 ## 1. 口径
 
 矩阵中的 Topic 使用以下 accepted responsibility 名称：Repository/Governance、Research Control/Method、

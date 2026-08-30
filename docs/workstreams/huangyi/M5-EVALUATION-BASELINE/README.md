@@ -3,13 +3,14 @@
 - 实现责任人：黄毅（GitHub `let778750-cpu`）
 - Task owner / 必需审查人：路诚钺（GitHub `Chengyue-Lu`）
 - Task：`M5-003`
-- 基线：`develop@e5cca23`（含 TEST-QUALITY-001、M10 / Phase C 与 M4-001）
-- 分支：`agent/m5-evaluation-baseline`
+- 状态：PR #43 已以 `9d2f72f` 合入 `develop`；M5-003 DONE，真实案例与净收益验证仍未执行
+- 实施基线（历史）：`develop@e5cca23`（含 TEST-QUALITY-001、M10 / Phase C 与 M4-001）
+- 实施分支（历史）：`agent/m5-evaluation-baseline`
 - 风险：R1（共享 Evaluation contract）
 
 ## 范围
 
-本 PR 只完成规范化后的 M5-003：最小 Evaluation Manifest、四臂 Phase D treatment vocabulary、
+PR #43 只完成规范化后的 M5-003：最小 Evaluation Manifest、四臂 Phase D treatment vocabulary、
 M5-003 v0.1 指标/evidence-class freeze，以及 deterministic non-executing baseline plan。
 M5-001/002/004/005 不推进，状态不变。
 
@@ -37,9 +38,9 @@ M5-001/002/004/005 不推进，状态不变。
   no blocking deterministic risks；13 metrics verified；
 - `rwb eval plan ...`：四臂 canonical 顺序、同一 frozen digest、`compiled-not-executed`；
 - `rwb validate examples registry --root .`：182 validated、0 error、0 warning；
-- 双 Python full suite、coverage-quality、package-smoke、governance 与 aggregate Gate 的
-  rebased exact-HEAD 结果记录在 PR evidence 中；本文只保留稳定命令、契约边界与验收口径，
-  不固化易过期的 hosted run identity。
+- 合并前 exact-head hosted evidence：Python 3.11/3.13 各 770/770 PASS，coverage-quality 709/709
+  PASS，global line 91.23%；package-smoke、governance 与 aggregate Gates 全部 PASS。本文不把这些
+  implementation 证据解释为真实 Evaluation 已执行。
 
 ## 非目标与后续
 

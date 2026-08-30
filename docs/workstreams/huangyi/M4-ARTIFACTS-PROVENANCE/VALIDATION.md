@@ -1,8 +1,8 @@
 # M4-001 验证证据
 
-状态：PR #39 基于 PR #44 / TEST-QUALITY-001 后的 latest `develop` 完成语义 rebase；
-code-complete HEAD `3e19390` 的 hosted CI 证据已闭合，最终 docs-only evidence HEAD 仍须保持同一
-authoritative Gate 全绿。
+状态：PR #39 基于 PR #44 / TEST-QUALITY-001 后的 latest `develop` 完成语义 rebase 与最终
+exact-head hosted CI，并以 `e5cca23` 合入 `develop`。code-complete 与 docs evidence 已由同一
+authoritative Gate 闭合。
 
 ## Task 级证据
 
@@ -22,6 +22,6 @@ authoritative Gate 全绿。
 |---|---|---|
 | M4-001 专项 | `PYTHONPATH=src python -m unittest discover -s tests -p test_artifacts_admission.py` | 26 passed（含 raw-reference 与 producer critical 分支） |
 | Schema 目录 | `PYTHONPATH=src python -m unittest discover -s tests -p test_schemas.py` | 3 passed |
-| Coverage Policy | `artifacts/admission.py` 纳入 critical inventory；valid exact-sidecar 与五类 fail-closed 用例作为独立正反 evidence | run `33307280679`: global 91.47%；admission 97.06% line / 95.45% branch；665/665 PASS，无 duplicate canonical test |
-| 双 Python full suite | 仓库 authoritative CI topology | run `33307280679`: Python 3.11 726/726 PASS；Python 3.13 726/726 PASS |
-| 仓库校验 / package-smoke / governance / aggregate Gates | 仓库 authoritative CI topology | run `33307280679`: 全部 PASS；repository validation 由 clean wheel 执行 |
+| Coverage Policy | `artifacts/admission.py` 纳入 critical inventory；valid exact-sidecar 与五类 fail-closed 用例作为独立正反 evidence | final run `33308110868`: global 91.47%；admission 97.06% line / 95.45% branch；665/665 PASS，无 duplicate canonical test |
+| 双 Python full suite | 仓库 authoritative CI topology | final run `33308110868`: Python 3.11 726/726 PASS；Python 3.13 726/726 PASS |
+| 仓库校验 / package-smoke / governance / aggregate Gates | 仓库 authoritative CI topology | final run `33308110868`: 全部 PASS；repository validation 由 clean wheel 执行 |

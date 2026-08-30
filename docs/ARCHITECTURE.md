@@ -1,8 +1,8 @@
 # 总体架构
 
-版本：0.7
+版本：0.7.1
 状态：Accepted system model
-更新：2026-08-25
+更新：2026-08-31
 
 ## 1. 核心模型
 
@@ -35,15 +35,16 @@ flowchart TB
 | Research Mode | 学科/方法语境与 Action catalog | Method Resolution |
 | Mode Action | 在某 Mode 中可审计的研究动作 | Method、Capability、Gate 解析 |
 | Method Resolution | 为什么选择某机制、能力和控制条件 | Capability Requirement、Method Trace |
-| Task | 单次原子目标、输入、权限、预算、输出和停止条件 | Resolved Execution View、Validator |
-| Agent Profile | 角色能力上限、默认权限和上下文策略 | Assignment Resolver |
+| Task | 单次原子目标、输入、权限、预算、输出和停止条件 | Runtime Bundle、Resolved Execution View、Validator |
+| Agent Profile | 角色能力上限、默认权限和上下文策略 | Resolved Execution View producer；Skill-bearing 兼容路径中的 Assignment Resolver |
 | Skill | 经证明有净增量的窄方法程序 | Agent 执行；不拥有任务或科学决定 |
 | Tool | 具有权限与副作用元数据的可调用能力 | Agent / Adapter |
 | Capability Requirement | 与具体 Skill、Tool、Adapter 或 Provider 无关的需求与 ceiling | Supply Report、Capability Resolution |
 | Capability Supply Report | 一个具体供给的 identity、能力、I/O、边界与证据事实；不能选择自身 | Research Control / Capability Resolver |
 | Capability Resolution | Resolver 对显式候选的 deterministic compare、qualification 与唯一 selection；或 gap/ambiguous/blocked | Resolved Capability Snapshot |
-| Resolved Capability Snapshot | Resolver 对一次确定性选择所冻结的需求、供给、证据与 supply-side boundary | Resolved Execution View |
+| Resolved Capability Snapshot | Resolver 对一次确定性选择所冻结的需求、供给、证据与 supply-side boundary | Runtime Bundle、Resolved Execution View producer |
 | SkillReleaseProjection | 已准入不可变 Skill Release 的窄、只读发布视图 | Skill Supply Report；不暴露演化历史 |
+| Runtime Bundle / Consumer Profile | exact allowed-read closure 与 Action→Capability slice；不选择 Supply、不授予执行权 | Resolved Execution View producer、Execution Host |
 | Resolved Execution View | Snapshot 与 exact Host/Provider/Adapter/Model、freshness、DataPolicy 和权限交集 | Execution Host |
 | Assignment | 仅 Skill-bearing 路径所需的 Task、Profile、Skill 精确锁定；no-Skill/direct Tool 不创建 | Resolved Execution View |
 | Capability Diagnostic | Runtime 产生的有界失败事实，不是 Skill Need | 本地审计；可选 Maintainer triage |
@@ -63,13 +64,13 @@ sequenceDiagram
     participant V as Validator
 
     H->>R: Question + Mode + bounded Task
-    R->>R: resolve Action, Method, capability supply, permissions
+    R->>R: resolve Action, Method, capability supply and ceilings
     R-->>H: unresolved conflict or Human Gate
-    R->>A: frozen Snapshot + Resolved Execution View
+    R->>A: exact Runtime Bundle + Bundle-bound Resolved Execution View
     A->>T: bounded calls
     T-->>A: results
     A->>A: persist artifacts, trace, receipt, bounded diagnostic
-    A->>V: Handoff + outputs + archive
+    A->>V: outputs + archive + optional Handoff
     V-->>H: structural result + risks
     H->>H: accept, revise, pause, or release
 ```
@@ -88,7 +89,8 @@ flowchart LR
         CR --> SR["Explicit Supply Report(s)"]
         SR --> RS["Research Control / Capability Resolver<br/>compare · qualify · resolve · select"]
         RS --> SS["Frozen Resolution / Snapshot"]
-        SS --> EV["Resolved Execution View"]
+        SS --> RB["Runtime Bundle<br/>exact allowed-read closure"]
+        RB --> EV["Resolved Execution View<br/>bound to exact Bundle"]
         EV --> EX["Execution Host<br/>consume exact frozen input"]
         EX --> TR["actual facts / Trace / Receipt<br/>bounded Diagnostic or re-resolution request"]
     end
@@ -109,7 +111,8 @@ flowchart LR
 Research Control / Capability Resolver 是唯一 Supply selection owner：它接收显式候选 Reports，在既有
 ceilings 内 compare、qualify、resolve、select，并生成新的 Resolution 与 Snapshot revision；上游 View
 producer 只能按该 frozen selection 生成 Resolved Execution View，不能再次选择。Execution Host / Runtime
-consumer 只消费 exact frozen Snapshot 与 View；它可以在不改变
+consumer 只消费 exact View 与该 View 绑定的 Runtime Bundle；上游 Snapshot 只通过这条 closure 被使用。
+调用前由 trusted clock 重验 freshness，并按哈希重载 Bundle 以阻断可控文件 TOCTOU 漂移。它可以在不改变
 Capability/Supply binding 时做非语义执行调度，但不能重新选择、静默替换、rebind、automatic fallback，
 也不能用“局部重规划”修改当前 frozen execution input。
 

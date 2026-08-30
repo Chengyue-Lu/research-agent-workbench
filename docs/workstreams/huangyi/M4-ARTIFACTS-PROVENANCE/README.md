@@ -3,18 +3,19 @@
 - 实现责任人：黄毅（GitHub `let778750-cpu`）
 - Task owner / 必需审查人：路诚钺（GitHub `Chengyue-Lu`）
 - Task：`M4-001`
-- latest-base 验证基线：`develop@aa4e7eed`
-- 分支：`agent/m4-artifacts-provenance`
+- 状态：PR #39 已以 `e5cca23` 合入 `develop`；M4-001 DONE，M4-002 因唯一 hard dependency 已满足而为 READY
+- latest-base 验证基线（历史）：`develop@92fcbe5`（PR #44 / M10 已合入）
+- 实施分支（历史）：`agent/m4-artifacts-provenance`
 - 风险：R1（共享 Schema/CLI/validator contract）
 
 ## 范围
 
-本 PR 按 Issue #41 / PR #42 的规范化治理只承载 M4 第一依赖层：source admission、
+PR #39 按 Issue #41 / PR #42 的规范化治理只承载 M4 第一依赖层：source admission、
 provenance sidecar、inbox 引用阻断、CLI 与确定性验证。`docs/TASKS.md` 只将 M4-001 从
 READY 置为 DONE。
 
-M4-002 promotion、M4-003 Claim trace、M4-004 Run manifest 均保留 BLOCKED；它们必须在
-前置层经 owner 接受后，按当前 module-level 治理与 owner 确认的顺序沿 M4 线推进。规范化前
+M4-002 promotion 现为 READY；M4-003 Claim trace 与 M4-004 Run manifest 继续等待 M4-002，保持
+BLOCKED。它们必须按当前 module-level 治理与 owner 确认的顺序沿 M4 线推进。规范化前
 一次性将四个 Task 置为 DONE 的口径已经撤销，旧 head 仅保存在
 `archive/pr39-pre-split-20260826` 供追溯，不构成实现状态真值。
 
