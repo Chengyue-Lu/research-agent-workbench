@@ -23,6 +23,7 @@
 - [Ref-only Method Trace v0.1 candidate (M3-009)](METHOD_TRACE_CANDIDATE_CONTRACT.md)
 - [Phase C runner-owned bounded Gate (M10-003)](PHASE_C_BOUNDED_GATE.md)
 - [Source admission contract (M4-001)](SOURCE_ADMISSION_CONTRACT.md)
+- [Evaluation manifest contract (M5-003)](EVALUATION_MANIFEST_CONTRACT.md)
 - [File-authoritative Trace Core](TRACE_CORE.md)
 - [Execution Trace Adapter](EXECUTION_TRACE_ADAPTER.md)
 - [Provider Adapter plan and seam](PROVIDER_ADAPTER_PLAN.md)

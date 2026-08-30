@@ -107,7 +107,7 @@ M3-001～007 的 `PARKED` 表示当前没有 active implementation，并非抹�
 |---|---|---|---|---|
 | M5-001 | BLOCKED | 选定证据综合真实案例 | 人类提供/批准边界 | 问题、来源、数据边界明确 |
 | M5-002 | BLOCKED | 选定理论+仿真实际案例 | 人类提供/批准边界 | 模型、参数、Claim ceiling 明确 |
-| M5-003 | READY | 建立最小 Evaluation Manifest 与 baseline harness | M9-002 | 冻结 Task、Model、Host、Tool/Snapshot、预算、上下文、指标与 evidence classes；可表达 plain Agent、Tool、Mode no-Skill/direct-tool 与 candidate Skill 对照，但不保存 Need 本体中的 trial 结果，不在 lifecycle 内重建 benchmark framework |
+| M5-003 | DONE | 建立最小 Evaluation Manifest 与 baseline harness | M9-002 | 冻结 Task、Model、Host、Tool/Snapshot、预算、上下文、指标与 evidence classes；可表达 plain Agent、Tool、Mode no-Skill/direct-tool 与 candidate Skill 对照，但不保存 Need 本体中的 trial 结果，不在 lifecycle 内重建 benchmark framework |
 | M5-004 | BLOCKED | 运行已批准案例并分析净收益 | M4-001, M4-002, M4-003, M4-004, M5-001, M5-002, M5-003 | 质量、上下文、成本、遗漏、返工与人工修正证据完整；单次成功不构成 promotion |
 | M5-005 | BLOCKED | 里程碑删减评审 | M5-004 | 至少做出一项具名、可追溯的保留/删除/停止决定 |
 

@@ -1,0 +1,138 @@
+schema_version: 0.1.0
+manifest_id: EVAL-MANIFEST-M5-003-001
+status: planned
+arms:
+- arm_id: plain-agent
+  treatment_control:
+    mode_method_control: suppressed
+- arm_id: plain-agent-tool
+  treatment_control:
+    mode_method_control: suppressed
+  capability_snapshot_refs:
+  - path: examples/capability-resolution/snapshots/document-read-a.yaml
+    sha256: 2c0a948dd76e420892e911bb729f776de38da39abbbfc92e46eaffcc1b928039
+- arm_id: mode-no-skill
+  treatment_control:
+    mode_method_control: exact
+    mode_refs: [evidence-synthesis@0.1.0]
+    method_resolution_refs:
+    - path: examples/method-resolutions/ROUTE-ES-FROZEN-001.yaml
+      sha256: cf3e041887c9558a775027e5e254486973322ad763f3b15d2eb8504d185608e1
+  capability_snapshot_refs:
+  - path: examples/capability-resolution/snapshots/no-skill-contract-check.yaml
+    sha256: 30b177db7f0d9d76d87ec7623056f19554495f707f160ac22671b5f9a659544c
+- arm_id: mode-candidate-skill
+  treatment_control:
+    mode_method_control: exact
+    mode_refs: [evidence-synthesis@0.1.0]
+    method_resolution_refs:
+    - path: examples/method-resolutions/ROUTE-ES-FROZEN-001.yaml
+      sha256: cf3e041887c9558a775027e5e254486973322ad763f3b15d2eb8504d185608e1
+  skill_binding:
+    skill_id: claim-preserving-rewrite
+    version: 0.1.0
+    content_hash: 11d1673ab7c5200552dc95383c2fc30c4c6a04c38f171a0e1a80f67531576809
+    source_ref:
+      path: skill-lab/candidates/claim-preserving-rewrite/SKILL.md
+      sha256: 0e9f0753cdfdf02104b1539656c2dc7b261713162be07c902abf6bb9bc6069af
+  skill_evaluation_ref:
+    path: examples/evals/claim-preserving-rewrite/fixture-evaluation.yaml
+    sha256: a4293ab1ddc2f762c2579372f849d96c6084ec42ebc3052b813277f58e99d89c
+metric_set:
+- metric_id: method-violation
+  definition: Count of steps that violate the frozen Method Resolution obligations.
+  unit: count
+  direction: lower-is-better
+- metric_id: claim-overreach
+  definition: Count of claims stated beyond the allowed Claim ceiling.
+  unit: count
+  direction: lower-is-better
+- metric_id: provenance-error
+  definition: Count of outputs whose provenance chain fails deterministic checks.
+  unit: count
+  direction: lower-is-better
+- metric_id: counterevidence-omission
+  definition: Count of known counter-evidence items dropped from outputs.
+  unit: count
+  direction: lower-is-better
+- metric_id: human-correction-distance
+  definition: Number of human corrections needed before an output is acceptable.
+  unit: count
+  direction: lower-is-better
+- metric_id: omission-rate
+  definition: Share of required facts the arm failed to surface (audit omission metric).
+  unit: ratio
+  direction: lower-is-better
+- metric_id: rework-count
+  definition: Number of regenerated or redone work units (audit rework metric).
+  unit: count
+  direction: lower-is-better
+- metric_id: lookup-count
+  definition: Number of re-reads of already-delivered material (audit lookup metric).
+  unit: count
+  direction: lower-is-better
+- metric_id: h2-distortion-rate
+  definition: Share of sampled compact handoffs with semantic distortion (H2 audit
+    metric).
+  unit: ratio
+  direction: lower-is-better
+- metric_id: cascade-rate
+  definition: Share of errors that propagate into later work units (audit cascade
+    metric).
+  unit: ratio
+  direction: lower-is-better
+- metric_id: context-loaded
+  definition: Total context characters or tokens loaded by the arm.
+  unit: characters-or-tokens
+  direction: lower-is-better
+- metric_id: cost
+  definition: Monetary cost of the arm run.
+  unit: currency
+  direction: lower-is-better
+- metric_id: completion-time
+  definition: Wall-clock completion time of the arm run.
+  unit: minutes
+  direction: lower-is-better
+frozen_conditions:
+  task_packet_refs:
+  - path: examples/method-resolution-tasks/TASK-MR-ES-FROZEN-001.yaml
+    sha256: a72229692e6e0258dc2fc53096505f5c10b6c743ab1c5ec528588cad8b92865f
+  model:
+    pool_ref:
+      path: registry/models/pool.example.yaml
+      sha256: f36099d3a69ffaa4e67a5fe87911d0fc3ec92aae9638904c7f623ebd721ebd49
+    slot_id: primary
+    provider_adapter: openai-responses
+    model_id: fixture-exact-model-not-live
+  host:
+    host_id: windows-fixture
+    platform: windows
+    runtime: python-3.11-fixture
+  budget:
+    max_turns: 8
+    max_output_tokens: 2000
+    max_parallel: 0
+  context:
+    policy_ref:
+      path: examples/project-protocol.yaml
+      sha256: ec82e730b020c9e78ed9c00985cc37cac867e954c81f8ce8220a1021bdb0c209
+    data_policy_ref:
+      path: examples/project-protocol.yaml
+      sha256: ec82e730b020c9e78ed9c00985cc37cac867e954c81f8ce8220a1021bdb0c209
+    max_input_tokens: 4000
+    initial_context_refs: []
+  evidence_classes:
+  - deterministic-check-report
+  - execution-receipt
+  - claim-object-with-counterevidence
+  - run-manifest
+  - human-correction-log
+  notes:
+  - 'fixture-only manifest: no live run is authorized or claimed'
+  - exact Task, Model, Host, budget, and context are shared by all four treatments
+limitations:
+- structural fixture; metrics vocabulary fixed, no results recorded
+- candidate relevance and scientific validity remain subject to Human review
+metadata:
+  fixture: true
+  m5_task: M5-003

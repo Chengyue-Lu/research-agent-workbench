@@ -28,6 +28,7 @@ suites:
       - test_execution_contract_helpers
       - test_execution_archive_helpers
       - test_execution_view
+      - test_evaluation_manifest
       - test_governance_helper_branches
       - test_integrity
       - test_kernel
