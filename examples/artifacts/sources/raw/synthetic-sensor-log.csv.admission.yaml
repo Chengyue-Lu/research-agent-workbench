@@ -1,0 +1,19 @@
+schema_version: 0.1.0
+admission_id: SADM-SENSOR-LOG-001
+original_filename: synthetic-sensor-log.csv
+admitted_path: examples/artifacts/sources/raw/synthetic-sensor-log.csv
+sha256: 5e55c955907c6b8b7568d5f0284308f6fc1ff45b364a68fbbd06e460dd0b93a5
+acquisition:
+  origin:
+    uri: https://example.org/fixtures/synthetic-sensor-log
+  acquired_at: '2026-08-25T10:00:00+08:00'
+  operator: huangyi
+license_or_data_use: project-internal fixture; not scientific evidence
+parser:
+  name: csv-fixture-reader
+  version: 1.0.0
+sensitivity: synthetic-public-fixture
+egress_restriction: no-restriction-fixture
+metadata:
+  fixture: true
+  not_scientific_evidence: true

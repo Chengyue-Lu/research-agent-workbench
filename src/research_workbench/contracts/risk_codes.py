@@ -135,7 +135,29 @@ RECOVERY_RISK_CODE_REGISTRY = (
 
 RECOVERY_RISK_CODES = frozenset(entry.code for entry in RECOVERY_RISK_CODE_REGISTRY)
 
+ARTIFACT_RISK_CODE_REGISTRY = (
+    RiskCodeEntry(
+        "ARTIFACT-HASH-MISMATCH",
+        "BLOCK",
+        "Admitted artifact bytes differ from their declared hash.",
+    ),
+    RiskCodeEntry(
+        "ARTIFACT-INBOX-CITED",
+        "BLOCK",
+        "A document cites mutable inbox content that was never admitted.",
+    ),
+    RiskCodeEntry(
+        "ARTIFACT-MISSING-PROVENANCE",
+        "BLOCK",
+        "An admitted source lacks the provenance facts required to re-locate it.",
+    ),
+)
+
+ARTIFACT_RISK_CODES = frozenset(entry.code for entry in ARTIFACT_RISK_CODE_REGISTRY)
+
 __all__ = [
+    "ARTIFACT_RISK_CODE_REGISTRY",
+    "ARTIFACT_RISK_CODES",
     "EXECUTION_TRACE_RISK_CODE_REGISTRY",
     "EXECUTION_TRACE_RISK_CODES",
     "EXECUTION_ARCHIVE_RISK_CODE_REGISTRY",

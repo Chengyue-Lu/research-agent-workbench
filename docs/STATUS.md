@@ -31,6 +31,7 @@ Protocol、两级 Snapshot 与 migration/replacement 结构契约已经实现。
 | Method Trace v0.1 candidate（M3-009） | 独立 ref-only Trace 精确绑定 Attempt/Task/Method Resolution/Mode/Action disposition/State/kernel Decision；无本 Attempt authoritative M11 fact 时记录 per-Attempt gap，captured fact 必须 exact 绑定 applied path 与 State effect，Snapshot 不得冒充 actual execution（[契约](implementation/METHOD_TRACE_CANDIDATE_CONTRACT.md)） |
 | Phase C bounded Gate（M10-003） | runner 以 source manifest 精确 pin 并 staging 两案 closure；fresh actor 新进程只读生成 manifest 与 allowlist，结束后 runner 才读取 private oracle；machine PASS 仍保持 Human semantic review、R2 closeout 与 Phase C closeout pending，且不授权 Topic 5（[契约](implementation/PHASE_C_BOUNDED_GATE.md)） |
 | 确定性验证 | Schema、引用、哈希、权限交集、Handoff lock、Claim 支持关系 |
+| Source admission（M4-001） | `sources/raw` admission sidecar 固定来源 locator、时间、操作者、许可/数据边界、解析器与 exact byte hash；已提取引用若落入 `sources/inbox` 完整路径段则阻断（[契约](implementation/SOURCE_ADMISSION_CONTRACT.md)） |
 | Task 解析 | Task + Agent Profile + 显式或 Registry Skill 的冻结 Assignment、权限交集与版本锁 |
 | Legacy Skill 兼容 | accepted Registry 的 active / legacy / deprecated 历史选择边界与精确版本继续可验证；新绑定使用 lifecycle v2 eligibility |
 | 文件式连续性 | Main State、checkpoint、resume-check、受控 Handoff 与归档约定 |
@@ -53,6 +54,7 @@ Protocol、两级 Snapshot 与 migration/replacement 结构契约已经实现。
 | 真实外部模型 | 仓库测试不证明各供应商真实账号、配额、工具调用或长期兼容性 |
 | 科学有效性 | Validator 不评判方法适用、证据质量或 Claim 正确性 |
 | Phase C candidates（M10-001/002 + M3-009 + M10-003） | 两个 synthetic bounded case 只证明 State/Attempt/Failure/Method Trace 的确定性 closure、fresh-process 受控读取和固定 fixture behavior；Human semantic review、R2/Phase C closeout 仍 pending，最终表示与 Topic 5 实现均未获授权 |
+| Source admission（M4-001） | 不抓取网页/API，不判断来源真实性、许可法律效力、内容安全或科学质量；promotion、Claim trace 与 Run reproduction 尚未在本层实现 |
 | Skill 价值 | 现有 Registry 条目不构成已证明的普适研究增益；新任务可优先 no-Skill / direct-tool |
 | 发布 | 仓库缺少最终许可证选择，原创 Skill 许可状态仍阻断正式发布 |
 | 产品体验 | 初始化、可视化、协作 UI、安装包和运维流程仍是开发者级别 |

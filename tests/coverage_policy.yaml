@@ -11,6 +11,7 @@ suites:
       - test_accepted_skill_migration_fixtures
       - test_agent_trace
       - test_api_session_runner
+      - test_artifacts_admission
       - test_capability_consumer
       - test_capability_requirements
       - test_capability_resolver_branches
@@ -124,6 +125,7 @@ critical_modules:
   - src/research_workbench/execution/host.py
   - src/research_workbench/observability/trace.py
   - src/research_workbench/execution/generic_closeout.py
+  - src/research_workbench/artifacts/admission.py
   - src/research_workbench/artifacts/integrity.py
   - src/research_workbench/kernel/objects.py
   - src/research_workbench/validation/relationships.py
@@ -223,7 +225,18 @@ negative_acceptance:
     negative_tests:
       - test_agent_trace.AgentTraceTests.test_hash_tamper_is_blocking
       - test_execution_contract_helpers.GenericCloseoutHelperTests.test_host_view_lifecycle_closure_rejects_unsupported_facts
-  - surface: artifact-integrity-source-admission-and-research-state
+  - surface: source-admission-producer-and-reference-gate
+    modules:
+      - src/research_workbench/artifacts/admission.py
+    positive_tests:
+      - test_artifacts_admission.RawReferenceAdmissionGateTest.test_valid_raw_reference_requires_and_accepts_exact_sidecar
+    negative_tests:
+      - test_artifacts_admission.RawReferenceAdmissionGateTest.test_missing_sidecar_blocks
+      - test_artifacts_admission.RawReferenceAdmissionGateTest.test_schema_invalid_sidecar_blocks
+      - test_artifacts_admission.RawReferenceAdmissionGateTest.test_wrong_admitted_path_blocks
+      - test_artifacts_admission.RawReferenceAdmissionGateTest.test_live_byte_drift_blocks_even_when_reference_tracks_mutation
+      - test_artifacts_admission.RawReferenceAdmissionGateTest.test_reference_and_admission_hash_mismatch_blocks
+  - surface: artifact-integrity-and-research-state
     modules:
       - src/research_workbench/artifacts/integrity.py
       - src/research_workbench/kernel/objects.py

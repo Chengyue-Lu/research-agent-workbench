@@ -1,0 +1,5 @@
+timestamp_ms,channel,reading_mv
+1000,A,12.4
+1100,A,12.5
+1200,B,18.9
+1300,B,19.1
