@@ -1745,17 +1745,24 @@ def _validate_research_mode_migrations(
 
 
 def _validate_evaluation_manifests(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
+    evaluation_manifests = [
+        (path, document)
+        for path, document in documents.items()
+        if isinstance(document, Mapping)
+        and infer_document_kind(document) == "evaluation_manifest"
+    ]
+    if not evaluation_manifests:
+        return []
+
     from research_workbench.evaluation.manifest import check_evaluation_manifest
 
     issues: list[ValidationIssue] = []
-    for path, document in documents.items():
-        if not isinstance(document, Mapping):
-            continue
-        if infer_document_kind(document) != "evaluation_manifest":
-            continue
+    for path, document in evaluation_manifests:
         for problem in check_evaluation_manifest(document):
             issues.append(ValidationIssue(path, "EVAL-MANIFEST-INVALID", problem))
     return issues
+
+
 def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     source_ids: set[str] = set()
