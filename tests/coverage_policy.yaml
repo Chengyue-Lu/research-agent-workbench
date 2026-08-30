@@ -45,6 +45,7 @@ suites:
       - test_registry_require_branches
       - test_research_attempt_failure
       - test_research_state_candidate
+      - test_research_state_critical_branches
       - test_project_internal_handoff_fixtures
       - test_relationships
       - test_research_mode_migration
