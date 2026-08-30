@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Mapping
 
-from research_workbench.research_state import (
+from research_workbench.research_state.closure import (
     ClosureIndex,
     check_research_attempt_lineage,
     check_research_failure,
