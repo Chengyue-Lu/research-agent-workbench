@@ -194,7 +194,7 @@ implementation slice、commit、evidence、owner review 或 hard dependency。
 | M11-002 | DONE | 建立 supply-neutral Resolved Execution View Core | 路诚钺 | R2 | F / Research Control + Topic 4 | M9-005, M11-001 | 从 frozen selection 计算并冻结 exact Host/Provider/Adapter/Model、external pin/freshness、Task/Profile/DataPolicy/Host policy 与 permission/data-egress/side-effect 最严交集；fail closed，不重新选择 Supply、不 fallback、不要求 SkillReleaseProjection |
 | M11-003 | DONE | 建立 Thin Execution Host 与 actual execution fact report | 黄毅 | R2 | F / Topic 4 | M3-008, M6-002, M11-002 | Host 只消费 exact closure-valid Snapshot/View，执行冻结调用并报告 actual facts、bounded Diagnostic 或 re-resolution request；不能 reselect/rebind/fallback、修改 Method/Claim/Gate 或扩大边界；不实现 Topic 5 的 Handoff/context/recovery 语义 |
 | M11-004 | DONE | 建立 generic execution Trace/Receipt linkage 与 Core vertical Gate | 黄毅 | R2 | F / Topic 4 + Artifact/Trace | M3-008, M11-003 | no-Skill 与 direct-tool bounded path 可从 Task/View/Host 到 Trace、Artifact、Validation、generic Receipt 闭合；复用 observability contract 不构成 Topic 5 membership；不伪造 Skill Assignment，不把 execution completion 写成 Claim/Human acceptance，并保留 legacy Receipt replay |
-| M11-005 | PARKED | 发布不可变 SkillReleaseProjection | 路诚钺 | R2 | F / Capability/Skill Evolution + Topic 4 | M9-003 | 只发布 accepted immutable Skill Release 的 runtime-minimal identity/version/hash/capability/boundary facts；不暴露 Need/Evaluation/Lifecycle 历史，不授予选择或执行权限；缺失只阻断 Skill new-binding |
+| M11-005 | READY | 发布不可变 SkillReleaseProjection | 路诚钺 | R2 | F / Capability/Skill Evolution + Topic 4 | M9-003 | 只发布 accepted immutable Skill Release 的 runtime-minimal identity/version/hash/capability/boundary facts；不暴露 Need/Evaluation/Lifecycle 历史，不授予选择或执行权限；缺失只阻断 Skill new-binding |
 | M11-006 | PARKED | 将 eligible Skill supply 映射进统一 Resolved Execution View 语义 | 路诚钺 | R2 | F / Research Control + Capability/Skill Evolution + Topic 4 | M11-002, M11-005 | projection-derived Skill 与 Tool/procedure/Adapter 使用同一 Report→Resolution→Snapshot→View 语义；Capability Resolver 仍是唯一 selector，View/Host 保持 supply-kind neutral；不得形成 Skill-specific Runtime dispatcher/session/fallback seam，projection 缺失/stale/mismatch 时仅该候选 fail closed |
 
 ## Future M-series reservations
@@ -237,7 +237,7 @@ M13 不等于 strategy framework approval；M14 不等于 release implementation
 | `M6-005` | 黄毅 | R1～R2 | deferred F | Topic 4 | 真实需求/平台选择前 PARKED |
 | `M7-005, M7-006, M7-014` | 路诚钺 | R2 | D | Research Control + Evaluation + Skill Evolution | evidence-driven trials PARKED |
 | `M7-007` | 路诚钺 | R2 | E | Research Control / Mode | 真实案例证明 Mode gap 前 PARKED |
-| `M11-005, M11-006` | 路诚钺 | R2 | F | Topic 4 + Research Control + Capability/Skill Evolution；不属于 Topic 5 | optional Skill supply publication/mapping 保持 PARKED；不阻塞已完成的 Core |
+| `M11-005, M11-006` | 路诚钺 | R2 | F | Topic 4 + Research Control + Capability/Skill Evolution；不属于 Topic 5 | 具名 owner 已恢复 M11-005 为 READY；M11-006 继续 PARKED，等待 M11-005 验收；optional extension 不阻塞已完成的 Core |
 
 ## 历史 GitHub Issues
 
@@ -259,8 +259,10 @@ Task。`BLOCKED` 行只能由其显式 hard/external condition 解除，`PARKED`
 
 M10-001 → M10-002 → M3-009 → M10-003 的 bounded machine chain 与 M11-001 → M11-002 →
 M11-003 → M11-004 的 Core chain 均已按各自 Task 验收完成。前者不等于 Phase C Human/R2
-semantic closeout，后者不等于 live Provider 或 ordinary-user E2E。M11-005～006 仍是可选 Skill
-supply publication/mapping，不阻塞零 Skill Core，也不建立第二条 Runtime consumer path。
+semantic closeout，后者不等于 live Provider 或 ordinary-user E2E。M11-005 已由具名 owner 独立恢复为
+READY，M11-006 仍 PARKED；两者仍是可选 Skill supply publication/mapping，不阻塞零 Skill Core，也不建立
+第二条 Runtime consumer path。READY 只授权 M11-005 实施，不等于实现验收、真实 Skill 准入或 Runtime
+new-binding 资格。
 
 Issue #41 新增或规范化的 M4、M5、M10、M11 dependency chains 保持逐 Task implementation /
 acceptance identity；PR 组织统一遵守 `DEVELOPMENT.md` 的 module-level DAG 规则。Governance v2 的

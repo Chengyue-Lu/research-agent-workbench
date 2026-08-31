@@ -114,17 +114,18 @@ M4-002 是当前 provenance/promotion 链的合法入口；M4-003/004 必须等�
 M4 闭环、两个具名真实案例边界与已存在的 M5-003 计划契约；M5-003 本身没有执行案例或
 产生净增量结论。本图未展开的独立 `READY` 行（例如 scaffold）仍直接从 `TASKS.md` 读取。
 
-### 3.3 Optional / parked
+### 3.3 Optional Skill extension
 
 ```mermaid
 flowchart LR
-    M1105["M11-005 PARKED<br/>SkillReleaseProjection"] --> M1106["M11-006 PARKED<br/>Skill supply mapping"]
+    M1105["M11-005 READY<br/>SkillReleaseProjection"] --> M1106["M11-006 PARKED<br/>Skill supply mapping"]
     M1102["M11-002 DONE<br/>supply-neutral View Core"] --> M1106
 ```
 
-Skill extension 只在明确的 Skill-bearing 需求下依 `TASKS.md` 恢复；Projection 缺失只阻塞 Skill
-new-binding，不阻塞已完成的 no-Skill/direct-Tool Core。其他 PARKED Task 的恢复条件也只看
-`TASKS.md`。所有图中省略的 hard dependency（包括 Human/external Gate）均不得由本图推断。
+具名 owner 已依据 accepted ADR-0019 与已完成的 M9-003 恢复 M11-005；该 READY 状态只授权 projection
+publication 实施，不构成验收。M11-006 继续 PARKED，Projection 缺失只阻塞 Skill new-binding，不阻塞
+已完成的 no-Skill/direct-Tool Core。其他 PARKED Task 的恢复条件也只看 `TASKS.md`。所有图中省略的
+hard dependency（包括 Human/external Gate）均不得由本图推断。
 
 ## 4. Reservation activation
 
