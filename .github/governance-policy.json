@@ -58,6 +58,11 @@
       "registry/skills/lifecycle/**",
       "registry/skills/lifecycle-migrations/**",
       "src/research_workbench/capability/lifecycle.py",
+      "schemas/**/skill-release-projection*.schema.json",
+      "registry/skills/release-projections.json",
+      "registry/skills/release-projections/**",
+      "src/research_workbench/capability/release_projection.py",
+      "src/research_workbench/validation/skill_release_projection_registry.py",
       "schemas/**/protocol-profile*.schema.json",
       "registry/protocol-profiles.json",
       "registry/protocol-profiles/**",
@@ -160,6 +165,16 @@
         "registry/skills/lifecycle-migrations/**/*.yml"
       ],
       "identity_fields": ["migration_id", "migration_version"]
+    },
+    {
+      "kind": "skill-release-projection",
+      "patterns": [
+        "registry/skills/release-projections/*.yaml",
+        "registry/skills/release-projections/*.yml",
+        "registry/skills/release-projections/**/*.yaml",
+        "registry/skills/release-projections/**/*.yml"
+      ],
+      "identity_fields": ["projection_id", "projection_version"]
     }
   ]
 }

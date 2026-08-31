@@ -1,0 +1,38 @@
+schema_version: 0.1.0
+task_id: M11-005
+revision: 1
+goal: Publish a deterministic immutable SkillReleaseProjection contract without admitting a legacy Skill or exposing maintainer history to Runtime.
+base_ref: develop@97fa2455c983dc65e66a782bac8d272eed32c633
+accountable_owner: Chengyue-Lu
+input_refs:
+  - AGENTS.md
+  - docs/DEVELOPMENT.md
+  - docs/TASKS.md
+  - docs/decisions/0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md
+  - docs/implementation/SKILL_LIFECYCLE_V2.md
+  - src/research_workbench/capability/lifecycle.py
+  - schemas/v0.1.0/skill-manifest.schema.json
+write_scope:
+  - schemas/v0.1.0/skill-release-projection*.schema.json
+  - schemas/v0.1.0/skill-manifest.schema.json
+  - registry/skills/release-projections.json
+  - src/research_workbench/capability/release_projection.py
+  - src/research_workbench/validation/skill_release_projection_registry.py
+  - src/research_workbench/validation/document_kinds.py
+  - src/research_workbench/validation/documents.py
+  - tests/test_skill_release_projection.py
+  - tests/test_schemas.py
+  - tests/test_pr_governance.py
+  - tests/coverage_policy.yaml
+  - .github/governance-policy.json
+  - docs/implementation/SKILL_RELEASE_PROJECTION.md
+  - docs/workstreams/chengyue-lu/M11-SKILL-RUNTIME-EXTENSION/**
+  - work/M11-005/A-20260831-001/**
+required_outputs:
+  - immutable projection and integrity index contracts
+  - deterministic fail-closed publisher and registry validator
+  - synthetic bounded positive and adversarial evidence
+atomic_boundary: M11-005 only; no real Skill admission, runtime selection, Provider execution, fallback, Topic 5, Claim, Gate, or Human authority.
+stop_conditions:
+  - M11-005 focused tests and repository validation pass
+  - implementation forms an independently reviewable commit before M11-006 begins

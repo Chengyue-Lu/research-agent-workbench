@@ -58,6 +58,8 @@ suites:
       - test_skill_archive_audit
       - test_skill_evaluation_helpers
       - test_skill_lifecycle
+      - test_skill_release_projection
+      - test_skill_runtime_extension
       - test_skill_needs
       - test_trace_risk_codes
       - test_phase_b_evolution_gate
@@ -121,6 +123,8 @@ critical_modules:
   - src/research_workbench/protocol/authority.py
   - src/research_workbench/capability/requirements.py
   - src/research_workbench/capability/supply.py
+  - src/research_workbench/capability/release_projection.py
+  - src/research_workbench/capability/projection_supply.py
   - src/research_workbench/execution/runtime_bundle.py
   - src/research_workbench/execution/execution_view.py
   - src/research_workbench/execution/host.py
@@ -139,6 +143,7 @@ critical_modules:
   - src/research_workbench/validation/authority_registry.py
   - src/research_workbench/validation/document_kinds.py
   - src/research_workbench/validation/research_state_registry.py
+  - src/research_workbench/validation/skill_release_projection_registry.py
   - src/research_workbench/research_state/boundaries.py
   - src/research_workbench/research_state/closure.py
   - src/research_workbench/research_state/fresh_actor.py
@@ -190,6 +195,37 @@ negative_acceptance:
       - test_capability_resolution.CapabilityResolutionTests.test_supply_registry_adversarial_contract_and_evidence_matrix
       - test_capability_resolution.CapabilityResolutionTests.test_resolution_and_snapshot_registry_adversarial_matrix
       - test_capability_resolution.CapabilityResolutionTests.test_supply_reference_evidence_and_cross_object_guard_matrix
+  - surface: skill-release-projection-publication
+    modules:
+      - src/research_workbench/capability/release_projection.py
+      - src/research_workbench/validation/skill_release_projection_registry.py
+    positive_tests:
+      - test_skill_release_projection.SkillReleaseProjectionTests.test_verified_release_produces_narrow_deterministic_projection
+      - test_skill_release_projection.SkillReleaseProjectionTests.test_empty_production_index_preserves_zero_skill_core
+    negative_tests:
+      - test_skill_release_projection.SkillReleaseProjectionTests.test_publisher_requires_external_evidence_human_decision_and_runtime_boundaries
+      - test_skill_release_projection.SkillReleaseProjectionTests.test_legacy_repository_skills_cannot_be_projected
+      - test_skill_release_projection.SkillReleaseProjectionTests.test_projection_registry_and_derivation_are_fail_closed
+      - test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_revalidates_external_evidence_and_human_decision
+      - test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_shadow_only_authority_closure
+      - test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_ambiguous_shadow_authority_closure
+      - test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_cross_root_stitched_publication
+      - test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_alias_only_authority_path
+      - test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_alias_only_index_path
+      - test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_schema_boundary_is_fail_closed
+  - surface: projection-derived-skill-supply-runtime-extension
+    modules:
+      - src/research_workbench/capability/projection_supply.py
+      - src/research_workbench/capability/supply.py
+      - src/research_workbench/validation/capability_supply_registry.py
+      - src/research_workbench/execution/runtime_bundle.py
+    positive_tests:
+      - test_skill_runtime_extension.SkillRuntimeExtensionTests.test_projection_skill_uses_existing_resolution_snapshot_and_view_path
+      - test_skill_runtime_extension.SkillRuntimeExtensionTests.test_projection_supply_report_registry_facts_are_closed
+    negative_tests:
+      - test_skill_runtime_extension.SkillRuntimeExtensionTests.test_runtime_assessment_requires_projection_not_lifecycle_callback
+      - test_skill_runtime_extension.SkillRuntimeExtensionTests.test_runtime_bundle_rejects_projection_and_boundary_drift
+      - test_skill_runtime_extension.SkillRuntimeExtensionTests.test_runtime_and_host_keep_no_skill_specific_dispatch_seam
   - surface: runtime-bundle-closure
     modules:
       - src/research_workbench/execution/runtime_bundle.py

@@ -51,7 +51,7 @@ family 为什么存在、由什么 authority boundary 约束、何时允许启�
 | Phase C | Research State、Failure、Method Trace 与 bounded verification | M10，复用历史 `M3-009`；M4 为 provenance support | bounded machine DAG 已实现；Human/R2 semantic closeout 仍独立 pending |
 | Phase D | Evaluation record、baseline 与 net increment；不自动 promotion | M5；部分 M7 experiments 由 TASKS 决定是否恢复 | M5-003 已建立计划契约；真实案例、provenance 与 evaluation evidence 仍是 Gate |
 | Phase E | Strategy candidate 与 governed evolution；不得自动修改 Core | 既有 M2/M7；M13 仅 **RESERVED** | Phase C/D evidence 证明旧 group 不足后另行接受 |
-| Phase F / Topic 4 | Agent/Model/Provider/Runtime 消费 frozen contract；不拥有 Method/Claim/Gate/fallback authority | M11 Core 与 optional extension；M6 live conformance | M11 Core 已 bounded 实现；optional Skill extension 与 live conformance 依各自 Gate |
+| Phase F / Topic 4 | Agent/Model/Provider/Runtime 消费 frozen contract；不拥有 Method/Claim/Gate/fallback authority | M11 Core 与 optional extension；M6 live conformance | M11 Core 与 optional Skill extension 已 bounded 实现；live conformance 仍依独立 Gate |
 | Topic 5 residual | Handoff、context rollover、safe pause/resume、recovery/continuation | M12 仅 **RESERVED** | Phase C closeout + 独立 Topic 5 R2 review/task-definition |
 | Product / release closure | Ordinary-user E2E、package/runtime/release governance | M14 仅 **RESERVED** | Runtime/Evaluation/release maturity 且 M1/M11 被证明不足 |
 
@@ -273,8 +273,9 @@ Runtime 也不创建 Skill Need/Candidate、不执行 Trial/Evaluation/Promotion
 供给通过已发布投影进入 Capability Supply Report；no-Skill/direct Tool 路径不依赖该投影。可选
 Capability Diagnostic/feedback bridge 等待 Phase C Failure/Trace 与 privacy 语义稳定，不阻塞 Topic 4。
 
-Phase F 的 M11-001～004 Core 已完成 bounded integration；optional Skill supply publication/mapping 仍是独立
-extension，具体激活只看 `TASKS.md`。M6-003 保留为历史 compatibility seam，不再充当执行
+Phase F 的 M11-001～004 Core 与 M11-005/006 optional Skill supply publication/mapping 均已完成 bounded
+integration；生产 projection index 仍为空，真实 Skill new-binding 继续依独立 evidence/Human admission。
+M6-003 保留为历史 compatibility seam，不再充当执行
 umbrella。M6-004 只验证 Provider/isolated session 的 live conformance，在 M6-001/002 后由具名 live
 authorization 解阻；它不 hard-depend M11-004，也不替代已接受的 Task→View→Host→generic
 Receipt bounded Gate。

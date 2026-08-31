@@ -53,7 +53,8 @@
           "items": { "$ref": "#/$defs/component" }
         },
         "skill_lifecycle_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
-        "runtime_eligibility_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+        "runtime_eligibility_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "skill_release_projection_ref": { "$ref": "#/$defs/versionedDocumentRef" }
       },
       "allOf": [
         {
@@ -61,12 +62,29 @@
             "properties": { "supply_kind": { "const": "skill" } },
             "required": ["supply_kind"]
           },
-          "then": { "required": ["skill_lifecycle_ref", "runtime_eligibility_ref"] },
+          "then": {
+            "oneOf": [
+              {
+                "required": ["skill_lifecycle_ref", "runtime_eligibility_ref"],
+                "not": { "required": ["skill_release_projection_ref"] }
+              },
+              {
+                "required": ["skill_release_projection_ref"],
+                "not": {
+                  "anyOf": [
+                    { "required": ["skill_lifecycle_ref"] },
+                    { "required": ["runtime_eligibility_ref"] }
+                  ]
+                }
+              }
+            ]
+          },
           "else": {
             "not": {
               "anyOf": [
                 { "required": ["skill_lifecycle_ref"] },
-                { "required": ["runtime_eligibility_ref"] }
+                { "required": ["runtime_eligibility_ref"] },
+                { "required": ["skill_release_projection_ref"] }
               ]
             }
           }
@@ -75,7 +93,22 @@
       "additionalProperties": false
     },
     "permissionBoundary": {
-      "$ref": "capability-requirement.schema.json#/$defs/permissionCeiling"
+      "description": "Supply-side required permission facts, including roots later intersected by the final execution View.",
+      "type": "object",
+      "required": ["filesystem", "network", "external_write"],
+      "properties": {
+        "filesystem": {
+          "enum": ["forbidden", "read-only", "worktree-write", "workspace-write"]
+        },
+        "network": { "enum": ["forbidden", "search-and-fetch", "allowed"] },
+        "external_write": { "const": false },
+        "allowed_roots": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/relativePath" },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
     },
     "dataEgressBoundary": {
       "$ref": "capability-requirement.schema.json#/$defs/dataEgress"

@@ -254,7 +254,12 @@ def _receipt(
     return path.name
 
 
-def _live_evaluation(root: Path) -> dict[str, object]:
+def _live_evaluation(
+    root: Path,
+    *,
+    skill_id: str = "fixture-skill",
+    skill_version: str = "0.1.0",
+) -> dict[str, object]:
     skill_dir = root / "skill"
     skill_dir.mkdir()
     skill = skill_dir / "SKILL.md"
@@ -297,8 +302,8 @@ def _live_evaluation(root: Path) -> dict[str, object]:
         hash_directory(base_skill_dir),
     )
     candidate_lock = SkillLock(
-        "fixture-skill",
-        "0.1.0",
+        skill_id,
+        skill_version,
         hash_file(skill),
         skill.relative_to(root).as_posix(),
         hash_directory(skill_dir),
@@ -350,8 +355,8 @@ def _live_evaluation(root: Path) -> dict[str, object]:
         "schema_version": "0.1.0",
         "evaluation_id": "SE-LIVE-001",
         "candidate_id": "fixture-candidate",
-        "skill_id": "fixture-skill",
-        "skill_version": "0.1.0",
+        "skill_id": skill_id,
+        "skill_version": skill_version,
         "skill_source_ref": _file_ref(skill, root),
         "skill_package_hash": hash_directory(skill_dir),
         "project_protocol_ref": _file_ref(protocol, root),

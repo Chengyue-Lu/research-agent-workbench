@@ -101,8 +101,9 @@ Task completion。
 Thin Execution Host 只消费与同一 Bundle 绑定的 View，使用 trusted clock 和调用前 Bundle reload 重验
 freshness/TOCTOU，并通过一个 pre-bound Driver 最多执行一次。它只能报告 actual facts、bounded diagnostic
 或 re-resolution request，不能 select、rebind 或 fallback。Skill Assignment 只在 Skill-bearing extension
-或 legacy compatibility 中出现；当前 M11 Core 的 no-Skill/direct Tool 路径不创建 Assignment，M11-005/006
-仍为 `PARKED`。兼容期字段映射见[兼容性说明](../compatibility/README.md)。
+或 legacy compatibility 中出现；当前 M11 Core 的 no-Skill/direct Tool 路径不创建 Assignment。M11-005/006
+optional extension 已 bounded 实现，但生产 projection index 为空，不表示真实 Skill 已获 admission 或
+new-binding。兼容期字段映射见[兼容性说明](../compatibility/README.md)。
 
 ## 4. Handoff Packet
 

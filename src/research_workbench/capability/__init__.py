@@ -39,6 +39,7 @@ from research_workbench.capability.supply import (
     SupplyAssessment,
     SupplyComponent,
     SupplyIdentity,
+    SkillReleaseProjectionReference,
     assess_supply,
     resolve_status,
 )
@@ -52,6 +53,14 @@ from research_workbench.capability.lifecycle import (
     SkillLifecycleEntry,
     SkillLifecycleRecord,
     SkillLifecycleSet,
+)
+from research_workbench.capability.release_projection import (
+    DEFAULT_SKILL_RELEASE_PROJECTION_INDEX,
+    SkillReleaseProjection,
+    SkillReleaseProjectionEntry,
+    SkillReleaseProjectionSet,
+    build_skill_release_projection,
+    projection_from_verified_release,
 )
 from research_workbench.capability.resolver import (
     ResolvedTask,
@@ -90,6 +99,7 @@ __all__ = [
     "SupplyAssessment",
     "SupplyComponent",
     "SupplyIdentity",
+    "SkillReleaseProjectionReference",
     "assess_supply",
     "resolve_status",
     "LifecycleAdmission",
@@ -101,6 +111,12 @@ __all__ = [
     "SkillLifecycleEntry",
     "SkillLifecycleRecord",
     "SkillLifecycleSet",
+    "DEFAULT_SKILL_RELEASE_PROJECTION_INDEX",
+    "SkillReleaseProjection",
+    "SkillReleaseProjectionEntry",
+    "SkillReleaseProjectionSet",
+    "build_skill_release_projection",
+    "projection_from_verified_release",
     "SkillRegistrySelectionError",
     "SkillLock",
     "SkillManifest",

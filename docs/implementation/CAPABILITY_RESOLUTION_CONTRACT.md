@@ -88,20 +88,33 @@ Provider/Adapter/Model/Runtime、credentials/quota、Task/Profile/Skill/Assignme
 
 ## Skill Supply Extension
 
-Lifecycle state 只形成结构资格。`new-binding` scope、trial/evaluation/promotion refs 与 Human decision ref 均
-必须存在；Runtime eligibility 还必须由外部 evidence resolver 和 Human-decision resolver 解析成功。Phase B
-不实现 Phase D evidence 或 Human Decision 系统，repository validator 默认以拒绝型 resolver 处理新绑定。
-Skill Supply Report 仍可陈述事实；只有 runtime Resolution/Snapshot 资格被拒绝，Report 事实层不会冒充准入层。
+Lifecycle state 与旧 `skill_lifecycle_ref` / `runtime_eligibility_ref` 只服务 Maintainer 结构审计和历史
+Resolution replay，不能授权 Runtime new-binding。即使调用方传入一个返回 true 的旧 Lifecycle callback，
+`runtime-execution` comparison 仍保持 `skill-runtime-eligibility: unknown`。
 
-现有 Supply→Lifecycle 引用属于 Maintainer/repository validation closure。未来 Runtime 不直接解析完整
-Lifecycle；仅 Skill-bearing extension 的 runtime-side catalog 消费从已准入不可变 Release 确定性派生的
-`SkillReleaseProjection`，并据此产生候选 Skill Supply Report。该投影至少 exact-pin
-Skill ID/version、content/package digest、capabilities、I/O、依赖/compatibility、permission/data-egress/
-side-effect ceiling、scoped eligibility 与最小 Release/Human Admission provenance；不得包含 Need 正文、
-Candidate、Trial/Evaluation 结果、评分、审议过程或完整 Lifecycle history。
+M11-005/006 后，Runtime Skill Supply 必须改用 exact `skill_release_projection_ref`：
 
-在发布投影尚未实现前，Skill runtime binding 必须 fail closed；no-Skill/direct Tool/procedure 与
-Adapter/Provider Core 不依赖该投影。
+- ref、document path 与 raw SHA-256 必须命中一个 `SkillReleaseProjection`；
+- projection 必须显式 `eligible + new-binding`，且所有 authority boundary 为 false；
+- Supply implementation 与唯一 Skill component 必须等于 projection 的 Release identity/version/content hash；
+- capability、supported I/O 必须等于 projection；附加 Tool component 只能来自 projection dependencies；
+- Supply permissions（包括 optional `allowed_roots`）、data egress 与 side effects 可以进一步收紧，
+  但不能超过 projection ceiling；projection 声明的 required Tool dependencies 必须全部成为 Supply
+  component，optional Tool 只在实际绑定时出现；
+- conformance、availability、limits 与 limitations 仍属于 Supply Report，不由 projection 伪造。
+
+Capability Requirement v0.1 只比较 filesystem/network/external-write permission class；Supply 的 optional
+`allowed_roots` 是后续 View 收窄事实。projection-backed Skill 必须显式携带 roots 并先证明其位于 Release
+ceiling 内，View 再与 Task/Profile/DataPolicy/Host roots 做同一通用交集。非 Skill 旧 Report 未声明 roots
+时仍使用 Task roots，因而 Core 行为不变。
+
+这些检查只决定某一 Skill candidate 是否有资格进入既有 Capability comparison。Capability Resolver 仍是
+唯一 selector；Projection 或 Report 都不能创建 permission、execution、fallback、Method、Claim 或 Human
+authority。missing/stale/mismatch projection 只让该 candidate fail closed，不改变 Requirement 或其他 Supply。
+
+完整 Lifecycle、Need、Candidate、Trial/Evaluation 与 Human deliberation 不进入 Runtime bundle。现有三个
+legacy Skill 均无 production projection；空 projection index 不影响 no-Skill/direct Tool/procedure 与
+Adapter/Provider Core。
 
 ## Consumer profiles
 

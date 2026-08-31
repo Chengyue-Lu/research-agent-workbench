@@ -95,8 +95,8 @@ flowchart TB
         EVAL --> ADM["Named Human Admission"]
         ADM --> LIFE["Lifecycle"]
         LIFE --> REL["Immutable Release"]
-        REL -. "M11-005 READY / optional" .-> PROJ["SkillReleaseProjection"]
-        PROJ -. "M11-006 PARKED / optional" .-> SSR["Candidate Skill Supply Report"]
+        REL -. "M11-005 DONE / optional" .-> PROJ["SkillReleaseProjection"]
+        PROJ -. "M11-006 DONE / optional" .-> SSR["Candidate Skill Supply Report"]
     end
 
     SSR -. "optional candidate only" .-> SR
@@ -424,7 +424,7 @@ Need 声明 semantic gap、no-Skill/direct-tool baseline、expected increment、
 classes，不累积 actual results。Lifecycle 分开 intake、evaluation state、admission、runtime eligibility 和
 disposition，但 eligibility 不是 execution permission。
 
-M11-005/006 仍是 optional extension；当前 M11-005 已独立恢复为 READY，M11-006 继续 PARKED：
+M11-005/006 是已完成的 optional extension，但不使任何真实 Skill 自动获得 new-binding 资格：
 
 - Projection 只发布 runtime-minimal immutable Release facts，不暴露 Need/Evaluation/Lifecycle history；
 - candidate Skill 仍必须作为 Supply Report 进入唯一 Capability Resolver；

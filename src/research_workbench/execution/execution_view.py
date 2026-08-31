@@ -570,7 +570,10 @@ def produce_resolved_execution_view(
             _permission_source(
                 {
                     **snapshot.get("supply_required_permissions", {}),
-                    "allowed_roots": task.get("permissions", {}).get("allowed_roots", ()),
+                    "allowed_roots": snapshot.get("supply_required_permissions", {}).get(
+                        "allowed_roots",
+                        task.get("permissions", {}).get("allowed_roots", ()),
+                    ),
                 },
                 "Supply",
             ),

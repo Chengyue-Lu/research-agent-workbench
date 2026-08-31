@@ -125,7 +125,8 @@ Task / Method / frozen Capability selection
 - Thin Host 只消费与同一 Bundle 绑定的 frozen View，在调用前重验 freshness 与 Bundle bytes，并通过一个
   pre-bound Driver 最多执行一次；它不选择 Supply、不 rebind、不 fallback；
 - no-Skill、direct Tool、procedure 与 Adapter/Provider supply 路径在零 Skill、零 Evolution Registry、
-  零 Skill Assignment 下合法；M11-005/006 optional Skill extension 仍为 `PARKED`；
+  零 Skill Assignment 下合法；M11-005/006 optional Skill extension 已 bounded 实现，但生产 projection
+  index 仍为空，不表示真实 Skill 已获 admission、new-binding 或 Runtime authority；
 - 当前实现证明 bounded local Core contract，不等于真实 Provider、凭据、配额或 ordinary-user E2E 已就绪；
   当前成熟度见[实现状态](../STATUS.md)。
 

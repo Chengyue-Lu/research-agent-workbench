@@ -118,6 +118,12 @@ class CapabilityRequirementTests(unittest.TestCase):
                 document[key] = "forbidden-supply-state"
                 self.assertTrue(self.catalog.validate("capability_requirement", document))
 
+    def test_requirement_permission_ceiling_rejects_supply_roots(self) -> None:
+        document = copy.deepcopy(next(iter(self.requirements.values())))
+        document["constraints"]["permission_ceiling"]["allowed_roots"] = ["work"]
+
+        self.assertTrue(self.catalog.validate("capability_requirement", document))
+
     def test_unsatisfied_demand_remains_stable_without_supply(self) -> None:
         requirement_set = CapabilityRequirementSet.load(project_root=ROOT)
         selected = requirement_set.require(["literature-search", "document-read"])
