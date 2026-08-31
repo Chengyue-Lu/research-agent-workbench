@@ -105,11 +105,13 @@ M3-001～007 的 `PARKED` 表示当前没有 active implementation，并非抹�
 
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
-| M5-001 | BLOCKED | 选定证据综合真实案例 | 人类提供/批准边界 | 问题、来源、数据边界明确 |
-| M5-002 | BLOCKED | 选定理论+仿真实际案例 | 人类提供/批准边界 | 模型、参数、Claim ceiling 明确 |
+| M5-001 | BLOCKED | 冻结 Evidence-Synthesis Evaluation Case Dossier | 人类提供/批准边界 | Public package 冻结 research question、exact admitted source set、inclusion/exclusion 与 data/read boundary、required outputs、Claim ceiling、initial context 和 Task；Private adjudication package 独立冻结 required facts、counterevidence、limitations、forbidden claims、evidence relations 与 Human scoring anchors；case/oracle 在观察 treatment output 前 hash-frozen 并记录选择理由、Human approval 与 no-treatment-specific-tuning |
+| M5-002 | BLOCKED | 冻结 Theory + Simulation Evaluation Case Dossier | 人类提供/批准边界 | Public package 冻结 research question、exact model/equations、assumptions、parameters、inputs、simulation environment、required outputs、Claim ceiling 与 Task/context；Private adjudication package 独立冻结 invariants、numerical tolerances、failure/convergence conditions、limitations、forbidden overreach 与 evaluator anchors；case/oracle 在观察 output 前 hash-frozen、经 Human approval 且不得事后改写 |
 | M5-003 | DONE | 建立最小 Evaluation Manifest 与 baseline harness | M9-002 | 冻结 Task、Model、Host、Tool/Snapshot、预算、上下文、指标与 evidence classes；可表达 plain Agent、Tool、Mode no-Skill/direct-tool 与 candidate Skill 对照，但不保存 Need 本体中的 trial 结果，不在 lifecycle 内重建 benchmark framework |
-| M5-004 | BLOCKED | 运行已批准案例并分析净收益 | M4-001, M4-002, M4-003, M4-004, M5-001, M5-002, M5-003 | 质量、上下文、成本、遗漏、返工与人工修正证据完整；单次成功不构成 promotion |
-| M5-005 | BLOCKED | 里程碑删减评审 | M5-004 | 至少做出一项具名、可追溯的保留/删除/停止决定 |
+| M5-004 | BLOCKED | 运行已批准真实案例并分析 system-level net benefit | M4-001, M4-002, M4-003, M4-004, M5-001, M5-002, M5-003, M5-006, M5-007, M11-006, M6-004 | 按 frozen protocol 对 approved real cases 执行全部四臂并保持共享条件；只接受 live Provider/session conformance 与真实 accepted Release→Projection→Skill Supply 的 A4，不以 synthetic Driver/projection 作为正式 evidence；pilot 与 confirmatory 分离，failed Attempts 保留，blind Human Review 完成，metric evidence 完整或显式 unavailable/N/A，并产生 system-level analysis；单次成功不构成 promotion |
+| M5-005 | BLOCKED | 里程碑删减与 disposition 评审 | M5-004 | 至少对一个机制作出 KEEP / KEEP-WITH-BOUNDARY / MODIFY / PARK / DEPRECATE / DELETE / STOP 或 accepted 等价决定，并引用 protocol、case dossiers、exact run set、blind reviews、analysis 与 known limitations；A4 较优或 sunk cost 均不自动触发 Skill promotion/KEEP |
+| M5-006 | READY | 冻结 System-Level Evaluation Protocol | M5-003 | 预注册 system-level primary estimand、secondary comparisons、randomization、replicates、pilot/stopping/retry、model/provider drift、blinding/reveal、metric operationalization/status、analysis rule 与三层 decision hierarchy；measured/estimated/unavailable/not-applicable 严格区分，blind phase 隐藏 arm/Skill/cost/token/RWB 标签，Research Integrity 退化不得由效率抵消且禁止单一 weighted aggregate score |
+| M5-007 | BLOCKED | 建立 System-Level Evaluation Harness | M5-006, M11-006 | 编译 frozen plan、以 fresh Attempt/session 启动 exact arms，并闭合 Runtime Bundle/View/Host、Trace/Receipt/Artifact、匿名化、metric evidence、Human Review、reveal map 与 analysis input；不得 special-case A4、直接加载 candidate 目录、在 confirmatory run 使用 synthetic projection、自动 promotion/pruning/Human scoring；harness implementation 不等待真实 case data，正式 execution 留给 M5-004 |
 
 ## M6：API Execution（黄毅维护）
 

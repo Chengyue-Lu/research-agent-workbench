@@ -98,9 +98,13 @@ flowchart LR
     end
 
     subgraph M5["M5 Evaluation"]
-        M5001["M5-001 BLOCKED<br/>Human case boundary"] --> M5004["M5-004 BLOCKED"]
-        M5002["M5-002 BLOCKED<br/>Human case boundary"] --> M5004
-        M5003["M5-003 DONE<br/>non-executing plan"] --> M5004
+        M5001["M5-001 BLOCKED<br/>evidence dossier"] --> M5004["M5-004 BLOCKED<br/>real system evaluation"]
+        M5002["M5-002 BLOCKED<br/>theory/simulation dossier"] --> M5004
+        M5003["M5-003 DONE<br/>non-executing plan"] --> M5006["M5-006 READY<br/>evaluation protocol"]
+        M5006 --> M5007["M5-007 BLOCKED<br/>evaluation harness"]
+        M5003 --> M5004
+        M5006 --> M5004
+        M5007 --> M5004
         M5004 --> M5005["M5-005 BLOCKED"]
     end
 
@@ -108,11 +112,16 @@ flowchart LR
     M4002 --> M5004
     M4003 --> M5004
     M4004 --> M5004
+    M1106["M11-006<br/>projection-backed Skill path"] --> M5007
+    M1106 --> M5004
+    M6004["M6-004<br/>live Provider/session"] --> M5004
 ```
 
 M4-002 是当前 provenance/promotion 链的合法入口；M4-003/004 必须等它完成。M5-004 同时等待
-M4 闭环、两个具名真实案例边界与已存在的 M5-003 计划契约；M5-003 本身没有执行案例或
-产生净增量结论。本图未展开的独立 `READY` 行（例如 scaffold）仍直接从 `TASKS.md` 读取。
+M4 闭环、两个 Human-approved public/private Case Dossier、M5-003 计划契约、M5-006 Protocol、M5-007
+Harness、M11-006 真实 projection-backed Skill 路径与 M6-004 live Provider/session Gate。M5-006 可先行
+设计；M5-007 不等待真实 case data，但必须等待 M11-006。M5-003 本身没有执行案例或产生净增量结论。
+本图未展开的独立 `READY` 行（例如 scaffold）仍直接从 `TASKS.md` 读取。
 
 ### 3.3 Optional Skill extension
 

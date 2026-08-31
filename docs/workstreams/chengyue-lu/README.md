@@ -4,6 +4,9 @@
 
 当前进行中或仍待具名语义决定的工作流：
 
+- [`M5-SYSTEM-EVALUATION-DESIGN/`](M5-SYSTEM-EVALUATION-DESIGN/README.md)：冻结 system-level
+  primary estimand、case dossier public/private boundary、Protocol/Harness Tasks 与真实执行/pruning Gate；
+  不运行 Evaluation，也不宣称净收益。
 - [`POST-INTEGRATION-DOCS-ALIGNMENT/`](POST-INTEGRATION-DOCS-ALIGNMENT/README.md)：以当前
   `develop` 实现和治理事实校正文档真值、Runtime 传递关系与 derived navigation；不重定义系统契约。
 - [`PHASE-C-RESEARCH-STATE/`](PHASE-C-RESEARCH-STATE/README.md)：M10 bounded machine implementation

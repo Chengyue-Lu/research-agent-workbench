@@ -401,8 +401,26 @@ Skill Supply；candidate Skill arm 必须 exact-pin Skill package 和 Evaluation
 `rwb eval plan` 先复用 authoritative reference closure，再按 canonical 顺序编译四臂计划。它不运行模型、
 不写入 result、不决定 admission/promotion、不产生 Runtime/Method/Claim/Human authority。
 
-下一步价值证据必须来自经人类批准的真实案例与独立 Evaluation/Trial records，而不是由 Manifest
-存在本身推导。
+Phase D 的 primary estimand 是完整 RWB Runtime 集成系统相对 simpler Agent/Tool baseline 的
+system-level net benefit；单一 Skill 效果只作 secondary interpretation。后继受控面为：
+
+```text
+M5-001/002 public case + private adjudication dossiers
+                      ↓
+M5-006 frozen protocol → M5-007 unified harness
+                      ↓
+M5-004 approved real-case four-arm execution
+                      ↓
+M5-005 evidence-linked keep/modify/park/deprecate/delete/stop decision
+```
+
+Case 与 oracle 必须在观察输出前 hash-frozen；blind Human Review 先于 arm/Skill/cost/token/RWB label reveal。
+metric status 区分 measured/estimated/unavailable/not-applicable，Research Integrity 退化不能被效率抵消，
+也不得压成单一 weighted score。M5-004 的 A4 必须走真实 accepted Release→Projection→Skill Supply 与
+统一 Runtime Bundle/View/Host 路径；synthetic projection 只可用于 contract test，不是正式价值证据。
+
+下一步价值证据必须来自经人类批准的真实案例、M6-004 live Provider/session Gate 与独立
+Evaluation/Trial records，而不是由 Manifest、Harness 或 synthetic fixture 的存在本身推导。
 
 ---
 
