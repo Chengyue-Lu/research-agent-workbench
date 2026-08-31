@@ -4,6 +4,8 @@
 
 当前仍待具名语义决定的工作流：
 
+- [`M11-SKILL-RUNTIME-ACTIVATION/`](M11-SKILL-RUNTIME-ACTIVATION/README.md)：独立恢复
+  M11-005 为 READY；不验收实现、不激活 M11-006，也不改变 zero-Skill Core。
 - [`POST-INTEGRATION-DOCS-ALIGNMENT/`](POST-INTEGRATION-DOCS-ALIGNMENT/README.md)：以当前
   `develop` 实现和治理事实校正文档真值、Runtime 传递关系与 derived navigation；不重定义系统契约。
 - [`PHASE-C-RESEARCH-STATE/`](PHASE-C-RESEARCH-STATE/README.md)：M10 bounded machine implementation

@@ -1,0 +1,29 @@
+schema_version: 0.1.0
+task_id: M11-005
+revision: 1
+goal: Restore M11-005 from PARKED to READY without accepting implementation or activating M11-006.
+base_ref: develop@97fa2455c983dc65e66a782bac8d272eed32c633
+accountable_owner: Chengyue-Lu
+input_refs:
+  - AGENTS.md
+  - docs/DEVELOPMENT.md
+  - docs/TASKS.md
+  - docs/ROADMAP.md
+  - docs/decisions/0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md
+write_scope:
+  - docs/TASKS.md
+  - docs/M_SERIES_IMPLEMENTATION_MAP.md
+  - docs/DEVELOPER_ARCHITECTURE_MAP.md
+  - docs/workstreams/chengyue-lu/README.md
+  - docs/workstreams/chengyue-lu/M11-SKILL-RUNTIME-ACTIVATION/**
+  - work/M11-005/A-20260831-ACTIVATION/**
+required_outputs:
+  - canonical M11-005 READY status
+  - synchronized derived navigation
+  - explicit activation authority and risk record
+atomic_boundary: Docs-only activation of M11-005; no implementation, completion, Skill admission, Runtime binding, fallback, or Topic 5 authority.
+stop_conditions:
+  - task identity, dependency, and acceptance remain byte-equivalent
+  - M11-006 remains PARKED
+  - governance and documentation validation pass
+  - activation PR enters normal R2 review
