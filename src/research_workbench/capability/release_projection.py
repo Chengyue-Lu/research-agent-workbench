@@ -119,6 +119,18 @@ class SkillReleaseProjectionSet:
         index = load_document(index_path)
         if not isinstance(index, Mapping) or index.get("registry_kind") != "skill_release_projection_index":
             raise ValueError(f"not a Skill Release Projection integrity index: {index_path}")
+        # Import lazily: validation.documents imports the projection registry,
+        # which imports this module while the validation package is initialising.
+        from research_workbench.validation.schemas import SchemaCatalog
+
+        catalog = SchemaCatalog()
+        index_schema_errors = catalog.validate("skill_release_projection_index", index)
+        if index_schema_errors:
+            first = index_schema_errors[0]
+            raise ValueError(
+                "Skill Release Projection index schema invalid: "
+                f"{first.pointer}: {first.message}"
+            )
         raw_entries = index.get("entries")
         if not isinstance(raw_entries, list):
             raise ValueError(f"Skill Release Projection index has no entries list: {index_path}")
@@ -158,6 +170,15 @@ class SkillReleaseProjectionSet:
             document = load_document_bytes(resolved, content)
             if not isinstance(document, Mapping):
                 raise ValueError(f"Skill Release Projection is not an object: {document_path}")
+            projection_schema_errors = catalog.validate(
+                "skill_release_projection", document
+            )
+            if projection_schema_errors:
+                first = projection_schema_errors[0]
+                raise ValueError(
+                    "Skill Release Projection schema invalid: "
+                    f"{first.pointer}: {first.message}"
+                )
             projection = SkillReleaseProjection.from_mapping(document)
             if (
                 projection.reference != projection_ref

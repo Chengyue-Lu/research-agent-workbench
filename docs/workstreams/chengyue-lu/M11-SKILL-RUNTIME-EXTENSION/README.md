@@ -2,7 +2,7 @@
 
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 风险：R2 Capability / Skill Evolution → Runtime publication boundary
-- 开发基线：`develop@97fa2455c983dc65e66a782bac8d272eed32c633`
+- 当前 rebase 基线：`develop@ad038bdd35316718a88a2513886f1831763203bd`
 - 分支：`agent/m11-skill-runtime-extension`
 - Task：`M11-005`、`M11-006`
 
@@ -58,7 +58,8 @@ evidence resolver 与 Human-decision resolver 证明。
 
 本阶段允许在一个 module-level PR 中按 `M11-005 → M11-006` 提交两个独立 implementation slice 和
 task-specific evidence，但不改写 Task identity、dependency 或 acceptance。当前实现分支不额外创建
-状态解锁 PR；Task 状态的最终 closeout 仍由 merge-boundary governance 与具名 owner 决定。
+状态解锁 PR；本 PR 以 `M11-005 READY → DONE` 为 anchor，并按 dependency DAG 原子完成
+`M11-006 PARKED → DONE`。两项 Task 仍分别保留 implementation slice、commit 与验收证据。
 
 ## 明确非目标
 
@@ -80,7 +81,7 @@ task-specific evidence，但不改写 Task identity、dependency 或 acceptance�
 
 ## 当前实现证据
 
-### M11-005 slice — `a4e0ce9`
+### M11-005 slice — `3c4b407`（rebase 后）
 
 - projection/index Schema、空生产 index、publisher、runtime-minimal reader、closed validator 与 published
   identity policy 已实现；
@@ -90,7 +91,7 @@ task-specific evidence，但不改写 Task identity、dependency 或 acceptance�
   validation exit 0；首个 hosted coverage artifact 暴露新 producer/validator 分支不足后，projection suite
   已扩展为 8/8，并加入 index/publisher/registry adversarial matrix。
 
-### M11-006 slice — working tree
+### M11-006 slice — `e8b9dee`（rebase 后）
 
 - Skill Supply identity 支持 exact projection ref；旧 Lifecycle pair 只保留 structural/history 兼容；
 - `runtime-execution` 只接受 projection eligibility，Lifecycle callback 不能授权；
@@ -106,4 +107,19 @@ task-specific evidence，但不改写 Task identity、dependency 或 acceptance�
 - 本地 authoritative full behavioral suite：781 tests / 634.437s，PASS（4 个环境特定 skip）；
 - 首个 hosted run `33333387290`：Python 3.11/3.13 behavioral、package-smoke、governance PASS，global line
   90.91%；Coverage Policy 正确阻断三个新 critical module 的逐文件不足。补测后 projection + Skill Runtime
-  extension 14/14 focused PASS；新的 exact-head hosted 90/95/90 结果仍是 merge-boundary evidence。
+  extension 14/14 focused PASS；该 run 属于 rebase 前历史证据，不能替代当前 exact-head Gate。
+
+### R2 review remediation — current PR head
+
+- repository publication validator 不再信任 Lifecycle 中的非空引用或仅调用
+  `eligible_for_new_binding()`：它会解析真实 `skill_evaluation`，重放 baseline/with-Skill evidence closure，
+  并验证与 evaluation/candidate/accept outcome 绑定的 named Human Decision；将全部引用替换为
+  `MISSING-*` 且同步重算 Lifecycle/Projection/Index hash 仍会 BLOCK；
+- `SkillReleaseProjectionSet.load()` 在返回 Runtime-facing catalog 前完整验证 index/projection Schema；未知
+  index 字段、nested `evaluation` / `private_score` / `need_text` 与缺失 boundary 均 fail closed；
+- 撤销 Capability Requirement v0.1 中未参与 comparison/View intersection 的 `allowed_roots`；Supply roots
+  继续由 Projection ceiling 与 final View intersection 约束；
+- focused projection suite：11/11 PASS；projection + Skill Evaluation authority closure 23/23 PASS；
+  Requirement/Skill Runtime/Schema boundary 20/20 PASS；本地 Python 3.14 full behavioral 788/788 PASS
+  （4 skipped，713.611s）；当前 exact-head Python 3.11/3.13、coverage-quality 90/95/90、package-smoke、
+  governance 与 aggregate hosted evidence 在推送后重新生成。

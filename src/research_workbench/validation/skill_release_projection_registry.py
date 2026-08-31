@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any, Mapping
 
 from research_workbench.capability.lifecycle import (
@@ -23,6 +23,7 @@ from research_workbench.validation.document_core import (
     matches_repository_path,
 )
 from research_workbench.validation.document_kinds import infer_document_kind
+from research_workbench.validation.schemas import SchemaCatalog
 
 
 def _indices(
@@ -85,6 +86,130 @@ def _lifecycle_entries(
                 ),
             )
     return result
+
+
+def _repository_root_for(path: Path, repository_relative: str) -> Path | None:
+    """Recover the project root without accepting absolute or parent paths."""
+
+    relative = PurePosixPath(repository_relative)
+    if (
+        relative.is_absolute()
+        or not relative.parts
+        or any(part in {"", ".", ".."} for part in relative.parts)
+    ):
+        return None
+    resolved_path = path.resolve()
+    root = resolved_path
+    for _part in relative.parts:
+        root = root.parent
+    expected = root.joinpath(*relative.parts).resolve()
+    return root if expected == resolved_path else None
+
+
+def _arm_evidence_paths(
+    evaluation: Mapping[str, Any], arm_name: str
+) -> set[str]:
+    paths: set[str] = set()
+    for case in evaluation.get("cases", []):
+        if not isinstance(case, Mapping):
+            continue
+        arms = case.get("arms")
+        arm = arms.get(arm_name) if isinstance(arms, Mapping) else None
+        if not isinstance(arm, Mapping):
+            continue
+        for key in ("output_ref", "validation_ref"):
+            reference = arm.get(key)
+            path = reference.get("path") if isinstance(reference, Mapping) else None
+            if isinstance(path, str):
+                paths.add(path)
+        receipt_ref = arm.get("execution_receipt_ref")
+        if isinstance(receipt_ref, str):
+            paths.add(receipt_ref)
+    return paths
+
+
+def _loaded_evidence(
+    documents: Mapping[Path, Any], reference: str
+) -> tuple[Path, Mapping[str, Any]] | None:
+    loaded = loaded_document_at(documents, reference)
+    if loaded is None or not document_has_loaded_bytes(documents, loaded[0]):
+        return None
+    return loaded
+
+
+def _publication_authority_verified(
+    documents: Mapping[Path, Any], record: SkillLifecycleRecord
+) -> bool:
+    """Revalidate the external Evaluation closure and its named Human Decision."""
+
+    evaluation_ref = record.evaluation.evaluation_record_ref
+    decision_ref = record.admission.decision_ref
+    if evaluation_ref is None or decision_ref is None:
+        return False
+    loaded_evaluation = _loaded_evidence(documents, evaluation_ref)
+    if loaded_evaluation is None:
+        return False
+    evaluation_path, evaluation = loaded_evaluation
+    root = _repository_root_for(evaluation_path, evaluation_ref)
+    if root is None or SchemaCatalog().validate("skill_evaluation", evaluation):
+        return False
+    if (
+        evaluation.get("skill_id") != record.skill_ref.skill_id
+        or evaluation.get("skill_version") != record.skill_ref.version
+    ):
+        return False
+    admission = evaluation.get("admission")
+    if (
+        not isinstance(admission, Mapping)
+        or admission.get("status") != "human-decided"
+        or admission.get("outcome") != "accept"
+        or admission.get("decision_ref") != decision_ref
+    ):
+        return False
+    loaded_decision = _loaded_evidence(documents, decision_ref)
+    if loaded_decision is None:
+        return False
+    decision = loaded_decision[1]
+    if (
+        decision.get("object_type") != "decision"
+        or SchemaCatalog().validate("research_object", decision)
+    ):
+        return False
+
+    # Import lazily because skill_evaluation imports the public validation
+    # package; importing it while validation.documents is initialising cycles.
+    from research_workbench.evaluation.skill_evaluation import assess_skill_evaluation
+
+    assessment = assess_skill_evaluation(evaluation, root=root)
+    if assessment.verdict != "human-decision-recorded":
+        return False
+
+    baseline_paths = _arm_evidence_paths(evaluation, "baseline")
+    trial_paths = _arm_evidence_paths(evaluation, "with_skill")
+    baseline_ref = record.evaluation.baseline_ref
+    trial_ref = record.evaluation.trial_ref
+    promotion_refs = record.evaluation.promotion_evidence_refs
+    if (
+        baseline_ref not in baseline_paths
+        or trial_ref not in trial_paths
+        or not promotion_refs
+        or any(reference not in baseline_paths | trial_paths for reference in promotion_refs)
+    ):
+        return False
+    verified_evidence = {
+        reference
+        for reference in (
+            baseline_ref,
+            trial_ref,
+            evaluation_ref,
+            *promotion_refs,
+        )
+        if reference is not None and _loaded_evidence(documents, reference) is not None
+    }
+    return record.externally_verified_for_new_binding(
+        evidence_resolver=lambda reference: reference in verified_evidence,
+        decision_resolver=lambda reference: reference == decision_ref,
+    )
 
 
 def validate_skill_release_projections(
@@ -281,12 +406,12 @@ def validate_skill_release_projections(
             continue
         lifecycle_index_entry, lifecycle_entry = lifecycle_pair
         record = lifecycle_entry.record
-        if not record.eligible_for_new_binding():
+        if not _publication_authority_verified(documents, record):
             issues.append(
                 ValidationIssue(
                     path,
-                    "SKILL-RELEASE-PROJECTION-LIFECYCLE-INELIGIBLE",
-                    "projection source Lifecycle is not structurally eligible for new binding",
+                    "SKILL-RELEASE-PROJECTION-AUTHORITY-UNVERIFIED",
+                    "projection source external Evaluation evidence or named Human Decision is not verified",
                 )
             )
             continue

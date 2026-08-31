@@ -1,3 +1,4 @@
+import contextlib
 import copy
 import json
 import tempfile
@@ -21,9 +22,13 @@ from research_workbench.capability.release_projection import (
 from research_workbench.contracts.common import ContractError
 from research_workbench.io import iter_documents, load_document
 from research_workbench.validation import SchemaCatalog, validate_documents
+from research_workbench.validation import (
+    skill_release_projection_registry as projection_registry_module,
+)
 from research_workbench.validation.skill_release_projection_registry import (
     validate_skill_release_projections,
 )
+from tests.test_skill_evaluation import _live_evaluation
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -110,8 +115,41 @@ def _synthetic_project(root: Path) -> tuple[str, set[str], str]:
     }
     _write_json(root / "registry/skills/accepted.json", accepted)
 
-    evidence_refs = {"BASELINE-SYNTHETIC", "TRIAL-SYNTHETIC", "EVAL-SYNTHETIC"}
-    decision_ref = "DECISION-ACCEPT-SYNTHETIC"
+    evaluation = _live_evaluation(
+        root, skill_id="synthetic-skill", skill_version="1.0.0"
+    )
+    decision_ref = "decision.json"
+    decision = {
+        "schema_version": "0.1.0",
+        "object_type": "decision",
+        "object_id": "D-SYNTHETIC-SKILL-001",
+        "revision": 1,
+        "status": "accepted",
+        "decision": "Admit the synthetic Skill release.",
+        "scope": ["fixture-candidate"],
+        "reason_refs": ["SE-LIVE-001"],
+        "actor": "human-reviewer",
+        "timestamp": "2026-08-31T00:00:00Z",
+        "metadata": {
+            "skill_evaluation_id": "SE-LIVE-001",
+            "skill_candidate_id": "fixture-candidate",
+            "decision_owner": "human",
+            "skill_admission_outcome": "accept",
+        },
+    }
+    _write_json(root / decision_ref, decision)
+    evaluation["admission"] = {
+        "status": "human-decided",
+        "outcome": "accept",
+        "decision_ref": decision_ref,
+        "rationale": "A named Human admitted the synthetic release.",
+    }
+    evaluation_ref = "evaluation.json"
+    _write_json(root / evaluation_ref, evaluation)
+    baseline_ref = "baseline-receipt.json"
+    trial_ref = "with-skill-receipt.json"
+    promotion_refs = ["baseline-validation.json", "skill-validation.json"]
+    evidence_refs = {baseline_ref, trial_ref, evaluation_ref, *promotion_refs}
     lifecycle_ref = "synthetic-skill@1.0.0/lifecycle@1.0.0"
     lifecycle_path = root / "registry/skills/lifecycle/synthetic-skill-1.0.0.yaml"
     lifecycle = {
@@ -134,10 +172,10 @@ def _synthetic_project(root: Path) -> tuple[str, set[str], str]:
         },
         "evaluation": {
             "state": "evidence-ready",
-            "baseline_ref": "BASELINE-SYNTHETIC",
-            "trial_ref": "TRIAL-SYNTHETIC",
-            "evaluation_record_ref": "EVAL-SYNTHETIC",
-            "promotion_evidence_refs": ["EVAL-SYNTHETIC", "TRIAL-SYNTHETIC"],
+            "baseline_ref": baseline_ref,
+            "trial_ref": trial_ref,
+            "evaluation_record_ref": evaluation_ref,
+            "promotion_evidence_refs": promotion_refs,
             "reason": "Synthetic external evidence references are complete.",
         },
         "admission": {
@@ -183,6 +221,22 @@ def _synthetic_project(root: Path) -> tuple[str, set[str], str]:
     }
     _write_json(root / "registry/skills/lifecycle-v2.json", lifecycle_index)
     return lifecycle_ref, evidence_refs, decision_ref
+
+
+def _publication_documents(root: Path) -> dict[Path, object]:
+    paths = iter_documents([root / "registry"])
+    paths.extend(
+        root / relative
+        for relative in (
+            "baseline-receipt.json",
+            "with-skill-receipt.json",
+            "baseline-validation.json",
+            "skill-validation.json",
+            "evaluation.json",
+            "decision.json",
+        )
+    )
+    return {path: load_document(path) for path in paths}
 
 
 def _publish_synthetic(root: Path) -> dict:
@@ -237,8 +291,14 @@ class SkillReleaseProjectionTests(unittest.TestCase):
             first = _publish_synthetic(root)
             lifecycle_ref, evidence_refs, decision_ref = (
                 "synthetic-skill@1.0.0/lifecycle@1.0.0",
-                {"BASELINE-SYNTHETIC", "TRIAL-SYNTHETIC", "EVAL-SYNTHETIC"},
-                "DECISION-ACCEPT-SYNTHETIC",
+                {
+                    "baseline-receipt.json",
+                    "with-skill-receipt.json",
+                    "evaluation.json",
+                    "baseline-validation.json",
+                    "skill-validation.json",
+                },
+                "decision.json",
             )
             second = build_skill_release_projection(
                 lifecycle_ref,
@@ -263,6 +323,9 @@ class SkillReleaseProjectionTests(unittest.TestCase):
                 "promotion_evidence_refs",
                 "metrics",
                 "scores",
+                "private_score",
+                "need_text",
+                "trial_results",
                 "reason",
                 "deliberation",
             }
@@ -329,10 +392,7 @@ class SkillReleaseProjectionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             _publish_synthetic(root)
-            documents = {
-                path: load_document(path)
-                for path in iter_documents([root / "registry"])
-            }
+            documents = _publication_documents(root)
             self.assertEqual([], validate_documents(documents))
 
             projection_path = root / "registry/skills/release-projections/synthetic-skill-1.0.0.yaml"
@@ -363,18 +423,305 @@ class SkillReleaseProjectionTests(unittest.TestCase):
                     "SKILL-RELEASE-PROJECTION-MANIFEST-HASH-MISMATCH",
                 ),
             )
-            for mutate, expected in mutations:
-                with self.subTest(expected=expected):
-                    changed = copy.deepcopy(documents)
-                    mutate(changed)
-                    self.assertIn(
-                        expected,
-                        {issue.code for issue in validate_documents(changed)},
-                    )
+            with patch.object(
+                projection_registry_module,
+                "_publication_authority_verified",
+                return_value=True,
+            ):
+                for mutate, expected in mutations:
+                    with self.subTest(expected=expected):
+                        changed = copy.deepcopy(documents)
+                        mutate(changed)
+                        self.assertIn(
+                            expected,
+                            {issue.code for issue in validate_documents(changed)},
+                        )
 
             injected = copy.deepcopy(documents[projection_path])
             injected["trial_results"] = {"score": 1}
             self.assertTrue(self.catalog.validate("skill_release_projection", injected))
+
+    def test_repository_projection_revalidates_external_evidence_and_human_decision(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            _publish_synthetic(root)
+            self.assertEqual([], validate_documents(_publication_documents(root)))
+
+            lifecycle_path = (
+                root / "registry/skills/lifecycle/synthetic-skill-1.0.0.yaml"
+            )
+            lifecycle = load_document(lifecycle_path)
+            lifecycle["evaluation"].update(
+                {
+                    "baseline_ref": "MISSING-BASELINE",
+                    "trial_ref": "MISSING-TRIAL",
+                    "evaluation_record_ref": "MISSING-EVALUATION",
+                    "promotion_evidence_refs": ["MISSING-PROMOTION"],
+                }
+            )
+            lifecycle["admission"]["decision_ref"] = "MISSING-DECISION"
+            _write_json(lifecycle_path, lifecycle)
+
+            lifecycle_index_path = root / "registry/skills/lifecycle-v2.json"
+            lifecycle_index = load_document(lifecycle_index_path)
+            lifecycle_index["entries"][0]["content_hash"] = (
+                f"sha256:{hash_file(lifecycle_path)}"
+            )
+            _write_json(lifecycle_index_path, lifecycle_index)
+
+            projection_path = (
+                root
+                / "registry/skills/release-projections/synthetic-skill-1.0.0.yaml"
+            )
+            projection = load_document(projection_path)
+            projection["admission_provenance"].update(
+                {
+                    "lifecycle_content_hash": lifecycle_index["entries"][0][
+                        "content_hash"
+                    ],
+                    "decision_ref": "MISSING-DECISION",
+                }
+            )
+            _write_json(projection_path, projection)
+
+            projection_index_path = root / "registry/skills/release-projections.json"
+            projection_index = load_document(projection_index_path)
+            projection_index["entries"][0]["content_hash"] = (
+                f"sha256:{hash_file(projection_path)}"
+            )
+            _write_json(projection_index_path, projection_index)
+
+            codes = {
+                issue.code
+                for issue in validate_documents(_publication_documents(root))
+            }
+            self.assertIn("SKILL-RELEASE-PROJECTION-AUTHORITY-UNVERIFIED", codes)
+            self.assertNotIn("SKILL-RELEASE-PROJECTION-HASH-MISMATCH", codes)
+            self.assertNotIn("SKILL-RELEASE-PROJECTION-PROVENANCE-DRIFT", codes)
+            self.assertNotIn("SKILL-RELEASE-PROJECTION-DERIVATION-DRIFT", codes)
+
+    def test_repository_publication_authority_helpers_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            _publish_synthetic(root)
+            documents = _publication_documents(root)
+            record = next(
+                iter(projection_registry_module._lifecycle_entries(documents).values())
+            )[1].record
+            evaluation_path = root / "evaluation.json"
+
+            self.assertEqual(
+                root,
+                projection_registry_module._repository_root_for(
+                    evaluation_path, "evaluation.json"
+                ),
+            )
+            self.assertIsNone(
+                projection_registry_module._repository_root_for(
+                    evaluation_path, "../evaluation.json"
+                )
+            )
+            self.assertIsNone(
+                projection_registry_module._repository_root_for(
+                    evaluation_path, "/evaluation.json"
+                )
+            )
+            self.assertEqual(
+                set(),
+                projection_registry_module._arm_evidence_paths(
+                    {
+                        "cases": [
+                            None,
+                            {"arms": []},
+                            {"arms": {"baseline": []}},
+                            {"arms": {"baseline": {"output_ref": [], "receipt": 1}}},
+                        ]
+                    },
+                    "baseline",
+                ),
+            )
+
+            no_evaluation = replace(
+                record,
+                evaluation=replace(record.evaluation, evaluation_record_ref=None),
+            )
+            no_decision = replace(
+                record,
+                admission=replace(record.admission, decision_ref=None),
+            )
+            self.assertFalse(
+                projection_registry_module._publication_authority_verified(
+                    documents, no_evaluation
+                )
+            )
+            self.assertFalse(
+                projection_registry_module._publication_authority_verified(
+                    documents, no_decision
+                )
+            )
+
+            def assert_rejected(mutate_documents, changed_record=record) -> None:
+                changed = copy.deepcopy(documents)
+                mutate_documents(changed)
+                self.assertFalse(
+                    projection_registry_module._publication_authority_verified(
+                        changed, changed_record
+                    )
+                )
+
+            evaluation_ref = root / "evaluation.json"
+            decision_ref = root / "decision.json"
+            assert_rejected(lambda values: values.pop(evaluation_ref))
+            assert_rejected(
+                lambda values: values[evaluation_ref].pop("skill_version")
+            )
+            assert_rejected(
+                lambda values: values[evaluation_ref].update(
+                    {"skill_id": "other-skill"}
+                )
+            )
+            assert_rejected(
+                lambda values: values[evaluation_ref].update({"admission": []})
+            )
+            assert_rejected(lambda values: values.pop(decision_ref))
+            assert_rejected(
+                lambda values: values[decision_ref].update({"object_type": "claim"})
+            )
+
+            accepted_assessment = SimpleNamespace(
+                verdict="human-decision-recorded"
+            )
+            rejected_assessment = SimpleNamespace(verdict="not-eligible")
+            with patch(
+                "research_workbench.evaluation.skill_evaluation.assess_skill_evaluation",
+                return_value=rejected_assessment,
+            ):
+                self.assertFalse(
+                    projection_registry_module._publication_authority_verified(
+                        documents, record
+                    )
+                )
+
+            wrong_baseline = replace(
+                record,
+                evaluation=replace(
+                    record.evaluation, baseline_ref="skill-validation.json"
+                ),
+            )
+            no_promotion = replace(
+                record,
+                evaluation=replace(
+                    record.evaluation, promotion_evidence_refs=()
+                ),
+            )
+            ineligible = replace(
+                record,
+                runtime_eligibility=replace(
+                    record.runtime_eligibility, state="ineligible"
+                ),
+            )
+            with patch(
+                "research_workbench.evaluation.skill_evaluation.assess_skill_evaluation",
+                return_value=accepted_assessment,
+            ):
+                for changed_record in (wrong_baseline, no_promotion, ineligible):
+                    with self.subTest(record=changed_record):
+                        self.assertFalse(
+                            projection_registry_module._publication_authority_verified(
+                                documents, changed_record
+                            )
+                        )
+                missing_evidence = copy.deepcopy(documents)
+                missing_evidence.pop(root / "baseline-receipt.json")
+                self.assertFalse(
+                    projection_registry_module._publication_authority_verified(
+                        missing_evidence, record
+                    )
+                )
+
+    def test_projection_set_schema_boundary_is_fail_closed(self) -> None:
+        def mutate_projection(root: Path, index: dict, mutate) -> None:
+            projection_path = (
+                root
+                / "registry/skills/release-projections/synthetic-skill-1.0.0.yaml"
+            )
+            projection = load_document(projection_path)
+            mutate(projection)
+            _write_json(projection_path, projection)
+            index["entries"][0]["content_hash"] = (
+                f"sha256:{hash_file(projection_path)}"
+            )
+
+        cases = (
+            (
+                "index schema invalid",
+                lambda _root, index: index.__setitem__("private_score", 1),
+            ),
+            (
+                "index schema invalid",
+                lambda _root, index: index["entries"][0].__setitem__(
+                    "need_text", "must not enter Runtime"
+                ),
+            ),
+            (
+                "Projection schema invalid",
+                lambda root, index: mutate_projection(
+                    root, index, lambda value: value.__setitem__("evaluation", {})
+                ),
+            ),
+            (
+                "Projection schema invalid",
+                lambda root, index: mutate_projection(
+                    root,
+                    index,
+                    lambda value: value["runtime_contract"].__setitem__(
+                        "evaluation", {}
+                    ),
+                ),
+            ),
+            (
+                "Projection schema invalid",
+                lambda root, index: mutate_projection(
+                    root,
+                    index,
+                    lambda value: value["eligibility"].__setitem__(
+                        "private_score", 1
+                    ),
+                ),
+            ),
+            (
+                "Projection schema invalid",
+                lambda root, index: mutate_projection(
+                    root,
+                    index,
+                    lambda value: value["release"].__setitem__(
+                        "need_text", "must not enter Runtime"
+                    ),
+                ),
+            ),
+            (
+                "Projection schema invalid",
+                lambda root, index: mutate_projection(
+                    root,
+                    index,
+                    lambda value: value["boundaries"].pop(
+                        "stores_lifecycle_history"
+                    ),
+                ),
+            ),
+        )
+        for expected, mutate in cases:
+            with self.subTest(expected=expected), tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                _publish_synthetic(root)
+                index_path = root / "registry/skills/release-projections.json"
+                index = load_document(index_path)
+                mutate(root, index)
+                _write_json(index_path, index)
+                with self.assertRaisesRegex(ValueError, expected):
+                    SkillReleaseProjectionSet.load(project_root=root)
 
     def test_projection_set_rejects_malformed_or_ambiguous_publication(self) -> None:
         def duplicate_entry(index: dict, **changes: object) -> None:
@@ -392,17 +739,17 @@ class SkillReleaseProjectionTests(unittest.TestCase):
 
         cases = (
             (
-                "not an object",
+                "index schema invalid",
                 lambda _root, index: index.update({"entries": [None]}),
             ),
             (
-                "expected a SHA-256 digest",
+                "index schema invalid",
                 lambda _root, index: index["entries"][0].update(
                     {"content_hash": "sha256:short"}
                 ),
             ),
             (
-                "expected a SHA-256 digest",
+                "index schema invalid",
                 lambda _root, index: index["entries"][0].update(
                     {"content_hash": "sha256:" + "z" * 64}
                 ),
@@ -430,7 +777,7 @@ class SkillReleaseProjectionTests(unittest.TestCase):
                 ),
             ),
             (
-                "missing or escapes root",
+                "index schema invalid",
                 lambda _root, index: index["entries"][0].update(
                     {"document_path": "../outside.yaml"}
                 ),
@@ -610,10 +957,7 @@ class SkillReleaseProjectionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             _publish_synthetic(root)
-            documents = {
-                path: load_document(path)
-                for path in iter_documents([root / "registry"])
-            }
+            documents = _publication_documents(root)
             index_path = root / "registry/skills/release-projections.json"
             projection_path = (
                 root
@@ -666,15 +1010,30 @@ class SkillReleaseProjectionTests(unittest.TestCase):
                 },
                 *noise[index_path]["entries"],
             ]
-            self.assertEqual([], validate_skill_release_projections(noise))
+            with patch.object(
+                projection_registry_module,
+                "_publication_authority_verified",
+                return_value=True,
+            ):
+                self.assertEqual([], validate_skill_release_projections(noise))
 
-            def assert_issue(expected: str, mutate) -> None:
+            def assert_issue(expected: str, mutate, *, verify_authority: bool = False) -> None:
                 changed = copy.deepcopy(documents)
                 mutate(changed)
-                self.assertIn(
-                    expected,
-                    {issue.code for issue in validate_skill_release_projections(changed)},
+                authority = (
+                    patch.object(
+                        projection_registry_module,
+                        "_publication_authority_verified",
+                        return_value=True,
+                    )
+                    if not verify_authority
+                    else contextlib.nullcontext()
                 )
+                with authority:
+                    self.assertIn(
+                        expected,
+                        {issue.code for issue in validate_skill_release_projections(changed)},
+                    )
 
             assert_issue(
                 "SKILL-RELEASE-PROJECTION-INDEX-MISSING",
@@ -763,10 +1122,11 @@ class SkillReleaseProjectionTests(unittest.TestCase):
                 ),
             )
             assert_issue(
-                "SKILL-RELEASE-PROJECTION-LIFECYCLE-INELIGIBLE",
+                "SKILL-RELEASE-PROJECTION-AUTHORITY-UNVERIFIED",
                 lambda values: values[lifecycle_path]["runtime_eligibility"].update(
                     {"state": "ineligible"}
                 ),
+                verify_authority=True,
             )
             assert_issue(
                 "SKILL-RELEASE-PROJECTION-RELEASE-DRIFT",

@@ -93,7 +93,22 @@
       "additionalProperties": false
     },
     "permissionBoundary": {
-      "$ref": "capability-requirement.schema.json#/$defs/permissionCeiling"
+      "description": "Supply-side required permission facts, including roots later intersected by the final execution View.",
+      "type": "object",
+      "required": ["filesystem", "network", "external_write"],
+      "properties": {
+        "filesystem": {
+          "enum": ["forbidden", "read-only", "worktree-write", "workspace-write"]
+        },
+        "network": { "enum": ["forbidden", "search-and-fetch", "allowed"] },
+        "external_write": { "const": false },
+        "allowed_roots": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/relativePath" },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
     },
     "dataEgressBoundary": {
       "$ref": "capability-requirement.schema.json#/$defs/dataEgress"

@@ -63,12 +63,7 @@
         "network": {
           "enum": ["forbidden", "search-and-fetch", "allowed"]
         },
-        "external_write": { "const": false },
-        "allowed_roots": {
-          "type": "array",
-          "items": { "$ref": "common.schema.json#/$defs/relativePath" },
-          "uniqueItems": true
-        }
+        "external_write": { "const": false }
       },
       "additionalProperties": false
     },

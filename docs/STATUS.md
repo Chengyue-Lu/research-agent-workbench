@@ -43,6 +43,7 @@ production runtime-execution binding、Human Decision、科学有效性或端到
 | Resolved Execution View | M11-002 supply-neutral producer 固定 exact execution slice 与 Provider/Adapter/Model/Runtime/Host，Profile Tool allowlist 只约束真实 Tool Supply；最严 permission/data-egress/side-effect 交集后还必须证明 selected Supply 仍可运行，否则 fail closed |
 | Thin Execution Host | M11-003 exact View consumer 绑定同一 Runtime Bundle，以 Host-owned/injected trusted clock 和调用前重载阻断 backdating 与受控文件 TOCTOU；preflight requested facts 与 post-call actual facts 分离，preventive/detective 语义不混淆；无 retry/fallback/Topic 5 recovery |
 | Generic execution closeout | M11-004 对 completed/post-call failed/preflight blocked 作 status-aware replay；Trace 显式 pin execution slice，actual binding/Supply 与 Provider/Tool facts 按生命周期交叉闭合；completed 只声明 Action/Capability-slice completion，永不声明 Task/Claim/Human completion |
+| Optional Skill runtime supply | M11-005/006 发布 runtime-minimal、Schema-closed 的 SkillReleaseProjection，并把 eligible Skill 映射回统一 Report→Resolution→Snapshot→View 路径；repository validator 重验真实 Evaluation evidence closure 与 named Human Decision，Capability Resolver 仍是唯一 selector，View/Host 不按 supply kind 分派 |
 
 ## 受限或尚不可用
 
@@ -57,6 +58,7 @@ production runtime-execution binding、Human Decision、科学有效性或端到
 | Phase C candidates（M10-001/002 + M3-009 + M10-003） | 两个 synthetic bounded case 只证明 State/Attempt/Failure/Method Trace 的确定性 closure、fresh-process 受控读取和固定 fixture behavior；Human semantic review、R2/Phase C closeout 仍 pending，最终表示与 Topic 5 实现均未获授权 |
 | Source admission（M4-001） | 不抓取网页/API，不判断来源真实性、许可法律效力、内容安全或科学质量；promotion、Claim trace 与 Run reproduction 尚未在本层实现 |
 | Skill 价值 | 现有 Registry 条目不构成已证明的普适研究增益；新任务可优先 no-Skill / direct-tool |
+| Skill new-binding | 生产 projection index 仍为空；M11-005/006 只证明可选 publication/mapping contract，未重新准入任何 legacy Skill，也未证明真实 trial、Provider 可用性或科研净增量 |
 | 发布 | 仓库缺少最终许可证选择，原创 Skill 许可状态仍阻断正式发布 |
 | 产品体验 | 初始化、可视化、协作 UI、安装包和运维流程仍是开发者级别 |
 

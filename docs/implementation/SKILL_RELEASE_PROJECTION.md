@@ -45,10 +45,19 @@ no active, evidence-complete new-binding Skill. Every future entry must fix proj
 path and raw-file hash. Repository validation replays the deterministic Release/Lifecycle mapping and rejects
 missing, relocated, rewritten or fact-drifted projections.
 
+Repository validation does not trust Lifecycle reference strings or a structurally eligible state. For every
+published projection it resolves the persisted `skill_evaluation`, replays its hash-pinned baseline/with-Skill
+evidence closure, requires the Lifecycle baseline/trial/promotion refs to name artifacts in that closure, and
+requires the Evaluation to end in a Schema-valid, named Human Decision bound to the same evaluation, candidate and
+`accept` outcome. Missing refs remain blocking even if an author recomputes the Lifecycle, projection and both
+integrity-index hashes. This Maintainer-side validation is not imported by Runtime.
+
 ## Consumer boundary
 
 `SkillReleaseProjectionSet` is the runtime-minimal catalog reader. It reads only its explicit index and indexed
-projection files; it does not load Need, Candidate, Evaluation or Lifecycle documents. M11-006 uses an exact
+projection files. The reader validates the complete closed index Schema and each hash-pinned projection Schema
+before exposing catalog data, so unknown or nested Need/Evaluation/private fields and missing boundary flags fail
+closed rather than being ignored. It does not load Need, Candidate, Evaluation or Lifecycle documents. M11-006 uses an exact
 projection reference to qualify one Skill Supply candidate through the existing Capability Resolver. Projection
 metadata is a ceiling and eligibility fact, never a final permission or execution grant.
 
@@ -56,6 +65,9 @@ Runtime Bundle does not scan this catalog or import Lifecycle. The producer supp
 in the manifest closure, and the selected Skill Supply points to the same path/hash. The pure
 `projection_supply_fact_issues()` checker closes Release identity, required Tool dependencies, capability/I/O,
 permission roots, data-egress allow/forbid sets and side-effect ceilings without adding a second selector.
+Capability Requirement v0.1 continues to compare only the filesystem/network/external-write permission class;
+Supply roots remain bounded by the projection ceiling and the final View intersection rather than becoming an
+unenforced Requirement field.
 
 The zero-Skill/no-Skill/direct Tool Core remains valid with an empty projection index or with no projection input
 in a Runtime Bundle.

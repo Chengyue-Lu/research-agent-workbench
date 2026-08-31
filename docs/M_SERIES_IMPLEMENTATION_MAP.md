@@ -118,13 +118,13 @@ M4 闭环、两个具名真实案例边界与已存在的 M5-003 计划契约；
 
 ```mermaid
 flowchart LR
-    M1105["M11-005 READY<br/>SkillReleaseProjection"] --> M1106["M11-006 PARKED<br/>Skill supply mapping"]
+    M1105["M11-005 DONE<br/>SkillReleaseProjection"] --> M1106["M11-006 DONE<br/>Skill supply mapping"]
     M1102["M11-002 DONE<br/>supply-neutral View Core"] --> M1106
 ```
 
-具名 owner 已依据 accepted ADR-0019 与已完成的 M9-003 恢复 M11-005；该 READY 状态只授权 projection
-publication 实施，不构成验收。M11-006 继续 PARKED，Projection 缺失只阻塞 Skill new-binding，不阻塞
-已完成的 no-Skill/direct-Tool Core。其他 PARKED Task 的恢复条件也只看 `TASKS.md`。所有图中省略的
+M11-005/006 已按 accepted ADR-0019 完成 runtime-minimal projection publication 与统一 Skill Supply
+mapping；Projection 缺失只阻塞 Skill new-binding，不阻塞已完成的 no-Skill/direct-Tool Core。DONE 不表示
+任何真实 Skill 已准入或已证明净增量。其他 PARKED Task 的恢复条件只看 `TASKS.md`，所有图中省略的
 hard dependency（包括 Human/external Gate）均不得由本图推断。
 
 ## 4. Reservation activation
