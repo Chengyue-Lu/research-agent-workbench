@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from types import MappingProxyType
 from typing import Any, Callable, Iterable, Mapping
 
 from research_workbench.artifacts.integrity import hash_bytes, resolve_within_root
@@ -43,14 +42,6 @@ def _normalized_hash(value: str) -> str:
     except ValueError as exc:
         raise ValueError("expected a SHA-256 digest") from exc
     return normalized
-
-
-def _read_only(value: Any) -> Any:
-    if isinstance(value, Mapping):
-        return MappingProxyType({key: _read_only(item) for key, item in value.items()})
-    if isinstance(value, (list, tuple)):
-        return tuple(_read_only(item) for item in value)
-    return value
 
 
 @dataclass(frozen=True, slots=True)
@@ -131,18 +122,14 @@ class SkillReleaseProjectionSet:
                 "Skill Release Projection index schema invalid: "
                 f"{first.pointer}: {first.message}"
             )
-        raw_entries = index.get("entries")
-        if not isinstance(raw_entries, list):
-            raise ValueError(f"Skill Release Projection index has no entries list: {index_path}")
+        raw_entries = index["entries"]
 
         entries: list[SkillReleaseProjectionEntry] = []
         seen_refs: set[str] = set()
         seen_identities: set[tuple[str, str]] = set()
         seen_paths: set[str] = set()
         seen_releases: set[str] = set()
-        for position, raw in enumerate(raw_entries):
-            if not isinstance(raw, Mapping):
-                raise ValueError(f"Skill Release Projection entry {position} is not an object")
+        for raw in raw_entries:
             projection_ref = require_string(raw, "projection_ref")
             projection_id = require_string(raw, "projection_id")
             projection_version = require_string(raw, "projection_version")

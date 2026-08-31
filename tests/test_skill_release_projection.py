@@ -783,6 +783,12 @@ class SkillReleaseProjectionTests(unittest.TestCase):
                 ),
             ),
             (
+                "path is missing or escapes root",
+                lambda _root, index: index["entries"][0].update(
+                    {"document_path": "registry/skills/release-projections/missing.yaml"}
+                ),
+            ),
+            (
                 "content drift",
                 lambda _root, index: index["entries"][0].update(
                     {"content_hash": "sha256:" + "0" * 64}
@@ -902,6 +908,17 @@ class SkillReleaseProjectionTests(unittest.TestCase):
                     manifest_sha256="a" * 64,
                     projection_version="1.0.0",
                 )
+
+            for invalid_hash in ("short", "z" * 64):
+                with self.subTest(invalid_hash=invalid_hash), self.assertRaisesRegex(
+                    ValueError, "expected a SHA-256 digest"
+                ):
+                    projection_from_verified_release(
+                        lifecycle_entry=lifecycle_entry,
+                        manifest=accepted_entry.manifest,
+                        manifest_sha256=invalid_hash,
+                        projection_version="1.0.0",
+                    )
 
             def call_with_paths(
                 manifest_path: str,
