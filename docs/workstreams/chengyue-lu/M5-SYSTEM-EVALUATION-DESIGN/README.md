@@ -26,11 +26,20 @@ A2 plain-agent-tool
 A3 mode-no-skill
    Mode + Method + no-Skill/direct-tool/procedure
 A4 mode-candidate-skill
-   Mode + Method + real projection-backed Skill Runtime path
+   Mode + Method + exact candidate skill_binding + skill_evaluation_ref
 ```
 
 Task、exact Model、Provider Adapter、Host、budget、context、data policy 与 evidence classes 是四臂共享
 frozen conditions，arm 不得覆写。M5-003 仍只编译 non-executing exact-reference plan。
+
+正式 M5-004 采用 B 型 system-level estimand，因此 A4 的执行解释固定为：
+
+> **candidate-origin treatment + admitted Runtime execution**
+
+`candidate` 是 frozen experiment source / 被评估对象，不表示 Runtime 可以加载 candidate directory。M5-003
+继续 exact-pin candidate `skill_id`、`version`、package `content_hash`、source FileReference 与
+`skill_evaluation_ref`；这些字段和 M5-003 v0.1 的 Schema、fixture、validator 均不在本 PR 改写。准入后的
+运行身份由独立 execution-qualification overlay 追加引用，不能回填或替换 Manifest 中的 A4 binding。
 
 ## 3. Case dossier boundary
 
@@ -65,7 +74,19 @@ M5-006 在 M5-003 之后独立 READY；它不等待真实案例完成。实现�
 - failure/retry rule、model/provider drift handling；
 - blind-first Human review、reveal procedure；
 - metric operationalization、measurement status 与 analysis rule；
-- decision hierarchy。
+- decision hierarchy；
+- versioned A4 execution-qualification overlay 的字段与验证顺序。
+
+该 overlay 是 M5-003 frozen plan 之外的执行期资格记录：它必须 exact 引用 M5-003 manifest/arm、candidate
+binding、`skill_evaluation_ref`，以及 `A4-RUNTIME-ADMISSION-GATE` 闭合的准入与 Runtime lineage。它不改变
+canonical A4 identity，不把 candidate 改写成另一 treatment，也不产生 Human admission、Supply selection、
+permission、Method、Claim 或 execution authority。M5-006 只冻结协议；每次运行的实际 overlay 由后继
+Harness 在 Maintainer/Evaluation 侧形成并验证。overlay 不是 Runtime input；Runtime 只消费 resolver-selected、
+projection-backed Supply 及其 Snapshot/Bundle/View，不读取 candidate、Evaluation 或 Lifecycle history。
+
+overlay 是 pre-run qualification，不冒充 actual execution evidence。M5-007 在调用后还必须沿既有
+Host report→typed execution Trace fact→replay-valid Receipt 路径独立闭合 actual Projection、Supply 与 binding；
+`completed`、`post-call failed` 与 `preflight blocked` 分别保留既有状态语义，planned View 不能替代 actual facts。
 
 Measurement status 是一等语义：`measured`、`estimated`、`unavailable` 与 `not-applicable` 互不等价；N/A、
 unavailable 和 estimated 都不能写成 measured zero。
@@ -82,18 +103,21 @@ Research Integrity 的实质退化不能被更低成本抵消。replicate count 
 
 ## 5. M5-007 — System-Level Evaluation Harness
 
-M5-007 在 M5-006 与 M11-006 验收后实现，但不 hard-depend 真实 case data。其 bounded responsibility 是：
+M11-006 已在 PR #51 中 DONE，因此 M5-007 当前只等待 M5-006，不 hard-depend 真实 case data 或某个已准入
+Skill。其 bounded responsibility 是：
 
 - compile frozen evaluation plan；
 - 为每次 run 创建 fresh Attempt/session 并启动 exact arm execution；
+- 在 A4 启动前验证 versioned execution-qualification overlay 与外部 admission Gate；
 - 形成 standardized run record；
 - 绑定 Runtime Bundle / Resolved Execution View / Thin Host；
 - 引用 Trace / Receipt / Artifact；
 - 匿名化输出并抽取 metric evidence；
 - 记录 Human Review、reveal map 与 analysis input。
 
-Harness 不得建立 A4 bypass、直接读取 candidate directory、在 confirmatory run 接受 synthetic projection、
-自动 promotion、自动 pruning、自动 Human score 或 Topic 5 recovery semantics。
+Harness 不得建立 A4 bypass、直接读取 candidate directory、把 candidate binding 静默换成 accepted binding、
+在 confirmatory run 接受 synthetic projection、自动 promotion、自动 pruning、自动 Human score 或 Topic 5
+recovery semantics。
 
 ## 6. M5-004 live execution Gate
 
@@ -104,6 +128,10 @@ flowchart LR
     M5003["M5-003 DONE"] --> M5006["M5-006 READY"]
     M5006 --> M5007["M5-007 BLOCKED"]
     M1106["M11-006"] --> M5007
+
+    M5003 -. "exact candidate + evaluation" .-> A4G["A4-RUNTIME-ADMISSION-GATE<br/>external / currently unsatisfied"]
+    M1106 -. "Projection + unified Supply path" .-> A4G
+    A4G --> M5004
 
     M4001["M4-001 DONE"] --> M4002["M4-002"]
     M4002 --> M4003["M4-003"]
@@ -124,9 +152,64 @@ flowchart LR
 ```
 
 当前没有另一个已接受、具名且等价的 live Provider/session Gate，因此 M5-004 明确 hard-depend M6-004。
-synthetic Driver 不能成为 system-level formal evidence；A4 还必须存在真实 accepted immutable Skill Release →
-valid SkillReleaseProjection → projection-backed Skill Supply。pilot 与 confirmatory evidence 分开，failed
-Attempts 保留，blind Human Review 和所有 metric status 必须闭合。
+synthetic Driver 不能成为 system-level formal evidence。
+
+### `A4-RUNTIME-ADMISSION-GATE`
+
+这是可审计外部条件，不是一个只表示“人已批准”的新 M Task。它只回答 frozen A4 是否已有资格进入这次
+正式 Runtime execution，不替代 Human Admission Decision，也不授予 permission、execution、Claim、Method、
+Supply selection 或 fallback authority。PASS 必须闭合以下 exact、hash-pinned lineage：
+
+```text
+M5-003 mode-candidate-skill binding
+  → exact skill_evaluation_ref
+  → named Human Admission Decision accepting that exact candidate/evaluation
+  → immutable accepted Skill Release
+  → SkillReleaseProjection
+  → projection-backed Skill Supply
+  → Capability Resolution
+  → Resolved Capability Snapshot
+  → Runtime Bundle
+  → Resolved Execution View
+  → Thin Host
+```
+
+每一跳都必须 pin exact identity、version（适用时）、document path 与 content SHA-256，并由下游对象重验其
+父引用。direct-promotion 路径必须满足：
+
+```text
+binding.skill_id/version
+  = Evaluation.skill_id/skill_version
+  = Projection.release.skill_id/skill_version
+
+binding.source_ref.sha256
+  = Evaluation.skill_source_ref.sha256
+  = Projection.release.content_hash
+
+binding.content_hash
+  = Evaluation.skill_package_hash
+  = Projection.release.package_hash
+```
+
+若 promotion/build 形成不同 Release bytes/version，则不能用同名或隐式 substitution 通过；必须有独立、
+hash-pinned provenance record，exact 指向 frozen candidate/evaluation 的 source/target identity 与 hashes、
+transformation/build inputs/outputs 及 accepted Release。Human Decision 必须具名并绑定 exact
+candidate/evaluation 与 `accept` outcome；Lifecycle/accepted Registry/publisher closure 或上述显式 provenance
+再把该决定闭合到 immutable Release，而不是虚构一个“Decision 直接授权 Release”的新契约。Projection 必须由
+该 Release 合法发布；Supply 必须 exact 引用该 Projection；Capability Resolver 仍是唯一 selector，Resolution
+必须实际选中该 Supply，后续 Snapshot/Bundle/View/Host 必须保持同一 binding 且不按 Skill 建旁路。Gate 与
+overlay 都停留在 Maintainer/Evaluation Harness 侧，不进入 Runtime Bundle。
+
+上段是 pre-run qualification。执行后，M5-007 必须验证 Host report 与 typed execution Trace fact 中的 actual
+Projection/Supply/binding 等于 overlay 和 selected View，并由 replay-valid Receipt 独立重放；post-call failure
+保留实际 facts，preflight block 不得伪造实际调用。无法形成该 post-run equality 的 run 仍被保留为 failed/
+unavailable evidence，但不能作为成功 A4 treatment evidence。
+
+当前生产 projection index 为空，因此该 Gate 当前明确 **UNSATISFIED**，M5-004 继续 BLOCKED。任一引用缺失、
+hash drift、Decision 不匹配、无 provenance 的 candidate/Release substitution、candidate direct-load、
+Projection/Supply 未闭合或 actual binding 不一致均 BLOCK；
+不能通过修改 M5-003 v0.1 消除阻断。pilot 与 confirmatory evidence 分开，failed Attempts 保留，blind Human
+Review 和所有 metric status 必须闭合。
 
 ## 7. M5-005 disposition
 
@@ -142,7 +225,7 @@ A4 看起来较优不自动触发 Skill promotion；既有开发成本也不自�
 
 - 写 runner 或 Harness 实现；
 - 运行模型、选择真实案例或准入真实 Skill；
-- 修改 M5-003、M11/M4 implementation 或 Provider Adapter；
+- 修改 M5-003 v0.1、M11/M4 implementation 或 Provider Adapter；
 - thaw Topic 5；
 - 建立自动 Human judge、单一总分或 automatic promotion/pruning；
 - 宣称 RWB 已有 system-level net benefit。
@@ -153,7 +236,7 @@ hard dependencies 保持 BLOCKED。
 ## 9. 本地验证
 
 - `python -m unittest tests.test_documentation tests.test_pr_governance -v`：76/76 PASS；
-- `python -m research_workbench validate examples registry --root .`：182 validated，0 errors，0 warnings；
+- `python -m research_workbench validate examples registry --root .`：183 validated，0 errors，0 warnings；
 - 使用 repository governance 的 `validate_task_changes()` 对实际 diff 校验：declared Task closure、docs-only、
   dependency 与 DONE immutability 全部 PASS；
 - `git diff --check`：PASS。

@@ -419,6 +419,17 @@ metric status 区分 measured/estimated/unavailable/not-applicable，Research In
 也不得压成单一 weighted score。M5-004 的 A4 必须走真实 accepted Release→Projection→Skill Supply 与
 统一 Runtime Bundle/View/Host 路径；synthetic projection 只可用于 contract test，不是正式价值证据。
 
+A4 的 frozen treatment identity 仍是 M5-003 v0.1 的 `mode-candidate-skill`。正式运行采用
+**candidate-origin treatment + admitted Runtime execution**：M5-006 定义独立 versioned
+execution-qualification overlay，`A4-RUNTIME-ADMISSION-GATE` exact-pin candidate binding 与
+`skill_evaluation_ref`，再闭合具名 Human Admission Decision→immutable Release→Projection→Skill Supply→
+Capability Resolution→Snapshot→Runtime Bundle→Resolved Execution View→Thin Host。每跳必须有 exact
+identity/path/hash；Runtime 不读 candidate，overlay 不改 Manifest，也不产生 admission、selection 或 permission
+authority。overlay 由 Maintainer/Evaluation Harness 验证且不进入 Runtime Bundle；Runtime 只消费
+resolver-selected Supply 与 frozen Snapshot/Bundle/View。生产 projection index 当前为空，所以该 Gate 尚未满足，
+M5-004 保持 BLOCKED。Gate 是 pre-run qualification；M5-007 在执行后还必须用 Host report、typed execution
+Trace fact 与 replay-valid Receipt 证明 actual Projection/Supply/binding 未偏离 overlay。
+
 下一步价值证据必须来自经人类批准的真实案例、M6-004 live Provider/session Gate 与独立
 Evaluation/Trial records，而不是由 Manifest、Harness 或 synthetic fixture 的存在本身推导。
 
@@ -492,8 +503,9 @@ Manifest 与 plan 已有，但两类真实案例边界、执行结果、人工�
 
 ### 16.4 Optional Skill runtime extension
 
-M11 Core 不需要 Skill extension。Projection/publisher 和 eligible Skill supply 到统一 View 的 mapping 仍未实现，
-且只应在明确 Skill-bearing 需求下激活。
+M11 Core 不需要 Skill extension。M11-005/006 已实现 Projection/publisher 与 eligible Skill supply 到统一 View
+的 mapping；生产 projection index 仍为空，因此没有真实 Skill new-binding。该可选机制不反向 Gate Core，也不
+证明科研净增量或 live Provider 可用性。
 
 ### 16.5 Live / ordinary-user / release closure
 
@@ -512,7 +524,7 @@ M11 Core 不需要 Skill extension。Projection/publisher 和 eligible Skill sup
 | Phase B | M9 Requirement→Report→Resolution→Snapshot 与 evolution foundations 已收口 | structural contracts 不证明 live availability 或 Skill increment |
 | Phase C | M10 + M3-009 bounded candidate/machine Gate 已实现 | Human/R2 semantic closeout pending；Topic 5 不自动 thaw |
 | Phase D | M5-003 canonical four-arm plan 已实现 | 真实案例、results、net-increment 与 pruning decision 未完成 |
-| Phase F / Topic 4 | M11-001～004 bounded Core 已实现 | live conformance/ordinary E2E 独立；Skill extension 可选 |
+| Phase F / Topic 4 | M11-001～004 bounded Core 与 M11-005/006 optional Skill extension 已实现 | production Skill projection、live conformance 与 ordinary E2E 仍是独立 Gate |
 | Topic 5 | 没有新 implementation authority | Phase C Human/R2 closeout + 独立 R2 architecture review/task-definition |
 
 M12、M13、M14 只是 reservation，没有 Task state、owner、dependency、acceptance 或 Schema；不得从本图生成

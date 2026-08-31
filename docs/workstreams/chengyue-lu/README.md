@@ -11,12 +11,11 @@
   `develop` 实现和治理事实校正文档真值、Runtime 传递关系与 derived navigation；不重定义系统契约。
 - [`PHASE-C-RESEARCH-STATE/`](PHASE-C-RESEARCH-STATE/README.md)：M10 bounded machine implementation
   已集成；Human semantic review 与 R2/Phase C closeout 仍 pending，Topic 5 未获实现权限。
-- [`M11-SKILL-RUNTIME-EXTENSION/`](M11-SKILL-RUNTIME-EXTENSION/README.md)：M11-005/006 的
-  runtime-minimal projection publication 与统一 Skill Supply mapping；本分支实现待 exact-head CI 与
-  cross-owner R2 review，生产 index 仍为空且不改变 zero-Skill Core。
-
 已集成、保留审计记录的工作流：
 
+- [`M11-SKILL-RUNTIME-EXTENSION/`](M11-SKILL-RUNTIME-EXTENSION/README.md)：PR #51 已将 M11-005/006
+  runtime-minimal projection publication 与统一 Skill Supply mapping 合入 `develop`，两项 Task 均为 DONE；
+  生产 index 仍为空，且 optional extension 不改变 zero-Skill Core。
 - [`M11-SKILL-RUNTIME-ACTIVATION/`](M11-SKILL-RUNTIME-ACTIVATION/README.md)：PR #52 独立恢复
   M11-005 为 READY 的历史 activation 记录；后续完成状态以 TASKS 与 extension workstream 为准。
 - [`CI-PERFORMANCE-MAINTENANCE/`](CI-PERFORMANCE-MAINTENANCE/README.md)：PR #47 的 CI 去重与

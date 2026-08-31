@@ -2,9 +2,11 @@
 
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 风险：R2 Capability / Skill Evolution → Runtime publication boundary
-- 当前 rebase 基线：`develop@ad038bdd35316718a88a2513886f1831763203bd`
-- 分支：`agent/m11-skill-runtime-extension`
+- 实施 rebase 基线：`develop@ad038bdd35316718a88a2513886f1831763203bd`
+- 历史实施分支：`agent/m11-skill-runtime-extension`
 - Task：`M11-005`、`M11-006`
+- 当前状态：PR #51 已以 `100fec5b5ff4e28bc7daa812db4226a85dcd2d26` 合入 `develop`；
+  `M11-005`、`M11-006` 均为 DONE，生产 projection index 仍为空
 
 ## 目标
 
@@ -109,7 +111,7 @@ task-specific evidence，但不改写 Task identity、dependency 或 acceptance�
   90.91%；Coverage Policy 正确阻断三个新 critical module 的逐文件不足。补测后 projection + Skill Runtime
   extension 14/14 focused PASS；该 run 属于 rebase 前历史证据，不能替代当前 exact-head Gate。
 
-### R2 review remediation — current PR head
+### R2 review remediation — merged PR #51 head `910bf5b`
 
 - 唯一 canonical Projection Index 现在只恢复一次 repository root；Accepted Registry、Lifecycle Index/record、
   Projection、Evaluation、Decision、baseline/trial/promotion evidence 与 Manifest 均以该 root 做 portable
@@ -130,5 +132,7 @@ task-specific evidence，但不改写 Task identity、dependency 或 acceptance�
 - focused projection suite：16/16 PASS；shadow/exact-root authority closure focused 6/6 PASS；
   Requirement/Skill Runtime/Schema boundary 20/20 PASS；本地 Python 3.14 full behavioral 788/788 PASS
   （4 skipped，713.611s）；本轮 repository validation 为 183 documents、0 errors、0 warnings，Coverage Policy
-  与 Governance focused 88/88 PASS；当前 exact-head Python 3.11/3.13、coverage-quality 90/95/90、
-  package-smoke、governance 与 aggregate hosted evidence 在推送后重新生成。
+  与 Governance focused 88/88 PASS；final hosted run `33406961100` 在 exact head `910bf5b` 上通过 Python
+  3.11/3.13（各 793 tests）、coverage-quality（732 tests，global line 91.54%，全部 critical modules 满足
+  line ≥95% / branch ≥90%）、package-smoke、governance 与两个 aggregate Gates。随后 PR #51 已合入
+  `develop@100fec5`。

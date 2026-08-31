@@ -56,7 +56,7 @@ owner、scope 与 acceptance 都以 `TASKS.md` 的 Task 行为准。M12～M14 �
 | M8 | Method Core formalization | task-defined and complete |
 | M9 | Evolution Foundation | task-defined and complete |
 | M10 | Research State & verification | task-defined；bounded machine chain complete，Human/R2 semantic closeout 独立 pending |
-| M11 | Execution reintegration | task-defined；Core complete，optional Skill extension 依 `TASKS.md` 单独激活 |
+| M11 | Execution reintegration | task-defined；Core 与 optional Skill extension complete；生产 projection index 仍为空 |
 | M12 | Execution Continuity & Recovery | **RESERVED** |
 | M13 | Strategy & Governed Evolution | **RESERVED** |
 | M14 | Product / Release Closure | **RESERVED** |
@@ -102,6 +102,8 @@ flowchart LR
         M5002["M5-002 BLOCKED<br/>theory/simulation dossier"] --> M5004
         M5003["M5-003 DONE<br/>non-executing plan"] --> M5006["M5-006 READY<br/>evaluation protocol"]
         M5006 --> M5007["M5-007 BLOCKED<br/>evaluation harness"]
+        M5003 -. "candidate + evaluation" .-> A4G["A4-RUNTIME-ADMISSION-GATE<br/>external / unsatisfied"]
+        A4G --> M5004
         M5003 --> M5004
         M5006 --> M5004
         M5007 --> M5004
@@ -112,7 +114,8 @@ flowchart LR
     M4002 --> M5004
     M4003 --> M5004
     M4004 --> M5004
-    M1106["M11-006<br/>projection-backed Skill path"] --> M5007
+    M1106["M11-006 DONE<br/>projection-backed Skill path"] --> M5007
+    M1106 -. "Projection + Supply" .-> A4G
     M1106 --> M5004
     M6004["M6-004<br/>live Provider/session"] --> M5004
 ```
@@ -121,6 +124,9 @@ M4-002 是当前 provenance/promotion 链的合法入口；M4-003/004 必须等�
 M4 闭环、两个 Human-approved public/private Case Dossier、M5-003 计划契约、M5-006 Protocol、M5-007
 Harness、M11-006 真实 projection-backed Skill 路径与 M6-004 live Provider/session Gate。M5-006 可先行
 设计；M5-007 不等待真实 case data，但必须等待 M11-006。M5-003 本身没有执行案例或产生净增量结论。
+`A4-RUNTIME-ADMISSION-GATE` 是外部可审计条件，不是新 M Task：它保持 M5-003 的 candidate/evaluation
+origin，并 exact-pin Human Admission Decision→accepted Release→Projection→Supply→Resolution→Snapshot→
+Bundle→View→Host 的逐跳 identity/hash closure；当前生产 projection index 为空，故该 Gate 未满足。
 本图未展开的独立 `READY` 行（例如 scaffold）仍直接从 `TASKS.md` 读取。
 
 ### 3.3 Optional Skill extension

@@ -270,7 +270,15 @@ reveal map 和 analysis input。Harness 不得为 A4 建旁路、直接加载 ca
 synthetic projection 或自动作出 promotion/pruning/Human judgement。
 
 M5-004 的正式 system-level execution 还必须等待 M4 provenance chain、两个 Human-approved dossier、
-M6-004 live Provider/session conformance，以及真实 accepted Release→Projection→Skill Supply 的 A4 路径。
+M6-004 live Provider/session conformance，以及 `A4-RUNTIME-ADMISSION-GATE`。A4 保持 M5-003 v0.1 的
+`mode-candidate-skill` identity，其正式含义是 candidate-origin treatment + admitted Runtime execution；M5-006
+定义独立、版本化的 execution-qualification overlay，不回写 frozen Manifest。该 Gate 必须 exact-pin
+candidate binding→`skill_evaluation_ref`→具名 Human Admission Decision→immutable accepted Release→
+SkillReleaseProjection→projection-backed Skill Supply→Capability Resolution→Snapshot→Runtime Bundle→
+Resolved Execution View→Thin Host 的 identity/path/hash lineage；任一缺失即 BLOCK。当前生产 projection index
+为空，故 Gate 尚未满足，M5-004 继续 BLOCKED。该链先形成 pre-run qualification；M5-007 还必须在执行后以
+Host report、typed execution Trace fact 与 replay-valid Receipt 独立证明 actual Projection/Supply/binding 与
+overlay 相同，planned View 不构成 actual execution evidence。
 pilot/confirmatory 与 failed Attempts 分别保留，blind Human Review 完成；单次成功不构成 promotion。
 M5-005 最终必须基于 exact protocol/cases/runs/reviews/analysis 作出至少一个具名保留、修改、停放、弃用、
 删除或停止决定，且开发 sunk cost 不构成 KEEP 依据。精确状态与依赖只看 `TASKS.md`。

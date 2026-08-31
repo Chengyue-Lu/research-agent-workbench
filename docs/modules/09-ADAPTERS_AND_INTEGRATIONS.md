@@ -84,8 +84,8 @@ Profile、Host policy 与 binding 的 final narrowing 由 View producer 重算�
 
 Codex、OpenCode、Claude Code 或其他平台各自实现这一接口；Canonical manifests 不因平台变化。应利用
 平台原生子 Agent 和可选 Skill 能力，并在原生能力覆盖项目代码时删除重复机制。当前 M11 Core 已闭合
-zero-Skill/no-Skill/direct Tool 的 bounded local contract；M11-005/006 SkillReleaseProjection/mapping 仍
-`PARKED`，不是 Runtime prerequisite。
+zero-Skill/no-Skill/direct Tool 的 bounded local contract；M11-005/006 SkillReleaseProjection/mapping 也已作为
+optional extension 完成，但生产 projection index 为空，且它们仍不是 Runtime Core prerequisite。
 
 ## 6. Model Provider 契约
 
