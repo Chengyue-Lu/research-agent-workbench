@@ -207,6 +207,9 @@ negative_acceptance:
       - test_skill_release_projection.SkillReleaseProjectionTests.test_legacy_repository_skills_cannot_be_projected
       - test_skill_release_projection.SkillReleaseProjectionTests.test_projection_registry_and_derivation_are_fail_closed
       - test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_revalidates_external_evidence_and_human_decision
+      - test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_shadow_only_authority_closure
+      - test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_ambiguous_shadow_authority_closure
+      - test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_cross_root_stitched_publication
       - test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_schema_boundary_is_fail_closed
   - surface: projection-derived-skill-supply-runtime-extension
     modules:

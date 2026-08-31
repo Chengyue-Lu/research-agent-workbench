@@ -2,15 +2,19 @@
 
 from __future__ import annotations
 
-from pathlib import Path, PurePosixPath
+from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any, Mapping
 
+from research_workbench.artifacts.integrity import resolve_within_root
+from research_workbench.capability.catalog import DEFAULT_ACCEPTED
 from research_workbench.capability.lifecycle import (
+    DEFAULT_SKILL_LIFECYCLE_INDEX,
     SkillLifecycleEntry,
     SkillLifecycleRecord,
 )
 from research_workbench.capability.models import SkillManifest
 from research_workbench.capability.release_projection import (
+    DEFAULT_SKILL_RELEASE_PROJECTION_INDEX,
     SkillReleaseProjection,
     projection_from_verified_release,
 )
@@ -19,8 +23,6 @@ from research_workbench.validation.document_core import (
     ValidationIssue,
     document_has_loaded_bytes,
     document_hash,
-    loaded_document_at,
-    matches_repository_path,
 )
 from research_workbench.validation.document_kinds import infer_document_kind
 from research_workbench.validation.schemas import SchemaCatalog
@@ -37,54 +39,93 @@ def _indices(
     ]
 
 
-def _accepted_entries(documents: Mapping[Path, Any]) -> dict[str, Mapping[str, Any]]:
+def _loaded_document_at_root(
+    documents: Mapping[Path, Any], root: Path, repository_relative: str
+) -> tuple[Path, Mapping[str, Any]] | None:
+    """Return one exact, portable repository-relative document or fail closed."""
+
+    posix = PurePosixPath(repository_relative)
+    windows = PureWindowsPath(repository_relative)
+    if (
+        not posix.parts
+        or posix.is_absolute()
+        or windows.is_absolute()
+        or bool(windows.drive)
+        or any(part in {"", ".", ".."} for part in (*posix.parts, *windows.parts))
+    ):
+        return None
+    try:
+        target = resolve_within_root(root, repository_relative)
+        if target is None:
+            return None
+        matches = [
+            (path, document)
+            for path, document in documents.items()
+            if isinstance(document, Mapping) and path.resolve() == target
+        ]
+    except (OSError, RuntimeError):
+        return None
+    return matches[0] if len(matches) == 1 else None
+
+
+def _accepted_entries(
+    documents: Mapping[Path, Any], *, root: Path
+) -> dict[str, Mapping[str, Any]]:
     entries: dict[str, Mapping[str, Any]] = {}
-    for document in documents.values():
-        if not isinstance(document, Mapping) or document.get("registry_kind") != "skill_accepted":
+    loaded = _loaded_document_at_root(documents, root, DEFAULT_ACCEPTED.as_posix())
+    if loaded is None or loaded[1].get("registry_kind") != "skill_accepted":
+        return entries
+    for entry in loaded[1].get("entries", []):
+        if not isinstance(entry, Mapping):
             continue
-        for entry in document.get("entries", []):
-            if not isinstance(entry, Mapping):
-                continue
-            skill_id = entry.get("skill_id")
-            version = entry.get("version")
-            if isinstance(skill_id, str) and isinstance(version, str):
-                entries[f"{skill_id}@{version}"] = entry
+        skill_id = entry.get("skill_id")
+        version = entry.get("version")
+        if isinstance(skill_id, str) and isinstance(version, str):
+            entries[f"{skill_id}@{version}"] = entry
     return entries
 
 
 def _lifecycle_entries(
-    documents: Mapping[Path, Any],
+    documents: Mapping[Path, Any], *, root: Path
 ) -> dict[str, tuple[Mapping[str, Any], SkillLifecycleEntry]]:
     result: dict[str, tuple[Mapping[str, Any], SkillLifecycleEntry]] = {}
-    for document in documents.values():
-        if not isinstance(document, Mapping) or document.get("registry_kind") != "skill_lifecycle_index":
+    loaded_index = _loaded_document_at_root(
+        documents, root, DEFAULT_SKILL_LIFECYCLE_INDEX.as_posix()
+    )
+    if (
+        loaded_index is None
+        or loaded_index[1].get("registry_kind") != "skill_lifecycle_index"
+    ):
+        return result
+    for entry in loaded_index[1].get("entries", []):
+        if not isinstance(entry, Mapping):
             continue
-        for entry in document.get("entries", []):
-            if not isinstance(entry, Mapping):
-                continue
-            lifecycle_ref = entry.get("lifecycle_ref")
-            document_path = entry.get("document_path")
-            content_hash = entry.get("content_hash")
-            if not all(isinstance(value, str) for value in (lifecycle_ref, document_path, content_hash)):
-                continue
-            loaded = loaded_document_at(documents, document_path)
-            if loaded is None:
-                continue
-            try:
-                record = SkillLifecycleRecord.from_mapping(loaded[1])
-            except ContractError:
-                continue
-            result[str(lifecycle_ref)] = (
-                entry,
-                SkillLifecycleEntry(
-                    lifecycle_ref=str(lifecycle_ref),
-                    lifecycle_id=str(entry.get("lifecycle_id")),
-                    lifecycle_version=str(entry.get("lifecycle_version")),
-                    document_path=str(document_path),
-                    content_hash=str(content_hash).removeprefix("sha256:").lower(),
-                    record=record,
-                ),
-            )
+        lifecycle_ref = entry.get("lifecycle_ref")
+        document_path = entry.get("document_path")
+        content_hash = entry.get("content_hash")
+        if not all(
+            isinstance(value, str)
+            for value in (lifecycle_ref, document_path, content_hash)
+        ):
+            continue
+        loaded = _loaded_document_at_root(documents, root, str(document_path))
+        if loaded is None:
+            continue
+        try:
+            record = SkillLifecycleRecord.from_mapping(loaded[1])
+        except ContractError:
+            continue
+        result[str(lifecycle_ref)] = (
+            entry,
+            SkillLifecycleEntry(
+                lifecycle_ref=str(lifecycle_ref),
+                lifecycle_id=str(entry.get("lifecycle_id")),
+                lifecycle_version=str(entry.get("lifecycle_version")),
+                document_path=str(document_path),
+                content_hash=str(content_hash).removeprefix("sha256:").lower(),
+                record=record,
+            ),
+        )
     return result
 
 
@@ -129,16 +170,24 @@ def _arm_evidence_paths(
 
 
 def _loaded_evidence(
-    documents: Mapping[Path, Any], reference: str
+    documents: Mapping[Path, Any], reference: str, *, root: Path
 ) -> tuple[Path, Mapping[str, Any]] | None:
-    loaded = loaded_document_at(documents, reference)
+    """Load one repository-root-anchored evidence document exactly.
+
+    Publication authority must never inherit the legacy suffix matching used by
+    general document discovery. A Lifecycle reference names one exact path in
+    the repository anchored by the canonical Projection index. Missing,
+    escaping, or aliased/multiply-loaded targets therefore fail closed.
+    """
+
+    loaded = _loaded_document_at_root(documents, root, reference)
     if loaded is None or not document_has_loaded_bytes(documents, loaded[0]):
         return None
     return loaded
 
 
 def _publication_authority_verified(
-    documents: Mapping[Path, Any], record: SkillLifecycleRecord
+    documents: Mapping[Path, Any], record: SkillLifecycleRecord, *, root: Path
 ) -> bool:
     """Revalidate the external Evaluation closure and its named Human Decision."""
 
@@ -146,12 +195,11 @@ def _publication_authority_verified(
     decision_ref = record.admission.decision_ref
     if evaluation_ref is None or decision_ref is None:
         return False
-    loaded_evaluation = _loaded_evidence(documents, evaluation_ref)
+    loaded_evaluation = _loaded_evidence(documents, evaluation_ref, root=root)
     if loaded_evaluation is None:
         return False
-    evaluation_path, evaluation = loaded_evaluation
-    root = _repository_root_for(evaluation_path, evaluation_ref)
-    if root is None or SchemaCatalog().validate("skill_evaluation", evaluation):
+    _, evaluation = loaded_evaluation
+    if SchemaCatalog().validate("skill_evaluation", evaluation):
         return False
     if (
         evaluation.get("skill_id") != record.skill_ref.skill_id
@@ -166,7 +214,7 @@ def _publication_authority_verified(
         or admission.get("decision_ref") != decision_ref
     ):
         return False
-    loaded_decision = _loaded_evidence(documents, decision_ref)
+    loaded_decision = _loaded_evidence(documents, decision_ref, root=root)
     if loaded_decision is None:
         return False
     decision = loaded_decision[1]
@@ -204,7 +252,8 @@ def _publication_authority_verified(
             evaluation_ref,
             *promotion_refs,
         )
-        if reference is not None and _loaded_evidence(documents, reference) is not None
+        if reference is not None
+        and _loaded_evidence(documents, reference, root=root) is not None
     }
     return record.externally_verified_for_new_binding(
         evidence_resolver=lambda reference: reference in verified_evidence,
@@ -245,6 +294,18 @@ def validate_skill_release_projections(
         return issues
 
     index_path, index = indices[0]
+    repository_root = _repository_root_for(
+        index_path, DEFAULT_SKILL_RELEASE_PROJECTION_INDEX.as_posix()
+    )
+    if repository_root is None:
+        issues.append(
+            ValidationIssue(
+                index_path,
+                "SKILL-RELEASE-PROJECTION-INDEX-PATH",
+                "SkillReleaseProjection index is not at its canonical repository path",
+            )
+        )
+        return issues
     indexed: dict[str, tuple[str, Mapping[str, Any]]] = {}
     seen_identities: set[tuple[str, str]] = set()
     seen_paths: set[str] = set()
@@ -297,7 +358,9 @@ def validate_skill_release_projections(
         seen_paths.add(document_path)
         seen_releases.add(release_ref)
 
-        loaded = loaded_document_at(documents, document_path)
+        loaded = _loaded_document_at_root(
+            documents, repository_root, document_path
+        )
         if loaded is None:
             issues.append(
                 ValidationIssue(
@@ -366,7 +429,12 @@ def validate_skill_release_projections(
                     f"projection is not in the integrity index: {parsed.reference}",
                 )
             )
-        elif not matches_repository_path(path, indexed_entry[0]):
+        else:
+            indexed_projection = _loaded_document_at_root(
+                documents, repository_root, indexed_entry[0]
+            )
+            if indexed_projection is not None and indexed_projection[0] == path:
+                continue
             issues.append(
                 ValidationIssue(
                     path,
@@ -375,8 +443,8 @@ def validate_skill_release_projections(
                 )
             )
 
-    accepted = _accepted_entries(documents)
-    lifecycle = _lifecycle_entries(documents)
+    accepted = _accepted_entries(documents, root=repository_root)
+    lifecycle = _lifecycle_entries(documents, root=repository_root)
     for path, projection in projection_documents:
         release = projection.get("release")
         provenance = projection.get("admission_provenance")
@@ -406,7 +474,9 @@ def validate_skill_release_projections(
             continue
         lifecycle_index_entry, lifecycle_entry = lifecycle_pair
         record = lifecycle_entry.record
-        if not _publication_authority_verified(documents, record):
+        if not _publication_authority_verified(
+            documents, record, root=repository_root
+        ):
             issues.append(
                 ValidationIssue(
                     path,
@@ -446,7 +516,12 @@ def validate_skill_release_projections(
                 )
             )
             continue
-        manifest_loaded = loaded_document_at(documents, release.get("manifest_path"))
+        manifest_ref = release.get("manifest_path")
+        manifest_loaded = (
+            _loaded_document_at_root(documents, repository_root, manifest_ref)
+            if isinstance(manifest_ref, str)
+            else None
+        )
         if manifest_loaded is None:
             issues.append(
                 ValidationIssue(

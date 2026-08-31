@@ -1,6 +1,7 @@
 import contextlib
 import copy
 import json
+import shutil
 import tempfile
 import unittest
 from dataclasses import replace
@@ -22,6 +23,7 @@ from research_workbench.capability.release_projection import (
 from research_workbench.contracts.common import ContractError
 from research_workbench.io import iter_documents, load_document
 from research_workbench.validation import SchemaCatalog, validate_documents
+from research_workbench.validation.documents import load_and_validate
 from research_workbench.validation import (
     skill_release_projection_registry as projection_registry_module,
 )
@@ -32,6 +34,15 @@ from tests.test_skill_evaluation import _live_evaluation
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+PUBLICATION_AUTHORITY_DOCUMENTS = (
+    "baseline-receipt.json",
+    "with-skill-receipt.json",
+    "baseline-validation.json",
+    "skill-validation.json",
+    "evaluation.json",
+    "decision.json",
+)
 
 
 def _write_json(path: Path, value: object) -> None:
@@ -227,16 +238,45 @@ def _publication_documents(root: Path) -> dict[Path, object]:
     paths = iter_documents([root / "registry"])
     paths.extend(
         root / relative
-        for relative in (
-            "baseline-receipt.json",
-            "with-skill-receipt.json",
-            "baseline-validation.json",
-            "skill-validation.json",
-            "evaluation.json",
-            "decision.json",
-        )
+        for relative in PUBLICATION_AUTHORITY_DOCUMENTS
     )
     return {path: load_document(path) for path in paths}
+
+
+def _loaded_publication_documents(
+    root: Path, *authority_roots: Path
+) -> tuple[object, list[object]]:
+    paths = iter_documents([root / "registry"])
+    for authority_root in authority_roots:
+        paths.extend(
+            authority_root / relative
+            for relative in PUBLICATION_AUTHORITY_DOCUMENTS
+        )
+    return load_and_validate(paths)
+
+
+def _copy_or_move_evaluation_closure(
+    root: Path, destinations: tuple[Path, ...], *, remove_original: bool
+) -> None:
+    sources = [
+        path
+        for path in root.iterdir()
+        if path.name not in {"registry", ".agents"}
+    ]
+    for destination in destinations:
+        destination.mkdir(parents=True)
+        for source in sources:
+            target = destination / source.name
+            if source.is_dir():
+                shutil.copytree(source, target)
+            else:
+                shutil.copy2(source, target)
+    if remove_original:
+        for source in sources:
+            if source.is_dir():
+                shutil.rmtree(source)
+            else:
+                source.unlink()
 
 
 def _publish_synthetic(root: Path) -> dict:
@@ -502,13 +542,84 @@ class SkillReleaseProjectionTests(unittest.TestCase):
             self.assertNotIn("SKILL-RELEASE-PROJECTION-PROVENANCE-DRIFT", codes)
             self.assertNotIn("SKILL-RELEASE-PROJECTION-DERIVATION-DRIFT", codes)
 
+    def test_repository_projection_rejects_shadow_only_authority_closure(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            _publish_synthetic(root)
+            _, initial_issues = _loaded_publication_documents(root, root)
+            self.assertEqual([], initial_issues)
+
+            shadow = root / "shadow"
+            _copy_or_move_evaluation_closure(
+                root, (shadow,), remove_original=True
+            )
+            _, issues = _loaded_publication_documents(root, shadow)
+            codes = {issue.code for issue in issues}
+            self.assertIn("SKILL-RELEASE-PROJECTION-AUTHORITY-UNVERIFIED", codes)
+            self.assertNotIn("SKILL-RELEASE-PROJECTION-HASH-MISMATCH", codes)
+            self.assertNotIn("SKILL-RELEASE-PROJECTION-PROVENANCE-DRIFT", codes)
+            self.assertNotIn("SKILL-RELEASE-PROJECTION-DERIVATION-DRIFT", codes)
+
+    def test_repository_projection_rejects_ambiguous_shadow_authority_closure(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            _publish_synthetic(root)
+            shadow_a = root / "shadow-a"
+            shadow_b = root / "shadow-b"
+            _copy_or_move_evaluation_closure(
+                root, (shadow_a, shadow_b), remove_original=True
+            )
+
+            _, issues = _loaded_publication_documents(root, shadow_a, shadow_b)
+            codes = {issue.code for issue in issues}
+            self.assertIn("SKILL-RELEASE-PROJECTION-AUTHORITY-UNVERIFIED", codes)
+            self.assertNotIn("SKILL-RELEASE-PROJECTION-HASH-MISMATCH", codes)
+            self.assertNotIn("SKILL-RELEASE-PROJECTION-PROVENANCE-DRIFT", codes)
+            self.assertNotIn("SKILL-RELEASE-PROJECTION-DERIVATION-DRIFT", codes)
+
+    def test_repository_projection_rejects_cross_root_stitched_publication(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            _publish_synthetic(root)
+            shadow = root / "shadow"
+            _copy_or_move_evaluation_closure(
+                root, (shadow,), remove_original=False
+            )
+
+            projection_index = root / "registry/skills/release-projections.json"
+            shadow_index = shadow / "registry/skills/release-projections.json"
+            shadow_index.parent.mkdir(parents=True)
+            shutil.move(projection_index, shadow_index)
+            paths = iter_documents([root / "registry", shadow / "registry"])
+            paths.extend(
+                shadow / relative
+                for relative in PUBLICATION_AUTHORITY_DOCUMENTS
+            )
+
+            _, issues = load_and_validate(paths)
+            codes = {issue.code for issue in issues}
+            self.assertIn("SKILL-RELEASE-PROJECTION-DOCUMENT-MISSING", codes)
+            self.assertNotIn("SKILL-RELEASE-PROJECTION-HASH-MISMATCH", codes)
+            self.assertNotIn("SKILL-RELEASE-PROJECTION-PROVENANCE-DRIFT", codes)
+            self.assertNotIn("SKILL-RELEASE-PROJECTION-DERIVATION-DRIFT", codes)
+
     def test_repository_publication_authority_helpers_fail_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             _publish_synthetic(root)
             documents = _publication_documents(root)
             record = next(
-                iter(projection_registry_module._lifecycle_entries(documents).values())
+                iter(
+                    projection_registry_module._lifecycle_entries(
+                        documents, root=root
+                    ).values()
+                )
             )[1].record
             evaluation_path = root / "evaluation.json"
 
@@ -526,6 +637,25 @@ class SkillReleaseProjectionTests(unittest.TestCase):
             self.assertIsNone(
                 projection_registry_module._repository_root_for(
                     evaluation_path, "/evaluation.json"
+                )
+            )
+            self.assertIsNone(
+                projection_registry_module._loaded_document_at_root(
+                    documents, root, "../evaluation.json"
+                )
+            )
+            self.assertIsNone(
+                projection_registry_module._loaded_document_at_root(
+                    documents, root, str(evaluation_path)
+                )
+            )
+            ambiguous_documents = dict(documents)
+            ambiguous_documents[
+                root / "alias" / ".." / "evaluation.json"
+            ] = documents[evaluation_path]
+            self.assertIsNone(
+                projection_registry_module._loaded_document_at_root(
+                    ambiguous_documents, root, "evaluation.json"
                 )
             )
             self.assertEqual(
@@ -553,12 +683,12 @@ class SkillReleaseProjectionTests(unittest.TestCase):
             )
             self.assertFalse(
                 projection_registry_module._publication_authority_verified(
-                    documents, no_evaluation
+                    documents, no_evaluation, root=root
                 )
             )
             self.assertFalse(
                 projection_registry_module._publication_authority_verified(
-                    documents, no_decision
+                    documents, no_decision, root=root
                 )
             )
 
@@ -567,7 +697,7 @@ class SkillReleaseProjectionTests(unittest.TestCase):
                 mutate_documents(changed)
                 self.assertFalse(
                     projection_registry_module._publication_authority_verified(
-                        changed, changed_record
+                        changed, changed_record, root=root
                     )
                 )
 
@@ -600,7 +730,7 @@ class SkillReleaseProjectionTests(unittest.TestCase):
             ):
                 self.assertFalse(
                     projection_registry_module._publication_authority_verified(
-                        documents, record
+                        documents, record, root=root
                     )
                 )
 
@@ -630,14 +760,14 @@ class SkillReleaseProjectionTests(unittest.TestCase):
                     with self.subTest(record=changed_record):
                         self.assertFalse(
                             projection_registry_module._publication_authority_verified(
-                                documents, changed_record
+                                documents, changed_record, root=root
                             )
                         )
                 missing_evidence = copy.deepcopy(documents)
                 missing_evidence.pop(root / "baseline-receipt.json")
                 self.assertFalse(
                     projection_registry_module._publication_authority_verified(
-                        missing_evidence, record
+                        missing_evidence, record, root=root
                     )
                 )
 
