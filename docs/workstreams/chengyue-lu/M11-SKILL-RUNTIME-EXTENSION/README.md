@@ -116,8 +116,9 @@ task-specific evidence，但不改写 Task identity、dependency 或 acceptance�
   repository-relative exact lookup，不再从 evidence 所在路径反推 root，也不再接受 suffix-first、路径逃逸或
   多个 exact alias；
 - aggregate `LoadedDocuments` 负例已覆盖完整 authority closure 移入 `shadow/`、两个同名 shadow closure，
-  以及 shadow Index + 真实 Registry 对象 + shadow evidence 的 cross-root stitched closure；三者均 fail closed，
-  且不是由 Projection hash/provenance/derivation drift 替代性触发；
+  shadow Index + 真实 Registry 对象 + shadow evidence 的 cross-root stitched closure，以及唯一
+  `alias/../evaluation.json` key 与 alias-only Projection Index；这些路径均 fail closed，且不是由
+  Projection hash/provenance/derivation drift 替代性触发；
 - repository publication validator 不再信任 Lifecycle 中的非空引用或仅调用
   `eligible_for_new_binding()`：它会解析真实 `skill_evaluation`，重放 baseline/with-Skill evidence closure，
   并验证与 evaluation/candidate/accept outcome 绑定的 named Human Decision；将全部引用替换为
@@ -126,7 +127,7 @@ task-specific evidence，但不改写 Task identity、dependency 或 acceptance�
   index 字段、nested `evaluation` / `private_score` / `need_text` 与缺失 boundary 均 fail closed；
 - 撤销 Capability Requirement v0.1 中未参与 comparison/View intersection 的 `allowed_roots`；Supply roots
   继续由 Projection ceiling 与 final View intersection 约束；
-- focused projection suite：14/14 PASS；shadow/exact-root authority closure focused 4/4 PASS；
+- focused projection suite：16/16 PASS；shadow/exact-root authority closure focused 6/6 PASS；
   Requirement/Skill Runtime/Schema boundary 20/20 PASS；本地 Python 3.14 full behavioral 788/788 PASS
   （4 skipped，713.611s）；本轮 repository validation 为 183 documents、0 errors、0 warnings，Coverage Policy
   与 Governance focused 88/88 PASS；当前 exact-head Python 3.11/3.13、coverage-quality 90/95/90、

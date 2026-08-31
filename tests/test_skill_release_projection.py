@@ -609,6 +609,50 @@ class SkillReleaseProjectionTests(unittest.TestCase):
             self.assertNotIn("SKILL-RELEASE-PROJECTION-PROVENANCE-DRIFT", codes)
             self.assertNotIn("SKILL-RELEASE-PROJECTION-DERIVATION-DRIFT", codes)
 
+    def test_repository_projection_rejects_alias_only_authority_path(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            _publish_synthetic(root)
+            (root / "alias").mkdir()
+            paths = iter_documents([root / "registry"])
+            paths.extend(
+                root / "alias" / ".." / relative
+                if relative == "evaluation.json"
+                else root / relative
+                for relative in PUBLICATION_AUTHORITY_DOCUMENTS
+            )
+
+            _, issues = load_and_validate(paths)
+            self.assertIn(
+                "SKILL-RELEASE-PROJECTION-AUTHORITY-UNVERIFIED",
+                {issue.code for issue in issues},
+            )
+
+    def test_repository_projection_rejects_alias_only_index_path(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            _publish_synthetic(root)
+            (root / "alias").mkdir()
+            canonical_index = root / "registry/skills/release-projections.json"
+            paths = [
+                path
+                for path in iter_documents([root / "registry"])
+                if path != canonical_index
+            ]
+            paths.append(
+                root / "alias" / ".." / "registry/skills/release-projections.json"
+            )
+            paths.extend(
+                root / relative
+                for relative in PUBLICATION_AUTHORITY_DOCUMENTS
+            )
+
+            _, issues = load_and_validate(paths)
+            self.assertIn(
+                "SKILL-RELEASE-PROJECTION-INDEX-PATH",
+                {issue.code for issue in issues},
+            )
+
     def test_repository_publication_authority_helpers_fail_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
@@ -646,6 +690,11 @@ class SkillReleaseProjectionTests(unittest.TestCase):
             )
             self.assertIsNone(
                 projection_registry_module._loaded_document_at_root(
+                    documents, root, ".\\evaluation.json"
+                )
+            )
+            self.assertIsNone(
+                projection_registry_module._loaded_document_at_root(
                     documents, root, str(evaluation_path)
                 )
             )
@@ -653,9 +702,20 @@ class SkillReleaseProjectionTests(unittest.TestCase):
             ambiguous_documents[
                 root / "alias" / ".." / "evaluation.json"
             ] = documents[evaluation_path]
-            self.assertIsNone(
+            self.assertEqual(
+                (evaluation_path, documents[evaluation_path]),
                 projection_registry_module._loaded_document_at_root(
                     ambiguous_documents, root, "evaluation.json"
+                ),
+            )
+            alias_only_documents = dict(documents)
+            alias_only_documents.pop(evaluation_path)
+            alias_only_documents[
+                root / "alias" / ".." / "evaluation.json"
+            ] = documents[evaluation_path]
+            self.assertIsNone(
+                projection_registry_module._loaded_document_at_root(
+                    alias_only_documents, root, "evaluation.json"
                 )
             )
             self.assertEqual(

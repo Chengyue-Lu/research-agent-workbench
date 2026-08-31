@@ -48,6 +48,8 @@ def _loaded_document_at_root(
     windows = PureWindowsPath(repository_relative)
     if (
         not posix.parts
+        or posix.as_posix() != repository_relative
+        or "\\" in repository_relative
         or posix.is_absolute()
         or windows.is_absolute()
         or bool(windows.drive)
@@ -55,13 +57,18 @@ def _loaded_document_at_root(
     ):
         return None
     try:
+        root_path = root.resolve()
+        canonical = root_path.joinpath(*posix.parts)
         target = resolve_within_root(root, repository_relative)
-        if target is None:
+        if target is None or target != canonical:
             return None
         matches = [
             (path, document)
             for path, document in documents.items()
-            if isinstance(document, Mapping) and path.resolve() == target
+            if isinstance(document, Mapping)
+            and not any(part in {".", ".."} for part in path.parts)
+            and (path if path.is_absolute() else Path.cwd() / path) == canonical
+            and path.resolve() == target
         ]
     except (OSError, RuntimeError):
         return None
@@ -136,15 +143,25 @@ def _repository_root_for(path: Path, repository_relative: str) -> Path | None:
     if (
         relative.is_absolute()
         or not relative.parts
+        or relative.as_posix() != repository_relative
+        or "\\" in repository_relative
         or any(part in {"", ".", ".."} for part in relative.parts)
+        or any(part in {".", ".."} for part in path.parts)
     ):
         return None
-    resolved_path = path.resolve()
-    root = resolved_path
+    absolute_path = path if path.is_absolute() else Path.cwd() / path
+    root = absolute_path
     for _part in relative.parts:
         root = root.parent
-    expected = root.joinpath(*relative.parts).resolve()
-    return root if expected == resolved_path else None
+    if root.joinpath(*relative.parts) != absolute_path:
+        return None
+    try:
+        resolved_root = root.resolve()
+        resolved_path = path.resolve()
+    except (OSError, RuntimeError):
+        return None
+    expected = resolved_root.joinpath(*relative.parts)
+    return resolved_root if expected == resolved_path else None
 
 
 def _arm_evidence_paths(
