@@ -264,6 +264,12 @@ measurement status、analysis rule 与 decision hierarchy。`measured`、`estima
 `not-applicable` 互不等价；Research Integrity 的退化不能被成本收益抵消，也不得建立单一 weighted
 aggregate score。
 
+Protocol 同时冻结 A4 admission-evidence overlap / held-out policy。M5-007 必须在 confirmatory freeze 前把
+M5-001/002 的 case、Task、formal input、private-oracle exact identities 与 `skill_evaluation_ref` 的 admission
+Evaluation case closure 比较；closure 缺失或 unresolved 时 fail closed，任一重叠记录为
+`admission-overlap` 并令 `primary_confirmatory_eligible=false`。重叠 case 只作 pilot/secondary evidence，不进入
+primary net-benefit conclusion，也不能单独支撑 M5-005 pruning；公共 source set 不要求完全互斥。
+
 M5-007 在 M5-006 与 M11-006 后实现统一 Harness，负责编译 frozen plan、fresh Attempt/session、exact arm
 execution、Runtime Bundle/View/Host 与 Trace/Receipt/Artifact linkage、匿名化、metric evidence、Human Review、
 reveal map 和 analysis input。Harness 不得为 A4 建旁路、直接加载 candidate、在 confirmatory run 使用

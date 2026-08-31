@@ -127,6 +127,10 @@ Harness、M11-006 真实 projection-backed Skill 路径与 M6-004 live Provider/
 `A4-RUNTIME-ADMISSION-GATE` 是外部可审计条件，不是新 M Task：它保持 M5-003 的 candidate/evaluation
 origin，并 exact-pin Human Admission Decision→accepted Release→Projection→Supply→Resolution→Snapshot→
 Bundle→View→Host 的逐跳 identity/hash closure；当前生产 projection index 为空，故该 Gate 未满足。
+M5-006 另行冻结 admission-evidence overlap / held-out policy；M5-007 在 confirmatory freeze 前比较
+M5-001/002 case、Task、input、private-oracle 与 `skill_evaluation_ref` case closure 的 exact identities。
+重叠 case 标为 `admission-overlap` 且只可作 pilot/secondary；缺失或 unresolved closure 不得进入 primary
+net-benefit conclusion，也不能单独支撑 M5-005 pruning。
 本图未展开的独立 `READY` 行（例如 scaffold）仍直接从 `TASKS.md` 读取。
 
 ### 3.3 Optional Skill extension

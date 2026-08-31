@@ -430,6 +430,12 @@ resolver-selected Supply 与 frozen Snapshot/Bundle/View。生产 projection ind
 M5-004 保持 BLOCKED。Gate 是 pre-run qualification；M5-007 在执行后还必须用 Host report、typed execution
 Trace fact 与 replay-valid Receipt 证明 actual Projection/Supply/binding 未偏离 overlay。
 
+同一 overlay 还承载 M5-006 冻结的 admission-evidence overlap / held-out policy，但只在 Maintainer/Evaluation
+侧使用。M5-007 在 confirmatory freeze 前比较 M5-001/002 case、Task、formal input、private-oracle exact
+identities 与 A4 `skill_evaluation_ref` case closure；重叠记录为 `admission-overlap`，只能作 pilot/secondary，
+不得进入 primary net-benefit conclusion 或单独支撑 M5-005 pruning。公共 source set 无需完全互斥；closure
+缺失或 unresolved 时 primary eligibility fail closed。该检查不改变 M5-003、Runtime input 或任何 authority。
+
 下一步价值证据必须来自经人类批准的真实案例、M6-004 live Provider/session Gate 与独立
 Evaluation/Trial records，而不是由 Manifest、Harness 或 synthetic fixture 的存在本身推导。
 
