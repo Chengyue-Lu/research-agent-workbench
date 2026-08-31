@@ -92,9 +92,9 @@ Manifest 也是已完成的当前后继前置。
 ```mermaid
 flowchart LR
     subgraph M4["M4 Artifact & Provenance"]
-        M4001["M4-001 DONE"] --> M4002["M4-002 READY"]
-        M4002 --> M4003["M4-003 BLOCKED"]
-        M4002 --> M4004["M4-004 BLOCKED"]
+        M4001["M4-001 DONE"] --> M4002["M4-002 DONE"]
+        M4002 --> M4003["M4-003 READY"]
+        M4002 --> M4004["M4-004 READY"]
     end
 
     subgraph M5["M5 Evaluation"]
@@ -125,7 +125,7 @@ flowchart LR
     M6004["M6-004<br/>live Provider/session"] --> M5004
 ```
 
-M4-002 是当前 provenance/promotion 链的合法入口；M4-003/004 必须等它完成。M5-004 同时等待
+M4-002 已闭合 exact validation 与 fail-closed promotion；M4-003/004 现为两个独立 READY 后继。M5-004 同时等待
 M4 闭环、两个 Human-approved public/private Case Dossier、M5-003 计划契约、M5-006 Protocol、M5-007
 Harness、M11-006 真实 projection-backed Skill 路径与 M6-004 live Provider/session Gate。ADR-0020 已 exact-pin
 双传输并关闭 `M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE`：A1/A2→M6、A3→M11 Core、A4→M11 Skill

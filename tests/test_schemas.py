@@ -65,6 +65,7 @@ class VersionedSchemaTests(unittest.TestCase):
                 "phase_c_gate_manifest",
                 "phase_c_gate_report",
                 "project_protocol",
+                "promotion_record",
                 "protocol_profile",
                 "protocol_profile_index",
                 "provider_conformance_report",

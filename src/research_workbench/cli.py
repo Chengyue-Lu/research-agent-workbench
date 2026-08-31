@@ -29,6 +29,7 @@ from research_workbench.artifacts.admission import (
     path_cites_inbox,
     sidecar_path_for,
 )
+from research_workbench.artifacts.promotion import check_promotion, execute_promotion
 from research_workbench.capability import (
     AcceptedSkillRegistry,
     AgentProfile,
@@ -376,6 +377,27 @@ def _source_check(args: argparse.Namespace) -> int:
     if errors:
         return 1
     return _print_risks(check_source_admission(Path(args.root).resolve(), document))
+
+
+def _promotion_validate(args: argparse.Namespace) -> int:
+    document = load_document(args.record)
+    if not isinstance(document, Mapping):
+        print("ERROR   DOCUMENT-INVALID              promotion record must be an object")
+        return 1
+    return _print_risks(check_promotion(Path(args.root).resolve(), document))
+
+
+def _promotion_execute(args: argparse.Namespace) -> int:
+    document = load_document(args.record)
+    if not isinstance(document, Mapping):
+        print("ERROR   DOCUMENT-INVALID              promotion record must be an object")
+        return 1
+    targets = execute_promotion(Path(args.root).resolve(), document)
+    for target in targets:
+        print(f"promoted: {target}")
+    if not targets:
+        print("ok: all validated entries retained in work")
+    return 0
 
 
 def _eval_check(args: argparse.Namespace) -> int:
@@ -1497,6 +1519,23 @@ def build_parser() -> argparse.ArgumentParser:
     source_check.add_argument("admission")
     source_check.add_argument("--root", default=".")
     source_check.set_defaults(handler=_source_check)
+
+    promotion = subparsers.add_parser(
+        "promotion", help="validate or execute fail-closed work artifact promotion"
+    )
+    promotion_subparsers = promotion.add_subparsers(dest="promotion_command", required=True)
+    promotion_validate = promotion_subparsers.add_parser(
+        "validate", help="verify report pins, exact subjects, dispositions, and target boundaries"
+    )
+    promotion_validate.add_argument("record")
+    promotion_validate.add_argument("--root", default=".")
+    promotion_validate.set_defaults(handler=_promotion_validate)
+    promotion_execute = promotion_subparsers.add_parser(
+        "execute", help="stage, revalidate, and exclusively publish eligible bytes"
+    )
+    promotion_execute.add_argument("record")
+    promotion_execute.add_argument("--root", default=".")
+    promotion_execute.set_defaults(handler=_promotion_execute)
 
     trace = subparsers.add_parser("trace", help="validate a file-authoritative Attempt trace")
     trace_subparsers = trace.add_subparsers(dest="trace_command", required=True)

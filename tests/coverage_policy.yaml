@@ -12,6 +12,7 @@ suites:
       - test_agent_trace
       - test_api_session_runner
       - test_artifacts_admission
+      - test_artifacts_promotion
       - test_capability_consumer
       - test_capability_requirements
       - test_capability_resolver_branches
@@ -132,6 +133,7 @@ critical_modules:
   - src/research_workbench/execution/generic_closeout.py
   - src/research_workbench/artifacts/admission.py
   - src/research_workbench/artifacts/integrity.py
+  - src/research_workbench/artifacts/promotion.py
   - src/research_workbench/kernel/objects.py
   - src/research_workbench/validation/relationships.py
   - src/research_workbench/validation/capability.py
@@ -273,6 +275,18 @@ negative_acceptance:
       - test_artifacts_admission.RawReferenceAdmissionGateTest.test_wrong_admitted_path_blocks
       - test_artifacts_admission.RawReferenceAdmissionGateTest.test_live_byte_drift_blocks_even_when_reference_tracks_mutation
       - test_artifacts_admission.RawReferenceAdmissionGateTest.test_reference_and_admission_hash_mismatch_blocks
+  - surface: artifact-promotion-validation-and-exclusive-publication
+    modules:
+      - src/research_workbench/artifacts/promotion.py
+    positive_tests:
+      - test_artifacts_promotion.PromotionValidationTest.test_valid_record_closes_report_checker_subjects_and_entries
+      - test_artifacts_promotion.PromotionExecutionTest.test_execute_stages_publishes_without_overwrite_and_preserves_work
+    negative_tests:
+      - test_artifacts_promotion.PromotionValidationTest.test_report_pin_subject_set_and_checker_drift_fail_closed
+      - test_artifacts_promotion.PromotionValidationTest.test_extra_or_missing_entry_cannot_bypass_exact_subject_set
+      - test_artifacts_promotion.PromotionValidationTest.test_workspace_target_and_existing_target_boundaries_fail_closed
+      - test_artifacts_promotion.PromotionExecutionTest.test_source_race_and_partial_publish_roll_back
+      - test_artifacts_promotion.PromotionExecutionTest.test_staged_byte_drift_and_pre_publish_target_race_block
   - surface: artifact-integrity-and-research-state
     modules:
       - src/research_workbench/artifacts/integrity.py

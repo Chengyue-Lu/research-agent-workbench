@@ -139,7 +139,8 @@ SHA-256 必须与 live bytes 闭合；FileReference 自带 SHA 时还必须与 a
 
 这套 Gate 只证明 identity/hash/provenance closure，不判断来源真实性、许可证法律效力、内容安全或科学
 质量。网页、API 返回和数据库查询也需要快照或可复现 locator；只保存 URL 不足以保证来源未变化。
-M4-002 promotion、M4-003 Claim trace 与 M4-004 Run reproduction 仍是独立未完成层，M4-001 不替代它们。
+M4-002 promotion 已作为独立层实现；M4-003 Claim trace 与 M4-004 Run reproduction 仍需各自完成，
+M4-001 不替代任何后继层。
 
 ## 5. Run Manifest target（M4-004 尚未实现）
 
@@ -171,18 +172,22 @@ limitations: []
 Skill-bearing Run 可以额外引用 exact Assignment；no-Skill/direct Tool/procedure/Adapter 路径不得伪造该
 字段。模型输出和 Agent 输出都只是工件，必须经过后续 Claim 关系与决策。
 
-## 6. 提升与冻结 target（M4-002 尚未实现）
+## 6. 提升与冻结（M4-002 已实现）
 
-以下是 promotion 层需要保持的设计边界，不是 M4-001 已经提供的实现能力：
+`promotion_record` 将 exact `work/<TASK>/<ATTEMPT>` 中 validation report 的全部 subjects 映射为
+`promote` 或 `retain-in-work`。report 自身、checker source、subjects、entries 与 live bytes 全部按
+SHA-256 复验，subjects/entries 必须按 `(path, sha256)` 完全集合相等；额外未受检工件、遗漏负结果、
+重复 identity、错误 pin 或 failed report 均阻断。
 
-- 子 Agent 先写 `work/<TASK>/<ATTEMPT>`；
-- 校验通过后由 promotion 操作复制/登记到正式区；
-- accepted deliverable 不原地覆盖；
-- 发布是 accepted 工件的明确子集，并需要独立 Decision；
-- archive 表示保留但不活跃，不等于可删除；
-- 垃圾回收不进入首版。
+`rwb promotion validate` 只读检查；`rwb promotion execute` 先在目标目录 staging 完整字节并复算 hash，
+再做第二次完整复验，最后以 exclusive-create 发布。目标只允许位于 `objects/`、`runs/` 或
+`deliverables/candidates/`；existing target、相似前缀、root/symlink escape 和
+`deliverables/accepted/` 直达均 fail closed。中途冲突会回滚本次仍可确认的已创建目标，不覆盖正式
+工件，也不删除 work/archive。
 
-Agent Trace 随 Attempt 冻结。promotion 只引用所需消息、Decision 或输出，不把整个 Archive 复制到正式对象，也不删除失败、拒绝或未采用路径。
+Agent Trace 随 Attempt 冻结。promotion 只复制记录中明确选择的 exact bytes，不把整个 Archive 复制到
+正式对象。结构 PASS 不产生 Claim acceptance、Human Decision、accepted publication 或科研质量判断；
+详见 [M4-002 契约](../implementation/ARTIFACT_PROMOTION_CONTRACT.md)。
 
 ## 7. 大文件与保留策略
 
@@ -246,6 +251,13 @@ Trace 默认保存在项目工作区，但不等于默认提交 Git：
 - FileReference/admission SHA 漂移、缺失或错误 sidecar 均 fail closed；
 - admission PASS 不被解释为来源可信、许可合法或科学正确。
 
+当前已实现的 M4-002 验收边界：
+
+- report、checker、subjects、entries 与 live bytes exact-pin，subject/entry 集合既不遗漏也不夹带；
+- 每个受检工件均有 promote/retain disposition，负结果不会被静默删除；
+- staging、二次复验和 exclusive-create 阻断覆盖、accepted 直达、路径逃逸及源/目标竞态；
+- promotion PASS 不被解释为 Claim、Human Decision、publication 或 scientific correctness。
+
 当前 Agent/Method Trace 可追溯边界：
 
 - 任一跨 Agent Handoff 能定位到发送前后的消息、actor、附件和接收决定；
@@ -254,6 +266,6 @@ Trace 默认保存在项目工作区，但不等于默认提交 Git：
 - Worklog 缺失不导致 Trace 消失，Trace 很长也不要求主 Agent 默认加载；
 - capture gap、删减和延迟会显式暴露，不能被误报为完整记录。
 
-以下仍是 M4-002～004 的 target acceptance，不能由 M4-001 的 DONE 状态代替：路径调整不破坏正式对象
-identity、promotion 不丢弃失败/负结果、子 Agent 不能覆盖 accepted 工件、Claim trace 可一次定位支持/反证/
-限制，以及 Run 可在没有原 Agent 会话时按 exact inputs/environment/execution facts 理解与重建。
+以下仍是 M4-003～004 的 target acceptance，不能由 M4-001/002 的 DONE 状态代替：Claim trace 可一次
+定位支持/反证/限制，以及 Run 可在没有原 Agent 会话时按 exact inputs/environment/execution facts 理解与
+重建。

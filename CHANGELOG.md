@@ -21,6 +21,15 @@
 - M5-007 继续等待 M5-006、M6-008 与 Skill-bearing replay Gate；M5-003、M11 authority、真实案例/live
   Provider/Human Gate 与 Topic 5 均未被改写或提前解冻。
 
+## 2026-08-31 — M4-002 fail-closed artifact promotion
+
+- 新增 `promotion_record`、`rwb promotion validate|execute` 与独立 validator/executor，完整闭合
+  validation report、checker、subject、entry 和 live-byte pins；
+- promotion 采用 staging、二次复验和 exclusive-create 发布，拒绝额外未受检工件、accepted 直达、
+  覆盖、路径逃逸与竞态，并保留 work、archive 和负结果 disposition；
+- M4-002 完成不产生 Claim acceptance、Human Decision、publication 或 scientific correctness；
+  M4-003/004 只因依赖满足而激活，仍须独立实现和验收。
+
 ## 2026-08-30 — Phase C、Source Admission 与 Evaluation 基线
 
 - 接受 M10-001、M10-002、M3-009 与 M10-003 的 bounded candidate chain：durable Research State、

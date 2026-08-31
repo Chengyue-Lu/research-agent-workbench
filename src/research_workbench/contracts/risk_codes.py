@@ -151,6 +151,21 @@ ARTIFACT_RISK_CODE_REGISTRY = (
         "BLOCK",
         "An admitted source lacks the provenance facts required to re-locate it.",
     ),
+    RiskCodeEntry(
+        "ARTIFACT-NEGATIVE-DROPPED",
+        "BLOCK",
+        "A validated subject, including a declared negative result, lacks an exact disposition.",
+    ),
+    RiskCodeEntry(
+        "ARTIFACT-OVERWRITE",
+        "BLOCK",
+        "Promotion would overwrite or ambiguously publish a target artifact.",
+    ),
+    RiskCodeEntry(
+        "ARTIFACT-PROMOTION-BYPASS",
+        "BLOCK",
+        "Promotion bypasses its workspace, validation, target-zone, or authority boundary.",
+    ),
 )
 
 ARTIFACT_RISK_CODES = frozenset(entry.code for entry in ARTIFACT_RISK_CODE_REGISTRY)

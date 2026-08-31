@@ -153,6 +153,7 @@ SCHEMA_KINDS = {
     "research_failure",
     "research_state",
     "source_admission",
+    "promotion_record",
 }
 
 
