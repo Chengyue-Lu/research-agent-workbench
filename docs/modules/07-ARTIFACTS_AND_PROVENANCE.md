@@ -175,15 +175,18 @@ Skill-bearing Run 可以额外引用 exact Assignment；no-Skill/direct Tool/pro
 ## 6. 提升与冻结（M4-002 已实现）
 
 `promotion_record` 将 exact `work/<TASK>/<ATTEMPT>` 中 validation report 的全部 subjects 映射为
-`promote` 或 `retain-in-work`。report 自身、checker source、subjects、entries 与 live bytes 全部按
-SHA-256 复验，subjects/entries 必须按 `(path, sha256)` 完全集合相等；额外未受检工件、遗漏负结果、
-重复 identity、错误 pin 或 failed report 均阻断。
+`promote` 或 `retain-in-work`。repository-governed validation policy 先固定 Task 与 checker/runner 的
+identity/version/source hash；独立 validation execution fact 再固定同一 Task/Attempt、policy、report、
+subjects、执行者、时间和 outcome。policy → execution → PASS report → entries/live bytes 任一关系或 hash
+漂移均阻断；调用方在 work 内自建 checker/policy/execution 不能获得稳定区写入资格。
 
-`rwb promotion validate` 只读检查；`rwb promotion execute` 先在目标目录 staging 完整字节并复算 hash，
-再做第二次完整复验，最后以 exclusive-create 发布。目标只允许位于 `objects/`、`runs/` 或
+`rwb promotion validate` 只读检查；`rwb promotion execute` 只接受 workspace 内的 file-bound record，
+先在目标目录 staging 完整字节并复算 hash，再做完整复验，并生成 exact-pin record/policy/execution/report/
+source/actual-target/operator/time/outcome 的 Promotion Receipt。目标与 receipt 在 commit-time 再复验后
+一起 exclusive-create。目标只允许位于 `objects/`、`runs/` 或
 `deliverables/candidates/`；existing target、相似前缀、root/symlink escape 和
 `deliverables/accepted/` 直达均 fail closed。中途冲突会回滚本次仍可确认的已创建目标，不覆盖正式
-工件，也不删除 work/archive。
+工件或 receipt，也不删除 work/archive。
 
 Agent Trace 随 Attempt 冻结。promotion 只复制记录中明确选择的 exact bytes，不把整个 Archive 复制到
 正式对象。结构 PASS 不产生 Claim acceptance、Human Decision、accepted publication 或科研质量判断；
@@ -253,9 +256,11 @@ Trace 默认保存在项目工作区，但不等于默认提交 Git：
 
 当前已实现的 M4-002 验收边界：
 
-- report、checker、subjects、entries 与 live bytes exact-pin，subject/entry 集合既不遗漏也不夹带；
+- accepted validation policy、deterministic validation execution、PASS report、subjects、entries 与 live
+  bytes exact closure，subject/entry 集合既不遗漏也不夹带；
 - 每个受检工件均有 promote/retain disposition，负结果不会被静默删除；
-- staging、二次复验和 exclusive-create 阻断覆盖、accepted 直达、路径逃逸及源/目标竞态；
+- file-bound record、durable receipt、staging、commit-time 复验和 exclusive-create 阻断自签 PASS、覆盖、
+  accepted 直达、路径逃逸及 record/source/target/receipt 竞态；
 - promotion PASS 不被解释为 Claim、Human Decision、publication 或 scientific correctness。
 
 当前 Agent/Method Trace 可追溯边界：

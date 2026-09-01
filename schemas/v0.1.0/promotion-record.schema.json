@@ -6,13 +6,19 @@
   "type": "object",
   "required": [
     "schema_version", "promotion_id", "source_workspace", "validation_report",
-    "operator", "recorded_at", "entries", "authority_boundaries"
+    "validation_policy", "validation_execution", "operator", "recorded_at",
+    "entries", "authority_boundaries"
   ],
   "properties": {
     "schema_version": { "const": "0.1.0" },
-    "promotion_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "promotion_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
     "source_workspace": { "$ref": "common.schema.json#/$defs/relativePath" },
     "validation_report": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "validation_policy": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "validation_execution": { "$ref": "common.schema.json#/$defs/fileRef" },
     "operator": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "recorded_at": { "type": "string", "format": "date-time" },
     "entries": {

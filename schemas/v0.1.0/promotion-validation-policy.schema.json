@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/promotion-validation-policy.schema.json",
+  "title": "Promotion Validation Policy",
+  "$comment": "Repository-governed authority for one Task's promotion checker. It does not itself record a validation execution.",
+  "x-rwb-document-kind": "promotion_validation_policy",
+  "type": "object",
+  "required": [
+    "schema_version", "policy_id", "version", "task_id", "policy_owner",
+    "checker", "runner", "accepted_for", "authority_boundaries"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "policy_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "version": { "$ref": "common.schema.json#/$defs/semver" },
+    "task_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "policy_owner": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "checker": { "$ref": "deterministic-check-report.schema.json#/properties/checker" },
+    "runner": {
+      "type": "object",
+      "required": ["runner_id", "version", "source_ref"],
+      "properties": {
+        "runner_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "version": { "$ref": "common.schema.json#/$defs/semver" },
+        "source_ref": { "$ref": "common.schema.json#/$defs/fileRef" }
+      },
+      "additionalProperties": false
+    },
+    "accepted_for": { "const": "artifact-promotion-validation" },
+    "authority_boundaries": {
+      "type": "object",
+      "required": [
+        "checker_authority", "execution_fact", "claim_acceptance",
+        "human_decision", "scientific_correctness"
+      ],
+      "properties": {
+        "checker_authority": { "const": true },
+        "execution_fact": { "const": false },
+        "claim_acceptance": { "const": false },
+        "human_decision": { "const": false },
+        "scientific_correctness": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

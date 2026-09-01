@@ -29,7 +29,11 @@ from research_workbench.artifacts.admission import (
     path_cites_inbox,
     sidecar_path_for,
 )
-from research_workbench.artifacts.promotion import check_promotion, execute_promotion
+from research_workbench.artifacts.promotion import (
+    check_promotion,
+    execute_promotion,
+    load_promotion_record,
+)
 from research_workbench.capability import (
     AcceptedSkillRegistry,
     AgentProfile,
@@ -202,6 +206,54 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
         for subject_ref in document.get("subject_refs", []):
             if isinstance(subject_ref, Mapping):
                 references += (FileReference.from_mapping(subject_ref),)
+    elif kind == "promotion_record":
+        for key in ("validation_report", "validation_policy", "validation_execution"):
+            reference = document.get(key)
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
+        for entry in document.get("entries", []):
+            if isinstance(entry, Mapping) and isinstance(entry.get("artifact"), Mapping):
+                references += (FileReference.from_mapping(entry["artifact"]),)
+    elif kind == "promotion_validation_policy":
+        for key in ("checker", "runner"):
+            component = document.get(key)
+            if isinstance(component, Mapping) and isinstance(component.get("source_ref"), Mapping):
+                references += (FileReference.from_mapping(component["source_ref"]),)
+    elif kind == "promotion_validation_execution":
+        for key in ("policy_ref", "report_ref"):
+            reference = document.get(key)
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
+        for key in ("checker", "runner"):
+            component = document.get(key)
+            if isinstance(component, Mapping) and isinstance(component.get("source_ref"), Mapping):
+                references += (FileReference.from_mapping(component["source_ref"]),)
+        for reference in document.get("subject_refs", []):
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
+    elif kind == "promotion_execution_receipt":
+        for key in (
+            "promotion_record_ref",
+            "validation_policy_ref",
+            "validation_execution_ref",
+            "validation_report_ref",
+        ):
+            reference = document.get(key)
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
+        checker = document.get("checker")
+        if isinstance(checker, Mapping) and isinstance(checker.get("source_ref"), Mapping):
+            references += (FileReference.from_mapping(checker["source_ref"]),)
+        for reference in document.get("source_artifact_refs", []):
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
+        for target in document.get("target_artifact_refs", []):
+            if not isinstance(target, Mapping):
+                continue
+            for key in ("source_ref", "target_ref"):
+                reference = target.get(key)
+                if isinstance(reference, Mapping):
+                    references += (FileReference.from_mapping(reference),)
     elif kind == "handoff_transfer_manifest":
         for source_ref in document.get("source_artifact_refs", []):
             if isinstance(source_ref, Mapping):
@@ -380,23 +432,22 @@ def _source_check(args: argparse.Namespace) -> int:
 
 
 def _promotion_validate(args: argparse.Namespace) -> int:
-    document = load_document(args.record)
-    if not isinstance(document, Mapping):
-        print("ERROR   DOCUMENT-INVALID              promotion record must be an object")
+    root = Path(args.root).resolve()
+    try:
+        document, record_reference = load_promotion_record(root, args.record)
+    except ContractError as exc:
+        print(f"ERROR   DOCUMENT-INVALID              {exc}")
         return 1
-    return _print_risks(check_promotion(Path(args.root).resolve(), document))
+    return _print_risks(check_promotion(root, document, record_reference=record_reference))
 
 
 def _promotion_execute(args: argparse.Namespace) -> int:
-    document = load_document(args.record)
-    if not isinstance(document, Mapping):
-        print("ERROR   DOCUMENT-INVALID              promotion record must be an object")
-        return 1
-    targets = execute_promotion(Path(args.root).resolve(), document)
-    for target in targets:
+    result = execute_promotion(Path(args.root).resolve(), args.record)
+    for target in result.targets:
         print(f"promoted: {target}")
-    if not targets:
+    if not result.targets:
         print("ok: all validated entries retained in work")
+    print(f"receipt: {result.receipt}")
     return 0
 
 

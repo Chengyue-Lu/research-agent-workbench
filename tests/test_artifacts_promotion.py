@@ -9,6 +9,7 @@ import unittest
 from contextlib import redirect_stdout
 from io import StringIO
 from pathlib import Path
+from types import SimpleNamespace
 from unittest import mock
 
 import yaml
@@ -30,14 +31,27 @@ class PromotionFixture(unittest.TestCase):
         self.workspace = self.root / "work" / "M4-002" / "A-001"
         self.output = self.workspace / "outputs" / "result.txt"
         self.negative = self.workspace / "outputs" / "negative.txt"
-        self.checker = self.workspace / "checks" / "checker.py"
+        self.checker = self.root / "checks" / "promotion" / "checker.py"
+        self.runner = self.root / "checks" / "promotion" / "runner.py"
         self.report_path = self.workspace / "checks" / "validation.yaml"
+        self.policy_path = (
+            self.root / "registry" / "validation-policies" / "M4-002-promotion.yaml"
+        )
+        self.execution_path = (
+            self.root / "runs" / "validation" / "M4-002" / "A-001" / "execution.yaml"
+        )
         self.output.parent.mkdir(parents=True)
         self.checker.parent.mkdir(parents=True)
+        self.report_path.parent.mkdir(parents=True)
+        self.policy_path.parent.mkdir(parents=True)
+        self.execution_path.parent.mkdir(parents=True)
         self.output.write_bytes(b"validated result\n")
         self.negative.write_bytes(b"validated null result\n")
         self.checker.write_text("def check(): return True\n", encoding="utf-8")
+        self.runner.write_text("def run(): return 'deterministic'\n", encoding="utf-8")
         self.report = self._report()
+        self.policy = self._policy()
+        self.execution = self._execution()
         self.record = self._record()
 
     def tearDown(self) -> None:
@@ -78,10 +92,92 @@ class PromotionFixture(unittest.TestCase):
             yaml.safe_dump(report, sort_keys=False), encoding="utf-8", newline="\n"
         )
 
+    def _policy(self) -> dict:
+        policy = {
+            "schema_version": "0.1.0",
+            "policy_id": "M4-002-PROMOTION-VALIDATION",
+            "version": "1.0.0",
+            "task_id": "M4-002",
+            "policy_owner": "Chengyue-Lu",
+            "checker": copy.deepcopy(self.report["checker"]),
+            "runner": {
+                "runner_id": "fixture-deterministic-runner",
+                "version": "1.0.0",
+                "source_ref": self.ref(self.runner),
+            },
+            "accepted_for": "artifact-promotion-validation",
+            "authority_boundaries": {
+                "checker_authority": True,
+                "execution_fact": False,
+                "claim_acceptance": False,
+                "human_decision": False,
+                "scientific_correctness": False,
+            },
+        }
+        self.write_policy(policy)
+        return policy
+
+    def write_policy(self, policy: dict) -> None:
+        self.policy_path.write_text(
+            yaml.safe_dump(policy, sort_keys=False), encoding="utf-8", newline="\n"
+        )
+
+    def _execution(self) -> dict:
+        execution = {
+            "schema_version": "0.1.0",
+            "execution_id": "M4-002-VALIDATION-EXEC-A-001",
+            "task_id": "M4-002",
+            "attempt_id": "A-001",
+            "policy_ref": self.ref(self.policy_path),
+            "checker": copy.deepcopy(self.report["checker"]),
+            "runner": copy.deepcopy(self.policy["runner"]),
+            "report_ref": self.ref(self.report_path),
+            "subject_refs": copy.deepcopy(self.report["subject_refs"]),
+            "executor": "fixture-validation-host",
+            "started_at": "2026-08-31T08:58:00+08:00",
+            "finished_at": "2026-08-31T08:59:00+08:00",
+            "outcome": "pass",
+            "authority_boundaries": {
+                "validation_execution_fact": True,
+                "promotion_execution": False,
+                "claim_acceptance": False,
+                "human_decision": False,
+                "scientific_correctness": False,
+            },
+        }
+        self.write_execution(execution)
+        return execution
+
+    def write_execution(self, execution: dict) -> None:
+        self.execution_path.write_text(
+            yaml.safe_dump(execution, sort_keys=False), encoding="utf-8", newline="\n"
+        )
+
     def repin_report(self, record: dict, report: dict | None = None) -> None:
         if report is not None:
             self.write_report(report)
+            self.report = report
         record["validation_report"] = self.ref(self.report_path)
+        self.execution["checker"] = copy.deepcopy(self.report["checker"])
+        self.execution["report_ref"] = self.ref(self.report_path)
+        self.execution["subject_refs"] = copy.deepcopy(self.report["subject_refs"])
+        self.write_execution(self.execution)
+        record["validation_execution"] = self.ref(self.execution_path)
+
+    def repin_policy(self, record: dict, policy: dict) -> None:
+        self.policy = policy
+        self.write_policy(policy)
+        record["validation_policy"] = self.ref(self.policy_path)
+        self.execution["policy_ref"] = self.ref(self.policy_path)
+        self.execution["checker"] = copy.deepcopy(policy["checker"])
+        self.execution["runner"] = copy.deepcopy(policy["runner"])
+        self.write_execution(self.execution)
+        record["validation_execution"] = self.ref(self.execution_path)
+
+    def repin_execution(self, record: dict, execution: dict) -> None:
+        self.execution = execution
+        self.write_execution(execution)
+        record["validation_execution"] = self.ref(self.execution_path)
 
     def _record(self) -> dict:
         return {
@@ -89,6 +185,8 @@ class PromotionFixture(unittest.TestCase):
             "promotion_id": "PROMOTION-M4-002-A-001",
             "source_workspace": "work/M4-002/A-001",
             "validation_report": self.ref(self.report_path),
+            "validation_policy": self.ref(self.policy_path),
+            "validation_execution": self.ref(self.execution_path),
             "operator": "huangyi",
             "recorded_at": "2026-08-31T09:00:00+08:00",
             "entries": [
@@ -119,6 +217,10 @@ class PromotionFixture(unittest.TestCase):
         path.write_text(yaml.safe_dump(record, sort_keys=False), encoding="utf-8", newline="\n")
         return path
 
+    def execute(self, record: dict | None = None, *, executed_at: str | None = None):
+        path = self.write_record(record or self.record)
+        return execute_promotion(self.root, path, executed_at=executed_at)
+
     def codes(self, record: dict) -> set[str]:
         return {risk.code for risk in check_promotion(self.root, record)}
 
@@ -126,8 +228,172 @@ class PromotionFixture(unittest.TestCase):
 class PromotionValidationTest(PromotionFixture):
     def test_valid_record_closes_report_checker_subjects_and_entries(self) -> None:
         self.assertEqual(infer_document_kind(self.record), "promotion_record")
+        self.assertEqual(infer_document_kind(self.policy), "promotion_validation_policy")
+        self.assertEqual(infer_document_kind(self.execution), "promotion_validation_execution")
         self.assertEqual(SchemaCatalog().validate("promotion_record", self.record), [])
+        self.assertEqual(SchemaCatalog().validate("promotion_validation_policy", self.policy), [])
+        self.assertEqual(
+            SchemaCatalog().validate("promotion_validation_execution", self.execution), []
+        )
         self.assertEqual(check_promotion(self.root, self.record), [])
+
+    def test_self_signed_work_checker_policy_or_execution_cannot_authorize_promotion(self) -> None:
+        original_report = copy.deepcopy(self.report)
+        original_policy = copy.deepcopy(self.policy)
+        original_execution = copy.deepcopy(self.execution)
+        caller_checker = self.workspace / "checks" / "caller-checker.py"
+        caller_checker.write_text("def check(): return True\n", encoding="utf-8")
+        record = copy.deepcopy(self.record)
+        report = copy.deepcopy(self.report)
+        report["checker"]["source_ref"] = self.ref(caller_checker)
+        self.repin_report(record, report)
+        policy = copy.deepcopy(self.policy)
+        policy["checker"] = copy.deepcopy(report["checker"])
+        self.repin_policy(record, policy)
+        self.assertIn("ARTIFACT-PROMOTION-BYPASS", self.codes(record))
+
+        self.report = original_report
+        self.policy = original_policy
+        self.execution = original_execution
+        self.write_report(self.report)
+        self.write_policy(self.policy)
+        self.write_execution(self.execution)
+
+        work_policy = self.workspace / "checks" / "caller-policy.yaml"
+        work_policy.write_text(
+            yaml.safe_dump(self.policy, sort_keys=False), encoding="utf-8", newline="\n"
+        )
+        policy_record = copy.deepcopy(self.record)
+        policy_record["validation_policy"] = self.ref(work_policy)
+        policy_execution = copy.deepcopy(self.execution)
+        policy_execution["policy_ref"] = self.ref(work_policy)
+        self.write_execution(policy_execution)
+        policy_record["validation_execution"] = self.ref(self.execution_path)
+        self.assertIn("ARTIFACT-PROMOTION-BYPASS", self.codes(policy_record))
+
+        work_execution = self.workspace / "checks" / "caller-execution.yaml"
+        work_execution.write_text(
+            yaml.safe_dump(self.execution, sort_keys=False), encoding="utf-8", newline="\n"
+        )
+        execution_record = copy.deepcopy(self.record)
+        execution_record["validation_execution"] = self.ref(work_execution)
+        self.assertIn("ARTIFACT-PROMOTION-BYPASS", self.codes(execution_record))
+
+    def test_validation_authority_identity_task_outcome_and_time_drift_fail_closed(self) -> None:
+        for mutation in ("checker", "task", "outcome", "time", "recorded-before-finish"):
+            with self.subTest(mutation=mutation):
+                execution = copy.deepcopy(self.execution)
+                record = copy.deepcopy(self.record)
+                if mutation == "checker":
+                    execution["checker"]["checker_id"] = "caller-substituted-checker"
+                elif mutation == "task":
+                    execution["task_id"] = "M4-999"
+                elif mutation == "outcome":
+                    execution["outcome"] = "fail"
+                elif mutation == "time":
+                    execution["started_at"] = "2026-08-31T09:00:00+08:00"
+                    execution["finished_at"] = "2026-08-31T08:59:00+08:00"
+                else:
+                    record["recorded_at"] = "2026-08-31T08:58:30+08:00"
+                self.write_execution(execution)
+                record["validation_execution"] = self.ref(self.execution_path)
+                self.assertIn("ARTIFACT-PROMOTION-BYPASS", self.codes(record))
+
+    def test_validation_authority_cross_document_closure_matrix(self) -> None:
+        base_report = copy.deepcopy(self.report)
+        base_policy = copy.deepcopy(self.policy)
+        base_execution = copy.deepcopy(self.execution)
+        for mutation in (
+            "policy-task",
+            "report-checker",
+            "attempt",
+            "policy-ref",
+            "report-ref",
+            "runner",
+            "duplicate-subject",
+            "subject-set",
+            "work-runner",
+        ):
+            with self.subTest(mutation=mutation):
+                report = copy.deepcopy(base_report)
+                policy = copy.deepcopy(base_policy)
+                execution = copy.deepcopy(base_execution)
+                record = copy.deepcopy(self.record)
+                if mutation == "policy-task":
+                    policy["task_id"] = "M4-999"
+                elif mutation == "report-checker":
+                    report["checker"]["checker_id"] = "substituted-report-checker"
+                    execution["checker"] = copy.deepcopy(report["checker"])
+                elif mutation == "attempt":
+                    execution["attempt_id"] = "A-999"
+                elif mutation == "policy-ref":
+                    execution["policy_ref"]["sha256"] = "0" * 64
+                elif mutation == "report-ref":
+                    execution["report_ref"]["sha256"] = "0" * 64
+                elif mutation == "runner":
+                    execution["runner"]["runner_id"] = "substituted-runner"
+                elif mutation == "duplicate-subject":
+                    duplicate = copy.deepcopy(execution["subject_refs"][0])
+                    duplicate["sha256"] = f"sha256:{duplicate['sha256']}"
+                    execution["subject_refs"][1] = duplicate
+                elif mutation == "subject-set":
+                    execution["subject_refs"].pop()
+                else:
+                    work_runner = self.workspace / "checks" / "caller-runner.py"
+                    work_runner.write_text("def run(): return 'pass'\n", encoding="utf-8")
+                    policy["runner"]["source_ref"] = self.ref(work_runner)
+                    execution["runner"] = copy.deepcopy(policy["runner"])
+
+                self.write_report(report)
+                record["validation_report"] = self.ref(self.report_path)
+                execution["report_ref"] = (
+                    execution["report_ref"]
+                    if mutation == "report-ref"
+                    else self.ref(self.report_path)
+                )
+                self.write_policy(policy)
+                record["validation_policy"] = self.ref(self.policy_path)
+                execution["policy_ref"] = (
+                    execution["policy_ref"]
+                    if mutation == "policy-ref"
+                    else self.ref(self.policy_path)
+                )
+                self.write_execution(execution)
+                record["validation_execution"] = self.ref(self.execution_path)
+                self.assertIn("ARTIFACT-PROMOTION-BYPASS", self.codes(record))
+
+    def test_file_bound_record_and_receipt_identity_are_not_optional(self) -> None:
+        root_record = self.root / "promotion.yaml"
+        root_record.write_text(
+            yaml.safe_dump(self.record, sort_keys=False), encoding="utf-8", newline="\n"
+        )
+        outside_workspace_ref = promotion.FileReference(
+            "promotion.yaml", hash_file(root_record)
+        )
+        self.assertIn(
+            "ARTIFACT-PROMOTION-BYPASS",
+            {
+                risk.code
+                for risk in check_promotion(
+                    self.root,
+                    self.record,
+                    record_reference=outside_workspace_ref,
+                )
+            },
+        )
+
+        collision = copy.deepcopy(self.record)
+        collision["entries"][0]["target"] = (
+            "runs/promotions/PROMOTION-M4-002-A-001/receipt.json"
+        )
+        self.assertIn("ARTIFACT-OVERWRITE", self.codes(collision))
+
+    def test_missing_or_drifted_validation_authority_files_fail_closed(self) -> None:
+        self.execution_path.unlink()
+        self.assertIn("REF-MISSING", self.codes(self.record))
+        self.write_execution(self.execution)
+        self.policy_path.write_text("changed after acceptance\n", encoding="utf-8")
+        self.assertIn("ARTIFACT-HASH-MISMATCH", self.codes(self.record))
 
     def test_backslash_paths_normalize_to_one_cross_host_identity(self) -> None:
         report = copy.deepcopy(self.report)
@@ -136,14 +402,11 @@ class PromotionValidationTest(PromotionFixture):
         ].replace("/", "\\")
         for subject in report["subject_refs"]:
             subject["path"] = subject["path"].replace("/", "\\")
-        self.write_report(report)
-
         record = copy.deepcopy(self.record)
+        self.repin_report(record, report)
         record["source_workspace"] = record["source_workspace"].replace("/", "\\")
-        record["validation_report"] = self.ref(self.report_path)
-        record["validation_report"]["path"] = record["validation_report"]["path"].replace(
-            "/", "\\"
-        )
+        for field in ("validation_report", "validation_policy", "validation_execution"):
+            record[field]["path"] = record[field]["path"].replace("/", "\\")
         for entry in record["entries"]:
             entry["artifact"]["path"] = entry["artifact"]["path"].replace("/", "\\")
             if "target" in entry:
@@ -154,9 +417,31 @@ class PromotionValidationTest(PromotionFixture):
         record_path = self.write_record(self.record)
         output = StringIO()
         with redirect_stdout(output):
-            result = main(["promotion", "validate", str(record_path), "--root", str(self.root)])
+            result = main(
+                [
+                    "promotion",
+                    "validate",
+                    self.rel(record_path),
+                    "--root",
+                    str(self.root),
+                ]
+            )
         self.assertEqual(result, 0)
         self.assertIn("no blocking deterministic risks", output.getvalue())
+
+    def test_repository_validation_recognizes_promotion_authority_documents(self) -> None:
+        record_path = self.write_record(self.record)
+        paths = [
+            str(self.policy_path),
+            str(self.execution_path),
+            str(self.report_path),
+            str(record_path),
+        ]
+        output = StringIO()
+        with redirect_stdout(output):
+            result = main(["validate", *paths, "--root", str(self.root)])
+        self.assertEqual(result, 0, output.getvalue())
+        self.assertIn("validated=4 errors=0 warnings=0", output.getvalue())
 
     def test_report_pin_subject_set_and_checker_drift_fail_closed(self) -> None:
         with self.subTest("report pin"):
@@ -299,7 +584,23 @@ class PromotionValidationTest(PromotionFixture):
         for record in (
             {},
             {"validation_report": {}, "entries": []},
-            {"validation_report": {}, "entries": ["not-an-object"]},
+            {
+                "validation_report": {},
+                "validation_policy": {},
+                "entries": [],
+            },
+            {
+                "validation_report": {},
+                "validation_policy": {},
+                "validation_execution": {},
+                "entries": [],
+            },
+            {
+                "validation_report": {},
+                "validation_policy": {},
+                "validation_execution": {},
+                "entries": ["not-an-object"],
+            },
         ):
             with self.subTest(record=record), self.assertRaises(ContractError):
                 promotion.PromotionRecord.from_mapping(record)
@@ -337,14 +638,219 @@ class PromotionValidationTest(PromotionFixture):
 
 
 class PromotionExecutionTest(PromotionFixture):
+    def test_defensive_reference_staging_and_record_loader_guards(self) -> None:
+        outside_ref = promotion.FileReference("../outside.txt", "0" * 64)
+        self.assertIn(
+            "ARTIFACT-PROMOTION-BYPASS",
+            {risk.code for risk in promotion._reference_risks(self.root, outside_ref, "outside")},
+        )
+        fake_ok = SimpleNamespace(
+            status=SimpleNamespace(value="ok"),
+            resolved_path=self.root / "different.txt",
+        )
+        with mock.patch.object(promotion, "check_file_reference", return_value=fake_ok):
+            self.assertIn(
+                "ARTIFACT-PROMOTION-BYPASS",
+                {
+                    risk.code
+                    for risk in promotion._reference_risks(
+                        self.root,
+                        promotion.FileReference("expected.txt", "0" * 64),
+                        "aliased",
+                    )
+                },
+            )
+        with self.assertRaises(ContractError):
+            promotion._reference_keys(None, "subjects")
+        with self.assertRaises(ContractError):
+            promotion._component_binding("not-a-mapping", "checker")
+        with self.assertRaises(ContractError):
+            promotion._component_binding({"checker_id": "x", "version": "1.0.0"}, "checker")
+        self.assertEqual(
+            promotion._reference_mapping(promotion.FileReference("x", "0" * 64, 2))["revision"],
+            2,
+        )
+
+        parsed = promotion.PromotionRecord.from_mapping(self.record)
+        existing_target = self.root / "objects" / "M4-002" / "result.txt"
+        existing_target.parent.mkdir(parents=True)
+        existing_target.write_bytes(b"existing")
+        with self.assertRaises(ContractError):
+            promotion._stage_promotions(self.root, parsed)
+        existing_target.unlink()
+
+        real_resolve = promotion.resolve_within_root
+
+        def hide_source(root, path):
+            if path == self.rel(self.output):
+                return None
+            return real_resolve(root, path)
+
+        with mock.patch.object(promotion, "resolve_within_root", side_effect=hide_source):
+            with self.assertRaises(ContractError):
+                promotion._stage_promotions(self.root, parsed)
+
+        with self.assertRaises(ContractError):
+            promotion._stage_bytes(self.root, "../receipt.json", b"receipt")
+        existing_receipt = self.root / "runs" / "promotions" / "X" / "receipt.json"
+        existing_receipt.parent.mkdir(parents=True)
+        existing_receipt.write_bytes(b"existing")
+        with self.assertRaises(ContractError):
+            promotion._stage_bytes(self.root, "runs/promotions/X/receipt.json", b"receipt")
+
+        with self.assertRaises(ContractError):
+            promotion.load_promotion_record(self.root, "work/M4-002/A-001/missing.yaml")
+        malformed = self.workspace / "malformed.yaml"
+        malformed.write_text("[unterminated", encoding="utf-8")
+        with self.assertRaises(ContractError):
+            promotion.load_promotion_record(self.root, malformed)
+        not_mapping = self.workspace / "list.yaml"
+        not_mapping.write_text("- not\n- a\n- mapping\n", encoding="utf-8")
+        with self.assertRaises(ContractError):
+            promotion.load_promotion_record(self.root, not_mapping)
+        outside = self.root.parent / f"{self.root.name}-outside-promotion.yaml"
+        try:
+            outside.write_text("schema_version: 0.1.0\n", encoding="utf-8")
+            with self.assertRaises(ContractError):
+                promotion.load_promotion_record(self.root, outside)
+        finally:
+            outside.unlink(missing_ok=True)
+
+    def test_execution_rejects_in_memory_record_and_record_drift(self) -> None:
+        with self.assertRaisesRegex(ContractError, "file-bound"):
+            execute_promotion(self.root, self.record)  # type: ignore[arg-type]
+
+        record_path = self.write_record(self.record)
+        original_stage = promotion._stage_promotions
+
+        def mutate_record_after_staging(root: Path, record):
+            staged = original_stage(root, record)
+            record_path.write_text("changed after initial validation\n", encoding="utf-8")
+            return staged
+
+        with mock.patch.object(
+            promotion,
+            "_stage_promotions",
+            side_effect=mutate_record_after_staging,
+        ):
+            with self.assertRaises(ContractError):
+                execute_promotion(self.root, record_path)
+        self.assertFalse((self.root / "objects" / "M4-002" / "result.txt").exists())
+        self.assertFalse(
+            (self.root / "runs" / "promotions" / "PROMOTION-M4-002-A-001" / "receipt.json").exists()
+        )
+
     def test_execute_stages_publishes_without_overwrite_and_preserves_work(self) -> None:
-        targets = execute_promotion(self.root, self.record)
-        self.assertEqual(targets, ("objects/M4-002/result.txt",))
-        self.assertEqual((self.root / targets[0]).read_bytes(), self.output.read_bytes())
+        result = self.execute(executed_at="2026-08-31T09:01:00+08:00")
+        self.assertEqual(result.targets, ("objects/M4-002/result.txt",))
+        self.assertEqual((self.root / result.targets[0]).read_bytes(), self.output.read_bytes())
+        receipt = yaml.safe_load((self.root / result.receipt).read_text(encoding="utf-8"))
+        self.assertEqual(infer_document_kind(receipt), "promotion_execution_receipt")
+        self.assertEqual(SchemaCatalog().validate("promotion_execution_receipt", receipt), [])
+        self.assertEqual(receipt["promotion_record_ref"], self.ref(self.workspace / "promotion.yaml"))
+        self.assertEqual(receipt["validation_report_ref"], self.record["validation_report"])
+        self.assertEqual(receipt["source_artifact_refs"], [self.ref(self.output), self.ref(self.negative)])
+        self.assertEqual(
+            receipt["target_artifact_refs"][0]["target_ref"],
+            {"path": "objects/M4-002/result.txt", "sha256": self.ref(self.output)["sha256"]},
+        )
+        self.assertEqual(receipt["operator"], "huangyi")
+        self.assertEqual(receipt["outcome"], "succeeded")
         self.assertTrue(self.output.is_file())
         self.assertTrue(self.negative.is_file())
         self.assertFalse((self.root / "deliverables" / "accepted").exists())
         self.assertIn("ARTIFACT-OVERWRITE", self.codes(self.record))
+
+    def test_receipt_repository_validation_rechecks_actual_target_bytes(self) -> None:
+        result = self.execute(executed_at="2026-08-31T09:01:00+08:00")
+        receipt_path = self.root / result.receipt
+        output = StringIO()
+        with redirect_stdout(output):
+            validation = main(["validate", str(receipt_path), "--root", str(self.root)])
+        self.assertEqual(validation, 0, output.getvalue())
+
+        (self.root / result.targets[0]).write_bytes(b"drifted after promotion\n")
+        output = StringIO()
+        with redirect_stdout(output):
+            validation = main(["validate", str(receipt_path), "--root", str(self.root)])
+        self.assertEqual(validation, 1)
+        self.assertIn("HASH", output.getvalue())
+
+    def test_execution_timestamp_cannot_predate_record(self) -> None:
+        with self.assertRaisesRegex(ContractError, "must not predate"):
+            self.execute(executed_at="2026-08-31T08:59:30+08:00")
+        self.assertFalse((self.root / "objects" / "M4-002" / "result.txt").exists())
+        self.assertFalse(
+            (self.root / "runs" / "promotions" / "PROMOTION-M4-002-A-001" / "receipt.json").exists()
+        )
+
+    def test_receipt_publication_failure_rolls_back_targets_and_receipt(self) -> None:
+        real_link = os.link
+        calls = 0
+
+        def fail_receipt_link(source, target):
+            nonlocal calls
+            calls += 1
+            if calls == 2:
+                raise FileExistsError("simulated receipt publication conflict")
+            return real_link(source, target)
+
+        with mock.patch.object(promotion.os, "link", side_effect=fail_receipt_link):
+            with self.assertRaises(FileExistsError):
+                self.execute()
+        self.assertFalse((self.root / "objects" / "M4-002" / "result.txt").exists())
+        self.assertFalse(
+            (self.root / "runs" / "promotions" / "PROMOTION-M4-002-A-001" / "receipt.json").exists()
+        )
+
+    def test_existing_receipt_is_never_overwritten(self) -> None:
+        result = self.execute()
+        receipt_path = self.root / result.receipt
+        original = receipt_path.read_bytes()
+        with self.assertRaises(ContractError):
+            self.execute()
+        self.assertEqual(receipt_path.read_bytes(), original)
+
+    def test_receipt_build_and_commit_drifts_fail_before_publication(self) -> None:
+        real_parse = promotion._parse_referenced_document
+        parse_calls = 0
+
+        def drift_report_on_receipt_build(*args, **kwargs):
+            nonlocal parse_calls
+            parse_calls += 1
+            if parse_calls == 7:
+                return None, [
+                    ContractRisk("ARTIFACT-HASH-MISMATCH", RiskLevel.BLOCK, "report drift")
+                ]
+            return real_parse(*args, **kwargs)
+
+        with mock.patch.object(
+            promotion,
+            "_parse_referenced_document",
+            side_effect=drift_report_on_receipt_build,
+        ):
+            with self.assertRaises(ContractError):
+                self.execute()
+
+        with self.assertRaisesRegex(ContractError, "must be an ISO-8601 date-time"):
+            self.execute(executed_at="not-a-date-time")
+
+        blocker = ContractRisk("ARTIFACT-HASH-MISMATCH", RiskLevel.BLOCK, "commit drift")
+        with mock.patch.object(promotion, "check_promotion", side_effect=[[], [], [blocker]]):
+            with self.assertRaises(ContractError):
+                self.execute()
+
+        real_stage_bytes = promotion._stage_bytes
+
+        def corrupt_receipt_stage(root: Path, target_path: str, content: bytes):
+            staged = real_stage_bytes(root, target_path, content)
+            staged.temporary.write_bytes(b"corrupt receipt bytes")
+            return staged
+
+        with mock.patch.object(promotion, "_stage_bytes", side_effect=corrupt_receipt_stage):
+            with self.assertRaises(ContractError):
+                self.execute()
+        self.assertFalse((self.root / "objects" / "M4-002" / "result.txt").exists())
 
     def test_cli_execute_reports_promoted_target(self) -> None:
         record_path = self.write_record(self.record)
@@ -353,6 +859,7 @@ class PromotionExecutionTest(PromotionFixture):
             result = main(["promotion", "execute", str(record_path), "--root", str(self.root)])
         self.assertEqual(result, 0)
         self.assertIn("promoted: objects/M4-002/result.txt", output.getvalue())
+        self.assertIn("receipt: runs/promotions/PROMOTION-M4-002-A-001/receipt.json", output.getvalue())
 
     def test_all_validated_negative_results_may_be_explicitly_retained(self) -> None:
         record = copy.deepcopy(self.record)
@@ -362,7 +869,9 @@ class PromotionExecutionTest(PromotionFixture):
             "negative_result": False,
             "reason": "No formal copy requested.",
         }
-        self.assertEqual(execute_promotion(self.root, record), ())
+        result = self.execute(record)
+        self.assertEqual(result.targets, ())
+        self.assertTrue((self.root / result.receipt).is_file())
         self.assertFalse((self.root / "objects").exists())
         self.assertTrue(self.output.is_file())
 
@@ -375,7 +884,7 @@ class PromotionExecutionTest(PromotionFixture):
 
         with mock.patch.object(promotion, "_stage_promotions", side_effect=mutate_then_stage):
             with self.assertRaises(ContractError):
-                execute_promotion(self.root, self.record)
+                self.execute()
         self.assertFalse((self.root / "objects" / "M4-002" / "result.txt").exists())
 
         self.output.write_bytes(b"validated result\n")
@@ -398,7 +907,7 @@ class PromotionExecutionTest(PromotionFixture):
 
         with mock.patch.object(promotion.os, "link", side_effect=fail_second_link):
             with self.assertRaises(FileExistsError):
-                execute_promotion(self.root, record)
+                self.execute(record)
         self.assertFalse((self.root / "objects" / "M4-002" / "result.txt").exists())
         self.assertFalse((self.root / "runs" / "M4-002" / "negative.txt").exists())
         self.assertTrue(self.output.is_file())
@@ -408,12 +917,12 @@ class PromotionExecutionTest(PromotionFixture):
         invalid = copy.deepcopy(self.record)
         invalid["entries"][0]["target"] = "deliverables/accepted/result.txt"
         with self.assertRaises(ContractError):
-            execute_promotion(self.root, invalid)
+            self.execute(invalid)
 
         blocker = ContractRisk("ARTIFACT-HASH-MISMATCH", RiskLevel.BLOCK, "simulated final drift")
         with mock.patch.object(promotion, "check_promotion", side_effect=[[], [blocker]]):
             with self.assertRaises(ContractError):
-                execute_promotion(self.root, self.record)
+                self.execute()
         self.assertFalse((self.root / "objects" / "M4-002" / "result.txt").exists())
         self.assertEqual(list((self.root / "objects").rglob("*.tmp")), [])
 
@@ -427,12 +936,12 @@ class PromotionExecutionTest(PromotionFixture):
 
         with mock.patch.object(promotion, "_stage_promotions", side_effect=corrupt_staging):
             with self.assertRaises(ContractError):
-                execute_promotion(self.root, self.record)
+                self.execute()
 
         target = self.root / "objects" / "M4-002" / "result.txt"
         calls = 0
 
-        def create_target_on_final_check(root, data):
+        def create_target_on_final_check(root, data, **kwargs):
             nonlocal calls
             calls += 1
             if calls == 2:
@@ -441,7 +950,7 @@ class PromotionExecutionTest(PromotionFixture):
 
         with mock.patch.object(promotion, "check_promotion", side_effect=create_target_on_final_check):
             with self.assertRaises(ContractError):
-                execute_promotion(self.root, self.record)
+                self.execute()
         self.assertEqual(target.read_bytes(), b"appeared during final validation")
 
     def test_staging_helper_cleans_earlier_temp_when_later_source_drifts(self) -> None:
@@ -471,15 +980,15 @@ class PromotionExecutionTest(PromotionFixture):
 
         with mock.patch.object(promotion, "_publish_staged", side_effect=create_target_then_publish):
             with self.assertRaises(FileExistsError):
-                execute_promotion(self.root, self.record)
+                self.execute()
         self.assertEqual(target.read_bytes(), b"concurrent owner")
         self.assertTrue(self.output.is_file())
 
     def test_temp_cleanup_error_does_not_misreport_successful_publication(self) -> None:
         with mock.patch.object(promotion.Path, "unlink", side_effect=OSError("simulated cleanup")):
-            targets = execute_promotion(self.root, self.record)
-        self.assertEqual(targets, ("objects/M4-002/result.txt",))
-        self.assertEqual((self.root / targets[0]).read_bytes(), b"validated result\n")
+            result = self.execute()
+        self.assertEqual(result.targets, ("objects/M4-002/result.txt",))
+        self.assertEqual((self.root / result.targets[0]).read_bytes(), b"validated result\n")
 
 
 if __name__ == "__main__":
