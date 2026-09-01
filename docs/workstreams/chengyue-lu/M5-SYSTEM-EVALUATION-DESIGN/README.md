@@ -10,11 +10,13 @@ PR 类型：`task-definition`（docs-only）
 
 本工作流冻结 Phase D 的首要问题：
 
-> 最终 RWB Runtime 集成后的完整系统，相对 simpler Agent / Tool baseline，是否产生可复核的
-> system-level net benefit？
+> 最终 RWB Mode/Method/admitted-Skill/M11 execution package，相对 tool-enabled simpler Agent/M6
+> baseline，是否产生可复核的 system-level net benefit？
 
-Skill 独立效果只能作为 secondary interpretation，不能替代 system-level primary estimand。当前提交只定义
-未来 Task 与 Gate，不执行 Evaluation，也不声称 RWB 已产生净收益。
+ADR-0020 将 `A4 − A2` 固定为 primary，并明确它包含 transport package difference；`A2 − A1` 与
+`A4 − A3` 才分别是同 transport 的 Tool/Skill 条件增量，`A3 − A2` 不得称 pure Mode effect，`A4 − A1`
+只作完整栈支持性 contrast。当前 workstream 接受 Gate A 架构并定义后续 Task/Gate；不执行 Evaluation，
+也不声称 RWB 已产生净收益。
 
 ## 2. 保留的 M5-003 基线
 
@@ -67,22 +69,30 @@ Human 批准而继续 BLOCKED。
 
 ## 4. M5-006 — System-Level Evaluation Protocol
 
-M5-006 当前为 BLOCKED。它在 M5-003 之外还 hard-depend Issue #55 的可审计外部条件
-`M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE`。该 Gate 只在具名 R2 architecture decision 以 exact
-version/path/hash 接受以下一种方案时闭合：
+`M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE` 已由
+`PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND@1.0.0` 闭合。ADR 的 exact identity/path/hash 与 preserved
+invariants 记录在 [Gate record](BASELINE_TRANSPORT_GATE.md)：
 
-1. versioned neutral execution envelope / transport seam，使 baseline arms 复用受控 Host/Trace transport 而不
-   获得 Mode/Method treatment；或
-2. baseline arms 使用 M6 isolated session、Mode arms 使用 M11，并明确接受 dual-transport system estimand。
+```text
+A1 plain-agent          → M6 isolated session + M6-008 baseline closeout
+A2 plain-agent-tool     → M6 isolated session + exact Tool + M6-008 baseline closeout
+A3 mode-no-skill        → M11 Core
+A4 mode-candidate-skill → M11 projection-backed Skill extension
+```
 
-Decision 必须冻结逐 arm transport mapping，以及选择对 shared conditions、primary estimand、limitations 与
-interpretation 的影响；不得修改 M5-003 treatment/read boundary、向 A1/A2 注入 Mode/Method 或 dummy Snapshot，
-也不产生 Runtime、Method、Supply selection 或 Human authority。Gate 只证明架构选择被接受，不证明 neutral
-transport implementation 已存在；若选择产生新的 Execution-owned contract/Task dependency，Decision 必须显式
-列出并在 M5-007 实现前纳入 canonical DAG。该 Gate 不包含 `AdmissionEvidenceOverlapAssessment`，后者仍由
-M5-006 定义、M5-007 重算，因此不存在 pre-M5-006 自依赖。
+完整 Task 仍作为 experiment identity exact-pin；A1/A2 只能接收独立版本、`additionalProperties=false` 的
+正向白名单 provider payload，完整 Task 与 enforcement metadata 不进入模型上下文。`agent_profile`、
+Mode/Action/Method/Capability/Skill/private-oracle 以及未知 Task 字段默认不可见。A1 Tool surface 为空；A2
+唯一额外暴露为 qualified exact Tool interface，Snapshot/Method ref 只作 evaluator-side provenance。正式 A2
+必须拒绝 checked-in `structural-replay` / `execution_input=false` fixture，并以 versioned/hash-pinned
+`A2ExecutionQualificationRecord` exact 连接 frozen 与 runtime binding；Tool identity/implementation/interface
+必须相同，permission/data-egress/side-effect ceiling 只能等价或收窄。Decision 不修改 M5-003、不产生
+Runtime/Method/Supply/Human authority，也不证明 baseline transport 已实现；它新增 Execution-owned M6-008，
+后者在 M5-007 前闭合每次 provider request/Tool invocation use-boundary pin 重验、trusted-clock enforcement、
+actual facts 与 replay Receipt。该 Gate 不包含
+`AdmissionEvidenceOverlapAssessment`，后者仍由 M5-006 定义、M5-007 重算，因此不存在 pre-M5-006 自依赖。
 
-Gate 闭合后，M5-006 不等待真实案例完成即可实现。Protocol 必须 exact 引用已接受 Decision，并预注册：
+M5-006 当前为 READY，不等待真实案例完成即可实现。Protocol 必须 exact 引用 ADR-0020，并预注册：
 
 - primary estimand 与 secondary comparisons；
 - run randomization、replicate count、pilot semantics 与 stopping rule；
@@ -199,16 +209,19 @@ Research Integrity 的实质退化不能被更低成本抵消。replicate count 
 
 ## 5. M5-007 — System-Level Evaluation Harness
 
-M11-004 以 M11-003 为传递依赖，提供 Core Host actual-fact / generic Trace/Receipt/Artifact closeout contract；
-M11-006 独立提供 projection-backed Skill Supply mapping。因此 M5-007 的 canonical hard dependencies 是
-`M5-006, M11-004, M11-006, M5-SKILL-CLOSEOUT-REPLAY-GATE`，M11-006 不能被误写成 actual-fact producer。
+M6-008 提供 A1/A2 treatment-visible baseline envelope、M6 actual facts 与 no-Skill replay closeout；M11-004
+以 M11-003 为传递依赖，提供 Core Host actual-fact / generic Trace/Receipt/Artifact closeout contract；M11-006
+独立提供 projection-backed Skill Supply mapping。因此 M5-007 的 canonical hard dependencies 是
+`M5-006, M6-008, M11-004, M11-006, M5-SKILL-CLOSEOUT-REPLAY-GATE`，M11-006 不能被误写成
+actual-fact producer，ADR-0020 也不能被误写成 M6-008 implementation evidence。
 M11-004 v0.1 的 generic Receipt 当前仍排除 Skill-bearing closeout；该 Gate 只在 projection-backed Skill actual
 binding 获得 replay-valid closeout seam，或 R2 正式修订 M5-007 acceptance 后闭合，不能把 M11-004 Core Receipt
 假写成已经支持 Skill。它不是凭 Issue 文本自动获得的实现权限，只有 accepted task-definition / contract evidence
 能关闭。
 
 baseline transport 不再作为 M5-007 的独立外部 Gate：它由 M5-006 的 hard dependency 传递，Harness 必须遵守
-Protocol exact 引用的 arm→transport mapping，并满足 baseline Decision 显式声明的任何 Execution-owned dependency。
+Protocol exact 引用的 arm→transport mapping，并消费 M6-008。Harness 不得把 raw Task control、dummy
+Method/Snapshot 或 Skill Assignment 注入 A1/A2，也不得把 M6 baseline Receipt 冒充 M11 View/Receipt。
 M5-007 不 hard-depend 真实 case data 或某个已准入 Skill，但在 Skill closeout Gate 闭合或本 Task acceptance 被正式
 修订前不得验收为 DONE。加入 M11 dependencies 与 accepted architecture decision 均不等于相关实现已经存在。
 
@@ -221,7 +234,10 @@ M5-007 不 hard-depend 真实 case data 或某个已准入 Skill，但在 Skill 
   private-oracle overlap、验证 `checked_at <= case_selection_frozen_at`，并只允许
   `primary_confirmatory_eligible=true` 的 case 进入 primary analysis；
 - 形成 standardized run record；
-- 绑定 Runtime Bundle / Resolved Execution View / Thin Host；
+- A1/A2 绑定 M6-008 allowlisted envelope、isolated session、Trace 与 baseline Receipt；正式 A2 只接受
+  runtime-execution / `execution_input=true`、typed-conformance-complete 的 exact Tool binding，并独立重算
+  `A2ExecutionQualificationRecord` 的 identity/implementation/interface equality 与 ceiling non-relaxation；
+- A3/A4 绑定 Runtime Bundle / Resolved Execution View / Thin Host；
 - 引用 Trace / Receipt / Artifact；
 - 匿名化输出并抽取 metric evidence；
 - 记录 Human Review、reveal map 与 analysis input。
@@ -237,9 +253,11 @@ M5-004 只在所有真实执行前置闭合后运行：
 
 ```mermaid
 flowchart LR
-    M5003["M5-003 DONE"] --> M5006["M5-006 BLOCKED"]
-    BTG["M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE<br/>Issue #55 / external / unsatisfied"] --> M5006
+    M5003["M5-003 DONE"] --> M5006["M5-006 READY"]
+    BTG["ADR-0020 dual transport<br/>Gate A satisfied"] --> M5006
     M5006 --> M5007["M5-007 BLOCKED"]
+    M5003 --> M6008
+    M6008["M6-008 baseline envelope<br/>+ replay closeout / READY"] --> M5007
     M1104["M11-004<br/>Core generic closeout<br/>M11-003 Host facts"] --> M5007
     M1106["M11-006"] --> M5007
     SCG["M5-SKILL-CLOSEOUT-REPLAY-GATE<br/>Issue #55 / external / unsatisfied"] --> M5007
@@ -346,10 +364,10 @@ pilot/secondary evidence 不得作为 pruning 的唯一证据。该 Gate 明确�
 - 建立自动 Human judge、单一总分或 automatic promotion/pruning；
 - 宣称 RWB 已有 system-level net benefit。
 
-合入后，M5 侧的合法下一动作是先在 Issue #55 下形成并接受 baseline transport architecture decision；这不是
-M5 implementation，也不冒充 transport contract 已实现。在 `M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE` 闭合前，
-M5-006 保持 BLOCKED，Phase D 没有可直接进入的 M5 implementation Task；M5-001/002 继续受 Human boundary
-阻断，M5-007/004/005 按各自 hard dependencies 保持 BLOCKED。
+ADR-0020 合入后，M5 侧的合法 implementation 入口是 READY 的 M5-006 Protocol；Execution owner 可并行推进
+READY 的 M6-008 baseline envelope/closeout。两者不得混成一个 ownership 模糊的 Harness shortcut。M5-001/002
+继续受 Human boundary 阻断；M5-007 仍等待 M5-006、M6-008 与 Skill replay Gate，M5-004/005 按各自真实
+execution/Human dependencies 保持 BLOCKED。Issue #55 继续跟踪 Gate B 与 M5-006→007 overlap closure。
 
 ## 9. 本地验证
 

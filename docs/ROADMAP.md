@@ -2,7 +2,7 @@
 
 状态：方向与依赖基线；不记录逐项实时状态
 
-更新：2026-08-31
+更新：2026-09-02
 
 逐项状态和唯一下一任务只在 [`TASKS.md`](TASKS.md) 更新。本文件说明依赖顺序、阶段 Gate 与
 停止条件，不是工期承诺，也不是研究项目必须遵循的固定流程。
@@ -14,7 +14,7 @@
 | A — Core Formalization | 把 Mode-first 方法论变成正式语义 | Mode Action、Method Resolution、Mode v0.2、Decision Authority | ADR-0013/0016 |
 | B — Evolution Foundation | 支持可迁移、可评测的能力演化 | Skill Need、Lifecycle v2、Migration、Protocol、Resolved Capability Snapshot | Phase A 稳定接口 |
 | C — Research State & Verification | 保存跨 Runtime 的研究意义 | State/Frontier、Failure、Evidence–Claim relation、Method Trace | A；部分依赖 B |
-| D — Evaluation Loop | 证明完整系统相对简单 baseline 的可复核净增量 | Evaluation Manifest、public/private Case Dossier、frozen Protocol、统一 Harness、blind Review、system-level analysis 与 disposition | A；minimal Manifest 已建立；真实执行仍需案例、provenance、live execution 与人类批准 |
+| D — Evaluation Loop | 证明完整系统相对简单 baseline 的可复核净增量 | Evaluation Manifest、public/private Case Dossier、frozen Protocol、统一 Harness、blind Review、system-level analysis 与 disposition | ADR-0020 已接受 dual transport；Protocol 可启动，Harness 仍等待 baseline/Skill closeout，真实执行仍需案例、provenance、live execution 与人类批准 |
 | E — Strategy & Governed Evolution | 有界吸收新策略和外部候选 | Strategy interface、candidate pipeline、merge/prune/promotion | B+C+D |
 | F — Execution Reintegration | 让 Runtime 消费冻结科研契约 | M11 Core：runtime bundle、supply-neutral resolved execution、Thin Host、Trace/Receipt integration；可选 Skill supply：release projection、统一 View semantic mapping | ADR-0019 与 M9-005 Core；Skill release projection 不 Gate Topic 4 Core；Topic 5 另受 Phase C Human/R2 closeout 约束 |
 
@@ -49,7 +49,7 @@ family 为什么存在、由什么 authority boundary 约束、何时允许启�
 | Phase A | Method/Core 与 Authority Rule Eligibility；不产生执行或 Human Decision | M8 | 已收口 |
 | Phase B | Capability demand/supply、Skill evolution、Protocol；不授予 Runtime authority | M9 | 已收口 |
 | Phase C | Research State、Failure、Method Trace 与 bounded verification | M10，复用历史 `M3-009`；M4 为 provenance support | bounded machine DAG 已实现；Human/R2 semantic closeout 仍独立 pending |
-| Phase D | Evaluation record、system-level baseline/net benefit 与 pruning；不自动 promotion | M5；部分 M7 experiments 由 TASKS 决定是否恢复 | M5-003 已建立计划契约；Protocol 可先设计，真实 case/Harness/provenance/live execution/Human review 仍是正式运行 Gate |
+| Phase D | Evaluation record、system-level baseline/net benefit 与 pruning；不自动 promotion | M5；baseline transport 复用 M6；部分 M7 experiments 由 TASKS 决定是否恢复 | ADR-0020 已闭合 baseline architecture Gate，M5-006 可启动；M6-008、Skill replay、真实 case/provenance/live execution/Human review 仍各自受 Gate 约束 |
 | Phase E | Strategy candidate 与 governed evolution；不得自动修改 Core | 既有 M2/M7；M13 仅 **RESERVED** | Phase C/D evidence 证明旧 group 不足后另行接受 |
 | Phase F / Topic 4 | Agent/Model/Provider/Runtime 消费 frozen contract；不拥有 Method/Claim/Gate/fallback authority | M11 Core 与 optional extension；M6 live conformance | M11 Core 与 optional Skill extension 已 bounded 实现；live conformance 仍依独立 Gate |
 | Topic 5 residual | Handoff、context rollover、safe pause/resume、recovery/continuation | M12 仅 **RESERVED** | Phase C closeout + 独立 Topic 5 R2 review/task-definition |
@@ -252,26 +252,32 @@ exact references、指标与 evidence classes，并编译 non-executing plan。�
 Phase D 执行。Need 本体仍只声明 evaluation criteria 和 required evidence classes，M9-003
 lifecycle 只引用 record，不在 Phase B 重建完整 benchmark/experiment framework。
 
-Phase D 的 primary estimand 固定为：最终 RWB Runtime 集成系统相对 simpler Agent/Tool baseline 是否产生
-可复核的 system-level net benefit。Skill 独立效果只作 secondary interpretation。M5-001/002 分别负责
+Phase D 的 primary estimand 由 ADR-0020 固定为 `A4 − A2`：最终 RWB Mode/Method/admitted-Skill/M11
+execution package 相对 tool-enabled simpler Agent/M6 baseline 是否产生可复核的 system-level net benefit；
+该差异明确包含 transport package，不能拆读为 pure Mode 或 pure Skill effect。`A2 − A1` 与 `A4 − A3`
+分别是同 transport 下的 Tool 与 admitted Skill 条件增量，`A3 − A2` 只能称 Mode/Method + transport
+组合差异，`A4 − A1` 只作完整栈支持性 contrast。M5-001/002 分别负责
 evidence-synthesis 与 theory/simulation Case Dossier；每个 dossier 都必须把所有 arm 可读的 Public Case
 Package 与不可读的 Private Adjudication Package 分开，并在观察 treatment output 前完成 exact hash freeze、
 Human approval 和 no-treatment-specific-tuning 记录。
 
-M5-006 之前必须先闭合 Issue #55 的 `M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE`：具名 R2 architecture
-decision 以 exact version/path/hash 选择 versioned neutral execution envelope/transport seam，或明确接受 baseline
-使用 M6 isolated session、Mode arms 使用 M11 的 dual-transport system estimand。Decision 必须冻结逐 arm transport
-mapping，以及该选择对 shared conditions、primary estimand、limitations 与 interpretation 的影响；不得修改 M5-003
-treatment/read boundary、给 A1/A2 注入 Mode/Method 或 dummy Snapshot，也不产生 Runtime/Method/Supply/Human
-authority。该 Gate 只证明架构选择被接受，不证明 transport implementation 已存在；若选择产生新的
-Execution-owned contract/Task dependency，必须在 M5-007 实现前显式加入 canonical DAG。当前 Gate 尚未满足，
-因此 M5-006 保持 BLOCKED。
+`M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE` 已由
+`PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND@1.0.0` 闭合；exact path/hash 见
+[Gate record](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/BASELINE_TRANSPORT_GATE.md)。A1/A2
+固定使用 M6 isolated session，A3 使用 M11 Core，A4 使用 M11 projection-backed Skill extension。完整 Task
+继续作为 experiment identity 被 exact-pin，但 A1/A2 只消费独立版本、`additionalProperties=false` 的
+正向白名单 provider payload；完整 Task、actor/permission/budget/pins 留在不可见 enforcement metadata。
+`active_modes`、`agent_profile`、Task `required_capabilities`、Action/Method/Capability control、Skill、
+private-oracle 与未知 Task 字段不得进入 provider request。A1 Tool surface 为空，A2 唯一额外暴露为 qualified
+exact Tool interface，Snapshot/Method ref 只作 Harness provenance。该 Decision 不修改 M5-003、不产生
+Runtime/Method/Supply/Human authority，也不证明 transport implementation 已存在。
 
-Gate 闭合后，M5-006 不必等待真实案例完成即可设计 System-Level Evaluation Protocol：冻结
+因此 M5-006 进入 READY，不必等待真实案例完成即可设计 System-Level Evaluation Protocol：冻结
 primary/secondary questions、randomization、replicates、pilot/stopping/retry、model/provider drift、blind/reveal、
 metric operationalization、measurement status、analysis rule 与 decision hierarchy。`measured`、`estimated`、
 `unavailable`、`not-applicable` 互不等价；Research Integrity 的退化不能被成本收益抵消，也不得建立单一
-weighted aggregate score。
+weighted aggregate score。跨 M6/M11 transport 的 completion time 只能由同一 Harness 外层可信时钟形成
+可比观测；内部 timing/cost/token 口径若不能同义化，必须显式 estimated/unavailable/N/A，而不是填零。
 
 Protocol 同时冻结 A4 admission-evidence overlap / held-out policy，并定义独立、versioned、hash-pinned 的
 `AdmissionEvidenceOverlapAssessment`。该工件 exact-pin `skill_evaluation_ref`、admission case IDs、Task/input、
@@ -283,13 +289,25 @@ M5-001/002 的 case、Task、formal input、private-oracle intersection、status
 `primary_confirmatory_eligible=false`。重叠 case 只作 pilot/secondary evidence，不进入 primary net-benefit
 conclusion，也不能单独支撑 M5-005 pruning；公共 source set 不要求完全互斥。
 
-M5-007 hard-depend M5-006、M11-004、M11-006 与 `M5-SKILL-CLOSEOUT-REPLAY-GATE`。M11-004 通过
+ADR-0020 同时产生新的 Execution-owned `M6-008`：从 A1/A2 frozen arm 确定性编译 treatment-visible
+baseline envelope，并通过 M6 isolated session 形成 actual Provider/Adapter/Model/Runtime/Host/Tool facts、
+Trace、Artifact、Validation 与 no-Skill replay-valid closeout；正式 A2 必须拒绝 M5-003 的
+`structural-replay` / `execution_input=false` fixture，改用具有 typed conformance 的 runtime-execution Tool
+binding。该转换通过 versioned/hash-pinned `A2ExecutionQualificationRecord` exact 连接 frozen binding 与
+runtime binding；两端 Tool supply identity、implementation version/hash、provider-visible interface 必须相同，
+permission/data-egress/side-effect ceiling 只能等价或收窄。M6-008 还须在每次 provider request 与每次 Tool
+invocation 的实际 use boundary 立即重验对应 pins、使用 transport trusted clock，并由 Trace 记录重验后的
+bytes/hash、独立佐证 actual binding；它不复用 legacy mandatory Skill Assignment，所有状态固定
+`task_completion=false`。M6-008 与 M5-006 可并行，但 Decision 本身不是其实现证据。
+
+M5-007 hard-depend M5-006、M6-008、M11-004、M11-006 与 `M5-SKILL-CLOSEOUT-REPLAY-GATE`。M11-004 通过
 M11-003 提供 Core Host actual-fact 与 generic Trace/Receipt/Artifact closeout contract；M11-006 独立提供
 projection-backed Skill Supply mapping，但不传递前者。现有 Core Receipt 不支持 Skill-bearing actual binding，
 所以 Issue #55 跟踪的该外部 Gate 必须先接受 replay-valid closeout seam，或由 R2 正式修订 M5-007 acceptance。
 baseline transport architecture decision 已作为 M5-006 的 hard dependency 传递；Harness 必须实现其中冻结的
-arm→transport mapping，并满足 Decision 显式声明的任何 Execution-owned dependency，不能通过 dummy
-Method/Snapshot 强塞 plain arms 进入 M11。Harness 只在不改变 M5-003 arm treatment/read boundary 的 evaluation
+arm→transport mapping 并消费 M6-008，不能通过 raw Task control、dummy Method/Snapshot 或 Skill Assignment
+强塞 plain arms 进入 M11；对 A2 还必须独立重算 `A2ExecutionQualificationRecord`，拒绝 Tool substitution 或
+boundary relaxation。Harness 只在不改变 M5-003 arm treatment/read boundary 的 evaluation
 plan/run-record 层统一调度、匿名化、metric evidence、Human Review、reveal map 和 analysis input，不得为 A4
 建旁路、直接加载 candidate、在 confirmatory run 使用 synthetic projection 或自动作出
 promotion/pruning/Human judgement。
