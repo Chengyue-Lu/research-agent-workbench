@@ -114,7 +114,9 @@ flowchart LR
     M4002 --> M5004
     M4003 --> M5004
     M4004 --> M5004
+    M1104["M11-004 DONE<br/>Core generic closeout<br/>M11-003 Host facts"] --> M5007
     M1106["M11-006 DONE<br/>projection-backed Skill path"] --> M5007
+    PREG["M5-PRE-ENTRY-ARCHITECTURE-GATE<br/>Issue #55 / unsatisfied"] --> M5007
     M1106 -. "Projection + Supply" .-> A4G
     M1106 --> M5004
     M6004["M6-004<br/>live Provider/session"] --> M5004
@@ -123,14 +125,19 @@ flowchart LR
 M4-002 是当前 provenance/promotion 链的合法入口；M4-003/004 必须等它完成。M5-004 同时等待
 M4 闭环、两个 Human-approved public/private Case Dossier、M5-003 计划契约、M5-006 Protocol、M5-007
 Harness、M11-006 真实 projection-backed Skill 路径与 M6-004 live Provider/session Gate。M5-006 可先行
-设计；M5-007 不等待真实 case data，但必须等待 M11-006。M5-003 本身没有执行案例或产生净增量结论。
+设计；M5-007 不等待真实 case data，但 hard-depend M11-004 的 Core Host/Trace/Receipt contract、M11-006 的
+projection-backed Skill mapping 与 `M5-PRE-ENTRY-ARCHITECTURE-GATE`。两个 M11 Task 当前均为 DONE，但 Core
+Receipt 尚不支持 Skill-bearing actual binding，plain arm 也不能通过 dummy Method/Snapshot 改写 M5-003 treatment；
+Issue #55 跟踪的外部 Gate 仍未满足。M5-003 本身没有执行案例或产生净增量结论。
 `A4-RUNTIME-ADMISSION-GATE` 是外部可审计条件，不是新 M Task：它保持 M5-003 的 candidate/evaluation
 origin，并 exact-pin Human Admission Decision→accepted Release→Projection→Supply→Resolution→Snapshot→
 Bundle→View→Host 的逐跳 identity/hash closure；当前生产 projection index 为空，故该 Gate 未满足。
-M5-006 另行冻结 admission-evidence overlap / held-out policy；M5-007 在 confirmatory freeze 前比较
-M5-001/002 case、Task、input、private-oracle 与 `skill_evaluation_ref` case closure 的 exact identities。
-重叠 case 标为 `admission-overlap` 且只可作 pilot/secondary；缺失或 unresolved closure 不得进入 primary
-net-benefit conclusion，也不能单独支撑 M5-005 pruning。
+M5-006 另行冻结 admission-evidence overlap / held-out policy，并定义 exact-pin Evaluation、admission case、
+Task/input、typed oracle/checker/adjudication、comparison inputs、`checked_at`、validator 与结果的 versioned
+`AdmissionEvidenceOverlapAssessment`。M5-007 在 confirmatory freeze 前重新加载 assessment 两侧闭包，验证
+`checked_at <= case_selection_frozen_at`，独立比较 M5-001/002 case、Task、input、private-oracle exact identities
+并重算结果。重叠 case 标为 `admission-overlap` 且只可作 pilot/secondary；缺失、typed `absent`/`unknown` 或
+unresolved closure 不得进入 primary net-benefit conclusion，也不能单独支撑 M5-005 pruning。
 本图未展开的独立 `READY` 行（例如 scaffold）仍直接从 `TASKS.md` 读取。
 
 ### 3.3 Optional Skill extension

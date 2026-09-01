@@ -75,7 +75,8 @@ M5-006 在 M5-003 之后独立 READY；它不等待真实案例完成。实现�
 - blind-first Human review、reveal procedure；
 - metric operationalization、measurement status 与 analysis rule；
 - decision hierarchy；
-- versioned A4 execution-qualification overlay 的字段与验证顺序。
+- versioned A4 execution-qualification overlay 的字段与验证顺序；
+- 独立、versioned、hash-pinned `AdmissionEvidenceOverlapAssessment` 的输入闭包、结果与验证顺序。
 
 该 overlay 是 M5-003 frozen plan 之外的执行期资格记录：它必须 exact 引用 M5-003 manifest/arm、candidate
 binding、`skill_evaluation_ref`，以及 `A4-RUNTIME-ADMISSION-GATE` 闭合的准入与 Runtime lineage。它不改变
@@ -84,36 +85,82 @@ permission、Method、Claim 或 execution authority。M5-006 只冻结协议；�
 Harness 在 Maintainer/Evaluation 侧形成并验证。overlay 不是 Runtime input；Runtime 只消费 resolver-selected、
 projection-backed Supply 及其 Snapshot/Bundle/View，不读取 candidate、Evaluation 或 Lifecycle history。
 
-overlay 是 pre-run qualification，不冒充 actual execution evidence。M5-007 在调用后还必须沿既有
-Host report→typed execution Trace fact→replay-valid Receipt 路径独立闭合 actual Projection、Supply 与 binding；
+overlay 是 pre-run qualification，不冒充 actual execution evidence。M5-007 在调用后还必须以既有 Core
+Host report→typed execution Trace fact→generic Receipt contract 为基础，独立闭合 actual Projection、Supply 与
+binding；但当前 Receipt 对 Skill-bearing path 的扩展尚未存在，必须先通过 `M5-PRE-ENTRY-ARCHITECTURE-GATE`。
 `completed`、`post-call failed` 与 `preflight blocked` 分别保留既有状态语义，planned View 不能替代 actual facts。
 
 ### Admission-evidence overlap / held-out policy
 
 M5-006 还必须在 Protocol 中冻结 A4 admission evidence 与 Phase D confirmatory cases 的 held-out 规则。
-`skill_evaluation_ref` 所指向的 admission Evaluation 必须提供 closed、hash-pinned case closure；若该 closure 缺失、
-引用不可解析或 hash 不一致，M5-007 不得把相关 M5-001/002 case 接受为 primary confirmatory case。
+`skill_evaluation_ref` 所指向的 admission Evaluation v0.1 本身没有 private-oracle identity，因此不能把其现有
+case 字段误写成完整 held-out 证明，也不得原位扩张该已发布契约。M5-006 必须另行定义独立、versioned、
+hash-pinned 的 `AdmissionEvidenceOverlapAssessment`；每个消费者以 exact path/hash FileReference 绑定该工件，
+旧 assessment 保留且不可被新结果原位覆盖。
+
+该工件是一个文档、三个逻辑区，避免 closure 与 result 形成循环引用：
+
+1. `admission_case_closure`
+   - `assessment_id`、`version` 与 exact `skill_evaluation_ref`；后者必须等于 M5-003 A4 已冻结引用，并重新
+     验证 Evaluation identity/Schema/hash；
+   - evaluation/candidate/Skill identity，以及每个 admission case 的 case ID、Task binding 与 input binding；
+   - private-oracle commitment、case-specific deterministic checker 与 case-specific Human adjudication 的
+     identity/ref/hash；每类使用 `resolved | absent | unknown`，`absent`/`unknown` 必须带 reason，不能解释为
+     “确认无重叠”；
+   - Task binding 可显式区分 `formal-task | opaque-task-contract`；只有 opaque FileReference 而没有可比较
+     formal identity 时必须 unresolved，不能虚构 `task_id/revision`。
+2. `comparison_input_closure`
+   - exact Protocol ref、proposed M5-001/002 case closure ref/hash、admission closure ref/hash；
+   - 两侧按 case、Task、formal input、private-oracle 四类规范化后的 subject sets 与 deterministic input digest；
+   - 同类别 identity 相等或 content/commitment hash 相等都构成 overlap；same path + different hash 是 drift，
+     必须 unresolved；跨类别相同 hash、公共 source set 或共享通用 validator/framework 不构成禁止性 overlap。
+3. `assessment_result`
+   - `checked_at`、exact validator identity/version/path/hash；
+   - validator 派生的 `overlap_status`、分类 `overlap_refs`、`unresolved_reasons` 与
+     `primary_confirmatory_eligible`。
+
+assessment 不保存自身 raw content hash，避免 self-hash 歧义；由 overlay 的 exact
+`admission_overlap_assessment_ref {path, sha256}` 从外部固定其 bytes。
+
+```mermaid
+flowchart LR
+    M5003["M5-003 A4<br/>skill_evaluation_ref"] --> ASSESS["AdmissionEvidenceOverlapAssessment"]
+    ADC["admission case closure<br/>case/Task/input/oracle commitments"] --> ASSESS
+    CASES["M5-001/002 proposed case commitments<br/>real data not a Harness implementation dependency"] -.-> ASSESS
+    ASSESS -->|"external exact path/hash ref"| OVERLAY["A4 execution-qualification overlay"]
+    OVERLAY --> M5007["M5-007 independent recomputation"]
+```
+
+只有所有四类 identity 都存在可比较的 exact closure 时，assessment 才可能产生 `held-out`。任一 admission
+Evaluation 没有 private oracle、只留下 typed `absent`/`unknown`、引用不可解析、hash 漂移或 comparison input
+不完整时，结果必须是 `unresolved`，不得默认为 held-out，也不得进入 primary confirmatory conclusion。Private
+oracle bytes 继续隔离于 treatment arms 与 Runtime；assessment 只保存可验证 identity/hash commitment。
 
 每个 versioned execution-qualification overlay 至少记录：
 
 - `case_selection_frozen_at`：在 confirmatory assignment/execution 和观察 treatment output 前冻结的选择时间；
 - `admission_evaluation_ref`：必须与 M5-003 A4 `skill_evaluation_ref` 的 exact path/hash reference 相等；
+- `admission_overlap_assessment_ref`：exact-pin 上述 assessment identity/version/path/hash；
 - `overlap_status`：闭集 `held-out | admission-overlap | unresolved`；
 - `overlap_refs`：按 case、Task、input、private-oracle 四类列出的 exact identity/hash overlap；
   `admission-overlap` 时必须非空，完整比较后的 `held-out` 必须为空；
 - `primary_confirmatory_eligible`：validator 派生值；只有 closure 完整且 `overlap_status=held-out` 时为 `true`。
 
-M5-007 必须在接受 confirmatory freeze 前，比较 M5-001/002 frozen dossier 中的 case identity、Task
+M5-007 必须在接受 confirmatory freeze 前，比较 M5-001/002 proposed/frozen dossier 中的 case identity、Task
 identity/revision/hash、formal input refs/hashes 与 Private Adjudication Package/oracle identity/hash，和
-`admission_evaluation_ref` case closure 中的对应集合。任一 exact identity 相交都必须标为
-`admission-overlap`；不得在看到结果后重写 status、替换 case 或清空 `overlap_refs`。公共 source set 可以重叠，
-其重叠本身不构成这里的禁止条件；本 Gate 隔离的是正式 case、Task、input 与 private oracle identity。
+assessment `admission_case_closure` 中的对应分类集合。任一同类别 exact identity 或 content/commitment hash
+相交都必须标为 `admission-overlap`；checker/adjudication 只作为 case-specific oracle closure provenance，不能
+把共享框架误作第五/第六个 disqualifying overlap axis。不得在看到结果后重写 status、替换 case 或清空
+`overlap_refs`。公共 source set 可以重叠，其重叠本身不构成这里的禁止条件。
 
-M5-007 必须重算 status 与 eligibility，而不能相信 overlay 作者的布尔声明。`admission_evaluation_ref` 与
-frozen `skill_evaluation_ref` 不同、closure 或任一 identity/hash 缺失/漂移、comparison 未在
-`case_selection_frozen_at` 前完成、exact intersection 未完整列入 `overlap_refs`、status 与 refs 不一致，或
-`unresolved` 却声明 eligible，均 fail closed。unresolved reference/gap 必须留在 validation evidence；Private
-Adjudication Package/oracle bytes 继续隔离于 treatment arms 与 Runtime。
+M5-007 必须重新加载 assessment 的两侧 comparison input closure，独立重算 intersection、status 与 eligibility，
+并与 assessment/overlay 声明逐字段对账，不能相信 assessment 或 overlay 作者的布尔结论。它还必须验证
+`checked_at <= case_selection_frozen_at`，且 frozen case selection 的 exact content hash 等于 assessment 已检查的
+comparison input；否则先检查旧选择、再偷偷替换 case 的路径仍会被错误接受。`admission_evaluation_ref` 与 frozen
+`skill_evaluation_ref` 不同、assessment identity/hash/validator pin 缺失或漂移、typed `absent`/`unknown` 被当作
+held-out、exact intersection 未完整列入 `overlap_refs`、status 与 refs 不一致，或 `unresolved` 却声明 eligible，
+均 fail closed。unresolved reference/gap 必须留在 validation evidence；Private Adjudication Package/oracle bytes
+继续隔离于 treatment arms 与 Runtime。
 
 `admission-overlap` case 只能进入 pilot / secondary evidence，不能进入 primary system-level net-benefit
 conclusion，也不能作为 M5-005 pruning 的唯一证据。`unresolved` 同样令
@@ -136,23 +183,38 @@ Research Integrity 的实质退化不能被更低成本抵消。replicate count 
 
 ## 5. M5-007 — System-Level Evaluation Harness
 
-M11-006 已在 PR #51 中 DONE，因此 M5-007 当前只等待 M5-006，不 hard-depend 真实 case data 或某个已准入
-Skill。其 bounded responsibility 是：
+M11-004 以 M11-003 为传递依赖，提供 Core Host actual-fact / generic Trace/Receipt/Artifact closeout contract；
+M11-006 独立提供 projection-backed Skill Supply mapping。因此 M5-007 的 canonical hard dependencies 是
+`M5-006, M11-004, M11-006`，M11-006 不能被误写成 actual-fact producer。M11-004 v0.1 的 generic Receipt
+当前仍排除 Skill-bearing closeout，四臂 baseline transport 也尚不能在不改变 M5-003 treatment 的情况下强制
+共用 M11 path；这两个实现前 architecture hold 已由 Issue #55 记录。加入正确 dependency 不等于宣称这些
+Skill/baseline extension 已经存在。M5-007 不 hard-depend 真实 case data 或某个已准入 Skill，但在 Issue #55
+形成 accepted seam 或本 Task acceptance 被正式修订前不得验收为 DONE。TASKS 将其具名为可审计外部条件
+`M5-PRE-ENTRY-ARCHITECTURE-GATE`；它不是凭 Issue 文本自动获得的实现权限，只有后续 accepted task-definition /
+contract evidence 能关闭。Gate 至少要求：
+
+- baseline arm 的 execution transport 不注入 M5-003 已禁止的 Method/Snapshot，也不改变 treatment/read boundary；
+- projection-backed Skill actual binding 有 replay-valid closeout seam，或经 R2 正式修改 M5-007 acceptance，不能
+  把 M11-004 Core Receipt 假写成已经支持 Skill。
+
+其 bounded responsibility 是：
 
 - compile frozen evaluation plan；
 - 为每次 run 创建 fresh Attempt/session 并启动 exact arm execution；
 - 在 A4 启动前验证 versioned execution-qualification overlay 与外部 admission Gate；
-- 在 confirmatory freeze 前解析 admission Evaluation case closure，校核 case / Task / input / private-oracle
-  overlap，并只允许 `primary_confirmatory_eligible=true` 的 case 进入 primary analysis；
+- 在 confirmatory freeze 前加载并独立验证 `AdmissionEvidenceOverlapAssessment`，重算 case / Task / input /
+  private-oracle overlap、验证 `checked_at <= case_selection_frozen_at`，并只允许
+  `primary_confirmatory_eligible=true` 的 case 进入 primary analysis；
 - 形成 standardized run record；
 - 绑定 Runtime Bundle / Resolved Execution View / Thin Host；
 - 引用 Trace / Receipt / Artifact；
 - 匿名化输出并抽取 metric evidence；
 - 记录 Human Review、reveal map 与 analysis input。
 
-Harness 不得建立 A4 bypass、直接读取 candidate directory、把 candidate binding 静默换成 accepted binding、
-在 confirmatory run 接受 synthetic projection、自动 promotion、自动 pruning、自动 Human score 或 Topic 5
-recovery semantics。
+Harness 只能在 evaluation plan/run-record 层统一四臂的调度与证据，不得为了表面统一而给 A1/A2 注入
+dummy Method/Snapshot 或改变 M5-003 treatment/read boundary。它也不得建立 A4 bypass、直接读取 candidate
+directory、把 candidate binding 静默换成 accepted binding、在 confirmatory run 接受 synthetic projection、
+自动 promotion、自动 pruning、自动 Human score 或 Topic 5 recovery semantics。
 
 ## 6. M5-004 live execution Gate
 
@@ -162,7 +224,9 @@ M5-004 只在所有真实执行前置闭合后运行：
 flowchart LR
     M5003["M5-003 DONE"] --> M5006["M5-006 READY"]
     M5006 --> M5007["M5-007 BLOCKED"]
+    M1104["M11-004<br/>Core generic closeout<br/>M11-003 Host facts"] --> M5007
     M1106["M11-006"] --> M5007
+    PREG["M5-PRE-ENTRY-ARCHITECTURE-GATE<br/>Issue #55 / external / unsatisfied"] --> M5007
 
     M5003 -. "exact candidate + evaluation" .-> A4G["A4-RUNTIME-ADMISSION-GATE<br/>external / currently unsatisfied"]
     M1106 -. "Projection + unified Supply path" .-> A4G
@@ -236,9 +300,10 @@ candidate/evaluation 与 `accept` outcome；Lifecycle/accepted Registry/publishe
 overlay 都停留在 Maintainer/Evaluation Harness 侧，不进入 Runtime Bundle。
 
 上段是 pre-run qualification。执行后，M5-007 必须验证 Host report 与 typed execution Trace fact 中的 actual
-Projection/Supply/binding 等于 overlay 和 selected View，并由 replay-valid Receipt 独立重放；post-call failure
-保留实际 facts，preflight block 不得伪造实际调用。无法形成该 post-run equality 的 run 仍被保留为 failed/
-unavailable evidence，但不能作为成功 A4 treatment evidence。
+Projection/Supply/binding 等于 overlay 和 selected View，并在 Issue #55 所跟踪的 Skill-bearing closeout seam
+获接受后由 replay-valid Receipt 独立重放；post-call failure 保留实际 facts，preflight block 不得伪造实际调用。
+无法形成该 post-run equality 的 run 仍被保留为 failed/unavailable evidence，但不能作为成功 A4 treatment
+evidence，也不能把 M11-004 Core Receipt 当作替代证明。
 
 当前生产 projection index 为空，因此该 Gate 当前明确 **UNSATISFIED**，M5-004 继续 BLOCKED。任一引用缺失、
 hash drift、Decision 不匹配、无 provenance 的 candidate/Release substitution、candidate direct-load、

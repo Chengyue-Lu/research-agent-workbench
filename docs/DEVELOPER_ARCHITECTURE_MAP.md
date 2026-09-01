@@ -407,7 +407,10 @@ system-level net benefit；单一 Skill 效果只作 secondary interpretation。
 ```text
 M5-001/002 public case + private adjudication dossiers
                       ↓
-M5-006 frozen protocol → M5-007 unified harness
+M5-006 frozen protocol ───────────────────────────┐
+M11-004 Core closeout (M11-003 Host facts) ───────┼→ M5-007 unified evaluation harness
+M11-006 projection-backed Skill mapping ──────────┘
+M5-PRE-ENTRY-ARCHITECTURE-GATE (Issue #55) ───────┘
                       ↓
 M5-004 approved real-case four-arm execution
                       ↓
@@ -427,14 +430,22 @@ Capability Resolution→Snapshot→Runtime Bundle→Resolved Execution View→Th
 identity/path/hash；Runtime 不读 candidate，overlay 不改 Manifest，也不产生 admission、selection 或 permission
 authority。overlay 由 Maintainer/Evaluation Harness 验证且不进入 Runtime Bundle；Runtime 只消费
 resolver-selected Supply 与 frozen Snapshot/Bundle/View。生产 projection index 当前为空，所以该 Gate 尚未满足，
-M5-004 保持 BLOCKED。Gate 是 pre-run qualification；M5-007 在执行后还必须用 Host report、typed execution
-Trace fact 与 replay-valid Receipt 证明 actual Projection/Supply/binding 未偏离 overlay。
+M5-004 保持 BLOCKED。Gate 是 pre-run qualification；M5-007 hard-depend M11-004 的 Core Trace /
+generic-closeout contract（Host actual facts 由其 M11-003 依赖传递），并独立 hard-depend M11-006 的
+projection-backed Skill mapping。M11-006 不传递 M11-003/004 的 producer/closeout 责任；M5-007 在执行后还必须
+用 Host report、typed execution Trace fact 与 replay-valid Receipt 证明 actual Projection/Supply/binding 未偏离
+overlay。当前 generic Receipt 对 Skill-bearing actual
+binding 的剩余适用性缺口由 Issue #55 单独跟踪；列出 M11-004 依赖不等于宣称该缺口已经解决。
 
 同一 overlay 还承载 M5-006 冻结的 admission-evidence overlap / held-out policy，但只在 Maintainer/Evaluation
-侧使用。M5-007 在 confirmatory freeze 前比较 M5-001/002 case、Task、formal input、private-oracle exact
-identities 与 A4 `skill_evaluation_ref` case closure；重叠记录为 `admission-overlap`，只能作 pilot/secondary，
-不得进入 primary net-benefit conclusion 或单独支撑 M5-005 pruning。公共 source set 无需完全互斥；closure
-缺失或 unresolved 时 primary eligibility fail closed。该检查不改变 M5-003、Runtime input 或任何 authority。
+侧使用。M5-006 定义独立、versioned、hash-pinned `AdmissionEvidenceOverlapAssessment`，绑定 exact Evaluation、
+admission case/Task/input、typed oracle/checker/adjudication identities、两侧 comparison closure、`checked_at`、
+validator 与结果。M5-007 在 confirmatory freeze 前重新加载两侧闭包，验证
+`checked_at <= case_selection_frozen_at`，独立重算与 M5-001/002 case、Task、formal input、private-oracle 的
+intersection/status/eligibility；重叠记录为 `admission-overlap`，只能作 pilot/secondary，不得进入 primary
+net-benefit conclusion 或单独支撑 M5-005 pruning。公共 source set 无需完全互斥；缺失、typed
+`absent`/`unknown` 或 unresolved 时 primary eligibility fail closed。该检查不改变 M5-003、Runtime input 或任何
+authority。
 
 下一步价值证据必须来自经人类批准的真实案例、M6-004 live Provider/session Gate 与独立
 Evaluation/Trial records，而不是由 Manifest、Harness 或 synthetic fixture 的存在本身推导。

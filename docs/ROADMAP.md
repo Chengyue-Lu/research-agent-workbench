@@ -264,16 +264,24 @@ measurement status、analysis rule 与 decision hierarchy。`measured`、`estima
 `not-applicable` 互不等价；Research Integrity 的退化不能被成本收益抵消，也不得建立单一 weighted
 aggregate score。
 
-Protocol 同时冻结 A4 admission-evidence overlap / held-out policy。M5-007 必须在 confirmatory freeze 前把
-M5-001/002 的 case、Task、formal input、private-oracle exact identities 与 `skill_evaluation_ref` 的 admission
-Evaluation case closure 比较；closure 缺失或 unresolved 时 fail closed，任一重叠记录为
-`admission-overlap` 并令 `primary_confirmatory_eligible=false`。重叠 case 只作 pilot/secondary evidence，不进入
-primary net-benefit conclusion，也不能单独支撑 M5-005 pruning；公共 source set 不要求完全互斥。
+Protocol 同时冻结 A4 admission-evidence overlap / held-out policy，并定义独立、versioned、hash-pinned 的
+`AdmissionEvidenceOverlapAssessment`。该工件 exact-pin `skill_evaluation_ref`、admission case IDs、Task/input、
+typed private-oracle/checker/Human-adjudication identities/hashes、两侧 comparison input closure、`checked_at`、
+validator identity/version/hash 与计算结果；它不修改 Skill Evaluation v0.1，也不向 Runtime 暴露 private bytes。
+M5-007 必须在 confirmatory freeze 前重新加载两侧闭包，验证 `checked_at <= case_selection_frozen_at`，独立重算
+M5-001/002 的 case、Task、formal input、private-oracle intersection、status 与 eligibility；closure 缺失、typed
+`absent`/`unknown` 或 unresolved 时 fail closed，任一重叠记录为 `admission-overlap` 并令
+`primary_confirmatory_eligible=false`。重叠 case 只作 pilot/secondary evidence，不进入 primary net-benefit
+conclusion，也不能单独支撑 M5-005 pruning；公共 source set 不要求完全互斥。
 
-M5-007 在 M5-006 与 M11-006 后实现统一 Harness，负责编译 frozen plan、fresh Attempt/session、exact arm
-execution、Runtime Bundle/View/Host 与 Trace/Receipt/Artifact linkage、匿名化、metric evidence、Human Review、
-reveal map 和 analysis input。Harness 不得为 A4 建旁路、直接加载 candidate、在 confirmatory run 使用
-synthetic projection 或自动作出 promotion/pruning/Human judgement。
+M5-007 hard-depend M5-006、M11-004、M11-006 与 `M5-PRE-ENTRY-ARCHITECTURE-GATE`。M11-004 通过
+M11-003 提供 Core Host actual-fact 与 generic Trace/Receipt/Artifact closeout contract；M11-006 独立提供
+projection-backed Skill Supply mapping，但不传递前者。现有 Core Receipt 不支持 Skill-bearing actual binding，
+plain arms 也不能通过 dummy Method/Snapshot 强塞进 M11；Issue #55 跟踪的外部 Gate 必须先接受对应 seam，或
+由 R2 正式修订 M5-007 acceptance。Harness 只在不改变 M5-003 arm treatment/read boundary 的 evaluation
+plan/run-record 层统一调度、匿名化、metric evidence、Human Review、reveal map 和 analysis input，不得为 A4
+建旁路、直接加载 candidate、在 confirmatory run 使用 synthetic projection 或自动作出
+promotion/pruning/Human judgement。
 
 M5-004 的正式 system-level execution 还必须等待 M4 provenance chain、两个 Human-approved dossier、
 M6-004 live Provider/session conformance，以及 `A4-RUNTIME-ADMISSION-GATE`。A4 保持 M5-003 v0.1 的
@@ -283,8 +291,9 @@ candidate binding→`skill_evaluation_ref`→具名 Human Admission Decision→i
 SkillReleaseProjection→projection-backed Skill Supply→Capability Resolution→Snapshot→Runtime Bundle→
 Resolved Execution View→Thin Host 的 identity/path/hash lineage；任一缺失即 BLOCK。当前生产 projection index
 为空，故 Gate 尚未满足，M5-004 继续 BLOCKED。该链先形成 pre-run qualification；M5-007 还必须在执行后以
-Host report、typed execution Trace fact 与 replay-valid Receipt 独立证明 actual Projection/Supply/binding 与
-overlay 相同，planned View 不构成 actual execution evidence。
+Host report、typed execution Trace fact，并在 `M5-PRE-ENTRY-ARCHITECTURE-GATE` 接受 Skill-bearing closeout
+seam 后以 replay-valid Receipt 独立证明 actual Projection/Supply/binding 与 overlay 相同；M11-004 Core Receipt
+本身不构成该证明，planned View 也不构成 actual execution evidence。
 pilot/confirmatory 与 failed Attempts 分别保留，blind Human Review 完成；单次成功不构成 promotion。
 M5-005 最终必须基于 exact protocol/cases/runs/reviews/analysis 作出至少一个具名保留、修改、停放、弃用、
 删除或停止决定，且开发 sunk cost 不构成 KEEP 依据。精确状态与依赖只看 `TASKS.md`。
