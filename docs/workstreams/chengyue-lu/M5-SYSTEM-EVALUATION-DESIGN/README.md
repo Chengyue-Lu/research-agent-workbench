@@ -13,10 +13,11 @@ PR 类型：`task-definition`（docs-only）
 > 最终 RWB Mode/Method/admitted-Skill/M11 execution package，相对 tool-enabled simpler Agent/M6
 > baseline，是否产生可复核的 system-level net benefit？
 
-ADR-0020 将 `A4 − A2` 固定为 primary，并明确它包含 transport package difference；`A2 − A1` 与
-`A4 − A3` 才分别是同 transport 的 Tool/Skill 条件增量，`A3 − A2` 不得称 pure Mode effect，`A4 − A1`
-只作完整栈支持性 contrast。当前 workstream 接受 Gate A 架构并定义后续 Task/Gate；不执行 Evaluation，
-也不声称 RWB 已产生净收益。
+ADR-0020 将 `A4 − A2` 固定为 primary，并明确它包含 transport package difference；`A2 − A1` 是同 M6
+transport 的 Tool 条件增量，`A4 − A3` 只有在 pairwise exact-equality closure 证明唯一 delta 为 admitted
+Skill extension 时才可称 Skill conditional increment，否则必须降级为 Skill-bearing package / bundled
+effect 或 unavailable。`A3 − A2` 不得称 pure Mode effect，`A4 − A1` 只作完整栈支持性 contrast。当前
+workstream 接受 Gate A 架构并定义后续 Task/Gate；不执行 Evaluation，也不声称 RWB 已产生净收益。
 
 ## 2. 保留的 M5-003 基线
 
@@ -83,13 +84,17 @@ A4 mode-candidate-skill → M11 projection-backed Skill extension
 完整 Task 仍作为 experiment identity exact-pin；A1/A2 只能接收独立版本、`additionalProperties=false` 的
 正向白名单 provider payload，完整 Task 与 enforcement metadata 不进入模型上下文。`agent_profile`、
 Mode/Action/Method/Capability/Skill/private-oracle 以及未知 Task 字段默认不可见。A1 Tool surface 为空；A2
-唯一额外暴露为 qualified exact Tool interface，Snapshot/Method ref 只作 evaluator-side provenance。正式 A2
+唯一额外暴露为 qualified exact Tool interface，Snapshot/Method ref 只作 evaluator-side provenance。正式 A2/A3
 必须拒绝 checked-in `structural-replay` / `execution_input=false` fixture，并以 versioned/hash-pinned
-`A2ExecutionQualificationRecord` exact 连接 frozen 与 runtime binding；Tool identity/implementation/interface
-必须相同，permission/data-egress/side-effect ceiling 只能等价或收窄。Decision 不修改 M5-003、不产生
-Runtime/Method/Supply/Human authority，也不证明 baseline transport 已实现；它新增 Execution-owned M6-008，
-后者在 M5-007 前闭合每次 provider request/Tool invocation use-boundary pin 重验、trusted-clock enforcement、
-actual facts 与 replay Receipt。该 Gate 不包含
+`ArmExecutionQualificationRecord@1.0.0` exact 连接 frozen 与 runtime binding。record 必须闭合 Manifest/arm、
+Task、Requirement、Resolution/Snapshot、Supply/component/implementation/interface；A3 还必须闭合 exact
+Mode/Action/Method。permission/data-egress/side-effect ceiling 只能等价或收窄。M5-006 拥有 shared
+contract/Schema/validator；M6-008 只有在 M5-006 DONE 后才产生 A2 record。Capability Resolver 是 A3 runtime
+Resolution/Snapshot 的唯一 producer/selector；M11 只验证并消费 exact Snapshot，M5-007 在
+Maintainer/Evaluation preflight 引用两端对象组装 A3 record并对两类 record 独立重算。Decision 不修改 M5-003、
+不产生 Runtime/Method/Supply/Human authority，也不证明 baseline transport 已实现；Execution-owned M6-008
+在 M5-007 前闭合 A1/A2 每次 provider request/Tool invocation use-boundary pin 重验、trusted-clock enforcement、
+actual facts 与 replay Receipt，但不拥有 A3/M11。该 Gate 不包含
 `AdmissionEvidenceOverlapAssessment`，后者仍由 M5-006 定义、M5-007 重算，因此不存在 pre-M5-006 自依赖。
 
 M5-006 当前为 READY，不等待真实案例完成即可实现。Protocol 必须 exact 引用 ADR-0020，并预注册：
@@ -100,6 +105,9 @@ M5-006 当前为 READY，不等待真实案例完成即可实现。Protocol 必�
 - blind-first Human review、reveal procedure；
 - metric operationalization、measurement status 与 analysis rule；
 - decision hierarchy；
+- shared `ArmExecutionQualificationRecord@1.0.0` contract、Schema、comparison/validator 语义及 A2/A3
+  producer/consumer ownership；
+- `A3A4PairwiseComparabilityRecord` contract、exact equality surface、三态结果与 interpretation ceiling；
 - versioned A4 execution-qualification overlay 的字段与验证顺序；
 - 独立、versioned、hash-pinned `AdmissionEvidenceOverlapAssessment` 的输入闭包、结果与验证顺序。
 
@@ -115,6 +123,22 @@ Host report→typed execution Trace fact→generic Receipt contract 为基础，
 binding；但当前 Receipt 对 Skill-bearing path 的扩展尚未存在，必须先通过
 `M5-SKILL-CLOSEOUT-REPLAY-GATE`。
 `completed`、`post-call failed` 与 `preflight blocked` 分别保留既有状态语义，planned View 不能替代 actual facts。
+
+### A3/A4 pairwise comparability
+
+M5-006 必须冻结 versioned/hash-pinned `A3A4PairwiseComparabilityRecord`。该记录逐项 exact 比较 shared
+case/Task/frozen conditions、Mode bytes、Action set/order、Method Resolution 及 obligations/Gate/stop/block/claim
+effects、Capability Requirement multiset、排除唯一 Skill component 后的 non-Skill Supply/component multiset、
+Tool/procedure identity/version/hash、provider-visible interface digest 以及 permission/data-egress/side-effect/
+context/output/budget boundaries。A4 唯一允许 delta 是 exact candidate/evaluation→named Human Decision→immutable
+Release→Projection→Skill Supply extension，且不得放宽 ceiling。
+
+结果仅允许 `exact-skill-only`、`skill-bearing-package`、`not-comparable`。只有第一种可报告 Skill conditional
+increment；第二种只能报告 Skill-bearing package / bundled effect并列出 mismatch refs；第三种令该 secondary
+contrast unavailable，但不改写 primary `A4 − A2`。M5-007 必须在 plan/pre-run 与 analysis-input 阶段加载真实
+对象独立重算。当前 checked-in Method 的 `skill_disposition=no-skill` 与 M11 Skill Supply 所需
+`skill-need|mixed` 若在 live A3/A4 间造成 Method 差异，必须降级或 unavailable，不能由 overlay/Harness
+伪造 exact equality。
 
 ### Admission-evidence overlap / held-out policy
 
@@ -236,8 +260,12 @@ M5-007 不 hard-depend 真实 case data 或某个已准入 Skill，但在 Skill 
 - 形成 standardized run record；
 - A1/A2 绑定 M6-008 allowlisted envelope、isolated session、Trace 与 baseline Receipt；正式 A2 只接受
   runtime-execution / `execution_input=true`、typed-conformance-complete 的 exact Tool binding，并独立重算
-  `A2ExecutionQualificationRecord` 的 identity/implementation/interface equality 与 ceiling non-relaxation；
-- A3/A4 绑定 Runtime Bundle / Resolved Execution View / Thin Host；
+  M6-008 产生的 A2 `ArmExecutionQualificationRecord@1.0.0`；
+- A3/A4 绑定 Runtime Bundle / Resolved Execution View / Thin Host；A3 runtime Resolution/Snapshot 必须由唯一
+  Capability Resolver 产生/选择，M11 只验证并消费，Harness 只引用两端对象组装并独立重算 A3
+  `ArmExecutionQualificationRecord@1.0.0`；
+- 在 plan/pre-run 与 analysis-input 阶段独立重算 `A3A4PairwiseComparabilityRecord`，严格执行
+  exact-skill-only / skill-bearing-package / not-comparable 的解释上限；
 - 引用 Trace / Receipt / Artifact；
 - 匿名化输出并抽取 metric evidence；
 - 记录 Human Review、reveal map 与 analysis input。
@@ -256,8 +284,8 @@ flowchart LR
     M5003["M5-003 DONE"] --> M5006["M5-006 READY"]
     BTG["ADR-0020 dual transport<br/>Gate A satisfied"] --> M5006
     M5006 --> M5007["M5-007 BLOCKED"]
-    M5003 --> M6008
-    M6008["M6-008 baseline envelope<br/>+ replay closeout / READY"] --> M5007
+    M5006 --> M6008["M6-008 baseline envelope<br/>+ replay closeout / PARKED"]
+    M6008 --> M5007
     M1104["M11-004<br/>Core generic closeout<br/>M11-003 Host facts"] --> M5007
     M1106["M11-006"] --> M5007
     SCG["M5-SKILL-CLOSEOUT-REPLAY-GATE<br/>Issue #55 / external / unsatisfied"] --> M5007
@@ -364,8 +392,8 @@ pilot/secondary evidence 不得作为 pruning 的唯一证据。该 Gate 明确�
 - 建立自动 Human judge、单一总分或 automatic promotion/pruning；
 - 宣称 RWB 已有 system-level net benefit。
 
-ADR-0020 合入后，M5 侧的合法 implementation 入口是 READY 的 M5-006 Protocol；Execution owner 可并行推进
-READY 的 M6-008 baseline envelope/closeout。两者不得混成一个 ownership 模糊的 Harness shortcut。M5-001/002
+ADR-0020 合入后，M5 侧唯一立即可启动的 implementation 入口是 READY 的 M5-006 Protocol；M6-008 等待其
+冻结 shared qualification contract，当前 PARKED。二者不得混成一个 ownership 模糊的 Harness shortcut。M5-001/002
 继续受 Human boundary 阻断；M5-007 仍等待 M5-006、M6-008 与 Skill replay Gate，M5-004/005 按各自真实
 execution/Human dependencies 保持 BLOCKED。Issue #55 继续跟踪 Gate B 与 M5-006→007 overlap closure。
 

@@ -84,20 +84,37 @@ definition/interface 及实际 Tool result；Snapshot 本体和其中的 Method 
 provenance，不改变 prompt、策略或执行规则。Trace 必须能证明 provider request payload 与 Tool surface 恰好
 等于白名单 envelope，而不是相信 Harness 的自报布尔值。
 
-M5-003 checked-in A2 Snapshot 是 `structural-replay`、`execution_input=false`，只能用于 synthetic contract
-tests，不得进入 M5-004 正式执行。正式 A2 必须绑定 `qualification=runtime-execution`、
-`boundaries.execution_input=true` 的 exact Tool Snapshot，并重新验证 Tool implementation、availability、
+M5-003 checked-in A2 与 A3 Snapshot 都是 `structural-replay`、`execution_input=false`，只能用于 synthetic
+contract tests，不得进入 M5-004 正式执行。正式 A2/A3 必须绑定 `qualification=runtime-execution`、
+`boundaries.execution_input=true` 的 exact Snapshot，并重新验证 implementation、availability、
 permission/data/side-effect boundary 与 typed conformance evidence；`structural-replay`、fixture-only availability
 或缺失 conformance 一律 BLOCK。
 
-这种执行资格转换必须由独立、versioned、hash-pinned 的 `A2ExecutionQualificationRecord` 闭合，而不是在
-Harness 中替换引用。该记录 exact-pin M5-003 frozen A2 binding 与正式 runtime-execution Snapshot 的
-identity/path/hash，并证明两端 selected Tool 的 supply identity、implementation version/hash 与 provider-visible
-interface 完全相同；runtime 侧只能增加 live availability/conformance evidence 或收窄 boundary，不得放宽
-filesystem/network/external-write permission class、data-egress 或 side-effect ceiling。任何 Tool identity、
-implementation bytes/interface 或 treatment-visible behavior 变化都必须发布新的 Evaluation Manifest/Protocol
-version，不能借 qualification overlay 改写 M5-003。M6-008 产生该记录，M5-007 必须独立重算并 fail closed；
-记录本身不授予 execution、Method、Capability、permission 或 Human authority。
+这种执行资格转换必须由独立、versioned、hash-pinned 的 `ArmExecutionQualificationRecord@1.0.0` 闭合，
+而不是在 Harness 中替换引用。v1 只覆盖 A2 `plain-agent-tool` 与 A3 `mode-no-skill`，并至少 exact-pin：
+
+- Evaluation Manifest/arm、完整 Task、frozen structural Capability Resolution/Snapshot 与 runtime
+  Capability Resolution/Snapshot 两端的 identity/path/hash；
+- Requirement ref；A3 还必须 exact-pin Mode、Action 与 Method Resolution；A2 的 Method ref 仍只是不可见
+  provenance，不能变成 treatment control 或 provider input；
+- 两端 Supply kind/identity、implementation version/hash、component multiset 与 treatment/provider-visible
+  interface digest；
+- permission、data-egress、side-effect ceiling 的逐项比较，以及 typed live availability/conformance evidence；
+- validator identity/version/hash、派生结果、限制与不产生 authority 的 boundary。
+
+validator 必须加载真实对象重新计算，不得相信记录中自报的 equality/result。runtime 侧只能增加 live
+availability/conformance evidence 或收窄 boundary；Task、Requirement、A3 Mode/Action/Method、Supply、
+implementation bytes/component/interface 任一替换，或 filesystem/network/external-write permission class、
+data-egress、side-effect ceiling 任一放宽都必须 BLOCK。若相同 implementation/hash 无法获得 live qualification，
+必须发布新的 versioned live Evaluation Manifest/Protocol 并保留 M5-003 历史，不能借 qualification record
+静默换绑。
+
+ownership 固定为：M5-006 拥有 shared record 的 contract、Schema、comparison rule 与 fail-closed validator；
+M6-008 在 M5-006 DONE 后只从 M6 baseline path 产生 A2 record；Capability Resolver 是 A3 runtime Capability
+Resolution/Snapshot 的唯一 producer/selector，M11 只验证并消费 exact runtime Snapshot 形成 Bundle/View/Host，
+M5-007 只在 Maintainer/Evaluation preflight 引用两端对象组装 A3 record，并对 A2/A3 两类 record 独立重算。
+Harness、M6-008 与 M11 都不因此取得 Supply selection；记录本身不授予 execution、Method、Capability、
+permission 或 Human authority。
 
 该投影不修改、复制或发布新版本 Task，也不构成 Method Resolution、Capability Resolution、permission grant
 或 execution authorization。
@@ -146,13 +163,28 @@ M5-006 必须把以下比较写入 frozen Protocol：
 |---|---|
 | `A4 − A2` | **Primary system-level estimand**：完整 RWB Mode/Method/admitted-Skill/M11 execution package 相对 tool-enabled simpler Agent/M6 baseline 的净收益；明确包含 transport package difference |
 | `A2 − A1` | 同一 M6 transport 内 exact Tool 的条件增量 |
-| `A4 − A3` | 同一 M11 transport 内 projection-backed admitted Skill Supply 的条件增量 |
+| `A4 − A3` | 仅在 A3/A4 pairwise exact-equality closure 证明**唯一差异为 admitted Skill extension**时，才可称 Skill conditional increment；否则只可称 Skill-bearing package / bundled effect，或记为不可比较 |
 | `A3 − A2` | Mode/Method package **加 transport** 的组合差异；不得称为 pure Mode effect |
 | `A4 − A1` | Tool、Mode/Method、Skill 与 transport 的完整栈组合差异，只作支持性 system contrast |
 
 这些解释只适用于 exact case、Task、Model、Provider、Host、budget、context、data policy 与版本化 transport。
 任何 contrast 都不能单独证明普遍科研增益、生产 readiness、Skill promotion、具体因果机制、Claim 正确性或
 Human acceptance。
+
+M5-006 必须冻结 versioned、hash-pinned 的 `A3A4PairwiseComparabilityRecord` 契约；M5-007 在 plan/pre-run
+阶段加载真实对象独立重算，并在分析输入中保留结果。该记录必须比较：shared case/Task/frozen conditions；
+Mode bytes；Action set/order；Method Resolution identity/revision/bytes 及 obligations、Gate、stop/block、claim
+effects；Capability Requirement multiset；排除唯一 Skill component 后的 non-Skill Supply/component multiset；
+Tool/procedure identity/version/hash；provider-visible interface digest；permission、data-egress、side-effect、
+context/output/budget boundaries。A4 唯一允许的 delta 是由 candidate/evaluation→named Human Decision→
+immutable Release→Projection→Skill Supply exact 闭合的 admitted Skill extension，且不得放宽任何 ceiling。
+
+结果固定为：`exact-skill-only` 才允许 Skill conditional increment；`skill-bearing-package` 必须列出 mismatch
+surface/refs 且只允许 bundled/package interpretation；`not-comparable` 用于缺 pin、hash drift 或无法验证的
+closure，使该 secondary contrast unavailable，但不因此改写 primary `A4 − A2`。若 Protocol 预注册了
+`exact-skill-only` 而 pre-run/actual closure 发生漂移，该 run 必须 fail closed。当前 checked-in Method 的
+`skill_disposition=no-skill` 与 M11 Skill Supply 所需 `skill-need|mixed` 不能被 Harness 掩盖；若 live A3/A4
+因此不能 exact-equal，就必须降级或不可比较，而不是伪造 pure Skill 解释。
 
 跨 transport 的 completion time 只能使用同一 Harness 外层可信时钟作为可比观测；M6/M11 内部 elapsed
 只作诊断。token、cost、context 或其他无法同义化的指标必须记为 `estimated`、`unavailable` 或
@@ -178,7 +210,9 @@ Human acceptance。
 
 - 不修改 M5-003 v0.1，也不伪造 Method/Snapshot 让 plain arms 进入 M11；
 - 复用已经存在的 M6 baseline session 与 M11 Mode-aware Runtime，各自保持权威边界；
-- A2−A1 与 A4−A3 仍有同 transport 的局部解释，primary contrast 则诚实声明系统 package confounding；
+- A2−A1 保留同 transport Tool 局部解释；A4−A3 只有在 pairwise exact-equality closure 成立时才有 Skill
+  conditional interpretation，否则显式降级为 bundled/package effect；primary contrast 诚实声明系统 package
+  confounding；
 - `M6-008` 把输入污染、actual facts 与 replay closeout 收成一个具名、可独立验收的 Execution Task。
 
 代价：
@@ -192,10 +226,13 @@ Human acceptance。
 ## 实施顺序
 
 1. 本 ADR 通过 exact-head R2 cross-owner review，并由外部 Gate record 固定 identity/version/path/hash；
-2. `M5-006` 进入 READY，按本决定冻结 Protocol、arm mapping、estimand、metric comparability 与限制；
-3. `M6-008` 可与 M5-006 并行实现 baseline envelope/Trace/Receipt；
+2. `M5-006` 进入 READY，按本决定冻结 Protocol、arm mapping、estimand、shared
+   `ArmExecutionQualificationRecord` contract、A3/A4 pairwise comparability 与限制；
+3. `M5-006` DONE 后，`M6-008` 才从 PARKED 解锁，按 frozen shared contract 实现 baseline
+   envelope/Trace/Receipt，并只产生 A2 qualification record；
 4. Skill-bearing actual binding 继续通过独立 `M5-SKILL-CLOSEOUT-REPLAY-GATE` 收口；
-5. 只有 M5-006、M6-008、M11-004、M11-006 与 Skill replay Gate 全部满足后，M5-007 才可进入；
+5. 只有 M5-006、M6-008、M11-004、M11-006 与 Skill replay Gate 全部满足后，M5-007 才可进入，并负责
+   组装 A3 qualification record、独立重算 A2/A3 qualification 与 A3/A4 pairwise comparability；
 6. M5-001/002、M4、M6-004 与 A4 admission 等真实执行 Gate 继续阻断 M5-004。
 
 ## 非目标
@@ -210,8 +247,11 @@ orchestration、critic voting、recovery 或 Skill self-evolution。
 - 路诚钺确认 primary/secondary estimand、M5-003 treatment/read boundary 与 interpretation ceiling；
 - 黄毅确认 A1/A2 的 M6 ownership、`M6-008` actual-fact/replay 责任及 M11 不被改写；
 - 两位 owner 确认 Task exact-pin 与 treatment-visible input projection 不等于修改 Task；
-- 两位 owner 确认 A2 execution qualification exact 维持 frozen Tool identity/implementation/interface，且 boundary
-  只能等价或收窄；
+- 两位 owner 确认 shared A2/A3 execution qualification exact 维持 frozen Task/Requirement/Supply、相关
+  Mode/Action/Method、implementation/component/interface，且 boundary 只能等价或收窄；M6-008 只拥有 A2
+  producer；Capability Resolver 仍是 A3 Resolution/Snapshot 唯一 producer/selector，M11 只验证和消费；
+- 两位 owner 确认 A4−A3 只有在 `A3A4PairwiseComparabilityRecord` 证明唯一 delta 为 admitted Skill extension
+  时才可称 Skill conditional increment，否则必须降级为 Skill-bearing package / bundled effect 或 unavailable；
 - 两位 owner 确认 Decision 不等于 transport implementation，Gate A 关闭后 M5-007 仍因实现依赖与 Gate B
   保持 BLOCKED；
 - 对抗性审查确认 A1/A2 无 Mode/Method/dummy Snapshot/Skill Assignment，A3−A2 不被解释为 pure Mode，

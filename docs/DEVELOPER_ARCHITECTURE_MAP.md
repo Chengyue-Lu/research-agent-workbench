@@ -409,8 +409,8 @@ flowchart TD
     M5003["M5-003 non-executing plan"] --> M5006["M5-006 frozen protocol<br/>READY"]
     BTG["ADR-0020 dual transport<br/>Gate A satisfied"] --> M5006
     M5006 --> M5007["M5-007 unified evaluation harness<br/>BLOCKED"]
-    M5003 --> M6008
-    M6008["M6-008 baseline envelope<br/>+ replay closeout / READY"] --> M5007
+    M5006 --> M6008["M6-008 baseline envelope<br/>+ replay closeout / PARKED"]
+    M6008 --> M5007
     M1104["M11-004 Core closeout<br/>M11-003 Host facts"] --> M5007
     M1106["M11-006 projection-backed Skill mapping"] --> M5007
     SCG["M5-SKILL-CLOSEOUT-REPLAY-GATE<br/>Issue #55 / unsatisfied"] --> M5007
@@ -422,18 +422,23 @@ flowchart TD
 `M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE` 已由 exact-pin 的
 [ADR-0020](decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) 闭合：A1/A2 使用 M6 isolated
 session，A3 使用 M11 Core，A4 使用 M11 projection-backed Skill extension。`A4 − A2` 是包含 transport
-difference 的 primary system-level estimand；`A2 − A1` 与 `A4 − A3` 只作同 transport 条件增量，
-`A3 − A2` 不得称 pure Mode effect。M5-006 因此为 READY。
+difference 的 primary system-level estimand；`A2 − A1` 是同 M6 transport Tool 条件增量，`A4 − A3`
+只有在 pairwise exact-equality closure 证明唯一 delta 为 admitted Skill extension 时才可称 Skill conditional
+increment，否则降级为 Skill-bearing package / bundled effect 或 unavailable；`A3 − A2` 不得称 pure Mode
+effect。M5-006 因此为 READY。
 
 完整 Task 仍作为四臂共享 experiment identity exact-pin，但 A1/A2 只消费独立版本、
 `additionalProperties=false` 的正向白名单 provider payload；完整 Task、actor/permission/budget/pins 只进入
 enforcement metadata。`agent_profile`、Mode/Action/Method/Capability/Skill/private-oracle 与未知 Task 字段
-不得进入 provider request。A1 Tool surface 为空；A2 唯一额外暴露为 qualified exact Tool interface，正式运行
-拒绝 `structural-replay` / `execution_input=false` fixture。A2 的 frozen→runtime 转换必须通过 hash-pinned
-`A2ExecutionQualificationRecord` 保持 Tool identity/implementation/interface，且所有 ceiling 只能等价或收窄。
-Decision 不等于 transport 实现，故新增 Execution-owned M6-008 负责该 projection、每次 provider request/Tool
+不得进入 provider request。A1 Tool surface 为空；A2 唯一额外暴露为 qualified exact Tool interface。A2/A3
+正式运行都拒绝 `structural-replay` / `execution_input=false` fixture；frozen→runtime 转换必须通过 M5-006
+拥有的 hash-pinned `ArmExecutionQualificationRecord@1.0.0` 保持 Task/Requirement/Supply/component/
+implementation/interface 与相关 A3 Mode/Action/Method，且所有 ceiling 只能等价或收窄。M6-008 只产生 A2
+record；Capability Resolver 是 A3 runtime Resolution/Snapshot 的唯一 producer/selector，M11 只验证并消费，
+M5-007 引用两端对象组装 A3 record并重算两类 record。
+Decision 不等于 transport 实现，故新增 Execution-owned M6-008 负责 A1/A2 projection、每次 provider request/Tool
 invocation use-boundary 的 pin reload、trusted clock、actual binding Trace facts 与 no-Skill replay-valid
-closeout；M6-008 当前 READY，可与 M5-006 并行，但在 DONE 前继续阻断 M5-007。
+closeout；M6-008 当前 PARKED，只有 M5-006 DONE、shared contract 冻结后才解锁，并在 DONE 前继续阻断 M5-007。
 Gate A 不包含 admission-overlap 工件；后者仍由 M5-006 定义、M5-007 重算，避免自依赖。
 
 Case 与 oracle 必须在观察输出前 hash-frozen；blind Human Review 先于 arm/Skill/cost/token/RWB label reveal。
@@ -457,8 +462,11 @@ overlay。当前 generic Receipt 对 Skill-bearing actual binding 的剩余适�
 `M5-SKILL-CLOSEOUT-REPLAY-GATE` 单独跟踪；列出 M11-004 依赖不等于宣称该缺口已经解决。M5-007 的
 canonical hard dependencies 现在包含 M5-006、M6-008、M11-004、M11-006 与该 Gate；Harness 必须遵守
 ADR-0020 的 arm→transport mapping，不得自行选择或隐藏 transport，也不得给 plain arm 注入 raw Task control、
-dummy Method/Snapshot 或 Skill Assignment；A2 qualification record 必须由 Harness 独立重算，不能作为换 Tool
-或放宽 boundary 的旁路。
+dummy Method/Snapshot 或 Skill Assignment；A2/A3 qualification record 必须由 Harness 独立重算，不能作为
+换 binding 或放宽 boundary 的旁路。M5-006 还冻结 `A3A4PairwiseComparabilityRecord`，M5-007 必须独立比较
+Mode/Action/Method、non-Skill Capability/Supply、Tool/procedure、provider-visible interface 与 relevant boundaries；
+只有 `exact-skill-only` 可称 Skill conditional increment，`skill-bearing-package`/`not-comparable` 分别触发
+bundled/package 降级或 secondary contrast unavailable。Harness 与 M6-008 均不取得 Supply selection authority。
 
 同一 overlay 还承载 M5-006 冻结的 admission-evidence overlap / held-out policy，但只在 Maintainer/Evaluation
 侧使用。M5-006 定义独立、versioned、hash-pinned `AdmissionEvidenceOverlapAssessment`，绑定 exact Evaluation、
@@ -563,7 +571,7 @@ M11 Core 不需要 Skill extension。M11-005/006 已实现 Projection/publisher 
 | Phase A | M8 Method/Core 已收口 | 不推导 Capability/Runtime/Human execution authority |
 | Phase B | M9 Requirement→Report→Resolution→Snapshot 与 evolution foundations 已收口 | structural contracts 不证明 live availability 或 Skill increment |
 | Phase C | M10 + M3-009 bounded candidate/machine Gate 已实现 | Human/R2 semantic closeout pending；Topic 5 不自动 thaw |
-| Phase D | M5-003 canonical plan 与 ADR-0020 dual-transport estimand 已接受；M5-006 READY | M6-008 baseline closeout、Skill replay Gate、Harness、真实案例/results/net-increment 与 disposition 未完成 |
+| Phase D | M5-003 canonical plan 与 ADR-0020 dual-transport estimand 已接受；M5-006 READY | M6-008 等待 M5-006 shared contract（PARKED）；baseline closeout、Skill replay Gate、Harness、真实案例/results/net-increment 与 disposition 未完成 |
 | Phase F / Topic 4 | M11-001～004 bounded Core 与 M11-005/006 optional Skill extension 已实现 | production Skill projection、live conformance 与 ordinary E2E 仍是独立 Gate |
 | Topic 5 | 没有新 implementation authority | Phase C Human/R2 closeout + 独立 R2 architecture review/task-definition |
 

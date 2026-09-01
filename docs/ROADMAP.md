@@ -254,9 +254,10 @@ lifecycle 只引用 record，不在 Phase B 重建完整 benchmark/experiment fr
 
 Phase D 的 primary estimand 由 ADR-0020 固定为 `A4 − A2`：最终 RWB Mode/Method/admitted-Skill/M11
 execution package 相对 tool-enabled simpler Agent/M6 baseline 是否产生可复核的 system-level net benefit；
-该差异明确包含 transport package，不能拆读为 pure Mode 或 pure Skill effect。`A2 − A1` 与 `A4 − A3`
-分别是同 transport 下的 Tool 与 admitted Skill 条件增量，`A3 − A2` 只能称 Mode/Method + transport
-组合差异，`A4 − A1` 只作完整栈支持性 contrast。M5-001/002 分别负责
+该差异明确包含 transport package，不能拆读为 pure Mode 或 pure Skill effect。`A2 − A1` 是同 M6
+transport 下的 Tool 条件增量；`A4 − A3` 只有在 pairwise exact-equality closure 证明唯一 delta 为 admitted
+Skill extension 时才是 Skill conditional increment，否则只可称 Skill-bearing package / bundled effect 或
+unavailable。`A3 − A2` 只能称 Mode/Method + transport 组合差异，`A4 − A1` 只作完整栈支持性 contrast。M5-001/002 分别负责
 evidence-synthesis 与 theory/simulation Case Dossier；每个 dossier 都必须把所有 arm 可读的 Public Case
 Package 与不可读的 Private Adjudication Package 分开，并在观察 treatment output 前完成 exact hash freeze、
 Human approval 和 no-treatment-specific-tuning 记录。
@@ -279,6 +280,16 @@ metric operationalization、measurement status、analysis rule 与 decision hier
 weighted aggregate score。跨 M6/M11 transport 的 completion time 只能由同一 Harness 外层可信时钟形成
 可比观测；内部 timing/cost/token 口径若不能同义化，必须显式 estimated/unavailable/N/A，而不是填零。
 
+Protocol 还拥有覆盖 A2/A3 的 `ArmExecutionQualificationRecord@1.0.0` contract、Schema、comparison rule 与
+fail-closed validator。record exact 连接 M5-003 frozen structural Snapshot 与正式 runtime-execution Snapshot，
+保持 Task/Requirement/Supply/component/implementation/interface 以及相关 A3 Mode/Action/Method 不变，所有
+ceiling 只能等价或收窄。M5-006 DONE 后才解锁 M6-008；M6-008 只产生 A2 record。Capability Resolver 是
+A3 runtime Resolution/Snapshot 的唯一 producer/selector；M11 只验证并消费 exact Snapshot，M5-007 引用两端
+对象组装 A3 record并独立重算两类 record。Protocol 另行冻结 `A3A4PairwiseComparabilityRecord`：比较
+Mode/Action/Method、non-Skill Requirement/Supply、Tool/procedure、provider-visible interface 与 relevant boundaries，
+只有 `exact-skill-only` 可支持 Skill conditional interpretation；`skill-bearing-package` 与 `not-comparable`
+分别触发 bundled/package 降级或 secondary contrast unavailable。
+
 Protocol 同时冻结 A4 admission-evidence overlap / held-out policy，并定义独立、versioned、hash-pinned 的
 `AdmissionEvidenceOverlapAssessment`。该工件 exact-pin `skill_evaluation_ref`、admission case IDs、Task/input、
 typed private-oracle/checker/Human-adjudication identities/hashes、两侧 comparison input closure、`checked_at`、
@@ -293,12 +304,12 @@ ADR-0020 同时产生新的 Execution-owned `M6-008`：从 A1/A2 frozen arm 确�
 baseline envelope，并通过 M6 isolated session 形成 actual Provider/Adapter/Model/Runtime/Host/Tool facts、
 Trace、Artifact、Validation 与 no-Skill replay-valid closeout；正式 A2 必须拒绝 M5-003 的
 `structural-replay` / `execution_input=false` fixture，改用具有 typed conformance 的 runtime-execution Tool
-binding。该转换通过 versioned/hash-pinned `A2ExecutionQualificationRecord` exact 连接 frozen binding 与
-runtime binding；两端 Tool supply identity、implementation version/hash、provider-visible interface 必须相同，
+binding。该转换通过 M5-006 shared contract 的 A2 `ArmExecutionQualificationRecord@1.0.0` exact 连接 frozen
+binding 与 runtime binding；两端 Tool supply identity、implementation version/hash、component 与 provider-visible interface 必须相同，
 permission/data-egress/side-effect ceiling 只能等价或收窄。M6-008 还须在每次 provider request 与每次 Tool
 invocation 的实际 use boundary 立即重验对应 pins、使用 transport trusted clock，并由 Trace 记录重验后的
 bytes/hash、独立佐证 actual binding；它不复用 legacy mandatory Skill Assignment，所有状态固定
-`task_completion=false`。M6-008 与 M5-006 可并行，但 Decision 本身不是其实现证据。
+`task_completion=false`。M6-008 当前等待 M5-006 的 frozen shared contract；Decision 本身不是其实现证据。
 
 M5-007 hard-depend M5-006、M6-008、M11-004、M11-006 与 `M5-SKILL-CLOSEOUT-REPLAY-GATE`。M11-004 通过
 M11-003 提供 Core Host actual-fact 与 generic Trace/Receipt/Artifact closeout contract；M11-006 独立提供
@@ -306,8 +317,11 @@ projection-backed Skill Supply mapping，但不传递前者。现有 Core Receip
 所以 Issue #55 跟踪的该外部 Gate 必须先接受 replay-valid closeout seam，或由 R2 正式修订 M5-007 acceptance。
 baseline transport architecture decision 已作为 M5-006 的 hard dependency 传递；Harness 必须实现其中冻结的
 arm→transport mapping 并消费 M6-008，不能通过 raw Task control、dummy Method/Snapshot 或 Skill Assignment
-强塞 plain arms 进入 M11；对 A2 还必须独立重算 `A2ExecutionQualificationRecord`，拒绝 Tool substitution 或
-boundary relaxation。Harness 只在不改变 M5-003 arm treatment/read boundary 的 evaluation
+强塞 plain arms 进入 M11；对 A2/A3 必须独立重算 `ArmExecutionQualificationRecord@1.0.0`，拒绝 binding
+substitution 或 boundary relaxation；A3 runtime Resolution/Snapshot 仍只由 Capability Resolver 产生/选择，
+M11 验证并消费，Harness 只引用两端对象组装 record。Harness 还须
+独立重算 `A3A4PairwiseComparabilityRecord`，不得把 known Method/Supply/interface difference 掩盖为 pure Skill
+increment。Harness 只在不改变 M5-003 arm treatment/read boundary 的 evaluation
 plan/run-record 层统一调度、匿名化、metric evidence、Human Review、reveal map 和 analysis input，不得为 A4
 建旁路、直接加载 candidate、在 confirmatory run 使用 synthetic projection 或自动作出
 promotion/pruning/Human judgement。
