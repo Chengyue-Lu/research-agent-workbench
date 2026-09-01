@@ -258,11 +258,20 @@ evidence-synthesis 与 theory/simulation Case Dossier；每个 dossier 都必须
 Package 与不可读的 Private Adjudication Package 分开，并在观察 treatment output 前完成 exact hash freeze、
 Human approval 和 no-treatment-specific-tuning 记录。
 
-M5-006 在真实案例完成前即可设计 System-Level Evaluation Protocol：冻结 primary/secondary questions、
-randomization、replicates、pilot/stopping/retry、model/provider drift、blind/reveal、metric operationalization、
-measurement status、analysis rule 与 decision hierarchy。`measured`、`estimated`、`unavailable`、
-`not-applicable` 互不等价；Research Integrity 的退化不能被成本收益抵消，也不得建立单一 weighted
-aggregate score。
+M5-006 之前必须先闭合 Issue #55 的 `M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE`：具名 R2 architecture
+decision 以 exact version/path/hash 选择 versioned neutral execution envelope/transport seam，或明确接受 baseline
+使用 M6 isolated session、Mode arms 使用 M11 的 dual-transport system estimand。Decision 必须冻结逐 arm transport
+mapping，以及该选择对 shared conditions、primary estimand、limitations 与 interpretation 的影响；不得修改 M5-003
+treatment/read boundary、给 A1/A2 注入 Mode/Method 或 dummy Snapshot，也不产生 Runtime/Method/Supply/Human
+authority。该 Gate 只证明架构选择被接受，不证明 transport implementation 已存在；若选择产生新的
+Execution-owned contract/Task dependency，必须在 M5-007 实现前显式加入 canonical DAG。当前 Gate 尚未满足，
+因此 M5-006 保持 BLOCKED。
+
+Gate 闭合后，M5-006 不必等待真实案例完成即可设计 System-Level Evaluation Protocol：冻结
+primary/secondary questions、randomization、replicates、pilot/stopping/retry、model/provider drift、blind/reveal、
+metric operationalization、measurement status、analysis rule 与 decision hierarchy。`measured`、`estimated`、
+`unavailable`、`not-applicable` 互不等价；Research Integrity 的退化不能被成本收益抵消，也不得建立单一
+weighted aggregate score。
 
 Protocol 同时冻结 A4 admission-evidence overlap / held-out policy，并定义独立、versioned、hash-pinned 的
 `AdmissionEvidenceOverlapAssessment`。该工件 exact-pin `skill_evaluation_ref`、admission case IDs、Task/input、
@@ -274,11 +283,13 @@ M5-001/002 的 case、Task、formal input、private-oracle intersection、status
 `primary_confirmatory_eligible=false`。重叠 case 只作 pilot/secondary evidence，不进入 primary net-benefit
 conclusion，也不能单独支撑 M5-005 pruning；公共 source set 不要求完全互斥。
 
-M5-007 hard-depend M5-006、M11-004、M11-006 与 `M5-PRE-ENTRY-ARCHITECTURE-GATE`。M11-004 通过
+M5-007 hard-depend M5-006、M11-004、M11-006 与 `M5-SKILL-CLOSEOUT-REPLAY-GATE`。M11-004 通过
 M11-003 提供 Core Host actual-fact 与 generic Trace/Receipt/Artifact closeout contract；M11-006 独立提供
 projection-backed Skill Supply mapping，但不传递前者。现有 Core Receipt 不支持 Skill-bearing actual binding，
-plain arms 也不能通过 dummy Method/Snapshot 强塞进 M11；Issue #55 跟踪的外部 Gate 必须先接受对应 seam，或
-由 R2 正式修订 M5-007 acceptance。Harness 只在不改变 M5-003 arm treatment/read boundary 的 evaluation
+所以 Issue #55 跟踪的该外部 Gate 必须先接受 replay-valid closeout seam，或由 R2 正式修订 M5-007 acceptance。
+baseline transport architecture decision 已作为 M5-006 的 hard dependency 传递；Harness 必须实现其中冻结的
+arm→transport mapping，并满足 Decision 显式声明的任何 Execution-owned dependency，不能通过 dummy
+Method/Snapshot 强塞 plain arms 进入 M11。Harness 只在不改变 M5-003 arm treatment/read boundary 的 evaluation
 plan/run-record 层统一调度、匿名化、metric evidence、Human Review、reveal map 和 analysis input，不得为 A4
 建旁路、直接加载 candidate、在 confirmatory run 使用 synthetic projection 或自动作出
 promotion/pruning/Human judgement。
@@ -291,7 +302,7 @@ candidate binding→`skill_evaluation_ref`→具名 Human Admission Decision→i
 SkillReleaseProjection→projection-backed Skill Supply→Capability Resolution→Snapshot→Runtime Bundle→
 Resolved Execution View→Thin Host 的 identity/path/hash lineage；任一缺失即 BLOCK。当前生产 projection index
 为空，故 Gate 尚未满足，M5-004 继续 BLOCKED。该链先形成 pre-run qualification；M5-007 还必须在执行后以
-Host report、typed execution Trace fact，并在 `M5-PRE-ENTRY-ARCHITECTURE-GATE` 接受 Skill-bearing closeout
+Host report、typed execution Trace fact，并在 `M5-SKILL-CLOSEOUT-REPLAY-GATE` 接受 Skill-bearing closeout
 seam 后以 replay-valid Receipt 独立证明 actual Projection/Supply/binding 与 overlay 相同；M11-004 Core Receipt
 本身不构成该证明，planned View 也不构成 actual execution evidence。
 pilot/confirmatory 与 failed Attempts 分别保留，blind Human Review 完成；单次成功不构成 promotion。

@@ -67,7 +67,22 @@ Human 批准而继续 BLOCKED。
 
 ## 4. M5-006 — System-Level Evaluation Protocol
 
-M5-006 在 M5-003 之后独立 READY；它不等待真实案例完成。实现时必须预注册：
+M5-006 当前为 BLOCKED。它在 M5-003 之外还 hard-depend Issue #55 的可审计外部条件
+`M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE`。该 Gate 只在具名 R2 architecture decision 以 exact
+version/path/hash 接受以下一种方案时闭合：
+
+1. versioned neutral execution envelope / transport seam，使 baseline arms 复用受控 Host/Trace transport 而不
+   获得 Mode/Method treatment；或
+2. baseline arms 使用 M6 isolated session、Mode arms 使用 M11，并明确接受 dual-transport system estimand。
+
+Decision 必须冻结逐 arm transport mapping，以及选择对 shared conditions、primary estimand、limitations 与
+interpretation 的影响；不得修改 M5-003 treatment/read boundary、向 A1/A2 注入 Mode/Method 或 dummy Snapshot，
+也不产生 Runtime、Method、Supply selection 或 Human authority。Gate 只证明架构选择被接受，不证明 neutral
+transport implementation 已存在；若选择产生新的 Execution-owned contract/Task dependency，Decision 必须显式
+列出并在 M5-007 实现前纳入 canonical DAG。该 Gate 不包含 `AdmissionEvidenceOverlapAssessment`，后者仍由
+M5-006 定义、M5-007 重算，因此不存在 pre-M5-006 自依赖。
+
+Gate 闭合后，M5-006 不等待真实案例完成即可实现。Protocol 必须 exact 引用已接受 Decision，并预注册：
 
 - primary estimand 与 secondary comparisons；
 - run randomization、replicate count、pilot semantics 与 stopping rule；
@@ -87,7 +102,8 @@ projection-backed Supply 及其 Snapshot/Bundle/View，不读取 candidate、Eva
 
 overlay 是 pre-run qualification，不冒充 actual execution evidence。M5-007 在调用后还必须以既有 Core
 Host report→typed execution Trace fact→generic Receipt contract 为基础，独立闭合 actual Projection、Supply 与
-binding；但当前 Receipt 对 Skill-bearing path 的扩展尚未存在，必须先通过 `M5-PRE-ENTRY-ARCHITECTURE-GATE`。
+binding；但当前 Receipt 对 Skill-bearing path 的扩展尚未存在，必须先通过
+`M5-SKILL-CLOSEOUT-REPLAY-GATE`。
 `completed`、`post-call failed` 与 `preflight blocked` 分别保留既有状态语义，planned View 不能替代 actual facts。
 
 ### Admission-evidence overlap / held-out policy
@@ -185,17 +201,16 @@ Research Integrity 的实质退化不能被更低成本抵消。replicate count 
 
 M11-004 以 M11-003 为传递依赖，提供 Core Host actual-fact / generic Trace/Receipt/Artifact closeout contract；
 M11-006 独立提供 projection-backed Skill Supply mapping。因此 M5-007 的 canonical hard dependencies 是
-`M5-006, M11-004, M11-006`，M11-006 不能被误写成 actual-fact producer。M11-004 v0.1 的 generic Receipt
-当前仍排除 Skill-bearing closeout，四臂 baseline transport 也尚不能在不改变 M5-003 treatment 的情况下强制
-共用 M11 path；这两个实现前 architecture hold 已由 Issue #55 记录。加入正确 dependency 不等于宣称这些
-Skill/baseline extension 已经存在。M5-007 不 hard-depend 真实 case data 或某个已准入 Skill，但在 Issue #55
-形成 accepted seam 或本 Task acceptance 被正式修订前不得验收为 DONE。TASKS 将其具名为可审计外部条件
-`M5-PRE-ENTRY-ARCHITECTURE-GATE`；它不是凭 Issue 文本自动获得的实现权限，只有后续 accepted task-definition /
-contract evidence 能关闭。Gate 至少要求：
+`M5-006, M11-004, M11-006, M5-SKILL-CLOSEOUT-REPLAY-GATE`，M11-006 不能被误写成 actual-fact producer。
+M11-004 v0.1 的 generic Receipt 当前仍排除 Skill-bearing closeout；该 Gate 只在 projection-backed Skill actual
+binding 获得 replay-valid closeout seam，或 R2 正式修订 M5-007 acceptance 后闭合，不能把 M11-004 Core Receipt
+假写成已经支持 Skill。它不是凭 Issue 文本自动获得的实现权限，只有 accepted task-definition / contract evidence
+能关闭。
 
-- baseline arm 的 execution transport 不注入 M5-003 已禁止的 Method/Snapshot，也不改变 treatment/read boundary；
-- projection-backed Skill actual binding 有 replay-valid closeout seam，或经 R2 正式修改 M5-007 acceptance，不能
-  把 M11-004 Core Receipt 假写成已经支持 Skill。
+baseline transport 不再作为 M5-007 的独立外部 Gate：它由 M5-006 的 hard dependency 传递，Harness 必须遵守
+Protocol exact 引用的 arm→transport mapping，并满足 baseline Decision 显式声明的任何 Execution-owned dependency。
+M5-007 不 hard-depend 真实 case data 或某个已准入 Skill，但在 Skill closeout Gate 闭合或本 Task acceptance 被正式
+修订前不得验收为 DONE。加入 M11 dependencies 与 accepted architecture decision 均不等于相关实现已经存在。
 
 其 bounded responsibility 是：
 
@@ -222,11 +237,12 @@ M5-004 只在所有真实执行前置闭合后运行：
 
 ```mermaid
 flowchart LR
-    M5003["M5-003 DONE"] --> M5006["M5-006 READY"]
+    M5003["M5-003 DONE"] --> M5006["M5-006 BLOCKED"]
+    BTG["M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE<br/>Issue #55 / external / unsatisfied"] --> M5006
     M5006 --> M5007["M5-007 BLOCKED"]
     M1104["M11-004<br/>Core generic closeout<br/>M11-003 Host facts"] --> M5007
     M1106["M11-006"] --> M5007
-    PREG["M5-PRE-ENTRY-ARCHITECTURE-GATE<br/>Issue #55 / external / unsatisfied"] --> M5007
+    SCG["M5-SKILL-CLOSEOUT-REPLAY-GATE<br/>Issue #55 / external / unsatisfied"] --> M5007
 
     M5003 -. "exact candidate + evaluation" .-> A4G["A4-RUNTIME-ADMISSION-GATE<br/>external / currently unsatisfied"]
     M1106 -. "Projection + unified Supply path" .-> A4G
@@ -330,8 +346,10 @@ pilot/secondary evidence 不得作为 pruning 的唯一证据。该 Gate 明确�
 - 建立自动 Human judge、单一总分或 automatic promotion/pruning；
 - 宣称 RWB 已有 system-level net benefit。
 
-合入后，合法下一施工入口只有 M5-006；M5-001/002 保持 Human-boundary BLOCKED，M5-007/004/005 按各自
-hard dependencies 保持 BLOCKED。
+合入后，M5 侧的合法下一动作是先在 Issue #55 下形成并接受 baseline transport architecture decision；这不是
+M5 implementation，也不冒充 transport contract 已实现。在 `M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE` 闭合前，
+M5-006 保持 BLOCKED，Phase D 没有可直接进入的 M5 implementation Task；M5-001/002 继续受 Human boundary
+阻断，M5-007/004/005 按各自 hard dependencies 保持 BLOCKED。
 
 ## 9. 本地验证
 
