@@ -56,7 +56,7 @@ owner、scope 与 acceptance 都以 `TASKS.md` 的 Task 行为准。M12～M14 �
 | M8 | Method Core formalization | task-defined and complete |
 | M9 | Evolution Foundation | task-defined and complete |
 | M10 | Research State & verification | task-defined；bounded machine chain complete，Human/R2 semantic closeout 独立 pending |
-| M11 | Execution reintegration | task-defined；Core complete，optional Skill extension 依 `TASKS.md` 单独激活 |
+| M11 | Execution reintegration | task-defined；Core 与 optional Skill extension complete；生产 projection index 仍为空 |
 | M12 | Execution Continuity & Recovery | **RESERVED** |
 | M13 | Strategy & Governed Evolution | **RESERVED** |
 | M14 | Product / Release Closure | **RESERVED** |
@@ -98,9 +98,15 @@ flowchart LR
     end
 
     subgraph M5["M5 Evaluation"]
-        M5001["M5-001 BLOCKED<br/>Human case boundary"] --> M5004["M5-004 BLOCKED"]
-        M5002["M5-002 BLOCKED<br/>Human case boundary"] --> M5004
-        M5003["M5-003 DONE<br/>non-executing plan"] --> M5004
+        M5001["M5-001 BLOCKED<br/>evidence dossier"] --> M5004["M5-004 BLOCKED<br/>real system evaluation"]
+        M5002["M5-002 BLOCKED<br/>theory/simulation dossier"] --> M5004
+        M5003["M5-003 DONE<br/>non-executing plan"] --> M5006["M5-006 BLOCKED<br/>evaluation protocol"]
+        M5006 --> M5007["M5-007 BLOCKED<br/>evaluation harness"]
+        M5003 -. "candidate + evaluation" .-> A4G["A4-RUNTIME-ADMISSION-GATE<br/>external / unsatisfied"]
+        A4G --> M5004
+        M5003 --> M5004
+        M5006 --> M5004
+        M5007 --> M5004
         M5004 --> M5005["M5-005 BLOCKED"]
     end
 
@@ -108,11 +114,36 @@ flowchart LR
     M4002 --> M5004
     M4003 --> M5004
     M4004 --> M5004
+    BTG["M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE<br/>Issue #55 / unsatisfied"] --> M5006
+    M1104["M11-004 DONE<br/>Core generic closeout<br/>M11-003 Host facts"] --> M5007
+    M1106["M11-006 DONE<br/>projection-backed Skill path"] --> M5007
+    SCG["M5-SKILL-CLOSEOUT-REPLAY-GATE<br/>Issue #55 / unsatisfied"] --> M5007
+    M1106 -. "Projection + Supply" .-> A4G
+    M1106 --> M5004
+    M6004["M6-004<br/>live Provider/session"] --> M5004
 ```
 
 M4-002 是当前 provenance/promotion 链的合法入口；M4-003/004 必须等它完成。M5-004 同时等待
-M4 闭环、两个具名真实案例边界与已存在的 M5-003 计划契约；M5-003 本身没有执行案例或
-产生净增量结论。本图未展开的独立 `READY` 行（例如 scaffold）仍直接从 `TASKS.md` 读取。
+M4 闭环、两个 Human-approved public/private Case Dossier、M5-003 计划契约、M5-006 Protocol、M5-007
+Harness、M11-006 真实 projection-backed Skill 路径与 M6-004 live Provider/session Gate。M5-006 先
+hard-depend `M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE`：只有 exact-pin 的具名 R2 Decision 接受 neutral transport
+或 dual-transport system estimand，并冻结 arm mapping、estimand/limitations/interpretation 影响后，M5-006 才能从
+BLOCKED 进入；Decision 不冒充 transport implementation，产生的新 Execution dependency 必须显式加入后续 DAG。
+M5-007 不等待真实 case data，但 hard-depend M11-004 的 Core Host/Trace/Receipt contract、M11-006 的
+projection-backed Skill mapping 与 `M5-SKILL-CLOSEOUT-REPLAY-GATE`。两个 M11 Task 当前均为 DONE，但 Core
+Receipt 尚不支持 Skill-bearing actual binding；baseline decision 由 M5-006 传递，plain arm 仍不能通过 dummy
+Method/Snapshot 改写 M5-003 treatment。Issue #55 跟踪的两个外部 Gate 均未满足。M5-003 本身没有执行案例或
+产生净增量结论。
+`A4-RUNTIME-ADMISSION-GATE` 是外部可审计条件，不是新 M Task：它保持 M5-003 的 candidate/evaluation
+origin，并 exact-pin Human Admission Decision→accepted Release→Projection→Supply→Resolution→Snapshot→
+Bundle→View→Host 的逐跳 identity/hash closure；当前生产 projection index 为空，故该 Gate 未满足。
+M5-006 另行冻结 admission-evidence overlap / held-out policy，并定义 exact-pin Evaluation、admission case、
+Task/input、typed oracle/checker/adjudication、comparison inputs、`checked_at`、validator 与结果的 versioned
+`AdmissionEvidenceOverlapAssessment`。M5-007 在 confirmatory freeze 前重新加载 assessment 两侧闭包，验证
+`checked_at <= case_selection_frozen_at`，独立比较 M5-001/002 case、Task、input、private-oracle exact identities
+并重算结果。重叠 case 标为 `admission-overlap` 且只可作 pilot/secondary；缺失、typed `absent`/`unknown` 或
+unresolved closure 不得进入 primary net-benefit conclusion，也不能单独支撑 M5-005 pruning。
+本图未展开的独立 `READY` 行（例如 scaffold）仍直接从 `TASKS.md` 读取。
 
 ### 3.3 Optional Skill extension
 

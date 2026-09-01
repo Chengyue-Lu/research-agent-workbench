@@ -401,8 +401,63 @@ Skill Supply；candidate Skill arm 必须 exact-pin Skill package 和 Evaluation
 `rwb eval plan` 先复用 authoritative reference closure，再按 canonical 顺序编译四臂计划。它不运行模型、
 不写入 result、不决定 admission/promotion、不产生 Runtime/Method/Claim/Human authority。
 
-下一步价值证据必须来自经人类批准的真实案例与独立 Evaluation/Trial records，而不是由 Manifest
-存在本身推导。
+Phase D 的 primary estimand 是完整 RWB Runtime 集成系统相对 simpler Agent/Tool baseline 的
+system-level net benefit；单一 Skill 效果只作 secondary interpretation。后继受控面为：
+
+```mermaid
+flowchart TD
+    M5003["M5-003 non-executing plan"] --> M5006["M5-006 frozen protocol<br/>BLOCKED"]
+    BTG["M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE<br/>Issue #55 / unsatisfied"] --> M5006
+    M5006 --> M5007["M5-007 unified evaluation harness<br/>BLOCKED"]
+    M1104["M11-004 Core closeout<br/>M11-003 Host facts"] --> M5007
+    M1106["M11-006 projection-backed Skill mapping"] --> M5007
+    SCG["M5-SKILL-CLOSEOUT-REPLAY-GATE<br/>Issue #55 / unsatisfied"] --> M5007
+    M5001["M5-001/002 public case<br/>+ private adjudication dossiers"] --> M5004["M5-004 approved real-case<br/>four-arm execution"]
+    M5007 --> M5004
+    M5004 --> M5005["M5-005 evidence-linked<br/>keep/modify/park/deprecate/delete/stop decision"]
+```
+
+`M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE` 是 pre-M5-006 条件，只接受具名、exact version/path/hash 固定的
+R2 architecture decision：选择 versioned neutral execution envelope/transport seam，或接受 baseline 使用 M6、
+Mode arms 使用 M11 的 dual-transport system estimand，并冻结逐 arm mapping 及其对 shared conditions、primary
+estimand、limitations、interpretation 的影响。Decision 不等于实现完成，也不授予 execution authority；若选择
+产生新的 Execution-owned contract/Task dependency，必须在 M5-007 前加入 canonical DAG。该 Gate 当前未满足，
+所以 M5-006 为 BLOCKED。它不包含 admission-overlap 工件；后者仍由 M5-006 定义、M5-007 重算，避免自依赖。
+
+Case 与 oracle 必须在观察输出前 hash-frozen；blind Human Review 先于 arm/Skill/cost/token/RWB label reveal。
+metric status 区分 measured/estimated/unavailable/not-applicable，Research Integrity 退化不能被效率抵消，
+也不得压成单一 weighted score。M5-004 的 A4 必须走真实 accepted Release→Projection→Skill Supply 与
+统一 Runtime Bundle/View/Host 路径；synthetic projection 只可用于 contract test，不是正式价值证据。
+
+A4 的 frozen treatment identity 仍是 M5-003 v0.1 的 `mode-candidate-skill`。正式运行采用
+**candidate-origin treatment + admitted Runtime execution**：M5-006 定义独立 versioned
+execution-qualification overlay，`A4-RUNTIME-ADMISSION-GATE` exact-pin candidate binding 与
+`skill_evaluation_ref`，再闭合具名 Human Admission Decision→immutable Release→Projection→Skill Supply→
+Capability Resolution→Snapshot→Runtime Bundle→Resolved Execution View→Thin Host。每跳必须有 exact
+identity/path/hash；Runtime 不读 candidate，overlay 不改 Manifest，也不产生 admission、selection 或 permission
+authority。overlay 由 Maintainer/Evaluation Harness 验证且不进入 Runtime Bundle；Runtime 只消费
+resolver-selected Supply 与 frozen Snapshot/Bundle/View。生产 projection index 当前为空，所以该 Gate 尚未满足，
+M5-004 保持 BLOCKED。Gate 是 pre-run qualification；M5-007 hard-depend M11-004 的 Core Trace /
+generic-closeout contract（Host actual facts 由其 M11-003 依赖传递），并独立 hard-depend M11-006 的
+projection-backed Skill mapping。M11-006 不传递 M11-003/004 的 producer/closeout 责任；M5-007 在执行后还必须
+用 Host report、typed execution Trace fact 与 replay-valid Receipt 证明 actual Projection/Supply/binding 未偏离
+overlay。当前 generic Receipt 对 Skill-bearing actual binding 的剩余适用性缺口由 Issue #55 的
+`M5-SKILL-CLOSEOUT-REPLAY-GATE` 单独跟踪；列出 M11-004 依赖不等于宣称该缺口已经解决。baseline transport
+decision 已由 M5-006 dependency 传递，M5-007 必须遵守冻结的 arm→transport mapping 和其中显式声明的任何
+Execution-owned dependency，不得再自行选择或隐藏 transport。
+
+同一 overlay 还承载 M5-006 冻结的 admission-evidence overlap / held-out policy，但只在 Maintainer/Evaluation
+侧使用。M5-006 定义独立、versioned、hash-pinned `AdmissionEvidenceOverlapAssessment`，绑定 exact Evaluation、
+admission case/Task/input、typed oracle/checker/adjudication identities、两侧 comparison closure、`checked_at`、
+validator 与结果。M5-007 在 confirmatory freeze 前重新加载两侧闭包，验证
+`checked_at <= case_selection_frozen_at`，独立重算与 M5-001/002 case、Task、formal input、private-oracle 的
+intersection/status/eligibility；重叠记录为 `admission-overlap`，只能作 pilot/secondary，不得进入 primary
+net-benefit conclusion 或单独支撑 M5-005 pruning。公共 source set 无需完全互斥；缺失、typed
+`absent`/`unknown` 或 unresolved 时 primary eligibility fail closed。该检查不改变 M5-003、Runtime input 或任何
+authority。
+
+下一步价值证据必须来自经人类批准的真实案例、M6-004 live Provider/session Gate 与独立
+Evaluation/Trial records，而不是由 Manifest、Harness 或 synthetic fixture 的存在本身推导。
 
 ---
 
@@ -474,8 +529,9 @@ Manifest 与 plan 已有，但两类真实案例边界、执行结果、人工�
 
 ### 16.4 Optional Skill runtime extension
 
-M11 Core 不需要 Skill extension。Projection/publisher 和 eligible Skill supply 到统一 View 的 mapping 仍未实现，
-且只应在明确 Skill-bearing 需求下激活。
+M11 Core 不需要 Skill extension。M11-005/006 已实现 Projection/publisher 与 eligible Skill supply 到统一 View
+的 mapping；生产 projection index 仍为空，因此没有真实 Skill new-binding。该可选机制不反向 Gate Core，也不
+证明科研净增量或 live Provider 可用性。
 
 ### 16.5 Live / ordinary-user / release closure
 
@@ -494,7 +550,7 @@ M11 Core 不需要 Skill extension。Projection/publisher 和 eligible Skill sup
 | Phase B | M9 Requirement→Report→Resolution→Snapshot 与 evolution foundations 已收口 | structural contracts 不证明 live availability 或 Skill increment |
 | Phase C | M10 + M3-009 bounded candidate/machine Gate 已实现 | Human/R2 semantic closeout pending；Topic 5 不自动 thaw |
 | Phase D | M5-003 canonical four-arm plan 已实现 | 真实案例、results、net-increment 与 pruning decision 未完成 |
-| Phase F / Topic 4 | M11-001～004 bounded Core 已实现 | live conformance/ordinary E2E 独立；Skill extension 可选 |
+| Phase F / Topic 4 | M11-001～004 bounded Core 与 M11-005/006 optional Skill extension 已实现 | production Skill projection、live conformance 与 ordinary E2E 仍是独立 Gate |
 | Topic 5 | 没有新 implementation authority | Phase C Human/R2 closeout + 独立 R2 architecture review/task-definition |
 
 M12、M13、M14 只是 reservation，没有 Task state、owner、dependency、acceptance 或 Schema；不得从本图生成
