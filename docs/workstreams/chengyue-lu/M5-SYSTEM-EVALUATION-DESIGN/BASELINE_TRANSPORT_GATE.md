@@ -18,7 +18,8 @@ Gate：`M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE`
 | Path | `docs/decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md` |
 | Raw SHA-256 | `f5028da753694b4f823c788a092362dc3603c4db549e1d5ae575090763888ae1` |
 | Audit base | `dd2454b5595e33a12aa058529358d46d311a08c4` |
-| Integration evidence | 承载本记录的 exact-head R2 PR、cross-owner review 与 merge event；PR 未合并前 Gate 为 `PENDING (not satisfied)` |
+| Integration PR | [PR #56](https://github.com/Chengyue-Lu/research-agent-workbench/pull/56) |
+| Review / merge evidence | exact-head cross-owner review 与 merge event；PR 未合并前 Gate 为 `PENDING (not satisfied)` |
 
 ADR bytes、identity、version 或 path 变化时，本记录失效；必须发布新 Decision version 与新 Gate record，
 不得只更新 hash 以掩盖语义变化。
