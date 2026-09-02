@@ -6,8 +6,9 @@
   "x-rwb-document-kind": "promotion_validation_execution",
   "type": "object",
   "required": [
-    "schema_version", "execution_id", "task_id", "attempt_id", "policy_ref",
-    "checker", "runner", "report_ref", "subject_refs", "executor",
+    "schema_version", "execution_id", "task_id", "attempt_id", "task_ref",
+    "authority_registry_ref", "policy_ref", "checker", "runner", "host",
+    "report_ref", "subject_refs", "executor",
     "started_at", "finished_at", "outcome", "authority_boundaries"
   ],
   "properties": {
@@ -15,9 +16,12 @@
     "execution_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "task_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "attempt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "task_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "authority_registry_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
     "policy_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
     "checker": { "$ref": "deterministic-check-report.schema.json#/properties/checker" },
     "runner": { "$ref": "promotion-validation-policy.schema.json#/properties/runner" },
+    "host": { "$ref": "promotion-validation-authority-registry.schema.json#/$defs/host" },
     "report_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
     "subject_refs": {
       "type": "array",

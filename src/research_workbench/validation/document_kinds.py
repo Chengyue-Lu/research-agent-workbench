@@ -108,6 +108,8 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "evaluation_manifest"
     if "promotion_id" in document and "validation_report" in document and "entries" in document:
         return "promotion_record"
+    if document.get("registry_id") == "RWB-PROMOTION-VALIDATION-AUTHORITY":
+        return "promotion_validation_authority_registry"
     if "policy_id" in document and document.get("accepted_for") == "artifact-promotion-validation":
         return "promotion_validation_policy"
     if "execution_id" in document and "policy_ref" in document and "report_ref" in document:

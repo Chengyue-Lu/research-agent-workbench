@@ -31,7 +31,9 @@ from research_workbench.validation.schemas import SchemaCatalog
 
 ALLOWED_TARGET_ZONES = ("objects", "runs", "deliverables/candidates")
 VALIDATION_POLICY_ZONE = "registry/validation-policies"
+VALIDATION_AUTHORITY_REGISTRY_PATH = "registry/validation-policies/accepted.yaml"
 VALIDATION_EXECUTION_ZONE = "runs/validation"
+TASK_AUTHORITY_ZONE = "objects/tasks"
 TRUSTED_VALIDATION_SOURCE_ZONES = ("src", "checks", ".github/scripts", "registry/validation-tools")
 
 
@@ -116,6 +118,8 @@ class PromotionEntry:
 class PromotionRecord:
     promotion_id: str
     source_workspace: str
+    task_ref: FileReference
+    validation_authority_registry: FileReference
     validation_report: FileReference
     validation_policy: FileReference
     validation_execution: FileReference
@@ -125,10 +129,16 @@ class PromotionRecord:
 
     @classmethod
     def from_mapping(cls, data: Mapping[str, Any]) -> "PromotionRecord":
+        task_raw = data.get("task_ref")
+        registry_raw = data.get("validation_authority_registry")
         report_raw = data.get("validation_report")
         policy_raw = data.get("validation_policy")
         execution_raw = data.get("validation_execution")
         entries_raw = data.get("entries")
+        if not isinstance(task_raw, Mapping):
+            raise ContractError("task_ref", "must be an object")
+        if not isinstance(registry_raw, Mapping):
+            raise ContractError("validation_authority_registry", "must be an object")
         if not isinstance(report_raw, Mapping):
             raise ContractError("validation_report", "must be an object")
         if not isinstance(policy_raw, Mapping):
@@ -142,6 +152,8 @@ class PromotionRecord:
         return cls(
             require_string(data, "promotion_id"),
             _normalized_path(require_string(data, "source_workspace"), "source_workspace"),
+            _file_reference(task_raw, "task_ref"),
+            _file_reference(registry_raw, "validation_authority_registry"),
             _file_reference(report_raw, "validation_report"),
             _file_reference(policy_raw, "validation_policy"),
             _file_reference(execution_raw, "validation_execution"),
@@ -226,7 +238,7 @@ def _reference_keys(items: Any, field: str) -> list[tuple[str, str, int | None]]
 def _component_binding(data: Any, kind: str) -> tuple[str, str, FileReference]:
     if not isinstance(data, Mapping):
         raise ContractError(kind, "must be an object")
-    identity_field = "checker_id" if kind == "checker" else "runner_id"
+    identity_field = {"checker": "checker_id", "runner": "runner_id", "host": "host_id"}[kind]
     source_raw = data.get("source_ref")
     if not isinstance(source_raw, Mapping):
         raise ContractError(f"{kind}.source_ref", "must be an object")
@@ -290,6 +302,18 @@ def check_promotion(
                 )
             )
 
+    task, task_risks = _parse_referenced_document(
+        root_path,
+        record.task_ref,
+        "task_packet",
+        "authoritative Task Packet",
+    )
+    authority_registry, registry_risks = _parse_referenced_document(
+        root_path,
+        record.validation_authority_registry,
+        "promotion_validation_authority_registry",
+        "accepted validation authority registry",
+    )
     report, report_risks = _parse_referenced_document(
         root_path,
         record.validation_report,
@@ -308,6 +332,8 @@ def check_promotion(
         "promotion_validation_execution",
         "validation execution record",
     )
+    risks.extend(task_risks)
+    risks.extend(registry_risks)
     risks.extend(report_risks)
     risks.extend(policy_risks)
     risks.extend(execution_risks)
@@ -317,6 +343,13 @@ def check_promotion(
             _risk(
                 "ARTIFACT-PROMOTION-BYPASS",
                 "validation report must be an exact file inside source_workspace",
+            )
+        )
+    if record.validation_authority_registry.path != VALIDATION_AUTHORITY_REGISTRY_PATH:
+        risks.append(
+            _risk(
+                "ARTIFACT-PROMOTION-BYPASS",
+                f"validation authority registry must be {VALIDATION_AUTHORITY_REGISTRY_PATH}",
             )
         )
     if not _within_zone(record.validation_policy.path, VALIDATION_POLICY_ZONE):
@@ -410,6 +443,99 @@ def check_promotion(
 
     policy_checker: tuple[str, str, FileReference] | None = None
     policy_runner: tuple[str, str, FileReference] | None = None
+    registry_checker: tuple[str, str, FileReference] | None = None
+    registry_runner: tuple[str, str, FileReference] | None = None
+    registry_host: tuple[str, str, FileReference] | None = None
+
+    task_revision: int | None = None
+    if task is not None:
+        revision = task.get("revision")
+        task_revision = revision if isinstance(revision, int) else None
+        if not valid_workspace_shape or task.get("task_id") != workspace_parts[1]:
+            risks.append(_risk("ARTIFACT-PROMOTION-BYPASS", "Task Packet is for another Task"))
+        expected_task_path = (
+            f"{TASK_AUTHORITY_ZONE}/{task.get('task_id')}/r{task_revision}/TASK.yaml"
+            if task_revision is not None
+            else ""
+        )
+        if record.task_ref.revision != task_revision or record.task_ref.path != expected_task_path:
+            risks.append(
+                _risk(
+                    "ARTIFACT-PROMOTION-BYPASS",
+                    "Task Packet must be revision-pinned at its canonical pre-Attempt authority path",
+                )
+            )
+        input_keys = _reference_keys(task.get("input_refs"), "task.input_refs")
+        if len(input_keys) != len(set(input_keys)):
+            risks.append(_risk("ARTIFACT-PROMOTION-BYPASS", "Task Packet has duplicate input refs"))
+        required_inputs = {
+            _reference_key(record.validation_authority_registry),
+            _reference_key(record.validation_policy),
+        }
+        if not required_inputs.issubset(set(input_keys)):
+            risks.append(
+                _risk(
+                    "ARTIFACT-PROMOTION-BYPASS",
+                    "Task Packet does not exact-pin the authority registry and accepted policy",
+                )
+            )
+        write_scope = task.get("write_scope")
+        if not isinstance(write_scope, list) or record.source_workspace not in write_scope:
+            risks.append(
+                _risk("ARTIFACT-PROMOTION-BYPASS", "Task Packet does not bind the source workspace")
+            )
+        elif any(
+            not isinstance(scope, str)
+            or not (scope == record.source_workspace or _strictly_within(scope, record.source_workspace))
+            for scope in write_scope
+        ):
+            risks.append(
+                _risk(
+                    "ARTIFACT-PROMOTION-BYPASS",
+                    "Task write_scope reaches outside the exact source workspace",
+                )
+            )
+
+    registry_entry: Mapping[str, Any] | None = None
+    if authority_registry is not None and valid_workspace_shape and task_revision is not None:
+        matching_entries = [
+            entry
+            for entry in authority_registry.get("accepted_policies", [])
+            if isinstance(entry, Mapping)
+            and entry.get("task_id") == workspace_parts[1]
+            and entry.get("task_revision") == task_revision
+        ]
+        if len(matching_entries) != 1:
+            risks.append(
+                _risk(
+                    "ARTIFACT-PROMOTION-BYPASS",
+                    "authority registry must contain exactly one accepted policy for the Task revision",
+                )
+            )
+        else:
+            registry_entry = matching_entries[0]
+            registry_policy_ref = _file_reference(registry_entry["policy_ref"], "policy_ref")
+            if registry_policy_ref != record.validation_policy:
+                risks.append(
+                    _risk("ARTIFACT-PROMOTION-BYPASS", "authority registry accepts another policy")
+                )
+            registry_checker = _component_binding(registry_entry["checker"], "checker")
+            registry_runner = _component_binding(registry_entry["runner"], "runner")
+            registry_host = _component_binding(registry_entry["host"], "host")
+            for binding, label in (
+                (registry_checker, "registry checker"),
+                (registry_runner, "registry runner"),
+                (registry_host, "registry validation host"),
+            ):
+                risks.extend(_reference_risks(root_path, binding[2], label))
+                if not _trusted_validation_source(binding[2].path):
+                    risks.append(
+                        _risk(
+                            "ARTIFACT-PROMOTION-BYPASS",
+                            f"{label} must be exact-pinned from a repository-governed source zone",
+                        )
+                    )
+
     if policy is not None:
         policy_checker = _component_binding(policy["checker"], "checker")
         policy_runner = _component_binding(policy["runner"], "runner")
@@ -431,13 +557,19 @@ def check_promotion(
                     "report checker identity/version/source pin differs from accepted policy",
                 )
             )
+        if registry_checker is not None and policy_checker != registry_checker:
+            risks.append(_risk("ARTIFACT-PROMOTION-BYPASS", "policy checker differs from registry"))
+        if registry_runner is not None and policy_runner != registry_runner:
+            risks.append(_risk("ARTIFACT-PROMOTION-BYPASS", "policy runner differs from registry"))
 
     if execution is not None:
         execution_checker = _component_binding(execution["checker"], "checker")
         execution_runner = _component_binding(execution["runner"], "runner")
+        execution_host = _component_binding(execution["host"], "host")
         for binding, label in (
             (execution_checker, "execution checker"),
             (execution_runner, "execution runner"),
+            (execution_host, "execution validation host"),
         ):
             risks.extend(_reference_risks(root_path, binding[2], label))
             if not _trusted_validation_source(binding[2].path):
@@ -454,8 +586,18 @@ def check_promotion(
                 risks.append(_risk("ARTIFACT-PROMOTION-BYPASS", "validation execution is for another Task"))
             if execution.get("attempt_id") != workspace_parts[2]:
                 risks.append(_risk("ARTIFACT-PROMOTION-BYPASS", "validation execution is for another Attempt"))
+        execution_task_ref = _file_reference(execution["task_ref"], "task_ref")
+        execution_registry_ref = _file_reference(
+            execution["authority_registry_ref"], "authority_registry_ref"
+        )
         execution_policy_ref = _file_reference(execution["policy_ref"], "policy_ref")
         execution_report_ref = _file_reference(execution["report_ref"], "report_ref")
+        if execution_task_ref != record.task_ref:
+            risks.append(_risk("ARTIFACT-PROMOTION-BYPASS", "execution does not exact-pin the Task"))
+        if execution_registry_ref != record.validation_authority_registry:
+            risks.append(
+                _risk("ARTIFACT-PROMOTION-BYPASS", "execution does not exact-pin the authority registry")
+            )
         if execution_policy_ref != record.validation_policy:
             risks.append(_risk("ARTIFACT-PROMOTION-BYPASS", "execution does not exact-pin the accepted policy"))
         if execution_report_ref != record.validation_report:
@@ -482,6 +624,14 @@ def check_promotion(
             risks.append(_risk("ARTIFACT-PROMOTION-BYPASS", "execution checker differs from policy"))
         if policy_runner is not None and execution_runner != policy_runner:
             risks.append(_risk("ARTIFACT-PROMOTION-BYPASS", "execution runner differs from policy"))
+        if registry_checker is not None and execution_checker != registry_checker:
+            risks.append(_risk("ARTIFACT-PROMOTION-BYPASS", "execution checker differs from registry"))
+        if registry_runner is not None and execution_runner != registry_runner:
+            risks.append(_risk("ARTIFACT-PROMOTION-BYPASS", "execution runner differs from registry"))
+        if registry_host is not None and execution_host != registry_host:
+            risks.append(_risk("ARTIFACT-PROMOTION-BYPASS", "execution host differs from registry"))
+        if execution.get("executor") != execution_host[0]:
+            risks.append(_risk("ARTIFACT-PROMOTION-BYPASS", "executor differs from validation host"))
         if report_checker is not None and execution_checker != report_checker:
             risks.append(_risk("ARTIFACT-PROMOTION-BYPASS", "execution checker differs from report"))
         started_at = _timestamp(str(execution["started_at"]), "validation_execution.started_at")
@@ -490,6 +640,15 @@ def check_promotion(
             risks.append(
                 _risk("ARTIFACT-PROMOTION-BYPASS", "validation execution finishes before it starts")
             )
+        if registry_entry is not None:
+            accepted_at = _timestamp(str(registry_entry["accepted_at"]), "accepted_at")
+            if accepted_at > started_at:
+                risks.append(
+                    _risk(
+                        "ARTIFACT-PROMOTION-BYPASS",
+                        "validation authority was not accepted before execution started",
+                    )
+                )
         if finished_at > record.recorded_at:
             risks.append(
                 _risk(
@@ -653,6 +812,7 @@ def _build_receipt(
     record: PromotionRecord,
     record_reference: FileReference,
     report: Mapping[str, Any],
+    execution: Mapping[str, Any],
     executed_at: str,
 ) -> Mapping[str, Any]:
     source_refs = [_reference_mapping(entry.artifact) for entry in record.entries]
@@ -668,11 +828,17 @@ def _build_receipt(
         if entry.disposition == "promote" and entry.target is not None
     ]
     checker_id, checker_version, checker_source = _component_binding(report["checker"], "checker")
+    runner_id, runner_version, runner_source = _component_binding(execution["runner"], "runner")
+    host_id, host_version, host_source = _component_binding(execution["host"], "host")
     return {
         "schema_version": "0.1.0",
         "receipt_id": f"{record.promotion_id}-RECEIPT",
         "promotion_id": record.promotion_id,
         "promotion_record_ref": _reference_mapping(record_reference),
+        "task_ref": _reference_mapping(record.task_ref),
+        "validation_authority_registry_ref": _reference_mapping(
+            record.validation_authority_registry
+        ),
         "validation_policy_ref": _reference_mapping(record.validation_policy),
         "validation_execution_ref": _reference_mapping(record.validation_execution),
         "validation_report_ref": _reference_mapping(record.validation_report),
@@ -680,6 +846,16 @@ def _build_receipt(
             "checker_id": checker_id,
             "version": checker_version,
             "source_ref": _reference_mapping(checker_source),
+        },
+        "runner": {
+            "runner_id": runner_id,
+            "version": runner_version,
+            "source_ref": _reference_mapping(runner_source),
+        },
+        "host": {
+            "host_id": host_id,
+            "version": host_version,
+            "source_ref": _reference_mapping(host_source),
         },
         "source_artifact_refs": source_refs,
         "target_artifact_refs": target_refs,
@@ -731,10 +907,18 @@ def execute_promotion(
         )
         if report is None or report_risks:
             raise ContractError("promotion", "validation report drifted before receipt creation")
+        execution, execution_risks = _parse_referenced_document(
+            root_path,
+            record.validation_execution,
+            "promotion_validation_execution",
+            "validation execution record",
+        )
+        if execution is None or execution_risks:
+            raise ContractError("promotion", "validation execution drifted before receipt creation")
         execution_time = executed_at or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
         if _timestamp(execution_time, "executed_at") < record.recorded_at:
             raise ContractError("executed_at", "must not predate the promotion record")
-        receipt = _build_receipt(record, record_reference, report, execution_time)
+        receipt = _build_receipt(record, record_reference, report, execution, execution_time)
         receipt_errors = _schema_catalog().validate("promotion_execution_receipt", receipt)
         if receipt_errors:
             detail = "; ".join(f"{item.pointer}: {item.message}" for item in receipt_errors[:4])

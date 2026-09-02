@@ -155,6 +155,7 @@ SCHEMA_KINDS = {
     "source_admission",
     "promotion_execution_receipt",
     "promotion_record",
+    "promotion_validation_authority_registry",
     "promotion_validation_execution",
     "promotion_validation_policy",
 }

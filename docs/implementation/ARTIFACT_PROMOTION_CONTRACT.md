@@ -21,21 +21,31 @@ receipt 事实：
 每份记录必须固定：
 
 - exact `source_workspace`，且必须是三段式 `work/<task>/<attempt>` 根；
+- pre-Attempt、revision-pinned `task_packet`，位于 canonical `objects/tasks/<task>/r<revision>/TASK.yaml`；
+  Task 的 exact inputs 必须同时 pin accepted-policy registry 与 policy，write scope 必须收窄到该
+  `work/<task>/<attempt>`；
+- hash-pinned `promotion_validation_authority_registry`，且只能是
+  `registry/validation-policies/accepted.yaml`；registry 按 Task revision 接受唯一 policy，并固定
+  checker、runner 与 validation host 的 identity/version/source hash、具名接受人和接受时间；
 - hash-pinned `deterministic_check_report`；
-- hash-pinned `promotion_validation_policy`，且 policy 位于 repository-governed
+- hash-pinned `promotion_validation_policy`，且 policy 位于
   `registry/validation-policies/`，固定 Task、checker 与 validation runner 的 identity/version/source hash；
 - hash-pinned `promotion_validation_execution`，且 execution fact 位于 `runs/validation/`，固定同一
-  Task/Attempt、policy、checker、runner、report、subjects、执行者、时间和 pass/fail outcome；
+  Task/Attempt、Task/registry/policy refs、checker、runner、trusted host、report、subjects、执行者、时间和
+  pass/fail outcome；
 - 具名 `operator` 和显式 `recorded_at`；
 - 每个受检工件的 `(path, sha256)`、`promote` / `retain-in-work` disposition、负结果声明；
 - promote 项的目标路径，或 retain 项的具名原因；
 - 不可放宽的 authority boundaries。
 
-validator 会复验 policy、validation execution、report、checker/runner source、全部 subjects、entries 和
-live bytes。policy → execution → report 的 Task/Attempt、组件 identity/version/source pin 与 exact refs
+validator 会复验 Task、accepted registry、policy、validation execution、report、checker/runner/host source、
+全部 subjects、entries 和 live bytes。Task → registry/policy → host-bound execution → report 的
+Task/Attempt/revision、组件 identity/version/source pin 与 exact refs
 必须一致；execution outcome 与 report status 均须为 pass。report subject、execution subject 与 entry 必须按
 规范化后的 exact file-reference 集合相等；重复 identity、遗漏、额外未受检工件、错误 pin 或调用方在
-`work/` 内自建 checker/policy/execution 均阻断。`negative_result` 是保留/提升记录，不是科学语义推断；
+`work/` 内自建或在允许稳定目录内拼装的 fake checker/runner/host/policy/execution 均阻断，除非它们与
+pre-Attempt Task input pins 及唯一 accepted registry entry 完全一致。`negative_result` 是保留/提升记录，
+不是科学语义推断；
 负结果也必须有明确 disposition，不能静默丢弃。validation execution 必须先于
 `recorded_at`完成，实际 promotion `executed_at` 不得早于 record。
 
@@ -60,11 +70,13 @@ live bytes。policy → execution → report 的 Task/Attempt、组件 identity/
 
 1. 从 project root 内的实际 record 文件一次读取、解析并固定其 path/hash；拒绝
    in-memory mapping 执行和分离的 read/hash 窗口；
-2. 完整执行 policy、validation execution、report、checker/runner、subject、entry、live byte 和路径检查；
+2. 完整执行 Task/registry/policy、host-bound validation execution、report、checker/runner/host、subject、
+   entry、live byte 和路径检查；
 3. 将每个 promote 源复制到目标目录内的私有临时文件，同时重新计算 SHA-256 并 `fsync`；
 4. 对所有输入和目标进行第二次完整复验，并复核 staged bytes；
-5. 生成 Schema-valid `promotion_execution_receipt`，exact-pin record、policy、validation execution、report、
-   checker、全部 source refs、actual target refs/hash、operator、executed_at、outcome 和固定 authority boundary；
+5. 生成 Schema-valid `promotion_execution_receipt`，exact-pin record、Task、authority registry、policy、
+   validation execution、report、checker/runner/host、全部 source refs、actual target refs/hash、operator、
+   executed_at、outcome 和固定 authority boundary；
 6. stage receipt 后执行 commit-time 第三次权威链复验，再将目标与 receipt 一起 hard-link exclusive-create；
 7. 任一中途冲突或异常会撤销本次已创建且仍与 staged inode 相同的目标/receipt 并清理 staging；源始终保留。
 
@@ -87,7 +99,8 @@ receipt 中的 actual target byte pins。
 
 ## 6. 验收证据边界
 
-专项测试覆盖自签 work checker/policy/execution、policy/execution/report 关系漂移、report/checker/subject/
+专项测试覆盖允许稳定目录内完整自洽的 fake authority 链、自签 work checker/policy/execution、
+Task/registry/policy/execution/report 关系漂移、report/checker/subject/
 entry pin 漂移、额外/遗漏工件、负结果 disposition、路径前缀伪装、root/symlink escape、重复 identity、
 existing/accepted target、record/source/target 竞态、staged-byte 漂移、receipt 冲突和目标/receipt 同批回滚。
 该证据只支持 M4-002；M4-003 Claim Trace 与 M4-004 Run reproduction 仍需各自独立实现、PR 和 owner 验收。

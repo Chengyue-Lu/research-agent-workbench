@@ -207,24 +207,41 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
             if isinstance(subject_ref, Mapping):
                 references += (FileReference.from_mapping(subject_ref),)
     elif kind == "promotion_record":
-        for key in ("validation_report", "validation_policy", "validation_execution"):
+        for key in (
+            "task_ref",
+            "validation_authority_registry",
+            "validation_report",
+            "validation_policy",
+            "validation_execution",
+        ):
             reference = document.get(key)
             if isinstance(reference, Mapping):
                 references += (FileReference.from_mapping(reference),)
         for entry in document.get("entries", []):
             if isinstance(entry, Mapping) and isinstance(entry.get("artifact"), Mapping):
                 references += (FileReference.from_mapping(entry["artifact"]),)
+    elif kind == "promotion_validation_authority_registry":
+        for entry in document.get("accepted_policies", []):
+            if not isinstance(entry, Mapping):
+                continue
+            policy_ref = entry.get("policy_ref")
+            if isinstance(policy_ref, Mapping):
+                references += (FileReference.from_mapping(policy_ref),)
+            for key in ("checker", "runner", "host"):
+                component = entry.get(key)
+                if isinstance(component, Mapping) and isinstance(component.get("source_ref"), Mapping):
+                    references += (FileReference.from_mapping(component["source_ref"]),)
     elif kind == "promotion_validation_policy":
         for key in ("checker", "runner"):
             component = document.get(key)
             if isinstance(component, Mapping) and isinstance(component.get("source_ref"), Mapping):
                 references += (FileReference.from_mapping(component["source_ref"]),)
     elif kind == "promotion_validation_execution":
-        for key in ("policy_ref", "report_ref"):
+        for key in ("task_ref", "authority_registry_ref", "policy_ref", "report_ref"):
             reference = document.get(key)
             if isinstance(reference, Mapping):
                 references += (FileReference.from_mapping(reference),)
-        for key in ("checker", "runner"):
+        for key in ("checker", "runner", "host"):
             component = document.get(key)
             if isinstance(component, Mapping) and isinstance(component.get("source_ref"), Mapping):
                 references += (FileReference.from_mapping(component["source_ref"]),)
@@ -234,6 +251,8 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
     elif kind == "promotion_execution_receipt":
         for key in (
             "promotion_record_ref",
+            "task_ref",
+            "validation_authority_registry_ref",
             "validation_policy_ref",
             "validation_execution_ref",
             "validation_report_ref",
@@ -241,9 +260,10 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
             reference = document.get(key)
             if isinstance(reference, Mapping):
                 references += (FileReference.from_mapping(reference),)
-        checker = document.get("checker")
-        if isinstance(checker, Mapping) and isinstance(checker.get("source_ref"), Mapping):
-            references += (FileReference.from_mapping(checker["source_ref"]),)
+        for key in ("checker", "runner", "host"):
+            component = document.get(key)
+            if isinstance(component, Mapping) and isinstance(component.get("source_ref"), Mapping):
+                references += (FileReference.from_mapping(component["source_ref"]),)
         for reference in document.get("source_artifact_refs", []):
             if isinstance(reference, Mapping):
                 references += (FileReference.from_mapping(reference),)

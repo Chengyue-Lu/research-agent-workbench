@@ -283,6 +283,7 @@ negative_acceptance:
       - test_artifacts_promotion.PromotionExecutionTest.test_execute_stages_publishes_without_overwrite_and_preserves_work
     negative_tests:
       - test_artifacts_promotion.PromotionValidationTest.test_self_signed_work_checker_policy_or_execution_cannot_authorize_promotion
+      - test_artifacts_promotion.PromotionValidationTest.test_self_consistent_fake_stable_zone_authority_cannot_bypass_frozen_task
       - test_artifacts_promotion.PromotionValidationTest.test_validation_authority_cross_document_closure_matrix
       - test_artifacts_promotion.PromotionValidationTest.test_report_pin_subject_set_and_checker_drift_fail_closed
       - test_artifacts_promotion.PromotionValidationTest.test_extra_or_missing_entry_cannot_bypass_exact_subject_set

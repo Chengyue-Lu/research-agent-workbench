@@ -4,7 +4,7 @@
 - 实现责任：黄毅（GitHub `let778750-cpu`）与 Codex
 - Task：`M4-002`
 - 风险：R1（共享 Schema、CLI、artifact lifecycle contract）
-- 基线：`develop@100fec5b5ff4e28bc7daa812db4226a85dcd2d26`（已包含 PR #51）
+- 基线：`develop@dd2454b5595e33a12aa058529358d46d311a08c4`（已包含 PR #53）
 - 分支：`codex/m4-002-promotion`
 - 状态：实现与本地验证进行中；等待 PR exact-head CI 和 Task owner 接受，不自行 merge
 
@@ -20,8 +20,9 @@ M4-003 Claim Trace 与 M4-004 Run reproduction 不在本分支实现；M5 状态
 
 ## 契约边界
 
-- accepted validation policy → deterministic validation execution → PASS report → promotion 的 Task/Attempt、
-  checker/runner identity/version/source hash 与 subject set 全部 exact closure；
+- pre-Attempt canonical Task → accepted-policy registry → exact policy → host-bound deterministic validation
+  execution → PASS report → promotion 的 Task/Attempt/revision、checker/runner/host identity/version/source hash
+  与 subject set 全部 exact closure；允许稳定目录本身不授予 authority；
 - report、subjects、entries 与 live bytes 全部 exact-pin；subjects/entries 按 exact file-reference 集合相等；
 - 只从 exact `work/<task>/<attempt>` 复制到 `objects/`、`runs/`、`deliverables/candidates/`；
 - execute 只接受 workspace 内的 file-bound record；staging + commit-time 复验 + exclusive-create 同批发布

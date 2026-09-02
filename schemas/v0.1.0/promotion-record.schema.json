@@ -5,8 +5,9 @@
   "x-rwb-document-kind": "promotion_record",
   "type": "object",
   "required": [
-    "schema_version", "promotion_id", "source_workspace", "validation_report",
-    "validation_policy", "validation_execution", "operator", "recorded_at",
+    "schema_version", "promotion_id", "source_workspace", "task_ref",
+    "validation_authority_registry", "validation_report", "validation_policy",
+    "validation_execution", "operator", "recorded_at",
     "entries", "authority_boundaries"
   ],
   "properties": {
@@ -16,6 +17,8 @@
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
     },
     "source_workspace": { "$ref": "common.schema.json#/$defs/relativePath" },
+    "task_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "validation_authority_registry": { "$ref": "common.schema.json#/$defs/fileRef" },
     "validation_report": { "$ref": "common.schema.json#/$defs/fileRef" },
     "validation_policy": { "$ref": "common.schema.json#/$defs/fileRef" },
     "validation_execution": { "$ref": "common.schema.json#/$defs/fileRef" },

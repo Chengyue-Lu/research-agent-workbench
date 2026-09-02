@@ -33,10 +33,13 @@ class PromotionFixture(unittest.TestCase):
         self.negative = self.workspace / "outputs" / "negative.txt"
         self.checker = self.root / "checks" / "promotion" / "checker.py"
         self.runner = self.root / "checks" / "promotion" / "runner.py"
+        self.host = self.root / "checks" / "promotion" / "host.py"
         self.report_path = self.workspace / "checks" / "validation.yaml"
         self.policy_path = (
             self.root / "registry" / "validation-policies" / "M4-002-promotion.yaml"
         )
+        self.registry_path = self.root / "registry" / "validation-policies" / "accepted.yaml"
+        self.task_path = self.root / "objects" / "tasks" / "M4-002" / "r1" / "TASK.yaml"
         self.execution_path = (
             self.root / "runs" / "validation" / "M4-002" / "A-001" / "execution.yaml"
         )
@@ -44,13 +47,17 @@ class PromotionFixture(unittest.TestCase):
         self.checker.parent.mkdir(parents=True)
         self.report_path.parent.mkdir(parents=True)
         self.policy_path.parent.mkdir(parents=True)
+        self.task_path.parent.mkdir(parents=True)
         self.execution_path.parent.mkdir(parents=True)
         self.output.write_bytes(b"validated result\n")
         self.negative.write_bytes(b"validated null result\n")
         self.checker.write_text("def check(): return True\n", encoding="utf-8")
         self.runner.write_text("def run(): return 'deterministic'\n", encoding="utf-8")
+        self.host.write_text("def validate(): return 'recorded-fact'\n", encoding="utf-8")
         self.report = self._report()
         self.policy = self._policy()
+        self.registry = self._registry()
+        self.task = self._task()
         self.execution = self._execution()
         self.record = self._record()
 
@@ -60,8 +67,11 @@ class PromotionFixture(unittest.TestCase):
     def rel(self, path: Path) -> str:
         return path.relative_to(self.root).as_posix()
 
-    def ref(self, path: Path) -> dict[str, str]:
-        return {"path": self.rel(path), "sha256": hash_file(path)}
+    def ref(self, path: Path, *, revision: int | None = None) -> dict:
+        reference = {"path": self.rel(path), "sha256": hash_file(path)}
+        if revision is not None:
+            reference["revision"] = revision
+        return reference
 
     def _report(self) -> dict:
         report = {
@@ -122,15 +132,88 @@ class PromotionFixture(unittest.TestCase):
             yaml.safe_dump(policy, sort_keys=False), encoding="utf-8", newline="\n"
         )
 
+    def _registry(self) -> dict:
+        registry = {
+            "schema_version": "0.1.0",
+            "registry_id": "RWB-PROMOTION-VALIDATION-AUTHORITY",
+            "revision": 1,
+            "accepted_policies": [
+                {
+                    "task_id": "M4-002",
+                    "task_revision": 1,
+                    "policy_ref": self.ref(self.policy_path),
+                    "checker": copy.deepcopy(self.policy["checker"]),
+                    "runner": copy.deepcopy(self.policy["runner"]),
+                    "host": {
+                        "host_id": "fixture-validation-host",
+                        "version": "1.0.0",
+                        "source_ref": self.ref(self.host),
+                    },
+                    "accepted_at": "2026-08-31T08:55:00+08:00",
+                    "accepted_by": "Chengyue-Lu",
+                }
+            ],
+            "authority_boundaries": {
+                "pre_attempt_acceptance": True,
+                "validation_execution_fact": False,
+                "promotion_execution": False,
+                "claim_acceptance": False,
+                "human_decision": False,
+                "scientific_correctness": False,
+            },
+        }
+        self.write_registry(registry)
+        return registry
+
+    def write_registry(self, registry: dict) -> None:
+        self.registry_path.write_text(
+            yaml.safe_dump(registry, sort_keys=False), encoding="utf-8", newline="\n"
+        )
+
+    def _task(self) -> dict:
+        task = {
+            "schema_version": "0.1.0",
+            "task_id": "M4-002",
+            "revision": 1,
+            "goal": "Promote exact validated artifact bytes.",
+            "question_refs": [],
+            "active_modes": [],
+            "required_capabilities": [],
+            "required_skills": [],
+            "forbidden_skills": [],
+            "agent_profile": "fixture-operator",
+            "input_refs": [self.ref(self.registry_path), self.ref(self.policy_path)],
+            "write_scope": ["work/M4-002/A-001"],
+            "required_outputs": ["promotion_record"],
+            "permissions": {},
+            "delegation": {"allowed": False, "max_depth": 0, "max_parallel": 0},
+            "budget": {"max_turns": 2},
+            "atomic_boundary": "One exact promotion attempt.",
+            "completion_checks": ["promotion record validates"],
+            "safe_pause_conditions": ["authority closure unavailable"],
+            "stop_conditions": ["any pin drift"],
+            "stale_if": ["authority registry or policy changes"],
+        }
+        self.write_task(task)
+        return task
+
+    def write_task(self, task: dict) -> None:
+        self.task_path.write_text(
+            yaml.safe_dump(task, sort_keys=False), encoding="utf-8", newline="\n"
+        )
+
     def _execution(self) -> dict:
         execution = {
             "schema_version": "0.1.0",
             "execution_id": "M4-002-VALIDATION-EXEC-A-001",
             "task_id": "M4-002",
             "attempt_id": "A-001",
+            "task_ref": self.ref(self.task_path, revision=1),
+            "authority_registry_ref": self.ref(self.registry_path),
             "policy_ref": self.ref(self.policy_path),
             "checker": copy.deepcopy(self.report["checker"]),
             "runner": copy.deepcopy(self.policy["runner"]),
+            "host": copy.deepcopy(self.registry["accepted_policies"][0]["host"]),
             "report_ref": self.ref(self.report_path),
             "subject_refs": copy.deepcopy(self.report["subject_refs"]),
             "executor": "fixture-validation-host",
@@ -184,6 +267,8 @@ class PromotionFixture(unittest.TestCase):
             "schema_version": "0.1.0",
             "promotion_id": "PROMOTION-M4-002-A-001",
             "source_workspace": "work/M4-002/A-001",
+            "task_ref": self.ref(self.task_path, revision=1),
+            "validation_authority_registry": self.ref(self.registry_path),
             "validation_report": self.ref(self.report_path),
             "validation_policy": self.ref(self.policy_path),
             "validation_execution": self.ref(self.execution_path),
@@ -228,14 +313,76 @@ class PromotionFixture(unittest.TestCase):
 class PromotionValidationTest(PromotionFixture):
     def test_valid_record_closes_report_checker_subjects_and_entries(self) -> None:
         self.assertEqual(infer_document_kind(self.record), "promotion_record")
+        self.assertEqual(
+            infer_document_kind(self.registry), "promotion_validation_authority_registry"
+        )
         self.assertEqual(infer_document_kind(self.policy), "promotion_validation_policy")
         self.assertEqual(infer_document_kind(self.execution), "promotion_validation_execution")
         self.assertEqual(SchemaCatalog().validate("promotion_record", self.record), [])
+        self.assertEqual(
+            SchemaCatalog().validate("promotion_validation_authority_registry", self.registry), []
+        )
+        self.assertEqual(SchemaCatalog().validate("task_packet", self.task), [])
         self.assertEqual(SchemaCatalog().validate("promotion_validation_policy", self.policy), [])
         self.assertEqual(
             SchemaCatalog().validate("promotion_validation_execution", self.execution), []
         )
         self.assertEqual(check_promotion(self.root, self.record), [])
+
+    def test_self_consistent_fake_stable_zone_authority_cannot_bypass_frozen_task(self) -> None:
+        fake_checker = self.root / "checks" / "promotion" / "fake-checker.py"
+        fake_runner = self.root / "checks" / "promotion" / "fake-runner.py"
+        fake_host = self.root / "checks" / "promotion" / "fake-host.py"
+        fake_checker.write_text("def check(): return True\n", encoding="utf-8")
+        fake_runner.write_text("def run(): return 'pass'\n", encoding="utf-8")
+        fake_host.write_text("def validate(): return 'pass'\n", encoding="utf-8")
+
+        report = copy.deepcopy(self.report)
+        report["checker"] = {
+            "checker_id": "fake-checker",
+            "version": "1.0.0",
+            "source_ref": self.ref(fake_checker),
+        }
+        self.write_report(report)
+        policy = copy.deepcopy(self.policy)
+        policy["checker"] = copy.deepcopy(report["checker"])
+        policy["runner"] = {
+            "runner_id": "fake-runner",
+            "version": "1.0.0",
+            "source_ref": self.ref(fake_runner),
+        }
+        self.write_policy(policy)
+        registry = copy.deepcopy(self.registry)
+        accepted = registry["accepted_policies"][0]
+        accepted["policy_ref"] = self.ref(self.policy_path)
+        accepted["checker"] = copy.deepcopy(policy["checker"])
+        accepted["runner"] = copy.deepcopy(policy["runner"])
+        accepted["host"] = {
+            "host_id": "fake-validation-host",
+            "version": "1.0.0",
+            "source_ref": self.ref(fake_host),
+        }
+        self.write_registry(registry)
+        execution = copy.deepcopy(self.execution)
+        execution["authority_registry_ref"] = self.ref(self.registry_path)
+        execution["policy_ref"] = self.ref(self.policy_path)
+        execution["checker"] = copy.deepcopy(policy["checker"])
+        execution["runner"] = copy.deepcopy(policy["runner"])
+        execution["host"] = copy.deepcopy(accepted["host"])
+        execution["executor"] = "fake-validation-host"
+        execution["report_ref"] = self.ref(self.report_path)
+        self.write_execution(execution)
+
+        record = copy.deepcopy(self.record)
+        record["validation_authority_registry"] = self.ref(self.registry_path)
+        record["validation_policy"] = self.ref(self.policy_path)
+        record["validation_report"] = self.ref(self.report_path)
+        record["validation_execution"] = self.ref(self.execution_path)
+        risks = check_promotion(self.root, record)
+        self.assertTrue(
+            any("Task Packet does not exact-pin" in risk.message for risk in risks),
+            [risk.message for risk in risks],
+        )
 
     def test_self_signed_work_checker_policy_or_execution_cannot_authorize_promotion(self) -> None:
         original_report = copy.deepcopy(self.report)
@@ -362,6 +509,69 @@ class PromotionValidationTest(PromotionFixture):
                 record["validation_execution"] = self.ref(self.execution_path)
                 self.assertIn("ARTIFACT-PROMOTION-BYPASS", self.codes(record))
 
+    def test_task_registry_host_and_acceptance_time_drift_fail_closed(self) -> None:
+        base_task = copy.deepcopy(self.task)
+        base_registry = copy.deepcopy(self.registry)
+        base_execution = copy.deepcopy(self.execution)
+
+        for mutation in (
+            "registry-path",
+            "task-duplicate-input",
+            "task-write-scope",
+            "registry-entry",
+            "execution-task-ref",
+            "execution-registry-ref",
+            "host",
+            "executor",
+            "accepted-after-execution",
+        ):
+            with self.subTest(mutation=mutation):
+                task = copy.deepcopy(base_task)
+                registry = copy.deepcopy(base_registry)
+                execution = copy.deepcopy(base_execution)
+                record = copy.deepcopy(self.record)
+                registry_path = self.registry_path
+
+                if mutation == "registry-path":
+                    registry_path = self.registry_path.with_name("forged-accepted.yaml")
+                elif mutation == "task-write-scope":
+                    task["write_scope"].append("registry/validation-policies")
+                elif mutation == "registry-entry":
+                    registry["accepted_policies"][0]["task_revision"] = 2
+                elif mutation == "host":
+                    execution["host"]["host_id"] = "substituted-host"
+                    execution["executor"] = "substituted-host"
+                elif mutation == "executor":
+                    execution["executor"] = "caller-claimed-host"
+                elif mutation == "accepted-after-execution":
+                    registry["accepted_policies"][0]["accepted_at"] = (
+                        "2026-08-31T08:58:30+08:00"
+                    )
+
+                registry_path.write_text(
+                    yaml.safe_dump(registry, sort_keys=False), encoding="utf-8", newline="\n"
+                )
+                record["validation_authority_registry"] = self.ref(registry_path)
+                task["input_refs"] = [
+                    copy.deepcopy(record["validation_authority_registry"]),
+                    copy.deepcopy(record["validation_policy"]),
+                ]
+                if mutation == "task-duplicate-input":
+                    task["input_refs"].append(copy.deepcopy(task["input_refs"][0]))
+                self.write_task(task)
+                record["task_ref"] = self.ref(self.task_path, revision=1)
+                execution["task_ref"] = copy.deepcopy(record["task_ref"])
+                execution["authority_registry_ref"] = copy.deepcopy(
+                    record["validation_authority_registry"]
+                )
+                if mutation == "execution-task-ref":
+                    execution["task_ref"]["sha256"] = "0" * 64
+                elif mutation == "execution-registry-ref":
+                    execution["authority_registry_ref"]["sha256"] = "0" * 64
+                self.write_execution(execution)
+                record["validation_execution"] = self.ref(self.execution_path)
+                self.assertIn("ARTIFACT-PROMOTION-BYPASS", self.codes(record))
+
     def test_file_bound_record_and_receipt_identity_are_not_optional(self) -> None:
         root_record = self.root / "promotion.yaml"
         root_record.write_text(
@@ -405,7 +615,13 @@ class PromotionValidationTest(PromotionFixture):
         record = copy.deepcopy(self.record)
         self.repin_report(record, report)
         record["source_workspace"] = record["source_workspace"].replace("/", "\\")
-        for field in ("validation_report", "validation_policy", "validation_execution"):
+        for field in (
+            "task_ref",
+            "validation_authority_registry",
+            "validation_report",
+            "validation_policy",
+            "validation_execution",
+        ):
             record[field]["path"] = record[field]["path"].replace("/", "\\")
         for entry in record["entries"]:
             entry["artifact"]["path"] = entry["artifact"]["path"].replace("/", "\\")
@@ -432,6 +648,8 @@ class PromotionValidationTest(PromotionFixture):
     def test_repository_validation_recognizes_promotion_authority_documents(self) -> None:
         record_path = self.write_record(self.record)
         paths = [
+            str(self.task_path),
+            str(self.registry_path),
             str(self.policy_path),
             str(self.execution_path),
             str(self.report_path),
@@ -441,7 +659,7 @@ class PromotionValidationTest(PromotionFixture):
         with redirect_stdout(output):
             result = main(["validate", *paths, "--root", str(self.root)])
         self.assertEqual(result, 0, output.getvalue())
-        self.assertIn("validated=4 errors=0 warnings=0", output.getvalue())
+        self.assertIn("validated=6 errors=0 warnings=0", output.getvalue())
 
     def test_report_pin_subject_set_and_checker_drift_fail_closed(self) -> None:
         with self.subTest("report pin"):
@@ -583,19 +801,30 @@ class PromotionValidationTest(PromotionFixture):
 
         for record in (
             {},
-            {"validation_report": {}, "entries": []},
+            {"task_ref": {}},
+            {"task_ref": {}, "validation_authority_registry": {}},
             {
+                "task_ref": {},
+                "validation_authority_registry": {},
                 "validation_report": {},
-                "validation_policy": {},
-                "entries": [],
             },
             {
+                "task_ref": {},
+                "validation_authority_registry": {},
+                "validation_report": {},
+                "validation_policy": {},
+            },
+            {
+                "task_ref": {},
+                "validation_authority_registry": {},
                 "validation_report": {},
                 "validation_policy": {},
                 "validation_execution": {},
                 "entries": [],
             },
             {
+                "task_ref": {},
+                "validation_authority_registry": {},
                 "validation_report": {},
                 "validation_policy": {},
                 "validation_execution": {},
@@ -604,6 +833,8 @@ class PromotionValidationTest(PromotionFixture):
         ):
             with self.subTest(record=record), self.assertRaises(ContractError):
                 promotion.PromotionRecord.from_mapping(record)
+        with self.assertRaises(ContractError):
+            promotion._timestamp("2026-08-31T09:00:00", "recorded_at")
 
     def test_symlink_escape_blocks_source_and_target(self) -> None:
         outside = self.root.parent / f"{self.root.name}-outside"
@@ -611,7 +842,7 @@ class PromotionValidationTest(PromotionFixture):
         try:
             source_link = self.workspace / "outputs" / "outside-link"
             target_link = self.root / "objects" / "outside-link"
-            target_link.parent.mkdir(parents=True)
+            target_link.parent.mkdir(parents=True, exist_ok=True)
             try:
                 source_link.symlink_to(outside, target_is_directory=True)
                 target_link.symlink_to(outside, target_is_directory=True)
@@ -748,6 +979,11 @@ class PromotionExecutionTest(PromotionFixture):
         self.assertEqual(infer_document_kind(receipt), "promotion_execution_receipt")
         self.assertEqual(SchemaCatalog().validate("promotion_execution_receipt", receipt), [])
         self.assertEqual(receipt["promotion_record_ref"], self.ref(self.workspace / "promotion.yaml"))
+        self.assertEqual(receipt["task_ref"], self.record["task_ref"])
+        self.assertEqual(
+            receipt["validation_authority_registry_ref"],
+            self.record["validation_authority_registry"],
+        )
         self.assertEqual(receipt["validation_report_ref"], self.record["validation_report"])
         self.assertEqual(receipt["source_artifact_refs"], [self.ref(self.output), self.ref(self.negative)])
         self.assertEqual(
@@ -872,7 +1108,7 @@ class PromotionExecutionTest(PromotionFixture):
         result = self.execute(record)
         self.assertEqual(result.targets, ())
         self.assertTrue((self.root / result.receipt).is_file())
-        self.assertFalse((self.root / "objects").exists())
+        self.assertFalse((self.root / "objects" / "M4-002" / "result.txt").exists())
         self.assertTrue(self.output.is_file())
 
     def test_source_race_and_partial_publish_roll_back(self) -> None:
