@@ -2,7 +2,7 @@
 
 | ID | 类型 | 风险 | 控制 | 当前状态 |
 |---|---|---|---|---|
-| M14-GOV-001 | fact | 仅放行 `release/*` 分支名会绕过 source、surface 与 manifest 证明，或迁移期形成两条可绕行发布路径。 | M14-001 只识别 dormant same-repo/source/parent trust seam；M14-002 exporter/checker 完成后 release path 仍 BLOCK；M14-005 在全部 readiness Gate 闭合后才原子启用 release/v* 并禁用 direct develop→main。 | open；等待 M14-001～005 |
+| M14-GOV-001 | fact | 仅放行 `release/*` 分支名会绕过 source、surface 与 manifest 证明，或迁移期形成两条可绕行发布路径。 | M14-001 已实现 strict dormant same-repo/source/parent trust seam，且完整候选仍固定 ERROR；M14-002 exporter/checker 完成后 release path仍 BLOCK；M14-005 在全部 readiness Gate 闭合后才原子启用 release/v* 并禁用 direct develop→main。 | partially controlled；branch-only/data-only bypass 已阻断，等待 M14-002/005 |
 | M14-SOURCE-001 | fact | 从 working tree 复制会吸收 dirty/untracked 文件或 Windows CRLF 转换，generated output 又可能脱离 provenance。 | M14-002 直接读取 frozen commit Git blobs；显式纳入 `.gitattributes`；每个输出分类 source/generated 并 pin blob/mode 或 generator/inputs；两次完整 tree 逐字节一致。 | open；等待 M14-002 |
 | M14-MANIFEST-001 | fact | 攻击者同步改文件和 manifest hash 后伪造一致性。 | checker 接受外部 expected source SHA 与 current-main parent SHA，重读 source commit/policy、重算 prospective merge tree 并比较 Git blob bytes，不能只信 manifest。 | open；等待 M14-002 |
 | M14-POLICY-001 | fact | allowlist 的 unknown/overlap/path collision 或同版本漂移改变公开面而未被识别。 | strict append-only policy Schema；拒绝 unknown、空/重复/重叠/不存在 include、file/tree ambiguity、case-fold/Unicode/Windows 路径冲突。 | open；等待 M14-002 |
@@ -16,5 +16,5 @@
 | M14-EVAL-001 | fact | M5 真实 net-benefit 未完成却被 release 文案写成已证明价值。 | M14-004 support matrix 明确 structural/bounded/live/evaluated 层级；M14-005 review 校核 claim 不超证据。 | open；不阻塞机制实现，但阻断过度宣称 |
 | M14-ANCESTRY-001 | fact | release branch 若不以 current main 为父提交，连续发行会对 manifest 产生 add/add 冲突，并可能让旧版 generated 文件滞留在 merge result。 | 以 external expected current main tip 为 Git parent、frozen develop 为唯一内容来源；manifest 分别 pin source/parent；main 漂移即重建；合并前证明 prospective merge-result tree、projection tree 与 manifest closed output tree 完全相同。 | open；等待 M14-002/005 |
 | M14-READINESS-001 | fact | topology recognition 或 surface checker 完成后过早开放 release PR，会绕过 package、public docs、license、remote protection 或 Human release decision。 | M14-001～004 全部不产生 merge eligibility；M14-005 验证所有 readiness Gate 后才原子 cutover并执行首次 release。 | open；等待 M14-005 |
-| M14-BRANCH-001 | fact | 在 release branch 修功能，或把精选删除反向合并到 develop。 | release branch 从 exact current main 创建但只由 frozen-develop exporter 生成完整 tree；语义修复回 develop 后重建；release branch 永不合并回 develop。 | open；等待 M14-001/002/005 enforcement |
+| M14-BRANCH-001 | fact | 在 release branch 修功能，或把精选删除反向合并到 develop。 | M14-001 已阻断 release branch 指向 develop，并要求 exact current-main 线性无 merge ancestry；后续只由 frozen-develop exporter 生成完整 tree，语义修复回 develop 后重建，release branch 永不回并。 | partially controlled；等待 M14-002/005 tree/cutover enforcement |
 | M14-FREEZE-001 | inference | 把计划分支 HEAD 当成首次发布 source SHA，导致 review 期间 scope 漂移。 | 只有 M14-005 在全部前置完成后冻结 source；task-definition/M14-001 不记录 release source manifest。 | controlled by current scope |

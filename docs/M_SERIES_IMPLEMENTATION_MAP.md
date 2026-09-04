@@ -39,7 +39,8 @@ flowchart TB
 
 箭头是 family-level 施工导航，不是机械的 hard dependency。任何具体 Task 的 exact dependency、状态、
 owner、scope 与 acceptance 都以 `TASKS.md` 的 Task 行为准。M12/M13 仍是 reservation，不在执行队列；
-M14 已 task-defined，但只有 `M14-001` READY。虚线只表示 maturity evidence，不生成 hard dependency。
+M14 已 task-defined，`M14-001` dormant trust seam 为 DONE；其余仍为 PARKED/BLOCKED。虚线只表示 maturity
+evidence，不生成 hard dependency。
 
 ## 2. M-group 索引
 
@@ -59,7 +60,7 @@ M14 已 task-defined，但只有 `M14-001` READY。虚线只表示 maturity evid
 | M11 | Execution reintegration | task-defined；Core 与 optional Skill extension complete；生产 projection index 仍为空 |
 | M12 | Execution Continuity & Recovery | **RESERVED** |
 | M13 | Strategy & Governed Evolution | **RESERVED** |
-| M14 | Product / Release Closure | task-defined；M14-001 READY，其余依 DAG PARKED/BLOCKED |
+| M14 | Product / Release Closure | task-defined；M14-001 DONE，其余依 DAG PARKED/BLOCKED |
 
 `task-defined` 只表示该 family 已有原子 Task，不表示全部 Task 已完成。实时状态仍见 `TASKS.md`。
 
@@ -172,7 +173,7 @@ hard dependency（包括 Human/external Gate）均不得由本图推断。
 
 ```mermaid
 flowchart LR
-    M14001["M14-001 READY<br/>topology / source trust"] --> M14002["M14-002 PARKED<br/>surface / manifest"]
+    M14001["M14-001 DONE<br/>dormant topology / source trust"] --> M14002["M14-002 PARKED<br/>surface / manifest"]
     M14001 --> M14003["M14-003 PARKED<br/>portable package"]
     M14002 --> M14004["M14-004 PARKED<br/>public docs"]
     M14003 --> M14004
@@ -185,7 +186,7 @@ flowchart LR
 ```
 
 M14 只把 frozen `develop` 确定性投影为精选 `main`，不成为新产品语义 owner；exact current `main` 只作为
-generated release branch 的 Git 父提交。M14-001 先建立 dormant R2 trust anchor，M14-002 与 M14-003 后续
+generated release branch 的 Git 父提交。M14-001 已建立 dormant R2 trust anchor，M14-002 与 M14-003 后续
 可并行闭合 projection/package，但 release branch 继续 fail closed、现行 exact develop release 继续有效。
 M14-005 在全部 readiness Gate 闭合后才原子完成 topology cutover。首版允许 no-Skill Core，但不得发布
 未许可/未准入 Skill，也不得把 incomplete M5 evaluation 写成已证明价值。Issue #57 的 `REL-*` 仅为工作包

@@ -565,7 +565,7 @@ M11 Core 不需要 Skill extension。M11-005/006 已实现 Projection/publisher 
 
 Issue #57 与 ADR-0021 已把最后一项拆成正式 M14 family，但没有把这些限制改写为完成。目标模型分离两条
 输入：frozen `develop` 是 exporter 唯一内容/provenance 来源，exact current `main` 是 generated
-`release/v*` 的 Git 父提交。M14-001 只建立 dormant trust/governance seam；M14-002/003/004 分别闭合
+`release/v*` 的 Git 父提交。M14-001 已建立 dormant trust/governance seam；M14-002/003/004 分别闭合
 deterministic surface、checkout 外 package/runtime data 与 public docs，完成后 release path 仍不具备 merge
 资格。M14-005 在许可证、scaffold、GitHub remote protection、人类决定和全部前置 Task 闭合后，才原子启用
 `release/v* -> main` 并禁用 direct `develop -> main`。release projection 不获得 Runtime、Method、Claim 或
@@ -583,7 +583,7 @@ Human authority，也不能把 M5 未完成的 system-level Evaluation 伪装为
 | Phase D | M5-003 canonical plan 与 ADR-0020 dual-transport estimand 已接受；M5-006 READY | M6-008 等待 M5-006 shared contract（PARKED）；baseline closeout、Skill replay Gate、Harness、真实案例/results/net-increment 与 disposition 未完成 |
 | Phase F / Topic 4 | M11-001～004 bounded Core 与 M11-005/006 optional Skill extension 已实现 | production Skill projection、live conformance 与 ordinary E2E 仍是独立 Gate |
 | Topic 5 | 没有新 implementation authority | Phase C Human/R2 closeout + 独立 R2 architecture review/task-definition |
-| Product / Release | M14 已 task-defined；M14-001 是唯一 READY trust-anchor Task | deterministic surface、portable package、public docs、license/scaffold、远端保护与首次发行均未完成 |
+| Product / Release | M14 已 task-defined；M14-001 dormant trust-anchor DONE | deterministic surface、portable package、public docs、license/scaffold、远端保护与首次发行均未完成 |
 
 M12、M13 只是 reservation，没有 Task state、owner、dependency、acceptance 或 Schema；不得从本图生成
 `M12-001` 等伪 Task。M14 的 `M14-001～005` 已由独立 R2 task-definition 明确列出，但本图仍不生成状态或

@@ -13,9 +13,11 @@ Phase A / M8 Core Formalization 已完成契约收口。Phase B / M9-001～006 �
 Protocol、两级 Snapshot 与 migration/replacement 结构契约已经实现。这里的“完成”不表示真实 Provider、
 production runtime-execution binding、Human Decision、科学有效性或端到端研究运行已经证明。
 
-Issue #57 / ADR-0021 已将 Product / Release Closure 从 M14 reservation 转为正式 Task family；当前仅
-`M14-001` release topology/source trust 为 READY。deterministic surface、portable package、public docs 与首次
-curated main release 均未实现，因此这不是发布完成宣称，也不改变当前 exact `develop -> main` 执行规则。
+Issue #57 / ADR-0021 已将 Product / Release Closure 从 M14 reservation 转为正式 Task family；`M14-001`
+release topology/source trust 已以 dormant、R2、fail-closed seam 完成。治理器可识别并校核 strict
+`release/v* -> main` 候选，但即使 trusted prerequisites 全部满足也仍明确 BLOCK；普通环境或 PR 自报值不构成
+external trust。deterministic surface、portable package、public docs 与首次 curated main release 均未实现，
+因此这不是发布完成宣称，也不改变当前 exact `develop -> main` 执行规则。
 
 ## 已实现
 
