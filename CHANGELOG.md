@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-09-05 — M14-001 dormant release trust seam
+
+- 以声明式 policy 与 critical governance checker 识别 strict same-repository `release/vMAJOR.MINOR.PATCH -> main`
+  R2 candidate，并分别校核 external source/CI attestation、exact current-main parent、无 merge 线性 ancestry 与
+  raw manifest SHA-256 prerequisite；
+- PR body、branch/manifest 自报内容和普通进程环境不能替代 trusted caller attestation；仅修改 policy 数据也
+  不能激活路径，完整有效候选仍以 `TOPOLOGY-RELEASE-DORMANT` 阻断；
+- 保持 exact same-repository `develop -> main` 为唯一可执行 release topology。exporter、manifest contract、
+  package/public projection、远端 GitHub attestation 和 topology cutover 继续分别属于 M14-002～005。
+
 ## 2026-09-05 — M14 curated release task-definition
 
 - 依据 Issue #57 与 ADR-0021，将 M14 从 namespace reservation 转为正式 Product / Release Closure family，

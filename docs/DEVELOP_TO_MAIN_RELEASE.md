@@ -1,6 +1,6 @@
 # `develop` → `main` 发布合并规范
 
-状态：Stable release rules；M14 migration pending
+状态：Stable release rules；M14-001 dormant trust seam implemented
 更新：2026-09-05
 
 本文规定已在 `develop` 集成的项目状态如何进入 `main`。这里的“发布”是仓库稳定线发布，表示
@@ -10,7 +10,8 @@
 > [Issue #57](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57) 与
 > [ADR-0021](decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md) 已接受未来的 curated release 目标：
 > frozen `develop` 是内容与 provenance 来源，exact current `main` 是 release branch 的 Git 父提交。
-> M14-001～004 只建立 dormant topology、export/check、portable package 与 public docs；在 M14-005
+> M14-001 已建立只识别、校验并阻断的 dormant topology；M14-002～004 后续建立 export/check、portable
+> package 与 public docs。在 M14-005
 > readiness/cutover 验收前，本页以下 exact `develop -> main` 规则仍是唯一可执行规则，不得提前手工使用
 > `release/* -> main`。
 
@@ -34,6 +35,25 @@ feature / task-definition branch
 
 该拓扑由 `.github/scripts/check_pr_governance.py` 校验。GitHub ruleset 负责远端阻断；仓库规则与
 ruleset 两者都生效后，才能宣称分支受到完整保护。
+
+### 1.1 M14-001 dormant seam（不是第二条可执行拓扑）
+
+`.github/governance-policy.json` 现已声明 strict `release/vMAJOR.MINOR.PATCH -> main` 候选面；治理器只在
+base 为 `main`、head 为同仓库 canonical SemVer 分支且 PR class 为 `release` 时将其识别为 curated-release
+attempt，并自动提升到 R2。识别不等于准入：任何结构正确的候选仍产生
+`TOPOLOGY-RELEASE-DORMANT` `ERROR`，仅修改 policy 数据也不能切到 active。
+
+该 seam 把以下内容作为相互独立的 prerequisite 进行 fail-closed 校核：
+
+- external expected source repository、exact `develop` ref/SHA 与 fetched develop history；
+- 绑定同一 source SHA 的具名 CI workflow、run identity、required-check success closure；
+- external expected current-main SHA、PR event base、merge-base、首提交 parent 与无 merge commit 的线性历史；
+- `RELEASE_MANIFEST.json` 是否存在，以及其原始 bytes 是否匹配 external expected SHA-256。
+
+这些 expectation 只能由未来受保护调用方以显式 attestation 传入；PR body、release branch、manifest 自报值和
+普通进程环境都不会自动获得 trust。当前 hosted workflow 尚未建立这种 attestation，M14-002 也尚未发布
+manifest/exporter；因此候选会在更早 prerequisite 或 dormant Gate 处阻断。fresh main/develop observation、
+GitHub required-check authenticity 和最终 readiness 仍由 M14-005 闭合，本节不宣称真实 release 已可执行。
 
 ## 2. 创建 release PR 前
 
