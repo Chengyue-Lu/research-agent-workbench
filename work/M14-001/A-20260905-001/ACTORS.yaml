@@ -1,0 +1,25 @@
+schema_version: 0.1.0
+task_id: M14-001
+task_revision: 1
+attempt_id: A-20260905-001
+actors:
+  - actor_id: main-agent
+    actor_type: agent
+    role: coordinator-and-implementer
+    runtime_identity: Codex primary task window
+    accountable_owner: Chengyue-Lu
+  - actor_id: governance-design-auditor
+    actor_type: agent
+    role: read-only governance design auditor
+    runtime_identity: bounded Codex subagent m14_001_governance_design
+    accountable_owner: Chengyue-Lu
+  - actor_id: test-auditor
+    actor_type: agent
+    role: read-only test and coverage auditor
+    runtime_identity: bounded Codex subagent m14_001_test_audit
+    accountable_owner: Chengyue-Lu
+  - actor_id: archive-scope-auditor
+    actor_type: agent
+    role: read-only archive and scope auditor
+    runtime_identity: bounded Codex subagent m14_001_archive_scope
+    accountable_owner: Chengyue-Lu
