@@ -10,8 +10,9 @@
 
 ## 范围
 
-本 PR 只完成 M4-002：`promotion_record`、独立 library validator/executor、`rwb promotion
-validate|execute`、对抗测试、Coverage Policy 和实现文档。它提议在合入时将 M4-002 置为 DONE，并因
+本 PR 只完成 M4-002：`promotion_record`、独立 library validator/executor、trusted validation host 与
+`rwb validation run`、`promotion_validation_host_receipt`、`rwb promotion validate|execute`、对抗测试、
+Coverage Policy 和实现文档。它提议在合入时将 M4-002 置为 DONE，并因
 hard dependency 满足而把 M4-003/004 激活为 READY。
 
 M4-003 Claim Trace 与 M4-004 Run reproduction 不在本分支实现；M5 状态不变。本分支已经 rebase 到
@@ -20,9 +21,12 @@ M4-003 Claim Trace 与 M4-004 Run reproduction 不在本分支实现；M5 状态
 
 ## 契约边界
 
-- pre-Attempt canonical Task → accepted-policy registry → exact policy → host-bound deterministic validation
-  execution → PASS report → promotion 的 Task/Attempt/revision、checker/runner/host identity/version/source hash
-  与 subject set 全部 exact closure；允许稳定目录本身不授予 authority；
+- pre-Attempt canonical Task → accepted-policy registry → exact policy → trusted validation host 实际执行
+  accepted runner/checker → host receipt → host-bound deterministic validation execution → PASS report →
+  promotion 的 Task/Attempt/revision、checker/runner/host identity/version/source hash 与 subject set 全部
+  exact closure；允许稳定目录本身不授予 authority；手写 execution record（即使内部 hash 自洽、引用合法
+  authority 对象）不得获得 eligibility——promotion 验证在其余检查干净后确定性重执行 pinned
+  runner/checker，要求 byte-exact 复现 PASS report 与记录 transcript；
 - report、subjects、entries 与 live bytes 全部 exact-pin；subjects/entries 按 exact file-reference 集合相等；
 - 只从 exact `work/<task>/<attempt>` 复制到 `objects/`、`runs/`、`deliverables/candidates/`；
 - execute 只接受 workspace 内的 file-bound record；staging + commit-time 复验 + exclusive-create 同批发布

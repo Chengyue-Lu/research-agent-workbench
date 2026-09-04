@@ -69,6 +69,7 @@ class VersionedSchemaTests(unittest.TestCase):
                 "promotion_record",
                 "promotion_validation_authority_registry",
                 "promotion_validation_execution",
+                "promotion_validation_host_receipt",
                 "promotion_validation_policy",
                 "protocol_profile",
                 "protocol_profile_index",

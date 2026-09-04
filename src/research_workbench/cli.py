@@ -34,6 +34,7 @@ from research_workbench.artifacts.promotion import (
     execute_promotion,
     load_promotion_record,
 )
+from research_workbench.artifacts.validation_host import run_validation_execution
 from research_workbench.capability import (
     AcceptedSkillRegistry,
     AgentProfile,
@@ -237,6 +238,18 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
             if isinstance(component, Mapping) and isinstance(component.get("source_ref"), Mapping):
                 references += (FileReference.from_mapping(component["source_ref"]),)
     elif kind == "promotion_validation_execution":
+        for key in ("task_ref", "authority_registry_ref", "policy_ref", "report_ref"):
+            reference = document.get(key)
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
+        for key in ("checker", "runner", "host"):
+            component = document.get(key)
+            if isinstance(component, Mapping) and isinstance(component.get("source_ref"), Mapping):
+                references += (FileReference.from_mapping(component["source_ref"]),)
+        for reference in document.get("subject_refs", []):
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
+    elif kind == "promotion_validation_host_receipt":
         for key in ("task_ref", "authority_registry_ref", "policy_ref", "report_ref"):
             reference = document.get(key)
             if isinstance(reference, Mapping):
@@ -468,6 +481,29 @@ def _promotion_execute(args: argparse.Namespace) -> int:
     if not result.targets:
         print("ok: all validated entries retained in work")
     print(f"receipt: {result.receipt}")
+    return 0
+
+
+def _validation_run(args: argparse.Namespace) -> int:
+    try:
+        result = run_validation_execution(
+            Path(args.root).resolve(),
+            args.task,
+            attempt_id=args.attempt,
+            subjects=tuple(args.subject),
+            operator=args.operator,
+            report_path=args.report_path,
+        )
+    except ContractError as exc:
+        print(f"ERROR   VALIDATION-EXECUTION-UNPROVEN {exc}")
+        return 1
+    print(f"report: {result.report_path}")
+    print(f"execution: {result.execution_path}")
+    print(f"receipt: {result.receipt_path}")
+    if result.outcome != "pass":
+        print("blocked: validation execution outcome is not pass")
+        return 1
+    print("ok: trusted validation host produced a PASS execution fact")
     return 0
 
 
@@ -1607,6 +1643,29 @@ def build_parser() -> argparse.ArgumentParser:
     promotion_execute.add_argument("record")
     promotion_execute.add_argument("--root", default=".")
     promotion_execute.set_defaults(handler=_promotion_execute)
+
+    validation = subparsers.add_parser(
+        "validation", help="run the trusted validation host for artifact promotion"
+    )
+    validation_subparsers = validation.add_subparsers(dest="validation_command", required=True)
+    validation_run = validation_subparsers.add_parser(
+        "run",
+        help="actually invoke the accepted runner/checker and persist the execution facts",
+    )
+    validation_run.add_argument("--task", required=True, help="file-bound canonical Task Packet")
+    validation_run.add_argument("--attempt", required=True, help="Attempt ID under work/<task>/")
+    validation_run.add_argument(
+        "--subject",
+        action="append",
+        required=True,
+        help="subject path inside the workspace; repeat for each subject",
+    )
+    validation_run.add_argument("--operator", required=True, help="named accountable operator")
+    validation_run.add_argument(
+        "--report-path", help="report path override; must stay inside the workspace"
+    )
+    validation_run.add_argument("--root", default=".")
+    validation_run.set_defaults(handler=_validation_run)
 
     trace = subparsers.add_parser("trace", help="validate a file-authoritative Attempt trace")
     trace_subparsers = trace.add_subparsers(dest="trace_command", required=True)

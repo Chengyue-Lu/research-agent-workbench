@@ -125,7 +125,7 @@ flowchart LR
     M6004["M6-004<br/>live Provider/session"] --> M5004
 ```
 
-M4-002 已闭合 exact validation 与 fail-closed promotion；M4-003/004 现为两个独立 READY 后继。M5-004 同时等待
+M4-002 已闭合 trusted validation host 实际执行的 exact validation 与 fail-closed promotion（host receipt + 确定性重执行等价）；M4-003/004 现为两个独立 READY 后继。M5-004 同时等待
 M4 闭环、两个 Human-approved public/private Case Dossier、M5-003 计划契约、M5-006 Protocol、M5-007
 Harness、M11-006 真实 projection-backed Skill 路径与 M6-004 live Provider/session Gate。ADR-0020 已 exact-pin
 双传输并关闭 `M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE`：A1/A2→M6、A3→M11 Core、A4→M11 Skill

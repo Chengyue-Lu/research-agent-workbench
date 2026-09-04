@@ -656,6 +656,34 @@ def check_promotion(
                     "promotion record predates completion of its validation execution",
                 )
             )
+
+    host_receipt: Mapping[str, Any] | None = None
+    if execution is not None:
+        host_receipt_ref = _file_reference(execution["host_receipt_ref"], "host_receipt_ref")
+        host_receipt, host_receipt_risks = _parse_referenced_document(
+            root_path,
+            host_receipt_ref,
+            "promotion_validation_host_receipt",
+            "validation host receipt",
+        )
+        risks.extend(host_receipt_risks)
+        if not _within_zone(host_receipt_ref.path, VALIDATION_EXECUTION_ZONE):
+            risks.append(
+                _risk(
+                    "VALIDATION-EXECUTION-UNPROVEN",
+                    f"validation host receipt must be under {VALIDATION_EXECUTION_ZONE}/",
+                )
+            )
+        if host_receipt is not None and report is not None:
+            from research_workbench.artifacts.validation_host import check_host_receipt_closure
+
+            risks.extend(
+                check_host_receipt_closure(root_path, record, report, execution, host_receipt)
+            )
+    if not risks and execution is not None and report is not None and host_receipt is not None:
+        from research_workbench.artifacts.validation_host import reexecute_validation
+
+        risks.extend(reexecute_validation(root_path, record, report, execution, host_receipt))
     return risks
 
 

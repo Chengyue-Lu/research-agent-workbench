@@ -96,7 +96,7 @@ M3-001～007 的 `PARKED` 表示当前没有 active implementation，并非抹�
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
 | M4-001 | DONE | source admission 与 provenance | M1-005, M1-007 | inbox 不可直接引用；admitted source 具有 exact identity/hash/provenance，拒绝未准入引用 |
-| M4-002 | DONE | work → object/run promotion | M4-001 | 只有校验通过可提升；promotion 不等于 Claim 接受或 Human Decision |
+| M4-002 | DONE | work → object/run promotion | M4-001 | 只有校验通过可提升；PASS 只能由受信 validation host 实际执行 accepted runner/checker 产生（host receipt + 确定性重执行等价），手写 execution 不得获得 eligibility；promotion 不等于 Claim 接受或 Human Decision |
 | M4-003 | READY | Claim trace 与 counterevidence | M4-001, M4-002, M8-005 | 支持/反证/限制一次定位；validator 不代替科研判断或 Claim promotion authority |
 | M4-004 | READY | Run manifest 与复现检查 | M3-008, M4-002 | 仿真案例可由 exact inputs/artifacts/environment refs 重建；不宣称结果科学正确 |
 | M4-005 | PARKED | DVC 技术 spike | 真实大文件需求 | 无需求则不启动 |
@@ -251,7 +251,7 @@ M13 不等于 strategy framework approval。
 | `M2-003, M2-004, M2-007, M2-008` | 路诚钺 | R1～R2 | E / optional evaluation | Capability / Skill Evolution | legacy 或来源驱动路线，保持 PARKED |
 | `M2-006` | 黄毅 | R1 | F / optional platform | Topic 4 | 无真实平台需求，保持 PARKED |
 | `M3-001～007` | 路诚钺、黄毅按既有边界 | R2 | pre-A bounded slice；post-C future | Topic 5 + Artifact/Trace | 无 active implementation，future residual 等待 Phase C closeout 后重新 task-definition |
-| `M4-002` | 路诚钺 | R1 | C / D | Research State + Artifact/Trace | exact validation closure 与 fail-closed promotion 已实现，DONE |
+| `M4-002` | 路诚钺 | R1 | C / D | Research State + Artifact/Trace | exact validation closure 与 fail-closed promotion 已实现，DONE；validation PASS 必须由 trusted host 实际执行 accepted runner/checker 产生（host receipt + 确定性重执行等价），手写 execution 不得获得 eligibility |
 | `M4-003, M4-004` | 路诚钺 | R1；M4-003 R2 | C / D | Research State + Artifact/Trace | M4-002 已完成；两个独立后继均为 READY，仍须分 Task/PR 验收 |
 | `M4-005` | 路诚钺 | R1 | deferred | Artifact/Trace | 只在真实大文件需求出现时恢复 |
 | `M5-001, M5-002` | 路诚钺 | Human decisions R2 | D | Evaluation + Research State | 等待人类选定并批准两类真实案例边界，BLOCKED |

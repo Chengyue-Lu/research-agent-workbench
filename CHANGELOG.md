@@ -21,6 +21,23 @@
 - M5-007 继续等待 M5-006、M6-008 与 Skill-bearing replay Gate；M5-003、M11 authority、真实案例/live
   Provider/Human Gate 与 Topic 5 均未被改写或提前解冻。
 
+## 2026-09-02 — M4-002 trusted validation host closure
+
+- 新增 trusted validation host（`rwb validation run`）：`promotion_validation_execution` 只有在 host
+  实际调用 accepted、hash-pinned 的 runner/checker 对 exact pinned subject bytes 运行后才携带 promotion
+  eligibility；手写 execution record 即使内部 hash 自洽、引用完全合法的 accepted authority 对象，也不得
+  获得 eligibility；
+- 新增 `promotion_validation_host_receipt` 文档种类，`host_receipt_ref` 成为 execution 的必需 exact
+  pin；receipt 固定 run-inputs closure hash、run transcript（exit code 与 stdout/stderr/report hash）和
+  `report_produced_by`；promotion 验证在其余检查干净后确定性重执行 pinned runner/checker，要求 byte-exact
+  复现 PASS report 与记录 transcript，任何不匹配以 `VALIDATION-EXECUTION-UNPROVEN` 阻断；
+- 新增 runner contract `rwb-validation-runner-contract/1` 与参考 runner
+  `registry/validation-tools/deterministic_runner.py`；checker/runner 的 byte-determinism 成为
+  policy-owned 要求；runner 崩溃、超时或未产出 report 持久化 durable fail fact
+  （`report_produced_by: host-failure-synthesis`），永不构成 eligibility；
+- `rwb promotion execute` 仍不执行任何调用方提供的代码；本闭合不产生 Claim acceptance、Human
+  Decision、publication 或 scientific correctness。
+
 ## 2026-08-31 — M4-002 fail-closed artifact promotion
 
 - 新增 `promotion_record`、pre-Attempt Task-pinned validation authority registry、accepted promotion

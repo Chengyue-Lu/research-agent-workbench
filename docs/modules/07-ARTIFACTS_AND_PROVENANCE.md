@@ -177,12 +177,19 @@ Skill-bearing Run 可以额外引用 exact Assignment；no-Skill/direct Tool/pro
 `promotion_record` 将 exact `work/<TASK>/<ATTEMPT>` 中 validation report 的全部 subjects 映射为
 `promote` 或 `retain-in-work`。pre-Attempt canonical Task Packet 先 exact-pin 唯一 accepted-policy registry
 与 policy，并把 actor write scope 收窄到该 workspace；registry 再按 Task revision 固定 checker、runner 与
-validation host。host-bound execution fact 固定同一 Task/Attempt、Task/registry/policy、report、subjects、
-执行者、时间和 outcome。Task → registry/policy → execution → PASS report → entries/live bytes 任一关系或
+validation host。trusted validation host（`rwb validation run`）在 scrubbed subprocess 中实际执行 pinned
+runner/checker，产出 `deterministic_check_report`、host-bound `promotion_validation_execution` 与
+`promotion_validation_host_receipt`（execution 以必需 `host_receipt_ref` exact-pin receipt；receipt 固定
+run-inputs closure hash 与 run transcript）。host-bound execution fact 固定同一 Task/Attempt、
+Task/registry/policy、report、subjects、执行者、时间和 outcome。Task → registry/policy → host 实际执行 →
+receipt → execution → PASS report → entries/live bytes 任一关系或
 hash 漂移均阻断；调用方即使在允许稳定目录内构造一套自洽 checker/runner/policy/execution，也不能绕过
-预先冻结的 Task inputs。
+预先冻结的 Task inputs；没有 trusted host 实际运行的手写 execution 也不得获得 eligibility——promotion
+验证在其余检查干净后会确定性重执行 pinned runner/checker，要求 byte-exact 复现 PASS report 与记录
+transcript，否则以 `VALIDATION-EXECUTION-UNPROVEN` 阻断。
 
-`rwb promotion validate` 只读检查；`rwb promotion execute` 只接受 workspace 内的 file-bound record，
+`rwb validation run` 产生 validation fact；`rwb promotion validate` 只读检查；`rwb promotion execute`
+只接受 workspace 内的 file-bound record，
 先在目标目录 staging 完整字节并复算 hash，再做完整复验，并生成 exact-pin
 record/Task/registry/policy/execution/report/checker/runner/host/source/actual-target/operator/time/outcome 的
 Promotion Receipt。目标与 receipt 在 commit-time 再复验后
@@ -259,8 +266,10 @@ Trace 默认保存在项目工作区，但不等于默认提交 Git：
 
 当前已实现的 M4-002 验收边界：
 
-- pre-Attempt Task、accepted registry/policy、host-bound deterministic validation execution、PASS report、
-  subjects、entries 与 live bytes exact closure，subject/entry 集合既不遗漏也不夹带；
+- pre-Attempt Task、accepted registry/policy、trusted validation host 实际执行产生的 host-bound
+  deterministic validation execution 与 host receipt、PASS report、subjects、entries 与 live bytes exact
+  closure，subject/entry 集合既不遗漏也不夹带；手写 execution（无 host receipt 闭包或确定性重执行不等价）
+  不得获得 eligibility；
 - 每个受检工件均有 promote/retain disposition，负结果不会被静默删除；
 - file-bound record、durable receipt、staging、commit-time 复验和 exclusive-create 阻断自签 PASS、覆盖、
   accepted 直达、路径逃逸及 record/source/target/receipt 竞态；

@@ -1,18 +1,20 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/promotion-validation-execution.schema.json",
-  "title": "Promotion Validation Execution Record",
-  "$comment": "Auditable fact for one deterministic validation run under an accepted promotion policy.",
-  "x-rwb-document-kind": "promotion_validation_execution",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/promotion-validation-host-receipt.schema.json",
+  "title": "Promotion Validation Host Receipt",
+  "$comment": "Trusted-host production fact for one deterministic validation execution. Promotion eligibility requires this receipt plus deterministic re-execution equivalence; a hand-written execution record never confers eligibility. It carries no Claim, Human Decision, publication, or scientific-correctness authority.",
+  "x-rwb-document-kind": "promotion_validation_host_receipt",
   "type": "object",
   "required": [
-    "schema_version", "execution_id", "task_id", "attempt_id", "task_ref",
-    "authority_registry_ref", "policy_ref", "checker", "runner", "host",
-    "report_ref", "subject_refs", "executor", "host_receipt_ref",
-    "started_at", "finished_at", "outcome", "authority_boundaries"
+    "schema_version", "receipt_id", "execution_id", "task_id", "attempt_id",
+    "task_ref", "authority_registry_ref", "policy_ref", "checker", "runner",
+    "host", "report_ref", "subject_refs", "run_inputs_sha256", "transcript",
+    "report_produced_by", "operator", "started_at", "finished_at", "outcome",
+    "authority_boundaries"
   ],
   "properties": {
     "schema_version": { "const": "0.1.0" },
+    "receipt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "execution_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "task_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "attempt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
@@ -29,8 +31,32 @@
       "uniqueItems": true,
       "items": { "$ref": "common.schema.json#/$defs/fileRef" }
     },
-    "executor": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
-    "host_receipt_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "run_inputs_sha256": {
+      "type": "string",
+      "pattern": "^(sha256:)?[0-9a-fA-F]{64}$"
+    },
+    "transcript": {
+      "type": "object",
+      "required": ["exit_code", "stdout_sha256", "stderr_sha256", "report_sha256"],
+      "properties": {
+        "exit_code": { "type": "integer" },
+        "stdout_sha256": {
+          "type": "string",
+          "pattern": "^(sha256:)?[0-9a-fA-F]{64}$"
+        },
+        "stderr_sha256": {
+          "type": "string",
+          "pattern": "^(sha256:)?[0-9a-fA-F]{64}$"
+        },
+        "report_sha256": {
+          "type": "string",
+          "pattern": "^(sha256:)?[0-9a-fA-F]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "report_produced_by": { "enum": ["runner", "host-failure-synthesis"] },
+    "operator": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "started_at": { "type": "string", "format": "date-time" },
     "finished_at": { "type": "string", "format": "date-time" },
     "outcome": { "enum": ["pass", "fail"] },

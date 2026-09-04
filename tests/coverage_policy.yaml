@@ -13,6 +13,7 @@ suites:
       - test_api_session_runner
       - test_artifacts_admission
       - test_artifacts_promotion
+      - test_artifacts_validation_host
       - test_capability_consumer
       - test_capability_requirements
       - test_capability_resolver_branches
@@ -134,6 +135,7 @@ critical_modules:
   - src/research_workbench/artifacts/admission.py
   - src/research_workbench/artifacts/integrity.py
   - src/research_workbench/artifacts/promotion.py
+  - src/research_workbench/artifacts/validation_host.py
   - src/research_workbench/kernel/objects.py
   - src/research_workbench/validation/relationships.py
   - src/research_workbench/validation/capability.py
@@ -294,6 +296,23 @@ negative_acceptance:
       - test_artifacts_promotion.PromotionExecutionTest.test_receipt_publication_failure_rolls_back_targets_and_receipt
       - test_artifacts_promotion.PromotionExecutionTest.test_source_race_and_partial_publish_roll_back
       - test_artifacts_promotion.PromotionExecutionTest.test_staged_byte_drift_and_pre_publish_target_race_block
+  - surface: artifact-validation-host-actual-execution
+    modules:
+      - src/research_workbench/artifacts/validation_host.py
+    positive_tests:
+      - test_artifacts_validation_host.ValidationHostRunTest.test_host_run_produces_schema_valid_pass_triple
+      - test_artifacts_validation_host.ValidationHostCliTest.test_cli_validation_run_then_promotion_validate_and_execute
+    negative_tests:
+      - test_artifacts_promotion.PromotionValidationTest.test_hand_written_execution_without_host_run_cannot_gain_eligibility
+      - test_artifacts_promotion.PromotionValidationTest.test_hand_written_execution_with_fabricated_receipt_cannot_gain_eligibility
+      - test_artifacts_promotion.PromotionValidationTest.test_failing_checker_reported_as_pass_blocks_promotion
+      - test_artifacts_promotion.PromotionValidationTest.test_host_receipt_transcript_and_closure_drift_matrix_blocks
+      - test_artifacts_validation_host.ValidationHostRunTest.test_runner_fault_without_report_produces_durable_fail_triple
+      - test_artifacts_validation_host.ValidationHostRunTest.test_runner_timeout_produces_durable_fail_triple
+      - test_artifacts_validation_host.ValidationHostRunTest.test_checker_exception_produces_durable_fail_triple
+      - test_artifacts_validation_host.ValidationHostRunTest.test_schema_invalid_runner_report_produces_durable_fail_triple
+      - test_artifacts_validation_host.ValidationHostRunTest.test_authority_and_boundary_faults_raise_before_any_write
+      - test_artifacts_validation_host.ValidationHostRunTest.test_second_run_for_same_attempt_is_refused
   - surface: artifact-integrity-and-research-state
     modules:
       - src/research_workbench/artifacts/integrity.py

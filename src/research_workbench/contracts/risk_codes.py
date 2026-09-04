@@ -166,6 +166,11 @@ ARTIFACT_RISK_CODE_REGISTRY = (
         "BLOCK",
         "Promotion bypasses its workspace, validation, target-zone, or authority boundary.",
     ),
+    RiskCodeEntry(
+        "VALIDATION-EXECUTION-UNPROVEN",
+        "BLOCK",
+        "A validation execution lacks trusted-host production evidence or fails deterministic re-execution equivalence.",
+    ),
 )
 
 ARTIFACT_RISK_CODES = frozenset(entry.code for entry in ARTIFACT_RISK_CODE_REGISTRY)
