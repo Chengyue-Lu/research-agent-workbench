@@ -53,7 +53,7 @@ family 为什么存在、由什么 authority boundary 约束、何时允许启�
 | Phase E | Strategy candidate 与 governed evolution；不得自动修改 Core | 既有 M2/M7；M13 仅 **RESERVED** | Phase C/D evidence 证明旧 group 不足后另行接受 |
 | Phase F / Topic 4 | Agent/Model/Provider/Runtime 消费 frozen contract；不拥有 Method/Claim/Gate/fallback authority | M11 Core 与 optional extension；M6 live conformance | M11 Core 与 optional Skill extension 已 bounded 实现；live conformance 仍依独立 Gate |
 | Topic 5 residual | Handoff、context rollover、safe pause/resume、recovery/continuation | M12 仅 **RESERVED** | Phase C closeout + 独立 Topic 5 R2 review/task-definition |
-| Product / release closure | Ordinary-user E2E、package/runtime/release governance | M14 仅 **RESERVED** | Runtime/Evaluation/release maturity 且 M1/M11 被证明不足 |
+| Product / release closure | Ordinary-user E2E、package/runtime/release governance | M14 已 task-defined | Issue #57 / ADR-0021 已接受 family 边界；从 M14-001 trust anchor 开始，首次发行仍受许可证、scaffold、远端保护与 M14-002～004 阻断 |
 
 ```mermaid
 flowchart LR
@@ -64,19 +64,20 @@ flowchart LR
     E["Phase E<br/>Strategy boundary"] -. "future activation only" .-> M13["M13 — RESERVED"]
     F["Phase F / Topic 4<br/>thin execution ceiling"] --> M11["M11"]
     T5["Topic 5<br/>continuity/recovery frozen"] -. "Phase C closeout + R2 Gate" .-> M12["M12 — RESERVED"]
-    Release["Product/release maturity Gate"] -. "future activation only" .-> M14["M14 — RESERVED"]
+    Release["Issue #57 / ADR-0021<br/>release activation Gate"] --> M14["M14<br/>Product / Release Closure"]
 
     M8 --> M9
     M9 --> C
     C --> D
     M10 -. "evidence" .-> T5
-    M11 -. "maturity evidence" .-> Release
-    M5 -. "maturity evidence" .-> Release
+    M11 -. "bounded runtime maturity" .-> Release
+    M5 -. "plan/evidence boundary" .-> Release
 ```
 
-实线表达已接受的 architecture aggregation，虚线表达尚未授予 implementation authority 的 activation
-condition。M12/M13/M14 没有 Task 状态、owner、dependency、acceptance 或 Schema；不创建
-`M12-001`、`M13-001`、`M14-001`，也不继续推测 M15+。
+实线表达已接受的 architecture aggregation，虚线表达 maturity evidence 或尚未授予 implementation authority
+的 activation condition。M12/M13 没有 Task 状态、owner、dependency、acceptance 或 Schema；不创建
+`M12-001`、`M13-001`，也不继续推测 M15+。M14 已完成独立 R2 task-definition；其 exact 状态和依赖只看
+`TASKS.md`，不能从本图推导 release 已可执行。
 
 ## 2. Phase A：Core Formalization
 
@@ -363,7 +364,45 @@ umbrella。M6-004 只验证 Provider/isolated session 的 live conformance，在
 authorization 解阻；它不 hard-depend M11-004，也不替代已接受的 Task→View→Host→generic
 Receipt bounded Gate。
 
-## 7. 不在近期关键路径
+## 7. Product / Release Closure
+
+[Issue #57](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57) 与
+[ADR-0021](decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md) 已证明 release source trust、curated main、
+portable package、公开文档与首次 tag/release 不能由 M1 scaffold 或 M11 Runtime contracts 自然承载，因此
+M14 从 reservation 转为正式 implementation family。它不改变既有 Phase/Topic authority，也不把尚未完成
+的 M5 真实评价当作产品价值证据。
+
+```text
+M14-001 release topology + source trust
+    ├── M14-002 deterministic surface / manifest / export-check
+    └── M14-003 portable package / Runtime resource boundary
+              M14-002 + M14-003
+                       ↓
+              M14-004 public documentation surface
+                       ↓
+              M14-005 first curated release
+```
+
+M14-001 是唯一初始 `READY` 入口，只建立 dormant release topology/source-trust seam，`release/v*` 仍
+fail closed。M14-002/003 等待 trust anchor 后可并行；M14-002 在 surface/manifest validator 验收时原子
+启用 `release/v* -> main` 并禁用 direct `develop -> main`；M14-004 等待确定的文件面和
+安装边界；M14-005 还 hard-depend M0-007 license、M1-009 scaffold、GitHub remote protection 与具名人类
+release decision。Task 已定义不表示可以跳过这些 Gate。
+
+发行采用 `develop full engineering truth -> frozen exact commit -> generated release/v* projection -> curated
+main`。导出只读取 frozen commit Git blobs，由外部 expected source SHA、versioned allowlist 和 strict manifest
+形成 closed-set/byte-identity 证明。release branch 不是开发分支，不接收语义修复，也不合并回 develop。
+
+portable package 区分两种验证：develop 的 repository/maintainer Gate 继续重验完整 publication provenance；
+installed Runtime 只消费独立 RuntimeResourceManifest 下的 published Schema/index/hash/identity，不为运行时
+验证重新打包 Need/Evaluation/Lifecycle 私有历史；最终 RELEASE_MANIFEST 再 pin wheel、resource manifest 与
+source-CI。默认资源不依赖 cwd；首版 no-Skill Core 不等待真实 Skill 准入。
+
+在 M14-001/002 完成前，现有 exact `develop -> main` 仍是执行事实，不能根据本 Roadmap 手工放行
+`release/* -> main`。精确验收与 negative boundaries 见 [`TASKS.md`](TASKS.md) 和
+[M14 workstream](workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md)。
+
+## 8. 不在近期关键路径
 
 - 新增大量正式 Mode 或 accepted Skill；
 - 通用多 Agent Supervisor、团队拓扑或全局 DAG；
@@ -373,7 +412,7 @@ Receipt bounded Gate。
 - 自动修改 Core；
 - 没有真实消费者的数据库、消息总线或 distributed runtime。
 
-## 8. 长期成功判据
+## 9. 长期成功判据
 
 - 更换 Model/Runtime/Tool/Skill 后，Research State 与 Method contract 仍可复用；
 - 旧对象跨版本迁移和历史 Attempt 解释可复现；

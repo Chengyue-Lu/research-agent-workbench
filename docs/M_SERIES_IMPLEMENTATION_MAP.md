@@ -32,14 +32,14 @@ flowchart TB
 
     M5 -. "activation evidence only" .-> M13["M13 — RESERVED<br/>Strategy & Governed Evolution"]
     M10 -. "closeout may activate" .-> M12["M12 — RESERVED<br/>Continuity & Recovery"]
-    M11 -. "maturity input" .-> M14["M14 — RESERVED<br/>Product / Release Closure"]
-    M5 -. "maturity input" .-> M14
-    M12 -. "only if later activated" .-> M14
+    M11 -. "bounded runtime maturity" .-> M14["M14<br/>Product / Release Closure"]
+    M5 -. "plan/evidence boundary" .-> M14
+    M1 --> M14
 ```
 
 箭头是 family-level 施工导航，不是机械的 hard dependency。任何具体 Task 的 exact dependency、状态、
-owner、scope 与 acceptance 都以 `TASKS.md` 的 Task 行为准。M12～M14 是 reservation，不在执行队列；
-虚线只表示未来 activation evidence 的可能来源，不授权实现。
+owner、scope 与 acceptance 都以 `TASKS.md` 的 Task 行为准。M12/M13 仍是 reservation，不在执行队列；
+M14 已 task-defined，但只有 `M14-001` READY。虚线只表示 maturity evidence，不生成 hard dependency。
 
 ## 2. M-group 索引
 
@@ -59,7 +59,7 @@ owner、scope 与 acceptance 都以 `TASKS.md` 的 Task 行为准。M12～M14 �
 | M11 | Execution reintegration | task-defined；Core 与 optional Skill extension complete；生产 projection index 仍为空 |
 | M12 | Execution Continuity & Recovery | **RESERVED** |
 | M13 | Strategy & Governed Evolution | **RESERVED** |
-| M14 | Product / Release Closure | **RESERVED** |
+| M14 | Product / Release Closure | task-defined；M14-001 READY，其余依 DAG PARKED/BLOCKED |
 
 `task-defined` 只表示该 family 已有原子 Task，不表示全部 Task 已完成。实时状态仍见 `TASKS.md`。
 
@@ -168,9 +168,31 @@ mapping；Projection 缺失只阻塞 Skill new-binding，不阻塞已完成的 n
 任何真实 Skill 已准入或已证明净增量。其他 PARKED Task 的恢复条件只看 `TASKS.md`，所有图中省略的
 hard dependency（包括 Human/external Gate）均不得由本图推断。
 
+### 3.4 Curated release closure
+
+```mermaid
+flowchart LR
+    M14001["M14-001 READY<br/>topology / source trust"] --> M14002["M14-002 PARKED<br/>surface / manifest"]
+    M14001 --> M14003["M14-003 PARKED<br/>portable package"]
+    M14002 --> M14004["M14-004 PARKED<br/>public docs"]
+    M14003 --> M14004
+    M14002 --> M14005["M14-005 BLOCKED<br/>first release"]
+    M14003 --> M14005
+    M14004 --> M14005
+    M0007["M0-007 BLOCKED<br/>license"] --> M14005
+    M1009["M1-009 READY<br/>scaffold"] --> M14005
+    Remote["GitHub protection<br/>external Gate"] --> M14005
+```
+
+M14 只把 frozen `develop` 确定性投影为精选 `main`，不成为新产品语义 owner。M14-001 先建立 dormant R2
+trust anchor，release branch 继续 fail closed、现行 exact develop release 继续有效；M14-002 在 manifest/surface
+validator 验收时才原子完成 topology cutover。M14-002 与 M14-003 后续可并行。首版允许 no-Skill Core，
+但不得发布未许可/未准入 Skill，也不得把 incomplete M5 evaluation 写成已证明价值。Issue #57 的
+`REL-*` 仅为工作包别名，不能替代图中的 Task identity。
+
 ## 4. Reservation activation
 
-将 M12、M13 或 M14 从 reservation 转为正式 M-group，必须依次满足：
+将 M12 或 M13 从 reservation 转为正式 M-group，必须依次满足：
 
 1. 对应 architecture area 的 activation Gate 已被接受；
 2. 有证据证明现有 M-group 不能自然承载该 coherent implementation family；
@@ -178,7 +200,8 @@ hard dependency（包括 Human/external Gate）均不得由本图推断。
 4. 当时再定义具体 Task ID、具名 owner、risk、hard dependencies、acceptance 与 negative boundaries。
 
 在此之前，reservation 没有 Task state、branch/PR、CI 或 implementation authority，也不得解冻 Topic 5、
-Strategy、Release，或扩大 Runtime、Capability、Method、Claim、Gate、Human Decision authority。
+Strategy，或扩大 Runtime、Capability、Method、Claim、Gate、Human Decision authority。M14 已按同一规则
+由 Issue #57、ADR-0021 与独立 docs-only task-definition 激活；其权限只限 `TASKS.md` 明列的 release closure。
 
 ## 5. 日常使用
 
