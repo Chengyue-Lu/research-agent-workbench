@@ -37,7 +37,7 @@ Issue 中的 `REL-001～005` 仅作工作包别名，不是治理器识别的 Ta
 
 ```mermaid
 flowchart LR
-    M0005["M0-005 DONE<br/>repository"] --> M14001["M14-001 READY<br/>REL-001 topology + governance"]
+    M0005["M0-005 DONE<br/>repository"] --> M14001["M14-001 DONE<br/>REL-001 dormant topology + governance"]
     M1001["M1-001 DONE<br/>CI foundation"] --> M14001
     M5003["M5-003 DONE<br/>evaluation boundary"] -. "activation evidence" .-> M14001
     M1104["M11-004 DONE<br/>Core closeout"] -. "activation evidence" .-> M14001
@@ -70,6 +70,12 @@ frozen develop source SHA/CI 和 exact current main parent/ancestry requirements
 该 Task 不实现 exporter，也不开放一个仅靠分支名即可通过的 release path。M14-001 完成后 release PR 仍
 必须以明确原因 BLOCK，现行 exact `develop -> main` 继续可执行；该 dormant 状态持续到 M14-005 readiness/
 cutover。
+
+实现结果：policy 与 checker 已识别 strict SemVer、same-repository、R2 curated-release attempt，并把 external
+source/repository/CI attestation、exact current-main parent、线性无 merge ancestry 与 raw manifest hash 分开
+校核。PR body、branch、manifest 和普通进程环境都不能自产可信 expectation；完整 prerequisite PASS 也仍产生
+`TOPOLOGY-RELEASE-DORMANT`。调用方 attestation 的真实性、fresh remote observation 与 required GitHub checks
+查询尚未接线，必须在 M14-005 激活前闭合，不能由本 Task 的结构校核冒充。
 
 ### M14-002 / REL-002 — Deterministic projection
 
@@ -163,6 +169,6 @@ task-definition 只写 canonical docs、ADR、workstream 与导航。后续实�
 
 ## 下一合法动作
 
-本 task-definition 合并后只启动 `M14-001`。在其完成前不实现 M14-002～005，不创建 release branch，也不
-冻结某次真实 release source SHA。若 `develop` 在本 PR 合并前前进，先 rebase 并重新核对 TASKS/ROADMAP/
-ADR 编号与治理事实。
+`M14-001` 已完成；下一步只能由 owner 分别激活 `M14-002` deterministic surface 或 `M14-003` portable
+package slice。两者可并行但不能互相代替，也不能提前创建真实 release branch、冻结 release source SHA 或
+解锁 merge eligibility。任何实现分支在开 PR 前仍须基于当时最新 `develop` 重新验证。
