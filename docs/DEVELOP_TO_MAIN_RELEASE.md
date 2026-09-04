@@ -8,9 +8,11 @@
 有效性或产品成熟度已经获批。
 
 > [Issue #57](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57) 与
-> [ADR-0021](decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md) 已接受未来的 curated release 目标，
-> 但 M14-001/002 的治理和 manifest/surface validator 尚未实现。迁移完成前，本页以下 exact
-> `develop -> main` 规则仍是唯一可执行规则；不得提前手工使用 `release/* -> main`。
+> [ADR-0021](decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md) 已接受未来的 curated release 目标：
+> frozen `develop` 是内容与 provenance 来源，exact current `main` 是 release branch 的 Git 父提交。
+> M14-001～004 只建立 dormant topology、export/check、portable package 与 public docs；在 M14-005
+> readiness/cutover 验收前，本页以下 exact `develop -> main` 规则仍是唯一可执行规则，不得提前手工使用
+> `release/* -> main`。
 
 ## 1. 唯一允许的拓扑
 

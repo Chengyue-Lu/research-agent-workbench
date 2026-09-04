@@ -184,11 +184,12 @@ flowchart LR
     Remote["GitHub protection<br/>external Gate"] --> M14005
 ```
 
-M14 只把 frozen `develop` 确定性投影为精选 `main`，不成为新产品语义 owner。M14-001 先建立 dormant R2
-trust anchor，release branch 继续 fail closed、现行 exact develop release 继续有效；M14-002 在 manifest/surface
-validator 验收时才原子完成 topology cutover。M14-002 与 M14-003 后续可并行。首版允许 no-Skill Core，
-但不得发布未许可/未准入 Skill，也不得把 incomplete M5 evaluation 写成已证明价值。Issue #57 的
-`REL-*` 仅为工作包别名，不能替代图中的 Task identity。
+M14 只把 frozen `develop` 确定性投影为精选 `main`，不成为新产品语义 owner；exact current `main` 只作为
+generated release branch 的 Git 父提交。M14-001 先建立 dormant R2 trust anchor，M14-002 与 M14-003 后续
+可并行闭合 projection/package，但 release branch 继续 fail closed、现行 exact develop release 继续有效。
+M14-005 在全部 readiness Gate 闭合后才原子完成 topology cutover。首版允许 no-Skill Core，但不得发布
+未许可/未准入 Skill，也不得把 incomplete M5 evaluation 写成已证明价值。Issue #57 的 `REL-*` 仅为工作包
+别名，不能替代图中的 Task identity。
 
 ## 4. Reservation activation
 

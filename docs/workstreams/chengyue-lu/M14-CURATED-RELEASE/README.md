@@ -4,7 +4,8 @@
 - 来源：[Issue #57](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57)
 - 架构决定：[ADR-0021](../../../decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md)
 - 状态：R2 task-definition；尚未实现 release topology、exporter、portable package 或首次发行
-- 基线：`origin/develop@dd2454b5595e33a12aa058529358d46d311a08c4`
+- diagnostic baseline：`origin/develop@dd2454b5595e33a12aa058529358d46d311a08c4`
+- task-definition integration base：`origin/develop@6a032e12c30a88a501258eec8c0b5d6c6082d81d`
 
 ## 为什么激活 M14
 
@@ -19,7 +20,7 @@ M11-001～006 已提供 bounded execution/runtime foundation；M5-003 已冻结 
 
 ## 入口审计事实
 
-在上述 exact baseline 上以 `git archive` 构建并于系统临时目录安装 wheel 的诊断结果为：wheel 含 63 个
+在上述 diagnostic baseline 上以 `git archive` 构建并于系统临时目录安装 wheel 的诊断结果为：wheel 含 63 个
 Schema、0 个 Registry、0 个 `.agents`、0 个 `.codex`；空目录 `rwb schema list` 与 `rwb init` 可通过，
 但 repository-level `rwb validate examples registry` 和默认 `rwb skills accepted` 找不到 CWD-relative
 Registry。单独提供 Capability Requirement Registry 时，loader 仍把 Schema 绑定到 project root；空
@@ -45,7 +46,7 @@ flowchart LR
     M14001 --> M14003["M14-003 PARKED<br/>REL-003 portable package"]
     M14002 --> M14004["M14-004 PARKED<br/>REL-004 public docs"]
     M14003 --> M14004
-    M14002 --> M14005["M14-005 BLOCKED<br/>REL-005 first release"]
+    M14002 --> M14005["M14-005 BLOCKED<br/>REL-005 readiness + first release"]
     M14003 --> M14005
     M14004 --> M14005
     M1009["M1-009 READY<br/>scaffold/compatibility"] --> M14005
@@ -55,34 +56,36 @@ flowchart LR
 
 实线为 canonical hard dependency，虚线只记录 M14 family activation evidence。M14-002 与 M14-003 在
 M14-001 完成后可并行；M14-004 等待两者，以最终 package/runtime boundary 生成
-无断链的用户文档。M14-005 只做 frozen-source release、review、merge 和 tag，不在 release branch 修复
-任何产品问题。
+无断链的用户文档。M14-001～004 都不授予 release merge eligibility；M14-005 闭合 readiness、完成 topology
+cutover，并以 frozen-source projection 执行 review、merge 和 tag，不在 release branch 修复任何产品问题。
 
 ## 阶段边界
 
 ### M14-001 / REL-001 — Release trust anchor
 
-以声明式 policy 定义 dormant `release/v* -> main` R2 topology、same-repository/source identity、external
-expected source SHA/ancestry/CI requirements 与 manifest prerequisite。普通 feature/task-definition 仍进入
-`develop`。
+以声明式 policy 定义 dormant `release/v* -> main` R2 topology、same-repository identity、external expected
+frozen develop source SHA/CI 和 exact current main parent/ancestry requirements，以及 manifest prerequisite。
+普通 feature/task-definition 仍进入 `develop`。
 
 该 Task 不实现 exporter，也不开放一个仅靠分支名即可通过的 release path。M14-001 完成后 release PR 仍
-必须以明确原因 BLOCK，现行 exact `develop -> main` 继续可执行；只有 M14-002 在同一验收变更中闭合
-manifest/surface validator，才原子启用 `release/v* -> main` 并禁用 direct `develop -> main`。
+必须以明确原因 BLOCK，现行 exact `develop -> main` 继续可执行；该 dormant 状态持续到 M14-005 readiness/
+cutover。
 
 ### M14-002 / REL-002 — Deterministic projection
 
 建立 strict、append-only versioned allowlist policy、strict manifest Schema，以及共享同一规则实现的
 export/check。policy 拒绝 unknown、重复/overlap/不存在 include、file/tree ambiguity、路径逃逸以及 case-fold/
-Unicode/Windows path collision。导出读取 frozen commit Git blobs，每个输出分类为 source-blob 或 exact
+Unicode/Windows path collision。release branch 以 external expected exact current main 为 Git parent；导出只读取
+external expected frozen develop commit 的 Git blobs并完整重建 tree。每个输出分类为 source-blob 或 exact
 allowlisted generated：前者固定 path/mode/blob/size/hash，后者固定 generator identity/version/hash/inputs；
-manifest-last 规则处理自哈希边界。
+manifest-last 规则处理自哈希边界，并分别 pin source develop 与 parent main。
 
-完整 tree 使用 canonical UTF-8 JSON/LF/稳定排序，不写 wall-clock、随机值或临时绝对路径。同 source/policy/
-inputs 的两次结果逐字节相同；dirty working tree、CRLF 转换、Git mode drift、额外/隐藏/移动文件、重算伪
-hash、路径逃逸、symlink/gitlink、undeclared generated 和 broad Registry inclusion 都必须被阻断。验收时
-原子完成 release topology cutover。release checker 属 critical allow/block surface，进入 Coverage Policy
-95/90 和独立正反 evidence。
+完整 tree 使用 canonical UTF-8 JSON/LF/稳定排序，不写 wall-clock、随机值或临时绝对路径。同 source/parent/
+policy/inputs 的两次结果逐字节相同；dirty working tree、CRLF 转换、Git mode drift、额外/隐藏/移动/遗留文件、
+重算伪 hash、路径逃逸、symlink/gitlink、undeclared generated 和 broad Registry inclusion 都必须被阻断。
+连续 v1→v2 fixture 必须证明旧版独有 generated 文件被删除，且 prospective merge-result tree = projection tree
+= manifest closed output tree；current main 前移时旧 branch/manifest 失效并重新生成。M14-002 验收后 topology
+仍 dormant。release checker 属 critical allow/block surface，进入 Coverage Policy 95/90 和独立正反 evidence。
 
 ### M14-003 / REL-003 — Portable package closure
 
@@ -115,9 +118,13 @@ index、未执行 Evaluation 或未验证 live Provider 描述为已完成产品
 
 ### M14-005 / REL-005 — First curated release
 
-在 exact develop SHA required CI 全绿、M0-007/M1-009/M14-001～004、GitHub remote protections 和人类 release
-decision 全部满足后创建生成式 release branch。重复生成、release checks、R2 review、merge commit、tag 与
-artifact/hash 必须绑定同一 source/manifest；release branch 永不合并回 develop。
+在 exact develop SHA required CI 全绿、M0-007/M1-009/M14-001～004、GitHub remote protections 和具名 Human
+release decision 全部满足后，同时冻结 exact develop source SHA 与 exact current main parent SHA。从该 main tip
+创建生成式 release branch，exporter 只从 frozen develop source 构建完整 projection；若 main 前移则以新 parent
+重建。治理激活与首次 release 是同一 Task 中独立可审计的 slice：readiness 满足后原子启用
+`release/v* -> main`、禁用 direct `develop -> main`，再执行 R2 release PR。重复生成、prospective merge-result
+tree equality、release checks、R2 review、merge commit、tag 与 artifact/hash 必须绑定同一 source/parent/
+manifest；release branch 永不合并回 develop。
 
 ## 允许读取与写入
 
@@ -135,13 +142,15 @@ task-definition 只写 canonical docs、ADR、workstream 与导航。后续实�
 ## 验证策略
 
 - task-definition：Markdown link、repository validation、governance dry-run；不宣称实现测试；
-- M14-001：dormant topology/source/manifest prerequisite、release fail-closed 与现行 develop release 回归；
-- M14-002：两次 export byte-identical、source/generated provenance、external repository/source、Git mode/blob
-  identity、strict policy/canonical manifest、closed output set 与攻击性输入，并验证 topology 原子 cutover；
+- M14-001：dormant topology、source/parent/manifest prerequisite、release fail-closed 与现行 develop release 回归；
+- M14-002：两次 export byte-identical、连续版本 stale-output removal、source/generated provenance、external
+  repository/source/parent、Git mode/blob identity、strict policy/canonical manifest、closed output set、
+  prospective merge-result equality 与攻击性输入；不改变 topology eligibility；
 - M14-003：direct wheel 与 sdist→wheel resource manifest/hash 一致、CWD/PYTHONPATH poison、三 root 分离、
   missing/corrupt/hash/path/orphan fail closed、双 Python checkout 外 clean install；
 - M14-004：release projection 内链接闭合、developer-only token/path 泄漏检查、truthful support matrix；
-- M14-005：exact-head hosted Gates、remote ruleset evidence、manifest reproducibility、merge/tag/artifact closure。
+- M14-005：全部 readiness Gate、source/parent freshness、topology 原子 cutover、exact-head hosted Gates、remote
+  ruleset evidence、manifest reproducibility、prospective merge-result equality 与 merge/tag/artifact closure。
 
 ## 明确不进入本 workstream 的内容
 

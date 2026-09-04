@@ -384,21 +384,24 @@ M14-001 release topology + source trust
 ```
 
 M14-001 是唯一初始 `READY` 入口，只建立 dormant release topology/source-trust seam，`release/v*` 仍
-fail closed。M14-002/003 等待 trust anchor 后可并行；M14-002 在 surface/manifest validator 验收时原子
-启用 `release/v* -> main` 并禁用 direct `develop -> main`；M14-004 等待确定的文件面和
-安装边界；M14-005 还 hard-depend M0-007 license、M1-009 scaffold、GitHub remote protection 与具名人类
-release decision。Task 已定义不表示可以跳过这些 Gate。
+fail closed。M14-002/003 等待 trust anchor 后可并行，分别闭合 projection 与 package；M14-004 等待确定的
+文件面和安装边界。三项完成都不产生 release merge eligibility。M14-005 还 hard-depend M0-007 license、
+M1-009 scaffold、GitHub remote protection 与具名人类 release decision；只有全部 readiness Gate 闭合后，
+它才原子启用 `release/v* -> main` 并禁用 direct `develop -> main`。
 
-发行采用 `develop full engineering truth -> frozen exact commit -> generated release/v* projection -> curated
-main`。导出只读取 frozen commit Git blobs，由外部 expected source SHA、versioned allowlist 和 strict manifest
-形成 closed-set/byte-identity 证明。release branch 不是开发分支，不接收语义修复，也不合并回 develop。
+发行分离两条受信关系：内容/provenance 从 `develop full engineering truth -> frozen exact commit ->
+deterministic projection`，Git ancestry 从 `exact current main -> generated release/v* -> new curated main`。
+导出只读取 frozen develop commit Git blobs，并完整替换父分支工作树；外部 expected develop source SHA、
+expected main parent SHA、versioned allowlist 和 strict manifest 共同形成 closed-set/byte-identity 证明。合并前
+机器证明 prospective merge-result tree、release projection tree 与 manifest closed output tree 完全相同；若
+current main 前进则从新 parent 重新生成。release branch 不接收语义修复，也不合并回 develop。
 
 portable package 区分两种验证：develop 的 repository/maintainer Gate 继续重验完整 publication provenance；
 installed Runtime 只消费独立 RuntimeResourceManifest 下的 published Schema/index/hash/identity，不为运行时
 验证重新打包 Need/Evaluation/Lifecycle 私有历史；最终 RELEASE_MANIFEST 再 pin wheel、resource manifest 与
 source-CI。默认资源不依赖 cwd；首版 no-Skill Core 不等待真实 Skill 准入。
 
-在 M14-001/002 完成前，现有 exact `develop -> main` 仍是执行事实，不能根据本 Roadmap 手工放行
+在 M14-005 readiness/cutover 完成前，现有 exact `develop -> main` 仍是执行事实，不能根据本 Roadmap 手工放行
 `release/* -> main`。精确验收与 negative boundaries 见 [`TASKS.md`](TASKS.md) 和
 [M14 workstream](workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md)。
 

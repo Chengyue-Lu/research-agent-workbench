@@ -4,8 +4,8 @@
 
 - 依据 Issue #57 与 ADR-0021，将 M14 从 namespace reservation 转为正式 Product / Release Closure family，
   并以 M14-001～005 映射 release governance、deterministic surface、portable package、public docs 与首次发行；
-- 固定 `develop` 完整工程真相、frozen exact commit、generated `release/v*` 与 curated `main` 的目标拓扑，
-  同时声明 M14-001/002 验收前现有发布规则仍有效且新 release path 必须 fail closed；
+- 固定 frozen `develop` 内容来源、exact current `main` Git 父提交、generated `release/v*` 与 curated `main`
+  的目标拓扑，同时声明 M14-005 readiness/cutover 验收前现有发布规则仍有效且新 release path 必须 fail closed；
 - 首个合法实现入口仅为 M14-001。许可证、scaffold、远端 GitHub protection、public/package closure 与
   exact release evidence 继续阻断 M14-005，本次文档不实现 exporter、package migration 或真实发行。
 

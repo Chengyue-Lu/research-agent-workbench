@@ -1,7 +1,8 @@
 # RWB 开发者架构地图：核心控制、执行边界与可验证性
 
-> Developer Architecture Map｜基于 `develop@dd2454b5595e33a12aa058529358d46d311a08c4` 的
-> Phase D 入口跨契约审计（2026-09-02）。
+> Developer Architecture Map｜Phase D/core 跨契约审计基线为
+> `develop@dd2454b5595e33a12aa058529358d46d311a08c4`（2026-09-02）；该历史审计锚不是本文后续文档变更的
+> current integration base。
 >
 > 本文是 derived developer navigation，不创建新 Contract、Task、Gate 或 authority。稳定架构以
 > [ARCHITECTURE.md](ARCHITECTURE.md)、[Accepted ADR](decisions/README.md) 与
@@ -562,12 +563,13 @@ M11 Core 不需要 Skill extension。M11-005/006 已实现 Projection/publisher 
 - ordinary-user E2E、外部 scaffold/migration UX 与发布就绪度仍未闭合；
 - 项目 license 与原创 Skills 许可仍需人类决定。
 
-Issue #57 与 ADR-0021 已把最后一项拆成正式 M14 family，但没有把这些限制改写为完成。M14-001 只先建立
-dormant 的 `develop full truth -> frozen exact commit -> generated release/v* -> curated main` source
-trust/governance，目标 topology 到 M14-002 才原子 cutover；
-M14-002/003/004 分别闭合 deterministic surface、checkout 外 package/runtime data 与 public docs，M14-005
-仍被许可证、scaffold、GitHub remote protection 和上述 Task 阻断。release projection 不获得 Runtime、Method、
-Claim 或 Human authority，也不能把 M5 未完成的 system-level Evaluation 伪装为发行证据。
+Issue #57 与 ADR-0021 已把最后一项拆成正式 M14 family，但没有把这些限制改写为完成。目标模型分离两条
+输入：frozen `develop` 是 exporter 唯一内容/provenance 来源，exact current `main` 是 generated
+`release/v*` 的 Git 父提交。M14-001 只建立 dormant trust/governance seam；M14-002/003/004 分别闭合
+deterministic surface、checkout 外 package/runtime data 与 public docs，完成后 release path 仍不具备 merge
+资格。M14-005 在许可证、scaffold、GitHub remote protection、人类决定和全部前置 Task 闭合后，才原子启用
+`release/v* -> main` 并禁用 direct `develop -> main`。release projection 不获得 Runtime、Method、Claim 或
+Human authority，也不能把 M5 未完成的 system-level Evaluation 伪装为发行证据。
 
 ---
 
