@@ -1,0 +1,44 @@
+schema_version: 0.1.0
+task_id: M14-001
+revision: 1
+goal: Establish a declarative dormant curated-release trust seam while preserving exact develop-to-main as the only executable release topology.
+base_ref: docs/m14-curated-release-activation@12d05dd130c718dd179e011292f9ada9f97bdf74
+accountable_owner: Chengyue-Lu
+input_refs:
+  - AGENTS.md
+  - .github/governance-policy.json
+  - .github/scripts/check_pr_governance.py
+  - tests/coverage_policy.yaml
+  - docs/DEVELOPMENT.md
+  - docs/TASKS.md
+  - docs/DEVELOP_TO_MAIN_RELEASE.md
+  - docs/decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md
+  - docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md
+  - docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/RISK_LEDGER.md
+write_scope:
+  - .github/governance-policy.json
+  - .github/scripts/check_pr_governance.py
+  - tests/test_pr_governance.py
+  - tests/test_governance_helper_branches.py
+  - tests/coverage_policy.yaml
+  - docs/DEVELOP_TO_MAIN_RELEASE.md
+  - docs/TASKS.md
+  - docs/STATUS.md
+  - docs/ROADMAP.md
+  - docs/M_SERIES_IMPLEMENTATION_MAP.md
+  - docs/DEVELOPER_ARCHITECTURE_MAP.md
+  - docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md
+  - docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/RISK_LEDGER.md
+  - CHANGELOG.md
+  - work/M14-001/A-20260905-001/**
+required_outputs:
+  - strict declarative dormant release topology policy
+  - fail-closed topology and trust validation with current develop-to-main regression protection
+  - independent positive and adversarial governance evidence
+  - synchronized M14-001 task, workstream, risk, and contributor documentation
+atomic_boundary: M14-001 only; recognize and validate the dormant trust seam without exporter, manifest schema, package, public projection, release branch, readiness cutover, or M14-002 through M14-005 implementation.
+stop_conditions:
+  - any change would make release/v* merge-eligible before M14-005
+  - trusted source or parent expectations would be accepted from author-controlled PR body or manifest claims
+  - implementation would alter Runtime, Method, Capability, Claim, Human Decision, permission, or product-contract semantics
+  - focused governance, coverage-quality, repository validation, or full behavioral acceptance fails
