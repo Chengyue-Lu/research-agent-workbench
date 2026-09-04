@@ -51,7 +51,7 @@ owner、scope 与 acceptance 都以 `TASKS.md` 的 Task 行为准。M12～M14 �
 | M3 | Context, Trace & risk | task-defined；部分 residual work PARKED |
 | M4 | Artifact, provenance & reproducibility | task-defined |
 | M5 | Evaluation & pruning | task-defined |
-| M6 | Provider/API execution seams | task-defined；具名责任人维护 |
+| M6 | Provider/API execution seams | task-defined；M6-008 等待 M5-006 shared qualification contract，当前 PARKED；具名责任人维护 |
 | M7 | Mode–Skill selection & coordination evidence | task-defined |
 | M8 | Method Core formalization | task-defined and complete |
 | M9 | Evolution Foundation | task-defined and complete |
@@ -100,7 +100,7 @@ flowchart LR
     subgraph M5["M5 Evaluation"]
         M5001["M5-001 BLOCKED<br/>evidence dossier"] --> M5004["M5-004 BLOCKED<br/>real system evaluation"]
         M5002["M5-002 BLOCKED<br/>theory/simulation dossier"] --> M5004
-        M5003["M5-003 DONE<br/>non-executing plan"] --> M5006["M5-006 BLOCKED<br/>evaluation protocol"]
+        M5003["M5-003 DONE<br/>non-executing plan"] --> M5006["M5-006 READY<br/>evaluation protocol"]
         M5006 --> M5007["M5-007 BLOCKED<br/>evaluation harness"]
         M5003 -. "candidate + evaluation" .-> A4G["A4-RUNTIME-ADMISSION-GATE<br/>external / unsatisfied"]
         A4G --> M5004
@@ -114,7 +114,9 @@ flowchart LR
     M4002 --> M5004
     M4003 --> M5004
     M4004 --> M5004
-    BTG["M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE<br/>Issue #55 / unsatisfied"] --> M5006
+    BTG["ADR-0020 dual transport<br/>Gate A satisfied"] --> M5006
+    M5006 --> M6008["M6-008 PARKED<br/>baseline envelope + replay closeout"]
+    M6008 --> M5007
     M1104["M11-004 DONE<br/>Core generic closeout<br/>M11-003 Host facts"] --> M5007
     M1106["M11-006 DONE<br/>projection-backed Skill path"] --> M5007
     SCG["M5-SKILL-CLOSEOUT-REPLAY-GATE<br/>Issue #55 / unsatisfied"] --> M5007
@@ -125,15 +127,23 @@ flowchart LR
 
 M4-002 是当前 provenance/promotion 链的合法入口；M4-003/004 必须等它完成。M5-004 同时等待
 M4 闭环、两个 Human-approved public/private Case Dossier、M5-003 计划契约、M5-006 Protocol、M5-007
-Harness、M11-006 真实 projection-backed Skill 路径与 M6-004 live Provider/session Gate。M5-006 先
-hard-depend `M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE`：只有 exact-pin 的具名 R2 Decision 接受 neutral transport
-或 dual-transport system estimand，并冻结 arm mapping、estimand/limitations/interpretation 影响后，M5-006 才能从
-BLOCKED 进入；Decision 不冒充 transport implementation，产生的新 Execution dependency 必须显式加入后续 DAG。
-M5-007 不等待真实 case data，但 hard-depend M11-004 的 Core Host/Trace/Receipt contract、M11-006 的
-projection-backed Skill mapping 与 `M5-SKILL-CLOSEOUT-REPLAY-GATE`。两个 M11 Task 当前均为 DONE，但 Core
-Receipt 尚不支持 Skill-bearing actual binding；baseline decision 由 M5-006 传递，plain arm 仍不能通过 dummy
-Method/Snapshot 改写 M5-003 treatment。Issue #55 跟踪的两个外部 Gate 均未满足。M5-003 本身没有执行案例或
-产生净增量结论。
+Harness、M11-006 真实 projection-backed Skill 路径与 M6-004 live Provider/session Gate。ADR-0020 已 exact-pin
+双传输并关闭 `M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE`：A1/A2→M6、A3→M11 Core、A4→M11 Skill
+extension，primary `A4 − A2` 明确包含 transport difference；M5-006 因此 READY。`A4 − A3` 只有在
+`A3A4PairwiseComparabilityRecord` 证明唯一差异是 admitted Skill extension 时才可称 Skill conditional
+increment，否则降级为 bundled/package effect 或 unavailable。Decision 不冒充 transport implementation；
+M5-006 拥有覆盖 A2/A3 的 `ArmExecutionQualificationRecord@1.0.0` contract/validator，M6-008 只负责 A1/A2
+正向白名单 input、正式 A2 record、逐 provider request/Tool invocation use-boundary pin 重验、trusted-clock
+enforcement、Trace actual facts 与 replay-valid closeout。Capability Resolver 是 A3 runtime Resolution/Snapshot
+唯一 producer/selector；M11 只验证并消费，M5-007 引用两端对象组装 A3 record并重算两类 record。
+qualification 必须保持 frozen Task/Requirement/Supply/component/
+implementation/interface 与相关 A3 Mode/Action/Method，所有 ceiling 只能等价或收窄。
+M5-007 不等待真实 case data，但 hard-depend M5-006、M6-008、M11-004 的 Core Host/Trace/Receipt contract、
+M11-006 的 projection-backed Skill mapping 与 `M5-SKILL-CLOSEOUT-REPLAY-GATE`。两个既有 M11 Task 当前均为
+DONE，但 M6-008 仍因 M5-006 未 DONE 而 PARKED，Core Receipt 也尚不支持 Skill-bearing actual binding；plain arm 不能通过 raw Task
+control、dummy Method/Snapshot 或 Skill Assignment 改写 M5-003 treatment。Harness 还必须独立重算 A3/A4
+pairwise record，不能把 Method、non-Skill substrate、interface 或 boundary 差异误报为 pure Skill effect。Issue
+#55 的 Gate A 已满足，Gate B 仍未满足，所以 M5-007 保持 BLOCKED。M5-003 本身没有执行案例或产生净增量结论。
 `A4-RUNTIME-ADMISSION-GATE` 是外部可审计条件，不是新 M Task：它保持 M5-003 的 candidate/evaluation
 origin，并 exact-pin Human Admission Decision→accepted Release→Projection→Supply→Resolution→Snapshot→
 Bundle→View→Host 的逐跳 identity/hash closure；当前生产 projection index 为空，故该 Gate 未满足。

@@ -1,7 +1,7 @@
 # 实现状态
 
 状态：Current implementation authority
-更新：2026-08-31
+更新：2026-09-02
 
 本页只回答“仓库现在实现到哪里”。实时任务状态由 [`TASKS.md`](TASKS.md) 维护，依赖方向由 [`ROADMAP.md`](ROADMAP.md) 维护。
 
@@ -59,6 +59,7 @@ production runtime-execution binding、Human Decision、科学有效性或端到
 | Source admission（M4-001） | 不抓取网页/API，不判断来源真实性、许可法律效力、内容安全或科学质量；promotion、Claim trace 与 Run reproduction 尚未在本层实现 |
 | Skill 价值 | 现有 Registry 条目不构成已证明的普适研究增益；新任务可优先 no-Skill / direct-tool |
 | Skill new-binding | 生产 projection index 仍为空；M11-005/006 只证明可选 publication/mapping contract，未重新准入任何 legacy Skill，也未证明真实 trial、Provider 可用性或科研净增量 |
+| Phase D evaluation entry | [ADR-0020](decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) 已选择 A1/A2→M6、A3/A4→M11 的显式双传输并允许 M5-006 Protocol 启动；这不是执行实现。M6-008 treatment-visible baseline envelope/replay closeout 尚未实现，Skill-bearing closeout Gate 仍未满足，M5-007 Harness 与真实 M5-004 execution 继续 BLOCKED |
 | 发布 | 仓库缺少最终许可证选择，原创 Skill 许可状态仍阻断正式发布 |
 | 产品体验 | 初始化、可视化、协作 UI、安装包和运维流程仍是开发者级别 |
 

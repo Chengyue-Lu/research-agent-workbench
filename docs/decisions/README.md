@@ -23,5 +23,6 @@ ADR 保存已接受架构决定及其理由；当前系统说明仍以[总体架
 | [0017](0017-SCOPED-WRITE-PERMISSIONS.md) | Accepted | 源只读、任务区受限写 |
 | [0018](0018-RISK-BASED-DEVELOPMENT-GOVERNANCE.md) | Proposed | 基于风险的开发治理与共享真值边界 |
 | [0019](0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md) | Accepted | Skill Evolution 作为可选 Maintainer 外环 |
+| [0020](0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) | Accepted on exact-head R2 cross-owner approval and merge | Phase D 显式双传输与系统级 estimand 解释上限 |
 
 `0017` 原文件曾与 Assignment Handoff 决定重复使用编号 `0005`；2026-08-22 只修正文件名和标题，Git 历史保留原路径与内容关系。

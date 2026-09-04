@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-09-02 — Phase D dual-transport entry decision（本 R2 PR 合入时生效）
+
+- 本 R2 PR 合入时接受 ADR-0020：A1/A2 使用 M6 isolated session，A3/A4 使用 M11，并把 `A4 − A2` 固定为明确包含
+  transport difference 的 primary system-level estimand；A2/A3 structural→runtime binding 由 shared
+  `ArmExecutionQualificationRecord` 闭合；`A4 − A3` 只有在 pairwise exact-equality 证明唯一 Skill delta 时才作
+  conditional increment，否则降级为 bundled/package effect 或 unavailable；
+- 同一次合入关闭 `M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE` 并将 M5-006 解锁为 READY，同时新增 Execution-owned
+  M6-008（PARKED until M5-006 freezes the shared contract），后续负责 A1/A2 treatment-visible input、actual facts
+  与 replay-valid closeout；Decision 本身不冒充实现；
+- M5-007 继续等待 M5-006、M6-008 与 Skill-bearing replay Gate；M5-003、M11 authority、真实案例/live
+  Provider/Human Gate 与 Topic 5 均未被改写或提前解冻。
+
 ## 2026-08-30 — Phase C、Source Admission 与 Evaluation 基线
 
 - 接受 M10-001、M10-002、M3-009 与 M10-003 的 bounded candidate chain：durable Research State、
