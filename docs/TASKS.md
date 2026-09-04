@@ -96,7 +96,7 @@ M3-001～007 的 `PARKED` 表示当前没有 active implementation，并非抹�
 | ID | 状态 | 任务 | 依赖 | 验收 |
 |---|---|---|---|---|
 | M4-001 | DONE | source admission 与 provenance | M1-005, M1-007 | inbox 不可直接引用；admitted source 具有 exact identity/hash/provenance，拒绝未准入引用 |
-| M4-002 | DONE | work → object/run promotion | M4-001 | 只有校验通过可提升；PASS 只能由受信 validation host 实际执行 accepted runner/checker 产生（host receipt + 确定性重执行等价），手写 execution 不得获得 eligibility；promotion 不等于 Claim 接受或 Human Decision |
+| M4-002 | DONE | work → object/run promotion | M4-001 | 只有校验通过可提升；promotion 不等于 Claim 接受或 Human Decision |
 | M4-003 | READY | Claim trace 与 counterevidence | M4-001, M4-002, M8-005 | 支持/反证/限制一次定位；validator 不代替科研判断或 Claim promotion authority |
 | M4-004 | READY | Run manifest 与复现检查 | M3-008, M4-002 | 仿真案例可由 exact inputs/artifacts/environment refs 重建；不宣称结果科学正确 |
 | M4-005 | PARKED | DVC 技术 spike | 真实大文件需求 | 无需求则不启动 |
