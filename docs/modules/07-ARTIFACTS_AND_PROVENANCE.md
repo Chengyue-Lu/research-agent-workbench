@@ -139,7 +139,8 @@ SHA-256 必须与 live bytes 闭合；FileReference 自带 SHA 时还必须与 a
 
 这套 Gate 只证明 identity/hash/provenance closure，不判断来源真实性、许可证法律效力、内容安全或科学
 质量。网页、API 返回和数据库查询也需要快照或可复现 locator；只保存 URL 不足以保证来源未变化。
-M4-002 promotion、M4-003 Claim trace 与 M4-004 Run reproduction 仍是独立未完成层，M4-001 不替代它们。
+M4-002 promotion 已作为独立层实现；M4-003 Claim trace 与 M4-004 Run reproduction 仍需各自完成，
+M4-001 不替代任何后继层。
 
 ## 5. Run Manifest target（M4-004 尚未实现）
 
@@ -171,18 +172,41 @@ limitations: []
 Skill-bearing Run 可以额外引用 exact Assignment；no-Skill/direct Tool/procedure/Adapter 路径不得伪造该
 字段。模型输出和 Agent 输出都只是工件，必须经过后续 Claim 关系与决策。
 
-## 6. 提升与冻结 target（M4-002 尚未实现）
+## 6. 提升与冻结（M4-002 已实现）
 
-以下是 promotion 层需要保持的设计边界，不是 M4-001 已经提供的实现能力：
+`promotion_record` 将 exact `work/<TASK>/<ATTEMPT>` 中 validation report 的全部 subjects 映射为
+`promote` 或 `retain-in-work`。pre-Attempt canonical Task Packet 先 exact-pin 唯一 accepted-policy registry
+与 policy，并把 actor write scope 收窄到该 workspace；registry 再按 Task revision 固定 checker、runner 与
+validation host。validation host（`rwb validation run`）在 scrubbed subprocess（OS 必需变量白名单、丢弃
+会话注入变量与凭据、固定 `PYTHONHASHSEED` 等确定性 pin）中实际执行 pinned
+runner/checker，产出 `deterministic_check_report`、`promotion_validation_execution` 与
+`promotion_validation_host_receipt`（execution 以必需 `host_receipt_ref` exact-pin receipt；receipt 固定
+run-inputs closure hash 与 run transcript）。这份三元组是 provenance metadata：它记录一次声称运行的
+Task/Attempt、Task/registry/policy、report、subjects、自声明执行者/时间和 outcome，但自身不构成
+execution fact（`validation_execution_fact=false`）。Task → registry/policy → validation run 记录 →
+receipt → execution → PASS report → entries/live bytes 任一关系或
+hash 漂移均阻断；调用方即使在允许稳定目录内构造一套自洽 checker/runner/policy/execution，也不能绕过
+预先冻结的 Task inputs。eligibility 是 validity fact，只在 promotion 验证时确立：其余检查干净后
+确定性重执行 pinned runner/checker，要求 byte-exact 复现 PASS report 与记录 transcript，否则以
+`VALIDATION-EXECUTION-UNPROVEN` 阻断。手写但 byte-exact 的伪造"历史"不携带历史权威——它能通过验证
+只因为重执行当场独立确认了 pinned pipeline 在 exact pinned bytes 上通过；任何假 PASS 都被同一重执行
+证伪。
 
-- 子 Agent 先写 `work/<TASK>/<ATTEMPT>`；
-- 校验通过后由 promotion 操作复制/登记到正式区；
-- accepted deliverable 不原地覆盖；
-- 发布是 accepted 工件的明确子集，并需要独立 Decision；
-- archive 表示保留但不活跃，不等于可删除；
-- 垃圾回收不进入首版。
+`rwb validation run` 产出候选 validation 三元组（provenance metadata）；`rwb promotion validate`
+的宿主逻辑不写仓库，但会在临时工作目录实际重执行 pinned pipeline 完成 rebuild-and-compare；组件必须
+受信且无副作用，环境清理与临时目录不构成 OS 沙箱。`rwb promotion execute`
+只接受 workspace 内的 file-bound record，
+先在目标目录 staging 完整字节并复算 hash，再做完整复验，并生成 exact-pin
+record/Task/registry/policy/execution/report/checker/runner/host/source/actual-target/operator/time/outcome 的
+Promotion Receipt。目标与 receipt 在 commit-time 再复验后
+一起 exclusive-create。目标只允许位于 `objects/`、`runs/` 或
+`deliverables/candidates/`；existing target、相似前缀、root/symlink escape 和
+`deliverables/accepted/` 直达均 fail closed。中途冲突会回滚本次仍可确认的已创建目标，不覆盖正式
+工件或 receipt，也不删除 work/archive。
 
-Agent Trace 随 Attempt 冻结。promotion 只引用所需消息、Decision 或输出，不把整个 Archive 复制到正式对象，也不删除失败、拒绝或未采用路径。
+Agent Trace 随 Attempt 冻结。promotion 只复制记录中明确选择的 exact bytes，不把整个 Archive 复制到
+正式对象。结构 PASS 不产生 Claim acceptance、Human Decision、accepted publication 或科研质量判断；
+详见 [M4-002 契约](../implementation/ARTIFACT_PROMOTION_CONTRACT.md)。
 
 ## 7. 大文件与保留策略
 
@@ -246,6 +270,17 @@ Trace 默认保存在项目工作区，但不等于默认提交 Git：
 - FileReference/admission SHA 漂移、缺失或错误 sidecar 均 fail closed；
 - admission PASS 不被解释为来源可信、许可合法或科学正确。
 
+当前已实现的 M4-002 验收边界：
+
+- pre-Attempt Task、accepted registry/policy、validation execution 与 host receipt（claimed provenance metadata，
+  `validation_execution_fact=false`）、PASS report、subjects、entries 与 live bytes exact
+  closure，subject/entry 集合既不遗漏也不夹带；eligibility 只由 promotion 时的确定性重执行等价当场
+  确立；手写的错误 PASS report/transcript 被阻断，byte-exact 自报历史不携带历史权威；
+- 每个受检工件均有 promote/retain disposition，负结果不会被静默删除；
+- file-bound record、durable receipt、staging、commit-time 复验和 exclusive-create 阻断自签 PASS、覆盖、
+  accepted 直达、路径逃逸及 record/source/target/receipt 竞态；
+- promotion PASS 不被解释为 Claim、Human Decision、publication 或 scientific correctness。
+
 当前 Agent/Method Trace 可追溯边界：
 
 - 任一跨 Agent Handoff 能定位到发送前后的消息、actor、附件和接收决定；
@@ -254,6 +289,6 @@ Trace 默认保存在项目工作区，但不等于默认提交 Git：
 - Worklog 缺失不导致 Trace 消失，Trace 很长也不要求主 Agent 默认加载；
 - capture gap、删减和延迟会显式暴露，不能被误报为完整记录。
 
-以下仍是 M4-002～004 的 target acceptance，不能由 M4-001 的 DONE 状态代替：路径调整不破坏正式对象
-identity、promotion 不丢弃失败/负结果、子 Agent 不能覆盖 accepted 工件、Claim trace 可一次定位支持/反证/
-限制，以及 Run 可在没有原 Agent 会话时按 exact inputs/environment/execution facts 理解与重建。
+以下仍是 M4-003～004 的 target acceptance，不能由 M4-001/002 的 DONE 状态代替：Claim trace 可一次
+定位支持/反证/限制，以及 Run 可在没有原 Agent 会话时按 exact inputs/environment/execution facts 理解与
+重建。

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/promotion-execution-receipt.schema.json",
+  "title": "Promotion Execution Receipt",
+  "$comment": "Durable success fact for exact-byte promotion. It confers no Claim, Human Decision, or publication authority.",
+  "x-rwb-document-kind": "promotion_execution_receipt",
+  "type": "object",
+  "required": [
+    "schema_version", "receipt_id", "promotion_id", "promotion_record_ref",
+    "task_ref", "validation_authority_registry_ref", "validation_policy_ref",
+    "validation_execution_ref", "validation_report_ref", "checker", "runner",
+    "host", "source_artifact_refs", "target_artifact_refs", "operator",
+    "executed_at", "outcome", "authority_boundaries"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "receipt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "promotion_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "promotion_record_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "task_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "validation_authority_registry_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "validation_policy_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "validation_execution_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "validation_report_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "checker": { "$ref": "deterministic-check-report.schema.json#/properties/checker" },
+    "runner": { "$ref": "promotion-validation-policy.schema.json#/properties/runner" },
+    "host": { "$ref": "promotion-validation-authority-registry.schema.json#/$defs/host" },
+    "source_artifact_refs": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/fileRef" }
+    },
+    "target_artifact_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["source_ref", "target_ref"],
+        "properties": {
+          "source_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+          "target_ref": { "$ref": "common.schema.json#/$defs/fileRef" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "operator": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "executed_at": { "type": "string", "format": "date-time" },
+    "outcome": { "const": "succeeded" },
+    "authority_boundaries": {
+      "type": "object",
+      "required": [
+        "structural_copy_fact_only", "claim_acceptance", "human_decision",
+        "publication", "scientific_correctness", "source_deletion"
+      ],
+      "properties": {
+        "structural_copy_fact_only": { "const": true },
+        "claim_acceptance": { "const": false },
+        "human_decision": { "const": false },
+        "publication": { "const": false },
+        "scientific_correctness": { "const": false },
+        "source_deletion": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

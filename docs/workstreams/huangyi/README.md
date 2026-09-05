@@ -13,6 +13,11 @@ owner：黄毅（GitHub 主名 `let778750-cpu`；昵称/界面名 `huangyi855`�
 - [`open-source-agent-harness-research/`](open-source-agent-harness-research/README.md)：
   开源 Agent Harness 调研、Codex 只读协议验证与候选研究方向（`RESEARCH-HARNESS-001`）。
 
+进行中的 implementation workstream：
+
+- [`M4-ARTIFACT-PROMOTION/`](M4-ARTIFACT-PROMOTION/README.md)：
+  M4-002 exact validation closure 与 fail-closed work-to-formal-zone promotion；等待 owner review/CI。
+
 已集成、保留审计记录的 implementation workstream：
 
 - [`M10-RESEARCH-STATE/`](M10-RESEARCH-STATE/README.md)：

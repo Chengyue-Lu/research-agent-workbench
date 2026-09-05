@@ -29,6 +29,12 @@ from research_workbench.artifacts.admission import (
     path_cites_inbox,
     sidecar_path_for,
 )
+from research_workbench.artifacts.promotion import (
+    check_promotion,
+    execute_promotion,
+    load_promotion_record,
+)
+from research_workbench.artifacts.validation_host import run_validation_execution
 from research_workbench.capability import (
     AcceptedSkillRegistry,
     AgentProfile,
@@ -201,6 +207,86 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
         for subject_ref in document.get("subject_refs", []):
             if isinstance(subject_ref, Mapping):
                 references += (FileReference.from_mapping(subject_ref),)
+    elif kind == "promotion_record":
+        for key in (
+            "task_ref",
+            "validation_authority_registry",
+            "validation_report",
+            "validation_policy",
+            "validation_execution",
+        ):
+            reference = document.get(key)
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
+        for entry in document.get("entries", []):
+            if isinstance(entry, Mapping) and isinstance(entry.get("artifact"), Mapping):
+                references += (FileReference.from_mapping(entry["artifact"]),)
+    elif kind == "promotion_validation_authority_registry":
+        for entry in document.get("accepted_policies", []):
+            if not isinstance(entry, Mapping):
+                continue
+            policy_ref = entry.get("policy_ref")
+            if isinstance(policy_ref, Mapping):
+                references += (FileReference.from_mapping(policy_ref),)
+            for key in ("checker", "runner", "host"):
+                component = entry.get(key)
+                if isinstance(component, Mapping) and isinstance(component.get("source_ref"), Mapping):
+                    references += (FileReference.from_mapping(component["source_ref"]),)
+    elif kind == "promotion_validation_policy":
+        for key in ("checker", "runner"):
+            component = document.get(key)
+            if isinstance(component, Mapping) and isinstance(component.get("source_ref"), Mapping):
+                references += (FileReference.from_mapping(component["source_ref"]),)
+    elif kind == "promotion_validation_execution":
+        for key in ("task_ref", "authority_registry_ref", "policy_ref", "report_ref"):
+            reference = document.get(key)
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
+        for key in ("checker", "runner", "host"):
+            component = document.get(key)
+            if isinstance(component, Mapping) and isinstance(component.get("source_ref"), Mapping):
+                references += (FileReference.from_mapping(component["source_ref"]),)
+        for reference in document.get("subject_refs", []):
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
+    elif kind == "promotion_validation_host_receipt":
+        for key in ("task_ref", "authority_registry_ref", "policy_ref", "report_ref"):
+            reference = document.get(key)
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
+        for key in ("checker", "runner", "host"):
+            component = document.get(key)
+            if isinstance(component, Mapping) and isinstance(component.get("source_ref"), Mapping):
+                references += (FileReference.from_mapping(component["source_ref"]),)
+        for reference in document.get("subject_refs", []):
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
+    elif kind == "promotion_execution_receipt":
+        for key in (
+            "promotion_record_ref",
+            "task_ref",
+            "validation_authority_registry_ref",
+            "validation_policy_ref",
+            "validation_execution_ref",
+            "validation_report_ref",
+        ):
+            reference = document.get(key)
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
+        for key in ("checker", "runner", "host"):
+            component = document.get(key)
+            if isinstance(component, Mapping) and isinstance(component.get("source_ref"), Mapping):
+                references += (FileReference.from_mapping(component["source_ref"]),)
+        for reference in document.get("source_artifact_refs", []):
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
+        for target in document.get("target_artifact_refs", []):
+            if not isinstance(target, Mapping):
+                continue
+            for key in ("source_ref", "target_ref"):
+                reference = target.get(key)
+                if isinstance(reference, Mapping):
+                    references += (FileReference.from_mapping(reference),)
     elif kind == "handoff_transfer_manifest":
         for source_ref in document.get("source_artifact_refs", []):
             if isinstance(source_ref, Mapping):
@@ -376,6 +462,49 @@ def _source_check(args: argparse.Namespace) -> int:
     if errors:
         return 1
     return _print_risks(check_source_admission(Path(args.root).resolve(), document))
+
+
+def _promotion_validate(args: argparse.Namespace) -> int:
+    root = Path(args.root).resolve()
+    try:
+        document, record_reference = load_promotion_record(root, args.record)
+    except ContractError as exc:
+        print(f"ERROR   DOCUMENT-INVALID              {exc}")
+        return 1
+    return _print_risks(check_promotion(root, document, record_reference=record_reference))
+
+
+def _promotion_execute(args: argparse.Namespace) -> int:
+    result = execute_promotion(Path(args.root).resolve(), args.record)
+    for target in result.targets:
+        print(f"promoted: {target}")
+    if not result.targets:
+        print("ok: all validated entries retained in work")
+    print(f"receipt: {result.receipt}")
+    return 0
+
+
+def _validation_run(args: argparse.Namespace) -> int:
+    try:
+        result = run_validation_execution(
+            Path(args.root).resolve(),
+            args.task,
+            attempt_id=args.attempt,
+            subjects=tuple(args.subject),
+            operator=args.operator,
+            report_path=args.report_path,
+        )
+    except ContractError as exc:
+        print(f"ERROR   VALIDATION-EXECUTION-UNPROVEN {exc}")
+        return 1
+    print(f"report: {result.report_path}")
+    print(f"execution: {result.execution_path}")
+    print(f"receipt: {result.receipt_path}")
+    if result.outcome != "pass":
+        print("blocked: validation execution outcome is not pass")
+        return 1
+    print("ok: validation run produced a PASS provenance triple (eligibility is established by promotion-time re-execution)")
+    return 0
 
 
 def _eval_check(args: argparse.Namespace) -> int:
@@ -1497,6 +1626,50 @@ def build_parser() -> argparse.ArgumentParser:
     source_check.add_argument("admission")
     source_check.add_argument("--root", default=".")
     source_check.set_defaults(handler=_source_check)
+
+    promotion = subparsers.add_parser(
+        "promotion", help="validate or execute fail-closed work artifact promotion"
+    )
+    promotion_subparsers = promotion.add_subparsers(dest="promotion_command", required=True)
+    promotion_validate = promotion_subparsers.add_parser(
+        "validate",
+        help="verify pins and boundaries, then deterministically re-execute the "
+        "pinned validation pipeline in a scratch directory (trusted side-effect-free components required)",
+    )
+    promotion_validate.add_argument("record")
+    promotion_validate.add_argument("--root", default=".")
+    promotion_validate.set_defaults(handler=_promotion_validate)
+    promotion_execute = promotion_subparsers.add_parser(
+        "execute", help="stage, revalidate, and exclusively publish eligible bytes"
+    )
+    promotion_execute.add_argument("record")
+    promotion_execute.add_argument("--root", default=".")
+    promotion_execute.set_defaults(handler=_promotion_execute)
+
+    validation = subparsers.add_parser(
+        "validation", help="run the validation pipeline for artifact promotion"
+    )
+    validation_subparsers = validation.add_subparsers(dest="validation_command", required=True)
+    validation_run = validation_subparsers.add_parser(
+        "run",
+        help="actually invoke the accepted runner/checker and persist the run's "
+        "provenance triple (report/execution/host receipt); promotion eligibility "
+        "itself is established later by promotion-time re-execution",
+    )
+    validation_run.add_argument("--task", required=True, help="file-bound canonical Task Packet")
+    validation_run.add_argument("--attempt", required=True, help="Attempt ID under work/<task>/")
+    validation_run.add_argument(
+        "--subject",
+        action="append",
+        required=True,
+        help="subject path inside the workspace; repeat for each subject",
+    )
+    validation_run.add_argument("--operator", required=True, help="named accountable operator")
+    validation_run.add_argument(
+        "--report-path", help="report path override; must stay inside the workspace"
+    )
+    validation_run.add_argument("--root", default=".")
+    validation_run.set_defaults(handler=_validation_run)
 
     trace = subparsers.add_parser("trace", help="validate a file-authoritative Attempt trace")
     trace_subparsers = trace.add_subparsers(dest="trace_command", required=True)

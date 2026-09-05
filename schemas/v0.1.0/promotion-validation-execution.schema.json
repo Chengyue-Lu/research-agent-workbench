@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/promotion-validation-execution.schema.json",
+  "title": "Promotion Validation Execution Record",
+  "$comment": "Auditable provenance record for one claimed deterministic validation run under an accepted promotion policy. Promotion eligibility (the actual validation execution fact) is established only by promotion-time deterministic re-execution of the pinned runner/checker; this document alone is metadata and never confers eligibility. It carries no Claim, Human Decision, publication, or scientific-correctness authority.",
+  "x-rwb-document-kind": "promotion_validation_execution",
+  "type": "object",
+  "required": [
+    "schema_version", "execution_id", "task_id", "attempt_id", "task_ref",
+    "authority_registry_ref", "policy_ref", "checker", "runner", "host",
+    "report_ref", "subject_refs", "executor", "host_receipt_ref",
+    "started_at", "finished_at", "outcome", "authority_boundaries"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "execution_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "task_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "attempt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "task_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "authority_registry_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "policy_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "checker": { "$ref": "deterministic-check-report.schema.json#/properties/checker" },
+    "runner": { "$ref": "promotion-validation-policy.schema.json#/properties/runner" },
+    "host": { "$ref": "promotion-validation-authority-registry.schema.json#/$defs/host" },
+    "report_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "subject_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/fileRef" }
+    },
+    "executor": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "host_receipt_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "started_at": { "type": "string", "format": "date-time" },
+    "finished_at": { "type": "string", "format": "date-time" },
+    "outcome": { "enum": ["pass", "fail"] },
+    "authority_boundaries": {
+      "type": "object",
+      "required": [
+        "validation_execution_fact", "promotion_execution",
+        "claim_acceptance", "human_decision", "scientific_correctness"
+      ],
+      "properties": {
+        "validation_execution_fact": { "const": false },
+        "promotion_execution": { "const": false },
+        "claim_acceptance": { "const": false },
+        "human_decision": { "const": false },
+        "scientific_correctness": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

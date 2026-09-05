@@ -37,6 +37,7 @@ curated main release 均未实现，因此这不是发布完成宣称，也不�
 | 评估对照（M5-003） | Evaluation Manifest 直接以四个 Phase D treatment 为 canonical arms；Task、exact Model、Host、budget、context 与 evidence classes 共享冻结，Tool/no-Skill Snapshot 和 candidate Skill binding fail closed；`rwb eval plan` 编译同一条件 digest 的 non-executing baseline plan（[契约](implementation/EVALUATION_MANIFEST_CONTRACT.md)） |
 | 确定性验证 | Schema、引用、哈希、权限交集、Handoff lock、Claim 支持关系 |
 | Source admission（M4-001） | `sources/raw` admission sidecar 固定来源 locator、时间、操作者、许可/数据边界、解析器与 exact byte hash；已提取引用若落入 `sources/inbox` 完整路径段则阻断（[契约](implementation/SOURCE_ADMISSION_CONTRACT.md)） |
+| Artifact promotion（M4-002） | accepted validation policy 固定 runner/checker；validation run 三元组仅记录 claimed provenance metadata，eligibility 由 promotion 时重执行 pinned pipeline 并复现 PASS report/transcript 当场确立；错误 PASS 阻断，byte-exact 自报历史不产生历史 producer/operator/time 权威；entries/live bytes exact closure 与 file-bound record 以 staging + commit-time revalidation + exclusive-create 同批发布 object/run/candidate bytes 与 durable Promotion Receipt，保留全部 work 与负结果 disposition（[契约](implementation/ARTIFACT_PROMOTION_CONTRACT.md)） |
 | Legacy alpha Task 解析 | 旧 `task resolve` 路径仍以 Task + Agent Profile + 显式或 Registry Skill 生成冻结 Assignment、权限交集与版本锁；它是 Skill-bearing compatibility seam，不是 M11 Runtime Core 的统一入口 |
 | Legacy Skill 兼容 | accepted Registry 的 active / legacy / deprecated 历史选择边界与精确版本继续可验证；新绑定使用 lifecycle v2 eligibility |
 | 文件式连续性 | Main State、checkpoint、resume-check、受控 Handoff 与归档约定 |
@@ -60,7 +61,8 @@ curated main release 均未实现，因此这不是发布完成宣称，也不�
 | 真实外部模型 | 仓库测试不证明各供应商真实账号、配额、工具调用或长期兼容性 |
 | 科学有效性 | Validator 不评判方法适用、证据质量或 Claim 正确性 |
 | Phase C candidates（M10-001/002 + M3-009 + M10-003） | 两个 synthetic bounded case 只证明 State/Attempt/Failure/Method Trace 的确定性 closure、fresh-process 受控读取和固定 fixture behavior；Human semantic review、R2/Phase C closeout 仍 pending，最终表示与 Topic 5 实现均未获授权 |
-| Source admission（M4-001） | 不抓取网页/API，不判断来源真实性、许可法律效力、内容安全或科学质量；promotion、Claim trace 与 Run reproduction 尚未在本层实现 |
+| Source admission（M4-001） | 不抓取网页/API，不判断来源真实性、许可法律效力、内容安全或科学质量；它本身不实现后续 promotion、Claim trace 或 Run reproduction |
+| Artifact promotion（M4-002） | policy/execution/report/receipt 记录一次声称的校验运行（provenance metadata）与 exact byte copy 的可审计事实；eligibility 只由 promotion 时的确定性重执行等价当场确立；不接受 Claim、不记录 Human Decision、不直达 accepted/publication、不证明科学正确性，也不实现 M4-003 Claim Trace 或 M4-004 Run reproduction |
 | Skill 价值 | 现有 Registry 条目不构成已证明的普适研究增益；新任务可优先 no-Skill / direct-tool |
 | Skill new-binding | 生产 projection index 仍为空；M11-005/006 只证明可选 publication/mapping contract，未重新准入任何 legacy Skill，也未证明真实 trial、Provider 可用性或科研净增量 |
 | Phase D evaluation entry | [ADR-0020](decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) 已选择 A1/A2→M6、A3/A4→M11 的显式双传输并允许 M5-006 Protocol 启动；这不是执行实现。M6-008 treatment-visible baseline envelope/replay closeout 尚未实现，Skill-bearing closeout Gate 仍未满足，M5-007 Harness 与真实 M5-004 execution 继续 BLOCKED |

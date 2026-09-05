@@ -106,6 +106,18 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "skill_evaluation"
     if "manifest_id" in document and "arms" in document and "metric_set" in document:
         return "evaluation_manifest"
+    if "promotion_id" in document and "validation_report" in document and "entries" in document:
+        return "promotion_record"
+    if document.get("registry_id") == "RWB-PROMOTION-VALIDATION-AUTHORITY":
+        return "promotion_validation_authority_registry"
+    if "policy_id" in document and document.get("accepted_for") == "artifact-promotion-validation":
+        return "promotion_validation_policy"
+    if "receipt_id" in document and "run_inputs_sha256" in document and "transcript" in document:
+        return "promotion_validation_host_receipt"
+    if "execution_id" in document and "policy_ref" in document and "report_ref" in document:
+        return "promotion_validation_execution"
+    if "receipt_id" in document and "promotion_record_ref" in document:
+        return "promotion_execution_receipt"
     if "admission_id" in document and "acquisition" in document and "admitted_path" in document:
         return "source_admission"
     if "state_id" in document and "entries" in document and "open_items" in document:
