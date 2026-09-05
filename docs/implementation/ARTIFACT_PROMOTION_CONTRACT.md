@@ -67,39 +67,58 @@ receipt 都必须留在各自固定 zone 和 project root 内，且不得穿越 
 `deliverables/accepted/`、`checks/` 和任意相似前缀不具备 promotion 资格。目标已存在或多项指向同一
 目标时 fail closed。
 
-## 4. 受信验证执行（trusted validation host）
+## 4. 验证执行与 promotion-time 重执行（validity semantics）
 
-`promotion_validation_execution` 只有在由受信 validation host 实际调用 accepted、hash-pinned 的
-runner/checker、对 exact pinned subject bytes 运行之后，才携带 promotion eligibility。手写的
-execution record——即使内部 hash 完全自洽、且引用完全合法的 accepted authority 对象——本身永远不能
-获得 eligibility。
+promotion eligibility 是一个 **validity fact**，只在 promotion 验证时确立：`check_promotion` 在其余
+检查全部干净后，通过同一受控 host seam 对 live subject bytes 确定性重执行 accepted、hash-pinned 的
+runner/checker，要求 byte-exact 复现记录的 PASS report 与 run transcript（deterministic
+rebuild-and-compare，不引入签名密钥）；任何漂移以 `VALIDATION-EXECUTION-UNPROVEN` 阻断。
+
+`rwb validation run`（validation host）是产生候选验证记录的规范入口：它解析 pre-Attempt 权威链
+（revision-pinned canonical Task → accepted-policy registry → 该 Task revision 的唯一 accepted
+policy → checker/runner/host identity/version/source pin），在 scrubbed subprocess 中实际执行 pinned
+runner，并 exclusive-create 三份 durable 文档——PASS report、`promotion_validation_execution` 与
+`promotion_validation_host_receipt`。这份三元组是 **provenance metadata**：它把一次"声称的运行"的
+pinned inputs、transcript、自声明 operator 与时间以 durable、交叉 exact-pin 的形式记录下来，供审计与
+故障排查使用；它**不证明该历史运行确实发生过**，也从不单独授予 eligibility。因此：
+
+- 手写 execution/report/receipt 且声称与真实 runner 输出不符：重执行直接证伪，阻断；
+- 手写但 byte-exact 的三元组（攻击者离线运行 pinned runner 后伪造"历史"）：可以通过 promotion
+  验证——这不是漏洞而是语义本身。eligibility 从不依赖不可验证的历史声称，只依赖重执行对"pinned
+  pipeline 在 exact pinned bytes 上通过"这一事实的当场重建；伪造能力被限制在"声称真事实"之内，
+  任何假 PASS 都被同一重执行证伪。
 
 权威链为：pre-Attempt 冻结且 revision-pinned 的 Task Packet（canonical
 `objects/tasks/<task>/r<revision>/TASK.yaml`）→ accepted-policy registry
-（`registry/validation-policies/accepted.yaml`）→ 该 Task revision 的唯一 accepted policy → trusted
-validation host 实际执行 accepted runner/checker → host 产出的 receipt →
-`promotion_validation_execution` → PASS report → promotion。host 在执行前核验：Task 的
-`input_refs` exact-pin registry 与 policy；`write_scope` 绑定 exact `work/<task>/<attempt>`；
-checker/runner/host 的 identity/version/source-sha256 pin 指向 repository-governed 受信 source zone
-（`src/`、`checks/`、`.github/scripts/`、`registry/validation-tools/`）。
+（`registry/validation-policies/accepted.yaml`）→ 该 Task revision 的唯一 accepted policy →
+checker/runner/host 的 identity/version/source pin。host 在执行前核验：Task 的 `input_refs`
+exact-pin registry 与 policy；`write_scope` 绑定 exact `work/<task>/<attempt>`；checker/runner/host
+pin 指向 repository-governed 受信 source zone（`src/`、`checks/`、`.github/scripts/`、
+`registry/validation-tools/`）。registry 中的 host pin 以 metadata 形式标识 operator 声称使用的
+producer 实现；真正的 producer 始终是 installed `rwb` package——本协议的 TCB 为执行 promotion 验证的
+rwb installed package 代码与 pinned runner/checker source。单一信任域（同一台主机、同一文件系统）内
+不存在调用方无法离线重建的 proof，因此本协议刻意不声称 trusted-host historical provenance；若未来
+引入跨信任域的签名/attestation 基础设施，需独立 ADR。
 
-host 在全新 scrubbed subprocess（`PYTHONHASHSEED=0`、90 秒超时、捕获 stdout/stderr/exit code）中实际
-执行 pinned runner，并 exclusive-create 三份 durable fact：
+host 在 scrubbed subprocess 中执行 pinned runner：环境只继承 OS 必需变量白名单（Windows
+`PATH`/`SystemRoot`/`TEMP` 等，POSIX `PATH`/`HOME`/`TMPDIR` 等，大小写不敏感匹配），丢弃会话/Agent
+注入变量、凭据与解释器污染开关（`PYTHONPATH`/`PYTHONHOME`/`PYTHONSTARTUP` 等），并固定
+`PYTHONHASHSEED=0`、`PYTHONDONTWRITEBYTECODE=1`、`PYTHONNOUSERSITE=1`、`TZ=UTC`；90 秒超时，捕获
+stdout/stderr/exit code。host exclusive-create 三份 durable 文档：
 
 - `work/<task>/<attempt>/checks/validation.yaml`：`deterministic_check_report`——PASS 时为 runner
   产出的原始 bytes；runner 未产出 report 时由 host 合成 fail report；
-- `runs/validation/<task>/<attempt>/execution.yaml`：`promotion_validation_execution`，新增必需
+- `runs/validation/<task>/<attempt>/execution.yaml`：`promotion_validation_execution`，必需
   `host_receipt_ref`；
-- `runs/validation/<task>/<attempt>/receipt.json`：新文档种类
-  `promotion_validation_host_receipt`（Schema
+- `runs/validation/<task>/<attempt>/receipt.json`：`promotion_validation_host_receipt`（Schema
   `schemas/v0.1.0/promotion-validation-host-receipt.schema.json`），固定 receipt/execution/Task/Attempt
   id、Task/registry/policy/report exact refs、checker/runner/host binding、subject_refs、
   `run_inputs_sha256`（对 runner contract id、execution/report id、全部 authority refs、组件 pin 与
   subject pin 的 canonical closure hash）、`transcript{exit_code, stdout_sha256, stderr_sha256,
-  report_sha256}`、`report_produced_by`（`runner` | `host-failure-synthesis`）、具名 operator、
-  started/finished 时间、outcome 与固定 authority boundaries（`validation_execution_fact=true`；
-  `promotion_execution` / `claim_acceptance` / `human_decision` / `scientific_correctness`
-  均为 false）。
+  report_sha256}`、`report_produced_by`（`runner` | `host-failure-synthesis`）、自声明 operator 与
+  started/finished 时间、outcome 与固定 authority boundaries（全部为 false——包括
+  `validation_execution_fact=false`，因为 execution fact 只由 promotion-time 重执行确立，任何文档
+  自身都不是该 fact）。
 
 失败语义保持 fail closed：authority 或 boundary 故障在任何执行与写入之前以 ContractError 中止；
 runner 崩溃、超时或未产出 report 仍持久化一份 `outcome=fail` 的 report/execution/receipt 三元组（缺失
@@ -113,13 +132,6 @@ runner 与 checker 必须 byte-deterministic：report 内容不得包含 wall-cl
 按 exact path 经 importlib 加载 checker、要求 checker 暴露 `evaluate(subjects)` 并返回
 `{checks, scope, limitations}`、写出 canonical deterministic YAML report，以退出码 0/1/2 区分
 PASS / FAIL / runner fault。
-
-promotion 验证在其余检查全部干净后，通过同一 host seam 对 live subject bytes 重新执行 pinned
-runner/checker，要求 PASS report 与记录的 transcript（exit code、stdout/stderr hash）byte-exact
-复现；任何漂移都以 `VALIDATION-EXECUTION-UNPROVEN` 阻断。这是 deterministic
-rebuild-and-compare：不引入签名密钥，eligibility 的等价定义是——pinned validation 确实在 exact
-pinned bytes 上运行过并产生了这份 exact PASS report。本协议的 TCB 为 rwb installed package 代码与
-pinned runner/checker/host source。
 
 ## 5. Promotion 执行模型
 
@@ -153,9 +165,11 @@ rwb promotion validate RECORD --root ROOT
 rwb promotion execute RECORD --root ROOT
 ```
 
-`rwb validation run` 是唯一产生携带 eligibility 的 validation execution fact 的入口：authority 或
-boundary 故障在任何执行与写入之前直接拒绝；runner 失败会持久化 `outcome=fail` 三元组并以非零退出。
-`validate` 只读。`execute` 必须接收 root 内、workspace 内的实际 record 文件，只复制 disposition 为
+`rwb validation run` 是产生候选 validation 三元组（report/execution/host receipt provenance
+metadata）的规范入口：authority 或 boundary 故障在任何执行与写入之前直接拒绝；runner 失败会持久化
+`outcome=fail` 三元组并以非零退出。`validate` 不修改仓库任何状态，但不是消极只读：它会在隔离临时
+目录中经同一 host seam 实际执行 pinned runner/checker 以完成 rebuild-and-compare——eligibility 正是
+在这里确立。`execute` 必须接收 root 内、workspace 内的实际 record 文件，只复制 disposition 为
 `promote` 的 exact bytes，并在 `runs/promotions/<promotion-id>/receipt.json` 留下 durable success fact；
 即使全部 entry 都 retain，也会留下 receipt。三条命令均不修改 Claim、Decision 或 deliverable acceptance
 状态。通用 `rwb validate` 识别 policy、validation execution、host receipt、record 和 receipt，并会重新
@@ -167,7 +181,11 @@ boundary 故障在任何执行与写入之前直接拒绝；runner 失败会持�
 Task/registry/policy/execution/report 关系漂移、report/checker/subject/
 entry pin 漂移、额外/遗漏工件、负结果 disposition、路径前缀伪装、root/symlink escape、重复 identity、
 existing/accepted target、record/source/target 竞态、staged-byte 漂移、receipt 冲突和目标/receipt 同批回滚；
-trusted host 闭合新增覆盖：无 host 实际运行的手写 execution、伪造 host receipt、receipt↔execution↔record
-闭包漂移、把 failing checker 伪报为 PASS、非确定性 checker/runner 的重执行 transcript 漂移，以及 runner
-崩溃/超时/未产 report 时的 durable fail fact。
+validation host 闭合新增覆盖：无 host 记录的手写 execution、伪造 host receipt、receipt↔execution↔record
+闭包漂移、把 failing checker 伪报为 PASS、非确定性 checker/runner 的重执行 transcript 漂移、runner
+崩溃/超时/未产 report 时的 durable fail fact、runner 子进程环境 scrub（OS 白名单 + 确定性 pin、丢弃
+会话注入变量与凭据），以及 validity semantics 的边界锁定——host 从未运行、report/transcript 与
+pinned runner/checker 输出逐字节一致、operator/时间纯属伪造的三元组可以通过验证但不携带任何历史
+权威（三元组自身声明 `validation_execution_fact=false`，eligibility 完全由 promotion-time 重执行
+当场确立）。
 该证据只支持 M4-002；M4-003 Claim Trace 与 M4-004 Run reproduction 仍需各自独立实现、PR 和 owner 验收。

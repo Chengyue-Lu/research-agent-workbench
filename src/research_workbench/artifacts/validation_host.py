@@ -1,18 +1,25 @@
-"""Trusted validation host for fail-closed artifact promotion (M4-002).
+"""Deterministic validation pipeline runner for fail-closed artifact promotion (M4-002).
 
-A ``promotion_validation_execution`` carries promotion eligibility only when it
-is produced by this host actually invoking the accepted, hash-pinned
-runner/checker over the exact pinned subject bytes.  A hand-written execution
-record -- even one referencing fully legitimate accepted authority objects --
-never gains eligibility on its own: promotion validation re-executes the
-pinned pipeline and requires byte-exact reproduction of the PASS report and of
-the recorded run transcript (deterministic rebuild-and-compare, so no signing
-keys are needed).
+Promotion eligibility is a validity fact established at promotion time:
+``check_promotion`` deterministically re-executes the accepted, hash-pinned
+runner/checker over the exact pinned subject bytes and requires byte-exact
+reproduction of the recorded PASS report and run transcript
+(rebuild-and-compare; no signing keys).  The report / execution / host-receipt
+triple produced here is provenance metadata: it durably records one claimed
+run -- its pinned inputs, transcript, operator, and timestamps.  Those
+self-declared fields are not independently verifiable and never confer
+eligibility on their own.  A hand-written triple whose report and transcript
+are byte-exactly what the pinned pipeline would produce can pass promotion
+validation only because re-execution independently confirms the underlying
+claim; any false claim (bytes that do not actually pass) is refuted by the
+same re-execution.
 
-The host executes nothing beyond the runner/checker exact-pinned by the frozen
-Task Packet, the authority registry, and the accepted policy.  It never accepts
-a Claim, records a Human Decision, publishes a deliverable, or judges
-scientific correctness.
+The registry's ``host`` pin identifies the claimed producer implementation as
+metadata; the actual producer is always this installed ``rwb`` package, which
+is part of the promotion TCB.  The host executes nothing beyond the
+runner/checker exact-pinned by the frozen Task Packet, the authority registry,
+and the accepted policy.  It never accepts a Claim, records a Human Decision,
+publishes a deliverable, or judges scientific correctness.
 """
 
 from __future__ import annotations
@@ -94,6 +101,40 @@ def _canonical_json_bytes(data: Mapping[str, Any]) -> bytes:
 
 def _canonical_yaml_bytes(data: Mapping[str, Any]) -> bytes:
     return yaml.safe_dump(data, sort_keys=True, allow_unicode=True).encode("utf-8")
+
+
+_SCRUBBED_ENV_ALLOWLIST = frozenset(
+    {
+        # Windows process essentials
+        "APPDATA", "COMSPEC", "HOMEDRIVE", "HOMEPATH", "LOCALAPPDATA",
+        "NUMBER_OF_PROCESSORS", "OS", "PATH", "PATHEXT", "PROGRAMDATA",
+        "SYSTEMDRIVE", "SYSTEMROOT", "TEMP", "TMP", "USERPROFILE",
+        # POSIX essentials
+        "HOME", "LANG", "LC_ALL", "TMPDIR", "USER",
+    }
+)
+
+
+def _scrubbed_environment() -> dict[str, str]:
+    """Minimal environment for the pinned runner subprocess.
+
+    Only OS-essential variables are inherited (matched case-insensitively so
+    Windows case variants collapse); session- or agent-injected variables,
+    credentials, and interpreter-poisoning knobs (``PYTHONPATH``,
+    ``PYTHONHOME``, ``PYTHONSTARTUP``, ...) are dropped.  Hash randomisation,
+    user site-packages, bytecode writes, and timezone are pinned so the run is
+    reproducible and isolated from the caller's shell.
+    """
+
+    env: dict[str, str] = {}
+    for key, value in os.environ.items():
+        if key.upper() in _SCRUBBED_ENV_ALLOWLIST:
+            env[key] = value
+    env["PYTHONHASHSEED"] = "0"
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    env["PYTHONNOUSERSITE"] = "1"
+    env["TZ"] = "UTC"
+    return env
 
 
 def _path_token(value: Any, field: str) -> str:
@@ -302,8 +343,7 @@ def _execute_runner(
         }
         manifest_path = temp_root / "manifest.json"
         manifest_path.write_bytes(_canonical_json_bytes(manifest))
-        environment = dict(os.environ)
-        environment["PYTHONHASHSEED"] = "0"
+        environment = _scrubbed_environment()
         timed_out = False
         try:
             completed = subprocess.run(
@@ -359,7 +399,12 @@ def run_validation_execution(
     operator: str,
     report_path: str | None = None,
 ) -> ValidationRunResult:
-    """Actually run the accepted validation pipeline and persist its facts.
+    """Actually run the accepted validation pipeline and persist its record.
+
+    The persisted report/execution/host-receipt triple is provenance metadata
+    describing one claimed run; it never confers promotion eligibility by
+    itself.  Eligibility is established later, at promotion time, by
+    deterministic re-execution of the pinned pipeline (``reexecute_validation``).
 
     Authority or boundary faults raise ``ContractError`` before anything is
     executed or written.  A runner/checker failure is itself a durable fact:
@@ -561,7 +606,10 @@ def run_validation_execution(
         "finished_at": finished_at,
         "outcome": outcome.outcome,
         "authority_boundaries": {
-            "validation_execution_fact": True,
+            # Provenance metadata only: promotion eligibility (the actual
+            # execution fact) is established by promotion-time deterministic
+            # re-execution, never by this receipt.
+            "validation_execution_fact": False,
             "promotion_execution": False,
             "claim_acceptance": False,
             "human_decision": False,
@@ -595,7 +643,10 @@ def run_validation_execution(
         "finished_at": finished_at,
         "outcome": outcome.outcome,
         "authority_boundaries": {
-            "validation_execution_fact": True,
+            # Provenance metadata only: promotion eligibility (the actual
+            # execution fact) is established by promotion-time deterministic
+            # re-execution, never by this record alone.
+            "validation_execution_fact": False,
             "promotion_execution": False,
             "claim_acceptance": False,
             "human_decision": False,
@@ -632,7 +683,13 @@ def check_host_receipt_closure(
     execution: Mapping[str, Any],
     receipt: Mapping[str, Any],
 ) -> list[ContractRisk]:
-    """Cross-check that the receipt, execution, and record pin one host run."""
+    """Cross-check that the receipt, execution, and record pin one claimed run.
+
+    This is a structural metadata closure: it proves the triple is internally
+    consistent and bound to the frozen authority chain.  It does not prove the
+    claimed run ever happened; that validity question is answered only by
+    ``reexecute_validation`` at promotion time.
+    """
 
     risks: list[ContractRisk] = []
     if receipt.get("execution_id") != execution.get("execution_id"):
@@ -720,7 +777,12 @@ def reexecute_validation(
     execution: Mapping[str, Any],
     receipt: Mapping[str, Any],
 ) -> list[ContractRisk]:
-    """Re-run the pinned pipeline and demand byte-exact transcript equivalence."""
+    """Re-run the pinned pipeline and demand byte-exact transcript equivalence.
+
+    This is the authoritative validity check behind promotion eligibility: it
+    -- not the recorded report/execution/receipt triple -- establishes that the
+    accepted runner/checker passes on the exact pinned subject bytes right now.
+    """
 
     checker = _component_binding(execution["checker"], "checker")
     runner = _component_binding(execution["runner"], "runner")

@@ -9,6 +9,26 @@
 - 首个合法实现入口仅为 M14-001。许可证、scaffold、远端 GitHub protection、public/package closure 与
   exact release evidence 继续阻断 M14-005，本次文档不实现 exporter、package migration 或真实发行。
 
+## 2026-09-04 — M4-002 validity semantics 收口
+
+- PR #54 第四轮 review 确认：此前实现证明的是 deterministic validation validity，而文档/Schema 声称
+  trusted-host historical execution provenance，二者不等价；实证探针显示 host 从未运行、report 与
+  transcript 和 pinned runner/checker 输出逐字节一致的伪造三元组（含编造 operator/时间）可获得
+  eligibility。单一信任域内不存在调用方无法离线重建的 producer proof（pinned host source 本身即在仓库
+  公开区），签名/attestation 基础设施属新全局依赖，需独立 ADR，本轮不引入；
+- 收口为 validity semantics：promotion eligibility ≡ promotion 验证时的确定性重执行在 exact pinned
+  bytes 上 byte-exact 复现 PASS report 与记录 transcript；report/execution/host receipt 三元组降级为
+  provenance metadata，`validation_execution_fact` 在两个 Schema 中由 `const: true` 翻转为
+  `const: false`；自声明 operator/timestamps 明确为不可验证字段，从不参与 eligibility；伪造能力被
+  限制在"声称真事实"之内，假 PASS 由重执行证伪；
+- runner 子进程环境从"复制 `os.environ`"修正为真实 scrub：OS 必需变量白名单（大小写不敏感），丢弃
+  凭据与 `PYTHONPATH`/`PYTHONHOME`/`PYTHONSTARTUP` 等解释器污染开关，固定
+  `PYTHONHASHSEED=0`/`PYTHONDONTWRITEBYTECODE=1`/`PYTHONNOUSERSITE=1`/`TZ=UTC`；文档中"`promotion
+  validate` 只读"修正为"不修改仓库状态，但在隔离临时目录实际执行 pinned pipeline"；
+- 新增对抗与边界测试：`test_byte_exact_fabricated_history_carries_no_historical_authority`（强反例
+  语义锁定）、`test_runner_subprocess_environment_is_scrubbed`（端到端 env-scrub 护卫）与
+  `test_scrubbed_environment_allowlist_and_determinism_pins`。
+
 ## 2026-09-02 — Phase D dual-transport entry decision（本 R2 PR 合入时生效）
 
 - 本 R2 PR 合入时接受 ADR-0020：A1/A2 使用 M6 isolated session，A3/A4 使用 M11，并把 `A4 − A2` 固定为明确包含
@@ -23,10 +43,11 @@
 
 ## 2026-09-02 — M4-002 trusted validation host closure
 
-- 新增 trusted validation host（`rwb validation run`）：`promotion_validation_execution` 只有在 host
-  实际调用 accepted、hash-pinned 的 runner/checker 对 exact pinned subject bytes 运行后才携带 promotion
-  eligibility；手写 execution record 即使内部 hash 自洽、引用完全合法的 accepted authority 对象，也不得
-  获得 eligibility；
+- 新增 validation host（`rwb validation run`）：解析 pre-Attempt 权威链并实际调用 accepted、
+  hash-pinned 的 runner/checker 对 exact pinned subject bytes 运行，产出 durable
+  report/execution/host-receipt 三元组；手写 execution record 即使内部 hash 自洽、引用完全合法的
+  accepted authority 对象，也不得仅凭自身获得 eligibility（语义声称以 2026-09-04 validity semantics
+  收口为准）；
 - 新增 `promotion_validation_host_receipt` 文档种类，`host_receipt_ref` 成为 execution 的必需 exact
   pin；receipt 固定 run-inputs closure hash、run transcript（exit code 与 stdout/stderr/report hash）和
   `report_produced_by`；promotion 验证在其余检查干净后确定性重执行 pinned runner/checker，要求 byte-exact

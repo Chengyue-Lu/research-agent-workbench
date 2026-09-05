@@ -1,9 +1,12 @@
 """M4-002 fail-closed artifact promotion tests.
 
-Every fixture state is produced by the trusted validation host
-(``run_validation_execution``) actually invoking the pinned runner/checker in a
-subprocess; hand-written execution/report/receipt bytes only ever appear as
-attack simulations and must never gain eligibility.
+Fixture state is produced by the validation host (``run_validation_execution``)
+actually invoking the pinned runner/checker in a scrubbed subprocess.
+Hand-written triples appear in both adversarial roles: false claims (which
+promotion-time deterministic re-execution refutes and blocks) and the
+byte-exact fabricated history (whose self-declared provenance is unverifiable
+metadata; eligibility is a validity fact established only by promotion-time
+re-execution, never by any recorded document).
 """
 
 from __future__ import annotations
@@ -12,6 +15,8 @@ import copy
 import json
 import os
 import shutil
+import subprocess
+import sys
 import tempfile
 import unittest
 from contextlib import redirect_stdout
@@ -353,7 +358,10 @@ class PromotionFixture(unittest.TestCase):
         self.report = report
         self.write_report(report)
         boundaries = {
-            "validation_execution_fact": True,
+            # Matches host-produced facts: even a genuine triple is provenance
+            # metadata only; eligibility is established by promotion-time
+            # deterministic re-execution.
+            "validation_execution_fact": False,
             "promotion_execution": False,
             "claim_acceptance": False,
             "human_decision": False,
@@ -424,6 +432,143 @@ class PromotionFixture(unittest.TestCase):
             execution["host_receipt_ref"] = self.ref(self.receipt_path)
         self.execution = execution
         self.write_execution(execution)
+
+    def fabricate_byte_exact_history(self, *, operator: str = "mallory-offline-fabricator") -> None:
+        """Fabricate a byte-exact triple without ever invoking the host.
+
+        The reviewer-flagged strong case: every byte is computed offline from
+        repo-public information -- the fabricator runs the pinned runner with a
+        self-made manifest in the same scrubbed environment, captures the real
+        transcript, and recomputes the public run-inputs closure.  The
+        resulting report/execution/receipt are byte-exactly what a genuine host
+        run would have produced, except the self-declared operator and
+        timestamps, which no purely local mechanism can verify or refute.
+        """
+        self.strip_host_run()
+        entry = self.registry["accepted_policies"][0]
+        checker = promotion._component_binding(entry["checker"], "checker")
+        runner = promotion._component_binding(entry["runner"], "runner")
+        host = promotion._component_binding(entry["host"], "host")
+        subjects = sorted(
+            (
+                FileReference(self.rel(self.output), hash_file(self.output)),
+                FileReference(self.rel(self.negative), hash_file(self.negative)),
+            ),
+            key=lambda item: item.path,
+        )
+        with tempfile.TemporaryDirectory(prefix="rwb-fabrication-") as temporary:
+            temp_root = Path(temporary).resolve()
+            report_out = temp_root / "report.yaml"
+            manifest = {
+                "contract": validation_host.VALIDATION_RUNNER_CONTRACT,
+                "report_id": "M4-002-VALIDATION-A-001",
+                "checker": {
+                    "checker_id": checker[0],
+                    "version": checker[1],
+                    "source_ref": promotion._reference_mapping(checker[2]),
+                    "source_path": str(self.checker),
+                },
+                "subjects": [
+                    {
+                        "path": str(self.root / item.path),
+                        "relative_path": item.path,
+                        "sha256": item.sha256,
+                    }
+                    for item in subjects
+                ],
+                "report_out": str(report_out),
+            }
+            manifest_path = temp_root / "manifest.json"
+            manifest_path.write_bytes(validation_host._canonical_json_bytes(manifest))
+            completed = subprocess.run(
+                [sys.executable, str(self.runner), str(manifest_path)],
+                cwd=temp_root,
+                env=validation_host._scrubbed_environment(),
+                capture_output=True,
+                timeout=validation_host.VALIDATION_RUN_TIMEOUT_SECONDS,
+                check=False,
+            )
+            report_bytes = report_out.read_bytes()
+        if completed.returncode != 0:
+            raise AssertionError(f"fixture fabrication run failed: {completed.stderr!r}")
+        self.report_path.write_bytes(report_bytes)
+        self.report_bytes = report_bytes
+        self.report = yaml.safe_load(report_bytes)
+        started = datetime.now(timezone.utc) - timedelta(days=1)
+        finished = started + timedelta(seconds=3)
+        boundaries = {
+            "validation_execution_fact": False,
+            "promotion_execution": False,
+            "claim_acceptance": False,
+            "human_decision": False,
+            "scientific_correctness": False,
+        }
+        execution = {
+            "schema_version": "0.1.0",
+            "execution_id": "M4-002-VALIDATION-EXEC-A-001",
+            "task_id": "M4-002",
+            "attempt_id": "A-001",
+            "task_ref": self.ref(self.task_path, revision=1),
+            "authority_registry_ref": self.ref(self.registry_path),
+            "policy_ref": self.ref(self.policy_path),
+            "checker": copy.deepcopy(self.policy["checker"]),
+            "runner": copy.deepcopy(self.policy["runner"]),
+            "host": copy.deepcopy(self.registry["accepted_policies"][0]["host"]),
+            "report_ref": self.ref(self.report_path),
+            "subject_refs": copy.deepcopy(self.report["subject_refs"]),
+            "executor": host[0],
+            "host_receipt_ref": {"path": self.rel(self.receipt_path), "sha256": "0" * 64},
+            "started_at": self._iso(started),
+            "finished_at": self._iso(finished),
+            "outcome": "pass",
+            "authority_boundaries": copy.deepcopy(boundaries),
+        }
+        run_inputs = validation_host._run_inputs_sha256(
+            execution_id=execution["execution_id"],
+            report_id=self.report["report_id"],
+            task_ref=self._file_ref(execution["task_ref"]),
+            registry_ref=self._file_ref(execution["authority_registry_ref"]),
+            policy_ref=self._file_ref(execution["policy_ref"]),
+            checker=checker,
+            runner=runner,
+            host=host,
+            subjects=subjects,
+        )
+        receipt = {
+            "schema_version": "0.1.0",
+            "receipt_id": "M4-002-VALIDATION-EXEC-A-001-HOST-RECEIPT",
+            "execution_id": execution["execution_id"],
+            "task_id": "M4-002",
+            "attempt_id": "A-001",
+            "task_ref": copy.deepcopy(execution["task_ref"]),
+            "authority_registry_ref": copy.deepcopy(execution["authority_registry_ref"]),
+            "policy_ref": copy.deepcopy(execution["policy_ref"]),
+            "checker": copy.deepcopy(execution["checker"]),
+            "runner": copy.deepcopy(execution["runner"]),
+            "host": copy.deepcopy(execution["host"]),
+            "report_ref": copy.deepcopy(execution["report_ref"]),
+            "subject_refs": copy.deepcopy(execution["subject_refs"]),
+            "run_inputs_sha256": run_inputs,
+            "transcript": {
+                "exit_code": completed.returncode,
+                "stdout_sha256": hash_bytes(completed.stdout),
+                "stderr_sha256": hash_bytes(completed.stderr),
+                "report_sha256": hash_bytes(report_bytes),
+            },
+            "report_produced_by": "runner",
+            "operator": operator,
+            "started_at": execution["started_at"],
+            "finished_at": execution["finished_at"],
+            "outcome": "pass",
+            "authority_boundaries": copy.deepcopy(boundaries),
+        }
+        self.receipt = receipt
+        self.write_receipt(receipt)
+        self.receipt_bytes = self.receipt_path.read_bytes()
+        execution["host_receipt_ref"] = self.ref(self.receipt_path)
+        self.execution = execution
+        self.write_execution(execution)
+        self.execution_bytes = self.execution_path.read_bytes()
 
     def _record(self) -> dict:
         return {
@@ -1149,6 +1294,34 @@ class PromotionValidationTest(PromotionFixture):
         )
         with self.assertRaises(ContractError):
             self.execute(record)
+
+    def test_byte_exact_fabricated_history_carries_no_historical_authority(self) -> None:
+        # The reviewer-flagged strong case: the trusted host NEVER ran, yet the
+        # hand-written triple carries report + transcript bytes exactly equal
+        # to what the accepted runner/checker produce, under a fabricated
+        # operator and fabricated timestamps.
+        #
+        # Under validity semantics this promotion is eligible -- NOT because
+        # the fabricated history is believed (operator/timestamps are
+        # unverifiable, self-declared provenance metadata, and the triple
+        # itself declares validation_execution_fact=false), but because
+        # promotion-time deterministic re-execution independently confirms the
+        # only claim that gates promotion: the pinned pipeline passes on the
+        # exact pinned bytes.  Fabrication power is thereby bounded to
+        # asserting true claims; a false PASS claim is refuted by the same
+        # re-execution (see the two hand-written/fabricated blocking tests
+        # above).
+        self.fabricate_byte_exact_history()
+        record = self._record()
+        risks = check_promotion(self.root, record)
+        self.assertEqual([], [f"{risk.code}: {risk.message}" for risk in risks])
+        self.assertEqual("mallory-offline-fabricator", self.receipt["operator"])
+        self.assertFalse(
+            self.receipt["authority_boundaries"]["validation_execution_fact"],
+            "the triple itself must declare that it is not the execution fact",
+        )
+        result = self.execute(record)
+        self.assertEqual(("objects/M4-002/result.txt",), result.targets)
 
     def test_host_receipt_outside_validation_zone_is_unproven(self) -> None:
         relocated = self.workspace / "checks" / "caller-receipt.json"

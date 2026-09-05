@@ -1,17 +1,20 @@
-"""M4-002 trusted validation host producer tests.
+"""M4-002 validation host producer tests.
 
-The host (``run_validation_execution``) is the only legitimate producer of
-promotion validation facts: it actually invokes the pinned runner/checker in a
-fresh subprocess and durably persists the report/execution/receipt triple.
-Authority and boundary faults raise ``ContractError`` before anything is
-written; runner/checker failures produce a durable ``outcome=fail`` triple that
-never confers promotion eligibility.
+The host (``run_validation_execution``) is the canonical producer of the
+promotion validation triple: it actually invokes the pinned runner/checker in a
+scrubbed subprocess and durably persists the report/execution/receipt
+provenance metadata.  Authority and boundary faults raise ``ContractError``
+before anything is written; runner/checker failures produce a durable
+``outcome=fail`` triple that never confers promotion eligibility.  Eligibility
+itself is a validity fact established at promotion time by deterministic
+re-execution, not by these documents.
 """
 
 from __future__ import annotations
 
 import copy
 import json
+import os
 import shutil
 import tempfile
 import unittest
@@ -59,6 +62,33 @@ CHECKER_SOURCE = '''def evaluate(subjects):
 
 RAISING_CHECKER_SOURCE = '''def evaluate(subjects):
     raise RuntimeError("synthetic checker fault")
+'''
+
+# Guard checker: fails unless the runner subprocess environment was scrubbed.
+# No backslash escapes anywhere so the generated source stays byte-clean.
+ENV_GUARD_CHECKER_SOURCE = '''import os
+
+BANNED = ("RWB_TEST_SENTINEL", "PYTHONPATH", "PYTHONHOME", "PYTHONSTARTUP",
+          "AWS_SECRET_ACCESS_KEY", "ANTHROPIC_API_KEY", "OPENAI_API_KEY")
+
+
+def evaluate(subjects):
+    leaked = [name for name in BANNED if name in os.environ]
+    ok = (
+        not leaked
+        and os.environ.get("PYTHONHASHSEED") == "0"
+        and os.environ.get("PYTHONNOUSERSITE") == "1"
+        and os.environ.get("TZ") == "UTC"
+    )
+    return {
+        "checks": [{
+            "code": "ENV-SCRUBBED",
+            "status": "pass" if ok else "fail",
+            "detail": "leaked: " + (",".join(leaked) if leaked else "none"),
+        }],
+        "scope": "Synthetic M4-002 env-scrub guard fixture only.",
+        "limitations": ["Does not establish scientific correctness."],
+    }
 '''
 
 FAULT_RUNNER_SOURCE = '''import sys
@@ -402,8 +432,45 @@ class ValidationHostRunTest(ValidationHostFixture):
             subjects=[self._file_ref(item) for item in execution["subject_refs"]],
         )
         self.assertEqual(receipt["run_inputs_sha256"], recomputed)
-        # The produced facts confer real promotion eligibility end to end.
+        # Eligibility holds because promotion-time deterministic re-execution
+        # independently confirms the recorded claim -- not because the triple
+        # itself is trusted.
         self.assertEqual(check_promotion(self.root, self.make_record()), [])
+
+    def test_runner_subprocess_environment_is_scrubbed(self) -> None:
+        # The host must not leak the caller's session/agent environment
+        # (credentials, PYTHONPATH poisoning knobs) into the pinned runner
+        # subprocess; the guard checker reports fail if any banned variable
+        # survives or the pinned determinism knobs are missing.
+        self.accept_components(checker_source=ENV_GUARD_CHECKER_SOURCE)
+        hostile = {
+            "RWB_TEST_SENTINEL": "1",
+            "PYTHONPATH": "/tmp/attacker-controlled",
+            "AWS_SECRET_ACCESS_KEY": "AKIA-FIXTURE",
+            "ANTHROPIC_API_KEY": "sk-fixture",
+            "PYTHONHASHSEED": "random",  # hostile caller value must be overridden
+        }
+        with mock.patch.dict(os.environ, hostile):
+            result = self.run_host()
+        self.assertEqual(result.outcome, "pass")
+        report = yaml.safe_load((self.root / result.report_path).read_bytes())
+        self.assertEqual(report["checks"][0]["status"], "pass")
+        self.assertEqual(report["checks"][0]["detail"], "leaked: none")
+
+    def test_scrubbed_environment_allowlist_and_determinism_pins(self) -> None:
+        with mock.patch.dict(
+            os.environ,
+            {"RWB_TEST_SENTINEL": "1", "PYTHONPATH": "/tmp/attacker-controlled"},
+        ):
+            env = validation_host._scrubbed_environment()
+        self.assertNotIn("RWB_TEST_SENTINEL", env)
+        self.assertNotIn("PYTHONPATH", env)
+        self.assertNotIn("PYTHONHOME", env)
+        self.assertEqual(env["PYTHONHASHSEED"], "0")
+        self.assertEqual(env["PYTHONDONTWRITEBYTECODE"], "1")
+        self.assertEqual(env["PYTHONNOUSERSITE"], "1")
+        self.assertEqual(env["TZ"], "UTC")
+        self.assertIn("PATH", {key.upper() for key in env})
 
     def test_runner_fault_without_report_produces_durable_fail_triple(self) -> None:
         self.accept_components(runner_source=FAULT_RUNNER_SOURCE)
@@ -880,7 +947,7 @@ class ValidationHostCliTest(ValidationHostFixture):
         self.assertIn("report: work/M4-002/A-001/checks/validation.yaml", output.getvalue())
         self.assertIn("execution: runs/validation/M4-002/A-001/execution.yaml", output.getvalue())
         self.assertIn("receipt: runs/validation/M4-002/A-001/receipt.json", output.getvalue())
-        self.assertIn("ok: trusted validation host produced a PASS execution fact", output.getvalue())
+        self.assertIn("ok: validation run produced a PASS provenance triple (eligibility is established by promotion-time re-execution)", output.getvalue())
 
         # A second run for the same attempt is refused by the CLI as well.
         output = StringIO()

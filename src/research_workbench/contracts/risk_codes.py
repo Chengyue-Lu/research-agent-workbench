@@ -169,7 +169,7 @@ ARTIFACT_RISK_CODE_REGISTRY = (
     RiskCodeEntry(
         "VALIDATION-EXECUTION-UNPROVEN",
         "BLOCK",
-        "A validation execution lacks trusted-host production evidence or fails deterministic re-execution equivalence.",
+        "A validation execution triple fails closure or deterministic re-execution equivalence; eligibility is a validity fact established only by promotion-time re-execution, never by the recorded provenance metadata.",
     ),
 )
 

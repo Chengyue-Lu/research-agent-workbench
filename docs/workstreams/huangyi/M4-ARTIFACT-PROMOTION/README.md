@@ -21,12 +21,14 @@ M4-003 Claim Trace 与 M4-004 Run reproduction 不在本分支实现；M5 状态
 
 ## 契约边界
 
-- pre-Attempt canonical Task → accepted-policy registry → exact policy → trusted validation host 实际执行
-  accepted runner/checker → host receipt → host-bound deterministic validation execution → PASS report →
+- pre-Attempt canonical Task → accepted-policy registry → exact policy → validation host 实际执行
+  accepted runner/checker → host receipt → deterministic validation execution → PASS report →
   promotion 的 Task/Attempt/revision、checker/runner/host identity/version/source hash 与 subject set 全部
-  exact closure；允许稳定目录本身不授予 authority；手写 execution record（即使内部 hash 自洽、引用合法
-  authority 对象）不得获得 eligibility——promotion 验证在其余检查干净后确定性重执行 pinned
-  runner/checker，要求 byte-exact 复现 PASS report 与记录 transcript；
+  exact closure；允许稳定目录本身不授予 authority；eligibility 是 validity fact，只在 promotion 验证时
+  由确定性重执行 pinned runner/checker 并 byte-exact 复现 PASS report 与记录 transcript 来确立；
+  validation run 三元组是 provenance metadata（自声明 operator/时间不可独立验证，
+  `validation_execution_fact=false`）；手写 execution record 的虚假声称会被重执行证伪，手写但
+  byte-exact 的伪造"历史"不携带历史权威——它能否通过完全由重执行当场决定；
 - report、subjects、entries 与 live bytes 全部 exact-pin；subjects/entries 按 exact file-reference 集合相等；
 - 只从 exact `work/<task>/<attempt>` 复制到 `objects/`、`runs/`、`deliverables/candidates/`；
 - execute 只接受 workspace 内的 file-bound record；staging + commit-time 复验 + exclusive-create 同批发布

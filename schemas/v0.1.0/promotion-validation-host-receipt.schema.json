@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://research-agent-workbench.local/schemas/v0.1.0/promotion-validation-host-receipt.schema.json",
   "title": "Promotion Validation Host Receipt",
-  "$comment": "Trusted-host production fact for one deterministic validation execution. Promotion eligibility requires this receipt plus deterministic re-execution equivalence; a hand-written execution record never confers eligibility. It carries no Claim, Human Decision, publication, or scientific-correctness authority.",
+  "$comment": "Provenance metadata for one claimed validation host run. It records the claimed run's pinned inputs, transcript, self-declared operator and timestamps in durable, cross-pinned form, but it is not a trusted-host historical-execution proof: promotion eligibility requires deterministic re-execution equivalence at promotion time, and a hand-written receipt never confers eligibility on its own. It carries no Claim, Human Decision, publication, or scientific-correctness authority.",
   "x-rwb-document-kind": "promotion_validation_host_receipt",
   "type": "object",
   "required": [
@@ -67,7 +67,7 @@
         "claim_acceptance", "human_decision", "scientific_correctness"
       ],
       "properties": {
-        "validation_execution_fact": { "const": true },
+        "validation_execution_fact": { "const": false },
         "promotion_execution": { "const": false },
         "claim_acceptance": { "const": false },
         "human_decision": { "const": false },

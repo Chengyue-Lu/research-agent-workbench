@@ -503,7 +503,7 @@ def _validation_run(args: argparse.Namespace) -> int:
     if result.outcome != "pass":
         print("blocked: validation execution outcome is not pass")
         return 1
-    print("ok: trusted validation host produced a PASS execution fact")
+    print("ok: validation run produced a PASS provenance triple (eligibility is established by promotion-time re-execution)")
     return 0
 
 
@@ -1632,7 +1632,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     promotion_subparsers = promotion.add_subparsers(dest="promotion_command", required=True)
     promotion_validate = promotion_subparsers.add_parser(
-        "validate", help="verify report pins, exact subjects, dispositions, and target boundaries"
+        "validate",
+        help="verify pins and boundaries, then deterministically re-execute the "
+        "pinned validation pipeline (scratch dir only; repository state is never mutated)",
     )
     promotion_validate.add_argument("record")
     promotion_validate.add_argument("--root", default=".")
@@ -1645,12 +1647,14 @@ def build_parser() -> argparse.ArgumentParser:
     promotion_execute.set_defaults(handler=_promotion_execute)
 
     validation = subparsers.add_parser(
-        "validation", help="run the trusted validation host for artifact promotion"
+        "validation", help="run the validation pipeline for artifact promotion"
     )
     validation_subparsers = validation.add_subparsers(dest="validation_command", required=True)
     validation_run = validation_subparsers.add_parser(
         "run",
-        help="actually invoke the accepted runner/checker and persist the execution facts",
+        help="actually invoke the accepted runner/checker and persist the run's "
+        "provenance triple (report/execution/host receipt); promotion eligibility "
+        "itself is established later by promotion-time re-execution",
     )
     validation_run.add_argument("--task", required=True, help="file-bound canonical Task Packet")
     validation_run.add_argument("--attempt", required=True, help="Attempt ID under work/<task>/")

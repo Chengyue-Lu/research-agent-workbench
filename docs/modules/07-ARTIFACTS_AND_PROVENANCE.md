@@ -177,18 +177,23 @@ Skill-bearing Run 可以额外引用 exact Assignment；no-Skill/direct Tool/pro
 `promotion_record` 将 exact `work/<TASK>/<ATTEMPT>` 中 validation report 的全部 subjects 映射为
 `promote` 或 `retain-in-work`。pre-Attempt canonical Task Packet 先 exact-pin 唯一 accepted-policy registry
 与 policy，并把 actor write scope 收窄到该 workspace；registry 再按 Task revision 固定 checker、runner 与
-validation host。trusted validation host（`rwb validation run`）在 scrubbed subprocess 中实际执行 pinned
-runner/checker，产出 `deterministic_check_report`、host-bound `promotion_validation_execution` 与
+validation host。validation host（`rwb validation run`）在 scrubbed subprocess（OS 必需变量白名单、丢弃
+会话注入变量与凭据、固定 `PYTHONHASHSEED` 等确定性 pin）中实际执行 pinned
+runner/checker，产出 `deterministic_check_report`、`promotion_validation_execution` 与
 `promotion_validation_host_receipt`（execution 以必需 `host_receipt_ref` exact-pin receipt；receipt 固定
-run-inputs closure hash 与 run transcript）。host-bound execution fact 固定同一 Task/Attempt、
-Task/registry/policy、report、subjects、执行者、时间和 outcome。Task → registry/policy → host 实际执行 →
+run-inputs closure hash 与 run transcript）。这份三元组是 provenance metadata：它记录一次声称运行的
+Task/Attempt、Task/registry/policy、report、subjects、自声明执行者/时间和 outcome，但自身不构成
+execution fact（`validation_execution_fact=false`）。Task → registry/policy → validation run 记录 →
 receipt → execution → PASS report → entries/live bytes 任一关系或
 hash 漂移均阻断；调用方即使在允许稳定目录内构造一套自洽 checker/runner/policy/execution，也不能绕过
-预先冻结的 Task inputs；没有 trusted host 实际运行的手写 execution 也不得获得 eligibility——promotion
-验证在其余检查干净后会确定性重执行 pinned runner/checker，要求 byte-exact 复现 PASS report 与记录
-transcript，否则以 `VALIDATION-EXECUTION-UNPROVEN` 阻断。
+预先冻结的 Task inputs。eligibility 是 validity fact，只在 promotion 验证时确立：其余检查干净后
+确定性重执行 pinned runner/checker，要求 byte-exact 复现 PASS report 与记录 transcript，否则以
+`VALIDATION-EXECUTION-UNPROVEN` 阻断。手写但 byte-exact 的伪造"历史"不携带历史权威——它能通过验证
+只因为重执行当场独立确认了 pinned pipeline 在 exact pinned bytes 上通过；任何假 PASS 都被同一重执行
+证伪。
 
-`rwb validation run` 产生 validation fact；`rwb promotion validate` 只读检查；`rwb promotion execute`
+`rwb validation run` 产出候选 validation 三元组（provenance metadata）；`rwb promotion validate`
+不修改仓库状态，但会在隔离临时目录实际重执行 pinned pipeline 完成 rebuild-and-compare；`rwb promotion execute`
 只接受 workspace 内的 file-bound record，
 先在目标目录 staging 完整字节并复算 hash，再做完整复验，并生成 exact-pin
 record/Task/registry/policy/execution/report/checker/runner/host/source/actual-target/operator/time/outcome 的
@@ -266,10 +271,11 @@ Trace 默认保存在项目工作区，但不等于默认提交 Git：
 
 当前已实现的 M4-002 验收边界：
 
-- pre-Attempt Task、accepted registry/policy、trusted validation host 实际执行产生的 host-bound
-  deterministic validation execution 与 host receipt、PASS report、subjects、entries 与 live bytes exact
-  closure，subject/entry 集合既不遗漏也不夹带；手写 execution（无 host receipt 闭包或确定性重执行不等价）
-  不得获得 eligibility；
+- pre-Attempt Task、accepted registry/policy、validation host 实际执行并记录的
+  deterministic validation execution 与 host receipt（provenance metadata，
+  `validation_execution_fact=false`）、PASS report、subjects、entries 与 live bytes exact
+  closure，subject/entry 集合既不遗漏也不夹带；eligibility 只由 promotion 时的确定性重执行等价当场
+  确立——手写 execution 的虚假声称被重执行证伪，byte-exact 伪造"历史"不携带历史权威；
 - 每个受检工件均有 promote/retain disposition，负结果不会被静默删除；
 - file-bound record、durable receipt、staging、commit-time 复验和 exclusive-create 阻断自签 PASS、覆盖、
   accepted 直达、路径逃逸及 record/source/target/receipt 竞态；
