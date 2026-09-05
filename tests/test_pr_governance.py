@@ -1,5 +1,8 @@
+import hashlib
 import importlib.util
 import json
+import os
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -335,6 +338,367 @@ class TopologyTests(unittest.TestCase):
             base_ref="main", head_ref="feature/x", base_repository="org/repo", head_repository="org/repo", pr_class="feature"
         )
         self.assertIn("TOPOLOGY-MAIN-SOURCE", codes(report, "ERROR"))
+        release_class = self.check(
+            base_ref="main",
+            head_ref="feature/x",
+            base_repository="org/repo",
+            head_repository="org/repo",
+            pr_class="release",
+        )
+        self.assertEqual({"TOPOLOGY-MAIN-SOURCE"}, codes(release_class, "ERROR"))
+
+    def test_develop_to_main_rejects_fork_and_wrong_class(self) -> None:
+        fork = self.check(
+            base_ref="main",
+            head_ref="develop",
+            base_repository="org/repo",
+            head_repository="fork/repo",
+            pr_class="release",
+        )
+        self.assertIn("TOPOLOGY-MAIN-SOURCE", codes(fork, "ERROR"))
+        wrong_class = self.check(
+            base_ref="main",
+            head_ref="develop",
+            base_repository="org/repo",
+            head_repository="org/repo",
+            pr_class="feature",
+        )
+        self.assertIn("TOPOLOGY-RELEASE-CLASS", codes(wrong_class, "ERROR"))
+
+    def test_strict_curated_release_branch_shape_is_matched_and_dormant(self) -> None:
+        report = governance.GovernanceReport()
+        result = governance.validate_topology(
+            base_ref="main",
+            head_ref="release/v1.2.3",
+            base_repository="org/repo",
+            head_repository="org/repo",
+            pr_class="release",
+            report=report,
+        )
+        self.assertTrue(result.curated_release_attempt)
+        self.assertTrue(result.curated_release_topology_matched)
+        self.assertEqual({"TOPOLOGY-RELEASE-DORMANT"}, codes(report, "ERROR"))
+
+    def test_release_version_repository_class_and_base_fail_closed(self) -> None:
+        cases = (
+            ({"base_ref": "main", "head_ref": "release/v1.2"}, "TOPOLOGY-RELEASE-BRANCH"),
+            ({"base_ref": "main", "head_ref": "release/v01.2.3"}, "TOPOLOGY-RELEASE-BRANCH"),
+            ({"base_ref": "main", "head_ref": "release/1.2.3"}, "TOPOLOGY-RELEASE-BRANCH"),
+            ({"base_ref": "main", "head_ref": "release/v1.2.3/extra"}, "TOPOLOGY-RELEASE-BRANCH"),
+            ({"base_ref": "main", "head_ref": "release/v1.2.3", "head_repository": "fork/repo"}, "TOPOLOGY-RELEASE-REPOSITORY"),
+            ({"base_ref": "main", "head_ref": "release/v1.2.3", "pr_class": "feature"}, "TOPOLOGY-RELEASE-CLASS"),
+            ({"base_ref": "develop", "head_ref": "release/v1.2.3"}, "TOPOLOGY-RELEASE-BASE"),
+        )
+        defaults = {
+            "base_ref": "main",
+            "head_ref": "release/v1.2.3",
+            "base_repository": "org/repo",
+            "head_repository": "org/repo",
+            "pr_class": "release",
+        }
+        for overrides, expected_code in cases:
+            with self.subTest(overrides=overrides):
+                report = self.check(**(defaults | overrides))
+                self.assertIn(expected_code, codes(report, "ERROR"))
+
+
+class ReleaseTrustTopologyTests(unittest.TestCase):
+    BASE_SHA = "a" * 40
+    SOURCE_SHA = "b" * 40
+    MANIFEST = b'{"schema_version":1}\n'
+
+    def expectations(self, **overrides: str) -> dict[str, str]:
+        values = {
+            "expected_source_repository": "org/repo",
+            "expected_source_ref": "develop",
+            "expected_source_sha": self.SOURCE_SHA,
+            "source_ci_run_id": "123456",
+            "source_ci_workflow": "CI",
+            "source_ci_repository": "org/repo",
+            "source_ci_ref": "develop",
+            "source_ci_sha": self.SOURCE_SHA,
+            "source_ci_conclusion": "success",
+            "source_ci_required_checks": json.dumps(
+                {
+                    "governance": "success",
+                    "test (3.11)": "success",
+                    "test (3.13)": "success",
+                },
+                sort_keys=True,
+            ),
+            "expected_parent_sha": self.BASE_SHA,
+            "expected_manifest_sha256": hashlib.sha256(self.MANIFEST).hexdigest(),
+        }
+        values.update(overrides)
+        return values
+
+    def validate(
+        self,
+        *,
+        expectations: dict[str, str] | None = None,
+        merge_base_sha: str | None = None,
+        release_root_parent_sha: str | None = None,
+        release_history_has_merges: bool = False,
+        source_commit_exists: bool = True,
+        source_in_develop_history: bool = True,
+        manifest_bytes: bytes | None = MANIFEST,
+    ) -> tuple[bool, object]:
+        report = governance.GovernanceReport()
+        valid = governance.validate_curated_release_prerequisites(
+            base_sha=self.BASE_SHA,
+            base_repository="org/repo",
+            head_repository="org/repo",
+            merge_base_sha=merge_base_sha or self.BASE_SHA,
+            release_root_parent_sha=(
+                self.BASE_SHA
+                if release_root_parent_sha is None
+                else release_root_parent_sha
+            ),
+            release_history_has_merges=release_history_has_merges,
+            expectations=self.expectations() if expectations is None else expectations,
+            source_commit_exists=source_commit_exists,
+            source_in_develop_history=source_in_develop_history,
+            manifest_bytes=manifest_bytes,
+            report=report,
+        )
+        return valid, report
+
+    def test_valid_release_prerequisites_have_no_specific_failures(self) -> None:
+        valid, report = self.validate()
+        self.assertTrue(valid)
+        self.assertFalse(report.has_errors, report.findings)
+
+    def test_branch_name_alone_cannot_supply_trusted_expectations(self) -> None:
+        valid, report = self.validate(expectations={})
+        self.assertFalse(valid)
+        self.assertEqual({"RELEASE-EXPECTATIONS-MISSING"}, codes(report, "ERROR"))
+
+    def test_source_repository_ref_sha_history_and_ci_drift_fail_closed(self) -> None:
+        cases = (
+            (self.expectations(expected_source_repository="fork/repo"), {}, "RELEASE-SOURCE-REPOSITORY"),
+            (self.expectations(source_ci_repository="fork/repo"), {}, "RELEASE-SOURCE-REPOSITORY"),
+            (self.expectations(expected_source_ref="main"), {}, "RELEASE-SOURCE-REF"),
+            (self.expectations(source_ci_ref="main"), {}, "RELEASE-SOURCE-REF"),
+            (self.expectations(expected_source_sha="short"), {}, "RELEASE-SOURCE-SHA"),
+            (self.expectations(source_ci_sha="c" * 40), {}, "RELEASE-SOURCE-CI"),
+            (self.expectations(source_ci_run_id="0"), {}, "RELEASE-SOURCE-CI"),
+            (self.expectations(source_ci_workflow="Other"), {}, "RELEASE-SOURCE-CI"),
+            (self.expectations(source_ci_conclusion="failure"), {}, "RELEASE-SOURCE-CI"),
+            (self.expectations(source_ci_required_checks="not-json"), {}, "RELEASE-SOURCE-CI"),
+            (
+                self.expectations(
+                    source_ci_required_checks=json.dumps({"governance": "success"})
+                ),
+                {},
+                "RELEASE-SOURCE-CI",
+            ),
+            (self.expectations(), {"source_commit_exists": False}, "RELEASE-SOURCE-HISTORY"),
+            (self.expectations(), {"source_in_develop_history": False}, "RELEASE-SOURCE-HISTORY"),
+        )
+        for expectations, options, expected_code in cases:
+            with self.subTest(expected_code=expected_code, options=options):
+                valid, report = self.validate(expectations=expectations, **options)
+                self.assertFalse(valid)
+                self.assertIn(expected_code, codes(report, "ERROR"))
+
+    def test_parent_and_manifest_drift_fail_closed(self) -> None:
+        cases = (
+            ({"expectations": self.expectations(expected_parent_sha="c" * 40)}, "RELEASE-PARENT-EXPECTATION"),
+            ({"merge_base_sha": "c" * 40}, "RELEASE-PARENT-ANCESTRY"),
+            ({"release_root_parent_sha": "c" * 40}, "RELEASE-PARENT-ANCESTRY"),
+            ({"release_history_has_merges": True}, "RELEASE-PARENT-ANCESTRY"),
+            ({"manifest_bytes": None}, "RELEASE-MANIFEST-PREREQUISITE"),
+            ({"expectations": self.expectations(expected_manifest_sha256="0" * 64)}, "RELEASE-MANIFEST-PREREQUISITE"),
+            ({"expectations": self.expectations(expected_manifest_sha256="invalid")}, "RELEASE-MANIFEST-PREREQUISITE"),
+        )
+        for options, expected_code in cases:
+            with self.subTest(expected_code=expected_code):
+                valid, report = self.validate(**options)
+                self.assertFalse(valid)
+                self.assertIn(expected_code, codes(report, "ERROR"))
+
+    def test_policy_shape_and_activation_cannot_be_weakened_by_data_only(self) -> None:
+        cases = (
+            ({**governance.CURATED_RELEASE_TOPOLOGY, "activation_state": "active"}, "RELEASE-POLICY-VALUE"),
+            ({**governance.CURATED_RELEASE_TOPOLOGY, "unknown": True}, "RELEASE-POLICY-SHAPE"),
+            ({**governance.CURATED_RELEASE_TOPOLOGY, "required_external_facts": []}, "RELEASE-POLICY-FACTS"),
+        )
+        for policy, expected_code in cases:
+            with self.subTest(expected_code=expected_code):
+                report = governance.GovernanceReport()
+                self.assertFalse(governance.validate_curated_release_policy(policy, report))
+                self.assertIn(expected_code, codes(report, "ERROR"))
+
+    def test_prerequisite_helper_revalidates_canonical_policy(self) -> None:
+        weakened = {**governance.CURATED_RELEASE_TOPOLOGY, "source_ref": "feature/x"}
+        report = governance.GovernanceReport()
+        valid = governance.validate_curated_release_prerequisites(
+            base_sha=self.BASE_SHA,
+            base_repository="org/repo",
+            head_repository="org/repo",
+            merge_base_sha=self.BASE_SHA,
+            release_root_parent_sha=self.BASE_SHA,
+            release_history_has_merges=False,
+            expectations=self.expectations(),
+            source_commit_exists=True,
+            source_in_develop_history=True,
+            manifest_bytes=self.MANIFEST,
+            report=report,
+            release_policy=weakened,
+        )
+        self.assertFalse(valid)
+        self.assertIn("RELEASE-POLICY-VALUE", codes(report, "ERROR"))
+
+    def test_unknown_expectation_fields_are_rejected(self) -> None:
+        valid, report = self.validate(
+            expectations=self.expectations(author_controlled_claim="ignored")
+        )
+        self.assertFalse(valid)
+        self.assertIn("RELEASE-EXPECTATIONS-UNKNOWN", codes(report, "ERROR"))
+
+
+class ReleaseTrustIntegrationTests(unittest.TestCase):
+    BASE_SHA = "a" * 40
+    HEAD_SHA = "b" * 40
+    SOURCE_SHA = "c" * 40
+    MANIFEST = b'{"schema_version":1}\n'
+    TASKS = """# Tasks
+| ID | 状态 | 任务 | 依赖 | 验收 |
+|---|---|---|---|---|
+| M14-001 | READY | Release trust seam | none | Remains dormant |
+"""
+
+    def release_event(self) -> dict[str, object]:
+        return {
+            "pull_request": {
+                "base": {
+                    "sha": self.BASE_SHA,
+                    "ref": "main",
+                    "repo": {"full_name": "org/repo"},
+                },
+                "head": {
+                    "sha": self.HEAD_SHA,
+                    "ref": "release/v1.2.3",
+                    "repo": {"full_name": "org/repo"},
+                },
+                "body": valid_body(
+                    pr_class="release",
+                    task_ids="M14-001",
+                    risk="R2",
+                    workstream="docs/workstreams/chengyue-lu/M14-CURATED-RELEASE",
+                    shared_contract="yes",
+                    authority_impact="yes",
+                    authority_basis="M14-001 and ADR-0021 define the dormant trust seam.",
+                    adversarial_evidence="Branch-only, source, parent, manifest and activation bypasses are rejected.",
+                ),
+                "mergeable": True,
+            }
+        }
+
+    def expectations(self) -> dict[str, str]:
+        return {
+            "expected_source_repository": "org/repo",
+            "expected_source_ref": "develop",
+            "expected_source_sha": self.SOURCE_SHA,
+            "source_ci_run_id": "123456",
+            "source_ci_workflow": "CI",
+            "source_ci_repository": "org/repo",
+            "source_ci_ref": "develop",
+            "source_ci_sha": self.SOURCE_SHA,
+            "source_ci_conclusion": "success",
+            "source_ci_required_checks": json.dumps(
+                {
+                    "governance": "success",
+                    "test (3.11)": "success",
+                    "test (3.13)": "success",
+                },
+                sort_keys=True,
+            ),
+            "expected_parent_sha": self.BASE_SHA,
+            "expected_manifest_sha256": hashlib.sha256(self.MANIFEST).hexdigest(),
+        }
+
+    def run_release(
+        self,
+        expectations: dict[str, str] | None,
+        *,
+        history_error: bool = False,
+    ) -> object:
+        def read_blob(_: str, path: str) -> str:
+            return self.TASKS if path == "docs/TASKS.md" else "workstream evidence"
+
+        with (
+            mock.patch.object(governance, "_changed_paths", return_value=[]),
+            mock.patch.object(governance, "_merge_base", return_value=self.BASE_SHA),
+            mock.patch.object(
+                governance,
+                "_release_history",
+                return_value=governance.ReleaseHistory(self.BASE_SHA, False),
+                side_effect=(
+                    governance.GovernanceError("history unavailable")
+                    if history_error else None
+                ),
+            ),
+            mock.patch.object(governance, "_commit_exists", return_value=True),
+            mock.patch.object(governance, "_is_ancestor", return_value=True),
+            mock.patch.object(
+                governance,
+                "_blob_exists",
+                side_effect=lambda _commit, path: path == "RELEASE_MANIFEST.json",
+            ),
+            mock.patch.object(governance, "_read_blob_bytes", return_value=self.MANIFEST),
+            mock.patch.object(governance, "_read_blob", side_effect=read_blob),
+            mock.patch.object(governance, "_published_documents_at", return_value={}),
+        ):
+            if expectations is None:
+                return governance.check_pull_request(self.release_event())
+            return governance.check_pull_request(self.release_event(), release_expectations=expectations)
+
+    def test_fully_valid_release_candidate_remains_dormant_and_r2(self) -> None:
+        report = self.run_release(self.expectations())
+        self.assertEqual({"TOPOLOGY-RELEASE-DORMANT"}, codes(report, "ERROR"))
+        self.assertEqual("R2", report.effective_risk)
+        self.assertIn(
+            "curated release topology attempts are always governed as R2",
+            report.risk_reasons,
+        )
+
+    def test_pr_body_or_branch_name_cannot_replace_trusted_expectations(self) -> None:
+        report = self.run_release({})
+        self.assertIn("RELEASE-EXPECTATIONS-MISSING", codes(report, "ERROR"))
+        self.assertIn("TOPOLOGY-RELEASE-DORMANT", codes(report, "ERROR"))
+
+    def test_process_environment_is_not_implicitly_trusted(self) -> None:
+        environment = {
+            "RWB_RELEASE_" + key.upper(): value
+            for key, value in self.expectations().items()
+        }
+        with mock.patch.dict(os.environ, environment, clear=False):
+            report = self.run_release(None)
+        self.assertIn("RELEASE-EXPECTATIONS-MISSING", codes(report, "ERROR"))
+
+    def test_release_trust_read_failure_is_blocking(self) -> None:
+        report = self.run_release(self.expectations(), history_error=True)
+        self.assertIn("RELEASE-TRUST-READ", codes(report, "ERROR"))
+
+    def test_develop_to_main_check_remains_executable(self) -> None:
+        event = self.release_event()
+        pull_request = event["pull_request"]
+        assert isinstance(pull_request, dict)
+        head = pull_request["head"]
+        assert isinstance(head, dict)
+        head["ref"] = "develop"
+        pull_request["body"] = valid_body(pr_class="release")
+
+        with (
+            mock.patch.object(governance, "_changed_paths", return_value=[]),
+            mock.patch.object(governance, "_merge_base", return_value=self.BASE_SHA),
+            mock.patch.object(governance, "_read_blob", return_value=BASE_TASKS),
+            mock.patch.object(governance, "_blob_exists", return_value=False),
+            mock.patch.object(governance, "_published_documents_at", return_value={}),
+        ):
+            report = governance.check_pull_request(event)
+        self.assertFalse(report.has_errors, report.findings)
 
 
 class TasksAuthorityTests(unittest.TestCase):
@@ -670,6 +1034,36 @@ class PolicyAndCodeownersTests(unittest.TestCase):
         self.assertEqual(["feature", "task-definition", "release"], policy["pr_classes"])
         self.assertEqual(["R0", "R1", "R2"], policy["risk_order"])
         self.assertEqual(["INFO", "WARNING", "ERROR"], policy["finding_severities"])
+
+    def test_curated_release_policy_is_strict_declarative_and_dormant(self) -> None:
+        policy = json.loads((ROOT / ".github" / "governance-policy.json").read_text(encoding="utf-8"))
+        release = policy["curated_release_topology"]
+        self.assertEqual("dormant", release["activation_state"])
+        self.assertEqual("M14-005", release["activation_task"])
+        self.assertEqual("main", release["base_ref"])
+        self.assertEqual("develop", release["source_ref"])
+        self.assertEqual("trusted-caller-attestation", release["expectations_source"])
+        self.assertTrue(release["same_repository"])
+        report = governance.GovernanceReport()
+        self.assertTrue(governance.validate_curated_release_policy(release, report))
+        self.assertFalse(report.has_errors, report.findings)
+
+    def test_curated_release_required_checks_exist_in_ci_workflow(self) -> None:
+        policy = json.loads(
+            (ROOT / ".github" / "governance-policy.json").read_text(encoding="utf-8")
+        )
+        required_checks = set(
+            policy["curated_release_topology"]["source_ci_required_checks"]
+        )
+        workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text(
+            encoding="utf-8"
+        )
+        actual_checks = {"governance"}
+        actual_checks.update(
+            match.group(1)
+            for match in re.finditer(r"(?m)^\s{4}name:\s*(.+?)\s*$", workflow)
+        )
+        self.assertLessEqual(required_checks, actual_checks)
 
     def test_published_identity_policy_declares_all_protected_kinds(self) -> None:
         policy = json.loads((ROOT / ".github" / "governance-policy.json").read_text(encoding="utf-8"))

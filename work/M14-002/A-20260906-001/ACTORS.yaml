@@ -1,0 +1,15 @@
+schema_version: 0.1.0
+task_id: M14-002
+task_revision: 1
+attempt_id: A-20260906-001
+actors:
+- actor_id: main-agent
+  actor_type: agent
+  role: bounded repository implementation and verification
+  runtime_identity: Codex repository task
+  accountable_owner: Chengyue-Lu
+- actor_id: provider-openai
+  actor_type: model-provider
+  role: bound model provider
+  runtime_identity: openai
+  accountable_owner: Chengyue-Lu

@@ -42,6 +42,7 @@ suites:
       - test_observability_model_branches
       - test_protocol_profiles
       - test_pr_governance
+      - test_release_surface
       - test_provider_adapters
       - test_provider_conformance
       - test_provider_contract_branches
@@ -122,6 +123,7 @@ thresholds:
 critical_modules:
   - .github/scripts/check_coverage_policy.py
   - .github/scripts/check_pr_governance.py
+  - .github/scripts/release_surface.py
   - src/research_workbench/protocol/authority.py
   - src/research_workbench/capability/requirements.py
   - src/research_workbench/capability/supply.py
@@ -154,6 +156,20 @@ critical_modules:
   - src/research_workbench/research_state/gate.py
 
 negative_acceptance:
+  - surface: deterministic-release-surface
+    modules:
+      - .github/scripts/release_surface.py
+    positive_tests:
+      - test_release_surface.ReleaseSurfaceTests.test_export_twice_and_git_merge_tree_are_byte_identical
+      - test_release_surface.ReleaseSurfaceTests.test_two_versions_remove_old_generated_output_and_reject_stale_parent
+      - test_release_surface.ReleaseSurfaceTests.test_binary_source_and_executable_mode_preserve_bytes
+    negative_tests:
+      - test_release_surface.ReleaseSurfaceTests.test_synchronized_source_and_manifest_hash_forgery_is_blocked
+      - test_release_surface.ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked
+      - test_release_surface.ReleaseSurfaceTests.test_source_and_ci_expectations_cannot_come_from_manifest
+      - test_release_surface.ReleaseSurfaceTests.test_policy_same_version_drift_is_rejected
+      - test_release_surface.ReleaseSurfaceTests.test_portable_path_attack_matrix
+      - test_release_surface.ReleaseSurfaceTests.test_git_symlink_gitlink_casefold_and_non_utf8_paths_are_rejected
   - surface: coverage-policy-self-control
     modules:
       - .github/scripts/check_coverage_policy.py
@@ -169,9 +185,24 @@ negative_acceptance:
       - .github/scripts/check_pr_governance.py
     positive_tests:
       - test_pr_governance.TopologyTests.test_feature_to_develop_passes
+      - test_pr_governance.TopologyTests.test_develop_to_main_release_passes
+      - test_pr_governance.ReleaseTrustTopologyTests.test_valid_release_prerequisites_have_no_specific_failures
+      - test_pr_governance.ReleaseTrustIntegrationTests.test_develop_to_main_check_remains_executable
+      - test_pr_governance.PolicyAndCodeownersTests.test_curated_release_required_checks_exist_in_ci_workflow
       - test_pr_governance.TasksAuthorityTests.test_r2_connected_linear_stage_chain_passes
     negative_tests:
       - test_pr_governance.TopologyTests.test_feature_to_main_fails
+      - test_pr_governance.TopologyTests.test_release_version_repository_class_and_base_fail_closed
+      - test_pr_governance.ReleaseTrustTopologyTests.test_branch_name_alone_cannot_supply_trusted_expectations
+      - test_pr_governance.ReleaseTrustTopologyTests.test_source_repository_ref_sha_history_and_ci_drift_fail_closed
+      - test_pr_governance.ReleaseTrustTopologyTests.test_parent_and_manifest_drift_fail_closed
+      - test_pr_governance.ReleaseTrustTopologyTests.test_policy_shape_and_activation_cannot_be_weakened_by_data_only
+      - test_pr_governance.ReleaseTrustTopologyTests.test_prerequisite_helper_revalidates_canonical_policy
+      - test_pr_governance.ReleaseTrustTopologyTests.test_unknown_expectation_fields_are_rejected
+      - test_pr_governance.ReleaseTrustIntegrationTests.test_fully_valid_release_candidate_remains_dormant_and_r2
+      - test_pr_governance.ReleaseTrustIntegrationTests.test_pr_body_or_branch_name_cannot_replace_trusted_expectations
+      - test_pr_governance.ReleaseTrustIntegrationTests.test_process_environment_is_not_implicitly_trusted
+      - test_pr_governance.ReleaseTrustIntegrationTests.test_release_trust_read_failure_is_blocking
       - test_pr_governance.TasksAuthorityTests.test_done_task_is_immutable
       - test_pr_governance.PublishedIdentityIntegrationTests.test_move_out_is_detected_when_changed_path_is_not_published
       - test_governance_helper_branches.GovernanceHelperBranchTests.test_workstream_risk_git_and_main_boundaries_are_observable

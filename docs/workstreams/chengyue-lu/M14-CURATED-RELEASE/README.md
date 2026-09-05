@@ -3,7 +3,7 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 来源：[Issue #57](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57)
 - 架构决定：[ADR-0021](../../../decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md)
-- 状态：R2 task-definition；尚未实现 release topology、exporter、portable package 或首次发行
+- 状态：M14-001 dormant topology 与 M14-002 deterministic surface 已实现；portable package、public docs 与首次发行仍待闭合
 - diagnostic baseline：`origin/develop@dd2454b5595e33a12aa058529358d46d311a08c4`
 - task-definition integration base：`origin/develop@6a032e12c30a88a501258eec8c0b5d6c6082d81d`
 
@@ -37,12 +37,12 @@ Issue 中的 `REL-001～005` 仅作工作包别名，不是治理器识别的 Ta
 
 ```mermaid
 flowchart LR
-    M0005["M0-005 DONE<br/>repository"] --> M14001["M14-001 READY<br/>REL-001 topology + governance"]
+    M0005["M0-005 DONE<br/>repository"] --> M14001["M14-001 DONE<br/>REL-001 dormant topology + governance"]
     M1001["M1-001 DONE<br/>CI foundation"] --> M14001
     M5003["M5-003 DONE<br/>evaluation boundary"] -. "activation evidence" .-> M14001
     M1104["M11-004 DONE<br/>Core closeout"] -. "activation evidence" .-> M14001
     M1106["M11-006 DONE<br/>optional mapping"] -. "activation evidence" .-> M14001
-    M14001 --> M14002["M14-002 PARKED<br/>REL-002 deterministic surface"]
+    M14001 --> M14002["M14-002 DONE<br/>REL-002 deterministic surface"]
     M14001 --> M14003["M14-003 PARKED<br/>REL-003 portable package"]
     M14002 --> M14004["M14-004 PARKED<br/>REL-004 public docs"]
     M14003 --> M14004
@@ -71,6 +71,12 @@ frozen develop source SHA/CI 和 exact current main parent/ancestry requirements
 必须以明确原因 BLOCK，现行 exact `develop -> main` 继续可执行；该 dormant 状态持续到 M14-005 readiness/
 cutover。
 
+实现结果：policy 与 checker 已识别 strict SemVer、same-repository、R2 curated-release attempt，并把 external
+source/repository/CI attestation、exact current-main parent、线性无 merge ancestry 与 raw manifest hash 分开
+校核。PR body、branch、manifest 和普通进程环境都不能自产可信 expectation；完整 prerequisite PASS 也仍产生
+`TOPOLOGY-RELEASE-DORMANT`。调用方 attestation 的真实性、fresh remote observation 与 required GitHub checks
+查询尚未接线，必须在 M14-005 激活前闭合，不能由本 Task 的结构校核冒充。
+
 ### M14-002 / REL-002 — Deterministic projection
 
 建立 strict、append-only versioned allowlist policy、strict manifest Schema，以及共享同一规则实现的
@@ -86,6 +92,11 @@ policy/inputs 的两次结果逐字节相同；dirty working tree、CRLF 转换�
 连续 v1→v2 fixture 必须证明旧版独有 generated 文件被删除，且 prospective merge-result tree = projection tree
 = manifest closed output tree；current main 前移时旧 branch/manifest 失效并重新生成。M14-002 验收后 topology
 仍 dormant。release checker 属 critical allow/block surface，进入 Coverage Policy 95/90 和独立正反 evidence。
+
+实现入口：[Release surface](../../../implementation/RELEASE_SURFACE.md)。独立实现使用 strict JSON/YAML policy、
+Git source history immutable-version 校验、source/generated manifest-last closure、完整 staging 和 candidate/
+prospective merge-tree equality。验证位于 `tests/test_release_surface.py`；Task Archive 为
+`work/M14-002/A-20260906-001/`。真实 source freeze、branch、CI attestation 和发布均留给 M14-005。
 
 ### M14-003 / REL-003 — Portable package closure
 
@@ -163,6 +174,6 @@ task-definition 只写 canonical docs、ADR、workstream 与导航。后续实�
 
 ## 下一合法动作
 
-本 task-definition 合并后只启动 `M14-001`。在其完成前不实现 M14-002～005，不创建 release branch，也不
-冻结某次真实 release source SHA。若 `develop` 在本 PR 合并前前进，先 rebase 并重新核对 TASKS/ROADMAP/
-ADR 编号与治理事实。
+`M14-001/002` 已完成；下一步由 owner 独立激活 `M14-003` portable package slice。
+M14-004 等待 package closure；不能提前创建真实 release branch、冻结 release source SHA 或
+解锁 merge eligibility。任何实现分支在开 PR 前仍须基于当时最新 `develop` 重新验证。

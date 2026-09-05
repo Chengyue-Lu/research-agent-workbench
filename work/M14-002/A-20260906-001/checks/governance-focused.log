@@ -1,0 +1,55 @@
+...........................................................................................governance: FAIL: GITHUB_EVENT_PATH is required
+governance: FAIL: Expecting value: line 1 column 1 (char 0)
+...............................
+----------------------------------------------------------------------
+Ran 122 tests in 0.192s
+
+OK
+governance: push/non-PR event; PR-only checks skipped
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=89.00% threshold=90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+coverage-policy: PASS
+coverage-policy: FAIL
+- coverage must be a mapping
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=94.00%/95.00% branch=89.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=89.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=85.00% threshold=90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/89.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
