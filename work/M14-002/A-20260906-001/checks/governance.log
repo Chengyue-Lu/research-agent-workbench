@@ -1,0 +1,26 @@
+Declared risk: R2
+Inferred minimum: R2
+Effective risk: R2
+Reason:
+- .github/governance-policy.json matches the R2 policy surface
+- .github/release-surface.yml matches the R2 policy surface
+- .github/scripts/check_pr_governance.py matches the R2 policy surface
+- .github/scripts/release_surface.py matches the R2 policy surface
+- docs/STATUS.md matches the R1 policy surface
+- docs/implementation/README.md matches the R1 policy surface
+- docs/implementation/RELEASE_SURFACE.md matches the R1 policy surface
+- schemas/v0.1.0/release-manifest.schema.json matches the R1 policy surface
+- schemas/v0.1.0/release-surface-policy.schema.json matches the R1 policy surface
+- PR declares a shared-contract impact
+- PR declares an authority, permission, or data-boundary impact
+Requirements:
+- pull request and required CI
+- cross-owner review before merge
+- explicit authority basis
+- adversarial or negative evidence
+- owner-matched workstream and Risk Ledger
+Findings:
+- INFO TASK-TRANSITION: valid transition M14-001: READY -> DONE
+- INFO TASK-TRANSITION: atomic completion M14-002: PARKED -> DONE
+- INFO TASK-ATOMIC-COMPLETION: validated completion order: M14-001 -> M14-002
+governance: PASS

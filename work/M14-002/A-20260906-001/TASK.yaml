@@ -1,0 +1,67 @@
+task_id: M14-002
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+handoff_level: H0
+baseline: 1b3f5f6f29058c37ea759a650991553647a44ea9
+authorization: 'User: continue development on the PR #60 implementation baseline,
+  assuming its acceptance.'
+goal: Deterministic release surface/manifest/export/check with dormant release eligibility.
+dependencies:
+- M14-001
+profile: 'main-agent: bounded repository implementation'
+required_skills: []
+delegation: false
+write_scope:
+- .github/release-surface.yml
+- .github/scripts/release_surface.py
+- schemas/v0.1.0/release-surface-policy.schema.json
+- schemas/v0.1.0/release-manifest.schema.json
+- tests/test_release_surface.py
+- tests/coverage_policy.yaml
+- docs/implementation/RELEASE_SURFACE.md
+- docs/implementation/README.md
+- docs/TASKS.md
+- docs/STATUS.md
+- docs/ROADMAP.md
+- docs/DEVELOP_TO_MAIN_RELEASE.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- work/M14-002/A-20260906-001/**
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/ARCHITECTURE.md
+- docs/TASKS.md
+- docs/decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- .github/**
+- tests/test_agent_trace.py
+- tests/test_documentation.py
+- tests/test_coverage_policy.py
+- tests/coverage_policy.yaml
+- src/research_workbench/observability/trace.py
+- src/research_workbench/validation/schemas.py
+- schemas/**
+- docs/templates/TASK_WORKLOG.md
+- pyproject.toml
+- MANIFEST.in
+- .gitattributes
+- .github/release-surface.yml
+- .github/scripts/release_surface.py
+- schemas/v0.1.0/release-surface-policy.schema.json
+- schemas/v0.1.0/release-manifest.schema.json
+- tests/test_release_surface.py
+- tests/coverage_policy.yaml
+- docs/implementation/RELEASE_SURFACE.md
+- docs/implementation/README.md
+- docs/TASKS.md
+- docs/STATUS.md
+- docs/ROADMAP.md
+- docs/DEVELOP_TO_MAIN_RELEASE.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- work/M14-002/A-20260906-001/**
+stop_conditions:
+- Do not create a real release branch, release manifest, tag, or merge.
+- M14-003/004 remain PARKED; M14-005 remains BLOCKED.
+- Do not represent the assumed dependency acceptance as a recorded human review.
