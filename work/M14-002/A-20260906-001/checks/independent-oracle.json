@@ -1,0 +1,8 @@
+{
+  "git_tree_oracle": "PASS",
+  "manifest_last_and_excluded_closure": "PASS",
+  "merge_eligible": false,
+  "result": "PASS",
+  "source_blob_and_generated_outputs_verified": 6,
+  "source_pin": "older synthetic commit with newer clean checkout"
+}
