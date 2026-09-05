@@ -205,23 +205,39 @@ implementation slice、commit、evidence、owner review 或 hard dependency。
 | M11-005 | DONE | 发布不可变 SkillReleaseProjection | 路诚钺 | R2 | F / Capability/Skill Evolution + Topic 4 | M9-003 | 只发布 accepted immutable Skill Release 的 runtime-minimal identity/version/hash/capability/boundary facts；不暴露 Need/Evaluation/Lifecycle 历史，不授予选择或执行权限；缺失只阻断 Skill new-binding |
 | M11-006 | DONE | 将 eligible Skill supply 映射进统一 Resolved Execution View 语义 | 路诚钺 | R2 | F / Research Control + Capability/Skill Evolution + Topic 4 | M11-002, M11-005 | projection-derived Skill 与 Tool/procedure/Adapter 使用同一 Report→Resolution→Snapshot→View 语义；Capability Resolver 仍是唯一 selector，View/Host 保持 supply-kind neutral；不得形成 Skill-specific Runtime dispatcher/session/fallback seam，projection 缺失/stale/mismatch 时仅该候选 fail closed |
 
+## M14：Product / Release Closure
+
+M14 由 [ADR-0021](decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md) 与
+[Issue #57](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57) 激活。它只负责把 frozen
+`develop` 工程真相确定性投影为可安装、可追溯的精选 `main` 发行视图；不修改 Runtime、Method、Claim、
+Human Decision 或 permission 语义。Issue 中的 `REL-001～005` 是工作包别名，以下 `M14-*` 才是 canonical
+implementation / acceptance identity。
+
+| ID | 状态 | 任务 | 责任人 | 风险 | Phase / Topic | 依赖 | 验收 |
+|---|---|---|---|---|---|---|---|
+| M14-001 | READY | 建立 curated release topology 与 source trust governance（REL-001） | 路诚钺 | R2 | Product / Release Governance | M0-005, M1-001 | 以声明式 policy 建立 dormant、same-repository、version-valid `release/v* -> main` R2 topology；分别校验 external expected frozen develop source/repository trust 与 exact current main Git parent/ancestry，但所有 release-branch PR 在 M14-005 readiness/cutover 前显式 fail closed；普通 feature/task-definition 仍进入 develop，现行 exact `develop -> main` 保持唯一可执行发布路径；不能只凭分支名放行，也不恢复 direct push/force/delete 或在 release branch 修改产品语义 |
+| M14-002 | PARKED | 建立 deterministic release surface、manifest 与 export/check（REL-002） | 路诚钺 | R2 | Product / Release Projection | M14-001 | strict、append-only versioned allowlist 与 manifest Schema 驱动同一 export/check 实现；每个输出分类为 source-blob 或 exact allowlisted generated，分别 pin blob/mode/size/hash 或 generator identity/version/hash/inputs，manifest 使用无自哈希歧义的 canonical UTF-8 JSON/LF/稳定排序且禁止时间、随机数和临时绝对路径；直接读取 frozen develop commit Git blobs，在以 exact current main 为 Git parent 的生成分支上完整构建 projection，并由 external expected repository/source/parent 重算 selection/excluded/output closure；unknown/重复/overlap/不存在 include、casefold/Unicode/Windows path collision、dirty tree、CRLF、mode/byte drift、额外/隐藏/移动/遗留文件、path escape、symlink/gitlink、undeclared generated、policy drift 及同步重算伪 hash 全部阻断；连续 v1→v2 fixture 证明旧版独有 generated 文件不会残留，prospective merge-result tree、projection tree 与 manifest closed output tree 完全相同，main parent 漂移时必须重新生成；critical checker 满足 95/90 与独立正反 evidence，但不启用 release merge path |
+| M14-003 | PARKED | 闭合 portable package 与 Runtime data boundary（REL-003） | 路诚钺 | R2 | Product / Package + Runtime Resources | M14-001 | 定义独立 hash-pinned `RuntimeResourceManifest`、packaged default resolver，并分离 project/filesystem、immutable runtime-resource、integration-config 三个 root，禁止隐式 CWD/checkout fallback；公开 Runtime catalog 与 maintainer/publication history 分离，repository publication validation 与 installed-runtime catalog validation 分层；wheel/sdist→wheel exact assets 在清空 `PYTHONPATH` 的 checkout 外 Python 3.11/3.13 环境加载 Schema、Mode/Action、Authority、Requirement、Profile 与空 Projection，并由 wheel-owned/generated input 完成 no-Skill structural quickstart；非空 Projection 必须通过 logical→installed path mapping 闭合其 exact immutable Skill manifest/package bytes且拒绝 orphan/unindexed asset，否则 fail closed；legacy `accepted.json` selector、`sources.json`、Need/Evaluation/Lifecycle、provider baseline、broad `.agents/**` 与 `.codex/**` 不得成为 packaged default，但被 Projection exact path/hash 引用的单个 accepted manifest/package 可作为条件 Runtime Release asset |
+| M14-004 | PARKED | 建立 public documentation surface（REL-004） | 路诚钺 | R2 | Product / Public Documentation | M14-002, M14-003 | README、Getting Started、Supported Features 与公开导航有单一来源，release tree 无指向 TASKS/STATUS/DEVELOPMENT/workstream 等排除文件的断链；文档区分 structural、bounded、live 与 evaluated 证据，不把空 Projection index、未完成 M5、synthetic fixture 或未验证 Provider 写成已交付能力 |
+| M14-005 | BLOCKED | 生成并验收首个 curated main release（REL-005） | 路诚钺 | R2 | Product / Release | M0-007, M1-009, M14-002, M14-003, M14-004, `GITHUB-RELEASE-PROTECTION-GATE` | 在全部依赖、许可证、scaffold、远端保护与具名 Human release decision 闭合后，冻结 exact develop source SHA 和 exact current main parent SHA；从该 main tip 创建 release branch，由 exporter 只读取 frozen develop Git blobs并完整构建 tree/manifest，两次生成稳定；main 前移必须按新 parent 重建；source required CI、release checks、双 Python clean-install、no-Skill smoke、Registry/Projection load、公开链接与零内部材料泄漏均通过，且 prospective merge-result tree = projection tree = manifest closed output tree；同一 Task 的治理激活与首次 release 按可审计 slice 执行，原子启用 `release/v* -> main` 并禁用 direct `develop -> main`；R2 release PR 以 merge commit 合入 main 后 tag/artifact/hash 与 manifest 闭合，release branch 不回并 develop |
+
 ## Future M-series reservations
 
 以下条目只是 expected implementation-family namespace，不是 Task：没有 `READY / BLOCKED / PARKED / IN_PROGRESS / DONE`
 状态，不创建 future 原子 ID，也不冻结 owner、risk、dependency、acceptance 或
 Schema。Reservation 不授权 implementation，不代表 architecture acceptance 或解冻；若未来证明既有
-M-group 足以承载，可直接取消且不产生历史 Task identity。当前不推测 M15+。
+M-group 足以承载，可直接取消且不产生历史 Task identity。当前不推测 M15+。M14 已由独立 R2
+task-definition 激活，不再属于 reservation。
 
 | Reserved M-group | Expected implementation family | Activation condition | Confidence |
 |---|---|---|---|
 | **M12 — RESERVED** | Execution Continuity & Recovery：Handoff、context rollover、safe pause/resume、recovery、clean/salvage recovery 等 Topic 5 residual implementation | Phase C closeout，且完成独立 Topic 5 R2 architecture review 与 docs-only task-definition | High |
 | **M13 — RESERVED** | Strategy & Governed Evolution：strategy interface、candidate strategy、bounded experimentation、merge/prune/governed evolution | Phase C/D evidence 证明现有 M2/M7 无法自然承载一个新的 coherent implementation family | Medium–High |
-| **M14 — RESERVED** | Product / Release Closure：ordinary-user E2E、release projection、package/runtime closure、main release governance 与外部可消费性 | Runtime/Evaluation/release readiness 足够成熟，且现有 M1/M11 不足以形成完整产品/发布闭环 | Medium |
 
 Reservation 只有在对应 architecture activation Gate 已接受、已有 M-group 不足已有证据、独立 docs-only
 `task-definition` 完成后，才可转换为正式 M-group，并在当时定义具体 `Mxx-yyy`、owner、risk、dependency、
 acceptance 与 negative boundaries。因此：M12 reservation 不等于 Topic 5 thaw 或 implementation approval；
-M13 不等于 strategy framework approval；M14 不等于 release implementation approval。
+M13 不等于 strategy framework approval。
 
 ## 未完成 Task 的责任与阶段索引
 
@@ -248,6 +264,10 @@ M13 不等于 strategy framework approval；M14 不等于 release implementation
 | `M6-008` | 黄毅 | R2 | D / F | Evaluation + Topic 4 + Artifact/Trace | ADR-0020 产生的 baseline transport 实现入口；等待 M5-006 冻结 shared qualification contract，当前 PARKED；不替代 Skill replay Gate |
 | `M7-005, M7-006, M7-014` | 路诚钺 | R2 | D | Research Control + Evaluation + Skill Evolution | evidence-driven trials PARKED |
 | `M7-007` | 路诚钺 | R2 | E | Research Control / Mode | 真实案例证明 Mode gap 前 PARKED |
+| `M14-001` | 路诚钺 | R2 | Product / Release | Release Governance | M14 已 task-defined；唯一初始入口为 curated release topology/source trust，READY |
+| `M14-002, M14-003` | 路诚钺 | R2 | Product / Release | Projection + Package/Runtime Resources | 等待 M14-001；之后可作为两条独立 slice 并行激活，当前 PARKED |
+| `M14-004` | 路诚钺 | R2 | Product / Release | Public Documentation | 等待 deterministic surface 与 portable package，当前 PARKED |
+| `M14-005` | 路诚钺 | R2 | Product / Release | First Curated Release | 等待 M0-007、M1-009、M14-002～004 与远端 GitHub 保护，BLOCKED |
 
 ## 历史 GitHub Issues
 
@@ -272,6 +292,11 @@ M11-003 → M11-004 的 Core chain 均已按各自 Task 验收完成。前者不
 semantic closeout，后者不等于 live Provider 或 ordinary-user E2E。M11-005 → M11-006 的可选 Skill supply
 publication/mapping 也已按独立 Task identity 完成；它不阻塞零 Skill Core、不建立第二条 Runtime consumer
 path，也不等于任何真实 Skill 已获准入、证明研究增量或获得 Runtime new-binding 资格。
+
+M14 已由 Issue #57 与 ADR-0021 完成 family activation/task-definition；当前只允许从 `M14-001` 建立 dormant
+release trust anchor。M14-002/003 不因 Task 已声明而自动进入队列，M14-004/005 也不得绕过 public surface、
+package、许可证、scaffold 或 GitHub remote protection Gate。M14-001～004 都不产生 release merge eligibility；
+M14-005 readiness/cutover 前继续以现行治理为准，不手工创建 release tree。
 
 Issue #41 新增或规范化的 M4、M5、M10、M11 dependency chains 保持逐 Task implementation /
 acceptance identity；PR 组织统一遵守 `DEVELOPMENT.md` 的 module-level DAG 规则。Governance v2 的

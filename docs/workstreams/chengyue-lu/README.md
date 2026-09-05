@@ -4,6 +4,9 @@
 
 当前进行中或仍待具名语义决定的工作流：
 
+- [`M14-CURATED-RELEASE/`](M14-CURATED-RELEASE/README.md)：将 Issue #57 的 release topology、
+  deterministic surface、portable package、public docs 与首次精选发行映射为 M14-001～005；本轮只完成
+  R2 task-definition，首个实现入口为 M14-001。
 - [`M5-SYSTEM-EVALUATION-DESIGN/`](M5-SYSTEM-EVALUATION-DESIGN/README.md)：冻结 system-level
   primary estimand、case dossier public/private boundary、Protocol/Harness Tasks 与真实执行/pruning Gate；
   ADR-0020 已选择 dual transport；M5-006 是 READY 的 Protocol 入口，Execution-owned M6-008 等待其冻结

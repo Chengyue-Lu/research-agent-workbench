@@ -1,7 +1,7 @@
 # 实现状态
 
 状态：Current implementation authority
-更新：2026-09-02
+更新：2026-09-05
 
 本页只回答“仓库现在实现到哪里”。实时任务状态由 [`TASKS.md`](TASKS.md) 维护，依赖方向由 [`ROADMAP.md`](ROADMAP.md) 维护。
 
@@ -12,6 +12,10 @@ RWB 处于**内部技术 alpha**：核心文件契约、解析和确定性验证
 Phase A / M8 Core Formalization 已完成契约收口。Phase B / M9-001～006 的需求、供给、生命周期、
 Protocol、两级 Snapshot 与 migration/replacement 结构契约已经实现。这里的“完成”不表示真实 Provider、
 production runtime-execution binding、Human Decision、科学有效性或端到端研究运行已经证明。
+
+Issue #57 / ADR-0021 已将 Product / Release Closure 从 M14 reservation 转为正式 Task family；当前仅
+`M14-001` release topology/source trust 为 READY。deterministic surface、portable package、public docs 与首次
+curated main release 均未实现，因此这不是发布完成宣称，也不改变当前 exact `develop -> main` 执行规则。
 
 ## 已实现
 
@@ -60,7 +64,7 @@ production runtime-execution binding、Human Decision、科学有效性或端到
 | Skill 价值 | 现有 Registry 条目不构成已证明的普适研究增益；新任务可优先 no-Skill / direct-tool |
 | Skill new-binding | 生产 projection index 仍为空；M11-005/006 只证明可选 publication/mapping contract，未重新准入任何 legacy Skill，也未证明真实 trial、Provider 可用性或科研净增量 |
 | Phase D evaluation entry | [ADR-0020](decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) 已选择 A1/A2→M6、A3/A4→M11 的显式双传输并允许 M5-006 Protocol 启动；这不是执行实现。M6-008 treatment-visible baseline envelope/replay closeout 尚未实现，Skill-bearing closeout Gate 仍未满足，M5-007 Harness 与真实 M5-004 execution 继续 BLOCKED |
-| 发布 | 仓库缺少最终许可证选择，原创 Skill 许可状态仍阻断正式发布 |
+| 发布 | M14 已 task-defined，但 release topology/exporter/manifest、portable Runtime catalog、公开文档面均未实现；首次发行还被 M0-007 license、M1-009 scaffold、远端 GitHub protection 与人类 release decision 阻断 |
 | 产品体验 | 初始化、可视化、协作 UI、安装包和运维流程仍是开发者级别 |
 
 ## 支持边界

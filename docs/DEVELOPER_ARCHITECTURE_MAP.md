@@ -1,7 +1,8 @@
 # RWB 开发者架构地图：核心控制、执行边界与可验证性
 
-> Developer Architecture Map｜基于 `develop@dd2454b5595e33a12aa058529358d46d311a08c4` 的
-> Phase D 入口跨契约审计（2026-09-02）。
+> Developer Architecture Map｜Phase D/core 跨契约审计基线为
+> `develop@dd2454b5595e33a12aa058529358d46d311a08c4`（2026-09-02）；该历史审计锚不是本文后续文档变更的
+> current integration base。
 >
 > 本文是 derived developer navigation，不创建新 Contract、Task、Gate 或 authority。稳定架构以
 > [ARCHITECTURE.md](ARCHITECTURE.md)、[Accepted ADR](decisions/README.md) 与
@@ -562,6 +563,14 @@ M11 Core 不需要 Skill extension。M11-005/006 已实现 Projection/publisher 
 - ordinary-user E2E、外部 scaffold/migration UX 与发布就绪度仍未闭合；
 - 项目 license 与原创 Skills 许可仍需人类决定。
 
+Issue #57 与 ADR-0021 已把最后一项拆成正式 M14 family，但没有把这些限制改写为完成。目标模型分离两条
+输入：frozen `develop` 是 exporter 唯一内容/provenance 来源，exact current `main` 是 generated
+`release/v*` 的 Git 父提交。M14-001 只建立 dormant trust/governance seam；M14-002/003/004 分别闭合
+deterministic surface、checkout 外 package/runtime data 与 public docs，完成后 release path 仍不具备 merge
+资格。M14-005 在许可证、scaffold、GitHub remote protection、人类决定和全部前置 Task 闭合后，才原子启用
+`release/v* -> main` 并禁用 direct `develop -> main`。release projection 不获得 Runtime、Method、Claim 或
+Human authority，也不能把 M5 未完成的 system-level Evaluation 伪装为发行证据。
+
 ---
 
 ## 17. Phase / Topic / M-series 定位
@@ -574,9 +583,11 @@ M11 Core 不需要 Skill extension。M11-005/006 已实现 Projection/publisher 
 | Phase D | M5-003 canonical plan 与 ADR-0020 dual-transport estimand 已接受；M5-006 READY | M6-008 等待 M5-006 shared contract（PARKED）；baseline closeout、Skill replay Gate、Harness、真实案例/results/net-increment 与 disposition 未完成 |
 | Phase F / Topic 4 | M11-001～004 bounded Core 与 M11-005/006 optional Skill extension 已实现 | production Skill projection、live conformance 与 ordinary E2E 仍是独立 Gate |
 | Topic 5 | 没有新 implementation authority | Phase C Human/R2 closeout + 独立 R2 architecture review/task-definition |
+| Product / Release | M14 已 task-defined；M14-001 是唯一 READY trust-anchor Task | deterministic surface、portable package、public docs、license/scaffold、远端保护与首次发行均未完成 |
 
-M12、M13、M14 只是 reservation，没有 Task state、owner、dependency、acceptance 或 Schema；不得从本图生成
-`M12-001` 等伪 Task。当前施工位置见 [M-series Implementation / Construction Map](M_SERIES_IMPLEMENTATION_MAP.md)，
+M12、M13 只是 reservation，没有 Task state、owner、dependency、acceptance 或 Schema；不得从本图生成
+`M12-001` 等伪 Task。M14 的 `M14-001～005` 已由独立 R2 task-definition 明确列出，但本图仍不生成状态或
+放宽 Gate。当前施工位置见 [M-series Implementation / Construction Map](M_SERIES_IMPLEMENTATION_MAP.md)，
 exact status 只见 `TASKS.md`。
 
 ---

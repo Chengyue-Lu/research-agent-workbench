@@ -1,11 +1,18 @@
 # `develop` → `main` 发布合并规范
 
-状态：Stable release rules  
-更新：2026-08-24
+状态：Stable release rules；M14 migration pending
+更新：2026-09-05
 
 本文规定已在 `develop` 集成的项目状态如何进入 `main`。这里的“发布”是仓库稳定线发布，表示
 项目接受该提交集为共享真值；它不自动表示公开发行、许可证问题解决、真实 Provider 兼容、科研
 有效性或产品成熟度已经获批。
+
+> [Issue #57](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57) 与
+> [ADR-0021](decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md) 已接受未来的 curated release 目标：
+> frozen `develop` 是内容与 provenance 来源，exact current `main` 是 release branch 的 Git 父提交。
+> M14-001～004 只建立 dormant topology、export/check、portable package 与 public docs；在 M14-005
+> readiness/cutover 验收前，本页以下 exact `develop -> main` 规则仍是唯一可执行规则，不得提前手工使用
+> `release/* -> main`。
 
 ## 1. 唯一允许的拓扑
 
