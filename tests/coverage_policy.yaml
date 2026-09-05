@@ -42,6 +42,7 @@ suites:
       - test_observability_model_branches
       - test_protocol_profiles
       - test_pr_governance
+      - test_release_surface
       - test_provider_adapters
       - test_provider_conformance
       - test_provider_contract_branches
@@ -122,6 +123,7 @@ thresholds:
 critical_modules:
   - .github/scripts/check_coverage_policy.py
   - .github/scripts/check_pr_governance.py
+  - .github/scripts/release_surface.py
   - src/research_workbench/protocol/authority.py
   - src/research_workbench/capability/requirements.py
   - src/research_workbench/capability/supply.py
@@ -154,6 +156,20 @@ critical_modules:
   - src/research_workbench/research_state/gate.py
 
 negative_acceptance:
+  - surface: deterministic-release-surface
+    modules:
+      - .github/scripts/release_surface.py
+    positive_tests:
+      - test_release_surface.ReleaseSurfaceTests.test_export_twice_and_git_merge_tree_are_byte_identical
+      - test_release_surface.ReleaseSurfaceTests.test_two_versions_remove_old_generated_output_and_reject_stale_parent
+      - test_release_surface.ReleaseSurfaceTests.test_binary_source_and_executable_mode_preserve_bytes
+    negative_tests:
+      - test_release_surface.ReleaseSurfaceTests.test_synchronized_source_and_manifest_hash_forgery_is_blocked
+      - test_release_surface.ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked
+      - test_release_surface.ReleaseSurfaceTests.test_source_and_ci_expectations_cannot_come_from_manifest
+      - test_release_surface.ReleaseSurfaceTests.test_policy_same_version_drift_is_rejected
+      - test_release_surface.ReleaseSurfaceTests.test_portable_path_attack_matrix
+      - test_release_surface.ReleaseSurfaceTests.test_git_symlink_gitlink_casefold_and_non_utf8_paths_are_rejected
   - surface: coverage-policy-self-control
     modules:
       - .github/scripts/check_coverage_policy.py

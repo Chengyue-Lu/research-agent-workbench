@@ -3,7 +3,7 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 来源：[Issue #57](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57)
 - 架构决定：[ADR-0021](../../../decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md)
-- 状态：R2 task-definition；尚未实现 release topology、exporter、portable package 或首次发行
+- 状态：M14-001 dormant topology 与 M14-002 deterministic surface 已实现；portable package、public docs 与首次发行仍待闭合
 - diagnostic baseline：`origin/develop@dd2454b5595e33a12aa058529358d46d311a08c4`
 - task-definition integration base：`origin/develop@6a032e12c30a88a501258eec8c0b5d6c6082d81d`
 
@@ -42,7 +42,7 @@ flowchart LR
     M5003["M5-003 DONE<br/>evaluation boundary"] -. "activation evidence" .-> M14001
     M1104["M11-004 DONE<br/>Core closeout"] -. "activation evidence" .-> M14001
     M1106["M11-006 DONE<br/>optional mapping"] -. "activation evidence" .-> M14001
-    M14001 --> M14002["M14-002 PARKED<br/>REL-002 deterministic surface"]
+    M14001 --> M14002["M14-002 DONE<br/>REL-002 deterministic surface"]
     M14001 --> M14003["M14-003 PARKED<br/>REL-003 portable package"]
     M14002 --> M14004["M14-004 PARKED<br/>REL-004 public docs"]
     M14003 --> M14004
@@ -92,6 +92,11 @@ policy/inputs 的两次结果逐字节相同；dirty working tree、CRLF 转换�
 连续 v1→v2 fixture 必须证明旧版独有 generated 文件被删除，且 prospective merge-result tree = projection tree
 = manifest closed output tree；current main 前移时旧 branch/manifest 失效并重新生成。M14-002 验收后 topology
 仍 dormant。release checker 属 critical allow/block surface，进入 Coverage Policy 95/90 和独立正反 evidence。
+
+实现入口：[Release surface](../../../implementation/RELEASE_SURFACE.md)。独立实现使用 strict JSON/YAML policy、
+Git source history immutable-version 校验、source/generated manifest-last closure、完整 staging 和 candidate/
+prospective merge-tree equality。验证位于 `tests/test_release_surface.py`；Task Archive 为
+`work/M14-002/A-20260906-001/`。真实 source freeze、branch、CI attestation 和发布均留给 M14-005。
 
 ### M14-003 / REL-003 — Portable package closure
 
@@ -169,6 +174,6 @@ task-definition 只写 canonical docs、ADR、workstream 与导航。后续实�
 
 ## 下一合法动作
 
-`M14-001` 已完成；下一步只能由 owner 分别激活 `M14-002` deterministic surface 或 `M14-003` portable
-package slice。两者可并行但不能互相代替，也不能提前创建真实 release branch、冻结 release source SHA 或
+`M14-001/002` 已完成；下一步由 owner 独立激活 `M14-003` portable package slice。
+M14-004 等待 package closure；不能提前创建真实 release branch、冻结 release source SHA 或
 解锁 merge eligibility。任何实现分支在开 PR 前仍须基于当时最新 `develop` 重新验证。
