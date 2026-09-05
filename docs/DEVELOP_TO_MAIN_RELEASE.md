@@ -10,8 +10,8 @@
 > [Issue #57](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57) 与
 > [ADR-0021](decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md) 已接受未来的 curated release 目标：
 > frozen `develop` 是内容与 provenance 来源，exact current `main` 是 release branch 的 Git 父提交。
-> M14-001 已建立只识别、校验并阻断的 dormant topology；M14-002～004 后续建立 export/check、portable
-> package 与 public docs。在 M14-005
+> M14-001 已建立只识别、校验并阻断的 dormant topology，M14-002 已建立 deterministic export/check；
+> M14-003/004 后续闭合 portable package 与 public docs。在 M14-005
 > readiness/cutover 验收前，本页以下 exact `develop -> main` 规则仍是唯一可执行规则，不得提前手工使用
 > `release/* -> main`。
 
@@ -51,8 +51,8 @@ attempt，并自动提升到 R2。识别不等于准入：任何结构正确的�
 - `RELEASE_MANIFEST.json` 是否存在，以及其原始 bytes 是否匹配 external expected SHA-256。
 
 这些 expectation 只能由未来受保护调用方以显式 attestation 传入；PR body、release branch、manifest 自报值和
-普通进程环境都不会自动获得 trust。当前 hosted workflow 尚未建立这种 attestation，M14-002 也尚未发布
-manifest/exporter；因此候选会在更早 prerequisite 或 dormant Gate 处阻断。fresh main/develop observation、
+普通进程环境都不会自动获得 trust。当前 hosted workflow 尚未建立这种 attestation；M14-002 的
+manifest/exporter/checker 只交付离线生成与验证能力，候选仍在 prerequisite 或 dormant Gate 处阻断。fresh main/develop observation、
 GitHub required-check authenticity 和最终 readiness 仍由 M14-005 闭合，本节不宣称真实 release 已可执行。
 
 ## 2. 创建 release PR 前

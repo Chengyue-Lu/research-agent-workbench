@@ -53,7 +53,7 @@ family 为什么存在、由什么 authority boundary 约束、何时允许启�
 | Phase E | Strategy candidate 与 governed evolution；不得自动修改 Core | 既有 M2/M7；M13 仅 **RESERVED** | Phase C/D evidence 证明旧 group 不足后另行接受 |
 | Phase F / Topic 4 | Agent/Model/Provider/Runtime 消费 frozen contract；不拥有 Method/Claim/Gate/fallback authority | M11 Core 与 optional extension；M6 live conformance | M11 Core 与 optional Skill extension 已 bounded 实现；live conformance 仍依独立 Gate |
 | Topic 5 residual | Handoff、context rollover、safe pause/resume、recovery/continuation | M12 仅 **RESERVED** | Phase C closeout + 独立 Topic 5 R2 review/task-definition |
-| Product / release closure | Ordinary-user E2E、package/runtime/release governance | M14-001 dormant trust anchor DONE | M14-002/003 仍待独立激活；首次发行继续受 deterministic surface、portable package、public docs、许可证、scaffold 与远端保护阻断 |
+| Product / release closure | Ordinary-user E2E、package/runtime/release governance | M14-001 dormant trust anchor 与 M14-002 deterministic surface DONE | M14-003 仍待独立激活；首次发行继续受 portable package、public docs、许可证、scaffold 与远端保护阻断 |
 
 ```mermaid
 flowchart LR
@@ -384,9 +384,9 @@ M14-001 release topology + source trust
 ```
 
 M14-001 已完成 dormant release topology/source-trust seam，`release/v*` 在 topology helper 与完整 checker
-中都 fail closed；branch name、PR body 或普通环境不能替代 trusted external attestation。M14-002/003 的 hard
-dependency 已满足，但仍需各自激活后才可并行闭合 projection 与 package；M14-004 等待确定的
-文件面和安装边界。三项完成都不产生 release merge eligibility。M14-005 还 hard-depend M0-007 license、
+中都 fail closed；branch name、PR body 或普通环境不能替代 trusted external attestation。M14-002 已闭合
+deterministic projection/export/check；M14-003 的 hard dependency 已满足，等待独立激活以闭合 package。
+M14-004 仍等待安装边界。三项完成都不产生 release merge eligibility。M14-005 还 hard-depend M0-007 license、
 M1-009 scaffold、GitHub remote protection 与具名人类 release decision；只有全部 readiness Gate 闭合后，
 它才原子启用 `release/v* -> main` 并禁用 direct `develop -> main`。
 
