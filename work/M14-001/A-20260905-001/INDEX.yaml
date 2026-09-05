@@ -254,8 +254,8 @@ messages:
   - message_id: MSG-0018
     sequence: 18
     path: messages/0018-test-auditor-to-main-agent-full-suite-return.md
-    sha256: 640a40c46d9ac5e2f269b2afcd8a1485f610c079ae5006de9e7edc2e507c4d39
-    content_sha256: 00bb3bf2fc64d4d8244ba6df262ca2da123759691eeb1841990006afd4598df3
+    sha256: 17c53a7a1cc69eb90775cbd7149236bb7afc3e367e13cf1cd934f2ccea573987
+    content_sha256: 598b2506d143d289a2dde50af0ee0bf25df78e937b5edef8639290d9126efb62
     kind: handoff
     sender_actor_id: test-auditor
     receiver_actor_ids: [main-agent]
@@ -301,6 +301,7 @@ check_refs:
   - {path: checks/0004-repository-and-package-smoke.md, sha256: 6d3d7a89852e5f6b7fc1a1f88f032e602d9b4c668160d13daaf13265095c59ef}
   - {path: checks/0005-full-behavioral-suite.md, sha256: b825b8f3db91592e16b49dfdefa97605f2e4d6711f03cc4066158899b0534040}
   - {path: checks/0006-trace-format-remediation.md, sha256: 848b6c6c89fa43a918e0b199ddbcd7ccec5ca437a3df31a424d53157c96ccf8c}
+  - {path: checks/0007-message-path-redaction.md, sha256: 48241724a8b8de78a492acaa45f87ed94594536e8a9442dd7e8c0a9cccb8764a}
 capture_gaps:
   - {event_id: EVT-0022, affected_stream: messages}
   - {event_id: EVT-0023, affected_stream: events}

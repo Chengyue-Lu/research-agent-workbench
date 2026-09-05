@@ -11,10 +11,14 @@ receiver_actor_ids: [main-agent]
 accountable_owner: Chengyue-Lu
 created_at: "2026-09-05T03:51:01+08:00"
 in_reply_to: MSG-0013
-content_sha256: "00bb3bf2fc64d4d8244ba6df262ca2da123759691eeb1841990006afd4598df3"
+content_sha256: "598b2506d143d289a2dde50af0ee0bf25df78e937b5edef8639290d9126efb62"
 attachment_refs: []
-redactions: []
+redactions:
+  - redaction_id: RED-0001
+    category: personal-data
+    reason: "Replace the machine-specific temporary directory and local username with a temporary-location placeholder; the result JSON was not archived."
+    field_path: result.json_path
 capture_status: partial
 capture_gap_event_id: EVT-0022
 ---
-{"result":{"suite":"full","total":811,"passed":810,"skipped":1,"failed":0,"errors":0,"wall_seconds":715.434495,"exit_code":0,"json_path":"C:\\Users\\lcy20\\AppData\\Local\\Temp\\rwb-m14-full.json"},"workspace_edits":false}
+{"result":{"suite":"full","total":811,"passed":810,"skipped":1,"failed":0,"errors":0,"wall_seconds":715.434495,"exit_code":0,"json_path":"<temp>/rwb-m14-full.json"},"workspace_edits":false}
