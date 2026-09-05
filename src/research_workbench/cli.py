@@ -1634,7 +1634,7 @@ def build_parser() -> argparse.ArgumentParser:
     promotion_validate = promotion_subparsers.add_parser(
         "validate",
         help="verify pins and boundaries, then deterministically re-execute the "
-        "pinned validation pipeline (scratch dir only; repository state is never mutated)",
+        "pinned validation pipeline in a scratch directory (trusted side-effect-free components required)",
     )
     promotion_validate.add_argument("record")
     promotion_validate.add_argument("--root", default=".")

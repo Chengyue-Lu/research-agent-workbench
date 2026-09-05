@@ -193,7 +193,8 @@ hash 漂移均阻断；调用方即使在允许稳定目录内构造一套自洽
 证伪。
 
 `rwb validation run` 产出候选 validation 三元组（provenance metadata）；`rwb promotion validate`
-不修改仓库状态，但会在隔离临时目录实际重执行 pinned pipeline 完成 rebuild-and-compare；`rwb promotion execute`
+的宿主逻辑不写仓库，但会在临时工作目录实际重执行 pinned pipeline 完成 rebuild-and-compare；组件必须
+受信且无副作用，环境清理与临时目录不构成 OS 沙箱。`rwb promotion execute`
 只接受 workspace 内的 file-bound record，
 先在目标目录 staging 完整字节并复算 hash，再做完整复验，并生成 exact-pin
 record/Task/registry/policy/execution/report/checker/runner/host/source/actual-target/operator/time/outcome 的
@@ -271,11 +272,10 @@ Trace 默认保存在项目工作区，但不等于默认提交 Git：
 
 当前已实现的 M4-002 验收边界：
 
-- pre-Attempt Task、accepted registry/policy、validation host 实际执行并记录的
-  deterministic validation execution 与 host receipt（provenance metadata，
+- pre-Attempt Task、accepted registry/policy、validation execution 与 host receipt（claimed provenance metadata，
   `validation_execution_fact=false`）、PASS report、subjects、entries 与 live bytes exact
   closure，subject/entry 集合既不遗漏也不夹带；eligibility 只由 promotion 时的确定性重执行等价当场
-  确立——手写 execution 的虚假声称被重执行证伪，byte-exact 伪造"历史"不携带历史权威；
+  确立；手写的错误 PASS report/transcript 被阻断，byte-exact 自报历史不携带历史权威；
 - 每个受检工件均有 promote/retain disposition，负结果不会被静默删除；
 - file-bound record、durable receipt、staging、commit-time 复验和 exclusive-create 阻断自签 PASS、覆盖、
   accepted 直达、路径逃逸及 record/source/target/receipt 竞态；

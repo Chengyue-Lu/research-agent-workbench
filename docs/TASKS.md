@@ -251,7 +251,7 @@ M13 不等于 strategy framework approval。
 | `M2-003, M2-004, M2-007, M2-008` | 路诚钺 | R1～R2 | E / optional evaluation | Capability / Skill Evolution | legacy 或来源驱动路线，保持 PARKED |
 | `M2-006` | 黄毅 | R1 | F / optional platform | Topic 4 | 无真实平台需求，保持 PARKED |
 | `M3-001～007` | 路诚钺、黄毅按既有边界 | R2 | pre-A bounded slice；post-C future | Topic 5 + Artifact/Trace | 无 active implementation，future residual 等待 Phase C closeout 后重新 task-definition |
-| `M4-002` | 路诚钺 | R1 | C / D | Research State + Artifact/Trace | exact validation closure 与 fail-closed promotion 已实现，DONE；validation PASS 必须由 trusted host 实际执行 accepted runner/checker 产生（host receipt + 确定性重执行等价），手写 execution 不得获得 eligibility |
+| `M4-002` | 路诚钺 | R1 | C / D | Research State + Artifact/Trace | exact validation closure 与 fail-closed promotion 已实现，DONE；eligibility 只由 promotion 时重执行 accepted pinned runner/checker 确立；validation 三元组仅为 claimed provenance metadata，错误 PASS 阻断，byte-exact 自报历史可通过有效性检查但不产生历史 producer/operator/time 权威 |
 | `M4-003, M4-004` | 路诚钺 | R1；M4-003 R2 | C / D | Research State + Artifact/Trace | M4-002 已完成；两个独立后继均为 READY，仍须分 Task/PR 验收 |
 | `M4-005` | 路诚钺 | R1 | deferred | Artifact/Trace | 只在真实大文件需求出现时恢复 |
 | `M5-001, M5-002` | 路诚钺 | Human decisions R2 | D | Evaluation + Research State | 等待人类选定并批准两类真实案例边界，BLOCKED |

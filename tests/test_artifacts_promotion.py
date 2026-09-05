@@ -628,11 +628,9 @@ class PromotionValidationTest(PromotionFixture):
         )
         self.assertEqual(infer_document_kind(self.policy), "promotion_validation_policy")
         self.assertEqual(infer_document_kind(self.execution), "promotion_validation_execution")
-        # NOTE: infer_document_kind currently classifies the host receipt as
-        # promotion_validation_execution (its execution_id/policy_ref/report_ref
-        # rule matches a superset of the receipt's discriminator fields before
-        # the receipt rule is reached).  The receipt is therefore verified here
-        # through its explicit schema kind instead.
+        self.assertEqual(
+            infer_document_kind(self.receipt), "promotion_validation_host_receipt"
+        )
         self.assertEqual(
             SchemaCatalog().validate("promotion_validation_host_receipt", self.receipt), []
         )
@@ -1008,18 +1006,15 @@ class PromotionValidationTest(PromotionFixture):
             str(self.registry_path),
             str(self.policy_path),
             str(self.execution_path),
+            str(self.receipt_path),
             str(self.report_path),
             str(record_path),
         ]
-        # The host receipt (receipt.json) is intentionally not in this list:
-        # infer_document_kind classifies it as promotion_validation_execution
-        # (rule-ordering overlap), so kind-inferred schema validation rejects
-        # it.  The promotion flow pins it by explicit kind instead.
         output = StringIO()
         with redirect_stdout(output):
             result = main(["validate", *paths, "--root", str(self.root)])
         self.assertEqual(result, 0, output.getvalue())
-        self.assertIn("validated=6 errors=0 warnings=0", output.getvalue())
+        self.assertIn("validated=7 errors=0 warnings=0", output.getvalue())
 
     def test_report_pin_subject_set_and_checker_drift_fail_closed(self) -> None:
         with self.subTest("report pin"):

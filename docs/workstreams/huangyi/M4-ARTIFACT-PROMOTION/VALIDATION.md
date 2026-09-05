@@ -1,77 +1,53 @@
 # M4-002 验证证据
 
-状态：本地验证已在合并候选 HEAD 全部刷新完成；hosted exact-head CI 与 Task owner acceptance 尚未发生。
+本轮：2026-09-05，针对 PR #54 在 `b61c05485aed1920814d6d615563aa5faf5f0880` 上的两项收尾审查。
+集成基线为 `develop@6a032e12c30a88a501258eec8c0b5d6c6082d81d`。最终提交的 hosted checks 与具名
+Task owner 接受以 [PR #54](https://github.com/Chengyue-Lu/research-agent-workbench/pull/54) 为准；本地通过
+不等于 owner 接受，也不使候选 Task 状态提前成为 develop 真值。
 
-## 已完成的本地证据
+## 本轮修复与回归
 
-| 项 | 结果 |
+- host receipt discriminator 先于宽泛的 validation execution discriminator；真实 host 生成的 receipt
+  现在可经通用 `rwb validate` 验证，无需 explicit-kind 绕过。
+- 两条现有回归先增强、后修代码：旧顺序下分别因错误类型和 3 个 Schema errors 失败；修复后通过。
+  正向链使用 `run_validation_execution` 生成实际三元组，验证全部 7 份 authority/promotion 文档，
+  输出 `validated=7 errors=0 warnings=0`。
+- TASKS 的实现说明、contract、STATUS、module、CLI 与 workstream 统一为 promotion-time validity。
+  原始 Task 定义/验收、Schema、authority ceiling 与 promotion 执行逻辑未改。
+
+## 本地结果
+
+在独立 Python 3.11 venv 安装现有 `.[test]`，包含 Hypothesis；完整回归和 coverage 各执行一次。
+原始测试 JSON、duration logs、wheel 与治理事件保存在本地 ignored Attempt
+`work/M4-002/A-20260905-CLOSEOUT/`；这些本地耗时不作为跨机器性能比较。
+
+| 检查 | 结果 |
 |---|---|
-| Promotion focused tests | 62 项收集（`test_artifacts_promotion` + `test_artifacts_validation_host`）：60 项通过；2 项 Windows symlink 权限跳过，Linux CI 保留执行 |
-| Promotion critical coverage | `promotion.py` line 97.96% / branch 96.46%；`validation_host.py` line 97.74% / branch 97.14%，满足 95% / 90% 门槛 |
-| 对抗面 | pre-Attempt Task/registry/policy/host closure、稳定目录内完整自洽 fake checker/runner/host/policy/execution/PASS 链不再获得 eligibility、work 内自签链、record/report/subject/entry drift、时间倒置、额外/遗漏 entry、failed report/execution、prefix/accepted/existing target、duplicate identity、record/source/staging/target/receipt race、target+receipt rollback、repository receipt target drift、hand-written execution without host run、fabricated host receipt、failing checker reported as PASS、runner crash/timeout 仍落 durable fail fact、receipt closure/transcript drift、re-execution byte drift |
-| Coverage Policy v2 | 按 PR #47/#49 优化路径仅在 Python 3.11 执行一次：794 项收集，791 PASS、3 项 Windows symlink 权限跳过；global line 91.88%；全部 critical line/branch 门槛 PASS |
-| Full suite | Python 3.11 plain compatibility 只执行一次：855 项收集，849 PASS、6 项跳过（3 项 Windows symlink 权限 + 3 项 Hypothesis test extras 未安装，CI 均会执行）；本机没有 Python 3.13，不以其他版本冒充，等待 hosted exact-head CI |
+| Focused + Schema + documentation + governance | 141 项：139 PASS，2 Windows symlink permission skips |
+| Full compatibility | 855 项：852 PASS，3 Windows symlink permission skips；0 failures/errors；940.549 秒 |
+| Coverage Policy v2 | 794 项：791 PASS，3 Windows symlink permission skips；global line 91.97%；32 个 critical files 全部达到 line >=95% / branch >=90%；1400.184 秒 |
+| Promotion critical coverage | promotion.py line 97.96% / branch 96.46%；validation_host.py line 97.74% / branch 97.14%；document_kinds.py line 99.17% / branch 99.14% |
 | Repository validation | `validated=183 errors=0 warnings=0` |
-| Wheel / clean install | Python 3.11 临时 clean venv 成功安装 wheel：`share/` 分发 69 项 Schema（含 `promotion-validation-host-receipt`），`rwb` console script 与 `rwb validation run --help` 可用，并完成 repository validation |
-| Static checks | `compileall`、documentation 9、Schema 3、governance 67、Coverage Policy 21 项测试与 `git diff --check` PASS |
+| Wheel / clean install | 69 Schema；确认从 clean venv 的 site-packages 加载；两条真实 producer 回归及 repository validation PASS |
+| Static / links | compileall、documentation checks 和 `git diff --check` PASS |
 
-## Trusted validation host 闭合（2026-09-02）与 validity semantics 收口（2026-09-04）
+Python 3.13 和 Linux symlink 路径由最终提交的 hosted compatibility/coverage jobs 验证；不以本地其他
+Python 版本冒充该证据。数值报告完成后的文档整理不改变已经测试的 source/test/schema/registry bytes。
 
-注意：上表全部数值证据已在 validity semantics 收口之后的最终验证中刷新（2026-09-05，合并候选 HEAD，本机 Python 3.11）。
+## 语义证据边界
 
-PR #54 第三轮 review 要求闭合 trusted producer P1：此前一份手写 `promotion_validation_execution` 加
-自声明 PASS report（内部 hash 完全自洽、引用完全合法的 accepted authority 对象）仍可能获得 promotion
-eligibility，因为没有任何机制证明 accepted runner/checker/host 真的运行过。闭合设计：
+eligibility 只由 promotion 时重执行 accepted pinned pipeline 并复现 PASS report/transcript 当场确立。
+validation 三元组是 claimed provenance metadata；自声明 operator/time 仅参与格式与顺序一致性检查，
+不提供历史权威。错误 PASS/report/transcript 会被阻断；byte-exact 自报历史可满足当前有效性，但不能
+证明过去的 producer/operator/time。`test_byte_exact_fabricated_history_carries_no_historical_authority`
+继续固定这个边界，两个既有 Schema 仍将 `validation_execution_fact` 固定为 false。
 
-- 新增 validation host（`src/research_workbench/artifacts/validation_host.py`，CLI `rwb validation
-  run`）：解析 pre-Attempt 权威链（revision-pinned canonical Task → accepted-policy registry → 该 Task
-  revision 的唯一 accepted policy → checker/runner/host identity/version/source pin），在 scrubbed
-  subprocess 中实际执行 pinned runner，并 exclusive-create report / execution / receipt 三份 durable
-  文档；
-- 新增文档种类 `promotion_validation_host_receipt`；`promotion_validation_execution` 新增必需
-  `host_receipt_ref`；receipt 固定 `run_inputs_sha256` closure hash 与 transcript（exit code、
-  stdout/stderr/report hash）；
-- `check_promotion` 在其余检查全部干净后通过同一 host seam 对 live subject bytes 确定性重执行 pinned
-  runner/checker，要求 byte-exact 复现 PASS report 与记录 transcript；任何不匹配以
-  `VALIDATION-EXECUTION-UNPROVEN` 阻断——deterministic rebuild-and-compare，无需签名密钥；
-- byte-determinism 成为 checker/runner 的 policy-owned 要求；runner 崩溃、超时或未产出 report 仍持久化
-  `outcome=fail` 三元组（`report_produced_by: host-failure-synthesis`），是 durable fail fact，永不构成
-  eligibility。
+环境白名单和临时 cwd 不构成 OS 沙箱。CLI/contract 明确要求预先接受、受信且无副作用的组件；
+宿主自身不向仓库写入的行为，不被扩展为对恶意已接受代码的隔离保证。失败三元组属于 durable failure
+metadata，永不构成 eligibility。既有 source/target pins、负结果 disposition、receipt、staging、
+TOCTOU、exclusive-create 与 rollback 回归继续保留。
 
-第四轮 review 指出语义级裂缝：上述实现证明的是 deterministic validation validity，而文档/Schema 声称的
-是 trusted-host historical execution provenance；且 registry 的 `host.source_ref` 只被校验从未被执行。
-实证探针确认：host 从未运行、report/transcript 与 pinned runner/checker 输出逐字节一致的伪造三元组
-（含编造的 operator/时间）在修复前可通过 `check_promotion` 获得 eligibility。二选一收口经实证评估：
-
-- **Producer-provenance semantics（未选）**：要求调用方无法离线重建的 attestation。探针证明伪造三元组的
-  每个字节（report、transcript hash、run-inputs closure、全部 refs）都可从 repo 公开信息离线算出；
-  绑定 `host.source_ref` 同样无效——pinned host source 本身也在仓库公开区。单一信任域内不存在
-  调用方无法重建的 proof；引入签名/attestation 基础设施属于新全局依赖，需独立 ADR，超出本轮范围；
-- **Validity semantics（选定）**：authoritative fact ≡ promotion-time 确定性重执行；三元组降级为
-  provenance metadata（两个 Schema 以 `const: false` 强制 `validation_execution_fact`）；自声明
-  operator/timestamps 明确为不可验证字段，从不参与 eligibility。伪造能力被限制在"声称真事实"之内，
-  任何假 PASS 都被重执行证伪。
-
-同源两处 contract mismatch 一并修正：runner 子进程环境从"复制 `os.environ`"修正为真实 scrub
-（OS 必需变量白名单 + 丢弃凭据与 `PYTHONPATH` 等解释器污染开关 + 固定
-`PYTHONHASHSEED=0`/`PYTHONDONTWRITEBYTECODE=1`/`PYTHONNOUSERSITE=1`/`TZ=UTC`）；"`promotion validate`
-只读"修正为"不修改仓库状态，但在隔离临时目录实际执行 pinned pipeline 完成 rebuild-and-compare"。
-
-对抗与边界覆盖（已随本轮最终验证通过）：
-
-- `test_hand_written_execution_without_host_run_cannot_gain_eligibility`
-- `test_hand_written_execution_with_fabricated_receipt_cannot_gain_eligibility`
-- `test_failing_checker_reported_as_pass_blocks_promotion`
-- `test_byte_exact_fabricated_history_carries_no_historical_authority`（强反例：通过验证但无历史权威，
-  语义边界锁定）
-- `test_runner_subprocess_environment_is_scrubbed`（ENV-SCRUBBED guard checker 端到端）
-- `test_scrubbed_environment_allowlist_and_determinism_pins`
-
-对应风险台账 M4P-VALIDATION-PRODUCER-001、M4P-VALIDATION-REEXEC-001、M4P-VALIDATION-RUNNER-FAIL-001、
-M4P-VALIDATION-SEMANTICS-001、M4P-VALIDATION-ENV-001。
-
-## 合并前仍需更新
-
-- 已完成：rebase 到最新 `develop@dd2454b5595e33a12aa058529358d46d311a08c4`，保留 PR #53 的 M5 Task/navigation 真值；
-- exact HEAD Python 3.11/3.13 hosted CI；
-- 所有 review conversation resolved，且路诚钺对 exact HEAD 接受。
+三次完整重执行成本、非沙箱信任边界和整 registry hash 的多 Task 耦合已登记在
+[RISK_LEDGER.md](RISK_LEDGER.md)，待真实下游案例验证；本 PR 不新增签名、沙箱、缓存或 registry 重构。
+本证据仅支持 M4-002；M4-003 Claim Trace 与 M4-004 Run reproduction 仍须在本 PR 被接受并合入后
+各自实现与验收，不把 checker 重执行解释为科学 Run 复现或科学正确性。
