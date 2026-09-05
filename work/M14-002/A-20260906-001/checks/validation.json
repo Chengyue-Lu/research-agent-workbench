@@ -1,0 +1,268 @@
+{
+  "baseline": "1b3f5f6f29058c37ea759a650991553647a44ea9",
+  "checks": {
+    "compile": {
+      "exit_code": 0,
+      "wall_seconds": 0.084
+    },
+    "coverage-export": {
+      "exit_code": 0,
+      "wall_seconds": 1.281
+    },
+    "coverage-policy": {
+      "exit_code": 0,
+      "wall_seconds": 0.105
+    },
+    "coverage-suite": {
+      "exit_code": 0,
+      "wall_seconds": 574.49
+    },
+    "full": {
+      "exit_code": 0,
+      "wall_seconds": 856.524
+    },
+    "package-import": {
+      "exit_code": 0,
+      "wall_seconds": 0.039
+    },
+    "package-install": {
+      "exit_code": 0,
+      "wall_seconds": 3.304
+    },
+    "package-schemas": {
+      "exit_code": 0,
+      "wall_seconds": 0.767
+    },
+    "package-validation": {
+      "exit_code": 0,
+      "wall_seconds": 2.199
+    },
+    "package-venv": {
+      "exit_code": 0,
+      "wall_seconds": 2.497
+    },
+    "repository": {
+      "exit_code": 0,
+      "wall_seconds": 2.936
+    },
+    "trace": {
+      "exit_code": 0,
+      "wall_seconds": 1.43
+    },
+    "wheel-build": {
+      "exit_code": 0,
+      "wall_seconds": 3.017
+    },
+    "whitespace": {
+      "exit_code": 0,
+      "wall_seconds": 0.056
+    }
+  },
+  "coverage_quality": {
+    "outcomes": {
+      "errors": 0,
+      "failed": 0,
+      "passed": 840,
+      "skipped": 3
+    },
+    "successful": true,
+    "test_count": 843,
+    "wall_seconds": 573.905586
+  },
+  "critical_checker": {
+    "branch_percent": 96.666667,
+    "line_percent": 98.93617
+  },
+  "evidence_scope": "This compact summary retains command outcomes and task-specific cases. Raw full-suite/coverage files remain local; final-head GitHub checks provide independent hosted evidence.",
+  "focused_governance_docs": {
+    "passed": 122
+  },
+  "focused_release": {
+    "errors": 0,
+    "failed": 0,
+    "passed": 31
+  },
+  "full": {
+    "outcomes": {
+      "errors": 0,
+      "failed": 0,
+      "passed": 901,
+      "skipped": 3
+    },
+    "successful": true,
+    "test_count": 904,
+    "wall_seconds": 856.196783
+  },
+  "implementation_commit": "907cada15585a8e3cce74b3ca0206d3f5da7a7ef",
+  "original_local_reports_sha256": {
+    "coverage-tests.json": "fc99e15aa7f7a8ba8e2a8302f49d0f3e07e00070cf7f32967907652bf5eaf17a",
+    "coverage.json": "bb18bcd979aceb99e16c3df02cd9055328a35495d6beef208a519d51522f5828",
+    "full.json": "5973aec8bbc7090715439b041e7d651213b4aea9e0abfd3c470ee2d3d770a464"
+  },
+  "package_smoke": "PASS; existing repository package profile, not M14-003 portable acceptance",
+  "platform": "Windows",
+  "python": "3.14.6",
+  "release_merge_eligible": false,
+  "release_test_cases": [
+    {
+      "duration_seconds": 15.229157,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 13.165356,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.81765,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_two_versions_remove_old_generated_output_and_reject_stale_parent",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.059861,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_include_missing_duplicate_overlap_and_file_tree_ambiguity_fail",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.537359,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_generated_overlap_reserved_manifest_and_undeclared_generator_fail",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.527031,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_directory_checks_hidden_empty_directory_and_crlf_drift",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.08054,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_export_twice_and_git_merge_tree_are_byte_identical",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 4.097492,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_cli_export_check_and_errors",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 4.083389,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_candidate_must_have_exact_single_main_parent",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.904149,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_binary_source_and_executable_mode_preserve_bytes",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.165402,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_independent_merge_result_disagreement_is_blocking",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.115994,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_policy_unknown_empty_duplicate_and_unsorted_versions_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.958253,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_synchronized_source_and_manifest_hash_forgery_is_blocked",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.310772,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_source_manifest_and_omitted_attributes_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.250607,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_source_crlf_and_checker_drift_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.130899,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_source_and_ci_expectations_cannot_come_from_manifest",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.569649,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_generated_prefix_collision_is_rejected_during_projection",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.50855,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_shallow_remote_and_git_format_prerequisites",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.390233,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_policy_history_removal_and_restore_is_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.332496,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_policy_include_escape_is_rejected_during_projection",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.223927,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_policy_same_version_drift_is_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.153627,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_git_symlink_gitlink_casefold_and_non_utf8_paths_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.715658,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_source_must_belong_to_fetched_develop",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.656232,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_dirty_tracked_and_untracked_source_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.441451,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_git_environment_cannot_redirect_repository",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.434415,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_real_policy_schema_and_no_broad_runtime_or_internal_surface",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.408039,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_corrupt_git_blob_bytes_fail_before_projection",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.405981,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_portable_path_attack_matrix",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.403134,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_export_refuses_nonempty_relative_and_checkout_directories",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.40283,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_links_and_junctions_in_staging_fail_closed",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.396956,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_strict_json_duplicate_keys_and_invalid_utf8",
+      "outcome": "passed"
+    }
+  ],
+  "repository": {
+    "errors": 0,
+    "validated": 183,
+    "warnings": 0
+  }
+}

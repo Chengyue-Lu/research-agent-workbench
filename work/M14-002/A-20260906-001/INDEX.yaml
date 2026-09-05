@@ -1,0 +1,115 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260906-001
+task_id: M14-002
+task_revision: 1
+attempt_id: A-20260906-001
+archive_root: A-20260906-001
+baseline: 1b3f5f6f29058c37ea759a650991553647a44ea9
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 75bf05d924b3a78f58be184f0aa91bda663a6e326013497245a2361df787a502
+actors_ref:
+  path: ACTORS.yaml
+  sha256: d5f576cfbe7b5d628a01994cabf14e59418c18e63df5909238b6c7d6b798d724
+read_allowlist:
+- .gitattributes
+- .github/**
+- .github/release-surface.yml
+- .github/scripts/release_surface.py
+- AGENTS.md
+- MANIFEST.in
+- docs/ARCHITECTURE.md
+- docs/DEVELOPMENT.md
+- docs/DEVELOP_TO_MAIN_RELEASE.md
+- docs/README.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/TASKS.md
+- docs/decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md
+- docs/implementation/README.md
+- docs/implementation/RELEASE_SURFACE.md
+- docs/templates/TASK_WORKLOG.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- pyproject.toml
+- schemas/**
+- schemas/v0.1.0/release-manifest.schema.json
+- schemas/v0.1.0/release-surface-policy.schema.json
+- src/research_workbench/observability/trace.py
+- src/research_workbench/validation/schemas.py
+- tests/coverage_policy.yaml
+- tests/test_agent_trace.py
+- tests/test_coverage_policy.py
+- tests/test_documentation.py
+- tests/test_release_surface.py
+- work/M14-002/A-20260906-001/**
+write_scope:
+- .github/release-surface.yml
+- .github/scripts/release_surface.py
+- docs/DEVELOP_TO_MAIN_RELEASE.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/TASKS.md
+- docs/implementation/README.md
+- docs/implementation/RELEASE_SURFACE.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- schemas/v0.1.0/release-manifest.schema.json
+- schemas/v0.1.0/release-surface-policy.schema.json
+- tests/coverage_policy.yaml
+- tests/test_release_surface.py
+- work/M14-002/A-20260906-001/**
+tool_allowlist:
+- apply_patch
+- exec_command
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: f83c27609416c3f52acb37fb5e47afb67e2a73e891e984f0bd3e2472fec450a3
+  event_count: 8
+tool_event_refs:
+- path: tool-events/material-verification-summary-succeeded.json
+  sha256: 750b9b9eba34ebf3af9bbcf533e20b56b2473453558abfddace0bd4a069c5d65
+handoff_refs:
+- path: handoffs/H0-REVIEW.md
+  sha256: f1c3a7b26f20860994871e9b4239859f15e03d0db7a3ef57a5d49c96f027166f
+decision_refs: []
+output_refs:
+- path: outputs/IMPLEMENTATION.md
+  sha256: f1c3a7b26f20860994871e9b4239859f15e03d0db7a3ef57a5d49c96f027166f
+check_refs:
+- path: checks/validation.json
+  sha256: a499c1aa186ee9ed7eeb57a01193d442d2525e3c439ccc34509154c37510a501
+- path: checks/focused.log
+  sha256: bcd38db644f0f3bc815565110c753cb47611189442e3b3bc64a8f9419f6b820b
+- path: checks/governance-focused.log
+  sha256: 20dee190dc1d903ee3454bc160048054545b28e7bdd3abedfc18b69c9093dd04
+- path: checks/contracts-docs.log
+  sha256: 170d71e8ee3d99c9c7268e984213c61f01bc5afd86ec315faa5a76be50265109
+- path: checks/coverage-policy.log
+  sha256: 60984eb10014704312d12c160e1484a2857c76f37e86a1da5c9dc2b194171731
+- path: checks/governance.log
+  sha256: 859fc09ed38aaf0c1260a8f08ad6de6f34315540e96858b5506371360ff71d16
+- path: checks/repository.log
+  sha256: 44fbc76c8c06e9e9ae1216e41d419536c4c52604736da6539aae0a650a0ffa4d
+- path: checks/trace.log
+  sha256: a4aebe005c5e8eee0524ab344d0a273b7a1c2bb009b2cb5d0ad589ee27a58794
+- path: checks/independent-oracle.json
+  sha256: 3436089cfdc25ea27025550e7dea682c2653e568eecc882a41ab145382f4f3f8
+- path: checks/independent_projection_oracle.py
+  sha256: 5d4a602f1bb848e1e3dbfdb2a7e2b13b4d75c5868194a7d5e0804dedb0c39f81
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: tool-results
+- event_id: EVT-0004
+  affected_stream: file-revisions
+- event_id: EVT-0005
+  affected_stream: external-actions
