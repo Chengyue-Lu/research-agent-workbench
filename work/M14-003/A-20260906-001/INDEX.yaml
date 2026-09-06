@@ -1,0 +1,141 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260906-001
+task_id: M14-003
+task_revision: 1
+attempt_id: A-20260906-001
+archive_root: A-20260906-001
+baseline: 0b2d56f48abdfbc7c52478c6a46afdee801bf2bb
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 157a0f5ed8ff6313503e36612efceb2c3d6df9386632bf6781a60943d8d433e4
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 59ed1836bcdab1990851d44020fd78271ec9a21593b720c45c8ffc04555a686b
+read_allowlist:
+- .github/**
+- .github/scripts/portable_package_smoke.py
+- .github/workflows/ci.yml
+- .gitignore
+- .rwb/m14-002-deletion-review/**
+- AGENTS.md
+- CHANGELOG.md
+- MANIFEST.in
+- build_backend.py
+- docs/**
+- pyproject.toml
+- registry/authority/**
+- registry/capabilities/requirements*
+- registry/capabilities/requirements/**
+- registry/modes/**
+- registry/protocol-profiles*
+- registry/protocol-profiles/**
+- registry/skills/accepted/literature-evidence-extraction.yaml
+- registry/skills/release-projections.json
+- runtime-resources.json
+- schemas/**
+- schemas/v0.1.0/runtime-resource-manifest.schema.json
+- src/research_workbench/**
+- src/research_workbench/capability/release_projection.py
+- src/research_workbench/capability/requirements.py
+- src/research_workbench/cli.py
+- src/research_workbench/protocol/profiles.py
+- src/research_workbench/resources.py
+- src/research_workbench/validation/schemas.py
+- tests/**
+- tests/coverage_policy.yaml
+- tests/test_runtime_resources.py
+- tests/test_schemas.py
+- work/M14-003/A-20260906-001/**
+write_scope:
+- .github/scripts/portable_package_smoke.py
+- .github/workflows/ci.yml
+- .gitignore
+- CHANGELOG.md
+- MANIFEST.in
+- build_backend.py
+- docs/**
+- docs/DEVELOPER_ARCHITECTURE_MAP.md
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/TASKS.md
+- docs/implementation/README.md
+- docs/implementation/RUNTIME_RESOURCES.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/RISK_LEDGER.md
+- pyproject.toml
+- runtime-resources.json
+- schemas/v0.1.0/runtime-resource-manifest.schema.json
+- src/research_workbench/capability/release_projection.py
+- src/research_workbench/capability/requirements.py
+- src/research_workbench/cli.py
+- src/research_workbench/protocol/profiles.py
+- src/research_workbench/research_state/closure.py
+- src/research_workbench/research_state/fresh_actor.py
+- src/research_workbench/resources.py
+- src/research_workbench/validation/documents.py
+- src/research_workbench/validation/research_state_registry.py
+- src/research_workbench/validation/schemas.py
+- tests/coverage_policy.yaml
+- tests/test_cli_command_branches.py
+- tests/test_phase_c_gate.py
+- tests/test_runtime_resources.py
+- tests/test_schemas.py
+- work/M14-003/A-20260906-001/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: ca3c2632fb6044a9b0a94bf52343692b375e8dc693ee38daf5cba725f3df6220
+  event_count: 8
+tool_event_refs:
+- path: tool-events/m14-003-verification-succeeded.json
+  sha256: f826ed2e51e5fe402ac1e165f873de358dac59da1a66c0a72380170c657e49c6
+handoff_refs:
+- path: handoffs/H0-REVIEW.md
+  sha256: 4b332ef38f1f3877803bf459b2e3f0ad7999bb1293a5ff806a505cd65bd5d85f
+decision_refs: []
+output_refs:
+- path: outputs/IMPLEMENTATION.md
+  sha256: 4b332ef38f1f3877803bf459b2e3f0ad7999bb1293a5ff806a505cd65bd5d85f
+check_refs:
+- path: checks/verification.json
+  sha256: 875b0c172d29b7c31efbd8f793d61494900a86184d05547cb1933a5c12ccd7d5
+- path: checks/resources-tests.log
+  sha256: 6e84a286d3c8a6cd2c0b779f9dfe5aa7ffb2d48030d093ddc6253ac2c2770b0c
+- path: checks/exact-governance-docs.log
+  sha256: dca24661b186e60587d6e195e9907c391199a7a7994c86c208ffb4783bb60153
+- path: checks/repository.log
+  sha256: 44fbc76c8c06e9e9ae1216e41d419536c4c52604736da6539aae0a650a0ffa4d
+- path: checks/governance.log
+  sha256: b98e54776016fa7f791e9927f11a7be04c2669ac81d7b354ef486fd443deb556
+- path: checks/coverage-gate.log
+  sha256: 9251e1f727dad9ef6524f3e7330ab33313ee95c3d708e4e564831eab02618c0b
+- path: checks/coverage-gate-before-declaration.log
+  sha256: d7c1653cfed253b3cd5b3a8939b2fe13ffa3479a669e371867b4d3589cceef08
+- path: checks/resource-build-race.log
+  sha256: 835f3d59503226b630a3f127a9b1b5212c7123ce4c69223a1d2cdb54b3e7f589
+- path: checks/phase-c-fix.log
+  sha256: de4dc7e0b7759011f34215e7c6dc3a697c07b49ce9ce56bbb57dde03466dbda9
+- path: checks/phase-c-before-fix.json
+  sha256: bbff7e8e49d3dfae8f65449b395ac3aea3db87b8b79ba08f09794a3701f97955
+- path: checks/redactions.md
+  sha256: 9def9af9d19350036f9f0d8166a84e4b01001e51f6c93c1582899dbce60caaf3
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: tool-results
+- event_id: EVT-0004
+  affected_stream: file-revisions
+- event_id: EVT-0005
+  affected_stream: external-actions

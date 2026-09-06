@@ -1,0 +1,23 @@
+test_actor_read_surface_is_exact_and_excludes_private_oracle (test_phase_c_gate.CanonicalGateTest.test_actor_read_surface_is_exact_and_excludes_private_oracle) ... ok
+test_consumer_logic_is_independently_replayable_from_staged_bytes (test_phase_c_gate.CanonicalGateTest.test_consumer_logic_is_independently_replayable_from_staged_bytes) ... ok
+test_machine_pass_keeps_human_r2_and_topic_5_closed (test_phase_c_gate.CanonicalGateTest.test_machine_pass_keeps_human_r2_and_topic_5_closed) ... ok
+test_negative_case_avoids_the_known_failed_path (test_phase_c_gate.CanonicalGateTest.test_negative_case_avoids_the_known_failed_path) ... ok
+test_report_hash_binds_each_exact_gate_input (test_phase_c_gate.CanonicalGateTest.test_report_hash_binds_each_exact_gate_input) ... ok
+test_report_schema_rejects_missing_pins_and_read_surface_overclaim (test_phase_c_gate.CanonicalGateTest.test_report_schema_rejects_missing_pins_and_read_surface_overclaim) ... ok
+test_semantically_equal_replacement_inputs_are_hash_distinguishable (test_phase_c_gate.CanonicalGateTest.test_semantically_equal_replacement_inputs_are_hash_distinguishable) ... ok
+test_two_bounded_cases_pass_in_distinct_fresh_processes (test_phase_c_gate.CanonicalGateTest.test_two_bounded_cases_pass_in_distinct_fresh_processes) ... ok
+test_cli_generates_a_fresh_report_and_refuses_to_overwrite_it (test_phase_c_gate.CliBoundaryTest.test_cli_generates_a_fresh_report_and_refuses_to_overwrite_it) ... ok
+test_duplicate_candidate_path_id_is_rejected_by_actor (test_phase_c_gate.FreshActorAdversarialTest.test_duplicate_candidate_path_id_is_rejected_by_actor) ... ok
+test_stale_method_trace_is_rejected_in_the_fresh_actor (test_phase_c_gate.FreshActorAdversarialTest.test_stale_method_trace_is_rejected_in_the_fresh_actor) ... ok
+test_weak_private_oracle_is_rejected_after_actor_run (test_phase_c_gate.FreshActorAdversarialTest.test_weak_private_oracle_is_rejected_after_actor_run) ... ok
+test_wrong_kind_reopen_basis_is_rejected_by_actor (test_phase_c_gate.FreshActorAdversarialTest.test_wrong_kind_reopen_basis_is_rejected_by_actor) ... ok
+test_duplicate_identity_and_source_path_block_before_actor_spawn (test_phase_c_gate.RunnerOwnedClosureTest.test_duplicate_identity_and_source_path_block_before_actor_spawn) ... ok
+test_oracle_is_read_only_after_fresh_actor_exits (test_phase_c_gate.RunnerOwnedClosureTest.test_oracle_is_read_only_after_fresh_actor_exits) ... ok
+test_private_oracle_cannot_be_declared_as_actor_input (test_phase_c_gate.RunnerOwnedClosureTest.test_private_oracle_cannot_be_declared_as_actor_input) ... ok
+test_process_policy_denies_unlisted_reads_and_input_writes (test_phase_c_gate.RunnerOwnedClosureTest.test_process_policy_denies_unlisted_reads_and_input_writes) ... ok
+test_source_pin_drift_blocks_before_actor_spawn (test_phase_c_gate.RunnerOwnedClosureTest.test_source_pin_drift_blocks_before_actor_spawn) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 47.048s
+
+OK
