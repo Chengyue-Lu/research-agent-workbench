@@ -513,3 +513,7 @@ justified_exclusions:
     lines: [66, 67, 68, 69, 70, 71, 72, 73, 74, 76, 77, 78]
     reason: Protocol property and method declarations have no executable implementation body.
     owner: Chengyue-Lu
+  - path: src/research_workbench/research_state/closure.py
+    lines: [12, 13]
+    reason: Type-checking-only import avoids a runtime import cycle.
+    owner: Chengyue-Lu
