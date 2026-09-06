@@ -123,7 +123,7 @@ def _suite_for(args: argparse.Namespace) -> unittest.TestSuite:
         loaded = loader.discover(str(TESTS), pattern="test_*.py", top_level_dir=str(TESTS))
         _assert_unique_tests(loaded)
         return loaded
-    if args.suite in {"focused", "impact"}:
+    if args.suite in {"focused", "impact", "coverage-plan"}:
         if args.plan is None:
             raise ValueError("focused suite requires --plan")
         spec = importlib.util.spec_from_file_location("ci_planner", ROOT / ".github/scripts/plan_ci.py")
@@ -137,7 +137,27 @@ def _suite_for(args: argparse.Namespace) -> unittest.TestSuite:
         planner.verify_plan(ROOT, plan, event, os.environ.get("GITHUB_EVENT_NAME", "pull_request"))
         if args.suite == "focused" and plan["behavioral_scope"] not in {"none", "focused"}:
             raise ValueError("focused runner requires a selective plan")
-        if args.suite == "impact" and plan["coverage_scope"] != "impact":
+        obligations = planner.coverage_requirements(plan)
+        if args.suite == "coverage-plan":
+            if not obligations:
+                raise ValueError("coverage runner requires coverage obligations")
+            suites = []
+            if "repository" in obligations:
+                repository_args = argparse.Namespace(**{**vars(args), "suite": "coverage-quality"})
+                suites.append(_suite_for(repository_args))
+            if "impact" in obligations:
+                suites.append(loader.loadTestsFromNames(plan["coverage_tests"]))
+            # Union by canonical identity: preserve all tests while avoiding repeated execution.
+            unique = {}
+            for suite in suites:
+                for test in _iter_tests(suite):
+                    unique.setdefault(_canonical_test_id(test), test)
+            if loader.errors or not unique:
+                raise ValueError("coverage union has missing or empty test groups")
+            loaded = unittest.TestSuite(unique.values())
+            _assert_unique_tests(loaded)
+            return loaded
+        if args.suite == "impact" and obligations != {"impact"}:
             raise ValueError("impact runner requires impact coverage")
         loaded = loader.loadTestsFromNames(plan["coverage_tests" if args.suite == "impact" else "tests"])
         if loader.errors or loaded.countTestCases() == 0:
@@ -199,7 +219,7 @@ def _write_summary(
     }
     if plan is not None:
         payload.update(plan_id=plan["plan_id"], target=plan["binding"]["target"],
-                       python_version=platform.python_version())
+                       python_version=platform.python_version(), coverage_obligations=plan["coverage_obligations"])
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(
         "suite_duration "
@@ -235,7 +255,7 @@ def _write_summary(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--suite", choices=("full", "coverage-quality", "focused", "impact"), required=True)
+    parser.add_argument("--suite", choices=("full", "coverage-quality", "focused", "impact", "coverage-plan"), required=True)
     parser.add_argument("--plan", type=Path)
     parser.add_argument("--policy", type=Path, default=TESTS / "coverage_policy.yaml")
     parser.add_argument("--json-output", type=Path, required=True)
@@ -247,7 +267,10 @@ def main(argv: list[str] | None = None) -> int:
     result = runner.run(_suite_for(args))
     wall_seconds = time.perf_counter() - started
     plan = json.loads(args.plan.read_text(encoding="utf-8")) if args.plan else None
-    _write_summary(args.json_output, args.suite, wall_seconds, result, args.slowest, plan)
+    suite_name = args.suite
+    if suite_name == "coverage-plan":
+        suite_name = "coverage-quality" if "repository" in plan["coverage_obligations"] else "impact"
+    _write_summary(args.json_output, suite_name, wall_seconds, result, args.slowest, plan)
     return 0 if result.wasSuccessful() else 1
 
 

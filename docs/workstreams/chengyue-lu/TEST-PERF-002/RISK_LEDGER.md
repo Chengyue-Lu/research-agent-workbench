@@ -19,6 +19,8 @@ Owner: 路诚钺 (`Chengyue-Lu`); cross-owner: 黄毅 (`let778750-cpu`); R2.
 | Full behavior silently substitutes for missing coverage | Independent scope comparison and plan-aware gate requirements; metadata and job failure matrix | Review every lane and its reason |
 | A test-only R2 change acquires unrelated repository cost | Exact PR #65 fixture requires full behavior, coverage none, both smokes false | Preserve machine minimum and separate integration proof |
 | Candidate validator policy authorizes its own impact proof | CI validators use base critical inventory and acceptance mappings; source dependency uncertainty retains fail-safe | Review base-side authority and changed-line evidence |
+| Repository floors substitute for changed-code 100/100 | Coverage sets compare by inclusion; combined test union executes both checkers; repository-only reuse is rejected | Exact-head union and both-checker evidence |
+| Coverage-authority edits erase executable analysis | Repository obligation is additive; import/mode/consumer guards retain impact maps and base acceptance; missing proof blocks consumption | Combined source/authority and new-import adversarial regressions |
 
 The user explicitly authorized PR #65's merge after successful exact-head CI. The new obligation PR remains
 for cross-owner review. Quality thresholds, exclusions, product contracts and release authority retain their boundaries.

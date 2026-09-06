@@ -27,16 +27,17 @@ NEG = 'test_example.Example.test_negative'
 
 
 def plan(level='focused'):
-    p = {'version': 2, 'binding': {'repository':'Example/repo','base':'a'*40,'head':'b'*40,
+    p = {'version': 3, 'binding': {'repository':'Example/repo','base':'a'*40,'head':'b'*40,
          'merge_base':'a'*40,'target':'c'*40}, 'change_class':level, 'risk':'R1', 'changes':[], 'surfaces':[],
          'test_groups':['example'], 'tests':['test_example'], 'coverage_modules':[MODULE],
          'impact_evidence':{'positive_tests':[POS],'negative_tests':[NEG]}, 'changed_lines':{MODULE:[1]},
          'coverage_lines':{MODULE:[1]}, 'coverage_tests':['test_example'],
          'behavioral_scope': {'fast':'none','focused':'focused','full':'full'}[level], 'obligation_reasons':{},
          'policy_sha256':'d'*64,'python_versions':['3.11','3.13'], 'coverage_scope':'impact',
-         'package_smoke':False,'repository_smoke':False,'reasons':[]}
+         'package_smoke':False,'repository_smoke':False,'reasons':[], 'blocked_reasons':[]}
     if level == 'full': p.update(coverage_scope='repository',package_smoke=True,repository_smoke=True)
     if level == 'fast': p.update(coverage_scope='none',coverage_modules=[],changed_lines={},coverage_lines={},python_versions=[],impact_evidence={})
+    p['coverage_obligations'] = [] if p['coverage_scope'] == 'none' else [p['coverage_scope']]
     return signed(p)
 
 
@@ -59,7 +60,9 @@ def coverage():
 
 
 def results(p):
-    return {'suite':'impact','successful':True,'test_count':2,'plan_id':p['plan_id'],'target':p['binding']['target'],
+    return {'suite':'coverage-quality' if 'repository' in p['coverage_obligations'] else 'impact',
+            'coverage_obligations':p['coverage_obligations'],
+            'successful':True,'test_count':2,'plan_id':p['plan_id'],'target':p['binding']['target'],
             'tests':[{'id':name,'outcome':'passed'} for name in (POS,NEG)]}
 
 
@@ -96,6 +99,18 @@ class ImpactCoverageTests(unittest.TestCase):
         result=checks.impact_coverage(p,policy(),coverage(),results(p))
         self.assertFalse(result['repository_coverage_proved'])
         self.assertEqual([MODULE],result['modules'])
+
+    def test_repository_floor_does_not_cover_changed_line_or_branch_obligations(self):
+        p = plan(); p.update(coverage_obligations=['impact', 'repository'], coverage_scope='impact+repository'); signed(p)
+        checks.impact_coverage(p, policy(), coverage(), results(p))
+        for key, missing in [('missing_lines', 1), ('missing_branches', [1, -1])]:
+            cov = coverage()
+            # Unchanged 95/90 whole-file totals do not prove 100/100 at changed statements.
+            cov['files'][MODULE][key].append(missing)
+            with self.subTest(key=key), self.assertRaisesRegex(ValueError, 'uncovered changed'):
+                checks.impact_coverage(p, policy(), cov, results(p))
+        evidence = results(p); evidence['coverage_obligations'] = ['repository']
+        with self.assertRaises(ValueError): checks.impact_coverage(p, policy(), coverage(), evidence)
 
     def test_ordinary_files_require_changed_lines_and_branches_not_global(self):
         p=plan(); pol=policy(); cov=coverage(); pol['critical_modules']=[]
@@ -141,8 +156,9 @@ class ImpactCoverageTests(unittest.TestCase):
 
 class AggregateTests(unittest.TestCase):
     def test_independent_obligations_and_required_coverage_failure_matrix(self):
-        for scope in ('none', 'impact', 'repository'):
+        for scope in ('none', 'impact', 'repository', 'impact+repository'):
             p = plan('full'); p.update(coverage_scope=scope, package_smoke=False, repository_smoke=False)
+            p['coverage_obligations'] = [] if scope == 'none' else scope.split('+')
             for python in ('3.11', '3.13'):
                 required = checks.required_jobs(p, python)
                 self.assertEqual(scope != 'none', 'coverage_quality' in required)
@@ -187,18 +203,30 @@ class AggregateTests(unittest.TestCase):
 class MetadataTests(unittest.TestCase):
     def test_full_behavior_cannot_substitute_for_required_coverage_or_smokes(self):
         previous = plan('full'); previous.update(coverage_scope='none', package_smoke=False, repository_smoke=False); signed(previous)
+        previous['coverage_obligations'] = []; signed(previous)
         current = copy.deepcopy(previous)
         self.assertTrue(checks.covers(previous, current))
         for key, value in [('coverage_scope', 'impact'), ('coverage_scope', 'repository'),
                            ('package_smoke', True), ('repository_smoke', True), ('risk', 'R2')]:
-            current = copy.deepcopy(previous); current[key] = value; signed(current)
+            current = copy.deepcopy(previous); current[key] = value
+            if key == 'coverage_scope': current['coverage_obligations'] = [value]
+            signed(current)
             self.assertFalse(checks.covers(previous, current))
         previous['version'] = 1; signed(previous)
         self.assertFalse(checks.covers(previous, plan()))
 
     def test_same_binding_can_reuse_stronger_content_obligations(self):
         self.assertTrue(checks.covers(plan(),plan()))
-        self.assertTrue(checks.covers(plan('full'),plan()))
+        self.assertFalse(checks.covers(plan('full'),plan()))
+        previous = plan('full'); previous.update(coverage_obligations=['impact', 'repository'], coverage_scope='impact+repository'); signed(previous)
+        self.assertTrue(checks.covers(previous, plan()))
+        repository = plan('full')
+        repository.update(coverage_modules=[], coverage_tests=[], coverage_lines={}, changed_lines={}, impact_evidence={}); signed(repository)
+        self.assertTrue(checks.covers(previous, repository))
+        self.assertTrue(checks.covers(previous, plan('fast')))
+        for version in (1, 2):
+            legacy = copy.deepcopy(previous); legacy['version'] = version; signed(legacy)
+            self.assertFalse(checks.covers(legacy, plan()))
         self.assertFalse(checks.covers(plan('fast'),plan()))
         self.assertFalse(checks.covers(plan(),plan('full')))
 
@@ -256,9 +284,42 @@ class WorkflowTests(unittest.TestCase):
         self.assertNotIn('outputs.class', (ROOT / '.github/workflows/ci.yml').read_text())
         self.assertIn('--source=src/research_workbench,.github/scripts',
                       (ROOT / '.github/workflows/ci.yml').read_text())
+        self.assertIn('--suite coverage-plan', (ROOT / '.github/workflows/ci.yml').read_text())
+        self.assertIn('ci_checks.py coverage --plan', (ROOT / '.github/workflows/ci.yml').read_text())
 
 
 class EntryPointTests(unittest.TestCase):
+    def test_coverage_entry_enforces_each_required_checker_and_propagates_failures(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); (root / 'tests').mkdir()
+            (root / 'tests/coverage_policy.yaml').write_text(yaml.safe_dump(policy()))
+            for obligations in (['impact'], ['repository'], ['impact', 'repository'], []):
+                p = plan(); p.update(coverage_obligations=obligations, coverage_scope='+'.join(obligations) or 'none'); signed(p)
+                for name, data in [('plan',p), ('coverage',coverage()), ('results',results(p))]:
+                    (root / (name + '.json')).write_bytes(planner.canonical(data))
+                args = ['coverage', '--plan', str(root / 'plan.json'), '--coverage', str(root / 'coverage.json'),
+                        '--results', str(root / 'results.json')]
+                with patch.object(checks, 'verify_plan') as verify, patch.object(checks, 'ROOT', root), \
+                     patch.object(checks, 'impact_coverage', return_value={}) as impact, \
+                     patch.object(checks.subprocess, 'run') as repository, \
+                     patch.dict(os.environ, {}, clear=True), redirect_stdout(io.StringIO()):
+                    if not obligations:
+                        with self.assertRaises(ValueError): checks.main(args)
+                        continue
+                    self.assertEqual(0, checks.main(args))
+                    verify.assert_called_once()
+                    self.assertEqual('impact' in obligations, impact.called)
+                    self.assertEqual('repository' in obligations, repository.called)
+                    if repository.called:
+                        self.assertTrue(repository.call_args.kwargs['check'])
+                        repository.side_effect = subprocess.CalledProcessError(1, 'repository checker')
+                        with self.assertRaises(subprocess.CalledProcessError): checks.main(args)
+                    repository.reset_mock(); repository.side_effect = None
+                    if 'impact' in obligations:
+                        impact.side_effect = ValueError('changed branch missing')
+                        with self.assertRaises(ValueError): checks.main(args)
+                        repository.assert_not_called()
+
     def test_cli_aggregate_metadata_and_impact_route_through_plan_validation(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);p=plan();(root/'plan.json').write_bytes(planner.canonical(p))

@@ -342,6 +342,19 @@ class PlannerTests(unittest.TestCase):
         command(self.repo,'commit','-qm','source mode change')
         self.assertEqual('full',self.plan()['change_class'])
 
+    def test_git_type_change_adds_repository_without_erasing_other_impact(self):
+        # Construct an exact symlink tree entry without requiring Windows symlink privilege.
+        self.commit(LEAVES[0], 'VALUE = 2\n')
+        blob = subprocess.check_output(['git', '-C', str(self.repo), 'hash-object', '-w', '--stdin'],
+                                       input=b'docs/TASKS.md').decode().strip()
+        command(self.repo, 'update-index', '--cacheinfo', '120000,' + blob + ',README.md')
+        command(self.repo, 'commit', '-qm', 'type change')
+        p = self.plan()
+        self.assertEqual(['impact', 'repository'], p['coverage_obligations'])
+        self.assertIn('type change requires FULL', p['obligation_reasons']['coverage_scope'])
+        self.assertIn(LEAVES[0], p['coverage_modules'])
+        self.assertEqual([1], p['coverage_lines'][LEAVES[0]])
+
     def test_dirty_or_untracked_source_cannot_consume_clean_head_plan(self):
         self.commit();p=self.plan()
         write(self.repo,'README.md','uncommitted\n')
@@ -421,6 +434,44 @@ class PlannerTests(unittest.TestCase):
         self.commit(planner.POLICY, planner.canonical(reviewed))
         self.assertEqual('none', self.plan(body=BODY.replace('R0', 'R2'))['coverage_scope'])
 
+    def test_coverage_union_executes_repository_and_impact_tests_once(self):
+        from tests import run_unittest_suite as runner
+        authority = yaml.safe_load((self.repo / 'tests/coverage_policy.yaml').read_bytes())
+        authority['suites']['coverage-quality'] = {'modules': ['test_unselected'],
+                                                  'test_ids': ['test_ci_plan.Example.test_ok']}
+        self.base = self.commit('tests/coverage_policy.yaml', yaml.safe_dump(authority))
+        source = (self.repo / '.github/scripts/plan_ci.py').read_text()
+        self.commit('.github/scripts/plan_ci.py', source.replace("'fast': 0,", "'fast': 0 + 0,"))
+        p = self.plan(force_full=True)
+        self.assertEqual(['impact', 'repository'], p['coverage_obligations'])
+        path = Path(self.temp.name) / 'union-plan.json'; path.write_bytes(planner.canonical(p))
+        args = argparse.Namespace(suite='coverage-plan', plan=path, policy=self.repo / 'tests/coverage_policy.yaml')
+        with patch.object(runner, 'ROOT', self.repo), patch.object(runner, 'TESTS', self.repo / 'tests'), \
+             patch.object(runner, 'SOURCE', self.repo / 'src'), patch.dict(os.environ, {'GITHUB_EVENT_PATH':''}), \
+             patch.dict(sys.modules), patch.object(sys, 'path', list(sys.path)):
+            for name in ('test_ci_plan', 'test_unselected'): sys.modules.pop(name, None)
+            suite = runner._suite_for(args)
+            self.assertEqual({'test_ci_plan.Example.test_ok', 'test_unselected.Other.test_existing'},
+                             {test.id() for test in runner._iter_tests(suite)})
+            result = unittest.TestResult(); suite.run(result)
+            self.assertEqual(2, result.testsRun)
+            self.assertTrue(result.wasSuccessful())
+            with self.assertRaises(ValueError):
+                runner._suite_for(argparse.Namespace(suite='impact', plan=path))
+            with patch.object(unittest.TestLoader, 'loadTestsFromNames', return_value=unittest.TestSuite()):
+                with self.assertRaisesRegex(ValueError, 'missing or empty'):
+                    runner._suite_for(args)
+
+    def test_decorators_are_executable_impact_and_comments_keep_repository_guard(self):
+        path = LEAVES[0]
+        source = 'def identity(f): return f\n@identity\ndef example(): return 1\n# review note\n'
+        head = self.commit(path, source)
+        uncertain = []
+        mapped = planner.coverage_lines(self.repo, head, {path: [2, 4]}, uncertain)
+        self.assertEqual([2], mapped[path])
+        self.assertTrue(uncertain)
+        with self.assertRaises(ValueError): planner.coverage_lines(self.repo, head, {path: [4]})
+
     def test_r2_bounded_critical_validator_requires_impact_with_base_acceptance(self):
         path = '.github/scripts/plan_ci.py'
         source = (self.repo / path).read_text()
@@ -456,8 +507,32 @@ class PlannerTests(unittest.TestCase):
         source = (self.repo / '.github/scripts/plan_ci.py').read_text()
         self.commit('.github/scripts/plan_ci.py', source + '\nimport fractions\n')
         p = self.plan()
-        self.assertEqual('repository', p['coverage_scope'])
+        self.assertEqual(['impact', 'repository'], p['coverage_obligations'])
+        self.assertEqual(['.github/scripts/plan_ci.py'], p['coverage_modules'])
+        self.assertTrue(p['coverage_lines']['.github/scripts/plan_ci.py'])
+        self.assertIn('imports changed', ' '.join(p['reasons']))
+        self.assertTrue(p['impact_evidence']['positive_tests'] and p['impact_evidence']['negative_tests'])
+        planner.verify_plan(self.repo, p)
         self.assertFalse(p['package_smoke'] or p['repository_smoke'])
+
+    def test_repository_requirement_preserves_bounded_impact_and_rejects_downgrade(self):
+        path = '.github/scripts/plan_ci.py'
+        self.commit(path, (self.repo / path).read_text().replace("'fast': 0,", "'fast': 0 + 0,"))
+        bounded = self.plan(body=BODY.replace('R0', 'R2'))
+        authority = yaml.safe_load((self.repo / 'tests/coverage_policy.yaml').read_bytes())
+        authority['thresholds']['global']['line'] = 91
+        self.commit('tests/coverage_policy.yaml', yaml.safe_dump(authority))
+        combined = self.plan(body=BODY.replace('R0', 'R2'))
+        self.assertEqual(['impact', 'repository'], combined['coverage_obligations'])
+        for key in ('coverage_modules', 'changed_lines', 'coverage_lines', 'impact_evidence', 'coverage_tests'):
+            self.assertEqual(bounded[key], combined[key])
+        planner.verify_plan(self.repo, combined)
+        for obligations in (['repository'], ['impact'], []):
+            reduced = copy.deepcopy(combined)
+            reduced.update(coverage_obligations=obligations, coverage_scope='+'.join(obligations) or 'none')
+            reduced['plan_id'] = planner.digest({k:v for k,v in reduced.items() if k != 'plan_id'})
+            with self.subTest(obligations=obligations), self.assertRaises(ValueError):
+                planner.verify_plan(self.repo, reduced)
 
     def test_unknown_executable_and_integration_are_complete_fail_safe(self):
         self.commit('src/consumer.py', 'VALUE = 2\n')
@@ -518,9 +593,14 @@ class PlannerTests(unittest.TestCase):
             bad = copy.deepcopy(authority); mutate(bad)
             with patch.object(planner, 'read_at', side_effect=lambda r,c,p: yaml.safe_dump(bad).encode()
                               if p == 'tests/coverage_policy.yaml' else raw(r,c,p)):
-                self.assertEqual('repository', self.plan()['coverage_scope'])
+                blocked = self.plan()
+                self.assertEqual(['impact', 'repository'], blocked['coverage_obligations'])
+                self.assertTrue(blocked['blocked_reasons'])
+                with self.assertRaises(ValueError): planner.verify_plan(self.repo, blocked)
         self.commit(path, original + '\nimport fractions\n')
-        self.assertEqual('repository', self.plan()['coverage_scope'])
+        p = self.plan()
+        self.assertEqual(['impact', 'repository'], p['coverage_obligations'])
+        planner.verify_plan(self.repo, p)
 
     def test_candidate_policy_and_fingerprint_cannot_approve_new_consumer_closure(self):
         write(self.repo, 'tests/test_new_consumer.py', 'new executable consumer\n')
@@ -530,7 +610,7 @@ class PlannerTests(unittest.TestCase):
         candidate['groups']['provider-wire']['tests'].append('test_new_consumer')
         self.commit(planner.POLICY, planner.canonical(candidate))
         p = self.plan()
-        self.assertEqual('repository', p['coverage_scope'])
+        self.assertEqual(['impact', 'repository'], p['coverage_obligations'])
         self.assertIn('candidate consumer inventory changed', ' '.join(p['reasons']))
 
 

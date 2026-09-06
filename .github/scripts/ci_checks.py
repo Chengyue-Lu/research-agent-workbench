@@ -7,18 +7,22 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 
 import yaml
 
-from plan_ci import ROOT, canonical, digest, require, require_obligations, verify_plan
+from plan_ci import ROOT, canonical, coverage_requirements, digest, require, require_obligations, verify_plan
 
 
 def impact_coverage(plan, policy, coverage, results):
-    require(plan['coverage_scope'] == 'impact', 'impact plan required')
+    obligations = coverage_requirements(plan)
+    require('impact' in obligations, 'impact plan required')
     require(results.get('plan_id') == plan['plan_id'] and results.get('target') == plan['binding']['target'],
             'impact result binding mismatch')
-    require(results.get('suite') == 'impact' and results.get('successful') is True
+    expected_suite = 'coverage-quality' if 'repository' in obligations else 'impact'
+    require(results.get('coverage_obligations') == plan['coverage_obligations'], 'impact execution obligations mismatch')
+    require(results.get('suite') == expected_suite and results.get('successful') is True
             and results.get('test_count', 0) > 0, 'successful impact results required')
     spec = importlib.util.spec_from_file_location('coverage_policy', ROOT / '.github/scripts/check_coverage_policy.py')
     checker = importlib.util.module_from_spec(spec)
@@ -63,11 +67,11 @@ def impact_coverage(plan, policy, coverage, results):
 def required_jobs(plan, python):
     require(python in {'3.11', '3.13'}, 'unknown Python gate')
     required = {'plan', 'documentation'}
-    require(plan['behavioral_scope'] in {'none', 'focused', 'full'}
-            and plan['coverage_scope'] in {'none', 'impact', 'repository'}, 'unknown obligation scope')
+    require(plan['behavioral_scope'] in {'none', 'focused', 'full'}, 'unknown obligation scope')
+    coverage = coverage_requirements(plan)
     if plan['behavioral_scope'] != 'none':
         required.add('compatibility_' + python.replace('.', ''))
-    if plan['coverage_scope'] != 'none':
+    if coverage:
         required.add('coverage_quality')
     if plan['package_smoke']:
         required.add('package_smoke')
@@ -123,7 +127,7 @@ def metadata_continuity(plan):
 
 def main(argv=None):
     parser = argparse.ArgumentParser()
-    parser.add_argument('operation', choices=('impact', 'aggregate', 'metadata'))
+    parser.add_argument('operation', choices=('impact', 'coverage', 'aggregate', 'metadata'))
     parser.add_argument('--plan', type=Path, required=True)
     parser.add_argument('--coverage', type=Path)
     parser.add_argument('--results', type=Path)
@@ -133,9 +137,18 @@ def main(argv=None):
     event_path = os.environ.get('GITHUB_EVENT_PATH')
     event = json.loads(Path(event_path).read_bytes()) if event_path else None
     verify_plan(ROOT, plan, event, os.environ.get('GITHUB_EVENT_NAME', 'pull_request'))
-    if args.operation == 'impact':
-        result = impact_coverage(plan, yaml.safe_load((ROOT / 'tests/coverage_policy.yaml').read_bytes()),
-                                 json.loads(args.coverage.read_bytes()), json.loads(args.results.read_bytes()))
+    if args.operation in {'impact', 'coverage'}:
+        obligations = coverage_requirements(plan)
+        require(obligations, 'coverage obligations required')
+        result = {}
+        if args.operation == 'impact' or 'impact' in obligations:
+            result['impact'] = impact_coverage(plan, yaml.safe_load((ROOT / 'tests/coverage_policy.yaml').read_bytes()),
+                                              json.loads(args.coverage.read_bytes()), json.loads(args.results.read_bytes()))
+        if args.operation == 'coverage' and 'repository' in obligations:
+            subprocess.run([sys.executable, str(ROOT / '.github/scripts/check_coverage_policy.py'),
+                            '--policy', str(ROOT / 'tests/coverage_policy.yaml'), '--coverage', str(args.coverage),
+                            '--test-results', str(args.results)], check=True)
+            result['repository'] = 'passed'
     elif args.operation == 'aggregate':
         result = aggregate(plan, json.loads(os.environ['CI_NEEDS']), args.python)
     else:

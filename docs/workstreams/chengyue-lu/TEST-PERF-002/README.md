@@ -11,7 +11,7 @@
 
 [`plan_ci.py`](../../../../.github/scripts/plan_ci.py) reads exact base/head/merge-base Git facts and the
 accepted base [`ci_impact_policy.yaml`](../../../../tests/ci_impact_policy.yaml). Governance v2 supplies the risk
-floor. Plan v2 derives behavior, coverage and both smoke obligations independently. R2 always requires full
+floor. Plan v3 derives behavior, coverage and both smoke obligations independently. R2 always requires full
 behavioral regression. Candidate policy changes never authorize their own lighter selection.
 Git replacement objects are disabled for the planner's reads; immutable Git blobs are cached by repository,
 exact commit and path. No mutable branch-name result is cached.
@@ -32,7 +32,9 @@ Consumers reject tracked checkout drift and unexpected source/test/CI files befo
 `change_class` is a diagnostic alias for `behavioral_scope`; jobs consume their own obligation fields.
 R2, shared Schema/Registry and test/infrastructure changes select full behavior. Test/fixture/archive data and
 selection-policy metadata can have `coverage_scope: none` and no smokes. Bounded executable changes require
-impact coverage; coverage-authority changes and uncertain executable closure require repository coverage.
+impact coverage; coverage-authority changes and uncertain executable closure add repository coverage.
+`coverage_obligations` is a set: repository evidence never substitutes for impact 100/100. Combined plans
+run the union of selected tests once and enforce both checkers. Failed required impact mapping blocks consumption.
 Stale base, invalid/missing policy and unavailable closure retain complete fail-safe evidence. If exact commit
 facts cannot be read, execution fails instead of inventing a usable plan. All develop/main push and release
 boundaries retain full behavior, repository coverage and both smokes.

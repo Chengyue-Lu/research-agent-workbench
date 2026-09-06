@@ -132,3 +132,27 @@ Its receipt is pinned in the [revision-4 archive](../../../../work/TEST-PERF-002
 The archive pins source hashes, observable result summaries and plans, and declares native capture gaps.
 The new PR's exact-head CI and cross-owner review remain independent acceptance inputs. Global 90%,
 critical 95/90, exclusions, negative acceptance and existing behavioral tests are unchanged.
+
+## PR #66 blocking review repair (revision 5)
+
+[Task-owner review 5126334844](https://github.com/Chengyue-Lu/research-agent-workbench/pull/66#pullrequestreview-5126334844)
+identified invalid ordinal coverage reuse and destructive impact-analysis clearing at `1f9c13b`.
+Plan v3 compares coverage sets by inclusion, retains executable/closure guards and base acceptance, executes
+the union of required tests once and enforces both checkers for combined obligations.
+
+- Final scoped Python 3.11.16 run: **54/54 PASS**, zero skips/failures/errors. It includes all three requested
+  adversarial cases, repository-only reuse rejection, real union deduplication, independent checker failure
+  propagation, decorator mapping and Git type-change retention.
+- Planner: **381/382 lines (99.74%)**, **122/124 branches (98.39%)**. CI checker: **127/128 lines (99.22%)**,
+  **38/40 branches (95.00%)**. Both retain zero exclusions and all base positive/negative PASS evidence.
+- The staged PR diff against `97f760c` requires **impact + repository**, retains both critical modules and
+  their coverage test selection, records import/deletion/pragma uncertainty, and leaves both smokes false.
+  Its mapped executable statement and outgoing-arc preflight has **zero uncovered changes** in the scoped
+  report. This preflight does not claim execution of the actual repository test union or repository coverage.
+- Documentation / coverage-policy tests **30/30 PASS**; actionlint PASS; repository validation **183/0/0**.
+- The [revision-5 archive](../../../../work/TEST-PERF-002/A-20260907-003/INDEX.yaml) pins the review, final source
+  hashes, scoped summaries and staged plan. Native capture gaps are explicit; previous archives remain frozen.
+
+Old-head hosted run `34053678091` completed successfully with two plan-exempt smoke skips. It predates this
+repair. Final-head dual-Python full behavior, the actual coverage test union and both checkers remain required
+in the new PR CI; human cross-owner acceptance and merge remain pending.

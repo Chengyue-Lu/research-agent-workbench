@@ -172,13 +172,9 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: ci-plan
-      - name: Run repository or impact coverage
-        env:
-          CI_COVERAGE: ${{ needs.plan.outputs.coverage }}
+      - name: Run required coverage test union
         run: |
-          suite=coverage-quality
-          if [ "$CI_COVERAGE" = impact ]; then suite=impact; fi
-          python -m coverage run --branch --source=src/research_workbench,.github/scripts tests/run_unittest_suite.py --suite "$suite" --plan ci-plan.json --policy tests/coverage_policy.yaml --json-output coverage-test-results.json --slowest 20
+          python -m coverage run --branch --source=src/research_workbench,.github/scripts tests/run_unittest_suite.py --suite coverage-plan --plan ci-plan.json --policy tests/coverage_policy.yaml --json-output coverage-test-results.json --slowest 20
       - name: Export coverage evidence
         run: python -m coverage json -o coverage.json
       - name: Preserve coverage and duration evidence
@@ -190,14 +186,7 @@ jobs:
             coverage-test-results.json
           retention-days: 14
       - name: Enforce coverage obligations
-        env:
-          CI_COVERAGE: ${{ needs.plan.outputs.coverage }}
-        run: |
-          if [ "$CI_COVERAGE" = impact ]; then
-            python .github/scripts/ci_checks.py impact --plan ci-plan.json --coverage coverage.json --results coverage-test-results.json
-          else
-            python .github/scripts/check_coverage_policy.py --policy tests/coverage_policy.yaml --coverage coverage.json --test-results coverage-test-results.json
-          fi
+        run: python .github/scripts/ci_checks.py coverage --plan ci-plan.json --coverage coverage.json --results coverage-test-results.json
       - name: Report job wall time
         if: always()
         run: |
