@@ -24,6 +24,10 @@ Editable installs run the same generator; generated assets are local build outpu
 The resource resolver does not consult CWD or environment variables. Python module selection remains the host's
 responsibility; the clean-install Gate verifies imports originate in the installed environment.
 
+The Phase C fresh actor loads the pinned Schema catalog before installing its data-read policy and
+passes that in-memory catalog through document and Method Trace validation. Its guarded read surface
+continues to include only staged case inputs and trusted Schemas; other Runtime catalog files remain blocked.
+
 ```shell
 rwb resources check
 rwb resources quickstart --output ./project/task.yaml

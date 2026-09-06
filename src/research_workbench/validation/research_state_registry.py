@@ -14,10 +14,13 @@ from research_workbench.research_state.closure import (
 )
 from research_workbench.validation.document_core import ValidationIssue
 from research_workbench.validation.document_kinds import infer_document_kind
+from research_workbench.validation.schemas import SchemaCatalog
 
 
 def validate_research_state_set(
     documents: Mapping[Path, Any],
+    *,
+    schema_catalog: SchemaCatalog | None = None,
 ) -> list[ValidationIssue]:
     """Validate every Research State against one exact repository closure."""
 
@@ -47,6 +50,11 @@ def validate_research_state_set(
         if kind not in checkers:
             continue
         checker, code = checkers[kind]
-        for problem in checker(document, index):
+        problems = (
+            check_method_trace(document, index, schema_catalog=schema_catalog)
+            if kind == "method_trace"
+            else checker(document, index)
+        )
+        for problem in problems:
             issues.append(ValidationIssue(path, code, problem))
     return issues
