@@ -19,6 +19,7 @@ suites:
       - test_capability_resolver_branches
       - test_capability_resolution
       - test_candidate_claim_rewrite
+      - test_claim_trace
       - test_catalog
       - test_cli
       - test_cli_command_branches
@@ -133,6 +134,7 @@ critical_modules:
   - src/research_workbench/observability/trace.py
   - src/research_workbench/execution/generic_closeout.py
   - src/research_workbench/artifacts/admission.py
+  - src/research_workbench/artifacts/claim_trace.py
   - src/research_workbench/artifacts/integrity.py
   - src/research_workbench/artifacts/promotion.py
   - src/research_workbench/artifacts/validation_host.py
@@ -154,6 +156,16 @@ critical_modules:
   - src/research_workbench/research_state/gate.py
 
 negative_acceptance:
+  - surface: claim-evidence-localization
+    modules:
+      - src/research_workbench/artifacts/claim_trace.py
+    positive_tests:
+      - test_claim_trace.ClaimTraceTests.test_support_counterevidence_and_limits_locate_without_execution
+      - test_claim_trace.PromotedClaimTraceTests.test_real_promotion_and_retained_negative_are_consumed_without_replay
+    negative_tests:
+      - test_claim_trace.ClaimTraceTests.test_live_byte_drift_is_independent_of_declared_object_hash
+      - test_claim_trace.ClaimTraceTests.test_missing_revision_unversioned_and_missing_evidence_are_unresolved
+      - test_claim_trace.ClaimTraceTests.test_missing_and_wrong_raw_admission_do_not_yield_complete_trace
   - surface: coverage-policy-self-control
     modules:
       - .github/scripts/check_coverage_policy.py

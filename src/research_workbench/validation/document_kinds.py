@@ -6,6 +6,8 @@ from typing import Any, Mapping
 
 
 def infer_document_kind(document: Mapping[str, Any]) -> str | None:
+    if document.get("document_kind") == "claim_evidence_map":
+        return "claim_evidence_map"
     registry_kind = document.get("registry_kind")
     if isinstance(registry_kind, str):
         return registry_kind

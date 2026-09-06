@@ -66,6 +66,7 @@ class VersionedSchemaTests(unittest.TestCase):
                 "phase_c_gate_report",
                 "project_protocol",
                 "promotion_execution_receipt",
+                "claim_evidence_map",
                 "promotion_record",
                 "promotion_validation_authority_registry",
                 "promotion_validation_execution",
