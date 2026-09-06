@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import argparse
 import inspect
+import importlib.util
 import json
 import math
 import os
+import platform
 from pathlib import Path
 import statistics
 import sys
@@ -121,6 +123,21 @@ def _suite_for(args: argparse.Namespace) -> unittest.TestSuite:
         loaded = loader.discover(str(TESTS), pattern="test_*.py", top_level_dir=str(TESTS))
         _assert_unique_tests(loaded)
         return loaded
+    if args.suite == "focused":
+        spec = importlib.util.spec_from_file_location("ci_planner", ROOT / ".github/scripts/plan_ci.py")
+        planner = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(planner)
+        plan = json.loads(args.plan.read_text(encoding="utf-8"))
+        event_path = os.environ.get("GITHUB_EVENT_PATH")
+        event = json.loads(Path(event_path).read_text(encoding="utf-8")) if event_path else None
+        planner.verify_plan(ROOT, plan, event, os.environ.get("GITHUB_EVENT_NAME", "pull_request"))
+        if plan["change_class"] not in {"fast", "focused"}:
+            raise ValueError("focused runner requires a selective plan")
+        loaded = loader.loadTestsFromNames(plan["tests"])
+        if loader.errors or loaded.countTestCases() == 0:
+            raise ValueError("focused plan has missing or empty test groups")
+        _assert_unique_tests(loaded)
+        return loaded
     policy = _load_policy(args.policy)
     suite = policy.get("suites", {}).get("coverage-quality", {})
     modules = suite.get("modules", [])
@@ -151,6 +168,7 @@ def _write_summary(
     wall_seconds: float,
     result: TimedTextResult,
     slowest_count: int,
+    plan: dict | None = None,
 ) -> None:
     records = sorted(result.records.values(), key=lambda item: item.get("duration_seconds", 0.0), reverse=True)
     durations = [float(item.get("duration_seconds", 0.0)) for item in records]
@@ -173,6 +191,9 @@ def _write_summary(
         "slowest": records[:slowest_count],
         "tests": records,
     }
+    if plan is not None:
+        payload.update(plan_id=plan["plan_id"], target=plan["binding"]["target"],
+                       python_version=platform.python_version())
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(
         "suite_duration "
@@ -208,7 +229,8 @@ def _write_summary(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--suite", choices=("full", "coverage-quality"), required=True)
+    parser.add_argument("--suite", choices=("full", "coverage-quality", "focused"), required=True)
+    parser.add_argument("--plan", type=Path)
     parser.add_argument("--policy", type=Path, default=TESTS / "coverage_policy.yaml")
     parser.add_argument("--json-output", type=Path, required=True)
     parser.add_argument("--slowest", type=int, default=20)
@@ -218,7 +240,8 @@ def main(argv: list[str] | None = None) -> int:
     runner = unittest.TextTestRunner(verbosity=args.verbosity, resultclass=TimedTextResult)
     result = runner.run(_suite_for(args))
     wall_seconds = time.perf_counter() - started
-    _write_summary(args.json_output, args.suite, wall_seconds, result, args.slowest)
+    plan = json.loads(args.plan.read_text(encoding="utf-8")) if args.plan else None
+    _write_summary(args.json_output, args.suite, wall_seconds, result, args.slowest, plan)
     return 0 if result.wasSuccessful() else 1
 
 
