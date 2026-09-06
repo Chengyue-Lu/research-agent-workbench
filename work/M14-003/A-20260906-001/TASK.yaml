@@ -1,0 +1,91 @@
+task_id: M14-003
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+baseline: 0b2d56f48abdfbc7c52478c6a46afdee801bf2bb
+authorization: 'User requested continued development in PR #60; proceed with the next
+  predefined M14-003 dependency slice.'
+goal: Close portable package and Runtime resource boundaries as defined by M14-003
+  and ADR-0021.
+profile: main-agent bounded implementation
+required_skills: []
+delegation: false
+write_scope:
+- .github/scripts/portable_package_smoke.py
+- .github/workflows/ci.yml
+- .gitignore
+- CHANGELOG.md
+- MANIFEST.in
+- build_backend.py
+- docs/**
+- docs/DEVELOPER_ARCHITECTURE_MAP.md
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/TASKS.md
+- docs/implementation/README.md
+- docs/implementation/RUNTIME_RESOURCES.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/RISK_LEDGER.md
+- pyproject.toml
+- runtime-resources.json
+- schemas/v0.1.0/runtime-resource-manifest.schema.json
+- src/research_workbench/capability/release_projection.py
+- src/research_workbench/capability/requirements.py
+- src/research_workbench/cli.py
+- src/research_workbench/protocol/profiles.py
+- src/research_workbench/research_state/closure.py
+- src/research_workbench/research_state/fresh_actor.py
+- src/research_workbench/resources.py
+- src/research_workbench/validation/documents.py
+- src/research_workbench/validation/research_state_registry.py
+- src/research_workbench/validation/schemas.py
+- tests/coverage_policy.yaml
+- tests/test_cli_command_branches.py
+- tests/test_phase_c_gate.py
+- tests/test_runtime_resources.py
+- tests/test_schemas.py
+- work/M14-003/A-20260906-001/**
+read_allowlist:
+- AGENTS.md
+- docs/**
+- pyproject.toml
+- MANIFEST.in
+- .gitignore
+- registry/modes/**
+- registry/authority/**
+- registry/capabilities/requirements*
+- registry/capabilities/requirements/**
+- registry/protocol-profiles*
+- registry/protocol-profiles/**
+- registry/skills/release-projections.json
+- registry/skills/accepted/literature-evidence-extraction.yaml
+- src/research_workbench/**
+- schemas/**
+- tests/**
+- .github/**
+- .rwb/m14-002-deletion-review/**
+- build_backend.py
+- runtime-resources.json
+- MANIFEST.in
+- pyproject.toml
+- .gitignore
+- src/research_workbench/resources.py
+- src/research_workbench/validation/schemas.py
+- src/research_workbench/capability/requirements.py
+- src/research_workbench/capability/release_projection.py
+- src/research_workbench/protocol/profiles.py
+- src/research_workbench/cli.py
+- schemas/v0.1.0/runtime-resource-manifest.schema.json
+- tests/test_runtime_resources.py
+- tests/test_schemas.py
+- tests/coverage_policy.yaml
+- .github/scripts/portable_package_smoke.py
+- .github/workflows/ci.yml
+- docs/**
+- CHANGELOG.md
+- work/M14-003/A-20260906-001/**
+stop_conditions:
+- No M14-004/005 implementation or release activation.
+- No merge, tag, real release branch or Skill admission.
+- Preserve frozen previous attempt archives.
