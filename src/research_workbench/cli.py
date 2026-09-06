@@ -35,6 +35,7 @@ from research_workbench.artifacts.promotion import (
     load_promotion_record,
 )
 from research_workbench.artifacts.validation_host import run_validation_execution
+from research_workbench.artifacts.run_reconstruction import check_run_manifest, reproduce_run
 from research_workbench.capability import (
     AcceptedSkillRegistry,
     AgentProfile,
@@ -124,7 +125,16 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
     references: tuple[FileReference, ...] = ()
     path_only: list[str] = []
     extra_risks: list[ContractRisk] = []
-    if kind == "task_packet":
+    if kind == "run_reconstruction_manifest":
+        return [ContractRisk("RUN-RECONSTRUCTION-" + issue["status"].upper(), RiskLevel.BLOCK,
+                             issue["detail"]) for issue in check_run_manifest(root, document)]
+    elif kind == "run_reconstruction_report":
+        references = tuple(FileReference.from_mapping(document[key])
+                           for key in ("manifest_ref", "stdout_ref", "stderr_ref", "promotion_receipt_ref")
+                           if key in document)
+        references += tuple(FileReference.from_mapping(reference)
+                            for key in ("staged_refs", "output_refs") for reference in document.get(key, []))
+    elif kind == "task_packet":
         references = TaskPacket.from_mapping(document).input_refs
     elif kind == "handoff_packet":
         handoff = HandoffPacket.from_mapping(document)
@@ -462,6 +472,26 @@ def _source_check(args: argparse.Namespace) -> int:
     if errors:
         return 1
     return _print_risks(check_source_admission(Path(args.root).resolve(), document))
+
+
+def _run_check(args: argparse.Namespace) -> int:
+    root = Path(args.root).resolve()
+    try:
+        document = load_document(root / args.manifest)
+    except yaml.YAMLError as exc:
+        raise ContractError("manifest", f"cannot parse reconstruction manifest: {exc}") from exc
+    issues = check_run_manifest(root, document)
+    for issue in issues:
+        print(f"blocked: {issue['status']}: {issue['detail']}")
+    if not issues:
+        print("ok: pinned reconstruction closure is valid (no code executed)")
+    return 1 if issues else 0
+
+
+def _run_reproduce(args: argparse.Namespace) -> int:
+    report = reproduce_run(args.root, args.manifest, attempt_dir=args.attempt_dir)
+    print(json.dumps(report, indent=2, sort_keys=True))
+    return 0 if report["status"] == "matched" else 1
 
 
 def _promotion_validate(args: argparse.Namespace) -> int:
@@ -1626,6 +1656,20 @@ def build_parser() -> argparse.ArgumentParser:
     source_check.add_argument("admission")
     source_check.add_argument("--root", default=".")
     source_check.set_defaults(handler=_source_check)
+
+    run = subparsers.add_parser("run", help="inspect or reconstruct a file-pinned scientific Run")
+    run_subparsers = run.add_subparsers(dest="run_command", required=True)
+    run_check = run_subparsers.add_parser("check", help="check manifest pins without executing code")
+    run_check.add_argument("manifest")
+    run_check.add_argument("--root", default=".")
+    run_check.set_defaults(handler=_run_check)
+    run_reproduce = run_subparsers.add_parser(
+        "reproduce", help="execute trusted pinned Python code in a new work directory; not an OS sandbox"
+    )
+    run_reproduce.add_argument("manifest")
+    run_reproduce.add_argument("--root", default=".")
+    run_reproduce.add_argument("--attempt-dir", required=True, help="new directory inside root/work")
+    run_reproduce.set_defaults(handler=_run_reproduce)
 
     promotion = subparsers.add_parser(
         "promotion", help="validate or execute fail-closed work artifact promotion"

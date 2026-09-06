@@ -24,6 +24,7 @@
 - [Phase C runner-owned bounded Gate (M10-003)](PHASE_C_BOUNDED_GATE.md)
 - [Source admission contract (M4-001)](SOURCE_ADMISSION_CONTRACT.md)
 - [Artifact promotion contract (M4-002)](ARTIFACT_PROMOTION_CONTRACT.md)
+- [Run reconstruction contract and synthetic case (M4-004)](../workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md)
 - [Evaluation manifest contract (M5-003)](EVALUATION_MANIFEST_CONTRACT.md)
 - [File-authoritative Trace Core](TRACE_CORE.md)
 - [Execution Trace Adapter](EXECUTION_TRACE_ADAPTER.md)

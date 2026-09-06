@@ -50,6 +50,7 @@ suites:
       - test_research_attempt_failure
       - test_research_state_candidate
       - test_research_state_critical_branches
+      - test_run_reconstruction
       - test_project_internal_handoff_fixtures
       - test_relationships
       - test_research_mode_migration
@@ -136,6 +137,7 @@ critical_modules:
   - src/research_workbench/artifacts/integrity.py
   - src/research_workbench/artifacts/promotion.py
   - src/research_workbench/artifacts/validation_host.py
+  - src/research_workbench/artifacts/run_reconstruction.py
   - src/research_workbench/kernel/objects.py
   - src/research_workbench/validation/relationships.py
   - src/research_workbench/validation/capability.py
@@ -154,6 +156,17 @@ critical_modules:
   - src/research_workbench/research_state/gate.py
 
 negative_acceptance:
+  - surface: run-reconstruction-exact-closure
+    modules:
+      - src/research_workbench/artifacts/run_reconstruction.py
+    positive_tests:
+      - test_run_reconstruction.RunReconstructionTest.test_real_fresh_process_has_no_agent_environment_and_report_is_generically_valid
+      - test_run_reconstruction.RunReconstructionTest.test_object_revision_and_declared_hash_close_without_reinterpreting_file_bytes
+    negative_tests:
+      - test_run_reconstruction.RunReconstructionTest.test_repinning_run_does_not_allow_unrelated_input_environment_or_output_refs
+      - test_run_reconstruction.RunReconstructionTest.test_each_input_pin_drift_stops_before_execution
+      - test_run_reconstruction.RunReconstructionTest.test_unadmitted_raw_input_cannot_be_executed_even_with_correct_bytes
+      - test_run_reconstruction.RunReconstructionTest.test_nonzero_and_timeout_keep_partial_artifacts_and_diagnostics
   - surface: coverage-policy-self-control
     modules:
       - .github/scripts/check_coverage_policy.py

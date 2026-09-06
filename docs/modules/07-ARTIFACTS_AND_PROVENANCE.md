@@ -139,38 +139,34 @@ SHA-256 必须与 live bytes 闭合；FileReference 自带 SHA 时还必须与 a
 
 这套 Gate 只证明 identity/hash/provenance closure，不判断来源真实性、许可证法律效力、内容安全或科学
 质量。网页、API 返回和数据库查询也需要快照或可复现 locator；只保存 URL 不足以保证来源未变化。
-M4-002 promotion 已作为独立层实现；M4-003 Claim trace 与 M4-004 Run reproduction 仍需各自完成，
-M4-001 不替代任何后继层。
+M4-002 promotion 已作为独立层实现；M4-003 Claim trace 保持独立任务，M4-004 Run reconstruction
+的候选实现见下一节；M4-001 不替代任何后继层。
 
-## 5. Run Manifest target（M4-004 尚未实现）
+## 5. Run reconstruction（M4-004 独立候选）
 
-下面只展示未来 Run reproduction contract 需要保留的信息类别，不是已接受 Schema。每个实验、仿真、
-统计分析、检索批次或证明检查最终应记录：
+`run_reconstruction_manifest` exact-pin 一个 Run 文档、单文件 Python 程序、输入、参数、环境定义及
+预期输出。`run_ref` 关闭现有 Run 的对象身份与 revision；`input_bindings`、`environment_binding` 和
+各输出的 `object_ref` 将 Run 的输入、环境、输出 ObjectRef 与对应 FileRef 精确映射，检查完整集合、
+revision 和已声明的对象哈希。对象哈希仍表达原有 `content_hash` 语义，实际文件字节独立由 FileRef
+校验，不改变 Run/Claim 核心权限。
 
-```yaml
-run_id: RUN-0042
-method_ref: M-SIM-002@3
-input_refs:
-  - ref: code/model.py
-    sha256: "..."
-parameters_ref: runs/RUN-0042/params.yaml
-environment:
-  platform: windows
-  runtime: python-3.12
-  lock_ref: uv.lock
-agent_execution:
-  task_ref: tasks/SIM-007.yaml
-  profile_ref: simulation-auditor@0.1.0
-  resolved_execution_view_ref: execution/views/VIEW-SIM-007.yaml
-status: completed
-outputs:
-  - path: runs/RUN-0042/metrics.csv
-    sha256: "..."
-limitations: []
+`rwb run check MANIFEST --root ROOT` 只验证 Schema、文件哈希和来源边界，不执行代码。
+`rwb run reproduce MANIFEST --root ROOT --attempt-dir work/M4-004/A-NEW` 将锁定字节复制到新目录，
+用当前且符合环境定义的 Python 执行固定文件入口：
+
+```text
+python -I -S program.py inputs.json parameters.json outputs
 ```
 
-Skill-bearing Run 可以额外引用 exact Assignment；no-Skill/direct Tool/procedure/Adapter 路径不得伪造该
-字段。模型输出和 Agent 输出都只是工件，必须经过后续 Claim 关系与决策。
+生成报告区分 pin drift、前置缺失、运行失败、输出差异与字节一致；保留 stdout/stderr、staged bytes、
+实际输出和负结果标记。通用 `rwb validate` 能只读校验 manifest/environment/report 及报告直接引用的
+字节，不会重跑科研程序或 M4-002 checker。`matched` 只表达这次重建的完整输出集合及字节一致，
+不证明过去发生过某次运行，不授予科学正确性、Claim、Human Decision 或 promotion 权限。
+
+可选 `promotion_receipt_ref` 仅验证 pinned receipt 结构及预期输出是其 exact target FileRef；历史
+promotion eligibility 仍属于 M4-002，读操作不重执行。最小合成案例、环境锁定的具体边界和验收矩阵见
+[M4 Run reconstruction](../workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md)。本候选不是 M5
+正式研究案例，也不增加先行病例冻结或盲测审批门槛。
 
 ## 6. 提升与冻结（M4-002 已实现）
 
