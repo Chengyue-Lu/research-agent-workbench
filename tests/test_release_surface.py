@@ -329,6 +329,46 @@ class ReleaseSurfaceTests(unittest.TestCase):
         with self.assertRaisesRegex(release.ReleaseError, "removed"):
             release.project(self.repo, self.expected)
 
+    def test_policy_version_deletion_and_restore_is_rejected(self):
+        self.policy_version(lambda policy: None)
+        original = (self.repo / release.POLICY).read_bytes()
+        reduced = json.loads(original)
+        del reduced["policies"][0]
+        write(self.repo, release.POLICY, release.canonical(reduced))
+        self.update_source()
+        write(self.repo, release.POLICY, original)
+        self.update_source()
+        for later_commit in (False, True):
+            if later_commit:
+                write(self.repo, "src/run.py", b"print('later source')\n")
+                self.update_source()
+            with self.subTest(later_commit=later_commit):
+                with self.assertRaisesRegex(release.ReleaseError, "append-only.*removed"):
+                    release.project(self.repo, self.expected)
+                with self.assertRaisesRegex(release.ReleaseError, "append-only.*removed"):
+                    release.check(self.repo, self.expected, self.expected["source"])
+
+    def test_merge_dropped_parent_version_and_restore_is_rejected(self):
+        base = self.expected["source"]
+        self.policy_version(lambda policy: None)
+        left = json.loads((self.repo / release.POLICY).read_bytes())
+        command(self.repo, "checkout", "-qb", "side", base)
+        right = copy.deepcopy(self.policy)
+        right["policies"].append({**right["policies"][0], "version": "3.0.0"})
+        write(self.repo, release.POLICY, release.canonical(right))
+        self.update_source(version="3.0.0")
+        command(self.repo, "checkout", "-q", "develop")
+        # This merge is TREESAME to its first parent and drops the other parent's
+        # 3.0.0. A path-limited log may omit it even with --full-history.
+        command(self.repo, "merge", "--no-ff", "-s", "ours", "side", "-m", "drop parent version")
+        left["policies"].append(right["policies"][-1])
+        write(self.repo, release.POLICY, release.canonical(left))
+        self.update_source(version="3.0.0")
+        with self.assertRaisesRegex(release.ReleaseError, "append-only.*removed"):
+            release.project(self.repo, self.expected)
+        with self.assertRaisesRegex(release.ReleaseError, "append-only.*removed"):
+            release.check(self.repo, self.expected, self.expected["source"])
+
     def test_policy_unknown_empty_duplicate_and_unsorted_versions_are_rejected(self):
         for mutate in (lambda p: p.update(unknown=True),
                        lambda p: p["policies"].clear(),

@@ -1,0 +1,32 @@
+FFF
+======================================================================
+FAIL: test_policy_version_deletion_and_restore_is_rejected (tests.test_release_surface.ReleaseSurfaceTests.test_policy_version_deletion_and_restore_is_rejected) (later_commit=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>\tests\test_release_surface.py", line 346, in test_policy_version_deletion_and_restore_is_rejected
+    with self.assertRaisesRegex(release.ReleaseError, "append-only.*removed"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ReleaseError not raised
+
+======================================================================
+FAIL: test_policy_version_deletion_and_restore_is_rejected (tests.test_release_surface.ReleaseSurfaceTests.test_policy_version_deletion_and_restore_is_rejected) (later_commit=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>\tests\test_release_surface.py", line 346, in test_policy_version_deletion_and_restore_is_rejected
+    with self.assertRaisesRegex(release.ReleaseError, "append-only.*removed"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ReleaseError not raised
+
+======================================================================
+FAIL: test_merge_dropped_parent_version_and_restore_is_rejected (tests.test_release_surface.ReleaseSurfaceTests.test_merge_dropped_parent_version_and_restore_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>\tests\test_release_surface.py", line 367, in test_merge_dropped_parent_version_and_restore_is_rejected
+    with self.assertRaisesRegex(release.ReleaseError, "append-only.*removed"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ReleaseError not raised
+
+----------------------------------------------------------------------
+Ran 2 tests in 6.900s
+
+FAILED (failures=3)

@@ -178,34 +178,36 @@ def policy_at(repo: Path, source: str, version: str, source_entries: dict) -> tu
             "policy versions must be unique and increasing")
     by_version = {item["version"]: item for item in versions}
     require(version in by_version, "unknown policy version")
-    # Every historical identity reachable from source must still be present with
-    # exactly its original semantics, including identities on merged histories.
-    history = git(repo, "log", "--full-history", "--format=%H", source, "--", POLICY).decode().splitlines()
-    history_versions = {}
-    for commit in history:
-        listing = git(repo, "ls-tree", commit, "--", POLICY).split()
-        require(bool(listing), "release policy removed from source history")
-        previous = parse(blob(repo, listing[2].decode()))
-        validate("policy", previous)
-        require(previous["policy_id"] == policy["policy_id"], "policy identity changed")
-        for item in previous["policies"]:
-            require(by_version.get(item["version"]) == item, "append-only policy version drift")
-        history_versions[commit] = {item["version"] for item in previous["policies"]}
-    # Check first introduction against all ancestors of each commit. A merge may
-    # inherit a non-prefix union of versions, but cannot insert a new lower one.
-    # Auditing each introduction also prevents a later unchanged source commit
-    # from laundering an earlier retroactive insertion into historical identity.
+    # Read the actual policy at every DAG commit: a path-limited log can omit a
+    # merge that matches one parent while dropping another parent's identities.
+    # Cache immutable blobs, but check retention and introduction at every commit.
+    blob_versions: dict[str, set[str]] = {}
     inherited_versions: dict[str, set[str]] = {}
     graph = git(repo, "rev-list", "--reverse", "--topo-order", "--parents", source).decode().splitlines()
     for row in graph:
         commit, *parents = row.split()
         inherited = set().union(*(inherited_versions[parent] for parent in parents))
-        introduced = history_versions.get(commit, set()) - inherited
+        listing = git(repo, "ls-tree", commit, "--", POLICY).split()
+        present: set[str] = set()
+        if listing:
+            oid = listing[2].decode()
+            if oid not in blob_versions:
+                previous = parse(blob(repo, oid))
+                validate("policy", previous)
+                require(previous["policy_id"] == policy["policy_id"], "policy identity changed")
+                for item in previous["policies"]:
+                    require(by_version.get(item["version"]) == item, "append-only policy version drift")
+                blob_versions[oid] = {item["version"] for item in previous["policies"]}
+            present = blob_versions[oid]
+        else:
+            require(not inherited, "release policy removed from source history")
+        require(inherited <= present, "append-only policy version removed from source history")
+        introduced = present - inherited
         if inherited:
             maximum = max(tuple(map(int, identity.split("."))) for identity in inherited)
             require(all(tuple(map(int, identity.split("."))) > maximum for identity in introduced),
                     "append-only policy retroactive version insertion")
-        inherited_versions[commit] = inherited | introduced
+        inherited_versions[commit] = present
     return by_version[version], raw
 
 
