@@ -1,0 +1,68 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260906-002
+task_id: M14-003
+task_revision: 1
+attempt_id: A-20260906-002
+archive_root: A-20260906-002
+baseline: cee51b35380d698ae8e8e4ae254fa649a449787d
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: f59c10e8988e95748b47c6d539b5acab2f7c2ce400435b8450120811aa406f11
+actors_ref:
+  path: ACTORS.yaml
+  sha256: e9b33d6cc1b01785009961e619a7c351017bddc774732e53fe0fd34d2ac8b2d3
+read_allowlist:
+- .github/workflows/ci.yml
+- .rwb/m14-003-ci-fix/**
+- AGENTS.md
+- build_backend.py
+- docs/**
+- pyproject.toml
+- src/research_workbench/observability/trace.py
+- tests/test_runtime_resources.py
+write_scope:
+- pyproject.toml
+- work/M14-003/A-20260906-002/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 65e8de1491ec91befcf53d6307c1036496c138cdc2a2a267e6246b1b7b2f5e46
+  event_count: 6
+tool_event_refs:
+- path: tool-events/m14-003-ci-repair-succeeded.json
+  sha256: 7c5f1ea90d14be0ce2b00345d342b7765aa427fd840a629fadc8145890033abf
+handoff_refs:
+- path: WORKLOG.md
+  sha256: 17b696830916c7d97379712e1cabcb731238706eb8658775d097d4de9c46a424
+decision_refs: []
+output_refs:
+- path: outputs/CI-REPAIR.md
+  sha256: 17b696830916c7d97379712e1cabcb731238706eb8658775d097d4de9c46a424
+check_refs:
+- path: checks/verification.json
+  sha256: be2e7b0c653f69702e358a9c2c8d2aa19c06d43e174992339447b9ac1508d538
+- path: checks/reproduce.log
+  sha256: 1d8bf00b31895527073482599bbe225facb7bc82164e479d0fa709aad3a9677c
+- path: checks/resources-313.log
+  sha256: 32fb2f16cd15ebc66663ef033b9dafaafaf3baefc32cdc9f41cbeb8a5453f8c5
+- path: checks/resources-311.log
+  sha256: 2ed03a05c033724b8094c2c388ce9c330aca6fabef6d20b5cdd7e22fa5dba66f
+- path: checks/focused.log
+  sha256: fbe4545bc3d01a9ecac6ee7a362506e342ae83342712093979d6d4d78a75c192
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: tool-results
+- event_id: EVT-0004
+  affected_stream: external-actions
