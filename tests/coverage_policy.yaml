@@ -1,5 +1,5 @@
 policy_id: rwb-coverage-policy
-version: 2.0.0
+version: 2.1.0
 source_root: src/research_workbench
 
 suites:
@@ -23,6 +23,8 @@ suites:
       - test_catalog
       - test_cli
       - test_cli_command_branches
+      - test_ci_plan
+      - test_ci_checks
       - test_contracts
       - test_context_model_branches
       - test_critical_contract_branches
@@ -114,6 +116,9 @@ suites:
         reason: CLI integration and fixture-only behavior stay in the behavioral suites; frozen-evidence validator cases are selected by exact ID
 
 thresholds:
+  impact:
+    line: 100
+    branch: 100
   global:
     line: 90
   critical:
@@ -121,6 +126,8 @@ thresholds:
     branch: 90
 
 critical_modules:
+  - .github/scripts/plan_ci.py
+  - .github/scripts/ci_checks.py
   - .github/scripts/check_coverage_policy.py
   - .github/scripts/check_pr_governance.py
   - src/research_workbench/protocol/authority.py
@@ -166,6 +173,25 @@ negative_acceptance:
       - test_claim_trace.ClaimTraceTests.test_live_byte_drift_is_independent_of_declared_object_hash
       - test_claim_trace.ClaimTraceTests.test_missing_revision_unversioned_and_missing_evidence_are_unresolved
       - test_claim_trace.ClaimTraceTests.test_missing_and_wrong_raw_admission_do_not_yield_complete_trace
+  - surface: ci-impact-planning
+    modules:
+      - .github/scripts/plan_ci.py
+    positive_tests:
+      - test_ci_plan.PlannerTests.test_docs_fast_plan_is_explainable_and_replayable
+      - test_ci_plan.PlannerTests.test_provider_change_selects_downstream_groups_and_both_pythons
+    negative_tests:
+      - test_ci_plan.PlannerTests.test_agent_can_add_groups_but_cannot_remove_minimum
+      - test_ci_plan.PlannerTests.test_self_modified_policy_or_runner_cannot_authorize_less
+      - test_ci_plan.PlannerTests.test_consumer_inventory_or_new_import_requires_full
+  - surface: ci-impact-evidence-and-gates
+    modules:
+      - .github/scripts/ci_checks.py
+    positive_tests:
+      - test_ci_checks.ImpactCoverageTests.test_impact_preserves_critical_floor_and_distinguishes_global
+      - test_ci_checks.AggregateTests.test_all_three_levels_require_only_proven_obligations
+    negative_tests:
+      - test_ci_checks.ImpactCoverageTests.test_missing_wrong_and_lower_quality_evidence_is_rejected
+      - test_ci_checks.MetadataTests.test_stale_binding_tamper_risk_or_weaker_obligations_cannot_reuse
   - surface: coverage-policy-self-control
     modules:
       - .github/scripts/check_coverage_policy.py

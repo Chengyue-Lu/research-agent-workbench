@@ -1,0 +1,75 @@
+{
+  "binding": {
+    "base": "2e083f9c1790458689c94873eb192cd3250648b0",
+    "head": "58721f7a4355b182f6f3a523e3be21c26c92aa5c",
+    "merge_base": "2e083f9c1790458689c94873eb192cd3250648b0",
+    "repository": "Chengyue-Lu/research-agent-workbench",
+    "target": "58721f7a4355b182f6f3a523e3be21c26c92aa5c"
+  },
+  "change_class": "focused",
+  "changed_lines": {
+    "src/research_workbench/adapters/models/openai.py": [
+      44
+    ]
+  },
+  "changes": [
+    {
+      "path": "src/research_workbench/adapters/models/openai.py",
+      "status": "M"
+    }
+  ],
+  "coverage_mode": "impact",
+  "coverage_modules": [
+    "src/research_workbench/adapters/models/anthropic.py",
+    "src/research_workbench/adapters/models/gemini.py",
+    "src/research_workbench/adapters/models/openai.py"
+  ],
+  "impact_evidence": {
+    "negative_tests": [
+      "test_provider_adapters.OpenAIAdapterTests.test_model_mismatch_fails_before_credential_resolution",
+      "test_provider_adapters.AnthropicAdapterTests.test_temperature_above_provider_range_is_rejected_before_call",
+      "test_provider_adapters.GeminiAdapterTests.test_parallel_response_is_contract_violation_when_not_claimed"
+    ],
+    "positive_tests": [
+      "test_provider_adapters.OpenAIAdapterTests.test_text_request_disables_storage_and_maps_usage",
+      "test_provider_adapters.AnthropicAdapterTests.test_system_is_hoisted_and_required_max_tokens_default_is_visible",
+      "test_provider_adapters.GeminiAdapterTests.test_text_request_maps_system_usage_and_stop"
+    ]
+  },
+  "package_smoke": true,
+  "plan_id": "6abfb2000207bdf38a50b4ae1973d5113f565d0358d16b1c7679c4c6763318d6",
+  "policy_sha256": "ebca138d929015e325e4a1bb45302092ec019cfa98d831ba8785debac6415fdf",
+  "python_versions": [
+    "3.11",
+    "3.13"
+  ],
+  "reasons": [
+    "src/research_workbench/adapters/models/openai.py -> provider-wire",
+    "provider-cli -> ",
+    "provider-conformance -> provider-session",
+    "provider-session -> provider-cli",
+    "provider-wire -> provider-conformance"
+  ],
+  "repository_smoke": true,
+  "risk": "R0",
+  "surfaces": [
+    "provider-wire"
+  ],
+  "test_groups": [
+    "provider-cli",
+    "provider-conformance",
+    "provider-session",
+    "provider-wire"
+  ],
+  "tests": [
+    "test_api_session_runner",
+    "test_cli",
+    "test_cli_command_branches",
+    "test_provider_adapters",
+    "test_provider_conformance",
+    "test_provider_contract_branches",
+    "test_provider_port",
+    "test_validation_helpers"
+  ],
+  "version": 1
+}

@@ -1,0 +1,41 @@
+{
+  "binding": {
+    "base": "2e083f9c1790458689c94873eb192cd3250648b0",
+    "head": "e02fe58ffc0810dbc7ccf02bee2f7ce7dabc1dd7",
+    "merge_base": "2e083f9c1790458689c94873eb192cd3250648b0",
+    "repository": "Chengyue-Lu/research-agent-workbench",
+    "target": "e02fe58ffc0810dbc7ccf02bee2f7ce7dabc1dd7"
+  },
+  "change_class": "fast",
+  "changed_lines": {},
+  "changes": [
+    {
+      "path": "README.md",
+      "status": "M"
+    }
+  ],
+  "coverage_mode": "none",
+  "coverage_modules": [],
+  "impact_evidence": {},
+  "package_smoke": false,
+  "plan_id": "4a9ddd401c04420d2abdcefd11ce96a588ebffb9aec1e6bd1ea9a516eae6863a",
+  "policy_sha256": "ebca138d929015e325e4a1bb45302092ec019cfa98d831ba8785debac6415fdf",
+  "python_versions": [],
+  "reasons": [
+    "README.md -> documentation",
+    "documentation -> "
+  ],
+  "repository_smoke": false,
+  "risk": "R0",
+  "surfaces": [
+    "documentation"
+  ],
+  "test_groups": [
+    "documentation"
+  ],
+  "tests": [
+    "test_documentation",
+    "test_pr_governance"
+  ],
+  "version": 1
+}
