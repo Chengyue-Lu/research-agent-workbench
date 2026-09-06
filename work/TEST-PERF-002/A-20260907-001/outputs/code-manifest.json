@@ -1,0 +1,7 @@
+{
+  "base": "690a9f8c89c32400bbc57b0781ef9b43205894db",
+  "staged_sha256": {
+    "tests/test_ci_plan.py": "2866042ee9347403e0962f671c7a7fad39e38c0ced71c1e7acf82bbf022e1318",
+    "tests/ci_impact_policy.yaml": "ce581f476e6b7d16b6c00359b1a9525e2d7ad3fc12ecd2ec2d2deb55def64c6d"
+  }
+}

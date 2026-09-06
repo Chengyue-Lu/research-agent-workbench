@@ -1,0 +1,116 @@
+{
+  "run": 34049735916,
+  "url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34049735916",
+  "head": "81ef2cbfa8de04aa4e98519c3dbbfb3a844ab869",
+  "status": "completed",
+  "conclusion": "success",
+  "plan": {
+    "binding": {
+      "base": "690a9f8c89c32400bbc57b0781ef9b43205894db",
+      "head": "81ef2cbfa8de04aa4e98519c3dbbfb3a844ab869",
+      "merge_base": "690a9f8c89c32400bbc57b0781ef9b43205894db",
+      "repository": "Chengyue-Lu/research-agent-workbench",
+      "target": "d8a3a2ed1add7545acad69fe48fbe6907b6ae220"
+    },
+    "change_class": "fast",
+    "changed_lines": {},
+    "changes": [
+      {
+        "path": "docs/workstreams/chengyue-lu/TEST-PERF-002/HOSTED_PROBE.md",
+        "status": "A"
+      }
+    ],
+    "coverage_lines": {},
+    "coverage_mode": "none",
+    "coverage_modules": [],
+    "impact_evidence": {},
+    "package_smoke": false,
+    "plan_id": "59b89436c6a7436b718aa607e7070ab5d2425e82b1d3f6d5306d681bd2bce4ce",
+    "policy_sha256": "b7df99ea71cfe27d0b8805be59b6b4c0d6c1ad3454c11e8bcfaa6c91795f4907",
+    "python_versions": [],
+    "reasons": [
+      "docs/workstreams/chengyue-lu/TEST-PERF-002/HOSTED_PROBE.md -> documentation",
+      "documentation -> "
+    ],
+    "repository_smoke": false,
+    "risk": "R0",
+    "surfaces": [
+      "documentation"
+    ],
+    "test_groups": [
+      "documentation"
+    ],
+    "tests": [
+      "test_documentation",
+      "test_pr_governance"
+    ],
+    "version": 1
+  },
+  "jobs": [
+    {
+      "name": "plan",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-09-06T17:48:17Z",
+      "completedAt": "2026-09-06T17:48:25Z"
+    },
+    {
+      "name": "documentation",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-09-06T17:48:28Z",
+      "completedAt": "2026-09-06T17:48:42Z"
+    },
+    {
+      "name": "coverage-quality (3.11)",
+      "status": "completed",
+      "conclusion": "skipped",
+      "startedAt": "2026-09-06T17:48:26Z",
+      "completedAt": "2026-09-06T17:48:25Z"
+    },
+    {
+      "name": "repository_smoke",
+      "status": "completed",
+      "conclusion": "skipped",
+      "startedAt": "2026-09-06T17:48:26Z",
+      "completedAt": "2026-09-06T17:48:25Z"
+    },
+    {
+      "name": "compatibility (3.13)",
+      "status": "completed",
+      "conclusion": "skipped",
+      "startedAt": "2026-09-06T17:48:26Z",
+      "completedAt": "2026-09-06T17:48:25Z"
+    },
+    {
+      "name": "package-smoke (3.11)",
+      "status": "completed",
+      "conclusion": "skipped",
+      "startedAt": "2026-09-06T17:48:26Z",
+      "completedAt": "2026-09-06T17:48:25Z"
+    },
+    {
+      "name": "compatibility (3.11)",
+      "status": "completed",
+      "conclusion": "skipped",
+      "startedAt": "2026-09-06T17:48:26Z",
+      "completedAt": "2026-09-06T17:48:25Z"
+    },
+    {
+      "name": "test (3.11)",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-09-06T17:48:44Z",
+      "completedAt": "2026-09-06T17:48:54Z"
+    },
+    {
+      "name": "test (3.13)",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-09-06T17:48:44Z",
+      "completedAt": "2026-09-06T17:48:50Z"
+    }
+  ],
+  "job_span_seconds": 37.0,
+  "runner_seconds": 38.0
+}

@@ -14,6 +14,7 @@ Owner: 路诚钺 (`Chengyue-Lu`); cross-owner: 黄毅 (`let778750-cpu`); R2.
 | FULL recovery is attached to another trigger SHA | Require dispatch GITHUB_SHA == current PR head before planning; retain exact merge-parent and metadata matching | Wrong/stale trigger rejects early; fresh head and merge candidate pass |
 | Tests are optimized by deleting behavior | Existing full suites preserved; selected groups use existing tests; new adversarial tests in full discovery | Compare suite inventory and negative acceptance |
 | Local timings overstate hosted savings | Duration artifacts retained; suite time, critical path and total runner time distinguished | Hosted measurements remain separate evidence |
+| Test fixtures inherit the outer workflow event | Synthetic PR CLI fixtures pass explicit event-name and run under PR/push/dispatch ambient contexts | Post-merge FULL must remain valid under push |
 | Remote settings fail to enforce check results | Preserve fixed check identities and record actual protection state | Remote protection configuration is an independent maintainer action |
 
 No threshold reduction, expanded exclusion, product-contract change, automatic merge or release is authorized by this workstream.
