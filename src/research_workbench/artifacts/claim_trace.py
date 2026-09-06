@@ -14,6 +14,12 @@ from research_workbench.artifacts.admission import (
     sidecar_path_for,
 )
 from research_workbench.artifacts.integrity import hash_bytes, resolve_within_root
+from research_workbench.artifacts.promotion import (
+    _in_target_zone,
+    _normalized_path,
+    _parts,
+    _strictly_within,
+)
 from research_workbench.io import load_document_bytes
 from research_workbench.research_state.closure import ClosureIndex
 from research_workbench.validation.document_core import LoadedDocuments
@@ -75,6 +81,14 @@ class _ReadSet:
         return document
 
 
+def _promotion_path(reads: _ReadSet, relative: str) -> str:
+    normalized = _normalized_path(relative, "promotion provenance path")
+    resolved = resolve_within_root(reads.root, normalized)
+    if resolved != reads.root.joinpath(*_parts(normalized)):
+        raise ValueError(f"ARTIFACT-MISSING-PROVENANCE: promotion path is aliased or escapes root: {relative}")
+    return normalized
+
+
 def _source_provenance(
     reads: _ReadSet, binding: Mapping[str, Any]
 ) -> dict[str, Any]:
@@ -92,9 +106,20 @@ def _source_provenance(
         return {"kind": "source_admission", "receipt_ref": dict(provenance)}
 
     receipt = reads.document(provenance, "promotion_execution_receipt")
+    if provenance["path"] != f"runs/promotions/{receipt['promotion_id']}/receipt.json":
+        raise ValueError("ARTIFACT-MISSING-PROVENANCE: receipt must use its canonical promotion path")
+    _promotion_path(reads, provenance["path"])
     record = reads.document(receipt["promotion_record_ref"], "promotion_record")
     if record["promotion_id"] != receipt["promotion_id"]:
         raise ValueError("ARTIFACT-MISSING-PROVENANCE: receipt and record identities differ")
+    workspace = _promotion_path(reads, record["source_workspace"])
+    workspace_parts = _parts(workspace)
+    if len(workspace_parts) != 3 or workspace_parts[0] != "work":
+        raise ValueError("ARTIFACT-MISSING-PROVENANCE: source_workspace must be work/<task>/<attempt>")
+    record_path = _promotion_path(reads, receipt["promotion_record_ref"]["path"])
+    if not _strictly_within(record_path, workspace):
+        raise ValueError("ARTIFACT-MISSING-PROVENANCE: promotion record must be inside source_workspace")
+    artifact_path = _promotion_path(reads, artifact["path"])
     matches = [
         item for item in receipt["target_artifact_refs"]
         if item["target_ref"]["path"] == artifact["path"]
@@ -108,6 +133,8 @@ def _source_provenance(
         and entry["artifact"] in receipt["source_artifact_refs"]
     ]
     if not matches and len(retained) == 1:
+        if not _strictly_within(artifact_path, workspace):
+            raise ValueError("ARTIFACT-MISSING-PROVENANCE: retained artifact must be inside source_workspace")
         return {
             "kind": "promotion_execution_receipt", "disposition": "retain-in-work",
             "receipt_ref": dict(provenance),
@@ -116,10 +143,14 @@ def _source_provenance(
         }
     if len(matches) != 1 or retained:
         raise ValueError("ARTIFACT-MISSING-PROVENANCE: receipt must map this exact target once")
+    if not _in_target_zone(artifact_path):
+        raise ValueError("ARTIFACT-MISSING-PROVENANCE: target is outside promotion target zones")
     source = matches[0]["source_ref"]
     if source not in receipt["source_artifact_refs"] or _digest(source["sha256"]) != _digest(artifact["sha256"]):
         raise ValueError("ARTIFACT-MISSING-PROVENANCE: promotion source/target mapping differs")
     reads.read(source)
+    if not _strictly_within(_promotion_path(reads, source["path"]), workspace):
+        raise ValueError("ARTIFACT-MISSING-PROVENANCE: promotion source must be inside source_workspace")
     entries = [
         entry for entry in record["entries"]
         if entry["disposition"] == "promote"
@@ -163,6 +194,7 @@ def localize_claim(
     problems: list[str] = []
     documents = LoadedDocuments()
     evidence_files: dict[tuple[str, int], Mapping[str, Any]] = {}
+    evidence_sources: set[tuple[str, int]] = set()
     for reference in evidence_map["evidence_refs"]:
         document = reads.document(reference, "research_object")
         if document["object_type"] != "evidence":
@@ -172,6 +204,10 @@ def localize_claim(
             raise ValueError(f"ambiguous Evidence identity: {key[0]}@{key[1]}")
         evidence_files[key] = reference
         documents.add(Path(reference["path"]), document, sha256=_digest(reference["sha256"]))
+        try:
+            evidence_sources.add(_identity(document["source_ref"]))
+        except ValueError as exc:
+            problems.append(f"{reference['path']}/source_ref: {exc}")
     index = ClosureIndex.from_documents(documents)
     bindings: dict[tuple[str, int], Mapping[str, Any]] = {}
     for binding in evidence_map["source_bindings"]:
@@ -181,6 +217,16 @@ def localize_claim(
         bindings[key] = binding
 
     provenance_cache: dict[tuple[str, int], dict[str, Any]] = {}
+    provenance_errors: dict[tuple[str, int], str] = {}
+    for key, binding in bindings.items():
+        try:
+            provenance_cache[key] = _source_provenance(reads, binding)
+        except ValueError as exc:
+            provenance_errors[key] = str(exc)
+            problems.append(f"source binding {key[0]}@{key[1]}: {exc}")
+    if set(bindings) != evidence_sources:
+        problems.append("source bindings must exactly match the Evidence source identities")
+    referenced_evidence: set[tuple[str, int]] = set()
     located: dict[str, list[dict[str, Any]]] = {"support": [], "counterevidence": []}
     for relation, field in (("support", "support_refs"), ("counterevidence", "counterevidence_refs")):
         for position, reference in enumerate(claim[field]):
@@ -188,6 +234,7 @@ def localize_claim(
             located[relation].append(item)
             try:
                 key = _identity(reference)
+                referenced_evidence.add(key)
                 resolved = index.resolve(reference)
                 if resolved["status"] != "ok":
                     raise ValueError(f"Evidence {key[0]}@{key[1]}: {resolved['status']}")
@@ -201,8 +248,8 @@ def localize_claim(
                     source_hash = binding["source_ref"].get("sha256")
                     if source_hash is None or _digest(source_hash) != _digest(evidence["source_ref"]["sha256"]):
                         raise ValueError("source ObjectRef hash does not match its explicit binding")
-                if source_key not in provenance_cache:
-                    provenance_cache[source_key] = _source_provenance(reads, binding)
+                if source_key in provenance_errors:
+                    raise ValueError(provenance_errors[source_key])
                 item.update(
                     status="located", evidence_ref=dict(evidence_ref),
                     statement=evidence["statement"], locator=evidence["locator"],
@@ -213,6 +260,8 @@ def localize_claim(
             except ValueError as exc:
                 item.update(status="unresolved", problem=str(exc))
                 problems.append(f"{item['claim_pointer']}: {exc}")
+    if set(evidence_files) != referenced_evidence:
+        problems.append("Evidence map identities must exactly match Claim support/counterevidence references")
     return {
         "claim_id": claim["object_id"], "revision": claim["revision"],
         "strength": claim["strength"], "claim_ref": dict(claim_ref),

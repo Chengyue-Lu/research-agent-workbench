@@ -176,6 +176,40 @@ class ClaimTraceTests(unittest.TestCase):
         self.mapping["source_bindings"][0]["source_ref"]["sha256"] = "a" * 64
         self.assertTrue(self.trace()["complete"])
 
+    def test_map_requires_exact_evidence_and_source_closure(self) -> None:
+        original = copy.deepcopy(self.mapping)
+        for mutation in ("unused-evidence", "unused-binding", "unversioned-source"):
+            with self.subTest(mutation=mutation):
+                self.mapping = copy.deepcopy(original)
+                if mutation == "unused-evidence":
+                    self.mapping["evidence_refs"].append(write_document(
+                        self.root, "objects/unused.yaml", evidence("E-UNUSED", "UNUSED@1"),
+                    ))
+                elif mutation == "unused-binding":
+                    binding = copy.deepcopy(self.mapping["source_bindings"][0])
+                    binding["source_ref"] = {"object_id": "UNUSED", "revision": 1}
+                    (self.root / "objects/unused.csv").write_bytes(TRAJECTORY)
+                    binding["artifact_ref"]["path"] = "objects/unused.csv"
+                    binding["provenance_ref"]["path"] = "objects/missing-receipt.json"
+                    self.mapping["source_bindings"].append(binding)
+                else:
+                    self.mapping["evidence_refs"][0] = write_document(
+                        self.root, "objects/support.yaml", evidence("E-SUPPORT", "TRAJECTORY"),
+                    )
+                map_ref = write_document(self.root, "trace-map.yaml", self.mapping)
+                with patch("subprocess.Popen", side_effect=AssertionError("read-only consumer")):
+                    result = self.trace()
+                    self.assertFalse(result["complete"], result)
+                    with redirect_stdout(StringIO()):
+                        self.assertEqual(1, main([
+                            "validate", str(self.root / map_ref["path"]), "--root", str(self.root),
+                        ]))
+                if mutation == "unused-evidence":
+                    self.assertIn("exactly match Claim", str(result["problems"]))
+                if mutation == "unused-binding":
+                    self.assertIn("exactly match the Evidence", str(result["problems"]))
+                    self.assertIn("REF-MISSING", str(result["problems"]))
+
     def test_duplicate_identity_and_wrong_document_type_are_rejected(self) -> None:
         original = copy.deepcopy(self.mapping)
         self.mapping["evidence_refs"].append(write_document(self.root, "objects/duplicate.yaml", evidence("E-SUPPORT")))
@@ -309,24 +343,77 @@ class PromotedClaimTraceTests(PromotionFixture):
         receipt_path = self.root / result.receipt
         receipt = json.loads(receipt_path.read_bytes())
         original_receipt = copy.deepcopy(receipt)
-        for mutation in ("promotion-id", "target", "source", "record-target"):
+        original_mapping = copy.deepcopy(mapping)
+        copied_receipt = self.root / "objects/copied-receipt.json"
+        copied_receipt.write_bytes(receipt_path.read_bytes())
+        for binding in mapping["source_bindings"]:
+            binding["provenance_ref"] = self.ref(copied_receipt)
+        with patch("subprocess.Popen", side_effect=AssertionError("read-only consumer")):
+            self.assertIn("canonical promotion path", str(localize_claim(self.root, mapping)["problems"]))
+        for mutation in (
+            "promotion-id", "record-id", "target", "source", "record-target",
+            "record-outside", "workspace-shape", "workspace-zone",
+            "target-zone", "retained-outside", "source-outside",
+        ):
             with self.subTest(mutation=mutation):
+                mapping = copy.deepcopy(original_mapping)
                 changed = copy.deepcopy(original_receipt)
+                record = copy.deepcopy(self.record)
                 if mutation == "promotion-id":
                     changed["promotion_id"] = "OTHER-PROMOTION"
+                elif mutation == "record-id":
+                    record["promotion_id"] = "OTHER-PROMOTION"
                 elif mutation == "target":
                     changed["target_artifact_refs"][0]["target_ref"]["path"] = "objects/another.txt"
                 elif mutation == "source":
                     changed["target_artifact_refs"][0]["source_ref"]["sha256"] = "a" * 64
-                else:
-                    record = copy.deepcopy(self.record)
+                elif mutation == "record-target":
                     record["entries"][0]["target"] = "objects/another.txt"
-                    changed["promotion_record_ref"] = write_document(self.root, "work/M4-002/A-001/changed-record.yaml", record)
+                elif mutation == "workspace-shape":
+                    record["source_workspace"] = "work/M4-002"
+                elif mutation == "workspace-zone":
+                    record["source_workspace"] = "objects/M4-002/A-001"
+                elif mutation == "target-zone":
+                    target = self.root / "deliverables/accepted/trajectory.csv"
+                    target.parent.mkdir(parents=True)
+                    target.write_bytes(TRAJECTORY)
+                    target_ref = self.ref(target)
+                    mapping["source_bindings"][0]["artifact_ref"] = target_ref
+                    changed["target_artifact_refs"][0]["target_ref"] = target_ref
+                    record["entries"][0]["target"] = target_ref["path"]
+                elif mutation in ("retained-outside", "source-outside"):
+                    entry_index = 1 if mutation == "retained-outside" else 0
+                    entry = record["entries"][entry_index]
+                    source_ref = entry["artifact"]
+                    moved = self.root / "work/M4-002/A-OTHER" / Path(source_ref["path"]).name
+                    moved.parent.mkdir(parents=True, exist_ok=True)
+                    moved.write_bytes((self.root / source_ref["path"]).read_bytes())
+                    moved_ref = self.ref(moved)
+                    changed["source_artifact_refs"] = [
+                        moved_ref if item == source_ref else item for item in changed["source_artifact_refs"]
+                    ]
+                    entry["artifact"] = moved_ref
+                    if mutation == "retained-outside":
+                        mapping["source_bindings"][1]["artifact_ref"] = moved_ref
+                    else:
+                        changed["target_artifact_refs"][0]["source_ref"] = moved_ref
+                record_path = (
+                    "objects/relocated-record.yaml" if mutation == "record-outside"
+                    else "work/M4-002/A-001/changed-record.yaml"
+                )
+                changed["promotion_record_ref"] = write_document(self.root, record_path, record)
                 receipt_path.write_text(json.dumps(changed), encoding="utf-8", newline="\n")
                 for binding in mapping["source_bindings"]:
                     binding["provenance_ref"] = self.ref(receipt_path)
-                self.assertFalse(localize_claim(self.root, mapping)["complete"])
+                map_ref = write_document(self.root, "trace-map.yaml", mapping)
+                with patch("subprocess.Popen", side_effect=AssertionError("read-only consumer")):
+                    self.assertFalse(localize_claim(self.root, mapping)["complete"])
+                    with redirect_stdout(StringIO()):
+                        self.assertEqual(1, main([
+                            "validate", str(self.root / map_ref["path"]), "--root", str(self.root),
+                        ]))
         receipt_path.write_text(json.dumps(original_receipt), encoding="utf-8", newline="\n")
+        mapping = copy.deepcopy(original_mapping)
         for binding in mapping["source_bindings"]:
             binding["provenance_ref"] = self.ref(receipt_path)
         target = self.root / result.targets[0]

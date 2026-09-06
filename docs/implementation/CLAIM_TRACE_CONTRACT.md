@@ -35,6 +35,11 @@ declared binding, not identity attestation or a new source-object ontology.
   Claim's declared support/counterevidence. Missing, wrong-type, unversioned,
   ambiguous, wrong-revision and hash-drifted references prevent a complete
   localization result. No latest-revision fallback or workspace search.
+- The map's Evidence identity/revision set must equal the union of the Claim's
+  support and counterevidence references. Its source-binding set must equal the
+  sources referenced by those Evidence. Extra entries prevent completion;
+  every declared binding's artifact/provenance is checked once, including
+  invalid or unused bindings. Shared failure results are cached too.
 - A raw source uses its exact `<raw-path>.admission.yaml`, with valid Schema,
   acquisition fields, matching admitted path and captured byte hash. An inbox
   reference is rejected. Unreferenced derivative graphs are not expanded.
@@ -42,9 +47,15 @@ declared binding, not identity attestation or a new source-object ontology.
   Promotion Receipt and its pinned promotion record. Captured source bytes
   must equal the target pin. The consumer verifies that record's declared
   disposition; it does not reconstruct the entire historical validation chain.
+- The receipt must be at `runs/promotions/<promotion_id>/receipt.json`.
+  Its record and cited work source must be strictly inside the record's exact
+  `work/<task>/<attempt>` workspace. Promotion targets stay within `objects/`,
+  `runs/` or `deliverables/candidates/`. These paths retain M4-002's resolved
+  path checks, so a filesystem alias cannot stand in for the declared path.
 - A retained source may be cited through the same receipt's source set and
   record's `retain-in-work` entry. Its negative-result flag and reason remain
-  visible; it is never labeled promoted merely because it has provenance.
+  visible, and its artifact stays inside the declared workspace; it is never
+  labeled promoted merely because it has provenance.
 - Each limitation retains its text and points to the Claim FileRef plus
   `/limitations/<index>`. The current `limitations: string[]` contract does
   not contain separate source citations; no such citations are invented.
