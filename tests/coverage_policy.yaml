@@ -223,11 +223,15 @@ negative_acceptance:
       - test_release_surface.ReleaseSurfaceTests.test_export_twice_and_git_merge_tree_are_byte_identical
       - test_release_surface.ReleaseSurfaceTests.test_two_versions_remove_old_generated_output_and_reject_stale_parent
       - test_release_surface.ReleaseSurfaceTests.test_binary_source_and_executable_mode_preserve_bytes
+      - test_release_surface.ReleaseSurfaceTests.test_merged_nonprefix_policy_histories_and_new_maximum_are_valid
     negative_tests:
       - test_release_surface.ReleaseSurfaceTests.test_synchronized_source_and_manifest_hash_forgery_is_blocked
       - test_release_surface.ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked
       - test_release_surface.ReleaseSurfaceTests.test_source_and_ci_expectations_cannot_come_from_manifest
       - test_release_surface.ReleaseSurfaceTests.test_policy_same_version_drift_is_rejected
+      - test_release_surface.ReleaseSurfaceTests.test_policy_version_cannot_be_inserted_before_history
+      - test_release_surface.ReleaseSurfaceTests.test_policy_version_cannot_be_inserted_between_historical_versions
+      - test_release_surface.ReleaseSurfaceTests.test_required_check_permutations_have_only_one_legal_tree
       - test_release_surface.ReleaseSurfaceTests.test_portable_path_attack_matrix
       - test_release_surface.ReleaseSurfaceTests.test_git_symlink_gitlink_casefold_and_non_utf8_paths_are_rejected
   - surface: coverage-policy-self-control
