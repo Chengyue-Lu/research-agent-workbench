@@ -309,6 +309,12 @@ class PlannerTests(unittest.TestCase):
              patch.dict(sys.modules),patch.object(sys,'path',list(sys.path)):
             suite=runner._suite_for(args)
             self.assertGreater(suite.countTestCases(),0)
+            with self.assertRaisesRegex(ValueError,'requires --plan'):
+                runner._suite_for(argparse.Namespace(suite='focused',plan=None))
+            for spec in (None, argparse.Namespace(loader=None)):
+                with patch.object(runner.importlib.util,'spec_from_file_location',return_value=spec):
+                    with self.assertRaisesRegex(ValueError,'could not be loaded'):
+                        runner._suite_for(args)
             with patch.object(unittest.TestLoader,'loadTestsFromNames',return_value=unittest.TestSuite()):
                 with self.assertRaises(ValueError):runner._suite_for(args)
             path.write_bytes(planner.canonical(self.plan(force_full=True)))

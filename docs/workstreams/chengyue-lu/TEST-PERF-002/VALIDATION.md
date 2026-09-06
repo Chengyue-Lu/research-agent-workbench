@@ -2,14 +2,14 @@
 
 Base: `6f0caf0b8e8a9b123f1ea399e747d2c0ed33cdce` (`develop`).
 Implementation: `ceacf58cca0f82d6016e18ba818acd9b42f2805a`.
-Final code: `2e083f9c1790458689c94873eb192cd3250648b0`.
+Guard verification baseline: `2e083f9c1790458689c94873eb192cd3250648b0`.
 Review: [PR #63](https://github.com/Chengyue-Lu/research-agent-workbench/pull/63), R2, target `develop`.
 
 ## Local evidence and its commit boundary
 
 All local runs used Windows and Python 3.14. The full runs below belong to the implementation commit;
 the final code adds strict policy and execution-input guards and has its own targeted regression evidence.
-The documentation/archive commit preserves final-code source and test blobs. Hosted Python 3.11/3.13
+Archive commit `613f91a` preserves those source and test blobs. Hosted Python 3.11/3.13
 FULL checks must pass on the final PR head before acceptance.
 
 | Check | Commit | Result |
@@ -63,3 +63,16 @@ by this implementation. Cross-owner review and final-head CI remain merge gates.
 source hashes and machine result summaries. Native events, intermediate file revisions and complete
 tool output streams have explicit capture gaps. The archive distinguishes observed checks from pending
 hosted acceptance; structural Trace validation does not grant a human approval.
+
+## PR review follow-up
+
+Copilot's initial review identified a missing `pull-requests: read` token permission for FULL dispatch and
+an unclear failure when a focused run omits `--plan`. The follow-up grants only the required read permission
+and rejects missing plan/loader inputs with explicit errors. The existing regression cases now exercise
+these paths (34/34 PASS); actionlint and 9 documentation tests pass. This follow-up is recorded in PR #63 and its
+own Git commit after the frozen archive; the archive's code manifest remains evidence for `2e083f9`.
+
+Hosted run `34029871793` on `2e083f9` was automatically cancelled after `613f91a` started replacement
+run `34030126386`. No manual cancellation was issued. Updating the PR body after that replacement plan
+was uploaded triggered governance run `34030228581`, which passed and retained content run `34030126386`
+without launching another content run. Final hosted outcomes remain available in the PR checks and body.

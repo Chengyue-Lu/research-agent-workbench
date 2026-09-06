@@ -174,6 +174,7 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual({'main','develop'},set(content['on']['push']['branches']))
         self.assertNotIn('governance',content['jobs'])
         self.assertIn('governance',governance['jobs'])
+        self.assertEqual('read',content['permissions']['pull-requests'])
         for suffix,python in [('311','3.11'),('313','3.13')]:
             job=content['jobs']['required_test_'+suffix]
             self.assertEqual('test ('+python+')',job['name'])

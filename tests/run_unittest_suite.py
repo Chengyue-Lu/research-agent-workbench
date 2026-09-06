@@ -124,7 +124,11 @@ def _suite_for(args: argparse.Namespace) -> unittest.TestSuite:
         _assert_unique_tests(loaded)
         return loaded
     if args.suite == "focused":
+        if args.plan is None:
+            raise ValueError("focused suite requires --plan")
         spec = importlib.util.spec_from_file_location("ci_planner", ROOT / ".github/scripts/plan_ci.py")
+        if spec is None or spec.loader is None:
+            raise ValueError("CI planner could not be loaded")
         planner = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(planner)
         plan = json.loads(args.plan.read_text(encoding="utf-8"))
