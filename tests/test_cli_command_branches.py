@@ -87,6 +87,8 @@ class CliCommandBranchTests(unittest.TestCase):
                     "--root",
                     str(ROOT),
                     "--historical-replay",
+                    "--integration-root",
+                    str(ROOT),
                     "--output",
                     str(prompt_path),
                 ]

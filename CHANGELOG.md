@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-06 — M14-003 portable Runtime resources
+
+- 新增 hash-pinned RuntimeResourceManifest 与 package-owned catalog，分离 project、Runtime resource 和 integration config roots。
+- direct wheel / sdist→wheel 使用相同资源生成器；Python 3.11/3.13 在 checkout 外校核 Schema/catalog、no-Skill structural Task 与资源污染拒绝。
+- 非空 Projection 精确映射 immutable Skill manifest/package；生产 index 保持为空，installed validation 与 repository publication authority 分开。
+- Maintainer/provider/model/Codex CLI 配置改为显式输入；release topology 继续 dormant，M14-004/005 留待后续。
+
 ## 2026-09-05 — M14-001 dormant release trust seam
 
 - 以声明式 policy 与 critical governance checker 识别 strict same-repository `release/vMAJOR.MINOR.PATCH -> main`

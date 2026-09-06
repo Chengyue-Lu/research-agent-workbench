@@ -99,10 +99,18 @@ class SkillReleaseProjectionSet:
     @classmethod
     def load(
         cls,
-        path: str | Path = DEFAULT_SKILL_RELEASE_PROJECTION_INDEX,
+        path: str | Path | None = None,
         *,
-        project_root: str | Path = ".",
+        project_root: str | Path | None = None,
     ) -> "SkillReleaseProjectionSet":
+        if project_root is None:
+            if path is not None:
+                raise ValueError("custom Projection index requires an explicit project root")
+            from research_workbench.resources import RuntimeResources
+            resources = RuntimeResources()
+            resources.validate_catalog()
+            project_root = resources.catalog_root
+        path = DEFAULT_SKILL_RELEASE_PROJECTION_INDEX if path is None else path
         root = Path(project_root).resolve()
         index_path = Path(path)
         if not index_path.is_absolute():
