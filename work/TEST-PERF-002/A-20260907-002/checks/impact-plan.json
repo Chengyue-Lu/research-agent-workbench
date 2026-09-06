@@ -1,0 +1,79 @@
+{
+  "behavioral_scope": "full",
+  "binding": {
+    "base": "54ac03cdf258a069b6ad1824a926f67cd4d4afbd",
+    "head": "d44df58c7adde8f0e0e9df29c6fe0a54fff43c7c",
+    "merge_base": "54ac03cdf258a069b6ad1824a926f67cd4d4afbd",
+    "repository": "Example/acceptance",
+    "target": "d44df58c7adde8f0e0e9df29c6fe0a54fff43c7c"
+  },
+  "change_class": "full",
+  "changed_lines": {
+    ".github/scripts/plan_ci.py": [
+      34
+    ]
+  },
+  "changes": [
+    {
+      "path": ".github/scripts/plan_ci.py",
+      "status": "M"
+    }
+  ],
+  "coverage_lines": {
+    ".github/scripts/plan_ci.py": [
+      34
+    ]
+  },
+  "coverage_modules": [
+    ".github/scripts/plan_ci.py"
+  ],
+  "coverage_scope": "impact",
+  "coverage_tests": [
+    "test_ci_plan"
+  ],
+  "impact_evidence": {
+    "negative_tests": [
+      "test_ci_plan.PlannerTests.test_agent_can_add_groups_but_cannot_remove_minimum",
+      "test_ci_plan.PlannerTests.test_consumer_inventory_or_new_import_requires_full",
+      "test_ci_plan.PlannerTests.test_self_modified_policy_or_runner_cannot_authorize_less"
+    ],
+    "positive_tests": [
+      "test_ci_plan.PlannerTests.test_docs_fast_plan_is_explainable_and_replayable",
+      "test_ci_plan.PlannerTests.test_provider_change_selects_downstream_groups_and_both_pythons"
+    ]
+  },
+  "obligation_reasons": {
+    "behavioral_scope": [
+      "authority-sensitive PR requires complete behavioral regression"
+    ],
+    "coverage_scope": [
+      "bounded executable change with base-side acceptance evidence"
+    ],
+    "package_smoke": [
+      "no packaging/install surface changed"
+    ],
+    "repository_smoke": [
+      "no repository validation surface changed"
+    ]
+  },
+  "package_smoke": false,
+  "plan_id": "ccaf11a16702b42d8630827f9254c6ff729eb388a1d4c2865512c1f33353bd3d",
+  "policy_sha256": "c2329e6aaae30e5f4d0182c1999a111408789a4eac0dfafedba92b6cc464a881",
+  "python_versions": [
+    "3.11",
+    "3.13"
+  ],
+  "reasons": [
+    ".github/scripts/plan_ci.py matches the R2 policy surface",
+    "PR declares a shared-contract impact",
+    "PR declares an authority, permission, or data-boundary impact"
+  ],
+  "repository_smoke": false,
+  "risk": "R2",
+  "surfaces": [],
+  "test_groups": [],
+  "tests": [
+    "test_ci_plan"
+  ],
+  "version": 2
+}

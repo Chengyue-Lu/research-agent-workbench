@@ -13,6 +13,9 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import tomllib
+
+import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 POLICY = 'tests/ci_impact_policy.yaml'
@@ -20,6 +23,14 @@ TRUST_FILES = ('.github/scripts/plan_ci.py', '.github/scripts/ci_checks.py',
                '.github/scripts/check_pr_governance.py', '.github/governance-policy.json',
                'tests/run_unittest_suite.py', 'tests/coverage_policy.yaml', POLICY)
 LEVELS = {'fast': 0, 'focused': 1, 'full': 2}
+BEHAVIOR = {'none': 0, 'focused': 1, 'full': 2}
+COVERAGE = {'none': 0, 'impact': 1, 'repository': 2}
+# These bounded validators already have base-side critical inventory and acceptance mappings.
+CI_EXECUTABLES = {'.github/scripts/plan_ci.py', '.github/scripts/ci_checks.py',
+                  '.github/scripts/check_pr_governance.py'}
+COVERAGE_AUTHORITY = {'tests/coverage_policy.yaml', '.github/scripts/check_coverage_policy.py',
+                      'tests/run_unittest_suite.py', 'pyproject.toml', '.coveragerc', 'setup.cfg', 'tox.ini',
+                      '.github/workflows/ci.yml'}
 METADATA = {'edited', 'labeled', 'unlabeled'}
 
 
@@ -195,17 +206,79 @@ def risk_at(repo, base, paths, body):
     return module.resolve_effective_risk(declared, inferred, report), reasons
 
 
+def non_executable(path):
+    """Only data/document/test surfaces; test infrastructure is classified first."""
+    return (path.endswith('.md') or path.startswith('work/')
+            or (path.startswith('tests/') and (Path(path).name.startswith('test_') and path.endswith('.py')
+                or path.endswith(('.json', '.yaml', '.yml', '.txt', '.toml')))))
+
+
+def validator_evidence(repo, base, modules):
+    policy = yaml.safe_load(read_at(repo, base, 'tests/coverage_policy.yaml'))
+    require(set(modules) <= set(policy['critical_modules']), 'validator absent from base critical inventory')
+    mappings = [m for m in policy['negative_acceptance'] if set(m['modules']) & set(modules)]
+    require(set(modules) <= {p for m in mappings for p in m['modules']}, 'validator acceptance mapping missing')
+    evidence = {key: sorted({t for m in mappings for t in m[key]})
+                for key in ('positive_tests', 'negative_tests')}
+    require(all(evidence.values()) and not set(evidence['positive_tests']) & set(evidence['negative_tests']),
+            'validator positive/negative evidence invalid')
+    return evidence
+
+
+def coverage_authority_changed(repo, base, head, path):
+    before, after = (read_at(repo, commit, path) for commit in (base, head))
+    if path == 'tests/coverage_policy.yaml':
+        return yaml.safe_load(before) != yaml.safe_load(after)
+    if path == 'pyproject.toml':
+        configs = [tomllib.loads(raw.decode()) for raw in (before, after)]
+        for config in configs:
+            for key in ('name', 'version', 'description', 'readme', 'authors', 'maintainers',
+                        'urls', 'classifiers', 'keywords', 'license', 'license-files'):
+                config.get('project', {}).pop(key, None)
+        # Dependencies, interpreter requirements, entrypoints, build configuration and
+        # measurement configuration can change executable/coverage semantics.
+        return configs[0] != configs[1]
+    return before != after
+
+
+def require_obligations(plan, minimum):
+    """Compare dimensions independently, also used for authenticated metadata continuity."""
+    require(plan['version'] == minimum['version'] == 2, 'plan version mismatch')
+    ranks = {'R0': 0, 'R1': 1, 'R2': 2}
+    require(ranks.get(plan['risk'], -1) >= ranks[minimum['risk']], 'plan lowers governance risk')
+    for key, ranks in (('behavioral_scope', BEHAVIOR), ('coverage_scope', COVERAGE)):
+        require(ranks.get(plan[key], -1) >= ranks[minimum[key]], 'plan below machine minimum: ' + key)
+    require(plan['change_class'] == {'none': 'fast', 'focused': 'focused', 'full': 'full'}[plan['behavioral_scope']],
+            'change class disagrees with behavioral minimum')
+    require(plan['risk'] != 'R2' or plan['behavioral_scope'] == 'full', 'R2 requires full behavioral regression')
+    require(plan['python_versions'] == ([] if plan['behavioral_scope'] == 'none' else ['3.11', '3.13']),
+            'plan drops required python_versions')
+    for key in ('package_smoke', 'repository_smoke'):
+        require(type(plan[key]) is bool and (plan[key] or not minimum[key]), 'plan drops required ' + key)
+    require(plan['policy_sha256'] == minimum['policy_sha256'], 'plan policy mismatch')
+    if plan['behavioral_scope'] != 'full':
+        for key in ('tests', 'test_groups'):
+            require(set(plan[key]) >= set(minimum[key]), 'plan drops required ' + key)
+    if plan['coverage_scope'] == 'impact':
+        for key in ('coverage_modules', 'coverage_tests'):
+            require(set(plan[key]) >= set(minimum[key]) and plan[key], 'plan drops required ' + key)
+        require(plan['impact_evidence'] == minimum['impact_evidence'], 'plan evidence mismatch')
+        require(plan['changed_lines'] == minimum['changed_lines'], 'plan changed-line mismatch')
+        require(plan['coverage_lines'] == minimum['coverage_lines'], 'plan executable-line mapping mismatch')
+
+
 def make_plan(repo, *, base, head, target, repository, base_ref='develop', body='', integration=False,
               force_full=False, extra_groups=()):
     for sha in (base, head, target):
         exact_commit(repo, sha)
     merge_base = git(repo, 'merge-base', base, head).decode().strip()
     binding = {'repository': repository, 'base': base, 'head': head, 'merge_base': merge_base, 'target': target}
-    plan = {'version': 1, 'binding': binding, 'change_class': 'full', 'risk': 'R2', 'changes': [],
+    plan = {'version': 2, 'binding': binding, 'change_class': 'full', 'risk': 'R2', 'changes': [],
             'surfaces': [], 'test_groups': [], 'tests': [], 'coverage_modules': [], 'impact_evidence': {},
-            'changed_lines': {}, 'coverage_lines': {},
-            'policy_sha256': '', 'python_versions': ['3.11', '3.13'], 'coverage_mode': 'repository',
-            'package_smoke': True, 'repository_smoke': True, 'reasons': []}
+            'changed_lines': {}, 'coverage_lines': {}, 'coverage_tests': [],
+            'policy_sha256': '', 'python_versions': ['3.11', '3.13'],
+            'behavioral_scope': 'full', 'coverage_scope': 'repository',
+            'package_smoke': True, 'repository_smoke': True, 'reasons': [], 'obligation_reasons': {}}
     reasons = plan['reasons']
     try:
         require(git(repo, 'rev-parse', '--is-shallow-repository').strip() == b'false', 'shallow history')
@@ -219,26 +292,54 @@ def make_plan(repo, *, base, head, target, repository, base_ref='develop', body=
         plan['policy_sha256'] = hashlib.sha256(raw).hexdigest()
         policy = json.loads(raw, object_pairs_hook=unique_object)
         validate_policy(policy)
-        # New/modified infrastructure cannot authorize its own lighter execution.
-        for path in TRUST_FILES:
-            require(read_at(repo, base, path) == read_at(repo, head, path), 'CI authority changed: ' + path)
         require(not integration and base_ref == 'develop', 'integration/release boundary')
         require(base == merge_base, 'stale base requires complete merge regression')
-        require(risk != 'R2' and not force_full, 'R2 or explicit FULL request')
+        require(not force_full, 'explicit complete-evidence request')
         require(rows, 'empty diff requires full evidence')
         require(all(row['status'] != 'T' for row in rows), 'type change requires FULL')
         selected, matched = set(), set()
+        validators, executable = set(), set()
+        coverage_reasons, package_reasons, repository_reasons = [], [], []
         level = 'fast'
         for path in paths:
+            if path in COVERAGE_AUTHORITY:
+                level = 'full'
+                if coverage_authority_changed(repo, base, head, path):
+                    coverage_reasons.append('coverage authority changed: ' + path)
+                if path in {'pyproject.toml', 'setup.cfg'}:
+                    package_reasons.append('package metadata changed: ' + path)
+                continue
+            if path in CI_EXECUTABLES:
+                validators.add(path)
+                executable.add(path)
+                level = 'full'
+                continue
+            if path in {POLICY, '.github/governance-policy.json'}:
+                # Candidate metadata never supplies this PR's selection authority.
+                level = 'full'
+                reasons.append('base-side selection retained; policy metadata changed: ' + path)
+                continue
             hits = [(name, s) for name, s in policy['surfaces'].items()
                     if any(fnmatch.fnmatchcase(path, pattern) for pattern in s['paths'])]
-            require(hits, 'unclassified path: ' + path)
+            if not hits:
+                level = 'full'
+                if non_executable(path):
+                    reasons.append('test/document/archive data: ' + path)
+                    continue
+                if path.startswith(('schemas/', 'registry/', 'examples/')) and path.endswith(('.json', '.yaml', '.yml')):
+                    repository_reasons.append('repository validation surface: ' + path)
+                    if path.startswith('schemas/'):
+                        package_reasons.append('installed schema resources: ' + path)
+                    continue
+                raise ValueError('unknown/high-fanout executable or surface: ' + path)
             for name, surface in hits:
                 require(surface['class'] != 'fast' or path.endswith('.md'), 'non-Markdown documentation requires FULL')
                 matched.add(name)
                 selected.update(surface['groups'])
                 level = max((level, surface['class']), key=LEVELS.get)
                 reasons.append(path + ' -> ' + name)
+            if path.endswith('.py'):
+                executable.add(path)
         groups = closure(policy, selected | set(extra_groups))
         records = [policy['groups'][name] for name in groups]
         tests = sorted({t for g in records for t in g['tests']})
@@ -246,31 +347,63 @@ def make_plan(repo, *, base, head, target, repository, base_ref='develop', body=
             read_at(repo, head, 'tests/' + name.split('.')[0] + '.py')
         modules = sorted({p for g in records for p in g['coverage']})
         if modules:
-            level = 'focused'
-            require(all(row['status'] == 'M' for row in rows if row['path'].endswith('.py')),
+            level = max((level, 'focused'), key=LEVELS.get)
+        if coverage_reasons:
+            # Repository evidence already covers executable changes; impact uncertainty must not
+            # manufacture unrelated install or repository-smoke obligations.
+            modules, validators, executable = [], set(), set()
+        evidence = policy['impact_evidence'] if modules else {'positive_tests': [], 'negative_tests': []}
+        if modules or validators:
+            require(all(row['status'] == 'M' for row in rows if row['path'] in executable),
                     'source add/delete/rename requires FULL')
             require(not git(repo, 'diff', '--no-ext-diff', '--summary', base, head, '--',
-                            *[p for p in paths if p.endswith('.py')]).strip(), 'source mode drift requires FULL')
-            require(consumer_fingerprint(repo, base, modules) == policy['consumer_fingerprint'],
-                    'consumer inventory changed; impact closure needs review')
-            for path in paths:
-                if path.endswith('.py'):
-                    require(imports(read_at(repo, base, path)) == imports(read_at(repo, head, path)),
-                            'source imports changed; dependency closure uncertain')
-        require(level != 'focused' or modules, 'focused scope lacks coverage obligations')
-        require({p for p in paths if p.endswith('.py')} <= set(modules), 'changed source lacks coverage obligation')
-        affected_lines = changed_lines(repo, base, head, paths) if modules else {}
+                            *sorted(executable)).strip(), 'source mode drift requires FULL')
+            if modules:
+                require(consumer_fingerprint(repo, base, modules) == policy['consumer_fingerprint'],
+                        'consumer inventory changed; impact closure needs review')
+                # Test-only changes do not need coverage, but cannot silently expand a leaf closure.
+                require(consumer_fingerprint(repo, head, modules) == policy['consumer_fingerprint'],
+                        'candidate consumer inventory changed; impact closure needs review')
+            for path in executable:
+                require(imports(read_at(repo, base, path)) == imports(read_at(repo, head, path)),
+                        'source imports changed; dependency closure uncertain')
+                require([line for line in read_at(repo, base, path).splitlines() if b'pragma:' in line]
+                        == [line for line in read_at(repo, head, path).splitlines() if b'pragma:' in line],
+                        'coverage exclusion semantics changed: ' + path)
+            if validators:
+                validator_mapping = validator_evidence(repo, base, validators)
+                evidence = {key: sorted(set(evidence[key]) | set(validator_mapping[key])) for key in evidence}
+                tests = sorted(set(tests) | {t.split('.')[0] for names in validator_mapping.values() for t in names})
+                modules = sorted(set(modules) | validators)
+        for name in tests:
+            read_at(repo, head, 'tests/' + name.split('.')[0] + '.py')
+        require(executable <= set(modules), 'changed source lacks coverage obligation')
+        affected_lines = changed_lines(repo, base, head, sorted(executable)) if modules else {}
         executable_lines = coverage_lines(repo, head, affected_lines)
+        if risk == 'R2':
+            level = 'full'
+        scope = 'repository' if coverage_reasons else 'impact' if modules else 'none'
+        behavioral = {'fast': 'none', 'focused': 'focused', 'full': 'full'}[level]
+        package_reasons.extend('affected dependency group: ' + name for name in groups if policy['groups'][name]['package'])
+        repository_reasons.extend('affected dependency group: ' + name for name in groups if policy['groups'][name]['repository'])
         plan.update(change_class=level, surfaces=sorted(matched), test_groups=groups, tests=tests,
                     changed_lines=affected_lines, coverage_lines=executable_lines,
-                    coverage_modules=modules, impact_evidence=policy['impact_evidence'] if modules else {},
-                    python_versions=['3.11', '3.13'] if level == 'focused' else [],
-                    coverage_mode='impact' if modules else 'none',
-                    package_smoke=any(g['package'] for g in records),
-                    repository_smoke=any(g['repository'] for g in records))
+                    coverage_modules=modules, impact_evidence=evidence if modules else {},
+                    coverage_tests=tests if modules else [], behavioral_scope=behavioral,
+                    python_versions=['3.11', '3.13'] if behavioral != 'none' else [],
+                    coverage_scope=scope, package_smoke=bool(package_reasons), repository_smoke=bool(repository_reasons),
+                    obligation_reasons={
+                        'behavioral_scope': ['authority-sensitive PR requires complete behavioral regression' if risk == 'R2'
+                                             else 'exact diff and base-side dependency closure require ' + behavioral],
+                        'coverage_scope': coverage_reasons or ['bounded executable change with base-side acceptance evidence' if modules
+                                             else 'no production/critical executable or coverage authority changed'],
+                        'package_smoke': package_reasons or ['no packaging/install surface changed'],
+                        'repository_smoke': repository_reasons or ['no repository validation surface changed']})
         reasons.extend(name + ' -> ' + ','.join(policy['groups'][name]['downstream']) for name in groups)
-    except (ValueError, KeyError, TypeError, UnicodeError, SyntaxError) as error:
+    except (ValueError, KeyError, TypeError, UnicodeError, SyntaxError, yaml.YAMLError) as error:
         reasons.append('FULL fallback: ' + str(error))
+        plan['obligation_reasons'] = {key: ['fail-safe complete evidence: ' + str(error)] for key in
+                                      ('behavioral_scope', 'coverage_scope', 'package_smoke', 'repository_smoke')}
     plan['plan_id'] = digest(plan)
     return plan
 
@@ -317,21 +450,7 @@ def verify_plan(repo, plan, event=None, event_name='pull_request'):
                          integration=b['base'] == b['head']))
     require(set(plan) == set(minimum), 'plan shape mismatch')
     require(b == minimum['binding'], 'plan event binding mismatch')
-    require(LEVELS[plan['change_class']] >= LEVELS[minimum['change_class']], 'plan below machine minimum')
-    if plan['change_class'] != 'full':
-        for key in ('test_groups', 'tests', 'coverage_modules', 'python_versions'):
-            require(set(plan[key]) >= set(minimum[key]), 'plan drops required ' + key)
-        for key in ('package_smoke', 'repository_smoke'):
-            require(plan[key] or not minimum[key], 'plan drops required ' + key)
-        require(plan['policy_sha256'] == minimum['policy_sha256']
-                and plan['impact_evidence'] == minimum['impact_evidence'], 'plan policy/evidence mismatch')
-        require(plan['changed_lines'] == minimum['changed_lines'], 'plan changed-line mismatch')
-        require(plan['coverage_lines'] == minimum['coverage_lines'], 'plan executable-line mapping mismatch')
-        require(plan['coverage_mode'] == minimum['coverage_mode'], 'plan coverage mode mismatch')
-    else:
-        require(plan['coverage_mode'] == 'repository' and plan['package_smoke'] is True
-                and plan['repository_smoke'] is True and plan['python_versions'] == ['3.11', '3.13'],
-                'FULL plan drops obligations')
+    require_obligations(plan, minimum)
     return plan
 
 
@@ -347,8 +466,9 @@ def main(argv=None):
     print(json.dumps(plan, indent=2))
     if os.environ.get('GITHUB_OUTPUT'):
         with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as stream:
-            for name, value in {'class': plan['change_class'], 'package': str(plan['package_smoke']).lower(),
-                                'coverage': plan['coverage_mode'], 'repository': str(plan['repository_smoke']).lower()}.items():
+            for name, value in {'class': plan['change_class'], 'behavioral': plan['behavioral_scope'],
+                                'package': str(plan['package_smoke']).lower(), 'coverage': plan['coverage_scope'],
+                                'repository': str(plan['repository_smoke']).lower()}.items():
                 stream.write(name + '=' + value + '\n')
     return 0
 

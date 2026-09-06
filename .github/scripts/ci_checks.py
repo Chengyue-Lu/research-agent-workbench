@@ -11,15 +11,15 @@ import tempfile
 
 import yaml
 
-from plan_ci import ROOT, LEVELS, canonical, digest, require, verify_plan
+from plan_ci import ROOT, canonical, digest, require, require_obligations, verify_plan
 
 
 def impact_coverage(plan, policy, coverage, results):
-    require(plan['change_class'] == 'focused' and plan['coverage_mode'] == 'impact', 'impact plan required')
+    require(plan['coverage_scope'] == 'impact', 'impact plan required')
     require(results.get('plan_id') == plan['plan_id'] and results.get('target') == plan['binding']['target'],
             'impact result binding mismatch')
-    require(results.get('suite') == 'focused' and results.get('successful') is True
-            and results.get('test_count', 0) > 0, 'successful focused results required')
+    require(results.get('suite') == 'impact' and results.get('successful') is True
+            and results.get('test_count', 0) > 0, 'successful impact results required')
     spec = importlib.util.spec_from_file_location('coverage_policy', ROOT / '.github/scripts/check_coverage_policy.py')
     checker = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(checker)
@@ -57,14 +57,18 @@ def impact_coverage(plan, policy, coverage, results):
         if set(mapping['modules']) & set(modules):
             require(set(mapping['positive_tests'] + mapping['negative_tests']) <= passed,
                     'missing critical surface PASS evidence: ' + mapping['surface'])
-    return {'coverage_mode': 'impact', 'modules': modules, 'repository_coverage_proved': False}
+    return {'coverage_scope': 'impact', 'modules': modules, 'repository_coverage_proved': False}
 
 
 def required_jobs(plan, python):
     require(python in {'3.11', '3.13'}, 'unknown Python gate')
     required = {'plan', 'documentation'}
-    if plan['change_class'] != 'fast':
-        required.update({'compatibility_' + python.replace('.', ''), 'coverage_quality'})
+    require(plan['behavioral_scope'] in {'none', 'focused', 'full'}
+            and plan['coverage_scope'] in {'none', 'impact', 'repository'}, 'unknown obligation scope')
+    if plan['behavioral_scope'] != 'none':
+        required.add('compatibility_' + python.replace('.', ''))
+    if plan['coverage_scope'] != 'none':
+        required.add('coverage_quality')
     if plan['package_smoke']:
         required.add('package_smoke')
     if plan['repository_smoke']:
@@ -89,17 +93,11 @@ def covers(previous, current):
     signature = unsigned.pop('plan_id', '')
     if digest(unsigned) != signature or previous.get('binding') != current['binding']:
         return False
-    if previous.get('policy_sha256') != current['policy_sha256']:
+    try:
+        require_obligations(previous, current)
+    except (ValueError, KeyError, TypeError):
         return False
-    if LEVELS.get(previous.get('change_class'), -1) < LEVELS[current['change_class']]:
-        return False
-    if previous['change_class'] == 'full':
-        return (previous.get('coverage_mode') == 'repository' and previous.get('package_smoke') is True
-                and previous.get('repository_smoke') is True and previous.get('python_versions') == ['3.11', '3.13'])
-    return (all(set(previous[key]) >= set(current[key]) for key in
-                ('test_groups', 'tests', 'coverage_modules', 'python_versions'))
-            and previous['impact_evidence'] == current['impact_evidence']
-            and all(previous[key] or not current[key] for key in ('package_smoke', 'repository_smoke')))
+    return True
 
 
 def metadata_continuity(plan):

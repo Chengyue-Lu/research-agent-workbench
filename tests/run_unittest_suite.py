@@ -123,7 +123,7 @@ def _suite_for(args: argparse.Namespace) -> unittest.TestSuite:
         loaded = loader.discover(str(TESTS), pattern="test_*.py", top_level_dir=str(TESTS))
         _assert_unique_tests(loaded)
         return loaded
-    if args.suite == "focused":
+    if args.suite in {"focused", "impact"}:
         if args.plan is None:
             raise ValueError("focused suite requires --plan")
         spec = importlib.util.spec_from_file_location("ci_planner", ROOT / ".github/scripts/plan_ci.py")
@@ -135,9 +135,11 @@ def _suite_for(args: argparse.Namespace) -> unittest.TestSuite:
         event_path = os.environ.get("GITHUB_EVENT_PATH")
         event = json.loads(Path(event_path).read_text(encoding="utf-8")) if event_path else None
         planner.verify_plan(ROOT, plan, event, os.environ.get("GITHUB_EVENT_NAME", "pull_request"))
-        if plan["change_class"] not in {"fast", "focused"}:
+        if args.suite == "focused" and plan["behavioral_scope"] not in {"none", "focused"}:
             raise ValueError("focused runner requires a selective plan")
-        loaded = loader.loadTestsFromNames(plan["tests"])
+        if args.suite == "impact" and plan["coverage_scope"] != "impact":
+            raise ValueError("impact runner requires impact coverage")
+        loaded = loader.loadTestsFromNames(plan["coverage_tests" if args.suite == "impact" else "tests"])
         if loader.errors or loaded.countTestCases() == 0:
             raise ValueError("focused plan has missing or empty test groups")
         _assert_unique_tests(loaded)
@@ -233,7 +235,7 @@ def _write_summary(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--suite", choices=("full", "coverage-quality", "focused"), required=True)
+    parser.add_argument("--suite", choices=("full", "coverage-quality", "focused", "impact"), required=True)
     parser.add_argument("--plan", type=Path)
     parser.add_argument("--policy", type=Path, default=TESTS / "coverage_policy.yaml")
     parser.add_argument("--json-output", type=Path, required=True)

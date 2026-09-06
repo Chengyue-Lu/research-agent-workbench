@@ -1,0 +1,118 @@
+{
+  "behavioral_scope": "full",
+  "binding": {
+    "base": "97f760c43e95b398c396987f349e2199c567cbc7",
+    "head": "0cad30aea22332369957f7a48f59ae3630566c5b",
+    "merge_base": "97f760c43e95b398c396987f349e2199c567cbc7",
+    "repository": "Chengyue-Lu/research-agent-workbench",
+    "target": "0cad30aea22332369957f7a48f59ae3630566c5b"
+  },
+  "change_class": "full",
+  "changed_lines": {},
+  "changes": [
+    {
+      "path": ".github/scripts/ci_checks.py",
+      "status": "M"
+    },
+    {
+      "path": ".github/scripts/plan_ci.py",
+      "status": "M"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "status": "M"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/TEST-PERF-002/OBLIGATIONS.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/TEST-PERF-002/README.md",
+      "status": "M"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/TEST-PERF-002/RISK_LEDGER.md",
+      "status": "M"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/TEST-PERF-002/VALIDATION.md",
+      "status": "M"
+    },
+    {
+      "path": "tests/ci_impact_policy.yaml",
+      "status": "M"
+    },
+    {
+      "path": "tests/fixtures/ci/pr65.json",
+      "status": "A"
+    },
+    {
+      "path": "tests/run_unittest_suite.py",
+      "status": "M"
+    },
+    {
+      "path": "tests/test_ci_checks.py",
+      "status": "M"
+    },
+    {
+      "path": "tests/test_ci_plan.py",
+      "status": "M"
+    }
+  ],
+  "coverage_lines": {},
+  "coverage_modules": [],
+  "coverage_scope": "repository",
+  "coverage_tests": [],
+  "impact_evidence": {},
+  "obligation_reasons": {
+    "behavioral_scope": [
+      "authority-sensitive PR requires complete behavioral regression"
+    ],
+    "coverage_scope": [
+      "coverage authority changed: .github/workflows/ci.yml",
+      "coverage authority changed: tests/run_unittest_suite.py"
+    ],
+    "package_smoke": [
+      "no packaging/install surface changed"
+    ],
+    "repository_smoke": [
+      "no repository validation surface changed"
+    ]
+  },
+  "package_smoke": false,
+  "plan_id": "72ac6582a314b7c19bf23e05b9220494749cf925878308bc76ee5a693c7861f8",
+  "policy_sha256": "ce581f476e6b7d16b6c00359b1a9525e2d7ad3fc12ecd2ec2d2deb55def64c6d",
+  "python_versions": [
+    "3.11",
+    "3.13"
+  ],
+  "reasons": [
+    ".github/scripts/ci_checks.py matches the R2 policy surface",
+    ".github/scripts/plan_ci.py matches the R2 policy surface",
+    ".github/workflows/ci.yml matches the R2 policy surface",
+    "PR declares a shared-contract impact",
+    "PR declares an authority, permission, or data-boundary impact",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/OBLIGATIONS.md -> documentation",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/README.md -> documentation",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/RISK_LEDGER.md -> documentation",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/VALIDATION.md -> documentation",
+    "base-side selection retained; policy metadata changed: tests/ci_impact_policy.yaml",
+    "test/document/archive data: tests/fixtures/ci/pr65.json",
+    "test/document/archive data: tests/test_ci_checks.py",
+    "test/document/archive data: tests/test_ci_plan.py",
+    "documentation -> "
+  ],
+  "repository_smoke": false,
+  "risk": "R2",
+  "surfaces": [
+    "documentation"
+  ],
+  "test_groups": [
+    "documentation"
+  ],
+  "tests": [
+    "test_documentation",
+    "test_pr_governance"
+  ],
+  "version": 2
+}

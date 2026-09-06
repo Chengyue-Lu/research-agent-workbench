@@ -104,3 +104,31 @@ the 95/90 critical floor. These runs cover the changed code blobs pinned by the
 The accepted-base product tree, full suite inventory and quality thresholds are retained. This closeout
 requires one new final-head FULL hosted run and cross-owner acceptance. Parent Issue #48 remains open;
 its broader hosted performance and profiling work is outside these three fixes.
+
+## Independent obligations (revision 4)
+
+Base is `develop@97f760c43e95b398c396987f349e2199c567cbc7`. PR #65 was merged after all ten
+exact-head checks passed, with the user's explicit authorization and a matching-head squash operation.
+Its receipt is pinned in the [revision-4 archive](../../../../work/TEST-PERF-002/A-20260907-002/INDEX.yaml).
+
+- Final Python 3.11.16 planner/checker suite: **48/48 PASS**. The exact 20-file PR #65 Git replay gives
+  R2/full behavior, coverage none and both smokes false. A-F, base-policy/fingerprint bypasses, metadata
+  reductions and required-job failure matrices are included.
+- Final planner: **346/347 lines (99.71%)**, **108/110 branches (98.18%)**; CI evidence checker:
+  **115/116 lines (99.14%)**, **34/36 branches (94.44%)**. Both retain zero exclusions and 95/90 floors.
+  This focused critical evidence does not establish repository coverage.
+- A separate, isolated bounded planner edit executed **33 impact tests PASS** with real coverage and
+  positive/negative acceptance evidence. Its checker accepted the plan and reported
+  `repository_coverage_proved: false`. Explicit filesystem measurement roots retain unimported package
+  files for complete exclusion reconciliation.
+- The local full suite before the final package dependency/configuration guard ran **903 tests**:
+  **900 PASS + 3 Windows symlink-permission skips**, zero failures/errors. The final guard has fresh
+  focused tests; final-head full behavior remains mandatory in hosted CI.
+- The local repository-coverage run was cancelled when superseded by that final guard. No final-head
+  repository coverage PASS is claimed here. The new PR requires repository coverage because its runner
+  and workflow coverage authority changed; package and repository smoke are independently false.
+- actionlint PASS; documentation links **9/9 PASS**; repository validation **183/0/0**; staged governance PASS.
+
+The archive pins source hashes, observable result summaries and plans, and declares native capture gaps.
+The new PR's exact-head CI and cross-owner review remain independent acceptance inputs. Global 90%,
+critical 95/90, exclusions, negative acceptance and existing behavioral tests are unchanged.

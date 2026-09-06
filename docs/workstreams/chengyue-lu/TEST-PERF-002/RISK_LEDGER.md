@@ -9,12 +9,16 @@ Owner: 路诚钺 (`Chengyue-Lu`); cross-owner: 黄毅 (`let778750-cpu`); R2.
 | Metadata cancels or replaces useful code CI | Separate content/governance concurrency and unique check producers | Hosted event/cancellation evidence |
 | Old FAST result reused after risk/base changes | Exact binding/policy and obligation comparison against content artifact; explicit FULL dispatch | Retarget/risk-elevation fixture and hosted rerun behavior |
 | Skipped or failed work appears green | Plan-aware fixed aggregates require every selected job to succeed | Adversarial missing/skip/cancel/failure matrix |
-| Selective coverage weakens repository quality | Whole-repository 90/95/90 on FULL; affected critical 95/90; ordinary changed code 100/100; no global PASS claim in impact report | Full coverage policy and impact adversarial evidence |
+| Selective coverage weakens repository quality | Repository 90/95/90 at integration/coverage-authority boundaries; affected critical 95/90; changed code 100/100; no global PASS claim in impact report | Coverage obligation and impact adversarial evidence |
 | A multiline continuation misses its branch origin | Map physical changes to the smallest enclosing statement span; verify mapped obligations; unmappable lines -> FULL | Real coverage arcs reject the missing branch and accept both paths |
 | FULL recovery is attached to another trigger SHA | Require dispatch GITHUB_SHA == current PR head before planning; retain exact merge-parent and metadata matching | Wrong/stale trigger rejects early; fresh head and merge candidate pass |
 | Tests are optimized by deleting behavior | Existing full suites preserved; selected groups use existing tests; new adversarial tests in full discovery | Compare suite inventory and negative acceptance |
 | Local timings overstate hosted savings | Duration artifacts retained; suite time, critical path and total runner time distinguished | Hosted measurements remain separate evidence |
 | Test fixtures inherit the outer workflow event | Synthetic PR CLI fixtures pass explicit event-name and run under PR/push/dispatch ambient contexts | Post-merge FULL must remain valid under push |
 | Remote settings fail to enforce check results | Preserve fixed check identities and record actual protection state | Remote protection configuration is an independent maintainer action |
+| Full behavior silently substitutes for missing coverage | Independent scope comparison and plan-aware gate requirements; metadata and job failure matrix | Review every lane and its reason |
+| A test-only R2 change acquires unrelated repository cost | Exact PR #65 fixture requires full behavior, coverage none, both smokes false | Preserve machine minimum and separate integration proof |
+| Candidate validator policy authorizes its own impact proof | CI validators use base critical inventory and acceptance mappings; source dependency uncertainty retains fail-safe | Review base-side authority and changed-line evidence |
 
-No threshold reduction, expanded exclusion, product-contract change, automatic merge or release is authorized by this workstream.
+The user explicitly authorized PR #65's merge after successful exact-head CI. The new obligation PR remains
+for cross-owner review. Quality thresholds, exclusions, product contracts and release authority retain their boundaries.

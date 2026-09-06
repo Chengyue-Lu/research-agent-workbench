@@ -27,7 +27,8 @@ jobs:
   plan:
     runs-on: ubuntu-latest
     outputs:
-      class: ${{ steps.plan.outputs.class }}
+      behavioral: ${{ steps.plan.outputs.behavioral }}
+      coverage: ${{ steps.plan.outputs.coverage }}
       package: ${{ steps.plan.outputs.package }}
       repository: ${{ steps.plan.outputs.repository }}
     steps:
@@ -65,9 +66,9 @@ jobs:
           name: ci-plan
       - name: Documentation and task surface evidence
         env:
-          CI_CLASS: ${{ needs.plan.outputs.class }}
+          CI_BEHAVIORAL: ${{ needs.plan.outputs.behavioral }}
         run: |
-          if [ "$CI_CLASS" = fast ]; then
+          if [ "$CI_BEHAVIORAL" = none ]; then
             python tests/run_unittest_suite.py --suite focused --plan ci-plan.json --json-output docs-results.json
           else
             python -m unittest tests.test_documentation
@@ -76,7 +77,7 @@ jobs:
 
   compatibility_311:
     needs: plan
-    if: needs.plan.outputs.class != 'fast'
+    if: needs.plan.outputs.behavioral != 'none'
     name: compatibility (3.11)
     runs-on: ubuntu-latest
     steps:
@@ -95,10 +96,10 @@ jobs:
           name: ci-plan
       - name: Run selected compatibility suite
         env:
-          CI_CLASS: ${{ needs.plan.outputs.class }}
+          CI_BEHAVIORAL: ${{ needs.plan.outputs.behavioral }}
         run: |
           suite=full
-          if [ "$CI_CLASS" = focused ]; then suite=focused; fi
+          if [ "$CI_BEHAVIORAL" = focused ]; then suite=focused; fi
           python tests/run_unittest_suite.py --suite "$suite" --plan ci-plan.json --json-output full-test-results-3.11.json --slowest 20
       - uses: actions/upload-artifact@v4
         if: always()
@@ -115,7 +116,7 @@ jobs:
 
   compatibility_313:
     needs: plan
-    if: needs.plan.outputs.class != 'fast'
+    if: needs.plan.outputs.behavioral != 'none'
     name: compatibility (3.13)
     runs-on: ubuntu-latest
     steps:
@@ -134,10 +135,10 @@ jobs:
           name: ci-plan
       - name: Run selected compatibility suite
         env:
-          CI_CLASS: ${{ needs.plan.outputs.class }}
+          CI_BEHAVIORAL: ${{ needs.plan.outputs.behavioral }}
         run: |
           suite=full
-          if [ "$CI_CLASS" = focused ]; then suite=focused; fi
+          if [ "$CI_BEHAVIORAL" = focused ]; then suite=focused; fi
           python tests/run_unittest_suite.py --suite "$suite" --plan ci-plan.json --json-output full-test-results-3.13.json --slowest 20
       - uses: actions/upload-artifact@v4
         if: always()
@@ -154,7 +155,7 @@ jobs:
 
   coverage_quality:
     needs: plan
-    if: needs.plan.outputs.class != 'fast'
+    if: needs.plan.outputs.coverage != 'none'
     name: coverage-quality (3.11)
     runs-on: ubuntu-latest
     steps:
@@ -173,11 +174,11 @@ jobs:
           name: ci-plan
       - name: Run repository or impact coverage
         env:
-          CI_CLASS: ${{ needs.plan.outputs.class }}
+          CI_COVERAGE: ${{ needs.plan.outputs.coverage }}
         run: |
           suite=coverage-quality
-          if [ "$CI_CLASS" = focused ]; then suite=focused; fi
-          python -m coverage run --branch tests/run_unittest_suite.py --suite "$suite" --plan ci-plan.json --policy tests/coverage_policy.yaml --json-output coverage-test-results.json --slowest 20
+          if [ "$CI_COVERAGE" = impact ]; then suite=impact; fi
+          python -m coverage run --branch --source=src/research_workbench,.github/scripts tests/run_unittest_suite.py --suite "$suite" --plan ci-plan.json --policy tests/coverage_policy.yaml --json-output coverage-test-results.json --slowest 20
       - name: Export coverage evidence
         run: python -m coverage json -o coverage.json
       - name: Preserve coverage and duration evidence
@@ -190,9 +191,9 @@ jobs:
           retention-days: 14
       - name: Enforce coverage obligations
         env:
-          CI_CLASS: ${{ needs.plan.outputs.class }}
+          CI_COVERAGE: ${{ needs.plan.outputs.coverage }}
         run: |
-          if [ "$CI_CLASS" = focused ]; then
+          if [ "$CI_COVERAGE" = impact ]; then
             python .github/scripts/ci_checks.py impact --plan ci-plan.json --coverage coverage.json --results coverage-test-results.json
           else
             python .github/scripts/check_coverage_policy.py --policy tests/coverage_policy.yaml --coverage coverage.json --test-results coverage-test-results.json

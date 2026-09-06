@@ -1,0 +1,79 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260907-002
+task_id: TEST-PERF-002
+task_revision: 4
+attempt_id: A-20260907-002
+archive_root: A-20260907-002
+baseline: 97f760c43e95b398c396987f349e2199c567cbc7
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: a205c256107fcdd89434a73a57fabc189c6e539534459c2895072167bdbce6a5
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 2dff8b3f286b1ea902c9486498517f1985a05f288384b1f425f80c6a19470b1c
+read_allowlist:
+- .github/**
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- docs/README.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- pyproject.toml
+- src/research_workbench/observability/trace.py
+- tests/**
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/ci_checks.py
+- .github/scripts/plan_ci.py
+- .github/workflows/ci.yml
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/ci_impact_policy.yaml
+- tests/fixtures/ci/pr65.json
+- tests/run_unittest_suite.py
+- tests/test_ci_checks.py
+- tests/test_ci_plan.py
+- work/TEST-PERF-002/A-20260907-002/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 71c6e1078afc8e4b4330451a57fa8e42b0823f9def15dc0857f69b5f8444933c
+  event_count: 7
+tool_event_refs:
+- path: tool-events/independent-obligations-validation-succeeded.json
+  sha256: ce78a2ff44cca9cf2c3e55f7e520a24b8b65ac13c49844c374c5e1f63685ad5d
+handoff_refs:
+- path: handoff/H0.md
+  sha256: 947a325f71177c197ab0775976d2964829892bb489f3ce51624ea5c6849132ec
+decision_refs: []
+output_refs:
+- path: outputs/code-manifest.json
+  sha256: 23a0bcd602657bdf050273d1140dd0d8cf2cb7b783ad311b48daf04c0f405359
+- path: AUDIT.md
+  sha256: 31c99668c2faa46f131e71d6d6b786b7acab22ce66ecb4473e3742a820f0dc15
+- path: WORKLOG.md
+  sha256: c51789f31e397b63b4c2f055a53f2f64f295f162d1011a16b45b7b2e37488a56
+check_refs:
+- path: checks/pr65-merge.json
+  sha256: f4f857e27dafce5a87cf4fa28b7cc890242927b5ae01a3b1f6629ba02ab71e3b
+- path: checks/validation-summary.json
+  sha256: c555c5e58d5ed471de27cef7258696d39885f1dac38ce1f73fd5bdb2706d6e0b
+- path: checks/impact-plan.json
+  sha256: 6729dfb84b959025de9a0f23d700ea036325e92717513f81d021bc2e956e04c3
+- path: checks/staged-plan.json
+  sha256: 921be727108ab2c0feb1f14eb2bc4fd83d49757faed9e628f4a14f2b63825798
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: tool-results
+- event_id: EVT-0006
+  affected_stream: events

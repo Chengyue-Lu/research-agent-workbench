@@ -27,15 +27,16 @@ NEG = 'test_example.Example.test_negative'
 
 
 def plan(level='focused'):
-    p = {'version': 1, 'binding': {'repository':'Example/repo','base':'a'*40,'head':'b'*40,
+    p = {'version': 2, 'binding': {'repository':'Example/repo','base':'a'*40,'head':'b'*40,
          'merge_base':'a'*40,'target':'c'*40}, 'change_class':level, 'risk':'R1', 'changes':[], 'surfaces':[],
          'test_groups':['example'], 'tests':['test_example'], 'coverage_modules':[MODULE],
          'impact_evidence':{'positive_tests':[POS],'negative_tests':[NEG]}, 'changed_lines':{MODULE:[1]},
-         'coverage_lines':{MODULE:[1]},
-         'policy_sha256':'d'*64,'python_versions':['3.11','3.13'], 'coverage_mode':'impact',
+         'coverage_lines':{MODULE:[1]}, 'coverage_tests':['test_example'],
+         'behavioral_scope': {'fast':'none','focused':'focused','full':'full'}[level], 'obligation_reasons':{},
+         'policy_sha256':'d'*64,'python_versions':['3.11','3.13'], 'coverage_scope':'impact',
          'package_smoke':False,'repository_smoke':False,'reasons':[]}
-    if level == 'full': p.update(coverage_mode='repository',package_smoke=True,repository_smoke=True)
-    if level == 'fast': p.update(coverage_mode='none',coverage_modules=[],changed_lines={},coverage_lines={},python_versions=[],impact_evidence={})
+    if level == 'full': p.update(coverage_scope='repository',package_smoke=True,repository_smoke=True)
+    if level == 'fast': p.update(coverage_scope='none',coverage_modules=[],changed_lines={},coverage_lines={},python_versions=[],impact_evidence={})
     return signed(p)
 
 
@@ -58,7 +59,7 @@ def coverage():
 
 
 def results(p):
-    return {'suite':'focused','successful':True,'test_count':2,'plan_id':p['plan_id'],'target':p['binding']['target'],
+    return {'suite':'impact','successful':True,'test_count':2,'plan_id':p['plan_id'],'target':p['binding']['target'],
             'tests':[{'id':name,'outcome':'passed'} for name in (POS,NEG)]}
 
 
@@ -101,8 +102,18 @@ class ImpactCoverageTests(unittest.TestCase):
         cov['files'][MODULE]['summary']['covered_lines']=20
         self.assertFalse(checks.impact_coverage(p,pol,cov,results(p))['repository_coverage_proved'])
 
+    def test_r2_full_behavior_retains_impact_thresholds_and_pass_evidence(self):
+        p = plan(); p.update(risk='R2', behavioral_scope='full', change_class='full'); signed(p)
+        checks.impact_coverage(p, policy(), coverage(), results(p))
+        for line, branch in ((94, 90), (95, 89)):
+            cov = coverage(); cov['files'][MODULE]['summary'].update(covered_lines=line, covered_branches=branch)
+            with self.assertRaises(ValueError): checks.impact_coverage(p, policy(), cov, results(p))
+        for index in (0, 1):
+            evidence = results(p); evidence['tests'][index]['outcome'] = 'skipped'
+            with self.assertRaises(ValueError): checks.impact_coverage(p, policy(), coverage(), evidence)
+
     def test_missing_wrong_and_lower_quality_evidence_is_rejected(self):
-        cases=[('plan',lambda x:x.update(change_class='fast')),('plan',lambda x:x.update(coverage_modules=[])),
+        cases=[('plan',lambda x:x.update(coverage_scope='none')),('plan',lambda x:x.update(coverage_modules=[])),
           ('results',lambda x:x.update(plan_id='wrong')),('results',lambda x:x.update(target='wrong')),
           ('results',lambda x:x.update(successful=False)),('results',lambda x:x.update(test_count=0)),
           ('results',lambda x:x['tests'].pop()),('results',lambda x:x['tests'][0].update(outcome='skipped')),
@@ -129,6 +140,26 @@ class ImpactCoverageTests(unittest.TestCase):
 
 
 class AggregateTests(unittest.TestCase):
+    def test_independent_obligations_and_required_coverage_failure_matrix(self):
+        for scope in ('none', 'impact', 'repository'):
+            p = plan('full'); p.update(coverage_scope=scope, package_smoke=False, repository_smoke=False)
+            for python in ('3.11', '3.13'):
+                required = checks.required_jobs(p, python)
+                self.assertEqual(scope != 'none', 'coverage_quality' in required)
+                self.assertNotIn('package_smoke', required)
+                self.assertNotIn('repository_smoke', required)
+                needs = {name: {'result': 'success'} for name in required}
+                if scope == 'none': needs['coverage_quality'] = {'result': 'skipped'}
+                checks.aggregate(p, needs, python)
+                if scope != 'none':
+                    for state in ('skipped', 'cancelled', 'failure', None):
+                        bad = copy.deepcopy(needs)
+                        if state is None: bad.pop('coverage_quality')
+                        else: bad['coverage_quality']['result'] = state
+                        with self.assertRaises(ValueError): checks.aggregate(p, bad, python)
+        p['coverage_scope'] = 'unknown'
+        with self.assertRaises(ValueError): checks.required_jobs(p, '3.11')
+
     def test_all_three_levels_require_only_proven_obligations(self):
         for level in ('fast','focused','full'):
             p=plan(level)
@@ -154,6 +185,17 @@ class AggregateTests(unittest.TestCase):
 
 
 class MetadataTests(unittest.TestCase):
+    def test_full_behavior_cannot_substitute_for_required_coverage_or_smokes(self):
+        previous = plan('full'); previous.update(coverage_scope='none', package_smoke=False, repository_smoke=False); signed(previous)
+        current = copy.deepcopy(previous)
+        self.assertTrue(checks.covers(previous, current))
+        for key, value in [('coverage_scope', 'impact'), ('coverage_scope', 'repository'),
+                           ('package_smoke', True), ('repository_smoke', True), ('risk', 'R2')]:
+            current = copy.deepcopy(previous); current[key] = value; signed(current)
+            self.assertFalse(checks.covers(previous, current))
+        previous['version'] = 1; signed(previous)
+        self.assertFalse(checks.covers(previous, plan()))
+
     def test_same_binding_can_reuse_stronger_content_obligations(self):
         self.assertTrue(checks.covers(plan(),plan()))
         self.assertTrue(checks.covers(plan('full'),plan()))
@@ -209,6 +251,11 @@ class WorkflowTests(unittest.TestCase):
             self.assertEqual('test ('+python+')',job['name'])
             self.assertIn('always()',job['if'])
             self.assertIn('documentation',job['needs'])
+            self.assertIn('outputs.behavioral', content['jobs']['compatibility_' + suffix]['if'])
+        self.assertIn('outputs.coverage', content['jobs']['coverage_quality']['if'])
+        self.assertNotIn('outputs.class', (ROOT / '.github/workflows/ci.yml').read_text())
+        self.assertIn('--source=src/research_workbench,.github/scripts',
+                      (ROOT / '.github/workflows/ci.yml').read_text())
 
 
 class EntryPointTests(unittest.TestCase):

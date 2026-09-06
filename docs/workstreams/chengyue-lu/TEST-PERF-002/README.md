@@ -11,7 +11,8 @@
 
 [`plan_ci.py`](../../../../.github/scripts/plan_ci.py) reads exact base/head/merge-base Git facts and the
 accepted base [`ci_impact_policy.yaml`](../../../../tests/ci_impact_policy.yaml). Governance v2 supplies the risk
-floor. Policy/runner/checker changes require FULL, including the bootstrap PR that introduces the planner.
+floor. Plan v2 derives behavior, coverage and both smoke obligations independently. R2 always requires full
+behavioral regression. Candidate policy changes never authorize their own lighter selection.
 Git replacement objects are disabled for the planner's reads; immutable Git blobs are cached by repository,
 exact commit and path. No mutable branch-name result is cached.
 
@@ -22,16 +23,22 @@ machine minimum. The PR's declared risk can raise the inferred floor and cannot 
 The impact policy uses strict JSON (a YAML subset); duplicate keys and ambiguous YAML constructs are rejected.
 Consumers reject tracked checkout drift and unexpected source/test/CI files before executing a plan.
 
-| Class | Execution |
+| Behavioral class | Behavioral execution |
 |---|---|
 | FAST | Allowlisted documentation with acceptable risk: documentation/links, task/governance tests and diff check; governance independently validates the real PR |
-| FOCUSED | Closed groups and downstream consumers on Python 3.11/3.13, impact coverage, required package/repository smoke |
-| FULL | Complete dual-Python behavioral suites, repository Coverage Policy, documentation, package and repository smoke |
+| FOCUSED | Closed groups and downstream consumers on Python 3.11/3.13 |
+| FULL | Complete dual-Python behavioral suites |
 
-R2, shared Schema/Registry, high-fanout/unclassified source, CI/test infrastructure, new/deleted/renamed source,
-stale base, invalid/missing policy or incomplete groups select FULL. If exact commit facts cannot be read,
-execution fails instead of inventing a usable plan. All develop/main push and release boundaries remain FULL.
+`change_class` is a diagnostic alias for `behavioral_scope`; jobs consume their own obligation fields.
+R2, shared Schema/Registry and test/infrastructure changes select full behavior. Test/fixture/archive data and
+selection-policy metadata can have `coverage_scope: none` and no smokes. Bounded executable changes require
+impact coverage; coverage-authority changes and uncertain executable closure require repository coverage.
+Stale base, invalid/missing policy and unavailable closure retain complete fail-safe evidence. If exact commit
+facts cannot be read, execution fails instead of inventing a usable plan. All develop/main push and release
+boundaries retain full behavior, repository coverage and both smokes.
 Authority documents are subject to Governance risk even when an allowlist pattern matches them.
+
+The detailed obligation matrix, reasons and PR #65 acceptance fixture are in [OBLIGATIONS.md](OBLIGATIONS.md).
 
 ## Initial focused closure
 
@@ -52,11 +59,11 @@ final validation and limitations are recorded in [VALIDATION.md](VALIDATION.md).
 
 ## Coverage Policy v2.1
 
-[`coverage_policy.yaml`](../../../../tests/coverage_policy.yaml) remains the threshold authority. FULL keeps
+[`coverage_policy.yaml`](../../../../tests/coverage_policy.yaml) remains the threshold authority. Repository coverage keeps
 canonical package-wide line >=90% and every critical module line >=95% / branch >=90%, with the existing
 positive/negative acceptance and exact exclusion reconciliation.
 
-FOCUSED uses the same full measurement roots and preserves its artifact. Each impacted critical file must
+Impact coverage uses the same full measurement roots and preserves its artifact. Each impacted critical file must
 still satisfy whole-file 95/90 plus its own positive/negative evidence. For ordinary files, changed executable
 lines and outgoing branches require 100% coverage. Git derives physical `changed_lines`; the planner expands
 each line to the smallest enclosing AST statement span in `coverage_lines`, preserving multiline statement
@@ -103,5 +110,6 @@ check names does not claim remote protection is enabled. This PR does not change
 
 The [Risk Ledger](RISK_LEDGER.md), validation record, PR diff and bounded Attempt archive are the review inputs.
 Post-merge behavior and the integration fixture repair are recorded in [HOSTED_VERIFICATION.md](HOSTED_VERIFICATION.md).
-The work uses the existing Audit ID path, as PR #49 did, and does not modify M-series Task states. Cross-owner
-review and exact-head required checks are merge prerequisites. No self-merge or release operation is included.
+The work uses the existing Audit ID path, as PR #49 did, and does not modify M-series Task states. PR #65 was
+merged at the user's explicit instruction after all ten exact-head checks passed. Its merge is `97f760c`.
+The independent-obligation implementation is a new R2 PR for cross-owner review.

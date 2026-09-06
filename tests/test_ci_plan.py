@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import importlib.util
 import json
 import os
@@ -46,6 +47,9 @@ class PlannerTests(unittest.TestCase):
         write(cls.seed, '.gitignore', '__pycache__/\n')
         for path in planner.TRUST_FILES:
             write(cls.seed, path, (ROOT / path).read_bytes())
+        write(cls.seed, 'pyproject.toml', (ROOT / 'pyproject.toml').read_bytes())
+        for name in ('test_ci_plan', 'test_ci_checks', 'test_governance_helper_branches'):
+            write(cls.seed, 'tests/' + name + '.py', 'import unittest\nclass Example(unittest.TestCase):\n    def test_ok(self): pass\n')
         for name in {t.split('.')[0] for g in cls.policy['groups'].values() for t in g['tests']}:
             write(cls.seed, 'tests/' + name + '.py', 'import unittest\nclass Example(unittest.TestCase):\n    def test_ok(self): pass\n')
         for path in LEAVES:
@@ -221,7 +225,7 @@ class PlannerTests(unittest.TestCase):
         self.assertIn('documentation', plan['test_groups'])
         planner.verify_plan(self.repo, plan)
         for key, value in [('test_groups', []), ('tests', []), ('coverage_modules', []), ('python_versions', []),
-                           ('package_smoke', False), ('repository_smoke', False), ('coverage_mode', 'none'),
+                           ('package_smoke', False), ('repository_smoke', False), ('coverage_scope', 'none'),
                            ('policy_sha256', 'fake'), ('impact_evidence', {})]:
             tampered = copy.deepcopy(plan)
             tampered[key] = value
@@ -230,10 +234,10 @@ class PlannerTests(unittest.TestCase):
                 planner.verify_plan(self.repo, tampered)
 
     def test_wrong_digest_target_and_lowered_class_are_rejected(self):
-        self.commit()
-        plan = self.plan(force_full=True)
+        self.commit('src/unknown.py', 'VALUE = 1\n')
+        plan = self.plan()
         for mutate in (lambda p: p.update(plan_id='fake'), lambda p: p['binding'].update(target=self.base),
-                       lambda p: p.update(coverage_mode='none')):
+                       lambda p: p.update(coverage_scope='none')):
             bad = copy.deepcopy(plan)
             mutate(bad)
             if bad['plan_id'] != 'fake':
@@ -393,6 +397,141 @@ class PlannerTests(unittest.TestCase):
                 with self.assertRaises(ValueError):runner._suite_for(args)
             path.write_bytes(planner.canonical(self.plan(force_full=True)))
             with self.assertRaises(ValueError):runner._suite_for(args)
+            with self.assertRaises(ValueError):
+                runner._suite_for(argparse.Namespace(suite='impact', plan=path))
+            source = (self.repo / '.github/scripts/plan_ci.py').read_text()
+            self.commit('.github/scripts/plan_ci.py', source.replace("'fast': 0,", "'fast': 0 + 0,"))
+            p = self.plan(body=BODY.replace('R0', 'R2'))
+            path.write_bytes(planner.canonical(p))
+            self.assertEqual('full', p['behavioral_scope'])
+            self.assertGreater(runner._suite_for(argparse.Namespace(suite='impact', plan=path)).countTestCases(), 0)
+
+    def test_r2_test_fixture_and_fingerprint_refresh_have_no_coverage_or_smokes(self):
+        for path in ('tests/test_unselected.py', 'tests/fixtures/case.json', 'work/example/result.yaml'):
+            with self.subTest(path=path):
+                command(self.repo, 'reset', '--hard', self.base)
+                self.commit(path, 'fixture change\n')
+                p = self.plan(body=BODY.replace('R0', 'R2'))
+                self.assertEqual(('full', 'none', False, False),
+                    tuple(p[k] for k in ('behavioral_scope', 'coverage_scope', 'package_smoke', 'repository_smoke')))
+                self.assertIn('no production/critical', p['obligation_reasons']['coverage_scope'][0])
+        self.commit('tests/test_unselected.py', 'reviewed test change\n')
+        reviewed = copy.deepcopy(self.policy)
+        reviewed['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, 'HEAD', LEAVES)
+        self.commit(planner.POLICY, planner.canonical(reviewed))
+        self.assertEqual('none', self.plan(body=BODY.replace('R0', 'R2'))['coverage_scope'])
+
+    def test_r2_bounded_critical_validator_requires_impact_with_base_acceptance(self):
+        path = '.github/scripts/plan_ci.py'
+        source = (self.repo / path).read_text()
+        self.commit(path, source.replace("'fast': 0,", "'fast': 0 + 0,"))
+        p = self.plan(body=BODY.replace('R0', 'R2'))
+        self.assertEqual(('full', 'impact', False, False),
+            tuple(p[k] for k in ('behavioral_scope', 'coverage_scope', 'package_smoke', 'repository_smoke')))
+        self.assertEqual([path], p['coverage_modules'])
+        self.assertTrue(p['impact_evidence']['positive_tests'] and p['impact_evidence']['negative_tests'])
+        self.assertIn('test_ci_plan', p['coverage_tests'])
+        planner.verify_plan(self.repo, p)
+        event = {'pull_request': {'base': {'sha': self.base, 'ref': 'develop', 'repo': {'full_name': 'Example/repo'}},
+            'head': {'sha': p['binding']['head']}, 'body': BODY + '\ncoverage_scope: none'}}
+        self.assertEqual('impact', planner.event_plan(self.repo, event, 'pull_request')['coverage_scope'])
+        for key, value in [('coverage_scope', 'none'), ('coverage_modules', []), ('coverage_tests', []),
+                           ('impact_evidence', {}), ('behavioral_scope', 'focused')]:
+            tampered = copy.deepcopy(p); tampered[key] = value
+            tampered['plan_id'] = planner.digest({k:v for k,v in tampered.items() if k != 'plan_id'})
+            with self.subTest(key=key), self.assertRaises(ValueError): planner.verify_plan(self.repo, tampered, event)
+
+    def test_coverage_authority_semantics_require_repository_proof(self):
+        path = 'tests/coverage_policy.yaml'
+        initial = yaml.safe_load((self.repo / path).read_bytes())
+        for mutate in (lambda p:p['thresholds']['global'].update(line=91),
+                       lambda p:p.update(source_root='src'), lambda p:p['critical_modules'].append('new.py'),
+                       lambda p:p['justified_exclusions'].clear(), lambda p:p['negative_acceptance'].pop()):
+            command(self.repo, 'reset', '--hard', self.base)
+            policy = copy.deepcopy(initial); mutate(policy)
+            self.commit(path, yaml.safe_dump(policy))
+            p = self.plan()
+            self.assertEqual(('full', 'repository'), (p['behavioral_scope'], p['coverage_scope']))
+            self.assertFalse(p['package_smoke'] or p['repository_smoke'])
+        source = (self.repo / '.github/scripts/plan_ci.py').read_text()
+        self.commit('.github/scripts/plan_ci.py', source + '\nimport fractions\n')
+        p = self.plan()
+        self.assertEqual('repository', p['coverage_scope'])
+        self.assertFalse(p['package_smoke'] or p['repository_smoke'])
+
+    def test_unknown_executable_and_integration_are_complete_fail_safe(self):
+        self.commit('src/consumer.py', 'VALUE = 2\n')
+        for kwargs in ({}, {'integration': True}, {'base_ref': 'main'}, {'base_ref': 'release/v1.0.0'}):
+            p = self.plan(**kwargs)
+            self.assertEqual(('full', 'repository', True, True),
+                tuple(p[k] for k in ('behavioral_scope', 'coverage_scope', 'package_smoke', 'repository_smoke')))
+
+    def test_pr65_exact_git_diff_is_full_behavior_without_coverage_or_smokes(self):
+        fixture = json.loads((ROOT / 'tests/fixtures/ci/pr65.json').read_bytes())
+        self.assertEqual('09f96193845ee0e73a215d87ba188b5aa5569704', fixture['head'])
+        for side in ('base', 'head'):
+            for row in fixture['changes']:
+                blob = row[side]
+                if blob is None:
+                    (self.repo / row['path']).unlink(missing_ok=True)
+                else:
+                    self.assertEqual(blob['sha256'], hashlib.sha256(blob['content'].encode()).hexdigest())
+                    write(self.repo, row['path'], blob['content'])
+            command(self.repo, 'add', '.')
+            command(self.repo, 'commit', '-qm', 'exact PR 65 ' + side + ' blobs')
+            if side == 'base': self.base = command(self.repo, 'rev-parse', 'HEAD')
+        p = self.plan(body=BODY.replace('R0', 'R2').replace('impact**: no', 'impact**: yes'))
+        self.assertEqual([{'status': r['status'], 'path': r['path']} for r in fixture['changes']], p['changes'])
+        self.assertEqual(('R2', 'full', 'none', False, False),
+            tuple(p[k] for k in ('risk', 'behavioral_scope', 'coverage_scope', 'package_smoke', 'repository_smoke')))
+
+    def test_smokes_and_coverage_config_are_independent_of_full_behavior(self):
+        cases = [('schemas/new.json', '{}', True, True), ('registry/new.yaml', 'version: 1', False, True),
+                 ('examples/new.yaml', 'example: true', False, True),
+                 ('pyproject.toml', (self.repo / 'pyproject.toml').read_text().replace('version = "0.1.0"', 'version = "0.1.1"'), True, False)]
+        for path, content, package, repository in cases:
+            command(self.repo, 'reset', '--hard', self.base)
+            self.commit(path, content)
+            p = self.plan(body=BODY.replace('R0', 'R2'))
+            self.assertEqual(('full', 'none', package, repository),
+                tuple(p[k] for k in ('behavioral_scope', 'coverage_scope', 'package_smoke', 'repository_smoke')))
+        command(self.repo, 'reset', '--hard', self.base)
+        self.commit('pyproject.toml', (self.repo / 'pyproject.toml').read_text().replace('branch = true', 'branch = false'))
+        self.assertEqual('repository', self.plan()['coverage_scope'])
+        for before, after in [('PyYAML>=6,<7', 'PyYAML>=6.1,<7'), ('setuptools>=69', 'setuptools>=70'),
+                              ('requires-python = ">=3.11"', 'requires-python = ">=3.12"'),
+                              ('research_workbench.cli:main', 'research_workbench.cli:another')]:
+            command(self.repo, 'reset', '--hard', self.base)
+            self.commit('pyproject.toml', (self.repo / 'pyproject.toml').read_text().replace(before, after))
+            p = self.plan()
+            self.assertEqual('repository', p['coverage_scope'])
+            self.assertTrue(p['package_smoke'])
+
+    def test_validator_inventory_mapping_and_new_import_fail_safe(self):
+        path = '.github/scripts/plan_ci.py'
+        original = (self.repo / path).read_text()
+        self.commit(path, original.replace("'fast': 0,", "'fast': 0 + 0,"))
+        raw = planner.read_at
+        authority = yaml.safe_load((self.repo / 'tests/coverage_policy.yaml').read_bytes())
+        for mutate in (lambda p:p['critical_modules'].remove(path), lambda p:p.update(negative_acceptance=[]),
+                       lambda p:p['negative_acceptance'][0].update(positive_tests=[])):
+            bad = copy.deepcopy(authority); mutate(bad)
+            with patch.object(planner, 'read_at', side_effect=lambda r,c,p: yaml.safe_dump(bad).encode()
+                              if p == 'tests/coverage_policy.yaml' else raw(r,c,p)):
+                self.assertEqual('repository', self.plan()['coverage_scope'])
+        self.commit(path, original + '\nimport fractions\n')
+        self.assertEqual('repository', self.plan()['coverage_scope'])
+
+    def test_candidate_policy_and_fingerprint_cannot_approve_new_consumer_closure(self):
+        write(self.repo, 'tests/test_new_consumer.py', 'new executable consumer\n')
+        self.commit(LEAVES[0], 'VALUE = 2\n')
+        candidate = copy.deepcopy(self.policy)
+        candidate['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, 'HEAD', LEAVES)
+        candidate['groups']['provider-wire']['tests'].append('test_new_consumer')
+        self.commit(planner.POLICY, planner.canonical(candidate))
+        p = self.plan()
+        self.assertEqual('repository', p['coverage_scope'])
+        self.assertIn('candidate consumer inventory changed', ' '.join(p['reasons']))
 
 
 if __name__ == '__main__':
