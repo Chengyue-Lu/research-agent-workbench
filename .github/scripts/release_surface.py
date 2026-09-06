@@ -181,6 +181,7 @@ def policy_at(repo: Path, source: str, version: str, source_entries: dict) -> tu
     # Every historical identity reachable from source must still be present with
     # exactly its original semantics, including identities on merged histories.
     history = git(repo, "log", "--full-history", "--format=%H", source, "--", POLICY).decode().splitlines()
+    history_versions = {}
     for commit in history:
         listing = git(repo, "ls-tree", commit, "--", POLICY).split()
         require(bool(listing), "release policy removed from source history")
@@ -189,6 +190,22 @@ def policy_at(repo: Path, source: str, version: str, source_entries: dict) -> tu
         require(previous["policy_id"] == policy["policy_id"], "policy identity changed")
         for item in previous["policies"]:
             require(by_version.get(item["version"]) == item, "append-only policy version drift")
+        history_versions[commit] = {item["version"] for item in previous["policies"]}
+    # Check first introduction against all ancestors of each commit. A merge may
+    # inherit a non-prefix union of versions, but cannot insert a new lower one.
+    # Auditing each introduction also prevents a later unchanged source commit
+    # from laundering an earlier retroactive insertion into historical identity.
+    inherited_versions: dict[str, set[str]] = {}
+    graph = git(repo, "rev-list", "--reverse", "--topo-order", "--parents", source).decode().splitlines()
+    for row in graph:
+        commit, *parents = row.split()
+        inherited = set().union(*(inherited_versions[parent] for parent in parents))
+        introduced = history_versions.get(commit, set()) - inherited
+        if inherited:
+            maximum = max(tuple(map(int, identity.split("."))) for identity in inherited)
+            require(all(tuple(map(int, identity.split("."))) > maximum for identity in introduced),
+                    "append-only policy retroactive version insertion")
+        inherited_versions[commit] = inherited | introduced
     return by_version[version], raw
 
 
@@ -207,7 +224,7 @@ def expectations(repo: Path, expected: dict) -> None:
             "current main parent drift; regenerate")
     ci = expected["source_ci"]
     require(ci["repository"] == expected["repository"] and ci["sha"] == expected["source"], "CI source binding mismatch")
-    require(sorted(ci["required_checks"]) == REQUIRED_CHECKS, "CI required-check closure mismatch")
+    require(ci["required_checks"] == REQUIRED_CHECKS, "CI required-check closure/canonical order mismatch")
 
 
 def project(repo: Path, expected: dict) -> dict[str, tuple[str, bytes]]:

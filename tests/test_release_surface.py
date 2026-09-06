@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import importlib.util
 import io
+import itertools
 import json
 import os
 import shutil
@@ -250,6 +251,75 @@ class ReleaseSurfaceTests(unittest.TestCase):
         self.update_source()
         with self.assertRaisesRegex(release.ReleaseError, "append-only"):
             release.project(self.repo, self.expected)
+
+    def test_policy_version_cannot_be_inserted_before_history(self):
+        policy = copy.deepcopy(self.policy)
+        policy["policies"].insert(0, {**policy["policies"][0], "version": "0.9.0"})
+        write(self.repo, release.POLICY, release.canonical(policy))
+        self.update_source()
+        with self.assertRaisesRegex(release.ReleaseError, "retroactive"):
+            release.project(self.repo, self.expected)
+        # A later source commit with unchanged policy must not launder the insertion.
+        write(self.repo, "src/run.py", b"print('later clean source')\n")
+        self.update_source()
+        with self.assertRaisesRegex(release.ReleaseError, "retroactive"):
+            release.project(self.repo, self.expected)
+
+    def test_policy_version_cannot_be_inserted_between_historical_versions(self):
+        self.policy_version(lambda policy: None)
+        policy = json.loads((self.repo / release.POLICY).read_bytes())
+        policy["policies"].insert(1, {**policy["policies"][0], "version": "1.5.0"})
+        write(self.repo, release.POLICY, release.canonical(policy))
+        self.update_source()
+        with self.assertRaisesRegex(release.ReleaseError, "retroactive"):
+            release.project(self.repo, self.expected)
+
+    def test_merged_nonprefix_policy_histories_and_new_maximum_are_valid(self):
+        base = self.expected["source"]
+        self.policy_version(lambda policy: None)
+        left = json.loads((self.repo / release.POLICY).read_bytes())
+        command(self.repo, "checkout", "-qb", "side", base)
+        right = copy.deepcopy(self.policy)
+        right["policies"].append({**right["policies"][0], "version": "3.0.0"})
+        write(self.repo, release.POLICY, release.canonical(right))
+        self.update_source(version="3.0.0")
+        command(self.repo, "checkout", "-q", "develop")
+        command(self.repo, "merge", "--no-commit", "--no-ff", "-s", "ours", "side")
+        combined = copy.deepcopy(left)
+        combined["policies"].append(right["policies"][-1])
+        write(self.repo, release.POLICY, release.canonical(combined))
+        self.update_source(version="3.0.0")
+        # [1, 3] is not a prefix of [1, 2, 3], but both identities are inherited.
+        self.assertTrue(release.project(self.repo, self.expected))
+        combined["policies"].append({**combined["policies"][-1], "version": "10.0.0"})
+        write(self.repo, release.POLICY, release.canonical(combined))
+        self.update_source(version="10.0.0")
+        files = release.project(self.repo, self.expected)
+        candidate, tree = self.candidate(files)
+        self.assertEqual(tree, release.check(self.repo, self.expected, candidate)["tree"])
+        combined["policies"].insert(3, {**combined["policies"][-1], "version": "4.0.0"})
+        write(self.repo, release.POLICY, release.canonical(combined))
+        self.update_source()
+        with self.assertRaisesRegex(release.ReleaseError, "retroactive"):
+            release.project(self.repo, self.expected)
+
+    def test_required_check_permutations_have_only_one_legal_tree(self):
+        files = release.project(self.repo, self.expected)
+        candidate, tree = self.candidate(files)
+        legal = []
+        for ordering in itertools.permutations(release.REQUIRED_CHECKS):
+            expected = copy.deepcopy(self.expected)
+            expected["source_ci"]["required_checks"] = list(ordering)
+            if list(ordering) == release.REQUIRED_CHECKS:
+                self.assertEqual(files, release.project(self.repo, expected))
+                self.assertEqual(tree, release.check(self.repo, expected, candidate)["tree"])
+                legal.append(ordering)
+            else:
+                with self.subTest(ordering=ordering), self.assertRaisesRegex(release.ReleaseError, "canonical order"):
+                    release.project(self.repo, expected)
+                with self.assertRaisesRegex(release.ReleaseError, "canonical order"):
+                    release.check(self.repo, expected, candidate)
+        self.assertEqual([tuple(release.REQUIRED_CHECKS)], legal)
 
     def test_policy_history_removal_and_restore_is_rejected(self):
         (self.repo / release.POLICY).unlink()

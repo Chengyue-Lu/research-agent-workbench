@@ -137,6 +137,9 @@ release decision 全部满足后，同时冻结 exact develop source SHA 与 exa
 tree equality、release checks、R2 review、merge commit、tag 与 artifact/hash 必须绑定同一 source/parent/
 manifest；release branch 永不合并回 develop。
 
+Release-only workflow / release checks 及其 exact policy include 由 M14-005 的 develop-side readiness/cutover
+slice 交付；发行面变化追加新的 policy version，并在该 Task 的 R2 review 中验收。
+
 ## 允许读取与写入
 
 task-definition 只写 canonical docs、ADR、workstream 与导航。后续实现必须按 exact M14 Task 进一步限定：

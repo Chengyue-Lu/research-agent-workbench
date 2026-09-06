@@ -27,8 +27,11 @@ generator emits canonical JSON from a closed set of source/parent/release/policy
 The [policy](../../.github/release-surface.yml) is strict JSON, a subset of YAML, to avoid duplicate mapping keys,
 aliases and implementation-dependent YAML coercions. Its [Schema](../../schemas/v0.1.0/release-surface-policy.schema.json)
 permits only an ordered list of immutable policy versions. Every version visible anywhere in the source commit's
-policy history must remain present with identical semantics. New versions append; removal, identity replacement
-or a same-version rewrite fails. Comments and formatting are not a second policy input.
+policy history must remain present with identical semantics. At each historical introduction, new versions must
+exceed the maximum version in that commit's ancestor histories. Merges retain the union of inherited identities;
+individual parent lists need not be prefixes of the merged list. Later unchanged commits cannot legitimize an
+earlier retroactive insertion. Removal, identity replacement or a same-version rewrite also fails. Comments and
+formatting are not a second policy input.
 
 Includes use exact `file` or `tree` entries, with no glob interpretation. Every include must exist and have an
 unambiguous kind; duplicate or overlapping selection fails. Broad `registry`, `.agents` and `.codex` roots are
@@ -76,6 +79,8 @@ python .github/scripts/release_surface.py check --repo <source-checkout> --expec
 The expectations shape is `$defs.expectations` in the manifest Schema. Source CI is the `CI` workflow with a positive
 run ID, the exact source/repository, success conclusion and all required governance/Python checks. Supplying these
 fields does not prove their GitHub authenticity; protected-caller wiring remains a release-readiness prerequisite.
+`required_checks` must use the unique canonical order `["governance", "test (3.11)", "test (3.13)"]`.
+Other permutations fail before projection, so the same logical check set cannot produce a second legal manifest/tree.
 
 Both successful commands report `merge_eligible: false`. They do not create branches, commits, tags or remote
 effects. M14-001 governance continues to reject all curated-release attempts until M14-005 cutover.

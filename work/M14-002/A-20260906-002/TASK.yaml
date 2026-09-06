@@ -1,0 +1,37 @@
+task_id: M14-002
+revision: 2
+owner: Chengyue-Lu
+risk: R2
+handoff_level: H0
+baseline: 87d8dc497e6469d26f5849a3d3d2d0a7d1c377ea
+authorization: 'User requested remediation of M14-002 review findings in PR #60.'
+goal: Close retroactive policy insertion and required-check canonical ordering findings.
+profile: 'main-agent: bounded review remediation'
+required_skills: []
+delegation: false
+write_scope:
+- .github/scripts/release_surface.py
+- tests/test_release_surface.py
+- tests/coverage_policy.yaml
+- docs/implementation/RELEASE_SURFACE.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md
+- work/M14-002/A-20260906-002/**
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md
+- .github/**
+- schemas/v0.1.0/agent-trace-*.schema.json
+- src/research_workbench/observability/trace.py
+- work/M14-002/A-20260906-001/TASK.yaml
+- .github/scripts/release_surface.py
+- tests/test_release_surface.py
+- tests/coverage_policy.yaml
+- docs/implementation/RELEASE_SURFACE.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md
+- work/M14-002/A-20260906-002/**
+stop_conditions:
+- No release topology activation, branch, tag or merge.
+- No changes to frozen historical attempt evidence or Task definitions.
