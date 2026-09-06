@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/runtime-resource-manifest.schema.json",
+  "title": "Runtime Resource Manifest",
+  "x-rwb-document-kind": "runtime_resource_manifest",
+  "type": "object",
+  "required": ["schema_version", "kind", "manifest_id", "version", "entries"],
+  "properties": {
+    "schema_version": {"const": "0.1.0"},
+    "kind": {"const": "runtime_resource_manifest"},
+    "manifest_id": {"const": "rwb-runtime-resources"},
+    "version": {"const": "1.0.0"},
+    "entries": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["logical_path", "installed_path", "kind", "size", "sha256"],
+        "properties": {
+          "logical_path": {"type": "string", "minLength": 1},
+          "installed_path": {"type": "string", "minLength": 1},
+          "kind": {"enum": ["schema", "research_mode", "mode_action_registry", "mode_action", "decision_authority_matrix", "capability_requirement_index", "capability_requirement", "protocol_profile_index", "protocol_profile", "skill_release_projection_index", "skill_release_projection", "skill_manifest", "skill_asset", "task_packet"]},
+          "size": {"type": "integer", "minimum": 0},
+          "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

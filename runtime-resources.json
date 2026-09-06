@@ -1,0 +1,15 @@
+{
+  "catalogs": [
+    {"path": "registry/modes/evidence-synthesis.yaml", "kind": "research_mode"},
+    {"path": "registry/modes/simulation.yaml", "kind": "research_mode"},
+    {"path": "registry/modes/v0.2.0/evidence-synthesis.yaml", "kind": "research_mode"},
+    {"path": "registry/modes/v0.2.0/simulation.yaml", "kind": "research_mode"},
+    {"path": "registry/modes/actions.json", "kind": "mode_action_registry", "entry_kind": "mode_action", "entry_prefix": "registry/modes/actions/"},
+    {"path": "registry/authority/decision-authority-matrix.yaml", "kind": "decision_authority_matrix"},
+    {"path": "registry/capabilities/requirements.json", "kind": "capability_requirement_index", "entry_kind": "capability_requirement", "entry_prefix": "registry/capabilities/requirements/"},
+    {"path": "registry/protocol-profiles.json", "kind": "protocol_profile_index", "entry_kind": "protocol_profile", "entry_prefix": "registry/protocol-profiles/"},
+    {"path": "registry/skills/release-projections.json", "kind": "skill_release_projection_index", "entry_kind": "skill_release_projection", "entry_prefix": "registry/skills/release-projections/"},
+    {"path": "examples/quickstart/task-no-skill.yaml", "kind": "task_packet"}
+  ],
+  "release_assets": []
+}

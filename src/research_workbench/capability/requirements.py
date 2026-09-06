@@ -168,10 +168,18 @@ class CapabilityRequirementSet:
     @classmethod
     def load(
         cls,
-        path: str | Path = DEFAULT_CAPABILITY_REQUIREMENTS,
+        path: str | Path | None = None,
         *,
-        project_root: str | Path = ".",
+        project_root: str | Path | None = None,
     ) -> "CapabilityRequirementSet":
+        if project_root is None:
+            if path is not None:
+                raise ValueError("custom Requirement index requires an explicit project root")
+            from research_workbench.resources import RuntimeResources
+            resources = RuntimeResources()
+            resources.validate_catalog()
+            project_root = resources.catalog_root
+        path = DEFAULT_CAPABILITY_REQUIREMENTS if path is None else path
         root = Path(project_root).resolve()
         index_path = Path(path)
         if not index_path.is_absolute():
@@ -182,7 +190,7 @@ class CapabilityRequirementSet:
         # loader a schema-validating, fail-closed consumer boundary.
         from research_workbench.validation.schemas import SchemaCatalog
 
-        catalog = SchemaCatalog(root / "schemas")
+        catalog = SchemaCatalog()
         if not isinstance(index, Mapping) or index.get("registry_kind") != "capability_requirement_index":
             raise ValueError(f"not a Capability Requirement integrity index: {index_path}")
         index_errors = catalog.validate("capability_requirement_index", index)

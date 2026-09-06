@@ -1,1 +1,12 @@
 recursive-include schemas *.json
+include build_backend.py runtime-resources.json
+include registry/modes/*.yaml registry/modes/actions.json
+recursive-include registry/modes/v0.2.0 *.yaml
+recursive-include registry/modes/actions *.yaml
+include registry/authority/decision-authority-matrix.yaml
+include registry/capabilities/requirements.json registry/protocol-profiles.json
+recursive-include registry/capabilities/requirements *.yaml
+recursive-include registry/protocol-profiles *.yaml
+include registry/skills/release-projections.json
+recursive-include registry/skills/release-projections *.yaml *.json
+include examples/quickstart/task-no-skill.yaml

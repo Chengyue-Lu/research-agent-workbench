@@ -3,7 +3,7 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 来源：[Issue #57](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57)
 - 架构决定：[ADR-0021](../../../decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md)
-- 状态：M14-001 dormant topology 与 M14-002 deterministic surface 已实现；portable package、public docs 与首次发行仍待闭合
+- 状态：M14-001/002/003 dormant topology、deterministic surface 与 portable package 已实现；public docs 与首次发行仍待闭合
 - diagnostic baseline：`origin/develop@dd2454b5595e33a12aa058529358d46d311a08c4`
 - task-definition integration base：`origin/develop@6a032e12c30a88a501258eec8c0b5d6c6082d81d`
 
@@ -43,7 +43,7 @@ flowchart LR
     M1104["M11-004 DONE<br/>Core closeout"] -. "activation evidence" .-> M14001
     M1106["M11-006 DONE<br/>optional mapping"] -. "activation evidence" .-> M14001
     M14001 --> M14002["M14-002 DONE<br/>REL-002 deterministic surface"]
-    M14001 --> M14003["M14-003 PARKED<br/>REL-003 portable package"]
+    M14001 --> M14003["M14-003 DONE<br/>REL-003 portable package"]
     M14002 --> M14004["M14-004 PARKED<br/>REL-004 public docs"]
     M14003 --> M14004
     M14002 --> M14005["M14-005 BLOCKED<br/>REL-005 readiness + first release"]
@@ -121,6 +121,10 @@ adapters/model pool 只是显式 integration/config。`rwb validate <用户路�
 maintainer/provider/model/Codex 命令的 CWD default 要么改为显式 root，要么明确失败，不能把同一相对路径
 悄悄解释成 package resource。
 
+实现入口：[Portable Runtime resources](../../../implementation/RUNTIME_RESOURCES.md)。构建 hook 生成同一 pinned catalog；
+三 root 与 installed/repository validation 分离。Python 3.11/3.13 的 direct wheel 和 sdist→wheel 均在
+checkout 外验证，生产 Projection 仍为空，非空引用闭包只由 synthetic fixture 证明。
+
 ### M14-004 / REL-004 — Public documentation surface
 
 形成公开 README、Getting Started、Supported Features 和稳定模块导航的单一来源。页面不得链接被 release
@@ -177,6 +181,6 @@ task-definition 只写 canonical docs、ADR、workstream 与导航。后续实�
 
 ## 下一合法动作
 
-`M14-001/002` 已完成；下一步由 owner 独立激活 `M14-003` portable package slice。
-M14-004 等待 package closure；不能提前创建真实 release branch、冻结 release source SHA 或
+`M14-001/002/003` 已完成；下一步由 owner 独立激活 `M14-004` public documentation slice。
+M14-004 的 package/surface 依赖已闭合；不能提前创建真实 release branch、冻结 release source SHA 或
 解锁 merge eligibility。任何实现分支在开 PR 前仍须基于当时最新 `develop` 重新验证。

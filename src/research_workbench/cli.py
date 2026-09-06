@@ -873,7 +873,7 @@ def _runtime_codex_render(args: argparse.Namespace) -> int:
         )
     except ResolutionError as exc:
         return _print_risks(exc.risks)
-    adapter = CodexRuntimeAdapter(args.root, platform_version=args.platform_version)
+    adapter = CodexRuntimeAdapter(args.integration_root, platform_version=args.platform_version)
     prompt = adapter.render_task_prompt(task, profile, assignment)
     if args.output:
         _write_text(Path(args.output), prompt)
@@ -1418,9 +1418,39 @@ def _context_checkpoint(args: argparse.Namespace) -> int:
     return 0
 
 
+def _resources_check(args: argparse.Namespace) -> int:
+    from research_workbench.resources import RuntimeResources
+    resources = RuntimeResources(args.runtime_root, expected_sha256=args.manifest_sha256)
+    print(json.dumps(resources.validate_catalog(), sort_keys=True))
+    return 0
+
+
+def _resources_quickstart(args: argparse.Namespace) -> int:
+    from research_workbench.resources import RuntimeResources
+    resources = RuntimeResources(args.runtime_root, expected_sha256=args.manifest_sha256)
+    resources.validate_catalog()
+    output = Path(args.output)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with output.open("xb") as stream:
+        stream.write(resources.read("examples/quickstart/task-no-skill.yaml"))
+    print(f"No-Skill structural Task written to {output}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="rwb", description="Research Agent Workbench utilities")
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    resources = subparsers.add_parser("resources", help="validate installed Runtime resources")
+    resource_commands = resources.add_subparsers(dest="resources_command", required=True)
+    resource_check = resource_commands.add_parser("check")
+    resource_quickstart = resource_commands.add_parser("quickstart")
+    for command in (resource_check, resource_quickstart):
+        command.add_argument("--runtime-root", help="absolute resource override root")
+        command.add_argument("--manifest-sha256", help="external digest required with a resource override")
+    resource_check.set_defaults(handler=_resources_check)
+    resource_quickstart.add_argument("--output", required=True)
+    resource_quickstart.set_defaults(handler=_resources_quickstart)
 
     init_parser = subparsers.add_parser("init", help="initialize a minimal file-first project")
     init_parser.add_argument("path")
@@ -1452,7 +1482,7 @@ def build_parser() -> argparse.ArgumentParser:
     skills = subparsers.add_parser("skills", help="inspect the skill candidate registry")
     skill_subparsers = skills.add_subparsers(dest="skills_command", required=True)
     candidates = skill_subparsers.add_parser("candidates", help="list or filter candidates")
-    candidates.add_argument("--registry", default=str(DEFAULT_CANDIDATES))
+    candidates.add_argument("--registry", required=True)
     candidates.add_argument("--status")
     candidates.add_argument("--mode")
     candidates.add_argument("--capability")
@@ -1460,7 +1490,7 @@ def build_parser() -> argparse.ArgumentParser:
     candidates.set_defaults(handler=_skill_candidates)
     accepted = skill_subparsers.add_parser("accepted", help="validate and list accepted repository Skills")
     accepted.add_argument("--registry", default=str(DEFAULT_ACCEPTED))
-    accepted.add_argument("--root", default=".")
+    accepted.add_argument("--root", required=True)
     accepted.add_argument("--json", action="store_true")
     accepted.set_defaults(handler=_skill_accepted)
     archive_audit = skill_subparsers.add_parser(
@@ -1470,7 +1500,7 @@ def build_parser() -> argparse.ArgumentParser:
     archive_audit.add_argument("archive")
     archive_audit.add_argument("--source-id", required=True)
     archive_audit.add_argument("--expected-sha256", required=True)
-    archive_audit.add_argument("--registry", default=str(DEFAULT_CANDIDATES))
+    archive_audit.add_argument("--registry", required=True)
     archive_audit.add_argument("--generated-at")
     archive_audit.add_argument("--output")
     archive_audit.set_defaults(handler=_skill_audit_archive)
@@ -1484,21 +1514,21 @@ def build_parser() -> argparse.ArgumentParser:
         help="check paired outputs, receipts, context, blind review, and case coverage",
     )
     skill_eval_assess.add_argument("evaluation")
-    skill_eval_assess.add_argument("--root", default=".")
-    skill_eval_assess.add_argument("--registry", default=str(DEFAULT_CANDIDATES))
+    skill_eval_assess.add_argument("--root", required=True)
+    skill_eval_assess.add_argument("--registry", required=True)
     skill_eval_assess.set_defaults(handler=_skill_eval_assess)
 
     providers = subparsers.add_parser("providers", help="inspect model provider baselines")
     provider_subparsers = providers.add_subparsers(dest="providers_command", required=True)
     provider_list = provider_subparsers.add_parser("list")
-    provider_list.add_argument("--registry", default="registry/providers/capabilities.json")
+    provider_list.add_argument("--registry", required=True)
     provider_list.add_argument("--json", action="store_true")
     provider_list.set_defaults(handler=_provider_list)
     provider_probe = provider_subparsers.add_parser(
         "probe",
         help="validate non-secret adapter config and optionally check environment presence",
     )
-    provider_probe.add_argument("--config", default="registry/providers/adapters.yaml")
+    provider_probe.add_argument("--config", required=True)
     provider_probe.add_argument(
         "--check-environment",
         action="store_true",
@@ -1510,7 +1540,7 @@ def build_parser() -> argparse.ArgumentParser:
         "conformance",
         help="plan or explicitly execute bounded synthetic provider checks",
     )
-    provider_conformance.add_argument("--config", default="registry/providers/adapters.yaml")
+    provider_conformance.add_argument("--config", required=True)
     provider_conformance.add_argument("--adapter", required=True)
     provider_conformance.add_argument(
         "--check",
@@ -1538,7 +1568,7 @@ def build_parser() -> argparse.ArgumentParser:
         "probe",
         help="validate model slots without choosing, ranking, or calling a model",
     )
-    model_probe.add_argument("--config", default="registry/models/pool.example.yaml")
+    model_probe.add_argument("--config", required=True)
     model_probe.add_argument(
         "--check-environment",
         action="store_true",
@@ -1569,14 +1599,15 @@ def build_parser() -> argparse.ArgumentParser:
     codex = runtime_subparsers.add_parser("codex", help="inspect the Codex native adapter")
     codex_subparsers = codex.add_subparsers(dest="codex_command", required=True)
     codex_validate = codex_subparsers.add_parser("validate")
-    codex_validate.add_argument("--root", default=".")
+    codex_validate.add_argument("--root", "--integration-root", required=True)
     codex_validate.add_argument("--platform-version", default="unprobed")
     codex_validate.set_defaults(handler=_runtime_codex_validate)
     codex_render = codex_subparsers.add_parser("render")
     codex_render.add_argument("task")
     codex_render.add_argument("--profile", required=True)
     codex_render.add_argument("--registry", default=str(DEFAULT_ACCEPTED))
-    codex_render.add_argument("--root", default=".")
+    codex_render.add_argument("--root", required=True)
+    codex_render.add_argument("--integration-root", required=True)
     codex_render.add_argument("--platform-version", default="unprobed")
     codex_render.add_argument(
         "--historical-replay",
