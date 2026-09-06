@@ -53,10 +53,14 @@ def impact_coverage(plan, policy, coverage, results):
                 'uncovered changed branches: ' + path)
     evidence = plan['impact_evidence']
     positives, negatives = set(evidence['positive_tests']), set(evidence['negative_tests'])
-    require(positives and negatives and not positives & negatives, 'distinct positive/negative evidence required')
+    critical = set(modules) & set(policy['critical_modules'])
+    require(not positives & negatives and ((positives and negatives) or (not critical and not positives and not negatives)),
+            'distinct positive/negative evidence required')
     passed = {row['id'] for row in results['tests'] if row['outcome'] == 'passed'}
     require(positives | negatives <= passed, 'missing positive/negative PASS evidence')
     # Existing critical files in the impacted closure retain their own mappings.
+    require(critical <= {p for m in policy['negative_acceptance'] for p in m['modules']},
+            'critical acceptance mapping missing')
     for mapping in policy['negative_acceptance']:
         if set(mapping['modules']) & set(modules):
             require(set(mapping['positive_tests'] + mapping['negative_tests']) <= passed,

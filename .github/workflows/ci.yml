@@ -174,7 +174,7 @@ jobs:
           name: ci-plan
       - name: Run required coverage test union
         run: |
-          python -m coverage run --branch --source=src/research_workbench,.github/scripts tests/run_unittest_suite.py --suite coverage-plan --plan ci-plan.json --policy tests/coverage_policy.yaml --json-output coverage-test-results.json --slowest 20
+          python -m coverage run --branch --source=src/research_workbench,.github/scripts,tests.run_unittest_suite -m tests.run_unittest_suite --suite coverage-plan --plan ci-plan.json --policy tests/coverage_policy.yaml --json-output coverage-test-results.json --slowest 20
       - name: Export coverage evidence
         run: python -m coverage json -o coverage.json
       - name: Preserve coverage and duration evidence

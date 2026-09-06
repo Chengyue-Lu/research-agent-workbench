@@ -27,7 +27,7 @@ NEG = 'test_example.Example.test_negative'
 
 
 def plan(level='focused'):
-    p = {'version': 3, 'binding': {'repository':'Example/repo','base':'a'*40,'head':'b'*40,
+    p = {'version': 4, 'selection': {}, 'binding': {'repository':'Example/repo','base':'a'*40,'head':'b'*40,
          'merge_base':'a'*40,'target':'c'*40}, 'change_class':level, 'risk':'R1', 'changes':[], 'surfaces':[],
          'test_groups':['example'], 'tests':['test_example'], 'coverage_modules':[MODULE],
          'impact_evidence':{'positive_tests':[POS],'negative_tests':[NEG]}, 'changed_lines':{MODULE:[1]},
@@ -67,6 +67,35 @@ def results(p):
 
 
 class ImpactCoverageTests(unittest.TestCase):
+    def test_workflow_measurement_includes_the_executing_runner(self):
+        import shlex
+        workflow = yaml.safe_load((ROOT / '.github/workflows/ci.yml').read_bytes())
+        step = next(s for s in workflow['jobs']['coverage_quality']['steps'] if s.get('name') == 'Run required coverage test union')
+        command = shlex.split(step['run'])
+        command[0] = sys.executable
+        with tempfile.TemporaryDirectory() as directory:
+            env = {**os.environ, 'COVERAGE_FILE': str(Path(directory) / 'coverage-data')}
+            subprocess.run(command[:command.index('--suite')] + ['--help'], cwd=ROOT, env=env, check=True, capture_output=True)
+            output = Path(directory) / 'coverage.json'
+            subprocess.run([sys.executable, '-m', 'coverage', 'json', '-o', str(output)], cwd=ROOT, env=env, check=True, capture_output=True)
+            measured = json.loads(output.read_bytes())
+            names = {p.replace('\\', '/') for p in measured['files']}
+            self.assertIn('tests/run_unittest_suite.py', names)
+            self.assertTrue(measured['meta']['branch_coverage'])
+
+    def test_ordinary_impact_does_not_invent_critical_evidence_and_critical_cannot_drop_mapping(self):
+        p, pol = plan(), policy()
+        p['impact_evidence'] = {'positive_tests': [], 'negative_tests': []}
+        pol['critical_modules'] = []
+        pol['negative_acceptance'][0]['modules'] = ['another.py']
+        signed(p)
+        self.assertFalse(checks.impact_coverage(p, pol, coverage(), results(p))['repository_coverage_proved'])
+        pol['critical_modules'] = [MODULE]
+        p['impact_evidence'] = {'positive_tests': [POS], 'negative_tests': [NEG]}
+        signed(p)
+        with self.assertRaisesRegex(ValueError, 'critical acceptance mapping missing'):
+            checks.impact_coverage(p, pol, coverage(), results(p))
+
     def test_multiline_condition_uses_real_coverage_branch_origins(self):
         source = 'def decide(enabled, count):\n    if (\n        enabled and count >= 0\n    ):\n        return True\n    return False\n'
         p = plan(); p['changed_lines'] = {MODULE: [3]}

@@ -25,6 +25,7 @@ suites:
       - test_cli_command_branches
       - test_ci_plan
       - test_ci_checks
+      - test_ci_dependencies
       - test_contracts
       - test_context_model_branches
       - test_critical_contract_branches
@@ -126,6 +127,7 @@ thresholds:
     branch: 90
 
 critical_modules:
+  - .github/scripts/ci_dependencies.py
   - .github/scripts/plan_ci.py
   - .github/scripts/ci_checks.py
   - .github/scripts/check_coverage_policy.py
@@ -174,6 +176,14 @@ negative_acceptance:
       - test_claim_trace.ClaimTraceTests.test_missing_revision_unversioned_and_missing_evidence_are_unresolved
       - test_claim_trace.ClaimTraceTests.test_missing_and_wrong_raw_admission_do_not_yield_complete_trace
       - test_claim_trace.ClaimTraceTests.test_map_requires_exact_evidence_and_source_closure
+  - surface: ci-dependency-selection
+    modules:
+      - .github/scripts/ci_dependencies.py
+    positive_tests:
+      - test_ci_dependencies.DependencyTests.test_import_closure_keeps_consumers_and_excludes_independent_test
+    negative_tests:
+      - test_ci_dependencies.DependencyTests.test_removed_edge_cannot_hide_old_consumer
+      - test_ci_dependencies.DependencyTests.test_opaque_execution_expands_instead_of_claiming_exclusion
   - surface: ci-impact-planning
     modules:
       - .github/scripts/plan_ci.py

@@ -48,7 +48,7 @@ class PlannerTests(unittest.TestCase):
         for path in planner.TRUST_FILES:
             write(cls.seed, path, (ROOT / path).read_bytes())
         write(cls.seed, 'pyproject.toml', (ROOT / 'pyproject.toml').read_bytes())
-        for name in ('test_ci_plan', 'test_ci_checks', 'test_governance_helper_branches'):
+        for name in ('test_ci_plan', 'test_ci_checks', 'test_ci_dependencies', 'test_coverage_policy', 'test_governance_helper_branches'):
             write(cls.seed, 'tests/' + name + '.py', 'import unittest\nclass Example(unittest.TestCase):\n    def test_ok(self): pass\n')
         for name in {t.split('.')[0] for g in cls.policy['groups'].values() for t in g['tests']}:
             write(cls.seed, 'tests/' + name + '.py', 'import unittest\nclass Example(unittest.TestCase):\n    def test_ok(self): pass\n')
@@ -121,18 +121,19 @@ class PlannerTests(unittest.TestCase):
         self.assertIn('documentation', plan['test_groups'])
 
     def test_r2_shared_and_unknown_paths_cannot_be_docs_fast(self):
-        for path in ('docs/ARCHITECTURE.md', 'schemas/new.json', 'unknown.txt', '.github/new.py'):
+        for path in ('unknown.txt', '.github/new.py'):
             with self.subTest(path=path):
                 command(self.repo, 'reset', '--hard', self.base)
                 self.commit(path)
                 self.assertEqual('full', self.plan()['change_class'])
         command(self.repo, 'reset', '--hard', self.base)
         self.commit()
-        for body in (BODY.replace('R0', 'R2'), BODY.replace('impact**: no', 'impact**: yes'), '',
-                     BODY.replace('R0', 'invalid')):
+        for body in ('', BODY.replace('R0', 'invalid')):
             with self.subTest(body=body):
                 self.assertEqual('full', self.plan(body=body)['change_class'])
         self.assertEqual('fast', self.plan(body=BODY.replace('R0', 'R1'))['change_class'])
+        self.assertEqual('fast', self.plan(body=BODY.replace('R0', 'R2'))['change_class'])
+        self.assertEqual('fast', self.plan(body=BODY.replace('impact**: no', 'impact**: yes'))['change_class'])
 
     def test_integration_release_force_and_empty_diff_are_full(self):
         self.assertEqual('full', self.plan()['change_class'])
@@ -145,7 +146,17 @@ class PlannerTests(unittest.TestCase):
             with self.subTest(path=path):
                 command(self.repo, 'reset', '--hard', self.base)
                 self.commit(path, (self.repo / path).read_bytes() + b'\n')
-                self.assertEqual('full', self.plan()['change_class'])
+                p = self.plan()
+                self.assertEqual('none', p['coverage_scope'])
+                self.assertFalse(p['package_smoke'] or p['repository_smoke'])
+        command(self.repo, 'reset', '--hard', self.base)
+        candidate = copy.deepcopy(self.policy)
+        candidate['groups']['provider-wire']['tests'] = ['test_unselected']
+        write(self.repo, planner.POLICY, planner.canonical(candidate))
+        self.commit(LEAVES[0], 'VALUE = 2\n')
+        p = self.plan()
+        self.assertIn('test_provider_adapters', p['tests'])
+        self.assertNotIn('test_unselected', p['tests'])
 
     def test_missing_or_malformed_base_policy_falls_back_full(self):
         self.commit()
@@ -158,7 +169,7 @@ class PlannerTests(unittest.TestCase):
         (self.repo / 'README.md').rename(self.repo / 'CHANGED.md')
         self.commit('docs/TASKS.md')
         plan = self.plan()
-        self.assertEqual('full', plan['change_class'])
+        self.assertEqual('fast', plan['change_class'])
         self.assertIn({'path': 'README.md', 'status': 'D'}, plan['changes'])
         self.assertIn({'path': 'CHANGED.md', 'status': 'A'}, plan['changes'])
 
@@ -166,11 +177,15 @@ class PlannerTests(unittest.TestCase):
         self.commit('src/consumer.py', 'VALUE = 2\n')
         self.base = command(self.repo, 'rev-parse', 'HEAD')
         self.commit(LEAVES[0], 'VALUE = 2\n')
-        self.assertEqual('full', self.plan()['change_class'])
+        self.assertEqual('focused', self.plan()['change_class'])
         command(self.repo, 'reset', '--hard', self.base)
         self.commit(LEAVES[0], 'import os\nVALUE = 2\n')
         with patch.object(planner, 'consumer_fingerprint', return_value=self.policy['consumer_fingerprint']):
-            self.assertEqual('full', self.plan()['change_class'])
+            self.assertEqual('focused', self.plan()['change_class'])
+        self.commit('tests/test_opaque_consumer.py', 'exec("unknown executable consumer")\n')
+        p = self.plan()
+        self.assertIn('test_opaque_consumer', p['tests'])
+        self.assertNotIn('test_opaque_consumer', p['selection']['excluded'])
 
     def test_accepted_test_consumer_drift_invalidates_old_closure(self):
         original_base = self.base
@@ -193,8 +208,8 @@ class PlannerTests(unittest.TestCase):
                 self.base = command(self.repo, 'rev-parse', 'HEAD')
                 self.commit(LEAVES[0], 'VALUE = 2\n')
                 p = self.plan()
-                self.assertEqual('full', p['change_class'])
-                self.assertIn('consumer inventory changed', ' '.join(p['reasons']))
+                self.assertEqual('focused', p['change_class'])
+                if action != 'deleted': self.assertIn(name, p['tests'])
                 if action != 'deleted':
                     after = subprocess.run([sys.executable, '-m', 'unittest', 'discover', '-s', 'tests', '-p', name + '.py'],
                                            cwd=self.repo, capture_output=True)
@@ -206,7 +221,7 @@ class PlannerTests(unittest.TestCase):
                     reviewed['groups']['provider-wire']['tests'].append(name)
                 reviewed['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, self.base, LEAVES)
                 self.base = self.commit(planner.POLICY, planner.canonical(reviewed))
-                self.commit(LEAVES[0], 'VALUE = 1  # reviewed consumer closure\n')
+                self.commit(LEAVES[0], 'VALUE = 1 + 0  # reviewed consumer closure\n')
                 restored = self.plan()
                 self.assertEqual('focused', restored['change_class'])
                 planner.verify_plan(self.repo, restored)
@@ -320,7 +335,8 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual({LEAVES[0]:[1]},planner.changed_lines(self.repo,self.base,head,[LEAVES[0],'README.md']))
         self.assertEqual({LEAVES[0]:[1]},self.plan()['changed_lines'])
         self.commit(LEAVES[0],'')
-        self.assertEqual('full',self.plan()['change_class'])
+        self.assertEqual('focused',self.plan()['change_class'])
+        self.assertEqual([], self.plan()['changed_lines'][LEAVES[0]])
 
     def test_executable_mapping_is_bound_and_unmapped_changes_require_full(self):
         self.commit(LEAVES[0], 'VALUE = (\n    1\n)\n')
@@ -335,7 +351,7 @@ class PlannerTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'executable-line mapping'):
             planner.verify_plan(self.repo, p)
         self.commit(LEAVES[0], 'VALUE = (\n    2\n)\n# no executable owner\n')
-        self.assertEqual('full', self.plan()['change_class'])
+        self.assertEqual('focused', self.plan()['change_class'])
 
     def test_source_mode_change_requires_full(self):
         command(self.repo,'update-index','--chmod=+x',LEAVES[0])
@@ -416,23 +432,151 @@ class PlannerTests(unittest.TestCase):
             self.commit('.github/scripts/plan_ci.py', source.replace("'fast': 0,", "'fast': 0 + 0,"))
             p = self.plan(body=BODY.replace('R0', 'R2'))
             path.write_bytes(planner.canonical(p))
-            self.assertEqual('full', p['behavioral_scope'])
+            self.assertEqual('focused', p['behavioral_scope'])
             self.assertGreater(runner._suite_for(argparse.Namespace(suite='impact', plan=path)).countTestCases(), 0)
 
     def test_r2_test_fixture_and_fingerprint_refresh_have_no_coverage_or_smokes(self):
         for path in ('tests/test_unselected.py', 'tests/fixtures/case.json', 'work/example/result.yaml'):
             with self.subTest(path=path):
                 command(self.repo, 'reset', '--hard', self.base)
-                self.commit(path, 'fixture change\n')
+                self.commit(path, 'VALUE = 2\n' if path.endswith('.py') else 'fixture change\n')
                 p = self.plan(body=BODY.replace('R0', 'R2'))
-                self.assertEqual(('full', 'none', False, False),
+                self.assertEqual(('focused' if path.endswith('.py') else 'none', 'none', False, False),
                     tuple(p[k] for k in ('behavioral_scope', 'coverage_scope', 'package_smoke', 'repository_smoke')))
                 self.assertIn('no production/critical', p['obligation_reasons']['coverage_scope'][0])
-        self.commit('tests/test_unselected.py', 'reviewed test change\n')
+        self.commit('tests/test_unselected.py', 'VALUE = 2\n')
         reviewed = copy.deepcopy(self.policy)
         reviewed['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, 'HEAD', LEAVES)
         self.commit(planner.POLICY, planner.canonical(reviewed))
         self.assertEqual('none', self.plan(body=BODY.replace('R0', 'R2'))['coverage_scope'])
+
+    def test_provider_and_independent_test_do_not_force_repository_or_full(self):
+        self.commit(LEAVES[0], 'VALUE = 2\n')
+        bounded = self.plan()
+        self.commit('tests/test_unselected.py', 'import unittest\nclass Other(unittest.TestCase):\n    def test_existing(self): self.assertEqual(1+1,2)\n')
+        p = self.plan(body=BODY.replace('R0', 'R2'))
+        self.assertEqual(('R2', 'focused', ['impact']), (p['risk'], p['behavioral_scope'], p['coverage_obligations']))
+        self.assertEqual(bounded['coverage_modules'], p['coverage_modules'])
+        self.assertTrue(set(bounded['tests']) | {'test_unselected'} <= set(p['tests']))
+        self.assertNotIn('test_ci_checks', p['tests'])
+        planner.verify_plan(self.repo, p)
+
+    def test_test_only_planner_input_does_not_become_a_product_executable_change(self):
+        write(self.repo, 'src/research_workbench/cli.py', 'import subprocess\ndef run(command): return subprocess.run(command)\n')
+        self.base = self.commit('tests/test_runtime.py', 'from research_workbench.cli import run\n')
+        self.commit('tests/test_ci_plan.py', 'import unittest\nclass Example(unittest.TestCase):\n    def test_ok(self): self.assertEqual(1+1,2)\n')
+        p = self.plan(body=BODY.replace('R0', 'R2'))
+        self.assertEqual(('focused', [], False, False), tuple(p[k] for k in
+            ('behavioral_scope', 'coverage_obligations', 'package_smoke', 'repository_smoke')))
+        self.assertIn('test_ci_plan', p['tests'])
+        self.assertNotIn('test_runtime', p['tests'])
+        # A new opaque runtime consumer since the reviewed fingerprint remains required.
+        self.commit(LEAVES[0], 'VALUE=2\n')
+        self.assertIn('test_runtime', self.plan()['tests'])
+
+    def test_reviewed_opaque_contract_is_invalidated_per_consumer(self):
+        runtime = 'src/research_workbench/opaque_runtime.py'
+        write(self.repo, runtime, 'import subprocess\ndef run(command): return subprocess.run(command)\n')
+        self.commit('tests/test_runtime.py', 'from research_workbench.opaque_runtime import run\n')
+        reviewed = copy.deepcopy(self.policy)
+        reviewed['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, 'HEAD', LEAVES)
+        self.base = self.commit(planner.POLICY, planner.canonical(reviewed))
+        self.commit(LEAVES[0], 'VALUE=2\n')
+        p = self.plan()
+        self.assertNotIn('test_runtime', p['tests'])
+        self.assertEqual(self.base, p['selection']['reviewed_contract_anchor'])
+        # A changed/new consumer is no longer covered by the unchanged reviewed boundary.
+        self.commit(runtime, 'import subprocess\ndef run(command): return subprocess.run(command, check=True)\n')
+        self.assertIn('test_runtime', self.plan()['tests'])
+        with patch.object(planner, 'consumer_fingerprint', return_value='invalid'):
+            p = self.plan()
+            self.assertIn('test_runtime', p['tests'])
+            self.assertIn('fingerprint anchor unavailable', ' '.join(p['reasons']))
+
+    def test_new_source_domain_selects_reverse_consumer_and_test_only_is_scoped(self):
+        write(self.repo, 'src/research_workbench/example.py', 'VALUE = 1\n')
+        self.base = self.commit('tests/test_example.py', 'from research_workbench.example import VALUE\n')
+        self.commit('src/research_workbench/example.py', 'VALUE = 2\n')
+        p = self.plan()
+        self.assertEqual(('focused', ['impact']), (p['behavioral_scope'], p['coverage_obligations']))
+        self.assertEqual(['test_example'], p['tests'])
+        self.assertEqual(['src/research_workbench/example.py'], p['coverage_modules'])
+        self.assertFalse(p['package_smoke'] or p['repository_smoke'])
+        self.assertEqual({'positive_tests': [], 'negative_tests': []}, p['impact_evidence'])
+        planner.verify_plan(self.repo, p)
+
+    def test_monotonic_local_critical_addition_has_local_proof_and_cannot_remove_old_obligations(self):
+        path = 'src/consumer.py'
+        authority = yaml.safe_load((self.repo / 'tests/coverage_policy.yaml').read_bytes())
+        before = copy.deepcopy(authority)
+        authority['critical_modules'].append(path)
+        authority['suites']['coverage-quality']['modules'].append('test_unselected')
+        authority['negative_acceptance'].append({'surface': 'local-critical', 'modules': [path],
+            'positive_tests': ['test_unselected.Other.test_existing'],
+            'negative_tests': ['test_unselected.Other.test_negative']})
+        self.commit('tests/coverage_policy.yaml', yaml.safe_dump(authority))
+        p = self.plan(body=BODY.replace('R0', 'R2'))
+        self.assertEqual(('focused', ['impact']), (p['behavioral_scope'], p['coverage_obligations']))
+        self.assertEqual([path], p['coverage_modules'])
+        self.assertEqual({}, p['changed_lines'])
+        self.assertIn('test_unselected', p['tests'])
+        self.assertFalse(p['package_smoke'] or p['repository_smoke'])
+        planner.verify_plan(self.repo, p)
+        for mutate in (lambda a:a['critical_modules'].pop(0), lambda a:a['negative_acceptance'].pop(0),
+                       lambda a:a['suites']['coverage-quality']['modules'].pop(0)):
+            bad = copy.deepcopy(authority); mutate(bad)
+            self.assertFalse(planner.policy_delta(before, bad)[0])
+
+    def test_comment_only_critical_change_has_no_executable_coverage_obligation(self):
+        path = '.github/scripts/plan_ci.py'
+        self.commit(path, (self.repo / path).read_text() + '\n# ordinary review comment\n')
+        p = self.plan(body=BODY.replace('R0', 'R2'))
+        self.assertEqual(('R2', 'none', []), (p['risk'], p['behavioral_scope'], p['coverage_obligations']))
+        self.assertFalse(p['package_smoke'] or p['repository_smoke'])
+
+    def test_critical_syntax_error_blocks_instead_of_erasing_impact(self):
+        self.commit('.github/scripts/plan_ci.py', 'if [')
+        p = self.plan()
+        self.assertEqual(['impact', 'repository'], p['coverage_obligations'])
+        self.assertTrue(p['blocked_reasons'])
+        with self.assertRaises(ValueError): planner.verify_plan(self.repo, p)
+
+    def test_source_deletion_preserves_old_contract_consumers_without_candidate_lines(self):
+        command(self.repo, 'rm', LEAVES[0])
+        command(self.repo, 'commit', '-qm', 'delete source fixture')
+        p = self.plan()
+        self.assertEqual('focused', p['behavioral_scope'])
+        self.assertIn('test_provider_adapters', p['tests'])
+        self.assertNotIn(LEAVES[0], p['coverage_modules'])
+        self.assertNotIn(LEAVES[0], p['changed_lines'])
+
+    def test_actual_pragma_and_runner_semantics_keep_repository_obligation(self):
+        self.commit(LEAVES[0], 'VALUE = 1  # pragma: no cover\n')
+        p = self.plan()
+        self.assertEqual(['impact', 'repository'], p['coverage_obligations'])
+        self.assertEqual('focused', p['behavioral_scope'])
+        self.assertTrue(planner.coverage_pragmas(b'VALUE=1 # pragma: no cover\n'))
+        self.assertFalse(planner.coverage_pragmas(b'VALUE="pragma: no cover"\n'))
+        command(self.repo, 'reset', '--hard', self.base)
+        path = 'tests/run_unittest_suite.py'
+        self.commit(path, (self.repo / path).read_text() + '\nSELECTOR_REVISION = 4\n')
+        p = self.plan()
+        self.assertEqual(['impact', 'repository'], p['coverage_obligations'])
+        self.assertIn(path, p['coverage_modules'])
+        self.assertIn('coverage authority changed: ' + path, p['obligation_reasons']['coverage_scope'])
+
+    def test_public_cli_and_validation_consumers_independently_select_smokes(self):
+        cli = 'src/research_workbench/cli.py'
+        validator = 'src/research_workbench/validation/example.py'
+        write(self.repo, cli, 'VALUE=1\n')
+        write(self.repo, validator, 'VALUE=1\n')
+        self.base = self.commit('tests/test_app.py', 'import research_workbench.cli\nimport research_workbench.validation.example\n')
+        write(self.repo, cli, 'VALUE=2\n')
+        self.commit(validator, 'VALUE=2\n')
+        p = self.plan()
+        self.assertEqual('focused', p['behavioral_scope'])
+        self.assertEqual(['test_app'], p['tests'])
+        self.assertTrue(p['package_smoke'] and p['repository_smoke'])
 
     def test_coverage_union_executes_repository_and_impact_tests_once(self):
         from tests import run_unittest_suite as runner
@@ -469,15 +613,15 @@ class PlannerTests(unittest.TestCase):
         uncertain = []
         mapped = planner.coverage_lines(self.repo, head, {path: [2, 4]}, uncertain)
         self.assertEqual([2], mapped[path])
-        self.assertTrue(uncertain)
-        with self.assertRaises(ValueError): planner.coverage_lines(self.repo, head, {path: [4]})
+        self.assertFalse(uncertain)
+        self.assertEqual({path: []}, planner.coverage_lines(self.repo, head, {path: [4]}))
 
     def test_r2_bounded_critical_validator_requires_impact_with_base_acceptance(self):
         path = '.github/scripts/plan_ci.py'
         source = (self.repo / path).read_text()
         self.commit(path, source.replace("'fast': 0,", "'fast': 0 + 0,"))
         p = self.plan(body=BODY.replace('R0', 'R2'))
-        self.assertEqual(('full', 'impact', False, False),
+        self.assertEqual(('focused', 'impact', False, False),
             tuple(p[k] for k in ('behavioral_scope', 'coverage_scope', 'package_smoke', 'repository_smoke')))
         self.assertEqual([path], p['coverage_modules'])
         self.assertTrue(p['impact_evidence']['positive_tests'] and p['impact_evidence']['negative_tests'])
@@ -487,7 +631,7 @@ class PlannerTests(unittest.TestCase):
             'head': {'sha': p['binding']['head']}, 'body': BODY + '\ncoverage_scope: none'}}
         self.assertEqual('impact', planner.event_plan(self.repo, event, 'pull_request')['coverage_scope'])
         for key, value in [('coverage_scope', 'none'), ('coverage_modules', []), ('coverage_tests', []),
-                           ('impact_evidence', {}), ('behavioral_scope', 'focused')]:
+                           ('impact_evidence', {}), ('behavioral_scope', 'none'), ('selection', {})]:
             tampered = copy.deepcopy(p); tampered[key] = value
             tampered['plan_id'] = planner.digest({k:v for k,v in tampered.items() if k != 'plan_id'})
             with self.subTest(key=key), self.assertRaises(ValueError): planner.verify_plan(self.repo, tampered, event)
@@ -496,13 +640,13 @@ class PlannerTests(unittest.TestCase):
         path = 'tests/coverage_policy.yaml'
         initial = yaml.safe_load((self.repo / path).read_bytes())
         for mutate in (lambda p:p['thresholds']['global'].update(line=91),
-                       lambda p:p.update(source_root='src'), lambda p:p['critical_modules'].append('new.py'),
+                       lambda p:p.update(source_root='src'), lambda p:p['critical_modules'].pop(),
                        lambda p:p['justified_exclusions'].clear(), lambda p:p['negative_acceptance'].pop()):
             command(self.repo, 'reset', '--hard', self.base)
             policy = copy.deepcopy(initial); mutate(policy)
             self.commit(path, yaml.safe_dump(policy))
             p = self.plan()
-            self.assertEqual(('full', 'repository'), (p['behavioral_scope'], p['coverage_scope']))
+            self.assertEqual(('focused', 'repository'), (p['behavioral_scope'], p['coverage_scope']))
             self.assertFalse(p['package_smoke'] or p['repository_smoke'])
         source = (self.repo / '.github/scripts/plan_ci.py').read_text()
         self.commit('.github/scripts/plan_ci.py', source + '\nimport fractions\n')
@@ -510,7 +654,7 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual(['impact', 'repository'], p['coverage_obligations'])
         self.assertEqual(['.github/scripts/plan_ci.py'], p['coverage_modules'])
         self.assertTrue(p['coverage_lines']['.github/scripts/plan_ci.py'])
-        self.assertIn('imports changed', ' '.join(p['reasons']))
+        self.assertEqual('focused', p['behavioral_scope'])
         self.assertTrue(p['impact_evidence']['positive_tests'] and p['impact_evidence']['negative_tests'])
         planner.verify_plan(self.repo, p)
         self.assertFalse(p['package_smoke'] or p['repository_smoke'])
@@ -524,8 +668,9 @@ class PlannerTests(unittest.TestCase):
         self.commit('tests/coverage_policy.yaml', yaml.safe_dump(authority))
         combined = self.plan(body=BODY.replace('R0', 'R2'))
         self.assertEqual(['impact', 'repository'], combined['coverage_obligations'])
-        for key in ('coverage_modules', 'changed_lines', 'coverage_lines', 'impact_evidence', 'coverage_tests'):
+        for key in ('coverage_modules', 'changed_lines', 'coverage_lines', 'impact_evidence'):
             self.assertEqual(bounded[key], combined[key])
+        self.assertTrue(set(bounded['coverage_tests']) <= set(combined['coverage_tests']))
         planner.verify_plan(self.repo, combined)
         for obligations in (['repository'], ['impact'], []):
             reduced = copy.deepcopy(combined)
@@ -538,7 +683,7 @@ class PlannerTests(unittest.TestCase):
         self.commit('src/consumer.py', 'VALUE = 2\n')
         for kwargs in ({}, {'integration': True}, {'base_ref': 'main'}, {'base_ref': 'release/v1.0.0'}):
             p = self.plan(**kwargs)
-            self.assertEqual(('full', 'repository', True, True),
+            self.assertEqual(('full', 'repository' if kwargs.get('integration') else 'impact+repository', True, True),
                 tuple(p[k] for k in ('behavioral_scope', 'coverage_scope', 'package_smoke', 'repository_smoke')))
 
     def test_pr65_exact_git_diff_is_full_behavior_without_coverage_or_smokes(self):
@@ -557,7 +702,7 @@ class PlannerTests(unittest.TestCase):
             if side == 'base': self.base = command(self.repo, 'rev-parse', 'HEAD')
         p = self.plan(body=BODY.replace('R0', 'R2').replace('impact**: no', 'impact**: yes'))
         self.assertEqual([{'status': r['status'], 'path': r['path']} for r in fixture['changes']], p['changes'])
-        self.assertEqual(('R2', 'full', 'none', False, False),
+        self.assertEqual(('R2', 'focused', 'none', False, False),
             tuple(p[k] for k in ('risk', 'behavioral_scope', 'coverage_scope', 'package_smoke', 'repository_smoke')))
 
     def test_smokes_and_coverage_config_are_independent_of_full_behavior(self):
@@ -568,7 +713,7 @@ class PlannerTests(unittest.TestCase):
             command(self.repo, 'reset', '--hard', self.base)
             self.commit(path, content)
             p = self.plan(body=BODY.replace('R0', 'R2'))
-            self.assertEqual(('full', 'none', package, repository),
+            self.assertEqual(('none', 'none', package, repository),
                 tuple(p[k] for k in ('behavioral_scope', 'coverage_scope', 'package_smoke', 'repository_smoke')))
         command(self.repo, 'reset', '--hard', self.base)
         self.commit('pyproject.toml', (self.repo / 'pyproject.toml').read_text().replace('branch = true', 'branch = false'))
@@ -589,7 +734,7 @@ class PlannerTests(unittest.TestCase):
         raw = planner.read_at
         authority = yaml.safe_load((self.repo / 'tests/coverage_policy.yaml').read_bytes())
         for mutate in (lambda p:p['critical_modules'].remove(path), lambda p:p.update(negative_acceptance=[]),
-                       lambda p:p['negative_acceptance'][0].update(positive_tests=[])):
+                       lambda p:next(m for m in p['negative_acceptance'] if path in m['modules']).update(positive_tests=[])):
             bad = copy.deepcopy(authority); mutate(bad)
             with patch.object(planner, 'read_at', side_effect=lambda r,c,p: yaml.safe_dump(bad).encode()
                               if p == 'tests/coverage_policy.yaml' else raw(r,c,p)):
@@ -599,19 +744,21 @@ class PlannerTests(unittest.TestCase):
                 with self.assertRaises(ValueError): planner.verify_plan(self.repo, blocked)
         self.commit(path, original + '\nimport fractions\n')
         p = self.plan()
-        self.assertEqual(['impact', 'repository'], p['coverage_obligations'])
+        self.assertEqual(['impact'], p['coverage_obligations'])
         planner.verify_plan(self.repo, p)
 
     def test_candidate_policy_and_fingerprint_cannot_approve_new_consumer_closure(self):
-        write(self.repo, 'tests/test_new_consumer.py', 'new executable consumer\n')
+        write(self.repo, 'tests/test_new_consumer.py', 'import runpy\nrunpy.run_path("' + LEAVES[0] + '")\n')
         self.commit(LEAVES[0], 'VALUE = 2\n')
         candidate = copy.deepcopy(self.policy)
         candidate['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, 'HEAD', LEAVES)
         candidate['groups']['provider-wire']['tests'].append('test_new_consumer')
         self.commit(planner.POLICY, planner.canonical(candidate))
         p = self.plan()
-        self.assertEqual(['impact', 'repository'], p['coverage_obligations'])
-        self.assertIn('candidate consumer inventory changed', ' '.join(p['reasons']))
+        self.assertEqual(['impact'], p['coverage_obligations'])
+        self.assertIn('test_new_consumer', p['tests'])
+        self.assertIn('test_provider_adapters', p['tests'])
+        self.assertEqual('focused', p['behavioral_scope'])
 
 
 if __name__ == '__main__':

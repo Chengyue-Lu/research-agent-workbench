@@ -11,8 +11,8 @@
 
 [`plan_ci.py`](../../../../.github/scripts/plan_ci.py) reads exact base/head/merge-base Git facts and the
 accepted base [`ci_impact_policy.yaml`](../../../../tests/ci_impact_policy.yaml). Governance v2 supplies the risk
-floor. Plan v3 derives behavior, coverage and both smoke obligations independently. R2 always requires full
-behavioral regression. Candidate policy changes never authorize their own lighter selection.
+floor. Plan v4 derives behavior from the affected base/head consumer and contract closure.
+R2 determines governance and cross-owner review; affected tests run on Python 3.11 and 3.13. Candidate policy changes never authorize their own lighter selection.
 Git replacement objects are disabled for the planner's reads; immutable Git blobs are cached by repository,
 exact commit and path. No mutable branch-name result is cached.
 
@@ -25,13 +25,13 @@ Consumers reject tracked checkout drift and unexpected source/test/CI files befo
 
 | Behavioral class | Behavioral execution |
 |---|---|
-| FAST | Allowlisted documentation with acceptable risk: documentation/links, task/governance tests and diff check; governance independently validates the real PR |
+| FAST | Documentation-only obligations: documentation/links, task/governance tests and diff check; governance independently validates the real PR |
 | FOCUSED | Closed groups and downstream consumers on Python 3.11/3.13 |
 | FULL | Complete dual-Python behavioral suites |
 
 `change_class` is a diagnostic alias for `behavioral_scope`; jobs consume their own obligation fields.
-R2, shared Schema/Registry and test/infrastructure changes select full behavior. Test/fixture/archive data and
-selection-policy metadata can have `coverage_scope: none` and no smokes. Bounded executable changes require
+Source, tests, shared fixtures and resources seed the affected closure independently of risk.
+Test/fixture/archive data and selection-policy metadata can have `coverage_scope: none` and no smokes. Bounded executable changes require
 impact coverage; coverage-authority changes and uncertain executable closure add repository coverage.
 `coverage_obligations` is a set: repository evidence never substitutes for impact 100/100. Combined plans
 run the union of selected tests once and enforce both checkers. Failed required impact mapping blocks consumption.
@@ -49,11 +49,20 @@ The first bounded entry is Provider wire serialization/parsing in `openai.py`, `
 `provider-wire -> provider-conformance -> provider-session -> provider-cli`
 
 The groups include existing normalization/preflight/error tests, conformance construction, API session behavior,
-CLI and validation consumers. Product-source, Schema, Registry, packaging metadata and all Python files under
-`tests/` outside these leaves are
-bound by a consumer-inventory fingerprint. A changed accepted inventory requires a fresh closure review and
-policy update before FOCUSED resumes. Changed imports and deletion-only source hunks also fall back to FULL.
-This conservative inventory guard prevents a newly merged consumer from silently escaping the old groups.
+CLI and validation consumers. These base-side groups remain additive contract obligations.
+[`ci_dependencies.py`](../../../../.github/scripts/ci_dependencies.py) builds a module-level reverse graph
+from exact base/head Python blobs, including imports, package initialization, literal repository references,
+resource readers and conservative opaque-execution consumers. Removed edges remain in the union.
+Changed tests seed themselves and their consumers. Ordinary comments preserve the executable AST; deleted
+source lines select old consumers without inventing candidate coverage coordinates.
+
+The graph inventory digest binds the evidence. Reviewed groups use their immutable base-side fingerprint
+commit as an anchor; unchanged consumers retain that boundary, while changed consumers and imports add
+new dependency obligations. A change to an unrelated consumer no longer invalidates
+all groups. Candidate fingerprint refreshes cannot remove base-side requirements. Unparseable dependencies,
+unclassified surfaces and source without a closed test consumer retain explicit complete-evidence fallback.
+Opaque execution can select a broad set; its affected consumers and dependency chains appear in the plan.
+The analyzer is conservative and does not claim that static import reachability alone proves independence.
 
 An initial local shadow measurement executed 81 group tests with no skips in approximately 19 seconds under
 coverage. This is selected-suite evidence, not a hosted critical-path or total-compute speedup claim. Exact
@@ -70,12 +79,12 @@ still satisfy whole-file 95/90 plus its own positive/negative evidence. For ordi
 lines and outgoing branches require 100% coverage. Git derives physical `changed_lines`; the planner expands
 each line to the smallest enclosing AST statement span in `coverage_lines`, preserving multiline statement
 and branch origins. A changed compound condition conservatively covers its suite as well. Workers recompute
-both sets; unmappable lines require FULL. This may require more evidence than the physical diff alone.
+both sets; ordinary blank/comment lines have no executable obligation and unmappable executable changes block. This may require more evidence than the physical diff alone.
 Unchanged ordinary lines do not acquire a new whole-file critical threshold. The impact report explicitly sets
 `repository_coverage_proved: false`. Missing files, branch detail, wrong-head results, lowered thresholds,
 uncovered changed code, skipped required evidence and undeclared exclusions fail.
 
-The planner and CI evidence checker themselves enter the critical 95/90 inventory with independent positive
+The planner, dependency analyzer and CI evidence checker themselves enter the critical 95/90 inventory with independent positive
 and adversarial acceptance tests. Tests are retained in full behavioral discovery.
 
 ## Events, cancellation and required checks

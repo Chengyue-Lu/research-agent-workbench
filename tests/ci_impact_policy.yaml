@@ -105,5 +105,5 @@
       "test_provider_adapters.GeminiAdapterTests.test_parallel_response_is_contract_violation_when_not_claimed"
     ]
   },
-  "consumer_fingerprint": "0cf28d48ceb58557c29a9afe4272bebbd0562eae1b397af7401991817f3aaa73"
+  "consumer_fingerprint": "e0fe258c29782788e5070cefa90daa64aa44dd5b339f2e2408c147b3c3621974"
 }
