@@ -1,0 +1,44 @@
+task_id: TEST-PERF-002
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+handoff_level: H0
+goal: Implement change-aware CI with trusted impact closure, metadata isolation and
+  full regression fallback.
+authorization: 'User authorized starting Issue #48 latest restart request.'
+required_skills: []
+delegation: false
+write_scope:
+- .github/workflows/ci*.yml
+- .github/scripts/plan_ci.py
+- .github/scripts/ci_checks.py
+- tests/ci_impact_policy.yaml
+- tests/run_unittest_suite.py
+- tests/test_ci_*.py
+- tests/coverage_policy.yaml
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- work/TEST-PERF-002/A-20260906-001/**
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/STATUS.md
+- docs/TASKS.md
+- docs/ROADMAP.md
+- docs/DEVELOPMENT.md
+- .github/**
+- tests/**
+- src/research_workbench/**
+- docs/workstreams/chengyue-lu/TEST-QUALITY-001/**
+- .github/workflows/ci*.yml
+- .github/scripts/plan_ci.py
+- .github/scripts/ci_checks.py
+- tests/ci_impact_policy.yaml
+- tests/run_unittest_suite.py
+- tests/test_ci_*.py
+- tests/coverage_policy.yaml
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- work/TEST-PERF-002/A-20260906-001/**
+baseline: 6f0caf0b8e8a9b123f1ea399e747d2c0ed33cdce
+stop_conditions:
+- No product contract edits, gate threshold reduction, automatic merge or remote protection
+  changes.
