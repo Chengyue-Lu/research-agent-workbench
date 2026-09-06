@@ -42,7 +42,7 @@ def impact_coverage(plan, policy, coverage, results):
         if path in policy['critical_modules']:
             require(checker._line_percent(summary) + 1e-9 >= thresholds['critical']['line'], 'impact line coverage: ' + path)
             require(checker._branch_percent(summary) + 1e-9 >= thresholds['critical']['branch'], 'impact branch coverage: ' + path)
-        affected = set(plan['changed_lines'].get(path, []))
+        affected = set(plan['coverage_lines'].get(path, []))
         require(not affected & set(files[path]['missing_lines']), 'uncovered changed lines: ' + path)
         require('executed_branches' in files[path] and 'missing_branches' in files[path], 'missing branch detail')
         require(not any(source in affected for source, _ in files[path]['missing_branches']),

@@ -53,6 +53,7 @@ class PlannerTests(unittest.TestCase):
         for path in ('README.md', 'docs/TASKS.md', 'docs/ARCHITECTURE.md', 'docs/workstreams/example.md'):
             write(cls.seed, path, 'baseline\n')
         write(cls.seed, 'src/consumer.py', 'VALUE = 1\n')
+        write(cls.seed, 'tests/test_unselected.py', 'import unittest\nclass Other(unittest.TestCase):\n    def test_existing(self): pass\n')
         command(cls.seed, 'add', '.')
         command(cls.seed, 'commit', '-qm', 'baseline')
         cls.policy['consumer_fingerprint'] = planner.consumer_fingerprint(cls.seed, 'HEAD', LEAVES)
@@ -167,6 +168,46 @@ class PlannerTests(unittest.TestCase):
         with patch.object(planner, 'consumer_fingerprint', return_value=self.policy['consumer_fingerprint']):
             self.assertEqual('full', self.plan()['change_class'])
 
+    def test_accepted_test_consumer_drift_invalidates_old_closure(self):
+        original_base = self.base
+        budget_test = ('import runpy, unittest\nclass Budget(unittest.TestCase):\n'
+                       '    def test_limit(self):\n'
+                       '        self.assertLessEqual(runpy.run_path("' + LEAVES[0] + '")["VALUE"], 1)\n')
+        for action in ('added', 'modified', 'deleted'):
+            with self.subTest(action=action):
+                command(self.repo, 'reset', '--hard', original_base)
+                name = 'test_new_budget' if action == 'added' else 'test_unselected'
+                path = 'tests/' + name + '.py'
+                if action == 'deleted':
+                    command(self.repo, 'rm', path)
+                    command(self.repo, 'commit', '-qm', 'accepted test deletion')
+                else:
+                    self.commit(path, budget_test)
+                    before = subprocess.run([sys.executable, '-m', 'unittest', 'discover', '-s', 'tests', '-p', name + '.py'],
+                                            cwd=self.repo, capture_output=True)
+                    self.assertEqual(0, before.returncode, before.stderr.decode(errors='replace'))
+                self.base = command(self.repo, 'rev-parse', 'HEAD')
+                self.commit(LEAVES[0], 'VALUE = 2\n')
+                p = self.plan()
+                self.assertEqual('full', p['change_class'])
+                self.assertIn('consumer inventory changed', ' '.join(p['reasons']))
+                if action != 'deleted':
+                    after = subprocess.run([sys.executable, '-m', 'unittest', 'discover', '-s', 'tests', '-p', name + '.py'],
+                                           cwd=self.repo, capture_output=True)
+                    self.assertNotEqual(0, after.returncode)
+                    self.assertIn(b'AssertionError', after.stderr)
+                command(self.repo, 'reset', '--hard', self.base)
+                reviewed = copy.deepcopy(self.policy)
+                if action != 'deleted':
+                    reviewed['groups']['provider-wire']['tests'].append(name)
+                reviewed['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, self.base, LEAVES)
+                self.base = self.commit(planner.POLICY, planner.canonical(reviewed))
+                self.commit(LEAVES[0], 'VALUE = 1  # reviewed consumer closure\n')
+                restored = self.plan()
+                self.assertEqual('focused', restored['change_class'])
+                planner.verify_plan(self.repo, restored)
+                if action != 'deleted': self.assertIn(name, restored['tests'])
+
     def test_stale_base_requires_full_merge_validation(self):
         self.commit()
         head = command(self.repo, 'rev-parse', 'HEAD')
@@ -274,6 +315,21 @@ class PlannerTests(unittest.TestCase):
         self.commit(LEAVES[0],'')
         self.assertEqual('full',self.plan()['change_class'])
 
+    def test_executable_mapping_is_bound_and_unmapped_changes_require_full(self):
+        self.commit(LEAVES[0], 'VALUE = (\n    1\n)\n')
+        self.base = command(self.repo, 'rev-parse', 'HEAD')
+        self.commit(LEAVES[0], 'VALUE = (\n    2\n)\n')
+        p = self.plan()
+        self.assertEqual([2], p['changed_lines'][LEAVES[0]])
+        self.assertEqual([1, 2, 3], p['coverage_lines'][LEAVES[0]])
+        planner.verify_plan(self.repo, p)
+        p['coverage_lines'][LEAVES[0]] = [2]
+        p['plan_id'] = planner.digest({k: v for k, v in p.items() if k != 'plan_id'})
+        with self.assertRaisesRegex(ValueError, 'executable-line mapping'):
+            planner.verify_plan(self.repo, p)
+        self.commit(LEAVES[0], 'VALUE = (\n    2\n)\n# no executable owner\n')
+        self.assertEqual('full', self.plan()['change_class'])
+
     def test_source_mode_change_requires_full(self):
         command(self.repo,'update-index','--chmod=+x',LEAVES[0])
         command(self.repo,'commit','-qm','source mode change')
@@ -290,10 +346,25 @@ class PlannerTests(unittest.TestCase):
     def test_manual_full_rerun_uses_current_pr_facts(self):
         head=self.commit()
         pr={'base':{'sha':self.base,'ref':'develop','repo':{'full_name':'Example/repo'}},'head':{'sha':head},'body':BODY}
-        with patch.object(planner.subprocess,'check_output',return_value=json.dumps(pr).encode()):
-            p=planner.event_plan(self.repo,{'inputs':{'pr':60},'repository':{'full_name':'Example/repo'}},'workflow_dispatch')
+        event = {'inputs':{'pr':60},'repository':{'full_name':'Example/repo'}}
+        tree = command(self.repo, 'rev-parse', 'HEAD^{tree}')
+        with patch.object(planner.subprocess,'check_output',return_value=json.dumps(pr).encode()), \
+             patch.dict(os.environ, {'GITHUB_SHA': head}):
+            p=planner.event_plan(self.repo,event,'workflow_dispatch')
             self.assertEqual('full',p['change_class'])
             self.assertEqual(head,p['binding']['head'])
+            planner.verify_plan(self.repo, p, event, 'workflow_dispatch')
+            for trigger in (self.base, '', '0' * 40):
+                with patch.dict(os.environ, {'GITHUB_SHA': trigger}):
+                    with self.assertRaisesRegex(ValueError, 'start a new dispatch'):
+                        planner.event_plan(self.repo, event, 'workflow_dispatch')
+                    with self.assertRaisesRegex(ValueError, 'start a new dispatch'):
+                        planner.verify_plan(self.repo, p, event, 'workflow_dispatch')
+            # Use run here: the PR API mock must not intercept this Git fixture operation.
+            merged = subprocess.run(['git', '-C', str(self.repo), 'commit-tree', tree, '-p', self.base, '-p', head],
+                                    input=b'merge\n', capture_output=True, check=True).stdout.decode().strip()
+            subprocess.run(['git', '-C', str(self.repo), 'checkout', '--detach', merged], capture_output=True, check=True)
+            self.assertEqual(merged, planner.event_plan(self.repo, event, 'workflow_dispatch')['binding']['target'])
         with self.assertRaises(ValueError):
             planner.event_plan(self.repo,{'inputs':{'pr':'bad'},'repository':{'full_name':'Example/repo'}},'workflow_dispatch')
 

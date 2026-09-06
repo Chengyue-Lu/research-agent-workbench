@@ -1,0 +1,10 @@
+{
+  "parent": "2f93bf52968d6f1b20cc765269a2d25117bd2e71",
+  "staged_code_sha256": {
+    ".github/scripts/ci_checks.py": "decb59632ae9b98539804658e6695a710bb15a467d24a740b1928a4a57fc6332",
+    ".github/scripts/plan_ci.py": "db06e3219a8b8f7ce750fa38e8aa13344d407901e0c0937449f878546f668bfe",
+    "tests/ci_impact_policy.yaml": "b7df99ea71cfe27d0b8805be59b6b4c0d6c1ad3454c11e8bcfaa6c91795f4907",
+    "tests/test_ci_checks.py": "1ccbed02aadb97c45b888b78324a8875dca331dce076d7d6e5bbd353d7d4483c",
+    "tests/test_ci_plan.py": "88b122f459432aa04f415b72af2b86ecc5734820a2da1e824c963f948f114539"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "review": "https://github.com/Chengyue-Lu/research-agent-workbench/pull/63#issuecomment-5559639631",
+  "platform": "Windows / Python 3.14",
+  "full_hosted": "pending on new exact head",
+  "fixed_findings": [
+    "P2-1 test consumer drift",
+    "P2-2 multiline branch mapping",
+    "P2-3 dispatch trigger binding"
+  ],
+  "affected_regressions": {
+    "tests": 37,
+    "seconds": 90.911,
+    "result": "PASS"
+  },
+  "docs_policy": {
+    "tests": 30,
+    "seconds": 0.144,
+    "result": "PASS"
+  },
+  "critical_coverage": {
+    ".github/scripts/ci_checks.py": {
+      "line_percent": 99.13,
+      "branch_percent": 92.5,
+      "counters": {
+        "covered_lines": 114,
+        "num_statements": 115,
+        "percent_covered": 97.41935483870968,
+        "percent_covered_display": "97",
+        "missing_lines": 1,
+        "excluded_lines": 0,
+        "percent_statements_covered": 99.1304347826087,
+        "percent_statements_covered_display": "99",
+        "num_branches": 40,
+        "num_partial_branches": 3,
+        "covered_branches": 37,
+        "missing_branches": 3,
+        "percent_branches_covered": 92.5,
+        "percent_branches_covered_display": "92"
+      }
+    },
+    ".github/scripts/plan_ci.py": {
+      "line_percent": 99.62,
+      "branch_percent": 97.06,
+      "counters": {
+        "covered_lines": 261,
+        "num_statements": 262,
+        "percent_covered": 99.0909090909091,
+        "percent_covered_display": "99",
+        "missing_lines": 1,
+        "excluded_lines": 0,
+        "percent_statements_covered": 99.61832061068702,
+        "percent_statements_covered_display": "99",
+        "num_branches": 68,
+        "num_partial_branches": 2,
+        "covered_branches": 66,
+        "missing_branches": 2,
+        "percent_branches_covered": 97.05882352941177,
+        "percent_branches_covered_display": "97"
+      }
+    }
+  }
+}

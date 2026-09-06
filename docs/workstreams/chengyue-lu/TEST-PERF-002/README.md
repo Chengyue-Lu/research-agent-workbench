@@ -40,7 +40,8 @@ The first bounded entry is Provider wire serialization/parsing in `openai.py`, `
 `provider-wire -> provider-conformance -> provider-session -> provider-cli`
 
 The groups include existing normalization/preflight/error tests, conformance construction, API session behavior,
-CLI and validation consumers. Product-source, Schema, Registry and packaging metadata outside these leaves are
+CLI and validation consumers. Product-source, Schema, Registry, packaging metadata and all Python files under
+`tests/` outside these leaves are
 bound by a consumer-inventory fingerprint. A changed accepted inventory requires a fresh closure review and
 policy update before FOCUSED resumes. Changed imports and deletion-only source hunks also fall back to FULL.
 This conservative inventory guard prevents a newly merged consumer from silently escaping the old groups.
@@ -57,7 +58,10 @@ positive/negative acceptance and exact exclusion reconciliation.
 
 FOCUSED uses the same full measurement roots and preserves its artifact. Each impacted critical file must
 still satisfy whole-file 95/90 plus its own positive/negative evidence. For ordinary files, changed executable
-lines and outgoing branches on changed lines require 100% coverage; Git derives the changed-line set.
+lines and outgoing branches require 100% coverage. Git derives physical `changed_lines`; the planner expands
+each line to the smallest enclosing AST statement span in `coverage_lines`, preserving multiline statement
+and branch origins. A changed compound condition conservatively covers its suite as well. Workers recompute
+both sets; unmappable lines require FULL. This may require more evidence than the physical diff alone.
 Unchanged ordinary lines do not acquire a new whole-file critical threshold. The impact report explicitly sets
 `repository_coverage_proved: false`. Missing files, branch detail, wrong-head results, lowered thresholds,
 uncovered changed code, skipped required evidence and undeclared exclusions fail.
@@ -84,7 +88,9 @@ current PR branch and number, then rerun the failed governance check after its c
 gh workflow run ci.yml --ref <current-pr-branch> -f pr=<pr-number>
 ```
 
-The dispatch fetches current PR metadata and checks out its merge candidate; it always runs FULL. Ordinary
+The dispatch fetches current PR metadata and requires its trigger `GITHUB_SHA` to equal that PR's current head
+before planning FULL for the exact head/merge candidate. A wrong ref or stale dispatch rerun stops at the plan
+stage; start a new dispatch from the current PR branch. Ordinary
 metadata edits do not dispatch code tests. A very early metadata run with no uploaded content plan fails
 explicitly and can be rerun once the plan exists.
 

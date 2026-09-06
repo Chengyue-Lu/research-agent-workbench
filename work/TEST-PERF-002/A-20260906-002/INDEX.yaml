@@ -1,0 +1,74 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260906-002
+task_id: TEST-PERF-002
+task_revision: 2
+attempt_id: A-20260906-002
+archive_root: A-20260906-002
+baseline: 2f93bf52968d6f1b20cc765269a2d25117bd2e71
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: bdafe3c8d7a1632a8ba6ea3610cb964ef65588a907dd5aa48bf4089be5e7cda8
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 00aee91b84b7051d73d5484c47347dab4837e6323bc65741863527d5e870e06a
+read_allowlist:
+- .github/scripts/ci_checks.py
+- .github/scripts/plan_ci.py
+- .github/workflows/ci*.yml
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- src/research_workbench/observability/trace.py
+- tests/ci_impact_policy.yaml
+- tests/coverage_policy.yaml
+- tests/run_unittest_suite.py
+- tests/test_ci_checks.py
+- tests/test_ci_plan.py
+- work/TEST-PERF-002/A-20260906-002/**
+write_scope:
+- .github/scripts/ci_checks.py
+- .github/scripts/plan_ci.py
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/ci_impact_policy.yaml
+- tests/test_ci_checks.py
+- tests/test_ci_plan.py
+- work/TEST-PERF-002/A-20260906-002/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: c00559bf12d9b5ea232323a7a533da31ea98acc44a4e74fbd48502541124ebbf
+  event_count: 6
+tool_event_refs:
+- path: tool-events/local-closeout-verification-succeeded.json
+  sha256: 6a39b4d896594f19af3caf7c0f0361ac9db12894f3e487527f72ef7b33c0d2ee
+handoff_refs:
+- path: handoff/H0.md
+  sha256: 7f68ee4fbc933e64044401d98dca1065e4e24dec18b485ea1799d5225a8db559
+decision_refs: []
+output_refs:
+- path: outputs/code-manifest.json
+  sha256: 237e28ef709c5b3e2d9992c12a94f4eddfdfe6a1b341023418b85cb52c2e77c9
+- path: AUDIT.md
+  sha256: c993f10256a14c5dc8906839512761a6341aca611622c1bf50ea80d367d41e0e
+- path: WORKLOG.md
+  sha256: 03037f74eaf0f1b49d313fc29654dc20b8b9ac2a7fc1d034a447030a1ba7cee2
+check_refs:
+- path: checks/local-verification.json
+  sha256: 801e080cb343f06f50883a5f0bcc71031e474b74a7e0670ae3ebc782b8cd49b3
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: tool-results
+- event_id: EVT-0005
+  affected_stream: events

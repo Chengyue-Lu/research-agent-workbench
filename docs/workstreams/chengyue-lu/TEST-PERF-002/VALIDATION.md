@@ -76,3 +76,31 @@ Hosted run `34029871793` on `2e083f9` was automatically cancelled after `613f91a
 run `34030126386`. No manual cancellation was issued. Updating the PR body after that replacement plan
 was uploaded triggered governance run `34030228581`, which passed and retained content run `34030126386`
 without launching another content run. Final hosted outcomes remain available in the PR checks and body.
+
+## Bounded cross-owner closeout: P2-1 through P2-3
+
+The [latest cross-owner review](https://github.com/Chengyue-Lu/research-agent-workbench/pull/63#issuecomment-5559639631)
+at `2f93bf5` requests three local corrections. The next R2 commit contains:
+
+- P2-1: consumer fingerprint includes every Python file under `tests/`, including content and mode. Real Git
+  fixtures add/delete a test module and evolve an unselected module; old closure falls back FULL. The same
+  budget assertion passes before the leaf regression and fails afterward. After explicit grouping and
+  fingerprint renewal, FOCUSED includes the consumer again. The policy fingerprint is refreshed against
+  the reviewed staged tree; it does not include the policy JSON itself.
+- P2-2: retain physical Git `changed_lines` and bind recomputed AST statement spans as `coverage_lines`.
+  The checker checks those spans, including multiline branch origins. Real coverage reports the missing
+  arc `[2, 6]` for a continuation-line edit; rejection occurs until both paths execute. An unmappable line
+  falls back FULL, and narrowing the plan's executable mapping is rejected.
+- P2-3: require dispatch trigger `GITHUB_SHA` to equal the freshly queried PR head. Wrong, missing and
+  stale trigger SHAs reject before a usable plan exists. Current head and exact merge-candidate fixtures
+  retain FULL recovery; metadata matching is unchanged.
+
+Local affected regressions: **37/37 PASS** (90.91 seconds under coverage); documentation/coverage-policy:
+**30/30 PASS**. Planner coverage is **261/262 lines (99.62%)**, **66/68 branches (97.06%)**. CI checker
+coverage is **114/115 lines (99.13%)**, **37/40 branches (92.50%)**. Both have zero exclusions and retain
+the 95/90 critical floor. These runs cover the changed code blobs pinned by the
+[review attempt](../../../../work/TEST-PERF-002/A-20260906-002/INDEX.yaml), before its archive-only additions.
+
+The accepted-base product tree, full suite inventory and quality thresholds are retained. This closeout
+requires one new final-head FULL hosted run and cross-owner acceptance. Parent Issue #48 remains open;
+its broader hosted performance and profiling work is outside these three fixes.

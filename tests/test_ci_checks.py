@@ -13,6 +13,7 @@ from contextlib import redirect_stdout
 from unittest.mock import patch
 
 import yaml
+from coverage import Coverage
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / '.github/scripts'))
@@ -30,10 +31,11 @@ def plan(level='focused'):
          'merge_base':'a'*40,'target':'c'*40}, 'change_class':level, 'risk':'R1', 'changes':[], 'surfaces':[],
          'test_groups':['example'], 'tests':['test_example'], 'coverage_modules':[MODULE],
          'impact_evidence':{'positive_tests':[POS],'negative_tests':[NEG]}, 'changed_lines':{MODULE:[1]},
+         'coverage_lines':{MODULE:[1]},
          'policy_sha256':'d'*64,'python_versions':['3.11','3.13'], 'coverage_mode':'impact',
          'package_smoke':False,'repository_smoke':False,'reasons':[]}
     if level == 'full': p.update(coverage_mode='repository',package_smoke=True,repository_smoke=True)
-    if level == 'fast': p.update(coverage_mode='none',coverage_modules=[],changed_lines={},python_versions=[],impact_evidence={})
+    if level == 'fast': p.update(coverage_mode='none',coverage_modules=[],changed_lines={},coverage_lines={},python_versions=[],impact_evidence={})
     return signed(p)
 
 
@@ -61,6 +63,33 @@ def results(p):
 
 
 class ImpactCoverageTests(unittest.TestCase):
+    def test_multiline_condition_uses_real_coverage_branch_origins(self):
+        source = 'def decide(enabled, count):\n    if (\n        enabled and count >= 0\n    ):\n        return True\n    return False\n'
+        p = plan(); p['changed_lines'] = {MODULE: [3]}
+        with patch.object(planner, 'read_at', return_value=source.encode()):
+            p['coverage_lines'] = planner.coverage_lines(None, 'head', p['changed_lines'])
+        self.assertIn(2, p['coverage_lines'][MODULE])
+        signed(p); pol = policy(); pol['critical_modules'] = []
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); path = root / 'example.py'; path.write_text(source, encoding='utf-8')
+            for both_paths in (False, True):
+                measured = Coverage(branch=True, source=[str(root)], config_file=False, data_file=None)
+                measured.start()
+                namespace = {}; exec(compile(source, str(path), 'exec'), namespace)
+                self.assertTrue(namespace['decide'](True, 0))
+                if both_paths:
+                    self.assertFalse(namespace['decide'](False, 0))
+                measured.stop(); measured.json_report(outfile=str(root / 'coverage.json'))
+                report = json.loads((root / 'coverage.json').read_bytes())
+                report['files'] = {MODULE: next(iter(report['files'].values()))}
+                if both_paths:
+                    self.assertEqual([], report['files'][MODULE]['missing_branches'])
+                    checks.impact_coverage(p, pol, report, results(p))
+                else:
+                    self.assertIn([2, 6], report['files'][MODULE]['missing_branches'])
+                    with self.assertRaisesRegex(ValueError, 'uncovered changed branches'):
+                        checks.impact_coverage(p, pol, report, results(p))
+
     def test_impact_preserves_critical_floor_and_distinguishes_global(self):
         p=plan()
         result=checks.impact_coverage(p,policy(),coverage(),results(p))

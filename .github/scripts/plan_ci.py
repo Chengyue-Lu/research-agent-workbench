@@ -28,7 +28,8 @@ def consumer_fingerprint(repo, commit, leaves):
     inventory = []
     for record in filter(None, records):
         metadata, path = record.split('\t')
-        if path not in leaves and (path.startswith(('src/', 'schemas/', 'registry/')) or path == 'pyproject.toml'):
+        if path not in leaves and (path.startswith(('src/', 'schemas/', 'registry/')) or path == 'pyproject.toml'
+                                   or (path.startswith('tests/') and path.endswith('.py'))):
             inventory.append([path, metadata])
     return digest(sorted(inventory))
 
@@ -51,6 +52,24 @@ def changed_lines(repo, base, head, paths):
             require(count > 0, 'deleted-only source hunk requires FULL')
             lines.update(range(start, start + count))
         result[path] = sorted(lines)
+    return result
+
+
+def coverage_lines(repo, head, physical_lines):
+    """Conservatively cover the enclosing statement, including multiline branch origins."""
+    result = {}
+    for path, lines in physical_lines.items():
+        tree = ast.parse(read_at(repo, head, path))
+        statements = [node for node in ast.walk(tree) if isinstance(node, ast.stmt)]
+        affected = set()
+        for line in lines:
+            owners = [node for node in statements if node.lineno <= line <= node.end_lineno]
+            require(owners, 'changed line has no executable statement mapping; requires FULL')
+            # The smallest enclosing statement excludes unrelated outer suites. Expanding its
+            # complete span also covers continuation lines and branch sources within expressions.
+            owner = min(owners, key=lambda node: (node.end_lineno - node.lineno, -node.col_offset))
+            affected.update(range(owner.lineno, owner.end_lineno + 1))
+        result[path] = sorted(affected)
     return result
 
 
@@ -184,7 +203,7 @@ def make_plan(repo, *, base, head, target, repository, base_ref='develop', body=
     binding = {'repository': repository, 'base': base, 'head': head, 'merge_base': merge_base, 'target': target}
     plan = {'version': 1, 'binding': binding, 'change_class': 'full', 'risk': 'R2', 'changes': [],
             'surfaces': [], 'test_groups': [], 'tests': [], 'coverage_modules': [], 'impact_evidence': {},
-            'changed_lines': {},
+            'changed_lines': {}, 'coverage_lines': {},
             'policy_sha256': '', 'python_versions': ['3.11', '3.13'], 'coverage_mode': 'repository',
             'package_smoke': True, 'repository_smoke': True, 'reasons': []}
     reasons = plan['reasons']
@@ -241,8 +260,9 @@ def make_plan(repo, *, base, head, target, repository, base_ref='develop', body=
         require(level != 'focused' or modules, 'focused scope lacks coverage obligations')
         require({p for p in paths if p.endswith('.py')} <= set(modules), 'changed source lacks coverage obligation')
         affected_lines = changed_lines(repo, base, head, paths) if modules else {}
+        executable_lines = coverage_lines(repo, head, affected_lines)
         plan.update(change_class=level, surfaces=sorted(matched), test_groups=groups, tests=tests,
-                    changed_lines=affected_lines,
+                    changed_lines=affected_lines, coverage_lines=executable_lines,
                     coverage_modules=modules, impact_evidence=policy['impact_evidence'] if modules else {},
                     python_versions=['3.11', '3.13'] if level == 'focused' else [],
                     coverage_mode='impact' if modules else 'none',
@@ -262,6 +282,8 @@ def event_plan(repo, event, event_name, *, force_full=False):
         repository = event['repository']['full_name']
         response = subprocess.check_output(['gh', 'api', f'repos/{repository}/pulls/{number}'])
         event = {'pull_request': json.loads(response)}
+        require(os.environ.get('GITHUB_SHA') == event['pull_request']['head']['sha'],
+                'dispatch trigger SHA must equal current PR head; start a new dispatch with --ref <current-pr-branch>')
         force_full = True
     pr = event.get('pull_request')
     if pr:
@@ -304,6 +326,7 @@ def verify_plan(repo, plan, event=None, event_name='pull_request'):
         require(plan['policy_sha256'] == minimum['policy_sha256']
                 and plan['impact_evidence'] == minimum['impact_evidence'], 'plan policy/evidence mismatch')
         require(plan['changed_lines'] == minimum['changed_lines'], 'plan changed-line mismatch')
+        require(plan['coverage_lines'] == minimum['coverage_lines'], 'plan executable-line mapping mismatch')
         require(plan['coverage_mode'] == minimum['coverage_mode'], 'plan coverage mode mismatch')
     else:
         require(plan['coverage_mode'] == 'repository' and plan['package_smoke'] is True
