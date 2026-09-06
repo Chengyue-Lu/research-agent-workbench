@@ -1,0 +1,11 @@
+{
+  "probe_pr": 64,
+  "state": "CLOSED",
+  "merged": false,
+  "body_metadata_run": 34049868007,
+  "label_metadata_run": 34049895921,
+  "reused_content_run": 34049735916,
+  "cancelled_run": 34050011774,
+  "replacement_run": 34050042447,
+  "manual_cancel": false
+}

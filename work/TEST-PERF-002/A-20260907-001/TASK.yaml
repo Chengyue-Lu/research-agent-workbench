@@ -1,0 +1,30 @@
+task_id: TEST-PERF-002
+revision: 3
+owner: Chengyue-Lu
+risk: R2
+delegation: false
+required_skills: []
+goal: Verify merged selective CI on hosted PR events and fix the reproduced integration
+  test event leak.
+authorization: 'User requested testing whether merged PR #63 takes effect. Controlled
+  draft PR #64 is closed after evidence capture; fix PR remains for human review.'
+read_allowlist:
+- tests/test_ci_plan.py
+- tests/ci_impact_policy.yaml
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- work/TEST-PERF-002/A-20260907-001/**
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- .github/**
+- tests/run_unittest_suite.py
+- tests/test_ci_checks.py
+- tests/coverage_policy.yaml
+- src/research_workbench/adapters/models/openai.py
+- src/research_workbench/observability/trace.py
+write_scope:
+- tests/test_ci_plan.py
+- tests/ci_impact_policy.yaml
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- work/TEST-PERF-002/A-20260907-001/**
+stop_conditions:
+- 'No merge, release, remote protection edits or parent Issue #48 closure.'

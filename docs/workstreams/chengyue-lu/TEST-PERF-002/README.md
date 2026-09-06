@@ -102,5 +102,6 @@ check names does not claim remote protection is enabled. This PR does not change
 ## Delivery and review
 
 The [Risk Ledger](RISK_LEDGER.md), validation record, PR diff and bounded Attempt archive are the review inputs.
+Post-merge behavior and the integration fixture repair are recorded in [HOSTED_VERIFICATION.md](HOSTED_VERIFICATION.md).
 The work uses the existing Audit ID path, as PR #49 did, and does not modify M-series Task states. Cross-owner
 review and exact-head required checks are merge prerequisites. No self-merge or release operation is included.

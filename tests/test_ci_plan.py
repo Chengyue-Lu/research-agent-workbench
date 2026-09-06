@@ -303,8 +303,11 @@ class PlannerTests(unittest.TestCase):
         event.write_text(json.dumps({'pull_request': {'base': {'sha':self.base,'ref':'develop','repo':{'full_name':'Example/repo'}},'head':{'sha':head},'body':BODY}}))
         output = Path(self.temp.name)/'plan.json'
         ghout = Path(self.temp.name)/'outputs'
-        with patch.object(planner,'ROOT',self.repo), patch.dict(os.environ,{'GITHUB_OUTPUT':str(ghout)}):
-            self.assertEqual(0,planner.main(['--event',str(event),'--output',str(output)]))
+        for host_event in ('pull_request', 'push', 'workflow_dispatch'):
+            with self.subTest(host_event=host_event), patch.object(planner,'ROOT',self.repo), \
+                 patch.dict(os.environ,{'GITHUB_OUTPUT':str(ghout), 'GITHUB_EVENT_NAME':host_event}):
+                self.assertEqual(0,planner.main(['--event',str(event),'--event-name','pull_request',
+                                                '--output',str(output)]))
         self.assertIn('class=fast',ghout.read_text())
         self.assertEqual(output.read_bytes(), planner.canonical(json.loads(output.read_bytes())))
 
