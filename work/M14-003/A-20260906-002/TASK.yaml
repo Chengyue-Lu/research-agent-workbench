@@ -1,0 +1,26 @@
+task_id: M14-003
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+baseline: cee51b35380d698ae8e8e4ae254fa649a449787d
+authorization: 'User requested diagnosis and repair of PR #60 CI failure.'
+goal: Declare the build-backend dependency used directly by Runtime resource tests.
+profile: main-agent bounded CI repair
+required_skills: []
+delegation: false
+read_allowlist:
+- AGENTS.md
+- docs/**
+- pyproject.toml
+- build_backend.py
+- tests/test_runtime_resources.py
+- .github/workflows/ci.yml
+- src/research_workbench/observability/trace.py
+- .rwb/m14-003-ci-fix/**
+write_scope:
+- pyproject.toml
+- work/M14-003/A-20260906-002/**
+stop_conditions:
+- Preserve Runtime behavior and release gates.
+- No merge or release activation.
+- Preserve frozen earlier archives.
