@@ -41,7 +41,7 @@ class OpenAIResponsesProvider:
     configured model and account.
     """
 
-    provider_name = "openai"
+    provider_name = 'openai'
     adapter_version = "0.1.0"
     implemented_capabilities = frozenset(
         {Capability.TEXT, Capability.TOOLS, Capability.STRUCTURED_OUTPUT, Capability.REASONING}
