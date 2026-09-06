@@ -105,7 +105,7 @@ def covers(previous, current):
 def metadata_continuity(plan):
     binding = plan['binding']
     repository = binding['repository']
-    response = subprocess.check_output(['gh', 'api', f'repos/{repository}/actions/runs',
+    response = subprocess.check_output(['gh', 'api', f'repos/{repository}/actions/workflows/ci.yml/runs',
                                         '--method', 'GET', '-f',
                                         'head_sha=' + binding['head'], '-f', 'per_page=30'])
     runs = json.loads(response)['workflow_runs']

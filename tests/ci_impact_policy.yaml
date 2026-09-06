@@ -1,53 +1,109 @@
-policy_id: rwb-ci-impact
-version: 1
-# Exact low-fanout entry points; everything unclassified remains FULL.
-surfaces:
-  documentation:
-    paths: [README.md, CHANGELOG.md, DEVELOPMENT_HISTORY.md, docs/GETTING_STARTED.md, docs/README.md, docs/STATUS.md, docs/TASKS.md, docs/ROADMAP.md, docs/workstreams/**]
-    class: fast
-    groups: [documentation]
-  provider-wire:
-    paths: [src/research_workbench/adapters/models/openai.py, src/research_workbench/adapters/models/anthropic.py, src/research_workbench/adapters/models/gemini.py]
-    class: focused
-    groups: [provider-wire]
-groups:
-  documentation:
-    tests: [test_documentation, test_pr_governance]
-    downstream: []
-    coverage: []
-    package: false
-    repository: false
-  provider-wire:
-    tests: [test_provider_adapters, test_provider_contract_branches, test_provider_port]
-    downstream: [provider-conformance]
-    coverage: [src/research_workbench/adapters/models/openai.py, src/research_workbench/adapters/models/anthropic.py, src/research_workbench/adapters/models/gemini.py]
-    package: false
-    repository: false
-  provider-conformance:
-    tests: [test_provider_conformance]
-    downstream: [provider-session]
-    coverage: []
-    package: false
-    repository: true
-  provider-session:
-    tests: [test_api_session_runner]
-    downstream: [provider-cli]
-    coverage: []
-    package: false
-    repository: false
-  provider-cli:
-    tests: [test_cli, test_cli_command_branches, test_validation_helpers]
-    downstream: []
-    coverage: []
-    package: true
-    repository: false
-impact_evidence:
-  positive_tests:
-    - test_provider_adapters.OpenAIAdapterTests.test_text_request_disables_storage_and_maps_usage
-    - test_provider_adapters.AnthropicAdapterTests.test_system_is_hoisted_and_required_max_tokens_default_is_visible
-    - test_provider_adapters.GeminiAdapterTests.test_text_request_maps_system_usage_and_stop
-  negative_tests:
-    - test_provider_adapters.OpenAIAdapterTests.test_model_mismatch_fails_before_credential_resolution
-    - test_provider_adapters.AnthropicAdapterTests.test_temperature_above_provider_range_is_rejected_before_call
-    - test_provider_adapters.GeminiAdapterTests.test_parallel_response_is_contract_violation_when_not_claimed
-consumer_fingerprint: f26c5e1e1335310c2d15e425202deeebbf1f414f3d7670d84ed38856b2d94243
+{
+  "policy_id": "rwb-ci-impact",
+  "version": 1,
+  "surfaces": {
+    "documentation": {
+      "paths": [
+        "README.md",
+        "CHANGELOG.md",
+        "DEVELOPMENT_HISTORY.md",
+        "docs/GETTING_STARTED.md",
+        "docs/README.md",
+        "docs/STATUS.md",
+        "docs/TASKS.md",
+        "docs/ROADMAP.md",
+        "docs/workstreams/**"
+      ],
+      "class": "fast",
+      "groups": [
+        "documentation"
+      ]
+    },
+    "provider-wire": {
+      "paths": [
+        "src/research_workbench/adapters/models/openai.py",
+        "src/research_workbench/adapters/models/anthropic.py",
+        "src/research_workbench/adapters/models/gemini.py"
+      ],
+      "class": "focused",
+      "groups": [
+        "provider-wire"
+      ]
+    }
+  },
+  "groups": {
+    "documentation": {
+      "tests": [
+        "test_documentation",
+        "test_pr_governance"
+      ],
+      "downstream": [],
+      "coverage": [],
+      "package": false,
+      "repository": false
+    },
+    "provider-wire": {
+      "tests": [
+        "test_provider_adapters",
+        "test_provider_contract_branches",
+        "test_provider_port"
+      ],
+      "downstream": [
+        "provider-conformance"
+      ],
+      "coverage": [
+        "src/research_workbench/adapters/models/openai.py",
+        "src/research_workbench/adapters/models/anthropic.py",
+        "src/research_workbench/adapters/models/gemini.py"
+      ],
+      "package": false,
+      "repository": false
+    },
+    "provider-conformance": {
+      "tests": [
+        "test_provider_conformance"
+      ],
+      "downstream": [
+        "provider-session"
+      ],
+      "coverage": [],
+      "package": false,
+      "repository": true
+    },
+    "provider-session": {
+      "tests": [
+        "test_api_session_runner"
+      ],
+      "downstream": [
+        "provider-cli"
+      ],
+      "coverage": [],
+      "package": false,
+      "repository": false
+    },
+    "provider-cli": {
+      "tests": [
+        "test_cli",
+        "test_cli_command_branches",
+        "test_validation_helpers"
+      ],
+      "downstream": [],
+      "coverage": [],
+      "package": true,
+      "repository": false
+    }
+  },
+  "impact_evidence": {
+    "positive_tests": [
+      "test_provider_adapters.OpenAIAdapterTests.test_text_request_disables_storage_and_maps_usage",
+      "test_provider_adapters.AnthropicAdapterTests.test_system_is_hoisted_and_required_max_tokens_default_is_visible",
+      "test_provider_adapters.GeminiAdapterTests.test_text_request_maps_system_usage_and_stop"
+    ],
+    "negative_tests": [
+      "test_provider_adapters.OpenAIAdapterTests.test_model_mismatch_fails_before_credential_resolution",
+      "test_provider_adapters.AnthropicAdapterTests.test_temperature_above_provider_range_is_rejected_before_call",
+      "test_provider_adapters.GeminiAdapterTests.test_parallel_response_is_contract_violation_when_not_claimed"
+    ]
+  },
+  "consumer_fingerprint": "f26c5e1e1335310c2d15e425202deeebbf1f414f3d7670d84ed38856b2d94243"
+}

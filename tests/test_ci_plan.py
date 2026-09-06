@@ -56,7 +56,7 @@ class PlannerTests(unittest.TestCase):
         command(cls.seed, 'add', '.')
         command(cls.seed, 'commit', '-qm', 'baseline')
         cls.policy['consumer_fingerprint'] = planner.consumer_fingerprint(cls.seed, 'HEAD', LEAVES)
-        write(cls.seed, planner.POLICY, yaml.safe_dump(cls.policy))
+        write(cls.seed, planner.POLICY, planner.canonical(cls.policy))
         command(cls.seed, 'add', planner.POLICY)
         command(cls.seed, 'commit', '-qm', 'accepted impact policy')
 
@@ -145,7 +145,7 @@ class PlannerTests(unittest.TestCase):
     def test_missing_or_malformed_base_policy_falls_back_full(self):
         self.commit()
         original = planner.read_at
-        for replacement in (b'[]', b'not: [yaml', b'{}'):
+        for replacement in (b'[]', b'not: [yaml', b'{}', b'{"version":1,"version":2}'):
             with patch.object(planner, 'read_at', side_effect=lambda r,c,p: replacement if p == planner.POLICY else original(r,c,p)):
                 self.assertEqual('full', self.plan()['change_class'])
 
@@ -237,7 +237,7 @@ class PlannerTests(unittest.TestCase):
                 planner.changes(self.repo,self.base,self.base)
 
     def test_invalid_policy_groups_and_evidence_fail_closed(self):
-        mutations = [lambda p:p.update(version=2), lambda p:p.update(groups={}),
+        mutations = [lambda p:p.update(version=2), lambda p:p.update(version=True), lambda p:p.update(groups={}),
             lambda p:p['groups']['documentation'].update(unknown=True),
             lambda p:p['groups']['documentation'].update(tests=[]),
             lambda p:p['groups']['documentation'].update(tests=['bad']),
@@ -273,6 +273,19 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual({LEAVES[0]:[1]},self.plan()['changed_lines'])
         self.commit(LEAVES[0],'')
         self.assertEqual('full',self.plan()['change_class'])
+
+    def test_source_mode_change_requires_full(self):
+        command(self.repo,'update-index','--chmod=+x',LEAVES[0])
+        command(self.repo,'commit','-qm','source mode change')
+        self.assertEqual('full',self.plan()['change_class'])
+
+    def test_dirty_or_untracked_source_cannot_consume_clean_head_plan(self):
+        self.commit();p=self.plan()
+        write(self.repo,'README.md','uncommitted\n')
+        with self.assertRaisesRegex(ValueError,'checkout drift'):planner.verify_plan(self.repo,p)
+        command(self.repo,'checkout','--','README.md')
+        write(self.repo,'src/injected.py','untracked\n')
+        with self.assertRaisesRegex(ValueError,'untracked'):planner.verify_plan(self.repo,p)
 
     def test_manual_full_rerun_uses_current_pr_facts(self):
         head=self.commit()

@@ -150,9 +150,10 @@ class MetadataTests(unittest.TestCase):
         def download(args,**kwargs):
             (Path(args[-1])/'ci-plan.json').write_bytes(planner.canonical(p))
             return subprocess.CompletedProcess(args,0)
-        with patch.object(checks.subprocess,'check_output',return_value=json.dumps({'workflow_runs':rows}).encode()),\
+        with patch.object(checks.subprocess,'check_output',return_value=json.dumps({'workflow_runs':rows}).encode()) as query,\
              patch.object(checks.subprocess,'run',side_effect=download):
             self.assertEqual(42,checks.metadata_continuity(p)['content_run'])
+            self.assertIn('/actions/workflows/ci.yml/runs',query.call_args.args[0][2])
 
     def test_missing_or_failed_content_evidence_requires_rerun(self):
         row={'head_sha':'b'*40,'path':'.github/workflows/ci.yml','status':'completed','conclusion':'success','id':1}

@@ -19,6 +19,8 @@ The deterministic plan binds repository, base/head, merge-base, tested head/merg
 selected surfaces/groups/tests, coverage and smoke obligations. Workers and aggregates revalidate it against
 the workflow event and Git facts. Agent requests may add policy groups or request FULL; they cannot remove the
 machine minimum. The PR's declared risk can raise the inferred floor and cannot lower it.
+The impact policy uses strict JSON (a YAML subset); duplicate keys and ambiguous YAML constructs are rejected.
+Consumers reject tracked checkout drift and unexpected source/test/CI files before executing a plan.
 
 | Class | Execution |
 |---|---|

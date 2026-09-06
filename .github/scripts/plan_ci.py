@@ -14,8 +14,6 @@ import re
 import subprocess
 import sys
 
-import yaml
-
 ROOT = Path(__file__).resolve().parents[2]
 POLICY = 'tests/ci_impact_policy.yaml'
 TRUST_FILES = ('.github/scripts/plan_ci.py', '.github/scripts/ci_checks.py',
@@ -69,6 +67,14 @@ def digest(value):
     return hashlib.sha256(canonical(value)).hexdigest()
 
 
+def unique_object(pairs):
+    result = {}
+    for key, value in pairs:
+        require(key not in result, 'duplicate policy key: ' + key)
+        result[key] = value
+    return result
+
+
 def git(repo, *args):
     result = subprocess.run(['git', '--no-replace-objects', '-C', str(repo), *args], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     require(result.returncode == 0, 'Git fact unavailable: ' + ' '.join(args[:2]))
@@ -120,7 +126,8 @@ def closure(policy, seeds):
 
 def validate_policy(policy):
     require(set(policy) == {'policy_id', 'version', 'surfaces', 'groups', 'impact_evidence', 'consumer_fingerprint'}
-            and policy['policy_id'] == 'rwb-ci-impact' and policy['version'] == 1, 'impact policy shape/version')
+            and policy['policy_id'] == 'rwb-ci-impact' and type(policy['version']) is int
+            and policy['version'] == 1, 'impact policy shape/version')
     require(isinstance(policy['groups'], dict) and policy['groups'], 'empty groups')
     for group in policy['groups'].values():
         require(set(group) == {'tests', 'downstream', 'coverage', 'package', 'repository'}, 'group shape')
@@ -191,7 +198,7 @@ def make_plan(repo, *, base, head, target, repository, base_ref='develop', body=
         reasons.extend(risk_reasons)
         raw = read_at(repo, base, POLICY)
         plan['policy_sha256'] = hashlib.sha256(raw).hexdigest()
-        policy = yaml.safe_load(raw)
+        policy = json.loads(raw, object_pairs_hook=unique_object)
         validate_policy(policy)
         # New/modified infrastructure cannot authorize its own lighter execution.
         for path in TRUST_FILES:
@@ -223,6 +230,8 @@ def make_plan(repo, *, base, head, target, repository, base_ref='develop', body=
             level = 'focused'
             require(all(row['status'] == 'M' for row in rows if row['path'].endswith('.py')),
                     'source add/delete/rename requires FULL')
+            require(not git(repo, 'diff', '--no-ext-diff', '--summary', base, head, '--',
+                            *[p for p in paths if p.endswith('.py')]).strip(), 'source mode drift requires FULL')
             require(consumer_fingerprint(repo, base, modules) == policy['consumer_fingerprint'],
                     'consumer inventory changed; impact closure needs review')
             for path in paths:
@@ -240,7 +249,7 @@ def make_plan(repo, *, base, head, target, repository, base_ref='develop', body=
                     package_smoke=any(g['package'] for g in records),
                     repository_smoke=any(g['repository'] for g in records))
         reasons.extend(name + ' -> ' + ','.join(policy['groups'][name]['downstream']) for name in groups)
-    except (ValueError, KeyError, TypeError, UnicodeError, SyntaxError, yaml.YAMLError) as error:
+    except (ValueError, KeyError, TypeError, UnicodeError, SyntaxError) as error:
         reasons.append('FULL fallback: ' + str(error))
     plan['plan_id'] = digest(plan)
     return plan
@@ -271,6 +280,9 @@ def event_plan(repo, event, event_name, *, force_full=False):
 
 
 def verify_plan(repo, plan, event=None, event_name='pull_request'):
+    require(not git(repo, 'status', '--porcelain', '--untracked-files=no'), 'tracked checkout drift')
+    require(not git(repo, 'status', '--porcelain', '--untracked-files=all', '--', '.github', 'src', 'tests'),
+            'untracked CI/source/test input')
     expected = dict(plan)
     plan_id = expected.pop('plan_id')
     require(digest(expected) == plan_id, 'plan digest mismatch')
