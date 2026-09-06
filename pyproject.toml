@@ -18,6 +18,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
+  "setuptools>=69", # Runtime resource tests import the build backend directly.
   "build>=1.2,<2",
   "coverage>=7.6,<8",
   "hypothesis>=6.112,<7",
