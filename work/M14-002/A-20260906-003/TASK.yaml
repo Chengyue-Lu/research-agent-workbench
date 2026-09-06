@@ -1,0 +1,35 @@
+task_id: M14-002
+revision: 3
+owner: Chengyue-Lu
+risk: R2
+handoff_level: H0
+baseline: 3331a0666ebd4c0220d5c8bdfff7351c3e4fbb65
+authorization: 'User requested remediation of M14-002 review findings in PR #60.'
+goal: Reject historical version deletion and restoration at every source DAG commit.
+profile: 'main-agent: bounded review remediation'
+required_skills: []
+delegation: false
+write_scope:
+- .github/scripts/release_surface.py
+- tests/test_release_surface.py
+- tests/coverage_policy.yaml
+- docs/implementation/RELEASE_SURFACE.md
+- work/M14-002/A-20260906-003/**
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md
+- .github/**
+- schemas/v0.1.0/agent-trace-*.schema.json
+- src/research_workbench/observability/trace.py
+- work/M14-002/A-20260906-001/TASK.yaml
+- .github/scripts/release_surface.py
+- tests/test_release_surface.py
+- tests/coverage_policy.yaml
+- docs/implementation/RELEASE_SURFACE.md
+- work/M14-002/A-20260906-003/**
+stop_conditions:
+- No release topology activation, branch, tag or merge.
+- No changes to frozen historical attempt evidence or Task definitions.

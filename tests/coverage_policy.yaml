@@ -231,6 +231,8 @@ negative_acceptance:
       - test_release_surface.ReleaseSurfaceTests.test_policy_same_version_drift_is_rejected
       - test_release_surface.ReleaseSurfaceTests.test_policy_version_cannot_be_inserted_before_history
       - test_release_surface.ReleaseSurfaceTests.test_policy_version_cannot_be_inserted_between_historical_versions
+      - test_release_surface.ReleaseSurfaceTests.test_policy_version_deletion_and_restore_is_rejected
+      - test_release_surface.ReleaseSurfaceTests.test_merge_dropped_parent_version_and_restore_is_rejected
       - test_release_surface.ReleaseSurfaceTests.test_required_check_permutations_have_only_one_legal_tree
       - test_release_surface.ReleaseSurfaceTests.test_portable_path_attack_matrix
       - test_release_surface.ReleaseSurfaceTests.test_git_symlink_gitlink_casefold_and_non_utf8_paths_are_rejected

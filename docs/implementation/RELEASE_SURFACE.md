@@ -27,7 +27,9 @@ generator emits canonical JSON from a closed set of source/parent/release/policy
 The [policy](../../.github/release-surface.yml) is strict JSON, a subset of YAML, to avoid duplicate mapping keys,
 aliases and implementation-dependent YAML coercions. Its [Schema](../../schemas/v0.1.0/release-surface-policy.schema.json)
 permits only an ordered list of immutable policy versions. Every version visible anywhere in the source commit's
-policy history must remain present with identical semantics. At each historical introduction, new versions must
+policy history must remain present with identical semantics at every descendant commit. The checker reads each
+commit's actual policy tree, including merges that match one parent, and requires it to retain all parent identities.
+Restoring a deleted version later cannot repair the intervening history. At each historical introduction, new versions must
 exceed the maximum version in that commit's ancestor histories. Merges retain the union of inherited identities;
 individual parent lists need not be prefixes of the merged list. Later unchanged commits cannot legitimize an
 earlier retroactive insertion. Removal, identity replacement or a same-version rewrite also fails. Comments and
