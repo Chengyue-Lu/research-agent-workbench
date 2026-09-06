@@ -606,6 +606,42 @@ class PlannerTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, 'missing or empty'):
                     runner._suite_for(args)
 
+    def test_runner_main_executes_each_coverage_set_and_binds_real_results(self):
+        from tests import run_unittest_suite as runner
+        from contextlib import redirect_stdout, redirect_stderr
+        import io
+        authority = yaml.safe_load((self.repo / 'tests/coverage_policy.yaml').read_bytes())
+        authority['suites']['coverage-quality'] = {'modules': ['test_unselected'],
+                                                  'test_ids': ['test_ci_plan.Example.test_ok']}
+        self.base = self.commit('tests/coverage_policy.yaml', yaml.safe_dump(authority))
+        plan_path = Path(self.temp.name) / 'runner-plan.json'
+        output = Path(self.temp.name) / 'runner-results.json'
+        source = (self.repo / '.github/scripts/plan_ci.py').read_text()
+        with patch.object(runner, 'ROOT', self.repo), patch.object(runner, 'TESTS', self.repo / 'tests'), \
+             patch.object(runner, 'SOURCE', self.repo / 'src'), patch.dict(os.environ, {'GITHUB_EVENT_PATH':''}), \
+             patch.dict(sys.modules), patch.object(sys, 'path', list(sys.path)), \
+             redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            for name in ('test_ci_plan', 'test_unselected', 'test_documentation', 'test_pr_governance'):
+                sys.modules.pop(name, None)
+            for impact, repository in ((False, False), (False, True), (True, False), (True, True)):
+                command(self.repo, 'reset', '--hard', self.base)
+                self.commit('.github/scripts/plan_ci.py', source.replace("'fast': 0,", "'fast': 0 + 0,")) if impact else self.commit()
+                p = self.plan(force_full=repository)
+                plan_path.write_bytes(planner.canonical(p))
+                argv = ['--suite', 'coverage-plan', '--plan', str(plan_path), '--policy', str(self.repo / 'tests/coverage_policy.yaml'),
+                        '--json-output', str(output), '--verbosity', '0']
+                if not impact and not repository:
+                    with self.assertRaisesRegex(ValueError, 'coverage obligations'):
+                        runner.main(argv)
+                    argv[1] = 'focused'
+                self.assertEqual(0, runner.main(argv))
+                receipt = json.loads(output.read_bytes())
+                self.assertTrue(receipt['successful'])
+                self.assertEqual(p['plan_id'], receipt['plan_id'])
+                self.assertEqual(p['coverage_obligations'], receipt['coverage_obligations'])
+                self.assertEqual('coverage-quality' if repository else 'impact' if impact else 'focused', receipt['suite'])
+                self.assertEqual(len({r['id'] for r in receipt['tests']}), receipt['test_count'])
+
     def test_decorators_are_executable_impact_and_comments_keep_repository_guard(self):
         path = LEAVES[0]
         source = 'def identity(f): return f\n@identity\ndef example(): return 1\n# review note\n'
