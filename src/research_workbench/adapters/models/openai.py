@@ -42,7 +42,7 @@ class OpenAIResponsesProvider:
     """
 
     provider_name = 'openai'
-    adapter_version = "0.1.0"
+    adapter_version = '0.1.0'
     implemented_capabilities = frozenset(
         {Capability.TEXT, Capability.TOOLS, Capability.STRUCTURED_OUTPUT, Capability.REASONING}
     )
