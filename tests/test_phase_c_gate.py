@@ -258,13 +258,24 @@ class RunnerOwnedClosureTest(unittest.TestCase):
         script = """
 from pathlib import Path
 from research_workbench.research_state.fresh_actor import FileAccessPolicy
+from research_workbench.resources import RuntimeResources
+from research_workbench.validation.schemas import SchemaCatalog
+resources = RuntimeResources()
+catalog = SchemaCatalog()
 root = Path.cwd().resolve()
 allowed = root / 'allowed.txt'
 secret = root / 'secret.txt'
 output = root / 'output.json'
-policy = FileAccessPolicy(root=root, allowed_reads={allowed}, allowed_writes={output})
+policy = FileAccessPolicy(root=root, allowed_reads={allowed}, allowed_writes={output},
+                          trusted_read_roots=(catalog.directory,))
 policy.install()
 blocked = []
+for path in (resources.root / 'manifest.json',
+             resources.catalog_root / 'registry/skills/release-projections.json'):
+    try:
+        path.read_bytes()
+    except PermissionError:
+        blocked.append('runtime')
 try:
     secret.read_text(encoding='utf-8')
 except PermissionError:
@@ -274,7 +285,7 @@ try:
 except PermissionError:
     blocked.append('write')
 output.write_text('ok', encoding='utf-8')
-raise SystemExit(0 if blocked == ['read', 'write'] else 1)
+raise SystemExit(0 if blocked == ['runtime', 'runtime', 'read', 'write'] else 1)
 """
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
