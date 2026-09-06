@@ -308,8 +308,24 @@ class RunReconstructionTest(unittest.TestCase):
         manifest["promotion_receipt_ref"] = fixture.ref(fixture.root / result.receipt)
         with mock.patch.object(reconstruction.subprocess, "Popen", side_effect=AssertionError("read only")):
             self.assertEqual(reconstruction.check_run_manifest(fixture.root, manifest), [])
-            manifest["expected_outputs"][0]["artifact_ref"] = fixture.ref(fixture.root / CASE_PATH / "trajectory.csv")
-            self.assertEqual(reconstruction.check_run_manifest(fixture.root, manifest)[0]["status"], "manifest-invalid")
+            wrong_path_manifest = copy.deepcopy(manifest)
+            wrong_path_manifest["expected_outputs"][0]["artifact_ref"] = fixture.ref(fixture.root / CASE_PATH / "trajectory.csv")
+            self.assertEqual(reconstruction.check_run_manifest(fixture.root, wrong_path_manifest)[0]["status"], "manifest-invalid")
+
+        manifest_path = fixture.root / CASE_PATH / "promoted-manifest.yaml"
+        manifest_path.write_text(yaml.safe_dump(manifest), encoding="utf-8")
+        attempt_dir = "work/M4-004/promoted-reconstruction"
+        report = reconstruction.reproduce_run(fixture.root, manifest_path, attempt_dir=attempt_dir)
+        self.assertEqual(report["status"], "matched")
+        self.assertTrue(report["executed"])
+        self.assertEqual(report["returncode"], 0)
+        self.assertEqual(report["promotion_receipt_ref"], manifest["promotion_receipt_ref"])
+        published_target = fixture.root / manifest["expected_outputs"][0]["artifact_ref"]["path"]
+        self.assertEqual((fixture.root / report["output_refs"][0]["path"]).read_bytes(), published_target.read_bytes())
+        report_path = fixture.root / attempt_dir / "reconstruction-report.json"
+        with mock.patch.object(reconstruction.subprocess, "Popen", side_effect=AssertionError("read only")):
+            with redirect_stdout(StringIO()):
+                self.assertEqual(main(["validate", str(report_path), "--root", str(fixture.root)]), 0)
 
 
 if __name__ == "__main__":

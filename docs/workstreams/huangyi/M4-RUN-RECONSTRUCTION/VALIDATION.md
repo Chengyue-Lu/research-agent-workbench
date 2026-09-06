@@ -36,10 +36,40 @@ FileRef revisions are included in focused evidence. No original Task acceptance 
 | Preconditions and failure are distinct | Missing file, interpreter mismatch, nonzero status, timeout, partial outputs |
 | Changed run config reveals a difference | Re-pinned coefficient `a=2` yields `output-different`; missing and extra files are both reported |
 | Negative results remain visible | Zero net change is retained with `negative_result: true`; failures retain partial output and stderr |
-| Promotion linkage has exact path/hash semantics | Real host-produced promotion fixture is executed; its published target is accepted and a same-byte different path rejected |
+| Promotion linkage has exact path/hash semantics | One real host-produced promotion fixture supplies the published target and receipt for actual reconstruction; output bytes match, the report retains the receipt ref, and a same-byte different path is rejected |
 | Readers do not execute checkers or simulations | Manifest and report validation tested with `Popen` forbidden |
 | Producer to generic validator | Generated report accepted; modifying generated output makes generic validation fail |
 | Scope and authority remain constrained | Escape/inbox/alias/wrong Run/duplicate output/Claim authority changes rejected; existing attempt not overwritten |
+
+On 2026-09-06 a narrow regression extended only
+`test_actual_promotion_receipt_binds_published_target_without_checker_reexecution`. It reuses that method's
+existing real promotion target and receipt, saves a valid manifest, then actually reconstructs the trajectory.
+Assertions cover `matched`, `executed: true`, zero return code, exact published-target bytes, the unchanged
+receipt reference, and generic `rwb validate` acceptance of the emitted report. Both read-only validations keep
+`Popen` forbidden; the same-byte wrong-path rejection remains. This one method passed once in **6.639 seconds**
+on Windows CPython 3.11.9 with source explicitly selected from this candidate; the capture wrapper took 6.653
+seconds including suite loading. No full suite, coverage, package, or model tests were rerun, so the earlier
+coverage figures remain historical measurements rather than a new measurement of this test extension.
+The local wrapper retained the already-generated producer fixture before normal cleanup under
+`work/M4-004/A-20260906-002/agent-regression/producer-case/`, including `promoted-manifest.yaml`, the real
+promotion receipt, and the reconstruction report. Its command and raw console evidence are retained beside it
+in `WORKLOG.md` and `run-output.txt`. This demonstrates engineering reconstruction and structural report
+validation in that environment; it does not establish scientific correctness, historical execution identity,
+cross-platform reproduction, or Human acceptance.
+
+The same saved producer case was then consumed by the local-only combined candidate
+`e16524631b78985fb2b65f693c9fb1adb4d8a0a3` (PR61 plus this regression). Claim localization and reconstruction
+used the same promoted target and receipt: `claim complete=true`, `reconstruction matched`, generic map/report
+validation passed, and negative results remained visible. The combination invoked no promotion/checker and
+exactly one simulation subprocess, whose reported duration was **0.093 seconds**. This is one engineering
+observation, not a performance threshold or research-benefit measurement. The shared trajectory SHA-256 is
+`177fa6856055f38f2ce7268a2e47f21f843628f0bfe316813ac1c55efec09369`; the receipt SHA-256 is
+`70ba4c543989ffffc00e4a0137431f2bea56c20c4dcba0cffb6f8d7adeafa53c`. The combined checkout's existing
+`work/M4-004/A-20260906-002/` archive holds the case, Claim output, reconstruction report and file-hash index.
+A single Schema catalog check passed in 0.869 seconds after resolving overlapping registrations; the five
+merged documentation files had 66 valid relative links. These observations do not replace hosted checks on
+the eventual PR62 candidate or either Task's named-owner acceptance. The draft Claim intentionally overstates
+stability so that its contrary intermediate values and limitation remain visible; `complete` does not endorse it.
 
 An initial pre-binding-fix CLI attempt was retained locally under
 `work/M4-004/A-20260906-001/reconstruction/`. It ran CPython 3.11.9 with `-I -S` in a fresh staged directory,
