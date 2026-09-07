@@ -29,6 +29,15 @@
       "groups": [
         "provider-wire"
       ]
+    },
+    "m14-release-surface": {
+      "paths": [
+        ".github/scripts/release_surface.py"
+      ],
+      "class": "focused",
+      "groups": [
+        "m14-release-surface"
+      ]
     }
   },
   "groups": {
@@ -91,6 +100,23 @@
       "coverage": [],
       "package": true,
       "repository": false
+    },
+    "m14-release-surface": {
+      "tests": [
+        "test_release_surface",
+        "test_provider_adapters.OpenAIAdapterTests.test_text_request_disables_storage_and_maps_usage",
+        "test_provider_adapters.AnthropicAdapterTests.test_system_is_hoisted_and_required_max_tokens_default_is_visible",
+        "test_provider_adapters.GeminiAdapterTests.test_text_request_maps_system_usage_and_stop",
+        "test_provider_adapters.OpenAIAdapterTests.test_model_mismatch_fails_before_credential_resolution",
+        "test_provider_adapters.AnthropicAdapterTests.test_temperature_above_provider_range_is_rejected_before_call",
+        "test_provider_adapters.GeminiAdapterTests.test_parallel_response_is_contract_violation_when_not_claimed"
+      ],
+      "downstream": [],
+      "coverage": [
+        ".github/scripts/release_surface.py"
+      ],
+      "package": false,
+      "repository": false
     }
   },
   "impact_evidence": {
@@ -105,5 +131,5 @@
       "test_provider_adapters.GeminiAdapterTests.test_parallel_response_is_contract_violation_when_not_claimed"
     ]
   },
-  "consumer_fingerprint": "66ac9d3b4d0134a0b8ab7c4e1540ac0fa64bc5d4ba75bc45f228dfdf13d2207d"
+  "consumer_fingerprint": "354924e90fdb3984dc7db81e13c5d65e4d3c00325f8c28c39f149ce698046acc"
 }
