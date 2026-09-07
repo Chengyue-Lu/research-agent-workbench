@@ -6,6 +6,7 @@ Owner: 路诚钺 (`Chengyue-Lu`); cross-owner: 黄毅 (`let778750-cpu`); R2.
 |---|---|---|
 | Author narrows tests through metadata or candidate policy | Git-derived paths, base inventory/risk floor, immutable dependency proof, worker plan recomputation, adversarial reductions | Review planner trust boundary and workflow wiring |
 | A new downstream consumer escapes selection | Union of exact base/head imports, resource references, opaque consumers and reviewed contract groups; new tests seed their own closure | Inspect inclusion chains and exclusions; unresolved closure retains explicit fallback |
+| Bound execution functions hide a dynamic consumer | Passing or binding import, eval/exec, subprocess and loader capabilities retains opaque consumers; 11 alias and indirect-execution regressions | Review dynamic execution boundaries alongside direct literal-import selection |
 | Metadata cancels or replaces useful code CI | Separate content/governance concurrency and unique check producers | Hosted event/cancellation evidence |
 | Old FAST result reused after risk/base changes | Exact binding/policy and obligation comparison against content artifact; explicit FULL dispatch | Retarget/risk-elevation fixture and hosted rerun behavior |
 | Skipped or failed work appears green | Plan-aware fixed aggregates require every selected job to succeed | Adversarial missing/skip/cancel/failure matrix |

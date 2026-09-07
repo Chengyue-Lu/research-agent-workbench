@@ -204,3 +204,24 @@ runner time must be reported separately from these targeted probes.
 Revision 6 archive: `work/TEST-PERF-002/A-20260907-004/`. It pins executable hashes, plan/probe summaries,
 observable checks and explicit capture gaps. Final-head hosted checks and cross-owner acceptance remain
 required after the same-PR push; this archive does not authorize a merge.
+
+## Revision 7: bound execution consumers
+
+A final boundary probe found that assigning `__import__` to a variable could hide its dynamic consumer.
+Execution capabilities passed or bound away from a direct call now preserve opaque consumers. Builtins
+aliases and loader methods receive the same treatment; direct literal imports retain precise edges.
+Eleven adversarial subcases cover assignment, passing, aliases and loader execution.
+
+The updated planner/checker/dependency regressions pass **85/85**, including the real runner cases.
+The dependency helper has **100% line / 100% branch** coverage; planner and checker remain above 95/90.
+All four changed executable files pass the **100/100** statement/outgoing-branch preflight.
+The full inventory is **940** tests and retains all 938 oracle identities plus both subsequent additions.
+
+Refreshed complete-repository Git probes select **106** tests in four modules for the R2 CI-test edit,
+with coverage none and both smokes false. The Provider probe retains **81** tests in eight modules,
+impact coverage and the original smokes. These counts are selection evidence, not hosted timings.
+
+The revision 6 full oracle remains tied to its recorded commit. The dependency helper changed afterward,
+so final-head hosted dual-Python behavior and the actual coverage union/checkers remain required.
+Run `34068747020` on superseded head `e39b398` was cancelled to avoid finishing obsolete evidence.
+The supplemental archive is `work/TEST-PERF-002/A-20260907-005/`; the prior sealed archive is preserved.

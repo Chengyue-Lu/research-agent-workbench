@@ -137,19 +137,30 @@ def graph(blobs, paths):
             return ''
 
         for node in ast.walk(tree):
+            if isinstance(node, (ast.Name, ast.Attribute)):
+                name = call_name(node)
+                if (name in {'__import__', 'eval', 'exec', 'builtins.__import__', 'builtins.eval', 'builtins.exec',
+                             'importlib.import_module', 'runpy.run_module', 'runpy.run_path'}
+                        or name.startswith(('subprocess.', 'os.system', 'os.popen'))
+                        or name.endswith(('.exec_module', '.spec_from_file_location'))):
+                    parent = parents.get(node)
+                    if not isinstance(parent, ast.Call) or parent.func is not node:
+                        # Passing or binding an execution capability loses its argument
+                        # boundary. Preserve that consumer even when later aliases vary.
+                        opaque.add(path)
             if (isinstance(node, ast.Attribute) and node.attr in {'read_text', 'read_bytes', 'open', 'glob', 'rglob', 'iterdir'}) or (isinstance(node, ast.Name) and node.id == 'open'):
                 resources.add(path)
             if not isinstance(node, ast.Call):
                 continue
             name = call_name(node.func)
-            if name in {'__import__', 'importlib.import_module', 'runpy.run_module', 'runpy.run_path'}:
+            if name in {'__import__', 'builtins.__import__', 'importlib.import_module', 'runpy.run_module', 'runpy.run_path'}:
                 if node.args and isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str):
                     link(node.args[0].value)
                 else:
                     opaque.add(path)
-            elif not name or name in {'eval', 'exec'} or name.startswith(('subprocess.', 'os.system', 'os.popen')):
+            elif not name or name in {'eval', 'exec', 'builtins.eval', 'builtins.exec'} or name.startswith(('subprocess.', 'os.system', 'os.popen')):
                 opaque.add(path)
-            elif name.startswith('importlib.') and name.endswith(('exec_module', 'spec_from_file_location')):
+            elif name.endswith(('.exec_module', '.spec_from_file_location')):
                 opaque.add(path)
             if name.endswith(('.read_text', '.read_bytes', '.open', '.glob', '.rglob', '.iterdir')) or name == 'open':
                 resources.add(path)

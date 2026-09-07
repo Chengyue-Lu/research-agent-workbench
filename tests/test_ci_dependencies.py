@@ -138,6 +138,29 @@ class DependencyTests(unittest.TestCase):
         p = self.selection(blobs, blobs, ['tests/fixtures/claim.json'], ['tests/fixtures/claim.json'])
         self.assertEqual(['test_other'], list(p['selected']))
 
+    def test_bound_and_passed_execution_capabilities_keep_dynamic_consumers(self):
+        consumers = [
+            b'loader = __import__\nloader(prefix + suffix)',
+            b'invoke = exec\ninvoke(source)',
+            b'calculate = eval\ncalculate(source)',
+            b'import importlib\nloader = importlib.import_module\nloader(name)',
+            b'import subprocess\nlaunch = subprocess.run\nlaunch(command)',
+            b'import runpy\nexecute = runpy.run_path\nexecute(path)',
+            b'execute = spec.loader.exec_module\nexecute(module)',
+            b'factory(__import__)(name)',
+            b'from builtins import __import__ as load\nload(name)',
+            b'import builtins\nbuiltins.exec(source)',
+            b'spec.loader.exec_module(module)',
+        ]
+        for raw in consumers:
+            with self.subTest(raw=raw):
+                blobs = {'src/pkg/leaf.py': b'VALUE=1', 'tests/test_direct.py': b'import pkg.leaf',
+                         'tests/test_dynamic.py': raw, 'tests/test_other.py': b'pass'}
+                plan = self.selection(blobs, blobs, ['src/pkg/leaf.py'])
+                self.assertEqual({'test_direct', 'test_dynamic'}, set(plan['selected']))
+                self.assertEqual(['tests/test_dynamic.py'], plan['opaque_consumers'])
+                self.assertEqual(['test_other'], plan['excluded'])
+
     def test_dynamic_path_tail_keeps_known_prefix_and_empty_prefix_is_not_a_reference(self):
         blobs = {'tests/test_prefix.py': b'path = ROOT / "fixtures" / name / "result.json"',
                  'tests/test_empty.py': b'value = left / right'}
