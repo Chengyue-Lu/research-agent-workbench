@@ -32,7 +32,8 @@ COVERAGE = {'impact', 'repository'}
 CI_EXECUTABLES = {'.github/scripts/plan_ci.py', '.github/scripts/ci_checks.py', '.github/scripts/ci_dependencies.py',
                   '.github/scripts/check_pr_governance.py'}
 SELECTION_AUTHORITY = {'.github/scripts/plan_ci.py', '.github/scripts/ci_dependencies.py',
-                       '.github/scripts/ci_checks.py', 'tests/run_unittest_suite.py', '.github/workflows/ci.yml'}
+                       '.github/scripts/ci_checks.py', 'tests/run_unittest_suite.py', '.github/workflows/ci.yml',
+                       '.github/scripts/selection_witness.py'}
 COVERAGE_AUTHORITY = {'tests/coverage_policy.yaml', '.github/scripts/check_coverage_policy.py',
                       'tests/run_unittest_suite.py', 'pyproject.toml', '.coveragerc', 'setup.cfg', 'tox.ini',
                       '.github/workflows/ci.yml'}

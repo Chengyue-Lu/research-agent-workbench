@@ -26,6 +26,7 @@ suites:
       - test_ci_plan
       - test_ci_checks
       - test_ci_dependencies
+      - test_selection_witness
       - test_contracts
       - test_context_model_branches
       - test_critical_contract_branches
@@ -127,6 +128,7 @@ thresholds:
     branch: 90
 
 critical_modules:
+  - .github/scripts/selection_witness.py
   - .github/scripts/ci_dependencies.py
   - .github/scripts/plan_ci.py
   - .github/scripts/ci_checks.py
@@ -176,6 +178,15 @@ negative_acceptance:
       - test_claim_trace.ClaimTraceTests.test_missing_revision_unversioned_and_missing_evidence_are_unresolved
       - test_claim_trace.ClaimTraceTests.test_missing_and_wrong_raw_admission_do_not_yield_complete_trace
       - test_claim_trace.ClaimTraceTests.test_map_requires_exact_evidence_and_source_closure
+  - surface: independent-selection-authority-witness
+    modules:
+      - .github/scripts/selection_witness.py
+    positive_tests:
+      - test_selection_witness.WitnessTests.test_authority_floor_is_independent_of_plan_claims
+      - test_selection_witness.WitnessTests.test_product_and_comments_do_not_acquire_full_floor
+    negative_tests:
+      - test_selection_witness.WitnessTests.test_deleted_candidate_bootstrap_cannot_change_external_witness
+      - test_selection_witness.WitnessTests.test_bindings_digest_shape_and_refs_are_not_candidate_authority
   - surface: ci-dependency-selection
     modules:
       - .github/scripts/ci_dependencies.py

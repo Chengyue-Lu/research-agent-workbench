@@ -263,3 +263,37 @@ The preceding `2e23893` hosted run [34069525321](https://github.com/Chengyue-Lu/
 completed successfully. It remains evidence for that earlier head. Final-head hosted full behavior,
 coverage/checkers and cross-owner acceptance are separate requirements. Revision 8 evidence is sealed in
 `work/TEST-PERF-002/A-20260907-006/`; prior archives remain immutable.
+
+## Revision 9: independent selection-authority witness
+
+The remaining review finding is reproduced with two actual candidate subprocesses:
+the candidate deletes its planner FULL guard and empties the dependency selector;
+both its planner and worker accept focused behavior. The same plan is rejected by a
+separately committed witness running in an isolated Python process. Candidate module
+shadowing does not enter that process. The previous bootstrap regression remains useful
+behavioral evidence but does not by itself establish an independent authority root.
+
+The [execution procedure](SELECTION_WITNESS.md) pins witness commit
+`1b543393ae71b9032359b739170d66ec0be08772`. Independent hosted run
+[34079220171](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34079220171)
+passed in a 9-second job; GitHub API confirmed that exact workflow SHA and dispatch event.
+Its receipt is bound to candidate `69b22e8` and content run `34074914208`, not to later
+implementation commits. A new-head invocation follows the final push. Cross-owner
+acceptance of the fixed root and current receipt remains required; automatic required
+check enforcement of this additional witness has not been configured.
+
+Local targeted regression: **98/98 PASS**, 310.640 seconds. The witness has **100% line /
+100% branch** coverage; planner 99.78/98.68, dependency helper 100/100 and checker 99.23/97.50
+retain whole-file 95/90. All five impacted executable files satisfy the changed-statement
+and outgoing-branch **100/100** preflight. Positive/negative mappings and the coverage-quality
+suite include the witness. Thresholds and exclusions are unchanged. These local results
+are impact preflight evidence, not repository-wide coverage authority.
+
+Inventory: **953 tests**, retaining all 938 earlier oracle identities. Documentation and
+coverage-policy checks: **30 PASS**. Proposed-baseline Git probes retain R2 focused behavior:
+test-only selects **119 tests**, coverage none, both smokes false; Provider remains **81 tests**,
+impact coverage and its original smokes. These are selection counts, not hosted speedup claims.
+
+Revision 9 archive: `work/TEST-PERF-002/A-20260907-007/`. It records the attack receipt,
+independent initial hosted receipt, source hashes, local validation and explicit capture gaps.
+Final-head CI and independent witness receipts remain separate GitHub evidence after the seal.

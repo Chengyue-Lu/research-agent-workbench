@@ -40,6 +40,10 @@ Selection authority has an explicit behavioral bootstrap: semantic changes to `p
 `ci_dependencies.py`, `ci_checks.py`, `run_unittest_suite.py` or `ci.yml` require full dual-Python behavior.
 The rule follows Python AST or workflow structure changes and does not depend on the dependency selector's
 chosen tests. Ordinary comments retain scoped behavior. Coverage and smoke remain separate obligations.
+An [independently pinned witness](SELECTION_WITNESS.md) supplies the authority for this floor;
+candidate planner/worker agreement alone cannot establish it. Witness implementation changes also
+belong to the fixed selection-authority inventory. Its receipt and execution-root acceptance are
+explicit cross-owner review requirements alongside the existing exact-head CI checks.
 Reflected access through `getattr` to execution namespaces or loader capabilities retains opaque consumers,
 including assigned, passed and stored functions; ordinary data-attribute access stays outside that frontier.
 
