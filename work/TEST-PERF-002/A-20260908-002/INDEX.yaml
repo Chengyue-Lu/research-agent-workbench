@@ -1,0 +1,78 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260908-002
+task_id: TEST-PERF-002
+task_revision: 14
+attempt_id: A-20260908-002
+archive_root: A-20260908-002
+baseline: 7d69512a6a29863a439cd8e0e0e131ff6b9e1fa8
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 5b568cb384bf095b84f48fc9add77721546b92565e8bf7e22e2fdde4c9c3f437
+actors_ref:
+  path: ACTORS.yaml
+  sha256: ad50f282ad2cb4b6afccb45bec40a00823a72fe81dbe7d6145a6fdf8082b212a
+read_allowlist:
+- .github/**
+- .rwb/precision-intake/**
+- AGENTS.md
+- build_backend.py
+- docs/DEVELOPMENT.md
+- docs/README.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/**
+- pyproject.toml
+- runtime-resources.json
+- src/**
+- tests/**
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/ci_checks.py
+- .github/scripts/ci_dependencies.py
+- .github/scripts/plan_ci.py
+- .github/workflows/ci.yml
+- .rwb/precision-intake/**
+- .rwb/precision-venv311/**
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/ci_impact_policy.yaml
+- tests/fixtures/ci/**
+- tests/test_ci_checks.py
+- tests/test_ci_dependencies.py
+- tests/test_ci_plan.py
+- work/TEST-PERF-002/A-20260908-002/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 94edaed1b5e0f1086a26d9792b29f51255954ffc338d11401e153793925284cd
+  event_count: 6
+tool_event_refs:
+- path: tool-events/focused-and-claim-validation-succeeded.json
+  sha256: 2a53156c18416e04b085915194731af7f31321d06a63188602391893b00db9fb
+handoff_refs:
+- path: handoff/H0.md
+  sha256: fb7a43ca5b887d14595d1a84d9bf308721e29ab572659b62607272c90738bc40
+decision_refs: []
+output_refs:
+- path: RESULTS.md
+  sha256: 3fdd5b005ada96780523b052f6cf6559052f58a62fd991bc7e06b31f18fa14d0
+check_refs:
+- path: checks/summary.json
+  sha256: c2381cbf84d6fa5db164f26cd84f9f99f15f09d1b3e9b2668788dfd207902bf2
+- path: checks/claim-probe.json
+  sha256: 0199b2413acd15fcc6b8612b9a77ef89988f092c9a6d5084ee36c99a21470da2
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0004
+  affected_stream: messages
+- event_id: EVT-0005
+  affected_stream: events

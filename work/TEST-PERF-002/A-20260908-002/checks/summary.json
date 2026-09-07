@@ -1,0 +1,41 @@
+{
+  "implementation_head": "151c5f82a4156364785b0868025c953e28055f1f",
+  "base": "bdbac11a0c9a17fa221f8cc8bdd522c1bf4f9087",
+  "focused": {
+    "passed": 113,
+    "seconds": 285.369,
+    "python": "3.11.16"
+  },
+  "documentation_and_coverage_policy": {
+    "passed": 30
+  },
+  "repository": {
+    "validated": 183,
+    "errors": 0,
+    "warnings": 0
+  },
+  "coverage_scope": "focused impact preflight, not repository coverage",
+  "subjects": {
+    ".github/scripts/ci_dependencies.py": {
+      "source_sha256": "52e435b481332db9f35d6cdc5b45ea300e9d4b3e2542bff345cf95e60a413462",
+      "line_percent": 100.0,
+      "branch_percent": 100.0,
+      "missing_changed_statements": [],
+      "missing_changed_branches": []
+    },
+    ".github/scripts/plan_ci.py": {
+      "source_sha256": "97370340ed716cbe370f1b307b67c2f29616d34d9362d9573dd9e97443cf6c40",
+      "line_percent": 99.800796812749,
+      "branch_percent": 98.94736842105263,
+      "missing_changed_statements": [],
+      "missing_changed_branches": []
+    },
+    ".github/scripts/ci_checks.py": {
+      "source_sha256": "d1ef2da6a92be90b9d91e3c31a02198dba41b3e52e493703be0dfa4e3fb3cba6",
+      "line_percent": 99.35897435897436,
+      "branch_percent": 98.0,
+      "missing_changed_statements": [],
+      "missing_changed_branches": []
+    }
+  }
+}

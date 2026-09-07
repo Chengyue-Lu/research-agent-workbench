@@ -1,6 +1,6 @@
 # Impact selection precision: next repair round
 
-Status: intake and acceptance design complete; implementation and performance acceptance pending.
+Status: candidate implementation under validation; contract review and hosted performance acceptance pending.
 Owner: Chengyue-Lu; cross-owner: let778750-cpu; Audit ID: TEST-PERF-002; risk: R2.
 
 Request: [Issue #48 comment 5573581053](https://github.com/Chengyue-Lu/research-agent-workbench/issues/48#issuecomment-5573581053).
@@ -8,6 +8,8 @@ Accepted implementation: PR #66, merged into `develop@bdbac11a0c9a17fa221f8cc8bd
 Next branch: `feature/test-perf-002-impact-precision`, starting at that exact base.
 The [revision 13 intake](../../../../work/TEST-PERF-002/A-20260908-001/RESULTS.md)
 pins the request, raw selection certificates and hosted artifact hashes.
+The [revision 14 implementation record](../../../../work/TEST-PERF-002/A-20260908-002/RESULTS.md)
+records the independent proof selector, guarded local contracts and collector repair.
 
 ## Reproduced baseline
 
