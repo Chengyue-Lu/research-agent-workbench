@@ -1,0 +1,1657 @@
+{
+  "total_count": 13,
+  "jobs": [
+    {
+      "id": 101838196609,
+      "run_id": 34152736021,
+      "workflow_name": "CI",
+      "head_branch": "audit/test-perf-002-precision-benchmark",
+      "run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOT2gtDc8AAAAXtgePgQ",
+      "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a",
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/jobs/101838196609",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021/job/101838196609",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-09-07T18:42:55Z",
+      "started_at": "2026-09-07T18:42:57Z",
+      "completed_at": "2026-09-07T18:43:03Z",
+      "name": "Experimental precision matrix",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-09-07T18:42:58Z",
+          "completed_at": "2026-09-07T18:42:59Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-09-07T18:42:59Z",
+          "completed_at": "2026-09-07T18:43:00Z"
+        },
+        {
+          "name": "Run python - <<'PY'",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-09-07T18:43:00Z",
+          "completed_at": "2026-09-07T18:43:00Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-09-07T18:43:00Z",
+          "completed_at": "2026-09-07T18:43:00Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-09-07T18:43:00Z",
+          "completed_at": "2026-09-07T18:43:00Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/101838196609",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000001598,
+      "runner_name": "GitHub Actions 1000001598",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 101838224413,
+      "run_id": 34152736021,
+      "workflow_name": "CI",
+      "head_branch": "audit/test-perf-002-precision-benchmark",
+      "run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOT2gtDc8AAAAXtgf8HQ",
+      "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a",
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/jobs/101838224413",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021/job/101838224413",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-09-07T18:43:03Z",
+      "started_at": "2026-09-07T18:43:06Z",
+      "completed_at": "2026-09-07T19:41:48Z",
+      "name": "precision (before, coverage, 3.11)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-09-07T18:43:07Z",
+          "completed_at": "2026-09-07T18:43:08Z"
+        },
+        {
+          "name": "Start job clock",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-09-07T18:43:08Z",
+          "completed_at": "2026-09-07T18:43:08Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-09-07T18:43:08Z",
+          "completed_at": "2026-09-07T18:43:09Z"
+        },
+        {
+          "name": "Preserve controller outside candidate checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-09-07T18:43:09Z",
+          "completed_at": "2026-09-07T18:43:09Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-09-07T18:43:09Z",
+          "completed_at": "2026-09-07T18:43:10Z"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-09-07T18:43:10Z",
+          "completed_at": "2026-09-07T18:43:11Z"
+        },
+        {
+          "name": "Run python -m pip install -e '.[test]'",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-09-07T18:43:11Z",
+          "completed_at": "2026-09-07T18:43:15Z"
+        },
+        {
+          "name": "Measure explicit proposed-base plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-09-07T18:43:15Z",
+          "completed_at": "2026-09-07T19:41:45Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-09-07T19:41:45Z",
+          "completed_at": "2026-09-07T19:41:46Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-09-07T19:41:46Z",
+          "completed_at": "2026-09-07T19:41:46Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-09-07T19:41:46Z",
+          "completed_at": "2026-09-07T19:41:46Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-09-07T19:41:46Z",
+          "completed_at": "2026-09-07T19:41:46Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-09-07T19:41:46Z",
+          "completed_at": "2026-09-07T19:41:46Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/101838224413",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000001600,
+      "runner_name": "GitHub Actions 1000001600",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 101838224426,
+      "run_id": 34152736021,
+      "workflow_name": "CI",
+      "head_branch": "audit/test-perf-002-precision-benchmark",
+      "run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOT2gtDc8AAAAXtgf8Kg",
+      "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a",
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/jobs/101838224426",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021/job/101838224426",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-09-07T18:43:04Z",
+      "started_at": "2026-09-07T18:43:05Z",
+      "completed_at": "2026-09-07T18:46:35Z",
+      "name": "precision (claim, coverage, 3.11)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-09-07T18:43:06Z",
+          "completed_at": "2026-09-07T18:43:06Z"
+        },
+        {
+          "name": "Start job clock",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-09-07T18:43:06Z",
+          "completed_at": "2026-09-07T18:43:06Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-09-07T18:43:06Z",
+          "completed_at": "2026-09-07T18:43:07Z"
+        },
+        {
+          "name": "Preserve controller outside candidate checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-09-07T18:43:07Z",
+          "completed_at": "2026-09-07T18:43:07Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-09-07T18:43:07Z",
+          "completed_at": "2026-09-07T18:43:09Z"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-09-07T18:43:09Z",
+          "completed_at": "2026-09-07T18:43:09Z"
+        },
+        {
+          "name": "Run python -m pip install -e '.[test]'",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-09-07T18:43:09Z",
+          "completed_at": "2026-09-07T18:43:13Z"
+        },
+        {
+          "name": "Measure explicit proposed-base plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-09-07T18:43:13Z",
+          "completed_at": "2026-09-07T18:46:32Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-09-07T18:46:32Z",
+          "completed_at": "2026-09-07T18:46:33Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-09-07T18:46:33Z",
+          "completed_at": "2026-09-07T18:46:33Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-09-07T18:46:33Z",
+          "completed_at": "2026-09-07T18:46:33Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-09-07T18:46:33Z",
+          "completed_at": "2026-09-07T18:46:34Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-09-07T18:46:34Z",
+          "completed_at": "2026-09-07T18:46:34Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/101838224426",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000001599,
+      "runner_name": "GitHub Actions 1000001599",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 101838224432,
+      "run_id": 34152736021,
+      "workflow_name": "CI",
+      "head_branch": "audit/test-perf-002-precision-benchmark",
+      "run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOT2gtDc8AAAAXtgf8MA",
+      "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a",
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/jobs/101838224432",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021/job/101838224432",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-09-07T18:43:04Z",
+      "started_at": "2026-09-07T18:45:16Z",
+      "completed_at": "2026-09-07T18:45:46Z",
+      "name": "precision (release, behavioral, 3.11)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-09-07T18:45:17Z",
+          "completed_at": "2026-09-07T18:45:18Z"
+        },
+        {
+          "name": "Start job clock",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-09-07T18:45:18Z",
+          "completed_at": "2026-09-07T18:45:18Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-09-07T18:45:18Z",
+          "completed_at": "2026-09-07T18:45:19Z"
+        },
+        {
+          "name": "Preserve controller outside candidate checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-09-07T18:45:19Z",
+          "completed_at": "2026-09-07T18:45:19Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-09-07T18:45:19Z",
+          "completed_at": "2026-09-07T18:45:21Z"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-09-07T18:45:21Z",
+          "completed_at": "2026-09-07T18:45:21Z"
+        },
+        {
+          "name": "Run python -m pip install -e '.[test]'",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-09-07T18:45:21Z",
+          "completed_at": "2026-09-07T18:45:27Z"
+        },
+        {
+          "name": "Measure explicit proposed-base plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-09-07T18:45:27Z",
+          "completed_at": "2026-09-07T18:45:42Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-09-07T18:45:42Z",
+          "completed_at": "2026-09-07T18:45:43Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-09-07T18:45:43Z",
+          "completed_at": "2026-09-07T18:45:43Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-09-07T18:45:43Z",
+          "completed_at": "2026-09-07T18:45:43Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-09-07T18:45:43Z",
+          "completed_at": "2026-09-07T18:45:43Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-09-07T18:45:43Z",
+          "completed_at": "2026-09-07T18:45:44Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/101838224432",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000001608,
+      "runner_name": "GitHub Actions 1000001608",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 101838224434,
+      "run_id": 34152736021,
+      "workflow_name": "CI",
+      "head_branch": "audit/test-perf-002-precision-benchmark",
+      "run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOT2gtDc8AAAAXtgf8Mg",
+      "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a",
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/jobs/101838224434",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021/job/101838224434",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-09-07T18:43:04Z",
+      "started_at": "2026-09-07T18:45:32Z",
+      "completed_at": "2026-09-07T18:46:00Z",
+      "name": "precision (release, behavioral, 3.13)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-09-07T18:45:32Z",
+          "completed_at": "2026-09-07T18:45:33Z"
+        },
+        {
+          "name": "Start job clock",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-09-07T18:45:33Z",
+          "completed_at": "2026-09-07T18:45:33Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-09-07T18:45:33Z",
+          "completed_at": "2026-09-07T18:45:35Z"
+        },
+        {
+          "name": "Preserve controller outside candidate checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-09-07T18:45:35Z",
+          "completed_at": "2026-09-07T18:45:35Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-09-07T18:45:35Z",
+          "completed_at": "2026-09-07T18:45:37Z"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-09-07T18:45:37Z",
+          "completed_at": "2026-09-07T18:45:37Z"
+        },
+        {
+          "name": "Run python -m pip install -e '.[test]'",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-09-07T18:45:37Z",
+          "completed_at": "2026-09-07T18:45:43Z"
+        },
+        {
+          "name": "Measure explicit proposed-base plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-09-07T18:45:43Z",
+          "completed_at": "2026-09-07T18:45:56Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-09-07T18:45:56Z",
+          "completed_at": "2026-09-07T18:45:57Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-09-07T18:45:57Z",
+          "completed_at": "2026-09-07T18:45:57Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-09-07T18:45:57Z",
+          "completed_at": "2026-09-07T18:45:58Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-09-07T18:45:58Z",
+          "completed_at": "2026-09-07T18:45:58Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-09-07T18:45:58Z",
+          "completed_at": "2026-09-07T18:45:58Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/101838224434",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000001609,
+      "runner_name": "GitHub Actions 1000001609",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 101838224437,
+      "run_id": 34152736021,
+      "workflow_name": "CI",
+      "head_branch": "audit/test-perf-002-precision-benchmark",
+      "run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOT2gtDc8AAAAXtgf8NQ",
+      "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a",
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/jobs/101838224437",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021/job/101838224437",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-09-07T18:43:04Z",
+      "started_at": "2026-09-07T18:43:06Z",
+      "completed_at": "2026-09-07T18:45:09Z",
+      "name": "precision (claim, behavioral, 3.11)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-09-07T18:43:06Z",
+          "completed_at": "2026-09-07T18:43:07Z"
+        },
+        {
+          "name": "Start job clock",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-09-07T18:43:07Z",
+          "completed_at": "2026-09-07T18:43:07Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-09-07T18:43:07Z",
+          "completed_at": "2026-09-07T18:43:09Z"
+        },
+        {
+          "name": "Preserve controller outside candidate checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-09-07T18:43:09Z",
+          "completed_at": "2026-09-07T18:43:09Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-09-07T18:43:09Z",
+          "completed_at": "2026-09-07T18:43:11Z"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-09-07T18:43:11Z",
+          "completed_at": "2026-09-07T18:43:11Z"
+        },
+        {
+          "name": "Run python -m pip install -e '.[test]'",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-09-07T18:43:11Z",
+          "completed_at": "2026-09-07T18:43:16Z"
+        },
+        {
+          "name": "Measure explicit proposed-base plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-09-07T18:43:16Z",
+          "completed_at": "2026-09-07T18:45:05Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-09-07T18:45:05Z",
+          "completed_at": "2026-09-07T18:45:06Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-09-07T18:45:06Z",
+          "completed_at": "2026-09-07T18:45:06Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-09-07T18:45:06Z",
+          "completed_at": "2026-09-07T18:45:06Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-09-07T18:45:06Z",
+          "completed_at": "2026-09-07T18:45:06Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-09-07T18:45:06Z",
+          "completed_at": "2026-09-07T18:45:06Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/101838224437",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000001601,
+      "runner_name": "GitHub Actions 1000001601",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 101838224450,
+      "run_id": 34152736021,
+      "workflow_name": "CI",
+      "head_branch": "audit/test-perf-002-precision-benchmark",
+      "run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOT2gtDc8AAAAXtgf8Qg",
+      "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a",
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/jobs/101838224450",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021/job/101838224450",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-09-07T18:43:04Z",
+      "started_at": "2026-09-07T18:45:36Z",
+      "completed_at": "2026-09-07T18:46:22Z",
+      "name": "precision (release, coverage, 3.11)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-09-07T18:45:36Z",
+          "completed_at": "2026-09-07T18:45:37Z"
+        },
+        {
+          "name": "Start job clock",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-09-07T18:45:37Z",
+          "completed_at": "2026-09-07T18:45:37Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-09-07T18:45:37Z",
+          "completed_at": "2026-09-07T18:45:38Z"
+        },
+        {
+          "name": "Preserve controller outside candidate checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-09-07T18:45:38Z",
+          "completed_at": "2026-09-07T18:45:38Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-09-07T18:45:38Z",
+          "completed_at": "2026-09-07T18:45:39Z"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-09-07T18:45:39Z",
+          "completed_at": "2026-09-07T18:45:40Z"
+        },
+        {
+          "name": "Run python -m pip install -e '.[test]'",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-09-07T18:45:40Z",
+          "completed_at": "2026-09-07T18:45:45Z"
+        },
+        {
+          "name": "Measure explicit proposed-base plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-09-07T18:45:45Z",
+          "completed_at": "2026-09-07T18:46:19Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-09-07T18:46:19Z",
+          "completed_at": "2026-09-07T18:46:20Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-09-07T18:46:20Z",
+          "completed_at": "2026-09-07T18:46:20Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-09-07T18:46:20Z",
+          "completed_at": "2026-09-07T18:46:20Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-09-07T18:46:20Z",
+          "completed_at": "2026-09-07T18:46:21Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-09-07T18:46:21Z",
+          "completed_at": "2026-09-07T18:46:21Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/101838224450",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000001610,
+      "runner_name": "GitHub Actions 1000001610",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 101838224451,
+      "run_id": 34152736021,
+      "workflow_name": "CI",
+      "head_branch": "audit/test-perf-002-precision-benchmark",
+      "run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOT2gtDc8AAAAXtgf8Qw",
+      "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a",
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/jobs/101838224451",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021/job/101838224451",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-09-07T18:43:04Z",
+      "started_at": "2026-09-07T18:43:05Z",
+      "completed_at": "2026-09-07T18:45:34Z",
+      "name": "precision (projection, behavioral, 3.13)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-09-07T18:43:06Z",
+          "completed_at": "2026-09-07T18:43:06Z"
+        },
+        {
+          "name": "Start job clock",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-09-07T18:43:06Z",
+          "completed_at": "2026-09-07T18:43:06Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-09-07T18:43:06Z",
+          "completed_at": "2026-09-07T18:43:07Z"
+        },
+        {
+          "name": "Preserve controller outside candidate checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-09-07T18:43:07Z",
+          "completed_at": "2026-09-07T18:43:07Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-09-07T18:43:07Z",
+          "completed_at": "2026-09-07T18:43:09Z"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-09-07T18:43:09Z",
+          "completed_at": "2026-09-07T18:43:09Z"
+        },
+        {
+          "name": "Run python -m pip install -e '.[test]'",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-09-07T18:43:09Z",
+          "completed_at": "2026-09-07T18:43:16Z"
+        },
+        {
+          "name": "Measure explicit proposed-base plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-09-07T18:43:16Z",
+          "completed_at": "2026-09-07T18:45:32Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-09-07T18:45:32Z",
+          "completed_at": "2026-09-07T18:45:32Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-09-07T18:45:32Z",
+          "completed_at": "2026-09-07T18:45:32Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-09-07T18:45:32Z",
+          "completed_at": "2026-09-07T18:45:33Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-09-07T18:45:33Z",
+          "completed_at": "2026-09-07T18:45:33Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-09-07T18:45:33Z",
+          "completed_at": "2026-09-07T18:45:33Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/101838224451",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000001602,
+      "runner_name": "GitHub Actions 1000001602",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 101838224456,
+      "run_id": 34152736021,
+      "workflow_name": "CI",
+      "head_branch": "audit/test-perf-002-precision-benchmark",
+      "run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOT2gtDc8AAAAXtgf8SA",
+      "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a",
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/jobs/101838224456",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021/job/101838224456",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-09-07T18:43:04Z",
+      "started_at": "2026-09-07T18:43:05Z",
+      "completed_at": "2026-09-07T18:45:13Z",
+      "name": "precision (claim, behavioral, 3.13)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-09-07T18:43:06Z",
+          "completed_at": "2026-09-07T18:43:07Z"
+        },
+        {
+          "name": "Start job clock",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-09-07T18:43:07Z",
+          "completed_at": "2026-09-07T18:43:07Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-09-07T18:43:07Z",
+          "completed_at": "2026-09-07T18:43:07Z"
+        },
+        {
+          "name": "Preserve controller outside candidate checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-09-07T18:43:07Z",
+          "completed_at": "2026-09-07T18:43:08Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-09-07T18:43:08Z",
+          "completed_at": "2026-09-07T18:43:09Z"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-09-07T18:43:09Z",
+          "completed_at": "2026-09-07T18:43:09Z"
+        },
+        {
+          "name": "Run python -m pip install -e '.[test]'",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-09-07T18:43:09Z",
+          "completed_at": "2026-09-07T18:43:17Z"
+        },
+        {
+          "name": "Measure explicit proposed-base plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-09-07T18:43:17Z",
+          "completed_at": "2026-09-07T18:45:11Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-09-07T18:45:11Z",
+          "completed_at": "2026-09-07T18:45:11Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-09-07T18:45:11Z",
+          "completed_at": "2026-09-07T18:45:11Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-09-07T18:45:11Z",
+          "completed_at": "2026-09-07T18:45:12Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-09-07T18:45:12Z",
+          "completed_at": "2026-09-07T18:45:12Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-09-07T18:45:12Z",
+          "completed_at": "2026-09-07T18:45:12Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/101838224456",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000001604,
+      "runner_name": "GitHub Actions 1000001604",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 101838224467,
+      "run_id": 34152736021,
+      "workflow_name": "CI",
+      "head_branch": "audit/test-perf-002-precision-benchmark",
+      "run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOT2gtDc8AAAAXtgf8Uw",
+      "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a",
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/jobs/101838224467",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021/job/101838224467",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-09-07T18:43:04Z",
+      "started_at": "2026-09-07T18:43:06Z",
+      "completed_at": "2026-09-07T19:10:55Z",
+      "name": "precision (before, behavioral, 3.13)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-09-07T18:43:06Z",
+          "completed_at": "2026-09-07T18:43:07Z"
+        },
+        {
+          "name": "Start job clock",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-09-07T18:43:07Z",
+          "completed_at": "2026-09-07T18:43:07Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-09-07T18:43:07Z",
+          "completed_at": "2026-09-07T18:43:09Z"
+        },
+        {
+          "name": "Preserve controller outside candidate checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-09-07T18:43:09Z",
+          "completed_at": "2026-09-07T18:43:09Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-09-07T18:43:09Z",
+          "completed_at": "2026-09-07T18:43:11Z"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-09-07T18:43:11Z",
+          "completed_at": "2026-09-07T18:43:11Z"
+        },
+        {
+          "name": "Run python -m pip install -e '.[test]'",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-09-07T18:43:11Z",
+          "completed_at": "2026-09-07T18:43:21Z"
+        },
+        {
+          "name": "Measure explicit proposed-base plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-09-07T18:43:21Z",
+          "completed_at": "2026-09-07T19:10:51Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-09-07T19:10:51Z",
+          "completed_at": "2026-09-07T19:10:52Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-09-07T19:10:52Z",
+          "completed_at": "2026-09-07T19:10:52Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-09-07T19:10:52Z",
+          "completed_at": "2026-09-07T19:10:52Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-09-07T19:10:52Z",
+          "completed_at": "2026-09-07T19:10:53Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-09-07T19:10:53Z",
+          "completed_at": "2026-09-07T19:10:53Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/101838224467",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000001603,
+      "runner_name": "GitHub Actions 1000001603",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 101838224474,
+      "run_id": 34152736021,
+      "workflow_name": "CI",
+      "head_branch": "audit/test-perf-002-precision-benchmark",
+      "run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOT2gtDc8AAAAXtgf8Wg",
+      "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a",
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/jobs/101838224474",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021/job/101838224474",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-09-07T18:43:04Z",
+      "started_at": "2026-09-07T18:43:05Z",
+      "completed_at": "2026-09-07T18:59:30Z",
+      "name": "precision (before, behavioral, 3.11)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-09-07T18:43:06Z",
+          "completed_at": "2026-09-07T18:43:08Z"
+        },
+        {
+          "name": "Start job clock",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-09-07T18:43:08Z",
+          "completed_at": "2026-09-07T18:43:08Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-09-07T18:43:08Z",
+          "completed_at": "2026-09-07T18:43:09Z"
+        },
+        {
+          "name": "Preserve controller outside candidate checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-09-07T18:43:09Z",
+          "completed_at": "2026-09-07T18:43:09Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-09-07T18:43:09Z",
+          "completed_at": "2026-09-07T18:43:10Z"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-09-07T18:43:10Z",
+          "completed_at": "2026-09-07T18:43:11Z"
+        },
+        {
+          "name": "Run python -m pip install -e '.[test]'",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-09-07T18:43:11Z",
+          "completed_at": "2026-09-07T18:43:15Z"
+        },
+        {
+          "name": "Measure explicit proposed-base plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-09-07T18:43:15Z",
+          "completed_at": "2026-09-07T18:59:27Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-09-07T18:59:27Z",
+          "completed_at": "2026-09-07T18:59:28Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-09-07T18:59:28Z",
+          "completed_at": "2026-09-07T18:59:28Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-09-07T18:59:28Z",
+          "completed_at": "2026-09-07T18:59:28Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-09-07T18:59:28Z",
+          "completed_at": "2026-09-07T18:59:28Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-09-07T18:59:28Z",
+          "completed_at": "2026-09-07T18:59:28Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/101838224474",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000001605,
+      "runner_name": "GitHub Actions 1000001605",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 101838224499,
+      "run_id": 34152736021,
+      "workflow_name": "CI",
+      "head_branch": "audit/test-perf-002-precision-benchmark",
+      "run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOT2gtDc8AAAAXtgf8cw",
+      "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a",
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/jobs/101838224499",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021/job/101838224499",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-09-07T18:43:04Z",
+      "started_at": "2026-09-07T18:45:10Z",
+      "completed_at": "2026-09-07T18:49:41Z",
+      "name": "precision (projection, coverage, 3.11)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-09-07T18:45:11Z",
+          "completed_at": "2026-09-07T18:45:12Z"
+        },
+        {
+          "name": "Start job clock",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-09-07T18:45:12Z",
+          "completed_at": "2026-09-07T18:45:12Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-09-07T18:45:12Z",
+          "completed_at": "2026-09-07T18:45:13Z"
+        },
+        {
+          "name": "Preserve controller outside candidate checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-09-07T18:45:13Z",
+          "completed_at": "2026-09-07T18:45:13Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-09-07T18:45:13Z",
+          "completed_at": "2026-09-07T18:45:14Z"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-09-07T18:45:14Z",
+          "completed_at": "2026-09-07T18:45:15Z"
+        },
+        {
+          "name": "Run python -m pip install -e '.[test]'",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-09-07T18:45:15Z",
+          "completed_at": "2026-09-07T18:45:20Z"
+        },
+        {
+          "name": "Measure explicit proposed-base plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-09-07T18:45:20Z",
+          "completed_at": "2026-09-07T18:49:38Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-09-07T18:49:38Z",
+          "completed_at": "2026-09-07T18:49:39Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-09-07T18:49:39Z",
+          "completed_at": "2026-09-07T18:49:39Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-09-07T18:49:39Z",
+          "completed_at": "2026-09-07T18:49:40Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-09-07T18:49:40Z",
+          "completed_at": "2026-09-07T18:49:40Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-09-07T18:49:40Z",
+          "completed_at": "2026-09-07T18:49:40Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/101838224499",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000001607,
+      "runner_name": "GitHub Actions 1000001607",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 101838224581,
+      "run_id": 34152736021,
+      "workflow_name": "CI",
+      "head_branch": "audit/test-perf-002-precision-benchmark",
+      "run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOT2gtDc8AAAAXtgf8xQ",
+      "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a",
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/jobs/101838224581",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34152736021/job/101838224581",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-09-07T18:43:04Z",
+      "started_at": "2026-09-07T18:43:05Z",
+      "completed_at": "2026-09-07T18:45:30Z",
+      "name": "precision (projection, behavioral, 3.11)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-09-07T18:43:06Z",
+          "completed_at": "2026-09-07T18:43:07Z"
+        },
+        {
+          "name": "Start job clock",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-09-07T18:43:07Z",
+          "completed_at": "2026-09-07T18:43:07Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-09-07T18:43:07Z",
+          "completed_at": "2026-09-07T18:43:09Z"
+        },
+        {
+          "name": "Preserve controller outside candidate checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-09-07T18:43:09Z",
+          "completed_at": "2026-09-07T18:43:09Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-09-07T18:43:09Z",
+          "completed_at": "2026-09-07T18:43:10Z"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-09-07T18:43:10Z",
+          "completed_at": "2026-09-07T18:43:10Z"
+        },
+        {
+          "name": "Run python -m pip install -e '.[test]'",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-09-07T18:43:10Z",
+          "completed_at": "2026-09-07T18:43:15Z"
+        },
+        {
+          "name": "Measure explicit proposed-base plan",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-09-07T18:43:15Z",
+          "completed_at": "2026-09-07T18:45:27Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-09-07T18:45:27Z",
+          "completed_at": "2026-09-07T18:45:28Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-09-07T18:45:28Z",
+          "completed_at": "2026-09-07T18:45:28Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-09-07T18:45:28Z",
+          "completed_at": "2026-09-07T18:45:28Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-09-07T18:45:28Z",
+          "completed_at": "2026-09-07T18:45:28Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-09-07T18:45:28Z",
+          "completed_at": "2026-09-07T18:45:28Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/101838224581",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000001606,
+      "runner_name": "GitHub Actions 1000001606",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}

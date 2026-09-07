@@ -1,0 +1,267 @@
+{
+  "coverage_obligations": [
+    "impact"
+  ],
+  "duration_seconds": {
+    "p50": 1.009173,
+    "p95": 11.920051
+  },
+  "outcomes": {
+    "errors": 0,
+    "failed": 0,
+    "passed": 28,
+    "skipped": 0
+  },
+  "plan_id": "d29949427650c3605ec6dd74280f5dc8639609b8697594015fb955bb4a13abd7",
+  "python_version": "3.11.16",
+  "schema_version": "1.0.0",
+  "slowest": [
+    {
+      "duration_seconds": 13.987711,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_projection_registry_and_derivation_are_fail_closed",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 11.920051,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_revalidates_external_evidence_and_human_decision",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 11.911065,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_shadow_only_authority_closure",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 10.688512,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_projection_registry_adversarial_surface_is_closed",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 9.942723,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_repository_publication_authority_helpers_fail_closed",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 9.33676,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_rejects_malformed_or_ambiguous_publication",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.255132,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_default_catalogs_and_three_roots_ignore_cwd_resources",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.542596,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_runtime_catalog_schema_hash_identity_index_and_orphan_attacks",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.056548,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_schema_boundary_is_fail_closed",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.978909,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_skill_release_asset_omission_orphan_and_byte_drift",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.645097,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_resource_cli_no_skill_quickstart_and_explicit_maintainer_config",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.034473,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_mode_action_reference_and_unindexed_skill_asset_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.953817,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_build_regeneration_is_identical_and_removes_stale_output",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.152542,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_conditional_skill_assets_map_outside_legacy_paths",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.865805,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_override_needs_external_pin_and_rejects_manifest_drift",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.806715,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_explicit_requirement_root_does_not_need_project_schemas",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.794963,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_ambiguous_shadow_authority_closure",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.753066,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_alias_only_index_path",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.752597,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_cross_root_stitched_publication",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.744366,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_alias_only_authority_path",
+      "outcome": "passed"
+    }
+  ],
+  "successful": true,
+  "suite": "focused",
+  "target": "b5182ccd228581df0ca7bc510f8e67b91ebf1e9e",
+  "test_count": 28,
+  "tests": [
+    {
+      "duration_seconds": 13.987711,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_projection_registry_and_derivation_are_fail_closed",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 11.920051,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_revalidates_external_evidence_and_human_decision",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 11.911065,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_shadow_only_authority_closure",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 10.688512,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_projection_registry_adversarial_surface_is_closed",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 9.942723,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_repository_publication_authority_helpers_fail_closed",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 9.33676,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_rejects_malformed_or_ambiguous_publication",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.255132,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_default_catalogs_and_three_roots_ignore_cwd_resources",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.542596,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_runtime_catalog_schema_hash_identity_index_and_orphan_attacks",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.056548,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_schema_boundary_is_fail_closed",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.978909,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_skill_release_asset_omission_orphan_and_byte_drift",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.645097,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_resource_cli_no_skill_quickstart_and_explicit_maintainer_config",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.034473,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_mode_action_reference_and_unindexed_skill_asset_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.953817,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_build_regeneration_is_identical_and_removes_stale_output",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.152542,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_conditional_skill_assets_map_outside_legacy_paths",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.865805,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_override_needs_external_pin_and_rejects_manifest_drift",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.806715,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_explicit_requirement_root_does_not_need_project_schemas",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.794963,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_ambiguous_shadow_authority_closure",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.753066,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_alias_only_index_path",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.752597,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_cross_root_stitched_publication",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.744366,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_alias_only_authority_path",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.737845,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_verified_release_produces_narrow_deterministic_projection",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.653604,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_empty_production_index_preserves_zero_skill_core",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.468035,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_missing_corrupt_extra_and_empty_directory_fail_closed",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.400351,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_portable_paths_namespace_duplicates_and_manifest_shape",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.313734,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_links_and_root_escape_fail_closed",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.173949,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_publisher_defensive_guards_fail_closed",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.073863,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_publisher_requires_external_evidence_human_decision_and_runtime_boundaries",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.025834,
+      "id": "test_skill_release_projection.SkillReleaseProjectionTests.test_legacy_repository_skills_cannot_be_projected",
+      "outcome": "passed"
+    }
+  ],
+  "wall_seconds": 109.390271
+}

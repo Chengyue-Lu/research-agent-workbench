@@ -1,0 +1,33 @@
+{
+  "pr_binding": {
+    "base": "bdbac11a0c9a17fa221f8cc8bdd522c1bf4f9087",
+    "head": "439940067c3d60e0d0196fd976e24ccd6e79424a",
+    "merge_base": "bdbac11a0c9a17fa221f8cc8bdd522c1bf4f9087",
+    "repository": "Chengyue-Lu/research-agent-workbench",
+    "target": "8338a4518e6768159ec6f5af5f2c80b8f9a2c73f"
+  },
+  "plan_id": "f2093284c14f4341c6fc057fdf6413b517eb533c049ffed5c4c0fc98982ab0cf",
+  "repository_global_line": 92.27,
+  "full_coverage_artifact_sha256": "569517ae1025cbe5059b1488053b1b55f02d21b09088a3743025e84e795f3bf0",
+  "final_selector_worker_source_hashes": {
+    ".github/scripts/ci_dependencies.py": "9c73a1d35c8a07cb4dda0ca91852e520c2d44b353679ffb0048b40e92c150e87",
+    ".github/scripts/plan_ci.py": "97370340ed716cbe370f1b307b67c2f29616d34d9362d9573dd9e97443cf6c40",
+    ".github/scripts/ci_checks.py": "d1ef2da6a92be90b9d91e3c31a02198dba41b3e52e493703be0dfa4e3fb3cba6",
+    "tests/run_unittest_suite.py": "bc929b3c510855ec23f1146a57032e126fbad6736cbb86e952b69e17b7f806bc"
+  },
+  "fault_reuse": {
+    "original_base": "cbda9c2c78da3cc647f5e73da160053fca2d6a4e",
+    "final_experimental_base": "3e0b0e0cb1134e7106df793cdc85de8059d7925e",
+    "identical_runtime_and_test_paths": [
+      "src",
+      ".github/scripts/release_surface.py",
+      "tests/test_claim_trace.py",
+      "tests/test_skill_release_projection.py",
+      "tests/test_runtime_resources.py",
+      "tests/test_release_surface.py",
+      "tests/test_release_digest_vectors.py"
+    ],
+    "git_diff_empty": true,
+    "boundary": "Fault execution uses unchanged business/consumer/test bytes; final hosted plans reprove selection on the repaired selector."
+  }
+}

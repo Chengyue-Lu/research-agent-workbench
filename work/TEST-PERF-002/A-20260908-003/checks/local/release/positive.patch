@@ -1,0 +1,13 @@
+diff --git a/.github/scripts/release_surface.py b/.github/scripts/release_surface.py
+index 2ace7ea..8cb23df 100644
+--- a/.github/scripts/release_surface.py
++++ b/.github/scripts/release_surface.py
+@@ -49,7 +49,7 @@ def canonical(value: Any) -> bytes:
+ 
+ 
+ def digest(data: bytes) -> str:
+-    return hashlib.sha256(data).hexdigest()
++    return hashlib.sha256(data).hexdigest()[0:]
+ 
+ 
+ def parse(data: bytes) -> Any:

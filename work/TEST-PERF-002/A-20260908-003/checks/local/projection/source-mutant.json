@@ -1,0 +1,41 @@
+{
+  "original_sha256": "a7e0321f7c67cf7bd84a27245723c9e32e6aa4f7e2a90fc705837106ab2d627b",
+  "failure_ids": [
+    "ERROR: test_projection_registry_adversarial_surface_is_closed (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_registry_adversarial_surface_is_closed)",
+    "ERROR: test_projection_registry_and_derivation_are_fail_closed (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_registry_and_derivation_are_fail_closed)",
+    "ERROR: test_projection_set_rejects_malformed_or_ambiguous_publication (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_rejects_malformed_or_ambiguous_publication) (expected='index schema invalid')",
+    "ERROR: test_projection_set_rejects_malformed_or_ambiguous_publication (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_rejects_malformed_or_ambiguous_publication) (expected='index schema invalid')",
+    "ERROR: test_projection_set_rejects_malformed_or_ambiguous_publication (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_rejects_malformed_or_ambiguous_publication) (expected='index schema invalid')",
+    "ERROR: test_projection_set_rejects_malformed_or_ambiguous_publication (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_rejects_malformed_or_ambiguous_publication) (expected='duplicate Skill Release Projection identity')",
+    "ERROR: test_projection_set_rejects_malformed_or_ambiguous_publication (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_rejects_malformed_or_ambiguous_publication) (expected='duplicate Skill Release Projection path')",
+    "ERROR: test_projection_set_rejects_malformed_or_ambiguous_publication (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_rejects_malformed_or_ambiguous_publication) (expected='multiple current projections')",
+    "ERROR: test_projection_set_rejects_malformed_or_ambiguous_publication (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_rejects_malformed_or_ambiguous_publication) (expected='index schema invalid')",
+    "ERROR: test_projection_set_rejects_malformed_or_ambiguous_publication (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_rejects_malformed_or_ambiguous_publication) (expected='path is missing or escapes root')",
+    "ERROR: test_projection_set_rejects_malformed_or_ambiguous_publication (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_rejects_malformed_or_ambiguous_publication) (expected='content drift')",
+    "ERROR: test_projection_set_rejects_malformed_or_ambiguous_publication (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_rejects_malformed_or_ambiguous_publication) (expected='is not an object')",
+    "ERROR: test_projection_set_rejects_malformed_or_ambiguous_publication (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_rejects_malformed_or_ambiguous_publication) (expected='identity mismatch')",
+    "ERROR: test_projection_set_rejects_malformed_or_ambiguous_publication (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_rejects_malformed_or_ambiguous_publication)",
+    "ERROR: test_projection_set_schema_boundary_is_fail_closed (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_schema_boundary_is_fail_closed) (expected='index schema invalid')",
+    "ERROR: test_projection_set_schema_boundary_is_fail_closed (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_schema_boundary_is_fail_closed) (expected='index schema invalid')",
+    "ERROR: test_projection_set_schema_boundary_is_fail_closed (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_schema_boundary_is_fail_closed) (expected='Projection schema invalid')",
+    "ERROR: test_projection_set_schema_boundary_is_fail_closed (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_schema_boundary_is_fail_closed) (expected='Projection schema invalid')",
+    "ERROR: test_projection_set_schema_boundary_is_fail_closed (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_schema_boundary_is_fail_closed) (expected='Projection schema invalid')",
+    "ERROR: test_projection_set_schema_boundary_is_fail_closed (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_schema_boundary_is_fail_closed) (expected='Projection schema invalid')",
+    "ERROR: test_projection_set_schema_boundary_is_fail_closed (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_schema_boundary_is_fail_closed) (expected='Projection schema invalid')",
+    "ERROR: test_repository_projection_rejects_alias_only_authority_path (test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_alias_only_authority_path)",
+    "ERROR: test_repository_projection_rejects_alias_only_index_path (test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_alias_only_index_path)",
+    "ERROR: test_repository_projection_rejects_ambiguous_shadow_authority_closure (test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_ambiguous_shadow_authority_closure)",
+    "ERROR: test_repository_projection_rejects_cross_root_stitched_publication (test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_cross_root_stitched_publication)",
+    "ERROR: test_repository_projection_rejects_shadow_only_authority_closure (test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_shadow_only_authority_closure)",
+    "ERROR: test_repository_projection_revalidates_external_evidence_and_human_decision (test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_revalidates_external_evidence_and_human_decision)",
+    "ERROR: test_repository_publication_authority_helpers_fail_closed (test_skill_release_projection.SkillReleaseProjectionTests.test_repository_publication_authority_helpers_fail_closed)",
+    "ERROR: test_verified_release_produces_narrow_deterministic_projection (test_skill_release_projection.SkillReleaseProjectionTests.test_verified_release_produces_narrow_deterministic_projection)",
+    "FAIL: test_publisher_defensive_guards_fail_closed (test_skill_release_projection.SkillReleaseProjectionTests.test_publisher_defensive_guards_fail_closed)",
+    "FAIL: test_publisher_requires_external_evidence_human_decision_and_runtime_boundaries (test_skill_release_projection.SkillReleaseProjectionTests.test_publisher_requires_external_evidence_human_decision_and_runtime_boundaries)"
+  ],
+  "conclusion": [
+    "Ran 28 tests in 30.612s",
+    "FAILED (failures=2, errors=29)"
+  ],
+  "exit_code": 1
+}

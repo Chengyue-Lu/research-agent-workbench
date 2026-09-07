@@ -1,0 +1,33 @@
+{
+  "original_sha256": "d78f986563b0c579c987473f35effc6dfe3617401c068265e34066312a8a7a5e",
+  "failure_ids": [
+    "ERROR: test_binary_source_and_executable_mode_preserve_bytes (test_release_surface.ReleaseSurfaceTests.test_binary_source_and_executable_mode_preserve_bytes)",
+    "ERROR: test_candidate_must_have_exact_single_main_parent (test_release_surface.ReleaseSurfaceTests.test_candidate_must_have_exact_single_main_parent)",
+    "ERROR: test_directory_checks_hidden_empty_directory_and_crlf_drift (test_release_surface.ReleaseSurfaceTests.test_directory_checks_hidden_empty_directory_and_crlf_drift)",
+    "ERROR: test_export_twice_and_git_merge_tree_are_byte_identical (test_release_surface.ReleaseSurfaceTests.test_export_twice_and_git_merge_tree_are_byte_identical)",
+    "ERROR: test_extra_hidden_missing_moved_and_mode_drift_are_blocked (test_release_surface.ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked) (mutate=<function ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked.<locals>.<lambda> at 0x00000277A1BCBEC0>)",
+    "ERROR: test_extra_hidden_missing_moved_and_mode_drift_are_blocked (test_release_surface.ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked) (mutate=<function ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked.<locals>.<lambda> at 0x00000277A1BCBCE0>)",
+    "ERROR: test_extra_hidden_missing_moved_and_mode_drift_are_blocked (test_release_surface.ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked) (mutate=<function ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked.<locals>.<lambda> at 0x00000277A1BCB600>)",
+    "ERROR: test_extra_hidden_missing_moved_and_mode_drift_are_blocked (test_release_surface.ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked) (mutate=<function ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked.<locals>.<lambda> at 0x00000277A1BCBF60>)",
+    "ERROR: test_extra_hidden_missing_moved_and_mode_drift_are_blocked (test_release_surface.ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked) (mutate=<function ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked.<locals>.<lambda> at 0x00000277A1BF00E0>)",
+    "ERROR: test_extra_hidden_missing_moved_and_mode_drift_are_blocked (test_release_surface.ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked) (mutate=<function ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked.<locals>.<lambda> at 0x00000277A1BF0040>)",
+    "ERROR: test_independent_merge_result_disagreement_is_blocking (test_release_surface.ReleaseSurfaceTests.test_independent_merge_result_disagreement_is_blocking)",
+    "ERROR: test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail (test_release_surface.ReleaseSurfaceTests.test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail) (mutate=<function ReleaseSurfaceTests.test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail.<locals>.altered.<locals>.mutate at 0x00000277A1B83F60>)",
+    "ERROR: test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail (test_release_surface.ReleaseSurfaceTests.test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail) (mutate=<function ReleaseSurfaceTests.test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail.<locals>.altered.<locals>.mutate at 0x00000277A1B83CE0>)",
+    "ERROR: test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail (test_release_surface.ReleaseSurfaceTests.test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail) (mutate=<function ReleaseSurfaceTests.test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail.<locals>.altered.<locals>.mutate at 0x00000277A1B83E20>)",
+    "ERROR: test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail (test_release_surface.ReleaseSurfaceTests.test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail) (mutate=<function ReleaseSurfaceTests.test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail.<locals>.<lambda> at 0x00000277A1BCB380>)",
+    "ERROR: test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail (test_release_surface.ReleaseSurfaceTests.test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail) (mutate=<function ReleaseSurfaceTests.test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail.<locals>.<lambda> at 0x00000277A1BCB880>)",
+    "ERROR: test_merged_nonprefix_policy_histories_and_new_maximum_are_valid (test_release_surface.ReleaseSurfaceTests.test_merged_nonprefix_policy_histories_and_new_maximum_are_valid)",
+    "ERROR: test_required_check_permutations_have_only_one_legal_tree (test_release_surface.ReleaseSurfaceTests.test_required_check_permutations_have_only_one_legal_tree)",
+    "ERROR: test_shallow_remote_and_git_format_prerequisites (test_release_surface.ReleaseSurfaceTests.test_shallow_remote_and_git_format_prerequisites)",
+    "ERROR: test_synchronized_source_and_manifest_hash_forgery_is_blocked (test_release_surface.ReleaseSurfaceTests.test_synchronized_source_and_manifest_hash_forgery_is_blocked)",
+    "ERROR: test_two_versions_remove_old_generated_output_and_reject_stale_parent (test_release_surface.ReleaseSurfaceTests.test_two_versions_remove_old_generated_output_and_reject_stale_parent)",
+    "FAIL: test_independent_known_vectors (test_release_digest_vectors.DigestVectors.test_independent_known_vectors)",
+    "FAIL: test_cli_export_check_and_errors (test_release_surface.ReleaseSurfaceTests.test_cli_export_check_and_errors)"
+  ],
+  "conclusion": [
+    "Ran 38 tests in 76.126s",
+    "FAILED (failures=2, errors=21)"
+  ],
+  "exit_code": 1
+}

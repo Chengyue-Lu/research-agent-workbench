@@ -1,0 +1,33 @@
+{
+  "case": "release",
+  "kind": "coverage",
+  "base": "3e0b0e0cb1134e7106df793cdc85de8059d7925e",
+  "head": "cb5366d0cbc16517bb42df3bacc91e463a774fe5",
+  "python": "3.11.16",
+  "authority_status": "experimental proposed future-develop base; not normal PR Gate authority",
+  "shared_baseline": "Three separate before plans have identical behavioral and impact test lists; one combined equivalent-edit run measures that common suite.",
+  "phases": {
+    "Run required coverage test union": {
+      "seconds": 21.281,
+      "exit_code": 0
+    },
+    "Export coverage evidence": {
+      "seconds": 1.643,
+      "exit_code": 0
+    },
+    "impact gate": {
+      "seconds": 3.316,
+      "exit_code": 0
+    }
+  },
+  "successful": true,
+  "plan_id": "bdacd22340427f95cc795c7f9734855e42bdf4f26d2d0ca39f85fa7a0bf4a2c9",
+  "behavioral_scope": "focused",
+  "coverage_scope": "impact",
+  "package_smoke": false,
+  "repository_smoke": false,
+  "test_count": 38,
+  "suite_wall_seconds": 17.65661,
+  "harness_seconds": 29.592,
+  "job_until_receipt_seconds": 40.227
+}

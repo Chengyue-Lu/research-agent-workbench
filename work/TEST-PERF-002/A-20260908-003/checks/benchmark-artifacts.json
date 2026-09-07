@@ -1,0 +1,245 @@
+{
+  "total_count": 12,
+  "artifacts": [
+    {
+      "id": 10031154482,
+      "node_id": "MDg6QXJ0aWZhY3QxMDAzMTE1NDQ4Mg==",
+      "name": "precision-before-coverage-3.11",
+      "size_in_bytes": 147492,
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10031154482",
+      "archive_download_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10031154482/zip",
+      "expired": false,
+      "digest": "sha256:6db3fd22a5ffde41e6fd916476c0aab434407bb82cbc7b649ed1851dd3f80752",
+      "created_at": "2026-09-07T19:41:46Z",
+      "updated_at": "2026-09-07T19:41:46Z",
+      "expires_at": "2026-09-21T19:41:45Z",
+      "workflow_run": {
+        "id": 34152736021,
+        "repository_id": 1332227341,
+        "head_repository_id": 1332227341,
+        "head_branch": "audit/test-perf-002-precision-benchmark",
+        "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a"
+      }
+    },
+    {
+      "id": 10030502323,
+      "node_id": "MDg6QXJ0aWZhY3QxMDAzMDUwMjMyMw==",
+      "name": "precision-before-behavioral-3.13",
+      "size_in_bytes": 34813,
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10030502323",
+      "archive_download_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10030502323/zip",
+      "expired": false,
+      "digest": "sha256:a769ee73a13aeac8d912539e1a6ef5c033446fd8a6f79fb7630f7cc34eb28b93",
+      "created_at": "2026-09-07T19:10:52Z",
+      "updated_at": "2026-09-07T19:10:52Z",
+      "expires_at": "2026-09-21T19:10:51Z",
+      "workflow_run": {
+        "id": 34152736021,
+        "repository_id": 1332227341,
+        "head_repository_id": 1332227341,
+        "head_branch": "audit/test-perf-002-precision-benchmark",
+        "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a"
+      }
+    },
+    {
+      "id": 10030257494,
+      "node_id": "MDg6QXJ0aWZhY3QxMDAzMDI1NzQ5NA==",
+      "name": "precision-before-behavioral-3.11",
+      "size_in_bytes": 34721,
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10030257494",
+      "archive_download_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10030257494/zip",
+      "expired": false,
+      "digest": "sha256:4e4b68fac31049d7bdbbd644b41578f5ad664a63f5e17fa7cf3d03c36254e539",
+      "created_at": "2026-09-07T18:59:28Z",
+      "updated_at": "2026-09-07T18:59:28Z",
+      "expires_at": "2026-09-21T18:59:27Z",
+      "workflow_run": {
+        "id": 34152736021,
+        "repository_id": 1332227341,
+        "head_repository_id": 1332227341,
+        "head_branch": "audit/test-perf-002-precision-benchmark",
+        "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a"
+      }
+    },
+    {
+      "id": 10030054252,
+      "node_id": "MDg6QXJ0aWZhY3QxMDAzMDA1NDI1Mg==",
+      "name": "precision-projection-coverage-3.11",
+      "size_in_bytes": 109560,
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10030054252",
+      "archive_download_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10030054252/zip",
+      "expired": false,
+      "digest": "sha256:df333e8ebc388a69b01639f0c520db3a462f5db34c12708bd0a70d99f52eca16",
+      "created_at": "2026-09-07T18:49:39Z",
+      "updated_at": "2026-09-07T18:49:39Z",
+      "expires_at": "2026-09-21T18:49:39Z",
+      "workflow_run": {
+        "id": 34152736021,
+        "repository_id": 1332227341,
+        "head_repository_id": 1332227341,
+        "head_branch": "audit/test-perf-002-precision-benchmark",
+        "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a"
+      }
+    },
+    {
+      "id": 10029988271,
+      "node_id": "MDg6QXJ0aWZhY3QxMDAyOTk4ODI3MQ==",
+      "name": "precision-claim-coverage-3.11",
+      "size_in_bytes": 108769,
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10029988271",
+      "archive_download_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10029988271/zip",
+      "expired": false,
+      "digest": "sha256:ac618863bb441297c708aaf456052dd5b014c5f5114f1ff0071880ba423a2948",
+      "created_at": "2026-09-07T18:46:33Z",
+      "updated_at": "2026-09-07T18:46:33Z",
+      "expires_at": "2026-09-21T18:46:32Z",
+      "workflow_run": {
+        "id": 34152736021,
+        "repository_id": 1332227341,
+        "head_repository_id": 1332227341,
+        "head_branch": "audit/test-perf-002-precision-benchmark",
+        "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a"
+      }
+    },
+    {
+      "id": 10029983787,
+      "node_id": "MDg6QXJ0aWZhY3QxMDAyOTk4Mzc4Nw==",
+      "name": "precision-release-coverage-3.11",
+      "size_in_bytes": 102025,
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10029983787",
+      "archive_download_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10029983787/zip",
+      "expired": false,
+      "digest": "sha256:bb44f1a082a9b97b952d28a7658d9ebcedae020167cb6e672c5a3ec00189f671",
+      "created_at": "2026-09-07T18:46:20Z",
+      "updated_at": "2026-09-07T18:46:20Z",
+      "expires_at": "2026-09-21T18:46:20Z",
+      "workflow_run": {
+        "id": 34152736021,
+        "repository_id": 1332227341,
+        "head_repository_id": 1332227341,
+        "head_branch": "audit/test-perf-002-precision-benchmark",
+        "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a"
+      }
+    },
+    {
+      "id": 10029975584,
+      "node_id": "MDg6QXJ0aWZhY3QxMDAyOTk3NTU4NA==",
+      "name": "precision-release-behavioral-3.13",
+      "size_in_bytes": 4815,
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10029975584",
+      "archive_download_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10029975584/zip",
+      "expired": false,
+      "digest": "sha256:20532feb836c539c684efd401ba777bfa001feac3b45e9ca419c4db54e2df191",
+      "created_at": "2026-09-07T18:45:57Z",
+      "updated_at": "2026-09-07T18:45:57Z",
+      "expires_at": "2026-09-21T18:45:56Z",
+      "workflow_run": {
+        "id": 34152736021,
+        "repository_id": 1332227341,
+        "head_repository_id": 1332227341,
+        "head_branch": "audit/test-perf-002-precision-benchmark",
+        "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a"
+      }
+    },
+    {
+      "id": 10029970249,
+      "node_id": "MDg6QXJ0aWZhY3QxMDAyOTk3MDI0OQ==",
+      "name": "precision-release-behavioral-3.11",
+      "size_in_bytes": 4800,
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10029970249",
+      "archive_download_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10029970249/zip",
+      "expired": false,
+      "digest": "sha256:33f0820b1ba4edbca0379d50d44c9578cdb45ea02fe13fe65dafea062a0ef039",
+      "created_at": "2026-09-07T18:45:43Z",
+      "updated_at": "2026-09-07T18:45:43Z",
+      "expires_at": "2026-09-21T18:45:42Z",
+      "workflow_run": {
+        "id": 34152736021,
+        "repository_id": 1332227341,
+        "head_repository_id": 1332227341,
+        "head_branch": "audit/test-perf-002-precision-benchmark",
+        "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a"
+      }
+    },
+    {
+      "id": 10029966388,
+      "node_id": "MDg6QXJ0aWZhY3QxMDAyOTk2NjM4OA==",
+      "name": "precision-projection-behavioral-3.13",
+      "size_in_bytes": 4468,
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10029966388",
+      "archive_download_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10029966388/zip",
+      "expired": false,
+      "digest": "sha256:6dbf93a224236dc366466b54a5c7df184b41c15c50b291572f06830533659aac",
+      "created_at": "2026-09-07T18:45:32Z",
+      "updated_at": "2026-09-07T18:45:32Z",
+      "expires_at": "2026-09-21T18:45:32Z",
+      "workflow_run": {
+        "id": 34152736021,
+        "repository_id": 1332227341,
+        "head_repository_id": 1332227341,
+        "head_branch": "audit/test-perf-002-precision-benchmark",
+        "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a"
+      }
+    },
+    {
+      "id": 10029964682,
+      "node_id": "MDg6QXJ0aWZhY3QxMDAyOTk2NDY4Mg==",
+      "name": "precision-projection-behavioral-3.11",
+      "size_in_bytes": 4462,
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10029964682",
+      "archive_download_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10029964682/zip",
+      "expired": false,
+      "digest": "sha256:db1c8d57d804f439c1213b841eef41aed0de73bbf3a525dc61a58eaefa40b218",
+      "created_at": "2026-09-07T18:45:28Z",
+      "updated_at": "2026-09-07T18:45:28Z",
+      "expires_at": "2026-09-21T18:45:27Z",
+      "workflow_run": {
+        "id": 34152736021,
+        "repository_id": 1332227341,
+        "head_repository_id": 1332227341,
+        "head_branch": "audit/test-perf-002-precision-benchmark",
+        "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a"
+      }
+    },
+    {
+      "id": 10029958773,
+      "node_id": "MDg6QXJ0aWZhY3QxMDAyOTk1ODc3Mw==",
+      "name": "precision-claim-behavioral-3.13",
+      "size_in_bytes": 4426,
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10029958773",
+      "archive_download_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10029958773/zip",
+      "expired": false,
+      "digest": "sha256:8438b41493a781f6b4773bd085f174e1079072c09cd4bd49a7eb45cb1d63af0c",
+      "created_at": "2026-09-07T18:45:11Z",
+      "updated_at": "2026-09-07T18:45:11Z",
+      "expires_at": "2026-09-21T18:45:11Z",
+      "workflow_run": {
+        "id": 34152736021,
+        "repository_id": 1332227341,
+        "head_repository_id": 1332227341,
+        "head_branch": "audit/test-perf-002-precision-benchmark",
+        "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a"
+      }
+    },
+    {
+      "id": 10029956714,
+      "node_id": "MDg6QXJ0aWZhY3QxMDAyOTk1NjcxNA==",
+      "name": "precision-claim-behavioral-3.11",
+      "size_in_bytes": 4428,
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10029956714",
+      "archive_download_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10029956714/zip",
+      "expired": false,
+      "digest": "sha256:99c04915947e1825a6c8f08cb81fc006e3d1f49faddc82f7f044ece4fc609124",
+      "created_at": "2026-09-07T18:45:06Z",
+      "updated_at": "2026-09-07T18:45:06Z",
+      "expires_at": "2026-09-21T18:45:05Z",
+      "workflow_run": {
+        "id": 34152736021,
+        "repository_id": 1332227341,
+        "head_repository_id": 1332227341,
+        "head_branch": "audit/test-perf-002-precision-benchmark",
+        "head_sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a"
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+diff --git a/.github/scripts/release_surface.py b/.github/scripts/release_surface.py
+index 8cb23df..6ac3541 100644
+--- a/.github/scripts/release_surface.py
++++ b/.github/scripts/release_surface.py
+@@ -324,6 +324,7 @@ def no_links(path: Path) -> None:
+ 
+ 
+ def export(repo: Path, expected: dict, output: Path) -> dict:
++    raise RuntimeError("intentional downstream probe")
+     require(output.is_absolute(), "staging directory must be explicit and absolute")
+     require(output.resolve() != repo.resolve() and repo.resolve() not in output.resolve().parents,
+             "staging must be outside the source checkout")

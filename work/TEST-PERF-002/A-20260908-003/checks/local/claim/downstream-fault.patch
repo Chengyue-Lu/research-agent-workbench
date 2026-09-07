@@ -1,0 +1,12 @@
+diff --git a/src/research_workbench/cli.py b/src/research_workbench/cli.py
+index ef50f3e..15dbdc3 100644
+--- a/src/research_workbench/cli.py
++++ b/src/research_workbench/cli.py
+@@ -1021,6 +1021,7 @@ def _research_state_gate(args: argparse.Namespace) -> int:
+ 
+ 
+ def _claim_trace(args: argparse.Namespace) -> int:
++    raise RuntimeError("intentional downstream probe")
+     if args.evidence_map:
+         from research_workbench.artifacts.claim_trace import localize_claim
+ 

@@ -1,0 +1,11 @@
+{
+  "original_sha256": "dbd972832e24abaa933f7dfdaec63d2301da9492b122b22046314598794daa57",
+  "failure_ids": [
+    "ERROR: test_schema_kind_claim_pin_and_cli_generic_validation (test_claim_trace.ClaimTraceTests.test_schema_kind_claim_pin_and_cli_generic_validation)"
+  ],
+  "conclusion": [
+    "Ran 27 tests in 81.230s",
+    "FAILED (errors=1)"
+  ],
+  "exit_code": 1
+}

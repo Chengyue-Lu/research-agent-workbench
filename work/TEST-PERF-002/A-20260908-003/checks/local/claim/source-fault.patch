@@ -1,0 +1,13 @@
+diff --git a/src/research_workbench/artifacts/claim_trace.py b/src/research_workbench/artifacts/claim_trace.py
+index d875e32..05c9c90 100644
+--- a/src/research_workbench/artifacts/claim_trace.py
++++ b/src/research_workbench/artifacts/claim_trace.py
+@@ -27,7 +27,7 @@ from research_workbench.validation.schemas import SchemaCatalog
+ 
+ 
+ def _digest(value: str) -> str:
+-    return value.lower().removeprefix("sha256:")[0:]
++    return value.lower().removeprefix("sha256:")[1:]
+ 
+ 
+ def _identity(reference: str | Mapping[str, Any]) -> tuple[str, int]:

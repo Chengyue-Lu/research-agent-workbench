@@ -1,0 +1,25 @@
+{
+  "case": "claim",
+  "kind": "behavioral",
+  "base": "3e0b0e0cb1134e7106df793cdc85de8059d7925e",
+  "head": "42ef226ed13665fa2a8490230fc291c38775dea7",
+  "python": "3.13.15",
+  "authority_status": "experimental proposed future-develop base; not normal PR Gate authority",
+  "shared_baseline": "Three separate before plans have identical behavioral and impact test lists; one combined equivalent-edit run measures that common suite.",
+  "phases": {
+    "behavioral": {
+      "seconds": 135.451,
+      "exit_code": 0
+    }
+  },
+  "successful": true,
+  "plan_id": "2e768dfa0c836d2d16f5132bd6a67a4509f3abdb75665873e15364ac72395fe0",
+  "behavioral_scope": "focused",
+  "coverage_scope": "impact",
+  "package_smoke": false,
+  "repository_smoke": false,
+  "test_count": 27,
+  "suite_wall_seconds": 135.172109,
+  "harness_seconds": 140.287,
+  "job_until_receipt_seconds": 152.051
+}

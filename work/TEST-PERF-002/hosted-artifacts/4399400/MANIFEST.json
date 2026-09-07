@@ -1,0 +1,47 @@
+[
+  {
+    "run_id": 34154360036,
+    "case": "formal-pr",
+    "path": "formal-pr-coverage.json.gz",
+    "uncompressed_sha256": "569517ae1025cbe5059b1488053b1b55f02d21b09088a3743025e84e795f3bf0",
+    "compressed_sha256": "3b36497e670cb73a5175f5bdffe24f59fbf93d3bf3465c28a77d38fdd308ef94",
+    "uncompressed_bytes": 1224726,
+    "compressed_bytes": 105469
+  },
+  {
+    "run_id": 34152736021,
+    "case": "before",
+    "path": "before-coverage.json.gz",
+    "uncompressed_sha256": "fa1b3488ee53710e3cbfae60a02976a48ac40f8842578a6c83f5e649ba4fd5ec",
+    "compressed_sha256": "e34f6409b2b3b182c1df16657d9d9097e64bd6da9fef1b31a5ad477c31081648",
+    "uncompressed_bytes": 1274820,
+    "compressed_bytes": 109069
+  },
+  {
+    "run_id": 34154076029,
+    "case": "claim",
+    "path": "claim-coverage.json.gz",
+    "uncompressed_sha256": "9b0c0890325d827d8cf62bccf241483e98a508bf82d18a8b938a7a13900d6196",
+    "compressed_sha256": "adfb53d0fbe341edb29f9d901861b3427c8aa29c521d02b766693d4540a8f14b",
+    "uncompressed_bytes": 1270022,
+    "compressed_bytes": 101883
+  },
+  {
+    "run_id": 34154076029,
+    "case": "projection",
+    "path": "projection-coverage.json.gz",
+    "uncompressed_sha256": "2984df4687fe70c0d5ff7dc261a616cc326c44d3740235eae351f6e86279b5b4",
+    "compressed_sha256": "b13500b30ab2145b40428181d41d2df7a9d4a0f5b5f9bf2b2b1f188bc4969805",
+    "uncompressed_bytes": 1270558,
+    "compressed_bytes": 102698
+  },
+  {
+    "run_id": 34154076029,
+    "case": "release",
+    "path": "release-coverage.json.gz",
+    "uncompressed_sha256": "8b3cd0c3122184fc5f388235bbf6b9bc85d8168b4a499c14a60eb80595d28ffe",
+    "compressed_sha256": "256f6b921d5a1145abc7cee690d9007f19877c9a90a345fac814d4bfd231929e",
+    "uncompressed_bytes": 1263500,
+    "compressed_bytes": 94966
+  }
+]

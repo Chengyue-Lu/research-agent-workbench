@@ -1,0 +1,262 @@
+{
+  "coverage_obligations": [
+    "impact"
+  ],
+  "duration_seconds": {
+    "p50": 2.269341,
+    "p95": 6.872643
+  },
+  "outcomes": {
+    "errors": 0,
+    "failed": 0,
+    "passed": 27,
+    "skipped": 0
+  },
+  "plan_id": "2e768dfa0c836d2d16f5132bd6a67a4509f3abdb75665873e15364ac72395fe0",
+  "python_version": "3.11.16",
+  "schema_version": "1.0.0",
+  "slowest": [
+    {
+      "duration_seconds": 28.442782,
+      "id": "test_claim_trace.PromotedClaimTraceTests.test_real_promotion_and_retained_negative_are_consumed_without_replay",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.872643,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_default_catalogs_and_three_roots_ignore_cwd_resources",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.847135,
+      "id": "test_claim_trace.ClaimTraceTests.test_map_requires_exact_evidence_and_source_closure",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.841191,
+      "id": "test_claim_trace.ClaimTraceTests.test_schema_kind_claim_pin_and_cli_generic_validation",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.264787,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_runtime_catalog_schema_hash_identity_index_and_orphan_attacks",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.748893,
+      "id": "test_claim_trace.ClaimTraceTests.test_missing_malformed_and_non_claim_inputs_fail_with_diagnostics",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.623766,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_skill_release_asset_omission_orphan_and_byte_drift",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.595602,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_resource_cli_no_skill_quickstart_and_explicit_maintainer_config",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.023053,
+      "id": "test_claim_trace.ClaimTraceTests.test_missing_revision_unversioned_and_missing_evidence_are_unresolved",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.017131,
+      "id": "test_claim_trace.ClaimTraceTests.test_live_byte_drift_is_independent_of_declared_object_hash",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.2728,
+      "id": "test_claim_trace.ClaimTraceTests.test_missing_and_wrong_raw_admission_do_not_yield_complete_trace",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.272214,
+      "id": "test_claim_trace.ClaimTraceTests.test_duplicate_identity_and_wrong_document_type_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.271257,
+      "id": "test_claim_trace.ClaimTraceTests.test_object_hash_pin_and_source_identity_are_checked",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.269341,
+      "id": "test_claim_trace.ClaimTraceTests.test_source_declared_hash_needs_explicit_matching_binding",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.817466,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_mode_action_reference_and_unindexed_skill_asset_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.776702,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_build_regeneration_is_identical_and_removes_stale_output",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.510402,
+      "id": "test_claim_trace.ClaimTraceTests.test_inbox_and_outside_root_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.96156,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_conditional_skill_assets_map_outside_legacy_paths",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.780828,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_explicit_requirement_root_does_not_need_project_schemas",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.776361,
+      "id": "test_claim_trace.ClaimTraceTests.test_bytes_are_read_once_for_shared_evidence_source",
+      "outcome": "passed"
+    }
+  ],
+  "successful": true,
+  "suite": "focused",
+  "target": "42ef226ed13665fa2a8490230fc291c38775dea7",
+  "test_count": 27,
+  "tests": [
+    {
+      "duration_seconds": 28.442782,
+      "id": "test_claim_trace.PromotedClaimTraceTests.test_real_promotion_and_retained_negative_are_consumed_without_replay",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.872643,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_default_catalogs_and_three_roots_ignore_cwd_resources",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.847135,
+      "id": "test_claim_trace.ClaimTraceTests.test_map_requires_exact_evidence_and_source_closure",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.841191,
+      "id": "test_claim_trace.ClaimTraceTests.test_schema_kind_claim_pin_and_cli_generic_validation",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.264787,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_runtime_catalog_schema_hash_identity_index_and_orphan_attacks",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.748893,
+      "id": "test_claim_trace.ClaimTraceTests.test_missing_malformed_and_non_claim_inputs_fail_with_diagnostics",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.623766,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_skill_release_asset_omission_orphan_and_byte_drift",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.595602,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_resource_cli_no_skill_quickstart_and_explicit_maintainer_config",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.023053,
+      "id": "test_claim_trace.ClaimTraceTests.test_missing_revision_unversioned_and_missing_evidence_are_unresolved",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.017131,
+      "id": "test_claim_trace.ClaimTraceTests.test_live_byte_drift_is_independent_of_declared_object_hash",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.2728,
+      "id": "test_claim_trace.ClaimTraceTests.test_missing_and_wrong_raw_admission_do_not_yield_complete_trace",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.272214,
+      "id": "test_claim_trace.ClaimTraceTests.test_duplicate_identity_and_wrong_document_type_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.271257,
+      "id": "test_claim_trace.ClaimTraceTests.test_object_hash_pin_and_source_identity_are_checked",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.269341,
+      "id": "test_claim_trace.ClaimTraceTests.test_source_declared_hash_needs_explicit_matching_binding",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.817466,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_mode_action_reference_and_unindexed_skill_asset_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.776702,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_build_regeneration_is_identical_and_removes_stale_output",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.510402,
+      "id": "test_claim_trace.ClaimTraceTests.test_inbox_and_outside_root_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.96156,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_conditional_skill_assets_map_outside_legacy_paths",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.780828,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_explicit_requirement_root_does_not_need_project_schemas",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.776361,
+      "id": "test_claim_trace.ClaimTraceTests.test_bytes_are_read_once_for_shared_evidence_source",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.759691,
+      "id": "test_claim_trace.ClaimTraceTests.test_invalid_source_admission_is_reported",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.758109,
+      "id": "test_claim_trace.ClaimTraceTests.test_support_counterevidence_and_limits_locate_without_execution",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.752359,
+      "id": "test_claim_trace.ClaimTraceTests.test_empty_relations_preserve_limits_without_inventing_evidence",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.734214,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_override_needs_external_pin_and_rejects_manifest_drift",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.073824,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_portable_paths_namespace_duplicates_and_manifest_shape",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.065261,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_missing_corrupt_extra_and_empty_directory_fail_closed",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.046794,
+      "id": "test_runtime_resources.RuntimeResourceTests.test_links_and_root_escape_fail_closed",
+      "outcome": "passed"
+    }
+  ],
+  "wall_seconds": 95.690313
+}

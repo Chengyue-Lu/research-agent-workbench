@@ -1,0 +1,85 @@
+{
+  "total_count": 4,
+  "artifacts": [
+    {
+      "id": 10031157616,
+      "node_id": "MDg6QXJ0aWZhY3QxMDAzMTE1NzYxNg==",
+      "name": "coverage-quality-evidence",
+      "size_in_bytes": 136773,
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10031157616",
+      "archive_download_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10031157616/zip",
+      "expired": false,
+      "digest": "sha256:fcfef4755abbb7dcaf9d87a78d65cb0875e1dc35e47fd85a8b5c0305f3e9c7b3",
+      "created_at": "2026-09-07T19:41:55Z",
+      "updated_at": "2026-09-07T19:41:55Z",
+      "expires_at": "2026-09-21T19:41:54Z",
+      "workflow_run": {
+        "id": 34154360036,
+        "repository_id": 1332227341,
+        "head_repository_id": 1332227341,
+        "head_branch": "feature/test-perf-002-impact-precision",
+        "head_sha": "439940067c3d60e0d0196fd976e24ccd6e79424a"
+      }
+    },
+    {
+      "id": 10030899108,
+      "node_id": "MDg6QXJ0aWZhY3QxMDAzMDg5OTEwOA==",
+      "name": "compatibility-3.13-evidence",
+      "size_in_bytes": 28694,
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10030899108",
+      "archive_download_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10030899108/zip",
+      "expired": false,
+      "digest": "sha256:4632adc33211d488a6174067e678bd7c745fa189a3f17b2440e4bdc7b9282c57",
+      "created_at": "2026-09-07T19:29:27Z",
+      "updated_at": "2026-09-07T19:29:27Z",
+      "expires_at": "2026-12-06T19:07:28Z",
+      "workflow_run": {
+        "id": 34154360036,
+        "repository_id": 1332227341,
+        "head_repository_id": 1332227341,
+        "head_branch": "feature/test-perf-002-impact-precision",
+        "head_sha": "439940067c3d60e0d0196fd976e24ccd6e79424a"
+      }
+    },
+    {
+      "id": 10030827200,
+      "node_id": "MDg6QXJ0aWZhY3QxMDAzMDgyNzIwMA==",
+      "name": "compatibility-3.11-evidence",
+      "size_in_bytes": 28615,
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10030827200",
+      "archive_download_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10030827200/zip",
+      "expired": false,
+      "digest": "sha256:8303e97d8bf41f9aea10c640cc379e65f911c15a00c1c5e9e499741f83e1445f",
+      "created_at": "2026-09-07T19:26:01Z",
+      "updated_at": "2026-09-07T19:26:01Z",
+      "expires_at": "2026-12-06T19:07:28Z",
+      "workflow_run": {
+        "id": 34154360036,
+        "repository_id": 1332227341,
+        "head_repository_id": 1332227341,
+        "head_branch": "feature/test-perf-002-impact-precision",
+        "head_sha": "439940067c3d60e0d0196fd976e24ccd6e79424a"
+      }
+    },
+    {
+      "id": 10030445616,
+      "node_id": "MDg6QXJ0aWZhY3QxMDAzMDQ0NTYxNg==",
+      "name": "ci-plan",
+      "size_in_bytes": 6719,
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10030445616",
+      "archive_download_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/artifacts/10030445616/zip",
+      "expired": false,
+      "digest": "sha256:8a6cb3734c17279685f27d31225607f46de3960293653f3c4079ce0f41325ceb",
+      "created_at": "2026-09-07T19:08:14Z",
+      "updated_at": "2026-09-07T19:08:14Z",
+      "expires_at": "2026-12-06T19:07:28Z",
+      "workflow_run": {
+        "id": 34154360036,
+        "repository_id": 1332227341,
+        "head_repository_id": 1332227341,
+        "head_branch": "feature/test-perf-002-impact-precision",
+        "head_sha": "439940067c3d60e0d0196fd976e24ccd6e79424a"
+      }
+    }
+  ]
+}

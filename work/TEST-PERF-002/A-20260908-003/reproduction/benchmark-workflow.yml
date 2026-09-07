@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  matrix:
+    name: Experimental precision matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: matrix
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          manifest=json.loads(Path('.github/precision-benchmark.json').read_text())
+          include=[dict(case=c['name'],head=c['head'],kind=kind,python=version)
+                   for c in manifest['cases']
+                   for kind,version in [('behavioral','3.11'),('behavioral','3.13'),('coverage','3.11')]]
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:
+              out.write('matrix='+json.dumps({'include':include})+'\n')
+          PY
+
+  probe:
+    name: precision (${{ matrix.case }}, ${{ matrix.kind }}, ${{ matrix.python }})
+    needs: matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix: ${{ fromJSON(needs.matrix.outputs.matrix) }}
+    env:
+      PROBE_CASE: ${{ matrix.case }}
+      PROBE_KIND: ${{ matrix.kind }}
+    steps:
+      - name: Start job clock
+        run: echo "PROBE_STARTED_AT=$(date +%s)" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v4
+      - name: Preserve controller outside candidate checkout
+        run: |
+          cp .github/scripts/precision_benchmark.py "$RUNNER_TEMP/precision_benchmark.py"
+          cp .github/precision-benchmark.json "$RUNNER_TEMP/precision-benchmark.json"
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ matrix.head }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install -e '.[test]'
+      - name: Measure explicit proposed-base plan
+        run: python "$RUNNER_TEMP/precision_benchmark.py" "$RUNNER_TEMP/precision-benchmark.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: precision-${{ matrix.case }}-${{ matrix.kind }}-${{ matrix.python }}
+          path: |
+            benchmark.json
+            ci-plan.json
+            benchmark-test-results.json
+            coverage-test-results.json
+            coverage.json
+          retention-days: 14

@@ -1,0 +1,317 @@
+{
+  "coverage_obligations": [
+    "impact"
+  ],
+  "duration_seconds": {
+    "p50": 2.404888,
+    "p95": 14.242842
+  },
+  "outcomes": {
+    "errors": 0,
+    "failed": 0,
+    "passed": 38,
+    "skipped": 0
+  },
+  "plan_id": "5b78284cfdda1e113e7051ace3b499f7be03d3a35ebb7e87d3e84d4ed9d9c5fa",
+  "python_version": "3.11.16",
+  "schema_version": "1.0.0",
+  "slowest": [
+    {
+      "duration_seconds": 16.878776,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 14.242842,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 8.085162,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_merged_nonprefix_policy_histories_and_new_maximum_are_valid",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 7.858905,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_required_check_permutations_have_only_one_legal_tree",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 7.535743,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_two_versions_remove_old_generated_output_and_reject_stale_parent",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.640544,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_include_missing_duplicate_overlap_and_file_tree_ambiguity_fail",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.203049,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_directory_checks_hidden_empty_directory_and_crlf_drift",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.051283,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_generated_overlap_reserved_manifest_and_undeclared_generator_fail",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.748302,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_export_twice_and_git_merge_tree_are_byte_identical",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 4.63806,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_candidate_must_have_exact_single_main_parent",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 4.607942,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_cli_export_check_and_errors",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 4.452107,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_policy_version_deletion_and_restore_is_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 4.300554,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_binary_source_and_executable_mode_preserve_bytes",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.473858,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_independent_merge_result_disagreement_is_blocking",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.368251,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_policy_unknown_empty_duplicate_and_unsorted_versions_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.25311,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_synchronized_source_and_manifest_hash_forgery_is_blocked",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.033885,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_merge_dropped_parent_version_and_restore_is_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.635728,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_source_crlf_and_checker_drift_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.521915,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_source_manifest_and_omitted_attributes_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.28786,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_policy_version_cannot_be_inserted_before_history",
+      "outcome": "passed"
+    }
+  ],
+  "successful": true,
+  "suite": "impact",
+  "target": "fee9a5b45749add6275d04f3a6de53622440cdab",
+  "test_count": 38,
+  "tests": [
+    {
+      "duration_seconds": 16.878776,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 14.242842,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 8.085162,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_merged_nonprefix_policy_histories_and_new_maximum_are_valid",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 7.858905,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_required_check_permutations_have_only_one_legal_tree",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 7.535743,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_two_versions_remove_old_generated_output_and_reject_stale_parent",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.640544,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_include_missing_duplicate_overlap_and_file_tree_ambiguity_fail",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.203049,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_directory_checks_hidden_empty_directory_and_crlf_drift",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.051283,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_generated_overlap_reserved_manifest_and_undeclared_generator_fail",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.748302,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_export_twice_and_git_merge_tree_are_byte_identical",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 4.63806,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_candidate_must_have_exact_single_main_parent",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 4.607942,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_cli_export_check_and_errors",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 4.452107,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_policy_version_deletion_and_restore_is_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 4.300554,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_binary_source_and_executable_mode_preserve_bytes",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.473858,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_independent_merge_result_disagreement_is_blocking",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.368251,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_policy_unknown_empty_duplicate_and_unsorted_versions_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.25311,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_synchronized_source_and_manifest_hash_forgery_is_blocked",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.033885,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_merge_dropped_parent_version_and_restore_is_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.635728,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_source_crlf_and_checker_drift_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.521915,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_source_manifest_and_omitted_attributes_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.28786,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_policy_version_cannot_be_inserted_before_history",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.271697,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_source_and_ci_expectations_cannot_come_from_manifest",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.688864,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_generated_prefix_collision_is_rejected_during_projection",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.666163,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_shallow_remote_and_git_format_prerequisites",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.650389,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_policy_version_cannot_be_inserted_between_historical_versions",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.550161,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_policy_history_removal_and_restore_is_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.523931,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_policy_include_escape_is_rejected_during_projection",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.30708,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_policy_same_version_drift_is_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.231953,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_git_symlink_gitlink_casefold_and_non_utf8_paths_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.778741,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_source_must_belong_to_fetched_develop",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.737329,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_dirty_tracked_and_untracked_source_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.475229,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_git_environment_cannot_redirect_repository",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.471455,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_real_policy_schema_and_no_broad_runtime_or_internal_surface",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.442072,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_export_refuses_nonempty_relative_and_checkout_directories",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.424928,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_strict_json_duplicate_keys_and_invalid_utf8",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.424285,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_links_and_junctions_in_staging_fail_closed",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.422611,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_corrupt_git_blob_bytes_fail_before_projection",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.417321,
+      "id": "test_release_surface.ReleaseSurfaceTests.test_portable_path_attack_matrix",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.003692,
+      "id": "test_release_digest_vectors.DigestVectors.test_independent_known_vectors",
+      "outcome": "passed"
+    }
+  ],
+  "wall_seconds": 144.427324
+}

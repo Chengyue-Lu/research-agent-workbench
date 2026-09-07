@@ -1,0 +1,17 @@
+{
+  "original_sha256": "d1b27c671d11d5bac7fedf43633ce0945b01a6ffb87a164c79590610b9241b8f",
+  "failure_ids": [
+    "ERROR: test_cli_export_check_and_errors (test_release_surface.ReleaseSurfaceTests.test_cli_export_check_and_errors)",
+    "ERROR: test_directory_checks_hidden_empty_directory_and_crlf_drift (test_release_surface.ReleaseSurfaceTests.test_directory_checks_hidden_empty_directory_and_crlf_drift)",
+    "ERROR: test_export_refuses_nonempty_relative_and_checkout_directories (test_release_surface.ReleaseSurfaceTests.test_export_refuses_nonempty_relative_and_checkout_directories) (path=WindowsPath('relative'))",
+    "ERROR: test_export_refuses_nonempty_relative_and_checkout_directories (test_release_surface.ReleaseSurfaceTests.test_export_refuses_nonempty_relative_and_checkout_directories) (path=WindowsPath('C:/Users/lcy20/AppData/Local/Temp/rwb-surface-4jnyxypo/repo'))",
+    "ERROR: test_export_refuses_nonempty_relative_and_checkout_directories (test_release_surface.ReleaseSurfaceTests.test_export_refuses_nonempty_relative_and_checkout_directories) (path=WindowsPath('C:/Users/lcy20/AppData/Local/Temp/rwb-surface-4jnyxypo/repo/src'))",
+    "ERROR: test_export_refuses_nonempty_relative_and_checkout_directories (test_release_surface.ReleaseSurfaceTests.test_export_refuses_nonempty_relative_and_checkout_directories) (path=WindowsPath('C:/Users/lcy20/AppData/Local/Temp/rwb-surface-4jnyxypo'))",
+    "ERROR: test_export_twice_and_git_merge_tree_are_byte_identical (test_release_surface.ReleaseSurfaceTests.test_export_twice_and_git_merge_tree_are_byte_identical)"
+  ],
+  "conclusion": [
+    "Ran 38 tests in 122.264s",
+    "FAILED (errors=7)"
+  ],
+  "exit_code": 1
+}

@@ -1,0 +1,70 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260908-003
+task_id: TEST-PERF-002
+task_revision: 15
+attempt_id: A-20260908-003
+archive_root: A-20260908-003
+baseline: 9e286e3c387f781e6993f3c702c0704ab8d85513
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: b000ce7afe1f8d40a7db21ea829771811c4fa18f70b49c19b842dd883d4cfd88
+actors_ref:
+  path: ACTORS.yaml
+  sha256: cde20c823cdf4fd4dc6469b8602b701a8e9c27a316e6356c946321caff891d16
+read_allowlist:
+- .github/**
+- .rwb/precision-intake/**
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- src/**
+- tests/**
+- work/TEST-PERF-002/**
+write_scope:
+- .rwb/precision-intake/**
+- Issue 48 and PR 67 review updates
+- isolated M14 experiment branches and workflow
+- work/TEST-PERF-002/A-20260908-003/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 1b6cf0c02c6c7587f9ebd538733bf0961bcd12aa9f7f92463e712419b23bcb50
+  event_count: 6
+tool_event_refs:
+- path: tool-events/three-local-fault-probes-succeeded.json
+  sha256: 281cdecafb75e66fec68cda4f9cc6d5cc7ff2e5a6c687f43f7766e4ce00458da
+- path: tool-events/final-hosted-acceptance-succeeded.json
+  sha256: 8e926290944d977e54e8beab8429d105daddf24e34fab60beec3f01862191f5b
+handoff_refs:
+- path: handoff/H0.md
+  sha256: 6b63ce5a8186fd471ee586b2c079439d5f9dea1e87c75a92db3c116a29642f24
+decision_refs: []
+output_refs:
+- path: RESULTS.md
+  sha256: 95ec4196af35717ce6f1574828fd44c509be74e232bebd11ff4214bd32482b4a
+check_refs:
+- path: checks/hosted-summary.json
+  sha256: 248aa4c893b0233f3c4a954c6cad02d18c37eda0ebd9e13fd7ac7043c86516de
+- path: checks/local-summary.json
+  sha256: b9df39ec999eac324f57a17cabfdeba4636214b6cd408daaf2fd54de141547f4
+- path: checks/integrity.json
+  sha256: 9d563b87bc464a5345e7acce41707613189fcf6b974f090cff843ecd73f76e83
+- path: checks/witness-final.json
+  sha256: 2f4a26e517f5850f2b095070a8536b16b1aae3e05f22d0008136fdd7653f0a98
+- path: checks/pr67-tests-summary.json
+  sha256: f126b4942871358083b3557a1eb0bd5d8969ef960db2b34bbf0290ea53a5898f
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0005
+  affected_stream: messages

@@ -1,0 +1,524 @@
+{
+  "baseline_run_id": 34152736021,
+  "after_run_id": 34154076029,
+  "controller_heads": {
+    "baseline": "5d9a43cecc47d376b6b8d4b60576541e42b8650a",
+    "after": "57d6622dd7b5652c3c9640859f718d0dec7a97e8"
+  },
+  "implementation_head": "4c04db6cd0a639e367100f3205a732fee041ab9f",
+  "pr_head": "439940067c3d60e0d0196fd976e24ccd6e79424a",
+  "authority_status": "experimental proposed future-develop base; not normal PR Gate authority",
+  "sample_count": 1,
+  "comparison": "Three separate before plans have identical behavioral and impact test lists; one combined equivalent-edit run measures that common suite.",
+  "jobs": [
+    {
+      "case": "before",
+      "kind": "behavioral",
+      "base": "205559b25f7f0bd276094a4ac53db28354b7284d",
+      "head": "20629e79969f92cf764230ada7143ca8e356ebee",
+      "python": "3.11.16",
+      "authority_status": "experimental proposed future-develop base; not normal PR Gate authority",
+      "shared_baseline": "Three separate before plans have identical behavioral and impact test lists; one combined equivalent-edit run measures that common suite.",
+      "phases": {
+        "behavioral": {
+          "seconds": 968.612,
+          "exit_code": 0
+        }
+      },
+      "successful": true,
+      "plan_id": "320e42bb156db5db94df702e900141d8a3ddee4615954939d2de3c946e1a457f",
+      "behavioral_scope": "focused",
+      "coverage_scope": "impact",
+      "package_smoke": true,
+      "repository_smoke": true,
+      "test_count": 1027,
+      "suite_wall_seconds": 968.437814,
+      "harness_seconds": 971.561,
+      "job_until_receipt_seconds": 979.564,
+      "job_id": 101838224474,
+      "job_conclusion": "success",
+      "job_wall_seconds": 985.0,
+      "started_at": "2026-09-07T18:43:05Z",
+      "completed_at": "2026-09-07T18:59:30Z",
+      "run_id": 34152736021,
+      "dispatch_to_job_start_seconds": 11.0,
+      "file_hashes": {
+        "benchmark-test-results.json": "d2fb3c2ba3e42372aafe410655fef448a98b3f6b7a7daceb292e031479cbb584",
+        "benchmark.json": "c579621a2dfab0554a9b4a34cf8bab10b045cf532f55421b177822419e46eebb",
+        "ci-plan.json": "0ec30439af05882d2db28d1e3f90a2810cfbf16972094d2a2a917fd1809b4f0a"
+      }
+    },
+    {
+      "case": "before",
+      "kind": "behavioral",
+      "base": "205559b25f7f0bd276094a4ac53db28354b7284d",
+      "head": "20629e79969f92cf764230ada7143ca8e356ebee",
+      "python": "3.13.15",
+      "authority_status": "experimental proposed future-develop base; not normal PR Gate authority",
+      "shared_baseline": "Three separate before plans have identical behavioral and impact test lists; one combined equivalent-edit run measures that common suite.",
+      "phases": {
+        "behavioral": {
+          "seconds": 1645.149,
+          "exit_code": 0
+        }
+      },
+      "successful": true,
+      "plan_id": "320e42bb156db5db94df702e900141d8a3ddee4615954939d2de3c946e1a457f",
+      "behavioral_scope": "focused",
+      "coverage_scope": "impact",
+      "package_smoke": true,
+      "repository_smoke": true,
+      "test_count": 1027,
+      "suite_wall_seconds": 1644.569876,
+      "harness_seconds": 1649.86,
+      "job_until_receipt_seconds": 1664.183,
+      "job_id": 101838224467,
+      "job_conclusion": "success",
+      "job_wall_seconds": 1669.0,
+      "started_at": "2026-09-07T18:43:06Z",
+      "completed_at": "2026-09-07T19:10:55Z",
+      "run_id": 34152736021,
+      "dispatch_to_job_start_seconds": 12.0,
+      "file_hashes": {
+        "benchmark-test-results.json": "6b17dc619603cc13b3f86f5d13b046308beb93ab88d4bea0cd7d30a921516e03",
+        "benchmark.json": "73a62294f995ce2d6ca1ff3b4c5f928762ecbed3d98486f97531c1f5457dedf7",
+        "ci-plan.json": "0ec30439af05882d2db28d1e3f90a2810cfbf16972094d2a2a917fd1809b4f0a"
+      }
+    },
+    {
+      "case": "before",
+      "kind": "coverage",
+      "base": "205559b25f7f0bd276094a4ac53db28354b7284d",
+      "head": "20629e79969f92cf764230ada7143ca8e356ebee",
+      "python": "3.11.16",
+      "authority_status": "experimental proposed future-develop base; not normal PR Gate authority",
+      "shared_baseline": "Three separate before plans have identical behavioral and impact test lists; one combined equivalent-edit run measures that common suite.",
+      "phases": {
+        "Run required coverage test union": {
+          "seconds": 3498.717,
+          "exit_code": 0
+        },
+        "Export coverage evidence": {
+          "seconds": 2.161,
+          "exit_code": 0
+        },
+        "impact gate": {
+          "seconds": 4.346,
+          "exit_code": 0
+        }
+      },
+      "successful": true,
+      "plan_id": "320e42bb156db5db94df702e900141d8a3ddee4615954939d2de3c946e1a457f",
+      "behavioral_scope": "focused",
+      "coverage_scope": "impact",
+      "package_smoke": true,
+      "repository_smoke": true,
+      "test_count": 1027,
+      "suite_wall_seconds": 3498.2051,
+      "harness_seconds": 3509.486,
+      "job_until_receipt_seconds": 3517.343,
+      "job_id": 101838224413,
+      "job_conclusion": "success",
+      "job_wall_seconds": 3522.0,
+      "started_at": "2026-09-07T18:43:06Z",
+      "completed_at": "2026-09-07T19:41:48Z",
+      "run_id": 34152736021,
+      "dispatch_to_job_start_seconds": 12.0,
+      "file_hashes": {
+        "benchmark.json": "4b4f9188a6f4c56eaa6006a66fda13346edec5e0fb4ea30af48db0dee7abd80b",
+        "ci-plan.json": "0ec30439af05882d2db28d1e3f90a2810cfbf16972094d2a2a917fd1809b4f0a",
+        "coverage-test-results.json": "3e4c721715b38fd7cfd52adb958ef3fae6915767cdff53a344255bd13374f927",
+        "coverage.json": "fa1b3488ee53710e3cbfae60a02976a48ac40f8842578a6c83f5e649ba4fd5ec"
+      }
+    },
+    {
+      "case": "claim",
+      "kind": "behavioral",
+      "base": "3e0b0e0cb1134e7106df793cdc85de8059d7925e",
+      "head": "42ef226ed13665fa2a8490230fc291c38775dea7",
+      "python": "3.11.16",
+      "authority_status": "experimental proposed future-develop base; not normal PR Gate authority",
+      "shared_baseline": "Three separate before plans have identical behavioral and impact test lists; one combined equivalent-edit run measures that common suite.",
+      "phases": {
+        "behavioral": {
+          "seconds": 95.938,
+          "exit_code": 0
+        }
+      },
+      "successful": true,
+      "plan_id": "2e768dfa0c836d2d16f5132bd6a67a4509f3abdb75665873e15364ac72395fe0",
+      "behavioral_scope": "focused",
+      "coverage_scope": "impact",
+      "package_smoke": false,
+      "repository_smoke": false,
+      "test_count": 27,
+      "suite_wall_seconds": 95.690313,
+      "harness_seconds": 100.062,
+      "job_until_receipt_seconds": 110.105,
+      "job_id": 101842161036,
+      "job_conclusion": "success",
+      "job_wall_seconds": 114.0,
+      "started_at": "2026-09-07T19:03:24Z",
+      "completed_at": "2026-09-07T19:05:18Z",
+      "run_id": 34154076029,
+      "dispatch_to_job_start_seconds": 12.0,
+      "file_hashes": {
+        "benchmark-test-results.json": "1f70bf2221fdb519f2acc178a55b3207371dfc324570bf75b12c99f6a2315e8a",
+        "benchmark.json": "869420fa82aa43210665d2d86ec8caafb1a72f1bc8364dac6aa5528c5cfc4680",
+        "ci-plan.json": "b1767c3ec7fad32eeacd65b0329c1536169c0a5c9569e20d8eb72b95cfa1f432"
+      }
+    },
+    {
+      "case": "claim",
+      "kind": "behavioral",
+      "base": "3e0b0e0cb1134e7106df793cdc85de8059d7925e",
+      "head": "42ef226ed13665fa2a8490230fc291c38775dea7",
+      "python": "3.13.15",
+      "authority_status": "experimental proposed future-develop base; not normal PR Gate authority",
+      "shared_baseline": "Three separate before plans have identical behavioral and impact test lists; one combined equivalent-edit run measures that common suite.",
+      "phases": {
+        "behavioral": {
+          "seconds": 135.451,
+          "exit_code": 0
+        }
+      },
+      "successful": true,
+      "plan_id": "2e768dfa0c836d2d16f5132bd6a67a4509f3abdb75665873e15364ac72395fe0",
+      "behavioral_scope": "focused",
+      "coverage_scope": "impact",
+      "package_smoke": false,
+      "repository_smoke": false,
+      "test_count": 27,
+      "suite_wall_seconds": 135.172109,
+      "harness_seconds": 140.287,
+      "job_until_receipt_seconds": 152.051,
+      "job_id": 101842161049,
+      "job_conclusion": "success",
+      "job_wall_seconds": 155.0,
+      "started_at": "2026-09-07T19:03:23Z",
+      "completed_at": "2026-09-07T19:05:58Z",
+      "run_id": 34154076029,
+      "dispatch_to_job_start_seconds": 11.0,
+      "file_hashes": {
+        "benchmark-test-results.json": "9e5c82ce52691a2466c5d16cf18a46bfa322d79c1ae35a5f0cd6b493ec143f7c",
+        "benchmark.json": "105c45e275bef8a57c5d3d61c7b6c74dc5ae0f6dbb41a1b7b379a7a95a0938ad",
+        "ci-plan.json": "b1767c3ec7fad32eeacd65b0329c1536169c0a5c9569e20d8eb72b95cfa1f432"
+      }
+    },
+    {
+      "case": "claim",
+      "kind": "coverage",
+      "base": "3e0b0e0cb1134e7106df793cdc85de8059d7925e",
+      "head": "42ef226ed13665fa2a8490230fc291c38775dea7",
+      "python": "3.11.16",
+      "authority_status": "experimental proposed future-develop base; not normal PR Gate authority",
+      "shared_baseline": "Three separate before plans have identical behavioral and impact test lists; one combined equivalent-edit run measures that common suite.",
+      "phases": {
+        "Run required coverage test union": {
+          "seconds": 188.937,
+          "exit_code": 0
+        },
+        "Export coverage evidence": {
+          "seconds": 2.059,
+          "exit_code": 0
+        },
+        "impact gate": {
+          "seconds": 4.114,
+          "exit_code": 0
+        }
+      },
+      "successful": true,
+      "plan_id": "2e768dfa0c836d2d16f5132bd6a67a4509f3abdb75665873e15364ac72395fe0",
+      "behavioral_scope": "focused",
+      "coverage_scope": "impact",
+      "package_smoke": false,
+      "repository_smoke": false,
+      "test_count": 15,
+      "suite_wall_seconds": 184.446897,
+      "harness_seconds": 199.245,
+      "job_until_receipt_seconds": 206.721,
+      "job_id": 101842161055,
+      "job_conclusion": "success",
+      "job_wall_seconds": 210.0,
+      "started_at": "2026-09-07T19:03:23Z",
+      "completed_at": "2026-09-07T19:06:53Z",
+      "run_id": 34154076029,
+      "dispatch_to_job_start_seconds": 11.0,
+      "file_hashes": {
+        "benchmark.json": "a8cc6ae8ee72950ecfb2ca6e1efb21fdd438a6a8be9df3c7adef97b3e6f7f029",
+        "ci-plan.json": "b1767c3ec7fad32eeacd65b0329c1536169c0a5c9569e20d8eb72b95cfa1f432",
+        "coverage-test-results.json": "0e290712681cce3fed172cc91756f4a8b1597b9b40494fa3a5ecd22f1ec60225",
+        "coverage.json": "9b0c0890325d827d8cf62bccf241483e98a508bf82d18a8b938a7a13900d6196"
+      }
+    },
+    {
+      "case": "projection",
+      "kind": "behavioral",
+      "base": "3e0b0e0cb1134e7106df793cdc85de8059d7925e",
+      "head": "89419a82d52a6bd6883e11bd59f90bcad6675a2b",
+      "python": "3.11.16",
+      "authority_status": "experimental proposed future-develop base; not normal PR Gate authority",
+      "shared_baseline": "Three separate before plans have identical behavioral and impact test lists; one combined equivalent-edit run measures that common suite.",
+      "phases": {
+        "behavioral": {
+          "seconds": 149.623,
+          "exit_code": 0
+        }
+      },
+      "successful": true,
+      "plan_id": "5427cc05f42f3b6d4342f9eaf909cdbd4a0462bb3ca10574a97e5df49b8d6d50",
+      "behavioral_scope": "focused",
+      "coverage_scope": "impact",
+      "package_smoke": false,
+      "repository_smoke": false,
+      "test_count": 28,
+      "suite_wall_seconds": 149.477388,
+      "harness_seconds": 153.714,
+      "job_until_receipt_seconds": 162.228,
+      "job_id": 101842161072,
+      "job_conclusion": "success",
+      "job_wall_seconds": 169.0,
+      "started_at": "2026-09-07T19:03:23Z",
+      "completed_at": "2026-09-07T19:06:12Z",
+      "run_id": 34154076029,
+      "dispatch_to_job_start_seconds": 11.0,
+      "file_hashes": {
+        "benchmark-test-results.json": "d7b2fe3b3c12a296f86b3ffc725127ced76115d067a7294b5e79122be7192b8a",
+        "benchmark.json": "fc3fbdfd19f59044adb70c394a283d02832f98e127ea34d12d5d788b223213f1",
+        "ci-plan.json": "5da5269fe413db10947f1d9f029b705affd4f0bf01d6b71f6c693e284a01a8b2"
+      }
+    },
+    {
+      "case": "projection",
+      "kind": "behavioral",
+      "base": "3e0b0e0cb1134e7106df793cdc85de8059d7925e",
+      "head": "89419a82d52a6bd6883e11bd59f90bcad6675a2b",
+      "python": "3.13.15",
+      "authority_status": "experimental proposed future-develop base; not normal PR Gate authority",
+      "shared_baseline": "Three separate before plans have identical behavioral and impact test lists; one combined equivalent-edit run measures that common suite.",
+      "phases": {
+        "behavioral": {
+          "seconds": 89.859,
+          "exit_code": 0
+        }
+      },
+      "successful": true,
+      "plan_id": "5427cc05f42f3b6d4342f9eaf909cdbd4a0462bb3ca10574a97e5df49b8d6d50",
+      "behavioral_scope": "focused",
+      "coverage_scope": "impact",
+      "package_smoke": false,
+      "repository_smoke": false,
+      "test_count": 28,
+      "suite_wall_seconds": 89.545656,
+      "harness_seconds": 92.738,
+      "job_until_receipt_seconds": 111.644,
+      "job_id": 101842161087,
+      "job_conclusion": "success",
+      "job_wall_seconds": 117.0,
+      "started_at": "2026-09-07T19:03:23Z",
+      "completed_at": "2026-09-07T19:05:20Z",
+      "run_id": 34154076029,
+      "dispatch_to_job_start_seconds": 11.0,
+      "file_hashes": {
+        "benchmark-test-results.json": "68d3af422023a93f183405fd6198fa8d545f33d7c7762c91464a6e347618d343",
+        "benchmark.json": "dd6e8b03c154e2604b64481487fd11e2fc51d7bf450b6ae360dcb33bc37ac175",
+        "ci-plan.json": "5da5269fe413db10947f1d9f029b705affd4f0bf01d6b71f6c693e284a01a8b2"
+      }
+    },
+    {
+      "case": "projection",
+      "kind": "coverage",
+      "base": "3e0b0e0cb1134e7106df793cdc85de8059d7925e",
+      "head": "89419a82d52a6bd6883e11bd59f90bcad6675a2b",
+      "python": "3.11.16",
+      "authority_status": "experimental proposed future-develop base; not normal PR Gate authority",
+      "shared_baseline": "Three separate before plans have identical behavioral and impact test lists; one combined equivalent-edit run measures that common suite.",
+      "phases": {
+        "Run required coverage test union": {
+          "seconds": 243.648,
+          "exit_code": 0
+        },
+        "Export coverage evidence": {
+          "seconds": 2.166,
+          "exit_code": 0
+        },
+        "impact gate": {
+          "seconds": 4.209,
+          "exit_code": 0
+        }
+      },
+      "successful": true,
+      "plan_id": "5427cc05f42f3b6d4342f9eaf909cdbd4a0462bb3ca10574a97e5df49b8d6d50",
+      "behavioral_scope": "focused",
+      "coverage_scope": "impact",
+      "package_smoke": false,
+      "repository_smoke": false,
+      "test_count": 16,
+      "suite_wall_seconds": 239.118964,
+      "harness_seconds": 254.183,
+      "job_until_receipt_seconds": 263.8,
+      "job_id": 101842161068,
+      "job_conclusion": "success",
+      "job_wall_seconds": 269.0,
+      "started_at": "2026-09-07T19:03:38Z",
+      "completed_at": "2026-09-07T19:08:07Z",
+      "run_id": 34154076029,
+      "dispatch_to_job_start_seconds": 26.0,
+      "file_hashes": {
+        "benchmark.json": "8390d144824d4a754b2bc8ee035591d1699fe7df8c487e74720a44c913f9357c",
+        "ci-plan.json": "5da5269fe413db10947f1d9f029b705affd4f0bf01d6b71f6c693e284a01a8b2",
+        "coverage-test-results.json": "03d94ab257e17ec3b2ec8554fb209b614e67689db0ee3382c0a700c1fff5537c",
+        "coverage.json": "2984df4687fe70c0d5ff7dc261a616cc326c44d3740235eae351f6e86279b5b4"
+      }
+    },
+    {
+      "case": "release",
+      "kind": "behavioral",
+      "base": "3e0b0e0cb1134e7106df793cdc85de8059d7925e",
+      "head": "cb5366d0cbc16517bb42df3bacc91e463a774fe5",
+      "python": "3.11.16",
+      "authority_status": "experimental proposed future-develop base; not normal PR Gate authority",
+      "shared_baseline": "Three separate before plans have identical behavioral and impact test lists; one combined equivalent-edit run measures that common suite.",
+      "phases": {
+        "behavioral": {
+          "seconds": 9.55,
+          "exit_code": 0
+        }
+      },
+      "successful": true,
+      "plan_id": "bdacd22340427f95cc795c7f9734855e42bdf4f26d2d0ca39f85fa7a0bf4a2c9",
+      "behavioral_scope": "focused",
+      "coverage_scope": "impact",
+      "package_smoke": false,
+      "repository_smoke": false,
+      "test_count": 38,
+      "suite_wall_seconds": 8.840796,
+      "harness_seconds": 13.719,
+      "job_until_receipt_seconds": 23.215,
+      "job_id": 101842161113,
+      "job_conclusion": "success",
+      "job_wall_seconds": 27.0,
+      "started_at": "2026-09-07T19:03:23Z",
+      "completed_at": "2026-09-07T19:03:50Z",
+      "run_id": 34154076029,
+      "dispatch_to_job_start_seconds": 11.0,
+      "file_hashes": {
+        "benchmark-test-results.json": "7076ab5b6623136773e8307850a09866b9c3d809ac3346afd188a961769978b9",
+        "benchmark.json": "3dd8f49b746224975462fd14823cfd69ef80d2d00ced91a17bcff9bb4186d48e",
+        "ci-plan.json": "8e6a2e9b0e33686f64b1f84ae44171151f40be30f6da65e98e084b3cf2d3606d"
+      }
+    },
+    {
+      "case": "release",
+      "kind": "behavioral",
+      "base": "3e0b0e0cb1134e7106df793cdc85de8059d7925e",
+      "head": "cb5366d0cbc16517bb42df3bacc91e463a774fe5",
+      "python": "3.13.15",
+      "authority_status": "experimental proposed future-develop base; not normal PR Gate authority",
+      "shared_baseline": "Three separate before plans have identical behavioral and impact test lists; one combined equivalent-edit run measures that common suite.",
+      "phases": {
+        "behavioral": {
+          "seconds": 11.014,
+          "exit_code": 0
+        }
+      },
+      "successful": true,
+      "plan_id": "bdacd22340427f95cc795c7f9734855e42bdf4f26d2d0ca39f85fa7a0bf4a2c9",
+      "behavioral_scope": "focused",
+      "coverage_scope": "impact",
+      "package_smoke": false,
+      "repository_smoke": false,
+      "test_count": 38,
+      "suite_wall_seconds": 10.73934,
+      "harness_seconds": 13.942,
+      "job_until_receipt_seconds": 28.39,
+      "job_id": 101842161051,
+      "job_conclusion": "success",
+      "job_wall_seconds": 33.0,
+      "started_at": "2026-09-07T19:03:23Z",
+      "completed_at": "2026-09-07T19:03:56Z",
+      "run_id": 34154076029,
+      "dispatch_to_job_start_seconds": 11.0,
+      "file_hashes": {
+        "benchmark-test-results.json": "bb620aeb175d4d917702d255894d26adb5d518cdead5ec3890f04079da021d60",
+        "benchmark.json": "223cb508b3d9de85f52ec8b58161cfcb96a4f932bafd3ec81e4889f99b7e8749",
+        "ci-plan.json": "8e6a2e9b0e33686f64b1f84ae44171151f40be30f6da65e98e084b3cf2d3606d"
+      }
+    },
+    {
+      "case": "release",
+      "kind": "coverage",
+      "base": "3e0b0e0cb1134e7106df793cdc85de8059d7925e",
+      "head": "cb5366d0cbc16517bb42df3bacc91e463a774fe5",
+      "python": "3.11.16",
+      "authority_status": "experimental proposed future-develop base; not normal PR Gate authority",
+      "shared_baseline": "Three separate before plans have identical behavioral and impact test lists; one combined equivalent-edit run measures that common suite.",
+      "phases": {
+        "Run required coverage test union": {
+          "seconds": 21.281,
+          "exit_code": 0
+        },
+        "Export coverage evidence": {
+          "seconds": 1.643,
+          "exit_code": 0
+        },
+        "impact gate": {
+          "seconds": 3.316,
+          "exit_code": 0
+        }
+      },
+      "successful": true,
+      "plan_id": "bdacd22340427f95cc795c7f9734855e42bdf4f26d2d0ca39f85fa7a0bf4a2c9",
+      "behavioral_scope": "focused",
+      "coverage_scope": "impact",
+      "package_smoke": false,
+      "repository_smoke": false,
+      "test_count": 38,
+      "suite_wall_seconds": 17.65661,
+      "harness_seconds": 29.592,
+      "job_until_receipt_seconds": 40.227,
+      "job_id": 101842161047,
+      "job_conclusion": "success",
+      "job_wall_seconds": 45.0,
+      "started_at": "2026-09-07T19:03:52Z",
+      "completed_at": "2026-09-07T19:04:37Z",
+      "run_id": 34154076029,
+      "dispatch_to_job_start_seconds": 40.0,
+      "file_hashes": {
+        "benchmark.json": "093dd667f1c320b31c86fad838e8f482fb3b4f313806d22b736d4ac1a8da0f91",
+        "ci-plan.json": "8e6a2e9b0e33686f64b1f84ae44171151f40be30f6da65e98e084b3cf2d3606d",
+        "coverage-test-results.json": "d013a7d82ac2f6d5de763370d0c6a96ad97f0abbad2236a13827981bdcb3fce6",
+        "coverage.json": "8b3cd0c3122184fc5f388235bbf6b9bc85d8168b4a499c14a60eb80595d28ffe"
+      }
+    }
+  ],
+  "case_times": {
+    "before": {
+      "max_worker_seconds": 3522.0,
+      "summed_runner_seconds": 6176.0,
+      "observed_matrix_span_seconds": 3523.0
+    },
+    "claim": {
+      "max_worker_seconds": 210.0,
+      "summed_runner_seconds": 479.0,
+      "observed_matrix_span_seconds": 210.0,
+      "max_worker_reduction_percent": 94.03747870528109,
+      "runner_reduction_percent": 92.24417098445596
+    },
+    "projection": {
+      "max_worker_seconds": 269.0,
+      "summed_runner_seconds": 555.0,
+      "observed_matrix_span_seconds": 284.0,
+      "max_worker_reduction_percent": 92.36229415105053,
+      "runner_reduction_percent": 91.01360103626943
+    },
+    "release": {
+      "max_worker_seconds": 45.0,
+      "summed_runner_seconds": 105.0,
+      "observed_matrix_span_seconds": 74.0,
+      "max_worker_reduction_percent": 98.72231686541738,
+      "runner_reduction_percent": 98.29987046632125
+    }
+  },
+  "timing_boundary": "Job wall includes setup, proof checks and artifact upload, excludes pre-start queue. Matrix spans include inter-job scheduling gaps. Max worker is parallel compute critical path, not a measured standalone PR latency."
+}

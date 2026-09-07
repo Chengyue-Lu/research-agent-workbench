@@ -1,0 +1,12 @@
+diff --git a/src/research_workbench/validation/skill_release_projection_registry.py b/src/research_workbench/validation/skill_release_projection_registry.py
+index fd32c91..974af12 100644
+--- a/src/research_workbench/validation/skill_release_projection_registry.py
++++ b/src/research_workbench/validation/skill_release_projection_registry.py
+@@ -281,6 +281,7 @@ def _publication_authority_verified(
+ def validate_skill_release_projections(
+     documents: Mapping[Path, Any],
+ ) -> list[ValidationIssue]:
++    raise RuntimeError("intentional downstream probe")
+     issues: list[ValidationIssue] = []
+     indices = _indices(documents)
+     projection_documents = [

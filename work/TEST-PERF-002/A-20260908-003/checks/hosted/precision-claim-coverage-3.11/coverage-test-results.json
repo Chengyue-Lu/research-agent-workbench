@@ -1,0 +1,177 @@
+{
+  "coverage_obligations": [
+    "impact"
+  ],
+  "duration_seconds": {
+    "p50": 6.007047,
+    "p95": 74.50999
+  },
+  "outcomes": {
+    "errors": 0,
+    "failed": 0,
+    "passed": 15,
+    "skipped": 0
+  },
+  "plan_id": "2e768dfa0c836d2d16f5132bd6a67a4509f3abdb75665873e15364ac72395fe0",
+  "python_version": "3.11.16",
+  "schema_version": "1.0.0",
+  "slowest": [
+    {
+      "duration_seconds": 74.50999,
+      "id": "test_claim_trace.PromotedClaimTraceTests.test_real_promotion_and_retained_negative_are_consumed_without_replay",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 18.168087,
+      "id": "test_claim_trace.ClaimTraceTests.test_map_requires_exact_evidence_and_source_closure",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 17.946725,
+      "id": "test_claim_trace.ClaimTraceTests.test_schema_kind_claim_pin_and_cli_generic_validation",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 9.893345,
+      "id": "test_claim_trace.ClaimTraceTests.test_missing_malformed_and_non_claim_inputs_fail_with_diagnostics",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 7.998482,
+      "id": "test_claim_trace.ClaimTraceTests.test_missing_revision_unversioned_and_missing_evidence_are_unresolved",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 7.911156,
+      "id": "test_claim_trace.ClaimTraceTests.test_live_byte_drift_is_independent_of_declared_object_hash",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.029112,
+      "id": "test_claim_trace.ClaimTraceTests.test_object_hash_pin_and_source_identity_are_checked",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.007047,
+      "id": "test_claim_trace.ClaimTraceTests.test_source_declared_hash_needs_explicit_matching_binding",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.987178,
+      "id": "test_claim_trace.ClaimTraceTests.test_missing_and_wrong_raw_admission_do_not_yield_complete_trace",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.971612,
+      "id": "test_claim_trace.ClaimTraceTests.test_duplicate_identity_and_wrong_document_type_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.935566,
+      "id": "test_claim_trace.ClaimTraceTests.test_inbox_and_outside_root_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.034368,
+      "id": "test_claim_trace.ClaimTraceTests.test_bytes_are_read_once_for_shared_evidence_source",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.0022,
+      "id": "test_claim_trace.ClaimTraceTests.test_support_counterevidence_and_limits_locate_without_execution",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.996633,
+      "id": "test_claim_trace.ClaimTraceTests.test_empty_relations_preserve_limits_without_inventing_evidence",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.975385,
+      "id": "test_claim_trace.ClaimTraceTests.test_invalid_source_admission_is_reported",
+      "outcome": "passed"
+    }
+  ],
+  "successful": true,
+  "suite": "impact",
+  "target": "42ef226ed13665fa2a8490230fc291c38775dea7",
+  "test_count": 15,
+  "tests": [
+    {
+      "duration_seconds": 74.50999,
+      "id": "test_claim_trace.PromotedClaimTraceTests.test_real_promotion_and_retained_negative_are_consumed_without_replay",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 18.168087,
+      "id": "test_claim_trace.ClaimTraceTests.test_map_requires_exact_evidence_and_source_closure",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 17.946725,
+      "id": "test_claim_trace.ClaimTraceTests.test_schema_kind_claim_pin_and_cli_generic_validation",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 9.893345,
+      "id": "test_claim_trace.ClaimTraceTests.test_missing_malformed_and_non_claim_inputs_fail_with_diagnostics",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 7.998482,
+      "id": "test_claim_trace.ClaimTraceTests.test_missing_revision_unversioned_and_missing_evidence_are_unresolved",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 7.911156,
+      "id": "test_claim_trace.ClaimTraceTests.test_live_byte_drift_is_independent_of_declared_object_hash",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.029112,
+      "id": "test_claim_trace.ClaimTraceTests.test_object_hash_pin_and_source_identity_are_checked",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.007047,
+      "id": "test_claim_trace.ClaimTraceTests.test_source_declared_hash_needs_explicit_matching_binding",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.987178,
+      "id": "test_claim_trace.ClaimTraceTests.test_missing_and_wrong_raw_admission_do_not_yield_complete_trace",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.971612,
+      "id": "test_claim_trace.ClaimTraceTests.test_duplicate_identity_and_wrong_document_type_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.935566,
+      "id": "test_claim_trace.ClaimTraceTests.test_inbox_and_outside_root_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.034368,
+      "id": "test_claim_trace.ClaimTraceTests.test_bytes_are_read_once_for_shared_evidence_source",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.0022,
+      "id": "test_claim_trace.ClaimTraceTests.test_support_counterevidence_and_limits_locate_without_execution",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.996633,
+      "id": "test_claim_trace.ClaimTraceTests.test_empty_relations_preserve_limits_without_inventing_evidence",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.975385,
+      "id": "test_claim_trace.ClaimTraceTests.test_invalid_source_admission_is_reported",
+      "outcome": "passed"
+    }
+  ],
+  "wall_seconds": 184.446897
+}

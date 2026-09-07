@@ -1,0 +1,29 @@
+task_id: TEST-PERF-002
+revision: 15
+owner: Chengyue-Lu
+risk: R2
+delegation: false
+required_skills: []
+goal: Preserve exact-head implementation CI and isolated real-module precision acceptance
+  evidence.
+authorization: Continuation of user-authorized implementation, review updates and
+  isolated M14 fault/performance experiments.
+read_allowlist:
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- .github/**
+- src/**
+- tests/**
+- work/TEST-PERF-002/**
+- .rwb/precision-intake/**
+write_scope:
+- work/TEST-PERF-002/A-20260908-003/**
+- .rwb/precision-intake/**
+- isolated M14 experiment branches and workflow
+- Issue 48 and PR 67 review updates
+stop_conditions:
+- No official M4/M14 branch mutation or merge.
+- No release, tags, main, protection changes or further M14 milestone activation.
+- Experiments are conditional on proposed consumer-contract acceptance and do not
+  replace required PR gates.

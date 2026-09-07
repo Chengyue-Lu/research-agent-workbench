@@ -1,0 +1,13 @@
+diff --git a/src/research_workbench/capability/release_projection.py b/src/research_workbench/capability/release_projection.py
+index 184897c..8912e4d 100644
+--- a/src/research_workbench/capability/release_projection.py
++++ b/src/research_workbench/capability/release_projection.py
+@@ -41,7 +41,7 @@ def _normalized_hash(value: str) -> str:
+         int(normalized, 16)
+     except ValueError as exc:
+         raise ValueError("expected a SHA-256 digest") from exc
+-    return normalized[0:]
++    return normalized[1:]
+ 
+ 
+ @dataclass(frozen=True, slots=True)

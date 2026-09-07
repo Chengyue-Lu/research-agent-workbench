@@ -1,0 +1,18 @@
+{
+  "original_sha256": "7cd6e2a375cc1e7633d8d2ee3678d1c9b846ac9e31133019f3a9267a72195761",
+  "failure_ids": [
+    "ERROR: test_projection_registry_adversarial_surface_is_closed (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_registry_adversarial_surface_is_closed)",
+    "ERROR: test_projection_registry_and_derivation_are_fail_closed (test_skill_release_projection.SkillReleaseProjectionTests.test_projection_registry_and_derivation_are_fail_closed)",
+    "ERROR: test_repository_projection_rejects_alias_only_authority_path (test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_alias_only_authority_path)",
+    "ERROR: test_repository_projection_rejects_alias_only_index_path (test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_alias_only_index_path)",
+    "ERROR: test_repository_projection_rejects_ambiguous_shadow_authority_closure (test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_ambiguous_shadow_authority_closure)",
+    "ERROR: test_repository_projection_rejects_cross_root_stitched_publication (test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_cross_root_stitched_publication)",
+    "ERROR: test_repository_projection_rejects_shadow_only_authority_closure (test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_shadow_only_authority_closure)",
+    "ERROR: test_repository_projection_revalidates_external_evidence_and_human_decision (test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_revalidates_external_evidence_and_human_decision)"
+  ],
+  "conclusion": [
+    "Ran 28 tests in 60.393s",
+    "FAILED (errors=8)"
+  ],
+  "exit_code": 1
+}
