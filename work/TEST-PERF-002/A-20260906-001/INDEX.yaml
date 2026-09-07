@@ -1,0 +1,92 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260906-001
+task_id: TEST-PERF-002
+task_revision: 1
+attempt_id: A-20260906-001
+archive_root: A-20260906-001
+baseline: 6f0caf0b8e8a9b123f1ea399e747d2c0ed33cdce
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: ee6ec7b8290b8e168b98fc16144f053c029957d56fc902f9eeb510452ad6bf1b
+actors_ref:
+  path: ACTORS.yaml
+  sha256: d1d6c935f2db84ee8e97d219fc0d225631b59a34f92806be12a9c64c78e31f0f
+read_allowlist:
+- .github/**
+- .github/scripts/ci_checks.py
+- .github/scripts/plan_ci.py
+- .github/workflows/ci*.yml
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- docs/README.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- docs/workstreams/chengyue-lu/TEST-QUALITY-001/**
+- src/research_workbench/**
+- tests/**
+- tests/ci_impact_policy.yaml
+- tests/coverage_policy.yaml
+- tests/run_unittest_suite.py
+- tests/test_ci_*.py
+- work/TEST-PERF-002/A-20260906-001/**
+write_scope:
+- .github/scripts/ci_checks.py
+- .github/scripts/plan_ci.py
+- .github/workflows/ci*.yml
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/ci_impact_policy.yaml
+- tests/coverage_policy.yaml
+- tests/run_unittest_suite.py
+- tests/test_ci_*.py
+- work/TEST-PERF-002/A-20260906-001/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 0282027abdf035e54ed2ef2f33e6e32f9d452c286b30d72bbaaf269fd046eadf
+  event_count: 9
+tool_event_refs:
+- path: tool-events/observed-verification-summary-succeeded.json
+  sha256: 8e55cdff9625000fb80e05c0f8b4b0d88f44ee5847332f8d0cfa08a405cfe834
+handoff_refs:
+- path: handoff/H0.md
+  sha256: 686280deb0c7ecf84eb3ceaf43191aa7d01127862a8c04fe0a8660b124adbaec
+decision_refs: []
+output_refs:
+- path: outputs/code-manifest.json
+  sha256: 5b2f6ef80bfd12cbc50d299c208c0e56cecf8003b63a49a6c04892acde418591
+- path: WORKLOG.md
+  sha256: 2e5d458922eb960cc5aeaca5650175d93c0c4599d606815c362fb0d58bf12510
+check_refs:
+- path: checks/verification-summary.json
+  sha256: 01a6b9154e20b561bd5421f8a2a5beae77acf03c847fbed4e385975b1dc35406
+- path: checks/coverage-policy.log
+  sha256: b5424dd7e400470cd5ab699977721367a34788cda28bf15de947bfdaa0750f20
+- path: checks/focused-plan.json
+  sha256: 5534cc5d1569045afa9489c1b5733f5f875e57ea46c261a27497030306d4bf86
+- path: checks/fast-plan.json
+  sha256: 27891efacafed608d7a7d925f453321e309b4f7beb950035db0adc239646b5f1
+- path: checks/publication-receipt.json
+  sha256: c8e3af8a48bbcb47537c0ac7744683477cb47e6a60d73df70d92e22ce002b042
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: tool-results
+- event_id: EVT-0004
+  affected_stream: file-revisions
+- event_id: EVT-0007
+  affected_stream: events
+- event_id: EVT-0009
+  affected_stream: events

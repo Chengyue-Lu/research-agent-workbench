@@ -1,0 +1,35 @@
+task_id: TEST-PERF-002
+revision: 2
+owner: Chengyue-Lu
+risk: R2
+delegation: false
+required_skills: []
+goal: 'Close PR #63 review P2-1 test consumer drift, P2-2 multiline coverage mapping,
+  and P2-3 dispatch trigger binding.'
+authorization: User requested fixing latest review; bounded comment 5559639631 by
+  cross-owner let778750-cpu.
+read_allowlist:
+- .github/scripts/plan_ci.py
+- .github/scripts/ci_checks.py
+- tests/ci_impact_policy.yaml
+- tests/test_ci_plan.py
+- tests/test_ci_checks.py
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- work/TEST-PERF-002/A-20260906-002/**
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- .github/workflows/ci*.yml
+- tests/run_unittest_suite.py
+- tests/coverage_policy.yaml
+- src/research_workbench/observability/trace.py
+write_scope:
+- .github/scripts/plan_ci.py
+- .github/scripts/ci_checks.py
+- tests/ci_impact_policy.yaml
+- tests/test_ci_plan.py
+- tests/test_ci_checks.py
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- work/TEST-PERF-002/A-20260906-002/**
+stop_conditions:
+- 'No merge, release, remote protection edits, product changes or parent Issue #48
+  closure.'

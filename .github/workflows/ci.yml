@@ -1,36 +1,82 @@
 name: CI
 
 on:
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: PR number to revalidate against its current base/head and metadata
+        type: number
+        required: true
   push:
     branches: [main, develop]
   pull_request:
-    types: [opened, synchronize, reopened, edited, labeled, unlabeled, ready_for_review]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: ci-content-${{ github.event.pull_request.number || inputs.pr || github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'push' }}
 
 permissions:
   contents: read
+  pull-requests: read
+
+env:
+  GH_TOKEN: ${{ github.token }}
 
 jobs:
-  governance:
+  plan:
     runs-on: ubuntu-latest
+    outputs:
+      class: ${{ steps.plan.outputs.class }}
+      package: ${{ steps.plan.outputs.package }}
+      repository: ${{ steps.plan.outputs.repository }}
     steps:
-      - name: Start wall-time clock
-        run: echo "RWB_JOB_STARTED_AT=$(date +%s)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/pull/{0}/merge', inputs.pr) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-      - run: python .github/scripts/check_pr_governance.py
-      - name: Report job wall time
-        if: always()
+          python-version: '3.11'
+      - run: python -m pip install 'PyYAML>=6,<7'
+      - id: plan
+        run: python .github/scripts/plan_ci.py --output ci-plan.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ci-plan
+          path: ci-plan.json
+      - name: Explain selected obligations
+        run: cat ci-plan.json >> "$GITHUB_STEP_SUMMARY"
+
+  documentation:
+    needs: plan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/pull/{0}/merge', inputs.pr) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -e '.[test]'
+      - uses: actions/download-artifact@v4
+        with:
+          name: ci-plan
+      - name: Documentation and task surface evidence
+        env:
+          CI_CLASS: ${{ needs.plan.outputs.class }}
         run: |
-          ended_at="$(date +%s)"
-          wall_seconds="$((ended_at - RWB_JOB_STARTED_AT))"
-          echo "governance job_wall_seconds=${wall_seconds}"
-          printf '### Job wall time\n\n- job: governance\n- wall_seconds: %s\n' "$wall_seconds" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$CI_CLASS" = fast ]; then
+            python tests/run_unittest_suite.py --suite focused --plan ci-plan.json --json-output docs-results.json
+          else
+            python -m unittest tests.test_documentation
+          fi
+          python -c 'import json, subprocess; p=json.load(open("ci-plan.json")); subprocess.run(["git", "diff", "--check", p["binding"]["merge_base"], p["binding"]["head"]], check=True)'
 
   compatibility_311:
+    needs: plan
+    if: needs.plan.outputs.class != 'fast'
     name: compatibility (3.11)
     runs-on: ubuntu-latest
     steps:
@@ -39,14 +85,26 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/pull/{0}/merge', inputs.pr) || github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
       - run: python -m pip install -e ".[test]"
-      - name: Run plain full unittest suite
-        run: >-
-          python tests/run_unittest_suite.py --suite full
-          --json-output full-test-results-3.11.json --slowest 20
+      - uses: actions/download-artifact@v4
+        with:
+          name: ci-plan
+      - name: Run selected compatibility suite
+        env:
+          CI_CLASS: ${{ needs.plan.outputs.class }}
+        run: |
+          suite=full
+          if [ "$CI_CLASS" = focused ]; then suite=focused; fi
+          python tests/run_unittest_suite.py --suite "$suite" --plan ci-plan.json --json-output full-test-results-3.11.json --slowest 20
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compatibility-3.11-evidence
+          path: full-test-results-3.11.json
       - name: Report job wall time
         if: always()
         run: |
@@ -56,6 +114,8 @@ jobs:
           printf '### Job wall time\n\n- job: compatibility (3.11)\n- wall_seconds: %s\n' "$wall_seconds" >> "$GITHUB_STEP_SUMMARY"
 
   compatibility_313:
+    needs: plan
+    if: needs.plan.outputs.class != 'fast'
     name: compatibility (3.13)
     runs-on: ubuntu-latest
     steps:
@@ -64,14 +124,26 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/pull/{0}/merge', inputs.pr) || github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
       - run: python -m pip install -e ".[test]"
-      - name: Run plain full unittest suite
-        run: >-
-          python tests/run_unittest_suite.py --suite full
-          --json-output full-test-results-3.13.json --slowest 20
+      - uses: actions/download-artifact@v4
+        with:
+          name: ci-plan
+      - name: Run selected compatibility suite
+        env:
+          CI_CLASS: ${{ needs.plan.outputs.class }}
+        run: |
+          suite=full
+          if [ "$CI_CLASS" = focused ]; then suite=focused; fi
+          python tests/run_unittest_suite.py --suite "$suite" --plan ci-plan.json --json-output full-test-results-3.13.json --slowest 20
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compatibility-3.13-evidence
+          path: full-test-results-3.13.json
       - name: Report job wall time
         if: always()
         run: |
@@ -81,6 +153,8 @@ jobs:
           printf '### Job wall time\n\n- job: compatibility (3.13)\n- wall_seconds: %s\n' "$wall_seconds" >> "$GITHUB_STEP_SUMMARY"
 
   coverage_quality:
+    needs: plan
+    if: needs.plan.outputs.class != 'fast'
     name: coverage-quality (3.11)
     runs-on: ubuntu-latest
     steps:
@@ -89,16 +163,21 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/pull/{0}/merge', inputs.pr) || github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
       - run: python -m pip install -e ".[test]"
-      - name: Run dedicated coverage-quality suite with branch measurement
-        run: >-
-          python -m coverage run --branch
-          tests/run_unittest_suite.py --suite coverage-quality
-          --policy tests/coverage_policy.yaml
-          --json-output coverage-test-results.json --slowest 20
+      - uses: actions/download-artifact@v4
+        with:
+          name: ci-plan
+      - name: Run repository or impact coverage
+        env:
+          CI_CLASS: ${{ needs.plan.outputs.class }}
+        run: |
+          suite=coverage-quality
+          if [ "$CI_CLASS" = focused ]; then suite=focused; fi
+          python -m coverage run --branch tests/run_unittest_suite.py --suite "$suite" --plan ci-plan.json --policy tests/coverage_policy.yaml --json-output coverage-test-results.json --slowest 20
       - name: Export coverage evidence
         run: python -m coverage json -o coverage.json
       - name: Preserve coverage and duration evidence
@@ -109,12 +188,15 @@ jobs:
             coverage.json
             coverage-test-results.json
           retention-days: 14
-      - name: Enforce Coverage Policy v2
-        run: >-
-          python .github/scripts/check_coverage_policy.py
-          --policy tests/coverage_policy.yaml
-          --coverage coverage.json
-          --test-results coverage-test-results.json
+      - name: Enforce coverage obligations
+        env:
+          CI_CLASS: ${{ needs.plan.outputs.class }}
+        run: |
+          if [ "$CI_CLASS" = focused ]; then
+            python .github/scripts/ci_checks.py impact --plan ci-plan.json --coverage coverage.json --results coverage-test-results.json
+          else
+            python .github/scripts/check_coverage_policy.py --policy tests/coverage_policy.yaml --coverage coverage.json --test-results coverage-test-results.json
+          fi
       - name: Report job wall time
         if: always()
         run: |
@@ -124,6 +206,8 @@ jobs:
           printf '### Job wall time\n\n- job: coverage-quality (3.11)\n- wall_seconds: %s\n' "$wall_seconds" >> "$GITHUB_STEP_SUMMARY"
 
   package_smoke:
+    needs: plan
+    if: needs.plan.outputs.package == 'true'
     name: package-smoke (3.11)
     runs-on: ubuntu-latest
     steps:
@@ -132,6 +216,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/pull/{0}/merge', inputs.pr) || github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -149,26 +234,60 @@ jobs:
           echo "package-smoke (3.11) job_wall_seconds=${wall_seconds}"
           printf '### Job wall time\n\n- job: package-smoke (3.11)\n- wall_seconds: %s\n' "$wall_seconds" >> "$GITHUB_STEP_SUMMARY"
 
+  repository_smoke:
+    needs: plan
+    if: needs.plan.outputs.repository == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/pull/{0}/merge', inputs.pr) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -e '.[test]'
+      - run: python -m research_workbench validate examples registry --root .
+
   required_test_311:
     name: test (3.11)
-    needs: [compatibility_311, coverage_quality, package_smoke]
+    needs: [plan, documentation, compatibility_311, coverage_quality, package_smoke, repository_smoke]
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - name: Preserve existing required Gate identity
-        run: |
-          test "${{ needs.compatibility_311.result }}" = "success"
-          test "${{ needs.coverage_quality.result }}" = "success"
-          test "${{ needs.package_smoke.result }}" = "success"
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/pull/{0}/merge', inputs.pr) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install 'PyYAML>=6,<7'
+      - uses: actions/download-artifact@v4
+        with:
+          name: ci-plan
+      - name: Verify every required obligation
+        env:
+          CI_NEEDS: ${{ toJSON(needs) }}
+        run: python .github/scripts/ci_checks.py aggregate --plan ci-plan.json --python 3.11
 
   required_test_313:
     name: test (3.13)
-    needs: [compatibility_313, coverage_quality, package_smoke]
+    needs: [plan, documentation, compatibility_313, coverage_quality, package_smoke, repository_smoke]
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - name: Preserve existing required Gate identity
-        run: |
-          test "${{ needs.compatibility_313.result }}" = "success"
-          test "${{ needs.coverage_quality.result }}" = "success"
-          test "${{ needs.package_smoke.result }}" = "success"
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/pull/{0}/merge', inputs.pr) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install 'PyYAML>=6,<7'
+      - uses: actions/download-artifact@v4
+        with:
+          name: ci-plan
+      - name: Verify every required obligation
+        env:
+          CI_NEEDS: ${{ toJSON(needs) }}
+        run: python .github/scripts/ci_checks.py aggregate --plan ci-plan.json --python 3.13

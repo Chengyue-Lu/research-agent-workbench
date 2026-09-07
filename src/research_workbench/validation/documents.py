@@ -100,6 +100,7 @@ SCHEMA_KINDS = {
     "run_reconstruction_manifest",
     "run_reconstruction_environment",
     "run_reconstruction_report",
+    "claim_evidence_map",
     "capability_requirement",
     "capability_requirement_index",
     "capability_conformance_evidence",

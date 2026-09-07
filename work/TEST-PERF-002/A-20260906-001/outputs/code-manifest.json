@@ -1,0 +1,14 @@
+{
+  "commit": "2e083f9c1790458689c94873eb192cd3250648b0",
+  "sha256": {
+    ".github/scripts/ci_checks.py": "f8b586e6f5f9e5be49c263ff2040f78eeedfe0ce9733942f386762ff0fd2571c",
+    ".github/scripts/plan_ci.py": "d5b5dc671091a0221260ae8e85646c4403fe33a20271f1a2c3f3ad3684bf8196",
+    ".github/workflows/ci-governance.yml": "71dabf5f545579152c474a4ff98abf121a23a30db5daebaf01732deddd159b25",
+    ".github/workflows/ci.yml": "3f5b226814131956736ed5fc646e7440d0b03a93770dbcb30590bca027575496",
+    "tests/ci_impact_policy.yaml": "ebca138d929015e325e4a1bb45302092ec019cfa98d831ba8785debac6415fdf",
+    "tests/coverage_policy.yaml": "55dcefbf9446a4bcb6fac82723da3cc75a2e161039a1e1fba3df1a317d0e970b",
+    "tests/run_unittest_suite.py": "d853db253f3c0fc6a7fcd81406d31f3556ee45e94c1a6c97d70073008ae66142",
+    "tests/test_ci_checks.py": "b7e603155dcf919d1e9624ef86dc9458e9d2ba9f8d783168db518dcfd4c603ce",
+    "tests/test_ci_plan.py": "97294ae3499c5eb17f947670b0f167932baba342106ed429258e592e436ec2f8"
+  }
+}

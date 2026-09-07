@@ -139,8 +139,15 @@ SHA-256 必须与 live bytes 闭合；FileReference 自带 SHA 时还必须与 a
 
 这套 Gate 只证明 identity/hash/provenance closure，不判断来源真实性、许可证法律效力、内容安全或科学
 质量。网页、API 返回和数据库查询也需要快照或可复现 locator；只保存 URL 不足以保证来源未变化。
-M4-002 promotion 已作为独立层实现；M4-003 Claim trace 保持独立任务，M4-004 Run reconstruction
-的候选实现见下一节；M4-001 不替代任何后继层。
+source admission、promotion、Claim localization 与 Run reproduction 各自承担独立验收；任何一层不替代
+后继层。Claim localization 的实现覆盖由 STATUS 维护。
+
+### Claim evidence localization
+
+`rwb claim trace --evidence-map` 通过显式 ObjectRef/FileRef 连接支持、反证与实际工件；raw 来源消费
+admission sidecar，晋升或保留的产物消费 Promotion Receipt 与原 record。限制原文定位到 Claim 文件的
+JSON pointer。读取复用同次调用捕获的字节，不启动 checker、promotion 或科学计算，也不决定 Claim
+是否成立。详见 [Claim localization 契约](../implementation/CLAIM_TRACE_CONTRACT.md)。
 
 ## 5. Run reconstruction（M4-004 独立候选）
 

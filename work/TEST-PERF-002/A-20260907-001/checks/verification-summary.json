@@ -1,0 +1,41 @@
+{
+  "fast": {
+    "run": 34049735916,
+    "head": "81ef2cbfa8de04aa4e98519c3dbbfb3a844ab869",
+    "conclusion": "success",
+    "job_span_seconds": 37.0,
+    "runner_seconds": 38.0
+  },
+  "focused": {
+    "run": 34049937742,
+    "head": "9b4f72be404e9e871e9800232d13d29f6c6714ea",
+    "conclusion": "success",
+    "job_span_seconds": 88.0,
+    "runner_seconds": 226.0
+  },
+  "focused-final": {
+    "run": 34050042447,
+    "head": "6f3dfd0548230265ed62714fd40f161668579133",
+    "conclusion": "success",
+    "job_span_seconds": 101.0,
+    "runner_seconds": 255.0
+  },
+  "push-regressions": {
+    "passed": 37,
+    "seconds": 80.881
+  },
+  "docs-policy": {
+    "passed": 30,
+    "seconds": 0.148
+  },
+  "integration": {
+    "run": 34043176406,
+    "class": "full",
+    "conclusion": "failure",
+    "test": "test_cli_emits_canonical_plan_and_workflow_outputs",
+    "error": "unsupported PR event",
+    "reproduced_under": "GITHUB_EVENT_NAME=push",
+    "repair": "explicit event-name for synthetic PR input; ambient PR/push/dispatch matrix",
+    "repair_hosted": "pending repair PR exact-head FULL"
+  }
+}

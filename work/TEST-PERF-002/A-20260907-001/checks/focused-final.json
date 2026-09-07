@@ -1,0 +1,188 @@
+{
+  "run": 34050042447,
+  "url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34050042447",
+  "head": "6f3dfd0548230265ed62714fd40f161668579133",
+  "status": "completed",
+  "conclusion": "success",
+  "plan": {
+    "binding": {
+      "base": "690a9f8c89c32400bbc57b0781ef9b43205894db",
+      "head": "6f3dfd0548230265ed62714fd40f161668579133",
+      "merge_base": "690a9f8c89c32400bbc57b0781ef9b43205894db",
+      "repository": "Chengyue-Lu/research-agent-workbench",
+      "target": "aeaf2686c1f6f64196db1bb37238a20304cb40ec"
+    },
+    "change_class": "focused",
+    "changed_lines": {
+      "src/research_workbench/adapters/models/openai.py": [
+        44,
+        45
+      ]
+    },
+    "changes": [
+      {
+        "path": "src/research_workbench/adapters/models/openai.py",
+        "status": "M"
+      }
+    ],
+    "coverage_lines": {
+      "src/research_workbench/adapters/models/openai.py": [
+        44,
+        45
+      ]
+    },
+    "coverage_mode": "impact",
+    "coverage_modules": [
+      "src/research_workbench/adapters/models/anthropic.py",
+      "src/research_workbench/adapters/models/gemini.py",
+      "src/research_workbench/adapters/models/openai.py"
+    ],
+    "impact_evidence": {
+      "negative_tests": [
+        "test_provider_adapters.OpenAIAdapterTests.test_model_mismatch_fails_before_credential_resolution",
+        "test_provider_adapters.AnthropicAdapterTests.test_temperature_above_provider_range_is_rejected_before_call",
+        "test_provider_adapters.GeminiAdapterTests.test_parallel_response_is_contract_violation_when_not_claimed"
+      ],
+      "positive_tests": [
+        "test_provider_adapters.OpenAIAdapterTests.test_text_request_disables_storage_and_maps_usage",
+        "test_provider_adapters.AnthropicAdapterTests.test_system_is_hoisted_and_required_max_tokens_default_is_visible",
+        "test_provider_adapters.GeminiAdapterTests.test_text_request_maps_system_usage_and_stop"
+      ]
+    },
+    "package_smoke": true,
+    "plan_id": "ef79379e902bc7fc13bf0af46b31014e0e3c46cbbc710d01d864dbf597ad9d5b",
+    "policy_sha256": "b7df99ea71cfe27d0b8805be59b6b4c0d6c1ad3454c11e8bcfaa6c91795f4907",
+    "python_versions": [
+      "3.11",
+      "3.13"
+    ],
+    "reasons": [
+      "src/research_workbench/adapters/models/openai.py -> provider-wire",
+      "provider-cli -> ",
+      "provider-conformance -> provider-session",
+      "provider-session -> provider-cli",
+      "provider-wire -> provider-conformance"
+    ],
+    "repository_smoke": true,
+    "risk": "R0",
+    "surfaces": [
+      "provider-wire"
+    ],
+    "test_groups": [
+      "provider-cli",
+      "provider-conformance",
+      "provider-session",
+      "provider-wire"
+    ],
+    "tests": [
+      "test_api_session_runner",
+      "test_cli",
+      "test_cli_command_branches",
+      "test_provider_adapters",
+      "test_provider_conformance",
+      "test_provider_contract_branches",
+      "test_provider_port",
+      "test_validation_helpers"
+    ],
+    "version": 1
+  },
+  "jobs": [
+    {
+      "name": "plan",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-09-06T17:54:55Z",
+      "completedAt": "2026-09-06T17:55:04Z"
+    },
+    {
+      "name": "package-smoke (3.11)",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-09-06T17:55:06Z",
+      "completedAt": "2026-09-06T17:55:29Z"
+    },
+    {
+      "name": "compatibility (3.11)",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-09-06T17:55:06Z",
+      "completedAt": "2026-09-06T17:55:56Z"
+    },
+    {
+      "name": "repository_smoke",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-09-06T17:55:06Z",
+      "completedAt": "2026-09-06T17:55:21Z"
+    },
+    {
+      "name": "documentation",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-09-06T17:55:06Z",
+      "completedAt": "2026-09-06T17:55:17Z"
+    },
+    {
+      "name": "coverage-quality (3.11)",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-09-06T17:55:06Z",
+      "completedAt": "2026-09-06T17:56:26Z"
+    },
+    {
+      "name": "compatibility (3.13)",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-09-06T17:55:06Z",
+      "completedAt": "2026-09-06T17:55:58Z"
+    },
+    {
+      "name": "test (3.13)",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-09-06T17:56:28Z",
+      "completedAt": "2026-09-06T17:56:35Z"
+    },
+    {
+      "name": "test (3.11)",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-09-06T17:56:28Z",
+      "completedAt": "2026-09-06T17:56:36Z"
+    }
+  ],
+  "job_span_seconds": 101.0,
+  "runner_seconds": 255.0,
+  "suites": {
+    "compatibility-3.11-evidence": {
+      "test_count": 81,
+      "outcomes": {
+        "errors": 0,
+        "failed": 0,
+        "passed": 81,
+        "skipped": 0
+      },
+      "wall_seconds": 33.695192
+    },
+    "compatibility-3.13-evidence": {
+      "test_count": 81,
+      "outcomes": {
+        "errors": 0,
+        "failed": 0,
+        "passed": 81,
+        "skipped": 0
+      },
+      "wall_seconds": 35.889306
+    },
+    "coverage-quality-evidence": {
+      "test_count": 81,
+      "outcomes": {
+        "errors": 0,
+        "failed": 0,
+        "passed": 81,
+        "skipped": 0
+      },
+      "wall_seconds": 66.346615
+    }
+  }
+}

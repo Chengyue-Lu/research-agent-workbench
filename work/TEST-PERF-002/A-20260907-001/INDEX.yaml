@@ -1,0 +1,78 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260907-001
+task_id: TEST-PERF-002
+task_revision: 3
+attempt_id: A-20260907-001
+archive_root: A-20260907-001
+baseline: 690a9f8c89c32400bbc57b0781ef9b43205894db
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: f2084501ba9ed9357277a2087e27d5ea635324f8419f79f83e7e41e04552b05e
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 67b14d1298b16f3d8514f24c89d56baf8b05ad2a98618a3a11a21e0d127028ba
+read_allowlist:
+- .github/**
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- src/research_workbench/adapters/models/openai.py
+- src/research_workbench/observability/trace.py
+- tests/ci_impact_policy.yaml
+- tests/coverage_policy.yaml
+- tests/run_unittest_suite.py
+- tests/test_ci_checks.py
+- tests/test_ci_plan.py
+- work/TEST-PERF-002/A-20260907-001/**
+write_scope:
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/ci_impact_policy.yaml
+- tests/test_ci_plan.py
+- work/TEST-PERF-002/A-20260907-001/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 7e075adc0bbc34b5ea0f8eff64f986cc32a6a3646155ae1d80fb74c260135116
+  event_count: 7
+tool_event_refs:
+- path: tool-events/operational-verification-summary-succeeded.json
+  sha256: d1950da60b590dd40ef30a0c14dc14d60240ff86168bdd99e51f3a433d3accbd
+handoff_refs:
+- path: handoff/H0.md
+  sha256: 699283dba7423b8f376225e163e28a1d08064d576bfff224ea7f2e6e00bf7ac0
+decision_refs: []
+output_refs:
+- path: outputs/code-manifest.json
+  sha256: 8d83484e9c31214180d81a2876a910f9b36c088559e0f860cc66b7ac93b560de
+- path: AUDIT.md
+  sha256: 54148d28344f19ca5abe1435983070a1b363c8a8619bc97b9e174ebda178e493
+- path: WORKLOG.md
+  sha256: e45023537cd13e017afd6f0cfed9e46cc94d6bd2f6d1c2f2fc679a8a680ca527
+check_refs:
+- path: checks/fast.json
+  sha256: 95c4c3c8dec9ce8e12ed49f1f2c049154d8f3d6c2a62a1a19def7d7a73229f96
+- path: checks/focused.json
+  sha256: 22e353cf5adc91155570cd9f863e1ba505c6af399112810cc70a77dc419b5d7b
+- path: checks/focused-final.json
+  sha256: 19d79c4c454f41efe5a218230d78917ec06112f76588c21e9f51229b7195c523
+- path: checks/operational-receipt.json
+  sha256: 6633d8dd9fc81e3509afdc3418d017181922d8c3f3475de1b677993774a048c7
+- path: checks/verification-summary.json
+  sha256: 2e7d94300b22e5b276cc21978e9fb555398fe50bc2edd842bdd306bf0f382f21
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: tool-results
+- event_id: EVT-0006
+  affected_stream: events
