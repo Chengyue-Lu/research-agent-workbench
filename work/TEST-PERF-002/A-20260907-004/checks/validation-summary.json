@@ -1,0 +1,87 @@
+{
+  "implementation_head": "774cdb6d7511a22fcffe5972f58fc745fa46d2f7",
+  "focused": {
+    "test_count": 83,
+    "successful": true,
+    "outcomes": {
+      "errors": 0,
+      "failed": 0,
+      "passed": 83,
+      "skipped": 0
+    },
+    "wall_seconds": 280.266
+  },
+  "supplemental_runner_regression": {
+    "test_id": "test_ci_plan.PlannerTests.test_runner_main_executes_each_coverage_set_and_binds_real_results",
+    "passed": 1,
+    "wall_seconds": 14.633,
+    "basis": "observed unittest completion; real runner main exercised four obligation sets"
+  },
+  "critical_coverage": {
+    ".github/scripts/ci_checks.py": {
+      "line_percent": 99.2308,
+      "branch_percent": 97.5
+    },
+    ".github/scripts/ci_dependencies.py": {
+      "line_percent": 100.0,
+      "branch_percent": 100.0
+    },
+    ".github/scripts/plan_ci.py": {
+      "line_percent": 99.7701,
+      "branch_percent": 98.6301
+    }
+  },
+  "changed_code_preflight": {
+    ".github/scripts/ci_checks.py": {
+      "missing_changed_statements": [],
+      "missing_changed_outgoing_branches": []
+    },
+    ".github/scripts/ci_dependencies.py": {
+      "missing_changed_statements": [],
+      "missing_changed_outgoing_branches": []
+    },
+    ".github/scripts/plan_ci.py": {
+      "missing_changed_statements": [],
+      "missing_changed_outgoing_branches": []
+    },
+    "tests/run_unittest_suite.py": {
+      "missing_changed_statements": [],
+      "missing_changed_outgoing_branches": []
+    }
+  },
+  "repository_validation": {
+    "validated": 183,
+    "errors": 0,
+    "warnings": 0
+  },
+  "documentation_and_policy_tests": 30,
+  "actionlint": "PASS",
+  "package_smoke": "PASS; wheel built and installed into a fresh venv",
+  "repository_coverage_proved": false,
+  "measurement_note": "Local focused run overlapped the full oracle; its elapsed time is not a CI speedup benchmark. Final hosted union and both checkers are independent evidence.",
+  "full_oracle": {
+    "test_count": 938,
+    "successful": true,
+    "outcomes": {
+      "errors": 0,
+      "failed": 0,
+      "passed": 935,
+      "skipped": 3
+    },
+    "wall_seconds": 1361.040845,
+    "head": "774cdb6d7511a22fcffe5972f58fc745fa46d2f7",
+    "skip_reason": "Three Windows symlink privilege limitations; Linux hosted checks must execute these tests.",
+    "scope_note": "Code head 774cdb6. Later 01aa4e4 adds one passing runner regression and refreshes metadata; executable implementation bytes are identical."
+  },
+  "executable_identity_after_oracle": "PASS",
+  "final_head_hosted_coverage_union_and_dual_python": "Pending after same-PR push; local preflight is not repository coverage proof.",
+  "inventory_retention": {
+    "oracle_test_count": 938,
+    "added_test_ids": [
+      "test_ci_plan.PlannerTests.test_runner_main_executes_each_coverage_set_and_binds_real_results"
+    ],
+    "current_test_count": 939,
+    "removed_test_ids": []
+  },
+  "quality_policy_retention": "PASS: thresholds/exclusions unchanged; base critical inventory and acceptance retained"
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "scenario": "test-only",
+    "scope": {
+      "risk": "R2",
+      "behavioral_scope": "focused",
+      "coverage_obligations": [],
+      "package_smoke": false,
+      "repository_smoke": false,
+      "tests": [
+        "test_ci_checks",
+        "test_ci_dependencies",
+        "test_ci_plan",
+        "test_coverage_policy"
+      ]
+    },
+    "selected_test_count": 105,
+    "baseline_source_ref": "01aa4e49b80c642795a0e9e00afc3809475bbe6a",
+    "binding": {
+      "base": "f6be37a05132e6fd5aee6380766aca89980b463c",
+      "head": "0501a228df8d7d0a699b227eebed27fcb2ed8c9b",
+      "merge_base": "f6be37a05132e6fd5aee6380766aca89980b463c",
+      "repository": "Chengyue-Lu/research-agent-workbench",
+      "target": "0501a228df8d7d0a699b227eebed27fcb2ed8c9b"
+    },
+    "fixture": "Append SCOPED_TEST_FIXTURE = 1 to tests/test_ci_plan.py",
+    "basis": "Local synthetic Git commits against the complete proposed baseline; plan/collection evidence, not hosted timing."
+  },
+  {
+    "scenario": "provider",
+    "scope": {
+      "risk": "R2",
+      "behavioral_scope": "focused",
+      "coverage_obligations": [
+        "impact"
+      ],
+      "package_smoke": true,
+      "repository_smoke": true,
+      "tests": [
+        "test_api_session_runner",
+        "test_cli",
+        "test_cli_command_branches",
+        "test_provider_adapters",
+        "test_provider_conformance",
+        "test_provider_contract_branches",
+        "test_provider_port",
+        "test_validation_helpers"
+      ]
+    },
+    "selected_test_count": 81,
+    "baseline_source_ref": "01aa4e49b80c642795a0e9e00afc3809475bbe6a",
+    "binding": {
+      "base": "f6be37a05132e6fd5aee6380766aca89980b463c",
+      "head": "e5b48162396e273887610defb5bb298412f470e0",
+      "merge_base": "f6be37a05132e6fd5aee6380766aca89980b463c",
+      "repository": "Chengyue-Lu/research-agent-workbench",
+      "target": "e5b48162396e273887610defb5bb298412f470e0"
+    },
+    "fixture": "Append SCOPED_PROVIDER_FIXTURE = 1 to src/research_workbench/adapters/models/openai.py",
+    "basis": "Local synthetic Git commits against the complete proposed baseline; plan/collection evidence, not hosted timing."
+  }
+]

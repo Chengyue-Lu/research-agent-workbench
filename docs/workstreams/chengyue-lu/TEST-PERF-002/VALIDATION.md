@@ -156,3 +156,51 @@ the union of required tests once and enforces both checkers for combined obligat
 Old-head hosted run `34053678091` completed successfully with two plan-exempt smoke skips. It predates this
 repair. Final-head dual-Python full behavior, the actual coverage test union and both checkers remain required
 in the new PR CI; human cross-owner acceptance and merge remain pending.
+
+
+## Revision 6: affected behavioral and coverage scope
+
+The accepted re-audit changes the selection contract to plan v4. R2 controls governance/review;
+complete affected behavioral tests, coverage and smokes are independent. Base/head imports and actual
+file/path references supplement reviewed groups. A base-side fingerprint commit anchors each reviewed
+consumer boundary; only changed/new consumers add their downstream closure. Metadata keys and unchanged
+processors of test input cannot turn test-only changes into product executable changes.
+
+On implementation `774cdb6`, the Windows/Python 3.11 full oracle ran **938 tests: 935 PASS, 3 SKIP**
+with no failures/errors. The three skips are existing symlink privilege limitations. Full wall time was
+1361.041 seconds; it overlapped focused validation and is not a hosted performance benchmark.
+`01aa4e4` adds one independently passing real runner regression plus its fingerprint refresh; all four
+impacted executable files are byte-identical to the oracle implementation. The retained full inventory
+plus that addition contains 939 tests. Linux hosted checks must execute the symlink cases.
+
+Focused evidence is **83 PASS + 1 additional runner regression PASS**. The latter executes none,
+impact-only, repository-only and combined coverage entries, verifies real result binding and canonical
+identity deduplication. The coverage union/checker proof remains a separate hosted obligation.
+
+| Critical module | Line | Branch |
+|---|---:|---:|
+| plan_ci.py | 99.77% | 98.63% |
+| ci_dependencies.py | 100.00% | 100.00% |
+| ci_checks.py | 99.23% | 97.50% |
+
+All changed executable statement/outgoing-branch preflights pass at 100/100, including the runner.
+Documentation/coverage-policy: 30 PASS; actionlint: PASS; repository validation: 183/0/0;
+wheel build and clean installed-package smoke: PASS. Governance remains R2 with cross-owner review.
+Global 90, critical 95/90, exclusions, negative acceptance and full behavioral inventory are retained.
+
+Real full-repository, proposed-baseline Git probes give:
+
+| Probe | Behavior | Selected modules/tests | Coverage | Package/repository smoke |
+|---|---|---:|---|---|
+| R2 ordinary CI test edit | focused | 4 / 105 | none | false / false |
+| R2 Provider leaf edit | focused | 8 / 81 | impact | true / true |
+
+These are plan/collection results against exact local Git trees. They are not observed hosted wall-time
+savings. The Provider probe preserves the original reviewed 81-test closure; the test-only probe excludes
+unrelated product behavior. The current PR also changes shared planner/runner/workflow authority, so its
+own closure remains broad and requires repository plus impact evidence. Hosted critical path and total
+runner time must be reported separately from these targeted probes.
+
+Revision 6 archive: `work/TEST-PERF-002/A-20260907-004/`. It pins executable hashes, plan/probe summaries,
+observable checks and explicit capture gaps. Final-head hosted checks and cross-owner acceptance remain
+required after the same-PR push; this archive does not authorize a merge.
