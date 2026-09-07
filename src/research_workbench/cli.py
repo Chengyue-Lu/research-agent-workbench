@@ -120,6 +120,14 @@ def _print_risks(risks) -> int:
 
 
 def _document_reference_risks(document: Mapping[str, Any], root: Path):
+    if document.get("document_kind") == "claim_evidence_map":
+        from research_workbench.artifacts.claim_trace import localize_claim
+
+        try:
+            problems = localize_claim(root, document)["problems"]
+        except ValueError as exc:
+            problems = [str(exc)]
+        return [ContractRisk("CLAIM-TRACE-INCOMPLETE", RiskLevel.BLOCK, problem) for problem in problems]
     kind = infer_document_kind(document)
     references: tuple[FileReference, ...] = ()
     path_only: list[str] = []
@@ -1013,6 +1021,16 @@ def _research_state_gate(args: argparse.Namespace) -> int:
 
 
 def _claim_trace(args: argparse.Namespace) -> int:
+    if args.evidence_map:
+        from research_workbench.artifacts.claim_trace import localize_claim
+
+        trace = localize_claim(args.root, load_document(args.evidence_map), claim_path=args.claim)
+        print(json.dumps(trace, ensure_ascii=False, indent=2))
+        result = 0 if trace["complete"] else 1
+        if args.protocol:
+            protocol = ProjectProtocol.from_mapping(_load_valid(args.protocol, "project_protocol"))
+            result = max(result, _print_risks(check_claim_ceiling(protocol, str(trace["strength"]))))
+        return result
     document = load_document(args.claim)
     if not isinstance(document, Mapping):
         print("ERROR   DOCUMENT-INVALID              claim document must be an object")
@@ -1025,6 +1043,7 @@ def _claim_trace(args: argparse.Namespace) -> int:
             print("ERROR   OBJECT-NOT-CLAIM             document object_type is not claim")
         return 1
     trace = {
+        "localization_status": "not-requested",
         "claim_id": document["object_id"],
         "revision": document["revision"],
         "strength": document["strength"],
@@ -1595,6 +1614,8 @@ def build_parser() -> argparse.ArgumentParser:
     claim_trace = claim_subparsers.add_parser("trace")
     claim_trace.add_argument("claim")
     claim_trace.add_argument("--protocol")
+    claim_trace.add_argument("--root", default=".")
+    claim_trace.add_argument("--evidence-map", help="exact file and provenance bindings for evidence localization")
     claim_trace.set_defaults(handler=_claim_trace)
 
     source = subparsers.add_parser("source", help="admit raw sources with provenance sidecars")

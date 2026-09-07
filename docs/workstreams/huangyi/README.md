@@ -15,16 +15,18 @@ owner：黄毅（GitHub 主名 `let778750-cpu`；昵称/界面名 `huangyi855`�
 
 进行中的 implementation workstream：
 
-- [`M4-ARTIFACT-PROMOTION/`](M4-ARTIFACT-PROMOTION/README.md)：
-  M4-002 exact validation closure 与 fail-closed work-to-formal-zone promotion；等待 owner review/CI。
+- [`M4-CLAIM-TRACE/`](M4-CLAIM-TRACE/README.md)：
+  M4-003 支持/反证/限制的 exact evidence-map 定位；独立候选等待 owner review/CI。
 
 已集成、保留审计记录的 implementation workstream：
 
+- [`M4-ARTIFACT-PROMOTION/`](M4-ARTIFACT-PROMOTION/README.md)：
+  PR #54 已合入；M4-002 work-to-formal-zone promotion 与 durable receipt。
 - [`M10-RESEARCH-STATE/`](M10-RESEARCH-STATE/README.md)：
   PR #44 的 Phase C State、Attempt/Failure、Method Trace 与 bounded machine Gate；Human/R2 semantic
   closeout 仍独立 pending。
 - [`M4-ARTIFACTS-PROVENANCE/`](M4-ARTIFACTS-PROVENANCE/README.md)：
-  PR #39 的 M4-001 source admission；M4-002 已成为下一合法 READY 入口。
+  PR #39 的 M4-001 source admission；后继 promotion 已由 PR #54 合入。
 - [`M5-EVALUATION-BASELINE/`](M5-EVALUATION-BASELINE/README.md)：
   PR #43 的 M5-003 canonical four-arm Evaluation Manifest 与 non-executing baseline plan。
 

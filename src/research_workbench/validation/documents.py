@@ -97,6 +97,7 @@ DOCUMENT_REQUIRED: dict[str, tuple[str, ...]] = {
 }
 
 SCHEMA_KINDS = {
+    "claim_evidence_map",
     "capability_requirement",
     "capability_requirement_index",
     "capability_conformance_evidence",
