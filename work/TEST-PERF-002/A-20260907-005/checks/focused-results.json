@@ -1,0 +1,496 @@
+{
+  "duration_seconds": {
+    "p50": 2.416289,
+    "p95": 11.472686
+  },
+  "outcomes": {
+    "errors": 0,
+    "failed": 0,
+    "passed": 85,
+    "skipped": 0
+  },
+  "schema_version": "1.0.0",
+  "slowest": [
+    {
+      "duration_seconds": 20.505128,
+      "id": "test_ci_plan.PlannerTests.test_accepted_test_consumer_drift_invalidates_old_closure",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 14.255594,
+      "id": "test_ci_plan.PlannerTests.test_self_modified_policy_or_runner_cannot_authorize_less",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 13.857265,
+      "id": "test_ci_plan.PlannerTests.test_smokes_and_coverage_config_are_independent_of_full_behavior",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 12.442001,
+      "id": "test_ci_plan.PlannerTests.test_runner_main_executes_each_coverage_set_and_binds_real_results",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 11.472686,
+      "id": "test_ci_plan.PlannerTests.test_agent_can_add_groups_but_cannot_remove_minimum",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 10.336438,
+      "id": "test_ci_plan.PlannerTests.test_coverage_authority_semantics_require_repository_proof",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 9.759395,
+      "id": "test_ci_plan.PlannerTests.test_runner_consumes_valid_plan_and_rejects_full_as_focused",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 9.448142,
+      "id": "test_ci_plan.PlannerTests.test_r2_bounded_critical_validator_requires_impact_with_base_acceptance",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 8.438648,
+      "id": "test_ci_plan.PlannerTests.test_validator_inventory_mapping_and_new_import_fail_safe",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 8.042133,
+      "id": "test_ci_plan.PlannerTests.test_repository_requirement_preserves_bounded_impact_and_rejects_downgrade",
+      "outcome": "passed"
+    }
+  ],
+  "successful": true,
+  "suite": "focused-development",
+  "test_count": 85,
+  "tests": [
+    {
+      "duration_seconds": 20.505128,
+      "id": "test_ci_plan.PlannerTests.test_accepted_test_consumer_drift_invalidates_old_closure",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 14.255594,
+      "id": "test_ci_plan.PlannerTests.test_self_modified_policy_or_runner_cannot_authorize_less",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 13.857265,
+      "id": "test_ci_plan.PlannerTests.test_smokes_and_coverage_config_are_independent_of_full_behavior",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 12.442001,
+      "id": "test_ci_plan.PlannerTests.test_runner_main_executes_each_coverage_set_and_binds_real_results",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 11.472686,
+      "id": "test_ci_plan.PlannerTests.test_agent_can_add_groups_but_cannot_remove_minimum",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 10.336438,
+      "id": "test_ci_plan.PlannerTests.test_coverage_authority_semantics_require_repository_proof",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 9.759395,
+      "id": "test_ci_plan.PlannerTests.test_runner_consumes_valid_plan_and_rejects_full_as_focused",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 9.448142,
+      "id": "test_ci_plan.PlannerTests.test_r2_bounded_critical_validator_requires_impact_with_base_acceptance",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 8.438648,
+      "id": "test_ci_plan.PlannerTests.test_validator_inventory_mapping_and_new_import_fail_safe",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 8.042133,
+      "id": "test_ci_plan.PlannerTests.test_repository_requirement_preserves_bounded_impact_and_rejects_downgrade",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 7.648841,
+      "id": "test_ci_plan.PlannerTests.test_consumer_inventory_or_new_import_requires_full",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 7.580588,
+      "id": "test_ci_plan.PlannerTests.test_r2_shared_and_unknown_paths_cannot_be_docs_fast",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 7.331388,
+      "id": "test_ci_plan.PlannerTests.test_r2_test_fixture_and_fingerprint_refresh_have_no_coverage_or_smokes",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.822017,
+      "id": "test_ci_plan.PlannerTests.test_executable_mapping_is_bound_and_unmapped_changes_require_full",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.776244,
+      "id": "test_ci_plan.PlannerTests.test_coverage_union_executes_repository_and_impact_tests_once",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.721447,
+      "id": "test_ci_plan.PlannerTests.test_reviewed_opaque_contract_is_invalidated_per_consumer",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.801476,
+      "id": "test_ci_plan.PlannerTests.test_provider_and_independent_test_do_not_force_repository_or_full",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.700988,
+      "id": "test_ci_plan.PlannerTests.test_wrong_digest_target_and_lowered_class_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.446412,
+      "id": "test_ci_plan.PlannerTests.test_changed_lines_and_deleted_only_hunks",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 4.66478,
+      "id": "test_ci_plan.PlannerTests.test_test_only_planner_input_does_not_become_a_product_executable_change",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 4.456489,
+      "id": "test_ci_plan.PlannerTests.test_actual_pragma_and_runner_semantics_keep_repository_obligation",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 4.443054,
+      "id": "test_ci_plan.PlannerTests.test_event_binds_actual_head_or_exact_merge_candidate",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 4.099751,
+      "id": "test_ci_plan.PlannerTests.test_manual_full_rerun_uses_current_pr_facts",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.914571,
+      "id": "test_ci_plan.PlannerTests.test_unknown_executable_and_integration_are_complete_fail_safe",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.725156,
+      "id": "test_ci_plan.PlannerTests.test_new_markdown_is_fast_but_document_data_is_full",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.614095,
+      "id": "test_ci_plan.PlannerTests.test_provider_change_selects_downstream_groups_and_both_pythons",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.592893,
+      "id": "test_ci_plan.PlannerTests.test_integration_release_force_and_empty_diff_are_full",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.570925,
+      "id": "test_ci_plan.PlannerTests.test_cli_emits_canonical_plan_and_workflow_outputs",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.533906,
+      "id": "test_ci_plan.PlannerTests.test_candidate_policy_and_fingerprint_cannot_approve_new_consumer_closure",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.392841,
+      "id": "test_ci_plan.PlannerTests.test_git_type_change_adds_repository_without_erasing_other_impact",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.248979,
+      "id": "test_ci_plan.PlannerTests.test_new_source_domain_selects_reverse_consumer_and_test_only_is_scoped",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.022185,
+      "id": "test_ci_plan.PlannerTests.test_monotonic_local_critical_addition_has_local_proof_and_cannot_remove_old_obligations",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.981467,
+      "id": "test_ci_plan.PlannerTests.test_mixed_docs_and_provider_keeps_full_impact_closure",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.966629,
+      "id": "test_ci_plan.PlannerTests.test_docs_fast_plan_is_explainable_and_replayable",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.871361,
+      "id": "test_ci_plan.PlannerTests.test_pr65_exact_git_diff_is_full_behavior_without_coverage_or_smokes",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.845918,
+      "id": "test_ci_plan.PlannerTests.test_public_cli_and_validation_consumers_independently_select_smokes",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.809548,
+      "id": "test_ci_plan.PlannerTests.test_stale_base_requires_full_merge_validation",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.643065,
+      "id": "test_ci_plan.PlannerTests.test_source_deletion_preserves_old_contract_consumers_without_candidate_lines",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.520404,
+      "id": "test_ci_plan.PlannerTests.test_missing_or_malformed_base_policy_falls_back_full",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.497289,
+      "id": "test_ci_plan.PlannerTests.test_dirty_or_untracked_source_cannot_consume_clean_head_plan",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.460868,
+      "id": "test_ci_plan.PlannerTests.test_critical_syntax_error_blocks_instead_of_erasing_impact",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.439271,
+      "id": "test_ci_plan.PlannerTests.test_deleted_renamed_and_new_paths_require_full",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.416289,
+      "id": "test_ci_plan.PlannerTests.test_comment_only_critical_change_has_no_executable_coverage_obligation",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.355433,
+      "id": "test_ci_plan.PlannerTests.test_full_fallback_on_missing_tests_and_git_fact_errors",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.340881,
+      "id": "test_ci_checks.ImpactCoverageTests.test_workflow_measurement_includes_the_executing_runner",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.235293,
+      "id": "test_ci_plan.PlannerTests.test_source_mode_change_requires_full",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.918741,
+      "id": "test_ci_plan.PlannerTests.test_decorators_are_executable_impact_and_comments_keep_repository_guard",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.637504,
+      "id": "test_ci_plan.PlannerTests.test_nul_diff_rejects_ambiguous_paths_and_preserves_spaces",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.527592,
+      "id": "test_ci_dependencies.DependencyTests.test_snapshot_reads_exact_git_blobs_and_ignores_worktree_drift",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.48975,
+      "id": "test_ci_plan.PlannerTests.test_invalid_policy_groups_and_evidence_fail_closed",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.166073,
+      "id": "test_ci_checks.ImpactCoverageTests.test_multiline_condition_uses_real_coverage_branch_origins",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.062676,
+      "id": "test_ci_checks.EntryPointTests.test_coverage_entry_enforces_each_required_checker_and_propagates_failures",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.048141,
+      "id": "test_ci_checks.WorkflowTests.test_metadata_isolation_concurrency_and_fixed_gate_names",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.027537,
+      "id": "test_ci_checks.EntryPointTests.test_cli_aggregate_metadata_and_impact_route_through_plan_validation",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.014229,
+      "id": "test_ci_checks.ImpactCoverageTests.test_missing_wrong_and_lower_quality_evidence_is_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.013184,
+      "id": "test_ci_dependencies.DependencyTests.test_new_and_modified_test_do_not_select_independent_opaque_execution",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.013148,
+      "id": "test_ci_dependencies.DependencyTests.test_bound_and_passed_execution_capabilities_keep_dynamic_consumers",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.009278,
+      "id": "test_ci_checks.AggregateTests.test_all_three_levels_require_only_proven_obligations",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.003726,
+      "id": "test_ci_dependencies.DependencyTests.test_path_expression_is_specific_and_metadata_keys_are_not_directory_reads",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.003527,
+      "id": "test_ci_checks.MetadataTests.test_metadata_accepts_only_matching_content_run_artifact",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.003272,
+      "id": "test_ci_dependencies.DependencyTests.test_ambiguous_import_alias_and_module_collision_keep_all_possible_consumers",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.002513,
+      "id": "test_ci_checks.ImpactCoverageTests.test_impact_preserves_critical_floor_and_distinguishes_global",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.002173,
+      "id": "test_ci_checks.ImpactCoverageTests.test_repository_floor_does_not_cover_changed_line_or_branch_obligations",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.002115,
+      "id": "test_ci_checks.ImpactCoverageTests.test_r2_full_behavior_retains_impact_thresholds_and_pass_evidence",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.002031,
+      "id": "test_ci_checks.ImpactCoverageTests.test_ordinary_impact_does_not_invent_critical_evidence_and_critical_cannot_drop_mapping",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.002026,
+      "id": "test_ci_dependencies.DependencyTests.test_literal_dynamic_import_and_run_path_resolve_without_opaque_fallback",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.001935,
+      "id": "test_ci_dependencies.DependencyTests.test_indirect_dynamic_call_and_bound_resource_reader_cannot_escape",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.001892,
+      "id": "test_ci_dependencies.DependencyTests.test_importlib_loader_resource_methods_and_unknown_call_shapes",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.001799,
+      "id": "test_ci_checks.MetadataTests.test_missing_or_failed_content_evidence_requires_rerun",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.001511,
+      "id": "test_ci_dependencies.DependencyTests.test_import_closure_keeps_consumers_and_excludes_independent_test",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.00147,
+      "id": "test_ci_dependencies.DependencyTests.test_changed_inventory_is_bound_without_invalidating_independent_closure",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.00126,
+      "id": "test_ci_checks.AggregateTests.test_independent_obligations_and_required_coverage_failure_matrix",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.001244,
+      "id": "test_ci_checks.MetadataTests.test_same_binding_can_reuse_stronger_content_obligations",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.001194,
+      "id": "test_ci_dependencies.DependencyTests.test_opaque_execution_expands_instead_of_claiming_exclusion",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.001098,
+      "id": "test_ci_dependencies.DependencyTests.test_test_helper_consumers_are_transitive",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.001058,
+      "id": "test_ci_dependencies.DependencyTests.test_literals_and_resource_readers_preserve_fixture_contract",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.001049,
+      "id": "test_ci_dependencies.DependencyTests.test_dynamic_path_tail_keeps_known_prefix_and_empty_prefix_is_not_a_reference",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.001047,
+      "id": "test_ci_dependencies.DependencyTests.test_removed_edge_cannot_hide_old_consumer",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000967,
+      "id": "test_ci_checks.MetadataTests.test_full_behavior_cannot_substitute_for_required_coverage_or_smokes",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000934,
+      "id": "test_ci_dependencies.DependencyTests.test_package_initialization_star_and_relative_imports",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000763,
+      "id": "test_ci_checks.ImpactCoverageTests.test_ordinary_files_require_changed_lines_and_branches_not_global",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000636,
+      "id": "test_ci_checks.MetadataTests.test_stale_binding_tamper_risk_or_weaker_obligations_cannot_reuse",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000589,
+      "id": "test_ci_dependencies.DependencyTests.test_invalid_python_is_explicit_uncertainty",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000172,
+      "id": "test_ci_dependencies.DependencyTests.test_semantic_comments_and_docstrings",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000147,
+      "id": "test_ci_checks.AggregateTests.test_optional_skips_are_allowed_but_unknown_failures_are_not",
+      "outcome": "passed"
+    }
+  ],
+  "wall_seconds": 268.093
+}

@@ -1,0 +1,34 @@
+task_id: TEST-PERF-002
+revision: 4
+owner: Chengyue-Lu
+risk: R2
+delegation: false
+required_skills: []
+goal: Refine independent CI obligations while preserving accepted selective CI and
+  quality boundaries.
+authorization: User requested merging PR 65 after successful CI and opening the next
+  implementation PR with acceptance cases A through F.
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- .github/**
+- pyproject.toml
+- tests/**
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- work/TEST-PERF-002/**
+- src/research_workbench/observability/trace.py
+write_scope:
+- .github/scripts/plan_ci.py
+- .github/scripts/ci_checks.py
+- .github/workflows/ci.yml
+- tests/run_unittest_suite.py
+- tests/test_ci_plan.py
+- tests/test_ci_checks.py
+- tests/ci_impact_policy.yaml
+- tests/fixtures/ci/pr65.json
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- work/TEST-PERF-002/A-20260907-002/**
+stop_conditions:
+- Preserve quality thresholds, exclusions, behavioral tests and negative acceptance.
+- Do not merge the new PR, alter M14, publish a release, or change remote protection.

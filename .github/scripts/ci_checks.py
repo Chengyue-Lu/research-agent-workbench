@@ -7,19 +7,23 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 
 import yaml
 
-from plan_ci import ROOT, LEVELS, canonical, digest, require, verify_plan
+from plan_ci import ROOT, canonical, coverage_requirements, digest, require, require_obligations, verify_plan
 
 
 def impact_coverage(plan, policy, coverage, results):
-    require(plan['change_class'] == 'focused' and plan['coverage_mode'] == 'impact', 'impact plan required')
+    obligations = coverage_requirements(plan)
+    require('impact' in obligations, 'impact plan required')
     require(results.get('plan_id') == plan['plan_id'] and results.get('target') == plan['binding']['target'],
             'impact result binding mismatch')
-    require(results.get('suite') == 'focused' and results.get('successful') is True
-            and results.get('test_count', 0) > 0, 'successful focused results required')
+    expected_suite = 'coverage-quality' if 'repository' in obligations else 'impact'
+    require(results.get('coverage_obligations') == plan['coverage_obligations'], 'impact execution obligations mismatch')
+    require(results.get('suite') == expected_suite and results.get('successful') is True
+            and results.get('test_count', 0) > 0, 'successful impact results required')
     spec = importlib.util.spec_from_file_location('coverage_policy', ROOT / '.github/scripts/check_coverage_policy.py')
     checker = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(checker)
@@ -49,22 +53,30 @@ def impact_coverage(plan, policy, coverage, results):
                 'uncovered changed branches: ' + path)
     evidence = plan['impact_evidence']
     positives, negatives = set(evidence['positive_tests']), set(evidence['negative_tests'])
-    require(positives and negatives and not positives & negatives, 'distinct positive/negative evidence required')
+    critical = set(modules) & set(policy['critical_modules'])
+    require(not positives & negatives and ((positives and negatives) or (not critical and not positives and not negatives)),
+            'distinct positive/negative evidence required')
     passed = {row['id'] for row in results['tests'] if row['outcome'] == 'passed'}
     require(positives | negatives <= passed, 'missing positive/negative PASS evidence')
     # Existing critical files in the impacted closure retain their own mappings.
+    require(critical <= {p for m in policy['negative_acceptance'] for p in m['modules']},
+            'critical acceptance mapping missing')
     for mapping in policy['negative_acceptance']:
         if set(mapping['modules']) & set(modules):
             require(set(mapping['positive_tests'] + mapping['negative_tests']) <= passed,
                     'missing critical surface PASS evidence: ' + mapping['surface'])
-    return {'coverage_mode': 'impact', 'modules': modules, 'repository_coverage_proved': False}
+    return {'coverage_scope': 'impact', 'modules': modules, 'repository_coverage_proved': False}
 
 
 def required_jobs(plan, python):
     require(python in {'3.11', '3.13'}, 'unknown Python gate')
     required = {'plan', 'documentation'}
-    if plan['change_class'] != 'fast':
-        required.update({'compatibility_' + python.replace('.', ''), 'coverage_quality'})
+    require(plan['behavioral_scope'] in {'none', 'focused', 'full'}, 'unknown obligation scope')
+    coverage = coverage_requirements(plan)
+    if plan['behavioral_scope'] != 'none':
+        required.add('compatibility_' + python.replace('.', ''))
+    if coverage:
+        required.add('coverage_quality')
     if plan['package_smoke']:
         required.add('package_smoke')
     if plan['repository_smoke']:
@@ -89,17 +101,11 @@ def covers(previous, current):
     signature = unsigned.pop('plan_id', '')
     if digest(unsigned) != signature or previous.get('binding') != current['binding']:
         return False
-    if previous.get('policy_sha256') != current['policy_sha256']:
+    try:
+        require_obligations(previous, current)
+    except (ValueError, KeyError, TypeError):
         return False
-    if LEVELS.get(previous.get('change_class'), -1) < LEVELS[current['change_class']]:
-        return False
-    if previous['change_class'] == 'full':
-        return (previous.get('coverage_mode') == 'repository' and previous.get('package_smoke') is True
-                and previous.get('repository_smoke') is True and previous.get('python_versions') == ['3.11', '3.13'])
-    return (all(set(previous[key]) >= set(current[key]) for key in
-                ('test_groups', 'tests', 'coverage_modules', 'python_versions'))
-            and previous['impact_evidence'] == current['impact_evidence']
-            and all(previous[key] or not current[key] for key in ('package_smoke', 'repository_smoke')))
+    return True
 
 
 def metadata_continuity(plan):
@@ -125,7 +131,7 @@ def metadata_continuity(plan):
 
 def main(argv=None):
     parser = argparse.ArgumentParser()
-    parser.add_argument('operation', choices=('impact', 'aggregate', 'metadata'))
+    parser.add_argument('operation', choices=('impact', 'coverage', 'aggregate', 'metadata'))
     parser.add_argument('--plan', type=Path, required=True)
     parser.add_argument('--coverage', type=Path)
     parser.add_argument('--results', type=Path)
@@ -135,9 +141,18 @@ def main(argv=None):
     event_path = os.environ.get('GITHUB_EVENT_PATH')
     event = json.loads(Path(event_path).read_bytes()) if event_path else None
     verify_plan(ROOT, plan, event, os.environ.get('GITHUB_EVENT_NAME', 'pull_request'))
-    if args.operation == 'impact':
-        result = impact_coverage(plan, yaml.safe_load((ROOT / 'tests/coverage_policy.yaml').read_bytes()),
-                                 json.loads(args.coverage.read_bytes()), json.loads(args.results.read_bytes()))
+    if args.operation in {'impact', 'coverage'}:
+        obligations = coverage_requirements(plan)
+        require(obligations, 'coverage obligations required')
+        result = {}
+        if args.operation == 'impact' or 'impact' in obligations:
+            result['impact'] = impact_coverage(plan, yaml.safe_load((ROOT / 'tests/coverage_policy.yaml').read_bytes()),
+                                              json.loads(args.coverage.read_bytes()), json.loads(args.results.read_bytes()))
+        if args.operation == 'coverage' and 'repository' in obligations:
+            subprocess.run([sys.executable, str(ROOT / '.github/scripts/check_coverage_policy.py'),
+                            '--policy', str(ROOT / 'tests/coverage_policy.yaml'), '--coverage', str(args.coverage),
+                            '--test-results', str(args.results)], check=True)
+            result['repository'] = 'passed'
     elif args.operation == 'aggregate':
         result = aggregate(plan, json.loads(os.environ['CI_NEEDS']), args.python)
     else:

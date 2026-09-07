@@ -1,0 +1,76 @@
+{
+  "focused": {
+    "successful": true,
+    "test_count": 85,
+    "outcomes": {
+      "errors": 0,
+      "failed": 0,
+      "passed": 85,
+      "skipped": 0
+    },
+    "wall_seconds": 268.093
+  },
+  "critical_coverage": {
+    ".github/scripts/ci_checks.py": {
+      "line_percent": 99.2308,
+      "branch_percent": 97.5
+    },
+    ".github/scripts/ci_dependencies.py": {
+      "line_percent": 100.0,
+      "branch_percent": 100.0
+    },
+    ".github/scripts/plan_ci.py": {
+      "line_percent": 99.7701,
+      "branch_percent": 98.6301
+    }
+  },
+  "changed_code_preflight": {
+    ".github/scripts/ci_checks.py": {
+      "missing_statements": [],
+      "missing_outgoing_branches": []
+    },
+    ".github/scripts/ci_dependencies.py": {
+      "missing_statements": [],
+      "missing_outgoing_branches": []
+    },
+    ".github/scripts/plan_ci.py": {
+      "missing_statements": [],
+      "missing_outgoing_branches": []
+    },
+    "tests/run_unittest_suite.py": {
+      "missing_statements": [],
+      "missing_outgoing_branches": []
+    }
+  },
+  "retained_oracle_inventory": 938,
+  "current_inventory": 940,
+  "probes": [
+    {
+      "scenario": "test-only",
+      "tests": 106,
+      "scope": {
+        "risk": "R2",
+        "behavioral_scope": "focused",
+        "coverage_scope": "none",
+        "package_smoke": false,
+        "repository_smoke": false
+      },
+      "basis": "exact synthetic Git plan/collection, not hosted elapsed time"
+    },
+    {
+      "scenario": "provider",
+      "tests": 81,
+      "scope": {
+        "risk": "R2",
+        "behavioral_scope": "focused",
+        "coverage_scope": "impact",
+        "package_smoke": true,
+        "repository_smoke": true
+      },
+      "basis": "exact synthetic Git plan/collection, not hosted elapsed time"
+    }
+  ],
+  "repository_coverage_proved": false,
+  "full_oracle_note": "Revision 6 oracle belongs to 774cdb6. The dependency helper changed afterward; final-head hosted validation remains required.",
+  "raw_coverage_sha256": "83fb802064dc4609c3a64dbffc55eba02f7b7670570fc6966a193071f7e32b81"
+}

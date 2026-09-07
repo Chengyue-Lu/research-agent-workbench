@@ -1,0 +1,8 @@
+{
+  "previous_head": "e39b398293c8e402b3ca47d5bf1f16551f7f9534",
+  "staged_sha256": {
+    ".github/scripts/ci_dependencies.py": "9039242d790c5b843a6fd1b1d669244fbcb4ff420c4893490549ab09933babab",
+    "tests/test_ci_dependencies.py": "2dfd96f554a91f750ef3e5d2194e08d86da510584ecdffbb1e4a1373c65f7219",
+    "tests/ci_impact_policy.yaml": "a8e7df510f3d1118ba3d43257a0c6fbc75d2599108a296c86d8dbd08abf7c42d"
+  }
+}

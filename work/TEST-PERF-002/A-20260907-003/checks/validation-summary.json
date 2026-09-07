@@ -1,0 +1,66 @@
+{
+  "focused": {
+    "suite": "focused-critical-validation",
+    "test_count": 54,
+    "successful": true,
+    "outcomes": {
+      "errors": 0,
+      "failed": 0,
+      "passed": 54,
+      "skipped": 0
+    },
+    "wall_seconds": 138.106101
+  },
+  "critical_coverage": {
+    ".github/scripts/ci_checks.py": {
+      "covered_lines": 127,
+      "num_statements": 128,
+      "percent_covered": 98.21428571428571,
+      "percent_covered_display": "98",
+      "missing_lines": 1,
+      "excluded_lines": 0,
+      "percent_statements_covered": 99.21875,
+      "percent_statements_covered_display": "99",
+      "num_branches": 40,
+      "num_partial_branches": 2,
+      "covered_branches": 38,
+      "missing_branches": 2,
+      "percent_branches_covered": 95.0,
+      "percent_branches_covered_display": "95"
+    },
+    ".github/scripts/plan_ci.py": {
+      "covered_lines": 381,
+      "num_statements": 382,
+      "percent_covered": 99.40711462450592,
+      "percent_covered_display": "99",
+      "missing_lines": 1,
+      "excluded_lines": 0,
+      "percent_statements_covered": 99.73821989528795,
+      "percent_statements_covered_display": "99",
+      "num_branches": 124,
+      "num_partial_branches": 2,
+      "covered_branches": 122,
+      "missing_branches": 2,
+      "percent_branches_covered": 98.38709677419355,
+      "percent_branches_covered_display": "98"
+    }
+  },
+  "staged_diff_coverage_preflight": {
+    ".github/scripts/ci_checks.py": {
+      "uncovered_changed_statements": [],
+      "uncovered_changed_outgoing_arcs": []
+    },
+    ".github/scripts/plan_ci.py": {
+      "uncovered_changed_statements": [],
+      "uncovered_changed_outgoing_arcs": []
+    }
+  },
+  "focused_results_sha256": "94ca1d9d0c83c7cf06e984b48d89014bd2c0e0f091913a312da0f7f6c94fb182",
+  "coverage_json_sha256": "4266db581683957e19045c5648e793b71c71010ed118a2c825c25cc754f418a1",
+  "positive_negative_acceptance": "PASS",
+  "repository_coverage_proved": false,
+  "final_head_hosted_union_and_full_behavior": "required after push; pending at seal",
+  "documentation_and_coverage_policy_tests": 30,
+  "actionlint": "PASS",
+  "repository_validation": "183/0/0"
+}

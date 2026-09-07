@@ -1,0 +1,13 @@
+{
+  "candidate_planner_exit": 0,
+  "candidate_verifier_exit": 0,
+  "candidate_behavioral_scope": "focused",
+  "candidate_selected": {},
+  "external_witness_exit": 1,
+  "receipt": {
+    "reason": "selection authority requires FULL independently of candidate self-verification",
+    "status": "BLOCK",
+    "witness_commit": "777b4b45e3c54cd713f5be68c41a76433a0fde0a",
+    "witness_source_sha256": "27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"
+  }
+}

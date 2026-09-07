@@ -1,0 +1,79 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260907-005
+task_id: TEST-PERF-002
+task_revision: 7
+attempt_id: A-20260907-005
+archive_root: A-20260907-005
+baseline: e39b398293c8e402b3ca47d5bf1f16551f7f9534
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: eff6e0731984cf591d0be2f6e87447f2af187adc95cbbfabdefed9fd4661267e
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 7242ce7721153d2b591278f1e863f6acb7992a2dadf6d578ac714061f8f23174
+read_allowlist:
+- .github/**
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- docs/README.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- examples/**
+- pyproject.toml
+- registry/**
+- schemas/**
+- src/**
+- src/research_workbench/observability/trace.py
+- tests/**
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/ci_checks.py
+- .github/scripts/ci_dependencies.py
+- .github/scripts/plan_ci.py
+- .github/workflows/ci.yml
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/ci_impact_policy.yaml
+- tests/coverage_policy.yaml
+- tests/run_unittest_suite.py
+- tests/test_ci_checks.py
+- tests/test_ci_dependencies.py
+- tests/test_ci_plan.py
+- work/TEST-PERF-002/A-20260907-005/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: e26ed75028e521596b750900659f49c5f8c71c4c34f3f82e976823295e413e0f
+  event_count: 6
+tool_event_refs:
+- path: tool-events/bound-execution-reproduction-succeeded.json
+  sha256: 4dfe9545e6c1afaa5bea0568f1a4a197923358910d01f0147a35e05e14611d6c
+- path: tool-events/bound-execution-validation-succeeded.json
+  sha256: 8a3c6ee61689077b6d48c128d6dc0901cef36434f5b8aa8e199f6658eee036fd
+handoff_refs:
+- path: handoff/H0.md
+  sha256: e992fa1c92ecd6eb58fbb4d2be9468c441ff072fdfb37564545573a9f050a27a
+decision_refs: []
+output_refs:
+- path: outputs/code-manifest.json
+  sha256: 1d6025e28b921763e17733db0f7404f16528124a60aa8e5b2db174ad79aef49e
+- path: WORKLOG.md
+  sha256: 0d99b8e27cbd4db263f2a84c7a0e9fb0314c2b8b668eca7cfae4896cf5dba119
+check_refs:
+- path: checks/focused-results.json
+  sha256: 78352e83368fc176eb10535ac34c584e60e9a94ba3f8c7f981d21122192842c9
+- path: checks/validation-summary.json
+  sha256: 2b173638d7ebe2a28a329e9db6a26bf65d4bf453b48926d3f11d3f759d72052c
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0005
+  affected_stream: events

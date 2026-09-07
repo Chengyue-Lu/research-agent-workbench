@@ -1,0 +1,40 @@
+{
+  "_links": {
+    "html": {
+      "href": "https://github.com/Chengyue-Lu/research-agent-workbench/pull/66#pullrequestreview-5127339541"
+    },
+    "pull_request": {
+      "href": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/pulls/66"
+    }
+  },
+  "author_association": "OWNER",
+  "body": "Task-owner technical review \u2014 **CHANGES REQUESTED (blocking; supersedes the prior technical-APPROVE review on `2808189`)**\n\nExact HEAD reviewed: `2e23893a50f938470bb8895d34a3c9a004681aa2` on `develop@97f760c43e95b398c396987f349e2199c567cbc7`.\n\nThe v4 direction is accepted: R2 governance strength is correctly decoupled from behavioral blast radius, affected tests are derived from the exact base/head consumer closure, the prior orthogonal coverage-obligation model remains intact, and quality floors / negative acceptance are not weakened. Two authority/soundness blockers remain before merge.\n\n1. **P1 \u2014 selector self-modification currently bootstraps trust from the candidate implementation itself.**\n\n   This PR changes the selection authority (`plan_ci.py`, `ci_dependencies.py`, `ci_checks.py`, `run_unittest_suite.py`, and `ci.yml`), while the hosted plan job checks out the candidate merge tree and runs that same candidate selector to compute the machine minimum. Worker verification then recomputes with the same candidate implementation. Candidate-vs-candidate agreement is not an independent proof that the base-trusted minimum was preserved.\n\n   A future defective change such as `ci_dependencies.select(...) -> []` can therefore be self-consistent unless a bootstrap boundary exists outside the modified selector.\n\n   **Required fix:** keep ordinary R2 product changes eligible for focused behavioral, but make semantic changes to the CI selection-authority surface unable to narrow their own behavioral obligation. The simplest v1 rule is:\n\n   - semantic change to `plan_ci.py`, `ci_dependencies.py`, `ci_checks.py`, `run_unittest_suite.py`, or `ci.yml` => **behavioral full** for that PR;\n   - coverage / package / repository-smoke obligations remain independently derived and must not be re-coupled.\n\n   A more complex base-selector bootstrap is not required for this PR. Add an adversarial regression where candidate selector code is modified to return fewer/no tests and confirm that the PR cannot obtain focused authorization.\n\n2. **P1 \u2014 dynamic execution through `getattr` can still escape the opaque-consumer frontier.**\n\n   The latest bound/passed capability handling is a good improvement, but the current AST logic can still miss common indirection such as:\n\n   ```python\n   import importlib\n   loader = getattr(importlib, \"import_module\")\n   loader(runtime_name)\n   ```\n\n   Here the analyzer sees `getattr(...)` and later `loader(...)`, but does not bind the returned capability back to `importlib.import_module`. With no literal module edge, the test can be silently excluded rather than conservatively retained. Similar shapes exist for `subprocess`, `runpy`, and loader/spec execution surfaces.\n\n   **Required fix:** do not build a full Python points-to analysis. Extend the fail-closed frontier so `getattr` over known execution namespaces/capabilities, when its result is assigned/passed/called/stored, marks that consumer opaque unless the target is otherwise statically resolved. Add at least one regression proving a changed source plus `getattr(importlib, \"import_module\")` dynamic consumer is selected or explicitly opaque, never silently excluded.\n\nThese are narrow fixes; do **not** revert v4 back to `R2 -> full behavioral` globally. The accepted model remains:\n\n- risk governs review/authority strength;\n- exact impact governs behavioral scope;\n- impact/repository coverage remain orthogonal obligations;\n- smoke obligations remain independent;\n- unknown dependency semantics expand fail-closed.\n\nCurrent hosted evidence shows the v4 path is actually active (`risk=R2`, `behavioral_scope=focused`), but this PR itself still selects a very broad closure and exact-head coverage is not yet complete. Hosted green alone would not close the two semantic blockers above.\n\nGitHub does not permit the PR author account to submit a formal REQUEST_CHANGES review on its own PR, so this COMMENT is the blocking task-owner review record. Cross-owner R2 acceptance remains independently required.",
+  "commit_id": "2e23893a50f938470bb8895d34a3c9a004681aa2",
+  "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/pull/66#pullrequestreview-5127339541",
+  "id": 5127339541,
+  "node_id": "PRR_kwDOT2gtDc8AAAABMZz-FQ",
+  "pull_request_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/pulls/66",
+  "state": "COMMENTED",
+  "submitted_at": "2026-09-07T01:33:02Z",
+  "user": {
+    "avatar_url": "https://avatars.githubusercontent.com/u/140945476?u=e24a642abec7162ae5a41697cf7ece325c9e3652&v=4",
+    "events_url": "https://api.github.com/users/Chengyue-Lu/events{/privacy}",
+    "followers_url": "https://api.github.com/users/Chengyue-Lu/followers",
+    "following_url": "https://api.github.com/users/Chengyue-Lu/following{/other_user}",
+    "gists_url": "https://api.github.com/users/Chengyue-Lu/gists{/gist_id}",
+    "gravatar_id": "",
+    "html_url": "https://github.com/Chengyue-Lu",
+    "id": 140945476,
+    "login": "Chengyue-Lu",
+    "node_id": "U_kgDOCGaoRA",
+    "organizations_url": "https://api.github.com/users/Chengyue-Lu/orgs",
+    "received_events_url": "https://api.github.com/users/Chengyue-Lu/received_events",
+    "repos_url": "https://api.github.com/users/Chengyue-Lu/repos",
+    "site_admin": false,
+    "starred_url": "https://api.github.com/users/Chengyue-Lu/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/Chengyue-Lu/subscriptions",
+    "type": "User",
+    "url": "https://api.github.com/users/Chengyue-Lu",
+    "user_view_type": "public"
+  }
+}

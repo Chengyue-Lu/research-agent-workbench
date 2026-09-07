@@ -1,0 +1,14 @@
+{
+  "base": "69b22e852fff61f2bc5ff87e1d023a27856f75df",
+  "staged_sha256": {
+    ".github/scripts/plan_ci.py": "cfdbaff458d7240b999ee109a4ff0d0002d5a00ccee64444cbea3fa1ef750d46",
+    ".github/scripts/selection_witness.py": "27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/OBLIGATIONS.md": "f11a6ceaba94c75adf2a51a224b5955c610748e0db22f8973f3ae9fd81ba659f",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/RISK_LEDGER.md": "dcb4fa0ddc9df66f60cc54de7893d9a0775804c880846b6348e4402665019cff",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/SELECTION_WITNESS.md": "279c6f6b609b69a8f49ec0e7c1b2e8ee43ed24ddf47758308edf7dcae675a73e",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/VALIDATION.md": "22cca60ccf35bb59f96c221718c2989bd44b18ce99039fe0d0fb24a15257cbba",
+    "tests/ci_impact_policy.yaml": "19f8951aef53f2cb4617ddf614deebcdf549fd711b7af208adf1d8e343dbb6d4",
+    "tests/coverage_policy.yaml": "7e014faf9f2d9f27d7314cc71decb3d993fc980d95cbdd6c5bb929f9995f8855",
+    "tests/test_selection_witness.py": "b03c60cdc232b03fc00a854607c970858aa1b20e62ae4bfd7b4c8acf4ba134b4"
+  }
+}

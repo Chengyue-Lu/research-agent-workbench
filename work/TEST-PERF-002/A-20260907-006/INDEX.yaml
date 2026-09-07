@@ -1,0 +1,85 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260907-006
+task_id: TEST-PERF-002
+task_revision: 8
+attempt_id: A-20260907-006
+archive_root: A-20260907-006
+baseline: 2e23893a50f938470bb8895d34a3c9a004681aa2
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: c8236bb2966607dc4387f1628cece2203b9576612b2a0fc68d2a918d00c2c808
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 6d1a2c09d78be76fc9ee2a6f32aa409d92e56644c5cd7eee19b8917cf4357b3e
+read_allowlist:
+- .github/**
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- docs/README.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- examples/**
+- pyproject.toml
+- registry/**
+- schemas/**
+- src/**
+- src/research_workbench/observability/trace.py
+- tests/**
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/ci_checks.py
+- .github/scripts/ci_dependencies.py
+- .github/scripts/plan_ci.py
+- .github/workflows/ci.yml
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/ci_impact_policy.yaml
+- tests/coverage_policy.yaml
+- tests/run_unittest_suite.py
+- tests/test_ci_checks.py
+- tests/test_ci_dependencies.py
+- tests/test_ci_plan.py
+- work/TEST-PERF-002/A-20260907-006/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 9264f1de9745133454abed056e1b6cbfa75ee3f9f7fc5a39015b799485815360
+  event_count: 6
+tool_event_refs:
+- path: tool-events/review-intake-succeeded.json
+  sha256: e861e29c49212fa664b3c10b8d79678c60576a00ced8b6a994c7ae82a1c6cb20
+- path: tool-events/review-regression-validation-succeeded.json
+  sha256: b664f694cacfa79fa95422676966e180c7ec3dac1384b7245e23d50874670a6a
+handoff_refs:
+- path: handoff/H0.md
+  sha256: bb953a7529ae9ccd618b75a07724930bdfb3521853bd1176a36108763526966f
+decision_refs: []
+output_refs:
+- path: outputs/code-manifest.json
+  sha256: b48f77095a73efa847bce37e905acf56c2c025d277af8012c3b1deafbc774614
+- path: WORKLOG.md
+  sha256: 1a00525e917478e2a930d362b699f23cf837ea2958461ec40b21c511013f7c2e
+check_refs:
+- path: checks/review.json
+  sha256: a75b3b355686ff358b25ead9b115b8933eefd060e4ce6ddd06d18c10d778595f
+- path: checks/summary.json
+  sha256: 7e1bfcde5f7007e3bdb7e7b5d3cf19be9492c01f66a7d98c9a5f1865f03d6824
+- path: checks/focused-results.json
+  sha256: 30d7b3a7cffe3fc4b5448c509b376bfd293bd5a47af8cf29741079a64722dace
+- path: checks/candidate-plan.json
+  sha256: 69990db0f8ef379299e3eda43ccc306d1dee6181ac92a051a27292051d890327
+- path: checks/probes.json
+  sha256: d1fab6a91103b41d9434bba0bbc880f51ae7b142474554dbe61a617d8f15c98c
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0005
+  affected_stream: events

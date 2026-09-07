@@ -1,0 +1,38 @@
+task_id: TEST-PERF-002
+revision: 12
+owner: Chengyue-Lu
+risk: R2
+delegation: false
+required_skills: []
+goal: Extend existing reviewed base-side consumer contracts to CI scripts and measure
+  the proposed M14 release-surface boundary.
+authorization: User requested continuing repairs and incorporating cross-owner independent
+  PR66 review.
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/**
+- .github/**
+- src/**
+- tests/**
+- pyproject.toml
+- build_backend.py
+- runtime-resources.json
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/ci_dependencies.py
+- .github/scripts/plan_ci.py
+- tests/test_ci_dependencies.py
+- tests/test_ci_plan.py
+- tests/test_release_surface.py
+- tests/ci_impact_policy.yaml
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/CI_IMPACT_CONTRACT.md
+- work/TEST-PERF-002/A-20260907-010/**
+- .rwb/m14-contract/**
+stop_conditions:
+- M4 work remains untouched.
+- No merge before cross-owner acceptance and required current-head CI/witness.
+- No release, main, tags, protection or new M14 milestone activation.
+- Intentional mutants stay in isolated probes.

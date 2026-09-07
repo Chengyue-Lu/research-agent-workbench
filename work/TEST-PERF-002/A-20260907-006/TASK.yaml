@@ -1,0 +1,40 @@
+task_id: TEST-PERF-002
+revision: 8
+owner: Chengyue-Lu
+risk: R2
+delegation: false
+required_skills: []
+goal: Require full behavior for selection-authority semantics and retain reflected
+  execution consumers.
+authorization: User requested implementation fixes for the latest PR 66 task-owner
+  review on 2e23893.
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- .github/**
+- pyproject.toml
+- tests/**
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- work/TEST-PERF-002/**
+- src/research_workbench/observability/trace.py
+- src/**
+- schemas/**
+- registry/**
+- examples/**
+write_scope:
+- .github/scripts/plan_ci.py
+- .github/scripts/ci_checks.py
+- .github/workflows/ci.yml
+- tests/run_unittest_suite.py
+- tests/test_ci_plan.py
+- tests/test_ci_checks.py
+- tests/ci_impact_policy.yaml
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- work/TEST-PERF-002/A-20260907-006/**
+- .github/scripts/ci_dependencies.py
+- tests/test_ci_dependencies.py
+- tests/coverage_policy.yaml
+stop_conditions:
+- Preserve quality thresholds, exclusions, behavioral tests and negative acceptance.
+- Do not merge the new PR, alter M14, publish a release, or change remote protection.
