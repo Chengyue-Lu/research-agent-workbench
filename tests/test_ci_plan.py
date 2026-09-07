@@ -634,6 +634,28 @@ class PlannerTests(unittest.TestCase):
             forged['plan_id'] = planner.digest(forged)
             with self.assertRaises(ValueError):
                 planner.verify_plan(self.repo, forged)
+        expanded = copy.deepcopy(plan)
+        extra = 'test_proof.Proof.test_behavioral'
+        expanded['coverage_tests'] = sorted(expanded['coverage_tests'] + [extra])
+        expanded['coverage_selection'][extra] = ['agent requested additional proof']
+        expanded.pop('plan_id'); expanded['plan_id'] = planner.digest(expanded)
+        planner.verify_plan(self.repo, expanded)
+
+    def test_critical_subject_uses_explicit_base_proof_and_keeps_all_acceptance(self):
+        leaf, source, policy, names = self._proof_contract()
+        authority = yaml.safe_load((self.repo / 'tests/coverage_policy.yaml').read_bytes())
+        authority['critical_modules'].append(leaf)
+        authority['negative_acceptance'].append({'surface': 'bounded-critical', 'modules': [leaf],
+                                                 'positive_tests': names[:1], 'negative_tests': names[1:]})
+        write(self.repo, 'tests/coverage_policy.yaml', yaml.safe_dump(authority))
+        self.base = self.commit(planner.POLICY, planner.canonical(policy))
+        self.commit(leaf, source.replace('1 + 0', '0 + 1'))
+        plan = self.plan()
+        self.assertEqual(sorted(names), plan['coverage_tests'])
+        self.assertEqual([leaf], plan['coverage_modules'])
+        self.assertEqual(names[:1], plan['impact_evidence']['positive_tests'])
+        self.assertEqual(names[1:], plan['impact_evidence']['negative_tests'])
+        planner.verify_plan(self.repo, plan)
 
     def test_accepted_deterministic_ids_avoid_reloading_mixed_behavioral_module(self):
         leaf = 'src/research_workbench/example.py'

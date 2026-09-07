@@ -276,7 +276,8 @@ def require_obligations(plan, minimum):
         require(type(plan[key]) is bool and (plan[key] or not minimum[key]), 'plan drops required ' + key)
     require(plan['policy_sha256'] == minimum['policy_sha256'], 'plan policy mismatch')
     require(plan['selection'] == minimum['selection'], 'plan dependency selection proof mismatch')
-    require(plan.get('coverage_selection') == minimum.get('coverage_selection'), 'plan coverage selection proof mismatch')
+    require(all(set(plan.get('coverage_selection', {}).get(name, [])) >= set(reasons)
+                for name, reasons in minimum.get('coverage_selection', {}).items()), 'plan coverage selection proof mismatch')
     if plan['behavioral_scope'] != 'full':
         for key in ('tests', 'test_groups'):
             require(set(plan[key]) >= set(minimum[key]), 'plan drops required ' + key)
