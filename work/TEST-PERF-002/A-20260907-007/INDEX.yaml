@@ -1,0 +1,87 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260907-007
+task_id: TEST-PERF-002
+task_revision: 9
+attempt_id: A-20260907-007
+archive_root: A-20260907-007
+baseline: 69b22e852fff61f2bc5ff87e1d023a27856f75df
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 172c6649f5df906f1457bc155d5eabc8f59667ca6f69abbb7ea51b4783606892
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 1cead7f00ce0decfb165dd1c8b26cbf21b9876cb120d7a3a2d129211dda19d43
+read_allowlist:
+- .github/**
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- docs/README.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- examples/**
+- pyproject.toml
+- registry/**
+- schemas/**
+- src/**
+- src/research_workbench/observability/trace.py
+- tests/**
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/ci_checks.py
+- .github/scripts/ci_dependencies.py
+- .github/scripts/plan_ci.py
+- .github/scripts/selection_witness.py
+- .github/workflows/ci.yml
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/ci_impact_policy.yaml
+- tests/coverage_policy.yaml
+- tests/run_unittest_suite.py
+- tests/test_ci_checks.py
+- tests/test_ci_dependencies.py
+- tests/test_ci_plan.py
+- tests/test_selection_witness.py
+- work/TEST-PERF-002/A-20260907-007/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: f5843e4b029bfcfc1f497a9a0031d0effedeab4907047d9225b8b55b82b6edea
+  event_count: 5
+tool_event_refs:
+- path: tool-events/independent-witness-validation-succeeded.json
+  sha256: 7a2e2dbab225ae89199ac9049e8a1d34cc7f2293dca37c538601bf4536199840
+handoff_refs:
+- path: handoff/H0.md
+  sha256: 80606e982e9139a29b7ce2d7d8fcc03809ad4bcb1cddf8927fc82c4bc0f69627
+decision_refs: []
+output_refs:
+- path: outputs/code-manifest.json
+  sha256: 0ed9011243d387316441e06775e3c8ddc5a39ab4f1304a906567d77bfae76556
+- path: WORKLOG.md
+  sha256: 73ddd94886cb7b4326290363ba2073d1f94df25442e964bb64ee01f606bc708b
+check_refs:
+- path: checks/review.md
+  sha256: 1b35a8a6f6659d80f42089b02f465a31b8a2a6a01bff97f79c712e765d0b6c41
+- path: checks/summary.json
+  sha256: 21b675e79c751a45c3b8528193c633abc16c7ce7d0f207d7b3ce74fa8d599c72
+- path: checks/independent-receipt.json
+  sha256: c73f3ff606bcd9cf271de1732c9d1e4563f71e5d8c10f11941847e3a5d64be17
+- path: checks/attack-receipt.json
+  sha256: 295a8d63b2075c5166e2bcdf459a213dc5ad176ad067ac3b65a9af421b1c05d9
+- path: checks/focused-results.json
+  sha256: 42fc829df3a234bc8859b3ec85ec301d79bb857c213cbf60a06d9db91987de6b
+- path: checks/candidate-plan.json
+  sha256: 6880b3d2dc676e6d0ef97d5d88dedf56ed1d463d74536f03ce44d052e14e5fa0
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0004
+  affected_stream: events
