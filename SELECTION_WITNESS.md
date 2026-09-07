@@ -5,7 +5,8 @@ Its source is reviewed alongside the implementation PR, but its workflow execute
 from a separately chosen immutable commit. It is not a release or integration branch.
 
 The reviewer supplies the witness commit and candidate CI run independently of the
-candidate plan. Dispatch the existing `ci.yml` workflow at that exact witness commit,
+candidate plan. Dispatch the existing `ci.yml` workflow using this audit branch as
+the API ref and the independently pinned commit as the `witness_sha` input,
 then check the returned run's `head_sha` against the chosen commit using GitHub's API.
 Only a receipt from that run, bound to the current PR base/head and plan, is evidence.
 Candidate workflow results, candidate-proposed pins and candidate copies of this
