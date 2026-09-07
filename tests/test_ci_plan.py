@@ -622,6 +622,18 @@ class PlannerTests(unittest.TestCase):
         self.assertIn('test_dynamic', plan['coverage_tests'])
         self.assertIn('initialization/dependency', ' '.join(plan['reasons']))
 
+    def test_function_contract_keeps_aliased_execution_opaque(self):
+        leaf, source, policy, names = self._proof_contract()
+        source = 'import subprocess as child\n' + source.replace('    return', '    child.run(command)\n    return')
+        self.commit(leaf, source)
+        policy['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, 'HEAD', LEAVES + [leaf])
+        self.base = self.commit(planner.POLICY, planner.canonical(policy))
+        self.commit(leaf, source.replace('1 + 0', '0 + 1'))
+        plan = self.plan()
+        self.assertIn('test_dynamic', plan['tests'])
+        self.assertIn('test_dynamic', plan['coverage_tests'])
+        self.assertIn('initialization/dependency', ' '.join(plan['reasons']))
+
     def test_proof_list_and_provenance_cannot_be_resigned_below_base_minimum(self):
         leaf, source, policy, names = self._proof_contract()
         self.base = self.commit(planner.POLICY, planner.canonical(policy))

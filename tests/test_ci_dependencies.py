@@ -252,6 +252,20 @@ class DependencyTests(unittest.TestCase):
             with self.subTest(before=before):
                 self.assertFalse(deps.function_body_only(before, after))
 
+    def test_local_contract_resolves_module_execution_aliases(self):
+        for setup, call in (
+            ('import subprocess as child', 'child.run(["tool"])'),
+            ('from subprocess import run as launch', 'launch(["tool"])'),
+            ('import runpy as loader', 'loader.run_path(path)'),
+            ('import subprocess as child\nlaunch = child.run', 'launch(["tool"])'),
+        ):
+            before = (setup + '\ndef f():\n    ' + call + '\n    return 1\n').encode()
+            with self.subTest(setup=setup):
+                self.assertIn('subject.py', deps.graph({'subject.py': before}, {'subject.py'})[1])
+                self.assertFalse(deps.function_body_only(before, before.replace(b'return 1', b'return 2')))
+        before = b'import subprocess as child\ndef execute():\n child.run(["tool"])\ndef digest(value):\n return value[0:]\n'
+        self.assertTrue(deps.function_body_only(before, before.replace(b'value[0:]', b'value[1:]')))
+
 
 if __name__ == '__main__':
     unittest.main()

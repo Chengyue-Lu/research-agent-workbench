@@ -90,8 +90,11 @@ def function_body_only(before, after):
                           or isinstance(part, ast.Constant) and isinstance(part.value, str))
         if boundary(old) != boundary(new):
             return False
-        for node in (old, new):
-            if graph({'subject.py': ast.unparse(node).encode()}, {'subject.py'})[1]:
+        for context, node in zip(trees, (old, new)):
+            # Keep module/class imports and capability bindings when analyzing the
+            # changed body. A detached function loses aliases such as child.run.
+            scoped = ast.Module(body=[*context.body, node], type_ignores=[])
+            if graph({'subject.py': ast.unparse(scoped).encode()}, {'subject.py'})[1]:
                 return False
     return True
 
