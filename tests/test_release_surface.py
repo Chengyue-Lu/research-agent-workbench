@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import importlib.util
 import io
 import itertools
@@ -33,6 +34,16 @@ def write(repo, path, value):
     target = repo / path
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_bytes(value)
+
+
+class DigestTests(unittest.TestCase):
+    def test_sha256_known_vectors(self):
+        for data, expected in (
+            (b'', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'),
+            (b'abc', 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad'),
+        ):
+            with self.subTest(data=data):
+                self.assertEqual(expected, release.digest(data))
 
 
 class ReleaseSurfaceTests(unittest.TestCase):
@@ -139,6 +150,19 @@ class ReleaseSurfaceTests(unittest.TestCase):
         self.assertEqual(tree, result["tree"])
         self.assertEqual(result, release.check(self.repo, self.expected, candidate, directory=first))
         manifest = json.loads((first / release.MANIFEST).read_bytes())
+        # The implementation's digest must not serve as the expected-value oracle.
+        policy_bytes = command(self.repo, 'show', self.expected['source'] + ':' + release.POLICY)
+        policy_hash = hashlib.sha256(policy_bytes).hexdigest()
+        self.assertEqual(policy_hash, manifest['policy']['sha256'])
+        self.assertEqual(hashlib.sha256((first / release.MANIFEST).read_bytes()).hexdigest(),
+                         result['manifest_sha256'])
+        for row in manifest['outputs']:
+            with self.subTest(output=row['path']):
+                self.assertEqual(hashlib.sha256((first / row['path']).read_bytes()).hexdigest(), row['sha256'])
+                if row['origin'] == 'generated':
+                    self.assertEqual(hashlib.sha256((ROOT / release.TOOL).read_bytes()).hexdigest(),
+                                     row['generator']['sha256'])
+                    self.assertEqual(policy_hash, row['generator']['inputs']['policy_sha256'])
         self.assertIn("tests/private.txt", manifest["excluded"])
         self.assertNotIn("old-main-only.txt", files)
         self.assertEqual("source_blob", next(x for x in manifest["outputs"] if x["path"] == "src/run.py")["origin"])
