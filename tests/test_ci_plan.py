@@ -552,6 +552,102 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual({'positive_tests': [], 'negative_tests': []}, p['impact_evidence'])
         planner.verify_plan(self.repo, p)
 
+    def test_unrelated_test_edit_expands_behavior_but_not_executable_coverage(self):
+        leaf = 'src/research_workbench/example.py'
+        write(self.repo, leaf, 'VALUE=1\n')
+        self.base = self.commit('tests/test_example.py', 'from research_workbench.example import VALUE\n')
+        self.commit(leaf, 'VALUE=2\n')
+        first = self.plan()
+        self.commit('tests/test_unselected.py', 'import unittest\nVALUE=2\n')
+        plan = self.plan()
+        self.assertIn('test_unselected', plan['tests'])
+        self.assertNotIn('test_unselected', plan['coverage_tests'])
+        self.assertEqual(first['coverage_tests'], plan['coverage_tests'])
+        self.assertEqual(['test_example'], plan['coverage_tests'])
+        planner.verify_plan(self.repo, plan)
+
+    def _proof_contract(self):
+        leaf = 'src/research_workbench/proof_leaf.py'
+        source = 'def value():\n    return 1 + 0\n'
+        write(self.repo, 'src/research_workbench/__init__.py', '')
+        write(self.repo, leaf, source)
+        write(self.repo, 'tests/test_proof.py',
+              'import unittest\nfrom research_workbench.proof_leaf import value\n'
+              'class Proof(unittest.TestCase):\n'
+              '    def test_positive(self): self.assertEqual(value(),1)\n'
+              '    def test_negative(self): self.assertNotEqual(value(),0)\n'
+              '    def test_behavioral(self): self.assertGreater(value(),0)\n')
+        self.base = self.commit('tests/test_dynamic.py', 'import subprocess\nsubprocess.run(command)\n')
+        policy = copy.deepcopy(self.policy)
+        policy['surfaces']['proof'] = {'paths': [leaf], 'class': 'focused', 'groups': ['proof']}
+        names = ['test_proof.Proof.test_positive', 'test_proof.Proof.test_negative']
+        policy['groups']['proof'] = {'tests': ['test_proof'], 'downstream': [], 'coverage': [leaf],
+            'coverage_tests': names, 'change_scope': 'function-body', 'package': False, 'repository': False,
+            'impact_evidence': {'positive_tests': names[:1], 'negative_tests': names[1:]}}
+        policy['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, 'HEAD', LEAVES + [leaf])
+        return leaf, source, policy, names
+
+    def test_exact_proof_contract_requires_base_acceptance_and_rejects_same_suite_mutant(self):
+        leaf, source, policy, names = self._proof_contract()
+        write(self.repo, planner.POLICY, planner.canonical(policy))
+        self.commit(leaf, source.replace('1 + 0', '0 + 1'))
+        self.assertIn('test_dynamic', self.plan()['coverage_tests'])
+        self.base = command(self.repo, 'rev-parse', 'HEAD')
+        self.commit(leaf, source)
+        plan = self.plan()
+        self.assertEqual(['test_proof'], plan['tests'])
+        self.assertEqual(sorted(names), plan['coverage_tests'])
+        self.assertEqual(set(names), set(plan['impact_evidence']['positive_tests'] + plan['impact_evidence']['negative_tests']))
+        planner.verify_plan(self.repo, plan)
+        def run():
+            return subprocess.run([sys.executable, '-B', '-m', 'unittest', *names], cwd=self.repo,
+                env={**os.environ, 'PYTHONPATH': str(self.repo / 'src') + os.pathsep + str(self.repo / 'tests')}, capture_output=True)
+        self.assertEqual(0, run().returncode)
+        self.commit(leaf, source.replace('1 + 0', '0 + 0'))
+        self.assertEqual(sorted(names), self.plan()['coverage_tests'])
+        self.assertNotEqual(0, run().returncode)
+
+    def test_function_contract_restores_consumers_for_initialization_and_new_downstream(self):
+        leaf, source, policy, names = self._proof_contract()
+        self.base = self.commit(planner.POLICY, planner.canonical(policy))
+        self.commit(leaf, source.replace('1 + 0', '0 + 1'))
+        self.assertNotIn('test_dynamic', self.plan()['tests'])
+        self.commit('tests/test_downstream.py', 'from research_workbench.proof_leaf import value\n')
+        plan = self.plan()
+        self.assertIn('test_downstream', plan['tests'])
+        self.assertIn('test_downstream', plan['coverage_tests'])
+        self.commit(leaf, source + '\nvalue()\n')
+        plan = self.plan()
+        self.assertIn('test_dynamic', plan['tests'])
+        self.assertIn('test_dynamic', plan['coverage_tests'])
+        self.assertIn('initialization/dependency', ' '.join(plan['reasons']))
+
+    def test_proof_list_and_provenance_cannot_be_resigned_below_base_minimum(self):
+        leaf, source, policy, names = self._proof_contract()
+        self.base = self.commit(planner.POLICY, planner.canonical(policy))
+        self.commit(leaf, source.replace('1 + 0', '0 + 1'))
+        plan = self.plan()
+        for key, value in [('coverage_tests', names[:1]), ('coverage_selection', {})]:
+            forged = copy.deepcopy(plan)
+            forged[key] = value
+            forged.pop('plan_id')
+            forged['plan_id'] = planner.digest(forged)
+            with self.assertRaises(ValueError):
+                planner.verify_plan(self.repo, forged)
+
+    def test_accepted_deterministic_ids_avoid_reloading_mixed_behavioral_module(self):
+        leaf = 'src/research_workbench/example.py'
+        write(self.repo, leaf, 'VALUE=1\n')
+        module = 'test_generic_execution_closeout'
+        self.base = self.commit('tests/' + module + '.py', 'from research_workbench.example import VALUE\n')
+        self.commit(leaf, 'VALUE=2\n')
+        plan = self.plan()
+        expected = [t for t in yaml.safe_load((self.repo / 'tests/coverage_policy.yaml').read_bytes())
+                    ['suites']['coverage-quality']['test_ids'] if t.startswith(module + '.')]
+        self.assertIn(module, plan['tests'])
+        self.assertNotIn(module, plan['coverage_tests'])
+        self.assertEqual(sorted(expected), plan['coverage_tests'])
+
     def test_ci_script_contract_requires_base_acceptance_and_keeps_new_consumers(self):
         leaf = '.github/scripts/check_leaf.py'
         write(self.repo, leaf, 'VALUE = 1\n')

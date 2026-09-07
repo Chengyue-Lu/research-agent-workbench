@@ -46,6 +46,65 @@ def signed(p):
     return p
 
 
+class CollectionTests(unittest.TestCase):
+    def test_sources_retain_canonical_roots_and_cover_external_subject_directories(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for path in ('src/research_workbench/unexecuted.py', 'tests/test_unrelated.py', 'tests/run_unittest_suite.py',
+                         'build_backend.py', 'work/task/checks/oracle.py', 'work/task/checks/unrelated.py'):
+                target = root / path; target.parent.mkdir(parents=True, exist_ok=True); target.write_text('VALUE=1\n')
+            config = checks.coverage_config({'coverage_modules': ['build_backend.py', 'work/task/checks/oracle.py']}, root)
+            for path in ('src/research_workbench', 'build_backend.py', 'work/task/checks/oracle.py', 'tests/run_unittest_suite.py'):
+                self.assertNotIn('    ' + path, config.split('omit =')[1])
+            self.assertIn('    tests/test_unrelated.py', config)
+            self.assertIn('    work/task/checks/unrelated.py', config)
+        for path in ('../outside.py', '/outside.py', 'C:/outside.py', 'a\\b.py', 'bad,name.py',
+                     'bad[name].py', 'bad\nname.py', 'bad\rname.py', 'a//b.py', 'data.json'):
+            with self.subTest(path=path), self.assertRaises(ValueError):
+                checks.coverage_config({'coverage_modules': [path]}, ROOT)
+
+    def test_root_backend_loaded_by_file_alias_is_actually_measured(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'build_backend.py').write_text('def calculate(value):\n    return value + 1\n', encoding='utf-8')
+            (root / 'src/research_workbench').mkdir(parents=True)
+            (root / 'src/research_workbench/unexecuted.py').write_text('VALUE=1\n')
+            (root / 'probe.py').write_text(
+                'import importlib.util\n'
+                'spec=importlib.util.spec_from_file_location("backend_alias","build_backend.py")\n'
+                'module=importlib.util.module_from_spec(spec)\nspec.loader.exec_module(module)\n'
+                'assert module.calculate(1)==2\n', encoding='utf-8')
+            (root / 'coverage.ini').write_text(checks.coverage_config({'coverage_modules': ['build_backend.py']}, root))
+            result = subprocess.run([sys.executable, '-m', 'coverage', 'run', '--rcfile=coverage.ini', 'probe.py'],
+                                    cwd=root, capture_output=True)
+            self.assertEqual(0, result.returncode, result.stderr.decode(errors='replace'))
+            subprocess.run([sys.executable, '-m', 'coverage', 'json', '--rcfile=coverage.ini', '-o', 'coverage.json'], cwd=root,
+                           capture_output=True, check=True)
+            measured = {p.replace('\\', '/'): value for p, value in json.loads((root / 'coverage.json').read_text())['files'].items()}
+            item = measured['build_backend.py']
+            self.assertEqual([], item['missing_lines'])
+            self.assertEqual([1, 2], item['executed_lines'])
+            self.assertEqual([1], measured['src/research_workbench/unexecuted.py']['missing_lines'])
+            self.assertNotIn('probe.py', measured)
+
+    def test_collector_rejects_unrepresentable_filters_and_aliased_roots(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            odd = root / 'ambiguous[name].py'; odd.write_text('VALUE=1\n')
+            with self.assertRaisesRegex(ValueError, 'filter path'):
+                checks.coverage_config({'coverage_modules': []}, root)
+            odd.unlink()
+            blocked = root / 'src'; blocked.write_text('not a directory')
+            with self.assertRaisesRegex(ValueError, 'ancestor'):
+                checks.coverage_config({'coverage_modules': []}, root)
+            blocked.unlink(); (root / 'src/research_workbench').mkdir(parents=True)
+            with patch.object(Path, 'is_symlink', return_value=True), self.assertRaises(ValueError):
+                checks.coverage_config({'coverage_modules': []}, root)
+            (root / 'build_backend.py').write_text('VALUE=1\n')
+            with patch.object(Path, 'is_symlink', side_effect=lambda: True), self.assertRaises(ValueError):
+                checks.coverage_config({'coverage_modules': ['build_backend.py']}, root)
+
+
 def policy():
     return {'source_root':'src/research_workbench','thresholds':{'global':{'line':90},
         'critical':{'line':95,'branch':90},'impact':{'line':100,'branch':100}},
@@ -71,13 +130,16 @@ class ImpactCoverageTests(unittest.TestCase):
         import shlex
         workflow = yaml.safe_load((ROOT / '.github/workflows/ci.yml').read_bytes())
         step = next(s for s in workflow['jobs']['coverage_quality']['steps'] if s.get('name') == 'Run required coverage test union')
-        command = shlex.split(step['run'])
+        command = shlex.split(step['run'].splitlines()[-1])
         command[0] = sys.executable
         with tempfile.TemporaryDirectory() as directory:
             env = {**os.environ, 'COVERAGE_FILE': str(Path(directory) / 'coverage-data')}
+            config = Path(directory) / 'coverage.ini'
+            config.write_text(checks.coverage_config({'coverage_modules': []}, ROOT))
+            command[command.index('--rcfile=.rwb/ci-coverage.ini')] = '--rcfile=' + str(config)
             subprocess.run(command[:command.index('--suite')] + ['--help'], cwd=ROOT, env=env, check=True, capture_output=True)
             output = Path(directory) / 'coverage.json'
-            subprocess.run([sys.executable, '-m', 'coverage', 'json', '-o', str(output)], cwd=ROOT, env=env, check=True, capture_output=True)
+            subprocess.run([sys.executable, '-m', 'coverage', 'json', '--rcfile=' + str(config), '-o', str(output)], cwd=ROOT, env=env, check=True, capture_output=True)
             measured = json.loads(output.read_bytes())
             names = {p.replace('\\', '/') for p in measured['files']}
             self.assertIn('tests/run_unittest_suite.py', names)
@@ -311,8 +373,9 @@ class WorkflowTests(unittest.TestCase):
             self.assertIn('outputs.behavioral', content['jobs']['compatibility_' + suffix]['if'])
         self.assertIn('outputs.coverage', content['jobs']['coverage_quality']['if'])
         self.assertNotIn('outputs.class', (ROOT / '.github/workflows/ci.yml').read_text())
-        self.assertIn('--source=src/research_workbench,.github/scripts',
+        self.assertIn('ci_checks.py configure --plan ci-plan.json',
                       (ROOT / '.github/workflows/ci.yml').read_text())
+        self.assertIn('--rcfile=.rwb/ci-coverage.ini', (ROOT / '.github/workflows/ci.yml').read_text())
         self.assertIn('--suite coverage-plan', (ROOT / '.github/workflows/ci.yml').read_text())
         self.assertIn('ci_checks.py coverage --plan', (ROOT / '.github/workflows/ci.yml').read_text())
 
@@ -358,10 +421,16 @@ class EntryPointTests(unittest.TestCase):
             with patch.object(checks,'verify_plan') as verify, patch.object(checks,'metadata_continuity',return_value={}),\
                  patch.object(checks,'aggregate',return_value={}),patch.object(checks,'impact_coverage',return_value={}),\
                  patch.object(checks,'ROOT',root),patch.dict(os.environ,{'CI_NEEDS':'{}'},clear=True),redirect_stdout(io.StringIO()):
-                for operation in ('aggregate','metadata','impact'):
+                for operation in ('aggregate','metadata','impact','configure'):
                     self.assertEqual(0,checks.main([operation,'--plan',str(root/'plan.json'),'--python','3.11',
-                        '--coverage',str(root/'coverage.json'),'--results',str(root/'results.json')]))
-                self.assertEqual(3,verify.call_count)
+                        '--coverage',str(root/'coverage.json'),'--results',str(root/'results.json'), '--config', str(root/'coverage.ini')]))
+                self.assertEqual(4,verify.call_count)
+                with self.assertRaisesRegex(ValueError, 'configuration output'):
+                    checks.main(['configure', '--plan', str(root/'plan.json')])
+                p.update(coverage_obligations=[], coverage_scope='none')
+                (root/'plan.json').write_bytes(planner.canonical(p))
+                with self.assertRaisesRegex(ValueError, 'coverage obligations'):
+                    checks.main(['configure', '--plan', str(root/'plan.json')])
 
 
 if __name__=='__main__':

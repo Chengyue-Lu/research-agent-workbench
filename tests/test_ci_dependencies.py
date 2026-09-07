@@ -222,6 +222,36 @@ class DependencyTests(unittest.TestCase):
             self.assertIn('data.json', paths)
             self.assertEqual({'test_x.py': b'VALUE=1\n'}, blobs)
 
+    def test_function_contract_keeps_initialization_bindings_and_execution_inputs_fixed(self):
+        before = b'import math\nLIMIT=1\ndef calculate(value):\n    return value + 1\n'
+        self.assertTrue(deps.function_body_only(before, before.replace(b'value + 1', b'value + 2')))
+        self.assertTrue(deps.function_body_only(before, before + b'# ordinary comment\n'))
+        for after in (before.replace(b'LIMIT=1', b'LIMIT=2'), before.replace(b'calculate(value)', b'calculate(value=1)'),
+                      before.replace(b'value + 1', b'other + 1'), before.replace(b'value + 1', b'math.sqrt(value)'),
+                      before.replace(b'import math', b'import math\nimport subprocess'),
+                      before.replace(b'def calculate', b'@decorator\ndef calculate'),
+                      before + b'calculate(1)\n'):
+            with self.subTest(after=after):
+                self.assertFalse(deps.function_body_only(before, after))
+        for before, after in (
+            (b'class C:\n def f(self): return 1\n', b'class C:\n def f(self): return 2\n'),
+            (b'async def f(): return 1\n', b'async def f(): return 2\n'),
+        ):
+            self.assertTrue(deps.function_body_only(before, after))
+
+    def test_local_contract_rejects_opaque_or_resource_boundary_mutations(self):
+        cases = [
+            (b'def f():\n exec(code)\n return 1', b'def f():\n exec(code)\n return 2'),
+            (b'def f():\n return reader("fixed")', b'def f():\n return reader("other")'),
+            (b'def f():\n path="fixed"\n return reader(path)', b'def f():\n path="other"\n return reader(path)'),
+            (b'def f(): return 1\ndef f(): return 2', b'def f(): return 1\ndef f(): return 3'),
+            (b'class C:\n def f(self): return 1\n def f(self): return 2',
+             b'class C:\n def f(self): return 1\n def f(self): return 3'),
+        ]
+        for before, after in cases:
+            with self.subTest(before=before):
+                self.assertFalse(deps.function_body_only(before, after))
+
 
 if __name__ == '__main__':
     unittest.main()
