@@ -1,0 +1,10 @@
+{
+  "blocked": true,
+  "risks": [
+    {
+      "code": "TRACE-CAPTURE-DELAYED",
+      "level": "block",
+      "message": "[capture-gap] trace declares incomplete or delayed capture"
+    }
+  ]
+}

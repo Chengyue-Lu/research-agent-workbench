@@ -1,0 +1,2443 @@
+{
+  "schema_version": "1.0",
+  "observed_at": "2026-09-07T17:23:35.684831+00:00",
+  "accepted_base": "bdbac11a0c9a17fa221f8cc8bdd522c1bf4f9087",
+  "m14_head": "205559b25f7f0bd276094a4ac53db28354b7284d",
+  "scope": "read-only intake; no source mutation or test execution",
+  "issue_comment": "https://github.com/Chengyue-Lu/research-agent-workbench/issues/48#issuecomment-5573581053",
+  "ci_run": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34131110394",
+  "analyzer_sha256": "73006de781d33cf8cd80fbc72ef07b2c5098fdec8ffa6737186ec7bffc54828b",
+  "same_analyzer_on_develop": true,
+  "probes": [
+    {
+      "seed": "src/research_workbench/artifacts/claim_trace.py",
+      "selected_module_count": 72,
+      "inventory_module_count": 75,
+      "selection": {
+        "algorithm": "base-head-consumers-v1",
+        "inventory_sha256": "401c242388054f4d30eb7389d7a035dc8f70c27996f8b71415384e8f0b31d09a",
+        "selected": {
+          "test_accepted_skill_migration_fixtures": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_accepted_skill_migration_fixtures.py"
+          ],
+          "test_agent_trace": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/cli.py",
+            "tests/test_agent_trace.py"
+          ],
+          "test_api_session_runner": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/observability/models.py",
+            "src/research_workbench/observability/__init__.py",
+            "tests/test_api_session_runner.py"
+          ],
+          "test_artifacts_admission": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/cli.py",
+            "tests/test_artifacts_admission.py"
+          ],
+          "test_artifacts_promotion": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "tests/test_artifacts_promotion.py"
+          ],
+          "test_artifacts_validation_host": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_artifacts_validation_host.py"
+          ],
+          "test_candidate_claim_rewrite": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "tests/test_candidate_claim_rewrite.py"
+          ],
+          "test_capability_consumer": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_capability_consumer.py"
+          ],
+          "test_capability_requirements": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_capability_requirements.py"
+          ],
+          "test_capability_resolution": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_capability_resolution.py"
+          ],
+          "test_capability_resolver_branches": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_capability_resolver_branches.py"
+          ],
+          "test_catalog": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_catalog.py"
+          ],
+          "test_ci_checks": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "tests/test_ci_checks.py"
+          ],
+          "test_ci_dependencies": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "tests/test_ci_dependencies.py"
+          ],
+          "test_ci_plan": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "tests/test_ci_plan.py"
+          ],
+          "test_claim_trace": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "tests/test_claim_trace.py"
+          ],
+          "test_cli": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_cli.py"
+          ],
+          "test_cli_command_branches": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/cli.py",
+            "tests/test_cli_command_branches.py"
+          ],
+          "test_context_model_branches": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "src/research_workbench/context/handoff_transfer.py",
+            "src/research_workbench/context/__init__.py",
+            "tests/test_context_model_branches.py"
+          ],
+          "test_contracts": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_contracts.py"
+          ],
+          "test_coverage_policy": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "tests/test_coverage_policy.py"
+          ],
+          "test_critical_contract_branches": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_critical_contract_branches.py"
+          ],
+          "test_decision_authority": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_decision_authority.py"
+          ],
+          "test_documentation": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            ".github/scripts/check_pr_governance.py",
+            "tests/test_documentation.py"
+          ],
+          "test_evaluation_manifest": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/cli.py",
+            "tests/test_evaluation_manifest.py"
+          ],
+          "test_execution_archive_helpers": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/observability/models.py",
+            "src/research_workbench/execution/archive.py",
+            "tests/test_execution_archive_helpers.py"
+          ],
+          "test_execution_contract_helpers": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/observability/models.py",
+            "src/research_workbench/observability/__init__.py",
+            "tests/test_execution_contract_helpers.py"
+          ],
+          "test_execution_host": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_execution_host.py"
+          ],
+          "test_execution_trace_adapter": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "tests/test_execution_trace_adapter.py"
+          ],
+          "test_execution_view": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_execution_view.py"
+          ],
+          "test_generic_execution_closeout": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_generic_execution_closeout.py"
+          ],
+          "test_governance_helper_branches": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "tests/test_pr_governance.py",
+            "tests/test_governance_helper_branches.py"
+          ],
+          "test_handoff_transfer": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/cli.py",
+            "tests/test_handoff_transfer.py"
+          ],
+          "test_m2_registry_runtime": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "tests/test_m2_registry_runtime.py"
+          ],
+          "test_m3_context_observability": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/cli.py",
+            "tests/test_m3_context_observability.py"
+          ],
+          "test_method_resolutions": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_method_resolutions.py"
+          ],
+          "test_method_trace_candidate": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/cli.py",
+            "tests/test_method_trace_candidate.py"
+          ],
+          "test_mode_actions": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_mode_actions.py"
+          ],
+          "test_model_pool": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+            "src/research_workbench/adapters/codex.py",
+            "src/research_workbench/adapters/__init__.py",
+            "tests/test_model_pool.py"
+          ],
+          "test_observability_model_branches": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/observability/models.py",
+            "tests/test_observability_model_branches.py"
+          ],
+          "test_phase_b_evolution_gate": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_phase_b_evolution_gate.py"
+          ],
+          "test_phase_c_gate": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "tests/test_phase_c_gate.py"
+          ],
+          "test_pr_governance": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "tests/test_pr_governance.py"
+          ],
+          "test_project_internal_handoff_fixtures": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_project_internal_handoff_fixtures.py"
+          ],
+          "test_protocol_profiles": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_protocol_profiles.py"
+          ],
+          "test_provider_adapters": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+            "src/research_workbench/adapters/codex.py",
+            "src/research_workbench/adapters/__init__.py",
+            "tests/test_provider_adapters.py"
+          ],
+          "test_provider_conformance": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_provider_conformance.py"
+          ],
+          "test_provider_contract_branches": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            ".agents/skills/literature-evidence-extraction/scripts/check_evidence_record.py",
+            "tests/test_provider_contract_branches.py"
+          ],
+          "test_provider_port": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+            "src/research_workbench/adapters/codex.py",
+            "src/research_workbench/adapters/__init__.py",
+            "tests/test_provider_port.py"
+          ],
+          "test_registry_require_branches": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_registry_require_branches.py"
+          ],
+          "test_relationships": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_relationships.py"
+          ],
+          "test_release_surface": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "tests/test_release_surface.py"
+          ],
+          "test_research_attempt_failure": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/cli.py",
+            "tests/test_research_attempt_failure.py"
+          ],
+          "test_research_mode_migration": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_research_mode_migration.py"
+          ],
+          "test_research_state_candidate": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/cli.py",
+            "tests/test_research_state_candidate.py"
+          ],
+          "test_research_state_critical_branches": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "tests/test_research_state_critical_branches.py"
+          ],
+          "test_runtime_bundle": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_runtime_bundle.py"
+          ],
+          "test_runtime_resources": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "build_backend.py",
+            "tests/test_runtime_resources.py"
+          ],
+          "test_schemas": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_schemas.py"
+          ],
+          "test_selection_witness": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "tests/test_selection_witness.py"
+          ],
+          "test_skill_archive_audit": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/cli.py",
+            "tests/test_skill_archive_audit.py"
+          ],
+          "test_skill_evaluation": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/cli.py",
+            "tests/test_skill_evaluation.py"
+          ],
+          "test_skill_evaluation_helpers": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "src/research_workbench/evaluation/skill_evaluation.py",
+            "tests/test_skill_evaluation_helpers.py"
+          ],
+          "test_skill_lifecycle": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_skill_lifecycle.py"
+          ],
+          "test_skill_needs": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_skill_needs.py"
+          ],
+          "test_skill_release_projection": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_skill_release_projection.py"
+          ],
+          "test_skill_runtime_extension": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_skill_runtime_extension.py"
+          ],
+          "test_trace_properties": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/observability/models.py",
+            "src/research_workbench/observability/__init__.py",
+            "tests/test_trace_properties.py"
+          ],
+          "test_trace_risk_codes": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/observability/models.py",
+            "tests/test_trace_risk_codes.py"
+          ],
+          "test_validation": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_validation.py"
+          ],
+          "test_validation_critical_surfaces": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_validation_critical_surfaces.py"
+          ],
+          "test_validation_helpers": [
+            "src/research_workbench/artifacts/claim_trace.py",
+            "src/research_workbench/cli.py",
+            "tests/test_validation_helpers.py"
+          ]
+        },
+        "excluded": [
+          "test_integrity",
+          "test_kernel",
+          "test_mode_action_routing_fixtures"
+        ],
+        "exclusion_reason": "outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately",
+        "opaque_consumers": [
+          ".github/scripts/check_pr_governance.py",
+          ".github/scripts/ci_checks.py",
+          ".github/scripts/ci_dependencies.py",
+          ".github/scripts/plan_ci.py",
+          ".github/scripts/portable_package_smoke.py",
+          ".github/scripts/release_surface.py",
+          ".github/scripts/selection_witness.py",
+          "build_backend.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "src/research_workbench/artifacts/validation_host.py",
+          "src/research_workbench/cli.py",
+          "src/research_workbench/research_state/gate.py",
+          "tests/run_unittest_suite.py",
+          "tests/test_artifacts_promotion.py",
+          "tests/test_candidate_claim_rewrite.py",
+          "tests/test_ci_checks.py",
+          "tests/test_ci_dependencies.py",
+          "tests/test_ci_plan.py",
+          "tests/test_coverage_policy.py",
+          "tests/test_execution_trace_adapter.py",
+          "tests/test_m2_registry_runtime.py",
+          "tests/test_phase_c_gate.py",
+          "tests/test_pr_governance.py",
+          "tests/test_release_surface.py",
+          "tests/test_selection_witness.py"
+        ],
+        "errors": [],
+        "test_reachable_sources": [
+          "src/research_workbench/artifacts/claim_trace.py"
+        ],
+        "affected_paths": [
+          ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+          ".agents/skills/literature-evidence-extraction/scripts/check_evidence_record.py",
+          ".github/scripts/check_pr_governance.py",
+          ".github/scripts/ci_checks.py",
+          ".github/scripts/ci_dependencies.py",
+          ".github/scripts/plan_ci.py",
+          ".github/scripts/portable_package_smoke.py",
+          ".github/scripts/release_surface.py",
+          ".github/scripts/selection_witness.py",
+          "build_backend.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "src/research_workbench/__main__.py",
+          "src/research_workbench/adapters/__init__.py",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/models/__init__.py",
+          "src/research_workbench/adapters/models/anthropic.py",
+          "src/research_workbench/adapters/models/base.py",
+          "src/research_workbench/adapters/models/configuration.py",
+          "src/research_workbench/adapters/models/conformance.py",
+          "src/research_workbench/adapters/models/gemini.py",
+          "src/research_workbench/adapters/models/openai.py",
+          "src/research_workbench/adapters/models/pool.py",
+          "src/research_workbench/adapters/models/session.py",
+          "src/research_workbench/artifacts/admission.py",
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/artifacts/promotion.py",
+          "src/research_workbench/artifacts/validation_host.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/capability/archive_audit.py",
+          "src/research_workbench/capability/catalog.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/requirements.py",
+          "src/research_workbench/capability/resolver.py",
+          "src/research_workbench/capability/supply.py",
+          "src/research_workbench/cli.py",
+          "src/research_workbench/context/__init__.py",
+          "src/research_workbench/context/handoff_transfer.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/evaluation/manifest.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/execution/__init__.py",
+          "src/research_workbench/execution/archive.py",
+          "src/research_workbench/execution/execution_view.py",
+          "src/research_workbench/execution/generic_closeout.py",
+          "src/research_workbench/execution/host.py",
+          "src/research_workbench/execution/recovery.py",
+          "src/research_workbench/execution/runner.py",
+          "src/research_workbench/execution/runtime_bundle.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/observability/models.py",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/protocol/__init__.py",
+          "src/research_workbench/protocol/migrations.py",
+          "src/research_workbench/protocol/profiles.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/research_state/closure.py",
+          "src/research_workbench/research_state/fresh_actor.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/resources.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/validation/authority_registry.py",
+          "src/research_workbench/validation/capability.py",
+          "src/research_workbench/validation/capability_registry.py",
+          "src/research_workbench/validation/capability_supply_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/method_resolution_registry.py",
+          "src/research_workbench/validation/phase_b_gate.py",
+          "src/research_workbench/validation/relationships.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/schemas.py",
+          "src/research_workbench/validation/skill_release_projection_registry.py",
+          "tests/execution_fixtures.py",
+          "tests/run_unittest_suite.py",
+          "tests/skill_runtime_fixtures.py",
+          "tests/test_accepted_skill_migration_fixtures.py",
+          "tests/test_agent_trace.py",
+          "tests/test_api_session_runner.py",
+          "tests/test_artifacts_admission.py",
+          "tests/test_artifacts_promotion.py",
+          "tests/test_artifacts_validation_host.py",
+          "tests/test_candidate_claim_rewrite.py",
+          "tests/test_capability_consumer.py",
+          "tests/test_capability_requirements.py",
+          "tests/test_capability_resolution.py",
+          "tests/test_capability_resolver_branches.py",
+          "tests/test_catalog.py",
+          "tests/test_ci_checks.py",
+          "tests/test_ci_dependencies.py",
+          "tests/test_ci_plan.py",
+          "tests/test_claim_trace.py",
+          "tests/test_cli.py",
+          "tests/test_cli_command_branches.py",
+          "tests/test_context_model_branches.py",
+          "tests/test_contracts.py",
+          "tests/test_coverage_policy.py",
+          "tests/test_critical_contract_branches.py",
+          "tests/test_decision_authority.py",
+          "tests/test_documentation.py",
+          "tests/test_evaluation_manifest.py",
+          "tests/test_execution_archive_helpers.py",
+          "tests/test_execution_contract_helpers.py",
+          "tests/test_execution_host.py",
+          "tests/test_execution_trace_adapter.py",
+          "tests/test_execution_view.py",
+          "tests/test_generic_execution_closeout.py",
+          "tests/test_governance_helper_branches.py",
+          "tests/test_handoff_transfer.py",
+          "tests/test_m2_registry_runtime.py",
+          "tests/test_m3_context_observability.py",
+          "tests/test_method_resolutions.py",
+          "tests/test_method_trace_candidate.py",
+          "tests/test_mode_actions.py",
+          "tests/test_model_pool.py",
+          "tests/test_observability_model_branches.py",
+          "tests/test_phase_b_evolution_gate.py",
+          "tests/test_phase_c_gate.py",
+          "tests/test_pr_governance.py",
+          "tests/test_project_internal_handoff_fixtures.py",
+          "tests/test_protocol_profiles.py",
+          "tests/test_provider_adapters.py",
+          "tests/test_provider_conformance.py",
+          "tests/test_provider_contract_branches.py",
+          "tests/test_provider_port.py",
+          "tests/test_registry_require_branches.py",
+          "tests/test_relationships.py",
+          "tests/test_release_surface.py",
+          "tests/test_research_attempt_failure.py",
+          "tests/test_research_mode_migration.py",
+          "tests/test_research_state_candidate.py",
+          "tests/test_research_state_critical_branches.py",
+          "tests/test_runtime_bundle.py",
+          "tests/test_runtime_resources.py",
+          "tests/test_schemas.py",
+          "tests/test_selection_witness.py",
+          "tests/test_skill_archive_audit.py",
+          "tests/test_skill_evaluation.py",
+          "tests/test_skill_evaluation_helpers.py",
+          "tests/test_skill_lifecycle.py",
+          "tests/test_skill_needs.py",
+          "tests/test_skill_release_projection.py",
+          "tests/test_skill_runtime_extension.py",
+          "tests/test_trace_properties.py",
+          "tests/test_trace_risk_codes.py",
+          "tests/test_validation.py",
+          "tests/test_validation_critical_surfaces.py",
+          "tests/test_validation_helpers.py",
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py"
+        ]
+      }
+    },
+    {
+      "seed": ".github/scripts/release_surface.py",
+      "selected_module_count": 72,
+      "inventory_module_count": 75,
+      "selection": {
+        "algorithm": "base-head-consumers-v1",
+        "inventory_sha256": "401c242388054f4d30eb7389d7a035dc8f70c27996f8b71415384e8f0b31d09a",
+        "selected": {
+          "test_accepted_skill_migration_fixtures": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_accepted_skill_migration_fixtures.py"
+          ],
+          "test_agent_trace": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/cli.py",
+            "tests/test_agent_trace.py"
+          ],
+          "test_api_session_runner": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/observability/models.py",
+            "src/research_workbench/observability/__init__.py",
+            "tests/test_api_session_runner.py"
+          ],
+          "test_artifacts_admission": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/cli.py",
+            "tests/test_artifacts_admission.py"
+          ],
+          "test_artifacts_promotion": [
+            ".github/scripts/release_surface.py",
+            "tests/test_artifacts_promotion.py"
+          ],
+          "test_artifacts_validation_host": [
+            ".github/scripts/release_surface.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_artifacts_validation_host.py"
+          ],
+          "test_candidate_claim_rewrite": [
+            ".github/scripts/release_surface.py",
+            "tests/test_candidate_claim_rewrite.py"
+          ],
+          "test_capability_consumer": [
+            ".github/scripts/release_surface.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_capability_consumer.py"
+          ],
+          "test_capability_requirements": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_capability_requirements.py"
+          ],
+          "test_capability_resolution": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_capability_resolution.py"
+          ],
+          "test_capability_resolver_branches": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_capability_resolver_branches.py"
+          ],
+          "test_catalog": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_catalog.py"
+          ],
+          "test_ci_checks": [
+            ".github/scripts/release_surface.py",
+            "tests/test_ci_checks.py"
+          ],
+          "test_ci_dependencies": [
+            ".github/scripts/release_surface.py",
+            "tests/test_ci_dependencies.py"
+          ],
+          "test_ci_plan": [
+            ".github/scripts/release_surface.py",
+            "tests/test_ci_plan.py"
+          ],
+          "test_claim_trace": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/cli.py",
+            "tests/test_claim_trace.py"
+          ],
+          "test_cli": [
+            ".github/scripts/release_surface.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_cli.py"
+          ],
+          "test_cli_command_branches": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/cli.py",
+            "tests/test_cli_command_branches.py"
+          ],
+          "test_context_model_branches": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "src/research_workbench/context/handoff_transfer.py",
+            "src/research_workbench/context/__init__.py",
+            "tests/test_context_model_branches.py"
+          ],
+          "test_contracts": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_contracts.py"
+          ],
+          "test_coverage_policy": [
+            ".github/scripts/release_surface.py",
+            "tests/test_coverage_policy.py"
+          ],
+          "test_critical_contract_branches": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_critical_contract_branches.py"
+          ],
+          "test_decision_authority": [
+            ".github/scripts/release_surface.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_decision_authority.py"
+          ],
+          "test_documentation": [
+            ".github/scripts/release_surface.py",
+            ".github/scripts/check_pr_governance.py",
+            "tests/test_documentation.py"
+          ],
+          "test_evaluation_manifest": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/cli.py",
+            "tests/test_evaluation_manifest.py"
+          ],
+          "test_execution_archive_helpers": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/observability/models.py",
+            "src/research_workbench/execution/archive.py",
+            "tests/test_execution_archive_helpers.py"
+          ],
+          "test_execution_contract_helpers": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/observability/models.py",
+            "src/research_workbench/observability/__init__.py",
+            "tests/test_execution_contract_helpers.py"
+          ],
+          "test_execution_host": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_execution_host.py"
+          ],
+          "test_execution_trace_adapter": [
+            ".github/scripts/release_surface.py",
+            "tests/test_execution_trace_adapter.py"
+          ],
+          "test_execution_view": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_execution_view.py"
+          ],
+          "test_generic_execution_closeout": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_generic_execution_closeout.py"
+          ],
+          "test_governance_helper_branches": [
+            ".github/scripts/release_surface.py",
+            "tests/test_pr_governance.py",
+            "tests/test_governance_helper_branches.py"
+          ],
+          "test_handoff_transfer": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/cli.py",
+            "tests/test_handoff_transfer.py"
+          ],
+          "test_m2_registry_runtime": [
+            ".github/scripts/release_surface.py",
+            "tests/test_m2_registry_runtime.py"
+          ],
+          "test_m3_context_observability": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/cli.py",
+            "tests/test_m3_context_observability.py"
+          ],
+          "test_method_resolutions": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_method_resolutions.py"
+          ],
+          "test_method_trace_candidate": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/cli.py",
+            "tests/test_method_trace_candidate.py"
+          ],
+          "test_mode_actions": [
+            ".github/scripts/release_surface.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_mode_actions.py"
+          ],
+          "test_model_pool": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+            "src/research_workbench/adapters/codex.py",
+            "src/research_workbench/adapters/__init__.py",
+            "tests/test_model_pool.py"
+          ],
+          "test_observability_model_branches": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/observability/models.py",
+            "tests/test_observability_model_branches.py"
+          ],
+          "test_phase_b_evolution_gate": [
+            ".github/scripts/release_surface.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_phase_b_evolution_gate.py"
+          ],
+          "test_phase_c_gate": [
+            ".github/scripts/release_surface.py",
+            "tests/test_phase_c_gate.py"
+          ],
+          "test_pr_governance": [
+            ".github/scripts/release_surface.py",
+            "tests/test_pr_governance.py"
+          ],
+          "test_project_internal_handoff_fixtures": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_project_internal_handoff_fixtures.py"
+          ],
+          "test_protocol_profiles": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_protocol_profiles.py"
+          ],
+          "test_provider_adapters": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+            "src/research_workbench/adapters/codex.py",
+            "src/research_workbench/adapters/__init__.py",
+            "tests/test_provider_adapters.py"
+          ],
+          "test_provider_conformance": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_provider_conformance.py"
+          ],
+          "test_provider_contract_branches": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            ".agents/skills/literature-evidence-extraction/scripts/check_evidence_record.py",
+            "tests/test_provider_contract_branches.py"
+          ],
+          "test_provider_port": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+            "src/research_workbench/adapters/codex.py",
+            "src/research_workbench/adapters/__init__.py",
+            "tests/test_provider_port.py"
+          ],
+          "test_registry_require_branches": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_registry_require_branches.py"
+          ],
+          "test_relationships": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_relationships.py"
+          ],
+          "test_release_surface": [
+            ".github/scripts/release_surface.py",
+            "tests/test_release_surface.py"
+          ],
+          "test_research_attempt_failure": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/cli.py",
+            "tests/test_research_attempt_failure.py"
+          ],
+          "test_research_mode_migration": [
+            ".github/scripts/release_surface.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_research_mode_migration.py"
+          ],
+          "test_research_state_candidate": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/cli.py",
+            "tests/test_research_state_candidate.py"
+          ],
+          "test_research_state_critical_branches": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "tests/test_research_state_critical_branches.py"
+          ],
+          "test_runtime_bundle": [
+            ".github/scripts/release_surface.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_runtime_bundle.py"
+          ],
+          "test_runtime_resources": [
+            ".github/scripts/release_surface.py",
+            "build_backend.py",
+            "tests/test_runtime_resources.py"
+          ],
+          "test_schemas": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_schemas.py"
+          ],
+          "test_selection_witness": [
+            ".github/scripts/release_surface.py",
+            "tests/test_selection_witness.py"
+          ],
+          "test_skill_archive_audit": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/cli.py",
+            "tests/test_skill_archive_audit.py"
+          ],
+          "test_skill_evaluation": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/cli.py",
+            "tests/test_skill_evaluation.py"
+          ],
+          "test_skill_evaluation_helpers": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "src/research_workbench/evaluation/skill_evaluation.py",
+            "tests/test_skill_evaluation_helpers.py"
+          ],
+          "test_skill_lifecycle": [
+            ".github/scripts/release_surface.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_skill_lifecycle.py"
+          ],
+          "test_skill_needs": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_skill_needs.py"
+          ],
+          "test_skill_release_projection": [
+            ".github/scripts/release_surface.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_skill_release_projection.py"
+          ],
+          "test_skill_runtime_extension": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_skill_runtime_extension.py"
+          ],
+          "test_trace_properties": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/observability/models.py",
+            "src/research_workbench/observability/__init__.py",
+            "tests/test_trace_properties.py"
+          ],
+          "test_trace_risk_codes": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/observability/models.py",
+            "tests/test_trace_risk_codes.py"
+          ],
+          "test_validation": [
+            ".github/scripts/release_surface.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_validation.py"
+          ],
+          "test_validation_critical_surfaces": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/research_state/gate.py",
+            "src/research_workbench/research_state/__init__.py",
+            "src/research_workbench/validation/research_state_registry.py",
+            "src/research_workbench/validation/documents.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_validation_critical_surfaces.py"
+          ],
+          "test_validation_helpers": [
+            ".github/scripts/release_surface.py",
+            "src/research_workbench/cli.py",
+            "tests/test_validation_helpers.py"
+          ]
+        },
+        "excluded": [
+          "test_integrity",
+          "test_kernel",
+          "test_mode_action_routing_fixtures"
+        ],
+        "exclusion_reason": "outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately",
+        "opaque_consumers": [
+          ".github/scripts/check_pr_governance.py",
+          ".github/scripts/ci_checks.py",
+          ".github/scripts/ci_dependencies.py",
+          ".github/scripts/plan_ci.py",
+          ".github/scripts/portable_package_smoke.py",
+          ".github/scripts/release_surface.py",
+          ".github/scripts/selection_witness.py",
+          "build_backend.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "src/research_workbench/artifacts/validation_host.py",
+          "src/research_workbench/cli.py",
+          "src/research_workbench/research_state/gate.py",
+          "tests/run_unittest_suite.py",
+          "tests/test_artifacts_promotion.py",
+          "tests/test_candidate_claim_rewrite.py",
+          "tests/test_ci_checks.py",
+          "tests/test_ci_dependencies.py",
+          "tests/test_ci_plan.py",
+          "tests/test_coverage_policy.py",
+          "tests/test_execution_trace_adapter.py",
+          "tests/test_m2_registry_runtime.py",
+          "tests/test_phase_c_gate.py",
+          "tests/test_pr_governance.py",
+          "tests/test_release_surface.py",
+          "tests/test_selection_witness.py"
+        ],
+        "errors": [],
+        "test_reachable_sources": [
+          ".github/scripts/release_surface.py"
+        ],
+        "affected_paths": [
+          ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+          ".agents/skills/literature-evidence-extraction/scripts/check_evidence_record.py",
+          ".github/scripts/check_pr_governance.py",
+          ".github/scripts/ci_checks.py",
+          ".github/scripts/ci_dependencies.py",
+          ".github/scripts/plan_ci.py",
+          ".github/scripts/portable_package_smoke.py",
+          ".github/scripts/release_surface.py",
+          ".github/scripts/selection_witness.py",
+          "build_backend.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "src/research_workbench/__main__.py",
+          "src/research_workbench/adapters/__init__.py",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/models/__init__.py",
+          "src/research_workbench/adapters/models/anthropic.py",
+          "src/research_workbench/adapters/models/base.py",
+          "src/research_workbench/adapters/models/configuration.py",
+          "src/research_workbench/adapters/models/conformance.py",
+          "src/research_workbench/adapters/models/gemini.py",
+          "src/research_workbench/adapters/models/openai.py",
+          "src/research_workbench/adapters/models/pool.py",
+          "src/research_workbench/adapters/models/session.py",
+          "src/research_workbench/artifacts/admission.py",
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/artifacts/promotion.py",
+          "src/research_workbench/artifacts/validation_host.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/capability/archive_audit.py",
+          "src/research_workbench/capability/catalog.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/requirements.py",
+          "src/research_workbench/capability/resolver.py",
+          "src/research_workbench/capability/supply.py",
+          "src/research_workbench/cli.py",
+          "src/research_workbench/context/__init__.py",
+          "src/research_workbench/context/handoff_transfer.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/evaluation/manifest.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/execution/__init__.py",
+          "src/research_workbench/execution/archive.py",
+          "src/research_workbench/execution/execution_view.py",
+          "src/research_workbench/execution/generic_closeout.py",
+          "src/research_workbench/execution/host.py",
+          "src/research_workbench/execution/recovery.py",
+          "src/research_workbench/execution/runner.py",
+          "src/research_workbench/execution/runtime_bundle.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/observability/models.py",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/protocol/__init__.py",
+          "src/research_workbench/protocol/migrations.py",
+          "src/research_workbench/protocol/profiles.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/research_state/closure.py",
+          "src/research_workbench/research_state/fresh_actor.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/resources.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/validation/authority_registry.py",
+          "src/research_workbench/validation/capability.py",
+          "src/research_workbench/validation/capability_registry.py",
+          "src/research_workbench/validation/capability_supply_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/method_resolution_registry.py",
+          "src/research_workbench/validation/phase_b_gate.py",
+          "src/research_workbench/validation/relationships.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/schemas.py",
+          "src/research_workbench/validation/skill_release_projection_registry.py",
+          "tests/execution_fixtures.py",
+          "tests/run_unittest_suite.py",
+          "tests/skill_runtime_fixtures.py",
+          "tests/test_accepted_skill_migration_fixtures.py",
+          "tests/test_agent_trace.py",
+          "tests/test_api_session_runner.py",
+          "tests/test_artifacts_admission.py",
+          "tests/test_artifacts_promotion.py",
+          "tests/test_artifacts_validation_host.py",
+          "tests/test_candidate_claim_rewrite.py",
+          "tests/test_capability_consumer.py",
+          "tests/test_capability_requirements.py",
+          "tests/test_capability_resolution.py",
+          "tests/test_capability_resolver_branches.py",
+          "tests/test_catalog.py",
+          "tests/test_ci_checks.py",
+          "tests/test_ci_dependencies.py",
+          "tests/test_ci_plan.py",
+          "tests/test_claim_trace.py",
+          "tests/test_cli.py",
+          "tests/test_cli_command_branches.py",
+          "tests/test_context_model_branches.py",
+          "tests/test_contracts.py",
+          "tests/test_coverage_policy.py",
+          "tests/test_critical_contract_branches.py",
+          "tests/test_decision_authority.py",
+          "tests/test_documentation.py",
+          "tests/test_evaluation_manifest.py",
+          "tests/test_execution_archive_helpers.py",
+          "tests/test_execution_contract_helpers.py",
+          "tests/test_execution_host.py",
+          "tests/test_execution_trace_adapter.py",
+          "tests/test_execution_view.py",
+          "tests/test_generic_execution_closeout.py",
+          "tests/test_governance_helper_branches.py",
+          "tests/test_handoff_transfer.py",
+          "tests/test_m2_registry_runtime.py",
+          "tests/test_m3_context_observability.py",
+          "tests/test_method_resolutions.py",
+          "tests/test_method_trace_candidate.py",
+          "tests/test_mode_actions.py",
+          "tests/test_model_pool.py",
+          "tests/test_observability_model_branches.py",
+          "tests/test_phase_b_evolution_gate.py",
+          "tests/test_phase_c_gate.py",
+          "tests/test_pr_governance.py",
+          "tests/test_project_internal_handoff_fixtures.py",
+          "tests/test_protocol_profiles.py",
+          "tests/test_provider_adapters.py",
+          "tests/test_provider_conformance.py",
+          "tests/test_provider_contract_branches.py",
+          "tests/test_provider_port.py",
+          "tests/test_registry_require_branches.py",
+          "tests/test_relationships.py",
+          "tests/test_release_surface.py",
+          "tests/test_research_attempt_failure.py",
+          "tests/test_research_mode_migration.py",
+          "tests/test_research_state_candidate.py",
+          "tests/test_research_state_critical_branches.py",
+          "tests/test_runtime_bundle.py",
+          "tests/test_runtime_resources.py",
+          "tests/test_schemas.py",
+          "tests/test_selection_witness.py",
+          "tests/test_skill_archive_audit.py",
+          "tests/test_skill_evaluation.py",
+          "tests/test_skill_evaluation_helpers.py",
+          "tests/test_skill_lifecycle.py",
+          "tests/test_skill_needs.py",
+          "tests/test_skill_release_projection.py",
+          "tests/test_skill_runtime_extension.py",
+          "tests/test_trace_properties.py",
+          "tests/test_trace_risk_codes.py",
+          "tests/test_validation.py",
+          "tests/test_validation_critical_surfaces.py",
+          "tests/test_validation_helpers.py",
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py"
+        ]
+      }
+    },
+    {
+      "seed": "src/research_workbench/capability/release_projection.py",
+      "selected_module_count": 72,
+      "inventory_module_count": 75,
+      "selection": {
+        "algorithm": "base-head-consumers-v1",
+        "inventory_sha256": "401c242388054f4d30eb7389d7a035dc8f70c27996f8b71415384e8f0b31d09a",
+        "selected": {
+          "test_accepted_skill_migration_fixtures": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_accepted_skill_migration_fixtures.py"
+          ],
+          "test_agent_trace": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/cli.py",
+            "tests/test_agent_trace.py"
+          ],
+          "test_api_session_runner": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "src/research_workbench/adapters/codex.py",
+            "src/research_workbench/adapters/__init__.py",
+            "tests/test_api_session_runner.py"
+          ],
+          "test_artifacts_admission": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/cli.py",
+            "tests/test_artifacts_admission.py"
+          ],
+          "test_artifacts_promotion": [
+            "src/research_workbench/capability/release_projection.py",
+            "tests/test_artifacts_promotion.py"
+          ],
+          "test_artifacts_validation_host": [
+            "src/research_workbench/capability/release_projection.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_artifacts_validation_host.py"
+          ],
+          "test_candidate_claim_rewrite": [
+            "src/research_workbench/capability/release_projection.py",
+            "tests/test_candidate_claim_rewrite.py"
+          ],
+          "test_capability_consumer": [
+            "src/research_workbench/capability/release_projection.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_capability_consumer.py"
+          ],
+          "test_capability_requirements": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_capability_requirements.py"
+          ],
+          "test_capability_resolution": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_capability_resolution.py"
+          ],
+          "test_capability_resolver_branches": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_capability_resolver_branches.py"
+          ],
+          "test_catalog": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_catalog.py"
+          ],
+          "test_ci_checks": [
+            "src/research_workbench/capability/release_projection.py",
+            "tests/test_ci_checks.py"
+          ],
+          "test_ci_dependencies": [
+            "src/research_workbench/capability/release_projection.py",
+            "tests/test_ci_dependencies.py"
+          ],
+          "test_ci_plan": [
+            "src/research_workbench/capability/release_projection.py",
+            "tests/test_ci_plan.py"
+          ],
+          "test_claim_trace": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/cli.py",
+            "tests/test_claim_trace.py"
+          ],
+          "test_cli": [
+            "src/research_workbench/capability/release_projection.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_cli.py"
+          ],
+          "test_cli_command_branches": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/cli.py",
+            "tests/test_cli_command_branches.py"
+          ],
+          "test_context_model_branches": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "src/research_workbench/validation/__init__.py",
+            "src/research_workbench/context/handoff_transfer.py",
+            "src/research_workbench/context/__init__.py",
+            "tests/test_context_model_branches.py"
+          ],
+          "test_contracts": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_contracts.py"
+          ],
+          "test_coverage_policy": [
+            "src/research_workbench/capability/release_projection.py",
+            "tests/test_coverage_policy.py"
+          ],
+          "test_critical_contract_branches": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_critical_contract_branches.py"
+          ],
+          "test_decision_authority": [
+            "src/research_workbench/capability/release_projection.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_decision_authority.py"
+          ],
+          "test_documentation": [
+            "src/research_workbench/capability/release_projection.py",
+            ".github/scripts/check_pr_governance.py",
+            "tests/test_documentation.py"
+          ],
+          "test_evaluation_manifest": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/cli.py",
+            "tests/test_evaluation_manifest.py"
+          ],
+          "test_execution_archive_helpers": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "src/research_workbench/execution/runtime_bundle.py",
+            "src/research_workbench/execution/__init__.py",
+            "tests/test_execution_archive_helpers.py"
+          ],
+          "test_execution_contract_helpers": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "src/research_workbench/execution/runtime_bundle.py",
+            "tests/test_execution_contract_helpers.py"
+          ],
+          "test_execution_host": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_execution_host.py"
+          ],
+          "test_execution_trace_adapter": [
+            "src/research_workbench/capability/release_projection.py",
+            "tests/test_execution_trace_adapter.py"
+          ],
+          "test_execution_view": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_execution_view.py"
+          ],
+          "test_generic_execution_closeout": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_generic_execution_closeout.py"
+          ],
+          "test_governance_helper_branches": [
+            "src/research_workbench/capability/release_projection.py",
+            "tests/test_pr_governance.py",
+            "tests/test_governance_helper_branches.py"
+          ],
+          "test_handoff_transfer": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/cli.py",
+            "tests/test_handoff_transfer.py"
+          ],
+          "test_m2_registry_runtime": [
+            "src/research_workbench/capability/release_projection.py",
+            "tests/test_m2_registry_runtime.py"
+          ],
+          "test_m3_context_observability": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/cli.py",
+            "tests/test_m3_context_observability.py"
+          ],
+          "test_method_resolutions": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_method_resolutions.py"
+          ],
+          "test_method_trace_candidate": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/cli.py",
+            "tests/test_method_trace_candidate.py"
+          ],
+          "test_mode_actions": [
+            "src/research_workbench/capability/release_projection.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_mode_actions.py"
+          ],
+          "test_model_pool": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "src/research_workbench/adapters/codex.py",
+            "src/research_workbench/adapters/__init__.py",
+            "tests/test_model_pool.py"
+          ],
+          "test_observability_model_branches": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "src/research_workbench/observability/models.py",
+            "tests/test_observability_model_branches.py"
+          ],
+          "test_phase_b_evolution_gate": [
+            "src/research_workbench/capability/release_projection.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_phase_b_evolution_gate.py"
+          ],
+          "test_phase_c_gate": [
+            "src/research_workbench/capability/release_projection.py",
+            "tests/test_phase_c_gate.py"
+          ],
+          "test_pr_governance": [
+            "src/research_workbench/capability/release_projection.py",
+            "tests/test_pr_governance.py"
+          ],
+          "test_project_internal_handoff_fixtures": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_project_internal_handoff_fixtures.py"
+          ],
+          "test_protocol_profiles": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_protocol_profiles.py"
+          ],
+          "test_provider_adapters": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "src/research_workbench/adapters/codex.py",
+            "src/research_workbench/adapters/__init__.py",
+            "tests/test_provider_adapters.py"
+          ],
+          "test_provider_conformance": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_provider_conformance.py"
+          ],
+          "test_provider_contract_branches": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_provider_contract_branches.py"
+          ],
+          "test_provider_port": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "src/research_workbench/adapters/codex.py",
+            "src/research_workbench/adapters/__init__.py",
+            "tests/test_provider_port.py"
+          ],
+          "test_registry_require_branches": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_registry_require_branches.py"
+          ],
+          "test_relationships": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_relationships.py"
+          ],
+          "test_release_surface": [
+            "src/research_workbench/capability/release_projection.py",
+            "tests/test_release_surface.py"
+          ],
+          "test_research_attempt_failure": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/cli.py",
+            "tests/test_research_attempt_failure.py"
+          ],
+          "test_research_mode_migration": [
+            "src/research_workbench/capability/release_projection.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_research_mode_migration.py"
+          ],
+          "test_research_state_candidate": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/cli.py",
+            "tests/test_research_state_candidate.py"
+          ],
+          "test_research_state_critical_branches": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/research_state/gate.py",
+            "tests/test_research_state_critical_branches.py"
+          ],
+          "test_runtime_bundle": [
+            "src/research_workbench/capability/release_projection.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_runtime_bundle.py"
+          ],
+          "test_runtime_resources": [
+            "src/research_workbench/capability/release_projection.py",
+            "tests/test_runtime_resources.py"
+          ],
+          "test_schemas": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_schemas.py"
+          ],
+          "test_selection_witness": [
+            "src/research_workbench/capability/release_projection.py",
+            "tests/test_selection_witness.py"
+          ],
+          "test_skill_archive_audit": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_skill_archive_audit.py"
+          ],
+          "test_skill_evaluation": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_skill_evaluation.py"
+          ],
+          "test_skill_evaluation_helpers": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "src/research_workbench/evaluation/skill_evaluation.py",
+            "tests/test_skill_evaluation_helpers.py"
+          ],
+          "test_skill_lifecycle": [
+            "src/research_workbench/capability/release_projection.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_skill_lifecycle.py"
+          ],
+          "test_skill_needs": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_skill_needs.py"
+          ],
+          "test_skill_release_projection": [
+            "src/research_workbench/capability/release_projection.py",
+            "tests/test_skill_release_projection.py"
+          ],
+          "test_skill_runtime_extension": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "tests/test_skill_runtime_extension.py"
+          ],
+          "test_trace_properties": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "src/research_workbench/observability/models.py",
+            "src/research_workbench/observability/__init__.py",
+            "tests/test_trace_properties.py"
+          ],
+          "test_trace_risk_codes": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "src/research_workbench/observability/models.py",
+            "tests/test_trace_risk_codes.py"
+          ],
+          "test_validation": [
+            "src/research_workbench/capability/release_projection.py",
+            "registry/validation-tools/deterministic_runner.py",
+            "tests/test_validation.py"
+          ],
+          "test_validation_critical_surfaces": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/capability/__init__.py",
+            "src/research_workbench/validation/__init__.py",
+            "tests/test_validation_critical_surfaces.py"
+          ],
+          "test_validation_helpers": [
+            "src/research_workbench/capability/release_projection.py",
+            "src/research_workbench/cli.py",
+            "tests/test_validation_helpers.py"
+          ]
+        },
+        "excluded": [
+          "test_integrity",
+          "test_kernel",
+          "test_mode_action_routing_fixtures"
+        ],
+        "exclusion_reason": "outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately",
+        "opaque_consumers": [
+          ".github/scripts/check_pr_governance.py",
+          ".github/scripts/ci_checks.py",
+          ".github/scripts/ci_dependencies.py",
+          ".github/scripts/plan_ci.py",
+          ".github/scripts/portable_package_smoke.py",
+          ".github/scripts/release_surface.py",
+          ".github/scripts/selection_witness.py",
+          "build_backend.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "src/research_workbench/artifacts/validation_host.py",
+          "src/research_workbench/cli.py",
+          "src/research_workbench/research_state/gate.py",
+          "tests/run_unittest_suite.py",
+          "tests/test_artifacts_promotion.py",
+          "tests/test_candidate_claim_rewrite.py",
+          "tests/test_ci_checks.py",
+          "tests/test_ci_dependencies.py",
+          "tests/test_ci_plan.py",
+          "tests/test_coverage_policy.py",
+          "tests/test_execution_trace_adapter.py",
+          "tests/test_m2_registry_runtime.py",
+          "tests/test_phase_c_gate.py",
+          "tests/test_pr_governance.py",
+          "tests/test_release_surface.py",
+          "tests/test_selection_witness.py"
+        ],
+        "errors": [],
+        "test_reachable_sources": [
+          "src/research_workbench/capability/release_projection.py"
+        ],
+        "affected_paths": [
+          ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+          ".agents/skills/literature-evidence-extraction/scripts/check_evidence_record.py",
+          ".github/scripts/check_pr_governance.py",
+          ".github/scripts/ci_checks.py",
+          ".github/scripts/ci_dependencies.py",
+          ".github/scripts/plan_ci.py",
+          ".github/scripts/portable_package_smoke.py",
+          ".github/scripts/release_surface.py",
+          ".github/scripts/selection_witness.py",
+          "build_backend.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "src/research_workbench/__main__.py",
+          "src/research_workbench/adapters/__init__.py",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/models/__init__.py",
+          "src/research_workbench/adapters/models/anthropic.py",
+          "src/research_workbench/adapters/models/base.py",
+          "src/research_workbench/adapters/models/configuration.py",
+          "src/research_workbench/adapters/models/conformance.py",
+          "src/research_workbench/adapters/models/gemini.py",
+          "src/research_workbench/adapters/models/openai.py",
+          "src/research_workbench/adapters/models/pool.py",
+          "src/research_workbench/adapters/models/session.py",
+          "src/research_workbench/artifacts/admission.py",
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/artifacts/promotion.py",
+          "src/research_workbench/artifacts/validation_host.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/capability/archive_audit.py",
+          "src/research_workbench/capability/catalog.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/requirements.py",
+          "src/research_workbench/capability/resolver.py",
+          "src/research_workbench/capability/supply.py",
+          "src/research_workbench/cli.py",
+          "src/research_workbench/context/__init__.py",
+          "src/research_workbench/context/handoff_transfer.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/evaluation/manifest.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/execution/__init__.py",
+          "src/research_workbench/execution/archive.py",
+          "src/research_workbench/execution/execution_view.py",
+          "src/research_workbench/execution/generic_closeout.py",
+          "src/research_workbench/execution/host.py",
+          "src/research_workbench/execution/recovery.py",
+          "src/research_workbench/execution/runner.py",
+          "src/research_workbench/execution/runtime_bundle.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/observability/models.py",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/protocol/__init__.py",
+          "src/research_workbench/protocol/migrations.py",
+          "src/research_workbench/protocol/profiles.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/research_state/closure.py",
+          "src/research_workbench/research_state/fresh_actor.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/resources.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/validation/authority_registry.py",
+          "src/research_workbench/validation/capability.py",
+          "src/research_workbench/validation/capability_registry.py",
+          "src/research_workbench/validation/capability_supply_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/method_resolution_registry.py",
+          "src/research_workbench/validation/phase_b_gate.py",
+          "src/research_workbench/validation/relationships.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/schemas.py",
+          "src/research_workbench/validation/skill_release_projection_registry.py",
+          "tests/execution_fixtures.py",
+          "tests/run_unittest_suite.py",
+          "tests/skill_runtime_fixtures.py",
+          "tests/test_accepted_skill_migration_fixtures.py",
+          "tests/test_agent_trace.py",
+          "tests/test_api_session_runner.py",
+          "tests/test_artifacts_admission.py",
+          "tests/test_artifacts_promotion.py",
+          "tests/test_artifacts_validation_host.py",
+          "tests/test_candidate_claim_rewrite.py",
+          "tests/test_capability_consumer.py",
+          "tests/test_capability_requirements.py",
+          "tests/test_capability_resolution.py",
+          "tests/test_capability_resolver_branches.py",
+          "tests/test_catalog.py",
+          "tests/test_ci_checks.py",
+          "tests/test_ci_dependencies.py",
+          "tests/test_ci_plan.py",
+          "tests/test_claim_trace.py",
+          "tests/test_cli.py",
+          "tests/test_cli_command_branches.py",
+          "tests/test_context_model_branches.py",
+          "tests/test_contracts.py",
+          "tests/test_coverage_policy.py",
+          "tests/test_critical_contract_branches.py",
+          "tests/test_decision_authority.py",
+          "tests/test_documentation.py",
+          "tests/test_evaluation_manifest.py",
+          "tests/test_execution_archive_helpers.py",
+          "tests/test_execution_contract_helpers.py",
+          "tests/test_execution_host.py",
+          "tests/test_execution_trace_adapter.py",
+          "tests/test_execution_view.py",
+          "tests/test_generic_execution_closeout.py",
+          "tests/test_governance_helper_branches.py",
+          "tests/test_handoff_transfer.py",
+          "tests/test_m2_registry_runtime.py",
+          "tests/test_m3_context_observability.py",
+          "tests/test_method_resolutions.py",
+          "tests/test_method_trace_candidate.py",
+          "tests/test_mode_actions.py",
+          "tests/test_model_pool.py",
+          "tests/test_observability_model_branches.py",
+          "tests/test_phase_b_evolution_gate.py",
+          "tests/test_phase_c_gate.py",
+          "tests/test_pr_governance.py",
+          "tests/test_project_internal_handoff_fixtures.py",
+          "tests/test_protocol_profiles.py",
+          "tests/test_provider_adapters.py",
+          "tests/test_provider_conformance.py",
+          "tests/test_provider_contract_branches.py",
+          "tests/test_provider_port.py",
+          "tests/test_registry_require_branches.py",
+          "tests/test_relationships.py",
+          "tests/test_release_surface.py",
+          "tests/test_research_attempt_failure.py",
+          "tests/test_research_mode_migration.py",
+          "tests/test_research_state_candidate.py",
+          "tests/test_research_state_critical_branches.py",
+          "tests/test_runtime_bundle.py",
+          "tests/test_runtime_resources.py",
+          "tests/test_schemas.py",
+          "tests/test_selection_witness.py",
+          "tests/test_skill_archive_audit.py",
+          "tests/test_skill_evaluation.py",
+          "tests/test_skill_evaluation_helpers.py",
+          "tests/test_skill_lifecycle.py",
+          "tests/test_skill_needs.py",
+          "tests/test_skill_release_projection.py",
+          "tests/test_skill_runtime_extension.py",
+          "tests/test_trace_properties.py",
+          "tests/test_trace_risk_codes.py",
+          "tests/test_validation.py",
+          "tests/test_validation_critical_surfaces.py",
+          "tests/test_validation_helpers.py",
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py"
+        ]
+      }
+    }
+  ],
+  "hosted": {
+    "plan_id": "abb1ac462f821f7e01433887a9dc736a7b4ebba485312546e6f35e2d49d23eef",
+    "target": "b9d5d432c0ba9455eca9aedba7823095b83fbc2f",
+    "behavioral_scope": "full",
+    "coverage_scope": "impact+repository",
+    "behavioral_selected_module_count": 74,
+    "impact_selected_module_count": 74,
+    "coverage_tests_equal_behavioral_tests": true,
+    "test_count": 1039,
+    "successful": true,
+    "duration_seconds": {
+      "p50": 0.055117,
+      "p95": 12.143344
+    },
+    "wall_seconds": 2655.396489,
+    "repository_policy_selected_test_count": 978,
+    "impact_readded_test_count": 61,
+    "impact_readded_duration_seconds": 937.590517,
+    "impact_readded_modules": {
+      "test_generic_execution_closeout": {
+        "test_count": 10,
+        "duration_seconds": 515.573634
+      },
+      "test_execution_trace_adapter": {
+        "test_count": 14,
+        "duration_seconds": 144.159535
+      },
+      "test_execution_host": {
+        "test_count": 9,
+        "duration_seconds": 137.61617700000002
+      },
+      "test_trace_properties": {
+        "test_count": 3,
+        "duration_seconds": 83.447092
+      },
+      "test_m3_context_observability": {
+        "test_count": 13,
+        "duration_seconds": 38.042440000000006
+      },
+      "test_skill_evaluation": {
+        "test_count": 2,
+        "duration_seconds": 10.139678
+      },
+      "test_handoff_transfer": {
+        "test_count": 1,
+        "duration_seconds": 8.562979
+      },
+      "test_documentation": {
+        "test_count": 9,
+        "duration_seconds": 0.048982
+      }
+    },
+    "impact_readded_tests": [
+      {
+        "duration_seconds": 176.301314,
+        "id": "test_generic_execution_closeout.GenericExecutionCloseoutTests.test_failed_receipt_trace_fact_covers_every_binding_component_and_supply",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 71.609079,
+        "id": "test_execution_host.ExecutionHostTests.test_post_call_binding_boundary_budget_and_output_drift_fail_closed",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 63.62659,
+        "id": "test_generic_execution_closeout.GenericExecutionCloseoutTests.test_completed_failed_and_preflight_blocked_lifecycle_replay_end_to_end",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 60.464865,
+        "id": "test_generic_execution_closeout.GenericExecutionCloseoutTests.test_receipt_replay_rejects_rehashed_host_binding_and_supply_substitution",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 60.361118,
+        "id": "test_generic_execution_closeout.GenericExecutionCloseoutTests.test_trace_provider_and_runtime_actor_identity_must_match_host_binding",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 47.259742,
+        "id": "test_generic_execution_closeout.GenericExecutionCloseoutTests.test_no_skill_and_direct_tool_close_and_form_core_gate_without_assignment",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 35.157475,
+        "id": "test_trace_properties.TracePropertyTests.test_any_message_byte_append_breaks_hash_binding",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 35.054806,
+        "id": "test_execution_trace_adapter.ExecutionArchiveCloseoutTests.test_marker_last_closeout_and_file_only_replay",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 34.316065,
+        "id": "test_trace_properties.TracePropertyTests.test_any_non_contiguous_event_sequence_is_blocked",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 31.635441,
+        "id": "test_generic_execution_closeout.GenericExecutionCloseoutTests.test_host_tool_fact_without_trace_operation_is_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 30.019247,
+        "id": "test_generic_execution_closeout.GenericExecutionCloseoutTests.test_trace_or_validation_tamper_blocks_file_replay",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 29.143495,
+        "id": "test_generic_execution_closeout.GenericExecutionCloseoutTests.test_host_provider_count_without_trace_request_is_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 27.609064,
+        "id": "test_execution_trace_adapter.ExecutionRecoveryTests.test_recovery_rejects_attempt_reuse_and_tampered_archive",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 24.100139,
+        "id": "test_execution_trace_adapter.ExecutionRecoveryTests.test_new_process_recovers_only_to_a_distinct_attempt",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 18.625253,
+        "id": "test_execution_host.ExecutionHostTests.test_host_clock_freshness_and_bound_bundle_drift_prevent_driver_call",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 17.47147,
+        "id": "test_execution_trace_adapter.ExecutionArchiveCloseoutTests.test_transcript_tamper_and_unrecorded_file_are_blocking",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 17.131339,
+        "id": "test_execution_trace_adapter.ExecutionRecoveryTests.test_recovery_reports_malformed_main_state_as_structured_risk",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 15.485809,
+        "id": "test_m3_context_observability.ContextGovernanceTests.test_checkpoint_and_resume_are_file_recoverable",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 13.973552,
+        "id": "test_trace_properties.TracePropertyTests.test_any_parent_path_escape_is_blocked",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 13.268706,
+        "id": "test_generic_execution_closeout.GenericExecutionCloseoutTests.test_failed_post_call_receipt_requires_hash_pinned_trace_execution_fact",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 11.829532,
+        "id": "test_execution_host.ExecutionHostTests.test_exact_view_load_and_single_driver_execution_report_actual_facts",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 10.207183,
+        "id": "test_execution_host.ExecutionHostTests.test_driver_exception_is_one_call_content_free_capture_gap_not_recovery",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 10.088896,
+        "id": "test_execution_host.ExecutionHostTests.test_host_clock_blocks_actual_timeout_when_driver_underreports_duration",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 8.77123,
+        "id": "test_execution_trace_adapter.ExecutionArchiveCloseoutTests.test_frozen_attempt_cannot_be_republished",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 8.751024,
+        "id": "test_execution_trace_adapter.ExecutionArchiveCloseoutTests.test_marker_publication_failure_leaves_uncommitted_attempt",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 8.562979,
+        "id": "test_handoff_transfer.HandoffTransferTests.test_cli_reports_structural_only_status_without_blocking",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 8.496942,
+        "id": "test_execution_host.ExecutionHostTests.test_preflight_binding_mismatch_blocks_without_call_and_requests_reresolution",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 6.758751,
+        "id": "test_execution_host.ExecutionHostTests.test_hash_valid_view_rewrite_is_rejected_by_deterministic_recomputation",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 5.218135,
+        "id": "test_m3_context_observability.ContextGovernanceTests.test_safe_pause_fixture_is_file_recoverable",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 5.201005,
+        "id": "test_m3_context_observability.ContextGovernanceTests.test_checkpoint_publish_failure_leaves_no_partial_target",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 5.152488,
+        "id": "test_m3_context_observability.ContextGovernanceTests.test_resume_check_rejects_git_head_conflict",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 5.115643,
+        "id": "test_skill_evaluation.SkillEvaluationTests.test_cli_returns_nonzero_for_incomplete_fixture_evidence",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 5.024035,
+        "id": "test_skill_evaluation.SkillEvaluationTests.test_fixture_example_is_valid_but_not_admission_evidence",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 3.508103,
+        "id": "test_m3_context_observability.ContextGovernanceTests.test_explicit_git_capture_fails_closed_outside_repository",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 3.493116,
+        "id": "test_generic_execution_closeout.GenericExecutionCloseoutTests.test_agent_profile_tool_allowlist_applies_to_actual_tool_supply",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 3.412477,
+        "id": "test_m3_context_observability.ExecutionReceiptTests.test_failed_machine_report_overrides_completed_claim",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 1.746565,
+        "id": "test_execution_trace_adapter.ExecutionTraceLinkTests.test_trace_identity_and_status_drift_are_blocked",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 1.734348,
+        "id": "test_execution_trace_adapter.ExecutionTraceLinkTests.test_attempt_receipt_trace_mismatch_is_blocked",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 1.732732,
+        "id": "test_execution_trace_adapter.ExecutionTraceLinkTests.test_valid_trace_link_replays_from_files_only",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.0453,
+        "id": "test_documentation.DocumentationTests.test_internal_markdown_links_resolve",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.040696,
+        "id": "test_execution_trace_adapter.ExecutionTraceLinkTests.test_historical_model_api_receipt_without_trace_remains_unchanged",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.014085,
+        "id": "test_m3_context_observability.ContextGovernanceTests.test_snapshot_rejects_falsified_assessment",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.012318,
+        "id": "test_m3_context_observability.ContextGovernanceTests.test_main_state_rejects_duplicate_machine_reference_paths",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.011485,
+        "id": "test_m3_context_observability.ContextGovernanceTests.test_tampered_checkpoint_digest_is_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.009343,
+        "id": "test_execution_trace_adapter.ExecutionTraceLinkTests.test_legacy_attempt_and_receipt_without_trace_remain_readable",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.006897,
+        "id": "test_m3_context_observability.ContextGovernanceTests.test_main_raw_material_is_blocked_before_context_growth",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.006583,
+        "id": "test_m3_context_observability.ContextGovernanceTests.test_next_atomic_cost_protects_closeout_reserve",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.006557,
+        "id": "test_m3_context_observability.ContextGovernanceTests.test_compacted_task_cannot_self_declare_ready_without_transfer_audit",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.006498,
+        "id": "test_m3_context_observability.ContextGovernanceTests.test_task_compaction_is_only_recoverable_after_handoff",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.006069,
+        "id": "test_execution_trace_adapter.ExecutionTraceLinkTests.test_trace_link_shape_is_optional_but_strict_when_present",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.001177,
+        "id": "test_documentation.DocumentationTests.test_execution_runtime_audit_keeps_private_sources_out_of_git",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.00089,
+        "id": "test_documentation.DocumentationTests.test_adr_numbers_are_unique",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.00071,
+        "id": "test_execution_trace_adapter.ExecutionArchiveCloseoutTests.test_missing_trace_blocks_before_closeout_artifacts",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.000483,
+        "id": "test_documentation.DocumentationTests.test_first_contact_surfaces_do_not_own_internal_milestones",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.000395,
+        "id": "test_documentation.DocumentationTests.test_document_surface_authorities_exist",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.000321,
+        "id": "test_execution_host.ExecutionHostTests.test_host_source_has_no_retry_fallback_routing_or_recovery_dependency",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.000278,
+        "id": "test_documentation.DocumentationTests.test_stable_examples_do_not_use_retired_skill_packages",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.00022,
+        "id": "test_execution_host.ExecutionHostTests.test_execution_caller_cannot_supply_or_backdate_host_timestamps",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.000188,
+        "id": "test_documentation.DocumentationTests.test_recovery_gate_separates_authority_from_implementation_evidence",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.000136,
+        "id": "test_documentation.DocumentationTests.test_no_skill_path_requires_execution_view_without_assignment",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.000135,
+        "id": "test_documentation.DocumentationTests.test_getting_started_uses_recommended_not_replay_path",
+        "outcome": "passed"
+      }
+    ],
+    "jobs": [
+      {
+        "completed_at": "2026-09-07T14:06:43Z",
+        "conclusion": "success",
+        "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34131110394/job/101771187911",
+        "name": "plan",
+        "started_at": "2026-09-07T14:06:28Z",
+        "wall_seconds": 15.0
+      },
+      {
+        "completed_at": "2026-09-07T14:06:55Z",
+        "conclusion": "success",
+        "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34131110394/job/101771275646",
+        "name": "documentation",
+        "started_at": "2026-09-07T14:06:45Z",
+        "wall_seconds": 10.0
+      },
+      {
+        "completed_at": "2026-09-07T14:35:30Z",
+        "conclusion": "success",
+        "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34131110394/job/101771275674",
+        "name": "compatibility (3.13)",
+        "started_at": "2026-09-07T14:06:46Z",
+        "wall_seconds": 1724.0
+      },
+      {
+        "completed_at": "2026-09-07T14:32:51Z",
+        "conclusion": "success",
+        "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34131110394/job/101771275677",
+        "name": "compatibility (3.11)",
+        "started_at": "2026-09-07T14:06:45Z",
+        "wall_seconds": 1566.0
+      },
+      {
+        "completed_at": "2026-09-07T14:51:19Z",
+        "conclusion": "failure",
+        "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34131110394/job/101771275685",
+        "name": "coverage-quality (3.11)",
+        "started_at": "2026-09-07T14:06:45Z",
+        "wall_seconds": 2674.0
+      },
+      {
+        "completed_at": "2026-09-07T14:07:01Z",
+        "conclusion": "success",
+        "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34131110394/job/101771275791",
+        "name": "repository_smoke",
+        "started_at": "2026-09-07T14:06:45Z",
+        "wall_seconds": 16.0
+      },
+      {
+        "completed_at": "2026-09-07T14:08:09Z",
+        "conclusion": "success",
+        "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34131110394/job/101771275839",
+        "name": "package-smoke (3.13)",
+        "started_at": "2026-09-07T14:06:45Z",
+        "wall_seconds": 84.0
+      },
+      {
+        "completed_at": "2026-09-07T14:08:23Z",
+        "conclusion": "success",
+        "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34131110394/job/101771276021",
+        "name": "package-smoke (3.11)",
+        "started_at": "2026-09-07T14:06:45Z",
+        "wall_seconds": 98.0
+      },
+      {
+        "completed_at": "2026-09-07T14:51:36Z",
+        "conclusion": "failure",
+        "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34131110394/job/101784462464",
+        "name": "test (3.13)",
+        "started_at": "2026-09-07T14:51:22Z",
+        "wall_seconds": 14.0
+      },
+      {
+        "completed_at": "2026-09-07T14:51:36Z",
+        "conclusion": "failure",
+        "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34131110394/job/101784462466",
+        "name": "test (3.11)",
+        "started_at": "2026-09-07T14:51:22Z",
+        "wall_seconds": 14.0
+      }
+    ],
+    "attribution_limit": "Policy membership reconstructed from executed IDs; durations observed within the combined instrumented run, not measured savings from an alternative run.",
+    "artifacts": [
+      {
+        "name": "ci-plan.json",
+        "sha256": "0f36f38bbf368830ab07ef73cd9ea072aec2cd1694bceccdd2243678b7e79fdf",
+        "bytes": 74295
+      },
+      {
+        "name": "coverage-test-results.json",
+        "sha256": "12c79b75a1da61dd01e0e9c7d7340f88acc9d3c87b64c8aa5da166dfdda144e3",
+        "bytes": 203133
+      },
+      {
+        "name": "coverage.json",
+        "sha256": "65ecf8e768774447ea58e04a454b49e3fcac005bb8a473cc7fea1f11cbcc4beb",
+        "bytes": 1274852
+      }
+    ]
+  }
+}
