@@ -1,0 +1,515 @@
+{
+  "coverage_obligations": [],
+  "duration_seconds": {
+    "p50": 9.4e-05,
+    "p95": 0.000941
+  },
+  "outcomes": {
+    "errors": 0,
+    "failed": 0,
+    "passed": 93,
+    "skipped": 0
+  },
+  "plan_id": "68f7870685c84d275f38fd1dc5aec139d5f3f39f187fc03d175e0958f7910242",
+  "python_version": "3.11.16",
+  "schema_version": "1.0.0",
+  "slowest": [
+    {
+      "duration_seconds": 0.122384,
+      "id": "test_documentation.DocumentationTests.test_internal_markdown_links_resolve",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.002362,
+      "id": "test_pr_governance.ReleaseTrustIntegrationTests.test_process_environment_is_not_implicitly_trusted",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.00197,
+      "id": "test_pr_governance.PublishedDocumentIdentityTests.test_new_version_append_preserves_old_identity",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.001175,
+      "id": "test_documentation.DocumentationTests.test_execution_runtime_audit_keeps_private_sources_out_of_git",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000941,
+      "id": "test_pr_governance.ReleaseTrustIntegrationTests.test_fully_valid_release_candidate_remains_dormant_and_r2",
+      "outcome": "passed"
+    }
+  ],
+  "successful": true,
+  "suite": "focused",
+  "target": "4b5ddcc2fb18e129391fe9ffb073ee170b9063c1",
+  "test_count": 93,
+  "tests": [
+    {
+      "duration_seconds": 0.122384,
+      "id": "test_documentation.DocumentationTests.test_internal_markdown_links_resolve",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.002362,
+      "id": "test_pr_governance.ReleaseTrustIntegrationTests.test_process_environment_is_not_implicitly_trusted",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.00197,
+      "id": "test_pr_governance.PublishedDocumentIdentityTests.test_new_version_append_preserves_old_identity",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.001175,
+      "id": "test_documentation.DocumentationTests.test_execution_runtime_audit_keeps_private_sources_out_of_git",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000941,
+      "id": "test_pr_governance.ReleaseTrustIntegrationTests.test_fully_valid_release_candidate_remains_dormant_and_r2",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000875,
+      "id": "test_pr_governance.ReleaseTrustIntegrationTests.test_release_trust_read_failure_is_blocking",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000862,
+      "id": "test_pr_governance.PublishedIdentityIntegrationTests.test_move_out_is_detected_when_changed_path_is_not_published",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000802,
+      "id": "test_pr_governance.PublishedDocumentIdentityTests.test_same_version_rewrite_fails_for_every_published_kind",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000706,
+      "id": "test_pr_governance.ReleaseTrustIntegrationTests.test_pr_body_or_branch_name_cannot_replace_trusted_expectations",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000605,
+      "id": "test_pr_governance.ReleaseTrustIntegrationTests.test_develop_to_main_check_remains_executable",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000515,
+      "id": "test_documentation.DocumentationTests.test_no_skill_path_requires_execution_view_without_assignment",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000481,
+      "id": "test_documentation.DocumentationTests.test_document_surface_authorities_exist",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.00047,
+      "id": "test_documentation.DocumentationTests.test_first_contact_surfaces_do_not_own_internal_milestones",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000465,
+      "id": "test_documentation.DocumentationTests.test_adr_numbers_are_unique",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000377,
+      "id": "test_documentation.DocumentationTests.test_stable_examples_do_not_use_retired_skill_packages",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000376,
+      "id": "test_pr_governance.PolicyAndCodeownersTests.test_curated_release_required_checks_exist_in_ci_workflow",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.00034,
+      "id": "test_pr_governance.PublishedDocumentIdentityTests.test_migration_move_outside_registry_fails",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000339,
+      "id": "test_pr_governance.TasksAuthorityTests.test_task_definition_must_match_declared_ids",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000316,
+      "id": "test_pr_governance.PolicyAndCodeownersTests.test_versioned_research_mode_directory_is_protected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.00031,
+      "id": "test_pr_governance.TasksAuthorityTests.test_single_parked_completion_with_base_done_dependency_fails",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000301,
+      "id": "test_pr_governance.PolicyAndCodeownersTests.test_published_identity_policy_declares_all_protected_kinds",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000292,
+      "id": "test_pr_governance.ReleaseTrustTopologyTests.test_source_repository_ref_sha_history_and_ci_drift_fail_closed",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000286,
+      "id": "test_pr_governance.PolicyAndCodeownersTests.test_policy_has_three_by_three_model",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000285,
+      "id": "test_pr_governance.PolicyAndCodeownersTests.test_pr25_rollout_is_retained_and_marked_superseded",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000273,
+      "id": "test_pr_governance.ReleaseTrustTopologyTests.test_parent_and_manifest_drift_fail_closed",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000273,
+      "id": "test_pr_governance.TasksAuthorityTests.test_legal_feature_transitions_pass",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000262,
+      "id": "test_pr_governance.PublishedDocumentIdentityTests.test_action_move_outside_protected_tree_fails",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000249,
+      "id": "test_pr_governance.WorkstreamTests.test_provided_workstream_must_match_owner",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000243,
+      "id": "test_pr_governance.PublishedDocumentIdentityTests.test_authority_matrix_move_outside_registry_fails",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.00023,
+      "id": "test_pr_governance.TasksAuthorityTests.test_r1_parked_to_done_chain_fails",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000228,
+      "id": "test_pr_governance.TasksAuthorityTests.test_atomic_completion_cyclic_dag_fails",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000186,
+      "id": "test_documentation.DocumentationTests.test_recovery_gate_separates_authority_from_implementation_evidence",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000179,
+      "id": "test_pr_governance.PolicyAndCodeownersTests.test_curated_release_policy_is_strict_declarative_and_dormant",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000171,
+      "id": "test_pr_governance.PolicyAndCodeownersTests.test_template_omits_machine_known_and_retired_fields",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000168,
+      "id": "test_pr_governance.TopologyTests.test_release_version_repository_class_and_base_fail_closed",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000145,
+      "id": "test_pr_governance.TasksAuthorityTests.test_feature_cannot_rewrite_acceptance",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000144,
+      "id": "test_pr_governance.PublishedDocumentIdentityTests.test_new_version_append_with_old_path_retained_passes",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000142,
+      "id": "test_pr_governance.PolicyAndCodeownersTests.test_codeowners_has_no_global_wildcard_and_keeps_sensitive_paths",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.00014,
+      "id": "test_pr_governance.TasksAuthorityTests.test_r2_branching_dag_reachable_from_anchor_passes",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.00013,
+      "id": "test_pr_governance.PublishedDocumentIdentityTests.test_versioned_research_mode_move_outside_registry_fails",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000129,
+      "id": "test_pr_governance.TopologyTests.test_develop_to_main_rejects_fork_and_wrong_class",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.00012,
+      "id": "test_pr_governance.TasksAuthorityTests.test_illegal_transition_fails",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000108,
+      "id": "test_documentation.DocumentationTests.test_getting_started_uses_recommended_not_replay_path",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 0.000108,
+      "id": "test_pr_governance.PublishedDocumentIdentityTests.test_unrelated_archive_file_addition_passes",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 9.9e-05,
+      "id": "test_pr_governance.TasksAuthorityTests.test_dependency_must_be_done_for_ready",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 9.8e-05,
+      "id": "test_pr_governance.TasksAuthorityTests.test_atomic_dependency_chain_can_complete_in_one_stage",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 9.4e-05,
+      "id": "test_pr_governance.PublishedDocumentIdentityTests.test_research_mode_move_outside_registry_fails",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 8.9e-05,
+      "id": "test_pr_governance.TasksAuthorityTests.test_disconnected_parked_completion_component_fails",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 8.8e-05,
+      "id": "test_pr_governance.TasksAuthorityTests.test_r2_connected_linear_stage_chain_passes",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 7.6e-05,
+      "id": "test_pr_governance.ReleaseTrustTopologyTests.test_prerequisite_helper_revalidates_canonical_policy",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 7.5e-05,
+      "id": "test_pr_governance.RiskInferenceTests.test_capability_resolution_contract_surface_is_r2",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 7.4e-05,
+      "id": "test_pr_governance.PublishedActionIdentityTests.test_existing_action_entry_is_append_only",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 7.4e-05,
+      "id": "test_pr_governance.RiskInferenceTests.test_skill_lifecycle_contract_surface_is_r2",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 7.3e-05,
+      "id": "test_pr_governance.TasksAuthorityTests.test_undeclared_status_change_fails",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 7.2e-05,
+      "id": "test_pr_governance.PublishedDocumentIdentityTests.test_published_action_deletion_fails",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 7.2e-05,
+      "id": "test_pr_governance.RiskInferenceTests.test_protocol_profile_contract_surface_is_r2",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 7e-05,
+      "id": "test_pr_governance.TasksAuthorityTests.test_atomic_completion_fails_when_dependency_is_missing",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.9e-05,
+      "id": "test_pr_governance.TasksAuthorityTests.test_atomic_completion_missing_per_task_evidence_fails",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.7e-05,
+      "id": "test_pr_governance.PullRequestBodyTests.test_contract_flags_must_be_explicit",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.7e-05,
+      "id": "test_pr_governance.TasksAuthorityTests.test_atomic_completion_with_undeclared_intermediate_fails",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.5e-05,
+      "id": "test_pr_governance.RiskInferenceTests.test_authority_protocol_is_r2",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 6.1e-05,
+      "id": "test_pr_governance.TasksAuthorityTests.test_combined_completion_and_dependency_activation_passes",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.8e-05,
+      "id": "test_pr_governance.PublishedDocumentIdentityTests.test_same_identity_relocation_inside_protected_tree_fails",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.8e-05,
+      "id": "test_pr_governance.TasksAuthorityTests.test_atomic_completion_without_anchor_fails",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.7e-05,
+      "id": "test_pr_governance.RiskInferenceTests.test_capability_requirement_contract_surface_is_r2",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.5e-05,
+      "id": "test_pr_governance.PullRequestBodyTests.test_minimal_r0_body_does_not_require_sha_reviewer_or_workstream",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.5e-05,
+      "id": "test_pr_governance.TasksAuthorityTests.test_each_completed_task_requires_named_evidence",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.4e-05,
+      "id": "test_pr_governance.ReleaseTrustTopologyTests.test_policy_shape_and_activation_cannot_be_weakened_by_data_only",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.4e-05,
+      "id": "test_pr_governance.RiskInferenceTests.test_skill_need_contract_surface_is_r2",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.3e-05,
+      "id": "test_pr_governance.RiskInferenceTests.test_implementation_docs_and_status_are_at_least_r1",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.2e-05,
+      "id": "test_pr_governance.TasksAuthorityTests.test_done_task_is_immutable",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 5.1e-05,
+      "id": "test_pr_governance.PullRequestBodyTests.test_missing_required_section_is_a_finding",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 4.6e-05,
+      "id": "test_pr_governance.PullRequestBodyTests.test_unknown_owner_is_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 4.3e-05,
+      "id": "test_pr_governance.ReleaseTrustTopologyTests.test_unknown_expectation_fields_are_rejected",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 4.3e-05,
+      "id": "test_pr_governance.TopologyTests.test_feature_to_main_fails",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 4.2e-05,
+      "id": "test_pr_governance.RiskInferenceTests.test_phase_b_evolution_gate_is_r2",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 4.1e-05,
+      "id": "test_pr_governance.ReleaseTrustTopologyTests.test_branch_name_alone_cannot_supply_trusted_expectations",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 4e-05,
+      "id": "test_pr_governance.PublishedActionIdentityTests.test_same_identity_cannot_change_hash",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.8e-05,
+      "id": "test_pr_governance.RiskInferenceTests.test_architecture_change_is_r2",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.8e-05,
+      "id": "test_pr_governance.TopologyTests.test_feature_to_develop_passes",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.5e-05,
+      "id": "test_pr_governance.PublishedActionIdentityTests.test_published_identity_cannot_be_removed",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.4e-05,
+      "id": "test_pr_governance.ReleaseTrustTopologyTests.test_valid_release_prerequisites_have_no_specific_failures",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.4e-05,
+      "id": "test_pr_governance.TopologyTests.test_develop_to_main_release_passes",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.3e-05,
+      "id": "test_pr_governance.TopologyTests.test_strict_curated_release_branch_shape_is_matched_and_dormant",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 3.1e-05,
+      "id": "test_pr_governance.RiskInferenceTests.test_test_only_change_is_r0",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.9e-05,
+      "id": "test_pr_governance.WorkstreamTests.test_r0_and_r1_can_omit_workstream",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.8e-05,
+      "id": "test_pr_governance.RiskInferenceTests.test_schema_change_is_r1",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.3e-05,
+      "id": "test_pr_governance.RiskRequirementTests.test_r1_requires_task_or_audit_id",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.3e-05,
+      "id": "test_pr_governance.RiskRequirementTests.test_r2_requires_authority_and_adversarial_sections",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.2e-05,
+      "id": "test_pr_governance.RiskInferenceTests.test_method_resolution_schema_is_r2_not_r1",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2.1e-05,
+      "id": "test_pr_governance.RiskInferenceTests.test_declared_r0_is_automatically_upgraded",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 2e-05,
+      "id": "test_pr_governance.WorkstreamTests.test_r2_requires_workstream",
+      "outcome": "passed"
+    },
+    {
+      "duration_seconds": 1.7e-05,
+      "id": "test_pr_governance.RiskInferenceTests.test_declared_r2_is_never_downgraded",
+      "outcome": "passed"
+    }
+  ],
+  "wall_seconds": 3.308501
+}

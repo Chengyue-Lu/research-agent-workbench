@@ -1,0 +1,74 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260907-008
+task_id: TEST-PERF-002
+task_revision: 10
+attempt_id: A-20260907-008
+archive_root: A-20260907-008
+baseline: c7233912e64b7dda81514197a9b3fb6e1f0b0b27
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: a7e7640e49aa992268b711356ddae8ddb2a6e03d88e75bcfc4b219cf8f029500
+actors_ref:
+  path: ACTORS.yaml
+  sha256: a41dcf7f5ab855bfe360e02c37f358d1e778d4db721d69ee3c6a0d117ef76d84
+read_allowlist:
+- .github/**
+- AGENTS.md
+- build_backend.py
+- docs/DEVELOPMENT.md
+- docs/workstreams/chengyue-lu/**
+- pyproject.toml
+- runtime-resources.json
+- src/**
+- tests/**
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/release_surface.py
+- .rwb/acceptance/**
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md
+- work/TEST-PERF-002/A-20260907-008/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 216a7ae176d26a9d0bddaf1bd64f49699913518e2c2fe3888757df91e23494e1
+  event_count: 5
+tool_event_refs:
+- path: tool-events/m14-selection-acceptance-succeeded.json
+  sha256: 34a15a2ba075b55bbde6bd7736b7f5b5308b4038948108a727aa32d6251fd377
+handoff_refs:
+- path: handoff/H0.md
+  sha256: 46dce70177e23a87e18b4d45ca82a28e9636e6a5f8b324dc1cfb7a4365aaeb17
+decision_refs: []
+output_refs:
+- path: RESULTS.md
+  sha256: 75d2677b0bcd04c6cea9b7f456a3051691b777dee355f1d98ff2efc0ca418899
+check_refs:
+- path: checks/acceptance-summary.json
+  sha256: cc998444c1b9c140a3d95b6240cc58b20aa77ebae4b586c987b39222110e09d3
+- path: checks/rebase-proof.json
+  sha256: 47d64c9d7d79b2fcbe6f4e41e155a55b870a2b03a9df6c1eca94e1e527c2796c
+- path: checks/inventory.json
+  sha256: c5260e24013ea70911b0b595313231f1b044a3e1d75b4a3df8fdc0bdc9e12699
+- path: checks/digest-oracle.json
+  sha256: 3aa50b00b5fad333ee0ffb5b14f5f6aa90868c64ac2845008a959853f4d4c825
+- path: checks/docs-results.json
+  sha256: 03a900c5bb236f14a1fc2866f70ade73f5467e7310ef4a35b7073bc7274276eb
+- path: checks/rebased-witness.json
+  sha256: e8a719cfba28fa227bd39953c15f04c8385363802fe1ea77257840383ff079f3
+- path: checks/package.json
+  sha256: 6052beb7a86c03534135a0b14d513e8bc0bb99f55ecf1efa79cbdcaddb3c9398
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0004
+  affected_stream: events

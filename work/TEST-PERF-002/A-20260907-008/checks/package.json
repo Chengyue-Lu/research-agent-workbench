@@ -1,0 +1,95 @@
+{
+  "runtime_resources_identical": true,
+  "manifest_sha256": "852a8b98bbaa913b4db112b6fa9966ca75b1ab4ead4bff2ea7e3081eb4204877",
+  "installs": [
+    {
+      "merge_eligible": false,
+      "modes": 4,
+      "projections": 0,
+      "python": "3.11.16",
+      "resources": 121,
+      "schemas": 73,
+      "validation_profile": "installed-runtime",
+      "route": "direct",
+      "isolated": true
+    },
+    {
+      "merge_eligible": false,
+      "modes": 4,
+      "projections": 0,
+      "python": "3.11.16",
+      "resources": 121,
+      "schemas": 73,
+      "validation_profile": "installed-runtime",
+      "route": "direct",
+      "isolated": false
+    },
+    {
+      "merge_eligible": false,
+      "modes": 4,
+      "projections": 0,
+      "python": "3.11.16",
+      "resources": 121,
+      "schemas": 73,
+      "validation_profile": "installed-runtime",
+      "route": "sdist-wheel",
+      "isolated": true
+    },
+    {
+      "merge_eligible": false,
+      "modes": 4,
+      "projections": 0,
+      "python": "3.11.16",
+      "resources": 121,
+      "schemas": 73,
+      "validation_profile": "installed-runtime",
+      "route": "sdist-wheel",
+      "isolated": false
+    },
+    {
+      "merge_eligible": false,
+      "modes": 4,
+      "projections": 0,
+      "python": "3.13.15",
+      "resources": 121,
+      "schemas": 73,
+      "validation_profile": "installed-runtime",
+      "route": "direct",
+      "isolated": true
+    },
+    {
+      "merge_eligible": false,
+      "modes": 4,
+      "projections": 0,
+      "python": "3.13.15",
+      "resources": 121,
+      "schemas": 73,
+      "validation_profile": "installed-runtime",
+      "route": "direct",
+      "isolated": false
+    },
+    {
+      "merge_eligible": false,
+      "modes": 4,
+      "projections": 0,
+      "python": "3.13.15",
+      "resources": 121,
+      "schemas": 73,
+      "validation_profile": "installed-runtime",
+      "route": "sdist-wheel",
+      "isolated": true
+    },
+    {
+      "merge_eligible": false,
+      "modes": 4,
+      "projections": 0,
+      "python": "3.13.15",
+      "resources": 121,
+      "schemas": 73,
+      "validation_profile": "installed-runtime",
+      "route": "sdist-wheel",
+      "isolated": false
+    }
+  ],
+  "merge_eligible": false
+}

@@ -1,0 +1,31 @@
+task_id: TEST-PERF-002
+revision: 10
+owner: Chengyue-Lu
+risk: R2
+delegation: false
+required_skills: []
+goal: Measure selective CI using an isolated rebased M14 baseline and docs/function
+  mutations; preserve current-base and review gates.
+authorization: User accepted testing on isolated branches, then directed M4 to baseline
+  synchronization only and M14 to performance probes.
+read_allowlist:
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- docs/workstreams/chengyue-lu/**
+- .github/**
+- src/**
+- tests/**
+- pyproject.toml
+- build_backend.py
+- runtime-resources.json
+- work/TEST-PERF-002/**
+write_scope:
+- work/TEST-PERF-002/A-20260907-008/**
+- .rwb/acceptance/**
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md
+- .github/scripts/release_surface.py
+stop_conditions:
+- Mutations are confined to detached probe worktrees and cannot be merged.
+- Do not change the official M4 or M14 PR branches; M4 already includes current develop.
+- No release, main, tag, protection or new M14 milestone authorization.
+- Do not merge while required checks or cross-owner acceptance remain incomplete.

@@ -1,0 +1,29 @@
+{
+  "full_inventory": 1035,
+  "selected_inventory": 1023,
+  "selected_test_modules": 72,
+  "excluded_inventory": 12,
+  "test_count_reduction_percent": 1.16,
+  "unrelated_examples": {
+    "test_provider_adapters": [
+      ".github/scripts/release_surface.py",
+      "src/research_workbench/resources.py",
+      "src/research_workbench/capability/release_projection.py",
+      "src/research_workbench/capability/__init__.py",
+      "src/research_workbench/adapters/codex.py",
+      "src/research_workbench/adapters/__init__.py",
+      "tests/test_provider_adapters.py"
+    ],
+    "test_api_session_runner": [
+      ".github/scripts/release_surface.py",
+      "src/research_workbench/resources.py",
+      "src/research_workbench/validation/schemas.py",
+      "src/research_workbench/observability/trace.py",
+      "tests/test_api_session_runner.py"
+    ],
+    "test_release_surface": [
+      ".github/scripts/release_surface.py",
+      "tests/test_release_surface.py"
+    ]
+  }
+}

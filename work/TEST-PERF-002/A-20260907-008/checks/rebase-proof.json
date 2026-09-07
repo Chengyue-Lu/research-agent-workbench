@@ -1,0 +1,12 @@
+{
+  "base": "b8a38a1d0cea4e8422ade8481aec4c277250d6cb",
+  "behavioral": "full",
+  "conflicts": [
+    "tests/coverage_policy.yaml"
+  ],
+  "coverage": "impact+repository",
+  "head": "def9322d44dd7bd6161d244f81f7b1ee6a7adeb6",
+  "old_head": "e1b42f8807b34ee6897de754704b30c6a76ea146",
+  "resolution": "retain both added acceptance mappings; all other bytes equal Git three-way expected tree",
+  "tree": "2f8a2db3beebb6b7524bd4cfa40de07ede39360a"
+}

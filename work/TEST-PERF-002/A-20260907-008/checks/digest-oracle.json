@@ -1,0 +1,18 @@
+{
+  "baseline": {
+    "expected": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+    "observed": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+    "known_vector_passed": true
+  },
+  "mutant": {
+    "expected": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+    "observed": "0000000000000000000000000000000000000000000000000000000000000000",
+    "known_vector_passed": false
+  },
+  "existing_release_suite_on_mutant": {
+    "tests": 37,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 133.318
+  }
+}
