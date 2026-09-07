@@ -176,7 +176,7 @@ def validate_policy(policy):
                     and len(group[key]) == len(set(group[key])), 'invalid group list')
         require(group['tests'] and all(re.fullmatch(r'test_[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)*', t)
                                      for t in group['tests']), 'invalid tests')
-        require(all(p.startswith('src/research_workbench/') and p.endswith('.py')
+        require(all(p.startswith(('src/research_workbench/', '.github/scripts/')) and p.endswith('.py')
                     and '..' not in p.split('/') and '\\' not in p for p in group['coverage']), 'coverage module paths')
         require(type(group['package']) is bool and type(group['repository']) is bool, 'invalid smoke flags')
     closure(policy, policy['groups'])
