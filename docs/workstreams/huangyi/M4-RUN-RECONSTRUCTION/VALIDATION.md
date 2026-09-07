@@ -1,5 +1,37 @@
 # M4-004 Candidate Validation
 
+## Accepted M4-003 integration (2026-09-07)
+
+PR61 was accepted by Chengyue Lu at `72ba684` and merged into develop as
+`b8a38a1`. Integration commit `d3ec4a0` incorporates that accepted Claim consumer
+and the accepted PR63/65 CI behavior into this PR62 candidate. Conflict resolution
+preserves both consumers, all four Schema registrations, both coverage inventories
+and M4-003 DONE; only M4-004's completion remains a candidate Task transition.
+
+The previously tested producer-to-reconstruction extension `cf114c9` is unchanged.
+A new combined observation at `d3ec4a0` reuses its retained real promotion target
+and receipt, with the now-accepted Claim consumer: Claim `complete=true`, Run
+`matched`, exact output bytes and generic manifest/map/report checks all pass.
+Readers forbid `Popen`; exactly one necessary reconstruction subprocess ran, with
+reported duration **0.141 seconds**, under Windows CPython 3.11.9. No promotion,
+checker, installation, model, local full or global coverage run was repeated.
+
+The candidate's ignored `work/M4-004/A-20260907-001/README.md` indexes the manifest,
+receipt, Claim trace, reconstruction report and file-hash inventory. The synthetic
+Claim intentionally overstates stability; its contrary intermediate states and
+limitation remain visible. The observation proves fixed-environment engineering
+integration, not scientific truth, cross-platform reproduction or M5 benefit.
+
+The merged Schema catalog inventory and internal Markdown link checks pass
+(2 tests, 1.864 seconds), and `git diff --check` passes. No production source
+changed after the combined observation; the following commit only records it.
+
+Final hosted CI and Chengyue Lu's semantic acceptance remain required for PR62.
+The sections below retain the earlier measurements at their original candidates;
+they are not measurements of this integrated candidate.
+
+## Earlier candidate evidence
+
 Validation environment: local Windows, CPython 3.11.9. Source package selected explicitly with `PYTHONPATH`
 pointing at this candidate's `src`; the reused closeout venv does not select the older editable source tree.
 
