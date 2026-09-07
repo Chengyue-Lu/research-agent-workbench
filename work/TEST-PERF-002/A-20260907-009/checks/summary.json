@@ -1,0 +1,58 @@
+{
+  "code_head": "8ba54a432ff54afe85b98729e387f74a243a1521",
+  "base": "b8a38a1d0cea4e8422ade8481aec4c277250d6cb",
+  "incremental_repair_base": "def9322d44dd7bd6161d244f81f7b1ee6a7adeb6",
+  "focused": {
+    "successful": true,
+    "test_count": 101,
+    "outcomes": {
+      "errors": 0,
+      "failed": 0,
+      "passed": 101,
+      "skipped": 0
+    },
+    "wall_seconds": 250.375
+  },
+  "critical_coverage": {
+    ".github/scripts/ci_dependencies.py": {
+      "line_percent": 100.0,
+      "branch_percent": 100.0
+    },
+    ".github/scripts/plan_ci.py": {
+      "line_percent": 99.7758,
+      "branch_percent": 98.6842
+    }
+  },
+  "changed_code_preflight": {
+    ".github/scripts/ci_dependencies.py": {
+      "missing_statements": [],
+      "missing_outgoing_branches": []
+    },
+    ".github/scripts/plan_ci.py": {
+      "missing_statements": [],
+      "missing_outgoing_branches": []
+    }
+  },
+  "docs_and_policy_tests": 30,
+  "repository_validation": {
+    "validated": 183,
+    "errors": 0,
+    "warnings": 0
+  },
+  "hash_repair_commit": "7dea133a8e5f5e98dc05af0cfb9a2933a67ba050",
+  "hash_positive_methods": 2,
+  "hash_mutant": {
+    "base": "7dea133a8e5f5e98dc05af0cfb9a2933a67ba050",
+    "head": "8a50c062a539e5106eb8852483415d6ca83de18f",
+    "exit_code": 1,
+    "test_methods": 2,
+    "failures": 3,
+    "expected_rejection": true,
+    "wall_seconds": 6.329
+  },
+  "repository_coverage_proved_locally": false,
+  "witness_root": "1b543393ae71b9032359b739170d66ec0be08772",
+  "automatic_witness_required_check": false,
+  "hosted_current_head_evidence": "pending final archive commit and push",
+  "raw_coverage_sha256": "4c9d6b62b96380972dac4e07a83888073bcbe07bced0792e77a4b129de0f4f92"
+}
