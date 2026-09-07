@@ -552,6 +552,36 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual({'positive_tests': [], 'negative_tests': []}, p['impact_evidence'])
         planner.verify_plan(self.repo, p)
 
+    def test_ci_script_contract_requires_base_acceptance_and_keeps_new_consumers(self):
+        leaf = '.github/scripts/check_leaf.py'
+        write(self.repo, leaf, 'VALUE = 1\n')
+        write(self.repo, 'tests/test_leaf.py', 'import runpy\nrunpy.run_path("' + leaf + '")\n')
+        self.base = self.commit('tests/test_runtime.py', 'import subprocess\nsubprocess.run(command)\n')
+        policy = copy.deepcopy(self.policy)
+        policy['surfaces']['ci-leaf'] = {'paths': [leaf], 'class': 'focused', 'groups': ['ci-leaf']}
+        policy['groups']['ci-leaf'] = {'tests': ['test_leaf'], 'downstream': [], 'coverage': [leaf],
+                                       'package': False, 'repository': False}
+        policy['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, self.base, LEAVES + [leaf])
+        write(self.repo, planner.POLICY, planner.canonical(policy))
+        self.commit(leaf, 'VALUE = 2\n')
+        # A candidate cannot use its newly declared contract to approve its own exclusion.
+        self.assertIn('test_runtime', self.plan()['tests'])
+        # Only after that contract becomes the reviewed base may a subsequent leaf edit use it.
+        self.base = command(self.repo, 'rev-parse', 'HEAD')
+        self.commit(leaf, 'VALUE = 3\n')
+        p = self.plan(body=BODY.replace('R0', 'R2'))
+        self.assertEqual(('focused', 'impact', False, False), tuple(p[k] for k in
+                         ('behavioral_scope', 'coverage_scope', 'package_smoke', 'repository_smoke')))
+        self.assertEqual(['test_leaf'], p['tests'])
+        self.assertEqual([leaf], p['coverage_modules'])
+        self.assertEqual(self.base, p['selection']['reviewed_contract_anchor'])
+        planner.verify_plan(self.repo, p)
+        self.commit('tests/test_new_consumer.py', 'import runpy\nrunpy.run_path("' + leaf + '")\n')
+        self.assertIn('test_new_consumer', self.plan()['tests'])
+        # An import change invalidates the leaf boundary, retaining opaque execution again.
+        self.commit(leaf, 'import subprocess\nVALUE = 3\n')
+        self.assertIn('test_runtime', self.plan()['tests'])
+
     def test_monotonic_local_critical_addition_has_local_proof_and_cannot_remove_old_obligations(self):
         path = 'src/consumer.py'
         authority = yaml.safe_load((self.repo / 'tests/coverage_policy.yaml').read_bytes())
