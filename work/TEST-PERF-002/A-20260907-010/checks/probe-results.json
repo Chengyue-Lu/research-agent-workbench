@@ -1,0 +1,806 @@
+{
+  "cases": [
+    {
+      "name": "good",
+      "base": "8f8b56f64633185c4bfbe30ad7928a935272d702",
+      "head": "ba138d2ece69f1d5fc49328fa6a5cb9b3fcfa915",
+      "tests": [
+        "test_provider_adapters.AnthropicAdapterTests.test_system_is_hoisted_and_required_max_tokens_default_is_visible",
+        "test_provider_adapters.AnthropicAdapterTests.test_temperature_above_provider_range_is_rejected_before_call",
+        "test_provider_adapters.GeminiAdapterTests.test_parallel_response_is_contract_violation_when_not_claimed",
+        "test_provider_adapters.GeminiAdapterTests.test_text_request_maps_system_usage_and_stop",
+        "test_provider_adapters.OpenAIAdapterTests.test_model_mismatch_fails_before_credential_resolution",
+        "test_provider_adapters.OpenAIAdapterTests.test_text_request_disables_storage_and_maps_usage",
+        "test_release_surface"
+      ],
+      "behavioral_scope": "focused",
+      "coverage_scope": "impact",
+      "coverage_modules": [
+        ".github/scripts/release_surface.py"
+      ],
+      "package_smoke": false,
+      "repository_smoke": false
+    },
+    {
+      "name": "bad",
+      "base": "8f8b56f64633185c4bfbe30ad7928a935272d702",
+      "head": "1097a2a15b76ee6ededb1ad416230dc1326f3cb2",
+      "tests": [
+        "test_provider_adapters.AnthropicAdapterTests.test_system_is_hoisted_and_required_max_tokens_default_is_visible",
+        "test_provider_adapters.AnthropicAdapterTests.test_temperature_above_provider_range_is_rejected_before_call",
+        "test_provider_adapters.GeminiAdapterTests.test_parallel_response_is_contract_violation_when_not_claimed",
+        "test_provider_adapters.GeminiAdapterTests.test_text_request_maps_system_usage_and_stop",
+        "test_provider_adapters.OpenAIAdapterTests.test_model_mismatch_fails_before_credential_resolution",
+        "test_provider_adapters.OpenAIAdapterTests.test_text_request_disables_storage_and_maps_usage",
+        "test_release_surface"
+      ],
+      "behavioral_scope": "focused",
+      "coverage_scope": "impact",
+      "coverage_modules": [
+        ".github/scripts/release_surface.py"
+      ],
+      "package_smoke": false,
+      "repository_smoke": false
+    }
+  ],
+  "inventory": {
+    "full": 1040,
+    "selected": 44,
+    "excluded": 996,
+    "reduction_percent": 95.77,
+    "selected_ids": [
+      "test_provider_adapters.AnthropicAdapterTests.test_system_is_hoisted_and_required_max_tokens_default_is_visible",
+      "test_provider_adapters.AnthropicAdapterTests.test_temperature_above_provider_range_is_rejected_before_call",
+      "test_provider_adapters.GeminiAdapterTests.test_parallel_response_is_contract_violation_when_not_claimed",
+      "test_provider_adapters.GeminiAdapterTests.test_text_request_maps_system_usage_and_stop",
+      "test_provider_adapters.OpenAIAdapterTests.test_model_mismatch_fails_before_credential_resolution",
+      "test_provider_adapters.OpenAIAdapterTests.test_text_request_disables_storage_and_maps_usage",
+      "test_release_surface.DigestTests.test_sha256_known_vectors",
+      "test_release_surface.ReleaseSurfaceTests.test_binary_source_and_executable_mode_preserve_bytes",
+      "test_release_surface.ReleaseSurfaceTests.test_candidate_must_have_exact_single_main_parent",
+      "test_release_surface.ReleaseSurfaceTests.test_cli_export_check_and_errors",
+      "test_release_surface.ReleaseSurfaceTests.test_corrupt_git_blob_bytes_fail_before_projection",
+      "test_release_surface.ReleaseSurfaceTests.test_directory_checks_hidden_empty_directory_and_crlf_drift",
+      "test_release_surface.ReleaseSurfaceTests.test_dirty_tracked_and_untracked_source_are_rejected",
+      "test_release_surface.ReleaseSurfaceTests.test_export_refuses_nonempty_relative_and_checkout_directories",
+      "test_release_surface.ReleaseSurfaceTests.test_export_twice_and_git_merge_tree_are_byte_identical",
+      "test_release_surface.ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked",
+      "test_release_surface.ReleaseSurfaceTests.test_generated_overlap_reserved_manifest_and_undeclared_generator_fail",
+      "test_release_surface.ReleaseSurfaceTests.test_generated_prefix_collision_is_rejected_during_projection",
+      "test_release_surface.ReleaseSurfaceTests.test_git_environment_cannot_redirect_repository",
+      "test_release_surface.ReleaseSurfaceTests.test_git_symlink_gitlink_casefold_and_non_utf8_paths_are_rejected",
+      "test_release_surface.ReleaseSurfaceTests.test_include_missing_duplicate_overlap_and_file_tree_ambiguity_fail",
+      "test_release_surface.ReleaseSurfaceTests.test_independent_merge_result_disagreement_is_blocking",
+      "test_release_surface.ReleaseSurfaceTests.test_links_and_junctions_in_staging_fail_closed",
+      "test_release_surface.ReleaseSurfaceTests.test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail",
+      "test_release_surface.ReleaseSurfaceTests.test_merge_dropped_parent_version_and_restore_is_rejected",
+      "test_release_surface.ReleaseSurfaceTests.test_merged_nonprefix_policy_histories_and_new_maximum_are_valid",
+      "test_release_surface.ReleaseSurfaceTests.test_policy_history_removal_and_restore_is_rejected",
+      "test_release_surface.ReleaseSurfaceTests.test_policy_include_escape_is_rejected_during_projection",
+      "test_release_surface.ReleaseSurfaceTests.test_policy_same_version_drift_is_rejected",
+      "test_release_surface.ReleaseSurfaceTests.test_policy_unknown_empty_duplicate_and_unsorted_versions_are_rejected",
+      "test_release_surface.ReleaseSurfaceTests.test_policy_version_cannot_be_inserted_before_history",
+      "test_release_surface.ReleaseSurfaceTests.test_policy_version_cannot_be_inserted_between_historical_versions",
+      "test_release_surface.ReleaseSurfaceTests.test_policy_version_deletion_and_restore_is_rejected",
+      "test_release_surface.ReleaseSurfaceTests.test_portable_path_attack_matrix",
+      "test_release_surface.ReleaseSurfaceTests.test_real_policy_schema_and_no_broad_runtime_or_internal_surface",
+      "test_release_surface.ReleaseSurfaceTests.test_required_check_permutations_have_only_one_legal_tree",
+      "test_release_surface.ReleaseSurfaceTests.test_shallow_remote_and_git_format_prerequisites",
+      "test_release_surface.ReleaseSurfaceTests.test_source_and_ci_expectations_cannot_come_from_manifest",
+      "test_release_surface.ReleaseSurfaceTests.test_source_crlf_and_checker_drift_are_rejected",
+      "test_release_surface.ReleaseSurfaceTests.test_source_manifest_and_omitted_attributes_are_rejected",
+      "test_release_surface.ReleaseSurfaceTests.test_source_must_belong_to_fetched_develop",
+      "test_release_surface.ReleaseSurfaceTests.test_strict_json_duplicate_keys_and_invalid_utf8",
+      "test_release_surface.ReleaseSurfaceTests.test_synchronized_source_and_manifest_hash_forgery_is_blocked",
+      "test_release_surface.ReleaseSurfaceTests.test_two_versions_remove_old_generated_output_and_reject_stale_parent"
+    ]
+  },
+  "good_results": {
+    "coverage_obligations": [
+      "impact"
+    ],
+    "duration_seconds": {
+      "p50": 1.643548,
+      "p95": 7.78342
+    },
+    "outcomes": {
+      "errors": 0,
+      "failed": 0,
+      "passed": 44,
+      "skipped": 0
+    },
+    "plan_id": "4baa10ef0d2105c1fcd35827cab56d0d6de30abc9e4dc381976989d251e0571c",
+    "python_version": "3.11.16",
+    "schema_version": "1.0.0",
+    "slowest": [
+      {
+        "duration_seconds": 17.313925,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 13.912429,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 7.78342,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_required_check_permutations_have_only_one_legal_tree",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 7.740745,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_merged_nonprefix_policy_histories_and_new_maximum_are_valid",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 7.428888,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_two_versions_remove_old_generated_output_and_reject_stale_parent",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 6.489464,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_include_missing_duplicate_overlap_and_file_tree_ambiguity_fail",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 6.069489,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_directory_checks_hidden_empty_directory_and_crlf_drift",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 5.861207,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_generated_overlap_reserved_manifest_and_undeclared_generator_fail",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 5.604536,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_export_twice_and_git_merge_tree_are_byte_identical",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 4.399301,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_cli_export_check_and_errors",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 4.395298,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_candidate_must_have_exact_single_main_parent",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 4.275856,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_binary_source_and_executable_mode_preserve_bytes",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 4.260436,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_policy_version_deletion_and_restore_is_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 3.43295,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_independent_merge_result_disagreement_is_blocking",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 3.175167,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_policy_unknown_empty_duplicate_and_unsorted_versions_are_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 3.160214,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_synchronized_source_and_manifest_hash_forgery_is_blocked",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 2.940245,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_merge_dropped_parent_version_and_restore_is_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 2.561952,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_source_crlf_and_checker_drift_are_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 2.511815,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_source_manifest_and_omitted_attributes_are_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 2.254865,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_policy_version_cannot_be_inserted_before_history",
+        "outcome": "passed"
+      }
+    ],
+    "successful": true,
+    "suite": "impact",
+    "target": "ba138d2ece69f1d5fc49328fa6a5cb9b3fcfa915",
+    "test_count": 44,
+    "tests": [
+      {
+        "duration_seconds": 17.313925,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 13.912429,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 7.78342,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_required_check_permutations_have_only_one_legal_tree",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 7.740745,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_merged_nonprefix_policy_histories_and_new_maximum_are_valid",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 7.428888,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_two_versions_remove_old_generated_output_and_reject_stale_parent",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 6.489464,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_include_missing_duplicate_overlap_and_file_tree_ambiguity_fail",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 6.069489,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_directory_checks_hidden_empty_directory_and_crlf_drift",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 5.861207,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_generated_overlap_reserved_manifest_and_undeclared_generator_fail",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 5.604536,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_export_twice_and_git_merge_tree_are_byte_identical",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 4.399301,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_cli_export_check_and_errors",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 4.395298,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_candidate_must_have_exact_single_main_parent",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 4.275856,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_binary_source_and_executable_mode_preserve_bytes",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 4.260436,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_policy_version_deletion_and_restore_is_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 3.43295,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_independent_merge_result_disagreement_is_blocking",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 3.175167,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_policy_unknown_empty_duplicate_and_unsorted_versions_are_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 3.160214,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_synchronized_source_and_manifest_hash_forgery_is_blocked",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 2.940245,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_merge_dropped_parent_version_and_restore_is_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 2.561952,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_source_crlf_and_checker_drift_are_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 2.511815,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_source_manifest_and_omitted_attributes_are_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 2.254865,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_policy_version_cannot_be_inserted_before_history",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 2.200188,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_source_and_ci_expectations_cannot_come_from_manifest",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 1.6735,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_policy_version_cannot_be_inserted_between_historical_versions",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 1.613596,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_shallow_remote_and_git_format_prerequisites",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 1.605177,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_generated_prefix_collision_is_rejected_during_projection",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 1.464574,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_policy_include_escape_is_rejected_during_projection",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 1.457118,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_policy_history_removal_and_restore_is_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 1.20325,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_policy_same_version_drift_is_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 1.143623,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_git_symlink_gitlink_casefold_and_non_utf8_paths_are_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.75226,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_source_must_belong_to_fetched_develop",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.715745,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_dirty_tracked_and_untracked_source_are_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.476959,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_git_environment_cannot_redirect_repository",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.458724,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_real_policy_schema_and_no_broad_runtime_or_internal_surface",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.425208,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_links_and_junctions_in_staging_fail_closed",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.420996,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_portable_path_attack_matrix",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.40833,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_strict_json_duplicate_keys_and_invalid_utf8",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.401832,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_corrupt_git_blob_bytes_fail_before_projection",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.400155,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_export_refuses_nonempty_relative_and_checkout_directories",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.001515,
+        "id": "test_provider_adapters.GeminiAdapterTests.test_parallel_response_is_contract_violation_when_not_claimed",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.000355,
+        "id": "test_provider_adapters.AnthropicAdapterTests.test_system_is_hoisted_and_required_max_tokens_default_is_visible",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.000171,
+        "id": "test_provider_adapters.OpenAIAdapterTests.test_text_request_disables_storage_and_maps_usage",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.000151,
+        "id": "test_provider_adapters.GeminiAdapterTests.test_text_request_maps_system_usage_and_stop",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 9.2e-05,
+        "id": "test_provider_adapters.AnthropicAdapterTests.test_temperature_above_provider_range_is_rejected_before_call",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 8.5e-05,
+        "id": "test_release_surface.DigestTests.test_sha256_known_vectors",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 7.7e-05,
+        "id": "test_provider_adapters.OpenAIAdapterTests.test_model_mismatch_fails_before_credential_resolution",
+        "outcome": "passed"
+      }
+    ],
+    "wall_seconds": 141.704026
+  },
+  "bad_results": {
+    "coverage_obligations": [
+      "impact"
+    ],
+    "duration_seconds": {
+      "p50": 1.816476,
+      "p95": 8.45396
+    },
+    "outcomes": {
+      "errors": 0,
+      "failed": 3,
+      "passed": 42,
+      "skipped": 0
+    },
+    "plan_id": "8c1a555678906afea658d3a0b07cb15c23a7f6a6e0cbe02d0f7b0e2f9f58af4d",
+    "python_version": "3.11.16",
+    "schema_version": "1.0.0",
+    "slowest": [
+      {
+        "duration_seconds": 19.282609,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 15.014447,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 8.45396,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_required_check_permutations_have_only_one_legal_tree",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 8.418521,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_merged_nonprefix_policy_histories_and_new_maximum_are_valid",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 7.665431,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_two_versions_remove_old_generated_output_and_reject_stale_parent",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 7.223864,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_include_missing_duplicate_overlap_and_file_tree_ambiguity_fail",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 7.187096,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_directory_checks_hidden_empty_directory_and_crlf_drift",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 6.90366,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_generated_overlap_reserved_manifest_and_undeclared_generator_fail",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 6.740863,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_export_twice_and_git_merge_tree_are_byte_identical",
+        "outcome": "failed"
+      },
+      {
+        "duration_seconds": 5.233873,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_cli_export_check_and_errors",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 5.11083,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_candidate_must_have_exact_single_main_parent",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 4.710463,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_binary_source_and_executable_mode_preserve_bytes",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 4.705088,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_policy_version_deletion_and_restore_is_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 3.84272,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_independent_merge_result_disagreement_is_blocking",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 3.471429,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_policy_unknown_empty_duplicate_and_unsorted_versions_are_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 3.323323,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_synchronized_source_and_manifest_hash_forgery_is_blocked",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 3.168198,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_merge_dropped_parent_version_and_restore_is_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 2.704151,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_source_crlf_and_checker_drift_are_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 2.655221,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_source_manifest_and_omitted_attributes_are_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 2.379239,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_policy_version_cannot_be_inserted_before_history",
+        "outcome": "passed"
+      }
+    ],
+    "successful": false,
+    "suite": "focused",
+    "target": "1097a2a15b76ee6ededb1ad416230dc1326f3cb2",
+    "test_count": 44,
+    "tests": [
+      {
+        "duration_seconds": 19.282609,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 15.014447,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_manifest_unknown_reordered_crlf_duplicate_and_forged_exclusions_fail",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 8.45396,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_required_check_permutations_have_only_one_legal_tree",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 8.418521,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_merged_nonprefix_policy_histories_and_new_maximum_are_valid",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 7.665431,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_two_versions_remove_old_generated_output_and_reject_stale_parent",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 7.223864,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_include_missing_duplicate_overlap_and_file_tree_ambiguity_fail",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 7.187096,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_directory_checks_hidden_empty_directory_and_crlf_drift",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 6.90366,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_generated_overlap_reserved_manifest_and_undeclared_generator_fail",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 6.740863,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_export_twice_and_git_merge_tree_are_byte_identical",
+        "outcome": "failed"
+      },
+      {
+        "duration_seconds": 5.233873,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_cli_export_check_and_errors",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 5.11083,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_candidate_must_have_exact_single_main_parent",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 4.710463,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_binary_source_and_executable_mode_preserve_bytes",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 4.705088,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_policy_version_deletion_and_restore_is_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 3.84272,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_independent_merge_result_disagreement_is_blocking",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 3.471429,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_policy_unknown_empty_duplicate_and_unsorted_versions_are_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 3.323323,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_synchronized_source_and_manifest_hash_forgery_is_blocked",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 3.168198,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_merge_dropped_parent_version_and_restore_is_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 2.704151,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_source_crlf_and_checker_drift_are_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 2.655221,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_source_manifest_and_omitted_attributes_are_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 2.379239,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_policy_version_cannot_be_inserted_before_history",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 2.31981,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_source_and_ci_expectations_cannot_come_from_manifest",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 1.858093,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_generated_prefix_collision_is_rejected_during_projection",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 1.774859,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_policy_version_cannot_be_inserted_between_historical_versions",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 1.76231,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_shallow_remote_and_git_format_prerequisites",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 1.650758,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_policy_include_escape_is_rejected_during_projection",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 1.641202,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_policy_history_removal_and_restore_is_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 1.354154,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_policy_same_version_drift_is_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 1.298942,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_git_symlink_gitlink_casefold_and_non_utf8_paths_are_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.784825,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_dirty_tracked_and_untracked_source_are_rejected",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.776063,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_source_must_belong_to_fetched_develop",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.522893,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_git_environment_cannot_redirect_repository",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.518563,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_real_policy_schema_and_no_broad_runtime_or_internal_surface",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.513724,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_corrupt_git_blob_bytes_fail_before_projection",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.509622,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_export_refuses_nonempty_relative_and_checkout_directories",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.45597,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_links_and_junctions_in_staging_fail_closed",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.425622,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_portable_path_attack_matrix",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.401429,
+        "id": "test_release_surface.ReleaseSurfaceTests.test_strict_json_duplicate_keys_and_invalid_utf8",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.000971,
+        "id": "test_provider_adapters.GeminiAdapterTests.test_parallel_response_is_contract_violation_when_not_claimed",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.000846,
+        "id": "test_release_surface.DigestTests.test_sha256_known_vectors",
+        "outcome": "unknown"
+      },
+      {
+        "duration_seconds": 0.000214,
+        "id": "test_provider_adapters.AnthropicAdapterTests.test_system_is_hoisted_and_required_max_tokens_default_is_visible",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.000183,
+        "id": "test_provider_adapters.AnthropicAdapterTests.test_temperature_above_provider_range_is_rejected_before_call",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 0.000111,
+        "id": "test_provider_adapters.GeminiAdapterTests.test_text_request_maps_system_usage_and_stop",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 9.7e-05,
+        "id": "test_provider_adapters.OpenAIAdapterTests.test_text_request_disables_storage_and_maps_usage",
+        "outcome": "passed"
+      },
+      {
+        "duration_seconds": 4.4e-05,
+        "id": "test_provider_adapters.OpenAIAdapterTests.test_model_mismatch_fails_before_credential_resolution",
+        "outcome": "passed"
+      }
+    ],
+    "wall_seconds": 151.227304
+  },
+  "impact_gate": {
+    "coverage_scope": "impact",
+    "modules": [
+      ".github/scripts/release_surface.py"
+    ],
+    "repository_coverage_proved": false
+  },
+  "critical_line_percent": 98.99328859060402,
+  "critical_branch_percent": 96.96969696969697,
+  "changed_statements_and_outgoing_branches": "100/100",
+  "raw_coverage_sha256": "6edfe57278f6bf7a17f27a35481ca6a9663c631d5d1660e84104eeb2f0f3ea7d",
+  "acceptance_scope": "Local proposed-base experiment; requires reviewed acceptance of the M14 consumer contract before real PR selection can use it.",
+  "hosted_wall_time_saving_proved": false,
+  "initial_collector_note": "A scripts-only collector passed behavior but failed unchanged global exclusion-set equality; the retained run uses the full workflow collection source roots and passes the impact gate."
+}
