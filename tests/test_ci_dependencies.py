@@ -194,6 +194,20 @@ class DependencyTests(unittest.TestCase):
         self.assertIn('test_prefix', p['selected'])
         self.assertNotIn('test_empty', p['selected'])
 
+    def test_assigned_execution_namespace_is_opaque_but_stat_result_is_data(self):
+        blobs = {'src/pkg/leaf.py': b'VALUE=1', 'tests/test_direct.py': b'import pkg.leaf',
+                 'tests/test_dynamic.py': b'import importlib\nnamespace = importlib\nattribute = "import_module"\n'
+                                         b'loader = getattr(namespace, attribute)\nloader("pkg." + "leaf")',
+                 'src/pkg/resources.py': b'attributes = getattr(path.lstat(), "st_file_attributes", 0)',
+                 'tests/test_resources.py': b'import pkg.resources'}
+        p = self.selection(blobs, blobs, ['src/pkg/leaf.py'])
+        self.assertEqual({'test_direct', 'test_dynamic'}, set(p['selected']))
+        self.assertEqual(['test_resources'], p['excluded'])
+        # The same accessor still participates when its real resource input changes.
+        blobs['src/pkg/resources.py'] += b'\ndata = (ROOT / "fixtures" / "input.json").read_bytes()'
+        p = self.selection(blobs, blobs, ['fixtures/input.json'], ['fixtures/input.json'])
+        self.assertIn('test_resources', p['selected'])
+
     def test_snapshot_reads_exact_git_blobs_and_ignores_worktree_drift(self):
         import subprocess
         with tempfile.TemporaryDirectory() as directory:
