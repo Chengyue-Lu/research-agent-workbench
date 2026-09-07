@@ -1,0 +1,76 @@
+{
+  "focused": {
+    "successful": true,
+    "test_count": 88,
+    "outcomes": {
+      "errors": 0,
+      "failed": 0,
+      "passed": 88,
+      "skipped": 0
+    },
+    "wall_seconds": 214.297
+  },
+  "critical_coverage": {
+    ".github/scripts/ci_checks.py": {
+      "line_percent": 99.2308,
+      "branch_percent": 97.5
+    },
+    ".github/scripts/ci_dependencies.py": {
+      "line_percent": 100.0,
+      "branch_percent": 100.0
+    },
+    ".github/scripts/plan_ci.py": {
+      "line_percent": 99.7753,
+      "branch_percent": 98.6842
+    }
+  },
+  "changed_code_preflight": {
+    ".github/scripts/ci_checks.py": {
+      "missing_statements": [],
+      "missing_outgoing_branches": []
+    },
+    ".github/scripts/ci_dependencies.py": {
+      "missing_statements": [],
+      "missing_outgoing_branches": []
+    },
+    ".github/scripts/plan_ci.py": {
+      "missing_statements": [],
+      "missing_outgoing_branches": []
+    },
+    "tests/run_unittest_suite.py": {
+      "missing_statements": [],
+      "missing_outgoing_branches": []
+    }
+  },
+  "retained_oracle_inventory": 938,
+  "current_inventory": 943,
+  "probes": [
+    {
+      "scenario": "test-only",
+      "tests": 109,
+      "scope": {
+        "risk": "R2",
+        "behavioral_scope": "focused",
+        "coverage_scope": "none",
+        "package_smoke": false,
+        "repository_smoke": false
+      },
+      "basis": "exact synthetic Git plan/collection, not hosted elapsed time"
+    },
+    {
+      "scenario": "provider",
+      "tests": 81,
+      "scope": {
+        "risk": "R2",
+        "behavioral_scope": "focused",
+        "coverage_scope": "impact",
+        "package_smoke": true,
+        "repository_smoke": true
+      },
+      "basis": "exact synthetic Git plan/collection, not hosted elapsed time"
+    }
+  ],
+  "repository_coverage_proved": false,
+  "full_oracle_note": "Prior full oracle and hosted checks are bound to their recorded heads. This selector-authority revision requires final-head full behavior and independent coverage validation.",
+  "raw_coverage_sha256": "66d5bc65b9396035eb04dbbe22cb05c412c39d3c80f9fecb6f6df1c613940136"
+}

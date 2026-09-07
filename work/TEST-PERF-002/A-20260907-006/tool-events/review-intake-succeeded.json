@@ -1,0 +1,1 @@
+{"findings":["selection authority self-modification requires full behavior","getattr execution capabilities must retain opaque consumers"],"prior_hosted_run":34069525321,"prior_hosted_status":"all checks succeeded","review_id":5127339541}

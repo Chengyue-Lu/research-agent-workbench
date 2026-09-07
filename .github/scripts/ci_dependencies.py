@@ -139,7 +139,8 @@ def graph(blobs, paths):
         for node in ast.walk(tree):
             if isinstance(node, (ast.Name, ast.Attribute)):
                 name = call_name(node)
-                if (name in {'__import__', 'eval', 'exec', 'builtins.__import__', 'builtins.eval', 'builtins.exec',
+                if (name in {'__import__', 'eval', 'exec', 'getattr', 'builtins.getattr',
+                             'builtins.__import__', 'builtins.eval', 'builtins.exec',
                              'importlib.import_module', 'runpy.run_module', 'runpy.run_path'}
                         or name.startswith(('subprocess.', 'os.system', 'os.popen'))
                         or name.endswith(('.exec_module', '.spec_from_file_location'))):
@@ -153,6 +154,15 @@ def graph(blobs, paths):
             if not isinstance(node, ast.Call):
                 continue
             name = call_name(node.func)
+            if name in {'getattr', 'builtins.getattr'} and node.args:
+                namespace = call_name(node.args[0])
+                attribute = node.args[1].value if len(node.args) > 1 and isinstance(node.args[1], ast.Constant) else None
+                if (not namespace or namespace.split('.')[0] in {'importlib', 'subprocess', 'runpy', 'builtins', 'os'}
+                        or namespace.rsplit('.', 1)[-1] in {'loader', 'spec'}
+                        or attribute in {'import_module', 'run_module', 'run_path', 'exec_module', 'spec_from_file_location'}):
+                    # Reflection can store/pass a capability before calling it. Its
+                    # consumer remains opaque without attempting points-to analysis.
+                    opaque.add(path)
             if name in {'__import__', 'builtins.__import__', 'importlib.import_module', 'runpy.run_module', 'runpy.run_path'}:
                 if node.args and isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str):
                     link(node.args[0].value)

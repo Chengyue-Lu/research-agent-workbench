@@ -31,6 +31,8 @@ COVERAGE = {'impact', 'repository'}
 # These bounded validators already have base-side critical inventory and acceptance mappings.
 CI_EXECUTABLES = {'.github/scripts/plan_ci.py', '.github/scripts/ci_checks.py', '.github/scripts/ci_dependencies.py',
                   '.github/scripts/check_pr_governance.py'}
+SELECTION_AUTHORITY = {'.github/scripts/plan_ci.py', '.github/scripts/ci_dependencies.py',
+                       '.github/scripts/ci_checks.py', 'tests/run_unittest_suite.py', '.github/workflows/ci.yml'}
 COVERAGE_AUTHORITY = {'tests/coverage_policy.yaml', '.github/scripts/check_coverage_policy.py',
                       'tests/run_unittest_suite.py', 'pyproject.toml', '.coveragerc', 'setup.cfg', 'tox.ini',
                       '.github/workflows/ci.yml'}
@@ -301,6 +303,12 @@ def coverage_pragmas(raw):
             if token.type == tokenize.COMMENT and 'pragma:' in token.string]
 
 
+def workflow_semantic(raw):
+    # Preserve scalar types and duplicate entries; comments and layout carry no authority.
+    node = yaml.compose(raw)
+    return yaml.serialize(node, canonical=True) if node is not None else None
+
+
 def make_plan(repo, *, base, head, target, repository, base_ref='develop', body='', integration=False,
               force_full=False, extra_groups=()):
     for sha in (base, head, target):
@@ -356,7 +364,10 @@ def make_plan(repo, *, base, head, target, repository, base_ref='develop', body=
             if path.endswith('.py') and path in (old.keys() | new.keys()):
                 if not path.startswith('tests/') or path == 'tests/run_unittest_suite.py':
                     plan.update(coverage_obligations=['impact', 'repository'], coverage_scope='impact+repository')
-                semantic_change = dependencies.semantic(old.get(path, b'')) != dependencies.semantic(new.get(path, b''))
+                # The behavioral bootstrap does not depend on the candidate dependency selector.
+                semantic_change = ast.dump(ast.parse(old.get(path, b''))) != ast.dump(ast.parse(new.get(path, b'')))
+                if semantic_change and path in SELECTION_AUTHORITY:
+                    full_reasons.append('CI selection authority changed; complete behavioral bootstrap: ' + path)
                 pragma_change = coverage_pragmas(old.get(path, b'')) != coverage_pragmas(new.get(path, b''))
                 if before.get(path, [''])[0] != after.get(path, [''])[0] and path in before and path in after:
                     full_reasons.append('source mode drift requires FULL: ' + path)
@@ -372,6 +383,11 @@ def make_plan(repo, *, base, head, target, repository, base_ref='develop', body=
                         executable.add(path)
             elif not path.endswith('.md') and not path.startswith('work/'):
                 seeds.add(path)
+                if path == '.github/workflows/ci.yml':
+                    workflow = [workflow_semantic(read_at(repo, commit, path) if path in inventory else b'')
+                                for commit, inventory in ((merge_base, before), (head, after))]
+                    if workflow[0] != workflow[1]:
+                        full_reasons.append('CI selection authority changed; complete behavioral bootstrap: ' + path)
             if path == 'tests/coverage_policy.yaml':
                 monotonic, local_modules, added_tests = policy_delta(authority, candidate_authority)
                 if not monotonic:

@@ -36,6 +36,13 @@ cannot authorize their own exclusions. New/modified tests seed their own module 
 reverse closure. Python comments/spacing preserve the AST; docstrings remain semantic. Actual coverage
 pragmas are tokenized as comments rather than detected in arbitrary strings.
 
+Selection authority has an explicit behavioral bootstrap: semantic changes to `plan_ci.py`,
+`ci_dependencies.py`, `ci_checks.py`, `run_unittest_suite.py` or `ci.yml` require full dual-Python behavior.
+The rule follows Python AST or workflow structure changes and does not depend on the dependency selector's
+chosen tests. Ordinary comments retain scoped behavior. Coverage and smoke remain separate obligations.
+Reflected access through `getattr` to execution namespaces or loader capabilities retains opaque consumers,
+including assigned, passed and stored functions; ordinary data-attribute access stays outside that frontier.
+
 The `selection` certificate records graph-selected modules with dependency chains, graph-excluded modules,
 opaque consumers, errors, affected paths and inventory digest. Base contract groups and explicit additions
 are applied separately in the final `tests` list. Unknown surfaces, malformed dependencies, missing test
@@ -48,6 +55,7 @@ its presence is retained for review rather than silently treated as independent.
 | Ordinary test or fixture | affected test/consumer closure | none |
 | Consumer fingerprint-only refresh | selection-policy tests | none |
 | Bounded source or critical validator | complete affected closure | impact |
+| CI selection-authority semantics | full behavioral bootstrap | independently derived impact/repository obligations |
 | Source plus independent test edit | union of the two closures | impact |
 | Monotonic critical/mapping/suite addition | local acceptance and policy tests | local impact subjects |
 | Global coverage authority semantics | affected validator/consumer closure | repository plus any executable impact |

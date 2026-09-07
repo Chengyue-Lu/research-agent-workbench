@@ -161,6 +161,32 @@ class DependencyTests(unittest.TestCase):
                 self.assertEqual(['tests/test_dynamic.py'], plan['opaque_consumers'])
                 self.assertEqual(['test_other'], plan['excluded'])
 
+    def test_getattr_execution_namespaces_retain_assigned_passed_stored_and_called_consumers(self):
+        consumers = [
+            b'import importlib\nloader = getattr(importlib, "import_module")\nloader(runtime_name)',
+            b'import importlib as lib\nloader = getattr(lib, attribute)\nloader(runtime_name)',
+            b'import subprocess\nfactory(getattr(subprocess, "run"))',
+            b'import runpy\ncallbacks = [getattr(runpy, "run_module")]',
+            b'import runpy\ngetattr(runpy, "run_path")(runtime_path)',
+            b'from importlib import machinery as loaders\nload = getattr(loaders, attribute)',
+            b'from builtins import getattr as lookup\nimport importlib\nload = lookup(importlib, "import_module")',
+            b'import builtins\nimport importlib\nload = builtins.getattr(importlib, attribute)',
+            b'callback = getattr(spec.loader, attribute)',
+            b'callback = getattr(target, "exec_module")',
+            b'callback = getattr(target, "spec_from_file_location")',
+            b'callback = getattr(__import__("importlib"), attribute)',
+            b'lookup = getattr\nimport importlib\ncallback = lookup(importlib, attribute)',
+        ]
+        for raw in consumers:
+            with self.subTest(raw=raw):
+                blobs = {'src/pkg/leaf.py': b'VALUE=1', 'tests/test_direct.py': b'import pkg.leaf',
+                         'tests/test_dynamic.py': raw,
+                         'tests/test_other.py': b'value = getattr(record, "title", None)'}
+                plan = self.selection(blobs, blobs, ['src/pkg/leaf.py'])
+                self.assertEqual({'test_direct', 'test_dynamic'}, set(plan['selected']))
+                self.assertIn('tests/test_dynamic.py', plan['opaque_consumers'])
+                self.assertEqual(['test_other'], plan['excluded'])
+
     def test_dynamic_path_tail_keeps_known_prefix_and_empty_prefix_is_not_a_reference(self):
         blobs = {'tests/test_prefix.py': b'path = ROOT / "fixtures" / name / "result.json"',
                  'tests/test_empty.py': b'value = left / right'}

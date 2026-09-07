@@ -225,3 +225,41 @@ The revision 6 full oracle remains tied to its recorded commit. The dependency h
 so final-head hosted dual-Python behavior and the actual coverage union/checkers remain required.
 Run `34068747020` on superseded head `e39b398` was cancelled to avoid finishing obsolete evidence.
 The supplemental archive is `work/TEST-PERF-002/A-20260907-005/`; the prior sealed archive is preserved.
+
+## Revision 8: selection-authority and reflection review
+
+The [task-owner review on 2e23893](https://github.com/Chengyue-Lu/research-agent-workbench/pull/66#pullrequestreview-5127339541)
+identified two P1 blockers. Both were reproduced before the fixes: a real defective candidate selector
+could authorize focused behavior, and reflected execution capabilities could lose their consumer edges.
+
+Semantic changes to the five selection-authority files now require full dual-Python behavior. Coverage
+and smoke remain independent. A real candidate process with an empty selected-test mapping generates
+full; its own worker rejects a re-signed focused downgrade. Python/workflow comment controls remain
+scoped. Workflow comparison preserves scalar types and duplicate fields while ignoring comments/layout.
+Thirteen `getattr`/reflection scenarios retain consumers across assignment, passing, storage, calls,
+aliases and loader/spec capabilities; an ordinary data-attribute consumer remains excluded.
+
+Final local focused validation is **88/88 PASS** with no skips, failures or errors. An earlier run exposed
+one old runner expectation of focused behavior after a planner edit; that expectation was updated to full
+while retaining the independent impact-runner assertion, and the final suite was rerun on the final code.
+
+| Critical module | Line | Branch |
+|---|---:|---:|
+| plan_ci.py | 99.78% | 98.68% |
+| ci_dependencies.py | 100.00% | 100.00% |
+| ci_checks.py | 99.23% | 97.50% |
+
+All four impacted executable files pass the 100/100 changed-statement/outgoing-branch preflight.
+The current full inventory contains **943** tests and retains every earlier oracle identity.
+Documentation and coverage-policy checks pass **30/30**; quality thresholds, exclusions and acceptance
+inventory are preserved. Local focused coverage does not claim repository coverage authority.
+
+The complete-repository probes retain R2 test-only **109 tests / coverage none / no smokes** and Provider
+**81 tests / impact / original smokes**. This PR itself now explicitly requires **full behavior** because
+it changes selection authority, alongside independently derived impact + repository coverage and smokes.
+These probes establish selection, not hosted time savings.
+
+The preceding `2e23893` hosted run [34069525321](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34069525321)
+completed successfully. It remains evidence for that earlier head. Final-head hosted full behavior,
+coverage/checkers and cross-owner acceptance are separate requirements. Revision 8 evidence is sealed in
+`work/TEST-PERF-002/A-20260907-006/`; prior archives remain immutable.

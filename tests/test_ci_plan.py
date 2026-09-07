@@ -432,7 +432,7 @@ class PlannerTests(unittest.TestCase):
             self.commit('.github/scripts/plan_ci.py', source.replace("'fast': 0,", "'fast': 0 + 0,"))
             p = self.plan(body=BODY.replace('R0', 'R2'))
             path.write_bytes(planner.canonical(p))
-            self.assertEqual('focused', p['behavioral_scope'])
+            self.assertEqual('full', p['behavioral_scope'])
             self.assertGreater(runner._suite_for(argparse.Namespace(suite='impact', plan=path)).countTestCases(), 0)
 
     def test_r2_test_fixture_and_fingerprint_refresh_have_no_coverage_or_smokes(self):
@@ -497,7 +497,7 @@ class PlannerTests(unittest.TestCase):
         write(self.repo, 'src/research_workbench/example.py', 'VALUE = 1\n')
         self.base = self.commit('tests/test_example.py', 'from research_workbench.example import VALUE\n')
         self.commit('src/research_workbench/example.py', 'VALUE = 2\n')
-        p = self.plan()
+        p = self.plan(body=BODY.replace('R0', 'R2'))
         self.assertEqual(('focused', ['impact']), (p['behavioral_scope'], p['coverage_obligations']))
         self.assertEqual(['test_example'], p['tests'])
         self.assertEqual(['src/research_workbench/example.py'], p['coverage_modules'])
@@ -533,6 +533,76 @@ class PlannerTests(unittest.TestCase):
         p = self.plan(body=BODY.replace('R0', 'R2'))
         self.assertEqual(('R2', 'none', []), (p['risk'], p['behavioral_scope'], p['coverage_obligations']))
         self.assertFalse(p['package_smoke'] or p['repository_smoke'])
+
+    def test_selection_authority_semantics_require_full_behavior_independently(self):
+        self.assertIsNone(planner.workflow_semantic(b'# empty workflow\n'))
+        self.assertEqual(planner.workflow_semantic(b'flag: true\n'),
+                         planner.workflow_semantic(b'{flag: true} # formatting\n'))
+        self.assertNotEqual(planner.workflow_semantic(b'flag: true\n'),
+                            planner.workflow_semantic(b'flag: "true"\n'))
+        self.assertNotEqual(planner.workflow_semantic(b'flag: true\nflag: false\n'),
+                            planner.workflow_semantic(b'flag: false\n'))
+        workflow = '.github/workflows/ci.yml'
+        write(self.repo, 'tests/test_runner_consumer.py', 'import run_unittest_suite\n')
+        self.base = self.commit(workflow, 'name: CI\njobs: {}\n')
+        paths = ['.github/scripts/plan_ci.py', '.github/scripts/ci_dependencies.py',
+                 '.github/scripts/ci_checks.py', 'tests/run_unittest_suite.py', workflow]
+        for path in paths:
+            with self.subTest(path=path):
+                command(self.repo, 'reset', '--hard', self.base)
+                source = (self.repo / path).read_bytes()
+                self.commit(path, source + b'\n# comment only\n')
+                self.assertNotEqual('full', self.plan()['behavioral_scope'])
+                command(self.repo, 'reset', '--hard', self.base)
+                self.commit(path, source + (b'\nSELECTOR_FIXTURE = 1\n' if path.endswith('.py') else b'env: {REVISION: changed}\n'))
+                p = self.plan(body=BODY.replace('R0', 'R2'))
+                self.assertEqual('full', p['behavioral_scope'])
+                self.assertIn('selection authority', ' '.join(p['obligation_reasons']['behavioral_scope']))
+                expected = ['repository'] if path == workflow else ['impact', 'repository'] if path.startswith('tests/') else ['impact']
+                self.assertEqual(expected, p['coverage_obligations'])
+                self.assertFalse(p['package_smoke'] or p['repository_smoke'])
+                self.assertFalse(p['blocked_reasons'])
+                planner.verify_plan(self.repo, p)
+
+    def test_candidate_selector_returning_no_tests_cannot_authorize_focused(self):
+        path = '.github/scripts/ci_dependencies.py'
+        defective = (self.repo / path).read_bytes() + b'''
+original_select = select
+def select(*args, **kwargs):
+    result = original_select(*args, **kwargs)
+    result[0]['selected'] = {}
+    return result
+'''
+        head = self.commit(path, defective)
+        event = Path(self.temp.name) / 'event.json'
+        output = Path(self.temp.name) / 'plan.json'
+        event.write_bytes(planner.canonical({'pull_request': {
+            'base': {'sha': self.base, 'ref': 'develop', 'repo': {'full_name': 'Example/repo'}},
+            'head': {'sha': head}, 'body': BODY.replace('R0', 'R2')}}))
+        env = {**os.environ, 'GITHUB_OUTPUT': ''}
+        process = subprocess.run([sys.executable, '.github/scripts/plan_ci.py', '--event', str(event),
+            '--event-name', 'pull_request', '--output', str(output)], cwd=self.repo, env=env, capture_output=True, text=True)
+        self.assertEqual(0, process.returncode, process.stderr)
+        candidate = json.loads(output.read_bytes())
+        self.assertEqual({}, candidate['selection']['selected'])
+        self.assertEqual('full', candidate['behavioral_scope'])
+        self.assertEqual(['impact'], candidate['coverage_obligations'])
+        worker = '''
+import json,sys
+sys.path.insert(0,'.github/scripts')
+import plan_ci as p
+plan=json.load(open(sys.argv[1])); event=json.load(open(sys.argv[2]))
+p.verify_plan(p.ROOT,plan,event)
+plan.update(behavioral_scope='focused',change_class='focused')
+plan['plan_id']=p.digest({k:v for k,v in plan.items() if k!='plan_id'})
+try: p.verify_plan(p.ROOT,plan,event)
+except ValueError as error:
+    assert 'behavioral_scope' in str(error),str(error)
+else: raise AssertionError('candidate worker accepted focused self-authorization')
+'''
+        checked = subprocess.run([sys.executable, '-c', worker, str(output), str(event)],
+                                 cwd=self.repo, env=env, capture_output=True, text=True)
+        self.assertEqual(0, checked.returncode, checked.stderr)
 
     def test_critical_syntax_error_blocks_instead_of_erasing_impact(self):
         self.commit('.github/scripts/plan_ci.py', 'if [')
@@ -657,7 +727,7 @@ class PlannerTests(unittest.TestCase):
         source = (self.repo / path).read_text()
         self.commit(path, source.replace("'fast': 0,", "'fast': 0 + 0,"))
         p = self.plan(body=BODY.replace('R0', 'R2'))
-        self.assertEqual(('focused', 'impact', False, False),
+        self.assertEqual(('full', 'impact', False, False),
             tuple(p[k] for k in ('behavioral_scope', 'coverage_scope', 'package_smoke', 'repository_smoke')))
         self.assertEqual([path], p['coverage_modules'])
         self.assertTrue(p['impact_evidence']['positive_tests'] and p['impact_evidence']['negative_tests'])
@@ -690,7 +760,7 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual(['impact', 'repository'], p['coverage_obligations'])
         self.assertEqual(['.github/scripts/plan_ci.py'], p['coverage_modules'])
         self.assertTrue(p['coverage_lines']['.github/scripts/plan_ci.py'])
-        self.assertEqual('focused', p['behavioral_scope'])
+        self.assertEqual('full', p['behavioral_scope'])
         self.assertTrue(p['impact_evidence']['positive_tests'] and p['impact_evidence']['negative_tests'])
         planner.verify_plan(self.repo, p)
         self.assertFalse(p['package_smoke'] or p['repository_smoke'])

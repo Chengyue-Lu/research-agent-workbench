@@ -13,6 +13,9 @@
 accepted base [`ci_impact_policy.yaml`](../../../../tests/ci_impact_policy.yaml). Governance v2 supplies the risk
 floor. Plan v4 derives behavior from the affected base/head consumer and contract closure.
 R2 determines governance and cross-owner review; affected tests run on Python 3.11 and 3.13. Candidate policy changes never authorize their own lighter selection.
+Semantic changes to `plan_ci.py`, `ci_dependencies.py`, `ci_checks.py`, `run_unittest_suite.py` or `ci.yml`
+require complete behavioral suites to validate selection authority. Their coverage and smoke obligations
+remain independently derived. Ordinary R2 product and test changes retain affected-scope selection.
 Git replacement objects are disabled for the planner's reads; immutable Git blobs are cached by repository,
 exact commit and path. No mutable branch-name result is cached.
 
