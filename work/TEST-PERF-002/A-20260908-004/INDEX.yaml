@@ -1,0 +1,76 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260908-004
+task_id: TEST-PERF-002
+task_revision: 16
+attempt_id: A-20260908-004
+archive_root: A-20260908-004
+baseline: 9e286e3c387f781e6993f3c702c0704ab8d85513
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 29d351d47848978c834c7cbce033c5ffa4d61c5950fd69e2df5a0faf16a6d4bf
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 58074323c0c734fe3413d92724a85a01a88f367e90ff11ead88eafa642f4502b
+read_allowlist:
+- .github/**
+- .rwb/precision-intake/**
+- AGENTS.md
+- build_backend.py
+- docs/DEVELOPMENT.md
+- docs/README.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/**
+- pyproject.toml
+- runtime-resources.json
+- src/**
+- tests/**
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/ci_checks.py
+- .github/scripts/ci_dependencies.py
+- .github/scripts/plan_ci.py
+- .github/workflows/ci.yml
+- .rwb/precision-intake/**
+- .rwb/precision-venv311/**
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/ci_impact_policy.yaml
+- tests/fixtures/ci/**
+- tests/test_ci_checks.py
+- tests/test_ci_dependencies.py
+- tests/test_ci_plan.py
+- work/TEST-PERF-002/A-20260908-004/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 504ffe0b7d57eceaf32eca4dd17f8ad196758b2b4cc6e8def95cb6296bbd3612
+  event_count: 6
+tool_event_refs:
+- path: tool-events/alias-guard-focused-proof-succeeded.json
+  sha256: 1419d7cf7e7ac425c67d052e99bb28b34c1be3b07b42e28d9ae9ffe06e465c59
+handoff_refs:
+- path: handoff/H0.md
+  sha256: 256e5ac892d4b69dc14bf75112d50c43663fcb1bae0ec15e2a1a4906d0e59201
+decision_refs: []
+output_refs:
+- path: RESULTS.md
+  sha256: 69ac3926709d17133e7c32e3f6d856663d893bf32a6ef268d5079e0a3567350f
+check_refs:
+- path: checks/summary.json
+  sha256: 148addfe795b9c6ce5c4ed11ee104cb0ca4966ed0b7317a4e31326fcd291c84d
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: messages
+- event_id: EVT-0004
+  affected_stream: events
