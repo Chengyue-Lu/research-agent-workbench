@@ -382,7 +382,7 @@ def make_plan(repo, *, base, head, target, repository, base_ref='develop', body=
                 if not path.startswith('tests/') or path == 'tests/run_unittest_suite.py':
                     if path in new:
                         executable.add(path)
-            elif not path.endswith('.md') and not path.startswith('work/'):
+            elif not path.startswith('work/'):
                 seeds.add(path)
                 if path == '.github/workflows/ci.yml':
                     workflow = [workflow_semantic(read_at(repo, commit, path) if path in inventory else b'')
@@ -483,7 +483,10 @@ def make_plan(repo, *, base, head, target, repository, base_ref='develop', body=
                 coverage_reasons.append('no closed test consumer for executable: ' + path)
                 package_reasons.append('unbounded executable surface: ' + path)
                 repository_reasons.append('unbounded executable surface: ' + path)
-        behavioral_tests = bool(tests)
+        # Markdown may be an executable consumer's input. Preserve its graph edges,
+        # while documentation checks alone still do not require behavioral workers.
+        documentation_tests = set(policy['groups']['documentation']['tests'])
+        behavioral_tests = bool(tests - documentation_tests) if seeds and all(p.endswith('.md') for p in seeds) else bool(tests)
         if not tests:
             groups = closure(policy, set(groups) | {'documentation'})
             tests.update(t for name in groups for t in policy['groups'][name]['tests'])

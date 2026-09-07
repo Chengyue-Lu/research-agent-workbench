@@ -104,6 +104,53 @@ class PlannerTests(unittest.TestCase):
         self.commit('docs/workstreams/input.yaml')
         self.assertEqual('full',self.plan()['change_class'])
 
+    def test_markdown_resource_change_keeps_existing_failing_consumer(self):
+        write(self.repo, 'tests/test_markdown_consumer.py',
+              'from pathlib import Path\nimport unittest\n'
+              'class MarkdownTest(unittest.TestCase):\n'
+              '    def test_value(self):\n'
+              '        value = (Path(__file__).parent / "fixtures" / "expected.md").read_text()\n'
+              '        self.assertEqual(value, "expected\\n")\n')
+        self.base = self.commit('tests/fixtures/expected.md', 'expected\n')
+        def run():
+            return subprocess.run([sys.executable, '-m', 'unittest', 'discover', '-s', 'tests',
+                                   '-p', 'test_markdown_consumer.py'], cwd=self.repo, capture_output=True)
+        self.assertEqual(0, run().returncode)
+        self.commit('tests/fixtures/expected.md', 'changed\n')
+        self.assertEqual(1, run().returncode)
+        plan = self.plan()
+        self.assertEqual('focused', plan['behavioral_scope'])
+        self.assertEqual('none', plan['coverage_scope'])
+        self.assertIn('test_markdown_consumer', plan['tests'])
+        planner.verify_plan(self.repo, plan)
+
+    def test_assigned_execution_namespace_keeps_failing_reflective_consumer(self):
+        write(self.repo, 'src/probe_package/__init__.py', '')
+        for name, setup, assertion in (
+            ('alias', 'import importlib\nnamespace = importlib\nattribute = "import_module"\n'
+             'loader = getattr(namespace, attribute)\nmodule = loader("probe_package." + "value")\n',
+             'self.assertEqual(module.VALUE, 1)'),
+            ('direct', 'from probe_package import value as module\n', 'self.assertGreaterEqual(module.VALUE, 0)'),
+        ):
+            write(self.repo, 'tests/test_' + name + '_consumer.py',
+                  'import unittest\n' + setup +
+                  'class Consumer(unittest.TestCase):\n    def test_value(self): ' + assertion + '\n')
+        self.base = self.commit('src/probe_package/value.py', 'VALUE = 1\n')
+        def run(name):
+            return subprocess.run([sys.executable, '-B', '-m', 'unittest', 'discover', '-s', 'tests',
+                                   '-p', 'test_' + name + '_consumer.py'], cwd=self.repo, capture_output=True,
+                                  env={**os.environ, 'PYTHONPATH': str(self.repo / 'src')})
+        self.assertEqual(0, run('alias').returncode)
+        self.commit('src/probe_package/value.py', 'VALUE = 2\n')
+        self.assertEqual(1, run('alias').returncode)
+        self.assertEqual(0, run('direct').returncode)
+        plan = self.plan()
+        self.assertEqual('focused', plan['behavioral_scope'])
+        self.assertEqual('impact', plan['coverage_scope'])
+        self.assertTrue({'test_alias_consumer', 'test_direct_consumer'} <= set(plan['tests']))
+        self.assertIn('tests/test_alias_consumer.py', plan['selection']['opaque_consumers'])
+        planner.verify_plan(self.repo, plan)
+
     def test_provider_change_selects_downstream_groups_and_both_pythons(self):
         self.commit(LEAVES[0], 'VALUE = 2\n')
         plan = self.plan()
