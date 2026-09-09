@@ -634,6 +634,115 @@ class PlannerTests(unittest.TestCase):
         self.assertIn('test_dynamic', plan['coverage_tests'])
         self.assertIn('initialization/dependency', ' '.join(plan['reasons']))
 
+    def test_contract_rejects_weakened_proof_implementation_with_unchanged_ids(self):
+        leaf, source, policy, names = self._proof_contract()
+        self.base = self.commit(planner.POLICY, planner.canonical(policy))
+        self.commit(leaf, source.replace('1 + 0', '0 + 0'))
+        proof_path = 'tests/test_proof.py'
+        proof = (self.repo / proof_path).read_text()
+        weakened = proof.replace('self.assertEqual(value(),1)', 'self.assertTrue(True)').replace(
+            'self.assertNotEqual(value(),0)', 'self.assertTrue(True)')
+        self.commit(proof_path, weakened)
+        env = {**os.environ, 'PYTHONPATH': str(self.repo / 'src') + os.pathsep + str(self.repo / 'tests')}
+        for suite, passes in [(names, True), (['test_proof'], False)]:
+            result = subprocess.run([sys.executable, '-B', '-m', 'unittest', *suite],
+                                    cwd=self.repo, env=env, capture_output=True)
+            self.assertEqual(passes, result.returncode == 0, result.stderr)
+        plan = self.plan(body=BODY.replace('R0', 'R2'))
+        self.assertEqual([], plan['selection']['reviewed_opaque_boundary'])
+        self.assertIn('test_dynamic', plan['tests'])
+        self.assertIn('test_dynamic', plan['coverage_tests'])
+        self.assertIn('test_proof', plan['coverage_tests'])
+        self.assertEqual(('focused', 'impact'), (plan['behavioral_scope'], plan['coverage_scope']))
+        self.assertIn('contract evidence implementation changed', ' '.join(plan['reasons']))
+        planner.verify_plan(self.repo, plan)
+
+    def test_contract_evidence_requires_refreshed_accepted_anchor_after_test_review(self):
+        leaf, source, policy, names = self._proof_contract()
+        self.base = self.commit(planner.POLICY, planner.canonical(policy))
+        path = 'tests/test_proof.py'
+        proof = (self.repo / path).read_text()
+        # Separately accepting a test edit does not refresh the old contract anchor.
+        self.base = self.commit(path, proof.replace('value(),1', '1,value()'))
+        self.commit(leaf, source.replace('1 + 0', '0 + 1'))
+        plan = self.plan()
+        self.assertIn('test_dynamic', plan['tests'])
+        self.assertIn('test_proof', plan['coverage_tests'])
+        # Candidate fingerprint changes cannot reauthorize their own narrow proof.
+        policy['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, 'HEAD', LEAVES + [leaf])
+        self.commit(planner.POLICY, planner.canonical(policy))
+        self.assertIn('test_dynamic', self.plan()['coverage_tests'])
+        self.base = command(self.repo, 'rev-parse', 'HEAD')
+        self.commit(leaf, source)
+        plan = self.plan()
+        self.assertEqual(['test_proof'], plan['tests'])
+        self.assertEqual(sorted(names), plan['coverage_tests'])
+        planner.verify_plan(self.repo, plan)
+
+    def test_contract_pins_each_behavioral_proof_and_acceptance_module(self):
+        leaf, source, policy, names = self._proof_contract()
+        initial = self.base
+        for origin in ('tests', 'coverage_tests', 'positive_tests', 'negative_tests',
+                       'global-positive', 'global-negative', 'critical-positive', 'critical-negative'):
+            with self.subTest(origin=origin):
+                command(self.repo, 'reset', '--hard', initial)
+                candidate = copy.deepcopy(policy)
+                group = candidate['groups']['proof']
+                test = 'test_evidence.Evidence.test_accepted'
+                path = 'tests/test_evidence.py'
+                write(self.repo, path, 'import unittest\nclass Evidence(unittest.TestCase):\n'
+                      '    def test_accepted(self): self.assertEqual(1,1)\n')
+                if origin in ('tests', 'coverage_tests'):
+                    group[origin].append(test)
+                elif origin.startswith('critical-'):
+                    authority = yaml.safe_load((self.repo / 'tests/coverage_policy.yaml').read_bytes())
+                    authority['critical_modules'].append(leaf)
+                    mapping = {'surface': 'proof', 'modules': [leaf], 'positive_tests': names[:1], 'negative_tests': names[1:]}
+                    mapping[origin.split('-')[1] + '_tests'] = [test]
+                    authority['negative_acceptance'].append(mapping)
+                    write(self.repo, 'tests/coverage_policy.yaml', yaml.safe_dump(authority))
+                elif origin.startswith('global-'):
+                    del group['impact_evidence']
+                    candidate['impact_evidence'][origin.split('-')[1] + '_tests'] = [test]
+                else:
+                    group['impact_evidence'][origin] = [test]
+                self.commit(path, (self.repo / path).read_bytes())
+                candidate['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, 'HEAD', LEAVES + [leaf])
+                self.base = self.commit(planner.POLICY, planner.canonical(candidate))
+                self.commit(leaf, source.replace('1 + 0', '0 + 1'))
+                self.assertNotIn('test_dynamic', self.plan()['tests'])
+                # Even a comment-only drift breaks byte identity, independently of AST seeds.
+                self.commit(path, (self.repo / path).read_bytes() + b'# revised evidence implementation\n')
+                plan = self.plan()
+                self.assertIn('test_dynamic', plan['tests'])
+                self.assertIn('test_dynamic', plan['coverage_tests'])
+                self.assertIn('test_proof', plan['coverage_tests'])
+                self.assertIn('test_evidence', plan['coverage_tests'])
+                self.assertEqual('focused', plan['behavioral_scope'])
+                planner.verify_plan(self.repo, plan)
+
+    def test_deterministic_proof_substitution_requires_unchanged_base_implementation(self):
+        leaf = 'src/research_workbench/example.py'
+        write(self.repo, leaf, 'VALUE=1\n')
+        path = 'tests/test_mixed.py'
+        source = ('import unittest\nfrom research_workbench.example import VALUE\n'
+                  'class Mixed(unittest.TestCase):\n'
+                  '    def test_deterministic(self): self.assertEqual(VALUE,1)\n'
+                  '    def test_integration(self): self.assertGreater(VALUE,0)\n')
+        write(self.repo, path, source)
+        authority = yaml.safe_load((self.repo / 'tests/coverage_policy.yaml').read_bytes())
+        name = 'test_mixed.Mixed.test_deterministic'
+        authority['suites']['coverage-quality']['test_ids'].append(name)
+        self.base = self.commit('tests/coverage_policy.yaml', yaml.safe_dump(authority))
+        self.commit(leaf, 'VALUE=2\n')
+        self.assertEqual([name], self.plan()['coverage_tests'])
+        self.commit(path, source.replace('self.assertEqual(VALUE,1)', 'self.assertTrue(True)'))
+        plan = self.plan()
+        self.assertEqual(['test_mixed'], plan['coverage_tests'])
+        self.assertIn('deterministic evidence implementation changed', ' '.join(plan['reasons']))
+        self.assertEqual(('focused', 'impact'), (plan['behavioral_scope'], plan['coverage_scope']))
+        planner.verify_plan(self.repo, plan)
+
     def test_proof_list_and_provenance_cannot_be_resigned_below_base_minimum(self):
         leaf, source, policy, names = self._proof_contract()
         self.base = self.commit(planner.POLICY, planner.canonical(policy))

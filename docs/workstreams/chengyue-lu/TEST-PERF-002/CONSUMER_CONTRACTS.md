@@ -13,6 +13,12 @@ and string/resource inputs. Changed opaque execution, new imports/consumers and 
 changes restore the ordinary closure. Coverage still proves actual affected statements
 and outgoing branches, plus whole critical-file 95/90 and existing acceptance.
 
+This syntactic guard preserves initialization expressions, not their results. Admission
+of a future subject must inspect whether module/class initialization calls an editable
+function (for example, `CACHED = calculate(1)`) and whether consumers depend on that
+result. The current Claim and Projection contracts were reviewed for their specific
+edit domains; they do not authorize arbitrary future subjects through syntax alone.
+
 | Subject | Required behavioral consumer suite | Impact proof suite | Consumer boundary basis |
 |---|---|---|---|
 | `src/research_workbench/artifacts/claim_trace.py` | `test_claim_trace` | `test_claim_trace`, including every existing claim-evidence-localization positive/negative ID | The suite exercises localization, actual promoted bytes, source/admission drift and both CLI validation/trace paths. Function-only changes do not change CLI/package initialization. |
@@ -24,11 +30,28 @@ initialization and dependency boundaries are fixed by this edit domain. New or c
 consumers since that anchor add their downstream closure even when outside these suites.
 A base fingerprint mismatch restores the broad closure. Ordinary graph edges are not deleted.
 
+Every contract that reduces closure also requires unchanged evidence implementation.
+Evidence modules are derived from the group's behavioral tests, coverage tests,
+positive/negative IDs (including the global fallback), and applicable critical acceptance
+mappings. Their Git blobs and modes must match both the accepted fingerprint anchor
+and the candidate. Retaining test names while changing assertions, helpers within the
+module, or even comments invalidates this contract. Both behavioral and impact planning
+then use the ordinary consumer closure and complete contract test suite; unresolved
+ordinary closure retains the existing fail-safe. Risk alone does not force FULL.
+
+A candidate fingerprint refresh cannot accept its own changed proof. After the evidence
+and refreshed contract/fingerprint are accepted into a newer base, a subsequent bounded
+source-only change can use that authority again. New or changed ordinary consumers
+continue to add closure independently.
+
 The exact pre-existing critical acceptance mappings remain authoritative, including their
 negative cases. A proof suite can use exact deterministic IDs from an accepted mapping when
 its behavioral module also owns slow integration cases. Absence of a reviewed narrower
 mapping retains a complete module. An impact coverage failure remains blocking regardless
 of the selected test count or repository-wide coverage result.
+Substituting accepted deterministic IDs for a complete mixed module additionally requires
+that module's implementation to match the exact base. Candidate evidence drift keeps the
+complete module, including its behavioral/integration cases, in the impact proof suite.
 
 Real probes must establish a passing local edit and reject both a source fault and a fault
 in a relevant downstream consumer using the same selected test suite. Timing on these

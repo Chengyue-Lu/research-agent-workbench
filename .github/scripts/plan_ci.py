@@ -51,6 +51,23 @@ def consumer_fingerprint(repo, commit, leaves):
     return digest(sorted(inventory))
 
 
+def evidence_drift(names, accepted, candidate):
+    """Exact IDs authorize narrowing only with the accepted module implementation."""
+    paths = {'tests/' + name.split('.')[0] + '.py' for name in names}
+    return {path for path in paths if path not in accepted or accepted[path] != candidate.get(path)}
+
+
+def contract_evidence(group, policy, coverage_policy):
+    names = set(group['tests']) | set(group.get('coverage_tests', []))
+    evidence = group.get('impact_evidence', policy['impact_evidence'])
+    names.update(evidence['positive_tests'] + evidence['negative_tests'])
+    critical = set(group['coverage']) & set(coverage_policy['critical_modules'])
+    for mapping in coverage_policy['negative_acceptance']:
+        if critical & set(mapping['modules']):
+            names.update(mapping['positive_tests'] + mapping['negative_tests'])
+    return names
+
+
 def changed_lines(repo, base, head, paths, uncertainties=None):
     result = {}
     for path in paths:
@@ -451,6 +468,7 @@ def make_plan(repo, *, base, head, target, repository, base_ref='develop', body=
             repository_reasons.append(reason)
         groups = closure(policy, selected | set(extra_groups))
         records = [policy['groups'][name] for name in groups]
+        mapping_policy = candidate_authority if policy_delta(authority, candidate_authority)[0] else authority
         # The reviewed Provider contract already bounds unchanged opaque consumers.
         # Locate its immutable fingerprint anchor, then invalidate individual changed
         # consumers rather than requiring the whole candidate inventory to be identical.
@@ -466,9 +484,20 @@ def make_plan(repo, *, base, head, target, repository, base_ref='develop', body=
             anchor = git(repo, 'log', '-1', '--format=%H', base, '--', POLICY).decode().strip()
             if consumer_fingerprint(repo, anchor, leaves) == policy['consumer_fingerprint']:
                 accepted, _ = dependencies.snapshot(repo, anchor)
+                for name in groups:
+                    group = policy['groups'][name]
+                    if not bounded & set(group['coverage']):
+                        continue
+                    names = contract_evidence(group, policy, mapping_policy)
+                    drift = evidence_drift(names, accepted, before) | evidence_drift(names, accepted, after)
+                    if drift:
+                        bounded.difference_update(group['coverage'])
+                        reasons.append('contract evidence implementation changed; ordinary closure restored: '
+                                       + name + ': ' + ', '.join(sorted(drift)))
                 reviewed = {p for p in before.keys() & after.keys() & accepted.keys()
                             if before[p] == after[p] == accepted[p]}
             else:
+                bounded.clear()
                 reasons.append('reviewed closure fingerprint anchor unavailable; opaque consumers retained')
         selection, _, _, _, _ = dependencies.select(repo, merge_base, head, seeds, bounded, reviewed, leaves)
         selection['reviewed_contract_anchor'] = anchor
@@ -483,7 +512,6 @@ def make_plan(repo, *, base, head, target, repository, base_ref='develop', body=
         if modules:
             plan.update(coverage_obligations=['impact', 'repository'], coverage_scope='impact+repository')
         # Base critical mappings remain authoritative; safe additions can only add obligations.
-        mapping_policy = candidate_authority if policy_delta(authority, candidate_authority)[0] else authority
         critical = modules & set(mapping_policy['critical_modules'])
         mappings = [m for m in mapping_policy['negative_acceptance'] if set(m['modules']) & critical]
         require(critical <= {p for m in mappings for p in m['modules']}, 'validator acceptance mapping missing')
@@ -505,9 +533,13 @@ def make_plan(repo, *, base, head, target, repository, base_ref='develop', body=
             for group in records:
                 if not group['coverage']:
                     continue
-                for name in group.get('coverage_tests', group['tests']):
+                contracted = bool(set(group['coverage']) & bounded)
+                proof_tests = (group.get('coverage_tests', group['tests']) if contracted else
+                               {t.split('.')[0] for t in contract_evidence(group, policy, mapping_policy)})
+                for name in proof_tests:
                     proof.add(name)
-                    proof_reasons.setdefault(name, []).append('accepted base contract proof suite')
+                    proof_reasons.setdefault(name, []).append('accepted base contract proof suite' if contracted
+                                                             else 'ordinary contract test suite fallback')
             critical_tests = {t.split('.')[0] for m in mappings for k in evidence for t in m[k]}
             explicit_subjects = {p for g in records if 'coverage_tests' in g for p in g['coverage']} & bounded
             for mapping in mappings:
@@ -529,8 +561,12 @@ def make_plan(repo, *, base, head, target, repository, base_ref='develop', body=
             exact = {}
             for name in suite.get('test_ids', []):
                 exact.setdefault(name.split('.')[0], set()).add(name)
+            accepted_base, _ = dependencies.snapshot(repo, base)
             for name in sorted(proof.copy()):
                 if name in exact and name not in suite['modules'] and name not in critical_tests:
+                    if evidence_drift([name], accepted_base, after):
+                        reasons.append('deterministic evidence implementation changed; complete proof module retained: ' + name)
+                        continue
                     proof.remove(name)
                     reason = proof_reasons.pop(name)
                     for test in exact[name]:
