@@ -1,0 +1,537 @@
+[
+  {
+    "subject": "src/research_workbench/artifacts/claim_trace.py",
+    "hypothetical_accepted_base": "54f752942f3f0f66afa4b42d1444834f94322547",
+    "plan": {
+      "version": 4,
+      "binding": {
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "base": "54f752942f3f0f66afa4b42d1444834f94322547",
+        "head": "72346053ba06cc9136770d0dfa2e20ab197a226f",
+        "merge_base": "54f752942f3f0f66afa4b42d1444834f94322547",
+        "target": "72346053ba06cc9136770d0dfa2e20ab197a226f"
+      },
+      "change_class": "focused",
+      "risk": "R2",
+      "changes": [
+        {
+          "status": "M",
+          "path": "src/research_workbench/artifacts/claim_trace.py"
+        }
+      ],
+      "surfaces": [
+        "claim-local-function"
+      ],
+      "test_groups": [
+        "claim-local-function"
+      ],
+      "tests": [
+        "test_claim_trace"
+      ],
+      "coverage_modules": [
+        "src/research_workbench/artifacts/claim_trace.py"
+      ],
+      "impact_evidence": {
+        "positive_tests": [
+          "test_claim_trace.ClaimTraceTests.test_support_counterevidence_and_limits_locate_without_execution",
+          "test_claim_trace.PromotedClaimTraceTests.test_real_promotion_and_retained_negative_are_consumed_without_replay"
+        ],
+        "negative_tests": [
+          "test_claim_trace.ClaimTraceTests.test_live_byte_drift_is_independent_of_declared_object_hash",
+          "test_claim_trace.ClaimTraceTests.test_map_requires_exact_evidence_and_source_closure",
+          "test_claim_trace.ClaimTraceTests.test_missing_and_wrong_raw_admission_do_not_yield_complete_trace",
+          "test_claim_trace.ClaimTraceTests.test_missing_revision_unversioned_and_missing_evidence_are_unresolved"
+        ]
+      },
+      "changed_lines": {
+        "src/research_workbench/artifacts/claim_trace.py": [
+          30
+        ]
+      },
+      "coverage_lines": {
+        "src/research_workbench/artifacts/claim_trace.py": [
+          30
+        ]
+      },
+      "coverage_tests": [
+        "test_claim_trace"
+      ],
+      "selection": {
+        "algorithm": "base-head-consumers-v1",
+        "inventory_sha256": "3a567345f63e392cee939eb165a012525ab49ee052e166670c22f1b55b0468e7",
+        "selected": {},
+        "excluded": [
+          "test_accepted_skill_migration_fixtures",
+          "test_agent_trace",
+          "test_api_session_runner",
+          "test_artifacts_admission",
+          "test_artifacts_promotion",
+          "test_artifacts_validation_host",
+          "test_candidate_claim_rewrite",
+          "test_capability_consumer",
+          "test_capability_requirements",
+          "test_capability_resolution",
+          "test_capability_resolver_branches",
+          "test_catalog",
+          "test_ci_checks",
+          "test_ci_dependencies",
+          "test_ci_plan",
+          "test_claim_trace",
+          "test_cli",
+          "test_cli_command_branches",
+          "test_context_model_branches",
+          "test_contracts",
+          "test_coverage_policy",
+          "test_critical_contract_branches",
+          "test_decision_authority",
+          "test_documentation",
+          "test_evaluation_manifest",
+          "test_execution_archive_helpers",
+          "test_execution_contract_helpers",
+          "test_execution_host",
+          "test_execution_trace_adapter",
+          "test_execution_view",
+          "test_generic_execution_closeout",
+          "test_governance_helper_branches",
+          "test_handoff_transfer",
+          "test_integrity",
+          "test_kernel",
+          "test_m2_registry_runtime",
+          "test_m3_context_observability",
+          "test_method_resolutions",
+          "test_method_trace_candidate",
+          "test_mode_action_routing_fixtures",
+          "test_mode_actions",
+          "test_model_pool",
+          "test_observability_model_branches",
+          "test_phase_b_evolution_gate",
+          "test_phase_c_gate",
+          "test_pr_governance",
+          "test_project_internal_handoff_fixtures",
+          "test_protocol_profiles",
+          "test_provider_adapters",
+          "test_provider_conformance",
+          "test_provider_contract_branches",
+          "test_provider_port",
+          "test_registry_require_branches",
+          "test_relationships",
+          "test_research_attempt_failure",
+          "test_research_mode_migration",
+          "test_research_state_candidate",
+          "test_research_state_critical_branches",
+          "test_runtime_bundle",
+          "test_schemas",
+          "test_selection_witness",
+          "test_skill_archive_audit",
+          "test_skill_evaluation",
+          "test_skill_evaluation_helpers",
+          "test_skill_lifecycle",
+          "test_skill_needs",
+          "test_skill_release_projection",
+          "test_skill_runtime_extension",
+          "test_trace_properties",
+          "test_trace_risk_codes",
+          "test_validation",
+          "test_validation_critical_surfaces",
+          "test_validation_helpers"
+        ],
+        "exclusion_reasons": {
+          "test_accepted_skill_migration_fixtures": "outside base/head dependency closure",
+          "test_agent_trace": "unchanged consumer covered by accepted base contract",
+          "test_api_session_runner": "outside base/head dependency closure",
+          "test_artifacts_admission": "unchanged consumer covered by accepted base contract",
+          "test_artifacts_promotion": "unchanged consumer covered by accepted base contract",
+          "test_artifacts_validation_host": "unchanged consumer covered by accepted base contract",
+          "test_candidate_claim_rewrite": "outside base/head dependency closure",
+          "test_capability_consumer": "outside base/head dependency closure",
+          "test_capability_requirements": "outside base/head dependency closure",
+          "test_capability_resolution": "outside base/head dependency closure",
+          "test_capability_resolver_branches": "outside base/head dependency closure",
+          "test_catalog": "outside base/head dependency closure",
+          "test_ci_checks": "unchanged consumer covered by accepted base contract",
+          "test_ci_dependencies": "unchanged consumer covered by accepted base contract",
+          "test_ci_plan": "unchanged consumer covered by accepted base contract",
+          "test_claim_trace": "unchanged consumer covered by accepted base contract",
+          "test_cli": "unchanged consumer covered by accepted base contract",
+          "test_cli_command_branches": "unchanged consumer covered by accepted base contract",
+          "test_context_model_branches": "outside base/head dependency closure",
+          "test_contracts": "outside base/head dependency closure",
+          "test_coverage_policy": "unchanged consumer covered by accepted base contract",
+          "test_critical_contract_branches": "outside base/head dependency closure",
+          "test_decision_authority": "outside base/head dependency closure",
+          "test_documentation": "outside base/head dependency closure",
+          "test_evaluation_manifest": "unchanged consumer covered by accepted base contract",
+          "test_execution_archive_helpers": "outside base/head dependency closure",
+          "test_execution_contract_helpers": "outside base/head dependency closure",
+          "test_execution_host": "outside base/head dependency closure",
+          "test_execution_trace_adapter": "unchanged consumer covered by accepted base contract",
+          "test_execution_view": "outside base/head dependency closure",
+          "test_generic_execution_closeout": "outside base/head dependency closure",
+          "test_governance_helper_branches": "outside base/head dependency closure",
+          "test_handoff_transfer": "unchanged consumer covered by accepted base contract",
+          "test_integrity": "outside base/head dependency closure",
+          "test_kernel": "outside base/head dependency closure",
+          "test_m2_registry_runtime": "unchanged consumer covered by accepted base contract",
+          "test_m3_context_observability": "unchanged consumer covered by accepted base contract",
+          "test_method_resolutions": "outside base/head dependency closure",
+          "test_method_trace_candidate": "unchanged consumer covered by accepted base contract",
+          "test_mode_action_routing_fixtures": "outside base/head dependency closure",
+          "test_mode_actions": "outside base/head dependency closure",
+          "test_model_pool": "outside base/head dependency closure",
+          "test_observability_model_branches": "outside base/head dependency closure",
+          "test_phase_b_evolution_gate": "outside base/head dependency closure",
+          "test_phase_c_gate": "unchanged consumer covered by accepted base contract",
+          "test_pr_governance": "outside base/head dependency closure",
+          "test_project_internal_handoff_fixtures": "outside base/head dependency closure",
+          "test_protocol_profiles": "outside base/head dependency closure",
+          "test_provider_adapters": "outside base/head dependency closure",
+          "test_provider_conformance": "outside base/head dependency closure",
+          "test_provider_contract_branches": "outside base/head dependency closure",
+          "test_provider_port": "outside base/head dependency closure",
+          "test_registry_require_branches": "outside base/head dependency closure",
+          "test_relationships": "outside base/head dependency closure",
+          "test_research_attempt_failure": "unchanged consumer covered by accepted base contract",
+          "test_research_mode_migration": "outside base/head dependency closure",
+          "test_research_state_candidate": "unchanged consumer covered by accepted base contract",
+          "test_research_state_critical_branches": "outside base/head dependency closure",
+          "test_runtime_bundle": "outside base/head dependency closure",
+          "test_schemas": "outside base/head dependency closure",
+          "test_selection_witness": "unchanged consumer covered by accepted base contract",
+          "test_skill_archive_audit": "unchanged consumer covered by accepted base contract",
+          "test_skill_evaluation": "unchanged consumer covered by accepted base contract",
+          "test_skill_evaluation_helpers": "outside base/head dependency closure",
+          "test_skill_lifecycle": "outside base/head dependency closure",
+          "test_skill_needs": "outside base/head dependency closure",
+          "test_skill_release_projection": "unchanged consumer covered by accepted base contract",
+          "test_skill_runtime_extension": "outside base/head dependency closure",
+          "test_trace_properties": "outside base/head dependency closure",
+          "test_trace_risk_codes": "outside base/head dependency closure",
+          "test_validation": "outside base/head dependency closure",
+          "test_validation_critical_surfaces": "outside base/head dependency closure",
+          "test_validation_helpers": "unchanged consumer covered by accepted base contract"
+        },
+        "exclusion_reason": "outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately",
+        "opaque_consumers": [],
+        "errors": [],
+        "test_reachable_sources": [
+          "src/research_workbench/artifacts/claim_trace.py"
+        ],
+        "affected_paths": [
+          "src/research_workbench/artifacts/claim_trace.py"
+        ],
+        "reviewed_contract_anchor": "54f752942f3f0f66afa4b42d1444834f94322547",
+        "reviewed_opaque_boundary": [
+          "src/research_workbench/artifacts/claim_trace.py"
+        ]
+      },
+      "coverage_selection": {
+        "test_claim_trace": [
+          "accepted base contract proof suite"
+        ]
+      },
+      "policy_sha256": "e56c06c15866d7c701cee1da6cbd24e9b567772876be966d3982653de5c07902",
+      "python_versions": [
+        "3.11",
+        "3.13"
+      ],
+      "behavioral_scope": "focused",
+      "coverage_scope": "impact",
+      "coverage_obligations": [
+        "impact"
+      ],
+      "blocked_reasons": [],
+      "package_smoke": false,
+      "repository_smoke": false,
+      "reasons": [
+        "src/research_workbench/artifacts/claim_trace.py -> claim-local-function"
+      ],
+      "obligation_reasons": {
+        "behavioral_scope": [
+          "complete affected base/head consumer and contract tests"
+        ],
+        "coverage_scope": [
+          "changed executable/critical subjects retain impact 100/100 and critical 95/90 with acceptance"
+        ],
+        "package_smoke": [
+          "no packaging/install surface changed"
+        ],
+        "repository_smoke": [
+          "no repository validation surface changed"
+        ]
+      },
+      "plan_id": "c8d56f3db627e63add7ed19d148c6d91d37ce8856af0252ae39da77c2abceac2"
+    },
+    "boundary": "Git-object-only plan replay; no branch mutation, test execution or hosted timing claim"
+  },
+  {
+    "subject": "src/research_workbench/capability/release_projection.py",
+    "hypothetical_accepted_base": "54f752942f3f0f66afa4b42d1444834f94322547",
+    "plan": {
+      "version": 4,
+      "binding": {
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "base": "54f752942f3f0f66afa4b42d1444834f94322547",
+        "head": "c394fab7049fe0d1eac46b1d7e5d8cb12274bd91",
+        "merge_base": "54f752942f3f0f66afa4b42d1444834f94322547",
+        "target": "c394fab7049fe0d1eac46b1d7e5d8cb12274bd91"
+      },
+      "change_class": "focused",
+      "risk": "R2",
+      "changes": [
+        {
+          "status": "M",
+          "path": "src/research_workbench/capability/release_projection.py"
+        }
+      ],
+      "surfaces": [
+        "projection-local-function"
+      ],
+      "test_groups": [
+        "projection-local-function"
+      ],
+      "tests": [
+        "test_skill_release_projection"
+      ],
+      "coverage_modules": [
+        "src/research_workbench/capability/release_projection.py"
+      ],
+      "impact_evidence": {
+        "positive_tests": [
+          "test_skill_release_projection.SkillReleaseProjectionTests.test_empty_production_index_preserves_zero_skill_core",
+          "test_skill_release_projection.SkillReleaseProjectionTests.test_verified_release_produces_narrow_deterministic_projection"
+        ],
+        "negative_tests": [
+          "test_skill_release_projection.SkillReleaseProjectionTests.test_legacy_repository_skills_cannot_be_projected",
+          "test_skill_release_projection.SkillReleaseProjectionTests.test_projection_registry_and_derivation_are_fail_closed",
+          "test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_schema_boundary_is_fail_closed",
+          "test_skill_release_projection.SkillReleaseProjectionTests.test_publisher_requires_external_evidence_human_decision_and_runtime_boundaries",
+          "test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_alias_only_authority_path",
+          "test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_alias_only_index_path",
+          "test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_ambiguous_shadow_authority_closure",
+          "test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_cross_root_stitched_publication",
+          "test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_shadow_only_authority_closure",
+          "test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_revalidates_external_evidence_and_human_decision"
+        ]
+      },
+      "changed_lines": {
+        "src/research_workbench/capability/release_projection.py": [
+          44
+        ]
+      },
+      "coverage_lines": {
+        "src/research_workbench/capability/release_projection.py": [
+          44
+        ]
+      },
+      "coverage_tests": [
+        "test_skill_release_projection"
+      ],
+      "selection": {
+        "algorithm": "base-head-consumers-v1",
+        "inventory_sha256": "0a8e72c72f6ce1dd623ca8a2390368023b37d1add43ae372ea9cc9a346d9e934",
+        "selected": {},
+        "excluded": [
+          "test_accepted_skill_migration_fixtures",
+          "test_agent_trace",
+          "test_api_session_runner",
+          "test_artifacts_admission",
+          "test_artifacts_promotion",
+          "test_artifacts_validation_host",
+          "test_candidate_claim_rewrite",
+          "test_capability_consumer",
+          "test_capability_requirements",
+          "test_capability_resolution",
+          "test_capability_resolver_branches",
+          "test_catalog",
+          "test_ci_checks",
+          "test_ci_dependencies",
+          "test_ci_plan",
+          "test_claim_trace",
+          "test_cli",
+          "test_cli_command_branches",
+          "test_context_model_branches",
+          "test_contracts",
+          "test_coverage_policy",
+          "test_critical_contract_branches",
+          "test_decision_authority",
+          "test_documentation",
+          "test_evaluation_manifest",
+          "test_execution_archive_helpers",
+          "test_execution_contract_helpers",
+          "test_execution_host",
+          "test_execution_trace_adapter",
+          "test_execution_view",
+          "test_generic_execution_closeout",
+          "test_governance_helper_branches",
+          "test_handoff_transfer",
+          "test_integrity",
+          "test_kernel",
+          "test_m2_registry_runtime",
+          "test_m3_context_observability",
+          "test_method_resolutions",
+          "test_method_trace_candidate",
+          "test_mode_action_routing_fixtures",
+          "test_mode_actions",
+          "test_model_pool",
+          "test_observability_model_branches",
+          "test_phase_b_evolution_gate",
+          "test_phase_c_gate",
+          "test_pr_governance",
+          "test_project_internal_handoff_fixtures",
+          "test_protocol_profiles",
+          "test_provider_adapters",
+          "test_provider_conformance",
+          "test_provider_contract_branches",
+          "test_provider_port",
+          "test_registry_require_branches",
+          "test_relationships",
+          "test_research_attempt_failure",
+          "test_research_mode_migration",
+          "test_research_state_candidate",
+          "test_research_state_critical_branches",
+          "test_runtime_bundle",
+          "test_schemas",
+          "test_selection_witness",
+          "test_skill_archive_audit",
+          "test_skill_evaluation",
+          "test_skill_evaluation_helpers",
+          "test_skill_lifecycle",
+          "test_skill_needs",
+          "test_skill_release_projection",
+          "test_skill_runtime_extension",
+          "test_trace_properties",
+          "test_trace_risk_codes",
+          "test_validation",
+          "test_validation_critical_surfaces",
+          "test_validation_helpers"
+        ],
+        "exclusion_reasons": {
+          "test_accepted_skill_migration_fixtures": "unchanged consumer covered by accepted base contract",
+          "test_agent_trace": "unchanged consumer covered by accepted base contract",
+          "test_api_session_runner": "unchanged consumer covered by accepted base contract",
+          "test_artifacts_admission": "unchanged consumer covered by accepted base contract",
+          "test_artifacts_promotion": "unchanged consumer covered by accepted base contract",
+          "test_artifacts_validation_host": "unchanged consumer covered by accepted base contract",
+          "test_candidate_claim_rewrite": "unchanged consumer covered by accepted base contract",
+          "test_capability_consumer": "unchanged consumer covered by accepted base contract",
+          "test_capability_requirements": "unchanged consumer covered by accepted base contract",
+          "test_capability_resolution": "unchanged consumer covered by accepted base contract",
+          "test_capability_resolver_branches": "unchanged consumer covered by accepted base contract",
+          "test_catalog": "unchanged consumer covered by accepted base contract",
+          "test_ci_checks": "unchanged consumer covered by accepted base contract",
+          "test_ci_dependencies": "unchanged consumer covered by accepted base contract",
+          "test_ci_plan": "unchanged consumer covered by accepted base contract",
+          "test_claim_trace": "unchanged consumer covered by accepted base contract",
+          "test_cli": "unchanged consumer covered by accepted base contract",
+          "test_cli_command_branches": "unchanged consumer covered by accepted base contract",
+          "test_context_model_branches": "unchanged consumer covered by accepted base contract",
+          "test_contracts": "unchanged consumer covered by accepted base contract",
+          "test_coverage_policy": "unchanged consumer covered by accepted base contract",
+          "test_critical_contract_branches": "unchanged consumer covered by accepted base contract",
+          "test_decision_authority": "unchanged consumer covered by accepted base contract",
+          "test_documentation": "outside base/head dependency closure",
+          "test_evaluation_manifest": "unchanged consumer covered by accepted base contract",
+          "test_execution_archive_helpers": "unchanged consumer covered by accepted base contract",
+          "test_execution_contract_helpers": "unchanged consumer covered by accepted base contract",
+          "test_execution_host": "unchanged consumer covered by accepted base contract",
+          "test_execution_trace_adapter": "unchanged consumer covered by accepted base contract",
+          "test_execution_view": "unchanged consumer covered by accepted base contract",
+          "test_generic_execution_closeout": "unchanged consumer covered by accepted base contract",
+          "test_governance_helper_branches": "unchanged consumer covered by accepted base contract",
+          "test_handoff_transfer": "unchanged consumer covered by accepted base contract",
+          "test_integrity": "outside base/head dependency closure",
+          "test_kernel": "outside base/head dependency closure",
+          "test_m2_registry_runtime": "unchanged consumer covered by accepted base contract",
+          "test_m3_context_observability": "unchanged consumer covered by accepted base contract",
+          "test_method_resolutions": "unchanged consumer covered by accepted base contract",
+          "test_method_trace_candidate": "unchanged consumer covered by accepted base contract",
+          "test_mode_action_routing_fixtures": "outside base/head dependency closure",
+          "test_mode_actions": "unchanged consumer covered by accepted base contract",
+          "test_model_pool": "unchanged consumer covered by accepted base contract",
+          "test_observability_model_branches": "unchanged consumer covered by accepted base contract",
+          "test_phase_b_evolution_gate": "unchanged consumer covered by accepted base contract",
+          "test_phase_c_gate": "unchanged consumer covered by accepted base contract",
+          "test_pr_governance": "unchanged consumer covered by accepted base contract",
+          "test_project_internal_handoff_fixtures": "unchanged consumer covered by accepted base contract",
+          "test_protocol_profiles": "unchanged consumer covered by accepted base contract",
+          "test_provider_adapters": "unchanged consumer covered by accepted base contract",
+          "test_provider_conformance": "unchanged consumer covered by accepted base contract",
+          "test_provider_contract_branches": "unchanged consumer covered by accepted base contract",
+          "test_provider_port": "unchanged consumer covered by accepted base contract",
+          "test_registry_require_branches": "unchanged consumer covered by accepted base contract",
+          "test_relationships": "unchanged consumer covered by accepted base contract",
+          "test_research_attempt_failure": "unchanged consumer covered by accepted base contract",
+          "test_research_mode_migration": "unchanged consumer covered by accepted base contract",
+          "test_research_state_candidate": "unchanged consumer covered by accepted base contract",
+          "test_research_state_critical_branches": "unchanged consumer covered by accepted base contract",
+          "test_runtime_bundle": "unchanged consumer covered by accepted base contract",
+          "test_schemas": "unchanged consumer covered by accepted base contract",
+          "test_selection_witness": "unchanged consumer covered by accepted base contract",
+          "test_skill_archive_audit": "unchanged consumer covered by accepted base contract",
+          "test_skill_evaluation": "unchanged consumer covered by accepted base contract",
+          "test_skill_evaluation_helpers": "unchanged consumer covered by accepted base contract",
+          "test_skill_lifecycle": "unchanged consumer covered by accepted base contract",
+          "test_skill_needs": "unchanged consumer covered by accepted base contract",
+          "test_skill_release_projection": "unchanged consumer covered by accepted base contract",
+          "test_skill_runtime_extension": "unchanged consumer covered by accepted base contract",
+          "test_trace_properties": "unchanged consumer covered by accepted base contract",
+          "test_trace_risk_codes": "unchanged consumer covered by accepted base contract",
+          "test_validation": "unchanged consumer covered by accepted base contract",
+          "test_validation_critical_surfaces": "unchanged consumer covered by accepted base contract",
+          "test_validation_helpers": "unchanged consumer covered by accepted base contract"
+        },
+        "exclusion_reason": "outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately",
+        "opaque_consumers": [],
+        "errors": [],
+        "test_reachable_sources": [
+          "src/research_workbench/capability/release_projection.py"
+        ],
+        "affected_paths": [
+          "src/research_workbench/capability/release_projection.py"
+        ],
+        "reviewed_contract_anchor": "54f752942f3f0f66afa4b42d1444834f94322547",
+        "reviewed_opaque_boundary": [
+          "src/research_workbench/capability/release_projection.py"
+        ]
+      },
+      "coverage_selection": {
+        "test_skill_release_projection": [
+          "accepted base contract proof suite"
+        ]
+      },
+      "policy_sha256": "e56c06c15866d7c701cee1da6cbd24e9b567772876be966d3982653de5c07902",
+      "python_versions": [
+        "3.11",
+        "3.13"
+      ],
+      "behavioral_scope": "focused",
+      "coverage_scope": "impact",
+      "coverage_obligations": [
+        "impact"
+      ],
+      "blocked_reasons": [],
+      "package_smoke": false,
+      "repository_smoke": false,
+      "reasons": [
+        "src/research_workbench/capability/release_projection.py matches the R2 policy surface",
+        "src/research_workbench/capability/release_projection.py -> projection-local-function"
+      ],
+      "obligation_reasons": {
+        "behavioral_scope": [
+          "complete affected base/head consumer and contract tests"
+        ],
+        "coverage_scope": [
+          "changed executable/critical subjects retain impact 100/100 and critical 95/90 with acceptance"
+        ],
+        "package_smoke": [
+          "no packaging/install surface changed"
+        ],
+        "repository_smoke": [
+          "no repository validation surface changed"
+        ]
+      },
+      "plan_id": "5c22edf3fb2a358f1e16da77da88a06be179a54b313cbad03c2ad470ed4ba62a"
+    },
+    "boundary": "Git-object-only plan replay; no branch mutation, test execution or hosted timing claim"
+  }
+]
