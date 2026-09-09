@@ -725,7 +725,7 @@ def check_method_trace(
             problems.append(
                 "method_application.resolution_ref: Method Resolution binds a different Task"
             )
-        elif isinstance(resolution_task, Mapping):
+        else:
             declared_hash = str(resolution_task.get("sha256", "")).removeprefix(
                 "sha256:"
             ).lower()

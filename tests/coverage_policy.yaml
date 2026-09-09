@@ -48,6 +48,8 @@ suites:
       - test_protocol_profiles
       - test_pr_governance
       - test_release_surface
+      - test_release_oracle_replay
+      - test_portable_build
       - test_runtime_resources
       - test_provider_adapters
       - test_provider_conformance

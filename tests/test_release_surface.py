@@ -6,6 +6,8 @@ import io
 import itertools
 import json
 import os
+import runpy
+import sys
 import shutil
 import subprocess
 import tempfile
@@ -13,6 +15,7 @@ import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
+from types import SimpleNamespace
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -495,6 +498,7 @@ class ReleaseSurfaceTests(unittest.TestCase):
             release.check(self.repo, self.expected, candidate)
 
     def test_binary_source_and_executable_mode_preserve_bytes(self):
+        write(self.repo, "src/non-utf8.bin", b"\xff\xfe")
         write(self.repo, "src/binary.bin", b"\xff\x00\r\n")
         write(self.repo, "src/binary-with-nul.bin", b"\x00\r\n")
         command(self.repo, "add", "src/binary.bin")
@@ -503,6 +507,7 @@ class ReleaseSurfaceTests(unittest.TestCase):
         self.update_source()
         files = release.project(self.repo, self.expected)
         self.assertEqual(b"\xff\x00\r\n", files["src/binary.bin"][1])
+        self.assertEqual(b"\xff\xfe", files["src/non-utf8.bin"][1])
         self.assertEqual("100755", files["src/run.py"][0])
         candidate, tree = self.candidate(files)
         self.assertEqual(tree, release.check(self.repo, self.expected, candidate)["tree"])
@@ -525,6 +530,20 @@ class ReleaseSurfaceTests(unittest.TestCase):
         (output / "src/run.py").write_bytes(b"converted\r\n")
         with self.assertRaisesRegex(release.ReleaseError, "working projection"):
             release.check(self.repo, self.expected, candidate, directory=output)
+
+    def test_directory_mode_is_platform_specific_and_script_requires_arguments(self):
+        output = self.base / "staging"
+        output.mkdir()
+        (output / "file").write_bytes(b"content")
+        expected = {"file": ("100755", b"content")}
+        for platform in ("nt", "posix"):
+            with self.subTest(platform=platform), patch.object(release, "os", SimpleNamespace(name=platform, walk=os.walk)):
+                observed = release.directory_files(output, expected)
+            mode = "100755" if (output / "file").stat().st_mode & 0o100 else "100644"
+            self.assertEqual(("100755" if platform == "nt" else mode, b"content"), observed["file"])
+        with patch.object(sys, "argv", ["release_surface.py"]), redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as raised:
+            runpy.run_path(str(ROOT / release.TOOL), run_name="__main__")
+        self.assertEqual(2, raised.exception.code)
 
     def test_shallow_remote_and_git_format_prerequisites(self):
         original = release.git

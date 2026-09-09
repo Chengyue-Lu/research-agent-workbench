@@ -156,10 +156,9 @@ class RuntimeResources:
         require(logical in self.entries, "unindexed Runtime resource")
         result = self.root / self.entries[logical]["installed_path"]
         require(result.resolve().is_relative_to(self.root.resolve()), "Runtime resource path escapes root")
-        for path in (result, *result.parents):
+        ancestors = (result, *result.parents)
+        for path in ancestors[:ancestors.index(self.root) + 1]:
             no_link(path)
-            if path == self.root:
-                break
         require(result.is_file(), "missing Runtime resource")
         return result
 

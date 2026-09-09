@@ -18,6 +18,38 @@ def _codes(report: object) -> set[str]:
 
 
 class GovernanceHelperBranchTests(unittest.TestCase):
+    def test_changed_action_registry_is_read_from_both_pins_and_fails_closed(self):
+        base, head = "a" * 40, "b" * 40
+        path = "registry/modes/actions.json"
+        event = {"pull_request": {"body": valid_body(), "mergeable": True,
+                 "base": {"ref": "develop", "sha": base, "repo": {"full_name": "owner/repo"}},
+                 "head": {"ref": "feature", "sha": head, "repo": {"full_name": "owner/repo"}}}}
+        before = json.loads((governance.ROOT / path).read_bytes())
+        removed = json.loads(json.dumps(before))
+        removed["entries"].pop()
+        for after, exists, expected in ((before, True, None), (removed, True, "ACTION-IDENTITY-REMOVED"),
+                                        (None, False, "ACTION-REGISTRY-REMOVED"),
+                                        ("invalid JSON", True, "ACTION-REGISTRY-READ"),
+                                        (governance.GovernanceError("unreadable"), True, "ACTION-REGISTRY-READ")):
+            def read(commit, relative):
+                if relative != path:
+                    return BASE_TASKS
+                value = before if commit == base else after
+                if isinstance(value, Exception):
+                    raise value
+                return value if isinstance(value, str) else json.dumps(value)
+
+            with self.subTest(after=type(after).__name__, exists=exists), mock.patch.object(governance, "_changed_paths", return_value=[path]), mock.patch.object(
+                governance, "_merge_base", return_value=base
+            ), mock.patch.object(governance, "_blob_exists", side_effect=lambda commit, relative: commit == base or exists), mock.patch.object(
+                governance, "_read_blob", side_effect=read
+            ), mock.patch.object(governance, "_published_documents_at", return_value={}):
+                codes = _codes(governance.check_pull_request(event))
+            if expected:
+                self.assertIn(expected, codes)
+            else:
+                self.assertFalse(any(code.startswith("ACTION-REGISTRY-") for code in codes))
+
     def test_report_emission_covers_pass_warning_and_error_outcomes(self) -> None:
         reports = (
             governance.GovernanceReport(),

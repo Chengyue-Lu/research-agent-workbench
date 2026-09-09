@@ -61,18 +61,12 @@ def generate(root: Path = ROOT):
         contract.portable(logical)
         if kind not in contract.KINDS or not re.fullmatch(contract.KINDS[kind], logical):
             raise ValueError("source resource outside public catalog class")
-        parts = logical.split("/")
-        if any(part in ("", ".", "..") for part in parts) or "\\" in logical or ":" in logical:
-            raise ValueError("unsafe source resource path")
         source = root / logical
         contract.no_link(source)
         if not source.is_file() or source.is_symlink() or not source.resolve().is_relative_to(root.resolve()):
             raise ValueError("missing or unsafe source resource")
-        for parent in source.parents:
-            if parent == root:
-                break
-            if parent.is_symlink() or (hasattr(parent, "is_junction") and parent.is_junction()):
-                raise ValueError("linked source resource parent")
+        for parent in source.parents[:source.parents.index(root)]:
+            contract.no_link(parent)
         data = source.read_bytes()
         mapped = "assets/" + logical
         if kind in ("skill_manifest", "skill_asset"):
