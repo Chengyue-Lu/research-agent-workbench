@@ -237,6 +237,31 @@ def commit_graph(repo, commit):
     return graph(blobs, paths)
 
 
+def test_evidence_closure(repo, commit, proof_names):
+    """Follow known test-side implementation inputs without pinning production code."""
+    paths, _ = snapshot(repo, commit)
+    reverse, *_ = commit_graph(repo, commit)
+    forward = defaultdict(set)
+    for dependency, consumers in reverse.items():
+        if dependency.startswith('tests/'):
+            for consumer in consumers:
+                forward[consumer].add(dependency)
+    found = {'tests/' + name.split('.')[0] + '.py' for name in proof_names}
+    pending = sorted(found)
+    for path in pending:
+        inputs = set(forward[path])
+        if path.endswith('.py'):
+            parts = path.split('/')
+            # Package initializers execute even when the root uses an unqualified
+            # test import. Namespace packages have no initializer to pin at this ref.
+            inputs.update('/'.join(parts[:stop]) + '/__init__.py' for stop in range(1, len(parts))
+                          if '/'.join(parts[:stop]) + '/__init__.py' in paths)
+        for dependency in sorted(inputs - found):
+            found.add(dependency)
+            pending.append(dependency)
+    return found
+
+
 def select(repo, base, head, seeds, reviewed_seeds=(), reviewed_consumers=(), reviewed_leaves=()):
     """Union old/new edges so removing an import or a consumer cannot hide impact."""
     before, old = snapshot(repo, base)

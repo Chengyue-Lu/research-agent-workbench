@@ -33,15 +33,22 @@ A base fingerprint mismatch restores the broad closure. Ordinary graph edges are
 Every contract that reduces closure also requires unchanged evidence implementation.
 Evidence modules are derived from the group's behavioral tests, coverage tests,
 positive/negative IDs (including the global fallback), and applicable critical acceptance
-mappings. Their Git blobs and modes must match both the accepted fingerprint anchor
-and the candidate. Retaining test names while changing assertions, helpers within the
-module, or even comments invalidates this contract. Both behavioral and impact planning
+mappings. The existing Git dependency graph recursively expands these roots through
+`tests/**` helper imports, package initializers and known literal fixture/resource inputs.
+Production dependencies remain outside this identity closure: their correctness is
+proved by the source boundary and behavioral/impact checks. Evidence Git blobs and modes
+must match the accepted fingerprint anchor, current base and candidate. Candidate graph
+paths can only add obligations, including newly present initializers and fixture inputs.
+Retaining test names while changing assertions, transitive helpers, fixtures, or even
+comments invalidates this contract. Both behavioral and impact planning
 then use the ordinary consumer closure and complete contract test suite; unresolved
 ordinary closure retains the existing fail-safe. Risk alone does not force FULL.
 
 A candidate fingerprint refresh cannot accept its own changed proof. After the evidence
 and refreshed contract/fingerprint are accepted into a newer base, a subsequent bounded
-source-only change can use that authority again. New or changed ordinary consumers
+source-only change can use that authority again. The consumer fingerprint includes test
+resources as well as Python modules so a fixture-only refresh creates a new accepted
+anchor; the impact policy itself is excluded from its own fingerprint. New or changed ordinary consumers
 continue to add closure independently.
 
 The exact pre-existing critical acceptance mappings remain authoritative, including their
@@ -50,7 +57,7 @@ its behavioral module also owns slow integration cases. Absence of a reviewed na
 mapping retains a complete module. An impact coverage failure remains blocking regardless
 of the selected test count or repository-wide coverage result.
 Substituting accepted deterministic IDs for a complete mixed module additionally requires
-that module's implementation to match the exact base. Candidate evidence drift keeps the
+that module's complete test-side evidence closure to match the exact base. Candidate evidence drift keeps the
 complete module, including its behavioral/integration cases, in the impact proof suite.
 
 Real probes must establish a passing local edit and reject both a source fault and a fault

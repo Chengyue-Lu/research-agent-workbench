@@ -42,6 +42,24 @@ class DependencyTests(unittest.TestCase):
         p = self.selection(old, {'tests/test_contract.py': b'import unittest'}, ['src/pkg/leaf.py'])
         self.assertIn('test_contract', p['selected'])
 
+    def test_evidence_closure_follows_test_helpers_packages_and_literal_inputs_only(self):
+        blobs = {'tests/__init__.py': b'from .support import setup',
+                 'tests/test_proof.py': b'from tests.support.helpers import expected\nimport pkg.subject',
+                 'tests/support/__init__.py': b'from . import setup',
+                 'tests/support/setup.py': b'from . import helpers',
+                 'tests/support/helpers.py': b'from . import setup\nfrom pathlib import Path\n'
+                     b'data=(ROOT / "tests" / "fixtures" / "expected.json").read_text()',
+                 'src/pkg/subject.py': b'import tests.production_only',
+                 'tests/production_only.py': b'pass', 'tests/unrelated.py': b'pass'}
+        paths = set(blobs) | {'tests/fixtures/expected.json', 'tests/fixtures/unrelated.json'}
+        deps.commit_graph.cache_clear()
+        with patch.object(deps, 'snapshot', return_value=(paths, blobs)):
+            found = deps.test_evidence_closure('evidence-fixture', 'base', ['test_proof.Proof.test_ok'])
+            self.assertEqual({'tests/__init__.py', 'tests/test_proof.py', 'tests/support/__init__.py',
+                              'tests/support/setup.py', 'tests/support/helpers.py', 'tests/fixtures/expected.json'}, found)
+            # Missing roots remain visible to the caller's identity check, never disappearing silently.
+            self.assertIn('tests/test_missing.py', deps.test_evidence_closure('evidence-fixture', 'base', ['test_missing']))
+
     def test_opaque_execution_expands_instead_of_claiming_exclusion(self):
         blobs = {'src/pkg/leaf.py': b'VALUE=1', 'tests/test_dynamic.py': b'import importlib\nimportlib.import_module(name)',
                  'tests/test_subprocess.py': b'from subprocess import run as launch\nlaunch(command)',

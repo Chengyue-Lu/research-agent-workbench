@@ -45,15 +45,20 @@ def consumer_fingerprint(repo, commit, leaves):
     inventory = []
     for record in filter(None, records):
         metadata, path = record.split('\t')
-        if path not in leaves and (path.startswith(('src/', 'schemas/', 'registry/')) or path == 'pyproject.toml'
-                                   or (path.startswith('tests/') and path.endswith('.py'))):
+        if path not in leaves and path != POLICY and (path.startswith(('src/', 'schemas/', 'registry/', 'tests/'))
+                                                      or path == 'pyproject.toml'):
             inventory.append([path, metadata])
     return digest(sorted(inventory))
 
 
-def evidence_drift(names, accepted, candidate):
-    """Exact IDs authorize narrowing only with the accepted module implementation."""
-    paths = {'tests/' + name.split('.')[0] + '.py' for name in names}
+def evidence_drift(repo, anchor, commit, names):
+    """Pin known test helpers/resources as well as each direct proof module."""
+    accepted, _ = dependencies.snapshot(repo, anchor)
+    candidate, _ = dependencies.snapshot(repo, commit)
+    paths = (dependencies.test_evidence_closure(repo, anchor, names)
+             | dependencies.test_evidence_closure(repo, commit, names))
+    # The candidate closure can only add obligations (for example a newly present
+    # package initializer or a new file in an accepted literal fixture directory).
     return {path for path in paths if path not in accepted or accepted[path] != candidate.get(path)}
 
 
@@ -489,7 +494,7 @@ def make_plan(repo, *, base, head, target, repository, base_ref='develop', body=
                     if not bounded & set(group['coverage']):
                         continue
                     names = contract_evidence(group, policy, mapping_policy)
-                    drift = evidence_drift(names, accepted, before) | evidence_drift(names, accepted, after)
+                    drift = evidence_drift(repo, anchor, base, names) | evidence_drift(repo, anchor, head, names)
                     if drift:
                         bounded.difference_update(group['coverage'])
                         reasons.append('contract evidence implementation changed; ordinary closure restored: '
@@ -561,10 +566,9 @@ def make_plan(repo, *, base, head, target, repository, base_ref='develop', body=
             exact = {}
             for name in suite.get('test_ids', []):
                 exact.setdefault(name.split('.')[0], set()).add(name)
-            accepted_base, _ = dependencies.snapshot(repo, base)
             for name in sorted(proof.copy()):
                 if name in exact and name not in suite['modules'] and name not in critical_tests:
-                    if evidence_drift([name], accepted_base, after):
+                    if evidence_drift(repo, base, head, [name]):
                         reasons.append('deterministic evidence implementation changed; complete proof module retained: ' + name)
                         continue
                     proof.remove(name)
