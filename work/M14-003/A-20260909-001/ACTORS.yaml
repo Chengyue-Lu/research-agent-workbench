@@ -1,0 +1,15 @@
+schema_version: 0.1.0
+task_id: M14-003
+task_revision: 1
+attempt_id: A-20260909-001
+actors:
+- actor_id: main-agent
+  actor_type: agent
+  role: bounded CI diagnosis and dependency repair
+  runtime_identity: 'Codex PR #60 CI repair'
+  accountable_owner: Chengyue-Lu
+- actor_id: provider-openai
+  actor_type: model-provider
+  role: bound model provider
+  runtime_identity: openai
+  accountable_owner: Chengyue-Lu

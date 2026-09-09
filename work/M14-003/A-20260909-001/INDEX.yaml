@@ -1,0 +1,88 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260909-001
+task_id: M14-003
+task_revision: 1
+attempt_id: A-20260909-001
+archive_root: A-20260909-001
+baseline: 347f264c1624654f909b91542a96724b98c9cad4
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 2d7afcfde017613a5cb8c4714f369f105b2897138b29e662e7ec2b000532b7c7
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 354b7b8e10ac172d5fbb64ce11534bf5a677541ceab5d8c9a04349d0d5d2dfb3
+read_allowlist:
+- .github/**
+- .rwb/m14-rebase-20260909/**
+- AGENTS.md
+- build_backend.py
+- docs/**
+- examples/phase-c/**
+- pyproject.toml
+- registry/**
+- runtime-resources.json
+- src/**
+- src/research_workbench/observability/trace.py
+- tests/**
+- work/M14-002/A-20260906-001/checks/independent_projection_oracle.py
+write_scope:
+- .github/scripts/**
+- build_backend.py
+- src/**
+- tests/**
+- work/M14-003/A-20260909-001/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 745e071ceff564f2f1bcd7d2488ded4ed5b5a6b7325bb29ff6b180e427e2d682
+  event_count: 6
+tool_event_refs:
+- path: tool-events/m14-ci-adaptation-succeeded.json
+  sha256: 2182cad0b0f043de80b53744eb6e90aff17389ce3e4455f1da1a7ca4dd760541
+handoff_refs:
+- path: WORKLOG.md
+  sha256: c9529881bfbbb40c6a853cb971f319e3df0b80ce2520f0d6a3463f375e8ed323
+decision_refs: []
+output_refs:
+- path: outputs/CI-ADAPTATION.md
+  sha256: c9529881bfbbb40c6a853cb971f319e3df0b80ce2520f0d6a3463f375e8ed323
+check_refs:
+- path: checks/verification.json
+  sha256: 44083a7d56cf5bfe378c9072dd6ea2e04d8c7dc61faf789974b48ea3da82dbfb
+- path: checks/focused-results.json
+  sha256: 1a25aa7c2d8f4ff7880bbf5999ec0aabd8d3802776e88365a7da496dc7676916
+- path: checks/range-diff.log
+  sha256: fccead8a07cf94ee64d7a7eb63a9865360ba96c64f1a075ca7833e83d95abd19
+- path: checks/targeted.log
+  sha256: 36e112d172091f17a7f6cc22632f4cc07f5f8d40b32baf8fd42f6feb234fd9fe
+- path: checks/build-fixed.log
+  sha256: d3b0dbe801cf77f2bd7664ecd3606e9555031c3b4984af26dda8fc9864c5c471
+- path: checks/focused-311.log
+  sha256: 558d63871bad0052ea87d0afe24852d3c3dd650bcb0fb9d74ee30a91d025873a
+- path: checks/registry-fixed.log
+  sha256: d10ffbd9f0faa72cd6837063279524e199b59fbc3d035051302a1e8dbc4b36ad
+- path: checks/registry-committed.log
+  sha256: fb184ea57734512b1f088f9181209901b9cd46df3eb7eaa2500ea9e48dde20b5
+- path: checks/ci-contracts.log
+  sha256: 9d9190d55196b82bb3a96015259e9ab25c41c5afb3879a0a572d8fdd12800dd0
+- path: checks/repository.log
+  sha256: 44fbc76c8c06e9e9ae1216e41d419536c4c52604736da6539aae0a650a0ffa4d
+- path: checks/governance.log
+  sha256: b98e54776016fa7f791e9927f11a7be04c2669ac81d7b354ef486fd443deb556
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: tool-results
+- event_id: EVT-0004
+  affected_stream: external-actions
