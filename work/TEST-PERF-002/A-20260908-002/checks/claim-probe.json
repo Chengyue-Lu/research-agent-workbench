@@ -1,0 +1,62 @@
+{
+  "authority_status": "isolated proposed accepted-contract baseline; not formal develop acceptance",
+  "base": "cbda9c2c78da3cc647f5e73da160053fca2d6a4e",
+  "python": "3.11.16",
+  "cases": [
+    {
+      "name": "claim",
+      "path": "src/research_workbench/artifacts/claim_trace.py",
+      "head": "fb6c775f7fb57cc56a3bd46a8adc459595e2731f",
+      "behavioral_scope": "focused",
+      "coverage_scope": "impact",
+      "tests": [
+        "test_claim_trace",
+        "test_runtime_resources"
+      ],
+      "coverage_tests": [
+        "test_claim_trace"
+      ],
+      "smokes": [
+        false,
+        false
+      ],
+      "runs": {
+        "behavioral": {
+          "exit_code": 0,
+          "wall_seconds": 91.287
+        },
+        "configure": {
+          "exit_code": 0,
+          "wall_seconds": 3.821
+        },
+        "coverage": {
+          "exit_code": 0,
+          "wall_seconds": 138.434
+        },
+        "coverage-export": {
+          "exit_code": 0,
+          "wall_seconds": 1.756
+        },
+        "impact-gate": {
+          "exit_code": 0,
+          "wall_seconds": 3.812
+        },
+        "source-mutant": {
+          "exit_code": 1,
+          "wall_seconds": 46.427
+        },
+        "downstream-mutant": {
+          "exit_code": 1,
+          "wall_seconds": 82.052
+        }
+      },
+      "source_mutant_head": "b23b0e08d1e45cc0088d58ef8a9c7fba613ddb37",
+      "downstream_mutant": {
+        "head": "83220b93381a8c1af724e2a7569c1fdfebba6ed7",
+        "path": "src/research_workbench/cli.py",
+        "function": "_claim_trace",
+        "scope": "frozen positive behavioral suite"
+      }
+    }
+  ]
+}

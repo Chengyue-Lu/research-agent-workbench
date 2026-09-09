@@ -42,6 +42,24 @@ class DependencyTests(unittest.TestCase):
         p = self.selection(old, {'tests/test_contract.py': b'import unittest'}, ['src/pkg/leaf.py'])
         self.assertIn('test_contract', p['selected'])
 
+    def test_evidence_closure_follows_test_helpers_packages_and_literal_inputs_only(self):
+        blobs = {'tests/__init__.py': b'from .support import setup',
+                 'tests/test_proof.py': b'from tests.support.helpers import expected\nimport pkg.subject',
+                 'tests/support/__init__.py': b'from . import setup',
+                 'tests/support/setup.py': b'from . import helpers',
+                 'tests/support/helpers.py': b'from . import setup\nfrom pathlib import Path\n'
+                     b'data=(ROOT / "tests" / "fixtures" / "expected.json").read_text()',
+                 'src/pkg/subject.py': b'import tests.production_only',
+                 'tests/production_only.py': b'pass', 'tests/unrelated.py': b'pass'}
+        paths = set(blobs) | {'tests/fixtures/expected.json', 'tests/fixtures/unrelated.json'}
+        deps.commit_graph.cache_clear()
+        with patch.object(deps, 'snapshot', return_value=(paths, blobs)):
+            found = deps.test_evidence_closure('evidence-fixture', 'base', ['test_proof.Proof.test_ok'])
+            self.assertEqual({'tests/__init__.py', 'tests/test_proof.py', 'tests/support/__init__.py',
+                              'tests/support/setup.py', 'tests/support/helpers.py', 'tests/fixtures/expected.json'}, found)
+            # Missing roots remain visible to the caller's identity check, never disappearing silently.
+            self.assertIn('tests/test_missing.py', deps.test_evidence_closure('evidence-fixture', 'base', ['test_missing']))
+
     def test_opaque_execution_expands_instead_of_claiming_exclusion(self):
         blobs = {'src/pkg/leaf.py': b'VALUE=1', 'tests/test_dynamic.py': b'import importlib\nimportlib.import_module(name)',
                  'tests/test_subprocess.py': b'from subprocess import run as launch\nlaunch(command)',
@@ -221,6 +239,50 @@ class DependencyTests(unittest.TestCase):
             paths, blobs = deps.snapshot(root, head)
             self.assertIn('data.json', paths)
             self.assertEqual({'test_x.py': b'VALUE=1\n'}, blobs)
+
+    def test_function_contract_keeps_initialization_bindings_and_execution_inputs_fixed(self):
+        before = b'import math\nLIMIT=1\ndef calculate(value):\n    return value + 1\n'
+        self.assertTrue(deps.function_body_only(before, before.replace(b'value + 1', b'value + 2')))
+        self.assertTrue(deps.function_body_only(before, before + b'# ordinary comment\n'))
+        for after in (before.replace(b'LIMIT=1', b'LIMIT=2'), before.replace(b'calculate(value)', b'calculate(value=1)'),
+                      before.replace(b'value + 1', b'other + 1'), before.replace(b'value + 1', b'math.sqrt(value)'),
+                      before.replace(b'import math', b'import math\nimport subprocess'),
+                      before.replace(b'def calculate', b'@decorator\ndef calculate'),
+                      before + b'calculate(1)\n'):
+            with self.subTest(after=after):
+                self.assertFalse(deps.function_body_only(before, after))
+        for before, after in (
+            (b'class C:\n def f(self): return 1\n', b'class C:\n def f(self): return 2\n'),
+            (b'async def f(): return 1\n', b'async def f(): return 2\n'),
+        ):
+            self.assertTrue(deps.function_body_only(before, after))
+
+    def test_local_contract_rejects_opaque_or_resource_boundary_mutations(self):
+        cases = [
+            (b'def f():\n exec(code)\n return 1', b'def f():\n exec(code)\n return 2'),
+            (b'def f():\n return reader("fixed")', b'def f():\n return reader("other")'),
+            (b'def f():\n path="fixed"\n return reader(path)', b'def f():\n path="other"\n return reader(path)'),
+            (b'def f(): return 1\ndef f(): return 2', b'def f(): return 1\ndef f(): return 3'),
+            (b'class C:\n def f(self): return 1\n def f(self): return 2',
+             b'class C:\n def f(self): return 1\n def f(self): return 3'),
+        ]
+        for before, after in cases:
+            with self.subTest(before=before):
+                self.assertFalse(deps.function_body_only(before, after))
+
+    def test_local_contract_resolves_module_execution_aliases(self):
+        for setup, call in (
+            ('import subprocess as child', 'child.run(["tool"])'),
+            ('from subprocess import run as launch', 'launch(["tool"])'),
+            ('import runpy as loader', 'loader.run_path(path)'),
+            ('import subprocess as child\nlaunch = child.run', 'launch(["tool"])'),
+        ):
+            before = (setup + '\ndef f():\n    ' + call + '\n    return 1\n').encode()
+            with self.subTest(setup=setup):
+                self.assertIn('subject.py', deps.graph({'subject.py': before}, {'subject.py'})[1])
+                self.assertFalse(deps.function_body_only(before, before.replace(b'return 1', b'return 2')))
+        before = b'import subprocess as child\ndef execute():\n child.run(["tool"])\ndef digest(value):\n return value[0:]\n'
+        self.assertTrue(deps.function_body_only(before, before.replace(b'value[0:]', b'value[1:]')))
 
 
 if __name__ == '__main__':

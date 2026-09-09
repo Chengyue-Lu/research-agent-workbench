@@ -72,6 +72,18 @@ and the behavioral full label do not enable either smoke.
 
 ## Evidence and quality
 
+Impact test selection is derived separately from behavioral test/fixture seeds. Reviewed base groups can
+name `coverage_tests` and group-specific `impact_evidence`; legacy groups retain their existing evidence.
+The plan records `coverage_selection` provenance. Changed/new executable consumers remain additive,
+and critical subjects without an explicit proof contract retain their complete acceptance test modules.
+Accepted exact deterministic IDs may replace a mixed ordinary behavioral module; modules without that
+mapping remain complete. Workers recompute the proof list and cannot accept a re-signed reduction.
+
+The [local-function contracts](CONSUMER_CONTRACTS.md) declare their edit domain and consumer inventory.
+They cannot narrow the PR that introduces them. Initialization, dependency or opaque-execution changes
+restore the ordinary base/head closure. Canonical coverage roots are always retained; additional planned
+backend/archive executables extend collection rather than disappearing from the impact gate.
+
 Coverage is a canonical set: `[]`, `[impact]`, `[repository]`, `[impact, repository]`. Repository evidence
 cannot replace impact evidence. The runner executes the union once by canonical test ID and each required
 checker runs independently. Both positive and negative evidence remain mandatory for affected critical

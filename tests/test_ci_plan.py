@@ -552,6 +552,376 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual({'positive_tests': [], 'negative_tests': []}, p['impact_evidence'])
         planner.verify_plan(self.repo, p)
 
+    def test_unrelated_test_edit_expands_behavior_but_not_executable_coverage(self):
+        leaf = 'src/research_workbench/example.py'
+        write(self.repo, leaf, 'VALUE=1\n')
+        self.base = self.commit('tests/test_example.py', 'from research_workbench.example import VALUE\n')
+        self.commit(leaf, 'VALUE=2\n')
+        first = self.plan()
+        self.commit('tests/test_unselected.py', 'import unittest\nVALUE=2\n')
+        plan = self.plan()
+        self.assertIn('test_unselected', plan['tests'])
+        self.assertNotIn('test_unselected', plan['coverage_tests'])
+        self.assertEqual(first['coverage_tests'], plan['coverage_tests'])
+        self.assertEqual(['test_example'], plan['coverage_tests'])
+        planner.verify_plan(self.repo, plan)
+
+    def _proof_contract(self):
+        leaf = 'src/research_workbench/proof_leaf.py'
+        source = 'def value():\n    return 1 + 0\n'
+        write(self.repo, 'src/research_workbench/__init__.py', '')
+        write(self.repo, leaf, source)
+        write(self.repo, 'tests/test_proof.py',
+              'import unittest\nfrom research_workbench.proof_leaf import value\n'
+              'class Proof(unittest.TestCase):\n'
+              '    def test_positive(self): self.assertEqual(value(),1)\n'
+              '    def test_negative(self): self.assertNotEqual(value(),0)\n'
+              '    def test_behavioral(self): self.assertGreater(value(),0)\n')
+        self.base = self.commit('tests/test_dynamic.py', 'import subprocess\nsubprocess.run(command)\n')
+        policy = copy.deepcopy(self.policy)
+        policy['surfaces']['proof'] = {'paths': [leaf], 'class': 'focused', 'groups': ['proof']}
+        names = ['test_proof.Proof.test_positive', 'test_proof.Proof.test_negative']
+        policy['groups']['proof'] = {'tests': ['test_proof'], 'downstream': [], 'coverage': [leaf],
+            'coverage_tests': names, 'change_scope': 'function-body', 'package': False, 'repository': False,
+            'impact_evidence': {'positive_tests': names[:1], 'negative_tests': names[1:]}}
+        policy['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, 'HEAD', LEAVES + [leaf])
+        return leaf, source, policy, names
+
+    def test_exact_proof_contract_requires_base_acceptance_and_rejects_same_suite_mutant(self):
+        leaf, source, policy, names = self._proof_contract()
+        write(self.repo, planner.POLICY, planner.canonical(policy))
+        self.commit(leaf, source.replace('1 + 0', '0 + 1'))
+        self.assertIn('test_dynamic', self.plan()['coverage_tests'])
+        self.base = command(self.repo, 'rev-parse', 'HEAD')
+        self.commit(leaf, source)
+        plan = self.plan()
+        self.assertEqual(['test_proof'], plan['tests'])
+        self.assertEqual(sorted(names), plan['coverage_tests'])
+        self.assertEqual(set(names), set(plan['impact_evidence']['positive_tests'] + plan['impact_evidence']['negative_tests']))
+        planner.verify_plan(self.repo, plan)
+        def run():
+            return subprocess.run([sys.executable, '-B', '-m', 'unittest', *names], cwd=self.repo,
+                env={**os.environ, 'PYTHONPATH': str(self.repo / 'src') + os.pathsep + str(self.repo / 'tests')}, capture_output=True)
+        self.assertEqual(0, run().returncode)
+        self.commit(leaf, source.replace('1 + 0', '0 + 0'))
+        self.assertEqual(sorted(names), self.plan()['coverage_tests'])
+        self.assertNotEqual(0, run().returncode)
+
+    def test_function_contract_restores_consumers_for_initialization_and_new_downstream(self):
+        leaf, source, policy, names = self._proof_contract()
+        self.base = self.commit(planner.POLICY, planner.canonical(policy))
+        self.commit(leaf, source.replace('1 + 0', '0 + 1'))
+        self.assertNotIn('test_dynamic', self.plan()['tests'])
+        self.commit('tests/test_downstream.py', 'from research_workbench.proof_leaf import value\n')
+        plan = self.plan()
+        self.assertIn('test_downstream', plan['tests'])
+        self.assertIn('test_downstream', plan['coverage_tests'])
+        self.commit(leaf, source + '\nvalue()\n')
+        plan = self.plan()
+        self.assertIn('test_dynamic', plan['tests'])
+        self.assertIn('test_dynamic', plan['coverage_tests'])
+        self.assertIn('initialization/dependency', ' '.join(plan['reasons']))
+
+    def test_function_contract_keeps_aliased_execution_opaque(self):
+        leaf, source, policy, names = self._proof_contract()
+        source = 'import subprocess as child\n' + source.replace('    return', '    child.run(command)\n    return')
+        self.commit(leaf, source)
+        policy['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, 'HEAD', LEAVES + [leaf])
+        self.base = self.commit(planner.POLICY, planner.canonical(policy))
+        self.commit(leaf, source.replace('1 + 0', '0 + 1'))
+        plan = self.plan()
+        self.assertIn('test_dynamic', plan['tests'])
+        self.assertIn('test_dynamic', plan['coverage_tests'])
+        self.assertIn('initialization/dependency', ' '.join(plan['reasons']))
+
+    def test_contract_rejects_weakened_proof_implementation_with_unchanged_ids(self):
+        leaf, source, policy, names = self._proof_contract()
+        self.base = self.commit(planner.POLICY, planner.canonical(policy))
+        self.commit(leaf, source.replace('1 + 0', '0 + 0'))
+        proof_path = 'tests/test_proof.py'
+        proof = (self.repo / proof_path).read_text()
+        weakened = proof.replace('self.assertEqual(value(),1)', 'self.assertTrue(True)').replace(
+            'self.assertNotEqual(value(),0)', 'self.assertTrue(True)')
+        self.commit(proof_path, weakened)
+        env = {**os.environ, 'PYTHONPATH': str(self.repo / 'src') + os.pathsep + str(self.repo / 'tests')}
+        for suite, passes in [(names, True), (['test_proof'], False)]:
+            result = subprocess.run([sys.executable, '-B', '-m', 'unittest', *suite],
+                                    cwd=self.repo, env=env, capture_output=True)
+            self.assertEqual(passes, result.returncode == 0, result.stderr)
+        plan = self.plan(body=BODY.replace('R0', 'R2'))
+        self.assertEqual([], plan['selection']['reviewed_opaque_boundary'])
+        self.assertIn('test_dynamic', plan['tests'])
+        self.assertIn('test_dynamic', plan['coverage_tests'])
+        self.assertIn('test_proof', plan['coverage_tests'])
+        self.assertEqual(('focused', 'impact'), (plan['behavioral_scope'], plan['coverage_scope']))
+        self.assertIn('contract evidence implementation changed', ' '.join(plan['reasons']))
+        planner.verify_plan(self.repo, plan)
+
+    def test_contract_evidence_requires_refreshed_accepted_anchor_after_test_review(self):
+        leaf, source, policy, names = self._proof_contract()
+        self.base = self.commit(planner.POLICY, planner.canonical(policy))
+        path = 'tests/test_proof.py'
+        proof = (self.repo / path).read_text()
+        # Separately accepting a test edit does not refresh the old contract anchor.
+        self.base = self.commit(path, proof.replace('value(),1', '1,value()'))
+        self.commit(leaf, source.replace('1 + 0', '0 + 1'))
+        plan = self.plan()
+        self.assertIn('test_dynamic', plan['tests'])
+        self.assertIn('test_proof', plan['coverage_tests'])
+        # Candidate fingerprint changes cannot reauthorize their own narrow proof.
+        policy['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, 'HEAD', LEAVES + [leaf])
+        self.commit(planner.POLICY, planner.canonical(policy))
+        self.assertIn('test_dynamic', self.plan()['coverage_tests'])
+        self.base = command(self.repo, 'rev-parse', 'HEAD')
+        self.commit(leaf, source)
+        plan = self.plan()
+        self.assertEqual(['test_proof'], plan['tests'])
+        self.assertEqual(sorted(names), plan['coverage_tests'])
+        planner.verify_plan(self.repo, plan)
+
+    def test_contract_pins_each_behavioral_proof_and_acceptance_module(self):
+        leaf, source, policy, names = self._proof_contract()
+        initial = self.base
+        for origin in ('tests', 'coverage_tests', 'positive_tests', 'negative_tests',
+                       'global-positive', 'global-negative', 'critical-positive', 'critical-negative'):
+            with self.subTest(origin=origin):
+                command(self.repo, 'reset', '--hard', initial)
+                candidate = copy.deepcopy(policy)
+                group = candidate['groups']['proof']
+                test = 'test_evidence.Evidence.test_accepted'
+                path = 'tests/test_evidence.py'
+                write(self.repo, path, 'import unittest\nclass Evidence(unittest.TestCase):\n'
+                      '    def test_accepted(self): self.assertEqual(1,1)\n')
+                if origin in ('tests', 'coverage_tests'):
+                    group[origin].append(test)
+                elif origin.startswith('critical-'):
+                    authority = yaml.safe_load((self.repo / 'tests/coverage_policy.yaml').read_bytes())
+                    authority['critical_modules'].append(leaf)
+                    mapping = {'surface': 'proof', 'modules': [leaf], 'positive_tests': names[:1], 'negative_tests': names[1:]}
+                    mapping[origin.split('-')[1] + '_tests'] = [test]
+                    authority['negative_acceptance'].append(mapping)
+                    write(self.repo, 'tests/coverage_policy.yaml', yaml.safe_dump(authority))
+                elif origin.startswith('global-'):
+                    del group['impact_evidence']
+                    candidate['impact_evidence'][origin.split('-')[1] + '_tests'] = [test]
+                else:
+                    group['impact_evidence'][origin] = [test]
+                self.commit(path, (self.repo / path).read_bytes())
+                candidate['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, 'HEAD', LEAVES + [leaf])
+                self.base = self.commit(planner.POLICY, planner.canonical(candidate))
+                self.commit(leaf, source.replace('1 + 0', '0 + 1'))
+                self.assertNotIn('test_dynamic', self.plan()['tests'])
+                # Even a comment-only drift breaks byte identity, independently of AST seeds.
+                self.commit(path, (self.repo / path).read_bytes() + b'# revised evidence implementation\n')
+                plan = self.plan()
+                self.assertIn('test_dynamic', plan['tests'])
+                self.assertIn('test_dynamic', plan['coverage_tests'])
+                self.assertIn('test_proof', plan['coverage_tests'])
+                self.assertIn('test_evidence', plan['coverage_tests'])
+                self.assertEqual('focused', plan['behavioral_scope'])
+                planner.verify_plan(self.repo, plan)
+
+    def test_deterministic_proof_substitution_requires_unchanged_base_implementation(self):
+        leaf = 'src/research_workbench/example.py'
+        write(self.repo, leaf, 'VALUE=1\n')
+        path = 'tests/test_mixed.py'
+        source = ('import unittest\nfrom research_workbench.example import VALUE\n'
+                  'class Mixed(unittest.TestCase):\n'
+                  '    def test_deterministic(self): self.assertEqual(VALUE,1)\n'
+                  '    def test_integration(self): self.assertGreater(VALUE,0)\n')
+        write(self.repo, path, source)
+        authority = yaml.safe_load((self.repo / 'tests/coverage_policy.yaml').read_bytes())
+        name = 'test_mixed.Mixed.test_deterministic'
+        authority['suites']['coverage-quality']['test_ids'].append(name)
+        self.base = self.commit('tests/coverage_policy.yaml', yaml.safe_dump(authority))
+        self.commit(leaf, 'VALUE=2\n')
+        self.assertEqual([name], self.plan()['coverage_tests'])
+        self.commit(path, source.replace('self.assertEqual(VALUE,1)', 'self.assertTrue(True)'))
+        plan = self.plan()
+        self.assertEqual(['test_mixed'], plan['coverage_tests'])
+        self.assertIn('deterministic evidence implementation changed', ' '.join(plan['reasons']))
+        self.assertEqual(('focused', 'impact'), (plan['behavioral_scope'], plan['coverage_scope']))
+        planner.verify_plan(self.repo, plan)
+
+    def _real_contract_helper_drift(self, leaf, proof, helper, old_source, new_source, old_helper, new_helper):
+        for path in (leaf, 'tests/__init__.py', 'tests/' + proof + '.py', helper):
+            write(self.repo, path, (ROOT / path).read_bytes())
+        self.commit('tests/test_independent_consumer.py', 'import subprocess\nsubprocess.run(command)\n')
+        policy = copy.deepcopy(self.policy)
+        leaves = {p for g in policy['groups'].values() for p in g['coverage']}
+        policy['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, 'HEAD', leaves)
+        self.base = self.commit(planner.POLICY, planner.canonical(policy))
+        source = (self.repo / leaf).read_text()
+        self.assertEqual(1, source.count(old_source))
+        self.commit(leaf, source.replace(old_source, new_source))
+        narrow = self.plan()
+        self.assertEqual([proof], narrow['tests'])
+        self.assertEqual([proof], narrow['coverage_tests'])
+        original = (self.repo / ('tests/' + proof + '.py')).read_bytes()
+        source = (self.repo / helper).read_text()
+        self.assertIn(old_helper, source)
+        self.commit(helper, source.replace(old_helper, new_helper, 1))
+        self.assertEqual(original, (self.repo / ('tests/' + proof + '.py')).read_bytes())
+        plan = self.plan()
+        self.assertNotIn(leaf, plan['selection']['reviewed_opaque_boundary'])
+        self.assertIn('test_independent_consumer', plan['tests'])
+        self.assertIn('test_independent_consumer', plan['coverage_tests'])
+        self.assertIn(proof, plan['coverage_tests'])
+        self.assertIn(helper, ' '.join(plan['reasons']))
+        self.assertEqual(('focused', 'impact'), (plan['behavioral_scope'], plan['coverage_scope']))
+        planner.verify_plan(self.repo, plan)
+
+    def test_claim_contract_rejects_actual_promotion_fixture_drift(self):
+        self._real_contract_helper_drift('src/research_workbench/artifacts/claim_trace.py', 'test_claim_trace',
+            'tests/test_artifacts_promotion.py', 'return value.lower().removeprefix("sha256:")',
+            'return value.lower().removeprefix("sha256:")[0:]',
+            'self.output.write_bytes(b"validated result\\n")', 'self.output.write_bytes(b"")')
+
+    def test_projection_contract_rejects_actual_live_evaluation_helper_drift(self):
+        self._real_contract_helper_drift('src/research_workbench/capability/release_projection.py', 'test_skill_release_projection',
+            'tests/test_skill_evaluation.py', 'return normalized\n', 'return normalized[0:]\n',
+            'baseline_output.write_text("The result is positive.', 'baseline_output.write_text("The result may be null.')
+
+    def _test_side_contract(self):
+        leaf, source, policy, names = self._proof_contract()
+        write(self.repo, 'tests/__init__.py', '')
+        write(self.repo, 'tests/support/__init__.py', 'from .values import expected\n')
+        write(self.repo, 'tests/support/values.py', 'from pathlib import Path\nexpected = int(Path("tests/fixtures/expected.txt").read_text())\n')
+        write(self.repo, 'tests/fixtures/expected.txt', '1\n')
+        path = 'tests/test_proof.py'
+        self.commit(path, 'from tests.support import expected\n' + (self.repo / path).read_text().replace('value(),1', 'value(),expected'))
+        policy['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, 'HEAD', LEAVES + [leaf])
+        self.base = self.commit(planner.POLICY, planner.canonical(policy))
+        return leaf, source, policy, names
+
+    def test_contract_test_side_drift_and_accepted_readmission(self):
+        leaf, source, policy, names = self._test_side_contract()
+        initial = self.base
+        for path, changed in [('tests/support/values.py', 'expected = 0\n'),
+                              ('tests/support/__init__.py', 'from .values import expected\nexpected = 0\n'),
+                              ('tests/fixtures/expected.txt', '0\n')]:
+            with self.subTest(path=path):
+                command(self.repo, 'reset', '--hard', initial)
+                self.base = initial
+                self.commit(leaf, source.replace('1 + 0', '0 + 1'))
+                self.assertEqual(sorted(names), self.plan()['coverage_tests'])
+                self.commit(path, changed)
+                plan = self.plan()
+                self.assertIn('test_dynamic', plan['tests'])
+                self.assertIn('test_dynamic', plan['coverage_tests'])
+                self.assertIn('test_proof', plan['coverage_tests'])
+                self.assertIn(path, ' '.join(plan['reasons']))
+                self.assertEqual('focused', plan['behavioral_scope'])
+                planner.verify_plan(self.repo, plan)
+                # An independently accepted helper/resource alone does not refresh the old contract.
+                self.base = command(self.repo, 'rev-parse', 'HEAD')
+                self.commit(leaf, source)
+                self.assertIn('test_dynamic', self.plan()['coverage_tests'])
+                refreshed = copy.deepcopy(policy)
+                refreshed['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, 'HEAD', LEAVES + [leaf])
+                self.assertNotEqual(policy['consumer_fingerprint'], refreshed['consumer_fingerprint'])
+                self.commit(planner.POLICY, planner.canonical(refreshed))
+                self.assertIn('test_dynamic', self.plan()['coverage_tests'])
+                self.base = command(self.repo, 'rev-parse', 'HEAD')
+                self.commit(leaf, source.replace('1 + 0', '0 + 1'))
+                plan = self.plan()
+                self.assertEqual(['test_proof'], plan['tests'])
+                self.assertEqual(sorted(names), plan['coverage_tests'])
+                planner.verify_plan(self.repo, plan)
+
+    def test_deterministic_ids_reject_indirect_helper_and_fixture_drift(self):
+        leaf, source, _, names = self._test_side_contract()
+        # Remove the local consumer contract; exercise only repository-suite substitution.
+        authority = yaml.safe_load((self.repo / 'tests/coverage_policy.yaml').read_bytes())
+        authority['suites']['coverage-quality']['test_ids'].extend(names)
+        write(self.repo, planner.POLICY, planner.canonical(self.policy))
+        self.base = self.commit('tests/coverage_policy.yaml', yaml.safe_dump(authority))
+        initial = self.base
+        for path, changed in [('tests/support/values.py', 'expected = 0\n'), ('tests/fixtures/expected.txt', '0\n')]:
+            with self.subTest(path=path):
+                command(self.repo, 'reset', '--hard', initial)
+                self.commit(leaf, source.replace('1 + 0', '0 + 1'))
+                self.assertTrue(set(names) <= set(self.plan()['coverage_tests']))
+                self.assertNotIn('test_proof', self.plan()['coverage_tests'])
+                self.commit(path, changed)
+                plan = self.plan()
+                self.assertIn('test_proof', plan['coverage_tests'])
+                self.assertFalse(set(names) & set(plan['coverage_tests']))
+                self.assertIn('deterministic evidence implementation changed', ' '.join(plan['reasons']))
+                planner.verify_plan(self.repo, plan)
+
+    def test_new_initializer_and_literal_fixture_input_cannot_extend_accepted_proof(self):
+        leaf, source, policy, names = self._test_side_contract()
+        proof = 'tests/test_proof.py'
+        write(self.repo, proof, (self.repo / proof).read_text().replace('from tests.support import', 'from tests.support.values import'))
+        command(self.repo, 'rm', 'tests/support/__init__.py')
+        helper = 'tests/support/values.py'
+        self.commit(helper, 'from pathlib import Path\nROOT=Path()\n'
+                    'expected = sum(int(p.read_text()) for p in (ROOT / "tests" / "fixtures").glob("*.txt"))\n')
+        policy['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, 'HEAD', LEAVES + [leaf])
+        self.base = self.commit(planner.POLICY, planner.canonical(policy))
+        self.commit(leaf, source.replace('1 + 0', '0 + 1'))
+        original = command(self.repo, 'rev-parse', 'HEAD')
+        self.assertEqual(sorted(names), self.plan()['coverage_tests'])
+        for path, data in [('tests/support/__init__.py', 'OVERRIDE=True\n'),
+                           ('tests/fixtures/added.txt', '2\n')]:
+            with self.subTest(path=path):
+                command(self.repo, 'reset', '--hard', original)
+                self.commit(path, data)
+                plan = self.plan()
+                self.assertIn('test_dynamic', plan['coverage_tests'])
+                self.assertIn(path, ' '.join(plan['reasons']))
+                planner.verify_plan(self.repo, plan)
+
+    def test_proof_list_and_provenance_cannot_be_resigned_below_base_minimum(self):
+        leaf, source, policy, names = self._proof_contract()
+        self.base = self.commit(planner.POLICY, planner.canonical(policy))
+        self.commit(leaf, source.replace('1 + 0', '0 + 1'))
+        plan = self.plan()
+        for key, value in [('coverage_tests', names[:1]), ('coverage_selection', {})]:
+            forged = copy.deepcopy(plan)
+            forged[key] = value
+            forged.pop('plan_id')
+            forged['plan_id'] = planner.digest(forged)
+            with self.assertRaises(ValueError):
+                planner.verify_plan(self.repo, forged)
+        expanded = copy.deepcopy(plan)
+        extra = 'test_proof.Proof.test_behavioral'
+        expanded['coverage_tests'] = sorted(expanded['coverage_tests'] + [extra])
+        expanded['coverage_selection'][extra] = ['agent requested additional proof']
+        expanded.pop('plan_id'); expanded['plan_id'] = planner.digest(expanded)
+        planner.verify_plan(self.repo, expanded)
+
+    def test_critical_subject_uses_explicit_base_proof_and_keeps_all_acceptance(self):
+        leaf, source, policy, names = self._proof_contract()
+        authority = yaml.safe_load((self.repo / 'tests/coverage_policy.yaml').read_bytes())
+        authority['critical_modules'].append(leaf)
+        authority['negative_acceptance'].append({'surface': 'bounded-critical', 'modules': [leaf],
+                                                 'positive_tests': names[:1], 'negative_tests': names[1:]})
+        self.commit('tests/coverage_policy.yaml', yaml.safe_dump(authority))
+        policy['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, 'HEAD', LEAVES + [leaf])
+        self.base = self.commit(planner.POLICY, planner.canonical(policy))
+        self.commit(leaf, source.replace('1 + 0', '0 + 1'))
+        plan = self.plan()
+        self.assertEqual(sorted(names), plan['coverage_tests'])
+        self.assertEqual([leaf], plan['coverage_modules'])
+        self.assertEqual(names[:1], plan['impact_evidence']['positive_tests'])
+        self.assertEqual(names[1:], plan['impact_evidence']['negative_tests'])
+        planner.verify_plan(self.repo, plan)
+
+    def test_accepted_deterministic_ids_avoid_reloading_mixed_behavioral_module(self):
+        leaf = 'src/research_workbench/example.py'
+        write(self.repo, leaf, 'VALUE=1\n')
+        module = 'test_generic_execution_closeout'
+        self.base = self.commit('tests/' + module + '.py', 'from research_workbench.example import VALUE\n')
+        self.commit(leaf, 'VALUE=2\n')
+        plan = self.plan()
+        expected = [t for t in yaml.safe_load((self.repo / 'tests/coverage_policy.yaml').read_bytes())
+                    ['suites']['coverage-quality']['test_ids'] if t.startswith(module + '.')]
+        self.assertIn(module, plan['tests'])
+        self.assertNotIn(module, plan['coverage_tests'])
+        self.assertEqual(sorted(expected), plan['coverage_tests'])
+
     def test_ci_script_contract_requires_base_acceptance_and_keeps_new_consumers(self):
         leaf = '.github/scripts/check_leaf.py'
         write(self.repo, leaf, 'VALUE = 1\n')

@@ -174,9 +174,10 @@ jobs:
           name: ci-plan
       - name: Run required coverage test union
         run: |
-          python -m coverage run --branch --source=src/research_workbench,.github/scripts,tests.run_unittest_suite -m tests.run_unittest_suite --suite coverage-plan --plan ci-plan.json --policy tests/coverage_policy.yaml --json-output coverage-test-results.json --slowest 20
+          python .github/scripts/ci_checks.py configure --plan ci-plan.json --config .rwb/ci-coverage.ini
+          python -m coverage run --rcfile=.rwb/ci-coverage.ini -m tests.run_unittest_suite --suite coverage-plan --plan ci-plan.json --policy tests/coverage_policy.yaml --json-output coverage-test-results.json --slowest 20
       - name: Export coverage evidence
-        run: python -m coverage json -o coverage.json
+        run: python -m coverage json --rcfile=.rwb/ci-coverage.ini -o coverage.json
       - name: Preserve coverage and duration evidence
         uses: actions/upload-artifact@v4
         with:

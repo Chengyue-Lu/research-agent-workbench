@@ -15,6 +15,38 @@ import yaml
 from plan_ci import ROOT, canonical, coverage_requirements, digest, require, require_obligations, verify_plan
 
 
+def coverage_config(plan, root):
+    """Measure canonical roots and planned files by path, including import aliases.
+
+    Coverage's module-name source filter misses spec_from_file_location aliases.
+    A repository source root with a complementary path filter retains unexecuted
+    canonical files while avoiding instrumentation of unrelated tests and archives.
+    """
+    directories = {'src/research_workbench', '.github/scripts'}
+    files = {'tests/run_unittest_suite.py'}
+    for path in plan['coverage_modules']:
+        require(isinstance(path, str) and path.endswith('.py') and not path.startswith('/')
+                and all(part not in {'', '.', '..'} for part in path.split('/'))
+                and not any(character in path for character in ('\\', ',', '\n', '\r', ':', '*', '?', '[', ']')),
+                'unsafe coverage subject path')
+        files.add(path)
+    omitted = []
+    def visit(directory):
+        for entry in sorted(directory.iterdir()):
+            path = entry.relative_to(root).as_posix()
+            if path in directories | files:
+                require(not entry.is_symlink(), 'coverage input symlink')
+            elif any(p.startswith(path + '/') for p in directories | files):
+                require(entry.is_dir() and not entry.is_symlink(), 'coverage ancestor is not a directory')
+                visit(entry)
+            else:
+                require(not any(c in path for c in '\n\r[]*?'), 'unsupported coverage filter path')
+                omitted.append(path + '/*' if entry.is_dir() else path)
+    visit(root)
+    return ('[run]\nbranch = True\nsource =\n    src/research_workbench\n    .github/scripts\n    .\nomit =\n'
+            + ''.join('    ' + p + '\n' for p in omitted))
+
+
 def impact_coverage(plan, policy, coverage, results):
     obligations = coverage_requirements(plan)
     require('impact' in obligations, 'impact plan required')
@@ -131,16 +163,23 @@ def metadata_continuity(plan):
 
 def main(argv=None):
     parser = argparse.ArgumentParser()
-    parser.add_argument('operation', choices=('impact', 'coverage', 'aggregate', 'metadata'))
+    parser.add_argument('operation', choices=('impact', 'coverage', 'configure', 'aggregate', 'metadata'))
     parser.add_argument('--plan', type=Path, required=True)
     parser.add_argument('--coverage', type=Path)
     parser.add_argument('--results', type=Path)
+    parser.add_argument('--config', type=Path)
     parser.add_argument('--python', choices=('3.11', '3.13'))
     args = parser.parse_args(argv)
     plan = json.loads(args.plan.read_bytes())
     event_path = os.environ.get('GITHUB_EVENT_PATH')
     event = json.loads(Path(event_path).read_bytes()) if event_path else None
     verify_plan(ROOT, plan, event, os.environ.get('GITHUB_EVENT_NAME', 'pull_request'))
+    if args.operation == 'configure':
+        require(coverage_requirements(plan), 'coverage obligations required')
+        require(args.config is not None, 'coverage configuration output required')
+        args.config.parent.mkdir(parents=True, exist_ok=True)
+        args.config.write_text(coverage_config(plan, ROOT), encoding='utf-8')
+        return 0
     if args.operation in {'impact', 'coverage'}:
         obligations = coverage_requirements(plan)
         require(obligations, 'coverage obligations required')

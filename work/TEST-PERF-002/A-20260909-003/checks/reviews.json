@@ -1,0 +1,82 @@
+[
+  {
+    "id": 5140151957,
+    "node_id": "PRR_kwDOT2gtDc8AAAABMmB-lQ",
+    "user": {
+      "login": "let778750-cpu",
+      "id": 240712654,
+      "node_id": "U_kgDODlj7zg",
+      "avatar_url": "https://avatars.githubusercontent.com/u/240712654?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/let778750-cpu",
+      "html_url": "https://github.com/let778750-cpu",
+      "followers_url": "https://api.github.com/users/let778750-cpu/followers",
+      "following_url": "https://api.github.com/users/let778750-cpu/following{/other_user}",
+      "gists_url": "https://api.github.com/users/let778750-cpu/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/let778750-cpu/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/let778750-cpu/subscriptions",
+      "organizations_url": "https://api.github.com/users/let778750-cpu/orgs",
+      "repos_url": "https://api.github.com/users/let778750-cpu/repos",
+      "events_url": "https://api.github.com/users/let778750-cpu/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/let778750-cpu/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "body": "## Cross-owner review: APPROVE\n\n\u9ec4\u6bc5\u4fa7\u5df2\u5b8c\u6210 PR67 \u7684\u4ee3\u7801\u3001\u5177\u4f53\u6d88\u8d39\u8005\u5951\u7ea6\u4e0e\u6700\u7ec8\u9a8c\u8bc1\u8bc1\u636e\u5ba1\u67e5\u3002**\u5f53\u524d\u5b9e\u73b0\u672a\u53d1\u73b0\u5408\u5e76\u963b\u65ad\u95ee\u9898\uff0c\u63a5\u53d7\u672c PR \u63d0\u51fa\u7684 Claim / Projection \u4e24\u4e2a\u5177\u4f53\u5951\u7ea6\u53ca\u5176\u9650\u5b9a\u4fee\u6539\u8303\u56f4\u3002**\n\nReviewed HEAD: `439940067c3d60e0d0196fd976e24ccd6e79424a`\nBase: `bdbac11a0c9a17fa221f8cc8bdd522c1bf4f9087`\n\n### \u5b9e\u73b0\u4e0e\u5951\u7ea6\n\n- Behavioral tests \u4e0e coverage proof tests \u72ec\u7acb\u9009\u62e9\uff1b\u53d8\u66f4 executable subjects\u3001\u771f\u5b9e\u53d8\u66f4\u884c\u53ca outgoing branches\u3001critical whole-file \u548c\u5fc5\u9700\u6b63\u53cd\u4f8b\u4ecd\u4fdd\u7559\u3002\u91cd\u65b0\u7b7e\u540d\u7684 plan \u4e0d\u80fd\u5220\u51cf\u8fd9\u4e9b\u4e49\u52a1\uff0c\u5408\u6cd5\u52a0\u6d4b\u7ee7\u7eed\u5141\u8bb8\u3002\n- Claim \u7684\u4e24\u6761 CLI/\u9a8c\u8bc1\u6d88\u8d39\u8def\u5f84\uff0c\u4ee5\u53ca Projection \u7684\u53d1\u5e03\u3001ProjectionSet \u4e0e Registry \u6d88\u8d39\u8def\u5f84\uff0c\u5747\u5728\u63d0\u51fa\u63a5\u53d7\u7684\u5b8c\u6574\u6d4b\u8bd5\u6a21\u5757\u4e2d\u6709\u5bf9\u5e94\u68c0\u67e5\u3002\u65b0\u5951\u7ea6\u4e0d\u80fd\u7f29\u5c0f\u5f15\u5165\u5b83\u7684\u5f53\u524d PR\uff1b\u53ea\u6709\u8fdb\u5165\u63a5\u53d7\u7684 base \u540e\u624d\u4f5c\u4e3a\u540e\u7eed\u5019\u9009\u7684\u6743\u5a01\u8f93\u5165\u3002\u65b0\u589e/\u53d8\u5316\u6d88\u8d39\u8005\u3001imports\u3001\u521d\u59cb\u5316\u53ca\u6267\u884c\u522b\u540d\u8d8a\u754c\u4ecd\u6062\u590d\u5fc5\u8981\u95ed\u5305\u3002\n- \u91c7\u96c6\u5668\u6309\u6587\u4ef6\u4fdd\u7559 alias-loaded backend\uff0c\u672a\u6267\u884c canonical production \u6587\u4ef6\u4ecd\u8ba1\u4e3a missing\uff1brun/export \u5171\u7528\u540c\u4e00\u914d\u7f6e\u3002\u6ca1\u6709\u964d\u4f4e global 90%\u3001critical 95/90\u3001changed 100/100 \u6216\u5220\u9664\u65e2\u6709 M4 acceptance\u3002\n- \u72ec\u7acb\u91cd\u7b97 `consumer_fingerprint`\uff0cpolicy \u58f0\u660e\u3001\u6700\u65b0 anchor `4c04db6` \u4e0e\u6700\u7ec8 HEAD \u5747\u4e3a `47b37bb0462837d9a1e691fe820b8267fd35158e7a423785db2400acc0b41900`\u3002\n\n### \u975e\u963b\u65ad\u7684\u9002\u7528\u8fb9\u754c\u8bf4\u660e\n\n[`function_body_only`](https://github.com/Chengyue-Lu/research-agent-workbench/blob/439940067c3d60e0d0196fd976e24ccd6e79424a/.github/scripts/ci_dependencies.py#L80)\u56fa\u5b9a\u521d\u59cb\u5316\u8bed\u6cd5\uff0c\u4e0d\u5355\u72ec\u8bc1\u660e\u521d\u59cb\u5316\u7ed3\u679c\u6052\u5b9a\uff1a\u82e5\u67d0\u4e2a\u672a\u6765\u6a21\u5757\u5df2\u6709 `CACHED = calculate(1)`\uff0c\u4fee\u6539 `calculate` \u7684\u6570\u503c\u5206\u652f\u53ef\u4ee5\u6539\u53d8\u7f13\u5b58\u7ed3\u679c\u800c\u4fdd\u6301\u9876\u5c42\u8c03\u7528\u8bed\u6cd5\u4e0d\u53d8\u3002\n\n**\u5f53\u524d\u4e24\u4e2a\u5b9e\u9645 subject \u672a\u53d1\u73b0\u5bf9\u5e94\u89e6\u53d1\u8def\u5f84\uff0c\u672a\u636e\u6b64\u590d\u73b0\u5f53\u524d\u6d88\u8d39\u8005\u9057\u6f0f\uff0c\u56e0\u6b64\u4e0d\u4f5c\u4e3a blocker\u3002** [\u5951\u7ea6\u8bf4\u660e](https://github.com/Chengyue-Lu/research-agent-workbench/blob/439940067c3d60e0d0196fd976e24ccd6e79424a/docs/workstreams/chengyue-lu/TEST-PERF-002/CONSUMER_CONTRACTS.md#L11)\u5b9c\u660e\u786e\uff1a\u672a\u6765\u6269\u5c55 subject \u65f6\uff0c\u9700\u5728\u8be5\u5177\u4f53\u5951\u7ea6\u4e2d\u6838\u5bf9\u521d\u59cb\u5316\u5bf9\u53ef\u7f16\u8f91\u51fd\u6570\u7684\u4f9d\u8d56\u3002\u65e0\u9700\u4e3a\u6b64\u589e\u52a0\u901a\u7528 Python \u5206\u6790\u5668\u3001\u5168\u91cf\u6d4b\u8bd5\u6216\u65b0\u4fe1\u4efb\u673a\u5236\u3002\u672c\u6b21\u4e0d\u8981\u6c42\u4e3a\u63aa\u8f9e\u5355\u72ec\u8865\u4e01\u5e76\u91cd\u590d CI\u3002\n\n### \u672c\u8f6e\u72ec\u7acb\u9a8c\u8bc1\n\n- \u672c\u5730 Windows CPython 3.11.9\uff1a\u5171 6 \u4e2a\u5b9a\u5411\u65b9\u6cd5\u901a\u8fc7\uff0c\u8986\u76d6\u51fd\u6570/\u8d44\u6e90/\u6267\u884c\u522b\u540d\u8fb9\u754c\u3001proof \u4e0d\u53ef\u7f29\u51cf\u3001critical acceptance \u548c\u771f\u5b9e collector\u3002\u53e6\u4fdd\u7559\u4e0a\u8ff0\u5fae\u578b\u5185\u5b58\u8fb9\u754c\u53cd\u4f8b\u3002\u4e00\u6b21 reviewer \u7684\u6d4b\u8bd5\u5bfc\u5165\u8def\u5f84\u9519\u8bef\u4fee\u6b63\u540e\uff0c\u53ea\u6267\u884c\u539f\u672a\u542f\u52a8\u7684 collector \u65b9\u6cd5\uff0c\u672a\u91cd\u590d\u5df2\u901a\u8fc7\u65b9\u6cd5\u3002\n- \u672a\u91cd\u8dd1\u672c\u5730 full\u3001\u5168\u4ed3 coverage\u3001package\u3001\u6a21\u578b\u6d4b\u8bd5\uff0c\u4e5f\u672a\u65b0\u5efa hosted run\u3002\n- [\u6700\u7ec8 content CI 34154360036](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34154360036)\uff1aPython 3.11.16 / 3.13.15 \u5404 **985/985 PASS**\uff0ccoverage union **959/959 PASS**\uff1b\u751f\u4ea7\u4ee3\u7801 global line **92.27%**\uff0c\u5168\u90e8 critical floors \u548c\u72ec\u7acb impact/repository enforcement PASS\uff1bdocumentation\u3001smokes\u3001governance\u3001\u4e24\u9879\u56fa\u5b9a aggregate \u5168\u90e8\u901a\u8fc7\u3002\n- [Witness 34154474835](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34154474835)\uff1aActions API \u5b9e\u9645 execution root \u4e3a\u5df2\u5ba1\u9605\u7684 `1b543393ae71b9032359b739170d66ec0be08772`\uff0cworkflow_dispatch / success\uff1bwitness \u6e90\u7801\u4e0e\u56fa\u5b9a\u6839\u4e00\u81f4\u3002\u4e0b\u8f7d\u7684 receipt\u3001content plan \u548c live PR \u5747\u5339\u914d\u5f53\u524d base/head\u3001target `8338a4518e6768159ec6f5af5f2c80b8f9a2c73f`\u3001plan ID `f2093284c14f4341c6fc057fdf6413b517eb533c049ffed5c4c0fc98982ab0cf`\u3002Receipt \u5f53\u65f6\u8bb0\u5f55 content in_progress\uff0c\u672c\u6b21\u53e6\u884c\u6838\u5b9e\u6700\u7ec8 success\uff1b`execution_checks_proved=false` \u6b63\u786e\u4fdd\u7559\u5176\u4ec5\u8bc1\u660e selection floor \u7684\u8fb9\u754c\u3002\n\n### \u6027\u80fd\u7ed3\u8bba\n\n[\u5df2\u5f52\u6863 hosted \u8bc1\u636e](https://github.com/Chengyue-Lu/research-agent-workbench/blob/57f8c69a3fc770f2cfa993dfc18007c5172141c0/work/TEST-PERF-002/A-20260908-003/RESULTS.md)\u548c\u5b9e\u9645 Actions job \u72b6\u6001/\u65f6\u95f4\u5df2\u6838\u5bf9\uff1a\u65e7\u5171\u540c\u57fa\u7ebf\u6700\u6162 worker 58.70 \u5206\u949f\uff1bClaim / Projection / Release \u5206\u522b\u4e3a 3.50 / 4.48 / 0.75 \u5206\u949f\uff0c\u5bf9\u5e94 behavioral/proof 27/15\u300128/16\u300138/38\u3002\u76f8\u8f83\u4e0a\u4e00\u8f6e\u4ec5\u672c\u5730\u9009\u96c6\u6570\u91cf\uff0c\u8fd9\u6b21\u5df2\u6709\u5b9e\u9645 hosted \u7f29\u65f6\u8bc1\u636e\u3002\n\n\u8be5\u6d4b\u91cf\u4ecd\u9650\u5b9a\u4e3a proposed future-develop contracts \u548c\u58f0\u660e\u7684\u51fd\u6570\u4fee\u6539\u57df\uff0c\u6bcf\u4f8b\u4e00\u6b21\u3001\u4e0d\u540c VM\uff1b\u4e09\u4efd\u65e7\u8ba1\u5212\u540c\u4e00\u9009\u96c6\u5171\u7528\u4e00\u6b21\u7ec4\u5408\u7b49\u4ef7\u4fee\u6539\u6d4b\u91cf\u3002\u6700\u6162 worker \u4e0d\u662f\u542b\u6392\u961f\u7684\u5b8c\u6574 PR \u5ef6\u8fdf\uff0csmoke \u4e0d\u5728\u8be5\u5b9e\u9a8c\u8ba1\u65f6\u5185\u3002\u516d\u4e2a source/consumer fault \u7ed3\u679c\u8bfb\u53d6\u81ea\u4f5c\u8005\u4e0d\u53ef\u53d8\u8bc1\u636e\uff0c\u672c\u8f6e\u6ca1\u6709\u91cd\u590d\u6267\u884c\uff0c\u4e0d\u8868\u8ff0\u4e3a\u6211\u7684\u72ec\u7acb\u5b9e\u6d4b\u3002\n\nPR67 \u7684\u63a5\u53d7\u4e0d\u7b49\u4e8e\u6b63\u5f0f PR60/M14 integration \u5df2\u901a\u8fc7\uff0c\u4e5f\u4e0d\u5c06 Issue48 \u5168\u90e8\u6027\u80fd\u540e\u7eed\u6807\u4e3a\u5b8c\u6210\u3002M4/M5 \u539f\u76ee\u6807\u4e0e\u4f9d\u8d56\u4fdd\u6301\u3002\u6b64\u5904\u63d0\u4ea4\u6b63\u5f0f APPROVE\uff0c\u672a\u6267\u884c merge\u3002\n",
+    "state": "APPROVED",
+    "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/pull/67#pullrequestreview-5140151957",
+    "pull_request_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/pulls/67",
+    "author_association": "COLLABORATOR",
+    "_links": {
+      "html": {
+        "href": "https://github.com/Chengyue-Lu/research-agent-workbench/pull/67#pullrequestreview-5140151957"
+      },
+      "pull_request": {
+        "href": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/pulls/67"
+      }
+    },
+    "submitted_at": "2026-09-08T09:51:19Z",
+    "commit_id": "439940067c3d60e0d0196fd976e24ccd6e79424a"
+  },
+  {
+    "id": 5148724675,
+    "node_id": "PRR_kwDOT2gtDc8AAAABMuNNww",
+    "user": {
+      "login": "Chengyue-Lu",
+      "id": 140945476,
+      "node_id": "U_kgDOCGaoRA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/140945476?u=e24a642abec7162ae5a41697cf7ece325c9e3652&v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Chengyue-Lu",
+      "html_url": "https://github.com/Chengyue-Lu",
+      "followers_url": "https://api.github.com/users/Chengyue-Lu/followers",
+      "following_url": "https://api.github.com/users/Chengyue-Lu/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Chengyue-Lu/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Chengyue-Lu/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Chengyue-Lu/subscriptions",
+      "organizations_url": "https://api.github.com/users/Chengyue-Lu/orgs",
+      "repos_url": "https://api.github.com/users/Chengyue-Lu/repos",
+      "events_url": "https://api.github.com/users/Chengyue-Lu/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Chengyue-Lu/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "body": "**CHANGES REQUESTED (blocking) \u2014 exact HEAD `439940067c3d60e0d0196fd976e24ccd6e79424a`.**\n\nThe overall #67 direction is accepted: behavioral selection and impact-proof selection are now genuinely separate, the bounded local-function contract is intentionally narrow/fail-closed, exact-head CI + pinned witness are green, and the hosted conditional probes demonstrate material compute reduction without lowering 90/95/90 or negative acceptance.\n\nOne P1 authority seam remains:\n\n### P1 \u2014 accepted proof identity is pinned, but accepted proof implementation is not\n\nA base-side contract can authorize a narrow closure through `tests`, `coverage_tests`, and exact positive/negative test IDs. However, the contract currently binds the **names/IDs**, while the candidate executes the **HEAD bytes** of those tests.\n\nA future candidate can therefore make both:\n\n1. a legal `function-body` source change that still qualifies for the narrow contract; and\n2. a change to the contract-owning proof test (for example `tests/test_claim_trace.py`) that preserves the same module/test IDs but weakens the assertion.\n\nThe current consumer-drift logic will add that changed test back as a changed consumer, but it does not invalidate the local contract itself or restore the other old consumers excluded by that contract. The proof builder still takes the accepted base contract's `coverage_tests` / evidence IDs and then runs their candidate HEAD implementation. In authority terms, the candidate cannot rewrite the proof list, but it can rewrite the proof program the list points to.\n\nThis must be fail-closed before the contract may narrow the candidate.\n\n### Required repair\n\nFor every base contract that can reduce consumer/proof closure, derive its **contract evidence modules** from at least:\n\n- `group.tests`;\n- `group.coverage_tests`;\n- module prefixes of `impact_evidence.{positive_tests,negative_tests}`;\n- any critical negative-acceptance / deterministic coverage IDs actually used to justify a narrower proof module.\n\nThe bounded contract is usable only when both are true:\n\n```text\nsource edit remains inside the accepted local boundary\nAND\ncontract evidence implementation remains byte-identical to the accepted anchor/base authority\n```\n\nIf a candidate changes one of those proof implementations, do **not** silently keep the narrow contract. Restore the ordinary conservative consumer/proof closure for that candidate; require FULL only if that ordinary closure is itself unresolved. This should not reintroduce global `R2 -> FULL`.\n\n### Minimum adversarial regressions\n\n1. **Proof implementation drift**\n   - base: accepted function-body contract, `test_claim_trace` is accepted proof;\n   - candidate: legal bounded source change + weaken `tests/test_claim_trace.py` while preserving the same test IDs;\n   - expected: bounded contract cannot authorize the narrow closure; ordinary/broad closure is restored.\n\n2. **Re-admission recovery**\n   - proof-test change is separately accepted into a later base and contract/fingerprint authority is refreshed;\n   - a subsequent bounded source-only change may use the narrow contract again.\n\n3. **Exact deterministic-ID drift**\n   - if an accepted deterministic test ID is used instead of loading a full mixed behavioral module, changing that ID's implementation in the candidate must invalidate the narrowing authority in the same way.\n\nNo other substantive blocker found in this pass. The current consumer-contract design, proof-set separation, hosted performance evidence, collector repair, and source/downstream mutant strategy should be retained. Once the proof implementation is made immutable relative to the accepted contract authority, this is close to technical approval.",
+    "state": "COMMENTED",
+    "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/pull/67#pullrequestreview-5148724675",
+    "pull_request_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/pulls/67",
+    "author_association": "OWNER",
+    "_links": {
+      "html": {
+        "href": "https://github.com/Chengyue-Lu/research-agent-workbench/pull/67#pullrequestreview-5148724675"
+      },
+      "pull_request": {
+        "href": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/pulls/67"
+      }
+    },
+    "submitted_at": "2026-09-09T01:23:38Z",
+    "commit_id": "439940067c3d60e0d0196fd976e24ccd6e79424a"
+  }
+]

@@ -1,0 +1,70 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260908-001
+task_id: TEST-PERF-002
+task_revision: 13
+attempt_id: A-20260908-001
+archive_root: A-20260908-001
+baseline: bdbac11a0c9a17fa221f8cc8bdd522c1bf4f9087
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 6b344e9a534bc7d367a881bb997ff9a3068aac3dca6652084a835096fb31b87e
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 5a3c76ad485ca9fad71f7e2d477ef3a267cdf83b3f0520d7224a690e52c52eaf
+read_allowlist:
+- .github/**
+- .rwb/precision-intake/**
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- docs/README.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- src/research_workbench/cli.py
+- src/research_workbench/observability/trace.py
+- tests/**
+- work/TEST-PERF-002/**
+write_scope:
+- .rwb/precision-intake/**
+- docs/workstreams/chengyue-lu/TEST-PERF-002/IMPACT_PRECISION.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/README.md
+- work/TEST-PERF-002/A-20260908-001/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 0489a833dc154b33008b4ea590c251a9f0addb8ed4c9d84c4e13ad98b6bf55c1
+  event_count: 6
+tool_event_refs:
+- path: tool-events/intake-evidence-succeeded.json
+  sha256: f3ab836a4214c9c20ca503d9d73a571e6d92fde75b27242d47cca5b730748e8e
+handoff_refs:
+- path: handoff/H0.md
+  sha256: d45bb5dc49546c5123950e1b46b203582b7fd356797fe76cb9e30a4081387270
+decision_refs: []
+output_refs:
+- path: RESULTS.md
+  sha256: 16a76d3e4b7d2254140abe6535d2b2a611c63e3d2727643180f53d9c0ccfe08b
+check_refs:
+- path: checks/baseline.json
+  sha256: 4a124f059fa69f2965c0248b5f126e6b6cbf5aece73edb7e2a9ce20de7c88468
+- path: checks/issue48-comment.json
+  sha256: d1b630cb8569f98b26ea34f4bbbdfaa309299c96f584dd735a4e95244f0a3005
+- path: checks/validation.json
+  sha256: 7071c247a7dd5498110cd74d84a9eef5fe9875eed1fcc3adb9801d483165ad13
+- path: checks/REPRODUCE.md
+  sha256: d4b1217c0ddebc69db06a2c28c2d553e5cbf3486e7bc3e4a350f43f18a3f88e7
+- path: checks/trace-initial-validation.json
+  sha256: bdd84f8e779e31946629055f2a4884a3c955f6cdd9c291459d2917a0a10a959f
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0004
+  affected_stream: events

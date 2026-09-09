@@ -7,6 +7,9 @@
 - Accepted quality foundation: [TEST-QUALITY-001](../TEST-QUALITY-001/README.md).
 - Scope: planner, execution/coverage obligations, workflow events and evidence. Product Runtime, Provider code, research authority and Task definitions retain their current contracts.
 
+The next repair round after merged PR #66 is prepared in [Impact precision](IMPACT_PRECISION.md),
+with the real M14 hosted baseline, three reproduced module probes and independent coverage-selection acceptance.
+
 ## Selection authority
 
 [`plan_ci.py`](../../../../.github/scripts/plan_ci.py) reads exact base/head/merge-base Git facts and the

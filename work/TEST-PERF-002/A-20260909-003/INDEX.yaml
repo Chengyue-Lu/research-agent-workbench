@@ -1,0 +1,90 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260909-003
+task_id: TEST-PERF-002
+task_revision: 19
+attempt_id: A-20260909-003
+archive_root: A-20260909-003
+baseline: 439940067c3d60e0d0196fd976e24ccd6e79424a
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 5386c06330519703138a6bc8b7291b76c3d19cfe4f54676ec4b551436872d793
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 6cb7dd2e8649b4b496d935eb97297e215d28d3087582721e1e75acd8e401cde3
+read_allowlist:
+- .github/**
+- .rwb/precision-intake/**
+- AGENTS.md
+- build_backend.py
+- docs/DEVELOPMENT.md
+- docs/README.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/**
+- pyproject.toml
+- runtime-resources.json
+- src/**
+- tests/**
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/ci_checks.py
+- .github/scripts/ci_dependencies.py
+- .github/scripts/plan_ci.py
+- .github/workflows/ci.yml
+- .rwb/precision-intake/**
+- .rwb/precision-venv311/**
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/ci_impact_policy.yaml
+- tests/fixtures/ci/**
+- tests/test_ci_checks.py
+- tests/test_ci_dependencies.py
+- tests/test_ci_plan.py
+- work/TEST-PERF-002/A-20260909-003/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 75037ef2ecf512e2953136acf7e2754b70e064bdfaf468dd2ce94b22dce1411c
+  event_count: 6
+tool_event_refs:
+- path: tool-events/proof-implementation-evidence-recheck-succeeded.json
+  sha256: bd8e24e8000a2fa9106528d1d1dbac903b68db9f603a66fb819e86c5c62262c5
+handoff_refs:
+- path: handoff/H0.md
+  sha256: af074b96354a023b7390d07a1903055910b5268f972640ef836b6c6d1e061315
+decision_refs: []
+output_refs:
+- path: RESULTS.md
+  sha256: fbc429ec76e86fb7bcd5382bbb81ca9b9c55aaf505b947d66c926bd132bd7df5
+check_refs:
+- path: checks/before.log
+  sha256: 248bc41f339abe7e4b6205fc61441e611103377981ce0ca30410d9aea38ec1fd
+- path: checks/docs.log
+  sha256: 39d62c15a255f95a34f758b88d9bde9c1799a6d77c63f2f3c0ca4135a2592199
+- path: checks/focused.log
+  sha256: 67f7ac93c77c70c1445819c875feb4408f4d112b11c3f0a3c6c320e05e3903a9
+- path: checks/governance.log
+  sha256: 71d0010daadf6a29b957c9ad05fef8148ec6af3c4f37bb41949474fd8311e3ee
+- path: checks/real-plans.json
+  sha256: 38e937818ae9e57797a37a49240258ddb0a9178619d11e783d5ccff2b1bc6b81
+- path: checks/regressions.log
+  sha256: c8c13bfea1c542e57b22d2dd0328abf94ee2a4998dde24d4720bbd0a7df83d89
+- path: checks/reviews.json
+  sha256: 15e92e06e3985b955382b1d5064c3355b3624d19e8d3182b9ace0486c8749845
+- path: checks/summary.json
+  sha256: abf13e1a579033f7c6d1a404a31cd2f6eade773c074beb293035eae1b35bd98e
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: messages
+- event_id: EVT-0004
+  affected_stream: events

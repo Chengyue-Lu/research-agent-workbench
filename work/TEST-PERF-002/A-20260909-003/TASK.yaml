@@ -1,0 +1,42 @@
+task_id: TEST-PERF-002
+revision: 19
+owner: Chengyue-Lu
+risk: R2
+delegation: false
+required_skills: []
+goal: Bind reduced consumer and proof closure to accepted evidence implementation
+  and validate review regressions.
+authorization: 'User: 根据comment修复问题。 PR 67 blocking review PRR_kwDOT2gtDc8AAAABMuNNww.'
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/**
+- .github/**
+- src/**
+- tests/**
+- pyproject.toml
+- build_backend.py
+- runtime-resources.json
+- work/TEST-PERF-002/**
+- .rwb/precision-intake/**
+write_scope:
+- .github/scripts/plan_ci.py
+- .github/scripts/ci_dependencies.py
+- .github/scripts/ci_checks.py
+- .github/workflows/ci.yml
+- tests/test_ci_plan.py
+- tests/test_ci_dependencies.py
+- tests/test_ci_checks.py
+- tests/ci_impact_policy.yaml
+- tests/fixtures/ci/**
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- work/TEST-PERF-002/A-20260909-003/**
+- .rwb/precision-intake/**
+- .rwb/precision-venv311/**
+stop_conditions:
+- M4 stays outside experiments; formal M14 head remains unchanged.
+- Real mutants stay in isolated disposable probes.
+- No release, tags, main, protection changes or further M14 milestone activation.
+- Cross-owner review and exact-head required CI/witness precede any merge.

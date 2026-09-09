@@ -7,6 +7,7 @@ The graph is an additive supplement to the reviewed base-side contract groups.
 from __future__ import annotations
 
 import ast
+import copy
 from collections import defaultdict
 from functools import lru_cache
 import hashlib
@@ -48,6 +49,54 @@ def semantic(raw):
 def imports(raw):
     return sorted(ast.dump(node, include_attributes=False) for node in ast.walk(ast.parse(raw))
                   if isinstance(node, (ast.Import, ast.ImportFrom)))
+
+
+def function_body_only(before, after):
+    """A reviewed local contract cannot hide initialization or dependency changes.
+
+    Keep definitions, imports, bindings, call expressions and string/resource inputs
+    fixed. This deliberately accepts a smaller domain than arbitrary function edits.
+    Unknown execution in a changed function retains the ordinary consumer closure.
+    """
+    trees = [ast.parse(raw) for raw in (before, after)]
+    bodies = []
+    for tree in trees:
+        functions = {}
+        def strip(nodes, prefix=''):
+            for node in nodes:
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    key = prefix + node.name
+                    if key in functions:
+                        return False
+                    functions[key] = copy.deepcopy(node)
+                    node.body = [ast.Pass()]
+                elif isinstance(node, ast.ClassDef):
+                    if not strip(node.body, prefix + node.name + '.'):
+                        return False
+            return True
+        if not strip(tree.body):
+            return False
+        bodies.append(functions)
+    if ast.dump(trees[0]) != ast.dump(trees[1]):
+        return False
+    for name, old in bodies[0].items():
+        new = bodies[1][name]
+        if ast.dump(old) == ast.dump(new):
+            continue
+        def boundary(node):
+            return sorted(ast.dump(part) for part in ast.walk(node)
+                          if isinstance(part, (ast.Call, ast.Import, ast.ImportFrom, ast.Name,
+                                               ast.Global, ast.Nonlocal, ast.Attribute))
+                          or isinstance(part, ast.Constant) and isinstance(part.value, str))
+        if boundary(old) != boundary(new):
+            return False
+        for context, node in zip(trees, (old, new)):
+            # Keep module/class imports and capability bindings when analyzing the
+            # changed body. A detached function loses aliases such as child.run.
+            scoped = ast.Module(body=[*context.body, node], type_ignores=[])
+            if graph({'subject.py': ast.unparse(scoped).encode()}, {'subject.py'})[1]:
+                return False
+    return True
 
 
 def graph(blobs, paths):
@@ -188,6 +237,31 @@ def commit_graph(repo, commit):
     return graph(blobs, paths)
 
 
+def test_evidence_closure(repo, commit, proof_names):
+    """Follow known test-side implementation inputs without pinning production code."""
+    paths, _ = snapshot(repo, commit)
+    reverse, *_ = commit_graph(repo, commit)
+    forward = defaultdict(set)
+    for dependency, consumers in reverse.items():
+        if dependency.startswith('tests/'):
+            for consumer in consumers:
+                forward[consumer].add(dependency)
+    found = {'tests/' + name.split('.')[0] + '.py' for name in proof_names}
+    pending = sorted(found)
+    for path in pending:
+        inputs = set(forward[path])
+        if path.endswith('.py'):
+            parts = path.split('/')
+            # Package initializers execute even when the root uses an unqualified
+            # test import. Namespace packages have no initializer to pin at this ref.
+            inputs.update('/'.join(parts[:stop]) + '/__init__.py' for stop in range(1, len(parts))
+                          if '/'.join(parts[:stop]) + '/__init__.py' in paths)
+        for dependency in sorted(inputs - found):
+            found.add(dependency)
+            pending.append(dependency)
+    return found
+
+
 def select(repo, base, head, seeds, reviewed_seeds=(), reviewed_consumers=(), reviewed_leaves=()):
     """Union old/new edges so removing an import or a consumer cannot hide impact."""
     before, old = snapshot(repo, base)
@@ -241,6 +315,9 @@ def select(repo, base, head, seeds, reviewed_seeds=(), reviewed_consumers=(), re
     payload = json.dumps({'base': before, 'head': after}, sort_keys=True).encode()
     return {'algorithm': 'base-head-consumers-v1', 'inventory_sha256': hashlib.sha256(payload).hexdigest(),
             'selected': dict(sorted(tests.items())), 'excluded': sorted(set(inventory) - tests.keys()),
+            'exclusion_reasons': {name: ('unchanged consumer covered by accepted base contract' if
+                'tests/' + name + '.py' in bounded else 'outside base/head dependency closure')
+                for name in sorted(set(inventory) - tests.keys())},
             'exclusion_reason': 'outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately',
             'opaque_consumers': sorted(opaque & trails.keys()), 'errors': sorted(set(errors)),
             'test_reachable_sources': sorted(reachable & set(seeds)),
