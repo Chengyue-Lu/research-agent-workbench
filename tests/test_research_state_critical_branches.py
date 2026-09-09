@@ -98,8 +98,13 @@ class ClosureDefensiveBranchTests(unittest.TestCase):
     def test_registry_skips_non_state_documents_in_a_mixed_closure(self):
         from research_workbench.validation.research_state_registry import validate_research_state_set
         documents = {Path("unrelated.yaml"): {"task_id": "TASK", "goal": "fixture", "revision": 1},
-                     Path("state.yaml"): {"state_id": "STATE", "revision": 1, "entries": [], "open_items": []}}
-        self.assertEqual([], validate_research_state_set(documents))
+                     Path("scalar.yaml"): None,
+                     Path("state.yaml"): {"state_id": "STATE", "revision": 1,
+                                          "entries": [{"role": "question", "ref": "ABSENT@1"}], "open_items": []}}
+        issues = validate_research_state_set(documents)
+        self.assertEqual(1, len(issues))
+        self.assertEqual(Path("state.yaml"), issues[0].path)
+        self.assertEqual("RESEARCH-STATE-CLOSURE-INVALID", issues[0].code)
 
     def test_path_loading_resolution_and_file_ref_fail_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
