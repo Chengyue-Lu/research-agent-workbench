@@ -24,6 +24,7 @@
 - [Phase C runner-owned bounded Gate (M10-003)](PHASE_C_BOUNDED_GATE.md)
 - [Source admission contract (M4-001)](SOURCE_ADMISSION_CONTRACT.md)
 - [Artifact promotion contract (M4-002)](ARTIFACT_PROMOTION_CONTRACT.md)
+- [Run reconstruction contract and synthetic case (M4-004)](../workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md)
 - [Claim evidence localization (M4-003)](CLAIM_TRACE_CONTRACT.md)
 - [Deterministic release surface (M14-002)](RELEASE_SURFACE.md)
 - [Portable Runtime resources (M14-003)](RUNTIME_RESOURCES.md)

@@ -15,11 +15,13 @@ owner：黄毅（GitHub 主名 `let778750-cpu`；昵称/界面名 `huangyi855`�
 
 进行中的 implementation workstream：
 
-- [`M4-CLAIM-TRACE/`](M4-CLAIM-TRACE/README.md)：
-  M4-003 支持/反证/限制的 exact evidence-map 定位；独立候选等待 owner review/CI。
+- [`M4-RUN-RECONSTRUCTION/`](M4-RUN-RECONSTRUCTION/README.md)：
+  M4-004 exact file/Run bindings 与 fresh-process 仿真重建候选；等待 owner review/CI。
 
 已集成、保留审计记录的 implementation workstream：
 
+- [`M4-CLAIM-TRACE/`](M4-CLAIM-TRACE/README.md)：
+  PR #61 已接受合入；M4-003 支持/反证/限制的 exact evidence-map 定位。
 - [`M4-ARTIFACT-PROMOTION/`](M4-ARTIFACT-PROMOTION/README.md)：
   PR #54 已合入；M4-002 work-to-formal-zone promotion 与 durable receipt。
 - [`M10-RESEARCH-STATE/`](M10-RESEARCH-STATE/README.md)：

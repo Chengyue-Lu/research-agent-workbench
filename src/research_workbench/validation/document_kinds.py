@@ -6,6 +6,12 @@ from typing import Any, Mapping
 
 
 def infer_document_kind(document: Mapping[str, Any]) -> str | None:
+    if document.get("manifest_kind") == "python-file-reconstruction":
+        return "run_reconstruction_manifest"
+    if document.get("environment_kind") == "python-stdlib-reconstruction":
+        return "run_reconstruction_environment"
+    if document.get("report_kind") == "run-reconstruction":
+        return "run_reconstruction_report"
     if document.get("document_kind") == "claim_evidence_map":
         return "claim_evidence_map"
     registry_kind = document.get("registry_kind")
