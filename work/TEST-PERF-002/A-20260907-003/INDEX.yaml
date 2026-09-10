@@ -1,0 +1,76 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260907-003
+task_id: TEST-PERF-002
+task_revision: 5
+attempt_id: A-20260907-003
+archive_root: A-20260907-003
+baseline: 97f760c43e95b398c396987f349e2199c567cbc7
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 7b267785b6e24c33535b761f0c01cd2925ccd072f6913ac1e7338bee6d417db0
+actors_ref:
+  path: ACTORS.yaml
+  sha256: e9d6547ed3d6a13439306bcbc4cd50195de57d5e5fa9661581a91c1f3a38a021
+read_allowlist:
+- .github/**
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- docs/README.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- pyproject.toml
+- src/research_workbench/observability/trace.py
+- tests/**
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/ci_checks.py
+- .github/scripts/plan_ci.py
+- .github/workflows/ci.yml
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/ci_impact_policy.yaml
+- tests/run_unittest_suite.py
+- tests/test_ci_checks.py
+- tests/test_ci_plan.py
+- work/TEST-PERF-002/A-20260907-003/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 1fd141ba558fc62d54f1a949a9f9f0846ed87c9e679095c2df18d72ff7e422a7
+  event_count: 6
+tool_event_refs:
+- path: tool-events/coverage-obligation-review-validation-succeeded.json
+  sha256: 44ff954cb1a20da8b8bdc278e153ab16af3eec5b6571574b3d523b95594d4fe6
+handoff_refs:
+- path: handoff/H0.md
+  sha256: cda511b58fa53023dc0c6981bcc216590b9e77b96d519876699569ffae9c587c
+decision_refs: []
+output_refs:
+- path: outputs/code-manifest.json
+  sha256: 0d771f788a3fba1eae99773a19ae3f89e6d57e94c148f3564adf2b326fed8ac2
+- path: AUDIT.md
+  sha256: 1284b8cd2e6e3faede4cb7a44c30fed148339103309fb7366a36e869a0db25d2
+- path: WORKLOG.md
+  sha256: fcc514f07b942f8bdd688f1076f73c69c4917dcc33803b20edc8cd825a554c00
+check_refs:
+- path: checks/review.json
+  sha256: 2d44dfa5e66c648438130240d7132d463f9d27359604b4a6f8ac54545ccadc88
+- path: checks/validation-summary.json
+  sha256: 0fe2372416a6d0b640ce69be73e2d609c45105ae2b13c71c70e85be44a3b1af2
+- path: checks/staged-plan.json
+  sha256: a947f552cdc731f99a8c1cbb3b80ff547d1121e189bae0648d57f9ae376896e4
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: tool-results
+- event_id: EVT-0005
+  affected_stream: events

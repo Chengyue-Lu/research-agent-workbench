@@ -25,6 +25,8 @@ suites:
       - test_cli_command_branches
       - test_ci_plan
       - test_ci_checks
+      - test_ci_dependencies
+      - test_selection_witness
       - test_contracts
       - test_context_model_branches
       - test_critical_contract_branches
@@ -45,6 +47,10 @@ suites:
       - test_observability_model_branches
       - test_protocol_profiles
       - test_pr_governance
+      - test_release_surface
+      - test_release_oracle_replay
+      - test_portable_build
+      - test_runtime_resources
       - test_provider_adapters
       - test_provider_conformance
       - test_provider_contract_branches
@@ -127,10 +133,14 @@ thresholds:
     branch: 90
 
 critical_modules:
+  - .github/scripts/selection_witness.py
+  - .github/scripts/ci_dependencies.py
   - .github/scripts/plan_ci.py
   - .github/scripts/ci_checks.py
+  - src/research_workbench/resources.py
   - .github/scripts/check_coverage_policy.py
   - .github/scripts/check_pr_governance.py
+  - .github/scripts/release_surface.py
   - src/research_workbench/protocol/authority.py
   - src/research_workbench/capability/requirements.py
   - src/research_workbench/capability/supply.py
@@ -187,6 +197,23 @@ negative_acceptance:
       - test_claim_trace.ClaimTraceTests.test_missing_revision_unversioned_and_missing_evidence_are_unresolved
       - test_claim_trace.ClaimTraceTests.test_missing_and_wrong_raw_admission_do_not_yield_complete_trace
       - test_claim_trace.ClaimTraceTests.test_map_requires_exact_evidence_and_source_closure
+  - surface: independent-selection-authority-witness
+    modules:
+      - .github/scripts/selection_witness.py
+    positive_tests:
+      - test_selection_witness.WitnessTests.test_authority_floor_is_independent_of_plan_claims
+      - test_selection_witness.WitnessTests.test_product_and_comments_do_not_acquire_full_floor
+    negative_tests:
+      - test_selection_witness.WitnessTests.test_deleted_candidate_bootstrap_cannot_change_external_witness
+      - test_selection_witness.WitnessTests.test_bindings_digest_shape_and_refs_are_not_candidate_authority
+  - surface: ci-dependency-selection
+    modules:
+      - .github/scripts/ci_dependencies.py
+    positive_tests:
+      - test_ci_dependencies.DependencyTests.test_import_closure_keeps_consumers_and_excludes_independent_test
+    negative_tests:
+      - test_ci_dependencies.DependencyTests.test_removed_edge_cannot_hide_old_consumer
+      - test_ci_dependencies.DependencyTests.test_opaque_execution_expands_instead_of_claiming_exclusion
   - surface: ci-impact-planning
     modules:
       - .github/scripts/plan_ci.py
@@ -206,6 +233,38 @@ negative_acceptance:
     negative_tests:
       - test_ci_checks.ImpactCoverageTests.test_missing_wrong_and_lower_quality_evidence_is_rejected
       - test_ci_checks.MetadataTests.test_stale_binding_tamper_risk_or_weaker_obligations_cannot_reuse
+  - surface: installed-runtime-resources
+    modules:
+      - src/research_workbench/resources.py
+    positive_tests:
+      - test_runtime_resources.RuntimeResourceTests.test_default_catalogs_and_three_roots_ignore_cwd_resources
+      - test_runtime_resources.RuntimeResourceTests.test_conditional_skill_assets_map_outside_legacy_paths
+    negative_tests:
+      - test_runtime_resources.RuntimeResourceTests.test_override_needs_external_pin_and_rejects_manifest_drift
+      - test_runtime_resources.RuntimeResourceTests.test_missing_corrupt_extra_and_empty_directory_fail_closed
+      - test_runtime_resources.RuntimeResourceTests.test_skill_release_asset_omission_orphan_and_byte_drift
+      - test_runtime_resources.RuntimeResourceTests.test_mode_action_reference_and_unindexed_skill_asset_are_rejected
+      - test_runtime_resources.RuntimeResourceTests.test_links_and_root_escape_fail_closed
+  - surface: deterministic-release-surface
+    modules:
+      - .github/scripts/release_surface.py
+    positive_tests:
+      - test_release_surface.ReleaseSurfaceTests.test_export_twice_and_git_merge_tree_are_byte_identical
+      - test_release_surface.ReleaseSurfaceTests.test_two_versions_remove_old_generated_output_and_reject_stale_parent
+      - test_release_surface.ReleaseSurfaceTests.test_binary_source_and_executable_mode_preserve_bytes
+      - test_release_surface.ReleaseSurfaceTests.test_merged_nonprefix_policy_histories_and_new_maximum_are_valid
+    negative_tests:
+      - test_release_surface.ReleaseSurfaceTests.test_synchronized_source_and_manifest_hash_forgery_is_blocked
+      - test_release_surface.ReleaseSurfaceTests.test_extra_hidden_missing_moved_and_mode_drift_are_blocked
+      - test_release_surface.ReleaseSurfaceTests.test_source_and_ci_expectations_cannot_come_from_manifest
+      - test_release_surface.ReleaseSurfaceTests.test_policy_same_version_drift_is_rejected
+      - test_release_surface.ReleaseSurfaceTests.test_policy_version_cannot_be_inserted_before_history
+      - test_release_surface.ReleaseSurfaceTests.test_policy_version_cannot_be_inserted_between_historical_versions
+      - test_release_surface.ReleaseSurfaceTests.test_policy_version_deletion_and_restore_is_rejected
+      - test_release_surface.ReleaseSurfaceTests.test_merge_dropped_parent_version_and_restore_is_rejected
+      - test_release_surface.ReleaseSurfaceTests.test_required_check_permutations_have_only_one_legal_tree
+      - test_release_surface.ReleaseSurfaceTests.test_portable_path_attack_matrix
+      - test_release_surface.ReleaseSurfaceTests.test_git_symlink_gitlink_casefold_and_non_utf8_paths_are_rejected
   - surface: coverage-policy-self-control
     modules:
       - .github/scripts/check_coverage_policy.py
@@ -221,9 +280,24 @@ negative_acceptance:
       - .github/scripts/check_pr_governance.py
     positive_tests:
       - test_pr_governance.TopologyTests.test_feature_to_develop_passes
+      - test_pr_governance.TopologyTests.test_develop_to_main_release_passes
+      - test_pr_governance.ReleaseTrustTopologyTests.test_valid_release_prerequisites_have_no_specific_failures
+      - test_pr_governance.ReleaseTrustIntegrationTests.test_develop_to_main_check_remains_executable
+      - test_pr_governance.PolicyAndCodeownersTests.test_curated_release_required_checks_exist_in_ci_workflow
       - test_pr_governance.TasksAuthorityTests.test_r2_connected_linear_stage_chain_passes
     negative_tests:
       - test_pr_governance.TopologyTests.test_feature_to_main_fails
+      - test_pr_governance.TopologyTests.test_release_version_repository_class_and_base_fail_closed
+      - test_pr_governance.ReleaseTrustTopologyTests.test_branch_name_alone_cannot_supply_trusted_expectations
+      - test_pr_governance.ReleaseTrustTopologyTests.test_source_repository_ref_sha_history_and_ci_drift_fail_closed
+      - test_pr_governance.ReleaseTrustTopologyTests.test_parent_and_manifest_drift_fail_closed
+      - test_pr_governance.ReleaseTrustTopologyTests.test_policy_shape_and_activation_cannot_be_weakened_by_data_only
+      - test_pr_governance.ReleaseTrustTopologyTests.test_prerequisite_helper_revalidates_canonical_policy
+      - test_pr_governance.ReleaseTrustTopologyTests.test_unknown_expectation_fields_are_rejected
+      - test_pr_governance.ReleaseTrustIntegrationTests.test_fully_valid_release_candidate_remains_dormant_and_r2
+      - test_pr_governance.ReleaseTrustIntegrationTests.test_pr_body_or_branch_name_cannot_replace_trusted_expectations
+      - test_pr_governance.ReleaseTrustIntegrationTests.test_process_environment_is_not_implicitly_trusted
+      - test_pr_governance.ReleaseTrustIntegrationTests.test_release_trust_read_failure_is_blocking
       - test_pr_governance.TasksAuthorityTests.test_done_task_is_immutable
       - test_pr_governance.PublishedIdentityIntegrationTests.test_move_out_is_detected_when_changed_path_is_not_published
       - test_governance_helper_branches.GovernanceHelperBranchTests.test_workstream_risk_git_and_main_boundaries_are_observable
@@ -453,4 +527,8 @@ justified_exclusions:
   - path: src/research_workbench/execution/host.py
     lines: [66, 67, 68, 69, 70, 71, 72, 73, 74, 76, 77, 78]
     reason: Protocol property and method declarations have no executable implementation body.
+    owner: Chengyue-Lu
+  - path: src/research_workbench/research_state/closure.py
+    lines: [12, 13]
+    reason: Type-checking-only import avoids a runtime import cycle.
     owner: Chengyue-Lu

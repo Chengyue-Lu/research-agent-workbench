@@ -1,0 +1,24 @@
+{
+  "authority_changes": [
+    ".github/scripts/plan_ci.py",
+    ".github/scripts/ci_dependencies.py",
+    ".github/scripts/ci_checks.py",
+    "tests/run_unittest_suite.py",
+    ".github/workflows/ci.yml"
+  ],
+  "base": "97f760c43e95b398c396987f349e2199c567cbc7",
+  "content_conclusion": "success",
+  "content_run": 34074914208,
+  "content_status": "completed",
+  "execution_checks_proved": false,
+  "head": "69b22e852fff61f2bc5ff87e1d023a27856f75df",
+  "observed_behavioral": "full",
+  "plan_id": "e1071f72b26694100d456b4def7946d1ce15599485826614fc88a89468dd102f",
+  "repository": "Chengyue-Lu/research-agent-workbench",
+  "required_behavioral": "full",
+  "scope": "selection-authority floor only",
+  "status": "PASS",
+  "target": "87c78a856ad644405626e276fc812c42ec0496a0",
+  "witness_commit": "1b543393ae71b9032359b739170d66ec0be08772",
+  "witness_source_sha256": "27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"
+}

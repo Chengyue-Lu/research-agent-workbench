@@ -1,0 +1,13 @@
+ 1:  41581a2 =  1:  47087a3 feat(governance): establish dormant curated release trust seam
+ 2:  3ed92f9 =  2:  81d741e chore(trace): archive M14-001 attempt evidence
+ 3:  572dc27 =  3:  8b9bdf5 fix(trace): redact local path from archived test result
+ 4:  48f4932 =  4:  6ab8b33 feat(release): implement deterministic M14-002 surface export and checks
+ 5:  c23160c =  5:  7bffc73 docs(trace): record M14-002 implementation verification
+ 6:  93f38f8 =  6:  42f0b78 fix(release): enforce append-only versions and canonical checks
+ 7:  bc87834 =  7:  f419638 fix(release): reject policy deletion across source history
+ 8:  9f465ba =  8:  483661d feat(package): add pinned portable Runtime resources (M14-003)
+ 9:  54049f1 =  9:  72b7f97 fix(runtime): reuse pinned schemas within fresh actor read policy
+10:  255d7b2 = 10:  d1bb450 test(coverage): declare type-checking import exclusion
+11:  481f6a2 = 11:  cbaf62b docs(trace): archive M14-003 package verification and review handoff
+12:  0802894 = 12:  c66b929 fix(test): declare setuptools for Runtime resource tests
+13:  205559b = 13:  347f264 docs(trace): record M14-003 CI dependency repair

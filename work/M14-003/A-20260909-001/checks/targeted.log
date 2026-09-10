@@ -1,0 +1,23 @@
+.F...................................governance: FAIL: GITHUB_EVENT_PATH is required
+governance: FAIL: Expecting value: line 1 column 1 (char 0)
+................................................fresh actor blocked: blocked
+fresh actor blocked: blocked
+............
+======================================================================
+FAIL: test_build_rejects_catalog_escape_duplicate_missing_and_linked_sources (tests.test_portable_build.PortableBuildTests.test_build_rejects_catalog_escape_duplicate_missing_and_linked_sources)
+----------------------------------------------------------------------
+ValueError: duplicate conditional resource
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<repo>\tests\test_portable_build.py", line 50, in test_build_rejects_catalog_escape_duplicate_missing_and_linked_sources
+    with self.assertRaisesRegex(ValueError, "missing or unsafe"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "missing or unsafe" does not match "duplicate conditional resource"
+
+----------------------------------------------------------------------
+Ran 97 tests in 213.164s
+
+FAILED (failures=1)
+governance: push/non-PR event; PR-only checks skipped

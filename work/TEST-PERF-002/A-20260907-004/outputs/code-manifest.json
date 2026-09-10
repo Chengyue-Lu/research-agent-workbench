@@ -1,0 +1,22 @@
+{
+  "baseline": "97f760c43e95b398c396987f349e2199c567cbc7",
+  "implementation_head": "774cdb6d7511a22fcffe5972f58fc745fa46d2f7",
+  "test_supplement_head": "01aa4e49b80c642795a0e9e00afc3809475bbe6a",
+  "staged_sha256": {
+    ".github/scripts/ci_checks.py": "a52f747e2db947bec2e5a8840a0b6ad1c528ff04357e3d6c6d2bf981465ee5eb",
+    ".github/scripts/ci_dependencies.py": "60440f0ce631b8c191d20d5bfb2627272697abd7f05e431ed23a702bc18623c8",
+    ".github/scripts/plan_ci.py": "c81b9b6bffa76b3cf01cdb484030c4ae9326e454e3b8b0786a2b61f01be2696d",
+    ".github/workflows/ci.yml": "74054fc07040fb939165fbf8e27ff4c0224e1d79b677935ded1091cb39d2f03d",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/OBLIGATIONS.md": "f6332b121073e6976b590bfcb61788450b834e7baef4e33e2ba2fa2c857214ac",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/README.md": "d18e2dea3c46126408cdc030f23e6a01d8164cfc5936ac905f9847259648ddce",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/RISK_LEDGER.md": "c0e56692ac1ac9dc21e453b7293d1b4dc9bc002bfce72b510028dc2a188a2d05",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/VALIDATION.md": "9a3cc59d9fd9c3a3ef8d4ae4e65708b58f6c0c0693beeaefeef6c1a2d354102b",
+    "tests/ci_impact_policy.yaml": "681dae526d6dda2205b9bdda1de5df21836b24175d4282a8259384873d33f790",
+    "tests/coverage_policy.yaml": "f10666eab080fe6ea57a2a0911ffac13c4efb42041370b48dd2a62fbc97fff15",
+    "tests/fixtures/ci/pr65.json": "e3734b9fe252406d456489f95bbbc5e86dcabc77cc64e64cf2584b52c2826f91",
+    "tests/run_unittest_suite.py": "bc929b3c510855ec23f1146a57032e126fbad6736cbb86e952b69e17b7f806bc",
+    "tests/test_ci_checks.py": "681f70f26adb0669a00e06ba449b39e63c3a7b2d4ddd748730832ab5758b00e4",
+    "tests/test_ci_dependencies.py": "dd9dd05738d76030e6dab2333994d20774d62bfdd32cebe1708cc3d48f715be2",
+    "tests/test_ci_plan.py": "1515eb26aae41e8765061b6260cb86fd1cde97097cd8f5fc49669adba1ea40e2"
+  }
+}

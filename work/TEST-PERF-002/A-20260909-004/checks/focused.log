@@ -1,0 +1,387 @@
+{
+  "version": 4,
+  "binding": {
+    "repository": "Example/repo",
+    "base": "74ef85037d00e6e0a515fcdd86056303bb273dd1",
+    "head": "9b71a69c2dd8b10fc2ce312376a89153feb8c498",
+    "merge_base": "74ef85037d00e6e0a515fcdd86056303bb273dd1",
+    "target": "9b71a69c2dd8b10fc2ce312376a89153feb8c498"
+  },
+  "change_class": "fast",
+  "risk": "R0",
+  "changes": [
+    {
+      "status": "M",
+      "path": "README.md"
+    }
+  ],
+  "surfaces": [
+    "documentation"
+  ],
+  "test_groups": [
+    "documentation"
+  ],
+  "tests": [
+    "test_documentation",
+    "test_pr_governance"
+  ],
+  "coverage_modules": [],
+  "impact_evidence": {},
+  "changed_lines": {},
+  "coverage_lines": {},
+  "coverage_tests": [],
+  "selection": {
+    "algorithm": "base-head-consumers-v1",
+    "inventory_sha256": "bcaf63404c055233e7a3fcec16aac293e5ceb79ec8e5c52faaedc476fa568412",
+    "selected": {},
+    "excluded": [
+      "test_api_session_runner",
+      "test_ci_checks",
+      "test_ci_dependencies",
+      "test_ci_plan",
+      "test_claim_trace",
+      "test_cli",
+      "test_cli_command_branches",
+      "test_coverage_policy",
+      "test_documentation",
+      "test_governance_helper_branches",
+      "test_pr_governance",
+      "test_provider_adapters",
+      "test_provider_conformance",
+      "test_provider_contract_branches",
+      "test_provider_port",
+      "test_skill_release_projection",
+      "test_unselected",
+      "test_validation_helpers"
+    ],
+    "exclusion_reasons": {
+      "test_api_session_runner": "outside base/head dependency closure",
+      "test_ci_checks": "outside base/head dependency closure",
+      "test_ci_dependencies": "outside base/head dependency closure",
+      "test_ci_plan": "outside base/head dependency closure",
+      "test_claim_trace": "outside base/head dependency closure",
+      "test_cli": "outside base/head dependency closure",
+      "test_cli_command_branches": "outside base/head dependency closure",
+      "test_coverage_policy": "outside base/head dependency closure",
+      "test_documentation": "outside base/head dependency closure",
+      "test_governance_helper_branches": "outside base/head dependency closure",
+      "test_pr_governance": "outside base/head dependency closure",
+      "test_provider_adapters": "outside base/head dependency closure",
+      "test_provider_conformance": "outside base/head dependency closure",
+      "test_provider_contract_branches": "outside base/head dependency closure",
+      "test_provider_port": "outside base/head dependency closure",
+      "test_skill_release_projection": "outside base/head dependency closure",
+      "test_unselected": "outside base/head dependency closure",
+      "test_validation_helpers": "outside base/head dependency closure"
+    },
+    "exclusion_reason": "outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately",
+    "opaque_consumers": [
+      ".github/scripts/check_pr_governance.py",
+      ".github/scripts/ci_checks.py",
+      ".github/scripts/plan_ci.py",
+      "tests/run_unittest_suite.py"
+    ],
+    "errors": [],
+    "test_reachable_sources": [],
+    "affected_paths": [
+      ".github/scripts/check_pr_governance.py",
+      ".github/scripts/ci_checks.py",
+      ".github/scripts/plan_ci.py",
+      "README.md",
+      "tests/run_unittest_suite.py"
+    ],
+    "reviewed_contract_anchor": "",
+    "reviewed_opaque_boundary": []
+  },
+  "coverage_selection": {},
+  "policy_sha256": "2a0fbbcd892f3a82baa8404f5a3e6cbc10c7dab0af4f1345bb5b483bcd7826f9",
+  "python_versions": [],
+  "behavioral_scope": "none",
+  "coverage_scope": "none",
+  "coverage_obligations": [],
+  "blocked_reasons": [],
+  "package_smoke": false,
+  "repository_smoke": false,
+  "reasons": [
+    "README.md -> documentation",
+    "test/document/archive data: README.md"
+  ],
+  "obligation_reasons": {
+    "behavioral_scope": [
+      "documentation obligations only"
+    ],
+    "coverage_scope": [
+      "no production/critical executable or coverage authority changed"
+    ],
+    "package_smoke": [
+      "no packaging/install surface changed"
+    ],
+    "repository_smoke": [
+      "no repository validation surface changed"
+    ]
+  },
+  "plan_id": "cd03bbab94194a695bb9995f24f2fa4ce47b4a7a6ef15f4a25efa0ef04cb822c"
+}
+{
+  "version": 4,
+  "binding": {
+    "repository": "Example/repo",
+    "base": "74ef85037d00e6e0a515fcdd86056303bb273dd1",
+    "head": "9b71a69c2dd8b10fc2ce312376a89153feb8c498",
+    "merge_base": "74ef85037d00e6e0a515fcdd86056303bb273dd1",
+    "target": "9b71a69c2dd8b10fc2ce312376a89153feb8c498"
+  },
+  "change_class": "fast",
+  "risk": "R0",
+  "changes": [
+    {
+      "status": "M",
+      "path": "README.md"
+    }
+  ],
+  "surfaces": [
+    "documentation"
+  ],
+  "test_groups": [
+    "documentation"
+  ],
+  "tests": [
+    "test_documentation",
+    "test_pr_governance"
+  ],
+  "coverage_modules": [],
+  "impact_evidence": {},
+  "changed_lines": {},
+  "coverage_lines": {},
+  "coverage_tests": [],
+  "selection": {
+    "algorithm": "base-head-consumers-v1",
+    "inventory_sha256": "bcaf63404c055233e7a3fcec16aac293e5ceb79ec8e5c52faaedc476fa568412",
+    "selected": {},
+    "excluded": [
+      "test_api_session_runner",
+      "test_ci_checks",
+      "test_ci_dependencies",
+      "test_ci_plan",
+      "test_claim_trace",
+      "test_cli",
+      "test_cli_command_branches",
+      "test_coverage_policy",
+      "test_documentation",
+      "test_governance_helper_branches",
+      "test_pr_governance",
+      "test_provider_adapters",
+      "test_provider_conformance",
+      "test_provider_contract_branches",
+      "test_provider_port",
+      "test_skill_release_projection",
+      "test_unselected",
+      "test_validation_helpers"
+    ],
+    "exclusion_reasons": {
+      "test_api_session_runner": "outside base/head dependency closure",
+      "test_ci_checks": "outside base/head dependency closure",
+      "test_ci_dependencies": "outside base/head dependency closure",
+      "test_ci_plan": "outside base/head dependency closure",
+      "test_claim_trace": "outside base/head dependency closure",
+      "test_cli": "outside base/head dependency closure",
+      "test_cli_command_branches": "outside base/head dependency closure",
+      "test_coverage_policy": "outside base/head dependency closure",
+      "test_documentation": "outside base/head dependency closure",
+      "test_governance_helper_branches": "outside base/head dependency closure",
+      "test_pr_governance": "outside base/head dependency closure",
+      "test_provider_adapters": "outside base/head dependency closure",
+      "test_provider_conformance": "outside base/head dependency closure",
+      "test_provider_contract_branches": "outside base/head dependency closure",
+      "test_provider_port": "outside base/head dependency closure",
+      "test_skill_release_projection": "outside base/head dependency closure",
+      "test_unselected": "outside base/head dependency closure",
+      "test_validation_helpers": "outside base/head dependency closure"
+    },
+    "exclusion_reason": "outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately",
+    "opaque_consumers": [
+      ".github/scripts/check_pr_governance.py",
+      ".github/scripts/ci_checks.py",
+      ".github/scripts/plan_ci.py",
+      "tests/run_unittest_suite.py"
+    ],
+    "errors": [],
+    "test_reachable_sources": [],
+    "affected_paths": [
+      ".github/scripts/check_pr_governance.py",
+      ".github/scripts/ci_checks.py",
+      ".github/scripts/plan_ci.py",
+      "README.md",
+      "tests/run_unittest_suite.py"
+    ],
+    "reviewed_contract_anchor": "",
+    "reviewed_opaque_boundary": []
+  },
+  "coverage_selection": {},
+  "policy_sha256": "2a0fbbcd892f3a82baa8404f5a3e6cbc10c7dab0af4f1345bb5b483bcd7826f9",
+  "python_versions": [],
+  "behavioral_scope": "none",
+  "coverage_scope": "none",
+  "coverage_obligations": [],
+  "blocked_reasons": [],
+  "package_smoke": false,
+  "repository_smoke": false,
+  "reasons": [
+    "README.md -> documentation",
+    "test/document/archive data: README.md"
+  ],
+  "obligation_reasons": {
+    "behavioral_scope": [
+      "documentation obligations only"
+    ],
+    "coverage_scope": [
+      "no production/critical executable or coverage authority changed"
+    ],
+    "package_smoke": [
+      "no packaging/install surface changed"
+    ],
+    "repository_smoke": [
+      "no repository validation surface changed"
+    ]
+  },
+  "plan_id": "cd03bbab94194a695bb9995f24f2fa4ce47b4a7a6ef15f4a25efa0ef04cb822c"
+----------------------------------------------------------------------
+Ran 125 tests in 439.522s
+
+OK
+}
+{
+  "version": 4,
+  "binding": {
+    "repository": "Example/repo",
+    "base": "74ef85037d00e6e0a515fcdd86056303bb273dd1",
+    "head": "9b71a69c2dd8b10fc2ce312376a89153feb8c498",
+    "merge_base": "74ef85037d00e6e0a515fcdd86056303bb273dd1",
+    "target": "9b71a69c2dd8b10fc2ce312376a89153feb8c498"
+  },
+  "change_class": "fast",
+  "risk": "R0",
+  "changes": [
+    {
+      "status": "M",
+      "path": "README.md"
+    }
+  ],
+  "surfaces": [
+    "documentation"
+  ],
+  "test_groups": [
+    "documentation"
+  ],
+  "tests": [
+    "test_documentation",
+    "test_pr_governance"
+  ],
+  "coverage_modules": [],
+  "impact_evidence": {},
+  "changed_lines": {},
+  "coverage_lines": {},
+  "coverage_tests": [],
+  "selection": {
+    "algorithm": "base-head-consumers-v1",
+    "inventory_sha256": "bcaf63404c055233e7a3fcec16aac293e5ceb79ec8e5c52faaedc476fa568412",
+    "selected": {},
+    "excluded": [
+      "test_api_session_runner",
+      "test_ci_checks",
+      "test_ci_dependencies",
+      "test_ci_plan",
+      "test_claim_trace",
+      "test_cli",
+      "test_cli_command_branches",
+      "test_coverage_policy",
+      "test_documentation",
+      "test_governance_helper_branches",
+      "test_pr_governance",
+      "test_provider_adapters",
+      "test_provider_conformance",
+      "test_provider_contract_branches",
+      "test_provider_port",
+      "test_skill_release_projection",
+      "test_unselected",
+      "test_validation_helpers"
+    ],
+    "exclusion_reasons": {
+      "test_api_session_runner": "outside base/head dependency closure",
+      "test_ci_checks": "outside base/head dependency closure",
+      "test_ci_dependencies": "outside base/head dependency closure",
+      "test_ci_plan": "outside base/head dependency closure",
+      "test_claim_trace": "outside base/head dependency closure",
+      "test_cli": "outside base/head dependency closure",
+      "test_cli_command_branches": "outside base/head dependency closure",
+      "test_coverage_policy": "outside base/head dependency closure",
+      "test_documentation": "outside base/head dependency closure",
+      "test_governance_helper_branches": "outside base/head dependency closure",
+      "test_pr_governance": "outside base/head dependency closure",
+      "test_provider_adapters": "outside base/head dependency closure",
+      "test_provider_conformance": "outside base/head dependency closure",
+      "test_provider_contract_branches": "outside base/head dependency closure",
+      "test_provider_port": "outside base/head dependency closure",
+      "test_skill_release_projection": "outside base/head dependency closure",
+      "test_unselected": "outside base/head dependency closure",
+      "test_validation_helpers": "outside base/head dependency closure"
+    },
+    "exclusion_reason": "outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately",
+    "opaque_consumers": [
+      ".github/scripts/check_pr_governance.py",
+      ".github/scripts/ci_checks.py",
+      ".github/scripts/plan_ci.py",
+      "tests/run_unittest_suite.py"
+    ],
+    "errors": [],
+    "test_reachable_sources": [],
+    "affected_paths": [
+      ".github/scripts/check_pr_governance.py",
+      ".github/scripts/ci_checks.py",
+      ".github/scripts/plan_ci.py",
+      "README.md",
+      "tests/run_unittest_suite.py"
+    ],
+    "reviewed_contract_anchor": "",
+    "reviewed_opaque_boundary": []
+  },
+  "coverage_selection": {},
+  "policy_sha256": "2a0fbbcd892f3a82baa8404f5a3e6cbc10c7dab0af4f1345bb5b483bcd7826f9",
+  "python_versions": [],
+  "behavioral_scope": "none",
+  "coverage_scope": "none",
+  "coverage_obligations": [],
+  "blocked_reasons": [],
+  "package_smoke": false,
+  "repository_smoke": false,
+  "reasons": [
+    "README.md -> documentation",
+    "test/document/archive data: README.md"
+  ],
+  "obligation_reasons": {
+    "behavioral_scope": [
+      "documentation obligations only"
+    ],
+    "coverage_scope": [
+      "no production/critical executable or coverage authority changed"
+    ],
+    "package_smoke": [
+      "no packaging/install surface changed"
+    ],
+    "repository_smoke": [
+      "no repository validation surface changed"
+    ]
+  },
+  "plan_id": "cd03bbab94194a695bb9995f24f2fa4ce47b4a7a6ef15f4a25efa0ef04cb822c"
+}
+{"authority_changes":[],"base":"adf5c792f1ea06aa188a295097f90bc0c401a073","execution_checks_proved":false,"head":"adf5c792f1ea06aa188a295097f90bc0c401a073","observed_behavioral":"full","plan_id":"c189ccfbdc1af2cabb0c5506692a635ca66f520db1c4842864f8b2cc367f09f1","repository":"Example/repo","required_behavioral":"none","scope":"selection-authority floor only","status":"PASS","target":"adf5c792f1ea06aa188a295097f90bc0c401a073","witness_commit":"adf5c792f1ea06aa188a295097f90bc0c401a073","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+{"reason":"witness source drift","status":"BLOCK","witness_source_sha256":"186866d274a9e55c517a6d49f684c99ef36f4afeff0409c10bd93ce40d54031d"}
+
+{"reason":"witness checkout differs from reviewer-pinned commit","status":"BLOCK","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+{"authority_changes":[],"base":"86f7d3e2eeaaf66d3a3f5e98419735c4974f1835","content_conclusion":null,"content_run":7,"content_status":"in_progress","execution_checks_proved":false,"head":"86f7d3e2eeaaf66d3a3f5e98419735c4974f1835","observed_behavioral":"full","plan_id":"7d63bf3ac225ab5a991c9bee9e2d83006db544482c91b41134f6f59b237da0fa","repository":"Example/repo","required_behavioral":"none","scope":"selection-authority floor only","status":"PASS","target":"86f7d3e2eeaaf66d3a3f5e98419735c4974f1835","witness_commit":"86f7d3e2eeaaf66d3a3f5e98419735c4974f1835","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+{"reason":"invalid zip","status":"BLOCK","witness_commit":"86f7d3e2eeaaf66d3a3f5e98419735c4974f1835","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+{"reason":"witness checkout differs from reviewer-pinned commit","status":"BLOCK","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}

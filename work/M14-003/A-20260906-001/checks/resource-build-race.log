@@ -1,0 +1,44 @@
+.........FEE
+======================================================================
+ERROR: test_runtime_catalog_schema_hash_identity_index_and_orphan_attacks (tests.test_runtime_resources.RuntimeResourceTests.test_runtime_catalog_schema_hash_identity_index_and_orphan_attacks)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>\tests\test_runtime_resources.py", line 34, in setUp
+    self.manifest = json.loads((self.root / "manifest.json").read_bytes())
+                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "<local-path>", line 777, in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<local-path>", line 771, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '<local-path>'
+
+======================================================================
+ERROR: test_skill_release_asset_omission_orphan_and_byte_drift (tests.test_runtime_resources.RuntimeResourceTests.test_skill_release_asset_omission_orphan_and_byte_drift)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>\tests\test_runtime_resources.py", line 34, in setUp
+    self.manifest = json.loads((self.root / "manifest.json").read_bytes())
+                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "<local-path>", line 777, in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<local-path>", line 771, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '<local-path>'
+
+======================================================================
+FAIL: test_resource_cli_no_skill_quickstart_and_explicit_maintainer_config (tests.test_runtime_resources.RuntimeResourceTests.test_resource_cli_no_skill_quickstart_and_explicit_maintainer_config)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>\tests\test_runtime_resources.py", line 268, in test_resource_cli_no_skill_quickstart_and_explicit_maintainer_config
+    self.assertEqual(0, main(["resources", "check"]))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 2
+
+----------------------------------------------------------------------
+Ran 12 tests in 11.906s
+
+FAILED (failures=1, errors=2)

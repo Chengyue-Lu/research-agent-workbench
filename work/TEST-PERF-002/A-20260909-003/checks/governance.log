@@ -1,0 +1,17 @@
+Declared risk: R2
+Inferred minimum: R2
+Effective risk: R2
+Reason:
+- .github/scripts/ci_checks.py matches the R2 policy surface
+- .github/scripts/ci_dependencies.py matches the R2 policy surface
+- .github/scripts/plan_ci.py matches the R2 policy surface
+- .github/workflows/ci.yml matches the R2 policy surface
+- PR declares a shared-contract impact
+- PR declares an authority, permission, or data-boundary impact
+Requirements:
+- pull request and required CI
+- cross-owner review before merge
+- explicit authority basis
+- adversarial or negative evidence
+- owner-matched workstream and Risk Ledger
+governance: PASS

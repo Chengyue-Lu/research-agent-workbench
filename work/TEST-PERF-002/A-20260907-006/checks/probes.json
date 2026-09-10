@@ -1,0 +1,26 @@
+[
+  {
+    "scenario": "test-only",
+    "tests": 109,
+    "scope": {
+      "risk": "R2",
+      "behavioral_scope": "focused",
+      "coverage_scope": "none",
+      "package_smoke": false,
+      "repository_smoke": false
+    },
+    "basis": "exact synthetic Git plan/collection, not hosted elapsed time"
+  },
+  {
+    "scenario": "provider",
+    "tests": 81,
+    "scope": {
+      "risk": "R2",
+      "behavioral_scope": "focused",
+      "coverage_scope": "impact",
+      "package_smoke": true,
+      "repository_smoke": true
+    },
+    "basis": "exact synthetic Git plan/collection, not hosted elapsed time"
+  }
+]

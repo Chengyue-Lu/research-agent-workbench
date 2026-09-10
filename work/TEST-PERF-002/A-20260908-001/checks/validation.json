@@ -1,0 +1,15 @@
+{
+  "documentation_tests": {
+    "python": "3.11.16",
+    "passed": 9,
+    "seconds": 0.147
+  },
+  "scoped_internal_links": {
+    "missing": []
+  },
+  "git_diff_check": "pass",
+  "production_changes": false,
+  "tests_executed_in_intake": "documentation only; no product suites",
+  "baseline_policy_matches_hosted_merge_target": true,
+  "baseline_analyzer_matches_hosted_merge_target": true
+}

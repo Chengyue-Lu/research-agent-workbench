@@ -26,6 +26,8 @@
 - [Artifact promotion contract (M4-002)](ARTIFACT_PROMOTION_CONTRACT.md)
 - [Run reconstruction contract and synthetic case (M4-004)](../workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md)
 - [Claim evidence localization (M4-003)](CLAIM_TRACE_CONTRACT.md)
+- [Deterministic release surface (M14-002)](RELEASE_SURFACE.md)
+- [Portable Runtime resources (M14-003)](RUNTIME_RESOURCES.md)
 - [Evaluation manifest contract (M5-003)](EVALUATION_MANIFEST_CONTRACT.md)
 - [File-authoritative Trace Core](TRACE_CORE.md)
 - [Execution Trace Adapter](EXECUTION_TRACE_ADAPTER.md)

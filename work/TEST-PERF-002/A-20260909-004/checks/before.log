@@ -1,0 +1,42 @@
+Previous committed planner reproduces Claim, Projection and two indirect deterministic-proof failures.
+FFFF
+======================================================================
+FAIL: test_claim_contract_rejects_actual_promotion_fixture_drift (tests.test_ci_plan.PlannerTests.test_claim_contract_rejects_actual_promotion_fixture_drift)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-precision\tests\test_ci_plan.py", line 775, in test_claim_contract_rejects_actual_promotion_fixture_drift
+    self._real_contract_helper_drift('src/research_workbench/artifacts/claim_trace.py', 'test_claim_trace',
+  File "D:\lcy\develop\research-agent-workbench-ci-precision\tests\test_ci_plan.py", line 766, in _real_contract_helper_drift
+    self.assertNotIn(leaf, plan['selection']['reviewed_opaque_boundary'])
+AssertionError: 'src/research_workbench/artifacts/claim_trace.py' unexpectedly found in ['src/research_workbench/artifacts/claim_trace.py']
+
+======================================================================
+FAIL: test_projection_contract_rejects_actual_live_evaluation_helper_drift (tests.test_ci_plan.PlannerTests.test_projection_contract_rejects_actual_live_evaluation_helper_drift)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-precision\tests\test_ci_plan.py", line 781, in test_projection_contract_rejects_actual_live_evaluation_helper_drift
+    self._real_contract_helper_drift('src/research_workbench/capability/release_projection.py', 'test_skill_release_projection',
+  File "D:\lcy\develop\research-agent-workbench-ci-precision\tests\test_ci_plan.py", line 766, in _real_contract_helper_drift
+    self.assertNotIn(leaf, plan['selection']['reviewed_opaque_boundary'])
+AssertionError: 'src/research_workbench/capability/release_projection.py' unexpectedly found in ['src/research_workbench/capability/release_projection.py']
+
+======================================================================
+FAIL: test_deterministic_ids_reject_indirect_helper_and_fixture_drift (tests.test_ci_plan.PlannerTests.test_deterministic_ids_reject_indirect_helper_and_fixture_drift) (path='tests/support/values.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-precision\tests\test_ci_plan.py", line 848, in test_deterministic_ids_reject_indirect_helper_and_fixture_drift
+    self.assertIn('test_proof', plan['coverage_tests'])
+AssertionError: 'test_proof' not found in ['test_dynamic', 'test_proof.Proof.test_negative', 'test_proof.Proof.test_positive']
+
+======================================================================
+FAIL: test_deterministic_ids_reject_indirect_helper_and_fixture_drift (tests.test_ci_plan.PlannerTests.test_deterministic_ids_reject_indirect_helper_and_fixture_drift) (path='tests/fixtures/expected.txt')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-precision\tests\test_ci_plan.py", line 848, in test_deterministic_ids_reject_indirect_helper_and_fixture_drift
+    self.assertIn('test_proof', plan['coverage_tests'])
+AssertionError: 'test_proof' not found in ['test_dynamic', 'test_proof.Proof.test_negative', 'test_proof.Proof.test_positive']
+
+----------------------------------------------------------------------
+Ran 3 tests in 13.263s
+
+FAILED (failures=4)

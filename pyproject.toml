@@ -1,6 +1,7 @@
 [build-system]
 requires = ["setuptools>=69"]
-build-backend = "setuptools.build_meta"
+build-backend = "build_backend"
+backend-path = ["."]
 
 [project]
 name = "research-agent-workbench"
@@ -17,6 +18,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
+  "setuptools>=69", # Runtime resource tests import the build backend directly.
   "build>=1.2,<2",
   "coverage>=7.6,<8",
   "hypothesis>=6.112,<7",
@@ -28,8 +30,11 @@ rwb = "research_workbench.cli:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
-[tool.setuptools.data-files]
-"share/research-agent-workbench/schemas/v0.1.0" = ["schemas/v0.1.0/*.schema.json"]
+[tool.setuptools.cmdclass]
+sdist = "build_backend.RuntimeSdist"
+
+[tool.setuptools.package-data]
+research_workbench = ["_runtime_data/**/*", "_runtime_data/manifest.json"]
 
 [tool.coverage.run]
 source = ["research_workbench", ".github/scripts"]

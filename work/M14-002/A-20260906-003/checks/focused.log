@@ -1,0 +1,7 @@
+.....................................
+----------------------------------------------------------------------
+Ran 37 tests in 127.270s
+
+OK
+<python-library>:558: CoverageWarning: Module research_workbench was never imported. (module-not-imported); see https://coverage.readthedocs.io/en/7.16.0/messages.html#warning-module-not-imported
+  self.warn(f"Module {pkg} was never imported.", slug="module-not-imported")

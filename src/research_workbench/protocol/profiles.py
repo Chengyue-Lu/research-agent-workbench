@@ -236,10 +236,18 @@ class ProtocolProfileSet:
     @classmethod
     def load(
         cls,
-        path: str | Path = DEFAULT_PROTOCOL_PROFILES,
+        path: str | Path | None = None,
         *,
-        project_root: str | Path = ".",
+        project_root: str | Path | None = None,
     ) -> "ProtocolProfileSet":
+        if project_root is None:
+            if path is not None:
+                raise ValueError("custom Profile index requires an explicit project root")
+            from research_workbench.resources import RuntimeResources
+            resources = RuntimeResources()
+            resources.validate_catalog()
+            project_root = resources.catalog_root
+        path = DEFAULT_PROTOCOL_PROFILES if path is None else path
         root = Path(project_root).resolve()
         index_path = Path(path)
         if not index_path.is_absolute():

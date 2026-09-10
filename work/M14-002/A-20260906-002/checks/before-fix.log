@@ -1,0 +1,45 @@
+FFFF
+======================================================================
+FAIL: test_policy_version_cannot_be_inserted_before_history (tests.test_release_surface.ReleaseSurfaceTests.test_policy_version_cannot_be_inserted_before_history)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>\tests\test_release_surface.py", line 260, in test_policy_version_cannot_be_inserted_before_history
+    with self.assertRaisesRegex(release.ReleaseError, "retroactive"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ReleaseError not raised
+
+======================================================================
+FAIL: test_policy_version_cannot_be_inserted_between_historical_versions (tests.test_release_surface.ReleaseSurfaceTests.test_policy_version_cannot_be_inserted_between_historical_versions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>\tests\test_release_surface.py", line 274, in test_policy_version_cannot_be_inserted_between_historical_versions
+    with self.assertRaisesRegex(release.ReleaseError, "retroactive"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ReleaseError not raised
+
+======================================================================
+FAIL: test_required_check_permutations_have_only_one_legal_tree (tests.test_release_surface.ReleaseSurfaceTests.test_required_check_permutations_have_only_one_legal_tree) (ordering=('governance', 'test (3.13)', 'test (3.11)'))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>\tests\test_release_surface.py", line 318, in test_required_check_permutations_have_only_one_legal_tree
+    with self.subTest(ordering=ordering), self.assertRaisesRegex(release.ReleaseError, "canonical order"):
+                                          ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ReleaseError not raised
+
+======================================================================
+FAIL: test_required_check_permutations_have_only_one_legal_tree (tests.test_release_surface.ReleaseSurfaceTests.test_required_check_permutations_have_only_one_legal_tree)
+----------------------------------------------------------------------
+release_surface.ReleaseError: Git mode/blob drift: RELEASE_MANIFEST.json
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<repo>\tests\test_release_surface.py", line 320, in test_required_check_permutations_have_only_one_legal_tree
+    with self.assertRaisesRegex(release.ReleaseError, "canonical order"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "canonical order" does not match "Git mode/blob drift: RELEASE_MANIFEST.json"
+
+----------------------------------------------------------------------
+Ran 3 tests in 10.494s
+
+FAILED (failures=4)

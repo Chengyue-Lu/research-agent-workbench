@@ -1,0 +1,15 @@
+schema_version: 0.1.0
+task_id: M14-002
+task_revision: 2
+attempt_id: A-20260906-002
+actors:
+- actor_id: main-agent
+  actor_type: agent
+  role: bounded review remediation and verification
+  runtime_identity: Codex review remediation
+  accountable_owner: Chengyue-Lu
+- actor_id: provider-openai
+  actor_type: model-provider
+  role: bound model provider
+  runtime_identity: openai
+  accountable_owner: Chengyue-Lu

@@ -1,0 +1,31 @@
+task_id: TEST-PERF-002
+revision: 13
+owner: Chengyue-Lu
+risk: R2
+delegation: false
+required_skills: []
+goal: Prepare the next impact precision repair with immutable baseline reproduction,
+  hosted cost attribution and a reviewable acceptance sequence.
+authorization: 'User requested preparing further repairs from the latest Issue #48
+  comment; previous authorization covers updating the issue with the work direction.'
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- .github/**
+- tests/**
+- src/research_workbench/observability/trace.py
+- src/research_workbench/cli.py
+- work/TEST-PERF-002/**
+- .rwb/precision-intake/**
+write_scope:
+- docs/workstreams/chengyue-lu/TEST-PERF-002/README.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/IMPACT_PRECISION.md
+- work/TEST-PERF-002/A-20260908-001/**
+- .rwb/precision-intake/**
+stop_conditions:
+- Implementation and hosted performance acceptance remain a subsequent repair phase.
+- Keep formal M4 and M14 heads unchanged during intake.
+- No release, main, tag, protection or new M14 milestone activation.
+- Preserve full selection-authority checks, quality floors and cross-owner review.

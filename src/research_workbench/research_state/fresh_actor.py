@@ -266,7 +266,9 @@ def run_actor(manifest_path: Path, output_path: Path) -> dict[str, Any]:
         documents.add(path, document, sha256=hash_bytes(content))
         documents_by_alias[alias] = document
 
-    issues = validate_documents(documents)
+    # Reuse the pinned schemas loaded before the data-read boundary. Nested
+    # closure validation must not reopen the Runtime manifest or other catalogs.
+    issues = validate_documents(documents, schema_catalog=catalog)
     if issues:
         rendered = "; ".join(f"{issue.code}: {issue.message}" for issue in issues[:12])
         raise ValueError(f"staged closure validation failed: {rendered}")
@@ -333,21 +335,12 @@ def run_actor(manifest_path: Path, output_path: Path) -> dict[str, Any]:
     identity_kinds: dict[str, str] = {}
     for document in documents_by_alias.values():
         kind = infer_document_kind(document)
-        if kind in {
-            "research_state",
-            "research_object",
-            "research_attempt_lineage",
-            "attempt",
-            "research_failure",
-            "task_packet",
-            "method_resolution",
-            "method_trace",
-        }:
-            identifier, revision = _identity(kind, document)
-            semantic_kind = (
-                str(document.get("object_type")) if kind == "research_object" else kind
-            )
-            identity_kinds[f"{identifier}@{revision}"] = semantic_kind
+        # Every staged document already passed the same identity check above.
+        identifier, revision = _identity(kind, document)
+        semantic_kind = (
+            str(document.get("object_type")) if kind == "research_object" else kind
+        )
+        identity_kinds[f"{identifier}@{revision}"] = semantic_kind
 
     choices, recommended = _classify_paths(
         list(manifest.get("candidate_paths", [])), failures, identity_kinds

@@ -1,0 +1,16 @@
+test_build_regeneration_is_identical_and_removes_stale_output (tests.test_runtime_resources.RuntimeResourceTests.test_build_regeneration_is_identical_and_removes_stale_output) ... ERROR
+
+======================================================================
+ERROR: test_build_regeneration_is_identical_and_removes_stale_output (tests.test_runtime_resources.RuntimeResourceTests.test_build_regeneration_is_identical_and_removes_stale_output)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<repo>\tests\test_runtime_resources.py", line 281, in test_build_regeneration_is_identical_and_removes_stale_output
+    import build_backend
+  File "<repo>\build_backend.py", line 12, in <module>
+    from setuptools import build_meta as backend
+ModuleNotFoundError: No module named 'setuptools'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.101s
+
+FAILED (errors=1)

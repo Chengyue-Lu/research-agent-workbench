@@ -1,0 +1,34 @@
+======================================================================
+FAIL: test_contract_rejects_weakened_proof_implementation_with_unchanged_ids (tests.test_ci_plan.PlannerTests.test_contract_rejects_weakened_proof_implementation_with_unchanged_ids)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-precision\tests\test_ci_plan.py", line 652, in test_contract_rejects_weakened_proof_implementation_with_unchanged_ids
+    self.assertEqual([], plan['selection']['reviewed_opaque_boundary'])
+AssertionError: Lists differ: [] != ['src/research_workbench/proof_leaf.py']
+
+Second list contains 1 additional elements.
+First extra element 0:
+'src/research_workbench/proof_leaf.py'
+
+- []
++ ['src/research_workbench/proof_leaf.py']
+
+======================================================================
+FAIL: test_deterministic_proof_substitution_requires_unchanged_base_implementation (tests.test_ci_plan.PlannerTests.test_deterministic_proof_substitution_requires_unchanged_base_implementation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-precision\tests\test_ci_plan.py", line 740, in test_deterministic_proof_substitution_requires_unchanged_base_implementation
+    self.assertEqual(['test_mixed'], plan['coverage_tests'])
+AssertionError: Lists differ: ['test_mixed'] != ['test_mixed.Mixed.test_deterministic']
+
+First differing element 0:
+'test_mixed'
+'test_mixed.Mixed.test_deterministic'
+
+- ['test_mixed']
++ ['test_mixed.Mixed.test_deterministic']
+
+----------------------------------------------------------------------
+Ran 2 tests in 7.152s
+
+FAILED (failures=2)

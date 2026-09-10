@@ -1,5 +1,7 @@
 import copy
 import json
+import hashlib
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -16,6 +18,39 @@ ACTION_REGISTRY = ROOT / "registry/modes/actions.json"
 
 
 class ProtocolProfileTests(unittest.TestCase):
+    def test_explicit_index_rejects_shape_duplicates_and_untrusted_documents(self):
+        canonical = copy.deepcopy(self.index)
+        canonical["entries"] = canonical["entries"][:1]
+        entry = canonical["entries"][0]
+        cases = [([], "integrity index"), ({"registry_kind": "other"}, "integrity index"),
+                 ({"registry_kind": "protocol_profile_index", "entries": None}, "entries list")]
+        for change, error in ((lambda e: e.__setitem__(0, False), "not an object"),
+                              (lambda e: e.append(copy.deepcopy(e[0])), "duplicate Protocol Profile reference"),
+                              (lambda e: e.append({**e[0], "profile_ref": "other@1.0.0"}), "duplicate Protocol Profile identity"),
+                              (lambda e: e.append({**e[0], "profile_ref": "other@1.0.0", "profile_id": "other"}), "duplicate Protocol Profile path"),
+                              (lambda e: e[0].update(document_path="missing.yaml"), "missing or escapes"),
+                              (lambda e: e[0].update(document_path="../outside.yaml"), "missing or escapes"),
+                              (lambda e: e[0].update(content_hash="0" * 64), "content drift"),
+                              (lambda e: e[0].update(profile_id="other"), "identity mismatch")):
+            value = copy.deepcopy(canonical)
+            change(value["entries"])
+            cases.append((value, error))
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            document = root / entry["document_path"]
+            document.parent.mkdir(parents=True)
+            document.write_bytes((ROOT / entry["document_path"]).read_bytes())
+            index = root / "profiles.json"
+            for value, error in cases:
+                index.write_text(json.dumps(value), encoding="utf-8")
+                with self.subTest(error=error), self.assertRaisesRegex(ValueError, error):
+                    ProtocolProfileSet.load(index, project_root=root)
+            document.write_bytes(b"[]")
+            canonical["entries"][0]["content_hash"] = hashlib.sha256(b"[]").hexdigest()
+            index.write_text(json.dumps(canonical), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "Profile is not an object"):
+                ProtocolProfileSet.load(index, project_root=root)
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.catalog = SchemaCatalog(ROOT / "schemas")

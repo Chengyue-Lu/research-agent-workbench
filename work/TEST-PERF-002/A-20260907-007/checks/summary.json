@@ -1,0 +1,88 @@
+{
+  "focused": {
+    "successful": true,
+    "test_count": 98,
+    "outcomes": {
+      "errors": 0,
+      "failed": 0,
+      "passed": 98,
+      "skipped": 0
+    },
+    "wall_seconds": 310.64
+  },
+  "critical_coverage": {
+    ".github/scripts/ci_checks.py": {
+      "line_percent": 99.2308,
+      "branch_percent": 97.5
+    },
+    ".github/scripts/ci_dependencies.py": {
+      "line_percent": 100.0,
+      "branch_percent": 100.0
+    },
+    ".github/scripts/plan_ci.py": {
+      "line_percent": 99.7753,
+      "branch_percent": 98.6842
+    },
+    ".github/scripts/selection_witness.py": {
+      "line_percent": 100.0,
+      "branch_percent": 100.0
+    }
+  },
+  "changed_code_preflight": {
+    ".github/scripts/ci_checks.py": {
+      "missing_statements": [],
+      "missing_outgoing_branches": []
+    },
+    ".github/scripts/ci_dependencies.py": {
+      "missing_statements": [],
+      "missing_outgoing_branches": []
+    },
+    ".github/scripts/plan_ci.py": {
+      "missing_statements": [],
+      "missing_outgoing_branches": []
+    },
+    ".github/scripts/selection_witness.py": {
+      "missing_statements": [],
+      "missing_outgoing_branches": []
+    },
+    "tests/run_unittest_suite.py": {
+      "missing_statements": [],
+      "missing_outgoing_branches": []
+    }
+  },
+  "retained_oracle_inventory": 938,
+  "current_inventory": 953,
+  "probes": [
+    {
+      "scenario": "test-only",
+      "tests": 119,
+      "scope": {
+        "risk": "R2",
+        "behavioral_scope": "focused",
+        "coverage_scope": "none",
+        "package_smoke": false,
+        "repository_smoke": false
+      },
+      "basis": "exact synthetic Git plan/collection, not hosted elapsed time"
+    },
+    {
+      "scenario": "provider",
+      "tests": 81,
+      "scope": {
+        "risk": "R2",
+        "behavioral_scope": "focused",
+        "coverage_scope": "impact",
+        "package_smoke": true,
+        "repository_smoke": true
+      },
+      "basis": "exact synthetic Git plan/collection, not hosted elapsed time"
+    }
+  ],
+  "repository_coverage_proved": false,
+  "witness_commit": "1b543393ae71b9032359b739170d66ec0be08772",
+  "independent_initial_run": 34079220171,
+  "initial_candidate_head": "69b22e852fff61f2bc5ff87e1d023a27856f75df",
+  "automatic_required_check_enforcement": false,
+  "docs_and_policy_tests": 30,
+  "raw_coverage_sha256": "dbf3cb8c203ab2b5238d3a0c2f0f138e665ae033ffa590408d60778d15eb8587"
+}

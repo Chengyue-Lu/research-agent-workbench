@@ -1,0 +1,75 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260907-010
+task_id: TEST-PERF-002
+task_revision: 12
+attempt_id: A-20260907-010
+archive_root: A-20260907-010
+baseline: 1683a508b90a725ba8716b240880937472f548b2
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 6706b4c0dfdece8a147ae6362d89338b277e6126e6e57c7a7901648332cf7d1e
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 9c6e5fab95b8b4816bb64ff5aa8b89263450807e50829e032e3b7b9c5c488c24
+read_allowlist:
+- .github/**
+- AGENTS.md
+- build_backend.py
+- docs/DEVELOPMENT.md
+- docs/README.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/**
+- pyproject.toml
+- runtime-resources.json
+- src/**
+- tests/**
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/ci_dependencies.py
+- .github/scripts/plan_ci.py
+- .rwb/m14-contract/**
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/CI_IMPACT_CONTRACT.md
+- tests/ci_impact_policy.yaml
+- tests/test_ci_dependencies.py
+- tests/test_ci_plan.py
+- tests/test_release_surface.py
+- work/TEST-PERF-002/A-20260907-010/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: c0a0d637f7d1e42c37166f0e587e7fab56c97b4aa8eea5eab853a32bcbc35e9f
+  event_count: 5
+tool_event_refs:
+- path: tool-events/review-repair-validation-succeeded.json
+  sha256: ba2aef7c1653e11e0dc29c6ae77c93ff612fe2be9d5c3057f294bf5392df0486
+handoff_refs:
+- path: handoff/H0.md
+  sha256: 12fcdf1b9650ec28ceee4466ecbbce9ccaa77e74c14a776cd06ff54f9e7ca3d8
+decision_refs: []
+output_refs:
+- path: RESULTS.md
+  sha256: 4692f8cf5130dbf23f2d619bad1744b477af992fa485f22735d5c6d3b7045499
+check_refs:
+- path: checks/summary.json
+  sha256: 9dc718ee03c92a44d664ecfc04fc1c5e77d0a93f3c234eea263f2d3a63ba2722
+- path: checks/focused-results.json
+  sha256: 5741d55bdebd723df73c8e57e85a62da5be4b61b1b44c449c69834d65bc770e6
+- path: checks/probe-results.json
+  sha256: 80f6da23b3adad46afbaa5f9ba21781d7a6163e0a385731ded4d2ae280f44855
+- path: checks/cross-owner-review.json
+  sha256: 11499cd3fc71d468b3f4e887b73c6eef39684c65e4c814f6abd682587d06a0b3
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0004
+  affected_stream: events

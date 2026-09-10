@@ -1,0 +1,16 @@
+{
+  "baseline": "97f760c43e95b398c396987f349e2199c567cbc7",
+  "staged_sha256": {
+    ".github/scripts/ci_checks.py": "e520553620a109d5caefa8af2b877ed192567c5832c3283615a15816b859daf8",
+    ".github/scripts/plan_ci.py": "dc809ba01409a97ef233f435488ab7d03a0e1ce38c951cf68e4e19bc119b3eaf",
+    ".github/workflows/ci.yml": "fabe669bc71266a5304aa6bdacc20329db73b191df560be7ed2051a2172fbaeb",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/OBLIGATIONS.md": "c774cbfb9aaad72ad2f52e0b80e32f96cd72d907cda5885bb1fa40117d3331ee",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/README.md": "eda5a97341860a9560d1ddd884635e782f59d907cda001b5bb2672cec9505e55",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/RISK_LEDGER.md": "f0e9da8e9cc249fad22eb797db9bd8242179cce3f5d4972dd795ca9c95562d5a",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/VALIDATION.md": "e17e44d70bbf88688d2327fb8f6893fe7c4e16b1b92e16344107888e8357e207",
+    "tests/ci_impact_policy.yaml": "6e56a727ae0c35421be73261fee78fc45f1b6bc8ffea68178c55f5a6f17b4e99",
+    "tests/run_unittest_suite.py": "1616567116e2c289471b00ff14a4c8671670e36f3d6666d091c5b74304057d54",
+    "tests/test_ci_checks.py": "f670f30f627a6f1d933ea000d2af39456644fe38544f0b2b5430edd4fa9f3fc6",
+    "tests/test_ci_plan.py": "e92099fce599b68967290d17a97fb534f6d76c7230599a58f3f6eededa8f1e12"
+  }
+}

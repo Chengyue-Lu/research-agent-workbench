@@ -1,0 +1,30 @@
+{
+  "implementation": "f78e4800b5510ff747d0ed3906d1ad8209468f68",
+  "full": {
+    "suite": "full",
+    "test_count": 922,
+    "successful": false,
+    "outcomes": {
+      "errors": 0,
+      "failed": 12,
+      "passed": 908,
+      "skipped": 3
+    },
+    "wall_seconds": 1292.198048
+  },
+  "coverage_quality": {
+    "suite": "coverage-quality",
+    "test_count": 861,
+    "successful": false,
+    "outcomes": {
+      "errors": 0,
+      "failed": 12,
+      "passed": 847,
+      "skipped": 3
+    },
+    "wall_seconds": 936.532245
+  },
+  "cause": "Nested validation reopened the Runtime manifest after the fresh actor read policy was installed.",
+  "resolution": "Pass the preloaded pinned SchemaCatalog through document and Method Trace validation; preserve the guarded read surface.",
+  "fix_commit": "bd76a4ca17eb6bc1b9cfb25c756067b535357674"
+}

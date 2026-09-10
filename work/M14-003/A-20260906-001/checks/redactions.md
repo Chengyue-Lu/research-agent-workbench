@@ -1,0 +1,3 @@
+# Evidence redaction
+
+Local repository/runtime/temp paths in diagnostics are replaced with portable markers. Test names and failure/pass outcomes are retained. The early full run was interrupted for source hardening and is not counted as completed evidence. An observed parallel build/editable-resource race is retained; the package smoke now builds from an isolated source copy, and subsequent resource/package checks passed. The complete pre-fix full/coverage runs exposed a Phase C manifest-read denial; their failed outcomes are retained in phase-c-before-fix.json. Corrected Phase C regression results are retained in phase-c-fix.log.

@@ -1,0 +1,62 @@
+{
+  "code_head": "aa7f0da293baaedada9c3df49e75431f82d556b9",
+  "base": "b8a38a1d0cea4e8422ade8481aec4c277250d6cb",
+  "focused": {
+    "successful": true,
+    "test_count": 102,
+    "outcomes": {
+      "errors": 0,
+      "failed": 0,
+      "passed": 102,
+      "skipped": 0
+    },
+    "wall_seconds": 285.719
+  },
+  "critical_coverage": {
+    ".github/scripts/ci_checks.py": {
+      "line_percent": 99.2308,
+      "branch_percent": 97.5
+    },
+    ".github/scripts/ci_dependencies.py": {
+      "line_percent": 100.0,
+      "branch_percent": 100.0
+    },
+    ".github/scripts/plan_ci.py": {
+      "line_percent": 99.7758,
+      "branch_percent": 98.6842
+    },
+    ".github/scripts/selection_witness.py": {
+      "line_percent": 100.0,
+      "branch_percent": 100.0
+    }
+  },
+  "changed_code_preflight": {
+    ".github/scripts/ci_checks.py": {
+      "missing_statements": [],
+      "missing_outgoing_branches": []
+    },
+    ".github/scripts/ci_dependencies.py": {
+      "missing_statements": [],
+      "missing_outgoing_branches": []
+    },
+    ".github/scripts/plan_ci.py": {
+      "missing_statements": [],
+      "missing_outgoing_branches": []
+    },
+    ".github/scripts/selection_witness.py": {
+      "missing_statements": [],
+      "missing_outgoing_branches": []
+    },
+    "tests/run_unittest_suite.py": {
+      "missing_statements": [],
+      "missing_outgoing_branches": []
+    }
+  },
+  "docs_and_policy_tests": 30,
+  "proposed_m14_contract_base": "8f8b56f64633185c4bfbe30ad7928a935272d702",
+  "repository_coverage_proved_locally": false,
+  "witness_root": "1b543393ae71b9032359b739170d66ec0be08772",
+  "automatic_witness_required_check": false,
+  "hosted_current_head_evidence": "pending final archive commit and push",
+  "raw_coverage_sha256": "62899f8fc18998a5501a091e8389dbc2ad49d0d55d2e24e8a98720da516b6915"
+}
