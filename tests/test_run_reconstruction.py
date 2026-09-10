@@ -282,9 +282,25 @@ class RunReconstructionTest(unittest.TestCase):
         candidate = copy.deepcopy(original)
         candidate["input_bindings"][0]["file_ref"]["revision"] = 99
         variants.append(candidate)
+        candidate = copy.deepcopy(original)
+        candidate["input_bindings"][0]["role"] = "parameters"
+        variants.append(candidate)
+        candidate = copy.deepcopy(original)
+        candidate["input_bindings"][0].pop("role")
+        variants.append(candidate)
         for candidate in variants:
             with self.subTest(candidate=candidate):
                 self.assertEqual(reconstruction.check_run_manifest(self.root, candidate)[0]["status"], "manifest-invalid")
+
+    def test_swapped_input_files_block_execution_but_binding_order_does_not_matter(self) -> None:
+        self.manifest["input_bindings"].reverse()
+        with mock.patch.object(reconstruction.subprocess, "Popen", side_effect=AssertionError("read only")):
+            self.assertEqual(reconstruction.check_run_manifest(self.root, self.manifest), [])
+            first, second = self.manifest["input_bindings"]
+            first["file_ref"], second["file_ref"] = second["file_ref"], first["file_ref"]
+            report = self.run_case("swapped-input-files")
+        self.assertEqual(report["status"], "manifest-invalid")
+        self.assertFalse(report["executed"])
 
     def test_cli_runs_from_unrelated_cwd_without_existing_agent_process(self) -> None:
         environment = dict(os.environ, PYTHONPATH=str(REPO_ROOT / "src"))
@@ -311,6 +327,16 @@ class RunReconstructionTest(unittest.TestCase):
             wrong_path_manifest = copy.deepcopy(manifest)
             wrong_path_manifest["expected_outputs"][0]["artifact_ref"] = fixture.ref(fixture.root / CASE_PATH / "trajectory.csv")
             self.assertEqual(reconstruction.check_run_manifest(fixture.root, wrong_path_manifest)[0]["status"], "manifest-invalid")
+            copied_receipt = fixture.root / "objects/copied-receipt.json"
+            copied_receipt.write_bytes((fixture.root / result.receipt).read_bytes())
+            copied_manifest = copy.deepcopy(manifest)
+            copied_manifest["promotion_receipt_ref"] = fixture.ref(copied_receipt)
+            copied_manifest_path = fixture.root / CASE_PATH / "copied-receipt-manifest.yaml"
+            copied_manifest_path.write_text(yaml.safe_dump(copied_manifest), encoding="utf-8")
+            rejected = reconstruction.reproduce_run(fixture.root, copied_manifest_path,
+                                                     attempt_dir="work/M4-004/copied-receipt")
+            self.assertEqual(rejected["status"], "manifest-invalid")
+            self.assertFalse(rejected["executed"])
 
         manifest_path = fixture.root / CASE_PATH / "promoted-manifest.yaml"
         manifest_path.write_text(yaml.safe_dump(manifest), encoding="utf-8")

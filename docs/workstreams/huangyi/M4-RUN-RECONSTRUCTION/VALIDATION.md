@@ -1,5 +1,30 @@
 # M4-004 Candidate Validation
 
+## Owner-review corrections (2026-09-10)
+
+Chengyue Lu's review of `5141e6d` identified two remaining P1 closure defects.
+Input bindings now require exactly one `input` and one `parameters` role and each
+role's FileRef must equal the corresponding executed reference. Promotion receipts
+must retain their canonical, unaliased `runs/promotions/<promotion_id>/receipt.json`
+location. Report and contract text also explicitly retain the nonblocking limit:
+the pinned program is not bound to the Run's declared Method implementation.
+
+Four focused methods passed on Windows CPython 3.11.9 in **15.993 seconds**:
+swapped input files reject before execution while binding order remains valid;
+duplicate/missing roles and existing invalid bindings reject; the existing real
+promotion fixture rejects a re-pinned receipt copy and the original wrong-target
+path, then successfully reconstructs the published bytes and validates its report;
+the shipped manifest remains generically valid without execution. The receipt test
+reuses one producer fixture and only its existing successful reconstruction.
+Read-only and rejected cases forbid `Popen`. This is not a new global coverage or
+performance measurement. Local evidence: `work/M4-004/A-20260910-001/focused-tests.txt`
+and `delta-review.md`. No local full, coverage, package or model test was repeated.
+
+The schema and example changes tighten the still-unaccepted manifest candidate;
+old local manifests without roles remain historical and are not current acceptance
+evidence. Final integrated hosted CI and Chengyue Lu's semantic acceptance are
+still required. Earlier measurements below retain their original scope and dates.
+
 ## Accepted M4-003 integration (2026-09-07)
 
 PR61 was accepted by Chengyue Lu at `72ba684` and merged into develop as

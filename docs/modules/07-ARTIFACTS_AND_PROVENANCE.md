@@ -156,6 +156,8 @@ JSON pointer。读取复用同次调用捕获的字节，不启动 checker、pro
 各输出的 `object_ref` 将 Run 的输入、环境、输出 ObjectRef 与对应 FileRef 精确映射，检查完整集合、
 revision 和已声明的对象哈希。对象哈希仍表达原有 `content_hash` 语义，实际文件字节独立由 FileRef
 校验，不改变 Run/Claim 核心权限。
+输入绑定必须各声明一次 `role: input` 和 `role: parameters`，其 FileRef 分别匹配实际执行的
+`input_ref` 和 `parameters_ref`；仅交换绑定顺序不影响配对，交换文件则拒绝。
 
 `rwb run check MANIFEST --root ROOT` 只验证 Schema、文件哈希和来源边界，不执行代码。
 `rwb run reproduce MANIFEST --root ROOT --attempt-dir work/M4-004/A-NEW` 将锁定字节复制到新目录，
@@ -169,8 +171,10 @@ python -I -S program.py inputs.json parameters.json outputs
 实际输出和负结果标记。通用 `rwb validate` 能只读校验 manifest/environment/report 及报告直接引用的
 字节，不会重跑科研程序或 M4-002 checker。`matched` 只表达这次重建的完整输出集合及字节一致，
 不证明过去发生过某次运行，不授予科学正确性、Claim、Human Decision 或 promotion 权限。
+`code_ref` 只锁定程序字节，未绑定 `Run.method_ref`，因此不证明程序实现了该 Run 声明的方法。
 
-可选 `promotion_receipt_ref` 仅验证 pinned receipt 结构及预期输出是其 exact target FileRef；历史
+可选 `promotion_receipt_ref` 验证 receipt 位于其无别名的原始
+`runs/promotions/<promotion_id>/receipt.json`，并检查结构及预期输出是其 exact target FileRef；历史
 promotion eligibility 仍属于 M4-002，读操作不重执行。最小合成案例、环境锁定的具体边界和验收矩阵见
 [M4 Run reconstruction](../workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md)。本候选不是 M5
 正式研究案例，也不增加先行病例冻结或盲测审批门槛。

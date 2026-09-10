@@ -19,11 +19,13 @@ environment_ref:
   path: examples/run-reconstruction/linear-recurrence/environment.json
   sha256: 3555260a8a513bf2ae6113f0e2fb722f5b66e285fdfe3758fce2989d68e8e8ec
 input_bindings:
-  - object_ref: INPUT-M4-LINEAR-001@1
+  - role: input
+    object_ref: INPUT-M4-LINEAR-001@1
     file_ref:
       path: examples/run-reconstruction/linear-recurrence/inputs.json.txt
       sha256: 34daf86ea235053be067394df1f8d4fe3fa964328c280fb8de75bf38622afbe2
-  - object_ref: PARAMS-M4-LINEAR-001@1
+  - role: parameters
+    object_ref: PARAMS-M4-LINEAR-001@1
     file_ref:
       path: examples/run-reconstruction/linear-recurrence/parameters.json.txt
       sha256: 2ed7e189cbf7b578cf3477c192b68b99aeed586b606752b202cb1988708f283b

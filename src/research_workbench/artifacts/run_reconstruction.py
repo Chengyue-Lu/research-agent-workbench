@@ -101,10 +101,11 @@ def _check_run_bindings(run: Mapping[str, Any], manifest: Mapping[str, Any]) -> 
     def file_key(reference: Mapping[str, Any]) -> tuple[str, str, int | None]:
         return (*_key(reference), reference.get("revision"))
 
-    if {file_key(item["file_ref"]) for item in inputs} != {
-        file_key(manifest["input_ref"]), file_key(manifest["parameters_ref"])
-    }:
-        raise ReconstructionError("manifest-invalid", "input bindings must map exactly to executed input and parameter files")
+    if {item["role"] for item in inputs} != {"input", "parameters"}:
+        raise ReconstructionError("manifest-invalid", "input bindings need exactly one input and one parameters role")
+    for item in inputs:
+        if file_key(item["file_ref"]) != file_key(manifest[f"{item['role']}_ref"]):
+            raise ReconstructionError("manifest-invalid", "input binding file differs from its executed role")
     environment = manifest["environment_binding"]
     if (_object_key(run["environment_ref"]) != _object_key(environment["object_ref"])
             or file_key(environment["file_ref"]) != file_key(manifest["environment_ref"])):
@@ -147,6 +148,10 @@ def _capture(root: Path, manifest: Mapping[str, Any]) -> tuple[dict[str, bytes],
         captured["promotion_receipt_ref"] = _read_pin(root, receipt_ref)
         receipt = _document(receipt_ref, captured["promotion_receipt_ref"])
         _schema("promotion_execution_receipt", receipt, catalog)
+        canonical_path = f"runs/promotions/{receipt['promotion_id']}/receipt.json"
+        if (receipt_ref["path"] != canonical_path
+                or resolve_within_root(root, canonical_path) != root / canonical_path):
+            raise ReconstructionError("manifest-invalid", "Promotion Receipt must use its canonical, unaliased promotion path")
         published = {_key(item["target_ref"]) for item in receipt["target_artifact_refs"]}
         for output in manifest["expected_outputs"]:
             if _key(output["artifact_ref"]) not in published:
@@ -218,6 +223,7 @@ def reproduce_run(
         "staged_refs": [], "output_refs": [],
         "authority_boundaries": dict(AUTHORITY_BOUNDARIES),
         "limitations": ["Current reconstruction only; no historical or scientific authority.",
+                        "Pinned program bytes are not bound to the Run's declared Method implementation.",
                         "Trusted code; fresh cwd and isolated Python are not an OS sandbox."],
     }
     stdout = b""

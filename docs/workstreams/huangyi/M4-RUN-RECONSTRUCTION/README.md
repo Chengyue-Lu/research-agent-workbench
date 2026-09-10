@@ -12,7 +12,10 @@ conversation or cwd. This is an M4 synthetic engineering case. It does not estab
 `run_reconstruction_manifest` binds the Run identity plus exact FileRefs for a single Python program, input data,
 parameters, environment definition and expected outputs. It adds no new core ObjectRef meaning or Claim authority.
 The manifest's `run_ref.revision` must equal the Run revision. `input_bindings` explicitly maps every Run
-`input_refs` ObjectRef to exactly the executed input and parameter FileRefs; `environment_binding` maps the
+`input_refs` ObjectRef to exactly the executed input and parameter FileRefs. Each input binding declares
+`role: input` or `role: parameters`, exactly once each; its FileRef must equal the corresponding top-level
+`input_ref` or `parameters_ref`, including any FileRef revision. Reordering bindings is valid; swapping their
+files is not. `environment_binding` maps the
 Run environment ObjectRef to the executed environment FileRef. Each `expected_outputs` entry maps a Run
 output ObjectRef to its expected artifact FileRef. These object identity/revision sets must match exactly,
 without duplicate, missing or additional bindings. Unversioned string ObjectRefs are rejected for reconstruction.
@@ -89,11 +92,14 @@ streams. `rwb validate` checks report structure and these direct FileRefs withou
 not authenticate a report's claimed history or recursively replay the manifest; a retained failed report can
 therefore remain structurally valid while documenting missing or drifted original inputs. `matched` is a current
 execution result from this runner, not scientific authority or proof that earlier execution metadata is genuine.
+`code_ref` pins the executed program's bytes but does not bind that program to `Run.method_ref`; matching bytes
+therefore do not prove that the program implements the Run's declared Method.
 
 ## Promotion And Claim Boundary
 
 Optional `promotion_receipt_ref` exact-pins an existing M4-002 Promotion Execution Receipt. The manifest reader
-checks its schema and requires each expected artifact's path/hash pair to occur as a receipt target. Same bytes
+checks its schema, requires its original `runs/promotions/<promotion_id>/receipt.json` path without filesystem
+aliasing, and requires each expected artifact's path/hash pair to occur as a receipt target. Same bytes
 at a different path do not satisfy that binding. It does not re-execute promotion validation, authenticate old
 execution metadata or publish reconstructed output. Promotion acceptance remains in M4-002.
 
