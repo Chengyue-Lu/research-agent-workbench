@@ -1,0 +1,36 @@
+task_id: M14-003
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+baseline: 347f264c1624654f909b91542a96724b98c9cad4
+authorization: 'User requested rebasing PR #60 onto current develop and adapting and
+  testing the accepted Issue #48 CI obligations.'
+goal: Prove M14 integration under accepted impact and repository coverage, both Python
+  compatibility suites and package and repository smoke.
+profile: main-agent bounded CI repair
+required_skills: []
+delegation: false
+read_allowlist:
+- AGENTS.md
+- docs/**
+- pyproject.toml
+- build_backend.py
+- tests/**
+- .github/**
+- src/**
+- work/M14-002/A-20260906-001/checks/independent_projection_oracle.py
+- runtime-resources.json
+- registry/**
+- examples/phase-c/**
+- src/research_workbench/observability/trace.py
+- .rwb/m14-rebase-20260909/**
+write_scope:
+- build_backend.py
+- src/**
+- tests/**
+- .github/scripts/**
+- work/M14-003/A-20260909-001/**
+stop_conditions:
+- Preserve Runtime behavior and release gates.
+- No merge or release activation.
+- Preserve frozen earlier archives.

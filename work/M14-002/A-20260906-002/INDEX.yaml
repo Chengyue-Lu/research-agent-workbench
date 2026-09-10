@@ -1,0 +1,83 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260906-002
+task_id: M14-002
+task_revision: 2
+attempt_id: A-20260906-002
+archive_root: A-20260906-002
+baseline: 87d8dc497e6469d26f5849a3d3d2d0a7d1c377ea
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 49b81e85e84ec3056076b0ed710f7fb0a038c2d3bce356ab10d2ed983f52d572
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 8f6cd0f590cf833810ce6b390e5a1c20a7718c8f46b2ea9769015a98925eb993
+read_allowlist:
+- .github/**
+- .github/scripts/release_surface.py
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- docs/README.md
+- docs/TASKS.md
+- docs/decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md
+- docs/implementation/RELEASE_SURFACE.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md
+- schemas/v0.1.0/agent-trace-*.schema.json
+- src/research_workbench/observability/trace.py
+- tests/coverage_policy.yaml
+- tests/test_release_surface.py
+- work/M14-002/A-20260906-001/TASK.yaml
+- work/M14-002/A-20260906-002/**
+write_scope:
+- .github/scripts/release_surface.py
+- docs/implementation/RELEASE_SURFACE.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md
+- tests/coverage_policy.yaml
+- tests/test_release_surface.py
+- work/M14-002/A-20260906-002/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 4c43e173ee3b47c892833738a58a1459648a9db01a21903e170dd482097c7b76
+  event_count: 8
+tool_event_refs:
+- path: tool-events/review-fix-verification-succeeded.json
+  sha256: 2e246d58c61378735c26f49580e02f1cb7da17990d50e7341795718026000707
+handoff_refs:
+- path: handoffs/H0-REVIEW.md
+  sha256: 7af627c5b1229a60dddbcea7926e67eaf571c73a3f8a9f22f26138a85fbe2f31
+decision_refs: []
+output_refs:
+- path: outputs/REVIEW_FIXES.md
+  sha256: 7af627c5b1229a60dddbcea7926e67eaf571c73a3f8a9f22f26138a85fbe2f31
+check_refs:
+- path: review.md
+  sha256: e2c94d346fb98a10342d231fe1dfbef85b2f6c2b60301da1c1fb937a36258349
+- path: checks/verification.json
+  sha256: e135647c420b7c6d9eaafce347c26248ec71c3cf90c6bc3562ac404619b29cc6
+- path: checks/focused.log
+  sha256: f76ecd9fc07b0d02145a263bf1f6104a710fe543cf85f97a9a3fc4aa8f4f2ebc
+- path: checks/governance-docs.log
+  sha256: 66e0730ee36e1b31d294404766519b78df3c912ca0fe3b1c02a15f9d3160e269
+- path: checks/before-fix.log
+  sha256: 07965d956c1ee0ccea3bdeee71a21090a2767dcba795b374eb907f9fc9a27a67
+- path: checks/redactions.md
+  sha256: b120ebce03922ae5d6799ea464929fe10af87f1eba87180ae04029090e960555
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: tool-results
+- event_id: EVT-0004
+  affected_stream: file-revisions
+- event_id: EVT-0005
+  affected_stream: external-actions

@@ -1,0 +1,104 @@
+test_adr_numbers_are_unique (tests.test_documentation.DocumentationTests.test_adr_numbers_are_unique) ... ok
+test_document_surface_authorities_exist (tests.test_documentation.DocumentationTests.test_document_surface_authorities_exist) ... ok
+test_execution_runtime_audit_keeps_private_sources_out_of_git (tests.test_documentation.DocumentationTests.test_execution_runtime_audit_keeps_private_sources_out_of_git) ... ok
+test_first_contact_surfaces_do_not_own_internal_milestones (tests.test_documentation.DocumentationTests.test_first_contact_surfaces_do_not_own_internal_milestones) ... ok
+test_getting_started_uses_recommended_not_replay_path (tests.test_documentation.DocumentationTests.test_getting_started_uses_recommended_not_replay_path) ... ok
+test_internal_markdown_links_resolve (tests.test_documentation.DocumentationTests.test_internal_markdown_links_resolve) ... ok
+test_no_skill_path_requires_execution_view_without_assignment (tests.test_documentation.DocumentationTests.test_no_skill_path_requires_execution_view_without_assignment) ... ok
+test_recovery_gate_separates_authority_from_implementation_evidence (tests.test_documentation.DocumentationTests.test_recovery_gate_separates_authority_from_implementation_evidence) ... ok
+test_stable_examples_do_not_use_retired_skill_packages (tests.test_documentation.DocumentationTests.test_stable_examples_do_not_use_retired_skill_packages) ... ok
+test_branch_collection_is_mandatory (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_branch_collection_is_mandatory) ... ok
+test_checker_helpers_and_structural_failures_are_explicit (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_checker_helpers_and_structural_failures_are_explicit) ... ok
+test_checker_main_reports_pass_and_fail_without_traceback (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_checker_main_reports_pass_and_fail_without_traceback) ... ok
+test_coverage_suite_rejects_same_canonical_test_loaded_through_module_aliases (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_coverage_suite_rejects_same_canonical_test_loaded_through_module_aliases) ... ok
+test_coverage_suite_supports_exact_test_selectors_without_duplicates (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_coverage_suite_supports_exact_test_selectors_without_duplicates) ... ok
+test_declared_exclusions_exactly_match_coverage_json (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_declared_exclusions_exactly_match_coverage_json) ... ok
+test_each_critical_file_has_independent_line_and_branch_gates (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_each_critical_file_has_independent_line_and_branch_gates) ... ok
+test_exact_thresholds_and_positive_negative_evidence_pass (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_exact_thresholds_and_positive_negative_evidence_pass) ... ok
+test_exclusion_line_shape_and_duplicates_are_fail_closed (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_exclusion_line_shape_and_duplicates_are_fail_closed) ... ok
+test_exclusion_requires_exact_auditable_location (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_exclusion_requires_exact_auditable_location) ... ok
+test_global_line_threshold_is_fail_closed (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_global_line_threshold_is_fail_closed) ... ok
+test_malformed_coverage_exclusions_fail_closed (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_malformed_coverage_exclusions_fail_closed) ... ok
+test_missing_critical_file_is_blocking (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_missing_critical_file_is_blocking) ... ok
+test_missing_negative_acceptance_result_is_blocking (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_missing_negative_acceptance_result_is_blocking) ... ok
+test_policy_cannot_downgrade_the_quality_floor (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_policy_cannot_downgrade_the_quality_floor) ... ok
+test_positive_and_negative_evidence_must_be_disjoint (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_positive_and_negative_evidence_must_be_disjoint) ... ok
+test_positive_and_negative_evidence_must_be_nonempty_lists (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_positive_and_negative_evidence_must_be_nonempty_lists) ... ok
+test_positive_and_negative_evidence_reject_internal_duplicates (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_positive_and_negative_evidence_reject_internal_duplicates) ... ok
+test_repository_policy_covers_bounded_capability_validation_surfaces (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_repository_policy_covers_bounded_capability_validation_surfaces) ... ok
+test_source_root_is_canonical_and_cannot_be_narrowed (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_source_root_is_canonical_and_cannot_be_narrowed) ... ok
+test_undeclared_actual_and_nonexistent_declared_exclusions_fail (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_undeclared_actual_and_nonexistent_declared_exclusions_fail) ... ok
+test_all_three_levels_require_only_proven_obligations (tests.test_ci_checks.AggregateTests.test_all_three_levels_require_only_proven_obligations) ... ok
+test_independent_obligations_and_required_coverage_failure_matrix (tests.test_ci_checks.AggregateTests.test_independent_obligations_and_required_coverage_failure_matrix) ... ok
+test_optional_skips_are_allowed_but_unknown_failures_are_not (tests.test_ci_checks.AggregateTests.test_optional_skips_are_allowed_but_unknown_failures_are_not) ... ok
+test_collector_rejects_unrepresentable_filters_and_aliased_roots (tests.test_ci_checks.CollectionTests.test_collector_rejects_unrepresentable_filters_and_aliased_roots) ... ok
+test_root_backend_loaded_by_file_alias_is_actually_measured (tests.test_ci_checks.CollectionTests.test_root_backend_loaded_by_file_alias_is_actually_measured) ... ok
+test_sources_retain_canonical_roots_and_cover_external_subject_directories (tests.test_ci_checks.CollectionTests.test_sources_retain_canonical_roots_and_cover_external_subject_directories) ... ok
+test_cli_aggregate_metadata_and_impact_route_through_plan_validation (tests.test_ci_checks.EntryPointTests.test_cli_aggregate_metadata_and_impact_route_through_plan_validation) ... ok
+test_coverage_entry_enforces_each_required_checker_and_propagates_failures (tests.test_ci_checks.EntryPointTests.test_coverage_entry_enforces_each_required_checker_and_propagates_failures) ... ok
+test_impact_preserves_critical_floor_and_distinguishes_global (tests.test_ci_checks.ImpactCoverageTests.test_impact_preserves_critical_floor_and_distinguishes_global) ... ok
+test_missing_wrong_and_lower_quality_evidence_is_rejected (tests.test_ci_checks.ImpactCoverageTests.test_missing_wrong_and_lower_quality_evidence_is_rejected) ... ok
+test_multiline_condition_uses_real_coverage_branch_origins (tests.test_ci_checks.ImpactCoverageTests.test_multiline_condition_uses_real_coverage_branch_origins) ... ok
+test_ordinary_files_require_changed_lines_and_branches_not_global (tests.test_ci_checks.ImpactCoverageTests.test_ordinary_files_require_changed_lines_and_branches_not_global) ... ok
+test_ordinary_impact_does_not_invent_critical_evidence_and_critical_cannot_drop_mapping (tests.test_ci_checks.ImpactCoverageTests.test_ordinary_impact_does_not_invent_critical_evidence_and_critical_cannot_drop_mapping) ... ok
+test_r2_full_behavior_retains_impact_thresholds_and_pass_evidence (tests.test_ci_checks.ImpactCoverageTests.test_r2_full_behavior_retains_impact_thresholds_and_pass_evidence) ... ok
+test_repository_floor_does_not_cover_changed_line_or_branch_obligations (tests.test_ci_checks.ImpactCoverageTests.test_repository_floor_does_not_cover_changed_line_or_branch_obligations) ... ok
+test_workflow_measurement_includes_the_executing_runner (tests.test_ci_checks.ImpactCoverageTests.test_workflow_measurement_includes_the_executing_runner) ... ok
+test_full_behavior_cannot_substitute_for_required_coverage_or_smokes (tests.test_ci_checks.MetadataTests.test_full_behavior_cannot_substitute_for_required_coverage_or_smokes) ... ok
+test_metadata_accepts_only_matching_content_run_artifact (tests.test_ci_checks.MetadataTests.test_metadata_accepts_only_matching_content_run_artifact) ... ok
+test_missing_or_failed_content_evidence_requires_rerun (tests.test_ci_checks.MetadataTests.test_missing_or_failed_content_evidence_requires_rerun) ... ok
+test_same_binding_can_reuse_stronger_content_obligations (tests.test_ci_checks.MetadataTests.test_same_binding_can_reuse_stronger_content_obligations) ... ok
+test_stale_binding_tamper_risk_or_weaker_obligations_cannot_reuse (tests.test_ci_checks.MetadataTests.test_stale_binding_tamper_risk_or_weaker_obligations_cannot_reuse) ... ok
+test_metadata_isolation_concurrency_and_fixed_gate_names (tests.test_ci_checks.WorkflowTests.test_metadata_isolation_concurrency_and_fixed_gate_names) ... ok
+
+----------------------------------------------------------------------
+Ran 52 tests in 2.684s
+
+OK
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=89.00% threshold=90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+coverage-policy: PASS
+coverage-policy: FAIL
+- coverage must be a mapping
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=94.00%/95.00% branch=89.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=89.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=85.00% threshold=90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/89.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%

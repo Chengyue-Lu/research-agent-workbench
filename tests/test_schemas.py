@@ -76,6 +76,7 @@ class VersionedSchemaTests(unittest.TestCase):
                 "protocol_profile_index",
                 "provider_conformance_report",
                 "research_mode",
+                "runtime_resource_manifest",
                 "research_mode_migration",
                 "research_object",
                 "research_attempt_lineage",

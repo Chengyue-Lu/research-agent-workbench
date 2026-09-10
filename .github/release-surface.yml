@@ -1,0 +1,119 @@
+{
+  "schema_version": "0.1.0",
+  "policy_id": "rwb-release-surface",
+  "policies": [
+    {
+      "version": "1.0.0",
+      "include": [
+        {
+          "path": ".gitattributes",
+          "kind": "file"
+        },
+        {
+          "path": ".github/release-surface.yml",
+          "kind": "file"
+        },
+        {
+          "path": ".github/scripts/release_surface.py",
+          "kind": "file"
+        },
+        {
+          "path": "CHANGELOG.md",
+          "kind": "file"
+        },
+        {
+          "path": "MANIFEST.in",
+          "kind": "file"
+        },
+        {
+          "path": "README.md",
+          "kind": "file"
+        },
+        {
+          "path": "docs/ARCHITECTURE.md",
+          "kind": "file"
+        },
+        {
+          "path": "docs/GETTING_STARTED.md",
+          "kind": "file"
+        },
+        {
+          "path": "docs/PROJECT_CHARTER.md",
+          "kind": "file"
+        },
+        {
+          "path": "pyproject.toml",
+          "kind": "file"
+        },
+        {
+          "path": "registry/agents",
+          "kind": "tree"
+        },
+        {
+          "path": "registry/authority",
+          "kind": "tree"
+        },
+        {
+          "path": "registry/capabilities/requirements",
+          "kind": "tree"
+        },
+        {
+          "path": "registry/capabilities/requirements.json",
+          "kind": "file"
+        },
+        {
+          "path": "registry/modes/actions",
+          "kind": "tree"
+        },
+        {
+          "path": "registry/modes/actions.json",
+          "kind": "file"
+        },
+        {
+          "path": "registry/modes/evidence-synthesis.yaml",
+          "kind": "file"
+        },
+        {
+          "path": "registry/modes/migrations",
+          "kind": "tree"
+        },
+        {
+          "path": "registry/modes/simulation.yaml",
+          "kind": "file"
+        },
+        {
+          "path": "registry/modes/v0.2.0",
+          "kind": "tree"
+        },
+        {
+          "path": "registry/protocol-profiles",
+          "kind": "tree"
+        },
+        {
+          "path": "registry/protocol-profiles.json",
+          "kind": "file"
+        },
+        {
+          "path": "registry/skills/release-projections.json",
+          "kind": "file"
+        },
+        {
+          "path": "schemas",
+          "kind": "tree"
+        },
+        {
+          "path": "src/research_workbench",
+          "kind": "tree"
+        }
+      ],
+      "generated": [
+        {
+          "path": "RELEASE_METADATA.json",
+          "generator": "rwb-release-metadata",
+          "version": "1.0.0",
+          "label": "structural-alpha"
+        }
+      ]
+    }
+  ]
+}

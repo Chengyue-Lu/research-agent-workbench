@@ -1,0 +1,17 @@
+test_build_regeneration_is_identical_and_removes_stale_output (tests.test_runtime_resources.RuntimeResourceTests.test_build_regeneration_is_identical_and_removes_stale_output) ... ok
+test_conditional_skill_assets_map_outside_legacy_paths (tests.test_runtime_resources.RuntimeResourceTests.test_conditional_skill_assets_map_outside_legacy_paths) ... ok
+test_default_catalogs_and_three_roots_ignore_cwd_resources (tests.test_runtime_resources.RuntimeResourceTests.test_default_catalogs_and_three_roots_ignore_cwd_resources) ... ok
+test_explicit_requirement_root_does_not_need_project_schemas (tests.test_runtime_resources.RuntimeResourceTests.test_explicit_requirement_root_does_not_need_project_schemas) ... ok
+test_links_and_root_escape_fail_closed (tests.test_runtime_resources.RuntimeResourceTests.test_links_and_root_escape_fail_closed) ... ok
+test_missing_corrupt_extra_and_empty_directory_fail_closed (tests.test_runtime_resources.RuntimeResourceTests.test_missing_corrupt_extra_and_empty_directory_fail_closed) ... ok
+test_mode_action_reference_and_unindexed_skill_asset_are_rejected (tests.test_runtime_resources.RuntimeResourceTests.test_mode_action_reference_and_unindexed_skill_asset_are_rejected) ... ok
+test_override_needs_external_pin_and_rejects_manifest_drift (tests.test_runtime_resources.RuntimeResourceTests.test_override_needs_external_pin_and_rejects_manifest_drift) ... ok
+test_portable_paths_namespace_duplicates_and_manifest_shape (tests.test_runtime_resources.RuntimeResourceTests.test_portable_paths_namespace_duplicates_and_manifest_shape) ... ok
+test_resource_cli_no_skill_quickstart_and_explicit_maintainer_config (tests.test_runtime_resources.RuntimeResourceTests.test_resource_cli_no_skill_quickstart_and_explicit_maintainer_config) ... ok
+test_runtime_catalog_schema_hash_identity_index_and_orphan_attacks (tests.test_runtime_resources.RuntimeResourceTests.test_runtime_catalog_schema_hash_identity_index_and_orphan_attacks) ... ok
+test_skill_release_asset_omission_orphan_and_byte_drift (tests.test_runtime_resources.RuntimeResourceTests.test_skill_release_asset_omission_orphan_and_byte_drift) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 21.236s
+
+OK

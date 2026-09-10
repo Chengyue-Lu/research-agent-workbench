@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import fnmatch
+import hashlib
 import json
 import os
 import re
@@ -31,9 +32,47 @@ MINIMUM_RISK_PATHS = {
     risk: tuple(patterns) for risk, patterns in POLICY["minimum_risk_paths"].items()
 }
 PUBLISHED_IDENTITIES = tuple(POLICY["published_identities"])
+CURATED_RELEASE_TOPOLOGY = dict(POLICY["curated_release_topology"])
 
 ALLOWED_BASES = {"develop", "main"}
 TASK_ID_RE = re.compile(r"^M\d+-\d+$")
+FULL_SHA_RE = re.compile(r"^[0-9a-f]{40}$")
+SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+CURATED_RELEASE_HEAD_PATTERN = (
+    r"^release/v(?:0|[1-9][0-9]*)\."
+    r"(?:0|[1-9][0-9]*)\."
+    r"(?:0|[1-9][0-9]*)$"
+)
+CURATED_RELEASE_POLICY_FIELDS = {
+    "schema_version",
+    "activation_state",
+    "activation_task",
+    "base_ref",
+    "head_ref_pattern",
+    "pr_class",
+    "minimum_risk",
+    "same_repository",
+    "source_ref",
+    "source_ci_workflow",
+    "source_ci_required_checks",
+    "manifest_path",
+    "expectations_source",
+    "required_external_facts",
+}
+CURATED_RELEASE_EXTERNAL_FACTS = (
+    "expected_source_repository",
+    "expected_source_ref",
+    "expected_source_sha",
+    "source_ci_run_id",
+    "source_ci_workflow",
+    "source_ci_repository",
+    "source_ci_ref",
+    "source_ci_sha",
+    "source_ci_conclusion",
+    "source_ci_required_checks",
+    "expected_parent_sha",
+    "expected_manifest_sha256",
+)
 HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
 YES_VALUES = {"yes", "true", "是"}
 NO_VALUES = {"no", "false", "否"}
@@ -139,6 +178,20 @@ class PublishedDocument:
     identity: tuple[str, ...]
     path: str
     content: str
+
+
+@dataclass(frozen=True)
+class TopologyValidation:
+    """Structural PR-topology classification; never a release authorization."""
+
+    curated_release_attempt: bool = False
+    curated_release_topology_matched: bool = False
+
+
+@dataclass(frozen=True)
+class ReleaseHistory:
+    root_parent_sha: str | None
+    has_merge_commits: bool
 
 
 def _clean_value(value: str) -> str:
@@ -268,6 +321,56 @@ def resolve_effective_risk(
     return effective
 
 
+def validate_curated_release_policy(
+    policy: Mapping[str, object], report: GovernanceReport
+) -> bool:
+    valid = True
+    fields = set(policy)
+    if fields != CURATED_RELEASE_POLICY_FIELDS:
+        missing = sorted(CURATED_RELEASE_POLICY_FIELDS - fields)
+        unknown = sorted(fields - CURATED_RELEASE_POLICY_FIELDS)
+        report.add(
+            "ERROR",
+            "RELEASE-POLICY-SHAPE",
+            f"curated release policy fields differ; missing={missing}, unknown={unknown}",
+        )
+        valid = False
+
+    expected_scalars = {
+        "schema_version": 1,
+        "activation_state": "dormant",
+        "activation_task": "M14-005",
+        "base_ref": "main",
+        "head_ref_pattern": CURATED_RELEASE_HEAD_PATTERN,
+        "pr_class": "release",
+        "minimum_risk": "R2",
+        "same_repository": True,
+        "source_ref": "develop",
+        "source_ci_workflow": "CI",
+        "source_ci_required_checks": ["governance", "test (3.11)", "test (3.13)"],
+        "manifest_path": "RELEASE_MANIFEST.json",
+        "expectations_source": "trusted-caller-attestation",
+    }
+    for field_name, expected in expected_scalars.items():
+        if policy.get(field_name) != expected:
+            report.add(
+                "ERROR",
+                "RELEASE-POLICY-VALUE",
+                f"curated release policy {field_name} must remain {expected!r} during M14-001",
+            )
+            valid = False
+
+    facts = policy.get("required_external_facts")
+    if not isinstance(facts, list) or tuple(facts) != CURATED_RELEASE_EXTERNAL_FACTS:
+        report.add(
+            "ERROR",
+            "RELEASE-POLICY-FACTS",
+            "curated release policy must declare the exact M14-001 external trust facts",
+        )
+        valid = False
+    return valid
+
+
 def validate_topology(
     *,
     base_ref: str,
@@ -276,21 +379,214 @@ def validate_topology(
     head_repository: str,
     pr_class: str,
     report: GovernanceReport,
-) -> None:
+    release_policy: Mapping[str, object] | None = None,
+) -> TopologyValidation:
+    policy = CURATED_RELEASE_TOPOLOGY if release_policy is None else release_policy
+    policy_valid = validate_curated_release_policy(policy, report)
+    release_attempt = head_ref.startswith("release/")
     if base_ref not in ALLOWED_BASES:
         report.add("ERROR", "TOPOLOGY-BASE", f"PR base must be develop or main, not {base_ref!r}")
-        return
+        return TopologyValidation(curated_release_attempt=release_attempt)
     if base_ref == "main":
-        if head_ref != "develop" or head_repository != base_repository:
+        if head_ref == "develop":
+            if head_repository != base_repository:
+                report.add(
+                    "ERROR",
+                    "TOPOLOGY-MAIN-SOURCE",
+                    "main accepts develop only from the same repository",
+                )
+            if pr_class != "release":
+                report.add("ERROR", "TOPOLOGY-RELEASE-CLASS", "develop -> main must use release")
+            return TopologyValidation()
+
+        if release_attempt:
+            branch_valid = re.fullmatch(CURATED_RELEASE_HEAD_PATTERN, head_ref) is not None
+            if not branch_valid:
+                report.add(
+                    "ERROR",
+                    "TOPOLOGY-RELEASE-BRANCH",
+                    "curated release branches must use exact release/vMAJOR.MINOR.PATCH syntax without leading zeroes",
+                )
+            repository_valid = head_repository == base_repository
+            if not repository_valid:
+                report.add(
+                    "ERROR",
+                    "TOPOLOGY-RELEASE-REPOSITORY",
+                    "curated release branches must come from the same repository",
+                )
+            class_valid = pr_class == "release"
+            if not class_valid:
+                report.add(
+                    "ERROR",
+                    "TOPOLOGY-RELEASE-CLASS",
+                    "curated release branches must use PR class release",
+                )
+            topology_matched = (
+                policy_valid and branch_valid and repository_valid and class_valid
+            )
+            if topology_matched:
+                report.add(
+                    "ERROR",
+                    "TOPOLOGY-RELEASE-DORMANT",
+                    "curated release topology remains dormant until M14-005 readiness activation",
+                )
+            return TopologyValidation(
+                curated_release_attempt=True,
+                curated_release_topology_matched=topology_matched,
+            )
+
+        report.add(
+            "ERROR",
+            "TOPOLOGY-MAIN-SOURCE",
+            "main accepts only exact same-repository develop or a governed curated release branch",
+        )
+        if pr_class != "release":
             report.add(
                 "ERROR",
-                "TOPOLOGY-MAIN-SOURCE",
-                "main accepts only an exact same-repository develop branch",
+                "TOPOLOGY-RELEASE-CLASS",
+                "main-bound pull requests must use the release class",
             )
-        if pr_class != "release":
-            report.add("ERROR", "TOPOLOGY-RELEASE-CLASS", "develop -> main must use release")
+    elif release_attempt:
+        report.add(
+            "ERROR",
+            "TOPOLOGY-RELEASE-BASE",
+            "curated release branches may target only main and never develop",
+        )
     elif pr_class == "release":
         report.add("ERROR", "TOPOLOGY-RELEASE-BASE", "release PRs must target main from develop")
+    return TopologyValidation(curated_release_attempt=release_attempt)
+
+
+def validate_curated_release_prerequisites(
+    *,
+    base_sha: str,
+    base_repository: str,
+    head_repository: str,
+    merge_base_sha: str,
+    release_root_parent_sha: str | None,
+    release_history_has_merges: bool,
+    expectations: Mapping[str, str],
+    source_commit_exists: bool,
+    source_in_develop_history: bool,
+    manifest_bytes: bytes | None,
+    report: GovernanceReport,
+    release_policy: Mapping[str, object] | None = None,
+) -> bool:
+    policy = CURATED_RELEASE_TOPOLOGY if release_policy is None else release_policy
+    start = len(report.findings)
+    if not validate_curated_release_policy(policy, report):
+        return False
+    supplied_fields = set(expectations)
+    expected_fields = set(CURATED_RELEASE_EXTERNAL_FACTS)
+    unknown = sorted(supplied_fields - expected_fields)
+    missing = [
+        field
+        for field in CURATED_RELEASE_EXTERNAL_FACTS
+        if not expectations.get(field, "").strip()
+    ]
+    if unknown:
+        report.add(
+            "ERROR",
+            "RELEASE-EXPECTATIONS-UNKNOWN",
+            "trusted release expectations contain unknown fields: " + ", ".join(unknown),
+        )
+    if missing:
+        report.add(
+            "ERROR",
+            "RELEASE-EXPECTATIONS-MISSING",
+            "trusted base-owned release expectations are missing: " + ", ".join(missing),
+        )
+        return False
+
+    values = {field: expectations[field].strip() for field in CURATED_RELEASE_EXTERNAL_FACTS}
+    source_sha = values["expected_source_sha"]
+    parent_sha = values["expected_parent_sha"]
+    ci_sha = values["source_ci_sha"]
+    expected_manifest_hash = values["expected_manifest_sha256"]
+
+    if (
+        values["expected_source_repository"] != base_repository
+        or head_repository != base_repository
+        or values["source_ci_repository"] != base_repository
+    ):
+        report.add(
+            "ERROR",
+            "RELEASE-SOURCE-REPOSITORY",
+            "source, CI, base, and head repository identities must be exact and identical",
+        )
+    if (
+        values["expected_source_ref"] != policy.get("source_ref")
+        or values["source_ci_ref"] != policy.get("source_ref")
+    ):
+        report.add(
+            "ERROR",
+            "RELEASE-SOURCE-REF",
+            "source and source-CI refs must both bind exact develop",
+        )
+    if not FULL_SHA_RE.fullmatch(source_sha):
+        report.add("ERROR", "RELEASE-SOURCE-SHA", "expected source SHA must be a full lowercase Git SHA")
+    elif not source_commit_exists or not source_in_develop_history:
+        report.add(
+            "ERROR",
+            "RELEASE-SOURCE-HISTORY",
+            "expected source SHA must resolve as a commit in fetched origin/develop history",
+        )
+
+    required_checks: object
+    try:
+        required_checks = json.loads(values["source_ci_required_checks"])
+    except json.JSONDecodeError:
+        required_checks = None
+    expected_checks = {
+        str(name): "success" for name in policy.get("source_ci_required_checks", [])
+    }
+    if (
+        not values["source_ci_run_id"].isdigit()
+        or int(values["source_ci_run_id"]) < 1
+        or values["source_ci_workflow"] != policy.get("source_ci_workflow")
+        or not FULL_SHA_RE.fullmatch(ci_sha)
+        or ci_sha != source_sha
+        or values["source_ci_conclusion"] != "success"
+        or required_checks != expected_checks
+    ):
+        report.add(
+            "ERROR",
+            "RELEASE-SOURCE-CI",
+            "trusted source CI must identify a successful positive run bound to the exact source SHA",
+        )
+
+    normalized_base_sha = base_sha.lower()
+    if not FULL_SHA_RE.fullmatch(parent_sha) or parent_sha != normalized_base_sha:
+        report.add(
+            "ERROR",
+            "RELEASE-PARENT-EXPECTATION",
+            "trusted expected parent must equal the exact current main SHA from the PR event",
+        )
+    if (
+        merge_base_sha.lower() != normalized_base_sha
+        or release_root_parent_sha != normalized_base_sha
+        or release_history_has_merges
+    ):
+        report.add(
+            "ERROR",
+            "RELEASE-PARENT-ANCESTRY",
+            "release history must descend from and begin directly at the exact current main SHA",
+        )
+
+    if manifest_bytes is None:
+        report.add(
+            "ERROR",
+            "RELEASE-MANIFEST-PREREQUISITE",
+            f"{policy.get('manifest_path')} must exist before a curated release can be assessed",
+        )
+    elif not SHA256_RE.fullmatch(expected_manifest_hash) or hashlib.sha256(manifest_bytes).hexdigest() != expected_manifest_hash:
+        report.add(
+            "ERROR",
+            "RELEASE-MANIFEST-PREREQUISITE",
+            "manifest bytes must match the trusted external SHA-256 expectation",
+        )
+
+    return not any(item.severity == "ERROR" for item in report.findings[start:])
 
 
 def parse_task_rows(text: str) -> dict[str, TaskRow]:
@@ -791,6 +1087,19 @@ def _read_blob(commit: str, path: str) -> str:
     return _git("show", f"{commit}:{path}")
 
 
+def _read_blob_bytes(commit: str, path: str) -> bytes:
+    process = subprocess.run(
+        ["git", "show", f"{commit}:{path}"],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+    )
+    if process.returncode != 0:
+        error = process.stderr.decode("utf-8", errors="replace").strip()
+        raise GovernanceError(f"git show {commit}:{path} failed: {error}")
+    return process.stdout
+
+
 def _blob_exists(commit: str, path: str) -> bool:
     process = subprocess.run(
         ["git", "cat-file", "-e", f"{commit}:{path}"],
@@ -800,6 +1109,49 @@ def _blob_exists(commit: str, path: str) -> bool:
         text=True,
     )
     return process.returncode == 0
+
+
+def _commit_exists(commit: str) -> bool:
+    if not FULL_SHA_RE.fullmatch(commit.lower()):
+        return False
+    process = subprocess.run(
+        ["git", "cat-file", "-e", f"{commit}^{{commit}}"],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+    )
+    return process.returncode == 0
+
+
+def _is_ancestor(ancestor: str, descendant: str) -> bool:
+    process = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", ancestor, descendant],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+    )
+    return process.returncode == 0
+
+
+def _release_history(base_sha: str, head_sha: str) -> ReleaseHistory:
+    commits = [
+        line.strip().lower()
+        for line in _git(
+            "rev-list", "--first-parent", "--reverse", f"{base_sha}..{head_sha}"
+        ).splitlines()
+        if line.strip()
+    ]
+    merge_commits = [
+        line
+        for line in _git(
+            "rev-list", "--min-parents=2", f"{base_sha}..{head_sha}"
+        ).splitlines()
+        if line.strip()
+    ]
+    root_parent = (
+        _git("rev-parse", f"{commits[0]}^1").strip().lower() if commits else None
+    )
+    return ReleaseHistory(root_parent, bool(merge_commits))
 
 
 def _merge_base(base_sha: str, head_sha: str) -> str:
@@ -824,7 +1176,11 @@ def _published_documents_at(commit: str) -> dict[str, str]:
     return {path: _read_blob(commit, path) for path in paths}
 
 
-def check_pull_request(event: Mapping[str, object]) -> GovernanceReport:
+def check_pull_request(
+    event: Mapping[str, object],
+    *,
+    release_expectations: Mapping[str, str] | None = None,
+) -> GovernanceReport:
     report = GovernanceReport()
     pull_request = event.get("pull_request")
     if not isinstance(pull_request, Mapping):
@@ -843,12 +1199,17 @@ def check_pull_request(event: Mapping[str, object]) -> GovernanceReport:
     )
     base_repo = base.get("repo")
     head_repo = head.get("repo")
+    topology = TopologyValidation()
+    base_repository = ""
+    head_repository = ""
     if isinstance(base_repo, Mapping) and isinstance(head_repo, Mapping):
-        validate_topology(
+        base_repository = str(base_repo.get("full_name", ""))
+        head_repository = str(head_repo.get("full_name", ""))
+        topology = validate_topology(
             base_ref=str(base.get("ref", "")),
             head_ref=str(head.get("ref", "")),
-            base_repository=str(base_repo.get("full_name", "")),
-            head_repository=str(head_repo.get("full_name", "")),
+            base_repository=base_repository,
+            head_repository=head_repository,
             pr_class=metadata.get("PR class", ""),
             report=report,
         )
@@ -858,7 +1219,7 @@ def check_pull_request(event: Mapping[str, object]) -> GovernanceReport:
     try:
         changed_paths = _changed_paths(base_sha, head_sha)
         merge_base = _merge_base(base_sha, head_sha)
-        if merge_base != base_sha:
+        if merge_base != base_sha and not topology.curated_release_attempt:
             report.add(
                 "WARNING",
                 "BASE-STALE",
@@ -869,9 +1230,46 @@ def check_pull_request(event: Mapping[str, object]) -> GovernanceReport:
         changed_paths = []
         merge_base = base_sha
 
+    if topology.curated_release_topology_matched:
+        expectations = (
+            {}
+            if release_expectations is None
+            else {key: str(value) for key, value in release_expectations.items()}
+        )
+        source_sha = expectations.get("expected_source_sha", "").strip().lower()
+        manifest_path = str(CURATED_RELEASE_TOPOLOGY["manifest_path"])
+        try:
+            release_history = _release_history(base_sha, head_sha)
+            source_exists = _commit_exists(source_sha)
+            validate_curated_release_prerequisites(
+                base_sha=base_sha,
+                base_repository=base_repository,
+                head_repository=head_repository,
+                merge_base_sha=merge_base,
+                release_root_parent_sha=release_history.root_parent_sha,
+                release_history_has_merges=release_history.has_merge_commits,
+                expectations=expectations,
+                source_commit_exists=source_exists,
+                source_in_develop_history=(
+                    _is_ancestor(source_sha, "origin/develop")
+                    if source_exists else False
+                ),
+                manifest_bytes=(
+                    _read_blob_bytes(head_sha, manifest_path)
+                    if _blob_exists(head_sha, manifest_path)
+                    else None
+                ),
+                report=report,
+            )
+        except GovernanceError as exc:
+            report.add("ERROR", "RELEASE-TRUST-READ", str(exc))
+
     inferred, reasons = infer_minimum_risk(
         changed_paths, shared_contract=shared_contract, authority_impact=authority_impact
     )
+    if topology.curated_release_attempt:
+        inferred = _max_risk(inferred, "R2")
+        reasons.append("curated release topology attempts are always governed as R2")
     report.risk_reasons = reasons
     effective = resolve_effective_risk(metadata.get("Risk tier", ""), inferred, report)
     validate_risk_requirements(

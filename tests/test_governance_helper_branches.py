@@ -18,6 +18,38 @@ def _codes(report: object) -> set[str]:
 
 
 class GovernanceHelperBranchTests(unittest.TestCase):
+    def test_changed_action_registry_is_read_from_both_pins_and_fails_closed(self):
+        base, head = "a" * 40, "b" * 40
+        path = "registry/modes/actions.json"
+        event = {"pull_request": {"body": valid_body(), "mergeable": True,
+                 "base": {"ref": "develop", "sha": base, "repo": {"full_name": "owner/repo"}},
+                 "head": {"ref": "feature", "sha": head, "repo": {"full_name": "owner/repo"}}}}
+        before = json.loads((governance.ROOT / path).read_bytes())
+        removed = json.loads(json.dumps(before))
+        removed["entries"].pop()
+        for after, exists, expected in ((before, True, None), (removed, True, "ACTION-IDENTITY-REMOVED"),
+                                        (None, False, "ACTION-REGISTRY-REMOVED"),
+                                        ("invalid JSON", True, "ACTION-REGISTRY-READ"),
+                                        (governance.GovernanceError("unreadable"), True, "ACTION-REGISTRY-READ")):
+            def read(commit, relative):
+                if relative != path:
+                    return BASE_TASKS
+                value = before if commit == base else after
+                if isinstance(value, Exception):
+                    raise value
+                return value if isinstance(value, str) else json.dumps(value)
+
+            with self.subTest(after=type(after).__name__, exists=exists), mock.patch.object(governance, "_changed_paths", return_value=[path]), mock.patch.object(
+                governance, "_merge_base", return_value=base
+            ), mock.patch.object(governance, "_blob_exists", side_effect=lambda commit, relative: commit == base or exists), mock.patch.object(
+                governance, "_read_blob", side_effect=read
+            ), mock.patch.object(governance, "_published_documents_at", return_value={}):
+                codes = _codes(governance.check_pull_request(event))
+            if expected:
+                self.assertIn(expected, codes)
+            else:
+                self.assertFalse(any(code.startswith("ACTION-REGISTRY-") for code in codes))
+
     def test_report_emission_covers_pass_warning_and_error_outcomes(self) -> None:
         reports = (
             governance.GovernanceReport(),
@@ -225,6 +257,43 @@ class GovernanceHelperBranchTests(unittest.TestCase):
                 clear=True,
             ):
                 self.assertEqual(2, governance.main())
+
+    def test_release_git_helpers_preserve_raw_bytes_and_linear_history(self) -> None:
+        success = SimpleNamespace(returncode=0, stdout=b"raw\r\nbytes", stderr=b"")
+        failure = SimpleNamespace(returncode=1, stdout=b"", stderr=b"missing object")
+        with mock.patch.object(governance.subprocess, "run", return_value=success):
+            self.assertEqual(b"raw\r\nbytes", governance._read_blob_bytes("a" * 40, "manifest"))
+            self.assertTrue(governance._commit_exists("a" * 40))
+            self.assertTrue(governance._is_ancestor("a" * 40, "origin/develop"))
+        with mock.patch.object(governance.subprocess, "run", return_value=failure):
+            with self.assertRaises(governance.GovernanceError):
+                governance._read_blob_bytes("a" * 40, "manifest")
+            self.assertFalse(governance._commit_exists("a" * 40))
+            self.assertFalse(governance._is_ancestor("a" * 40, "origin/develop"))
+        self.assertFalse(governance._commit_exists("not-a-sha"))
+
+        with mock.patch.object(
+            governance,
+            "_git",
+            side_effect=["b\nc\n", "", "a\n"],
+        ):
+            history = governance._release_history("a" * 40, "c" * 40)
+        self.assertEqual("a", history.root_parent_sha)
+        self.assertFalse(history.has_merge_commits)
+
+        with mock.patch.object(governance, "_git", side_effect=["", ""]):
+            empty_history = governance._release_history("a" * 40, "a" * 40)
+        self.assertIsNone(empty_history.root_parent_sha)
+        self.assertFalse(empty_history.has_merge_commits)
+
+        with mock.patch.object(
+            governance,
+            "_git",
+            side_effect=["b\nmerge\n", "merge\n", "a\n"],
+        ):
+            merged_history = governance._release_history("a" * 40, "c" * 40)
+        self.assertEqual("a", merged_history.root_parent_sha)
+        self.assertTrue(merged_history.has_merge_commits)
 
     def test_pull_request_orchestrator_fails_closed_at_each_external_boundary(self) -> None:
         self.assertIn("EVENT-PR", _codes(governance.check_pull_request({})))

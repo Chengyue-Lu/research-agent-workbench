@@ -4,10 +4,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Iterable, Mapping
+from typing import TYPE_CHECKING, Any, Iterable, Mapping
 
 from research_workbench.artifacts.integrity import hash_bytes, hash_file
 from research_workbench.io import load_document_bytes
+
+if TYPE_CHECKING:
+    from research_workbench.validation.schemas import SchemaCatalog
 
 
 STATE_ROLE_TYPES: dict[str, tuple[str, ...]] = {
@@ -664,13 +667,15 @@ def _ref_identity(raw_ref: Any) -> tuple[str, int | None] | None:
     return identifier, revision
 
 
-def check_method_trace(document: Mapping[str, Any], index: ClosureIndex) -> list[str]:
+def check_method_trace(
+    document: Mapping[str, Any], index: ClosureIndex, *, schema_catalog: SchemaCatalog | None = None
+) -> list[str]:
     """Validate the ref-only Method Trace and its honest actual-binding boundary."""
 
     from research_workbench.validation.schemas import SchemaCatalog
 
     problems = index.identity_problems()
-    catalog = SchemaCatalog()
+    catalog = schema_catalog if schema_catalog is not None else SchemaCatalog()
     attempt_ref = document.get("attempt_ref")
     task_ref = document.get("task_ref")
     method_application = document.get("method_application", {})
@@ -720,7 +725,7 @@ def check_method_trace(document: Mapping[str, Any], index: ClosureIndex) -> list
             problems.append(
                 "method_application.resolution_ref: Method Resolution binds a different Task"
             )
-        elif isinstance(resolution_task, Mapping):
+        else:
             declared_hash = str(resolution_task.get("sha256", "")).removeprefix(
                 "sha256:"
             ).lower()

@@ -1775,10 +1775,13 @@ def _validate_evaluation_manifests(documents: Mapping[Path, Any]) -> list[Valida
     return issues
 
 
-def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
+def validate_documents(
+    documents: Mapping[Path, Any], *, schema_catalog: SchemaCatalog | None = None
+) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     source_ids: set[str] = set()
-    schema_catalog = SchemaCatalog()
+    if schema_catalog is None:
+        schema_catalog = SchemaCatalog()
 
     for path, document in documents.items():
         if isinstance(document, Mapping) and document.get("registry_kind") == "skill_sources":
@@ -1819,7 +1822,7 @@ def validate_documents(documents: Mapping[Path, Any]) -> list[ValidationIssue]:
     issues.extend(validate_phase_b_evolution_gates(documents))
     issues.extend(_validate_research_mode_migrations(documents))
     issues.extend(validate_decision_authority(documents))
-    issues.extend(validate_research_state_set(documents))
+    issues.extend(validate_research_state_set(documents, schema_catalog=schema_catalog))
     issues.extend(_validate_evaluation_manifests(documents))
     return issues
 

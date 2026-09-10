@@ -8,6 +8,7 @@ import json
 import os
 import tempfile
 import unittest
+from dataclasses import replace
 from contextlib import redirect_stderr
 from pathlib import Path
 from types import SimpleNamespace
@@ -70,6 +71,41 @@ def _indexed(
 
 
 class ClosureDefensiveBranchTests(unittest.TestCase):
+    def test_method_trace_requires_verifiable_task_pin_and_preserves_revision_order(self):
+        from tests import test_method_trace_candidate as fixtures
+        documents = fixtures._case_documents()
+        trace = copy.deepcopy(documents[fixtures.TRACE_PATH])
+        index = closure.ClosureIndex.from_documents(documents)
+        task = documents[fixtures.TASK_PATH]["task_id"]
+        index.by_id[task] = [replace(entry, file_sha256=None) for entry in index.by_id[task]]
+        problems = closure.check_method_trace(trace, index)
+        self.assertTrue(any("Task pin cannot be verified" in item for item in problems))
+        for value, expected in ((42, "unsupported"), (trace["trace_id"] + "@1", None)):
+            trace.update(revision=2, supersedes=value, actual_binding=None)
+            problems = closure.check_method_trace(trace, index)
+            if expected:
+                self.assertTrue(any(expected in item for item in problems))
+            else:
+                self.assertFalse(any("supersedes:" in item for item in problems))
+        before = closure.check_method_trace(trace, index)
+        for entries in index.by_id.values():
+            for entry in entries:
+                if entry.kind == "research_state":
+                    entry.document["entries"].append({"role": "question", "ref": 42})
+        # An invalid question ref cannot fabricate an additional Task/State match.
+        self.assertEqual(before, closure.check_method_trace(trace, index))
+
+    def test_registry_skips_non_state_documents_in_a_mixed_closure(self):
+        from research_workbench.validation.research_state_registry import validate_research_state_set
+        documents = {Path("unrelated.yaml"): {"task_id": "TASK", "goal": "fixture", "revision": 1},
+                     Path("scalar.yaml"): None,
+                     Path("state.yaml"): {"state_id": "STATE", "revision": 1,
+                                          "entries": [{"role": "question", "ref": "ABSENT@1"}], "open_items": []}}
+        issues = validate_research_state_set(documents)
+        self.assertEqual(1, len(issues))
+        self.assertEqual(Path("state.yaml"), issues[0].path)
+        self.assertEqual("RESEARCH-STATE-CLOSURE-INVALID", issues[0].code)
+
     def test_path_loading_resolution_and_file_ref_fail_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -272,6 +308,40 @@ class ClosureDefensiveBranchTests(unittest.TestCase):
 
 
 class FreshActorHelperBranchTests(unittest.TestCase):
+    def test_actor_independently_rejects_multiple_active_heads_and_absent_failure(self):
+        for kind, expected in (("research_state", "State lineage has 2"),
+                               ("method_trace", "Method Trace lineage has 2"),
+                               ("missing_failure", "failure ref is absent")):
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                project = root / "project"
+                manifest_path = _materialize_manifest(project)
+                manifest = json.loads(manifest_path.read_bytes())
+                actor_root = root / "actor"
+                actor_root.mkdir()
+                actor_manifest, answer, _, _ = gate._stage_case(manifest, project_root=project, actor_root=actor_root, oracle=CASE_A_ORACLE)
+                staged = json.loads(actor_manifest.read_bytes())
+                if kind == "missing_failure":
+                    entry = next(item for item in staged["documents"] if item["alias"] == staged["method_trace_alias"])
+                    document = yaml.safe_load((actor_root / entry["path"]).read_bytes())
+                    document["path_dispositions"][0]["failure_refs"] = ["ABSENT@1"]
+                else:
+                    alias = staged["state_alias" if kind == "research_state" else "method_trace_alias"]
+                    entry = copy.deepcopy(next(item for item in staged["documents"] if item["alias"] == alias))
+                    document = yaml.safe_load((actor_root / entry["path"]).read_bytes())
+                    document["revision"] += 1
+                    entry.update(alias="duplicate-active", path="duplicate-active.yaml")
+                    entry["identity"]["revision"] = document["revision"]
+                    staged["documents"].append(entry)
+                content = yaml.safe_dump(document, sort_keys=False).encode("utf-8")
+                (actor_root / entry["path"]).write_bytes(content)
+                entry["sha256"] = hash_bytes(content)
+                _write_json(actor_manifest, staged)
+                # Verify the actor's second-line guards independently of the schema/closure preflight.
+                with mock.patch.object(fresh_actor, "validate_documents", return_value=[]), mock.patch.object(fresh_actor.FileAccessPolicy, "install"):
+                    with self.assertRaisesRegex(ValueError, expected):
+                        fresh_actor.run_actor(actor_manifest, answer)
+
     def test_write_modes_path_identity_and_projection_helpers(self) -> None:
         self.assertFalse(fresh_actor._is_write_mode(None))
         self.assertFalse(fresh_actor._is_write_mode("rb"))

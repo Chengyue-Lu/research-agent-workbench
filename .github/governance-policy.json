@@ -11,6 +11,35 @@
     "BLOCKED": ["READY", "IN_PROGRESS", "DONE"],
     "DONE": []
   },
+  "curated_release_topology": {
+    "schema_version": 1,
+    "activation_state": "dormant",
+    "activation_task": "M14-005",
+    "base_ref": "main",
+    "head_ref_pattern": "^release/v(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)$",
+    "pr_class": "release",
+    "minimum_risk": "R2",
+    "same_repository": true,
+    "source_ref": "develop",
+    "source_ci_workflow": "CI",
+    "source_ci_required_checks": ["governance", "test (3.11)", "test (3.13)"],
+    "manifest_path": "RELEASE_MANIFEST.json",
+    "expectations_source": "trusted-caller-attestation",
+    "required_external_facts": [
+      "expected_source_repository",
+      "expected_source_ref",
+      "expected_source_sha",
+      "source_ci_run_id",
+      "source_ci_workflow",
+      "source_ci_repository",
+      "source_ci_ref",
+      "source_ci_sha",
+      "source_ci_conclusion",
+      "source_ci_required_checks",
+      "expected_parent_sha",
+      "expected_manifest_sha256"
+    ]
+  },
   "owners": {
     "Chengyue-Lu": "chengyue-lu",
     "let778750-cpu": "huangyi"
