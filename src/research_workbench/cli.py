@@ -136,13 +136,13 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
     if kind == "run_reconstruction_manifest":
         return [ContractRisk("RUN-RECONSTRUCTION-" + issue["status"].upper(), RiskLevel.BLOCK,
                              issue["detail"]) for issue in check_run_manifest(root, document)]
-    elif kind == "run_reconstruction_report":
+    if kind == "run_reconstruction_report":
         references = tuple(FileReference.from_mapping(document[key])
                            for key in ("manifest_ref", "stdout_ref", "stderr_ref", "promotion_receipt_ref")
                            if key in document)
         references += tuple(FileReference.from_mapping(reference)
                             for key in ("staged_refs", "output_refs") for reference in document.get(key, []))
-    elif kind == "task_packet":
+    if kind == "task_packet":
         references = TaskPacket.from_mapping(document).input_refs
     elif kind == "handoff_packet":
         handoff = HandoffPacket.from_mapping(document)

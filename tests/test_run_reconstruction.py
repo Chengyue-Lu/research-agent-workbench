@@ -6,6 +6,7 @@ import copy
 import json
 import os
 import platform
+import runpy
 import shutil
 import subprocess
 import sys
@@ -66,6 +67,14 @@ class RunReconstructionTest(unittest.TestCase):
         return reconstruction.reproduce_run(self.root, self.manifest_path,
                                             attempt_dir=f"work/M4-004/{name}")
 
+    def run_cli_case(self) -> tuple[int, dict]:
+        self.save()
+        output = StringIO()
+        with redirect_stdout(output):
+            status = main(["run", "reproduce", str(self.manifest_path), "--root", str(self.root),
+                           "--attempt-dir", "work/M4-004/A-001"])
+        return status, json.loads(output.getvalue())
+
     def program(self, text: str) -> None:
         (self.case / "simulate.py").write_text(text, encoding="utf-8")
         self.repin("code_ref")
@@ -75,14 +84,24 @@ class RunReconstructionTest(unittest.TestCase):
         with mock.patch.object(reconstruction.subprocess, "Popen", side_effect=AssertionError("must not execute")):
             self.assertEqual(reconstruction.check_run_manifest(REPO_ROOT, manifest), [])
             with redirect_stdout(StringIO()):
+                self.assertEqual(main(["run", "check", str(REPO_ROOT / CASE_PATH / "manifest.yaml"),
+                                       "--root", str(REPO_ROOT)]), 0)
                 self.assertEqual(main(["validate", str(REPO_ROOT / CASE_PATH), "--root", str(REPO_ROOT)]), 0)
+            self.manifest["code_ref"]["sha256"] = "0" * 64
+            self.save()
+            output = StringIO()
+            with redirect_stdout(output):
+                self.assertEqual(main(["run", "check", str(self.manifest_path), "--root", str(self.root)]), 1)
+                self.assertEqual(main(["validate", str(self.manifest_path), "--root", str(self.root)]), 1)
+            self.assertIn("pin-drift", output.getvalue())
 
     def test_real_fresh_process_has_no_agent_environment_and_report_is_generically_valid(self) -> None:
         original = (self.case / "simulate.py").read_text(encoding="utf-8")
         self.program("import os, sys\nassert 'RWB_AGENT_SESSION' not in os.environ\n"
                      "assert sys.flags.isolated and sys.flags.no_site\n" + original)
         with mock.patch.dict(os.environ, {"RWB_AGENT_SESSION": "private-session"}):
-            report = self.run_case()
+            status, report = self.run_cli_case()
+        self.assertEqual(status, 0)
         self.assertEqual(report["status"], "matched")
         self.assertTrue(report["executed"])
         self.assertNotEqual(report["child_pid"], os.getpid())
@@ -142,7 +161,8 @@ class RunReconstructionTest(unittest.TestCase):
     def test_repinned_parameter_change_is_output_difference_not_pin_drift(self) -> None:
         (self.case / "parameters.json.txt").write_text('{"x0":0,"a":2}', encoding="utf-8")
         self.repin("parameters_ref")
-        report = self.run_case()
+        status, report = self.run_cli_case()
+        self.assertEqual(status, 1)
         self.assertEqual(report["status"], "output-different")
         self.assertTrue(report["executed"])
         self.assertFalse(report["comparisons"][0]["matched"])
@@ -353,6 +373,21 @@ class RunReconstructionTest(unittest.TestCase):
         result = subprocess.run(command, cwd=self.root.parent, env=environment, capture_output=True, text=True, timeout=20)
         self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
         self.assertEqual(json.loads(result.stdout)["status"], "matched")
+
+    def test_example_program_matches_trajectory_and_rejects_boolean_parameters(self) -> None:
+        program = REPO_ROOT / CASE_PATH / "simulate.py"
+        output = self.root / "example-output"
+        output.mkdir()
+        arguments = [str(program), str(self.case / "inputs.json.txt"),
+                     str(self.case / "parameters.json.txt"), str(output)]
+        with mock.patch.object(sys, "argv", arguments):
+            runpy.run_path(str(program), run_name="__main__")
+            self.assertEqual((output / "trajectory.csv").read_bytes(), (self.case / "trajectory.csv").read_bytes())
+            namespace = runpy.run_path(str(program))
+            (self.case / "parameters.json.txt").write_text('{"x0":0,"a":true}', encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "bounded integer inputs"):
+                namespace["main"]()
+        self.assertEqual((output / "trajectory.csv").read_bytes(), (self.case / "trajectory.csv").read_bytes())
 
     def test_actual_promotion_receipt_binds_published_target_without_checker_reexecution(self) -> None:
         fixture = promotion_fixtures.PromotionFixture()

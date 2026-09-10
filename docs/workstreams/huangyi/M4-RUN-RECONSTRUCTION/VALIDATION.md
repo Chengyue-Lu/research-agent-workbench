@@ -2,6 +2,25 @@
 
 ## Owner-review corrections (2026-09-10)
 
+The first hosted plan at `feb3e22` also selected the example program and changed
+CLI statements. Existing success/difference tests now enter through the public CLI
+in the measured process, reusing their original single reconstruction; static CLI
+checks verify valid and drifted manifests. Four affected methods pass (26.140 s).
+One direct example test verifies the same trajectory and rejects Boolean parameters
+before overwriting it; example coverage is **22/22 lines, 6/6 branches**, zero
+exclusions (0.064 s, after correcting the local measurement configuration).
+
+The new Run reference cases use independent `if` statements before the unchanged
+existing kind chain. This equivalent dispatch avoids changing the enclosing old
+`if`/`elif` statement, which would otherwise pull 15 previously uncovered lines
+and 52 branches from unrelated consumers into this PR's impact obligation. No CI
+policy changed. The two affected CLI methods pass again after this two-keyword
+edit (16.415 s); no full/module suite or producer was repeated for that edit.
+The prior content run `34427623116` was cancelled before its expensive suites
+finished, since this test/dispatch correction supersedes that candidate. Final
+hosted evidence must bind the corrected candidate. Local combined evidence above
+remains explicitly attributed to `eec0f5f`; this dispatch edit adds no Run behavior.
+
 The accepted PR66/67 CI policy requires all changed executable lines/outgoing
 branches of a new module to be covered. One module-only branch coverage run after
 integration passed **19 methods in 109.604 seconds**, with **217/217 lines and
