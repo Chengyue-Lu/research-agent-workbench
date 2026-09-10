@@ -2,6 +2,35 @@
 
 ## Owner-review corrections (2026-09-10)
 
+The accepted PR66/67 CI policy requires all changed executable lines/outgoing
+branches of a new module to be covered. One module-only branch coverage run after
+integration passed **19 methods in 109.604 seconds**, with **217/217 lines and
+76/76 branches (100/100), zero exclusions**. It closes the actual prior gaps for
+non-object pinned documents, distinct Run outputs colliding on names/files, output
+link classification and nested extra outputs. The link-classification unit check
+injects the filesystem predicate; it does not claim real OS symlink confinement.
+Existing tests cover the role/receipt fixes and real producer-to-reconstruction
+path in the same suite. No thresholds or policy exclusions changed. This narrow
+measurement is distinct from the earlier pre-integration four-method run below;
+it is not repository/global coverage. No further local suite is required without
+a new change or failure. Evidence: `module-coverage-tests.txt` and
+`module-coverage.json` in the local attempt directory.
+
+Repair commit `035d464` is integrated with accepted develop `f78fae6` (including
+PR66/67 CI and PR60 M14-001/002/003) by merge commit `eec0f5f`. There were no merge
+conflicts. Both Claim/Run consumers, Schema registrations and critical/acceptance
+inventories are retained. Schema catalog and internal Markdown links pass
+(2 methods, 0.761 seconds). Runtime resources were generated from this merged
+checkout for the source-selected local checks; no wheel or installation was run.
+
+The refreshed local combined observation at `eec0f5f` reuses the retained original
+promotion target and receipt. Only a new copied manifest receives explicit roles;
+historical artifacts are preserved. Claim `complete=true`, Run `matched`, output
+bytes and generic map/report checks pass. Exactly one reconstruction subprocess
+runs (**0.094 seconds**), with zero promotion/checker executions. The indexed local
+result is `work/M4-004/A-20260910-001/README.md`. This fixed-environment synthetic
+observation is neither scientific acceptance nor measured research benefit.
+
 Chengyue Lu's review of `5141e6d` identified two remaining P1 closure defects.
 Input bindings now require exactly one `input` and one `parameters` role and each
 role's FileRef must equal the corresponding executed reference. Promotion receipts
@@ -18,7 +47,7 @@ the shipped manifest remains generically valid without execution. The receipt te
 reuses one producer fixture and only its existing successful reconstruction.
 Read-only and rejected cases forbid `Popen`. This is not a new global coverage or
 performance measurement. Local evidence: `work/M4-004/A-20260910-001/focused-tests.txt`
-and `delta-review.md`. No local full, coverage, package or model test was repeated.
+and `delta-review.md`. No local full, repository coverage, package or model test was repeated.
 
 The schema and example changes tighten the still-unaccepted manifest candidate;
 old local manifests without roles remain historical and are not current acceptance

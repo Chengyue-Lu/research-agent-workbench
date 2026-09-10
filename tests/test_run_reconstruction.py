@@ -150,12 +150,31 @@ class RunReconstructionTest(unittest.TestCase):
         self.assertTrue((self.root / report["output_refs"][0]["path"]).is_file())
 
     def test_missing_and_extra_outputs_are_reported(self) -> None:
-        self.program("from pathlib import Path\nPath('outputs/extra.txt').write_text('extra')\n")
+        self.program("from pathlib import Path\nPath('outputs/nested').mkdir()\n"
+                     "Path('outputs/nested/extra.txt').write_text('extra')\n")
         report = self.run_case()
         self.assertEqual(report["status"], "output-different")
         rows = {row["output_path"]: row for row in report["comparisons"]}
         self.assertIsNone(rows["trajectory.csv"]["actual_sha256"])
-        self.assertIsNone(rows["extra.txt"]["expected_sha256"])
+        self.assertIsNone(rows["nested/extra.txt"]["expected_sha256"])
+        self.assertEqual(len(report["output_refs"]), 1)
+
+    def test_output_marked_as_link_is_rejected_and_not_retained_as_a_file(self) -> None:
+        self.program("from pathlib import Path\nPath('outputs/linked.txt').write_text('untrusted output')\n")
+        original = Path.is_symlink
+
+        # Inject the filesystem's link classification so this policy check is
+        # independent of the host's permission to create real symlinks.
+        def is_symlink(path: Path) -> bool:
+            return path.name == "linked.txt" or original(path)
+
+        with mock.patch.object(Path, "is_symlink", is_symlink):
+            report = self.run_case("output-link")
+        self.assertEqual(report["status"], "run-failed")
+        self.assertTrue(report["executed"])
+        self.assertIn("output escapes", report["detail"])
+        self.assertEqual(report["output_refs"], [])
+        self.assertTrue((self.root / report["stdout_ref"]["path"]).is_file())
 
     def test_nonzero_and_timeout_keep_partial_artifacts_and_diagnostics(self) -> None:
         prefix = "from pathlib import Path\nPath('outputs/partial.txt').write_text('partial')\n"
@@ -216,6 +235,30 @@ class RunReconstructionTest(unittest.TestCase):
         report = self.run_case()
         self.assertEqual(report["status"], "manifest-invalid")
         self.assertFalse(report["executed"])
+        (self.case / "run.yaml").write_text("- valid-yaml-but-not-an-object\n", encoding="utf-8")
+        self.repin("run_ref")
+        with mock.patch.object(reconstruction.subprocess, "Popen", side_effect=AssertionError("read only")):
+            report = self.run_case("non-object")
+        self.assertEqual(report["status"], "manifest-invalid")
+        self.assertFalse(report["executed"])
+
+    def test_distinct_run_outputs_cannot_reuse_output_names_or_artifact_files(self) -> None:
+        run = yaml.safe_load((self.case / "run.yaml").read_bytes())
+        run["output_refs"].append("ARTIFACT-M4-SECOND-001@1")
+        (self.case / "run.yaml").write_text(yaml.safe_dump(run), encoding="utf-8")
+        self.repin("run_ref")
+        second = copy.deepcopy(self.manifest["expected_outputs"][0])
+        second["object_ref"] = run["output_refs"][-1]
+        self.manifest["expected_outputs"].append(second)
+        with mock.patch.object(reconstruction.subprocess, "Popen", side_effect=AssertionError("read only")):
+            for name, detail in (("TRAJECTORY.CSV", "output paths must be unique"),
+                                 ("second.csv", "output artifacts must be distinct")):
+                with self.subTest(output_path=name):
+                    second["output_path"] = name
+                    report = self.run_case(name)
+                    self.assertEqual(report["status"], "manifest-invalid")
+                    self.assertFalse(report["executed"])
+                    self.assertIn(detail, report["detail"])
 
     def test_repinning_run_does_not_allow_unrelated_input_environment_or_output_refs(self) -> None:
         original = yaml.safe_load((self.case / "run.yaml").read_bytes())
