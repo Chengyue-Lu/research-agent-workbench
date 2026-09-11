@@ -1,0 +1,73 @@
+task_id: M14-004
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+baseline: 11c3b57dfbf8af0dc2587fc421d097e2544941c3
+authorization: User requested continuing M14 after readiness audit and cleaning obsolete
+  local branches first.
+goal: Implement the accepted public documentation surface and compose package inputs
+  with an appended release policy version.
+profile: main-agent bounded implementation
+required_skills: []
+delegation: false
+read_allowlist:
+- AGENTS.md
+- README.md
+- CHANGELOG.md
+- docs/**
+- .github/**
+- tests/**
+- schemas/**
+- src/research_workbench/**
+- registry/agents/**
+- registry/authority/**
+- registry/capabilities/requirements*
+- registry/capabilities/requirements/**
+- registry/modes/**
+- registry/protocol-profiles*
+- registry/protocol-profiles/**
+- registry/skills/release-projections.json
+- examples/quickstart/task-no-skill.yaml
+- pyproject.toml
+- MANIFEST.in
+- build_backend.py
+- runtime-resources.json
+- work/M14-003/A-20260906-001/**
+- work/M14-004/A-20260911-001/**
+- .rwb/m14-004/**
+write_scope:
+- README.md
+- docs/GETTING_STARTED.md
+- docs/PROJECT_CHARTER.md
+- docs/ARCHITECTURE.md
+- docs/PUBLIC_GUIDE.md
+- docs/SUPPORTED_FEATURES.md
+- docs/README.md
+- docs/TASKS.md
+- docs/STATUS.md
+- docs/ROADMAP.md
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/implementation/RELEASE_SURFACE.md
+- docs/implementation/RUNTIME_RESOURCES.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- .github/release-surface.yml
+- tests/test_documentation.py
+- tests/test_public_surface.py
+- tests/public_surface_helpers.py
+- work/M14-004/A-20260911-001/**
+- .rwb/m14-004/**
+- CHANGELOG.md
+- docs/history/README.md
+- docs/history/CHANGELOG-20260911.md
+outputs:
+- Single-source public README, Getting Started, support matrix and module navigation.
+- Immutable old policy plus new policy with complete public docs and build inputs.
+- Projected-tree link/leakage and build closure evidence; R2 review handoff.
+stop_conditions:
+- Preserve Runtime, Method, Claim and Human authority semantics.
+- No M14-005 activation, release source freeze, real release branch, tag, release
+  or self-merge.
+- Do not rewrite prior policy versions or frozen Attempt Archives.
+- 'Follow Issue 57 updated lane: public surface first; finalize Quickstart using accepted
+  M1-009 scaffold before M14-004 DONE. Owner handles the preceding activation documentation
+  commit.'

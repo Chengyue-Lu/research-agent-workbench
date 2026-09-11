@@ -1,0 +1,21 @@
+Declared risk: R2
+Inferred minimum: R2
+Effective risk: R2
+Reason:
+- .github/release-surface.yml matches the R2 policy surface
+- docs/ARCHITECTURE.md matches the R2 policy surface
+- docs/PROJECT_CHARTER.md matches the R2 policy surface
+- docs/STATUS.md matches the R1 policy surface
+- docs/implementation/RELEASE_SURFACE.md matches the R1 policy surface
+- docs/implementation/RUNTIME_RESOURCES.md matches the R1 policy surface
+- PR declares a shared-contract impact
+- PR declares an authority, permission, or data-boundary impact
+Requirements:
+- pull request and required CI
+- cross-owner review before merge
+- explicit authority basis
+- adversarial or negative evidence
+- owner-matched workstream and Risk Ledger
+Findings:
+- INFO TASK-TRANSITION: valid transition M14-004: PARKED -> READY
+governance: PASS
