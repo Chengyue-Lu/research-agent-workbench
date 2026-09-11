@@ -21,7 +21,8 @@ unambiguous pathlib values. Function-local name lists used exclusively by lexica
 predicates are not content inputs. Reads, unknown calls, returned/exported values,
 closures, rebinding and global/nonlocal assignments retain conservative references.
 Whole path expressions are resolved against fixed `__file__` / pathlib roots and
-directory prefixes. Their individual filename components no longer create unrelated
+directory prefixes, normalizing parent segments and retaining ambiguity when a path
+leaves the repository root. Their individual filename components no longer create unrelated
 basename aliases. Unknown roots and bare filename/helper inputs retain ambiguity.
 
 ## Verification boundary

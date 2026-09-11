@@ -13,6 +13,7 @@ from functools import lru_cache
 import hashlib
 import json
 from pathlib import PurePosixPath
+import posixpath
 import subprocess
 
 
@@ -329,7 +330,9 @@ def graph(blobs, paths):
                     prefix.append(part)
                 value = '/'.join(prefix).replace('\\', '/').strip('/')
                 if value and resolved is not None:
-                    value = (resolved / value).as_posix()
+                    value = posixpath.normpath((resolved / value).as_posix())
+                    if value == '..' or value.startswith('../'):
+                        resolved = None
                 if value:
                     for dependency in paths:
                         if dependency == value or dependency.startswith(value + '/'):

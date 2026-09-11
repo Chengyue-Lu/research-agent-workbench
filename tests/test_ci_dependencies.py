@@ -100,6 +100,16 @@ class DependencyTests(unittest.TestCase):
         self.assertEqual({'test_relative', 'test_dynamic'},
                          set(self.selection(blobs, blobs, ['tests/README.md'], paths)['selected']))
 
+    def test_parent_segments_resolve_inside_root_and_escape_retains_ambiguity(self):
+        header = b'from pathlib import Path\nROOT=Path(__file__).parents[1]\n'
+        blobs = {'tests/test_inside.py': header + b'(ROOT / "docs" / ".." / "tests" / "README.md").read_text()',
+                 'tests/test_outside.py': header + b'(ROOT / ".." / "checkout" / "docs" / "README.md").read_text()',
+                 'tests/test_parent.py': header + b'directory=ROOT / ".."'}
+        paths = ['docs/README.md', 'tests/README.md']
+        self.assertEqual({'test_outside'}, set(self.selection(blobs, blobs, ['docs/README.md'], paths)['selected']))
+        self.assertEqual({'test_inside', 'test_outside'},
+                         set(self.selection(blobs, blobs, ['tests/README.md'], paths)['selected']))
+
     def test_scope_shadowing_export_and_unknown_predicates_retain_conservative_edges(self):
         cases = [
             'from pathlib import Path\ncustom.is_relative_to(ROOT / "docs")',
