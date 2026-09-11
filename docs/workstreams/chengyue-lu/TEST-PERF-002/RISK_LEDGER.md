@@ -52,3 +52,16 @@ for cross-owner review. Quality thresholds, exclusions, product contracts and re
   field. Local cold/warm measurements are distinct from hosted execution and total runner cost.
 - Selection-authority bootstrap, all quality floors, independent witness and cross-owner review
   remain required. See [analysis performance](ANALYSIS_PERFORMANCE.md).
+
+## Schema self-check reuse and test-cost audit
+
+- Cache only successful schema self-validation by exact bytes and checker identity, with bounded
+  process-local retention. Every catalog still performs current reads, resource integrity checks,
+  fresh parsing/registry construction and actual document validation.
+- Same-size/timestamp byte drift, invalid schema retries, checker changes, catalog mutation,
+  different roots, rename/removal and malformed inputs have regression coverage.
+- Profiling identified repeated schema self-checks rather than expensive fixture creation in the
+  sampled Skill evaluation. No complete test was proven redundant; existing negative cases remain.
+- Local before/after measurements do not establish the new hosted full-suite wall time. Remaining
+  Runtime resource closure work and cross-commit evidence reuse have separate proof requirements;
+  see [full-suite audit](FULL_SUITE_COST.md). Cross-commit result reuse is not enabled by this repair.
