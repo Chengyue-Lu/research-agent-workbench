@@ -1,0 +1,19 @@
+---
+schema_version: 0.1.0
+message_id: MSG-0006
+task_id: DOC-ALIGN-002
+task_revision: 1
+attempt_id: A-20260911-001
+sequence: 6
+kind: handoff
+sender_actor_id: accepted-gate-docs
+receiver_actor_ids:
+- main-agent
+accountable_owner: Chengyue-Lu
+created_at: '2026-09-11T13:59:05.624125Z'
+content_sha256: 1dd45aeb3dadd6281d67db695ff0e845f86ea9ca285684c0a4930cc55e552923
+attachment_refs: []
+redactions: []
+capture_status: complete
+---
+{"capture":"retrospective; workspace path normalized","visible_message":"已完成四个文件的限定修改，未提交或推送：\n- Module 07：移除 M4-004 候选状态，更新末尾过时的目标验收描述，保留科学正确性、Claim 和正式 M5 案例边界。\n- M4 README：仅更新标题和顶部 accepted/merged 状态，记录 PR #62 的 UTC 时间与 squash SHA。\n- ADR 索引：0020 改为 `Accepted`。\n- Baseline Gate：顶部改为 `SATISFIED`，记录 PR #56 合并事实。\n验证通过：`git diff --check`；27 个本地 Markdown 链接；两项合并提交位于当前基线。\n冻结内容逐字节一致：\n- M4 README 从 `The bounded goal` 起：7,142 bytes，SHA-256 `fd441354175e88f9fca456f534ad209b2d4684035a1aea96e3d532fe3b158273`。\n- Gate 第 2 节起：6,759 bytes，SHA-256 `cc66d32e3c27b83ac9fb3486662531a73482de228e9ccf431232f1a03903481b`。\n- ADR 0020 原文件 SHA-256 仍为 `64edd73c44bc77f326a90c51e0a8cbf5fd28c4bbf1a5e18aca7f50250ce21a12`。"}

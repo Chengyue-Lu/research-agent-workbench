@@ -1,0 +1,19 @@
+---
+schema_version: 0.1.0
+message_id: MSG-0001
+task_id: DOC-ALIGN-002
+task_revision: 1
+attempt_id: A-20260911-001
+sequence: 1
+kind: assignment
+sender_actor_id: main-agent
+receiver_actor_ids:
+- architecture-docs
+accountable_owner: Chengyue-Lu
+created_at: '2026-09-11T13:59:05.585332Z'
+content_sha256: 94a9e236e16c1c7675d7a3815e13b7352d06a55a4078921f6fd79ec8f705a0fa
+attachment_refs: []
+redactions: []
+capture_status: complete
+---
+{"capture":"retrospective; workspace path normalized","visible_message":"Bounded documentation editing subtask, docs-maintainer profile, requiredSkills: []. Worktree <worktree>, branch docs/accepted-state-alignment-20260911 base 11c3b57dfbf8af0dc2587fc421d097e2544941c3. Read AGENTS.md applicable instructions. User asks D1-D4 factual documentation maintenance based latest develop. Only edit these files: docs/DEVELOPER_ARCHITECTURE_MAP.md, docs/modules/10-OBSERVABILITY_EVALUATION_COST.md, docs/implementation/README.md, docs/modules/README.md. Facts canonical docs/TASKS.md: M4-001..004 DONE (PR62 merged Sep10 UTC into 11c3b57); M5-003 DONE only implemented evaluation contract; M5-006 READY future Protocol contract NOT yet implemented; M6-008 PARKED pending M5-006; M5-007 BLOCKED future Harness. ADR0020 accepted dual transport A4-A2 primary. M11-005/006 DONE bounded implemented SkillReleaseProjection but production index empty is not mechanism unimplemented. Source Admission row may have stale promotion pending semantics; update maturity while preserving responsibilities and no scientific correctness/live provider/release claims. User guide: add current PhaseD interpretation after existing four-arm M5-003 text; no invented protocol schema or active implementation link for M5-006. M4 navigation uses accepted wording. Do not edit TASKS, public docs, schemas, ADR body, anything outside allowlisted four files. M14-004 stays PARKED on this base (separate dirty worktree owns activation/public docs). No commits/push/external writes. Output concise changed points and checks; stop after edits+diff inspection, budget ~10 minutes. Root edits STATUS/map/ROADMAP concurrently."}

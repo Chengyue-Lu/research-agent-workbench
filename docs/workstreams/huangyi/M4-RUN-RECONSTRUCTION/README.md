@@ -1,8 +1,9 @@
-# M4-004 Run Reconstruction Candidate
+# M4-004 Run Reconstruction
 
 Task owner: Chengyue Lu. Implementation owner: Huang Yi. Base: develop `6f0caf0`, after PR #54.
-Status: independently reviewed implementation candidate; hosted validation and owner merge review remain pending.
-The candidate marks M4-004 DONE without changing its original acceptance, owner or dependencies.
+Status: accepted and merged into develop via [PR #62](https://github.com/Chengyue-Lu/research-agent-workbench/pull/62)
+at `2026-09-10T23:50:24Z`, squash commit `11c3b57dfbf8af0dc2587fc421d097e2544941c3`.
+M4-004 is DONE within its original acceptance, owner and dependencies.
 
 The bounded goal is to rebuild one Run from explicit pinned files in a fresh process, without the original Agent
 conversation or cwd. This is an M4 synthetic engineering case. It does not establish an M5 research result.

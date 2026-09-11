@@ -2,7 +2,7 @@
 
 状态：方向与依赖基线；不记录逐项实时状态
 
-更新：2026-09-02
+更新：2026-09-11
 
 逐项状态和唯一下一任务只在 [`TASKS.md`](TASKS.md) 更新。本文件说明依赖顺序、阶段 Gate 与
 停止条件，不是工期承诺，也不是研究项目必须遵循的固定流程。
@@ -14,7 +14,7 @@
 | A — Core Formalization | 把 Mode-first 方法论变成正式语义 | Mode Action、Method Resolution、Mode v0.2、Decision Authority | ADR-0013/0016 |
 | B — Evolution Foundation | 支持可迁移、可评测的能力演化 | Skill Need、Lifecycle v2、Migration、Protocol、Resolved Capability Snapshot | Phase A 稳定接口 |
 | C — Research State & Verification | 保存跨 Runtime 的研究意义 | State/Frontier、Failure、Evidence–Claim relation、Method Trace | A；部分依赖 B |
-| D — Evaluation Loop | 证明完整系统相对简单 baseline 的可复核净增量 | Evaluation Manifest、public/private Case Dossier、frozen Protocol、统一 Harness、blind Review、system-level analysis 与 disposition | ADR-0020 已接受 dual transport；Protocol 可启动，Harness 仍等待 baseline/Skill closeout，真实执行仍需案例、provenance、live execution 与人类批准 |
+| D — Evaluation Loop | 证明完整系统相对简单 baseline 的可复核净增量 | Evaluation Manifest、public/private Case Dossier、frozen Protocol、统一 Harness、blind Review、system-level analysis 与 disposition | ADR-0020 已接受 dual transport，M4 bounded provenance 链已实现；M5-006 Protocol 是当前入口，Harness 仍等待 baseline/Skill closeout，真实执行仍需获批案例及其 provenance、live execution 与人类批准 |
 | E — Strategy & Governed Evolution | 有界吸收新策略和外部候选 | Strategy interface、candidate pipeline、merge/prune/promotion | B+C+D |
 | F — Execution Reintegration | 让 Runtime 消费冻结科研契约 | M11 Core：runtime bundle、supply-neutral resolved execution、Thin Host、Trace/Receipt integration；可选 Skill supply：release projection、统一 View semantic mapping | ADR-0019 与 M9-005 Core；Skill release projection 不 Gate Topic 4 Core；Topic 5 另受 Phase C Human/R2 closeout 约束 |
 
@@ -327,7 +327,9 @@ plan/run-record 层统一调度、匿名化、metric evidence、Human Review、r
 建旁路、直接加载 candidate、在 confirmatory run 使用 synthetic projection 或自动作出
 promotion/pruning/Human judgement。
 
-M5-004 的正式 system-level execution 还必须等待 M4 provenance chain、两个 Human-approved dossier、
+M4-001～004 的 bounded provenance chain 已实现并合入，M5-003 计划契约与 M11-006 Skill mapping 也已具备。
+M5-004 的正式 system-level execution 仍须等待两个 Human-approved dossier 及其真实案例 provenance、
+M5-006 Protocol、M5-007 Harness（含 M6-008 baseline transport 与 Skill closeout Gate）、
 M6-004 live Provider/session conformance，以及 `A4-RUNTIME-ADMISSION-GATE`。A4 保持 M5-003 v0.1 的
 `mode-candidate-skill` identity，其正式含义是 candidate-origin treatment + admitted Runtime execution；M5-006
 定义独立、版本化的 execution-qualification overlay，不回写 frozen Manifest。该 Gate 必须 exact-pin
@@ -350,8 +352,8 @@ M5-005 最终必须基于 exact protocol/cases/runs/reviews/analysis 作出至�
 Execution reintegration 不授权 Runtime 定义 Mode、Claim、supply/Skill fallback、rebinding、silent
 replacement 或权限放宽。bounded contracts 已覆盖 State-at-attempt / predecessor 分离、slice-only
 completion、Source Admission、Supply side-effect ceilings、Host-observed duration 与临时 fixture 再生；
-这不等于 Evidence→Claim trace、Provider cancellation/deadline、live actual-fact provenance 或 ordinary-user
-E2E 已闭合，后者仍须各自 Task/Gate。
+Evidence→Claim localization 与 bounded Run reconstruction 已由 M4-003/004 实现；Provider
+cancellation/deadline、live actual-fact provenance 与 ordinary-user E2E 仍须各自 Task/Gate。
 
 Runtime 也不创建 Skill Need/Candidate、不执行 Trial/Evaluation/Promotion、不读取完整 Lifecycle。Skill
 供给通过已发布投影进入 Capability Supply Report；no-Skill/direct Tool 路径不依赖该投影。可选

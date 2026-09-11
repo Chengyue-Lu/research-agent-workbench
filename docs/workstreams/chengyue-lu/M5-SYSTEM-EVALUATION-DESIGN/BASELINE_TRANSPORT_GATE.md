@@ -2,8 +2,8 @@
 
 Gate：`M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE`
 
-结果：本记录进入 `develop` 且承载它的 exact-head R2 PR 获两位 owner 审查并合并时为 `SATISFIED`；
-在 feature branch / 未合并 PR 中为 `PENDING (not satisfied)`
+结果：`SATISFIED`。承载本记录的 [PR #56](https://github.com/Chengyue-Lu/research-agent-workbench/pull/56)
+已于 `2026-09-04T17:13:19Z` 合并进入 `develop`。
 
 责任人：
 
@@ -19,7 +19,7 @@ Gate：`M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE`
 | Raw SHA-256 | `64edd73c44bc77f326a90c51e0a8cbf5fd28c4bbf1a5e18aca7f50250ce21a12` |
 | Audit base | `dd2454b5595e33a12aa058529358d46d311a08c4` |
 | Integration PR | [PR #56](https://github.com/Chengyue-Lu/research-agent-workbench/pull/56) |
-| Review / merge evidence | exact-head cross-owner review 与 merge event；PR 未合并前 Gate 为 `PENDING (not satisfied)` |
+| Review / merge evidence | PR #56 merged at `2026-09-04T17:13:19Z`；squash commit `6a032e12c30a88a501258eec8c0b5d6c6082d81d` |
 
 首次发布前的 review 修订会使旧 hash、CI 与 review 失效，本记录必须更新为新的 exact bytes 并重新审查；
 该 identity 首次进入 `develop` 后，任何语义变化必须发布新 Decision version 与新 Gate record，旧版本继续保留，

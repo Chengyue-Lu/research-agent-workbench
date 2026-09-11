@@ -4,6 +4,8 @@
 
 当前进行中或仍待具名语义决定的工作流：
 
+- [`DOC-ALIGN-002/`](DOC-ALIGN-002/README.md)：按 accepted develop 对齐 M4/M14 成熟度、Phase D
+  入口与 ADR-0020 Gate 状态；M14 activation 和 public docs 继续由其独立工作流承担。
 - [`M14-CURATED-RELEASE/`](M14-CURATED-RELEASE/README.md)：将 Issue #57 的 release topology、
   deterministic surface、portable package、public docs 与首次精选发行映射为 M14-001～005；本轮只完成
   R2 task-definition，首个实现入口为 M14-001。

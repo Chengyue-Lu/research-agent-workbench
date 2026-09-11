@@ -149,7 +149,7 @@ admission sidecar，晋升或保留的产物消费 Promotion Receipt 与原 reco
 JSON pointer。读取复用同次调用捕获的字节，不启动 checker、promotion 或科学计算，也不决定 Claim
 是否成立。详见 [Claim localization 契约](../implementation/CLAIM_TRACE_CONTRACT.md)。
 
-## 5. Run reconstruction（M4-004 独立候选）
+## 5. Run reconstruction（M4-004）
 
 `run_reconstruction_manifest` exact-pin 一个 Run 文档、单文件 Python 程序、输入、参数、环境定义及
 预期输出。`run_ref` 关闭现有 Run 的对象身份与 revision；`input_bindings`、`environment_binding` 和
@@ -176,7 +176,7 @@ python -I -S program.py inputs.json parameters.json outputs
 可选 `promotion_receipt_ref` 验证 receipt 位于其无别名的原始
 `runs/promotions/<promotion_id>/receipt.json`，并检查结构及预期输出是其 exact target FileRef；历史
 promotion eligibility 仍属于 M4-002，读操作不重执行。最小合成案例、环境锁定的具体边界和验收矩阵见
-[M4 Run reconstruction](../workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md)。本候选不是 M5
+[M4 Run reconstruction](../workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md)。该有界合成案例不是 M5
 正式研究案例，也不增加先行病例冻结或盲测审批门槛。
 
 ## 6. 提升与冻结（M4-002 已实现）
@@ -296,6 +296,6 @@ Trace 默认保存在项目工作区，但不等于默认提交 Git：
 - Worklog 缺失不导致 Trace 消失，Trace 很长也不要求主 Agent 默认加载；
 - capture gap、删减和延迟会显式暴露，不能被误报为完整记录。
 
-以下仍是 M4-003～004 的 target acceptance，不能由 M4-001/002 的 DONE 状态代替：Claim trace 可一次
-定位支持/反证/限制，以及 Run 可在没有原 Agent 会话时按 exact inputs/environment/execution facts 理解与
-重建。
+M4-003 的 Claim trace 通过显式引用一次定位支持、反证和限制；M4-004 的有界 Run reconstruction 在没有
+原 Agent 会话时按 exact inputs/artifacts/environment refs 重建合成案例。两者分别验证引用定位与完整输出
+集合的字节一致，不授予科学正确性、Claim acceptance 或 M5 正式研究案例资格。

@@ -1,0 +1,19 @@
+---
+schema_version: 0.1.0
+message_id: MSG-0003
+task_id: DOC-ALIGN-002
+task_revision: 1
+attempt_id: A-20260911-001
+sequence: 3
+kind: progress
+sender_actor_id: architecture-docs
+receiver_actor_ids:
+- main-agent
+accountable_owner: Chengyue-Lu
+created_at: '2026-09-11T13:59:05.600417Z'
+content_sha256: e87e40be71dea24bc8e47f728264cf1662a75ae40c085b6e4239521ea92b5e52
+attachment_refs: []
+redactions: []
+capture_status: complete
+---
+{"capture":"retrospective; workspace path normalized","visible_message":"已确认四文件中的主要漂移：Source Admission 矩阵仍带 promotion pending，§12/§16.2/结尾仍把 M4-002..004 视作未完成；SkillReleaseProjection 矩阵仍是 P，但正文已为 DONE。TASKS 主表四项均 DONE，不过后方 owner 导航行 255 仍写 M4-004 待合入，我会按你指定的主表/合入事实维护且不修改 TASKS。模块10需在四臂段后补 accepted Phase D 解释及 future Protocol/Harness 边界。"}

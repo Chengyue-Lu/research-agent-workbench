@@ -1,0 +1,19 @@
+---
+schema_version: 0.1.0
+message_id: MSG-0008
+task_id: DOC-ALIGN-002
+task_revision: 1
+attempt_id: A-20260911-001
+sequence: 8
+kind: handoff
+sender_actor_id: architecture-docs
+receiver_actor_ids:
+- main-agent
+accountable_owner: Chengyue-Lu
+created_at: '2026-09-11T13:59:05.645473Z'
+content_sha256: e0a06d29d23673dbe0a4b7a7fa787eecc9ceccfa2aed2a57ccdf13bb05bbe5b2
+attachment_refs: []
+redactions: []
+capture_status: complete
+---
+{"capture":"retrospective; workspace path normalized","visible_message":"已完成四文件维护：\n- 架构地图纠正 M4、SkillReleaseProjection 成熟度，明确 M5-006/transport/Harness 尚待实现。\n- 模块 10 补充双传输、`A4 − A2` 主比较、条件性 secondary 和 A4 准入链。\n- 两份索引采用已接受 M4 实现导航，未添加虚构 Protocol 契约链接。\n验证：`test_documentation.py` 9 项通过；四文件 `git diff --check` 通过。未提交或推送。"}

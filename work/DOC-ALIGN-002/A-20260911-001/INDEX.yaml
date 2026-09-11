@@ -1,0 +1,165 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260911-001
+task_id: DOC-ALIGN-002
+task_revision: 1
+attempt_id: A-20260911-001
+archive_root: A-20260911-001
+baseline: 11c3b57dfbf8af0dc2587fc421d097e2544941c3
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: e0385a3d337ce1aeab40de3f87b5fd5e0bc581e716c82cf1084f56c5d5f8594f
+actors_ref:
+  path: ACTORS.yaml
+  sha256: a67b13d5260621b777da19d211e92720cdf0dc73ce0f64cf11bbdb192239249a
+read_allowlist:
+- .github/**
+- AGENTS.md
+- docs/**
+- pyproject.toml
+- schemas/v0.1.0/agent-trace*
+- src/research_workbench/observability/trace.py
+- tests/**
+- work/DOC-ALIGN-002/**
+write_scope:
+- docs/DEVELOPER_ARCHITECTURE_MAP.md
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/decisions/README.md
+- docs/implementation/README.md
+- docs/modules/07-ARTIFACTS_AND_PROVENANCE.md
+- docs/modules/10-OBSERVABILITY_EVALUATION_COST.md
+- docs/modules/README.md
+- docs/workstreams/chengyue-lu/DOC-ALIGN-002/**
+- docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/BASELINE_TRANSPORT_GATE.md
+- docs/workstreams/chengyue-lu/README.md
+- docs/workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md
+- work/DOC-ALIGN-002/A-20260911-001/**
+tool_allowlist:
+- apply_patch
+- collaboration
+- gh
+- git
+- python
+messages:
+- message_id: MSG-0001
+  sequence: 1
+  path: messages/0001-assignment.trace
+  sha256: 9df61b922c7e51a23a0cb4f453f5fa01b4df3de08fc79fd446603565a0fd68b2
+  content_sha256: 94a9e236e16c1c7675d7a3815e13b7352d06a55a4078921f6fd79ec8f705a0fa
+  kind: assignment
+  sender_actor_id: main-agent
+  receiver_actor_ids:
+  - architecture-docs
+  created_at: '2026-09-11T13:59:05.585332Z'
+  capture_status: complete
+- message_id: MSG-0002
+  sequence: 2
+  path: messages/0002-assignment.trace
+  sha256: 7d298fa7d0ad4715b7c859affd41b1c4093b288753dbddc8c0e9af4dd0804992
+  content_sha256: e27a661fd0809a60ca7d676760733db087a32caa4c316dfc8accd918b094e314
+  kind: assignment
+  sender_actor_id: main-agent
+  receiver_actor_ids:
+  - accepted-gate-docs
+  created_at: '2026-09-11T13:59:05.593243Z'
+  capture_status: complete
+- message_id: MSG-0003
+  sequence: 3
+  path: messages/0003-progress.trace
+  sha256: d4687510d13ca38c918dc41569bd9fe5b4deb6422d247eaa8c18710eb499fb16
+  content_sha256: e87e40be71dea24bc8e47f728264cf1662a75ae40c085b6e4239521ea92b5e52
+  kind: progress
+  sender_actor_id: architecture-docs
+  receiver_actor_ids:
+  - main-agent
+  created_at: '2026-09-11T13:59:05.600417Z'
+  capture_status: complete
+- message_id: MSG-0004
+  sequence: 4
+  path: messages/0004-progress.trace
+  sha256: 1a5ebe42092fbf852632487c7df8371b6f50870b65bad556cee68ef37c1a5615
+  content_sha256: 6e2c7fe0b44afcbddd13416298bf20186d5d19f850630b24ebd25bd412d4197f
+  kind: progress
+  sender_actor_id: accepted-gate-docs
+  receiver_actor_ids:
+  - main-agent
+  created_at: '2026-09-11T13:59:05.608690Z'
+  capture_status: complete
+- message_id: MSG-0005
+  sequence: 5
+  path: messages/0005-progress.trace
+  sha256: 3ef9542a54f611a1d117fab8c08b0cb4e2978c2e28003f27a03ca6d8cef47cf8
+  content_sha256: 73d3acd16539e9eaf0cefd08c1d71ed5baf8d3144b90565f08ecc11cd15950f3
+  kind: progress
+  sender_actor_id: accepted-gate-docs
+  receiver_actor_ids:
+  - main-agent
+  created_at: '2026-09-11T13:59:05.616452Z'
+  capture_status: complete
+- message_id: MSG-0006
+  sequence: 6
+  path: messages/0006-result.trace
+  sha256: dc2aab35352b1bc65556c80ba5bfc3b4e5ca6d676db4a78a2eef521fa1e554c1
+  content_sha256: 1dd45aeb3dadd6281d67db695ff0e845f86ea9ca285684c0a4930cc55e552923
+  kind: handoff
+  sender_actor_id: accepted-gate-docs
+  receiver_actor_ids:
+  - main-agent
+  created_at: '2026-09-11T13:59:05.624125Z'
+  capture_status: complete
+- message_id: MSG-0007
+  sequence: 7
+  path: messages/0007-progress.trace
+  sha256: 8dc6c7922cb58d7547de3fe54180ab22f8a9aff3f9759739f4ee0ac48b28d2de
+  content_sha256: 2a0942a6cc94c47b5aa8ef00692df76a3ad9e4a3bec34d4b6c503a1ca94f3845
+  kind: progress
+  sender_actor_id: architecture-docs
+  receiver_actor_ids:
+  - main-agent
+  created_at: '2026-09-11T13:59:05.634166Z'
+  capture_status: complete
+- message_id: MSG-0008
+  sequence: 8
+  path: messages/0008-result.trace
+  sha256: a2bccd3fb6ebbc22d9b890ef3184907efa8e8f35c41e69f2ca1f9486ab30f560
+  content_sha256: e0a06d29d23673dbe0a4b7a7fa787eecc9ceccfa2aed2a57ccdf13bb05bbe5b2
+  kind: handoff
+  sender_actor_id: architecture-docs
+  receiver_actor_ids:
+  - main-agent
+  created_at: '2026-09-11T13:59:05.645473Z'
+  capture_status: complete
+event_ledger:
+  path: events.jsonl
+  sha256: e70c38ce2a07ed9b3b62a9670332341f64f8bf4ad7a8e5fadf1b4988531f0c90
+  event_count: 17
+tool_event_refs:
+- path: tool-events/initial-doc-check-failed.json
+  sha256: 1039a589d80a421e24c5e4006d35a20b4681a14bfd9710aa1ef6dc68a0d3dc9b
+- path: tool-events/docs-governance-succeeded.json
+  sha256: 25b592f340e4c7387b76380da27a29a9ef8acdca7b634f9b5aad1eab67340961
+- path: tool-events/repository-failed.json
+  sha256: 5f57a23105af0d86d96fc0cebfd6033596264552b479e37f77fd679ea8bae0c9
+- path: tool-events/diff-succeeded.json
+  sha256: cdf787df9f03b2d353cc8ffad5298b830dd350c7e6ab1c335e7381475f1a9a65
+- path: tool-events/preserved-boundaries-succeeded.json
+  sha256: c9c7988cdab2c89c5076327ac95a0e8534de9bb4a45b2ad6ca12b4d1ca354eeb
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs:
+- path: CHECKS.md
+  sha256: bde7d532b5f5262dd099d4a123d222d863a2f722a60ed8781bf65795d663f318
+- path: .gitattributes
+  sha256: a79691a93b46e49ce460c26ef22afcc03d6eca1e63bf2edbc20e96159510f6c9
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: messages

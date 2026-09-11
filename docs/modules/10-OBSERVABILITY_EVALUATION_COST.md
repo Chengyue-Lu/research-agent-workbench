@@ -112,6 +112,26 @@ trial/result，也不证明 Skill/Method 已有净收益。未来比较可观察
 provenance error、反证遗漏、人工纠正距离、返工、时间、token/成本和可恢复性，不能只比较文本“更完整”。
 多 Agent/H1/H2 是正交的 coordination 变量，不是旧 arm 名称或默认优胜组。
 
+Phase D 的系统级解释采用已接受的
+[ADR-0020 双传输决定](../decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md)：A1/A2 使用 M6
+isolated session，A3 使用 M11 Core，A4 使用 M11 projection-backed Skill extension。Primary estimand 为
+`A4 − A2` 的 system-level net benefit，其中包含 transport difference；`A2 − A1` 表示同 transport 的
+Tool 条件增量。`A4 − A3` 只有在 pairwise exact-equality closure 证明唯一差异为 admitted Skill extension
+时才解释为 Skill conditional increment，否则按 Skill-bearing package / bundled effect 或 unavailable 处理；
+`A3 − A2` 不能解释为 pure Mode effect。
+
+已实现的 Evaluation contract 仍限于 M5-003 的 Manifest 与 non-executing plan。System-Level Evaluation
+Protocol（M5-006）将冻结 execution qualification、pairwise comparability、盲评、measurement status、
+admission-evidence overlap/held-out policy 与分析规则；baseline envelope/closeout（M6-008）和
+System-Level Evaluation Harness（M5-007）在该 Protocol 基础上实现执行与证据重算。这些是后继工作，
+本模块不定义其 Schema，也不把架构决定计为 transport 或 Harness 实现证据。
+
+A4 保留 `mode-candidate-skill` 的 frozen treatment identity，正式执行必须闭合具名准入决定与
+accepted Release→Projection→Supply→Resolution→Snapshot→Bundle→View→Host lineage；Runtime 只消费
+准入后的供给，不读取 candidate/evaluation/lifecycle history。M11 的 projection/mapping 机制已实现，
+真实 A4 执行仍须满足独立 admission 与 Skill closeout replay Gate。当前成熟度、任务状态及剩余依赖分别见
+[STATUS](../STATUS.md)、[TASKS](../TASKS.md) 与 [ROADMAP](../ROADMAP.md)。
+
 ## 7. Skill 评估
 
 每个 Skill 有独立小型 eval 集：

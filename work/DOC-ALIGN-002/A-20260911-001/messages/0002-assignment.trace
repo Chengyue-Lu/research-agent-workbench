@@ -1,0 +1,19 @@
+---
+schema_version: 0.1.0
+message_id: MSG-0002
+task_id: DOC-ALIGN-002
+task_revision: 1
+attempt_id: A-20260911-001
+sequence: 2
+kind: assignment
+sender_actor_id: main-agent
+receiver_actor_ids:
+- accepted-gate-docs
+accountable_owner: Chengyue-Lu
+created_at: '2026-09-11T13:59:05.593243Z'
+content_sha256: e27a661fd0809a60ca7d676760733db087a32caa4c316dfc8accd918b094e314
+attachment_refs: []
+redactions: []
+capture_status: complete
+---
+{"capture":"retrospective; workspace path normalized","visible_message":"Bounded docs-maintainer subtask, requiredSkills: []. Worktree <worktree> branch docs/accepted-state-alignment-20260911 base 11c3b57dfbf8af0dc2587fc421d097e2544941c3. Read applicable AGENTS.md. Only edit docs/modules/07-ARTIFACTS_AND_PROVENANCE.md, docs/workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md, docs/decisions/README.md, docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/BASELINE_TRANSPORT_GATE.md. User asks factual documentation upkeep per latest develop: M4-004 now accepted/merged bounded run reconstruction (PR62 merged 2026-09-10T23:50:24Z into 11c3b57dfbf8af0dc2587fc421d097e2544941c3); change candidate module heading/state, retain not scientific correctness/not real M5 case limits. M4 workstream README only current top status, preserve all historical validation/review/failure evidence verbatim. ADR0020 index status Accepted (PR56 merged 2026-09-04T17:13:19Z squash 6a032e12c30a88a501258eec8c0b5d6c6082d81d). Gate doc top conditional merge -> current SATISFIED based PR56; can update top evidence field to verified merge fact, but entire section '## 2. Frozen arm mapping' onwards unchanged. Do NOT edit pinned ADR0020 document/hash/mapping. No TASKS/public docs/runtime/other files edits. No commits/push/external communication. Output precise changes and evidence of preserved historical/frozen content. Budget ~10 minutes; stop after diff inspection. Root edits STATUS/map/ROADMAP concurrently."}

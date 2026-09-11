@@ -59,9 +59,9 @@ Resolved Capability Snapshot
 | Research State / Failure | **D｜bounded candidate + P｜Human/R2** | revisioned State、Attempt lineage、Research Failure、Unknown/Assumption items、Contradiction relation 与 derived Frontier 可验证 | candidate 已是 final universal kernel 或科学语义已接受 |
 | Method Trace | **D｜ref-only candidate + P｜Human/R2** | exact Attempt/Task/Method/Mode/Action/State path 与 authoritative actual-fact/gap 边界可闭合 | 已证明 reviewer reconstruction 或 complete method coverage |
 | Phase C Gate | **D｜synthetic machine Gate + P｜semantic closeout** | 两个 fresh-process bounded case 的 exact closure、受控读取与 fixed predicates 可复验 | Human/R2 closeout 完成，或 Topic 5 自动解冻 |
-| Source Admission | **D｜M4-001 + P｜promotion** | inbox/raw 分区、provenance sidecar、live-byte hash 与 raw-reference Gate 已实现 | promotion、Claim trace、Run reproduction、license 法律效力或科学质量已验证 |
+| Artifact / Provenance | **D｜M4-001～004 bounded** | Source Admission、受信验证链控制的 promotion、Claim 支持/反证/限制定位与 exact Run synthetic reconstruction 已实现 | promotion 等于 Claim/Human acceptance，或 synthetic reconstruction 证明任意 Run 可复现、license 法律效力或科学质量 |
 | Evaluation Manifest | **D｜non-executing plan + G｜real cases** | canonical four-arm plan 冻结 Task/Model/Host/budget/context/evidence 并确定编译 | evaluation 已运行，或 Skill/Method 净增量已证明 |
-| SkillReleaseProjection | **P｜optional extension** | 语义与排除面已被 ADR/M11 Task 定义限定 | Projection/mapping 已实现，或它 Gate 了 no-Skill Core |
+| SkillReleaseProjection | **D｜bounded optional extension** | M11-005/006 已实现 immutable Release projection/publisher 与统一 Supply→View mapping | 空生产 index 已提供真实 Skill new-binding，或该可选扩展 Gate 了 no-Skill Core |
 
 ---
 
@@ -358,7 +358,7 @@ pause/resume、recovery 或 salvage implementation。
 
 ---
 
-## 12. Artifact / Provenance 与 Source Admission（M4-001）
+## 12. Artifact / Provenance 闭环（M4-001～004）
 
 ```text
 sources/inbox
@@ -379,8 +379,17 @@ Source Admission PASS
 != work/object promotion
 ```
 
-M4-002 是当前合法的 promotion frontier；M4-003 Claim/counterevidence trace 与 M4-004 Run reproduction 仍等待
-该层。精确状态只看 `TASKS.md`。
+M4-001～004 已在 `develop` 完成有界实现，各层继续承担独立责任：
+
+- [Source Admission](implementation/SOURCE_ADMISSION_CONTRACT.md) 保存 admitted bytes 与 provenance；
+- [Artifact Promotion](implementation/ARTIFACT_PROMOTION_CONTRACT.md) 以 promotion 时重执行的 accepted
+  pinned runner/checker 确立复制资格，保留 work 原始材料；
+- [Claim evidence localization](implementation/CLAIM_TRACE_CONTRACT.md) 一次定位支持、反证、限制与来源闭包；
+- [Run reconstruction](workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md) 从 exact
+  inputs/artifacts/environment refs 在 fresh process 重建 bounded synthetic case。
+
+这些实现不替代 Claim 接受、Human Decision 或科学正确性判断；Run reconstruction 不证明任意研究环境的
+通用复现能力。精确状态以 [TASKS.md](TASKS.md) 为准。
 
 ---
 
@@ -403,11 +412,15 @@ Skill Supply；candidate Skill arm 必须 exact-pin Skill package 和 Evaluation
 不写入 result、不决定 admission/promotion、不产生 Runtime/Method/Claim/Human authority。
 
 Phase D 的 primary estimand 是完整 RWB Runtime 集成系统相对 simpler Agent/Tool baseline 的
-system-level net benefit；单一 Skill 效果只作 secondary interpretation。后继受控面为：
+system-level net benefit；单一 Skill 效果只作 secondary interpretation。
+
+本节已实现的 Evaluation contract 仅为 M5-003 Manifest/check/non-executing plan。ADR-0020 已接受
+双传输与 estimand；以下 M5-006 Protocol、M6-008 baseline envelope/closeout 与 M5-007 Harness 的描述
+均为已定义的后继验收要求，不表示已有对应 Schema、validator 或执行实现。后继受控面为：
 
 ```mermaid
 flowchart TD
-    M5003["M5-003 non-executing plan"] --> M5006["M5-006 frozen protocol<br/>READY"]
+    M5003["M5-003 non-executing plan / DONE"] --> M5006["M5-006 protocol to implement<br/>READY"]
     BTG["ADR-0020 dual transport<br/>Gate A satisfied"] --> M5006
     M5006 --> M5007["M5-007 unified evaluation harness<br/>BLOCKED"]
     M5006 --> M6008["M6-008 baseline envelope<br/>+ replay closeout / PARKED"]
@@ -436,7 +449,7 @@ enforcement metadata。`agent_profile`、Mode/Action/Method/Capability/Skill/pri
 拥有的 hash-pinned `ArmExecutionQualificationRecord@1.0.0` 保持 Task/Requirement/Supply/component/
 implementation/interface 与相关 A3 Mode/Action/Method，且所有 ceiling 只能等价或收窄。M6-008 只产生 A2
 record；Capability Resolver 是 A3 runtime Resolution/Snapshot 的唯一 producer/selector，M11 只验证并消费，
-M5-007 引用两端对象组装 A3 record并重算两类 record。
+M5-007 将引用两端对象组装 A3 record 并重算两类 record。
 Decision 不等于 transport 实现，故新增 Execution-owned M6-008 负责 A1/A2 projection、每次 provider request/Tool
 invocation use-boundary 的 pin reload、trusted clock、actual binding Trace facts 与 no-Skill replay-valid
 closeout；M6-008 当前 PARKED，只有 M5-006 DONE、shared contract 冻结后才解锁，并在 DONE 前继续阻断 M5-007。
@@ -541,10 +554,11 @@ M10 State candidate 复用具 actor/time/reason refs 的 kernel Decision 表达 
 machine chain 已完成，但尚未有将 candidate 接受为 Phase C semantic baseline 的具名 Human/R2 closeout。
 Topic 5 因此仍冻结，且未来 closeout 也只能开启独立架构审查，不直接授权实现。
 
-### 16.2 M4 promotion / Claim trace / reproduction
+### 16.2 M4 bounded implementation 与真实案例验证
 
-Source Admission 已完成，但 raw/work 何时成为可引用 object/run、支持/反证/限制如何闭合、Run
-如何从 exact inputs/artifacts/environment 复现仍未实现。
+Source Admission、promotion、Claim trace 与 bounded synthetic Run reconstruction 已实现。剩余价值验证
+需要在批准的真实案例中确认 provenance、支持/反证/限制定位与复现结果是否改善研究工作；这些工程实现
+本身不构成 M5 真实案例结果、Claim 接受或科学正确性证据。
 
 ### 16.3 M5 real-case evaluation
 
@@ -580,7 +594,7 @@ Human authority，也不能把 M5 未完成的 system-level Evaluation 伪装为
 | Phase A | M8 Method/Core 已收口 | 不推导 Capability/Runtime/Human execution authority |
 | Phase B | M9 Requirement→Report→Resolution→Snapshot 与 evolution foundations 已收口 | structural contracts 不证明 live availability 或 Skill increment |
 | Phase C | M10 + M3-009 bounded candidate/machine Gate 已实现 | Human/R2 semantic closeout pending；Topic 5 不自动 thaw |
-| Phase D | M5-003 canonical plan 与 ADR-0020 dual-transport estimand 已接受；M5-006 READY | M6-008 等待 M5-006 shared contract（PARKED）；baseline closeout、Skill replay Gate、Harness、真实案例/results/net-increment 与 disposition 未完成 |
+| Phase D | M4-001～004 bounded 闭环与 M5-003 non-executing plan 已实现；ADR-0020 dual-transport estimand 已接受 | M5-006 READY 但 Protocol 尚待实现；M6-008 等待 shared contract（PARKED）；baseline closeout、Skill replay Gate、Harness、真实案例/results/net-increment 与 disposition 未完成 |
 | Phase F / Topic 4 | M11-001～004 bounded Core 与 M11-005/006 optional Skill extension 已实现 | production Skill projection、live conformance 与 ordinary E2E 仍是独立 Gate |
 | Topic 5 | 没有新 implementation authority | Phase C Human/R2 closeout + 独立 R2 architecture review/task-definition |
 | Product / Release | M14-001/002/003 trust、surface 与 portable package DONE | public docs、license/scaffold、远端保护与首次发行仍未完成 |
@@ -631,7 +645,7 @@ Contract/implementation 是 value evidence 的必要条件，不是充分条件�
 - `src/research_workbench/capability/`：Requirement、Skill Need/Lifecycle、Supply、Resolution/Snapshot；
 - `src/research_workbench/execution/`：Runtime Bundle、Resolved Execution View、Thin Host、generic closeout；
 - `src/research_workbench/research_state/`：State/Attempt/Failure/Method Trace closure 与 Phase C Gate；
-- `src/research_workbench/artifacts/admission.py`：Source Admission producer/validator；
+- `src/research_workbench/artifacts/`：Source Admission、promotion、Claim trace 与 bounded Run reconstruction；
 - `src/research_workbench/evaluation/manifest.py`：Evaluation Manifest 与 non-executing plan；
 - `src/research_workbench/observability/`：Execution Trace、legacy Receipt 与 shared facts；
 - `src/research_workbench/validation/`：document dispatch 与独立 critical validators；
@@ -639,7 +653,7 @@ Contract/implementation 是 value evidence 的必要条件，不是充分条件�
 
 ### 一句话状态
 
-RWB 已从“只有 Method/Capability structural contracts”前进到 **bounded supply-neutral Runtime Core + bounded
-Research State/Method Trace candidate + Source Admission + non-executing Evaluation plan**；当前价值验证与
-发布距离主要由 Human/R2 semantic closeout、promotion/reproduction、real-case evaluation、live conformance、
-ordinary-user E2E 与 license/release Gate 决定，而不是继续堆叠新 Supervisor、fallback 或全局编排。
+RWB 已具备 **bounded supply-neutral Runtime Core + optional Skill projection/mapping + bounded
+Research State/Method Trace candidate + M4 Artifact/Provenance 闭环 + non-executing Evaluation plan**；当前价值
+验证与发布距离主要由 Human/R2 semantic closeout、Evaluation Protocol/baseline transport/Harness、real-case
+evaluation、live conformance、ordinary-user E2E 与 license/release Gate 决定。
