@@ -353,6 +353,26 @@ class MetadataTests(unittest.TestCase):
 
 
 class WorkflowTests(unittest.TestCase):
+    def test_parallel_execution_producers_feed_a_fail_closed_compatibility_join(self):
+        workflow = yaml.load((ROOT / '.github/workflows/ci.yml').read_bytes(), Loader=yaml.BaseLoader)
+        jobs = workflow['jobs']
+        for name in ('behavioral_remainder_311', 'coverage_quality'):
+            self.assertEqual('plan', jobs[name]['needs'])
+        join = jobs['compatibility_311']
+        self.assertEqual({'plan', 'behavioral_remainder_311', 'coverage_quality'}, set(join['needs']))
+        self.assertIn('always()', join['if'])
+        steps = join['steps']
+        require = steps[0]
+        self.assertIn('test "$BEHAVIOR_RESULT" = success', require['run'])
+        self.assertIn('test "$COVERAGE_RESULT" = skipped', require['run'])
+        self.assertIn('test "$COVERAGE_RESULT" = success', require['run'])
+        scripts = '\n'.join(step.get('run', '') for step in steps)
+        self.assertIn('--suite behavioral-union', scripts)
+        self.assertNotIn('coverage run', scripts)
+        remainder = '\n'.join(step.get('run', '') for step in jobs['behavioral_remainder_311']['steps'])
+        self.assertIn('--suite behavioral-remainder', remainder)
+        self.assertNotIn('--suite full', remainder)
+
     def test_metadata_isolation_concurrency_and_fixed_gate_names(self):
         content=yaml.load((ROOT/'.github/workflows/ci.yml').read_bytes(),Loader=yaml.BaseLoader)
         governance=yaml.load((ROOT/'.github/workflows/ci-governance.yml').read_bytes(),Loader=yaml.BaseLoader)

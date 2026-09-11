@@ -13,23 +13,24 @@ import ci_dependencies as deps
 
 
 class DependencyTests(unittest.TestCase):
-    def test_cached_facts_resolve_added_and_removed_modules_against_each_inventory(self):
-        consumer = {'tests/test_contract.py': b'from pkg import leaf'}
-        self.assertEqual({}, deps.graph(consumer, consumer)[0])
-        expanded = {**consumer, 'src/pkg/__init__.py': b'', 'src/pkg/leaf.py': b'VALUE=1'}
-        edges = deps.graph(expanded, expanded)[0]
-        self.assertEqual({'tests/test_contract.py'}, edges['src/pkg/leaf.py'])
-        self.assertEqual({'tests/test_contract.py'}, edges['src/pkg/__init__.py'])
-        self.assertEqual({}, deps.graph(consumer, consumer)[0])
-
-    def test_cached_facts_keep_new_basename_and_directory_resource_matches(self):
-        blobs = {'tests/test_contract.py': b'consume("README.md")\n'
-                 b'(ROOT / "data").rglob("*")'}
-        first = {*blobs, 'README.md', 'data/a.txt', 'database/unrelated.txt'}
-        second = {*blobs, 'README.md', 'docs/README.md', 'data/b.txt'}
-        self.assertEqual({'README.md', 'data/a.txt'}, set(deps.graph(blobs, first)[0]))
-        self.assertEqual({'README.md', 'docs/README.md', 'data/b.txt'}, set(deps.graph(blobs, second)[0]))
-        self.assertEqual({'README.md', 'data/a.txt'}, set(deps.graph(blobs, first)[0]))
+    def test_cached_consumer_follows_inventory_lifecycle(self):
+        """Cached consumer: discover inputs, expand inventory, remove inputs, restore."""
+        consumer = 'tests/test_contract.py'
+        blobs = {consumer: b'from pkg import leaf\nconsume("README.md")\n(ROOT / "data").rglob("*")'}
+        modules = {'src/pkg/__init__.py': b'', 'src/pkg/leaf.py': b'VALUE=1'}
+        first = {'README.md', 'data/a.txt', 'database/unrelated.txt'}
+        second = {'README.md', 'docs/README.md', 'data/b.txt'}
+        for checkpoint, sources, resources, expected in (
+            ('no inputs', blobs, set(), set()),
+            ('discover resources', blobs, first, {'README.md', 'data/a.txt'}),
+            ('add package and nested basename', {**blobs, **modules}, second, {*modules, *second}),
+            ('remove package and replace directory child', blobs, second, second),
+            ('restore original inventory', blobs, first, {'README.md', 'data/a.txt'}),
+            ('remove all inputs', blobs, set(), set()),
+        ):
+            with self.subTest(checkpoint=checkpoint):
+                edges = deps.graph(sources, {*sources, *resources})[0]
+                self.assertEqual({path: {consumer} for path in expected}, edges)
 
     def test_cached_facts_bind_relative_import_and_file_root_to_consumer_path(self):
         raw = b'from . import helper\nfrom pathlib import Path\n(Path(__file__).parent / "data.txt").read_text()'
@@ -44,13 +45,13 @@ class DependencyTests(unittest.TestCase):
 
     def test_cached_facts_invalidate_changed_bytes_and_invalid_python(self):
         path = 'tests/test_contract.py'
-        for raw, expected, opaque, invalid in (
-            (b'import pkg.a', {'src/pkg/a.py'}, False, False),
-            (b'import pkg.b\nexec(code)', {'src/pkg/b.py'}, True, False),
-            (b'def invalid(', set(), False, True),
-            (b'import pkg.a', {'src/pkg/a.py'}, False, False),
+        for checkpoint, raw, expected, opaque, invalid in (
+            ('original source', b'import pkg.a', {'src/pkg/a.py'}, False, False),
+            ('changed import and dynamic execution', b'import pkg.b\nexec(code)', {'src/pkg/b.py'}, True, False),
+            ('invalid source', b'def invalid(', set(), False, True),
+            ('restored source', b'import pkg.a', {'src/pkg/a.py'}, False, False),
         ):
-            with self.subTest(raw=raw):
+            with self.subTest(checkpoint=checkpoint):
                 blobs = {path: raw, 'src/pkg/a.py': b'', 'src/pkg/b.py': b''}
                 edges, dynamic, _, errors = deps.graph(blobs, blobs)
                 self.assertEqual(expected, set(edges))

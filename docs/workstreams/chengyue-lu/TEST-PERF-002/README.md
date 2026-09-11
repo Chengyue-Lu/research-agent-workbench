@@ -16,6 +16,9 @@ The post-merge PR #68 investigation and bounded parser repair are recorded in
 The follow-up [project comparison and analysis performance](ANALYSIS_PERFORMANCE.md)
 records immutable syntax-fact reuse, unchanged graph/plan outputs and local timings.
 
+[Scenario tests and execution reuse](SCENARIO_EXECUTION.md) describes named checkpoints
+and the parallel coverage / behavioral-remainder producers with a complete evidence join.
+
 ## Selection authority
 
 [`plan_ci.py`](../../../../.github/scripts/plan_ci.py) reads exact base/head/merge-base Git facts and the

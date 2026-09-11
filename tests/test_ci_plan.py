@@ -1189,6 +1189,50 @@ else: raise AssertionError('candidate worker accepted focused self-authorization
                 self.assertEqual('coverage-quality' if repository else 'impact' if impact else 'focused', receipt['suite'])
                 self.assertEqual(len({r['id'] for r in receipt['tests']}), receipt['test_count'])
 
+    def test_real_workers_partition_and_rejoin_exact_git_plan_evidence(self):
+        """Two isolated workers supply one complete behavioral receipt; corrupt evidence blocks."""
+        authority = yaml.safe_load((self.repo / 'tests/coverage_policy.yaml').read_bytes())
+        authority['suites']['coverage-quality'] = {'modules': ['test_unselected']}
+        self.base = self.commit('tests/coverage_policy.yaml', yaml.safe_dump(authority))
+        self.commit()
+        p = self.plan(force_full=True)
+        plan_path = Path(self.temp.name) / 'partition-plan.json'
+        plan_path.write_bytes(planner.canonical(p))
+        coverage = Path(self.temp.name) / 'coverage.json'
+        remainder = Path(self.temp.name) / 'remainder.json'
+        joined = Path(self.temp.name) / 'joined.json'
+        argv = [sys.executable, str(self.repo / 'tests/run_unittest_suite.py'),
+                '--plan', str(plan_path), '--verbosity', '0']
+        env = {**os.environ, 'GITHUB_EVENT_PATH': '', 'GITHUB_EVENT_NAME': 'pull_request', 'GITHUB_STEP_SUMMARY': ''}
+        def execute(*args):
+            return subprocess.run([*argv, *args], cwd=self.repo, env=env, text=True,
+                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        for name, path in [('coverage-plan', coverage), ('behavioral-remainder', remainder)]:
+            with self.subTest(checkpoint=name):
+                result = execute('--suite', name, '--json-output', str(path))
+                self.assertEqual(0, result.returncode, result.stderr)
+        c, b = json.loads(coverage.read_bytes()), json.loads(remainder.read_bytes())
+        self.assertTrue({r['canonical_id'] for r in c['tests']}.isdisjoint(r['canonical_id'] for r in b['tests']))
+        join_args = ['--suite', 'behavioral-union', '--json-output', str(joined),
+                     '--behavior-results', str(remainder), '--coverage-results', str(coverage)]
+        result = execute(*join_args)
+        if sys.version_info[:2] == (3, 11):
+            self.assertEqual(0, result.returncode, result.stderr)
+            merged = json.loads(joined.read_bytes())
+            self.assertEqual(c['test_count'] + b['test_count'], merged['test_count'])
+            self.assertEqual(c['test_count'], merged['execution']['reused_for_behavioral'])
+        else:
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn('mismatched binding', result.stderr)
+        c['tests'] = []
+        coverage.write_bytes(planner.canonical(c))
+        with self.subTest(checkpoint='missing executed case'):
+            self.assertNotEqual(0, execute(*join_args).returncode)
+        # A plan cannot be replayed after the actual checked-out Git head changes.
+        self.commit('README.md', 'new head\n')
+        with self.subTest(checkpoint='stale plan'):
+            self.assertNotEqual(0, execute('--suite', 'behavioral-remainder', '--json-output', str(remainder)).returncode)
+
     def test_decorators_are_executable_impact_and_comments_keep_repository_guard(self):
         path = LEAVES[0]
         source = 'def identity(f): return f\n@identity\ndef example(): return 1\n# review note\n'

@@ -75,10 +75,10 @@ jobs:
           fi
           python -c 'import json, subprocess; p=json.load(open("ci-plan.json")); subprocess.run(["git", "diff", "--check", p["binding"]["merge_base"], p["binding"]["head"]], check=True)'
 
-  compatibility_311:
+  behavioral_remainder_311:
     needs: plan
     if: needs.plan.outputs.behavioral != 'none'
-    name: compatibility (3.11)
+    name: behavioral remainder (3.11)
     runs-on: ubuntu-latest
     steps:
       - name: Start wall-time clock
@@ -94,25 +94,68 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: ci-plan
-      - name: Run selected compatibility suite
-        env:
-          CI_BEHAVIORAL: ${{ needs.plan.outputs.behavioral }}
-        run: |
-          suite=full
-          if [ "$CI_BEHAVIORAL" = focused ]; then suite=focused; fi
-          python tests/run_unittest_suite.py --suite "$suite" --plan ci-plan.json --json-output full-test-results-3.11.json --slowest 20
+      - name: Run behavioral tests outside the coverage group
+        run: python tests/run_unittest_suite.py --suite behavioral-remainder --plan ci-plan.json --json-output behavioral-remainder-results.json --slowest 20
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: compatibility-3.11-evidence
-          path: full-test-results-3.11.json
+          name: behavioral-remainder-3.11-evidence
+          path: behavioral-remainder-results.json
       - name: Report job wall time
         if: always()
         run: |
           ended_at="$(date +%s)"
           wall_seconds="$((ended_at - RWB_JOB_STARTED_AT))"
-          echo "compatibility (3.11) job_wall_seconds=${wall_seconds}"
-          printf '### Job wall time\n\n- job: compatibility (3.11)\n- wall_seconds: %s\n' "$wall_seconds" >> "$GITHUB_STEP_SUMMARY"
+          echo "behavioral remainder (3.11) job_wall_seconds=${wall_seconds}"
+          printf '### Job wall time\n\n- job: behavioral remainder (3.11)\n- wall_seconds: %s\n' "$wall_seconds" >> "$GITHUB_STEP_SUMMARY"
+
+  compatibility_311:
+    needs: [plan, behavioral_remainder_311, coverage_quality]
+    if: always() && needs.plan.result == 'success' && needs.plan.outputs.behavioral != 'none'
+    name: compatibility (3.11)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require successful execution producers
+        env:
+          BEHAVIOR_RESULT: ${{ needs.behavioral_remainder_311.result }}
+          COVERAGE_RESULT: ${{ needs.coverage_quality.result }}
+          COVERAGE_SCOPE: ${{ needs.plan.outputs.coverage }}
+        run: |
+          test "$BEHAVIOR_RESULT" = success
+          if [ "$COVERAGE_SCOPE" = none ]; then
+            test "$COVERAGE_RESULT" = skipped
+          else
+            test "$COVERAGE_RESULT" = success
+          fi
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/pull/{0}/merge', inputs.pr) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -e '.[test]'
+      - uses: actions/download-artifact@v4
+        with:
+          name: ci-plan
+      - uses: actions/download-artifact@v4
+        with:
+          name: behavioral-remainder-3.11-evidence
+      - uses: actions/download-artifact@v4
+        if: needs.plan.outputs.coverage != 'none'
+        with:
+          name: coverage-quality-evidence
+      - name: Verify complete behavioral evidence from both groups
+        env:
+          COVERAGE_SCOPE: ${{ needs.plan.outputs.coverage }}
+        run: |
+          coverage_args=()
+          if [ "$COVERAGE_SCOPE" != none ]; then coverage_args=(--coverage-results coverage-test-results.json); fi
+          python tests/run_unittest_suite.py --suite behavioral-union --plan ci-plan.json --behavior-results behavioral-remainder-results.json "${coverage_args[@]}" --json-output full-test-results-3.11.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: compatibility-3.11-evidence
+          path: full-test-results-3.11.json
 
   compatibility_313:
     needs: plan
@@ -177,9 +220,11 @@ jobs:
           python .github/scripts/ci_checks.py configure --plan ci-plan.json --config .rwb/ci-coverage.ini
           python -m coverage run --rcfile=.rwb/ci-coverage.ini -m tests.run_unittest_suite --suite coverage-plan --plan ci-plan.json --policy tests/coverage_policy.yaml --json-output coverage-test-results.json --slowest 20
       - name: Export coverage evidence
+        if: always()
         run: python -m coverage json --rcfile=.rwb/ci-coverage.ini -o coverage.json
       - name: Preserve coverage and duration evidence
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: coverage-quality-evidence
           path: |

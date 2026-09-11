@@ -31,6 +31,7 @@ suites:
       - test_context_model_branches
       - test_critical_contract_branches
       - test_coverage_policy
+      - test_test_runner
       - test_decision_authority
       - test_execution_contract_helpers
       - test_execution_archive_helpers
