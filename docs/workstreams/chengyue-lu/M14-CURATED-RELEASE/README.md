@@ -131,6 +131,15 @@ checkout 外验证，生产 Projection 仍为空，非空引用闭包只由 synt
 policy 排除的 TASKS/STATUS/DEVELOPMENT/workstream，也不得把 synthetic/bounded contract、空 Projection
 index、未执行 Evaluation 或未验证 live Provider 描述为已完成产品能力。
 
+当前实现 slice 使用同一份 source README / Changelog / Charter / Architecture / Getting Started / Public Guide /
+Supported Features，并追加 policy `1.1.0` 闭合 build backend、Runtime catalog spec 与 no-Skill 输入。
+开发侧 documentation check 对实际选入文件检查链接、锚点、内部导航泄漏与构建输入闭包；负例拒绝丢失输入、
+encoded/reference/HTML 内部链接。原 Changelog 的完整工程记录移入 history，公开页只保留面向使用者的变化。
+
+按 [Issue #57 当前推进线](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57#issuecomment-5635297678)，
+public IA 与 support matrix 先行；M1-009 完成后用真实 scaffold flow 定稿 Quickstart。当前安装后资源示例只证明
+structural no-Skill 输入，不作为 M14-004 最终 Quickstart 验收。Task 不在本 slice 标记 DONE。
+
 ### M14-005 / REL-005 — First curated release
 
 在 exact develop SHA required CI 全绿、M0-007/M1-009/M14-001～004、GitHub remote protections 和具名 Human
@@ -151,7 +160,7 @@ task-definition 只写 canonical docs、ADR、workstream 与导航。后续实�
 - M14-001：`.github` governance、治理测试与 release contributor docs；
 - M14-002：release policy/export/check/Schema、focused tests 与 Coverage Policy；
 - M14-003：package metadata、resource loader、portable smoke 与必要 runtime catalog；
-- M14-004：release-facing docs/navigation；
+- M14-004：release-facing docs/navigation、其 build-input/public-surface policy 新版本与开发侧闭包检查；
 - M14-005：生成的 `release/v*` tree、manifest、release evidence、main PR 与 tag。
 
 不同 Task 不得借“release”名义跨写 Runtime/Method/Claim/Human authority。共享文件冲突时依上述 DAG 串行或
