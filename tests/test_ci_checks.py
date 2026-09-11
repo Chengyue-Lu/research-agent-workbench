@@ -129,7 +129,7 @@ class ImpactCoverageTests(unittest.TestCase):
     def test_workflow_measurement_includes_the_executing_runner(self):
         import shlex
         workflow = yaml.safe_load((ROOT / '.github/workflows/ci.yml').read_bytes())
-        step = next(s for s in workflow['jobs']['coverage_quality']['steps'] if s.get('name') == 'Run required coverage test union')
+        step = next(s for s in workflow['jobs']['coverage_quality']['steps'] if s.get('name') == 'Run ordered behavior and coverage-only cases once')
         command = shlex.split(step['run'].splitlines()[-1])
         command[0] = sys.executable
         with tempfile.TemporaryDirectory() as directory:
@@ -353,25 +353,27 @@ class MetadataTests(unittest.TestCase):
 
 
 class WorkflowTests(unittest.TestCase):
-    def test_parallel_execution_producers_feed_a_fail_closed_compatibility_join(self):
+    def test_ordered_coverage_producer_feeds_fail_closed_behavioral_projection(self):
         workflow = yaml.load((ROOT / '.github/workflows/ci.yml').read_bytes(), Loader=yaml.BaseLoader)
         jobs = workflow['jobs']
-        for name in ('behavioral_remainder_311', 'coverage_quality'):
-            self.assertEqual('plan', jobs[name]['needs'])
-        join = jobs['compatibility_311']
-        self.assertEqual({'plan', 'behavioral_remainder_311', 'coverage_quality'}, set(join['needs']))
-        self.assertIn('always()', join['if'])
-        steps = join['steps']
-        require = steps[0]
-        self.assertIn('test "$BEHAVIOR_RESULT" = success', require['run'])
-        self.assertIn('test "$COVERAGE_RESULT" = skipped', require['run'])
-        self.assertIn('test "$COVERAGE_RESULT" = success', require['run'])
-        scripts = '\n'.join(step.get('run', '') for step in steps)
-        self.assertIn('--suite behavioral-union', scripts)
+        self.assertNotIn('behavioral_remainder_311', jobs)
+        self.assertEqual('plan', jobs['coverage_quality']['needs'])
+        compatibility = jobs['compatibility_311']
+        self.assertEqual({'plan', 'coverage_quality'}, set(compatibility['needs']))
+        self.assertIn('always()', compatibility['if'])
+        requirement = compatibility['steps'][0]['run']
+        self.assertIn('test "$COVERAGE_RESULT" = skipped', requirement)
+        self.assertIn('test "$COVERAGE_RESULT" = success', requirement)
+        scripts = '\n'.join(step.get('run', '') for step in compatibility['steps'])
+        self.assertIn('--suite behavioral-evidence', scripts)
+        self.assertIn('--execution-results execution-test-results.json', scripts)
+        self.assertIn('--suite "$CI_BEHAVIORAL"', scripts)
         self.assertNotIn('coverage run', scripts)
-        remainder = '\n'.join(step.get('run', '') for step in jobs['behavioral_remainder_311']['steps'])
-        self.assertIn('--suite behavioral-remainder', remainder)
-        self.assertNotIn('--suite full', remainder)
+        producer = '\n'.join(step.get('run', '') for step in jobs['coverage_quality']['steps'])
+        self.assertIn('--suite coverage-execution', producer)
+        self.assertIn('--coverage-results coverage-test-results.json', producer)
+        uploads = [s['with']['path'] for s in jobs['coverage_quality']['steps'] if s.get('uses', '').startswith('actions/upload-artifact')]
+        self.assertTrue(any('execution-test-results.json' in value for value in uploads))
 
     def test_metadata_isolation_concurrency_and_fixed_gate_names(self):
         content=yaml.load((ROOT/'.github/workflows/ci.yml').read_bytes(),Loader=yaml.BaseLoader)
@@ -396,7 +398,7 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn('ci_checks.py configure --plan ci-plan.json',
                       (ROOT / '.github/workflows/ci.yml').read_text())
         self.assertIn('--rcfile=.rwb/ci-coverage.ini', (ROOT / '.github/workflows/ci.yml').read_text())
-        self.assertIn('--suite coverage-plan', (ROOT / '.github/workflows/ci.yml').read_text())
+        self.assertIn('--suite coverage-execution', (ROOT / '.github/workflows/ci.yml').read_text())
         self.assertIn('ci_checks.py coverage --plan', (ROOT / '.github/workflows/ci.yml').read_text())
 
 

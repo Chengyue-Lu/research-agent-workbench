@@ -17,7 +17,7 @@ The follow-up [project comparison and analysis performance](ANALYSIS_PERFORMANCE
 records immutable syntax-fact reuse, unchanged graph/plan outputs and local timings.
 
 [Scenario tests and execution reuse](SCENARIO_EXECUTION.md) describes named checkpoints
-and the parallel coverage / behavioral-remainder producers with a complete evidence join.
+and the ordered behavioral/coverage producer with verified evidence projections.
 
 [Full-suite cost and test necessity](FULL_SUITE_COST.md) records direct profiling, bounded
 schema self-check reuse, long-test audit and the conditions for future cross-commit evidence reuse.

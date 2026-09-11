@@ -65,3 +65,17 @@ for cross-owner review. Quality thresholds, exclusions, product contracts and re
 - Local before/after measurements do not establish the new hosted full-suite wall time. Remaining
   Runtime resource closure work and cross-commit evidence reuse have separate proof requirements;
   see [full-suite audit](FULL_SUITE_COST.md). Cross-commit result reuse is not enabled by this repair.
+
+## Ordered behavioral execution repair
+
+- Equal TestCase identity sets do not establish equivalent fixture/order semantics. Preserve
+  the original B suite in one producer, then run C minus B. Real class/module state mutants
+  must fail both direct full and the ordered producer.
+- Delay coverage-only loading until B's top-level teardown completes. Start a fresh fixture
+  lifecycle for extras and retain B's errors/failures on the same unittest result.
+- Verify the raw ordered receipt against exact planned inventories, target, Python and
+  outcomes, including fixture events and checkpoints. Legacy split receipts are rejected;
+  projections preserve the raw digest and keep coverage-only cases outside behavioral scope.
+- The previous `8c09f6c` hosted result proves identity completeness across two producers,
+  not historical full execution equivalence. Fresh exact-head full, coverage, fixed aggregates,
+  governance and independent selection witness remain required before cross-owner acceptance.

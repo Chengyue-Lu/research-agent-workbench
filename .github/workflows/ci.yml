@@ -75,53 +75,17 @@ jobs:
           fi
           python -c 'import json, subprocess; p=json.load(open("ci-plan.json")); subprocess.run(["git", "diff", "--check", p["binding"]["merge_base"], p["binding"]["head"]], check=True)'
 
-  behavioral_remainder_311:
-    needs: plan
-    if: needs.plan.outputs.behavioral != 'none'
-    name: behavioral remainder (3.11)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Start wall-time clock
-        run: echo "RWB_JOB_STARTED_AT=$(date +%s)" >> "$GITHUB_ENV"
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/pull/{0}/merge', inputs.pr) || github.sha }}
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - run: python -m pip install -e ".[test]"
-      - uses: actions/download-artifact@v4
-        with:
-          name: ci-plan
-      - name: Run behavioral tests outside the coverage group
-        run: python tests/run_unittest_suite.py --suite behavioral-remainder --plan ci-plan.json --json-output behavioral-remainder-results.json --slowest 20
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: behavioral-remainder-3.11-evidence
-          path: behavioral-remainder-results.json
-      - name: Report job wall time
-        if: always()
-        run: |
-          ended_at="$(date +%s)"
-          wall_seconds="$((ended_at - RWB_JOB_STARTED_AT))"
-          echo "behavioral remainder (3.11) job_wall_seconds=${wall_seconds}"
-          printf '### Job wall time\n\n- job: behavioral remainder (3.11)\n- wall_seconds: %s\n' "$wall_seconds" >> "$GITHUB_STEP_SUMMARY"
-
   compatibility_311:
-    needs: [plan, behavioral_remainder_311, coverage_quality]
+    needs: [plan, coverage_quality]
     if: always() && needs.plan.result == 'success' && needs.plan.outputs.behavioral != 'none'
     name: compatibility (3.11)
     runs-on: ubuntu-latest
     steps:
-      - name: Require successful execution producers
+      - name: Require the planned coverage producer
         env:
-          BEHAVIOR_RESULT: ${{ needs.behavioral_remainder_311.result }}
           COVERAGE_RESULT: ${{ needs.coverage_quality.result }}
           COVERAGE_SCOPE: ${{ needs.plan.outputs.coverage }}
         run: |
-          test "$BEHAVIOR_RESULT" = success
           if [ "$COVERAGE_SCOPE" = none ]; then
             test "$COVERAGE_RESULT" = skipped
           else
@@ -139,19 +103,19 @@ jobs:
         with:
           name: ci-plan
       - uses: actions/download-artifact@v4
-        with:
-          name: behavioral-remainder-3.11-evidence
-      - uses: actions/download-artifact@v4
         if: needs.plan.outputs.coverage != 'none'
         with:
           name: coverage-quality-evidence
-      - name: Verify complete behavioral evidence from both groups
+      - name: Prove the ordered behavioral execution
         env:
           COVERAGE_SCOPE: ${{ needs.plan.outputs.coverage }}
+          CI_BEHAVIORAL: ${{ needs.plan.outputs.behavioral }}
         run: |
-          coverage_args=()
-          if [ "$COVERAGE_SCOPE" != none ]; then coverage_args=(--coverage-results coverage-test-results.json); fi
-          python tests/run_unittest_suite.py --suite behavioral-union --plan ci-plan.json --behavior-results behavioral-remainder-results.json "${coverage_args[@]}" --json-output full-test-results-3.11.json
+          if [ "$COVERAGE_SCOPE" = none ]; then
+            python tests/run_unittest_suite.py --suite "$CI_BEHAVIORAL" --plan ci-plan.json --json-output full-test-results-3.11.json
+          else
+            python tests/run_unittest_suite.py --suite behavioral-evidence --plan ci-plan.json --execution-results execution-test-results.json --json-output full-test-results-3.11.json
+          fi
       - uses: actions/upload-artifact@v4
         with:
           name: compatibility-3.11-evidence
@@ -215,10 +179,10 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: ci-plan
-      - name: Run required coverage test union
+      - name: Run ordered behavior and coverage-only cases once
         run: |
           python .github/scripts/ci_checks.py configure --plan ci-plan.json --config .rwb/ci-coverage.ini
-          python -m coverage run --rcfile=.rwb/ci-coverage.ini -m tests.run_unittest_suite --suite coverage-plan --plan ci-plan.json --policy tests/coverage_policy.yaml --json-output coverage-test-results.json --slowest 20
+          python -m coverage run --rcfile=.rwb/ci-coverage.ini -m tests.run_unittest_suite --suite coverage-execution --plan ci-plan.json --policy tests/coverage_policy.yaml --json-output execution-test-results.json --coverage-results coverage-test-results.json --slowest 20
       - name: Export coverage evidence
         if: always()
         run: python -m coverage json --rcfile=.rwb/ci-coverage.ini -o coverage.json
@@ -230,6 +194,7 @@ jobs:
           path: |
             coverage.json
             coverage-test-results.json
+            execution-test-results.json
           retention-days: 14
       - name: Enforce coverage obligations
         run: python .github/scripts/ci_checks.py coverage --plan ci-plan.json --coverage coverage.json --results coverage-test-results.json

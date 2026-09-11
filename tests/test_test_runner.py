@@ -157,6 +157,21 @@ class ScenarioReportTests(unittest.TestCase):
                          [p["detail"] for p in payload["problems"]])
 
 
+def ordered_receipt(behavioral, load_coverage, p):
+    execution = runner.OrderedCoverageExecution(behavioral, load_coverage)
+    result = run_suite(execution)
+    with tempfile.TemporaryDirectory() as directory, patch.dict(os.environ, {}, clear=True), redirect_stdout(io.StringIO()):
+        payload = runner._write_summary(Path(directory) / "results.json", "coverage-execution", 0.1,
+                                        result, 2, p, execution.contract())
+    payload["python_version"] = "3.11.16"
+    return execution, payload
+
+
+def project(p, execution, payload):
+    with patch.object(runner.platform, "python_version", return_value="3.11.16"):
+        return runner._project_execution(p, execution.behavioral_inventory, execution.coverage_inventory, payload)
+
+
 class ExecutionReuseTests(unittest.TestCase):
     def setUp(self):
         self.events = []
@@ -167,47 +182,48 @@ class ExecutionReuseTests(unittest.TestCase):
         return (unittest.defaultTestLoader.loadTestsFromTestCase(self.case),
                 unittest.TestSuite([self.case("test_measured")]))
 
-    def receipts(self, p=None):
-        p = p or self.p
-        behavioral, measured = self.suites()
-        remainder = runner._remainder(behavioral, measured)
-        return (receipt(remainder, "behavioral-remainder", p),
-                receipt(measured, "coverage-quality" if "repository" in p["coverage_obligations"] else "impact", p))
+    def execution(self, p=None):
+        return ordered_receipt(self.suites()[0], lambda: self.suites()[1], p or self.p)
 
     def test_one_execution_per_case_supplies_both_obligations(self):
-        """Measured and remaining paths execute once, then receipts prove complete behavior."""
-        remaining, measured = self.receipts()
-        self.assertEqual(["setup", "remaining", "teardown", "setup", "measured", "teardown"], self.events)
-        combined = runner._combine_behavioral(self.p, *self.suites(), remaining, measured)
-        self.assertEqual(2, combined["test_count"])
-        self.assertTrue(combined["successful"])
-        self.assertEqual(1, combined["execution"]["reused_for_behavioral"])
-        self.assertEqual(2, combined["execution"]["unique_executions"])
+        """Behavior keeps its ordered fixture lifecycle and supplies coverage evidence."""
+        execution, payload = self.execution()
+        self.assertEqual(["setup", "measured", "remaining", "teardown"], self.events)
+        behavioral, coverage = project(self.p, execution, payload)
+        self.assertEqual((2, 1), (behavioral["test_count"], coverage["test_count"]))
+        self.assertTrue(behavioral["successful"])
+        self.assertEqual(2, behavioral["execution"]["unique_executions"])
         self.assertEqual(1, self.events.count("measured"))
         self.assertEqual(1, self.events.count("remaining"))
+        self.assertEqual(payload["execution_order"], behavioral["execution_order"])
 
-    def test_empty_remainder_and_coverage_none_each_have_complete_evidence(self):
-        for obligations in ([], ["impact"], ["repository"], ["impact", "repository"]):
-            with self.subTest(coverage=obligations):
-                p = plan(obligations)
-                behavioral = unittest.defaultTestLoader.loadTestsFromTestCase(self.case)
-                measured = unittest.defaultTestLoader.loadTestsFromTestCase(self.case) if obligations else unittest.TestSuite()
-                remainder = receipt(runner._remainder(behavioral, measured), "behavioral-remainder", p)
-                coverage = receipt(measured, "coverage-quality" if "repository" in obligations else "impact", p) if obligations else None
-                behavioral = unittest.defaultTestLoader.loadTestsFromTestCase(self.case)
-                measured = unittest.defaultTestLoader.loadTestsFromTestCase(self.case) if obligations else unittest.TestSuite()
-                result = runner._combine_behavioral(p, behavioral, measured, remainder, coverage)
-                self.assertEqual(2, result["test_count"])
-                self.assertEqual(0 if obligations else 2, remainder["test_count"])
+    def test_all_coverage_obligations_and_empty_behavior_preserve_exact_scope(self):
+        for obligations in (["impact"], ["repository"], ["impact", "repository"]):
+            for empty_behavior in (False, True):
+                with self.subTest(coverage=obligations, empty_behavior=empty_behavior):
+                    p = plan(obligations)
+                    if empty_behavior: p["behavioral_scope"] = "none"
+                    b = unittest.TestSuite() if empty_behavior else self.suites()[0]
+                    execution, payload = ordered_receipt(b, lambda: self.suites()[0], p)
+                    behavioral, coverage = project(p, execution, payload)
+                    self.assertEqual(0 if empty_behavior else 2, behavioral["test_count"])
+                    self.assertEqual(2, coverage["test_count"])
+                    self.assertEqual("coverage-quality" if "repository" in obligations else "impact", coverage["suite"])
 
     def test_receipt_tampering_cannot_hide_missing_failed_or_wrong_head_execution(self):
-        originals = self.receipts()
+        execution, original = self.execution()
         mutations = {
             "old plan": lambda p: p.update(plan_id="old"),
             "old target": lambda p: p.update(target="old"),
+            "old receipt schema": lambda p: p.update(schema_version="1.1.0"),
             "wrong suite": lambda p: p.update(suite="full"),
+            "legacy split receipt": lambda p: p.update(suite="behavioral-remainder"),
             "wrong Python": lambda p: p.update(python_version="3.13.1"),
+            "different Python patch": lambda p: p.update(python_version="3.11.15"),
             "failed producer": lambda p: p.update(successful=False),
+            "missing fixture events": lambda p: p.pop("events"),
+            "reported fixture error": lambda p: p["events"].update(errors=1),
+            "reported failure event": lambda p: p["events"].update(failures=1),
             "missing obligation": lambda p: p.update(coverage_obligations=[]),
             "missing test": lambda p: p.update(tests=[]),
             "extra test": lambda p: p["tests"].append(copy.deepcopy(p["tests"][0])),
@@ -217,42 +233,42 @@ class ExecutionReuseTests(unittest.TestCase):
             "forged runtime ID": lambda p: p["tests"][0].update(id="alias.test_fake"),
             "wrong source identity": lambda p: p["tests"][0].update(canonical_id="wrong-source"),
             "failed checkpoint": lambda p: p["tests"][0].update(checkpoints=[{"outcome": "failed"}]),
+            "missing order contract": lambda p: p.pop("execution"),
+            "wrong contract": lambda p: p["execution"].update(contract="split-producers"),
+            "reordered behavior": lambda p: p["execution"]["behavioral_order"].reverse(),
+            "missing coverage identity": lambda p: p["execution"].update(coverage_order=[]),
+            "missing execution order": lambda p: p.pop("execution_order"),
+            "reordered execution": lambda p: p["execution_order"].reverse(),
         }
-        for producer in (0, 1):
-            for checkpoint, mutate in mutations.items():
-                with self.subTest(producer=producer, checkpoint=checkpoint):
-                    payloads = copy.deepcopy(originals)
-                    mutate(payloads[producer])
-                    with self.assertRaises(ValueError):
-                        runner._combine_behavioral(self.p, *self.suites(), *payloads)
-        altered = copy.deepcopy(originals)
-        altered[1]["python_version"] = "3.11.15"
-        with self.assertRaisesRegex(ValueError, "different Python"):
-            runner._combine_behavioral(self.p, *self.suites(), *altered)
+        for checkpoint, mutate in mutations.items():
+            with self.subTest(checkpoint=checkpoint):
+                payload = copy.deepcopy(original)
+                mutate(payload)
+                with self.assertRaises(ValueError): project(self.p, execution, payload)
 
     def test_coverage_only_case_is_checked_without_claiming_it_in_behavioral_scope(self):
-        behavioral, measured = self.suites()
-        # Behavior requires one case; coverage independently requires the other.
-        b = unittest.TestSuite([self.case("test_remaining")])
-        rem, cov = self.receipts()
-        result = runner._combine_behavioral(self.p, b, measured, rem, cov)
-        self.assertEqual(1, result["test_count"])
-        self.assertEqual(0, result["execution"]["reused_for_behavioral"])
-        self.assertEqual(2, result["execution"]["unique_executions"])
+        def load_coverage():
+            self.events.append("load coverage")
+            return self.suites()[1]
+        execution, payload = ordered_receipt(unittest.TestSuite([self.case("test_remaining")]), load_coverage, self.p)
+        self.assertEqual(["setup", "remaining", "teardown", "load coverage", "setup", "measured", "teardown"], self.events)
+        behavioral, coverage = project(self.p, execution, payload)
+        self.assertEqual(1, behavioral["test_count"])
+        self.assertEqual(1, behavioral["execution"]["coverage_only"])
+        self.assertEqual(2, behavioral["execution"]["unique_executions"])
+        self.assertEqual(["test_remaining"], [r["id"].rsplit(".", 1)[-1] for r in behavioral["tests"]])
+        self.assertFalse(set(behavioral["execution_order"]) & set(coverage["execution_order"]))
 
     def test_unrequired_or_missing_coverage_receipt_cannot_be_reused(self):
-        p = plan([])
-        b, c = self.suites()
-        rem = receipt(b, "behavioral-remainder", p)
+        execution, payload = self.execution()
         with self.assertRaisesRegex(ValueError, "does not authorize"):
-            runner._combine_behavioral(p, self.suites()[0], unittest.TestSuite(), rem, {})
-        with self.assertRaises(ValueError):
-            runner._combine_behavioral(self.p, *self.suites(), self.receipts()[0], None)
+            project(plan([]), execution, payload)
+        with self.assertRaises(ValueError): project(self.p, execution, None)
 
     def test_alias_imports_share_execution_and_preserve_behavioral_test_names(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "cases.py"
-            path.write_text("import unittest\nclass Example(unittest.TestCase):\n def test_pass(self): pass\n")
+            path.write_text("import unittest\nevents=[]\nclass Example(unittest.TestCase):\n def test_pass(self): events.append(__name__)\n")
             modules = []
             for name in ("reuse_original", "reuse_alias"):
                 spec = importlib.util.spec_from_file_location(name, path)
@@ -262,75 +278,166 @@ class ExecutionReuseTests(unittest.TestCase):
                 spec.loader.exec_module(module)
                 modules.append(module)
             with patch.object(runner, "ROOT", Path(directory)):
-                b = unittest.defaultTestLoader.loadTestsFromModule(modules[0])
-                c = unittest.defaultTestLoader.loadTestsFromModule(modules[1])
-                rem = receipt(runner._remainder(b, c), "behavioral-remainder", self.p)
-                cov = receipt(c, "impact", self.p)
-                b = unittest.defaultTestLoader.loadTestsFromModule(modules[0])
-                c = unittest.defaultTestLoader.loadTestsFromModule(modules[1])
-                result = runner._combine_behavioral(self.p, b, c, rem, cov)
-                self.assertEqual(0, rem["test_count"])
-                self.assertEqual("reuse_original.Example.test_pass", result["tests"][0]["id"])
+                execution, payload = ordered_receipt(unittest.defaultTestLoader.loadTestsFromModule(modules[0]),
+                    lambda: unittest.defaultTestLoader.loadTestsFromModule(modules[1]), self.p)
+                b, c = project(self.p, execution, payload)
+                self.assertEqual(1, b["execution"]["unique_executions"])
+                self.assertEqual(["reuse_original"], modules[0].events)
+                self.assertEqual([], modules[1].events)
+                self.assertEqual("reuse_original.Example.test_pass", b["tests"][0]["id"])
+                self.assertEqual("reuse_alias.Example.test_pass", c["tests"][0]["id"])
+                self.assertEqual(b["tests"][0]["id"], c["tests"][0]["execution_id"])
+
+
+class OrderedFixtureTests(unittest.TestCase):
+    def load(self, source):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        path = Path(directory.name) / "cases.py"
+        path.write_text(source)
+        name = "ordered_fixture_case"
+        spec = importlib.util.spec_from_file_location(name, path)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[name] = module
+        self.addCleanup(sys.modules.pop, name, None)
+        spec.loader.exec_module(module)
+        return module
+
+    def test_class_state_split_preserves_direct_full_failure_and_fixture_order(self):
+        events = []
+        class Example(unittest.TestCase):
+            @classmethod
+            def setUpClass(cls): cls.state = 0; events.append("setup")
+            @classmethod
+            def tearDownClass(cls): events.append("teardown")
+            def test_a_mutates(self): type(self).state = 1; events.append("a")
+            def test_b_observes(self): events.append("b"); self.assertEqual(0, type(self).state)
+        def b(): return unittest.defaultTestLoader.loadTestsFromTestCase(Example)
+        direct = run_suite(b()); expected_events = list(events); events.clear()
+        execution, payload = ordered_receipt(b(), lambda: unittest.TestSuite([Example("test_a_mutates")]), plan())
+        self.assertFalse(direct.wasSuccessful())
+        self.assertFalse(payload["successful"])
+        self.assertEqual(expected_events, events)
+        self.assertEqual(1, payload["events"]["failures"])
+        with self.assertRaises(ValueError): project(plan(), execution, payload)
+
+    def test_module_state_split_preserves_direct_full_failure_and_fixture_order(self):
+        module = self.load("""import unittest
+events=[]
+state=0
+def setUpModule():
+ global state
+ state=0
+ events.append('module setup')
+def tearDownModule(): events.append('module teardown')
+class A(unittest.TestCase):
+ def test_a_mutates(self):
+  global state
+  state=1
+  events.append('a')
+class B(unittest.TestCase):
+ def test_b_observes(self):
+  events.append('b')
+  self.assertEqual(0,state)
+""")
+        def b(): return unittest.defaultTestLoader.loadTestsFromModule(module)
+        direct = run_suite(b()); expected_events = list(module.events); module.events.clear()
+        execution, payload = ordered_receipt(b(), lambda: unittest.TestSuite([module.A("test_a_mutates")]), plan())
+        self.assertFalse(direct.wasSuccessful())
+        self.assertFalse(payload["successful"])
+        self.assertEqual(expected_events, module.events)
+        self.assertEqual(1, payload["events"]["failures"])
+        with self.assertRaises(ValueError): project(plan(), execution, payload)
+
+    def test_coverage_only_case_cannot_repair_behavioral_teardown_or_run_early(self):
+        module = self.load("""import unittest
+events=[]
+state=0
+def setUpModule():
+ global state
+ state=0
+ events.append('setup')
+def tearDownModule():
+ events.append('teardown')
+ if state: raise ValueError('behavioral teardown failed')
+class Example(unittest.TestCase):
+ def test_a_mutates(self):
+  global state
+  state=1
+  events.append('a')
+ def test_b_repairs(self):
+  global state
+  state=0
+  events.append('b')
+""")
+        def b(): return unittest.TestSuite([module.Example("test_a_mutates")])
+        direct = run_suite(b()); expected_events = list(module.events); module.events.clear()
+        def c():
+            module.events.append("coverage loaded")
+            return unittest.defaultTestLoader.loadTestsFromModule(module)
+        execution, payload = ordered_receipt(b(), c, plan())
+        self.assertFalse(direct.wasSuccessful())
+        self.assertFalse(payload["successful"])
+        self.assertEqual(expected_events + ["coverage loaded", "setup", "b", "teardown"], module.events)
+        self.assertEqual(1, payload["events"]["errors"])
+        with self.assertRaises(ValueError): project(plan(), execution, payload)
 
 
 class EntryPointTests(unittest.TestCase):
-    def test_partition_and_join_commands_verify_plan_and_propagate_test_failure(self):
-        events = []
-        case = scenarios(events)
-        p = plan()
+    def test_ordered_execution_and_projection_commands_bind_one_receipt_and_propagate_failure(self):
+        events = []; case = scenarios(events); p = plan()
         def suites(*args):
             return unittest.defaultTestLoader.loadTestsFromTestCase(case), unittest.TestSuite([case("test_measured")])
+        def load(args): return suites()[1] if args.suite == "coverage-plan" else suites()[0]
         with tempfile.TemporaryDirectory() as directory, patch.dict(os.environ, {}, clear=True), \
-             redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+             redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()), \
+             patch.object(runner.platform, "python_version", return_value="3.11.16"):
             root = Path(directory)
-            args = ["--plan", str(root / "plan.json"), "--json-output", str(root / "out.json"), "--verbosity", "0"]
-            with patch.object(runner, "_verified_plan", return_value=p) as verify, patch.object(runner, "_execution_suites", side_effect=suites):
-                self.assertEqual(0, runner.main(["--suite", "behavioral-remainder", *args]))
-                verify.assert_called_once()
-                remainder = json.loads((root / "out.json").read_bytes())
-                remainder["python_version"] = "3.11.16"
-                (root / "remaining.json").write_text(json.dumps(remainder))
-                measured = receipt(suites()[1], "impact", p)
-                (root / "coverage.json").write_text(json.dumps(measured))
-                join = ["--suite", "behavioral-union", *args, "--behavior-results", str(root / "remaining.json"),
-                        "--coverage-results", str(root / "coverage.json")]
+            args = ["--plan", str(root / "plan.json"), "--json-output", str(root / "execution.json"), "--verbosity", "0"]
+            with patch.object(runner, "_verified_plan", return_value=p) as verify, patch.object(runner, "_suite_for", side_effect=load):
+                producer = ["--suite", "coverage-execution", *args, "--coverage-results", str(root / "coverage.json")]
+                self.assertEqual(0, runner.main(producer)); verify.assert_called_once()
+                self.assertEqual(["setup", "measured", "remaining", "teardown"], events)
+                consumer = ["--suite", "behavioral-evidence", "--plan", str(root / "plan.json"),
+                            "--json-output", str(root / "behavior.json"), "--execution-results", str(root / "execution.json")]
                 with patch.dict(os.environ, {"GITHUB_STEP_SUMMARY": str(root / "summary.md")}):
-                    self.assertEqual(0, runner.main(join))
-                self.assertEqual(2, json.loads((root / "out.json").read_bytes())["test_count"])
-                with self.assertRaisesRegex(ValueError, "every producer"):
-                    runner.main(["--suite", "behavioral-union", *args])
-                measured["successful"] = False
-                (root / "coverage.json").write_text(json.dumps(measured))
-                with self.assertRaises(ValueError): runner.main(join)
-                # With no coverage obligation, the command must not request an artifact.
+                    self.assertEqual(0, runner.main(consumer))
+                self.assertEqual(0, runner.main(consumer))
+                self.assertEqual(["setup", "measured", "remaining", "teardown"], events)
+                self.assertEqual(2, json.loads((root / "behavior.json").read_bytes())["test_count"])
+                with self.assertRaisesRegex(ValueError, "ordered execution receipt"):
+                    runner.main(["--suite", "behavioral-evidence", *args])
+                with self.assertRaisesRegex(ValueError, "--coverage-results"):
+                    runner.main(["--suite", "coverage-execution", *args])
+                payload = json.loads((root / "execution.json").read_bytes()); payload["successful"] = False
+                (root / "execution.json").write_text(json.dumps(payload))
+                with self.assertRaises(ValueError): runner.main(consumer)
                 p["coverage_obligations"] = []
-                empty_coverage = lambda *args: (suites()[0], unittest.TestSuite())
-                with patch.object(runner, "_execution_suites", side_effect=empty_coverage):
-                    self.assertEqual(0, runner.main(["--suite", "behavioral-remainder", *args]))
-                    remaining = json.loads((root / "out.json").read_bytes())
-                    remaining["python_version"] = "3.11.16"
-                    (root / "remaining.json").write_text(json.dumps(remaining))
-                    self.assertEqual(0, runner.main(join[:-2]))
+                with self.assertRaisesRegex(ValueError, "coverage obligations"): runner.main(producer)
+                self.assertEqual(0, runner.main(["--suite", "full", *args]))
             with self.assertRaisesRegex(ValueError, "--plan"):
-                runner.main(["--suite", "behavioral-remainder", "--json-output", str(root / "out.json")])
+                runner.main(["--suite", "coverage-execution", "--json-output", str(root / "out.json")])
             class Broken(unittest.TestCase):
                 def runTest(self): self.fail("intentional probe")
-            with patch.object(runner, "_suite_for", return_value=unittest.TestSuite([Broken()])):
+            with patch.object(runner, "_verified_plan", return_value=plan()), \
+                 patch.object(runner, "_suite_for", side_effect=lambda args: unittest.TestSuite([Broken()])):
+                self.assertEqual(1, runner.main(producer))
+                self.assertFalse(json.loads((root / "execution.json").read_bytes())["successful"])
                 self.assertEqual(1, runner.main(["--suite", "full", "--json-output", str(root / "failed.json"), "--verbosity", "0"]))
 
     def test_execution_scopes_load_only_required_suites(self):
-        args = argparse.Namespace(suite="behavioral-remainder", plan=Path("plan.json"))
-        for scope in ("full", "focused", "none"):
+        args = argparse.Namespace(suite="behavioral-evidence", plan=Path("plan.json"))
+        for scope in ("full", "focused", "none", "invalid"):
             for obligations in ([], ["impact"]):
                 with self.subTest(scope=scope, coverage=obligations):
                     p = plan(obligations); p["behavioral_scope"] = scope
                     with patch.object(runner, "_suite_for", side_effect=lambda args: unittest.TestSuite()) as load:
-                        if scope == "none":
+                        if scope == "invalid":
                             with self.assertRaises(ValueError): runner._execution_suites(args, p)
                             load.assert_not_called()
                         else:
                             runner._execution_suites(args, p)
-                            self.assertEqual([scope] + (["coverage-plan"] if obligations else []),
+                            self.assertEqual(([scope] if scope != "none" else []) + (["coverage-plan"] if obligations else []),
                                              [call.args[0].suite for call in load.call_args_list])
 
 

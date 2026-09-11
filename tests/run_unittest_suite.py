@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import inspect
 import importlib.util
 import json
@@ -29,8 +30,10 @@ class TimedTextResult(unittest.TextTestResult):
         super().__init__(*args, **kwargs)
         self._started: dict[str, float] = {}
         self.records: dict[str, dict[str, Any]] = {}
+        self.execution_order: list[str] = []
 
     def startTest(self, test: unittest.case.TestCase) -> None:  # noqa: N802
+        self.execution_order.append(_evidence_test_id(test))
         self._started[test.id()] = time.perf_counter()
         self._record(test)
         super().startTest(test)
@@ -245,29 +248,62 @@ def _percentile(values: list[float], percentile: float) -> float:
     return ordered[index]
 
 
+def _behavioral_suite(args, plan):
+    scope = plan["behavioral_scope"]
+    if scope == "none":
+        return unittest.TestSuite()
+    if scope not in {"full", "focused"}:
+        raise ValueError("unknown behavioral scope")
+    return _suite_for(argparse.Namespace(**{**vars(args), "suite": scope}))
+
+
 def _execution_suites(args, plan):
-    """Load both obligations before subtracting; preserve unittest fixture order."""
-    if plan["behavioral_scope"] not in {"full", "focused"}:
-        raise ValueError("behavioral execution requires a behavioral obligation")
-    def load(name):
-        return _suite_for(argparse.Namespace(**{**vars(args), "suite": name}))
-    behavioral = load(plan["behavioral_scope"])
-    measured = load("coverage-plan") if plan["coverage_obligations"] else unittest.TestSuite()
+    """Collect expected inventories for receipt verification, without executing them."""
+    behavioral = _behavioral_suite(args, plan)
+    measured = _suite_for(argparse.Namespace(**{**vars(args), "suite": "coverage-plan"})) if plan["coverage_obligations"] else unittest.TestSuite()
     return behavioral, measured
 
 
-def _remainder(behavioral, measured):
-    covered = {_canonical_test_id(test) for test in _iter_tests(measured)}
-    return unittest.TestSuite(test for test in _iter_tests(behavioral)
-                              if _canonical_test_id(test) not in covered)
+def _inventory(suite):
+    _assert_unique_tests(suite)
+    return {_evidence_test_id(test): test.id() for test in _iter_tests(suite)}
+
+
+class OrderedCoverageExecution:
+    """Run the original behavioral suite to completion before loading coverage extras."""
+    def __init__(self, behavioral, load_coverage):
+        self.behavioral = behavioral
+        self.behavioral_inventory = _inventory(behavioral)
+        self.load_coverage = load_coverage
+        self.coverage_inventory = {}
+
+    def __call__(self, result):
+        # Keep the original suite hierarchy/order and its top-level fixture teardown.
+        self.behavioral(result)
+        # unittest retains the previous class on its result after top-level teardown.
+        # The coverage-only phase starts a new fixture lifecycle on the same result.
+        result._previousTestClass = None
+        result._moduleSetUpFailed = False
+        measured = self.load_coverage()
+        self.coverage_inventory = _inventory(measured)
+        extras = unittest.TestSuite(test for test in _iter_tests(measured)
+                                   if _evidence_test_id(test) not in self.behavioral_inventory)
+        extras(result)
+        return result
+
+    def contract(self):
+        return {"contract": "ordered-behavioral-v1", "behavioral_order": list(self.behavioral_inventory),
+                "coverage_order": list(self.coverage_inventory)}
 
 
 def _receipt_records(payload, suite, expected, plan):
     """Execution reuse requires complete, successful evidence for this exact plan."""
     if (not isinstance(payload, dict) or payload.get("plan_id") != plan["plan_id"] or payload.get("target") != plan["binding"]["target"]
+            or payload.get("schema_version") != "1.2.0"
             or payload.get("coverage_obligations") != plan["coverage_obligations"]
             or payload.get("suite") != suite or payload.get("successful") is not True
-            or not str(payload.get("python_version", "")).startswith("3.11.")):
+            or not str(payload.get("python_version", "")).startswith("3.11.")
+            or payload.get("python_version") != platform.python_version()):
         raise ValueError("execution receipt has a failed or mismatched binding")
     rows = payload.get("tests", [])
     by_id = {row.get("canonical_id"): row for row in rows}
@@ -284,36 +320,34 @@ def _receipt_records(payload, suite, expected, plan):
     return by_id
 
 
-def _combine_behavioral(plan, behavioral, measured, remainder_payload, coverage_payload):
-    def inventory(suite):
-        return {_evidence_test_id(test): test.id() for test in _iter_tests(suite)}
-    complete, coverage = inventory(behavioral), inventory(measured)
-    remaining = inventory(_remainder(behavioral, measured))
-    rows = _receipt_records(remainder_payload, "behavioral-remainder", remaining, plan)
-    if plan["coverage_obligations"]:
-        label = "coverage-quality" if "repository" in plan["coverage_obligations"] else "impact"
-        rows.update(_receipt_records(coverage_payload, label, coverage, plan))
-        if remainder_payload["python_version"] != coverage_payload["python_version"]:
-            raise ValueError("execution receipts use different Python versions")
-    elif coverage_payload is not None:
-        raise ValueError("plan does not authorize coverage receipt reuse")
-    result = {
-        "schema_version": "1.1.0", "suite": plan["behavioral_scope"], "successful": True,
-        "plan_id": plan["plan_id"], "target": plan["binding"]["target"],
-        "coverage_obligations": plan["coverage_obligations"],
-        "python_version": remainder_payload["python_version"],
-        "test_count": len(complete),
-        "tests": [{**rows[key], "id": value} for key, value in complete.items()],
-        "execution": {
-            "behavioral_only": len(remaining), "coverage": len(coverage),
-            "reused_for_behavioral": len(set(complete) & set(coverage)),
-            "unique_executions": len(set(complete) | set(coverage)),
-            "producer_wall_seconds": {"behavioral_remainder": remainder_payload["wall_seconds"],
-                                      "coverage": coverage_payload["wall_seconds"] if coverage_payload else 0},
-        },
-    }
-    # The two producers run in parallel. Their durations are not workflow wall time.
-    return result
+def _project_execution(plan, complete, coverage, payload):
+    """Derive both obligations from a verified single ordered execution receipt."""
+    if not plan["coverage_obligations"]:
+        raise ValueError("plan does not authorize coverage execution reuse")
+    expected = {**complete, **{k: v for k, v in coverage.items() if k not in complete}}
+    rows = _receipt_records(payload, "coverage-execution", expected, plan)
+    events = payload.get("events")
+    if not isinstance(events, dict) or events.get("failures") != 0 or events.get("errors") != 0:
+        raise ValueError("execution receipt has missing or unsuccessful fixture events")
+    contract = {"contract": "ordered-behavioral-v1", "behavioral_order": list(complete),
+                "coverage_order": list(coverage)}
+    if payload.get("execution") != contract or payload.get("execution_order") != list(expected):
+        raise ValueError("execution receipt does not preserve behavioral fixture/order contract")
+    source_digest = hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    def project(inventory, label):
+        records = [{**rows[key], "id": value, "execution_id": rows[key]["id"]} for key, value in inventory.items()]
+        return {
+            "schema_version": "1.2.0", "suite": label, "successful": True,
+            "plan_id": plan["plan_id"], "target": plan["binding"]["target"],
+            "coverage_obligations": plan["coverage_obligations"], "python_version": payload["python_version"],
+            "test_count": len(inventory), "tests": records, "execution_order": list(inventory),
+            "execution": {"contract": contract["contract"], "source_receipt_sha256": source_digest,
+                          "behavioral": len(complete), "required_coverage": len(coverage),
+                          "coverage_only": len(expected) - len(complete), "unique_executions": len(expected),
+                          "producer_wall_seconds": payload["wall_seconds"]},
+        }
+    return (project(complete, plan["behavioral_scope"]),
+            project(coverage, "coverage-quality" if "repository" in plan["coverage_obligations"] else "impact"))
 
 
 def _write_summary(
@@ -323,11 +357,13 @@ def _write_summary(
     result: TimedTextResult,
     slowest_count: int,
     plan: dict | None = None,
-) -> None:
+    execution: dict | None = None,
+) -> dict:
     records = sorted(result.records.values(), key=lambda item: item.get("duration_seconds", 0.0), reverse=True)
     durations = [float(item.get("duration_seconds", 0.0)) for item in records]
     payload = {
-        "schema_version": "1.1.0",
+        "schema_version": "1.2.0",
+        "execution_order": result.execution_order,
         "suite": suite_name,
         "wall_seconds": round(wall_seconds, 6),
         "test_count": result.testsRun,
@@ -363,6 +399,8 @@ def _write_summary(
     if plan is not None:
         payload.update(plan_id=plan["plan_id"], target=plan["binding"]["target"],
                        python_version=platform.python_version(), coverage_obligations=plan["coverage_obligations"])
+    if execution is not None:
+        payload["execution"] = execution
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(
         "suite_duration "
@@ -404,40 +442,45 @@ def _write_summary(
             lines = [*failures, "", *lines]
         with Path(github_summary).open("a", encoding="utf-8") as handle:
             handle.write("\n".join(lines) + "\n")
+    return payload
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--suite", choices=("full", "coverage-quality", "focused", "impact", "coverage-plan",
-                                          "behavioral-remainder", "behavioral-union"), required=True)
+                                          "coverage-execution", "behavioral-evidence"), required=True)
     parser.add_argument("--plan", type=Path)
     parser.add_argument("--policy", type=Path, default=TESTS / "coverage_policy.yaml")
     parser.add_argument("--json-output", type=Path, required=True)
-    parser.add_argument("--behavior-results", type=Path)
+    parser.add_argument("--execution-results", type=Path)
     parser.add_argument("--coverage-results", type=Path)
     parser.add_argument("--slowest", type=int, default=20)
     parser.add_argument("--verbosity", type=int, choices=(0, 1, 2), default=2)
     args = parser.parse_args(argv)
     started = time.perf_counter()
     plan = _verified_plan(args.plan) if args.plan else None
-    if args.suite in {"behavioral-remainder", "behavioral-union"}:
+    if args.suite in {"coverage-execution", "behavioral-evidence"}:
         if plan is None:
             raise ValueError("execution reuse requires --plan")
-        behavioral, measured = _execution_suites(args, plan)
-        if args.suite == "behavioral-union":
-            if args.behavior_results is None or (plan["coverage_obligations"] and args.coverage_results is None):
-                raise ValueError("execution reuse requires every producer receipt")
-            combined = _combine_behavioral(plan, behavioral, measured,
-                json.loads(args.behavior_results.read_bytes()),
-                json.loads(args.coverage_results.read_bytes()) if args.coverage_results else None)
+        if not plan["coverage_obligations"]:
+            raise ValueError("coverage execution requires coverage obligations")
+        if args.suite == "behavioral-evidence":
+            if args.execution_results is None:
+                raise ValueError("execution reuse requires the ordered execution receipt")
+            behavioral, measured = _execution_suites(args, plan)
+            combined, _ = _project_execution(plan, _inventory(behavioral), _inventory(measured),
+                                            json.loads(args.execution_results.read_bytes()))
             args.json_output.write_text(json.dumps(combined, indent=2) + "\n", encoding="utf-8")
             explanation = json.dumps(combined["execution"], sort_keys=True)
-            print("Verified behavioral union: " + explanation)
+            print("Verified ordered behavioral execution: " + explanation)
             if os.environ.get("GITHUB_STEP_SUMMARY"):
                 with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as handle:
                     handle.write("### Verified behavioral execution\n\n" + explanation + "\n")
             return 0
-        suite = _remainder(behavioral, measured)
+        if args.coverage_results is None:
+            raise ValueError("coverage execution requires --coverage-results output")
+        suite = OrderedCoverageExecution(_behavioral_suite(args, plan),
+            lambda: _suite_for(argparse.Namespace(**{**vars(args), "suite": "coverage-plan"})))
     else:
         suite = _suite_for(args)
     runner = unittest.TextTestRunner(verbosity=args.verbosity, resultclass=TimedTextResult)
@@ -446,7 +489,11 @@ def main(argv: list[str] | None = None) -> int:
     suite_name = args.suite
     if suite_name == "coverage-plan":
         suite_name = "coverage-quality" if "repository" in plan["coverage_obligations"] else "impact"
-    _write_summary(args.json_output, suite_name, wall_seconds, result, args.slowest, plan)
+    payload = _write_summary(args.json_output, suite_name, wall_seconds, result, args.slowest, plan,
+                             suite.contract() if args.suite == "coverage-execution" else None)
+    if args.suite == "coverage-execution" and result.wasSuccessful():
+        _, coverage = _project_execution(plan, suite.behavioral_inventory, suite.coverage_inventory, payload)
+        args.coverage_results.write_text(json.dumps(coverage, indent=2) + "\n", encoding="utf-8")
     return 0 if result.wasSuccessful() else 1
 
 

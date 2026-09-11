@@ -121,9 +121,15 @@ combine stale coordinates. Integration baselines and explicit fresh runs remain 
 from cached test evidence.
 
 This is an audited adoption design, not an enabled cross-commit result cache. The currently
-implemented execution join reuses results only within the same plan/run. The old `fee47c0`
+implemented ordered execution shares results only within the same plan/run. The old `fee47c0`
 to `bf6d079` transition changed the runner/workflow, so overlapping test names alone would
 not have authorized carrying their old execution receipts forward.
+
+The `8c09f6c` two-producer result established complete behavioral TestCase identity coverage,
+but not historical single-process fixture/order equivalence: splitting C and B minus C
+could hide a shared class/module state failure. Its timings remain historical observations.
+The repaired producer executes the original ordered B to completion before loading and
+running C minus B, and requires fresh exact-head checks; see [execution contract](SCENARIO_EXECUTION.md).
 
 [Pants's test documentation](https://www.pantsbuild.org/stable/docs/python/goals/test) provides
 a relevant implementation reference: dependency-aware invalidation, isolated test processes,
