@@ -1,0 +1,22 @@
+{
+  "source_head": "57daffc039f6cc006fa1320819d3eafd50a12789",
+  "final_targeted": 100,
+  "first_pass_infrastructure": 174,
+  "infrastructure_boundary": "Started before final diagnostic preservation and successful-summary regression; final 100 checks cover frozen implementation.",
+  "docs_governance": 93,
+  "repository": "186/0/0",
+  "inventory": {
+    "source_head": "57daffc039f6cc006fa1320819d3eafd50a12789",
+    "plan_id": "df6204248f312598d4284003b84f1631c43843cb5f4d2ca939432ca72553a0f6",
+    "behavioral": 1127,
+    "coverage": 1101,
+    "remaining": 26,
+    "reused": 1101,
+    "unique": 1127,
+    "disjoint": true,
+    "complete": true
+  },
+  "changed_runner_lines": 231,
+  "changed_runner_coverage": "100/100",
+  "hosted_final_head": "Fresh dual-Python full, impact+repository coverage, smoke, governance and witness required after archive push."
+}

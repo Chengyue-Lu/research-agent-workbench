@@ -1,0 +1,11 @@
+{
+  "source_head": "57daffc039f6cc006fa1320819d3eafd50a12789",
+  "plan_id": "df6204248f312598d4284003b84f1631c43843cb5f4d2ca939432ca72553a0f6",
+  "behavioral": 1127,
+  "coverage": 1101,
+  "remaining": 26,
+  "reused": 1101,
+  "unique": 1127,
+  "disjoint": true,
+  "complete": true
+}
