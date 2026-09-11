@@ -1,0 +1,401 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/system-evaluation-protocol.schema.json",
+  "title": "System Evaluation Protocol",
+  "x-rwb-document-kind": "system_evaluation_protocol",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "protocol_id",
+    "version",
+    "decision_ref",
+    "manifest_ref",
+    "frozen_at",
+    "purpose",
+    "rules",
+    "design",
+    "boundaries",
+    "execution_bindings",
+    "mode_documents",
+    "action_documents",
+    "execution_time_budget_seconds",
+    "execution_binding",
+    "admission_case_closure_ref"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "system_evaluation_protocol"
+    },
+    "protocol_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "decision_ref": {
+      "const": {
+        "path": "docs/decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md",
+        "sha256": "64edd73c44bc77f326a90c51e0a8cbf5fd28c4bbf1a5e18aca7f50250ce21a12"
+      }
+    },
+    "manifest_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "frozen_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "purpose": {
+      "enum": [
+        "synthetic-contract-proof",
+        "confirmatory-protocol"
+      ]
+    },
+    "rules": {
+      "const": {
+        "arm_transport": {
+          "plain-agent": "m6",
+          "plain-agent-tool": "m6",
+          "mode-no-skill": "m11-core",
+          "mode-candidate-skill": "m11-skill-extension"
+        },
+        "primary": {
+          "contrast": "A4-A2",
+          "interpretation": "system-level-including-transport"
+        },
+        "secondary": {
+          "A2-A1": "tool-increment-within-m6",
+          "A4-A3": "pairwise-record-dependent",
+          "A3-A2": "mode-method-and-transport-package",
+          "A4-A1": "supporting-full-stack"
+        },
+        "decision_hierarchy": [
+          "research-integrity",
+          "quality-and-correction",
+          "efficiency-and-cost"
+        ],
+        "integrity_compensable": false,
+        "weighted_aggregate_score": false,
+        "measurement_statuses": [
+          "measured",
+          "estimated",
+          "unavailable",
+          "not-applicable"
+        ],
+        "wall_time_source": "harness-outer-trusted-clock",
+        "unknown_is_zero": false,
+        "cost_scope": [
+          "preparation",
+          "supervision",
+          "review",
+          "correction",
+          "recovery",
+          "all-attempts"
+        ],
+        "blind_hidden_fields": [
+          "arm",
+          "skill",
+          "rwb-label",
+          "cost",
+          "tokens",
+          "execution-identity"
+        ],
+        "human_scoring": "blind-before-reveal",
+        "confirmatory_cases": "held-out-only",
+        "admission_overlap": "pilot-or-secondary-only",
+        "pruning_from_overlap_alone": false
+      }
+    },
+    "design": {
+      "type": "object",
+      "required": [
+        "randomization",
+        "replicates_per_case",
+        "pilot_replicates_per_case",
+        "pilot_primary_eligible",
+        "stopping",
+        "retry",
+        "drift",
+        "analysis"
+      ],
+      "properties": {
+        "randomization": {
+          "type": "object",
+          "required": [
+            "unit",
+            "method",
+            "seed",
+            "block_by"
+          ],
+          "properties": {
+            "unit": {
+              "const": "case-replicate"
+            },
+            "method": {
+              "const": "seeded-permutation-within-block"
+            },
+            "seed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "block_by": {
+              "const": [
+                "case_id",
+                "replicate"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "replicates_per_case": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "pilot_replicates_per_case": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pilot_primary_eligible": {
+          "const": false
+        },
+        "stopping": {
+          "type": "object",
+          "required": [
+            "rule",
+            "case_count",
+            "completed_blocks",
+            "early_stop"
+          ],
+          "properties": {
+            "rule": {
+              "const": "fixed-complete-blocks"
+            },
+            "case_count": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "completed_blocks": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "early_stop": {
+              "const": "safety-only-retain-all-attempts"
+            }
+          },
+          "additionalProperties": false
+        },
+        "retry": {
+          "type": "object",
+          "required": [
+            "max_retries",
+            "eligible_failures",
+            "fresh_attempt",
+            "retain_failed_attempts",
+            "include_all_attempt_costs"
+          ],
+          "properties": {
+            "max_retries": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "eligible_failures": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "provider-transient",
+                  "transport-interrupted"
+                ]
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            },
+            "fresh_attempt": {
+              "const": true
+            },
+            "retain_failed_attempts": {
+              "const": true
+            },
+            "include_all_attempt_costs": {
+              "const": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "drift": {
+          "const": {
+            "pins": [
+              "model",
+              "provider",
+              "adapter",
+              "host",
+              "runtime",
+              "task",
+              "context",
+              "budget",
+              "data"
+            ],
+            "action": "block-and-new-protocol-version"
+          }
+        },
+        "analysis": {
+          "type": "object",
+          "required": [
+            "unit",
+            "summary",
+            "interval",
+            "confidence_level",
+            "resamples",
+            "seed",
+            "missing",
+            "secondary",
+            "reveal_after"
+          ],
+          "properties": {
+            "unit": {
+              "const": "case-replicate-paired-difference"
+            },
+            "summary": {
+              "const": "per-metric-paired-differences-and-intervals"
+            },
+            "interval": {
+              "const": "case-cluster-bootstrap"
+            },
+            "confidence_level": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 1
+            },
+            "resamples": {
+              "type": "integer",
+              "minimum": 100
+            },
+            "seed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "missing": {
+              "const": "report-by-status-no-imputation"
+            },
+            "secondary": {
+              "const": "descriptive-no-confirmatory-claim"
+            },
+            "reveal_after": {
+              "const": "all-blind-human-reviews-frozen"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "boundaries": {
+      "const": {
+        "runtime_input": false,
+        "execution_authority": false,
+        "supply_selection": false,
+        "human_decision": false,
+        "claim_acceptance": false,
+        "promotion": false
+      }
+    },
+    "execution_bindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "arm_id",
+          "snapshot_ref",
+          "implementation_ref",
+          "component_refs",
+          "interface_ref"
+        ],
+        "properties": {
+          "arm_id": {
+            "enum": [
+              "plain-agent-tool",
+              "mode-no-skill"
+            ]
+          },
+          "snapshot_ref": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          },
+          "implementation_ref": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          },
+          "component_refs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "component_ref",
+                "version",
+                "file_ref"
+              ],
+              "properties": {
+                "component_ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "version": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "file_ref": {
+                  "$ref": "common.schema.json#/$defs/fileRef"
+                }
+              },
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "interface_ref": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 2,
+      "uniqueItems": true
+    },
+    "mode_documents": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/fileRef"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "action_documents": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/fileRef"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "execution_time_budget_seconds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "execution_binding": {
+      "$ref": "resolved-execution-view.schema.json#/properties/binding"
+    },
+    "admission_case_closure_ref": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/fileRef"
+        },
+        {
+          "const": null
+        }
+      ]
+    }
+  },
+  "additionalProperties": false
+}

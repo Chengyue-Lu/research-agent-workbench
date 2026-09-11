@@ -6,6 +6,13 @@ from typing import Any, Mapping
 
 
 def infer_document_kind(document: Mapping[str, Any]) -> str | None:
+    evaluation_kind = document.get("record_kind")
+    if isinstance(evaluation_kind, str) and evaluation_kind in {
+        "system_evaluation_protocol", "evaluation_measurement", "evaluation_provider_interface",
+        "arm_execution_qualification", "evaluation_case_closure", "admission_evidence_overlap",
+        "a4_execution_qualification", "a3_a4_pairwise_comparability",
+    }:
+        return evaluation_kind
     if document.get("manifest_kind") == "python-file-reconstruction":
         return "run_reconstruction_manifest"
     if document.get("environment_kind") == "python-stdlib-reconstruction":

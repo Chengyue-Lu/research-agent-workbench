@@ -566,6 +566,30 @@ def _eval_check(args: argparse.Namespace) -> int:
     return exit_code
 
 
+def _eval_verify(args: argparse.Namespace) -> int:
+    from research_workbench.evaluation.contracts import verify_evaluation_record
+
+    try:
+        protocol_ref = None
+        case_ref = None
+        if args.protocol or args.protocol_sha256:
+            if not args.protocol or not args.protocol_sha256:
+                raise ValueError("--protocol and --protocol-sha256 must be supplied together")
+            protocol_ref = {"path": args.protocol, "sha256": args.protocol_sha256}
+        if args.case_closure or args.case_closure_sha256:
+            if not args.case_closure or not args.case_closure_sha256:
+                raise ValueError("--case-closure and --case-closure-sha256 must be supplied together")
+            case_ref = {"path": args.case_closure, "sha256": args.case_closure_sha256}
+        result = verify_evaluation_record(args.root, {"path": args.record, "sha256": args.sha256},
+            expected_protocol_ref=protocol_ref, expected_case_closure_ref=case_ref,
+            case_selection_frozen_at=args.case_selection_frozen_at)
+    except (ValueError, OSError, KeyError, TypeError) as exc:
+        print(f"ERROR   EVALUATION-CONTRACT-INVALID {exc}")
+        return 1
+    print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+    return 0
+
+
 def _eval_plan(args: argparse.Namespace) -> int:
     document = _load_valid(args.manifest, "evaluation_manifest")
     from research_workbench.evaluation.manifest import compile_baseline_plan
@@ -1788,6 +1812,18 @@ def build_parser() -> argparse.ArgumentParser:
     eval_plan.add_argument("manifest")
     eval_plan.add_argument("--root", default=".")
     eval_plan.set_defaults(handler=_eval_plan)
+    eval_verify = evaluation_subparsers.add_parser(
+        "verify", help="recompute an exact-pinned M5 protocol or qualification record"
+    )
+    eval_verify.add_argument("record", help="record path relative to the explicit evaluation root")
+    eval_verify.add_argument("--root", required=True)
+    eval_verify.add_argument("--sha256", required=True)
+    eval_verify.add_argument("--protocol")
+    eval_verify.add_argument("--protocol-sha256")
+    eval_verify.add_argument("--case-closure")
+    eval_verify.add_argument("--case-closure-sha256")
+    eval_verify.add_argument("--case-selection-frozen-at")
+    eval_verify.set_defaults(handler=_eval_verify)
 
     execute = subparsers.add_parser("execute", help="verify a committed execution archive")
     execute_subparsers = execute.add_subparsers(dest="execute_command", required=True)
