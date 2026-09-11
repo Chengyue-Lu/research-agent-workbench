@@ -57,6 +57,22 @@ def scenarios(events):
 
 
 class ScenarioReportTests(unittest.TestCase):
+    def test_successful_scenario_summary_keeps_checkpoints_without_a_failure_section(self):
+        class Scenario(unittest.TestCase):
+            def runTest(self):
+                with self.subTest(checkpoint="validated"):
+                    self.assertTrue(True)
+        result = run_suite(unittest.TestSuite([Scenario()]))
+        with tempfile.TemporaryDirectory() as directory:
+            output, summary = Path(directory) / "result.json", Path(directory) / "summary.md"
+            with patch.dict(os.environ, {"GITHUB_STEP_SUMMARY": str(summary)}), redirect_stdout(io.StringIO()):
+                runner._write_summary(output, "focused", 0.1, result, 1)
+            payload = json.loads(output.read_bytes())
+            self.assertTrue(payload["successful"])
+            self.assertEqual("passed", payload["tests"][0]["checkpoints"][0]["outcome"])
+            self.assertFalse(payload["problems"])
+            self.assertNotIn("Failed scenarios", summary.read_text())
+
     def test_failures_keep_named_checkpoints_and_continue_to_later_checks(self):
         """One scenario reports both failed checkpoints and the later successful check."""
         class Scenario(unittest.TestCase):
