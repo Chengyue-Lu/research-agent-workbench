@@ -1,0 +1,32 @@
+{"python_files": 185, "paths": 1176, "seconds": [3.269414299997152, 3.280188200005796, 3.289643600001], "edges": 7187}
+         53192183 function calls (53135305 primitive calls) in 12.844 seconds
+
+   Ordered by: cumulative time
+   List reduced from 84 to 25 due to restriction <25>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    1.915    1.915   12.844   12.844 D:\lcy\develop\research-agent-workbench-ci-resources\.github\scripts\ci_dependencies.py:104(graph)
+  3179892    1.322    0.000    7.999    0.000 D:\lcy\develop\research-agent-workbench\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\ast.py:380(walk)
+  3174921    0.860    0.000    6.477    0.000 {method 'extend' of 'collections.deque' objects}
+  7186061    3.307    0.000    6.279    0.000 D:\lcy\develop\research-agent-workbench\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\ast.py:267(iter_child_nodes)
+41329/39244    0.079    0.000    4.464    0.000 D:\lcy\develop\research-agent-workbench-ci-resources\.github\scripts\ci_dependencies.py:238(name_only)
+  9396014    1.774    0.000    2.280    0.000 D:\lcy\develop\research-agent-workbench\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\ast.py:255(iter_fields)
+5257/5253    0.071    0.000    2.268    0.000 {built-in method builtins.any}
+   748282    0.272    0.000    2.196    0.000 D:\lcy\develop\research-agent-workbench-ci-resources\.github\scripts\ci_dependencies.py:252(<genexpr>)
+     2115    0.217    0.000    2.087    0.001 D:\lcy\develop\research-agent-workbench-ci-resources\.github\scripts\ci_dependencies.py:254(<listcomp>)
+      185    0.217    0.001    1.923    0.010 D:\lcy\develop\research-agent-workbench-ci-resources\.github\scripts\ci_dependencies.py:122(<dictcomp>)
+ 17804931    1.207    0.000    1.207    0.000 {built-in method builtins.isinstance}
+  5803027    0.507    0.000    0.507    0.000 {built-in method builtins.getattr}
+      185    0.001    0.000    0.424    0.002 D:\lcy\develop\research-agent-workbench\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\ast.py:33(parse)
+      185    0.423    0.002    0.423    0.002 {built-in method builtins.compile}
+  3174921    0.194    0.000    0.194    0.000 {method 'popleft' of 'collections.deque' objects}
+2115/2069    0.001    0.000    0.139    0.000 {built-in method builtins.all}
+4257/4163    0.006    0.000    0.138    0.000 D:\lcy\develop\research-agent-workbench-ci-resources\.github\scripts\ci_dependencies.py:256(<genexpr>)
+192444/145884    0.099    0.000    0.130    0.000 D:\lcy\develop\research-agent-workbench-ci-resources\.github\scripts\ci_dependencies.py:346(call_name)
+  1595334    0.129    0.000    0.129    0.000 {method 'startswith' of 'str' objects}
+    37927    0.054    0.000    0.080    0.000 D:\lcy\develop\research-agent-workbench-ci-resources\.github\scripts\ci_dependencies.py:272(link)
+   318794    0.051    0.000    0.051    0.000 {method 'get' of 'dict' objects}
+4384/1629    0.012    0.000    0.043    0.000 D:\lcy\develop\research-agent-workbench-ci-resources\.github\scripts\ci_dependencies.py:186(literal_path)
+    18600    0.023    0.000    0.029    0.000 D:\lcy\develop\research-agent-workbench-ci-resources\.github\scripts\ci_dependencies.py:123(scope)
+   177733    0.022    0.000    0.022    0.000 {method 'endswith' of 'str' objects}
+     2786    0.005    0.000    0.011    0.000 D:\lcy\develop\research-agent-workbench-ci-resources\.github\scripts\ci_dependencies.py:151(parameter)

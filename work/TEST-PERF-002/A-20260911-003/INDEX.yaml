@@ -1,0 +1,99 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260911-003
+task_id: TEST-PERF-002
+task_revision: 23
+attempt_id: A-20260911-003
+archive_root: A-20260911-003
+baseline: c70aa6c8c27c5eaf7f4fc7af6b289ce3f2a2418a
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: fc911a553246d33c4a5284a3e74bc0b613f53fc3d0fc6b4920b7764d179b44be
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 5bee53ef466555ebf519c7cf50796c5b4d953c7dbda2852bf779a2843a2f75a4
+read_allowlist:
+- .github/**
+- .rwb/precision-intake/**
+- .rwb/resource-audit/**
+- AGENTS.md
+- build_backend.py
+- docs/DEVELOPMENT.md
+- docs/README.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/**
+- pyproject.toml
+- runtime-resources.json
+- src/**
+- tests/**
+- work/M14-002/A-20260906-001/checks/independent_projection_oracle.py
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/ci_checks.py
+- .github/scripts/ci_dependencies.py
+- .github/scripts/plan_ci.py
+- .github/workflows/ci.yml
+- .rwb/precision-venv311/**
+- .rwb/resource-audit/**
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/ci_impact_policy.yaml
+- tests/fixtures/ci/**
+- tests/test_ci_checks.py
+- tests/test_ci_dependencies.py
+- tests/test_ci_plan.py
+- work/TEST-PERF-002/A-20260911-003/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+- web
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 1ddb1178fb5bca6b36647f40213d850ca84e49da9e48f9333075616e71856fe1
+  event_count: 6
+tool_event_refs:
+- path: tool-events/baseline-profile-succeeded.json
+  sha256: c711097faa1622411eb64080cb7f16384278355a1b498200c4123a7112bae3d0
+- path: tool-events/incremental-analysis-validation-succeeded.json
+  sha256: 30dd7efcdbf6b9295d9d78f76610bc9dd22bcdf09b94aefa723f76ba90dfa877
+handoff_refs: []
+decision_refs: []
+output_refs:
+- path: RESULTS.md
+  sha256: def5d2692dc65e18b812dfd77736656ba8be6199d744238f2a5151afb40d84db
+check_refs:
+- path: checks/benchmark-source.txt
+  sha256: 68438eb01dac2cca4fb96340ef0e9c0b5795526202b73e552d4382a83835b756
+- path: checks/coverage-subject.json
+  sha256: 1b88e373ff5359a2244c5bffbad162715347ed5971d2c964514fec02d235739e
+- path: checks/current-plan-equivalence.json
+  sha256: a4c9ca62d5528edcc2ffdf7ba26e1dad1252dc0f6b88bc7110838a3e7d96486b
+- path: checks/performance-benchmark.json
+  sha256: 227807d4959dca578e85c6865e335720e46d58105478d38c3fcd6056813fdc67
+- path: checks/performance-benchmark.log
+  sha256: 6b9a66050b546980afc9d44ff534c4e6e625de6f9a0642cba59dc5ac75c8e5ca
+- path: checks/performance-docs-governance.log
+  sha256: 8701b616147f8b089069909365dce4031a83f66a1d7329a1fa77f522ffb06d9f
+- path: checks/performance-infrastructure.log
+  sha256: 7d1850debba359a747da1a0ef61f08d6dcd564eecb912c563d4258c23b796349
+- path: checks/performance-plan-benchmark.log
+  sha256: e4bb39578e43aa5918ae116d7f190631f9fd7d7d01e096c478b74610d65cae50
+- path: checks/performance-repository.log
+  sha256: 6895861bf5f35b7669baaf95d9caf2b94c3a4e1d5682f29bbc73ba0aa0064633
+- path: checks/performance-targeted.log
+  sha256: 71d7c44e63d82874203373406fae4bad252cfef55aac87927e0e19373ba216d5
+- path: checks/profile-before.log
+  sha256: 94f711359d160a98d11b3221625820504a7e77bf2769ad8786145c3cb7017dd0
+- path: checks/summary.json
+  sha256: 858dada57c0ff6ddfec5e4ca8c1ffd681d826fb104a0e98cc0f867a78d0e2f8f
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: messages
