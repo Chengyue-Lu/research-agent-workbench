@@ -129,7 +129,10 @@ def graph(blobs, paths):
 
         bindings = defaultdict(lambda: defaultdict(list))
         import_targets = defaultdict(set)
+        mutated_names = set()
         for node in ast.walk(tree):
+            if isinstance(node, (ast.Global, ast.Nonlocal)):
+                mutated_names.update(node.names)
             if isinstance(node, ast.ImportFrom):
                 for item in node.names:
                     import_targets[item.asname or item.name].add(str(node.module) + '.' + item.name)
@@ -151,10 +154,32 @@ def graph(blobs, paths):
                                            *([owner.args.vararg] if owner.args.vararg else []),
                                            *([owner.args.kwarg] if owner.args.kwarg else [])))
 
+        @lru_cache(maxsize=None)
+        def lexical_values(node):
+            """A nearer binding or an exported mutation prevents a fixed-root claim."""
+            if node.id in mutated_names:
+                return [None]
+            owner = scope(node)
+            while True:
+                if bindings[owner].get(node.id):
+                    return bindings[owner][node.id]
+                if isinstance(owner, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
+                    if any(arg.arg == node.id for arg in (*owner.args.posonlyargs, *owner.args.args,
+                                                         *owner.args.kwonlyargs)):
+                        return [None]
+                    if any(arg is not None and arg.arg == node.id for arg in (owner.args.vararg, owner.args.kwarg)):
+                        return [None]
+                if owner is tree:
+                    return []
+                owner = scope(owner)
+                # Method free variables do not resolve through the class namespace.
+                while isinstance(owner, ast.ClassDef):
+                    owner = scope(owner)
+
         def path_constructor(node):
             return (isinstance(node, ast.Name) and aliases.get(node.id) == 'pathlib.Path'
                     and import_targets[node.id] == {'pathlib.Path'}
-                    and not bindings[scope(node)].get(node.id) and not bindings[tree].get(node.id)
+                    and not lexical_values(node)
                     and not parameter(node, node.id))
 
         def literal_path(node, seen=frozenset()):
@@ -164,11 +189,11 @@ def graph(blobs, paths):
             seen = seen | {node}
             if isinstance(node, ast.Name):
                 if (node.id == '__file__' and not parameter(node, node.id)
-                        and not bindings[scope(node)].get(node.id) and not bindings[tree].get(node.id)):
+                        and not lexical_values(node)):
                     return PurePosixPath(path)
                 if parameter(node, node.id):
                     return None
-                values = bindings[scope(node)].get(node.id, bindings[tree].get(node.id, []))
+                values = lexical_values(node)
                 if len(values) == 1 and values[0] is not None:
                     return literal_path(values[0], seen)
             if isinstance(node, ast.Call):
@@ -178,7 +203,7 @@ def graph(blobs, paths):
                     return literal_path(node.func.value, seen)
             if isinstance(node, ast.Attribute) and node.attr == 'parent':
                 value = literal_path(node.value, seen)
-                return value.parent if value is not None else None
+                return value.parent if value is not None and value != PurePosixPath('.') else None
             if (isinstance(node, ast.Subscript) and isinstance(node.value, ast.Attribute) and node.value.attr == 'parents'
                     and isinstance(node.slice, ast.Constant) and type(node.slice.value) is int):
                 value = literal_path(node.value.value, seen)

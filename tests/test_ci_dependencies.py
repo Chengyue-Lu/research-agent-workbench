@@ -128,6 +128,18 @@ class DependencyTests(unittest.TestCase):
             'from pathlib import Path\nROOT=Path(__file__).parents[1]\n'
                 'def other():\n from custom import Path\n'
                 '(ROOT / "input.md").read_text()',
+            'from pathlib import Path\nROOT=Path(__file__).parents[1]\n'
+                'def outer(ROOT):\n def inner(): return (ROOT / "input.md").read_text()\n return inner()',
+            'from pathlib import Path\ndef outer(Path):\n'
+                ' def inner(): return (Path(__file__).parent / "input.md").read_text()\n return inner()',
+            'from pathlib import Path\nROOT=Path(__file__).parents[1]\n'
+                'def mutate():\n global ROOT\n ROOT=other\n(ROOT / "input.md").read_text()',
+            'from pathlib import Path\nROOT=Path(__file__).parent.parent.parent\n'
+                '(ROOT / "checkout" / "docs" / "input.md").read_text()',
+            'from pathlib import Path\ndef outer(*Path):\n'
+                ' def inner(): return (Path(__file__).parent / "input.md").read_text()',
+            'from pathlib import Path\ndef outer(**Path):\n'
+                ' def inner(): return (Path(__file__).parent / "input.md").read_text()',
         ]
         for raw in cases:
             with self.subTest(raw=raw):
@@ -147,6 +159,16 @@ class DependencyTests(unittest.TestCase):
             with self.subTest(raw=raw):
                 blobs = {'tests/test_guard.py': raw.encode()}
                 self.assertNotIn('test_guard', self.selection(blobs, blobs, ['docs/input.md'], ['docs/input.md'])['selected'])
+
+    def test_class_method_root_uses_module_binding_and_closure_uses_outer_binding(self):
+        header = b'from pathlib import Path\nROOT=Path(__file__).parents[1]\n'
+        blobs = {'tests/test_reader.py': header + b'class Reader:\n ROOT=other\n'
+                 b' def read(self): return (ROOT / "docs/input.md").read_text()\n',
+                 'tests/test_closure.py': header + b'def outer():\n ROOT=Path(__file__).parent\n'
+                 b' def inner(): return (ROOT / "input.md").read_text()\n return inner()'}
+        paths = ['docs/input.md', 'tests/input.md']
+        self.assertEqual({'test_reader'}, set(self.selection(blobs, blobs, ['docs/input.md'], paths)['selected']))
+        self.assertEqual({'test_closure'}, set(self.selection(blobs, blobs, ['tests/input.md'], paths)['selected']))
 
     def test_lexical_comparisons_skip_names_but_preserve_real_reads_and_escaped_values(self):
         blobs = {
