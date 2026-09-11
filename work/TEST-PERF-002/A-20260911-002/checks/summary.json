@@ -1,0 +1,27 @@
+{
+  "source_head": "c60a3ad72eec527e5c8ef7652e12be1866818d08",
+  "subject_git_sha256": "38051f5d91a0534ee21938f01d9704ed2d342220e6503c4e9cf78e085f8615fe",
+  "targeted_tests": 36,
+  "statements": [
+    381,
+    381
+  ],
+  "branches": [
+    254,
+    254
+  ],
+  "replay": {
+    "old_modules": 35,
+    "new_modules": 10,
+    "old_ids_in_baseline": 725,
+    "new_ids_in_baseline": 261,
+    "baseline_selected_case_seconds": 74.728,
+    "obligations": {
+      "behavioral_scope": "focused",
+      "coverage_scope": "none",
+      "package_smoke": false,
+      "repository_smoke": false
+    }
+  },
+  "hosted_full_bootstrap": "required on final PR head; pending"
+}
