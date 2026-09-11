@@ -37,6 +37,9 @@ M5-007, Human case/admission or actual-execution obligations.
 | A3A4-COMP / DRIFT | Compare frozen full execution binding and output/stop obligations; current Method difference yields package effect; recheck preregistered analysis refs and all input bytes | M5-007 must reconcile post-run actual facts; pure equality fixture grants no execution authority |
 | SCHEMA / CACHE | Bounded same-byte parsing, finite JSON, invocation-local copied caches, captured Schema identity and rechecks; changed refs/Schemas cannot reuse cached qualification | Exact-head coverage and package verification |
 | SCOPE / TRACE | One existing M5-006 feature/R2 implementation; no Task redefinition or downstream implementation; capture gaps retained in the Attempt record | Cross-owner review; no self-merge |
+| PR71 / ADMISSION-CLOSURE | Confirmatory Protocol requires an exact admission-scoped closure in schema and semantics; synthetic null remains valid, wrong scope/hash fails | Review correction; real admission remains independently verified |
+| PR71 / METHOD-COMPLETENESS | Derive demand from exact frozen Methods and Tasks; compare runtime Requirement identities with exact multiplicity across A3 and case-scoped A4; missing, extra, duplicate and Task/Method drift fail | Complete synthetic document-read + research-contract-check fixtures; no Task completion authority |
+| PR71 / EXTENSION-COUNT | Count exact Projection/Skill ID/version/hash identities once across Requirements; one reused Skill remains one extension and distinct identities remain distinct | Interpretation still depends on the full comparison surface |
 
 Evidence entrypoints and consumer responsibilities are in [the implementation contract](../../../implementation/SYSTEM_EVALUATION_PROTOCOL.md)
 and [WORKLOG](WORKLOG.md). Test fixtures are synthetic structural evidence, not Human admission or scientific efficacy.

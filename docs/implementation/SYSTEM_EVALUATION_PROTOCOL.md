@@ -87,6 +87,15 @@ It verifies exact Task, Requirement, Supply/component/implementation identity an
 frozen Mode/Action/Method and Core `no-skill` disposition. Permission roots, data egress and side effects can
 only remain equivalent or narrow. A structural fixture never becomes executable by changing a record boolean.
 
+A3 qualification also requires the complete Capability Requirement set derived from each exact frozen Method,
+equal to that Method's exact Task `required_capabilities`. Every frozen Task must have a Method. The observed
+runtime bindings must contain each `(Task file pin, Method file pin, Requirement ID)` exactly once; omitted,
+extra and duplicate bindings fail even when the submitted Manifest's Snapshot list is internally consistent.
+Method declares Requirement IDs; the existing Snapshot chain separately checks Requirement document hashes
+and logical identities. Repetition of one Requirement across Action decisions is one demand within that Method.
+A4 applies the same completeness rule to its case Task and that Task's frozen Methods, across all runtime bindings.
+Individual Runtime Bundles continue to represent one capability slice and do not assert Task completion.
+
 M6-008 produces A2 records after this contract is accepted. Capability Resolver produces/selects A3 runtime
 Resolution/Snapshot; M11 consumes them. M5-007 assembles and independently recomputes A3 records.
 Qualification is evaluated at its recorded timestamp. M6 use-boundary checks and the Harness/Host's trusted
@@ -98,7 +107,9 @@ An assessment has three logical sections, without a self-referential raw hash:
 
 1. `admission_case_closure` pins the exact Skill Evaluation, candidate/Skill identity and every admission case.
    The Protocol independently pins this closure before assessment. Rewriting an assessment and its case/provenance
-   files cannot replace that frozen source. A Protocol without this pin cannot support overlap verification.
+   files cannot replace that frozen source. `purpose: confirmatory-protocol` requires a non-null, exact,
+   admission-scoped closure pin in both schema and semantic verification. A synthetic contract proof may omit
+   the pin; such a Protocol cannot support overlap verification.
    Its Task and formal input references must agree with that Evaluation; v0.1's opaque Task contracts remain
    unresolved unless formal Task identity can actually be read and checked.
 2. `comparison_input_closure` pins the Protocol and proposed/frozen case closure, hashes the admission logical
@@ -143,6 +154,9 @@ Profile constraints, output/completion requirements and stop/safe-pause conditio
 Only exact equality with one admitted Skill extension can yield `exact-skill-only`. Differences in Method, non-Skill
 Supply or relevant boundaries downgrade to `skill-bearing-package`; missing/incompatible shared conditions make the
 secondary contrast `not-comparable` / unavailable. Neither changes the primary estimand.
+The extension count deduplicates the exact Projection file pin plus Skill ID, version and normalized content hash.
+One admitted extension used by multiple Capability Requirements counts once; distinct extension identities count
+separately. Per-Requirement interfaces, obligations and other comparison facts retain their original multiplicity.
 
 Current M11 Core/Skill Method dispositions differ, so the complete synthetic integration fixture reports a package
 effect. The pure exact-equality test proves the comparison algorithm, not the existence of a currently executable

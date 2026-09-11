@@ -201,6 +201,10 @@ negative_acceptance:
       - test_system_evaluation_protocol.SystemProtocolTests.test_structural_snapshot_is_never_execution_evidence
       - test_system_evaluation_protocol.SystemProtocolTests.test_frozen_binding_interface_components_and_implementation_cannot_be_replaced
       - test_system_evaluation_protocol.SystemProtocolTests.test_cached_protocol_is_copied_and_rechecks_every_reference
+      - test_system_evaluation_protocol.SystemProtocolTests.test_confirmatory_requires_exact_closure_in_schema_and_semantics
+      - test_system_evaluation_protocol.SystemProtocolTests.test_a3_requires_all_method_requirements_even_if_manifest_omits_one
+      - test_system_evaluation_protocol.SystemProtocolTests.test_a3_rejects_duplicate_requirement_through_distinct_frozen_snapshots
+      - test_system_evaluation_protocol.SystemProtocolTests.test_frozen_method_closure_rejects_task_demand_identity_and_extra_bindings
   - surface: m5-admission-held-out-closure
     modules:
       - src/research_workbench/evaluation/overlap.py
@@ -216,10 +220,12 @@ negative_acceptance:
     positive_tests:
       - test_evaluation_overlay.EvaluationOverlayTests.test_pre_run_lineage_is_valid_but_not_actual_execution_or_admission_authority
       - test_evaluation_overlay.EvaluationOverlayTests.test_analysis_input_replays_the_exact_preregistered_comparison
+      - test_evaluation_overlay.EvaluationOverlayTests.test_skill_count_deduplicates_exact_extension_identity_across_requirements
     negative_tests:
       - test_evaluation_overlay.EvaluationOverlayTests.test_status_strings_cannot_replace_external_admission_verification
       - test_evaluation_overlay.EvaluationOverlayTests.test_current_a3_a4_method_difference_is_package_effect
       - test_evaluation_overlay.EvaluationOverlayTests.test_runtime_snapshot_bundle_view_interface_pins_fail_closed
+      - test_evaluation_overlay.EvaluationOverlayTests.test_a4_requires_each_frozen_method_requirement_exactly_once
   - surface: m5-public-verification-boundary
     modules:
       - src/research_workbench/evaluation/contracts.py

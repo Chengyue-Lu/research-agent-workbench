@@ -11,6 +11,14 @@
 
 ## Progress
 
+2026-09-12 PR #71 review repair: reviewed the comment on `1eac55de9293ff0e5b19f9b838307d8a0650cf0f`
+and reproduced the completeness gaps. Added schema/semantic confirmatory admission pin enforcement, exact
+Task/Method Requirement closure for A3/A4, and unique admitted extension counting. Synthetic fixtures now bind
+both document-read and research-contract-check through independently validated capability slices, including one
+Skill serving both. M5-003 and Runtime contracts remain unchanged. The original implementation archive remains
+immutable; this review attempt records subsequent evidence separately, with capture gaps disclosed. Current-head
+validation and review status are recorded on the same PR; earlier CI applies only to its own head.
+
 2026-09-11: fetched origin; base unchanged; only the prior entry-plan file was untracked. Verified current Snapshot, Bundle and View validators as reuse points. M11 Core requires `no-skill` Method disposition for non-Skill and `skill-need|mixed` for Skill: current executable A3/A4 paths therefore cannot honestly claim an exact Skill-only delta.
 
 Implementation and validation evidence will be added by slice. No new Task is marked DONE by this initial record.

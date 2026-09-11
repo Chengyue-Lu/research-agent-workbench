@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections import Counter
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from typing import Any
 
 from research_workbench.evaluation.pins import (
@@ -91,6 +91,73 @@ def snapshot_chain(
         "Method Task binding mismatch",
     )
     return chain
+
+
+def validate_requirement_closure(
+    inputs: EvaluationInputs,
+    chains: Sequence[Mapping[str, Any]],
+    manifest: Mapping[str, Any],
+    selected_arm: Mapping[str, Any],
+    *,
+    task_ref: Mapping[str, Any] | None = None,
+) -> None:
+    """Require one qualified binding per frozen Task/Method/Requirement identity.
+
+    Method declares Requirement IDs, not Requirement document hashes. Each
+    qualified Snapshot independently pins and validates those document bytes;
+    the demand set comes from frozen Methods, never from submitted bindings.
+    A4 records cover one frozen case Task; A3 covers the frozen arm.
+    """
+    tasks = {}
+    for reference in manifest["frozen_conditions"]["task_packet_refs"]:
+        task = inputs.read(reference, "task_packet")
+        tasks[(task["task_id"], task["revision"], file_ref(reference)["sha256"])] = (
+            digest(file_ref(reference)),
+            task,
+        )
+    expected = Counter()
+    covered_tasks = set()
+    for reference in selected_arm["treatment_control"]["method_resolution_refs"]:
+        method = inputs.read(reference, "method_resolution")
+        bound = method["task_ref"]
+        key = (bound["task_id"], bound["revision"], sha(bound["sha256"]))
+        require(key in tasks, "frozen Method Task is outside frozen Task closure")
+        task_identity, task = tasks[key]
+        if task_ref is not None and task_identity != digest(file_ref(task_ref)):
+            continue
+        covered_tasks.add(task_identity)
+        requirements = {
+            identity
+            for decision in method["action_decisions"]
+            for identity in decision["capability_requirements"]
+        }
+        require(
+            requirements == set(task["required_capabilities"]),
+            "frozen Method Requirement set differs from Task capability closure",
+        )
+        for identity in requirements:
+            expected[(task_identity, digest(file_ref(reference)), identity)] = 1
+    required_tasks = (
+        {digest(file_ref(task_ref))}
+        if task_ref is not None
+        else {identity for identity, _task in tasks.values()}
+    )
+    require(
+        covered_tasks == required_tasks,
+        "frozen Method closure must cover every qualified Task",
+    )
+    observed = Counter(
+        (
+            digest(file_ref(chain["snapshot"]["task_ref"])),
+            digest(file_ref(chain["snapshot"]["method_resolution_ref"])),
+            chain["snapshot"]["requirement_ref"]["requirement_id"],
+        )
+        for chain in chains
+    )
+    require(
+        observed == expected,
+        "qualified Requirement set must equal frozen Task/Method closure exactly once",
+    )
 
 
 def ceilings_narrow(frozen: Mapping[str, Any], runtime: Mapping[str, Any]) -> bool:
@@ -296,5 +363,7 @@ def validate_qualification(
         runtime["interface"] = validate_implementation(inputs, binding, runtime)
         validate_implementation(inputs, binding, frozen)
         qualified.append(runtime)
+    if document["arm_id"] == "mode-no-skill":
+        validate_requirement_closure(inputs, qualified, manifest, selected_arm)
     inputs.recheck()
     return qualified

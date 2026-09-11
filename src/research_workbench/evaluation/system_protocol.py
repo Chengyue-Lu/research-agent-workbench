@@ -26,11 +26,22 @@ def validate_protocol(
         inputs.recheck()
         return copy.deepcopy(inputs.protocol_cache[cache_key])
     protocol = inputs.read(reference, "system_evaluation_protocol")
+    require(
+        protocol["purpose"] != "confirmatory-protocol"
+        or protocol["admission_case_closure_ref"] is not None,
+        "confirmatory Protocol requires a frozen admission case closure",
+    )
     inputs.read_bytes(protocol["decision_ref"])
     manifest = inputs.manifest(protocol["manifest_ref"])
     validate_frozen_binding(protocol["execution_binding"], manifest)
     if protocol["admission_case_closure_ref"] is not None:
-        inputs.read(protocol["admission_case_closure_ref"], "evaluation_case_closure")
+        closure = inputs.read(
+            protocol["admission_case_closure_ref"], "evaluation_case_closure"
+        )
+        require(
+            closure["scope"] == "admission",
+            "Protocol requires an admission-scoped case closure",
+        )
     modes = [inputs.read(ref, "research_mode") for ref in protocol["mode_documents"]]
     require(
         sorted(f"{m['mode_id']}@{m['version']}" for m in modes)

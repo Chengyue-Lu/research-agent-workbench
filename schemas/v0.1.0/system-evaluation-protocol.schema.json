@@ -397,5 +397,18 @@
       ]
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"purpose": {"const": "confirmatory-protocol"}},
+        "required": ["purpose"]
+      },
+      "then": {
+        "properties": {
+          "admission_case_closure_ref": {"$ref": "common.schema.json#/$defs/fileRef"}
+        }
+      }
+    }
+  ],
   "additionalProperties": false
 }

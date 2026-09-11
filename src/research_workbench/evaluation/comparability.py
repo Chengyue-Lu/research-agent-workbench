@@ -11,6 +11,7 @@ from research_workbench.evaluation.pins import (
     digest,
     file_ref,
     require,
+    sha,
     timestamp,
 )
 from research_workbench.evaluation.qualification import validate_qualification
@@ -139,6 +140,27 @@ def derive_comparability(
     }
 
 
+def admitted_skill_extension_count(chains: Sequence[Mapping[str, Any]]) -> int:
+    """Count exact admitted extensions, not their uses across Requirements."""
+    return len(
+        {
+            (
+                digest(
+                    file_ref(
+                        c["snapshot"]["supply_identity"]["skill_release_projection_ref"]
+                    )
+                ),
+                component["component_ref"],
+                component["version"],
+                sha(component["content_hash"]),
+            )
+            for c in chains
+            for component in c["snapshot"]["supply_identity"]["components"]
+            if component["component_kind"] == "skill"
+        }
+    )
+
+
 def validate_comparability(
     inputs: EvaluationInputs,
     document: Mapping[str, Any],
@@ -227,11 +249,7 @@ def validate_comparability(
         validate_view_shared_conditions(
             view.document, inputs.manifest(document["manifest_ref"]), protocol
         )
-    count = sum(
-        component["component_kind"] == "skill"
-        for c in a4
-        for component in c["snapshot"]["supply_identity"]["components"]
-    )
+    count = admitted_skill_extension_count(a4)
     result = derive_comparability(
         comparison_surface(a3), comparison_surface(a4), admitted_skill_count=count
     )

@@ -22,7 +22,10 @@ from research_workbench.evaluation.pins import (
     sha,
     timestamp,
 )
-from research_workbench.evaluation.qualification import snapshot_chain
+from research_workbench.evaluation.qualification import (
+    snapshot_chain,
+    validate_requirement_closure,
+)
 from research_workbench.evaluation.system_protocol import (
     validate_protocol,
     validate_view_shared_conditions,
@@ -283,12 +286,8 @@ def validate_overlay(
         chain["view"] = view.document
         validate_view_shared_conditions(view.document, manifest, protocol)
         bindings.append(chain)
-    require(
-        len(
-            {item["snapshot"]["requirement_ref"]["requirement_id"] for item in bindings}
-        )
-        == len(bindings),
-        "duplicate A4 capability binding",
+    validate_requirement_closure(
+        inputs, bindings, manifest, selected_arm, task_ref=document["task_ref"]
     )
     inputs.recheck()
     return bindings

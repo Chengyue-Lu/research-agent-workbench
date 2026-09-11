@@ -4,6 +4,7 @@ import copy
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from research_workbench.evaluation.pins import (
     EvaluationInputs,
@@ -14,6 +15,7 @@ from research_workbench.evaluation.pins import (
 from research_workbench.evaluation.qualification import (
     ceilings_narrow,
     validate_qualification,
+    validate_requirement_closure,
 )
 from research_workbench.evaluation.system_protocol import (
     validate_measurement,
@@ -23,6 +25,188 @@ from tests.system_evaluation_fixtures import ROOT, ProtocolFixtureMixin, record
 
 
 class SystemProtocolTests(ProtocolFixtureMixin, unittest.TestCase):
+    def test_confirmatory_requires_exact_closure_in_schema_and_semantics(self):
+        synthetic = copy.deepcopy(self.f.protocol)
+        inputs = self.inputs()
+        self.assertEqual(
+            validate_protocol(inputs, self.f.protocol_ref)["purpose"],
+            "synthetic-contract-proof",
+        )
+        confirmatory = {**synthetic, "purpose": "confirmatory-protocol"}
+        self.assertTrue(
+            inputs.catalog.validate("system_evaluation_protocol", confirmatory)
+        )
+        reference = self.f.write("evaluation/confirmatory.json", confirmatory)
+        # Exercise the semantic invariant independently of schema enforcement.
+        with (
+            patch.object(inputs, "validate", side_effect=lambda _kind, doc: doc),
+            self.assertRaisesRegex(
+                EvaluationValidationError, "requires a frozen admission"
+            ),
+        ):
+            validate_protocol(inputs, reference)
+        with self.assertRaisesRegex(EvaluationValidationError, "schema"):
+            validate_protocol(self.inputs(), reference)
+        self.f.overlap_inputs()
+        confirmatory["manifest_ref"] = self.f.manifest_ref
+        admission_ref = self.f.write(
+            "evaluation/admission-cases.json", self.f.admission_closure
+        )
+        confirmatory["admission_case_closure_ref"] = admission_ref
+        reference = self.f.write("evaluation/confirmatory-complete.json", confirmatory)
+        self.assertFalse(
+            self.inputs().catalog.validate("system_evaluation_protocol", confirmatory)
+        )
+        self.assertEqual(
+            validate_protocol(self.inputs(), reference)["admission_case_closure_ref"],
+            admission_ref,
+        )
+        wrong_scope = {
+            **confirmatory,
+            "admission_case_closure_ref": self.f.case_closure_ref,
+        }
+        wrong_ref = self.f.write("evaluation/wrong-scope-protocol.json", wrong_scope)
+        with self.assertRaisesRegex(EvaluationValidationError, "admission-scoped"):
+            validate_protocol(self.inputs(), wrong_ref)
+        (self.f.root / admission_ref["path"]).write_bytes(b"{}")
+        with self.assertRaisesRegex(EvaluationValidationError, "hash mismatch"):
+            validate_protocol(self.inputs(), reference)
+
+    def test_a3_requires_all_method_requirements_even_if_manifest_omits_one(self):
+        manifest = self.f.doc(self.f.manifest_ref["path"])
+        manifest["arms"][2]["capability_snapshot_refs"] = [
+            self.f.bindings["mode-no-skill"]["snapshot_ref"]
+        ]
+        self.f.manifest_ref = self.f.write("evaluation/omitted-manifest.json", manifest)
+        self.f.protocol["manifest_ref"] = self.f.manifest_ref
+        self.f.protocol["execution_bindings"] = list(self.f.bindings.values())
+        self.f.protocol_ref = self.f.write(
+            "evaluation/omitted-protocol.json", self.f.protocol
+        )
+        document = self.f.qualification("mode-no-skill")
+        document["bindings"] = document["bindings"][:1]
+        with self.assertRaisesRegex(
+            EvaluationValidationError, "Requirement set.*exactly once"
+        ):
+            validate_qualification(
+                self.inputs(), document, expected_protocol_ref=self.f.protocol_ref
+            )
+
+    def test_a3_rejects_duplicate_requirement_through_distinct_frozen_snapshots(self):
+        binding = copy.deepcopy(self.f.bindings["mode-no-skill"])
+        binding["snapshot_ref"] = self.f.write(
+            "arm-2/duplicate-frozen.json", self.f.doc(binding["snapshot_ref"]["path"])
+        )
+        manifest = self.f.doc(self.f.manifest_ref["path"])
+        manifest["arms"][2]["capability_snapshot_refs"].append(binding["snapshot_ref"])
+        self.f.manifest_ref = self.f.write(
+            "evaluation/duplicate-manifest.json", manifest
+        )
+        self.f.protocol["manifest_ref"] = self.f.manifest_ref
+        self.f.protocol["execution_bindings"].append(binding)
+        self.f.protocol_ref = self.f.write(
+            "evaluation/duplicate-protocol.json", self.f.protocol
+        )
+        document = self.f.qualification("mode-no-skill")
+        duplicate = copy.deepcopy(document["bindings"][0])
+        duplicate["frozen_snapshot_ref"] = binding["snapshot_ref"]
+        document["bindings"].append(duplicate)
+        with self.assertRaisesRegex(
+            EvaluationValidationError, "Requirement set.*exactly once"
+        ):
+            validate_qualification(
+                self.inputs(), document, expected_protocol_ref=self.f.protocol_ref
+            )
+
+    def test_frozen_method_closure_rejects_task_demand_identity_and_extra_bindings(
+        self,
+    ):
+        inputs = self.inputs()
+        chains = validate_qualification(
+            inputs,
+            self.f.qualification("mode-no-skill"),
+            expected_protocol_ref=self.f.protocol_ref,
+        )
+        manifest = self.f.doc(self.f.manifest_ref["path"])
+        selected_arm = manifest["arms"][2]
+        self.assertEqual(
+            {c["requirement"]["requirement_id"] for c in chains},
+            {"document-read", "research-contract-check"},
+        )
+        validate_requirement_closure(
+            inputs, list(reversed(chains)), manifest, selected_arm
+        )
+        changed = copy.deepcopy(chains)
+        extra = copy.deepcopy(chains[0])
+        extra["snapshot"]["requirement_ref"]["requirement_id"] = "undeclared"
+        changed.append(extra)
+        with self.assertRaisesRegex(EvaluationValidationError, "Requirement set"):
+            validate_requirement_closure(self.inputs(), changed, manifest, selected_arm)
+        for change in ("task-id", "task-revision", "task-sha", "method-demand"):
+            method = self.f.doc(
+                selected_arm["treatment_control"]["method_resolution_refs"][0]["path"]
+            )
+            if change == "method-demand":
+                method["action_decisions"][0]["capability_requirements"].append(
+                    "undeclared"
+                )
+            else:
+                key = {
+                    "task-id": "task_id",
+                    "task-revision": "revision",
+                    "task-sha": "sha256",
+                }[change]
+                method["task_ref"][key] = {
+                    "task_id": "OTHER",
+                    "revision": 2,
+                    "sha256": "0" * 64,
+                }[key]
+            changed_arm = copy.deepcopy(selected_arm)
+            changed_arm["treatment_control"]["method_resolution_refs"] = [
+                self.f.write(f"evaluation/{change}.json", method)
+            ]
+            with (
+                self.subTest(change=change),
+                self.assertRaisesRegex(EvaluationValidationError, "frozen Method"),
+            ):
+                validate_requirement_closure(
+                    self.inputs(), chains, manifest, changed_arm
+                )
+
+    def test_case_scoped_closure_uses_only_that_tasks_frozen_methods(self):
+        inputs = self.inputs()
+        chains = validate_qualification(
+            inputs,
+            self.f.qualification("mode-no-skill"),
+            expected_protocol_ref=self.f.protocol_ref,
+        )
+        manifest = self.f.doc(self.f.manifest_ref["path"])
+        selected_arm = manifest["arms"][2]
+        task = self.f.doc(self.f.task_ref["path"])
+        task["task_id"] = "SECOND-FROZEN-TASK"
+        task_ref = self.f.write("evaluation/second-task.json", task)
+        manifest["frozen_conditions"]["task_packet_refs"].append(task_ref)
+        with self.assertRaisesRegex(
+            EvaluationValidationError, "cover every qualified Task"
+        ):
+            validate_requirement_closure(self.inputs(), chains, manifest, selected_arm)
+        method = self.f.doc(
+            selected_arm["treatment_control"]["method_resolution_refs"][0]["path"]
+        )
+        method["task_ref"] = {
+            "task_id": task["task_id"],
+            "revision": task["revision"],
+            "sha256": task_ref["sha256"],
+        }
+        selected_arm["treatment_control"]["method_resolution_refs"].append(
+            self.f.write("evaluation/second-method.json", method)
+        )
+        validate_requirement_closure(
+            self.inputs(), chains, manifest, selected_arm, task_ref=self.f.task_ref
+        )
+        with self.assertRaisesRegex(EvaluationValidationError, "Requirement set"):
+            validate_requirement_closure(self.inputs(), chains, manifest, selected_arm)
+
     def inputs(self):
         return EvaluationInputs(self.f.root, ROOT / "schemas")
 

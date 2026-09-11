@@ -3,12 +3,16 @@
 import copy
 import unittest
 
-from research_workbench.evaluation.comparability import validate_comparability
+from research_workbench.evaluation.comparability import (
+    admitted_skill_extension_count,
+    validate_comparability,
+)
 from research_workbench.evaluation.overlay import validate_overlay
 from research_workbench.evaluation.pins import (
     EvaluationInputs,
     EvaluationValidationError,
 )
+from tests.execution_fixtures import plain
 from tests.system_evaluation_fixtures import AT, ROOT, OverlayFixtureMixin
 
 
@@ -41,7 +45,12 @@ class EvaluationOverlayTests(OverlayFixtureMixin, unittest.TestCase):
     ):
         seen = []
         result = self.overlay(verifier=lambda evidence: seen.append(evidence) is None)
-        self.assertEqual(len(result), 1)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(
+            {c["requirement"]["requirement_id"] for c in result},
+            {"document-read", "research-contract-check"},
+        )
+        self.assertEqual(admitted_skill_extension_count(result), 1)
         self.assertEqual(seen[0]["evaluation_ref"], self.f.evaluation_ref)
         self.assertEqual(
             result[0]["snapshot"]["supply_identity"]["supply_kind"], "skill"
@@ -150,11 +159,97 @@ class EvaluationOverlayTests(OverlayFixtureMixin, unittest.TestCase):
         result = self.pairwise()
         self.assertEqual(result["status"], "skill-bearing-package")
         self.assertIn("methods", result["mismatches"])
+        self.assertNotIn("admitted-skill-extension-count", result["mismatches"])
         document = copy.deepcopy(self.f.pairwise)
         document["result"]["status"] = "exact-skill-only"
         document["result"]["interpretation"] = "skill-conditional-increment"
         with self.assertRaisesRegex(EvaluationValidationError, "pairwise result"):
             self.pairwise(document)
+
+    def test_a4_requires_each_frozen_method_requirement_exactly_once(self):
+        for mutation in ("missing", "duplicate", "extra-undeclared"):
+            document = copy.deepcopy(self.f.overlay)
+            if mutation == "missing":
+                document["runtime_bindings"].pop()
+            elif mutation == "duplicate":
+                duplicate = copy.deepcopy(document["runtime_bindings"][0])
+                duplicate["interface_ref"] = self.f.write(
+                    "a4/duplicate-interface.json",
+                    self.f.doc(duplicate["interface_ref"]["path"]),
+                )
+                document["runtime_bindings"].append(duplicate)
+            else:
+                # An extra qualified A3 slice cannot enter the A4 frozen Method.
+                document["runtime_bindings"].append(
+                    {
+                        **self.f.pairwise["a3_runtime_bindings"][0],
+                        "interface_ref": self.f.bindings["mode-no-skill"][
+                            "interface_ref"
+                        ],
+                    }
+                )
+            expected = (
+                "Requirement set.*exactly once"
+                if mutation != "extra-undeclared"
+                else "A4 Method.*frozen arm"
+            )
+            with (
+                self.subTest(mutation=mutation),
+                self.assertRaisesRegex(EvaluationValidationError, expected),
+            ):
+                self.overlay(document)
+
+    def test_skill_count_deduplicates_exact_extension_identity_across_requirements(
+        self,
+    ):
+        from research_workbench.evaluation.comparability import (
+            comparison_surface,
+            derive_comparability,
+        )
+        from research_workbench.evaluation.qualification import validate_qualification
+
+        chains = plain(self.overlay())
+        self.assertEqual(len(chains), 2)
+        self.assertEqual(admitted_skill_extension_count(chains), 1)
+        surface = comparison_surface(chains)
+        self.assertEqual(
+            derive_comparability(
+                surface,
+                surface,
+                admitted_skill_count=admitted_skill_extension_count(chains),
+            )["status"],
+            "exact-skill-only",
+        )
+        for field, value in (
+            ("component_ref", "another-skill"),
+            ("version", "2.0.0"),
+            ("content_hash", "sha256:" + "0" * 64),
+            ("projection", "0" * 64),
+        ):
+            changed = copy.deepcopy(chains)
+            identity = changed[1]["snapshot"]["supply_identity"]
+            if field == "projection":
+                identity["skill_release_projection_ref"]["content_hash"] = (
+                    "sha256:" + value
+                )
+            else:
+                identity["components"][0][field] = value
+            with self.subTest(field=field):
+                count = admitted_skill_extension_count(changed)
+                self.assertEqual(count, 2)
+                self.assertEqual(
+                    derive_comparability(surface, surface, admitted_skill_count=count)[
+                        "status"
+                    ],
+                    "not-comparable",
+                )
+        no_skill = validate_qualification(
+            self.inputs(),
+            self.f.qualification("mode-no-skill"),
+            expected_protocol_ref=self.f.protocol_ref,
+        )
+        self.assertEqual(admitted_skill_extension_count(no_skill), 0)
+        self.assertEqual(admitted_skill_extension_count([*chains, *no_skill]), 1)
 
     def test_analysis_input_replays_the_exact_preregistered_comparison(self):
         prior = self.f.write("evaluation/preregistered-pairwise.json", self.f.pairwise)
@@ -233,10 +328,7 @@ class EvaluationOverlayTests(OverlayFixtureMixin, unittest.TestCase):
             derive_comparability,
         )
 
-        chains = self.overlay()
-        chains[0]["view"] = self.f.doc(
-            self.f.overlay["runtime_bindings"][0]["view_ref"]["path"]
-        )
+        chains = plain(self.overlay())
         surface = comparison_surface(chains)
         for field in ("supported_inputs", "supported_outputs", "provided_capabilities"):
             changed = copy.deepcopy(chains)
@@ -274,7 +366,7 @@ class EvaluationOverlayTests(OverlayFixtureMixin, unittest.TestCase):
         document["promotion_provenance_ref"] = self.f.write(
             "accepted/promotion.json", provenance
         )
-        self.assertEqual(len(self.overlay(document)), 1)
+        self.assertEqual(len(self.overlay(document)), 2)
         provenance["release_ref"] = document["lifecycle_ref"]
         document["promotion_provenance_ref"] = self.f.write(
             "accepted/wrong-promotion.json", provenance

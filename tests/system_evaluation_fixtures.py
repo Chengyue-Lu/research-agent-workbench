@@ -107,6 +107,215 @@ class SystemEvaluationFixture:
             "content_hash": "sha256:" + ref["sha256"],
         }
 
+    def complete_supply(self, supply):
+        """Synthetic two-capability implementation; no side effects in either slice."""
+        requirement = load_document(
+            ROOT / "registry/capabilities/requirements/document-read.yaml"
+        )
+        for field, additions in (
+            ("provided_capabilities", ["document-read"]),
+            ("supported_inputs", requirement["required_inputs"]),
+            ("supported_outputs", requirement["required_outputs"]),
+            ("produced_artifacts", requirement["required_artifacts"]),
+        ):
+            supply[field] = list(dict.fromkeys([*supply[field], *additions]))
+        supply["data_egress_behavior"]["forbidden_payloads"] = list(
+            dict.fromkeys(
+                [
+                    *supply["data_egress_behavior"]["forbidden_payloads"],
+                    *requirement["constraints"]["data_egress"]["forbidden_payloads"],
+                ]
+            )
+        )
+        supply["side_effects"] = {"policy": "none", "allowed_effects": []}
+
+    def requirement_slice(self, original_ref, prefix, requirement_id="document-read"):
+        """Bind another declared Requirement to the same exact implementation."""
+        from research_workbench.evaluation.pins import file_ref
+
+        snapshot = self.doc(original_ref["path"])
+        requirement = load_document(
+            ROOT / f"registry/capabilities/requirements/{requirement_id}.yaml"
+        )
+        requirement_ref = self.write(
+            f"evaluation/requirements/{requirement_id}.json", requirement
+        )
+        pinned_requirement = {
+            "requirement_id": requirement_id,
+            "document_path": requirement_ref["path"],
+            "content_hash": "sha256:" + requirement_ref["sha256"],
+        }
+        supply = self.doc(file_ref(snapshot["selected_supply_report_ref"])["path"])
+        resolution = self.doc(file_ref(snapshot["resolution_ref"])["path"])
+        resolution["resolution_id"] += "-" + requirement_id
+        resolution["requirement_ref"] = pinned_requirement
+        resolution["comparisons"] = [
+            assess_supply(
+                CapabilityRequirement.from_mapping(requirement),
+                CapabilitySupplyReport.from_mapping(supply),
+                qualification=resolution["qualification"],
+                evidence_check=lambda *_args: "pass",
+                projection_eligibility_check=lambda _reference: True,
+            ).to_mapping()
+        ]
+        resolution_ref = self.write(f"{prefix}/resolution.json", resolution)
+        snapshot["snapshot_id"] += "-" + requirement_id
+        snapshot["requirement_ref"] = pinned_requirement
+        snapshot["resolution_ref"] = self.c_ref(
+            resolution["resolution_id"] + "@r1", resolution_ref
+        )
+        return self.write(f"{prefix}/snapshot.json", snapshot)
+
+    def runtime_binding(self, snapshot_ref, interface_ref, prefix, action_ref):
+        """Create a real validated Bundle/View for one synthetic capability slice."""
+        from research_workbench.evaluation.pins import file_ref
+        from research_workbench.execution import (
+            load_runtime_bundle,
+            produce_resolved_execution_view,
+        )
+        from research_workbench.execution.execution_view import PinnedExecutionInput
+
+        snapshot = self.doc(snapshot_ref["path"])
+        refs = {
+            key: file_ref(snapshot[key + "_ref"])
+            for key in (
+                "task",
+                "method_resolution",
+                "requirement",
+                "resolution",
+                "selected_supply_report",
+            )
+        }
+        documents = [
+            {"kind": kind, **refs[key]}
+            for key, kind in (
+                ("task", "task_packet"),
+                ("method_resolution", "method_resolution"),
+                ("requirement", "capability_requirement"),
+                ("resolution", "capability_resolution"),
+                ("selected_supply_report", "capability_supply_report"),
+            )
+        ]
+        documents += [{"kind": "resolved_capability_snapshot", **snapshot_ref}]
+        imports = [
+            {
+                "from_path": snapshot_ref["path"],
+                "to_path": refs[key]["path"],
+                "relation": relation,
+            }
+            for key, relation in (
+                ("task", "snapshot-task"),
+                ("method_resolution", "snapshot-method"),
+                ("requirement", "snapshot-requirement"),
+                ("resolution", "snapshot-resolution"),
+                ("selected_supply_report", "snapshot-supply"),
+            )
+        ]
+        imports += [
+            {
+                "from_path": refs[source]["path"],
+                "to_path": refs[target]["path"],
+                "relation": relation,
+            }
+            for source, target, relation in (
+                ("method_resolution", "task", "method-task"),
+                ("resolution", "method_resolution", "resolution-method"),
+                ("resolution", "requirement", "resolution-requirement"),
+                ("resolution", "selected_supply_report", "resolution-candidate-supply"),
+            )
+        ]
+        for evidence_ref in snapshot["conformance_evidence_refs"]:
+            documents.append(
+                {"kind": "capability_conformance_evidence", **evidence_ref}
+            )
+            imports.extend(
+                [
+                    {
+                        "from_path": snapshot_ref["path"],
+                        "to_path": evidence_ref["path"],
+                        "relation": "snapshot-conformance",
+                    },
+                    {
+                        "from_path": refs["selected_supply_report"]["path"],
+                        "to_path": evidence_ref["path"],
+                        "relation": "supply-conformance",
+                    },
+                ]
+            )
+        extension = {"enabled": False}
+        projection = snapshot["supply_identity"].get("skill_release_projection_ref")
+        if projection:
+            pinned = {"kind": "skill_release_projection", **file_ref(projection)}
+            documents.append(pinned)
+            imports.append(
+                {
+                    "from_path": refs["selected_supply_report"]["path"],
+                    "to_path": pinned["path"],
+                    "relation": "supply-projection",
+                }
+            )
+            extension = {"enabled": True, "projection": pinned}
+        task = self.doc(refs["task"]["path"])
+        requirement_id = snapshot["requirement_ref"]["requirement_id"]
+        bundle_ref = self.write(
+            f"{prefix}/bundle.json",
+            {
+                "schema_version": "0.1.0",
+                "bundle_id": prefix,
+                "revision": 1,
+                "profile": "runtime-bundle",
+                "execution_scope": {
+                    "kind": "action-capability-slice",
+                    "action_ref": action_ref,
+                    "requirement_id": requirement_id,
+                    "task_capability_closure": {
+                        "required": task["required_capabilities"],
+                        "closed": [requirement_id],
+                        "task_completion": False,
+                    },
+                },
+                "entrypoint": {"kind": "resolved_capability_snapshot", **snapshot_ref},
+                "documents": documents,
+                "imports": imports,
+                "skill_extension": extension,
+                "boundaries": dict.fromkeys(
+                    (
+                        "supply_selection",
+                        "execution_authority",
+                        "permission_grant",
+                        "fallback_authority",
+                    ),
+                    False,
+                ),
+            },
+        )
+        bundle = load_runtime_bundle(
+            bundle_ref["path"], project_root=self.root, schema_root=ROOT / "schemas"
+        )
+        view_inputs = self.shared_view_inputs(
+            ExecutionViewFixture()._inputs(self.root), prefix
+        )
+        binding = self.doc(view_inputs["execution_binding"].path)
+        binding["selected_supply_report_ref"] = snapshot["selected_supply_report_ref"][
+            "ref"
+        ]
+        binding_ref = self.write(f"{prefix}/binding.json", binding)
+        view_inputs["execution_binding"] = PinnedExecutionInput(**binding_ref)
+        view = produce_resolved_execution_view(
+            bundle,
+            **view_inputs,
+            execution_at=AT,
+            view_id=prefix,
+            expected_bundle_sha256=bundle_ref["sha256"],
+            schema_root=ROOT / "schemas",
+        )
+        return {
+            "snapshot_ref": snapshot_ref,
+            "bundle_ref": bundle_ref,
+            "view_ref": self.write(f"{prefix}/view.json", view),
+            "interface_ref": interface_ref,
+        }
+
     def build(self):
         manifest = copy.deepcopy(
             load_document(
@@ -148,6 +357,8 @@ class SystemEvaluationFixture:
                 b"def bounded_operation(value):\n    return value\n",
             )
             supply = self.doc("bundle/supply.yaml")
+            if index == 2:
+                self.complete_supply(supply)
             supply["report_id"] = f"m5-synthetic-supply-{index}"
             identity = supply["supply_identity"]
             identity["supply_kind"] = "tool" if index == 1 else "procedure"
@@ -162,6 +373,7 @@ class SystemEvaluationFixture:
                 }
             ]
             conformance = self.doc("bundle/conformance.yaml")
+            conformance["capability_ids"] = supply["provided_capabilities"]
             conformance["implementation_ref"] = identity["implementation_ref"]
             evidence_ref = self.write(f"{prefix}/conformance.json", conformance)
             supply["conformance_evidence"][0]["artifact_ref"] = evidence_ref
@@ -207,6 +419,10 @@ class SystemEvaluationFixture:
                 supply["report_id"] + "@1.0.0", supply_ref
             )
             snapshot["supply_identity"] = copy.deepcopy(identity)
+            snapshot["supply_data_egress"] = copy.deepcopy(
+                supply["data_egress_behavior"]
+            )
+            snapshot["supply_side_effects"] = copy.deepcopy(supply["side_effects"])
             snapshot["conformance_evidence_refs"] = [evidence_ref]
             runtime_ref = self.write(f"{prefix}/runtime-snapshot.json", snapshot)
             self.runtime_refs[arm_id] = runtime_ref
@@ -269,6 +485,16 @@ class SystemEvaluationFixture:
                 ],
                 "interface_ref": self.write(f"{prefix}/interface.json", interface),
             }
+        self.extra_runtime_ref = self.requirement_slice(
+            self.runtime_refs["mode-no-skill"], "arm-2/document-read/runtime"
+        )
+        self.extra_binding = copy.deepcopy(self.bindings["mode-no-skill"])
+        self.extra_binding["snapshot_ref"] = self.requirement_slice(
+            self.extra_binding["snapshot_ref"], "arm-2/document-read/frozen"
+        )
+        manifest["arms"][2]["capability_snapshot_refs"].append(
+            self.extra_binding["snapshot_ref"]
+        )
         self.manifest_ref = self.write("evaluation/manifest.json", manifest)
         schema = json.loads(
             (
@@ -317,7 +543,7 @@ class SystemEvaluationFixture:
             rules=schema["properties"]["rules"]["const"],
             mode_documents=mode_refs,
             action_documents=action_refs,
-            execution_bindings=list(self.bindings.values()),
+            execution_bindings=[*self.bindings.values(), self.extra_binding],
             design={
                 "randomization": {
                     "unit": "case-replicate",
@@ -376,6 +602,7 @@ class SystemEvaluationFixture:
 
         frozen = self.doc(self.manifest_ref["path"])["frozen_conditions"]
         profile = self.doc(view_inputs["agent_profile"].path)
+        profile["output_contracts"] = ["deterministic-check-report", "read-receipt"]
         profile["model_policy"]["default_slot"] = frozen["model"]["slot_id"]
         host_policy = self.doc(view_inputs["host_policy"].path)
         binding = self.doc(view_inputs["execution_binding"].path)
@@ -398,52 +625,16 @@ class SystemEvaluationFixture:
         from research_workbench.evaluation.overlay import validate_overlay
         from research_workbench.evaluation.pins import EvaluationInputs
         from research_workbench.evaluation.qualification import validate_qualification
-        from research_workbench.execution import (
-            load_runtime_bundle,
-            produce_resolved_execution_view,
-        )
-        from research_workbench.execution.execution_view import PinnedExecutionInput
-        from tests.execution_fixtures import ExecutionViewFixture
 
-        bundle = self.doc("bundle/manifest.yaml")
-        mapping = {
-            "bundle/supply.yaml": "arm-2/supply.json",
-            "bundle/conformance.yaml": "arm-2/conformance.json",
-            "bundle/resolution.yaml": "arm-2/runtime-resolution.json",
-            "bundle/snapshot.yaml": "arm-2/runtime-snapshot.json",
-        }
-
-        def remap(value):
-            if isinstance(value, dict):
-                result = {k: remap(v) for k, v in value.items()}
-                if "path" in result and "sha256" in result:
-                    result["sha256"] = self.ref(result["path"])["sha256"]
-                return result
-            if isinstance(value, list):
-                return [remap(v) for v in value]
-            return mapping.get(value, value) if isinstance(value, str) else value
-
-        bundle = remap(bundle)
-        bundle_ref = self.write("a3/bundle.json", bundle)
-        loaded = load_runtime_bundle(
-            bundle_ref["path"], project_root=self.root, schema_root=ROOT / "schemas"
-        )
-        view_inputs = self.shared_view_inputs(
-            ExecutionViewFixture()._inputs(self.root), "a3"
-        )
-        binding = self.doc(view_inputs["execution_binding"].path)
-        binding["selected_supply_report_ref"] = "m5-synthetic-supply-2@1.0.0"
-        binding_ref = self.write("a3/binding.json", binding)
-        view_inputs["execution_binding"] = PinnedExecutionInput(**binding_ref)
-        view = produce_resolved_execution_view(
-            loaded,
-            **view_inputs,
-            execution_at=AT,
-            view_id="M5-SYNTHETIC-A3-VIEW",
-            expected_bundle_sha256=bundle_ref["sha256"],
-            schema_root=ROOT / "schemas",
-        )
-        view_ref = self.write("a3/view.json", view)
+        bindings = [
+            self.runtime_binding(
+                ref, self.bindings["mode-no-skill"]["interface_ref"], prefix, action
+            )
+            for ref, prefix, action in (
+                (self.runtime_refs["mode-no-skill"], "a3", "ES-A4@1.0.0"),
+                (self.extra_runtime_ref, "a3-document-read", "ES-A3@1.0.0"),
+            )
+        ]
         qualification = self.qualification("mode-no-skill")
         qualification_ref = self.write(
             "evaluation/a3-qualification.json", qualification
@@ -453,7 +644,8 @@ class SystemEvaluationFixture:
         a3 = validate_qualification(
             inputs, qualification, expected_protocol_ref=self.protocol_ref
         )
-        a3[0]["view"] = view
+        for chain, binding in zip(a3, bindings):
+            chain["view"] = self.doc(binding["view_ref"]["path"])
         a4 = validate_overlay(
             inputs,
             self.overlay,
@@ -474,11 +666,8 @@ class SystemEvaluationFixture:
             a3_qualification_ref=qualification_ref,
             a4_overlay_ref=overlay_ref,
             a3_runtime_bindings=[
-                {
-                    "snapshot_ref": self.runtime_refs["mode-no-skill"],
-                    "bundle_ref": bundle_ref,
-                    "view_ref": view_ref,
-                }
+                {key: b[key] for key in ("snapshot_ref", "bundle_ref", "view_ref")}
+                for b in bindings
             ],
             case_closure_ref=self.case_closure_ref,
             checked_at=AT,
@@ -490,6 +679,9 @@ class SystemEvaluationFixture:
 
     def qualification(self, arm_id="plain-agent-tool"):
         binding = self.bindings[arm_id]
+        bindings = [(binding, self.runtime_refs[arm_id])]
+        if arm_id == "mode-no-skill":
+            bindings.append((self.extra_binding, self.extra_runtime_ref))
         return record(
             "arm_execution_qualification",
             "qualification_id",
@@ -505,7 +697,7 @@ class SystemEvaluationFixture:
             bindings=[
                 {
                     "frozen_snapshot_ref": binding["snapshot_ref"],
-                    "runtime_snapshot_ref": self.runtime_refs[arm_id],
+                    "runtime_snapshot_ref": runtime_ref,
                     **{
                         k: binding[k]
                         for k in (
@@ -515,6 +707,7 @@ class SystemEvaluationFixture:
                         )
                     },
                 }
+                for binding, runtime_ref in bindings
             ],
         )
 
@@ -662,6 +855,11 @@ class SystemEvaluationFixture:
         package_hash = hash_directory(self.root / "accepted/synthetic-skill")
         projection = SkillRuntimeBundleFixture.projection()
         contract = projection["runtime_contract"]
+        complete = self.doc("arm-2/supply.json")
+        for key in ("provided_capabilities", "supported_inputs", "supported_outputs"):
+            contract[key] = complete[key]
+        contract["data_egress_ceiling"] = complete["data_egress_behavior"]
+        contract["side_effect_ceiling"] = complete["side_effects"]
         release = {
             "schema_version": "0.1.0",
             "skill_id": "synthetic-runtime-skill",
@@ -808,9 +1006,38 @@ class SystemEvaluationFixture:
                 for item in bundle["documents"]
             }
         source_documents["bundle/skill-projection.yaml"] = projection
+        supply = source_documents["bundle/supply.yaml"]
+        self.complete_supply(supply)
+        source_documents["bundle/conformance.yaml"]["capability_ids"] = supply[
+            "provided_capabilities"
+        ]
+        method = source_documents["bundle/method.yaml"]
+        method["action_decisions"][0]["mechanisms"] = [
+            "tool",
+            "skill-need",
+            "human-gate",
+        ]
+        method["action_decisions"][0]["skill_need_refs"] = ["NEED-SYNTHETIC-RUNTIME"]
+        source_documents["bundle/snapshot.yaml"]["supply_data_egress"] = copy.deepcopy(
+            supply["data_egress_behavior"]
+        )
+        source_documents["bundle/snapshot.yaml"]["supply_side_effects"] = copy.deepcopy(
+            supply["side_effects"]
+        )
         identity = source_documents["bundle/supply.yaml"]["supply_identity"]
         identity["content_hash"] = release["source"]["content_hash"]
         identity["components"][0]["content_hash"] = identity["content_hash"]
+        source_documents["bundle/resolution.yaml"]["comparisons"] = [
+            assess_supply(
+                CapabilityRequirement.from_mapping(
+                    source_documents["bundle/requirement.yaml"]
+                ),
+                CapabilitySupplyReport.from_mapping(supply),
+                qualification="runtime-execution",
+                evidence_check=lambda *_args: "pass",
+                projection_eligibility_check=lambda _ref: True,
+            ).to_mapping()
+        ]
         source_documents["bundle/snapshot.yaml"]["supply_identity"] = copy.deepcopy(
             identity
         )
@@ -941,5 +1168,13 @@ class SystemEvaluationFixture:
             overlap_refs=outcome["overlap_refs"],
             primary_confirmatory_eligible=outcome["primary_confirmatory_eligible"],
             evidence_phase="pre-run-qualification",
+        )
+        extra_snapshot = self.requirement_slice(
+            self.ref("a4/bundle/snapshot.yaml"), "a4/document-read"
+        )
+        self.overlay["runtime_bindings"].append(
+            self.runtime_binding(
+                extra_snapshot, interface_ref, "a4-document-read", "ES-A3@1.0.0"
+            )
         )
         return self
