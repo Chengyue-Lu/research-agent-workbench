@@ -73,20 +73,20 @@ tool_allowlist:
 messages: []
 event_ledger:
   path: events.jsonl
-  sha256: fbf25d1d74575fa206571ff055f6a67a756f4d5c22fa3b32de0789fbb2415ed3
-  event_count: 7
+  sha256: 173bfa636a6dd8eccc0ed427e4f46ecac679ed30f1e5420e60343288f23eb2dc
+  event_count: 9
 tool_event_refs:
 - path: tool-events/material-verification.json
   sha256: 75b88fe41c725b091577d26e08829ae48391c41b998b09018f6173b87b0488c7
 handoff_refs:
 - path: handoffs/H0-REVIEW.md
-  sha256: 61573f9a62d5279ae4c072d1aaebafc0a508ae23720bf597c75ac060558558e9
+  sha256: 967783f31d4611250f63b49e69ed86fd5edf47fb7a658e05de24fef34cfa2ec8
 decision_refs: []
 output_refs:
 - path: outputs/IMPLEMENTATION.md
-  sha256: 61573f9a62d5279ae4c072d1aaebafc0a508ae23720bf597c75ac060558558e9
-- path: outputs/verify_projection.py
-  sha256: c85e5dee24764aa0fe7f40a9a29811b156e05afb4ed8865e69d9c7d084c170a9
+  sha256: 967783f31d4611250f63b49e69ed86fd5edf47fb7a658e05de24fef34cfa2ec8
+- path: outputs/PROJECTION_VERIFICATION.md
+  sha256: bc6cc075efd6c161ce0727733c48e9b0daf286f5972fb1900d269edc52ad47db
 check_refs:
 - path: checks/ci-plan.json
   sha256: 20de6a577bd82b8520eddfa6ba107f4068bf0242e0207981dd4981cf257e66be

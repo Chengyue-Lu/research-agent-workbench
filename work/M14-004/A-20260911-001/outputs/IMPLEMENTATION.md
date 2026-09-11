@@ -25,6 +25,7 @@ The M14 branch now uses its own worktree. The primary checkout was restored clea
 Native capture is incomplete and declared gapped. Checks retain material verification results with hashes;
 this archive does not claim complete native event provenance. Historical frozen attempts are unchanged.
 
-Reproduce projected-source checks from repository root:
-`python work/M14-004/A-20260911-001/outputs/verify_projection.py`
-Add `--with-package --python <python-3.11> --python <python-3.13>` for clean installation checks.
+The projected-source experiment is recorded in outputs/PROJECTION_VERIFICATION.md as archival documentation.
+Maintained checks run with `python -m unittest tests.test_documentation tests.test_public_surface`;
+clean installation uses `.github/scripts/portable_package_smoke.py`. The recorded fixture experiment additionally
+supplied the exported tree as that harness's source; its exact results and build-input identities are retained in checks/.

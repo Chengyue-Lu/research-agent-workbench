@@ -1,3 +1,15 @@
+# Projected-source verification record
+
+This is the source snapshot of the local verification experiment recorded in checks/projection.json and
+checks/projection-package.json. It is archival documentation, not a maintained executable or a CI entrypoint.
+The maintained public-surface checks run with `python -m unittest tests.test_documentation tests.test_public_surface`.
+The package harness is `.github/scripts/portable_package_smoke.py`; the experiment supplied the exported fixture tree
+as its source and used both accepted Python interpreters. Its synthetic source-CI expectations confer no release authority.
+
+The original experiment source is retained below for review. Local paths, interpreter selection and fixture source identity
+must be chosen explicitly when repeating the experiment; the archived result is bound to its recorded implementation head.
+
+```python
 from pathlib import Path
 import argparse,importlib.util,json,subprocess,sys,tempfile,hashlib
 ROOT=Path.cwd();sys.path.insert(0,str(ROOT))
@@ -40,3 +52,4 @@ with tempfile.TemporaryDirectory(prefix='rwb-public-surface-fixture-') as tmp:
   sys.argv=['portable_package_smoke','--output',str(OUT/'projection-package.json')]
   for interpreter in args.python or [sys.executable]:sys.argv+=['--python',interpreter]
   portable.main()
+```
