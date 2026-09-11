@@ -12,7 +12,6 @@ from research_workbench.io import load_document
 from research_workbench.validation import SchemaCatalog
 from research_workbench.validation.schemas import _check_schema_bytes
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 

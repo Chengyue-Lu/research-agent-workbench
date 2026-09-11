@@ -42,6 +42,7 @@ suites:
       - test_evaluation_comparability
       - test_evaluation_overlay
       - test_evaluation_contracts
+      - test_m5_trace_export
       - test_governance_helper_branches
       - test_integrity
       - test_kernel
