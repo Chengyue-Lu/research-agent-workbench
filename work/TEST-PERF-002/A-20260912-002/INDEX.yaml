@@ -1,0 +1,122 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260912-002
+task_id: TEST-PERF-002
+task_revision: 25
+attempt_id: A-20260912-002
+archive_root: A-20260912-002
+baseline: bf6d0798d683c3fa5be623a89a4fed1dffc4eb6b
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 7a504de696e631eeff633233e86fccbf02a0902f17f78aa2b90eeaa5c94ac0da
+actors_ref:
+  path: ACTORS.yaml
+  sha256: b3e2b18c51367ab1428b224772c353b09ff8e2d2f6f4ad4cc02c3dc5717d82cd
+read_allowlist:
+- .github/**
+- .rwb/coverage-union-audit/**
+- .rwb/precision-intake/**
+- .rwb/resource-audit/**
+- .rwb/test-cost-audit/**
+- AGENTS.md
+- build_backend.py
+- docs/DEVELOPMENT.md
+- docs/README.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/**
+- pyproject.toml
+- runtime-resources.json
+- src/**
+- tests/**
+- work/M14-002/A-20260906-001/checks/independent_projection_oracle.py
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/check_coverage_policy.py
+- .github/scripts/ci_checks.py
+- .github/scripts/ci_dependencies.py
+- .github/scripts/plan_ci.py
+- .github/workflows/ci.yml
+- .rwb/coverage-union-audit/**
+- .rwb/precision-venv311/**
+- .rwb/resource-audit/**
+- .rwb/test-cost-audit/**
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- src/research_workbench/validation/schemas.py
+- tests/ci_impact_policy.yaml
+- tests/coverage_policy.yaml
+- tests/fixtures/ci/**
+- tests/run_unittest_suite.py
+- tests/test_ci_checks.py
+- tests/test_ci_dependencies.py
+- tests/test_ci_plan.py
+- tests/test_coverage_policy.py
+- tests/test_schemas.py
+- tests/test_test_runner.py
+- work/TEST-PERF-002/A-20260912-002/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+- web
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 6791c5a810e58ca51d96fde694fd78d09c32ed2b39a53a12daf50672e58e221d
+  event_count: 5
+tool_event_refs:
+- path: tool-events/schema-cost-and-necessity-verification-succeeded.json
+  sha256: 51ebfe564ea4deb3da2573643c933556f3a9062b678fe4645612464e2c06c3f3
+handoff_refs: []
+decision_refs: []
+output_refs:
+- path: RESULTS.md
+  sha256: a9a2a327e6489b030941ba640bff00f717faf98ccd99db3e374c98bfc673664d
+check_refs:
+- path: checks/after-cold.json
+  sha256: 6f845bddce67d2b6637d0293ab95df47f3e8ef35e37f156ab1527336da79f03a
+- path: checks/before.json
+  sha256: cacbdcc9b441b534a8fd2091f7dc1dda5e929c52f87dd4f211e31bfda1193d99
+- path: checks/behavioral-remainder-results.json
+  sha256: ee84feede707504ddb014ce62b97f22c8258f0f777281b74505278b8492d071c
+- path: checks/behavioral-union.log
+  sha256: 60acdc4a1419aea0c6365db7ec7b4bcfa157d233c29f853fbd975a09c68c0c2e
+- path: checks/benchmark-script.txt
+  sha256: 37ee01cb679c8b45bdb6ea01d4c282e34e978b045ffd4f31f2776b47a3a73245
+- path: checks/coverage-gate.log
+  sha256: 8e6e0a0e30f4677f0fe36867ee03b9b9e56a4da65998cfa4494208c793400e98
+- path: checks/coverage-runtime.json
+  sha256: 7d617f8a7706978520471f7d585d7390e770509fb6b15e6a9d8e60b498ee26b9
+- path: checks/coverage-test-results.json
+  sha256: 1f7f5025a7243259c70cd031e2b6a70024713a77c68956b71d104a7cf9d0141b
+- path: checks/docs-governance.log
+  sha256: 47447cc36f80be3f7977a8027101a29caba8f4c305ccccb50d2fc46ad6fd29ca
+- path: checks/full-test-results-3.11.json
+  sha256: 1524c04a44de93c6d0f59de395b17cc8d61faad17b3c4c9bf7e6942acc528042
+- path: checks/hosted-before-summary.json
+  sha256: a6cee3242aca4469a8cd6129ade5b24c9f17545150ab05192abe358ffb7d6922
+- path: checks/necessity-inventory.json
+  sha256: 4cdd6c05cd967195bc51230efae86c26d7ca9a06e2b493ab92c36b4aad8fb863
+- path: checks/profile-comparison.json
+  sha256: 7bed91cc0882d81c41df1a8fb2e42a84515440abdf514564c5e1458ac24e62f7
+- path: checks/repository.log
+  sha256: 6895861bf5f35b7669baaf95d9caf2b94c3a4e1d5682f29bbc73ba0aa0064633
+- path: checks/schema-coverage-tests.log
+  sha256: d1b02d87e65e3e967d870b6b2e8b62ab1928a9a29c7ff034cc2cf6476f4a2d08
+- path: checks/schema-tests.log
+  sha256: ae89e225bb3e503651ee13802fc2108bb739fc5f04e833325c7d2a056b544c74
+- path: checks/source-plan.json
+  sha256: 5bce9f2631214d88e5dbd1ecf5c5f8b95ef04ba6c1c0fb01599b60c35a0a2cc4
+- path: checks/source-validation.json
+  sha256: 8918dac1d9125ee8b6c41ed1b614bdf22f1ca34430a2e2f85eadb4e3d593b2ac
+- path: checks/summary.json
+  sha256: 3d11a48604a142009c2384d3583bb2cd20a9ea2402e3e4b4a3dc171b1ed86e5c
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: messages

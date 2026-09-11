@@ -1,0 +1,39 @@
+import argparse
+import hashlib
+import io
+import json
+from pathlib import Path
+import statistics
+import sys
+import time
+import unittest
+
+root = Path.cwd()
+sys.path.insert(0, str(root))
+sys.path.insert(0, str(root / 'src'))
+from research_workbench.validation import schemas
+
+args = argparse.ArgumentParser()
+args.add_argument('phase')
+args.add_argument('--warm', action='store_true')
+options = args.parse_args()
+names = ['tests.test_skill_evaluation.SkillEvaluationTests.test_complete_live_pair_is_only_eligible_for_human_decision']
+loader = unittest.TestLoader()
+loader.loadTestsFromNames(names)
+trials = []
+for index in range(3):
+    if hasattr(schemas, '_check_schema_bytes') and not options.warm:
+        schemas._check_schema_bytes.cache_clear()
+    started = time.perf_counter()
+    output = io.StringIO()
+    result = unittest.TextTestRunner(stream=output).run(loader.loadTestsFromNames(names))
+    assert result.wasSuccessful(), output.getvalue()
+    trials.append(time.perf_counter() - started)
+evidence = {'phase': options.phase, 'tests': names, 'trials_seconds': trials,
+            'median_seconds': statistics.median(trials), 'successful': True,
+            'schema_source_sha256': hashlib.sha256((root / 'src/research_workbench/validation/schemas.py').read_bytes()).hexdigest(),
+            'python': sys.version, 'cold_each_trial': not options.warm}
+if hasattr(schemas, '_check_schema_bytes'):
+    evidence['cache_info'] = schemas._check_schema_bytes.cache_info()._asdict()
+(root / '.rwb/test-cost-audit' / (options.phase + '.json')).write_text(json.dumps(evidence, indent=2) + '\n')
+print(json.dumps(evidence))
