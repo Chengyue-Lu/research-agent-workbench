@@ -132,6 +132,24 @@ class EvaluationOverlapTests(OverlapFixtureMixin, unittest.TestCase):
         self.assertFalse(result["primary_confirmatory_eligible"])
         self.assertEqual(result["overlap_status"], "unresolved")
 
+    def test_uncaptured_admission_task_or_input_cannot_be_primary_evidence(self):
+        original = copy.deepcopy(self.f.admission_closure)
+        for field in ("task", "formal_inputs"):
+            self.f.admission_closure = copy.deepcopy(original)
+            subject = {
+                "state": "unknown",
+                "identity": None,
+                "ref": None,
+                "reason": "Admission source was not captured.",
+            }
+            self.f.admission_closure["cases"][0][field] = (
+                [subject] if field == "formal_inputs" else subject
+            )
+            with self.subTest(field=field):
+                result = self.validate(self.f.assessment())
+                self.assertFalse(result["primary_confirmatory_eligible"])
+                self.assertEqual(result["overlap_status"], "unresolved")
+
     def test_missing_or_drifted_private_oracle_is_retained_as_gap(self):
         path = (
             self.f.root

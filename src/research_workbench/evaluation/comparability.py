@@ -45,7 +45,18 @@ def comparison_surface(chains: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             if c["snapshot"]["supply_identity"]["supply_kind"] != "skill"
         ),
         "interfaces": sorted(
-            digest(c["interface"]["provider_visible_interface"]) for c in chains
+            digest(
+                {
+                    key: c["interface"][key]
+                    for key in (
+                        "provider_visible_interface",
+                        "supported_inputs",
+                        "supported_outputs",
+                        "provided_capabilities",
+                    )
+                }
+            )
+            for c in chains
         ),
         "supply_boundaries": sorted(
             digest(

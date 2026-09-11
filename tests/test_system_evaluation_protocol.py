@@ -332,6 +332,7 @@ class SystemProtocolTests(ProtocolFixtureMixin, unittest.TestCase):
         for changes in (
             {"metric_id": "omission-rate", "unit": "ratio", "value": 1},
             {"metric_id": "rework-count", "unit": "count", "value": 2},
+            {"metric_id": "rework-count", "unit": "count", "value": 10**400},
             {"metric_id": "context-loaded", "unit": "tokens", "value": 4},
         ):
             validate_measurement(

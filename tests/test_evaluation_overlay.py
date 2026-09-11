@@ -238,6 +238,15 @@ class EvaluationOverlayTests(OverlayFixtureMixin, unittest.TestCase):
             self.f.overlay["runtime_bindings"][0]["view_ref"]["path"]
         )
         surface = comparison_surface(chains)
+        for field in ("supported_inputs", "supported_outputs", "provided_capabilities"):
+            changed = copy.deepcopy(chains)
+            changed[0]["interface"][field] = ["other-contract"]
+            result = derive_comparability(
+                surface, comparison_surface(changed), admitted_skill_count=1
+            )
+            with self.subTest(interface_field=field):
+                self.assertEqual(result["status"], "skill-bearing-package")
+                self.assertEqual(result["mismatches"], ["interfaces"])
         for field in (
             "profile_constraints",
             "required_outputs",

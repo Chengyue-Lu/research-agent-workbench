@@ -1,6 +1,6 @@
 # M5 implementation entry plan — 2026-09-11
 
-状态：进入评估与实施规划；本记录尚不构成 M5-006 实现、Protocol freeze 或验收证据。
+状态：开工时的进入评估与实施规划快照；当前实现与验证进展见 [WORKLOG](WORKLOG.md)。本记录本身不构成验收证据。
 
 Evaluation owner：路诚钺（`Chengyue-Lu`）。Execution 接口 owner：黄毅（`let778750-cpu`）。
 

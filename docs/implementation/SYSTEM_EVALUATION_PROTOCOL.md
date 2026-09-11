@@ -137,7 +137,8 @@ eligibility. It remains a pre-run record: the future Harness separately needs Ho
 replay-valid Skill closeout. The Core closeout's current Skill exclusion is preserved.
 
 Pairwise verification reloads A3 qualification, A4 overlay and both execution surfaces. It compares Task/Method bytes,
-Requirement and non-Skill Supply/component multisets, provider-visible interface, binding, effective constraints,
+Requirement and non-Skill Supply/component multisets, provider-visible interface and its full I/O/capability declarations,
+binding, effective constraints,
 Profile constraints, output/completion requirements and stop/safe-pause conditions.
 Only exact equality with one admitted Skill extension can yield `exact-skill-only`. Differences in Method, non-Skill
 Supply or relevant boundaries downgrade to `skill-bearing-package`; missing/incompatible shared conditions make the

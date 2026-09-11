@@ -158,7 +158,7 @@ def validate_measurement(
     if value is not None:
         require(metric.unit != "ratio" or value <= 1, "ratio measurement exceeds one")
         require(
-            metric.unit != "count" or float(value).is_integer(),
+            metric.unit != "count" or value % 1 == 0,
             "count measurement must be integral",
         )
     for ref in document["evidence_refs"]:
