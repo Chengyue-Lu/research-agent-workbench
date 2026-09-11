@@ -1,105 +1,78 @@
 # 上手指南
 
-本指南面向第一次接触 RWB 的开发者，演示当前受支持的离线 alpha 路径：安装、验证仓库、解析一个不依赖 Skill 的 Task，并理解输出边界。全程不调用模型、网络或外部服务。
+本指南演示离线 structural 路径：安装、检查随包资源、创建项目入口，并验证一个 no-Skill Task。
+安装需要获取 Python 依赖；安装后的这些命令不调用模型或外部服务。
 
-## 1. 准备环境
+## 1. 安装
 
-需要 Python 3.11 或更高版本、Git 和 PowerShell、bash 或等价终端。克隆仓库后，在根目录建立独立虚拟环境并安装：
+需要 Python 3.11+，已验证的安装环境为 Python 3.11 和 3.13。取得本源码目录后，在根目录执行：
 
-```powershell
+```shell
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-python -m pip install -e .
 ```
 
-如需运行测试，可安装 `python -m pip install -e ".[test]"`。
+PowerShell 使用 `.\.venv\Scripts\Activate.ps1` 激活；bash 使用 `source .venv/bin/activate`。
+随后安装到该环境：
 
-## 2. 验证仓库基线
+```shell
+python -m pip install .
+```
 
-```powershell
-rwb validate examples registry
+命令从本地源码构建 wheel 并安装。使用已取得的 wheel 时，也可执行
+`python -m pip install /path/to/research_agent_workbench-0.1.0-py3-none-any.whl`，替换为实际文件路径。
+这里不假设已有 PyPI 发布或可下载的正式发行物。
+
+## 2. 在源码目录外检查资源
+
+保持虚拟环境激活，切换到一个新的工作目录：
+
+```shell
+cd ..
+mkdir rwb-demo
+cd rwb-demo
+rwb resources check
 rwb schema list
 ```
 
-第一条命令检查示例与 Registry 的 Schema、引用和确定性规则；第二条列出可用 Schema。成功只说明结构与引用有效，不代表研究内容科学正确。
+`resources check` 校验随包 RuntimeResourceManifest 的 pin、文件哈希、索引和引用闭包。
+Schema、Mode/Action、Authority、Requirement、Protocol Profile 和 Projection index 由安装包提供。
+生产 Projection index 为空；资源检查成功不表示存在可执行的已发布 Skill。
 
-## 3. 初始化一个最小项目
+## 3. 创建项目与 no-Skill 输入
 
-```powershell
-rwb init work/quickstart-project --project-id quickstart
+```shell
+rwb init project --project-id quickstart
+rwb resources quickstart --output project/task.yaml
+rwb validate project/task.yaml --root project
 ```
 
-该命令创建最小文件式项目入口，不会复制完整仓库模板、安装外部工具或启动 Agent。
+`init` 创建 `project-protocol.yaml` 以及 `objects/`、`tasks/`、`handoffs/`、`checkpoints/`、`work/` 目录。
+它是最小项目入口，完整外部项目 scaffold 尚待交付。`resources quickstart` 从安装包复制
+[no-Skill Task](../examples/quickstart/task-no-skill.yaml) 的 exact bytes 到新文件，并做结构验证；已存在的输出不会被覆盖。
 
-## 4. 阅读一个 no-Skill Task
+Task 的 `required_skills` 为空，同时保留输入、输出、权限、预算、写入范围和停止条件。
+成功表示输入契约与引用可校验，尚未执行研究 Task，也未生成 Runtime Bundle、Execution View 或研究结论。
+再次体验时选用新的项目目录。
 
-仓库提供 [`examples/quickstart/task-no-skill.yaml`](../examples/quickstart/task-no-skill.yaml)。它要求产出一个有界 Handoff packet，但不要求 Skill 或外部能力。
+## 4. 验证自己已有的工件
 
-```powershell
-Get-Content examples/quickstart/task-no-skill.yaml
-rwb validate examples registry
+```shell
+rwb validate /path/to/document.yaml --root /path/to/project
+rwb trace validate --attempt /path/to/attempt --root /path/to/project
 ```
 
-重点观察：
+替换为自己的真实文件路径。项目文件从显式 root 读取，默认 Runtime catalog 从安装包读取。
+平台配置通过独立 integration root 提供。维护者 Registry、Provider 配置和模型凭据须由相应命令显式指定。
+Trace 验证检查事件、索引和结果闭包；方法适用性、Claim 接受与发布仍由具名人类决定。
 
-- Task 自己声明输入、输出、权限和写入范围；
-- `required_skills` 为空是合法结果；
-- 预算、原子边界和停止条件仍由 Task 约束。
+## 5. 后续集成
 
-这个文件代表已接受的 no-Skill Task 语义，并会参与仓库验证。legacy alpha CLI 的 `task resolve` 目前仍
-要求显式 Skill 或 Registry 中可选的 active Skill，尚不能为该文件生成 no-Skill Assignment；因此本指南
-不伪造一条解析成功路径。这个兼容实现缺口集中记录在[实现状态](STATUS.md)，但不阻塞 M11 no-Skill /
-direct-tool Core。当前 Runtime 接入应消费经过校验的 Runtime Bundle 与 Resolved Execution View；只有
-Skill-bearing 或 legacy compatibility 路径才额外携带 Assignment。
+Runtime 接入按 Capability Supply Report → Resolution → Snapshot → Runtime Bundle → Resolved Execution View
+→ Thin Host 的顺序冻结并消费执行边界。no-Skill、direct-tool 与 Skill-bearing 路径共享该 Core；
+Skill-bearing 路径额外携带其精确 Skill 绑定。该路径当前由集成者显式接线，尚无一键研究运行入口。
 
-## 5. 验证已有 Trace 或执行归档
+若 `rwb` 命令不存在，确认虚拟环境已激活，并运行
+`python -c "import research_workbench; print(research_workbench.__file__)"` 检查安装位置。
+若资源检查失败，从可信源码或 wheel 重新安装；若任务能力或权限冲突，复核输入边界并由任务负责人决定后续。
 
-当 Runtime 已经产生文件式 Attempt，可运行：
-
-```powershell
-rwb trace validate --attempt <attempt-directory> --root .
-rwb execute verify `
-  --attempt <attempt-directory> `
-  --protocol <protocol-file> `
-  --root .
-```
-
-Trace 校验检查 Envelope、Index、事件、工具结果与文件之间的闭集关系；执行校验在此基础上检查归档和协议约束。尖括号参数必须替换为真实路径。不要把校验通过解读为方法适用或科学结论已获批准。
-
-## 6. 接入模型或其他 Runtime
-
-核心集成顺序是：
-
-1. 把外部 Tool、Adapter、Provider 或 procedure 映射为带 exact identity/version/hash、输入输出、权限、
-   data-egress 与 side-effect 事实的 Capability Supply Report；
-2. 由 Capability Resolution 比较 Requirement 与候选供给，并冻结 Resolved Capability Snapshot；供给方和
-   Adapter 不得自行选择自己，也不得放宽上游边界；
-3. 生成 Runtime Bundle 与 Resolved Execution View，再让 Thin Host 只消费该 exact View；no-Skill、
-   direct-tool 和 Skill-bearing 路径共享这一 Core，Skill Assignment 只在需要时附加；
-4. 把 actual execution facts、Trace、Artifact、Validation 与 generic Receipt 写成可重放闭包；
-5. 把方法适用性、Claim 接受和 Human Decision 留给相应的人类 Gate。
-
-Codex、OpenCode、自建 API Runner、MCP 或本地 CLI 都应停留在 Adapter/Driver 边界。平台会话可用于执行，
-但不是跨会话权威状态；Host 不得在执行时重新选择 Supply 或静默 fallback。
-
-## 7. 常见问题
-
-### `rwb` 命令不存在
-
-确认虚拟环境已激活，并重新执行 `python -m pip install -e .`。也可运行 `python -c "import research_workbench; print(research_workbench.__file__)"` 检查安装。
-
-### 解析提示能力或权限冲突
-
-不要通过放宽 Profile 或静默增加 Skill 来绕过。先检查 Task 的 `required_capabilities`、`required_outputs`、`permissions` 和 `write_scope` 是否必要；不能安全满足时应拆分或阻塞。
-
-### 为什么没有自动启动 Agent
-
-RWB 的可移植核心负责契约、解析、验证和连续性。实际模型调用由显式 Adapter 或原生 Runtime 执行；这避免把某一家平台变成核心依赖。
-
-## 8. 下一步阅读
-
-- [总体架构](ARCHITECTURE.md)：理解各平面和传递关系；
-- [实现状态](STATUS.md)：确认哪些能力可用、哪些仍有限；
-- [兼容性说明](compatibility/README.md)：处理旧工件；
-- [开发协作指南](DEVELOPMENT.md)：开始贡献代码或文档。
+下一步：[支持能力与证据边界](SUPPORTED_FEATURES.md) · [公开模块导航](PUBLIC_GUIDE.md) · [总体架构](ARCHITECTURE.md)。

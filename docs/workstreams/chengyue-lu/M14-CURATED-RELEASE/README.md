@@ -44,7 +44,7 @@ flowchart LR
     M1106["M11-006 DONE<br/>optional mapping"] -. "activation evidence" .-> M14001
     M14001 --> M14002["M14-002 DONE<br/>REL-002 deterministic surface"]
     M14001 --> M14003["M14-003 DONE<br/>REL-003 portable package"]
-    M14002 --> M14004["M14-004 PARKED<br/>REL-004 public docs"]
+    M14002 --> M14004["M14-004 READY<br/>REL-004 public docs"]
     M14003 --> M14004
     M14002 --> M14005["M14-005 BLOCKED<br/>REL-005 readiness + first release"]
     M14003 --> M14005
@@ -181,6 +181,6 @@ task-definition 只写 canonical docs、ADR、workstream 与导航。后续实�
 
 ## 下一合法动作
 
-`M14-001/002/003` 已完成；下一步由 owner 独立激活 `M14-004` public documentation slice。
+`M14-001/002/003` 已完成；owner 已激活 `M14-004` public documentation slice，进入独立 R2 实现与审查。
 M14-004 的 package/surface 依赖已闭合；不能提前创建真实 release branch、冻结 release source SHA 或
 解锁 merge eligibility。任何实现分支在开 PR 前仍须基于当时最新 `develop` 重新验证。
