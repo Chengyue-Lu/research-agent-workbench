@@ -198,14 +198,65 @@ class SystemProtocolTests(ProtocolFixtureMixin, unittest.TestCase):
             "revision": task["revision"],
             "sha256": task_ref["sha256"],
         }
-        selected_arm["treatment_control"]["method_resolution_refs"].append(
-            self.f.write("evaluation/second-method.json", method)
-        )
+        method["resolution_id"] = "SECOND-FROZEN-METHOD"
+        method_ref = self.f.write("evaluation/second-method.json", method)
+        selected_arm["treatment_control"]["method_resolution_refs"].append(method_ref)
         validate_requirement_closure(
             self.inputs(), chains, manifest, selected_arm, task_ref=self.f.task_ref
         )
         with self.assertRaisesRegex(EvaluationValidationError, "Requirement set"):
             validate_requirement_closure(self.inputs(), chains, manifest, selected_arm)
+        second_task_chains = copy.deepcopy(chains)
+        for chain in second_task_chains:
+            chain["snapshot"]["task_ref"] = self.f.c_ref(
+                task["task_id"] + "@r1", task_ref
+            )
+            chain["snapshot"]["method_resolution_ref"] = self.f.c_ref(
+                method["resolution_id"] + "@r1", method_ref
+            )
+            chain["task"] = copy.deepcopy(task)
+            chain["method_resolution"] = copy.deepcopy(method)
+        validate_requirement_closure(
+            self.inputs(), [*chains, *second_task_chains], manifest, selected_arm
+        )
+
+    def test_distinct_frozen_methods_cannot_duplicate_one_tasks_requirements(self):
+        inputs = self.inputs()
+        chains = validate_qualification(
+            inputs,
+            self.f.qualification("mode-no-skill"),
+            expected_protocol_ref=self.f.protocol_ref,
+        )
+        manifest = self.f.doc(self.f.manifest_ref["path"])
+        selected_arm = manifest["arms"][2]
+        reference = selected_arm["treatment_control"]["method_resolution_refs"][0]
+        method = self.f.doc(reference["path"])
+        method["resolution_id"] = "ANOTHER-METHOD-FOR-THE-SAME-TASK"
+        other_ref = self.f.write("evaluation/another-method.json", method)
+        selected_arm["treatment_control"]["method_resolution_refs"].append(other_ref)
+        duplicates = copy.deepcopy(chains)
+        for chain in duplicates:
+            chain["snapshot"]["method_resolution_ref"] = self.f.c_ref(
+                method["resolution_id"] + "@r1", other_ref
+            )
+            chain["method_resolution"] = copy.deepcopy(method)
+        # The full Method-context multiset matches, but each Task Requirement
+        # is bound twice. Preserve the A4 uniqueness rule independently.
+        for task_ref in (None, self.f.task_ref):
+            with (
+                self.subTest(task_ref=task_ref),
+                self.assertRaisesRegex(
+                    EvaluationValidationError,
+                    "duplicate Requirement binding within one Task",
+                ),
+            ):
+                validate_requirement_closure(
+                    self.inputs(),
+                    [*chains, *duplicates],
+                    manifest,
+                    selected_arm,
+                    task_ref=task_ref,
+                )
 
     def inputs(self):
         return EvaluationInputs(self.f.root, ROOT / "schemas")

@@ -158,6 +158,11 @@ def validate_requirement_closure(
         observed == expected,
         "qualified Requirement set must equal frozen Task/Method closure exactly once",
     )
+    require(
+        len({(task, requirement) for task, _method, requirement in observed})
+        == len(chains),
+        "duplicate Requirement binding within one Task",
+    )
 
 
 def ceilings_narrow(frozen: Mapping[str, Any], runtime: Mapping[str, Any]) -> bool:

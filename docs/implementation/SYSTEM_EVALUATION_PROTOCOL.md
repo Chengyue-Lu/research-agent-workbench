@@ -94,6 +94,8 @@ extra and duplicate bindings fail even when the submitted Manifest's Snapshot li
 Method declares Requirement IDs; the existing Snapshot chain separately checks Requirement document hashes
 and logical identities. Repetition of one Requirement across Action decisions is one demand within that Method.
 A4 applies the same completeness rule to its case Task and that Task's frozen Methods, across all runtime bindings.
+Within one Task, a Requirement can have only one binding; different frozen Method references do not permit
+duplicate bindings of that same Requirement. The same capability may occur in different Tasks.
 Individual Runtime Bundles continue to represent one capability slice and do not assert Task completion.
 
 M6-008 produces A2 records after this contract is accepted. Capability Resolver produces/selects A3 runtime

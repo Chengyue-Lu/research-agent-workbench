@@ -19,6 +19,12 @@ Skill serving both. M5-003 and Runtime contracts remain unchanged. The original 
 immutable; this review attempt records subsequent evidence separately, with capture gaps disclosed. Current-head
 validation and review status are recorded on the same PR; earlier CI applies only to its own head.
 
+The follow-up review preserves Requirement uniqueness within a Task even across distinct frozen Method refs;
+separate Tasks may reuse the same Capability Requirement. An adversarial multiset that otherwise exactly matches
+both frozen Methods is rejected. The new regression and case-scoped positive checks supplement the PR71 repair.
+The initial local CLI replay also exposed an outdated editable Schema resource; rebuilding the editable install
+restored exact Schema-byte equality and the affected test passed without changing the implementation.
+
 2026-09-11: fetched origin; base unchanged; only the prior entry-plan file was untracked. Verified current Snapshot, Bundle and View validators as reuse points. M11 Core requires `no-skill` Method disposition for non-Skill and `skill-need|mixed` for Skill: current executable A3/A4 paths therefore cannot honestly claim an exact Skill-only delta.
 
 Implementation and validation evidence will be added by slice. No new Task is marked DONE by this initial record.

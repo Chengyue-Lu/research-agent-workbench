@@ -205,6 +205,7 @@ negative_acceptance:
       - test_system_evaluation_protocol.SystemProtocolTests.test_a3_requires_all_method_requirements_even_if_manifest_omits_one
       - test_system_evaluation_protocol.SystemProtocolTests.test_a3_rejects_duplicate_requirement_through_distinct_frozen_snapshots
       - test_system_evaluation_protocol.SystemProtocolTests.test_frozen_method_closure_rejects_task_demand_identity_and_extra_bindings
+      - test_system_evaluation_protocol.SystemProtocolTests.test_distinct_frozen_methods_cannot_duplicate_one_tasks_requirements
   - surface: m5-admission-held-out-closure
     modules:
       - src/research_workbench/evaluation/overlap.py
