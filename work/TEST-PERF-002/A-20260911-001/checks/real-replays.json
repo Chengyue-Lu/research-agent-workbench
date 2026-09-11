@@ -1,0 +1,4338 @@
+{
+  "base": "11c3b57dfbf8af0dc2587fc421d097e2544941c3",
+  "head": "0f6da949c9d89d4d5e0cea9cffad1e85465bb52c",
+  "candidate_selector_sha256": "a95f08bb297a2c6a34efedc19d363e0aeb5fab7c46a4771eae514d50cc4354f3",
+  "boundary": "Read-only replay using proposed selector on immutable PR 68 snapshots. Not accepted-base CI evidence and not a new hosted timing measurement.",
+  "pr68": {
+    "old_modules": 35,
+    "new_modules": 10,
+    "old_ids_in_baseline": 725,
+    "new_ids_in_baseline": 261,
+    "baseline_selected_case_seconds": 74.728,
+    "obligations": {
+      "behavioral_scope": "focused",
+      "coverage_scope": "none",
+      "package_smoke": false,
+      "repository_smoke": false
+    },
+    "selected": {
+      "test_ci_checks": [
+        "docs/DEVELOPER_ARCHITECTURE_MAP.md",
+        "tests/test_documentation.py",
+        "tests/test_ci_checks.py"
+      ],
+      "test_ci_dependencies": [
+        "docs/decisions/README.md",
+        ".github/scripts/portable_package_smoke.py",
+        "tests/test_ci_dependencies.py"
+      ],
+      "test_ci_plan": [
+        "docs/decisions/README.md",
+        "tests/test_ci_plan.py"
+      ],
+      "test_coverage_policy": [
+        "docs/DEVELOPER_ARCHITECTURE_MAP.md",
+        "tests/test_documentation.py",
+        "tests/run_unittest_suite.py",
+        "tests/test_coverage_policy.py"
+      ],
+      "test_documentation": [
+        "docs/DEVELOPER_ARCHITECTURE_MAP.md",
+        "tests/test_documentation.py"
+      ],
+      "test_governance_helper_branches": [
+        "docs/STATUS.md",
+        "tests/test_pr_governance.py",
+        "tests/test_governance_helper_branches.py"
+      ],
+      "test_portable_build": [
+        "docs/decisions/README.md",
+        "tests/test_portable_build.py"
+      ],
+      "test_pr_governance": [
+        "docs/STATUS.md",
+        "tests/test_pr_governance.py"
+      ],
+      "test_selection_witness": [
+        "docs/decisions/README.md",
+        ".github/scripts/portable_package_smoke.py",
+        "tests/test_selection_witness.py"
+      ],
+      "test_trace_risk_codes": [
+        "docs/modules/07-ARTIFACTS_AND_PROVENANCE.md",
+        "tests/test_trace_risk_codes.py"
+      ]
+    }
+  },
+  "probes": [
+    {
+      "seed": "README.md",
+      "old": 9,
+      "new": 7,
+      "removed": [
+        "test_governance_helper_branches",
+        "test_pr_governance"
+      ],
+      "selected": {
+        "test_ci_checks": [
+          "README.md",
+          ".github/scripts/portable_package_smoke.py",
+          "tests/test_ci_checks.py"
+        ],
+        "test_ci_dependencies": [
+          "README.md",
+          ".github/scripts/portable_package_smoke.py",
+          "tests/test_ci_dependencies.py"
+        ],
+        "test_ci_plan": [
+          "README.md",
+          "tests/test_ci_plan.py"
+        ],
+        "test_coverage_policy": [
+          "README.md",
+          ".github/scripts/portable_package_smoke.py",
+          "tests/run_unittest_suite.py",
+          "tests/test_coverage_policy.py"
+        ],
+        "test_documentation": [
+          "README.md",
+          "tests/test_documentation.py"
+        ],
+        "test_portable_build": [
+          "README.md",
+          "tests/test_portable_build.py"
+        ],
+        "test_selection_witness": [
+          "README.md",
+          ".github/scripts/portable_package_smoke.py",
+          "tests/test_selection_witness.py"
+        ]
+      }
+    },
+    {
+      "seed": "docs/STATUS.md",
+      "old": 34,
+      "new": 8,
+      "removed": [
+        "test_agent_trace",
+        "test_artifacts_admission",
+        "test_artifacts_promotion",
+        "test_artifacts_validation_host",
+        "test_claim_trace",
+        "test_cli",
+        "test_cli_command_branches",
+        "test_evaluation_manifest",
+        "test_execution_trace_adapter",
+        "test_handoff_transfer",
+        "test_m2_registry_runtime",
+        "test_m3_context_observability",
+        "test_method_trace_candidate",
+        "test_phase_c_gate",
+        "test_portable_build",
+        "test_release_oracle_replay",
+        "test_release_surface",
+        "test_research_attempt_failure",
+        "test_research_state_candidate",
+        "test_research_state_critical_branches",
+        "test_run_reconstruction",
+        "test_runtime_resources",
+        "test_skill_archive_audit",
+        "test_skill_evaluation",
+        "test_skill_release_projection",
+        "test_validation_helpers"
+      ],
+      "selected": {
+        "test_ci_checks": [
+          "docs/STATUS.md",
+          "tests/test_documentation.py",
+          "tests/test_ci_checks.py"
+        ],
+        "test_ci_dependencies": [
+          "docs/STATUS.md",
+          "tests/test_pr_governance.py",
+          ".github/scripts/plan_ci.py",
+          "tests/test_ci_dependencies.py"
+        ],
+        "test_ci_plan": [
+          "docs/STATUS.md",
+          "tests/test_documentation.py",
+          "tests/test_ci_plan.py"
+        ],
+        "test_coverage_policy": [
+          "docs/STATUS.md",
+          "tests/test_documentation.py",
+          "tests/run_unittest_suite.py",
+          "tests/test_coverage_policy.py"
+        ],
+        "test_documentation": [
+          "docs/STATUS.md",
+          "tests/test_documentation.py"
+        ],
+        "test_governance_helper_branches": [
+          "docs/STATUS.md",
+          "tests/test_pr_governance.py",
+          "tests/test_governance_helper_branches.py"
+        ],
+        "test_pr_governance": [
+          "docs/STATUS.md",
+          "tests/test_pr_governance.py"
+        ],
+        "test_selection_witness": [
+          "docs/STATUS.md",
+          "tests/test_documentation.py",
+          "tests/test_ci_plan.py",
+          "tests/test_selection_witness.py"
+        ]
+      }
+    },
+    {
+      "seed": "docs/decisions/README.md",
+      "old": 9,
+      "new": 7,
+      "removed": [
+        "test_governance_helper_branches",
+        "test_pr_governance"
+      ],
+      "selected": {
+        "test_ci_checks": [
+          "docs/decisions/README.md",
+          ".github/scripts/portable_package_smoke.py",
+          "tests/test_ci_checks.py"
+        ],
+        "test_ci_dependencies": [
+          "docs/decisions/README.md",
+          ".github/scripts/portable_package_smoke.py",
+          "tests/test_ci_dependencies.py"
+        ],
+        "test_ci_plan": [
+          "docs/decisions/README.md",
+          "tests/test_ci_plan.py"
+        ],
+        "test_coverage_policy": [
+          "docs/decisions/README.md",
+          ".github/scripts/portable_package_smoke.py",
+          "tests/run_unittest_suite.py",
+          "tests/test_coverage_policy.py"
+        ],
+        "test_documentation": [
+          "docs/decisions/README.md",
+          "tests/test_documentation.py"
+        ],
+        "test_portable_build": [
+          "docs/decisions/README.md",
+          "tests/test_portable_build.py"
+        ],
+        "test_selection_witness": [
+          "docs/decisions/README.md",
+          ".github/scripts/portable_package_smoke.py",
+          "tests/test_selection_witness.py"
+        ]
+      }
+    },
+    {
+      "seed": "docs/modules/07-ARTIFACTS_AND_PROVENANCE.md",
+      "old": 7,
+      "new": 7,
+      "removed": [],
+      "selected": {
+        "test_ci_checks": [
+          "docs/modules/07-ARTIFACTS_AND_PROVENANCE.md",
+          "tests/test_documentation.py",
+          "tests/test_ci_checks.py"
+        ],
+        "test_ci_dependencies": [
+          "docs/modules/07-ARTIFACTS_AND_PROVENANCE.md",
+          "tests/test_documentation.py",
+          "tests/run_unittest_suite.py",
+          ".github/scripts/ci_checks.py",
+          "tests/test_ci_dependencies.py"
+        ],
+        "test_ci_plan": [
+          "docs/modules/07-ARTIFACTS_AND_PROVENANCE.md",
+          "tests/test_documentation.py",
+          "tests/test_ci_plan.py"
+        ],
+        "test_coverage_policy": [
+          "docs/modules/07-ARTIFACTS_AND_PROVENANCE.md",
+          "tests/test_documentation.py",
+          "tests/run_unittest_suite.py",
+          "tests/test_coverage_policy.py"
+        ],
+        "test_documentation": [
+          "docs/modules/07-ARTIFACTS_AND_PROVENANCE.md",
+          "tests/test_documentation.py"
+        ],
+        "test_selection_witness": [
+          "docs/modules/07-ARTIFACTS_AND_PROVENANCE.md",
+          "tests/test_documentation.py",
+          "tests/test_ci_plan.py",
+          "tests/test_selection_witness.py"
+        ],
+        "test_trace_risk_codes": [
+          "docs/modules/07-ARTIFACTS_AND_PROVENANCE.md",
+          "tests/test_trace_risk_codes.py"
+        ]
+      }
+    },
+    {
+      "seed": "tests/fixtures/claim-preserving-rewrite/source.txt",
+      "old": 77,
+      "new": 77,
+      "removed": [],
+      "selected": {
+        "test_accepted_skill_migration_fixtures": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_accepted_skill_migration_fixtures.py"
+        ],
+        "test_agent_trace": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_agent_trace.py"
+        ],
+        "test_api_session_runner": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_api_session_runner.py"
+        ],
+        "test_artifacts_admission": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "src/research_workbench/artifacts/integrity.py",
+          "tests/test_artifacts_admission.py"
+        ],
+        "test_artifacts_promotion": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_artifacts_promotion.py"
+        ],
+        "test_artifacts_validation_host": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_artifacts_validation_host.py"
+        ],
+        "test_candidate_claim_rewrite": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_candidate_claim_rewrite.py"
+        ],
+        "test_capability_consumer": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_capability_consumer.py"
+        ],
+        "test_capability_requirements": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_capability_requirements.py"
+        ],
+        "test_capability_resolution": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_capability_resolution.py"
+        ],
+        "test_capability_resolver_branches": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "src/research_workbench/io.py",
+          "tests/test_capability_resolver_branches.py"
+        ],
+        "test_catalog": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "src/research_workbench/artifacts/integrity.py",
+          "src/research_workbench/capability/catalog.py",
+          "tests/test_catalog.py"
+        ],
+        "test_ci_checks": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_ci_checks.py"
+        ],
+        "test_ci_dependencies": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          ".github/scripts/check_coverage_policy.py",
+          "tests/test_ci_dependencies.py"
+        ],
+        "test_ci_plan": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_ci_plan.py"
+        ],
+        "test_claim_trace": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_claim_trace.py"
+        ],
+        "test_cli": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "examples/run-reconstruction/linear-recurrence/simulate.py",
+          "tests/test_cli.py"
+        ],
+        "test_cli_command_branches": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_cli_command_branches.py"
+        ],
+        "test_context_model_branches": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "src/research_workbench/io.py",
+          "tests/test_context_model_branches.py"
+        ],
+        "test_contracts": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "src/research_workbench/io.py",
+          "tests/test_contracts.py"
+        ],
+        "test_coverage_policy": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_coverage_policy.py"
+        ],
+        "test_critical_contract_branches": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_critical_contract_branches.py"
+        ],
+        "test_decision_authority": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_decision_authority.py"
+        ],
+        "test_documentation": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_documentation.py"
+        ],
+        "test_evaluation_manifest": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "src/research_workbench/cli.py",
+          "tests/test_evaluation_manifest.py"
+        ],
+        "test_execution_archive_helpers": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_execution_archive_helpers.py"
+        ],
+        "test_execution_contract_helpers": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_execution_contract_helpers.py"
+        ],
+        "test_execution_host": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_execution_host.py"
+        ],
+        "test_execution_trace_adapter": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_execution_trace_adapter.py"
+        ],
+        "test_execution_view": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_execution_view.py"
+        ],
+        "test_generic_execution_closeout": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_generic_execution_closeout.py"
+        ],
+        "test_governance_helper_branches": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_governance_helper_branches.py"
+        ],
+        "test_handoff_transfer": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "src/research_workbench/cli.py",
+          "tests/test_handoff_transfer.py"
+        ],
+        "test_integrity": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "src/research_workbench/artifacts/integrity.py",
+          "tests/test_integrity.py"
+        ],
+        "test_m2_registry_runtime": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_m2_registry_runtime.py"
+        ],
+        "test_m3_context_observability": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_m3_context_observability.py"
+        ],
+        "test_method_resolutions": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_method_resolutions.py"
+        ],
+        "test_method_trace_candidate": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_method_trace_candidate.py"
+        ],
+        "test_mode_action_routing_fixtures": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_mode_action_routing_fixtures.py"
+        ],
+        "test_mode_actions": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_mode_actions.py"
+        ],
+        "test_model_pool": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_model_pool.py"
+        ],
+        "test_observability_model_branches": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "src/research_workbench/io.py",
+          "tests/test_observability_model_branches.py"
+        ],
+        "test_phase_b_evolution_gate": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_phase_b_evolution_gate.py"
+        ],
+        "test_phase_c_gate": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_phase_c_gate.py"
+        ],
+        "test_portable_build": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_portable_build.py"
+        ],
+        "test_pr_governance": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_pr_governance.py"
+        ],
+        "test_project_internal_handoff_fixtures": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "src/research_workbench/io.py",
+          "tests/test_project_internal_handoff_fixtures.py"
+        ],
+        "test_protocol_profiles": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_protocol_profiles.py"
+        ],
+        "test_provider_adapters": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_provider_adapters.py"
+        ],
+        "test_provider_conformance": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_provider_conformance.py"
+        ],
+        "test_provider_contract_branches": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          ".agents/skills/literature-evidence-extraction/scripts/check_evidence_record.py",
+          "tests/test_provider_contract_branches.py"
+        ],
+        "test_provider_port": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_provider_port.py"
+        ],
+        "test_registry_require_branches": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "src/research_workbench/capability/skill_needs.py",
+          "tests/test_registry_require_branches.py"
+        ],
+        "test_relationships": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "src/research_workbench/io.py",
+          "tests/test_relationships.py"
+        ],
+        "test_release_oracle_replay": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_release_surface.py",
+          "tests/test_release_oracle_replay.py"
+        ],
+        "test_release_surface": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_release_surface.py"
+        ],
+        "test_research_attempt_failure": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_research_attempt_failure.py"
+        ],
+        "test_research_mode_migration": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_research_mode_migration.py"
+        ],
+        "test_research_state_candidate": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_research_state_candidate.py"
+        ],
+        "test_research_state_critical_branches": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_research_state_critical_branches.py"
+        ],
+        "test_run_reconstruction": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_run_reconstruction.py"
+        ],
+        "test_runtime_bundle": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_runtime_bundle.py"
+        ],
+        "test_runtime_resources": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_runtime_resources.py"
+        ],
+        "test_schemas": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_schemas.py"
+        ],
+        "test_selection_witness": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_selection_witness.py"
+        ],
+        "test_skill_archive_audit": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_skill_archive_audit.py"
+        ],
+        "test_skill_evaluation": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_skill_evaluation.py"
+        ],
+        "test_skill_evaluation_helpers": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_skill_evaluation_helpers.py"
+        ],
+        "test_skill_lifecycle": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_skill_lifecycle.py"
+        ],
+        "test_skill_needs": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_skill_needs.py"
+        ],
+        "test_skill_release_projection": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_skill_release_projection.py"
+        ],
+        "test_skill_runtime_extension": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "src/research_workbench/artifacts/integrity.py",
+          "tests/test_skill_runtime_extension.py"
+        ],
+        "test_trace_properties": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_trace_properties.py"
+        ],
+        "test_trace_risk_codes": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "tests/test_trace_risk_codes.py"
+        ],
+        "test_validation": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "examples/run-reconstruction/linear-recurrence/simulate.py",
+          "tests/test_validation.py"
+        ],
+        "test_validation_critical_surfaces": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "src/research_workbench/artifacts/integrity.py",
+          "tests/test_validation_critical_surfaces.py"
+        ],
+        "test_validation_helpers": [
+          "tests/fixtures/claim-preserving-rewrite/source.txt",
+          "src/research_workbench/artifacts/integrity.py",
+          "tests/test_validation_helpers.py"
+        ]
+      }
+    },
+    {
+      "seed": "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+      "old": 75,
+      "new": 75,
+      "removed": [],
+      "selected": {
+        "test_accepted_skill_migration_fixtures": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_accepted_skill_migration_fixtures.py"
+        ],
+        "test_agent_trace": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/cli.py",
+          "tests/test_agent_trace.py"
+        ],
+        "test_api_session_runner": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/observability/models.py",
+          "src/research_workbench/observability/__init__.py",
+          "tests/test_api_session_runner.py"
+        ],
+        "test_artifacts_admission": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/cli.py",
+          "tests/test_artifacts_admission.py"
+        ],
+        "test_artifacts_promotion": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "tests/test_artifacts_promotion.py"
+        ],
+        "test_artifacts_validation_host": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_artifacts_validation_host.py"
+        ],
+        "test_candidate_claim_rewrite": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "tests/test_candidate_claim_rewrite.py"
+        ],
+        "test_capability_consumer": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_capability_consumer.py"
+        ],
+        "test_capability_requirements": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_capability_requirements.py"
+        ],
+        "test_capability_resolution": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_capability_resolution.py"
+        ],
+        "test_capability_resolver_branches": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_capability_resolver_branches.py"
+        ],
+        "test_catalog": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_catalog.py"
+        ],
+        "test_ci_checks": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "tests/test_ci_checks.py"
+        ],
+        "test_ci_dependencies": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "tests/test_ci_dependencies.py"
+        ],
+        "test_ci_plan": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "tests/test_ci_plan.py"
+        ],
+        "test_claim_trace": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/cli.py",
+          "tests/test_claim_trace.py"
+        ],
+        "test_cli": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_cli.py"
+        ],
+        "test_cli_command_branches": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/cli.py",
+          "tests/test_cli_command_branches.py"
+        ],
+        "test_context_model_branches": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/context/handoff_transfer.py",
+          "src/research_workbench/context/__init__.py",
+          "tests/test_context_model_branches.py"
+        ],
+        "test_contracts": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_contracts.py"
+        ],
+        "test_coverage_policy": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "tests/test_coverage_policy.py"
+        ],
+        "test_critical_contract_branches": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_critical_contract_branches.py"
+        ],
+        "test_decision_authority": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_decision_authority.py"
+        ],
+        "test_documentation": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          ".github/scripts/check_pr_governance.py",
+          "tests/test_documentation.py"
+        ],
+        "test_evaluation_manifest": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/cli.py",
+          "tests/test_evaluation_manifest.py"
+        ],
+        "test_execution_archive_helpers": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/observability/models.py",
+          "src/research_workbench/execution/archive.py",
+          "tests/test_execution_archive_helpers.py"
+        ],
+        "test_execution_contract_helpers": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/observability/models.py",
+          "src/research_workbench/observability/__init__.py",
+          "tests/test_execution_contract_helpers.py"
+        ],
+        "test_execution_host": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_execution_host.py"
+        ],
+        "test_execution_trace_adapter": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "tests/test_execution_trace_adapter.py"
+        ],
+        "test_execution_view": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_execution_view.py"
+        ],
+        "test_generic_execution_closeout": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_generic_execution_closeout.py"
+        ],
+        "test_governance_helper_branches": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "tests/test_pr_governance.py",
+          "tests/test_governance_helper_branches.py"
+        ],
+        "test_handoff_transfer": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/cli.py",
+          "tests/test_handoff_transfer.py"
+        ],
+        "test_m2_registry_runtime": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "tests/test_m2_registry_runtime.py"
+        ],
+        "test_m3_context_observability": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/cli.py",
+          "tests/test_m3_context_observability.py"
+        ],
+        "test_method_resolutions": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_method_resolutions.py"
+        ],
+        "test_method_trace_candidate": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/cli.py",
+          "tests/test_method_trace_candidate.py"
+        ],
+        "test_mode_actions": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_mode_actions.py"
+        ],
+        "test_model_pool": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_model_pool.py"
+        ],
+        "test_observability_model_branches": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/observability/models.py",
+          "tests/test_observability_model_branches.py"
+        ],
+        "test_phase_b_evolution_gate": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_phase_b_evolution_gate.py"
+        ],
+        "test_phase_c_gate": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "tests/test_phase_c_gate.py"
+        ],
+        "test_portable_build": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "tests/test_portable_build.py"
+        ],
+        "test_pr_governance": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "tests/test_pr_governance.py"
+        ],
+        "test_project_internal_handoff_fixtures": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_project_internal_handoff_fixtures.py"
+        ],
+        "test_protocol_profiles": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_protocol_profiles.py"
+        ],
+        "test_provider_adapters": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_provider_adapters.py"
+        ],
+        "test_provider_conformance": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_provider_conformance.py"
+        ],
+        "test_provider_contract_branches": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          ".agents/skills/literature-evidence-extraction/scripts/check_evidence_record.py",
+          "tests/test_provider_contract_branches.py"
+        ],
+        "test_provider_port": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_provider_port.py"
+        ],
+        "test_registry_require_branches": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_registry_require_branches.py"
+        ],
+        "test_relationships": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_relationships.py"
+        ],
+        "test_release_oracle_replay": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "tests/test_release_oracle_replay.py"
+        ],
+        "test_release_surface": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "tests/test_release_surface.py"
+        ],
+        "test_research_attempt_failure": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/cli.py",
+          "tests/test_research_attempt_failure.py"
+        ],
+        "test_research_mode_migration": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_research_mode_migration.py"
+        ],
+        "test_research_state_candidate": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/cli.py",
+          "tests/test_research_state_candidate.py"
+        ],
+        "test_research_state_critical_branches": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "tests/test_research_state_critical_branches.py"
+        ],
+        "test_run_reconstruction": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "tests/test_run_reconstruction.py"
+        ],
+        "test_runtime_bundle": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_runtime_bundle.py"
+        ],
+        "test_runtime_resources": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "build_backend.py",
+          "tests/test_runtime_resources.py"
+        ],
+        "test_schemas": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_schemas.py"
+        ],
+        "test_selection_witness": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "tests/test_selection_witness.py"
+        ],
+        "test_skill_archive_audit": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/cli.py",
+          "tests/test_skill_archive_audit.py"
+        ],
+        "test_skill_evaluation": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/cli.py",
+          "tests/test_skill_evaluation.py"
+        ],
+        "test_skill_evaluation_helpers": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "tests/test_skill_evaluation_helpers.py"
+        ],
+        "test_skill_lifecycle": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_skill_lifecycle.py"
+        ],
+        "test_skill_needs": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_skill_needs.py"
+        ],
+        "test_skill_release_projection": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_skill_release_projection.py"
+        ],
+        "test_skill_runtime_extension": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_skill_runtime_extension.py"
+        ],
+        "test_trace_properties": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/observability/models.py",
+          "src/research_workbench/observability/__init__.py",
+          "tests/test_trace_properties.py"
+        ],
+        "test_trace_risk_codes": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/observability/models.py",
+          "tests/test_trace_risk_codes.py"
+        ],
+        "test_validation": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_validation.py"
+        ],
+        "test_validation_critical_surfaces": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_validation_critical_surfaces.py"
+        ],
+        "test_validation_helpers": [
+          "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+          "src/research_workbench/cli.py",
+          "tests/test_validation_helpers.py"
+        ]
+      }
+    },
+    {
+      "seed": "src/research_workbench/artifacts/claim_trace.py",
+      "old": 75,
+      "new": 75,
+      "removed": [],
+      "selected": {
+        "test_accepted_skill_migration_fixtures": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_accepted_skill_migration_fixtures.py"
+        ],
+        "test_agent_trace": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_agent_trace.py"
+        ],
+        "test_api_session_runner": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/observability/models.py",
+          "src/research_workbench/observability/__init__.py",
+          "tests/test_api_session_runner.py"
+        ],
+        "test_artifacts_admission": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_artifacts_admission.py"
+        ],
+        "test_artifacts_promotion": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "tests/test_artifacts_promotion.py"
+        ],
+        "test_artifacts_validation_host": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_artifacts_validation_host.py"
+        ],
+        "test_candidate_claim_rewrite": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "tests/test_candidate_claim_rewrite.py"
+        ],
+        "test_capability_consumer": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_capability_consumer.py"
+        ],
+        "test_capability_requirements": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_capability_requirements.py"
+        ],
+        "test_capability_resolution": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_capability_resolution.py"
+        ],
+        "test_capability_resolver_branches": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_capability_resolver_branches.py"
+        ],
+        "test_catalog": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_catalog.py"
+        ],
+        "test_ci_checks": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "tests/test_ci_checks.py"
+        ],
+        "test_ci_dependencies": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "tests/test_ci_dependencies.py"
+        ],
+        "test_ci_plan": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "tests/test_ci_plan.py"
+        ],
+        "test_claim_trace": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "tests/test_claim_trace.py"
+        ],
+        "test_cli": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_cli.py"
+        ],
+        "test_cli_command_branches": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_cli_command_branches.py"
+        ],
+        "test_context_model_branches": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/context/handoff_transfer.py",
+          "src/research_workbench/context/__init__.py",
+          "tests/test_context_model_branches.py"
+        ],
+        "test_contracts": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_contracts.py"
+        ],
+        "test_coverage_policy": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "tests/test_coverage_policy.py"
+        ],
+        "test_critical_contract_branches": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_critical_contract_branches.py"
+        ],
+        "test_decision_authority": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_decision_authority.py"
+        ],
+        "test_documentation": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          ".github/scripts/check_pr_governance.py",
+          "tests/test_documentation.py"
+        ],
+        "test_evaluation_manifest": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_evaluation_manifest.py"
+        ],
+        "test_execution_archive_helpers": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/observability/models.py",
+          "src/research_workbench/execution/archive.py",
+          "tests/test_execution_archive_helpers.py"
+        ],
+        "test_execution_contract_helpers": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/observability/models.py",
+          "src/research_workbench/observability/__init__.py",
+          "tests/test_execution_contract_helpers.py"
+        ],
+        "test_execution_host": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_execution_host.py"
+        ],
+        "test_execution_trace_adapter": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "tests/test_execution_trace_adapter.py"
+        ],
+        "test_execution_view": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_execution_view.py"
+        ],
+        "test_generic_execution_closeout": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_generic_execution_closeout.py"
+        ],
+        "test_governance_helper_branches": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "tests/test_pr_governance.py",
+          "tests/test_governance_helper_branches.py"
+        ],
+        "test_handoff_transfer": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_handoff_transfer.py"
+        ],
+        "test_m2_registry_runtime": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "tests/test_m2_registry_runtime.py"
+        ],
+        "test_m3_context_observability": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_m3_context_observability.py"
+        ],
+        "test_method_resolutions": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_method_resolutions.py"
+        ],
+        "test_method_trace_candidate": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_method_trace_candidate.py"
+        ],
+        "test_mode_actions": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_mode_actions.py"
+        ],
+        "test_model_pool": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_model_pool.py"
+        ],
+        "test_observability_model_branches": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/observability/models.py",
+          "tests/test_observability_model_branches.py"
+        ],
+        "test_phase_b_evolution_gate": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_phase_b_evolution_gate.py"
+        ],
+        "test_phase_c_gate": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "tests/test_phase_c_gate.py"
+        ],
+        "test_portable_build": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "tests/test_portable_build.py"
+        ],
+        "test_pr_governance": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "tests/test_pr_governance.py"
+        ],
+        "test_project_internal_handoff_fixtures": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_project_internal_handoff_fixtures.py"
+        ],
+        "test_protocol_profiles": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_protocol_profiles.py"
+        ],
+        "test_provider_adapters": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_provider_adapters.py"
+        ],
+        "test_provider_conformance": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_provider_conformance.py"
+        ],
+        "test_provider_contract_branches": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          ".agents/skills/literature-evidence-extraction/scripts/check_evidence_record.py",
+          "tests/test_provider_contract_branches.py"
+        ],
+        "test_provider_port": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_provider_port.py"
+        ],
+        "test_registry_require_branches": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_registry_require_branches.py"
+        ],
+        "test_relationships": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_relationships.py"
+        ],
+        "test_release_oracle_replay": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "tests/test_release_oracle_replay.py"
+        ],
+        "test_release_surface": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "tests/test_release_surface.py"
+        ],
+        "test_research_attempt_failure": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_research_attempt_failure.py"
+        ],
+        "test_research_mode_migration": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_research_mode_migration.py"
+        ],
+        "test_research_state_candidate": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_research_state_candidate.py"
+        ],
+        "test_research_state_critical_branches": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "tests/test_research_state_critical_branches.py"
+        ],
+        "test_run_reconstruction": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "tests/test_run_reconstruction.py"
+        ],
+        "test_runtime_bundle": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_runtime_bundle.py"
+        ],
+        "test_runtime_resources": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "build_backend.py",
+          "tests/test_runtime_resources.py"
+        ],
+        "test_schemas": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_schemas.py"
+        ],
+        "test_selection_witness": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "tests/test_selection_witness.py"
+        ],
+        "test_skill_archive_audit": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_skill_archive_audit.py"
+        ],
+        "test_skill_evaluation": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_skill_evaluation.py"
+        ],
+        "test_skill_evaluation_helpers": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "tests/test_skill_evaluation_helpers.py"
+        ],
+        "test_skill_lifecycle": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_skill_lifecycle.py"
+        ],
+        "test_skill_needs": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_skill_needs.py"
+        ],
+        "test_skill_release_projection": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_skill_release_projection.py"
+        ],
+        "test_skill_runtime_extension": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_skill_runtime_extension.py"
+        ],
+        "test_trace_properties": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/observability/models.py",
+          "src/research_workbench/observability/__init__.py",
+          "tests/test_trace_properties.py"
+        ],
+        "test_trace_risk_codes": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/observability/models.py",
+          "tests/test_trace_risk_codes.py"
+        ],
+        "test_validation": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_validation.py"
+        ],
+        "test_validation_critical_surfaces": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_validation_critical_surfaces.py"
+        ],
+        "test_validation_helpers": [
+          "src/research_workbench/artifacts/claim_trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_validation_helpers.py"
+        ]
+      }
+    },
+    {
+      "seed": "src/research_workbench/capability/release_projection.py",
+      "old": 75,
+      "new": 75,
+      "removed": [],
+      "selected": {
+        "test_accepted_skill_migration_fixtures": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_accepted_skill_migration_fixtures.py"
+        ],
+        "test_agent_trace": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/cli.py",
+          "tests/test_agent_trace.py"
+        ],
+        "test_api_session_runner": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_api_session_runner.py"
+        ],
+        "test_artifacts_admission": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/cli.py",
+          "tests/test_artifacts_admission.py"
+        ],
+        "test_artifacts_promotion": [
+          "src/research_workbench/capability/release_projection.py",
+          "tests/test_artifacts_promotion.py"
+        ],
+        "test_artifacts_validation_host": [
+          "src/research_workbench/capability/release_projection.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_artifacts_validation_host.py"
+        ],
+        "test_candidate_claim_rewrite": [
+          "src/research_workbench/capability/release_projection.py",
+          "tests/test_candidate_claim_rewrite.py"
+        ],
+        "test_capability_consumer": [
+          "src/research_workbench/capability/release_projection.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_capability_consumer.py"
+        ],
+        "test_capability_requirements": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_capability_requirements.py"
+        ],
+        "test_capability_resolution": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_capability_resolution.py"
+        ],
+        "test_capability_resolver_branches": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_capability_resolver_branches.py"
+        ],
+        "test_catalog": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_catalog.py"
+        ],
+        "test_ci_checks": [
+          "src/research_workbench/capability/release_projection.py",
+          "tests/test_ci_checks.py"
+        ],
+        "test_ci_dependencies": [
+          "src/research_workbench/capability/release_projection.py",
+          "tests/test_ci_dependencies.py"
+        ],
+        "test_ci_plan": [
+          "src/research_workbench/capability/release_projection.py",
+          "tests/test_ci_plan.py"
+        ],
+        "test_claim_trace": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/cli.py",
+          "tests/test_claim_trace.py"
+        ],
+        "test_cli": [
+          "src/research_workbench/capability/release_projection.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_cli.py"
+        ],
+        "test_cli_command_branches": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/cli.py",
+          "tests/test_cli_command_branches.py"
+        ],
+        "test_context_model_branches": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/context/handoff_transfer.py",
+          "src/research_workbench/context/__init__.py",
+          "tests/test_context_model_branches.py"
+        ],
+        "test_contracts": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_contracts.py"
+        ],
+        "test_coverage_policy": [
+          "src/research_workbench/capability/release_projection.py",
+          "tests/test_coverage_policy.py"
+        ],
+        "test_critical_contract_branches": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_critical_contract_branches.py"
+        ],
+        "test_decision_authority": [
+          "src/research_workbench/capability/release_projection.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_decision_authority.py"
+        ],
+        "test_documentation": [
+          "src/research_workbench/capability/release_projection.py",
+          ".github/scripts/check_pr_governance.py",
+          "tests/test_documentation.py"
+        ],
+        "test_evaluation_manifest": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/cli.py",
+          "tests/test_evaluation_manifest.py"
+        ],
+        "test_execution_archive_helpers": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/execution/runtime_bundle.py",
+          "src/research_workbench/execution/__init__.py",
+          "tests/test_execution_archive_helpers.py"
+        ],
+        "test_execution_contract_helpers": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/execution/runtime_bundle.py",
+          "tests/test_execution_contract_helpers.py"
+        ],
+        "test_execution_host": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_execution_host.py"
+        ],
+        "test_execution_trace_adapter": [
+          "src/research_workbench/capability/release_projection.py",
+          "tests/test_execution_trace_adapter.py"
+        ],
+        "test_execution_view": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_execution_view.py"
+        ],
+        "test_generic_execution_closeout": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_generic_execution_closeout.py"
+        ],
+        "test_governance_helper_branches": [
+          "src/research_workbench/capability/release_projection.py",
+          "tests/test_pr_governance.py",
+          "tests/test_governance_helper_branches.py"
+        ],
+        "test_handoff_transfer": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/cli.py",
+          "tests/test_handoff_transfer.py"
+        ],
+        "test_m2_registry_runtime": [
+          "src/research_workbench/capability/release_projection.py",
+          "tests/test_m2_registry_runtime.py"
+        ],
+        "test_m3_context_observability": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/cli.py",
+          "tests/test_m3_context_observability.py"
+        ],
+        "test_method_resolutions": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_method_resolutions.py"
+        ],
+        "test_method_trace_candidate": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/cli.py",
+          "tests/test_method_trace_candidate.py"
+        ],
+        "test_mode_actions": [
+          "src/research_workbench/capability/release_projection.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_mode_actions.py"
+        ],
+        "test_model_pool": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_model_pool.py"
+        ],
+        "test_observability_model_branches": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/observability/models.py",
+          "tests/test_observability_model_branches.py"
+        ],
+        "test_phase_b_evolution_gate": [
+          "src/research_workbench/capability/release_projection.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_phase_b_evolution_gate.py"
+        ],
+        "test_phase_c_gate": [
+          "src/research_workbench/capability/release_projection.py",
+          "tests/test_phase_c_gate.py"
+        ],
+        "test_portable_build": [
+          "src/research_workbench/capability/release_projection.py",
+          "tests/test_portable_build.py"
+        ],
+        "test_pr_governance": [
+          "src/research_workbench/capability/release_projection.py",
+          "tests/test_pr_governance.py"
+        ],
+        "test_project_internal_handoff_fixtures": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_project_internal_handoff_fixtures.py"
+        ],
+        "test_protocol_profiles": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_protocol_profiles.py"
+        ],
+        "test_provider_adapters": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_provider_adapters.py"
+        ],
+        "test_provider_conformance": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_provider_conformance.py"
+        ],
+        "test_provider_contract_branches": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_provider_contract_branches.py"
+        ],
+        "test_provider_port": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_provider_port.py"
+        ],
+        "test_registry_require_branches": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_registry_require_branches.py"
+        ],
+        "test_relationships": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_relationships.py"
+        ],
+        "test_release_oracle_replay": [
+          "src/research_workbench/capability/release_projection.py",
+          "tests/test_release_oracle_replay.py"
+        ],
+        "test_release_surface": [
+          "src/research_workbench/capability/release_projection.py",
+          "tests/test_release_surface.py"
+        ],
+        "test_research_attempt_failure": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/cli.py",
+          "tests/test_research_attempt_failure.py"
+        ],
+        "test_research_mode_migration": [
+          "src/research_workbench/capability/release_projection.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_research_mode_migration.py"
+        ],
+        "test_research_state_candidate": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/cli.py",
+          "tests/test_research_state_candidate.py"
+        ],
+        "test_research_state_critical_branches": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/research_state/gate.py",
+          "tests/test_research_state_critical_branches.py"
+        ],
+        "test_run_reconstruction": [
+          "src/research_workbench/capability/release_projection.py",
+          "tests/test_run_reconstruction.py"
+        ],
+        "test_runtime_bundle": [
+          "src/research_workbench/capability/release_projection.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_runtime_bundle.py"
+        ],
+        "test_runtime_resources": [
+          "src/research_workbench/capability/release_projection.py",
+          "tests/test_runtime_resources.py"
+        ],
+        "test_schemas": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_schemas.py"
+        ],
+        "test_selection_witness": [
+          "src/research_workbench/capability/release_projection.py",
+          "tests/test_selection_witness.py"
+        ],
+        "test_skill_archive_audit": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_skill_archive_audit.py"
+        ],
+        "test_skill_evaluation": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_skill_evaluation.py"
+        ],
+        "test_skill_evaluation_helpers": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "tests/test_skill_evaluation_helpers.py"
+        ],
+        "test_skill_lifecycle": [
+          "src/research_workbench/capability/release_projection.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_skill_lifecycle.py"
+        ],
+        "test_skill_needs": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_skill_needs.py"
+        ],
+        "test_skill_release_projection": [
+          "src/research_workbench/capability/release_projection.py",
+          "tests/test_skill_release_projection.py"
+        ],
+        "test_skill_runtime_extension": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_skill_runtime_extension.py"
+        ],
+        "test_trace_properties": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/observability/models.py",
+          "src/research_workbench/observability/__init__.py",
+          "tests/test_trace_properties.py"
+        ],
+        "test_trace_risk_codes": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/observability/models.py",
+          "tests/test_trace_risk_codes.py"
+        ],
+        "test_validation": [
+          "src/research_workbench/capability/release_projection.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_validation.py"
+        ],
+        "test_validation_critical_surfaces": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_validation_critical_surfaces.py"
+        ],
+        "test_validation_helpers": [
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/cli.py",
+          "tests/test_validation_helpers.py"
+        ]
+      }
+    },
+    {
+      "seed": "src/research_workbench/artifacts/run_reconstruction.py",
+      "old": 75,
+      "new": 75,
+      "removed": [],
+      "selected": {
+        "test_accepted_skill_migration_fixtures": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_accepted_skill_migration_fixtures.py"
+        ],
+        "test_agent_trace": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/cli.py",
+          "tests/test_agent_trace.py"
+        ],
+        "test_api_session_runner": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/observability/models.py",
+          "src/research_workbench/observability/__init__.py",
+          "tests/test_api_session_runner.py"
+        ],
+        "test_artifacts_admission": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/cli.py",
+          "tests/test_artifacts_admission.py"
+        ],
+        "test_artifacts_promotion": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "tests/test_artifacts_promotion.py"
+        ],
+        "test_artifacts_validation_host": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_artifacts_validation_host.py"
+        ],
+        "test_candidate_claim_rewrite": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "tests/test_candidate_claim_rewrite.py"
+        ],
+        "test_capability_consumer": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_capability_consumer.py"
+        ],
+        "test_capability_requirements": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_capability_requirements.py"
+        ],
+        "test_capability_resolution": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_capability_resolution.py"
+        ],
+        "test_capability_resolver_branches": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_capability_resolver_branches.py"
+        ],
+        "test_catalog": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_catalog.py"
+        ],
+        "test_ci_checks": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "tests/test_ci_checks.py"
+        ],
+        "test_ci_dependencies": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "tests/test_ci_dependencies.py"
+        ],
+        "test_ci_plan": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "tests/test_ci_plan.py"
+        ],
+        "test_claim_trace": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/cli.py",
+          "tests/test_claim_trace.py"
+        ],
+        "test_cli": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_cli.py"
+        ],
+        "test_cli_command_branches": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/cli.py",
+          "tests/test_cli_command_branches.py"
+        ],
+        "test_context_model_branches": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/context/handoff_transfer.py",
+          "src/research_workbench/context/__init__.py",
+          "tests/test_context_model_branches.py"
+        ],
+        "test_contracts": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_contracts.py"
+        ],
+        "test_coverage_policy": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "tests/test_coverage_policy.py"
+        ],
+        "test_critical_contract_branches": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_critical_contract_branches.py"
+        ],
+        "test_decision_authority": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_decision_authority.py"
+        ],
+        "test_documentation": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          ".github/scripts/check_pr_governance.py",
+          "tests/test_documentation.py"
+        ],
+        "test_evaluation_manifest": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/cli.py",
+          "tests/test_evaluation_manifest.py"
+        ],
+        "test_execution_archive_helpers": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/observability/models.py",
+          "src/research_workbench/execution/archive.py",
+          "tests/test_execution_archive_helpers.py"
+        ],
+        "test_execution_contract_helpers": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/observability/models.py",
+          "src/research_workbench/observability/__init__.py",
+          "tests/test_execution_contract_helpers.py"
+        ],
+        "test_execution_host": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_execution_host.py"
+        ],
+        "test_execution_trace_adapter": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "tests/test_execution_trace_adapter.py"
+        ],
+        "test_execution_view": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_execution_view.py"
+        ],
+        "test_generic_execution_closeout": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_generic_execution_closeout.py"
+        ],
+        "test_governance_helper_branches": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "tests/test_pr_governance.py",
+          "tests/test_governance_helper_branches.py"
+        ],
+        "test_handoff_transfer": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/cli.py",
+          "tests/test_handoff_transfer.py"
+        ],
+        "test_m2_registry_runtime": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "tests/test_m2_registry_runtime.py"
+        ],
+        "test_m3_context_observability": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/cli.py",
+          "tests/test_m3_context_observability.py"
+        ],
+        "test_method_resolutions": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_method_resolutions.py"
+        ],
+        "test_method_trace_candidate": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/cli.py",
+          "tests/test_method_trace_candidate.py"
+        ],
+        "test_mode_actions": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_mode_actions.py"
+        ],
+        "test_model_pool": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_model_pool.py"
+        ],
+        "test_observability_model_branches": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/observability/models.py",
+          "tests/test_observability_model_branches.py"
+        ],
+        "test_phase_b_evolution_gate": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_phase_b_evolution_gate.py"
+        ],
+        "test_phase_c_gate": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "tests/test_phase_c_gate.py"
+        ],
+        "test_portable_build": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "tests/test_portable_build.py"
+        ],
+        "test_pr_governance": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "tests/test_pr_governance.py"
+        ],
+        "test_project_internal_handoff_fixtures": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_project_internal_handoff_fixtures.py"
+        ],
+        "test_protocol_profiles": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_protocol_profiles.py"
+        ],
+        "test_provider_adapters": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_provider_adapters.py"
+        ],
+        "test_provider_conformance": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_provider_conformance.py"
+        ],
+        "test_provider_contract_branches": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          ".agents/skills/literature-evidence-extraction/scripts/check_evidence_record.py",
+          "tests/test_provider_contract_branches.py"
+        ],
+        "test_provider_port": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_provider_port.py"
+        ],
+        "test_registry_require_branches": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_registry_require_branches.py"
+        ],
+        "test_relationships": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_relationships.py"
+        ],
+        "test_release_oracle_replay": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "tests/test_release_oracle_replay.py"
+        ],
+        "test_release_surface": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "tests/test_release_surface.py"
+        ],
+        "test_research_attempt_failure": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/cli.py",
+          "tests/test_research_attempt_failure.py"
+        ],
+        "test_research_mode_migration": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_research_mode_migration.py"
+        ],
+        "test_research_state_candidate": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/cli.py",
+          "tests/test_research_state_candidate.py"
+        ],
+        "test_research_state_critical_branches": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "tests/test_research_state_critical_branches.py"
+        ],
+        "test_run_reconstruction": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "tests/test_run_reconstruction.py"
+        ],
+        "test_runtime_bundle": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_runtime_bundle.py"
+        ],
+        "test_runtime_resources": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "build_backend.py",
+          "tests/test_runtime_resources.py"
+        ],
+        "test_schemas": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_schemas.py"
+        ],
+        "test_selection_witness": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "tests/test_selection_witness.py"
+        ],
+        "test_skill_archive_audit": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/cli.py",
+          "tests/test_skill_archive_audit.py"
+        ],
+        "test_skill_evaluation": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/cli.py",
+          "tests/test_skill_evaluation.py"
+        ],
+        "test_skill_evaluation_helpers": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "tests/test_skill_evaluation_helpers.py"
+        ],
+        "test_skill_lifecycle": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_skill_lifecycle.py"
+        ],
+        "test_skill_needs": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_skill_needs.py"
+        ],
+        "test_skill_release_projection": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_skill_release_projection.py"
+        ],
+        "test_skill_runtime_extension": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_skill_runtime_extension.py"
+        ],
+        "test_trace_properties": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/observability/models.py",
+          "src/research_workbench/observability/__init__.py",
+          "tests/test_trace_properties.py"
+        ],
+        "test_trace_risk_codes": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/observability/models.py",
+          "tests/test_trace_risk_codes.py"
+        ],
+        "test_validation": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_validation.py"
+        ],
+        "test_validation_critical_surfaces": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/research_state/gate.py",
+          "src/research_workbench/research_state/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_validation_critical_surfaces.py"
+        ],
+        "test_validation_helpers": [
+          "src/research_workbench/artifacts/run_reconstruction.py",
+          "src/research_workbench/cli.py",
+          "tests/test_validation_helpers.py"
+        ]
+      }
+    }
+  ],
+  "graph_delta": {
+    "removed_edges": 432,
+    "added_edges": 4,
+    "removed": [
+      [
+        ".gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        ".github/workflows/ci.yml",
+        ".github/scripts/ci_checks.py"
+      ],
+      [
+        "AGENTS.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "CHANGELOG.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "DEVELOPMENT_HISTORY.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/STATUS.md",
+        "tests/test_release_surface.py"
+      ],
+      [
+        "docs/compatibility/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/decisions/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/history/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/implementation/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/modules/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/references/second-round-audit/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/chengyue-lu-mode-skill/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/chengyue-lu/CI-PERFORMANCE-MAINTENANCE/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/chengyue-lu/GOV-V2-001/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/chengyue-lu/GOV-V2-STAGE-CLOSURE/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/chengyue-lu/ISSUE-35-RUNTIME-EVOLUTION-BOUNDARY/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/chengyue-lu/ISSUE-41-M-SERIES-NORMALIZATION/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/chengyue-lu/M11-EXECUTION-REINTEGRATION/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/chengyue-lu/M11-SKILL-RUNTIME-ACTIVATION/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/chengyue-lu/M11-SKILL-RUNTIME-EXTENSION/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/chengyue-lu/M8-002/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/chengyue-lu/M8-003/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/chengyue-lu/M8-004/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/chengyue-lu/M8-005/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/chengyue-lu/PHASE-B-EVOLUTION/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/chengyue-lu/PHASE-C-RESEARCH-STATE/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/chengyue-lu/POST-INTEGRATION-DOCS-ALIGNMENT/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/chengyue-lu/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/chengyue-lu/TEST-PERF-002/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/chengyue-lu/TEST-QUALITY-001/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/huangyi/M10-RESEARCH-STATE/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/huangyi/M4-ARTIFACT-PROMOTION/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/huangyi/M4-ARTIFACTS-PROVENANCE/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/huangyi/M4-CLAIM-TRACE/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/huangyi/M5-EVALUATION-BASELINE/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/huangyi/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/huangyi/execution-runtime-recovery-audit/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/huangyi/open-source-agent-harness-research/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/huangyi/open-source-agent-harness-research/gpt-joint-research/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/huangyi/open-source-agent-harness-research/history/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "docs/workstreams/huangyi/open-source-agent-harness-research/validation/README.md",
+        ".github/scripts/check_pr_governance.py"
+      ],
+      [
+        "examples/capability-resolution/resolutions/document-read-a.yaml",
+        "tests/test_method_trace_candidate.py"
+      ],
+      [
+        "examples/profiles/evidence-scout.yaml",
+        "tests/test_cli_command_branches.py"
+      ],
+      [
+        "registry/agents/evidence-scout.yaml",
+        "tests/test_capability_resolver_branches.py"
+      ],
+      [
+        "registry/skills/accepted/literature-evidence-extraction.yaml",
+        "tests/test_capability_resolver_branches.py"
+      ],
+      [
+        "tests/__init__.py",
+        "tests/test_cli.py"
+      ],
+      [
+        "tests/__init__.py",
+        "tests/test_release_surface.py"
+      ],
+      [
+        "tests/__init__.py",
+        "tests/test_schemas.py"
+      ],
+      [
+        "work/M11-005/A-20260831-001/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M11-005/A-20260831-001/WORKLOG.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M11-005/A-20260831-ACTIVATION/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M11-005/A-20260831-ACTIVATION/WORKLOG.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M11-006/A-20260831-001/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M11-006/A-20260831-001/WORKLOG.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/WORKLOG.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/checks/0001-focused-governance-documentation.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/checks/0002-coverage-quality.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/checks/0003-static-validation.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/checks/0004-repository-and-package-smoke.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/checks/0005-full-behavioral-suite.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/checks/0006-trace-format-remediation.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/checks/0007-message-path-redaction.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/handoffs/H1-SAFE-PAUSE.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/messages/0001-main-agent-to-governance-design-auditor-assignment.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/messages/0002-main-agent-to-test-auditor-assignment.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/messages/0003-main-agent-to-archive-scope-auditor-assignment.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/messages/0004-governance-design-auditor-to-main-agent-return.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/messages/0005-test-auditor-to-main-agent-return.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/messages/0006-archive-scope-auditor-to-main-agent-return.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/messages/0007-main-agent-to-governance-design-auditor-followup.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/messages/0008-main-agent-to-test-auditor-followup.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/messages/0009-main-agent-to-archive-scope-auditor-followup.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/messages/0010-governance-design-auditor-to-main-agent-adversarial-return.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/messages/0011-test-auditor-to-main-agent-coverage-return.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/messages/0012-archive-scope-auditor-to-main-agent-review-return.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/messages/0013-main-agent-to-test-auditor-full-suite-assignment.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/messages/0014-main-agent-to-governance-design-auditor-validation-assignment.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/messages/0015-main-agent-to-archive-scope-auditor-closeout-assignment.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/messages/0016-archive-scope-auditor-to-main-agent-closeout-return.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/messages/0017-governance-design-auditor-to-main-agent-validation-return.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/messages/0018-test-auditor-to-main-agent-full-suite-return.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/messages/0019-main-agent-to-archive-scope-auditor-trace-migration-assignment.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/messages/0020-archive-scope-auditor-to-main-agent-trace-migration-return.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-001/A-20260905-001/outputs/M14-001-IMPLEMENTATION-SUMMARY.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-001/.gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        "work/M14-002/A-20260906-001/.gitattributes",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-001/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-001/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-001/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-001/WORKLOG.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-001/checks/contracts-docs.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-001/checks/coverage-policy.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-001/checks/focused.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-001/checks/governance-focused.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-001/checks/governance.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-001/checks/independent-oracle.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-001/checks/repository.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-001/checks/trace.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-001/checks/validation.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-001/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-001/handoffs/H0-REVIEW.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-001/outputs/IMPLEMENTATION.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-001/tool-events/material-verification-summary-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-002/.gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        "work/M14-002/A-20260906-002/.gitattributes",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-002/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-002/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-002/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-002/WORKLOG.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-002/checks/before-fix.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-002/checks/focused.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-002/checks/governance-docs.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-002/checks/redactions.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-002/checks/verification.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-002/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-002/handoffs/H0-REVIEW.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-002/outputs/REVIEW_FIXES.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-002/review.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-002/tool-events/review-fix-verification-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-003/.gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        "work/M14-002/A-20260906-003/.gitattributes",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-003/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-003/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-003/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-003/WORKLOG.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-003/checks/before-fix.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-003/checks/focused.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-003/checks/governance-docs.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-003/checks/redactions.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-003/checks/repository.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-003/checks/verification.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-003/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-003/handoffs/H0-REVIEW.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-003/outputs/REVIEW_FIXES.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-003/review.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-002/A-20260906-003/tool-events/deletion-fix-verification-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-001/.gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        "work/M14-003/A-20260906-001/.gitattributes",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-001/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-001/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-001/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-001/WORKLOG.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-001/checks/coverage-gate-before-declaration.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-001/checks/coverage-gate.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-001/checks/exact-governance-docs.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-001/checks/governance.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-001/checks/phase-c-before-fix.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-001/checks/phase-c-fix.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-001/checks/redactions.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-001/checks/repository.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-001/checks/resource-build-race.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-001/checks/resources-tests.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-001/checks/verification.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-001/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-001/handoffs/H0-REVIEW.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-001/outputs/IMPLEMENTATION.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-001/tool-events/m14-003-verification-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-002/.gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        "work/M14-003/A-20260906-002/.gitattributes",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-002/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-002/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-002/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-002/WORKLOG.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-002/checks/focused.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-002/checks/reproduce.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-002/checks/resources-311.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-002/checks/resources-313.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-002/checks/verification.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-002/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-002/outputs/CI-REPAIR.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260906-002/tool-events/m14-003-ci-repair-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260909-001/.gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        "work/M14-003/A-20260909-001/.gitattributes",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260909-001/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260909-001/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260909-001/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260909-001/WORKLOG.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260909-001/checks/build-fixed.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260909-001/checks/ci-contracts.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260909-001/checks/focused-311.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260909-001/checks/focused-results.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260909-001/checks/governance.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260909-001/checks/range-diff.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260909-001/checks/registry-committed.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260909-001/checks/registry-fixed.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260909-001/checks/repository.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260909-001/checks/targeted.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260909-001/checks/verification.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260909-001/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260909-001/outputs/CI-ADAPTATION.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/M14-003/A-20260909-001/tool-events/m14-ci-adaptation-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-001/.gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-001/.gitattributes",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-001/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-001/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-001/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-001/WORKLOG.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-001/checks/coverage-policy.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-001/checks/fast-plan.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-001/checks/focused-plan.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-001/checks/publication-receipt.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-001/checks/verification-summary.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-001/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-001/handoff/H0.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-001/outputs/code-manifest.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-001/tool-events/observed-verification-summary-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-002/.gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-002/.gitattributes",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-002/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-002/AUDIT.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-002/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-002/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-002/WORKLOG.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-002/checks/local-verification.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-002/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-002/handoff/H0.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-002/outputs/code-manifest.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260906-002/tool-events/local-closeout-verification-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-001/.gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-001/.gitattributes",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-001/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-001/AUDIT.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-001/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-001/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-001/WORKLOG.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-001/checks/fast.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-001/checks/focused-final.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-001/checks/focused.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-001/checks/operational-receipt.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-001/checks/verification-summary.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-001/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-001/handoff/H0.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-001/outputs/code-manifest.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-001/tool-events/operational-verification-summary-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-002/.gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-002/.gitattributes",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-002/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-002/AUDIT.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-002/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-002/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-002/WORKLOG.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-002/checks/impact-plan.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-002/checks/pr65-merge.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-002/checks/staged-plan.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-002/checks/validation-summary.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-002/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-002/handoff/H0.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-002/outputs/code-manifest.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-002/tool-events/independent-obligations-validation-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-003/.gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-003/.gitattributes",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-003/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-003/AUDIT.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-003/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-003/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-003/WORKLOG.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-003/checks/review.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-003/checks/staged-plan.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-003/checks/validation-summary.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-003/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-003/handoff/H0.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-003/outputs/code-manifest.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-003/tool-events/coverage-obligation-review-validation-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-004/.gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-004/.gitattributes",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-004/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-004/AUDIT.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-004/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-004/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-004/WORKLOG.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-004/checks/direction.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-004/checks/full-oracle.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-004/checks/implementation-plan.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-004/checks/selection-probes.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-004/checks/validation-summary.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-004/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-004/handoff/H0.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-004/outputs/code-manifest.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-004/tool-events/publish-direction-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-004/tool-events/selection-revision-validation-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-005/.gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-005/.gitattributes",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-005/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-005/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-005/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-005/WORKLOG.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-005/checks/focused-results.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-005/checks/validation-summary.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-005/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-005/handoff/H0.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-005/outputs/code-manifest.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-005/tool-events/bound-execution-reproduction-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-005/tool-events/bound-execution-validation-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-006/.gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-006/.gitattributes",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-006/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-006/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-006/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-006/WORKLOG.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-006/checks/candidate-plan.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-006/checks/focused-results.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-006/checks/probes.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-006/checks/review.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-006/checks/summary.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-006/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-006/handoff/H0.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-006/outputs/code-manifest.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-006/tool-events/review-intake-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-006/tool-events/review-regression-validation-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-007/.gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-007/.gitattributes",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-007/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-007/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-007/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-007/WORKLOG.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-007/checks/attack-receipt.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-007/checks/candidate-plan.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-007/checks/focused-results.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-007/checks/independent-receipt.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-007/checks/review.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-007/checks/summary.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-007/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-007/handoff/H0.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-007/outputs/code-manifest.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-007/tool-events/independent-witness-validation-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-009/.gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-009/.gitattributes",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-009/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-009/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-009/RESULTS.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-009/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-009/checks/cross-owner-review.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-009/checks/focused-results.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-009/checks/probe-results.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-009/checks/summary.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-009/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-009/handoff/H0.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-009/tool-events/review-repair-validation-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-010/.gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-010/.gitattributes",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-010/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-010/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-010/RESULTS.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-010/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-010/checks/cross-owner-review.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-010/checks/focused-results.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-010/checks/probe-results.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-010/checks/summary.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-010/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-010/handoff/H0.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260907-010/tool-events/review-repair-validation-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-001/.gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-001/.gitattributes",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-001/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-001/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-001/RESULTS.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-001/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-001/checks/REPRODUCE.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-001/checks/baseline.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-001/checks/issue48-comment.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-001/checks/trace-initial-validation.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-001/checks/validation.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-001/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-001/handoff/H0.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-001/tool-events/intake-evidence-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-002/.gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-002/.gitattributes",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-002/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-002/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-002/RESULTS.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-002/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-002/checks/claim-probe.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-002/checks/summary.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-002/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-002/handoff/H0.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-002/tool-events/focused-and-claim-validation-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-004/.gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-004/.gitattributes",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-004/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-004/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-004/RESULTS.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-004/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-004/checks/summary.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-004/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-004/handoff/H0.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260908-004/tool-events/alias-guard-focused-proof-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-003/.gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-003/.gitattributes",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-003/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-003/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-003/RESULTS.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-003/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-003/checks/before.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-003/checks/docs.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-003/checks/focused.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-003/checks/governance.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-003/checks/real-plans.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-003/checks/regressions.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-003/checks/reviews.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-003/checks/summary.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-003/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-003/handoff/H0.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-003/tool-events/proof-implementation-evidence-recheck-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-004/.gitattributes",
+        ".github/scripts/release_surface.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-004/.gitattributes",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-004/ACTORS.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-004/INDEX.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-004/RESULTS.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-004/TASK.yaml",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-004/checks/before.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-004/checks/docs.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-004/checks/focused.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-004/checks/governance.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-004/checks/real-plans.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-004/checks/regressions.log",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-004/checks/review.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-004/checks/summary.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-004/events.jsonl",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-004/handoff/H0.md",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ],
+      [
+        "work/TEST-PERF-002/A-20260909-004/tool-events/helper-closure-evidence-recheck-succeeded.json",
+        "src/research_workbench/artifacts/run_reconstruction.py"
+      ]
+    ],
+    "added": [
+      [
+        "docs/workstreams/huangyi/open-source-agent-harness-research/validation/attempts/A-20260823-CODEX-READONLY-05/ATTEMPT_MANIFEST.md",
+        "docs/workstreams/huangyi/open-source-agent-harness-research/validation/verify_tracked_evidence.py"
+      ],
+      [
+        "docs/workstreams/huangyi/open-source-agent-harness-research/validation/attempts/A-20260823-CODEX-READONLY-05/COMMANDS.md",
+        "docs/workstreams/huangyi/open-source-agent-harness-research/validation/verify_tracked_evidence.py"
+      ],
+      [
+        "docs/workstreams/huangyi/open-source-agent-harness-research/validation/attempts/A-20260823-CODEX-READONLY-05/RESULTS.md",
+        "docs/workstreams/huangyi/open-source-agent-harness-research/validation/verify_tracked_evidence.py"
+      ],
+      [
+        "docs/workstreams/huangyi/open-source-agent-harness-research/validation/attempts/A-20260823-CODEX-READONLY-05/raw/.gitignore",
+        "docs/workstreams/huangyi/open-source-agent-harness-research/validation/verify_tracked_evidence.py"
+      ]
+    ]
+  }
+}
