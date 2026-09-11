@@ -104,6 +104,36 @@ class PlannerTests(unittest.TestCase):
         self.commit('docs/workstreams/input.yaml')
         self.assertEqual('full',self.plan()['change_class'])
 
+    def test_pr68_document_path_set_does_not_propagate_through_name_checks_and_archive(self):
+        fixture = json.loads((ROOT / 'tests/fixtures/ci/pr68-paths.json').read_bytes())
+        self.assertEqual('0f6da949c9d89d4d5e0cea9cffad1e85465bb52c', fixture['head'])
+        for row in fixture['changes']:
+            if row['status'] == 'M':
+                write(self.repo, row['path'], 'base document\n')
+        write(self.repo, 'tests/test_documentation.py', 'from pathlib import Path\n'
+              'ROOT=Path(__file__).resolve().parents[1]\n'
+              'content=(ROOT / "docs/STATUS.md").read_text()\n')
+        write(self.repo, 'tests/test_release_surface.py',
+              'paths={item["path"] for item in includes}\nassert paths.isdisjoint({"docs/STATUS.md"})\n')
+        write(self.repo, 'work/old/checks/oracle.py', 'from tests.test_release_surface import paths\n')
+        write(self.repo, 'src/research_workbench/artifacts/replay.py', 'from pathlib import Path\n'
+              'def check(root: Path, path: Path):\n return path.is_relative_to(root / "work")\n')
+        write(self.repo, 'src/research_workbench/cli.py', 'from .artifacts.replay import check\n')
+        write(self.repo, 'tests/test_cli.py', 'from research_workbench.cli import check\n')
+        self.base = self.commit('tests/test_trace_risk_codes.py', 'from pathlib import Path\n'
+              'ROOT=Path(__file__).resolve().parents[1]\n'
+              'content=(ROOT / "docs/modules/07-ARTIFACTS_AND_PROVENANCE.md").read_text()\n')
+        for row in fixture['changes']:
+            write(self.repo, row['path'], 'candidate document\n')
+        command(self.repo, 'add', '.')
+        command(self.repo, 'commit', '-qm', 'PR 68 exact changed path set')
+        plan = self.plan(body=BODY.replace('R0', 'R2'))
+        self.assertEqual(fixture['changes'], plan['changes'])
+        self.assertEqual({'test_documentation', 'test_pr_governance', 'test_trace_risk_codes'}, set(plan['tests']))
+        self.assertEqual(('focused', 'none', False, False), tuple(plan[k] for k in
+                         ('behavioral_scope', 'coverage_scope', 'package_smoke', 'repository_smoke')))
+        planner.verify_plan(self.repo, plan)
+
     def test_markdown_resource_change_keeps_existing_failing_consumer(self):
         write(self.repo, 'tests/test_markdown_consumer.py',
               'from pathlib import Path\nimport unittest\n'

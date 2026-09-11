@@ -12,6 +12,7 @@ from collections import defaultdict
 from functools import lru_cache
 import hashlib
 import json
+from pathlib import PurePosixPath
 import subprocess
 
 
@@ -108,7 +109,6 @@ def graph(blobs, paths):
     reverse = defaultdict(set)
     references = defaultdict(set)
     for dependency in paths:
-        references[dependency].add(dependency)
         references[dependency.rsplit('/', 1)[-1]].add(dependency)
     opaque, resources, errors = set(), set(), []
     for path, raw in blobs.items():
@@ -119,6 +119,124 @@ def graph(blobs, paths):
             continue
         aliases = {}
         parents = {child: parent for parent in ast.walk(tree) for child in ast.iter_child_nodes(parent)}
+        @lru_cache(maxsize=None)
+        def scope(node):
+            while node in parents:
+                node = parents[node]
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)):
+                    break
+            return node
+
+        bindings = defaultdict(lambda: defaultdict(list))
+        import_targets = defaultdict(set)
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom):
+                for item in node.names:
+                    import_targets[item.asname or item.name].add(str(node.module) + '.' + item.name)
+            elif isinstance(node, ast.Import):
+                for item in node.names:
+                    import_targets[item.asname or item.name.split('.')[0]].add(item.name)
+            if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
+                parent = parents[node]
+                bindings[scope(node)][node.id].append(parent.value if isinstance(parent, ast.Assign) else None)
+
+        def value_of(node):
+            values = bindings[scope(node)].get(node.id, []) if isinstance(node, ast.Name) else []
+            return values[0] if len(values) == 1 else None
+
+        def parameter(node, name):
+            owner = scope(node)
+            return isinstance(owner, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)) and any(
+                arg.arg == name for arg in (*owner.args.posonlyargs, *owner.args.args, *owner.args.kwonlyargs,
+                                           *([owner.args.vararg] if owner.args.vararg else []),
+                                           *([owner.args.kwarg] if owner.args.kwarg else [])))
+
+        def path_constructor(node):
+            return (isinstance(node, ast.Name) and aliases.get(node.id) == 'pathlib.Path'
+                    and import_targets[node.id] == {'pathlib.Path'}
+                    and not bindings[scope(node)].get(node.id) and not bindings[tree].get(node.id)
+                    and not parameter(node, node.id))
+
+        def literal_path(node, seen=frozenset()):
+            """Resolve fixed pathlib roots from syntax; unknown roots stay unknown."""
+            if node in seen:
+                return None
+            seen = seen | {node}
+            if isinstance(node, ast.Name):
+                if (node.id == '__file__' and not parameter(node, node.id)
+                        and not bindings[scope(node)].get(node.id) and not bindings[tree].get(node.id)):
+                    return PurePosixPath(path)
+                if parameter(node, node.id):
+                    return None
+                values = bindings[scope(node)].get(node.id, bindings[tree].get(node.id, []))
+                if len(values) == 1 and values[0] is not None:
+                    return literal_path(values[0], seen)
+            if isinstance(node, ast.Call):
+                if path_constructor(node.func) and len(node.args) == 1:
+                    return literal_path(node.args[0], seen)
+                if isinstance(node.func, ast.Attribute) and node.func.attr in {'resolve', 'absolute'}:
+                    return literal_path(node.func.value, seen)
+            if isinstance(node, ast.Attribute) and node.attr == 'parent':
+                value = literal_path(node.value, seen)
+                return value.parent if value is not None else None
+            if (isinstance(node, ast.Subscript) and isinstance(node.value, ast.Attribute) and node.value.attr == 'parents'
+                    and isinstance(node.slice, ast.Constant) and type(node.slice.value) is int):
+                value = literal_path(node.value.value, seen)
+                if value is not None and 0 <= node.slice.value < len(value.parents):
+                    return value.parents[node.slice.value]
+            return None
+
+        def path_value(node, seen=frozenset()):
+            if node in seen:
+                return False
+            seen = seen | {node}
+            if isinstance(node, ast.Name):
+                value = value_of(node)
+                if value is not None:
+                    return path_value(value, seen)
+                owner = scope(node)
+                if isinstance(owner, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.id not in bindings[owner]:
+                    return any(arg.arg == node.id and path_constructor(arg.annotation) for arg in
+                               (*owner.args.posonlyargs, *owner.args.args, *owner.args.kwonlyargs))
+            if isinstance(node, ast.Call):
+                if path_constructor(node.func):
+                    return True
+                if isinstance(node.func, ast.Attribute) and node.func.attr in {'resolve', 'absolute'}:
+                    return path_value(node.func.value, seen)
+            if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
+                return path_value(node.left, seen)
+            if isinstance(node, ast.IfExp):
+                return path_value(node.body, seen) and path_value(node.orelse, seen)
+            return False
+
+        def name_only(node, seen=frozenset()):
+            """Recognize lexical predicates, without crossing a read/call boundary."""
+            if node in seen:
+                return False
+            seen = seen | {node}
+            parent = parents.get(node)
+            while isinstance(parent, (ast.Set, ast.List, ast.Tuple, ast.BinOp)):
+                node, parent = parent, parents.get(parent)
+            if isinstance(parent, (ast.Compare, ast.Expr)):
+                return True
+            if isinstance(parent, ast.Assign) and len(parent.targets) == 1:
+                target = parent.targets[0]
+                owner = scope(parent)
+                if isinstance(target, ast.Name) and isinstance(owner, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    if any(isinstance(n, (ast.Global, ast.Nonlocal)) and target.id in n.names for n in ast.walk(owner)):
+                        return False
+                    uses = [n for n in ast.walk(owner) if isinstance(n, ast.Name)
+                            and isinstance(n.ctx, ast.Load) and n.id == target.id]
+                    if uses and all(scope(n) is owner and name_only(n, seen) for n in uses):
+                        return True
+            if isinstance(parent, ast.Call) and isinstance(parent.func, ast.Attribute):
+                receiver = parent.func.value
+                if parent.func.attr in {'isdisjoint', 'issubset', 'issuperset'}:
+                    return isinstance(receiver, ast.Set) or isinstance(value_of(receiver), (ast.Set, ast.SetComp))
+                if parent.func.attr == 'is_relative_to':
+                    # pathlib's lexical containment query never inspects the directory.
+                    return path_value(receiver)
+            return False
 
         def alias(name, target):
             if name in aliases and aliases[name] != target:
@@ -154,28 +272,47 @@ def graph(blobs, paths):
                     alias(item.asname or item.name, full)
                     link(full)
             elif isinstance(node, ast.Constant) and isinstance(node.value, str):
+                parent = parents.get(node)
+                if name_only(node) or isinstance(parent, ast.BinOp) and isinstance(parent.op, ast.Div):
+                    continue
                 value = node.value.replace('\\', '/')
                 link(value)
-                # File literals are references. Dictionary keys such as 'tests' and
-                # permission-zone names such as 'src' are not directory reads.
-                for dependency in references.get(value.rstrip('/'), ()):
+                # Whole path expressions are handled below. A bare filename with
+                # an unresolved use remains ambiguous, including assignment and
+                # helper-call inputs; do not silently assume the repository root.
+                matches = {value} & set(paths)
+                matches.update(references.get(value, ()))
+                for dependency in matches:
                     reverse[dependency].add(path)
             elif isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
                 parent = parents.get(node)
                 if isinstance(parent, ast.BinOp) and isinstance(parent.op, ast.Div):
                     continue
+                if name_only(node):
+                    continue
                 parts = path_parts(node)
-                while parts and parts[0] is None:
-                    parts.pop(0)
+                root_node = node
+                while isinstance(root_node, ast.BinOp) and isinstance(root_node.op, ast.Div):
+                    root_node = root_node.left
+                resolved = literal_path(root_node)
+                if parts and parts[0] is None:
+                    parts = parts[1:]
                 prefix = []
                 for part in parts:
                     if part is None:
                         break
                     prefix.append(part)
                 value = '/'.join(prefix).replace('\\', '/').strip('/')
+                if value and resolved is not None:
+                    value = (resolved / value).as_posix()
                 if value:
                     for dependency in paths:
                         if dependency == value or dependency.startswith(value + '/'):
+                            reverse[dependency].add(path)
+                if not value or resolved is None:
+                    # An unresolved leading segment must not hide a known suffix.
+                    for part in parts:
+                        for dependency in references.get(part, ()):
                             reverse[dependency].add(path)
 
         def call_name(node):

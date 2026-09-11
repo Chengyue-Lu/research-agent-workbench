@@ -10,6 +10,9 @@
 The next repair round after merged PR #66 is prepared in [Impact precision](IMPACT_PRECISION.md),
 with the real M14 hosted baseline, three reproduced module probes and independent coverage-selection acceptance.
 
+The post-merge PR #68 investigation and bounded parser repair are recorded in
+[Resource dependency precision](RESOURCE_DEPENDENCIES.md).
+
 ## Selection authority
 
 [`plan_ci.py`](../../../../.github/scripts/plan_ci.py) reads exact base/head/merge-base Git facts and the

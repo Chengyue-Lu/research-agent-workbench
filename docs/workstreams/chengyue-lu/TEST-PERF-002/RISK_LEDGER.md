@@ -31,3 +31,13 @@ Owner: 路诚钺 (`Chengyue-Lu`); cross-owner: 黄毅 (`let778750-cpu`); R2.
 
 The user explicitly authorized PR #65's merge after successful exact-head CI. The new obligation PR remains
 for cross-owner review. Quality thresholds, exclusions, product contracts and release authority retain their boundaries.
+## Resource dependency repair (PR #68 investigation)
+
+- False-positive scope: lexical path names and directory guards must not become content reads;
+  replay the exact PR #68 path set and immutable complete snapshots.
+- False-negative scope: relative roots, shadowing, returned/exported names, closures, rebinding,
+  actual Markdown reads and archive imports must retain their consumers. Unknown roots remain conservative.
+- Authority: parser edits require complete bootstrap, current-head independent witness and cross-owner
+  review; candidate fingerprint refresh cannot approve this PR's own narrower scope.
+- Performance: baseline case-duration attribution is not a hosted wall-time measurement. Remaining
+  unresolved fixture and executable consumers retain their existing broad closure.
