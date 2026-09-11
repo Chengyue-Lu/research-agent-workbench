@@ -41,3 +41,14 @@ for cross-owner review. Quality thresholds, exclusions, product contracts and re
   review; candidate fingerprint refresh cannot approve this PR's own narrower scope.
 - Performance: baseline case-duration attribution is not a hosted wall-time measurement. Remaining
   unresolved fixture and executable consumers retain their existing broad closure.
+
+## Dependency analysis reuse
+
+- Cache identity includes exact Python bytes and repository-relative path; cached facts are immutable.
+  No test result, resolved graph, mutable branch identity or disk cache is trusted.
+- Every graph rebuild resolves imports, basename matches and directory prefixes against the current
+  inventory; added/removed inputs and moved consumers have dedicated adversarial regressions.
+- Differential checks compare every graph field on three immutable snapshots and every PR #68 plan
+  field. Local cold/warm measurements are distinct from hosted execution and total runner cost.
+- Selection-authority bootstrap, all quality floors, independent witness and cross-owner review
+  remain required. See [analysis performance](ANALYSIS_PERFORMANCE.md).

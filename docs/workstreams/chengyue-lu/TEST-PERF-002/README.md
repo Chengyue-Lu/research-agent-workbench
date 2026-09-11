@@ -13,6 +13,9 @@ with the real M14 hosted baseline, three reproduced module probes and independen
 The post-merge PR #68 investigation and bounded parser repair are recorded in
 [Resource dependency precision](RESOURCE_DEPENDENCIES.md).
 
+The follow-up [project comparison and analysis performance](ANALYSIS_PERFORMANCE.md)
+records immutable syntax-fact reuse, unchanged graph/plan outputs and local timings.
+
 ## Selection authority
 
 [`plan_ci.py`](../../../../.github/scripts/plan_ci.py) reads exact base/head/merge-base Git facts and the

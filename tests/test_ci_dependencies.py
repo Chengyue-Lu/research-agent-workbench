@@ -13,6 +13,66 @@ import ci_dependencies as deps
 
 
 class DependencyTests(unittest.TestCase):
+    def test_cached_facts_resolve_added_and_removed_modules_against_each_inventory(self):
+        consumer = {'tests/test_contract.py': b'from pkg import leaf'}
+        self.assertEqual({}, deps.graph(consumer, consumer)[0])
+        expanded = {**consumer, 'src/pkg/__init__.py': b'', 'src/pkg/leaf.py': b'VALUE=1'}
+        edges = deps.graph(expanded, expanded)[0]
+        self.assertEqual({'tests/test_contract.py'}, edges['src/pkg/leaf.py'])
+        self.assertEqual({'tests/test_contract.py'}, edges['src/pkg/__init__.py'])
+        self.assertEqual({}, deps.graph(consumer, consumer)[0])
+
+    def test_cached_facts_keep_new_basename_and_directory_resource_matches(self):
+        blobs = {'tests/test_contract.py': b'consume("README.md")\n'
+                 b'(ROOT / "data").rglob("*")'}
+        first = {*blobs, 'README.md', 'data/a.txt', 'database/unrelated.txt'}
+        second = {*blobs, 'README.md', 'docs/README.md', 'data/b.txt'}
+        self.assertEqual({'README.md', 'data/a.txt'}, set(deps.graph(blobs, first)[0]))
+        self.assertEqual({'README.md', 'docs/README.md', 'data/b.txt'}, set(deps.graph(blobs, second)[0]))
+        self.assertEqual({'README.md', 'data/a.txt'}, set(deps.graph(blobs, first)[0]))
+
+    def test_cached_facts_bind_relative_import_and_file_root_to_consumer_path(self):
+        raw = b'from . import helper\nfrom pathlib import Path\n(Path(__file__).parent / "data.txt").read_text()'
+        helpers = {'tests/a/helper.py': b'', 'tests/b/helper.py': b''}
+        paths = {*helpers, 'tests/a/test_local.py', 'tests/b/test_local.py',
+                 'tests/a/data.txt', 'tests/b/data.txt'}
+        for directory in ('a', 'b', 'a'):
+            consumer = 'tests/' + directory + '/test_local.py'
+            edges = deps.graph({**helpers, consumer: raw}, paths)[0]
+            self.assertEqual({'tests/' + directory + '/helper.py', 'tests/' + directory + '/data.txt'}, set(edges))
+            self.assertTrue(all(consumers == {consumer} for consumers in edges.values()))
+
+    def test_cached_facts_invalidate_changed_bytes_and_invalid_python(self):
+        path = 'tests/test_contract.py'
+        for raw, expected, opaque, invalid in (
+            (b'import pkg.a', {'src/pkg/a.py'}, False, False),
+            (b'import pkg.b\nexec(code)', {'src/pkg/b.py'}, True, False),
+            (b'def invalid(', set(), False, True),
+            (b'import pkg.a', {'src/pkg/a.py'}, False, False),
+        ):
+            with self.subTest(raw=raw):
+                blobs = {path: raw, 'src/pkg/a.py': b'', 'src/pkg/b.py': b''}
+                edges, dynamic, _, errors = deps.graph(blobs, blobs)
+                self.assertEqual(expected, set(edges))
+                self.assertEqual({path} if opaque else set(), dynamic)
+                self.assertEqual(['unparseable Python dependency: ' + path] if invalid else [], errors)
+
+    def test_returned_graph_mutation_cannot_poison_cached_facts(self):
+        blobs = {'tests/test_contract.py': b'import pkg.a\nexec(code)\nopen("fixture.txt")',
+                 'src/pkg/a.py': b''}
+        paths = {*blobs, 'fixture.txt'}
+        result = deps.graph(blobs, paths)
+        result[0]['src/pkg/a.py'].clear()
+        result[1].clear()
+        result[2].clear()
+        result[3].append('injected')
+        edges, opaque, resources, errors = deps.graph(blobs, paths)
+        self.assertEqual({'tests/test_contract.py'}, edges['src/pkg/a.py'])
+        self.assertEqual({'tests/test_contract.py'}, edges['fixture.txt'])
+        self.assertEqual({'tests/test_contract.py'}, opaque)
+        self.assertEqual(opaque, resources)
+        self.assertFalse(errors)
+
     def selection(self, old, new, seeds, resources=()):
         def snapshot(repo, commit):
             blobs = old if commit == 'base' else new
