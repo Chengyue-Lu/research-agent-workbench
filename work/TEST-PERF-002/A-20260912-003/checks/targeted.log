@@ -1,0 +1,24 @@
+...........................................E
+======================================================================
+ERROR: test_real_ordered_worker_preserves_class_and_module_fixture_failures (tests.test_ci_plan.PlannerTests.test_real_ordered_worker_preserves_class_and_module_fixture_failures) (fixture='module')
+Direct full and the actual optimized CLI both fail the shared-state mutants.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File ".\tests\test_ci_plan.py", line 1265, in test_real_ordered_worker_preserves_class_and_module_fixture_failures
+    self.commit()
+  File ".\tests\test_ci_plan.py", line 85, in commit
+    command(self.repo, 'commit', '-qm', 'candidate')
+  File ".\tests\test_ci_plan.py", line 27, in command
+    return subprocess.check_output(['git', '-C', str(repo), *args], stderr=subprocess.PIPE).decode().strip()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\research-agent-workbench\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\subprocess.py", line 466, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\research-agent-workbench\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', '-C', 'C:\\Users\\lcy20\\AppData\\Local\\Temp\\tmp_9yizinp\\repo', 'commit', '-qm', 'candidate']' returned non-zero exit status 1.
+
+----------------------------------------------------------------------
+Ran 44 tests in 47.301s
+
+FAILED (errors=1)

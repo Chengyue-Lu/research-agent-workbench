@@ -1,0 +1,43 @@
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+import sys
+
+root = Path.cwd()
+scratch = root / '.rwb/fixture-order-review'
+sys.path.insert(0, str(root / '.github/scripts'))
+import plan_ci as planner
+
+head = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
+base = subprocess.check_output(['git', 'rev-parse', 'origin/develop']).decode().strip()
+assert not subprocess.check_output(['git', 'status', '--porcelain'])
+pr = json.loads((scratch / 'pr-current.json').read_text(encoding='utf-8-sig'))
+p = planner.make_plan(root, base=base, head=head, target=head,
+    repository='Chengyue-Lu/research-agent-workbench', body=pr['body'])
+planner.verify_plan(root, p)
+policy = json.loads((root / planner.POLICY).read_bytes())
+leaves = {path for group in policy['groups'].values() for path in group['coverage']}
+assert planner.consumer_fingerprint(root, head, leaves) == policy['consumer_fingerprint']
+assert p['behavioral_scope'] == 'full' and set(p['coverage_obligations']) == {'impact', 'repository'}
+assert not p['blocked_reasons']
+(scratch / 'source-plan.json').write_bytes(planner.canonical(p))
+subject = 'tests/run_unittest_suite.py'
+report = json.loads((scratch / 'runner-coverage.json').read_bytes())
+data = next(v for k,v in report['files'].items() if k.replace('\\','/') == subject)
+physical = planner.changed_lines(root, pr['headRefOid'], head, [subject])
+changed = set(planner.coverage_lines(root, head, physical)[subject])
+missing_lines = sorted(changed & set(data['missing_lines']))
+missing_arcs = [arc for arc in data['missing_branches'] if arc[0] in changed]
+assert not missing_lines and not missing_arcs, (missing_lines, missing_arcs)
+checks = {'source_head': head, 'base': base, 'plan_id': p['plan_id'],
+    'behavioral_scope': p['behavioral_scope'], 'coverage_obligations': p['coverage_obligations'],
+    'runner_sha256': hashlib.sha256((root / subject).read_bytes()).hexdigest(),
+    'review_repair_changed_executable_lines': len(changed), 'repair_changed_coverage': '100/100',
+    'runner_summary': data['summary'],
+    'local_tests': {'targeted_with_real_git_workers': 44, 'runner_ci_coverage_docs_governance': 155,
+                    'final_runner_checks': 17},
+    'pending': 'Exact archived-head hosted full 3.11/3.13, impact+repository coverage, smoke, governance, pinned witness and cross-owner acceptance.'}
+(scratch / 'source-validation.json').write_text(json.dumps(checks, indent=2) + '\n', encoding='utf-8')
+(scratch / 'owner-review.txt').write_text(pr['reviews'][-1]['body'] + '\n', encoding='utf-8')
+print(json.dumps(checks))

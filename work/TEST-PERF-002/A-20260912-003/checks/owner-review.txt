@@ -1,0 +1,62 @@
+## Task-owner technical review — CHANGES REQUESTED (blocking)
+
+Anchored to exact HEAD `8c09f6c74612c82cfb2c5d738de6abb8c5771954` / base `develop@11c3b57dfbf8af0dc2587fc421d097e2544941c3`.
+
+The dependency/resource precision work, bounded SchemaCatalog self-check cache, hosted performance result, coverage floors and receipt binding all look directionally correct. I do **not** recommend reverting those changes. One semantic blocker remains in the Python 3.11 execution deduplication.
+
+### P1 — `B = C ∪ (B−C)` proves test identity completeness, not full-suite execution equivalence
+
+The current workflow executes coverage set `C` and behavioral remainder `B−C` in separate processes, then reconstructs a complete behavioral receipt for `B`. This proves that every planned TestCase identity ran successfully, but it can change `unittest` module/class fixture and ordering semantics relative to the historical single full-suite execution.
+
+A direct counterexample is a class where two tests share `setUpClass` / class state. A direct full suite can fail because test A mutates class state before test B; if A is in `C` and B is in `B−C`, each producer gets a fresh `setUpClass`, so both can pass and the receipt join reports PASS. The same issue exists for `setUpModule` / module state. The current documented behavior explicitly allows a class to be split across producers, so this is a real semantic change rather than only a theoretical test gap.
+
+This conflicts with the accepted quality contract that Python 3.11 full behavioral semantics remain preserved. Exact ID closure is necessary, but not sufficient.
+
+### Recommended fix
+
+Do not try to statically prove fixture independence. Preserve `B` as one ordered execution unit.
+
+Preferred implementation when coverage is required:
+
+```text
+B = exact planned behavioral inventory, in normal unittest order
+C = exact required coverage inventory
+
+single Python 3.11 coverage producer executes:
+    ordered B
+    + coverage-only cases from (C - B)
+
+behavioral evidence = outcomes for B from that same execution
+coverage evidence   = coverage collected from B ∪ C
+```
+
+This keeps:
+
+- each behavioral TestCase executed once;
+- original `B` ordering;
+- one module/class fixture lifecycle for `B`;
+- zero duplicate execution between behavioral and coverage obligations;
+- coverage-only cases from inflating behavioral scope.
+
+For `coverage=none`, continue to execute `B` once without coverage instrumentation.
+
+The extra cost is only that `B−C` also runs under coverage when coverage is required. On the current HEAD that remainder is 26 cases / ~15 s hosted, which is a better trade than changing behavioral semantics.
+
+If you choose another design, it must machine-prove equivalence to direct full-suite fixture/order semantics; merely keeping every canonical TestCase ID is not enough.
+
+### Required regressions
+
+Please add adversarial tests where the optimized path must preserve the result of direct full execution:
+
+1. **class fixture/state split** — direct full FAIL because test A mutates class state before test B; optimized execution must also FAIL, never PASS after fresh `setUpClass` in separate producers;
+2. **module fixture/state split** — same requirement for `setUpModule` / module state;
+3. keep the existing receipt tamper/missing/failed/alias/target/Python/checkpoint regressions;
+4. verify coverage-only `C-B` cases do not appear in behavioral inventory/receipt.
+
+After this change, rerun the exact-head bootstrap + impact/repository coverage + fixed `test (3.11)` / `test (3.13)` aggregates and fresh pinned witness. No need to redo selector design or weaken 90/95/90 / changed 100/100 / negative acceptance.
+
+### Issue #48 wording
+
+Until this closes, please describe the current result as **complete behavioral TestCase identity coverage reconstructed from two producers**, not yet as semantically equivalent to the historical single-process 3.11 full suite. The hosted speedup evidence remains useful; it does not by itself close this fixture/order semantic gap.
+
+Once this narrow seam is fixed, I do not currently see another substantive blocker in #70. Cross-owner R2 acceptance remains independently required.
