@@ -40,6 +40,7 @@ M5-007, Human case/admission or actual-execution obligations.
 | PR71 / ADMISSION-CLOSURE | Confirmatory Protocol requires an exact admission-scoped closure in schema and semantics; synthetic null remains valid, wrong scope/hash fails | Review correction; real admission remains independently verified |
 | PR71 / METHOD-COMPLETENESS | Derive demand from exact frozen Methods and Tasks; compare runtime Requirement identities with exact multiplicity across A3 and case-scoped A4; missing, extra, duplicate and Task/Method drift fail | Complete synthetic document-read + research-contract-check fixtures; no Task completion authority |
 | PR71 / EXTENSION-COUNT | Count exact Projection/Skill ID/version/hash identities once across Requirements; one reused Skill remains one extension and distinct identities remain distinct | Interpretation still depends on the full comparison surface |
+| PR71 / TASK-COMPARISON-SCOPE | Qualify the whole A3 arm and reload all Bundle/View inputs, then select A3 by the overlay's exact Task path/hash and recheck its frozen Method/Requirement completeness | Multi-Task demand/comparison regression preserves the original case result; unrelated Tasks cannot force an unavailable result; no multi-Task execution claim |
 
 Evidence entrypoints and consumer responsibilities are in [the implementation contract](../../../implementation/SYSTEM_EVALUATION_PROTOCOL.md)
 and [WORKLOG](WORKLOG.md). Test fixtures are synthetic structural evidence, not Human admission or scientific efficacy.

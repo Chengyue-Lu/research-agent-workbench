@@ -274,7 +274,7 @@ private-oracle 与未知 Task 字段不得进入 provider request。A1 Tool surf
 exact Tool interface，Snapshot/Method ref 只作 Harness provenance。该 Decision 不修改 M5-003、不产生
 Runtime/Method/Supply/Human authority，也不证明 transport implementation 已存在。
 
-因此 M5-006 进入 READY，不必等待真实案例完成即可设计 System-Level Evaluation Protocol：冻结
+M5-006 以该 Gate 为基础冻结 System-Level Evaluation Protocol，设计不依赖真实案例先行完成：冻结
 primary/secondary questions、randomization、replicates、pilot/stopping/retry、model/provider drift、blind/reveal、
 metric operationalization、measurement status、analysis rule 与 decision hierarchy。`measured`、`estimated`、
 `unavailable`、`not-applicable` 互不等价；Research Integrity 的退化不能被成本收益抵消，也不得建立单一

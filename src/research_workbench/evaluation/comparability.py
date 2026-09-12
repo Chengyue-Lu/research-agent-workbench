@@ -8,13 +8,17 @@ from typing import Any
 from research_workbench.evaluation.overlay import AdmissionVerifier, validate_overlay
 from research_workbench.evaluation.pins import (
     EvaluationInputs,
+    arm,
     digest,
     file_ref,
     require,
     sha,
     timestamp,
 )
-from research_workbench.evaluation.qualification import validate_qualification
+from research_workbench.evaluation.qualification import (
+    validate_qualification,
+    validate_requirement_closure,
+)
 from research_workbench.evaluation.system_protocol import (
     validate_protocol,
     validate_view_shared_conditions,
@@ -90,6 +94,25 @@ def comparison_surface(chains: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             for c in chains
         ),
     }
+
+
+def _task_comparison_surface(
+    inputs: EvaluationInputs,
+    chains: Sequence[Mapping[str, Any]],
+    manifest: Mapping[str, Any],
+    *,
+    task_ref: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Select a complete case Task after the entire A3 arm has been qualified."""
+    selected = [
+        chain
+        for chain in chains
+        if file_ref(chain["snapshot"]["task_ref"]) == file_ref(task_ref)
+    ]
+    validate_requirement_closure(
+        inputs, selected, manifest, arm(manifest, "mode-no-skill"), task_ref=task_ref
+    )
+    return comparison_surface(selected)
 
 
 def derive_comparability(
@@ -251,7 +274,14 @@ def validate_comparability(
         )
     count = admitted_skill_extension_count(a4)
     result = derive_comparability(
-        comparison_surface(a3), comparison_surface(a4), admitted_skill_count=count
+        _task_comparison_surface(
+            inputs,
+            a3,
+            inputs.manifest(document["manifest_ref"]),
+            task_ref=overlay["task_ref"],
+        ),
+        comparison_surface(a4),
+        admitted_skill_count=count,
     )
     require(
         document["result"] == result, "pairwise result/interpretation/mismatch drift"

@@ -221,12 +221,14 @@ negative_acceptance:
     positive_tests:
       - test_evaluation_overlay.EvaluationOverlayTests.test_pre_run_lineage_is_valid_but_not_actual_execution_or_admission_authority
       - test_evaluation_overlay.EvaluationOverlayTests.test_analysis_input_replays_the_exact_preregistered_comparison
+      - test_evaluation_overlay.EvaluationOverlayTests.test_multi_task_composition_compares_the_complete_exact_overlay_task
       - test_evaluation_overlay.EvaluationOverlayTests.test_skill_count_deduplicates_exact_extension_identity_across_requirements
     negative_tests:
       - test_evaluation_overlay.EvaluationOverlayTests.test_status_strings_cannot_replace_external_admission_verification
       - test_evaluation_overlay.EvaluationOverlayTests.test_current_a3_a4_method_difference_is_package_effect
       - test_evaluation_overlay.EvaluationOverlayTests.test_runtime_snapshot_bundle_view_interface_pins_fail_closed
       - test_evaluation_overlay.EvaluationOverlayTests.test_a4_requires_each_frozen_method_requirement_exactly_once
+      - test_evaluation_overlay.EvaluationOverlayTests.test_multi_task_composition_compares_the_complete_exact_overlay_task
   - surface: m5-public-verification-boundary
     modules:
       - src/research_workbench/evaluation/contracts.py

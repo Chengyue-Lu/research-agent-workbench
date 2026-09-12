@@ -393,7 +393,7 @@ M4-001～004 已在 `develop` 完成有界实现，各层继续承担独立责�
 
 ---
 
-## 13. Evaluation Manifest / baseline harness（M5-003）
+## 13. Evaluation Manifest / System-Level Protocol（M5-003、M5-006）
 
 当前 canonical treatment arms 为：
 
@@ -414,13 +414,14 @@ Skill Supply；candidate Skill arm 必须 exact-pin Skill package 和 Evaluation
 Phase D 的 primary estimand 是完整 RWB Runtime 集成系统相对 simpler Agent/Tool baseline 的
 system-level net benefit；单一 Skill 效果只作 secondary interpretation。
 
-本节已实现的 Evaluation contract 仅为 M5-003 Manifest/check/non-executing plan。ADR-0020 已接受
-双传输与 estimand；以下 M5-006 Protocol、M6-008 baseline envelope/closeout 与 M5-007 Harness 的描述
-均为已定义的后继验收要求，不表示已有对应 Schema、validator 或执行实现。后继受控面为：
+已实现的 Evaluation contracts 包括 M5-003 Manifest/check/non-executing plan，以及
+[M5-006 Protocol 与资格/overlap/overlay/pairwise 校验器](implementation/SYSTEM_EVALUATION_PROTOCOL.md)。
+ADR-0020 固定双传输与 estimand；M6-008 baseline envelope/closeout、Skill replay Gate 与 M5-007 Harness
+仍是后继执行和验收工作。当前契约及依赖为：
 
 ```mermaid
 flowchart TD
-    M5003["M5-003 non-executing plan / DONE"] --> M5006["M5-006 protocol to implement<br/>READY"]
+    M5003["M5-003 non-executing plan / DONE"] --> M5006["M5-006 Protocol + validators<br/>DONE"]
     BTG["ADR-0020 dual transport<br/>Gate A satisfied"] --> M5006
     M5006 --> M5007["M5-007 unified evaluation harness<br/>BLOCKED"]
     M5006 --> M6008["M6-008 baseline envelope<br/>+ replay closeout / PARKED"]
@@ -439,7 +440,7 @@ session，A3 使用 M11 Core，A4 使用 M11 projection-backed Skill extension�
 difference 的 primary system-level estimand；`A2 − A1` 是同 M6 transport Tool 条件增量，`A4 − A3`
 只有在 pairwise exact-equality closure 证明唯一 delta 为 admitted Skill extension 时才可称 Skill conditional
 increment，否则降级为 Skill-bearing package / bundled effect 或 unavailable；`A3 − A2` 不得称 pure Mode
-effect。M5-006 因此为 READY。
+effect。M5-006 的 Schema 与 validator 实现服从这些约束。
 
 完整 Task 仍作为四臂共享 experiment identity exact-pin，但 A1/A2 只消费独立版本、
 `additionalProperties=false` 的正向白名单 provider payload；完整 Task、actor/permission/budget/pins 只进入
@@ -452,7 +453,7 @@ record；Capability Resolver 是 A3 runtime Resolution/Snapshot 的唯一 produc
 M5-007 将引用两端对象组装 A3 record 并重算两类 record。
 Decision 不等于 transport 实现，故新增 Execution-owned M6-008 负责 A1/A2 projection、每次 provider request/Tool
 invocation use-boundary 的 pin reload、trusted clock、actual binding Trace facts 与 no-Skill replay-valid
-closeout；M6-008 当前 PARKED，只有 M5-006 DONE、shared contract 冻结后才解锁，并在 DONE 前继续阻断 M5-007。
+closeout；M6-008 当前仍为 PARKED，由 Execution owner 按已冻结共享契约进入后继开发，其实现验收继续阻断 M5-007。
 Gate A 不包含 admission-overlap 工件；后者仍由 M5-006 定义、M5-007 重算，避免自依赖。
 
 Case 与 oracle 必须在观察输出前 hash-frozen；blind Human Review 先于 arm/Skill/cost/token/RWB label reveal。
@@ -594,7 +595,7 @@ Human authority，也不能把 M5 未完成的 system-level Evaluation 伪装为
 | Phase A | M8 Method/Core 已收口 | 不推导 Capability/Runtime/Human execution authority |
 | Phase B | M9 Requirement→Report→Resolution→Snapshot 与 evolution foundations 已收口 | structural contracts 不证明 live availability 或 Skill increment |
 | Phase C | M10 + M3-009 bounded candidate/machine Gate 已实现 | Human/R2 semantic closeout pending；Topic 5 不自动 thaw |
-| Phase D | M4-001～004 bounded 闭环与 M5-003 non-executing plan 已实现；ADR-0020 dual-transport estimand 已接受 | M5-006 READY 但 Protocol 尚待实现；M6-008 等待 shared contract（PARKED）；baseline closeout、Skill replay Gate、Harness、真实案例/results/net-increment 与 disposition 未完成 |
+| Phase D | M4-001～004 bounded 闭环、M5-003 non-executing plan 与 M5-006 Protocol/validators 已实现；ADR-0020 dual-transport estimand 已接受 | M6-008 仍为 PARKED；baseline closeout、Skill replay Gate、Harness、真实案例/live/admission/results/net-increment 与 disposition 未完成 |
 | Phase F / Topic 4 | M11-001～004 bounded Core 与 M11-005/006 optional Skill extension 已实现 | production Skill projection、live conformance 与 ordinary E2E 仍是独立 Gate |
 | Topic 5 | 没有新 implementation authority | Phase C Human/R2 closeout + 独立 R2 architecture review/task-definition |
 | Product / Release | M14-001/002/003 trust、surface 与 portable package DONE | public docs、license/scaffold、远端保护与首次发行仍未完成 |

@@ -52,7 +52,7 @@ evidence，不生成 hard dependency。
 | M3 | Context, Trace & risk | task-defined；部分 residual work PARKED |
 | M4 | Artifact, provenance & reproducibility | task-defined |
 | M5 | Evaluation & pruning | task-defined |
-| M6 | Provider/API execution seams | task-defined；M6-008 等待 M5-006 shared qualification contract，当前 PARKED；具名责任人维护 |
+| M6 | Provider/API execution seams | task-defined；M6-008 消费 M5-006 shared qualification contract，当前 PARKED；具名责任人维护 |
 | M7 | Mode–Skill selection & coordination evidence | task-defined |
 | M8 | Method Core formalization | task-defined and complete |
 | M9 | Evolution Foundation | task-defined and complete |
@@ -92,7 +92,7 @@ flowchart LR
 `M3-009` 保留历史 identity，即使它位于 M10 的 canonical implementation chain；不得为了图形
 连续性 cosmetic renumber。M10 的 machine chain complete 不等于 Human/R2 semantic closeout，M11 Core
 complete 也不等于 live Provider 或 ordinary-user E2E。M4-001～004 的 bounded provenance 链与
-M5-003 Evaluation Manifest 均已完成；它们不替代真实案例评价或科学判断。
+M5-003 Evaluation Manifest、M5-006 Protocol/validators 均已完成；它们不替代真实案例评价或科学判断。
 
 ### 3.2 Current frontier
 
@@ -101,7 +101,7 @@ flowchart LR
     subgraph M5["M5 Evaluation"]
         M5001["M5-001 BLOCKED<br/>evidence dossier"] --> M5004["M5-004 BLOCKED<br/>real system evaluation"]
         M5002["M5-002 BLOCKED<br/>theory/simulation dossier"] --> M5004
-        M5003["M5-003 DONE<br/>non-executing plan"] --> M5006["M5-006 READY<br/>evaluation protocol"]
+        M5003["M5-003 DONE<br/>non-executing plan"] --> M5006["M5-006 DONE<br/>Protocol + validators"]
         M5006 --> M5007["M5-007 BLOCKED<br/>evaluation harness"]
         M5003 -. "candidate + evaluation" .-> A4G["A4-RUNTIME-ADMISSION-GATE<br/>external / unsatisfied"]
         A4G --> M5004
@@ -125,12 +125,12 @@ flowchart LR
 
 M4-001～004 已闭合 bounded admission、promotion、Claim evidence localization 与 Run reconstruction；
 promotion eligibility 仍只由当次 pinned pipeline 重执行确立，不证明自报历史 provenance。当前开发入口是
-`M5-006 READY → M6-008 PARKED → M5-007 BLOCKED`，后两项须在各自全部前置满足后才能启动。
+`M5-006 DONE → M6-008 PARKED → M5-007 BLOCKED`，后两项须由相应 owner 按各自全部前置进入开发。
 M5-004 的 M4 provenance 链、M5-003 计划契约与 M11-006 mapping 机制已满足；仍等待两个 Human-approved
-public/private Case Dossier、M5-006 Protocol、M5-007 Harness、真实 A4 admission 与 M6-004 live
+public/private Case Dossier、M6-008 baseline closeout、Skill replay Gate、M5-007 Harness、真实 A4 admission 与 M6-004 live
 Provider/session Gate。ADR-0020 已 exact-pin
 双传输并关闭 `M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE`：A1/A2→M6、A3→M11 Core、A4→M11 Skill
-extension，primary `A4 − A2` 明确包含 transport difference；M5-006 因此 READY。`A4 − A3` 只有在
+extension，primary `A4 − A2` 明确包含 transport difference；M5-006 已实现相应 Protocol/validators。`A4 − A3` 只有在
 `A3A4PairwiseComparabilityRecord` 证明唯一差异是 admitted Skill extension 时才可称 Skill conditional
 increment，否则降级为 bundled/package effect 或 unavailable。Decision 不冒充 transport implementation；
 M5-006 拥有覆盖 A2/A3 的 `ArmExecutionQualificationRecord@1.0.0` contract/validator，M6-008 只负责 A1/A2
@@ -141,7 +141,7 @@ qualification 必须保持 frozen Task/Requirement/Supply/component/
 implementation/interface 与相关 A3 Mode/Action/Method，所有 ceiling 只能等价或收窄。
 M5-007 不等待真实 case data，但 hard-depend M5-006、M6-008、M11-004 的 Core Host/Trace/Receipt contract、
 M11-006 的 projection-backed Skill mapping 与 `M5-SKILL-CLOSEOUT-REPLAY-GATE`。两个既有 M11 Task 当前均为
-DONE，但 M6-008 仍因 M5-006 未 DONE 而 PARKED，Core Receipt 也尚不支持 Skill-bearing actual binding；plain arm 不能通过 raw Task
+DONE；M6-008 当前仍为 PARKED，等待 Execution owner 推进，Core Receipt 也尚不支持 Skill-bearing actual binding；plain arm 不能通过 raw Task
 control、dummy Method/Snapshot 或 Skill Assignment 改写 M5-003 treatment。Harness 还必须独立重算 A3/A4
 pairwise record，不能把 Method、non-Skill substrate、interface 或 boundary 差异误报为 pure Skill effect。Issue
 #55 的 Gate A 已满足，Gate B 仍未满足，所以 M5-007 保持 BLOCKED。M5-003 本身没有执行案例或产生净增量结论。

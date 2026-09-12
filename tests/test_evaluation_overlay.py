@@ -266,6 +266,98 @@ class EvaluationOverlayTests(OverlayFixtureMixin, unittest.TestCase):
         with self.assertRaisesRegex(EvaluationValidationError, "preregistration"):
             self.pairwise(analysis)
 
+    def test_multi_task_composition_compares_the_complete_exact_overlay_task(self):
+        """Extend qualified in-memory demand, not a multi-Task disk execution."""
+        from unittest.mock import patch
+
+        from research_workbench.evaluation.comparability import (
+            _task_comparison_surface,
+            comparison_surface,
+            derive_comparability,
+        )
+        from research_workbench.evaluation.qualification import (
+            validate_requirement_closure,
+        )
+
+        captured = []
+
+        def capture_surface(inputs, chains, manifest, *, task_ref):
+            captured.append(plain(chains))
+            return _task_comparison_surface(inputs, chains, manifest, task_ref=task_ref)
+
+        # Observe the public validator's actual qualified Bundle/View chains;
+        # every eligibility validator still runs before extending demand.
+        with patch(
+            "research_workbench.evaluation.comparability._task_comparison_surface",
+            side_effect=capture_surface,
+        ):
+            expected = self.pairwise()
+        a3 = captured[0]
+        a4 = comparison_surface(self.overlay())
+        manifest = self.f.doc(self.f.manifest_ref["path"])
+        selected_arm = manifest["arms"][2]
+        task = self.f.doc(self.f.task_ref["path"])
+        task["task_id"] = "SECOND-FROZEN-TASK"
+        second_task = self.f.write("evaluation/second-task.json", task)
+        manifest["frozen_conditions"]["task_packet_refs"].append(second_task)
+        method = copy.deepcopy(a3[0]["method_resolution"])
+        method["resolution_id"] = "SECOND-FROZEN-METHOD"
+        method["task_ref"] = {
+            "task_id": task["task_id"],
+            "revision": task["revision"],
+            "sha256": second_task["sha256"],
+        }
+        second_method = self.f.write("evaluation/second-method.json", method)
+        selected_arm["treatment_control"]["method_resolution_refs"].append(
+            second_method
+        )
+        extra = copy.deepcopy(a3)
+        for chain in extra:
+            chain["snapshot"]["task_ref"] = self.f.c_ref(
+                task["task_id"] + "@r1", second_task
+            )
+            chain["snapshot"]["method_resolution_ref"] = self.f.c_ref(
+                method["resolution_id"] + "@r1", second_method
+            )
+            chain["task"] = copy.deepcopy(task)
+            chain["method_resolution"] = copy.deepcopy(method)
+        combined = [*extra, *a3]
+        validate_requirement_closure(self.inputs(), combined, manifest, selected_arm)
+        self.assertEqual(
+            derive_comparability(
+                comparison_surface(combined), a4, admitted_skill_count=1
+            )["status"],
+            "not-comparable",
+        )
+        selected = _task_comparison_surface(
+            self.inputs(), combined, manifest, task_ref=self.f.overlay["task_ref"]
+        )
+        self.assertEqual(
+            derive_comparability(selected, a4, admitted_skill_count=1), expected
+        )
+        # Case selection cannot excuse an incomplete selected Task, nor a
+        # missing other Task in the whole-arm qualification that precedes it.
+        with self.assertRaisesRegex(EvaluationValidationError, "Requirement set"):
+            _task_comparison_surface(
+                self.inputs(), [*extra, *a3[:-1]], manifest, task_ref=self.f.task_ref
+            )
+        with self.assertRaisesRegex(EvaluationValidationError, "Requirement set"):
+            validate_requirement_closure(self.inputs(), a3, manifest, selected_arm)
+        for key, value in (
+            ("path", "evaluation/task-alias.json"),
+            ("sha256", "0" * 64),
+        ):
+            wrong_pin = {**self.f.task_ref, key: value}
+            with (
+                self.subTest(pin_field=key),
+                self.assertRaisesRegex(
+                    EvaluationValidationError, "cover every qualified Task"
+                ),
+            ):
+                _task_comparison_surface(
+                    self.inputs(), combined, manifest, task_ref=wrong_pin
+                )
+
     def test_pairwise_cannot_replace_outer_case_arm_time_or_snapshot_set(self):
         for key, value in (
             ("manifest_ref", self.f.case_closure_ref),

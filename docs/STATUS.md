@@ -14,7 +14,8 @@ Protocol、两级 Snapshot 与 migration/replacement 结构契约已经实现。
 production runtime-execution binding、Human Decision、科学有效性或端到端研究运行已经证明。
 
 M4-001～004 已全部 accepted / merged：Source Admission、Artifact Promotion、Claim evidence localization
-与 bounded Run reconstruction 构成已实现的 provenance 链。当前 Phase D 开发入口是 `M5-006` Protocol；
+与 bounded Run reconstruction 构成已实现的 provenance 链。M5-006 Protocol 与资格校验器已实现，
+后继开发节点是 M6-008 baseline envelope/closeout 与 Skill closeout replay Gate；
 M4 的 bounded 验收不替代真实 Case Dossier、live Provider/session conformance 或正式系统评价。
 
 Issue #57 / ADR-0021 已将 Product / Release Closure 从 M14 reservation 转为正式 Task family；`M14-001`
@@ -77,7 +78,7 @@ release 仍未实现，当前 exact `develop -> main` 执行规则保持不变�
 | Claim evidence localization（M4-003） | 只验证声明关系和文件位置；limitation 定位于 Claim 文本，不虚构独立来源；不判定 locator 科学含义、不接受 Claim、不证明历史运行或科学正确性 |
 | Skill 价值 | 现有 Registry 条目不构成已证明的普适研究增益；新任务可优先 no-Skill / direct-tool |
 | Skill new-binding | 生产 projection index 仍为空；M11-005/006 只证明可选 publication/mapping contract，未重新准入任何 legacy Skill，也未证明真实 trial、Provider 可用性或科研净增量 |
-| Phase D evaluation entry | [ADR-0020](decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) 已选择 A1/A2→M6、A3/A4→M11 的显式双传输并允许 M5-006 Protocol 启动；这不是执行实现。M6-008 treatment-visible baseline envelope/replay closeout 尚未实现，Skill-bearing closeout Gate 仍未满足，M5-007 Harness 与真实 M5-004 execution 继续 BLOCKED |
+| Phase D evaluation entry | [ADR-0020](decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) 已选择 A1/A2→M6、A3/A4→M11 的显式双传输；M5-006 Protocol 与资格/overlap/overlay/pairwise 校验器已实现。M6-008 treatment-visible baseline envelope/replay closeout 尚未实现，Skill-bearing closeout Gate 仍未满足，M5-007 Harness 与真实 M5-004 execution 继续 BLOCKED |
 | 发布 | M14-001 dormant trust seam、M14-002 deterministic exporter/manifest/checker 与 M14-003 portable Runtime catalog 已实现；公开文档面仍未闭合；首次发行还被 M0-007 license、M1-009 scaffold、远端 GitHub protection 与人类 release decision 阻断 |
 | 产品体验 | 初始化、可视化、协作 UI、安装包和运维流程仍是开发者级别 |
 

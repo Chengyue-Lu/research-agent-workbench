@@ -149,7 +149,11 @@ recomputed Resolved Execution View. The overlay references the overlap assessmen
 eligibility. It remains a pre-run record: the future Harness separately needs Host actual facts, typed Trace and
 replay-valid Skill closeout. The Core closeout's current Skill exclusion is preserved.
 
-Pairwise verification reloads A3 qualification, A4 overlay and both execution surfaces. It compares Task/Method bytes,
+Pairwise verification retains whole-arm A3 qualification and reloads every declared A3 Bundle/View before
+selecting the A3 subset by the A4 overlay's exact Task FileReference (path and hash). It rechecks that subset
+against the Task's complete frozen A3 Method/Requirement demand before comparing it with the case-scoped A4
+surface. Unrelated qualified Tasks do not affect this paired result; incomplete full-arm or selected-Task
+bindings still fail closed. It compares Task/Method bytes,
 Requirement and non-Skill Supply/component multisets, provider-visible interface and its full I/O/capability declarations,
 binding, effective constraints,
 Profile constraints, output/completion requirements and stop/safe-pause conditions.

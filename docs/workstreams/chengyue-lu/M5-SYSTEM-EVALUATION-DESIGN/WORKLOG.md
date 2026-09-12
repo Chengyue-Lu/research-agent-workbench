@@ -11,6 +11,29 @@
 
 ## Progress
 
+2026-09-12 cross-owner review on `cc1e214d8fdeea9644a261305b26f38469ce4b59`:
+[review](https://github.com/Chengyue-Lu/research-agent-workbench/pull/71#pullrequestreview-5184735519)
+accepted the preceding three fixes and requested case-scoped A3 comparison plus PR68 integration. Rebased onto
+`1cb0c19c1182aac368cd61afee111249a86818bb`; the implementation index retains M5-003's non-executing label
+and M5-006's link. Git checkout's line-ending conversion during historical Trace commits was verified to be
+line-ending-only and restored from exact Git blobs before replay continued; historical archives stay immutable.
+Updated the inherited M5 status/navigation paragraphs to distinguish implemented Protocol validators from
+M6-008, Skill replay, Harness, real-case/live/admission obligations. Task definitions and downstream states are unchanged.
+
+The pairwise validator still qualifies the full A3 arm and reloads every A3 Bundle/View. Its comparison step
+selects only the overlay's exact Task FileReference, rechecks that Task's frozen A3 Method/Requirement closure,
+then compares the paired surfaces. The regression observes the actual single-Task validator's qualified chains,
+extends the in-memory frozen demand with a second Task, and checks the original package-effect result/digest,
+selected-Task omissions, whole-arm omissions and path/hash mismatches. It is a bounded composition regression,
+not a complete multi-Task disk execution or research experiment. Current-head checks and re-review remain on PR71;
+the prior base's successful CI does not validate this new integration candidate.
+
+Local verification on this revision: seven comparison/composition/preregistration tests PASS under coverage
+(362.484 s); `comparability.py` has 66/66 covered statements and 14/14 branches. Documentation/coverage-policy
+checks: 30 PASS; Schema catalog checks: 3 PASS; changed-file Ruff and `git diff --check`: PASS. All 129 prior
+archive files match their pre-rebase Git bytes. A separate REVIEW-003 archive records this bounded repair;
+the final archive commit and newly rebased base still require the existing hosted CI obligations and cross-owner review.
+
 2026-09-12 PR #71 review repair: reviewed the comment on `1eac55de9293ff0e5b19f9b838307d8a0650cf0f`
 and reproduced the completeness gaps. Added schema/semantic confirmatory admission pin enforcement, exact
 Task/Method Requirement closure for A3/A4, and unique admitted extension counting. Synthetic fixtures now bind
