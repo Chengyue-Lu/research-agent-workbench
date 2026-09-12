@@ -135,9 +135,11 @@ def _file_facts(path, raw):
         if isinstance(node, ast.ImportFrom):
             for item in node.names:
                 import_targets[item.asname or item.name].add(str(node.module) + '.' + item.name)
+                bindings[scope(node)][item.asname or item.name].append(node)
         elif isinstance(node, ast.Import):
             for item in node.names:
                 import_targets[item.asname or item.name.split('.')[0]].add(item.name)
+                bindings[scope(node)][item.asname or item.name.split('.')[0]].append(node)
         if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
             parent = parents[node]
             bindings[scope(node)][node.id].append(parent.value if isinstance(parent, ast.Assign) else None)
@@ -176,9 +178,10 @@ def _file_facts(path, raw):
                 owner = scope(owner)
 
     def path_constructor(node):
+        values = lexical_values(node) if isinstance(node, ast.Name) else []
         return (isinstance(node, ast.Name) and aliases.get(node.id) == 'pathlib.Path'
                 and import_targets[node.id] == {'pathlib.Path'}
-                and not lexical_values(node)
+                and len(values) == 1 and isinstance(values[0], ast.ImportFrom)
                 and not parameter(node, node.id))
 
     def literal_path(node, seen=frozenset()):

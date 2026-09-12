@@ -79,3 +79,12 @@ for cross-owner review. Quality thresholds, exclusions, product contracts and re
 - The previous `8c09f6c` hosted result proves identity completeness across two producers,
   not historical full execution equivalence. Fresh exact-head full, coverage, fixed aggregates,
   governance and independent selection witness remain required before cross-owner acceptance.
+
+## Import shadowing repair
+
+- Imported names are lexical bindings even though the AST does not represent them as
+  Name(Store). Bind Import/ImportFrom names and aliases in their enclosing scope before
+  inferring fixed roots; unresolved imports retain unknown-reader dependencies.
+- Preserve known Path constructor imports and unrelated scope precision. Real Git-bound
+  good/bad document tests and scoped import/alias regressions cover both omission and
+  unnecessary broadening. Existing selection quality floors and witness requirements apply.

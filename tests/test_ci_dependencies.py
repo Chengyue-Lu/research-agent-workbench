@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -230,6 +231,78 @@ class DependencyTests(unittest.TestCase):
             with self.subTest(raw=raw):
                 blobs = {'tests/test_guard.py': raw.encode()}
                 self.assertNotIn('test_guard', self.selection(blobs, blobs, ['docs/input.md'], ['docs/input.md'])['selected'])
+
+    def test_local_import_shadowing_retains_actual_document_failure(self):
+        """Local import: unchanged reader remains selected when its real document fails."""
+        for declaration in ('from project_config import ROOT', 'from project_config import DOCUMENTS as ROOT'):
+            with self.subTest(binding=declaration), tempfile.TemporaryDirectory() as directory:
+                repo = Path(directory)
+                def git(*args):
+                    return subprocess.check_output(['git', '-C', str(repo), *args], stderr=subprocess.DEVNULL).decode().strip()
+                (repo / 'tests').mkdir(); (repo / 'docs').mkdir()
+                (repo / 'project_config.py').write_text('from pathlib import Path\nROOT=DOCUMENTS=Path("docs")\n')
+                (repo / 'tests/test_reader.py').write_text(
+                    'from pathlib import Path\nROOT=Path(__file__).resolve().parents[1]\n'
+                    'def test_document():\n    ' + declaration + '\n'
+                    '    assert (ROOT / "input.md").read_text() == "good"\n')
+                (repo / 'input.md').write_text('good')  # The outer root is a distinct, unchanged input.
+                git('init', '-q')
+                commits = []
+                for value in ('good', 'bad'):
+                    with self.subTest(document=value):
+                        (repo / 'docs/input.md').write_text(value)
+                        result = subprocess.run([sys.executable, '-c',
+                            'import runpy; runpy.run_path("tests/test_reader.py")["test_document"]()'],
+                            cwd=repo, capture_output=True, text=True)
+                        self.assertEqual(0 if value == 'good' else 1, result.returncode, result.stderr)
+                        self.assertEqual(value == 'bad', 'AssertionError' in result.stderr)
+                        git('add', 'tests/test_reader.py', 'project_config.py', 'input.md', 'docs/input.md')
+                        git('-c', 'user.name=CI fixture', '-c', 'user.email=ci@example.invalid', 'commit', '-qm', value)
+                        commits.append(git('rev-parse', 'HEAD'))
+                selected = deps.select(repo, *commits, ['docs/input.md'])[0]
+                self.assertEqual({'test_reader'}, set(selected['selected']))
+                self.assertEqual([], selected['excluded'])
+                self.assertEqual([], selected['errors'])
+
+    def test_import_bindings_stop_outer_root_fallback_in_each_lexical_scope(self):
+        header = 'from pathlib import Path\nROOT=Path(__file__).resolve().parents[1]\n'
+        read = 'return (ROOT / "input.md").read_text()'
+        cases = {
+            'import': 'def read():\n import ROOT\n ' + read,
+            'aliased import': 'def read():\n import project_config as ROOT\n ' + read,
+            'dotted import binds first component': 'def read():\n import ROOT.settings\n ' + read,
+            'aliased dotted import': 'def read():\n import project_config.settings as ROOT\n ' + read,
+            'from import': 'def read():\n from project_config import ROOT\n ' + read,
+            'aliased from import': 'def read():\n from project_config import DOCUMENTS as ROOT\n ' + read,
+            'async': 'async def read():\n from project_config import ROOT\n ' + read,
+            'closure': 'def outer():\n from project_config import ROOT\n def read():\n  ' + read,
+            'nested local': 'def outer():\n ROOT=Path(__file__).parent\n def read():\n  from project_config import ROOT\n  ' + read,
+            'class body': 'class Reader:\n from project_config import ROOT\n text=(ROOT / "input.md").read_text()',
+        }
+        for label, source in cases.items():
+            with self.subTest(binding=label):
+                blobs = {'tests/test_reader.py': (header + source).encode()}
+                selected = self.selection(blobs, blobs, ['docs/input.md'], ['docs/input.md', 'input.md'])
+                self.assertEqual({'test_reader'}, set(selected['selected']))
+                self.assertEqual([], selected['errors'])
+
+    def test_import_scope_and_known_path_constructor_keep_bounded_reads_precise(self):
+        header = 'from pathlib import Path\nROOT=Path(__file__).resolve().parents[1]\n'
+        cases = {
+            'sibling import': header + 'def unrelated():\n from project_config import ROOT\n'
+                'def read(): return (ROOT / "input.md").read_text()',
+            'method skips class import': header + 'class Reader:\n from project_config import ROOT\n'
+                ' def read(self): return (ROOT / "input.md").read_text()',
+        }
+        for declaration, name in [('from pathlib import Path', 'Path'), ('from pathlib import Path as P', 'P')]:
+            cases[declaration] = ('def read():\n ' + declaration + '\n ROOT=' + name
+                + '(__file__).resolve().parents[1]\n return (ROOT / "input.md").read_text()')
+        for label, source in cases.items():
+            with self.subTest(binding=label):
+                blobs = {'tests/test_reader.py': source.encode()}
+                paths = ['docs/input.md', 'input.md']
+                self.assertEqual({}, self.selection(blobs, blobs, ['docs/input.md'], paths)['selected'])
+                self.assertEqual({'test_reader'}, set(self.selection(blobs, blobs, ['input.md'], paths)['selected']))
 
     def test_class_method_root_uses_module_binding_and_closure_uses_outer_binding(self):
         header = b'from pathlib import Path\nROOT=Path(__file__).parents[1]\n'

@@ -25,6 +25,26 @@ directory prefixes, normalizing parent segments and retaining ambiguity when a p
 leaves the repository root. Their individual filename components no longer create unrelated
 basename aliases. Unknown roots and bare filename/helper inputs retain ambiguity.
 
+## Import-bound lexical names
+
+Cross-owner review 5184637057 reproduced a missed reader at `09d7611`: a local
+`from project_config import ROOT` was absent from the lexical binding table, so the
+reader incorrectly inherited an unrelated module-level fixed ROOT. A real temporary
+Git repository confirms that changing `docs/input.md` from `good` to `bad` fails the
+consumer while the old candidate selector excludes it; accepted `11c3b57` selects it.
+
+ImportFrom binds each imported name or alias in its enclosing lexical scope. Import
+binds its alias, or the first component of a dotted name. These nearer bindings stop
+fixed-root inference from falling through to an outer assignment. Imported roots that
+cannot be resolved retain the conservative unknown-reader dependency. An unambiguous
+`pathlib.Path` import still supports fixed path inference in its actual scope.
+
+Regression scenarios cover real document failures with direct/aliased imports, plain
+and dotted imports, async functions, nested closures and class bodies. Controls verify
+that sibling imports and class namespaces do not shadow a method's module-level free
+variable, and that known local Path constructors retain bounded input selection.
+The ordered behavioral producer and Schema self-check reuse remain in place.
+
 ## Verification boundary
 
 The committed PR #68 fixture pins its exact changed paths/statuses and tests the
