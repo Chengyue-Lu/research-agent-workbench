@@ -34,7 +34,7 @@ where = ["src"]
 sdist = "build_backend.RuntimeSdist"
 
 [tool.setuptools.package-data]
-research_workbench = ["_runtime_data/**/*", "_runtime_data/manifest.json"]
+research_workbench = ["_runtime_data/**/*", "_runtime_data/manifest.json", "_templates/**/*"]
 
 [tool.coverage.run]
 source = ["research_workbench", ".github/scripts"]

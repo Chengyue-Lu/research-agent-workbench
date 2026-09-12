@@ -1,0 +1,8 @@
+{
+  "schema_version": "0.1.0",
+  "environment_kind": "python-stdlib-reconstruction",
+  "python_implementation": "CPython",
+  "python_version": "3.11.9",
+  "platform": "win32",
+  "dependencies": "stdlib-only"
+}

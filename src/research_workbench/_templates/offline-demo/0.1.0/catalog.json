@@ -1,0 +1,43 @@
+{
+  "files": [
+    {
+      "asset": "environment.json",
+      "output": "environment.json",
+      "sha256": "3555260a8a513bf2ae6113f0e2fb722f5b66e285fdfe3758fce2989d68e8e8ec"
+    },
+    {
+      "asset": "inputs.json.txt",
+      "output": "inputs.json.txt",
+      "sha256": "34daf86ea235053be067394df1f8d4fe3fa964328c280fb8de75bf38622afbe2"
+    },
+    {
+      "asset": "manifest.yaml",
+      "output": "manifest.yaml",
+      "sha256": "c144b95b48fedb2d6920b1e947e8e0985448b653619021db3f03c4a5eca36d9c"
+    },
+    {
+      "asset": "parameters.json.txt",
+      "output": "parameters.json.txt",
+      "sha256": "2ed7e189cbf7b578cf3477c192b68b99aeed586b606752b202cb1988708f283b"
+    },
+    {
+      "asset": "run.yaml",
+      "output": "run.yaml",
+      "sha256": "aba87d441e87450b021a80c5d1c61aba5ffe57a275b48dbcaef91874c4df8b9b"
+    },
+    {
+      "asset": "simulate.py.txt",
+      "output": "simulate.py",
+      "sha256": "2c99193380b4d298c85e3e033e1e63d3e5c76319a5e69d17a0a371442f3f3213"
+    },
+    {
+      "asset": "trajectory.csv",
+      "output": "trajectory.csv",
+      "sha256": "177fa6856055f38f2ce7268a2e47f21f843628f0bfe316813ac1c55efec09369"
+    }
+  ],
+  "source_commit": "6ea2249e742c6404c1c4c3f54004e0035fa4536a",
+  "source_path": "examples/run-reconstruction/linear-recurrence/",
+  "template": "offline-demo",
+  "version": "0.1.0"
+}
