@@ -54,10 +54,25 @@ class PublicSurfaceTests(unittest.TestCase):
         for link in ("[internal][state]\n\n[state]: docs/STATUS.md",
                      '<a href="docs/TASKS.md">internal</a>',
                      "[internal](docs/%53TATUS.md)",
-                     "[internal](https://github.com/Example/project/blob/main/docs/STATUS.md)"):
+                     "[internal](https://github.com/Example/project/blob/main/docs/STATUS.md)",
+                     "[archive](work/demo/record.md)",
+                     "[archive][a]\n\n[a]: work/demo/record.md",
+                     '<a href="%77ork/demo/record.md">archive</a>',
+                     "[archive](https://github.com/Example/project/blob/main/work/demo/record.md)"):
             with self.subTest(link=link):
                 errors = documentation_errors({**self.files, "README.md": link.encode()})
                 self.assertTrue(any("internal" in error for error in errors))
+
+    def test_user_project_attempt_paths_are_not_repository_archive_links(self):
+        files = {**self.files, "README.md": (
+            "Read the generated `work/demo/A-001/reconstruction-report.json`.\n"
+            "```shell\nrwb run reproduce manifest.yaml --root . --attempt-dir work/demo/A-001\n```\n"
+        ).encode()}
+        self.assertEqual([], documentation_errors(files))
+        # An archive that exists in the supplied tree is still not public navigation.
+        files["README.md"] = b"[archive](work/demo/record.md)"
+        files["work/demo/record.md"] = b"private development evidence"
+        self.assertTrue(any("internal" in error for error in documentation_errors(files)))
 
     def test_markdown_reference_html_and_unicode_anchor_resolve(self):
         files = {**self.files, "README.md": (

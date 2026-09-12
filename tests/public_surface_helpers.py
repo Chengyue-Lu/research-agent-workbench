@@ -17,7 +17,8 @@ PUBLIC_PAGES = (
 INTERNAL_PATH = re.compile(
     r"(?:^|[/\s`(])(?:TASKS\.md|STATUS\.md|ROADMAP\.md|DEVELOPMENT\.md|"
     r"DEVELOPMENT_HISTORY\.md|DEVELOP_TO_MAIN_RELEASE\.md|M_SERIES_IMPLEMENTATION_MAP\.md|"
-    r"DEVELOPER_ARCHITECTURE_MAP\.md|workstreams/|history/|work/[^`\s]+|tests/)", re.I)
+    r"DEVELOPER_ARCHITECTURE_MAP\.md|workstreams/|history/|tests/)", re.I)
+ARCHIVE_LINK = re.compile(r"(?:^|/)work(?:/|$)", re.I)
 MILESTONE = re.compile(r"\b(?:M\d+-\d+|K-[A-Z0-9-]+)\b")
 
 
@@ -87,7 +88,7 @@ def documentation_errors(files: dict[str, bytes]) -> list[str]:
         for target in targets:
             parsed = urlsplit(target)
             if parsed.scheme in ("http", "https", "mailto") or parsed.netloc:
-                if INTERNAL_PATH.search(unquote(parsed.path)):
+                if INTERNAL_PATH.search(unquote(parsed.path)) or ARCHIVE_LINK.search(unquote(parsed.path)):
                     errors.append(f"internal external link: {name} -> {target}")
                 continue
             path = unquote(parsed.path)
@@ -95,6 +96,9 @@ def documentation_errors(files: dict[str, bytes]) -> list[str]:
                 errors.append(f"nonportable link: {name} -> {target}")
                 continue
             resolved = posixpath.normpath(posixpath.join(posixpath.dirname(name), path)) if path else name
+            if ARCHIVE_LINK.search(resolved):
+                errors.append(f"internal archive link: {name} -> {target}")
+                continue
             if resolved.startswith("../") or not (resolved in files or any(
                 candidate.startswith(resolved.rstrip("/") + "/") for candidate in files
             )):
