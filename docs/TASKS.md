@@ -252,10 +252,10 @@ M13 不等于 strategy framework approval。
 | `M2-006` | 黄毅 | R1 | F / optional platform | Topic 4 | 无真实平台需求，保持 PARKED |
 | `M3-001～007` | 路诚钺、黄毅按既有边界 | R2 | pre-A bounded slice；post-C future | Topic 5 + Artifact/Trace | 无 active implementation，future residual 等待 Phase C closeout 后重新 task-definition |
 | `M4-002` | 路诚钺 | R1 | C / D | Research State + Artifact/Trace | exact validation closure 与 fail-closed promotion 已实现，DONE；eligibility 只由 promotion 时重执行 accepted pinned runner/checker 确立；validation 三元组仅为 claimed provenance metadata，错误 PASS 阻断，byte-exact 自报历史可通过有效性检查但不产生历史 producer/operator/time 权威 |
-| `M4-003, M4-004` | 路诚钺 | R1；M4-003 R2 | C / D | Research State + Artifact/Trace | M4-003 已由 PR61 接受合入；M4-004 在独立候选中完成 exact Run 重建，仍须具名验收与合并 |
+| `M4-003, M4-004` | 路诚钺 | R1；M4-003 R2 | C / D | Research State + Artifact/Trace | 已分别由 PR #61/#62 接受合入，均为 DONE；覆盖 Claim 支持/反证/限制定位与 bounded synthetic Run reconstruction，不代替真实案例或科学判断 |
 | `M4-005` | 路诚钺 | R1 | deferred | Artifact/Trace | 只在真实大文件需求出现时恢复 |
 | `M5-001, M5-002` | 路诚钺 | Human decisions R2 | D | Evaluation + Research State | 等待人类选定并批准两类真实案例边界，BLOCKED |
-| `M5-004, M5-005` | 路诚钺 | R1；Human decisions R2 | D | Evaluation + Research State | 真实执行仍等待 M4 闭环、M5-001/002、Protocol/Harness、live Provider 与当前未满足的 A4 external admission Gate，BLOCKED |
+| `M5-004, M5-005` | 路诚钺 | R1；Human decisions R2 | D | Evaluation + Research State | M4 bounded provenance 链已完成；真实执行仍等待 M5-001/002 的获批案例及其 provenance、Protocol/Harness、live Provider 与 A4 external admission Gate；评价和后续 disposition 继续 BLOCKED |
 | `M5-006` | 路诚钺 | R2 | D | Evaluation protocol | ADR-0020 已选择并 exact-pin dual transport，`M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE` 闭合；当前 READY，可先实现 Protocol，但不得把 Decision 当成 M6-008 transport 证据 |
 | `M5-007` | 路诚钺 | R2 | D | Evaluation harness + Runtime evidence linkage | 等待 M5-006、M6-008 与 `M5-SKILL-CLOSEOUT-REPLAY-GATE`；M11-004 Core actual-fact/Trace/Receipt contract 与 M11-006 Skill mapping mechanism 均已 DONE；真实 A4 admission Gate 不阻塞 synthetic Harness 实现但阻塞 M5-004 execution |
 | `M6-003` | 黄毅 | R2 | historical / F compatibility | Topic 4 + Topic 5 | legacy seam PARKED；mainline superseded by M11-001～004 |

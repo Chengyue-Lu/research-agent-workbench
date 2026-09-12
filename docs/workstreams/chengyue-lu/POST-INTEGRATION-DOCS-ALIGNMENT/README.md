@@ -6,7 +6,9 @@
 - PR class：`feature`
 - 基线：`develop@9d2f72fb583bac2e58fb00a02678c89685644536`
 - 分支：`docs/post-integration-alignment`
-- 状态：文档对齐已完成，等待独立 PR 审查与 CI
+- 状态：已由 [PR #50](https://github.com/Chengyue-Lu/research-agent-workbench/pull/50) 合入，
+  commit `97fa2455c983dc65e66a782bac8d272eed32c633`；下文保留当时范围与验证，后续维护见
+  [DOC-ALIGN-002](../DOC-ALIGN-002/README.md)。
 
 ## 目标与范围
 
