@@ -1,0 +1,18 @@
+{
+  "purpose": "synthetic local projection/package acceptance only; not release source freeze or hosted CI attestation",
+  "implementation_head": "c78c829276aea53ff6c673dd9bdf073aeaaafc06",
+  "policy_version": "1.1.0",
+  "projection": {
+    "tree": "6ccd9f240e85bf7740fcd64bdb454aef2ff0c861",
+    "manifest_sha256": "013cecef5eff89d226bae9f430d8e5fa1318090ded8976c30811f1e8bf7cffc6",
+    "files": 232,
+    "merge_eligible": false
+  },
+  "repeated_bytes_identical": true,
+  "file_count": 232,
+  "public_doc_count": 7,
+  "public_links": "PASS",
+  "build_inputs": "PASS",
+  "source_classes_complete": true,
+  "merge_eligible": false
+}

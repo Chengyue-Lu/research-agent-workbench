@@ -1,0 +1,19 @@
+---
+schema_version: 0.1.0
+message_id: MSG-0003
+task_id: DOC-ALIGN-002
+task_revision: 2
+attempt_id: A-20260912-001
+sequence: 3
+kind: assignment
+sender_actor_id: main-agent
+receiver_actor_ids:
+- docs-integration-auditor
+accountable_owner: Chengyue-Lu
+created_at: '2026-09-12T10:23:38.485300Z'
+content_sha256: 3413cd224687acd259b5e0b2b828948177ffa08243de3adf043bebc6b5bafd40
+attachment_refs: []
+redactions: []
+capture_status: complete
+---
+{"capture":"retrospective portable transcription","visible_message":"Root edits are now present on docs/integration-navigation-20260912 at base ab98caf25125e6567d8bb2c8afff02105b54c940. Please do one bounded read-only final diff review of the same allowlisted docs, plus new docs/workstreams/chengyue-lu/DOC-ALIGN-002/FOLLOWUP-20260912.md and one forthcoming top-status-only correction in POST-INTEGRATION-DOCS-ALIGNMENT/README.md (PR50 merge 97fa2455c983dc65e66a782bac8d272eed32c633 verified via git log). DOC-ALIGN-002 remains in active workstream index because revision 2 is ongoing; its first slice is explicitly accepted. Verify canonical Task rows unchanged, no premature PR69/71 accepted implementation claims, no new dependency. No writes or extra broad research; return findings only, 3-minute stop."}

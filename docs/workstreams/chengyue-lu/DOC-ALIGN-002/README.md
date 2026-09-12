@@ -4,9 +4,11 @@
 - 风险：R2；`docs/decisions/README.md` 触发 accepted policy 的路径最低等级。
 - 基线：`develop@11c3b57dfbf8af0dc2587fc421d097e2544941c3`；目标分支：`develop`。
 - 工作分支：`docs/accepted-state-alignment-20260911`；PR class：`feature`。
-- 状态：维护修订已准备，等待 exact-head CI 与 `let778750-cpu` cross-owner review。
+- 状态：首轮已由 [PR #68](https://github.com/Chengyue-Lu/research-agent-workbench/pull/68) 接受合入，
+  squash commit `1cb0c19c1182aac368cd61afee111249a86818bb`；当前后续维护见
+  [2026-09-12 navigation maintenance](FOLLOWUP-20260912.md)。
 
-## 输入与范围
+## 首轮输入与范围（2026-09-11）
 
 按用户于 2026-09-11 提供的 D0～D5 文档维护表执行 D1～D4。Task 主表来自上述 frozen base 的
 [TASKS](../../../TASKS.md)，当前实现覆盖、派生施工位置、模块导航与 Gate 状态据此校正：
@@ -26,7 +28,7 @@ M14-004 继续按 canonical TASKS 为 PARKED，M14-005 为 BLOCKED；本次不�
 Getting Started、release surface 或 Runtime/Schema/Registry。基线 TASKS 后方 owner 摘要仍含旧 M4
 candidate 文案；本次以 canonical Task 行为依据，该共享文件留给正在推进的状态维护。
 
-## 证据与停止条件
+## 首轮证据与停止条件
 
 - 读写限于本 PR 的 11 个既有文档、本 workstream、owner 索引与有界
   [Attempt archive](../../../../work/DOC-ALIGN-002/A-20260911-001/INDEX.yaml)。
@@ -34,7 +36,8 @@ candidate 文案；本次以 canonical Task 行为依据，该共享文件留给
 - 文档测试检查内部链接与 surface ownership；范围检查确认代码、契约、TASKS 和 public surface 无差异。
 - 验证命令与结果固定在 Attempt archive；最终 commit 的 CI 和治理结果以 PR checks 为准。
 - 既有合入记录只证明 bounded implementation 的接受，不证明真实 M5 结果、科学正确性或 release authority。
-- 以新 PR 和独立 review request 为本轮交付终点；具名 owner 审查与 merge decision 仍待完成。
+- 首轮由 `let778750-cpu` 审查 exact head `0f6da949c9d89d4d5e0cea9cffad1e85465bb52c` 并批准；
+  该 head 的双 Python compatibility、package smoke、文档和治理检查均通过，随后经 PR #68 合入。
 
 处置：**ADAPT** 用户指南的 D1～D4，按 accepted base 校正文档；D0/D5 继续由 M14 lane 承担。
 剩余风险见 [Risk Ledger](RISK_LEDGER.md)。

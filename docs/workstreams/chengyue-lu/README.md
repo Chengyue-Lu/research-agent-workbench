@@ -4,21 +4,23 @@
 
 当前进行中或仍待具名语义决定的工作流：
 
-- [`DOC-ALIGN-002/`](DOC-ALIGN-002/README.md)：按 accepted develop 对齐 M4/M14 成熟度、Phase D
-  入口与 ADR-0020 Gate 状态；M14 activation 和 public docs 继续由其独立工作流承担。
-- [`M14-CURATED-RELEASE/`](M14-CURATED-RELEASE/README.md)：将 Issue #57 的 release topology、
-  deterministic surface、portable package、public docs 与首次精选发行映射为 M14-001～005；本轮只完成
-  R2 task-definition，首个实现入口为 M14-001。
+- [`DOC-ALIGN-002/`](DOC-ALIGN-002/README.md)：PR #68 已合入，完成 accepted M4/M14 成熟度、Phase D
+  入口与 ADR-0020 Gate 对齐；后续 [navigation maintenance](DOC-ALIGN-002/FOLLOWUP-20260912.md) 收口
+  TASKS 辅助说明与工作流索引，M14 activation/public docs 继续由独立工作流承担。
+- [`M14-CURATED-RELEASE/`](M14-CURATED-RELEASE/README.md)：M14-001～003 已由 PR #60 合入；
+  [PR #69](https://github.com/Chengyue-Lu/research-agent-workbench/pull/69) 承载 M14-004 public surface
+  preparation，已获该切片审查，仍待对齐已合入文档与最新 CI 基线后集成。最终 Quickstart 消费 M1-009
+  实际 scaffold 流程后收口；M14-005 仍受 license、scaffold、public docs 与远端保护等 Gate 约束。
 - [`M5-SYSTEM-EVALUATION-DESIGN/`](M5-SYSTEM-EVALUATION-DESIGN/README.md)：冻结 system-level
   primary estimand、case dossier public/private boundary、Protocol/Harness Tasks 与真实执行/pruning Gate；
   ADR-0020 已选择 dual transport；M5-006 是 READY 的 Protocol 入口，Execution-owned M6-008 等待其冻结
   shared qualification contract，当前 PARKED；本工作流不运行 Evaluation，也不宣称净收益。
-- [`POST-INTEGRATION-DOCS-ALIGNMENT/`](POST-INTEGRATION-DOCS-ALIGNMENT/README.md)：以当前
-  `develop` 实现和治理事实校正文档真值、Runtime 传递关系与 derived navigation；不重定义系统契约。
 - [`PHASE-C-RESEARCH-STATE/`](PHASE-C-RESEARCH-STATE/README.md)：M10 bounded machine implementation
   已集成；Human semantic review 与 R2/Phase C closeout 仍 pending，Topic 5 未获实现权限。
 已集成、保留审计记录的工作流：
 
+- [`POST-INTEGRATION-DOCS-ALIGNMENT/`](POST-INTEGRATION-DOCS-ALIGNMENT/README.md)：首轮
+  M10/M11 Core/M4-001/M5-003 集成后的文档对齐记录；当前维护由 DOC-ALIGN-002 承接。
 - [`M11-SKILL-RUNTIME-EXTENSION/`](M11-SKILL-RUNTIME-EXTENSION/README.md)：PR #51 已将 M11-005/006
   runtime-minimal projection publication 与统一 Skill Supply mapping 合入 `develop`，两项 Task 均为 DONE；
   生产 index 仍为空，且 optional extension 不改变 zero-Skill Core。

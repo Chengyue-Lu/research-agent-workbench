@@ -41,6 +41,23 @@ rejected. The initial policy names individual Runtime catalog classes. Its sourc
 Schemas, package metadata, `.gitattributes` and selected stable documents; public navigation and installed Runtime
 closure remain owned by M14-004 and M14-003 respectively. This policy is an engineering projection baseline.
 
+Policy `1.1.0` composes the portable package inputs and public documentation: it retains the `1.0.0` entry
+unchanged and adds the build backend, Runtime catalog specification, packaged no-Skill input, public guide and
+supported-features page. The public README, Changelog, Charter, Architecture and Getting Started are the same
+source blobs on develop and in the projection; there is no second edited copy or navigation generator.
+The development documentation index and historical Changelog snapshot stay outside the selected tree.
+
+`tests.public_surface_helpers` checks the selected Git source set rather than filesystem directory existence.
+The documentation CI test verifies public pages, local links/anchors, reference/HTML links, excluded navigation
+and Runtime catalog build-input closure. `tests.test_public_surface` adds negative cases for missing build inputs,
+excluded/encoded/external navigation and broken targets. Tests and their helper remain development-only.
+An isolated Git fixture also exports the exact implementation source twice and runs the portable package harness
+against that projected source on Python 3.11/3.13. Its synthetic CI expectations are test inputs, never release trust.
+
+The current Getting Started path demonstrates installed resources and structural Task validation. Issue #57's
+updated lane reserves its final scaffold flow for M1-009; M14-004 remains open until that integration and R2 review.
+Release-only workflows/checks and their next exact allowlist update remain M14-005 work.
+
 Paths must be relative POSIX, NFC-normalized and portable to Windows. Escape, empty/dot components, reserved device
 names, trailing dots/spaces, casefold collisions (including directory prefixes), symlinks and gitlinks fail closed.
 Selected UTF-8 text must use LF. Binary data is copied byte-for-byte. Each source output pins Git blob OID, mode,

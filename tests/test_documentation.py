@@ -22,6 +22,13 @@ STABLE_EXAMPLE_MODULES = (
 
 
 class DocumentationTests(unittest.TestCase):
+    def test_public_projection_documentation_and_build_closure(self) -> None:
+        from tests.public_surface_helpers import build_input_errors, documentation_errors, selected_files
+
+        files = selected_files(ROOT)
+        self.assertEqual([], documentation_errors(files))
+        self.assertEqual([], build_input_errors(files))
+
     def test_internal_markdown_links_resolve(self) -> None:
         missing: list[str] = []
         for document in [ROOT / "README.md", *sorted((ROOT / "docs").rglob("*.md"))]:

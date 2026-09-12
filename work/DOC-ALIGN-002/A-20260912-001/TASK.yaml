@@ -1,0 +1,25 @@
+task_id: DOC-ALIGN-002
+revision: 2
+owner: Chengyue-Lu
+risk: R2
+agent_profile: docs-maintainer
+required_skills: []
+delegation: true
+baseline: ab98caf25125e6567d8bb2c8afff02105b54c940
+user_request: 继续维护文档线，目前M14-004已经开发完毕，等待文档线推进。
+goal: Close accepted-state navigation leftovers after PR68 without changing canonical
+  Task rows or parallel PR69/71 implementation.
+write_scope:
+- docs/TASKS.md
+- docs/decisions/README.md
+- docs/workstreams/chengyue-lu/DOC-ALIGN-002/README.md
+- docs/workstreams/chengyue-lu/DOC-ALIGN-002/RISK_LEDGER.md
+- docs/workstreams/chengyue-lu/POST-INTEGRATION-DOCS-ALIGNMENT/README.md
+- docs/workstreams/chengyue-lu/README.md
+- docs/workstreams/huangyi/README.md
+- docs/workstreams/chengyue-lu/DOC-ALIGN-002/FOLLOWUP-20260912.md
+- work/DOC-ALIGN-002/A-20260912-001/**
+stop_conditions:
+- Documentation PR with independent cross-owner review requested.
+- No merge, M14 activation, M5 completion, release, or parallel implementation branch
+  writes.

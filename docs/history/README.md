@@ -27,3 +27,5 @@ workstream、major migration、架构/治理决定、release milestone 或关键
 
 进行中的 workstream 不得预先写成已完成历史；`DEVELOPMENT_HISTORY.md` 继续作为旧记录和全局
 索引，不再复制每个新 workstream 的完整正文。
+
+公开 Changelog 精简前的记录见[2026-09-11 历史快照](CHANGELOG-20260911.md)。
