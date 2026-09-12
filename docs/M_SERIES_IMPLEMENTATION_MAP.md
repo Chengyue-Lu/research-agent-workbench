@@ -39,7 +39,7 @@ flowchart TB
 
 箭头是 family-level 施工导航，不是机械的 hard dependency。任何具体 Task 的 exact dependency、状态、
 owner、scope 与 acceptance 都以 `TASKS.md` 的 Task 行为准。M12/M13 仍是 reservation，不在执行队列；
-M14 已 task-defined，`M14-001/002/003` trust、surface 与 portable package 为 DONE；M14-004/005 分别为 READY/BLOCKED。虚线只表示 maturity
+M14 已 task-defined，`M14-001/002/003` trust、surface 与 portable package 为 DONE；M14-004/005 分别为 DONE/BLOCKED。虚线只表示 maturity
 evidence，不生成 hard dependency。
 
 ## 2. M-group 索引
@@ -60,7 +60,7 @@ evidence，不生成 hard dependency。
 | M11 | Execution reintegration | task-defined；Core 与 optional Skill extension complete；生产 projection index 仍为空 |
 | M12 | Execution Continuity & Recovery | **RESERVED** |
 | M13 | Strategy & Governed Evolution | **RESERVED** |
-| M14 | Product / Release Closure | task-defined；M14-001/002/003 DONE，M14-004/005 依 DAG READY/BLOCKED |
+| M14 | Product / Release Closure | task-defined；M14-001/002/003 DONE，M14-004/005 依 DAG DONE/BLOCKED |
 
 `task-defined` 只表示该 family 已有原子 Task，不表示全部 Task 已完成。实时状态仍见 `TASKS.md`。
 
@@ -175,7 +175,7 @@ hard dependency（包括 Human/external Gate）均不得由本图推断。
 flowchart LR
     M14001["M14-001 DONE<br/>dormant topology / source trust"] --> M14002["M14-002 DONE<br/>surface / manifest"]
     M14001 --> M14003["M14-003 DONE<br/>portable package"]
-    M14002 --> M14004["M14-004 READY<br/>public docs"]
+    M14002 --> M14004["M14-004 DONE<br/>public docs"]
     M14003 --> M14004
     M14002 --> M14005["M14-005 BLOCKED<br/>first release"]
     M14003 --> M14005
