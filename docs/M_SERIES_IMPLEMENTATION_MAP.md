@@ -154,7 +154,7 @@ Task/input、typed oracle/checker/adjudication、comparison inputs、`checked_at
 `checked_at <= case_selection_frozen_at`，独立比较 M5-001/002 case、Task、input、private-oracle exact identities
 并重算结果。重叠 case 标为 `admission-overlap` 且只可作 pilot/secondary；缺失、typed `absent`/`unknown` 或
 unresolved closure 不得进入 primary net-benefit conclusion，也不能单独支撑 M5-005 pruning。
-本图未展开的独立 `READY` 行（例如 scaffold）仍直接从 `TASKS.md` 读取。
+本图未展开的独立工作仍直接从 `TASKS.md` 读取。
 
 ### 3.3 Optional Skill extension
 
@@ -181,7 +181,7 @@ flowchart LR
     M14003 --> M14005
     M14004 --> M14005
     M0007["M0-007 BLOCKED<br/>license"] --> M14005
-    M1009["M1-009 READY<br/>scaffold"] --> M14005
+    M1009["M1-009 DONE<br/>scaffold"] --> M14005
     Remote["GitHub protection<br/>external Gate"] --> M14005
 ```
 

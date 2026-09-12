@@ -1,5 +1,5 @@
 policy_id: rwb-coverage-policy
-version: 2.1.0
+version: 2.2.0
 source_root: src/research_workbench
 
 suites:
@@ -23,6 +23,7 @@ suites:
       - test_catalog
       - test_cli
       - test_cli_command_branches
+      - test_scaffold
       - test_ci_plan
       - test_ci_checks
       - test_ci_dependencies

@@ -1,0 +1,52 @@
+schema_version: 0.1.0
+manifest_kind: python-file-reconstruction
+manifest_id: RECONSTRUCT-M4-LINEAR-001
+run_id: RUN-M4-LINEAR-001
+run_ref:
+  path: examples/run-reconstruction/linear-recurrence/run.yaml
+  sha256: aba87d441e87450b021a80c5d1c61aba5ffe57a275b48dbcaef91874c4df8b9b
+  revision: 1
+code_ref:
+  path: examples/run-reconstruction/linear-recurrence/simulate.py
+  sha256: 2c99193380b4d298c85e3e033e1e63d3e5c76319a5e69d17a0a371442f3f3213
+input_ref:
+  path: examples/run-reconstruction/linear-recurrence/inputs.json.txt
+  sha256: 34daf86ea235053be067394df1f8d4fe3fa964328c280fb8de75bf38622afbe2
+parameters_ref:
+  path: examples/run-reconstruction/linear-recurrence/parameters.json.txt
+  sha256: 2ed7e189cbf7b578cf3477c192b68b99aeed586b606752b202cb1988708f283b
+environment_ref:
+  path: examples/run-reconstruction/linear-recurrence/environment.json
+  sha256: 3555260a8a513bf2ae6113f0e2fb722f5b66e285fdfe3758fce2989d68e8e8ec
+input_bindings:
+  - role: input
+    object_ref: INPUT-M4-LINEAR-001@1
+    file_ref:
+      path: examples/run-reconstruction/linear-recurrence/inputs.json.txt
+      sha256: 34daf86ea235053be067394df1f8d4fe3fa964328c280fb8de75bf38622afbe2
+  - role: parameters
+    object_ref: PARAMS-M4-LINEAR-001@1
+    file_ref:
+      path: examples/run-reconstruction/linear-recurrence/parameters.json.txt
+      sha256: 2ed7e189cbf7b578cf3477c192b68b99aeed586b606752b202cb1988708f283b
+environment_binding:
+  object_ref: ENV-M4-LINEAR-001@1
+  file_ref:
+    path: examples/run-reconstruction/linear-recurrence/environment.json
+    sha256: 3555260a8a513bf2ae6113f0e2fb722f5b66e285fdfe3758fce2989d68e8e8ec
+expected_outputs:
+  - output_path: trajectory.csv
+    object_ref: ARTIFACT-M4-TRAJECTORY-001@1
+    artifact_ref:
+      path: examples/run-reconstruction/linear-recurrence/trajectory.csv
+      sha256: 177fa6856055f38f2ce7268a2e47f21f843628f0bfe316813ac1c55efec09369
+timeout_seconds: 5
+negative_result: true
+limitations:
+  - Synthetic integer engineering case; zero net change is retained, not a scientific Claim.
+  - Python implementation, version and platform are checked; OS and interpreter build bytes are not attested.
+authority_boundaries:
+  claim_acceptance: false
+  human_decision: false
+  scientific_correctness: false
+  promotion: false

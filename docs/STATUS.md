@@ -26,12 +26,14 @@ external trust。`M14-002` 已建立 versioned allowlist、canonical manifest �
 hash-pinned packaged Runtime catalog、三 root 分离与双 Python checkout 外安装；public docs 与首次 curated main
 release 仍待闭合，当前 exact `develop -> main` 执行规则保持不变。M14-004 的 public navigation、
 [公开支持矩阵](SUPPORTED_FEATURES.md) 与 policy `1.1.0` 构建输入/文档闭包检查已进入独立实现 slice；
-最终 Quickstart 按 Issue #57 等待 M1-009 的真实 scaffold 流程与 R2 验收，尚不标记任务完成。
+M1-009 已提供仓库外可复用 scaffold 和离线工程示例；最终 Quickstart 按 Issue #57 等待对该流程的
+集成与 M14-004 R2 验收，尚不标记 M14-004 完成。
 
 ## 已实现
 
 | 能力 | 当前覆盖 |
 |---|---|
+| 项目 scaffold | no-Skill / offline-demo / minimal 模板、项目与 Runtime root 分离、exact resource pin、Task/Profile 校验及 0.x 兼容政策；离线示例调用已有 Run 检查/重建，不执行模型或授予研究结论 |
 | 版本化对象 | Task、Assignment、Handoff、Evidence、Claim、Decision、Protocol、Receipt 等 Schema 与示例 |
 | Method-aware control | 两个正式 Mode 的 16 个逻辑 Action、跨 v0.1/v0.2 的 32 个版本化 Action 文档、hash-pinned Registry，以及八组 `diagnostic case → bounded TaskPacket → Method Resolution`；Resolution 继承 Action Gate/Artifact/stop/block 且不绑定供应实现 |
 | Mode compatibility | v0.1/v0.2 Mode 并存，显式 v0.1→v0.2 迁移器与两个 exact-pin migration record；Registry 追加同 Action 新版本不改变旧 migration replay |
@@ -81,8 +83,8 @@ release 仍待闭合，当前 exact `develop -> main` 执行规则保持不变�
 | Skill 价值 | 现有 Registry 条目不构成已证明的普适研究增益；新任务可优先 no-Skill / direct-tool |
 | Skill new-binding | 生产 projection index 仍为空；M11-005/006 只证明可选 publication/mapping contract，未重新准入任何 legacy Skill，也未证明真实 trial、Provider 可用性或科研净增量 |
 | Phase D evaluation entry | [ADR-0020](decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) 已选择 A1/A2→M6、A3/A4→M11 的显式双传输；M5-006 Protocol 与资格/overlap/overlay/pairwise 校验器已实现。M6-008 treatment-visible baseline envelope/replay closeout 尚未实现，Skill-bearing closeout Gate 仍未满足，M5-007 Harness 与真实 M5-004 execution 继续 BLOCKED |
-| 发布 | M14-001 dormant trust seam、M14-002 deterministic exporter/manifest/checker 与 M14-003 portable Runtime catalog 已实现；公开文档面仍未闭合；首次发行还被 M0-007 license、M1-009 scaffold、远端 GitHub protection 与人类 release decision 阻断 |
-| 产品体验 | 初始化、可视化、协作 UI、安装包和运维流程仍是开发者级别 |
+| 发布 | M14-001 dormant trust seam、M14-002 deterministic exporter/manifest/checker 与 M14-003 portable Runtime catalog 已实现；公开文档面仍未闭合；M1-009 scaffold 已实现；首次发行仍等待 M14-004 最终验收、M0-007 license、远端 GitHub protection 与人类 release decision |
+| 产品体验 | scaffold 支持离线项目入口；可视化、协作 UI 和运维流程仍待完善 |
 
 ## 支持边界
 
