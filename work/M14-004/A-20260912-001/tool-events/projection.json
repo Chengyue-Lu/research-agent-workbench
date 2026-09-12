@@ -1,0 +1,29 @@
+{
+  "purpose": "synthetic projection and documented installed CLI acceptance; no release authority",
+  "implementation_head": "3591043fb870582ae674e1ac9ce994a0bc9675b3",
+  "source_tree": "2d4547e303efe89d4012aa80eed1e1f212145510",
+  "parent_fixture": "b1d5a5a5850e0e7541e4c460f15384cd45357ab2",
+  "policy_version": "1.1.0",
+  "merge_eligible": false,
+  "repeated_bytes_identical": true,
+  "file_count": 257,
+  "public_links": "PASS",
+  "build_inputs": "PASS",
+  "source_classes_complete": true,
+  "commands": [
+    "rwb resources check",
+    "rwb schema list",
+    "rwb init project --project-id quickstart",
+    "rwb project check project",
+    "rwb validate project/tasks/task.yaml project/profiles/local-no-skill.yaml --root project",
+    "rwb init offline-project --template offline-demo --project-id offline-demo",
+    "rwb project check offline-project",
+    "cd offline-project",
+    "rwb validate tasks/task.yaml profiles/local-no-skill.yaml --root .",
+    "rwb run check examples/run-reconstruction/linear-recurrence/manifest.yaml --root .",
+    "rwb hash examples/run-reconstruction/linear-recurrence/trajectory.csv",
+    "rwb run reproduce examples/run-reconstruction/linear-recurrence/manifest.yaml --root . --attempt-dir work/demo/A-001",
+    "rwb validate work/demo/A-001/reconstruction-report.json --root ."
+  ],
+  "quickstart_sha256": "d9a3b2b5f6a5e796942ed61b8af0d2e007baed1673bfcfd484ecbf5a1dc49486"
+}

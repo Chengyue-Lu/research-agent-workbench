@@ -1,0 +1,32 @@
+{
+  "implementation_head": "3591043fb870582ae674e1ac9ce994a0bc9675b3",
+  "base": "451644064f558601d5778b9b115390f882f4d260",
+  "focused_tests": 103,
+  "repository": {
+    "validated": 186,
+    "errors": 0,
+    "warnings": 0
+  },
+  "projection": {
+    "files": 257,
+    "repeated_bytes_identical": true,
+    "public_links": "PASS",
+    "build_inputs": "PASS",
+    "purpose": "synthetic local fixture; no release source freeze or source-CI attestation"
+  },
+  "quickstart": {
+    "installs": 8,
+    "cli_commands_per_install": 12,
+    "directory_changes_per_install": 1,
+    "reconstruction": "matched",
+    "manual_copies": 0,
+    "provider_credentials": 0,
+    "project_file_edits": 0,
+    "command_corrections": 0,
+    "negative_result_preserved": true,
+    "measurement_scope": "automated documented-path walkthrough, not a human usability study"
+  },
+  "hosted_ci": "Current candidate checks are required after this archive is frozen; see PR.",
+  "review": "Cross-owner R2 review required; M14-004 completion is a proposal.",
+  "remaining": "M14-005 BLOCKED on license, remote protections, named Human release decision and its cutover/readiness checks."
+}
