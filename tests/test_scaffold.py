@@ -105,6 +105,12 @@ class ScaffoldTests(unittest.TestCase):
         self.assertTrue(self.root.is_dir())
         self.assertEqual(list(self.root.iterdir()), [])
         self.assertEqual(list(self.parent.iterdir()), [self.root])
+        fresh = self.parent / "new-project"
+        with mock.patch.object(Path, "rename", side_effect=OSError("disk error")):
+            with self.assertRaises(OSError):
+                scaffold.initialize_project(fresh)
+        self.assertFalse(fresh.exists())
+        self.assertEqual(list(self.parent.iterdir()), [self.root])
         scaffold.initialize_project(self.root)
         self.assertFalse(scaffold.check_project(self.root)["executed"])
 
