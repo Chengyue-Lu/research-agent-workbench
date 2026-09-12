@@ -29,6 +29,7 @@
 - [Deterministic release surface (M14-002)](RELEASE_SURFACE.md)
 - [Portable Runtime resources (M14-003)](RUNTIME_RESOURCES.md)
 - [Evaluation Manifest and non-executing plan contract (M5-003)](EVALUATION_MANIFEST_CONTRACT.md)
+- [System-Level Evaluation Protocol (M5-006)](SYSTEM_EVALUATION_PROTOCOL.md)
 - [File-authoritative Trace Core](TRACE_CORE.md)
 - [Execution Trace Adapter](EXECUTION_TRACE_ADAPTER.md)
 - [Provider Adapter plan and seam](PROVIDER_ADAPTER_PLAN.md)
@@ -37,10 +38,11 @@
 M4 入口对应已接受的有界实现；各契约继续分别负责 source admission、promotion、Claim evidence
 localization 与 synthetic Run reconstruction，不因此取得 Claim/Human acceptance 或科学正确性权威。
 
-Evaluation 的 active implementation contract 目前仅含 M5-003 Manifest/check/non-executing plan。
+Evaluation 的 active implementation contracts 包括 M5-003 Manifest/check/non-executing plan，以及
+M5-006 System-Level Evaluation Protocol、资格/overlap/overlay/pairwise 校验器。
 [ADR-0020](../decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) 已接受 Phase D dual transport
-与 system-level estimand；M5-006 Protocol、M6-008 baseline envelope/closeout 和 M5-007 Harness 的实现
-仍由 [TASKS](../TASKS.md) 与 [ROADMAP](../ROADMAP.md) 跟踪，不列入本节已实现契约。
+与 system-level estimand；M6-008 baseline envelope/closeout、Skill closeout replay Gate、M5-007 Harness
+和真实案例/live/admission 仍由 [TASKS](../TASKS.md) 与 [ROADMAP](../ROADMAP.md) 跟踪。
 
 ## Evaluation and intake protocols
 

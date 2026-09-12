@@ -1,5 +1,9 @@
 # M5 System-Level Evaluation Design Risk Ledger
 
+The following original rows retain the accepted design-stage controls and downstream dependencies.
+Implementation evidence for M5-006 is recorded after the table; candidate verification does not close M6-008,
+M5-007, Human case/admission or actual-execution obligations.
+
 | Risk ID | Type | Risk | Control | Status |
 |---|---|---|---|---|
 | M5-EVAL-EST-001 | authority | Skill 独立效果取代 system-level primary estimand，使局部收益被误写成 RWB 整体净收益。 | Primary estimand 固定为完整 RWB 相对 simpler Agent/Tool baseline；Skill effect 只作满足 pairwise exact-equality closure 后的 secondary interpretation。 | controlled by Task definitions and R2 review |
@@ -21,3 +25,22 @@
 | M5-EVAL-DRIFT-001 | comparability | Model/Provider/Host/context/budget 漂移破坏四臂可比性。 | M5-003 共享 frozen conditions + M5-006 drift/retry/stopping rules + M5-007 exact run records。 | bounded by protocol design |
 | M5-EVAL-SUNK-001 | governance | 已投入开发成本导致默认 KEEP，或单次 A4 成功触发 promotion。 | M5-005 要求 evidence-linked disposition，并显式允许 PARK/DEPRECATE/DELETE/STOP。 | open until M5-005 |
 | M5-EVAL-SCOPE-001 | scope | task-definition PR 偷跑 Evaluation、实现 runner、解冻 Topic 5 或宣称净收益。 | 当前 diff 仅定义 unfinished Tasks、派生导航、workstream 和风险；M5-003 DONE immutable。 | controlled by docs-only governance |
+
+## M5-006 implementation candidate
+
+| Risk / seam | Implemented control and adversarial evidence | Remaining acceptance |
+|---|---|---|
+| EST / TRANSPORT / METRIC / CROSS-TRANSPORT | Protocol exact ADR pin, explicit transport/contrast rules, four measurement states, frozen statistical/design parameters and hierarchy; `test_system_evaluation_protocol` rejects changed primary, weighted score, imputed missing zero, invalid units/ranges and incomplete registration | Exact-head CI and named review; observed transport measurement belongs to M6-008/M5-007 |
+| ARM-QUAL | Reload selected and unselected Supply closure; exact frozen/runtime Task/Requirement/Supply/components/implementation/interface, A3 Method and narrowing ceilings; structural substitutions and producer/pin drift rejected | Execution producer and use-boundary replay remain downstream |
+| OVERLAP | Protocol independently pins admission closure; consumer independently supplies confirmatory cases/time; recompute four identity-or-hash intersections and all derived values; missing/unknown/opaque closure remains ineligible | Human approval of real dossiers and historical oracle provenance remain required |
+| ADMISSION / ACTUAL | Named Human Decision and independent callback, candidate/Release/promotion endpoints, deterministic Projection and exact Snapshot/Bundle/View; no status-only admission or planned-to-actual conversion | Real admission, actual facts and Skill closeout Gate remain open |
+| A3A4-COMP / DRIFT | Compare frozen full execution binding and output/stop obligations; current Method difference yields package effect; recheck preregistered analysis refs and all input bytes | M5-007 must reconcile post-run actual facts; pure equality fixture grants no execution authority |
+| SCHEMA / CACHE | Bounded same-byte parsing, finite JSON, invocation-local copied caches, captured Schema identity and rechecks; changed refs/Schemas cannot reuse cached qualification | Exact-head coverage and package verification |
+| SCOPE / TRACE | One existing M5-006 feature/R2 implementation; no Task redefinition or downstream implementation; capture gaps retained in the Attempt record | Cross-owner review; no self-merge |
+| PR71 / ADMISSION-CLOSURE | Confirmatory Protocol requires an exact admission-scoped closure in schema and semantics; synthetic null remains valid, wrong scope/hash fails | Review correction; real admission remains independently verified |
+| PR71 / METHOD-COMPLETENESS | Derive demand from exact frozen Methods and Tasks; compare runtime Requirement identities with exact multiplicity across A3 and case-scoped A4; missing, extra, duplicate and Task/Method drift fail | Complete synthetic document-read + research-contract-check fixtures; no Task completion authority |
+| PR71 / EXTENSION-COUNT | Count exact Projection/Skill ID/version/hash identities once across Requirements; one reused Skill remains one extension and distinct identities remain distinct | Interpretation still depends on the full comparison surface |
+| PR71 / TASK-COMPARISON-SCOPE | Qualify the whole A3 arm and reload all Bundle/View inputs, then select A3 by the overlay's exact Task path/hash and recheck its frozen Method/Requirement completeness | Multi-Task demand/comparison regression preserves the original case result; unrelated Tasks cannot force an unavailable result; no multi-Task execution claim |
+
+Evidence entrypoints and consumer responsibilities are in [the implementation contract](../../../implementation/SYSTEM_EVALUATION_PROTOCOL.md)
+and [WORKLOG](WORKLOG.md). Test fixtures are synthetic structural evidence, not Human admission or scientific efficacy.

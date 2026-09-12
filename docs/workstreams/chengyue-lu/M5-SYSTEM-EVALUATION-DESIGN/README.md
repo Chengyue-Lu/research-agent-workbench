@@ -4,7 +4,10 @@
 
 风险：R2
 
-PR 类型：`task-definition`（docs-only）
+当前实现 PR 类型：`feature`（M5-006 / R2）。原始任务定义与设计依据保留在下文。
+
+实施导航：[进入计划](ENTRY_PLAN.md)、[Protocol / validator contract](../../../implementation/SYSTEM_EVALUATION_PROTOCOL.md)、
+[工作记录与验证](WORKLOG.md)、[Risk Ledger](RISK_LEDGER.md)。
 
 ## 1. Primary estimand
 

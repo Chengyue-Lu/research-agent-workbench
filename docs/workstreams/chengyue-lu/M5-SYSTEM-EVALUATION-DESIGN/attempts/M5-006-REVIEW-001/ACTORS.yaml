@@ -1,0 +1,15 @@
+schema_version: 0.1.0
+task_id: M5-006
+task_revision: 1
+attempt_id: M5-006-REVIEW-001
+actors:
+- actor_id: codex-m5-review-repair
+  actor_type: runtime-adapter
+  role: bounded API session runner
+  runtime_identity: Codex local agent / delayed review export
+  accountable_owner: Chengyue-Lu
+- actor_id: provider-OpenAI
+  actor_type: model-provider
+  role: bound model provider
+  runtime_identity: OpenAI
+  accountable_owner: Chengyue-Lu

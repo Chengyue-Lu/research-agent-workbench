@@ -1,0 +1,116 @@
+schema_version: 0.1.0
+trace_id: TRACE-M5-006-REVIEW-001
+task_id: M5-006
+task_revision: 1
+attempt_id: M5-006-REVIEW-001
+archive_root: M5-006-REVIEW-001
+baseline: rwb-agent-trace-v0.1
+owner_actor_id: codex-m5-review-repair
+owner: Chengyue-Lu
+attempt_status: incomplete
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 05341fa212af6db75cb2de5f3fe5f6878f620cc4b9264775c13f1e7025ad6c08
+actors_ref:
+  path: ACTORS.yaml
+  sha256: f0b3c3173884ce86d31f42fc9f6e9352ac858f8d8f8c89eb0378f3a4b6ba4454
+read_allowlist:
+- .github/**
+- .rwb/m5-review/**
+- AGENTS.md
+- docs/**
+- examples/**
+- registry/**
+- schemas/**
+- src/research_workbench/**
+- tests/**
+write_scope:
+- .rwb/m5-review/**
+- docs/implementation/SYSTEM_EVALUATION_PROTOCOL.md
+- docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/**
+- schemas/v0.1.0/system-evaluation-protocol.schema.json
+- src/research_workbench/evaluation/**
+- tests/**
+tool_allowlist:
+- apply_patch
+- shell
+- write_stdin
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 88292f251d1226ea664475d9ac75007cfcb46cff23979a3c471e219f937c0677
+  event_count: 37
+tool_event_refs:
+- path: tool-events/review-0001-succeeded.json
+  sha256: 5a55c71c45d047896922ba6015c45f8335c16dc1d11e0119ac8efba8d64983bb
+- path: tool-events/review-0002-succeeded.json
+  sha256: 60dc05e9e407f7d97bbb63336f96bf675e7852ee8e38226094d8850a7de44a58
+- path: tool-events/review-0003-succeeded.json
+  sha256: 87a5dfbcc909b8a6f1146d8df81ac791e172097b738e04ac8d1928d49bbc149f
+- path: tool-events/review-0004-succeeded.json
+  sha256: caa389d4164283671baab6129b42ce880507d8af27230c20fe45585001538f6c
+- path: tool-events/review-0005-succeeded.json
+  sha256: d038b5350e0a44b424909a6e55ae304c25b5f529a39f7997dff802d0273ab904
+- path: tool-events/review-0006-succeeded.json
+  sha256: 74545e76e86b42288af570fed812502555f86fa650e51ee8698dc095e631f120
+- path: tool-events/review-0007-succeeded.json
+  sha256: e6d1fc532974d3f0cf1e7f4fabf3613f97a5d62a47c9666cc47dccda0e3d012a
+- path: tool-events/review-0008-succeeded.json
+  sha256: 1e5550d3b607c10fcff25b6b5ba3886b26fb8530354ef6a117ec6eed4ef4294a
+- path: tool-events/review-0009-succeeded.json
+  sha256: 1768698a1153aef2a85c7b72901d2b8ca3b6691c12bfc7b58584de136d5fa31d
+- path: tool-events/review-0010-succeeded.json
+  sha256: bc9e321908bd690e911bd369117b94dfc777d492d367aa1041d8a72dc0ec436b
+- path: tool-events/review-0011-unknown.json
+  sha256: ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356
+- path: tool-events/review-0012-unknown.json
+  sha256: ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356
+- path: tool-events/review-0013-unknown.json
+  sha256: ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356
+- path: tool-events/review-0014-attempted.json
+  sha256: 8f3638a952dc395ac4648301a0c5206d7a67c84b7711d18f459f84e9ab3c3f2f
+- path: tool-events/review-0015-attempted.json
+  sha256: 22b19c4b8acba44518ae02ea4aabf27e94165485070d3f4386cdab656c75dbf7
+- path: tool-events/review-0016-unknown.json
+  sha256: ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356
+- path: tool-events/review-0017-unknown.json
+  sha256: ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356
+- path: tool-events/review-0018-attempted.json
+  sha256: 55b3a8ff4e0ada3f354ec9255ae57104efc73a7853a241632a8eccb1f7263387
+- path: tool-events/review-0019-unknown.json
+  sha256: ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356
+- path: tool-events/review-0020-unknown.json
+  sha256: ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356
+- path: tool-events/review-0021-succeeded.json
+  sha256: c91c25e2c4e6aa6b8fb715739ad91c80044d06d2efed4d5d272b9af42573b49d
+- path: tool-events/review-0022-succeeded.json
+  sha256: 779866f45e06fe38610d229bc98678bba2add4a4d70cdf43fb735737477ad9d7
+- path: tool-events/review-0023-unknown.json
+  sha256: ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356
+- path: tool-events/review-0024-unknown.json
+  sha256: ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356
+- path: tool-events/review-0025-succeeded.json
+  sha256: 3ef9f99242c86fe905d0a825633ec4a378bfb7147c4662c741770c7ce4fad1cd
+- path: tool-events/review-0026-attempted.json
+  sha256: 79fb2640ff206b16cb292d81d7c6dc8acb82b46c34538c43b67d136de4a8f941
+- path: tool-events/review-0027-unknown.json
+  sha256: ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356
+- path: tool-events/review-0028-succeeded.json
+  sha256: 5a5b2950fab96754eaf36cd3247b80d60b53d18ec30c9ebc70541a548854713b
+- path: tool-events/review-0029-succeeded.json
+  sha256: 53ad201f2941169c6e46244126e2931d59d496089d818b14fdec4da46f994235
+- path: tool-events/review-0030-attempted.json
+  sha256: d0ef1cf1f2d4bf6b4154e8d9ce1c29e0a6c331671a18d2e34ade965756fd91f1
+- path: tool-events/review-0031-succeeded.json
+  sha256: 02c4b9fd6a48734184a0ddcaf1fa0be628375198fef527a50e1b79e59cdd1564
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: messages
