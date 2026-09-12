@@ -1,0 +1,1 @@
+{"output":"usage: rwb validate [-h] [--root ROOT] [--structure-only] paths [paths ...]\nrwb validate: error: the following arguments are required: paths\n","returncode":2}

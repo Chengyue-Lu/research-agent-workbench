@@ -1,0 +1,28 @@
+task_id: DOC-ALIGN-002
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+agent_profile: docs-maintainer
+required_skills: []
+delegation: true
+goal: Align D1-D4 documentation with accepted develop; create a new branch and PR.
+user_request: 根据这份文档维护指南和目前最新develop线状态，新开分支与PR进行文档维护。
+baseline: 11c3b57dfbf8af0dc2587fc421d097e2544941c3
+write_scope:
+- docs/DEVELOPER_ARCHITECTURE_MAP.md
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/decisions/README.md
+- docs/implementation/README.md
+- docs/modules/07-ARTIFACTS_AND_PROVENANCE.md
+- docs/modules/10-OBSERVABILITY_EVALUATION_COST.md
+- docs/modules/README.md
+- docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/BASELINE_TRANSPORT_GATE.md
+- docs/workstreams/chengyue-lu/README.md
+- docs/workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md
+- docs/workstreams/chengyue-lu/DOC-ALIGN-002/**
+- work/DOC-ALIGN-002/A-20260911-001/**
+stop_conditions:
+- New PR with cross-owner review requested.
+- Do not merge, activate M14 tasks, change public docs, pinned decisions, or implementation.

@@ -73,6 +73,12 @@ evidence，不生成 hard dependency。
 
 ```mermaid
 flowchart LR
+    subgraph M4["M4 Artifact & Provenance — bounded chain complete"]
+        M4001["M4-001 DONE"] --> M4002["M4-002 DONE"]
+        M4002 --> M4003["M4-003 DONE"]
+        M4002 --> M4004["M4-004 DONE"]
+    end
+
     subgraph M10["M10 Research State & Verification — machine chain complete"]
         M1001["M10-001"] --> M1002["M10-002"] --> M3009["M3-009 Method Trace"] --> M1003["M10-003"]
     end
@@ -85,19 +91,13 @@ flowchart LR
 
 `M3-009` 保留历史 identity，即使它位于 M10 的 canonical implementation chain；不得为了图形
 连续性 cosmetic renumber。M10 的 machine chain complete 不等于 Human/R2 semantic closeout，M11 Core
-complete 也不等于 live Provider 或 ordinary-user E2E。M4-001 Source Admission 与 M5-003 Evaluation
-Manifest 也是已完成的当前后继前置。
+complete 也不等于 live Provider 或 ordinary-user E2E。M4-001～004 的 bounded provenance 链与
+M5-003 Evaluation Manifest 均已完成；它们不替代真实案例评价或科学判断。
 
 ### 3.2 Current frontier
 
 ```mermaid
 flowchart LR
-    subgraph M4["M4 Artifact & Provenance"]
-        M4001["M4-001 DONE"] --> M4002["M4-002 DONE"]
-        M4002 --> M4003["M4-003 READY"]
-        M4002 --> M4004["M4-004 READY"]
-    end
-
     subgraph M5["M5 Evaluation"]
         M5001["M5-001 BLOCKED<br/>evidence dossier"] --> M5004["M5-004 BLOCKED<br/>real system evaluation"]
         M5002["M5-002 BLOCKED<br/>theory/simulation dossier"] --> M5004
@@ -111,10 +111,7 @@ flowchart LR
         M5004 --> M5005["M5-005 BLOCKED"]
     end
 
-    M4001 --> M5004
-    M4002 --> M5004
-    M4003 --> M5004
-    M4004 --> M5004
+    M4Done["M4-001～004 DONE<br/>bounded provenance chain"] --> M5004
     BTG["ADR-0020 dual transport<br/>Gate A satisfied"] --> M5006
     M5006 --> M6008["M6-008 PARKED<br/>baseline envelope + replay closeout"]
     M6008 --> M5007
@@ -123,12 +120,15 @@ flowchart LR
     SCG["M5-SKILL-CLOSEOUT-REPLAY-GATE<br/>Issue #55 / unsatisfied"] --> M5007
     M1106 -. "Projection + Supply" .-> A4G
     M1106 --> M5004
-    M6004["M6-004<br/>live Provider/session"] --> M5004
+    M6004["M6-004 BLOCKED<br/>live Provider/session"] --> M5004
 ```
 
-M4-002 已闭合 fail-closed promotion（validity semantics：validation host 实际执行产出 provenance 三元组，eligibility 由 promotion-time 确定性重执行等价当场确立）；M4-003/004 现为两个独立 READY 后继。M5-004 同时等待
-M4 闭环、两个 Human-approved public/private Case Dossier、M5-003 计划契约、M5-006 Protocol、M5-007
-Harness、M11-006 真实 projection-backed Skill 路径与 M6-004 live Provider/session Gate。ADR-0020 已 exact-pin
+M4-001～004 已闭合 bounded admission、promotion、Claim evidence localization 与 Run reconstruction；
+promotion eligibility 仍只由当次 pinned pipeline 重执行确立，不证明自报历史 provenance。当前开发入口是
+`M5-006 READY → M6-008 PARKED → M5-007 BLOCKED`，后两项须在各自全部前置满足后才能启动。
+M5-004 的 M4 provenance 链、M5-003 计划契约与 M11-006 mapping 机制已满足；仍等待两个 Human-approved
+public/private Case Dossier、M5-006 Protocol、M5-007 Harness、真实 A4 admission 与 M6-004 live
+Provider/session Gate。ADR-0020 已 exact-pin
 双传输并关闭 `M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE`：A1/A2→M6、A3→M11 Core、A4→M11 Skill
 extension，primary `A4 − A2` 明确包含 transport difference；M5-006 因此 READY。`A4 − A3` 只有在
 `A3A4PairwiseComparabilityRecord` 证明唯一差异是 admitted Skill extension 时才可称 Skill conditional

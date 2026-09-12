@@ -22,17 +22,25 @@
 - [Research Attempt lineage and Research Failure candidate (M10-002)](RESEARCH_ATTEMPT_FAILURE_CONTRACT.md)
 - [Ref-only Method Trace v0.1 candidate (M3-009)](METHOD_TRACE_CANDIDATE_CONTRACT.md)
 - [Phase C runner-owned bounded Gate (M10-003)](PHASE_C_BOUNDED_GATE.md)
-- [Source admission contract (M4-001)](SOURCE_ADMISSION_CONTRACT.md)
-- [Artifact promotion contract (M4-002)](ARTIFACT_PROMOTION_CONTRACT.md)
-- [Run reconstruction contract and synthetic case (M4-004)](../workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md)
-- [Claim evidence localization (M4-003)](CLAIM_TRACE_CONTRACT.md)
+- [Accepted source admission implementation (M4-001)](SOURCE_ADMISSION_CONTRACT.md)
+- [Accepted artifact promotion implementation (M4-002)](ARTIFACT_PROMOTION_CONTRACT.md)
+- [Accepted Claim evidence localization implementation (M4-003)](CLAIM_TRACE_CONTRACT.md)
+- [Accepted bounded Run reconstruction implementation and synthetic case (M4-004)](../workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md)
 - [Deterministic release surface (M14-002)](RELEASE_SURFACE.md)
 - [Portable Runtime resources (M14-003)](RUNTIME_RESOURCES.md)
-- [Evaluation manifest contract (M5-003)](EVALUATION_MANIFEST_CONTRACT.md)
+- [Evaluation Manifest and non-executing plan contract (M5-003)](EVALUATION_MANIFEST_CONTRACT.md)
 - [File-authoritative Trace Core](TRACE_CORE.md)
 - [Execution Trace Adapter](EXECUTION_TRACE_ADAPTER.md)
 - [Provider Adapter plan and seam](PROVIDER_ADAPTER_PLAN.md)
 - [Testing strategy](TESTING_STRATEGY.md)
+
+M4 入口对应已接受的有界实现；各契约继续分别负责 source admission、promotion、Claim evidence
+localization 与 synthetic Run reconstruction，不因此取得 Claim/Human acceptance 或科学正确性权威。
+
+Evaluation 的 active implementation contract 目前仅含 M5-003 Manifest/check/non-executing plan。
+[ADR-0020](../decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) 已接受 Phase D dual transport
+与 system-level estimand；M5-006 Protocol、M6-008 baseline envelope/closeout 和 M5-007 Harness 的实现
+仍由 [TASKS](../TASKS.md) 与 [ROADMAP](../ROADMAP.md) 跟踪，不列入本节已实现契约。
 
 ## Evaluation and intake protocols
 

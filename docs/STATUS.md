@@ -1,7 +1,7 @@
 # 实现状态
 
 状态：Current implementation authority
-更新：2026-09-06
+更新：2026-09-11
 
 本页只回答“仓库现在实现到哪里”。实时任务状态由 [`TASKS.md`](TASKS.md) 维护，依赖方向由 [`ROADMAP.md`](ROADMAP.md) 维护。
 
@@ -12,6 +12,10 @@ RWB 处于**内部技术 alpha**：核心文件契约、解析和确定性验证
 Phase A / M8 Core Formalization 已完成契约收口。Phase B / M9-001～006 的需求、供给、生命周期、
 Protocol、两级 Snapshot 与 migration/replacement 结构契约已经实现。这里的“完成”不表示真实 Provider、
 production runtime-execution binding、Human Decision、科学有效性或端到端研究运行已经证明。
+
+M4-001～004 已全部 accepted / merged：Source Admission、Artifact Promotion、Claim evidence localization
+与 bounded Run reconstruction 构成已实现的 provenance 链。当前 Phase D 开发入口是 `M5-006` Protocol；
+M4 的 bounded 验收不替代真实 Case Dossier、live Provider/session conformance 或正式系统评价。
 
 Issue #57 / ADR-0021 已将 Product / Release Closure 从 M14 reservation 转为正式 Task family；`M14-001`
 release topology/source trust 已以 dormant、R2、fail-closed seam 完成。治理器可识别并校核 strict
@@ -42,7 +46,7 @@ release 仍未实现，当前 exact `develop -> main` 执行规则保持不变�
 | 确定性验证 | Schema、引用、哈希、权限交集、Handoff lock、Claim 支持关系 |
 | Source admission（M4-001） | `sources/raw` admission sidecar 固定来源 locator、时间、操作者、许可/数据边界、解析器与 exact byte hash；已提取引用若落入 `sources/inbox` 完整路径段则阻断（[契约](implementation/SOURCE_ADMISSION_CONTRACT.md)） |
 | Artifact promotion（M4-002） | accepted validation policy 固定 runner/checker；validation run 三元组仅记录 claimed provenance metadata，eligibility 由 promotion 时重执行 pinned pipeline 并复现 PASS report/transcript 当场确立；错误 PASS 阻断，byte-exact 自报历史不产生历史 producer/operator/time 权威；entries/live bytes exact closure 与 file-bound record 以 staging + commit-time revalidation + exclusive-create 同批发布 object/run/candidate bytes 与 durable Promotion Receipt，保留全部 work 与负结果 disposition（[契约](implementation/ARTIFACT_PROMOTION_CONTRACT.md)） |
-| Run reconstruction candidate（M4-004） | Run revision、输入/环境/输出 ObjectRef 与实际 FileRef 逐项闭合；锁定单文件程序、输入、参数和 exact Python 环境，在无原 Agent 会话的新进程重建合成整数仿真并保留负结果/差异/失败；只读检查不重跑 checker，结果不授予历史真实性、科学正确性或 Claim 权限（[契约与验收](workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md)） |
+| Bounded Run reconstruction（M4-004，accepted / merged） | Run revision、输入/环境/输出 ObjectRef 与实际 FileRef 逐项闭合；锁定单文件程序、输入、参数和 exact Python 环境，在无原 Agent 会话的新进程重建合成整数仿真并保留负结果/差异/失败；只读检查不重跑 checker，结果不授予历史真实性、科学正确性或 Claim 权限（[契约与验收](workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md)） |
 | Claim evidence localization（M4-003） | `claim trace --evidence-map` 将 exact Evidence 身份连接到 captured artifact bytes 与 admission/Promotion Receipt；支持、反证、限制同次定位，保留 retain-in-work 负结果；复用每次调用内已读字节，不重执行 checker（[契约](implementation/CLAIM_TRACE_CONTRACT.md)） |
 | Legacy alpha Task 解析 | 旧 `task resolve` 路径仍以 Task + Agent Profile + 显式或 Registry Skill 生成冻结 Assignment、权限交集与版本锁；它是 Skill-bearing compatibility seam，不是 M11 Runtime Core 的统一入口 |
 | Legacy Skill 兼容 | accepted Registry 的 active / legacy / deprecated 历史选择边界与精确版本继续可验证；新绑定使用 lifecycle v2 eligibility |
@@ -68,7 +72,7 @@ release 仍未实现，当前 exact `develop -> main` 执行规则保持不变�
 | 科学有效性 | Validator 不评判方法适用、证据质量或 Claim 正确性 |
 | Phase C candidates（M10-001/002 + M3-009 + M10-003） | 两个 synthetic bounded case 只证明 State/Attempt/Failure/Method Trace 的确定性 closure、fresh-process 受控读取和固定 fixture behavior；Human semantic review、R2/Phase C closeout 仍 pending，最终表示与 Topic 5 实现均未获授权 |
 | Source admission（M4-001） | 不抓取网页/API，不判断来源真实性、许可法律效力、内容安全或科学质量；它本身不实现后续 promotion、Claim trace 或 Run reproduction |
-| Artifact promotion（M4-002） | policy/execution/report/receipt 记录一次声称的校验运行（provenance metadata）与 exact byte copy 的可审计事实；eligibility 只由 promotion 时的确定性重执行等价当场确立；不接受 Claim、不记录 Human Decision、不直达 accepted/publication、不证明科学正确性，也不实现 M4-003 Claim Trace 或 M4-004 Run reproduction |
+| Artifact promotion（M4-002） | policy/execution/report/receipt 记录一次声称的校验运行（provenance metadata）与 exact byte copy 的可审计事实；eligibility 只由 promotion 时的确定性重执行等价当场确立；不接受 Claim、不记录 Human Decision、不直达 accepted/publication、不证明科学正确性；Claim trace 与 Run reconstruction 分别由已完成的 M4-003/004 承担 |
 | Claim evidence localization（M4-003） | 只验证声明关系和文件位置；limitation 定位于 Claim 文本，不虚构独立来源；不判定 locator 科学含义、不接受 Claim、不证明历史运行或科学正确性 |
 | Skill 价值 | 现有 Registry 条目不构成已证明的普适研究增益；新任务可优先 no-Skill / direct-tool |
 | Skill new-binding | 生产 projection index 仍为空；M11-005/006 只证明可选 publication/mapping contract，未重新准入任何 legacy Skill，也未证明真实 trial、Provider 可用性或科研净增量 |
