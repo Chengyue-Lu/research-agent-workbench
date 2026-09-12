@@ -1,0 +1,54 @@
+schema_version: 0.1.0
+trace_id: TRACE-GATE-B-DEFINITION-001
+task_id: M11-007
+task_revision: 1
+attempt_id: GATE-B-DEFINITION-001
+archive_root: GATE-B-DEFINITION-001
+baseline: rwb-agent-trace-v0.1
+owner_actor_id: codex-gate-b-definition
+owner: Chengyue-Lu
+attempt_status: incomplete
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 38ff7f3da4abd349b8b6230ac5ccb47b5721c59a2006ef3973f5fb0a1071eb78
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 8c551f0a5df13e51479bc9d618380f6fb76ba72f5bd3ed818a016ef8c05818e3
+read_allowlist:
+- .github/**
+- .rwb/gate-b/**
+- AGENTS.md
+- docs/**
+- src/research_workbench/execution/generic_closeout.py
+- src/research_workbench/observability/**
+- tests/test_documentation.py
+write_scope:
+- .rwb/gate-b/**
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/**
+- docs/workstreams/chengyue-lu/README.md
+tool_allowlist:
+- apply_patch
+- shell
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 692b7c3761c98b48ad3a5f298ae9fa62fbf369a50e7ab44d4a418fe7d2fc40b6
+  event_count: 8
+tool_event_refs:
+- path: tool-events/definition-0001-succeeded.json
+  sha256: d7d5effdde5a6e5fc0d21edb098ac3687d67fcdaed87ce38e042916fea398384
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: messages

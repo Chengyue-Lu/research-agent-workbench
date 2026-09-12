@@ -1,0 +1,12 @@
+{
+  "changed_task_ids": [
+    "M11-007",
+    "M5-007"
+  ],
+  "m11_007_status": "READY",
+  "m5_007_status": "BLOCKED",
+  "done_rows_preserved": 63,
+  "m6_008_unchanged": true,
+  "docs_only": true,
+  "findings": []
+}

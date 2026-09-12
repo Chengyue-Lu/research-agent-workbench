@@ -117,6 +117,10 @@ flowchart LR
     M6008 --> M5007
     M1104["M11-004 DONE<br/>Core generic closeout<br/>M11-003 Host facts"] --> M5007
     M1106["M11-006 DONE<br/>projection-backed Skill path"] --> M5007
+    M1104 --> M1107["M11-007 READY<br/>Skill closeout + replay"]
+    M1106 --> M1107
+    M1107 --> M5007
+    M1107 --> SCG
     SCG["M5-SKILL-CLOSEOUT-REPLAY-GATE<br/>Issue #55 / unsatisfied"] --> M5007
     M1106 -. "Projection + Supply" .-> A4G
     M1106 --> M5004
@@ -140,11 +144,12 @@ enforcement、Trace actual facts 与 replay-valid closeout。Capability Resolver
 qualification 必须保持 frozen Task/Requirement/Supply/component/
 implementation/interface 与相关 A3 Mode/Action/Method，所有 ceiling 只能等价或收窄。
 M5-007 不等待真实 case data，但 hard-depend M5-006、M6-008、M11-004 的 Core Host/Trace/Receipt contract、
-M11-006 的 projection-backed Skill mapping 与 `M5-SKILL-CLOSEOUT-REPLAY-GATE`。两个既有 M11 Task 当前均为
+M11-006 的 projection-backed Skill mapping、M11-007 的 Skill closeout 与 `M5-SKILL-CLOSEOUT-REPLAY-GATE`。两个既有 M11 Task 当前均为
 DONE；M6-008 当前仍为 PARKED，等待 Execution owner 推进，Core Receipt 也尚不支持 Skill-bearing actual binding；plain arm 不能通过 raw Task
 control、dummy Method/Snapshot 或 Skill Assignment 改写 M5-003 treatment。Harness 还必须独立重算 A3/A4
 pairwise record，不能把 Method、non-Skill substrate、interface 或 boundary 差异误报为 pure Skill effect。Issue
-#55 的 Gate A 已满足，Gate B 仍未满足，所以 M5-007 保持 BLOCKED。M5-003 本身没有执行案例或产生净增量结论。
+#55 的 Gate A 已满足；Gate B 的实施入口为 M11-007 READY，与 M6-008 独立推进。
+[Gate B](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md) 仍未满足，所以 M5-007 保持 BLOCKED。M5-003 本身没有执行案例或产生净增量结论。
 `A4-RUNTIME-ADMISSION-GATE` 是外部可审计条件，不是新 M Task：它保持 M5-003 的 candidate/evaluation
 origin，并 exact-pin Human Admission Decision→accepted Release→Projection→Supply→Resolution→Snapshot→
 Bundle→View→Host 的逐跳 identity/hash closure；当前生产 projection index 为空，故该 Gate 未满足。
@@ -162,6 +167,8 @@ unresolved closure 不得进入 primary net-benefit conclusion，也不能单独
 flowchart LR
     M1105["M11-005 DONE<br/>SkillReleaseProjection"] --> M1106["M11-006 DONE<br/>Skill supply mapping"]
     M1102["M11-002 DONE<br/>supply-neutral View Core"] --> M1106
+    M1104["M11-004 DONE<br/>Core closeout"] --> M1107["M11-007 READY<br/>Skill closeout replay"]
+    M1106 --> M1107
 ```
 
 M11-005/006 已按 accepted ADR-0019 完成 runtime-minimal projection publication 与统一 Skill Supply
