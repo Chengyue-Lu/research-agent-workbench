@@ -11,6 +11,29 @@
 
 ## Progress
 
+2026-09-12 PR70 integration: fetched/pruned origin and verified both the dedicated M5 worktree and
+the primary `develop` checkout were clean. Rebased the 15 M5 commits from base
+`1cb0c19c1182aac368cd61afee111249a86818bb` onto accepted PR70 at
+`ab98caf25125e6567d8bb2c8afff02105b54c940`. The previous reviewed head was
+`372363046509ca549ef2194881e0a7a7693b9aea`; the rebased implementation head is
+`a61b1330e9b689f7ac60028f1bdc9212ed825be5`. Range-diff preserves every patch;
+the Schema-test import context incorporates PR70's accepted validator-cache tests.
+Historical checkout conversion affected seven Trace files during replay; each difference was verified
+as line-ending-only before restoring the exact intermediate Git blob. Existing archives remain immutable.
+The primary checkout was not changed. The new final candidate is validated under PR70's accepted CI
+workflow, which shares ordered Python 3.11 behavioral execution with coverage and runs Python 3.13
+compatibility separately. Old CI run 34670209343 and its approval belong to the previous head/base;
+new exact-head plan/results and renewed review are recorded on PR71.
+
+Next integration sequence, based on TASKS and Issue55: first accept M5-006 through PR71; then activate
+Execution-owned M6-008 using the frozen A2 qualification contract. In parallel, define a separate
+docs-only Task for the Skill-bearing generic closeout replay seam before implementing Gate B with
+Execution review. M5-007 remains BLOCKED until M6-008 is DONE and Gate B is satisfied; its next
+implementation milestone is synthetic four-arm Harness proof, independently of real-case data.
+M5-001/002 case approval, M6-004 live conformance and production A4 admission remain M5-004 execution
+gates. PR69 is still open; M14 public documentation and later M12/M13 work are not new M5 dependencies.
+This integration record does not change Task definitions or downstream statuses.
+
 2026-09-12 cross-owner review on `cc1e214d8fdeea9644a261305b26f38469ce4b59`:
 [review](https://github.com/Chengyue-Lu/research-agent-workbench/pull/71#pullrequestreview-5184735519)
 accepted the preceding three fixes and requested case-scoped A3 comparison plus PR68 integration. Rebased onto
