@@ -11,6 +11,7 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         "system_evaluation_protocol", "evaluation_measurement", "evaluation_provider_interface",
         "arm_execution_qualification", "evaluation_case_closure", "admission_evidence_overlap",
         "a4_execution_qualification", "a3_a4_pairwise_comparability",
+        "baseline_execution_envelope", "baseline_execution_fact", "baseline_execution_receipt",
     }:
         return evaluation_kind
     if document.get("manifest_kind") == "python-file-reconstruction":

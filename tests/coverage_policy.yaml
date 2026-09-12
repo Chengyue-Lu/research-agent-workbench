@@ -11,6 +11,8 @@ suites:
       - test_accepted_skill_migration_fixtures
       - test_agent_trace
       - test_api_session_runner
+      - test_baseline_envelope
+      - test_baseline_execution
       - test_artifacts_admission
       - test_artifacts_promotion
       - test_artifacts_validation_host
@@ -140,6 +142,9 @@ thresholds:
     branch: 90
 
 critical_modules:
+  - src/research_workbench/execution/baseline_envelope.py
+  - src/research_workbench/execution/baseline.py
+  - src/research_workbench/execution/baseline_closeout.py
   - src/research_workbench/evaluation/pins.py
   - src/research_workbench/evaluation/system_protocol.py
   - src/research_workbench/evaluation/qualification.py
@@ -189,6 +194,19 @@ critical_modules:
   - src/research_workbench/research_state/gate.py
 
 negative_acceptance:
+  - surface: m6-baseline-envelope-and-replay
+    modules:
+      - src/research_workbench/execution/baseline_envelope.py
+      - src/research_workbench/execution/baseline.py
+      - src/research_workbench/execution/baseline_closeout.py
+    positive_tests:
+      - test_baseline_envelope.BaselineEnvelopeTests.test_a1_a2_compile_the_same_public_bytes_with_only_the_tool_delta
+      - test_baseline_execution.BaselineExecutionTests.test_a1_completes_using_only_the_public_payload
+      - test_baseline_execution.BaselineExecutionTests.test_a2_uses_the_qualified_callable_then_replays_without_tools
+    negative_tests:
+      - test_baseline_envelope.BaselineEnvelopeTests.test_projection_is_explicitly_frozen_and_cannot_add_controls_or_replace_task
+      - test_baseline_execution.BaselineExecutionTests.test_tool_file_drift_before_invocation_preserves_the_failed_attempt
+      - test_baseline_execution.BaselineExecutionTests.test_rehashed_actual_binding_cannot_override_independent_trace_facts
   - surface: m5-protocol-and-arm-qualification
     modules:
       - src/research_workbench/evaluation/pins.py

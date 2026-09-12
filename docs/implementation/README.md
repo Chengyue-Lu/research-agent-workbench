@@ -30,6 +30,7 @@
 - [Portable Runtime resources (M14-003)](RUNTIME_RESOURCES.md)
 - [Evaluation Manifest and non-executing plan contract (M5-003)](EVALUATION_MANIFEST_CONTRACT.md)
 - [System-Level Evaluation Protocol (M5-006)](SYSTEM_EVALUATION_PROTOCOL.md)
+- [Baseline A1/A2 transport candidate (M6-008)](../workstreams/huangyi/M6-BASELINE-EXECUTION/README.md)
 - [File-authoritative Trace Core](TRACE_CORE.md)
 - [Execution Trace Adapter](EXECUTION_TRACE_ADAPTER.md)
 - [Provider Adapter plan and seam](PROVIDER_ADAPTER_PLAN.md)

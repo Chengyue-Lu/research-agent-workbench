@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/baseline-execution-fact.schema.json",
+  "title": "Baseline Execution Fact",
+  "x-rwb-document-kind": "baseline_execution_fact",
+  "type": "object",
+  "required": [
+    "schema_version", "record_kind", "version", "fact_id", "attempt_id",
+    "envelope_ref", "operation", "phase", "call_id", "event_sequence",
+    "event_sha256", "started_at", "observed_at", "elapsed_seconds",
+    "binding", "tool_ref", "use_refs"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "record_kind": { "const": "baseline_execution_fact" },
+    "version": { "const": "1.0.0" },
+    "fact_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "attempt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "envelope_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "operation": { "enum": ["provider", "tool", "session"] },
+    "phase": { "enum": ["before", "after", "end"] },
+    "call_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "event_sequence": { "type": "integer", "minimum": 1 },
+    "event_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "started_at": { "type": "string", "format": "date-time" },
+    "observed_at": { "type": "string", "format": "date-time" },
+    "elapsed_seconds": { "type": "number", "minimum": 0 },
+    "binding": {
+      "oneOf": [
+        { "$ref": "resolved-execution-view.schema.json#/properties/binding" },
+        { "const": null }
+      ]
+    },
+    "tool_ref": {
+      "oneOf": [
+        { "$ref": "common.schema.json#/$defs/fileRef" },
+        { "const": null }
+      ]
+    },
+    "use_refs": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/fileRef" }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "operation": { "const": "session" } }, "required": ["operation"] },
+      "then": { "properties": { "phase": { "const": "end" }, "call_id": { "const": "session" }, "tool_ref": { "const": null } } },
+      "else": { "properties": { "phase": { "enum": ["before", "after"] }, "binding": { "$ref": "resolved-execution-view.schema.json#/properties/binding" } } }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "tool" } }, "required": ["operation"] },
+      "then": { "properties": { "tool_ref": { "$ref": "common.schema.json#/$defs/fileRef" } } },
+      "else": { "properties": { "tool_ref": { "const": null } } }
+    }
+  ],
+  "additionalProperties": false
+}

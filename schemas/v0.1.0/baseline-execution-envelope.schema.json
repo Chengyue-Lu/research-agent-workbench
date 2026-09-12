@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/baseline-execution-envelope.schema.json",
+  "title": "Baseline Execution Envelope",
+  "x-rwb-document-kind": "baseline_execution_envelope",
+  "type": "object",
+  "required": ["schema_version", "record_kind", "version", "envelope_id", "provider_visible_payload", "transport_enforcement_metadata", "boundaries"],
+  "properties": {
+    "schema_version": {"const": "0.1.0"},
+    "record_kind": {"const": "baseline_execution_envelope"},
+    "version": {"const": "1.0.0"},
+    "envelope_id": {"type": "string", "minLength": 1},
+    "provider_visible_payload": {
+      "type": "object",
+      "required": ["instruction", "inputs", "required_outputs", "tools"],
+      "properties": {
+        "instruction": {"type": "string", "minLength": 1},
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["ref", "text"],
+            "properties": {
+              "ref": {"$ref": "common.schema.json#/$defs/fileRef"},
+              "text": {"type": "string"}
+            },
+            "additionalProperties": false
+          }
+        },
+        "required_outputs": {"$ref": "task-packet.schema.json#/properties/required_outputs"},
+        "tools": {"type": "array", "items": {"$ref": "#/$defs/toolDefinition"}, "uniqueItems": true}
+      },
+      "additionalProperties": false
+    },
+    "transport_enforcement_metadata": {
+      "type": "object",
+      "required": ["protocol_ref", "manifest_ref", "task_ref", "public_payload_ref", "qualification_ref", "arm_id", "accountable_owner", "execution_binding", "budget", "context", "permissions", "write_scope", "compiler_ref"],
+      "properties": {
+        "protocol_ref": {"$ref": "common.schema.json#/$defs/fileRef"},
+        "manifest_ref": {"$ref": "common.schema.json#/$defs/fileRef"},
+        "task_ref": {"$ref": "common.schema.json#/$defs/fileRef"},
+        "public_payload_ref": {"$ref": "common.schema.json#/$defs/fileRef"},
+        "qualification_ref": {"oneOf": [{"$ref": "common.schema.json#/$defs/fileRef"}, {"type": "null"}]},
+        "arm_id": {"enum": ["plain-agent", "plain-agent-tool"]},
+        "accountable_owner": {"type": "string", "minLength": 1},
+        "execution_binding": {"$ref": "resolved-execution-view.schema.json#/properties/binding"},
+        "budget": {
+          "type": "object",
+          "required": ["max_turns", "max_output_tokens", "max_parallel", "max_seconds"],
+          "properties": {
+            "max_turns": {"type": "integer", "minimum": 1},
+            "max_output_tokens": {"type": "integer", "minimum": 1},
+            "max_parallel": {"type": "integer", "minimum": 0},
+            "max_seconds": {"type": "integer", "minimum": 1}
+          },
+          "additionalProperties": false
+        },
+        "context": {"$ref": "evaluation-manifest.schema.json#/properties/frozen_conditions/properties/context"},
+        "permissions": {"$ref": "common.schema.json#/$defs/permissions"},
+        "write_scope": {"$ref": "task-packet.schema.json#/properties/write_scope"},
+        "compiler_ref": {"$ref": "common.schema.json#/$defs/fileRef"}
+      },
+      "additionalProperties": false
+    },
+    "boundaries": {
+      "const": {
+        "execution_authority": false,
+        "supply_selection": false,
+        "permission_grant": false,
+        "method_decision": false,
+        "task_completion": false,
+        "claim_acceptance": false,
+        "human_decision": false,
+        "promotion": false,
+        "topic5_recovery": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {"properties": {"transport_enforcement_metadata": {"properties": {"arm_id": {"const": "plain-agent"}}}}},
+      "then": {
+        "properties": {
+          "provider_visible_payload": {"properties": {"tools": {"maxItems": 0}}},
+          "transport_enforcement_metadata": {"properties": {"qualification_ref": {"type": "null"}}}
+        }
+      },
+      "else": {
+        "properties": {
+          "provider_visible_payload": {"properties": {"tools": {"minItems": 1}}},
+          "transport_enforcement_metadata": {"properties": {"qualification_ref": {"$ref": "common.schema.json#/$defs/fileRef"}}}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "publicProjection": {
+      "type": "object",
+      "required": ["task_ref", "instruction", "input_refs", "required_outputs"],
+      "properties": {
+        "task_ref": {"$ref": "common.schema.json#/$defs/fileRef"},
+        "instruction": {"type": "string", "minLength": 1},
+        "input_refs": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/fileRef"}, "uniqueItems": true},
+        "required_outputs": {"$ref": "task-packet.schema.json#/properties/required_outputs"}
+      },
+      "additionalProperties": false
+    },
+    "toolDefinition": {
+      "type": "object",
+      "required": ["name", "description", "input_schema"],
+      "properties": {
+        "name": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"},
+        "description": {"type": "string"},
+        "input_schema": {"type": "object", "required": ["type"], "properties": {"type": {"const": "object"}}}
+      },
+      "additionalProperties": false
+    }
+  }
+}
