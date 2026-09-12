@@ -52,7 +52,7 @@ evidence，不生成 hard dependency。
 | M3 | Context, Trace & risk | task-defined；部分 residual work PARKED |
 | M4 | Artifact, provenance & reproducibility | task-defined |
 | M5 | Evaluation & pruning | task-defined |
-| M6 | Provider/API execution seams | task-defined；M6-008 消费 M5-006 shared qualification contract，当前 PARKED；具名责任人维护 |
+| M6 | Provider/API execution seams | task-defined；M6-008 消费 M5-006 shared qualification contract，当前 READY，已有待验收 transport 候选；具名责任人维护 |
 | M7 | Mode–Skill selection & coordination evidence | task-defined |
 | M8 | Method Core formalization | task-defined and complete |
 | M9 | Evolution Foundation | task-defined and complete |
@@ -113,7 +113,7 @@ flowchart LR
 
     M4Done["M4-001～004 DONE<br/>bounded provenance chain"] --> M5004
     BTG["ADR-0020 dual transport<br/>Gate A satisfied"] --> M5006
-    M5006 --> M6008["M6-008 PARKED<br/>baseline envelope + replay closeout"]
+    M5006 --> M6008["M6-008 READY<br/>baseline envelope + replay closeout"]
     M6008 --> M5007
     M1104["M11-004 DONE<br/>Core generic closeout<br/>M11-003 Host facts"] --> M5007
     M1106["M11-006 DONE<br/>projection-backed Skill path"] --> M5007
@@ -125,7 +125,7 @@ flowchart LR
 
 M4-001～004 已闭合 bounded admission、promotion、Claim evidence localization 与 Run reconstruction；
 promotion eligibility 仍只由当次 pinned pipeline 重执行确立，不证明自报历史 provenance。当前开发入口是
-`M5-006 DONE → M6-008 PARKED → M5-007 BLOCKED`，后两项须由相应 owner 按各自全部前置进入开发。
+`M5-006 DONE → M6-008 READY → M5-007 BLOCKED`，后两项须由相应 owner 按各自全部前置进入开发。
 M5-004 的 M4 provenance 链、M5-003 计划契约与 M11-006 mapping 机制已满足；仍等待两个 Human-approved
 public/private Case Dossier、M6-008 baseline closeout、Skill replay Gate、M5-007 Harness、真实 A4 admission 与 M6-004 live
 Provider/session Gate。ADR-0020 已 exact-pin
@@ -141,7 +141,7 @@ qualification 必须保持 frozen Task/Requirement/Supply/component/
 implementation/interface 与相关 A3 Mode/Action/Method，所有 ceiling 只能等价或收窄。
 M5-007 不等待真实 case data，但 hard-depend M5-006、M6-008、M11-004 的 Core Host/Trace/Receipt contract、
 M11-006 的 projection-backed Skill mapping 与 `M5-SKILL-CLOSEOUT-REPLAY-GATE`。两个既有 M11 Task 当前均为
-DONE；M6-008 当前仍为 PARKED，等待 Execution owner 推进，Core Receipt 也尚不支持 Skill-bearing actual binding；plain arm 不能通过 raw Task
+DONE；M6-008 已激活为 READY，Execution owner 正在验证 A1/A2 transport 候选，Core Receipt 也尚不支持 Skill-bearing actual binding；plain arm 不能通过 raw Task
 control、dummy Method/Snapshot 或 Skill Assignment 改写 M5-003 treatment。Harness 还必须独立重算 A3/A4
 pairwise record，不能把 Method、non-Skill substrate、interface 或 boundary 差异误报为 pure Skill effect。Issue
 #55 的 Gate A 已满足，Gate B 仍未满足，所以 M5-007 保持 BLOCKED。M5-003 本身没有执行案例或产生净增量结论。

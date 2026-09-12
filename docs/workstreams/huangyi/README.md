@@ -8,6 +8,8 @@ owner：黄毅（GitHub 主名 `let778750-cpu`；昵称/界面名 `huangyi855`�
 
 当前研究/审计 workstream：
 
+- [`M6-BASELINE-EXECUTION/`](M6-BASELINE-EXECUTION/README.md)：
+  M6-008 A1/A2 公开输入、隔离执行与文件重放候选；由已接受的 M5-006 契约继续推进。
 - [`execution-runtime-recovery-audit/`](execution-runtime-recovery-audit/README.md)：
   Execution/Runtime 可恢复审计、PR #23 hard-block 证据及治理 rollout。
 - [`open-source-agent-harness-research/`](open-source-agent-harness-research/README.md)：
