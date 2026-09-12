@@ -1,0 +1,1 @@
+{"source_head":"09d76114cb64be0a7764a3fa3ee49cee0c63e19a","selection":{"accepted":{"selected":["test_reader"],"errors":[]},"candidate":{"selected":[],"errors":[]}},"actual_execution":{"good":{"returncode":0,"assertion_failed":false},"bad":{"returncode":1,"assertion_failed":true}}}
