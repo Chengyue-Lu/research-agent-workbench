@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/a4-execution-qualification.schema.json",
+  "title": "A4 Execution Qualification",
+  "x-rwb-document-kind": "a4_execution_qualification",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "overlay_id",
+    "version",
+    "protocol_ref",
+    "manifest_ref",
+    "arm_id",
+    "checked_at",
+    "task_ref",
+    "admission_evaluation_ref",
+    "admission_decision_ref",
+    "accountable_human",
+    "release_ref",
+    "lifecycle_ref",
+    "projection_ref",
+    "promotion_provenance_ref",
+    "runtime_bindings",
+    "case_closure_ref",
+    "case_selection_frozen_at",
+    "admission_overlap_assessment_ref",
+    "overlap_status",
+    "overlap_refs",
+    "primary_confirmatory_eligible",
+    "evidence_phase",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "a4_execution_qualification"
+    },
+    "overlay_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "protocol_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "manifest_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "arm_id": {
+      "const": "mode-candidate-skill"
+    },
+    "checked_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "task_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "admission_evaluation_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "admission_decision_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "accountable_human": {
+      "type": "string",
+      "minLength": 1
+    },
+    "release_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "lifecycle_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "projection_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "promotion_provenance_ref": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/fileRef"
+        },
+        {
+          "const": null
+        }
+      ]
+    },
+    "runtime_bindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "snapshot_ref",
+          "bundle_ref",
+          "view_ref",
+          "interface_ref"
+        ],
+        "properties": {
+          "snapshot_ref": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          },
+          "bundle_ref": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          },
+          "view_ref": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          },
+          "interface_ref": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "case_closure_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "case_selection_frozen_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "admission_overlap_assessment_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "overlap_status": {
+      "enum": [
+        "held-out",
+        "admission-overlap",
+        "unresolved"
+      ]
+    },
+    "overlap_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "category",
+          "admission_identity",
+          "comparison_identity",
+          "by"
+        ],
+        "properties": {
+          "category": {
+            "enum": [
+              "case",
+              "task",
+              "formal-input",
+              "private-oracle"
+            ]
+          },
+          "admission_identity": {
+            "type": "string",
+            "minLength": 1
+          },
+          "comparison_identity": {
+            "type": "string",
+            "minLength": 1
+          },
+          "by": {
+            "enum": [
+              "identity",
+              "hash",
+              "identity-and-hash"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "primary_confirmatory_eligible": {
+      "type": "boolean"
+    },
+    "evidence_phase": {
+      "const": "pre-run-qualification"
+    },
+    "boundaries": {
+      "const": {
+        "runtime_input": false,
+        "execution_authority": false,
+        "supply_selection": false,
+        "human_decision": false,
+        "claim_acceptance": false,
+        "promotion": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

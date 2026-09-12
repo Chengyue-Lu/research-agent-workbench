@@ -1,0 +1,62 @@
+schema_version: 0.1.0
+trace_id: TRACE-M5-006-REVIEW-002
+task_id: M5-006
+task_revision: 1
+attempt_id: M5-006-REVIEW-002
+archive_root: M5-006-REVIEW-002
+baseline: rwb-agent-trace-v0.1
+owner_actor_id: codex-m5-review-repair
+owner: Chengyue-Lu
+attempt_status: incomplete
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: b9d2ae5cf518626a52d78b9b8aa2542f6adb006c6d197bd34dc8bab9532dd386
+actors_ref:
+  path: ACTORS.yaml
+  sha256: c1876f942fb7744f165fc4db44b3d7fd333981a391bf9686f2cfcecdb65d84fe
+read_allowlist:
+- .github/**
+- .rwb/m5-review/**
+- AGENTS.md
+- docs/**
+- examples/**
+- registry/**
+- schemas/**
+- src/research_workbench/**
+- tests/**
+write_scope:
+- .rwb/m5-review/**
+- docs/implementation/SYSTEM_EVALUATION_PROTOCOL.md
+- docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/**
+- schemas/v0.1.0/system-evaluation-protocol.schema.json
+- src/research_workbench/evaluation/**
+- tests/**
+tool_allowlist:
+- apply_patch
+- shell
+- write_stdin
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 68719adc9f2a316245e78b39ba2cc5ed250960348aa1235bc305ddedcf2c7dd6
+  event_count: 10
+tool_event_refs:
+- path: tool-events/review-0001-unknown.json
+  sha256: ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356
+- path: tool-events/review-0002-unknown.json
+  sha256: ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356
+- path: tool-events/review-0003-attempted.json
+  sha256: 4e5e4971171e18adb6726a99e2abf23d555cac1e58b3e8fca702f95e096ec980
+- path: tool-events/review-0004-succeeded.json
+  sha256: a16b0e72d22fbbc10a10afae23dfb1c2c3cbe8870de55add25918ee8e2d9521e
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: messages

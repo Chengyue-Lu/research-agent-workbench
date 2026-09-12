@@ -7,7 +7,10 @@
 1. [项目章程](PROJECT_CHARTER.md)：产品长期使命、责任与边界；
 2. [总体架构](ARCHITECTURE.md)：已接受的概念、传递关系与不变量；
 3. [上手指南](GETTING_STARTED.md)：当前受支持的离线开发者路径；
-4. [实现状态](STATUS.md)：当前成熟度、已实现能力与已知限制。
+4. [支持能力与证据边界](SUPPORTED_FEATURES.md)：公开支持矩阵与证据等级；
+5. [公开模块导航](PUBLIC_GUIDE.md)：随发行源码提供的稳定模块入口。
+
+本页是开发侧文档索引。工程实现进度见[实现状态](STATUS.md)，贡献、兼容与历史入口见下表。
 
 ## 按任务查找
 
@@ -25,7 +28,8 @@
 | 表面 | 只回答什么 | 权威文件 |
 |---|---|---|
 | Stable | 系统是什么、概念如何协作、长期规则是什么 | `README`、Charter、Architecture、Modules、Development |
-| Status | 当前实现和成熟度如何 | [STATUS.md](STATUS.md) |
+| Public support | 用户可用入口、证据等级与限制的单一来源 | [SUPPORTED_FEATURES.md](SUPPORTED_FEATURES.md) |
+| Status | 当前工程实现和成熟度如何，补充公开支持矩阵 | [STATUS.md](STATUS.md) |
 | Task planning | exact M Task、owner、hard dependency、scope、验收和实时状态 | [TASKS.md](TASKS.md) |
 | Construction navigation | M-group 施工路线、已定义原子链与 future reservation | [M_SERIES_IMPLEMENTATION_MAP.md](M_SERIES_IMPLEMENTATION_MAP.md)；状态/依赖仍以 TASKS 为准 |
 | Architecture planning | Phase/Topic、macro dependency 与 architecture Gate | [ROADMAP.md](ROADMAP.md) |

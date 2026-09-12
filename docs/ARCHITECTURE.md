@@ -134,7 +134,7 @@ Release metadata 和 runtime eligibility 只声明供给事实与 ceiling，不�
 
 no-Skill、direct Tool、procedure 与 Adapter/Provider 路径在 Evolution 对象完全缺席时仍必须闭合。
 Runtime 对 gap/failure 最多形成 `CapabilityDiagnostic`；只有具名 Maintainer 的独立 triage 才能提出
-Skill Need。完整决定见 [ADR-0019](decisions/0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md)。
+Skill Need。
 
 ## 5. 上下文与连续性
 
@@ -168,4 +168,4 @@ Codex/OpenCode 等 Agent Runtime、MCP、CLI 或本地程序通过薄 Adapter �
    不能改写运行中的执行输入或在其中 rebind/fallback；
 8. 任何机制都可以在未证明价值或增加负担时被降级、替换或退役。
 
-当前实现覆盖见[实现状态](STATUS.md)，旧契约边界见[兼容性说明](compatibility/README.md)，概念细节见[模块设计](modules/)。
+当前支持与证据等级见[支持能力与证据边界](SUPPORTED_FEATURES.md)，模块与源码入口见[公开模块导航](PUBLIC_GUIDE.md)。

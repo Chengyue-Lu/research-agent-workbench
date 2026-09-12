@@ -1,0 +1,116 @@
+{
+  "deleted": [
+    {
+      "name": "audit/test-perf-002-precision-benchmark",
+      "sha": "5d9a43cecc47d376b6b8d4b60576541e42b8650a",
+      "reason": "completed CI measurement/probe; exact history archived"
+    },
+    {
+      "name": "audit/test-perf-002-precision-final",
+      "sha": "57d6622dd7b5652c3c9640859f718d0dec7a97e8",
+      "reason": "completed CI measurement/probe; exact history archived"
+    },
+    {
+      "name": "feature/m14-release-foundation",
+      "sha": "31f1f27bde1452668172f8b2e0e3dec80bb943e8",
+      "reason": "merged PR60 exact tree"
+    },
+    {
+      "name": "test/precision-2390-claim",
+      "sha": "fb6c775f7fb57cc56a3bd46a8adc459595e2731f",
+      "reason": "completed CI measurement/probe; exact history archived"
+    },
+    {
+      "name": "test/precision-2390-claim-downstream-fault",
+      "sha": "83220b93381a8c1af724e2a7569c1fdfebba6ed7",
+      "reason": "completed CI measurement/probe; exact history archived"
+    },
+    {
+      "name": "test/precision-2390-claim-source-fault",
+      "sha": "b23b0e08d1e45cc0088d58ef8a9c7fba613ddb37",
+      "reason": "completed CI measurement/probe; exact history archived"
+    },
+    {
+      "name": "test/precision-2390-projection",
+      "sha": "b5182ccd228581df0ca7bc510f8e67b91ebf1e9e",
+      "reason": "completed CI measurement/probe; exact history archived"
+    },
+    {
+      "name": "test/precision-2390-projection-downstream-fault",
+      "sha": "a947c66f2c9b7d9e5b09c38d2b7dfd7d5a8bd387",
+      "reason": "completed CI measurement/probe; exact history archived"
+    },
+    {
+      "name": "test/precision-2390-projection-source-fault",
+      "sha": "50240f62562af33093d785c2e84c9a993c3da7e6",
+      "reason": "completed CI measurement/probe; exact history archived"
+    },
+    {
+      "name": "test/precision-2390-release",
+      "sha": "fee9a5b45749add6275d04f3a6de53622440cdab",
+      "reason": "completed CI measurement/probe; exact history archived"
+    },
+    {
+      "name": "test/precision-2390-release-downstream-fault",
+      "sha": "6b292d677146f60e42a22debea89cab610bd55c1",
+      "reason": "completed CI measurement/probe; exact history archived"
+    },
+    {
+      "name": "test/precision-2390-release-source-fault",
+      "sha": "995130d35d6d574fd4536ffc0ae879aa2b59498b",
+      "reason": "completed CI measurement/probe; exact history archived"
+    },
+    {
+      "name": "test/precision-after-claim",
+      "sha": "aba799d65581f45b18c890ef7b7a942aaa272853",
+      "reason": "completed CI measurement/probe; exact history archived"
+    },
+    {
+      "name": "test/precision-after-projection",
+      "sha": "367e34a2141cf11270efac4b43840363c8eed4f4",
+      "reason": "completed CI measurement/probe; exact history archived"
+    },
+    {
+      "name": "test/precision-after-release",
+      "sha": "d1b5e1692890decef201e9f92acc2081f7aa8b90",
+      "reason": "completed CI measurement/probe; exact history archived"
+    },
+    {
+      "name": "test/precision-before-claim",
+      "sha": "4438f89f07fdd1b10a7e6cd16917c683a8dd12a9",
+      "reason": "completed CI measurement/probe; exact history archived"
+    },
+    {
+      "name": "test/precision-before-combined",
+      "sha": "20629e79969f92cf764230ada7143ca8e356ebee",
+      "reason": "completed CI measurement/probe; exact history archived"
+    },
+    {
+      "name": "test/precision-before-projection",
+      "sha": "aff349815fc06c059bef6e588029d52b2b830c2f",
+      "reason": "completed CI measurement/probe; exact history archived"
+    },
+    {
+      "name": "test/precision-before-release",
+      "sha": "70e1b7191f2861d8dbdfc376c8fdd19ad45ebae2",
+      "reason": "completed CI measurement/probe; exact history archived"
+    },
+    {
+      "name": "test/precision-final-claim",
+      "sha": "42ef226ed13665fa2a8490230fc291c38775dea7",
+      "reason": "completed CI measurement/probe; exact history archived"
+    },
+    {
+      "name": "test/precision-final-projection",
+      "sha": "89419a82d52a6bd6883e11bd59f90bcad6675a2b",
+      "reason": "completed CI measurement/probe; exact history archived"
+    },
+    {
+      "name": "test/precision-final-release",
+      "sha": "cb5366d0cbc16517bb42df3bacc91e463a774fe5",
+      "reason": "completed CI measurement/probe; exact history archived"
+    }
+  ],
+  "bundle_sha256": "3bc0caeb762d569a33434118892f198d4355de2837caea5edea0b2256c0ee9cc",
+  "scope": "local branch refs only; worktrees, ignored evidence and remote refs preserved"
+}

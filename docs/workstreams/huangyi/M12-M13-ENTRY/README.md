@@ -3,7 +3,7 @@
 - Audit ID：`AUDIT-M12-M13-ENTRY-001`；风险：R2；类型：文档审计与后续定义输入。
 - 责任人：黄毅（`let778750-cpu`），负责执行 consumer 与事实接口准备。
 - 语义审查归属：路诚钺（`Chengyue-Lu`），负责 State/Method/Failure 及策略、Need、Evaluation/Admission 语义。此处说明责任，不填充其尚未作出的决定。
-- 接受基线：`develop@ab98caf25125e6567d8bb2c8afff02105b54c940`；日期：2026-09-12。
+- 原始审查输入基线：`develop@ab98caf25125e6567d8bb2c8afff02105b54c940`；当前集成接受基线：`develop@60bdf8c28f6cf8c52c04e481e0309bbd6e8cba8b`；日期：2026-09-12。
 - 授权：黄毅要求先复审最新 PR 修改，随后推进 M12/M13；本次把此前本地分析转为可共同审查的仓库输入。
 - 状态：**审查输入已准备；Phase C 具名语义收口、M12/M13 激活与 feature implementation 均未因此接受。**
 
@@ -32,9 +32,9 @@ M13 已有反馈改进需求，但当前材料没有真实重复模型行为的�
 
 ## 3. 与当前主线的关系
 
-M4-001～004 已 DONE。PR70 已接受合入，提供当前 CI 优化基线。PR71 的 M5-006 修复已被复审认可，但截至本文件基线尚未合并；M6-008、Skill replay、Harness、真实 case/live/admission 保持其既有条件。PR69 的 M14-004 是准备范围，未因此完成最终 scaffold/Quickstart 验收。
+M4-001～004 已 DONE。PR70 已接受合入，提供当前 CI 优化基线。PR71 已于 `60bdf8c` 合入，M5-006 为 DONE，共享 qualification contract 已冻结。黄毅优先推进 M6-008 的独立实现候选；当前 canonical Task 行仍为 PARKED，其状态和功能验收不由本 PR 代填。Skill replay、Harness、真实 case/live/admission 继续保留各自条件。PR69 的 M14-004 是准备范围，未因此完成最终 scaffold/Quickstart 验收。
 
-本变更不修改 [TASKS](../../../TASKS.md)、[ROADMAP](../../../ROADMAP.md)、Schema、Registry、CLI 或产品实现；不为 M12/M13 分配原子 Task ID。准备工作可以并行，实际 feature 仍消费其准确依赖。M12/M13 不成为 M5 的新增前置，no-Skill 接续也不等待 Skill admission 或 M14 发行。
+本 PR 自身不修改 [TASKS](../../../TASKS.md)、[ROADMAP](../../../ROADMAP.md)、Schema、Registry、CLI 或产品实现；集成 develop 时保留其已接受更新，不为 M12/M13 分配原子 Task ID。M6 实施优先，M12 语义收口与 M13 真实反馈归因可以并行准备，实际 feature 仍消费其准确依赖。M12/M13 不成为 M5 的新增前置，no-Skill 接续也不等待 Skill admission 或 M14 发行。
 
 ## 4. 下一交付
 

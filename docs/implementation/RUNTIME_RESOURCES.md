@@ -61,9 +61,10 @@ and broad `.agents`/`.codex` roots are absent from the default resource catalog.
 Repository publication validation continues to own Lifecycle, Evaluation, Human Decision and license/admission
 truth. Installed validation consumes published bytes and does not reread that history or grant admission.
 M14-005 continues to own release readiness and topology activation.
-The next curated surface version must include `build_backend.py`, `runtime-resources.json` and all declared
-build inputs when M14-004 composes the package and public documentation surface; the original M14-002
-engineering policy version remains immutable.
+Curated surface policy `1.1.0` includes `build_backend.py`, `runtime-resources.json` and the declared
+no-Skill input alongside the existing catalog classes. M14-004 checks this build-input closure together with
+public navigation; the original M14-002 engineering policy version remains immutable. The structural Quickstart
+continues to be distinct from M1-009's forthcoming full scaffold flow.
 
 ## Verification
 

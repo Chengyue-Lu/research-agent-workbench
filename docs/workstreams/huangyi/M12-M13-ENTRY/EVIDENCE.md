@@ -21,7 +21,9 @@
 - [host.py](../../../../src/research_workbench/execution/host.py)与 [generic_closeout.py](../../../../src/research_workbench/execution/generic_closeout.py)：现有 action slice 的执行/闭合边界，仍不授予 Topic 5 authority。
 - [ADR-0019](../../../decisions/0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md)及 TASKS 中 M7/M9：已有可复用演化路径及未激活反馈桥，不需凭“自学习”名称再建相同生命周期。
 
-当前 PR 状态来源：[PR70 接受](https://github.com/Chengyue-Lu/research-agent-workbench/pull/70#pullrequestreview-5186088306)及合并提交、[PR71 本轮复审](https://github.com/Chengyue-Lu/research-agent-workbench/pull/71#pullrequestreview-5186095164)、[PR69](https://github.com/Chengyue-Lu/research-agent-workbench/pull/69)。PR71 的原基线 CI 不证明包含 PR70 的新集成目标通过；本审计不代替其最终检查。
+原始准备时的 PR 状态来源：[PR70 接受](https://github.com/Chengyue-Lu/research-agent-workbench/pull/70#pullrequestreview-5186088306)及合并提交、[PR71 当轮复审](https://github.com/Chengyue-Lu/research-agent-workbench/pull/71#pullrequestreview-5186095164)、[PR69](https://github.com/Chengyue-Lu/research-agent-workbench/pull/69)。该时点的 PR71 复审不代替后续集成检查。
+
+2026-09-12 集成更新：[PR71 合并提交](https://github.com/Chengyue-Lu/research-agent-workbench/commit/60bdf8c28f6cf8c52c04e481e0309bbd6e8cba8b)已使 M5-006 DONE。本分支集成该 accepted develop，保留上述原始 Case 输入基线与历史验证记录；Phase C Human/R2 收口和 M12/M13 激活条件没有因此改变。M6-008 的共享契约前置已具备，黄毅优先推进其独立候选，但 canonical 行仍为 PARKED，不由本审查输入更新。
 
 ## 3. 本变更的最小检查
 

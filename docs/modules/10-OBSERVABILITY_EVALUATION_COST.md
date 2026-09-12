@@ -120,11 +120,11 @@ Tool 条件增量。`A4 − A3` 只有在 pairwise exact-equality closure 证明
 时才解释为 Skill conditional increment，否则按 Skill-bearing package / bundled effect 或 unavailable 处理；
 `A3 − A2` 不能解释为 pure Mode effect。
 
-已实现的 Evaluation contract 仍限于 M5-003 的 Manifest 与 non-executing plan。System-Level Evaluation
-Protocol（M5-006）将冻结 execution qualification、pairwise comparability、盲评、measurement status、
-admission-evidence overlap/held-out policy 与分析规则；baseline envelope/closeout（M6-008）和
-System-Level Evaluation Harness（M5-007）在该 Protocol 基础上实现执行与证据重算。这些是后继工作，
-本模块不定义其 Schema，也不把架构决定计为 transport 或 Harness 实现证据。
+[Evaluation Manifest](../implementation/EVALUATION_MANIFEST_CONTRACT.md)（M5-003）负责 non-executing plan；
+[System-Level Evaluation Protocol](../implementation/SYSTEM_EVALUATION_PROTOCOL.md)（M5-006）负责
+execution qualification、pairwise comparability、盲评、measurement status、admission-evidence overlap/held-out
+policy 与分析规则。baseline envelope/closeout（M6-008）和 System-Level Evaluation Harness（M5-007）消费
+这些契约实现执行与证据重算。本模块不定义其 Schema；实现覆盖和后继 Gate 由 STATUS 与 TASKS 维护。
 
 A4 保留 `mode-candidate-skill` 的 frozen treatment identity，正式执行必须闭合具名准入决定与
 accepted Release→Projection→Supply→Resolution→Snapshot→Bundle→View→Host lineage；Runtime 只消费

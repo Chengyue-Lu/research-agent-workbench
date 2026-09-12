@@ -1,0 +1,120 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260912-001
+task_id: DOC-ALIGN-002
+task_revision: 2
+attempt_id: A-20260912-001
+archive_root: A-20260912-001
+baseline: ab98caf25125e6567d8bb2c8afff02105b54c940
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 66361c99a91c2aebc40d442777a9af89a4d43a7b3c9012b463a2db151f7b0ba7
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 92c312ba0ecec27e1d5062d017e28b5978b08a9adc60235d7af5a5079a9cd55d
+read_allowlist:
+- .github/**
+- AGENTS.md
+- docs/**
+- schemas/v0.1.0/agent-trace*
+- src/research_workbench/observability/trace.py
+- tests/**
+- work/DOC-ALIGN-002/**
+write_scope:
+- docs/TASKS.md
+- docs/decisions/README.md
+- docs/workstreams/chengyue-lu/DOC-ALIGN-002/FOLLOWUP-20260912.md
+- docs/workstreams/chengyue-lu/DOC-ALIGN-002/README.md
+- docs/workstreams/chengyue-lu/DOC-ALIGN-002/RISK_LEDGER.md
+- docs/workstreams/chengyue-lu/POST-INTEGRATION-DOCS-ALIGNMENT/README.md
+- docs/workstreams/chengyue-lu/README.md
+- docs/workstreams/huangyi/README.md
+- work/DOC-ALIGN-002/A-20260912-001/**
+tool_allowlist:
+- apply_patch
+- collaboration
+- gh
+- git
+- python
+messages:
+- message_id: MSG-0001
+  sequence: 1
+  path: messages/0001-assignment.trace
+  sha256: 5e8f309772dea80a41b0f31815754b5ba96cc708c44ba645f115dc52c815c142
+  content_sha256: 15f56c40ff08eb8f9c35c6b8d349845cda8e69e3cd0ed74fb134ff0d2aec69c3
+  kind: assignment
+  sender_actor_id: main-agent
+  receiver_actor_ids:
+  - docs-integration-auditor
+  created_at: '2026-09-12T10:23:38.467482Z'
+  capture_status: complete
+- message_id: MSG-0002
+  sequence: 2
+  path: messages/0002-handoff.trace
+  sha256: fcc3277db3667394011bd5f246d470f108c39d38403a3b1186790d71135ea1fc
+  content_sha256: 5641f947967b99272cff75e605aa90af3ddd07d8e44772a43923aced74158b93
+  kind: handoff
+  sender_actor_id: docs-integration-auditor
+  receiver_actor_ids:
+  - main-agent
+  created_at: '2026-09-12T10:23:38.477010Z'
+  capture_status: complete
+- message_id: MSG-0003
+  sequence: 3
+  path: messages/0003-assignment.trace
+  sha256: 71766177fde97554dd5cdf3a4e16267ca9b93dee9fa281f02864617dd84f9ac9
+  content_sha256: 3413cd224687acd259b5e0b2b828948177ffa08243de3adf043bebc6b5bafd40
+  kind: assignment
+  sender_actor_id: main-agent
+  receiver_actor_ids:
+  - docs-integration-auditor
+  created_at: '2026-09-12T10:23:38.485300Z'
+  capture_status: complete
+- message_id: MSG-0004
+  sequence: 4
+  path: messages/0004-progress.trace
+  sha256: 517cd8a144642f9245dd0686a62d2456c98ea4c4e81a6b884b8458841e2c822a
+  content_sha256: ee8b9c9bf77d6e4e6238679f207dbfe0996498fc6c1320e002e785dbcb296960
+  kind: progress
+  sender_actor_id: docs-integration-auditor
+  receiver_actor_ids:
+  - main-agent
+  created_at: '2026-09-12T10:23:38.497761Z'
+  capture_status: complete
+- message_id: MSG-0005
+  sequence: 5
+  path: messages/0005-handoff.trace
+  sha256: c0647541d15dbf15ecdd54a8e8a1317ad4dbd822a6de402bece4ffb6c8fa98d4
+  content_sha256: 183f672ac5ac331154d17159142e5eb8c79514ccaab8cecff153e657fa170c84
+  kind: handoff
+  sender_actor_id: docs-integration-auditor
+  receiver_actor_ids:
+  - main-agent
+  created_at: '2026-09-12T10:23:38.506707Z'
+  capture_status: complete
+event_ledger:
+  path: events.jsonl
+  sha256: 58c5c65dfafc0abb62b7004ae2ffaf575bae1d29146031d79dc65dbb53e74f2f
+  event_count: 12
+tool_event_refs:
+- path: tool-events/boundary-check-succeeded.json
+  sha256: 9e28ae529ca7b4e1901491b83ec9bb3422754745a68255120203d891a47fd6a2
+- path: tool-events/documentation-governance-succeeded.json
+  sha256: a1c27e3a8034ce3d7f5b088630ebc4522a71ec3feb8bf83ec1c14ba17577c723
+- path: tool-events/diff-succeeded.json
+  sha256: cdf787df9f03b2d353cc8ffad5298b830dd350c7e6ab1c335e7381475f1a9a65
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs:
+- path: .gitattributes
+  sha256: a79691a93b46e49ce460c26ef22afcc03d6eca1e63bf2edbc20e96159510f6c9
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: messages

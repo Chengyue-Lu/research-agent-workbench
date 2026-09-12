@@ -1,0 +1,4 @@
+BLOCK   TRACE-TRANSIENT-RESULT-MISSING [tool-result-index-missing] event result_ref is absent from INDEX.tool_event_refs (1 unmatched): checks/verification.json
+BLOCK   TRACE-TRANSIENT-RESULT-MISSING [tool-result-index-extra] INDEX.tool_event_refs has no matching transient event (1 unmatched): tool-events/material-verification.json
+BLOCK   TRACE-TRANSIENT-RESULT-MISSING [tool-result-path-outside-tool-events] event tool result ref is outside tool-events/: checks/verification.json
+WARNING TRACE-CAPTURE-DELAYED        [capture-gap] trace declares incomplete or delayed capture

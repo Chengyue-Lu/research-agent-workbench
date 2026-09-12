@@ -53,7 +53,7 @@ family 为什么存在、由什么 authority boundary 约束、何时允许启�
 | Phase E | Strategy candidate 与 governed evolution；不得自动修改 Core | 既有 M2/M7；M13 仅 **RESERVED** | Phase C/D evidence 证明旧 group 不足后另行接受 |
 | Phase F / Topic 4 | Agent/Model/Provider/Runtime 消费 frozen contract；不拥有 Method/Claim/Gate/fallback authority | M11 Core 与 optional extension；M6 live conformance | M11 Core 与 optional Skill extension 已 bounded 实现；live conformance 仍依独立 Gate |
 | Topic 5 residual | Handoff、context rollover、safe pause/resume、recovery/continuation | M12 仅 **RESERVED** | Phase C closeout + 独立 Topic 5 R2 review/task-definition |
-| Product / release closure | Ordinary-user E2E、package/runtime/release governance | M14-001/002/003 trust、surface 与 portable package DONE | M14-004 仍待独立激活；首次发行继续受 public docs、许可证、scaffold 与远端保护阻断 |
+| Product / release closure | Ordinary-user E2E、package/runtime/release governance | M14-001/002/003 trust、surface 与 portable package DONE | M14-004 public documentation slice 已激活，等待 R2 验收；首次发行继续受 public docs、许可证、scaffold 与远端保护阻断 |
 
 ```mermaid
 flowchart LR
@@ -274,7 +274,7 @@ private-oracle 与未知 Task 字段不得进入 provider request。A1 Tool surf
 exact Tool interface，Snapshot/Method ref 只作 Harness provenance。该 Decision 不修改 M5-003、不产生
 Runtime/Method/Supply/Human authority，也不证明 transport implementation 已存在。
 
-因此 M5-006 进入 READY，不必等待真实案例完成即可设计 System-Level Evaluation Protocol：冻结
+M5-006 以该 Gate 为基础冻结 System-Level Evaluation Protocol，设计不依赖真实案例先行完成：冻结
 primary/secondary questions、randomization、replicates、pilot/stopping/retry、model/provider drift、blind/reveal、
 metric operationalization、measurement status、analysis rule 与 decision hierarchy。`measured`、`estimated`、
 `unavailable`、`not-applicable` 互不等价；Research Integrity 的退化不能被成本收益抵消，也不得建立单一
@@ -388,7 +388,7 @@ M14-001 release topology + source trust
 M14-001 已完成 dormant release topology/source-trust seam，`release/v*` 在 topology helper 与完整 checker
 中都 fail closed；branch name、PR body 或普通环境不能替代 trusted external attestation。M14-002 已闭合
 deterministic projection/export/check；M14-003 已闭合 portable Runtime resource/package 边界。
-M14-004 的依赖已满足，等待独立激活。三项完成都不产生 release merge eligibility。M14-005 还 hard-depend M0-007 license、
+M14-004 的依赖已满足，已激活 public documentation slice，等待 R2 验收。三项完成都不产生 release merge eligibility。M14-005 还 hard-depend M0-007 license、
 M1-009 scaffold、GitHub remote protection 与具名人类 release decision；只有全部 readiness Gate 闭合后，
 它才原子启用 `release/v* -> main` 并禁用 direct `develop -> main`。
 

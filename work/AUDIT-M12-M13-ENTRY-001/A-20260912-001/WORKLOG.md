@@ -17,3 +17,11 @@
 本地核对结果：复用 `tests/test_documentation.py` 的内部链接规则检查本次 9 份 Markdown，55 个内部链接全部存在；上述 24 项源字节 pin 匹配；`git diff --check` 通过。对照 base，TASKS、ROADMAP、src、schemas、registry、.github 无差异。没有新增/执行功能测试，也没有声称 fresh actor、人工重建或科研效果。
 
 本记录的边界和授权见 [TASK](TASK.md)。核心判断供维护者审查，最终 Phase C Human 语义决定、独立 Topic 5 定义及 M13 真反馈样本仍待完成。
+
+## 2026-09-12：PR71 接受后的集成准备
+
+原 PR72 工作树 `09c671f` 在集成前无 staged、unstaged 或 untracked 变更。当前 accepted develop 为 `60bdf8c28f6cf8c52c04e481e0309bbd6e8cba8b`，PR71 已合入，M5-006 DONE。三方合并无实际冲突，保留 develop 已接受的 M14、M5 与其他更新；合并暂不提交，交主 agent 复核后集中提交原 PR72。
+
+本次只更新入口 README 和 EVIDENCE 的当期状态，并追加本段记录。黄毅优先推进 M6-008 独立候选；其 canonical Task 行仍为 PARKED，shared qualification contract 前置已冻结不等同于本 PR 接受 M6 功能。M12 继续准备具名 Phase C 语义收口和独立 Topic5 定义，M13 继续真实反馈归因，不制造数据、不代填签收、不改变 RESERVED 或 Gate。
+
+检查仅覆盖本次三份 Markdown 的内部链接及增量空白问题：27 个内部链接全部存在，`git diff --check` 通过，无未解决冲突。不重跑既有 Case pin 全表、功能、full、coverage、安装、模型或恢复测试。本条不预填新的 hosted CI、人工语义接受或功能完成结论。

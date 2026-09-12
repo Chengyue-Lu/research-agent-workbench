@@ -12,7 +12,6 @@ from research_workbench.io import load_document
 from research_workbench.validation import SchemaCatalog
 from research_workbench.validation.schemas import _check_schema_bytes
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -117,11 +116,15 @@ class VersionedSchemaTests(unittest.TestCase):
         catalog = SchemaCatalog(ROOT / "schemas")
         self.assertEqual(
             {
+                "a3_a4_pairwise_comparability",
+                "a4_execution_qualification",
+                "admission_evidence_overlap",
                 "agent_profile",
                 "agent_trace_actors",
                 "agent_trace_envelope",
                 "agent_trace_event",
                 "agent_trace_index",
+                "arm_execution_qualification",
                 "attempt",
                 "attempt_completion_manifest",
                 "capability_requirement",
@@ -133,7 +136,10 @@ class VersionedSchemaTests(unittest.TestCase):
                 "deterministic_check_report",
                 "decision_authority_matrix",
                 "authority_rule_eligibility",
+                "evaluation_case_closure",
                 "evaluation_manifest",
+                "evaluation_measurement",
+                "evaluation_provider_interface",
                 "execution_receipt",
                 "execution_binding",
                 "execution_trace_fact",
@@ -188,6 +194,7 @@ class VersionedSchemaTests(unittest.TestCase):
                 "skill_need",
                 "skill_need_index",
                 "source_admission",
+                "system_evaluation_protocol",
                 "task_packet",
             },
             set(catalog.document_kinds),

@@ -15,13 +15,11 @@ owner：黄毅（GitHub 主名 `let778750-cpu`；昵称/界面名 `huangyi855`�
 - [`open-source-agent-harness-research/`](open-source-agent-harness-research/README.md)：
   开源 Agent Harness 调研、Codex 只读协议验证与候选研究方向（`RESEARCH-HARNESS-001`）。
 
-进行中的 implementation workstream：
-
-- [`M4-RUN-RECONSTRUCTION/`](M4-RUN-RECONSTRUCTION/README.md)：
-  M4-004 exact file/Run bindings 与 fresh-process 仿真重建候选；等待 owner review/CI。
-
 已集成、保留审计记录的 implementation workstream：
 
+- [`M4-RUN-RECONSTRUCTION/`](M4-RUN-RECONSTRUCTION/README.md)：
+  PR #62 已接受合入；M4-004 exact file/Run bindings 与 fresh-process bounded synthetic reconstruction，
+  不构成 M5 真实研究结果或科学正确性证据。
 - [`M4-CLAIM-TRACE/`](M4-CLAIM-TRACE/README.md)：
   PR #61 已接受合入；M4-003 支持/反证/限制的 exact evidence-map 定位。
 - [`M4-ARTIFACT-PROMOTION/`](M4-ARTIFACT-PROMOTION/README.md)：

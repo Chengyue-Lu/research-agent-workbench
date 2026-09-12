@@ -1,0 +1,867 @@
+{
+  "package_run_head": "95df2be7aa792da2a2029880c9a44e95cf75ed77",
+  "implementation_head": "c78c829276aea53ff6c673dd9bdf073aeaaafc06",
+  "all_package_inputs_identical": true,
+  "inputs": {
+    "MANIFEST.in": {
+      "mode": "100644",
+      "blob": "93d347cb6a9d56c718cd8e9c32cd68f0bca098ba"
+    },
+    "README.md": {
+      "mode": "100644",
+      "blob": "41382f367244ca92f190649265ee9f61d5fff563"
+    },
+    "build_backend.py": {
+      "mode": "100644",
+      "blob": "8fd0e4aee201542d049ee7be05430672b28842f6"
+    },
+    "examples/quickstart/task-no-skill.yaml": {
+      "mode": "100644",
+      "blob": "0ab6a7e4d764e407d251fff7f7ed35fd706f4bb9"
+    },
+    "pyproject.toml": {
+      "mode": "100644",
+      "blob": "96504c4d34eed2c45f2d62c5596f53b6cf70d333"
+    },
+    "registry/authority/decision-authority-matrix.yaml": {
+      "mode": "100644",
+      "blob": "be9b888bce07b7c4f7e83536fe5f88e1896324dc"
+    },
+    "registry/capabilities/requirements.json": {
+      "mode": "100644",
+      "blob": "073bc0508580e8f1be5f6a1e1b20de060376e0fc"
+    },
+    "registry/capabilities/requirements/bounded-compute.yaml": {
+      "mode": "100644",
+      "blob": "db52ee6d5f8dc7ccd379c91af62d44a107a5f568"
+    },
+    "registry/capabilities/requirements/document-read.yaml": {
+      "mode": "100644",
+      "blob": "a481e29cb8239e1745108d229da101d3aaecb0f3"
+    },
+    "registry/capabilities/requirements/literature-search.yaml": {
+      "mode": "100644",
+      "blob": "bb2f80fad81a7fcc242b757a783e1f19db679891"
+    },
+    "registry/capabilities/requirements/research-contract-check.yaml": {
+      "mode": "100644",
+      "blob": "9af444cade802f8acd44d26400860fffbc0b0415"
+    },
+    "registry/modes/actions.json": {
+      "mode": "100644",
+      "blob": "c9058a8026c231e177fcca79284d034585e043f2"
+    },
+    "registry/modes/actions/evidence-synthesis/ES-A1.yaml": {
+      "mode": "100644",
+      "blob": "0f538c7574854eb72af256e68c37255b6f810655"
+    },
+    "registry/modes/actions/evidence-synthesis/ES-A2.yaml": {
+      "mode": "100644",
+      "blob": "037794e1b7cee517ef86b8771051d1749f913bca"
+    },
+    "registry/modes/actions/evidence-synthesis/ES-A3.yaml": {
+      "mode": "100644",
+      "blob": "51929a2e3c5898a160aeb320524e5bc907fb23e3"
+    },
+    "registry/modes/actions/evidence-synthesis/ES-A4.yaml": {
+      "mode": "100644",
+      "blob": "ca8d2d91f88d718ba3506fb13b748129eac5d640"
+    },
+    "registry/modes/actions/evidence-synthesis/ES-A5.yaml": {
+      "mode": "100644",
+      "blob": "dcb0a97e4bd95dbab7fbcbb80db23f88c0af1e96"
+    },
+    "registry/modes/actions/evidence-synthesis/ES-A6.yaml": {
+      "mode": "100644",
+      "blob": "4268207f69c993cc307642ebf753dd1c750f77eb"
+    },
+    "registry/modes/actions/evidence-synthesis/ES-A7.yaml": {
+      "mode": "100644",
+      "blob": "1d954505f21445333bfcac1a09f7334dd9c1d63f"
+    },
+    "registry/modes/actions/evidence-synthesis/ES-A8.yaml": {
+      "mode": "100644",
+      "blob": "11123ce3846a51799fe80a09c056dfe917e16819"
+    },
+    "registry/modes/actions/evidence-synthesis/v0.2.0/ES-A1.yaml": {
+      "mode": "100644",
+      "blob": "463a36138f1f87ed4770573fc8466749d5b04f99"
+    },
+    "registry/modes/actions/evidence-synthesis/v0.2.0/ES-A2.yaml": {
+      "mode": "100644",
+      "blob": "3a1baee314b26819c2e8fb0b84c2380ffa442295"
+    },
+    "registry/modes/actions/evidence-synthesis/v0.2.0/ES-A3.yaml": {
+      "mode": "100644",
+      "blob": "9863cb4d09a832034adc9320e7dc8e21541e6e20"
+    },
+    "registry/modes/actions/evidence-synthesis/v0.2.0/ES-A4.yaml": {
+      "mode": "100644",
+      "blob": "461f4eb24615b5d61d4f2e0232012847202b2bb7"
+    },
+    "registry/modes/actions/evidence-synthesis/v0.2.0/ES-A5.yaml": {
+      "mode": "100644",
+      "blob": "ba036ff7f975316f426c47594c6adc5003e66d78"
+    },
+    "registry/modes/actions/evidence-synthesis/v0.2.0/ES-A6.yaml": {
+      "mode": "100644",
+      "blob": "851b972c079ebed66e660d3bff3d539e4e8e68fb"
+    },
+    "registry/modes/actions/evidence-synthesis/v0.2.0/ES-A7.yaml": {
+      "mode": "100644",
+      "blob": "3b609f821918c8171eeec08df4fe89b6d494d5b9"
+    },
+    "registry/modes/actions/evidence-synthesis/v0.2.0/ES-A8.yaml": {
+      "mode": "100644",
+      "blob": "fb0edc0549c5625184815851b641a36a5fa77bb1"
+    },
+    "registry/modes/actions/simulation/SIM-A1.yaml": {
+      "mode": "100644",
+      "blob": "c209cae2333d0b6c494768d108e3bbe0d076ea30"
+    },
+    "registry/modes/actions/simulation/SIM-A2.yaml": {
+      "mode": "100644",
+      "blob": "d784c195a2f1f2c9384fd892b0640b41832021cf"
+    },
+    "registry/modes/actions/simulation/SIM-A3.yaml": {
+      "mode": "100644",
+      "blob": "49b999f14d8364a7ac6ade414edb7f078bae28ab"
+    },
+    "registry/modes/actions/simulation/SIM-A4.yaml": {
+      "mode": "100644",
+      "blob": "a72f2d25f0e3bf9c6d811a57e7ec85c8acf06948"
+    },
+    "registry/modes/actions/simulation/SIM-A5.yaml": {
+      "mode": "100644",
+      "blob": "b2a407d30ee318188fc189c407dfe280b878e75a"
+    },
+    "registry/modes/actions/simulation/SIM-A6.yaml": {
+      "mode": "100644",
+      "blob": "09109a4fcb152686d363a0ac7ae74ce0ab0393ef"
+    },
+    "registry/modes/actions/simulation/SIM-A7.yaml": {
+      "mode": "100644",
+      "blob": "3babc37c2efb9ff1ee5e5583a011c5a784e6cb28"
+    },
+    "registry/modes/actions/simulation/SIM-A8.yaml": {
+      "mode": "100644",
+      "blob": "6323c26e34497f6c5807c961a35c832afb629941"
+    },
+    "registry/modes/actions/simulation/v0.2.0/SIM-A1.yaml": {
+      "mode": "100644",
+      "blob": "93de2284a97f7e5cfe320e5305be9d92f9cf729f"
+    },
+    "registry/modes/actions/simulation/v0.2.0/SIM-A2.yaml": {
+      "mode": "100644",
+      "blob": "b5b37d17ce4ff4660a293a64e9c581982af2ce40"
+    },
+    "registry/modes/actions/simulation/v0.2.0/SIM-A3.yaml": {
+      "mode": "100644",
+      "blob": "41593ba0804620a48cb443296b8ac695f6ccfb74"
+    },
+    "registry/modes/actions/simulation/v0.2.0/SIM-A4.yaml": {
+      "mode": "100644",
+      "blob": "a86517ab932462de239608f65f9125236de9487b"
+    },
+    "registry/modes/actions/simulation/v0.2.0/SIM-A5.yaml": {
+      "mode": "100644",
+      "blob": "6b7846e24b0aa72c1a13a39a97afa86dc7802a8b"
+    },
+    "registry/modes/actions/simulation/v0.2.0/SIM-A6.yaml": {
+      "mode": "100644",
+      "blob": "4f94a9bd432e13fce5eead10e791288dd663d456"
+    },
+    "registry/modes/actions/simulation/v0.2.0/SIM-A7.yaml": {
+      "mode": "100644",
+      "blob": "28a2c96cb19b6455518b30b0856d0ae32b21972b"
+    },
+    "registry/modes/actions/simulation/v0.2.0/SIM-A8.yaml": {
+      "mode": "100644",
+      "blob": "bf1c41524263525d4f5e0a40b8040fa96abe2122"
+    },
+    "registry/modes/evidence-synthesis.yaml": {
+      "mode": "100644",
+      "blob": "4de11970f9fb7e75f69dcc166ad20c960c7e0e7c"
+    },
+    "registry/modes/simulation.yaml": {
+      "mode": "100644",
+      "blob": "77506cae386f04cf8b09a8ea7156c734cc959b30"
+    },
+    "registry/modes/v0.2.0/evidence-synthesis.yaml": {
+      "mode": "100644",
+      "blob": "8bab46e541224c2f90b0074aeb16a082f423c242"
+    },
+    "registry/modes/v0.2.0/simulation.yaml": {
+      "mode": "100644",
+      "blob": "bf61b3a7a95748b08d17e29e7c08c45599a59819"
+    },
+    "registry/protocol-profiles.json": {
+      "mode": "100644",
+      "blob": "9f9f7c752c3dba68e71248e163819fc6afdc39ed"
+    },
+    "registry/protocol-profiles/prisma-systematic-review-reporting-1.0.0.yaml": {
+      "mode": "100644",
+      "blob": "b135ce809cd2de3137ae8584c4dd6ae43ce9a31a"
+    },
+    "registry/protocol-profiles/simulation-vv-assurance-1.0.0.yaml": {
+      "mode": "100644",
+      "blob": "08769010286797495f1486b7377c354fbfa805c0"
+    },
+    "registry/skills/release-projections.json": {
+      "mode": "100644",
+      "blob": "0bf9e1b82c144a185cb317d6a428f61df9fe0631"
+    },
+    "runtime-resources.json": {
+      "mode": "100644",
+      "blob": "fce72cb0c984b3495b118c94654815cda3c27820"
+    },
+    "schemas/v0.1.0/agent-profile.schema.json": {
+      "mode": "100644",
+      "blob": "10a7b60d329f1e0aba3338cd3693ac41b5caad92"
+    },
+    "schemas/v0.1.0/agent-trace-actors.schema.json": {
+      "mode": "100644",
+      "blob": "47f3241775cb4d153cbd5c87f9bc9e7ef5e4ccb7"
+    },
+    "schemas/v0.1.0/agent-trace-envelope.schema.json": {
+      "mode": "100644",
+      "blob": "61ba93ccef225556f3f1d0d5fbe721800a43f993"
+    },
+    "schemas/v0.1.0/agent-trace-event.schema.json": {
+      "mode": "100644",
+      "blob": "111b33ab3e9bb50647042f3691ce4864c38a8d9a"
+    },
+    "schemas/v0.1.0/agent-trace-index.schema.json": {
+      "mode": "100644",
+      "blob": "3ffaf6182dbcf13eb83717c6e846a968e8c01b6c"
+    },
+    "schemas/v0.1.0/attempt-completion-manifest.schema.json": {
+      "mode": "100644",
+      "blob": "46899e2a1e860b33f9e71886238a501ab414cd3d"
+    },
+    "schemas/v0.1.0/attempt.schema.json": {
+      "mode": "100644",
+      "blob": "51974e5228ed2585d8051e467af3e4e5172fd4c9"
+    },
+    "schemas/v0.1.0/authority-rule-eligibility.schema.json": {
+      "mode": "100644",
+      "blob": "c5fdc40375a1f3d8997171bcc4a6c71304b313f2"
+    },
+    "schemas/v0.1.0/capability-conformance-evidence.schema.json": {
+      "mode": "100644",
+      "blob": "7174c59076a9d66202bc09e16579a4fb29094b4f"
+    },
+    "schemas/v0.1.0/capability-requirement-index.schema.json": {
+      "mode": "100644",
+      "blob": "b6b6902c09d7b97805b218bc583fe8500d88d251"
+    },
+    "schemas/v0.1.0/capability-requirement.schema.json": {
+      "mode": "100644",
+      "blob": "c7e8239dbf5ddcb00700c4fd0bbb38f534bc50bf"
+    },
+    "schemas/v0.1.0/capability-resolution.schema.json": {
+      "mode": "100644",
+      "blob": "28f7619271351fc86eefd1fa5535f57db1548aad"
+    },
+    "schemas/v0.1.0/capability-supply-common.schema.json": {
+      "mode": "100644",
+      "blob": "0e0cd2db7b33a46c70d9e7108519cfb6b6325d1e"
+    },
+    "schemas/v0.1.0/capability-supply-report.schema.json": {
+      "mode": "100644",
+      "blob": "2a73a8d68b930c6e04474f81b4ca412beefa126d"
+    },
+    "schemas/v0.1.0/claim-evidence-map.schema.json": {
+      "mode": "100644",
+      "blob": "fd64ed06db6a75ecbdf2acf5939c20b7b71486b9"
+    },
+    "schemas/v0.1.0/common.schema.json": {
+      "mode": "100644",
+      "blob": "fbc92c4c64c6059cfd01e9a3bd13aca98196f11f"
+    },
+    "schemas/v0.1.0/context-snapshot.schema.json": {
+      "mode": "100644",
+      "blob": "121b0dc98a3f3395efbd8d598c57ac64614c186b"
+    },
+    "schemas/v0.1.0/decision-authority-matrix.schema.json": {
+      "mode": "100644",
+      "blob": "351e181dd10913e01ca5030371454ede7ac1ad5a"
+    },
+    "schemas/v0.1.0/deterministic-check-report.schema.json": {
+      "mode": "100644",
+      "blob": "541d696e16779f54bf0af18131d47bdccbc2e804"
+    },
+    "schemas/v0.1.0/evaluation-manifest.schema.json": {
+      "mode": "100644",
+      "blob": "03ef653988fae00926096e635193223bb16f2077"
+    },
+    "schemas/v0.1.0/execution-binding.schema.json": {
+      "mode": "100644",
+      "blob": "93dbcd6dd8ac2acfd42404e67290712637e596f2"
+    },
+    "schemas/v0.1.0/execution-core-gate.schema.json": {
+      "mode": "100644",
+      "blob": "9de42137decc3210b05dbef5bab5cf270507c291"
+    },
+    "schemas/v0.1.0/execution-host-report.schema.json": {
+      "mode": "100644",
+      "blob": "dd7b18f761cabd37615d52cd75c7a8b8071f6586"
+    },
+    "schemas/v0.1.0/execution-policy.schema.json": {
+      "mode": "100644",
+      "blob": "3448301a8fd85a66b99b6c10d52d5b3f589d8e22"
+    },
+    "schemas/v0.1.0/execution-receipt.schema.json": {
+      "mode": "100644",
+      "blob": "b8b4d9c2b963f69dc00b9db06a01c731c5e88b5b"
+    },
+    "schemas/v0.1.0/execution-trace-fact.schema.json": {
+      "mode": "100644",
+      "blob": "9cf65a196f99d9e687438ab7fb53217491757ea8"
+    },
+    "schemas/v0.1.0/generic-execution-receipt.schema.json": {
+      "mode": "100644",
+      "blob": "8a9be96af27e1826372b271665245560071c0930"
+    },
+    "schemas/v0.1.0/handoff-packet.schema.json": {
+      "mode": "100644",
+      "blob": "6405185b06e9a4cc5e3bc63da36b29389f0644da"
+    },
+    "schemas/v0.1.0/handoff-transfer-audit.schema.json": {
+      "mode": "100644",
+      "blob": "fba4ac60769f825364772538fb95c4d260b62260"
+    },
+    "schemas/v0.1.0/handoff-transfer-manifest.schema.json": {
+      "mode": "100644",
+      "blob": "d8dc30bcf346745a4ecf7b76e6083756f1c221c1"
+    },
+    "schemas/v0.1.0/main-state.schema.json": {
+      "mode": "100644",
+      "blob": "27a343a41314fc2f96f1ca0504f81bb886b53541"
+    },
+    "schemas/v0.1.0/method-resolution.schema.json": {
+      "mode": "100644",
+      "blob": "3b565db923236609d12613b3d4a27cc4285beaeb"
+    },
+    "schemas/v0.1.0/method-trace.schema.json": {
+      "mode": "100644",
+      "blob": "65c5e6441924d8f5394c1ca1e488471615cdafdc"
+    },
+    "schemas/v0.1.0/mode-action-registry.schema.json": {
+      "mode": "100644",
+      "blob": "fb8c0285b888a2b682802de2291e2d95dcc861b0"
+    },
+    "schemas/v0.1.0/mode-action.schema.json": {
+      "mode": "100644",
+      "blob": "c2742d905b064a6579a66a20bb8db685719593c8"
+    },
+    "schemas/v0.1.0/phase-b-evolution-gate.schema.json": {
+      "mode": "100644",
+      "blob": "89756c03ba34d933ea7e516b790f950c4ad3baf0"
+    },
+    "schemas/v0.1.0/phase-c-gate-manifest.schema.json": {
+      "mode": "100644",
+      "blob": "549f4a519b74bb9e8f862f068a3b484569d9395e"
+    },
+    "schemas/v0.1.0/phase-c-gate-report.schema.json": {
+      "mode": "100644",
+      "blob": "502e675041a8fc0699102c21dc554cfcc28713b8"
+    },
+    "schemas/v0.1.0/project-protocol.schema.json": {
+      "mode": "100644",
+      "blob": "a1bc74a96ccda0603a2af92657d5350b290f2419"
+    },
+    "schemas/v0.1.0/promotion-execution-receipt.schema.json": {
+      "mode": "100644",
+      "blob": "e0e8ff3b872d6c339b6b5be364ee894eedab4a10"
+    },
+    "schemas/v0.1.0/promotion-record.schema.json": {
+      "mode": "100644",
+      "blob": "4addc1c451f5d7debed4855fb2d271c38bc12535"
+    },
+    "schemas/v0.1.0/promotion-validation-authority-registry.schema.json": {
+      "mode": "100644",
+      "blob": "664a1d867dee5947543c8608354b6aef964bcdf8"
+    },
+    "schemas/v0.1.0/promotion-validation-execution.schema.json": {
+      "mode": "100644",
+      "blob": "4a355014411f3be584746eecfa7da1b0e441abf3"
+    },
+    "schemas/v0.1.0/promotion-validation-host-receipt.schema.json": {
+      "mode": "100644",
+      "blob": "ce1bcd1b59599ba002f8f9166f3026605d37a729"
+    },
+    "schemas/v0.1.0/promotion-validation-policy.schema.json": {
+      "mode": "100644",
+      "blob": "9ce9f6f5df86f22b29ffcd5551698feee2f45144"
+    },
+    "schemas/v0.1.0/protocol-profile-index.schema.json": {
+      "mode": "100644",
+      "blob": "a43881f08be7a5d7a27f3e2fb179344385e325d2"
+    },
+    "schemas/v0.1.0/protocol-profile.schema.json": {
+      "mode": "100644",
+      "blob": "ca9bdd5fe7e8bba7ff265fdec716b28f17cec36f"
+    },
+    "schemas/v0.1.0/provider-conformance-report.schema.json": {
+      "mode": "100644",
+      "blob": "171f6bb8ca08391496d517f729d21e5fa4c468fa"
+    },
+    "schemas/v0.1.0/release-manifest.schema.json": {
+      "mode": "100644",
+      "blob": "180575541507321873297d5dec5fbf370940863b"
+    },
+    "schemas/v0.1.0/release-surface-policy.schema.json": {
+      "mode": "100644",
+      "blob": "f2205d5565eb3b227603f528ff4f1d983883c43a"
+    },
+    "schemas/v0.1.0/research-attempt-lineage.schema.json": {
+      "mode": "100644",
+      "blob": "59360a41fe224b33b396b05195163e782f9addb8"
+    },
+    "schemas/v0.1.0/research-failure.schema.json": {
+      "mode": "100644",
+      "blob": "c4d882bbf9f2b692bbf98b76111d2d37f92c92e3"
+    },
+    "schemas/v0.1.0/research-mode-migration.schema.json": {
+      "mode": "100644",
+      "blob": "8a9f19cc51779a7cd03a38ab70673869e90c63d0"
+    },
+    "schemas/v0.1.0/research-mode.schema.json": {
+      "mode": "100644",
+      "blob": "4b41396c2df411e55c03c2cfa48ae034b07a64a0"
+    },
+    "schemas/v0.1.0/research-object.schema.json": {
+      "mode": "100644",
+      "blob": "bbcc40a6ac1270b0c0cc3bc893dc1dc2b78e6874"
+    },
+    "schemas/v0.1.0/research-state.schema.json": {
+      "mode": "100644",
+      "blob": "bd80f965394e3b929736c709e3caaf74cfee0a0c"
+    },
+    "schemas/v0.1.0/resolved-capability-snapshot.schema.json": {
+      "mode": "100644",
+      "blob": "5e93ff85b25610ec0667d16704c1ef870a014767"
+    },
+    "schemas/v0.1.0/resolved-execution-view.schema.json": {
+      "mode": "100644",
+      "blob": "ac3b86f9b23ff2230515d28ca69977ef9b8b53ba"
+    },
+    "schemas/v0.1.0/run-reconstruction-environment.schema.json": {
+      "mode": "100644",
+      "blob": "a048ad66c8219321a237d70459103c57c46b804c"
+    },
+    "schemas/v0.1.0/run-reconstruction-manifest.schema.json": {
+      "mode": "100644",
+      "blob": "8e11324f615a86d99530e53a5eed5a245013e2e9"
+    },
+    "schemas/v0.1.0/run-reconstruction-report.schema.json": {
+      "mode": "100644",
+      "blob": "a5b5f5fa21368034790b6afc48a730f6fcfd3229"
+    },
+    "schemas/v0.1.0/runtime-bundle-manifest.schema.json": {
+      "mode": "100644",
+      "blob": "7649f0cbdcb8ab393a073f36d6287f8b5030b9ee"
+    },
+    "schemas/v0.1.0/runtime-resource-manifest.schema.json": {
+      "mode": "100644",
+      "blob": "17ec2a08e149241702ebd36e3c23f4883f9ea6d2"
+    },
+    "schemas/v0.1.0/skill-archive-audit.schema.json": {
+      "mode": "100644",
+      "blob": "231fd184d7c93f5c34fe3d478eed8f31f6a90a94"
+    },
+    "schemas/v0.1.0/skill-assignment.schema.json": {
+      "mode": "100644",
+      "blob": "1c8932a7808b21119e20d46889c33bf1d66a8de1"
+    },
+    "schemas/v0.1.0/skill-evaluation.schema.json": {
+      "mode": "100644",
+      "blob": "8cd028a0718d4486828f1a0c7b0ac7ce243b42e6"
+    },
+    "schemas/v0.1.0/skill-lifecycle-index.schema.json": {
+      "mode": "100644",
+      "blob": "67b6f6a03cc15c48b326aaa1b0e2f5d64a6c7850"
+    },
+    "schemas/v0.1.0/skill-lifecycle-migration.schema.json": {
+      "mode": "100644",
+      "blob": "c76d0261affe8f70fe0f7c0225a4b80e3e4a3259"
+    },
+    "schemas/v0.1.0/skill-lifecycle-record.schema.json": {
+      "mode": "100644",
+      "blob": "52429f58fb790ef287c6c1a81fded859d5ac4fd9"
+    },
+    "schemas/v0.1.0/skill-manifest.schema.json": {
+      "mode": "100644",
+      "blob": "36947fee5b71f02f12624ca3583444624342426f"
+    },
+    "schemas/v0.1.0/skill-need-index.schema.json": {
+      "mode": "100644",
+      "blob": "0dfec5cdf7b66f71b4b1c994f9ea5589d7adf014"
+    },
+    "schemas/v0.1.0/skill-need.schema.json": {
+      "mode": "100644",
+      "blob": "827c70388d5c9fdfae044a19f9681a1d6f0fc045"
+    },
+    "schemas/v0.1.0/skill-release-projection-index.schema.json": {
+      "mode": "100644",
+      "blob": "a348ee021f5b5bcfe70bca0c569e457fe601989a"
+    },
+    "schemas/v0.1.0/skill-release-projection.schema.json": {
+      "mode": "100644",
+      "blob": "5f7aec48e861212f861cf632edf9873ad98fc250"
+    },
+    "schemas/v0.1.0/source-admission.schema.json": {
+      "mode": "100644",
+      "blob": "c80c6f7b0ec8c029a67180923d9103a99fd580ae"
+    },
+    "schemas/v0.1.0/task-packet.schema.json": {
+      "mode": "100644",
+      "blob": "57070a62a73ae84cb00f8ac5d3704cd19159895b"
+    },
+    "src/research_workbench/__init__.py": {
+      "mode": "100644",
+      "blob": "695af377dec64f100feda0c93168a274ed9ef87e"
+    },
+    "src/research_workbench/__main__.py": {
+      "mode": "100644",
+      "blob": "8fde00ec17ee6dc9b3bc891d33ebc22b5de0bef0"
+    },
+    "src/research_workbench/adapters/__init__.py": {
+      "mode": "100644",
+      "blob": "a6ebbd5346687fe8ad02ba3d3e43e04cb34817aa"
+    },
+    "src/research_workbench/adapters/codex.py": {
+      "mode": "100644",
+      "blob": "12004804915f9f051e0f1589f3c672e1db35ea5f"
+    },
+    "src/research_workbench/adapters/models/__init__.py": {
+      "mode": "100644",
+      "blob": "97256970b041b2f97a20b07bb60c7e2620fa5483"
+    },
+    "src/research_workbench/adapters/models/anthropic.py": {
+      "mode": "100644",
+      "blob": "ebae349824a06bd3384da181352f111cdbae49e8"
+    },
+    "src/research_workbench/adapters/models/base.py": {
+      "mode": "100644",
+      "blob": "33fb90f938a2890531d32d2f3f60091efee2a18f"
+    },
+    "src/research_workbench/adapters/models/configuration.py": {
+      "mode": "100644",
+      "blob": "0cf4b7c7f295db1d5a13ca68911330fb1693c241"
+    },
+    "src/research_workbench/adapters/models/conformance.py": {
+      "mode": "100644",
+      "blob": "6e5c3d143cbdafcc7100d2aebca337f7abbc4d5e"
+    },
+    "src/research_workbench/adapters/models/gemini.py": {
+      "mode": "100644",
+      "blob": "d1f199882dadfcba2d89711ca262cf432ef5898b"
+    },
+    "src/research_workbench/adapters/models/http.py": {
+      "mode": "100644",
+      "blob": "d564d920e99533c9a6f68f13f39a2a11cad33ae0"
+    },
+    "src/research_workbench/adapters/models/openai.py": {
+      "mode": "100644",
+      "blob": "f2da4f4cef2b54b2ed256e58bf552bc53ab77e9e"
+    },
+    "src/research_workbench/adapters/models/pool.py": {
+      "mode": "100644",
+      "blob": "76cb7950548b80ed91c29a2ad73ccc50dd8a1f44"
+    },
+    "src/research_workbench/adapters/models/port.py": {
+      "mode": "100644",
+      "blob": "2b33aeb3a25cb6597d93a1413fcc7a39148b2688"
+    },
+    "src/research_workbench/adapters/models/session.py": {
+      "mode": "100644",
+      "blob": "b08cb2f62544c9c4319898c2842b840372e7ba9c"
+    },
+    "src/research_workbench/adapters/runtime.py": {
+      "mode": "100644",
+      "blob": "d1143b21d07b0e927b3d580afd0875a87edc088c"
+    },
+    "src/research_workbench/artifacts/__init__.py": {
+      "mode": "100644",
+      "blob": "5e6638c9c043492157a7376792cb3e206f286031"
+    },
+    "src/research_workbench/artifacts/admission.py": {
+      "mode": "100644",
+      "blob": "4f1b946776708275e523be5caf2885d868144a59"
+    },
+    "src/research_workbench/artifacts/claim_trace.py": {
+      "mode": "100644",
+      "blob": "5169a08c3ea0279e97e672b2201834717d5155ac"
+    },
+    "src/research_workbench/artifacts/integrity.py": {
+      "mode": "100644",
+      "blob": "a40a6e452e729eff79f1ca2ec08bdef76b4956e2"
+    },
+    "src/research_workbench/artifacts/promotion.py": {
+      "mode": "100644",
+      "blob": "dd78fa1ef8a0d100e8e0b9a24b9fb74ca3981670"
+    },
+    "src/research_workbench/artifacts/run_reconstruction.py": {
+      "mode": "100644",
+      "blob": "7bdfdaafa4890f4b048d88ceef917567157fed2e"
+    },
+    "src/research_workbench/artifacts/validation_host.py": {
+      "mode": "100644",
+      "blob": "fba8feab92a552f7eb4d865c341ee328d7285bff"
+    },
+    "src/research_workbench/capability/__init__.py": {
+      "mode": "100644",
+      "blob": "8926554976121198b5fe28cafc6227034f086df8"
+    },
+    "src/research_workbench/capability/archive_audit.py": {
+      "mode": "100644",
+      "blob": "22d5078a9a9015f0fe652de49cf91eff65df1bdd"
+    },
+    "src/research_workbench/capability/catalog.py": {
+      "mode": "100644",
+      "blob": "1265bd4f460c620818ac4ae9ce256c0f30329d33"
+    },
+    "src/research_workbench/capability/lifecycle.py": {
+      "mode": "100644",
+      "blob": "65ad3bbb4a103eac82095ee303984a1ac9c505ab"
+    },
+    "src/research_workbench/capability/models.py": {
+      "mode": "100644",
+      "blob": "ce05cb91ee380ad5408b8001912776c27cb56d7c"
+    },
+    "src/research_workbench/capability/projection_supply.py": {
+      "mode": "100644",
+      "blob": "25d919f963da40c86d003a9edc002127858267a5"
+    },
+    "src/research_workbench/capability/release_projection.py": {
+      "mode": "100644",
+      "blob": "e6f4d69064f4eeac089173198a8f21b49199f214"
+    },
+    "src/research_workbench/capability/requirements.py": {
+      "mode": "100644",
+      "blob": "4629177b5d70ff635f917ea4f16a84ec8315bde7"
+    },
+    "src/research_workbench/capability/resolver.py": {
+      "mode": "100644",
+      "blob": "02943730bef39d1f5b159aed6dabc03620c700ff"
+    },
+    "src/research_workbench/capability/skill_needs.py": {
+      "mode": "100644",
+      "blob": "8d74286d5ff627de069795ac1b71874177c83686"
+    },
+    "src/research_workbench/capability/supply.py": {
+      "mode": "100644",
+      "blob": "7cbd07309ff08e1a58ac9c27a340285819d26b4e"
+    },
+    "src/research_workbench/cli.py": {
+      "mode": "100644",
+      "blob": "81e3475cd982373cafdce34ee1fb8158cebb65f3"
+    },
+    "src/research_workbench/context/__init__.py": {
+      "mode": "100644",
+      "blob": "0fd26e833e7cf06ce737c2d1fca852e98960466b"
+    },
+    "src/research_workbench/context/handoff_transfer.py": {
+      "mode": "100644",
+      "blob": "64d7b1ff35abf206f36d2b2d060e55791d8151fd"
+    },
+    "src/research_workbench/context/models.py": {
+      "mode": "100644",
+      "blob": "a1649aedc5d18e5b1e6abf5da01ae0d0729522b0"
+    },
+    "src/research_workbench/contracts/__init__.py": {
+      "mode": "100644",
+      "blob": "44dcd25dd9a94cf4c5ba527717464fa26e51958e"
+    },
+    "src/research_workbench/contracts/common.py": {
+      "mode": "100644",
+      "blob": "3fc15c12069d51c42f84d7490d0154eb7bcc5394"
+    },
+    "src/research_workbench/contracts/risk_codes.py": {
+      "mode": "100644",
+      "blob": "55afc8c4f6c741e5f593809aaa7f4ced306423f9"
+    },
+    "src/research_workbench/contracts/risks.py": {
+      "mode": "100644",
+      "blob": "0f1106f5e3fc603f033d6f3ffbf88eb1f2b9f722"
+    },
+    "src/research_workbench/evaluation/__init__.py": {
+      "mode": "100644",
+      "blob": "59d1e3e50f07b8630d0f9249bd230f07155bb432"
+    },
+    "src/research_workbench/evaluation/manifest.py": {
+      "mode": "100644",
+      "blob": "62e7bf3cdbda9e25f1a74c097e43da997eb2cb50"
+    },
+    "src/research_workbench/evaluation/skill_evaluation.py": {
+      "mode": "100644",
+      "blob": "13a1cdd1fe49fd5800d00e3e36435c099d7cb2b0"
+    },
+    "src/research_workbench/execution/__init__.py": {
+      "mode": "100644",
+      "blob": "a7a83d6455a9d51da127433ac2d18710df606d66"
+    },
+    "src/research_workbench/execution/archive.py": {
+      "mode": "100644",
+      "blob": "ab57f1668c893faccaad9a14d2f5fe88c2e1d45b"
+    },
+    "src/research_workbench/execution/execution_view.py": {
+      "mode": "100644",
+      "blob": "892f4f1aab61f8ba40f8b0253be035f358638deb"
+    },
+    "src/research_workbench/execution/generic_closeout.py": {
+      "mode": "100644",
+      "blob": "26f6345f139f9737a1dadb8e3c9bbb5b30292fd2"
+    },
+    "src/research_workbench/execution/host.py": {
+      "mode": "100644",
+      "blob": "e50494d3fcd599ebcbf372090ecbf4b1b68bbb4f"
+    },
+    "src/research_workbench/execution/recovery.py": {
+      "mode": "100644",
+      "blob": "ae4b397d8996680eb48e9308162f40853b34943a"
+    },
+    "src/research_workbench/execution/runner.py": {
+      "mode": "100644",
+      "blob": "008c99abcca48d2dd72e96fa232df33a3866b924"
+    },
+    "src/research_workbench/execution/runtime_bundle.py": {
+      "mode": "100644",
+      "blob": "0d0114a909132ee45532553ecffb46f8fad943d7"
+    },
+    "src/research_workbench/io.py": {
+      "mode": "100644",
+      "blob": "a9b9fd86926b7b8b140f61a7d48fe4c9e6f31521"
+    },
+    "src/research_workbench/kernel/__init__.py": {
+      "mode": "100644",
+      "blob": "200b9d2006c4f4e15737dbcefb4b86b473d884a5"
+    },
+    "src/research_workbench/kernel/objects.py": {
+      "mode": "100644",
+      "blob": "13aa0f8f565f24575e78db7d0bf69fb1d001a03a"
+    },
+    "src/research_workbench/observability/__init__.py": {
+      "mode": "100644",
+      "blob": "2e672700953283f26f969b4467392a36a288910d"
+    },
+    "src/research_workbench/observability/models.py": {
+      "mode": "100644",
+      "blob": "11a0f140a5be9998d566c6adcea1320fc841d04e"
+    },
+    "src/research_workbench/observability/trace.py": {
+      "mode": "100644",
+      "blob": "ea16b6344cab389f7b2129f76d5d0e1e27b51a4d"
+    },
+    "src/research_workbench/protocol/__init__.py": {
+      "mode": "100644",
+      "blob": "3c6446bab14fa5a4b8cff1307a9c5eed2d247654"
+    },
+    "src/research_workbench/protocol/authority.py": {
+      "mode": "100644",
+      "blob": "85f90c782dcf0620618a127d63155c0653ec25b8"
+    },
+    "src/research_workbench/protocol/migrations.py": {
+      "mode": "100644",
+      "blob": "7ae4e7aa014dabf712659eb66de57af03d3faed4"
+    },
+    "src/research_workbench/protocol/models.py": {
+      "mode": "100644",
+      "blob": "455b4fb53ec19012812587cbb2a115fe1fff1f54"
+    },
+    "src/research_workbench/protocol/profiles.py": {
+      "mode": "100644",
+      "blob": "a95cb323c0fb0cfe9957867c2832c35a8dd40480"
+    },
+    "src/research_workbench/research_state/__init__.py": {
+      "mode": "100644",
+      "blob": "05c9fd79d60856d86ed21b4a59b6d4649e6e6ddf"
+    },
+    "src/research_workbench/research_state/boundaries.py": {
+      "mode": "100644",
+      "blob": "68f2880f4fb1568d2cf068b66df79f2527df3182"
+    },
+    "src/research_workbench/research_state/closure.py": {
+      "mode": "100644",
+      "blob": "7c945de36502228375974a225c5bbda04a2cef84"
+    },
+    "src/research_workbench/research_state/fresh_actor.py": {
+      "mode": "100644",
+      "blob": "afc68506f3789cd78c1b6a88f09f24f26ce51873"
+    },
+    "src/research_workbench/research_state/gate.py": {
+      "mode": "100644",
+      "blob": "a8c5aa0884a60c814ae23917e3d5aee0384b860d"
+    },
+    "src/research_workbench/resources.py": {
+      "mode": "100644",
+      "blob": "430360fd20ef7cbd55d72551f40759db2d72dcd1"
+    },
+    "src/research_workbench/tasks/__init__.py": {
+      "mode": "100644",
+      "blob": "b523b6385ea0f8a74a65b552bcfbc1900fcd2194"
+    },
+    "src/research_workbench/tasks/models.py": {
+      "mode": "100644",
+      "blob": "391aae46424f78c8fe9e0ee395bc637aa17190e3"
+    },
+    "src/research_workbench/validation/__init__.py": {
+      "mode": "100644",
+      "blob": "6f8e2e8affc0e1b9e7658c6f29cb211f91ba2154"
+    },
+    "src/research_workbench/validation/authority_registry.py": {
+      "mode": "100644",
+      "blob": "8de23ff565be0b3fb35e38f19ba99fc08f1a6f86"
+    },
+    "src/research_workbench/validation/capability.py": {
+      "mode": "100644",
+      "blob": "b12218783ff2b08f57292dac8e4a07c65430dbe5"
+    },
+    "src/research_workbench/validation/capability_registry.py": {
+      "mode": "100644",
+      "blob": "fbccd79f2c4409b9006d816a4e4899fa35986659"
+    },
+    "src/research_workbench/validation/capability_supply_registry.py": {
+      "mode": "100644",
+      "blob": "5b07a5272e3b3afd7622161fc5249725034b14df"
+    },
+    "src/research_workbench/validation/document_core.py": {
+      "mode": "100644",
+      "blob": "3b4343fdbf04162689d4d020d4eedb969fba12c2"
+    },
+    "src/research_workbench/validation/document_kinds.py": {
+      "mode": "100644",
+      "blob": "a1eb087ae426d12dc5e9ca2dd963afb9bd9f235e"
+    },
+    "src/research_workbench/validation/documents.py": {
+      "mode": "100644",
+      "blob": "59d3bed43672a38c2d8591b2fdb67190f0845fd7"
+    },
+    "src/research_workbench/validation/method_resolution_registry.py": {
+      "mode": "100644",
+      "blob": "b139989821b3fcebb8e6030c97470317a3d7ca67"
+    },
+    "src/research_workbench/validation/phase_b_gate.py": {
+      "mode": "100644",
+      "blob": "d069e17beb6db49cd691d6963dad01759cabd855"
+    },
+    "src/research_workbench/validation/relationships.py": {
+      "mode": "100644",
+      "blob": "14e8125e472d570de177862d90387b80cfba49ce"
+    },
+    "src/research_workbench/validation/research_state_registry.py": {
+      "mode": "100644",
+      "blob": "00dc261013883d98ba8480e85cafd4e0d68fb7f3"
+    },
+    "src/research_workbench/validation/schemas.py": {
+      "mode": "100644",
+      "blob": "2863a16951e27887a29d5a22a65aae309981e564"
+    },
+    "src/research_workbench/validation/skill_release_projection_registry.py": {
+      "mode": "100644",
+      "blob": "fd32c9165eae0b33e12a917015a632c63c4afe57"
+    }
+  }
+}

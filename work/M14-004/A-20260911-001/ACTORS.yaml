@@ -1,0 +1,10 @@
+schema_version: 0.1.0
+task_id: M14-004
+task_revision: 1
+attempt_id: A-20260911-001
+actors:
+- actor_id: main-agent
+  actor_type: agent
+  role: bounded implementation and verification
+  runtime_identity: Codex M14-004 implementation
+  accountable_owner: Chengyue-Lu
