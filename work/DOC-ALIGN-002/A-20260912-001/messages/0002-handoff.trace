@@ -1,0 +1,19 @@
+---
+schema_version: 0.1.0
+message_id: MSG-0002
+task_id: DOC-ALIGN-002
+task_revision: 2
+attempt_id: A-20260912-001
+sequence: 2
+kind: handoff
+sender_actor_id: docs-integration-auditor
+receiver_actor_ids:
+- main-agent
+accountable_owner: Chengyue-Lu
+created_at: '2026-09-12T10:23:38.477010Z'
+content_sha256: 5641f947967b99272cff75e605aa90af3ddd07d8e44772a43923aced74158b93
+attachment_refs: []
+redactions: []
+capture_status: complete
+---
+{"capture":"retrospective portable transcription","visible_message":"只读审计完成。未发现计划范围需要扩展；审计时工作树仍无修改，因此以下是基线核对结果，尚非对最终 diff 的验收。\n- docs/TASKS.md:255、258：M4-004 已由 PR #62 合入，辅助摘要仍写“候选、等待合并”；M5 阻塞说明仍笼统等待“M4 闭环”。按已接受 bounded M4 完成事实修正即可，保留 M5 实际剩余 Gate。\n- docs/workstreams/chengyue-lu/README.md:7–11：DOC-ALIGN-002 应移到已集成记录；M14 描述应更新为 M14-001～003 DONE，以及 PR #69 的未合入准备状态。\n- docs/workstreams/huangyi/README.md:18–19：M4-RUN-RECONSTRUCTION 应移到已集成区，引用 PR #62。\n- docs/workstreams/chengyue-lu/DOC-ALIGN-002/README.md:7、37：待审/待合并陈述已经过时。PR #68 实测于 2026-09-12T01:38:26Z 合入，merge SHA 为 1cb0c19c1182aac368cd61afee111249a86818bb。原基线、范围和历史风险记录应保留并明确其时间范围；不要把后续 TASKS 修复写回原 PR 的交付范围。\n- docs/decisions/README.md:27：可将 ADR-0021 改为已接受，同时保留 dormant/cutover 边界。docs/DEVELOPMENT.md:62 的现行 develop → main 发布路径仍正确，无需随索引更新而改动。\n集成核对：\n- PR #69 仍为 OPEN / APPROVED，head cc3de6c1…。本次读写范围与其仅重叠 docs/TASKS.md；它修改第 221、270 行的 M14-004 PARKED → READY，与 M4/M5 辅助摘要修复分离。\n- ab98caf 与 PR #69 的只读三方合并检查得到 0 个冲突标记；有三个双方修改文件，故无文本冲突不代表最终语义验收。\n- PR #71 仍为 OPEN / APPROVED，head 37236304…。当前 develop 的 M5-006 READY、M6-008 PARKED、M5-007 BLOCKED 应继续保持。\n- 本轮不应改变任何 canonical Task 行、依赖或验收定义，也不应给 M14-004 DONE、M5 实证结果或 release authority 背书。"}
