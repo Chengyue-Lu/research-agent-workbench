@@ -16,7 +16,7 @@ README、上手指南和模块导航均引用本页。任务排期和工程施�
 
 | 能力 | 可用入口或模块 | 当前证据 | 限制 |
 |---|---|---|---|
-| 安装后资源与离线输入校验 | `rwb resources check`、`schema list`、`resources quickstart`、`validate` | structural；Python 3.11/3.13 的 direct wheel 与 sdist→wheel 在 checkout 外验证 | Quickstart 只复制并校验 no-Skill Task；完整项目 scaffold 与一键研究运行尚未交付 |
+| 项目初始化与离线输入校验 | `rwb init`、`project check`、`resources check`、`schema list`、`validate` | structural；可复用 no-Skill 项目、exact Runtime pin 与本地 Profile；Python 3.11/3.13 的 direct wheel 与 sdist→wheel 在 checkout 外验证 | 初始化不执行 Task；可选 offline-demo 只复现 bounded 工程示例，尚无一键研究运行 |
 | Task / Method / Capability 契约 | [控制与能力模块](PUBLIC_GUIDE.md#控制与能力) | structural；Mode/Action、需求、供给、确定性选择与 Snapshot 引用闭合 | asserted facts 的结构成立不授予权限或 Human approval |
 | Runtime Bundle / View / Thin Host / Receipt | [执行与留痕模块](PUBLIC_GUIDE.md#执行与留痕) | bounded；no-Skill / direct-tool 的本地合成闭包与失败路径 | 需要集成者显式构造合法执行输入；仓库 structural replay fixture 不能充当运行输入 |
 | Trace、Handoff、State 与恢复候选 | [状态与证据模块](PUBLIC_GUIDE.md#状态与证据) | structural / bounded；文件闭集、受控 fresh-process 读取与固定 case behavior | 当前恢复候选仍需人类语义验收；不提供通用自动恢复或科学判断 |
@@ -25,7 +25,7 @@ README、上手指南和模块导航均引用本页。任务排期和工程施�
 | Provider Adapter 接缝 | [执行模块](PUBLIC_GUIDE.md#执行与留痕) | structural / bounded；离线 probe 与合成 conformance | 当前发行面不承诺任何 live Provider binding；真实账号、工具调用与长期兼容性需独立验证 |
 | 科研机制净收益 | 显式评估契约 | structural 的评估计划 | evaluated 真实对照实验尚未完成，尚无科研效果或成本净收益结论 |
 
-许可证决定、完整 scaffold、远端分支保护和人类发布决定仍是首次发行的前置条件。
+许可证决定、scaffold 与公开文档的具名验收、远端分支保护和人类发布决定仍是首次发行的前置条件。
 当前文档与包验证结果不构成发布授权。
 
 开始体验：[上手指南](GETTING_STARTED.md)。概念与源码位置：[公开模块导航](PUBLIC_GUIDE.md)。

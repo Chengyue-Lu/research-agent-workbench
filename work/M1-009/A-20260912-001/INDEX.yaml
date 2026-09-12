@@ -1,0 +1,86 @@
+schema_version: 0.1.0
+trace_id: TRACE-M1-009-A-20260912-001
+task_id: M1-009
+task_revision: 1
+attempt_id: A-20260912-001
+archive_root: A-20260912-001
+baseline: b111dbbed9c250c0bcf3afe1c754819b30eae935
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 78662ace8b569457f22edb7306481046870b66742b7ec9f5ed4da795ed3a8d98
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 59cf44b2aca9ed9750869dcd3d5bf86bd0aa37fbcb2e2be0d33efe43c8ea9f64
+read_allowlist:
+- AGENTS.md
+- docs/**
+- .github/**
+- src/research_workbench/**
+- schemas/**
+- examples/run-reconstruction/**
+- examples/quickstart/**
+- examples/profiles/**
+- tests/**
+- pyproject.toml
+- MANIFEST.in
+- runtime-resources.json
+- work/M1-009/**
+write_scope:
+- src/research_workbench/scaffold.py
+- src/research_workbench/cli.py
+- src/research_workbench/_templates/**
+- tests/test_scaffold.py
+- tests/coverage_policy.yaml
+- .github/scripts/portable_package_smoke.py
+- pyproject.toml
+- MANIFEST.in
+- README.md
+- docs/**
+- work/M1-009/**
+tool_allowlist:
+- git
+- gh
+- python
+- apply_patch
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: b8308a68dea140ce794aff16e290d575e323e108477ecc6f8c0df244fd4d9f03
+  event_count: 11
+tool_event_refs:
+- path: tool-events/documentation-governance.log
+  sha256: 651c668a08f9b5e602117bcf942a8859c49596709aaa65dd197cc5b27792cfed
+- path: tool-events/scaffold-tests.log
+  sha256: 42e93ca5ec71463f8dd85bd8670a7a77a638d2fc9f067600f385d3b197ac703e
+- path: tool-events/package-smoke.json
+  sha256: 9030430acaec454ff73b2c3ac4ced76a216aaae8425738871e205cf3213457e5
+- path: tool-events/repository.log
+  sha256: 255440a9ece3a188b00d67b928a848500938bdd0c6788d0dcac767adb46d7ef3
+- path: tool-events/initial-trace-validation.json
+  sha256: ef989173b98a3c0bc52acac213fb717e7ce96e0e0527c83e7d7a4623050c32ff
+handoff_refs:
+- path: WORKLOG.md
+  sha256: a859c493213b278ccdd66aa570df4981873c6c1595ec94ad8261f05ee2a91b9f
+decision_refs: []
+output_refs:
+- path: outputs/VERIFICATION.json
+  sha256: 41917da25e814738b131659f0d5558f915fdc446782226f8d95f26035bc1a3af
+- path: outputs/MERGE_RECEIPT.json
+  sha256: c9634591ec6c62db74a732552bf6c453937311cdcc54016f0c1544a37db05454
+check_refs:
+- path: .gitattributes
+  sha256: 48747480eddba024928d03be9bf83dc579e5515768647507a767e8187a85c9ab
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: tool-results
+- event_id: EVT-0004
+  affected_stream: file-revisions
+- event_id: EVT-0005
+  affected_stream: external-actions

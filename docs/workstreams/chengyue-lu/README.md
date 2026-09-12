@@ -4,6 +4,8 @@
 
 当前进行中或仍待具名语义决定的工作流：
 
+- [`M1-PROJECT-SCAFFOLD/`](M1-PROJECT-SCAFFOLD/README.md)：可复用项目模板、安装后离线 Run 路径与 0.x 兼容政策；实现候选等待当前 CI 与 R2 接受，M14-004 最终 Quickstart 继续独立收口。
+
 - [`DOC-ALIGN-002/`](DOC-ALIGN-002/README.md)：PR #68 已合入，完成 accepted M4/M14 成熟度、Phase D
   入口与 ADR-0020 Gate 对齐；后续 [navigation maintenance](DOC-ALIGN-002/FOLLOWUP-20260912.md) 收口
   TASKS 辅助说明与工作流索引，M14 activation/public docs 继续由独立工作流承担。

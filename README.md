@@ -31,11 +31,11 @@ RWB 管理的是研究工作的**控制面与证据链**。模型负责有界生
 rwb resources check
 rwb schema list
 rwb init project --project-id quickstart
-rwb resources quickstart --output project/task.yaml
-rwb validate project/task.yaml --root project
+rwb project check project
+rwb validate project/tasks/task.yaml project/profiles/local-no-skill.yaml --root project
 ```
 
-这些命令校验随包资源与 no-Skill Task，并创建最小项目入口。安装后的步骤不调用模型或外部服务；
+这些命令创建可复用 no-Skill 项目，并校验随包资源、Task 与本地 Profile。安装后的步骤不调用模型或外部服务；
 验收含义和使用限制统一见[支持能力与证据边界](docs/SUPPORTED_FEATURES.md)。
 
 ## 从哪里开始

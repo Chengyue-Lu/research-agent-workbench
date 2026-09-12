@@ -1,0 +1,19 @@
+{
+  "authorization": "User approved merging PR73/69 before M1-009 work.",
+  "pr73": {
+    "head": "34197d29bb6a45c405b4a4aa60cae4a3b2989387",
+    "merge_commit": "6ea2249e742c6404c1c4c3f54004e0035fa4536a",
+    "ci": 34688429095
+  },
+  "pr69": {
+    "original_head": "cc3de6c1e824e5e9018b00e221ce34ef98de8e6e",
+    "rebased_head": "60a762a79b4a73ab8a27a0ef59fcfdbe1dcc6441",
+    "merge_commit": "b111dbbed9c250c0bcf3afe1c754819b30eae935",
+    "ci": 34689316411,
+    "plan_id": "6a026f605da8a4d63f0d09fb414f953d84e227ff0ac2dac8d2e310722e7bfedf",
+    "checks": "all required passed",
+    "reviewer": "let778750-cpu",
+    "unresolved_threads": 0
+  },
+  "local_develop_preserved": "11c3b57dfbf8af0dc2587fc421d097e2544941c3"
+}

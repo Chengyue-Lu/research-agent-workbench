@@ -1,0 +1,42 @@
+task_id: M1-009
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+agent_profile: bounded-project-scaffold-maintainer
+required_skills: []
+delegation: false
+baseline: b111dbbed9c250c0bcf3afe1c754819b30eae935
+user_request: 可以，推进合并，然后推进M1-009
+goal: Reusable installed project scaffold, explicit roots, offline Run inspection/reconstruction
+  and 0.x compatibility policy.
+read_allowlist:
+- AGENTS.md
+- docs/**
+- .github/**
+- src/research_workbench/**
+- schemas/**
+- examples/run-reconstruction/**
+- examples/quickstart/**
+- examples/profiles/**
+- tests/**
+- pyproject.toml
+- MANIFEST.in
+- runtime-resources.json
+- work/M1-009/**
+write_scope:
+- src/research_workbench/scaffold.py
+- src/research_workbench/cli.py
+- src/research_workbench/_templates/**
+- tests/test_scaffold.py
+- tests/coverage_policy.yaml
+- .github/scripts/portable_package_smoke.py
+- pyproject.toml
+- MANIFEST.in
+- README.md
+- docs/**
+- work/M1-009/**
+stop_conditions:
+- Normal implementation PR to develop with exact-candidate checks and cross-owner
+  review requested.
+- Do not merge M1-009 without acceptance, modify primary develop, or activate M14
+  release topology.

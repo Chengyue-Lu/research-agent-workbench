@@ -40,6 +40,20 @@ assert main(["resources", "quickstart", "--output", str(task)]) == 0
 assert load_document(task)["required_skills"] == []
 assert not SchemaCatalog().validate("task_packet", load_document(task))
 assert main(["validate", str(task), "--root", str(Path.cwd())]) == 0
+from research_workbench.scaffold import DEMO_PATH, check_project, initialize_project
+from research_workbench.artifacts.run_reconstruction import reproduce_run
+project = Path.cwd() / "scaffold"
+initialized = initialize_project(project, template="offline-demo")
+assert not initialized["executed"]
+assert not check_project(project)["executed"]
+assert main(["validate", str(project / "tasks/task.yaml"), str(project / "profiles/local-no-skill.yaml"),
+             "--root", str(project)]) == 0
+reconstruction = reproduce_run(project, project / DEMO_PATH / "manifest.yaml", attempt_dir="work/demo/A-001")
+assert reconstruction["status"] == "matched" and reconstruction["executed"]
+assert not any(reconstruction["authority_boundaries"].values())
+assert main(["validate", str(project / "work/demo/A-001/reconstruction-report.json"), "--root", str(project)]) == 0
+summary["scaffold_template"] = initialized["template"]
+summary["scaffold_reconstruction"] = reconstruction["status"]
 summary["python"] = sys.version.split()[0]
 print(json.dumps(summary, sort_keys=True))
 '''
