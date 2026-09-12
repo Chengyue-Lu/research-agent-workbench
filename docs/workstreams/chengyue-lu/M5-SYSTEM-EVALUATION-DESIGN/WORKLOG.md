@@ -34,6 +34,13 @@ checks: 30 PASS; Schema catalog checks: 3 PASS; changed-file Ruff and `git diff 
 archive files match their pre-rebase Git bytes. A separate REVIEW-003 archive records this bounded repair;
 the final archive commit and newly rebased base still require the existing hosted CI obligations and cross-owner review.
 
+Hosted preflight [34669923680](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34669923680)
+on `7c07616` rejected the impact proof mapping with `positive/negative reuse` before running coverage tests:
+the combined composition regression was listed in both sets. Split its success and rejection assertions into
+independent test IDs sharing the same bounded fixture helper; CI policy and production code are unchanged.
+The preceding 7-test run remains diagnostic for that earlier test layout. The revised committed candidate is
+checked with the actual planner and independent regressions before fresh hosted verification.
+
 2026-09-12 PR #71 review repair: reviewed the comment on `1eac55de9293ff0e5b19f9b838307d8a0650cf0f`
 and reproduced the completeness gaps. Added schema/semantic confirmatory admission pin enforcement, exact
 Task/Method Requirement closure for A3/A4, and unique admitted extension counting. Synthetic fixtures now bind

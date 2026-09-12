@@ -228,7 +228,7 @@ negative_acceptance:
       - test_evaluation_overlay.EvaluationOverlayTests.test_current_a3_a4_method_difference_is_package_effect
       - test_evaluation_overlay.EvaluationOverlayTests.test_runtime_snapshot_bundle_view_interface_pins_fail_closed
       - test_evaluation_overlay.EvaluationOverlayTests.test_a4_requires_each_frozen_method_requirement_exactly_once
-      - test_evaluation_overlay.EvaluationOverlayTests.test_multi_task_composition_compares_the_complete_exact_overlay_task
+      - test_evaluation_overlay.EvaluationOverlayTests.test_task_comparison_rejects_incomplete_demand_and_substituted_task_pins
   - surface: m5-public-verification-boundary
     modules:
       - src/research_workbench/evaluation/contracts.py

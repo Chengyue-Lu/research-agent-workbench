@@ -266,14 +266,13 @@ class EvaluationOverlayTests(OverlayFixtureMixin, unittest.TestCase):
         with self.assertRaisesRegex(EvaluationValidationError, "preregistration"):
             self.pairwise(analysis)
 
-    def test_multi_task_composition_compares_the_complete_exact_overlay_task(self):
+    def _multi_task_comparison_inputs(self):
         """Extend qualified in-memory demand, not a multi-Task disk execution."""
         from unittest.mock import patch
 
         from research_workbench.evaluation.comparability import (
             _task_comparison_surface,
             comparison_surface,
-            derive_comparability,
         )
         from research_workbench.evaluation.qualification import (
             validate_requirement_closure,
@@ -323,6 +322,18 @@ class EvaluationOverlayTests(OverlayFixtureMixin, unittest.TestCase):
             chain["method_resolution"] = copy.deepcopy(method)
         combined = [*extra, *a3]
         validate_requirement_closure(self.inputs(), combined, manifest, selected_arm)
+        return expected, a3, a4, manifest, extra, combined
+
+    def test_multi_task_composition_compares_the_complete_exact_overlay_task(self):
+        from research_workbench.evaluation.comparability import (
+            _task_comparison_surface,
+            comparison_surface,
+            derive_comparability,
+        )
+
+        expected, _a3, a4, manifest, _extra, combined = (
+            self._multi_task_comparison_inputs()
+        )
         self.assertEqual(
             derive_comparability(
                 comparison_surface(combined), a4, admitted_skill_count=1
@@ -335,6 +346,17 @@ class EvaluationOverlayTests(OverlayFixtureMixin, unittest.TestCase):
         self.assertEqual(
             derive_comparability(selected, a4, admitted_skill_count=1), expected
         )
+
+    def test_task_comparison_rejects_incomplete_demand_and_substituted_task_pins(self):
+        from research_workbench.evaluation.comparability import _task_comparison_surface
+        from research_workbench.evaluation.qualification import (
+            validate_requirement_closure,
+        )
+
+        _expected, a3, _a4, manifest, extra, combined = (
+            self._multi_task_comparison_inputs()
+        )
+        selected_arm = manifest["arms"][2]
         # Case selection cannot excuse an incomplete selected Task, nor a
         # missing other Task in the whole-arm qualification that precedes it.
         with self.assertRaisesRegex(EvaluationValidationError, "Requirement set"):
