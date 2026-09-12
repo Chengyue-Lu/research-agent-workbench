@@ -11,7 +11,7 @@
   TASKS 辅助说明与工作流索引，M14 activation/public docs 继续由独立工作流承担。
 - [`M14-CURATED-RELEASE/`](M14-CURATED-RELEASE/README.md)：M14-001～003 已由 PR #60 合入；
   [PR #69](https://github.com/Chengyue-Lu/research-agent-workbench/pull/69) 承载 M14-004 public surface
-  preparation，已获该切片审查，仍待对齐已合入文档与最新 CI 基线后集成。最终 Quickstart 消费 M1-009
+  preparation 已在 PR #73 文档维护之后接受合入。最终 Quickstart 消费获接受的 M1-009
   实际 scaffold 流程后收口；M14-005 仍受 license、scaffold、public docs 与远端保护等 Gate 约束。
 - [`M5-SYSTEM-EVALUATION-DESIGN/`](M5-SYSTEM-EVALUATION-DESIGN/README.md)：冻结 system-level
   primary estimand、case dossier public/private boundary、Protocol/Harness Tasks 与真实执行/pruning Gate；

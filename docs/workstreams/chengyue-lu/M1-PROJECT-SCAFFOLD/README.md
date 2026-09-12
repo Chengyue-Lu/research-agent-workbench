@@ -1,9 +1,13 @@
 # M1-009 — 可复用项目 scaffold
 
-- Task：M1-009；责任人：路诚钺（`Chengyue-Lu`）；基线：`b111dbbed9c250c0bcf3afe1c754819b30eae935`。
+- Task：M1-009；责任人：路诚钺（`Chengyue-Lu`）；初始基线：`b111dbbed9c250c0bcf3afe1c754819b30eae935`。
 - 分支：`feature/m1-009-project-scaffold`；目标：develop；R2（package smoke 的 `.github` 路径触发）。
 - 授权：用户要求合入 #73/#69 后推进 M1-009；M1-009 原为 READY，hard dependency M1-006 已 DONE。
 - 主目录 develop 保持原 SHA，仅在独立 worktree 实现；不调整 M1-009 定义、owner、依赖或验收。
+
+当前候选已 rebase 到包含 PR #71 的 `develop@60bdf8c28f6cf8c52c04e481e0309bbd6e8cba8b`；STATUS
+同时保留 M5-006 已实现的状态和本次 scaffold 说明。初始冻结 Archive 保留原 baseline/bytes；
+最终验证与审查以 PR #74 当前候选为准，旧基线成功 CI 不代替新候选验证。
 
 ## 交付
 
