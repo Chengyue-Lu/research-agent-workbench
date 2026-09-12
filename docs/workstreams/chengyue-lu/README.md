@@ -5,6 +5,9 @@
 当前进行中或仍待具名语义决定的工作流：
 
 - [`M1-PROJECT-SCAFFOLD/`](M1-PROJECT-SCAFFOLD/README.md)：可复用项目模板、安装后离线 Run 路径与 0.x 兼容政策；实现候选等待当前 CI 与 R2 接受，M14-004 最终 Quickstart 继续独立收口。
+- [`M11-SKILL-CLOSEOUT-GATE/`](M11-SKILL-CLOSEOUT-GATE/README.md)：M11-007 Skill-bearing generic
+  closeout / replay 的 R2 任务定义与 Gate B evidence 接口；黄毅负责实施，路诚钺负责 M5 consumer 审查，
+  M5-007 继续等待 baseline closeout 和 Gate B。
 
 - [`DOC-ALIGN-002/`](DOC-ALIGN-002/README.md)：PR #68 已合入，完成 accepted M4/M14 成熟度、Phase D
   入口与 ADR-0020 Gate 对齐；后续 [navigation maintenance](DOC-ALIGN-002/FOLLOWUP-20260912.md) 收口
@@ -15,8 +18,9 @@
   实际 scaffold 流程后收口；M14-005 仍受 license、scaffold、public docs 与远端保护等 Gate 约束。
 - [`M5-SYSTEM-EVALUATION-DESIGN/`](M5-SYSTEM-EVALUATION-DESIGN/README.md)：冻结 system-level
   primary estimand、case dossier public/private boundary、Protocol/Harness Tasks 与真实执行/pruning Gate；
-  ADR-0020 已选择 dual transport；M5-006 是 READY 的 Protocol 入口，Execution-owned M6-008 等待其冻结
-  shared qualification contract，当前 PARKED；本工作流不运行 Evaluation，也不宣称净收益。
+  ADR-0020 已选择 dual transport，M5-006 Protocol / shared qualification contract 已由 PR71 接受；
+  M6-008 baseline closeout 与 M11-007 Skill closeout 分别推进，任务状态以 TASKS 为准；本工作流不运行
+  真实 Evaluation，也不宣称净收益。
 - [`PHASE-C-RESEARCH-STATE/`](PHASE-C-RESEARCH-STATE/README.md)：M10 bounded machine implementation
   已集成；Human semantic review 与 R2/Phase C closeout 仍 pending，Topic 5 未获实现权限。
 已集成、保留审计记录的工作流：

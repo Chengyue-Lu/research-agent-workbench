@@ -1,0 +1,24 @@
+[
+  {
+    "probe": "undeclared-successor",
+    "rejected": true,
+    "error_codes": [
+      "TASK-DECLARATION-CLOSURE"
+    ]
+  },
+  {
+    "probe": "premature-harness-ready",
+    "rejected": true,
+    "error_codes": [
+      "TASK-DEPENDENCY-NOT-DONE",
+      "TASK-DEPENDENCY-NOT-DONE"
+    ]
+  },
+  {
+    "probe": "definition-claims-implementation-done",
+    "rejected": true,
+    "error_codes": [
+      "TASK-DEFINITION-DONE"
+    ]
+  }
+]
