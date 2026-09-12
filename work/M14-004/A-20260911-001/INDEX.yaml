@@ -1,0 +1,125 @@
+schema_version: 0.1.0
+trace_id: TRACE-M14-004-A-20260911-001
+task_id: M14-004
+task_revision: 1
+attempt_id: A-20260911-001
+archive_root: A-20260911-001
+baseline: 11c3b57dfbf8af0dc2587fc421d097e2544941c3
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 83d89488f34cfc92e777e4e3487000f4caa0848a3a4026dba5d15377652428e6
+actors_ref:
+  path: ACTORS.yaml
+  sha256: e341f99aa016c814ce0ffe71902c0d977bcbaa4ab48276a87438743ea750e093
+read_allowlist:
+- AGENTS.md
+- README.md
+- CHANGELOG.md
+- docs/**
+- .github/**
+- tests/**
+- schemas/**
+- src/research_workbench/**
+- registry/agents/**
+- registry/authority/**
+- registry/capabilities/requirements*
+- registry/capabilities/requirements/**
+- registry/modes/**
+- registry/protocol-profiles*
+- registry/protocol-profiles/**
+- registry/skills/release-projections.json
+- examples/quickstart/task-no-skill.yaml
+- pyproject.toml
+- MANIFEST.in
+- build_backend.py
+- runtime-resources.json
+- work/M14-003/A-20260906-001/**
+- work/M14-004/A-20260911-001/**
+- .rwb/m14-004/**
+write_scope:
+- README.md
+- docs/GETTING_STARTED.md
+- docs/PROJECT_CHARTER.md
+- docs/ARCHITECTURE.md
+- docs/PUBLIC_GUIDE.md
+- docs/SUPPORTED_FEATURES.md
+- docs/README.md
+- docs/TASKS.md
+- docs/STATUS.md
+- docs/ROADMAP.md
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/implementation/RELEASE_SURFACE.md
+- docs/implementation/RUNTIME_RESOURCES.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- .github/release-surface.yml
+- tests/test_documentation.py
+- tests/test_public_surface.py
+- tests/public_surface_helpers.py
+- work/M14-004/A-20260911-001/**
+- .rwb/m14-004/**
+- CHANGELOG.md
+- docs/history/README.md
+- docs/history/CHANGELOG-20260911.md
+tool_allowlist:
+- apply_patch
+- python
+- git
+- gh
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 173bfa636a6dd8eccc0ed427e4f46ecac679ed30f1e5420e60343288f23eb2dc
+  event_count: 9
+tool_event_refs:
+- path: tool-events/material-verification.json
+  sha256: 75b88fe41c725b091577d26e08829ae48391c41b998b09018f6173b87b0488c7
+handoff_refs:
+- path: handoffs/H0-REVIEW.md
+  sha256: 967783f31d4611250f63b49e69ed86fd5edf47fb7a658e05de24fef34cfa2ec8
+decision_refs: []
+output_refs:
+- path: outputs/IMPLEMENTATION.md
+  sha256: 967783f31d4611250f63b49e69ed86fd5edf47fb7a658e05de24fef34cfa2ec8
+- path: outputs/PROJECTION_VERIFICATION.md
+  sha256: bc6cc075efd6c161ce0727733c48e9b0daf286f5972fb1900d269edc52ad47db
+check_refs:
+- path: checks/ci-plan.json
+  sha256: 20de6a577bd82b8520eddfa6ba107f4068bf0242e0207981dd4981cf257e66be
+- path: checks/docs-isolated.log
+  sha256: fc17c18790a52c60da91aa692d71089d30f48490ec5eadea7d0bbdac2fe285b9
+- path: checks/governance-focused.log
+  sha256: 0733b331a9a52598b0ffe9f2678b44814e4613c1e496ace77b3e88eea195163d
+- path: checks/governance.log
+  sha256: a5517124324a7ea26174d8fb4d741a06e0fd0f4a8f6929ec74635f86c5b1e3f6
+- path: checks/issue57-lane.json
+  sha256: 44e99dace09de747f2e8f2fef9faef288373cd3cbb6de115eaa44b4c0e14af2d
+- path: checks/local-branch-cleanup.json
+  sha256: 11aa70847e296dd9e0dbf7001ca604326bf547783ca83b5d541de61c9243ae76
+- path: checks/package-input-identity.json
+  sha256: 4f1c62fbea704697cc7887973482cb245ddf9cce076b755aa046aba93ae3b305
+- path: checks/projection-package.json
+  sha256: dc6b16be567d6eb52dcc493f361434021e16129417de3baef15fae40e8a3c11a
+- path: checks/projection.json
+  sha256: 45670e54e59ffa485d5db2298e6ae052a554783a6084d646949ebc5d02dc0938
+- path: checks/release-focused.log
+  sha256: 9dd62b2b5c1e1149332092ee90c7651bb37b63bdde568bd116a12fa162ff0f53
+- path: checks/repository.log
+  sha256: 6895861bf5f35b7669baaf95d9caf2b94c3a4e1d5682f29bbc73ba0aa0064633
+- path: checks/verification.json
+  sha256: 75b88fe41c725b091577d26e08829ae48391c41b998b09018f6173b87b0488c7
+- path: checks/trace-before-remediation.log
+  sha256: af55eea2df0cff3305af0bfc58e7a077ccaf8d4d288cc84fef8f5cda8ab4156c
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: tool-results
+- event_id: EVT-0004
+  affected_stream: file-revisions
+- event_id: EVT-0005
+  affected_stream: external-actions
