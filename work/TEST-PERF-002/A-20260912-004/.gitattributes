@@ -1,1 +1,3 @@
 * text eol=lf
+# Preserve the sealed receipt bytes; its original CRLF is part of the digest.
+checks/dependency-coverage.json -text whitespace=cr-at-eol
