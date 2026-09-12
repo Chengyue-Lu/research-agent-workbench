@@ -1,0 +1,69 @@
+import importlib.util
+import io
+import json
+from pathlib import Path
+import sys
+import tempfile
+import unittest
+from contextlib import redirect_stdout
+from unittest.mock import patch
+
+sys.path.insert(0, str(Path.cwd()))
+from tests import run_unittest_suite as runner
+
+examples = {
+    'class': '''import unittest
+class Example(unittest.TestCase):
+ @classmethod
+ def setUpClass(cls): cls.state = 0
+ def test_a_mutates(self): type(self).state = 1
+ def test_b_observes(self): self.assertEqual(0, type(self).state)
+''',
+    'module': '''import unittest
+state = 0
+def setUpModule():
+ global state
+ state = 0
+class A(unittest.TestCase):
+ def test_a_mutates(self):
+  global state
+  state = 1
+class B(unittest.TestCase):
+ def test_b_observes(self): self.assertEqual(0, state)
+'''}
+results = {}
+for kind, source in examples.items():
+    with tempfile.TemporaryDirectory() as directory, patch.object(runner, 'ROOT', Path(directory)):
+        path = Path(directory) / 'example.py'
+        path.write_text(source)
+        name = 'fixture_repro_' + kind
+        spec = importlib.util.spec_from_file_location(name, path)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[name] = module
+        spec.loader.exec_module(module)
+        def suites():
+            tests = list(runner._iter_tests(unittest.defaultTestLoader.loadTestsFromModule(module)))
+            return unittest.TestSuite(tests), unittest.TestSuite([tests[0]])
+        def run(suite):
+            return unittest.TextTestRunner(stream=io.StringIO(), resultclass=runner.TimedTextResult).run(suite)
+        direct = run(suites()[0])
+        plan = {'plan_id':'fixture-repro', 'binding':{'target':'repro-head'},
+                'behavioral_scope':'full', 'coverage_obligations':['impact']}
+        b, c = suites()
+        payloads = []
+        for label, suite in [('behavioral-remainder', runner._remainder(b, c)), ('impact', c)]:
+            result = run(suite)
+            output = Path(directory) / (label + '.json')
+            with redirect_stdout(io.StringIO()):
+                runner._write_summary(output, label, 0.0, result, 0, plan)
+            payloads.append(json.loads(output.read_bytes()))
+        combined = runner._combine_behavioral(plan, *suites(), *payloads)
+        results[kind] = {'direct_successful': direct.wasSuccessful(),
+                         'direct_failures': len(direct.failures),
+                         'split_producers_successful': [p['successful'] for p in payloads],
+                         'joined_successful': combined['successful']}
+        assert not direct.wasSuccessful() and combined['successful']
+        sys.modules.pop(name)
+output = {'source_head':'8c09f6c74612c82cfb2c5d738de6abb8c5771954', 'reproduced': results}
+Path('.rwb/fixture-order-review/reproduction.json').write_text(json.dumps(output, indent=2) + '\n')
+print(json.dumps(output))

@@ -1,0 +1,11 @@
+{
+  "source_head": "4283a0c18b3dfd95362b72d75cdad78702b2121c",
+  "graph_equal": true,
+  "plan_equal": true,
+  "fingerprint_valid": true,
+  "plan_id": "9b53d398f86a0d5c627050c72411fd757982d295fe610340de361b0cf352432c",
+  "behavioral_scope": "full",
+  "coverage_scope": "impact",
+  "package_smoke": true,
+  "repository_smoke": true
+}

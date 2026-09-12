@@ -1,0 +1,91 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260912-004
+task_id: TEST-PERF-002
+task_revision: 27
+attempt_id: A-20260912-004
+archive_root: A-20260912-004
+baseline: 09d76114cb64be0a7764a3fa3ee49cee0c63e19a
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 6cf4f0402378757b7c5266d28d4d5479f7acc27579fb5efebae2865ebeebd19c
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 2e89fea40063c11a378ef9402cb09fb8cca87a2d8a545472c163ca715b6f87b8
+read_allowlist:
+- .github/**
+- .rwb/coverage-union-audit/**
+- .rwb/fixture-order-review/**
+- .rwb/import-shadow-review/**
+- .rwb/precision-intake/**
+- .rwb/resource-audit/**
+- .rwb/test-cost-audit/**
+- AGENTS.md
+- build_backend.py
+- docs/DEVELOPMENT.md
+- docs/README.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/**
+- pyproject.toml
+- runtime-resources.json
+- src/**
+- tests/**
+- work/M14-002/A-20260906-001/checks/independent_projection_oracle.py
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/ci_dependencies.py
+- .rwb/import-shadow-review/**
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/ci_impact_policy.yaml
+- tests/test_ci_dependencies.py
+- work/TEST-PERF-002/A-20260912-004/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 79d8670a246c1493be820bc98a5d6f10ba3cc66523441bd7594d0c691bf8ce8a
+  event_count: 5
+tool_event_refs:
+- path: tool-events/import-shadowing-review-repair-succeeded.json
+  sha256: ea11093b3b5f1535dc1af2ddc57a7e2bc6304e14cd4d9a41d8972732a01be52d
+handoff_refs: []
+decision_refs: []
+output_refs:
+- path: RESULTS.md
+  sha256: 058e2b5721f2bfddf2ec85eb40e8126afec951daf2aa209665339098a19f86e9
+check_refs:
+- path: checks/dependencies-regression.log
+  sha256: df7211eea185ba53175cdce5de5480054861b8ad1712691c5ada1367e31e2af8
+- path: checks/dependency-coverage.json
+  sha256: a0f69bfbfc84452cfe1458df0fdfa82cd4636a799545a24bf21545ace581aaff
+- path: checks/docs-replay-script.txt
+  sha256: 70d348e26b92295a021fb7c7dbbbcfa3d288175177b6acf14d53e42c8bdcc035
+- path: checks/docs-replay.json
+  sha256: a6f2892bc82905aebae7e5a957492732e1bb1bd30216be108eee17e59e5e4c61
+- path: checks/focused.log
+  sha256: 1aeb0f6d8cc5b85772ef8311b86cfb409b5e0cf02d581c49de71eca5d7a848fa
+- path: checks/old-head-reproduction-script.txt
+  sha256: 30c27e600d1637b516dcfa57a50bae3a4b39760b4be8a1e359e5e16c9cc3a4c3
+- path: checks/rebase.log
+  sha256: 4ab7c1b34f076dfc30af713797db013d6848b70378ed11eb2551ef33f0980fab
+- path: checks/reproduction.json
+  sha256: 2cd5ec2adecb31340151d791bc0a1369c00f54f0659f90487afeecbc7499e99b
+- path: checks/review.json
+  sha256: ff72553f0c0ef20bfee8511e3f146818a0a27d92b386395838d9d7167cf736d1
+- path: checks/source-plan.json
+  sha256: 2043a31fdfdf016732b34b9f97a2fd8163f0d7471ba30636e170198f76e53d49
+- path: checks/source-validation.json
+  sha256: 38df922b4001fb480b6b9bb791239b3040b8ed89bd39d82ca837e38b52e5fd34
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: messages

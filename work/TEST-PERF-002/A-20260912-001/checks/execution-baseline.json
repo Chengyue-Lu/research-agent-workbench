@@ -1,0 +1,11 @@
+{
+  "baseline_plan_id": "3eb636d7dead762705ce19464a499663919c4c8061eb13d114bfe83526668d34",
+  "baseline_target": "f1b5d99118e9f878d0b56e14232045259d2d28e7",
+  "behavior_tests": 1112,
+  "coverage_tests": 1074,
+  "overlap": 1074,
+  "remainder": 38,
+  "baseline_producer_seconds": 3575.082977,
+  "duplicated_behavior_test_seconds": 759.6650230000005,
+  "remainder_test_seconds": 198.848494
+}

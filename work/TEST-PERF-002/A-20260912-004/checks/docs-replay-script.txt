@@ -1,0 +1,36 @@
+import json
+from pathlib import Path
+import subprocess
+import sys
+import types
+
+root=Path.cwd(); scratch=root/'.rwb/import-shadow-review'
+sys.path.insert(0,str(root/'.github/scripts'))
+import ci_dependencies as current
+import plan_ci as planner
+prior=types.ModuleType('reviewed_selector')
+exec(compile(subprocess.check_output(['git','show','09d7611:.github/scripts/ci_dependencies.py']),
+    'reviewed_selector.py','exec'),prior.__dict__)
+base='11c3b57dfbf8af0dc2587fc421d097e2544941c3'
+head='0f6da949c9d89d4d5e0cea9cffad1e85465bb52c'
+graphs=[]
+for ref in (base,head,subprocess.check_output(['git','rev-parse','HEAD']).decode().strip()):
+    paths,blobs=current.snapshot(root,ref)
+    a=prior.graph(blobs,paths); b=current.graph(blobs,paths)
+    edges=lambda value:{(dependency,consumer) for dependency,consumers in value[0].items() for consumer in consumers}
+    removed=sorted(edges(a)-edges(b)); added=sorted(edges(b)-edges(a))
+    assert not removed and not b[3], (ref,removed,b[3])
+    graphs.append({'ref':ref,'removed_edges':removed,'added_edges':added})
+plans=[]
+for analyzer in (prior,current):
+    planner.dependencies=analyzer
+    plans.append(planner.make_plan(root,base=base,head=head,target=head,
+        repository='Chengyue-Lu/research-agent-workbench',
+        body='- **Risk tier**: R2\n- **Shared contract**: no\n- **Authority impact**: no'))
+assert plans[0]==plans[1]
+assert len(plans[1]['tests'])==10 and plans[1]['coverage_scope']=='none'
+assert not plans[1]['package_smoke'] and not plans[1]['repository_smoke']
+report={'historical_pr68_plan_unchanged':True,'behavioral_modules':len(plans[1]['tests']),
+    'coverage_scope':'none','package_smoke':False,'repository_smoke':False,'graphs':graphs}
+(scratch/'docs-replay.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
+print(json.dumps(report))

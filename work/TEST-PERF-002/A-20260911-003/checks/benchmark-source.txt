@@ -1,0 +1,96 @@
+"""Compare exact snapshots using two analyzers; no test-selection cache is trusted."""
+import hashlib
+import json
+from pathlib import Path
+import statistics
+import subprocess
+import sys
+import time
+import types
+
+ROOT = Path.cwd()
+OUT = ROOT / '.rwb/resource-audit'
+sys.path.insert(0, str(ROOT / '.github/scripts'))
+import ci_dependencies as candidate
+import plan_ci as planner
+
+BEFORE = 'c70aa6c8c27c5eaf7f4fc7af6b289ce3f2a2418a'
+BASE = '11c3b57dfbf8af0dc2587fc421d097e2544941c3'
+DOC = '0f6da949c9d89d4d5e0cea9cffad1e85465bb52c'
+prior = types.ModuleType('previous_analyzer')
+exec(compile(subprocess.check_output(['git', 'show', BEFORE + ':.github/scripts/ci_dependencies.py']),
+             'previous_analyzer.py', 'exec'), prior.__dict__)
+
+def normalized(result):
+    edges, opaque, resources, errors = result
+    return {'edges': {p: sorted(c) for p, c in sorted(edges.items())},
+            'opaque': sorted(opaque), 'resources': sorted(resources), 'errors': errors}
+
+def clear(module):
+    module.snapshot.cache_clear()
+    module.commit_graph.cache_clear()
+    if hasattr(module, '_file_facts'):
+        module._file_facts.cache_clear()
+
+summary = {'before_source': BEFORE, 'candidate_sha256': hashlib.sha256(
+    (ROOT / '.github/scripts/ci_dependencies.py').read_bytes()).hexdigest(),
+    'environment': sys.version, 'boundary': 'Local Windows timings; unchanged graph/plan outputs; not hosted CI wall time.',
+    'snapshots': [], 'timings': {}}
+for commit in (() if '--resume' in sys.argv else (BASE, DOC, BEFORE)):
+    paths, blobs = candidate.snapshot(ROOT, commit)
+    a, b = normalized(prior.graph(blobs, paths)), normalized(candidate.graph(blobs, paths))
+    assert a == b, commit
+    record = {'commit': commit, 'python_files': len(blobs), 'paths': len(paths),
+              'edges': sum(map(len, a['edges'].values())), 'equal': True,
+              'sha256': hashlib.sha256(json.dumps(a, sort_keys=True).encode()).hexdigest()}
+    summary['snapshots'].append(record)
+    print(json.dumps(record), flush=True)
+
+paths, blobs = candidate.snapshot(ROOT, BEFORE)
+for mode in (() if '--resume' in sys.argv else ('cold_graph', 'warm_graph')):
+    samples = {'before': [], 'after': []}
+    for iteration in range(3):
+        for label, module in ((('before', prior), ('after', candidate)) if iteration % 2 == 0
+                              else (('after', candidate), ('before', prior))):
+            if mode == 'cold_graph':
+                clear(module)
+            else:
+                module.graph(blobs, paths)
+            started = time.perf_counter()
+            module.graph(blobs, paths)
+            samples[label].append(time.perf_counter() - started)
+    summary['timings'][mode] = {**samples, 'median_before': statistics.median(samples['before']),
+                               'median_after': statistics.median(samples['after'])}
+    print(json.dumps({mode: summary['timings'][mode]}), flush=True)
+
+if '--resume' in sys.argv:
+    for line in (OUT / 'performance-benchmark.log').read_text(encoding='utf-8').splitlines():
+        if line.startswith('{'):
+            item = json.loads(line)
+            if 'commit' in item:
+                summary['snapshots'].append(item)
+            else:
+                summary['timings'].update(item)
+
+body = '- **Risk tier**: R2\n- **Shared contract**: no\n- **Authority impact**: no'
+plans, samples = {}, {'before': [], 'after': []}
+for iteration in range(3):
+    for label, module in ((('before', prior), ('after', candidate)) if iteration % 2 == 0
+                          else (('after', candidate), ('before', prior))):
+        clear(module)
+        planner.read_at.cache_clear()
+        planner.dependencies = module
+        started = time.perf_counter()
+        plans[label] = planner.make_plan(ROOT, base=BASE, head=DOC, target=DOC,
+            repository='Chengyue-Lu/research-agent-workbench', body=body)
+        samples[label].append(time.perf_counter() - started)
+    assert plans['before'] == plans['after']
+    print(json.dumps({'plan_iteration': iteration, 'samples': samples, 'equal': True}), flush=True)
+summary['timings']['cold_pr68_plan'] = {**samples, 'median_before': statistics.median(samples['before']),
+                                      'median_after': statistics.median(samples['after'])}
+summary['plan'] = {'equal': True, 'plan_id': plans['after']['plan_id'],
+                   'tests': plans['after']['tests'],
+                   **{k: plans['after'][k] for k in ('behavioral_scope', 'coverage_scope', 'package_smoke', 'repository_smoke')}}
+planner.dependencies = candidate
+(OUT / 'performance-benchmark.json').write_text(json.dumps(summary, indent=2) + '\n', encoding='utf-8')
+print(json.dumps(summary, indent=2))

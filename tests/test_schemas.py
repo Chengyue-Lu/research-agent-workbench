@@ -1,11 +1,99 @@
 import unittest
+import json
+import os
 from pathlib import Path
+import tempfile
+from unittest.mock import patch
+
+from jsonschema import Draft202012Validator
+from jsonschema.exceptions import SchemaError
 
 from research_workbench.io import load_document
 from research_workbench.validation import SchemaCatalog
+from research_workbench.validation.schemas import _check_schema_bytes
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+class SchemaReuseTests(unittest.TestCase):
+    def setUp(self):
+        _check_schema_bytes.cache_clear()
+        self.addCleanup(_check_schema_bytes.cache_clear)
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.directory = self.root / 'v0.1.0'
+        self.directory.mkdir()
+        self.path = self.directory / 'example.schema.json'
+        self.schema = {'$schema': 'https://json-schema.org/draft/2020-12/schema',
+                       '$id': 'https://example.invalid/example', 'x-rwb-document-kind': 'example',
+                       'type': 'object', 'properties': {'value': {'type': 'integer'}}, 'required': ['value']}
+        self.raw = json.dumps(self.schema).encode()
+        self.path.write_bytes(self.raw)
+
+    def test_schema_lifecycle_reuses_bytes_but_rechecks_changed_inputs_and_invalid_schemas(self):
+        """Schema lifecycle: reuse, changed bytes, invalid schema, restore, rename, remove."""
+        with patch.object(Draft202012Validator, 'check_schema', wraps=Draft202012Validator.check_schema) as check:
+            with self.subTest(checkpoint='identical bytes'):
+                first = SchemaCatalog(self.root)
+                second = SchemaCatalog(self.root)
+                self.assertEqual(1, check.call_count)
+                self.assertEqual([], first.validate('example', {'value': 1}))
+                self.assertTrue(second.validate('example', {'value': 'wrong'}))
+            with self.subTest(checkpoint='different bytes with same size and timestamp'):
+                timestamp = self.path.stat()
+                changed = self.raw.replace(b'"integer"', b'"string" ')
+                self.assertEqual(len(self.raw), len(changed))
+                self.path.write_bytes(changed)
+                os.utime(self.path, ns=(timestamp.st_atime_ns, timestamp.st_mtime_ns))
+                current = SchemaCatalog(self.root)
+                self.assertEqual(2, check.call_count)
+                self.assertTrue(current.validate('example', {'value': 1}))
+                self.assertEqual([], current.validate('example', {'value': 'now valid'}))
+            with self.subTest(checkpoint='invalid schema is never cached as success'):
+                self.path.write_text(json.dumps({**self.schema, 'type': 17}))
+                for _ in range(2):
+                    with self.assertRaises(SchemaError): SchemaCatalog(self.root)
+                self.assertEqual(4, check.call_count)
+            with self.subTest(checkpoint='restore then rename'):
+                self.path.write_bytes(self.raw)
+                self.path.rename(self.directory / 'renamed.schema.json')
+                restored = SchemaCatalog(self.root)
+                self.assertEqual(('renamed',), restored.names)
+                self.assertEqual([], restored.validate('example', {'value': 1}))
+                self.assertEqual(4, check.call_count)
+            with self.subTest(checkpoint='remove from inventory'):
+                (self.directory / 'renamed.schema.json').unlink()
+                self.assertEqual((), SchemaCatalog(self.root).names)
+                with self.assertRaises(KeyError): SchemaCatalog(self.root).schema('renamed')
+
+    def test_catalog_mutation_and_checker_change_cannot_poison_reused_self_checks(self):
+        original = SchemaCatalog(self.root)
+        original.schema('example')['properties']['value']['type'] = 'string'
+        fresh = SchemaCatalog(self.root)
+        self.assertTrue(original.validate('example', {'value': 1}))
+        self.assertEqual([], fresh.validate('example', {'value': 1}))
+        with patch.object(Draft202012Validator, 'check_schema', side_effect=SchemaError('new checker rejects')) as check:
+            for _ in range(2):
+                with self.assertRaisesRegex(SchemaError, 'new checker rejects'): SchemaCatalog(self.root)
+            self.assertEqual(2, check.call_count)
+        self.assertEqual([], SchemaCatalog(self.root).validate('example', {'value': 1}))
+
+    def test_catalog_roots_and_reads_remain_independent_after_a_cache_hit(self):
+        SchemaCatalog(self.root)
+        other = self.root / 'other'
+        (other / 'v0.1.0').mkdir(parents=True)
+        path = other / 'v0.1.0/other.schema.json'
+        path.write_bytes(self.raw)
+        self.assertEqual(('other',), SchemaCatalog(other).names)
+        self.path.write_text('invalid JSON')
+        with self.assertRaises(json.JSONDecodeError): SchemaCatalog(self.root)
+        self.assertEqual([], SchemaCatalog(other).validate('example', {'value': 1}))
+        self.path.write_text('[]')
+        with self.assertRaisesRegex(SchemaError, 'must be an object'): SchemaCatalog(self.root)
+        self.path.write_text(json.dumps({'type': 'object'}))
+        with self.assertRaisesRegex(SchemaError, 'lacks \\$id'): SchemaCatalog(self.root)
 
 
 class VersionedSchemaTests(unittest.TestCase):

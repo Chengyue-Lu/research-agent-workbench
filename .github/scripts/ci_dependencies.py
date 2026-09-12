@@ -12,6 +12,8 @@ from collections import defaultdict
 from functools import lru_cache
 import hashlib
 import json
+from pathlib import PurePosixPath
+import posixpath
 import subprocess
 
 
@@ -99,135 +101,340 @@ def function_body_only(before, after):
     return True
 
 
+@lru_cache(maxsize=512)
+def _file_facts(path, raw):
+    """Cache immutable syntax facts only; resolve them against each fresh inventory.
+
+    Both the repository-relative path and exact Python bytes are inputs (relative
+    imports and __file__ depend on the path). Never persist a test result or a
+    resolved graph here: another snapshot may add a module or a resource match.
+    """
+    links, literals, prefixes, basenames = set(), set(), set(), set()
+    opaque = resources = False
+    try:
+        tree = ast.parse(raw)
+    except (SyntaxError, UnicodeError):
+        return None
+    aliases = {}
+    nodes = tuple(ast.walk(tree))
+    parents = {child: parent for parent in nodes for child in ast.iter_child_nodes(parent)}
+    @lru_cache(maxsize=None)
+    def scope(node):
+        while node in parents:
+            node = parents[node]
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)):
+                break
+        return node
+
+    bindings = defaultdict(lambda: defaultdict(list))
+    import_targets = defaultdict(set)
+    mutated_names = set()
+    for node in nodes:
+        if isinstance(node, (ast.Global, ast.Nonlocal)):
+            mutated_names.update(node.names)
+        if isinstance(node, ast.ImportFrom):
+            for item in node.names:
+                import_targets[item.asname or item.name].add(str(node.module) + '.' + item.name)
+                bindings[scope(node)][item.asname or item.name].append(node)
+        elif isinstance(node, ast.Import):
+            for item in node.names:
+                import_targets[item.asname or item.name.split('.')[0]].add(item.name)
+                bindings[scope(node)][item.asname or item.name.split('.')[0]].append(node)
+        if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
+            parent = parents[node]
+            bindings[scope(node)][node.id].append(parent.value if isinstance(parent, ast.Assign) else None)
+
+    def value_of(node):
+        values = bindings[scope(node)].get(node.id, []) if isinstance(node, ast.Name) else []
+        return values[0] if len(values) == 1 else None
+
+    def parameter(node, name):
+        owner = scope(node)
+        return isinstance(owner, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)) and any(
+            arg.arg == name for arg in (*owner.args.posonlyargs, *owner.args.args, *owner.args.kwonlyargs,
+                                       *([owner.args.vararg] if owner.args.vararg else []),
+                                       *([owner.args.kwarg] if owner.args.kwarg else [])))
+
+    @lru_cache(maxsize=None)
+    def lexical_values(node):
+        """A nearer binding or an exported mutation prevents a fixed-root claim."""
+        if node.id in mutated_names:
+            return [None]
+        owner = scope(node)
+        while True:
+            if bindings[owner].get(node.id):
+                return bindings[owner][node.id]
+            if isinstance(owner, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
+                if any(arg.arg == node.id for arg in (*owner.args.posonlyargs, *owner.args.args,
+                                                     *owner.args.kwonlyargs)):
+                    return [None]
+                if any(arg is not None and arg.arg == node.id for arg in (owner.args.vararg, owner.args.kwarg)):
+                    return [None]
+            if owner is tree:
+                return []
+            owner = scope(owner)
+            # Method free variables do not resolve through the class namespace.
+            while isinstance(owner, ast.ClassDef):
+                owner = scope(owner)
+
+    def path_constructor(node):
+        values = lexical_values(node) if isinstance(node, ast.Name) else []
+        return (isinstance(node, ast.Name) and aliases.get(node.id) == 'pathlib.Path'
+                and import_targets[node.id] == {'pathlib.Path'}
+                and len(values) == 1 and isinstance(values[0], ast.ImportFrom)
+                and not parameter(node, node.id))
+
+    def literal_path(node, seen=frozenset()):
+        """Resolve fixed pathlib roots from syntax; unknown roots stay unknown."""
+        if node in seen:
+            return None
+        seen = seen | {node}
+        if isinstance(node, ast.Name):
+            if (node.id == '__file__' and not parameter(node, node.id)
+                    and not lexical_values(node)):
+                return PurePosixPath(path)
+            if parameter(node, node.id):
+                return None
+            values = lexical_values(node)
+            if len(values) == 1 and values[0] is not None:
+                return literal_path(values[0], seen)
+        if isinstance(node, ast.Call):
+            if path_constructor(node.func) and len(node.args) == 1:
+                return literal_path(node.args[0], seen)
+            if isinstance(node.func, ast.Attribute) and node.func.attr in {'resolve', 'absolute'}:
+                return literal_path(node.func.value, seen)
+        if isinstance(node, ast.Attribute) and node.attr == 'parent':
+            value = literal_path(node.value, seen)
+            return value.parent if value is not None and value != PurePosixPath('.') else None
+        if (isinstance(node, ast.Subscript) and isinstance(node.value, ast.Attribute) and node.value.attr == 'parents'
+                and isinstance(node.slice, ast.Constant) and type(node.slice.value) is int):
+            value = literal_path(node.value.value, seen)
+            if value is not None and 0 <= node.slice.value < len(value.parents):
+                return value.parents[node.slice.value]
+        return None
+
+    def path_value(node, seen=frozenset()):
+        if node in seen:
+            return False
+        seen = seen | {node}
+        if isinstance(node, ast.Name):
+            value = value_of(node)
+            if value is not None:
+                return path_value(value, seen)
+            owner = scope(node)
+            if isinstance(owner, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.id not in bindings[owner]:
+                return any(arg.arg == node.id and path_constructor(arg.annotation) for arg in
+                           (*owner.args.posonlyargs, *owner.args.args, *owner.args.kwonlyargs))
+        if isinstance(node, ast.Call):
+            if path_constructor(node.func):
+                return True
+            if isinstance(node.func, ast.Attribute) and node.func.attr in {'resolve', 'absolute'}:
+                return path_value(node.func.value, seen)
+        if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
+            return path_value(node.left, seen)
+        if isinstance(node, ast.IfExp):
+            return path_value(node.body, seen) and path_value(node.orelse, seen)
+        return False
+
+    @lru_cache(maxsize=None)
+    def scope_inputs(owner):
+        uses, mutations = defaultdict(list), set()
+        for node in ast.walk(owner):
+            if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
+                uses[node.id].append(node)
+            if isinstance(node, (ast.Global, ast.Nonlocal)):
+                mutations.update(node.names)
+        return uses, mutations
+
+    def name_only(node, seen=frozenset()):
+        """Recognize lexical predicates, without crossing a read/call boundary."""
+        if node in seen:
+            return False
+        seen = seen | {node}
+        parent = parents.get(node)
+        while isinstance(parent, (ast.Set, ast.List, ast.Tuple, ast.BinOp)):
+            node, parent = parent, parents.get(parent)
+        if isinstance(parent, (ast.Compare, ast.Expr)):
+            return True
+        if isinstance(parent, ast.Assign) and len(parent.targets) == 1:
+            target = parent.targets[0]
+            owner = scope(parent)
+            if isinstance(target, ast.Name) and isinstance(owner, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                loads, mutations = scope_inputs(owner)
+                if target.id in mutations:
+                    return False
+                uses = loads[target.id]
+                if uses and all(scope(n) is owner and name_only(n, seen) for n in uses):
+                    return True
+        if isinstance(parent, ast.Call) and isinstance(parent.func, ast.Attribute):
+            receiver = parent.func.value
+            if parent.func.attr in {'isdisjoint', 'issubset', 'issuperset'}:
+                return isinstance(receiver, ast.Set) or isinstance(value_of(receiver), (ast.Set, ast.SetComp))
+            if parent.func.attr == 'is_relative_to':
+                # pathlib's lexical containment query never inspects the directory.
+                return path_value(receiver)
+        return False
+
+    def alias(name, target):
+        nonlocal opaque
+        if name in aliases and aliases[name] != target:
+            opaque = True
+        aliases[name] = target
+
+    def link(name):
+        links.add(name)
+
+    def path_parts(node):
+        if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
+            return path_parts(node.left) + path_parts(node.right)
+        return [node.value] if isinstance(node, ast.Constant) and isinstance(node.value, str) else [None]
+
+    for node in nodes:
+        if isinstance(node, ast.Import):
+            for item in node.names:
+                alias(item.asname or item.name.split('.')[0], item.name if item.asname else item.name.split('.')[0])
+                link(item.name)
+        elif isinstance(node, ast.ImportFrom):
+            package = module_name(path).split('.')
+            if not path.endswith('/__init__.py'):
+                package.pop()
+            prefix = '.'.join(package[:len(package) - node.level + 1]) if node.level else ''
+            name = '.'.join(filter(None, (prefix, node.module)))
+            link(name)
+            for item in node.names:
+                full = name + '.' + item.name
+                alias(item.asname or item.name, full)
+                link(full)
+        elif isinstance(node, ast.Constant) and isinstance(node.value, str):
+            parent = parents.get(node)
+            if name_only(node) or isinstance(parent, ast.BinOp) and isinstance(parent.op, ast.Div):
+                continue
+            value = node.value.replace('\\', '/')
+            link(value)
+            # Whole path expressions are handled below. A bare filename with
+            # an unresolved use remains ambiguous, including assignment and
+            # helper-call inputs; do not silently assume the repository root.
+            literals.add(value)
+        elif isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
+            parent = parents.get(node)
+            if isinstance(parent, ast.BinOp) and isinstance(parent.op, ast.Div):
+                continue
+            if name_only(node):
+                continue
+            parts = path_parts(node)
+            root_node = node
+            while isinstance(root_node, ast.BinOp) and isinstance(root_node.op, ast.Div):
+                root_node = root_node.left
+            resolved = literal_path(root_node)
+            if parts and parts[0] is None:
+                parts = parts[1:]
+            prefix = []
+            for part in parts:
+                if part is None:
+                    break
+                prefix.append(part)
+            value = '/'.join(prefix).replace('\\', '/').strip('/')
+            if value and resolved is not None:
+                value = posixpath.normpath((resolved / value).as_posix())
+                if value == '..' or value.startswith('../'):
+                    resolved = None
+            if value:
+                prefixes.add(value)
+            if not value or resolved is None:
+                # An unresolved leading segment must not hide a known suffix.
+                basenames.update(parts)
+
+    def call_name(node):
+        if isinstance(node, ast.Name):
+            return aliases.get(node.id, node.id)
+        if isinstance(node, ast.Attribute):
+            return call_name(node.value) + '.' + node.attr
+        return ''
+
+    for node in nodes:
+        if isinstance(node, (ast.Name, ast.Attribute)):
+            name = call_name(node)
+            if name in {'importlib', 'subprocess', 'runpy', 'builtins', 'os'} and not isinstance(parents.get(node), ast.Attribute):
+                # A namespace stored/passed as a value can expose execution through
+                # later assignment/reflection. Keep its consumer without guessing aliases.
+                opaque = True
+            if (name in {'__import__', 'eval', 'exec', 'getattr', 'builtins.getattr',
+                         'builtins.__import__', 'builtins.eval', 'builtins.exec',
+                         'importlib.import_module', 'runpy.run_module', 'runpy.run_path'}
+                    or name.startswith(('subprocess.', 'os.system', 'os.popen'))
+                    or name.endswith(('.exec_module', '.spec_from_file_location'))):
+                parent = parents.get(node)
+                if not isinstance(parent, ast.Call) or parent.func is not node:
+                    # Passing or binding an execution capability loses its argument
+                    # boundary. Preserve that consumer even when later aliases vary.
+                    opaque = True
+        if (isinstance(node, ast.Attribute) and node.attr in {'read_text', 'read_bytes', 'open', 'glob', 'rglob', 'iterdir'}) or (isinstance(node, ast.Name) and node.id == 'open'):
+            resources = True
+        if not isinstance(node, ast.Call):
+            continue
+        name = call_name(node.func)
+        if name in {'getattr', 'builtins.getattr'} and node.args:
+            namespace = call_name(node.args[0])
+            attribute = node.args[1].value if len(node.args) > 1 and isinstance(node.args[1], ast.Constant) else None
+            if ((not namespace and attribute is None) or namespace.split('.')[0] in {'importlib', 'subprocess', 'runpy', 'builtins', 'os'}
+                    or namespace.rsplit('.', 1)[-1] in {'loader', 'spec'}
+                    or attribute in {'import_module', 'run_module', 'run_path', 'exec_module', 'spec_from_file_location',
+                                     '__import__', 'eval', 'exec', 'run', 'Popen', 'system', 'popen'}):
+                # Reflection can store/pass a capability before calling it. Its
+                # consumer remains opaque without attempting points-to analysis.
+                opaque = True
+        if name in {'__import__', 'builtins.__import__', 'importlib.import_module', 'runpy.run_module', 'runpy.run_path'}:
+            if node.args and isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str):
+                link(node.args[0].value)
+            else:
+                opaque = True
+        elif not name or name in {'eval', 'exec', 'builtins.eval', 'builtins.exec'} or name.startswith(('subprocess.', 'os.system', 'os.popen')):
+            opaque = True
+        elif name.endswith(('.exec_module', '.spec_from_file_location')):
+            opaque = True
+        if name.endswith(('.read_text', '.read_bytes', '.open', '.glob', '.rglob', '.iterdir')) or name == 'open':
+            resources = True
+    return (frozenset(links), frozenset(literals), frozenset(prefixes),
+            frozenset(basenames), opaque, resources)
+
+
 def graph(blobs, paths):
-    modules = defaultdict(set)
+    modules, references, descendants = defaultdict(set), defaultdict(set), defaultdict(set)
     for path in blobs:
         modules[module_name(path)].add(path)
         if path.startswith('tests/'):
             modules[module_name(path).removeprefix('tests.')].add(path)
-    reverse = defaultdict(set)
-    references = defaultdict(set)
     for dependency in paths:
-        references[dependency].add(dependency)
         references[dependency.rsplit('/', 1)[-1]].add(dependency)
-    opaque, resources, errors = set(), set(), []
+        parts = dependency.split('/')
+        for stop in range(1, len(parts)):
+            descendants['/'.join(parts[:stop])].add(dependency)
+    reverse, opaque, resources, errors = defaultdict(set), set(), set(), []
     for path, raw in blobs.items():
-        try:
-            tree = ast.parse(raw)
-        except (SyntaxError, UnicodeError):
+        facts = _file_facts(path, raw)
+        if facts is None:
             errors.append('unparseable Python dependency: ' + path)
             continue
-        aliases = {}
-        parents = {child: parent for parent in ast.walk(tree) for child in ast.iter_child_nodes(parent)}
-
-        def alias(name, target):
-            if name in aliases and aliases[name] != target:
-                opaque.add(path)
-            aliases[name] = target
-
-        def link(name):
+        links, literals, prefixes, basenames, dynamic, reader = facts
+        inputs = set()
+        for name in links:
             parts = name.split('.')
             for stop in range(1, len(parts) + 1):
-                for dependency in modules.get('.'.join(parts[:stop]), ()):
-                    if dependency != path:
-                        reverse[dependency].add(path)
-
-        def path_parts(node):
-            if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
-                return path_parts(node.left) + path_parts(node.right)
-            return [node.value] if isinstance(node, ast.Constant) and isinstance(node.value, str) else [None]
-
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Import):
-                for item in node.names:
-                    alias(item.asname or item.name.split('.')[0], item.name if item.asname else item.name.split('.')[0])
-                    link(item.name)
-            elif isinstance(node, ast.ImportFrom):
-                package = module_name(path).split('.')
-                if not path.endswith('/__init__.py'):
-                    package.pop()
-                prefix = '.'.join(package[:len(package) - node.level + 1]) if node.level else ''
-                name = '.'.join(filter(None, (prefix, node.module)))
-                link(name)
-                for item in node.names:
-                    full = name + '.' + item.name
-                    alias(item.asname or item.name, full)
-                    link(full)
-            elif isinstance(node, ast.Constant) and isinstance(node.value, str):
-                value = node.value.replace('\\', '/')
-                link(value)
-                # File literals are references. Dictionary keys such as 'tests' and
-                # permission-zone names such as 'src' are not directory reads.
-                for dependency in references.get(value.rstrip('/'), ()):
-                    reverse[dependency].add(path)
-            elif isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
-                parent = parents.get(node)
-                if isinstance(parent, ast.BinOp) and isinstance(parent.op, ast.Div):
-                    continue
-                parts = path_parts(node)
-                while parts and parts[0] is None:
-                    parts.pop(0)
-                prefix = []
-                for part in parts:
-                    if part is None:
-                        break
-                    prefix.append(part)
-                value = '/'.join(prefix).replace('\\', '/').strip('/')
-                if value:
-                    for dependency in paths:
-                        if dependency == value or dependency.startswith(value + '/'):
-                            reverse[dependency].add(path)
-
-        def call_name(node):
-            if isinstance(node, ast.Name):
-                return aliases.get(node.id, node.id)
-            if isinstance(node, ast.Attribute):
-                return call_name(node.value) + '.' + node.attr
-            return ''
-
-        for node in ast.walk(tree):
-            if isinstance(node, (ast.Name, ast.Attribute)):
-                name = call_name(node)
-                if name in {'importlib', 'subprocess', 'runpy', 'builtins', 'os'} and not isinstance(parents.get(node), ast.Attribute):
-                    # A namespace stored/passed as a value can expose execution through
-                    # later assignment/reflection. Keep its consumer without guessing aliases.
-                    opaque.add(path)
-                if (name in {'__import__', 'eval', 'exec', 'getattr', 'builtins.getattr',
-                             'builtins.__import__', 'builtins.eval', 'builtins.exec',
-                             'importlib.import_module', 'runpy.run_module', 'runpy.run_path'}
-                        or name.startswith(('subprocess.', 'os.system', 'os.popen'))
-                        or name.endswith(('.exec_module', '.spec_from_file_location'))):
-                    parent = parents.get(node)
-                    if not isinstance(parent, ast.Call) or parent.func is not node:
-                        # Passing or binding an execution capability loses its argument
-                        # boundary. Preserve that consumer even when later aliases vary.
-                        opaque.add(path)
-            if (isinstance(node, ast.Attribute) and node.attr in {'read_text', 'read_bytes', 'open', 'glob', 'rglob', 'iterdir'}) or (isinstance(node, ast.Name) and node.id == 'open'):
-                resources.add(path)
-            if not isinstance(node, ast.Call):
-                continue
-            name = call_name(node.func)
-            if name in {'getattr', 'builtins.getattr'} and node.args:
-                namespace = call_name(node.args[0])
-                attribute = node.args[1].value if len(node.args) > 1 and isinstance(node.args[1], ast.Constant) else None
-                if ((not namespace and attribute is None) or namespace.split('.')[0] in {'importlib', 'subprocess', 'runpy', 'builtins', 'os'}
-                        or namespace.rsplit('.', 1)[-1] in {'loader', 'spec'}
-                        or attribute in {'import_module', 'run_module', 'run_path', 'exec_module', 'spec_from_file_location',
-                                         '__import__', 'eval', 'exec', 'run', 'Popen', 'system', 'popen'}):
-                    # Reflection can store/pass a capability before calling it. Its
-                    # consumer remains opaque without attempting points-to analysis.
-                    opaque.add(path)
-            if name in {'__import__', 'builtins.__import__', 'importlib.import_module', 'runpy.run_module', 'runpy.run_path'}:
-                if node.args and isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str):
-                    link(node.args[0].value)
-                else:
-                    opaque.add(path)
-            elif not name or name in {'eval', 'exec', 'builtins.eval', 'builtins.exec'} or name.startswith(('subprocess.', 'os.system', 'os.popen')):
-                opaque.add(path)
-            elif name.endswith(('.exec_module', '.spec_from_file_location')):
-                opaque.add(path)
-            if name.endswith(('.read_text', '.read_bytes', '.open', '.glob', '.rglob', '.iterdir')) or name == 'open':
-                resources.add(path)
+                inputs.update(modules.get('.'.join(parts[:stop]), ()))
+        inputs.discard(path)  # Imports omit self; literal resource references do not.
+        for value in literals | prefixes:
+            if value in paths:
+                inputs.add(value)
+        for value in literals | basenames:
+            inputs.update(references.get(value, ()))
+        for value in prefixes:
+            inputs.update(descendants.get(value, ()))
+        for dependency in inputs:
+            reverse[dependency].add(path)
+        if dynamic:
+            opaque.add(path)
+        if reader:
+            resources.add(path)
     return reverse, opaque, resources, errors
 
 

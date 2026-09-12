@@ -1,0 +1,44 @@
+import importlib.util
+import json
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+
+root=Path.cwd(); scratch=root/'.rwb/import-shadow-review'
+sys.path.insert(0,str(root/'.github/scripts'))
+import ci_dependencies as candidate
+accepted_path=scratch/'accepted-dependencies.py'
+accepted_path.write_bytes(subprocess.check_output(['git','show','11c3b57:.github/scripts/ci_dependencies.py']))
+spec=importlib.util.spec_from_file_location('accepted_dependencies',accepted_path)
+accepted=importlib.util.module_from_spec(spec); spec.loader.exec_module(accepted)
+consumer=b'from pathlib import Path\nROOT = Path(__file__).resolve().parents[1]\ndef test_document():\n    from project_config import ROOT\n    assert (ROOT / "input.md").read_text() == "good"\n'
+sources={'tests/test_reader.py':consumer,'project_config.py':b'from pathlib import Path\nROOT=Path("docs")\n'}
+selection={}
+with tempfile.TemporaryDirectory() as directory:
+    fixture=Path(directory)
+    for name,raw in sources.items():
+        path=fixture/name; path.parent.mkdir(parents=True,exist_ok=True); path.write_bytes(raw)
+    (fixture/'docs').mkdir(); (fixture/'input.md').write_text('good')
+    def git(*args):
+        return subprocess.check_output(['git','-C',str(fixture),*args],stderr=subprocess.DEVNULL).decode().strip()
+    git('init','-q')
+    outcomes={}
+    commits=[]
+    for data in ['good','bad']:
+        (fixture/'docs/input.md').write_text(data)
+        run=subprocess.run([sys.executable,'-c','import runpy; runpy.run_path("tests/test_reader.py")["test_document"]()'],
+            cwd=fixture,capture_output=True,text=True)
+        outcomes[data]={'returncode':run.returncode,'assertion_failed':'AssertionError' in run.stderr}
+        git('add','tests/test_reader.py','project_config.py','docs/input.md','input.md')
+        git('-c','user.name=CI fixture','-c','user.email=ci@example.invalid','commit','-qm',data)
+        commits.append(git('rev-parse','HEAD'))
+    for name,module in [('accepted',accepted),('candidate',candidate)]:
+        result=module.select(fixture,*commits,['docs/input.md'])[0]
+        selection[name]={'selected':sorted(result['selected']),'errors':result.get('errors',[])}
+report={'source_head':subprocess.check_output(['git','rev-parse','HEAD']).decode().strip(),
+    'selection':selection,'actual_execution':outcomes}
+assert selection['accepted']['selected']==['test_reader'] and not selection['candidate']['selected']
+assert outcomes['good']['returncode']==0 and outcomes['bad']['assertion_failed']
+(scratch/'reproduction.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
+print(json.dumps(report))

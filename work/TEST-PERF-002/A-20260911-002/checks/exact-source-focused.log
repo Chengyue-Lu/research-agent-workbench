@@ -1,0 +1,496 @@
+test_ambiguous_import_alias_and_module_collision_keep_all_possible_consumers (tests.test_ci_dependencies.DependencyTests.test_ambiguous_import_alias_and_module_collision_keep_all_possible_consumers) ... ok
+test_assigned_execution_namespace_is_opaque_but_stat_result_is_data (tests.test_ci_dependencies.DependencyTests.test_assigned_execution_namespace_is_opaque_but_stat_result_is_data) ... ok
+test_bound_and_passed_execution_capabilities_keep_dynamic_consumers (tests.test_ci_dependencies.DependencyTests.test_bound_and_passed_execution_capabilities_keep_dynamic_consumers) ... ok
+test_changed_inventory_is_bound_without_invalidating_independent_closure (tests.test_ci_dependencies.DependencyTests.test_changed_inventory_is_bound_without_invalidating_independent_closure) ... ok
+test_class_method_root_uses_module_binding_and_closure_uses_outer_binding (tests.test_ci_dependencies.DependencyTests.test_class_method_root_uses_module_binding_and_closure_uses_outer_binding) ... ok
+test_document_names_and_directory_guards_do_not_create_runtime_input_edges (tests.test_ci_dependencies.DependencyTests.test_document_names_and_directory_guards_do_not_create_runtime_input_edges) ... ok
+test_dynamic_path_tail_keeps_known_prefix_and_empty_prefix_is_not_a_reference (tests.test_ci_dependencies.DependencyTests.test_dynamic_path_tail_keeps_known_prefix_and_empty_prefix_is_not_a_reference) ... ok
+test_evidence_closure_follows_test_helpers_packages_and_literal_inputs_only (tests.test_ci_dependencies.DependencyTests.test_evidence_closure_follows_test_helpers_packages_and_literal_inputs_only) ... ok
+test_fixed_module_relative_root_and_unresolved_path_tail_preserve_inputs (tests.test_ci_dependencies.DependencyTests.test_fixed_module_relative_root_and_unresolved_path_tail_preserve_inputs) ... ok
+test_function_contract_keeps_initialization_bindings_and_execution_inputs_fixed (tests.test_ci_dependencies.DependencyTests.test_function_contract_keeps_initialization_bindings_and_execution_inputs_fixed) ... ok
+test_getattr_execution_namespaces_retain_assigned_passed_stored_and_called_consumers (tests.test_ci_dependencies.DependencyTests.test_getattr_execution_namespaces_retain_assigned_passed_stored_and_called_consumers) ... ok
+test_import_closure_keeps_consumers_and_excludes_independent_test (tests.test_ci_dependencies.DependencyTests.test_import_closure_keeps_consumers_and_excludes_independent_test) ... ok
+test_importlib_loader_resource_methods_and_unknown_call_shapes (tests.test_ci_dependencies.DependencyTests.test_importlib_loader_resource_methods_and_unknown_call_shapes) ... ok
+test_indirect_dynamic_call_and_bound_resource_reader_cannot_escape (tests.test_ci_dependencies.DependencyTests.test_indirect_dynamic_call_and_bound_resource_reader_cannot_escape) ... ok
+test_invalid_python_is_explicit_uncertainty (tests.test_ci_dependencies.DependencyTests.test_invalid_python_is_explicit_uncertainty) ... ok
+test_lexical_comparisons_skip_names_but_preserve_real_reads_and_escaped_values (tests.test_ci_dependencies.DependencyTests.test_lexical_comparisons_skip_names_but_preserve_real_reads_and_escaped_values) ... ok
+test_literal_dynamic_import_and_run_path_resolve_without_opaque_fallback (tests.test_ci_dependencies.DependencyTests.test_literal_dynamic_import_and_run_path_resolve_without_opaque_fallback) ... ok
+test_literals_and_resource_readers_preserve_fixture_contract (tests.test_ci_dependencies.DependencyTests.test_literals_and_resource_readers_preserve_fixture_contract) ... ok
+test_local_contract_rejects_opaque_or_resource_boundary_mutations (tests.test_ci_dependencies.DependencyTests.test_local_contract_rejects_opaque_or_resource_boundary_mutations) ... ok
+test_local_contract_resolves_module_execution_aliases (tests.test_ci_dependencies.DependencyTests.test_local_contract_resolves_module_execution_aliases) ... ok
+test_new_and_modified_test_do_not_select_independent_opaque_execution (tests.test_ci_dependencies.DependencyTests.test_new_and_modified_test_do_not_select_independent_opaque_execution) ... ok
+test_opaque_execution_expands_instead_of_claiming_exclusion (tests.test_ci_dependencies.DependencyTests.test_opaque_execution_expands_instead_of_claiming_exclusion) ... ok
+test_package_initialization_star_and_relative_imports (tests.test_ci_dependencies.DependencyTests.test_package_initialization_star_and_relative_imports) ... ok
+test_path_expression_is_specific_and_metadata_keys_are_not_directory_reads (tests.test_ci_dependencies.DependencyTests.test_path_expression_is_specific_and_metadata_keys_are_not_directory_reads) ... ok
+test_qualified_paths_do_not_alias_same_basename_in_other_directories (tests.test_ci_dependencies.DependencyTests.test_qualified_paths_do_not_alias_same_basename_in_other_directories) ... ok
+test_removed_edge_cannot_hide_old_consumer (tests.test_ci_dependencies.DependencyTests.test_removed_edge_cannot_hide_old_consumer) ... ok
+test_resource_changes_keep_real_archive_imports_and_directory_scans (tests.test_ci_dependencies.DependencyTests.test_resource_changes_keep_real_archive_imports_and_directory_scans) ... ok
+test_scope_shadowing_export_and_unknown_predicates_retain_conservative_edges (tests.test_ci_dependencies.DependencyTests.test_scope_shadowing_export_and_unknown_predicates_retain_conservative_edges) ... ok
+test_scoped_path_guards_follow_only_unambiguous_path_values (tests.test_ci_dependencies.DependencyTests.test_scoped_path_guards_follow_only_unambiguous_path_values) ... ok
+test_semantic_comments_and_docstrings (tests.test_ci_dependencies.DependencyTests.test_semantic_comments_and_docstrings) ... ok
+test_snapshot_reads_exact_git_blobs_and_ignores_worktree_drift (tests.test_ci_dependencies.DependencyTests.test_snapshot_reads_exact_git_blobs_and_ignores_worktree_drift) ... ok
+test_test_helper_consumers_are_transitive (tests.test_ci_dependencies.DependencyTests.test_test_helper_consumers_are_transitive) ... ok
+test_unresolved_bare_filenames_keep_relative_and_helper_consumers (tests.test_ci_dependencies.DependencyTests.test_unresolved_bare_filenames_keep_relative_and_helper_consumers) ... ok
+test_accepted_deterministic_ids_avoid_reloading_mixed_behavioral_module (tests.test_ci_plan.PlannerTests.test_accepted_deterministic_ids_avoid_reloading_mixed_behavioral_module) ... ok
+test_accepted_test_consumer_drift_invalidates_old_closure (tests.test_ci_plan.PlannerTests.test_accepted_test_consumer_drift_invalidates_old_closure) ... ok
+test_actual_pragma_and_runner_semantics_keep_repository_obligation (tests.test_ci_plan.PlannerTests.test_actual_pragma_and_runner_semantics_keep_repository_obligation) ... ok
+test_agent_can_add_groups_but_cannot_remove_minimum (tests.test_ci_plan.PlannerTests.test_agent_can_add_groups_but_cannot_remove_minimum) ... ok
+test_assigned_execution_namespace_keeps_failing_reflective_consumer (tests.test_ci_plan.PlannerTests.test_assigned_execution_namespace_keeps_failing_reflective_consumer) ... ok
+test_candidate_policy_and_fingerprint_cannot_approve_new_consumer_closure (tests.test_ci_plan.PlannerTests.test_candidate_policy_and_fingerprint_cannot_approve_new_consumer_closure) ... ok
+test_candidate_selector_returning_no_tests_cannot_authorize_focused (tests.test_ci_plan.PlannerTests.test_candidate_selector_returning_no_tests_cannot_authorize_focused) ... ok
+test_changed_lines_and_deleted_only_hunks (tests.test_ci_plan.PlannerTests.test_changed_lines_and_deleted_only_hunks) ... ok
+test_ci_script_contract_requires_base_acceptance_and_keeps_new_consumers (tests.test_ci_plan.PlannerTests.test_ci_script_contract_requires_base_acceptance_and_keeps_new_consumers) ... ok
+test_claim_contract_rejects_actual_promotion_fixture_drift (tests.test_ci_plan.PlannerTests.test_claim_contract_rejects_actual_promotion_fixture_drift) ... ok
+{
+  "version": 4,
+  "binding": {
+    "repository": "Example/repo",
+    "base": "47790411614464b0617ccdb20823bf4257b13f11",
+    "head": "c634a0f781f12c2c3385410e7e4bb92e3c37b083",
+    "merge_base": "47790411614464b0617ccdb20823bf4257b13f11",
+    "target": "c634a0f781f12c2c3385410e7e4bb92e3c37b083"
+  },
+  "change_class": "fast",
+  "risk": "R0",
+  "changes": [
+    {
+      "status": "M",
+      "path": "README.md"
+    }
+  ],
+  "surfaces": [
+    "documentation"
+  ],
+  "test_groups": [
+    "documentation"
+  ],
+  "tests": [
+    "test_documentation",
+    "test_pr_governance"
+  ],
+  "coverage_modules": [],
+  "impact_evidence": {},
+  "changed_lines": {},
+  "coverage_lines": {},
+  "coverage_tests": [],
+  "selection": {
+    "algorithm": "base-head-consumers-v1",
+    "inventory_sha256": "810a2726d6a044ba5fadff7a4cf4508422207c92fd9327fb50f4eecc4f1ce810",
+    "selected": {},
+    "excluded": [
+      "test_api_session_runner",
+      "test_ci_checks",
+      "test_ci_dependencies",
+      "test_ci_plan",
+      "test_claim_trace",
+      "test_cli",
+      "test_cli_command_branches",
+      "test_coverage_policy",
+      "test_documentation",
+      "test_governance_helper_branches",
+      "test_pr_governance",
+      "test_provider_adapters",
+      "test_provider_conformance",
+      "test_provider_contract_branches",
+      "test_provider_port",
+      "test_skill_release_projection",
+      "test_unselected",
+      "test_validation_helpers"
+    ],
+    "exclusion_reasons": {
+      "test_api_session_runner": "outside base/head dependency closure",
+      "test_ci_checks": "outside base/head dependency closure",
+      "test_ci_dependencies": "outside base/head dependency closure",
+      "test_ci_plan": "outside base/head dependency closure",
+      "test_claim_trace": "outside base/head dependency closure",
+      "test_cli": "outside base/head dependency closure",
+      "test_cli_command_branches": "outside base/head dependency closure",
+      "test_coverage_policy": "outside base/head dependency closure",
+      "test_documentation": "outside base/head dependency closure",
+      "test_governance_helper_branches": "outside base/head dependency closure",
+      "test_pr_governance": "outside base/head dependency closure",
+      "test_provider_adapters": "outside base/head dependency closure",
+      "test_provider_conformance": "outside base/head dependency closure",
+      "test_provider_contract_branches": "outside base/head dependency closure",
+      "test_provider_port": "outside base/head dependency closure",
+      "test_skill_release_projection": "outside base/head dependency closure",
+      "test_unselected": "outside base/head dependency closure",
+      "test_validation_helpers": "outside base/head dependency closure"
+    },
+    "exclusion_reason": "outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately",
+    "opaque_consumers": [],
+    "errors": [],
+    "test_reachable_sources": [],
+    "affected_paths": [
+      "README.md"
+    ],
+    "reviewed_contract_anchor": "",
+    "reviewed_opaque_boundary": []
+  },
+  "coverage_selection": {},
+  "policy_sha256": "d7dac5a52cd37e5d5ea8727eb8ba6cba751d5ff6f3a51512bfc7859dea8a376d",
+  "python_versions": [],
+  "behavioral_scope": "none",
+  "coverage_scope": "none",
+  "coverage_obligations": [],
+  "blocked_reasons": [],
+  "package_smoke": false,
+  "repository_smoke": false,
+  "reasons": [
+    "README.md -> documentation",
+    "test/document/archive data: README.md"
+  ],
+  "obligation_reasons": {
+    "behavioral_scope": [
+      "documentation obligations only"
+    ],
+    "coverage_scope": [
+      "no production/critical executable or coverage authority changed"
+    ],
+    "package_smoke": [
+      "no packaging/install surface changed"
+    ],
+    "repository_smoke": [
+      "no repository validation surface changed"
+    ]
+  },
+  "plan_id": "be3f3f1c7c9eabf6ab14995597640e2c425b8671a2417b089ba2d49761ad52b2"
+}
+{
+  "version": 4,
+  "binding": {
+    "repository": "Example/repo",
+    "base": "47790411614464b0617ccdb20823bf4257b13f11",
+    "head": "c634a0f781f12c2c3385410e7e4bb92e3c37b083",
+    "merge_base": "47790411614464b0617ccdb20823bf4257b13f11",
+    "target": "c634a0f781f12c2c3385410e7e4bb92e3c37b083"
+  },
+  "change_class": "fast",
+  "risk": "R0",
+  "changes": [
+    {
+      "status": "M",
+      "path": "README.md"
+    }
+  ],
+  "surfaces": [
+    "documentation"
+  ],
+  "test_groups": [
+    "documentation"
+  ],
+  "tests": [
+    "test_documentation",
+    "test_pr_governance"
+  ],
+  "coverage_modules": [],
+  "impact_evidence": {},
+  "changed_lines": {},
+  "coverage_lines": {},
+  "coverage_tests": [],
+  "selection": {
+    "algorithm": "base-head-consumers-v1",
+    "inventory_sha256": "810a2726d6a044ba5fadff7a4cf4508422207c92fd9327fb50f4eecc4f1ce810",
+    "selected": {},
+    "excluded": [
+      "test_api_session_runner",
+      "test_ci_checks",
+      "test_ci_dependencies",
+      "test_ci_plan",
+      "test_claim_trace",
+      "test_cli",
+      "test_cli_command_branches",
+      "test_coverage_policy",
+      "test_documentation",
+      "test_governance_helper_branches",
+      "test_pr_governance",
+      "test_provider_adapters",
+      "test_provider_conformance",
+      "test_provider_contract_branches",
+      "test_provider_port",
+      "test_skill_release_projection",
+      "test_unselected",
+      "test_validation_helpers"
+    ],
+    "exclusion_reasons": {
+      "test_api_session_runner": "outside base/head dependency closure",
+      "test_ci_checks": "outside base/head dependency closure",
+      "test_ci_dependencies": "outside base/head dependency closure",
+      "test_ci_plan": "outside base/head dependency closure",
+      "test_claim_trace": "outside base/head dependency closure",
+      "test_cli": "outside base/head dependency closure",
+      "test_cli_command_branches": "outside base/head dependency closure",
+      "test_coverage_policy": "outside base/head dependency closure",
+      "test_documentation": "outside base/head dependency closure",
+      "test_governance_helper_branches": "outside base/head dependency closure",
+      "test_pr_governance": "outside base/head dependency closure",
+      "test_provider_adapters": "outside base/head dependency closure",
+      "test_provider_conformance": "outside base/head dependency closure",
+      "test_provider_contract_branches": "outside base/head dependency closure",
+      "test_provider_port": "outside base/head dependency closure",
+      "test_skill_release_projection": "outside base/head dependency closure",
+      "test_unselected": "outside base/head dependency closure",
+      "test_validation_helpers": "outside base/head dependency closure"
+    },
+    "exclusion_reason": "outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately",
+    "opaque_consumers": [],
+    "errors": [],
+    "test_reachable_sources": [],
+    "affected_paths": [
+      "README.md"
+    ],
+    "reviewed_contract_anchor": "",
+    "reviewed_opaque_boundary": []
+  },
+  "coverage_selection": {},
+  "policy_sha256": "d7dac5a52cd37e5d5ea8727eb8ba6cba751d5ff6f3a51512bfc7859dea8a376d",
+  "python_versions": [],
+  "behavioral_scope": "none",
+  "coverage_scope": "none",
+  "coverage_obligations": [],
+  "blocked_reasons": [],
+  "package_smoke": false,
+  "repository_smoke": false,
+  "reasons": [
+    "README.md -> documentation",
+    "test/document/archive data: README.md"
+  ],
+  "obligation_reasons": {
+    "behavioral_scope": [
+      "documentation obligations only"
+    ],
+    "coverage_scope": [
+      "no production/critical executable or coverage authority changed"
+    ],
+    "package_smoke": [
+      "no packaging/install surface changed"
+    ],
+    "repository_smoke": [
+      "no repository validation surface changed"
+    ]
+  },
+  "plan_id": "be3f3f1c7c9eabf6ab14995597640e2c425b8671a2417b089ba2d49761ad52b2"
+}
+{
+  "version": 4,
+  "binding": {
+    "repository": "Example/repo",
+    "base": "47790411614464b0617ccdb20823bf4257b13f11",
+    "head": "c634a0f781f12c2c3385410e7e4bb92e3c37b083",
+    "merge_base": "47790411614464b0617ccdb20823bf4257b13f11",
+    "target": "c634a0f781f12c2c3385410e7e4bb92e3c37b083"
+  },
+  "change_class": "fast",
+  "risk": "R0",
+  "changes": [
+    {
+      "status": "M",
+      "path": "README.md"
+    }
+  ],
+  "surfaces": [
+    "documentation"
+  ],
+  "test_groups": [
+    "documentation"
+  ],
+  "tests": [
+    "test_documentation",
+    "test_pr_governance"
+  ],
+  "coverage_modules": [],
+  "impact_evidence": {},
+  "changed_lines": {},
+  "coverage_lines": {},
+  "coverage_tests": [],
+  "selection": {
+    "algorithm": "base-head-consumers-v1",
+    "inventory_sha256": "810a2726d6a044ba5fadff7a4cf4508422207c92fd9327fb50f4eecc4f1ce810",
+    "selected": {},
+    "excluded": [
+      "test_api_session_runner",
+      "test_ci_checks",
+      "test_ci_dependencies",
+      "test_ci_plan",
+      "test_claim_trace",
+      "test_cli",
+      "test_cli_command_branches",
+      "test_coverage_policy",
+      "test_documentation",
+      "test_governance_helper_branches",
+      "test_pr_governance",
+      "test_provider_adapters",
+      "test_provider_conformance",
+      "test_provider_contract_branches",
+      "test_provider_port",
+      "test_skill_release_projection",
+      "test_unselected",
+      "test_validation_helpers"
+    ],
+    "exclusion_reasons": {
+      "test_api_session_runner": "outside base/head dependency closure",
+      "test_ci_checks": "outside base/head dependency closure",
+      "test_ci_dependencies": "outside base/head dependency closure",
+      "test_ci_plan": "outside base/head dependency closure",
+      "test_claim_trace": "outside base/head dependency closure",
+      "test_cli": "outside base/head dependency closure",
+      "test_cli_command_branches": "outside base/head dependency closure",
+      "test_coverage_policy": "outside base/head dependency closure",
+      "test_documentation": "outside base/head dependency closure",
+      "test_governance_helper_branches": "outside base/head dependency closure",
+      "test_pr_governance": "outside base/head dependency closure",
+      "test_provider_adapters": "outside base/head dependency closure",
+      "test_provider_conformance": "outside base/head dependency closure",
+      "test_provider_contract_branches": "outside base/head dependency closure",
+      "test_provider_port": "outside base/head dependency closure",
+      "test_skill_release_projection": "outside base/head dependency closure",
+      "test_unselected": "outside base/head dependency closure",
+      "test_validation_helpers": "outside base/head dependency closure"
+    },
+    "exclusion_reason": "outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately",
+    "opaque_consumers": [],
+    "errors": [],
+    "test_reachable_sources": [],
+    "affected_paths": [
+      "README.md"
+    ],
+    "reviewed_contract_anchor": "",
+    "reviewed_opaque_boundary": []
+  },
+  "coverage_selection": {},
+  "policy_sha256": "d7dac5a52cd37e5d5ea8727eb8ba6cba751d5ff6f3a51512bfc7859dea8a376d",
+  "python_versions": [],
+  "behavioral_scope": "none",
+  "coverage_scope": "none",
+  "coverage_obligations": [],
+  "blocked_reasons": [],
+  "package_smoke": false,
+  "repository_smoke": false,
+  "reasons": [
+    "README.md -> documentation",
+    "test/document/archive data: README.md"
+  ],
+  "obligation_reasons": {
+    "behavioral_scope": [
+      "documentation obligations only"
+    ],
+    "coverage_scope": [
+      "no production/critical executable or coverage authority changed"
+    ],
+    "package_smoke": [
+      "no packaging/install surface changed"
+    ],
+    "repository_smoke": [
+      "no repository validation surface changed"
+    ]
+  },
+  "plan_id": "be3f3f1c7c9eabf6ab14995597640e2c425b8671a2417b089ba2d49761ad52b2"
+test_cli_emits_canonical_plan_and_workflow_outputs (tests.test_ci_plan.PlannerTests.test_cli_emits_canonical_plan_and_workflow_outputs) ... ok
+test_comment_only_critical_change_has_no_executable_coverage_obligation (tests.test_ci_plan.PlannerTests.test_comment_only_critical_change_has_no_executable_coverage_obligation) ... ok
+test_consumer_inventory_or_new_import_requires_full (tests.test_ci_plan.PlannerTests.test_consumer_inventory_or_new_import_requires_full) ... ok
+test_contract_evidence_requires_refreshed_accepted_anchor_after_test_review (tests.test_ci_plan.PlannerTests.test_contract_evidence_requires_refreshed_accepted_anchor_after_test_review) ... ok
+test_contract_pins_each_behavioral_proof_and_acceptance_module (tests.test_ci_plan.PlannerTests.test_contract_pins_each_behavioral_proof_and_acceptance_module) ... ok
+test_contract_rejects_weakened_proof_implementation_with_unchanged_ids (tests.test_ci_plan.PlannerTests.test_contract_rejects_weakened_proof_implementation_with_unchanged_ids) ... ok
+test_contract_test_side_drift_and_accepted_readmission (tests.test_ci_plan.PlannerTests.test_contract_test_side_drift_and_accepted_readmission) ... ok
+test_coverage_authority_semantics_require_repository_proof (tests.test_ci_plan.PlannerTests.test_coverage_authority_semantics_require_repository_proof) ... ok
+test_coverage_union_executes_repository_and_impact_tests_once (tests.test_ci_plan.PlannerTests.test_coverage_union_executes_repository_and_impact_tests_once) ... ok
+test_critical_subject_uses_explicit_base_proof_and_keeps_all_acceptance (tests.test_ci_plan.PlannerTests.test_critical_subject_uses_explicit_base_proof_and_keeps_all_acceptance) ... ok
+test_critical_syntax_error_blocks_instead_of_erasing_impact (tests.test_ci_plan.PlannerTests.test_critical_syntax_error_blocks_instead_of_erasing_impact) ... ok
+test_decorators_are_executable_impact_and_comments_keep_repository_guard (tests.test_ci_plan.PlannerTests.test_decorators_are_executable_impact_and_comments_keep_repository_guard) ... ok
+test_deleted_renamed_and_new_paths_require_full (tests.test_ci_plan.PlannerTests.test_deleted_renamed_and_new_paths_require_full) ... ok
+test_deterministic_ids_reject_indirect_helper_and_fixture_drift (tests.test_ci_plan.PlannerTests.test_deterministic_ids_reject_indirect_helper_and_fixture_drift) ... ok
+test_deterministic_proof_substitution_requires_unchanged_base_implementation (tests.test_ci_plan.PlannerTests.test_deterministic_proof_substitution_requires_unchanged_base_implementation) ... ok
+test_dirty_or_untracked_source_cannot_consume_clean_head_plan (tests.test_ci_plan.PlannerTests.test_dirty_or_untracked_source_cannot_consume_clean_head_plan) ... ok
+test_docs_fast_plan_is_explainable_and_replayable (tests.test_ci_plan.PlannerTests.test_docs_fast_plan_is_explainable_and_replayable) ... ok
+test_event_binds_actual_head_or_exact_merge_candidate (tests.test_ci_plan.PlannerTests.test_event_binds_actual_head_or_exact_merge_candidate) ... ok
+test_exact_proof_contract_requires_base_acceptance_and_rejects_same_suite_mutant (tests.test_ci_plan.PlannerTests.test_exact_proof_contract_requires_base_acceptance_and_rejects_same_suite_mutant) ... ok
+test_executable_mapping_is_bound_and_unmapped_changes_require_full (tests.test_ci_plan.PlannerTests.test_executable_mapping_is_bound_and_unmapped_changes_require_full) ... ok
+test_full_fallback_on_missing_tests_and_git_fact_errors (tests.test_ci_plan.PlannerTests.test_full_fallback_on_missing_tests_and_git_fact_errors) ... ok
+test_function_contract_keeps_aliased_execution_opaque (tests.test_ci_plan.PlannerTests.test_function_contract_keeps_aliased_execution_opaque) ... ok
+test_function_contract_restores_consumers_for_initialization_and_new_downstream (tests.test_ci_plan.PlannerTests.test_function_contract_restores_consumers_for_initialization_and_new_downstream) ... ok
+test_git_type_change_adds_repository_without_erasing_other_impact (tests.test_ci_plan.PlannerTests.test_git_type_change_adds_repository_without_erasing_other_impact) ... ok
+test_integration_release_force_and_empty_diff_are_full (tests.test_ci_plan.PlannerTests.test_integration_release_force_and_empty_diff_are_full) ... ok
+test_invalid_policy_groups_and_evidence_fail_closed (tests.test_ci_plan.PlannerTests.test_invalid_policy_groups_and_evidence_fail_closed) ... ok
+test_manual_full_rerun_uses_current_pr_facts (tests.test_ci_plan.PlannerTests.test_manual_full_rerun_uses_current_pr_facts) ... ok
+test_markdown_resource_change_keeps_existing_failing_consumer (tests.test_ci_plan.PlannerTests.test_markdown_resource_change_keeps_existing_failing_consumer) ... ok
+test_missing_or_malformed_base_policy_falls_back_full (tests.test_ci_plan.PlannerTests.test_missing_or_malformed_base_policy_falls_back_full) ... ok
+test_mixed_docs_and_provider_keeps_full_impact_closure (tests.test_ci_plan.PlannerTests.test_mixed_docs_and_provider_keeps_full_impact_closure) ... ok
+test_monotonic_local_critical_addition_has_local_proof_and_cannot_remove_old_obligations (tests.test_ci_plan.PlannerTests.test_monotonic_local_critical_addition_has_local_proof_and_cannot_remove_old_obligations) ... ok
+test_new_initializer_and_literal_fixture_input_cannot_extend_accepted_proof (tests.test_ci_plan.PlannerTests.test_new_initializer_and_literal_fixture_input_cannot_extend_accepted_proof) ... ok
+test_new_markdown_is_fast_but_document_data_is_full (tests.test_ci_plan.PlannerTests.test_new_markdown_is_fast_but_document_data_is_full) ... ok
+test_new_source_domain_selects_reverse_consumer_and_test_only_is_scoped (tests.test_ci_plan.PlannerTests.test_new_source_domain_selects_reverse_consumer_and_test_only_is_scoped) ... ok
+test_nul_diff_rejects_ambiguous_paths_and_preserves_spaces (tests.test_ci_plan.PlannerTests.test_nul_diff_rejects_ambiguous_paths_and_preserves_spaces) ... ok
+test_pr65_exact_git_diff_is_full_behavior_without_coverage_or_smokes (tests.test_ci_plan.PlannerTests.test_pr65_exact_git_diff_is_full_behavior_without_coverage_or_smokes) ... ok
+test_pr68_document_path_set_does_not_propagate_through_name_checks_and_archive (tests.test_ci_plan.PlannerTests.test_pr68_document_path_set_does_not_propagate_through_name_checks_and_archive) ... ok
+test_projection_contract_rejects_actual_live_evaluation_helper_drift (tests.test_ci_plan.PlannerTests.test_projection_contract_rejects_actual_live_evaluation_helper_drift) ... ok
+test_proof_list_and_provenance_cannot_be_resigned_below_base_minimum (tests.test_ci_plan.PlannerTests.test_proof_list_and_provenance_cannot_be_resigned_below_base_minimum) ... ok
+test_provider_and_independent_test_do_not_force_repository_or_full (tests.test_ci_plan.PlannerTests.test_provider_and_independent_test_do_not_force_repository_or_full) ... ok
+test_provider_change_selects_downstream_groups_and_both_pythons (tests.test_ci_plan.PlannerTests.test_provider_change_selects_downstream_groups_and_both_pythons) ... ok
+test_public_cli_and_validation_consumers_independently_select_smokes (tests.test_ci_plan.PlannerTests.test_public_cli_and_validation_consumers_independently_select_smokes) ... ok
+test_r2_bounded_critical_validator_requires_impact_with_base_acceptance (tests.test_ci_plan.PlannerTests.test_r2_bounded_critical_validator_requires_impact_with_base_acceptance) ... ok
+test_r2_shared_and_unknown_paths_cannot_be_docs_fast (tests.test_ci_plan.PlannerTests.test_r2_shared_and_unknown_paths_cannot_be_docs_fast) ... ok
+test_r2_test_fixture_and_fingerprint_refresh_have_no_coverage_or_smokes (tests.test_ci_plan.PlannerTests.test_r2_test_fixture_and_fingerprint_refresh_have_no_coverage_or_smokes) ... ok
+test_repository_requirement_preserves_bounded_impact_and_rejects_downgrade (tests.test_ci_plan.PlannerTests.test_repository_requirement_preserves_bounded_impact_and_rejects_downgrade) ... ok
+test_reviewed_opaque_contract_is_invalidated_per_consumer (tests.test_ci_plan.PlannerTests.test_reviewed_opaque_contract_is_invalidated_per_consumer) ... ok
+test_runner_consumes_valid_plan_and_rejects_full_as_focused (tests.test_ci_plan.PlannerTests.test_runner_consumes_valid_plan_and_rejects_full_as_focused) ... ok
+test_runner_main_executes_each_coverage_set_and_binds_real_results (tests.test_ci_plan.PlannerTests.test_runner_main_executes_each_coverage_set_and_binds_real_results) ... ok
+test_selection_authority_semantics_require_full_behavior_independently (tests.test_ci_plan.PlannerTests.test_selection_authority_semantics_require_full_behavior_independently) ... ok
+test_self_modified_policy_or_runner_cannot_authorize_less (tests.test_ci_plan.PlannerTests.test_self_modified_policy_or_runner_cannot_authorize_less) ... ok
+test_smokes_and_coverage_config_are_independent_of_full_behavior (tests.test_ci_plan.PlannerTests.test_smokes_and_coverage_config_are_independent_of_full_behavior) ... ok
+test_source_deletion_preserves_old_contract_consumers_without_candidate_lines (tests.test_ci_plan.PlannerTests.test_source_deletion_preserves_old_contract_consumers_without_candidate_lines) ... ok
+test_source_mode_change_requires_full (tests.test_ci_plan.PlannerTests.test_source_mode_change_requires_full) ... ok
+test_stale_base_requires_full_merge_validation (tests.test_ci_plan.PlannerTests.test_stale_base_requires_full_merge_validation) ... ok
+test_test_only_planner_input_does_not_become_a_product_executable_change (tests.test_ci_plan.PlannerTests.test_test_only_planner_input_does_not_become_a_product_executable_change) ... ok
+test_unknown_executable_and_integration_are_complete_fail_safe (tests.test_ci_plan.PlannerTests.test_unknown_executable_and_integration_are_complete_fail_safe) ... ok
+test_unrelated_test_edit_expands_behavior_but_not_executable_coverage (tests.test_ci_plan.PlannerTests.test_unrelated_test_edit_expands_behavior_but_not_executable_coverage) ... ok
+test_validator_inventory_mapping_and_new_import_fail_safe (tests.test_ci_plan.PlannerTests.test_validator_inventory_mapping_and_new_import_fail_safe) ... ok
+test_wrong_digest_target_and_lowered_class_are_rejected (tests.test_ci_plan.PlannerTests.test_wrong_digest_target_and_lowered_class_are_rejected) ... ok
+test_all_three_levels_require_only_proven_obligations (tests.test_ci_checks.AggregateTests.test_all_three_levels_require_only_proven_obligations) ... ok
+test_independent_obligations_and_required_coverage_failure_matrix (tests.test_ci_checks.AggregateTests.test_independent_obligations_and_required_coverage_failure_matrix) ... ok
+test_optional_skips_are_allowed_but_unknown_failures_are_not (tests.test_ci_checks.AggregateTests.test_optional_skips_are_allowed_but_unknown_failures_are_not) ... ok
+test_collector_rejects_unrepresentable_filters_and_aliased_roots (tests.test_ci_checks.CollectionTests.test_collector_rejects_unrepresentable_filters_and_aliased_roots) ... ok
+test_root_backend_loaded_by_file_alias_is_actually_measured (tests.test_ci_checks.CollectionTests.test_root_backend_loaded_by_file_alias_is_actually_measured) ... ok
+test_sources_retain_canonical_roots_and_cover_external_subject_directories (tests.test_ci_checks.CollectionTests.test_sources_retain_canonical_roots_and_cover_external_subject_directories) ... ok
+test_cli_aggregate_metadata_and_impact_route_through_plan_validation (tests.test_ci_checks.EntryPointTests.test_cli_aggregate_metadata_and_impact_route_through_plan_validation) ... ok
+test_coverage_entry_enforces_each_required_checker_and_propagates_failures (tests.test_ci_checks.EntryPointTests.test_coverage_entry_enforces_each_required_checker_and_propagates_failures) ... ok
+test_impact_preserves_critical_floor_and_distinguishes_global (tests.test_ci_checks.ImpactCoverageTests.test_impact_preserves_critical_floor_and_distinguishes_global) ... ok
+test_missing_wrong_and_lower_quality_evidence_is_rejected (tests.test_ci_checks.ImpactCoverageTests.test_missing_wrong_and_lower_quality_evidence_is_rejected) ... ok
+test_multiline_condition_uses_real_coverage_branch_origins (tests.test_ci_checks.ImpactCoverageTests.test_multiline_condition_uses_real_coverage_branch_origins) ... ok
+test_ordinary_files_require_changed_lines_and_branches_not_global (tests.test_ci_checks.ImpactCoverageTests.test_ordinary_files_require_changed_lines_and_branches_not_global) ... ok
+test_ordinary_impact_does_not_invent_critical_evidence_and_critical_cannot_drop_mapping (tests.test_ci_checks.ImpactCoverageTests.test_ordinary_impact_does_not_invent_critical_evidence_and_critical_cannot_drop_mapping) ... ok
+test_r2_full_behavior_retains_impact_thresholds_and_pass_evidence (tests.test_ci_checks.ImpactCoverageTests.test_r2_full_behavior_retains_impact_thresholds_and_pass_evidence) ... ok
+test_repository_floor_does_not_cover_changed_line_or_branch_obligations (tests.test_ci_checks.ImpactCoverageTests.test_repository_floor_does_not_cover_changed_line_or_branch_obligations) ... ok
+test_workflow_measurement_includes_the_executing_runner (tests.test_ci_checks.ImpactCoverageTests.test_workflow_measurement_includes_the_executing_runner) ... ok
+test_full_behavior_cannot_substitute_for_required_coverage_or_smokes (tests.test_ci_checks.MetadataTests.test_full_behavior_cannot_substitute_for_required_coverage_or_smokes) ... ok
+test_metadata_accepts_only_matching_content_run_artifact (tests.test_ci_checks.MetadataTests.test_metadata_accepts_only_matching_content_run_artifact) ... ok
+test_missing_or_failed_content_evidence_requires_rerun (tests.test_ci_checks.MetadataTests.test_missing_or_failed_content_evidence_requires_rerun) ... ok
+test_same_binding_can_reuse_stronger_content_obligations (tests.test_ci_checks.MetadataTests.test_same_binding_can_reuse_stronger_content_obligations) ... ok
+test_stale_binding_tamper_risk_or_weaker_obligations_cannot_reuse (tests.test_ci_checks.MetadataTests.test_stale_binding_tamper_risk_or_weaker_obligations_cannot_reuse) ... ok
+test_metadata_isolation_concurrency_and_fixed_gate_names (tests.test_ci_checks.WorkflowTests.test_metadata_isolation_concurrency_and_fixed_gate_names) ... ok
+test_authority_floor_is_independent_of_plan_claims (tests.test_selection_witness.WitnessTests.test_authority_floor_is_independent_of_plan_claims) ... ok
+test_bindings_digest_shape_and_refs_are_not_candidate_authority (tests.test_selection_witness.WitnessTests.test_bindings_digest_shape_and_refs_are_not_candidate_authority) ... ok
+test_cli_pin_drift_success_and_failures (tests.test_selection_witness.WitnessTests.test_cli_pin_drift_success_and_failures) ... ok
+test_deleted_candidate_bootstrap_cannot_change_external_witness (tests.test_selection_witness.WitnessTests.test_deleted_candidate_bootstrap_cannot_change_external_witness) ... ok
+test_exact_merge_target_and_stale_base (tests.test_selection_witness.WitnessTests.test_exact_merge_target_and_stale_base) ... ok
+test_hosted_artifact_is_data_and_bound_to_live_pr (tests.test_selection_witness.WitnessTests.test_hosted_artifact_is_data_and_bound_to_live_pr) ... ok
+test_hosted_main_checks_external_inputs_and_fetches_only_git_data (tests.test_selection_witness.WitnessTests.test_hosted_main_checks_external_inputs_and_fetches_only_git_data) ... ok
+test_new_removed_modes_invalid_syntax_and_workflow_types_fail_closed (tests.test_selection_witness.WitnessTests.test_new_removed_modes_invalid_syntax_and_workflow_types_fail_closed) ... ok
+test_product_and_comments_do_not_acquire_full_floor (tests.test_selection_witness.WitnessTests.test_product_and_comments_do_not_acquire_full_floor) ... ok
+test_script_entrypoint_blocks_an_unpinned_checkout (tests.test_selection_witness.WitnessTests.test_script_entrypoint_blocks_an_unpinned_checkout) ... ok
+
+----------------------------------------------------------------------
+Ran 135 tests in 416.639s
+
+OK
+}
+{"authority_changes":[],"base":"622c2e9a31ecfccd8032b6f081be173ea3d52a1b","execution_checks_proved":false,"head":"622c2e9a31ecfccd8032b6f081be173ea3d52a1b","observed_behavioral":"full","plan_id":"10487a0e3424e82e65ce69c49990d59cdb2c012ee4949c1ebdafc77516f49585","repository":"Example/repo","required_behavioral":"none","scope":"selection-authority floor only","status":"PASS","target":"622c2e9a31ecfccd8032b6f081be173ea3d52a1b","witness_commit":"622c2e9a31ecfccd8032b6f081be173ea3d52a1b","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+{"reason":"witness source drift","status":"BLOCK","witness_source_sha256":"186866d274a9e55c517a6d49f684c99ef36f4afeff0409c10bd93ce40d54031d"}
+
+{"reason":"witness checkout differs from reviewer-pinned commit","status":"BLOCK","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+{"authority_changes":[],"base":"5e7fa8b8b8ac7cb721f98d7442e1054ccfdbda53","content_conclusion":null,"content_run":7,"content_status":"in_progress","execution_checks_proved":false,"head":"5e7fa8b8b8ac7cb721f98d7442e1054ccfdbda53","observed_behavioral":"full","plan_id":"836719fd18e4515a31cf7f048c05973dcd21e91a68970ffd519bee1e57cc5730","repository":"Example/repo","required_behavioral":"none","scope":"selection-authority floor only","status":"PASS","target":"5e7fa8b8b8ac7cb721f98d7442e1054ccfdbda53","witness_commit":"5e7fa8b8b8ac7cb721f98d7442e1054ccfdbda53","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+{"reason":"invalid zip","status":"BLOCK","witness_commit":"5e7fa8b8b8ac7cb721f98d7442e1054ccfdbda53","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+{"reason":"witness checkout differs from reviewer-pinned commit","status":"BLOCK","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}

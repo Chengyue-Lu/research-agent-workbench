@@ -1,0 +1,52 @@
+task_id: TEST-PERF-002
+revision: 24
+owner: Chengyue-Lu
+risk: R2
+delegation: false
+required_skills: []
+goal: Consolidate scenario tests and checkpoint reports, reuse one execution for behavioral
+  and coverage obligations, preserve existing coverage floors.
+authorization: User approved scenario consolidation, readable failures and execution
+  reuse; clarified that function coverage was only an example, not a replacement gate.
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/**
+- .github/**
+- src/**
+- tests/**
+- pyproject.toml
+- build_backend.py
+- runtime-resources.json
+- work/TEST-PERF-002/**
+- .rwb/precision-intake/**
+- .rwb/resource-audit/**
+- work/M14-002/A-20260906-001/checks/independent_projection_oracle.py
+- .rwb/coverage-union-audit/**
+write_scope:
+- .github/scripts/plan_ci.py
+- .github/scripts/ci_dependencies.py
+- .github/scripts/ci_checks.py
+- .github/workflows/ci.yml
+- tests/test_ci_plan.py
+- tests/test_ci_dependencies.py
+- tests/test_ci_checks.py
+- tests/ci_impact_policy.yaml
+- tests/fixtures/ci/**
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- work/TEST-PERF-002/A-20260912-001/**
+- .rwb/resource-audit/**
+- .rwb/precision-venv311/**
+- tests/run_unittest_suite.py
+- tests/test_test_runner.py
+- tests/test_coverage_policy.py
+- tests/coverage_policy.yaml
+- .github/scripts/check_coverage_policy.py
+- .rwb/coverage-union-audit/**
+stop_conditions:
+- M4 stays outside experiments; formal M14 head remains unchanged.
+- Real mutants stay in isolated disposable probes.
+- No release, tags, main, protection changes or further M14 milestone activation.
+- Cross-owner review and exact-head required CI/witness precede any merge.

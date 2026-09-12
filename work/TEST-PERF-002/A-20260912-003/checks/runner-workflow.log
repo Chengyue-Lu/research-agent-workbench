@@ -1,0 +1,14 @@
+................................E.......
+======================================================================
+ERROR: test_workflow_measurement_includes_the_executing_runner (tests.test_ci_checks.ImpactCoverageTests.test_workflow_measurement_includes_the_executing_runner)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File ".\tests\test_ci_checks.py", line 132, in test_workflow_measurement_includes_the_executing_runner
+    step = next(s for s in workflow['jobs']['coverage_quality']['steps'] if s.get('name') == 'Run required coverage test union')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+StopIteration
+
+----------------------------------------------------------------------
+Ran 40 tests in 1.361s
+
+FAILED (errors=1)

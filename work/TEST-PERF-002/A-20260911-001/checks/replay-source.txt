@@ -1,0 +1,60 @@
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+import sys
+import types
+
+ROOT = Path.cwd()
+sys.path.insert(0, str(ROOT / '.github/scripts'))
+import ci_dependencies as candidate
+import plan_ci as planner
+
+BASE = '11c3b57dfbf8af0dc2587fc421d097e2544941c3'
+HEAD = '0f6da949c9d89d4d5e0cea9cffad1e85465bb52c'
+old = types.ModuleType('accepted_dependencies')
+exec(compile(subprocess.check_output(['git', 'show', BASE + ':.github/scripts/ci_dependencies.py']),
+             'accepted_dependencies.py', 'exec'), old.__dict__)
+body = '- **Risk tier**: R2\n- **Shared contract**: no\n- **Authority impact**: no'
+plan = planner.make_plan(ROOT, base=BASE, head=HEAD, target=HEAD,
+                         repository='Chengyue-Lu/research-agent-workbench', body=body)
+prior = json.loads((ROOT.parent / 'research-agent-workbench/.rwb/docs-ci-audit-20260911/pr68/ci-plan.json').read_bytes())
+baseline = json.loads((ROOT.parent / 'research-agent-workbench/.rwb/docs-ci-audit-20260911/develop/full-test-results-3.11.json').read_bytes())
+selected = [t for t in baseline['tests'] if t['id'].split('.')[0] in plan['tests']]
+audit = {'base': BASE, 'head': HEAD, 'candidate_selector_sha256': hashlib.sha256(
+    (ROOT / '.github/scripts/ci_dependencies.py').read_bytes()).hexdigest(),
+    'boundary': 'Read-only replay using proposed selector on immutable PR 68 snapshots. '
+        'Not accepted-base CI evidence and not a new hosted timing measurement.',
+    'pr68': {'old_modules': len(prior['tests']), 'new_modules': len(plan['tests']),
+        'old_ids_in_baseline': sum(t['id'].split('.')[0] in prior['tests'] for t in baseline['tests']),
+        'new_ids_in_baseline': len(selected), 'baseline_selected_case_seconds': round(sum(
+            t['duration_seconds'] for t in selected), 3),
+        'obligations': {k: plan[k] for k in ('behavioral_scope', 'coverage_scope', 'package_smoke', 'repository_smoke')},
+        'selected': plan['selection']['selected']}, 'probes': []}
+paths, _ = candidate.snapshot(ROOT, BASE)
+seeds = ['README.md', 'docs/STATUS.md', 'docs/decisions/README.md',
+         'docs/modules/07-ARTIFACTS_AND_PROVENANCE.md',
+         'tests/fixtures/claim-preserving-rewrite/source.txt',
+         'work/M14-002/A-20260906-001/checks/independent_projection_oracle.py',
+         'src/research_workbench/artifacts/claim_trace.py',
+         'src/research_workbench/capability/release_projection.py',
+         'src/research_workbench/artifacts/run_reconstruction.py']
+for seed in seeds:
+    a = old.select(ROOT, BASE, BASE, [seed])[0]
+    b = candidate.select(ROOT, BASE, BASE, [seed])[0]
+    audit['probes'].append({'seed': seed, 'old': len(a['selected']), 'new': len(b['selected']),
+        'removed': sorted(a['selected'].keys() - b['selected'].keys()), 'selected': b['selected']})
+# Whole graph audit: count changed edges by dependency surface; do not infer that
+# every removed edge is safe merely from the new analyzer's output.
+a = old.commit_graph(ROOT, BASE)[0]
+b = candidate.commit_graph(ROOT, BASE)[0]
+removed = [(source, target) for source, consumers in a.items() for target in consumers - b[source]]
+added = [(source, target) for source, consumers in b.items() for target in consumers - a[source]]
+audit['graph_delta'] = {'removed_edges': len(removed), 'added_edges': len(added),
+    'removed': sorted(removed), 'added': sorted(added)}
+out = ROOT / '.rwb/resource-audit'
+(out / 'real-replays.json').write_text(json.dumps(audit, indent=2) + '\n')
+(out / 'pr68-proposed-plan.json').write_text(json.dumps(plan, indent=2) + '\n')
+print(json.dumps({'pr68': {k:v for k,v in audit['pr68'].items() if k != 'selected'},
+                  'probes': [{k:v for k,v in p.items() if k not in {'selected','removed'}} for p in audit['probes']],
+                  'removed_edges': len(removed), 'added_edges': len(added)}, indent=2))

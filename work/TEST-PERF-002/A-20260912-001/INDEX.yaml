@@ -1,0 +1,98 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260912-001
+task_id: TEST-PERF-002
+task_revision: 24
+attempt_id: A-20260912-001
+archive_root: A-20260912-001
+baseline: fee47c0511e97de2871ece57d5875212d16a4a5c
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 49831c1129f48eeddf93fa3799a9de970b0bf886f2511519b56c42c6099bbbdd
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 485dd5459f1b78bfff55783233c0af51e73db1f7fd3e80a3ae2dd484ee51a4ca
+read_allowlist:
+- .github/**
+- .rwb/coverage-union-audit/**
+- .rwb/precision-intake/**
+- .rwb/resource-audit/**
+- AGENTS.md
+- build_backend.py
+- docs/DEVELOPMENT.md
+- docs/README.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/**
+- pyproject.toml
+- runtime-resources.json
+- src/**
+- tests/**
+- work/M14-002/A-20260906-001/checks/independent_projection_oracle.py
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/check_coverage_policy.py
+- .github/scripts/ci_checks.py
+- .github/scripts/ci_dependencies.py
+- .github/scripts/plan_ci.py
+- .github/workflows/ci.yml
+- .rwb/coverage-union-audit/**
+- .rwb/precision-venv311/**
+- .rwb/resource-audit/**
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/ci_impact_policy.yaml
+- tests/coverage_policy.yaml
+- tests/fixtures/ci/**
+- tests/run_unittest_suite.py
+- tests/test_ci_checks.py
+- tests/test_ci_dependencies.py
+- tests/test_ci_plan.py
+- tests/test_coverage_policy.py
+- tests/test_test_runner.py
+- work/TEST-PERF-002/A-20260912-001/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+- web
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: e755659b59a05d29973dc32e7dc39e953f84072b7499083f0c618427aae6cc42
+  event_count: 5
+tool_event_refs:
+- path: tool-events/scenario-execution-verification-succeeded.json
+  sha256: 0f8c319ca3c7d54d4f90587493febe80bd507f48aeb4b34643373f7f4a3bf13d
+handoff_refs: []
+decision_refs: []
+output_refs:
+- path: RESULTS.md
+  sha256: 7405f50f94d58caa48b4eb9a38121a1c0b8337b581b0c89c5fb44f9cbd7cffbe
+check_refs:
+- path: checks/changed-coverage.json
+  sha256: ef5a889842413c8d0d17bc18f964fe85a99735af73568407c24017ccfa5b2dc6
+- path: checks/current-inventory.json
+  sha256: 6762f3a4f7c367426b01e72a1e0bd9f4d521b9058d6fa1fe2f8bb15ccd77ecd8
+- path: checks/docs-governance.log
+  sha256: 85ea0d5753e2d414c94567df98c5d0ef290283d6fd410d2efa421c5246a5008b
+- path: checks/execution-baseline.json
+  sha256: a4118b0427e76e164ddd28eec38854209ae1d5911c2dbd85f9562c097629fa99
+- path: checks/final-targeted.log
+  sha256: 8c924e8c4fc2bf5b0eb43b120c571579745cbbfd48a2987056c361698db88e93
+- path: checks/infrastructure.log
+  sha256: c84fbb59f6a27d4e7589b3fab9a760e590334368f8f8bc329d6e128fcf59aedd
+- path: checks/repository.log
+  sha256: 6895861bf5f35b7669baaf95d9caf2b94c3a4e1d5682f29bbc73ba0aa0064633
+- path: checks/source-plan.json
+  sha256: d709364c60d530cfb27f5fdf87a703ded58ab4b691c7edf40f5faae9f064a571
+- path: checks/summary.json
+  sha256: 574fc47a18ce262d14e3d5e7d0965fa1595103cea772e16f6da4ed18a8ed9337
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: messages

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import inspect
 import importlib.util
 import json
@@ -29,9 +30,12 @@ class TimedTextResult(unittest.TextTestResult):
         super().__init__(*args, **kwargs)
         self._started: dict[str, float] = {}
         self.records: dict[str, dict[str, Any]] = {}
+        self.execution_order: list[str] = []
 
     def startTest(self, test: unittest.case.TestCase) -> None:  # noqa: N802
+        self.execution_order.append(_evidence_test_id(test))
         self._started[test.id()] = time.perf_counter()
+        self._record(test)
         super().startTest(test)
 
     def stopTest(self, test: unittest.case.TestCase) -> None:  # noqa: N802
@@ -42,23 +46,62 @@ class TimedTextResult(unittest.TextTestResult):
         super().stopTest(test)
 
     def addSuccess(self, test: unittest.case.TestCase) -> None:  # noqa: N802
-        self._outcome(test, "passed")
+        outcome = "passed_with_skips" if any(
+            point["outcome"] == "skipped" for point in self._record(test)["checkpoints"]) else "passed"
+        self._outcome(test, outcome)
         super().addSuccess(test)
 
     def addFailure(self, test: unittest.case.TestCase, err: tuple[type[BaseException], BaseException, object]) -> None:  # noqa: N802
-        self._outcome(test, "failed")
+        self._checkpoint(test, test, "failed", detail=str(err[1]))
+        self._outcome(test, "failed", detail=str(err[1]))
         super().addFailure(test, err)
 
     def addError(self, test: unittest.case.TestCase, err: tuple[type[BaseException], BaseException, object]) -> None:  # noqa: N802
-        self._outcome(test, "error")
+        self._checkpoint(test, test, "error", detail=str(err[1]))
+        self._outcome(test, "error", detail=str(err[1]))
         super().addError(test, err)
 
     def addSkip(self, test: unittest.case.TestCase, reason: str) -> None:  # noqa: N802
-        self._outcome(test, "skipped", reason=reason)
+        parent = getattr(test, "test_case", None)
+        if parent is None:
+            self._outcome(test, "skipped", reason=reason)
+        else:
+            self._checkpoint(parent, test, "skipped", reason=reason)
+            self._outcome(parent, "passed_with_skips")
         super().addSkip(test, reason)
 
+    def addSubTest(self, test, subtest, err) -> None:  # noqa: N802
+        outcome = "passed" if err is None else (
+            "failed" if issubclass(err[0], test.failureException) else "error")
+        self._checkpoint(test, subtest, outcome, **({"detail": str(err[1])} if err else {}))
+        if err is not None:
+            self._outcome(test, outcome)
+        super().addSubTest(test, subtest, err)
+
+    def addExpectedFailure(self, test, err) -> None:  # noqa: N802
+        self._outcome(test, "expected_failure", detail=str(err[1]))
+        super().addExpectedFailure(test, err)
+
+    def addUnexpectedSuccess(self, test) -> None:  # noqa: N802
+        self._outcome(test, "unexpected_success")
+        super().addUnexpectedSuccess(test)
+
+    def _record(self, test) -> dict:
+        return self.records.setdefault(test.id(), {
+            "id": test.id(), "canonical_id": _evidence_test_id(test),
+            "module": test.__class__.__module__,
+            "scenario": test.shortDescription() or test.id(),
+            "outcome": "unknown", "checkpoints": [],
+        })
+
+    def _checkpoint(self, test, subtest, outcome, **extra) -> None:
+        self._record(test)["checkpoints"].append({"id": subtest.id(), "outcome": outcome, **extra})
+
     def _outcome(self, test: unittest.case.TestCase, outcome: str, **extra: Any) -> None:
-        self.records.setdefault(test.id(), {"id": test.id()}).update(outcome=outcome, **extra)
+        record = self._record(test)
+        # A later successful checkpoint must never erase an earlier failure.
+        if record["outcome"] not in {"failed", "error", "unexpected_success"}:
+            record.update(outcome=outcome, **extra)
 
 
 def _load_policy(path: Path) -> dict[str, Any]:
@@ -87,6 +130,31 @@ def _canonical_test_id(test: unittest.case.TestCase) -> str:
     )
     method = getattr(test, "_testMethodName", test.id())
     return f"{source_identity}::{test.__class__.__qualname__}.{method}"
+
+
+def _evidence_test_id(test) -> str:
+    """Portable identity for comparing receipts from separate runner checkouts."""
+    source = inspect.getsourcefile(test.__class__)
+    if source is not None and Path(source).resolve().is_relative_to(ROOT):
+        path = Path(source).resolve().relative_to(ROOT).as_posix()
+        return f"{path}::{test.__class__.__qualname__}.{getattr(test, '_testMethodName', test.id())}"
+    return test.id()
+
+
+def _verified_plan(path: Path) -> dict:
+    scripts = str(ROOT / ".github/scripts")
+    if scripts not in sys.path:
+        sys.path.insert(0, scripts)
+    spec = importlib.util.spec_from_file_location("ci_planner", ROOT / ".github/scripts/plan_ci.py")
+    if spec is None or spec.loader is None:
+        raise ValueError("CI planner could not be loaded")
+    planner = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(planner)
+    plan = json.loads(path.read_text(encoding="utf-8"))
+    event_path = os.environ.get("GITHUB_EVENT_PATH")
+    event = json.loads(Path(event_path).read_text(encoding="utf-8")) if event_path else None
+    planner.verify_plan(ROOT, plan, event, os.environ.get("GITHUB_EVENT_NAME", "pull_request"))
+    return plan
 
 
 def _assert_unique_tests(suite: unittest.TestSuite) -> None:
@@ -126,21 +194,10 @@ def _suite_for(args: argparse.Namespace) -> unittest.TestSuite:
     if args.suite in {"focused", "impact", "coverage-plan"}:
         if args.plan is None:
             raise ValueError("focused suite requires --plan")
-        scripts = str(ROOT / ".github/scripts")
-        if scripts not in sys.path:
-            sys.path.insert(0, scripts)
-        spec = importlib.util.spec_from_file_location("ci_planner", ROOT / ".github/scripts/plan_ci.py")
-        if spec is None or spec.loader is None:
-            raise ValueError("CI planner could not be loaded")
-        planner = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(planner)
-        plan = json.loads(args.plan.read_text(encoding="utf-8"))
-        event_path = os.environ.get("GITHUB_EVENT_PATH")
-        event = json.loads(Path(event_path).read_text(encoding="utf-8")) if event_path else None
-        planner.verify_plan(ROOT, plan, event, os.environ.get("GITHUB_EVENT_NAME", "pull_request"))
+        plan = _verified_plan(args.plan)
         if args.suite == "focused" and plan["behavioral_scope"] not in {"none", "focused"}:
             raise ValueError("focused runner requires a selective plan")
-        obligations = planner.coverage_requirements(plan)
+        obligations = set(plan["coverage_obligations"])
         if args.suite == "coverage-plan":
             if not obligations:
                 raise ValueError("coverage runner requires coverage obligations")
@@ -191,6 +248,108 @@ def _percentile(values: list[float], percentile: float) -> float:
     return ordered[index]
 
 
+def _behavioral_suite(args, plan):
+    scope = plan["behavioral_scope"]
+    if scope == "none":
+        return unittest.TestSuite()
+    if scope not in {"full", "focused"}:
+        raise ValueError("unknown behavioral scope")
+    return _suite_for(argparse.Namespace(**{**vars(args), "suite": scope}))
+
+
+def _execution_suites(args, plan):
+    """Collect expected inventories for receipt verification, without executing them."""
+    behavioral = _behavioral_suite(args, plan)
+    measured = _suite_for(argparse.Namespace(**{**vars(args), "suite": "coverage-plan"})) if plan["coverage_obligations"] else unittest.TestSuite()
+    return behavioral, measured
+
+
+def _inventory(suite):
+    _assert_unique_tests(suite)
+    return {_evidence_test_id(test): test.id() for test in _iter_tests(suite)}
+
+
+class OrderedCoverageExecution:
+    """Run the original behavioral suite to completion before loading coverage extras."""
+    def __init__(self, behavioral, load_coverage):
+        self.behavioral = behavioral
+        self.behavioral_inventory = _inventory(behavioral)
+        self.load_coverage = load_coverage
+        self.coverage_inventory = {}
+
+    def __call__(self, result):
+        # Keep the original suite hierarchy/order and its top-level fixture teardown.
+        self.behavioral(result)
+        # unittest retains the previous class on its result after top-level teardown.
+        # The coverage-only phase starts a new fixture lifecycle on the same result.
+        result._previousTestClass = None
+        result._moduleSetUpFailed = False
+        measured = self.load_coverage()
+        self.coverage_inventory = _inventory(measured)
+        extras = unittest.TestSuite(test for test in _iter_tests(measured)
+                                   if _evidence_test_id(test) not in self.behavioral_inventory)
+        extras(result)
+        return result
+
+    def contract(self):
+        return {"contract": "ordered-behavioral-v1", "behavioral_order": list(self.behavioral_inventory),
+                "coverage_order": list(self.coverage_inventory)}
+
+
+def _receipt_records(payload, suite, expected, plan):
+    """Execution reuse requires complete, successful evidence for this exact plan."""
+    if (not isinstance(payload, dict) or payload.get("plan_id") != plan["plan_id"] or payload.get("target") != plan["binding"]["target"]
+            or payload.get("schema_version") != "1.2.0"
+            or payload.get("coverage_obligations") != plan["coverage_obligations"]
+            or payload.get("suite") != suite or payload.get("successful") is not True
+            or not str(payload.get("python_version", "")).startswith("3.11.")
+            or payload.get("python_version") != platform.python_version()):
+        raise ValueError("execution receipt has a failed or mismatched binding")
+    rows = payload.get("tests", [])
+    by_id = {row.get("canonical_id"): row for row in rows}
+    if (len(by_id) != len(rows) or len({row.get("id") for row in rows}) != len(rows)
+            or set(by_id) != set(expected) or payload.get("test_count") != len(expected)):
+        raise ValueError("execution receipt has missing, duplicate or unexpected tests")
+    allowed = {"passed", "skipped", "passed_with_skips", "expected_failure"}
+    for identity, row in by_id.items():
+        if row.get("id") != expected[identity] or row.get("outcome") not in allowed:
+            raise ValueError("execution receipt contains unsuccessful or aliased test evidence")
+        points = row.get("checkpoints", [])
+        if any(point.get("outcome") not in {"passed", "skipped"} for point in points):
+            raise ValueError("execution receipt contains an unsuccessful checkpoint")
+    return by_id
+
+
+def _project_execution(plan, complete, coverage, payload):
+    """Derive both obligations from a verified single ordered execution receipt."""
+    if not plan["coverage_obligations"]:
+        raise ValueError("plan does not authorize coverage execution reuse")
+    expected = {**complete, **{k: v for k, v in coverage.items() if k not in complete}}
+    rows = _receipt_records(payload, "coverage-execution", expected, plan)
+    events = payload.get("events")
+    if not isinstance(events, dict) or events.get("failures") != 0 or events.get("errors") != 0:
+        raise ValueError("execution receipt has missing or unsuccessful fixture events")
+    contract = {"contract": "ordered-behavioral-v1", "behavioral_order": list(complete),
+                "coverage_order": list(coverage)}
+    if payload.get("execution") != contract or payload.get("execution_order") != list(expected):
+        raise ValueError("execution receipt does not preserve behavioral fixture/order contract")
+    source_digest = hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    def project(inventory, label):
+        records = [{**rows[key], "id": value, "execution_id": rows[key]["id"]} for key, value in inventory.items()]
+        return {
+            "schema_version": "1.2.0", "suite": label, "successful": True,
+            "plan_id": plan["plan_id"], "target": plan["binding"]["target"],
+            "coverage_obligations": plan["coverage_obligations"], "python_version": payload["python_version"],
+            "test_count": len(inventory), "tests": records, "execution_order": list(inventory),
+            "execution": {"contract": contract["contract"], "source_receipt_sha256": source_digest,
+                          "behavioral": len(complete), "required_coverage": len(coverage),
+                          "coverage_only": len(expected) - len(complete), "unique_executions": len(expected),
+                          "producer_wall_seconds": payload["wall_seconds"]},
+        }
+    return (project(complete, plan["behavioral_scope"]),
+            project(coverage, "coverage-quality" if "repository" in plan["coverage_obligations"] else "impact"))
+
+
 def _write_summary(
     path: Path,
     suite_name: str,
@@ -198,21 +357,27 @@ def _write_summary(
     result: TimedTextResult,
     slowest_count: int,
     plan: dict | None = None,
-) -> None:
+    execution: dict | None = None,
+) -> dict:
     records = sorted(result.records.values(), key=lambda item: item.get("duration_seconds", 0.0), reverse=True)
     durations = [float(item.get("duration_seconds", 0.0)) for item in records]
     payload = {
-        "schema_version": "1.0.0",
+        "schema_version": "1.2.0",
+        "execution_order": result.execution_order,
         "suite": suite_name,
         "wall_seconds": round(wall_seconds, 6),
         "test_count": result.testsRun,
         "successful": result.wasSuccessful(),
         "outcomes": {
             "passed": sum(item.get("outcome") == "passed" for item in records),
-            "failed": len(result.failures),
-            "errors": len(result.errors),
-            "skipped": len(result.skipped),
+            "failed": sum(item.get("outcome") == "failed" for item in records),
+            "errors": sum(item.get("outcome") == "error" for item in records),
+            "skipped": sum(item.get("outcome") == "skipped" for item in records),
+            "passed_with_skips": sum(item.get("outcome") == "passed_with_skips" for item in records),
+            "expected_failure": len(result.expectedFailures),
+            "unexpected_success": len(result.unexpectedSuccesses),
         },
+        "events": {"failures": len(result.failures), "errors": len(result.errors), "skips": len(result.skipped)},
         "duration_seconds": {
             "p50": round(statistics.median(durations), 6) if durations else 0.0,
             "p95": round(_percentile(durations, 0.95), 6),
@@ -220,9 +385,22 @@ def _write_summary(
         "slowest": records[:slowest_count],
         "tests": records,
     }
+    problems = []
+    for record in records:
+        failed_points = [point for point in record.get("checkpoints", [])
+                         if point["outcome"] in {"failed", "error"}]
+        if record.get("outcome") in {"failed", "error", "unexpected_success"}:
+            for point in failed_points or [record]:
+                problems.append({"module": record.get("module", "fixture"),
+                                 "scenario": record.get("scenario", record["id"]),
+                                 "checkpoint": point["id"], "outcome": point["outcome"],
+                                 "detail": point.get("detail", "")})
+    payload["problems"] = problems
     if plan is not None:
         payload.update(plan_id=plan["plan_id"], target=plan["binding"]["target"],
                        python_version=platform.python_version(), coverage_obligations=plan["coverage_obligations"])
+    if execution is not None:
+        payload["execution"] = execution
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(
         "suite_duration "
@@ -230,6 +408,8 @@ def _write_summary(
         f"p50_seconds={payload['duration_seconds']['p50']:.3f} "
         f"p95_seconds={payload['duration_seconds']['p95']:.3f}"
     )
+    for problem in problems:
+        print(f"FAILED {problem['module']} / {problem['scenario']} / {problem['checkpoint']} ({problem['outcome']}): {problem['detail']}")
     print(f"slowest_{slowest_count}_tests")
     for item in records[:slowest_count]:
         print(f"{item.get('duration_seconds', 0.0):10.3f}s  {item['id']}  {item.get('outcome')}")
@@ -252,28 +432,68 @@ def _write_summary(
             f"| {item.get('duration_seconds', 0.0):.3f} | `{item['id']}` | {item.get('outcome')} |"
             for item in records[:slowest_count]
         )
+        if problems:
+            # HTML escaping prevents checkpoint parameters from breaking the report.
+            import html
+            failures = ["#### Failed scenarios and checkpoints", ""]
+            for problem in problems:
+                failures.append("- " + html.escape(
+                    f"{problem['module']} / {problem['scenario']} / {problem['checkpoint']}: {problem['detail']}"))
+            lines = [*failures, "", *lines]
         with Path(github_summary).open("a", encoding="utf-8") as handle:
             handle.write("\n".join(lines) + "\n")
+    return payload
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--suite", choices=("full", "coverage-quality", "focused", "impact", "coverage-plan"), required=True)
+    parser.add_argument("--suite", choices=("full", "coverage-quality", "focused", "impact", "coverage-plan",
+                                          "coverage-execution", "behavioral-evidence"), required=True)
     parser.add_argument("--plan", type=Path)
     parser.add_argument("--policy", type=Path, default=TESTS / "coverage_policy.yaml")
     parser.add_argument("--json-output", type=Path, required=True)
+    parser.add_argument("--execution-results", type=Path)
+    parser.add_argument("--coverage-results", type=Path)
     parser.add_argument("--slowest", type=int, default=20)
     parser.add_argument("--verbosity", type=int, choices=(0, 1, 2), default=2)
     args = parser.parse_args(argv)
     started = time.perf_counter()
+    plan = _verified_plan(args.plan) if args.plan else None
+    if args.suite in {"coverage-execution", "behavioral-evidence"}:
+        if plan is None:
+            raise ValueError("execution reuse requires --plan")
+        if not plan["coverage_obligations"]:
+            raise ValueError("coverage execution requires coverage obligations")
+        if args.suite == "behavioral-evidence":
+            if args.execution_results is None:
+                raise ValueError("execution reuse requires the ordered execution receipt")
+            behavioral, measured = _execution_suites(args, plan)
+            combined, _ = _project_execution(plan, _inventory(behavioral), _inventory(measured),
+                                            json.loads(args.execution_results.read_bytes()))
+            args.json_output.write_text(json.dumps(combined, indent=2) + "\n", encoding="utf-8")
+            explanation = json.dumps(combined["execution"], sort_keys=True)
+            print("Verified ordered behavioral execution: " + explanation)
+            if os.environ.get("GITHUB_STEP_SUMMARY"):
+                with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as handle:
+                    handle.write("### Verified behavioral execution\n\n" + explanation + "\n")
+            return 0
+        if args.coverage_results is None:
+            raise ValueError("coverage execution requires --coverage-results output")
+        suite = OrderedCoverageExecution(_behavioral_suite(args, plan),
+            lambda: _suite_for(argparse.Namespace(**{**vars(args), "suite": "coverage-plan"})))
+    else:
+        suite = _suite_for(args)
     runner = unittest.TextTestRunner(verbosity=args.verbosity, resultclass=TimedTextResult)
-    result = runner.run(_suite_for(args))
+    result = runner.run(suite)
     wall_seconds = time.perf_counter() - started
-    plan = json.loads(args.plan.read_text(encoding="utf-8")) if args.plan else None
     suite_name = args.suite
     if suite_name == "coverage-plan":
         suite_name = "coverage-quality" if "repository" in plan["coverage_obligations"] else "impact"
-    _write_summary(args.json_output, suite_name, wall_seconds, result, args.slowest, plan)
+    payload = _write_summary(args.json_output, suite_name, wall_seconds, result, args.slowest, plan,
+                             suite.contract() if args.suite == "coverage-execution" else None)
+    if args.suite == "coverage-execution" and result.wasSuccessful():
+        _, coverage = _project_execution(plan, suite.behavioral_inventory, suite.coverage_inventory, payload)
+        args.coverage_results.write_text(json.dumps(coverage, indent=2) + "\n", encoding="utf-8")
     return 0 if result.wasSuccessful() else 1
 
 

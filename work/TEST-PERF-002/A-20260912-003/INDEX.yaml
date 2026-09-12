@@ -1,0 +1,95 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260912-003
+task_id: TEST-PERF-002
+task_revision: 26
+attempt_id: A-20260912-003
+archive_root: A-20260912-003
+baseline: 8c09f6c74612c82cfb2c5d738de6abb8c5771954
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: f28fe84cf9ec2c6374f69df96222cca09fe2f852203eb6869dc4949099b29a3f
+actors_ref:
+  path: ACTORS.yaml
+  sha256: c08c4ff1996214202baf1ccb7904b2e0dd8bf6d60a5712194fcefe19c40cf597
+read_allowlist:
+- .github/**
+- .rwb/coverage-union-audit/**
+- .rwb/fixture-order-review/**
+- .rwb/precision-intake/**
+- .rwb/resource-audit/**
+- .rwb/test-cost-audit/**
+- AGENTS.md
+- build_backend.py
+- docs/DEVELOPMENT.md
+- docs/README.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/**
+- pyproject.toml
+- runtime-resources.json
+- src/**
+- tests/**
+- work/M14-002/A-20260906-001/checks/independent_projection_oracle.py
+- work/TEST-PERF-002/**
+write_scope:
+- .github/workflows/ci.yml
+- .rwb/fixture-order-review/**
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/ci_impact_policy.yaml
+- tests/run_unittest_suite.py
+- tests/test_ci_checks.py
+- tests/test_ci_plan.py
+- tests/test_test_runner.py
+- work/TEST-PERF-002/A-20260912-003/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: b211dda8ef82e7f132bfc82811325788cd55be893ceb3f530364edea4ddd31a6
+  event_count: 5
+tool_event_refs:
+- path: tool-events/ordered-behavioral-fixture-review-repair-succeeded.json
+  sha256: 84257e7a1b0afebb938224d0dbed543d2708f5f1f5dbe2cbb12faacc964835ab
+handoff_refs: []
+decision_refs: []
+output_refs:
+- path: RESULTS.md
+  sha256: 8e8b8eb12acab64f27f14aaf3bd159eba43e22da6fe95b6caaca6481a75e2fad
+check_refs:
+- path: checks/coverage-targeted.log
+  sha256: f7ded7ca1b0d80fedc10e7cc393bb31608bc296a367f21296cbf9a1535c6d744
+- path: checks/old-head-reproduction-script.txt
+  sha256: 81f50a97f36b0c8daa74e9fa538e433eb47f9eda5c30157e86a5b3a893b737bd
+- path: checks/owner-review.txt
+  sha256: 8299c1ba09bb02c253521f86febe8cdc89cf3680428678ad925756c4a4ee2e82
+- path: checks/reproduction.json
+  sha256: a6f435aaab6fa2bd42b2dfc30bdd58895f3c1894a0dbe7935dd7a979b53449a7
+- path: checks/runner-coverage.json
+  sha256: b28db20cdd423212f72a43dc7749000f043dee2fda01dd75e59157777d8f973b
+- path: checks/runner-final.log
+  sha256: d091446fa55f1f248cefd0bb4dbe5fe7a24aeec680dc90622f8a7cfeebe40042
+- path: checks/runner-workflow.log
+  sha256: ae30a67bb80af0836db9a1cc64439cc7ce84ae55816ce367122a7b8ce70195f2
+- path: checks/source-check-script.txt
+  sha256: d0e66b7b84f580cea49dc7c2d7cca47553495ff117980927f23584d1247c52b6
+- path: checks/source-plan.json
+  sha256: 1074b09af41ef467dd74d9e244e09535adad3f0b68b32e8156efa07f9b56508a
+- path: checks/source-validation.json
+  sha256: f2b3db413b96c1a198cb310770236451dbc80383dd90bb675ff54f0aa8d22ade
+- path: checks/targeted-fixed.log
+  sha256: f76cb2e289863af62d7674c3972717180a899b8b8ed36303272a69bab3ab8d50
+- path: checks/targeted.log
+  sha256: 919a70b96956dd7d0291e8c3a4b21e97d96f19d8aef5b96022a93f01175055ba
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: messages

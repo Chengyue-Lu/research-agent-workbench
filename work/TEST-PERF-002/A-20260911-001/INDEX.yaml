@@ -1,0 +1,98 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260911-001
+task_id: TEST-PERF-002
+task_revision: 21
+attempt_id: A-20260911-001
+archive_root: A-20260911-001
+baseline: 11c3b57dfbf8af0dc2587fc421d097e2544941c3
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 4939e65862a35af76e9509c15bcf4d0a057a7ab3803ef128ed55d945abb56cfa
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 796c4b3861e66e3cd98081c7edf863d007e48f6909cc82d915d522009c715275
+read_allowlist:
+- .github/**
+- .rwb/precision-intake/**
+- .rwb/resource-audit/**
+- AGENTS.md
+- build_backend.py
+- docs/DEVELOPMENT.md
+- docs/README.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/**
+- pyproject.toml
+- runtime-resources.json
+- src/**
+- tests/**
+- work/M14-002/A-20260906-001/checks/independent_projection_oracle.py
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/ci_checks.py
+- .github/scripts/ci_dependencies.py
+- .github/scripts/plan_ci.py
+- .github/workflows/ci.yml
+- .rwb/precision-venv311/**
+- .rwb/resource-audit/**
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/ci_impact_policy.yaml
+- tests/fixtures/ci/**
+- tests/test_ci_checks.py
+- tests/test_ci_dependencies.py
+- tests/test_ci_plan.py
+- work/TEST-PERF-002/A-20260911-001/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 3b176689f86e97373c482f4573e4984b1e17cf3c12ac4fa2fa517452664e85e1
+  event_count: 5
+tool_event_refs:
+- path: tool-events/resource-dependency-validation-succeeded.json
+  sha256: 6c87b332e933dcac8a2d1f712b8499b6879fd1854b8b942661bb58c204ab747d
+handoff_refs:
+- path: handoff/H0.md
+  sha256: 56f085b32735fbc105684375701a2b6cc28f78629a06184e54b10e79400ea76d
+decision_refs: []
+output_refs:
+- path: RESULTS.md
+  sha256: 10336dccc552217e43073a47111eeaf0598b2eda9cf9f3c0b950637f6ff56caa
+check_refs:
+- path: checks/base-regressions-source.txt
+  sha256: 493d49f81506013dcc5710ec6dfbadd21374b0ecb622c4de1ca9c0d2efc3eec8
+- path: checks/base-regressions.log
+  sha256: c16b4b2e254dd21c0d3eadb54b2a9ce2138b5541f52ffa34aaf539a7c049d242
+- path: checks/development-focused.log
+  sha256: d8115b7e42174ae54fa353166d5214566bc7aa04f2ad2759a952bbc4078360dc
+- path: checks/docs-governance.log
+  sha256: 6d4c9cf79405b991a5113aa2df2b4e9434e896267f58da3aac8cc4cce39c03f0
+- path: checks/package.json
+  sha256: 29644db628ce16ccfb50291f69b377d7af838df20e4d88820b849bfb62d72ac5
+- path: checks/pr68-proposed-plan.json
+  sha256: fd1d689fbc9836c0858e1b5fb04bf0084655d209f42404e8bc6d95825805ea87
+- path: checks/real-replays.json
+  sha256: 31593c47238d249386d18b9e8a6b534ce01eb660f037f560be227d8ca9b877d2
+- path: checks/regressions.log
+  sha256: 68bdaeed6faa315386f326bc5016c3a4097a90f67b469cb735ae20fda75a4b09
+- path: checks/replay-source.txt
+  sha256: dc465c933addea240aac287a7fc1462061b33745639454396abdb0b953b07cb6
+- path: checks/repository.log
+  sha256: 6895861bf5f35b7669baaf95d9caf2b94c3a4e1d5682f29bbc73ba0aa0064633
+- path: checks/summary.json
+  sha256: fa3370d6bccbe5f17e278fae63db08374841a3a6e34aa123e6687f6d53afae09
+- path: checks/superseded-instrumented.log
+  sha256: 957427c841d625db38c44ba961d37114ff052b293e7328d24b345581f63255a2
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: messages

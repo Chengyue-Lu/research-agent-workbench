@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -13,6 +14,67 @@ import ci_dependencies as deps
 
 
 class DependencyTests(unittest.TestCase):
+    def test_cached_consumer_follows_inventory_lifecycle(self):
+        """Cached consumer: discover inputs, expand inventory, remove inputs, restore."""
+        consumer = 'tests/test_contract.py'
+        blobs = {consumer: b'from pkg import leaf\nconsume("README.md")\n(ROOT / "data").rglob("*")'}
+        modules = {'src/pkg/__init__.py': b'', 'src/pkg/leaf.py': b'VALUE=1'}
+        first = {'README.md', 'data/a.txt', 'database/unrelated.txt'}
+        second = {'README.md', 'docs/README.md', 'data/b.txt'}
+        for checkpoint, sources, resources, expected in (
+            ('no inputs', blobs, set(), set()),
+            ('discover resources', blobs, first, {'README.md', 'data/a.txt'}),
+            ('add package and nested basename', {**blobs, **modules}, second, {*modules, *second}),
+            ('remove package and replace directory child', blobs, second, second),
+            ('restore original inventory', blobs, first, {'README.md', 'data/a.txt'}),
+            ('remove all inputs', blobs, set(), set()),
+        ):
+            with self.subTest(checkpoint=checkpoint):
+                edges = deps.graph(sources, {*sources, *resources})[0]
+                self.assertEqual({path: {consumer} for path in expected}, edges)
+
+    def test_cached_facts_bind_relative_import_and_file_root_to_consumer_path(self):
+        raw = b'from . import helper\nfrom pathlib import Path\n(Path(__file__).parent / "data.txt").read_text()'
+        helpers = {'tests/a/helper.py': b'', 'tests/b/helper.py': b''}
+        paths = {*helpers, 'tests/a/test_local.py', 'tests/b/test_local.py',
+                 'tests/a/data.txt', 'tests/b/data.txt'}
+        for directory in ('a', 'b', 'a'):
+            consumer = 'tests/' + directory + '/test_local.py'
+            edges = deps.graph({**helpers, consumer: raw}, paths)[0]
+            self.assertEqual({'tests/' + directory + '/helper.py', 'tests/' + directory + '/data.txt'}, set(edges))
+            self.assertTrue(all(consumers == {consumer} for consumers in edges.values()))
+
+    def test_cached_facts_invalidate_changed_bytes_and_invalid_python(self):
+        path = 'tests/test_contract.py'
+        for checkpoint, raw, expected, opaque, invalid in (
+            ('original source', b'import pkg.a', {'src/pkg/a.py'}, False, False),
+            ('changed import and dynamic execution', b'import pkg.b\nexec(code)', {'src/pkg/b.py'}, True, False),
+            ('invalid source', b'def invalid(', set(), False, True),
+            ('restored source', b'import pkg.a', {'src/pkg/a.py'}, False, False),
+        ):
+            with self.subTest(checkpoint=checkpoint):
+                blobs = {path: raw, 'src/pkg/a.py': b'', 'src/pkg/b.py': b''}
+                edges, dynamic, _, errors = deps.graph(blobs, blobs)
+                self.assertEqual(expected, set(edges))
+                self.assertEqual({path} if opaque else set(), dynamic)
+                self.assertEqual(['unparseable Python dependency: ' + path] if invalid else [], errors)
+
+    def test_returned_graph_mutation_cannot_poison_cached_facts(self):
+        blobs = {'tests/test_contract.py': b'import pkg.a\nexec(code)\nopen("fixture.txt")',
+                 'src/pkg/a.py': b''}
+        paths = {*blobs, 'fixture.txt'}
+        result = deps.graph(blobs, paths)
+        result[0]['src/pkg/a.py'].clear()
+        result[1].clear()
+        result[2].clear()
+        result[3].append('injected')
+        edges, opaque, resources, errors = deps.graph(blobs, paths)
+        self.assertEqual({'tests/test_contract.py'}, edges['src/pkg/a.py'])
+        self.assertEqual({'tests/test_contract.py'}, edges['fixture.txt'])
+        self.assertEqual({'tests/test_contract.py'}, opaque)
+        self.assertEqual(opaque, resources)
+        self.assertFalse(errors)
+
     def selection(self, old, new, seeds, resources=()):
         def snapshot(repo, commit):
             blobs = old if commit == 'base' else new
@@ -41,6 +103,240 @@ class DependencyTests(unittest.TestCase):
         self.assertIn('test_contract', p['selected'])
         p = self.selection(old, {'tests/test_contract.py': b'import unittest'}, ['src/pkg/leaf.py'])
         self.assertIn('test_contract', p['selected'])
+
+    def test_document_names_and_directory_guards_do_not_create_runtime_input_edges(self):
+        blobs = {
+            'tests/test_release.py': b'paths = {item["path"] for item in includes}\n'
+                b'assert paths.isdisjoint({"docs/STATUS.md"})',
+            'work/a/oracle.py': b'from tests.test_release import paths',
+            'src/pkg/reconstruct.py': b'from pathlib import Path\n'
+                b'def check(root: Path, path: Path):\n'
+                b'    return path.is_relative_to(root / "work") and path != root / "work"',
+            'tests/test_runtime.py': b'import pkg.reconstruct',
+            'tests/test_docs.py': b'(ROOT / "docs" / "STATUS.md").read_text()',
+        }
+        plan = self.selection(blobs, blobs, ['docs/STATUS.md'], ['docs/STATUS.md'])
+        self.assertEqual({'test_docs'}, set(plan['selected']))
+        plan = self.selection(blobs, blobs, ['work/a/oracle.py'])
+        self.assertNotIn('test_runtime', plan['selected'])
+
+    def test_qualified_paths_do_not_alias_same_basename_in_other_directories(self):
+        blobs = {
+            'tests/test_root.py': b'(ROOT / "README.md").read_text()',
+            'tests/test_nested.py': b'(ROOT / "docs" / "README.md").read_text()',
+            'tests/test_names.py': b'def docs_only(path):\n'
+                b'    root_docs = {"README.md", "AGENTS.md"}\n'
+                b'    return path in root_docs',
+            'tests/test_fixture.py': b'p = ROOT / "tests" / "fixtures" / "README.md"',
+        }
+        blobs = {p: b'from pathlib import Path\nROOT = Path(__file__).resolve().parents[1]\n' + raw
+                 for p, raw in blobs.items()}
+        paths = ['README.md', 'docs/README.md', 'tests/fixtures/README.md']
+        plan = self.selection(blobs, blobs, ['docs/README.md'], paths)
+        self.assertEqual({'test_nested'}, set(plan['selected']))
+        plan = self.selection(blobs, blobs, ['tests/fixtures/README.md'], paths)
+        self.assertEqual({'test_fixture'}, set(plan['selected']))
+
+    def test_unresolved_bare_filenames_keep_relative_and_helper_consumers(self):
+        blobs = {
+            'tests/test_relative.py': b'filename = "README.md"\n'
+                b'(Path(__file__).parent / filename).read_text()',
+            'tests/test_helper.py': b'consume("README.md")',
+            'tests/test_exported.py': b'FILES = ["README.md"]',
+        }
+        paths = ['README.md', 'docs/README.md']
+        for seed in paths:
+            with self.subTest(seed=seed):
+                self.assertEqual({'test_relative', 'test_helper', 'test_exported'},
+                                 set(self.selection(blobs, blobs, [seed], paths)['selected']))
+
+    def test_fixed_module_relative_root_and_unresolved_path_tail_preserve_inputs(self):
+        blobs = {
+            'tests/test_relative.py': b'from pathlib import Path\nHERE = Path(__file__).resolve().parent\n'
+                b'(HERE / "README.md").read_text()',
+            'tests/test_dynamic.py': b'(root / name / "README.md").read_text()',
+            'tests/test_other.py': b'pass',
+        }
+        paths = ['README.md', 'tests/README.md', 'docs/README.md']
+        self.assertEqual({'test_dynamic'}, set(self.selection(blobs, blobs, ['docs/README.md'], paths)['selected']))
+        self.assertEqual({'test_relative', 'test_dynamic'},
+                         set(self.selection(blobs, blobs, ['tests/README.md'], paths)['selected']))
+
+    def test_parent_segments_resolve_inside_root_and_escape_retains_ambiguity(self):
+        header = b'from pathlib import Path\nROOT=Path(__file__).parents[1]\n'
+        blobs = {'tests/test_inside.py': header + b'(ROOT / "docs" / ".." / "tests" / "README.md").read_text()',
+                 'tests/test_outside.py': header + b'(ROOT / ".." / "checkout" / "docs" / "README.md").read_text()',
+                 'tests/test_parent.py': header + b'directory=ROOT / ".."'}
+        paths = ['docs/README.md', 'tests/README.md']
+        self.assertEqual({'test_outside'}, set(self.selection(blobs, blobs, ['docs/README.md'], paths)['selected']))
+        self.assertEqual({'test_inside', 'test_outside'},
+                         set(self.selection(blobs, blobs, ['tests/README.md'], paths)['selected']))
+
+    def test_scope_shadowing_export_and_unknown_predicates_retain_conservative_edges(self):
+        cases = [
+            'from pathlib import Path\ncustom.is_relative_to(ROOT / "docs")',
+            'def check():\n global names\n names = ["docs/input.md"]\n return "x" in names',
+            'def outer():\n names=[]\n def check():\n  nonlocal names\n  names=["docs/input.md"]\n  return "x" in names',
+            'def check():\n names=["docs/input.md"]\n def inner(): return names\n return inner()',
+            'def check():\n names={"x"}\n names=custom\n return names.isdisjoint({"docs/input.md"})',
+            'def one():\n names={"x"}\ndef two(names):\n return names.isdisjoint({"docs/input.md"})',
+            'from pathlib import Path\nROOT=Path(__file__).parents[1]\n'
+                'def read(ROOT): return (ROOT / "input.md").read_text()',
+            'from pathlib import Path\nPath=custom\nROOT=Path(__file__).parent\n(ROOT / "input.md").read_text()',
+            'from pathlib import Path\ndef read(Path):\n root=Path(__file__).parent\n return (root / "input.md").read_text()',
+            'def check():\n a=b\n b=a\n return a.is_relative_to(ROOT / "docs")',
+            'from pathlib import Path\nroot=Path(__file__).parents[99]\n(root / "input.md").read_text()',
+            'from pathlib import Path\nroot=Path(__file__, extra)\n(root / "input.md").read_text()',
+            'root=alias\nalias=root\n(root / "input.md").read_text()',
+            'def check():\n names=["docs/input.md"]\n alias=names\n names=alias\n return names',
+            'from pathlib import Path\npath=factory()\npath.is_relative_to(ROOT / "docs")',
+            'value = "docs" / "input.md"',
+            'from pathlib import Path\ndef read(__file__):\n'
+                ' return (Path(__file__).parent / "input.md").read_text()',
+            'from pathlib import Path\n__file__=external\n'
+                '(Path(__file__).parent / "input.md").read_text()',
+            'from pathlib import Path\nPath=custom\ndef check(path: Path):\n'
+                ' return path.is_relative_to(ROOT / "docs")',
+            'from pathlib import Path\nROOT=Path(__file__).parents[1]\n'
+                'def other():\n from custom import Path\n'
+                '(ROOT / "input.md").read_text()',
+            'from pathlib import Path\nROOT=Path(__file__).parents[1]\n'
+                'def outer(ROOT):\n def inner(): return (ROOT / "input.md").read_text()\n return inner()',
+            'from pathlib import Path\ndef outer(Path):\n'
+                ' def inner(): return (Path(__file__).parent / "input.md").read_text()\n return inner()',
+            'from pathlib import Path\nROOT=Path(__file__).parents[1]\n'
+                'def mutate():\n global ROOT\n ROOT=other\n(ROOT / "input.md").read_text()',
+            'from pathlib import Path\nROOT=Path(__file__).parent.parent.parent\n'
+                '(ROOT / "checkout" / "docs" / "input.md").read_text()',
+            'from pathlib import Path\ndef outer(*Path):\n'
+                ' def inner(): return (Path(__file__).parent / "input.md").read_text()',
+            'from pathlib import Path\ndef outer(**Path):\n'
+                ' def inner(): return (Path(__file__).parent / "input.md").read_text()',
+        ]
+        for raw in cases:
+            with self.subTest(raw=raw):
+                blobs = {'tests/test_input.py': raw.encode()}
+                self.assertIn('test_input', self.selection(blobs, blobs, ['docs/input.md'], ['docs/input.md'])['selected'])
+
+    def test_scoped_path_guards_follow_only_unambiguous_path_values(self):
+        cases = [
+            'from pathlib import Path\ndef check(root: Path, raw: Path):\n'
+                ' path=(raw if flag else root / raw).resolve()\n return path.is_relative_to(root / "docs")',
+            'from pathlib import Path as P\npath=P(__file__).absolute()\npath.is_relative_to(ROOT / "docs")',
+            'names={"x"}\nnames.issubset({"docs/input.md"})',
+            '{"x"}.issuperset({"docs/input.md"})',
+            'def check():\n names=["docs/input.md"]\n alias=names\n return "x" in alias',
+        ]
+        for raw in cases:
+            with self.subTest(raw=raw):
+                blobs = {'tests/test_guard.py': raw.encode()}
+                self.assertNotIn('test_guard', self.selection(blobs, blobs, ['docs/input.md'], ['docs/input.md'])['selected'])
+
+    def test_local_import_shadowing_retains_actual_document_failure(self):
+        """Local import: unchanged reader remains selected when its real document fails."""
+        for declaration in ('from project_config import ROOT', 'from project_config import DOCUMENTS as ROOT'):
+            with self.subTest(binding=declaration), tempfile.TemporaryDirectory() as directory:
+                repo = Path(directory)
+                def git(*args):
+                    return subprocess.check_output(['git', '-C', str(repo), *args], stderr=subprocess.DEVNULL).decode().strip()
+                (repo / 'tests').mkdir(); (repo / 'docs').mkdir()
+                (repo / 'project_config.py').write_text('from pathlib import Path\nROOT=DOCUMENTS=Path("docs")\n')
+                (repo / 'tests/test_reader.py').write_text(
+                    'from pathlib import Path\nROOT=Path(__file__).resolve().parents[1]\n'
+                    'def test_document():\n    ' + declaration + '\n'
+                    '    assert (ROOT / "input.md").read_text() == "good"\n')
+                (repo / 'input.md').write_text('good')  # The outer root is a distinct, unchanged input.
+                git('init', '-q')
+                commits = []
+                for value in ('good', 'bad'):
+                    with self.subTest(document=value):
+                        (repo / 'docs/input.md').write_text(value)
+                        result = subprocess.run([sys.executable, '-c',
+                            'import runpy; runpy.run_path("tests/test_reader.py")["test_document"]()'],
+                            cwd=repo, capture_output=True, text=True)
+                        self.assertEqual(0 if value == 'good' else 1, result.returncode, result.stderr)
+                        self.assertEqual(value == 'bad', 'AssertionError' in result.stderr)
+                        git('add', 'tests/test_reader.py', 'project_config.py', 'input.md', 'docs/input.md')
+                        git('-c', 'user.name=CI fixture', '-c', 'user.email=ci@example.invalid', 'commit', '-qm', value)
+                        commits.append(git('rev-parse', 'HEAD'))
+                selected = deps.select(repo, *commits, ['docs/input.md'])[0]
+                self.assertEqual({'test_reader'}, set(selected['selected']))
+                self.assertEqual([], selected['excluded'])
+                self.assertEqual([], selected['errors'])
+
+    def test_import_bindings_stop_outer_root_fallback_in_each_lexical_scope(self):
+        header = 'from pathlib import Path\nROOT=Path(__file__).resolve().parents[1]\n'
+        read = 'return (ROOT / "input.md").read_text()'
+        cases = {
+            'import': 'def read():\n import ROOT\n ' + read,
+            'aliased import': 'def read():\n import project_config as ROOT\n ' + read,
+            'dotted import binds first component': 'def read():\n import ROOT.settings\n ' + read,
+            'aliased dotted import': 'def read():\n import project_config.settings as ROOT\n ' + read,
+            'from import': 'def read():\n from project_config import ROOT\n ' + read,
+            'aliased from import': 'def read():\n from project_config import DOCUMENTS as ROOT\n ' + read,
+            'async': 'async def read():\n from project_config import ROOT\n ' + read,
+            'closure': 'def outer():\n from project_config import ROOT\n def read():\n  ' + read,
+            'nested local': 'def outer():\n ROOT=Path(__file__).parent\n def read():\n  from project_config import ROOT\n  ' + read,
+            'class body': 'class Reader:\n from project_config import ROOT\n text=(ROOT / "input.md").read_text()',
+        }
+        for label, source in cases.items():
+            with self.subTest(binding=label):
+                blobs = {'tests/test_reader.py': (header + source).encode()}
+                selected = self.selection(blobs, blobs, ['docs/input.md'], ['docs/input.md', 'input.md'])
+                self.assertEqual({'test_reader'}, set(selected['selected']))
+                self.assertEqual([], selected['errors'])
+
+    def test_import_scope_and_known_path_constructor_keep_bounded_reads_precise(self):
+        header = 'from pathlib import Path\nROOT=Path(__file__).resolve().parents[1]\n'
+        cases = {
+            'sibling import': header + 'def unrelated():\n from project_config import ROOT\n'
+                'def read(): return (ROOT / "input.md").read_text()',
+            'method skips class import': header + 'class Reader:\n from project_config import ROOT\n'
+                ' def read(self): return (ROOT / "input.md").read_text()',
+        }
+        for declaration, name in [('from pathlib import Path', 'Path'), ('from pathlib import Path as P', 'P')]:
+            cases[declaration] = ('def read():\n ' + declaration + '\n ROOT=' + name
+                + '(__file__).resolve().parents[1]\n return (ROOT / "input.md").read_text()')
+        for label, source in cases.items():
+            with self.subTest(binding=label):
+                blobs = {'tests/test_reader.py': source.encode()}
+                paths = ['docs/input.md', 'input.md']
+                self.assertEqual({}, self.selection(blobs, blobs, ['docs/input.md'], paths)['selected'])
+                self.assertEqual({'test_reader'}, set(self.selection(blobs, blobs, ['input.md'], paths)['selected']))
+
+    def test_class_method_root_uses_module_binding_and_closure_uses_outer_binding(self):
+        header = b'from pathlib import Path\nROOT=Path(__file__).parents[1]\n'
+        blobs = {'tests/test_reader.py': header + b'class Reader:\n ROOT=other\n'
+                 b' def read(self): return (ROOT / "docs/input.md").read_text()\n',
+                 'tests/test_closure.py': header + b'def outer():\n ROOT=Path(__file__).parent\n'
+                 b' def inner(): return (ROOT / "input.md").read_text()\n return inner()'}
+        paths = ['docs/input.md', 'tests/input.md']
+        self.assertEqual({'test_reader'}, set(self.selection(blobs, blobs, ['docs/input.md'], paths)['selected']))
+        self.assertEqual({'test_closure'}, set(self.selection(blobs, blobs, ['tests/input.md'], paths)['selected']))
+
+    def test_lexical_comparisons_skip_names_but_preserve_real_reads_and_escaped_values(self):
+        blobs = {
+            'tests/test_label.py': b'assert name == "docs/data.md"\n'
+                b'assert name not in ["docs/data.md"]\n"docs/data.md"',
+            'tests/test_reader.py': b'assert (ROOT / "docs/data.md").read_text() == "valid"',
+            'tests/test_escape.py': b'INPUTS = ["docs/data.md"]\nconsume(INPUTS)',
+            'tests/test_unknown.py': b'custom.isdisjoint({"docs/data.md"})',
+        }
+        plan = self.selection(blobs, blobs, ['docs/data.md'], ['docs/data.md'])
+        self.assertEqual({'test_reader', 'test_escape', 'test_unknown'}, set(plan['selected']))
+
+    def test_resource_changes_keep_real_archive_imports_and_directory_scans(self):
+        blobs = {
+            'work/a/oracle.py': b'from tests.helper import VALUE',
+            'tests/helper.py': b'VALUE = 1',
+            'tests/test_archive.py': b'import runpy\nrunpy.run_path("work/a/oracle.py")',
+            'tests/test_scan.py': b'list((ROOT / "docs").rglob("*.md"))',
+            'tests/test_independent.py': b'(ROOT / "other" / "README.md").read_text()',
+        }
+        plan = self.selection(blobs, blobs, ['tests/helper.py'])
+        self.assertIn('test_archive', plan['selected'])
+        plan = self.selection(blobs, blobs, ['docs/new.md'], ['docs/new.md', 'other/README.md'])
+        self.assertEqual({'test_scan'}, set(plan['selected']))
 
     def test_evidence_closure_follows_test_helpers_packages_and_literal_inputs_only(self):
         blobs = {'tests/__init__.py': b'from .support import setup',

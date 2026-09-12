@@ -1,0 +1,498 @@
+{
+  "version": 4,
+  "binding": {
+    "repository": "Chengyue-Lu/research-agent-workbench",
+    "base": "11c3b57dfbf8af0dc2587fc421d097e2544941c3",
+    "head": "0f6da949c9d89d4d5e0cea9cffad1e85465bb52c",
+    "merge_base": "11c3b57dfbf8af0dc2587fc421d097e2544941c3",
+    "target": "0f6da949c9d89d4d5e0cea9cffad1e85465bb52c"
+  },
+  "change_class": "focused",
+  "risk": "R2",
+  "changes": [
+    {
+      "status": "M",
+      "path": "docs/DEVELOPER_ARCHITECTURE_MAP.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/M_SERIES_IMPLEMENTATION_MAP.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/ROADMAP.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/STATUS.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/README.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/implementation/README.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/modules/07-ARTIFACTS_AND_PROVENANCE.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/modules/10-OBSERVABILITY_EVALUATION_COST.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/modules/README.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/DOC-ALIGN-002/README.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/DOC-ALIGN-002/RISK_LEDGER.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/BASELINE_TRANSPORT_GATE.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/workstreams/chengyue-lu/README.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/.gitattributes"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/ACTORS.yaml"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/CHECKS.md"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/INDEX.yaml"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/TASK.yaml"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/events.jsonl"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/messages/0001-assignment.trace"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/messages/0002-assignment.trace"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/messages/0003-progress.trace"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/messages/0004-progress.trace"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/messages/0005-progress.trace"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/messages/0006-result.trace"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/messages/0007-progress.trace"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/messages/0008-result.trace"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/tool-events/diff-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/tool-events/docs-governance-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/tool-events/initial-doc-check-failed.json"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/tool-events/preserved-boundaries-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/tool-events/repository-failed.json"
+    }
+  ],
+  "surfaces": [
+    "documentation"
+  ],
+  "test_groups": [
+    "documentation"
+  ],
+  "tests": [
+    "test_ci_checks",
+    "test_ci_dependencies",
+    "test_ci_plan",
+    "test_coverage_policy",
+    "test_documentation",
+    "test_governance_helper_branches",
+    "test_portable_build",
+    "test_pr_governance",
+    "test_selection_witness",
+    "test_trace_risk_codes"
+  ],
+  "coverage_modules": [],
+  "impact_evidence": {},
+  "changed_lines": {},
+  "coverage_lines": {},
+  "coverage_tests": [],
+  "selection": {
+    "algorithm": "base-head-consumers-v1",
+    "inventory_sha256": "9e44ec3502e7c95757d2fb0a93305c467eb559746af0b9c5b0b95b7ba8f5f990",
+    "selected": {
+      "test_ci_checks": [
+        "docs/DEVELOPER_ARCHITECTURE_MAP.md",
+        "tests/test_documentation.py",
+        "tests/test_ci_checks.py"
+      ],
+      "test_ci_dependencies": [
+        "docs/decisions/README.md",
+        ".github/scripts/portable_package_smoke.py",
+        "tests/test_ci_dependencies.py"
+      ],
+      "test_ci_plan": [
+        "docs/decisions/README.md",
+        "tests/test_ci_plan.py"
+      ],
+      "test_coverage_policy": [
+        "docs/DEVELOPER_ARCHITECTURE_MAP.md",
+        "tests/test_documentation.py",
+        "tests/run_unittest_suite.py",
+        "tests/test_coverage_policy.py"
+      ],
+      "test_documentation": [
+        "docs/DEVELOPER_ARCHITECTURE_MAP.md",
+        "tests/test_documentation.py"
+      ],
+      "test_governance_helper_branches": [
+        "docs/STATUS.md",
+        "tests/test_pr_governance.py",
+        "tests/test_governance_helper_branches.py"
+      ],
+      "test_portable_build": [
+        "docs/decisions/README.md",
+        "tests/test_portable_build.py"
+      ],
+      "test_pr_governance": [
+        "docs/STATUS.md",
+        "tests/test_pr_governance.py"
+      ],
+      "test_selection_witness": [
+        "docs/decisions/README.md",
+        ".github/scripts/portable_package_smoke.py",
+        "tests/test_selection_witness.py"
+      ],
+      "test_trace_risk_codes": [
+        "docs/modules/07-ARTIFACTS_AND_PROVENANCE.md",
+        "tests/test_trace_risk_codes.py"
+      ]
+    },
+    "excluded": [
+      "test_accepted_skill_migration_fixtures",
+      "test_agent_trace",
+      "test_api_session_runner",
+      "test_artifacts_admission",
+      "test_artifacts_promotion",
+      "test_artifacts_validation_host",
+      "test_candidate_claim_rewrite",
+      "test_capability_consumer",
+      "test_capability_requirements",
+      "test_capability_resolution",
+      "test_capability_resolver_branches",
+      "test_catalog",
+      "test_claim_trace",
+      "test_cli",
+      "test_cli_command_branches",
+      "test_context_model_branches",
+      "test_contracts",
+      "test_critical_contract_branches",
+      "test_decision_authority",
+      "test_evaluation_manifest",
+      "test_execution_archive_helpers",
+      "test_execution_contract_helpers",
+      "test_execution_host",
+      "test_execution_trace_adapter",
+      "test_execution_view",
+      "test_generic_execution_closeout",
+      "test_handoff_transfer",
+      "test_integrity",
+      "test_kernel",
+      "test_m2_registry_runtime",
+      "test_m3_context_observability",
+      "test_method_resolutions",
+      "test_method_trace_candidate",
+      "test_mode_action_routing_fixtures",
+      "test_mode_actions",
+      "test_model_pool",
+      "test_observability_model_branches",
+      "test_phase_b_evolution_gate",
+      "test_phase_c_gate",
+      "test_project_internal_handoff_fixtures",
+      "test_protocol_profiles",
+      "test_provider_adapters",
+      "test_provider_conformance",
+      "test_provider_contract_branches",
+      "test_provider_port",
+      "test_registry_require_branches",
+      "test_relationships",
+      "test_release_oracle_replay",
+      "test_release_surface",
+      "test_research_attempt_failure",
+      "test_research_mode_migration",
+      "test_research_state_candidate",
+      "test_research_state_critical_branches",
+      "test_run_reconstruction",
+      "test_runtime_bundle",
+      "test_runtime_resources",
+      "test_schemas",
+      "test_skill_archive_audit",
+      "test_skill_evaluation",
+      "test_skill_evaluation_helpers",
+      "test_skill_lifecycle",
+      "test_skill_needs",
+      "test_skill_release_projection",
+      "test_skill_runtime_extension",
+      "test_trace_properties",
+      "test_validation",
+      "test_validation_critical_surfaces",
+      "test_validation_helpers"
+    ],
+    "exclusion_reasons": {
+      "test_accepted_skill_migration_fixtures": "outside base/head dependency closure",
+      "test_agent_trace": "outside base/head dependency closure",
+      "test_api_session_runner": "outside base/head dependency closure",
+      "test_artifacts_admission": "outside base/head dependency closure",
+      "test_artifacts_promotion": "outside base/head dependency closure",
+      "test_artifacts_validation_host": "outside base/head dependency closure",
+      "test_candidate_claim_rewrite": "outside base/head dependency closure",
+      "test_capability_consumer": "outside base/head dependency closure",
+      "test_capability_requirements": "outside base/head dependency closure",
+      "test_capability_resolution": "outside base/head dependency closure",
+      "test_capability_resolver_branches": "outside base/head dependency closure",
+      "test_catalog": "outside base/head dependency closure",
+      "test_claim_trace": "outside base/head dependency closure",
+      "test_cli": "outside base/head dependency closure",
+      "test_cli_command_branches": "outside base/head dependency closure",
+      "test_context_model_branches": "outside base/head dependency closure",
+      "test_contracts": "outside base/head dependency closure",
+      "test_critical_contract_branches": "outside base/head dependency closure",
+      "test_decision_authority": "outside base/head dependency closure",
+      "test_evaluation_manifest": "outside base/head dependency closure",
+      "test_execution_archive_helpers": "outside base/head dependency closure",
+      "test_execution_contract_helpers": "outside base/head dependency closure",
+      "test_execution_host": "outside base/head dependency closure",
+      "test_execution_trace_adapter": "outside base/head dependency closure",
+      "test_execution_view": "outside base/head dependency closure",
+      "test_generic_execution_closeout": "outside base/head dependency closure",
+      "test_handoff_transfer": "outside base/head dependency closure",
+      "test_integrity": "outside base/head dependency closure",
+      "test_kernel": "outside base/head dependency closure",
+      "test_m2_registry_runtime": "outside base/head dependency closure",
+      "test_m3_context_observability": "outside base/head dependency closure",
+      "test_method_resolutions": "outside base/head dependency closure",
+      "test_method_trace_candidate": "outside base/head dependency closure",
+      "test_mode_action_routing_fixtures": "outside base/head dependency closure",
+      "test_mode_actions": "outside base/head dependency closure",
+      "test_model_pool": "outside base/head dependency closure",
+      "test_observability_model_branches": "outside base/head dependency closure",
+      "test_phase_b_evolution_gate": "outside base/head dependency closure",
+      "test_phase_c_gate": "outside base/head dependency closure",
+      "test_project_internal_handoff_fixtures": "outside base/head dependency closure",
+      "test_protocol_profiles": "outside base/head dependency closure",
+      "test_provider_adapters": "outside base/head dependency closure",
+      "test_provider_conformance": "outside base/head dependency closure",
+      "test_provider_contract_branches": "outside base/head dependency closure",
+      "test_provider_port": "outside base/head dependency closure",
+      "test_registry_require_branches": "outside base/head dependency closure",
+      "test_relationships": "outside base/head dependency closure",
+      "test_release_oracle_replay": "outside base/head dependency closure",
+      "test_release_surface": "outside base/head dependency closure",
+      "test_research_attempt_failure": "outside base/head dependency closure",
+      "test_research_mode_migration": "outside base/head dependency closure",
+      "test_research_state_candidate": "outside base/head dependency closure",
+      "test_research_state_critical_branches": "outside base/head dependency closure",
+      "test_run_reconstruction": "outside base/head dependency closure",
+      "test_runtime_bundle": "outside base/head dependency closure",
+      "test_runtime_resources": "outside base/head dependency closure",
+      "test_schemas": "outside base/head dependency closure",
+      "test_skill_archive_audit": "outside base/head dependency closure",
+      "test_skill_evaluation": "outside base/head dependency closure",
+      "test_skill_evaluation_helpers": "outside base/head dependency closure",
+      "test_skill_lifecycle": "outside base/head dependency closure",
+      "test_skill_needs": "outside base/head dependency closure",
+      "test_skill_release_projection": "outside base/head dependency closure",
+      "test_skill_runtime_extension": "outside base/head dependency closure",
+      "test_trace_properties": "outside base/head dependency closure",
+      "test_validation": "outside base/head dependency closure",
+      "test_validation_critical_surfaces": "outside base/head dependency closure",
+      "test_validation_helpers": "outside base/head dependency closure"
+    },
+    "exclusion_reason": "outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately",
+    "opaque_consumers": [
+      ".github/scripts/ci_checks.py",
+      ".github/scripts/plan_ci.py",
+      ".github/scripts/portable_package_smoke.py",
+      ".github/scripts/selection_witness.py",
+      "tests/run_unittest_suite.py",
+      "tests/test_ci_checks.py",
+      "tests/test_ci_dependencies.py",
+      "tests/test_ci_plan.py",
+      "tests/test_coverage_policy.py",
+      "tests/test_portable_build.py",
+      "tests/test_pr_governance.py",
+      "tests/test_selection_witness.py"
+    ],
+    "errors": [],
+    "test_reachable_sources": [
+      "docs/DEVELOPER_ARCHITECTURE_MAP.md",
+      "docs/M_SERIES_IMPLEMENTATION_MAP.md",
+      "docs/ROADMAP.md",
+      "docs/STATUS.md",
+      "docs/decisions/README.md",
+      "docs/implementation/README.md",
+      "docs/modules/07-ARTIFACTS_AND_PROVENANCE.md",
+      "docs/modules/10-OBSERVABILITY_EVALUATION_COST.md",
+      "docs/modules/README.md",
+      "docs/workstreams/chengyue-lu/DOC-ALIGN-002/README.md",
+      "docs/workstreams/chengyue-lu/DOC-ALIGN-002/RISK_LEDGER.md",
+      "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/BASELINE_TRANSPORT_GATE.md",
+      "docs/workstreams/chengyue-lu/README.md",
+      "docs/workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md"
+    ],
+    "affected_paths": [
+      ".github/scripts/ci_checks.py",
+      ".github/scripts/plan_ci.py",
+      ".github/scripts/portable_package_smoke.py",
+      ".github/scripts/selection_witness.py",
+      "docs/DEVELOPER_ARCHITECTURE_MAP.md",
+      "docs/M_SERIES_IMPLEMENTATION_MAP.md",
+      "docs/ROADMAP.md",
+      "docs/STATUS.md",
+      "docs/decisions/README.md",
+      "docs/implementation/README.md",
+      "docs/modules/07-ARTIFACTS_AND_PROVENANCE.md",
+      "docs/modules/10-OBSERVABILITY_EVALUATION_COST.md",
+      "docs/modules/README.md",
+      "docs/workstreams/chengyue-lu/DOC-ALIGN-002/README.md",
+      "docs/workstreams/chengyue-lu/DOC-ALIGN-002/RISK_LEDGER.md",
+      "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/BASELINE_TRANSPORT_GATE.md",
+      "docs/workstreams/chengyue-lu/README.md",
+      "docs/workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md",
+      "tests/run_unittest_suite.py",
+      "tests/test_ci_checks.py",
+      "tests/test_ci_dependencies.py",
+      "tests/test_ci_plan.py",
+      "tests/test_coverage_policy.py",
+      "tests/test_documentation.py",
+      "tests/test_governance_helper_branches.py",
+      "tests/test_portable_build.py",
+      "tests/test_pr_governance.py",
+      "tests/test_selection_witness.py",
+      "tests/test_trace_risk_codes.py"
+    ],
+    "reviewed_contract_anchor": "",
+    "reviewed_opaque_boundary": []
+  },
+  "coverage_selection": {},
+  "policy_sha256": "1fffd71b19c0b8381d534a8b4b7dedaca5167c1153589892f82c34740be338c2",
+  "python_versions": [
+    "3.11",
+    "3.13"
+  ],
+  "behavioral_scope": "focused",
+  "coverage_scope": "none",
+  "coverage_obligations": [],
+  "blocked_reasons": [],
+  "package_smoke": false,
+  "repository_smoke": false,
+  "reasons": [
+    "docs/STATUS.md matches the R1 policy surface",
+    "docs/decisions/README.md matches the R2 policy surface",
+    "docs/implementation/README.md matches the R1 policy surface",
+    "test/document/archive data: docs/DEVELOPER_ARCHITECTURE_MAP.md",
+    "test/document/archive data: docs/M_SERIES_IMPLEMENTATION_MAP.md",
+    "docs/ROADMAP.md -> documentation",
+    "test/document/archive data: docs/ROADMAP.md",
+    "docs/STATUS.md -> documentation",
+    "test/document/archive data: docs/STATUS.md",
+    "test/document/archive data: docs/decisions/README.md",
+    "test/document/archive data: docs/implementation/README.md",
+    "test/document/archive data: docs/modules/07-ARTIFACTS_AND_PROVENANCE.md",
+    "test/document/archive data: docs/modules/10-OBSERVABILITY_EVALUATION_COST.md",
+    "test/document/archive data: docs/modules/README.md",
+    "docs/workstreams/chengyue-lu/DOC-ALIGN-002/README.md -> documentation",
+    "test/document/archive data: docs/workstreams/chengyue-lu/DOC-ALIGN-002/README.md",
+    "docs/workstreams/chengyue-lu/DOC-ALIGN-002/RISK_LEDGER.md -> documentation",
+    "test/document/archive data: docs/workstreams/chengyue-lu/DOC-ALIGN-002/RISK_LEDGER.md",
+    "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/BASELINE_TRANSPORT_GATE.md -> documentation",
+    "test/document/archive data: docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/BASELINE_TRANSPORT_GATE.md",
+    "docs/workstreams/chengyue-lu/README.md -> documentation",
+    "test/document/archive data: docs/workstreams/chengyue-lu/README.md",
+    "docs/workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md -> documentation",
+    "test/document/archive data: docs/workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md",
+    "test/document/archive data: work/DOC-ALIGN-002/A-20260911-001/.gitattributes",
+    "test/document/archive data: work/DOC-ALIGN-002/A-20260911-001/ACTORS.yaml",
+    "test/document/archive data: work/DOC-ALIGN-002/A-20260911-001/CHECKS.md",
+    "test/document/archive data: work/DOC-ALIGN-002/A-20260911-001/INDEX.yaml",
+    "test/document/archive data: work/DOC-ALIGN-002/A-20260911-001/TASK.yaml",
+    "test/document/archive data: work/DOC-ALIGN-002/A-20260911-001/events.jsonl",
+    "test/document/archive data: work/DOC-ALIGN-002/A-20260911-001/messages/0001-assignment.trace",
+    "test/document/archive data: work/DOC-ALIGN-002/A-20260911-001/messages/0002-assignment.trace",
+    "test/document/archive data: work/DOC-ALIGN-002/A-20260911-001/messages/0003-progress.trace",
+    "test/document/archive data: work/DOC-ALIGN-002/A-20260911-001/messages/0004-progress.trace",
+    "test/document/archive data: work/DOC-ALIGN-002/A-20260911-001/messages/0005-progress.trace",
+    "test/document/archive data: work/DOC-ALIGN-002/A-20260911-001/messages/0006-result.trace",
+    "test/document/archive data: work/DOC-ALIGN-002/A-20260911-001/messages/0007-progress.trace",
+    "test/document/archive data: work/DOC-ALIGN-002/A-20260911-001/messages/0008-result.trace",
+    "test/document/archive data: work/DOC-ALIGN-002/A-20260911-001/tool-events/diff-succeeded.json",
+    "test/document/archive data: work/DOC-ALIGN-002/A-20260911-001/tool-events/docs-governance-succeeded.json",
+    "test/document/archive data: work/DOC-ALIGN-002/A-20260911-001/tool-events/initial-doc-check-failed.json",
+    "test/document/archive data: work/DOC-ALIGN-002/A-20260911-001/tool-events/preserved-boundaries-succeeded.json",
+    "test/document/archive data: work/DOC-ALIGN-002/A-20260911-001/tool-events/repository-failed.json"
+  ],
+  "obligation_reasons": {
+    "behavioral_scope": [
+      "complete affected base/head consumer and contract tests"
+    ],
+    "coverage_scope": [
+      "no production/critical executable or coverage authority changed"
+    ],
+    "package_smoke": [
+      "no packaging/install surface changed"
+    ],
+    "repository_smoke": [
+      "no repository validation surface changed"
+    ]
+  },
+  "plan_id": "8f60c88bcf90669e00510ecc61600e07e6667be336405bed8351a0ccac2bd0bf"
+}

@@ -1,0 +1,22 @@
+import subprocess
+import types
+import unittest
+
+import tests.test_ci_dependencies as test_dependencies
+import tests.test_ci_plan as test_planner
+
+old = types.ModuleType('accepted_dependencies')
+exec(compile(subprocess.check_output(['git', 'show',
+    '11c3b57dfbf8af0dc2587fc421d097e2544941c3:.github/scripts/ci_dependencies.py']),
+    'accepted_dependencies.py', 'exec'), old.__dict__)
+test_dependencies.deps = old
+test_planner.planner.dependencies = old
+names = [
+    'tests.test_ci_dependencies.DependencyTests.test_document_names_and_directory_guards_do_not_create_runtime_input_edges',
+    'tests.test_ci_dependencies.DependencyTests.test_qualified_paths_do_not_alias_same_basename_in_other_directories',
+    'tests.test_ci_dependencies.DependencyTests.test_lexical_comparisons_skip_names_but_preserve_real_reads_and_escaped_values',
+    'tests.test_ci_plan.PlannerTests.test_pr68_document_path_set_does_not_propagate_through_name_checks_and_archive',
+]
+result = unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromNames(names))
+assert len(result.failures) == 4 and not result.errors, result
+print('Expected four accepted-selector regressions reproduced against the final test implementation.')

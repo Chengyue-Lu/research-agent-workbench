@@ -2,12 +2,19 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Mapping
 
 from jsonschema import Draft202012Validator, FormatChecker
 from jsonschema.exceptions import SchemaError
 from referencing import Registry, Resource
+
+
+@lru_cache(maxsize=256)
+def _check_schema_bytes(raw: bytes, checker) -> None:
+    """Reuse only successful schema self-checks for identical bytes and checker."""
+    checker(json.loads(raw))
 
 
 @dataclass(frozen=True, slots=True)
@@ -40,13 +47,16 @@ class SchemaCatalog:
         resources: list[tuple[str, Resource[Any]]] = []
         for path in sorted(self.directory.glob("*.schema.json")):
             if self._resource_reader is None:
-                schema = json.loads(path.read_bytes())
+                raw = path.read_bytes()
             else:
                 logical = path.relative_to(self._resource_reader.catalog_root).as_posix()
-                schema = json.loads(self._resource_reader.read(logical))
+                raw = self._resource_reader.read(logical)
+            # Reads and pinned resource integrity checks still run on every load.
+            # Each catalog owns fresh mutable schemas and its own reference registry.
+            schema = json.loads(raw)
             if not isinstance(schema, Mapping):
                 raise SchemaError(f"schema must be an object: {path}")
-            Draft202012Validator.check_schema(schema)
+            _check_schema_bytes(raw, Draft202012Validator.check_schema)
             schema_id = schema.get("$id")
             if not isinstance(schema_id, str):
                 raise SchemaError(f"schema lacks $id: {path}")

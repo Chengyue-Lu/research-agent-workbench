@@ -31,3 +31,60 @@ Owner: 路诚钺 (`Chengyue-Lu`); cross-owner: 黄毅 (`let778750-cpu`); R2.
 
 The user explicitly authorized PR #65's merge after successful exact-head CI. The new obligation PR remains
 for cross-owner review. Quality thresholds, exclusions, product contracts and release authority retain their boundaries.
+## Resource dependency repair (PR #68 investigation)
+
+- False-positive scope: lexical path names and directory guards must not become content reads;
+  replay the exact PR #68 path set and immutable complete snapshots.
+- False-negative scope: relative roots, shadowing, returned/exported names, closures, rebinding,
+  actual Markdown reads and archive imports must retain their consumers. Unknown roots remain conservative.
+- Authority: parser edits require complete bootstrap, current-head independent witness and cross-owner
+  review; candidate fingerprint refresh cannot approve this PR's own narrower scope.
+- Performance: baseline case-duration attribution is not a hosted wall-time measurement. Remaining
+  unresolved fixture and executable consumers retain their existing broad closure.
+
+## Dependency analysis reuse
+
+- Cache identity includes exact Python bytes and repository-relative path; cached facts are immutable.
+  No test result, resolved graph, mutable branch identity or disk cache is trusted.
+- Every graph rebuild resolves imports, basename matches and directory prefixes against the current
+  inventory; added/removed inputs and moved consumers have dedicated adversarial regressions.
+- Differential checks compare every graph field on three immutable snapshots and every PR #68 plan
+  field. Local cold/warm measurements are distinct from hosted execution and total runner cost.
+- Selection-authority bootstrap, all quality floors, independent witness and cross-owner review
+  remain required. See [analysis performance](ANALYSIS_PERFORMANCE.md).
+
+## Schema self-check reuse and test-cost audit
+
+- Cache only successful schema self-validation by exact bytes and checker identity, with bounded
+  process-local retention. Every catalog still performs current reads, resource integrity checks,
+  fresh parsing/registry construction and actual document validation.
+- Same-size/timestamp byte drift, invalid schema retries, checker changes, catalog mutation,
+  different roots, rename/removal and malformed inputs have regression coverage.
+- Profiling identified repeated schema self-checks rather than expensive fixture creation in the
+  sampled Skill evaluation. No complete test was proven redundant; existing negative cases remain.
+- Local before/after measurements do not establish the new hosted full-suite wall time. Remaining
+  Runtime resource closure work and cross-commit evidence reuse have separate proof requirements;
+  see [full-suite audit](FULL_SUITE_COST.md). Cross-commit result reuse is not enabled by this repair.
+
+## Ordered behavioral execution repair
+
+- Equal TestCase identity sets do not establish equivalent fixture/order semantics. Preserve
+  the original B suite in one producer, then run C minus B. Real class/module state mutants
+  must fail both direct full and the ordered producer.
+- Delay coverage-only loading until B's top-level teardown completes. Start a fresh fixture
+  lifecycle for extras and retain B's errors/failures on the same unittest result.
+- Verify the raw ordered receipt against exact planned inventories, target, Python and
+  outcomes, including fixture events and checkpoints. Legacy split receipts are rejected;
+  projections preserve the raw digest and keep coverage-only cases outside behavioral scope.
+- The previous `8c09f6c` hosted result proves identity completeness across two producers,
+  not historical full execution equivalence. Fresh exact-head full, coverage, fixed aggregates,
+  governance and independent selection witness remain required before cross-owner acceptance.
+
+## Import shadowing repair
+
+- Imported names are lexical bindings even though the AST does not represent them as
+  Name(Store). Bind Import/ImportFrom names and aliases in their enclosing scope before
+  inferring fixed roots; unresolved imports retain unknown-reader dependencies.
+- Preserve known Path constructor imports and unrelated scope precision. Real Git-bound
+  good/bad document tests and scoped import/alias regressions cover both omission and
+  unnecessary broadening. Existing selection quality floors and witness requirements apply.

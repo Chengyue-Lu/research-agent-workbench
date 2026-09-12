@@ -1,0 +1,141 @@
+{
+  "repository": "Chengyue-Lu/research-agent-workbench",
+  "pr": 68,
+  "base": "11c3b57dfbf8af0dc2587fc421d097e2544941c3",
+  "head": "0f6da949c9d89d4d5e0cea9cffad1e85465bb52c",
+  "scope": "Exact changed-path/status acceptance fixture; document bytes and dependency consumers are supplied by the test. Complete-repository replay is recorded separately.",
+  "changes": [
+    {
+      "status": "M",
+      "path": "docs/DEVELOPER_ARCHITECTURE_MAP.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/M_SERIES_IMPLEMENTATION_MAP.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/ROADMAP.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/STATUS.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/README.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/implementation/README.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/modules/07-ARTIFACTS_AND_PROVENANCE.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/modules/10-OBSERVABILITY_EVALUATION_COST.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/modules/README.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/DOC-ALIGN-002/README.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/DOC-ALIGN-002/RISK_LEDGER.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/BASELINE_TRANSPORT_GATE.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/workstreams/chengyue-lu/README.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/.gitattributes"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/ACTORS.yaml"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/CHECKS.md"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/INDEX.yaml"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/TASK.yaml"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/events.jsonl"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/messages/0001-assignment.trace"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/messages/0002-assignment.trace"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/messages/0003-progress.trace"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/messages/0004-progress.trace"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/messages/0005-progress.trace"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/messages/0006-result.trace"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/messages/0007-progress.trace"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/messages/0008-result.trace"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/tool-events/diff-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/tool-events/docs-governance-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/tool-events/initial-doc-check-failed.json"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/tool-events/preserved-boundaries-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "work/DOC-ALIGN-002/A-20260911-001/tool-events/repository-failed.json"
+    }
+  ]
+}

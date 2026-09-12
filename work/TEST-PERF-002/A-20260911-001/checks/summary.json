@@ -1,0 +1,37 @@
+{
+  "source_head": "0c4572ede6094a7581e860f43a48f04347aa7d17",
+  "base": "11c3b57dfbf8af0dc2587fc421d097e2544941c3",
+  "subject": ".github/scripts/ci_dependencies.py",
+  "subject_git_sha256": "a95f08bb297a2c6a34efedc19d363e0aeb5fab7c46a4771eae514d50cc4354f3",
+  "targeted_tests": 35,
+  "targeted_result": "PASS",
+  "statements": [
+    378,
+    378
+  ],
+  "branches": [
+    252,
+    252
+  ],
+  "docs_governance_tests": 93,
+  "repository": {
+    "validated": 186,
+    "errors": 0,
+    "warnings": 0
+  },
+  "package_smoke": "PASS",
+  "pr68_replay": {
+    "old_modules": 35,
+    "new_modules": 10,
+    "old_ids_in_baseline": 725,
+    "new_ids_in_baseline": 261,
+    "baseline_selected_case_seconds": 74.728,
+    "obligations": {
+      "behavioral_scope": "focused",
+      "coverage_scope": "none",
+      "package_smoke": false,
+      "repository_smoke": false
+    }
+  },
+  "full_bootstrap": "Current final-head hosted CI required; local development runs are not its substitute."
+}

@@ -104,6 +104,36 @@ class PlannerTests(unittest.TestCase):
         self.commit('docs/workstreams/input.yaml')
         self.assertEqual('full',self.plan()['change_class'])
 
+    def test_pr68_document_path_set_does_not_propagate_through_name_checks_and_archive(self):
+        fixture = json.loads((ROOT / 'tests/fixtures/ci/pr68-paths.json').read_bytes())
+        self.assertEqual('0f6da949c9d89d4d5e0cea9cffad1e85465bb52c', fixture['head'])
+        for row in fixture['changes']:
+            if row['status'] == 'M':
+                write(self.repo, row['path'], 'base document\n')
+        write(self.repo, 'tests/test_documentation.py', 'from pathlib import Path\n'
+              'ROOT=Path(__file__).resolve().parents[1]\n'
+              'content=(ROOT / "docs/STATUS.md").read_text()\n')
+        write(self.repo, 'tests/test_release_surface.py',
+              'paths={item["path"] for item in includes}\nassert paths.isdisjoint({"docs/STATUS.md"})\n')
+        write(self.repo, 'work/old/checks/oracle.py', 'from tests.test_release_surface import paths\n')
+        write(self.repo, 'src/research_workbench/artifacts/replay.py', 'from pathlib import Path\n'
+              'def check(root: Path, path: Path):\n return path.is_relative_to(root / "work")\n')
+        write(self.repo, 'src/research_workbench/cli.py', 'from .artifacts.replay import check\n')
+        write(self.repo, 'tests/test_cli.py', 'from research_workbench.cli import check\n')
+        self.base = self.commit('tests/test_trace_risk_codes.py', 'from pathlib import Path\n'
+              'ROOT=Path(__file__).resolve().parents[1]\n'
+              'content=(ROOT / "docs/modules/07-ARTIFACTS_AND_PROVENANCE.md").read_text()\n')
+        for row in fixture['changes']:
+            write(self.repo, row['path'], 'candidate document\n')
+        command(self.repo, 'add', '.')
+        command(self.repo, 'commit', '-qm', 'PR 68 exact changed path set')
+        plan = self.plan(body=BODY.replace('R0', 'R2'))
+        self.assertEqual(fixture['changes'], plan['changes'])
+        self.assertEqual({'test_documentation', 'test_pr_governance', 'test_trace_risk_codes'}, set(plan['tests']))
+        self.assertEqual(('focused', 'none', False, False), tuple(plan[k] for k in
+                         ('behavioral_scope', 'coverage_scope', 'package_smoke', 'repository_smoke')))
+        planner.verify_plan(self.repo, plan)
+
     def test_markdown_resource_change_keeps_existing_failing_consumer(self):
         write(self.repo, 'tests/test_markdown_consumer.py',
               'from pathlib import Path\nimport unittest\n'
@@ -1158,6 +1188,97 @@ else: raise AssertionError('candidate worker accepted focused self-authorization
                 self.assertEqual(p['coverage_obligations'], receipt['coverage_obligations'])
                 self.assertEqual('coverage-quality' if repository else 'impact' if impact else 'focused', receipt['suite'])
                 self.assertEqual(len({r['id'] for r in receipt['tests']}), receipt['test_count'])
+
+    def test_real_workers_preserve_order_and_project_exact_git_plan_evidence(self):
+        """A real worker runs B before loading coverage-only input; its receipt is checked."""
+        authority = yaml.safe_load((self.repo / 'tests/coverage_policy.yaml').read_bytes())
+        authority['suites']['coverage-quality'] = {'modules': ['coverage_extra']}
+        write(self.repo, 'tests/coverage_extra.py', 'import os, unittest\n'
+              'os.environ["RWB_COVERAGE_EXTRA_LOADED"]="yes"\n'
+              'class Extra(unittest.TestCase):\n def test_extra(self): pass\n')
+        write(self.repo, 'tests/test_unselected.py', 'import os, unittest\n'
+              'class Other(unittest.TestCase):\n def test_existing(self):\n'
+              '  self.assertNotIn("RWB_COVERAGE_EXTRA_LOADED", os.environ)\n')
+        self.base = self.commit('tests/coverage_policy.yaml', yaml.safe_dump(authority))
+        self.commit()
+        p = self.plan(force_full=True)
+        plan_path = Path(self.temp.name) / 'ordered-plan.json'
+        plan_path.write_bytes(planner.canonical(p))
+        raw, coverage, direct, projected = [Path(self.temp.name) / (name + '.json')
+                                            for name in ('execution', 'coverage', 'direct', 'projected')]
+        argv = [sys.executable, str(self.repo / 'tests/run_unittest_suite.py'),
+                '--plan', str(plan_path), '--verbosity', '0']
+        env = {**os.environ, 'GITHUB_EVENT_PATH': '', 'GITHUB_EVENT_NAME': 'pull_request', 'GITHUB_STEP_SUMMARY': ''}
+        env.pop('RWB_COVERAGE_EXTRA_LOADED', None)
+        def execute(*args):
+            return subprocess.run([*argv, *args], cwd=self.repo, env=env, text=True,
+                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        ordinary = execute('--suite', 'full', '--json-output', str(direct))
+        self.assertEqual(0, ordinary.returncode, ordinary.stderr)
+        result = execute('--suite', 'coverage-execution', '--json-output', str(raw), '--coverage-results', str(coverage))
+        record, original = json.loads(raw.read_bytes()), json.loads(direct.read_bytes())
+        self.assertTrue(record['successful'])
+        self.assertEqual(original['execution_order'], record['execution']['behavioral_order'])
+        self.assertEqual(original['execution_order'], record['execution_order'][:-1])
+        self.assertEqual(original['test_count'] + 1, record['test_count'])
+        project_args = ['--suite', 'behavioral-evidence', '--json-output', str(projected), '--execution-results', str(raw)]
+        projected_result = execute(*project_args)
+        if sys.version_info[:2] == (3, 11):
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertEqual(0, projected_result.returncode, projected_result.stderr)
+            behavioral = json.loads(projected.read_bytes())
+            self.assertEqual(original['test_count'], behavioral['test_count'])
+            self.assertEqual(original['execution_order'], behavioral['execution_order'])
+            self.assertFalse(any('coverage_extra' in r['id'] for r in behavioral['tests']))
+            self.assertEqual(1, json.loads(coverage.read_bytes())['test_count'])
+        else:
+            self.assertNotEqual(0, result.returncode)
+            self.assertNotEqual(0, projected_result.returncode)
+            self.assertIn('mismatched binding', projected_result.stderr)
+        record['tests'] = []
+        raw.write_bytes(planner.canonical(record))
+        with self.subTest(checkpoint='missing executed case'):
+            self.assertNotEqual(0, execute(*project_args).returncode)
+        self.commit('README.md', 'new head\n')
+        with self.subTest(checkpoint='stale plan'):
+            self.assertNotEqual(0, execute('--suite', 'coverage-execution', '--json-output', str(raw),
+                                          '--coverage-results', str(coverage)).returncode)
+
+    def test_real_ordered_worker_preserves_class_and_module_fixture_failures(self):
+        """Direct full and the actual optimized CLI both fail the shared-state mutants."""
+        probes = {
+            'class': ('Example', 'import unittest\nclass Example(unittest.TestCase):\n'
+                      ' @classmethod\n def setUpClass(cls): cls.state=0\n'
+                      ' def test_a_mutates(self): type(self).state=1\n'
+                      ' def test_b_observes(self): self.assertEqual(0,type(self).state)\n'),
+            'module': ('A', 'import unittest\nstate=0\ndef setUpModule():\n global state\n state=0\n'
+                       'class A(unittest.TestCase):\n def test_a_mutates(self):\n  global state\n  state=1\n'
+                       'class B(unittest.TestCase):\n def test_b_observes(self): self.assertEqual(0,state)\n')}
+        env = {**os.environ, 'GITHUB_EVENT_PATH': '', 'GITHUB_EVENT_NAME': 'pull_request', 'GITHUB_STEP_SUMMARY': ''}
+        for kind, (case, code) in probes.items():
+            with self.subTest(fixture=kind):
+                authority = yaml.safe_load((self.repo / 'tests/coverage_policy.yaml').read_bytes())
+                authority['suites']['coverage-quality'] = {'modules': ['test_unselected'],
+                    'test_ids': ['test_fixture_probe.' + case + '.test_a_mutates']}
+                write(self.repo, 'tests/test_fixture_probe.py', code)
+                self.base = self.commit('tests/coverage_policy.yaml', yaml.safe_dump(authority))
+                self.commit('README.md', kind + '\n')
+                p = self.plan(force_full=True)
+                plan_path = Path(self.temp.name) / 'mutant-plan.json'; plan_path.write_bytes(planner.canonical(p))
+                receipts = []
+                for suite in ('full', 'coverage-execution'):
+                    output = Path(self.temp.name) / (suite + '.json')
+                    args = [sys.executable, str(self.repo / 'tests/run_unittest_suite.py'), '--suite', suite,
+                            '--plan', str(plan_path), '--json-output', str(output), '--verbosity', '0']
+                    if suite == 'coverage-execution':
+                        args += ['--coverage-results', str(Path(self.temp.name) / 'coverage.json')]
+                    completed = subprocess.run(args, cwd=self.repo, env=env, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    self.assertEqual(1, completed.returncode, completed.stderr)
+                    receipt = json.loads(output.read_bytes())
+                    self.assertFalse(receipt['successful'])
+                    self.assertTrue(any('test_b_observes' in r['id'] and r['outcome'] == 'failed' for r in receipt['tests']))
+                    receipts.append(receipt)
+                self.assertEqual(receipts[0]['execution_order'], receipts[1]['execution_order'])
 
     def test_decorators_are_executable_impact_and_comments_keep_repository_guard(self):
         path = LEAVES[0]

@@ -1,0 +1,99 @@
+{"plan_iteration": 0, "samples": {"before": [7.796871500002453], "after": [2.537183599997661]}, "equal": true}
+{"plan_iteration": 1, "samples": {"before": [7.796871500002453, 7.566780199995264], "after": [2.537183599997661, 2.627542499998526]}, "equal": true}
+{"plan_iteration": 2, "samples": {"before": [7.796871500002453, 7.566780199995264, 7.658389200005331], "after": [2.537183599997661, 2.627542499998526, 2.7929605999961495]}, "equal": true}
+{
+  "before_source": "c70aa6c8c27c5eaf7f4fc7af6b289ce3f2a2418a",
+  "candidate_sha256": "4d231416d4b895c09efbea70c416f4fd2b0e482b83481128a315a250c2a266b8",
+  "environment": "3.11.16 (main, Sep  1 2026, 14:15:24) [MSC v.1944 64 bit (AMD64)]",
+  "boundary": "Local Windows timings; unchanged graph/plan outputs; not hosted CI wall time.",
+  "snapshots": [
+    {
+      "commit": "11c3b57dfbf8af0dc2587fc421d097e2544941c3",
+      "python_files": 185,
+      "paths": 1142,
+      "edges": 7096,
+      "equal": true,
+      "sha256": "ce3b89fb7204e555b71c06d161eb59ea5d6580a6bf47571f5441ec33d5642083"
+    },
+    {
+      "commit": "0f6da949c9d89d4d5e0cea9cffad1e85465bb52c",
+      "python_files": 185,
+      "paths": 1163,
+      "edges": 7123,
+      "equal": true,
+      "sha256": "c3800e41df47113a54ba65ee6e1e033499544eda2f07a223dd11935f8e2ff639"
+    },
+    {
+      "commit": "c70aa6c8c27c5eaf7f4fc7af6b289ce3f2a2418a",
+      "python_files": 185,
+      "paths": 1176,
+      "edges": 7187,
+      "equal": true,
+      "sha256": "2f10e2ed73ebc44b3f54e8d0a43cdab65b4f87bdb11179b606faef0ca78f17f4"
+    }
+  ],
+  "timings": {
+    "cold_graph": {
+      "before": [
+        3.8270560999953886,
+        3.2943327000029967,
+        3.5481226999982027
+      ],
+      "after": [
+        1.449902699998347,
+        1.4159854000026826,
+        1.3407047000000603
+      ],
+      "median_before": 3.5481226999982027,
+      "median_after": 1.4159854000026826
+    },
+    "warm_graph": {
+      "before": [
+        3.575010000000475,
+        3.557856300001731,
+        3.8209485999977915
+      ],
+      "after": [
+        0.017029000002366956,
+        0.017270900003495626,
+        0.01949369999783812
+      ],
+      "median_before": 3.575010000000475,
+      "median_after": 0.017270900003495626
+    },
+    "cold_pr68_plan": {
+      "before": [
+        7.796871500002453,
+        7.566780199995264,
+        7.658389200005331
+      ],
+      "after": [
+        2.537183599997661,
+        2.627542499998526,
+        2.7929605999961495
+      ],
+      "median_before": 7.658389200005331,
+      "median_after": 2.627542499998526
+    }
+  },
+  "plan": {
+    "equal": true,
+    "plan_id": "8f60c88bcf90669e00510ecc61600e07e6667be336405bed8351a0ccac2bd0bf",
+    "tests": [
+      "test_ci_checks",
+      "test_ci_dependencies",
+      "test_ci_plan",
+      "test_coverage_policy",
+      "test_documentation",
+      "test_governance_helper_branches",
+      "test_portable_build",
+      "test_pr_governance",
+      "test_selection_witness",
+      "test_trace_risk_codes"
+    ],
+    "behavioral_scope": "focused",
+    "coverage_scope": "none",
+    "package_smoke": false,
+    "repository_smoke": false
+  }
+}
