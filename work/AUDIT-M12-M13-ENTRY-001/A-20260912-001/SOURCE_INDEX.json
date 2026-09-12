@@ -1,0 +1,143 @@
+{
+  "baseline_sha": "ab98caf25125e6567d8bb2c8afff02105b54c940",
+  "kind": "documentation-source-readback",
+  "source_refs_matched": 24,
+  "private_oracle_read": false,
+  "actor_executed": false,
+  "manifests": [
+    {
+      "manifest_path": "examples/phase-c/m10-003-gate/case-a/source-manifest.json",
+      "manifest_sha256": "d737238601c0321328d1445dce891a3f40e2f6e41ec8a431f3b3384bff1d01ba",
+      "case_id": "M10-003-EVIDENCE-SYNTHESIS",
+      "source_refs": [
+        {
+          "alias": "claim",
+          "path": "examples/phase-c/m10-001-case-a/objects/CLAIM-PC-A.yaml",
+          "sha256": "8e79e407369349b1468e6f240a1a1b53372e456de11c741f965b6b47a5d154f0"
+        },
+        {
+          "alias": "decision",
+          "path": "examples/phase-c/m10-001-case-a/objects/D-PC-A.yaml",
+          "sha256": "26025f0a85ec941840a4d4239af702266b2d14d3abe6396d5ab593d132a6c089"
+        },
+        {
+          "alias": "evidence",
+          "path": "examples/phase-c/m10-001-case-a/objects/EVID-PC-A.yaml",
+          "sha256": "9b5884c6b872081c668741c597ad8ceae266e6827fbf0cfc54637fde13dcd0e7"
+        },
+        {
+          "alias": "question",
+          "path": "examples/phase-c/m10-001-case-a/objects/Q-PC-A.yaml",
+          "sha256": "c4a7ed2b0d15c47f50cdcee4e2d21624a7fdec1e487f2062f4d88181783f9d20"
+        },
+        {
+          "alias": "state-from",
+          "path": "examples/phase-c/m10-001-case-a/states/RSTATE-PC-A-r1.yaml",
+          "sha256": "3a2009e728b04846a4e534dd87204f959d4ba56e279a9420d35bcefb34b148a9"
+        },
+        {
+          "alias": "state-current",
+          "path": "examples/phase-c/m10-001-case-a/states/RSTATE-PC-A-r2.yaml",
+          "sha256": "2183bb1c98be7c8ad28feabc0fdf0dba844444da71e131d19af05b810a5fd3b1"
+        },
+        {
+          "alias": "lineage-first",
+          "path": "examples/phase-c/m10-002-case-a/attempt-lineage/A-PC-A-01.yaml",
+          "sha256": "2d8c5c6452cce0df5d9d9e134ef375288eba27aa01d7eee588e2bb70338165f0"
+        },
+        {
+          "alias": "lineage-current",
+          "path": "examples/phase-c/m10-002-case-a/attempt-lineage/A-PC-A-02.yaml",
+          "sha256": "5c2afd53714d1dd3fcd4fb96481c5e3de0c12054789b9d3df2d313125d25b45d"
+        },
+        {
+          "alias": "attempt-first",
+          "path": "examples/phase-c/m10-002-case-a/attempts/A-PC-A-01.yaml",
+          "sha256": "4bfc49854a3a6f002e2506ff9746fe1745898a6ed0927ccf8b845b187f43b9a9"
+        },
+        {
+          "alias": "attempt-current",
+          "path": "examples/phase-c/m10-002-case-a/attempts/A-PC-A-02.yaml",
+          "sha256": "1d0c5e96caf7f5bccafe18877d0924ce2bf1e9092e7315a0ed64b6d0c06bf024"
+        },
+        {
+          "alias": "task",
+          "path": "examples/phase-c/m3-009-case-a/tasks/M10-CASE-A.yaml",
+          "sha256": "75417c55e7b37190887fa001875ff8a9d10fac9df7fa0ea0f499f1d36497018a"
+        },
+        {
+          "alias": "method-resolution",
+          "path": "examples/phase-c/m3-009-case-a/method-resolutions/MR-PC-A.yaml",
+          "sha256": "40205cabd97b50fb5680547638df878fbb71bc41f9e1fcb9e45220c03206f42d"
+        },
+        {
+          "alias": "method-trace",
+          "path": "examples/phase-c/m3-009-case-a/traces/MTRACE-PC-A.yaml",
+          "sha256": "2a5257d8d921764d35f428afda2d12f284f1c83af4ae60ccdd3f21347a7ab11f"
+        }
+      ]
+    },
+    {
+      "manifest_path": "examples/phase-c/m10-003-gate/case-b/source-manifest.json",
+      "manifest_sha256": "6b30550de75233d6ab86d3e8d116ef447ded1c37c53e1a3a9610f09a3c2d8865",
+      "case_id": "M10-003-SIMULATION-NEGATIVE",
+      "source_refs": [
+        {
+          "alias": "evidence",
+          "path": "examples/phase-c/m10-001-case-b/objects/EVID-PC-B.yaml",
+          "sha256": "9ed5731a7353b1fb82ebbac3af6140e48db64ba729bdd2872947a0a023f82aee"
+        },
+        {
+          "alias": "decision",
+          "path": "examples/phase-c/m10-003-gate/case-b/closure/objects/D-PC-B.yaml",
+          "sha256": "d265d393e0ced9865326b0ac34f5afa4ea304617d3c42a726f81975321a449ce"
+        },
+        {
+          "alias": "hypothesis",
+          "path": "examples/phase-c/m10-001-case-b/objects/HYP-PC-B.yaml",
+          "sha256": "52fddc9870e5e720859bfed2310f6a647a7c2cf0970de58a89bfe6914ee2fb37"
+        },
+        {
+          "alias": "state-from",
+          "path": "examples/phase-c/m10-001-case-b/states/RSTATE-PC-B-r1.yaml",
+          "sha256": "14a3091db734a7beb4a80a21a8e7e6cbf37593e4926492164778275c1916f316"
+        },
+        {
+          "alias": "state-current",
+          "path": "examples/phase-c/m10-001-case-b/states/RSTATE-PC-B-r2.yaml",
+          "sha256": "3c02bd1592ed4573a4f9b77e29bffcfcb3288268330e569ae60e7aa3badf94e4"
+        },
+        {
+          "alias": "lineage",
+          "path": "examples/phase-c/m10-002-case-b/attempt-lineage/A-PC-B-01.yaml",
+          "sha256": "2c409024435567acf47cba0735ba4e27a79e3e9c5cc53367ae4a7cbd4ed9411f"
+        },
+        {
+          "alias": "attempt",
+          "path": "examples/phase-c/m10-002-case-b/attempts/A-PC-B-01.yaml",
+          "sha256": "d1e8ac4aaa8995346037c0062677fcf460a91cb14dddab8adfc3fcd33a091d85"
+        },
+        {
+          "alias": "failure",
+          "path": "examples/phase-c/m10-002-case-b/failures/RFAIL-PC-B-001.yaml",
+          "sha256": "28d9f3481888f7f643824bdf1c19b92dffe9a54e241e555a10a5b88492e8ca3a"
+        },
+        {
+          "alias": "task",
+          "path": "examples/phase-c/m10-003-gate/case-b/closure/tasks/M10-CASE-B.yaml",
+          "sha256": "cc4bb0d17415c9b7a8c2892b52e5047e2636092cf501b571b182d1580627ac5b"
+        },
+        {
+          "alias": "method-resolution",
+          "path": "examples/phase-c/m10-003-gate/case-b/closure/method-resolutions/MR-PC-B.yaml",
+          "sha256": "7dbebf1ec5983f81edbf23edcaae4a606c7f5899c67eb4275f1c69153d12c539"
+        },
+        {
+          "alias": "method-trace",
+          "path": "examples/phase-c/m10-003-gate/case-b/closure/traces/MTRACE-PC-B.yaml",
+          "sha256": "71a39eabd1db33df2104123d73b9c317f163ce9afd314d7cb6f9d3acafbdcccd"
+        }
+      ]
+    }
+  ]
+}
