@@ -82,7 +82,7 @@ M1-009 已提供仓库外可复用 scaffold 和离线工程示例；最终 Quick
 | Claim evidence localization（M4-003） | 只验证声明关系和文件位置；limitation 定位于 Claim 文本，不虚构独立来源；不判定 locator 科学含义、不接受 Claim、不证明历史运行或科学正确性 |
 | Skill 价值 | 现有 Registry 条目不构成已证明的普适研究增益；新任务可优先 no-Skill / direct-tool |
 | Skill new-binding | 生产 projection index 仍为空；M11-005/006 只证明可选 publication/mapping contract，未重新准入任何 legacy Skill，也未证明真实 trial、Provider 可用性或科研净增量 |
-| Phase D evaluation entry | [ADR-0020](decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) 已选择 A1/A2→M6、A3/A4→M11 的显式双传输；M5-006 Protocol 与资格/overlap/overlay/pairwise 校验器已实现。M6-008 treatment-visible baseline envelope/replay closeout 尚未实现，Skill-bearing closeout Gate 仍未满足，M5-007 Harness 与真实 M5-004 execution 继续 BLOCKED |
+| Phase D evaluation entry | [ADR-0020](decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) 已选择 A1/A2→M6、A3/A4→M11 的显式双传输；M5-006 Protocol 与资格/overlap/overlay/pairwise 校验器已实现。M6-008 treatment-visible baseline envelope/replay closeout 尚未实现，Skill-bearing closeout 的 M11-007 仅完成任务定义，尚无实现证据，[Gate B](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md) 仍未满足，M5-007 Harness 与真实 M5-004 execution 继续 BLOCKED |
 | 发布 | M14-001 dormant trust seam、M14-002 deterministic exporter/manifest/checker 与 M14-003 portable Runtime catalog 已实现；公开文档面仍未闭合；M1-009 scaffold 已实现；首次发行仍等待 M14-004 最终验收、M0-007 license、远端 GitHub protection 与人类 release decision |
 | 产品体验 | scaffold 支持离线项目入口；可视化、协作 UI 和运维流程仍待完善 |
 

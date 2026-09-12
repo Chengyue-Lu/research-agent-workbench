@@ -310,12 +310,15 @@ binding 与 runtime binding；两端 Tool supply identity、implementation versi
 permission/data-egress/side-effect ceiling 只能等价或收窄。M6-008 还须在每次 provider request 与每次 Tool
 invocation 的实际 use boundary 立即重验对应 pins、使用 transport trusted clock，并由 Trace 记录重验后的
 bytes/hash、独立佐证 actual binding；它不复用 legacy mandatory Skill Assignment，所有状态固定
-`task_completion=false`。M6-008 当前等待 M5-006 的 frozen shared contract；Decision 本身不是其实现证据。
+`task_completion=false`。M5-006 已冻结 shared contract，M6-008 按该契约独立推进；Decision 本身不是其实现证据。
 
-M5-007 hard-depend M5-006、M6-008、M11-004、M11-006 与 `M5-SKILL-CLOSEOUT-REPLAY-GATE`。M11-004 通过
+M5-007 hard-depend M5-006、M6-008、M11-004、M11-006、M11-007 与 `M5-SKILL-CLOSEOUT-REPLAY-GATE`。M11-004 通过
 M11-003 提供 Core Host actual-fact 与 generic Trace/Receipt/Artifact closeout contract；M11-006 独立提供
 projection-backed Skill Supply mapping，但不传递前者。现有 Core Receipt 不支持 Skill-bearing actual binding，
-所以 Issue #55 跟踪的该外部 Gate 必须先接受 replay-valid closeout seam，或由 R2 正式修订 M5-007 acceptance。
+M11-007 为该外部 Gate 提供独立的 Execution-owned 实施身份，只依赖 M11-004/006，可与 M6-008
+并行。它须实现版本化 Skill-bearing actual closeout、保留三种生命周期并独立文件 replay；
+[Gate B record](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md) 继续为 UNSATISFIED，
+只有实现、exact-head 证据和双方审查被接受后才满足。任务定义合入不解锁 M5-007。
 baseline transport architecture decision 已作为 M5-006 的 hard dependency 传递；Harness 必须实现其中冻结的
 arm→transport mapping 并消费 M6-008，不能通过 raw Task control、dummy Method/Snapshot 或 Skill Assignment
 强塞 plain arms 进入 M11；对 A2/A3 必须独立重算 `ArmExecutionQualificationRecord@1.0.0`，拒绝 binding
