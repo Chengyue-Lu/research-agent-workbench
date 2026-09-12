@@ -3,7 +3,7 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 来源：[Issue #57](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57)
 - 架构决定：[ADR-0021](../../../decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md)
-- 状态：M14-001/002/003 dormant topology、deterministic surface 与 portable package 已实现；public docs 与首次发行仍待闭合
+- 状态：M14-001/002/003 dormant topology、deterministic surface 与 portable package 已实现；public docs 最终集成已完成并提交 R2 完成提案；首次发行仍待闭合
 - diagnostic baseline：`origin/develop@dd2454b5595e33a12aa058529358d46d311a08c4`
 - task-definition integration base：`origin/develop@6a032e12c30a88a501258eec8c0b5d6c6082d81d`
 
@@ -44,12 +44,12 @@ flowchart LR
     M1106["M11-006 DONE<br/>optional mapping"] -. "activation evidence" .-> M14001
     M14001 --> M14002["M14-002 DONE<br/>REL-002 deterministic surface"]
     M14001 --> M14003["M14-003 DONE<br/>REL-003 portable package"]
-    M14002 --> M14004["M14-004 READY<br/>REL-004 public docs"]
+    M14002 --> M14004["M14-004 DONE<br/>REL-004 public docs"]
     M14003 --> M14004
     M14002 --> M14005["M14-005 BLOCKED<br/>REL-005 readiness + first release"]
     M14003 --> M14005
     M14004 --> M14005
-    M1009["M1-009 READY<br/>scaffold/compatibility"] --> M14005
+    M1009["M1-009 DONE<br/>scaffold/compatibility"] --> M14005
     M0007["M0-007 BLOCKED<br/>license"] --> M14005
     Remote["external GitHub ruleset Gate"] --> M14005
 ```
@@ -137,8 +137,12 @@ Supported Features，并追加 policy `1.1.0` 闭合 build backend、Runtime cat
 encoded/reference/HTML 内部链接。原 Changelog 的完整工程记录移入 history，公开页只保留面向使用者的变化。
 
 按 [Issue #57 当前推进线](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57#issuecomment-5635297678)，
-public IA 与 support matrix 先行；M1-009 完成后用真实 scaffold flow 定稿 Quickstart。当前安装后资源示例只证明
-structural no-Skill 输入，不作为 M14-004 最终 Quickstart 验收。Task 不在本 slice 标记 DONE。
+public IA 与 support matrix 已在 PR #69 接受。PR #74 的 M1-009 在 `develop@4516440` 合入后，
+本轮 Quickstart 串联安装资源检查、完整项目初始化、Task/Profile 校验、manifest/hash 证据定位、
+显式 Run 重建与报告验证。文档检查区分用户项目的 Attempt 输出路径与仓库档案链接；后者仍拒绝进入公开导航。
+
+完成提案及逐项证据见 [最终集成记录](QUICKSTART_ACCEPTANCE.md)。本轮只将 M14-004 从 READY 提案为 DONE；
+Task 定义、依赖、验收与责任人保持不变，等待当前候选的 R2 review。
 
 ### M14-005 / REL-005 — First curated release
 
@@ -190,6 +194,6 @@ task-definition 只写 canonical docs、ADR、workstream 与导航。后续实�
 
 ## 下一合法动作
 
-`M14-001/002/003` 已完成；owner 已激活 `M14-004` public documentation slice，进入独立 R2 实现与审查。
-M14-004 的 package/surface 依赖已闭合；不能提前创建真实 release branch、冻结 release source SHA 或
-解锁 merge eligibility。任何实现分支在开 PR 前仍须基于当时最新 `develop` 重新验证。
+`M14-001～004` 的实现链已闭合；当前只等待 M14-004 完成提案的 exact-candidate CI 与 cross-owner R2 接受。
+接收后按 M14-005 检查剩余 readiness：M0-007 许可证、实际远端保护及具名 Human release decision。
+M14-005 仍 BLOCKED，尚不能创建真实 release branch、冻结 release source 或解锁 merge eligibility。
