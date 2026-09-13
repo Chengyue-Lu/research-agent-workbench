@@ -1,0 +1,73 @@
+{
+  "observed_at": "2026-09-13T17:07:00.998517+00:00",
+  "command": [
+    "gh",
+    "pr",
+    "view",
+    "77",
+    "--repo",
+    "Chengyue-Lu/research-agent-workbench",
+    "--json",
+    "url,state,headRefOid,baseRefName,mergedAt,mergeCommit,reviews,comments"
+  ],
+  "exit_code": 0,
+  "data": {
+    "baseRefName": "develop",
+    "comments": [],
+    "headRefOid": "cbf646d1d4139da249277615a88f54d9cdf5586d",
+    "mergeCommit": {
+      "oid": "f7a9715ed35787d3326283c22f834b1514c5c88c"
+    },
+    "mergedAt": "2026-09-13T17:01:58Z",
+    "reviews": [
+      {
+        "id": "PRR_kwDOT2gtDc8AAAABNSQtZQ",
+        "author": {
+          "login": "copilot-pull-request-reviewer"
+        },
+        "authorAssociation": "NONE",
+        "body": "Copilot was unable to review this pull request because the user who requested the review has reached their quota limit.",
+        "submittedAt": "2026-09-12T13:24:25Z",
+        "includesCreatedEdit": false,
+        "reactionGroups": [],
+        "state": "COMMENTED",
+        "commit": {
+          "oid": "8e7e31a821eff587638295b992533323f8c04dff"
+        }
+      },
+      {
+        "id": "PRR_kwDOT2gtDc8AAAABNU4BXA",
+        "author": {
+          "login": "let778750-cpu"
+        },
+        "authorAssociation": "COLLABORATOR",
+        "body": "结论：APPROVE，针对 `8e7e31a821eff587638295b992533323f8c04dff`；未发现阻塞 M14-004 完成提案的问题。\n\n已对照 M14 原任务、已合入的 M1-009 scaffold、公共选集与安装后的实际命令审查：指南贯通资源检查、no-Skill 初始化/输入校验、offline-demo manifest/hash 定位、显式 Run 重建与报告校验。初始化与实际执行区分清楚，保留零净变化结果；matched 没有扩义为 Claim 接受、通用研究运行或科研收益。公共链接检查只允许正文/命令出现用户生成的 Attempt 路径，仍拒绝相对、编码、引用式、HTML 和外部 repository archive 链接；产品 Runtime/Schema 未变。\n\n独立核对本地归档来源：implementation `3591043fb870582ae674e1ac9ce994a0bc9675b3` 的 255 个公共 source inputs 与当前 head 的文件模式/Git blob 一致，指南字节及其 12 条 CLI 命令一致；8 个 projected-source 安装场景（Python 3.11/3.13 × direct/sdist-wheel × isolated/poisoned）均实际完成全部命令并产生 matched 报告。257 个导出文件含 2 个生成身份文件；这里复用的是不变公共输入的 walkthrough 证据，不声称历史 release manifest 已绑定当前 head。自动命令演示也不等于人类可用性研究。\n\n当前 content CI `34696336139` 的 base `451644064f558601d5778b9b115390f882f4d260`、target `2071978e36bafd833197202ac2b4237db2f527d5`、plan `3fc42ed64d8e6e38af7bd2267d255ef69bb843f7eac989c50b4c9f41b3a38a1a` 对应。双 Python 各 1214 PASS/0 skip；focused consumers、安装 smoke、仓库/文档与 aggregate 通过，coverage 按计划 none 合法跳过，最新治理 `34696662674` 通过。内容工作流约 5分11秒。本次没有重复本地 full、coverage、安装或模型测试，也没有把 hosted 标准 package smoke 冒充完整指南 walkthrough。\n\n本 review 接受 M14-004 的限定完成提案；M14-005、license、实际分支保护和具名 release decision 仍按既有条件推进，不代表已经对外发布。",
+        "submittedAt": "2026-09-13T03:01:53Z",
+        "includesCreatedEdit": false,
+        "reactionGroups": [],
+        "state": "APPROVED",
+        "commit": {
+          "oid": "8e7e31a821eff587638295b992533323f8c04dff"
+        }
+      },
+      {
+        "id": "PRR_kwDOT2gtDc8AAAABNW0wWw",
+        "author": {
+          "login": "Chengyue-Lu"
+        },
+        "authorAssociation": "OWNER",
+        "body": "Review verdict: **REQUEST CHANGES** for exact head `8e7e31a821eff587638295b992533323f8c04dff`.\n\nThe M14-004 completion slice is otherwise coherent: current base matches `develop@451644064f558601d5778b9b115390f882f4d260`; M1-009 is already accepted; the installed Quickstart keeps initialization separate from explicit reconstruction; `matched` remains bounded and does not uplift Claim/Human/scientific authority; M14-005 remains blocked. Exact-head CI and the existing cross-owner review are green.\n\n**P1 — public-surface excluded-link closure still has parser/normalization false negatives.** `documentation_errors()` still inspects hand-extracted Markdown targets with `urlsplit()` + percent-decoding, but does not normalize HTML character references before URL parsing and does not recognize CommonMark URI autolinks. Two concrete forms remain capable of rendering as excluded repository links without being checked as such:\n\n- `[internal](https://github.com/Example/project/blob/main/docs/S&#84;ATUS.md)` → rendered href targets `docs/STATUS.md`, but `#` in the entity is parsed before entity normalization.\n- `<https://github.com/Example/project/blob/main/work/demo/record.md>` → rendered as a real link, but the current regex/HTML pass does not treat Markdown URI autolinks as link targets; `work/` is no longer globally rejected because prose/commands legitimately use generated Attempt paths.\n\nThis directly affects M14-004's fail-closed requirement that the public release surface contain no navigation into excluded TASKS/STATUS/DEVELOPMENT/workstream/archive material. Please normalize rendered link targets (preferably against actual CommonMark/GFM href/src semantics, or at minimum entity-unescape before URL parsing plus explicit URI-autolink handling) and add regressions for both cases. Existing raw/reference/HTML/percent-encoded cases should remain blocked, while code/prose `work/...` Attempt paths remain allowed.\n\n**P2 — public maturity wording.** `SUPPORTED_FEATURES.md` still says `Trace、Handoff、State 与恢复候选`. Current accepted evidence supports bounded State/continuity/fresh-process candidate behavior, not an activated Topic 5 Recovery implementation. Please narrow this wording (for example `Research State 与 bounded continuity candidate`) or explicitly state that it is not Topic 5 Recovery implementation.\n\nNo Runtime, release-policy, scaffold, or Quickstart redesign is requested. After the link-normalization/parser fix plus the wording cleanup, this should be a narrow final re-review.",
+        "submittedAt": "2026-09-13T16:12:44Z",
+        "includesCreatedEdit": false,
+        "reactionGroups": [],
+        "state": "COMMENTED",
+        "commit": {
+          "oid": "8e7e31a821eff587638295b992533323f8c04dff"
+        }
+      }
+    ],
+    "state": "MERGED",
+    "url": "https://github.com/Chengyue-Lu/research-agent-workbench/pull/77"
+  },
+  "stderr": ""
+}

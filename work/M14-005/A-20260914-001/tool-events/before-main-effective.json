@@ -1,0 +1,11 @@
+{
+  "observed_at": "2026-09-13T17:07:06.018745+00:00",
+  "command": [
+    "gh",
+    "api",
+    "repos/Chengyue-Lu/research-agent-workbench/rules/branches/main"
+  ],
+  "exit_code": 0,
+  "data": [],
+  "stderr": ""
+}

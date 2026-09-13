@@ -1,0 +1,13 @@
+{
+  "observed_at": "2026-09-13T17:08:42.372920+00:00",
+  "command": [
+    "gh",
+    "api",
+    "repos/Chengyue-Lu/research-agent-workbench/codeowners/errors?ref=develop"
+  ],
+  "exit_code": 0,
+  "data": {
+    "errors": []
+  },
+  "stderr": ""
+}

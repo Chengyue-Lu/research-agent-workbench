@@ -92,6 +92,13 @@ slice 必须闭合这个 producer/consumer 缺口，并由可信调用方核验�
 
 ## 接续顺序与停止条件
 
+本轮本地证据见 [Attempt index](../../../../work/M14-005/A-20260914-001/INDEX.yaml) 与
+[验证汇总](../../../../work/M14-005/A-20260914-001/outputs/VERIFICATION.json)。
+`e8d7e33` 的重复 projection 为 258 files byte-identical，双 Python 共 8 组安装 PASS；
+`d71bce3` 仅修正 CI planner 的构建依赖变更夹具，产品/构建输入相同，32 项 focused PASS。
+本地 full/coverage 在复现旧 setuptools 下限硬编码错误后停止，修复和失败均保留；完整验收以最新
+PR head 的 hosted full/coverage 结果为准。Trace 校验无 BLOCK，仅保留 capture-gap warning。
+
 1. 完成本 PR 的 exact-head CI 与 cross-owner R2 review，接受 M0-007 license closure 和 readiness evidence。
 2. 合入 develop 后重新核实 M0-007、M1-009、M14-002～004 全部 DONE，fresh remote protection 与 source CI。
 3. 取得具名维护者针对首发版本、范围和剩余限制的 Human release decision，才可提案 M14-005 BLOCKED → READY。

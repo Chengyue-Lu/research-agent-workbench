@@ -1,0 +1,16 @@
+{
+  "ruleset_ids": {
+    "develop": 23192001,
+    "main": 23192054
+  },
+  "requested_fields_readback_match": true,
+  "server_added_pull_request_defaults": {
+    "required_reviewers": [],
+    "require_extra_approval_for_unattributed_changes": true
+  },
+  "effective_rules_match": true,
+  "protected_both_branches": true,
+  "branch_tips_unchanged": true,
+  "destructive_push_probes_performed": false,
+  "release_attestation_implemented": false
+}

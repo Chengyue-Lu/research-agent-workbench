@@ -1,0 +1,109 @@
+{
+  "observed_at": "2026-09-13T17:08:35.812573+00:00",
+  "command": [
+    "gh",
+    "api",
+    "repos/Chengyue-Lu/research-agent-workbench/branches/develop"
+  ],
+  "exit_code": 0,
+  "data": {
+    "name": "develop",
+    "commit": {
+      "sha": "f7a9715ed35787d3326283c22f834b1514c5c88c",
+      "node_id": "C_kwDOT2gtDdoAKGY3YTk3MTVlZDM1Nzg3ZDMzMjYyODNjMjJmODM0YjE1MTRjNWM4OGM",
+      "commit": {
+        "author": {
+          "name": "Chengyue-Lu",
+          "email": "140945476+Chengyue-Lu@users.noreply.github.com",
+          "date": "2026-09-13T17:01:58Z"
+        },
+        "committer": {
+          "name": "GitHub",
+          "email": "noreply@github.com",
+          "date": "2026-09-13T17:01:58Z"
+        },
+        "message": "docs(M14-004): finalize installed Quickstart and public surface (#77)\n\n* docs(M14-004): complete the installed offline Quickstart\n\n* docs(M14-004): record final Quickstart acceptance evidence\n\n* chore(trace): retain M14-004 Quickstart verification archive\n\n* fix(M14-004): validate rendered public links and narrow continuity wording\n\n* docs(M14-004): retain review correction evidence",
+        "tree": {
+          "sha": "e827bc1fdadd6597a5af5839256d3703ef819e37",
+          "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/git/trees/e827bc1fdadd6597a5af5839256d3703ef819e37"
+        },
+        "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/git/commits/f7a9715ed35787d3326283c22f834b1514c5c88c",
+        "comment_count": 0,
+        "verification": {
+          "verified": true,
+          "reason": "valid",
+          "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJqptcGCRC1aQ7uu5UhlAAARgAQADMqsyQYMvgYTiXz23AXNcAL\nH25jLbZekzsA/RsenOmtwLTuQrXLYhZRmDyOZHY0xaeFGXCavEI1opidbk9EcCDO\nrXEgNouhXzrhH+xeRdWDkE3ayD9nINlEu9tJUg0tRSqqz6kaCDcIlX0rQyenbTZe\nnujL47REPHHt46bRNdfz8IAmo6YCOQh8vPKWKypOPJhUUxVt4JRJoqzGFh6AdYdp\nYisfh/WX1YF6nzA5BW6sFT2KyqzXxMDgfWnHF7q+GQR8jhXsgsJjNqrdxtVgE1tN\nYAqvFnmVGhHSqyCpm3GQpS8dU/Wx/Vqknl3RfI9xlgyZEP8IiRt0rBs3o9NVdWsQ\nw2RCK9uOaPpcuW022pgFqFss4s769C9vrO0bATfJ5p4/OKltBbT4s0B6Gvv3dVkP\nPcXbW1UwI7o1YQrW+H5bajFOfXU3Yc6/69+wXp19ZrewAx5Xm0hQzIFDLRWNjpce\ndX6YbSY1ax3n1jf/f+WXqCxj5zH+ertGWQBTzmjjXE+wBu9oZvqJIFkFzEVi1XDU\n7Fz32xE3Q3/QTlMAz1FJ/danRzJlq5z9X0eC2Z2kiUO7XN0/JB2vjkaCly2NY/gc\n7U/ekQHtssijXgDKjO3goYszNUH9ZQUmVeK13xB6aUKakxL+LzoOEANFsdT2NKTT\nVR9NhyofRk5ZOzBmM50l\n=mFtC\n-----END PGP SIGNATURE-----\n",
+          "payload": "tree e827bc1fdadd6597a5af5839256d3703ef819e37\nparent 451644064f558601d5778b9b115390f882f4d260\nauthor Chengyue-Lu <140945476+Chengyue-Lu@users.noreply.github.com> 1789318918 +0800\ncommitter GitHub <noreply@github.com> 1789318918 +0800\n\ndocs(M14-004): finalize installed Quickstart and public surface (#77)\n\n* docs(M14-004): complete the installed offline Quickstart\n\n* docs(M14-004): record final Quickstart acceptance evidence\n\n* chore(trace): retain M14-004 Quickstart verification archive\n\n* fix(M14-004): validate rendered public links and narrow continuity wording\n\n* docs(M14-004): retain review correction evidence",
+          "verified_at": "2026-09-13T17:01:58Z"
+        }
+      },
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/commits/f7a9715ed35787d3326283c22f834b1514c5c88c",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/commit/f7a9715ed35787d3326283c22f834b1514c5c88c",
+      "comments_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/commits/f7a9715ed35787d3326283c22f834b1514c5c88c/comments",
+      "author": {
+        "login": "Chengyue-Lu",
+        "id": 140945476,
+        "node_id": "U_kgDOCGaoRA",
+        "avatar_url": "https://avatars.githubusercontent.com/u/140945476?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/Chengyue-Lu",
+        "html_url": "https://github.com/Chengyue-Lu",
+        "followers_url": "https://api.github.com/users/Chengyue-Lu/followers",
+        "following_url": "https://api.github.com/users/Chengyue-Lu/following{/other_user}",
+        "gists_url": "https://api.github.com/users/Chengyue-Lu/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/Chengyue-Lu/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/Chengyue-Lu/subscriptions",
+        "organizations_url": "https://api.github.com/users/Chengyue-Lu/orgs",
+        "repos_url": "https://api.github.com/users/Chengyue-Lu/repos",
+        "events_url": "https://api.github.com/users/Chengyue-Lu/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/Chengyue-Lu/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "committer": {
+        "login": "web-flow",
+        "id": 19864447,
+        "node_id": "MDQ6VXNlcjE5ODY0NDQ3",
+        "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/web-flow",
+        "html_url": "https://github.com/web-flow",
+        "followers_url": "https://api.github.com/users/web-flow/followers",
+        "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+        "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+        "organizations_url": "https://api.github.com/users/web-flow/orgs",
+        "repos_url": "https://api.github.com/users/web-flow/repos",
+        "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/web-flow/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "parents": [
+        {
+          "sha": "451644064f558601d5778b9b115390f882f4d260",
+          "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/commits/451644064f558601d5778b9b115390f882f4d260",
+          "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/commit/451644064f558601d5778b9b115390f882f4d260"
+        }
+      ]
+    },
+    "_links": {
+      "self": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/branches/develop",
+      "html": "https://github.com/Chengyue-Lu/research-agent-workbench/tree/develop"
+    },
+    "protected": true,
+    "protection": {
+      "enabled": false,
+      "required_status_checks": {
+        "enforcement_level": "off",
+        "contexts": [],
+        "checks": []
+      }
+    },
+    "protection_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/branches/develop/protection"
+  },
+  "stderr": ""
+}

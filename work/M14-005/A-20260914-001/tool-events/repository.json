@@ -1,0 +1,27 @@
+{
+  "observed_at": "2026-09-13T17:06:59.701392+00:00",
+  "command": [
+    "gh",
+    "api",
+    "repos/Chengyue-Lu/research-agent-workbench",
+    "--jq",
+    "{full_name,visibility,default_branch,permissions,allow_squash_merge,allow_merge_commit,allow_rebase_merge}"
+  ],
+  "exit_code": 0,
+  "data": {
+    "allow_merge_commit": true,
+    "allow_rebase_merge": true,
+    "allow_squash_merge": true,
+    "default_branch": "main",
+    "full_name": "Chengyue-Lu/research-agent-workbench",
+    "permissions": {
+      "admin": true,
+      "maintain": true,
+      "pull": true,
+      "push": true,
+      "triage": true
+    },
+    "visibility": "public"
+  },
+  "stderr": ""
+}
