@@ -1,0 +1,32 @@
+{
+  "implementation_head": "992db5b53463b7b0c55851ff842485fb8f50615e",
+  "reviewed_head": "8e7e31a821eff587638295b992533323f8c04dff",
+  "develop_base": "451644064f558601d5778b9b115390f882f4d260",
+  "regression_before": {
+    "tests": 12,
+    "failures": 9
+  },
+  "focused_after": {
+    "tests": 106,
+    "passed": 106
+  },
+  "repository": {
+    "validated": 186,
+    "errors": 0,
+    "warnings": 0
+  },
+  "projection": {
+    "files": 257,
+    "repeated_bytes_identical": true,
+    "links": "PASS",
+    "build_inputs": "PASS",
+    "source_ci": "synthetic fixture only"
+  },
+  "test_dependencies": {
+    "markdown-it-py": "4.2.0",
+    "linkify-it-py": "2.2.0"
+  },
+  "historical_walkthrough": "A-20260912-001; not rerun or presented as current artifact identity",
+  "hosted_ci": "Current candidate required checks pending at archive freeze",
+  "review": "renewed cross-owner R2 review requested with PR update"
+}

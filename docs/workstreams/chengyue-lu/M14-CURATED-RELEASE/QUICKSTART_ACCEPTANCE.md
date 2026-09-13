@@ -50,3 +50,25 @@ Current-candidate CI and cross-owner R2 review must accept this proposal before 
 M14-005 remains BLOCKED. Its remaining readiness decisions include M0-007 license, actual GitHub remote
 protection and a named Human release decision. This slice does not configure protections, activate release
 topology, create a release branch/tag or perform a release. The primary local `develop` checkout stays unchanged.
+
+## Review correction — 2026-09-14
+
+Owner review on `8e7e31a` identified entity-encoded destinations and Markdown URI autolinks that bypassed
+the hand-extracted link checks. Commit `992db5b53463b7b0c55851ff842485fb8f50615e` uses rendered `href/src`
+values from markdown-it-py's CommonMark parser with GFM-style autolinks, followed by HTML attribute decoding
+before URL/path checks. Inline/fenced/indented code remains literal; entity, reference, image and autolink
+destinations are checked. The parser and linkifier are declared only in the test extra.
+
+The support matrix now names Research State and bounded continuity candidate behavior. This wording is
+limited to accepted file closure, fresh-process reading and fixed cases; semantic acceptance stays human-owned.
+
+The new regressions failed before the fix (9 failures), then all 106 public-surface/documentation/governance
+focused tests passed. Two corrected-source projections are byte-identical (257 files) with closed links and
+build inputs; repository validation is 186/0/0. Evidence is retained in
+[A-20260914-001](../../../../work/M14-004/A-20260914-001/WORKLOG.md).
+The earlier 8-install walkthrough remains bound to its recorded source. The guide, Runtime and template bytes
+are unchanged, while support wording and test-extra metadata changed; current-candidate package checks and
+re-review are tracked in the PR rather than presented as the historical artifact's identity.
+
+Parser references: [markdown-it-py presets](https://markdown-it-py.readthedocs.io/en/latest/using.html#the-parser)
+and [GFM link syntax](https://github.github.com/gfm/#links).

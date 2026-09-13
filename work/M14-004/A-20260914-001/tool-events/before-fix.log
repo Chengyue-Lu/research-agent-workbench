@@ -1,0 +1,91 @@
+F.......FFFFFFFF..
+======================================================================
+FAIL: test_autolink_syntax_in_code_remains_literal (tests.test_public_surface.PublicSurfaceTests.test_autolink_syntax_in_code_remains_literal) (text='`[record](work/demo/record.md)`')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_public_surface.py", line 99, in test_autolink_syntax_in_code_remains_literal
+    self.assertEqual([], documentation_errors({**self.files, "README.md": text.encode()}))
+AssertionError: Lists differ: [] != ['internal archive link: README.md -> work/demo/record.md']
+
+Second list contains 1 additional elements.
+First extra element 0:
+'internal archive link: README.md -> work/demo/record.md'
+
+- []
++ ['internal archive link: README.md -> work/demo/record.md']
+
+======================================================================
+FAIL: test_rendered_entities_and_autolinks_cannot_reach_excluded_files (tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files) (link='[internal](https://github.com/Example/project/blob/main/docs/S&#84;ATUS.md)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_public_surface.py", line 92, in test_rendered_entities_and_autolinks_cannot_reach_excluded_files
+    self.assertTrue(any("internal" in error for error in errors), errors)
+AssertionError: False is not true : []
+
+======================================================================
+FAIL: test_rendered_entities_and_autolinks_cannot_reach_excluded_files (tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files) (link='[internal](https://github.com/Example/project/blob/main/docs/S&#x54;ATUS.md)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_public_surface.py", line 92, in test_rendered_entities_and_autolinks_cannot_reach_excluded_files
+    self.assertTrue(any("internal" in error for error in errors), errors)
+AssertionError: False is not true : []
+
+======================================================================
+FAIL: test_rendered_entities_and_autolinks_cannot_reach_excluded_files (tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files) (link='[internal](docs/S&#84;ATUS.md)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_public_surface.py", line 92, in test_rendered_entities_and_autolinks_cannot_reach_excluded_files
+    self.assertTrue(any("internal" in error for error in errors), errors)
+AssertionError: False is not true : ['missing link: README.md -> docs/S&#84;ATUS.md']
+
+======================================================================
+FAIL: test_rendered_entities_and_autolinks_cannot_reach_excluded_files (tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files) (link='[internal][state]\n\n[state]: https://github.com/Example/project/blob/main/docs/S&#84;ATUS.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_public_surface.py", line 92, in test_rendered_entities_and_autolinks_cannot_reach_excluded_files
+    self.assertTrue(any("internal" in error for error in errors), errors)
+AssertionError: False is not true : []
+
+======================================================================
+FAIL: test_rendered_entities_and_autolinks_cannot_reach_excluded_files (tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files) (link='<https://github.com/Example/project/blob/main/work/demo/record.md>')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_public_surface.py", line 92, in test_rendered_entities_and_autolinks_cannot_reach_excluded_files
+    self.assertTrue(any("internal" in error for error in errors), errors)
+AssertionError: False is not true : []
+
+======================================================================
+FAIL: test_rendered_entities_and_autolinks_cannot_reach_excluded_files (tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files) (link='https://github.com/Example/project/blob/main/work/demo/record.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_public_surface.py", line 92, in test_rendered_entities_and_autolinks_cannot_reach_excluded_files
+    self.assertTrue(any("internal" in error for error in errors), errors)
+AssertionError: False is not true : []
+
+======================================================================
+FAIL: test_rendered_entities_and_autolinks_cannot_reach_excluded_files (tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files) (link='[archive](work&sol;demo/record.md)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_public_surface.py", line 92, in test_rendered_entities_and_autolinks_cannot_reach_excluded_files
+    self.assertTrue(any("internal" in error for error in errors), errors)
+AssertionError: False is not true : ['missing link: README.md -> work&sol;demo/record.md']
+
+======================================================================
+FAIL: test_rendered_public_entity_and_reference_destinations_resolve (tests.test_public_surface.PublicSurfaceTests.test_rendered_public_entity_and_reference_destinations_resolve)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_public_surface.py", line 109, in test_rendered_public_entity_and_reference_destinations_resolve
+    self.assertEqual([], documentation_errors({**self.files, "README.md": text.encode()}))
+AssertionError: Lists differ: [] != ['missing link: README.md -> docs/PUBLIC&#95;GUIDE.md#控制与能力']
+
+Second list contains 1 additional elements.
+First extra element 0:
+'missing link: README.md -> docs/PUBLIC&#95;GUIDE.md#控制与能力'
+
+- []
++ ['missing link: README.md -> docs/PUBLIC&#95;GUIDE.md#控制与能力']
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.147s
+
+FAILED (failures=9)

@@ -1,0 +1,39 @@
+task_id: M14-004
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+agent_profile: bounded-public-link-review-fix
+required_skills: []
+delegation: false
+baseline: 8e7e31a821eff587638295b992533323f8c04dff
+user_request: 根据comment修复
+goal: Fix rendered public-link normalization/autolink false negatives and narrow continuity
+  maturity wording in PR77.
+read_allowlist:
+- AGENTS.md
+- docs/**
+- README.md
+- CHANGELOG.md
+- pyproject.toml
+- tests/public_surface_helpers.py
+- tests/test_public_surface.py
+- tests/test_documentation.py
+- tests/test_pr_governance.py
+- .github/scripts/plan_ci.py
+- .github/scripts/release_surface.py
+- .github/scripts/portable_package_smoke.py
+- .github/release-surface.yml
+- runtime-resources.json
+- work/M14-004/**
+write_scope:
+- docs/SUPPORTED_FEATURES.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/QUICKSTART_ACCEPTANCE.md
+- pyproject.toml
+- tests/public_surface_helpers.py
+- tests/test_public_surface.py
+- work/M14-004/A-20260914-001/**
+stop_conditions:
+- Push repair to PR77 with exact-head required checks and renewed cross-owner review
+  requested.
+- Do not merge, modify primary develop, change Runtime/scaffold/release policy, or
+  activate M14-005.
