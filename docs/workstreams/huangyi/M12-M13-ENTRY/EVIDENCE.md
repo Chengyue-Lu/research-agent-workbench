@@ -27,6 +27,8 @@
 
 ## 3. 本变更的最小检查
 
+2026-09-13 同步：review 修正 `2b5aa5a` 的 CI 在计划阶段因事件 base 与 merge candidate 父提交不一致失败，尚未执行功能测试。本分支随后无冲突集成已接受的 `develop@4516440`（PR74），保留原始 Case 输入与 review 修正；本 PR 对该接受基线仍只有文档与原审计归档增量。新的 CI 必须与最终提交和真实 base 对应，不复用失败运行或旧成功作为本轮通过依据。
+
 仅核对新增文档和 owner 索引的内部链接、上述 24 项字节 pin、diff 空白问题、实际改动范围，以及既有 PR governance。保留一轮独立只读语义复核，重点是误把预检当接续、误把 fixture 当人类接受、重复建立 M7/M9 演化链。
 
 具体结果随本次 [工作记录](../../../../work/AUDIT-M12-M13-ENTRY-001/A-20260912-001/WORKLOG.md)和 PR 验证段提供。TASKS、ROADMAP、源码、Schema、Registry 和 CI 配置没有修改；不执行本地 full、coverage、安装、模型测试或恢复实验。新 PR 的 hosted 检查按已接受工作流执行，不能把其他提交的 CI 成功移记为本提交结果。

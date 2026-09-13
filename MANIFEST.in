@@ -10,3 +10,4 @@ recursive-include registry/protocol-profiles *.yaml
 include registry/skills/release-projections.json
 recursive-include registry/skills/release-projections *.yaml *.json
 include examples/quickstart/task-no-skill.yaml
+recursive-include src/research_workbench/_templates *

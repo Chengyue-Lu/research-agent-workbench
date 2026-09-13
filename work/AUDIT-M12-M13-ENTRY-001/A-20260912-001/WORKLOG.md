@@ -33,3 +33,9 @@
 反馈范围限定为正常科研使用中自然产生、且用户明确允许用于该次分析的本地记录；原授权有效、未撤回且范围不变时继续使用，不启动 telemetry/自动捕获/上传。RecoverySeed/legacy contract 只作风险与迁移参考，不预定 no-Skill 公共字段。design drafting/pre-activation 表示设计成熟度；本次查询 PR72 的 GitHub `isDraft=false`，不把二者混同。
 
 本轮只修正文案，不合并 develop，不修改 canonical Task/ROADMAP、源码、Schema 或 Human 决定；四份修改文档的 20 个内部链接和两个新增锚点均通过检查，`git diff --check` 通过。不重做 Phase C source review 或功能/full/coverage/install/model 测试。
+
+## 2026-09-13：修复 CI 事件基线与候选不一致
+
+上述文案修正提交 `2b5aa5a` 推送后，content run `34734282598` 与 governance `34734494859` 在计划重算时报 `checkout is not the exact PR head/merge candidate`。实际 target `00d8d7d56024cabd7d48f67c667809d07b02e18f` 的父提交为 `[4516440, 2b5aa5a]`，PR 事件/API base 仍为 `60bdf8c`。治理内容检查本身已通过，功能测试未开始；这不是 M12/M13 文案故障。
+
+为使新事件与真实接受基线闭合，本次无冲突合入 `origin/develop@451644064f558601d5778b9b115390f882f4d260`，只更新入口和证据的当期说明。PR74 产品代码原样来自已接受基线；不修改 CI、降低 parents 检查或重复本地 full/coverage/package/model。后续以新提交自然触发的 hosted 结果核对。

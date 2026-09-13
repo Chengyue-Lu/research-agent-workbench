@@ -1,0 +1,7 @@
+{
+  "command": "rwb trace validate --attempt work/M1-009/A-20260912-001 --root .",
+  "exit_code": 1,
+  "block_code": "TRACE-TRANSIENT-RESULT-MISSING",
+  "finding": "8 event/index tool result references were outside tool-events/ under outputs/",
+  "correction": "Preserve original result bytes under tool-events/ and repair archive references before first valid freeze/commit."
+}

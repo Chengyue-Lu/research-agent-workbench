@@ -42,13 +42,15 @@ Schema、Mode/Action、Authority、Requirement、Protocol Profile 和 Projection
 
 ```shell
 rwb init project --project-id quickstart
-rwb resources quickstart --output project/task.yaml
-rwb validate project/task.yaml --root project
+rwb project check project
+rwb validate project/tasks/task.yaml project/profiles/local-no-skill.yaml --root project
 ```
 
-`init` 创建 `project-protocol.yaml` 以及 `objects/`、`tasks/`、`handoffs/`、`checkpoints/`、`work/` 目录。
-它是最小项目入口，完整外部项目 scaffold 尚待交付。`resources quickstart` 从安装包复制
-[no-Skill Task](../examples/quickstart/task-no-skill.yaml) 的 exact bytes 到新文件，并做结构验证；已存在的输出不会被覆盖。
+`init` 默认创建完整 no-Skill 模板：Project Protocol、Task、本地 Profile、工作目录、使用说明和资源 pin。
+`project check` 校验项目身份、模板版本和安装资源的 exact hash；项目可移到新目录后继续检查。
+Registry 和发布的 Skill 资源由安装包提供，无需从源码目录复制。初始化拒绝覆盖非空目录。
+模板另有 `--template offline-demo` 离线工程示例和 `--template minimal` 最小入口。
+`resources quickstart` 仍可单独复制安装包中的 [no-Skill Task](../examples/quickstart/task-no-skill.yaml)。
 
 Task 的 `required_skills` 为空，同时保留输入、输出、权限、预算、写入范围和停止条件。
 成功表示输入契约与引用可校验，尚未执行研究 Task，也未生成 Runtime Bundle、Execution View 或研究结论。

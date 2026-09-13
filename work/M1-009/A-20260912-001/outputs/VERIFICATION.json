@@ -1,0 +1,55 @@
+{
+  "documentation_governance_packaging_policy_tests": {
+    "passed": 130
+  },
+  "scaffold_tests": {
+    "total": 12,
+    "passed": 11,
+    "skipped": 1,
+    "skip_reason": "Windows directory symlink privilege unavailable"
+  },
+  "initial_cli_and_scaffold": {
+    "total": 23,
+    "passed": 22,
+    "skipped": 1
+  },
+  "scaffold_coverage": {
+    "covered_lines": 137,
+    "num_statements": 137,
+    "percent_covered": 99.43502824858757,
+    "percent_covered_display": "99",
+    "missing_lines": 0,
+    "excluded_lines": 0,
+    "percent_statements_covered": 100.0,
+    "percent_statements_covered_display": "100",
+    "num_branches": 40,
+    "num_partial_branches": 1,
+    "covered_branches": 39,
+    "missing_branches": 1,
+    "percent_branches_covered": 97.5,
+    "percent_branches_covered_display": "98"
+  },
+  "repository": {
+    "validated": 186,
+    "errors": 0,
+    "warnings": 0
+  },
+  "package": {
+    "probes": 8,
+    "python": [
+      "3.11.16",
+      "3.13.15"
+    ],
+    "routes": [
+      "direct",
+      "sdist-wheel"
+    ],
+    "isolation_modes": [
+      true,
+      false
+    ],
+    "all_scaffold_reconstructions": "matched"
+  },
+  "hosted_current_candidate": "pending PR checks",
+  "scope": "Local structural/engineering evidence; no release eligibility or scientific Claim acceptance."
+}

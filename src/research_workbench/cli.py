@@ -635,35 +635,26 @@ def _hash(args: argparse.Namespace) -> int:
 
 
 def _init_project(args: argparse.Namespace) -> int:
-    root = Path(args.path)
-    if root.exists() and any(root.iterdir()):
-        raise FileExistsError(f"refusing to initialize a non-empty directory: {root}")
-    root.mkdir(parents=True, exist_ok=True)
-    project_id = args.project_id or root.name
-    protocol = {
-        "schema_version": "0.1.0",
-        "project_id": project_id,
-        "revision": 1,
-        "question_refs": [],
-        "active_modes": [],
-        "claim_ceiling": ["unresolved"],
-        "required_human_gates": ["approve_main_claim", "approve_external_release"],
-        "budgets": {
-            "max_parallel_subagents": 1,
-            "max_delegation_depth": 1,
-            "coordination_cost_ratio_warn": 0.33,
-        },
-        "context_policy": {"proactive_checkpoint": True, "main_raw_material": "on-demand"},
-        "data_boundary": {"local_only": True, "external_upload_requires_approval": True},
-    }
-    errors = SchemaCatalog().validate("project_protocol", protocol)
-    if errors:
-        raise ValueError("internal protocol template failed schema validation")
-    _write_yaml(root / "project-protocol.yaml", protocol)
-    for directory in ("objects", "tasks", "handoffs", "checkpoints", "work"):
-        (root / directory).mkdir()
-    print(f"initialized {project_id!r} at {root}")
+    from research_workbench.resources import RuntimeResources
+    from research_workbench.scaffold import initialize_project
+    resources = RuntimeResources(args.runtime_root, expected_sha256=args.manifest_sha256)
+    result = initialize_project(args.path, project_id=args.project_id,
+                                template=args.template, resources=resources)
+    if args.json:
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+    else:
+        print(f"initialized {result['project_id']!r} at {result['project_root']} ({result['template']})")
+        print(f"Runtime resources: {result['runtime_root']}")
     return 0
+
+
+def _project_check(args: argparse.Namespace) -> int:
+    from research_workbench.resources import RuntimeResources
+    from research_workbench.scaffold import check_project
+    resources = RuntimeResources(args.runtime_root, expected_sha256=args.manifest_sha256)
+    print(json.dumps(check_project(args.path, resources=resources), ensure_ascii=False, indent=2))
+    return 0
+
 
 
 def _skill_candidates(args: argparse.Namespace) -> int:
@@ -1506,10 +1497,20 @@ def build_parser() -> argparse.ArgumentParser:
     resource_quickstart.add_argument("--output", required=True)
     resource_quickstart.set_defaults(handler=_resources_quickstart)
 
-    init_parser = subparsers.add_parser("init", help="initialize a minimal file-first project")
+    init_parser = subparsers.add_parser("init", help="initialize a reusable local project")
     init_parser.add_argument("path")
     init_parser.add_argument("--project-id")
+    init_parser.add_argument("--template", choices=("no-skill", "offline-demo", "minimal"), default="no-skill")
+    init_parser.add_argument("--json", action="store_true")
     init_parser.set_defaults(handler=_init_project)
+    project = subparsers.add_parser("project", help="check an explicit project and its Runtime pin")
+    project_commands = project.add_subparsers(dest="project_command", required=True)
+    project_check = project_commands.add_parser("check")
+    project_check.add_argument("path")
+    project_check.set_defaults(handler=_project_check)
+    for command in (init_parser, project_check):
+        command.add_argument("--runtime-root", help="absolute resource override root")
+        command.add_argument("--manifest-sha256", help="external digest required with a resource override")
 
     validate = subparsers.add_parser("validate", help="run schema, deterministic, and reference checks")
     validate.add_argument("paths", nargs="+", help="document files or directories")

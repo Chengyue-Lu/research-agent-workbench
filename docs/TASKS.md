@@ -57,7 +57,7 @@ active implementation；`DONE` 只表示既有验收及证据已经接受，且�
 | M1-006 | DONE | 实现最小 CLI | M1-003..005 | init/validate/resolve/handoff/trace/checkpoint 可用 |
 | M1-007 | DONE | 建立确定性风险检查 | M1-004..006 | Skill 缺失、越权、写冲突、Claim overreach、stale 注入均阻断 |
 | M1-008 | DONE | 冻结模型 API 中立端口与能力协商语义 | M1-001 | Capability/Data Policy gap 在调用前阻断，提供商基线可查询 |
-| M1-009 | READY | 建立外部可复用项目 scaffold 与 `0.x` 兼容政策 | M1-006 | `rwb init` 可生成或选择完整模板；新项目不需手工复制 Registry/Profiles/Skills；Schema/CLI 迁移与废弃规则明确 |
+| M1-009 | DONE | 建立外部可复用项目 scaffold 与 `0.x` 兼容政策 | M1-006 | `rwb init` 可生成或选择完整模板；新项目不需手工复制 Registry/Profiles/Skills；Schema/CLI 迁移与废弃规则明确 |
 
 ## M2：Agent 与 Skills
 
@@ -247,7 +247,7 @@ M13 不等于 strategy framework approval。
 | Task | Owner | Risk | Phase | Topic / responsibility | 当前路径说明 |
 |---|---|---|---|---|---|
 | `M0-007` | 路诚钺 | R2 | Release Gate | Repository / Governance | 缺人类许可证决定，BLOCKED |
-| `M1-009` | 路诚钺 | R1 | F / release readiness | Repository / Product integration | 独立 READY，不阻塞 Phase C/F Core |
+| `M1-009` | 路诚钺 | R1；安装 smoke R2 | F / release readiness | Repository / Product integration | 可复用 no-Skill/scaffold、离线 Run 检查/重建路径与 0.x 兼容规则已实现，DONE；M14-004 最终 Quickstart 验收仍独立 |
 | `M2-003, M2-004, M2-007, M2-008` | 路诚钺 | R1～R2 | E / optional evaluation | Capability / Skill Evolution | legacy 或来源驱动路线，保持 PARKED |
 | `M2-006` | 黄毅 | R1 | F / optional platform | Topic 4 | 无真实平台需求，保持 PARKED |
 | `M3-001～007` | 路诚钺、黄毅按既有边界 | R2 | pre-A bounded slice；post-C future | Topic 5 + Artifact/Trace | 无 active implementation，future residual 等待 Phase C closeout 后重新 task-definition |

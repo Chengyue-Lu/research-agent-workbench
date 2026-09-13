@@ -64,7 +64,8 @@ M14-005 continues to own release readiness and topology activation.
 Curated surface policy `1.1.0` includes `build_backend.py`, `runtime-resources.json` and the declared
 no-Skill input alongside the existing catalog classes. M14-004 checks this build-input closure together with
 public navigation; the original M14-002 engineering policy version remains immutable. The structural Quickstart
-continues to be distinct from M1-009's forthcoming full scaffold flow.
+now has a reusable [project scaffold](PROJECT_SCAFFOLD.md) with local Task/Profile inputs and an explicit Runtime pin;
+the final M14-004 Quickstart acceptance remains a separate integration step.
 
 ## Verification
 
