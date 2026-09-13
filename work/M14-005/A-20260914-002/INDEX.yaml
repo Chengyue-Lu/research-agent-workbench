@@ -1,0 +1,102 @@
+schema_version: 0.1.0
+trace_id: TRACE-M14-005-A-20260914-002
+task_id: M14-005
+task_revision: 1
+attempt_id: A-20260914-002
+archive_root: A-20260914-002
+baseline: f7a9715ed35787d3326283c22f834b1514c5c88c
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: dbe7f756f739b69b0018111d3e44484b596189caca7b36c7076384713fbe4bcb
+actors_ref:
+  path: ACTORS.yaml
+  sha256: bd814cb2ef5a12cefec3a787458d5f23e2d3286bf2588d7033a134375b37df71
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/READINESS_PREPARATION.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/RISK_LEDGER.md
+- tests/test_documentation.py
+- tests/test_public_surface.py
+- .github/**
+- examples/**
+- registry/**
+- schemas/**
+- work/M14-005/A-20260914-001/**
+- work/M14-005/A-20260914-002/**
+- GitHub PR 78 review, head/base and check APIs
+write_scope:
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/READINESS_PREPARATION.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/RISK_LEDGER.md
+- work/M14-005/A-20260914-002/**
+- GitHub PR 78 feature branch, body and cross-owner review request
+tool_allowlist:
+- git
+- gh
+- python
+- apply_patch
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 0b0a721218f48f26150ada6b854cb0b8bd884ff8eb40b751fe044f800d6088c1
+  event_count: 16
+tool_event_refs:
+- path: tool-events/review.json
+  sha256: b9871acc23c1946d10f1e447f576159bdd8dcc31ed10329e1c340f6d80f729a0
+- path: tool-events/pr-before.json
+  sha256: 8cac1692478d86e044facee37b3ec376fa48c727ab10fd5856b4b03187f9ff2c
+- path: tool-events/scope.json
+  sha256: 1833d2d31a04d00cb6601bbeef06f58a360a699bf89ae9c459d8536515a0ccfd
+- path: tool-events/documentation.json
+  sha256: e126b559917342dc4357ba8ac6685394b3ebc214cb2de9d6dc15867cc2692e13
+- path: tool-events/documentation.log
+  sha256: 4b09eecd4cf23cf9c6ada49c748dd7be90c46abc78b9f94ab900d53324d63e41
+- path: tool-events/repository.json
+  sha256: a622ec4263423dae3fc8499073c4b4b83f3a378741ee07f294e0e5a4fe5d8bee
+- path: tool-events/repository.log
+  sha256: 6895861bf5f35b7669baaf95d9caf2b94c3a4e1d5682f29bbc73ba0aa0064633
+- path: tool-events/whitespace.json
+  sha256: ab58cb4892ffbfca30e18d9e13e53e81c7f99f61a501a178045b077b00a02b99
+- path: tool-events/whitespace.log
+  sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+- path: tool-events/governance.log
+  sha256: c9c6066fba43d7180dd5a9787fd02201070da93ba48918f576ae0fe65309e222
+handoff_refs:
+- path: WORKLOG.md
+  sha256: f2a410b4ef080fd979567caab74ac29d671a910ace6ec32026182f2b76be9075
+decision_refs: []
+output_refs:
+- path: outputs/checks.py.md
+  sha256: 4a7d168d54844237b4c5ccaf7f39ba4f87d69532d3969073f9ca949dda0a312e
+- path: outputs/freeze.py.md
+  sha256: 8f79cd6dc591fdbb6e788bdf68c0db113c2b0080a08b5d50810822676e510a32
+- path: outputs/VERIFICATION.json
+  sha256: 030903691a835a091532fada7cd97b34f09854060e5740d6fcd4d7a22098aac3
+check_refs:
+- path: .gitattributes
+  sha256: 48747480eddba024928d03be9bf83dc579e5515768647507a767e8187a85c9ab
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: tool-results
+- event_id: EVT-0004
+  affected_stream: file-revisions
+- event_id: EVT-0005
+  affected_stream: external-actions

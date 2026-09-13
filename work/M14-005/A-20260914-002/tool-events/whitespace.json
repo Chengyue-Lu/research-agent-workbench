@@ -1,0 +1,12 @@
+{
+  "started_at": "2026-09-13T19:16:15.043699Z",
+  "finished_at": "2026-09-13T19:16:15.088053Z",
+  "exit_code": 0,
+  "command": [
+    "git",
+    "diff",
+    "--check"
+  ],
+  "reviewed_head": "c328bbf1bc4084caeeabad613afda8ca00539e46",
+  "target": "working tree document blobs recorded in scope.json"
+}

@@ -99,6 +99,12 @@ slice 必须闭合这个 producer/consumer 缺口，并由可信调用方核验�
 本地 full/coverage 在复现旧 setuptools 下限硬编码错误后停止，修复和失败均保留；完整验收以最新
 PR head 的 hosted full/coverage 结果为准。Trace 校验无 BLOCK，仅保留 capture-gap warning。
 
+[PR #78 owner review](https://github.com/Chengyue-Lu/research-agent-workbench/pull/78#issuecomment-5655298378)
+提出的风险旧状态与接续分层两项 P2 已在 `1170c4a` 修正；23 项文档/公开面检查、repository 186/0/0
+与治理检查 PASS，canonical Task 行保持不变。修正证据见
+[review correction Attempt](../../../../work/M14-005/A-20260914-002/INDEX.yaml)；最终 head CI 与 fresh
+cross-owner R2 review 仍以 PR 当前记录为准。
+
 ### 第一层：external readiness remaining
 
 1. 完成本 PR 的 exact-head CI 与 cross-owner R2 review，接受 M0-007 license closure 和 readiness evidence。

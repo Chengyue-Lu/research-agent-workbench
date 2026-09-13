@@ -1,0 +1,31 @@
+{
+  "observed_at": "2026-09-13T19:16:11.969534Z",
+  "reviewed_head": "c328bbf1bc4084caeeabad613afda8ca00539e46",
+  "base": "f7a9715ed35787d3326283c22f834b1514c5c88c",
+  "changed_files": [
+    "docs/M_SERIES_IMPLEMENTATION_MAP.md",
+    "docs/ROADMAP.md",
+    "docs/STATUS.md",
+    "docs/TASKS.md",
+    "docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/READINESS_PREPARATION.md",
+    "docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md",
+    "docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/RISK_LEDGER.md"
+  ],
+  "canonical_task_rows_identical": true,
+  "canonical_task_rows_sha256": "d6669d83f87c8ca8a9d76db4da305fcfc12d4d32e1db018444666e4af9cf16bb",
+  "m14_005_state": "BLOCKED",
+  "product_policy_and_skill_files_unchanged": true,
+  "prior_frozen_archive_unchanged": true,
+  "primary_branch": "develop",
+  "primary_head": "11c3b57dfbf8af0dc2587fc421d097e2544941c3",
+  "primary_clean": true,
+  "document_blob_ids": {
+    "docs/STATUS.md": "7b5309a5e975b292841dab62b7cdf646015cd8ae",
+    "docs/ROADMAP.md": "f830da4180776992e27f3bc99397f8fe7322d4e8",
+    "docs/TASKS.md": "6cc9a310943b88434b60577ed949400b4a71d27b",
+    "docs/M_SERIES_IMPLEMENTATION_MAP.md": "3ad8b83d612ea621aae71f0b6434f3a32419af69",
+    "docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md": "3f38d3f6b1705cdf8c20bcfdc5c732c540ddc348",
+    "docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/RISK_LEDGER.md": "257fce79f93da89fcfdec01d1aa8061690762bc2",
+    "docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/READINESS_PREPARATION.md": "65216230054441183df9316805b4203ffcbb1651"
+  }
+}

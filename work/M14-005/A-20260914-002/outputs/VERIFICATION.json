@@ -1,0 +1,31 @@
+{
+  "reviewed_head": "c328bbf1bc4084caeeabad613afda8ca00539e46",
+  "correction_head": "1170c4aeb5af10d691097170d4be63d158d91239",
+  "baseline": "f7a9715ed35787d3326283c22f834b1514c5c88c",
+  "correction_commit_blobs_match_tested_working_tree": true,
+  "documentation_checks_passed": 23,
+  "repository": {
+    "validated": 186,
+    "errors": 0,
+    "warnings": 0
+  },
+  "local_governance": "PASS",
+  "governance_target": "1170c4aeb5af10d691097170d4be63d158d91239",
+  "canonical_task_rows_identical": true,
+  "m14_005_state": "BLOCKED",
+  "product_policy_and_skill_files_unchanged": true,
+  "prior_frozen_archive_unchanged": true,
+  "primary_branch": "develop",
+  "primary_head": "11c3b57dfbf8af0dc2587fc421d097e2544941c3",
+  "primary_clean": true,
+  "findings_addressed": [
+    "Stale risk ledger and accepted-status navigation",
+    "External readiness separated from M14-005 implementation and first-release closure"
+  ],
+  "final_head_ci": "Pending after archive commit and push; historical c328bbf CI is not new-head evidence.",
+  "fresh_cross_owner_review": "Pending let778750-cpu exact-head review.",
+  "release_source_frozen": false,
+  "release_refs_created": false,
+  "release_authorized": false,
+  "remote_protection_mutated": false
+}
