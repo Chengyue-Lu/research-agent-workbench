@@ -10,6 +10,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import tomllib
 import unittest
 from unittest.mock import patch
 
@@ -1392,11 +1393,17 @@ else: raise AssertionError('candidate worker accepted focused self-authorization
         command(self.repo, 'reset', '--hard', self.base)
         self.commit('pyproject.toml', (self.repo / 'pyproject.toml').read_text().replace('branch = true', 'branch = false'))
         self.assertEqual('repository', self.plan()['coverage_scope'])
-        for before, after in [('PyYAML>=6,<7', 'PyYAML>=6.1,<7'), ('setuptools>=69', 'setuptools>=70'),
+        build_requirement = tomllib.loads((self.repo / 'pyproject.toml').read_text())['build-system']['requires'][0]
+        self.assertIn('>=', build_requirement)
+        for before, after in [('PyYAML>=6,<7', 'PyYAML>=6.1,<7'),
+                              (build_requirement, build_requirement.replace('>=', '>', 1)),
                               ('requires-python = ">=3.11"', 'requires-python = ">=3.12"'),
                               ('research_workbench.cli:main', 'research_workbench.cli:another')]:
             command(self.repo, 'reset', '--hard', self.base)
-            self.commit('pyproject.toml', (self.repo / 'pyproject.toml').read_text().replace(before, after))
+            original = (self.repo / 'pyproject.toml').read_text()
+            changed = original.replace(before, after)
+            self.assertNotEqual(original, changed, f'fixture mutation missing: {before}')
+            self.commit('pyproject.toml', changed)
             p = self.plan()
             self.assertEqual('repository', p['coverage_scope'])
             self.assertTrue(p['package_smoke'])
