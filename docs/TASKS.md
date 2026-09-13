@@ -43,7 +43,7 @@ active implementation；`DONE` 只表示既有验收及证据已经接受，且�
 | M0-004 | DONE | 建立实施、迁移与测试计划 | 三份实施文档完成 |
 | M0-005 | DONE | 创建并推送独立 GitHub 仓库 | `main` 可访问，首次提交完成 |
 | M0-006 | DONE | 建立零基础使用与发布就绪度指南 | 安装、离线 quickstart、真实运行边界、故障处理和分级发布 Gate 可由新用户顺序阅读 |
-| M0-007 | BLOCKED | 选择项目许可证并核对仓库原创 Skills 的许可状态 | 人类维护者确定发布许可后加入 LICENSE，并消除 `project-original-unlicensed` 发布阻断 |
+| M0-007 | DONE | 选择项目许可证并核对仓库原创 Skills 的许可状态 | 人类维护者确定发布许可后加入 LICENSE，并消除 `project-original-unlicensed` 发布阻断 |
 
 ## M1：契约与 CLI
 
@@ -246,7 +246,7 @@ M13 不等于 strategy framework approval。
 
 | Task | Owner | Risk | Phase | Topic / responsibility | 当前路径说明 |
 |---|---|---|---|---|---|
-| `M0-007` | 路诚钺 | R2 | Release Gate | Repository / Governance | 缺人类许可证决定，BLOCKED |
+| `M0-007` | 路诚钺 | R2 | Release Gate | Repository / Governance | 维护者已选择 MIT 并确认相关贡献发布授权；LICENSE、包元数据与原创 Skill 许可记录闭合，DONE |
 | `M1-009` | 路诚钺 | R1；安装 smoke R2 | F / release readiness | Repository / Product integration | 可复用 no-Skill/scaffold、离线 Run 检查/重建路径与 0.x 兼容规则已实现，DONE；M14-004 最终 Quickstart 验收仍独立 |
 | `M2-003, M2-004, M2-007, M2-008` | 路诚钺 | R1～R2 | E / optional evaluation | Capability / Skill Evolution | legacy 或来源驱动路线，保持 PARKED |
 | `M2-006` | 黄毅 | R1 | F / optional platform | Topic 4 | 无真实平台需求，保持 PARKED |
@@ -268,7 +268,7 @@ M13 不等于 strategy framework approval。
 | `M14-002` | 路诚钺 | R2 | Product / Release | Projection | deterministic allowlist/manifest/export/check 与连续版本 closed-tree fixtures 已实现，DONE |
 | `M14-003` | 路诚钺 | R2 | Product / Release | Package/Runtime Resources | packaged RuntimeResourceManifest、三 root、双 Python 安装与 conditional Skill closure 已完成，DONE |
 | `M14-004` | 路诚钺 | R2 | Product / Release | Public Documentation | 公开导航、支持矩阵与仓库外 Quickstart 已闭合；DONE 提案随独立 R2 PR 验收 |
-| `M14-005` | 路诚钺 | R2 | Product / Release | First Curated Release | M1-009 与 M14-002～004 实现链已闭合；等待 M0-007、远端 GitHub 保护与具名发布决定，BLOCKED |
+| `M14-005` | 路诚钺 | R2 | Product / Release | First Curated Release | M0-007 MIT、M1-009 与 M14-002～004 实现链已闭合；远端保护已启用并留证，等待 readiness R2 接受与具名发布决定，BLOCKED |
 
 ## 历史 GitHub Issues
 

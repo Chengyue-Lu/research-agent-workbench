@@ -1,3 +1,4 @@
+include LICENSE
 recursive-include schemas *.json
 include build_backend.py runtime-resources.json
 include registry/modes/*.yaml registry/modes/actions.json

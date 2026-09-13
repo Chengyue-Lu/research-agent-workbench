@@ -106,7 +106,7 @@ def documentation_errors(files: dict[str, bytes]) -> list[str]:
 
 
 def build_input_errors(files: dict[str, bytes]) -> list[str]:
-    required = {"pyproject.toml", "MANIFEST.in", "README.md", "build_backend.py", "runtime-resources.json"}
+    required = {"pyproject.toml", "MANIFEST.in", "README.md", "LICENSE", "build_backend.py", "runtime-resources.json"}
     if "runtime-resources.json" in files:
         spec = json.loads(files["runtime-resources.json"])
         for catalog in spec["catalogs"]:

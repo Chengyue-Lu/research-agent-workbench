@@ -298,7 +298,7 @@
       "capabilities": ["claim-preserving-rewrite", "evidence-strength-calibration", "surface-invariant-check"],
       "applicable_modes": ["evidence-synthesis", "theory", "experiment", "simulation", "reporting"],
       "context_cost": "low",
-      "risk_flags": ["surface-checks-not-semantic-proof", "false-positive-gates-possible", "human-review-required", "with-without-forward-test-pending", "project-original-unlicensed", "non-discoverable-candidate"],
+      "risk_flags": ["surface-checks-not-semantic-proof", "false-positive-gates-possible", "human-review-required", "with-without-forward-test-pending", "non-discoverable-candidate"],
       "decision": {
         "action": "run-adversarial-and-with-without-evaluation",
         "reason": "The independently implemented candidate is bounded, offline, and deterministically checks surface invariants, but it remains outside runtime discovery until semantic drift and incremental value are measured on representative tasks."

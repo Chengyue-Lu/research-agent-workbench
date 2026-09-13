@@ -11,6 +11,7 @@ import sys
 import tarfile
 import tempfile
 import zipfile
+from email.parser import BytesParser
 from pathlib import Path
 
 
@@ -18,6 +19,8 @@ ROOT = Path(__file__).resolve().parents[2]
 PROBE = '''import json, sys
 from pathlib import Path
 import research_workbench
+from importlib.metadata import metadata
+assert metadata("research-agent-workbench")["License-Expression"] == "MIT"
 from research_workbench.resources import RuntimeResources, ResourceRoots
 from research_workbench.capability.requirements import CapabilityRequirementSet
 from research_workbench.capability.release_projection import SkillReleaseProjectionSet
@@ -69,6 +72,13 @@ def run(args, *, cwd, env=None):
 
 def closure(wheel):
     with zipfile.ZipFile(wheel) as archive:
+        metadata_paths = [name for name in archive.namelist() if name.endswith(".dist-info/METADATA")]
+        assert len(metadata_paths) == 1, "wheel metadata closure missing or ambiguous"
+        metadata = BytesParser().parsebytes(archive.read(metadata_paths[0]))
+        assert metadata["License-Expression"] == "MIT", "wheel license expression mismatch"
+        assert metadata.get_all("License-File") == ["LICENSE"], "wheel license file declaration mismatch"
+        license_path = metadata_paths[0].removesuffix("METADATA") + "licenses/LICENSE"
+        assert archive.read(license_path) == (ROOT / "LICENSE").read_bytes(), "wheel license bytes mismatch"
         prefix = "research_workbench/_runtime_data/"
         assets = {name.removeprefix(prefix): archive.read(name) for name in archive.namelist() if name.startswith(prefix)}
         manifest = json.loads(assets["manifest.json"])
@@ -85,7 +95,7 @@ def snapshot_sources(target):
     shutil.copytree(ROOT / "src", target / "src", ignore=shutil.ignore_patterns(
         "_runtime_data", "_runtime_pin.py", "__pycache__", "*.egg-info", "*.pyc"))
     shutil.copytree(ROOT / "schemas", target / "schemas")
-    paths = {"pyproject.toml", "MANIFEST.in", "README.md", "build_backend.py", "runtime-resources.json"}
+    paths = {"pyproject.toml", "MANIFEST.in", "README.md", "LICENSE", "build_backend.py", "runtime-resources.json"}
     spec = json.loads((ROOT / "runtime-resources.json").read_bytes())
     for entry in spec["catalogs"]:
         paths.add(entry["path"])

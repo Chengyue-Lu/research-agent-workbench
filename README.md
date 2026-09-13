@@ -45,3 +45,7 @@ rwb validate project/tasks/task.yaml project/profiles/local-no-skill.yaml --root
 - 第一次运行：[上手指南](docs/GETTING_STARTED.md)
 - 判断当前能做什么：[支持能力与证据边界](docs/SUPPORTED_FEATURES.md)
 - 查阅模块与源码：[公开模块导航](docs/PUBLIC_GUIDE.md)
+
+## 许可证
+
+项目原创代码、文档与原创 Skills 采用 [MIT License](LICENSE)。外部依赖及引用材料保留其各自许可。

@@ -1,7 +1,7 @@
 # 实现状态
 
 状态：Current implementation authority
-更新：2026-09-11
+更新：2026-09-14
 
 本页只回答“仓库现在实现到哪里”。实时任务状态由 [`TASKS.md`](TASKS.md) 维护，依赖方向由 [`ROADMAP.md`](ROADMAP.md) 维护。
 
@@ -26,7 +26,7 @@ external trust。`M14-002` 已建立 versioned allowlist、canonical manifest �
 hash-pinned packaged Runtime catalog、三 root 分离与双 Python checkout 外安装。M14-004 的 public navigation、
 [公开支持矩阵](SUPPORTED_FEATURES.md)、policy `1.1.0` 构建输入/文档闭包与最终 Quickstart 已实现。
 Quickstart 消费获接受的 M1-009 scaffold，串联输入校验、证据定位、Run 检查/重建和报告校验，
-仅证明固定离线工程示例的 bounded 重建。首次 curated main release 仍待许可证、远端保护和具名发布决定；
+仅证明固定离线工程示例的 bounded 重建。M0-007 已落实 MIT，远端 main/develop 保护已启用并回读留证；首次 curated main release 仍待 readiness R2 接受和具名发布决定；
 当前 exact `develop -> main` 执行规则保持不变。
 
 ## 已实现
@@ -83,7 +83,7 @@ Quickstart 消费获接受的 M1-009 scaffold，串联输入校验、证据定�
 | Skill 价值 | 现有 Registry 条目不构成已证明的普适研究增益；新任务可优先 no-Skill / direct-tool |
 | Skill new-binding | 生产 projection index 仍为空；M11-005/006 只证明可选 publication/mapping contract，未重新准入任何 legacy Skill，也未证明真实 trial、Provider 可用性或科研净增量 |
 | Phase D evaluation entry | [ADR-0020](decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) 已选择 A1/A2→M6、A3/A4→M11 的显式双传输；M5-006 Protocol 与资格/overlap/overlay/pairwise 校验器已实现。M6-008 treatment-visible baseline envelope/replay closeout 尚未实现，Skill-bearing closeout Gate 仍未满足，M5-007 Harness 与真实 M5-004 execution 继续 BLOCKED |
-| 发布 | M14-001 dormant trust seam、M14-002 deterministic exporter/manifest/checker 与 M14-003 portable Runtime catalog 已实现；M14-004 公开文档与仓库外 Quickstart 已闭合；M1-009 scaffold 已接受；首次发行仍等待 M0-007 license、远端 GitHub protection 与人类 release decision |
+| 发布 | M14-001 dormant trust seam、M14-002 deterministic exporter/manifest/checker 与 M14-003 portable Runtime catalog 已实现；M14-004 公开文档与仓库外 Quickstart 已闭合；M1-009 scaffold 已接受；M0-007 MIT 与远端 GitHub protection 已闭合，首次发行仍等待 readiness R2 接受与人类 release decision |
 | 产品体验 | scaffold 支持离线项目入口；可视化、协作 UI 和运维流程仍待完善 |
 
 ## 支持边界

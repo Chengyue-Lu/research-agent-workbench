@@ -26,7 +26,7 @@ README、上手指南和模块导航均引用本页。任务排期和工程施�
 | Provider Adapter 接缝 | [执行模块](PUBLIC_GUIDE.md#执行与留痕) | structural / bounded；离线 probe 与合成 conformance | 当前发行面不承诺任何 live Provider binding；真实账号、工具调用与长期兼容性需独立验证 |
 | 科研机制净收益 | 显式评估契约 | structural 的评估计划 | evaluated 真实对照实验尚未完成，尚无科研效果或成本净收益结论 |
 
-许可证决定、远端分支保护和具名人类发布决定仍是首次发行的前置条件。
+项目原创内容采用 [MIT License](../LICENSE)。首次发行须完成就绪审查，并取得具名人类发布决定。
 当前文档与包验证结果不构成发布授权。
 
 开始体验：[上手指南](GETTING_STARTED.md)。概念与源码位置：[公开模块导航](PUBLIC_GUIDE.md)。

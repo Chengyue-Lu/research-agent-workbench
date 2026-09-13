@@ -180,7 +180,7 @@ flowchart LR
     M14002 --> M14005["M14-005 BLOCKED<br/>first release"]
     M14003 --> M14005
     M14004 --> M14005
-    M0007["M0-007 BLOCKED<br/>license"] --> M14005
+    M0007["M0-007 DONE<br/>license"] --> M14005
     M1009["M1-009 DONE<br/>scaffold"] --> M14005
     Remote["GitHub protection<br/>external Gate"] --> M14005
 ```

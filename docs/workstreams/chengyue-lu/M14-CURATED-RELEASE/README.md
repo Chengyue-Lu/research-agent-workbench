@@ -3,7 +3,7 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 来源：[Issue #57](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57)
 - 架构决定：[ADR-0021](../../../decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md)
-- 状态：M14-001/002/003 dormant topology、deterministic surface 与 portable package 已实现；public docs 最终集成已完成并提交 R2 完成提案；首次发行仍待闭合
+- 状态：M14-001/002/003 dormant topology、deterministic surface 与 portable package 已实现；public docs 最终集成已由 PR #77 合入；MIT 与远端保护闭合进入 readiness R2 审查，首次发行仍待闭合
 - diagnostic baseline：`origin/develop@dd2454b5595e33a12aa058529358d46d311a08c4`
 - task-definition integration base：`origin/develop@6a032e12c30a88a501258eec8c0b5d6c6082d81d`
 
@@ -142,7 +142,7 @@ public IA 与 support matrix 已在 PR #69 接受。PR #74 的 M1-009 在 `devel
 显式 Run 重建与报告验证。文档检查区分用户项目的 Attempt 输出路径与仓库档案链接；后者仍拒绝进入公开导航。
 
 完成提案及逐项证据见 [最终集成记录](QUICKSTART_ACCEPTANCE.md)。本轮只将 M14-004 从 READY 提案为 DONE；
-Task 定义、依赖、验收与责任人保持不变，等待当前候选的 R2 review。
+Task 定义、依赖、验收与责任人保持不变。PR #77 已合入，review/merge 绑定详见 [readiness 记录](READINESS_PREPARATION.md)。
 
 ### M14-005 / REL-005 — First curated release
 
@@ -194,6 +194,6 @@ task-definition 只写 canonical docs、ADR、workstream 与导航。后续实�
 
 ## 下一合法动作
 
-`M14-001～004` 的实现链已闭合；当前只等待 M14-004 完成提案的 exact-candidate CI 与 cross-owner R2 接受。
-接收后按 M14-005 检查剩余 readiness：M0-007 许可证、实际远端保护及具名 Human release decision。
-M14-005 仍 BLOCKED，尚不能创建真实 release branch、冻结 release source 或解锁 merge eligibility。
+`M14-001～004` 与 M1-009 已合入；按 [readiness 准备记录](READINESS_PREPARATION.md) 审查 MIT closure、
+远端保护回读及演练证据。M0-007 在本 PR 提案 DONE，M14-005 继续 BLOCKED；接收准备工作后，
+刷新外部门禁并取得具名 Human release decision，再进入 cutover implementation 与真实首发。
