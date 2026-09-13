@@ -74,6 +74,40 @@ class PublicSurfaceTests(unittest.TestCase):
         files["work/demo/record.md"] = b"private development evidence"
         self.assertTrue(any("internal" in error for error in documentation_errors(files)))
 
+    def test_rendered_entities_and_autolinks_cannot_reach_excluded_files(self):
+        for link in (
+            "[internal](https://github.com/Example/project/blob/main/docs/S&#84;ATUS.md)",
+            "[internal](https://github.com/Example/project/blob/main/docs/S&#x54;ATUS.md)",
+            "[internal](docs/S&#84;ATUS.md)",
+            "[internal][state]\n\n[state]: https://github.com/Example/project/blob/main/docs/S&#84;ATUS.md",
+            "[archive][]\n\n[archive]: work/demo/record.md",
+            "[archive]\n\n[archive]: work/demo/record.md",
+            "<https://github.com/Example/project/blob/main/work/demo/record.md>",
+            "https://github.com/Example/project/blob/main/work/demo/record.md",
+            "[archive](work&sol;demo/record.md)",
+            '<img src="work&#47;demo/record.svg">',
+        ):
+            with self.subTest(link=link):
+                errors = documentation_errors({**self.files, "README.md": link.encode()})
+                self.assertTrue(any("internal" in error for error in errors), errors)
+
+    def test_autolink_syntax_in_code_remains_literal(self):
+        url = "https://github.com/Example/project/blob/main/work/demo/record.md"
+        for text in (f"`<{url}>`", f"`{url}`", f"```text\n<{url}>\n```\n",
+                     f"    <{url}>\n", "`[record](work/demo/record.md)`"):
+            with self.subTest(text=text):
+                self.assertEqual([], documentation_errors({**self.files, "README.md": text.encode()}))
+
+    def test_rendered_public_entity_and_reference_destinations_resolve(self):
+        text = (
+            "[guide](docs/PUBLIC&#95;GUIDE.md#控制与能力)\n"
+            "[guide][]\n\n[guide]: docs/PUBLIC_GUIDE.md#执行与留痕\n\n"
+            "<https://example.org/guide>\n"
+            # A literal ampersand entity is decoded once, not recursively.
+            "[literal](https://example.org/docs/S&amp;#84;ATUS.md)\n"
+        )
+        self.assertEqual([], documentation_errors({**self.files, "README.md": text.encode()}))
+
     def test_markdown_reference_html_and_unicode_anchor_resolve(self):
         files = {**self.files, "README.md": (
             '[guide][g]\n\n[g]: docs/PUBLIC_GUIDE.md#控制与能力\n'

@@ -9,6 +9,8 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
+from markdown_it import MarkdownIt
+
 
 PUBLIC_PAGES = (
     "README.md", "CHANGELOG.md", "docs/PROJECT_CHARTER.md", "docs/ARCHITECTURE.md",
@@ -67,25 +69,19 @@ def headings(text: str) -> set[str]:
 
 def documentation_errors(files: dict[str, bytes]) -> list[str]:
     errors = [f"missing public page: {name}" for name in PUBLIC_PAGES if name not in files]
+    markdown = MarkdownIt("gfm-like")
     for name, data in files.items():
         if not name.endswith(".md"):
             continue
         text = data.decode("utf-8")
         if INTERNAL_PATH.search(unquote(text)) or MILESTONE.search(text):
             errors.append(f"internal navigation or milestone: {name}")
-        # Fenced examples are inspected for internal-path leakage above, but are not links.
-        rendered = re.sub(r"^(```|~~~).*?^\1[^\n]*$", "", text, flags=re.M | re.S)
+        # Parse rendered href/src values: Markdown entities, references and URI
+        # autolinks have link semantics; code spans/blocks remain literal text.
+        # HTMLParser decodes rendered attribute entities once, before urlsplit.
         html = HtmlLinks()
-        html.feed(rendered)
-        definitions = {key.casefold(): target for key, target in re.findall(
-            r"^\s*\[([^\]]+)\]:\s*<?([^\s>]+)>?", rendered, re.M)}
-        targets = re.findall(r"\[[^\]]*\]\(\s*<?([^\s)>]+)>?(?:\s+[^)]*)?\)", rendered)
-        targets.extend(html.targets)
-        targets.extend(definitions.values())
-        for label, key in re.findall(r"\[([^\]]+)\]\[([^\]]*)\]", rendered):
-            if (key or label).casefold() not in definitions:
-                errors.append(f"undefined reference: {name} -> {key or label}")
-        for target in targets:
+        html.feed(markdown.render(text))
+        for target in html.targets:
             parsed = urlsplit(target)
             if parsed.scheme in ("http", "https", "mailto") or parsed.netloc:
                 if INTERNAL_PATH.search(unquote(parsed.path)) or ARCHIVE_LINK.search(unquote(parsed.path)):
@@ -96,8 +92,8 @@ def documentation_errors(files: dict[str, bytes]) -> list[str]:
                 errors.append(f"nonportable link: {name} -> {target}")
                 continue
             resolved = posixpath.normpath(posixpath.join(posixpath.dirname(name), path)) if path else name
-            if ARCHIVE_LINK.search(resolved):
-                errors.append(f"internal archive link: {name} -> {target}")
+            if INTERNAL_PATH.search(resolved) or ARCHIVE_LINK.search(resolved):
+                errors.append(f"internal link: {name} -> {target}")
                 continue
             if resolved.startswith("../") or not (resolved in files or any(
                 candidate.startswith(resolved.rstrip("/") + "/") for candidate in files

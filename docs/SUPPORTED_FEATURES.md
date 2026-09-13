@@ -20,7 +20,7 @@ README、上手指南和模块导航均引用本页。任务排期和工程施�
 | 离线示例与证据定位 | [上手指南](GETTING_STARTED.md#4-定位证据并重建离线示例)中的 `offline-demo`、`run check`、`hash`、`run reproduce` | bounded；从项目自己的 manifest 定位代码、输入与预期输出，独立进程重建后验证实际报告 | 合成参考 Run 与当次执行证据分开；保留零净变化；`matched` 不构成科学 Claim 接受 |
 | Task / Method / Capability 契约 | [控制与能力模块](PUBLIC_GUIDE.md#控制与能力) | structural；Mode/Action、需求、供给、确定性选择与 Snapshot 引用闭合 | asserted facts 的结构成立不授予权限或 Human approval |
 | Runtime Bundle / View / Thin Host / Receipt | [执行与留痕模块](PUBLIC_GUIDE.md#执行与留痕) | bounded；no-Skill / direct-tool 的本地合成闭包与失败路径 | 需要集成者显式构造合法执行输入；仓库 structural replay fixture 不能充当运行输入 |
-| Trace、Handoff、State 与恢复候选 | [状态与证据模块](PUBLIC_GUIDE.md#状态与证据) | structural / bounded；文件闭集、受控 fresh-process 读取与固定 case behavior | 当前恢复候选仍需人类语义验收；不提供通用自动恢复或科学判断 |
+| Trace、Handoff、Research State 与 bounded continuity candidate | [状态与证据模块](PUBLIC_GUIDE.md#状态与证据) | structural / bounded；文件闭集、受控 fresh-process 读取与固定 case behavior | continuity candidate 的语义验收与科学判断由人类负责 |
 | Source admission、Promotion、Claim trace、Run reconstruction | [状态与证据模块](PUBLIC_GUIDE.md#状态与证据) | structural / bounded；exact bytes、当场重执行等价、证据定位与合成 Run 重建 | 不证明历史运行真实性、来源科学质量或 Claim 已获接受 |
 | 可选 Skill publication / mapping | [能力模块](PUBLIC_GUIDE.md#控制与能力) | structural / bounded；非空引用闭包由 synthetic fixture 验证 | 生产 Projection index 为空，当前没有随包发布的 Skill；legacy Registry 不授予新绑定资格 |
 | Provider Adapter 接缝 | [执行模块](PUBLIC_GUIDE.md#执行与留痕) | structural / bounded；离线 probe 与合成 conformance | 当前发行面不承诺任何 live Provider binding；真实账号、工具调用与长期兼容性需独立验证 |
