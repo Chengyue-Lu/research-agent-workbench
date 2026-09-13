@@ -99,14 +99,21 @@ slice 必须闭合这个 producer/consumer 缺口，并由可信调用方核验�
 本地 full/coverage 在复现旧 setuptools 下限硬编码错误后停止，修复和失败均保留；完整验收以最新
 PR head 的 hosted full/coverage 结果为准。Trace 校验无 BLOCK，仅保留 capture-gap warning。
 
+### 第一层：external readiness remaining
+
 1. 完成本 PR 的 exact-head CI 与 cross-owner R2 review，接受 M0-007 license closure 和 readiness evidence。
-2. 合入 develop 后重新核实 M0-007、M1-009、M14-002～004 全部 DONE，fresh remote protection 与 source CI。
-3. 取得具名维护者针对首发版本、范围和剩余限制的 Human release decision，才可提案 M14-005 BLOCKED → READY。
-4. M14-005 的 develop-side implementation slice 建立 protected caller/CI attestation、release-only workflow
-   和新增 policy include；在 R2 review 下原子启用 curated topology 并禁用 direct develop→main。
-5. 全部门禁满足后冻结 exact develop source/current main parent，由 exporter 生成首发候选；验证重复生成、
+2. 合入 develop 后重新核实 M0-007、M1-009、M14-002～004 全部 DONE，并取得 fresh ruleset readback。
+3. 取得具名维护者针对首发版本、范围和剩余限制的 Human release decision；全部外部 readiness 条件满足后，
+   才可提案 M14-005 BLOCKED → READY。
+
+### 第二层：M14-005 implementation 与首发验收
+
+1. develop-side implementation slice 建立 protected source-CI producer/consumer attestation、release-only
+   workflow/checks 和新增 policy include，闭合当前 source CI 缺少 governance 的已知缺口。
+2. 在 R2 review 下原子启用 curated topology 并禁用 direct develop→main。
+3. 全部门禁满足后冻结 exact develop source/current main parent，由 exporter 生成首发候选；验证重复生成、
    双 Python 安装、零内部材料泄漏、prospective merge tree 等于 projection/manifest 闭集。
-6. release PR 获 R2 接受后 merge commit 到 main，再闭合 tag/artifact/hash；main 漂移即重建。
+4. release PR 获 R2 接受后 merge commit 到 main，再闭合 tag/artifact/hash；main 漂移即重建。
 
 本轮完成条件为可审查的 license/protection/readiness PR 与其证据。发布授权、cutover 实现、真实 release
 及其 tag/artifact closure 属于下一阶段。实时 Task 状态仅由 [`TASKS.md`](../../../TASKS.md) 维护。

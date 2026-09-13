@@ -24,12 +24,12 @@ M11-001～006 已提供 bounded execution/runtime foundation；M5-003 已冻结 
 Schema、0 个 Registry、0 个 `.agents`、0 个 `.codex`；空目录 `rwb schema list` 与 `rwb init` 可通过，
 但 repository-level `rwb validate examples registry` 和默认 `rwb skills accepted` 找不到 CWD-relative
 Registry。单独提供 Capability Requirement Registry 时，loader 仍把 Schema 绑定到 project root；空
-Projection index 则可使用 packaged Schema 加载。该 Python 3.12 诊断只证明当前缺口，不替代 M14-003 的
+Projection index 则可使用 packaged Schema 加载。该 Python 3.12 诊断只证明上述历史基线的缺口，不替代 M14-003 的
 Python 3.11/3.13 exact clean-install acceptance。
 
-当前 package-smoke 安装 wheel 后仍回到完整 checkout 验证 `examples`/`registry`，因此不能证明 portable
-package。GitHub API 也尚未提供 main/develop protection 已启用的证据。这两项分别保留为 M14-003 与
-M14-005 的未满足 Gate，不能由本 task-definition 标为受控。
+该 diagnostic baseline 的 package-smoke 安装 wheel 后仍回到完整 checkout 验证 `examples`/`registry`，
+当时也未取得 main/develop protection 已启用的 API 证据。后续 M14-003 已接受 portable package 验证，
+远端保护启用与回读证据见 [readiness 记录](READINESS_PREPARATION.md)；本节保留入口审计事实。
 
 ## Canonical Task DAG
 
@@ -50,7 +50,7 @@ flowchart LR
     M14003 --> M14005
     M14004 --> M14005
     M1009["M1-009 DONE<br/>scaffold/compatibility"] --> M14005
-    M0007["M0-007 BLOCKED<br/>license"] --> M14005
+    M0007["M0-007 DONE<br/>MIT closure proposal"] --> M14005
     Remote["external GitHub ruleset Gate"] --> M14005
 ```
 
@@ -141,8 +141,8 @@ public IA 与 support matrix 已在 PR #69 接受。PR #74 的 M1-009 在 `devel
 本轮 Quickstart 串联安装资源检查、完整项目初始化、Task/Profile 校验、manifest/hash 证据定位、
 显式 Run 重建与报告验证。文档检查区分用户项目的 Attempt 输出路径与仓库档案链接；后者仍拒绝进入公开导航。
 
-完成提案及逐项证据见 [最终集成记录](QUICKSTART_ACCEPTANCE.md)。本轮只将 M14-004 从 READY 提案为 DONE；
-Task 定义、依赖、验收与责任人保持不变。PR #77 已合入，review/merge 绑定详见 [readiness 记录](READINESS_PREPARATION.md)。
+M14-004 已由 PR #77 验收合入，状态为 DONE；逐项证据见 [最终集成记录](QUICKSTART_ACCEPTANCE.md)，
+review/merge 绑定详见 [readiness 记录](READINESS_PREPARATION.md)。
 
 ### M14-005 / REL-005 — First curated release
 
@@ -195,5 +195,10 @@ task-definition 只写 canonical docs、ADR、workstream 与导航。后续实�
 ## 下一合法动作
 
 `M14-001～004` 与 M1-009 已合入；按 [readiness 准备记录](READINESS_PREPARATION.md) 审查 MIT closure、
-远端保护回读及演练证据。M0-007 在本 PR 提案 DONE，M14-005 继续 BLOCKED；接收准备工作后，
-刷新外部门禁并取得具名 Human release decision，再进入 cutover implementation 与真实首发。
+远端保护回读及演练证据。M0-007 在本 PR 提案 DONE，M14-005 继续 BLOCKED，接续分两层：
+
+1. external readiness remaining：本 PR R2 接受、fresh ruleset readback 与具名 Human release decision；
+   全部满足后才可提案 M14-005 READY。
+2. M14-005 implementation：protected source-CI attestation、release-only workflow/checks、atomic topology cutover，
+   然后冻结 exact develop source/current main parent，验证 deterministic projection / prospective-tree equality，
+   完成首发 R2 验收及 tag/artifact/hash closure。

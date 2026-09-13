@@ -188,7 +188,10 @@ flowchart LR
 M14 只把 frozen `develop` 确定性投影为精选 `main`，不成为新产品语义 owner；exact current `main` 只作为
 generated release branch 的 Git 父提交。M14-001 已建立 dormant R2 trust anchor，M14-002 与 M14-003 已
 闭合 projection/package，但 release branch 继续 fail closed、现行 exact develop release 继续有效。
-M14-005 在全部 readiness Gate 闭合后才原子完成 topology cutover。首版允许 no-Skill Core，但不得发布
+M14-005 当前 BLOCKED：external readiness 仍需本 PR R2 接受、fresh ruleset readback 与具名 Human release decision。
+全部满足后才可提案 READY；后续 implementation 仍包括 protected source-CI attestation、release-only workflow/checks、
+atomic topology cutover、exact develop source/current main parent freeze、deterministic projection / prospective-tree equality，
+以及首发 R2 验收与 tag/artifact/hash closure，顺序见 [M14 路线](ROADMAP.md#7-product--release-closure)。首版允许 no-Skill Core，但不得发布
 未许可/未准入 Skill，也不得把 incomplete M5 evaluation 写成已证明价值。Issue #57 的 `REL-*` 仅为工作包
 别名，不能替代图中的 Task identity。
 
