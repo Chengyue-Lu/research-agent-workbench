@@ -25,3 +25,11 @@
 本次只更新入口 README 和 EVIDENCE 的当期状态，并追加本段记录。黄毅优先推进 M6-008 独立候选；其 canonical Task 行仍为 PARKED，shared qualification contract 前置已冻结不等同于本 PR 接受 M6 功能。M12 继续准备具名 Phase C 语义收口和独立 Topic5 定义，M13 继续真实反馈归因，不制造数据、不代填签收、不改变 RESERVED 或 Gate。
 
 检查仅覆盖本次三份 Markdown 的内部链接及增量空白问题：27 个内部链接全部存在，`git diff --check` 通过，无未解决冲突。不重跑既有 Case pin 全表、功能、full、coverage、安装、模型或恢复测试。本条不预填新的 hosted CI、人工语义接受或功能完成结论。
+
+## 2026-09-13：具名 review 的限定文案修正
+
+路诚钺对 `3878498` 的 [review 5186408709](https://github.com/Chengyue-Lu/research-agent-workbench/pull/72#pullrequestreview-5186408709)认可总体方向，要求收紧 M13 formal activation Gate，并给出三项非阻塞文字建议。本轮对照 `origin/develop@451644064f558601d5778b9b115390f882f4d260` 的 canonical TASKS/ROADMAP 修正入口计划、README 和风险记录：采集/归因不等于激活；正式 M13 先有 Phase C semantic closeout、所需 Phase D evidence 和 coherent family 无法被既有 M-group 自然承载的证据，再进入独立 docs-only R2 task-definition。
+
+反馈范围限定为正常科研使用中自然产生、且用户明确允许用于该次分析的本地记录；原授权有效、未撤回且范围不变时继续使用，不启动 telemetry/自动捕获/上传。RecoverySeed/legacy contract 只作风险与迁移参考，不预定 no-Skill 公共字段。design drafting/pre-activation 表示设计成熟度；本次查询 PR72 的 GitHub `isDraft=false`，不把二者混同。
+
+本轮只修正文案，不合并 develop，不修改 canonical Task/ROADMAP、源码、Schema 或 Human 决定；四份修改文档的 20 个内部链接和两个新增锚点均通过检查，`git diff --check` 通过。不重做 Phase C source review 或功能/full/coverage/install/model 测试。

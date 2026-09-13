@@ -26,7 +26,7 @@ M13 已有反馈改进需求，但当前材料没有真实重复模型行为的�
 |---|---|---|
 | Phase C 最小表示的语义接受 | PENDING | 路诚钺对精确输入、适用范围、保留项和必要修正作具名决定；黄毅复核实际执行事实接口 |
 | M12 Topic 5 架构/任务定义 | PROPOSAL | Phase C 收口后，独立接受一个 action 边界接续 Task；明确 no-Skill consumer 和 Handoff 兼容方式 |
-| M13 独立 implementation family 的必要性 | UNPROVEN | 真实失败/反馈与现有 Protocol/M7/M9 的复用判断，支持复用、窄新 family 或暂缓任一种结果 |
+| M13 独立 implementation family 的必要性 | UNPROVEN | 获准本地记录支持归因与复用判断；正式激活另需 Phase C semantic closeout、所需 Phase D evidence、既有 M-group 无法自然承载 coherent family 的证据，再接受独立 docs-only R2 task-definition |
 
 合并本审查输入本身不改变以上状态。具名 review 要说明接受的是“材料足以审查”、具体语义还是后续任务定义；普通 APPROVE 或文档 CI 不隐式同时完成三项决定。实际语义决定应以单独、可定位的记录收口，不能改写历史机器报告。
 
@@ -40,6 +40,6 @@ M4-001～004 已 DONE。PR70 已接受合入，提供当前 CI 优化基线。PR
 
 1. 对 [Phase C 审查表](PHASE_C_REVIEW.md)形成真实具名语义决定，并依据接受范围更新既有 Gate 说明；原 DONE Task 与历史报告保持原义。
 2. 将 M12 单条接续候选转成独立 ADR/task-definition；接受后由黄毅实现，路诚钺审 State/Method 语义。
-3. 在正常计算/仿真使用中收集 M13 首个实际纠正及后续重复情况。先明确归因和承载处，再冻结 direct 与一个窄候选的独立比较任务。
+3. 使用正常计算/仿真过程中自然产生、且用户明确允许用于该次分析的本地纠正记录，先判断重复问题的归因和承载处。采集/归因不激活 M13；比较沿获接受 Task 推进，独立 M13 另须满足 [ENTRY_PLAN](ENTRY_PLAN.md) 的 canonical 激活条件。
 
 工作记录：[本次文档准备记录](../../../../work/AUDIT-M12-M13-ENTRY-001/A-20260912-001/WORKLOG.md)。该记录不声称完整平台 Trace、实时恢复或科学结果。
