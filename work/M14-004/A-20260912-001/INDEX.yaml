@@ -1,0 +1,98 @@
+schema_version: 0.1.0
+trace_id: TRACE-M14-004-A-20260912-001
+task_id: M14-004
+task_revision: 1
+attempt_id: A-20260912-001
+archive_root: A-20260912-001
+baseline: 451644064f558601d5778b9b115390f882f4d260
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 3a16c7443d1eeda5b06ad342b38bbe18eb96d65408dc70195327e459c079137e
+actors_ref:
+  path: ACTORS.yaml
+  sha256: e379120129f5469a21c9ccfa0f4092b183a6ccf2995194ac040a472c1a707447
+read_allowlist:
+- AGENTS.md
+- README.md
+- CHANGELOG.md
+- docs/**
+- .github/release-surface.yml
+- .github/scripts/release_surface.py
+- .github/scripts/portable_package_smoke.py
+- .github/scripts/check_pr_governance.py
+- tests/test_documentation.py
+- tests/test_public_surface.py
+- tests/public_surface_helpers.py
+- tests/test_pr_governance.py
+- tests/test_release_surface.py
+- tests/test_scaffold.py
+- src/research_workbench/scaffold.py
+- src/research_workbench/cli.py
+- src/research_workbench/artifacts/run_reconstruction.py
+- src/research_workbench/_templates/**
+- pyproject.toml
+- MANIFEST.in
+- runtime-resources.json
+- work/M14-004/**
+- work/M1-009/A-20260912-001/{TASK.yaml,ACTORS.yaml,INDEX.yaml,events.jsonl}
+write_scope:
+- README.md
+- CHANGELOG.md
+- docs/GETTING_STARTED.md
+- docs/SUPPORTED_FEATURES.md
+- docs/TASKS.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/workstreams/chengyue-lu/README.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- tests/public_surface_helpers.py
+- tests/test_public_surface.py
+- work/M14-004/A-20260912-001/**
+tool_allowlist:
+- git
+- gh
+- python
+- apply_patch
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: fb5f2e7ee930ea74aa6b014e53959bc1e13fcaf23981ec577114b1c86b0bbdef
+  event_count: 11
+tool_event_refs:
+- path: tool-events/focused-final.log
+  sha256: 62c8aa0edb789ab1b6a7c9f27153e52f218996ec85adf48b8080df3f819f5aa4
+- path: tool-events/repository.log
+  sha256: 6895861bf5f35b7669baaf95d9caf2b94c3a4e1d5682f29bbc73ba0aa0064633
+- path: tool-events/projection.json
+  sha256: 2c9da85f09109b443bb6e52eb5b6bb2dd0f894d295ce9fb3303391ef386b451e
+- path: tool-events/quickstart-package.json
+  sha256: 1b929a26919b20fbec4afdae37c1efba9ea64a73a6fe54500ac7e58a19ed16b1
+- path: tool-events/m1-merge-receipt.json
+  sha256: 0ad789f3706fe7ce2db16cf0d99b3cd52d9fdaa0ab1b33a79a57a433b77e912c
+handoff_refs:
+- path: WORKLOG.md
+  sha256: 132438e12896ba7db728eee21c7a2edd487aa02e051a19f2b2c5c224510ecfcf
+decision_refs: []
+output_refs:
+- path: outputs/VERIFICATION.json
+  sha256: 18c9209869573f192e938a32973abc07afcbb137d4c152faf0df03974da9a034
+- path: outputs/EXPERIMENT.md
+  sha256: 0381f794934e4d5a7522988a298847aecfc66ab4a40612d4e9cbd0fe31eb0f5a
+check_refs:
+- path: .gitattributes
+  sha256: 48747480eddba024928d03be9bf83dc579e5515768647507a767e8187a85c9ab
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: tool-results
+- event_id: EVT-0004
+  affected_stream: file-revisions
+- event_id: EVT-0005
+  affected_stream: external-actions

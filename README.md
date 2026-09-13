@@ -36,6 +36,7 @@ rwb validate project/tasks/task.yaml project/profiles/local-no-skill.yaml --root
 ```
 
 这些命令创建可复用 no-Skill 项目，并校验随包资源、Task 与本地 Profile。安装后的步骤不调用模型或外部服务；
+随后可按[离线示例步骤](docs/GETTING_STARTED.md#4-定位证据并重建离线示例)定位输入和输出证据，显式执行重建并核验报告。
 验收含义和使用限制统一见[支持能力与证据边界](docs/SUPPORTED_FEATURES.md)。
 
 ## 从哪里开始

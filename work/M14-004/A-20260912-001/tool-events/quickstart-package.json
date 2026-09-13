@@ -1,0 +1,695 @@
+{
+  "runtime_resources_identical": true,
+  "manifest_sha256": "a38f44d34381f9869f8bce454059f8b66d932c1ef597a27164a704a15742181f",
+  "installs": [
+    {
+      "authority_boundaries": {
+        "claim_acceptance": false,
+        "human_decision": false,
+        "promotion": false,
+        "scientific_correctness": false
+      },
+      "command_corrections": 0,
+      "documented_cli": [
+        {
+          "command": "rwb resources check",
+          "exit_code": 0,
+          "stdout_sha256": "b4b79b610198197f697992940894b1bcdaf7dda33ece1a68ee87406c801fc8ec"
+        },
+        {
+          "command": "rwb schema list",
+          "exit_code": 0,
+          "stdout_sha256": "489f035e3a310cea6ba5c1aa1ff122d89072a05d12251dc49b880c0e137fcf5a"
+        },
+        {
+          "command": "rwb init project --project-id quickstart",
+          "exit_code": 0,
+          "stdout_sha256": "8fbe7ce02e3c8753ca828e86a6be6a0a37c93cb4e648487dfd4f9bcb5ab3219b"
+        },
+        {
+          "command": "rwb project check project",
+          "exit_code": 0,
+          "stdout_sha256": "1f7444104fbe8bcc7048f45f55d934776a65143a4512d0ea0f6009c22ed081db"
+        },
+        {
+          "command": "rwb validate project/tasks/task.yaml project/profiles/local-no-skill.yaml --root project",
+          "exit_code": 0,
+          "stdout_sha256": "0b700cd9f54d273d7192dbcdd218a3ec21e2ffb4e03ca39118ea958d5774818c"
+        },
+        {
+          "command": "rwb init offline-project --template offline-demo --project-id offline-demo",
+          "exit_code": 0,
+          "stdout_sha256": "69caebf8f6dfd165d2a72c9bb06ec634b41667f0f1384b92af4d143d7aa3d069"
+        },
+        {
+          "command": "rwb project check offline-project",
+          "exit_code": 0,
+          "stdout_sha256": "db2528705d5d77d88e48093a82d2872a8fe822d6485a3eafa75890ee3d2deedd"
+        },
+        {
+          "command": "rwb validate tasks/task.yaml profiles/local-no-skill.yaml --root .",
+          "exit_code": 0,
+          "stdout_sha256": "0b700cd9f54d273d7192dbcdd218a3ec21e2ffb4e03ca39118ea958d5774818c"
+        },
+        {
+          "command": "rwb run check examples/run-reconstruction/linear-recurrence/manifest.yaml --root .",
+          "exit_code": 0,
+          "stdout_sha256": "6a669d9aff7e6cdff9aab88ea31e7e0b4d854f07106673bce1d6c0fa247f102c"
+        },
+        {
+          "command": "rwb hash examples/run-reconstruction/linear-recurrence/trajectory.csv",
+          "exit_code": 0,
+          "stdout_sha256": "958c026a0b1bbee98ae5cf848582aeeefe2c505ebb6de88ee9f3894f17b5a67c"
+        },
+        {
+          "command": "rwb run reproduce examples/run-reconstruction/linear-recurrence/manifest.yaml --root . --attempt-dir work/demo/A-001",
+          "exit_code": 0,
+          "stdout_sha256": "d769b16b4a954e345fd3ffd27b877fa477ff0df0e20798214633490a85426dad"
+        },
+        {
+          "command": "rwb validate work/demo/A-001/reconstruction-report.json --root .",
+          "exit_code": 0,
+          "stdout_sha256": "d5ff9e22de5fba4005f9b89e0b71524853ed84f6bc9d26b424e2c9dc9ad18e29"
+        }
+      ],
+      "executed": true,
+      "manual_project_file_edits": 0,
+      "manual_registry_profile_skill_copies": 0,
+      "merge_eligible": false,
+      "modes": 4,
+      "negative_result_preserved": true,
+      "projections": 0,
+      "provider_credentials": 0,
+      "python": "3.11.16",
+      "reconstruction": "matched",
+      "resources": 132,
+      "schemas": 84,
+      "validation_profile": "installed-runtime",
+      "route": "direct",
+      "isolated": true
+    },
+    {
+      "authority_boundaries": {
+        "claim_acceptance": false,
+        "human_decision": false,
+        "promotion": false,
+        "scientific_correctness": false
+      },
+      "command_corrections": 0,
+      "documented_cli": [
+        {
+          "command": "rwb resources check",
+          "exit_code": 0,
+          "stdout_sha256": "b4b79b610198197f697992940894b1bcdaf7dda33ece1a68ee87406c801fc8ec"
+        },
+        {
+          "command": "rwb schema list",
+          "exit_code": 0,
+          "stdout_sha256": "489f035e3a310cea6ba5c1aa1ff122d89072a05d12251dc49b880c0e137fcf5a"
+        },
+        {
+          "command": "rwb init project --project-id quickstart",
+          "exit_code": 0,
+          "stdout_sha256": "b1b0ac3e1fd38528d9558a37aa4e485da690c55df81191d6273802e5580c3c3a"
+        },
+        {
+          "command": "rwb project check project",
+          "exit_code": 0,
+          "stdout_sha256": "2c57170258fca81326e98042c7fbd8d419161984a741db33e27d427a2c605aa2"
+        },
+        {
+          "command": "rwb validate project/tasks/task.yaml project/profiles/local-no-skill.yaml --root project",
+          "exit_code": 0,
+          "stdout_sha256": "0b700cd9f54d273d7192dbcdd218a3ec21e2ffb4e03ca39118ea958d5774818c"
+        },
+        {
+          "command": "rwb init offline-project --template offline-demo --project-id offline-demo",
+          "exit_code": 0,
+          "stdout_sha256": "62ff15cfdbf1d361238d920c8b3820743edda754f969f7f8c18f9753acd65a2f"
+        },
+        {
+          "command": "rwb project check offline-project",
+          "exit_code": 0,
+          "stdout_sha256": "6b2a827e6b5f596566f25108bbcd056f0bc0c2c8b757ee5700a46699b11a1336"
+        },
+        {
+          "command": "rwb validate tasks/task.yaml profiles/local-no-skill.yaml --root .",
+          "exit_code": 0,
+          "stdout_sha256": "0b700cd9f54d273d7192dbcdd218a3ec21e2ffb4e03ca39118ea958d5774818c"
+        },
+        {
+          "command": "rwb run check examples/run-reconstruction/linear-recurrence/manifest.yaml --root .",
+          "exit_code": 0,
+          "stdout_sha256": "6a669d9aff7e6cdff9aab88ea31e7e0b4d854f07106673bce1d6c0fa247f102c"
+        },
+        {
+          "command": "rwb hash examples/run-reconstruction/linear-recurrence/trajectory.csv",
+          "exit_code": 0,
+          "stdout_sha256": "958c026a0b1bbee98ae5cf848582aeeefe2c505ebb6de88ee9f3894f17b5a67c"
+        },
+        {
+          "command": "rwb run reproduce examples/run-reconstruction/linear-recurrence/manifest.yaml --root . --attempt-dir work/demo/A-001",
+          "exit_code": 0,
+          "stdout_sha256": "4bda52cba8be3296561b04a524799bc4edbccb20eb82ee8c8a4c7463b0f4ddf9"
+        },
+        {
+          "command": "rwb validate work/demo/A-001/reconstruction-report.json --root .",
+          "exit_code": 0,
+          "stdout_sha256": "d5ff9e22de5fba4005f9b89e0b71524853ed84f6bc9d26b424e2c9dc9ad18e29"
+        }
+      ],
+      "executed": true,
+      "manual_project_file_edits": 0,
+      "manual_registry_profile_skill_copies": 0,
+      "merge_eligible": false,
+      "modes": 4,
+      "negative_result_preserved": true,
+      "projections": 0,
+      "provider_credentials": 0,
+      "python": "3.11.16",
+      "reconstruction": "matched",
+      "resources": 132,
+      "schemas": 84,
+      "validation_profile": "installed-runtime",
+      "route": "direct",
+      "isolated": false
+    },
+    {
+      "authority_boundaries": {
+        "claim_acceptance": false,
+        "human_decision": false,
+        "promotion": false,
+        "scientific_correctness": false
+      },
+      "command_corrections": 0,
+      "documented_cli": [
+        {
+          "command": "rwb resources check",
+          "exit_code": 0,
+          "stdout_sha256": "b4b79b610198197f697992940894b1bcdaf7dda33ece1a68ee87406c801fc8ec"
+        },
+        {
+          "command": "rwb schema list",
+          "exit_code": 0,
+          "stdout_sha256": "489f035e3a310cea6ba5c1aa1ff122d89072a05d12251dc49b880c0e137fcf5a"
+        },
+        {
+          "command": "rwb init project --project-id quickstart",
+          "exit_code": 0,
+          "stdout_sha256": "cc2882db78132f843f396d2b76772c63b8ea27fa54c5f15c2bf7912eef9a2581"
+        },
+        {
+          "command": "rwb project check project",
+          "exit_code": 0,
+          "stdout_sha256": "ec1190097ff4381a9abf25254138d919a2128811993defb0bb682c5aa8b72861"
+        },
+        {
+          "command": "rwb validate project/tasks/task.yaml project/profiles/local-no-skill.yaml --root project",
+          "exit_code": 0,
+          "stdout_sha256": "0b700cd9f54d273d7192dbcdd218a3ec21e2ffb4e03ca39118ea958d5774818c"
+        },
+        {
+          "command": "rwb init offline-project --template offline-demo --project-id offline-demo",
+          "exit_code": 0,
+          "stdout_sha256": "16b5cdf5c71ec1c418051cecafc344450f2472f659b1d104b9cd4539e073457c"
+        },
+        {
+          "command": "rwb project check offline-project",
+          "exit_code": 0,
+          "stdout_sha256": "13fc181482c0056ac7963f3d6c059c1a4bb6852daa64049ea071f0fca1d05caf"
+        },
+        {
+          "command": "rwb validate tasks/task.yaml profiles/local-no-skill.yaml --root .",
+          "exit_code": 0,
+          "stdout_sha256": "0b700cd9f54d273d7192dbcdd218a3ec21e2ffb4e03ca39118ea958d5774818c"
+        },
+        {
+          "command": "rwb run check examples/run-reconstruction/linear-recurrence/manifest.yaml --root .",
+          "exit_code": 0,
+          "stdout_sha256": "6a669d9aff7e6cdff9aab88ea31e7e0b4d854f07106673bce1d6c0fa247f102c"
+        },
+        {
+          "command": "rwb hash examples/run-reconstruction/linear-recurrence/trajectory.csv",
+          "exit_code": 0,
+          "stdout_sha256": "958c026a0b1bbee98ae5cf848582aeeefe2c505ebb6de88ee9f3894f17b5a67c"
+        },
+        {
+          "command": "rwb run reproduce examples/run-reconstruction/linear-recurrence/manifest.yaml --root . --attempt-dir work/demo/A-001",
+          "exit_code": 0,
+          "stdout_sha256": "61f09164831b5cc2bd67a27ad219d6ccc69709f83993d2202986833248cd654c"
+        },
+        {
+          "command": "rwb validate work/demo/A-001/reconstruction-report.json --root .",
+          "exit_code": 0,
+          "stdout_sha256": "d5ff9e22de5fba4005f9b89e0b71524853ed84f6bc9d26b424e2c9dc9ad18e29"
+        }
+      ],
+      "executed": true,
+      "manual_project_file_edits": 0,
+      "manual_registry_profile_skill_copies": 0,
+      "merge_eligible": false,
+      "modes": 4,
+      "negative_result_preserved": true,
+      "projections": 0,
+      "provider_credentials": 0,
+      "python": "3.11.16",
+      "reconstruction": "matched",
+      "resources": 132,
+      "schemas": 84,
+      "validation_profile": "installed-runtime",
+      "route": "sdist-wheel",
+      "isolated": true
+    },
+    {
+      "authority_boundaries": {
+        "claim_acceptance": false,
+        "human_decision": false,
+        "promotion": false,
+        "scientific_correctness": false
+      },
+      "command_corrections": 0,
+      "documented_cli": [
+        {
+          "command": "rwb resources check",
+          "exit_code": 0,
+          "stdout_sha256": "b4b79b610198197f697992940894b1bcdaf7dda33ece1a68ee87406c801fc8ec"
+        },
+        {
+          "command": "rwb schema list",
+          "exit_code": 0,
+          "stdout_sha256": "489f035e3a310cea6ba5c1aa1ff122d89072a05d12251dc49b880c0e137fcf5a"
+        },
+        {
+          "command": "rwb init project --project-id quickstart",
+          "exit_code": 0,
+          "stdout_sha256": "2a6294fe3b756cdcef5abbfa308d74d2f4b8bb58fbb5b09287d3988b7f60a135"
+        },
+        {
+          "command": "rwb project check project",
+          "exit_code": 0,
+          "stdout_sha256": "8fb9f5393bc73b078fcce12f66d5cdddfdb21623057f8fee9af2e6d19aee9096"
+        },
+        {
+          "command": "rwb validate project/tasks/task.yaml project/profiles/local-no-skill.yaml --root project",
+          "exit_code": 0,
+          "stdout_sha256": "0b700cd9f54d273d7192dbcdd218a3ec21e2ffb4e03ca39118ea958d5774818c"
+        },
+        {
+          "command": "rwb init offline-project --template offline-demo --project-id offline-demo",
+          "exit_code": 0,
+          "stdout_sha256": "e81544b845b05d2f25e8a1f65e8764eff08cb465684071b6d0e23f9faa005fd8"
+        },
+        {
+          "command": "rwb project check offline-project",
+          "exit_code": 0,
+          "stdout_sha256": "de90e917e3ea9fbefe5d0f610e5004710443349a29152e8505e76c788de2368c"
+        },
+        {
+          "command": "rwb validate tasks/task.yaml profiles/local-no-skill.yaml --root .",
+          "exit_code": 0,
+          "stdout_sha256": "0b700cd9f54d273d7192dbcdd218a3ec21e2ffb4e03ca39118ea958d5774818c"
+        },
+        {
+          "command": "rwb run check examples/run-reconstruction/linear-recurrence/manifest.yaml --root .",
+          "exit_code": 0,
+          "stdout_sha256": "6a669d9aff7e6cdff9aab88ea31e7e0b4d854f07106673bce1d6c0fa247f102c"
+        },
+        {
+          "command": "rwb hash examples/run-reconstruction/linear-recurrence/trajectory.csv",
+          "exit_code": 0,
+          "stdout_sha256": "958c026a0b1bbee98ae5cf848582aeeefe2c505ebb6de88ee9f3894f17b5a67c"
+        },
+        {
+          "command": "rwb run reproduce examples/run-reconstruction/linear-recurrence/manifest.yaml --root . --attempt-dir work/demo/A-001",
+          "exit_code": 0,
+          "stdout_sha256": "0769430019e5a583f311828a2b5c039f0820fb673b385823bcdaafdc042189e1"
+        },
+        {
+          "command": "rwb validate work/demo/A-001/reconstruction-report.json --root .",
+          "exit_code": 0,
+          "stdout_sha256": "d5ff9e22de5fba4005f9b89e0b71524853ed84f6bc9d26b424e2c9dc9ad18e29"
+        }
+      ],
+      "executed": true,
+      "manual_project_file_edits": 0,
+      "manual_registry_profile_skill_copies": 0,
+      "merge_eligible": false,
+      "modes": 4,
+      "negative_result_preserved": true,
+      "projections": 0,
+      "provider_credentials": 0,
+      "python": "3.11.16",
+      "reconstruction": "matched",
+      "resources": 132,
+      "schemas": 84,
+      "validation_profile": "installed-runtime",
+      "route": "sdist-wheel",
+      "isolated": false
+    },
+    {
+      "authority_boundaries": {
+        "claim_acceptance": false,
+        "human_decision": false,
+        "promotion": false,
+        "scientific_correctness": false
+      },
+      "command_corrections": 0,
+      "documented_cli": [
+        {
+          "command": "rwb resources check",
+          "exit_code": 0,
+          "stdout_sha256": "b4b79b610198197f697992940894b1bcdaf7dda33ece1a68ee87406c801fc8ec"
+        },
+        {
+          "command": "rwb schema list",
+          "exit_code": 0,
+          "stdout_sha256": "489f035e3a310cea6ba5c1aa1ff122d89072a05d12251dc49b880c0e137fcf5a"
+        },
+        {
+          "command": "rwb init project --project-id quickstart",
+          "exit_code": 0,
+          "stdout_sha256": "91aa55dca1a29eb732c43172d7197e81d53876f64116549a6d4eb47ae90704c2"
+        },
+        {
+          "command": "rwb project check project",
+          "exit_code": 0,
+          "stdout_sha256": "7b15c2f17572431695c261bf38b2b6f430fb250eb39ba534aa9e51f73d435f35"
+        },
+        {
+          "command": "rwb validate project/tasks/task.yaml project/profiles/local-no-skill.yaml --root project",
+          "exit_code": 0,
+          "stdout_sha256": "0b700cd9f54d273d7192dbcdd218a3ec21e2ffb4e03ca39118ea958d5774818c"
+        },
+        {
+          "command": "rwb init offline-project --template offline-demo --project-id offline-demo",
+          "exit_code": 0,
+          "stdout_sha256": "1e71b2ea031e40d3acbb2b13d488e6c8db9ceb27ad789c9898f81cc98ddf07e1"
+        },
+        {
+          "command": "rwb project check offline-project",
+          "exit_code": 0,
+          "stdout_sha256": "ba0e60720fcf12bf819b4879f03cbc62e6bbbdb5b2470a86338f2f73e41d15d0"
+        },
+        {
+          "command": "rwb validate tasks/task.yaml profiles/local-no-skill.yaml --root .",
+          "exit_code": 0,
+          "stdout_sha256": "0b700cd9f54d273d7192dbcdd218a3ec21e2ffb4e03ca39118ea958d5774818c"
+        },
+        {
+          "command": "rwb run check examples/run-reconstruction/linear-recurrence/manifest.yaml --root .",
+          "exit_code": 0,
+          "stdout_sha256": "6a669d9aff7e6cdff9aab88ea31e7e0b4d854f07106673bce1d6c0fa247f102c"
+        },
+        {
+          "command": "rwb hash examples/run-reconstruction/linear-recurrence/trajectory.csv",
+          "exit_code": 0,
+          "stdout_sha256": "958c026a0b1bbee98ae5cf848582aeeefe2c505ebb6de88ee9f3894f17b5a67c"
+        },
+        {
+          "command": "rwb run reproduce examples/run-reconstruction/linear-recurrence/manifest.yaml --root . --attempt-dir work/demo/A-001",
+          "exit_code": 0,
+          "stdout_sha256": "402b22f1e78d480e13b367fa8773aca842772be849b78ef1614ba822e78e614d"
+        },
+        {
+          "command": "rwb validate work/demo/A-001/reconstruction-report.json --root .",
+          "exit_code": 0,
+          "stdout_sha256": "d5ff9e22de5fba4005f9b89e0b71524853ed84f6bc9d26b424e2c9dc9ad18e29"
+        }
+      ],
+      "executed": true,
+      "manual_project_file_edits": 0,
+      "manual_registry_profile_skill_copies": 0,
+      "merge_eligible": false,
+      "modes": 4,
+      "negative_result_preserved": true,
+      "projections": 0,
+      "provider_credentials": 0,
+      "python": "3.13.15",
+      "reconstruction": "matched",
+      "resources": 132,
+      "schemas": 84,
+      "validation_profile": "installed-runtime",
+      "route": "direct",
+      "isolated": true
+    },
+    {
+      "authority_boundaries": {
+        "claim_acceptance": false,
+        "human_decision": false,
+        "promotion": false,
+        "scientific_correctness": false
+      },
+      "command_corrections": 0,
+      "documented_cli": [
+        {
+          "command": "rwb resources check",
+          "exit_code": 0,
+          "stdout_sha256": "b4b79b610198197f697992940894b1bcdaf7dda33ece1a68ee87406c801fc8ec"
+        },
+        {
+          "command": "rwb schema list",
+          "exit_code": 0,
+          "stdout_sha256": "489f035e3a310cea6ba5c1aa1ff122d89072a05d12251dc49b880c0e137fcf5a"
+        },
+        {
+          "command": "rwb init project --project-id quickstart",
+          "exit_code": 0,
+          "stdout_sha256": "204975912c2b65c51e8ecad19b170da70f27a44d45e5ad6baea87b34c9edff1b"
+        },
+        {
+          "command": "rwb project check project",
+          "exit_code": 0,
+          "stdout_sha256": "8606341e9718b2fed7eda103312a647340cd20be59c705753b4b6cfb18fb4792"
+        },
+        {
+          "command": "rwb validate project/tasks/task.yaml project/profiles/local-no-skill.yaml --root project",
+          "exit_code": 0,
+          "stdout_sha256": "0b700cd9f54d273d7192dbcdd218a3ec21e2ffb4e03ca39118ea958d5774818c"
+        },
+        {
+          "command": "rwb init offline-project --template offline-demo --project-id offline-demo",
+          "exit_code": 0,
+          "stdout_sha256": "acddf6a4667fcd325e54dea54345e99b3e8438e019019a845fce4c19d235bac4"
+        },
+        {
+          "command": "rwb project check offline-project",
+          "exit_code": 0,
+          "stdout_sha256": "25010957d3b222d824871d950f8d6af3da189b84347a0ce0da24df9556a5abb6"
+        },
+        {
+          "command": "rwb validate tasks/task.yaml profiles/local-no-skill.yaml --root .",
+          "exit_code": 0,
+          "stdout_sha256": "0b700cd9f54d273d7192dbcdd218a3ec21e2ffb4e03ca39118ea958d5774818c"
+        },
+        {
+          "command": "rwb run check examples/run-reconstruction/linear-recurrence/manifest.yaml --root .",
+          "exit_code": 0,
+          "stdout_sha256": "6a669d9aff7e6cdff9aab88ea31e7e0b4d854f07106673bce1d6c0fa247f102c"
+        },
+        {
+          "command": "rwb hash examples/run-reconstruction/linear-recurrence/trajectory.csv",
+          "exit_code": 0,
+          "stdout_sha256": "958c026a0b1bbee98ae5cf848582aeeefe2c505ebb6de88ee9f3894f17b5a67c"
+        },
+        {
+          "command": "rwb run reproduce examples/run-reconstruction/linear-recurrence/manifest.yaml --root . --attempt-dir work/demo/A-001",
+          "exit_code": 0,
+          "stdout_sha256": "c1df26928fe906c4a6eff5896857b77328e5db9bee23c705d5104f192eda0b2b"
+        },
+        {
+          "command": "rwb validate work/demo/A-001/reconstruction-report.json --root .",
+          "exit_code": 0,
+          "stdout_sha256": "d5ff9e22de5fba4005f9b89e0b71524853ed84f6bc9d26b424e2c9dc9ad18e29"
+        }
+      ],
+      "executed": true,
+      "manual_project_file_edits": 0,
+      "manual_registry_profile_skill_copies": 0,
+      "merge_eligible": false,
+      "modes": 4,
+      "negative_result_preserved": true,
+      "projections": 0,
+      "provider_credentials": 0,
+      "python": "3.13.15",
+      "reconstruction": "matched",
+      "resources": 132,
+      "schemas": 84,
+      "validation_profile": "installed-runtime",
+      "route": "direct",
+      "isolated": false
+    },
+    {
+      "authority_boundaries": {
+        "claim_acceptance": false,
+        "human_decision": false,
+        "promotion": false,
+        "scientific_correctness": false
+      },
+      "command_corrections": 0,
+      "documented_cli": [
+        {
+          "command": "rwb resources check",
+          "exit_code": 0,
+          "stdout_sha256": "b4b79b610198197f697992940894b1bcdaf7dda33ece1a68ee87406c801fc8ec"
+        },
+        {
+          "command": "rwb schema list",
+          "exit_code": 0,
+          "stdout_sha256": "489f035e3a310cea6ba5c1aa1ff122d89072a05d12251dc49b880c0e137fcf5a"
+        },
+        {
+          "command": "rwb init project --project-id quickstart",
+          "exit_code": 0,
+          "stdout_sha256": "343e258dd34541d508c8f9676cfccbf0951f67439b861ae6dd3d9c61aad8e9f7"
+        },
+        {
+          "command": "rwb project check project",
+          "exit_code": 0,
+          "stdout_sha256": "5d7c699a3f0e8c05d0bb09f5e5b17e4d95e3e571c4b60eb3c25d2b862f13bf0b"
+        },
+        {
+          "command": "rwb validate project/tasks/task.yaml project/profiles/local-no-skill.yaml --root project",
+          "exit_code": 0,
+          "stdout_sha256": "0b700cd9f54d273d7192dbcdd218a3ec21e2ffb4e03ca39118ea958d5774818c"
+        },
+        {
+          "command": "rwb init offline-project --template offline-demo --project-id offline-demo",
+          "exit_code": 0,
+          "stdout_sha256": "8e0909e17faabb0bb5ccad839f7140f056a81df5c3e68df4e6850d3b07affa4f"
+        },
+        {
+          "command": "rwb project check offline-project",
+          "exit_code": 0,
+          "stdout_sha256": "dc795793fe931d38e91ebee30311ac459cfd2131ebc705d771a8a7fbd449b6d7"
+        },
+        {
+          "command": "rwb validate tasks/task.yaml profiles/local-no-skill.yaml --root .",
+          "exit_code": 0,
+          "stdout_sha256": "0b700cd9f54d273d7192dbcdd218a3ec21e2ffb4e03ca39118ea958d5774818c"
+        },
+        {
+          "command": "rwb run check examples/run-reconstruction/linear-recurrence/manifest.yaml --root .",
+          "exit_code": 0,
+          "stdout_sha256": "6a669d9aff7e6cdff9aab88ea31e7e0b4d854f07106673bce1d6c0fa247f102c"
+        },
+        {
+          "command": "rwb hash examples/run-reconstruction/linear-recurrence/trajectory.csv",
+          "exit_code": 0,
+          "stdout_sha256": "958c026a0b1bbee98ae5cf848582aeeefe2c505ebb6de88ee9f3894f17b5a67c"
+        },
+        {
+          "command": "rwb run reproduce examples/run-reconstruction/linear-recurrence/manifest.yaml --root . --attempt-dir work/demo/A-001",
+          "exit_code": 0,
+          "stdout_sha256": "e6ff5efe9d9d50c894a72556d55fdc19d5e01a5b236dc9aaf5e6f016d6835d71"
+        },
+        {
+          "command": "rwb validate work/demo/A-001/reconstruction-report.json --root .",
+          "exit_code": 0,
+          "stdout_sha256": "d5ff9e22de5fba4005f9b89e0b71524853ed84f6bc9d26b424e2c9dc9ad18e29"
+        }
+      ],
+      "executed": true,
+      "manual_project_file_edits": 0,
+      "manual_registry_profile_skill_copies": 0,
+      "merge_eligible": false,
+      "modes": 4,
+      "negative_result_preserved": true,
+      "projections": 0,
+      "provider_credentials": 0,
+      "python": "3.13.15",
+      "reconstruction": "matched",
+      "resources": 132,
+      "schemas": 84,
+      "validation_profile": "installed-runtime",
+      "route": "sdist-wheel",
+      "isolated": true
+    },
+    {
+      "authority_boundaries": {
+        "claim_acceptance": false,
+        "human_decision": false,
+        "promotion": false,
+        "scientific_correctness": false
+      },
+      "command_corrections": 0,
+      "documented_cli": [
+        {
+          "command": "rwb resources check",
+          "exit_code": 0,
+          "stdout_sha256": "b4b79b610198197f697992940894b1bcdaf7dda33ece1a68ee87406c801fc8ec"
+        },
+        {
+          "command": "rwb schema list",
+          "exit_code": 0,
+          "stdout_sha256": "489f035e3a310cea6ba5c1aa1ff122d89072a05d12251dc49b880c0e137fcf5a"
+        },
+        {
+          "command": "rwb init project --project-id quickstart",
+          "exit_code": 0,
+          "stdout_sha256": "35582ebb43744acb202ab00cef54aa4135b7bd1e851e90794cf2318aea78a55a"
+        },
+        {
+          "command": "rwb project check project",
+          "exit_code": 0,
+          "stdout_sha256": "0b81408e3b242ca9e4bd8e14551995fcb8f8aa633cca464fe657a1a835bdab45"
+        },
+        {
+          "command": "rwb validate project/tasks/task.yaml project/profiles/local-no-skill.yaml --root project",
+          "exit_code": 0,
+          "stdout_sha256": "0b700cd9f54d273d7192dbcdd218a3ec21e2ffb4e03ca39118ea958d5774818c"
+        },
+        {
+          "command": "rwb init offline-project --template offline-demo --project-id offline-demo",
+          "exit_code": 0,
+          "stdout_sha256": "5afb05cb86a29fc6f1505f44dc4d737b49bad670faa0221e325cce1452ffe698"
+        },
+        {
+          "command": "rwb project check offline-project",
+          "exit_code": 0,
+          "stdout_sha256": "e4adce83b498685462fe2ff4ca62059a940a25a0c2090c19be03e0e26736ea3f"
+        },
+        {
+          "command": "rwb validate tasks/task.yaml profiles/local-no-skill.yaml --root .",
+          "exit_code": 0,
+          "stdout_sha256": "0b700cd9f54d273d7192dbcdd218a3ec21e2ffb4e03ca39118ea958d5774818c"
+        },
+        {
+          "command": "rwb run check examples/run-reconstruction/linear-recurrence/manifest.yaml --root .",
+          "exit_code": 0,
+          "stdout_sha256": "6a669d9aff7e6cdff9aab88ea31e7e0b4d854f07106673bce1d6c0fa247f102c"
+        },
+        {
+          "command": "rwb hash examples/run-reconstruction/linear-recurrence/trajectory.csv",
+          "exit_code": 0,
+          "stdout_sha256": "958c026a0b1bbee98ae5cf848582aeeefe2c505ebb6de88ee9f3894f17b5a67c"
+        },
+        {
+          "command": "rwb run reproduce examples/run-reconstruction/linear-recurrence/manifest.yaml --root . --attempt-dir work/demo/A-001",
+          "exit_code": 0,
+          "stdout_sha256": "d0929c3cd62afdc7ac44ef90343920c88d6d491fc35882ed8472227580ab5467"
+        },
+        {
+          "command": "rwb validate work/demo/A-001/reconstruction-report.json --root .",
+          "exit_code": 0,
+          "stdout_sha256": "d5ff9e22de5fba4005f9b89e0b71524853ed84f6bc9d26b424e2c9dc9ad18e29"
+        }
+      ],
+      "executed": true,
+      "manual_project_file_edits": 0,
+      "manual_registry_profile_skill_copies": 0,
+      "merge_eligible": false,
+      "modes": 4,
+      "negative_result_preserved": true,
+      "projections": 0,
+      "provider_credentials": 0,
+      "python": "3.13.15",
+      "reconstruction": "matched",
+      "resources": 132,
+      "schemas": 84,
+      "validation_profile": "installed-runtime",
+      "route": "sdist-wheel",
+      "isolated": false
+    }
+  ],
+  "merge_eligible": false
+}

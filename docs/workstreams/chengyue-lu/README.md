@@ -4,15 +4,15 @@
 
 当前进行中或仍待具名语义决定的工作流：
 
-- [`M1-PROJECT-SCAFFOLD/`](M1-PROJECT-SCAFFOLD/README.md)：可复用项目模板、安装后离线 Run 路径与 0.x 兼容政策；实现候选等待当前 CI 与 R2 接受，M14-004 最终 Quickstart 继续独立收口。
+- [`M1-PROJECT-SCAFFOLD/`](M1-PROJECT-SCAFFOLD/README.md)：可复用项目模板、安装后离线 Run 路径与 0.x 兼容政策；[PR #74](https://github.com/Chengyue-Lu/research-agent-workbench/pull/74) 已获 R2 review 并合入，M14-004 消费该实际入口。
 
 - [`DOC-ALIGN-002/`](DOC-ALIGN-002/README.md)：PR #68 已合入，完成 accepted M4/M14 成熟度、Phase D
   入口与 ADR-0020 Gate 对齐；后续 [navigation maintenance](DOC-ALIGN-002/FOLLOWUP-20260912.md) 收口
   TASKS 辅助说明与工作流索引，M14 activation/public docs 继续由独立工作流承担。
 - [`M14-CURATED-RELEASE/`](M14-CURATED-RELEASE/README.md)：M14-001～003 已由 PR #60 合入；
   [PR #69](https://github.com/Chengyue-Lu/research-agent-workbench/pull/69) 承载 M14-004 public surface
-  preparation 已在 PR #73 文档维护之后接受合入。最终 Quickstart 消费获接受的 M1-009
-  实际 scaffold 流程后收口；M14-005 仍受 license、scaffold、public docs 与远端保护等 Gate 约束。
+  preparation 已在 PR #73 文档维护之后接受合入。最终 Quickstart 已消费获接受的 M1-009
+  实际 scaffold 流程，本轮提交 M14-004 完成提案；M14-005 仍受 license、远端保护与具名发布决定约束。
 - [`M5-SYSTEM-EVALUATION-DESIGN/`](M5-SYSTEM-EVALUATION-DESIGN/README.md)：冻结 system-level
   primary estimand、case dossier public/private boundary、Protocol/Harness Tasks 与真实执行/pruning Gate；
   ADR-0020 已选择 dual transport；M5-006 是 READY 的 Protocol 入口，Execution-owned M6-008 等待其冻结

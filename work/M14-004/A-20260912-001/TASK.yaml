@@ -1,0 +1,54 @@
+task_id: M14-004
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+agent_profile: bounded-public-quickstart-maintainer
+required_skills: []
+delegation: false
+baseline: 451644064f558601d5778b9b115390f882f4d260
+user_request: M1-009已review通过 可以进行下一步。
+goal: Complete the accepted M14-004 public documentation surface using the accepted
+  M1-009 installed scaffold and bounded offline Run.
+read_allowlist:
+- AGENTS.md
+- README.md
+- CHANGELOG.md
+- docs/**
+- .github/release-surface.yml
+- .github/scripts/release_surface.py
+- .github/scripts/portable_package_smoke.py
+- .github/scripts/check_pr_governance.py
+- tests/test_documentation.py
+- tests/test_public_surface.py
+- tests/public_surface_helpers.py
+- tests/test_pr_governance.py
+- tests/test_release_surface.py
+- tests/test_scaffold.py
+- src/research_workbench/scaffold.py
+- src/research_workbench/cli.py
+- src/research_workbench/artifacts/run_reconstruction.py
+- src/research_workbench/_templates/**
+- pyproject.toml
+- MANIFEST.in
+- runtime-resources.json
+- work/M14-004/**
+- work/M1-009/A-20260912-001/{TASK.yaml,ACTORS.yaml,INDEX.yaml,events.jsonl}
+write_scope:
+- README.md
+- CHANGELOG.md
+- docs/GETTING_STARTED.md
+- docs/SUPPORTED_FEATURES.md
+- docs/TASKS.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/workstreams/chengyue-lu/README.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- tests/public_surface_helpers.py
+- tests/test_public_surface.py
+- work/M14-004/A-20260912-001/**
+stop_conditions:
+- Normal R2 completion PR to develop with current-candidate CI and cross-owner review
+  requested.
+- Keep M14-005 BLOCKED and local develop unchanged. No release branch, release tag,
+  release topology activation or M14-004 self-merge.

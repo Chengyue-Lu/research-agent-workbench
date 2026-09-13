@@ -5,7 +5,7 @@
 ## Unreleased
 
 - README、上手指南、支持矩阵和公开模块导航使用同一组源码文档；源码发行面包含构建后端、Runtime catalog 声明和 no-Skill 示例。
-- 安装后可以在源码目录外校验资源、创建最小项目并复制与验证 no-Skill Task。完整 scaffold 流程仍待集成。
+- 安装后可在源码目录外创建完整 no-Skill 项目、校验项目与资源 pin；上手指南串联 offline-demo 的证据定位、Run 检查、独立进程重建与报告验证。
 
 ## 0.1.0 — 开发版本 / technical alpha
 
