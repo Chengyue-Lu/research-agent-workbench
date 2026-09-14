@@ -1,0 +1,8 @@
+......................................................................................................governance: FAIL: GITHUB_EVENT_PATH is required
+governance: FAIL: Expecting value: line 1 column 1 (char 0)
+.
+----------------------------------------------------------------------
+Ran 103 tests in 0.369s
+
+OK
+governance: push/non-PR event; PR-only checks skipped

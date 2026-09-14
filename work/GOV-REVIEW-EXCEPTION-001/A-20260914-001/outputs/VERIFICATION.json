@@ -1,0 +1,58 @@
+{
+  "implementation_head": "7ce9ad6aefaf0f81a244f48a7baf7729bad6ce2f",
+  "baseline": "f7a9715ed35787d3326283c22f834b1514c5c88c",
+  "focused_passed": 103,
+  "coverage_execution_tests": 1217,
+  "coverage_policy": "PASS",
+  "coverage_execution_outcomes": {
+    "passed": 1213,
+    "skipped": 4
+  },
+  "governance_coverage": {
+    "covered_lines": 656,
+    "num_statements": 669,
+    "percent_covered": 97.91883454734652,
+    "percent_covered_display": "98",
+    "missing_lines": 13,
+    "excluded_lines": 0,
+    "percent_statements_covered": 98.05680119581464,
+    "percent_statements_covered_display": "98",
+    "num_branches": 292,
+    "num_partial_branches": 7,
+    "covered_branches": 285,
+    "missing_branches": 7,
+    "percent_branches_covered": 97.6027397260274,
+    "percent_branches_covered_display": "98"
+  },
+  "repository": {
+    "validated": 186,
+    "errors": 0,
+    "warnings": 0
+  },
+  "configuration_negative_checks": 8,
+  "hard_rulesets": {
+    "develop": 23305447,
+    "main": 23305460
+  },
+  "review_rulesets": {
+    "develop": 23192001,
+    "main": 23192054
+  },
+  "hard_bypass": [],
+  "review_bypass": [
+    {
+      "actor_id": 140945476,
+      "actor_type": "User",
+      "bypass_mode": "pull_request"
+    }
+  ],
+  "remote_tips_unchanged": true,
+  "primary_clean": true,
+  "primary_head": "11c3b57dfbf8af0dc2587fc421d097e2544941c3",
+  "initial_repository_failure": "New worktree had no generated _runtime_pin before editable build; installation in its own venv resolved setup, not a product change.",
+  "final_head_hosted_ci": "Pending final evidence commit and PR push.",
+  "canonical_task_rows_unchanged": true,
+  "specific_pr_merge_authorized": false,
+  "remote_pr_merges": 0,
+  "release_authority_changed": false
+}

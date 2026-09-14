@@ -1,0 +1,2 @@
+# Preserve the frozen native coverage-policy receipt, including its final blank line.
+A-20260914-001/tool-events/coverage-policy.log whitespace=-blank-at-eof

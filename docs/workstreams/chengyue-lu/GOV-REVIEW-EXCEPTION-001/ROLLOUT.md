@@ -33,3 +33,13 @@ main/develop branch API 均保持 protected，配置前后 tips 相同：
 未执行 merge、直推、force/delete 探测；回读证明配置及组合覆盖，不冒充破坏性操作的实际拒绝结果。
 原 M14 readiness 的无 bypass 快照保留为部署历史，当前远端保护以本次分层记录及合并前 fresh readback 为准。
 本次启用没有授予任何具体 PR 的例外合并权。
+
+## 验证档案
+
+[Attempt index](../../../../work/GOV-REVIEW-EXCEPTION-001/A-20260914-001/INDEX.yaml) 与
+[验证汇总](../../../../work/GOV-REVIEW-EXCEPTION-001/A-20260914-001/outputs/VERIFICATION.json)
+绑定实现提交 `7ce9ad6aefaf0f81a244f48a7baf7729bad6ce2f`。103 项 focused checks、repository 186/0/0
+及治理检查 PASS；本地计划 coverage execution 为 1213 PASS + 4 skip，impact coverage policy PASS，
+治理器 line 98.06% / branch 97.60%。这不是 repository-global coverage 声明。
+独立 worktree 首次缺少构建生成的 runtime pin，完成自身 editable install 后 repository 验证通过；失败与恢复均留证。
+Trace 无 BLOCK，保留 capture-gap warning；最终提交的 hosted CI 以 PR 当前回执为准。

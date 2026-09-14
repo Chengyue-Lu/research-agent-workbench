@@ -1,0 +1,18 @@
+Declared risk: R2
+Inferred minimum: R2
+Effective risk: R2
+Reason:
+- .github/scripts/check_pr_governance.py matches the R2 policy surface
+- AGENTS.md matches the R2 policy surface
+- docs/decisions/0022-SINGLE-PR-MAINTAINER-REVIEW-EXCEPTION.md matches the R2 policy surface
+- docs/decisions/README.md matches the R2 policy surface
+- PR declares a shared-contract impact
+- PR declares an authority, permission, or data-boundary impact
+Requirements:
+- pull request and required CI
+- cross-owner review or explicit single-PR maintainer exception before merge (DEVELOPMENT 5.4)
+- explicit authority basis
+- adversarial or negative evidence
+- owner-matched workstream and Risk Ledger
+governance: PASS
+{"head": "7ce9ad6aefaf0f81a244f48a7baf7729bad6ce2f", "base": "f7a9715ed35787d3326283c22f834b1514c5c88c", "plan_id": "11508597364268c61cdddd75b22958a550c3fb973d8a8eac11884b18edd207a7", "behavioral": "focused", "coverage": "impact", "package": true}
