@@ -4,6 +4,7 @@
 
 当前进行中或仍待具名语义决定的工作流：
 
+- [`GOV-REVIEW-EXCEPTION-001/`](GOV-REVIEW-EXCEPTION-001/README.md)：reviewer 不可用时由路诚钺批准单次审核例外，独立保留 CI/PR/发布硬门禁。
 - [`M1-PROJECT-SCAFFOLD/`](M1-PROJECT-SCAFFOLD/README.md)：可复用项目模板、安装后离线 Run 路径与 0.x 兼容政策；[PR #74](https://github.com/Chengyue-Lu/research-agent-workbench/pull/74) 已获 R2 review 并合入，M14-004 消费该实际入口。
 
 - [`DOC-ALIGN-002/`](DOC-ALIGN-002/README.md)：PR #68 已合入，完成 accepted M4/M14 成熟度、Phase D

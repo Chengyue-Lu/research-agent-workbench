@@ -309,10 +309,10 @@ def resolve_effective_risk(
     report.effective_risk = effective
     report.requirements = {
         "R0": ["pull request and required CI"],
-        "R1": ["pull request and required CI", "cross-owner review before merge"],
+        "R1": ["pull request and required CI", "cross-owner review or explicit single-PR maintainer exception before merge (DEVELOPMENT 5.4)"],
         "R2": [
             "pull request and required CI",
-            "cross-owner review before merge",
+            "cross-owner review or explicit single-PR maintainer exception before merge (DEVELOPMENT 5.4)",
             "explicit authority basis",
             "adversarial or negative evidence",
             "owner-matched workstream and Risk Ledger",

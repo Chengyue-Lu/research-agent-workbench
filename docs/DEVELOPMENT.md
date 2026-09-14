@@ -89,8 +89,8 @@ effective_risk = max(declared_risk, minimum_risk)
 | 风险 | 典型表面 | 最低治理 |
 |---|---|---|
 | `R0` Routine | owner 内实现、bugfix、测试、refactor、非规范文档 | PR + CI；跨 owner review 可选 |
-| `R1` Shared Contract | Schema、Registry、公共模型/CLI、兼容迁移 | PR + CI + cross-owner review；workstream 可选 |
-| `R2` Authority / Safety | Method/Claim/Gate、权限、数据边界、Runtime authority、架构、治理、安全 | PR + CI + cross-owner + authority basis + adversarial evidence + workstream/Risk Ledger |
+| `R1` Shared Contract | Schema、Registry、公共模型/CLI、兼容迁移 | PR + CI；审核为 cross-owner review 或第 5.4 节的单次维护者例外；workstream 可选 |
+| `R2` Authority / Safety | Method/Claim/Gate、权限、数据边界、Runtime authority、架构、治理、安全 | PR + CI；审核为 cross-owner review 或第 5.4 节的单次维护者例外；另须 authority basis、adversarial evidence、workstream/Risk Ledger |
 
 `.github/governance-policy.json` 保存 owner、状态机与最低风险路径。治理器输出 `INFO / WARNING /
 ERROR`；只有 `ERROR` 使 CI 失败，并必须解释推导风险、原因和补救要求。
@@ -118,7 +118,7 @@ Task 状态机允许 `PARKED → READY → IN_PROGRESS → DONE`、`READY/IN_PRO
 4. 所有成员 Task 均在 PR 中声明，且各有独立 implementation slice、可定位 commit 和 task-specific
    Verification evidence；
 5. 每个依赖要么在 base 中已 `DONE`，要么在同一 PR 的拓扑序中先行闭合；
-6. PR risk 取所有成员及 changed paths 推导风险的最高值，相关 owner/cross-owner review 不因合并 PR 而减少。
+6. PR risk 取所有成员及 changed paths 推导风险的最高值；合并 PR 不减少相关 owner 的责任，审核仍按第 5.1、5.4 节执行。
 
 治理器验证声明闭包、定义不可改写、外部依赖、入口可达性、DAG 顺序和逐 Task 证据；reviewer 复核
 implementation slice/commit 是否确实可独立审查。断连 Task、未声明中间层、缺少证据或外部依赖未满足
@@ -129,8 +129,8 @@ R0 maintenance 可以填写 `Task ID(s): none`，前提是 `TASKS.md` 不变；R
 Audit ID。feature 置 `DONE` 只代表机器确认结构资格、证据字段和 CI，完成判断仍由具名 owner 承担。
 不再创建独立 `task-closeout` PR。
 
-PR 模板不再人工复制 Git 已知的 base SHA，也不要求填写 reviewer。Cross-owner review 由有效风险、
-CODEOWNERS 和 ruleset 决定。
+普通 PR 模板不再人工复制 Git 已知的 base SHA，也不要求填写 reviewer。Cross-owner review 由有效风险、
+CODEOWNERS 和 ruleset 决定；第 5.4 节的例外决定须另行绑定 exact base/head。
 
 已经进入 `develop` 的版本化 Registry 文档按 identity append-only：Mode Action
 `action_id + version`、Research Mode `mode_id + version`、Decision Authority Matrix
@@ -146,12 +146,43 @@ CODEOWNERS 和 ruleset 决定。
 - History 只为重要 workstream、迁移、治理/架构决定、release milestone 或关键失败建立，不按每个
   Task 自动制造 closeout 文档；
 - CODEOWNERS 不使用全局 `*`，只覆盖共享契约与 authority-sensitive 路径；
-- `develop` ruleset 的全局 approval count 为 0，但敏感路径要求 Code Owner review；`main` release
-  继续至少 1 approval。两者都要求治理与 Python 3.11/3.13 checks、conversation resolution，并禁止
-  direct/force/delete。
+- `develop` 审核层的全局 approval count 为 0，但敏感路径要求 Code Owner review；`main` 审核层
+  要求至少 1 approval 和 last-push approval。两者都保留 stale review dismissal；只有第 5.4 节可使用审核层例外。
+- 每个分支另设无 bypass 的硬门禁层：必须 PR、规定的 merge method、治理与 Python 3.11/3.13 checks、
+  latest-base 检查、conversation resolution，以及禁止 force/delete。审核层的 bypass 不覆盖硬门禁层。
 
 仓库内的治理检查负责验证来源拓扑、PR 元数据和 TASKS diff；GitHub ruleset 负责阻止直推、要求
 Code Owner 审查和必需 checks。两者都配置完成才构成有效保护。
+
+### 5.4 Reviewer 不可用时的单次维护者例外
+
+正常路径为 cross-owner review。路诚钺（`Chengyue-Lu`）可在亲自确认另一 reviewer 当前暂无空闲后，
+针对单个 PR 作出 `maintainer exception` 决定；可以由 PR 作者本人承担这项维护者责任。
+**无需默认等待时间**，也没有超时自动批准。该例外只替代第二人审核，不代表取得 cross-owner approval。
+治理决定见 [ADR-0022](decisions/0022-SINGLE-PR-MAINTAINER-REVIEW-EXCEPTION.md)。
+
+每次使用须满足：
+
+1. PR 已请求审核，路诚钺明确确认 reviewer 不可用，并审阅当前 diff、验证证据和剩余风险。
+2. 在 PR 保存具名决定：PR URL、base/head 完整 SHA、审核请求与不可用确认、CI/evidence 链接、
+   未解决问题、风险承接、回退办法、决定时间及明确的单次合并授权。可以转录其明确指令并标明来源。
+3. 合并前回读 exact base/head、必需 checks、conflicts、review/conversation 状态和有效 rulesets。
+   失败或缺失检查、未解决阻断问题、实质性 changes-requested 或冲突均不得按 reviewer 不可用处理。
+4. 决定有效期最多 24 小时，且只使用一次。base/head 改变、授权撤回或出现新阻断发现时立即失效；
+   更新后的候选重新核对并取得单次决定。
+5. 合并后记录执行人、时间、merge SHA 和例外依据；另一 owner 恢复后补审，发现问题通过修复或 revert PR 收口。
+6. `main` 还须有针对本次发布的具名 Human release decision，并满足相应 readiness、source/parent、
+   manifest/projection/tree 与工件门禁。例外不改变 Task 状态、dormant topology 或发行权限。
+
+GitHub 审核层仅允许 `Chengyue-Lu`（user ID `140945476`）使用 `pull_request` bypass；硬门禁层的
+bypass actors 必须为空。不得向合并了 CI 等硬门禁的 ruleset 直接添加 bypass，不得使用 `always` 或
+`exempt` 模式。变更授权对象或范围须另行作出治理决定。
+
+单次确认、exact-head 有效期、风险承接与补审属于人类操作规范；GitHub 原生 bypass 不会自动校验
+这些记录。仓库治理器只报告审核要求，不通过 PR 自报字段授予例外。Agent 可整理证据并执行已经明确
+授权的操作，不得自行作出例外决定；接受本机制不等于批准某个具体 PR。
+
+可复制的决定与回读步骤见 [操作记录模板](workstreams/chengyue-lu/GOV-REVIEW-EXCEPTION-001/EXCEPTION_RECORD.md)。
 
 ## 6. 变更检查清单
 
