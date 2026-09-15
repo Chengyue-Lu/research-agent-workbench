@@ -1,0 +1,139 @@
+{
+  "record_kind": "gate-b-closeout-evidence",
+  "gate_id": "M5-SKILL-CLOSEOUT-REPLAY-GATE",
+  "task_id": "M11-007",
+  "proposed_status": "SATISFIED",
+  "effective_when": "This R2 closeout record is accepted and merged into develop.",
+  "accepted_implementation": {
+    "pr": 81,
+    "head": "c529ac19e09ad436980acd46209fd964d9c80977",
+    "base": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+    "merge_commit": "7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba",
+    "merged_at": "2026-09-15T14:17:44Z",
+    "merge_tree_matches_reviewed_head": true,
+    "implementation_commit": "e1022d408c805aefb81e9177020064fe85e0ebc3"
+  },
+  "contract": "skill-execution@1.0.0",
+  "source_refs": [
+    {
+      "path": "schemas/v0.1.0/skill-execution-consumption.schema.json",
+      "sha256": "39df4b1c69fa4798e7103fb8fd97fcc8df718490b1079b20b24aff5f5707427f"
+    },
+    {
+      "path": "schemas/v0.1.0/skill-execution-host-report.schema.json",
+      "sha256": "352dded306dde7f7b5b72aa2d73262ff22c87f1e714c6fadfe85a9359467dfc7"
+    },
+    {
+      "path": "schemas/v0.1.0/skill-execution-receipt.schema.json",
+      "sha256": "2d3d3110697ec16870f2e0ef92f83b0bb6dfb6080d61a7ff94b1a0a0f5051608"
+    },
+    {
+      "path": "schemas/v0.1.0/skill-execution-trace-fact.schema.json",
+      "sha256": "72e3fccde36476da6c9af5e21c876e90c16e6e3001a85bfb2b04c95314c6825a"
+    },
+    {
+      "path": "src/research_workbench/execution/__init__.py",
+      "sha256": "9144ee4c6f1be220e7a414a86045ce237dad9d184d031e376d6718f59fffc178"
+    },
+    {
+      "path": "src/research_workbench/execution/generic_closeout.py",
+      "sha256": "c0ebc1d212cb25586f277728e48a315bbbc5f8f4c0677940179896284074a7dd"
+    },
+    {
+      "path": "src/research_workbench/execution/host.py",
+      "sha256": "2229f666b13424e29af8a1cd9609ca19e1be8202548e1b7c1bff433cb12f9599"
+    },
+    {
+      "path": "src/research_workbench/execution/skill_closeout.py",
+      "sha256": "8c6ec0b6790452b1ecec03a4945bebf8187d4a278274f5b2fba72546b64588bb"
+    },
+    {
+      "path": "src/research_workbench/execution/skill_facts.py",
+      "sha256": "7f542631b9770fbb8dfa5b05d73f26463c69c9d68d0e47dfd8834b9fb594465e"
+    },
+    {
+      "path": "src/research_workbench/validation/document_kinds.py",
+      "sha256": "b653e3c17cb06ef97cebfaa75790a581d74970192d202ba09ad256906e003966"
+    }
+  ],
+  "vertical_proof": {
+    "path": "work/M11-007/A-20260915-003/checks/vertical-proof.json",
+    "sha256": "c71dd8394d19ee93afd1e036a9705dfae5107c8cf3ea0cd27bb2f65d1b7e59f0"
+  },
+  "cases": [
+    {
+      "case": "completed-with-tool",
+      "receipt": {
+        "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/closeout/receipt.yaml",
+        "sha256": "fccc51fc9602263641daa98cc91b4bc9aa7b43bc9074542c0b3ee381669125bf"
+      },
+      "result": {
+        "status": "completed",
+        "completion_claim": "action-capability-slice-only",
+        "task_completion": false,
+        "receipt_sha256": "fccc51fc9602263641daa98cc91b4bc9aa7b43bc9074542c0b3ee381669125bf"
+      }
+    },
+    {
+      "case": "failed-model",
+      "receipt": {
+        "path": "work/M11-007/A-20260915-003/synthetic/failed-model/closeout/receipt.yaml",
+        "sha256": "dc7abd35ac713b1421b883266c8939139b4a063014b41b8c9bc157a050346218"
+      },
+      "result": {
+        "status": "failed",
+        "completion_claim": "none",
+        "task_completion": false,
+        "receipt_sha256": "dc7abd35ac713b1421b883266c8939139b4a063014b41b8c9bc157a050346218"
+      }
+    },
+    {
+      "case": "failed-projection",
+      "receipt": {
+        "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/closeout/receipt.yaml",
+        "sha256": "48f54a36e314f328fcee227191c85dc7c3050240cbe005463411a616219b545b"
+      },
+      "result": {
+        "status": "failed",
+        "completion_claim": "none",
+        "task_completion": false,
+        "receipt_sha256": "48f54a36e314f328fcee227191c85dc7c3050240cbe005463411a616219b545b"
+      }
+    },
+    {
+      "case": "preflight-blocked",
+      "receipt": {
+        "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/closeout/receipt.yaml",
+        "sha256": "9f1123b90e948dcffd5fcdd2dd89eeb46899761c29295f124f7456b79c71838c"
+      },
+      "result": {
+        "status": "blocked",
+        "completion_claim": "none",
+        "task_completion": false,
+        "receipt_sha256": "9f1123b90e948dcffd5fcdd2dd89eeb46899761c29295f124f7456b79c71838c"
+      }
+    }
+  ],
+  "acceptance": {
+    "path": "docs/workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/attempts/GATE-B-CLOSEOUT-001/evidence/pr81-acceptance.json",
+    "sha256": "31f2d1f9621cf341323d36199494aa2fe228733aeae66c587ecd7c33ea1095da"
+  },
+  "ci": {
+    "path": "docs/workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/attempts/GATE-B-CLOSEOUT-001/evidence/verified-ci-summary.json",
+    "sha256": "aced9ce0a956e27ddf86aac269e670476eac412486fc3536decd0a0dcb5b66d5"
+  },
+  "content_ci_run": 34976956664,
+  "governance_run": 34978544662,
+  "remaining_dependencies": {
+    "M5-007": [
+      "M6-008 DONE"
+    ],
+    "M6-008": "PR75 candidate; existing Task owner/definition unchanged"
+  },
+  "limits": [
+    "bounded synthetic execution and independent replay",
+    "failure replay does not establish successful overlay equality",
+    "M5 compares the replay result against its frozen overlay",
+    "no live readiness, real-case efficacy, Skill admission or release authority"
+  ]
+}

@@ -8,7 +8,8 @@
   PR78 MIT/readiness preparation 与 PR79 审核治理。
 - 分支：`docs/m11-skill-closeout-gate`，目标 `develop`。
 - 状态：任务定义已由 [PR #76](https://github.com/Chengyue-Lu/research-agent-workbench/pull/76) 合入；
-  当前 [implementation candidate](IMPLEMENTATION.md) 独立推进，[Gate B](GATE.md) 仍为 UNSATISFIED。
+  [PR #81](https://github.com/Chengyue-Lu/research-agent-workbench/pull/81) 已接受并合入实现；M11-007 DONE，
+  [Gate B](GATE.md) SATISFIED（本 R2 收口记录合入后生效）。后继见 [M6-008 接手准备](M6-008-HANDOFF.md)。
 - 来源：[Issue #55](https://github.com/Chengyue-Lu/research-agent-workbench/issues/55)、
   [ADR-0020](../../../decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md)、
   [TASKS](../../../TASKS.md)、用户授权“71已合并，M6-008正在推进，开始推进gateB任务定义”。
@@ -32,7 +33,7 @@ M5-006 的已接受 overlay 是 Evaluation consumer 的接口背景；Runtime �
 | 输入 / 输出 | 本 Task 的要求 |
 |---|---|
 | 冻结执行输入 | exact Task / Action / Capability slice / Attempt、Resolution/Snapshot、selected Supply/component、Bundle/View、SkillReleaseProjection 的 identity/version/path/hash 与 Skill ID/version/hash |
-| Host 与 typed Trace facts | 记录 use-boundary 实际消费的 Projection/Supply/binding；闭合 Provider/Adapter/Model/Runtime/Host、实际 Tool component 与调用事实；planned View 不能替代 actual evidence |
+| Host 与 typed Trace facts | 调用前记录实际消费的 Projection/Supply，调用后独立记录 actual binding；闭合 Provider/Adapter/Model/Runtime/Host、实际 Tool component 与调用事实；planned View 不能替代 actual evidence |
 | 版本化 closeout extension | 明确支持 Skill-bearing execution 的版本与 Schema 分派，builder、独立文件 replay validator 及必要的 typed execution-fact 扩展；保留现有 Core v0.1 与 legacy Receipt 的版本语义和回放 |
 | 输出与校验 | exact Artifacts、frozen Trace、Host report 与 deterministic Validation subject closed set；拒绝缺项、偷渡、hash/identity 漂移及自报 eligibility |
 | M5 consumer 接口 | 从 replay-validated result 暴露实际 Projection/Supply/binding 和生命周期，由 M5-007 在评价侧与 M5-006 overlay 比较；M11-007 不读取 candidate、Evaluation、Human Admission 或 private oracle |

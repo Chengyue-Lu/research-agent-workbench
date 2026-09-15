@@ -1,0 +1,33 @@
+{
+  "observed_at": "2026-09-15T14:44:44.457090+00:00",
+  "pr": 81,
+  "state": "MERGED",
+  "head": "c529ac19e09ad436980acd46209fd964d9c80977",
+  "base": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+  "merge_commit": "7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba",
+  "merged_at": "2026-09-15T14:17:44Z",
+  "execution_review_url": "https://github.com/Chengyue-Lu/research-agent-workbench/pull/81#pullrequestreview-5211196644",
+  "execution_review": {
+    "id": "PRR_kwDOT2gtDc8AAAABNpyM5A",
+    "author": {
+      "login": "let778750-cpu"
+    },
+    "authorAssociation": "COLLABORATOR",
+    "body": "# PR81 — APPROVE\n\n- Reviewer: let778750-cpu / 黄毅侧 Codex，未委派子代理。\n- Candidate: `c529ac19e09ad436980acd46209fd964d9c80977`\n- Base: `0bebafd81f0116a8269c63ac97378038a1eb2a5d` (`develop`)\n- Scope: M11-007 Skill execution closeout 1.0.0 实现、Core/Host 衔接、三项既有审查意见的修复及当前证据。\n\n当前提交未发现需要修改的新增问题；支持合并此实现候选。\n\n## 三项既有意见\n\n1. **P1，调用前预报 actual binding：已修复。** `skill-input-consumption` 仅固定实际读取的 Supply/Projection/component 输入，不含调用结果。另一个 Core `actual-execution-binding` 在调用后记录 actual binding/scalar；回放要求两个 typed/hash-pinned fact 与各自的 creation event，输入记录早于所有 Provider request/Tool invocation，结果记录晚于所有 Provider request/response/Tool event。failed drift 保留观察到的事实。\n2. **P1，错误 Skill closure 在执行后才阻断：已修复。** Host 对已选 Supply 做只读 Skill closure 校验，错误 kind 或无效 Projection 在 driver 调用前进入 preflight-blocked；没有候选扫描、重新选择或 fallback。对应负例同时约束 driver/provider/tool 零调用和无 actual consumption。\n3. **P2，恢复磁盘文件可掩盖矛盾重读：已修复。** 回放收集每个 canonical path 的全部读取，实际 Supply 和 Projection 各要求唯一且 hash 一致的 read；重复、矛盾以及 canonical alias 重读均拒绝。\n\n## 独立核验\n\n- 检查变更实现、schema、测试与直接依赖。四个 schema 均为新增，既有 schema 字节不变；Core 仍拒绝 Skill receipt/fact，旧 A-002 自原审查 head 起未改写。正式 Task 仅 M11-007 从 READY 改为 IN_PROGRESS。\n- 校验当前 A-003 proof SHA256 `c71dd8394d19ee93afd1e036a9705dfae5107c8cf3ea0cd27bb2f65d1b7e59f0`、16 个 implementation source pin、109 个案例文件 pin，以及 archive INDEX 的 10 个引用和 9 个事件。当前 runtime 源码/schema 与 proof 的 implementation commit `e1022d4` 字节一致；历史 source pin 与当前 head 的区别明确保留。\n- 用当前 review checkout 源码，在四个独立 `python -I` 进程回放 completed-with-tool、failed-model、failed-projection、preflight-blocked；断言导入来源，并禁用网络与 Host 执行入口。四项均匹配归档结果，未安装包或重跑全量测试。completed 仅 `action-capability-slice-only`，failed/blocked 为 `none`，所有结果 `task_completion=false`。\n- [当前 content CI 34976956664](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34976956664)：独立复算 plan 与 execution receipt 摘要，验证 ordered projections 逐条等于原始执行记录。Python 3.11/3.13 各 **1272 PASS**；coverage 选择集 **1248 PASS**；共享执行并集 **1274 PASS**，均无 skip。当前策略为 **focused + impact/repository coverage**，不称为 hosted full。\n- CI target `fef9abc85ba9fc74cf231f43a2f778dd7cfc5b03` 与当前 head tree 相同：`ab3622045a95173f4927fa1d35d8dbf1b5f1a4f6`。source line coverage **93.89%**，16 个 impact subject 变更行/分支均覆盖；两个新 Skill 模块行/分支均 **100%**。repository smoke **186/0/0**，package smoke **8/8** 且资源/重建匹配。\n- [当前 governance 34978544662](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/34978544662) 与 content run 均为此 head 的 completed/success。发布审查前 head/base 未变化，PR 为 OPEN/MERGEABLE，所见 checks 全部成功。\n\n## 接受边界\n\n本审查接受当前实现候选及上述 synthetic 证据。M11-007 仍为 **IN_PROGRESS**，Gate B 仍为 **UNSATISFIED**，M5-007 仍为 **BLOCKED**；合并及双方对 Gate B 的 exact pins 具名接受另按现有记录收口。此次 review 不产生 Task/Claim/Human/admission/promotion/recovery authority，也不证明真实研究效果。\n\n此次未合并、未改保护规则、未改产品源码。完整独立核验结果保存于本地 `verification.json`；审查留档为 scoped/gapped，不声称是完整 Runtime/provider transcript。\n",
+    "submittedAt": "2026-09-15T14:16:02Z",
+    "includesCreatedEdit": false,
+    "reactionGroups": [],
+    "state": "APPROVED",
+    "commit": {
+      "oid": "c529ac19e09ad436980acd46209fd964d9c80977"
+    }
+  },
+  "evaluation_consumer_acceptance": {
+    "owner": "Chengyue-Lu",
+    "source": "current user message in the M11 implementation task",
+    "text": "对M11-007做收口与gateB收口，然后准备接手M6-008的开发任务。",
+    "context": "Follows the reported c529ac1 repair and exact-head verification; requests Task/Gate closeout and M6 intake.",
+    "scope": "M11-007 bounded implementation and Gate B evidence closeout; no scientific or release acceptance"
+  },
+  "closeout_record_review": "This separate R2 documentation change still requires current-head cross-owner review before merge."
+}

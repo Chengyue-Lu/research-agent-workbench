@@ -41,3 +41,16 @@
 
 See [review repair](REVIEW-REPAIR.md). The old post-call archive is historical, while new proof and exact-head
 CI support focused re-review. Gate B remains UNSATISFIED.
+
+## PR81 接受后的收口
+
+上方 candidate/UNSATISFIED 描述保留对应阶段的风险处置。当前状态见 [Gate record](GATE.md)。
+
+| 当前风险 | 处置 / 剩余责任 |
+|---|---|
+| 将实现合并自动当作全部 Gate 接受 | 分别固定 PR81 exact-head APPROVE、merge tree、用户的 Evaluation consumer 收口指令；本 R2 文档变更另走当前 head review |
+| 状态收口破坏历史 pins | A-002/A-003 与 Gate 定义归档逐字节保留；新证据索引只引用已接受的 exact pins |
+| Gate B 满足被用于跳过 baseline | M5-007 保持 BLOCKED；M6-008 仍沿 PR75 独立接受，M5 live/case/admission Gates 保留 |
+| 接手覆盖另一 owner 的工作 | 新建隔离本地工作区固定 PR75 head；当前仅做 inventory/合并预检，不推送或改写原候选，后续修改继续在同一 PR 审查 |
+
+开发记录仍有显式 capture-gap；它用于导航到原 review/CI/运行证据，不替代完整 Runtime Trace。
