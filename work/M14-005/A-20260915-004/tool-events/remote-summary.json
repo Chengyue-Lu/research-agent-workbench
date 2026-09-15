@@ -1,0 +1,99 @@
+{
+  "observed_at": "2026-09-15T14:41:58.163735+00:00",
+  "repository": "Chengyue-Lu/research-agent-workbench",
+  "branches": {
+    "develop": {
+      "tip": "7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba",
+      "hard_ruleset": 23305447,
+      "review_ruleset": 23192001,
+      "protected": true,
+      "required_checks": [
+        "governance",
+        "test (3.11)",
+        "test (3.13)"
+      ],
+      "check_app_id": 15368,
+      "strict_latest_base": true,
+      "merge_method": "squash",
+      "hard_bypass_actors": [],
+      "review_bypass_actors": [
+        {
+          "actor_id": 140945476,
+          "actor_type": "User",
+          "bypass_mode": "pull_request"
+        }
+      ],
+      "effective_rules_match": true
+    },
+    "main": {
+      "tip": "b1d5a5a5850e0e7541e4c460f15384cd45357ab2",
+      "hard_ruleset": 23305460,
+      "review_ruleset": 23192054,
+      "protected": true,
+      "required_checks": [
+        "governance",
+        "test (3.11)",
+        "test (3.13)"
+      ],
+      "check_app_id": 15368,
+      "strict_latest_base": true,
+      "merge_method": "merge",
+      "hard_bypass_actors": [],
+      "review_bypass_actors": [
+        {
+          "actor_id": 140945476,
+          "actor_type": "User",
+          "bypass_mode": "pull_request"
+        }
+      ],
+      "effective_rules_match": true
+    }
+  },
+  "mutations": false,
+  "receipts": {
+    "ruleset-23305447": {
+      "path": "ruleset-23305447.json",
+      "sha256": "0ff90f049baacd39bd2542b00404b0e56caa448f18435d4ff1f745326d1e5892"
+    },
+    "ruleset-23192001": {
+      "path": "ruleset-23192001.json",
+      "sha256": "513512539c0f2b9dba2a8f90aa9661ec5c0a50f57a8c682c33efa160f8bcfd16"
+    },
+    "ruleset-23305460": {
+      "path": "ruleset-23305460.json",
+      "sha256": "eaebbf8ba374742440b92bc057530236541c7a0de8322912bf963f3f1c81d1ee"
+    },
+    "ruleset-23192054": {
+      "path": "ruleset-23192054.json",
+      "sha256": "3b09ed868a99c027ac696318b6248ae0cfea60a81d10fc9a5a0338ac9d3a249b"
+    },
+    "branch-develop": {
+      "path": "branch-develop.json",
+      "sha256": "8fa9fb972bbcd262848074dfe3efa6f6b38186666641196bef6765a0c51d0c76"
+    },
+    "branch-main": {
+      "path": "branch-main.json",
+      "sha256": "8d4551999d42b0982fe8257d8cc625a075c85b71ddcbf844341a25d821f11da8"
+    },
+    "effective-develop": {
+      "path": "effective-develop.json",
+      "sha256": "9f8550d6d27ab4a00fc42e26335de43bcd94608b7dc92eb55a6b2155329edaab"
+    },
+    "effective-main": {
+      "path": "effective-main.json",
+      "sha256": "ae4a840d91348e7a766b06f302a617f4ff267e0a7eafb893761377962e898ea3"
+    },
+    "rulesets": {
+      "path": "rulesets.json",
+      "sha256": "ce0a8674a04501310d2730685cb67e69bc29e01e5e7081e07fd67843f5e949ca"
+    },
+    "pr80": {
+      "path": "pr80.json",
+      "sha256": "42f410a075edcbed0685b5c5316654fb861e2d4d15bb892882131304c6016aa7"
+    },
+    "pr80-comments": {
+      "path": "pr80-comments.json",
+      "sha256": "5d225a8c9579d809243ac71e1a4da47ed174760ad9c7f80d0a525790c431f4fa"
+    }
+  }
+}

@@ -42,7 +42,8 @@ effective rules。四层均 active；配置与 effective rules 一致。本次�
 - canonical 依赖 `M0-007`、`M1-009`、`M14-002`、`M14-003`、`M14-004` 在该基线均为 DONE。
   `GITHUB-RELEASE-PROTECTION-GATE` 由上述外部读回证据满足，Task 定义与依赖未改写。
 
-原始回读、SHA-256 清单及决定转录见本轮修复 Attempt；其入口由 PR #80 保留。
+原始回读、SHA-256 清单及决定转录见[本轮修复 Attempt](../../../../work/M14-005/A-20260915-004/INDEX.yaml)
+与[决定转录](../../../../work/M14-005/A-20260915-004/outputs/AUTHORITY.md)。
 远端保护的观察只绑定本次时间，cutover/发布前仍需 fresh readback，漂移时重新核对。
 
 ## 接续验收

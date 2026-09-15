@@ -1,0 +1,119 @@
+schema_version: 0.1.0
+trace_id: TRACE-M14-005-A-20260915-004
+task_id: M14-005
+task_revision: 1
+attempt_id: A-20260915-004
+archive_root: A-20260915-004
+baseline: 7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: c51ce5a1cc5df5baa0757f322f90353b3de34c26b20670195192ebe29bc73c93
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 0c77a4931d209cfc6b6cb1893b4574efb85559777cb6c0469eaaf1f75cdd432c
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/STATUS.md
+- docs/ROADMAP.md
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- .github/**
+- tests/**
+- examples/**
+- registry/**
+- pyproject.toml
+- work/M14-005/**
+- GitHub PR 80 comments and Issue 57; read-only protection and CI APIs
+write_scope:
+- docs/TASKS.md
+- docs/STATUS.md
+- docs/ROADMAP.md
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- work/M14-005/A-20260915-004/**
+- GitHub feature/m14-005-source-ci and PR 80 body
+tool_allowlist:
+- git
+- gh
+- python
+- apply_patch
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 6e832254faeac6fb262a56f550bad076b5ebd5d10254f5ed6349f3aaa0f9073f
+  event_count: 24
+tool_event_refs:
+- path: tool-events/pr80.json
+  sha256: 42f410a075edcbed0685b5c5316654fb861e2d4d15bb892882131304c6016aa7
+- path: tool-events/pr80-comments.json
+  sha256: 5d225a8c9579d809243ac71e1a4da47ed174760ad9c7f80d0a525790c431f4fa
+- path: tool-events/rulesets.json
+  sha256: ce0a8674a04501310d2730685cb67e69bc29e01e5e7081e07fd67843f5e949ca
+- path: tool-events/remote-summary.json
+  sha256: f810f7a64720630f0b9feefbb3a0753dec11ef2a3faa53e85138d23f062f6868
+- path: tool-events/rebase-before.json
+  sha256: a29c0b7db599419c3ab8ec9b4fd35a08cba642aa506e8a96aba0f20d95621f99
+- path: tool-events/scope.json
+  sha256: bc865ee60b65f64d5f256a7f3964ef80e2cc525b219fc689dd990ca03f0bab8f
+- path: tool-events/focused.log
+  sha256: 635be94e9862ab68ce19af0345daf0f77ada7ac7df39bd920c77191c0c022cab
+- path: tool-events/repository.log
+  sha256: 255440a9ece3a188b00d67b928a848500938bdd0c6788d0dcac767adb46d7ef3
+- path: tool-events/governance-plan.log
+  sha256: bb02270dd1b20920c5d614e03691d71c9dd9d9ec6cdf24e7f64993e4fb3dba69
+- path: tool-events/ci-plan.json
+  sha256: 542569edd314d6421071cd3fa79aa2cbd7536b98bdcf9ae456cc261cd0832243
+- path: tool-events/ruleset-23305447.json
+  sha256: 0ff90f049baacd39bd2542b00404b0e56caa448f18435d4ff1f745326d1e5892
+- path: tool-events/ruleset-23192001.json
+  sha256: 513512539c0f2b9dba2a8f90aa9661ec5c0a50f57a8c682c33efa160f8bcfd16
+- path: tool-events/ruleset-23305460.json
+  sha256: eaebbf8ba374742440b92bc057530236541c7a0de8322912bf963f3f1c81d1ee
+- path: tool-events/ruleset-23192054.json
+  sha256: 3b09ed868a99c027ac696318b6248ae0cfea60a81d10fc9a5a0338ac9d3a249b
+- path: tool-events/branch-develop.json
+  sha256: 8fa9fb972bbcd262848074dfe3efa6f6b38186666641196bef6765a0c51d0c76
+- path: tool-events/branch-main.json
+  sha256: 8d4551999d42b0982fe8257d8cc625a075c85b71ddcbf844341a25d821f11da8
+- path: tool-events/effective-develop.json
+  sha256: 9f8550d6d27ab4a00fc42e26335de43bcd94608b7dc92eb55a6b2155329edaab
+- path: tool-events/effective-main.json
+  sha256: ae4a840d91348e7a766b06f302a617f4ff267e0a7eafb893761377962e898ea3
+handoff_refs:
+- path: WORKLOG.md
+  sha256: 6bb8457ae774461db0ae0ae201361dc12ae9b9d11c33ff7fc977ea5cf4fb98bc
+decision_refs:
+- path: outputs/AUTHORITY.md
+  sha256: 2d43a6369bdac89f5c6887bf5a8c8b82ec3ed85b8e4592be760ad72bfcc586e7
+output_refs:
+- path: outputs/AUTHORITY.md
+  sha256: 2d43a6369bdac89f5c6887bf5a8c8b82ec3ed85b8e4592be760ad72bfcc586e7
+- path: outputs/freeze_review.py.md
+  sha256: 52e249b3a1015ccedd4b77c8544987a7dd1e215b95ae4bcce2c5b39ab3c3b26a
+- path: outputs/readback.py.md
+  sha256: a39ad47c7c06cd1cb3a25e9b42c7cb4df3030684a326ec36979c5468097ae83e
+- path: outputs/VERIFICATION.json
+  sha256: f56de0e4b36d1131b93879974b7bafa2269bf049bc3d88773a58fcd66627ad5f
+- path: outputs/verify_candidate.py.md
+  sha256: 566f383e9e3b69e640e3c9b384f5e8c729df6824dc9d516c6a9547a432e4e963
+check_refs:
+- path: .gitattributes
+  sha256: 60570bcd4aede16b611131a3d7f4f41231d477d6b5ac83ccb8381e28af2110a6
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: tool-results
+- event_id: EVT-0004
+  affected_stream: file-revisions
+- event_id: EVT-0005
+  affected_stream: external-actions
