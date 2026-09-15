@@ -1,0 +1,77 @@
+FFFFFFFFF
+======================================================================
+FAIL: test_call_mediated_builtin_mutations_retain_document_consumers (tests.test_ci_dependencies.DependencyTests.test_call_mediated_builtin_mutations_retain_document_consumers) (mutation='patch("builtins.len", getsize)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-boundaries\tests\test_ci_dependencies.py", line 81, in test_call_mediated_builtin_mutations_retain_document_consumers
+    self.assertIn('test_reader', self.selection(
+AssertionError: 'test_reader' not found in {}
+
+======================================================================
+FAIL: test_call_mediated_builtin_mutations_retain_document_consumers (tests.test_ci_dependencies.DependencyTests.test_call_mediated_builtin_mutations_retain_document_consumers) (mutation='mock.patch("builtins.len", getsize)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-boundaries\tests\test_ci_dependencies.py", line 81, in test_call_mediated_builtin_mutations_retain_document_consumers
+    self.assertIn('test_reader', self.selection(
+AssertionError: 'test_reader' not found in {}
+
+======================================================================
+FAIL: test_call_mediated_builtin_mutations_retain_document_consumers (tests.test_ci_dependencies.DependencyTests.test_call_mediated_builtin_mutations_retain_document_consumers) (mutation='renamed("builtins.len", getsize)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-boundaries\tests\test_ci_dependencies.py", line 81, in test_call_mediated_builtin_mutations_retain_document_consumers
+    self.assertIn('test_reader', self.selection(
+AssertionError: 'test_reader' not found in {}
+
+======================================================================
+FAIL: test_call_mediated_builtin_mutations_retain_document_consumers (tests.test_ci_dependencies.DependencyTests.test_call_mediated_builtin_mutations_retain_document_consumers) (mutation='monkeypatch.setattr("builtins.len", getsize)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-boundaries\tests\test_ci_dependencies.py", line 81, in test_call_mediated_builtin_mutations_retain_document_consumers
+    self.assertIn('test_reader', self.selection(
+AssertionError: 'test_reader' not found in {}
+
+======================================================================
+FAIL: test_call_mediated_builtin_mutations_retain_document_consumers (tests.test_ci_dependencies.DependencyTests.test_call_mediated_builtin_mutations_retain_document_consumers) (mutation='monkeypatch.setattr(unknown_target, "len", getsize)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-boundaries\tests\test_ci_dependencies.py", line 81, in test_call_mediated_builtin_mutations_retain_document_consumers
+    self.assertIn('test_reader', self.selection(
+AssertionError: 'test_reader' not found in {}
+
+======================================================================
+FAIL: test_call_mediated_builtin_mutations_retain_document_consumers (tests.test_ci_dependencies.DependencyTests.test_call_mediated_builtin_mutations_retain_document_consumers) (mutation='builtins.__setattr__("len", getsize)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-boundaries\tests\test_ci_dependencies.py", line 81, in test_call_mediated_builtin_mutations_retain_document_consumers
+    self.assertIn('test_reader', self.selection(
+AssertionError: 'test_reader' not found in {}
+
+======================================================================
+FAIL: test_call_mediated_builtin_mutations_retain_document_consumers (tests.test_ci_dependencies.DependencyTests.test_call_mediated_builtin_mutations_retain_document_consumers) (mutation='patch(target="builtins.len", new=getsize)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-boundaries\tests\test_ci_dependencies.py", line 81, in test_call_mediated_builtin_mutations_retain_document_consumers
+    self.assertIn('test_reader', self.selection(
+AssertionError: 'test_reader' not found in {}
+
+======================================================================
+FAIL: test_call_mediated_builtin_mutations_retain_document_consumers (tests.test_ci_dependencies.DependencyTests.test_call_mediated_builtin_mutations_retain_document_consumers) (mutation='patch(dynamic_target, getsize)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-boundaries\tests\test_ci_dependencies.py", line 81, in test_call_mediated_builtin_mutations_retain_document_consumers
+    self.assertIn('test_reader', self.selection(
+AssertionError: 'test_reader' not found in {}
+
+======================================================================
+FAIL: test_call_mediated_builtin_mutations_retain_document_consumers (tests.test_ci_dependencies.DependencyTests.test_call_mediated_builtin_mutations_retain_document_consumers) (mutation='builtins.__setattr__(dynamic_name, getsize)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-boundaries\tests\test_ci_dependencies.py", line 81, in test_call_mediated_builtin_mutations_retain_document_consumers
+    self.assertIn('test_reader', self.selection(
+AssertionError: 'test_reader' not found in {}
+
+----------------------------------------------------------------------
+Ran 1 test in 0.008s
+
+FAILED (failures=9)
