@@ -1,0 +1,2 @@
+* text eol=lf
+checks/planner-coverage.log whitespace=-blank-at-eof
