@@ -1,0 +1,362 @@
+[
+  {
+    "case": "docs_append",
+    "head": "5785e0b28b60cc136871a27e30dc3495c33591aa",
+    "base": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+    "before": {
+      "behavior": "focused",
+      "coverage": "none",
+      "modules": 10,
+      "package": false,
+      "repository": false,
+      "seconds": 2.0623,
+      "summary": null,
+      "blocked": []
+    },
+    "after": {
+      "behavior": "focused",
+      "coverage": "none",
+      "modules": 10,
+      "package": false,
+      "repository": false,
+      "seconds": 2.182,
+      "summary": {
+        "available_test_modules": 87,
+        "selected_test_modules": 10,
+        "opaque_execution_paths": 0,
+        "unbounded_resource_paths": 0
+      },
+      "blocked": []
+    }
+  },
+  {
+    "case": "test_body",
+    "head": "a5b22257988a5dd3fea33fb63f6671b6debc91ab",
+    "base": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+    "before": {
+      "behavior": "focused",
+      "coverage": "none",
+      "modules": 8,
+      "package": false,
+      "repository": false,
+      "seconds": 0.657,
+      "summary": null,
+      "blocked": []
+    },
+    "after": {
+      "behavior": "focused",
+      "coverage": "none",
+      "modules": 8,
+      "package": false,
+      "repository": false,
+      "seconds": 0.6721,
+      "summary": {
+        "available_test_modules": 87,
+        "selected_test_modules": 8,
+        "opaque_execution_paths": 0,
+        "unbounded_resource_paths": 0
+      },
+      "blocked": []
+    }
+  },
+  {
+    "case": "shared_fixture_comment",
+    "head": "69455b8f208f560546073fa960d1de153717b234",
+    "base": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+    "before": {
+      "behavior": "none",
+      "coverage": "none",
+      "modules": 2,
+      "package": false,
+      "repository": false,
+      "seconds": 0.5068,
+      "summary": null,
+      "blocked": []
+    },
+    "after": {
+      "behavior": "none",
+      "coverage": "none",
+      "modules": 2,
+      "package": false,
+      "repository": false,
+      "seconds": 0.4916,
+      "summary": {
+        "available_test_modules": 87,
+        "selected_test_modules": 0,
+        "opaque_execution_paths": 0,
+        "unbounded_resource_paths": 0
+      },
+      "blocked": []
+    }
+  },
+  {
+    "case": "shared_fixture_semantics",
+    "head": "6d8bf72620f264a770c36498d420be726edc271d",
+    "base": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+    "before": {
+      "behavior": "focused",
+      "coverage": "none",
+      "modules": 84,
+      "package": true,
+      "repository": true,
+      "seconds": 3.1925,
+      "summary": null,
+      "blocked": []
+    },
+    "after": {
+      "behavior": "focused",
+      "coverage": "none",
+      "modules": 84,
+      "package": true,
+      "repository": true,
+      "seconds": 3.2824,
+      "summary": {
+        "available_test_modules": 87,
+        "selected_test_modules": 84,
+        "opaque_execution_paths": 77,
+        "unbounded_resource_paths": 0
+      },
+      "blocked": []
+    }
+  },
+  {
+    "case": "new_bounded_observer",
+    "head": "dd777f03e64f26d47754584f6792ab6f8cceeb77",
+    "base": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+    "before": {
+      "behavior": "focused",
+      "coverage": "impact",
+      "modules": 85,
+      "package": true,
+      "repository": true,
+      "seconds": 3.0875,
+      "summary": null,
+      "blocked": []
+    },
+    "after": {
+      "behavior": "focused",
+      "coverage": "impact",
+      "modules": 85,
+      "package": true,
+      "repository": true,
+      "seconds": 3.0141,
+      "summary": {
+        "available_test_modules": 88,
+        "selected_test_modules": 85,
+        "opaque_execution_paths": 80,
+        "unbounded_resource_paths": 0
+      },
+      "blocked": []
+    }
+  },
+  {
+    "case": "new_fixture_json",
+    "head": "9fc3e4093fa3149660cc814d6edd112c2abc6af7",
+    "base": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+    "before": {
+      "behavior": "focused",
+      "coverage": "none",
+      "modules": 86,
+      "package": true,
+      "repository": true,
+      "seconds": 3.0326,
+      "summary": null,
+      "blocked": []
+    },
+    "after": {
+      "behavior": "focused",
+      "coverage": "none",
+      "modules": 86,
+      "package": true,
+      "repository": true,
+      "seconds": 3.0105,
+      "summary": {
+        "available_test_modules": 87,
+        "selected_test_modules": 86,
+        "opaque_execution_paths": 0,
+        "unbounded_resource_paths": 83
+      },
+      "blocked": []
+    }
+  },
+  {
+    "case": "new_skill_config",
+    "head": "ac24d261beb3b588cb9b946d4b76fe13d17cbf52",
+    "base": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+    "before": {
+      "behavior": "full",
+      "coverage": "repository",
+      "modules": 86,
+      "package": true,
+      "repository": true,
+      "seconds": 2.9975,
+      "summary": null,
+      "blocked": []
+    },
+    "after": {
+      "behavior": "full",
+      "coverage": "repository",
+      "modules": 86,
+      "package": true,
+      "repository": true,
+      "seconds": 3.0197,
+      "summary": {
+        "available_test_modules": 87,
+        "selected_test_modules": 86,
+        "opaque_execution_paths": 0,
+        "unbounded_resource_paths": 86
+      },
+      "blocked": []
+    }
+  },
+  {
+    "case": "new_skill_markdown",
+    "head": "8640dfe84623e5178f5d8e8419325deb6bfec043",
+    "base": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+    "before": {
+      "behavior": "focused",
+      "coverage": "none",
+      "modules": 85,
+      "package": true,
+      "repository": true,
+      "seconds": 3.0058,
+      "summary": null,
+      "blocked": []
+    },
+    "after": {
+      "behavior": "focused",
+      "coverage": "none",
+      "modules": 13,
+      "package": false,
+      "repository": false,
+      "seconds": 0.7532,
+      "summary": {
+        "available_test_modules": 87,
+        "selected_test_modules": 13,
+        "opaque_execution_paths": 0,
+        "unbounded_resource_paths": 0
+      },
+      "blocked": []
+    }
+  },
+  {
+    "case": "workflow_comment",
+    "head": "ea05d4bf591e1a77b4f96aeb7c7515842493bb61",
+    "base": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+    "before": {
+      "behavior": "focused",
+      "coverage": "repository",
+      "modules": 86,
+      "package": true,
+      "repository": true,
+      "seconds": 3.1697,
+      "summary": null,
+      "blocked": []
+    },
+    "after": {
+      "behavior": "none",
+      "coverage": "none",
+      "modules": 2,
+      "package": false,
+      "repository": false,
+      "seconds": 0.5548,
+      "summary": {
+        "available_test_modules": 87,
+        "selected_test_modules": 0,
+        "opaque_execution_paths": 0,
+        "unbounded_resource_paths": 0
+      },
+      "blocked": []
+    }
+  },
+  {
+    "case": "workflow_independent_develop_job",
+    "head": "7abe49616ef209ddb5dc515953064c4e93e13848",
+    "base": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+    "before": {
+      "behavior": "full",
+      "coverage": "repository",
+      "modules": 86,
+      "package": true,
+      "repository": true,
+      "seconds": 3.0841,
+      "summary": null,
+      "blocked": []
+    },
+    "after": {
+      "behavior": "full",
+      "coverage": "repository",
+      "modules": 86,
+      "package": true,
+      "repository": true,
+      "seconds": 3.1868,
+      "summary": {
+        "available_test_modules": 87,
+        "selected_test_modules": 86,
+        "opaque_execution_paths": 0,
+        "unbounded_resource_paths": 82
+      },
+      "blocked": []
+    }
+  },
+  {
+    "case": "new_other_workflow",
+    "head": "40f224036a5d72203fae498e9c1ba8a6ecc3bd6d",
+    "base": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+    "before": {
+      "behavior": "full",
+      "coverage": "repository",
+      "modules": 86,
+      "package": true,
+      "repository": true,
+      "seconds": 3.1705,
+      "summary": null,
+      "blocked": []
+    },
+    "after": {
+      "behavior": "full",
+      "coverage": "repository",
+      "modules": 86,
+      "package": true,
+      "repository": true,
+      "seconds": 3.0022,
+      "summary": {
+        "available_test_modules": 87,
+        "selected_test_modules": 86,
+        "opaque_execution_paths": 0,
+        "unbounded_resource_paths": 86
+      },
+      "blocked": []
+    }
+  },
+  {
+    "case": "actual_pr72",
+    "head": "7a9a0b2ac073354537db260896649f1048d778f7",
+    "base": "451644064f558601d5778b9b115390f882f4d260",
+    "before": {
+      "behavior": "focused",
+      "coverage": "none",
+      "modules": 38,
+      "package": true,
+      "repository": false,
+      "seconds": 1.8196,
+      "summary": null,
+      "blocked": []
+    },
+    "after": {
+      "behavior": "focused",
+      "coverage": "none",
+      "modules": 38,
+      "package": true,
+      "repository": false,
+      "seconds": 1.8336,
+      "summary": {
+        "available_test_modules": 87,
+        "selected_test_modules": 37,
+        "opaque_execution_paths": 0,
+        "unbounded_resource_paths": 0
+      },
+      "blocked": []
+    }
+  }
+]
