@@ -116,3 +116,5 @@ when its target may be the builtin dictionary; replacement/clearing can affect t
 whole namespace. Imported patch aliases use the same rules. The shared real-Git
 failure scenario now covers direct patch, object patch, multiple patch and dictionary
 patch without adding separate full test modules.
+The [batch-patch Attempt](../../../../work/TEST-PERF-002/A-20260916-002/RESULTS.md)
+records the reproduced omissions and the final local source/coverage checks.

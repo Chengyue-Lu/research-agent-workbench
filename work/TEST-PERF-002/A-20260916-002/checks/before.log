@@ -1,0 +1,111 @@
+FFFFFFFFFFFFF
+======================================================================
+FAIL: test_call_mediated_builtin_mutations_retain_document_consumers (tests.test_ci_dependencies.DependencyTests.test_call_mediated_builtin_mutations_retain_document_consumers) (mutation='patch.multiple("builtins", len=getsize)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-boundaries\tests\test_ci_dependencies.py", line 96, in test_call_mediated_builtin_mutations_retain_document_consumers
+    self.assertIn('test_reader', self.selection(
+AssertionError: 'test_reader' not found in {}
+
+======================================================================
+FAIL: test_call_mediated_builtin_mutations_retain_document_consumers (tests.test_ci_dependencies.DependencyTests.test_call_mediated_builtin_mutations_retain_document_consumers) (mutation='mock.patch.multiple("builtins", len=getsize)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-boundaries\tests\test_ci_dependencies.py", line 96, in test_call_mediated_builtin_mutations_retain_document_consumers
+    self.assertIn('test_reader', self.selection(
+AssertionError: 'test_reader' not found in {}
+
+======================================================================
+FAIL: test_call_mediated_builtin_mutations_retain_document_consumers (tests.test_ci_dependencies.DependencyTests.test_call_mediated_builtin_mutations_retain_document_consumers) (mutation='renamed.multiple("builtins", len=getsize)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-boundaries\tests\test_ci_dependencies.py", line 96, in test_call_mediated_builtin_mutations_retain_document_consumers
+    self.assertIn('test_reader', self.selection(
+AssertionError: 'test_reader' not found in {}
+
+======================================================================
+FAIL: test_call_mediated_builtin_mutations_retain_document_consumers (tests.test_ci_dependencies.DependencyTests.test_call_mediated_builtin_mutations_retain_document_consumers) (mutation='patch.multiple(dynamic_target, len=getsize)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-boundaries\tests\test_ci_dependencies.py", line 96, in test_call_mediated_builtin_mutations_retain_document_consumers
+    self.assertIn('test_reader', self.selection(
+AssertionError: 'test_reader' not found in {}
+
+======================================================================
+FAIL: test_call_mediated_builtin_mutations_retain_document_consumers (tests.test_ci_dependencies.DependencyTests.test_call_mediated_builtin_mutations_retain_document_consumers) (mutation='patch.multiple(dynamic_target, **attrs)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-boundaries\tests\test_ci_dependencies.py", line 96, in test_call_mediated_builtin_mutations_retain_document_consumers
+    self.assertIn('test_reader', self.selection(
+AssertionError: 'test_reader' not found in {}
+
+======================================================================
+FAIL: test_call_mediated_builtin_mutations_retain_document_consumers (tests.test_ci_dependencies.DependencyTests.test_call_mediated_builtin_mutations_retain_document_consumers) (mutation='patch.multiple("builtins", **attrs)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-boundaries\tests\test_ci_dependencies.py", line 96, in test_call_mediated_builtin_mutations_retain_document_consumers
+    self.assertIn('test_reader', self.selection(
+AssertionError: 'test_reader' not found in {}
+
+======================================================================
+FAIL: test_call_mediated_builtin_mutations_retain_document_consumers (tests.test_ci_dependencies.DependencyTests.test_call_mediated_builtin_mutations_retain_document_consumers) (mutation='patch.multiple(target="builtins", len=getsize)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-boundaries\tests\test_ci_dependencies.py", line 96, in test_call_mediated_builtin_mutations_retain_document_consumers
+    self.assertIn('test_reader', self.selection(
+AssertionError: 'test_reader' not found in {}
+
+======================================================================
+FAIL: test_call_mediated_builtin_mutations_retain_document_consumers (tests.test_ci_dependencies.DependencyTests.test_call_mediated_builtin_mutations_retain_document_consumers) (mutation='patch.multiple(target=dynamic_target, **attrs)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-boundaries\tests\test_ci_dependencies.py", line 96, in test_call_mediated_builtin_mutations_retain_document_consumers
+    self.assertIn('test_reader', self.selection(
+AssertionError: 'test_reader' not found in {}
+
+======================================================================
+FAIL: test_call_mediated_builtin_mutations_retain_document_consumers (tests.test_ci_dependencies.DependencyTests.test_call_mediated_builtin_mutations_retain_document_consumers) (mutation='patch.dict("builtins.__dict__", len=getsize)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-boundaries\tests\test_ci_dependencies.py", line 96, in test_call_mediated_builtin_mutations_retain_document_consumers
+    self.assertIn('test_reader', self.selection(
+AssertionError: 'test_reader' not found in {}
+
+======================================================================
+FAIL: test_call_mediated_builtin_mutations_retain_document_consumers (tests.test_ci_dependencies.DependencyTests.test_call_mediated_builtin_mutations_retain_document_consumers) (mutation='mock.patch.dict("builtins.__dict__", {"len": getsize})')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-boundaries\tests\test_ci_dependencies.py", line 96, in test_call_mediated_builtin_mutations_retain_document_consumers
+    self.assertIn('test_reader', self.selection(
+AssertionError: 'test_reader' not found in {}
+
+======================================================================
+FAIL: test_call_mediated_builtin_mutations_retain_document_consumers (tests.test_ci_dependencies.DependencyTests.test_call_mediated_builtin_mutations_retain_document_consumers) (mutation='renamed.dict(dynamic_target, attrs)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-boundaries\tests\test_ci_dependencies.py", line 96, in test_call_mediated_builtin_mutations_retain_document_consumers
+    self.assertIn('test_reader', self.selection(
+AssertionError: 'test_reader' not found in {}
+
+======================================================================
+FAIL: test_patched_length_retains_actual_document_failure (tests.test_ci_dependencies.DependencyTests.test_patched_length_retains_actual_document_failure) (mutation='patch.multiple("builtins", len=getsize)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-boundaries\tests\test_ci_dependencies.py", line 126, in test_patched_length_retains_actual_document_failure
+    self.assertEqual({'test_reader'}, set(selected['selected']))
+AssertionError: Items in the first set but not the second:
+'test_reader'
+
+======================================================================
+FAIL: test_patched_length_retains_actual_document_failure (tests.test_ci_dependencies.DependencyTests.test_patched_length_retains_actual_document_failure) (mutation='patch.dict("builtins.__dict__", len=getsize)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\research-agent-workbench-ci-boundaries\tests\test_ci_dependencies.py", line 126, in test_patched_length_retains_actual_document_failure
+    self.assertEqual({'test_reader'}, set(selected['selected']))
+AssertionError: Items in the first set but not the second:
+'test_reader'
+
+----------------------------------------------------------------------
+Ran 2 tests in 2.805s
+
+FAILED (failures=13)
