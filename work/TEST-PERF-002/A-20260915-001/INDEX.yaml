@@ -1,0 +1,94 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260915-001
+task_id: TEST-PERF-002
+task_revision: 28
+attempt_id: A-20260915-001
+archive_root: A-20260915-001
+baseline: 7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 53a9c41cc0e9a8bcf6210213cb51b27fe38d4e071b4d3c7ecd7add6cb443abb1
+actors_ref:
+  path: ACTORS.yaml
+  sha256: f410b73b7e7ee4923bb0f85d88831fb7d87415a3620cc57ec6140aec79f3d820
+read_allowlist:
+- .github/**
+- .rwb/boundary-repair/**
+- AGENTS.md
+- build_backend.py
+- docs/DEVELOPMENT.md
+- docs/README.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- pyproject.toml
+- registry/**
+- runtime-resources.json
+- schemas/**
+- src/**
+- tests/**
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/ci_dependencies.py
+- .github/scripts/plan_ci.py
+- .rwb/boundary-repair/**
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/ci_impact_policy.yaml
+- tests/test_ci_dependencies.py
+- tests/test_ci_plan.py
+- work/TEST-PERF-002/A-20260915-001/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+- shell
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 546b3433674e490b2f96c714e89fc17df182a9299547bcb13ab7899288fd7958
+  event_count: 5
+tool_event_refs:
+- path: tool-events/boundary-source-validation-succeeded.json
+  sha256: 46915885b93c7afc83184f6b6e646c4d867a0739a08386f4dbec0c7515f33a7a
+handoff_refs: []
+decision_refs: []
+output_refs:
+- path: RESULTS.md
+  sha256: dfd6a578b6342393b8149506dfe1b2642847dbd6dd673e0ace0d161eef88faf3
+check_refs:
+- path: checks/capture-manifest.json
+  sha256: 078a876a3f234c04059fb87ea9d0d569aadba6a56b0a371ffb5ba6fac6f25907
+- path: checks/comparison.json
+  sha256: 2d81bfb9d1b71e8114c3fbdbb8b6136539fef3000a43ec796e53514b9ca86417
+- path: checks/critical-coverage.json
+  sha256: 1b1aafdf5770b6ec75c8225bd9850f6a76687fa15c6b8e098270dfcb7bb156fe
+- path: checks/critical-coverage.txt
+  sha256: 52dc44fabb13f49e139d88cc2cc1a25b197570598f38f538c2faa737a5a15716
+- path: checks/dependencies-coverage.log
+  sha256: 391f1f1752ce211000d077979c00b6f12fd8a5b33a846ef58d849a6839727c14
+- path: checks/dependencies.log
+  sha256: b6db716bd26804e5d16e6f31e687dad48be56eff8903e26119241d56b32c09bd
+- path: checks/documentation.log
+  sha256: 717a65748b706edc16da7ee0850d6ceb3c5fd66055e910c6fdfa0f89e218b4b1
+- path: checks/planner-coverage.log
+  sha256: d6d262c0e30fb58448dc20aac5d61863fc4f74d541f3f46e3cc4c6fbab14bbb7
+- path: checks/planner-regression.log
+  sha256: 338534011ee743c258648abaced4acd942f62ab5341289f81c3afafd02f083cc
+- path: checks/preflight.log
+  sha256: 0723c0f3df77caa59ec74e91563239f1cd431f0a447d8b902085a59a29514d8d
+- path: checks/source-plan.json
+  sha256: f8db3ec30bd1a9802e5cb0b58f9db42db6edba0b06cf383e6f7732949e55333a
+- path: checks/source-validation.json
+  sha256: c91a4e425e8dac60fe865fda6d72872db907776a651c6b875cf4cc92e149adb2
+- path: checks/workflow-focused.log
+  sha256: 9eb2ac3892c06db30246755af0931d41604213c4e09d5c9bf9b6401431aaae72
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: messages
