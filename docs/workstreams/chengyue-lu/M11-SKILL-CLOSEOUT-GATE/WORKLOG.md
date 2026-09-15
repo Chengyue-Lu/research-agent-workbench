@@ -49,3 +49,8 @@
   [运行与开发证据](../../../../work/M11-007/A-20260915-002/README.md) 保存四个完整 synthetic case
   及独立进程 replay。首次私有归档因 gap stream/status 不合法被拒绝，失败日志保留；新开发归档
   使用合法 gap stream 与 `safe-paused`，Trace 无 BLOCK，保留 capture-gap warning。
+- PR81 的 CI plan 同时要求 impact 与 repository coverage。补充归档 source/input/output pin 校验、
+  replay 入口执行、四个 checker 的 missing/outside/hash-drift 反例，以及 Host/Trace/Supply 边界。
+  coverage 的 Protocol 排除行号随新增字段顺移，排除范围不变。增量 focused 59 PASS，带覆盖回归
+  89 PASS，document-kind 兼容分派补验 1 PASS；11 个受影响模块的 changed line/branch 为 100/100。
+  已封存的 candidate archive 字节保持不变，新增验收与最终 exact-head CI 留在 PR81。

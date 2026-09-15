@@ -1,10 +1,16 @@
 import copy
+import contextlib
+from dataclasses import replace
+import hashlib
+import io
 import json
 import os
+import runpy
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 from research_workbench.artifacts.integrity import hash_file
@@ -12,12 +18,14 @@ from research_workbench.execution import (
     CloseoutPin, GenericCloseoutValidationError, SkillExecutionFactError,
     build_generic_execution_receipt, read_skill_execution_inputs,
     validate_generic_execution_receipt, validate_skill_execution_receipt,
+    build_skill_execution_receipt, execute_frozen_view, ExecutionHostValidationError,
+    SKILL_CLOSEOUT_CONTRACT,
 )
 from research_workbench.execution.skill_facts import validate_skill_consumption
 from research_workbench.io import load_document
 from research_workbench.validation import SchemaCatalog
 from research_workbench.validation.document_kinds import infer_document_kind
-from tests.execution_fixtures import plain
+from tests.execution_fixtures import plain, RecordingDriver, RaisingDriver, SequenceClock
 from tests.skill_closeout_fixtures import ROOT, SkillCloseoutFixture, write
 
 
@@ -265,6 +273,8 @@ print(json.dumps({'status':r.document['status'],'skill':r.document['actual_skill
                 self.assertTrue(SchemaCatalog(ROOT / "schemas").validate("skill_execution_receipt", mutated))
 
     def test_generic_document_validation_dispatches_explicit_skill_kinds(self):
+        self.assertEqual('system_evaluation_protocol',
+                         infer_document_kind({'record_kind': 'system_evaluation_protocol'}))
         fixture = SkillCloseoutFixture(self.root)
         index = load_document(fixture.trace_dir / "INDEX.yaml")
         fact = load_document(fixture.trace_dir / index["decision_refs"][-1]["path"])
@@ -327,6 +337,96 @@ print(json.dumps({'status':r.document['status'],'skill':r.document['actual_skill
         fixture.refresh_validation()
         with self.assertRaisesRegex(GenericCloseoutValidationError, "lacks actual drift"):
             fixture.build()
+
+    def test_host_rejects_unknown_contract_and_unverifiable_consumption(self):
+        fixture = SkillCloseoutFixture(self.root)
+        driver = RecordingDriver(self.root, fixture.view.document['binding'],
+                                 supply_ref=fixture.view.document['selected_supply_report_ref']['ref'])
+        with self.assertRaisesRegex(ExecutionHostValidationError, 'unsupported'):
+            execute_frozen_view(fixture.view, driver, report_id='HOST', attempt_id='ATTEMPT',
+                                closeout_contract='skill-execution@unpublished')
+        self.assertEqual(0, driver.calls)
+        execute = driver.execute
+        def corrupt(request):
+            result = execute(request)
+            consumption = plain(fixture.host['actual_skill_consumption'])
+            consumption['contract_version'] = 'unpublished'
+            return replace(result, actual_skill_consumption=consumption)
+        driver.execute = corrupt
+        with self.assertRaisesRegex(ExecutionHostValidationError, 'schema invalid'):
+            execute_frozen_view(fixture.view, driver, report_id='HOST', attempt_id='ATTEMPT',
+                                clock=SequenceClock('2026-08-26T00:00:01Z', '2026-08-26T00:00:02Z'),
+                                closeout_contract=SKILL_CLOSEOUT_CONTRACT, schema_root=ROOT / 'schemas')
+
+    def test_clock_regression_is_rejected_in_blocked_and_exception_lifecycles(self):
+        fixture = SkillCloseoutFixture(self.root)
+        for blocked in (True, False):
+            binding = plain(fixture.view.document['binding'])
+            if blocked:
+                binding['model']['ref'] = 'different-model'
+            driver_type = RecordingDriver if blocked else RaisingDriver
+            driver = driver_type(self.root, binding, supply_ref=fixture.view.document['selected_supply_report_ref']['ref'])
+            with self.subTest(blocked=blocked), self.assertRaisesRegex(ExecutionHostValidationError, 'moved backwards'):
+                execute_frozen_view(fixture.view, driver, report_id='HOST', attempt_id='ATTEMPT',
+                                    clock=SequenceClock('2026-08-26T00:00:02Z', '2026-08-26T00:00:01Z'),
+                                    closeout_contract=SKILL_CLOSEOUT_CONTRACT, schema_root=ROOT / 'schemas')
+            self.assertEqual(0 if blocked else 1, driver.calls)
+
+    def test_receipt_rejects_bundle_from_another_project(self):
+        fixture = SkillCloseoutFixture(self.root)
+        view = replace(fixture.view, project_root=self.root / 'other-project')
+        with self.assertRaisesRegex(GenericCloseoutValidationError, 'roots differ'):
+            build_skill_execution_receipt(view, fixture.bundle, host_report=fixture.host_pin,
+                                          trace_index=fixture.trace_pin, validations=(fixture.validation_pin,),
+                                          receipt_id='RECEIPT', schema_root=ROOT / 'schemas')
+
+    def test_actual_supply_scalar_cannot_diverge_from_consumed_supply(self):
+        fixture = SkillCloseoutFixture(self.root, lifecycle='failed')
+        fixture.host['actual_supply_report_ref'] = 'unconsumed-supply@1.0.0'
+        def mutate(index, events):
+            ref = index['decision_refs'][-1]
+            path = fixture.trace_dir / ref['path']
+            fact = load_document(path)
+            fact['actual_supply_report_ref'] = 'unconsumed-supply@1.0.0'
+            pin = write(self.root, path.relative_to(self.root).as_posix(), fact)
+            old_hash = ref['sha256']; ref['sha256'] = pin.sha256
+            for event in events:
+                if event['event_type'] == 'file-revision' and event['payload'].get('new_sha256') == old_hash:
+                    event['payload']['new_sha256'] = pin.sha256
+        self.rewrite_trace(fixture, mutate)
+        with self.assertRaisesRegex(GenericCloseoutValidationError, 'Host actual Supply differs'):
+            fixture.build()
+
+    def test_archived_candidate_pins_and_replay_are_portable(self):
+        archive = ROOT / 'work/M11-007/A-20260915-002'
+        proof = json.loads((archive / 'checks/vertical-proof.json').read_bytes())
+        for ref in proof['source_refs']:
+            content = subprocess.check_output(['git', 'show', proof['implementation_commit'] + ':' + ref['path']], cwd=ROOT)
+            self.assertEqual(ref['sha256'], hashlib.sha256(content).hexdigest())
+        self.assertEqual(proof['replay_script']['sha256'], hash_file(ROOT / proof['replay_script']['path']))
+        for case in proof['cases']:
+            with self.subTest(case=case['case']):
+                for ref in case['files']:
+                    self.assertEqual(ref['sha256'], hash_file(ROOT / ref['path']), ref['path'])
+                output = io.StringIO()
+                argv = [str(archive / 'replay.py'), str(ROOT / case['receipt']['path']),
+                        case['receipt']['sha256'], str(ROOT / case['project_root'])]
+                with patch.object(sys, 'argv', argv), contextlib.redirect_stdout(output):
+                    runpy.run_path(str(archive / 'replay.py'), run_name='__main__')
+                self.assertEqual(case['result'], json.loads(output.getvalue()))
+
+    def test_archived_checkers_reject_missing_outside_and_changed_subjects(self):
+        archive = ROOT / 'work/M11-007/A-20260915-002'
+        proof = json.loads((archive / 'checks/vertical-proof.json').read_bytes())
+        for case in proof['cases']:
+            with self.subTest(case=case['case']):
+                root = ROOT / case['project_root']
+                validation = load_document(root / 'closeout/validation.yaml')
+                check = runpy.run_path(str(root / 'closeout/checker.py'))['check']
+                self.assertTrue(check(root, validation['subject_refs']))
+                for path, digest in [('missing.yaml', '0' * 64), ('../outside.yaml', '0' * 64),
+                                     ('closeout/host.yaml', '0' * 64)]:
+                    self.assertFalse(check(root, [{'path': path, 'sha256': digest}]))
 
     def test_same_supply_identity_does_not_hide_projection_drift_as_completed(self):
         fixture = SkillCloseoutFixture(self.root, lifecycle="failed", drift="projection-identity")

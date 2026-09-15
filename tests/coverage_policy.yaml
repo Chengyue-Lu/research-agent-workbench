@@ -601,7 +601,7 @@ justified_exclusions:
     reason: Protocol method declaration has no executable implementation body.
     owner: Chengyue-Lu
   - path: src/research_workbench/execution/host.py
-    lines: [66, 67, 68, 69, 70, 71, 72, 73, 74, 76, 77, 78]
+    lines: [67, 68, 69, 70, 71, 72, 73, 74, 75, 77, 78, 79]
     reason: Protocol property and method declarations have no executable implementation body.
     owner: Chengyue-Lu
   - path: src/research_workbench/research_state/closure.py
