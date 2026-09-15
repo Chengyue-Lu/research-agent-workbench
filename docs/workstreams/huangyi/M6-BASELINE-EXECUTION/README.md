@@ -1,6 +1,7 @@
 # M6-008 Baseline Execution 候选
 
-日期：2026-09-12。Task / implementation owner：黄毅。风险：R2。
+更新：2026-09-16。Task / Execution owner：黄毅。风险：R2。
+路诚钺已授权当前 Agent 接手 PR #75 的基线集成、回放修复与验证；任务归属不变。
 
 本目录记录 M6-008 的实现候选，尚未接受，不宣称 DONE。共享输入契约已由
 [PR #71](https://github.com/Chengyue-Lu/research-agent-workbench/pull/71)
@@ -89,7 +90,21 @@ Receipt 区分 `completed`、`post-call-failed`、`preflight-blocked`。
 
 ## 验证与下一步
 
-当前候选的本地专项结果为 21 项 PASS：
+2026-09-16 接手时，PR #75 从 `60bdf8c` 基线迁移到 `develop@7b1323f`，
+保留已合入的 M11-007 实现与独立 PR #82 收口边界。新增
+[回放完整性测试](../../../../tests/test_baseline_replay_integrity.py) 复用一份实际 A2 成功档案，
+修改内容后重算全部外围哈希，先复现 9 个错误接受的样例，再补齐四项检查：
+
+- 每次 Provider request 精确匹配冻结公开 payload、Tool surface、控制参数及已观察到的历史。
+- 每次调用前的 use refs 与从冻结 Protocol / qualification 推导的完整闭包相同；终态汇总不能补偿漏验。
+- 每次 Tool 调用的身份、顺序与参数匹配 Provider 实际请求，返回字节绑定下一次请求的 Tool history。
+- Validation subject refs 精确等于本次 Trace 与实际输出，拒绝额外或重复 subject。
+
+历史回放按 v1 契约读取冻结字节，保留当时的 compiler identity，无需运行旧编译器、Provider 或 Tool。
+29 项专项及新增 batch / oversized 两项共 31 项通过；三个 M6 模块同源码累计局部覆盖率
+line / branch 均为 100%（549 条语句、114 个分支）。完整验证与当前提交绑定见 PR #75。
+
+以下为原候选的历史本地证据，不能代替接手后的 exact-head 检查。原专项为 21 项 PASS：
 [8 项 envelope 测试](../../../../tests/test_baseline_envelope.py) 与
 [13 项 execution 测试](../../../../tests/test_baseline_execution.py)。它们覆盖真实 UTF-8 输入、
 A1/A2 公开差异、共享 qualification、实际只读 Tool 调用、通用文档验证、fresh-process 文件回放、

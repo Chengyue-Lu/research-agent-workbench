@@ -70,6 +70,90 @@ def _message(
     return content
 
 
+def _replay_transport(inputs, envelope, envelope_ref, directory, facts, events, messages):
+    """Rebuild v1 requests from frozen inputs and observed messages, file only."""
+    from research_workbench.adapters.models.port import ContentBlock, Message
+    from research_workbench.execution.baseline import _plain, _request, _tool_inputs
+    from research_workbench.execution.baseline_envelope import compile_baseline_envelope
+
+    metadata = envelope["transport_enforcement_metadata"]
+    closure = EvaluationInputs(inputs.root, inputs.catalog.root)
+    closure.read_bytes(envelope_ref)
+    expected = compile_baseline_envelope(
+        closure, protocol_ref=metadata["protocol_ref"], task_ref=metadata["task_ref"],
+        public_payload_ref=metadata["public_payload_ref"], arm_id=metadata["arm_id"],
+        envelope_id=envelope["envelope_id"], accountable_owner=metadata["accountable_owner"],
+        qualification_ref=metadata["qualification_ref"],
+    )
+    # Replay applies the v1 contract to historical bytes; the recorded compiler
+    # identifies the producer, and need not be installed on this replay host.
+    expected["transport_enforcement_metadata"]["compiler_ref"] = metadata["compiler_ref"]
+    require(expected == envelope, "baseline historical envelope differs from frozen inputs")
+    request = _plain(_request(closure, envelope))
+    _tool_inputs(closure, metadata)
+    required = {_key({"path": path, "sha256": sha}) for path, sha in closure.hashes.items()}
+    for fact in facts:
+        if fact["phase"] in {"before", "end"}:
+            require({_key(ref) for ref in fact["use_refs"]} == required,
+                    "baseline use-boundary fact differs from independently derived input closure")
+    for path, sha in closure.hashes.items():
+        inputs.read_bytes({"path": path, "sha256": sha})
+    closure.recheck()
+
+    ready, awaiting_response, tool_active = True, False, False
+    calls, assistant, results = [], [], []
+    for fact in facts:
+        operation, phase = fact["operation"], fact["phase"]
+        payload = events[fact["event_sequence"] - 1]["payload"]
+        if operation == "provider":
+            body = _message(inputs, directory, messages[payload["message_id"]])
+            if phase == "before":
+                require(ready and not awaiting_response and not calls,
+                        "baseline provider request precedes complete observed history")
+                require(digest(body.get("request")) == digest(request),
+                        "baseline provider request differs from frozen payload or observed history")
+                ready, awaiting_response = False, True
+            else:
+                require(awaiting_response, "baseline provider response has no active request")
+                awaiting_response = False
+                response = body.get("response", body)
+                calls = list(response["tool_calls"])
+                assistant = list(response["output"])
+                for call in calls:
+                    assistant.append(_plain(ContentBlock("tool_call", data={
+                        key: call[key] for key in ("call_id", "name", "arguments")
+                    })))
+                results = []
+        elif operation == "tool":
+            require(bool(calls) and not awaiting_response,
+                    "baseline Tool call was not requested by the observed provider")
+            call = calls[0]
+            actual = {"call_id": payload["operation_id"], "name": payload["tool_name"],
+                      "arguments": payload["arguments"]}
+            require(digest(actual) == digest({key: call[key] for key in actual}),
+                    "baseline Tool call differs from the observed provider call")
+            require(tool_active == (phase == "after"), "baseline Tool call order differs")
+            tool_active = phase == "before"
+            if phase == "after":
+                calls.pop(0)
+                if not payload["result_entered_context"] or payload["status"] != "succeeded":
+                    # Failed/oversized results are retained, but cannot authorize
+                    # another use in this transport's stop-on-failure loop.
+                    calls = []
+                    continue
+                result = json.loads(inputs.read_bytes(_child_ref(inputs.root, directory, payload["result_ref"])))
+                results.append(_plain(ContentBlock("tool_result", data={
+                    "call_id": call["call_id"], "name": call["name"],
+                    "output": result, "is_error": False,
+                })))
+                if not calls:
+                    request["messages"].extend([
+                        {**_plain(Message("assistant", ())), "content": assistant},
+                        {**_plain(Message("tool", ())), "content": results},
+                    ])
+                    ready = True
+
+
 def _derive(
     inputs: EvaluationInputs,
     *,
@@ -121,6 +205,7 @@ def _derive(
     require(started.utcoffset() == timedelta(0) and completed.utcoffset() == timedelta(0), "baseline timestamps must be UTC")
     require(completed >= started, "baseline session time interval is reversed")
     all_uses: dict[str, Mapping[str, Any]] = {}
+    terminal_uses = {_key(ref) for ref in terminal["use_refs"]}
     pending: dict[tuple[str, str], Mapping[str, Any]] = {}
     closed: set[tuple[str, str]] = set()
     consumed_events: set[int] = set()
@@ -151,6 +236,8 @@ def _derive(
         require(phase in {"before", "after"}, "baseline call fact has an invalid phase")
         call = (operation, fact["call_id"])
         if phase == "before":
+            require(set(uses) == terminal_uses and set(required_inputs) <= set(uses),
+                    "baseline use-boundary fact omits its frozen input closure")
             require(call not in pending and call not in closed, "baseline call identity is reused")
             require(fact["binding"] == frozen, "baseline before-call binding differs from frozen input")
             pending[call] = fact
@@ -192,7 +279,6 @@ def _derive(
         and messages.get(event["payload"].get("message_id"), {}).get("kind") in {"provider-request", "provider-response"}
     }
     require(consumed_events == execution_events, "baseline facts omit or invent execution events")
-    terminal_uses = {_key(ref) for ref in terminal["use_refs"]}
     require(set(all_uses) <= terminal_uses and set(required_inputs) <= terminal_uses, "baseline terminal fact omits its frozen input closure")
     require(terminal["binding"] == actual_binding, "baseline terminal binding differs from last actual response")
     final_status = events[-1]["payload"]["to_status"]
@@ -207,6 +293,7 @@ def _derive(
     # drift destroyed the old source bytes. They cannot acquire successful
     # eligibility this way; strict replay still rejects that unavailable closure.
     if validate_use_refs or status == "completed":
+        _replay_transport(inputs, envelope, envelope_ref, directory, facts, events, messages)
         protocol = inputs.read(protocol_ref, "system_evaluation_protocol")
         require(frozen == protocol["execution_binding"], "baseline frozen binding differs from Protocol")
         for ref in {**required_inputs, **all_uses}.values():
@@ -231,7 +318,9 @@ def _derive(
         require(inputs.read(artifact_refs[0]) == last_response, "baseline final artifact differs from actual last response")
     validation = inputs.read(validation_ref, "deterministic_check_report")
     subjects = {_key(ref) for ref in validation["subject_refs"]}
-    require({_key(trace_index_ref), *(_key(ref) for ref in artifact_refs)} <= subjects, "baseline validation omits Trace or outputs")
+    require(len(subjects) == len(validation["subject_refs"])
+            and {_key(trace_index_ref), *(_key(ref) for ref in artifact_refs)} == subjects,
+            "baseline validation subjects differ from exact Trace and outputs")
     for ref in validation["subject_refs"]:
         inputs.read_bytes(ref)
     expected_status = "pass" if status == "completed" else "fail"
