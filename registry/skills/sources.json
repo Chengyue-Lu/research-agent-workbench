@@ -95,7 +95,7 @@
       "origin": "repository",
       "locator": "skill-lab/candidates/claim-preserving-rewrite",
       "revision": "sha256:11d1673ab7c5200552dc95383c2fc30c4c6a04c38f171a0e1a80f67531576809",
-      "license_status": "project-original-unlicensed",
+      "license_status": "MIT",
       "trust": "repository-candidate",
       "notes": "Independent candidate implementation derived from reviewed design constraints. The original external package is not vendored, this package remains outside runtime discovery, and it requires separate admission evidence."
     }

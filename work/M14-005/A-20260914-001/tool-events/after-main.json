@@ -1,0 +1,109 @@
+{
+  "observed_at": "2026-09-13T17:08:40.374372+00:00",
+  "command": [
+    "gh",
+    "api",
+    "repos/Chengyue-Lu/research-agent-workbench/branches/main"
+  ],
+  "exit_code": 0,
+  "data": {
+    "name": "main",
+    "commit": {
+      "sha": "b1d5a5a5850e0e7541e4c460f15384cd45357ab2",
+      "node_id": "C_kwDOT2gtDdoAKGIxZDVhNWE1ODUwZTBlNzU0MWU0YzQ2MGYxNTM4NGNkNDUzNTdhYjI",
+      "commit": {
+        "author": {
+          "name": "Chengyue-Lu",
+          "email": "lcy1613431834@163.com",
+          "date": "2026-08-22T08:27:09Z"
+        },
+        "committer": {
+          "name": "Chengyue-Lu",
+          "email": "lcy1613431834@163.com",
+          "date": "2026-08-22T08:27:09Z"
+        },
+        "message": "docs: refactor accepted system surfaces",
+        "tree": {
+          "sha": "895a612738dc36cbccfcc14a9e518c968c65b9fd",
+          "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/git/trees/895a612738dc36cbccfcc14a9e518c968c65b9fd"
+        },
+        "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/git/commits/b1d5a5a5850e0e7541e4c460f15384cd45357ab2",
+        "comment_count": 0,
+        "verification": {
+          "verified": false,
+          "reason": "unsigned",
+          "signature": null,
+          "payload": null,
+          "verified_at": null
+        }
+      },
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/commits/b1d5a5a5850e0e7541e4c460f15384cd45357ab2",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/commit/b1d5a5a5850e0e7541e4c460f15384cd45357ab2",
+      "comments_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/commits/b1d5a5a5850e0e7541e4c460f15384cd45357ab2/comments",
+      "author": {
+        "login": "Chengyue-Lu",
+        "id": 140945476,
+        "node_id": "U_kgDOCGaoRA",
+        "avatar_url": "https://avatars.githubusercontent.com/u/140945476?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/Chengyue-Lu",
+        "html_url": "https://github.com/Chengyue-Lu",
+        "followers_url": "https://api.github.com/users/Chengyue-Lu/followers",
+        "following_url": "https://api.github.com/users/Chengyue-Lu/following{/other_user}",
+        "gists_url": "https://api.github.com/users/Chengyue-Lu/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/Chengyue-Lu/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/Chengyue-Lu/subscriptions",
+        "organizations_url": "https://api.github.com/users/Chengyue-Lu/orgs",
+        "repos_url": "https://api.github.com/users/Chengyue-Lu/repos",
+        "events_url": "https://api.github.com/users/Chengyue-Lu/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/Chengyue-Lu/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "committer": {
+        "login": "Chengyue-Lu",
+        "id": 140945476,
+        "node_id": "U_kgDOCGaoRA",
+        "avatar_url": "https://avatars.githubusercontent.com/u/140945476?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/Chengyue-Lu",
+        "html_url": "https://github.com/Chengyue-Lu",
+        "followers_url": "https://api.github.com/users/Chengyue-Lu/followers",
+        "following_url": "https://api.github.com/users/Chengyue-Lu/following{/other_user}",
+        "gists_url": "https://api.github.com/users/Chengyue-Lu/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/Chengyue-Lu/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/Chengyue-Lu/subscriptions",
+        "organizations_url": "https://api.github.com/users/Chengyue-Lu/orgs",
+        "repos_url": "https://api.github.com/users/Chengyue-Lu/repos",
+        "events_url": "https://api.github.com/users/Chengyue-Lu/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/Chengyue-Lu/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "parents": [
+        {
+          "sha": "9d2146f3dc7c00c756ffbca38a05268ee2252a49",
+          "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/commits/9d2146f3dc7c00c756ffbca38a05268ee2252a49",
+          "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/commit/9d2146f3dc7c00c756ffbca38a05268ee2252a49"
+        }
+      ]
+    },
+    "_links": {
+      "self": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/branches/main",
+      "html": "https://github.com/Chengyue-Lu/research-agent-workbench/tree/main"
+    },
+    "protected": true,
+    "protection": {
+      "enabled": false,
+      "required_status_checks": {
+        "enforcement_level": "off",
+        "contexts": [],
+        "checks": []
+      }
+    },
+    "protection_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/branches/main/protection"
+  },
+  "stderr": ""
+}

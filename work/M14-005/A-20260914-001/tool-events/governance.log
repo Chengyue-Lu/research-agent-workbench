@@ -1,0 +1,22 @@
+Declared risk: R2
+Inferred minimum: R2
+Effective risk: R2
+Reason:
+- .github/release-surface.yml matches the R2 policy surface
+- .github/scripts/portable_package_smoke.py matches the R2 policy surface
+- docs/STATUS.md matches the R1 policy surface
+- registry/skills/accepted.json matches the R1 policy surface
+- registry/skills/candidates.json matches the R1 policy surface
+- registry/skills/sources.json matches the R1 policy surface
+- PR declares a shared-contract impact
+- PR declares an authority, permission, or data-boundary impact
+Requirements:
+- pull request and required CI
+- cross-owner review before merge
+- explicit authority basis
+- adversarial or negative evidence
+- owner-matched workstream and Risk Ledger
+Findings:
+- INFO TASK-TRANSITION: valid transition M0-007: BLOCKED -> DONE
+governance: PASS
+{"head": "d71bce36a584f338633f4286009070e639e9bf02", "plan_id": "218592de96a364b49e28526d91c6e35e5dd3e152a4e671bf5aff2d24493b0f35", "behavioral": "full", "coverage": "impact+repository", "package": true}

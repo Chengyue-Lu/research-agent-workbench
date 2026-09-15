@@ -1,0 +1,87 @@
+{
+  "observed_at": "2026-09-13T17:08:37.010499+00:00",
+  "command": [
+    "gh",
+    "api",
+    "--method",
+    "POST",
+    "repos/Chengyue-Lu/research-agent-workbench/rulesets",
+    "--input",
+    ".rwb/m14-005/evidence/main-ruleset-request.json"
+  ],
+  "exit_code": 0,
+  "data": {
+    "id": 23192054,
+    "name": "RWB main protection",
+    "target": "branch",
+    "source_type": "Repository",
+    "source": "Chengyue-Lu/research-agent-workbench",
+    "enforcement": "active",
+    "conditions": {
+      "ref_name": {
+        "exclude": [],
+        "include": [
+          "refs/heads/main"
+        ]
+      }
+    },
+    "rules": [
+      {
+        "type": "deletion"
+      },
+      {
+        "type": "non_fast_forward"
+      },
+      {
+        "type": "pull_request",
+        "parameters": {
+          "required_approving_review_count": 1,
+          "dismiss_stale_reviews_on_push": true,
+          "required_reviewers": [],
+          "require_code_owner_review": true,
+          "require_last_push_approval": true,
+          "required_review_thread_resolution": true,
+          "require_extra_approval_for_unattributed_changes": true,
+          "allowed_merge_methods": [
+            "merge"
+          ]
+        }
+      },
+      {
+        "type": "required_status_checks",
+        "parameters": {
+          "strict_required_status_checks_policy": true,
+          "do_not_enforce_on_create": false,
+          "required_status_checks": [
+            {
+              "context": "governance",
+              "integration_id": 15368
+            },
+            {
+              "context": "test (3.11)",
+              "integration_id": 15368
+            },
+            {
+              "context": "test (3.13)",
+              "integration_id": 15368
+            }
+          ]
+        }
+      }
+    ],
+    "node_id": "RRS_lACqUmVwb3NpdG9yec5PaC0NzgFh4fY",
+    "created_at": "2026-09-14T01:08:36.219+08:00",
+    "updated_at": "2026-09-14T01:08:36.307+08:00",
+    "bypass_actors": [],
+    "current_user_can_bypass": "never",
+    "_links": {
+      "self": {
+        "href": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/rulesets/23192054"
+      },
+      "html": {
+        "href": "https://github.com/Chengyue-Lu/research-agent-workbench/rules/23192054"
+      }
+    }
+  },
+  "stderr": ""
+}

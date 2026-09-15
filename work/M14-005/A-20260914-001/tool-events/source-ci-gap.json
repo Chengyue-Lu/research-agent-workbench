@@ -1,0 +1,38 @@
+{
+  "observed_source": "f7a9715ed35787d3326283c22f834b1514c5c88c",
+  "run_id": 34770350764,
+  "run_conclusion": "success",
+  "required_by_dormant_policy": [
+    "governance",
+    "test (3.11)",
+    "test (3.13)"
+  ],
+  "run_job_names": [
+    "plan",
+    "documentation",
+    "repository_smoke",
+    "package-smoke (3.13)",
+    "package-smoke (3.11)",
+    "coverage-quality (3.11)",
+    "compatibility (3.13)",
+    "compatibility (3.11)",
+    "test (3.13)",
+    "test (3.11)"
+  ],
+  "check_run_names": [
+    "test (3.11)",
+    "test (3.13)",
+    "compatibility (3.11)",
+    "compatibility (3.13)",
+    "coverage-quality (3.11)",
+    "package-smoke (3.11)",
+    "package-smoke (3.13)",
+    "repository_smoke",
+    "documentation",
+    "plan"
+  ],
+  "missing_required_checks": [
+    "governance"
+  ],
+  "complete_source_ci_attestation": false
+}

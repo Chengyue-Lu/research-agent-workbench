@@ -1,0 +1,60 @@
+task_id: M14-005
+revision: 1
+related_task_ids:
+- M0-007
+owner: Chengyue-Lu
+risk: R2
+agent_profile: bounded-release-readiness
+required_skills: []
+delegation: false
+baseline: f7a9715ed35787d3326283c22f834b1514c5c88c
+user_request: M14-004 merge -> license/protection/evidence readiness -> all external
+  gates -> READY -> first release
+goal: Prepare MIT license closure, enforce accepted remote protections, and retain
+  synthetic readiness evidence.
+read_allowlist:
+- AGENTS.md
+- docs/**
+- README.md
+- LICENSE
+- MANIFEST.in
+- pyproject.toml
+- .github/**
+- tests/**
+- src/research_workbench/resources.py
+- build_backend.py
+- runtime-resources.json
+- registry/skills/**
+- schemas/**
+- work/M14-004/**
+- work/M14-005/A-20260914-001/**
+- GitHub Issue 57 and PR 77/current branch/ruleset/CI APIs
+- GitHub rules REST documentation
+- MIT and setuptools license metadata documentation
+write_scope:
+- LICENSE
+- MANIFEST.in
+- pyproject.toml
+- README.md
+- registry/skills/accepted.json
+- registry/skills/candidates.json
+- registry/skills/sources.json
+- .github/release-surface.yml
+- .github/scripts/portable_package_smoke.py
+- tests/public_surface_helpers.py
+- tests/test_public_surface.py
+- tests/test_portable_build.py
+- tests/test_ci_plan.py
+- docs/TASKS.md
+- docs/STATUS.md
+- docs/ROADMAP.md
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/SUPPORTED_FEATURES.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- work/M14-005/A-20260914-001/**
+- GitHub exact main/develop protection rulesets
+stop_conditions:
+- Publish readiness PR for cross-owner R2 review.
+- M14-005 remains BLOCKED pending accepted readiness and named first-release decision.
+- Primary local develop, dormant topology, real release refs/tags and Skill admission
+  unchanged.

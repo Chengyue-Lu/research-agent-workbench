@@ -1,0 +1,13 @@
+{
+  "observed_at": "2026-09-13T17:22:37.439288+00:00",
+  "command": [
+    "git",
+    "-C",
+    "../research-agent-workbench",
+    "rev-parse",
+    "HEAD"
+  ],
+  "exit_code": 0,
+  "data": "11c3b57dfbf8af0dc2587fc421d097e2544941c3\n",
+  "stderr": ""
+}

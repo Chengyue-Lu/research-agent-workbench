@@ -1,0 +1,23 @@
+E
+======================================================================
+ERROR: test_smokes_and_coverage_config_are_independent_of_full_behavior (tests.test_ci_plan.PlannerTests.test_smokes_and_coverage_config_are_independent_of_full_behavior)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<readiness-worktree>\tests\test_ci_plan.py", line 1399, in test_smokes_and_coverage_config_are_independent_of_full_behavior
+    self.commit('pyproject.toml', (self.repo / 'pyproject.toml').read_text().replace(before, after))
+  File "<readiness-worktree>\tests\test_ci_plan.py", line 85, in commit
+    command(self.repo, 'commit', '-qm', 'candidate')
+  File "<readiness-worktree>\tests\test_ci_plan.py", line 27, in command
+    return subprocess.check_output(['git', '-C', str(repo), *args], stderr=subprocess.PIPE).decode().strip()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\subprocess.py", line 466, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', '-C', '<temporary-root>\\tmpw7ujp4rm\\repo', 'commit', '-qm', 'candidate']' returned non-zero exit status 1.
+
+----------------------------------------------------------------------
+Ran 1 test in 5.074s
+
+FAILED (errors=1)

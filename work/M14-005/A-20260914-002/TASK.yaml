@@ -1,0 +1,50 @@
+task_id: M14-005
+revision: 1
+related_task_ids:
+- M0-007
+owner: Chengyue-Lu
+risk: R2
+agent_profile: bounded-release-readiness-review-correction
+required_skills: []
+delegation: false
+baseline: f7a9715ed35787d3326283c22f834b1514c5c88c
+user_request: 根据审核问题进行修复。
+review_ref: https://github.com/Chengyue-Lu/research-agent-workbench/pull/78#issuecomment-5655298378
+goal: Correct stale risk/status summaries and separate external readiness from remaining
+  M14-005 implementation.
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/READINESS_PREPARATION.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/RISK_LEDGER.md
+- tests/test_documentation.py
+- tests/test_public_surface.py
+- .github/**
+- examples/**
+- registry/**
+- schemas/**
+- work/M14-005/A-20260914-001/**
+- work/M14-005/A-20260914-002/**
+- GitHub PR 78 review, head/base and check APIs
+write_scope:
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/READINESS_PREPARATION.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/RISK_LEDGER.md
+- work/M14-005/A-20260914-002/**
+- GitHub PR 78 feature branch, body and cross-owner review request
+stop_conditions:
+- Update the same PR 78 and request fresh exact-head cross-owner R2 review.
+- M14-005 remains BLOCKED; canonical Task definitions, dependencies and acceptance
+  unchanged.
+- Keep primary local develop clean and unchanged; retain dormant topology and existing
+  frozen archives.

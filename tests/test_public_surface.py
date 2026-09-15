@@ -25,6 +25,10 @@ class PublicSurfaceTests(unittest.TestCase):
                  "DEVELOPMENT_HISTORY.md", "registry/skills/accepted.json", "registry/skills/sources.json"}
         self.assertEqual([], [name for name in self.files if name.startswith(excluded) or name in exact])
 
+    def test_projection_without_license_is_not_build_ready(self):
+        files = {path: data for path, data in self.files.items() if path != "LICENSE"}
+        self.assertIn("missing build input: LICENSE", build_input_errors(files))
+
     def test_product_sources_and_schemas_are_complete(self):
         # Each policy version must select these whole source classes, never per-feature pruning.
         policy = json.loads(self.files[".github/release-surface.yml"])["policies"][-1]

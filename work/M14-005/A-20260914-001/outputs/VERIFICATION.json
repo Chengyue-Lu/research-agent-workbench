@@ -1,0 +1,32 @@
+{
+  "implementation_head": "d71bce36a584f338633f4286009070e639e9bf02",
+  "baseline": "f7a9715ed35787d3326283c22f834b1514c5c88c",
+  "focused_passed": 32,
+  "local_full_status": "interrupted after reproduced CI planner fixture failure on e8d7e33",
+  "local_full_completed": false,
+  "local_full_failure_fixed": true,
+  "full_and_coverage_acceptance": "Require fresh exact PR head GitHub CI; not yet observed at archive freeze",
+  "tested_package_source": "e8d7e33505a769cc2b7fb38d9c4665c7c0ccaa24",
+  "package_inputs_unchanged_by_fixture_fix": true,
+  "repository": {
+    "validated": 186,
+    "errors": 0,
+    "warnings": 0
+  },
+  "package_installs": 8,
+  "projection_file_count": 258,
+  "license": "MIT",
+  "remote_rulesets": {
+    "develop": 23192001,
+    "main": 23192054
+  },
+  "m14_005_state": "BLOCKED",
+  "source_ci_gap": "develop push CI lacks governance job required by dormant source policy",
+  "release_source_frozen": false,
+  "release_refs_created": false,
+  "release_authorized": false,
+  "omitted_redundant_logs": {
+    "projection-package.log": "dfb2c08a638c40ce3b3fca5ef9ff200695fc2c5d1a637f2b59a35c0f4a32ddb5",
+    "setup.log": "0d80ff189c5757777bfad8465d4323a08fae4fb238ed9e7716f8ffc83d9aa2e5"
+  }
+}

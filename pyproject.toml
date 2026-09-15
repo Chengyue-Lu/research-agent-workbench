@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=69"]
+requires = ["setuptools>=77"]
 build-backend = "build_backend"
 backend-path = ["."]
 
@@ -10,6 +10,8 @@ description = "A human-governed, provider-neutral research agent workbench."
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "Research Agent Workbench contributors" }]
+license = "MIT"
+license-files = ["LICENSE"]
 dependencies = [
   "jsonschema>=4.23,<5",
   "PyYAML>=6,<7",
@@ -18,7 +20,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
-  "setuptools>=69", # Runtime resource tests import the build backend directly.
+  "setuptools>=77", # Runtime resource tests import the build backend directly.
   "build>=1.2,<2",
   "coverage>=7.6,<8",
   "hypothesis>=6.112,<7",

@@ -95,6 +95,7 @@ class PortableBuildTests(unittest.TestCase):
         target = self.root / "source"
         smoke.snapshot_sources(target)
         self.assertEqual((ROOT / "runtime-resources.json").read_bytes(), (target / "runtime-resources.json").read_bytes())
+        self.assertEqual((ROOT / "LICENSE").read_bytes(), (target / "LICENSE").read_bytes())
         self.assertFalse((target / "src/research_workbench/_runtime_data").exists())
         self.assertFalse((target / "src/research_workbench/_runtime_pin.py").exists())
         spec = json.loads((target / "runtime-resources.json").read_bytes())
@@ -113,6 +114,8 @@ class PortableBuildTests(unittest.TestCase):
         data = b"{}"
         manifest = {"entries": [{"installed_path": "assets/item.json", "sha256": hashlib.sha256(data).hexdigest()}]}
         with zipfile.ZipFile(path, "w") as archive:
+            archive.writestr("fixture.dist-info/METADATA", "License-Expression: MIT\nLicense-File: LICENSE\n")
+            archive.writestr("fixture.dist-info/licenses/LICENSE", (ROOT / "LICENSE").read_bytes())
             archive.writestr("research_workbench/__init__.py", "")
             archive.writestr("research_workbench/_runtime_data/manifest.json", json.dumps(manifest))
             archive.writestr("research_workbench/_runtime_data/assets/item.json", b"bad" if corrupt else data)
@@ -132,6 +135,31 @@ class PortableBuildTests(unittest.TestCase):
                 else:
                     self.assertEqual("result", smoke.run(["python"], cwd=self.root, env={}))
                 self.assertEqual(str(run.call_args.args[0][0]), run.call_args.args[0][0])
+
+    def test_wheel_rejects_missing_or_changed_license_and_metadata(self):
+        wheel = self.root / "licensed.whl"
+        self.wheel(wheel)
+        with zipfile.ZipFile(wheel) as archive:
+            original = {name: archive.read(name) for name in archive.namelist()}
+        metadata = "fixture.dist-info/METADATA"
+        license_path = "fixture.dist-info/licenses/LICENSE"
+        for path, replacement in (
+            (metadata, None),
+            (metadata, b"License-Expression: Apache-2.0\nLicense-File: LICENSE\n"),
+            (metadata, b"License-Expression: MIT\n"),
+            (license_path, None),
+            (license_path, b"changed license"),
+        ):
+            with self.subTest(path=path, replacement=replacement):
+                contents = dict(original)
+                contents.pop(path)
+                if replacement is not None:
+                    contents[path] = replacement
+                with zipfile.ZipFile(wheel, "w") as archive:
+                    for name, data in contents.items():
+                        archive.writestr(name, data)
+                with self.assertRaises((AssertionError, KeyError)):
+                    smoke.closure(wheel)
 
     def test_smoke_orchestrates_both_distribution_routes_and_isolation_modes(self):
         for interpreters in ([], ["--python", sys.executable]):

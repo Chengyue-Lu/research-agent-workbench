@@ -1,0 +1,189 @@
+schema_version: 0.1.0
+trace_id: TRACE-M14-005-A-20260914-001
+task_id: M14-005
+task_revision: 1
+attempt_id: A-20260914-001
+archive_root: A-20260914-001
+baseline: f7a9715ed35787d3326283c22f834b1514c5c88c
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 6e9a611c020e59575817898a0909eaeb2ab1688a5b265b9f0394054457cebaa7
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 26749f366234a528d0df10afb69818dfa018f054c681699def72423de1e2e695
+read_allowlist:
+- AGENTS.md
+- docs/**
+- README.md
+- LICENSE
+- MANIFEST.in
+- pyproject.toml
+- .github/**
+- tests/**
+- src/research_workbench/resources.py
+- build_backend.py
+- runtime-resources.json
+- registry/skills/**
+- schemas/**
+- work/M14-004/**
+- work/M14-005/A-20260914-001/**
+- GitHub Issue 57 and PR 77/current branch/ruleset/CI APIs
+- GitHub rules REST documentation
+- MIT and setuptools license metadata documentation
+write_scope:
+- LICENSE
+- MANIFEST.in
+- pyproject.toml
+- README.md
+- registry/skills/accepted.json
+- registry/skills/candidates.json
+- registry/skills/sources.json
+- .github/release-surface.yml
+- .github/scripts/portable_package_smoke.py
+- tests/public_surface_helpers.py
+- tests/test_public_surface.py
+- tests/test_portable_build.py
+- tests/test_ci_plan.py
+- docs/TASKS.md
+- docs/STATUS.md
+- docs/ROADMAP.md
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/SUPPORTED_FEATURES.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- work/M14-005/A-20260914-001/**
+- GitHub exact main/develop protection rulesets
+tool_allowlist:
+- git
+- gh
+- python
+- apply_patch
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: db64dab86f00813ec32fed07f266809793d024f7405968852eea450673c25127
+  event_count: 51
+tool_event_refs:
+- path: tool-events/after-develop.json
+  sha256: 1599f8fd1e09259de0f0d93766b76a8493f02c008779b84205b923b23b1a4577
+- path: tool-events/after-main.json
+  sha256: 5d8d9de4d82bc6e4a6bfa82738b84244615f3401d7c8884c61d97397c24ccfff
+- path: tool-events/after-rulesets.json
+  sha256: bab61d748a2d4d93290379e767f10cadcc87a96881f211f4ecec3ae0498521e1
+- path: tool-events/before-develop-effective.json
+  sha256: c37fd8a649f03b5660a61fcd5d0112a072987616022b0bf57f8f63ce0e033b20
+- path: tool-events/before-develop.json
+  sha256: 72a190709fd24c7e52d9b5423735d176fb91432563998324d531c7c9f08e87c5
+- path: tool-events/before-main-effective.json
+  sha256: b409352256c0800ded0122ae1873f05dc8511bf1bff04ffcfc7bd4fa179dc185
+- path: tool-events/before-main.json
+  sha256: c3b68fe096d605cf856e49250cd0e08d0868fe1425635f9a171959bfc6ef42b4
+- path: tool-events/before-rulesets.json
+  sha256: 4c041a7e948b494738dc48c2813ebafe31b8bc0815098f290d645158dfee4b04
+- path: tool-events/check-app-identity.json
+  sha256: b41b9cb1140da7387d7d5447e300a6aa44fb28a9c4d3f71b6037078da0b79e46
+- path: tool-events/ci-plan-before-fix.json
+  sha256: 37eb975d935d9ddb86a926b89d968aec5b0031bf6689b27459bdf26e9160d573
+- path: tool-events/ci-plan.json
+  sha256: 6e2b2d94115c354fcbaee31d64e548d3347d4e758d33f32eaf6d1669f36a9c2f
+- path: tool-events/current-develop-effective.json
+  sha256: 46aa93bedafae23af1c6022fe2a40d3b5623210dd8b1f3a66a7b26f8645418d0
+- path: tool-events/current-main-effective.json
+  sha256: a6843bb6b65c5cae3c78fe1ed4720d040e4ea1d94cba1120504d6f130fb740dd
+- path: tool-events/develop-codeowners-errors.json
+  sha256: 80e99802f93f6b10b95d428dc60dde81d8583b37f7268883107c920f290303eb
+- path: tool-events/develop-create-response.json
+  sha256: eff02dd64d860985a8a5308a8a3adb3d4a9c70798b1a9fd2c1bc33eb5b93ac7d
+- path: tool-events/develop-effective-readback.json
+  sha256: 8e7df0e2a466dc90c44d677e90f8fba0bd1ba660a47dc57f9a43d7746dc5cb54
+- path: tool-events/develop-ruleset-readback.json
+  sha256: 32270a20e4414efb8ead5f1582c55ea3dfa60cd7312334510b3a575f0484f5e8
+- path: tool-events/develop-ruleset-request.json
+  sha256: 5c0ad32e9c5be5308c6d78ee2300c64f973e7d555e5ec30f5f47bae66557756a
+- path: tool-events/develop-source-checks.json
+  sha256: b67d48cecee62c9c0b0ca5b539d5deac04178a39069d9be3eb855d2dc30354d5
+- path: tool-events/develop-source-jobs.json
+  sha256: b0c18487e66b593e7a62ad9136e4310651b17a3d6efd7188e665b1a255abc53c
+- path: tool-events/develop-source-run.json
+  sha256: 04ea17877a0faeea66e449d0887305c3460e8e57324e550b79023091eb16817d
+- path: tool-events/human-license-decision.json
+  sha256: c0f3acb38d13e4fcdfdd551f79fe1840ba1e2d0c395e1045b318cfd5165d4207
+- path: tool-events/immediate-before-rulesets.json
+  sha256: 8753cc340d051ea74342a80c9fbf2da3cbdb189311b890693f22edc2c0c1f07a
+- path: tool-events/interrupted-known-failed-run.json
+  sha256: 864323058e40da5e617cad7f5dc008b0b545c196fbc59bfef53cca17c12f9fc2
+- path: tool-events/local-pr-event.json
+  sha256: 02000334395d564a8eff6f28ef61810a54f05d77f0c6688b2ca4306464de9167
+- path: tool-events/main-create-response.json
+  sha256: 0c8fc75e08e62a1a6ab2e5ccc5418e76249f8abe2c82f9ff4b6e288490233121
+- path: tool-events/main-effective-readback.json
+  sha256: f59a531a437f3222faa461a199bd24dd52e8e0ee99ba796faefe8f048ce858d8
+- path: tool-events/main-ruleset-readback.json
+  sha256: 085abe39a1389c4a8e3d47cdaaba1be09eec2442eb8668689a1f6b6d33c06fdc
+- path: tool-events/main-ruleset-request.json
+  sha256: e18900d70b387fd3e45ddef06c2fff8d52915ff7f77ffafdf2855af2355d6fa9
+- path: tool-events/package.json
+  sha256: 06ebcf9ae921c6712d19630512143290e04f8985bf05449d54b3798cd971fa1e
+- path: tool-events/pr77-merge.json
+  sha256: bd63506371c9becad7baef8656d32f30fb8b790139c2b8ee64635202b860d711
+- path: tool-events/primary-checkout.json
+  sha256: b4cf6e15c33fd165abba8694b52006b8ca55d127e4056728209aef35644cdb51
+- path: tool-events/primary-head.json
+  sha256: 44ae0ee929d1af1022ebc20a8a34558eb556fb913a7d1697ccff5806884a0a12
+- path: tool-events/projection.json
+  sha256: 3caf0d53d6050155a123a40320402a5c09f5aec9b0e1e6876630073f8c1afdb3
+- path: tool-events/protection-verification.json
+  sha256: 9cbcee45d90bfdcbf0cf84389ef5ca3697ea12326e371d3c89f18fb1e94f79c5
+- path: tool-events/repository.json
+  sha256: 337980e697da22bbf2d5580434e9a3b8cbf4b0186c22e9c19c7754682613b4f7
+- path: tool-events/resume-before-rulesets.json
+  sha256: e227aa9ca9979401c73a43ae364267548b3931fda86a71250f842146e6ffb82f
+- path: tool-events/source-ci-gap.json
+  sha256: 35ecdffaca143a1db1b355a0dc85a1bade39d90bdddc92f165149427939ac6bf
+- path: tool-events/source-ci-negative-preflight.json
+  sha256: d54c5d4289b3ef80eac27ec3a4e8d64f0592db8fe2d7de2a218e405665f5d19c
+- path: tool-events/governance.log
+  sha256: 0fb7586e218993e9a500c278bec796d11ced264ee850121727a8818f8ae966f4
+- path: tool-events/repository.log
+  sha256: 6895861bf5f35b7669baaf95d9caf2b94c3a4e1d5682f29bbc73ba0aa0064633
+- path: tool-events/focused-precommit.log
+  sha256: d16f2e9798c96e0e3da36096828153941948f2540aaa93751e2f300861f8093f
+- path: tool-events/ci-fixture-before-fix.log
+  sha256: 6ba50ad3266ec12214ce3ce2c943ce038c61b16a0980bee6c5919dc89a33f115
+- path: tool-events/focused-after-fix.log
+  sha256: 8bf07cb41f561beb36f6624d97a7f826dfa97a8010d9f8ccec16ce7030f0fc3e
+- path: tool-events/full-coverage.log
+  sha256: e553ea7264b208489565ecf2a0f16c9496cccf67486039a3e73d8e23aeef038d
+handoff_refs:
+- path: WORKLOG.md
+  sha256: 5fa5400b98c26a967bc6e1183fe57cf7a722b80cc53c82d8ea2d7cdd439faa46
+decision_refs: []
+output_refs:
+- path: outputs/apply_protection.py.md
+  sha256: 3b29cc130a5a72bd3878329601bab367af337745bd024cd0efb3426fcfebfe06
+- path: outputs/freeze_archive.py.md
+  sha256: 85326d6c0626e84c516410392f6b8f6fb852e03e55fb76fe1e5cc3036f51baf4
+- path: outputs/prepare_checks.py.md
+  sha256: b67df11da7220a3a97506725a4b1cd5df093490ca9d9ffb0af91488685cca8c5
+- path: outputs/prepare_protection.py.md
+  sha256: a2ef458353b2c9f9c86db963dbcfc088f42474ed8fb33f8fb14dfd07542695a8
+- path: outputs/VERIFICATION.json
+  sha256: 61e591e13cd0b5d383ef565de90fefae8c16037d731dda49af5f37e326bd6041
+- path: outputs/verify_projection.py.md
+  sha256: f62d04561f3de543fa09aef2a77c8ed4159cb8590ea1ec604d21570acfe92ab6
+check_refs:
+- path: .gitattributes
+  sha256: 48747480eddba024928d03be9bf83dc579e5515768647507a767e8187a85c9ab
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: tool-results
+- event_id: EVT-0004
+  affected_stream: file-revisions
+- event_id: EVT-0005
+  affected_stream: external-actions

@@ -1,0 +1,8 @@
+{
+  "observed_run": 34770350764,
+  "observed_source": "f7a9715ed35787d3326283c22f834b1514c5c88c",
+  "result": "REJECTED",
+  "reason": "CI required-check closure/canonical order mismatch",
+  "trusted_attestation": false,
+  "branch_or_manifest_created": false
+}

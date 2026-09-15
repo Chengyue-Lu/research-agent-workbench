@@ -1,0 +1,11 @@
+{
+  "observed_at": "2026-09-13T17:06:58.778713+00:00",
+  "command": [
+    "gh",
+    "api",
+    "repos/Chengyue-Lu/research-agent-workbench/rulesets"
+  ],
+  "exit_code": 0,
+  "data": [],
+  "stderr": ""
+}
