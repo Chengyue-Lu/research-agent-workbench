@@ -52,6 +52,78 @@ class DependencyTests(unittest.TestCase):
                 blobs = {'tests/test_reader.py': raw.encode()}
                 self.assertIn('test_reader', self.selection(blobs, blobs, ['docs/input.md'], ['docs/input.md'])['selected'])
 
+    def test_call_mediated_builtin_mutations_retain_document_consumers(self):
+        for mutation in (
+            'patch("builtins.len", getsize)',
+            'mock.patch("builtins.len", getsize)',
+            'renamed("builtins.len", getsize)',
+            'patch.object(builtins, "len", getsize)',
+            'mock.patch.object(builtins, "len", getsize)',
+            'renamed.object(builtins, "len", getsize)',
+            'monkeypatch.setattr("builtins.len", getsize)',
+            'monkeypatch.setattr(builtins, "len", getsize)',
+            'monkeypatch.setattr(unknown_target, "len", getsize)',
+            'builtins.__setattr__("len", getsize)',
+            'patch(target="builtins.len", new=getsize)',
+            'patch.object(target=builtins, attribute="len", new=getsize)',
+            'monkeypatch.setattr(target=builtins, name="len", value=getsize)',
+            'patch(dynamic_target, getsize)',
+            'patch.object(builtins, dynamic_name, getsize)',
+            'monkeypatch.setattr(builtins, dynamic_name, getsize)',
+            'builtins.__setattr__(dynamic_name, getsize)',
+        ):
+            with self.subTest(mutation=mutation):
+                operation = ('with ' + mutation + ':\n value = len("docs/input.md")\n'
+                             if mutation.startswith(('patch(', 'mock.patch(', 'renamed(')) else
+                             mutation + '\nvalue = len("docs/input.md")\n')
+                raw = ('import builtins\nfrom unittest import mock\n'
+                       'from unittest.mock import patch, patch as renamed\n'
+                       'from os.path import getsize\n' + operation)
+                blobs = {'tests/test_reader.py': raw.encode()}
+                self.assertIn('test_reader', self.selection(
+                    blobs, blobs, ['docs/input.md'], ['docs/input.md'])['selected'])
+
+    def test_patched_length_retains_actual_document_failure(self):
+        for mutation in ('patch("builtins.len", getsize)', 'patch.object(builtins, "len", getsize)'):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
+                repo = Path(directory)
+                def git(*args):
+                    return subprocess.check_output(['git', '-C', str(repo), *args], stderr=subprocess.DEVNULL).decode().strip()
+                (repo / 'tests').mkdir()
+                (repo / 'docs').mkdir()
+                (repo / 'tests/test_reader.py').write_text(
+                    'import builtins\nfrom unittest.mock import patch\nfrom os.path import getsize\n'
+                    'def test_document():\n with ' + mutation + ':\n'
+                    '  size = len("docs/input.md")\n assert size == 4\n')
+                git('init', '-q')
+                commits = []
+                for value in ('good', 'bad'):
+                    (repo / 'docs/input.md').write_text(value)
+                    result = subprocess.run([sys.executable, '-c',
+                        'import runpy; runpy.run_path("tests/test_reader.py")["test_document"]()'],
+                        cwd=repo, capture_output=True, text=True)
+                    self.assertEqual(0 if value == 'good' else 1, result.returncode, result.stderr)
+                    self.assertEqual(value == 'bad', 'AssertionError' in result.stderr)
+                    git('add', 'tests/test_reader.py', 'docs/input.md')
+                    git('-c', 'user.name=CI fixture', '-c', 'user.email=ci@example.invalid', 'commit', '-qm', value)
+                    commits.append(git('rev-parse', 'HEAD'))
+                selected = deps.select(repo, *commits, ['docs/input.md'])[0]
+                self.assertEqual({'test_reader'}, set(selected['selected']))
+                self.assertFalse(selected['errors'])
+
+    def test_unrelated_patch_targets_preserve_literal_length_precision(self):
+        for mutation in (
+            'patch("app.value", replacement)',
+            'patch.object(app, "value", replacement)',
+            'monkeypatch.setattr(app, "value", replacement)',
+            'monkeypatch.setattr("app.value", replacement)',
+            'app.__setattr__("value", replacement)',
+        ):
+            with self.subTest(mutation=mutation):
+                blobs = {'tests/test_metadata.py': (mutation + '\nvalue = len("SKILL.md")').encode()}
+                self.assertFalse(self.selection(
+                    blobs, blobs, ['skills/SKILL.md'], ['skills/SKILL.md'])['selected'])
+
     def test_selection_explains_fallback_edges_without_changing_paths(self):
         blobs = {'src/leaf.py': b'VALUE=1', 'src/dynamic.py': b'exec(code)',
                  'tests/test_dynamic.py': b'import dynamic', 'tests/test_direct.py': b'import leaf',
@@ -60,7 +132,7 @@ class DependencyTests(unittest.TestCase):
         self.assertEqual(['syntax-reference'], result['selected_edge_kinds']['test_direct'])
         self.assertEqual(['opaque-execution', 'syntax-reference'], result['selected_edge_kinds']['test_dynamic'])
         self.assertEqual(3, result['scope_summary']['available_test_modules'])
-        self.assertEqual(2, result['scope_summary']['selected_test_modules'])
+        self.assertEqual(2, result['scope_summary']['dependency_selected_test_modules'])
         self.assertEqual(1, result['scope_summary']['opaque_execution_paths'])
         resource = self.selection(blobs, blobs, ['fixtures/data.json'], ['fixtures/data.json'])
         self.assertEqual(['unbounded-resource'], resource['selected_edge_kinds']['test_resource'])

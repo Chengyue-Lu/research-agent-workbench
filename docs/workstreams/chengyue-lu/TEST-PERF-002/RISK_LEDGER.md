@@ -98,6 +98,18 @@ for cross-owner review. Quality thresholds, exclusions, product contracts and re
   changes keep full authority validation. The independent pinned witness is unchanged.
 - Diagnostic edge kinds and counts never lower the machine minimum. Global opaque/resource
   propagation, output-name ambiguity, lazy imports and exclusion-coordinate identity remain
-  open in this Draft; see the explicit matrix in BOUNDARY_REPAIR.md.
+  follow-ups in Issue #48; see the explicit matrix in BOUNDARY_REPAIR.md.
 - Local selection reductions do not establish hosted wall-time gains. Preserve critical
   95/90, changed 100/100, integration 90, ordered fixtures, exact-target checks and R2 review.
+
+## PR #83 review remediation
+
+- Mutation helpers can replace `builtins.len` without binding the bare name. Recognize
+  patch/patch.object aliases, setattr overloads and __setattr__; uncertain target/name
+  arguments retain dependencies. Fixed unrelated names retain metadata precision.
+- Real Git-bound four-byte/three-byte document probes retain a failing consumer under
+  both patch forms. Selector regressions cover the other call shapes and existing controls.
+- `dependency_selected_test_modules` explicitly counts the dependency selector output;
+  final plan tests may additionally contain policy and explicit obligations.
+- The bounded PR is prepared for review. Wider graph precision and cross-commit reuse
+  remain Issue #48 follow-ups; current checks and owner review govern acceptance.
