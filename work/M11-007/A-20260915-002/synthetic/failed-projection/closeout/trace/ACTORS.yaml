@@ -1,0 +1,15 @@
+schema_version: 0.1.0
+task_id: TASK-MR-ES-FROZEN-001
+task_revision: 1
+attempt_id: ATTEMPT-SKILL-CLOSEOUT
+actors:
+- actor_id: runtime-host
+  actor_type: runtime-adapter
+  role: bounded API session runner
+  runtime_identity: python
+  accountable_owner: M11 synthetic execution owner
+- actor_id: provider-local
+  actor_type: model-provider
+  role: bound model provider
+  runtime_identity: local
+  accountable_owner: M11 synthetic execution owner

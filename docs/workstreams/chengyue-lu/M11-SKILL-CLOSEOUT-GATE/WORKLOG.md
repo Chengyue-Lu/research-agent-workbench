@@ -45,3 +45,7 @@
 - 新增模块的开发覆盖率达到 critical 门槛；将 synthetic vertical proof、独立 replay、
   运行源文件 pin 与带 capture-gap 声明的开发 Trace 归档至 `work/M11-007/`。
   M11-007 保持 IN_PROGRESS，等待双方 R2 验收；Gate B 仍 UNSATISFIED，M5-007 保持 BLOCKED。
+- implementation commit `7b34051` 的 Skill/documentation focused 37 PASS。
+  [运行与开发证据](../../../../work/M11-007/A-20260915-002/README.md) 保存四个完整 synthetic case
+  及独立进程 replay。首次私有归档因 gap stream/status 不合法被拒绝，失败日志保留；新开发归档
+  使用合法 gap stream 与 `safe-paused`，Trace 无 BLOCK，保留 capture-gap warning。

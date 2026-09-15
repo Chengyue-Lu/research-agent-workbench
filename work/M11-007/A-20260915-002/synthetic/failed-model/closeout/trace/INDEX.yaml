@@ -1,0 +1,61 @@
+schema_version: 0.1.0
+trace_id: TRACE-ATTEMPT-SKILL-CLOSEOUT
+task_id: TASK-MR-ES-FROZEN-001
+task_revision: 1
+attempt_id: ATTEMPT-SKILL-CLOSEOUT
+archive_root: trace
+baseline: rwb-agent-trace-v0.1
+owner_actor_id: runtime-host
+owner: M11 synthetic execution owner
+attempt_status: failed
+trace_status: frozen
+completeness: complete
+task_ref:
+  path: TASK.yaml
+  sha256: c0714fedfbdd44e2bb0d02081e9c6a8307f5e237537844934632c661aad61406
+actors_ref:
+  path: ACTORS.yaml
+  sha256: ffd12b24acf23af46a1eb93221ef2ed9bc0d04581f6ce72ec8f24f83bc316aeb
+read_allowlist:
+- bundle/**
+write_scope:
+- closeout/**
+- work/**
+tool_allowlist: []
+messages:
+- message_id: MSG-0001
+  sequence: 1
+  path: messages/0001-provider-request.trace
+  sha256: bcd28029bd59faa3c733f8428bf356f21f73bcf389d400a83cdce6fcd74d3d8c
+  content_sha256: 6410fbe87c970dda392a513cc7cf7900dbce8372aea8ce184ab28e3ea3997cb5
+  kind: provider-request
+  sender_actor_id: runtime-host
+  receiver_actor_ids:
+  - provider-local
+  created_at: '2026-09-15T11:22:56.051000Z'
+  capture_status: complete
+- message_id: MSG-0002
+  sequence: 2
+  path: messages/0002-provider-response.trace
+  sha256: 6165003e541242c54ad8b1e7b5d8f7cbf3bc687918f8794cfc60e966ca58fee9
+  content_sha256: 71707a6915a119027f6ab978047a4f8f24bd09d0a3f6ec3894544e4a3026a952
+  kind: provider-response
+  sender_actor_id: provider-local
+  receiver_actor_ids:
+  - runtime-host
+  created_at: '2026-09-15T11:22:56.055212Z'
+  capture_status: complete
+event_ledger:
+  path: events.jsonl
+  sha256: bf1be397ab0e10b718e560a48a4f17ba1ed48d13548cc7870ca9e12d0d9db4df
+  event_count: 7
+tool_event_refs: []
+handoff_refs: []
+decision_refs:
+- path: decisions/execution-scope-binding.yaml
+  sha256: aa781d8ca209cfbe281011d84ae4ad6fa5d776355679bc4505a43cdcc87e72a7
+- path: decisions/skill-execution-fact-SKILL-USE-1.yaml
+  sha256: 7f2b2363eec55653eb0601745faa17d860070f41e804a292e50681bbb5d58e9a
+output_refs: []
+check_refs: []
+capture_gaps: []

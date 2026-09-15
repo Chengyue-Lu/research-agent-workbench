@@ -1,0 +1,33 @@
+schema_version: 0.1.0
+binding_id: BIND-LOCAL-001
+revision: 1
+selected_supply_report_ref: supply-synthetic-runtime-skill@1.0.0
+provider:
+  ref: local
+  version: '1'
+  content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+adapter:
+  ref: local-procedure
+  version: 1.0.0
+  content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+model:
+  ref: bounded-local-model
+  version: 1.0.0
+  content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+  model_class: bounded
+  slot: worker
+  capabilities:
+  - structured-output
+runtime:
+  ref: python
+  version: 3.11+
+  content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+host:
+  ref: bounded-test-host
+  version: '1'
+  content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+boundaries:
+  supply_selection: false
+  automatic_fallback: false
+  permission_grant: false
+  method_decision: false

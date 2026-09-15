@@ -1,0 +1,15 @@
+schema_version: 0.1.0
+task_id: M11-007
+task_revision: 1
+attempt_id: A-20260915-002
+actors:
+- actor_id: codex-implementation
+  actor_type: runtime-adapter
+  role: bounded API session runner
+  runtime_identity: Codex desktop bounded implementation
+  accountable_owner: Chengyue-Lu
+- actor_id: provider-OpenAI
+  actor_type: model-provider
+  role: bound model provider
+  runtime_identity: OpenAI
+  accountable_owner: Chengyue-Lu

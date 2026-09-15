@@ -1,0 +1,65 @@
+schema_version: 0.1.0
+contract_version: 1.0.0
+fact_id: SKILL-USE-1
+record_kind: actual-skill-execution-binding
+attempt_id: ATTEMPT-SKILL-CLOSEOUT
+view_ref:
+  ref: VIEW-LOCAL-001@r1
+  path: view/skill.yaml
+  sha256: 01170e176f0424c02de62b9129f5e9c71ee905bb86d1ef9bb9911f3bb422c48f
+execution_phase: use-boundary
+actual_binding:
+  provider:
+    ref: local
+    version: '1'
+    content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+  adapter:
+    ref: local-procedure
+    version: 1.0.0
+    content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+  model:
+    ref: observed-drift-model
+    version: 1.0.0
+    content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+    model_class: bounded
+    slot: worker
+    capabilities:
+    - structured-output
+  runtime:
+    ref: python
+    version: 3.11+
+    content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+  host:
+    ref: bounded-test-host
+    version: '1'
+    content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+actual_supply_report_ref: supply-synthetic-runtime-skill@1.0.0
+actual_skill_consumption:
+  schema_version: 0.1.0
+  contract_version: 1.0.0
+  record_kind: skill_execution_consumption
+  supply_report_ref:
+    ref: supply-synthetic-runtime-skill@1.0.0
+    path: bundle/supply.yaml
+    sha256: 6e6b6b369cb6dade192379082e3a178f408fdb6a3397adcf3c77005cfaa2aa8a
+  projection_ref:
+    ref: synthetic-runtime-skill-1.0.0@1.0.0
+    path: bundle/skill-projection.yaml
+    sha256: 58d3a7b3837056ec850d4a2ff7c6a91dc65e183fe283f48daef61b1c90da0ce4
+  skill:
+    skill_id: synthetic-runtime-skill
+    skill_version: 1.0.0
+    content_hash: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  component:
+    component_kind: skill
+    component_ref: synthetic-runtime-skill
+    version: 1.0.0
+    content_hash: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+boundaries:
+  actual_fact: true
+  supply_selection: false
+  rebinding: false
+  method_decision: false
+  task_completion: false
+  claim_effect: false
+  human_decision: false

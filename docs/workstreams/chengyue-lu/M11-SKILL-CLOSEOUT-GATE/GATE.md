@@ -26,3 +26,22 @@ Gate 的 bounded scope 是 Skill-bearing actual facts 与独立 execution closeo
 
 M5-007 同时 hard-depend M11-007 与此可审计 Gate，以保留实现身份和 evidence acceptance 两个条件。
 M6-008 的独立 baseline Task 仍须 DONE；真实案例/live/admission 则继续约束 M5-004。
+
+## Implementation candidate evidence
+
+以下是待审候选，尚未替换上方 accepted evidence 或 Gate 状态：
+
+- implementation commit：`7b3405189e06210cae6552b0eb7699b049e14d73`，基于
+  `develop@0bebafd81f0116a8269c63ac97378038a1eb2a5d`。
+- extension identity：`skill-execution@1.0.0`；四种 Schema、validator、producer 与 fixture 的
+  repo-relative source path/hash 见
+  [vertical proof](../../../../work/M11-007/A-20260915-002/checks/vertical-proof.json)。
+- proof SHA-256：`eeb86f824c398885df181e36d9e84c02bc3f3294e491da5649518a4114a6d312`。
+  四个 case 分别保留 completed-with-tool、failed-model、failed-projection、preflight-blocked
+  的全部输入与输出 pins，并记录 isolated-process replay result。
+- [开发 Attempt](../../../../work/M11-007/A-20260915-002/README.md) 为 delayed/gapped
+  `safe-paused` archive；运行样例各有独立 use-boundary Trace。
+- implementation commit 的 Skill/documentation focused 37 PASS；27 项 Skill 正反验收包含
+  缺事实、调用后补写、Host/Trace 联合改写、Projection identity 漂移和 subject closure 反例。
+  最终 base/head/CI plan、full/coverage/package/repository/governance 与双方 review pins 留在实现 PR，
+  接受后才更新上方 accepted evidence。

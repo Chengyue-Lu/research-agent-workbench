@@ -1,0 +1,81 @@
+schema_version: 0.1.0
+receipt_id: RECEIPT-SKILL-CLOSEOUT
+attempt_id: ATTEMPT-SKILL-CLOSEOUT
+execution_kind: skill
+status: blocked
+completion_claim: none
+task_ref:
+  ref: TASK-MR-ES-FROZEN-001@r1
+  path: bundle/task.yaml
+  sha256: 544537a3aae11d3f3ec2445dcc67dd2fd33f02b4b271a2b3a9e4dd878da2f65b
+execution_scope:
+  kind: action-capability-slice
+  action_ref: ES-A4@1.0.0
+  requirement_id: research-contract-check
+  task_capability_closure:
+    required:
+    - document-read
+    - research-contract-check
+    closed:
+    - research-contract-check
+    task_completion: false
+view_ref:
+  ref: VIEW-LOCAL-001@r1
+  path: view/skill.yaml
+  sha256: 01170e176f0424c02de62b9129f5e9c71ee905bb86d1ef9bb9911f3bb422c48f
+host_report_ref:
+  path: closeout/host.yaml
+  sha256: 5ad7397bfac9d834bf4b9295d20d4871e1df73f73046ef827e68c2065cb5d0e0
+trace_ref:
+  path: closeout/trace/INDEX.yaml
+  sha256: 735c25545ab5c7ef39e1dc22d0e66a2d173f3f7dff163a9fd8844250348e4e32
+artifact_refs: []
+validation_refs:
+- path: closeout/validation.yaml
+  sha256: d1a195a1c69f8073adb334214addb6b44ad04016518db59db43518c135b4ed34
+started_at: '2026-08-26T00:00:01Z'
+finished_at: '2026-08-26T00:00:02Z'
+limitations:
+- Execution completion does not promote a scientific Claim or satisfy a Human Gate.
+boundaries:
+  skill_assignment: absent
+  method_decision: false
+  claim_effect: false
+  human_decision: false
+  topic5_recovery: false
+  task_completion: false
+contract_version: 1.0.0
+record_kind: skill_execution_receipt
+runtime_bundle_ref:
+  ref: RB-SKILL-LOCAL-001@r1
+  path: bundle/manifest.yaml
+  sha256: 9c37a0bf8685fb5e6fa49ce965349906a29f7f2e2e3153f4f397f1f1c6179767
+snapshot_ref:
+  ref: RCS-NO-SKILL-CONTRACT-CHECK@r1
+  path: bundle/snapshot.yaml
+  sha256: 014865f0fd0d1c39d055fcfb271ef57be38f78b52854c736c44e91bdc88d774d
+resolution_ref:
+  ref: CR-NO-SKILL-CONTRACT-CHECK@r1
+  path: bundle/resolution.yaml
+  sha256: aa0cc7e443f7ee65f187da89c4404307c41c05d1159b4db669a2a9308620b7ce
+requested_skill_consumption:
+  schema_version: 0.1.0
+  contract_version: 1.0.0
+  record_kind: skill_execution_consumption
+  supply_report_ref:
+    ref: supply-synthetic-runtime-skill@1.0.0
+    path: bundle/supply.yaml
+    sha256: 6e6b6b369cb6dade192379082e3a178f408fdb6a3397adcf3c77005cfaa2aa8a
+  projection_ref:
+    ref: synthetic-runtime-skill-1.0.0@1.0.0
+    path: bundle/skill-projection.yaml
+    sha256: 58d3a7b3837056ec850d4a2ff7c6a91dc65e183fe283f48daef61b1c90da0ce4
+  skill:
+    skill_id: synthetic-runtime-skill
+    skill_version: 1.0.0
+    content_hash: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  component:
+    component_kind: skill
+    component_ref: synthetic-runtime-skill
+    version: 1.0.0
+    content_hash: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
