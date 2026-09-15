@@ -87,6 +87,8 @@ without this job remains a negative control.
 Engineering evidence: [Attempt index](../../../../work/M14-005/A-20260915-003/INDEX.yaml) and
 [verification](../../../../work/M14-005/A-20260915-003/outputs/VERIFICATION.json). Capture gaps and the rejected
 initial archive preflight are retained; final-head hosted CI and review receipts belong to the implementation PR.
+The [review correction Attempt](../../../../work/M14-005/A-20260915-004/INDEX.yaml) retains the named READY
+decision, fresh protection readback and receipt-semantics correction; prior frozen records retain their original scope.
 
 Next: review and integrate this READY candidate, verify that real protected push, then prepare release-only
 checks and their exact policy include. The named first-release decision authorizes implementation/cutover

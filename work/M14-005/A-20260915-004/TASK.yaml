@@ -1,0 +1,42 @@
+task_id: M14-005
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+agent_profile: bounded-review-correction
+required_skills: []
+delegation: false
+baseline: 7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba
+user_request: 根据comment解决问题。
+goal: Resolve PR 80 P1 with named v0.1.0 preparation authority and fresh protection
+  evidence; clarify P2 audit receipt semantics.
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/STATUS.md
+- docs/ROADMAP.md
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- .github/**
+- tests/**
+- examples/**
+- registry/**
+- pyproject.toml
+- work/M14-005/**
+- GitHub PR 80 comments and Issue 57; read-only protection and CI APIs
+write_scope:
+- docs/TASKS.md
+- docs/STATUS.md
+- docs/ROADMAP.md
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- work/M14-005/A-20260915-004/**
+- GitHub feature/m14-005-source-ci and PR 80 body
+stop_conditions:
+- R2 review-ready PR 80 with exact-head validation; no self merge.
+- Only M14-005 BLOCKED to READY; no Task definition or dependency changes.
+- No actual cutover, release branch/tag, remote protection mutation or primary develop
+  mutation.
+- Final release PR merge and tag require a separate named approval.

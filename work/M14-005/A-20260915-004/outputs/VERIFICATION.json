@@ -1,0 +1,20 @@
+{
+  "implementation_head": "4918b34c3d8685c1a103cc329ebc9cd172469e6f",
+  "baseline": "7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba",
+  "focused_passed": 38,
+  "repository": {
+    "validated": 186,
+    "errors": 0,
+    "warnings": 0
+  },
+  "governance": "PASS",
+  "task_transition": "M14-005 BLOCKED -> READY",
+  "only_canonical_status_changed": true,
+  "source_ci_code_tests_workflow_unchanged": true,
+  "frozen_archives_unchanged": true,
+  "primary_clean_unchanged": true,
+  "protection_readback": "PASS; four active layers and matching effective rules",
+  "final_head_hosted_ci": "Pending archive commit and push; PR body owns final-head receipts.",
+  "real_protected_source_push": "Pending R2 integration",
+  "release_authorization": "Separate approval required"
+}
