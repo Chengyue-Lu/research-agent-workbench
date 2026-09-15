@@ -1,0 +1,121 @@
+{
+  "attempt": "A-20260915-002",
+  "status": "rejected-before-publication",
+  "reason": "Native CRLF receipts need cr-at-eol whitespace attributes",
+  "bytes_preserved": true,
+  "successor": "A-20260915-003",
+  "files": [
+    {
+      "path": ".gitattributes",
+      "sha256": "98a1dc732458e62c75bb7e7cc0eafc10f3299f9833761fbaf94f424e0e67c8b5"
+    },
+    {
+      "path": "ACTORS.yaml",
+      "sha256": "94cdb3b2eb4f8df8bda555ea9aec6a34b202b1986d2882b8d1a2d577058ae833"
+    },
+    {
+      "path": "events.jsonl",
+      "sha256": "1ee28e7afa6810f6b2c5e76de091eab412d10dc60a2437a663cfb5559300aedc"
+    },
+    {
+      "path": "INDEX.yaml",
+      "sha256": "3981fcaa244420ae9d109e3a1f444a0300bdd3a30ec2124cbc7ab34e4b00e1d9"
+    },
+    {
+      "path": "TASK.yaml",
+      "sha256": "3c4501ff90efb7ace3cac88f3641a7033965a1f7808ac293c16f1751a8658709"
+    },
+    {
+      "path": "WORKLOG.md",
+      "sha256": "87ef9c03109ebb3574b35e74c05c7e08b5754ea33e4517f922aea824ea8c06aa"
+    },
+    {
+      "path": "outputs\\AUTHORITY.md",
+      "sha256": "001d4678fd3c025b4374c01c6b4acfa41139dbefe00d059aa3d2f31737907985"
+    },
+    {
+      "path": "outputs\\freeze.py.md",
+      "sha256": "7b8ad3907a6725de7c31adf0cfc459d2af702f20602b9689407636d0a4239ac5"
+    },
+    {
+      "path": "outputs\\live_negative.py.md",
+      "sha256": "bf99a485628f248b45ec861913e71e8c8f72316bef88da2bb4e8f2424c189c5d"
+    },
+    {
+      "path": "outputs\\prepare_checks.py.md",
+      "sha256": "ab6a8cbd20b06c2ecb1da700f724b16a273ac9c6639c5051364800e927e06c90"
+    },
+    {
+      "path": "outputs\\VERIFICATION.json",
+      "sha256": "56c0359985bf9b27f67483bcb8ab98020aa9a938166dc61090c7925d48396034"
+    },
+    {
+      "path": "tool-events\\ci-plan.json",
+      "sha256": "deb7f6e66bb2cc156eb4ee82dc25dbe4330b35f8b90b21baf50e218fdbc45d5a"
+    },
+    {
+      "path": "tool-events\\focused.log",
+      "sha256": "def0a02e3a6dfdd828069b09595389cc59f0b09c30f88f7654a81fd642312cc1"
+    },
+    {
+      "path": "tool-events\\governance-plan.log",
+      "sha256": "7fbd85bb788d8280322441d351131660bfbf726cf77a3ca66c3c82ee10a1fe56"
+    },
+    {
+      "path": "tool-events\\issue57.json",
+      "sha256": "e1ae00210c9091680b3d330c9c9cc9794ed5db54ff9b5e8a94dddc89fe62798d"
+    },
+    {
+      "path": "tool-events\\live-negative.json",
+      "sha256": "b0332d025ee9760ab8467e5eb9bfc54a179b8052bb5179a0411dedfbb0de99b1"
+    },
+    {
+      "path": "tool-events\\pr78.json",
+      "sha256": "320d47dda8b026128d5d9a0a638f7da15fdf57f5b7701af00d5d33063ddcf2c0"
+    },
+    {
+      "path": "tool-events\\pr79.json",
+      "sha256": "8b8f374022e07e2238bd105ed25b37d0c74befa9c007e586da12f50d23cbc3d2"
+    },
+    {
+      "path": "tool-events\\rejected-archive.json",
+      "sha256": "f013d0e1c4e1dbce7ed2002333b8d37605ab0fb77012d5de28854920d4eee1c5"
+    },
+    {
+      "path": "tool-events\\repository.log",
+      "sha256": "255440a9ece3a188b00d67b928a848500938bdd0c6788d0dcac767adb46d7ef3"
+    },
+    {
+      "path": "tool-events\\ruleset-23192001.json",
+      "sha256": "dff0110cb9a1f0e77e89265708c5d43c9722f9286909493910c92f6f6cfb168e"
+    },
+    {
+      "path": "tool-events\\ruleset-23192054.json",
+      "sha256": "d8bca84c47a1b2c6854d9c2aba9a0a76066838574719ad5c4919cd28450492aa"
+    },
+    {
+      "path": "tool-events\\ruleset-23305447.json",
+      "sha256": "8e5934ca7be40fbf29f615c00a249279a45f988be4e19e80525768fc369412ae"
+    },
+    {
+      "path": "tool-events\\ruleset-23305460.json",
+      "sha256": "730e35c95693a02c076cf9c9f2acfc2a1d1c460c414efdbca7829040097ffc70"
+    },
+    {
+      "path": "tool-events\\scope.json",
+      "sha256": "3441abb092955b1cc6632717eacbb009b407086d988a8fb7b0521d11ab00c6d3"
+    },
+    {
+      "path": "tool-events\\source-coverage-summary.json",
+      "sha256": "4365447dd3d329713556a5ac0787378817d9cc7f44c33356dd949636d38546f0"
+    },
+    {
+      "path": "tool-events\\source-focused.log",
+      "sha256": "1769fd25292a437af75924385effc930dafd59cb26dd7d2b154acde8ef92d564"
+    },
+    {
+      "path": "tool-events\\trace-initial.log",
+      "sha256": "e5c748d0511cf44406517a1cc9b1dd56212dd9d53f1e1e08f3317e74915d779a"
+    }
+  ]
+}

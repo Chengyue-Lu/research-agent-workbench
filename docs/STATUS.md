@@ -1,7 +1,7 @@
 # 实现状态
 
 状态：Current implementation authority
-更新：2026-09-14
+更新：2026-09-15
 
 本页只回答“仓库现在实现到哪里”。实时任务状态由 [`TASKS.md`](TASKS.md) 维护，依赖方向由 [`ROADMAP.md`](ROADMAP.md) 维护。
 
@@ -27,14 +27,14 @@ hash-pinned packaged Runtime catalog、三 root 分离与双 Python checkout 外
 [公开支持矩阵](SUPPORTED_FEATURES.md)、policy `1.1.0` 构建输入/文档闭包与最终 Quickstart 已实现。
 Quickstart 消费获接受的 M1-009 scaffold，串联输入校验、证据定位、Run 检查/重建和报告校验，
 仅证明固定离线工程示例的 bounded 重建。M0-007 已落实 MIT，远端 main/develop 保护已启用并回读留证。
-M14-005 继续 BLOCKED，后续分为两层：
+M14-005 在当前候选中转为 READY：[具名 v0.1.0 准备决定与 fresh protection 回读](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_DECISION.md)
+已闭合外部启动条件。后续须验收真实 protected source-CI，完成 release-only workflow/checks 与 atomic topology
+cutover，冻结 exact develop source/current main parent，验证 deterministic projection / prospective-tree equality。
+最终 release PR 与 tag/artifact/hash closure 仍须独立验收和维护者发布批准。
 
-- external readiness remaining：本 PR 的 readiness R2 接受、fresh ruleset readback 与具名 Human release decision；全部满足后才可提案 READY。
-- M14-005 implementation：建立 protected source-CI attestation 与 release-only workflow/checks，完成 atomic topology cutover，
-  冻结 exact develop source/current main parent，验证 deterministic projection / prospective-tree equality，
-  再完成首个 curated release 的 R2 验收及 tag/artifact/hash closure。
-
-当前 source-CI attestation 尚未闭合，exact `develop -> main` 执行规则保持不变。
+当前 [source-CI 准备](workstreams/chengyue-lu/M14-CURATED-RELEASE/SOURCE_CI.md) 已实现 merged-source
+governance producer 与在线 run/attempt/job/check 核验器；真实 protected push 证据须在该 slice 接受合入后验证。
+exact `develop -> main` 执行规则保持不变。
 
 ## 已实现
 
@@ -90,7 +90,7 @@ M14-005 继续 BLOCKED，后续分为两层：
 | Skill 价值 | 现有 Registry 条目不构成已证明的普适研究增益；新任务可优先 no-Skill / direct-tool |
 | Skill new-binding | 生产 projection index 仍为空；M11-005/006 只证明可选 publication/mapping contract，未重新准入任何 legacy Skill，也未证明真实 trial、Provider 可用性或科研净增量 |
 | Phase D evaluation entry | [ADR-0020](decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) 已选择 A1/A2→M6、A3/A4→M11 的显式双传输；M5-006 Protocol 与资格/overlap/overlay/pairwise 校验器已实现。M6-008 treatment-visible baseline envelope/replay closeout 尚未合入；M11-007 已提供 [Skill execution closeout 1.0.0](implementation/SKILL_EXECUTION_CLOSEOUT.md) 实现候选，以 use-boundary actual consumption、typed Trace 与独立文件 replay 区分 completed、failed drift 和 preflight blocked，等待 exact-candidate R2 验收。[Gate B](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md) 仍未满足，M5-007 Harness 与真实 M5-004 execution 继续 BLOCKED |
-| 发布 | M14-001～004 与 M1-009 已接受；M0-007 MIT 与远端 GitHub protection 已落实。M14-005 BLOCKED：外部 readiness 仍需本 PR R2 接受、fresh ruleset readback、具名 Human release decision；随后仍需 source-CI attestation、release-only checks、atomic cutover、exact source/parent freeze、projection/tree equality 与首发 tag/artifact closure，见 [M14 路线](ROADMAP.md#7-product--release-closure) |
+| 发布 | M14-001～004、M1-009 与 M0-007 已接受；具名 v0.1.0 准备决定和 fresh protection 回读支持本候选将 M14-005 置为 READY。真实 source-CI、release-only checks、atomic cutover、exact source/parent freeze、projection/tree equality 与首发 tag/artifact closure 仍待验收；最终发布另行批准，见 [M14 路线](ROADMAP.md#7-product--release-closure) |
 | 产品体验 | scaffold 支持离线项目入口；可视化、协作 UI 和运维流程仍待完善 |
 
 ## 支持边界

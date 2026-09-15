@@ -54,9 +54,10 @@ excluded/encoded/external navigation and broken targets. Tests and their helper 
 An isolated Git fixture also exports the exact implementation source twice and runs the portable package harness
 against that projected source on Python 3.11/3.13. Its synthetic CI expectations are test inputs, never release trust.
 
-The current Getting Started path demonstrates installed resources and structural Task validation. Issue #57's
-updated lane reserves its final scaffold flow for M1-009; M14-004 remains open until that integration and R2 review.
-Release-only workflows/checks and their next exact allowlist update remain M14-005 work.
+The current Getting Started path consumes the accepted M1-009 scaffold flow; M14-004 was accepted in PR #77.
+The develop-side [source-CI producer and observer](../workstreams/chengyue-lu/M14-CURATED-RELEASE/SOURCE_CI.md)
+prepare authentic source evidence. Release-only workflows/checks and their next exact allowlist update remain
+subsequent M14-005 work.
 
 Paths must be relative POSIX, NFC-normalized and portable to Windows. Escape, empty/dot components, reserved device
 names, trailing dots/spaces, casefold collisions (including directory prefixes), symlinks and gitlinks fail closed.
@@ -97,7 +98,9 @@ python .github/scripts/release_surface.py check --repo <source-checkout> --expec
 
 The expectations shape is `$defs.expectations` in the manifest Schema. Source CI is the `CI` workflow with a positive
 run ID, the exact source/repository, success conclusion and all required governance/Python checks. Supplying these
-fields does not prove their GitHub authenticity; protected-caller wiring remains a release-readiness prerequisite.
+fields does not prove their GitHub authenticity. The M14-005 source observer produces this shape only after live
+run/attempt/job/check verification; its accepted protected-push execution and the final release caller remain
+release-readiness prerequisites.
 `required_checks` must use the unique canonical order `["governance", "test (3.11)", "test (3.13)"]`.
 Other permutations fail before projection, so the same logical check set cannot produce a second legal manifest/tree.
 

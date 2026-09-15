@@ -1,0 +1,27 @@
+{
+  "observed_at": "2026-09-15T10:57:35.263258+00:00",
+  "baseline": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+  "head": "65978304329be2ac58326181f864e642b94df9c0",
+  "canonical_tasks_unchanged": true,
+  "task_rows_sha256": "1b83de3536319e48faa912a03f83e007d5405359329393dfa09ca423975c9412",
+  "m14_005_state": "BLOCKED",
+  "source_ci_implementation": true,
+  "live_positive_protected_push": "pending integration",
+  "product_schema_registry_release_policy_topology_and_frozen_archives_unchanged": true,
+  "primary_clean_unchanged": true,
+  "changed_paths": [
+    ".github/scripts/release_source_ci.py",
+    ".github/workflows/ci.yml",
+    "docs/M_SERIES_IMPLEMENTATION_MAP.md",
+    "docs/ROADMAP.md",
+    "docs/STATUS.md",
+    "docs/TASKS.md",
+    "docs/implementation/RELEASE_SURFACE.md",
+    "docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/READINESS_PREPARATION.md",
+    "docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md",
+    "docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/RISK_LEDGER.md",
+    "docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/SOURCE_CI.md",
+    "tests/coverage_policy.yaml",
+    "tests/test_release_source_ci.py"
+  ]
+}
