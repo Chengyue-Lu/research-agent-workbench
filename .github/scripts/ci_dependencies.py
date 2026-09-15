@@ -417,6 +417,51 @@ def _file_facts(path, raw):
             return call_name(node.value) + '.' + node.attr
         return ''
 
+    def repository_path(node, seen=frozenset()):
+        """Only an exact __file__-anchored pathlib expression proves a target."""
+        if node in seen:
+            return None
+        seen = seen | {node}
+        if isinstance(node, ast.Name) and len(lexical_values(node)) == 1:
+            return repository_path(lexical_values(node)[0], seen)
+        if (isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div)
+                and isinstance(node.right, ast.Constant) and isinstance(node.right.value, str)):
+            root = repository_path(node.left, seen)
+            tail = node.right.value.replace('\\', '/')
+            if root is None or tail.startswith('/') or ':' in tail or '..' in tail.split('/'):
+                return None
+            result = posixpath.normpath(root + '/' + tail)
+        else:
+            root = literal_path(node)
+            result = root.as_posix() if root is not None else '..'
+        return None if result == '..' or result.startswith('../') else result
+
+    # A replaced Path operation or escaped execution cannot prove filesystem roots.
+    path_mutation = reflective_bindings or any(
+        isinstance(n, ast.Attribute) and isinstance(n.ctx, (ast.Store, ast.Del))
+            and n.attr in {'Path', '__file__', 'str', 'run_path', 'read_text', 'read_bytes', 'open',
+                           'glob', 'rglob', 'iterdir', 'resolve', 'absolute', 'parent', 'parents',
+                           '__truediv__', '__fspath__', '__class__', '__getattribute__', '__getattr__'}
+        or isinstance(n, ast.Call) and (patch_callable(n.func)
+            or isinstance(n.func, ast.Attribute) and (
+                n.func.attr in {'setattr', '__setattr__', '__delattr__'}
+                or patch_callable(n.func.value))) for n in nodes)
+    fixed_reads, fixed_directories, fixed_runs, resource_nodes = set(), set(), set(), []
+
+    def run_path_target(call):
+        argument = call.args[0] if call.args else None
+        if (isinstance(argument, ast.Call) and isinstance(argument.func, ast.Name)
+                and argument.func.id == 'str' and not lexical_values(argument.func)
+                and len(argument.args) == 1 and not argument.keywords):
+            argument = argument.args[0]
+        target = repository_path(argument)
+        root = call.func.value if isinstance(call.func, ast.Attribute) else call.func
+        values = lexical_values(root) if isinstance(root, ast.Name) else []
+        if (target is not None and not path_mutation and len(values) == 1
+                and isinstance(values[0], (ast.Import, ast.ImportFrom))):
+            return target
+        return None
+
     for node in nodes:
         if isinstance(node, (ast.Name, ast.Attribute)):
             name = call_name(node)
@@ -435,7 +480,7 @@ def _file_facts(path, raw):
                     # boundary. Preserve that consumer even when later aliases vary.
                     opaque = True
         if (isinstance(node, ast.Attribute) and node.attr in {'read_text', 'read_bytes', 'open', 'glob', 'rglob', 'iterdir'}) or (isinstance(node, ast.Name) and node.id == 'open'):
-            resources = True
+            resource_nodes.append(node)
         if not isinstance(node, ast.Call):
             continue
         name = call_name(node.func)
@@ -452,13 +497,32 @@ def _file_facts(path, raw):
         if name in {'__import__', 'builtins.__import__', 'importlib.import_module', 'runpy.run_module', 'runpy.run_path'}:
             if node.args and isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str):
                 link(node.args[0].value)
+            elif name == 'runpy.run_path' and (target := run_path_target(node)) is not None:
+                fixed_runs.add(target)
             else:
                 opaque = True
         elif not name or name in {'eval', 'exec', 'builtins.eval', 'builtins.exec'} or name.startswith(('subprocess.', 'os.system', 'os.popen')):
             opaque = True
         elif name.endswith(('.exec_module', '.spec_from_file_location')):
             opaque = True
-        if name.endswith(('.read_text', '.read_bytes', '.open', '.glob', '.rglob', '.iterdir')) or name == 'open':
+    for node in resource_nodes:
+        parent = parents.get(node)
+        target = repository_path(node.value) if isinstance(node, ast.Attribute) else None
+        if (target is not None and isinstance(parent, ast.Call) and parent.func is node
+                and not path_mutation and not opaque):
+            if node.attr in {'read_text', 'read_bytes', 'open'}:
+                fixed_reads.add(target)
+            elif (node.attr == 'iterdir' and not parent.args and not parent.keywords
+                    or node.attr in {'glob', 'rglob'} and len(parent.args) == 1
+                    and isinstance(parent.args[0], ast.Constant) and isinstance(parent.args[0].value, str)
+                    and not parent.keywords and not parent.args[0].value.startswith(('/', '\\'))
+                    and ':' not in parent.args[0].value
+                    and '..' not in parent.args[0].value.replace('\\', '/').split('/')):
+                # Keep the entire directory inventory, including future entries.
+                fixed_directories.add(target)
+            else:
+                resources = True
+        else:
             resources = True
     if opaque:
         # Escaped/dynamic execution can mutate name resolution; keep its literal
@@ -466,7 +530,8 @@ def _file_facts(path, raw):
         literals.update(length_metadata)
         links.update(length_metadata)
     return (frozenset(links), frozenset(literals), frozenset(prefixes),
-            frozenset(basenames), opaque, resources)
+            frozenset(basenames), opaque, resources, frozenset(fixed_reads), frozenset(fixed_runs),
+            frozenset(fixed_directories))
 
 
 def graph(blobs, paths):
@@ -486,7 +551,7 @@ def graph(blobs, paths):
         if facts is None:
             errors.append('unparseable Python dependency: ' + path)
             continue
-        links, literals, prefixes, basenames, dynamic, reader = facts
+        links, literals, prefixes, basenames, dynamic, reader, fixed_reads, fixed_runs, fixed_directories = facts
         inputs = set()
         for name in links:
             parts = name.split('.')
@@ -500,6 +565,21 @@ def graph(blobs, paths):
             inputs.update(references.get(value, ()))
         for value in prefixes:
             inputs.update(descendants.get(value, ()))
+        for target in fixed_reads | fixed_runs | fixed_directories:
+            # Re-evaluate modes in each inventory; a cached syntax fact cannot bind
+            # a symlink target or an unparsed executable in a different snapshot.
+            ancestors = [target, *(p.as_posix() for p in PurePosixPath(target).parents)]
+            if target in fixed_directories:
+                children = paths if target == '.' else descendants.get(target, ())
+                inputs.update(children)
+                ancestors.extend(children)
+            if (any(isinstance(paths, dict) and p in paths and paths[p][0] not in {'100644', '100755'}
+                    for p in ancestors)
+                    or target in fixed_runs and target not in blobs):
+                reader |= target in fixed_reads | fixed_directories
+                dynamic |= target in fixed_runs
+            if target in paths:
+                inputs.add(target)
         for dependency in inputs:
             reverse[dependency].add(path)
         if dynamic:

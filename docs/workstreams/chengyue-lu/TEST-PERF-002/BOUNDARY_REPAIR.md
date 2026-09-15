@@ -54,8 +54,8 @@ bootstrap. Its CI duration cannot measure the speed of a future Skill/docs PR.
 
 ## Follow-up work tracked in Issue #48
 
-PR #83 closes the bounded changes above and their review findings. The broader
-expansion repairs below remain separate follow-ups with their own proof requirements.
+PR #83 closes the bounded changes above, their review findings and the fixed-root
+subset documented below. The remaining expansion repairs retain their own proof requirements.
 
 1. Scope opaque execution and resource access by proven targets/roots. Unknown calls and
    readers currently create nearly repository-wide dependencies; do not remove them without
@@ -118,3 +118,37 @@ failure scenario now covers direct patch, object patch, multiple patch and dicti
 patch without adding separate full test modules.
 The [batch-patch Attempt](../../../../work/TEST-PERF-002/A-20260916-002/RESULTS.md)
 records the reproduced omissions and the final local source/coverage checks.
+
+## M6-008 expansion audit and fixed repository inputs
+
+PR #75 at `34cc426e9c08d837ffc2e6dc58732c08a659291e`, against
+`7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba`, selected 91 of 92 behavioral test
+modules. Its impact coverage measured five source files; 108 coverage selectors
+represented 89 distinct test modules, including individual acceptance cases. The
+coverage job took 11m05s in run `35025376167`. This was a nearly complete execution
+set, not repository-wide instrumentation or a risk-driven FULL fallback. Installed
+schemas and the generic validation registration independently justify both smoke jobs.
+
+The analyzer now distinguishes exact `__file__`-anchored pathlib reads and directory
+scans from unknown resource roots. Directory scans retain the entire inventory below
+their root, including new files. Fixed `runpy.run_path` targets retain the archived
+script and its transitive imports; unparsed or unknown targets keep opaque execution.
+Shadowed bindings, mutation helpers, escaped reader capabilities, path escape and
+symlink modes retain conservative fallback. Immutable syntax caching never caches a
+resolved inventory or test result, and base/head edges are still combined.
+
+For the same M6 snapshots, nine consumer files no longer acquire an unconditional
+resource edge from every new schema: the fallback reader set decreases from 125 to
+116. The complete M6 selection remains 91/92 because independent paths still reach
+those consumers. Public validation changes reach the CLI and package initializers;
+parameter-driven I/O helpers, opaque execution and output-name references remain
+conservative. Removing those paths requires additional evidence about callers and
+inputs. This repair does not establish an M6 wall-time reduction.
+
+Regression scenarios retain failing unchanged consumers in real Git repositories:
+changing a fixed resource or executed script breaks its reader/replay, which stays
+selected. Unrelated new-schema probes exclude these fixed consumers. The previous
+PR #83 analyzer fails eleven precision assertions in the same scenarios. Controls
+cover directory additions, lexical mutation, escaped calls, unknown executables,
+symlink inventory changes and old unbounded readers. Evidence is retained in the
+[fixed-input Attempt](../../../../work/TEST-PERF-002/A-20260916-003/RESULTS.md).
