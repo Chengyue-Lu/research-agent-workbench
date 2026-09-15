@@ -97,3 +97,24 @@ Tool 引用修复以同一 A2 成功产物验证：旧源码反例 FAIL（10.308
 M5 真实运行条件以及 M12/M13 的 Phase C Human review / 真实反馈入口继续独立推进。
 
 具体限制和后续触发条件见 [RISK_LEDGER.md](RISK_LEDGER.md)。
+
+## 5. PR #75 review 修复（2026-09-16）
+
+在已迁移的 M6 专用 worktree 接续 `40c40e7`，fetch 后确认 `origin/develop` 仍为 `7b1323f`。
+主 checkout 的本地 develop 保持 clean。任务负责人、M5 共享契约、M11/Gate B 和 TASKS 状态均保持本 PR 既有边界。
+
+review 指出同名 Tool 的多 Requirement 绑定覆盖、事实缺少独立创建时序、Validation checker source
+未验证。先构造通过 M5 资格检查的双 Requirement / 单 handler fixture，旧实现错误放行三种过期时点。
+对真实 A2 档案重哈希后，旧 replay 接受调用后补写的 before fact 以及 checker 路径、哈希变造。
+创建事件反例首次构造未满足通用 Trace 的 event count / write scope；补齐后确认通用 Trace 通过而
+M6 旧实现错误接受，保留两次原始日志并区分其证明范围。
+
+实现保留所有资格绑定，记录每份事实的创建事件，并将 checker 源码作为执行前的归档快照消费。
+Trace 的创建事件采用 Attempt-relative artifact path，避免重复拼入 Task 标识而触发既有凭据形状
+脱敏；Task 对 Attempt 目标的写权限检查仍先执行，通用脱敏规则未变。
+既有 Tool implementation 变造测试迁入统一重哈希测试类，保证同时更新创建 pin 后仍由资格检查拒绝。
+
+第一轮 12 项定向检查通过。完整 M6 专项 37 项通过（157.954 秒），再补验创建 path/hash/action
+变造 1 项通过（19.171 秒），合计 38 项；同源码三个 M6 模块累计 line / branch 100%，
+共 572 条语句、116 个分支。文档检查 10 项通过。exact-head CI 的结果在 PR 及本轮独立归档记录；
+旧 `A-20260916-001` 不重写，不将旧 Receipt 作为当前候选的回放证据。仍需 R2 人工复核，不自行合并。

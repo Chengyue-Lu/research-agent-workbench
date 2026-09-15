@@ -59,14 +59,18 @@ class BaselineReplayIntegrityTests(unittest.TestCase):
         data = b'---\n' + yaml.safe_dump(header, sort_keys=False, allow_unicode=True).encode() + b'---\n' + raw + b'\n'
         entry['sha256'] = self.f.raw(path.as_posix(), data)['sha256']
 
-    def resign(self):
-        raw = ''.join(json.dumps(event, sort_keys=True, ensure_ascii=False) + '\n' for event in self.events).encode()
-        self.trace['event_ledger']['sha256'] = self.f.raw(self.events_path, raw)['sha256']
+    def resign(self, *, update_creation_pins=True):
         for reference, fact in zip(self.receipt['fact_refs'], self.facts):
             fact['event_sha256'] = digest(self.events[fact['event_sequence'] - 1])
             reference.update(self.f.write(reference['path'], fact))
             entry = next(row for row in self.trace['decision_refs'] if self.directory / row['path'] == Path(reference['path']))
             entry['sha256'] = reference['sha256']
+            for event in self.events:
+                if update_creation_pins and event['event_type'] == 'file-revision' and self.directory / event['payload']['path'] == Path(reference['path']):
+                    event['payload']['new_sha256'] = reference['sha256']
+        raw = ''.join(json.dumps(event, sort_keys=True, ensure_ascii=False) + '\n' for event in self.events).encode()
+        self.trace['event_ledger']['sha256'] = self.f.raw(self.events_path, raw)['sha256']
+        self.trace['event_ledger']['event_count'] = len(self.events)
         self.receipt['trace_index_ref'] = self.f.write(self.receipt['trace_index_ref']['path'], self.trace)
         validation = self.f.doc(self.receipt['validation_ref']['path'])
         for ref in validation['subject_refs']:
@@ -85,6 +89,87 @@ class BaselineReplayIntegrityTests(unittest.TestCase):
         with patch('research_workbench.execution.baseline_envelope.compiler_reference',
                    return_value={'path': 'historical/compiler.py', 'sha256': '0' * 64}):
             self.assertEqual(self.replay()['status'], 'completed')
+
+    def test_before_fact_backfilled_after_response_is_rejected(self):
+        bound = [self.events[fact['event_sequence'] - 1] for fact in self.facts]
+        late = next(e for e in self.events if e['event_type'] == 'file-revision'
+                    and self.directory / e['payload']['path'] == Path(self.receipt['fact_refs'][0]['path']))
+        self.events.remove(late)
+        self.events.insert(self.events.index(bound[1]) + 1, late)
+        for sequence, event in enumerate(self.events, 1):
+            event.update(sequence=sequence, event_id=f'EVT-{sequence:04d}')
+        for fact, event in zip(self.facts, bound):
+            fact['event_sequence'] = event['sequence']
+        self.resign()
+        with self.assertRaisesRegex(EvaluationValidationError, 'fact creation'):
+            self.replay()
+
+    def test_validation_checker_path_or_hash_drift_is_rejected(self):
+        for field, value in (('path', self.f.public_input_ref['path']), ('sha256', '0' * 64)):
+            with self.subTest(field=field):
+                self.reset()
+                validation = self.f.doc(self.receipt['validation_ref']['path'])
+                validation['checker']['source_ref'][field] = value
+                self.f.write(self.receipt['validation_ref']['path'], validation)
+                self.resign()
+                with self.assertRaises(EvaluationValidationError):
+                    self.replay()
+
+    def test_each_fact_requires_one_exact_creation_before_further_activity(self):
+        for index in range(len(self.facts)):
+            for mutation in ('missing', 'duplicate', 'late'):
+                with self.subTest(fact=index, mutation=mutation):
+                    self.reset()
+                    bound = [self.events[fact['event_sequence'] - 1] for fact in self.facts]
+                    creation = next(e for e in self.events if e['event_type'] == 'file-revision'
+                                    and self.directory / e['payload']['path'] == Path(self.receipt['fact_refs'][index]['path']))
+                    if mutation == 'duplicate':
+                        self.events.insert(self.events.index(creation), copy.deepcopy(creation))
+                    else:
+                        self.events.remove(creation)
+                        if mutation == 'late':
+                            self.events.append(creation)
+                    for sequence, event in enumerate(self.events, 1):
+                        event.update(sequence=sequence, event_id=f'EVT-{sequence:04d}')
+                    for fact, event in zip(self.facts, bound):
+                        fact['event_sequence'] = event['sequence']
+                    # The terminal fact is already last; relocating it there
+                    # preserves the genuine lifecycle and must remain valid.
+                    self.resign()
+                    if index == len(self.facts) - 1 and mutation == 'late':
+                        self.assertEqual(self.replay()['status'], 'completed')
+                    else:
+                        with self.assertRaises(EvaluationValidationError):
+                            self.replay()
+
+    def test_checker_source_bytes_must_match_pin(self):
+        validation = self.f.doc(self.receipt['validation_ref']['path'])
+        path = self.f.root / validation['checker']['source_ref']['path']
+        path.write_bytes(path.read_bytes() + b'\n# drift\n')
+        self.resign()
+        with self.assertRaisesRegex(EvaluationValidationError, 'hash mismatch'):
+            self.replay()
+
+    def test_creation_path_hash_and_action_are_authoritative(self):
+        for target in ('decisions/BASELINE-FACT-0001.yaml', 'checker-source.py'):
+            for field, value in (('path', 'decisions/unbound.yaml'), ('new_sha256', '0' * 64), ('action', 'modified')):
+                with self.subTest(target=target, field=field):
+                    self.reset()
+                    self.resign()
+                    creation = next(e for e in self.events if e['event_type'] == 'file-revision' and e['payload']['path'] == target)
+                    creation['payload'][field] = value
+                    self.resign(update_creation_pins=False)
+                    with self.assertRaisesRegex(EvaluationValidationError, 'fact creation'):
+                        self.replay()
+
+    def test_tool_implementation_must_match_qualification(self):
+        for fact in self.facts:
+            if fact['operation'] == 'tool':
+                self.assertIn(self.f.public_input_ref, fact['use_refs'])
+                fact['tool_ref'] = copy.deepcopy(self.f.public_input_ref)
+        self.resign()
+        with self.assertRaisesRegex(EvaluationValidationError, 'qualified Tool'):
+            self.replay()
 
     def test_scalar_and_list_tool_results_replay_from_observed_bytes(self):
         for value in ('7', [7], None):
