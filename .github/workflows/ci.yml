@@ -24,6 +24,31 @@ env:
   GH_TOKEN: ${{ github.token }}
 
 jobs:
+  source_governance:
+    # Avoid a skipped check named "governance" shadowing the independent PR gate.
+    name: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' && 'governance' || 'source governance (inactive)' }}
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install 'PyYAML>=6,<7'
+      - name: Verify merged PR governance
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          SOURCE_REPOSITORY: ${{ github.repository }}
+        run: python .github/scripts/release_source_ci.py governance --repository "$SOURCE_REPOSITORY" --source "$SOURCE_SHA" --output source-governance.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: source-governance
+          path: source-governance.json
+          if-no-files-found: error
+
   plan:
     runs-on: ubuntu-latest
     outputs:
