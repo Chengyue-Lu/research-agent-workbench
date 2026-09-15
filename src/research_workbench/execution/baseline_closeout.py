@@ -154,6 +154,17 @@ def _replay_transport(inputs, envelope, envelope_ref, directory, facts, events, 
                     ready = True
 
 
+def _creation_event(events, reference, archive_path):
+    reference = file_ref(reference)
+    path = Path(reference["path"]).relative_to(archive_path).as_posix()
+    revisions = [event for event in events if event["event_type"] == "file-revision"
+                 and event["payload"]["path"] == path]
+    require(len(revisions) == 1 and revisions[0]["payload"]["action"] == "created"
+            and revisions[0]["payload"].get("new_sha256") == reference["sha256"],
+            "baseline fact creation requires one exact path/hash event")
+    return revisions[0]
+
+
 def _derive(
     inputs: EvaluationInputs,
     *,
@@ -181,7 +192,8 @@ def _derive(
     require(trace["trace_status"] == "frozen" and trace["completeness"] == "complete", "baseline Trace is not complete and frozen")
     events_ref = _child_ref(inputs.root, directory, trace["event_ledger"])
     events = [json.loads(line) for line in inputs.read_bytes(events_ref).splitlines() if line.strip()]
-    require(bool(events) and events[-1]["event_type"] == "attempt-status", "baseline Trace lacks its terminal status event")
+    require(len(events) >= 2 and events[-2]["event_type"] == "attempt-status", "baseline Trace lacks its terminal status event")
+    status_event = events[-2]
     messages = {entry["message_id"]: entry for entry in trace["messages"]}
 
     indexed_facts = {}
@@ -199,7 +211,7 @@ def _derive(
     terminal = facts[-1]
     require(terminal["operation"] == "session" and terminal["phase"] == "end", "baseline final fact must close the session")
     require(terminal["call_id"] == "session" and terminal["tool_ref"] is None, "baseline terminal fact identity differs")
-    require(terminal["event_sequence"] == events[-1]["sequence"], "baseline terminal fact does not bind final Trace event")
+    require(terminal["event_sequence"] == status_event["sequence"], "baseline terminal fact does not bind final Trace status")
     started = timestamp(terminal["started_at"])
     completed = timestamp(terminal["observed_at"])
     require(started.utcoffset() == timedelta(0) and completed.utcoffset() == timedelta(0), "baseline timestamps must be UTC")
@@ -213,7 +225,7 @@ def _derive(
     last_response = None
     provider_after = []
     actual_tools: list[tuple[str, dict[str, Any]]] = []
-    for fact in facts:
+    for reference, fact in zip(fact_refs, facts):
         require(fact["attempt_id"] == trace["attempt_id"], "baseline fact Attempt differs from Trace")
         require(file_ref(fact["envelope_ref"]) == file_ref(envelope_ref), "baseline fact Envelope substitution")
         require(fact["started_at"] == terminal["started_at"], "baseline fact start differs from session")
@@ -226,6 +238,9 @@ def _derive(
         event = events[sequence - 1]
         require(digest(event) == fact["event_sha256"], "baseline fact event hash differs")
         require(event["attempt_id"] == trace["attempt_id"], "baseline event Attempt differs")
+        creation = _creation_event(events, reference, directory.relative_to(inputs.root))
+        require(creation["sequence"] == sequence + 1,
+                "baseline fact creation must immediately follow its observation before further activity")
         uses = {_key(ref): file_ref(ref) for ref in fact["use_refs"]}
         require(len(uses) == len(fact["use_refs"]), "baseline fact use reference is duplicated")
         all_uses.update(uses)
@@ -281,7 +296,7 @@ def _derive(
     require(consumed_events == execution_events, "baseline facts omit or invent execution events")
     require(set(all_uses) <= terminal_uses and set(required_inputs) <= terminal_uses, "baseline terminal fact omits its frozen input closure")
     require(terminal["binding"] == actual_binding, "baseline terminal binding differs from last actual response")
-    final_status = events[-1]["payload"]["to_status"]
+    final_status = status_event["payload"]["to_status"]
     require(final_status == trace["attempt_status"], "baseline Trace final status differs")
     if final_status == "completed":
         require(bool(provider_after) and not pending, "completed baseline lacks complete call facts")
@@ -317,6 +332,15 @@ def _derive(
     if last_response is not None:
         require(inputs.read(artifact_refs[0]) == last_response, "baseline final artifact differs from actual last response")
     validation = inputs.read(validation_ref, "deterministic_check_report")
+    checker = validation["checker"]
+    require(checker["checker_id"] == "baseline-transport-closeout" and checker["version"] == "1.0.0",
+            "baseline validation checker identity differs")
+    checker_ref = file_ref(checker["source_ref"])
+    require(checker_ref["path"] == (directory / "checker-source.py").relative_to(inputs.root).as_posix(),
+            "baseline validation checker source path differs")
+    inputs.read_bytes(checker_ref)
+    require(_creation_event(events, checker_ref, directory.relative_to(inputs.root))["sequence"] < sequences[0],
+            "baseline validation checker source must be captured before execution")
     subjects = {_key(ref) for ref in validation["subject_refs"]}
     require(len(subjects) == len(validation["subject_refs"])
             and {_key(trace_index_ref), *(_key(ref) for ref in artifact_refs)} == subjects,
@@ -329,7 +353,7 @@ def _derive(
     return {
         "attempt_id": trace["attempt_id"],
         "status": status,
-        "reason": events[-1]["payload"]["reason"],
+        "reason": status_event["payload"]["reason"],
         "started_at": terminal["started_at"],
         "completed_at": terminal["observed_at"],
         "elapsed_seconds": terminal["elapsed_seconds"],

@@ -56,6 +56,8 @@ class BaselineFixture(SystemEvaluationFixture):
         interface = self.doc(self.bindings[A2]["interface_ref"]["path"])
         interface["provider_visible_interface"] = copy.deepcopy(self.tool_definition)
         self.bindings[A2]["interface_ref"] = self.write("arm-1/interface.json", interface)
+        for binding in self.a2_extra_bindings:
+            binding["interface_ref"] = copy.deepcopy(self.bindings[A2]["interface_ref"])
         for binding in self.protocol["execution_bindings"]:
             if binding["arm_id"] == A2:
                 binding["interface_ref"] = copy.deepcopy(self.bindings[A2]["interface_ref"])

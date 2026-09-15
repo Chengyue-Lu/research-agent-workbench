@@ -139,10 +139,10 @@ def _tool_inputs(inputs: EvaluationInputs, metadata: Mapping[str, Any]) -> dict[
             continue
         interface = inputs.read(binding["interface_ref"], "evaluation_provider_interface")
         supply = inputs.read(snapshot["selected_supply_report_ref"], "capability_supply_report")
-        result[interface["provider_visible_interface"]["name"]] = {
-            "implementation_ref": file_ref(binding["implementation_ref"]),
-            "availability": supply["availability"], "snapshot": snapshot,
-        }
+        tool = result.setdefault(interface["provider_visible_interface"]["name"], {
+            "implementation_ref": file_ref(binding["implementation_ref"]), "bindings": [],
+        })
+        tool["bindings"].append({"availability": supply["availability"], "snapshot": snapshot})
     return result
 
 
@@ -173,10 +173,11 @@ class _BaselineSink:
         require(compiler_reference() == self.metadata["compiler_ref"], "baseline compiler changed")
         require(self._observed() == self.metadata["execution_binding"], "actual transport binding drift")
         now = timestamp(self.utc_clock())
-        for binding in self.tool_inputs.values():
-            availability = binding["availability"]
-            require(timestamp(availability["observed_at"]) <= now <= timestamp(availability["valid_until"]),
-                    "A2 availability expired at use boundary")
+        for tool in self.tool_inputs.values():
+            for binding in tool["bindings"]:
+                availability = binding["availability"]
+                require(timestamp(availability["observed_at"]) <= now <= timestamp(availability["valid_until"]),
+                        "A2 availability expired at use boundary")
         if tool_name is not None:
             binding = self.tool_inputs[tool_name]
             source = _source(self.tools[tool_name].execute)
@@ -199,6 +200,10 @@ class _BaselineSink:
         ref = self.recorder.record_decision_snapshot(document["fact_id"], document)
         root_ref = {"path": (self.recorder.attempt_dir / ref["path"]).relative_to(self.inputs.root).as_posix(),
                     "sha256": ref["sha256"]}
+        self.recorder.record_file_revision(
+            ref["path"], action="created", new_sha256=root_ref["sha256"],
+            reason=f"Baseline {operation} {phase} fact persisted at its observation boundary",
+        )
         self.facts.append(root_ref)
 
     def record(self, kind, payload):
@@ -297,13 +302,23 @@ def run_baseline_session(
         destination, task_id=task["task_id"], task_revision=task["revision"], attempt_id=attempt_id,
         task_snapshot=task, accountable_owner=metadata["accountable_owner"], actor_id="m6-baseline-transport",
         runtime_identity="m6-baseline-transport@1.0.0", provider=metadata["execution_binding"]["provider"]["ref"],
-        read_allowlist=list(inputs.hashes), write_scope=metadata["write_scope"], tool_allowlist=list(tool_map),
+        # Creation events use Attempt-relative artifact paths, like decision_refs.
+        read_allowlist=list(inputs.hashes), write_scope=["decisions/**", "checker-source.py"],
+        tool_allowlist=list(tool_map),
         created_at=started_at,
     )
     snapshot_path = destination / ("envelope" + Path(envelope_ref["path"]).suffix)
     with snapshot_path.open("xb") as stream:
         stream.write(envelope_bytes)
     envelope_snapshot_ref = _reference(inputs.root, snapshot_path)
+    # Archive the producer bytes so cold replay can verify the historical
+    # checker pin without requiring or executing that installed source version.
+    checker_path = destination / "checker-source.py"
+    with checker_path.open("xb") as stream:
+        stream.write(Path(__file__).read_bytes())
+    checker_ref = _reference(inputs.root, checker_path)
+    recorder.record_file_revision(checker_path.name, action="created", new_sha256=checker_ref["sha256"],
+                                  reason="Baseline Validation checker source snapshot")
     sink = _BaselineSink(inputs=inputs, envelope_ref=envelope_ref, envelope=envelope, provider=provider,
                          tools=tool_map, recorder=recorder, clock=clock, utc_clock=utc_clock,
                          started=started, started_at=started_at, tool_inputs=tool_inputs)
@@ -332,7 +347,7 @@ def run_baseline_session(
     validation = {
         "schema_version": "0.1.0", "report_id": f"CHECK-{attempt_id}",
         "checker": {"checker_id": "baseline-transport-closeout", "version": "1.0.0",
-                    "source_ref": {"path": "src/research_workbench/execution/baseline.py", "sha256": _hash(Path(__file__))}},
+                    "source_ref": checker_ref},
         "subject_refs": [trace_ref, *artifact_refs], "status": "pass" if status == "completed" else "fail",
         "checks": [{"code": "BASELINE-TRANSPORT", "status": "pass" if status == "completed" else "fail", "detail": reason}],
         "scope": "fixed A1/A2 transport output capture; not Task or scientific acceptance",

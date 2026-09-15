@@ -42,7 +42,8 @@ availability / boundary / typed conformance 闭包。开发测试以合成文件
 
 transport 在每次 Provider request 和 Tool invocation 前重验已读取的 pin 闭包、编译器、
 实际 Provider/Adapter/Model/Runtime/Host binding 和 Tool availability；Tool 调用还核对真实 callable
-的源码路径及哈希。它检查 Attempt 的 frozen write scope、Task 文件权限和 allowed roots，
+的源码路径及哈希。同名 Tool 保留每条 Task-specific Requirement 绑定；接口与实现可复用，
+每条 runtime Supply availability 都必须在每个使用边界有效。它检查 Attempt 的 frozen write scope、Task 文件权限和 allowed roots，
 并拒绝超过 Task 已声明预算上限的 Manifest / Protocol 配置。
 
 输入 token 上限和 Tool 结果字符上限分开。A2 的已 pin ProjectProtocol 须明确提供：
@@ -89,6 +90,18 @@ Receipt 区分 `completed`、`post-call-failed`、`preflight-blocked`。
 但完整 strict replay 仍会报告 pin 不一致，不能把“留下失败”写成“全部回放有效”。
 
 ## 验证与下一步
+
+2026-09-16 根据 [PR #75 review](https://github.com/Chengyue-Lu/research-agent-workbench/pull/75#issuecomment-5685397753)
+修复两个 P1 和一个 P2：同名 Tool 的绑定列表保留所有 availability；每份 Provider / Tool / session fact
+写入后立即记录 hash-pinned `file-revision(created)`，回放要求它紧随所绑定的请求、结果或终态事件，
+发生在后续活动之前。事件路径相对于 Attempt，与 decision refs 一致；外层 Receipt 仍使用 project-relative refs。
+Validation checker 源码在执行前保存为 `checker-source.py`，回放核对固定归档路径、实际字节哈希、
+checker identity 和创建事件。回放读取这个历史快照，不导入执行它，也不要求当前安装相同源码。
+
+专项反例覆盖运行前、Provider 返回后、Tool 返回后过期，调用后补写 before fact，逐份事实的缺失、
+重复或迟到创建事件，以及 checker 路径、pin 和实际文件漂移。旧实现错误接受已复现，修复证据及最终
+CI 绑定由本轮 PR 记录。`A-20260916-001` 保留旧候选原始字节；其中缺少创建事件与 checker 快照的
+Receipt 不满足本轮候选要求，不能作为当前回放通过证据。本轮未修改已接受的 M5 / M11 契约。
 
 2026-09-16 接手时，PR #75 从 `60bdf8c` 基线迁移到 `develop@7b1323f`，
 保留已合入的 M11-007 实现与独立 PR #82 收口边界。新增

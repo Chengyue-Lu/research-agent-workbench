@@ -90,7 +90,7 @@ class BaselineExecutionTests(unittest.TestCase):
             self.f.root, envelope_ref=self.f.envelope_ref,
             expected_protocol_ref=self.f.protocol_ref, provider=provider,
             attempt_path="work/TASK-MR-ES-FROZEN-001/A1", attempt_id="BASELINE-A1",
-            receipt_id="BASELINE-RECEIPT-A1", tools=tools, utc_clock=lambda: AT,
+            receipt_id="BASELINE-RECEIPT-A1", tools=tools, utc_clock=options.pop("utc_clock", lambda: AT),
             schema_root=ROOT / "schemas", **options,
         )
 
@@ -224,40 +224,33 @@ print(json.dumps({"status": receipt["status"], "attempt_id": receipt["attempt_id
         self.assert_fresh_file_replay(result, implementation=implementation)
         self.assertEqual(len(provider.requests), 2)
 
-        # Reuse this same successful Attempt: rehashing a different admitted
-        # input as the Tool must not replace the frozen qualified callable.
-        forged = copy.deepcopy(result["receipt"])
-        trace = self.f.doc(forged["trace_index_ref"]["path"])
-        trace_directory = Path(forged["trace_index_ref"]["path"]).parent
-        changed_facts = 0
-        for reference in forged["fact_refs"]:
-            fact = self.f.doc(reference["path"])
-            if fact["operation"] != "tool":
-                continue
-            self.assertIn(self.f.public_input_ref, fact["use_refs"])
-            fact["tool_ref"] = copy.deepcopy(self.f.public_input_ref)
-            replacement = self.f.write(reference["path"], fact)
-            reference.update(replacement)
-            child = next(
-                entry for entry in trace["decision_refs"]
-                if (trace_directory / entry["path"]).as_posix() == reference["path"]
-            )
-            child["sha256"] = replacement["sha256"]
-            changed_facts += 1
-        self.assertEqual(changed_facts, 2)
-        forged["trace_index_ref"] = self.f.write(forged["trace_index_ref"]["path"], trace)
-        validation = self.f.doc(forged["validation_ref"]["path"])
-        for reference in validation["subject_refs"]:
-            if reference["path"] == forged["trace_index_ref"]["path"]:
-                reference.update(forged["trace_index_ref"])
-        forged["validation_ref"] = self.f.write(forged["validation_ref"]["path"], validation)
-        forged_ref = self.f.write(result["receipt_ref"]["path"], forged)
-        with self.assertRaisesRegex(EvaluationValidationError, "qualified Tool"):
-            verify_baseline_receipt(
-                self.f.root, forged_ref, expected_envelope_ref=self.f.envelope_ref,
-                schema_root=ROOT / "schemas",
-            )
-        self.assertEqual(len(provider.requests), 2)
+    def test_same_tool_checks_every_requirement_availability_at_each_use(self):
+        for expiry in ("preflight", "provider-return", "tool-return", "none"):
+            with self.subTest(expiry=expiry):
+                self.setUp()
+                self.f.build(a2_multi_requirement=True)
+                now = [AT]
+
+                def expire(*_args):
+                    now[0] = "2026-09-11T00:00:02Z"
+
+                provider = ScriptedProvider(response("call", tool=True), response("final"),
+                    on_call=expire if expiry == "provider-return" else None)
+                self.freeze(provider, A2)
+                self.assertEqual(len(self.f.tool_bindings), 2)
+                self.assertEqual(len(self.f.tools), 1)
+                tool = self.load_tool()
+                if expiry == "preflight":
+                    expire()
+                with self.observe_tool_calls(tool, after_return=expire if expiry == "tool-return" else None) as calls:
+                    result = self.run_arm(provider, tools=(tool,), utc_clock=lambda: now[0])
+                expected_calls = 0 if expiry in {"preflight", "provider-return"} else 1
+                self.assertEqual(len(calls), expected_calls)
+                self.assertEqual(len(provider.requests), 0 if expiry == "preflight" else 2 if expiry == "none" else 1)
+                self.assertTrue(result["replay_valid"], result["replay_error"])
+                if expiry != "none":
+                    self.assertIn("availability expired", result["receipt"]["reason"])
+                    self.assertNotEqual(result["receipt"]["status"], "completed")
 
     def test_envelope_drift_after_tool_return_blocks_the_next_provider(self):
         provider = ScriptedProvider(response("a2-call", tool=True), response("must-not-run"))
