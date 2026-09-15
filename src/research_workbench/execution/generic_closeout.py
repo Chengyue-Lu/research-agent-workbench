@@ -233,9 +233,11 @@ def _validate_trace_execution_records(
     host: Mapping[str, Any],
     *,
     catalog: SchemaCatalog,
-) -> None:
+    skill_extension: bool = False,
+) -> CloseoutPin | None:
     scope_records: list[Mapping[str, Any]] = []
     execution_facts: list[Mapping[str, Any]] = []
+    execution_fact_pins: list[CloseoutPin] = []
     for reference in trace.get("decision_refs", ()):
         if not isinstance(reference, Mapping):
             continue
@@ -251,14 +253,16 @@ def _validate_trace_execution_records(
             continue
         if document.get("record_kind") == "execution-scope-binding":
             scope_records.append(document)
-        elif document.get("record_kind") == "actual-execution-binding":
-            errors = catalog.validate("execution_trace_fact", document)
+        elif document.get("record_kind") in {"actual-execution-binding", "actual-skill-execution-binding"}:
+            fact_kind = "skill_execution_trace_fact" if skill_extension else "execution_trace_fact"
+            errors = catalog.validate(fact_kind, document)
             if errors:
                 detail = "; ".join(f"{item.pointer}: {item.message}" for item in errors)
                 raise GenericCloseoutValidationError(
                     "Execution Trace actual-binding fact is schema-invalid: " + detail
                 )
             execution_facts.append(document)
+            execution_fact_pins.append(pin)
     expected = {
         "schema_version": "0.1.0",
         "record_kind": "execution-scope-binding",
@@ -278,10 +282,12 @@ def _validate_trace_execution_records(
         if (
             fact.get("attempt_id") != host.get("attempt_id")
             or fact.get("view_ref") != _plain(host.get("view_ref"))
-            or fact.get("execution_phase") != "post-call"
+            or fact.get("execution_phase") != ("use-boundary" if skill_extension else "post-call")
             or fact.get("actual_binding") != _plain(host.get("actual_binding"))
             or fact.get("actual_supply_report_ref")
             != host.get("actual_supply_report_ref")
+            or (skill_extension and fact.get("actual_skill_consumption")
+                != _plain(host.get("actual_skill_consumption")))
         ):
             raise GenericCloseoutValidationError(
                 "Execution Trace actual execution fact does not corroborate Host binding and Supply"
@@ -290,6 +296,7 @@ def _validate_trace_execution_records(
         raise GenericCloseoutValidationError(
             "pre-call Trace cannot claim an actual execution binding or Supply"
         )
+    return execution_fact_pins[0] if skill_extension and execution_fact_pins else None
 
 
 def _validate_host_trace_facts(
@@ -400,11 +407,31 @@ def build_generic_execution_receipt(
 ) -> dict[str, Any]:
     """Build an execution-only Receipt from exact facts; never publish files."""
 
+    return _build_execution_receipt(
+        view, bundle, host_report=host_report, trace_index=trace_index,
+        validations=validations, receipt_id=receipt_id, schema_root=schema_root,
+    )
+
+
+def _build_execution_receipt(
+    view: ValidatedExecutionView,
+    bundle: ValidatedRuntimeBundle,
+    *,
+    host_report: CloseoutPin,
+    trace_index: CloseoutPin,
+    validations: Sequence[CloseoutPin],
+    receipt_id: str,
+    schema_root: str | Path | None = None,
+    skill_extension: bool = False,
+) -> dict[str, Any]:
+    """Shared closeout invariants; public entry points select a fixed contract."""
+
     root = bundle.project_root
     if root != view.project_root:
         raise GenericCloseoutValidationError("View and Runtime Bundle roots differ")
     catalog = SchemaCatalog(schema_root)
-    host_path, host = _load_pin(root, host_report, kind="execution_host_report", catalog=catalog)
+    host_kind = "skill_execution_host_report" if skill_extension else "execution_host_report"
+    host_path, host = _load_pin(root, host_report, kind=host_kind, catalog=catalog)
     host_status = host.get("status")
     if host_status not in {"completed", "failed", "blocked"}:
         raise GenericCloseoutValidationError("Host report has an unsupported lifecycle status")
@@ -438,8 +465,8 @@ def build_generic_execution_receipt(
         or trace.get("completeness") != "complete"
     ):
         raise GenericCloseoutValidationError("Execution Trace identity/status/completeness mismatch")
-    _validate_trace_execution_records(
-        root, trace_path, trace, host, catalog=catalog
+    execution_fact_pin = _validate_trace_execution_records(
+        root, trace_path, trace, host, catalog=catalog, skill_extension=skill_extension
     )
 
     artifacts = host.get("artifacts", ())
@@ -499,6 +526,15 @@ def build_generic_execution_receipt(
         "tool": "direct-tool",
         "adapter-provider": "adapter-provider",
     }.get(supply_kind)
+    extension_fields: dict[str, Any] = {}
+    if skill_extension:
+        if supply_kind != "skill":
+            raise GenericCloseoutValidationError("Skill closeout requires Skill Supply")
+        from research_workbench.execution.skill_closeout import _validate_skill_closure
+        extension_fields, supply = _validate_skill_closure(
+            view, host, trace_path, trace, fact_pin=execution_fact_pin, schema_root=schema_root,
+        )
+        execution_kind = "skill"
     if execution_kind is None:
         raise GenericCloseoutValidationError("Skill Supply is outside M11 Core closeout")
     _validate_host_trace_facts(
@@ -534,7 +570,9 @@ def build_generic_execution_receipt(
             "task_completion": False,
         },
     }
-    if catalog.validate("generic_execution_receipt", receipt):
+    receipt.update(extension_fields)
+    receipt_kind = "skill_execution_receipt" if skill_extension else "generic_execution_receipt"
+    if catalog.validate(receipt_kind, receipt):
         raise GenericCloseoutValidationError("generated Generic Execution Receipt is schema-invalid")
     return receipt
 

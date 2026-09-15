@@ -16,3 +16,17 @@
 | 任务定义越界到 implementation / 科研执行 | 本 PR 仅 docs，M5-007 继续 BLOCKED，未新增 DONE | synthetic proof 在 implementation PR；real evaluation 留给 M5-004 |
 
 本次审查是定义/依赖/生命周期的静态一致性核对，不冒充尚未执行的 Runtime 对抗测试。
+
+## M11-007 implementation candidate
+
+本节跟踪 PR76 已接受定义之后的独立实施，风险仍为 R2。
+
+| 风险 | 实施控制 | 验收证据 |
+|---|---|---|
+| 用 planned View 填充 actual Skill facts | Driver 消费 exact bytes 的 immutable inputs；Trace 在调用前记录 input hashes 与 typed fact 创建事件；Host 仅保留观测 | 完整 synthetic vertical proof、fresh-process replay、missing/late fact 反例 |
+| 同时重签 Host 和 Trace 掩盖错误身份 | replay 重新加载 actual Supply/Projection，重算 Skill/component identity；completed 还须与 selected View 相同 | rehashed Host/fact 与 Projection identity 漂移反例 |
+| 失败事实被要求等同请求而丢失 | failed 保留 Provider/Adapter/Model/Runtime/Host 与 Supply/Projection 真实漂移，completion none | 五类 binding 与 Supply/Projection drift replay |
+| 新契约混入 Core 或旧 Receipt | 独立 kind + contract_version 1.0.0，旧 Schema 字节保留；Core API 明确拒绝 Skill contract | Core/legacy 回归与版本/authority 字段反例 |
+| 可验证实现被误读为 Gate 接受 | 候选证据与 accepted pins 分列；Gate B UNSATISFIED，M5-007 BLOCKED | 当前 CI、PR review 与 Gate record |
+
+实施接受仍由黄毅与路诚钺按各自边界承担；PR76 的单次维护者例外已使用，不适用于本实现候选。

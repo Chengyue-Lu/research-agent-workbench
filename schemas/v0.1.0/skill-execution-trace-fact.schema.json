@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/skill-execution-trace-fact.schema.json",
+  "title": "Skill Execution Trace Fact 1.0.0",
+  "$comment": "Independent Skill execution contract. Core and legacy schemas retain their published semantics.",
+  "x-rwb-document-kind": "skill_execution_trace_fact",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "fact_id",
+    "record_kind",
+    "attempt_id",
+    "view_ref",
+    "execution_phase",
+    "actual_binding",
+    "actual_supply_report_ref",
+    "boundaries",
+    "contract_version",
+    "actual_skill_consumption"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "fact_id": {
+      "$ref": "common.schema.json#/$defs/nonEmptyString"
+    },
+    "record_kind": {
+      "const": "actual-skill-execution-binding"
+    },
+    "attempt_id": {
+      "$ref": "common.schema.json#/$defs/nonEmptyString"
+    },
+    "view_ref": {
+      "$ref": "execution-host-report.schema.json#/$defs/revisionedFileRef"
+    },
+    "execution_phase": {
+      "const": "use-boundary"
+    },
+    "actual_binding": {
+      "$ref": "execution-host-report.schema.json#/properties/actual_binding"
+    },
+    "actual_supply_report_ref": {
+      "$ref": "common.schema.json#/$defs/nonEmptyString"
+    },
+    "boundaries": {
+      "type": "object",
+      "required": [
+        "actual_fact",
+        "supply_selection",
+        "rebinding",
+        "method_decision",
+        "task_completion",
+        "claim_effect",
+        "human_decision"
+      ],
+      "properties": {
+        "actual_fact": {
+          "const": true
+        },
+        "supply_selection": {
+          "const": false
+        },
+        "rebinding": {
+          "const": false
+        },
+        "method_decision": {
+          "const": false
+        },
+        "task_completion": {
+          "const": false
+        },
+        "claim_effect": {
+          "const": false
+        },
+        "human_decision": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "contract_version": {
+      "const": "1.0.0"
+    },
+    "actual_skill_consumption": {
+      "$ref": "skill-execution-consumption.schema.json"
+    }
+  },
+  "additionalProperties": false
+}

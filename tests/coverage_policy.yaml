@@ -80,6 +80,7 @@ suites:
       - test_skill_lifecycle
       - test_skill_release_projection
       - test_skill_runtime_extension
+      - test_skill_execution_closeout
       - test_skill_needs
       - test_trace_risk_codes
       - test_phase_b_evolution_gate
@@ -166,6 +167,8 @@ critical_modules:
   - src/research_workbench/execution/host.py
   - src/research_workbench/observability/trace.py
   - src/research_workbench/execution/generic_closeout.py
+  - src/research_workbench/execution/skill_facts.py
+  - src/research_workbench/execution/skill_closeout.py
   - src/research_workbench/artifacts/admission.py
   - src/research_workbench/artifacts/claim_trace.py
   - src/research_workbench/artifacts/integrity.py
@@ -388,6 +391,16 @@ negative_acceptance:
       - test_capability_resolution.CapabilityResolutionTests.test_supply_registry_adversarial_contract_and_evidence_matrix
       - test_capability_resolution.CapabilityResolutionTests.test_resolution_and_snapshot_registry_adversarial_matrix
       - test_capability_resolution.CapabilityResolutionTests.test_supply_reference_evidence_and_cross_object_guard_matrix
+  - surface: skill-execution-closeout
+    modules:
+      - src/research_workbench/execution/skill_facts.py
+      - src/research_workbench/execution/skill_closeout.py
+    positive_tests:
+      - test_skill_execution_closeout.SkillExecutionCloseoutTests.test_completed_vertical_proof_replays_in_fresh_process
+      - test_skill_execution_closeout.SkillExecutionCloseoutTests.test_failed_actual_supply_and_projection_are_preserved
+    negative_tests:
+      - test_skill_execution_closeout.SkillExecutionCloseoutTests.test_missing_typed_fact_is_rejected
+      - test_skill_execution_closeout.SkillExecutionCloseoutTests.test_consumption_schema_identity_component_and_hash_drift_are_rejected
   - surface: skill-release-projection-publication
     modules:
       - src/research_workbench/capability/release_projection.py

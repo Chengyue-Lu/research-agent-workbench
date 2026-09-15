@@ -44,6 +44,18 @@ from research_workbench.execution.recovery import (
     RecoverySeed,
     prepare_recovery_attempt,
 )
+from research_workbench.execution.skill_facts import (
+    ObservedSkillInputs,
+    SKILL_CLOSEOUT_CONTRACT,
+    SkillExecutionFactError,
+    read_skill_execution_inputs,
+    record_skill_execution_use,
+)
+from research_workbench.execution.skill_closeout import (
+    ValidatedSkillReceipt,
+    build_skill_execution_receipt,
+    validate_skill_execution_receipt,
+)
 
 __all__ = [
     "ATTEMPT_FILENAME",
@@ -81,4 +93,12 @@ __all__ = [
     "build_generic_execution_receipt",
     "validate_generic_execution_receipt",
     "verify_execution_archive",
+    "ObservedSkillInputs",
+    "SKILL_CLOSEOUT_CONTRACT",
+    "SkillExecutionFactError",
+    "read_skill_execution_inputs",
+    "record_skill_execution_use",
+    "ValidatedSkillReceipt",
+    "build_skill_execution_receipt",
+    "validate_skill_execution_receipt",
 ]

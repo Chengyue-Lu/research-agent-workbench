@@ -8,6 +8,12 @@ from typing import Any, Mapping
 def infer_document_kind(document: Mapping[str, Any]) -> str | None:
     evaluation_kind = document.get("record_kind")
     if isinstance(evaluation_kind, str) and evaluation_kind in {
+        "skill_execution_consumption", "skill_execution_host_report", "skill_execution_receipt",
+    }:
+        return evaluation_kind
+    if evaluation_kind == "actual-skill-execution-binding":
+        return "skill_execution_trace_fact"
+    if isinstance(evaluation_kind, str) and evaluation_kind in {
         "system_evaluation_protocol", "evaluation_measurement", "evaluation_provider_interface",
         "arm_execution_qualification", "evaluation_case_closure", "admission_evidence_overlap",
         "a4_execution_qualification", "a3_a4_pairwise_comparability",
