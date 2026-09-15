@@ -14,6 +14,58 @@ import ci_dependencies as deps
 
 
 class DependencyTests(unittest.TestCase):
+    def test_literal_length_metadata_does_not_consume_same_named_files(self):
+        paths = ['skills/one/SKILL.md', 'docs/SKILL.md']
+        blobs = {'src/archive.py': b'def prefix(name): return name[:-len("SKILL.md")]\n',
+                 'tests/test_archive.py': b'from archive import prefix\n'}
+        for path in paths:
+            with self.subTest(path=path):
+                self.assertFalse(self.selection(blobs, blobs, [path], paths)['selected'])
+        # A real reader remains selected even when the same spelling is also metadata.
+        blobs['src/archive.py'] += b'def read(root): return (root / "SKILL.md").read_text()\n'
+        self.assertIn('test_archive', self.selection(blobs, blobs, paths, paths)['selected'])
+
+    def test_shadowed_length_calls_retain_document_dependencies(self):
+        for raw in (
+            'def check(len): return len("docs/input.md")',
+            'def check(*len): return len("docs/input.md")',
+            'def check(**len): return len("docs/input.md")',
+            'def len(path): return reader(path)\nlen("docs/input.md")',
+            'class len:\n def __init__(self, path): reader(path)\nlen("docs/input.md")',
+            'try: pass\nexcept Exception as len: len("docs/input.md")',
+            'match value:\n case len: len("docs/input.md")',
+            'match value:\n case [*len]: len("docs/input.md")',
+            'match value:\n case {**len}: len("docs/input.md")',
+            'from custom import len\nlen("docs/input.md")',
+            'from custom import *\nlen("docs/input.md")',
+            'globals()["len"] = reader\nlen("docs/input.md")',
+            'from builtins import globals as namespace\nnamespace()["len"] = reader\nlen("docs/input.md")',
+            'import builtins\nsetattr(builtins, "len", reader)\nlen("docs/input.md")',
+            'import builtins\nbuiltins.len = reader\nlen("docs/input.md")',
+            'exec(code)\nlen("docs/input.md")',
+            'def check():\n from custom import len\n return len("docs/input.md")',
+            'def mutate():\n global len\n len=reader\nlen("docs/input.md")',
+            'def outer(len):\n def inner(): return len("docs/input.md")\n return inner()',
+            'len("docs/input.md", unexpected=True)',
+        ):
+            with self.subTest(source=raw):
+                blobs = {'tests/test_reader.py': raw.encode()}
+                self.assertIn('test_reader', self.selection(blobs, blobs, ['docs/input.md'], ['docs/input.md'])['selected'])
+
+    def test_selection_explains_fallback_edges_without_changing_paths(self):
+        blobs = {'src/leaf.py': b'VALUE=1', 'src/dynamic.py': b'exec(code)',
+                 'tests/test_dynamic.py': b'import dynamic', 'tests/test_direct.py': b'import leaf',
+                 'tests/test_resource.py': b'open(path)'}
+        result = self.selection(blobs, blobs, ['src/leaf.py'])
+        self.assertEqual(['syntax-reference'], result['selected_edge_kinds']['test_direct'])
+        self.assertEqual(['opaque-execution', 'syntax-reference'], result['selected_edge_kinds']['test_dynamic'])
+        self.assertEqual(3, result['scope_summary']['available_test_modules'])
+        self.assertEqual(2, result['scope_summary']['selected_test_modules'])
+        self.assertEqual(1, result['scope_summary']['opaque_execution_paths'])
+        resource = self.selection(blobs, blobs, ['fixtures/data.json'], ['fixtures/data.json'])
+        self.assertEqual(['unbounded-resource'], resource['selected_edge_kinds']['test_resource'])
+        self.assertEqual(1, resource['scope_summary']['unbounded_resource_paths'])
+
     def test_cached_consumer_follows_inventory_lifecycle(self):
         """Cached consumer: discover inputs, expand inventory, remove inputs, restore."""
         consumer = 'tests/test_contract.py'

@@ -110,6 +110,7 @@ def _file_facts(path, raw):
     resolved graph here: another snapshot may add a module or a resource match.
     """
     links, literals, prefixes, basenames = set(), set(), set(), set()
+    length_metadata = set()
     opaque = resources = False
     try:
         tree = ast.parse(raw)
@@ -130,6 +131,14 @@ def _file_facts(path, raw):
     import_targets = defaultdict(set)
     mutated_names = set()
     for node in nodes:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            bindings[scope(node)][node.name].append(node)
+        if isinstance(node, ast.ExceptHandler) and node.name:
+            bindings[scope(node)][node.name].append(node)
+        if isinstance(node, (ast.MatchAs, ast.MatchStar)) and node.name:
+            bindings[scope(node)][node.name].append(node)
+        if isinstance(node, ast.MatchMapping) and node.rest:
+            bindings[scope(node)][node.rest].append(node)
         if isinstance(node, (ast.Global, ast.Nonlocal)):
             mutated_names.update(node.names)
         if isinstance(node, ast.ImportFrom):
@@ -246,12 +255,30 @@ def _file_facts(path, raw):
                 mutations.update(node.names)
         return uses, mutations
 
+    reflective_bindings = any(
+        isinstance(n, ast.ImportFrom) and any(a.name == '*' for a in n.names)
+        or isinstance(n, ast.Name) and n.id in {'globals', 'locals', 'vars', 'setattr', 'delattr', '__builtins__'}
+        or isinstance(n, ast.ImportFrom) and n.module == 'builtins'
+            and any(a.name in {'globals', 'locals', 'vars', 'setattr', 'delattr'} for a in n.names)
+        or isinstance(n, ast.Attribute) and (n.attr == '__dict__' or n.attr == 'len' and isinstance(n.ctx, ast.Store))
+        or isinstance(n, ast.Subscript) and isinstance(n.ctx, ast.Store)
+            and isinstance(n.slice, ast.Constant) and n.slice.value == 'len'
+        for n in nodes)
+
     def name_only(node, seen=frozenset()):
         """Recognize lexical predicates, without crossing a read/call boundary."""
         if node in seen:
             return False
         seen = seen | {node}
         parent = parents.get(node)
+        if (isinstance(node, ast.Constant) and isinstance(node.value, str)
+                and isinstance(parent, ast.Call) and isinstance(parent.func, ast.Name)
+                and parent.func.id == 'len' and parent.args == [node] and not parent.keywords
+                and not lexical_values(parent.func) and not reflective_bindings):
+            # A literal's length is a number, not a repository path. Resolve the
+            # builtin lexically: an import, parameter or mutation can make len a reader.
+            length_metadata.add(node.value)
+            return True
         while isinstance(parent, (ast.Set, ast.List, ast.Tuple, ast.BinOp)):
             node, parent = parent, parents.get(parent)
         if isinstance(parent, (ast.Compare, ast.Expr)):
@@ -394,6 +421,11 @@ def _file_facts(path, raw):
             opaque = True
         if name.endswith(('.read_text', '.read_bytes', '.open', '.glob', '.rglob', '.iterdir')) or name == 'open':
             resources = True
+    if opaque:
+        # Escaped/dynamic execution can mutate name resolution; keep its literal
+        # inputs even when they appeared to be a builtin metadata operation.
+        literals.update(length_metadata)
+        links.update(length_metadata)
     return (frozenset(links), frozenset(literals), frozenset(prefixes),
             frozenset(basenames), opaque, resources)
 
@@ -519,9 +551,21 @@ def select(repo, base, head, seeds, reviewed_seeds=(), reviewed_consumers=(), re
     tests = {module_name(path).removeprefix('tests.'): chain for path, chain in trails.items()
              if path in new and path.startswith('tests/test_')}
     inventory = sorted(module_name(path).removeprefix('tests.') for path in new if path.startswith('tests/test_'))
+    edge_kinds = {}
+    for name, chain in sorted(tests.items()):
+        edge_kinds[name] = [
+            'syntax-reference' if consumer in reverse[dependency] else
+            'opaque-execution' if dependency in seeds and dependency.endswith('.py')
+                and not dependency.startswith('tests/test_') and consumer in opaque else
+            'unbounded-resource'
+            for dependency, consumer in zip(chain, chain[1:])]
     payload = json.dumps({'base': before, 'head': after}, sort_keys=True).encode()
     return {'algorithm': 'base-head-consumers-v1', 'inventory_sha256': hashlib.sha256(payload).hexdigest(),
             'selected': dict(sorted(tests.items())), 'excluded': sorted(set(inventory) - tests.keys()),
+            'selected_edge_kinds': edge_kinds,
+            'scope_summary': {'available_test_modules': len(inventory), 'selected_test_modules': len(tests),
+                              'opaque_execution_paths': sum('opaque-execution' in kinds for kinds in edge_kinds.values()),
+                              'unbounded_resource_paths': sum('unbounded-resource' in kinds for kinds in edge_kinds.values())},
             'exclusion_reasons': {name: ('unchanged consumer covered by accepted base contract' if
                 'tests/' + name + '.py' in bounded else 'outside base/head dependency closure')
                 for name in sorted(set(inventory) - tests.keys())},

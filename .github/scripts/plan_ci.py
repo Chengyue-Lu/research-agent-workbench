@@ -260,6 +260,8 @@ def non_executable(path):
 
 def coverage_authority_changed(repo, base, head, path):
     before, after = (read_at(repo, commit, path) for commit in (base, head))
+    if path == '.github/workflows/ci.yml':
+        return workflow_semantic(before) != workflow_semantic(after)
     if path == 'pyproject.toml':
         configs = [tomllib.loads(raw.decode()) for raw in (before, after)]
         for config in configs:
@@ -424,8 +426,17 @@ def make_plan(repo, *, base, head, target, repository, base_ref='develop', body=
                 if path == '.github/workflows/ci.yml':
                     workflow = [workflow_semantic(read_at(repo, commit, path) if path in inventory else b'')
                                 for commit, inventory in ((merge_base, before), (head, after))]
-                    if workflow[0] != workflow[1]:
+                    mode_changed = before.get(path, [''])[0] != after.get(path, [''])[0]
+                    if workflow[0] != workflow[1] or mode_changed:
                         full_reasons.append('CI selection authority changed; complete behavioral bootstrap: ' + path)
+                        if mode_changed:
+                            coverage_reasons.append('workflow mode changed: ' + path)
+                    else:
+                        # Identical typed YAML has the same authority as the base.
+                        # Do not feed formatting bytes into the global resource-reader fallback.
+                        seeds.discard(path)
+                        reasons.append('unchanged workflow YAML semantics: ' + path)
+                        continue
             if path == 'tests/coverage_policy.yaml':
                 monotonic, local_modules, added_tests = policy_delta(authority, candidate_authority)
                 if not monotonic:
