@@ -8,6 +8,8 @@ owner：黄毅（GitHub 主名 `let778750-cpu`；昵称/界面名 `huangyi855`�
 
 当前研究/审计 workstream：
 
+- [`M12-M13-ENTRY/`](M12-M13-ENTRY/README.md)：
+  Phase C 具名语义收口输入、M12 单条文件式接续候选与 M13 真实反馈缺口判定；尚未激活实现。
 - [`execution-runtime-recovery-audit/`](execution-runtime-recovery-audit/README.md)：
   Execution/Runtime 可恢复审计、PR #23 hard-block 证据及治理 rollout。
 - [`open-source-agent-harness-research/`](open-source-agent-harness-research/README.md)：
