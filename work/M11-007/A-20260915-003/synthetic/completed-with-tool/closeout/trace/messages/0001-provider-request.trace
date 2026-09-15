@@ -1,0 +1,19 @@
+---
+schema_version: 0.1.0
+message_id: MSG-0001
+task_id: TASK-MR-ES-FROZEN-001
+task_revision: 1
+attempt_id: ATTEMPT-SKILL-CLOSEOUT
+sequence: 1
+kind: provider-request
+sender_actor_id: runtime-host
+receiver_actor_ids:
+- provider-local
+accountable_owner: M11 synthetic execution owner
+created_at: '2026-09-15T13:41:34.430133Z'
+content_sha256: 6410fbe87c970dda392a513cc7cf7900dbce8372aea8ce184ab28e3ea3997cb5
+attachment_refs: []
+redactions: []
+capture_status: complete
+---
+{"input":{"skill_id":"synthetic-runtime-skill"}}

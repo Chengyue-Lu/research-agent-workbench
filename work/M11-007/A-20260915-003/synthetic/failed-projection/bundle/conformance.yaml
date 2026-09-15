@@ -1,0 +1,14 @@
+evidence_kind: local-conformance
+evidence_id: CONF-RUNTIME-NO-SKILL
+implementation_ref: synthetic-runtime-skill
+implementation_version: 1.0.0
+capability_ids:
+- research-contract-check
+scope:
+  scope_kind: local-environment
+  scope_ref: test-runtime-host
+checks:
+- the bounded local procedure is available without a Skill package
+result: pass
+limitations:
+- This test observation proves structural Runtime bundle closure only.

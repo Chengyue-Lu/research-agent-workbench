@@ -1,0 +1,139 @@
+schema_version: 0.1.0
+view_id: VIEW-LOCAL-001
+revision: 1
+execution_at: '2026-08-26T00:00:00Z'
+runtime_bundle_ref:
+  ref: RB-SKILL-LOCAL-001@r1
+  path: bundle/manifest.yaml
+  sha256: 9c37a0bf8685fb5e6fa49ce965349906a29f7f2e2e3153f4f397f1f1c6179767
+execution_scope:
+  kind: action-capability-slice
+  action_ref: ES-A4@1.0.0
+  requirement_id: research-contract-check
+  task_capability_closure:
+    required:
+    - document-read
+    - research-contract-check
+    closed:
+    - research-contract-check
+    task_completion: false
+task_ref:
+  ref: TASK-MR-ES-FROZEN-001@r1
+  path: bundle/task.yaml
+  sha256: 544537a3aae11d3f3ec2445dcc67dd2fd33f02b4b271a2b3a9e4dd878da2f65b
+method_resolution_ref:
+  ref: MR-ROUTE-ES-FROZEN-001@r1
+  path: bundle/method.yaml
+  sha256: ba10c1f5e4df9f655a2d0defa57f87bfd6bc2b4479a89251bce541578b7ab5e9
+capability_resolution_ref:
+  ref: CR-NO-SKILL-CONTRACT-CHECK@r1
+  path: bundle/resolution.yaml
+  sha256: aa0cc7e443f7ee65f187da89c4404307c41c05d1159b4db669a2a9308620b7ce
+snapshot_ref:
+  ref: RCS-NO-SKILL-CONTRACT-CHECK@r1
+  path: bundle/snapshot.yaml
+  sha256: 014865f0fd0d1c39d055fcfb271ef57be38f78b52854c736c44e91bdc88d774d
+selected_supply_report_ref:
+  ref: supply-synthetic-runtime-skill@1.0.0
+  path: bundle/supply.yaml
+  sha256: 6e6b6b369cb6dade192379082e3a178f408fdb6a3397adcf3c77005cfaa2aa8a
+agent_profile_ref:
+  ref: method-resolver@1.0.0
+  path: view/profile.yaml
+  sha256: ba3f4dddfb3481abfc8dca77c45c7bab440ac13a4b9dcbe78e8836304742d3f2
+data_policy_ref:
+  ref: DP-LOCAL@1.0.0
+  path: view/data-policy.yaml
+  sha256: 2625cbb724c823504c055bffcf5af1bb87084df051d1b08146139a68fc8673a7
+host_policy_ref:
+  ref: HP-LOCAL@1.0.0
+  path: view/host-policy.yaml
+  sha256: e6fb916192e9aa2e3a6fc96d5ec73a61aebc139a3aa27213815d99fbdd1a03d0
+execution_binding_ref:
+  ref: BIND-LOCAL-001@r1
+  path: view/binding.yaml
+  sha256: ada8b9aa6a7ac83a689844539288c906383e7c6ed7990d07fb8889efc28b0fd7
+binding:
+  provider:
+    ref: local
+    version: '1'
+    content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+  adapter:
+    ref: local-procedure
+    version: 1.0.0
+    content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+  model:
+    ref: bounded-local-model
+    version: 1.0.0
+    content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+    model_class: bounded
+    slot: worker
+    capabilities:
+    - structured-output
+  runtime:
+    ref: python
+    version: 3.11+
+    content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+  host:
+    ref: bounded-test-host
+    version: '1'
+    content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+freshness:
+  supply_observed_at: '2026-08-26T00:00:00Z'
+  supply_valid_until: '2099-12-31T23:59:59Z'
+  data_policy_valid_from: '2026-01-01T00:00:00Z'
+  data_policy_valid_until: '2027-01-01T00:00:00Z'
+  host_policy_valid_from: '2026-01-01T00:00:00Z'
+  host_policy_valid_until: '2027-01-01T00:00:00Z'
+profile_constraints:
+  required_tool_capabilities: []
+  required_output_contracts:
+  - deterministic-check-report
+  model:
+    ref: bounded-local-model
+    version: 1.0.0
+    content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+    model_class: bounded
+    slot: worker
+    capabilities:
+    - structured-output
+effective_constraints:
+  permissions:
+    filesystem: worktree-write
+    network: forbidden
+    external_write: false
+    allowed_roots:
+    - work/TASK-MR-ES-FROZEN-001
+  data_egress:
+    policy: forbidden
+    allowed_payloads: []
+    forbidden_payloads:
+    - checked-documents
+    - project-context
+    - validation-results
+  side_effects:
+    policy: allowlisted-only
+    allowed_effects:
+    - task-local-check-report
+  budget:
+    max_output_tokens: 2048
+    max_seconds: 120
+    max_turns: 4
+required_outputs:
+- deterministic-check-report
+completion_checks:
+- The report records checker identity and checked subject hashes.
+- Repeating the same checker over the same bytes yields the same structural findings.
+safe_pause_conditions:
+- The relevant passage cannot be located in an approved frozen source.
+stop_conditions:
+- All in-scope records pass locator and source-separation checks.
+boundaries:
+  supply_selection: false
+  automatic_fallback: false
+  permission_grant: false
+  method_decision: false
+  claim_effect: false
+  human_decision: false
+  task_completion: false
+  execution: false

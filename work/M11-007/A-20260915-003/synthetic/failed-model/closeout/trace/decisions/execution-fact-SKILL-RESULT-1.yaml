@@ -1,0 +1,43 @@
+schema_version: 0.1.0
+fact_id: SKILL-RESULT-1
+record_kind: actual-execution-binding
+attempt_id: ATTEMPT-SKILL-CLOSEOUT
+view_ref:
+  ref: VIEW-LOCAL-001@r1
+  path: view/skill.yaml
+  sha256: 01170e176f0424c02de62b9129f5e9c71ee905bb86d1ef9bb9911f3bb422c48f
+execution_phase: post-call
+actual_binding:
+  provider:
+    ref: local
+    version: '1'
+    content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+  adapter:
+    ref: local-procedure
+    version: 1.0.0
+    content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+  model:
+    ref: observed-drift-model
+    version: 1.0.0
+    content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+    model_class: bounded
+    slot: worker
+    capabilities:
+    - structured-output
+  runtime:
+    ref: python
+    version: 3.11+
+    content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+  host:
+    ref: bounded-test-host
+    version: '1'
+    content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+actual_supply_report_ref: supply-synthetic-runtime-skill@1.0.0
+boundaries:
+  actual_fact: true
+  supply_selection: false
+  rebinding: false
+  method_decision: false
+  task_completion: false
+  claim_effect: false
+  human_decision: false

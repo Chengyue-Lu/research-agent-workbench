@@ -1,0 +1,23 @@
+schema_version: 0.1.0
+agent_profile_id: method-resolver
+version: 1.0.0
+purpose: Bounded no-Skill method execution.
+model_policy:
+  class: bounded
+  default_slot: worker
+  required_capabilities:
+  - structured-output
+permission_ceiling:
+  filesystem: worktree-write
+  network: search-and-fetch
+  external_write: forbidden
+  allowed_roots:
+  - work
+allowed_tool_capabilities:
+- document-read
+- research-contract-check
+default_context_policy: isolated-task
+delegation:
+  allowed: false
+output_contracts:
+- deterministic-check-report

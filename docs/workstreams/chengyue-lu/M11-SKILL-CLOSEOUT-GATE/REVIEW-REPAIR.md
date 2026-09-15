@@ -23,7 +23,8 @@ The existing bounded implementation read/write scope applies; required Skills: [
 The original `A-20260915-002` archive is immutable evidence of the reviewed candidate. Its post-call
 proof predates the two-stage repair and is not current acceptance evidence. New tests preserve its
 source/file pins and reject its obsolete one-stage post-call facts under the corrected candidate.
-A fresh attempt will hold the repaired vertical proof and test evidence. The four new Skill kinds
+A [fresh attempt](../../../../work/M11-007/A-20260915-003/README.md) holds the repaired vertical proof
+and test evidence. The four new Skill kinds
 are still an unaccepted PR candidate; published Core/legacy schemas and Task definitions remain unchanged.
 
 Gate B remains UNSATISFIED, M11-007 IN_PROGRESS and M5-007 BLOCKED until exact-candidate owner acceptance.

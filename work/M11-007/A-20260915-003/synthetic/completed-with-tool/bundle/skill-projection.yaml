@@ -1,0 +1,73 @@
+schema_version: 0.1.0
+projection_id: synthetic-runtime-skill-1.0.0
+projection_version: 1.0.0
+release:
+  skill_id: synthetic-runtime-skill
+  skill_version: 1.0.0
+  release_ref: synthetic-runtime-skill@1.0.0
+  manifest_path: maintainer/accepted/synthetic-runtime-skill.yaml
+  manifest_sha256: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+  content_hash: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  package_hash: sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+runtime_contract:
+  provided_capabilities:
+  - research-contract-check
+  supported_inputs:
+  - document-references
+  - schema-and-checker-version
+  - checked-subject-hashes
+  - project-root-boundary
+  supported_outputs:
+  - deterministic-findings
+  - checked-subject-hashes
+  - declared-risk-codes
+  dependencies:
+    required_tools:
+    - synthetic-skill-tool
+    optional_tools: []
+  compatibility:
+    applies_to_modes:
+    - evidence-synthesis
+    excludes:
+    - claim-promotion
+    incompatible_with: []
+  permission_ceiling:
+    filesystem: worktree-write
+    network: forbidden
+    external_write: false
+    allowed_roots:
+    - work
+  data_egress_ceiling:
+    policy: forbidden
+    allowed_payloads: []
+    forbidden_payloads:
+    - checked-documents
+    - project-context
+    - validation-results
+  side_effect_ceiling:
+    policy: allowlisted-only
+    allowed_effects:
+    - task-local-check-report
+eligibility:
+  state: eligible
+  eligibility_ref: RTE-SYNTHETIC-RUNTIME-1
+  scopes:
+  - new-binding
+admission_provenance:
+  lifecycle_ref: synthetic-runtime-skill@1.0.0/lifecycle@1.0.0
+  lifecycle_document_path: maintainer/lifecycle/synthetic-runtime-skill.yaml
+  lifecycle_content_hash: sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+  decision_owner: human
+  decision_ref: DECISION-SYNTHETIC-RUNTIME-1
+boundaries:
+  stores_need: false
+  stores_candidate: false
+  stores_trial_or_evaluation_results: false
+  stores_metrics_or_deliberation: false
+  stores_lifecycle_history: false
+  selects_supply: false
+  grants_execution: false
+  grants_permission: false
+  owns_fallback: false
+  promotes_claim: false
+  satisfies_human_gate: false

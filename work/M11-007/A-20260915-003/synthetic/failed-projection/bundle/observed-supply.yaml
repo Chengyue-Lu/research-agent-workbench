@@ -1,0 +1,79 @@
+schema_version: 0.1.0
+report_id: supply-synthetic-runtime-skill
+version: 1.0.0
+observation_scope: deterministic-local
+supply_identity:
+  supply_kind: skill
+  implementation_ref: synthetic-runtime-skill
+  implementation_version: 1.0.0
+  content_hash: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  components:
+  - component_kind: skill
+    component_ref: synthetic-runtime-skill
+    version: 1.0.0
+    content_hash: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  skill_release_projection_ref:
+    ref: observed-drift-projection@1.0.0
+    document_path: bundle/observed-projection.yaml
+    content_hash: sha256:ac7a41cf912b03d46587b821f181ae990daafb22f9a5b4ee51ae092a284d91fd
+provided_capabilities:
+- research-contract-check
+supported_inputs:
+- document-references
+- schema-and-checker-version
+- checked-subject-hashes
+- project-root-boundary
+supported_outputs:
+- deterministic-findings
+- checked-subject-hashes
+- declared-risk-codes
+produced_artifacts:
+- deterministic-check-report
+required_permissions:
+  filesystem: worktree-write
+  network: forbidden
+  external_write: false
+  allowed_roots:
+  - work
+data_egress_behavior:
+  policy: forbidden
+  allowed_payloads: []
+  forbidden_payloads:
+  - checked-documents
+  - project-context
+  - validation-results
+side_effects:
+  policy: allowlisted-only
+  allowed_effects:
+  - task-local-check-report
+conformance_evidence:
+- evidence_id: CONF-RUNTIME-NO-SKILL
+  evidence_class: live
+  artifact_kind: capability-conformance-evidence
+  artifact_ref:
+    path: bundle/conformance.yaml
+    sha256: 9a8eb3b79cc58fe471db3646a8ccd35370ef0f3ceca6e74ce00e74079e7e2ea7
+availability:
+  status: available
+  scope:
+    scope_kind: local-environment
+    scope_ref: test-runtime-host
+  observed_at: '2026-08-26T00:00:00Z'
+  valid_until: '2099-12-31T23:59:59Z'
+  facts:
+  - The bounded no-Skill procedure is available in the named test host.
+limits:
+  known: []
+  unknown:
+  - installed checker
+  - host limits
+  - runtime limits
+limitations:
+- Synthetic Skill availability proves contract wiring only, not scientific benefit.
+authority_boundaries:
+  selects_itself: false
+  owns_method_authority: false
+  relaxes_permissions: false
+  owns_fallback: false
+  grants_claim_effect: false
+  satisfies_human_gate: false

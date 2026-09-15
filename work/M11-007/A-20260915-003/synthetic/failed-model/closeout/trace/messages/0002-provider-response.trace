@@ -1,0 +1,19 @@
+---
+schema_version: 0.1.0
+message_id: MSG-0002
+task_id: TASK-MR-ES-FROZEN-001
+task_revision: 1
+attempt_id: ATTEMPT-SKILL-CLOSEOUT
+sequence: 2
+kind: provider-response
+sender_actor_id: provider-local
+receiver_actor_ids:
+- runtime-host
+accountable_owner: M11 synthetic execution owner
+created_at: '2026-09-15T13:41:38.373879Z'
+content_sha256: dfe9dbe45d621f0411c590c5f66006a3d47cae20de8a920bb45deea017fd1aa3
+attachment_refs: []
+redactions: []
+capture_status: complete
+---
+{"observed_binding":{"adapter":{"content_hash":"1111111111111111111111111111111111111111111111111111111111111111","ref":"local-procedure","version":"1.0.0"},"host":{"content_hash":"1111111111111111111111111111111111111111111111111111111111111111","ref":"bounded-test-host","version":"1"},"model":{"capabilities":["structured-output"],"content_hash":"1111111111111111111111111111111111111111111111111111111111111111","model_class":"bounded","ref":"observed-drift-model","slot":"worker","version":"1.0.0"},"provider":{"content_hash":"1111111111111111111111111111111111111111111111111111111111111111","ref":"local","version":"1"},"runtime":{"content_hash":"1111111111111111111111111111111111111111111111111111111111111111","ref":"python","version":"3.11+"}},"status":"synthetic-completed"}

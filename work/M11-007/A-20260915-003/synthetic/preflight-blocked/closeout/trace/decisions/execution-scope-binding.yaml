@@ -1,0 +1,17 @@
+schema_version: 0.1.0
+record_kind: execution-scope-binding
+view_ref:
+  ref: VIEW-LOCAL-001@r1
+  path: view/skill.yaml
+  sha256: 01170e176f0424c02de62b9129f5e9c71ee905bb86d1ef9bb9911f3bb422c48f
+execution_scope:
+  kind: action-capability-slice
+  action_ref: ES-A4@1.0.0
+  requirement_id: research-contract-check
+  task_capability_closure:
+    required:
+    - document-read
+    - research-contract-check
+    closed:
+    - research-contract-check
+    task_completion: false

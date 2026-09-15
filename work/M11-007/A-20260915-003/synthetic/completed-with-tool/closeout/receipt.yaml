@@ -1,0 +1,131 @@
+schema_version: 0.1.0
+receipt_id: RECEIPT-SKILL-CLOSEOUT
+attempt_id: ATTEMPT-SKILL-CLOSEOUT
+execution_kind: skill
+status: completed
+completion_claim: action-capability-slice-only
+task_ref:
+  ref: TASK-MR-ES-FROZEN-001@r1
+  path: bundle/task.yaml
+  sha256: 544537a3aae11d3f3ec2445dcc67dd2fd33f02b4b271a2b3a9e4dd878da2f65b
+execution_scope:
+  kind: action-capability-slice
+  action_ref: ES-A4@1.0.0
+  requirement_id: research-contract-check
+  task_capability_closure:
+    required:
+    - document-read
+    - research-contract-check
+    closed:
+    - research-contract-check
+    task_completion: false
+view_ref:
+  ref: VIEW-LOCAL-001@r1
+  path: view/skill.yaml
+  sha256: 05a1217488f1bebe3d06ed2ed288834239c9c2c0bbfe893a79d4e92a5bcba576
+host_report_ref:
+  path: closeout/host.yaml
+  sha256: 4e3d34ab996d35ea669f247051660ce473a2eab48707be1903ee823df873b870
+trace_ref:
+  path: closeout/trace/INDEX.yaml
+  sha256: fa7435b616b0a09b500b6d76e288da3b0f17a323e9ce5eeeeeed7fd9b775eadd
+artifact_refs:
+- contract: deterministic-check-report
+  path: work/TASK-MR-ES-FROZEN-001/method-resolution.yaml
+  sha256: 34ccf7f01e08b24f0fae02d9f4ca04972a21e90ff80cba502b183cad850a402d
+validation_refs:
+- path: closeout/validation.yaml
+  sha256: 703836ee26bbda8debec5a3059c3bd53766672888705999cc157a7e6a36d55ad
+started_at: '2026-08-26T00:00:01Z'
+finished_at: '2026-08-26T00:00:02Z'
+limitations:
+- Execution completion does not promote a scientific Claim or satisfy a Human Gate.
+boundaries:
+  skill_assignment: absent
+  method_decision: false
+  claim_effect: false
+  human_decision: false
+  topic5_recovery: false
+  task_completion: false
+contract_version: 1.0.0
+record_kind: skill_execution_receipt
+runtime_bundle_ref:
+  ref: RB-SKILL-LOCAL-001@r1
+  path: bundle/manifest.yaml
+  sha256: a259bdc5307cb31affb6da93435f47a00af9b4ad1cb59dddda5714d7b44b14d5
+snapshot_ref:
+  ref: RCS-NO-SKILL-CONTRACT-CHECK@r1
+  path: bundle/snapshot.yaml
+  sha256: 80b1c55a52e51643cf7952d16535b897cb96c39895f77216b51975cf23969004
+resolution_ref:
+  ref: CR-NO-SKILL-CONTRACT-CHECK@r1
+  path: bundle/resolution.yaml
+  sha256: ca2cc04aecdda55c2c55ef4b6f1565c79ecce4d3320096af96d6fb11eefa71b4
+requested_skill_consumption:
+  schema_version: 0.1.0
+  contract_version: 1.0.0
+  record_kind: skill_execution_consumption
+  supply_report_ref:
+    ref: supply-synthetic-runtime-skill@1.0.0
+    path: bundle/supply.yaml
+    sha256: 9c7088caa5f20c6d906f5202e5b26c12c3f523e797900b410098c99c7f4714cf
+  projection_ref:
+    ref: synthetic-runtime-skill-1.0.0@1.0.0
+    path: bundle/skill-projection.yaml
+    sha256: 4073229b632329a59de0cd0f40e5a68f2b3633fa2b15c35b124f37395754bac8
+  skill:
+    skill_id: synthetic-runtime-skill
+    skill_version: 1.0.0
+    content_hash: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  component:
+    component_kind: skill
+    component_ref: synthetic-runtime-skill
+    version: 1.0.0
+    content_hash: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+actual_skill_consumption:
+  schema_version: 0.1.0
+  contract_version: 1.0.0
+  record_kind: skill_execution_consumption
+  supply_report_ref:
+    ref: supply-synthetic-runtime-skill@1.0.0
+    path: bundle/supply.yaml
+    sha256: 9c7088caa5f20c6d906f5202e5b26c12c3f523e797900b410098c99c7f4714cf
+  projection_ref:
+    ref: synthetic-runtime-skill-1.0.0@1.0.0
+    path: bundle/skill-projection.yaml
+    sha256: 4073229b632329a59de0cd0f40e5a68f2b3633fa2b15c35b124f37395754bac8
+  skill:
+    skill_id: synthetic-runtime-skill
+    skill_version: 1.0.0
+    content_hash: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  component:
+    component_kind: skill
+    component_ref: synthetic-runtime-skill
+    version: 1.0.0
+    content_hash: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+actual_binding:
+  provider:
+    ref: local
+    version: '1'
+    content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+  adapter:
+    ref: local-procedure
+    version: 1.0.0
+    content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+  model:
+    ref: bounded-local-model
+    version: 1.0.0
+    content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+    model_class: bounded
+    slot: worker
+    capabilities:
+    - structured-output
+  runtime:
+    ref: python
+    version: 3.11+
+    content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+  host:
+    ref: bounded-test-host
+    version: '1'
+    content_hash: '1111111111111111111111111111111111111111111111111111111111111111'
+actual_supply_report_ref: supply-synthetic-runtime-skill@1.0.0

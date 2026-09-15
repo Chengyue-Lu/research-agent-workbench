@@ -1,11 +1,18 @@
 """Independent regression cases for PR81's two-stage execution review."""
 
 import copy
+import contextlib
+import hashlib
+import io
 import json
+import runpy
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import patch
 
 from research_workbench.execution import (
     GenericCloseoutValidationError, SKILL_CLOSEOUT_CONTRACT, execute_frozen_view,
@@ -168,3 +175,24 @@ class SkillCloseoutReviewTests(unittest.TestCase):
         self.rewrite(fixture,mutate)
         with self.assertRaisesRegex(GenericCloseoutValidationError, 'exactly one.*Trace read'):
             fixture.build()
+
+    def test_repaired_archive_replays_and_its_checkers_reject_bad_subjects(self):
+        archive = ROOT / 'work/M11-007/A-20260915-003'
+        proof = json.loads((archive/'checks/vertical-proof.json').read_bytes())
+        for ref in proof['source_refs']:
+            content = subprocess.check_output(['git','show',proof['implementation_commit']+':'+ref['path']],cwd=ROOT)
+            self.assertEqual(ref['sha256'],hashlib.sha256(content).hexdigest())
+        for case in proof['cases']:
+            with self.subTest(case=case['case']):
+                for ref in case['files']:
+                    self.assertEqual(ref['sha256'],hashlib.sha256((ROOT/ref['path']).read_bytes()).hexdigest())
+                root = ROOT/case['project_root']
+                output = io.StringIO()
+                with patch.object(sys,'argv',[str(archive/'replay.py'),str(ROOT/case['receipt']['path']),
+                                              case['receipt']['sha256'],str(root)]),contextlib.redirect_stdout(output):
+                    runpy.run_path(str(archive/'replay.py'),run_name='__main__')
+                self.assertEqual(case['result'],json.loads(output.getvalue()))
+                check = runpy.run_path(str(root/'closeout/checker.py'))['check']
+                self.assertTrue(check(root,load_document(root/'closeout/validation.yaml')['subject_refs']))
+                for path in ('missing.yaml','../outside.yaml','closeout/host.yaml'):
+                    self.assertFalse(check(root,[{'path':path,'sha256':'0'*64}]))

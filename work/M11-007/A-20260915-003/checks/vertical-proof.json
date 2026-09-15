@@ -1,0 +1,605 @@
+{
+  "kind": "synthetic-skill-closeout-proof",
+  "contract": "skill-execution@1.0.0",
+  "generated_at": "2026-09-15T13:41:49.739833+00:00",
+  "base": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+  "implementation_commit": "e1022d408c805aefb81e9177020064fe85e0ebc3",
+  "deterministic_fixture_clock": "2026-08-26; fixture timestamps are not wall-clock execution times",
+  "source_refs": [
+    {
+      "path": "schemas/v0.1.0/skill-execution-consumption.schema.json",
+      "sha256": "39df4b1c69fa4798e7103fb8fd97fcc8df718490b1079b20b24aff5f5707427f"
+    },
+    {
+      "path": "schemas/v0.1.0/skill-execution-host-report.schema.json",
+      "sha256": "352dded306dde7f7b5b72aa2d73262ff22c87f1e714c6fadfe85a9359467dfc7"
+    },
+    {
+      "path": "schemas/v0.1.0/skill-execution-receipt.schema.json",
+      "sha256": "2d3d3110697ec16870f2e0ef92f83b0bb6dfb6080d61a7ff94b1a0a0f5051608"
+    },
+    {
+      "path": "schemas/v0.1.0/skill-execution-trace-fact.schema.json",
+      "sha256": "72e3fccde36476da6c9af5e21c876e90c16e6e3001a85bfb2b04c95314c6825a"
+    },
+    {
+      "path": "src/research_workbench/execution/__init__.py",
+      "sha256": "9144ee4c6f1be220e7a414a86045ce237dad9d184d031e376d6718f59fffc178"
+    },
+    {
+      "path": "src/research_workbench/execution/generic_closeout.py",
+      "sha256": "c0ebc1d212cb25586f277728e48a315bbbc5f8f4c0677940179896284074a7dd"
+    },
+    {
+      "path": "src/research_workbench/execution/host.py",
+      "sha256": "2229f666b13424e29af8a1cd9609ca19e1be8202548e1b7c1bff433cb12f9599"
+    },
+    {
+      "path": "src/research_workbench/execution/skill_closeout.py",
+      "sha256": "8c6ec0b6790452b1ecec03a4945bebf8187d4a278274f5b2fba72546b64588bb"
+    },
+    {
+      "path": "src/research_workbench/execution/skill_facts.py",
+      "sha256": "7f542631b9770fbb8dfa5b05d73f26463c69c9d68d0e47dfd8834b9fb594465e"
+    },
+    {
+      "path": "src/research_workbench/validation/document_kinds.py",
+      "sha256": "b653e3c17cb06ef97cebfaa75790a581d74970192d202ba09ad256906e003966"
+    },
+    {
+      "path": "tests/coverage_policy.yaml",
+      "sha256": "87cb689f6653f4459b486ff68f7ab82929b93fdb7be9399834045f2073ff99a9"
+    },
+    {
+      "path": "tests/skill_closeout_fixtures.py",
+      "sha256": "5ef7b3e505ef14d7a274a86a904ace5124a5caa117e1f3900893fda004c4be0b"
+    },
+    {
+      "path": "tests/test_execution_contract_helpers.py",
+      "sha256": "30959797bd065e59f6c8e7728722ad0fe92de5e15dc8f0267eeb0eefeec239b8"
+    },
+    {
+      "path": "tests/test_schemas.py",
+      "sha256": "6c5b3948ad7c644f31a4a3559e51997d4703d0cc9e2753a6db92207e07147bb8"
+    },
+    {
+      "path": "tests/test_skill_closeout_review.py",
+      "sha256": "e3beb68cbab2cd6eccf3b9a78395af51256a438d0d3db9470389fe4e2e2a25f7"
+    },
+    {
+      "path": "tests/test_skill_execution_closeout.py",
+      "sha256": "4e771c347f93f6a0e0dbb8e1e59b2f03e8088b1f36205e275bb6df20e0ac010b"
+    }
+  ],
+  "replay_script": {
+    "path": "work/M11-007/A-20260915-003/replay.py",
+    "sha256": "c8669f219ce33e43095a5e250e9778a640bca80ccea7e35bead7b87c6f8b9d72"
+  },
+  "cases": [
+    {
+      "case": "completed-with-tool",
+      "project_root": "work/M11-007/A-20260915-003/synthetic/completed-with-tool",
+      "receipt": {
+        "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/closeout/receipt.yaml",
+        "sha256": "fccc51fc9602263641daa98cc91b4bc9aa7b43bc9074542c0b3ee381669125bf"
+      },
+      "fresh_process": true,
+      "python_isolated": true,
+      "provider_tool_invocations_during_replay": 0,
+      "result": {
+        "status": "completed",
+        "completion_claim": "action-capability-slice-only",
+        "task_completion": false,
+        "receipt_sha256": "fccc51fc9602263641daa98cc91b4bc9aa7b43bc9074542c0b3ee381669125bf"
+      },
+      "trace_blocked": false,
+      "trace_risks": [],
+      "files": [
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/bundle/conformance.yaml",
+          "sha256": "9a8eb3b79cc58fe471db3646a8ccd35370ef0f3ceca6e74ce00e74079e7e2ea7"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/bundle/manifest.yaml",
+          "sha256": "a259bdc5307cb31affb6da93435f47a00af9b4ad1cb59dddda5714d7b44b14d5"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/bundle/method.yaml",
+          "sha256": "ba10c1f5e4df9f655a2d0defa57f87bfd6bc2b4479a89251bce541578b7ab5e9"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/bundle/requirement.yaml",
+          "sha256": "ca035cce559a1d879bf2e4ede7eca5c82670c727a1b90b9dfa8d54cd16cfa0a7"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/bundle/resolution.yaml",
+          "sha256": "ca2cc04aecdda55c2c55ef4b6f1565c79ecce4d3320096af96d6fb11eefa71b4"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/bundle/skill-projection.yaml",
+          "sha256": "4073229b632329a59de0cd0f40e5a68f2b3633fa2b15c35b124f37395754bac8"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/bundle/snapshot.yaml",
+          "sha256": "80b1c55a52e51643cf7952d16535b897cb96c39895f77216b51975cf23969004"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/bundle/supply.yaml",
+          "sha256": "9c7088caa5f20c6d906f5202e5b26c12c3f523e797900b410098c99c7f4714cf"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/bundle/task.yaml",
+          "sha256": "544537a3aae11d3f3ec2445dcc67dd2fd33f02b4b271a2b3a9e4dd878da2f65b"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/closeout/checker.py",
+          "sha256": "f5f2885a96d75ab8d20c1721edbff6c4c9df6cd093732c00f36c5cacaa76a128"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/closeout/host.yaml",
+          "sha256": "4e3d34ab996d35ea669f247051660ce473a2eab48707be1903ee823df873b870"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/closeout/receipt.yaml",
+          "sha256": "fccc51fc9602263641daa98cc91b4bc9aa7b43bc9074542c0b3ee381669125bf"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/closeout/trace/ACTORS.yaml",
+          "sha256": "ffd12b24acf23af46a1eb93221ef2ed9bc0d04581f6ce72ec8f24f83bc316aeb"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/closeout/trace/decisions/execution-fact-SKILL-RESULT-1.yaml",
+          "sha256": "e7642bffb4de624ae143e1523fe90136624c12d2b1705f186b73612cc7a9c84d"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/closeout/trace/decisions/execution-scope-binding.yaml",
+          "sha256": "92a812108b8c91aeda02dd521dc92ffd92b65cda70bce120d6ad7a586f4cdd49"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/closeout/trace/decisions/skill-execution-fact-SKILL-USE-1.yaml",
+          "sha256": "71d7708e0ac16b7291d6b5af25659c41a23b64446ec342bc87a76efcf535ade2"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/closeout/trace/events.jsonl",
+          "sha256": "b5a2212d64889adc48eb8ff35735a9762316a663e007881cd1e7a5daaad52690"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/closeout/trace/INDEX.yaml",
+          "sha256": "fa7435b616b0a09b500b6d76e288da3b0f17a323e9ce5eeeeeed7fd9b775eadd"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/closeout/trace/messages/0001-provider-request.trace",
+          "sha256": "873e03ce4c1cf8089c3c75c2213c1c8a39acd9dbfd268236ca2f8e3a1ea0ec70"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/closeout/trace/messages/0002-provider-response.trace",
+          "sha256": "2a529552e8f5820a920534750435e23d778311f9026c72884f00735fe398c1a8"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/closeout/trace/TASK.yaml",
+          "sha256": "c0714fedfbdd44e2bb0d02081e9c6a8307f5e237537844934632c661aad61406"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/closeout/validation.yaml",
+          "sha256": "703836ee26bbda8debec5a3059c3bd53766672888705999cc157a7e6a36d55ad"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/view/binding.yaml",
+          "sha256": "ada8b9aa6a7ac83a689844539288c906383e7c6ed7990d07fb8889efc28b0fd7"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/view/data-policy.yaml",
+          "sha256": "2625cbb724c823504c055bffcf5af1bb87084df051d1b08146139a68fc8673a7"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/view/host-policy.yaml",
+          "sha256": "e6fb916192e9aa2e3a6fc96d5ec73a61aebc139a3aa27213815d99fbdd1a03d0"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/view/profile.yaml",
+          "sha256": "ba3f4dddfb3481abfc8dca77c45c7bab440ac13a4b9dcbe78e8836304742d3f2"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/view/skill.yaml",
+          "sha256": "05a1217488f1bebe3d06ed2ed288834239c9c2c0bbfe893a79d4e92a5bcba576"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/completed-with-tool/work/TASK-MR-ES-FROZEN-001/method-resolution.yaml",
+          "sha256": "34ccf7f01e08b24f0fae02d9f4ca04972a21e90ff80cba502b183cad850a402d"
+        }
+      ]
+    },
+    {
+      "case": "failed-model",
+      "project_root": "work/M11-007/A-20260915-003/synthetic/failed-model",
+      "receipt": {
+        "path": "work/M11-007/A-20260915-003/synthetic/failed-model/closeout/receipt.yaml",
+        "sha256": "dc7abd35ac713b1421b883266c8939139b4a063014b41b8c9bc157a050346218"
+      },
+      "fresh_process": true,
+      "python_isolated": true,
+      "provider_tool_invocations_during_replay": 0,
+      "result": {
+        "status": "failed",
+        "completion_claim": "none",
+        "task_completion": false,
+        "receipt_sha256": "dc7abd35ac713b1421b883266c8939139b4a063014b41b8c9bc157a050346218"
+      },
+      "trace_blocked": false,
+      "trace_risks": [],
+      "files": [
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/bundle/conformance.yaml",
+          "sha256": "9a8eb3b79cc58fe471db3646a8ccd35370ef0f3ceca6e74ce00e74079e7e2ea7"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/bundle/manifest.yaml",
+          "sha256": "9c37a0bf8685fb5e6fa49ce965349906a29f7f2e2e3153f4f397f1f1c6179767"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/bundle/method.yaml",
+          "sha256": "ba10c1f5e4df9f655a2d0defa57f87bfd6bc2b4479a89251bce541578b7ab5e9"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/bundle/requirement.yaml",
+          "sha256": "ca035cce559a1d879bf2e4ede7eca5c82670c727a1b90b9dfa8d54cd16cfa0a7"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/bundle/resolution.yaml",
+          "sha256": "aa0cc7e443f7ee65f187da89c4404307c41c05d1159b4db669a2a9308620b7ce"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/bundle/skill-projection.yaml",
+          "sha256": "58d3a7b3837056ec850d4a2ff7c6a91dc65e183fe283f48daef61b1c90da0ce4"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/bundle/snapshot.yaml",
+          "sha256": "014865f0fd0d1c39d055fcfb271ef57be38f78b52854c736c44e91bdc88d774d"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/bundle/supply.yaml",
+          "sha256": "6e6b6b369cb6dade192379082e3a178f408fdb6a3397adcf3c77005cfaa2aa8a"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/bundle/task.yaml",
+          "sha256": "544537a3aae11d3f3ec2445dcc67dd2fd33f02b4b271a2b3a9e4dd878da2f65b"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/closeout/checker.py",
+          "sha256": "f5f2885a96d75ab8d20c1721edbff6c4c9df6cd093732c00f36c5cacaa76a128"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/closeout/host.yaml",
+          "sha256": "6f2cbdb9b207dce1caa65d8c7a1c056b4de1a46a710aa11ba99f11b32f429915"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/closeout/receipt.yaml",
+          "sha256": "dc7abd35ac713b1421b883266c8939139b4a063014b41b8c9bc157a050346218"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/closeout/trace/ACTORS.yaml",
+          "sha256": "ffd12b24acf23af46a1eb93221ef2ed9bc0d04581f6ce72ec8f24f83bc316aeb"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/closeout/trace/decisions/execution-fact-SKILL-RESULT-1.yaml",
+          "sha256": "ab2a6f6c805041df4a298c145dd4226b2154ee9882e029b7eb52482f2b28fc43"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/closeout/trace/decisions/execution-scope-binding.yaml",
+          "sha256": "aa781d8ca209cfbe281011d84ae4ad6fa5d776355679bc4505a43cdcc87e72a7"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/closeout/trace/decisions/skill-execution-fact-SKILL-USE-1.yaml",
+          "sha256": "b8851d9b63bad5ec5c87fa06fff638c51993c9c3263e4ac22cc5afe81122d435"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/closeout/trace/events.jsonl",
+          "sha256": "2ee50ae4dad9c1c6ddd975c832c4b4d526d8f0646b91e1103427d267a897c1cc"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/closeout/trace/INDEX.yaml",
+          "sha256": "7eea7e122e3c0042e46bd64d6a3058daf54b71053a02ef404b1c5c202abe4a22"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/closeout/trace/messages/0001-provider-request.trace",
+          "sha256": "ce02ed228d8b49fc111c9ca0d8e56f57299f5b436ebb0ef9e4cb673ab2aec3f7"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/closeout/trace/messages/0002-provider-response.trace",
+          "sha256": "2fcc526ff6e9f9fe7c7cc5a130bab80263c6fd80abf691d9126ce7f9916bec28"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/closeout/trace/TASK.yaml",
+          "sha256": "c0714fedfbdd44e2bb0d02081e9c6a8307f5e237537844934632c661aad61406"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/closeout/validation.yaml",
+          "sha256": "9e031f48225b314d78795eaccb8a7efabad622a30dc3de30e880ef81aa9b38be"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/view/binding.yaml",
+          "sha256": "ada8b9aa6a7ac83a689844539288c906383e7c6ed7990d07fb8889efc28b0fd7"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/view/data-policy.yaml",
+          "sha256": "2625cbb724c823504c055bffcf5af1bb87084df051d1b08146139a68fc8673a7"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/view/host-policy.yaml",
+          "sha256": "e6fb916192e9aa2e3a6fc96d5ec73a61aebc139a3aa27213815d99fbdd1a03d0"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/view/profile.yaml",
+          "sha256": "ba3f4dddfb3481abfc8dca77c45c7bab440ac13a4b9dcbe78e8836304742d3f2"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/view/skill.yaml",
+          "sha256": "01170e176f0424c02de62b9129f5e9c71ee905bb86d1ef9bb9911f3bb422c48f"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-model/work/TASK-MR-ES-FROZEN-001/method-resolution.yaml",
+          "sha256": "34ccf7f01e08b24f0fae02d9f4ca04972a21e90ff80cba502b183cad850a402d"
+        }
+      ]
+    },
+    {
+      "case": "failed-projection",
+      "project_root": "work/M11-007/A-20260915-003/synthetic/failed-projection",
+      "receipt": {
+        "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/closeout/receipt.yaml",
+        "sha256": "48f54a36e314f328fcee227191c85dc7c3050240cbe005463411a616219b545b"
+      },
+      "fresh_process": true,
+      "python_isolated": true,
+      "provider_tool_invocations_during_replay": 0,
+      "result": {
+        "status": "failed",
+        "completion_claim": "none",
+        "task_completion": false,
+        "receipt_sha256": "48f54a36e314f328fcee227191c85dc7c3050240cbe005463411a616219b545b"
+      },
+      "trace_blocked": false,
+      "trace_risks": [],
+      "files": [
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/bundle/conformance.yaml",
+          "sha256": "9a8eb3b79cc58fe471db3646a8ccd35370ef0f3ceca6e74ce00e74079e7e2ea7"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/bundle/manifest.yaml",
+          "sha256": "9c37a0bf8685fb5e6fa49ce965349906a29f7f2e2e3153f4f397f1f1c6179767"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/bundle/method.yaml",
+          "sha256": "ba10c1f5e4df9f655a2d0defa57f87bfd6bc2b4479a89251bce541578b7ab5e9"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/bundle/observed-projection.yaml",
+          "sha256": "ac7a41cf912b03d46587b821f181ae990daafb22f9a5b4ee51ae092a284d91fd"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/bundle/observed-supply.yaml",
+          "sha256": "5b0745d4e3526e5e466222fad1c230982ec424d2c392263a340e53c9cdeca11d"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/bundle/requirement.yaml",
+          "sha256": "ca035cce559a1d879bf2e4ede7eca5c82670c727a1b90b9dfa8d54cd16cfa0a7"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/bundle/resolution.yaml",
+          "sha256": "aa0cc7e443f7ee65f187da89c4404307c41c05d1159b4db669a2a9308620b7ce"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/bundle/skill-projection.yaml",
+          "sha256": "58d3a7b3837056ec850d4a2ff7c6a91dc65e183fe283f48daef61b1c90da0ce4"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/bundle/snapshot.yaml",
+          "sha256": "014865f0fd0d1c39d055fcfb271ef57be38f78b52854c736c44e91bdc88d774d"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/bundle/supply.yaml",
+          "sha256": "6e6b6b369cb6dade192379082e3a178f408fdb6a3397adcf3c77005cfaa2aa8a"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/bundle/task.yaml",
+          "sha256": "544537a3aae11d3f3ec2445dcc67dd2fd33f02b4b271a2b3a9e4dd878da2f65b"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/closeout/checker.py",
+          "sha256": "f5f2885a96d75ab8d20c1721edbff6c4c9df6cd093732c00f36c5cacaa76a128"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/closeout/host.yaml",
+          "sha256": "767fe991be3dfd8a68b7c5edbcc7a2479b6d4fcf30c85fd345c0e9dc8e966b38"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/closeout/receipt.yaml",
+          "sha256": "48f54a36e314f328fcee227191c85dc7c3050240cbe005463411a616219b545b"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/closeout/trace/ACTORS.yaml",
+          "sha256": "ffd12b24acf23af46a1eb93221ef2ed9bc0d04581f6ce72ec8f24f83bc316aeb"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/closeout/trace/decisions/execution-fact-SKILL-RESULT-1.yaml",
+          "sha256": "624be7869659019d62de0aa4334663a7780a51dbeb651637c9f6e36c67d90400"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/closeout/trace/decisions/execution-scope-binding.yaml",
+          "sha256": "aa781d8ca209cfbe281011d84ae4ad6fa5d776355679bc4505a43cdcc87e72a7"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/closeout/trace/decisions/skill-execution-fact-SKILL-USE-1.yaml",
+          "sha256": "4c06cc692bc89fc39ab6c9d3f0dadb46b17f0cae75df1063d0477dfd0a7ffb3e"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/closeout/trace/events.jsonl",
+          "sha256": "003d404b8cf86496945b6bfabdaa35f32e67d7207f7b775444b26ce4bab712dd"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/closeout/trace/INDEX.yaml",
+          "sha256": "4656c91f088ac8e292d147b7965293bb2f6dd2d486cd3477cd94a6b5e9ad62e1"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/closeout/trace/messages/0001-provider-request.trace",
+          "sha256": "bdf92e596367a34b8a6ee71488ddf63029e60b053c67465ff20e46d0084c2ae1"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/closeout/trace/messages/0002-provider-response.trace",
+          "sha256": "59640257234102759501c90b391d6c614741012510c14c3b5f0ff81cfd0dbd9b"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/closeout/trace/TASK.yaml",
+          "sha256": "c0714fedfbdd44e2bb0d02081e9c6a8307f5e237537844934632c661aad61406"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/closeout/validation.yaml",
+          "sha256": "a35bdde1033f9e4289235aaa500bb18fc7d9e51b75d2c33aae66eb779a40c501"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/view/binding.yaml",
+          "sha256": "ada8b9aa6a7ac83a689844539288c906383e7c6ed7990d07fb8889efc28b0fd7"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/view/data-policy.yaml",
+          "sha256": "2625cbb724c823504c055bffcf5af1bb87084df051d1b08146139a68fc8673a7"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/view/host-policy.yaml",
+          "sha256": "e6fb916192e9aa2e3a6fc96d5ec73a61aebc139a3aa27213815d99fbdd1a03d0"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/view/profile.yaml",
+          "sha256": "ba3f4dddfb3481abfc8dca77c45c7bab440ac13a4b9dcbe78e8836304742d3f2"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/view/skill.yaml",
+          "sha256": "01170e176f0424c02de62b9129f5e9c71ee905bb86d1ef9bb9911f3bb422c48f"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/failed-projection/work/TASK-MR-ES-FROZEN-001/method-resolution.yaml",
+          "sha256": "34ccf7f01e08b24f0fae02d9f4ca04972a21e90ff80cba502b183cad850a402d"
+        }
+      ]
+    },
+    {
+      "case": "preflight-blocked",
+      "project_root": "work/M11-007/A-20260915-003/synthetic/preflight-blocked",
+      "receipt": {
+        "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/closeout/receipt.yaml",
+        "sha256": "9f1123b90e948dcffd5fcdd2dd89eeb46899761c29295f124f7456b79c71838c"
+      },
+      "fresh_process": true,
+      "python_isolated": true,
+      "provider_tool_invocations_during_replay": 0,
+      "result": {
+        "status": "blocked",
+        "completion_claim": "none",
+        "task_completion": false,
+        "receipt_sha256": "9f1123b90e948dcffd5fcdd2dd89eeb46899761c29295f124f7456b79c71838c"
+      },
+      "trace_blocked": false,
+      "trace_risks": [],
+      "files": [
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/bundle/conformance.yaml",
+          "sha256": "9a8eb3b79cc58fe471db3646a8ccd35370ef0f3ceca6e74ce00e74079e7e2ea7"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/bundle/manifest.yaml",
+          "sha256": "9c37a0bf8685fb5e6fa49ce965349906a29f7f2e2e3153f4f397f1f1c6179767"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/bundle/method.yaml",
+          "sha256": "ba10c1f5e4df9f655a2d0defa57f87bfd6bc2b4479a89251bce541578b7ab5e9"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/bundle/requirement.yaml",
+          "sha256": "ca035cce559a1d879bf2e4ede7eca5c82670c727a1b90b9dfa8d54cd16cfa0a7"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/bundle/resolution.yaml",
+          "sha256": "aa0cc7e443f7ee65f187da89c4404307c41c05d1159b4db669a2a9308620b7ce"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/bundle/skill-projection.yaml",
+          "sha256": "58d3a7b3837056ec850d4a2ff7c6a91dc65e183fe283f48daef61b1c90da0ce4"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/bundle/snapshot.yaml",
+          "sha256": "014865f0fd0d1c39d055fcfb271ef57be38f78b52854c736c44e91bdc88d774d"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/bundle/supply.yaml",
+          "sha256": "6e6b6b369cb6dade192379082e3a178f408fdb6a3397adcf3c77005cfaa2aa8a"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/bundle/task.yaml",
+          "sha256": "544537a3aae11d3f3ec2445dcc67dd2fd33f02b4b271a2b3a9e4dd878da2f65b"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/closeout/checker.py",
+          "sha256": "f5f2885a96d75ab8d20c1721edbff6c4c9df6cd093732c00f36c5cacaa76a128"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/closeout/host.yaml",
+          "sha256": "5ad7397bfac9d834bf4b9295d20d4871e1df73f73046ef827e68c2065cb5d0e0"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/closeout/receipt.yaml",
+          "sha256": "9f1123b90e948dcffd5fcdd2dd89eeb46899761c29295f124f7456b79c71838c"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/closeout/trace/ACTORS.yaml",
+          "sha256": "ffd12b24acf23af46a1eb93221ef2ed9bc0d04581f6ce72ec8f24f83bc316aeb"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/closeout/trace/decisions/execution-scope-binding.yaml",
+          "sha256": "aa781d8ca209cfbe281011d84ae4ad6fa5d776355679bc4505a43cdcc87e72a7"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/closeout/trace/events.jsonl",
+          "sha256": "c95ae30934413b60ccb97a57e05334c7612e57b91969b44f66045e466d685e44"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/closeout/trace/INDEX.yaml",
+          "sha256": "622545532d3e6dd98e5a4d2abfc2d93dcd5f0ecb3af3f9dfa6fc86db26b2bd2e"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/closeout/trace/TASK.yaml",
+          "sha256": "c0714fedfbdd44e2bb0d02081e9c6a8307f5e237537844934632c661aad61406"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/closeout/validation.yaml",
+          "sha256": "74ea0746da3343f222313c9e8ac3b1c4ad7f3ca3b875a8fa759870a3d906fe67"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/view/binding.yaml",
+          "sha256": "ada8b9aa6a7ac83a689844539288c906383e7c6ed7990d07fb8889efc28b0fd7"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/view/data-policy.yaml",
+          "sha256": "2625cbb724c823504c055bffcf5af1bb87084df051d1b08146139a68fc8673a7"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/view/host-policy.yaml",
+          "sha256": "e6fb916192e9aa2e3a6fc96d5ec73a61aebc139a3aa27213815d99fbdd1a03d0"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/view/profile.yaml",
+          "sha256": "ba3f4dddfb3481abfc8dca77c45c7bab440ac13a4b9dcbe78e8836304742d3f2"
+        },
+        {
+          "path": "work/M11-007/A-20260915-003/synthetic/preflight-blocked/view/skill.yaml",
+          "sha256": "01170e176f0424c02de62b9129f5e9c71ee905bb86d1ef9bb9911f3bb422c48f"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "synthetic execution only",
+    "does not satisfy owner acceptance or Gate B",
+    "no admission, real-case, efficacy or release claim"
+  ]
+}
