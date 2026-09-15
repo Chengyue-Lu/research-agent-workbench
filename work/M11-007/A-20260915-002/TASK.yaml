@@ -1,0 +1,31 @@
+task_id: M11-007
+revision: 1
+accepted_definition:
+  commit: 0bebafd81f0116a8269c63ac97378038a1eb2a5d
+  path: docs/TASKS.md
+  sha256: 9d15dce22d1d9bd28d4b3020ed4e9b0c2247bb52ee75f564284870b8cefb6d74
+  row: '| M11-007 | READY | 建立 Skill-bearing generic closeout extension 与独立 replay
+    | 黄毅 | R2 | F / Topic 4 + Artifact/Trace | M11-004, M11-006 | 以独立版本扩展 Core execution
+    closeout，exact-pin SkillReleaseProjection identity/version/path/hash、Skill ID/version/hash、selected
+    Supply/component、Resolution/Snapshot、Bundle/View、Task/Action/Capability slice/Attempt
+    与 Host actual facts；由 use-boundary actual consumption 和 typed hash-pinned Trace
+    fact 独立佐证 actual Projection/Supply/binding，文件 replay 重载全部 refs 并重做跨对象/生命周期 invariant，不调用
+    Provider/Tool 或依赖原会话；completed actual 与 selected View 相同且输出/Validation subject
+    closed set 完整，post-call-failed 保留可被 Trace 佐证的真实 drift/diagnostic 而不强改 equality，preflight-blocked
+    无 actual facts/调用，driver exception 或 capture 不完整时拒绝 receipt eligibility；completed
+    仅 action-capability-slice-only，其他状态 none，全部 task_completion=false；保持 Core/legacy
+    版本语义与回放、View/Host supply-neutral 和 Resolver 唯一选择权，不引入 Assignment、dispatcher、fallback/reselection、Task/Claim/Human/admission/promotion/recovery
+    authority；Runtime 不加载 candidate/Evaluation/oracle，M5-007 在评价侧比较 replay result
+    与 M5-006 overlay；交付 synthetic vertical proof、独立正反验收与现行 coverage evidence，并由双方按
+    [Gate B record](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md) 接受 exact
+    implementation/validator/fixture/replay/CI pins；任务定义不等于 Gate SATISFIED |'
+implementation_commit: 7b3405189e06210cae6552b0eb7699b049e14d73
+authorization: User requested continuation of M11-007 implementation
+implementation_acceptance_owner: Huang Yi (let778750-cpu)
+evaluation_consumer_owner: Lu Chengyue (Chengyue-Lu)
+agent_role: bounded implementation agent
+required_skills: []
+delegation: false
+scope_ref:
+  path: docs/workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/IMPLEMENTATION.md
+  sha256: caa904bbd8388d230991a0acc9d30d765b1356e05598c06a85a5fb38fd5eb111

@@ -16,6 +16,7 @@
 - [Resolved Execution View Core](RESOLVED_EXECUTION_VIEW.md)
 - [Thin Execution Host](THIN_EXECUTION_HOST.md)
 - [Generic Execution Closeout and M11 Core Gate](GENERIC_EXECUTION_CLOSEOUT.md)
+- [Skill execution closeout 1.0.0 and independent replay](SKILL_EXECUTION_CLOSEOUT.md)
 - [Research Mode v0.1 to v0.2 migration](RESEARCH_MODE_MIGRATION.md)
 - [Decision Authority Matrix and Authority Rule Eligibility](DECISION_AUTHORITY.md)
 - [Durable Research State composition candidate (M10-001)](RESEARCH_STATE_CANDIDATE_CONTRACT.md)

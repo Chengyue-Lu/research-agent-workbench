@@ -1,0 +1,21 @@
+record_kind: development-evidence-manifest
+implementation_commit: 7b3405189e06210cae6552b0eb7699b049e14d73
+vertical_proof:
+  path: work/M11-007/A-20260915-002/checks/vertical-proof.json
+  sha256: eeb86f824c398885df181e36d9e84c02bc3f3294e491da5649518a4114a6d312
+local_checks:
+- path: work/M11-007/A-20260915-002/checks/archive-build.log
+  sha256: 65e3ff16069b7da3bd921e1c067f1f6818af4bc0f0db0d88abdc5df1102d8fc4
+- path: work/M11-007/A-20260915-002/checks/dispatch-final.log
+  sha256: 69e5de99ca675e03d7dd21753a58fc5af0f9fbd587437c010675b1f5a08e8c8d
+- path: work/M11-007/A-20260915-002/checks/exact-implementation-focused.log
+  sha256: 393637bb42db4d86b0f289e4fbacc04b873467c612010bdbc74a419906d9732f
+- path: work/M11-007/A-20260915-002/checks/regression-coverage.json
+  sha256: ac037c10a42706e70f6d8deee328755dd763452867084a7b237cc49bc0ee14f5
+- path: work/M11-007/A-20260915-002/checks/regression-final.log
+  sha256: 72cbf89a3c177739067ad150ef1195efc8b24e23663799fa026c50374d3b3eea
+validation_scope: 143 regression tests and their coverage predate final kind dispatch;
+  exact implementation focused log is separate
+gate_b: UNSATISFIED
+review: pending both named owners
+final_head_ci: reported on implementation PR after archive commit

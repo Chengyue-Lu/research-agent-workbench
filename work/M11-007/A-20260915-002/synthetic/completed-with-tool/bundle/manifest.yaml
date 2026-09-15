@@ -1,0 +1,92 @@
+schema_version: 0.1.0
+bundle_id: RB-SKILL-LOCAL-001
+revision: 1
+profile: runtime-bundle
+execution_scope:
+  kind: action-capability-slice
+  action_ref: ES-A4@1.0.0
+  requirement_id: research-contract-check
+  task_capability_closure:
+    required:
+    - document-read
+    - research-contract-check
+    closed:
+    - research-contract-check
+    task_completion: false
+entrypoint:
+  kind: resolved_capability_snapshot
+  path: bundle/snapshot.yaml
+  sha256: 80b1c55a52e51643cf7952d16535b897cb96c39895f77216b51975cf23969004
+documents:
+- kind: task_packet
+  path: bundle/task.yaml
+  sha256: 544537a3aae11d3f3ec2445dcc67dd2fd33f02b4b271a2b3a9e4dd878da2f65b
+- kind: method_resolution
+  path: bundle/method.yaml
+  sha256: ba10c1f5e4df9f655a2d0defa57f87bfd6bc2b4479a89251bce541578b7ab5e9
+- kind: capability_requirement
+  path: bundle/requirement.yaml
+  sha256: ca035cce559a1d879bf2e4ede7eca5c82670c727a1b90b9dfa8d54cd16cfa0a7
+- kind: capability_conformance_evidence
+  path: bundle/conformance.yaml
+  sha256: 9a8eb3b79cc58fe471db3646a8ccd35370ef0f3ceca6e74ce00e74079e7e2ea7
+- kind: capability_supply_report
+  path: bundle/supply.yaml
+  sha256: 9c7088caa5f20c6d906f5202e5b26c12c3f523e797900b410098c99c7f4714cf
+- kind: capability_resolution
+  path: bundle/resolution.yaml
+  sha256: ca2cc04aecdda55c2c55ef4b6f1565c79ecce4d3320096af96d6fb11eefa71b4
+- kind: resolved_capability_snapshot
+  path: bundle/snapshot.yaml
+  sha256: 80b1c55a52e51643cf7952d16535b897cb96c39895f77216b51975cf23969004
+- kind: skill_release_projection
+  path: bundle/skill-projection.yaml
+  sha256: 4073229b632329a59de0cd0f40e5a68f2b3633fa2b15c35b124f37395754bac8
+imports:
+- from_path: bundle/snapshot.yaml
+  to_path: bundle/task.yaml
+  relation: snapshot-task
+- from_path: bundle/snapshot.yaml
+  to_path: bundle/method.yaml
+  relation: snapshot-method
+- from_path: bundle/snapshot.yaml
+  to_path: bundle/requirement.yaml
+  relation: snapshot-requirement
+- from_path: bundle/snapshot.yaml
+  to_path: bundle/resolution.yaml
+  relation: snapshot-resolution
+- from_path: bundle/snapshot.yaml
+  to_path: bundle/supply.yaml
+  relation: snapshot-supply
+- from_path: bundle/snapshot.yaml
+  to_path: bundle/conformance.yaml
+  relation: snapshot-conformance
+- from_path: bundle/method.yaml
+  to_path: bundle/task.yaml
+  relation: method-task
+- from_path: bundle/resolution.yaml
+  to_path: bundle/method.yaml
+  relation: resolution-method
+- from_path: bundle/resolution.yaml
+  to_path: bundle/requirement.yaml
+  relation: resolution-requirement
+- from_path: bundle/resolution.yaml
+  to_path: bundle/supply.yaml
+  relation: resolution-candidate-supply
+- from_path: bundle/supply.yaml
+  to_path: bundle/conformance.yaml
+  relation: supply-conformance
+- from_path: bundle/supply.yaml
+  to_path: bundle/skill-projection.yaml
+  relation: supply-projection
+skill_extension:
+  enabled: true
+  projection:
+    kind: skill_release_projection
+    path: bundle/skill-projection.yaml
+    sha256: 4073229b632329a59de0cd0f40e5a68f2b3633fa2b15c35b124f37395754bac8
+boundaries:
+  supply_selection: false
+  execution_authority: false
+  permission_grant: false
+  fallback_authority: false

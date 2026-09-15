@@ -1,0 +1,34 @@
+schema_version: 0.1.0
+version: 1.0.0
+valid_from: '2026-01-01T00:00:00Z'
+valid_until: '2027-01-01T00:00:00Z'
+permission_ceiling:
+  filesystem: worktree-write
+  network: search-and-fetch
+  external_write: false
+  allowed_roots:
+  - work/TASK-MR-ES-FROZEN-001
+data_egress:
+  policy: allowlisted-only
+  allowed_payloads:
+  - public-query
+  forbidden_payloads:
+  - project-context
+side_effects:
+  policy: allowlisted-only
+  allowed_effects:
+  - task-local-check-report
+  - temporary-cache
+budget_ceiling:
+  max_turns: 4
+  max_output_tokens: 2048
+boundaries:
+  permission_grant: false
+  supply_selection: false
+  fallback_authority: false
+policy_id: HP-LOCAL
+policy_kind: host-policy
+subject_host:
+  ref: bounded-test-host
+  version: '1'
+  content_hash: '1111111111111111111111111111111111111111111111111111111111111111'

@@ -1,0 +1,126 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260915-002
+task_id: M11-007
+task_revision: 1
+attempt_id: A-20260915-002
+archive_root: A-20260915-002
+baseline: rwb-agent-trace-v0.1
+owner_actor_id: codex-implementation
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 6611383b891d47ee17207a9278745434529af49582b4de62f26783a2c2030f49
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 014688020dccd9215c55cd9e92347dc589ed4037b760c5192af67375a3443f6e
+read_allowlist:
+- .github/**
+- AGENTS.md
+- build_backend.py
+- docs/**
+- pyproject.toml
+- schemas/**
+- src/**
+- tests/**
+write_scope:
+- docs/**
+- schemas/v0.1.0/skill-execution-*.schema.json
+- src/research_workbench/execution/**
+- src/research_workbench/validation/document_kinds.py
+- tests/**
+- work/M11-007/**
+tool_allowlist:
+- delayed-tool-result-export
+- shell
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 941f5f99405999c0993bf1592c444143b43b65e890a860f1387368dd390a4f0a
+  event_count: 40
+tool_event_refs:
+- path: tool-events/delayed-observation-001-completed.json
+  sha256: 73883fd249ac3c33674ac03ea04c8e611356028c48f36afb50b872b9fd1bbcf7
+- path: tool-events/delayed-observation-002-completed.json
+  sha256: 9ffc6484a6c5947efcbd5d5c205d9207a74123220f95c4e7770289b5dc2afc73
+- path: tool-events/delayed-observation-003-completed.json
+  sha256: 9b4ba83e64616a10aa6f6f61ed32891d21e32fc243b8166a458e5d29651d2067
+- path: tool-events/delayed-observation-004-completed.json
+  sha256: 6c02ab70c78e70549d95ac4bdd68f788a9eb6a3552b5f42b890d74756014b369
+- path: tool-events/delayed-observation-005-completed.json
+  sha256: b5e245d563d676a877ac1ab3aeec0bd07347c1e549adbcb27276a1afdb8e8eeb
+- path: tool-events/delayed-observation-006-completed.json
+  sha256: e71fa2604e290a0c9b177f4b17ef4af1f5ca064ba081653e0cc1976aeb54062a
+- path: tool-events/delayed-observation-007-completed.json
+  sha256: f462e29c2aed1177833c9a005bed8740ffe215b2249787f1bbb268f3c63d0116
+- path: tool-events/delayed-observation-008-completed.json
+  sha256: f4c55abeace36ff5e00b4ad772189032c98510503ed4bb347c2cd1d5a95e6e4c
+- path: tool-events/delayed-observation-009-failed.json
+  sha256: f1852133a141ca127927caade71d2027897775a232b92c9d74d157c7db175b8a
+- path: tool-events/delayed-observation-010-completed.json
+  sha256: 1f55dcdc1d2a53f681d60038904575605e6b8489362b70ff66a3065157bd0269
+- path: tool-events/delayed-observation-011-failed.json
+  sha256: 7671881d02e617bbdd8f736f2002d87376c5bfe852990b4e4761c49a7b30a231
+- path: tool-events/delayed-observation-012-failed.json
+  sha256: cbe156f5cc76f28e33953f9a9a5c865f737eea5da1ad3733c3ac500e710315ee
+- path: tool-events/delayed-observation-013-completed.json
+  sha256: cc786d2fa5094c5d7a1a4bbb0909905b86655b283a7d6418d6a0871a4a399aae
+- path: tool-events/delayed-observation-014-completed.json
+  sha256: 1d1aca8c61a7f19a50f5ddf0b5a30468a505936b5e4e1218554637ad5675e72c
+- path: tool-events/delayed-observation-015-completed.json
+  sha256: a72ced7d22984a2051474dfc74cb8ef22d3e42d76b4c5f07a4bc05172a229533
+- path: tool-events/delayed-observation-016-failed.json
+  sha256: 780ec6959529516eb60da2d3767a2069354e1da15d2a706756c943c5fbbe4fb3
+- path: tool-events/delayed-observation-017-completed.json
+  sha256: 3d686541517a5f734121328586404587dd937aea61954556d3b9f3975a28d15d
+- path: tool-events/delayed-observation-018-completed.json
+  sha256: 06e5fefcf8517fa9df33dc442ca492e4810cb272c28883e04079d35e133d7aba
+- path: tool-events/delayed-observation-019-completed.json
+  sha256: bccdcf3d31b172df14624b9bd4eb70399484e7b5b81971eaaedf72ac20efd2a5
+- path: tool-events/delayed-observation-020-completed.json
+  sha256: ab0c52c5724acea83b2515bfaf533dc4205e3c4fa2943ae9ad7b945ddac06d00
+- path: tool-events/delayed-observation-021-completed.json
+  sha256: d316b1072de5ad380b3e2382f2fbd7da8d029f596b7ba7b5622f10917c1ad8d8
+- path: tool-events/delayed-observation-022-completed.json
+  sha256: 5cdfa881ec55ad826a9250af0901d31c939bf10d349d141eb640ef3d69cc88a5
+- path: tool-events/delayed-observation-023-completed.json
+  sha256: 5d406daf27244ab500bcfc3728f977c6d6e8b4afa924b03e9d6d6db76af34d34
+- path: tool-events/delayed-observation-024-completed.json
+  sha256: 06538cb1c00bb4e91ad83a94aeffc76b42b749e2c1e1cbe4d141333f473e11cd
+- path: tool-events/delayed-observation-025-completed.json
+  sha256: 923a99dc15b466af2e60d4bfea112278e88dc6a6a498390e92c9f4c37829a04f
+- path: tool-events/delayed-observation-026-completed.json
+  sha256: 7af5060f511043ba278c1361f2f15cab2ffe391268f41796407bfb254f207f54
+- path: tool-events/delayed-observation-027-completed.json
+  sha256: d1907cc90fa6ce936544babeeb9091b6fb91682814f906bf91740ecde4e6388b
+- path: tool-events/delayed-observation-028-completed.json
+  sha256: 3055765fd7a2a33590fb0c7794bb78b04e3c87fff687a7e12730bbcad900daa8
+- path: tool-events/delayed-observation-029-completed.json
+  sha256: 9ec816370bc3c43968b4d563b5dada7ebb683add9f311e00d74bd931f74da7b3
+- path: tool-events/delayed-observation-030-completed.json
+  sha256: 229b3ece1c68e159d98ed7376ea1258182f462b8dfc8e346410082bb2d94c795
+- path: tool-events/delayed-observation-031-completed.json
+  sha256: d0cb6586ff5e2e067fc2189f80abd817df2decf30322d46c14c0cee0f489ff13
+- path: tool-events/delayed-observation-032-completed.json
+  sha256: c43689dae1654ea99dfd6f4e79e80a9725677c2c560dc49c92891b22552e62e7
+- path: tool-events/delayed-observation-033-completed.json
+  sha256: 25df1a2e886982e68f0e1e0b156d74bf484c96e98da3972f92bd2f1be0eec812
+- path: tool-events/delayed-observation-034-completed.json
+  sha256: 30a29bfc36fb1d714ee59eb4a188f742cc57ad43b3d6febbe570b6b9d0514b7a
+- path: tool-events/delayed-observation-035-completed.json
+  sha256: 0ed9340dd9de445cab93452601724423f803acf7c012c7b01fde283a63945939
+- path: tool-events/delayed-observation-036-completed.json
+  sha256: b5599ababb32c9152be376ad544791e8a4c140d73f71cde7d0d65d3b790816c4
+- path: tool-events/delayed-observation-037-completed.json
+  sha256: e6f76f55d7988dc51b046f089f2363e8791f6e5507b677fbb055cf90d8236e8b
+handoff_refs: []
+decision_refs:
+- path: decisions/implementation-evidence-manifest.yaml
+  sha256: 4dd0b3cfadbac388969248e6962f57ba169cfdd5543244db2fef0ab9f749ebd9
+output_refs: []
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events

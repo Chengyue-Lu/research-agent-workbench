@@ -60,6 +60,7 @@ class ExecutionDriverResult:
     capture_gaps: tuple[str, ...] = ()
     failure_code: str | None = None
     re_resolution_required: bool = False
+    actual_skill_consumption: Mapping[str, Any] | None = None
 
 
 class FrozenExecutionDriver(Protocol):
@@ -433,9 +434,13 @@ def execute_frozen_view(
     attempt_id: str,
     clock: HostClock | None = None,
     schema_root: str | Path | None = None,
+    closeout_contract: str = "core-execution@0.1.0",
 ) -> dict[str, Any]:
     """Execute exactly once through one pre-bound driver and report facts."""
 
+    if closeout_contract not in {"core-execution@0.1.0", "skill-execution@1.0.0"}:
+        raise ExecutionHostValidationError("unsupported execution closeout contract")
+    skill_contract = closeout_contract == "skill-execution@1.0.0"
     trusted_clock = clock or SystemHostClock()
     started, started_at = _observe_time(trusted_clock, "started_at")
     declared_binding = _plain(driver.binding)
@@ -476,6 +481,12 @@ def execute_frozen_view(
                 or current_bundle.documents != bound_bundle.documents
             ):
                 preflight_code = "HOST-RUNTIME-BUNDLE-DRIFT"
+    if skill_contract and preflight_code is None:
+        from research_workbench.execution.skill_facts import selected_skill_consumption
+        try:
+            expected_consumption = selected_skill_consumption(view, schema_root=schema_root)
+        except (OSError, ValueError, TypeError, KeyError):
+            preflight_code = "HOST-SKILL-CLOSURE-INVALID"
     if preflight_code is not None:
         completed, completed_at = _observe_time(trusted_clock, "completed_at")
         if completed < started:
@@ -567,6 +578,27 @@ def execute_frozen_view(
                 result,
                 host_elapsed_seconds=host_elapsed_seconds,
             )
+            if skill_contract:
+                from research_workbench.execution.skill_facts import (
+                    SkillExecutionFactError,
+                    validate_skill_consumption,
+                )
+                actual_consumption = result.actual_skill_consumption
+                if actual_consumption is None:
+                    facts["complete"] = False
+                    facts["capture_gaps"].append("skill-consumption-not-captured")
+                    violation = violation or "HOST-FACT-CAPTURE-GAP"
+                else:
+                    try:
+                        validate_skill_consumption(
+                            view.project_root, actual_consumption, schema_root=schema_root,
+                        )
+                        if _plain(actual_consumption) != _plain(expected_consumption):
+                            violation = violation or "HOST-ACTUAL-SKILL-DRIFT"
+                    except (OSError, ValueError, SkillExecutionFactError):
+                        facts["complete"] = False
+                        facts["capture_gaps"].append("skill-consumption-unverifiable")
+                        violation = violation or "HOST-FACT-CAPTURE-GAP"
             if violation is None:
                 violation = _validate_artifacts(
                     view.project_root,
@@ -595,6 +627,8 @@ def execute_frozen_view(
                 facts=facts,
                 artifacts=result.artifacts,
             )
+            if skill_contract and result.actual_skill_consumption is not None:
+                report["actual_skill_consumption"] = _plain(result.actual_skill_consumption)
             if status != "completed":
                 proposed_code = violation or result.failure_code or "HOST-DRIVER-FAILED"
                 code = proposed_code if _DIAGNOSTIC_CODE.fullmatch(proposed_code) else "HOST-DRIVER-FAILED"
@@ -610,7 +644,11 @@ def execute_frozen_view(
                     category="boundary" if violation else "driver",
                     re_resolution=re_resolution,
                 )
-    errors = SchemaCatalog(schema_root).validate("execution_host_report", report)
+    if skill_contract:
+        report["contract_version"] = "1.0.0"
+        report["record_kind"] = "skill_execution_host_report"
+    report_kind = "skill_execution_host_report" if skill_contract else "execution_host_report"
+    errors = SchemaCatalog(schema_root).validate(report_kind, report)
     if errors:
         detail = "; ".join(f"{item.pointer}: {item.message}" for item in errors)
         raise ExecutionHostValidationError("Execution Host report schema invalid: " + detail)

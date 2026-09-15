@@ -1,0 +1,64 @@
+schema_version: 0.1.0
+trace_id: TRACE-ATTEMPT-SKILL-CLOSEOUT
+task_id: TASK-MR-ES-FROZEN-001
+task_revision: 1
+attempt_id: ATTEMPT-SKILL-CLOSEOUT
+archive_root: trace
+baseline: rwb-agent-trace-v0.1
+owner_actor_id: runtime-host
+owner: M11 synthetic execution owner
+attempt_status: completed
+trace_status: frozen
+completeness: complete
+task_ref:
+  path: TASK.yaml
+  sha256: c0714fedfbdd44e2bb0d02081e9c6a8307f5e237537844934632c661aad61406
+actors_ref:
+  path: ACTORS.yaml
+  sha256: ffd12b24acf23af46a1eb93221ef2ed9bc0d04581f6ce72ec8f24f83bc316aeb
+read_allowlist:
+- bundle/**
+write_scope:
+- closeout/**
+- work/**
+tool_allowlist:
+- synthetic-skill-tool
+messages:
+- message_id: MSG-0001
+  sequence: 1
+  path: messages/0001-provider-request.trace
+  sha256: 873e03ce4c1cf8089c3c75c2213c1c8a39acd9dbfd268236ca2f8e3a1ea0ec70
+  content_sha256: 6410fbe87c970dda392a513cc7cf7900dbce8372aea8ce184ab28e3ea3997cb5
+  kind: provider-request
+  sender_actor_id: runtime-host
+  receiver_actor_ids:
+  - provider-local
+  created_at: '2026-09-15T13:41:34.430133Z'
+  capture_status: complete
+- message_id: MSG-0002
+  sequence: 2
+  path: messages/0002-provider-response.trace
+  sha256: 2a529552e8f5820a920534750435e23d778311f9026c72884f00735fe398c1a8
+  content_sha256: 8ce81974a26753f3be11bae55badd3ffd5595d886234d962f3006ca3dfa22792
+  kind: provider-response
+  sender_actor_id: provider-local
+  receiver_actor_ids:
+  - runtime-host
+  created_at: '2026-09-15T13:41:34.435342Z'
+  capture_status: complete
+event_ledger:
+  path: events.jsonl
+  sha256: b5a2212d64889adc48eb8ff35735a9762316a663e007881cd1e7a5daaad52690
+  event_count: 9
+tool_event_refs: []
+handoff_refs: []
+decision_refs:
+- path: decisions/execution-scope-binding.yaml
+  sha256: 92a812108b8c91aeda02dd521dc92ffd92b65cda70bce120d6ad7a586f4cdd49
+- path: decisions/skill-execution-fact-SKILL-USE-1.yaml
+  sha256: 71d7708e0ac16b7291d6b5af25659c41a23b64446ec342bc87a76efcf535ade2
+- path: decisions/execution-fact-SKILL-RESULT-1.yaml
+  sha256: e7642bffb4de624ae143e1523fe90136624c12d2b1705f186b73612cc7a9c84d
+output_refs: []
+check_refs: []
+capture_gaps: []

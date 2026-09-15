@@ -1,5 +1,8 @@
 # Generic Execution Closeout 与 M11 Core Gate
 
+Skill-bearing execution 的独立版本与文件 replay 见 [Skill execution closeout](SKILL_EXECUTION_CLOSEOUT.md)。
+本页继续定义 Core no-Skill/direct Tool 契约。
+
 M11-004 在不修改 legacy Skill-bound Receipt 的前提下，为 no-Skill/direct Tool Core 增加独立、可文件重放的
 Action/Capability-slice closeout：
 

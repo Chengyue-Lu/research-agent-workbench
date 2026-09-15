@@ -1,0 +1,23 @@
+schema_version: 0.1.0
+report_id: CHECK-SKILL-CLOSEOUT
+status: pass
+checker:
+  checker_id: synthetic-skill-check
+  version: 1.0.0
+  source_ref:
+    path: closeout/checker.py
+    sha256: f5f2885a96d75ab8d20c1721edbff6c4c9df6cd093732c00f36c5cacaa76a128
+subject_refs:
+- path: closeout/host.yaml
+  sha256: 4e3d34ab996d35ea669f247051660ce473a2eab48707be1903ee823df873b870
+- path: closeout/trace/INDEX.yaml
+  sha256: fa7435b616b0a09b500b6d76e288da3b0f17a323e9ce5eeeeeed7fd9b775eadd
+- path: work/TASK-MR-ES-FROZEN-001/method-resolution.yaml
+  sha256: 34ccf7f01e08b24f0fae02d9f4ca04972a21e90ff80cba502b183cad850a402d
+checks:
+- code: execution-contract-closed
+  status: pass
+  detail: Bounded synthetic Host/Trace/output subjects.
+scope: execution-contract-only
+limitations:
+- Synthetic evidence only.

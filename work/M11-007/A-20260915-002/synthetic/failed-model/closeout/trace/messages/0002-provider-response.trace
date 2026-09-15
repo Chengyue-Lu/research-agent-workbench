@@ -1,0 +1,19 @@
+---
+schema_version: 0.1.0
+message_id: MSG-0002
+task_id: TASK-MR-ES-FROZEN-001
+task_revision: 1
+attempt_id: ATTEMPT-SKILL-CLOSEOUT
+sequence: 2
+kind: provider-response
+sender_actor_id: provider-local
+receiver_actor_ids:
+- runtime-host
+accountable_owner: M11 synthetic execution owner
+created_at: '2026-09-15T11:22:56.055212Z'
+content_sha256: 71707a6915a119027f6ab978047a4f8f24bd09d0a3f6ec3894544e4a3026a952
+attachment_refs: []
+redactions: []
+capture_status: complete
+---
+{"status":"synthetic-completed"}

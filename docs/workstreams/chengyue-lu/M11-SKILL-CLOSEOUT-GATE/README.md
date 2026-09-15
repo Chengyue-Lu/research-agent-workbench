@@ -7,7 +7,8 @@
 - 当前集成基线：`e5827a1e9eb4b27b53e748fb696a28ee696f80c3`，保留 PR74 scaffold、PR77 Quickstart、
   PR78 MIT/readiness preparation 与 PR79 审核治理。
 - 分支：`docs/m11-skill-closeout-gate`，目标 `develop`。
-- 状态：任务定义候选，等待双方 R2 review 与合入；[Gate B](GATE.md) 仍为 UNSATISFIED。
+- 状态：任务定义已由 [PR #76](https://github.com/Chengyue-Lu/research-agent-workbench/pull/76) 合入；
+  当前 [implementation candidate](IMPLEMENTATION.md) 独立推进，[Gate B](GATE.md) 仍为 UNSATISFIED。
 - 来源：[Issue #55](https://github.com/Chengyue-Lu/research-agent-workbench/issues/55)、
   [ADR-0020](../../../decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md)、
   [TASKS](../../../TASKS.md)、用户授权“71已合并，M6-008正在推进，开始推进gateB任务定义”。

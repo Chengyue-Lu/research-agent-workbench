@@ -1,0 +1,67 @@
+schema_version: 0.1.0
+snapshot_id: RCS-NO-SKILL-CONTRACT-CHECK
+revision: 1
+qualification: runtime-execution
+task_ref:
+  ref: TASK-MR-ES-FROZEN-001@r1
+  document_path: bundle/task.yaml
+  content_hash: sha256:544537a3aae11d3f3ec2445dcc67dd2fd33f02b4b271a2b3a9e4dd878da2f65b
+resolution_ref:
+  ref: CR-NO-SKILL-CONTRACT-CHECK@r1
+  document_path: bundle/resolution.yaml
+  content_hash: sha256:aa0cc7e443f7ee65f187da89c4404307c41c05d1159b4db669a2a9308620b7ce
+method_resolution_ref:
+  ref: MR-ROUTE-ES-FROZEN-001@r1
+  document_path: bundle/method.yaml
+  content_hash: sha256:ba10c1f5e4df9f655a2d0defa57f87bfd6bc2b4479a89251bce541578b7ab5e9
+requirement_ref:
+  requirement_id: research-contract-check
+  document_path: bundle/requirement.yaml
+  content_hash: sha256:ca035cce559a1d879bf2e4ede7eca5c82670c727a1b90b9dfa8d54cd16cfa0a7
+selected_supply_report_ref:
+  ref: supply-synthetic-runtime-skill@1.0.0
+  document_path: bundle/supply.yaml
+  content_hash: sha256:6e6b6b369cb6dade192379082e3a178f408fdb6a3397adcf3c77005cfaa2aa8a
+supply_identity:
+  supply_kind: skill
+  implementation_ref: synthetic-runtime-skill
+  implementation_version: 1.0.0
+  content_hash: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  components:
+  - component_kind: skill
+    component_ref: synthetic-runtime-skill
+    version: 1.0.0
+    content_hash: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  skill_release_projection_ref:
+    ref: synthetic-runtime-skill-1.0.0@1.0.0
+    document_path: bundle/skill-projection.yaml
+    content_hash: sha256:58d3a7b3837056ec850d4a2ff7c6a91dc65e183fe283f48daef61b1c90da0ce4
+supply_required_permissions:
+  filesystem: worktree-write
+  network: forbidden
+  external_write: false
+  allowed_roots:
+  - work
+supply_data_egress:
+  policy: forbidden
+  allowed_payloads: []
+  forbidden_payloads:
+  - checked-documents
+  - project-context
+  - validation-results
+supply_side_effects:
+  policy: allowlisted-only
+  allowed_effects:
+  - task-local-check-report
+conformance_evidence_refs:
+- path: bundle/conformance.yaml
+  sha256: 9a8eb3b79cc58fe471db3646a8ccd35370ef0f3ceca6e74ce00e74079e7e2ea7
+limitations:
+- The Skill Snapshot remains subject to the same final View/Host boundaries.
+boundaries:
+  execution_input: true
+  method_decision: false
+  permission_grant: false
+  claim_effect: false
+  human_decision: false
+  fallback_authority: false

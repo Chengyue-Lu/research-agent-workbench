@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "<frozen runpy>", line 291, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File ".rwb/m11-007/make_archive.py", line 111, in <module>
+    assert not trace.blocked, trace.risks
+           ^^^^^^^^^^^^^^^^^
+AssertionError: (ContractRisk(code='TRACE-EVENT-MISSING', level=<RiskLevel.BLOCK: 'block'>, message="[index-schema-invalid] INDEX$.capture_gaps[0].affected_stream: 'development-session' is not one of ['messages', 'events', 'tool-results', 'file-revisions', 'external-actions']"), ContractRisk(code='TRACE-EVENT-MISSING', level=<RiskLevel.BLOCK: 'block'>, message="[event-schema-invalid] event 2$.payload.affected_stream: 'development-session' is not one of ['messages', 'events', 'tool-results', 'file-revisions', 'external-actions']"), ContractRisk(code='TRACE-CAPTURE-DELAYED', level=<RiskLevel.BLOCK: 'block'>, message='[capture-gap] trace declares incomplete or delayed capture'))

@@ -1,0 +1,23 @@
+record_kind: development-evidence-manifest
+implementation_commit: e1022d408c805aefb81e9177020064fe85e0ebc3
+vertical_proof:
+  path: work/M11-007/A-20260915-003/checks/vertical-proof.json
+  sha256: c71dd8394d19ee93afd1e036a9705dfae5107c8cf3ea0cd27bb2f65d1b7e59f0
+local_checks:
+- path: work/M11-007/A-20260915-003/checks/review-baseline-red.log
+  sha256: 7d05e753e7432b6dd7c40971dcc2e2096627bcf51a9edcbd236fb1fec0e2f350
+- path: work/M11-007/A-20260915-003/checks/review-coverage.json
+  sha256: 4b614508fcb5c6437d2710f09cb8b0c86bc2652bbc84b067ea3f395e6a723474
+- path: work/M11-007/A-20260915-003/checks/review-coverage.log
+  sha256: ac99aa87db77da4a8d7177a50264939418d8f5c0fe3c29c6ab92f5693a3e3c43
+- path: work/M11-007/A-20260915-003/checks/review-first-green.log
+  sha256: 9ab4f24aec4e94bf1baadd71089ae995c1c718dfb7f8739d57aa800807dbde51
+- path: work/M11-007/A-20260915-003/checks/review-matrix.log
+  sha256: 5a9a85e9a7e408e92f4ac781d1a74cdc20c9300be1cee2ac6f0f8826320b4ff3
+- path: work/M11-007/A-20260915-003/checks/review-reproduction.log
+  sha256: 07ba014bb75964810c83d2960b5513c3f24ba7f41efa38ae7f6a36e3260e792a
+validation_scope: 'PR81 review repairs: two-stage facts, before-call Skill closure,
+  single-read invariant; final-head CI remains on the PR'
+gate_b: UNSATISFIED
+review: pending both named owners
+final_head_ci: reported on implementation PR after archive commit

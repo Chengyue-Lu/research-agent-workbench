@@ -972,7 +972,9 @@ class GenericCloseoutHelperTests(unittest.TestCase):
                 "actual_supply_report_ref": "supply@1",
             }
             actual_ref = reference("actual.json", actual)
-            trace = {"decision_refs": [scope_ref, actual_ref, "ignored"]}
+            trace = {"decision_refs": [scope_ref, actual_ref, "ignored",
+                                       reference("non-mapping.json", ["other decision"]),
+                                       reference("other-decision.json", {"record_kind": "other-decision"})]}
             closeout_module._validate_trace_execution_records(
                 root, trace_path, trace, host, catalog=catalog
             )
@@ -1203,9 +1205,11 @@ class GenericCloseoutHelperTests(unittest.TestCase):
                 validations=(validation_pin,),
                 trace_blocked=False,
                 catalog_errors=False,
+                skill_extension=False,
             ):
                 documents = {
                     "execution_host_report": (root / "host.yaml", changed_host or host),
+                    "skill_execution_host_report": (root / "host.yaml", changed_host or host),
                     "agent_trace_index": (root / "trace.yaml", changed_trace or trace),
                     "deterministic_check_report": (
                         root / "validation.yaml",
@@ -1239,16 +1243,22 @@ class GenericCloseoutHelperTests(unittest.TestCase):
                         ),
                     ),
                 ):
-                    return closeout_module.build_generic_execution_receipt(
+                    return closeout_module._build_execution_receipt(
                         view,
                         bundle,
                         host_report=host_pin,
                         trace_index=trace_pin,
                         validations=validations,
                         receipt_id="RECEIPT",
+                        skill_extension=skill_extension,
                     )
 
             self.assertEqual("no-skill", build()["execution_kind"])
+            with self.assertRaisesRegex(closeout_module.GenericCloseoutValidationError, "requires Skill Supply"):
+                build(skill_extension=True)
+            ignored_subject = copy.deepcopy(validation)
+            ignored_subject['subject_refs'].append('not-a-subject')
+            self.assertEqual('no-skill', build(changed_validation=ignored_subject)['execution_kind'])
             cases = []
             changed = copy.deepcopy(host); changed["status"] = "unknown"; cases.append({"changed_host": changed})
             changed = copy.deepcopy(host); changed["execution_phase"] = "driver-exception"; cases.append({"changed_host": changed})

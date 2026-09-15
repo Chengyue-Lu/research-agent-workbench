@@ -1,0 +1,64 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260915-003
+task_id: M11-007
+task_revision: 1
+attempt_id: A-20260915-003
+archive_root: A-20260915-003
+baseline: rwb-agent-trace-v0.1
+owner_actor_id: codex-implementation
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 6b7ff4d13fc9ba67e87d2e63a5dc5eefe13e2ebc55cf3ea398216bb6577655ea
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 7112b985ecbdfbbdca0510ef5138eb26a2ccf697641187d77315249b85137e5e
+read_allowlist:
+- .github/**
+- AGENTS.md
+- build_backend.py
+- docs/**
+- pyproject.toml
+- schemas/**
+- src/**
+- tests/**
+write_scope:
+- docs/**
+- schemas/v0.1.0/skill-execution-*.schema.json
+- src/research_workbench/execution/**
+- src/research_workbench/validation/document_kinds.py
+- tests/**
+- work/M11-007/**
+tool_allowlist:
+- delayed-tool-result-export
+- shell
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: de607c1eca466ef00afa23fc3070d17eaed7ac2af6362c8988b18d830c2ddf6b
+  event_count: 9
+tool_event_refs:
+- path: tool-events/delayed-observation-001-completed.json
+  sha256: 2177513321e88950d1462af305408c9d874fb07898a6527c7b88f2b8e3d7b46f
+- path: tool-events/delayed-observation-002-completed.json
+  sha256: 12d0fe503537fad16040a52a255dd495a7222fc385933303fa2f1d86d95c4684
+- path: tool-events/delayed-observation-003-completed.json
+  sha256: 1bbc5e12c047b766766e40c5a2b55193d958516bcc6570073535d575b100b3cb
+- path: tool-events/delayed-observation-004-completed.json
+  sha256: 4c5d05b274eef035fb09ff74701a7b8a2ea07ca7e9845fb551c97e77c00e1822
+- path: tool-events/delayed-observation-005-completed.json
+  sha256: 0fd0b15fba6d6057e32e40ba195a2e3819d5e03328807638716790609ed0f05f
+- path: tool-events/delayed-observation-006-completed.json
+  sha256: 7166af90b44b7dff486dee3ba4b099f70f9e33f69a46c4fb362d227f7cc4b2a6
+handoff_refs: []
+decision_refs:
+- path: decisions/implementation-evidence-manifest.yaml
+  sha256: a1580b4be2ab990023e7e7816077bed30cdcd7b75831747f6305d3a853f5ecf3
+output_refs: []
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
