@@ -1,0 +1,934 @@
+{
+  "m6_base": "7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba",
+  "m6_head": "34cc426e9c08d837ffc2e6dc58732c08a659291e",
+  "pr83_before": "3fe8b1d97559465786640381d11754dce9ff4d65",
+  "before_failures": 11,
+  "scope": {
+    "before": {
+      "test_modules": 91,
+      "unbounded_resource_consumers": [
+        ".agents/skills/literature-evidence-extraction/scripts/check_evidence_record.py",
+        ".github/scripts/check_coverage_policy.py",
+        ".github/scripts/check_pr_governance.py",
+        ".github/scripts/ci_checks.py",
+        ".github/scripts/plan_ci.py",
+        ".github/scripts/portable_package_smoke.py",
+        ".github/scripts/release_surface.py",
+        ".github/scripts/selection_witness.py",
+        "build_backend.py",
+        "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-006-IMPLEMENTATION-001/export_capture.py",
+        "docs/workstreams/huangyi/open-source-agent-harness-research/validation/verify_tracked_evidence.py",
+        "examples/run-reconstruction/linear-recurrence/simulate.py",
+        "registry/validation-tools/deterministic_runner.py",
+        "skill-lab/candidates/claim-preserving-rewrite/scripts/check_claim_preservation.py",
+        "src/research_workbench/adapters/codex.py",
+        "src/research_workbench/artifacts/claim_trace.py",
+        "src/research_workbench/artifacts/integrity.py",
+        "src/research_workbench/artifacts/promotion.py",
+        "src/research_workbench/artifacts/run_reconstruction.py",
+        "src/research_workbench/artifacts/validation_host.py",
+        "src/research_workbench/capability/archive_audit.py",
+        "src/research_workbench/capability/lifecycle.py",
+        "src/research_workbench/capability/release_projection.py",
+        "src/research_workbench/capability/requirements.py",
+        "src/research_workbench/capability/skill_needs.py",
+        "src/research_workbench/cli.py",
+        "src/research_workbench/evaluation/comparability.py",
+        "src/research_workbench/evaluation/overlap.py",
+        "src/research_workbench/evaluation/overlay.py",
+        "src/research_workbench/evaluation/pins.py",
+        "src/research_workbench/evaluation/qualification.py",
+        "src/research_workbench/evaluation/skill_evaluation.py",
+        "src/research_workbench/evaluation/system_protocol.py",
+        "src/research_workbench/execution/archive.py",
+        "src/research_workbench/execution/baseline.py",
+        "src/research_workbench/execution/baseline_closeout.py",
+        "src/research_workbench/execution/baseline_envelope.py",
+        "src/research_workbench/execution/execution_view.py",
+        "src/research_workbench/execution/generic_closeout.py",
+        "src/research_workbench/execution/host.py",
+        "src/research_workbench/execution/runner.py",
+        "src/research_workbench/execution/runtime_bundle.py",
+        "src/research_workbench/execution/skill_facts.py",
+        "src/research_workbench/io.py",
+        "src/research_workbench/observability/trace.py",
+        "src/research_workbench/protocol/profiles.py",
+        "src/research_workbench/research_state/closure.py",
+        "src/research_workbench/research_state/fresh_actor.py",
+        "src/research_workbench/research_state/gate.py",
+        "src/research_workbench/resources.py",
+        "src/research_workbench/scaffold.py",
+        "src/research_workbench/validation/capability.py",
+        "src/research_workbench/validation/documents.py",
+        "src/research_workbench/validation/schemas.py",
+        "tests/public_surface_helpers.py",
+        "tests/run_unittest_suite.py",
+        "tests/system_evaluation_fixtures.py",
+        "tests/test_accepted_skill_migration_fixtures.py",
+        "tests/test_agent_trace.py",
+        "tests/test_api_session_runner.py",
+        "tests/test_artifacts_promotion.py",
+        "tests/test_artifacts_validation_host.py",
+        "tests/test_baseline_execution.py",
+        "tests/test_baseline_replay_integrity.py",
+        "tests/test_capability_consumer.py",
+        "tests/test_capability_requirements.py",
+        "tests/test_capability_resolution.py",
+        "tests/test_ci_checks.py",
+        "tests/test_ci_plan.py",
+        "tests/test_claim_trace.py",
+        "tests/test_cli_command_branches.py",
+        "tests/test_coverage_policy.py",
+        "tests/test_critical_contract_branches.py",
+        "tests/test_decision_authority.py",
+        "tests/test_documentation.py",
+        "tests/test_evaluation_overlap.py",
+        "tests/test_execution_archive_helpers.py",
+        "tests/test_execution_contract_helpers.py",
+        "tests/test_execution_host.py",
+        "tests/test_execution_trace_adapter.py",
+        "tests/test_execution_view.py",
+        "tests/test_generic_execution_closeout.py",
+        "tests/test_governance_helper_branches.py",
+        "tests/test_m2_registry_runtime.py",
+        "tests/test_m3_context_observability.py",
+        "tests/test_m5_trace_export.py",
+        "tests/test_method_resolutions.py",
+        "tests/test_method_trace_candidate.py",
+        "tests/test_mode_action_routing_fixtures.py",
+        "tests/test_mode_actions.py",
+        "tests/test_phase_b_evolution_gate.py",
+        "tests/test_phase_c_gate.py",
+        "tests/test_portable_build.py",
+        "tests/test_pr_governance.py",
+        "tests/test_protocol_profiles.py",
+        "tests/test_release_surface.py",
+        "tests/test_research_attempt_failure.py",
+        "tests/test_research_mode_migration.py",
+        "tests/test_research_state_candidate.py",
+        "tests/test_research_state_critical_branches.py",
+        "tests/test_run_reconstruction.py",
+        "tests/test_runtime_resources.py",
+        "tests/test_scaffold.py",
+        "tests/test_schemas.py",
+        "tests/test_selection_witness.py",
+        "tests/test_skill_archive_audit.py",
+        "tests/test_skill_closeout_review.py",
+        "tests/test_skill_evaluation.py",
+        "tests/test_skill_execution_closeout.py",
+        "tests/test_skill_lifecycle.py",
+        "tests/test_skill_needs.py",
+        "tests/test_skill_release_projection.py",
+        "tests/test_system_evaluation_protocol.py",
+        "tests/test_test_runner.py",
+        "tests/test_trace_properties.py",
+        "tests/test_trace_risk_codes.py",
+        "work/M11-007/A-20260915-002/synthetic/completed-with-tool/closeout/checker.py",
+        "work/M11-007/A-20260915-002/synthetic/failed-model/closeout/checker.py",
+        "work/M11-007/A-20260915-002/synthetic/failed-projection/closeout/checker.py",
+        "work/M11-007/A-20260915-002/synthetic/preflight-blocked/closeout/checker.py",
+        "work/M11-007/A-20260915-003/synthetic/completed-with-tool/closeout/checker.py",
+        "work/M11-007/A-20260915-003/synthetic/failed-model/closeout/checker.py",
+        "work/M11-007/A-20260915-003/synthetic/failed-projection/closeout/checker.py",
+        "work/M11-007/A-20260915-003/synthetic/preflight-blocked/closeout/checker.py",
+        "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py"
+      ],
+      "opaque_consumers": [
+        ".github/scripts/check_pr_governance.py",
+        ".github/scripts/ci_checks.py",
+        ".github/scripts/ci_dependencies.py",
+        ".github/scripts/plan_ci.py",
+        ".github/scripts/portable_package_smoke.py",
+        ".github/scripts/release_surface.py",
+        ".github/scripts/selection_witness.py",
+        "build_backend.py",
+        "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-006-IMPLEMENTATION-001/export_capture.py",
+        "registry/validation-tools/deterministic_runner.py",
+        "src/research_workbench/artifacts/run_reconstruction.py",
+        "src/research_workbench/artifacts/validation_host.py",
+        "src/research_workbench/cli.py",
+        "src/research_workbench/research_state/gate.py",
+        "tests/public_surface_helpers.py",
+        "tests/run_unittest_suite.py",
+        "tests/skill_closeout_fixtures.py",
+        "tests/system_evaluation_fixtures.py",
+        "tests/test_artifacts_promotion.py",
+        "tests/test_baseline_execution.py",
+        "tests/test_candidate_claim_rewrite.py",
+        "tests/test_ci_checks.py",
+        "tests/test_ci_dependencies.py",
+        "tests/test_ci_plan.py",
+        "tests/test_coverage_policy.py",
+        "tests/test_execution_trace_adapter.py",
+        "tests/test_m2_registry_runtime.py",
+        "tests/test_m5_trace_export.py",
+        "tests/test_phase_c_gate.py",
+        "tests/test_portable_build.py",
+        "tests/test_pr_governance.py",
+        "tests/test_release_oracle_replay.py",
+        "tests/test_release_surface.py",
+        "tests/test_run_reconstruction.py",
+        "tests/test_scaffold.py",
+        "tests/test_selection_witness.py",
+        "tests/test_skill_closeout_review.py",
+        "tests/test_skill_execution_closeout.py",
+        "tests/test_test_runner.py"
+      ],
+      "selected_edge_kinds": {
+        "test_accepted_skill_migration_fixtures": [
+          "unbounded-resource"
+        ],
+        "test_agent_trace": [
+          "syntax-reference"
+        ],
+        "test_api_session_runner": [
+          "unbounded-resource"
+        ],
+        "test_artifacts_admission": [
+          "syntax-reference"
+        ],
+        "test_artifacts_promotion": [
+          "unbounded-resource"
+        ],
+        "test_artifacts_validation_host": [
+          "unbounded-resource"
+        ],
+        "test_baseline_envelope": [],
+        "test_baseline_execution": [],
+        "test_baseline_replay_integrity": [],
+        "test_candidate_claim_rewrite": [
+          "opaque-execution"
+        ],
+        "test_capability_consumer": [
+          "unbounded-resource"
+        ],
+        "test_capability_requirements": [
+          "syntax-reference"
+        ],
+        "test_capability_resolution": [
+          "syntax-reference"
+        ],
+        "test_capability_resolver_branches": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_catalog": [
+          "unbounded-resource",
+          "syntax-reference",
+          "syntax-reference"
+        ],
+        "test_ci_checks": [
+          "unbounded-resource"
+        ],
+        "test_ci_dependencies": [
+          "syntax-reference"
+        ],
+        "test_ci_plan": [
+          "syntax-reference"
+        ],
+        "test_claim_trace": [
+          "unbounded-resource"
+        ],
+        "test_cli": [
+          "syntax-reference"
+        ],
+        "test_cli_command_branches": [
+          "syntax-reference"
+        ],
+        "test_context_model_branches": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_contracts": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_coverage_policy": [
+          "unbounded-resource"
+        ],
+        "test_critical_contract_branches": [
+          "unbounded-resource"
+        ],
+        "test_decision_authority": [
+          "syntax-reference"
+        ],
+        "test_documentation": [
+          "syntax-reference"
+        ],
+        "test_evaluation_comparability": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_evaluation_contracts": [
+          "syntax-reference"
+        ],
+        "test_evaluation_manifest": [
+          "syntax-reference"
+        ],
+        "test_evaluation_overlap": [
+          "syntax-reference"
+        ],
+        "test_evaluation_overlay": [
+          "syntax-reference"
+        ],
+        "test_execution_archive_helpers": [
+          "unbounded-resource"
+        ],
+        "test_execution_contract_helpers": [
+          "unbounded-resource"
+        ],
+        "test_execution_host": [
+          "syntax-reference"
+        ],
+        "test_execution_trace_adapter": [
+          "unbounded-resource"
+        ],
+        "test_execution_view": [
+          "syntax-reference"
+        ],
+        "test_generic_execution_closeout": [
+          "syntax-reference"
+        ],
+        "test_governance_helper_branches": [
+          "syntax-reference"
+        ],
+        "test_handoff_transfer": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_integrity": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_m2_registry_runtime": [
+          "unbounded-resource"
+        ],
+        "test_m3_context_observability": [
+          "unbounded-resource"
+        ],
+        "test_m5_trace_export": [
+          "syntax-reference"
+        ],
+        "test_method_resolutions": [
+          "syntax-reference"
+        ],
+        "test_method_trace_candidate": [
+          "unbounded-resource"
+        ],
+        "test_mode_action_routing_fixtures": [
+          "unbounded-resource"
+        ],
+        "test_mode_actions": [
+          "syntax-reference"
+        ],
+        "test_model_pool": [
+          "unbounded-resource",
+          "syntax-reference",
+          "syntax-reference"
+        ],
+        "test_observability_model_branches": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_phase_b_evolution_gate": [
+          "syntax-reference"
+        ],
+        "test_phase_c_gate": [
+          "unbounded-resource"
+        ],
+        "test_portable_build": [
+          "syntax-reference"
+        ],
+        "test_pr_governance": [
+          "syntax-reference"
+        ],
+        "test_project_internal_handoff_fixtures": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_protocol_profiles": [
+          "syntax-reference"
+        ],
+        "test_provider_adapters": [
+          "unbounded-resource",
+          "syntax-reference",
+          "syntax-reference"
+        ],
+        "test_provider_conformance": [
+          "syntax-reference",
+          "syntax-reference"
+        ],
+        "test_provider_contract_branches": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_provider_port": [
+          "unbounded-resource",
+          "syntax-reference",
+          "syntax-reference"
+        ],
+        "test_public_surface": [
+          "syntax-reference"
+        ],
+        "test_registry_require_branches": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_relationships": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_release_oracle_replay": [
+          "opaque-execution"
+        ],
+        "test_release_surface": [
+          "unbounded-resource"
+        ],
+        "test_research_attempt_failure": [
+          "unbounded-resource"
+        ],
+        "test_research_mode_migration": [
+          "syntax-reference"
+        ],
+        "test_research_state_candidate": [
+          "unbounded-resource"
+        ],
+        "test_research_state_critical_branches": [
+          "unbounded-resource"
+        ],
+        "test_run_reconstruction": [
+          "unbounded-resource"
+        ],
+        "test_runtime_bundle": [
+          "syntax-reference"
+        ],
+        "test_runtime_resources": [
+          "unbounded-resource"
+        ],
+        "test_scaffold": [
+          "unbounded-resource"
+        ],
+        "test_schemas": [],
+        "test_selection_witness": [
+          "unbounded-resource"
+        ],
+        "test_skill_archive_audit": [
+          "unbounded-resource"
+        ],
+        "test_skill_closeout_review": [
+          "syntax-reference"
+        ],
+        "test_skill_evaluation": [
+          "unbounded-resource"
+        ],
+        "test_skill_evaluation_helpers": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_skill_execution_closeout": [
+          "syntax-reference"
+        ],
+        "test_skill_lifecycle": [
+          "syntax-reference"
+        ],
+        "test_skill_needs": [
+          "syntax-reference"
+        ],
+        "test_skill_release_projection": [
+          "syntax-reference"
+        ],
+        "test_skill_runtime_extension": [
+          "syntax-reference"
+        ],
+        "test_system_evaluation_protocol": [
+          "syntax-reference"
+        ],
+        "test_test_runner": [
+          "unbounded-resource"
+        ],
+        "test_trace_properties": [
+          "unbounded-resource"
+        ],
+        "test_trace_risk_codes": [
+          "syntax-reference"
+        ],
+        "test_validation": [
+          "syntax-reference"
+        ],
+        "test_validation_critical_surfaces": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_validation_helpers": [
+          "syntax-reference"
+        ]
+      }
+    },
+    "after": {
+      "test_modules": 91,
+      "unbounded_resource_consumers": [
+        ".agents/skills/literature-evidence-extraction/scripts/check_evidence_record.py",
+        ".github/scripts/check_coverage_policy.py",
+        ".github/scripts/check_pr_governance.py",
+        ".github/scripts/ci_checks.py",
+        ".github/scripts/plan_ci.py",
+        ".github/scripts/portable_package_smoke.py",
+        ".github/scripts/release_surface.py",
+        ".github/scripts/selection_witness.py",
+        "build_backend.py",
+        "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-006-IMPLEMENTATION-001/export_capture.py",
+        "docs/workstreams/huangyi/open-source-agent-harness-research/validation/verify_tracked_evidence.py",
+        "examples/run-reconstruction/linear-recurrence/simulate.py",
+        "registry/validation-tools/deterministic_runner.py",
+        "skill-lab/candidates/claim-preserving-rewrite/scripts/check_claim_preservation.py",
+        "src/research_workbench/adapters/codex.py",
+        "src/research_workbench/artifacts/claim_trace.py",
+        "src/research_workbench/artifacts/integrity.py",
+        "src/research_workbench/artifacts/promotion.py",
+        "src/research_workbench/artifacts/run_reconstruction.py",
+        "src/research_workbench/artifacts/validation_host.py",
+        "src/research_workbench/capability/archive_audit.py",
+        "src/research_workbench/capability/lifecycle.py",
+        "src/research_workbench/capability/release_projection.py",
+        "src/research_workbench/capability/requirements.py",
+        "src/research_workbench/capability/skill_needs.py",
+        "src/research_workbench/cli.py",
+        "src/research_workbench/evaluation/comparability.py",
+        "src/research_workbench/evaluation/overlap.py",
+        "src/research_workbench/evaluation/overlay.py",
+        "src/research_workbench/evaluation/pins.py",
+        "src/research_workbench/evaluation/qualification.py",
+        "src/research_workbench/evaluation/skill_evaluation.py",
+        "src/research_workbench/evaluation/system_protocol.py",
+        "src/research_workbench/execution/archive.py",
+        "src/research_workbench/execution/baseline.py",
+        "src/research_workbench/execution/baseline_closeout.py",
+        "src/research_workbench/execution/baseline_envelope.py",
+        "src/research_workbench/execution/execution_view.py",
+        "src/research_workbench/execution/generic_closeout.py",
+        "src/research_workbench/execution/host.py",
+        "src/research_workbench/execution/runner.py",
+        "src/research_workbench/execution/runtime_bundle.py",
+        "src/research_workbench/execution/skill_facts.py",
+        "src/research_workbench/io.py",
+        "src/research_workbench/observability/trace.py",
+        "src/research_workbench/protocol/profiles.py",
+        "src/research_workbench/research_state/closure.py",
+        "src/research_workbench/research_state/fresh_actor.py",
+        "src/research_workbench/research_state/gate.py",
+        "src/research_workbench/resources.py",
+        "src/research_workbench/scaffold.py",
+        "src/research_workbench/validation/capability.py",
+        "src/research_workbench/validation/documents.py",
+        "src/research_workbench/validation/schemas.py",
+        "tests/public_surface_helpers.py",
+        "tests/run_unittest_suite.py",
+        "tests/system_evaluation_fixtures.py",
+        "tests/test_agent_trace.py",
+        "tests/test_api_session_runner.py",
+        "tests/test_artifacts_promotion.py",
+        "tests/test_artifacts_validation_host.py",
+        "tests/test_baseline_execution.py",
+        "tests/test_baseline_replay_integrity.py",
+        "tests/test_capability_consumer.py",
+        "tests/test_capability_requirements.py",
+        "tests/test_ci_checks.py",
+        "tests/test_ci_plan.py",
+        "tests/test_claim_trace.py",
+        "tests/test_cli_command_branches.py",
+        "tests/test_coverage_policy.py",
+        "tests/test_critical_contract_branches.py",
+        "tests/test_documentation.py",
+        "tests/test_evaluation_overlap.py",
+        "tests/test_execution_archive_helpers.py",
+        "tests/test_execution_contract_helpers.py",
+        "tests/test_execution_host.py",
+        "tests/test_execution_trace_adapter.py",
+        "tests/test_execution_view.py",
+        "tests/test_generic_execution_closeout.py",
+        "tests/test_governance_helper_branches.py",
+        "tests/test_m2_registry_runtime.py",
+        "tests/test_m3_context_observability.py",
+        "tests/test_m5_trace_export.py",
+        "tests/test_method_trace_candidate.py",
+        "tests/test_phase_b_evolution_gate.py",
+        "tests/test_phase_c_gate.py",
+        "tests/test_portable_build.py",
+        "tests/test_pr_governance.py",
+        "tests/test_protocol_profiles.py",
+        "tests/test_release_surface.py",
+        "tests/test_research_attempt_failure.py",
+        "tests/test_research_state_candidate.py",
+        "tests/test_research_state_critical_branches.py",
+        "tests/test_run_reconstruction.py",
+        "tests/test_runtime_resources.py",
+        "tests/test_scaffold.py",
+        "tests/test_schemas.py",
+        "tests/test_selection_witness.py",
+        "tests/test_skill_archive_audit.py",
+        "tests/test_skill_closeout_review.py",
+        "tests/test_skill_evaluation.py",
+        "tests/test_skill_execution_closeout.py",
+        "tests/test_skill_release_projection.py",
+        "tests/test_system_evaluation_protocol.py",
+        "tests/test_test_runner.py",
+        "tests/test_trace_properties.py",
+        "tests/test_trace_risk_codes.py",
+        "work/M11-007/A-20260915-002/synthetic/completed-with-tool/closeout/checker.py",
+        "work/M11-007/A-20260915-002/synthetic/failed-model/closeout/checker.py",
+        "work/M11-007/A-20260915-002/synthetic/failed-projection/closeout/checker.py",
+        "work/M11-007/A-20260915-002/synthetic/preflight-blocked/closeout/checker.py",
+        "work/M11-007/A-20260915-003/synthetic/completed-with-tool/closeout/checker.py",
+        "work/M11-007/A-20260915-003/synthetic/failed-model/closeout/checker.py",
+        "work/M11-007/A-20260915-003/synthetic/failed-projection/closeout/checker.py",
+        "work/M11-007/A-20260915-003/synthetic/preflight-blocked/closeout/checker.py",
+        "work/M14-002/A-20260906-001/checks/independent_projection_oracle.py"
+      ],
+      "opaque_consumers": [
+        ".github/scripts/check_pr_governance.py",
+        ".github/scripts/ci_checks.py",
+        ".github/scripts/ci_dependencies.py",
+        ".github/scripts/plan_ci.py",
+        ".github/scripts/portable_package_smoke.py",
+        ".github/scripts/release_surface.py",
+        ".github/scripts/selection_witness.py",
+        "build_backend.py",
+        "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-006-IMPLEMENTATION-001/export_capture.py",
+        "registry/validation-tools/deterministic_runner.py",
+        "src/research_workbench/artifacts/run_reconstruction.py",
+        "src/research_workbench/artifacts/validation_host.py",
+        "src/research_workbench/cli.py",
+        "src/research_workbench/research_state/gate.py",
+        "tests/public_surface_helpers.py",
+        "tests/run_unittest_suite.py",
+        "tests/skill_closeout_fixtures.py",
+        "tests/system_evaluation_fixtures.py",
+        "tests/test_artifacts_promotion.py",
+        "tests/test_baseline_execution.py",
+        "tests/test_candidate_claim_rewrite.py",
+        "tests/test_ci_checks.py",
+        "tests/test_ci_dependencies.py",
+        "tests/test_ci_plan.py",
+        "tests/test_coverage_policy.py",
+        "tests/test_execution_trace_adapter.py",
+        "tests/test_m2_registry_runtime.py",
+        "tests/test_m5_trace_export.py",
+        "tests/test_phase_c_gate.py",
+        "tests/test_portable_build.py",
+        "tests/test_pr_governance.py",
+        "tests/test_release_oracle_replay.py",
+        "tests/test_release_surface.py",
+        "tests/test_run_reconstruction.py",
+        "tests/test_scaffold.py",
+        "tests/test_selection_witness.py",
+        "tests/test_skill_closeout_review.py",
+        "tests/test_skill_execution_closeout.py",
+        "tests/test_test_runner.py"
+      ],
+      "selected_edge_kinds": {
+        "test_accepted_skill_migration_fixtures": [
+          "unbounded-resource",
+          "syntax-reference",
+          "syntax-reference"
+        ],
+        "test_agent_trace": [
+          "syntax-reference"
+        ],
+        "test_api_session_runner": [
+          "unbounded-resource"
+        ],
+        "test_artifacts_admission": [
+          "syntax-reference"
+        ],
+        "test_artifacts_promotion": [
+          "unbounded-resource"
+        ],
+        "test_artifacts_validation_host": [
+          "unbounded-resource"
+        ],
+        "test_baseline_envelope": [],
+        "test_baseline_execution": [],
+        "test_baseline_replay_integrity": [],
+        "test_candidate_claim_rewrite": [
+          "opaque-execution"
+        ],
+        "test_capability_consumer": [
+          "unbounded-resource"
+        ],
+        "test_capability_requirements": [
+          "syntax-reference"
+        ],
+        "test_capability_resolution": [
+          "syntax-reference"
+        ],
+        "test_capability_resolver_branches": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_catalog": [
+          "unbounded-resource",
+          "syntax-reference",
+          "syntax-reference"
+        ],
+        "test_ci_checks": [
+          "unbounded-resource"
+        ],
+        "test_ci_dependencies": [
+          "syntax-reference"
+        ],
+        "test_ci_plan": [
+          "syntax-reference"
+        ],
+        "test_claim_trace": [
+          "unbounded-resource"
+        ],
+        "test_cli": [
+          "syntax-reference"
+        ],
+        "test_cli_command_branches": [
+          "syntax-reference"
+        ],
+        "test_context_model_branches": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_contracts": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_coverage_policy": [
+          "unbounded-resource"
+        ],
+        "test_critical_contract_branches": [
+          "unbounded-resource"
+        ],
+        "test_decision_authority": [
+          "syntax-reference"
+        ],
+        "test_documentation": [
+          "syntax-reference"
+        ],
+        "test_evaluation_comparability": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_evaluation_contracts": [
+          "syntax-reference"
+        ],
+        "test_evaluation_manifest": [
+          "syntax-reference"
+        ],
+        "test_evaluation_overlap": [
+          "syntax-reference"
+        ],
+        "test_evaluation_overlay": [
+          "syntax-reference"
+        ],
+        "test_execution_archive_helpers": [
+          "unbounded-resource"
+        ],
+        "test_execution_contract_helpers": [
+          "unbounded-resource"
+        ],
+        "test_execution_host": [
+          "syntax-reference"
+        ],
+        "test_execution_trace_adapter": [
+          "unbounded-resource"
+        ],
+        "test_execution_view": [
+          "syntax-reference"
+        ],
+        "test_generic_execution_closeout": [
+          "syntax-reference"
+        ],
+        "test_governance_helper_branches": [
+          "syntax-reference"
+        ],
+        "test_handoff_transfer": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_integrity": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_m2_registry_runtime": [
+          "unbounded-resource"
+        ],
+        "test_m3_context_observability": [
+          "unbounded-resource"
+        ],
+        "test_m5_trace_export": [
+          "syntax-reference"
+        ],
+        "test_method_resolutions": [
+          "syntax-reference"
+        ],
+        "test_method_trace_candidate": [
+          "unbounded-resource"
+        ],
+        "test_mode_action_routing_fixtures": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_mode_actions": [
+          "syntax-reference"
+        ],
+        "test_model_pool": [
+          "unbounded-resource",
+          "syntax-reference",
+          "syntax-reference"
+        ],
+        "test_observability_model_branches": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_phase_b_evolution_gate": [
+          "syntax-reference"
+        ],
+        "test_phase_c_gate": [
+          "unbounded-resource"
+        ],
+        "test_portable_build": [
+          "syntax-reference"
+        ],
+        "test_pr_governance": [
+          "syntax-reference"
+        ],
+        "test_project_internal_handoff_fixtures": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_protocol_profiles": [
+          "syntax-reference"
+        ],
+        "test_provider_adapters": [
+          "unbounded-resource",
+          "syntax-reference",
+          "syntax-reference"
+        ],
+        "test_provider_conformance": [
+          "syntax-reference",
+          "syntax-reference"
+        ],
+        "test_provider_contract_branches": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_provider_port": [
+          "unbounded-resource",
+          "syntax-reference",
+          "syntax-reference"
+        ],
+        "test_public_surface": [
+          "syntax-reference"
+        ],
+        "test_registry_require_branches": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_relationships": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_release_oracle_replay": [
+          "opaque-execution"
+        ],
+        "test_release_surface": [
+          "unbounded-resource"
+        ],
+        "test_research_attempt_failure": [
+          "unbounded-resource"
+        ],
+        "test_research_mode_migration": [
+          "syntax-reference"
+        ],
+        "test_research_state_candidate": [
+          "unbounded-resource"
+        ],
+        "test_research_state_critical_branches": [
+          "unbounded-resource"
+        ],
+        "test_run_reconstruction": [
+          "unbounded-resource"
+        ],
+        "test_runtime_bundle": [
+          "syntax-reference"
+        ],
+        "test_runtime_resources": [
+          "unbounded-resource"
+        ],
+        "test_scaffold": [
+          "unbounded-resource"
+        ],
+        "test_schemas": [],
+        "test_selection_witness": [
+          "unbounded-resource"
+        ],
+        "test_skill_archive_audit": [
+          "unbounded-resource"
+        ],
+        "test_skill_closeout_review": [
+          "syntax-reference"
+        ],
+        "test_skill_evaluation": [
+          "unbounded-resource"
+        ],
+        "test_skill_evaluation_helpers": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_skill_execution_closeout": [
+          "syntax-reference"
+        ],
+        "test_skill_lifecycle": [
+          "syntax-reference"
+        ],
+        "test_skill_needs": [
+          "syntax-reference"
+        ],
+        "test_skill_release_projection": [
+          "syntax-reference"
+        ],
+        "test_skill_runtime_extension": [
+          "syntax-reference"
+        ],
+        "test_system_evaluation_protocol": [
+          "syntax-reference"
+        ],
+        "test_test_runner": [
+          "unbounded-resource"
+        ],
+        "test_trace_properties": [
+          "unbounded-resource"
+        ],
+        "test_trace_risk_codes": [
+          "syntax-reference"
+        ],
+        "test_validation": [
+          "syntax-reference"
+        ],
+        "test_validation_critical_surfaces": [
+          "unbounded-resource",
+          "syntax-reference"
+        ],
+        "test_validation_helpers": [
+          "syntax-reference"
+        ]
+      }
+    }
+  },
+  "resource_consumers_now_bounded": [
+    "tests/test_accepted_skill_migration_fixtures.py",
+    "tests/test_capability_resolution.py",
+    "tests/test_decision_authority.py",
+    "tests/test_method_resolutions.py",
+    "tests/test_mode_action_routing_fixtures.py",
+    "tests/test_mode_actions.py",
+    "tests/test_research_mode_migration.py",
+    "tests/test_skill_lifecycle.py",
+    "tests/test_skill_needs.py"
+  ],
+  "interpretation": "M6 still has shared validation and unresolved helper inputs. Fixed roots remove direct fallback edges, not the complete independent paths. These are Git graph comparisons, not hosted time savings."
+}
