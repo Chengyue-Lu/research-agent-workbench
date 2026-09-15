@@ -3,7 +3,7 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 来源：[Issue #57](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57)
 - 架构决定：[ADR-0021](../../../decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md)
-- 状态：M14-001/002/003 dormant topology、deterministic surface 与 portable package 已实现；public docs 最终集成已由 PR #77 合入；MIT 与远端保护闭合进入 readiness R2 审查，首次发行仍待闭合
+- 状态：M14-001～004、M1-009 与 M0-007 已合入；远端分层保护已接受；M14-005 正推进 [source-CI 准备](SOURCE_CI.md)，首次发行仍待闭合
 - diagnostic baseline：`origin/develop@dd2454b5595e33a12aa058529358d46d311a08c4`
 - task-definition integration base：`origin/develop@6a032e12c30a88a501258eec8c0b5d6c6082d81d`
 
@@ -194,10 +194,11 @@ task-definition 只写 canonical docs、ADR、workstream 与导航。后续实�
 
 ## 下一合法动作
 
-`M14-001～004` 与 M1-009 已合入；按 [readiness 准备记录](READINESS_PREPARATION.md) 审查 MIT closure、
-远端保护回读及演练证据。M0-007 在本 PR 提案 DONE，M14-005 继续 BLOCKED，接续分两层：
+`M14-001～004`、M1-009 与 M0-007 已合入；[readiness 准备记录](READINESS_PREPARATION.md) 保留
+许可、远端保护和演练证据。当前 [source-CI slice](SOURCE_CI.md) 交付生产端与在线核验器，合入后的真实
+protected push 仍须验收。M14-005 继续 BLOCKED，接续分两层：
 
-1. external readiness remaining：本 PR R2 接受、fresh ruleset readback 与具名 Human release decision；
+1. external readiness remaining：fresh ruleset readback 与具名 Human release decision；
    全部满足后才可提案 M14-005 READY。
 2. M14-005 implementation：protected source-CI attestation、release-only workflow/checks、atomic topology cutover，
    然后冻结 exact develop source/current main parent，验证 deterministic projection / prospective-tree equality，

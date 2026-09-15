@@ -275,7 +275,7 @@ M13 不等于 strategy framework approval。
 | `M14-002` | 路诚钺 | R2 | Product / Release | Projection | deterministic allowlist/manifest/export/check 与连续版本 closed-tree fixtures 已实现，DONE |
 | `M14-003` | 路诚钺 | R2 | Product / Release | Package/Runtime Resources | packaged RuntimeResourceManifest、三 root、双 Python 安装与 conditional Skill closure 已完成，DONE |
 | `M14-004` | 路诚钺 | R2 | Product / Release | Public Documentation | 公开导航、支持矩阵与仓库外 Quickstart 已由 PR #77 验收合入，DONE |
-| `M14-005` | 路诚钺 | R2 | Product / Release | First Curated Release | M0-007 MIT、M1-009 与 M14-002～004 实现链已闭合，远端保护已启用并留证。外部 readiness 仍需本 PR R2 接受、fresh ruleset readback 与具名 Human release decision，当前 BLOCKED；全部满足后才可提案 READY，随后仍须实现 protected source-CI attestation、release-only workflow/checks、atomic topology cutover、exact develop source/current main parent freeze、deterministic projection / prospective-tree equality，以及首发 R2 验收和 tag/artifact/hash closure |
+| `M14-005` | 路诚钺 | R2 | Product / Release | First Curated Release | M0-007 MIT、M1-009 与 M14-002～004 实现链已闭合，远端保护已启用并留证。外部 readiness 仍需 fresh ruleset readback 与具名 Human release decision，当前 BLOCKED；全部满足后才可提案 READY，随后仍须实现 protected source-CI attestation、release-only workflow/checks、atomic topology cutover、exact develop source/current main parent freeze、deterministic projection / prospective-tree equality，以及首发 R2 验收和 tag/artifact/hash closure |
 
 ## 历史 GitHub Issues
 
