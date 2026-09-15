@@ -1,15 +1,19 @@
-# Dependency boundary repair — Draft implementation
+# Dependency boundary repair — bounded implementation
 
 TEST-PERF-002; Chengyue-Lu; R2; Issue #48. Implementation starts from
 `7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba` after the M11-007 integration.
 
-## Implemented in this Draft
+## Implemented scope
 
 Literal `len("SKILL.md")` computes metadata and does not read every repository file
 with that name. The analyzer now recognizes that operation when `len` resolves to
 the builtin. Function/class definitions, exception and pattern bindings, imported or
 parameter aliases, global mutation, reflection and opaque execution retain conservative
 dependencies. Actual file reads with the same literal continue to select their tests.
+Call-mediated mutations through `patch`, imported patch aliases, `patch.object`,
+`setattr` helpers and `__setattr__` also invalidate this optimization when their
+target can be `builtins.len`. Dynamic targets and unknown receivers remain conservative;
+fixed unrelated patch targets preserve ordinary literal-length precision.
 
 Workflow comments and formatting now use the same typed YAML comparison for behavioral
 and coverage authority. When both YAML semantics and file mode match the base, the
@@ -18,9 +22,11 @@ entries/scalar types, file-mode changes and independent job additions keep the e
 full authority bootstrap. The independently pinned selection witness remains unchanged.
 
 Plans now report `selection.selected_edge_kinds` for every selected test's chain and
-`selection.scope_summary` with the inventory/selected counts and counts of paths using
+`selection.scope_summary` with `dependency_selected_test_modules`, the inventory count and counts of paths using
 opaque-execution or unbounded-resource edges. These explain scope; they do not authorize
 exclusions. Existing workers compare the complete selection proof during verification.
+The dependency-selected count precedes policy groups and explicit additions; final
+execution scope is given by `plan.tests` and its independent obligations.
 
 ## Measured selection changes
 
@@ -46,7 +52,10 @@ hosted execution or merge evidence. Counts refer to test modules, not TestCases.
 The introducing PR changes selection authority and must itself run the complete dual-Python
 bootstrap. Its CI duration cannot measure the speed of a future Skill/docs PR.
 
-## Remaining work in this Draft
+## Follow-up work tracked in Issue #48
+
+PR #83 closes the bounded changes above and their review findings. The broader
+expansion repairs below remain separate follow-ups with their own proof requirements.
 
 1. Scope opaque execution and resource access by proven targets/roots. Unknown calls and
    readers currently create nearly repository-wide dependencies; do not remove them without
@@ -75,13 +84,23 @@ The prior [full-suite cost audit](FULL_SUITE_COST.md) already established succes
 self-check reuse and retained the necessary behavior/negative cases. Scope reduction is
 the immediate opportunity here. Test splitting, shared fixture reuse and process scheduling
 must preserve module/class lifecycle and ordered execution; no additional worker or fixture
-cache is enabled by this Draft. Cross-commit result reuse needs complete input/environment
+cache is enabled by this change. Cross-commit result reuse needs complete input/environment
 keys and a separately reviewed evidence contract; overlapping test names are insufficient.
 
 Analysis timings are retained with the comparisons, but cold/warm state and Windows Git
 process costs vary between samples. They are diagnostics, not a new analyzer speedup claim.
-The Draft is prepared as one initial push containing implementation and its archive, avoiding
+The initial Draft push contained implementation and its archive, avoiding
 an intentional code-push followed immediately by an archive-only replacement CI run.
 
 Evidence and implementation hashes are recorded in the
 [Attempt results](../../../../work/TEST-PERF-002/A-20260915-001/RESULTS.md).
+
+## Review remediation
+
+The task-owner review of `288489429b412ead2f0f8df34c43655c25089900` identified a
+call-mediated builtin mutation gap. Selector-level regressions cover dotted/object
+patches, import aliases, helper overloads, keyword arguments and uncertain targets.
+Two actual Git repositories exercise unchanged readers with `patch` and `patch.object`:
+changing the document from four bytes to three makes execution fail, and the selector
+retains the failing consumer. Ordinary metadata and all prior direct/lexical/opaque
+controls remain covered. The diagnostic count name also resolves the review's P2 ambiguity.

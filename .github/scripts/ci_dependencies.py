@@ -255,6 +255,36 @@ def _file_facts(path, raw):
                 mutations.update(node.names)
         return uses, mutations
 
+    def patch_callable(node):
+        return (isinstance(node, ast.Name) and (node.id == 'patch'
+                or 'unittest.mock.patch' in import_targets[node.id])
+                or isinstance(node, ast.Attribute) and node.attr == 'patch')
+
+    def call_mutates_builtin_len(node):
+        """Known mutation helpers invalidate metadata when their target is uncertain.
+
+        Do not infer object identity: an unknown receiver with attribute 'len' may
+        be builtins. Only a fixed, unrelated target/name keeps this optimization.
+        """
+        if not isinstance(node, ast.Call):
+            return False
+        keywords = {item.arg: item.value for item in node.keywords}
+        if patch_callable(node.func):
+            targets = node.args[:1] or [keywords.get('target')]
+        elif isinstance(node.func, ast.Attribute) and node.func.attr == 'object' and patch_callable(node.func.value):
+            targets = node.args[1:2] or [keywords.get('attribute')]
+        elif isinstance(node.func, ast.Attribute) and node.func.attr == 'setattr':
+            # monkeypatch has both dotted-target and object/name overloads.
+            targets = ([keywords['name']] if 'name' in keywords else
+                       node.args[1:2] if len(node.args) >= 3 or 'value' in keywords else
+                       node.args[:1] or [keywords.get('target')])
+        elif isinstance(node.func, ast.Attribute) and node.func.attr == '__setattr__':
+            targets = node.args[:1] or [keywords.get('name')]
+        else:
+            return False
+        return any(not isinstance(target, ast.Constant) or not isinstance(target.value, str)
+                   or target.value in {'len', 'builtins.len'} for target in targets)
+
     reflective_bindings = any(
         isinstance(n, ast.ImportFrom) and any(a.name == '*' for a in n.names)
         or isinstance(n, ast.Name) and n.id in {'globals', 'locals', 'vars', 'setattr', 'delattr', '__builtins__'}
@@ -263,6 +293,7 @@ def _file_facts(path, raw):
         or isinstance(n, ast.Attribute) and (n.attr == '__dict__' or n.attr == 'len' and isinstance(n.ctx, ast.Store))
         or isinstance(n, ast.Subscript) and isinstance(n.ctx, ast.Store)
             and isinstance(n.slice, ast.Constant) and n.slice.value == 'len'
+        or call_mutates_builtin_len(n)
         for n in nodes)
 
     def name_only(node, seen=frozenset()):
@@ -563,7 +594,7 @@ def select(repo, base, head, seeds, reviewed_seeds=(), reviewed_consumers=(), re
     return {'algorithm': 'base-head-consumers-v1', 'inventory_sha256': hashlib.sha256(payload).hexdigest(),
             'selected': dict(sorted(tests.items())), 'excluded': sorted(set(inventory) - tests.keys()),
             'selected_edge_kinds': edge_kinds,
-            'scope_summary': {'available_test_modules': len(inventory), 'selected_test_modules': len(tests),
+            'scope_summary': {'available_test_modules': len(inventory), 'dependency_selected_test_modules': len(tests),
                               'opaque_execution_paths': sum('opaque-execution' in kinds for kinds in edge_kinds.values()),
                               'unbounded_resource_paths': sum('unbounded-resource' in kinds for kinds in edge_kinds.values())},
             'exclusion_reasons': {name: ('unchanged consumer covered by accepted base contract' if
