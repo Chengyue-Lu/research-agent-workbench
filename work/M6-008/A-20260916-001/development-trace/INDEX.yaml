@@ -1,0 +1,49 @@
+schema_version: 0.1.0
+trace_id: TRACE-M6-008-TAKEOVER-20260916
+task_id: M6-008
+task_revision: 1
+attempt_id: M6-008-TAKEOVER-20260916
+archive_root: development-trace
+baseline: rwb-agent-trace-v0.1
+owner_actor_id: m6-takeover-agent
+owner: Chengyue-Lu (authorized takeover evidence)
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 6e253823c8973dd3e891c9f058bce62c05dbc093ffd4ce127b47cb4e20a53ff3
+actors_ref:
+  path: ACTORS.yaml
+  sha256: a8f0ae93a0a5f1c55d25898dc68d8e15872a559f1e5c9f2b3fffbd6bc4e22545
+read_allowlist:
+- docs/TASKS.md
+- src/research_workbench/execution/**
+- tests/test_baseline*
+write_scope:
+- work/M6-008/**
+tool_allowlist:
+- retained-local-check
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: bbc45b92946a196d11ab96a5030c938dc654a5aea91bdcd9550104213857712c
+  event_count: 12
+tool_event_refs:
+- path: tool-events/retained-1-succeeded.json
+  sha256: 05c96518f22636331c3aa211c7cc5788986e57d7c58dc0251686d60efc712424
+- path: tool-events/retained-2-succeeded.json
+  sha256: ab01b3f5ba78f4f6db3ffd0eb58f4726ee9aec8c0f89e9b9be75624591bd0bcb
+- path: tool-events/retained-3-succeeded.json
+  sha256: 3735e662b0f82744cc55e75bef5ad07539f3a9692ad4cd4c44c5ad7b23b45acc
+- path: tool-events/retained-4-succeeded.json
+  sha256: ecfc2e7eb20a51d0e042305eba7689e3eba3998a0908462993d6f80935e5f90b
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: messages

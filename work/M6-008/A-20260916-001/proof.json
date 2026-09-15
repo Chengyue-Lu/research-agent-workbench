@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-09-15T16:25:53.520292+00:00",
+  "implementation_commit": "b04957223d20d59904309fe9d7de70c7b074ac4c",
+  "evidence_kind": "synthetic-local-transport",
+  "task_completion": false,
+  "source_refs": [
+    {
+      "path": "src/research_workbench/execution/baseline.py",
+      "sha256": "7f46390787fd5c1a441a52635d28c0ba13af54405cdeb17343d3bb8ec97ba7d1"
+    },
+    {
+      "path": "src/research_workbench/execution/baseline_envelope.py",
+      "sha256": "ab9af1bb6ab3dd3798e3bef7cffb1d9e9a045d7f99cc488470c7e72ffbe0dc31"
+    },
+    {
+      "path": "src/research_workbench/execution/baseline_closeout.py",
+      "sha256": "301dab3d6096bd4cf6881474105cda5a92e1cde2d47015d91569a21e77d35af5"
+    }
+  ],
+  "cases": [
+    {
+      "project": "cases/a1",
+      "envelope_ref": {
+        "path": "baseline/plain-agent-envelope.json",
+        "sha256": "679c51bb594819055bdf80c2f6d585de26e1a16cfcf48af93cae6a4f40afea62"
+      },
+      "receipt_ref": {
+        "path": "work/TASK-MR-ES-FROZEN-001/A1/receipt.json",
+        "sha256": "0079d43bfd372bbcab55263425fd0f7ebdcce9372e371eba268a088cf52102bc"
+      },
+      "status": "completed",
+      "provider_calls": 1,
+      "cold_replay": "pass",
+      "trace_blocked": false
+    },
+    {
+      "project": "cases/a2",
+      "envelope_ref": {
+        "path": "baseline/plain-agent-tool-envelope.json",
+        "sha256": "6e3b4a60b46becf52fec4cc047da12a812e86f882534615e0e68c775912e5f9b"
+      },
+      "receipt_ref": {
+        "path": "work/TASK-MR-ES-FROZEN-001/A1/receipt.json",
+        "sha256": "22059bfa10a060592e3570c9bc1365cb01308c960917d8a136e5df13d5ed02e5"
+      },
+      "status": "completed",
+      "provider_calls": 2,
+      "cold_replay": "pass",
+      "trace_blocked": false
+    }
+  ]
+}
