@@ -1,0 +1,39 @@
+task_id: TEST-PERF-002
+revision: 29
+owner: Chengyue-Lu
+risk: R2
+delegation: false
+required_skills: []
+goal: Repair PR83 review findings and prepare the bounded change for review with exact-head
+  checks.
+authorization: User requests comment-driven fixes and moving PR83 out of Draft; no
+  merge is requested.
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- .github/**
+- src/**
+- tests/**
+- schemas/**
+- registry/**
+- pyproject.toml
+- build_backend.py
+- runtime-resources.json
+- work/TEST-PERF-002/**
+- .rwb/boundary-review/**
+write_scope:
+- .github/scripts/ci_dependencies.py
+- .github/scripts/plan_ci.py
+- tests/test_ci_dependencies.py
+- tests/test_ci_plan.py
+- tests/ci_impact_policy.yaml
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- work/TEST-PERF-002/A-20260916-001/**
+- .rwb/boundary-review/**
+stop_conditions:
+- Keep primary develop and other owners branches unchanged.
+- Keep full selection authority bootstrap, quality floors and ordered execution.
+- Mark ready after repairing review findings; no merge or release authority.

@@ -104,3 +104,6 @@ Two actual Git repositories exercise unchanged readers with `patch` and `patch.o
 changing the document from four bytes to three makes execution fail, and the selector
 retains the failing consumer. Ordinary metadata and all prior direct/lexical/opaque
 controls remain covered. The diagnostic count name also resolves the review's P2 ambiguity.
+The [review-remediation Attempt](../../../../work/TEST-PERF-002/A-20260916-001/RESULTS.md)
+records 47 dependency, 106 planner/checker/witness and 10 documentation checks, source
+hashes and critical/changed coverage. Hosted final-head checks are linked from PR #83.
