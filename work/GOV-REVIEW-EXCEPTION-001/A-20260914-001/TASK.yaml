@@ -1,0 +1,51 @@
+task_id: GOV-REVIEW-EXCEPTION-001
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+agent_profile: bounded-governance-review-exception
+required_skills: []
+delegation: false
+baseline: f7a9715ed35787d3326283c22f834b1514c5c88c
+user_request: 接受单次维护者例外；无默认等待或缩短为 6 小时，可人工确认另一 reviewer 暂无空闲后由自己一侧批准。
+goal: Implement the accepted no-wait, single-PR maintainer exception and split remote
+  hard/review gates.
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/DEVELOP_TO_MAIN_RELEASE.md
+- docs/decisions/README.md
+- docs/workstreams/chengyue-lu/README.md
+- docs/workstreams/chengyue-lu/GOV-REVIEW-EXCEPTION-001/**
+- .github/**
+- tests/test_documentation.py
+- tests/test_pr_governance.py
+- tests/test_governance_helper_branches.py
+- tests/coverage_policy.yaml
+- tests/run_unittest_suite.py
+- schemas/**
+- examples/**
+- registry/**
+- pyproject.toml
+- src/research_workbench/**
+- GitHub rules documentation and repository rules/identity/PR/CI APIs
+write_scope:
+- .github/scripts/check_pr_governance.py
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- docs/DEVELOP_TO_MAIN_RELEASE.md
+- docs/decisions/0022-SINGLE-PR-MAINTAINER-REVIEW-EXCEPTION.md
+- docs/decisions/README.md
+- docs/workstreams/chengyue-lu/GOV-REVIEW-EXCEPTION-001/EXCEPTION_RECORD.md
+- docs/workstreams/chengyue-lu/GOV-REVIEW-EXCEPTION-001/README.md
+- docs/workstreams/chengyue-lu/GOV-REVIEW-EXCEPTION-001/RISK_LEDGER.md
+- docs/workstreams/chengyue-lu/GOV-REVIEW-EXCEPTION-001/ROLLOUT.md
+- docs/workstreams/chengyue-lu/README.md
+- work/GOV-REVIEW-EXCEPTION-001/A-20260914-001/**
+- GitHub exact main/develop hard/review rulesets
+- GitHub feature branch and review PR metadata
+stop_conditions:
+- Publish an independently reviewable R2 PR with exact-head CI and deployment evidence.
+- Do not merge any specific PR without its separate explicit maintainer decision.
+- Keep primary develop, Task definitions/statuses, dormant release authority and product
+  inputs unchanged.

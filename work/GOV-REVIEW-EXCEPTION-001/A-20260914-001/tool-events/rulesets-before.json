@@ -1,0 +1,47 @@
+{
+  "observed_at": "2026-09-14T13:05:42.376125Z",
+  "method": "GET",
+  "route": "repos/Chengyue-Lu/research-agent-workbench/rulesets",
+  "exit_code": 0,
+  "response": [
+    {
+      "id": 23192001,
+      "name": "RWB develop protection",
+      "target": "branch",
+      "source_type": "Repository",
+      "source": "Chengyue-Lu/research-agent-workbench",
+      "enforcement": "active",
+      "node_id": "RRS_lACqUmVwb3NpdG9yec5PaC0NzgFh4cE",
+      "_links": {
+        "self": {
+          "href": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/rulesets/23192001"
+        },
+        "html": {
+          "href": "https://github.com/Chengyue-Lu/research-agent-workbench/rules/23192001"
+        }
+      },
+      "created_at": "2026-09-14T01:07:48.403+08:00",
+      "updated_at": "2026-09-14T01:07:48.469+08:00"
+    },
+    {
+      "id": 23192054,
+      "name": "RWB main protection",
+      "target": "branch",
+      "source_type": "Repository",
+      "source": "Chengyue-Lu/research-agent-workbench",
+      "enforcement": "active",
+      "node_id": "RRS_lACqUmVwb3NpdG9yec5PaC0NzgFh4fY",
+      "_links": {
+        "self": {
+          "href": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/rulesets/23192054"
+        },
+        "html": {
+          "href": "https://github.com/Chengyue-Lu/research-agent-workbench/rules/23192054"
+        }
+      },
+      "created_at": "2026-09-14T01:08:36.219+08:00",
+      "updated_at": "2026-09-14T01:08:36.307+08:00"
+    }
+  ],
+  "stderr": ""
+}

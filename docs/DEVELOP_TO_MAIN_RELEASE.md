@@ -30,7 +30,7 @@ feature / task-definition branch
 - `main` 只接受同一仓库中以精确 `develop` 分支为 head 的 PR；
 - release PR 的 base 必须是 `main`，PR class 必须是 `release`；
 - 禁止从 feature、个人、临时汇总、fork 或重新拼装的 release branch 直接进入 `main`；
-- 紧急修复仍先进入 `develop`，不得以紧急为由绕过 CI、审查或 authority gate；
+- 紧急修复仍先进入 `develop`，CI 与 authority gate 保持；reviewer 不可用时仅可按开发指南第 5.4 节采用单次维护者例外；
 - 禁止直接 push、force push 或删除 `develop` / `main`。
 
 该拓扑由 `.github/scripts/check_pr_governance.py` 校验。GitHub ruleset 负责远端阻断；仓库规则与
@@ -65,7 +65,7 @@ GitHub required-check authenticity 和最终 readiness 仍由 M14-005 闭合，�
 3. `develop` 的完整 CI 通过，工作树干净，且与 `main` 无未解决冲突；
 4. `STATUS.md`、`TASKS.md`、迁移说明、已知限制和必要 History 能准确描述拟发布状态；
 5. 涉及治理、架构、共享契约、权限、数据、Method/Claim/Gate 或 Runtime authority 时，原变更的
-   具名 owner、跨 owner 审查与证据仍可追溯；
+   具名 owner、跨 owner 审查或单次维护者例外及证据仍可追溯；
 6. 明确本次仓库发布不解除仍存在的许可证、外部发布、真实环境、科学正确性或净收益 Gate。
 
 若 `develop` 在审查期间前进，release PR 会随 exact `develop` 自动扩大范围。负责人必须重新检查
@@ -86,6 +86,10 @@ release PR 使用仓库模板，并至少填写：
 
 至少一名具备相应 authority 的维护者审查 release PR。若 head 在批准后变化，应重新确认最新 diff；
 未解决 conversation、失败/缺失的必需检查、冲突或 Governance `ERROR` 均阻断合并。
+
+reviewer 暂无空闲时，路诚钺可按[开发指南第 5.4 节](DEVELOPMENT.md#54-reviewer-不可用时的单次维护者例外)
+批准绑定 exact base/head 的单次审核例外，无需等待。release PR 作者可承担该维护者责任，但仍须明确
+作出本次 Human release decision；M14 readiness、source CI、topology 与 artifact closure 要求继续生效。
 
 ## 4. 合并方式
 

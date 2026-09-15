@@ -25,6 +25,7 @@
 ## Change discipline
 
 - Governance constrains what may enter shared project truth, not ordinary implementation choices inside an isolated branch. Apply the R0/R1/R2 merge-boundary policy in `docs/DEVELOPMENT.md`.
+- For R1/R2 merges, retain cross-owner review or the single-PR maintainer exception in `docs/DEVELOPMENT.md` section 5.4. Only Chengyue-Lu may authorize that exception after personally confirming reviewer unavailability; no waiting period or automated approval applies. Agents may prepare evidence and execute an explicitly authorized merge, but approval of the mechanism does not authorize a particular PR. Keep required CI, topology, unresolved-blocker and release-authority gates intact.
 - Start from `docs/README.md` and `docs/DEVELOPMENT.md`; read `docs/ARCHITECTURE.md` and only the relevant module plan before changing a core contract.
 - Record a new ADR for changes to core object identity, skill routing semantics, human decision boundaries, or runtime ownership.
 - Use explicit file paths when staging changes. Preserve unrelated user work.

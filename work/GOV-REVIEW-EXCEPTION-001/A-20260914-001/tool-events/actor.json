@@ -1,0 +1,12 @@
+{
+  "observed_at": "2026-09-14T13:05:38.858451Z",
+  "method": "GET",
+  "route": "user",
+  "exit_code": 0,
+  "response": {
+    "login": "Chengyue-Lu",
+    "id": 140945476,
+    "type": "User"
+  },
+  "stderr": ""
+}

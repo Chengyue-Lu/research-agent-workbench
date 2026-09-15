@@ -1,0 +1,34 @@
+[
+  {
+    "mutation": "hard bypass",
+    "rejected": true
+  },
+  {
+    "mutation": "wrong actor",
+    "rejected": true
+  },
+  {
+    "mutation": "always mode",
+    "rejected": true
+  },
+  {
+    "mutation": "exempt mode",
+    "rejected": true
+  },
+  {
+    "mutation": "missing checks",
+    "rejected": true
+  },
+  {
+    "mutation": "merge method drift",
+    "rejected": true
+  },
+  {
+    "mutation": "review drift",
+    "rejected": true
+  },
+  {
+    "mutation": "latent hard approval",
+    "rejected": true
+  }
+]

@@ -1,0 +1,67 @@
+{
+  "observed_at": "2026-09-14T13:05:41.430916Z",
+  "method": "GET",
+  "route": "repos/Chengyue-Lu/research-agent-workbench/collaborators?per_page=100",
+  "exit_code": 0,
+  "response": [
+    {
+      "login": "Chengyue-Lu",
+      "id": 140945476,
+      "node_id": "U_kgDOCGaoRA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/140945476?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Chengyue-Lu",
+      "html_url": "https://github.com/Chengyue-Lu",
+      "followers_url": "https://api.github.com/users/Chengyue-Lu/followers",
+      "following_url": "https://api.github.com/users/Chengyue-Lu/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Chengyue-Lu/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Chengyue-Lu/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Chengyue-Lu/subscriptions",
+      "organizations_url": "https://api.github.com/users/Chengyue-Lu/orgs",
+      "repos_url": "https://api.github.com/users/Chengyue-Lu/repos",
+      "events_url": "https://api.github.com/users/Chengyue-Lu/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Chengyue-Lu/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false,
+      "permissions": {
+        "admin": true,
+        "maintain": true,
+        "push": true,
+        "triage": true,
+        "pull": true
+      },
+      "role_name": "admin"
+    },
+    {
+      "login": "let778750-cpu",
+      "id": 240712654,
+      "node_id": "U_kgDODlj7zg",
+      "avatar_url": "https://avatars.githubusercontent.com/u/240712654?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/let778750-cpu",
+      "html_url": "https://github.com/let778750-cpu",
+      "followers_url": "https://api.github.com/users/let778750-cpu/followers",
+      "following_url": "https://api.github.com/users/let778750-cpu/following{/other_user}",
+      "gists_url": "https://api.github.com/users/let778750-cpu/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/let778750-cpu/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/let778750-cpu/subscriptions",
+      "organizations_url": "https://api.github.com/users/let778750-cpu/orgs",
+      "repos_url": "https://api.github.com/users/let778750-cpu/repos",
+      "events_url": "https://api.github.com/users/let778750-cpu/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/let778750-cpu/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false,
+      "permissions": {
+        "admin": false,
+        "maintain": false,
+        "push": true,
+        "triage": true,
+        "pull": true
+      },
+      "role_name": "write"
+    }
+  ],
+  "stderr": ""
+}

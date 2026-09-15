@@ -1,0 +1,10 @@
+schema_version: 0.1.0
+task_id: GOV-REVIEW-EXCEPTION-001
+task_revision: 1
+attempt_id: A-20260914-001
+actors:
+- actor_id: main-agent
+  actor_type: agent
+  role: governance implementation and remote rollout
+  runtime_identity: Codex governance review exception
+  accountable_owner: Chengyue-Lu
