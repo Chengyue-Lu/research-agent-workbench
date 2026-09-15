@@ -7,6 +7,9 @@
 - Accepted quality foundation: [TEST-QUALITY-001](../TEST-QUALITY-001/README.md).
 - Scope: planner, execution/coverage obligations, workflow events and evidence. Product Runtime, Provider code, research authority and Task definitions retain their current contracts.
 
+The September 15 [dependency boundary Draft](BOUNDARY_REPAIR.md) records the expansion
+audit, initial metadata/workflow precision repairs and the remaining consumer-boundary work.
+
 The next repair round after merged PR #66 is prepared in [Impact precision](IMPACT_PRECISION.md),
 with the real M14 hosted baseline, three reproduced module probes and independent coverage-selection acceptance.
 

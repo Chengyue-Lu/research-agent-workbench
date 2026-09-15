@@ -88,3 +88,16 @@ for cross-owner review. Quality thresholds, exclusions, product contracts and re
 - Preserve known Path constructor imports and unrelated scope precision. Real Git-bound
   good/bad document tests and scoped import/alias regressions cover both omission and
   unnecessary broadening. Existing selection quality floors and witness requirements apply.
+
+## September 15 boundary Draft
+
+- Treat a literal length as metadata only when the builtin binding is known. Preserve
+  definition/import/parameter/exception/pattern shadowing, reflective mutations, actual
+  reads and opaque execution; a filename spelling alone is insufficient to infer a read.
+- Typed YAML equivalence can exempt workflow comments/formatting, but mode or semantic
+  changes keep full authority validation. The independent pinned witness is unchanged.
+- Diagnostic edge kinds and counts never lower the machine minimum. Global opaque/resource
+  propagation, output-name ambiguity, lazy imports and exclusion-coordinate identity remain
+  open in this Draft; see the explicit matrix in BOUNDARY_REPAIR.md.
+- Local selection reductions do not establish hosted wall-time gains. Preserve critical
+  95/90, changed 100/100, integration 90, ordered fixtures, exact-target checks and R2 review.
