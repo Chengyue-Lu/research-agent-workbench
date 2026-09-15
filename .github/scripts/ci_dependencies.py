@@ -110,6 +110,7 @@ def _file_facts(path, raw):
     resolved graph here: another snapshot may add a module or a resource match.
     """
     links, literals, prefixes, basenames = set(), set(), set(), set()
+    length_metadata = set()
     opaque = resources = False
     try:
         tree = ast.parse(raw)
@@ -130,6 +131,14 @@ def _file_facts(path, raw):
     import_targets = defaultdict(set)
     mutated_names = set()
     for node in nodes:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            bindings[scope(node)][node.name].append(node)
+        if isinstance(node, ast.ExceptHandler) and node.name:
+            bindings[scope(node)][node.name].append(node)
+        if isinstance(node, (ast.MatchAs, ast.MatchStar)) and node.name:
+            bindings[scope(node)][node.name].append(node)
+        if isinstance(node, ast.MatchMapping) and node.rest:
+            bindings[scope(node)][node.rest].append(node)
         if isinstance(node, (ast.Global, ast.Nonlocal)):
             mutated_names.update(node.names)
         if isinstance(node, ast.ImportFrom):
@@ -246,12 +255,69 @@ def _file_facts(path, raw):
                 mutations.update(node.names)
         return uses, mutations
 
+    def patch_callable(node):
+        return (isinstance(node, ast.Name) and (node.id == 'patch'
+                or 'unittest.mock.patch' in import_targets[node.id])
+                or isinstance(node, ast.Attribute) and node.attr == 'patch')
+
+    def call_mutates_builtin_len(node):
+        """Known mutation helpers invalidate metadata when their target is uncertain.
+
+        Do not infer object identity: an unknown receiver with attribute 'len' may
+        be builtins. Only a fixed, unrelated target/name keeps this optimization.
+        """
+        if not isinstance(node, ast.Call):
+            return False
+        keywords = {item.arg: item.value for item in node.keywords}
+        if patch_callable(node.func):
+            targets = node.args[:1] or [keywords.get('target')]
+        elif isinstance(node.func, ast.Attribute) and node.func.attr == 'object' and patch_callable(node.func.value):
+            targets = node.args[1:2] or [keywords.get('attribute')]
+        elif isinstance(node.func, ast.Attribute) and node.func.attr in {'multiple', 'dict'} and patch_callable(node.func.value):
+            target = node.args[0] if node.args else keywords.get('target')
+            # multiple names are explicit keywords, unless ** expansion hides them.
+            # dict may replace/clear the entire namespace, so its keys are not a bound.
+            if node.func.attr == 'multiple' and not ({'len', None} & keywords.keys()):
+                return False
+            return (not isinstance(target, ast.Constant) or not isinstance(target.value, str)
+                    or target.value in {'builtins', 'builtins.__dict__'})
+        elif isinstance(node.func, ast.Attribute) and node.func.attr == 'setattr':
+            # monkeypatch has both dotted-target and object/name overloads.
+            targets = ([keywords['name']] if 'name' in keywords else
+                       node.args[1:2] if len(node.args) >= 3 or 'value' in keywords else
+                       node.args[:1] or [keywords.get('target')])
+        elif isinstance(node.func, ast.Attribute) and node.func.attr == '__setattr__':
+            targets = node.args[:1] or [keywords.get('name')]
+        else:
+            return False
+        return any(not isinstance(target, ast.Constant) or not isinstance(target.value, str)
+                   or target.value in {'len', 'builtins.len'} for target in targets)
+
+    reflective_bindings = any(
+        isinstance(n, ast.ImportFrom) and any(a.name == '*' for a in n.names)
+        or isinstance(n, ast.Name) and n.id in {'globals', 'locals', 'vars', 'setattr', 'delattr', '__builtins__'}
+        or isinstance(n, ast.ImportFrom) and n.module == 'builtins'
+            and any(a.name in {'globals', 'locals', 'vars', 'setattr', 'delattr'} for a in n.names)
+        or isinstance(n, ast.Attribute) and (n.attr == '__dict__' or n.attr == 'len' and isinstance(n.ctx, ast.Store))
+        or isinstance(n, ast.Subscript) and isinstance(n.ctx, ast.Store)
+            and isinstance(n.slice, ast.Constant) and n.slice.value == 'len'
+        or call_mutates_builtin_len(n)
+        for n in nodes)
+
     def name_only(node, seen=frozenset()):
         """Recognize lexical predicates, without crossing a read/call boundary."""
         if node in seen:
             return False
         seen = seen | {node}
         parent = parents.get(node)
+        if (isinstance(node, ast.Constant) and isinstance(node.value, str)
+                and isinstance(parent, ast.Call) and isinstance(parent.func, ast.Name)
+                and parent.func.id == 'len' and parent.args == [node] and not parent.keywords
+                and not lexical_values(parent.func) and not reflective_bindings):
+            # A literal's length is a number, not a repository path. Resolve the
+            # builtin lexically: an import, parameter or mutation can make len a reader.
+            length_metadata.add(node.value)
+            return True
         while isinstance(parent, (ast.Set, ast.List, ast.Tuple, ast.BinOp)):
             node, parent = parent, parents.get(parent)
         if isinstance(parent, (ast.Compare, ast.Expr)):
@@ -351,6 +417,51 @@ def _file_facts(path, raw):
             return call_name(node.value) + '.' + node.attr
         return ''
 
+    def repository_path(node, seen=frozenset()):
+        """Only an exact __file__-anchored pathlib expression proves a target."""
+        if node in seen:
+            return None
+        seen = seen | {node}
+        if isinstance(node, ast.Name) and len(lexical_values(node)) == 1:
+            return repository_path(lexical_values(node)[0], seen)
+        if (isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div)
+                and isinstance(node.right, ast.Constant) and isinstance(node.right.value, str)):
+            root = repository_path(node.left, seen)
+            tail = node.right.value.replace('\\', '/')
+            if root is None or tail.startswith('/') or ':' in tail or '..' in tail.split('/'):
+                return None
+            result = posixpath.normpath(root + '/' + tail)
+        else:
+            root = literal_path(node)
+            result = root.as_posix() if root is not None else '..'
+        return None if result == '..' or result.startswith('../') else result
+
+    # A replaced Path operation or escaped execution cannot prove filesystem roots.
+    path_mutation = reflective_bindings or any(
+        isinstance(n, ast.Attribute) and isinstance(n.ctx, (ast.Store, ast.Del))
+            and n.attr in {'Path', '__file__', 'str', 'run_path', 'read_text', 'read_bytes', 'open',
+                           'glob', 'rglob', 'iterdir', 'resolve', 'absolute', 'parent', 'parents',
+                           '__truediv__', '__fspath__', '__class__', '__getattribute__', '__getattr__'}
+        or isinstance(n, ast.Call) and (patch_callable(n.func)
+            or isinstance(n.func, ast.Attribute) and (
+                n.func.attr in {'setattr', '__setattr__', '__delattr__'}
+                or patch_callable(n.func.value))) for n in nodes)
+    fixed_reads, fixed_directories, fixed_runs, resource_nodes = set(), set(), set(), []
+
+    def run_path_target(call):
+        argument = call.args[0] if call.args else None
+        if (isinstance(argument, ast.Call) and isinstance(argument.func, ast.Name)
+                and argument.func.id == 'str' and not lexical_values(argument.func)
+                and len(argument.args) == 1 and not argument.keywords):
+            argument = argument.args[0]
+        target = repository_path(argument)
+        root = call.func.value if isinstance(call.func, ast.Attribute) else call.func
+        values = lexical_values(root) if isinstance(root, ast.Name) else []
+        if (target is not None and not path_mutation and len(values) == 1
+                and isinstance(values[0], (ast.Import, ast.ImportFrom))):
+            return target
+        return None
+
     for node in nodes:
         if isinstance(node, (ast.Name, ast.Attribute)):
             name = call_name(node)
@@ -369,7 +480,7 @@ def _file_facts(path, raw):
                     # boundary. Preserve that consumer even when later aliases vary.
                     opaque = True
         if (isinstance(node, ast.Attribute) and node.attr in {'read_text', 'read_bytes', 'open', 'glob', 'rglob', 'iterdir'}) or (isinstance(node, ast.Name) and node.id == 'open'):
-            resources = True
+            resource_nodes.append(node)
         if not isinstance(node, ast.Call):
             continue
         name = call_name(node.func)
@@ -386,16 +497,41 @@ def _file_facts(path, raw):
         if name in {'__import__', 'builtins.__import__', 'importlib.import_module', 'runpy.run_module', 'runpy.run_path'}:
             if node.args and isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str):
                 link(node.args[0].value)
+            elif name == 'runpy.run_path' and (target := run_path_target(node)) is not None:
+                fixed_runs.add(target)
             else:
                 opaque = True
         elif not name or name in {'eval', 'exec', 'builtins.eval', 'builtins.exec'} or name.startswith(('subprocess.', 'os.system', 'os.popen')):
             opaque = True
         elif name.endswith(('.exec_module', '.spec_from_file_location')):
             opaque = True
-        if name.endswith(('.read_text', '.read_bytes', '.open', '.glob', '.rglob', '.iterdir')) or name == 'open':
+    for node in resource_nodes:
+        parent = parents.get(node)
+        target = repository_path(node.value) if isinstance(node, ast.Attribute) else None
+        if (target is not None and isinstance(parent, ast.Call) and parent.func is node
+                and not path_mutation and not opaque):
+            if node.attr in {'read_text', 'read_bytes', 'open'}:
+                fixed_reads.add(target)
+            elif (node.attr == 'iterdir' and not parent.args and not parent.keywords
+                    or node.attr in {'glob', 'rglob'} and len(parent.args) == 1
+                    and isinstance(parent.args[0], ast.Constant) and isinstance(parent.args[0].value, str)
+                    and not parent.keywords and not parent.args[0].value.startswith(('/', '\\'))
+                    and ':' not in parent.args[0].value
+                    and '..' not in parent.args[0].value.replace('\\', '/').split('/')):
+                # Keep the entire directory inventory, including future entries.
+                fixed_directories.add(target)
+            else:
+                resources = True
+        else:
             resources = True
+    if opaque:
+        # Escaped/dynamic execution can mutate name resolution; keep its literal
+        # inputs even when they appeared to be a builtin metadata operation.
+        literals.update(length_metadata)
+        links.update(length_metadata)
     return (frozenset(links), frozenset(literals), frozenset(prefixes),
-            frozenset(basenames), opaque, resources)
+            frozenset(basenames), opaque, resources, frozenset(fixed_reads), frozenset(fixed_runs),
+            frozenset(fixed_directories))
 
 
 def graph(blobs, paths):
@@ -415,7 +551,7 @@ def graph(blobs, paths):
         if facts is None:
             errors.append('unparseable Python dependency: ' + path)
             continue
-        links, literals, prefixes, basenames, dynamic, reader = facts
+        links, literals, prefixes, basenames, dynamic, reader, fixed_reads, fixed_runs, fixed_directories = facts
         inputs = set()
         for name in links:
             parts = name.split('.')
@@ -429,6 +565,21 @@ def graph(blobs, paths):
             inputs.update(references.get(value, ()))
         for value in prefixes:
             inputs.update(descendants.get(value, ()))
+        for target in fixed_reads | fixed_runs | fixed_directories:
+            # Re-evaluate modes in each inventory; a cached syntax fact cannot bind
+            # a symlink target or an unparsed executable in a different snapshot.
+            ancestors = [target, *(p.as_posix() for p in PurePosixPath(target).parents)]
+            if target in fixed_directories:
+                children = paths if target == '.' else descendants.get(target, ())
+                inputs.update(children)
+                ancestors.extend(children)
+            if (any(isinstance(paths, dict) and p in paths and paths[p][0] not in {'100644', '100755'}
+                    for p in ancestors)
+                    or target in fixed_runs and target not in blobs):
+                reader |= target in fixed_reads | fixed_directories
+                dynamic |= target in fixed_runs
+            if target in paths:
+                inputs.add(target)
         for dependency in inputs:
             reverse[dependency].add(path)
         if dynamic:
@@ -519,9 +670,21 @@ def select(repo, base, head, seeds, reviewed_seeds=(), reviewed_consumers=(), re
     tests = {module_name(path).removeprefix('tests.'): chain for path, chain in trails.items()
              if path in new and path.startswith('tests/test_')}
     inventory = sorted(module_name(path).removeprefix('tests.') for path in new if path.startswith('tests/test_'))
+    edge_kinds = {}
+    for name, chain in sorted(tests.items()):
+        edge_kinds[name] = [
+            'syntax-reference' if consumer in reverse[dependency] else
+            'opaque-execution' if dependency in seeds and dependency.endswith('.py')
+                and not dependency.startswith('tests/test_') and consumer in opaque else
+            'unbounded-resource'
+            for dependency, consumer in zip(chain, chain[1:])]
     payload = json.dumps({'base': before, 'head': after}, sort_keys=True).encode()
     return {'algorithm': 'base-head-consumers-v1', 'inventory_sha256': hashlib.sha256(payload).hexdigest(),
             'selected': dict(sorted(tests.items())), 'excluded': sorted(set(inventory) - tests.keys()),
+            'selected_edge_kinds': edge_kinds,
+            'scope_summary': {'available_test_modules': len(inventory), 'dependency_selected_test_modules': len(tests),
+                              'opaque_execution_paths': sum('opaque-execution' in kinds for kinds in edge_kinds.values()),
+                              'unbounded_resource_paths': sum('unbounded-resource' in kinds for kinds in edge_kinds.values())},
             'exclusion_reasons': {name: ('unchanged consumer covered by accepted base contract' if
                 'tests/' + name + '.py' in bounded else 'outside base/head dependency closure')
                 for name in sorted(set(inventory) - tests.keys())},

@@ -1,0 +1,82 @@
+[
+  {
+    "path": "review-input.json",
+    "original_sha256": "86dc5723cb3573d215ca114195588e827feb3e336bea2501dc55cd6ade0ff7b9",
+    "original_bytes": 5753,
+    "archived_sha256": "86dc5723cb3573d215ca114195588e827feb3e336bea2501dc55cd6ade0ff7b9",
+    "archived_bytes": 5753,
+    "normalization": "CRLF to LF only"
+  },
+  {
+    "path": "before.log",
+    "original_sha256": "6892bead1e747acf73c4c6a49d1e899fb41200de1cd08a50ca190b7d94523b9a",
+    "original_bytes": 6239,
+    "archived_sha256": "6a90b2f509b5886ec89813483e28a4e72f977cd30623427e25168ca040a38cf2",
+    "archived_bytes": 6162,
+    "normalization": "CRLF to LF only"
+  },
+  {
+    "path": "dependencies.log",
+    "original_sha256": "a38b1ea1b6191f8688b8a1d989d177164ee4eb1bc068d9f324eacf967b74beda",
+    "original_bytes": 853,
+    "archived_sha256": "6fa6b6096a8cf3912b8682e252169b5f91121d6bc44654feedddbf2cada70c25",
+    "archived_bytes": 844,
+    "normalization": "CRLF to LF only"
+  },
+  {
+    "path": "dependencies-coverage.log",
+    "original_sha256": "65411ca819fa3b30b0b181e4211899d542ad22681d526cda209ddc3d6dde6c7b",
+    "original_bytes": 151,
+    "archived_sha256": "8ee84184decd750b0d52f2f2f8b62b717a3d967a87b8e28b91993fd650f35d0d",
+    "archived_bytes": 146,
+    "normalization": "CRLF to LF only"
+  },
+  {
+    "path": "planner-coverage.log",
+    "original_sha256": "05e9047a984b011f941c02ae323e9276bd497d585f14230be9eb5e37214b60d9",
+    "original_bytes": 15038,
+    "archived_sha256": "aee385809a2ecb415d12c29592e59120b85eb659684b9b534818c8f1f69ee9f8",
+    "archived_bytes": 14655,
+    "normalization": "CRLF to LF only"
+  },
+  {
+    "path": "documentation.log",
+    "original_sha256": "e6905109d352bc54dc313652799b3f20f5bacb0b46af501ffc30a5026ecd9a91",
+    "original_bytes": 114,
+    "archived_sha256": "26d94ec697f5bd3b47e836ee7e90c3d877f686fa34257b4397bb7d7af7cfd1b3",
+    "archived_bytes": 109,
+    "normalization": "CRLF to LF only"
+  },
+  {
+    "path": "critical-coverage.json",
+    "original_sha256": "6eac674fc88bcb51ba6a8d551ca6d58ead4112f7a0081bf75702f67ece2d332b",
+    "original_bytes": 189138,
+    "archived_sha256": "6eac674fc88bcb51ba6a8d551ca6d58ead4112f7a0081bf75702f67ece2d332b",
+    "archived_bytes": 189138,
+    "normalization": "CRLF to LF only"
+  },
+  {
+    "path": "source-validation.json",
+    "original_sha256": "f668a6f300fc482460eab908222f3dc898804154e1fa2c03faa8c5c3ebfe1202",
+    "original_bytes": 1436,
+    "archived_sha256": "f668a6f300fc482460eab908222f3dc898804154e1fa2c03faa8c5c3ebfe1202",
+    "archived_bytes": 1436,
+    "normalization": "CRLF to LF only"
+  },
+  {
+    "path": "source-plan.json",
+    "original_sha256": "2fe6f78f8639aeb40f15ac0cdc0a6a44ffa9a07fbf010627d52e8818bd5915c3",
+    "original_bytes": 81966,
+    "archived_sha256": "2fe6f78f8639aeb40f15ac0cdc0a6a44ffa9a07fbf010627d52e8818bd5915c3",
+    "archived_bytes": 81966,
+    "normalization": "CRLF to LF only"
+  },
+  {
+    "path": "preflight.log",
+    "original_sha256": "bb79bc27be0bf11079aa47acf3c5eaf91f1374ee14843bab287918d565fb4e9c",
+    "original_bytes": 2057,
+    "archived_sha256": "2c1d56cd9e64b0dd0dfc2a06f9d467003691c074d875db2423dce96ecd461505",
+    "archived_bytes": 1994,
+    "normalization": "CRLF to LF only"
+  }
+]

@@ -1,0 +1,48 @@
+{
+  "source_head": "acd900bc2d9c16bec6eecff7421efb9a97c8c391",
+  "base": "7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba",
+  "implementation": "0b8032762dadec4b32f74cc38676d91427ee9433",
+  "local_target": "acd900bc2d9c16bec6eecff7421efb9a97c8c391",
+  "hosted_merge_target": "pending",
+  "governance": "PASS",
+  "plan_id": "d2efc3fc9aa83dd7812be9b34b309ed0fb41de3046f299b78b043071d1d37dc6",
+  "behavior": "full",
+  "coverage": "impact",
+  "coverage_detail": {
+    ".github/scripts/ci_dependencies.py": {
+      "sha256": "cff8797315e3bb3b64ee1eab83adb7d54ad00bd5d7617e77fbbfbc699972b2ad",
+      "statements": [
+        432,
+        432
+      ],
+      "branches": [
+        280,
+        280
+      ],
+      "changed_coordinate_count": 347,
+      "missing_changed_lines": [],
+      "missing_changed_branches": []
+    },
+    ".github/scripts/plan_ci.py": {
+      "sha256": "ba025e5c32d6b153049ec630bc0e22854423351776641452fff35f90d3d99e58",
+      "statements": [
+        538,
+        539
+      ],
+      "branches": [
+        204,
+        206
+      ],
+      "changed_coordinate_count": 13,
+      "missing_changed_lines": [],
+      "missing_changed_branches": []
+    }
+  },
+  "tests": {
+    "dependency": 44,
+    "planner_checker_witness": 106,
+    "documentation": 10,
+    "planner_coverage_rerun": 73
+  },
+  "limits": "Focused source checks and local target only; hosted full execution and merge-target receipts remain separate."
+}

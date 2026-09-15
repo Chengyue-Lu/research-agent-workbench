@@ -88,3 +88,46 @@ for cross-owner review. Quality thresholds, exclusions, product contracts and re
 - Preserve known Path constructor imports and unrelated scope precision. Real Git-bound
   good/bad document tests and scoped import/alias regressions cover both omission and
   unnecessary broadening. Existing selection quality floors and witness requirements apply.
+
+## September 15 boundary Draft
+
+- Treat a literal length as metadata only when the builtin binding is known. Preserve
+  definition/import/parameter/exception/pattern shadowing, reflective mutations, actual
+  reads and opaque execution; a filename spelling alone is insufficient to infer a read.
+- Typed YAML equivalence can exempt workflow comments/formatting, but mode or semantic
+  changes keep full authority validation. The independent pinned witness is unchanged.
+- Diagnostic edge kinds and counts never lower the machine minimum. Global opaque/resource
+  propagation, output-name ambiguity, lazy imports and exclusion-coordinate identity remain
+  follow-ups in Issue #48; see the explicit matrix in BOUNDARY_REPAIR.md.
+- Local selection reductions do not establish hosted wall-time gains. Preserve critical
+  95/90, changed 100/100, integration 90, ordered fixtures, exact-target checks and R2 review.
+
+## PR #83 review remediation
+
+- Mutation helpers can replace `builtins.len` without binding the bare name. Recognize
+  patch/patch.object aliases, setattr overloads and __setattr__; uncertain target/name
+  arguments retain dependencies. Fixed unrelated names retain metadata precision.
+- Real Git-bound four-byte/three-byte document probes retain a failing consumer under
+  both patch forms. Selector regressions cover the other call shapes and existing controls.
+- `dependency_selected_test_modules` explicitly counts the dependency selector output;
+  final plan tests may additionally contain policy and explicit obligations.
+- The bounded PR is prepared for review. Wider graph precision and cross-commit reuse
+  remain Issue #48 follow-ups; current checks and owner review govern acceptance.
+- Batch patch helpers also mutate builtin bindings: multiple with `len` or unknown
+  keyword expansion, and dict on a possibly builtin namespace retain dependencies.
+  Fixed unrelated targets/attribute names preserve precision; real Git-bound failing
+  readers and dynamic/alias selector cases cover these adjacent standard-library forms.
+
+## M6-008 fixed-input audit
+
+- Exact repository roots can bound a resource read or script target; an unknown root,
+  mutation, escaped capability, path escape or symlink cannot authorize exclusion.
+  Directory scans keep every descendant and re-evaluate the inventory at each Git ref.
+- Bound script execution follows the script's actual imports and retains opaque fallback
+  for unknown/unparsed targets. The independent selection witness remains authoritative.
+- M6's resource fallback consumers decrease from 125 to 116, but its complete selection
+  stays 91/92. Shared validation imports and unresolved helper inputs still independently
+  reach these tests. No M6 runtime improvement is claimed; caller-sensitive propagation
+  needs further proof before exclusions can be widened.
+- This work changes PR #83 only. M6 source, branch, CI runs and acceptance remain owned
+  by its workstream. Exact-target full bootstrap, quality floors and R2 review still apply.

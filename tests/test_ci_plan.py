@@ -1042,6 +1042,26 @@ class PlannerTests(unittest.TestCase):
                 self.assertFalse(p['blocked_reasons'])
                 planner.verify_plan(self.repo, p)
 
+    def test_workflow_formatting_does_not_seed_resource_or_coverage_fallback(self):
+        workflow = '.github/workflows/ci.yml'
+        write(self.repo, 'tests/test_resource_reader.py', 'from pathlib import Path\nPath("data.json").read_text()\n')
+        self.base = self.commit(workflow, 'name: CI\njobs: {}\n')
+        for source in ('name: CI\njobs: {}\n# comment\n', '{name: CI, jobs: {}}\n'):
+            with self.subTest(source=source):
+                command(self.repo, 'reset', '--hard', self.base)
+                self.commit(workflow, source)
+                p = self.plan(body=BODY.replace('R0', 'R2'))
+                self.assertEqual(('none', 'none'), (p['behavioral_scope'], p['coverage_scope']))
+                self.assertNotIn('test_resource_reader', p['tests'])
+                self.assertFalse(p['package_smoke'] or p['repository_smoke'])
+                planner.verify_plan(self.repo, p)
+        command(self.repo, 'reset', '--hard', self.base)
+        command(self.repo, 'update-index', '--chmod=+x', workflow)
+        command(self.repo, 'commit', '-qm', 'workflow mode')
+        p = self.plan()
+        self.assertEqual(('full', 'repository'), (p['behavioral_scope'], p['coverage_scope']))
+
+
     def test_candidate_selector_returning_no_tests_cannot_authorize_focused(self):
         path = '.github/scripts/ci_dependencies.py'
         defective = (self.repo / path).read_bytes() + b'''
