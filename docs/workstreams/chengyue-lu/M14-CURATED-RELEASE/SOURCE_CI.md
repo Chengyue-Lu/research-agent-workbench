@@ -74,6 +74,10 @@ R2 acceptance into develop. Before claiming the source-CI gap closed, observe th
 download its producer receipt and invoke `attest` at the accepted source. A previously green develop run
 without this job remains a negative control.
 
+Engineering evidence: [Attempt index](../../../../work/M14-005/A-20260915-003/INDEX.yaml) and
+[verification](../../../../work/M14-005/A-20260915-003/outputs/VERIFICATION.json). Capture gaps and the rejected
+initial archive preflight are retained; final-head hosted CI and review receipts belong to the implementation PR.
+
 Next: review and integrate this slice, verify that real protected push, then prepare release-only checks and
 their exact policy include. The named first-release version/scope decision and fresh remote-protection
 readback precede READY/cutover. Canonical Task status, release policy, product/Skill inputs and topology

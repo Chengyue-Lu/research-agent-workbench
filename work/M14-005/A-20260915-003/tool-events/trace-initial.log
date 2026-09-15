@@ -1,0 +1,16 @@
+BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+WARNING TRACE-CAPTURE-DELAYED        [capture-gap] trace declares incomplete or delayed capture
