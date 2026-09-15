@@ -60,6 +60,18 @@ class DependencyTests(unittest.TestCase):
             'patch.object(builtins, "len", getsize)',
             'mock.patch.object(builtins, "len", getsize)',
             'renamed.object(builtins, "len", getsize)',
+            'patch.multiple("builtins", len=getsize)',
+            'mock.patch.multiple("builtins", len=getsize)',
+            'renamed.multiple("builtins", len=getsize)',
+            'patch.multiple(builtins, len=getsize)',
+            'patch.multiple(dynamic_target, len=getsize)',
+            'patch.multiple(dynamic_target, **attrs)',
+            'patch.multiple("builtins", **attrs)',
+            'patch.multiple(target="builtins", len=getsize)',
+            'patch.multiple(target=dynamic_target, **attrs)',
+            'patch.dict("builtins.__dict__", len=getsize)',
+            'mock.patch.dict("builtins.__dict__", {"len": getsize})',
+            'renamed.dict(dynamic_target, attrs)',
             'monkeypatch.setattr("builtins.len", getsize)',
             'monkeypatch.setattr(builtins, "len", getsize)',
             'monkeypatch.setattr(unknown_target, "len", getsize)',
@@ -74,7 +86,8 @@ class DependencyTests(unittest.TestCase):
         ):
             with self.subTest(mutation=mutation):
                 operation = ('with ' + mutation + ':\n value = len("docs/input.md")\n'
-                             if mutation.startswith(('patch(', 'mock.patch(', 'renamed(')) else
+                             if mutation.startswith(('patch(', 'mock.patch(', 'renamed('))
+                             or '.multiple(' in mutation or '.dict(' in mutation else
                              mutation + '\nvalue = len("docs/input.md")\n')
                 raw = ('import builtins\nfrom unittest import mock\n'
                        'from unittest.mock import patch, patch as renamed\n'
@@ -84,7 +97,9 @@ class DependencyTests(unittest.TestCase):
                     blobs, blobs, ['docs/input.md'], ['docs/input.md'])['selected'])
 
     def test_patched_length_retains_actual_document_failure(self):
-        for mutation in ('patch("builtins.len", getsize)', 'patch.object(builtins, "len", getsize)'):
+        for mutation in ('patch("builtins.len", getsize)', 'patch.object(builtins, "len", getsize)',
+                         'patch.multiple("builtins", len=getsize)',
+                         'patch.dict("builtins.__dict__", len=getsize)'):
             with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
                 repo = Path(directory)
                 def git(*args):
@@ -115,6 +130,11 @@ class DependencyTests(unittest.TestCase):
         for mutation in (
             'patch("app.value", replacement)',
             'patch.object(app, "value", replacement)',
+            'patch.multiple("app.config", value=replacement)',
+            'patch.multiple("app.config", len=replacement)',
+            'patch.multiple("builtins", value=replacement)',
+            'patch.multiple(dynamic_target, value=replacement)',
+            'patch.dict("app.config", value=replacement)',
             'monkeypatch.setattr(app, "value", replacement)',
             'monkeypatch.setattr("app.value", replacement)',
             'app.__setattr__("value", replacement)',
