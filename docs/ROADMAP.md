@@ -49,7 +49,7 @@ family 为什么存在、由什么 authority boundary 约束、何时允许启�
 | Phase A | Method/Core 与 Authority Rule Eligibility；不产生执行或 Human Decision | M8 | 已收口 |
 | Phase B | Capability demand/supply、Skill evolution、Protocol；不授予 Runtime authority | M9 | 已收口 |
 | Phase C | Research State、Failure、Method Trace 与 bounded verification | M10，复用历史 `M3-009`；M4 为 provenance support | bounded machine DAG 已实现；Human/R2 semantic closeout 仍独立 pending |
-| Phase D | Evaluation record、system-level baseline/net benefit 与 pruning；不自动 promotion | M5；baseline transport 复用 M6；部分 M7 experiments 由 TASKS 决定是否恢复 | ADR-0020 已闭合 baseline architecture Gate，M5-006 可启动；M6-008、Skill replay、真实 case/provenance/live execution/Human review 仍各自受 Gate 约束 |
+| Phase D | Evaluation record、system-level baseline/net benefit 与 pruning；不自动 promotion | M5；baseline transport 复用 M6；部分 M7 experiments 由 TASKS 决定是否恢复 | ADR-0020 Gate A、M5-006 Protocol 与 M11-007 Skill replay / Gate B 已闭合；M5-007 仍等待 M6-008；真实 case/provenance/live execution/Human review 保持独立 Gate |
 | Phase E | Strategy candidate 与 governed evolution；不得自动修改 Core | 既有 M2/M7；M13 仅 **RESERVED** | Phase C/D evidence 证明旧 group 不足后另行接受 |
 | Phase F / Topic 4 | Agent/Model/Provider/Runtime 消费 frozen contract；不拥有 Method/Claim/Gate/fallback authority | M11 Core 与 optional extension；M6 live conformance | M11 Core 与 optional Skill extension 已 bounded 实现；live conformance 仍依独立 Gate |
 | Topic 5 residual | Handoff、context rollover、safe pause/resume、recovery/continuation | M12 仅 **RESERVED** | Phase C closeout + 独立 Topic 5 R2 review/task-definition |
@@ -315,10 +315,9 @@ bytes/hash、独立佐证 actual binding；它不复用 legacy mandatory Skill A
 M5-007 hard-depend M5-006、M6-008、M11-004、M11-006、M11-007 与 `M5-SKILL-CLOSEOUT-REPLAY-GATE`。M11-004 通过
 M11-003 提供 Core Host actual-fact 与 generic Trace/Receipt/Artifact closeout contract；M11-006 独立提供
 projection-backed Skill Supply mapping，但不传递前者。现有 Core Receipt 不支持 Skill-bearing actual binding，
-M11-007 为该外部 Gate 提供独立的 Execution-owned 实施身份，只依赖 M11-004/006，可与 M6-008
-并行。它须实现版本化 Skill-bearing actual closeout、保留三种生命周期并独立文件 replay；
-[Gate B record](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md) 继续为 UNSATISFIED，
-只有实现、exact-head 证据和双方审查被接受后才满足。任务定义合入不解锁 M5-007。
+M11-007 的 `skill-execution@1.0.0` 已由 PR81 接受并合入，保留三种生命周期与独立文件 replay；
+[Gate B record](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md) exact-pin 实现、四个 synthetic proof、
+CI 与具名双方接受，现为 SATISFIED。M5-007 的剩余实现硬依赖是 M6-008 DONE；其候选继续由 PR75 承载。
 baseline transport architecture decision 已作为 M5-006 的 hard dependency 传递；Harness 必须实现其中冻结的
 arm→transport mapping 并消费 M6-008，不能通过 raw Task control、dummy Method/Snapshot 或 Skill Assignment
 强塞 plain arms 进入 M11；对 A2/A3 必须独立重算 `ArmExecutionQualificationRecord@1.0.0`，拒绝 binding

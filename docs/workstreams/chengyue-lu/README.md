@@ -8,7 +8,7 @@
 - [`M1-PROJECT-SCAFFOLD/`](M1-PROJECT-SCAFFOLD/README.md)：可复用项目模板、安装后离线 Run 路径与 0.x 兼容政策；[PR #74](https://github.com/Chengyue-Lu/research-agent-workbench/pull/74) 已获 R2 review 并合入，M14-004 消费该实际入口。
 - [`M11-SKILL-CLOSEOUT-GATE/`](M11-SKILL-CLOSEOUT-GATE/README.md)：M11-007 Skill-bearing generic
   closeout / replay 的 R2 任务定义与 Gate B evidence 接口；黄毅负责实施，路诚钺负责 M5 consumer 审查，
-  M5-007 继续等待 baseline closeout 和 Gate B。
+  M11-007 / Gate B 已绑定 PR81 收口证据，M5-007 继续等待 M6-008 baseline closeout。
 
 - [`DOC-ALIGN-002/`](DOC-ALIGN-002/README.md)：PR #68 已合入，完成 accepted M4/M14 成熟度、Phase D
   入口与 ADR-0020 Gate 对齐；后续 [navigation maintenance](DOC-ALIGN-002/FOLLOWUP-20260912.md) 收口
@@ -20,7 +20,7 @@
 - [`M5-SYSTEM-EVALUATION-DESIGN/`](M5-SYSTEM-EVALUATION-DESIGN/README.md)：冻结 system-level
   primary estimand、case dossier public/private boundary、Protocol/Harness Tasks 与真实执行/pruning Gate；
   ADR-0020 已选择 dual transport，M5-006 Protocol / shared qualification contract 已由 PR71 接受；
-  M6-008 baseline closeout 与 M11-007 Skill closeout 分别推进，任务状态以 TASKS 为准；本工作流不运行
+  M11-007 / Gate B 已闭合，下一节点为 M6-008 baseline closeout；任务状态以 TASKS 为准；本工作流不运行
   真实 Evaluation，也不宣称净收益。
 - [`PHASE-C-RESEARCH-STATE/`](PHASE-C-RESEARCH-STATE/README.md)：M10 bounded machine implementation
   已集成；Human semantic review 与 R2/Phase C closeout 仍 pending，Topic 5 未获实现权限。
