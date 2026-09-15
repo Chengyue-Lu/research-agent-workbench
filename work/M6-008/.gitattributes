@@ -1,0 +1,3 @@
+** -text
+# Preserve trailing spaces emitted by unittest in the retained raw counterexample log.
+A-20260916-001/evidence/replay-baseline-red.log whitespace=-blank-at-eol

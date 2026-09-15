@@ -1,0 +1,15 @@
+schema_version: 0.1.0
+task_id: M6-008
+task_revision: 1
+attempt_id: M6-008-TAKEOVER-20260916
+actors:
+- actor_id: m6-takeover-agent
+  actor_type: runtime-adapter
+  role: bounded API session runner
+  runtime_identity: codex-development-export
+  accountable_owner: Chengyue-Lu (authorized takeover evidence)
+- actor_id: provider-uncaptured-development-provider
+  actor_type: model-provider
+  role: bound model provider
+  runtime_identity: uncaptured-development-provider
+  accountable_owner: Chengyue-Lu (authorized takeover evidence)

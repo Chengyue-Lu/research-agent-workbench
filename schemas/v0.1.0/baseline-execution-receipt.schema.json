@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/baseline-execution-receipt.schema.json",
+  "title": "Baseline Execution Receipt",
+  "x-rwb-document-kind": "baseline_execution_receipt",
+  "type": "object",
+  "required": [
+    "schema_version", "record_kind", "version", "receipt_id", "attempt_id",
+    "envelope_ref", "envelope_snapshot_ref", "protocol_ref", "trace_index_ref", "fact_refs",
+    "artifact_refs", "validation_ref", "status", "reason", "started_at",
+    "completed_at", "elapsed_seconds", "actual_binding", "task_completion", "boundaries"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "record_kind": { "const": "baseline_execution_receipt" },
+    "version": { "const": "1.0.0" },
+    "receipt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "attempt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "envelope_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "envelope_snapshot_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "protocol_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "trace_index_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "fact_refs": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/fileRef" }
+    },
+    "artifact_refs": {
+      "type": "array", "maxItems": 1, "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/fileRef" }
+    },
+    "validation_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "status": { "enum": ["completed", "post-call-failed", "preflight-blocked"] },
+    "reason": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "started_at": { "type": "string", "format": "date-time" },
+    "completed_at": { "type": "string", "format": "date-time" },
+    "elapsed_seconds": { "type": "number", "minimum": 0 },
+    "actual_binding": {
+      "oneOf": [
+        { "$ref": "resolved-execution-view.schema.json#/properties/binding" },
+        { "const": null }
+      ]
+    },
+    "task_completion": { "const": false },
+    "boundaries": {
+      "const": {
+        "supply_selection": false, "human_decision": false,
+        "claim_acceptance": false, "promotion": false,
+        "pruning": false, "recovery": false
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "completed" } }, "required": ["status"] },
+      "then": { "properties": {
+        "actual_binding": { "$ref": "resolved-execution-view.schema.json#/properties/binding" },
+        "artifact_refs": { "minItems": 1 }
+      } }
+    }
+  ],
+  "additionalProperties": false
+}

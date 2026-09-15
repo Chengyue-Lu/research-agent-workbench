@@ -1,0 +1,89 @@
+test_each_invocation_requires_its_own_complete_use_refs (tests.test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_each_invocation_requires_its_own_complete_use_refs) ... 
+  test_each_invocation_requires_its_own_complete_use_refs (tests.test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_each_invocation_requires_its_own_complete_use_refs) (fact=0) ... FAIL
+  test_each_invocation_requires_its_own_complete_use_refs (tests.test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_each_invocation_requires_its_own_complete_use_refs) (fact=2) ... FAIL
+  test_each_invocation_requires_its_own_complete_use_refs (tests.test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_each_invocation_requires_its_own_complete_use_refs) (fact=4) ... FAIL
+test_first_request_must_match_public_payload_and_tool_surface (tests.test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_first_request_must_match_public_payload_and_tool_surface) ... 
+  test_first_request_must_match_public_payload_and_tool_surface (tests.test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_first_request_must_match_public_payload_and_tool_surface) (index=0) ... FAIL
+  test_first_request_must_match_public_payload_and_tool_surface (tests.test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_first_request_must_match_public_payload_and_tool_surface) (index=1) ... FAIL
+  test_first_request_must_match_public_payload_and_tool_surface (tests.test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_first_request_must_match_public_payload_and_tool_surface) (index=2) ... FAIL
+test_later_request_must_preserve_observed_tool_history (tests.test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_later_request_must_preserve_observed_tool_history) ... FAIL
+test_tool_arguments_must_match_the_observed_provider_call (tests.test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_tool_arguments_must_match_the_observed_provider_call) ... FAIL
+test_unchanged_archive_replays (tests.test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_unchanged_archive_replays) ... ok
+test_validation_cannot_include_an_unrelated_subject (tests.test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_validation_cannot_include_an_unrelated_subject) ... FAIL
+
+======================================================================
+FAIL: test_each_invocation_requires_its_own_complete_use_refs (tests.test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_each_invocation_requires_its_own_complete_use_refs) (fact=0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tests\test_baseline_replay_integrity.py", line 113, in test_each_invocation_requires_its_own_complete_use_refs
+    with self.assertRaisesRegex(EvaluationValidationError, 'use.boundary'):
+AssertionError: EvaluationValidationError not raised
+
+======================================================================
+FAIL: test_each_invocation_requires_its_own_complete_use_refs (tests.test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_each_invocation_requires_its_own_complete_use_refs) (fact=2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tests\test_baseline_replay_integrity.py", line 113, in test_each_invocation_requires_its_own_complete_use_refs
+    with self.assertRaisesRegex(EvaluationValidationError, 'use.boundary'):
+AssertionError: EvaluationValidationError not raised
+
+======================================================================
+FAIL: test_each_invocation_requires_its_own_complete_use_refs (tests.test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_each_invocation_requires_its_own_complete_use_refs) (fact=4)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tests\test_baseline_replay_integrity.py", line 113, in test_each_invocation_requires_its_own_complete_use_refs
+    with self.assertRaisesRegex(EvaluationValidationError, 'use.boundary'):
+AssertionError: EvaluationValidationError not raised
+
+======================================================================
+FAIL: test_first_request_must_match_public_payload_and_tool_surface (tests.test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_first_request_must_match_public_payload_and_tool_surface) (index=0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tests\test_baseline_replay_integrity.py", line 97, in test_first_request_must_match_public_payload_and_tool_surface
+    with self.assertRaisesRegex(EvaluationValidationError, 'provider request'):
+AssertionError: EvaluationValidationError not raised
+
+======================================================================
+FAIL: test_first_request_must_match_public_payload_and_tool_surface (tests.test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_first_request_must_match_public_payload_and_tool_surface) (index=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tests\test_baseline_replay_integrity.py", line 97, in test_first_request_must_match_public_payload_and_tool_surface
+    with self.assertRaisesRegex(EvaluationValidationError, 'provider request'):
+AssertionError: EvaluationValidationError not raised
+
+======================================================================
+FAIL: test_first_request_must_match_public_payload_and_tool_surface (tests.test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_first_request_must_match_public_payload_and_tool_surface) (index=2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tests\test_baseline_replay_integrity.py", line 97, in test_first_request_must_match_public_payload_and_tool_surface
+    with self.assertRaisesRegex(EvaluationValidationError, 'provider request'):
+AssertionError: EvaluationValidationError not raised
+
+======================================================================
+FAIL: test_later_request_must_preserve_observed_tool_history (tests.test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_later_request_must_preserve_observed_tool_history)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tests\test_baseline_replay_integrity.py", line 103, in test_later_request_must_preserve_observed_tool_history
+    with self.assertRaisesRegex(EvaluationValidationError, 'provider request'):
+AssertionError: EvaluationValidationError not raised
+
+======================================================================
+FAIL: test_tool_arguments_must_match_the_observed_provider_call (tests.test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_tool_arguments_must_match_the_observed_provider_call)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tests\test_baseline_replay_integrity.py", line 121, in test_tool_arguments_must_match_the_observed_provider_call
+    with self.assertRaisesRegex(EvaluationValidationError, 'Tool call'):
+AssertionError: EvaluationValidationError not raised
+
+======================================================================
+FAIL: test_validation_cannot_include_an_unrelated_subject (tests.test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_validation_cannot_include_an_unrelated_subject)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tests\test_baseline_replay_integrity.py", line 129, in test_validation_cannot_include_an_unrelated_subject
+    with self.assertRaisesRegex(EvaluationValidationError, 'subject'):
+AssertionError: EvaluationValidationError not raised
+
+----------------------------------------------------------------------
+Ran 6 tests in 14.755s
+
+FAILED (failures=9)
