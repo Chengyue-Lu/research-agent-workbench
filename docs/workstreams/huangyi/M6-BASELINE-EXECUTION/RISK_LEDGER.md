@@ -1,10 +1,14 @@
 # M6-008 Risk Ledger
 
-日期：2026-09-12。Owner：黄毅。范围：未接受的 M6-008 baseline transport 候选。
+更新：2026-09-16。Owner：黄毅。范围：未接受的 M6-008 baseline transport 候选。
 本表记录影响当前验收解释的具体边界，不增加 Task 定义、Gate 或新的执行权威。
 
 | 项目 | 当前处理 / 证据 | 剩余边界 |
 | --- | --- | --- |
+| 回放未核对实际 Provider request | **已修正**：从冻结公开输入重建首轮请求，从实际响应/Tool 结果重建后续历史，并精确比较整个请求；注入控制文本、删 Tool、改预算及 Tool history 的重哈希反例被拒绝 | 字节相等不证明公开自然语言无偏或远程 Provider 忠实执行 |
+| 终态 use refs 掩盖逐次调用漏验 | **已修正**：每次调用前及终态均要求独立推导的完整输入闭包；单次漏验和所有 facts 一致删去资格输入均被拒绝 | 文件关系验证不提供历史调用认证；漂移后的失败保存仍不能变成成功资格 |
+| Tool 参数脱离实际响应 | **已修正**：按实际 Provider tool_calls 核对调用身份、参数和顺序；实际 batch 两次调用与冷回放通过 | callable 源码 pin 仍不是 OS 沙箱或远程执行认证 |
+| Validation subject 扩张 | **已修正**：subject refs 必须无重复且恰好覆盖当前 Trace / 输出；追加无关输入的重哈希反例被拒绝 | transport Validation 不授予研究结论或 Task 接受权威 |
 | Task 控制泄漏到 plain arm | **已修正**：独立公开 projection 绑定 exact Task，且由 Manifest context pin；instruction / outputs 不从完整 Task 自动复制；未知字段、替换 Task 与未冻结输入有专项反例 | 冻结者需确认公开自然语言的科研含义与各臂公平性；字段白名单不证明无偏 |
 | token / character 单位混用 | **已修正**：Tool 结果字符上限从已 pin ProjectProtocol.context_policy.baseline_transport 明确读取，拒绝缺失/非正整数；与 max_input_tokens 分开 | fixture 的 16000 字符是 case 配置，不是通用默认或模型 token 换算 |
 | 冻结 Task 约束仅被记录 | **已修正**：写目标同时受 write_scope、文件权限及显式 allowed_roots 约束，执行预算不得高于 Task 已声明同名 ceiling | 文件绑定的 callable 仍须由已授权调用方注册；当前 transport 不是 OS 沙箱 |

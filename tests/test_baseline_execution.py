@@ -382,6 +382,32 @@ print(json.dumps({"status": receipt["status"], "attempt_id": receipt["attempt_id
         tool_events = [event for event in events if event["event_type"] == "tool-call"]
         self.assertEqual([event["payload"]["status"] for event in tool_events], ["attempted", "failed"])
 
+    def test_a2_batch_replays_both_ordered_tool_results(self):
+        calls = (ToolCall("first", "bounded_operation", {"value": "7"}),
+                 ToolCall("second", "bounded_operation", {"value": "8"}))
+        provider = ScriptedProvider(replace(response("batch", tool=True), tool_calls=calls), response("final"))
+        binding = observe_baseline_binding(provider, model="baseline-fixture", model_slot="primary")
+        self.f.build_baseline(A2, binding, max_parallel=2)
+        tool = self.load_tool()
+        with self.observe_tool_calls(tool) as observed:
+            result = self.run_arm(provider, tools=(tool,))
+        self.assertEqual(observed, [{"value": "7"}, {"value": "8"}])
+        self.assertEqual(result["receipt"]["status"], "completed")
+        self.assertTrue(result["replay_valid"], result["replay_error"])
+        self.assertEqual([b.data["call_id"] for b in provider.requests[1].messages[-1].content],
+                         ["first", "second"])
+        self.assert_fresh_file_replay(result, implementation=self.f.root / self.f.bindings[A2]["implementation_ref"]["path"])
+
+    def test_oversized_tool_result_retains_failure_without_a_next_request(self):
+        call = ToolCall("large", "bounded_operation", {"value": "x" * 16001})
+        provider = ScriptedProvider(replace(response("large", tool=True), tool_calls=(call,)), response("must-not-run"))
+        self.freeze(provider, A2)
+        result = self.run_arm(provider, tools=(self.load_tool(),))
+        self.assertEqual(len(provider.requests), 1)
+        self.assert_preserved_failure(result, replay_valid=True)
+        self.assertEqual(result["receipt"]["reason"], "tool-result-size-budget")
+        self.assert_fresh_file_replay(result)
+
     def test_sanitized_response_is_the_only_output_persisted_with_the_trace(self):
         credential = "synthetic-baseline-credential-marker"
         private_reasoning = "synthetic-baseline-private-reasoning-marker"

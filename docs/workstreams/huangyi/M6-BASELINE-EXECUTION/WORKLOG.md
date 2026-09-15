@@ -4,6 +4,28 @@
 这份记录是跨 Agent 实现交接的导航摘要，不替代本地保留的可见协作消息和执行记录；
 不为开发过程另造科研 Agent Trace。范围与状态见 [README.md](README.md)。
 
+## 2026-09-16 接手与回放修复
+
+用户授权接手 M6-008 后，在独立 worktree 将 PR #75 的 `8f68879e781cbc09ba60f3718f436a4a5de42ae2`
+迁移至 `develop@7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba`。原始候选基于 `60bdf8c`，
+重放后提交为 `5dcf628`。STATUS / implementation map 冲突按最新 M11 与 M14 状态保留，
+M6 仍只提议 PARKED → READY；Task / Execution owner 保持黄毅，M5 共享契约和 Gate 定义不变。
+
+此次授权范围内读取原候选、直接依赖的 M5 qualification、isolated session 与 Trace serializer，
+发现实际请求、逐次 use refs、Tool 参数和 Validation subject 四项可复现的回放缺口。
+同一份实际 A2 档案被内容篡改并完整重哈希后，原实现的 6 个测试方法中出现 9 个断言失败，
+未篡改档案正常通过。修复后首批 27 项通过（51.525 秒）；增加共同漏验与标量/列表结果后，
+29 项覆盖率运行通过（84.098 秒）。实际 batch 和 oversized Tool 的两项窄复验通过（14.868 秒）。
+三个 M6 模块同源码累计局部 line / branch 均 100%，未降低 coverage policy 阈值。
+
+回放从冻结文件独立推导 use closure，并从实际消息/结果字节重建 Provider 请求与 Tool 调用顺序。
+历史 compiler identity 保留为 producer 身份，不要求 replay host 安装相同源文件。
+失败保存语义维持原约定。新增测试仅使用本地 scripted Provider 和只读函数。
+
+开发过程记录属于带 capture-gap 声明的延迟导出，不能充当完整 runtime capture；
+实际 synthetic session 的 Trace 与开发记录分开。最终 archive、exact-head CI 与 cross-owner review
+在 PR #75 继续收口，不复用原候选 CI 或早先 PR 的 reviewer exception。
+
 ## 1. 共享输入与范围确认
 
 按 M6-008 和 ADR-0020 复核 M5 qualification / Protocol / Manifest、现有 API session 与

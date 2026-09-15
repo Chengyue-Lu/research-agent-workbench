@@ -28,6 +28,7 @@ class BaselineFixture(SystemEvaluationFixture):
         self,
         arm_id: str = A1,
         execution_binding: Mapping[str, Any] | None = None,
+        *, max_parallel: int = 1,
     ) -> "BaselineFixture":
         if not hasattr(self, "protocol"):
             self.build()
@@ -60,7 +61,7 @@ class BaselineFixture(SystemEvaluationFixture):
                 binding["interface_ref"] = copy.deepcopy(self.bindings[A2]["interface_ref"])
         manifest = self.doc(self.manifest_ref["path"])
         frozen = manifest["frozen_conditions"]
-        frozen["budget"]["max_parallel"] = 1
+        frozen["budget"]["max_parallel"] = max_parallel
         context_policy = self.doc(frozen["context"]["policy_ref"]["path"])
         # A fixture-chosen character limit for the existing ClientTool loop;
         # this is distinct from the Manifest's provider input-token budget.
