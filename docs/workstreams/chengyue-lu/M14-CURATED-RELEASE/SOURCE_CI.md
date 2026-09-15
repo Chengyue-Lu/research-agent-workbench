@@ -1,7 +1,8 @@
 # M14-005 source CI preparation
 
-- Owner: 路诚钺 (`Chengyue-Lu`); R2; Task M14-005 remains BLOCKED.
-- Integration baseline: `0bebafd81f0116a8269c63ac97378038a1eb2a5d`.
+- Owner: 路诚钺 (`Chengyue-Lu`); R2; Task M14-005 is READY in this candidate under the
+  [named v0.1.0 preparation decision and fresh protection readback](FIRST_RELEASE_DECISION.md).
+- Integration baseline: `7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba`.
 - M0-007 was accepted in [PR #78](https://github.com/Chengyue-Lu/research-agent-workbench/pull/78).
   [PR #79](https://github.com/Chengyue-Lu/research-agent-workbench/pull/79) accepted the separate hard/review rulesets.
 - Scope: the develop-side source-CI producer and live observer. Release-only checks, their policy include,
@@ -21,8 +22,9 @@ current merged PR body. An absent association, non-squash integration, metadata/
 tree mismatch fails the source check. Running the ordinary PR checker on a push and accepting its no-op
 exit is insufficient.
 
-The job publishes `source-governance.json` only after success. This establishes a same-source governance
-result in the same `CI` run as the existing complete integration tests. The PR metadata is a fresh API
+The job publishes `source-governance.json` only after success as an **audit artifact** recording its
+governance result. Trust comes from the successful same-source governance job in the authenticated `CI`
+run, together with the existing complete integration tests. The PR metadata is a fresh API
 observation, not a reconstruction of the body as it existed at merge time; later incompatible body edits
 can therefore block a rerun. They must be reconciled explicitly in the accepted PR record.
 
@@ -58,6 +60,12 @@ The future protected release caller must perform this live observation itself an
 `source_ci` to the exporter; a saved JSON file, candidate manifest or PR claim cannot substitute for that
 call. Authentic source CI alone grants neither release readiness nor release authority.
 
+`attest` does not download, hash or validate `source-governance.json`. That producer receipt is a separate
+audit attachment, not an attestation input or an exporter trust token. Downloading it helps inspect the
+producer's recorded metadata/delta, but a matching receipt cannot make a rejected live graph valid.
+Any future protected caller that uses its contents as a machine input must separately specify and verify
+the artifact's run/attempt/source binding, hash and content; that integration is not implemented here.
+
 API contracts: [workflow runs and attempts](https://docs.github.com/en/rest/actions/workflow-runs),
 [workflow jobs](https://docs.github.com/en/rest/actions/workflow-jobs),
 [check runs](https://docs.github.com/en/rest/checks/runs), and
@@ -71,14 +79,17 @@ and independent positive/negative evidence. Existing full integration, package a
 
 The initial PR cannot prove its own post-merge develop push producer: that workflow first runs after its
 R2 acceptance into develop. Before claiming the source-CI gap closed, observe that resulting push run,
-download its producer receipt and invoke `attest` at the accepted source. A previously green develop run
+invoke `attest` at the accepted source and retain its live graph observation. Separately download the
+producer receipt for audit inspection; this step is not performed by `attest` and does not supply trust.
+A previously green develop run
 without this job remains a negative control.
 
 Engineering evidence: [Attempt index](../../../../work/M14-005/A-20260915-003/INDEX.yaml) and
 [verification](../../../../work/M14-005/A-20260915-003/outputs/VERIFICATION.json). Capture gaps and the rejected
 initial archive preflight are retained; final-head hosted CI and review receipts belong to the implementation PR.
 
-Next: review and integrate this slice, verify that real protected push, then prepare release-only checks and
-their exact policy include. The named first-release version/scope decision and fresh remote-protection
-readback precede READY/cutover. Canonical Task status, release policy, product/Skill inputs and topology
-are unchanged by this slice.
+Next: review and integrate this READY candidate, verify that real protected push, then prepare release-only
+checks and their exact policy include. The named first-release decision authorizes implementation/cutover
+preparation; final release PR and tag require separate approval. Only the canonical Task status changes
+from BLOCKED to READY; its definition/dependencies, release policy, product/Skill inputs and topology remain
+unchanged. Live cutover remains gated by complete release checks, fresh protection evidence and R2 acceptance.
