@@ -1,0 +1,171 @@
+{
+  "control": "live historical green develop push",
+  "expected_rejection": "missing or ambiguous source job: governance",
+  "result": "PASS",
+  "release_eligible": false,
+  "observations": [
+    {
+      "path": "",
+      "observed_at": "2026-09-15T10:51:37.761096+00:00",
+      "response": {
+        "id": 1332227341,
+        "full_name": "Chengyue-Lu/research-agent-workbench",
+        "name": "research-agent-workbench"
+      }
+    },
+    {
+      "path": "actions/workflows/ci.yml",
+      "observed_at": "2026-09-15T10:51:38.909243+00:00",
+      "response": {
+        "id": 333624988,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "state": "active"
+      }
+    },
+    {
+      "path": "actions/runs/34939526577",
+      "observed_at": "2026-09-15T10:51:40.448107+00:00",
+      "response": {
+        "id": 34939526577,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "event": "push",
+        "head_sha": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+        "head_branch": "develop",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "workflow_id": 333624988,
+        "check_suite_id": 94612814414,
+        "repository": {
+          "id": 1332227341,
+          "full_name": "Chengyue-Lu/research-agent-workbench"
+        },
+        "head_repository": {
+          "id": 1332227341,
+          "full_name": "Chengyue-Lu/research-agent-workbench"
+        }
+      }
+    },
+    {
+      "path": "actions/runs/34939526577/attempts/1/jobs?per_page=100&page=1",
+      "observed_at": "2026-09-15T10:51:42.080375+00:00",
+      "response": {
+        "total_count": 10,
+        "jobs": [
+          {
+            "id": 104284777513,
+            "name": "plan",
+            "head_sha": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+            "head_branch": "develop",
+            "status": "completed",
+            "conclusion": "success",
+            "run_attempt": 1,
+            "run_id": 34939526577,
+            "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/104284777513"
+          },
+          {
+            "id": 104284833171,
+            "name": "coverage-quality (3.11)",
+            "head_sha": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+            "head_branch": "develop",
+            "status": "completed",
+            "conclusion": "success",
+            "run_attempt": 1,
+            "run_id": 34939526577,
+            "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/104284833171"
+          },
+          {
+            "id": 104284833211,
+            "name": "compatibility (3.13)",
+            "head_sha": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+            "head_branch": "develop",
+            "status": "completed",
+            "conclusion": "success",
+            "run_attempt": 1,
+            "run_id": 34939526577,
+            "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/104284833211"
+          },
+          {
+            "id": 104284833231,
+            "name": "package-smoke (3.11)",
+            "head_sha": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+            "head_branch": "develop",
+            "status": "completed",
+            "conclusion": "success",
+            "run_attempt": 1,
+            "run_id": 34939526577,
+            "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/104284833231"
+          },
+          {
+            "id": 104284833232,
+            "name": "documentation",
+            "head_sha": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+            "head_branch": "develop",
+            "status": "completed",
+            "conclusion": "success",
+            "run_attempt": 1,
+            "run_id": 34939526577,
+            "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/104284833232"
+          },
+          {
+            "id": 104284833260,
+            "name": "package-smoke (3.13)",
+            "head_sha": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+            "head_branch": "develop",
+            "status": "completed",
+            "conclusion": "success",
+            "run_attempt": 1,
+            "run_id": 34939526577,
+            "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/104284833260"
+          },
+          {
+            "id": 104284833265,
+            "name": "repository_smoke",
+            "head_sha": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+            "head_branch": "develop",
+            "status": "completed",
+            "conclusion": "success",
+            "run_attempt": 1,
+            "run_id": 34939526577,
+            "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/104284833265"
+          },
+          {
+            "id": 104287585394,
+            "name": "test (3.13)",
+            "head_sha": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+            "head_branch": "develop",
+            "status": "completed",
+            "conclusion": "success",
+            "run_attempt": 1,
+            "run_id": 34939526577,
+            "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/104287585394"
+          },
+          {
+            "id": 104287585397,
+            "name": "compatibility (3.11)",
+            "head_sha": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+            "head_branch": "develop",
+            "status": "completed",
+            "conclusion": "success",
+            "run_attempt": 1,
+            "run_id": 34939526577,
+            "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/104287585397"
+          },
+          {
+            "id": 104287669285,
+            "name": "test (3.11)",
+            "head_sha": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+            "head_branch": "develop",
+            "status": "completed",
+            "conclusion": "success",
+            "run_attempt": 1,
+            "run_id": 34939526577,
+            "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/104287669285"
+          }
+        ]
+      }
+    }
+  ]
+}

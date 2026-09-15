@@ -1,0 +1,58 @@
+task_id: M14-005
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+agent_profile: bounded-source-ci-preparation
+required_skills: []
+delegation: false
+baseline: 0bebafd81f0116a8269c63ac97378038a1eb2a5d
+user_request: 继续推进M14-005
+goal: Implement merged-source governance and live source-CI observation while keeping
+  release authority dormant.
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/DEVELOP_TO_MAIN_RELEASE.md
+- docs/decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md
+- .github/scripts/release_source_ci.py
+- .github/workflows/ci.yml
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/TASKS.md
+- docs/implementation/RELEASE_SURFACE.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/READINESS_PREPARATION.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/RISK_LEDGER.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/SOURCE_CI.md
+- tests/coverage_policy.yaml
+- tests/test_release_source_ci.py
+- .github/**
+- tests/**
+- schemas/v0.1.0/release-manifest.schema.json
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- examples/**
+- registry/**
+- GitHub Issue 57, PR 78/79 and read-only CI/ruleset APIs
+write_scope:
+- .github/scripts/release_source_ci.py
+- .github/workflows/ci.yml
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/TASKS.md
+- docs/implementation/RELEASE_SURFACE.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/READINESS_PREPARATION.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/RISK_LEDGER.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/SOURCE_CI.md
+- tests/coverage_policy.yaml
+- tests/test_release_source_ci.py
+- work/M14-005/A-20260915-003/**
+- GitHub feature/m14-005-source-ci, implementation PR body and review request
+stop_conditions:
+- R2 implementation PR to develop with exact-head CI and cross-owner review request.
+- Do not merge this new implementation PR without acceptance and authorization.
+- M14-005 stays BLOCKED pending first-release decision and readiness closure.
+- No release refs, tag, real release, topology change or primary develop mutation.
