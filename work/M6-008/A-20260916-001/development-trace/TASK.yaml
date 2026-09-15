@@ -1,0 +1,6 @@
+task_id: M6-008
+revision: 1
+source: docs/TASKS.md
+task_owner: Huang Yi
+authorization: User authorized the current agent to take over M6-008 implementation
+  in PR75.

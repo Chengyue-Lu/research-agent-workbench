@@ -23,8 +23,12 @@ M6 仍只提议 PARKED → READY；Task / Execution owner 保持黄毅，M5 共�
 失败保存语义维持原约定。新增测试仅使用本地 scripted Provider 和只读函数。
 
 开发过程记录属于带 capture-gap 声明的延迟导出，不能充当完整 runtime capture；
-实际 synthetic session 的 Trace 与开发记录分开。最终 archive、exact-head CI 与 cross-owner review
-在 PR #75 继续收口，不复用原候选 CI 或早先 PR 的 reviewer exception。
+实际 synthetic session 的 Trace 与开发记录分开。
+[接手证据](../../../../work/M6-008/A-20260916-001/README.md) 绑定修复提交 `b049572`，
+保存 A1/A2 实际产物、cold replay 和无 BLOCK / 有 capture-gap warning 的开发 Trace。
+完整原文件封装为 `transport-proof.zip`，manifest 逐项核对 163 个成员哈希；解包后只读回放，
+Python 样本保持为执行证据。初次全仓检查在完成封装前主动停止，结果未计为 PASS；最终检查绑定封装后的提交。
+最终 exact-head CI 与 cross-owner review 在 PR #75 继续收口，不复用原候选 CI 或早先 PR 的 reviewer exception。
 
 ## 1. 共享输入与范围确认
 
