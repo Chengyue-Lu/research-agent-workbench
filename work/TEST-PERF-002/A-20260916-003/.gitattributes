@@ -1,0 +1,3 @@
+# Preserve the sealed capture bytes, including native Windows output newlines.
+* -text whitespace=cr-at-eol
+checks/*.log whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
