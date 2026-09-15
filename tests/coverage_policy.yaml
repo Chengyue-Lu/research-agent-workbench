@@ -81,6 +81,7 @@ suites:
       - test_skill_release_projection
       - test_skill_runtime_extension
       - test_skill_execution_closeout
+      - test_skill_closeout_review
       - test_skill_needs
       - test_trace_risk_codes
       - test_phase_b_evolution_gate
@@ -398,9 +399,12 @@ negative_acceptance:
     positive_tests:
       - test_skill_execution_closeout.SkillExecutionCloseoutTests.test_completed_vertical_proof_replays_in_fresh_process
       - test_skill_execution_closeout.SkillExecutionCloseoutTests.test_failed_actual_supply_and_projection_are_preserved
+      - test_skill_closeout_review.SkillCloseoutReviewTests.test_consumption_fact_never_predicts_post_call_binding
     negative_tests:
       - test_skill_execution_closeout.SkillExecutionCloseoutTests.test_missing_typed_fact_is_rejected
       - test_skill_execution_closeout.SkillExecutionCloseoutTests.test_consumption_schema_identity_component_and_hash_drift_are_rejected
+      - test_skill_closeout_review.SkillCloseoutReviewTests.test_wrong_kind_contract_blocks_before_any_driver_call
+      - test_skill_closeout_review.SkillCloseoutReviewTests.test_later_conflicting_reread_cannot_be_hidden_by_restored_file
   - surface: skill-release-projection-publication
     modules:
       - src/research_workbench/capability/release_projection.py

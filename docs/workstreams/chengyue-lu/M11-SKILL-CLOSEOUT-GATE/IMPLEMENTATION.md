@@ -12,8 +12,13 @@
 Add independently versioned Skill execution Host report, typed execution fact and Receipt contracts.
 Reuse the existing Host and closeout invariants; retain published Core and legacy schemas and their replay.
 The execution producer captures actual Projection / Supply / component bytes and identity at consumption.
-The Host preserves those observations and diagnoses completed-versus-requested drift. Closeout consumes
+The pre-use fact records consumed input identity only. A separate Core post-call fact records the
+observed execution binding after Provider/Tool activity. Host preflight checks the already-selected
+Skill closure before invoking the Driver. The Host preserves those observations and diagnoses drift. Closeout consumes
 frozen Trace and independently reloads all exact references; it never creates missing execution facts.
+
+The [PR81 review repair](REVIEW-REPAIR.md) records the two-stage timing, before-call closure check,
+and single-read invariant. The earlier candidate archive remains immutable historical evidence.
 
 Completed execution has exact requested/actual equality. Post-call failure retains corroborated actual
 drift. Preflight-blocked execution has no actual facts or calls. Driver exception and incomplete capture

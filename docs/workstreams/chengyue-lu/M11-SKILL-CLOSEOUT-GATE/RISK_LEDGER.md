@@ -30,3 +30,14 @@
 | 可验证实现被误读为 Gate 接受 | 候选证据与 accepted pins 分列；Gate B UNSATISFIED，M5-007 BLOCKED | 当前 CI、PR review 与 Gate record |
 
 实施接受仍由黄毅与路诚钺按各自边界承担；PR76 的单次维护者例外已使用，不适用于本实现候选。
+
+## PR81 review controls
+
+| Review risk | Repair and independent evidence |
+|---|---|
+| Pre-use identity predicts later binding | Separate consumption and Core post-call fact; reject missing/early binding creation; synthetic response is the first model-drift observation |
+| Wrong-kind contract executes before rejection | Read-only selected Skill closure preflight; direct-tool, procedure and invalid Projection cases prove zero Driver calls |
+| Restored files conceal contradictory reads | One hash-pinned read per canonical consumed path; later different-hash and alias duplicate cases reject |
+
+See [review repair](REVIEW-REPAIR.md). The old post-call archive is historical, while new proof and exact-head
+CI support focused re-review. Gate B remains UNSATISFIED.

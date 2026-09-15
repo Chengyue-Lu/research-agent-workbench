@@ -172,7 +172,7 @@ print(json.dumps({'status':r.document['status'],'skill':r.document['actual_skill
         # both report dictionaries while retaining unrelated input bytes.
         fixture.host["actual_skill_consumption"]["skill"]["skill_id"] = "invented-skill"
         def mutate(index, events):
-            ref = index["decision_refs"][-1]
+            ref = index["decision_refs"][1]
             path = fixture.trace_dir / ref["path"]
             fact = load_document(path)
             fact["actual_skill_consumption"]["skill"]["skill_id"] = "invented-skill"
@@ -277,7 +277,7 @@ print(json.dumps({'status':r.document['status'],'skill':r.document['actual_skill
                          infer_document_kind({'record_kind': 'system_evaluation_protocol'}))
         fixture = SkillCloseoutFixture(self.root)
         index = load_document(fixture.trace_dir / "INDEX.yaml")
-        fact = load_document(fixture.trace_dir / index["decision_refs"][-1]["path"])
+        fact = load_document(fixture.trace_dir / index["decision_refs"][1]["path"])
         cases = [(fixture.host, "skill_execution_host_report"),
                  (fixture.host["actual_skill_consumption"], "skill_execution_consumption"),
                  (fixture.build(), "skill_execution_receipt"), (fact, "skill_execution_trace_fact")]
@@ -412,8 +412,14 @@ print(json.dumps({'status':r.document['status'],'skill':r.document['actual_skill
                 argv = [str(archive / 'replay.py'), str(ROOT / case['receipt']['path']),
                         case['receipt']['sha256'], str(ROOT / case['project_root'])]
                 with patch.object(sys, 'argv', argv), contextlib.redirect_stdout(output):
-                    runpy.run_path(str(archive / 'replay.py'), run_name='__main__')
-                self.assertEqual(case['result'], json.loads(output.getvalue()))
+                    if case['result']['status'] == 'blocked':
+                        runpy.run_path(str(archive / 'replay.py'), run_name='__main__')
+                        self.assertEqual(case['result'], json.loads(output.getvalue()))
+                    else:
+                        # The rejected candidate remains immutable historical
+                        # evidence; its one-stage fact is not current acceptance.
+                        with self.assertRaises(GenericCloseoutValidationError):
+                            runpy.run_path(str(archive / 'replay.py'), run_name='__main__')
 
     def test_archived_checkers_reject_missing_outside_and_changed_subjects(self):
         archive = ROOT / 'work/M11-007/A-20260915-002'

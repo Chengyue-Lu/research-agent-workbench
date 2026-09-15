@@ -50,6 +50,7 @@ from research_workbench.execution.skill_facts import (
     SkillExecutionFactError,
     read_skill_execution_inputs,
     record_skill_execution_use,
+    record_skill_execution_result,
 )
 from research_workbench.execution.skill_closeout import (
     ValidatedSkillReceipt,
@@ -98,6 +99,7 @@ __all__ = [
     "SkillExecutionFactError",
     "read_skill_execution_inputs",
     "record_skill_execution_use",
+    "record_skill_execution_result",
     "ValidatedSkillReceipt",
     "build_skill_execution_receipt",
     "validate_skill_execution_receipt",

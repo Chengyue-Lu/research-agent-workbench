@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+from research_workbench.artifacts.integrity import resolve_within_root
+
 from research_workbench.execution.generic_closeout import (
     CloseoutPin, GenericCloseoutValidationError, _build_execution_receipt,
     _load_pin, _load_trace_events, _plain,
@@ -46,21 +48,23 @@ def _validate_skill_closure(view, host, trace_path, trace, *, fact_pin, schema_r
             for position, event in enumerate(events):
                 payload = event.get("payload", {})
                 if event.get("event_type") == "content-read":
-                    reads.setdefault((payload.get("path"), payload.get("content_sha256")), position)
+                    path = resolve_within_root(root, payload.get("path", ""))
+                    reads.setdefault(path, []).append((payload.get("content_sha256"), position))
             for key in ("supply_report_ref", "projection_ref"):
                 ref = actual[key]
-                if (ref["path"], ref["sha256"]) not in reads:
-                    raise SkillExecutionFactError("Skill actual input lacks a hash-pinned Trace read")
-            # The common Trace validator has already validated and pinned exactly
-            # one Skill fact. Reuse that read instead of reopening mutable input.
+                observed_reads = reads.get(resolve_within_root(root, ref["path"]), [])
+                if len(observed_reads) != 1 or observed_reads[0][0] != ref["sha256"]:
+                    raise SkillExecutionFactError("Skill actual input requires exactly one hash-pinned Trace read")
+            # Reuse the independently validated pre-use and post-call fact pins.
             assert fact_pin is not None
+            consumption_pin, binding_pin = fact_pin
             writes = [position for position, event in enumerate(events)
                       if event.get("event_type") == "file-revision"
-                      and event.get("payload", {}).get("path") == fact_pin.path
+                      and event.get("payload", {}).get("path") == consumption_pin.path
                       and event["payload"].get("action") == "created"
-                      and event["payload"].get("new_sha256") == fact_pin.sha256]
+                      and event["payload"].get("new_sha256") == consumption_pin.sha256]
             if len(writes) != 1 or any(
-                reads[(actual[key]["path"], actual[key]["sha256"])] >= writes[0]
+                reads[resolve_within_root(root, actual[key]["path"])][0][1] >= writes[0]
                 for key in ("supply_report_ref", "projection_ref")
             ):
                 raise SkillExecutionFactError("Skill fact must be captured after its exact input reads")
@@ -72,6 +76,20 @@ def _validate_skill_closure(view, host, trace_path, trace, *, fact_pin, schema_r
                                and event.get("payload", {}).get("message_id") in provider_ids)]
             if any(position <= writes[0] for position in invocations):
                 raise SkillExecutionFactError("Skill input capture occurred after an execution invocation")
+            post_writes = [position for position, event in enumerate(events)
+                           if event.get("event_type") == "file-revision"
+                           and event.get("payload", {}).get("path") == binding_pin.path
+                           and event["payload"].get("action") == "created"
+                           and event["payload"].get("new_sha256") == binding_pin.sha256]
+            provider_messages = {item["message_id"] for item in trace["messages"]
+                                 if item["kind"] in {"provider-request", "provider-response"}}
+            activity = [position for position, event in enumerate(events)
+                        if event.get("event_type") == "tool-call"
+                        or (event.get("event_type") == "message-capture"
+                            and event.get("payload", {}).get("message_id") in provider_messages)]
+            if (len(post_writes) != 1 or post_writes[0] <= writes[0]
+                    or any(position >= post_writes[0] for position in activity)):
+                raise SkillExecutionFactError("Actual binding fact must be captured after execution activity")
             supply = observed.supply
         else:
             # The versioned Host schema has already excluded preflight actual facts.

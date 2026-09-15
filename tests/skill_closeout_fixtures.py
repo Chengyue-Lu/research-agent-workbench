@@ -12,7 +12,7 @@ from research_workbench.artifacts.integrity import hash_file
 from research_workbench.execution import (
     CloseoutPin, SKILL_CLOSEOUT_CONTRACT, build_skill_execution_receipt,
     execute_frozen_view, load_resolved_execution_view, load_runtime_bundle,
-    read_skill_execution_inputs, record_skill_execution_use,
+    read_skill_execution_inputs, record_skill_execution_use, record_skill_execution_result,
 )
 from research_workbench.io import load_document
 from research_workbench.observability.trace import AgentTraceRecorder
@@ -56,9 +56,10 @@ class SkillCloseoutFixture:
         view_pin = write(root, "view/skill.yaml", view_doc)
         self.view = load_resolved_execution_view(view_pin.path, expected_sha256=view_pin.sha256,
                                                 bundle=self.bundle, schema_root=ROOT / "schemas")
-        self.actual_binding = plain(self.view.document["binding"])
-        if lifecycle == "failed" and drift in self.actual_binding:
-            self.actual_binding[drift]["ref"] = "observed-drift-" + drift
+        self.actual_binding = None
+        actor_binding = plain(self.view.document["binding"])
+        if lifecycle == "failed" and drift in {"provider", "runtime"}:
+            actor_binding[drift]["ref"] = "observed-drift-" + drift
         self.supply_pin = {"path": "bundle/supply.yaml", "sha256": hash_file(root / "bundle/supply.yaml")}
         if lifecycle == "failed" and drift in {"supply", "projection", "projection-identity"}:
             supply = load_document(root / "bundle/supply.yaml")
@@ -80,8 +81,8 @@ class SkillCloseoutFixture:
             self.trace_dir, task_id=task["task_id"], task_revision=task.get("revision", 1),
             attempt_id="ATTEMPT-SKILL-CLOSEOUT", task_snapshot=task,
             accountable_owner="M11 synthetic execution owner", actor_id="runtime-host",
-            runtime_identity=self.actual_binding["runtime"]["ref"],
-            provider=self.actual_binding["provider"]["ref"],
+            runtime_identity=actor_binding["runtime"]["ref"],
+            provider=actor_binding["provider"]["ref"],
             read_allowlist=["bundle/**"], write_scope=["work/**", "closeout/**"],
             tool_allowlist=["synthetic-skill-tool"] if with_tool else [],
             created_at="2026-08-26T00:00:00Z",
@@ -101,16 +102,27 @@ class SkillCloseoutFixture:
                 observed = read_skill_execution_inputs(root, fixture.supply_pin, schema_root=ROOT / "schemas")
                 if capture:
                     record_skill_execution_use(fixture.recorder, observed, fact_id="SKILL-USE-1",
-                                               view_ref=fixture.view_ref, actual_binding=fixture.actual_binding)
+                                               view_ref=fixture.view_ref)
                 # The synthetic operation consumes the returned immutable Projection,
                 # never a second path read or a planned View claim.
                 self.consumed_skill = observed.projection["release"]["skill_id"]
                 fixture.recorder.record("provider-request", {"input": {"skill_id": self.consumed_skill}})
-                fixture.recorder.record("provider-response", {"status": "synthetic-completed"})
+                # The synthetic backend's response is the first observation of
+                # binding drift; input consumption cannot predict this response.
+                response_binding = plain(self.binding)
+                if lifecycle == "failed" and drift in response_binding:
+                    response_binding[drift]["ref"] = "observed-drift-" + drift
+                fixture.recorder.record("provider-response", {
+                    "status": "synthetic-completed", "observed_binding": response_binding,
+                })
+                fixture.actual_binding = response_binding
                 if with_tool:
                     fixture.recorder.record_tool_call(operation_id="skill-tool-1", tool_name="synthetic-skill-tool",
                                                        status="completed", arguments={}, result={"synthetic": True})
                 result = super().execute(request)
+                record_skill_execution_result(fixture.recorder, observed, fact_id="SKILL-RESULT-1",
+                    view_ref=fixture.view_ref, actual_binding=response_binding,
+                    actual_supply_report_ref=observed.consumption["supply_report_ref"]["ref"])
                 return replace(result, actual_binding=fixture.actual_binding,
                                provider_invocations=1,
                                actual_supply_report_ref=observed.consumption["supply_report_ref"]["ref"],

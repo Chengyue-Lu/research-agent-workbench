@@ -54,3 +54,14 @@
   coverage 的 Protocol 排除行号随新增字段顺移，排除范围不变。增量 focused 59 PASS，带覆盖回归
   89 PASS，document-kind 兼容分派补验 1 PASS；11 个受影响模块的 changed line/branch 为 100/100。
   已封存的 candidate archive 字节保持不变，新增验收与最终 exact-head CI 留在 PR81。
+
+## PR81 review repair
+
+- 用户要求修复 comment 5680907209 的两个 P1 和一个 P2。回归先复现 pre-use fact 预测 binding、
+  wrong-kind Supply 已执行 Driver、以及恢复文件后矛盾重读仍可 replay 三项问题。
+- consumption 与 post-call binding 分开，复用 Core post-call fact；Host 在调用前验证 frozen Skill
+  closure；replay 对 consumed canonical path 强制单次读取，并验证两个 fact 与调用事件的先后。
+- 既有 A-20260915-002 原封保留，其 one-stage post-call 证据按历史候选处理；新的正向 proof 单独归档。
+  修复说明与验收矩阵见 [REVIEW-REPAIR](REVIEW-REPAIR.md)。M11-007 与 Gate/M5 状态保持不变。
+- 修复后 37 项 Skill 回归与 9 项独立 review matrix 通过；随后共享 Core/Host/Schema/documentation
+  带覆盖回归 114 PASS，两个 Skill 模块 line/branch 均为 100/100。

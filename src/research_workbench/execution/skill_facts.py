@@ -142,7 +142,7 @@ def selected_skill_consumption(view, *, schema_root=None) -> Mapping[str, Any]:
 
 def record_skill_execution_use(
     recorder, observed: ObservedSkillInputs, *, fact_id: str,
-    view_ref: Mapping[str, Any], actual_binding: Mapping[str, Any],
+    view_ref: Mapping[str, Any],
 ) -> Mapping[str, str]:
     """Persist observations at the producer's consumption boundary, before use."""
     consumption = _plain(observed.consumption)
@@ -156,19 +156,35 @@ def record_skill_execution_use(
         f"skill-execution-fact-{fact_id}",
         {
             "schema_version": "0.1.0", "contract_version": "1.0.0", "fact_id": fact_id,
-            "record_kind": "actual-skill-execution-binding", "attempt_id": recorder.attempt_id,
+            "record_kind": "skill-input-consumption", "attempt_id": recorder.attempt_id,
             "view_ref": _plain(view_ref), "execution_phase": "use-boundary",
-            "actual_binding": _plain(actual_binding),
-            "actual_supply_report_ref": consumption["supply_report_ref"]["ref"],
             "actual_skill_consumption": consumption,
             "boundaries": {"actual_fact": True, "supply_selection": False, "rebinding": False,
                            "method_decision": False, "task_completion": False,
                            "claim_effect": False, "human_decision": False},
         },
     )
+    _record_fact_creation(recorder, observed, reference, "Skill inputs consumed before execution")
+    return reference
+
+
+def _record_fact_creation(recorder, observed, reference, reason):
     fact_path = (recorder.attempt_dir / reference["path"]).relative_to(observed.project_root).as_posix()
     recorder.record_file_revision(
         fact_path, action="created", new_sha256=reference["sha256"],
-        reason="Skill input consumption fact persisted at use boundary",
+        reason=reason,
     )
+
+
+def record_skill_execution_result(
+    recorder, observed: ObservedSkillInputs, *, fact_id: str,
+    view_ref: Mapping[str, Any], actual_binding: Mapping[str, Any],
+    actual_supply_report_ref: str,
+) -> Mapping[str, str]:
+    """Persist independently observed post-call binding using the Core fact contract."""
+    reference = recorder.record_execution_fact(
+        fact_id=fact_id, view_ref=_plain(view_ref), actual_binding=_plain(actual_binding),
+        actual_supply_report_ref=actual_supply_report_ref,
+    )
+    _record_fact_creation(recorder, observed, reference, "Actual execution binding observed after execution")
     return reference

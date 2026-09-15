@@ -481,6 +481,12 @@ def execute_frozen_view(
                 or current_bundle.documents != bound_bundle.documents
             ):
                 preflight_code = "HOST-RUNTIME-BUNDLE-DRIFT"
+    if skill_contract and preflight_code is None:
+        from research_workbench.execution.skill_facts import selected_skill_consumption
+        try:
+            expected_consumption = selected_skill_consumption(view, schema_root=schema_root)
+        except (OSError, ValueError, TypeError, KeyError):
+            preflight_code = "HOST-SKILL-CLOSURE-INVALID"
     if preflight_code is not None:
         completed, completed_at = _observe_time(trusted_clock, "completed_at")
         if completed < started:
@@ -574,7 +580,7 @@ def execute_frozen_view(
             )
             if skill_contract:
                 from research_workbench.execution.skill_facts import (
-                    SkillExecutionFactError, selected_skill_consumption,
+                    SkillExecutionFactError,
                     validate_skill_consumption,
                 )
                 actual_consumption = result.actual_skill_consumption
@@ -587,7 +593,6 @@ def execute_frozen_view(
                         validate_skill_consumption(
                             view.project_root, actual_consumption, schema_root=schema_root,
                         )
-                        expected_consumption = selected_skill_consumption(view, schema_root=schema_root)
                         if _plain(actual_consumption) != _plain(expected_consumption):
                             violation = violation or "HOST-ACTUAL-SKILL-DRIFT"
                     except (OSError, ValueError, SkillExecutionFactError):

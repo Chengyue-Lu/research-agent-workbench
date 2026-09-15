@@ -7,13 +7,14 @@ M11-007 为 projection-backed Skill execution 提供 Host report、实际消费�
 ## 契约版本
 
 以下新对象使用 Schema 格式 `0.1.0` 和必填的 `contract_version: 1.0.0`。对象 kind 与版本共同分派；
-未知版本、混入旧 Core 对象或新增 authority 字段均拒绝。已有 Core 与 legacy Schema 文件保持不变。
+未知版本、Host/Receipt kind 混用或新增 authority 字段均拒绝。已有 Core 与 legacy Schema 文件保持不变；
+Skill Trace 的 post-call binding 复用既有 Core `execution_trace_fact`。
 
 | kind | 作用 |
 |---|---|
 | `skill_execution_consumption` | 实际读取的 Supply / Projection identity、path、SHA-256，及 Skill identity/hash、唯一 Skill component |
 | `skill_execution_host_report` | 原 Host 生命周期、actual binding、Provider/Tool facts 与上述实际消费记录 |
-| `skill_execution_trace_fact` | `actual-skill-execution-binding` typed fact，在 use boundary 持久化上述记录及实际 binding |
+| `skill_execution_trace_fact` | `skill-input-consumption` typed fact，在 use boundary 只持久化实际消费的输入，不含执行 binding |
 | `skill_execution_receipt` | exact Bundle / Snapshot / Resolution / View / Host / Trace / Artifact / Validation refs，以及 requested/actual 消费事实 |
 
 Schema 路径为 `schemas/v0.1.0/skill-execution-*.schema.json`。Core 仍使用
@@ -22,18 +23,26 @@ Schema 路径为 `schemas/v0.1.0/skill-execution-*.schema.json`。Core 仍使用
 
 ## 执行侧事实来源
 
+Host 在调用 Driver 前只读校验已选 Supply 的 Skill/Projection closure；wrong-kind 或 invalid closure
+产生 `preflight-blocked`，Provider/Tool invocation 均为零。这一步不扫描候选或选择 Supply。
+
 已绑定 Driver 在消费边界调用 `read_skill_execution_inputs()`，传入实际消费的 exact Supply pin。
 reader 按同一次字节读取验证 Supply 及其 Projection，重算 identity/component 一致性，并返回不可变的
 `ObservedSkillInputs`。执行消费该对象的 `supply` / `projection`，避免重新打开路径引入不同字节。
 reader 不发现候选、不重新选择 Supply，也不读取 Projection 所描述的 Maintainer 历史路径。
 
 消费前调用 `record_skill_execution_use()`，写入两个 hash-pinned content-read 事件、typed fact 文件和
-该文件的创建事件。随后执行 bounded operation，将同一观测的 `consumption` 放入
-`ExecutionDriverResult.actual_skill_consumption`。实际 Provider/Tool 事件继续使用现有 Trace recorder。
+该文件的创建事件。随后执行 bounded operation，记录 Provider/Tool 请求及结果，在调用完成后依据
+实际观察调用 `record_skill_execution_result()`。该函数复用 Core `actual-execution-binding` post-call fact，
+记录实际 Provider/Adapter/Model/Runtime/Host/Supply binding 及其文件创建事件。将消费观测放入
+`ExecutionDriverResult.actual_skill_consumption`，调用后观察的 binding 放入 result 的 actual fields。
 
 Host 负责检测完成结果与 selected View 的一致性，并保留返回的真实事实；closeout 只消费已经 frozen
-的 Trace。Replay 核对 exact 输入读取、fact 文件 hash 与事件先后，拒绝在 Provider/Tool 调用后补写
-消费事实。Host report 与 typed fact 的实际 binding / Supply / consumption 必须一致，并能由输入文件重算。
+的 Trace。Replay 同时要求一个 pre-use consumption fact 和一个 post-call binding fact：输入读取先于
+consumption fact，后者先于所有 invocation；binding fact 必须晚于全部 Provider 请求/响应和 Tool 事件。
+两个已 pin 的 fact 分别佐证 Host 的实际消费与调用后 binding，并通过 actual Supply 关联。
+每个 consumed Supply/Projection 的 canonical path 只允许一次与 pin 相符的 content-read；矛盾重读或
+重复读取均拒绝，即使文件后来恢复原 hash。Closeout 不补写缺失事实。
 
 ## 生命周期与 replay
 
@@ -58,6 +67,9 @@ Host 负责检测完成结果与 selected View 的一致性，并保留返回的
 实际执行的 deterministic subject checker，再构建 Receipt 并在 fresh process 中独立 replay。
 覆盖 Provider/Adapter/Model/Runtime/Host 漂移、Supply/Projection 漂移、Tool component、缺失或延迟事实、
 重签两份自报记录、Artifact/Validation subject 缺项以及版本混用等反例。Core 与 legacy 回放另有现有回归。
+
+`tests/test_skill_closeout_review.py` 独立验证两个事实阶段、wrong-kind/invalid-Projection 的 before-call
+阻断、post-call fact 过早/缺失及 later-reread/alias 反例；synthetic model drift 首次出现在调用后响应中。
 
 测试证明有界执行事实与文件契约闭合。Gate B 的具名实现接受和审查仍以
 [Gate record](../workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md) 为准；真实 Provider readiness、

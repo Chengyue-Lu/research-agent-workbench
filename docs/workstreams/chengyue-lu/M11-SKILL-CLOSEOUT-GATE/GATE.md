@@ -27,9 +27,10 @@ Gate 的 bounded scope 是 Skill-bearing actual facts 与独立 execution closeo
 M5-007 同时 hard-depend M11-007 与此可审计 Gate，以保留实现身份和 evidence acceptance 两个条件。
 M6-008 的独立 baseline Task 仍须 DONE；真实案例/live/admission 则继续约束 M5-004。
 
-## Implementation candidate evidence
+## Historical implementation candidate evidence
 
-以下是待审候选，尚未替换上方 accepted evidence 或 Gate 状态：
+以下候选已收到 [PR81 review](REVIEW-REPAIR.md)。其 one-stage post-call proof 是修复前的历史证据，
+原始归档字节保留；它不再作为当前实现验收证据，也不替换上方 accepted evidence 或 Gate 状态：
 
 - implementation commit：`7b3405189e06210cae6552b0eb7699b049e14d73`，基于
   `develop@0bebafd81f0116a8269c63ac97378038a1eb2a5d`。

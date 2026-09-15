@@ -234,10 +234,12 @@ def _validate_trace_execution_records(
     *,
     catalog: SchemaCatalog,
     skill_extension: bool = False,
-) -> CloseoutPin | None:
+) -> tuple[CloseoutPin, CloseoutPin] | None:
     scope_records: list[Mapping[str, Any]] = []
     execution_facts: list[Mapping[str, Any]] = []
     execution_fact_pins: list[CloseoutPin] = []
+    consumption_facts: list[Mapping[str, Any]] = []
+    consumption_pins: list[CloseoutPin] = []
     for reference in trace.get("decision_refs", ()):
         if not isinstance(reference, Mapping):
             continue
@@ -253,16 +255,25 @@ def _validate_trace_execution_records(
             continue
         if document.get("record_kind") == "execution-scope-binding":
             scope_records.append(document)
-        elif document.get("record_kind") in {"actual-execution-binding", "actual-skill-execution-binding"}:
-            fact_kind = "skill_execution_trace_fact" if skill_extension else "execution_trace_fact"
+        elif document.get("record_kind") in {
+            "actual-execution-binding", "skill-input-consumption", "actual-skill-execution-binding",
+        }:
+            is_consumption = document.get("record_kind") == "skill-input-consumption"
+            if is_consumption and not skill_extension:
+                raise GenericCloseoutValidationError("Skill consumption fact requires Skill closeout")
+            fact_kind = "skill_execution_trace_fact" if is_consumption else "execution_trace_fact"
             errors = catalog.validate(fact_kind, document)
             if errors:
                 detail = "; ".join(f"{item.pointer}: {item.message}" for item in errors)
                 raise GenericCloseoutValidationError(
                     "Execution Trace actual-binding fact is schema-invalid: " + detail
                 )
-            execution_facts.append(document)
-            execution_fact_pins.append(pin)
+            if is_consumption:
+                consumption_facts.append(document)
+                consumption_pins.append(pin)
+            else:
+                execution_facts.append(document)
+                execution_fact_pins.append(pin)
     expected = {
         "schema_version": "0.1.0",
         "record_kind": "execution-scope-binding",
@@ -282,21 +293,28 @@ def _validate_trace_execution_records(
         if (
             fact.get("attempt_id") != host.get("attempt_id")
             or fact.get("view_ref") != _plain(host.get("view_ref"))
-            or fact.get("execution_phase") != ("use-boundary" if skill_extension else "post-call")
+            or fact.get("execution_phase") != "post-call"
             or fact.get("actual_binding") != _plain(host.get("actual_binding"))
             or fact.get("actual_supply_report_ref")
             != host.get("actual_supply_report_ref")
-            or (skill_extension and fact.get("actual_skill_consumption")
-                != _plain(host.get("actual_skill_consumption")))
         ):
             raise GenericCloseoutValidationError(
                 "Execution Trace actual execution fact does not corroborate Host binding and Supply"
             )
-    elif execution_facts:
+        if skill_extension:
+            if len(consumption_facts) != 1:
+                raise GenericCloseoutValidationError("Skill Receipt requires exactly one pre-use consumption fact")
+            consumption = consumption_facts[0]
+            if (consumption["attempt_id"] != host["attempt_id"]
+                    or consumption["view_ref"] != _plain(host["view_ref"])
+                    or consumption["actual_skill_consumption"] != _plain(host.get("actual_skill_consumption"))):
+                raise GenericCloseoutValidationError("Skill consumption fact does not corroborate Host consumption")
+            return consumption_pins[0], execution_fact_pins[0]
+    elif execution_facts or consumption_facts:
         raise GenericCloseoutValidationError(
             "pre-call Trace cannot claim an actual execution binding or Supply"
         )
-    return execution_fact_pins[0] if skill_extension and execution_fact_pins else None
+    return None
 
 
 def _validate_host_trace_facts(
