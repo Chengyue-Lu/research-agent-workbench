@@ -273,6 +273,14 @@ def _file_facts(path, raw):
             targets = node.args[:1] or [keywords.get('target')]
         elif isinstance(node.func, ast.Attribute) and node.func.attr == 'object' and patch_callable(node.func.value):
             targets = node.args[1:2] or [keywords.get('attribute')]
+        elif isinstance(node.func, ast.Attribute) and node.func.attr in {'multiple', 'dict'} and patch_callable(node.func.value):
+            target = node.args[0] if node.args else keywords.get('target')
+            # multiple names are explicit keywords, unless ** expansion hides them.
+            # dict may replace/clear the entire namespace, so its keys are not a bound.
+            if node.func.attr == 'multiple' and not ({'len', None} & keywords.keys()):
+                return False
+            return (not isinstance(target, ast.Constant) or not isinstance(target.value, str)
+                    or target.value in {'builtins', 'builtins.__dict__'})
         elif isinstance(node.func, ast.Attribute) and node.func.attr == 'setattr':
             # monkeypatch has both dotted-target and object/name overloads.
             targets = ([keywords['name']] if 'name' in keywords else

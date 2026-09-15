@@ -113,3 +113,7 @@ for cross-owner review. Quality thresholds, exclusions, product contracts and re
   final plan tests may additionally contain policy and explicit obligations.
 - The bounded PR is prepared for review. Wider graph precision and cross-commit reuse
   remain Issue #48 follow-ups; current checks and owner review govern acceptance.
+- Batch patch helpers also mutate builtin bindings: multiple with `len` or unknown
+  keyword expansion, and dict on a possibly builtin namespace retain dependencies.
+  Fixed unrelated targets/attribute names preserve precision; real Git-bound failing
+  readers and dynamic/alias selector cases cover these adjacent standard-library forms.

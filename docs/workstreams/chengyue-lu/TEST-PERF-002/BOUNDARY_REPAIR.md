@@ -107,3 +107,12 @@ controls remain covered. The diagnostic count name also resolves the review's P2
 The [review-remediation Attempt](../../../../work/TEST-PERF-002/A-20260916-001/RESULTS.md)
 records 47 dependency, 106 planner/checker/witness and 10 documentation checks, source
 hashes and critical/changed coverage. Hosted final-head checks are linked from PR #83.
+
+The subsequent review of `55f20aa4e9887e882c716a53a1d7346bb31ad880` adds the bounded
+`patch.multiple` rule: explicit `len` or expanded keywords invalidate metadata when
+the target may be builtins. Fixed unrelated targets or fixed unrelated attribute sets
+retain precision. The adjacent `patch.dict` namespace form also retains dependencies
+when its target may be the builtin dictionary; replacement/clearing can affect the
+whole namespace. Imported patch aliases use the same rules. The shared real-Git
+failure scenario now covers direct patch, object patch, multiple patch and dictionary
+patch without adding separate full test modules.
