@@ -14,6 +14,126 @@ import ci_dependencies as deps
 
 
 class DependencyTests(unittest.TestCase):
+    def test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory(self):
+        header = 'from pathlib import Path\nROOT=Path(__file__).resolve().parents[1]\n'
+        for expression in ('(ROOT / "data/input.json").read_text()',
+                           '(ROOT / "data/input.json").read_bytes()',
+                           '(ROOT / "data/input.json").open("rb")',
+                           '(ROOT / "data").glob("*.json")',
+                           '(ROOT / "data").rglob("*.json")',
+                           '(ROOT / "data").iterdir()'):
+            with self.subTest(expression=expression):
+                blobs = {'tests/test_reader.py': (header + expression).encode()}
+                self.assertFalse(self.selection(blobs, blobs, ['schemas/new.json'], ['schemas/new.json'])['selected'])
+                self.assertIn('test_reader', self.selection(blobs, blobs, ['data/input.json'], ['data/input.json'])['selected'])
+        blobs = {'tests/test_reader.py': (header + 'ROOT.iterdir()').encode()}
+        self.assertIn('test_reader', self.selection(blobs, blobs, ['schemas/new.json'], ['schemas/new.json'])['selected'])
+
+    def test_uncertain_roots_and_escaped_resource_capabilities_keep_fallback(self):
+        header = 'from pathlib import Path\nROOT=Path(__file__).parents[1]\n'
+        for operation in (
+            'ROOT=other\n(ROOT / "data/input.json").read_text()',
+            'ROOT=ROOT\nROOT.read_text()',
+            '(ROOT / name).read_text()',
+            '(ROOT / "../other/input.json").read_text()',
+            '(ROOT / "/other/input.json").read_text()',
+            '(ROOT / "D:/other/input.json").read_text()',
+            'reader=(ROOT / "data/input.json").read_text\nreader()',
+            '(ROOT / "data").glob(pattern)',
+            '(ROOT / "data").glob("../*.json")',
+            '(ROOT / "data").glob("/tmp/*.json")',
+            '(ROOT / "data").rglob("C:*.json")',
+            '(ROOT / "data").glob("*.json", case_sensitive=True)',
+            '(ROOT / "data").iterdir(extra)',
+            'Path.read_text=reader\n(ROOT / "data/input.json").read_text()',
+            'del Path.read_text\n(ROOT / "data/input.json").read_text()',
+            'from unittest.mock import patch\npatch("pathlib.Path.read_text", reader)\nROOT.read_text()',
+            'helper.setattr(Path, "read_text", reader)\nROOT.read_text()',
+            'from unittest.mock import patch\npatch.object(Path, "read_text", reader)\nROOT.read_text()',
+            'exec(code)\n(ROOT / "data/input.json").read_text()',
+            'def check(ROOT): return (ROOT / "data/input.json").read_text()',
+            'root=unknown()\nroot.open()',
+            'open(path)',
+        ):
+            with self.subTest(operation=operation):
+                blobs = {'tests/test_reader.py': (header + operation).encode()}
+                self.assertIn('test_reader', self.selection(blobs, blobs, ['schemas/new.json'], ['schemas/new.json'])['selected'])
+
+    def test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution(self):
+        header = 'import runpy\nfrom pathlib import Path\nROOT=Path(__file__).parents[1]\n'
+        scripts = {'work/check.py': b'from subject import VALUE\n', 'src/subject.py': b'VALUE=1'}
+        for operation in ('runpy.run_path(str(ROOT / "work/check.py"))',
+                          'runpy.run_path(ROOT / "work/check.py")',
+                          'script=ROOT / "work/check.py"\nrunpy.run_path(str(script))',
+                          'from runpy import run_path as run\nrun(ROOT / "work/check.py")'):
+            with self.subTest(operation=operation):
+                blobs = {**scripts, 'tests/test_replay.py': (header + operation).encode()}
+                self.assertFalse(self.selection(blobs, blobs, ['src/independent.py'])['selected'])
+                self.assertIn('test_replay', self.selection(blobs, blobs, ['src/subject.py'])['selected'])
+        for operation in ('runpy.run_path(path)', 'runpy.run_path()',
+                          'runpy=custom\nrunpy.run_path(ROOT / "work/check.py")',
+                          'def replay(str): return runpy.run_path(str(ROOT / "work/check.py"))',
+                          'runpy.run_path(str(ROOT / "work/check.py", unexpected=True))',
+                          'from unittest.mock import patch\npatch("pathlib.Path", custom)\nrunpy.run_path(ROOT / "work/check.py")',
+                          'runpy.run_path(ROOT / "work/unknown.py")'):
+            with self.subTest(operation=operation):
+                blobs = {**scripts, 'tests/test_replay.py': (header + operation).encode()}
+                self.assertIn('test_replay', self.selection(blobs, blobs, ['src/independent.py'])['selected'])
+        blobs = {**scripts, 'work/check.py': b'exec(code)',
+                 'tests/test_replay.py': (header + 'runpy.run_path(ROOT / "work/check.py")').encode()}
+        self.assertIn('test_replay', self.selection(blobs, blobs, ['src/independent.py'])['selected'])
+
+    def test_rooted_targets_recheck_symlink_modes_and_union_old_unbounded_reader(self):
+        header = b'from pathlib import Path\nROOT=Path(__file__).parents[1]\n'
+        for operation, target in ((b'(ROOT / "data/input.json").read_text()', 'data/input.json'),
+                                  (b'(ROOT / "data/input.json").read_text()', 'data'),
+                                  (b'(ROOT / "data").glob("*.json")', 'data/nested/link'),
+                                  (b'import runpy\nrunpy.run_path(ROOT / "work/check.py")', 'work/check.py')):
+            with self.subTest(operation=operation, target=target):
+                blobs = {'tests/test_reader.py': header + operation, 'work/check.py': b'pass'}
+                paths = {p: ['100644', 'blob', '0' * 40] for p in blobs}
+                for mode in ('120000', '160000'):
+                    paths[target] = [mode, 'blob', '1' * 40]
+                    graph = deps.graph(blobs, paths)
+                    self.assertIn('tests/test_reader.py', graph[1] | graph[2])
+                paths[target] = ['100644', 'blob', '2' * 40]
+                graph = deps.graph(blobs, paths)
+                self.assertNotIn('tests/test_reader.py', graph[1] | graph[2])
+        old = {'tests/test_reader.py': b'open(path)'}
+        new = {'tests/test_reader.py': header + b'(ROOT / "data/input.json").read_text()'}
+        self.assertIn('test_reader', self.selection(old, new, ['schemas/new.json'], ['schemas/new.json'])['selected'])
+
+    def test_rooted_consumers_remain_selected_when_actual_input_breaks(self):
+        with tempfile.TemporaryDirectory() as directory:
+            repo = Path(directory)
+            def git(*args):
+                return subprocess.check_output(['git', '-C', str(repo), *args], stderr=subprocess.DEVNULL).decode().strip()
+            (repo / 'tests').mkdir()
+            (repo / 'data').mkdir()
+            (repo / 'work').mkdir()
+            (repo / 'data/input.json').write_text('good')
+            (repo / 'work/check.py').write_text('VALUE=1\n')
+            header = 'from pathlib import Path\nROOT=Path(__file__).resolve().parents[1]\n'
+            (repo / 'tests/test_reader.py').write_text(header +
+                'assert (ROOT / "data/input.json").read_text() == "good"\n')
+            (repo / 'tests/test_replay.py').write_text(header +
+                'import runpy\nassert runpy.run_path(ROOT / "work/check.py")["VALUE"] == 1\n')
+            git('init', '-q'); git('config', 'user.name', 'Fixture'); git('config', 'user.email', 'fixture@example.invalid')
+            git('add', '.'); git('commit', '-qm', 'base'); base = git('rev-parse', 'HEAD')
+            for name in ('reader', 'replay'):
+                result = subprocess.run([sys.executable, 'tests/test_' + name + '.py'], cwd=repo, capture_output=True)
+                self.assertEqual(0, result.returncode, result.stderr)
+            (repo / 'data/input.json').write_text('broken')
+            (repo / 'work/check.py').write_text('VALUE=2\n')
+            git('add', '.'); git('commit', '-qm', 'changed'); head = git('rev-parse', 'HEAD')
+            plan = deps.select(repo, base, head, ['data/input.json', 'work/check.py'])[0]
+            self.assertEqual({'test_reader', 'test_replay'}, set(plan['selected']))
+            self.assertFalse(deps.select(repo, base, head, ['schemas/new.json'])[0]['selected'])
+            for name in ('reader', 'replay'):
+                result = subprocess.run([sys.executable, 'tests/test_' + name + '.py'], cwd=repo, capture_output=True)
+                self.assertNotEqual(0, result.returncode)
+                self.assertIn(b'AssertionError', result.stderr)
+
     def test_literal_length_metadata_does_not_consume_same_named_files(self):
         paths = ['skills/one/SKILL.md', 'docs/SKILL.md']
         blobs = {'src/archive.py': b'def prefix(name): return name[:-len("SKILL.md")]\n',

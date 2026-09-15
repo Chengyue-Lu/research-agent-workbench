@@ -117,3 +117,17 @@ for cross-owner review. Quality thresholds, exclusions, product contracts and re
   keyword expansion, and dict on a possibly builtin namespace retain dependencies.
   Fixed unrelated targets/attribute names preserve precision; real Git-bound failing
   readers and dynamic/alias selector cases cover these adjacent standard-library forms.
+
+## M6-008 fixed-input audit
+
+- Exact repository roots can bound a resource read or script target; an unknown root,
+  mutation, escaped capability, path escape or symlink cannot authorize exclusion.
+  Directory scans keep every descendant and re-evaluate the inventory at each Git ref.
+- Bound script execution follows the script's actual imports and retains opaque fallback
+  for unknown/unparsed targets. The independent selection witness remains authoritative.
+- M6's resource fallback consumers decrease from 125 to 116, but its complete selection
+  stays 91/92. Shared validation imports and unresolved helper inputs still independently
+  reach these tests. No M6 runtime improvement is claimed; caller-sensitive propagation
+  needs further proof before exclusions can be widened.
+- This work changes PR #83 only. M6 source, branch, CI runs and acceptance remain owned
+  by its workstream. Exact-target full bootstrap, quality floors and R2 review still apply.
