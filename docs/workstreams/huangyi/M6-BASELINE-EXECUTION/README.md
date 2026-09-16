@@ -102,6 +102,9 @@ Receipt 区分 `completed`、`post-call-failed`、`preflight-blocked`。
 新增 session-return 时钟反例，保证 producer 在最后一个观测边界到时仍留下 replayable failure。
 最新 `develop@2d5af1b` 已集成；M11-007 DONE / Gate B SATISFIED 来自已接受的 PR82，
 M6-008 保持待接受候选，M5-007 仍等待 M6-008 DONE。最终提交验证绑定在 PR #75。
+本轮 [终态资格归档](../../../../work/M6-008/A-20260916-003/README.md) 绑定实现 `48ba0e6`，
+包含成功、超时、未结束 Tool loop 和预检阻断共 5 个实际本地案例，全部通过独立进程文件重放。
+45 项 M6 专项通过；三个模块 line / branch 100%（582 statements / 120 branches）。
 
 上一轮根据 [PR #75 review](https://github.com/Chengyue-Lu/research-agent-workbench/pull/75#issuecomment-5685397753)
 修复两个 P1 和一个 P2：同名 Tool 的绑定列表保留所有 availability；每份 Provider / Tool / session fact
@@ -114,7 +117,7 @@ checker identity 和创建事件。回放读取这个历史快照，不导入执
 重复或迟到创建事件，以及 checker 路径、pin 和实际文件漂移。旧实现错误接受已复现，修复证据及最终
 CI 绑定由本轮 PR 记录。`A-20260916-001` 保留旧候选原始字节；其中缺少创建事件与 checker 快照的
 Receipt 不满足本轮候选要求，不能作为当前回放通过证据。本轮未修改已接受的 M5 / M11 契约。
-本轮 [独立归档](../../../../work/M6-008/A-20260916-002/README.md) 绑定实现 `0877542`，
+该轮 [独立归档](../../../../work/M6-008/A-20260916-002/README.md) 绑定实现 `0877542`，
 保存 38 项通过的专项证据及 A1/A2 cold replay；三个 M6 模块 line / branch 均为 100%。
 ZIP 的 169 个成员哈希逐一通过验证，development Trace 无 BLOCK，保留 capture-gap warning。
 
