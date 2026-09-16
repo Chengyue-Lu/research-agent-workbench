@@ -34,7 +34,7 @@ regular Git modes, entrypoints and test identifiers. Strict policy shape, portab
 and declared digests are validated inside the existing witnessed `plan_ci.py` authority.
 The planner/worker does not import the new diagnostic module. An isolated process with a
 failing diagnostic import sentinel still parses v2 and rejects an execution-authority injection.
-It reports call syntax with its lexical owner and source line. This is not arbitrary Python
+The diagnostic module reports call syntax with its lexical owner and source line. This is not arbitrary Python
 execution or a general capability resolver. Changed bytes, deleted files, mode changes,
 unparseable source and missing evidence identifiers are visible as drift.
 
@@ -61,7 +61,7 @@ and weaker-plan rejection tests remain required.
 The eleven declared business test IDs are also executed separately. Passing those examples
 establishes their observed behavior, not complete invocation closure or permission to skip
 other cases. Historical planner/report comparisons retain exact Git/metadata bindings and
-compare full execution fields; they do not stand in for twelve full behavioral runs.
+compare full execution fields; they do not stand in for thirteen full behavioral runs.
 
 M5-007's separate task **RWB开发 (3)** completed this development turn, and PR #86
 (`feature/m5-007-harness-preflight`) passed full CI at `b53a391ece3a4be7207c00c636dc9e1570e71473`.
@@ -80,6 +80,10 @@ diagnostics, before full planner metadata/contract filtering, not substitute exe
 The reference records flag M5's changed `validation/documents.py` and `test_schemas.py` pins.
 Thus fixing classification alone would not close the remaining consumer fan-out.
 
+The hosted M5 coverage job took 18 min 28 s, including 18 min 9 s in its ordered behavior
+and coverage test step. Python 3.13 compatibility took 9 min 46 s. These job durations do
+not isolate coverage instrumentation overhead or establish a paired performance gain.
+
 ## Next activation requirements
 
 1. Bind concrete invocation inputs, helper/environment changes and added/deleted membership.
@@ -90,3 +94,6 @@ Thus fixing classification alone would not close the remaining consumer fan-out.
 No quality threshold, coverage exclusion, existing behavioral test or release boundary is
 weakened. Current raw checks and Trace are retained in
 [A-20260916-009](../../../../work/TEST-PERF-002/A-20260916-009/RESULTS.md).
+The witnessed-authority correction, 216-test rerun, thirteen unchanged historical plans
+and exact unchanged inputs for reusing the eleven business proofs are retained in
+[A-20260916-010](../../../../work/TEST-PERF-002/A-20260916-010/RESULTS.md).

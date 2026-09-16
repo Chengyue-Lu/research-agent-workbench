@@ -1,0 +1,14 @@
+.F.
+======================================================================
+FAIL: test_coverage_union_executes_repository_and_impact_tests_once (tests.test_ci_plan.PlannerTests.test_coverage_union_executes_repository_and_impact_tests_once)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\ci-replan\tests\test_ci_plan.py", line 1167, in test_coverage_union_executes_repository_and_impact_tests_once
+    self.assertEqual({'test_ci_plan.Example.test_ok', 'test_unselected.Other.test_existing'},
+AssertionError: Items in the second set but not the first:
+'test_ci_consumer_contracts.Example.test_ok'
+
+----------------------------------------------------------------------
+Ran 3 tests in 11.543s
+
+FAILED (failures=1)

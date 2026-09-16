@@ -1,0 +1,30 @@
+"""Prove policy-validator relocation leaves all thirteen retained plans byte-identical."""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+import sys
+
+p=argparse.ArgumentParser();p.add_argument('--repo',type=Path,required=True)
+p.add_argument('--metadata',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
+a=p.parse_args();repo=a.repo.resolve();sys.path.insert(0,str(repo/'.github/scripts'))
+import plan_ci as planner
+assert 'ci_consumer_contracts' not in sys.modules
+assert '.github/scripts/ci_consumer_contracts.py' not in planner.TRUST_FILES
+rows=[]
+for metadata_path in sorted(a.metadata.glob('corpus-pr*.json'),key=lambda f:int(f.stem.removeprefix('corpus-pr'))):
+    pr=json.loads(metadata_path.read_bytes());number=pr['number']
+    ref=f'work/TEST-PERF-002/A-20260916-009/checks/corpus-after/pr{number}-plan.json'
+    raw=(repo/ref).read_bytes();original=json.loads(raw)
+    current=planner.make_plan(repo,base=pr['baseRefOid'],head=pr['headRefOid'],target=pr['headRefOid'],
+        repository='Chengyue-Lu/research-agent-workbench',body=pr['body'])
+    assert planner.canonical(current)==raw,number
+    rows.append({'pr':number,'status':'PASS','retained_plan':ref,'sha256':hashlib.sha256(raw).hexdigest(),
+                 'plan_id':current['plan_id'],'binding':current['binding']})
+assert len(rows)==13
+result={'status':'PASS','producer_commit':planner.git(repo,'rev-parse','HEAD').decode().strip(),
+    'diagnostic_not_loaded_by_planner':True,'cases':rows,
+    'source_hashes':{name:hashlib.sha256((repo/name).read_bytes()).hexdigest() for name in
+        ('.github/scripts/plan_ci.py','.github/scripts/ci_consumer_contracts.py')}}
+a.output.write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8',newline='\n')
+print(json.dumps({'status':'PASS','cases':len(rows),'producer':result['producer_commit']}))

@@ -1,0 +1,110 @@
+Declared risk: R2
+Inferred minimum: R2
+Effective risk: R2
+Reason:
+- .github/scripts/ci_consumer_contracts.py matches the R2 policy surface
+- .github/scripts/ci_contract_shadow.py matches the R2 policy surface
+- .github/scripts/ci_dependencies.py matches the R2 policy surface
+- .github/scripts/ci_input_facts.py matches the R2 policy surface
+- .github/scripts/plan_ci.py matches the R2 policy surface
+- .github/workflows/ci.yml matches the R2 policy surface
+- PR declares a shared-contract impact
+- PR declares an authority, permission, or data-boundary impact
+Requirements:
+- pull request and required CI
+- cross-owner review or explicit single-PR maintainer exception before merge (DEVELOPMENT 5.4)
+- explicit authority basis
+- adversarial or negative evidence
+- owner-matched workstream and Risk Ledger
+governance: PASS
+{
+  "head": "23fd135026e223c7ad9c4c17b279c17d31b4dbb7",
+  "base": "0d4a1d00a4c32ca9b822df6482a95920e7c21b1b",
+  "target": "23fd135026e223c7ad9c4c17b279c17d31b4dbb7",
+  "plan_id": "82add238c6639c7dbca4717da05576a61d65372e160601d9ceccf0ff21aa3618",
+  "behavioral_scope": "full",
+  "coverage_obligations": [
+    "impact",
+    "repository"
+  ],
+  "coverage_modules": [
+    ".github/scripts/ci_consumer_contracts.py",
+    ".github/scripts/ci_contract_shadow.py",
+    ".github/scripts/ci_dependencies.py",
+    ".github/scripts/ci_input_facts.py",
+    ".github/scripts/plan_ci.py"
+  ],
+  "governance": "PASS",
+  "source_manifest": [
+    {
+      "path": ".github/scripts/ci_consumer_contracts.py",
+      "checkout_sha256": "865a432e263d0bb10e748955b456df71ade0a5d00ddd17dbf81f7e1b4ccd140a",
+      "git_sha256": "865a432e263d0bb10e748955b456df71ade0a5d00ddd17dbf81f7e1b4ccd140a"
+    },
+    {
+      "path": ".github/scripts/plan_ci.py",
+      "checkout_sha256": "55c21010a31671199908053b7d044355be0fe4cead16ffeb799bc2d5f7057ecb",
+      "git_sha256": "55c21010a31671199908053b7d044355be0fe4cead16ffeb799bc2d5f7057ecb"
+    },
+    {
+      "path": "tests/test_ci_consumer_contracts.py",
+      "checkout_sha256": "6c67bb3b105aced5c610c2b94e239d366064fd24e380545e8ed6e313014a5ead",
+      "git_sha256": "6c67bb3b105aced5c610c2b94e239d366064fd24e380545e8ed6e313014a5ead"
+    },
+    {
+      "path": "tests/test_ci_plan.py",
+      "checkout_sha256": "01c45a263afa57acf51b52951aa5b57b2ca8fc0220ce97932ba03d52f9223aae",
+      "git_sha256": "01c45a263afa57acf51b52951aa5b57b2ca8fc0220ce97932ba03d52f9223aae"
+    },
+    {
+      "path": "tests/ci_impact_policy.yaml",
+      "checkout_sha256": "ff2e1eed56a77dbfbb318a7d8ff86f6d60b5ca8127bcc9fb5ffca091a066d7b5",
+      "git_sha256": "ff2e1eed56a77dbfbb318a7d8ff86f6d60b5ca8127bcc9fb5ffca091a066d7b5"
+    },
+    {
+      "path": ".github/scripts/ci_contract_shadow.py",
+      "checkout_sha256": "c13410b1db44ced18d432ba22b65e206faae1d0321f47f885de0d5c7875171e5",
+      "git_sha256": "c13410b1db44ced18d432ba22b65e206faae1d0321f47f885de0d5c7875171e5"
+    },
+    {
+      "path": ".github/scripts/ci_input_facts.py",
+      "checkout_sha256": "a4fc10bc50f824b305a938cb8b12724fd3e02e8697a599c2459c4c664dbbeab8",
+      "git_sha256": "a4fc10bc50f824b305a938cb8b12724fd3e02e8697a599c2459c4c664dbbeab8"
+    },
+    {
+      "path": ".github/scripts/ci_dependencies.py",
+      "checkout_sha256": "5768999e3e6929f69ac87c56b94b9ecb66bf4ee527f48d97a21beb839110a20f",
+      "git_sha256": "5768999e3e6929f69ac87c56b94b9ecb66bf4ee527f48d97a21beb839110a20f"
+    },
+    {
+      "path": "tests/test_ci_contract_shadow.py",
+      "checkout_sha256": "d4af59dad4c53babe36a834c542c7d40f6eab3629db6c0cc3dacd77410d331b3",
+      "git_sha256": "d4af59dad4c53babe36a834c542c7d40f6eab3629db6c0cc3dacd77410d331b3"
+    },
+    {
+      "path": "tests/test_ci_input_facts.py",
+      "checkout_sha256": "b8198a0c0685c0cd64d84b1fe70443165074b37e09312c70c4896e04fc9c2d1c",
+      "git_sha256": "b8198a0c0685c0cd64d84b1fe70443165074b37e09312c70c4896e04fc9c2d1c"
+    },
+    {
+      "path": "tests/test_ci_dependencies.py",
+      "checkout_sha256": "a6cd0c74438c973649f5afeee49de42000f1a309d0d8fec4dfc8e6f633de7577",
+      "git_sha256": "a6cd0c74438c973649f5afeee49de42000f1a309d0d8fec4dfc8e6f633de7577"
+    },
+    {
+      "path": "tests/coverage_policy.yaml",
+      "checkout_sha256": "4e8ec5fc1f390e857f845dfa00b998dd7311f545b2967a47c26c69f2f6039325",
+      "git_sha256": "4e8ec5fc1f390e857f845dfa00b998dd7311f545b2967a47c26c69f2f6039325"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "checkout_sha256": "571e1dda06ab092b1fb7eedbd3bd05ac366d2c324eacf0d886acc5e9a9327b1b",
+      "git_sha256": "571e1dda06ab092b1fb7eedbd3bd05ac366d2c324eacf0d886acc5e9a9327b1b"
+    }
+  ],
+  "source_test_coverage_scope": "five CI Python modules changed by the Draft PR",
+  "quality_thresholds_unchanged": true,
+  "coverage_exclusions_unchanged": true,
+  "other_selection_authority_preserved": true,
+  "shadow_report_id": "4f634c14de3a1aea4da80157a09b0e489bce9596b82f4e0972c08ae6d8ef0ed6"
+}

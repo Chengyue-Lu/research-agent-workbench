@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "execution_producer": "44abc86acb638b22a6740ee178ab72d730838bc0",
+  "log": "work/TEST-PERF-002/A-20260916-009/checks/declared-proofs.log",
+  "sha256": "7aa98fe46d7a0821f6f4374a76489056d54618de7c9f8112271c17ee98df2e4d",
+  "tests": 11,
+  "consumer_definitions_unchanged": true,
+  "all_declared_pins_unchanged": {
+    "src/research_workbench/cli.py": "3be2daa342fbddac3e1f7b535ef9dc5ab71e15dd138ad842b1ef3dc3e4a1798c",
+    "tests/test_m3_context_observability.py": "b8647fe2d840e0028b442081207c394b3a5a04812f80ab604bd51cf28bc6e2fd",
+    "src/research_workbench/validation/documents.py": "16cd9bb7d61820a9582e614daeecb8c2bee969534bb1b8a67795bb9a305361df",
+    "tests/test_validation.py": "cbac9f43a00235fa3b8445a7e447d2eeee3aeadb119d39bfcade3e35d6b6cc3b",
+    "src/research_workbench/resources.py": "eb0c8900503453386c9a458a7e3f406294cbe749da2bbc2d4a62897d5995787e",
+    "src/research_workbench/validation/schemas.py": "6160357a985a8c20b42a0e08ba0760ad95984a732629e77cfe56ae89d560a099",
+    "tests/test_schemas.py": "d0fc0c73d4d2bbb05ee38e161e9f7ad40c7880f6ade46ff73828cfe35d834ecc",
+    "src/research_workbench/validation/capability.py": "6819b2fe5fd5db6dc9e53ad09a1a89e920c9ef154b0f4527b83eeac3f8af192e",
+    "tests/test_capability_consumer.py": "74a936aec3034e883cbf71f0b14c851b3459c8ab680239fdb2e4c52c9d8d76c1"
+  },
+  "complete_input_closure_proved": false,
+  "execution_authority": false
+}
