@@ -1,0 +1,97 @@
+{
+  "generated_at": "2026-09-16T09:28:38.349503+00:00",
+  "implementation_commit": "48ba0e6ce9d70ea5f8c659188a722f76a46742b1",
+  "evidence_kind": "synthetic-local-transport",
+  "task_completion": false,
+  "source_refs": [
+    {
+      "path": "src/research_workbench/execution/baseline.py",
+      "sha256": "c77f90e7323c23adee97987ad4b7d441ddef0dbe70307ed70bd4f70d9b09e517"
+    },
+    {
+      "path": "src/research_workbench/execution/baseline_envelope.py",
+      "sha256": "ab9af1bb6ab3dd3798e3bef7cffb1d9e9a045d7f99cc488470c7e72ffbe0dc31"
+    },
+    {
+      "path": "src/research_workbench/execution/baseline_closeout.py",
+      "sha256": "e9591d5e89c08c381f86d7701cfa9e1d5ec2c8ef208df2ad409f34571df35f04"
+    }
+  ],
+  "cases": [
+    {
+      "project": "cases/a1",
+      "envelope_ref": {
+        "path": "baseline/plain-agent-envelope.json",
+        "sha256": "9e119df28787c9b5100fc41b6dffe87062eb742b060d01072ebf1d7a7cd6cbe7"
+      },
+      "receipt_ref": {
+        "path": "work/TASK-MR-ES-FROZEN-001/A1/receipt.json",
+        "sha256": "86cacb7643d3debb44149cda68c1a2ba9b4b6e09da7b1c3ae74cdecbd0f2655c"
+      },
+      "status": "completed",
+      "provider_calls": 1,
+      "cold_replay": "pass",
+      "trace_blocked": false
+    },
+    {
+      "project": "cases/a2",
+      "envelope_ref": {
+        "path": "baseline/plain-agent-tool-envelope.json",
+        "sha256": "032dedbe3c631ef5767e5285678df77138d6b0b60ee23900ba2676fcbdf0a471"
+      },
+      "receipt_ref": {
+        "path": "work/TASK-MR-ES-FROZEN-001/A1/receipt.json",
+        "sha256": "b794fc4dc6423276067e892ce30ddc86138c5772420128ba185efd46fd5e0964"
+      },
+      "status": "completed",
+      "provider_calls": 2,
+      "cold_replay": "pass",
+      "trace_blocked": false
+    },
+    {
+      "project": "cases/a2-turn-limit",
+      "envelope_ref": {
+        "path": "baseline/plain-agent-tool-envelope.json",
+        "sha256": "e58e2aa8c0f832b54b57708bb805ffbcdee5f5ec7cffa3482212f9083aee2f4d"
+      },
+      "receipt_ref": {
+        "path": "work/TASK-MR-ES-FROZEN-001/A1/receipt.json",
+        "sha256": "e0a1708f7fc20e377921b74629135b366f5bec3646f9e519ad51d871196a8437"
+      },
+      "status": "post-call-failed",
+      "provider_calls": 1,
+      "cold_replay": "pass",
+      "trace_blocked": false
+    },
+    {
+      "project": "cases/a1-timeout",
+      "envelope_ref": {
+        "path": "baseline/plain-agent-envelope.json",
+        "sha256": "9e119df28787c9b5100fc41b6dffe87062eb742b060d01072ebf1d7a7cd6cbe7"
+      },
+      "receipt_ref": {
+        "path": "work/TASK-MR-ES-FROZEN-001/A1/receipt.json",
+        "sha256": "d75e74046e660939f070df450754fecfdbc9b9fa2e63f3d84e9dbf92427813a9"
+      },
+      "status": "post-call-failed",
+      "provider_calls": 1,
+      "cold_replay": "pass",
+      "trace_blocked": false
+    },
+    {
+      "project": "cases/a1-blocked",
+      "envelope_ref": {
+        "path": "baseline/plain-agent-envelope.json",
+        "sha256": "9e119df28787c9b5100fc41b6dffe87062eb742b060d01072ebf1d7a7cd6cbe7"
+      },
+      "receipt_ref": {
+        "path": "work/TASK-MR-ES-FROZEN-001/A1/receipt.json",
+        "sha256": "17c0c279b7f49d0f0898aa3c29465d7109a1710a277e4bfc2725342e3dcd3d97"
+      },
+      "status": "preflight-blocked",
+      "provider_calls": 0,
+      "cold_replay": "pass",
+      "trace_blocked": false
+    }
+  ]
+}

@@ -316,7 +316,7 @@ class SystemEvaluationFixture:
             "interface_ref": interface_ref,
         }
 
-    def build(self):
+    def build(self, *, a2_multi_requirement=False):
         manifest = copy.deepcopy(
             load_document(
                 ROOT / "examples/evals/manifests/EVAL-MANIFEST-M5-003-001.yaml"
@@ -357,9 +357,11 @@ class SystemEvaluationFixture:
                 b"def bounded_operation(value):\n    return value\n",
             )
             supply = self.doc("bundle/supply.yaml")
-            if index == 2:
+            if index == 2 or a2_multi_requirement:
                 self.complete_supply(supply)
             supply["report_id"] = f"m5-synthetic-supply-{index}"
+            if index == 1 and a2_multi_requirement:
+                supply["availability"]["valid_until"] = "2026-09-11T00:00:01Z"
             identity = supply["supply_identity"]
             identity["supply_kind"] = "tool" if index == 1 else "procedure"
             identity["implementation_ref"] = f"m5-synthetic-implementation-{index}"
@@ -495,6 +497,36 @@ class SystemEvaluationFixture:
         manifest["arms"][2]["capability_snapshot_refs"].append(
             self.extra_binding["snapshot_ref"]
         )
+        self.a2_extra_bindings = []
+        if a2_multi_requirement:
+            arm = "plain-agent-tool"
+            extra = copy.deepcopy(self.bindings[arm])
+            extra["snapshot_ref"] = self.requirement_slice(
+                extra["snapshot_ref"], "arm-1/document-read/frozen"
+            )
+            runtime_ref = self.requirement_slice(
+                self.runtime_refs[arm], "arm-1/document-read/runtime"
+            )
+            # Keep Supply/implementation identity fixed, but independently pin
+            # a later observation for the second Requirement's runtime use.
+            snapshot = self.doc(runtime_ref["path"])
+            supply = self.doc("arm-1/supply.json")
+            supply["availability"]["valid_until"] = "2026-09-13T00:00:00Z"
+            supply_ref = self.write("arm-1/document-read/supply.json", supply)
+            selected = self.c_ref(supply["report_id"] + "@1.0.0", supply_ref)
+            resolution_path = snapshot["resolution_ref"]["document_path"]
+            resolution = self.doc(resolution_path)
+            resolution["candidate_supply_report_refs"] = [selected]
+            resolution["selected_supply_report_ref"] = selected["ref"]
+            for comparison in resolution["comparisons"]:
+                comparison["supply_report_ref"] = selected["ref"]
+            snapshot["resolution_ref"] = self.c_ref(
+                resolution["resolution_id"] + "@r1", self.write(resolution_path, resolution)
+            )
+            snapshot["selected_supply_report_ref"] = selected
+            self.a2_extra_runtime_ref = self.write(runtime_ref["path"], snapshot)
+            self.a2_extra_bindings.append(extra)
+            manifest["arms"][1]["capability_snapshot_refs"].append(extra["snapshot_ref"])
         self.manifest_ref = self.write("evaluation/manifest.json", manifest)
         schema = json.loads(
             (
@@ -543,7 +575,7 @@ class SystemEvaluationFixture:
             rules=schema["properties"]["rules"]["const"],
             mode_documents=mode_refs,
             action_documents=action_refs,
-            execution_bindings=[*self.bindings.values(), self.extra_binding],
+            execution_bindings=[*self.bindings.values(), self.extra_binding, *self.a2_extra_bindings],
             design={
                 "randomization": {
                     "unit": "case-replicate",
@@ -682,6 +714,8 @@ class SystemEvaluationFixture:
         bindings = [(binding, self.runtime_refs[arm_id])]
         if arm_id == "mode-no-skill":
             bindings.append((self.extra_binding, self.extra_runtime_ref))
+        if arm_id == "plain-agent-tool":
+            bindings.extend((extra, self.a2_extra_runtime_ref) for extra in self.a2_extra_bindings)
         return record(
             "arm_execution_qualification",
             "qualification_id",

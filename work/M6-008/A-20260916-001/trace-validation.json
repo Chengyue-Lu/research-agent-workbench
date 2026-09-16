@@ -1,0 +1,11 @@
+{
+  "blocked": false,
+  "risks": [
+    {
+      "code": "TRACE-CAPTURE-DELAYED",
+      "level": "warning",
+      "message": "[capture-gap] trace declares incomplete or delayed capture"
+    }
+  ],
+  "export_note": "Initial proof runs and Trace sealing succeeded. Dataclass report serialization was corrected after export failed; no synthetic session was rerun."
+}
