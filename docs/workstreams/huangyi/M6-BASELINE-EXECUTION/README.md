@@ -85,13 +85,25 @@ def replay_existing_attempt(project_root, receipt_ref, expected_envelope_ref):
 ```
 
 Receipt 区分 `completed`、`post-call-failed`、`preflight-blocked`。
+`completed` 须由文件中的执行事实重算资格：最后一次 Provider 响应为 `complete` 或 `stop`，
+没有等待中的 Provider 响应、未执行 Tool、进行中的 Tool 或等待下一轮 Provider 的 Tool 结果，
+终态 trusted elapsed 严格小于冻结 `max_seconds`。producer 使用同一次 end-clock 采样决定终态并
+写入终态 fact；恰达时限或超时保留为失败。已报告的 failed/blocked 不因本检查被升级成成功。
 在初始结构/权限检查通过并建立 Attempt 后，Provider 异常、超时及使用边界漂移保留失败记录；
 非法初始输入或不可写 Attempt 路径在写入执行档案前拒绝。源文件漂移时可保留失败及 envelope snapshot，
 但完整 strict replay 仍会报告 pin 不一致，不能把“留下失败”写成“全部回放有效”。
 
 ## 验证与下一步
 
-2026-09-16 根据 [PR #75 review](https://github.com/Chengyue-Lu/research-agent-workbench/pull/75#issuecomment-5685397753)
+2026-09-16 的 [终态 review](https://github.com/Chengyue-Lu/research-agent-workbench/pull/75#discussion_r4021866705)
+指出 completed 仍可被档案自报覆盖。已复现并修复“最终 Tool 未执行”“elapsed 达到/超过预算”及
+非成功 finish reason 的全外围重哈希反例；通用 Trace 通过而 baseline replay 拒绝。
+真实 turn-limit 失败保留原生命周期，即使 Tool 已返回，缺少最终 Provider 响应也不能变造为成功。
+新增 session-return 时钟反例，保证 producer 在最后一个观测边界到时仍留下 replayable failure。
+最新 `develop@2d5af1b` 已集成；M11-007 DONE / Gate B SATISFIED 来自已接受的 PR82，
+M6-008 保持待接受候选，M5-007 仍等待 M6-008 DONE。最终提交验证绑定在 PR #75。
+
+上一轮根据 [PR #75 review](https://github.com/Chengyue-Lu/research-agent-workbench/pull/75#issuecomment-5685397753)
 修复两个 P1 和一个 P2：同名 Tool 的绑定列表保留所有 availability；每份 Provider / Tool / session fact
 写入后立即记录 hash-pinned `file-revision(created)`，回放要求它紧随所绑定的请求、结果或终态事件，
 发生在后续活动之前。事件路径相对于 Attempt，与 decision refs 一致；外层 Receipt 仍使用 project-relative refs。

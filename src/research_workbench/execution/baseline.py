@@ -185,7 +185,7 @@ class _BaselineSink:
                     "actual Tool callable differs from qualified implementation path")
             require(_hash(source) == binding["implementation_ref"]["sha256"], "actual Tool bytes drift")
 
-    def fact(self, operation, phase, call_id, *, binding, tool_ref=None):
+    def fact(self, operation, phase, call_id, *, binding, tool_ref=None, elapsed_seconds=None):
         event = json.loads((self.recorder.attempt_dir / "events.jsonl").read_text(encoding="utf-8").splitlines()[-1])
         document = {
             "schema_version": "0.1.0", "record_kind": "baseline_execution_fact", "version": "1.0.0",
@@ -193,7 +193,8 @@ class _BaselineSink:
             "envelope_ref": self.envelope_ref, "operation": operation, "phase": phase, "call_id": call_id,
             "event_sequence": event["sequence"], "event_sha256": digest(event),
             "started_at": self.started_at, "observed_at": self.utc_clock(),
-            "elapsed_seconds": self.clock() - self.started, "binding": binding,
+            "elapsed_seconds": self.clock() - self.started if elapsed_seconds is None else elapsed_seconds,
+            "binding": binding,
             "tool_ref": tool_ref, "use_refs": self.use_refs,
         }
         self.inputs.validate("baseline_execution_fact", document)
@@ -337,8 +338,13 @@ def run_baseline_session(
         status = "failed" if sink.provider_count else "blocked"
     if recorder.redaction_count:
         status, reason = "failed", "trace redaction prevents exact transport replay"
+    # Freeze one trusted end-clock sample for both the terminal decision and
+    # fact; archive writes must not resample time after deciding completion.
+    elapsed_seconds = clock() - started
+    if status == "completed" and elapsed_seconds >= budget["max_seconds"]:
+        status, reason = "failed", "post-call time budget at session end (detective; no hard preemption)"
     recorder.record_attempt_status(status, reason=reason)
-    sink.fact("session", "end", "session", binding=sink.actual_binding)
+    sink.fact("session", "end", "session", binding=sink.actual_binding, elapsed_seconds=elapsed_seconds)
     trace_ref = recorder.seal(status)
     trace_ref = {"path": (destination / trace_ref["path"]).relative_to(inputs.root).as_posix(), "sha256": trace_ref["sha256"]}
     artifact_refs = []

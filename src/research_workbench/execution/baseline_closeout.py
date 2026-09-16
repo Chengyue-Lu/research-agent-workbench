@@ -101,6 +101,7 @@ def _replay_transport(inputs, envelope, envelope_ref, directory, facts, events, 
     closure.recheck()
 
     ready, awaiting_response, tool_active = True, False, False
+    terminal_response = False
     calls, assistant, results = [], [], []
     for fact in facts:
         operation, phase = fact["operation"], fact["phase"]
@@ -113,11 +114,13 @@ def _replay_transport(inputs, envelope, envelope_ref, directory, facts, events, 
                 require(digest(body.get("request")) == digest(request),
                         "baseline provider request differs from frozen payload or observed history")
                 ready, awaiting_response = False, True
+                terminal_response = False
             else:
                 require(awaiting_response, "baseline provider response has no active request")
                 awaiting_response = False
                 response = body.get("response", body)
                 calls = list(response["tool_calls"])
+                terminal_response = not calls and response["finish_reason"] in {"complete", "stop"}
                 assistant = list(response["output"])
                 for call in calls:
                     assistant.append(_plain(ContentBlock("tool_call", data={
@@ -152,6 +155,11 @@ def _replay_transport(inputs, envelope, envelope_ref, directory, facts, events, 
                         {**_plain(Message("tool", ())), "content": results},
                     ])
                     ready = True
+    return {
+        "awaiting_response": awaiting_response, "pending_tool_calls": len(calls),
+        "tool_active": tool_active, "ready_for_provider": ready,
+        "terminal_response": terminal_response,
+    }
 
 
 def _creation_event(events, reference, archive_path):
@@ -301,6 +309,8 @@ def _derive(
     if final_status == "completed":
         require(bool(provider_after) and not pending, "completed baseline lacks complete call facts")
         require(all(fact["binding"] == frozen for fact in provider_after), "completed baseline contains actual binding drift")
+        require(terminal["elapsed_seconds"] < metadata["budget"]["max_seconds"],
+                "completed baseline reaches or exceeds its frozen time budget")
         status = "completed"
     else:
         status = "post-call-failed" if execution_events else "preflight-blocked"
@@ -308,7 +318,11 @@ def _derive(
     # drift destroyed the old source bytes. They cannot acquire successful
     # eligibility this way; strict replay still rejects that unavailable closure.
     if validate_use_refs or status == "completed":
-        _replay_transport(inputs, envelope, envelope_ref, directory, facts, events, messages)
+        end = _replay_transport(inputs, envelope, envelope_ref, directory, facts, events, messages)
+        if status == "completed":
+            require(end["terminal_response"] and not any(end[key] for key in (
+                "awaiting_response", "pending_tool_calls", "tool_active", "ready_for_provider",
+            )), "completed baseline lacks a successful terminal response with a finished Tool loop")
         protocol = inputs.read(protocol_ref, "system_evaluation_protocol")
         require(frozen == protocol["execution_binding"], "baseline frozen binding differs from Protocol")
         for ref in {**required_inputs, **all_uses}.values():

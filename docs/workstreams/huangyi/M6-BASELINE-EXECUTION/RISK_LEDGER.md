@@ -5,6 +5,8 @@
 
 | 项目 | 当前处理 / 证据 | 剩余边界 |
 | --- | --- | --- |
+| 自报 completed 覆盖未结束的 Tool loop 或超时 | **已修正**：从请求/响应/Tool facts 重建终态，要求成功 finish reason、无待处理活动且 elapsed 严格低于冻结时限；未执行最终 Tool、Tool 返回但未取得最终响应、达限/超时和非成功响应的重哈希反例被拒绝 | 只验证 transport 成功资格；不会升级 failed/blocked 或授予 Task/科学接受 |
+| 终态决定与 end fact 采用不同时钟样本 | **已修正**：producer 对终态判定和 fact 复用同一个 trusted end-clock sample；session 返回时达限保留为 post-call-failed，并通过文件重放 | 同步调用仍不被强制抢占，超时属于 detective failure |
 | 同名 Tool 覆盖较早的 Requirement 绑定 | **已修正**：一个 handler 对应完整绑定列表，每次 Provider / Tool 使用前逐条检查 runtime availability；同实现 / 同接口 / 双 Requirement 的有效与中途过期案例覆盖 | 保留共享资格链检查，不增加自动换 Supply 或执行权限 |
 | 执行后补写 before fact | **已修正**：每份事实有独立的 exact path/hash 创建事件；创建必须紧随对应观察事件，先于后续活动，终态事实最后创建；重哈希后的迟到、缺失及重复事件被拒绝 | 文件内生命周期一致性不认证外部历史事件；旧候选缺失创建证据的档案保持原样 |
 | Validation checker source 未被重放消费 | **已修正**：执行前保存 checker 源码快照及创建事件；回放核对 checker identity、归档固定路径和实际字节 pin | 快照不被导入执行，源码身份 pin 不证明 checker 科研判断正确或提供签名认证 |

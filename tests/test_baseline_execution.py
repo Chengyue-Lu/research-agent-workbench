@@ -24,6 +24,7 @@ from research_workbench.cli import main
 from research_workbench.evaluation.pins import EvaluationValidationError
 from research_workbench.execution.baseline import _tool_inputs, observe_baseline_binding, run_baseline_session
 from research_workbench.execution.baseline_closeout import verify_baseline_receipt
+from research_workbench.adapters.models.session import IsolatedApiSessionRunner
 from research_workbench.validation.document_kinds import infer_document_kind
 from tests.baseline_fixtures import A1, A2, AT, ROOT, BaselineFixture
 
@@ -306,6 +307,41 @@ print(json.dumps({"status": receipt["status"], "attempt_id": receipt["attempt_id
         self.assertIn("post-call time budget", result["receipt"]["reason"])
         self.assertEqual(len(result["receipt"]["artifact_refs"]), 1)
         self.assertEqual(result["receipt"]["elapsed_seconds"], deadline)
+
+    def test_deadline_at_session_return_retains_failure_with_one_end_clock_sample(self):
+        provider = ScriptedProvider(response("final"))
+        self.freeze(provider)
+        now = [0.0]
+        deadline = self.f.envelope["transport_enforcement_metadata"]["budget"]["max_seconds"]
+        previous = sys.getprofile()
+
+        def profile(frame, event, _value):
+            if frame.f_code is IsolatedApiSessionRunner.run.__code__ and event == "return":
+                now[0] = float(deadline)
+
+        sys.setprofile(profile)
+        try:
+            result = self.run_arm(provider, clock=lambda: now[0])
+        finally:
+            sys.setprofile(previous)
+        self.assertEqual(len(provider.requests), 1)
+        self.assert_preserved_failure(result, replay_valid=True)
+        self.assertIn("post-call time budget", result["receipt"]["reason"])
+        self.assertEqual(result["receipt"]["elapsed_seconds"], deadline)
+
+    def test_tool_result_at_turn_limit_is_a_replayable_failure(self):
+        provider = ScriptedProvider(response("tool", tool=True), response("must-not-run"))
+        manifest = self.f.doc(self.f.manifest_ref["path"])
+        manifest["frozen_conditions"]["budget"]["max_turns"] = 1
+        self.f.manifest_ref = self.f.write(self.f.manifest_ref["path"], manifest)
+        self.freeze(provider, A2)
+        tool = self.load_tool()
+        with self.observe_tool_calls(tool) as calls:
+            result = self.run_arm(provider, tools=(tool,))
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(len(provider.requests), 1)
+        self.assert_preserved_failure(result, replay_valid=True)
+        self.assertIn("model-turn-budget", result["receipt"]["reason"])
 
     def test_rehashed_actual_binding_cannot_override_independent_trace_facts(self):
         provider = ScriptedProvider(response("a1-final"))

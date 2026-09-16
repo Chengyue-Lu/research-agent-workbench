@@ -41,7 +41,11 @@ class BaselineReplayIntegrityTests(unittest.TestCase):
         self.f = copy.deepcopy(self.template)
         self.f.root = Path(temporary.name)
         shutil.copytree(self.template.root, self.f.root, dirs_exist_ok=True)
-        self.receipt = copy.deepcopy(self.result['receipt'])
+        self.load_result(self.result)
+
+    def load_result(self, result):
+        self.receipt_path = result['receipt_ref']['path']
+        self.receipt = copy.deepcopy(result['receipt'])
         self.trace = self.f.doc(self.receipt['trace_index_ref']['path'])
         self.directory = Path(self.receipt['trace_index_ref']['path']).parent
         self.events_path = (self.directory / self.trace['event_ledger']['path']).as_posix()
@@ -49,15 +53,24 @@ class BaselineReplayIntegrityTests(unittest.TestCase):
         self.facts = [self.f.doc(ref['path']) for ref in self.receipt['fact_refs']]
 
     def change_request(self, position, mutate):
-        entry = [row for row in self.trace['messages'] if row['kind'] == 'provider-request'][position]
+        self.change_message('provider-request', position, lambda content: mutate(content['request']))
+
+    def change_final_response(self, mutate):
+        content = self.change_message('provider-response', -1, lambda content: mutate(content['response']))
+        ref = self.receipt['artifact_refs'][0]
+        ref.update(self.f.write(ref['path'], content['response']))
+
+    def change_message(self, kind, position, mutate):
+        entry = [row for row in self.trace['messages'] if row['kind'] == kind][position]
         path = self.directory / entry['path']
         header, body = _parse_message(self.f.root / path)
         content = json.loads(body)
-        mutate(content['request'])
+        mutate(content)
         raw = json.dumps(content, sort_keys=True, ensure_ascii=False, separators=(',', ':')).encode()
         header['content_sha256'] = entry['content_sha256'] = hashlib.sha256(raw).hexdigest()
         data = b'---\n' + yaml.safe_dump(header, sort_keys=False, allow_unicode=True).encode() + b'---\n' + raw + b'\n'
         entry['sha256'] = self.f.raw(path.as_posix(), data)['sha256']
+        return content
 
     def resign(self, *, update_creation_pins=True):
         for reference, fact in zip(self.receipt['fact_refs'], self.facts):
@@ -74,10 +87,11 @@ class BaselineReplayIntegrityTests(unittest.TestCase):
         self.receipt['trace_index_ref'] = self.f.write(self.receipt['trace_index_ref']['path'], self.trace)
         validation = self.f.doc(self.receipt['validation_ref']['path'])
         for ref in validation['subject_refs']:
-            if ref['path'] == self.receipt['trace_index_ref']['path']:
-                ref.update(self.receipt['trace_index_ref'])
+            for actual in [self.receipt['trace_index_ref'], *self.receipt['artifact_refs']]:
+                if ref['path'] == actual['path']:
+                    ref.update(actual)
         self.receipt['validation_ref'] = self.f.write(self.receipt['validation_ref']['path'], validation)
-        self.receipt_ref = self.f.write(self.result['receipt_ref']['path'], self.receipt)
+        self.receipt_ref = self.f.write(self.receipt_path, self.receipt)
         report = validate_attempt_trace(self.f.root, self.f.root / self.receipt['trace_index_ref']['path'])
         self.assertFalse(report.blocked, report.risks)
 
@@ -89,6 +103,65 @@ class BaselineReplayIntegrityTests(unittest.TestCase):
         with patch('research_workbench.execution.baseline_envelope.compiler_reference',
                    return_value={'path': 'historical/compiler.py', 'sha256': '0' * 64}):
             self.assertEqual(self.replay()['status'], 'completed')
+
+    def test_completed_rejects_unexecuted_final_tool_call(self):
+        self.change_final_response(lambda response: response['tool_calls'].append({
+            'call_id': 'never-executed-final-call', 'name': 'bounded_operation',
+            'arguments': {'value': '7'},
+        }))
+        self.resign()
+        with self.assertRaisesRegex(EvaluationValidationError, 'completed baseline'):
+            self.replay()
+
+    def test_completed_rejects_tool_result_without_final_provider_response(self):
+        harness = execution.BaselineExecutionTests()
+        self.f = harness.f = BaselineFixture(self.f.root / 'turn-limited')
+        self.f.build()
+        manifest = self.f.doc(self.f.manifest_ref['path'])
+        manifest['frozen_conditions']['budget']['max_turns'] = 1
+        self.f.manifest_ref = self.f.write(self.f.manifest_ref['path'], manifest)
+        provider = execution.ScriptedProvider(execution.response('tool', tool=True))
+        harness.freeze(provider, A2)
+        result = harness.run_arm(provider, tools=(harness.load_tool(),))
+        harness.assert_preserved_failure(result, replay_valid=True)
+        self.load_result(result)
+        self.trace['attempt_status'] = 'completed'
+        self.events[self.facts[-1]['event_sequence'] - 1]['payload']['to_status'] = 'completed'
+        self.receipt['status'] = 'completed'
+        validation = self.f.doc(self.receipt['validation_ref']['path'])
+        validation['status'] = 'pass'
+        for check in validation['checks']:
+            check['status'] = 'pass'
+        self.f.write(self.receipt['validation_ref']['path'], validation)
+        self.resign()
+        with self.assertRaisesRegex(EvaluationValidationError, 'completed baseline'):
+            self.replay()
+
+    def test_completed_requires_elapsed_below_frozen_deadline(self):
+        limit = self.f.envelope['transport_enforcement_metadata']['budget']['max_seconds']
+        for elapsed in (limit, limit + 1):
+            with self.subTest(elapsed=elapsed):
+                self.reset()
+                self.facts[-1]['elapsed_seconds'] = self.receipt['elapsed_seconds'] = elapsed
+                self.resign()
+                with self.assertRaisesRegex(EvaluationValidationError, 'completed baseline'):
+                    self.replay()
+
+    def test_completed_requires_a_successful_terminal_response(self):
+        for reason in ('length', 'refusal', 'paused', 'context_limit', 'error', 'unknown', 'tool_call'):
+            with self.subTest(reason=reason):
+                self.reset()
+                self.change_final_response(lambda response: response.update(finish_reason=reason))
+                self.resign()
+                with self.assertRaisesRegex(EvaluationValidationError, 'completed baseline'):
+                    self.replay()
+
+    def test_stop_response_within_deadline_remains_completed(self):
+        self.change_final_response(lambda response: response.update(finish_reason='stop'))
+        self.facts[-1]['elapsed_seconds'] = self.receipt['elapsed_seconds'] = (
+            self.f.envelope['transport_enforcement_metadata']['budget']['max_seconds'] - 0.001)
+        self.resign()
+        self.assertEqual(self.replay()['status'], 'completed')
 
     def test_before_fact_backfilled_after_response_is_rejected(self):
         bound = [self.events[fact['event_sequence'] - 1] for fact in self.facts]

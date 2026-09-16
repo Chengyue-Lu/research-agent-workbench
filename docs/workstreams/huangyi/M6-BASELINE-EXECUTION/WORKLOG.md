@@ -118,3 +118,24 @@ Trace 的创建事件采用 Attempt-relative artifact path，避免重复拼入 
 变造 1 项通过（19.171 秒），合计 38 项；同源码三个 M6 模块累计 line / branch 100%，
 共 572 条语句、116 个分支。文档检查 10 项通过。exact-head CI 的结果在 PR 及本轮独立归档记录；
 旧 `A-20260916-001` 不重写，不将旧 Receipt 作为当前候选的回放证据。仍需 R2 人工复核，不自行合并。
+
+## 6. 终态资格 review 修复（2026-09-16）
+
+处理黄毅在 `34cc426` 上提出的 [P1 review](https://github.com/Chengyue-Lu/research-agent-workbench/pull/75#discussion_r4021866705)。
+fetch 确认 PR82 已合入 `develop@2d5af1b`，在 M6 专用分支以 merge commit `07de6e6` 集成，保留此前
+归档所绑定的实现提交。STATUS 与施工图语义冲突保留主线已接受的 M11-007 / Gate B 状态及 M6 READY
+候选说明；文档 10 项通过。没有采用 reviewer 在其隔离分支上未推送的集成提交。
+
+先复现完整外围重哈希反例：最终 Provider 请求未执行 Tool（1 例）、终态 elapsed 达到/超过冻结
+时限（2 例）、非成功 finish reason（7 例），共 10 次旧实现错误接受。所有反例的通用 Trace 校验通过。
+另以真实 session-return 事件推进测试时钟，复现 producer 终态时已达限仍保留 completed 的缺口。
+
+transport replay 现在返回等待响应、待执行 Tool、Tool 活动、等待下一 Provider 和终态响应的可检查状态；
+successful closeout / strict replay 要求该状态闭合并且 elapsed 低于冻结时限。producer 对终态决定和
+fact 复用同一次 end-clock 采样，失败和阻断的保留语义不变。新增从真实 turn-limit 失败档案变造成功的
+反例，证明“Tool 已返回”不能替代最终 Provider 响应。首轮 7 项定向回归通过；完整 M6 专项 45 项通过
+（185.850 秒），三个模块 line / branch 100%（582 statements / 120 branches），文档 10 项通过。
+最终提交的自动 CI 按当前 plan 重新运行，旧提交绿灯不作为本轮证据。
+
+当前实现保持 M6 Task / Execution owner 为黄毅，M5 shared contract 和 M11 实现不变。
+保留 `task_completion=false`；不合并 PR，不声明 M6 DONE，不解锁 M5-007 或真实执行 Gate。
