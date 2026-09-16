@@ -49,7 +49,8 @@ class PlannerTests(unittest.TestCase):
         for path in planner.TRUST_FILES:
             write(cls.seed, path, (ROOT / path).read_bytes())
         write(cls.seed, 'pyproject.toml', (ROOT / 'pyproject.toml').read_bytes())
-        for name in ('test_ci_plan', 'test_ci_checks', 'test_ci_dependencies', 'test_coverage_policy', 'test_governance_helper_branches'):
+        for name in ('test_ci_plan', 'test_ci_checks', 'test_ci_dependencies', 'test_ci_consumer_contracts',
+                     'test_coverage_policy', 'test_governance_helper_branches'):
             write(cls.seed, 'tests/' + name + '.py', 'import unittest\nclass Example(unittest.TestCase):\n    def test_ok(self): pass\n')
         for name in {t.split('.')[0] for g in cls.policy['groups'].values() for t in g['tests']}:
             write(cls.seed, 'tests/' + name + '.py', 'import unittest\nclass Example(unittest.TestCase):\n    def test_ok(self): pass\n')
@@ -1161,12 +1162,14 @@ else: raise AssertionError('candidate worker accepted focused self-authorization
         with patch.object(runner, 'ROOT', self.repo), patch.object(runner, 'TESTS', self.repo / 'tests'), \
              patch.object(runner, 'SOURCE', self.repo / 'src'), patch.dict(os.environ, {'GITHUB_EVENT_PATH':''}), \
              patch.dict(sys.modules), patch.object(sys, 'path', list(sys.path)):
-            for name in ('test_ci_plan', 'test_unselected'): sys.modules.pop(name, None)
+            for name in ('test_ci_plan', 'test_ci_consumer_contracts', 'test_unselected'):
+                sys.modules.pop(name, None)
             suite = runner._suite_for(args)
-            self.assertEqual({'test_ci_plan.Example.test_ok', 'test_unselected.Other.test_existing'},
+            self.assertEqual({'test_ci_plan.Example.test_ok', 'test_ci_consumer_contracts.Example.test_ok',
+                              'test_unselected.Other.test_existing'},
                              {test.id() for test in runner._iter_tests(suite)})
             result = unittest.TestResult(); suite.run(result)
-            self.assertEqual(2, result.testsRun)
+            self.assertEqual(3, result.testsRun)
             self.assertTrue(result.wasSuccessful())
             with self.assertRaises(ValueError):
                 runner._suite_for(argparse.Namespace(suite='impact', plan=path))
@@ -1189,7 +1192,8 @@ else: raise AssertionError('candidate worker accepted focused self-authorization
              patch.object(runner, 'SOURCE', self.repo / 'src'), patch.dict(os.environ, {'GITHUB_EVENT_PATH':''}), \
              patch.dict(sys.modules), patch.object(sys, 'path', list(sys.path)), \
              redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
-            for name in ('test_ci_plan', 'test_unselected', 'test_documentation', 'test_pr_governance'):
+            for name in ('test_ci_plan', 'test_ci_consumer_contracts', 'test_unselected',
+                         'test_documentation', 'test_pr_governance'):
                 sys.modules.pop(name, None)
             for impact, repository in ((False, False), (False, True), (True, False), (True, True)):
                 command(self.repo, 'reset', '--hard', self.base)
