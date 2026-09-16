@@ -1,5 +1,5 @@
 policy_id: rwb-coverage-policy
-version: 2.2.3
+version: 2.2.4
 source_root: src/research_workbench
 
 suites:
@@ -349,6 +349,7 @@ negative_acceptance:
   - surface: ci-consumer-contract-records
     modules:
       - .github/scripts/ci_consumer_contracts.py
+      - .github/scripts/plan_ci.py
     positive_tests:
       - test_ci_consumer_contracts.ConsumerContractTests.test_matching_pins_and_call_syntax_are_review_evidence_only
       - test_ci_consumer_contracts.ConsumerContractTests.test_policy_v1_v2_and_live_records_preserve_explicit_version_boundary
@@ -356,6 +357,7 @@ negative_acceptance:
       - test_ci_consumer_contracts.ConsumerContractTests.test_source_test_input_mode_and_identifier_drift_are_visible
       - test_ci_consumer_contracts.ConsumerContractTests.test_candidate_rewrite_removal_and_new_record_never_become_base_authority
       - test_ci_consumer_contracts.ConsumerContractTests.test_contract_schema_rejects_authority_and_unbound_evidence
+      - test_ci_consumer_contracts.ConsumerContractTests.test_policy_authority_does_not_import_candidate_diagnostic_module
   - surface: ci-impact-evidence-and-gates
     modules:
       - .github/scripts/ci_checks.py

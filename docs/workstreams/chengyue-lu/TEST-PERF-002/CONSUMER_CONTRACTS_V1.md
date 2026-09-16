@@ -30,7 +30,10 @@ The four initial records pin nine files. These are declared source/test dependen
 not a claim that all helper, environment or dynamic resource inputs have been enumerated.
 
 [`ci_consumer_contracts.py`](../../../../.github/scripts/ci_consumer_contracts.py) checks
-strict shape, portable pin paths, digests, regular Git modes, entrypoints and test identifiers.
+regular Git modes, entrypoints and test identifiers. Strict policy shape, portable pin paths
+and declared digests are validated inside the existing witnessed `plan_ci.py` authority.
+The planner/worker does not import the new diagnostic module. An isolated process with a
+failing diagnostic import sentinel still parses v2 and rejects an execution-authority injection.
 It reports call syntax with its lexical owner and source line. This is not arbitrary Python
 execution or a general capability resolver. Changed bytes, deleted files, mode changes,
 unparseable source and missing evidence identifiers are visible as drift.

@@ -4,46 +4,9 @@ from __future__ import annotations
 import ast
 import hashlib
 import json
-import re
 
 
-def require(condition, message):
-    if not condition:
-        raise ValueError(message)
-
-
-def validate(records):
-    require(isinstance(records, list), 'consumer contracts must be a list')
-    ids = set()
-    for record in records:
-        require(isinstance(record, dict) and set(record) == {
-            'id', 'owner', 'consumer', 'pins', 'entrypoints', 'inputs', 'outputs',
-            'invariants', 'unresolved', 'positive_tests', 'negative_tests', 'execution_authority'},
-            'consumer contract shape')
-        require(isinstance(record['id'], str) and re.fullmatch(r'[a-z][a-z0-9-]+', record['id'])
-                and record['id'] not in ids, 'consumer contract identity')
-        ids.add(record['id'])
-        require(isinstance(record['owner'], str) and bool(record['owner'].strip()), 'consumer contract owner')
-        require(record['execution_authority'] is False, 'consumer contracts cannot authorize execution')
-        pins = record['pins']
-        require(isinstance(pins, dict) and pins, 'consumer contract pins')
-        for path, sha in pins.items():
-            require(isinstance(path, str) and path.startswith(('src/', 'tests/', 'registry/', 'schemas/'))
-                    and '\\' not in path and ':' not in path
-                    and all(part not in {'', '.', '..'} for part in path.split('/')),
-                    'consumer contract pin path')
-            require(isinstance(sha, str) and re.fullmatch('[0-9a-f]{64}', sha), 'consumer contract pin digest')
-        require(isinstance(record['consumer'], str) and record['consumer'].startswith('src/')
-                and record['consumer'].endswith('.py') and record['consumer'] in pins,
-                'consumer contract source pin')
-        for key in ('entrypoints', 'inputs', 'outputs', 'invariants', 'unresolved', 'positive_tests', 'negative_tests'):
-            values = record[key]
-            require(isinstance(values, list) and values and all(isinstance(v, str) and v.strip() for v in values)
-                    and len(values) == len(set(values)), 'consumer contract list: ' + key)
-        require(not set(record['positive_tests']) & set(record['negative_tests']), 'consumer evidence reuse')
-        for test in record['positive_tests'] + record['negative_tests']:
-            require(re.fullmatch(r'test_\w+\.\w+\.test_\w+', test)
-                    and 'tests/' + test.split('.')[0] + '.py' in pins, 'consumer evidence pin')
+from plan_ci import validate_consumer_contracts as validate
 
 
 def source_observations(raw):

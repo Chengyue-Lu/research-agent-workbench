@@ -183,7 +183,7 @@
       "test_provider_adapters.GeminiAdapterTests.test_parallel_response_is_contract_violation_when_not_claimed"
     ]
   },
-  "consumer_fingerprint": "910b012cb2979750ba1d5e95015c0113e7eb281c737065ac0e32b9a76d29eca5",
+  "consumer_fingerprint": "57f55a70c7af352961ae1c90ebfb1a448a93bb65ec66cb97d3ffa1dade71c3ce",
   "consumer_contracts": [
     {
       "id": "cli-git-head-observation",

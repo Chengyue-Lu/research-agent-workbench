@@ -19,14 +19,12 @@ import tokenize
 
 import yaml
 import ci_dependencies as dependencies
-import ci_consumer_contracts
 
 ROOT = Path(__file__).resolve().parents[2]
 POLICY = 'tests/ci_impact_policy.yaml'
 TRUST_FILES = ('.github/scripts/plan_ci.py', '.github/scripts/ci_checks.py', '.github/scripts/ci_dependencies.py',
                '.github/scripts/check_pr_governance.py', '.github/governance-policy.json',
-               'tests/run_unittest_suite.py', 'tests/coverage_policy.yaml', POLICY,
-               '.github/scripts/ci_consumer_contracts.py')
+               'tests/run_unittest_suite.py', 'tests/coverage_policy.yaml', POLICY)
 LEVELS = {'fast': 0, 'focused': 1, 'full': 2}
 BEHAVIOR = {'none': 0, 'focused': 1, 'full': 2}
 COVERAGE = {'impact', 'repository'}
@@ -188,13 +186,47 @@ def closure(policy, seeds):
     return sorted(found)
 
 
+def validate_consumer_contracts(records):
+    require(isinstance(records, list), 'consumer contracts must be a list')
+    ids = set()
+    for record in records:
+        require(isinstance(record, dict) and set(record) == {
+            'id', 'owner', 'consumer', 'pins', 'entrypoints', 'inputs', 'outputs',
+            'invariants', 'unresolved', 'positive_tests', 'negative_tests', 'execution_authority'},
+            'consumer contract shape')
+        require(isinstance(record['id'], str) and re.fullmatch(r'[a-z][a-z0-9-]+', record['id'])
+                and record['id'] not in ids, 'consumer contract identity')
+        ids.add(record['id'])
+        require(isinstance(record['owner'], str) and bool(record['owner'].strip()), 'consumer contract owner')
+        require(record['execution_authority'] is False, 'consumer contracts cannot authorize execution')
+        pins = record['pins']
+        require(isinstance(pins, dict) and pins, 'consumer contract pins')
+        for path, sha in pins.items():
+            require(isinstance(path, str) and path.startswith(('src/', 'tests/', 'registry/', 'schemas/'))
+                    and '\\' not in path and ':' not in path
+                    and all(part not in {'', '.', '..'} for part in path.split('/')),
+                    'consumer contract pin path')
+            require(isinstance(sha, str) and re.fullmatch('[0-9a-f]{64}', sha), 'consumer contract pin digest')
+        require(isinstance(record['consumer'], str) and record['consumer'].startswith('src/')
+                and record['consumer'].endswith('.py') and record['consumer'] in pins,
+                'consumer contract source pin')
+        for key in ('entrypoints', 'inputs', 'outputs', 'invariants', 'unresolved', 'positive_tests', 'negative_tests'):
+            values = record[key]
+            require(isinstance(values, list) and values and all(isinstance(v, str) and v.strip() for v in values)
+                    and len(values) == len(set(values)), 'consumer contract list: ' + key)
+        require(not set(record['positive_tests']) & set(record['negative_tests']), 'consumer evidence reuse')
+        for test in record['positive_tests'] + record['negative_tests']:
+            require(re.fullmatch(r'test_\w+\.\w+\.test_\w+', test)
+                    and 'tests/' + test.split('.')[0] + '.py' in pins, 'consumer evidence pin')
+
+
 def validate_policy(policy):
     require(isinstance(policy, dict), 'impact policy must be an object')
     keys = {'policy_id', 'version', 'surfaces', 'groups', 'impact_evidence', 'consumer_fingerprint'}
     require(set(policy) == (keys | {'consumer_contracts'} if policy.get('version') == 2 else keys)
             and policy['policy_id'] == 'rwb-ci-impact' and type(policy['version']) is int
             and policy['version'] in {1, 2}, 'impact policy shape/version')
-    ci_consumer_contracts.validate(policy.get('consumer_contracts', []))
+    validate_consumer_contracts(policy.get('consumer_contracts', []))
     require(isinstance(policy['groups'], dict) and policy['groups'], 'empty groups')
     for group in policy['groups'].values():
         required = {'tests', 'downstream', 'coverage', 'package', 'repository'}

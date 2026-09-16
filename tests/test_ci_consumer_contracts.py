@@ -4,6 +4,8 @@ import hashlib
 import json
 from pathlib import Path
 import sys
+import subprocess
+import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -119,3 +121,20 @@ class ConsumerContractTests(unittest.TestCase):
         invalid = {**policy, 'consumer_contracts':[dict(self.record, execution_authority=True)]}
         with self.assertRaises(ValueError):
             planner.validate_policy(invalid)
+
+    def test_policy_authority_does_not_import_candidate_diagnostic_module(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in ('plan_ci.py', 'ci_dependencies.py'):
+                (root/name).write_bytes((ROOT/'.github/scripts'/name).read_bytes())
+            (root/'ci_consumer_contracts.py').write_text('raise RuntimeError("diagnostic entered authority")\n')
+            code = ('import sys,json; sys.path.insert(0,sys.argv[1]); import plan_ci; '
+                    'p=json.load(open(sys.argv[2])); plan_ci.validate_policy(p); '
+                    'assert "ci_consumer_contracts" not in sys.modules; '
+                    'p["consumer_contracts"][0]["execution_authority"]=True; '
+                    'plan_ci.validate_policy(p)')
+            result = subprocess.run([sys.executable, '-I', '-c', code, str(root), str(ROOT/planner.POLICY)],
+                capture_output=True, text=True)
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn('consumer contracts cannot authorize execution', result.stderr)
+            self.assertNotIn('diagnostic entered authority', result.stderr)
