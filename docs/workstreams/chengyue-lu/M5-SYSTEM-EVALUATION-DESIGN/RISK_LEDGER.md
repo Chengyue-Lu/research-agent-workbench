@@ -60,3 +60,13 @@ and [WORKLOG](WORKLOG.md). Test fixtures are synthetic structural evidence, not 
 | M5-PILOT-TRANSFER-001 | 旧版本 pilot PASS 对新 Harness/Provider/Tool/Skill 自动生效 | 具名接受 exact source/config/run set；M5-004 执行前复核适用性，影响执行/证据链的变更需重新验证 | M5-004 保持 BLOCKED |
 
 本次仅提交 Task 定义；上表控制是未来验收要求，不是已观测结果。详见 [Live Pilot Gate](M5-008_LIVE_PILOT_GATE.md)。
+
+## M5-007 H1/H2 implementation candidate
+
+| Risk / seam | Implemented control and adversarial evidence | Remaining acceptance |
+|---|---|---|
+| ARM-QUAL / producer ownership | H2 reads M6-produced A2 reference and independently validates it; a patched M6 producer raises if Harness calls it. A3 assembly uses supplied Resolver bindings and the explicit preflight time | M6/Resolver ownership unchanged; H3 actual transport remains pending |
+| OVERLAP / phase | H1 Schema contains scheduling phase only; H2 recomputes overlap and derives eligibility. Confirmatory blocks with admission overlap remain ineligible; unknown oracle blocks preflight | Real case approval and admission remain independent |
+| DRIFT / clock and trust | Explicit caller `preflight_checked_at`, external replay expected time, runtime availability checks, full input and validator pin rechecks; missing callback, future/stale records and self-upgraded results fail | Trusted admission verifier stays external; use-boundary execution checks belong to H3 |
+| LEAK / plan identity | Exact public input pins, private artifact hash alias rejection, bounded deterministic slots and cross-process order vector; compilation has no Provider/Tool/Host calls | Planned identities do not attest fresh actual sessions; H3–H5 remain pending |
+| TRACE / acceptance | Formal Task snapshot and retained tool evidence; incomplete capture is declared with its warning | Exact-head CI and cross-owner review; Task stays IN_PROGRESS |

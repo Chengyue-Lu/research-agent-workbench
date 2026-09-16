@@ -1,0 +1,15 @@
+schema_version: 0.1.0
+task_id: M5-007
+task_revision: 1
+attempt_id: M5-007-H1-H2-001
+actors:
+- actor_id: codex-m5-h1h2
+  actor_type: runtime-adapter
+  role: bounded API session runner
+  runtime_identity: codex-desktop-retained-tool-export
+  accountable_owner: Chengyue-Lu
+- actor_id: provider-visible-conversation
+  actor_type: model-provider
+  role: bound model provider
+  runtime_identity: visible-conversation
+  accountable_owner: Chengyue-Lu

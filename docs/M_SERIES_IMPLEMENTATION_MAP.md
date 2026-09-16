@@ -102,7 +102,7 @@ flowchart LR
         M5001["M5-001 BLOCKED<br/>evidence dossier"] --> M5004["M5-004 BLOCKED<br/>real system evaluation"]
         M5002["M5-002 BLOCKED<br/>theory/simulation dossier"] --> M5004
         M5003["M5-003 DONE<br/>non-executing plan"] --> M5006["M5-006 DONE<br/>Protocol + validators"]
-        M5006 --> M5007["M5-007 READY<br/>synthetic evaluation harness"]
+        M5006 --> M5007["M5-007 IN_PROGRESS<br/>synthetic evaluation harness"]
         M5003 -. "candidate + evaluation" .-> A4G["A4-RUNTIME-ADMISSION-GATE<br/>external / unsatisfied"]
         A4G --> M5004
         M5003 --> M5004
@@ -134,7 +134,7 @@ flowchart LR
 
 M4-001～004 已闭合 bounded admission、promotion、Claim evidence localization 与 Run reconstruction；
 promotion eligibility 仍只由当次 pinned pipeline 重执行确立，不证明自报历史 provenance。当前开发入口是
-`M5-006 DONE → M6-008 DONE → M5-007 READY`；路诚钺按 [Harness 进入计划](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md) 从冻结 plan / 评价侧 preflight 开始。
+`M5-006 DONE → M6-008 DONE → M5-007 IN_PROGRESS`；路诚钺按 [Harness 进入计划](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md) 从冻结 plan / 评价侧 preflight 开始。
 M5-004 的 M4 provenance 链、M5-003 计划契约、M11-006 mapping 机制、M6-008 baseline closeout 与 Skill replay Gate 已满足；
 仍等待两个 Human-approved public/private Case Dossier、M5-007 Harness、M5-008 live pilot 验收、真实 A4 admission 与 M6-004 live
 Provider/session Gate。M5-008 使用独立获批的 pilot dossier，在完整 Harness、live conformance、A4 admission
@@ -157,7 +157,7 @@ M6-008 的 A1/A2 transport 已由 PR75 接受并收口为 DONE；plain arm 不�
 control、dummy Method/Snapshot 或 Skill Assignment 改写 M5-003 treatment。Harness 还必须独立重算 A3/A4
 pairwise record，不能把 Method、non-Skill substrate、interface 或 boundary 差异误报为 pure Skill effect。Issue
 #55 的 Gate A、[Gate B](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md) 均已满足。
-M5-007 的实现依赖已满足，进入 READY；具体实施和整体验收由路诚钺负责。M5-003 本身没有执行案例或产生净增量结论。
+M5-007 的实现依赖已满足，进入 IN_PROGRESS；具体实施和整体验收由路诚钺负责。M5-003 本身没有执行案例或产生净增量结论。
 `A4-RUNTIME-ADMISSION-GATE` 是外部可审计条件，不是新 M Task：它保持 M5-003 的 candidate/evaluation
 origin，并 exact-pin Human Admission Decision→accepted Release→Projection→Supply→Resolution→Snapshot→
 Bundle→View→Host 的逐跳 identity/hash closure；当前生产 projection index 为空，故该 Gate 未满足。

@@ -1,0 +1,37 @@
+{
+  "base": "0d4a1d00a4c32ca9b822df6482a95920e7c21b1b",
+  "starting_head": "4bbdb7259fad83be254ed87435fcafc746876417",
+  "working_tree_candidate": true,
+  "sources": {
+    "src/research_workbench/evaluation/harness_plan.py": "b1ada199543623b30dd4fba05e90f6b454805a2e2e5e75f15b24d63c2ca67bb0",
+    "src/research_workbench/evaluation/harness_preflight.py": "35dca037b211f24f4b3238531d77c6974cc16192c72982ea0548feef880a43a7",
+    "schemas/v0.1.0/evaluation-harness-plan.schema.json": "5860b4ba652f7160773d92cb3c3271a477a981b6b3167bcaccee8bd458053f2c",
+    "schemas/v0.1.0/evaluation-harness-preflight.schema.json": "598101c79b00b6350decbb02dd988f40d9cc90873ccc2c1f445c25c25f8fe97c",
+    "tests/harness_fixtures.py": "feeb7560f882f69a580afef8def7af5ca2ddec4b8278262f2b55cb4a81dc197a",
+    "tests/test_evaluation_harness_plan.py": "8c22110857f442468cb5a083873a2b83e7f21f1229f112834f9f488f2af0a88a",
+    "tests/test_evaluation_harness_preflight.py": "14f95f88e6203ff9c5df4dc5bf01d60bd5ef0e65a951c4e0e30b1e16684ba534"
+  },
+  "checks": [
+    {
+      "path": "checks/harness-focused.log",
+      "sha256": "e47185a561b87e6c2dfbf0bd3f84cc453bf9b77187974a830a8c6ec3888372c4"
+    },
+    {
+      "path": "checks/final-focused.log",
+      "sha256": "2e2e9c3e7ce917a49da9f6554eadef45482d4bef83a6ef4fad4cf98deba431c3"
+    },
+    {
+      "path": "checks/final-focused-coverage.json",
+      "sha256": "56d3bd8572eacebde6e31b9bc1917ea9599146548d794ec4c74ff41a9918f7fa"
+    },
+    {
+      "path": "checks/repository.log",
+      "sha256": "6895861bf5f35b7669baaf95d9caf2b94c3a4e1d5682f29bbc73ba0aa0064633"
+    },
+    {
+      "path": "checks/package-results.json",
+      "sha256": "6ba8191ebaa758f1ae31d9776340c5086042f3350327841c8ccedf8b4e0ad8ce"
+    }
+  ],
+  "hosted_ci": "Subsequent exact-head/base evidence is attached to the PR; not claimed here."
+}

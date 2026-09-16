@@ -1,0 +1,2 @@
+# Preserve captured bytes, including original CRLF line endings.
+* -text whitespace=cr-at-eol

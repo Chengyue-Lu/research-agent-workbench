@@ -49,6 +49,8 @@ suites:
       - test_evaluation_comparability
       - test_evaluation_overlay
       - test_evaluation_contracts
+      - test_evaluation_harness_plan
+      - test_evaluation_harness_preflight
       - test_m5_trace_export
       - test_governance_helper_branches
       - test_integrity
@@ -162,6 +164,8 @@ critical_modules:
   - src/research_workbench/evaluation/overlay.py
   - src/research_workbench/evaluation/comparability.py
   - src/research_workbench/evaluation/contracts.py
+  - src/research_workbench/evaluation/harness_plan.py
+  - src/research_workbench/evaluation/harness_preflight.py
   - .github/scripts/selection_witness.py
   - .github/scripts/ci_dependencies.py
   - .github/scripts/plan_ci.py
@@ -665,6 +669,27 @@ negative_acceptance:
       - test_phase_c_gate.RunnerOwnedClosureTest.test_duplicate_identity_and_source_path_block_before_actor_spawn
       - test_phase_c_gate.FreshActorAdversarialTest.test_stale_method_trace_is_rejected_in_the_fresh_actor
       - test_phase_c_gate.FreshActorAdversarialTest.test_wrong_kind_reopen_basis_is_rejected_by_actor
+
+  - surface: m5-harness-frozen-plan
+    modules:
+      - src/research_workbench/evaluation/harness_plan.py
+    positive_tests:
+      - test_evaluation_harness_plan.HarnessPlanTests.test_plan_is_nonexecuting_canonical_and_replays
+      - test_evaluation_harness_plan.HarnessPlanTests.test_permutation_has_stable_cross_process_vector
+    negative_tests:
+      - test_evaluation_harness_plan.HarnessPlanTests.test_phase_is_not_eligibility_and_unknown_authority_fields_fail
+      - test_evaluation_harness_plan.HarnessPlanTests.test_missing_public_case_input_and_private_alias_are_rejected
+      - test_evaluation_harness_plan.HarnessPlanTests.test_schedule_and_retry_tampering_cannot_rewrite_derived_plan
+  - surface: m5-harness-independent-preflight
+    modules:
+      - src/research_workbench/evaluation/harness_preflight.py
+    positive_tests:
+      - test_evaluation_harness_preflight.HarnessPreflightTests.test_frozen_inputs_recompute_without_producing_a2_or_execution
+    negative_tests:
+      - test_evaluation_harness_preflight.HarnessPreflightTests.test_time_is_explicit_and_replay_cannot_trust_a_self_selected_clock
+      - test_evaluation_harness_preflight.HarnessPreflightTests.test_confirmatory_phase_never_overrides_admission_overlap
+      - test_evaluation_harness_preflight.HarnessPreflightTests.test_unresolved_oracle_blocks_the_complete_preflight
+      - test_evaluation_harness_preflight.HarnessPreflightTests.test_pairwise_cannot_upgrade_or_replace_qualification_stage_and_time
 
 justified_exclusions:
   - path: src/research_workbench/adapters/models/session.py

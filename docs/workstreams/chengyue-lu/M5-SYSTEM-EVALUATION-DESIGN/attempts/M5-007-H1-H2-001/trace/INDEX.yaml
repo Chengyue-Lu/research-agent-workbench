@@ -1,0 +1,101 @@
+schema_version: 0.1.0
+trace_id: TRACE-M5-007-H1-H2-001
+task_id: M5-007
+task_revision: 1
+attempt_id: M5-007-H1-H2-001
+archive_root: trace
+baseline: rwb-agent-trace-v0.1
+owner_actor_id: codex-m5-h1h2
+owner: Chengyue-Lu
+attempt_status: incomplete
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 42e9b987f6829d85ccd79b18e1e74e489c8a3b66a259c127a95683bb7f96e431
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 8504e6e478a5ffc6766c429a4278d464dc569dcb120080f0906ce0667dbba89f
+read_allowlist:
+- .github/**
+- AGENTS.md
+- build_backend.py
+- docs/ARCHITECTURE.md
+- docs/DEVELOPMENT.md
+- docs/README.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/TASKS.md
+- docs/implementation/**
+- docs/modules/10-OBSERVABILITY_EVALUATION_COST.md
+- docs/workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/**
+- docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/**
+- docs/workstreams/huangyi/M6-BASELINE-EXECUTION/**
+- pyproject.toml
+- schemas/**
+- src/research_workbench/evaluation/**
+- src/research_workbench/execution/**
+- src/research_workbench/observability/trace.py
+- src/research_workbench/validation/**
+- tests/**
+write_scope:
+- .github/**
+- docs/**
+- schemas/**
+- src/research_workbench/cli.py
+- src/research_workbench/evaluation/**
+- src/research_workbench/validation/**
+- tests/**
+tool_allowlist:
+- apply_patch
+- evidence-export
+- exec_command
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 11be640a5def81758c0397c6601e2900f394df2b89a0b625ff54231722d87a1b
+  event_count: 21
+tool_event_refs:
+- path: tool-events/RETAINED-0001-unknown.json
+  sha256: 30e84a1d7d2a10b87002e1505a3a570c10f846dab8aeca9a09c82fa8b8e73f85
+- path: tool-events/RETAINED-0002-unknown.json
+  sha256: edc1e125066832ac3daa3ca08aab34162060c7b50875dcaa714ab99f9be2ef65
+- path: tool-events/RETAINED-0003-succeeded.json
+  sha256: e0b30711c3a37381487de667d02607f0aed7dadcbc69d9ef98b4e40adb0ce7b0
+- path: tool-events/RETAINED-0004-succeeded.json
+  sha256: 2d554734f890e92ccd9d164291a4fac3091d97a988b559aa3cbb40ec3aa8e5c5
+- path: tool-events/RETAINED-0005-unknown.json
+  sha256: 238d66c8d0b62415c1e3770c5fc588b0c61eeefc28219409f610e69a10f1264c
+- path: tool-events/RETAINED-0006-unknown.json
+  sha256: 9698834e837ed908034bb56f94e06e1bf76ce1faddf8b839bafbc9032ff77999
+- path: tool-events/RETAINED-0007-unknown.json
+  sha256: f9059e534eeb84db4fb2c3496b43d78ee65c8a6e3bf8c022836bdbdfb49fa463
+- path: tool-events/RETAINED-0008-unknown.json
+  sha256: ca3c5a2bd2102365d8b7463b14fe340b64117d0c0a14a9bde8447da80d26ece9
+- path: tool-events/RETAINED-0009-failed.json
+  sha256: 49b2aec0bf54ffdb4b575c4f8406ca3164644ac45445e7c9ba102200f9455b93
+- path: tool-events/RETAINED-0010-unknown.json
+  sha256: 227d1e9e5aa4cd011c813fd404d5cb6b8317a5a4f4472e05d787b0f79b1bd862
+- path: tool-events/RETAINED-0011-unknown.json
+  sha256: a99f99163f839936aa04ca2efc4e7608cfbb762255f9c13a6e1a3de73d0f4df8
+- path: tool-events/RETAINED-0012-unknown.json
+  sha256: d6183746d21a131edaa3efdb33fdf693202c958835538a0a302912b1ea08e35e
+- path: tool-events/RETAINED-0013-unknown.json
+  sha256: c64c841ad08951eca2a465942f794e850619755ba281b518a9c2076deb694a41
+- path: tool-events/RETAINED-0014-unknown.json
+  sha256: e7d18aa76fd20766b610de93eab9e9750c0725771b46bc9a1953ff60d002a9c3
+- path: tool-events/RETAINED-0015-unknown.json
+  sha256: d42aeeef23436f4514905bf39c911fdbbbcdbe9f281f785b4c5f7a520ced4a22
+- path: tool-events/CHECK-EVIDENCE-succeeded.json
+  sha256: e455a35137853b903770653bfa787900af9932cd3221927e9b319039c50c1a42
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: messages
+- event_id: EVT-0004
+  affected_stream: file-revisions

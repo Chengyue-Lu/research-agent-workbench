@@ -4,8 +4,8 @@
 基线：`develop@0d4a1d00a4c32ca9b822df6482a95920e7c21b1b`（PR84）。
 分支：`feature/m5-007-harness-preflight`。关联：[Issue55](https://github.com/Chengyue-Lu/research-agent-workbench/issues/55)。
 
-本包是已接受 [H1/H2 进入计划](M5-007_ENTRY_PLAN.md) 的实现准备；下述新增文件、接口与测试尚待实现。
-M5-007 当前 READY；首次 implementation PR 提出 IN_PROGRESS，H1/H2 完成后继续 H3–H5。
+本包细化已接受 [H1/H2 进入计划](M5-007_ENTRY_PLAN.md)；当前分支按此实施，并提出 M5-007 IN_PROGRESS。
+现有接口见 [Harness contract](../../../implementation/SYSTEM_EVALUATION_HARNESS.md)；H1/H2 接受后继续 H3–H5。
 
 ## 1. 入口与交付
 
@@ -16,7 +16,7 @@ M5-007 当前 READY；首次 implementation PR 提出 IN_PROGRESS，H1/H2 完成
 | 切片 | 输入 | 输出 | 完成判据 |
 |---|---|---|---|
 | H1 | exact Protocol/Manifest、冻结 case closure、逐 case 公共 payload、调用方给定的计划身份及冻结时间 | 版本化计划；pilot/confirmatory 分组、case × replicate × arm 顺序、独立 Attempt 身份及 retry 规则 | 同输入跨进程产生相同计划；逐项重算而不接受作者覆写；仅含 planned 身份和输入 |
-| H2 | H1 plan、A2/A3 frozen/runtime bindings、A4 overlay、overlap、pairwise refs、评价侧 admission verifier | exact plan-bound preflight record，保留派生 eligibility、comparison class 与阻断依据 | 重新加载闭包、验证全部外部绑定并调用既有语义检查；可审计地拒绝或降级不合格输入 |
+| H2 | H1 plan、M6 产生的 A2 qualification ref、A3 frozen/runtime bindings、A4 overlay、overlap、pairwise refs、评价侧 admission verifier | exact plan-bound preflight record，保留派生 eligibility、comparison class 与阻断依据 | 重新加载闭包、验证全部外部绑定并调用既有语义检查；可审计地拒绝或降级不合格输入 |
 
 H1/H2 不调用 Provider、Tool 或 Host 执行入口，不产生 actual facts/Receipt。实际 fresh session、失败后的
 retry 触发与全部 Attempt 成本由 H3 实现；预留 retry 身份不能被写成已发生的 Attempt。
@@ -30,7 +30,7 @@ retry 触发与全部 Attempt 成本由 H3 实现；预留 retry 身份不能被
 | `EvaluationInputs(root, schema_root=None)`；`read` / `manifest` / `recheck` | 限定根目录、显式 pin 和受控读取；输出前重验已读取内容，保留缓存后的漂移检测 |
 | `validate_protocol(inputs, reference)` | 先验证 Protocol、ADR、Manifest 与 frozen binding；不接受 arm 自带的另一份 Protocol |
 | `compile_baseline_plan(document)` | 复用四臂 canonical 编译与 shared-condition digest；它只验证文档结构/语义，外部 reference closure 由 `inputs.manifest(...)` 等加载路径承担；它不编排 case/replicate/retry |
-| `produce_a2_qualification(inputs, *, protocol_ref, qualification_id, checked_at, bindings)` | 由 M6 producer 生成 A2 record，随后按固定 Protocol 独立重验；不在 Harness 冒充 M6 producer |
+| `a2_qualification_ref` → `inputs.read` / `validate_qualification` | 加载 Harness 之外由 M6 producer 已产生的 A2 record，并按固定 Protocol 独立重验；synthetic fixture 在 Harness 外准备该输入 |
 | `validate_qualification(inputs, document, *, expected_protocol_ref)` | A3 组装 `producer=evaluation-harness` 的 record；frozen/runtime Resolution/Snapshot 均来自唯一 Resolver，Harness 不选择 Supply；必须覆盖完整 frozen demand |
 | `validate_overlap(inputs, document, *, expected_protocol_ref, expected_case_closure_ref, case_selection_frozen_at)` | 独立提供冻结 case 和时间，重算两侧 case/Task/input/private-oracle closure、身份和哈希交集 |
 | `validate_overlay(inputs, document, *, expected_protocol_ref, expected_case_closure_ref, case_selection_frozen_at, admission_verifier)` | 在评价侧验证 exact admission lineage；由授权调用方提供 verifier，记录中的 accepted/eligible 字符串不能代替它 |
@@ -48,6 +48,7 @@ retry 触发与全部 Attempt 成本由 H3 实现；预留 retry 身份不能被
 2. 消费已有 `case-replicate` / `seeded-permutation-within-block` / `[case_id, replicate]` 约束。
    在新增 plan 契约中明确版本化的排列算法及标准测试向量，固定序列化与 tie-break，禁止依赖进程 hash。
 3. 编排 pilot 与 confirmatory blocks；核对 replicates、case count 与 fixed-complete-blocks。
+   `phase=confirmatory` 仅是计划标签；H1 不包含 eligibility 判定，Schema 拒绝在计划中声明 `primary_confirmatory_eligible`。
    从显式计划/运行命名空间、case、phase、replicate、arm、retry index 派生互不碰撞的 planned 身份。
    再次执行需要新运行身份；重编译同一计划本身不证明 fresh session。
 4. 冻结 max_retries、eligible_failures、retain-all-attempts、include-all-costs 与 drift policy。
@@ -57,8 +58,10 @@ retry 触发与全部 Attempt 成本由 H3 实现；预留 retry 身份不能被
 
 ## 4. H2 实现顺序
 
-1. 重读 H1 的外部 Protocol/case/time pins；生成 A2 qualification、组装 A3 qualification 并调用共享 validator。
-2. 重算 overlap，验证 `Protocol frozen_at <= checked_at <= case_selection_frozen_at`。
+1. 重读 H1 的外部 Protocol/case/time pins；加载 M6 产生的 `a2_qualification_ref`，组装 A3 qualification 并调用共享 validator。
+2. H2 显式接收外部可信 `preflight_checked_at`，不读取系统当前时间；重放调用方再次提供预期时间。
+   A2/A3 qualification、overlay 与 pairwise 的既有 `checked_at` 均不得晚于该时间，runtime availability 也在该时间重验。
+   重算 overlap，验证 `Protocol frozen_at <= checked_at <= case_selection_frozen_at`。
    有效但 unresolved 的 assessment 仍不具 primary eligibility；记录结构有效与允许进入目标阶段分开判断。
 3. 使用显式 admission verifier 重载 A4 的 candidate→Human Decision→Release→Projection→Supply→Snapshot→Bundle→View
    闭包。synthetic fixture verifier 只在测试注入，不能成为生产默认成功回调。
@@ -94,7 +97,7 @@ retry 触发与全部 Attempt 成本由 H3 实现；预留 retry 身份不能被
 
 ## 6. 留痕与停止条件
 
-首次 R2 implementation 开始前建立正式 Task Attempt Archive，固定允许读取集、输出、具名 owner、
+本次正式 Task Attempt Archive 为 `attempts/M5-007-H1-H2-001/`；在首次实现前固定 Task snapshot、允许读取集、输出、具名 owner、
 预算/停止条件并从当时开始捕获可观察事件；本准备阶段的 Git/Issue/工作记录不得补写成完整实施 Trace。
 读取集限本包列出的 Task/计划、M5 contracts/Schema/tests、M6 envelope 与 H2 所需 M11 Bundle/View 接口。
 

@@ -1,0 +1,56 @@
+task_id: M5-007
+revision: 1
+attempt_id: M5-007-H1-H2-001
+accountable_owner: Chengyue-Lu
+interface_reviewer: let778750-cpu
+authorization:
+  source: current user message
+  text: 继续推进
+  scope: Implement H1/H2 per M5-007_H1_H2_PACKET.md; push feature/R2 implementation
+    PR for develop review
+baseline: 0d4a1d00a4c32ca9b822df6482a95920e7c21b1b
+starting_head: 4bbdb7259fad83be254ed87435fcafc746876417
+required_skills: []
+delegation: false
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/ARCHITECTURE.md
+- docs/TASKS.md
+- docs/STATUS.md
+- docs/ROADMAP.md
+- docs/implementation/**
+- docs/modules/10-OBSERVABILITY_EVALUATION_COST.md
+- docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/**
+- docs/workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/**
+- docs/workstreams/huangyi/M6-BASELINE-EXECUTION/**
+- src/research_workbench/evaluation/**
+- src/research_workbench/execution/**
+- src/research_workbench/observability/trace.py
+- src/research_workbench/validation/**
+- schemas/**
+- tests/**
+- .github/**
+- pyproject.toml
+- build_backend.py
+write_scope:
+- src/research_workbench/evaluation/**
+- src/research_workbench/validation/**
+- src/research_workbench/cli.py
+- schemas/**
+- tests/**
+- docs/**
+- .github/**
+outputs:
+- versioned non-executing Harness plan and preflight
+- adversarial tests and current policy coverage
+- documentation, Attempt evidence and feature/R2 PR
+budget:
+  scope: H1/H2 only
+  real_provider_calls: 0
+  delegation: 0
+stop_conditions:
+- required change to accepted M5 treatment or Runtime authority
+- missing exact external admission/case/time closure
+- implementation evidence or required CI failure prevents acceptance

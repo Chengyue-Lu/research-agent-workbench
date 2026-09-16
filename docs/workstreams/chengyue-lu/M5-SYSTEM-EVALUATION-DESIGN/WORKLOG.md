@@ -137,3 +137,27 @@ case/time pins，A4 admission verifier 由授权评价侧提供；当前完整 s
 **186 validated / 0 errors / 0 warnings**，diff check PASS。本地检查日志保存在未跟踪的
 `.rwb/m5-entry/`。这些结果是既有依赖的进入基线；新增 Harness、H3–H5、真实 case/live/admission
 与科学收益仍须各自实施和验收。此次准备只修改 workstream 文档，不修改 Task 状态、源码或 Schema。
+
+## M5-007 H1/H2 implementation candidate（2026-09-16）
+
+在 `develop@0d4a1d00a4c32ca9b822df6482a95920e7c21b1b` 上实现两个 version 1.0.0 的评价侧 record：
+确定性非执行 plan 和独立重算 preflight。H1 冻结 case/phase/replicate/arm/retry slots 与公共输入摘要；
+H2 复用 M5 validators，并验证外部 qualification、overlap、overlay、pairwise 和 admission callback。
+Task 提案仅为 M5-007 READY → IN_PROGRESS；所有 Task 定义、依赖、验收与其他状态逐项比较保持不变。
+
+本轮反馈落实为三个接口约束：Harness 只读取 M6 已产生的 A2 qualification；H1 phase 不产生 primary
+eligibility；H2 与 A3 组装使用显式 `preflight_checked_at`，重放由调用方提供 expected time。反例覆盖
+内部调用 M6 producer、confirmatory phase 掩盖 overlap、自选时间、缺失 admission verifier、私有输入
+哈希别名、记录/输入/validator drift 和 planned-to-actual 自我升级。
+
+提交前候选回归 **176 PASS / 0 skip，247.800 秒**，含新增 Harness **24 项**及现有 M5/M6、Schema、
+文档内链和 coverage-policy 检查。新增 H1 行覆盖 **100%**、分支 **95.83%**；H2 两项均 **100%**。
+repository validation **186/0/0**；portable package 的 direct wheel 与 sdist-wheel 两条路径、四个隔离
+安装 probe 全部通过，Runtime resources identical。初始诊断中固定向量预期、测试用过期时间和一次
+文档测试模块名错误均已纠正；最终上述回归通过。coverage 阈值未降低，也未新增豁免。
+
+[Attempt Archive](attempts/M5-007-H1-H2-001/README.md) 保留 Task snapshot、可观察工具记录与上述检查。
+Trace v0.1 无 BLOCK，仅保留 `TRACE-CAPTURE-DELAYED` / capture-gap warning，Attempt 为 incomplete；
+不将缺失的 provider frames/native events 重建为完整 capture。记录中的代码哈希绑定提交前候选字节；
+最终 full/coverage/governance/package CI 绑定 PR 的 exact head/base，证据由 GitHub Actions 保留。
+H1/H2 接受仍需 cross-owner review；H3–H5、真实执行与 M5-004 的 Human/live/admission 条件保持后续验收。

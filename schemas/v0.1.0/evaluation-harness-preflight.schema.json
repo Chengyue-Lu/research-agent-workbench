@@ -1,0 +1,302 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/evaluation-harness-preflight.schema.json",
+  "title": "Evaluation Harness Preflight",
+  "x-rwb-document-kind": "evaluation_harness_preflight",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "version",
+    "status",
+    "request",
+    "validator",
+    "qualifications",
+    "overlap",
+    "cases",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "evaluation_harness_preflight"
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "status": {
+      "const": "preflight-checked"
+    },
+    "request": {
+      "$ref": "#/$defs/request"
+    },
+    "validator": {
+      "type": "object",
+      "required": [
+        "identity",
+        "version",
+        "sources",
+        "schemas_sha256"
+      ],
+      "properties": {
+        "identity": {
+          "const": "evaluation-harness-preflight"
+        },
+        "version": {
+          "const": "1.0.0"
+        },
+        "sources": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "schemas_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "qualifications": {
+      "type": "object",
+      "required": [
+        "plain-agent-tool",
+        "mode-no-skill"
+      ],
+      "properties": {
+        "plain-agent-tool": {
+          "type": "object",
+          "required": [
+            "ref",
+            "bindings_sha256"
+          ],
+          "properties": {
+            "ref": {
+              "$ref": "common.schema.json#/$defs/fileRef"
+            },
+            "bindings_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "additionalProperties": false
+        },
+        "mode-no-skill": {
+          "type": "object",
+          "required": [
+            "ref",
+            "bindings_sha256"
+          ],
+          "properties": {
+            "ref": {
+              "$ref": "common.schema.json#/$defs/fileRef"
+            },
+            "bindings_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "overlap": {
+      "type": "object",
+      "required": [
+        "overlap_status",
+        "overlap_refs",
+        "unresolved_reasons",
+        "primary_confirmatory_eligible"
+      ],
+      "properties": {
+        "overlap_status": {
+          "enum": [
+            "held-out",
+            "admission-overlap",
+            "unresolved"
+          ]
+        },
+        "overlap_refs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "category",
+              "admission_identity",
+              "comparison_identity",
+              "by"
+            ],
+            "properties": {
+              "category": {
+                "enum": [
+                  "case",
+                  "task",
+                  "formal-input",
+                  "private-oracle"
+                ]
+              },
+              "admission_identity": {
+                "type": "string",
+                "minLength": 1
+              },
+              "comparison_identity": {
+                "type": "string",
+                "minLength": 1
+              },
+              "by": {
+                "enum": [
+                  "identity",
+                  "hash",
+                  "identity-and-hash"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "unresolved_reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "primary_confirmatory_eligible": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "case_id",
+          "comparison",
+          "baseline_payload_sha256",
+          "primary_confirmatory_eligible",
+          "pilot_primary_eligible"
+        ],
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "comparison": {
+            "$ref": "a3-a4-pairwise-comparability.schema.json#/properties/result"
+          },
+          "baseline_payload_sha256": {
+            "type": "object",
+            "required": [
+              "plain-agent",
+              "plain-agent-tool"
+            ],
+            "properties": {
+              "plain-agent": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "plain-agent-tool": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            },
+            "additionalProperties": false
+          },
+          "primary_confirmatory_eligible": {
+            "type": "boolean"
+          },
+          "pilot_primary_eligible": {
+            "const": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "boundaries": {
+      "const": {
+        "runtime_input": false,
+        "execution_authority": false,
+        "actual_execution": false,
+        "supply_selection": false,
+        "human_decision": false,
+        "task_completion": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "request": {
+      "type": "object",
+      "required": [
+        "plan_ref",
+        "preflight_id",
+        "preflight_checked_at",
+        "a2_qualification_ref",
+        "a3_qualification_ref",
+        "overlap_ref",
+        "case_bindings"
+      ],
+      "properties": {
+        "plan_ref": {
+          "$ref": "common.schema.json#/$defs/fileRef"
+        },
+        "preflight_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "preflight_checked_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "a2_qualification_ref": {
+          "$ref": "common.schema.json#/$defs/fileRef"
+        },
+        "a3_qualification_ref": {
+          "$ref": "common.schema.json#/$defs/fileRef"
+        },
+        "overlap_ref": {
+          "$ref": "common.schema.json#/$defs/fileRef"
+        },
+        "case_bindings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "case_id",
+              "a4_overlay_ref",
+              "pairwise_ref"
+            ],
+            "properties": {
+              "case_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "a4_overlay_ref": {
+                "$ref": "common.schema.json#/$defs/fileRef"
+              },
+              "pairwise_ref": {
+                "$ref": "common.schema.json#/$defs/fileRef"
+              }
+            },
+            "additionalProperties": false
+          },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
