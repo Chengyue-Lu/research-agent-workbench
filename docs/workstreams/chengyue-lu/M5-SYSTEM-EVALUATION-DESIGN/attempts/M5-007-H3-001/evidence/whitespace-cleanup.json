@@ -1,0 +1,6 @@
+{
+  "change": "Remove trailing empty line in the new Schema after candidate checks; JSON data and executable sources unchanged. Final-head hosted CI remains required.",
+  "path": "schemas/v0.1.0/evaluation-harness-execution.schema.json",
+  "checked_bytes_sha256": "5b9f93c831b87b25b39f4736e4f5c305c5fb9d63bd5d978b0d5635fe8c221941",
+  "submitted_bytes_sha256": "dc8a9f42e6630b0ada6c1b7a3dd36ea59a0090d1e0c4b56c87367321bb2a6d6c"
+}

@@ -8,6 +8,7 @@
 M6-008 实现已由 PR75 合入，PR84 已接受 M6-008 DONE 与 M5-007 READY。
 此计划细化现有 Task，不增加 Task、不改写其目标、依赖或验收。
 首个开发分支为 `feature/m5-007-harness-preflight`；具体接口、写入面与负例见 [H1/H2 实施包](M5-007_H1_H2_PACKET.md)。
+用户已于 2026-09-17 授权在 PR86 尚未合入时独立推进 [H3 实施包](M5-007_H3_PACKET.md)，完成后提交依赖父 PR 的 Draft PR。
 
 | 前置 | 已接受依据 | Harness 消费接口 |
 |---|---|---|

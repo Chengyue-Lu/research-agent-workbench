@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/evaluation-harness-execution.schema.json",
+  "title": "Evaluation Harness Synthetic Execution",
+  "x-rwb-document-kind": "evaluation_harness_execution",
+  "type": "object",
+  "required": ["schema_version", "record_kind", "version", "context", "context_ref", "attempt_refs", "status", "boundaries"],
+  "properties": {
+    "schema_version": {"const": "0.1.0"},
+    "record_kind": {"const": "evaluation_harness_execution"},
+    "version": {"const": "1.0.0"},
+    "context_ref": {"$ref": "common.schema.json#/$defs/fileRef"},
+    "context": {
+      "type": "object",
+      "required": ["expected_plan_ref", "expected_preflight_ref", "expected_protocol_ref", "expected_case_closure_ref", "case_selection_frozen_at", "expected_run_id", "expected_preflight_checked_at"],
+      "properties": {
+        "expected_plan_ref": {"$ref": "common.schema.json#/$defs/fileRef"},
+        "expected_preflight_ref": {"$ref": "common.schema.json#/$defs/fileRef"},
+        "expected_protocol_ref": {"$ref": "common.schema.json#/$defs/fileRef"},
+        "expected_case_closure_ref": {"$ref": "common.schema.json#/$defs/fileRef"},
+        "case_selection_frozen_at": {"type": "string", "format": "date-time"},
+        "expected_preflight_checked_at": {"type": "string", "format": "date-time"},
+        "expected_run_id": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "attempt_refs": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": {"$ref": "common.schema.json#/$defs/fileRef"}
+    },
+    "status": {"enum": ["completed", "stopped"]},
+    "boundaries": {
+      "const": {"runtime_input": false, "execution_authority": false, "supply_selection": false,
+                "human_decision": false, "task_completion": false, "analysis_eligibility": false}
+    }
+  },
+  "additionalProperties": false
+}

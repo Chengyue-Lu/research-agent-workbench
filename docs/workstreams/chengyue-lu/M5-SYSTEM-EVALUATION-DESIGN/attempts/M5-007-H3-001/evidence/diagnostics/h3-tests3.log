@@ -1,0 +1,156 @@
+test_driver_exception_preserves_unfinished_journal_and_host_trace (tests.test_evaluation_harness_execution.HarnessExecutionTests.test_driver_exception_preserves_unfinished_journal_and_host_trace) ... ok
+test_exhausted_arm_budget_stops_before_the_next_slice (tests.test_evaluation_harness_execution.HarnessExecutionTests.test_exhausted_arm_budget_stops_before_the_next_slice) ... ERROR
+test_four_arms_execute_all_slices_and_cold_replay (tests.test_evaluation_harness_execution.HarnessExecutionTests.test_four_arms_execute_all_slices_and_cold_replay) ... ERROR
+test_host_post_call_failure_is_retained_without_inferred_retry (tests.test_evaluation_harness_execution.HarnessExecutionTests.test_host_post_call_failure_is_retained_without_inferred_retry) ... ok
+test_host_preflight_blocked_makes_no_driver_call (tests.test_evaluation_harness_execution.HarnessExecutionTests.test_host_preflight_blocked_makes_no_driver_call) ... ok
+test_later_blocked_slice_is_an_arm_post_call_failure (tests.test_evaluation_harness_execution.HarnessExecutionTests.test_later_blocked_slice_is_an_arm_post_call_failure) ... ERROR
+test_nonretryable_and_exhausted_baseline_failures_stop_and_replay (tests.test_evaluation_harness_execution.HarnessExecutionTests.test_nonretryable_and_exhausted_baseline_failures_stop_and_replay) ... ERROR
+test_outer_authority_and_clock_reject_before_dispatch (tests.test_evaluation_harness_execution.HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch) ... ok
+test_preexisting_attempt_is_never_overwritten (tests.test_evaluation_harness_execution.HarnessExecutionTests.test_preexisting_attempt_is_never_overwritten) ... ok
+test_reused_driver_is_refused_before_second_call (tests.test_evaluation_harness_execution.HarnessExecutionTests.test_reused_driver_is_refused_before_second_call) ... ERROR
+test_slices_share_the_frozen_arm_budget (tests.test_evaluation_harness_execution.HarnessExecutionTests.test_slices_share_the_frozen_arm_budget) ... ERROR
+test_transient_failure_retains_fresh_retry (tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry) ... ERROR
+test_unsafe_task_output_and_missing_task_slice_are_rejected (tests.test_evaluation_harness_execution.HarnessExecutionTests.test_unsafe_task_output_and_missing_task_slice_are_rejected) ... ok
+setUpClass (tests.test_evaluation_harness_execution.HarnessReplayTests) ... ERROR
+
+======================================================================
+ERROR: test_exhausted_arm_budget_stops_before_the_next_slice (tests.test_evaluation_harness_execution.HarnessExecutionTests.test_exhausted_arm_budget_stops_before_the_next_slice)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tests\test_evaluation_harness_execution.py", line 119, in test_exhausted_arm_budget_stops_before_the_next_slice
+    result = self.replay(self.execute(turns=4))
+                         ^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\tests\test_evaluation_harness_execution.py", line 39, in execute
+    return execute_harness(self.f.inputs(), context=self.f.context, ports=self.f.ports(**options),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\src\research_workbench\evaluation\harness_execution.py", line 235, in execute_harness
+    lifecycle = _m11_progress(inputs, context, entry["receipts"], len(slices))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\src\research_workbench\evaluation\harness_execution.py", line 122, in _m11_progress
+    if (totals["max_seconds"] >= budget["max_seconds"]
+                                 ~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'max_seconds'
+
+======================================================================
+ERROR: test_four_arms_execute_all_slices_and_cold_replay (tests.test_evaluation_harness_execution.HarnessExecutionTests.test_four_arms_execute_all_slices_and_cold_replay)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tests\test_evaluation_harness_execution.py", line 46, in test_four_arms_execute_all_slices_and_cold_replay
+    ref = self.execute()
+          ^^^^^^^^^^^^^^
+  File "<checkout>\tests\test_evaluation_harness_execution.py", line 39, in execute
+    return execute_harness(self.f.inputs(), context=self.f.context, ports=self.f.ports(**options),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\src\research_workbench\evaluation\harness_execution.py", line 235, in execute_harness
+    lifecycle = _m11_progress(inputs, context, entry["receipts"], len(slices))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\src\research_workbench\evaluation\harness_execution.py", line 122, in _m11_progress
+    if (totals["max_seconds"] >= budget["max_seconds"]
+                                 ~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'max_seconds'
+
+======================================================================
+ERROR: test_later_blocked_slice_is_an_arm_post_call_failure (tests.test_evaluation_harness_execution.HarnessExecutionTests.test_later_blocked_slice_is_an_arm_post_call_failure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tests\test_evaluation_harness_execution.py", line 105, in test_later_blocked_slice_is_an_arm_post_call_failure
+    result = self.replay(self.execute(later_blocked=True))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\tests\test_evaluation_harness_execution.py", line 39, in execute
+    return execute_harness(self.f.inputs(), context=self.f.context, ports=self.f.ports(**options),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\src\research_workbench\evaluation\harness_execution.py", line 235, in execute_harness
+    lifecycle = _m11_progress(inputs, context, entry["receipts"], len(slices))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\src\research_workbench\evaluation\harness_execution.py", line 122, in _m11_progress
+    if (totals["max_seconds"] >= budget["max_seconds"]
+                                 ~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'max_seconds'
+
+======================================================================
+ERROR: test_nonretryable_and_exhausted_baseline_failures_stop_and_replay (tests.test_evaluation_harness_execution.HarnessExecutionTests.test_nonretryable_and_exhausted_baseline_failures_stop_and_replay)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tests\test_evaluation_harness_execution.py", line 80, in test_nonretryable_and_exhausted_baseline_failures_stop_and_replay
+    ref = self.execute(provider_errors=errors)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\tests\test_evaluation_harness_execution.py", line 39, in execute
+    return execute_harness(self.f.inputs(), context=self.f.context, ports=self.f.ports(**options),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\src\research_workbench\evaluation\harness_execution.py", line 235, in execute_harness
+    lifecycle = _m11_progress(inputs, context, entry["receipts"], len(slices))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\src\research_workbench\evaluation\harness_execution.py", line 122, in _m11_progress
+    if (totals["max_seconds"] >= budget["max_seconds"]
+                                 ~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'max_seconds'
+
+======================================================================
+ERROR: test_reused_driver_is_refused_before_second_call (tests.test_evaluation_harness_execution.HarnessExecutionTests.test_reused_driver_is_refused_before_second_call)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tests\test_evaluation_harness_execution.py", line 169, in test_reused_driver_is_refused_before_second_call
+    execute_harness(self.f.inputs(), context=self.f.context, ports=replace(ports, core_driver=shared),
+  File "<checkout>\src\research_workbench\evaluation\harness_execution.py", line 235, in execute_harness
+    lifecycle = _m11_progress(inputs, context, entry["receipts"], len(slices))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\src\research_workbench\evaluation\harness_execution.py", line 122, in _m11_progress
+    if (totals["max_seconds"] >= budget["max_seconds"]
+                                 ~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'max_seconds'
+
+======================================================================
+ERROR: test_slices_share_the_frozen_arm_budget (tests.test_evaluation_harness_execution.HarnessExecutionTests.test_slices_share_the_frozen_arm_budget)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tests\test_evaluation_harness_execution.py", line 112, in test_slices_share_the_frozen_arm_budget
+    result = self.replay(self.execute(turns=3))
+                         ^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\tests\test_evaluation_harness_execution.py", line 39, in execute
+    return execute_harness(self.f.inputs(), context=self.f.context, ports=self.f.ports(**options),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\src\research_workbench\evaluation\harness_execution.py", line 235, in execute_harness
+    lifecycle = _m11_progress(inputs, context, entry["receipts"], len(slices))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\src\research_workbench\evaluation\harness_execution.py", line 122, in _m11_progress
+    if (totals["max_seconds"] >= budget["max_seconds"]
+                                 ~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'max_seconds'
+
+======================================================================
+ERROR: test_transient_failure_retains_fresh_retry (tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tests\test_evaluation_harness_execution.py", line 64, in test_transient_failure_retains_fresh_retry
+    ref = self.execute(provider_errors=(ProviderError(ProviderErrorCategory.TRANSIENT, "local transient"),))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\tests\test_evaluation_harness_execution.py", line 39, in execute
+    return execute_harness(self.f.inputs(), context=self.f.context, ports=self.f.ports(**options),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\src\research_workbench\evaluation\harness_execution.py", line 235, in execute_harness
+    lifecycle = _m11_progress(inputs, context, entry["receipts"], len(slices))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\src\research_workbench\evaluation\harness_execution.py", line 122, in _m11_progress
+    if (totals["max_seconds"] >= budget["max_seconds"]
+                                 ~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'max_seconds'
+
+======================================================================
+ERROR: setUpClass (tests.test_evaluation_harness_execution.HarnessReplayTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tests\test_evaluation_harness_execution.py", line 199, in setUpClass
+    cls.good_ref = execute_harness(cls.prototype.inputs(), context=cls.prototype.context,
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\src\research_workbench\evaluation\harness_execution.py", line 235, in execute_harness
+    lifecycle = _m11_progress(inputs, context, entry["receipts"], len(slices))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\src\research_workbench\evaluation\harness_execution.py", line 122, in _m11_progress
+    if (totals["max_seconds"] >= budget["max_seconds"]
+                                 ~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'max_seconds'
+
+----------------------------------------------------------------------
+Ran 13 tests in 157.763s
+
+FAILED (errors=8)

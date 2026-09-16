@@ -337,6 +337,18 @@ class AgentTraceTests(unittest.TestCase):
         self.assertEqual(3, len(redactions))
         self.assertFalse(any("plain" in str(item) for item in redactions))
 
+    def test_task_paths_preserve_evidence_and_real_key_tokens_are_redacted(self) -> None:
+        path = "work/TASK-MR-ES-FROZEN-001/harness/attempt/trace/decisions/fact.json"
+        cleaned, redactions = sanitize_trace_value({"path": path})
+        self.assertEqual(cleaned["path"], path)
+        self.assertEqual(redactions, ())
+        for value in ("sk-abcdefghijklmnop", "SK-abcdefghijklmnop", "key=sk-abcdefghijklmnop",
+                      "work/sk-abcdefghijklmnop/fact.json", "(sk-abcdefghijklmnop)"):
+            with self.subTest(value=value):
+                cleaned, redactions = sanitize_trace_value({"nested": [{"text": value}]})
+                self.assertEqual(cleaned["nested"][0]["text"], "[REDACTED:credential]")
+                self.assertEqual(len(redactions), 1)
+
     def test_sanitizer_omits_entire_provider_reasoning_block(self) -> None:
         cleaned, redactions = sanitize_trace_value(
             {"output": [{"kind": "reasoning", "data": {"summary": "must never persist"}}]}

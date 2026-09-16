@@ -1,0 +1,75 @@
+{
+  "binding": "candidate file bytes, before commit",
+  "parent_head": "b53a391ece3a4be7207c00c636dc9e1570e71473",
+  "develop_base": "0d4a1d00a4c32ca9b822df6482a95920e7c21b1b",
+  "inputs": [
+    {
+      "path": "docs/STATUS.md",
+      "sha256": "515cb0a8dc8d9cc4ebe3caa9e392410a1d16612e5ab8d8623d4e11c702150846"
+    },
+    {
+      "path": "docs/implementation/SYSTEM_EVALUATION_HARNESS.md",
+      "sha256": "2a9ebf13aa5751dce3e57f081df78d27f2ee1466939b979bbd414096b7260c41"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md",
+      "sha256": "81c6b14bef76554ddb444614e0e903217728fcea531cdeddfbd3ec4b005c3dd1"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H3_PACKET.md",
+      "sha256": "4d5475849fde5701a244907d89d21e4cf14fef87e252ff9dcdf7e0fc479cebda"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/README.md",
+      "sha256": "a39730c4b4acf6793d8aeb0bdaf73b0ee39162546440e854ed1dd4392f9ef0ab"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/WORKLOG.md",
+      "sha256": "0a6e2e7e39d8983cc8f4d0bb4cd66c847d039f9f123dfef231ba247c643602fb"
+    },
+    {
+      "path": "schemas/v0.1.0/evaluation-harness-execution.schema.json",
+      "sha256": "5b9f93c831b87b25b39f4736e4f5c305c5fb9d63bd5d978b0d5635fe8c221941"
+    },
+    {
+      "path": "src/research_workbench/evaluation/harness_execution.py",
+      "sha256": "d9ceee3db066624154f2d3be375cd16013073331db392fdaf546a85379beed4a"
+    },
+    {
+      "path": "src/research_workbench/evaluation/harness_runtime.py",
+      "sha256": "0e217c390506ed48271ce23df52b8a13644e068cee990e333c2b40e315796be8"
+    },
+    {
+      "path": "src/research_workbench/observability/trace.py",
+      "sha256": "e32a0e52759e97ab7f061ef5ae57976ec2c1aef5fe9133cce54c26c489d1be61"
+    },
+    {
+      "path": "src/research_workbench/validation/document_kinds.py",
+      "sha256": "96660563237c0f4ec8738dbb55e19ad2a471205bea9a2e7f9aa5e58e4b22f364"
+    },
+    {
+      "path": "tests/coverage_policy.yaml",
+      "sha256": "a09897a48c80cb5063528d46c39d531a2b8d43451b7f21f58d088602f59ee748"
+    },
+    {
+      "path": "tests/harness_execution_fixtures.py",
+      "sha256": "265c55200cdb16c4c5c849160eb468a0bf17a07e08aa64ebe1df74d3ee9656f6"
+    },
+    {
+      "path": "tests/harness_fixtures.py",
+      "sha256": "32178051bc456c664dd133eea172f4ad09efe703e940b889a564044eb73ac083"
+    },
+    {
+      "path": "tests/test_agent_trace.py",
+      "sha256": "aaf127c90be71c55f21c47e59d1ee52384e250d7aecb40f75bdc7be0f5196648"
+    },
+    {
+      "path": "tests/test_evaluation_harness_execution.py",
+      "sha256": "fb410c5ad360f2610c255a4ccae3ba2989b79f863c2aa518d28e7e75213a54ba"
+    },
+    {
+      "path": "tests/test_schemas.py",
+      "sha256": "6b0d006c06debc32b94c470375bec696977a14cf47dac3161c2fa5ed65dc820b"
+    }
+  ]
+}

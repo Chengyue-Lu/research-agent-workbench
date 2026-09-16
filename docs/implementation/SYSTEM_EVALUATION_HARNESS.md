@@ -1,11 +1,13 @@
-# System-Level Evaluation Harness — H1/H2
+# System-Level Evaluation Harness — H1–H3
 
 Evaluation owner：路诚钺。Execution 接口 owner：黄毅。Record version：`1.0.0`。
 任务边界见 [M5-007](../TASKS.md)，完整施工顺序见 [进入计划](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md)。
 
-H1/H2 提供确定性计划及评价侧预检。Provider/Tool/Host 的实际调用、fresh session 分配、执行后 replay、
-盲审、metrics 和 analysis 属于后续 H3–H5。两个新 record 都固定 `actual_execution=false`、
-`execution_authority=false`、`task_completion=false`，保持现有 Manifest、Protocol 与 Runtime 契约。
+H1/H2 提供确定性计划及评价侧预检，其记录固定 `actual_execution=false`。
+H3 在独立开发分支提供 synthetic 四臂执行、fresh Attempt 和执行后 replay；接口与验证范围见
+[H3 实施包](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H3_PACKET.md)。
+盲审、metrics、analysis 和持久化集成收口属于后续 H4/H5。所有记录保持
+`execution_authority=false`、`task_completion=false`，不改写 Manifest、Protocol 或 Runtime 契约。
 
 ## H1：冻结计划
 
@@ -56,10 +58,39 @@ validator/Schema pins。当前完整 synthetic fixture 的 A3/A4 Method disposit
 `expected_preflight_checked_at` 和 admission verifier，再次加载全部 inputs 并重算结果。保存的预检
 不构成实时执行授权；H3 仍须按现有 transport 的 use-boundary 规则验证实际调用。
 
+## H3：执行账本与独立 replay
+
+`evaluation/harness_execution.py::execute_harness` 接受 `EvaluationInputs`、`HarnessContext`、
+`HarnessPorts`、显式可信 `clock` 和 `admission_verifier`。重算 preflight 后按计划顺序执行完整 blocks，
+遇不可重试失败停止。只接受 synthetic Protocol；没有真实模型执行的隐式授权。
+
+A1/A2 调 M6 transport；A3/A4 的每个必需 slice 分别调 M11 Core/Skill Host 和 closeout。
+Driver 工厂只收到已验证 View、当次 Trace recorder 和 fresh 输出目录，负责调用时的 actual facts。
+Harness 不代写 actual binding 或 Skill consumption。M6 自行创建 fresh isolated session；
+H1 session ID 是评价侧预留身份，不伪称 Provider 服务端 session identity。
+
+多个 M11 slice 共用该 arm 的冻结 turn/output-token/time 预算。预算已耗尽时不启动下一 slice；
+调用后的累计超限保留为 post-call failure。整臂已有调用时，后续 slice 的 preflight block 也归为
+整臂 post-call failure；原始各 slice Receipt 仍保存其真实状态。时间检查是调用边界检测，不提供硬抢占。
+
+评价侧账本位于 `.rwb/harness/<run-id-digest>/`；运行输出位于 frozen Task 首个具体 write directory
+中的 `harness/<attempt-id>/`。每个 started/finished 文件 exclusive-create，finished ref 按执行顺序
+保存于 `evaluation_harness_execution@1.0.0`。run 的 `completed` 只表示计划中的本地调用闭合。
+不可预期异常保留未闭合 started marker 和已有 evidence；不能复用该 run ID 继续挑选成功结果。
+
+`replay_harness` 要求外部 result ref 与相同 `HarnessContext`，重新验证 H2，逐个调用 M6/M11 的
+独立 Receipt replay，检查计划身份、完整 slice 集合、输出目录、实际时间、失败与 retry 顺序。
+它不调用 Provider、Tool、Driver 或归档 checker。M6 transient/rate-limit 的 replay-valid 失败仅在
+预注册策略允许时重试；M11 和无 typed transport 分类的失败保守停止，保留全部成本来源记录。
+
+Trace credential token 识别以词边界区分 `TASK-…` 路径与独立 `sk-…` 密钥；Skill fact 沿用
+现有 project-relative creation event 和验证器，真实密钥与敏感字段继续脱敏。
+
 ## 验证与读取边界
 
-两个 record 由 Schema catalog 和文档 kind 注册。通用 repository validation 证明结构；语义重算必须
+三个 record 由 Schema catalog 和文档 kind 注册。通用 repository validation 证明结构；语义重算必须
 调用上述 Harness API 并提供外部上下文与 admission authority。默认 CLI 不隐式补齐这些可信输入。
 
-对应测试为 `test_evaluation_harness_plan` 和 `test_evaluation_harness_preflight`。测试只使用 synthetic
+对应测试为 `test_evaluation_harness_plan`、`test_evaluation_harness_preflight` 和
+`test_evaluation_harness_execution`。测试只使用 synthetic
 文件闭包；真实 case、live conformance、production admission 与科研效果仍按 M5-004 的独立条件验收。

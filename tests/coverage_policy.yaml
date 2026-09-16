@@ -51,6 +51,7 @@ suites:
       - test_evaluation_contracts
       - test_evaluation_harness_plan
       - test_evaluation_harness_preflight
+      - test_evaluation_harness_execution
       - test_m5_trace_export
       - test_governance_helper_branches
       - test_integrity
@@ -166,6 +167,8 @@ critical_modules:
   - src/research_workbench/evaluation/contracts.py
   - src/research_workbench/evaluation/harness_plan.py
   - src/research_workbench/evaluation/harness_preflight.py
+  - src/research_workbench/evaluation/harness_execution.py
+  - src/research_workbench/evaluation/harness_runtime.py
   - .github/scripts/selection_witness.py
   - .github/scripts/ci_dependencies.py
   - .github/scripts/plan_ci.py
@@ -690,6 +693,19 @@ negative_acceptance:
       - test_evaluation_harness_preflight.HarnessPreflightTests.test_confirmatory_phase_never_overrides_admission_overlap
       - test_evaluation_harness_preflight.HarnessPreflightTests.test_unresolved_oracle_blocks_the_complete_preflight
       - test_evaluation_harness_preflight.HarnessPreflightTests.test_pairwise_cannot_upgrade_or_replace_qualification_stage_and_time
+
+  - surface: m5-harness-execution-and-cold-replay
+    modules:
+      - src/research_workbench/evaluation/harness_execution.py
+      - src/research_workbench/evaluation/harness_runtime.py
+    positive_tests:
+      - test_evaluation_harness_execution.HarnessExecutionTests.test_four_arms_execute_all_slices_and_cold_replay
+      - test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry
+    negative_tests:
+      - test_evaluation_harness_execution.HarnessExecutionTests.test_host_preflight_blocked_makes_no_driver_call
+      - test_evaluation_harness_execution.HarnessExecutionTests.test_driver_exception_preserves_unfinished_journal_and_host_trace
+      - test_evaluation_harness_execution.HarnessReplayTests.test_completed_arm_cannot_drop_a_required_slice
+      - test_evaluation_harness_execution.HarnessReplayTests.test_dropped_attempt_and_unfinished_marker_are_rejected
 
 justified_exclusions:
   - path: src/research_workbench/adapters/models/session.py

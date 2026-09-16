@@ -16,8 +16,8 @@ from tests.system_evaluation_fixtures import AT
 
 
 class HarnessFixture(BaselineFixture):
-    def build_harness(self):
-        self.build_baseline("plain-agent-tool")
+    def build_harness(self, *, execution_binding=None, compact=False):
+        self.build_baseline("plain-agent-tool", execution_binding=execution_binding)
         self.overlap_inputs()
         manifest = self.doc(self.manifest_ref["path"])
         context = manifest["frozen_conditions"]["context"]["initial_context_refs"]
@@ -41,6 +41,9 @@ class HarnessFixture(BaselineFixture):
         self.protocol["design"]["retry"].update(
             max_retries=1, eligible_failures=["provider-transient"]
         )
+        if compact:
+            self.protocol["design"].update(replicates_per_case=1, pilot_replicates_per_case=0)
+            self.protocol["design"]["stopping"]["completed_blocks"] = 2
         self.protocol_ref = self.write("evaluation/protocol.json", self.protocol)
         self.build_overlay()
         self.build_pairwise()

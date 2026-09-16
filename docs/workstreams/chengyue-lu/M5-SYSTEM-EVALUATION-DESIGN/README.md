@@ -405,8 +405,8 @@ pilot/secondary evidence 不得作为 pruning 的唯一证据。该 Gate 明确�
 - 建立自动 Human judge、单一总分或 automatic promotion/pruning；
 - 宣称 RWB 已有 system-level net benefit。
 
-当前 M5-007 implementation 提案推进 H1/H2 冻结 plan 与评价侧 preflight，Task 为 IN_PROGRESS；
-H3–H5 后续接入四臂 synthetic execution/replay。M5-001/002 继续受 Human boundary 阻断，M5-004/005 按各自
+当前 M5-007 implementation 提案在 PR86 H1/H2 基础上推进 [H3 四臂 synthetic execution/replay](M5-007_H3_PACKET.md)，
+Task 保持 IN_PROGRESS；H4/H5 的评价证据、分析输入与集成收口为后续切片。M5-001/002 继续受 Human boundary 阻断，M5-004/005 按各自
 真实 execution/Human dependencies 保持 BLOCKED。Issue #55 继续跟踪 M5-007 内部重算与分析输入闭包。
 
 ## 9. 原始设计阶段的历史本地验证
