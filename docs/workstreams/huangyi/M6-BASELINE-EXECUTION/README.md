@@ -1,19 +1,19 @@
-# M6-008 Baseline Execution 候选
+# M6-008 Baseline Execution
 
 更新：2026-09-16。Task / Execution owner：黄毅。风险：R2。
 路诚钺已授权当前 Agent 接手 PR #75 的基线集成、回放修复与验证；任务归属不变。
 
-本目录记录 M6-008 的实现候选，尚未接受，不宣称 DONE。共享输入契约已由
+本目录记录已由 PR75 接受并合入的 M6-008 实现；Task 收口与 M5 交接见 [CLOSEOUT](CLOSEOUT.md)。共享输入契约已由
 [PR #71](https://github.com/Chengyue-Lu/research-agent-workbench/pull/71)
 合入 `develop`，squash commit 为 `60bdf8c28f6cf8c52c04e481e0309bbd6e8cba8b`。
-本轮建议在原定义、依赖和负责人不变的前提下，将 M6-008 从 PARKED 激活为 READY；
-实际状态只由 [TASKS.md](../../../TASKS.md) 维护。本候选及其离线测试不能关闭 M5 的正式执行 Gate。
+本轮在原定义、依赖和负责人不变的前提下，将 M6-008 从 READY 收口为 DONE；
+实际状态只由 [TASKS.md](../../../TASKS.md) 维护。本实现及其离线测试不能关闭 M5 的正式执行 Gate。
 
 ## 目标与已实现路径
 
 依照 [ADR-0020](../../../decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md)，
 A1 `plain-agent` 和 A2 `plain-agent-tool` 使用 M6 隔离 API session。
-候选从 frozen Protocol / Manifest 确定性编译公开输入，经实际注册的 Provider 和 A2 Tool
+实现从 frozen Protocol / Manifest 确定性编译公开输入，经实际注册的 Provider 和 A2 Tool
 执行，保存 typed execution facts、Trace、最后响应工件、transport Validation 和独立 Receipt。
 文件回放从这些记录重算结果，不启动 Provider、Tool 或新的研究执行。
 
@@ -95,12 +95,16 @@ Receipt 区分 `completed`、`post-call-failed`、`preflight-blocked`。
 
 ## 验证与下一步
 
+PR75 已于 2026-09-16 合入 `b041aee`，具名 APPROVE 与实现 CI 绑定 reviewed `f704bfd`。
+[收口证据](CLOSEOUT.md) 为当前验收入口；下文保留修复过程及当时的候选状态。
+下一开发节点为 M5-007 的[进入计划](../../chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md)。
+
 2026-09-16 的 [终态 review](https://github.com/Chengyue-Lu/research-agent-workbench/pull/75#discussion_r4021866705)
 指出 completed 仍可被档案自报覆盖。已复现并修复“最终 Tool 未执行”“elapsed 达到/超过预算”及
 非成功 finish reason 的全外围重哈希反例；通用 Trace 通过而 baseline replay 拒绝。
 真实 turn-limit 失败保留原生命周期，即使 Tool 已返回，缺少最终 Provider 响应也不能变造为成功。
 新增 session-return 时钟反例，保证 producer 在最后一个观测边界到时仍留下 replayable failure。
-最新 `develop@2d5af1b` 已集成；M11-007 DONE / Gate B SATISFIED 来自已接受的 PR82，
+该轮 `develop@2d5af1b` 已集成；M11-007 DONE / Gate B SATISFIED 来自已接受的 PR82，
 M6-008 保持待接受候选，M5-007 仍等待 M6-008 DONE。最终提交验证绑定在 PR #75。
 本轮 [终态资格归档](../../../../work/M6-008/A-20260916-003/README.md) 绑定实现 `48ba0e6`，
 包含成功、超时、未结束 Tool loop 和预检阻断共 5 个实际本地案例，全部通过独立进程文件重放。

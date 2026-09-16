@@ -4,9 +4,9 @@
 
 风险：R2
 
-当前实现 PR 类型：`feature`（M5-006 / R2）。原始任务定义与设计依据保留在下文。
+M5-006 已由 PR71 接受；M6-008 实现已由 PR75 合入，M11-007 / Gate B 已按 PR81/82 收口。当前 `feature` / R2 收口提案将 M6-008 置为 DONE、M5-007 置为 READY；合入后从 [M5-007 进入计划](M5-007_ENTRY_PLAN.md) 启动 synthetic Harness。
 
-实施导航：[进入计划](ENTRY_PLAN.md)、[Protocol / validator contract](../../../implementation/SYSTEM_EVALUATION_PROTOCOL.md)、
+实施导航：[M5-007 进入计划](M5-007_ENTRY_PLAN.md)、[M5-006 历史进入计划](ENTRY_PLAN.md)、[Protocol / validator contract](../../../implementation/SYSTEM_EVALUATION_PROTOCOL.md)、
 [工作记录与验证](WORKLOG.md)、[Risk Ledger](RISK_LEDGER.md)。
 
 ## 1. Primary estimand
@@ -20,7 +20,7 @@ ADR-0020 将 `A4 − A2` 固定为 primary，并明确它包含 transport packag
 transport 的 Tool 条件增量，`A4 − A3` 只有在 pairwise exact-equality closure 证明唯一 delta 为 admitted
 Skill extension 时才可称 Skill conditional increment，否则必须降级为 Skill-bearing package / bundled
 effect 或 unavailable。`A3 − A2` 不得称 pure Mode effect，`A4 − A1` 只作完整栈支持性 contrast。当前
-workstream 接受 Gate A 架构并定义后续 Task/Gate；不执行 Evaluation，也不声称 RWB 已产生净收益。
+workstream 已接受 Gate A 与 Protocol 实现，准备后继 Harness；不执行 Evaluation，也不声称 RWB 已产生净收益。
 
 ## 2. 保留的 M5-003 基线
 
@@ -100,7 +100,7 @@ Maintainer/Evaluation preflight 引用两端对象组装 A3 record并对两类 r
 actual facts 与 replay Receipt，但不拥有 A3/M11。该 Gate 不包含
 `AdmissionEvidenceOverlapAssessment`，后者仍由 M5-006 定义、M5-007 重算，因此不存在 pre-M5-006 自依赖。
 
-M5-006 当前为 READY，不等待真实案例完成即可实现。Protocol 必须 exact 引用 ADR-0020，并预注册：
+M5-006 已 DONE。已接受 Protocol exact 引用 ADR-0020，并预注册：
 
 - primary estimand 与 secondary comparisons；
 - run randomization、replicate count、pilot semantics 与 stopping rule；
@@ -123,8 +123,8 @@ projection-backed Supply 及其 Snapshot/Bundle/View，不读取 candidate、Eva
 
 overlay 是 pre-run qualification，不冒充 actual execution evidence。M5-007 在调用后还必须以既有 Core
 Host report→typed execution Trace fact→generic Receipt contract 为基础，独立闭合 actual Projection、Supply 与
-binding；但当前 Receipt 对 Skill-bearing path 的扩展尚未存在，必须先通过
-`M5-SKILL-CLOSEOUT-REPLAY-GATE`。
+binding；Skill-bearing path 由 M11-007 的独立版本扩展承担，
+`M5-SKILL-CLOSEOUT-REPLAY-GATE` 已由 PR81/82 接受并收口。
 `completed`、`post-call failed` 与 `preflight blocked` 分别保留既有状态语义，planned View 不能替代 actual facts。
 
 ### A3/A4 pairwise comparability
@@ -239,12 +239,11 @@ Research Integrity 的实质退化不能被更低成本抵消。replicate count 
 M6-008 提供 A1/A2 treatment-visible baseline envelope、M6 actual facts 与 no-Skill replay closeout；M11-004
 以 M11-003 为传递依赖，提供 Core Host actual-fact / generic Trace/Receipt/Artifact closeout contract；M11-006
 独立提供 projection-backed Skill Supply mapping。因此 M5-007 的 canonical hard dependencies 是
-`M5-006, M6-008, M11-004, M11-006, M5-SKILL-CLOSEOUT-REPLAY-GATE`，M11-006 不能被误写成
+`M5-006, M6-008, M11-004, M11-006, M11-007, M5-SKILL-CLOSEOUT-REPLAY-GATE`，M11-006 不能被误写成
 actual-fact producer，ADR-0020 也不能被误写成 M6-008 implementation evidence。
-M11-004 v0.1 的 generic Receipt 当前仍排除 Skill-bearing closeout；该 Gate 只在 projection-backed Skill actual
-binding 获得 replay-valid closeout seam，或 R2 正式修订 M5-007 acceptance 后闭合，不能把 M11-004 Core Receipt
-假写成已经支持 Skill。它不是凭 Issue 文本自动获得的实现权限，只有 accepted task-definition / contract evidence
-能关闭。
+M11-004 v0.1 的 generic Receipt 继续负责 Core；M11-007 的独立 Skill closeout 已提供
+projection-backed actual binding 与 replay。Gate B 已按具名 implementation/replay/CI 证据 SATISFIED，
+具体 pins 见 [Gate record](../M11-SKILL-CLOSEOUT-GATE/GATE.md)。
 
 baseline transport 不再作为 M5-007 的独立外部 Gate：它由 M5-006 的 hard dependency 传递，Harness 必须遵守
 Protocol exact 引用的 arm→transport mapping，并消费 M6-008。Harness 不得把 raw Task control、dummy
@@ -284,14 +283,15 @@ M5-004 只在所有真实执行前置闭合后运行：
 
 ```mermaid
 flowchart LR
-    M5003["M5-003 DONE"] --> M5006["M5-006 READY"]
+    M5003["M5-003 DONE"] --> M5006["M5-006 DONE"]
     BTG["ADR-0020 dual transport<br/>Gate A satisfied"] --> M5006
-    M5006 --> M5007["M5-007 BLOCKED"]
-    M5006 --> M6008["M6-008 baseline envelope<br/>+ replay closeout / PARKED"]
+    M5006 --> M5007["M5-007 READY"]
+    M5006 --> M6008["M6-008 baseline envelope<br/>+ replay closeout / DONE"]
     M6008 --> M5007
     M1104["M11-004<br/>Core generic closeout<br/>M11-003 Host facts"] --> M5007
-    M1106["M11-006"] --> M5007
-    SCG["M5-SKILL-CLOSEOUT-REPLAY-GATE<br/>Issue #55 / external / unsatisfied"] --> M5007
+    M1106["M11-006 DONE"] --> M5007
+    M1107["M11-007 DONE"] --> M5007
+    SCG["M5-SKILL-CLOSEOUT-REPLAY-GATE<br/>Issue #55 / external / satisfied"] --> M5007
 
     M5003 -. "exact candidate + evaluation" .-> A4G["A4-RUNTIME-ADMISSION-GATE<br/>external / currently unsatisfied"]
     M1106 -. "Projection + unified Supply path" .-> A4G
@@ -395,12 +395,11 @@ pilot/secondary evidence 不得作为 pruning 的唯一证据。该 Gate 明确�
 - 建立自动 Human judge、单一总分或 automatic promotion/pruning；
 - 宣称 RWB 已有 system-level net benefit。
 
-ADR-0020 合入后，M5 侧唯一立即可启动的 implementation 入口是 READY 的 M5-006 Protocol；M6-008 等待其
-冻结 shared qualification contract，当前 PARKED。二者不得混成一个 ownership 模糊的 Harness shortcut。M5-001/002
-继续受 Human boundary 阻断；M5-007 仍等待 M5-006、M6-008 与 Skill replay Gate，M5-004/005 按各自真实
-execution/Human dependencies 保持 BLOCKED。Issue #55 继续跟踪 Gate B 与 M5-006→007 overlap closure。
+本次收口后，M5-007 是下一个 READY implementation 节点；先完成冻结 plan 与评价侧 preflight，
+再逐步接入四臂 synthetic execution/replay。M5-001/002 继续受 Human boundary 阻断，M5-004/005 按各自
+真实 execution/Human dependencies 保持 BLOCKED。Issue #55 继续跟踪 M5-007 内部重算与分析输入闭包。
 
-## 9. 本地验证
+## 9. 原始设计阶段的历史本地验证
 
 - `python -m unittest tests.test_documentation tests.test_pr_governance -v`：76/76 PASS；
 - `python -m research_workbench validate examples registry --root .`：183 validated，0 errors，0 warnings；

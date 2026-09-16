@@ -52,7 +52,7 @@ evidence，不生成 hard dependency。
 | M3 | Context, Trace & risk | task-defined；部分 residual work PARKED |
 | M4 | Artifact, provenance & reproducibility | task-defined |
 | M5 | Evaluation & pruning | task-defined |
-| M6 | Provider/API execution seams | task-defined；M6-008 消费 M5-006 shared qualification contract，当前 READY，已有待验收 transport 候选；具名责任人维护 |
+| M6 | Provider/API execution seams | task-defined；M6-008 baseline transport 已按 PR75 接受并收口为 DONE；具名责任人维护 |
 | M7 | Mode–Skill selection & coordination evidence | task-defined |
 | M8 | Method Core formalization | task-defined and complete |
 | M9 | Evolution Foundation | task-defined and complete |
@@ -102,7 +102,7 @@ flowchart LR
         M5001["M5-001 BLOCKED<br/>evidence dossier"] --> M5004["M5-004 BLOCKED<br/>real system evaluation"]
         M5002["M5-002 BLOCKED<br/>theory/simulation dossier"] --> M5004
         M5003["M5-003 DONE<br/>non-executing plan"] --> M5006["M5-006 DONE<br/>Protocol + validators"]
-        M5006 --> M5007["M5-007 BLOCKED<br/>evaluation harness"]
+        M5006 --> M5007["M5-007 READY<br/>synthetic evaluation harness"]
         M5003 -. "candidate + evaluation" .-> A4G["A4-RUNTIME-ADMISSION-GATE<br/>external / unsatisfied"]
         A4G --> M5004
         M5003 --> M5004
@@ -113,7 +113,7 @@ flowchart LR
 
     M4Done["M4-001～004 DONE<br/>bounded provenance chain"] --> M5004
     BTG["ADR-0020 dual transport<br/>Gate A satisfied"] --> M5006
-    M5006 --> M6008["M6-008 READY<br/>baseline envelope + replay closeout"]
+    M5006 --> M6008["M6-008 DONE<br/>baseline envelope + replay closeout"]
     M6008 --> M5007
     M1104["M11-004 DONE<br/>Core generic closeout<br/>M11-003 Host facts"] --> M5007
     M1106["M11-006 DONE<br/>projection-backed Skill path"] --> M5007
@@ -129,9 +129,9 @@ flowchart LR
 
 M4-001～004 已闭合 bounded admission、promotion、Claim evidence localization 与 Run reconstruction；
 promotion eligibility 仍只由当次 pinned pipeline 重执行确立，不证明自报历史 provenance。当前开发入口是
-`M5-006 DONE → M6-008 READY → M5-007 BLOCKED`，后两项须由相应 owner 按各自全部前置进入开发。
-M5-004 的 M4 provenance 链、M5-003 计划契约与 M11-006 mapping 机制已满足；仍等待两个 Human-approved
-public/private Case Dossier、M6-008 baseline closeout、Skill replay Gate、M5-007 Harness、真实 A4 admission 与 M6-004 live
+`M5-006 DONE → M6-008 DONE → M5-007 READY`；路诚钺按 [Harness 进入计划](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md) 从冻结 plan / 评价侧 preflight 开始。
+M5-004 的 M4 provenance 链、M5-003 计划契约、M11-006 mapping 机制、M6-008 baseline closeout 与 Skill replay Gate 已满足；
+仍等待两个 Human-approved public/private Case Dossier、M5-007 Harness、真实 A4 admission 与 M6-004 live
 Provider/session Gate。ADR-0020 已 exact-pin
 双传输并关闭 `M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE`：A1/A2→M6、A3→M11 Core、A4→M11 Skill
 extension，primary `A4 − A2` 明确包含 transport difference；M5-006 已实现相应 Protocol/validators。`A4 − A3` 只有在
@@ -145,11 +145,11 @@ qualification 必须保持 frozen Task/Requirement/Supply/component/
 implementation/interface 与相关 A3 Mode/Action/Method，所有 ceiling 只能等价或收窄。
 M5-007 不等待真实 case data，但 hard-depend M5-006、M6-008、M11-004 的 Core Host/Trace/Receipt contract、
 M11-006 的 projection-backed Skill mapping、M11-007 的 Skill closeout 与 `M5-SKILL-CLOSEOUT-REPLAY-GATE`。M11-004/006/007 均为 DONE；Skill actual binding 由独立版本 closeout 承担。
-M6-008 已激活为 READY，PR75 的 A1/A2 transport 候选仍待接受；plain arm 不能通过 raw Task
+M6-008 的 A1/A2 transport 已由 PR75 接受并收口为 DONE；plain arm 不能通过 raw Task
 control、dummy Method/Snapshot 或 Skill Assignment 改写 M5-003 treatment。Harness 还必须独立重算 A3/A4
 pairwise record，不能把 Method、non-Skill substrate、interface 或 boundary 差异误报为 pure Skill effect。Issue
 #55 的 Gate A、[Gate B](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md) 均已满足。
-M5-007 保持 BLOCKED，剩余实现依赖是 M6-008 DONE。M5-003 本身没有执行案例或产生净增量结论。
+M5-007 的实现依赖已满足，进入 READY；具体实施和整体验收由路诚钺负责。M5-003 本身没有执行案例或产生净增量结论。
 `A4-RUNTIME-ADMISSION-GATE` 是外部可审计条件，不是新 M Task：它保持 M5-003 的 candidate/evaluation
 origin，并 exact-pin Human Admission Decision→accepted Release→Projection→Supply→Resolution→Snapshot→
 Bundle→View→Host 的逐跳 identity/hash closure；当前生产 projection index 为空，故该 Gate 未满足。
