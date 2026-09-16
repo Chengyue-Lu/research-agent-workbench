@@ -161,3 +161,10 @@ Trace v0.1 无 BLOCK，仅保留 `TRACE-CAPTURE-DELAYED` / capture-gap warning�
 不将缺失的 provider frames/native events 重建为完整 capture。记录中的代码哈希绑定提交前候选字节；
 最终 full/coverage/governance/package CI 绑定 PR 的 exact head/base，证据由 GitHub Actions 保留。
 H1/H2 接受仍需 cross-owner review；H3–H5、真实执行与 M5-004 的 Human/live/admission 条件保持后续验收。
+
+PR86 首次 hosted [CI 35105112446](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/35105112446)
+绑定 head `94448bf781730b4af8528089a79794b748be2c2b`，Python 3.11/3.13 全量各 **1,355 PASS**；
+repository coverage policy 也通过（global line 94.96%）。CI 在更严格的 changed-branch 100% 门禁失败：
+H1 尚未覆盖 synthetic Protocol 的 `admission_case_closure_ref=null` 路径。补充该非执行计划正例及
+confirmatory Protocol 同样缺失 closure 时拒绝的反例；新用例本地通过，生产代码和所有门槛不变。
+原候选 Attempt evidence 保持冻结，后续 exact-head CI 由 PR86 关联；首次失败 run 只作为诊断记录。

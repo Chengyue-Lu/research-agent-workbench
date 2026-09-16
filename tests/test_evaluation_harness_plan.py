@@ -223,3 +223,20 @@ print(json.dumps(compile_harness_plan(EvaluationInputs(sys.argv[1],sys.argv[2]),
             self.assertRaisesRegex(EvaluationValidationError, "bounded attempt"),
         ):
             self.f.compile_plan()
+
+    def test_synthetic_plan_without_admission_closure_has_no_eligibility(self):
+        self.f.protocol.update(
+            purpose="synthetic-contract-proof", admission_case_closure_ref=None
+        )
+        self.f.freeze_protocol()
+        plan = self.f.compile_plan()
+        self.assertEqual(
+            plan, validate_harness_plan(self.f.inputs(), plan, **self.f.plan_context())
+        )
+        self.assertTrue(any(b["phase"] == "confirmatory" for b in plan["blocks"]))
+        self.assertNotIn("primary_confirmatory_eligible", plan)
+        self.assertFalse(any(plan["boundaries"].values()))
+        self.f.protocol["purpose"] = "confirmatory-protocol"
+        self.f.freeze_protocol()
+        with self.assertRaises(EvaluationValidationError):
+            self.f.compile_plan()
