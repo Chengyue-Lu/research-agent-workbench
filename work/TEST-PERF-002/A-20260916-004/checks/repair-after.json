@@ -1,0 +1,34 @@
+{
+  "reproduced_head": "5d989f87abf0a84c57cd87587c526488d09a549a",
+  "reproduced_content_run": 35028593655,
+  "reproduced_failure": "impact module absent: work/TEST-PERF-002/A-20260916-003/checks/compare_scope.py",
+  "original_source_sha256": "a444af83162de6ff29e206b915c7f95acc86f7825484f58ad73bdcc56fb1a768",
+  "head": "fbe3e1836e12f635dc91f2f18f0f78ecc3dd08da",
+  "base": "7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba",
+  "target": "fbe3e1836e12f635dc91f2f18f0f78ecc3dd08da",
+  "plan_id": "bfb545da2055c3d4bfd9dfcabf51ddda638d1f2e20377e4dede96c14abb68405",
+  "coverage_modules": [
+    ".github/scripts/ci_dependencies.py",
+    ".github/scripts/plan_ci.py"
+  ],
+  "coverage_scope": "impact",
+  "behavioral_scope": "full",
+  "missing_modules": [],
+  "source_identity": {
+    ".github/scripts/ci_dependencies.py": {
+      "source_unchanged_since_failed_head": true,
+      "sha256": "5f18860726d69e8f8d637714eaadae44991fd2f103f2f30e03decd982b4b0140",
+      "missing_changed_lines": [],
+      "missing_changed_branches": []
+    },
+    ".github/scripts/plan_ci.py": {
+      "source_unchanged_since_failed_head": true,
+      "sha256": "ba025e5c32d6b153049ec630bc0e22854423351776641452fff35f90d3d99e58",
+      "missing_changed_lines": [],
+      "missing_changed_branches": []
+    }
+  },
+  "archive_source_bytes_preserved": true,
+  "governance": "PASS",
+  "limits": "Coverage membership/source comparison only. Old receipts are not rebound or claimed as new-head execution; fresh hosted CI is required."
+}

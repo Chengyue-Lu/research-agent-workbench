@@ -1,0 +1,89 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260916-004
+task_id: TEST-PERF-002
+task_revision: 32
+attempt_id: A-20260916-004
+archive_root: A-20260916-004
+baseline: 7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: dcb7923b562cf70bf599443932017ec12fdbfbea7581e86d12223ce288bf7a07
+actors_ref:
+  path: ACTORS.yaml
+  sha256: d35c99c01f276cd091e686d099e1bb8c15bf62ecb6c72b69fa5be331f79e5c99
+read_allowlist:
+- .github/**
+- .rwb/archive-review/**
+- AGENTS.md
+- build_backend.py
+- docs/DEVELOPMENT.md
+- docs/README.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- pyproject.toml
+- registry/**
+- runtime-resources.json
+- schemas/**
+- src/**
+- tests/**
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/ci_dependencies.py
+- .github/scripts/plan_ci.py
+- .rwb/archive-review/**
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/ci_impact_policy.yaml
+- tests/test_ci_dependencies.py
+- tests/test_ci_plan.py
+- work/TEST-PERF-002/A-20260916-003/INDEX.yaml
+- work/TEST-PERF-002/A-20260916-003/checks/compare_scope.py
+- work/TEST-PERF-002/A-20260916-003/checks/compare_scope.py.txt
+- work/TEST-PERF-002/A-20260916-004/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+- shell
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 09dec3fefbdac550c868f14515ca12d5eb25621a2d971a56256c896d3669adc5
+  event_count: 6
+tool_event_refs:
+- path: tool-events/reproduce-review-failure-succeeded.json
+  sha256: 7d231cfa74b57c76005d78656b8031087fdb9f7d7b04c6d4e362c8c0e1dbf1d9
+- path: tool-events/correction-source-preflight-succeeded.json
+  sha256: b986d9be3ae24d440c11c0a902db299a71b497a475564e3017fce9a8c23255ee
+handoff_refs: []
+decision_refs: []
+output_refs:
+- path: RESULTS.md
+  sha256: 9e5db05bb36a052aa220ae9c383ba19cb713f4160a22f30d8b0eb8dbe256ef91
+check_refs:
+- path: checks/before-INDEX.yaml
+  sha256: 3b808fdd654243412c834169628d558e767f1c3cdb0591bbf773ab561c937936
+- path: checks/documentation.log
+  sha256: e38fc52ddd2f301b8c3c7148418c6e18dab3e68c19be2358bdb320629f695f81
+- path: checks/preflight.log
+  sha256: 146ba5f4f2803ebfc8f1607eca0e062c8f1284e168f88cf35c93424a33d8364f
+- path: checks/repair-after.json
+  sha256: 9b84c649a941286c1eeb07ef0d6568e89d306d306ee4cde40bc6513eb4c533b3
+- path: checks/repair-before.json
+  sha256: 63ff2c1d5b57a641b92a5b3d3741db3b54134246b8a594517c443279b4373530
+- path: checks/review-input.json
+  sha256: a77814761a0ea4346a287b5fa434225dacc184574c6e27d7e81920b64ddc5fac
+- path: checks/source-plan.json
+  sha256: 31a1061728847b3f7b63a8bb73c7da320f0952354dd74668565490d674417e14
+- path: checks/verify-repair-source.txt
+  sha256: 20919003f70434112805787e0dbd9a7e838131097554c7baaf9acb24c842e6f7
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: messages

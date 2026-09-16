@@ -1,0 +1,39 @@
+task_id: TEST-PERF-002
+revision: 28
+owner: Chengyue-Lu
+risk: R2
+delegation: false
+required_skills: []
+goal: Implement bounded dependency precision repairs and audit the remaining expansion
+  in a Draft PR.
+authorization: User requests an isolated implementation branch, Draft PR and Issue48
+  progress; related measured analysis savings may be included.
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- .github/**
+- src/**
+- tests/**
+- schemas/**
+- registry/**
+- pyproject.toml
+- build_backend.py
+- runtime-resources.json
+- work/TEST-PERF-002/**
+- .rwb/boundary-repair/**
+write_scope:
+- .github/scripts/ci_dependencies.py
+- .github/scripts/plan_ci.py
+- tests/test_ci_dependencies.py
+- tests/test_ci_plan.py
+- tests/ci_impact_policy.yaml
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- work/TEST-PERF-002/A-20260915-001/**
+- .rwb/boundary-repair/**
+stop_conditions:
+- Keep primary develop and other owners branches unchanged.
+- Keep full selection authority bootstrap, quality floors and ordered execution.
+- Publish Draft only; no merge or release authority.

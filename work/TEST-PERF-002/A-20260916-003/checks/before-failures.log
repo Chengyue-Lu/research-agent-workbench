@@ -1,0 +1,106 @@
+test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory (tests.test_ci_dependencies.DependencyTests.test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory) ... 
+  test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory (tests.test_ci_dependencies.DependencyTests.test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory) (expression='(ROOT / "data/input.json").read_text()') ... FAIL
+  test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory (tests.test_ci_dependencies.DependencyTests.test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory) (expression='(ROOT / "data/input.json").read_bytes()') ... FAIL
+  test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory (tests.test_ci_dependencies.DependencyTests.test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory) (expression='(ROOT / "data/input.json").open("rb")') ... FAIL
+  test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory (tests.test_ci_dependencies.DependencyTests.test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory) (expression='(ROOT / "data").glob("*.json")') ... FAIL
+  test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory (tests.test_ci_dependencies.DependencyTests.test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory) (expression='(ROOT / "data").rglob("*.json")') ... FAIL
+  test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory (tests.test_ci_dependencies.DependencyTests.test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory) (expression='(ROOT / "data").iterdir()') ... FAIL
+test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution (tests.test_ci_dependencies.DependencyTests.test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution) ... 
+  test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution (tests.test_ci_dependencies.DependencyTests.test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution) (operation='runpy.run_path(str(ROOT / "work/check.py"))') ... FAIL
+  test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution (tests.test_ci_dependencies.DependencyTests.test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution) (operation='runpy.run_path(ROOT / "work/check.py")') ... FAIL
+  test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution (tests.test_ci_dependencies.DependencyTests.test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution) (operation='script=ROOT / "work/check.py"\nrunpy.run_path(str(script))') ... FAIL
+  test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution (tests.test_ci_dependencies.DependencyTests.test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution) (operation='from runpy import run_path as run\nrun(ROOT / "work/check.py")') ... FAIL
+test_rooted_consumers_remain_selected_when_actual_input_breaks (tests.test_ci_dependencies.DependencyTests.test_rooted_consumers_remain_selected_when_actual_input_breaks) ... FAIL
+
+======================================================================
+FAIL: test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory (tests.test_ci_dependencies.DependencyTests.test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory) (expression='(ROOT / "data/input.json").read_text()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\ci-boundaries\tests\test_ci_dependencies.py", line 27, in test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory
+    self.assertFalse(self.selection(blobs, blobs, ['schemas/new.json'], ['schemas/new.json'])['selected'])
+AssertionError: {'test_reader': ['schemas/new.json', 'tests/test_reader.py']} is not false
+
+======================================================================
+FAIL: test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory (tests.test_ci_dependencies.DependencyTests.test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory) (expression='(ROOT / "data/input.json").read_bytes()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\ci-boundaries\tests\test_ci_dependencies.py", line 27, in test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory
+    self.assertFalse(self.selection(blobs, blobs, ['schemas/new.json'], ['schemas/new.json'])['selected'])
+AssertionError: {'test_reader': ['schemas/new.json', 'tests/test_reader.py']} is not false
+
+======================================================================
+FAIL: test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory (tests.test_ci_dependencies.DependencyTests.test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory) (expression='(ROOT / "data/input.json").open("rb")')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\ci-boundaries\tests\test_ci_dependencies.py", line 27, in test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory
+    self.assertFalse(self.selection(blobs, blobs, ['schemas/new.json'], ['schemas/new.json'])['selected'])
+AssertionError: {'test_reader': ['schemas/new.json', 'tests/test_reader.py']} is not false
+
+======================================================================
+FAIL: test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory (tests.test_ci_dependencies.DependencyTests.test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory) (expression='(ROOT / "data").glob("*.json")')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\ci-boundaries\tests\test_ci_dependencies.py", line 27, in test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory
+    self.assertFalse(self.selection(blobs, blobs, ['schemas/new.json'], ['schemas/new.json'])['selected'])
+AssertionError: {'test_reader': ['schemas/new.json', 'tests/test_reader.py']} is not false
+
+======================================================================
+FAIL: test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory (tests.test_ci_dependencies.DependencyTests.test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory) (expression='(ROOT / "data").rglob("*.json")')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\ci-boundaries\tests\test_ci_dependencies.py", line 27, in test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory
+    self.assertFalse(self.selection(blobs, blobs, ['schemas/new.json'], ['schemas/new.json'])['selected'])
+AssertionError: {'test_reader': ['schemas/new.json', 'tests/test_reader.py']} is not false
+
+======================================================================
+FAIL: test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory (tests.test_ci_dependencies.DependencyTests.test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory) (expression='(ROOT / "data").iterdir()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\ci-boundaries\tests\test_ci_dependencies.py", line 27, in test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory
+    self.assertFalse(self.selection(blobs, blobs, ['schemas/new.json'], ['schemas/new.json'])['selected'])
+AssertionError: {'test_reader': ['schemas/new.json', 'tests/test_reader.py']} is not false
+
+======================================================================
+FAIL: test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution (tests.test_ci_dependencies.DependencyTests.test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution) (operation='runpy.run_path(str(ROOT / "work/check.py"))')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\ci-boundaries\tests\test_ci_dependencies.py", line 71, in test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution
+    self.assertFalse(self.selection(blobs, blobs, ['src/independent.py'])['selected'])
+AssertionError: {'test_replay': ['src/independent.py', 'tests/test_replay.py']} is not false
+
+======================================================================
+FAIL: test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution (tests.test_ci_dependencies.DependencyTests.test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution) (operation='runpy.run_path(ROOT / "work/check.py")')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\ci-boundaries\tests\test_ci_dependencies.py", line 71, in test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution
+    self.assertFalse(self.selection(blobs, blobs, ['src/independent.py'])['selected'])
+AssertionError: {'test_replay': ['src/independent.py', 'tests/test_replay.py']} is not false
+
+======================================================================
+FAIL: test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution (tests.test_ci_dependencies.DependencyTests.test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution) (operation='script=ROOT / "work/check.py"\nrunpy.run_path(str(script))')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\ci-boundaries\tests\test_ci_dependencies.py", line 71, in test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution
+    self.assertFalse(self.selection(blobs, blobs, ['src/independent.py'])['selected'])
+AssertionError: {'test_replay': ['src/independent.py', 'tests/test_replay.py']} is not false
+
+======================================================================
+FAIL: test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution (tests.test_ci_dependencies.DependencyTests.test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution) (operation='from runpy import run_path as run\nrun(ROOT / "work/check.py")')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\ci-boundaries\tests\test_ci_dependencies.py", line 71, in test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution
+    self.assertFalse(self.selection(blobs, blobs, ['src/independent.py'])['selected'])
+AssertionError: {'test_replay': ['src/independent.py', 'tests/test_replay.py']} is not false
+
+======================================================================
+FAIL: test_rooted_consumers_remain_selected_when_actual_input_breaks (tests.test_ci_dependencies.DependencyTests.test_rooted_consumers_remain_selected_when_actual_input_breaks)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\ci-boundaries\tests\test_ci_dependencies.py", line 130, in test_rooted_consumers_remain_selected_when_actual_input_breaks
+    self.assertFalse(deps.select(repo, base, head, ['schemas/new.json'])[0]['selected'])
+AssertionError: {'test_reader': ['schemas/new.json', 'tests/test_reader.py']} is not false
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.640s
+
+FAILED (failures=11)

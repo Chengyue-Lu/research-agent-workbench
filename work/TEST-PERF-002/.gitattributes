@@ -1,0 +1,2 @@
+# Preserve the terminal's final blank line in this sealed check log.
+A-20260915-001/checks/planner-regression.log whitespace=-blank-at-eof

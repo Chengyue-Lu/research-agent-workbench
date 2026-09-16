@@ -1,0 +1,63 @@
+Declared risk: R2
+Inferred minimum: R2
+Effective risk: R2
+Reason:
+- .github/scripts/ci_dependencies.py matches the R2 policy surface
+- .github/scripts/plan_ci.py matches the R2 policy surface
+- PR declares a shared-contract impact
+- PR declares an authority, permission, or data-boundary impact
+Requirements:
+- pull request and required CI
+- cross-owner review or explicit single-PR maintainer exception before merge (DEVELOPMENT 5.4)
+- explicit authority basis
+- adversarial or negative evidence
+- owner-matched workstream and Risk Ledger
+governance: PASS
+{
+  "source_head": "59794b8cfdde08d33a7bde04ff55bfa68a5503c3",
+  "base": "7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba",
+  "implementation": "5311e84b0129e81f7ca312083ba3618650a9d71c",
+  "local_target": "59794b8cfdde08d33a7bde04ff55bfa68a5503c3",
+  "hosted_merge_target": "pending",
+  "governance": "PASS",
+  "plan_id": "baaee0c13eb6d0521917b82d325ee9c4bc049d1a853bf18480164385201de226",
+  "behavior": "full",
+  "coverage": "impact",
+  "coverage_detail": {
+    ".github/scripts/ci_dependencies.py": {
+      "sha256": "1c5628f361e2d4101f36af630f5a4f70289b23285208727ed6eb33c43084632f",
+      "statements": [
+        453,
+        453
+      ],
+      "branches": [
+        294,
+        294
+      ],
+      "changed_coordinate_count": 386,
+      "missing_changed_lines": [],
+      "missing_changed_branches": []
+    },
+    ".github/scripts/plan_ci.py": {
+      "sha256": "ba025e5c32d6b153049ec630bc0e22854423351776641452fff35f90d3d99e58",
+      "statements": [
+        538,
+        539
+      ],
+      "branches": [
+        204,
+        206
+      ],
+      "changed_coordinate_count": 13,
+      "missing_changed_lines": [],
+      "missing_changed_branches": []
+    }
+  },
+  "tests": {
+    "dependency": 47,
+    "planner_checker_witness": 106,
+    "documentation": 10,
+    "planner_checker_witness_under_coverage": 106
+  },
+  "limits": "Focused source checks and local target only; hosted full execution and merge-target receipts remain separate."
+}

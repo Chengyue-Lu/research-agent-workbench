@@ -14,6 +14,270 @@ import ci_dependencies as deps
 
 
 class DependencyTests(unittest.TestCase):
+    def test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory(self):
+        header = 'from pathlib import Path\nROOT=Path(__file__).resolve().parents[1]\n'
+        for expression in ('(ROOT / "data/input.json").read_text()',
+                           '(ROOT / "data/input.json").read_bytes()',
+                           '(ROOT / "data/input.json").open("rb")',
+                           '(ROOT / "data").glob("*.json")',
+                           '(ROOT / "data").rglob("*.json")',
+                           '(ROOT / "data").iterdir()'):
+            with self.subTest(expression=expression):
+                blobs = {'tests/test_reader.py': (header + expression).encode()}
+                self.assertFalse(self.selection(blobs, blobs, ['schemas/new.json'], ['schemas/new.json'])['selected'])
+                self.assertIn('test_reader', self.selection(blobs, blobs, ['data/input.json'], ['data/input.json'])['selected'])
+        blobs = {'tests/test_reader.py': (header + 'ROOT.iterdir()').encode()}
+        self.assertIn('test_reader', self.selection(blobs, blobs, ['schemas/new.json'], ['schemas/new.json'])['selected'])
+
+    def test_uncertain_roots_and_escaped_resource_capabilities_keep_fallback(self):
+        header = 'from pathlib import Path\nROOT=Path(__file__).parents[1]\n'
+        for operation in (
+            'ROOT=other\n(ROOT / "data/input.json").read_text()',
+            'ROOT=ROOT\nROOT.read_text()',
+            '(ROOT / name).read_text()',
+            '(ROOT / "../other/input.json").read_text()',
+            '(ROOT / "/other/input.json").read_text()',
+            '(ROOT / "D:/other/input.json").read_text()',
+            'reader=(ROOT / "data/input.json").read_text\nreader()',
+            '(ROOT / "data").glob(pattern)',
+            '(ROOT / "data").glob("../*.json")',
+            '(ROOT / "data").glob("/tmp/*.json")',
+            '(ROOT / "data").rglob("C:*.json")',
+            '(ROOT / "data").glob("*.json", case_sensitive=True)',
+            '(ROOT / "data").iterdir(extra)',
+            'Path.read_text=reader\n(ROOT / "data/input.json").read_text()',
+            'del Path.read_text\n(ROOT / "data/input.json").read_text()',
+            'from unittest.mock import patch\npatch("pathlib.Path.read_text", reader)\nROOT.read_text()',
+            'helper.setattr(Path, "read_text", reader)\nROOT.read_text()',
+            'from unittest.mock import patch\npatch.object(Path, "read_text", reader)\nROOT.read_text()',
+            'exec(code)\n(ROOT / "data/input.json").read_text()',
+            'def check(ROOT): return (ROOT / "data/input.json").read_text()',
+            'root=unknown()\nroot.open()',
+            'open(path)',
+        ):
+            with self.subTest(operation=operation):
+                blobs = {'tests/test_reader.py': (header + operation).encode()}
+                self.assertIn('test_reader', self.selection(blobs, blobs, ['schemas/new.json'], ['schemas/new.json'])['selected'])
+
+    def test_rooted_run_path_follows_script_imports_and_rejects_uncertain_execution(self):
+        header = 'import runpy\nfrom pathlib import Path\nROOT=Path(__file__).parents[1]\n'
+        scripts = {'work/check.py': b'from subject import VALUE\n', 'src/subject.py': b'VALUE=1'}
+        for operation in ('runpy.run_path(str(ROOT / "work/check.py"))',
+                          'runpy.run_path(ROOT / "work/check.py")',
+                          'script=ROOT / "work/check.py"\nrunpy.run_path(str(script))',
+                          'from runpy import run_path as run\nrun(ROOT / "work/check.py")'):
+            with self.subTest(operation=operation):
+                blobs = {**scripts, 'tests/test_replay.py': (header + operation).encode()}
+                self.assertFalse(self.selection(blobs, blobs, ['src/independent.py'])['selected'])
+                self.assertIn('test_replay', self.selection(blobs, blobs, ['src/subject.py'])['selected'])
+        for operation in ('runpy.run_path(path)', 'runpy.run_path()',
+                          'runpy=custom\nrunpy.run_path(ROOT / "work/check.py")',
+                          'def replay(str): return runpy.run_path(str(ROOT / "work/check.py"))',
+                          'runpy.run_path(str(ROOT / "work/check.py", unexpected=True))',
+                          'from unittest.mock import patch\npatch("pathlib.Path", custom)\nrunpy.run_path(ROOT / "work/check.py")',
+                          'runpy.run_path(ROOT / "work/unknown.py")'):
+            with self.subTest(operation=operation):
+                blobs = {**scripts, 'tests/test_replay.py': (header + operation).encode()}
+                self.assertIn('test_replay', self.selection(blobs, blobs, ['src/independent.py'])['selected'])
+        blobs = {**scripts, 'work/check.py': b'exec(code)',
+                 'tests/test_replay.py': (header + 'runpy.run_path(ROOT / "work/check.py")').encode()}
+        self.assertIn('test_replay', self.selection(blobs, blobs, ['src/independent.py'])['selected'])
+
+    def test_rooted_targets_recheck_symlink_modes_and_union_old_unbounded_reader(self):
+        header = b'from pathlib import Path\nROOT=Path(__file__).parents[1]\n'
+        for operation, target in ((b'(ROOT / "data/input.json").read_text()', 'data/input.json'),
+                                  (b'(ROOT / "data/input.json").read_text()', 'data'),
+                                  (b'(ROOT / "data").glob("*.json")', 'data/nested/link'),
+                                  (b'import runpy\nrunpy.run_path(ROOT / "work/check.py")', 'work/check.py')):
+            with self.subTest(operation=operation, target=target):
+                blobs = {'tests/test_reader.py': header + operation, 'work/check.py': b'pass'}
+                paths = {p: ['100644', 'blob', '0' * 40] for p in blobs}
+                for mode in ('120000', '160000'):
+                    paths[target] = [mode, 'blob', '1' * 40]
+                    graph = deps.graph(blobs, paths)
+                    self.assertIn('tests/test_reader.py', graph[1] | graph[2])
+                paths[target] = ['100644', 'blob', '2' * 40]
+                graph = deps.graph(blobs, paths)
+                self.assertNotIn('tests/test_reader.py', graph[1] | graph[2])
+        old = {'tests/test_reader.py': b'open(path)'}
+        new = {'tests/test_reader.py': header + b'(ROOT / "data/input.json").read_text()'}
+        self.assertIn('test_reader', self.selection(old, new, ['schemas/new.json'], ['schemas/new.json'])['selected'])
+
+    def test_rooted_consumers_remain_selected_when_actual_input_breaks(self):
+        with tempfile.TemporaryDirectory() as directory:
+            repo = Path(directory)
+            def git(*args):
+                return subprocess.check_output(['git', '-C', str(repo), *args], stderr=subprocess.DEVNULL).decode().strip()
+            (repo / 'tests').mkdir()
+            (repo / 'data').mkdir()
+            (repo / 'work').mkdir()
+            (repo / 'data/input.json').write_text('good')
+            (repo / 'work/check.py').write_text('VALUE=1\n')
+            header = 'from pathlib import Path\nROOT=Path(__file__).resolve().parents[1]\n'
+            (repo / 'tests/test_reader.py').write_text(header +
+                'assert (ROOT / "data/input.json").read_text() == "good"\n')
+            (repo / 'tests/test_replay.py').write_text(header +
+                'import runpy\nassert runpy.run_path(ROOT / "work/check.py")["VALUE"] == 1\n')
+            git('init', '-q'); git('config', 'user.name', 'Fixture'); git('config', 'user.email', 'fixture@example.invalid')
+            git('add', '.'); git('commit', '-qm', 'base'); base = git('rev-parse', 'HEAD')
+            for name in ('reader', 'replay'):
+                result = subprocess.run([sys.executable, 'tests/test_' + name + '.py'], cwd=repo, capture_output=True)
+                self.assertEqual(0, result.returncode, result.stderr)
+            (repo / 'data/input.json').write_text('broken')
+            (repo / 'work/check.py').write_text('VALUE=2\n')
+            git('add', '.'); git('commit', '-qm', 'changed'); head = git('rev-parse', 'HEAD')
+            plan = deps.select(repo, base, head, ['data/input.json', 'work/check.py'])[0]
+            self.assertEqual({'test_reader', 'test_replay'}, set(plan['selected']))
+            self.assertFalse(deps.select(repo, base, head, ['schemas/new.json'])[0]['selected'])
+            for name in ('reader', 'replay'):
+                result = subprocess.run([sys.executable, 'tests/test_' + name + '.py'], cwd=repo, capture_output=True)
+                self.assertNotEqual(0, result.returncode)
+                self.assertIn(b'AssertionError', result.stderr)
+
+    def test_literal_length_metadata_does_not_consume_same_named_files(self):
+        paths = ['skills/one/SKILL.md', 'docs/SKILL.md']
+        blobs = {'src/archive.py': b'def prefix(name): return name[:-len("SKILL.md")]\n',
+                 'tests/test_archive.py': b'from archive import prefix\n'}
+        for path in paths:
+            with self.subTest(path=path):
+                self.assertFalse(self.selection(blobs, blobs, [path], paths)['selected'])
+        # A real reader remains selected even when the same spelling is also metadata.
+        blobs['src/archive.py'] += b'def read(root): return (root / "SKILL.md").read_text()\n'
+        self.assertIn('test_archive', self.selection(blobs, blobs, paths, paths)['selected'])
+
+    def test_shadowed_length_calls_retain_document_dependencies(self):
+        for raw in (
+            'def check(len): return len("docs/input.md")',
+            'def check(*len): return len("docs/input.md")',
+            'def check(**len): return len("docs/input.md")',
+            'def len(path): return reader(path)\nlen("docs/input.md")',
+            'class len:\n def __init__(self, path): reader(path)\nlen("docs/input.md")',
+            'try: pass\nexcept Exception as len: len("docs/input.md")',
+            'match value:\n case len: len("docs/input.md")',
+            'match value:\n case [*len]: len("docs/input.md")',
+            'match value:\n case {**len}: len("docs/input.md")',
+            'from custom import len\nlen("docs/input.md")',
+            'from custom import *\nlen("docs/input.md")',
+            'globals()["len"] = reader\nlen("docs/input.md")',
+            'from builtins import globals as namespace\nnamespace()["len"] = reader\nlen("docs/input.md")',
+            'import builtins\nsetattr(builtins, "len", reader)\nlen("docs/input.md")',
+            'import builtins\nbuiltins.len = reader\nlen("docs/input.md")',
+            'exec(code)\nlen("docs/input.md")',
+            'def check():\n from custom import len\n return len("docs/input.md")',
+            'def mutate():\n global len\n len=reader\nlen("docs/input.md")',
+            'def outer(len):\n def inner(): return len("docs/input.md")\n return inner()',
+            'len("docs/input.md", unexpected=True)',
+        ):
+            with self.subTest(source=raw):
+                blobs = {'tests/test_reader.py': raw.encode()}
+                self.assertIn('test_reader', self.selection(blobs, blobs, ['docs/input.md'], ['docs/input.md'])['selected'])
+
+    def test_call_mediated_builtin_mutations_retain_document_consumers(self):
+        for mutation in (
+            'patch("builtins.len", getsize)',
+            'mock.patch("builtins.len", getsize)',
+            'renamed("builtins.len", getsize)',
+            'patch.object(builtins, "len", getsize)',
+            'mock.patch.object(builtins, "len", getsize)',
+            'renamed.object(builtins, "len", getsize)',
+            'patch.multiple("builtins", len=getsize)',
+            'mock.patch.multiple("builtins", len=getsize)',
+            'renamed.multiple("builtins", len=getsize)',
+            'patch.multiple(builtins, len=getsize)',
+            'patch.multiple(dynamic_target, len=getsize)',
+            'patch.multiple(dynamic_target, **attrs)',
+            'patch.multiple("builtins", **attrs)',
+            'patch.multiple(target="builtins", len=getsize)',
+            'patch.multiple(target=dynamic_target, **attrs)',
+            'patch.dict("builtins.__dict__", len=getsize)',
+            'mock.patch.dict("builtins.__dict__", {"len": getsize})',
+            'renamed.dict(dynamic_target, attrs)',
+            'monkeypatch.setattr("builtins.len", getsize)',
+            'monkeypatch.setattr(builtins, "len", getsize)',
+            'monkeypatch.setattr(unknown_target, "len", getsize)',
+            'builtins.__setattr__("len", getsize)',
+            'patch(target="builtins.len", new=getsize)',
+            'patch.object(target=builtins, attribute="len", new=getsize)',
+            'monkeypatch.setattr(target=builtins, name="len", value=getsize)',
+            'patch(dynamic_target, getsize)',
+            'patch.object(builtins, dynamic_name, getsize)',
+            'monkeypatch.setattr(builtins, dynamic_name, getsize)',
+            'builtins.__setattr__(dynamic_name, getsize)',
+        ):
+            with self.subTest(mutation=mutation):
+                operation = ('with ' + mutation + ':\n value = len("docs/input.md")\n'
+                             if mutation.startswith(('patch(', 'mock.patch(', 'renamed('))
+                             or '.multiple(' in mutation or '.dict(' in mutation else
+                             mutation + '\nvalue = len("docs/input.md")\n')
+                raw = ('import builtins\nfrom unittest import mock\n'
+                       'from unittest.mock import patch, patch as renamed\n'
+                       'from os.path import getsize\n' + operation)
+                blobs = {'tests/test_reader.py': raw.encode()}
+                self.assertIn('test_reader', self.selection(
+                    blobs, blobs, ['docs/input.md'], ['docs/input.md'])['selected'])
+
+    def test_patched_length_retains_actual_document_failure(self):
+        for mutation in ('patch("builtins.len", getsize)', 'patch.object(builtins, "len", getsize)',
+                         'patch.multiple("builtins", len=getsize)',
+                         'patch.dict("builtins.__dict__", len=getsize)'):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
+                repo = Path(directory)
+                def git(*args):
+                    return subprocess.check_output(['git', '-C', str(repo), *args], stderr=subprocess.DEVNULL).decode().strip()
+                (repo / 'tests').mkdir()
+                (repo / 'docs').mkdir()
+                (repo / 'tests/test_reader.py').write_text(
+                    'import builtins\nfrom unittest.mock import patch\nfrom os.path import getsize\n'
+                    'def test_document():\n with ' + mutation + ':\n'
+                    '  size = len("docs/input.md")\n assert size == 4\n')
+                git('init', '-q')
+                commits = []
+                for value in ('good', 'bad'):
+                    (repo / 'docs/input.md').write_text(value)
+                    result = subprocess.run([sys.executable, '-c',
+                        'import runpy; runpy.run_path("tests/test_reader.py")["test_document"]()'],
+                        cwd=repo, capture_output=True, text=True)
+                    self.assertEqual(0 if value == 'good' else 1, result.returncode, result.stderr)
+                    self.assertEqual(value == 'bad', 'AssertionError' in result.stderr)
+                    git('add', 'tests/test_reader.py', 'docs/input.md')
+                    git('-c', 'user.name=CI fixture', '-c', 'user.email=ci@example.invalid', 'commit', '-qm', value)
+                    commits.append(git('rev-parse', 'HEAD'))
+                selected = deps.select(repo, *commits, ['docs/input.md'])[0]
+                self.assertEqual({'test_reader'}, set(selected['selected']))
+                self.assertFalse(selected['errors'])
+
+    def test_unrelated_patch_targets_preserve_literal_length_precision(self):
+        for mutation in (
+            'patch("app.value", replacement)',
+            'patch.object(app, "value", replacement)',
+            'patch.multiple("app.config", value=replacement)',
+            'patch.multiple("app.config", len=replacement)',
+            'patch.multiple("builtins", value=replacement)',
+            'patch.multiple(dynamic_target, value=replacement)',
+            'patch.dict("app.config", value=replacement)',
+            'monkeypatch.setattr(app, "value", replacement)',
+            'monkeypatch.setattr("app.value", replacement)',
+            'app.__setattr__("value", replacement)',
+        ):
+            with self.subTest(mutation=mutation):
+                blobs = {'tests/test_metadata.py': (mutation + '\nvalue = len("SKILL.md")').encode()}
+                self.assertFalse(self.selection(
+                    blobs, blobs, ['skills/SKILL.md'], ['skills/SKILL.md'])['selected'])
+
+    def test_selection_explains_fallback_edges_without_changing_paths(self):
+        blobs = {'src/leaf.py': b'VALUE=1', 'src/dynamic.py': b'exec(code)',
+                 'tests/test_dynamic.py': b'import dynamic', 'tests/test_direct.py': b'import leaf',
+                 'tests/test_resource.py': b'open(path)'}
+        result = self.selection(blobs, blobs, ['src/leaf.py'])
+        self.assertEqual(['syntax-reference'], result['selected_edge_kinds']['test_direct'])
+        self.assertEqual(['opaque-execution', 'syntax-reference'], result['selected_edge_kinds']['test_dynamic'])
+        self.assertEqual(3, result['scope_summary']['available_test_modules'])
+        self.assertEqual(2, result['scope_summary']['dependency_selected_test_modules'])
+        self.assertEqual(1, result['scope_summary']['opaque_execution_paths'])
+        resource = self.selection(blobs, blobs, ['fixtures/data.json'], ['fixtures/data.json'])
+        self.assertEqual(['unbounded-resource'], resource['selected_edge_kinds']['test_resource'])
+        self.assertEqual(1, resource['scope_summary']['unbounded_resource_paths'])
+
     def test_cached_consumer_follows_inventory_lifecycle(self):
         """Cached consumer: discover inputs, expand inventory, remove inputs, restore."""
         consumer = 'tests/test_contract.py'
