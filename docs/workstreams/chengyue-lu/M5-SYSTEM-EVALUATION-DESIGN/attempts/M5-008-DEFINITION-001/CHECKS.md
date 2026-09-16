@@ -1,12 +1,12 @@
 # Definition check outputs
 
 These are human-reviewable documentation records with no runtime or test-data consumer.
-Original record bytes remain in commit `fb9242bd0d1ba3b899399fdef9c43a6433b8c50b`; the text below
-preserves their content, with line endings normalized for Markdown display.
+Original record bytes remain in commit `fb9242bd0d1ba3b899399fdef9c43a6433b8c50b`; each hash below binds the
+committed Git blob, and its text is reproduced in a fenced block.
 
 ## Candidate document hashes
 
-Original record: `candidate-files.json`; SHA-256 `b1f4588165361baacdedfbf2c211b0827a05cf63444d7bbc7724db1af72714ab`.
+Original record: `candidate-files.json`; SHA-256 `5903926e94247ebf3e6a0ed453626969042a2c30caec0906cbe2c166509de424`.
 
 ```json
 {
@@ -50,7 +50,7 @@ Original record: `candidate-files.json`; SHA-256 `b1f4588165361baacdedfbf2c211b0
 
 ## Successful documentation check
 
-Original record: `documentation-check.log`; SHA-256 `2dfa81c38b589f2dd7ad57dfbfa91f5faccaff8bbdc90bcec8a032788e421fa1`.
+Original record: `documentation-check.log`; SHA-256 `60cb52842d992255373904851db53be3043cf15c02204280bd04017027a40988`.
 
 ```text
 test_adr_numbers_are_unique (tests.test_documentation.DocumentationTests.test_adr_numbers_are_unique) ... ok
@@ -72,7 +72,7 @@ OK
 
 ## Initial environment failure
 
-Original record: `initial-documentation-check.log`; SHA-256 `083139128e5c9b5afb593fc916577d8f823b336a9ac8d0557a20dd83ac9bb50e`.
+Original record: `initial-documentation-check.log`; SHA-256 `0ebbf109e2ab8c799625a41bb0608b4ad22fa9856b6b791d4926f0cf59b86812`.
 
 ```text
 Portable-path redaction: local worktree prefix replaced by <worktree>.
@@ -105,7 +105,7 @@ FAILED (errors=1)
 
 ## Task governance audit
 
-Original record: `task-definition-check.json`; SHA-256 `d7d20d44814ca8626add0ad881076442079d00f0ca56917ee8a2a43f6baf2016`.
+Original record: `task-definition-check.json`; SHA-256 `181c079dff025fadfcfc719bcea86eecb7256975d0f754d6afcc98eb3cc88ed0`.
 
 ```json
 {
