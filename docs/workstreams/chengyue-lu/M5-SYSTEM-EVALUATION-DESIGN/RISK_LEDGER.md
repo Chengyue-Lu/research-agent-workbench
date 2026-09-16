@@ -48,3 +48,15 @@ and [WORKLOG](WORKLOG.md). Test fixtures are synthetic structural evidence, not 
 ## M5-007 进入时风险更新（2026-09-16）
 
 上文保留原设计及 M5-006 implementation 阶段状态。本次基于 PR71、PR75、PR81/82：Protocol、baseline 与 Skill closeout 已接受，Gate B 已 SATISFIED；M6 收口合入后 M5-007 READY。剩余 Harness 风险是 preflight 重算与实际执行混同、两种 transport 被强制同形、overlap/比较等级自报、失败选择性丢弃和盲审信息泄漏。H1–H5 的逐项负例与停止条件见 [进入计划](M5-007_ENTRY_PLAN.md)。生产 admission、真实 case/live 与科研净收益保持独立未满足条件。
+
+## M5-008 live pilot 定义（2026-09-17）
+
+| Risk ID | 风险 | 验收控制 | 状态 |
+|---|---|---|---|
+| M5-PILOT-LIVE-001 | API smoke、synthetic 或部分 transport 被当作完整 live Harness 验证 | 完成冻结的四臂 run set，至少一个完整 block；真实 Provider 与声明的 Tool/procedure 调用、use-boundary facts、独立 replay、盲审/metric/analysis joins 逐项闭合 | 待 M5-008 执行验证 |
+| M5-PILOT-AUTH-001 | 借 pilot 绕过正式 Runtime admission、执行许可或 Provider conformance | M6-004、A4 全链 Gate 和具名 pilot 账户/预算/数据/Tool 授权均为 hard/external prerequisites；缺失时零调用 | M5-008 BLOCKED |
+| M5-PILOT-CONTAMINATION-001 | pilot 输出或调参污染后续 held-out，或 pilot 被升级为确认性数据 | 独立冻结 pilot dossier；只执行 pilot slots；分析输入拒收 pilot；后续 freeze 审计 pilot 暴露，受影响案例不再作为未观察 held-out | 待运行与独立审计 |
+| M5-PILOT-FAILURE-001 | 只保存成功臂、漏计失败费用，或重复运行到满意 | 预注册 retry/complete-block stopping；保留全部失败与未完成 slots；安全/预算停止不能获得 Gate PASS；负例注入单列且须在授权边界内 | 待 live evidence |
+| M5-PILOT-TRANSFER-001 | 旧版本 pilot PASS 对新 Harness/Provider/Tool/Skill 自动生效 | 具名接受 exact source/config/run set；M5-004 执行前复核适用性，影响执行/证据链的变更需重新验证 | M5-004 保持 BLOCKED |
+
+本次仅提交 Task 定义；上表控制是未来验收要求，不是已观测结果。详见 [Live Pilot Gate](M5-008_LIVE_PILOT_GATE.md)。

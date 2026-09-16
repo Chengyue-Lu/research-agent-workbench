@@ -49,7 +49,7 @@ family 为什么存在、由什么 authority boundary 约束、何时允许启�
 | Phase A | Method/Core 与 Authority Rule Eligibility；不产生执行或 Human Decision | M8 | 已收口 |
 | Phase B | Capability demand/supply、Skill evolution、Protocol；不授予 Runtime authority | M9 | 已收口 |
 | Phase C | Research State、Failure、Method Trace 与 bounded verification | M10，复用历史 `M3-009`；M4 为 provenance support | bounded machine DAG 已实现；Human/R2 semantic closeout 仍独立 pending |
-| Phase D | Evaluation record、system-level baseline/net benefit 与 pruning；不自动 promotion | M5；baseline transport 复用 M6；部分 M7 experiments 由 TASKS 决定是否恢复 | ADR-0020 Gate A、M5-006 Protocol 与 M11-007 Skill replay / Gate B 已闭合；M6-008 已 DONE，M5-007 READY；真实 case/provenance/live execution/Human review 保持独立 Gate |
+| Phase D | Evaluation record、system-level baseline/net benefit 与 pruning；不自动 promotion | M5；baseline transport 复用 M6；部分 M7 experiments 由 TASKS 决定是否恢复 | ADR-0020 Gate A、M5-006 Protocol 与 M11-007 Skill replay / Gate B 已闭合；M6-008 已 DONE，M5-007 READY；M5-008 BLOCKED，作为 M5-004 前的四臂 live 工程验收；真实 case/provenance/live execution/Human review 保持独立 Gate |
 | Phase E | Strategy candidate 与 governed evolution；不得自动修改 Core | 既有 M2/M7；M13 仅 **RESERVED** | Phase C/D evidence 证明旧 group 不足后另行接受 |
 | Phase F / Topic 4 | Agent/Model/Provider/Runtime 消费 frozen contract；不拥有 Method/Claim/Gate/fallback authority | M11 Core 与 optional extension；M6 live conformance | M11 Core 与 optional Skill extension 已 bounded 实现；live conformance 仍依独立 Gate |
 | Topic 5 residual | Handoff、context rollover、safe pause/resume、recovery/continuation | M12 仅 **RESERVED** | Phase C closeout + 独立 Topic 5 R2 review/task-definition |
@@ -331,8 +331,15 @@ plan/run-record 层统一调度、匿名化、metric evidence、Human Review、r
 promotion/pruning/Human judgement。
 
 M4-001～004 的 bounded provenance chain 已实现并合入，M5-003 计划契约与 M11-006 Skill mapping 也已具备。
+M5-008 [Live Evaluation Pilot Gate](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_LIVE_PILOT_GATE.md)
+补足 synthetic Harness 与正式评价之间的 live 工程验收：在完整 M5-007、M6-004、真实 A4 admission 和
+pilot 专项授权闭合后，使用独立获批 pilot dossier 执行 A1/A2→M6、A3→M11 Core、A4→M11 Skill 的真实
+Provider/Tool 路径，并接受 actual facts、失败/retry、cold replay、盲审和分析输入闭包。当前 BLOCKED；
+pilot 不等待 M5-001/002，但不关闭其正式案例 Gate。pilot observations 不产生 confirmatory net-benefit
+conclusion，也不进入 primary confirmatory run set；被观察或调参影响的案例不再作为未观察 held-out。
+
 M5-004 的正式 system-level execution 仍须等待两个 Human-approved dossier 及其真实案例 provenance、
-M5-006 Protocol、M5-007 Harness（含 M6-008 baseline transport 与 Skill closeout Gate）、
+M5-006 Protocol、M5-007 Harness（含 M6-008 baseline transport 与 Skill closeout Gate）、M5-008 的具名 live pilot 验收、
 M6-004 live Provider/session conformance，以及 `A4-RUNTIME-ADMISSION-GATE`。A4 保持 M5-003 v0.1 的
 `mode-candidate-skill` identity，其正式含义是 candidate-origin treatment + admitted Runtime execution；M5-006
 定义独立、版本化的 execution-qualification overlay，不回写 frozen Manifest。该 Gate 必须 exact-pin

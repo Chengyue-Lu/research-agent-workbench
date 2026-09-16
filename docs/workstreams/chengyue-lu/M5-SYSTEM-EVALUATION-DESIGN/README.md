@@ -4,9 +4,9 @@
 
 风险：R2
 
-M5-006 已由 PR71 接受；M6-008 实现已由 PR75 合入，M11-007 / Gate B 已按 PR81/82 收口。当前 `feature` / R2 收口提案将 M6-008 置为 DONE、M5-007 置为 READY；合入后从 [M5-007 进入计划](M5-007_ENTRY_PLAN.md) 启动 synthetic Harness。
+M5-006 已由 PR71 接受；M6-008 实现已由 PR75 合入，M11-007 / Gate B 已按 PR81/82 收口。PR84 已接受 M6-008 DONE 与 M5-007 READY；按 [M5-007 进入计划](M5-007_ENTRY_PLAN.md) 推进 synthetic Harness。本次 task-definition 新增 M5-008 BLOCKED，作为 M5-004 之前的独立 live 工程验收关口。
 
-实施导航：[M5-007 进入计划](M5-007_ENTRY_PLAN.md)、[M5-006 历史进入计划](ENTRY_PLAN.md)、[Protocol / validator contract](../../../implementation/SYSTEM_EVALUATION_PROTOCOL.md)、
+实施导航：[M5-007 进入计划](M5-007_ENTRY_PLAN.md)、[M5-008 Live Pilot Gate](M5-008_LIVE_PILOT_GATE.md)、[M5-006 历史进入计划](ENTRY_PLAN.md)、[Protocol / validator contract](../../../implementation/SYSTEM_EVALUATION_PROTOCOL.md)、
 [工作记录与验证](WORKLOG.md)、[Risk Ledger](RISK_LEDGER.md)。
 
 ## 1. Primary estimand
@@ -281,6 +281,11 @@ directory、把 candidate binding 静默换成 accepted binding、在 confirmato
 
 M5-004 只在所有真实执行前置闭合后运行：
 
+其中 [M5-008 Live Pilot Gate](M5-008_LIVE_PILOT_GATE.md) 先以独立获批的 pilot dossier 验证真实 API、
+Provider/Tool 和四臂 transport；它同样受 live conformance、A4 admission 与专项授权约束。M5-007 的
+synthetic Harness 验收、M5-008 的 live 工程验收、M5-004 的正式研究评价分别接受，不相互替代。
+pilot runs 不进入主确认性分析；pilot 观察或调参影响的 case/oracle 不能作为未观察 held-out。
+
 ```mermaid
 flowchart LR
     M5003["M5-003 DONE"] --> M5006["M5-006 DONE"]
@@ -306,16 +311,21 @@ flowchart LR
     M5003 --> M5004
     M5006 --> M5004
     M5007 --> M5004
+    M5007 --> M5008["M5-008 BLOCKED<br/>four-arm live pilot"]
+    A4G --> M5008
+    PG["M5-LIVE-PILOT-AUTHORIZATION-GATE<br/>external / unsatisfied"] --> M5008
+    M5008 --> M5004
     M4001 --> M5004
     M4002 --> M5004
     M4003 --> M5004
     M4004 --> M5004
     M1106 --> M5004
     M6004["M6-004 live Provider/session"] --> M5004
+    M6004 --> M5008
     M5004 --> M5005["M5-005 disposition"]
 ```
 
-当前没有另一个已接受、具名且等价的 live Provider/session Gate，因此 M5-004 明确 hard-depend M6-004。
+当前没有另一个已接受、具名且等价的 live Provider/session Gate，因此 M5-008 与 M5-004 均明确 hard-depend M6-004。
 synthetic Driver 不能成为 system-level formal evidence。
 
 ### `A4-RUNTIME-ADMISSION-GATE`
