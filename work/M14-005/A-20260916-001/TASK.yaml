@@ -1,0 +1,37 @@
+task_id: M14-005
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+agent_profile: bounded-rebase-verification
+required_skills: []
+delegation: false
+baseline: b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22
+user_request: rebase到最新develop，并确认下一步计划。
+goal: Rebase PR 80 onto current develop, retain accepted M11 and CI planner changes,
+  verify exact head, and confirm gated next steps.
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/STATUS.md
+- docs/ROADMAP.md
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- .github/**
+- tests/**
+- examples/**
+- registry/**
+- work/M14-005/**
+- GitHub PR 80, Issue 57 and read-only CI/protection APIs
+write_scope:
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/SOURCE_CI.md
+- work/M14-005/A-20260916-001/**
+- M14 feature branch rebase; PR 80 body and final-head evidence
+stop_conditions:
+- PR 80 rebased and verified; no merge without current candidate approval and authorization.
+- Preserve source-CI implementation, Task definition/dependencies, prior archives
+  and primary develop.
+- Do not start release-only implementation before real protected source-CI acceptance
+  after PR integration.
+- No release ref/tag, topology cutover, remote policy mutation or new release authorization.

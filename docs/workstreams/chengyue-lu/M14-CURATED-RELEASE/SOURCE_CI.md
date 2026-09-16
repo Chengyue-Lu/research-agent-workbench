@@ -2,7 +2,7 @@
 
 - Owner: 路诚钺 (`Chengyue-Lu`); R2; Task M14-005 is READY in this candidate under the
   [named v0.1.0 preparation decision and fresh protection readback](FIRST_RELEASE_DECISION.md).
-- Integration baseline: `7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba`.
+- Integration baseline: `b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22` (2026-09-16 rebase).
 - M0-007 was accepted in [PR #78](https://github.com/Chengyue-Lu/research-agent-workbench/pull/78).
   [PR #79](https://github.com/Chengyue-Lu/research-agent-workbench/pull/79) accepted the separate hard/review rulesets.
 - Scope: the develop-side source-CI producer and live observer. Release-only checks, their policy include,
@@ -89,6 +89,7 @@ Engineering evidence: [Attempt index](../../../../work/M14-005/A-20260915-003/IN
 initial archive preflight are retained; final-head hosted CI and review receipts belong to the implementation PR.
 The [review correction Attempt](../../../../work/M14-005/A-20260915-004/INDEX.yaml) retains the named READY
 decision, fresh protection readback and receipt-semantics correction; prior frozen records retain their original scope.
+The [rebase Attempt](../../../../work/M14-005/A-20260916-001/INDEX.yaml) retains upstream Gate B/CI planner/M6 integration, current-base verification and the gated next-step plan.
 
 Next: review and integrate this READY candidate, verify that real protected push, then prepare release-only
 checks and their exact policy include. The named first-release decision authorizes implementation/cutover
