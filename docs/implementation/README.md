@@ -31,7 +31,7 @@
 - [Portable Runtime resources (M14-003)](RUNTIME_RESOURCES.md)
 - [Evaluation Manifest and non-executing plan contract (M5-003)](EVALUATION_MANIFEST_CONTRACT.md)
 - [System-Level Evaluation Protocol (M5-006)](SYSTEM_EVALUATION_PROTOCOL.md)
-- [Baseline A1/A2 transport candidate (M6-008)](../workstreams/huangyi/M6-BASELINE-EXECUTION/README.md)
+- [Baseline A1/A2 transport (M6-008)](../workstreams/huangyi/M6-BASELINE-EXECUTION/README.md)
 - [File-authoritative Trace Core](TRACE_CORE.md)
 - [Execution Trace Adapter](EXECUTION_TRACE_ADAPTER.md)
 - [Provider Adapter plan and seam](PROVIDER_ADAPTER_PLAN.md)
@@ -43,8 +43,9 @@ localization 与 synthetic Run reconstruction，不因此取得 Claim/Human acce
 Evaluation 的 active implementation contracts 包括 M5-003 Manifest/check/non-executing plan，以及
 M5-006 System-Level Evaluation Protocol、资格/overlap/overlay/pairwise 校验器。
 [ADR-0020](../decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) 已接受 Phase D dual transport
-与 system-level estimand；M6-008 baseline envelope/closeout、Skill closeout replay Gate、M5-007 Harness
-和真实案例/live/admission 仍由 [TASKS](../TASKS.md) 与 [ROADMAP](../ROADMAP.md) 跟踪。
+与 system-level estimand；M6-008 baseline envelope/closeout 已由 PR75 接受，M11-007 Skill closeout
+与 Gate B 已收口。后继 M5-007 Harness 和真实案例/live/admission 由 [TASKS](../TASKS.md) 与
+[ROADMAP](../ROADMAP.md) 跟踪，施工入口见 [Harness 进入计划](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md)。
 
 ## Evaluation and intake protocols
 
