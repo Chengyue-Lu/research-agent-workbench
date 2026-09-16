@@ -1,6 +1,6 @@
 {
   "policy_id": "rwb-ci-impact",
-  "version": 1,
+  "version": 2,
   "surfaces": {
     "documentation": {
       "paths": [
@@ -183,5 +183,148 @@
       "test_provider_adapters.GeminiAdapterTests.test_parallel_response_is_contract_violation_when_not_claimed"
     ]
   },
-  "consumer_fingerprint": "473465db7bbf7a3e3c5ea154b0fda754722ed09949dc40604ab4c24d501ac730"
+  "consumer_fingerprint": "910b012cb2979750ba1d5e95015c0113e7eb281c737065ac0e32b9a76d29eca5",
+  "consumer_contracts": [
+    {
+      "id": "cli-git-head-observation",
+      "owner": "Chengyue-Lu",
+      "consumer": "src/research_workbench/cli.py",
+      "pins": {
+        "src/research_workbench/cli.py": "3be2daa342fbddac3e1f7b535ef9dc5ab71e15dd138ad842b1ef3dc3e4a1798c",
+        "tests/test_m3_context_observability.py": "b8647fe2d840e0028b442081207c394b3a5a04812f80ab604bd51cf28bc6e2fd"
+      },
+      "entrypoints": [
+        "_context_resume_check",
+        "_context_checkpoint"
+      ],
+      "inputs": [
+        "Explicit args.root selects the project; git -C root rev-parse HEAD reads Git metadata.",
+        "The process inherits executable lookup and Git environment."
+      ],
+      "outputs": [
+        "Observed Git HEAD is compared with or stored in a checkpoint; return code becomes an error/risk."
+      ],
+      "invariants": [
+        "The two observed subprocess calls do not request Python or a candidate script.",
+        "Checkpoint parsing, digest, reference closure and resume semantics remain required."
+      ],
+      "unresolved": [
+        "Prove executable lookup/environment boundaries and each test invocation root.",
+        "Retain all other CLI imports, reads, commands and alternate consumer paths."
+      ],
+      "positive_tests": [
+        "test_m3_context_observability.ContextGovernanceTests.test_checkpoint_and_resume_are_file_recoverable"
+      ],
+      "negative_tests": [
+        "test_m3_context_observability.ContextGovernanceTests.test_explicit_git_capture_fails_closed_outside_repository",
+        "test_m3_context_observability.ContextGovernanceTests.test_resume_check_rejects_git_head_conflict"
+      ],
+      "execution_authority": false
+    },
+    {
+      "id": "validation-document-instances",
+      "owner": "Chengyue-Lu",
+      "consumer": "src/research_workbench/validation/documents.py",
+      "pins": {
+        "src/research_workbench/validation/documents.py": "16cd9bb7d61820a9582e614daeecb8c2bee969534bb1b8a67795bb9a305361df",
+        "tests/test_validation.py": "cbac9f43a00235fa3b8445a7e447d2eeee3aeadb119d39bfcade3e35d6b6cc3b"
+      },
+      "entrypoints": [
+        "load_and_validate"
+      ],
+      "inputs": [
+        "Caller-supplied iterable of paths; each document is read as bytes.",
+        "validate_documents still dispatches all applicable semantic validators and schema/catalog work."
+      ],
+      "outputs": [
+        "LoadedDocuments with byte digests and ordered ValidationIssues, including parse failures."
+      ],
+      "invariants": [
+        "The hash and parsed mapping must describe the same read bytes.",
+        "Changing one input instance does not itself change the reader implementation."
+      ],
+      "unresolved": [
+        "Map each caller to exact input instances, indirect refs, inventories and fixture lifecycle.",
+        "Do not suppress cross-document closure, global catalogs or unbound caller paths."
+      ],
+      "positive_tests": [
+        "test_validation.ValidationTests.test_repository_examples_and_registries_have_no_errors"
+      ],
+      "negative_tests": [
+        "test_validation.ValidationTests.test_loaded_reference_cannot_skip_hash_check_if_path_disappears",
+        "test_validation.ValidationTests.test_loaded_reference_hash_uses_the_same_bytes_as_its_mapping"
+      ],
+      "execution_authority": false
+    },
+    {
+      "id": "validation-schema-catalog",
+      "owner": "Chengyue-Lu",
+      "consumer": "src/research_workbench/validation/schemas.py",
+      "pins": {
+        "src/research_workbench/resources.py": "eb0c8900503453386c9a458a7e3f406294cbe749da2bbc2d4a62897d5995787e",
+        "src/research_workbench/validation/schemas.py": "6160357a985a8c20b42a0e08ba0760ad95984a732629e77cfe56ae89d560a099",
+        "tests/test_schemas.py": "d0fc0c73d4d2bbb05ee38e161e9f7ad40c7880f6ade46ff73828cfe35d834ecc"
+      },
+      "entrypoints": [
+        "SchemaCatalog.__init__",
+        "SchemaCatalog._load"
+      ],
+      "inputs": [
+        "Versioned schema directory glob *.schema.json, with every current member read.",
+        "Default root constructs RuntimeResources and its actual whole-manifest integrity validation."
+      ],
+      "outputs": [
+        "Fresh per-catalog mutable schema and reference registry; immutable self-check cache only."
+      ],
+      "invariants": [
+        "A cache hit does not suppress fresh reads, pinned integrity or changed/invalid schema checks."
+      ],
+      "unresolved": [
+        "Whole catalog and RuntimeResources inventory are actual dependencies; partition requires separate design.",
+        "Explicit roots, resource_reader, symlinks and environment need invocation-specific binding."
+      ],
+      "positive_tests": [
+        "test_schemas.SchemaReuseTests.test_catalog_roots_and_reads_remain_independent_after_a_cache_hit"
+      ],
+      "negative_tests": [
+        "test_schemas.SchemaReuseTests.test_schema_lifecycle_reuses_bytes_but_rechecks_changed_inputs_and_invalid_schemas"
+      ],
+      "execution_authority": false
+    },
+    {
+      "id": "validation-capability-root-scan",
+      "owner": "Chengyue-Lu",
+      "consumer": "src/research_workbench/validation/capability.py",
+      "pins": {
+        "src/research_workbench/validation/capability.py": "6819b2fe5fd5db6dc9e53ad09a1a89e920c9ef154b0f4527b83eeac3f8af192e",
+        "tests/test_capability_consumer.py": "74a936aec3034e883cbf71f0b14c851b3459c8ab680239fdb2e4c52c9d8d76c1"
+      },
+      "entrypoints": [
+        "load_validated_capability_snapshot"
+      ],
+      "inputs": [
+        "Externally supplied candidate path, document_roots and project root.",
+        "Each directory root is recursively scanned for document suffixes before load_and_validate."
+      ],
+      "outputs": [
+        "Validated read-only Snapshot and closure or a validation error."
+      ],
+      "invariants": [
+        "Candidate and document roots must remain inside the project.",
+        "External hash is checked against the bytes actually parsed."
+      ],
+      "unresolved": [
+        "Bind per-invocation root membership and added/deleted files; caller paths are not globally bounded.",
+        "Preserve repository closure and runtime-use qualification checks."
+      ],
+      "positive_tests": [
+        "test_capability_consumer.CapabilitySnapshotConsumerTests.test_structural_snapshot_loads_only_after_repository_validation"
+      ],
+      "negative_tests": [
+        "test_capability_consumer.CapabilitySnapshotConsumerTests.test_external_hash_rejects_same_identity_rewrite",
+        "test_capability_consumer.CapabilitySnapshotConsumerTests.test_external_hash_is_bound_to_the_bytes_parsed_by_validation"
+      ],
+      "execution_authority": false
+    }
+  ]
 }

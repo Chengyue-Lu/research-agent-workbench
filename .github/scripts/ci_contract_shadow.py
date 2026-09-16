@@ -15,6 +15,7 @@ import time
 
 import plan_ci as planner
 import ci_input_facts
+import ci_consumer_contracts
 
 def input_facts(path, versions):
     return ci_input_facts.describe(path, versions, selection_authority=planner.SELECTION_AUTHORITY,
@@ -105,6 +106,13 @@ def build_report(repo, plan):
     policy = json.loads(planner.read_at(repo, binding['base'], planner.POLICY),
                         object_pairs_hook=planner.unique_object)
     planner.validate_policy(policy)
+    candidate_policy = json.loads(planner.read_at(repo, binding['head'], planner.POLICY),
+                                  object_pairs_hook=planner.unique_object)
+    planner.validate_policy(candidate_policy)
+    contract_snapshots = {key: planner.dependencies.snapshot(repo, binding[key])[0] for key in ('base', 'head')}
+    consumer_contracts = ci_consumer_contracts.review(policy.get('consumer_contracts', []),
+        candidate_policy.get('consumer_contracts', []), contract_snapshots,
+        lambda label, path: planner.read_at(repo, binding[label], path))
     snapshots = [planner.dependencies.snapshot(repo, binding[key]) for key in ('merge_base', 'head')]
     inputs = []
     for change in plan['changes']:
@@ -146,13 +154,14 @@ def build_report(repo, plan):
                   'downstream': group['downstream']}
                  for name, group in sorted(policy['groups'].items())]
     report = {
-        'report_kind': 'ci-contract-shadow', 'schema_version': 2, 'execution_authority': False,
+        'report_kind': 'ci-contract-shadow', 'schema_version': 3, 'execution_authority': False,
         'binding': binding, 'observed_plan_id': plan['plan_id'], 'policy_sha256': plan['policy_sha256'],
         'engine_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         'producer_sources': {'.github/scripts/' + Path(path).name: hashlib.sha256(Path(path).read_bytes()).hexdigest()
-                             for path in (__file__, ci_input_facts.__file__, planner.__file__, planner.dependencies.__file__,
+                             for path in (__file__, ci_input_facts.__file__, ci_consumer_contracts.__file__, planner.__file__, planner.dependencies.__file__,
                                           Path(planner.__file__).with_name('check_pr_governance.py'))},
         'inputs': inputs, 'accepted_contracts': contracts, 'dependency_review': chains,
+        'consumer_contract_review': consumer_contracts,
         'smoke_review': smoke_review(plan, policy),
         'summary': {'input_roles': dict(sorted(Counter(row['role'] for row in inputs).items())),
             'available_test_modules': plan['selection'].get('scope_summary', {}).get('available_test_modules'),

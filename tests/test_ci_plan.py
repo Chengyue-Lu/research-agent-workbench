@@ -375,7 +375,7 @@ class PlannerTests(unittest.TestCase):
                 planner.changes(self.repo,self.base,self.base)
 
     def test_invalid_policy_groups_and_evidence_fail_closed(self):
-        mutations = [lambda p:p.update(version=2), lambda p:p.update(version=True), lambda p:p.update(groups={}),
+        mutations = [lambda p:p.update(version=3), lambda p:p.update(version=True), lambda p:p.update(groups={}),
             lambda p:p['groups']['documentation'].update(unknown=True),
             lambda p:p['groups']['documentation'].update(tests=[]),
             lambda p:p['groups']['documentation'].update(tests=['bad']),

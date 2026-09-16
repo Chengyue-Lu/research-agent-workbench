@@ -2,6 +2,9 @@
 
 TEST-PERF-002 / Issue #48 / Draft PR #85; owner Chengyue-Lu; R2; 2026-09-16.
 
+Subsequent P2 records and shadow schema 3: [consumer contracts](CONSUMER_CONTRACTS_V1.md).
+The schema 2 corpus below remains its original producer-bound evidence.
+
 ## This slice
 
 The user authorized a larger historical branch corpus and further CI replanning work.

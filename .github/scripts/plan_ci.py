@@ -19,12 +19,14 @@ import tokenize
 
 import yaml
 import ci_dependencies as dependencies
+import ci_consumer_contracts
 
 ROOT = Path(__file__).resolve().parents[2]
 POLICY = 'tests/ci_impact_policy.yaml'
 TRUST_FILES = ('.github/scripts/plan_ci.py', '.github/scripts/ci_checks.py', '.github/scripts/ci_dependencies.py',
                '.github/scripts/check_pr_governance.py', '.github/governance-policy.json',
-               'tests/run_unittest_suite.py', 'tests/coverage_policy.yaml', POLICY)
+               'tests/run_unittest_suite.py', 'tests/coverage_policy.yaml', POLICY,
+               '.github/scripts/ci_consumer_contracts.py')
 LEVELS = {'fast': 0, 'focused': 1, 'full': 2}
 BEHAVIOR = {'none': 0, 'focused': 1, 'full': 2}
 COVERAGE = {'impact', 'repository'}
@@ -187,9 +189,12 @@ def closure(policy, seeds):
 
 
 def validate_policy(policy):
-    require(set(policy) == {'policy_id', 'version', 'surfaces', 'groups', 'impact_evidence', 'consumer_fingerprint'}
+    require(isinstance(policy, dict), 'impact policy must be an object')
+    keys = {'policy_id', 'version', 'surfaces', 'groups', 'impact_evidence', 'consumer_fingerprint'}
+    require(set(policy) == (keys | {'consumer_contracts'} if policy.get('version') == 2 else keys)
             and policy['policy_id'] == 'rwb-ci-impact' and type(policy['version']) is int
-            and policy['version'] == 1, 'impact policy shape/version')
+            and policy['version'] in {1, 2}, 'impact policy shape/version')
+    ci_consumer_contracts.validate(policy.get('consumer_contracts', []))
     require(isinstance(policy['groups'], dict) and policy['groups'], 'empty groups')
     for group in policy['groups'].values():
         required = {'tests', 'downstream', 'coverage', 'package', 'repository'}

@@ -3,8 +3,10 @@ from __future__ import annotations
 
 import contextlib
 import copy
+import hashlib
 import io
 import json
+import os
 from pathlib import Path
 import runpy
 import subprocess
@@ -153,6 +155,55 @@ class ContractShadowGitTests(unittest.TestCase):
         self.assertEqual(before, planner.canonical(plan))
         unsigned = dict(report); signature = unsigned.pop('report_id')
         self.assertEqual(planner.digest(unsigned), signature)
+
+    def test_git_bound_consumer_record_cannot_refresh_its_own_failed_pin(self):
+        source = 'src/research_workbench/reader.py'
+        write(self.repo, 'src/research_workbench/__init__.py', '')
+        for name in ('test_ci_plan.py', 'test_ci_checks.py'):
+            write(self.repo, 'tests/' + name, (ROOT/'tests'/name).read_bytes())
+        write(self.repo, source, 'def read(path):\n return path.read_bytes()\n')
+        write(self.repo, 'tests/test_reader.py', 'import unittest\nfrom pathlib import Path\n'
+            'from research_workbench.reader import read\nROOT=Path(__file__).resolve().parents[1]\n'
+            'class Reader(unittest.TestCase):\n'
+            ' def test_ok(self): self.assertEqual(read(ROOT / "docs/input.md"), b"good")\n'
+            ' def test_bad(self): self.assertNotEqual(read(ROOT / "docs/input.md"), b"bad")\n')
+        def execute_reader():
+            return subprocess.run([sys.executable, '-m', 'unittest', 'discover', '-s', 'tests', '-p', 'test_reader.py'],
+                cwd=self.repo, env={**os.environ, 'PYTHONPATH':str(self.repo/'src')}, capture_output=True, text=True)
+        policy = json.loads((self.repo / planner.POLICY).read_bytes())
+        record = {'id':'reader-input','owner':'Chengyue-Lu','consumer':source,
+            'pins':{p:hashlib.sha256((self.repo/p).read_bytes()).hexdigest()
+                    for p in (source, 'tests/test_reader.py')},
+            'entrypoints':['read'],'inputs':['caller paths'],'outputs':['bytes'],
+            'invariants':['same input bytes'],'unresolved':['caller instances'],
+            'positive_tests':['test_reader.Reader.test_ok'],'negative_tests':['test_reader.Reader.test_bad'],
+            'execution_authority':False}
+        policy.update(version=2, consumer_contracts=[record])
+        self.base = self.commit(planner.POLICY, planner.canonical(policy))
+        good = execute_reader()
+        self.assertEqual(0, good.returncode, good.stderr)
+        old = copy.deepcopy(record)
+        write(self.repo, source, 'def read(path):\n return b"wrong"\n')
+        record['pins'][source] = hashlib.sha256((self.repo/source).read_bytes()).hexdigest()
+        self.commit(planner.POLICY, planner.canonical(policy))
+        failed = execute_reader()
+        self.assertNotEqual(0, failed.returncode)
+        self.assertIn('FAIL: test_ok', failed.stderr)
+        plan = self.plan()
+        self.assertFalse(plan['blocked_reasons'], plan['blocked_reasons'])
+        before = planner.canonical(plan)
+        report = shadow.build_report(self.repo, plan)
+        row = report['consumer_contract_review'][0]
+        self.assertEqual('candidate-revised', row['status'])
+        self.assertEqual(old, row['definition'])
+        self.assertTrue(row['checks']['base']['declared_pins_match'])
+        self.assertFalse(row['checks']['head']['declared_pins_match'])
+        self.assertIn(source + ': bytes changed', row['checks']['head']['drift'])
+        self.assertFalse(row['execution_authority'])
+        self.assertEqual(before, planner.canonical(plan))
+        # Uncommitted worktree bytes cannot repair the immutable candidate's drift.
+        write(self.repo, source, 'def read(path):\n return path.read_bytes()\n')
+        self.assertEqual(row, shadow.build_report(self.repo, plan)['consumer_contract_review'][0])
         self.assertTrue(all(c['source']=='accepted-base-impact-policy' for c in report['accepted_contracts']))
         with self.assertRaises((KeyError, ValueError)):
             planner.verify_plan(self.repo, report)
@@ -289,8 +340,8 @@ class ContractShadowGitTests(unittest.TestCase):
         package = report['smoke_review']['package_smoke']
         self.assertEqual(['documentation'], package['accepted_groups'])
         self.assertFalse(package['affected_consumers'][0]['contains_fallback_edge'])
-        self.assertEqual(5, len(report['producer_sources']))
-        self.assertEqual(2, report['schema_version'])
+        self.assertEqual(6, len(report['producer_sources']))
+        self.assertEqual(3, report['schema_version'])
 
 
 class ShadowWorkflowTests(unittest.TestCase):

@@ -5,7 +5,8 @@
 用户授权本轮深入盘点业务模块并重新规划 CI。本文定义拟采用的统一规范，尚未替换 accepted
 planner、witness、coverage policy、workflow、Task 状态或业务契约。
 
-用户已认可本轮方向；当前 P1 输入事实与路径证据实现见 [SHADOW_V2](SHADOW_V2.md)。它尚未激活减测规则。
+用户已认可本轮方向；P1 输入事实与路径证据见 [SHADOW_V2](SHADOW_V2.md)，
+当前 P2 消费记录与失效检查见 [CONSUMER_CONTRACTS_V1](CONSUMER_CONTRACTS_V1.md)。尚未激活减测规则。
 
 基线：`b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22`。配套材料：
 [模块与成本盘点](MODULE_AUDIT.md)、[迁移与验收](CI_REPLAN_ACCEPTANCE.md)、
