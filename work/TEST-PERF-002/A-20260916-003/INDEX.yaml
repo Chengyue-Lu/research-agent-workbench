@@ -67,7 +67,7 @@ check_refs:
   sha256: eb3b9afb9c3a0ce86a529cf2f6d6735a48057207c31175fd2f5ee8dfd71c878b
 - path: checks/ci-checks.log
   sha256: b18041a5e446d0003e268f124e73ccc09e71aeec19d149a6baf3b0df82e49311
-- path: checks/compare_scope.py
+- path: checks/compare_scope.py.txt
   sha256: a444af83162de6ff29e206b915c7f95acc86f7825484f58ad73bdcc56fb1a768
 - path: checks/dependencies-coverage.json
   sha256: a1728a2156581cfe10e89e48ed00da0e801f11f164186040696a59313ec3a68c

@@ -131,3 +131,12 @@ for cross-owner review. Quality thresholds, exclusions, product contracts and re
   needs further proof before exclusions can be widened.
 - This work changes PR #83 only. M6 source, branch, CI runs and acceptance remain owned
   by its workstream. Exact-target full bootstrap, quality floors and R2 review still apply.
+
+## Archived producer identity
+
+- A frozen producer snapshot is stored as non-executable source evidence. The PR83
+  correction retains its exact bytes/hash and relocates only the archive check reference;
+  the original INDEX and the coverage failure are retained in a separate correction Attempt.
+- Every final-plan coverage module must be checked after archive inclusion. A handpicked
+  list of critical modules cannot establish complete candidate coverage, and successful
+  test execution or a selection witness cannot substitute for a failed impact gate.

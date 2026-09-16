@@ -152,3 +152,25 @@ PR #83 analyzer fails eleven precision assertions in the same scenarios. Control
 cover directory additions, lexical mutation, escaped calls, unknown executables,
 symlink inventory changes and old unbounded readers. Evidence is retained in the
 [fixed-input Attempt](../../../../work/TEST-PERF-002/A-20260916-003/RESULTS.md).
+
+## Archive source identity correction
+
+Cross-owner review of `5d989f87abf0a84c57cd87587c526488d09a549a` found that the
+frozen comparison producer was packaged as `checks/compare_scope.py`. The final
+candidate correctly treated that added Python file as executable and required impact
+coverage for it. Run `35028593655` failed that gate because coverage had no such
+module, despite successful behavioral execution and the selection witness.
+
+The producer is retained as [source evidence](../../../../work/TEST-PERF-002/A-20260916-003/checks/compare_scope.py.txt).
+Its original bytes and SHA-256 `a444af83162de6ff29e206b915c7f95acc86f7825484f58ad73bdcc56fb1a768`
+are unchanged; only its filename and the matching archive check reference move. It
+records a scratch-directory producer, including that producer's original ROOT logic,
+and is not an installed or runnable archive tool. The original INDEX is retained in
+the [correction Attempt](../../../../work/TEST-PERF-002/A-20260916-004/RESULTS.md).
+
+Preflight now inspects every module required by the final candidate's plan, after
+archive files are included. The earlier check inspected only two named critical
+modules and therefore missed this new obligation. Production selection rules,
+coverage exclusions, floors and witness authority are unchanged; fresh final-head
+hosted checks remain required. Historical passing test receipts are not rebound to
+the corrected candidate.
