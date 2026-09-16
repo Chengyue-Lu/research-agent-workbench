@@ -1,6 +1,6 @@
 # Task-definition audit
 
-Executed with Python 3.14 from the repository root; output is in `task-definition-check.json`.
+Executed with Python 3.14 from the repository root; output is in `CHECKS.md` (task-definition-check.json).
 This is a bounded documentation/governance probe, not a new product test or live evidence.
 
 ```python
