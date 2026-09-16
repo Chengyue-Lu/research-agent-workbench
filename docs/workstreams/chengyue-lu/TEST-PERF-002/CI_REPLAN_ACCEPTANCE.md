@@ -8,7 +8,7 @@ TEST-PERF-002 / Issue #48；PROPOSAL；2026-09-16。
 
 | 阶段 | 交付 | 进入下一阶段的条件 |
 | --- | --- | --- |
-| P0 规范与盘点 | 统一当前目标、module inventory、真实 PR corpus、质量/精度/成本指标 | 具名 owner 评审输入类别、契约边界、例外和成本口径；本次交付在此阶段 |
+| P0 规范与盘点 | 统一当前目标、module inventory、真实 PR corpus、质量/精度/成本指标 | 具名 owner 评审输入类别、契约边界、例外和成本口径；用户已认可方向，P1 首版处于 Draft 审查 |
 | P1 可信契约与 shadow planner | 扩展现有 base policy，分类统一、typed dependency；旧计划继续控制 CI，新计划仅报告差异 | PR84 与每类正反例通过；所有减测差异有依据；shadow 中漏选为阻断，不自动接受缩小 |
 | P2 witness 与 Gate 接入 | 支持新契约的外部可信 witness、plan/receipt版本、aggregate义务校验 | 先完成可信执行根的独立 review/登记；candidate 不能自行变更根来验证自己；新旧版本不兼容时明确阻断 |
 | P3 业务模块逐族迁移 | 每个契约登记 source/input/test/helper，必要的小型 API-preserving extraction | Provider、M4、M6/M11、M14、数据/文档逐族通过精度和故障矩阵；未迁移边界保守兜底 |
@@ -105,5 +105,5 @@ selection 比较必须同一 Git事实；Python3.11 coverage与3.13plain的差�
 只因精度目标未达标不自动删边，继续旧full并记录本轮迁移未完成。
 回退不得依赖被 candidate 同时修改的代码；保持 old plan reader 或显式拒绝不支持版本。
 
-本轮规范审查通过后再建立实现PR；每个切片按现有review/CI合并要求推进。历史PR的绿色结果不授权
+用户认可后已开始 [P1 shadow 首版](SHADOW_V1.md)，以 Draft PR 审查；每个切片按现有review/CI合并要求推进。历史PR的绿色结果不授权
 新trusted root，也不证明本轮新协议已有效。

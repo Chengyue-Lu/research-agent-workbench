@@ -16,7 +16,19 @@ Owner: 路诚钺 (`Chengyue-Lu`); cross-owner: 黄毅 (`let778750-cpu`); R2.
 - Business extraction and test consolidation require API/lifecycle/negative-fault equivalence. This
   documentation round changes no production policy or executable and carries no merge/release authority.
 
-## Earlier accepted work and remaining controls
+## Contract shadow v1
+
+- The shadow role inventory cannot authorize execution exclusions. Preserve every accepted
+  obligation and consumer chain, even for documents, archive data and apparent output literals.
+- Recompute the observed plan against immutable Git facts and accepted base policy; a candidate
+  contract, resigned weaker plan or mismatched merge target cannot enter accepted evidence.
+- The diagnostic job has separate artifacts and no outputs or aggregate consumers. Its report
+  cannot be consumed as plan v4. New source retains impact 100/100 and critical 95/90.
+- PR84 replay exposes 9 classification conflicts and retains 91/92 modules. This is P1 model
+  observability, not completed C01 scope reduction; input/consumer contracts and trusted
+  activation still require review. See [implementation](SHADOW_V1.md).
+
+## Historical risk controls
 
 | Risk | Control and evidence | Remaining review |
 |---|---|---|

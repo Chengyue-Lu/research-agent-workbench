@@ -49,6 +49,29 @@ jobs:
       - name: Explain selected obligations
         run: cat ci-plan.json >> "$GITHUB_STEP_SUMMARY"
 
+  contract_shadow:
+    name: CI contract shadow (diagnostic)
+    needs: plan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/pull/{0}/merge', inputs.pr) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install 'PyYAML>=6,<7'
+      - uses: actions/download-artifact@v4
+        with:
+          name: ci-plan
+      - name: Audit typed inputs and retained consumer boundaries
+        run: python .github/scripts/ci_contract_shadow.py --plan ci-plan.json --output ci-contract-shadow.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ci-contract-shadow
+          path: ci-contract-shadow.json
+
   documentation:
     needs: plan
     runs-on: ubuntu-latest
