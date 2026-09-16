@@ -3,7 +3,7 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 来源：[Issue #57](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57)
 - 架构决定：[ADR-0021](../../../decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md)
-- 状态：M14-001/002/003 dormant topology、deterministic surface 与 portable package 已实现；public docs 最终集成已由 PR #77 合入；MIT 与远端保护闭合进入 readiness R2 审查，首次发行仍待闭合
+- 状态：M14-001～004、M1-009 与 M0-007 已合入；[具名首发准备决定与保护回读](FIRST_RELEASE_DECISION.md) 支持 M14-005 READY；当前审查 [source-CI 实现](SOURCE_CI.md)，首次发行仍待闭合
 - diagnostic baseline：`origin/develop@dd2454b5595e33a12aa058529358d46d311a08c4`
 - task-definition integration base：`origin/develop@6a032e12c30a88a501258eec8c0b5d6c6082d81d`
 
@@ -46,7 +46,7 @@ flowchart LR
     M14001 --> M14003["M14-003 DONE<br/>REL-003 portable package"]
     M14002 --> M14004["M14-004 DONE<br/>REL-004 public docs"]
     M14003 --> M14004
-    M14002 --> M14005["M14-005 BLOCKED<br/>REL-005 readiness + first release"]
+    M14002 --> M14005["M14-005 READY<br/>REL-005 readiness + first release"]
     M14003 --> M14005
     M14004 --> M14005
     M1009["M1-009 DONE<br/>scaffold/compatibility"] --> M14005
@@ -194,11 +194,12 @@ task-definition 只写 canonical docs、ADR、workstream 与导航。后续实�
 
 ## 下一合法动作
 
-`M14-001～004` 与 M1-009 已合入；按 [readiness 准备记录](READINESS_PREPARATION.md) 审查 MIT closure、
-远端保护回读及演练证据。M0-007 在本 PR 提案 DONE，M14-005 继续 BLOCKED，接续分两层：
+`M14-001～004`、M1-009 与 M0-007 已合入；[readiness 准备记录](READINESS_PREPARATION.md) 保留
+许可、远端保护和演练证据。当前 [source-CI slice](SOURCE_CI.md) 交付生产端与在线核验器，合入后的真实
+protected push 仍须验收。[具名 v0.1.0 准备决定与 fresh protection 回读](FIRST_RELEASE_DECISION.md) 已闭合
+外部启动条件，M14-005 在当前候选中为 READY，接续为：
 
-1. external readiness remaining：本 PR R2 接受、fresh ruleset readback 与具名 Human release decision；
-   全部满足后才可提案 M14-005 READY。
-2. M14-005 implementation：protected source-CI attestation、release-only workflow/checks、atomic topology cutover，
+1. R2 审查并接受本候选的 Task 激活、具名决定与 source-CI 实现。
+2. M14-005 implementation：真实 protected source-CI 验收、release-only workflow/checks、atomic topology cutover，
    然后冻结 exact develop source/current main parent，验证 deterministic projection / prospective-tree equality，
-   完成首发 R2 验收及 tag/artifact/hash closure。
+   完成首发 R2 验收及 tag/artifact/hash closure；最终 release PR 合并与 tag 另行批准。

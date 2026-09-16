@@ -53,7 +53,7 @@ family 为什么存在、由什么 authority boundary 约束、何时允许启�
 | Phase E | Strategy candidate 与 governed evolution；不得自动修改 Core | 既有 M2/M7；M13 仅 **RESERVED** | Phase C/D evidence 证明旧 group 不足后另行接受 |
 | Phase F / Topic 4 | Agent/Model/Provider/Runtime 消费 frozen contract；不拥有 Method/Claim/Gate/fallback authority | M11 Core 与 optional extension；M6 live conformance | M11 Core 与 optional Skill extension 已 bounded 实现；live conformance 仍依独立 Gate |
 | Topic 5 residual | Handoff、context rollover、safe pause/resume、recovery/continuation | M12 仅 **RESERVED** | Phase C closeout + 独立 Topic 5 R2 review/task-definition |
-| Product / release closure | Ordinary-user E2E、package/runtime/release governance | M14-001/002/003 trust、surface 与 portable package DONE | M14-004 public docs、M1-009 scaffold、MIT 与远端保护已落实；外部 readiness 仍需本 PR R2 接受、fresh ruleset readback 与具名发布决定；随后进入 M14-005 source-CI、release-only checks、cutover、freeze/projection 与首发闭包实现（见第 7 节） |
+| Product / release closure | Ordinary-user E2E、package/runtime/release governance | M14-001/002/003 trust、surface 与 portable package DONE | M14-004 public docs、M1-009 scaffold、MIT 已落实；具名 v0.1.0 准备决定与 fresh protection 回读支持 M14-005 READY，后续为真实 source-CI 验收、release-only checks、cutover、freeze/projection 与首发闭包（见第 7 节） |
 
 ```mermaid
 flowchart LR
@@ -391,14 +391,16 @@ M14-001 已完成 dormant release topology/source-trust seam，`release/v*` 在 
 中都 fail closed；branch name、PR body 或普通环境不能替代 trusted external attestation。M14-002 已闭合
 deterministic projection/export/check；M14-003 已闭合 portable Runtime resource/package 边界。
 M14-004 已闭合公开文档与仓库外 Quickstart；M1-009 scaffold 已接受。M14-001～004 完成都不产生 release merge eligibility。
-M0-007 MIT 与 GitHub remote protection 已落实。M14-005 保持 BLOCKED，接续工作分为两层：
+M0-007 MIT 与 GitHub remote protection 已落实。[具名 v0.1.0 准备决定与 fresh protection 回读](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_DECISION.md)
+闭合外部启动条件；当前候选将 M14-005 BLOCKED → READY。接续顺序为：
 
-1. **external readiness remaining**：本 PR 的 readiness R2 接受、fresh ruleset readback，以及具名 Human
-   release decision。全部满足后才可提案 M14-005 BLOCKED → READY。
-2. **M14-005 implementation**：先在 develop 建立 protected source-CI attestation 与 release-only workflow/checks；
+1. **Task activation / R2 integration**：在同一候选审查 READY 状态、具名决定与 source-CI 实现。
+2. **M14-005 implementation**：在 develop 验收真实 protected source-CI attestation，完成 release-only workflow/checks；
    经 R2 验收原子启用 `release/v* -> main` 并禁用 direct `develop -> main`；随后冻结 exact develop source/current
    main parent，验证 deterministic projection / prospective-tree equality，再闭合首个 curated release 的 R2 PR、
-   merge commit 与 tag/artifact/hash。当前绿色 develop push CI 缺少 governance job，source-CI attestation 仍待实现。
+   merge commit 与 tag/artifact/hash。当前 [source-CI slice](workstreams/chengyue-lu/M14-CURATED-RELEASE/SOURCE_CI.md)
+   准备了 producer/observer；先经 R2 接受并验收真实 protected push，再接 release-only checks。
+   最终 release PR 合并及 tag 由维护者在完整候选验收后另行批准。
 
 发行分离两条受信关系：内容/provenance 从 `develop full engineering truth -> frozen exact commit ->
 deterministic projection`，Git ancestry 从 `exact current main -> generated release/v* -> new curated main`。

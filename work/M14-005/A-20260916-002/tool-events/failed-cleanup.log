@@ -1,0 +1,37 @@
+ERROR: test_authority_floor_is_independent_of_plan_claims (test_selection_witness.WitnessTests.test_authority_floor_is_independent_of_plan_claims)
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7469082Z ----------------------------------------------------------------------
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7469542Z Traceback (most recent call last):
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7477357Z   File "/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/tempfile.py", line 947, in cleanup
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7478081Z     self._rmtree(self.name, ignore_errors=self._ignore_cleanup_errors)
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7478679Z   File "/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/tempfile.py", line 929, in _rmtree
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7479277Z     _shutil.rmtree(name, onerror=onerror)
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7479845Z   File "/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/shutil.py", line 752, in rmtree
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7480398Z     _rmtree_safe_fd(fd, path, onerror)
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7480977Z   File "/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/shutil.py", line 672, in _rmtree_safe_fd
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7481585Z     _rmtree_safe_fd(dirfd, fullname, onerror)
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7482142Z   File "/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/shutil.py", line 672, in _rmtree_safe_fd
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7482669Z     _rmtree_safe_fd(dirfd, fullname, onerror)
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7483622Z   File "/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/shutil.py", line 683, in _rmtree_safe_fd
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7484330Z     onerror(os.rmdir, fullname, sys.exc_info())
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7484960Z   File "/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/shutil.py", line 681, in _rmtree_safe_fd
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7485540Z     os.rmdir(entry.name, dir_fd=topfd)
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7485889Z OSError: [Errno 39] Directory not empty: 'pack'
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7486114Z 
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7486295Z ======================================================================
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7486933Z ERROR: test_cli_pin_drift_success_and_failures (test_selection_witness.WitnessTests.test_cli_pin_drift_success_and_failures)
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7487625Z ----------------------------------------------------------------------
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7488063Z Traceback (most recent call last):
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7488602Z   File "/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/tempfile.py", line 947, in cleanup
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7489307Z     self._rmtree(self.name, ignore_errors=self._ignore_cleanup_errors)
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7489974Z   File "/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/tempfile.py", line 929, in _rmtree
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7490548Z     _shutil.rmtree(name, onerror=onerror)
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7491130Z   File "/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/shutil.py", line 763, in rmtree
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7491864Z     onerror(os.rmdir, path, sys.exc_info())
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7492477Z   File "/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/shutil.py", line 761, in rmtree
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7493038Z     os.rmdir(path, dir_fd=dir_fd)
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7493476Z OSError: [Errno 39] Directory not empty: '/tmp/tmppxwy2e0q'
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7493785Z 
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7493962Z ----------------------------------------------------------------------
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7494559Z Ran 1346 tests in 642.667s
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7494798Z 
+coverage-quality (3.11)	Run ordered behavior and coverage-only cases once	2026-09-16T10:49:46.7494964Z FAILED (errors=2)

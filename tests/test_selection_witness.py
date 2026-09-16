@@ -25,6 +25,9 @@ class WitnessTests(unittest.TestCase):
         self.repo = Path(self.temp.name)
         self.git('init', '-q'); self.git('config', 'user.name', 'witness fixture')
         self.git('config', 'user.email', 'fixture@example.invalid')
+        # Detached maintenance must not outlive this temporary repository.
+        self.git('config', 'maintenance.auto', 'false')
+        self.git('config', 'gc.auto', '0')
         self.write('.github/scripts/plan_ci.py', b'RULE=True\n')
         self.write('.github/workflows/ci.yml', b'name: CI\njobs: {}\n')
         self.write('src/product.py', b'VALUE=1\n')

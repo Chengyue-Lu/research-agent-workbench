@@ -1,0 +1,55 @@
+{
+  "failed_run": 35086048928,
+  "failed_head": "740bdc0cdeaddf0ec298e526203518b52e761deb",
+  "repair_checkpoint": "81d46bf4893518759da9b1ca3b128acd1c84c4ec",
+  "baseline": "b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22",
+  "trace": {
+    "before": {
+      "sha256": "0421ae8c5e3392580ed22354c67578cdaec2b73f3fef72c150ef247f922eed6b",
+      "maintenance_child_count": 3,
+      "argv": [
+        [
+          "git",
+          "maintenance",
+          "run",
+          "--auto",
+          "--quiet",
+          "--detach"
+        ],
+        [
+          "git",
+          "maintenance",
+          "run",
+          "--auto",
+          "--quiet",
+          "--detach"
+        ],
+        [
+          "git",
+          "maintenance",
+          "run",
+          "--auto",
+          "--quiet",
+          "--detach"
+        ]
+      ]
+    },
+    "after": {
+      "sha256": "da5b9ff19532ce46de6cdbe784db3c28783d60fa861b35e9bc4db193abb1faf0",
+      "maintenance_child_count": 0,
+      "argv": []
+    }
+  },
+  "local_tests": {
+    "witness-before.log": {
+      "passed": 2
+    },
+    "witness-after.log": {
+      "passed": 2
+    },
+    "witness-full.log": {
+      "passed": 10
+    }
+  },
+  "failure_source_sha256": "b2632782b5ae4fe780855255857c4bdec10fd0ba40fdff7d4439c7da3a40ed62"
+}

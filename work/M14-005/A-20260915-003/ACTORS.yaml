@@ -1,0 +1,10 @@
+schema_version: 0.1.0
+task_id: M14-005
+task_revision: 1
+attempt_id: A-20260915-003
+actors:
+- actor_id: main-agent
+  actor_type: agent
+  role: source CI implementation and verification
+  runtime_identity: Codex M14 source CI
+  accountable_owner: Chengyue-Lu
