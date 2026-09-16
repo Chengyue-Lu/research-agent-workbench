@@ -130,8 +130,8 @@ flowchart LR
 M4-001～004 已闭合 bounded admission、promotion、Claim evidence localization 与 Run reconstruction；
 promotion eligibility 仍只由当次 pinned pipeline 重执行确立，不证明自报历史 provenance。当前开发入口是
 `M5-006 DONE → M6-008 DONE → M5-007 READY`；路诚钺按 [Harness 进入计划](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md) 从冻结 plan / 评价侧 preflight 开始。
-M5-004 的 M4 provenance 链、M5-003 计划契约与 M11-006 mapping 机制已满足；仍等待两个 Human-approved
-public/private Case Dossier、M6-008 baseline closeout、Skill replay Gate、M5-007 Harness、真实 A4 admission 与 M6-004 live
+M5-004 的 M4 provenance 链、M5-003 计划契约、M11-006 mapping 机制、M6-008 baseline closeout 与 Skill replay Gate 已满足；
+仍等待两个 Human-approved public/private Case Dossier、M5-007 Harness、真实 A4 admission 与 M6-004 live
 Provider/session Gate。ADR-0020 已 exact-pin
 双传输并关闭 `M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE`：A1/A2→M6、A3→M11 Core、A4→M11 Skill
 extension，primary `A4 − A2` 明确包含 transport difference；M5-006 已实现相应 Protocol/validators。`A4 − A3` 只有在
