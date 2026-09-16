@@ -1,0 +1,90 @@
+"""Retain branch replay and actual selected-test execution without CI acceptance claims."""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+import re
+import subprocess
+import sys
+
+p=argparse.ArgumentParser()
+p.add_argument('--repo',type=Path,required=True)
+p.add_argument('--probe',type=Path,required=True)
+a=p.parse_args()
+repo=a.repo.resolve()
+source=repo/'.rwb/contract-shadow/branches'
+attempt=repo/'work/TEST-PERF-002/A-20260916-007'
+attempt.mkdir(parents=True,exist_ok=False)
+(attempt/'checks').mkdir()
+(attempt/'.gitattributes').write_bytes(b'* -text whitespace=cr-at-eol\n')
+summary=json.loads((source/'branch-replay-summary.json').read_bytes())
+assert all(c['status']=='PASS' for c in summary['cases'])
+plan=json.loads((source/'pr65-plan.json').read_bytes())
+assert plan['tests']==['test_ci_checks','test_ci_plan','test_coverage_policy','test_documentation','test_pr_governance']
+assert subprocess.check_output(['git','-C',str(a.probe),'rev-parse','HEAD']).decode().strip()==plan['binding']['head']
+assert not subprocess.check_output(['git','-C',str(a.probe),'status','--porcelain'])
+log=(source/'pr65-selected-execution.log').read_text(encoding='utf-8')
+match=re.search(r'^Ran (\d+) tests in ([\d.]+)s$',log,re.M)
+assert match and '\nOK\n' in log
+execution={'binding':plan['binding'],'plan_id':plan['plan_id'],'mode':'local historical head; selected modules only',
+    'python':sys.version,'test_modules':plan['tests'],'test_count':int(match[1]),'wall_seconds':float(match[2]),
+    'observed_exit_code':0,'status':'PASS','checkout_clean':True,'full_suite_comparison':False}
+(source/'pr65-selected-execution.json').write_text(json.dumps(execution,indent=2)+'\n',encoding='utf-8')
+copies={f:f.name for f in source.iterdir() if f.suffix in {'.json','.log'}}
+copies[repo/'.rwb/contract-shadow/hosted-initial-shadow/ci-contract-shadow.json']='pr85-initial-hosted-shadow.json'
+copies[repo/'.rwb/contract-shadow/hosted-initial-plan/ci-plan.json']='pr85-initial-hosted-plan.json'
+for name in ('replay_branches.py','archive_branch_replay.py'):
+    copies[Path(__file__).resolve().parent/name]=name+'.txt'
+manifest=[]
+for file,name in copies.items():
+    raw=file.read_bytes()
+    (attempt/'checks'/name).write_bytes(raw)
+    manifest.append({'path':'checks/'+name,'sha256':hashlib.sha256(raw).hexdigest(),'bytes':len(raw)})
+(attempt/'checks/evidence-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8')
+(attempt/'RESULTS.md').write_text('''# Historical branch replay evidence
+
+TEST-PERF-002; owner Chengyue-Lu; R2; A-20260916-007. User authorized tests using old branches.
+
+Current engine commit: `47c09b95cc27fe59e1ebf1240ba3d3d6ef1a3543`. Original base/head pairs and fetched PR metadata are retained. Targets equal historical heads; this is not a rebase or an attestation of historical hosted merge results.
+
+| PR | Dependency modules | Behavioral | Coverage | Package / repository smoke | Replay |
+| --- | ---: | --- | --- | --- | --- |
+| #65 event isolation | 4/70; final plan has 5 selectors | focused | none | false / false | PASS |
+| #77 M14 Quickstart | 86/87 | full | repository | true / true | PASS |
+| #80 M14 Source CI | 92/93 | full | impact + repository | true / true | PASS |
+
+The shadow report preserves accepted groups, every selected consumer chain and all obligations. #65 does not change executable production or coverage authority. #77 actually changes pyproject.toml; #80 changes the CI workflow. Those concrete authority reasons retain full baselines independently of R2.
+
+#65 selected execution: the exact five planned modules ran in a clean detached historical checkout, Python 3.11, 134 PASS in 63.548 s. This is fresh local execution of the selected set, without instrumentation or a paired full-suite run. It does not measure hosted savings. M14 branches were used for planner/report replay, not full test execution.
+
+The prototype reports 1/7/22 unknown archive inputs respectively: .log files and historical attributes such as `* text eol=lf`, `** -text`, and scoped whitespace rules. They remain explicit audit gaps. No role exception, selector exclusion or activation rule was added to fit these examples.
+
+The first exploratory invocation supplied incomplete synthetic risk metadata and triggered conservative fallback. The retained final comparisons use the actual PR metadata and assert that this artificial fallback is absent. Earlier tool-stream capture is incomplete and is declared in Trace.
+
+Initial PR85 hosted diagnostic job succeeded at head 47c09b9 and merge target 41de7c4; retained artifact bindings match the official plan and tested engine hash. This proves that diagnostic producer only, not all required CI or a later commit.
+
+See [replay summary](checks/branch-replay-summary.json), [actual #65 execution](checks/pr65-selected-execution.json), [raw log](checks/pr65-selected-execution.log), [hosted diagnostic binding](checks/hosted-shadow-binding.json), [hash manifest](checks/evidence-manifest.json), [Trace validation](checks/trace-validation.json), and [implementation](../../../docs/workstreams/chengyue-lu/TEST-PERF-002/SHADOW_V1.md).
+''',encoding='utf-8')
+sys.path.insert(0,str(repo/'src'))
+from research_workbench.observability.trace import AgentTraceRecorder,validate_attempt_trace
+r=AgentTraceRecorder(attempt,task_id='TEST-PERF-002',task_revision=35,attempt_id='A-20260916-007',
+    task_snapshot={'task_id':'TEST-PERF-002','revision':35,'request':'你可以使用其他旧分支拉取下来做测试。',
+        'scope':'Historical branch replay and selected execution; original branches remain unchanged',
+        'delegation':False,'required_skills':[]},accountable_owner='Chengyue-Lu',actor_id='main-agent',
+    runtime_identity='Codex desktop',provider='OpenAI',baseline='0d4a1d00a4c32ca9b822df6482a95920e7c21b1b',
+    read_allowlist=['AGENTS.md','.github/**','tests/**','src/**','docs/workstreams/chengyue-lu/TEST-PERF-002/**',
+                    'PR65/77/80 exact Git blobs and PR metadata','PR85 diagnostic artifact'],
+    write_scope=['docs/workstreams/chengyue-lu/TEST-PERF-002/SHADOW_V1.md','work/TEST-PERF-002/A-20260916-007/**'],
+    tool_allowlist=['git','gh','python','shell','apply_patch'])
+r.record_capture_gap('events','Retrospective retained outputs. Earlier fetch, exploratory metadata fallback and shell exchanges were not fully streamed; no complete event capture is claimed.')
+r.record_tool_call(operation_id='retain-branch-replay',tool_name='python',status='succeeded',
+    arguments={'operation':'retain historical Git-bound comparisons and observed selected execution'},
+    result={'cases':summary,'selected_execution':execution,'retained_files':manifest},result_entered_context=True)
+r._index['check_refs']=[{'path':row['path'],'sha256':row['sha256']} for row in manifest]
+r._refresh_index()
+r.seal('safe-paused')
+validation=validate_attempt_trace(repo,attempt)
+result={'blocked':validation.blocked,'risks':[{'code':x.code,'level':x.level.value,'message':x.message} for x in validation.risks]}
+(attempt/'checks/trace-validation.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8')
+assert not validation.blocked
+print(json.dumps({'trace':result,'files':len(manifest),'execution':execution},indent=2))

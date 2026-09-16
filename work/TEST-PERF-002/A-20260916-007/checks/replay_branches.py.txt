@@ -1,0 +1,67 @@
+"""Replay old branch Git facts through the current diagnostic model."""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+import sys
+import time
+
+parser=argparse.ArgumentParser()
+parser.add_argument('--repo',type=Path,required=True)
+parser.add_argument('--output',type=Path,required=True)
+args=parser.parse_args()
+repo=args.repo.resolve()
+sys.path.insert(0,str(repo/'.github/scripts'))
+import plan_ci as planner
+import ci_contract_shadow as shadow
+
+cases=[
+    {'pr':65,'name':'test-event-isolation','base':'690a9f8c89c32400bbc57b0781ef9b43205894db',
+     'head':'09f96193845ee0e73a215d87ba188b5aa5569704'},
+    {'pr':80,'name':'m14-source-ci','base':'b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22',
+     'head':'47f518a164c59bb123541bc8c0705f2106ee513e'},
+    {'pr':77,'name':'m14-quickstart','base':'451644064f558601d5778b9b115390f882f4d260',
+     'head':'cbf646d1d4139da249277615a88f54d9cdf5586d'},
+]
+args.output.mkdir(parents=True,exist_ok=True)
+results=[]
+for case in cases:
+    started=time.monotonic()
+    row=dict(case)
+    try:
+        metadata=json.loads((args.output/f"pr{case['pr']}-metadata.json").read_bytes())
+        assert (metadata['baseRefOid'],metadata['headRefOid']) == (case['base'],case['head'])
+        plan=planner.make_plan(repo,base=case['base'],head=case['head'],target=case['head'],
+            repository='Chengyue-Lu/research-agent-workbench',body=metadata['body'])
+        assert 'unknown governance risk metadata' not in plan['obligation_reasons']['behavioral_scope']
+        original=planner.canonical(plan)
+        report=shadow.build_report(repo,plan)
+        assert planner.canonical(plan)==original
+        assert report['execution_authority'] is False and report['activation']['eligible'] is False
+        assert len(report['dependency_review'])==len(plan['selection']['selected'])
+        assert report['accepted_obligations']['coverage_obligations']==plan['coverage_obligations']
+        for key in ('behavioral_scope','package_smoke','repository_smoke'):
+            assert report['accepted_obligations'][key]==plan[key]
+        current=json.loads(planner.read_at(repo,case['base'],planner.POLICY))
+        assert {g['id'] for g in report['accepted_contracts']}==set(current['groups'])
+        expected_role = ('test-code' if case['pr']==65 else 'selection-authority' if case['pr']==80 else 'packaging-authority')
+        expected_path = ('tests/test_ci_plan.py' if case['pr']==65 else '.github/workflows/ci.yml' if case['pr']==80 else 'pyproject.toml')
+        roles={r['path']:r['role'] for r in report['inputs']}
+        assert roles[expected_path]==expected_role,roles.get(expected_path)
+        row.update({'status':'PASS','binding':plan['binding'],'plan_id':plan['plan_id'],
+            'report_id':report['report_id'],'summary':report['summary'],
+            'accepted_obligations':report['accepted_obligations'],
+            'coverage_modules':plan['coverage_modules'],
+            'obligation_reasons':plan['obligation_reasons']})
+        (args.output/f"pr{case['pr']}-plan.json").write_bytes(original)
+        (args.output/f"pr{case['pr']}-shadow.json").write_bytes(planner.canonical(report))
+    except (ValueError,KeyError,AssertionError) as exc:
+        row.update({'status':'REPLAY_REJECTED','error':type(exc).__name__+': '+str(exc)})
+    row['local_analysis_seconds']=round(time.monotonic()-started,3)
+    results.append(row)
+    print(json.dumps({k:v for k,v in row.items() if k!='obligation_reasons'},ensure_ascii=False),flush=True)
+payload={'engine_commit':planner.git(repo,'rev-parse','HEAD').decode().strip(),
+    'engine_sha256':hashlib.sha256((repo/'.github/scripts/ci_contract_shadow.py').read_bytes()).hexdigest(),
+    'mode':'current-engine-historical-Git-facts; target=head; no historical or hosted CI attestation',
+    'cases':results}
+(args.output/'branch-replay-summary.json').write_text(json.dumps(payload,indent=2)+'\n',encoding='utf-8')

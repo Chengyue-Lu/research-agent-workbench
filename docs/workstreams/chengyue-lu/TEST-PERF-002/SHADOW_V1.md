@@ -76,3 +76,26 @@ python .github/scripts/ci_contract_shadow.py --plan ci-plan.json --output ci-con
 ```
 
 原始证据与最终 exact-head 验证见 [本轮 Attempt](../../../../work/TEST-PERF-002/A-20260916-006/RESULTS.md)。
+
+## 旧分支补充验证
+
+按用户授权，拉取 #65、M14 #77/#80 的不可变 base/head，使用原 PR metadata 重放当前引擎。
+原分支不变；target=head，结果不冒充历史托管 merge CI。
+
+| 样本 | dependency modules | behavioral / coverage | smoke package / repository |
+| --- | ---: | --- | --- |
+| #65 test/fingerprint | 4/70，final plan 为 5 selectors | focused / none | false / false |
+| #77 M14 Quickstart | 86/87 | full / repository | true / true |
+| #80 M14 Source CI | 92/93 | full / impact + repository | true / true |
+
+三项重放全部通过，正式 obligations、base groups 与 consumer chains 全部保留。
+#65 在隔离的原始提交工作区实际执行所选 5 modules，134 PASS / 63.548 s；没有配对 full 执行，
+不能由此声称 hosted 缩时比例。#77 的 pyproject、#80 的 workflow 变化为保留完整基线提供明确依据。
+
+#80 的两项 smoke 另由 consumer closure 触发：`release_source_ci.py → deterministic_runner.py
+→ test_cli/test_validation`，第一条边为 `opaque-execution`。这条调用范围尚未证明有界；
+workflow 变化本身不能替代 smoke 的消费证明。后续契约需分别审查该链和 full/coverage authority。
+
+归档 `.log` 和旧 attributes 写法分别留下 1/7/22 个 unknown 输入，是后续输入契约需要补齐的分类范围。
+本轮未为这些样本增加减测例外。原始计划、报告、metadata、#65 真实执行和初次托管 diagnostic 绑定
+见 [分支测试 Attempt](../../../../work/TEST-PERF-002/A-20260916-007/RESULTS.md)。

@@ -1,0 +1,18 @@
+{
+  "binding": {
+    "base": "0d4a1d00a4c32ca9b822df6482a95920e7c21b1b",
+    "head": "47c09b95cc27fe59e1ebf1240ba3d3d6ef1a3543",
+    "merge_base": "0d4a1d00a4c32ca9b822df6482a95920e7c21b1b",
+    "repository": "Chengyue-Lu/research-agent-workbench",
+    "target": "41de7c49a727a4195bd37f5ca89fecf572d8b492"
+  },
+  "plan_id": "f4dc76b1b4fbf0f81dc477a3bfbd8ef0be8718082ae866df40beb267254f6c7b",
+  "report_id": "462f224ef8841d349e8c0bd2941465d0b21cd5247290a297e15c274ddab8abd7",
+  "engine_sha256": "fbd1fdb8fac80b39efc6bc548af37593c58c9d3500455bf99a814a99b736f57a",
+  "execution_authority": false,
+  "coverage_modules": [
+    ".github/scripts/ci_contract_shadow.py"
+  ],
+  "status": "binding-PASS",
+  "note": "Diagnostic producer only; complete required CI is separate"
+}

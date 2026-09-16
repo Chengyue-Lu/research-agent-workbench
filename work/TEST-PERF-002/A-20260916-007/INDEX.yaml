@@ -1,0 +1,86 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260916-007
+task_id: TEST-PERF-002
+task_revision: 35
+attempt_id: A-20260916-007
+archive_root: A-20260916-007
+baseline: 0d4a1d00a4c32ca9b822df6482a95920e7c21b1b
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 1448e573829901b46eb7e49287011085353395ad0df263e2697edf785caafddd
+actors_ref:
+  path: ACTORS.yaml
+  sha256: d2d2670858929843100a7478b39dc8236afc5d1261b90fe4c15a312dd90aebaa
+read_allowlist:
+- .github/**
+- AGENTS.md
+- PR65/77/80 exact Git blobs and PR metadata
+- PR85 diagnostic artifact
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- src/**
+- tests/**
+write_scope:
+- docs/workstreams/chengyue-lu/TEST-PERF-002/SHADOW_V1.md
+- work/TEST-PERF-002/A-20260916-007/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+- shell
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 14aa0474d245fc636fab00c647d7b7b5c7c057dfe113d200eeeb3cb4fe97a387
+  event_count: 4
+tool_event_refs:
+- path: tool-events/retain-branch-replay-succeeded.json
+  sha256: c925d7718be020e764a2e740e080c7fce961cbc70a994087a2520a923ef7deba
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs:
+- path: checks/branch-replay-summary.json
+  sha256: f7f1f57d11edf587961feb4dc60089b2988d336e6d71b92e9d52ea2bddb0b0fd
+- path: checks/hosted-shadow-binding.json
+  sha256: d6933dbc17a901f6a97e02d8fc8aca4fb9d2ccd6ec3774603f16020111c5b385
+- path: checks/pr65-metadata.json
+  sha256: fe6dbc20ad17861d52d1171c32d5234f37b1f46e6217d24b71473f187c07f7a9
+- path: checks/pr65-plan.json
+  sha256: f05d61ca848574c67b1cd286def2b80050fef7b5b3cbc7be878e37b86b2f1690
+- path: checks/pr65-selected-execution.json
+  sha256: 436cb2cb780ce8a34bf4a993be0f8f813e6f89aba0e8362782431afabd4589c9
+- path: checks/pr65-selected-execution.log
+  sha256: 79adc4960d3e3592062366c42a18a6a2f13b3d6215a14f97204124b45835df03
+- path: checks/pr65-shadow.json
+  sha256: 2ac2d0b032a79f380ad4563d6e5d084237813caf5898c6e16bd8f7eab4d0f24e
+- path: checks/pr77-metadata.json
+  sha256: 4816a027917a07da3a2b5fae3ff3596858a09a1d91449e324c4fc1caf666f006
+- path: checks/pr77-plan.json
+  sha256: 362109648e17b38c8c04e8b029492d1263628e7e33915fdc8aafe2bad2e052da
+- path: checks/pr77-shadow.json
+  sha256: 1604251a02a6ff45ee10e1e199415c0a10e4dc20201a84f30371c318059e09ae
+- path: checks/pr80-metadata.json
+  sha256: 1c8da916aa0597f18029488b45d65cbbf811808aa95e558735f89523ad3bcc9f
+- path: checks/pr80-plan.json
+  sha256: c852d38721b24e02519ee65c08ed3fa2fcaf4175bae3bb6634c960fab7a79fa8
+- path: checks/pr80-shadow.json
+  sha256: 05ce520be6da22b0964d019a43c7db44c492f377b555d2da62d7505407e22612
+- path: checks/replay.log
+  sha256: 43289c578a9e7197c6d398886bab027432c3cca6d38112b2d84c37db183268ba
+- path: checks/pr85-initial-hosted-shadow.json
+  sha256: 21a7f3f8afcb83c3f758beb19acd0fcf75629021450ceb52eaf3209943586266
+- path: checks/pr85-initial-hosted-plan.json
+  sha256: a58bf56d206b0d60f480b1c0a022bd3294dc17252cc31104b0f16bc561d742fd
+- path: checks/replay_branches.py.txt
+  sha256: 499897cb6d2bc31163a3573b28c53037344285a5afcd6f0b81cada8afa2cc347
+- path: checks/archive_branch_replay.py.txt
+  sha256: 3c1873e2ab36a826599030eb5112a35d66b3ac147637b6bfc2f5e02d4842ecb5
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
