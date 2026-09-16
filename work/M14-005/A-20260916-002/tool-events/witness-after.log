@@ -1,0 +1,11 @@
+{"authority_changes":[],"base":"49ffc851667ec4f7d0776108b348d0c12c73c951","execution_checks_proved":false,"head":"49ffc851667ec4f7d0776108b348d0c12c73c951","observed_behavioral":"full","plan_id":"0f6f48558a1e0bb5d5b51a1aaa01b8b4f7ff8c1ae602ef6e315fb7839a1b41ef","repository":"Example/repo","required_behavioral":"none","scope":"selection-authority floor only","status":"PASS","target":"49ffc851667ec4f7d0776108b348d0c12c73c951","witness_commit":"49ffc851667ec4f7d0776108b348d0c12c73c951","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+{"reason":"witness source drift","status":"BLOCK","witness_source_sha256":"186866d274a9e55c517a6d49f684c99ef36f4afeff0409c10bd93ce40d54031d"}
+
+{"reason":"witness checkout differs from reviewer-pinned commit","status":"BLOCK","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+..
+----------------------------------------------------------------------
+Ran 2 tests in 7.414s
+
+OK

@@ -1,0 +1,11 @@
+{"authority_changes":[],"base":"4444814e776817739c00b5fcd034e4fc95190f3b","execution_checks_proved":false,"head":"4444814e776817739c00b5fcd034e4fc95190f3b","observed_behavioral":"full","plan_id":"44114f26474403c1b3a65229c7cafe3d638794c3e05c547269f8c670e386fcc4","repository":"Example/repo","required_behavioral":"none","scope":"selection-authority floor only","status":"PASS","target":"4444814e776817739c00b5fcd034e4fc95190f3b","witness_commit":"4444814e776817739c00b5fcd034e4fc95190f3b","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+{"reason":"witness source drift","status":"BLOCK","witness_source_sha256":"186866d274a9e55c517a6d49f684c99ef36f4afeff0409c10bd93ce40d54031d"}
+
+{"reason":"witness checkout differs from reviewer-pinned commit","status":"BLOCK","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+..
+----------------------------------------------------------------------
+Ran 2 tests in 7.307s
+
+OK
