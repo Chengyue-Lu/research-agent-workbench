@@ -139,3 +139,7 @@ fact 复用同一次 end-clock 采样，失败和阻断的保留语义不变。�
 
 当前实现保持 M6 Task / Execution owner 为黄毅，M5 shared contract 和 M11 实现不变。
 保留 `task_completion=false`；不合并 PR，不声明 M6 DONE，不解锁 M5-007 或真实执行 Gate。
+
+## 7. 实现接受与 Task 收口（2026-09-16）
+
+PR75 reviewed head `f704bfd` 已由路诚钺 APPROVE 并合入 `b041aee`；tree 相同，既有 source/archive pins 保持原字节。用户要求 M6-008 收口并准备 M5-007，本 feature 提案只将 M6-008 READY→DONE、M5-007 BLOCKED→READY，并对齐当前导航。原 Task 定义、依赖、验收、owner 与 runtime/schema 不变。接受依据、验收映射和 CI 见 [CLOSEOUT](CLOSEOUT.md)；M5 首个开发切片为冻结 plan / 评价侧 preflight。当前收口 PR 仍独立接受 review/CI。

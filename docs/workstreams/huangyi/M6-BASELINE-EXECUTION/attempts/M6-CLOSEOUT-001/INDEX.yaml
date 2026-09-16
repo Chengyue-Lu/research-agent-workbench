@@ -1,0 +1,47 @@
+schema_version: 0.1.0
+trace_id: TRACE-M6-CLOSEOUT-001
+task_id: M6-008
+task_revision: 1
+attempt_id: M6-CLOSEOUT-001
+archive_root: M6-CLOSEOUT-001
+baseline: rwb-agent-trace-v0.1
+owner_actor_id: codex-closeout
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: f4e71976903234226b58efac0249b40df36a72363478efd944790724aebe14b3
+actors_ref:
+  path: ACTORS.yaml
+  sha256: e7e5f46d5283aadafe1e3c9590ba5be4f369392ea4702872331c84dc20089aee
+read_allowlist:
+- .github/**
+- AGENTS.md
+- docs/**
+- schemas/**
+- src/**
+- tests/**
+- work/M6-008/**
+write_scope:
+- docs/**
+tool_allowlist:
+- retained-evidence-export
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: f0c6251149b8b8cd8f7e8ddd8cf59c84388f03fd1a975b01b0611d7d4bc834c2
+  event_count: 4
+tool_event_refs:
+- path: tool-events/closeout-evidence-export-unknown.json
+  sha256: 39b08ddf5cfc2e19803b469998027265d576850aa659692cc52ccca23de31cf1
+handoff_refs: []
+decision_refs:
+- path: decisions/closeout-evidence-index.yaml
+  sha256: f8245b55e0afeac680cf429802d99d7861d63b335574a20b519cc4943a344f40
+output_refs: []
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events

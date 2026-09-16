@@ -1,6 +1,6 @@
 # M6-008 Risk Ledger
 
-更新：2026-09-16。Owner：黄毅。范围：未接受的 M6-008 baseline transport 候选。
+更新：2026-09-16。Owner：黄毅。范围：PR75 已接受的 M6-008 baseline transport；当前 Task 收口见 [CLOSEOUT](CLOSEOUT.md)。
 本表记录影响当前验收解释的具体边界，不增加 Task 定义、Gate 或新的执行权威。
 
 | 项目 | 当前处理 / 证据 | 剩余边界 |
@@ -17,7 +17,7 @@
 | Task 控制泄漏到 plain arm | **已修正**：独立公开 projection 绑定 exact Task，且由 Manifest context pin；instruction / outputs 不从完整 Task 自动复制；未知字段、替换 Task 与未冻结输入有专项反例 | 冻结者需确认公开自然语言的科研含义与各臂公平性；字段白名单不证明无偏 |
 | token / character 单位混用 | **已修正**：Tool 结果字符上限从已 pin ProjectProtocol.context_policy.baseline_transport 明确读取，拒绝缺失/非正整数；与 max_input_tokens 分开 | fixture 的 16000 字符是 case 配置，不是通用默认或模型 token 换算 |
 | 冻结 Task 约束仅被记录 | **已修正**：写目标同时受 write_scope、文件权限及显式 allowed_roots 约束，执行预算不得高于 Task 已声明同名 ceiling | 文件绑定的 callable 仍须由已授权调用方注册；当前 transport 不是 OS 沙箱 |
-| 不同 DataPolicy 形状被当空许可 | **已修正**：data_policy_ref 明确按 ProjectProtocol Schema 读取 data_boundary，不把 ExecutionPolicy.data_egress 当同形对象 | 当前候选未增加其他 policy 格式或授权机制 |
+| 不同 DataPolicy 形状被当空许可 | **已修正**：data_policy_ref 明确按 ProjectProtocol Schema 读取 data_boundary，不把 ExecutionPolicy.data_egress 当同形对象 | 已接受实现未增加其他 policy 格式或授权机制 |
 | actual binding 的证据强度 | 观察注册 ProviderCapabilities、真实 adapter 源码、Python 可执行文件和本机 transport 描述，并与响应 provider/model 对齐；Receipt actual binding 从 typed Trace facts 独立重算 | model content hash 表示能力与选择描述，不认证模型权重或远程部署；自报描述不能升级为历史身份认证 |
 | Tool fact 与资格链配对 | **已修正**：strict replay / successful closeout 按 exact Task、Tool name 与 implementation pin 对比；同一 A2 产物中以公开输入替代 Tool 并重哈希的反例被拒绝 | 验证文件关系，不构造历史执行认证；失败 producer 保存不依赖已漂移的原文件 |
 | 结构化响应脱敏一致性 | **已修正**：Trace 与输出均先转普通结构再递归脱敏；真实嵌套字段反例通过 | 发生脱敏时结果保留为失败，不承诺恢复原始秘密或隐藏推理 |

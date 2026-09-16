@@ -1,0 +1,11 @@
+task_id: M6-008
+revision: 1
+related_task: M5-007
+implementation_merge: b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22
+authorization:
+  source: current user message
+  text: 下一步就是M6-008收口，准备进入M5-007
+  scope: prepare feature/R2 closeout and entry PR; no self-approval or merge
+agent_role: bounded documentation closeout and M5 entry preparation
+required_skills: []
+delegation: false

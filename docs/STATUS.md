@@ -1,7 +1,7 @@
 # 实现状态
 
 状态：Current implementation authority
-更新：2026-09-15
+更新：2026-09-16
 
 本页只回答“仓库现在实现到哪里”。实时任务状态由 [`TASKS.md`](TASKS.md) 维护，依赖方向由 [`ROADMAP.md`](ROADMAP.md) 维护。
 
@@ -15,7 +15,7 @@ production runtime-execution binding、Human Decision、科学有效性或端到
 
 M4-001～004 已全部 accepted / merged：Source Admission、Artifact Promotion、Claim evidence localization
 与 bounded Run reconstruction 构成已实现的 provenance 链。M5-006 Protocol 与资格校验器已实现，
-M11-007 Skill closeout 与 Gate B 已按 PR81 实现及具名证据接受收口；后继开发节点为 M6-008 baseline envelope/closeout；
+M11-007 Skill closeout 与 Gate B 已按 PR81 实现及具名证据接受收口；M6-008 baseline envelope/closeout 已由 PR75 接受并收口，后继开发节点为 M5-007 synthetic Harness；
 M4 的 bounded 验收不替代真实 Case Dossier、live Provider/session conformance 或正式系统评价。
 
 Issue #57 / ADR-0021 已将 Product / Release Closure 从 M14 reservation 转为正式 Task family；`M14-001`
@@ -89,7 +89,7 @@ M14-005 继续 BLOCKED，后续分为两层：
 | Claim evidence localization（M4-003） | 只验证声明关系和文件位置；limitation 定位于 Claim 文本，不虚构独立来源；不判定 locator 科学含义、不接受 Claim、不证明历史运行或科学正确性 |
 | Skill 价值 | 现有 Registry 条目不构成已证明的普适研究增益；新任务可优先 no-Skill / direct-tool |
 | Skill new-binding | 生产 projection index 仍为空；M11-005/006 只证明可选 publication/mapping contract，未重新准入任何 legacy Skill，也未证明真实 trial、Provider 可用性或科研净增量 |
-| Phase D evaluation entry | [ADR-0020](decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) 已接受 A1/A2→M6、A3/A4→M11 的双传输；M5-006 Protocol 与 qualification/overlap/overlay/pairwise 校验器已实现。M11-007 [Skill closeout 1.0.0](implementation/SKILL_EXECUTION_CLOSEOUT.md) 已由 PR81 合入，[Gate B](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md) 绑定 exact implementation/replay/CI 和具名接受，状态 SATISFIED。M6-008 的 baseline envelope/replay closeout 已有[待验收候选](workstreams/huangyi/M6-BASELINE-EXECUTION/README.md)，Task 为 READY；M5-007 Harness 继续 BLOCKED，等待 M6-008 DONE；真实 M5-004 execution 仍受原 live/case/admission Gate 约束 |
+| Phase D evaluation entry | [ADR-0020](decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) 已接受 A1/A2→M6、A3/A4→M11 的双传输；M5-006 Protocol 与 qualification/overlap/overlay/pairwise 校验器已实现。M11-007 [Skill closeout 1.0.0](implementation/SKILL_EXECUTION_CLOSEOUT.md) 已由 PR81 合入，[Gate B](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md) 绑定 exact implementation/replay/CI 和具名接受，状态 SATISFIED。M6-008 baseline envelope/replay closeout 已由 PR75 接受，Task 按[收口证据](workstreams/huangyi/M6-BASELINE-EXECUTION/CLOSEOUT.md) 为 DONE；M5-007 synthetic Harness 进入 READY，首个切片为[冻结 plan 与评价侧 preflight](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md)；真实 M5-004 execution 仍受原 live/case/admission Gate 约束 |
 | 发布 | M14-001～004 与 M1-009 已接受；M0-007 MIT 与远端 GitHub protection 已落实。M14-005 BLOCKED：外部 readiness 仍需本 PR R2 接受、fresh ruleset readback、具名 Human release decision；随后仍需 source-CI attestation、release-only checks、atomic cutover、exact source/parent freeze、projection/tree equality 与首发 tag/artifact closure，见 [M14 路线](ROADMAP.md#7-product--release-closure) |
 | 产品体验 | scaffold 支持离线项目入口；可视化、协作 UI 和运维流程仍待完善 |
 
