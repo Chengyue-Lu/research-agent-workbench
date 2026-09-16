@@ -1,0 +1,30 @@
+task_id: M14-005
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+agent_profile: bounded-ci-fixture-repair
+required_skills: []
+delegation: false
+baseline: b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22
+user_request: rebase到最新develop，并确认下一步计划。
+goal: Complete rebase verification by removing detached maintenance from temporary
+  witness fixtures.
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- tests/test_selection_witness.py
+- tests/test_ci_plan.py
+- .github/scripts/selection_witness.py
+- .github/**
+- work/M14-005/**
+- GitHub PR 80 and CI run 35086048928; local Git trace and test receipts
+write_scope:
+- tests/test_selection_witness.py
+- work/M14-005/A-20260916-002/**
+- PR 80 body and feature branch
+stop_conditions:
+- Final-head hosted CI and R2 review; no PR merge without approval and authorization.
+- Preserve production witness/source-CI behavior, prior frozen Attempts and primary
+  develop.
+- No release ref/tag, remote protection mutation or release cutover.

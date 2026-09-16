@@ -1,0 +1,17 @@
+..........
+----------------------------------------------------------------------
+Ran 10 tests in 18.462s
+
+OK
+{"authority_changes":[],"base":"ceccb4d5ae0b158e2540af8f243c0dc7eabd0717","execution_checks_proved":false,"head":"ceccb4d5ae0b158e2540af8f243c0dc7eabd0717","observed_behavioral":"full","plan_id":"03b085dbb9d6d7dfbf17358db9f93ecb731efecfd8c1d3a73665263447404b11","repository":"Example/repo","required_behavioral":"none","scope":"selection-authority floor only","status":"PASS","target":"ceccb4d5ae0b158e2540af8f243c0dc7eabd0717","witness_commit":"ceccb4d5ae0b158e2540af8f243c0dc7eabd0717","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+{"reason":"witness source drift","status":"BLOCK","witness_source_sha256":"186866d274a9e55c517a6d49f684c99ef36f4afeff0409c10bd93ce40d54031d"}
+
+{"reason":"witness checkout differs from reviewer-pinned commit","status":"BLOCK","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+{"authority_changes":[],"base":"8d803183ef2c74353c8891c2a1c8b686a0917d3a","content_conclusion":null,"content_run":7,"content_status":"in_progress","execution_checks_proved":false,"head":"8d803183ef2c74353c8891c2a1c8b686a0917d3a","observed_behavioral":"full","plan_id":"eeaea19a2c7b01254339f12ce4b06a2cb4c193f1feaafd2ad6fb85cce9d79f9d","repository":"Example/repo","required_behavioral":"none","scope":"selection-authority floor only","status":"PASS","target":"8d803183ef2c74353c8891c2a1c8b686a0917d3a","witness_commit":"8d803183ef2c74353c8891c2a1c8b686a0917d3a","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+{"reason":"invalid zip","status":"BLOCK","witness_commit":"8d803183ef2c74353c8891c2a1c8b686a0917d3a","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+{"reason":"witness checkout differs from reviewer-pinned commit","status":"BLOCK","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+

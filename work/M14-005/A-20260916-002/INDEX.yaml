@@ -1,0 +1,70 @@
+schema_version: 0.1.0
+trace_id: TRACE-M14-005-A-20260916-002
+task_id: M14-005
+task_revision: 1
+attempt_id: A-20260916-002
+archive_root: A-20260916-002
+baseline: b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 87405308dc224905a47f04219c92f9266f86cc4716c782f554a11f38ce62babc
+actors_ref:
+  path: ACTORS.yaml
+  sha256: f7e858288f92a0d13cf99255290100f5bdabb49d8aa737817b7038a98f743123
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- tests/test_selection_witness.py
+- tests/test_ci_plan.py
+- .github/scripts/selection_witness.py
+- .github/**
+- work/M14-005/**
+- GitHub PR 80 and CI run 35086048928; local Git trace and test receipts
+write_scope:
+- tests/test_selection_witness.py
+- work/M14-005/A-20260916-002/**
+- PR 80 body and feature branch
+tool_allowlist:
+- git
+- gh
+- python
+- apply_patch
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: af8ddbf9b06463efdc977756fa47f316b814496e2912db6ff2831953a98b4a76
+  event_count: 11
+tool_event_refs:
+- path: tool-events/diagnosis.json
+  sha256: ef1cab5317fdb1c74f25bb028d88cee70ee8288ad346bf3a67127dd543d74dd2
+- path: tool-events/failed-cleanup.log
+  sha256: 684a8035a908209ff5b1a8a88d10b98d1b5230823836a816ad46490163f63626
+- path: tool-events/witness-after.log
+  sha256: e7ecca35ae3561a044562757c1bc86502fffd9f2a243175504f69291a959f136
+- path: tool-events/witness-before.log
+  sha256: ec2b39338e81390370d593920ebb030185334fd024c523fc8724b87e8eada71b
+- path: tool-events/witness-full.log
+  sha256: 82f1ee026b43d170221715c40fef6768ab47f7e1f99cf746903d0ad85e5e648f
+handoff_refs:
+- path: WORKLOG.md
+  sha256: 864529102cc95bb599b38eee517001d1fcdf5a3f6a54981d63d02d5c57763528
+decision_refs: []
+output_refs: []
+check_refs:
+- path: .gitattributes
+  sha256: 78f21538ed957a4c049d3b02e720ff138b052ed92fd436f0370b8a58521e353d
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: tool-results
+- event_id: EVT-0004
+  affected_stream: file-revisions
+- event_id: EVT-0005
+  affected_stream: external-actions
