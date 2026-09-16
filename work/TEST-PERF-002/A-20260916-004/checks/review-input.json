@@ -1,0 +1,15 @@
+{
+  "id": "PRR_kwDOT2gtDc8AAAABNv-8yw",
+  "author": {
+    "login": "let778750-cpu"
+  },
+  "authorAssociation": "COLLABORATOR",
+  "body": "# PR83 — REQUEST CHANGES\n\nExact head `5d989f87abf0a84c57cd87587c526488d09a549a` / base `7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba`。\n\n## [P2] 新归档 Python 脚本缺少 coverage 集成，当前必需检查无法通过\n\n`work/TEST-PERF-002/A-20260916-003/checks/compare_scope.py` 作为新增可执行 Python 文件进入当前 plan 的 `coverage_modules` / `coverage_lines`，但已上传 coverage 没有该模块。当前 [CI 35028593655](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/35028593655) 在 `ci_checks.py:impact_coverage` 确定性失败：`ValueError: impact module absent: work/TEST-PERF-002/A-20260916-003/checks/compare_scope.py`，继而导致 3.11 compatibility projection 和两个 required aggregate 失败。\n\n我下载当前 plan、coverage、execution/coverage receipts，用当前 `impact_coverage()` 独立重放得到同一错误。双版本行为执行各1286项以及1248项coverage选择集的测试记录通过，不等于 coverage gate 通过。旧 head 的绿灯或 selection witness 均不能替代这个失败。\n\n请明确这份文件的身份：若只是冻结的历史生产脚本，作为不可执行证据保留原始字节及 hash；若作为当前可执行工具交付，则修正归档位置下的 ROOT（目前 `parents[2]` 指向 `work/TEST-PERF-002`，其下没有 `.github/scripts`），将实际执行和变更行/分支覆盖纳入计划。修复后重新提供当前 head 的 required checks；无需降低 coverage floor 或删除 selection witness。\n\n本次还检查了 literal-length metadata 的 lexical/mutation guards、`patch.multiple/dict` 修复、固定文件/目录/script 输入的保守回退及 workflow typed-semantics/mode 处理。未发现另一项已证实的新增 selector 缺陷；当前阻断是上述最终候选的验证缺口。不执行 PR83 合并。\n",
+  "submittedAt": "2026-09-16T01:58:26Z",
+  "includesCreatedEdit": false,
+  "reactionGroups": [],
+  "state": "CHANGES_REQUESTED",
+  "commit": {
+    "oid": "5d989f87abf0a84c57cd87587c526488d09a549a"
+  }
+}

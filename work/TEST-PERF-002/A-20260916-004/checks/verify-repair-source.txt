@@ -1,0 +1,79 @@
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+import sys
+import yaml
+
+ROOT = Path(__file__).resolve().parents[2]
+OUT = Path(__file__).resolve().parent
+OLD = '5d989f87abf0a84c57cd87587c526488d09a549a'
+ARCHIVE = 'work/TEST-PERF-002/A-20260916-003/'
+SOURCE = ARCHIVE + 'checks/compare_scope.py'
+SNAPSHOT = SOURCE + '.txt'
+sys.path.insert(0, str(ROOT / '.github/scripts'))
+import plan_ci as planner
+import ci_checks
+import check_pr_governance as governance
+
+def git(*args):
+    return subprocess.check_output(['git', *args], cwd=ROOT)
+
+old_plan = json.loads((ROOT / '.rwb/boundary-rooted/hosted-plan/ci-plan.json').read_bytes())
+coverage = json.loads((OUT / 'failed-coverage/coverage.json').read_bytes())
+results = json.loads((OUT / 'failed-coverage/coverage-test-results.json').read_bytes())
+policy = yaml.safe_load(git('show', OLD + ':tests/coverage_policy.yaml'))
+try:
+    ci_checks.impact_coverage(old_plan, policy, coverage, results)
+except ValueError as error:
+    failure = str(error)
+    assert failure == 'impact module absent: ' + SOURCE, failure
+else:
+    raise AssertionError('Expected archived executable failure did not reproduce')
+
+report = {'reproduced_head': OLD, 'reproduced_content_run': 35028593655,
+          'reproduced_failure': failure,
+          'original_source_sha256': hashlib.sha256(git('show', OLD + ':' + SOURCE)).hexdigest()}
+if sys.argv[1] == 'after':
+    head = git('rev-parse', 'HEAD').decode().strip()
+    blob = git('show', head + ':' + SNAPSHOT)
+    assert blob == git('show', OLD + ':' + SOURCE)
+    old_index = yaml.safe_load(git('show', OLD + ':' + ARCHIVE + 'INDEX.yaml'))
+    new_index = yaml.safe_load(git('show', head + ':' + ARCHIVE + 'INDEX.yaml'))
+    for item in old_index['check_refs']:
+        if item['path'] == 'checks/compare_scope.py':
+            assert item['sha256'] == report['original_source_sha256']
+            item['path'] += '.txt'
+    assert old_index == new_index, 'Archive change exceeds byte-preserving reference relocation'
+    body = (OUT / 'pr-body.md').read_text(encoding='utf-8')
+    plan = planner.make_plan(ROOT, base=old_plan['binding']['base'], head=head, target=head,
+                             repository=old_plan['binding']['repository'], body=body)
+    planner.verify_plan(ROOT, plan)
+    files = {name.replace('\\', '/'): value for name, value in coverage['files'].items()}
+    missing = sorted(set(plan['coverage_modules']) - set(files))
+    assert not missing, missing
+    assert not any(path.startswith('work/') for path in plan['coverage_modules'])
+    rows = {}
+    for path in plan['coverage_modules']:
+        assert git('show', OLD + ':' + path) == git('show', head + ':' + path), path
+        changed = set(plan['coverage_lines'][path])
+        assert not changed & set(files[path]['missing_lines']), path
+        assert not [arc for arc in files[path]['missing_branches'] if arc[0] in changed], path
+        rows[path] = {'source_unchanged_since_failed_head': True,
+                      'sha256': hashlib.sha256(git('show', head + ':' + path)).hexdigest(),
+                      'missing_changed_lines': [], 'missing_changed_branches': []}
+    repository = {'full_name': old_plan['binding']['repository']}
+    event = {'repository': repository, 'pull_request': {'body': body, 'user': {'login': 'Chengyue-Lu'},
+             'base': {'sha': plan['binding']['base'], 'ref': 'develop', 'repo': repository},
+             'head': {'sha': head, 'ref': 'fix/ci-dependency-boundaries', 'repo': repository}}}
+    check = governance.check_pull_request(event)
+    check.emit()
+    assert not check.has_errors
+    (OUT / 'source-plan.json').write_text(json.dumps(plan, indent=2), encoding='utf-8', newline='\n')
+    report.update(head=head, base=plan['binding']['base'], target=head, plan_id=plan['plan_id'],
+                  coverage_modules=plan['coverage_modules'], coverage_scope=plan['coverage_scope'],
+                  behavioral_scope=plan['behavioral_scope'], missing_modules=missing,
+                  source_identity=rows, archive_source_bytes_preserved=True, governance='PASS',
+                  limits='Coverage membership/source comparison only. Old receipts are not rebound or claimed as new-head execution; fresh hosted CI is required.')
+(OUT / ('repair-' + sys.argv[1] + '.json')).write_text(json.dumps(report, indent=2), encoding='utf-8', newline='\n')
+print(json.dumps(report, indent=2))
