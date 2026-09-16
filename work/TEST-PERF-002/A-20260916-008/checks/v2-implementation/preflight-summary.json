@@ -1,0 +1,64 @@
+{
+  "head": "c713f999d7e39900966f6e59156377fc0dc3ec93",
+  "base": "0d4a1d00a4c32ca9b822df6482a95920e7c21b1b",
+  "target": "c713f999d7e39900966f6e59156377fc0dc3ec93",
+  "plan_id": "b2f9713408491a13b7fc668deca7c8989b0889657efbdee82ea9188f97c36c38",
+  "behavioral_scope": "full",
+  "coverage_obligations": [
+    "impact",
+    "repository"
+  ],
+  "coverage_modules": [
+    ".github/scripts/ci_contract_shadow.py",
+    ".github/scripts/ci_dependencies.py",
+    ".github/scripts/ci_input_facts.py"
+  ],
+  "governance": "PASS",
+  "source_manifest": [
+    {
+      "path": ".github/scripts/ci_contract_shadow.py",
+      "checkout_sha256": "342188a3a3961c1aeb7fcf016ab16910d94817041ebcd821118ec6496171313a",
+      "git_sha256": "342188a3a3961c1aeb7fcf016ab16910d94817041ebcd821118ec6496171313a"
+    },
+    {
+      "path": ".github/scripts/ci_input_facts.py",
+      "checkout_sha256": "a4fc10bc50f824b305a938cb8b12724fd3e02e8697a599c2459c4c664dbbeab8",
+      "git_sha256": "a4fc10bc50f824b305a938cb8b12724fd3e02e8697a599c2459c4c664dbbeab8"
+    },
+    {
+      "path": ".github/scripts/ci_dependencies.py",
+      "checkout_sha256": "5768999e3e6929f69ac87c56b94b9ecb66bf4ee527f48d97a21beb839110a20f",
+      "git_sha256": "5768999e3e6929f69ac87c56b94b9ecb66bf4ee527f48d97a21beb839110a20f"
+    },
+    {
+      "path": "tests/test_ci_contract_shadow.py",
+      "checkout_sha256": "9dd341035323edf1763e2babd30ab91f5b7a521909bcbdf1888d6fd77013b71f",
+      "git_sha256": "9dd341035323edf1763e2babd30ab91f5b7a521909bcbdf1888d6fd77013b71f"
+    },
+    {
+      "path": "tests/test_ci_input_facts.py",
+      "checkout_sha256": "b8198a0c0685c0cd64d84b1fe70443165074b37e09312c70c4896e04fc9c2d1c",
+      "git_sha256": "b8198a0c0685c0cd64d84b1fe70443165074b37e09312c70c4896e04fc9c2d1c"
+    },
+    {
+      "path": "tests/test_ci_dependencies.py",
+      "checkout_sha256": "a6cd0c74438c973649f5afeee49de42000f1a309d0d8fec4dfc8e6f633de7577",
+      "git_sha256": "a6cd0c74438c973649f5afeee49de42000f1a309d0d8fec4dfc8e6f633de7577"
+    },
+    {
+      "path": "tests/coverage_policy.yaml",
+      "checkout_sha256": "bef96002ca0128f9983dd154dfefea4626ddc4bd5c57602aeb19296f31413ff0",
+      "git_sha256": "bef96002ca0128f9983dd154dfefea4626ddc4bd5c57602aeb19296f31413ff0"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "checkout_sha256": "571e1dda06ab092b1fb7eedbd3bd05ac366d2c324eacf0d886acc5e9a9327b1b",
+      "git_sha256": "571e1dda06ab092b1fb7eedbd3bd05ac366d2c324eacf0d886acc5e9a9327b1b"
+    }
+  ],
+  "source_test_coverage_scope": "three changed CI Python modules",
+  "quality_thresholds_unchanged": true,
+  "coverage_exclusions_unchanged": true,
+  "other_selection_authority_preserved": true,
+  "shadow_report_id": "32ef105d595aaadf1abfe05d405bb0c6ba28bdfc325265df1f2b9c5a4d91f4c0"
+}

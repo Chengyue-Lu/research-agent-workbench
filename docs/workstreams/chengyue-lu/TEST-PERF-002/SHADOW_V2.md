@@ -60,7 +60,7 @@ checkout. Historical branches and the primary develop checkout are unchanged.
 | #82 closeout records | 88/89 | full / repository | 1 → 0 |
 | #84 closeout records | 91/92 | full / repository | 0 → 0 |
 
-All 12 comparisons preserve every previous selection field and 17 execution/binding
+All 12 comparisons preserve every previous selection field and 16 execution/binding
 fields, including exact tests, positive/negative proof, changed coordinates, coverage and
 both smokes. Classification gaps decrease from 112 to 4 records across cases (not a unique
 file count). The remainder is three transport-proof ZIPs and LICENSE; container contents
