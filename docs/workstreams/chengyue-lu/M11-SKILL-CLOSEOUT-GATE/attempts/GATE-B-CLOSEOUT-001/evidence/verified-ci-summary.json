@@ -1,0 +1,93 @@
+{
+  "binding": {
+    "base": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+    "head": "c529ac19e09ad436980acd46209fd964d9c80977",
+    "merge_base": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+    "repository": "Chengyue-Lu/research-agent-workbench",
+    "target": "fef9abc85ba9fc74cf231f43a2f778dd7cfc5b03"
+  },
+  "plan_id": "55e01f39ef5122627e8844b45f59486639be1547d9433dd651ad7859e8b48b54",
+  "behavioral_scope": "focused",
+  "coverage_obligations": [
+    "impact",
+    "repository"
+  ],
+  "merge_target_tree_equals_head": true,
+  "suites": {
+    "full-3.11": {
+      "test_count": 1272,
+      "outcomes": {
+        "passed": 1272
+      },
+      "wall_seconds": 712.870135
+    },
+    "full-3.13": {
+      "test_count": 1272,
+      "outcomes": {
+        "passed": 1272
+      },
+      "wall_seconds": 340.976262
+    },
+    "coverage": {
+      "test_count": 1248,
+      "outcomes": {
+        "passed": 1248
+      },
+      "wall_seconds": 712.870135
+    }
+  },
+  "shared_execution_projection_verified": true,
+  "impact": {
+    "coverage_scope": "impact",
+    "modules": [
+      "src/research_workbench/execution/__init__.py",
+      "src/research_workbench/execution/generic_closeout.py",
+      "src/research_workbench/execution/host.py",
+      "src/research_workbench/execution/skill_closeout.py",
+      "src/research_workbench/execution/skill_facts.py",
+      "src/research_workbench/validation/document_kinds.py",
+      "work/M11-007/A-20260915-002/replay.py",
+      "work/M11-007/A-20260915-002/synthetic/completed-with-tool/closeout/checker.py",
+      "work/M11-007/A-20260915-002/synthetic/failed-model/closeout/checker.py",
+      "work/M11-007/A-20260915-002/synthetic/failed-projection/closeout/checker.py",
+      "work/M11-007/A-20260915-002/synthetic/preflight-blocked/closeout/checker.py",
+      "work/M11-007/A-20260915-003/replay.py",
+      "work/M11-007/A-20260915-003/synthetic/completed-with-tool/closeout/checker.py",
+      "work/M11-007/A-20260915-003/synthetic/failed-model/closeout/checker.py",
+      "work/M11-007/A-20260915-003/synthetic/failed-projection/closeout/checker.py",
+      "work/M11-007/A-20260915-003/synthetic/preflight-blocked/closeout/checker.py"
+    ],
+    "repository_coverage_proved": false
+  },
+  "global_source_line_percent": 93.88853299167201,
+  "key_modules": {
+    "skill_facts": {
+      "line": 100.0,
+      "branch": 100.0
+    },
+    "skill_closeout": {
+      "line": 100.0,
+      "branch": 100.0
+    },
+    "host": {
+      "line": 100.0,
+      "branch": 99.19354838709677
+    },
+    "generic_closeout": {
+      "line": 99.69040247678019,
+      "branch": 97.67441860465117
+    }
+  },
+  "governance_checker": {
+    "line": 98.05680119581464,
+    "branch": 97.6027397260274
+  },
+  "artifact_sha256": {
+    "coverage/coverage-test-results.json": "41689488e4fe71beef4d4af05eb88de115a5a1567df2bd77982582aa73fac620",
+    "coverage/coverage.json": "b199872248edba4f6553804cf479bc2d366d41ba16755eb77c1ba684bf53ee83",
+    "coverage/execution-test-results.json": "9e17b37b70cb7219ca6bd95e53e86e0767c6190ff86f1ff4af26853e4be559d4",
+    "full-3.11/full-test-results-3.11.json": "33102587fab72bd4142f8aa30d5a6814fefc2cc8ece377b93765b1990306eec3",
+    "full-3.13/full-test-results-3.13.json": "3aa5090f7957acebb41399c65c9e64c5c81fb8fa53bfa1dc95bdf3d446ff7ac6",
+    "plan/ci-plan.json": "fda1f1bd0a313475963ea52f3b5810c3ccccc9962d739ec00d414e5adf98a3bc"
+  }
+}

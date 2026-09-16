@@ -1,4 +1,4 @@
-# M11-007 implementation candidate
+# M11-007 accepted implementation
 
 - Accepted definition: PR #76, `develop@0bebafd81f0116a8269c63ac97378038a1eb2a5d`.
 - User authorization: continue M11-007 implementation in this session.
@@ -41,8 +41,10 @@ Deliver a synthetic Bundle → View → bounded Host → use-boundary Trace → 
 missing-fact and subject-closure negatives; Core and legacy regression; current focused/full/coverage,
 repository/package/governance checks. Reuse execution evidence according to the accepted CI plan.
 
-Gate B remains UNSATISFIED while the candidate is implemented and reviewed. Implementation pins and
-test/CI evidence are prepared for both named owners; no prior single-PR merge exception carries forward.
+PR81 accepted head `c529ac19e09ad436980acd46209fd964d9c80977` was merged as
+`7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba`. [Gate B](GATE.md) binds the exact implementation,
+replay/CI and named acceptance. M11-007 DONE / Gate B SATISFIED take effect when that R2 closeout record
+is accepted and merged. M5-007 remains blocked on M6-008. Historical attempt statuses remain unchanged.
 
 ## Attempt evidence
 

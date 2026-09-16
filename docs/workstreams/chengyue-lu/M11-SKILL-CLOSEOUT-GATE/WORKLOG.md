@@ -65,3 +65,13 @@
   修复说明与验收矩阵见 [REVIEW-REPAIR](REVIEW-REPAIR.md)。M11-007 与 Gate/M5 状态保持不变。
 - 修复后 37 项 Skill 回归与 9 项独立 review matrix 通过；随后共享 Core/Host/Schema/documentation
   带覆盖回归 114 PASS，两个 Skill 模块 line/branch 均为 100/100。
+
+## 2026-09-15：实现接受、Gate B 收口与 M6 接手准备
+
+- PR81 head `c529ac19e09ad436980acd46209fd964d9c80977` 已获黄毅 APPROVE，并合入 `7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba`；两者 tree 相同。
+- 用户明确要求 M11-007 / Gate B 收口。新 [evidence archive](attempts/GATE-B-CLOSEOUT-001/README.md)
+  固定具名接受、原 implementation/schema/validator pins、四个 lifecycle proof 与已独立核验的 CI。
+  本次只修改文档状态和证据，保留旧归档；M11-007 DONE / Gate B SATISFIED 随本 R2 变更接受合入生效。
+- M5-007 继续 BLOCKED，剩余实现依赖 M6-008；已从 PR75 的 `8f68879` 建立隔离准备分支，
+  只读预检两处文档冲突。具体集成、验收与测试节点见 [handoff](M6-008-HANDOFF.md)。
+- 开发 Trace 为 scoped/gapped safe-paused，无 BLOCK；当前文档检查、PR review 和最终 merge 留在本次 PR。

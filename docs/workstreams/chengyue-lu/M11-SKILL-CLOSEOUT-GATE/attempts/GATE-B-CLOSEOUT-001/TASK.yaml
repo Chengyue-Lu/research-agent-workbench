@@ -1,0 +1,8 @@
+task_id: M11-007
+revision: 1
+accepted_definition_commit: 0bebafd81f0116a8269c63ac97378038a1eb2a5d
+implementation_merge: 7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba
+authorization: 对M11-007做收口与gateB收口，然后准备接手M6-008的开发任务。
+agent_role: bounded documentation closeout and M6 intake
+required_skills: []
+delegation: false
