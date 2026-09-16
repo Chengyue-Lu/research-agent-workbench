@@ -4,9 +4,10 @@
 
 ## 进入节点
 
-已接受基线为 `develop@b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22`。
-M6-008 实现已由 PR75 合入，本收口 PR 提议 M6-008 DONE 与 M5-007 READY；合入前 develop 的
-M5-007 仍为 BLOCKED。此计划细化现有 Task，不增加 Task、不改写其目标、依赖或验收。
+已接受基线为 `develop@0d4a1d00a4c32ca9b822df6482a95920e7c21b1b`。
+M6-008 实现已由 PR75 合入，PR84 已接受 M6-008 DONE 与 M5-007 READY。
+此计划细化现有 Task，不增加 Task、不改写其目标、依赖或验收。
+首个开发分支为 `feature/m5-007-harness-preflight`；具体接口、写入面与负例见 [H1/H2 实施包](M5-007_H1_H2_PACKET.md)。
 
 | 前置 | 已接受依据 | Harness 消费接口 |
 |---|---|---|
@@ -57,5 +58,5 @@ tests/fixtures 与 coverage inventory。必要的 catalog/validation/CLI 集成�
 M5-003 已发布 Manifest/arm/metric set 和 M6/M11 Runtime contracts 保持当前边界；若发现必须改变这些
 定义的缺口，先停在具体失败证据和 task-definition/ADR review，不能在 Harness 中加旁路。
 
-本收口 PR 只交付状态、证据绑定和进入计划。首次实现 PR 开始时将 M5-007 置为 IN_PROGRESS；
+PR84 交付的状态、证据绑定和进入计划已接受。首次实现 PR 开始时将 M5-007 置为 IN_PROGRESS；
 完成 H1–H5 的整体验收后才提出 DONE。Issue55 继续 OPEN，直到 Harness 的内部重算与分析输入闭包被接受。

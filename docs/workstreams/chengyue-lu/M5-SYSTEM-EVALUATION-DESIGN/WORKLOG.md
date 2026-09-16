@@ -119,3 +119,21 @@ confirmatory net-benefit conclusion，M5-004/005 保持 BLOCKED。
 
 [Definition Attempt](attempts/M5-008-DEFINITION-001/README.md) 记录输入、变更范围、检查与 capture gap。
 本次无 live 调用、Harness 实现或 Task DONE；Task-definition PR 的 CI/review 单独绑定其最终提交。
+
+## M5-007 H1/H2 分支与接口准备（2026-09-16）
+
+PR84 已合入 `develop@0d4a1d00a4c32ca9b822df6482a95920e7c21b1b`，M6-008 DONE、M5-007 READY。
+从该基线建立独立分支 `feature/m5-007-harness-preflight` 和独立 Python 3.11.16 虚拟环境；editable
+安装的 import path 指向新 checkout，`pip check` 与 `rwb --help` 通过。主 develop checkout 保持原样。
+
+[H1/H2 实施包](M5-007_H1_H2_PACKET.md) 固定复用接口、调用方责任、拟定写入面、实现顺序和六组反例。
+已核对现有 baseline plan 尚不编排 case/replicate/retry；overlap/overlay/comparability 必须接收独立的
+case/time pins，A4 admission verifier 由授权评价侧提供；当前完整 synthetic A3/A4 fixture 的比较等级
+保持 package effect。首次 implementation PR 再提出 IN_PROGRESS，并在实施开始前建立正式 Attempt capture。
+
+进入基线回归：`test_evaluation_manifest`、`test_system_evaluation_protocol`、`test_evaluation_overlap`、
+`test_evaluation_overlay`、`test_evaluation_comparability`、`test_evaluation_contracts`、`test_baseline_envelope`
+共 **115 PASS / 0 skip**，60.775 秒；文档检查 **10 PASS**（含内链），repository validation
+**186 validated / 0 errors / 0 warnings**，diff check PASS。本地检查日志保存在未跟踪的
+`.rwb/m5-entry/`。这些结果是既有依赖的进入基线；新增 Harness、H3–H5、真实 case/live/admission
+与科学收益仍须各自实施和验收。此次准备只修改 workstream 文档，不修改 Task 状态、源码或 Schema。

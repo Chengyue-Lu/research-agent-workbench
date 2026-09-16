@@ -47,7 +47,7 @@ and [WORKLOG](WORKLOG.md). Test fixtures are synthetic structural evidence, not 
 
 ## M5-007 进入时风险更新（2026-09-16）
 
-上文保留原设计及 M5-006 implementation 阶段状态。本次基于 PR71、PR75、PR81/82：Protocol、baseline 与 Skill closeout 已接受，Gate B 已 SATISFIED；M6 收口合入后 M5-007 READY。剩余 Harness 风险是 preflight 重算与实际执行混同、两种 transport 被强制同形、overlap/比较等级自报、失败选择性丢弃和盲审信息泄漏。H1–H5 的逐项负例与停止条件见 [进入计划](M5-007_ENTRY_PLAN.md)。生产 admission、真实 case/live 与科研净收益保持独立未满足条件。
+上文保留原设计及 M5-006 implementation 阶段状态。PR71、PR75、PR81/82 的 Protocol、baseline 与 Skill closeout 已接受，Gate B 已 SATISFIED；PR84 已接受 M6-008 DONE 与 M5-007 READY。剩余 Harness 风险是 preflight 重算与实际执行混同、两种 transport 被强制同形、overlap/比较等级自报、失败选择性丢弃和盲审信息泄漏。H1–H5 的逐项负例与停止条件见 [进入计划](M5-007_ENTRY_PLAN.md)，首个切片见 [H1/H2 实施包](M5-007_H1_H2_PACKET.md)。生产 admission、真实 case/live 与科研净收益保持独立未满足条件。
 
 ## M5-008 live pilot 定义（2026-09-17）
 

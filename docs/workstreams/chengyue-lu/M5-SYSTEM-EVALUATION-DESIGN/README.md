@@ -4,7 +4,7 @@
 
 风险：R2
 
-M5-006 已由 PR71 接受；M6-008 实现已由 PR75 合入，M11-007 / Gate B 已按 PR81/82 收口。PR84 已接受 M6-008 DONE 与 M5-007 READY；按 [M5-007 进入计划](M5-007_ENTRY_PLAN.md) 推进 synthetic Harness。本次 task-definition 新增 M5-008 BLOCKED，作为 M5-004 之前的独立 live 工程验收关口。
+M5-006 已由 PR71 接受；M6-008 实现已由 PR75 合入，M11-007 / Gate B 已按 PR81/82 收口。PR84 已接受 M6-008 DONE、M5-007 READY；从 [M5-007 进入计划](M5-007_ENTRY_PLAN.md) 和 [H1/H2 实施包](M5-007_H1_H2_PACKET.md) 启动 synthetic Harness。M5-008 为 BLOCKED，作为 M5-004 之前的独立 live 工程验收关口。
 
 实施导航：[M5-007 进入计划](M5-007_ENTRY_PLAN.md)、[M5-008 Live Pilot Gate](M5-008_LIVE_PILOT_GATE.md)、[M5-006 历史进入计划](ENTRY_PLAN.md)、[Protocol / validator contract](../../../implementation/SYSTEM_EVALUATION_PROTOCOL.md)、
 [工作记录与验证](WORKLOG.md)、[Risk Ledger](RISK_LEDGER.md)。
