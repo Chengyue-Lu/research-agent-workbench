@@ -10,6 +10,11 @@
 The September 15 [dependency boundary Draft](BOUNDARY_REPAIR.md) records the expansion
 audit, initial metadata/workflow precision repairs and the remaining consumer-boundary work.
 
+The September 16 [CI contract replanning proposal](CI_REPLAN.md) is the current review entry
+for the next development stage. Its [business-module and cost inventory](MODULE_AUDIT.md)
+and [migration/acceptance matrix](CI_REPLAN_ACCEPTANCE.md) define the proposed replacement
+model. This proposal has not changed the accepted selection rules described below.
+
 The next repair round after merged PR #66 is prepared in [Impact precision](IMPACT_PRECISION.md),
 with the real M14 hosted baseline, three reproduced module probes and independent coverage-selection acceptance.
 

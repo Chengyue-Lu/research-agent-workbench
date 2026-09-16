@@ -1,0 +1,94 @@
+"""Read-only attribution of PR84's hosted plan; diagnostic ablations are not exclusions."""
+import json
+from collections import defaultdict
+from pathlib import Path
+import sys
+
+OUT = Path(__file__).resolve().parent
+REPO = Path(r'D:\lcy\develop\_worktrees\RWB\ci-boundaries')
+sys.path.insert(0, str(REPO / '.github/scripts'))
+import plan_ci as planner
+
+hosted = json.loads((OUT / 'hosted-plan/ci-plan.json').read_text(encoding='utf-8-sig'))
+pr = json.loads((OUT / 'pr84.json').read_text(encoding='utf-8-sig'))
+deps = planner.dependencies
+original_select = deps.select
+captured = []
+
+def capture(*args, **kwargs):
+    result = original_select(*args, **kwargs)
+    captured.append((args, kwargs))
+    return result
+
+def plan():
+    return planner.make_plan(REPO, base=pr['baseRefOid'], head=pr['headRefOid'],
+        target=pr['headRefOid'], repository=hosted['binding']['repository'], body=pr['body'])
+
+deps.select = capture
+replayed = plan()
+deps.select = original_select
+for key in ('tests', 'coverage_tests', 'coverage_modules', 'behavioral_scope', 'coverage_scope',
+            'selection', 'obligation_reasons', 'package_smoke', 'repository_smoke'):
+    assert replayed[key] == hosted[key], key
+args, kwargs = captured[0]
+seeds = set(args[3])
+assert not args[4]
+archive = {row['path'] for row in hosted['changes'] if not row['path'].endswith('.md')}
+assert len(archive) == 9 and all('/attempts/M6-CLOSEOUT-001/' in p for p in archive)
+
+# Isolate the classifier layer only; do not change the repository or production policy.
+original_non_executable = planner.non_executable
+planner.non_executable = lambda path: original_non_executable(path) or path in archive
+classification_only = plan()
+planner.non_executable = original_non_executable
+
+reverse = defaultdict(set)
+resources = set()
+for commit in (pr['baseRefOid'], pr['headRefOid']):
+    edges, _, readers, errors = deps.commit_graph(REPO, commit)
+    assert not errors
+    for source, consumers in edges.items():
+        reverse[source].update(consumers)
+    resources.update(readers)
+_, blobs = deps.snapshot(REPO, pr['headRefOid'])
+
+def walk(starts, resource_fallback=True):
+    trails = {p: [p] for p in sorted(starts)}
+    queue = list(trails)
+    for source in queue:
+        consumers = set(reverse[source])
+        if resource_fallback and not source.endswith(('.py', '.md')) and not source.startswith('work/'):
+            consumers.update(resources)
+        for consumer in sorted(consumers - trails.keys()):
+            trails[consumer] = trails[source] + [consumer]
+            queue.append(consumer)
+    selected = {deps.module_name(p).removeprefix('tests.'): chain for p, chain in trails.items()
+                if p in blobs and p.startswith('tests/test_')}
+    return {'count': len(selected), 'selected': dict(sorted(selected.items())),
+            'public_consumers': {p: chain for p, chain in trails.items()
+                if p == 'src/research_workbench/cli.py' or p.startswith('src/research_workbench/validation/')}}
+
+assert set(walk(seeds)['selected']) == set(hosted['selection']['selected'])
+experiments = {
+    'all_current_edges': walk(seeds),
+    'all_without_unbounded_resource_edges': walk(seeds, False),
+    'markdown_seeds_only': walk(seeds - archive),
+    'archive_seeds_only': walk(archive),
+    'archive_without_unbounded_resource_edges': walk(archive, False),
+}
+single = {p: {'current': walk({p})['count'], 'syntax_only': walk({p}, False)['count']} for p in sorted(seeds)}
+scope_keys = ('behavioral_scope', 'coverage_scope', 'package_smoke', 'repository_smoke')
+result = {
+    'binding': hosted['binding'], 'hosted_plan_id': hosted['plan_id'], 'reproduced_hosted_plan_scope': True,
+    'scope': {k: hosted[k] for k in scope_keys}, 'scope_summary': hosted['selection']['scope_summary'],
+    'changed_files': len(hosted['changes']), 'archive_files': sorted(archive),
+    'classification_only_diagnostic': {**{k: classification_only[k] for k in scope_keys},
+        'tests': len(classification_only['tests']), 'reasons': classification_only['obligation_reasons']},
+    'diagnostic_ablations_not_safe_exclusions': experiments,
+    'single_seed_counts': single,
+}
+(OUT / 'scope-audit.json').write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
+print(json.dumps({**{k: result[k] for k in ('reproduced_hosted_plan_scope', 'scope_summary', 'classification_only_diagnostic')},
+    'ablation_counts': {k: v['count'] for k, v in experiments.items()},
+    'public_consumer_chains': experiments['all_current_edges']['public_consumers'],
+    'single_seed_counts': single}, ensure_ascii=False, indent=2))

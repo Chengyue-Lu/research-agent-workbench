@@ -1,0 +1,2942 @@
+{
+  "binding": {
+    "base": "b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22",
+    "head": "dfe3165a90ebcef99d107aef8e790bf7abc0c13f",
+    "merge_base": "b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22",
+    "repository": "Chengyue-Lu/research-agent-workbench",
+    "target": "7bc70fab34f947ff0e506d8a6b9450dba099589d"
+  },
+  "hosted_plan_id": "b2a8eb54ba3b2fcc3d2f5028ecf70152d45695f1be726ffdbd8a8295f0896b34",
+  "reproduced_hosted_plan_scope": true,
+  "scope": {
+    "behavioral_scope": "full",
+    "coverage_scope": "repository",
+    "package_smoke": true,
+    "repository_smoke": true
+  },
+  "scope_summary": {
+    "available_test_modules": 92,
+    "dependency_selected_test_modules": 91,
+    "opaque_execution_paths": 0,
+    "unbounded_resource_paths": 81
+  },
+  "changed_files": 24,
+  "archive_files": [
+    "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+    "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+    "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/INDEX.yaml",
+    "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/TASK.yaml",
+    "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/decisions/closeout-evidence-index.yaml",
+    "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/events.jsonl",
+    "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/evidence/closeout-evidence.json",
+    "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/evidence/trace-validation.json",
+    "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/tool-events/closeout-evidence-export-unknown.json"
+  ],
+  "classification_only_diagnostic": {
+    "behavioral_scope": "focused",
+    "coverage_scope": "none",
+    "package_smoke": true,
+    "repository_smoke": true,
+    "tests": 91,
+    "reasons": {
+      "behavioral_scope": [
+        "complete affected base/head consumer and contract tests"
+      ],
+      "coverage_scope": [
+        "no production/critical executable or coverage authority changed"
+      ],
+      "package_smoke": [
+        "affected public CLI consumer"
+      ],
+      "repository_smoke": [
+        "affected repository validation consumer"
+      ]
+    }
+  },
+  "diagnostic_ablations_not_safe_exclusions": {
+    "all_current_edges": {
+      "count": 91,
+      "selected": {
+        "test_accepted_skill_migration_fixtures": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/capability/archive_audit.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_accepted_skill_migration_fixtures.py"
+        ],
+        "test_agent_trace": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_agent_trace.py"
+        ],
+        "test_api_session_runner": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_api_session_runner.py"
+        ],
+        "test_artifacts_admission": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "tests/test_artifacts_admission.py"
+        ],
+        "test_artifacts_promotion": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_artifacts_promotion.py"
+        ],
+        "test_artifacts_validation_host": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_artifacts_validation_host.py"
+        ],
+        "test_baseline_envelope": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/evaluation/pins.py",
+          "tests/test_baseline_envelope.py"
+        ],
+        "test_baseline_execution": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_baseline_execution.py"
+        ],
+        "test_baseline_replay_integrity": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_baseline_replay_integrity.py"
+        ],
+        "test_candidate_claim_rewrite": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "skill-lab/candidates/claim-preserving-rewrite/scripts/check_claim_preservation.py",
+          "tests/test_candidate_claim_rewrite.py"
+        ],
+        "test_capability_consumer": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_capability_consumer.py"
+        ],
+        "test_capability_requirements": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_capability_requirements.py"
+        ],
+        "test_capability_resolution": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "tests/test_capability_resolution.py"
+        ],
+        "test_capability_resolver_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/io.py",
+          "tests/test_capability_resolver_branches.py"
+        ],
+        "test_catalog": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "src/research_workbench/capability/catalog.py",
+          "tests/test_catalog.py"
+        ],
+        "test_ci_checks": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_ci_checks.py"
+        ],
+        "test_ci_dependencies": [
+          "docs/M_SERIES_IMPLEMENTATION_MAP.md",
+          "tests/test_ci_dependencies.py"
+        ],
+        "test_ci_plan": [
+          "docs/TASKS.md",
+          "tests/test_ci_plan.py"
+        ],
+        "test_claim_trace": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_claim_trace.py"
+        ],
+        "test_cli": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "examples/run-reconstruction/linear-recurrence/simulate.py",
+          "tests/test_cli.py"
+        ],
+        "test_cli_command_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_cli_command_branches.py"
+        ],
+        "test_context_model_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/io.py",
+          "tests/test_context_model_branches.py"
+        ],
+        "test_contracts": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/io.py",
+          "tests/test_contracts.py"
+        ],
+        "test_coverage_policy": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_coverage_policy.py"
+        ],
+        "test_critical_contract_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_critical_contract_branches.py"
+        ],
+        "test_decision_authority": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "examples/run-reconstruction/linear-recurrence/simulate.py",
+          "tests/test_decision_authority.py"
+        ],
+        "test_documentation": [
+          "docs/M_SERIES_IMPLEMENTATION_MAP.md",
+          "tests/test_documentation.py"
+        ],
+        "test_evaluation_comparability": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/evaluation/comparability.py",
+          "tests/test_evaluation_comparability.py"
+        ],
+        "test_evaluation_contracts": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/cli.py",
+          "tests/test_evaluation_contracts.py"
+        ],
+        "test_evaluation_manifest": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/cli.py",
+          "tests/test_evaluation_manifest.py"
+        ],
+        "test_evaluation_overlap": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_evaluation_overlap.py"
+        ],
+        "test_evaluation_overlay": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/evaluation/comparability.py",
+          "tests/test_evaluation_overlay.py"
+        ],
+        "test_execution_archive_helpers": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_execution_archive_helpers.py"
+        ],
+        "test_execution_contract_helpers": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_execution_contract_helpers.py"
+        ],
+        "test_execution_host": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_execution_host.py"
+        ],
+        "test_execution_trace_adapter": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_execution_trace_adapter.py"
+        ],
+        "test_execution_view": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_execution_view.py"
+        ],
+        "test_generic_execution_closeout": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_generic_execution_closeout.py"
+        ],
+        "test_governance_helper_branches": [
+          "docs/TASKS.md",
+          "tests/test_governance_helper_branches.py"
+        ],
+        "test_handoff_transfer": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/cli.py",
+          "tests/test_handoff_transfer.py"
+        ],
+        "test_integrity": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "tests/test_integrity.py"
+        ],
+        "test_m2_registry_runtime": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_m2_registry_runtime.py"
+        ],
+        "test_m3_context_observability": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_m3_context_observability.py"
+        ],
+        "test_m5_trace_export": [
+          "docs/M_SERIES_IMPLEMENTATION_MAP.md",
+          "tests/test_m5_trace_export.py"
+        ],
+        "test_method_resolutions": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/io.py",
+          "tests/test_method_resolutions.py"
+        ],
+        "test_method_trace_candidate": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_method_trace_candidate.py"
+        ],
+        "test_mode_action_routing_fixtures": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/io.py",
+          "tests/test_mode_action_routing_fixtures.py"
+        ],
+        "test_mode_actions": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_mode_actions.py"
+        ],
+        "test_model_pool": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_model_pool.py"
+        ],
+        "test_observability_model_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/io.py",
+          "tests/test_observability_model_branches.py"
+        ],
+        "test_phase_b_evolution_gate": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_phase_b_evolution_gate.py"
+        ],
+        "test_phase_c_gate": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_phase_c_gate.py"
+        ],
+        "test_portable_build": [
+          "docs/implementation/README.md",
+          "tests/test_portable_build.py"
+        ],
+        "test_pr_governance": [
+          "docs/STATUS.md",
+          "tests/test_pr_governance.py"
+        ],
+        "test_project_internal_handoff_fixtures": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/io.py",
+          "tests/test_project_internal_handoff_fixtures.py"
+        ],
+        "test_protocol_profiles": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_protocol_profiles.py"
+        ],
+        "test_provider_adapters": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_provider_adapters.py"
+        ],
+        "test_provider_conformance": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_provider_conformance.py"
+        ],
+        "test_provider_contract_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          ".agents/skills/literature-evidence-extraction/scripts/check_evidence_record.py",
+          "tests/test_provider_contract_branches.py"
+        ],
+        "test_provider_port": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_provider_port.py"
+        ],
+        "test_public_surface": [
+          "docs/implementation/README.md",
+          "tests/test_public_surface.py"
+        ],
+        "test_registry_require_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/capability/skill_needs.py",
+          "tests/test_registry_require_branches.py"
+        ],
+        "test_relationships": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/io.py",
+          "tests/test_relationships.py"
+        ],
+        "test_release_oracle_replay": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_release_surface.py",
+          "tests/test_release_oracle_replay.py"
+        ],
+        "test_release_surface": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_release_surface.py"
+        ],
+        "test_research_attempt_failure": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_research_attempt_failure.py"
+        ],
+        "test_research_mode_migration": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_research_mode_migration.py"
+        ],
+        "test_research_state_candidate": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_research_state_candidate.py"
+        ],
+        "test_research_state_critical_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_research_state_critical_branches.py"
+        ],
+        "test_run_reconstruction": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_run_reconstruction.py"
+        ],
+        "test_runtime_bundle": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_runtime_bundle.py"
+        ],
+        "test_runtime_resources": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_runtime_resources.py"
+        ],
+        "test_scaffold": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_scaffold.py"
+        ],
+        "test_schemas": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_schemas.py"
+        ],
+        "test_selection_witness": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_selection_witness.py"
+        ],
+        "test_skill_archive_audit": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_skill_archive_audit.py"
+        ],
+        "test_skill_closeout_review": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_skill_closeout_review.py"
+        ],
+        "test_skill_evaluation": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_skill_evaluation.py"
+        ],
+        "test_skill_evaluation_helpers": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "tests/test_skill_evaluation_helpers.py"
+        ],
+        "test_skill_execution_closeout": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_skill_execution_closeout.py"
+        ],
+        "test_skill_lifecycle": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_skill_lifecycle.py"
+        ],
+        "test_skill_needs": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/io.py",
+          "tests/test_skill_needs.py"
+        ],
+        "test_skill_release_projection": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_skill_release_projection.py"
+        ],
+        "test_skill_runtime_extension": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "tests/test_skill_runtime_extension.py"
+        ],
+        "test_system_evaluation_protocol": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_system_evaluation_protocol.py"
+        ],
+        "test_test_runner": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_test_runner.py"
+        ],
+        "test_trace_properties": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_trace_properties.py"
+        ],
+        "test_trace_risk_codes": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_trace_risk_codes.py"
+        ],
+        "test_validation": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "examples/run-reconstruction/linear-recurrence/simulate.py",
+          "tests/test_validation.py"
+        ],
+        "test_validation_critical_surfaces": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "tests/test_validation_critical_surfaces.py"
+        ],
+        "test_validation_helpers": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "tests/test_validation_helpers.py"
+        ]
+      },
+      "public_consumers": {
+        "src/research_workbench/cli.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/cli.py"
+        ],
+        "src/research_workbench/validation/capability.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/validation/capability.py"
+        ],
+        "src/research_workbench/validation/documents.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/validation/documents.py"
+        ],
+        "src/research_workbench/validation/schemas.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/validation/schemas.py"
+        ],
+        "src/research_workbench/validation/document_core.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "src/research_workbench/validation/document_core.py"
+        ],
+        "src/research_workbench/validation/relationships.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "src/research_workbench/validation/relationships.py"
+        ],
+        "src/research_workbench/validation/skill_release_projection_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "src/research_workbench/validation/skill_release_projection_registry.py"
+        ],
+        "src/research_workbench/validation/capability_supply_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/capability/requirements.py",
+          "src/research_workbench/validation/capability_supply_registry.py"
+        ],
+        "src/research_workbench/validation/research_state_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/research_state/closure.py",
+          "src/research_workbench/validation/research_state_registry.py"
+        ],
+        "src/research_workbench/validation/__init__.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/validation/capability.py",
+          "src/research_workbench/validation/__init__.py"
+        ],
+        "src/research_workbench/validation/authority_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "src/research_workbench/validation/document_core.py",
+          "src/research_workbench/validation/authority_registry.py"
+        ],
+        "src/research_workbench/validation/capability_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "src/research_workbench/validation/document_core.py",
+          "src/research_workbench/validation/capability_registry.py"
+        ],
+        "src/research_workbench/validation/method_resolution_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "src/research_workbench/validation/document_core.py",
+          "src/research_workbench/validation/method_resolution_registry.py"
+        ],
+        "src/research_workbench/validation/phase_b_gate.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "src/research_workbench/validation/document_core.py",
+          "src/research_workbench/validation/phase_b_gate.py"
+        ]
+      }
+    },
+    "all_without_unbounded_resource_edges": {
+      "count": 89,
+      "selected": {
+        "test_accepted_skill_migration_fixtures": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_accepted_skill_migration_fixtures.py"
+        ],
+        "test_agent_trace": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "tests/test_agent_trace.py"
+        ],
+        "test_api_session_runner": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "tests/test_api_session_runner.py"
+        ],
+        "test_artifacts_admission": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_artifacts_admission.py"
+        ],
+        "test_artifacts_promotion": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/TASK.yaml",
+          "tests/test_artifacts_promotion.py"
+        ],
+        "test_artifacts_validation_host": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/TASK.yaml",
+          "tests/test_artifacts_validation_host.py"
+        ],
+        "test_baseline_envelope": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/execution/archive.py",
+          "src/research_workbench/execution/__init__.py",
+          "tests/test_baseline_envelope.py"
+        ],
+        "test_baseline_execution": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "tests/test_baseline_execution.py"
+        ],
+        "test_baseline_replay_integrity": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "tests/test_baseline_replay_integrity.py"
+        ],
+        "test_candidate_claim_rewrite": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_candidate_claim_rewrite.py"
+        ],
+        "test_capability_consumer": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "tests/test_capability_consumer.py"
+        ],
+        "test_capability_requirements": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_capability_requirements.py"
+        ],
+        "test_capability_resolution": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_capability_resolution.py"
+        ],
+        "test_capability_resolver_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_capability_resolver_branches.py"
+        ],
+        "test_catalog": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_catalog.py"
+        ],
+        "test_ci_checks": [
+          "docs/M_SERIES_IMPLEMENTATION_MAP.md",
+          "tests/test_ci_dependencies.py",
+          "tests/test_ci_checks.py"
+        ],
+        "test_ci_dependencies": [
+          "docs/M_SERIES_IMPLEMENTATION_MAP.md",
+          "tests/test_ci_dependencies.py"
+        ],
+        "test_ci_plan": [
+          "docs/TASKS.md",
+          "tests/test_ci_plan.py"
+        ],
+        "test_claim_trace": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/TASK.yaml",
+          "tests/test_artifacts_promotion.py",
+          "tests/test_claim_trace.py"
+        ],
+        "test_cli": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_cli.py"
+        ],
+        "test_cli_command_branches": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_cli_command_branches.py"
+        ],
+        "test_context_model_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/context/handoff_transfer.py",
+          "src/research_workbench/context/__init__.py",
+          "tests/test_context_model_branches.py"
+        ],
+        "test_contracts": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_contracts.py"
+        ],
+        "test_coverage_policy": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/INDEX.yaml",
+          "tests/test_execution_trace_adapter.py",
+          "tests/test_coverage_policy.py"
+        ],
+        "test_critical_contract_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_critical_contract_branches.py"
+        ],
+        "test_decision_authority": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_decision_authority.py"
+        ],
+        "test_documentation": [
+          "docs/M_SERIES_IMPLEMENTATION_MAP.md",
+          "tests/test_documentation.py"
+        ],
+        "test_evaluation_comparability": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/evaluation/overlap.py",
+          "src/research_workbench/evaluation/overlay.py",
+          "src/research_workbench/evaluation/comparability.py",
+          "tests/test_evaluation_comparability.py"
+        ],
+        "test_evaluation_contracts": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_evaluation_contracts.py"
+        ],
+        "test_evaluation_manifest": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_evaluation_manifest.py"
+        ],
+        "test_evaluation_overlap": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/evaluation/overlap.py",
+          "tests/test_evaluation_overlap.py"
+        ],
+        "test_evaluation_overlay": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/evaluation/overlap.py",
+          "src/research_workbench/evaluation/overlay.py",
+          "tests/test_evaluation_overlay.py"
+        ],
+        "test_execution_archive_helpers": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/execution/archive.py",
+          "tests/test_execution_archive_helpers.py"
+        ],
+        "test_execution_contract_helpers": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/INDEX.yaml",
+          "tests/test_execution_contract_helpers.py"
+        ],
+        "test_execution_host": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/execution/archive.py",
+          "src/research_workbench/execution/__init__.py",
+          "tests/test_execution_host.py"
+        ],
+        "test_execution_trace_adapter": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/INDEX.yaml",
+          "tests/test_execution_trace_adapter.py"
+        ],
+        "test_execution_view": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/execution/archive.py",
+          "src/research_workbench/execution/__init__.py",
+          "tests/test_execution_view.py"
+        ],
+        "test_generic_execution_closeout": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/INDEX.yaml",
+          "tests/test_generic_execution_closeout.py"
+        ],
+        "test_governance_helper_branches": [
+          "docs/TASKS.md",
+          "tests/test_governance_helper_branches.py"
+        ],
+        "test_handoff_transfer": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_handoff_transfer.py"
+        ],
+        "test_m2_registry_runtime": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "tests/test_m2_registry_runtime.py"
+        ],
+        "test_m3_context_observability": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_m3_context_observability.py"
+        ],
+        "test_m5_trace_export": [
+          "docs/M_SERIES_IMPLEMENTATION_MAP.md",
+          "tests/test_m5_trace_export.py"
+        ],
+        "test_method_resolutions": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_method_resolutions.py"
+        ],
+        "test_method_trace_candidate": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "tests/test_method_trace_candidate.py"
+        ],
+        "test_mode_actions": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "tests/test_mode_actions.py"
+        ],
+        "test_model_pool": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_model_pool.py"
+        ],
+        "test_observability_model_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "tests/test_observability_model_branches.py"
+        ],
+        "test_phase_b_evolution_gate": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_phase_b_evolution_gate.py"
+        ],
+        "test_phase_c_gate": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_phase_c_gate.py"
+        ],
+        "test_portable_build": [
+          "docs/implementation/README.md",
+          "tests/test_portable_build.py"
+        ],
+        "test_pr_governance": [
+          "docs/STATUS.md",
+          "tests/test_pr_governance.py"
+        ],
+        "test_project_internal_handoff_fixtures": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_project_internal_handoff_fixtures.py"
+        ],
+        "test_protocol_profiles": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_protocol_profiles.py"
+        ],
+        "test_provider_adapters": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_provider_adapters.py"
+        ],
+        "test_provider_conformance": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_provider_conformance.py"
+        ],
+        "test_provider_contract_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          ".agents/skills/literature-evidence-extraction/scripts/check_evidence_record.py",
+          "tests/test_provider_contract_branches.py"
+        ],
+        "test_provider_port": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_provider_port.py"
+        ],
+        "test_public_surface": [
+          "docs/implementation/README.md",
+          "tests/test_public_surface.py"
+        ],
+        "test_registry_require_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_registry_require_branches.py"
+        ],
+        "test_relationships": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_relationships.py"
+        ],
+        "test_release_oracle_replay": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_release_surface.py",
+          "tests/test_release_oracle_replay.py"
+        ],
+        "test_release_surface": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_release_surface.py"
+        ],
+        "test_research_attempt_failure": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_research_attempt_failure.py"
+        ],
+        "test_research_mode_migration": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_research_mode_migration.py"
+        ],
+        "test_research_state_candidate": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_research_state_candidate.py"
+        ],
+        "test_research_state_critical_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "tests/test_method_trace_candidate.py",
+          "tests/test_research_state_critical_branches.py"
+        ],
+        "test_run_reconstruction": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "tests/test_run_reconstruction.py"
+        ],
+        "test_runtime_bundle": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/execution/archive.py",
+          "src/research_workbench/execution/__init__.py",
+          "tests/test_runtime_bundle.py"
+        ],
+        "test_runtime_resources": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_runtime_resources.py"
+        ],
+        "test_scaffold": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "tests/test_scaffold.py"
+        ],
+        "test_schemas": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_schemas.py"
+        ],
+        "test_selection_witness": [
+          "docs/TASKS.md",
+          ".github/scripts/check_pr_governance.py",
+          "tests/test_selection_witness.py"
+        ],
+        "test_skill_archive_audit": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_skill_archive_audit.py"
+        ],
+        "test_skill_closeout_review": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/INDEX.yaml",
+          "tests/test_skill_closeout_review.py"
+        ],
+        "test_skill_evaluation": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_skill_evaluation.py"
+        ],
+        "test_skill_evaluation_helpers": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "tests/test_skill_evaluation_helpers.py"
+        ],
+        "test_skill_execution_closeout": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/INDEX.yaml",
+          "tests/test_skill_execution_closeout.py"
+        ],
+        "test_skill_lifecycle": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "tests/test_skill_lifecycle.py"
+        ],
+        "test_skill_needs": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_skill_needs.py"
+        ],
+        "test_skill_release_projection": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_skill_evaluation.py",
+          "tests/test_skill_release_projection.py"
+        ],
+        "test_skill_runtime_extension": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/execution/archive.py",
+          "src/research_workbench/execution/__init__.py",
+          "tests/test_skill_runtime_extension.py"
+        ],
+        "test_system_evaluation_protocol": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/evaluation/overlap.py",
+          "tests/system_evaluation_fixtures.py",
+          "tests/test_system_evaluation_protocol.py"
+        ],
+        "test_test_runner": [
+          "docs/M_SERIES_IMPLEMENTATION_MAP.md",
+          "tests/test_ci_dependencies.py",
+          "tests/run_unittest_suite.py",
+          "tests/test_test_runner.py"
+        ],
+        "test_trace_properties": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/INDEX.yaml",
+          "tests/test_trace_properties.py"
+        ],
+        "test_trace_risk_codes": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "tests/test_trace_risk_codes.py"
+        ],
+        "test_validation": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "tests/test_validation.py"
+        ],
+        "test_validation_critical_surfaces": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_validation_critical_surfaces.py"
+        ],
+        "test_validation_helpers": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_validation_helpers.py"
+        ]
+      },
+      "public_consumers": {
+        "src/research_workbench/cli.py": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py"
+        ],
+        "src/research_workbench/validation/skill_release_projection_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/validation/skill_release_projection_registry.py"
+        ],
+        "src/research_workbench/validation/documents.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py"
+        ],
+        "src/research_workbench/validation/__init__.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py"
+        ],
+        "src/research_workbench/validation/capability.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/capability.py"
+        ],
+        "src/research_workbench/validation/authority_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/validation/authority_registry.py"
+        ],
+        "src/research_workbench/validation/capability_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/validation/capability_registry.py"
+        ],
+        "src/research_workbench/validation/capability_supply_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/validation/capability_supply_registry.py"
+        ],
+        "src/research_workbench/validation/method_resolution_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/validation/method_resolution_registry.py"
+        ],
+        "src/research_workbench/validation/phase_b_gate.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/validation/phase_b_gate.py"
+        ],
+        "src/research_workbench/validation/research_state_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py"
+        ],
+        "src/research_workbench/validation/schemas.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/resources.py",
+          "src/research_workbench/validation/schemas.py"
+        ],
+        "src/research_workbench/validation/relationships.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/validation/relationships.py"
+        ]
+      }
+    },
+    "markdown_seeds_only": {
+      "count": 46,
+      "selected": {
+        "test_agent_trace": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_agent_trace.py"
+        ],
+        "test_artifacts_admission": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_artifacts_admission.py"
+        ],
+        "test_artifacts_promotion": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_artifacts_promotion.py"
+        ],
+        "test_artifacts_validation_host": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_artifacts_validation_host.py"
+        ],
+        "test_baseline_envelope": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/evaluation/overlap.py",
+          "tests/system_evaluation_fixtures.py",
+          "tests/baseline_fixtures.py",
+          "tests/test_baseline_envelope.py"
+        ],
+        "test_baseline_execution": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "tests/test_baseline_execution.py"
+        ],
+        "test_baseline_replay_integrity": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "tests/test_baseline_execution.py",
+          "tests/test_baseline_replay_integrity.py"
+        ],
+        "test_ci_checks": [
+          "docs/M_SERIES_IMPLEMENTATION_MAP.md",
+          "tests/test_ci_dependencies.py",
+          "tests/test_ci_checks.py"
+        ],
+        "test_ci_dependencies": [
+          "docs/M_SERIES_IMPLEMENTATION_MAP.md",
+          "tests/test_ci_dependencies.py"
+        ],
+        "test_ci_plan": [
+          "docs/TASKS.md",
+          "tests/test_ci_plan.py"
+        ],
+        "test_claim_trace": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_claim_trace.py"
+        ],
+        "test_cli": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_cli.py"
+        ],
+        "test_cli_command_branches": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_cli_command_branches.py"
+        ],
+        "test_coverage_policy": [
+          "docs/M_SERIES_IMPLEMENTATION_MAP.md",
+          "tests/test_ci_dependencies.py",
+          "tests/run_unittest_suite.py",
+          "tests/test_coverage_policy.py"
+        ],
+        "test_documentation": [
+          "docs/M_SERIES_IMPLEMENTATION_MAP.md",
+          "tests/test_documentation.py"
+        ],
+        "test_evaluation_comparability": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/evaluation/overlap.py",
+          "src/research_workbench/evaluation/overlay.py",
+          "src/research_workbench/evaluation/comparability.py",
+          "tests/test_evaluation_comparability.py"
+        ],
+        "test_evaluation_contracts": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_evaluation_contracts.py"
+        ],
+        "test_evaluation_manifest": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_evaluation_manifest.py"
+        ],
+        "test_evaluation_overlap": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/evaluation/overlap.py",
+          "tests/test_evaluation_overlap.py"
+        ],
+        "test_evaluation_overlay": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/evaluation/overlap.py",
+          "src/research_workbench/evaluation/overlay.py",
+          "tests/test_evaluation_overlay.py"
+        ],
+        "test_execution_trace_adapter": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_execution_trace_adapter.py"
+        ],
+        "test_governance_helper_branches": [
+          "docs/TASKS.md",
+          "tests/test_governance_helper_branches.py"
+        ],
+        "test_handoff_transfer": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_handoff_transfer.py"
+        ],
+        "test_m2_registry_runtime": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "tests/test_m2_registry_runtime.py"
+        ],
+        "test_m3_context_observability": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_m3_context_observability.py"
+        ],
+        "test_m5_trace_export": [
+          "docs/M_SERIES_IMPLEMENTATION_MAP.md",
+          "tests/test_m5_trace_export.py"
+        ],
+        "test_method_trace_candidate": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_method_trace_candidate.py"
+        ],
+        "test_phase_c_gate": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_phase_c_gate.py"
+        ],
+        "test_portable_build": [
+          "docs/implementation/README.md",
+          "tests/test_portable_build.py"
+        ],
+        "test_pr_governance": [
+          "docs/STATUS.md",
+          "tests/test_pr_governance.py"
+        ],
+        "test_public_surface": [
+          "docs/implementation/README.md",
+          "tests/test_public_surface.py"
+        ],
+        "test_release_oracle_replay": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "tests/test_release_surface.py",
+          "tests/test_release_oracle_replay.py"
+        ],
+        "test_release_surface": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "tests/test_release_surface.py"
+        ],
+        "test_research_attempt_failure": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_research_attempt_failure.py"
+        ],
+        "test_research_state_candidate": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_research_state_candidate.py"
+        ],
+        "test_research_state_critical_branches": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_method_trace_candidate.py",
+          "tests/test_research_state_critical_branches.py"
+        ],
+        "test_run_reconstruction": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "tests/test_run_reconstruction.py"
+        ],
+        "test_runtime_resources": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_runtime_resources.py"
+        ],
+        "test_scaffold": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "tests/test_scaffold.py"
+        ],
+        "test_selection_witness": [
+          "docs/TASKS.md",
+          ".github/scripts/check_pr_governance.py",
+          "tests/test_selection_witness.py"
+        ],
+        "test_skill_archive_audit": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_skill_archive_audit.py"
+        ],
+        "test_skill_evaluation": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_skill_evaluation.py"
+        ],
+        "test_skill_release_projection": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_skill_evaluation.py",
+          "tests/test_skill_release_projection.py"
+        ],
+        "test_system_evaluation_protocol": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/evaluation/overlap.py",
+          "tests/system_evaluation_fixtures.py",
+          "tests/test_system_evaluation_protocol.py"
+        ],
+        "test_test_runner": [
+          "docs/M_SERIES_IMPLEMENTATION_MAP.md",
+          "tests/test_ci_dependencies.py",
+          "tests/run_unittest_suite.py",
+          "tests/test_test_runner.py"
+        ],
+        "test_validation_helpers": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py",
+          "tests/test_validation_helpers.py"
+        ]
+      },
+      "public_consumers": {
+        "src/research_workbench/cli.py": [
+          "docs/implementation/README.md",
+          "src/research_workbench/scaffold.py",
+          "src/research_workbench/cli.py"
+        ]
+      }
+    },
+    "archive_seeds_only": {
+      "count": 91,
+      "selected": {
+        "test_accepted_skill_migration_fixtures": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/capability/archive_audit.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_accepted_skill_migration_fixtures.py"
+        ],
+        "test_agent_trace": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_agent_trace.py"
+        ],
+        "test_api_session_runner": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_api_session_runner.py"
+        ],
+        "test_artifacts_admission": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "tests/test_artifacts_admission.py"
+        ],
+        "test_artifacts_promotion": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_artifacts_promotion.py"
+        ],
+        "test_artifacts_validation_host": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_artifacts_validation_host.py"
+        ],
+        "test_baseline_envelope": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/evaluation/pins.py",
+          "tests/test_baseline_envelope.py"
+        ],
+        "test_baseline_execution": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_baseline_execution.py"
+        ],
+        "test_baseline_replay_integrity": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_baseline_replay_integrity.py"
+        ],
+        "test_candidate_claim_rewrite": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "skill-lab/candidates/claim-preserving-rewrite/scripts/check_claim_preservation.py",
+          "tests/test_candidate_claim_rewrite.py"
+        ],
+        "test_capability_consumer": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_capability_consumer.py"
+        ],
+        "test_capability_requirements": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_capability_requirements.py"
+        ],
+        "test_capability_resolution": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "tests/test_capability_resolution.py"
+        ],
+        "test_capability_resolver_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/io.py",
+          "tests/test_capability_resolver_branches.py"
+        ],
+        "test_catalog": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "src/research_workbench/capability/catalog.py",
+          "tests/test_catalog.py"
+        ],
+        "test_ci_checks": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_ci_checks.py"
+        ],
+        "test_ci_dependencies": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_ci_dependencies.py"
+        ],
+        "test_ci_plan": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_ci_plan.py"
+        ],
+        "test_claim_trace": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_claim_trace.py"
+        ],
+        "test_cli": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "examples/run-reconstruction/linear-recurrence/simulate.py",
+          "tests/test_cli.py"
+        ],
+        "test_cli_command_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_cli_command_branches.py"
+        ],
+        "test_context_model_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/io.py",
+          "tests/test_context_model_branches.py"
+        ],
+        "test_contracts": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/io.py",
+          "tests/test_contracts.py"
+        ],
+        "test_coverage_policy": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_coverage_policy.py"
+        ],
+        "test_critical_contract_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_critical_contract_branches.py"
+        ],
+        "test_decision_authority": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "examples/run-reconstruction/linear-recurrence/simulate.py",
+          "tests/test_decision_authority.py"
+        ],
+        "test_documentation": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_documentation.py"
+        ],
+        "test_evaluation_comparability": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/evaluation/comparability.py",
+          "tests/test_evaluation_comparability.py"
+        ],
+        "test_evaluation_contracts": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/cli.py",
+          "tests/test_evaluation_contracts.py"
+        ],
+        "test_evaluation_manifest": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/cli.py",
+          "tests/test_evaluation_manifest.py"
+        ],
+        "test_evaluation_overlap": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_evaluation_overlap.py"
+        ],
+        "test_evaluation_overlay": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/evaluation/comparability.py",
+          "tests/test_evaluation_overlay.py"
+        ],
+        "test_execution_archive_helpers": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_execution_archive_helpers.py"
+        ],
+        "test_execution_contract_helpers": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_execution_contract_helpers.py"
+        ],
+        "test_execution_host": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_execution_host.py"
+        ],
+        "test_execution_trace_adapter": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_execution_trace_adapter.py"
+        ],
+        "test_execution_view": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_execution_view.py"
+        ],
+        "test_generic_execution_closeout": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_generic_execution_closeout.py"
+        ],
+        "test_governance_helper_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_governance_helper_branches.py"
+        ],
+        "test_handoff_transfer": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/cli.py",
+          "tests/test_handoff_transfer.py"
+        ],
+        "test_integrity": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "tests/test_integrity.py"
+        ],
+        "test_m2_registry_runtime": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_m2_registry_runtime.py"
+        ],
+        "test_m3_context_observability": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_m3_context_observability.py"
+        ],
+        "test_m5_trace_export": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_m5_trace_export.py"
+        ],
+        "test_method_resolutions": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/io.py",
+          "tests/test_method_resolutions.py"
+        ],
+        "test_method_trace_candidate": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_method_trace_candidate.py"
+        ],
+        "test_mode_action_routing_fixtures": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/io.py",
+          "tests/test_mode_action_routing_fixtures.py"
+        ],
+        "test_mode_actions": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_mode_actions.py"
+        ],
+        "test_model_pool": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_model_pool.py"
+        ],
+        "test_observability_model_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/io.py",
+          "tests/test_observability_model_branches.py"
+        ],
+        "test_phase_b_evolution_gate": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_phase_b_evolution_gate.py"
+        ],
+        "test_phase_c_gate": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_phase_c_gate.py"
+        ],
+        "test_portable_build": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_portable_build.py"
+        ],
+        "test_pr_governance": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_pr_governance.py"
+        ],
+        "test_project_internal_handoff_fixtures": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/io.py",
+          "tests/test_project_internal_handoff_fixtures.py"
+        ],
+        "test_protocol_profiles": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_protocol_profiles.py"
+        ],
+        "test_provider_adapters": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_provider_adapters.py"
+        ],
+        "test_provider_conformance": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_provider_conformance.py"
+        ],
+        "test_provider_contract_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          ".agents/skills/literature-evidence-extraction/scripts/check_evidence_record.py",
+          "tests/test_provider_contract_branches.py"
+        ],
+        "test_provider_port": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_provider_port.py"
+        ],
+        "test_public_surface": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "build_backend.py",
+          "tests/test_public_surface.py"
+        ],
+        "test_registry_require_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/capability/skill_needs.py",
+          "tests/test_registry_require_branches.py"
+        ],
+        "test_relationships": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/io.py",
+          "tests/test_relationships.py"
+        ],
+        "test_release_oracle_replay": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_release_surface.py",
+          "tests/test_release_oracle_replay.py"
+        ],
+        "test_release_surface": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_release_surface.py"
+        ],
+        "test_research_attempt_failure": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_research_attempt_failure.py"
+        ],
+        "test_research_mode_migration": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_research_mode_migration.py"
+        ],
+        "test_research_state_candidate": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_research_state_candidate.py"
+        ],
+        "test_research_state_critical_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_research_state_critical_branches.py"
+        ],
+        "test_run_reconstruction": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_run_reconstruction.py"
+        ],
+        "test_runtime_bundle": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_runtime_bundle.py"
+        ],
+        "test_runtime_resources": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_runtime_resources.py"
+        ],
+        "test_scaffold": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_scaffold.py"
+        ],
+        "test_schemas": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_schemas.py"
+        ],
+        "test_selection_witness": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_selection_witness.py"
+        ],
+        "test_skill_archive_audit": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_skill_archive_audit.py"
+        ],
+        "test_skill_closeout_review": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_skill_closeout_review.py"
+        ],
+        "test_skill_evaluation": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_skill_evaluation.py"
+        ],
+        "test_skill_evaluation_helpers": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "tests/test_skill_evaluation_helpers.py"
+        ],
+        "test_skill_execution_closeout": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_skill_execution_closeout.py"
+        ],
+        "test_skill_lifecycle": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "registry/validation-tools/deterministic_runner.py",
+          "tests/test_skill_lifecycle.py"
+        ],
+        "test_skill_needs": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/io.py",
+          "tests/test_skill_needs.py"
+        ],
+        "test_skill_release_projection": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_skill_release_projection.py"
+        ],
+        "test_skill_runtime_extension": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "tests/test_skill_runtime_extension.py"
+        ],
+        "test_system_evaluation_protocol": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_system_evaluation_protocol.py"
+        ],
+        "test_test_runner": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_test_runner.py"
+        ],
+        "test_trace_properties": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_trace_properties.py"
+        ],
+        "test_trace_risk_codes": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_trace_risk_codes.py"
+        ],
+        "test_validation": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "examples/run-reconstruction/linear-recurrence/simulate.py",
+          "tests/test_validation.py"
+        ],
+        "test_validation_critical_surfaces": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "tests/test_validation_critical_surfaces.py"
+        ],
+        "test_validation_helpers": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "tests/test_validation_helpers.py"
+        ]
+      },
+      "public_consumers": {
+        "src/research_workbench/cli.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/cli.py"
+        ],
+        "src/research_workbench/validation/capability.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/validation/capability.py"
+        ],
+        "src/research_workbench/validation/documents.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/validation/documents.py"
+        ],
+        "src/research_workbench/validation/schemas.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/validation/schemas.py"
+        ],
+        "src/research_workbench/validation/document_core.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "src/research_workbench/validation/document_core.py"
+        ],
+        "src/research_workbench/validation/relationships.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "src/research_workbench/validation/relationships.py"
+        ],
+        "src/research_workbench/validation/skill_release_projection_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "src/research_workbench/validation/skill_release_projection_registry.py"
+        ],
+        "src/research_workbench/validation/capability_supply_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/capability/requirements.py",
+          "src/research_workbench/validation/capability_supply_registry.py"
+        ],
+        "src/research_workbench/validation/research_state_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/research_state/closure.py",
+          "src/research_workbench/validation/research_state_registry.py"
+        ],
+        "src/research_workbench/validation/__init__.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/validation/capability.py",
+          "src/research_workbench/validation/__init__.py"
+        ],
+        "src/research_workbench/validation/authority_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "src/research_workbench/validation/document_core.py",
+          "src/research_workbench/validation/authority_registry.py"
+        ],
+        "src/research_workbench/validation/capability_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "src/research_workbench/validation/document_core.py",
+          "src/research_workbench/validation/capability_registry.py"
+        ],
+        "src/research_workbench/validation/method_resolution_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "src/research_workbench/validation/document_core.py",
+          "src/research_workbench/validation/method_resolution_registry.py"
+        ],
+        "src/research_workbench/validation/phase_b_gate.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "src/research_workbench/artifacts/integrity.py",
+          "src/research_workbench/validation/document_core.py",
+          "src/research_workbench/validation/phase_b_gate.py"
+        ]
+      }
+    },
+    "archive_without_unbounded_resource_edges": {
+      "count": 89,
+      "selected": {
+        "test_accepted_skill_migration_fixtures": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_accepted_skill_migration_fixtures.py"
+        ],
+        "test_agent_trace": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "tests/test_agent_trace.py"
+        ],
+        "test_api_session_runner": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "tests/test_api_session_runner.py"
+        ],
+        "test_artifacts_admission": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_artifacts_admission.py"
+        ],
+        "test_artifacts_promotion": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/TASK.yaml",
+          "tests/test_artifacts_promotion.py"
+        ],
+        "test_artifacts_validation_host": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/TASK.yaml",
+          "tests/test_artifacts_validation_host.py"
+        ],
+        "test_baseline_envelope": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/execution/archive.py",
+          "src/research_workbench/execution/__init__.py",
+          "tests/test_baseline_envelope.py"
+        ],
+        "test_baseline_execution": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "tests/test_baseline_execution.py"
+        ],
+        "test_baseline_replay_integrity": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "tests/test_baseline_replay_integrity.py"
+        ],
+        "test_candidate_claim_rewrite": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_candidate_claim_rewrite.py"
+        ],
+        "test_capability_consumer": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "tests/test_capability_consumer.py"
+        ],
+        "test_capability_requirements": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_capability_requirements.py"
+        ],
+        "test_capability_resolution": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_capability_resolution.py"
+        ],
+        "test_capability_resolver_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_capability_resolver_branches.py"
+        ],
+        "test_catalog": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_catalog.py"
+        ],
+        "test_ci_checks": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_ci_dependencies.py",
+          "tests/test_ci_checks.py"
+        ],
+        "test_ci_dependencies": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_ci_dependencies.py"
+        ],
+        "test_ci_plan": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_ci_plan.py"
+        ],
+        "test_claim_trace": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/TASK.yaml",
+          "tests/test_artifacts_promotion.py",
+          "tests/test_claim_trace.py"
+        ],
+        "test_cli": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_cli.py"
+        ],
+        "test_cli_command_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_cli_command_branches.py"
+        ],
+        "test_context_model_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/context/handoff_transfer.py",
+          "src/research_workbench/context/__init__.py",
+          "tests/test_context_model_branches.py"
+        ],
+        "test_contracts": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_contracts.py"
+        ],
+        "test_coverage_policy": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/INDEX.yaml",
+          "tests/test_execution_trace_adapter.py",
+          "tests/test_coverage_policy.py"
+        ],
+        "test_critical_contract_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_critical_contract_branches.py"
+        ],
+        "test_decision_authority": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_decision_authority.py"
+        ],
+        "test_documentation": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_documentation.py"
+        ],
+        "test_evaluation_comparability": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/evaluation/overlap.py",
+          "src/research_workbench/evaluation/overlay.py",
+          "src/research_workbench/evaluation/comparability.py",
+          "tests/test_evaluation_comparability.py"
+        ],
+        "test_evaluation_contracts": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_evaluation_contracts.py"
+        ],
+        "test_evaluation_manifest": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_evaluation_manifest.py"
+        ],
+        "test_evaluation_overlap": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/evaluation/overlap.py",
+          "tests/test_evaluation_overlap.py"
+        ],
+        "test_evaluation_overlay": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/evaluation/overlap.py",
+          "src/research_workbench/evaluation/overlay.py",
+          "tests/test_evaluation_overlay.py"
+        ],
+        "test_execution_archive_helpers": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/execution/archive.py",
+          "tests/test_execution_archive_helpers.py"
+        ],
+        "test_execution_contract_helpers": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/INDEX.yaml",
+          "tests/test_execution_contract_helpers.py"
+        ],
+        "test_execution_host": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/execution/archive.py",
+          "src/research_workbench/execution/__init__.py",
+          "tests/test_execution_host.py"
+        ],
+        "test_execution_trace_adapter": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/INDEX.yaml",
+          "tests/test_execution_trace_adapter.py"
+        ],
+        "test_execution_view": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/execution/archive.py",
+          "src/research_workbench/execution/__init__.py",
+          "tests/test_execution_view.py"
+        ],
+        "test_generic_execution_closeout": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/INDEX.yaml",
+          "tests/test_generic_execution_closeout.py"
+        ],
+        "test_governance_helper_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/requirements.py",
+          "tests/test_pr_governance.py",
+          "tests/test_governance_helper_branches.py"
+        ],
+        "test_handoff_transfer": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_handoff_transfer.py"
+        ],
+        "test_m2_registry_runtime": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "tests/test_m2_registry_runtime.py"
+        ],
+        "test_m3_context_observability": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_m3_context_observability.py"
+        ],
+        "test_m5_trace_export": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_m5_trace_export.py"
+        ],
+        "test_method_resolutions": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_method_resolutions.py"
+        ],
+        "test_method_trace_candidate": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "tests/test_method_trace_candidate.py"
+        ],
+        "test_mode_actions": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "tests/test_mode_actions.py"
+        ],
+        "test_model_pool": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_model_pool.py"
+        ],
+        "test_observability_model_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "tests/test_observability_model_branches.py"
+        ],
+        "test_phase_b_evolution_gate": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_phase_b_evolution_gate.py"
+        ],
+        "test_phase_c_gate": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_phase_c_gate.py"
+        ],
+        "test_portable_build": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          ".github/scripts/portable_package_smoke.py",
+          "tests/test_portable_build.py"
+        ],
+        "test_pr_governance": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/requirements.py",
+          "tests/test_pr_governance.py"
+        ],
+        "test_project_internal_handoff_fixtures": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_project_internal_handoff_fixtures.py"
+        ],
+        "test_protocol_profiles": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_protocol_profiles.py"
+        ],
+        "test_provider_adapters": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_provider_adapters.py"
+        ],
+        "test_provider_conformance": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_provider_conformance.py"
+        ],
+        "test_provider_contract_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          ".agents/skills/literature-evidence-extraction/scripts/check_evidence_record.py",
+          "tests/test_provider_contract_branches.py"
+        ],
+        "test_provider_port": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          ".agents/skills/handoff-integrity/scripts/check_handoff.py",
+          "src/research_workbench/adapters/codex.py",
+          "src/research_workbench/adapters/__init__.py",
+          "tests/test_provider_port.py"
+        ],
+        "test_public_surface": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/resources.py",
+          "build_backend.py",
+          "tests/test_public_surface.py"
+        ],
+        "test_registry_require_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "tests/test_registry_require_branches.py"
+        ],
+        "test_relationships": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_relationships.py"
+        ],
+        "test_release_oracle_replay": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_release_surface.py",
+          "tests/test_release_oracle_replay.py"
+        ],
+        "test_release_surface": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_release_surface.py"
+        ],
+        "test_research_attempt_failure": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_research_attempt_failure.py"
+        ],
+        "test_research_mode_migration": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_research_mode_migration.py"
+        ],
+        "test_research_state_candidate": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_research_state_candidate.py"
+        ],
+        "test_research_state_critical_branches": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "tests/test_method_trace_candidate.py",
+          "tests/test_research_state_critical_branches.py"
+        ],
+        "test_run_reconstruction": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "tests/test_run_reconstruction.py"
+        ],
+        "test_runtime_bundle": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/execution/archive.py",
+          "src/research_workbench/execution/__init__.py",
+          "tests/test_runtime_bundle.py"
+        ],
+        "test_runtime_resources": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_runtime_resources.py"
+        ],
+        "test_scaffold": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_scaffold.py"
+        ],
+        "test_schemas": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_schemas.py"
+        ],
+        "test_selection_witness": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_ci_plan.py",
+          "tests/test_selection_witness.py"
+        ],
+        "test_skill_archive_audit": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_skill_archive_audit.py"
+        ],
+        "test_skill_closeout_review": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/INDEX.yaml",
+          "tests/test_skill_closeout_review.py"
+        ],
+        "test_skill_evaluation": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_skill_evaluation.py"
+        ],
+        "test_skill_evaluation_helpers": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "tests/test_skill_evaluation_helpers.py"
+        ],
+        "test_skill_execution_closeout": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/INDEX.yaml",
+          "tests/test_skill_execution_closeout.py"
+        ],
+        "test_skill_lifecycle": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "tests/test_skill_lifecycle.py"
+        ],
+        "test_skill_needs": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_skill_needs.py"
+        ],
+        "test_skill_release_projection": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_skill_evaluation.py",
+          "tests/test_skill_release_projection.py"
+        ],
+        "test_skill_runtime_extension": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/execution/archive.py",
+          "src/research_workbench/execution/__init__.py",
+          "tests/test_skill_runtime_extension.py"
+        ],
+        "test_system_evaluation_protocol": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/evaluation/overlap.py",
+          "tests/system_evaluation_fixtures.py",
+          "tests/test_system_evaluation_protocol.py"
+        ],
+        "test_test_runner": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+          "tests/test_ci_dependencies.py",
+          "tests/run_unittest_suite.py",
+          "tests/test_test_runner.py"
+        ],
+        "test_trace_properties": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/INDEX.yaml",
+          "tests/test_trace_properties.py"
+        ],
+        "test_trace_risk_codes": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "tests/test_trace_risk_codes.py"
+        ],
+        "test_validation": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "tests/test_validation.py"
+        ],
+        "test_validation_critical_surfaces": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "tests/test_validation_critical_surfaces.py"
+        ],
+        "test_validation_helpers": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/cli.py",
+          "tests/test_validation_helpers.py"
+        ]
+      },
+      "public_consumers": {
+        "src/research_workbench/cli.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/cli.py"
+        ],
+        "src/research_workbench/validation/skill_release_projection_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/validation/skill_release_projection_registry.py"
+        ],
+        "src/research_workbench/validation/documents.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py"
+        ],
+        "src/research_workbench/validation/__init__.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py"
+        ],
+        "src/research_workbench/validation/capability.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/capability.py"
+        ],
+        "src/research_workbench/validation/authority_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/validation/authority_registry.py"
+        ],
+        "src/research_workbench/validation/capability_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/validation/capability_registry.py"
+        ],
+        "src/research_workbench/validation/capability_supply_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/validation/capability_supply_registry.py"
+        ],
+        "src/research_workbench/validation/method_resolution_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/validation/method_resolution_registry.py"
+        ],
+        "src/research_workbench/validation/phase_b_gate.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/validation/phase_b_gate.py"
+        ],
+        "src/research_workbench/validation/research_state_registry.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/validation/research_state_registry.py"
+        ],
+        "src/research_workbench/validation/schemas.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/resources.py",
+          "src/research_workbench/validation/schemas.py"
+        ],
+        "src/research_workbench/validation/relationships.py": [
+          "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+          "src/research_workbench/observability/trace.py",
+          "src/research_workbench/observability/__init__.py",
+          "src/research_workbench/evaluation/skill_evaluation.py",
+          "src/research_workbench/evaluation/__init__.py",
+          "src/research_workbench/validation/documents.py",
+          "src/research_workbench/validation/__init__.py",
+          "src/research_workbench/capability/release_projection.py",
+          "src/research_workbench/capability/__init__.py",
+          "src/research_workbench/validation/relationships.py"
+        ]
+      }
+    }
+  },
+  "single_seed_counts": {
+    "docs/M_SERIES_IMPLEMENTATION_MAP.md": {
+      "current": 8,
+      "syntax_only": 8
+    },
+    "docs/ROADMAP.md": {
+      "current": 8,
+      "syntax_only": 8
+    },
+    "docs/STATUS.md": {
+      "current": 10,
+      "syntax_only": 10
+    },
+    "docs/TASKS.md": {
+      "current": 10,
+      "syntax_only": 10
+    },
+    "docs/implementation/README.md": {
+      "current": 44,
+      "syntax_only": 44
+    },
+    "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md": {
+      "current": 8,
+      "syntax_only": 8
+    },
+    "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/README.md": {
+      "current": 44,
+      "syntax_only": 44
+    },
+    "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/RISK_LEDGER.md": {
+      "current": 8,
+      "syntax_only": 8
+    },
+    "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/WORKLOG.md": {
+      "current": 8,
+      "syntax_only": 8
+    },
+    "docs/workstreams/chengyue-lu/README.md": {
+      "current": 44,
+      "syntax_only": 44
+    },
+    "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/CLOSEOUT.md": {
+      "current": 8,
+      "syntax_only": 8
+    },
+    "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/README.md": {
+      "current": 44,
+      "syntax_only": 44
+    },
+    "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/RISK_LEDGER.md": {
+      "current": 8,
+      "syntax_only": 8
+    },
+    "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/WORKLOG.md": {
+      "current": 8,
+      "syntax_only": 8
+    },
+    "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes": {
+      "current": 91,
+      "syntax_only": 10
+    },
+    "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml": {
+      "current": 91,
+      "syntax_only": 89
+    },
+    "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/INDEX.yaml": {
+      "current": 91,
+      "syntax_only": 89
+    },
+    "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/TASK.yaml": {
+      "current": 91,
+      "syntax_only": 89
+    },
+    "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/decisions/closeout-evidence-index.yaml": {
+      "current": 91,
+      "syntax_only": 8
+    },
+    "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/events.jsonl": {
+      "current": 91,
+      "syntax_only": 89
+    },
+    "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/evidence/closeout-evidence.json": {
+      "current": 91,
+      "syntax_only": 8
+    },
+    "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/evidence/trace-validation.json": {
+      "current": 91,
+      "syntax_only": 8
+    },
+    "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/tool-events/closeout-evidence-export-unknown.json": {
+      "current": 91,
+      "syntax_only": 8
+    },
+    "docs/workstreams/huangyi/README.md": {
+      "current": 44,
+      "syntax_only": 44
+    }
+  }
+}

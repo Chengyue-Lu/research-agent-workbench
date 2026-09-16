@@ -1,0 +1,10 @@
+task_id: TEST-PERF-002
+revision: 33
+request: 我们有必要重新指定一轮新的CI规范，而不是始终修修补补，因为后续进入测试阶段，必然还要牵涉大量之前的模块的部分bug修复，或者小型结构调整，所以应当再此处重新对之前的业务模块做一次深入盘点与CI重规划。
+scope: Business module inventory and proposed CI contract/acceptance redesign
+delegation: false
+required_skills: []
+write_scope:
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- work/TEST-PERF-002/A-20260916-005/**
+implementation_status: proposal-only

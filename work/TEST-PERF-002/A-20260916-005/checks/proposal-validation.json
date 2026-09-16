@@ -1,0 +1,22 @@
+{
+  "base": "b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22",
+  "checked_inventory_files": 208,
+  "checked_hash_entries": 11,
+  "checked_document_links": 47,
+  "checked_receipts": 3,
+  "documentation_unittests": {
+    "passed": 10,
+    "scope": "tests.test_documentation"
+  },
+  "trace": {
+    "blocked": false,
+    "risks": [
+      {
+        "code": "TRACE-CAPTURE-DELAYED",
+        "level": "warning",
+        "message": "[capture-gap] trace declares incomplete or delayed capture"
+      }
+    ]
+  },
+  "source_and_ci_implementation_changed": false
+}

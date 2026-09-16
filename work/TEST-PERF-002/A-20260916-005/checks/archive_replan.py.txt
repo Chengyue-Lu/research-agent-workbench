@@ -1,0 +1,66 @@
+"""Retain the observed CI replanning evidence; records explicit capture limitations."""
+import hashlib
+import json
+from pathlib import Path
+import shutil
+import sys
+
+REPO = Path(r'D:\lcy\develop\_worktrees\RWB\ci-replan')
+OUT = Path(__file__).resolve().parent
+ATTEMPT = REPO / 'work/TEST-PERF-002/A-20260916-005'
+sys.path.insert(0, str(REPO / 'src'))
+from research_workbench.observability.trace import AgentTraceRecorder, validate_attempt_trace
+
+ATTEMPT.mkdir(parents=True, exist_ok=False)
+(ATTEMPT / '.gitattributes').write_bytes(b'* -text\n')
+(ATTEMPT / 'checks').mkdir()
+copies = {
+    'module-inventory.json': 'module-inventory.json',
+    'scope-audit.json': 'pr84-scope-audit.json',
+    'hosted-plan/ci-plan.json': 'pr84-ci-plan.json',
+    'pr84.json': 'pr84-snapshot.json',
+    'run35092826503.json': 'pr84-hosted-run.json',
+    'compatibility-3.13/full-test-results-3.13.json': 'full-test-results-3.13.json',
+    'coverage-quality/execution-test-results.json': 'execution-test-results-3.11.json',
+    'coverage-quality/coverage-test-results.json': 'coverage-test-results.json',
+    'inventory_ci.py': 'inventory_ci.py.txt',
+    'audit_scope.py': 'audit_scope.py.txt',
+    'archive_replan.py': 'archive_replan.py.txt',
+}
+manifest = []
+for source, target in copies.items():
+    raw = (OUT / source).read_bytes()
+    dest = ATTEMPT / 'checks' / target
+    dest.write_bytes(raw)
+    manifest.append({'path': 'checks/'+target, 'sha256': hashlib.sha256(raw).hexdigest(), 'bytes':len(raw)})
+(ATTEMPT / 'checks/evidence-manifest.json').write_text(json.dumps(manifest, indent=2)+'\n', encoding='utf-8')
+request = '我们有必要重新指定一轮新的CI规范，而不是始终修修补补，因为后续进入测试阶段，必然还要牵涉大量之前的模块的部分bug修复，或者小型结构调整，所以应当再此处重新对之前的业务模块做一次深入盘点与CI重规划。'
+recorder = AgentTraceRecorder(ATTEMPT, task_id='TEST-PERF-002', task_revision=33,
+    attempt_id='A-20260916-005', task_snapshot={'task_id':'TEST-PERF-002','revision':33,
+        'request':request,'scope':'Business module inventory and proposed CI contract/acceptance redesign',
+        'delegation':False,'required_skills':[],'write_scope':['docs/workstreams/chengyue-lu/TEST-PERF-002/**',
+            'work/TEST-PERF-002/A-20260916-005/**'], 'implementation_status':'proposal-only'},
+    accountable_owner='Chengyue-Lu',actor_id='main-agent',runtime_identity='Codex desktop',provider='OpenAI',
+    read_allowlist=['AGENTS.md','docs/**','src/**','tests/**','.github/**','build_backend.py',
+        'runtime-resources.json','pyproject.toml','schemas/**','registry/**','work/TEST-PERF-002/**'],
+    write_scope=['docs/workstreams/chengyue-lu/TEST-PERF-002/**','work/TEST-PERF-002/A-20260916-005/**'],
+    tool_allowlist=['git','gh','python','shell','apply_patch','web'],
+    baseline='b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22')
+recorder.record_capture_gap('events',
+    'Retrospective archive of a desktop analysis turn. Exact input snapshots and resulting evidence are retained; '
+    'earlier shell/browser exchanges were not streamed into this recorder. No complete event capture is claimed.')
+inventory = json.loads((OUT/'module-inventory.json').read_text(encoding='utf-8'))
+recorder.record_tool_call(operation_id='retained-inventory-and-hosted-evidence',tool_name='python',status='succeeded',
+    arguments={'operation':'retrospective retention of observed inventory and downloaded execution receipts'},
+    result={'base':inventory['base'],'source_files':inventory['source_files'],'test_modules':inventory['test_modules'],
+        'timings':[{k:t[k] for k in ('target','plan_id','python_version','test_count','wall_seconds','successful')}
+                   for t in inventory['timings']], 'retained_files':manifest}, result_entered_context=True)
+recorder._index['check_refs'] = [{'path':v['path'],'sha256':v['sha256']} for v in manifest]
+recorder._refresh_index()
+recorder.seal('safe-paused')
+result = validate_attempt_trace(REPO, ATTEMPT)
+validation={'blocked':result.blocked,'risks':[{'code':r.code,'level':r.level.value,'message':r.message}
+    for r in result.risks]}
+(ATTEMPT/'checks/trace-validation.json').write_text(json.dumps(validation,indent=2)+'\n',encoding='utf-8')
+print(json.dumps(validation,ensure_ascii=False))
+assert not result.blocked

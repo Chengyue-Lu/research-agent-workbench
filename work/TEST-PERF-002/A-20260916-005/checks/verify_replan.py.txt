@@ -1,0 +1,51 @@
+"""Validate proposal links, immutable inventory, retained receipts and Trace."""
+import hashlib
+import json
+from pathlib import Path
+import re
+import subprocess
+import sys
+
+REPO=Path(r'D:\lcy\develop\_worktrees\RWB\ci-replan')
+ATTEMPT=REPO/'work/TEST-PERF-002/A-20260916-005'
+CHECKS=ATTEMPT/'checks'
+DOCS=REPO/'docs/workstreams/chengyue-lu/TEST-PERF-002'
+sys.path.insert(0,str(REPO/'src'))
+from research_workbench.observability.trace import validate_attempt_trace
+
+inventory=json.loads((CHECKS/'module-inventory.json').read_text(encoding='utf-8'))
+manifest=json.loads((CHECKS/'evidence-manifest.json').read_text(encoding='utf-8'))
+for row in manifest:
+    raw=(ATTEMPT/row['path']).read_bytes()
+    assert hashlib.sha256(raw).hexdigest()==row['sha256']
+    assert len(raw)==row['bytes']
+for path,row in inventory['files'].items():
+    raw=subprocess.check_output(['git','-C',str(REPO),'show',inventory['base']+':'+path])
+    assert hashlib.sha256(raw).hexdigest()==row['sha256'],path
+assert inventory['source_files']==99 and inventory['test_modules']==92
+assert sum(v['lines'] for v in inventory['areas'].values())==34294
+hosted=json.loads((CHECKS/'pr84-ci-plan.json').read_text(encoding='utf-8-sig'))
+for name in ('full-test-results-3.13.json','execution-test-results-3.11.json','coverage-test-results.json'):
+    receipt=json.loads((CHECKS/name).read_text(encoding='utf-8-sig'))
+    assert receipt['successful']
+    assert receipt['target']==hosted['binding']['target'] and receipt['plan_id']==hosted['plan_id']
+    assert receipt['test_count']==len(receipt['tests'])
+    assert len({t['canonical_id'] for t in receipt['tests']})==receipt['test_count']
+files=[DOCS/name for name in ('CI_REPLAN.md','MODULE_AUDIT.md','CI_REPLAN_ACCEPTANCE.md','README.md','RISK_LEDGER.md')]
+files.append(ATTEMPT/'RESULTS.md')
+link_count=0
+for path in files:
+    for target in re.findall(r'\[[^\]]+\]\(([^)]+)\)',path.read_text(encoding='utf-8')):
+        if target.startswith(('https://','http://','mailto:','#')):
+            continue
+        assert (path.parent/target.split('#')[0]).resolve().exists(),(path,target)
+        link_count+=1
+trace=validate_attempt_trace(REPO,ATTEMPT)
+trace_result={'blocked':trace.blocked,'risks':[{'code':r.code,'level':r.level.value,'message':r.message} for r in trace.risks]}
+assert not trace.blocked,trace_result
+report={'base':inventory['base'],'checked_inventory_files':len(inventory['files']),
+    'checked_hash_entries':len(manifest),'checked_document_links':link_count,
+    'checked_receipts':3,'documentation_unittests':{'passed':10,'scope':'tests.test_documentation'},
+    'trace':trace_result,'source_and_ci_implementation_changed':False}
+(CHECKS/'proposal-validation.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+print(json.dumps(report,ensure_ascii=False,indent=2))

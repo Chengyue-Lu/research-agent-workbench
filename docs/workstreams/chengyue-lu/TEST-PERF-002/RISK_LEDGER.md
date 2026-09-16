@@ -2,6 +2,22 @@
 
 Owner: 路诚钺 (`Chengyue-Lu`); cross-owner: 黄毅 (`let778750-cpu`); R2.
 
+## September 16 CI replanning proposal
+
+- Scope evidence: exact base `b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22`, 99 source files,
+  92 test modules, PR84 hosted plan and both timed execution receipts. Static import reachability
+  and diagnostic edge removal do not prove safe exclusions; see [module audit](MODULE_AUDIT.md).
+- Unify data/code/authority classification and preserve input-instance boundaries. RuntimeResources
+  currently checks the full package; a narrower selector cannot pretend this business dependency is absent.
+- Scope reduction requires an accepted base contract and independent witness. Candidate contracts,
+  dynamic observations and old test names cannot authorize their own smaller evidence set.
+- [The proposal](CI_REPLAN.md) retains 90/95/90, changed 100/100, negative acceptance, ordered fixtures,
+  exact-target Gates and integration baselines. Its cost targets are unmeasured goals until paired trials.
+- Business extraction and test consolidation require API/lifecycle/negative-fault equivalence. This
+  documentation round changes no production policy or executable and carries no merge/release authority.
+
+## Earlier accepted work and remaining controls
+
 | Risk | Control and evidence | Remaining review |
 |---|---|---|
 | A local contract hides initialization or a new dependency | New local-function contracts preserve module/class initialization, call expressions, string inputs and bindings; rejected changes restore ordinary consumers | Review [consumer inventories](CONSUMER_CONTRACTS.md), source/downstream mutants and exact future-base timings |
