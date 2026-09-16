@@ -249,6 +249,49 @@ class ContractShadowGitTests(unittest.TestCase):
         self.assertFalse(report['execution_authority'])
         self.assertEqual([],report['inputs'])
 
+    def test_smoke_witness_reaches_actual_source_consumer_not_just_a_test_name(self):
+        write(self.repo, '.github/scripts/tool.py', 'VALUE=1\n')
+        write(self.repo, 'registry/runner.py', 'import runpy\ndef run(path): return runpy.run_path(path)\n')
+        write(self.repo, 'src/research_workbench/cli.py', 'RUNNER="registry/runner.py"\n')
+        write(self.repo, 'src/research_workbench/validation/check.py', 'from research_workbench import cli\n')
+        self.base = self.commit('tests/test_consumer.py', 'from research_workbench.validation import check\n')
+        self.commit('.github/scripts/tool.py', 'VALUE=2\n')
+        plan = self.plan()
+        report = shadow.build_report(self.repo, plan)
+        for flag in ('package_smoke', 'repository_smoke'):
+            row = report['smoke_review'][flag]
+            self.assertTrue(row['required'])
+            self.assertTrue(row['affected_consumers'])
+            for consumer in row['affected_consumers']:
+                self.assertEqual('.github/scripts/tool.py', consumer['chain'][0])
+                self.assertEqual(consumer['path'], consumer['chain'][-1])
+                self.assertIn('opaque-execution', consumer['edge_kinds'])
+                self.assertTrue(consumer['contains_fallback_edge'])
+        altered = copy.deepcopy(plan)
+        altered['selection']['affected_witnesses'].pop('src/research_workbench/cli.py')
+        with self.assertRaisesRegex(ValueError, 'missing its path witness'):
+            shadow.smoke_review(altered, json.loads((self.repo/planner.POLICY).read_bytes()))
+        unsigned = dict(altered); unsigned.pop('plan_id'); altered['plan_id'] = planner.digest(unsigned)
+        with self.assertRaisesRegex(ValueError, 'selection proof mismatch'):
+            shadow.build_report(self.repo, altered)
+
+    def test_static_smoke_witness_and_base_group_reasons_stay_distinct(self):
+        write(self.repo, 'src/research_workbench/leaf.py', 'VALUE=1\n')
+        write(self.repo, 'src/research_workbench/cli.py', 'from research_workbench import leaf\n')
+        write(self.repo, 'tests/test_consumer.py', 'from research_workbench import cli\n')
+        policy = json.loads((self.repo/planner.POLICY).read_bytes())
+        policy['groups']['documentation']['package'] = True
+        policy['surfaces']['leaf'] = {'paths': ['src/research_workbench/leaf.py'], 'class': 'focused',
+                                      'groups': ['documentation']}
+        self.base = self.commit(planner.POLICY, planner.canonical(policy))
+        self.commit('src/research_workbench/leaf.py', 'VALUE=2\n')
+        report = shadow.build_report(self.repo, self.plan())
+        package = report['smoke_review']['package_smoke']
+        self.assertEqual(['documentation'], package['accepted_groups'])
+        self.assertFalse(package['affected_consumers'][0]['contains_fallback_edge'])
+        self.assertEqual(5, len(report['producer_sources']))
+        self.assertEqual(2, report['schema_version'])
+
 
 class ShadowWorkflowTests(unittest.TestCase):
     def test_shadow_job_has_no_execution_outputs_or_aggregate_consumers(self):

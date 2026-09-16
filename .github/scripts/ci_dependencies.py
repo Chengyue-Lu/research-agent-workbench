@@ -670,14 +670,16 @@ def select(repo, base, head, seeds, reviewed_seeds=(), reviewed_consumers=(), re
     tests = {module_name(path).removeprefix('tests.'): chain for path, chain in trails.items()
              if path in new and path.startswith('tests/test_')}
     inventory = sorted(module_name(path).removeprefix('tests.') for path in new if path.startswith('tests/test_'))
-    edge_kinds = {}
-    for name, chain in sorted(tests.items()):
-        edge_kinds[name] = [
+    affected_witnesses = {}
+    for path, chain in sorted(trails.items()):
+        kinds = [
             'syntax-reference' if consumer in reverse[dependency] else
             'opaque-execution' if dependency in seeds and dependency.endswith('.py')
                 and not dependency.startswith('tests/test_') and consumer in opaque else
             'unbounded-resource'
             for dependency, consumer in zip(chain, chain[1:])]
+        affected_witnesses[path] = {'chain': chain, 'edge_kinds': kinds}
+    edge_kinds = {name: affected_witnesses[chain[-1]]['edge_kinds'] for name, chain in sorted(tests.items())}
     payload = json.dumps({'base': before, 'head': after}, sort_keys=True).encode()
     return {'algorithm': 'base-head-consumers-v1', 'inventory_sha256': hashlib.sha256(payload).hexdigest(),
             'selected': dict(sorted(tests.items())), 'excluded': sorted(set(inventory) - tests.keys()),
@@ -691,4 +693,5 @@ def select(repo, base, head, seeds, reviewed_seeds=(), reviewed_consumers=(), re
             'exclusion_reason': 'outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately',
             'opaque_consumers': sorted(opaque & trails.keys()), 'errors': sorted(set(errors)),
             'test_reachable_sources': sorted(reachable & set(seeds)),
-            'affected_paths': sorted(trails)}, before, after, old, new
+            'affected_paths': sorted(trails), 'witness_version': 1,
+            'affected_witnesses': affected_witnesses}, before, after, old, new

@@ -14,52 +14,17 @@ from pathlib import Path, PurePosixPath
 import time
 
 import plan_ci as planner
+import ci_input_facts
 
-DATA = {'.json', '.jsonl', '.yaml', '.yml', '.txt'}
-SCRIPTS = {'.py', '.sh', '.bash', '.ps1', '.bat', '.cmd', '.js', '.mjs'}
-PACKAGING = {'build_backend.py', 'pyproject.toml', 'runtime-resources.json', 'MANIFEST.in'}
+def input_facts(path, versions):
+    return ci_input_facts.describe(path, versions, selection_authority=planner.SELECTION_AUTHORITY,
+                          coverage_authority=planner.COVERAGE_AUTHORITY, policy_path=planner.POLICY)
 
 
 def input_role(path, versions):
-    """One role inventory for the shadow model; roles do not prove independence."""
-    require = planner.require
-    parts = PurePosixPath(path).parts
-    require(versions, 'input has no Git version')
-    require(parts and not path.startswith('/') and '\\' not in path and ':' not in path
-            and all(p not in {'', '.', '..'} for p in path.split('/')), 'unsafe input path')
-    modes = {mode for mode, _ in versions}
-    if not modes <= {'100644', '100755'} or len(modes) > 1:
-        return 'unknown', 'Git type/mode boundary requires review'
-    if path in planner.SELECTION_AUTHORITY or path.startswith('.github/workflows/'):
-        return 'selection-authority', 'selection or workflow implementation'
-    if path == planner.POLICY:
-        return 'selection-policy-metadata', 'base policy retained; candidate declarations cannot reduce tests'
-    if path in PACKAGING:
-        return 'packaging-authority', 'build/install/runtime catalog contract'
-    if path in planner.COVERAGE_AUTHORITY:
-        return 'coverage-authority', 'coverage policy or measurement contract'
-    if path.startswith('.github/') or path == '.gitattributes':
-        return 'repository-authority', 'repository-wide configuration or CI tool'
-    suffix = PurePosixPath(path).suffix
-    if '100755' in modes or suffix in SCRIPTS or any(raw.startswith(b'#!') for _, raw in versions):
-        if path.startswith('tests/test_') and suffix == '.py' and modes == {'100644'}:
-            return 'test-code', 'test implementation; consumers still required'
-        return 'executable', 'executable bytes/mode override directory labels'
-    if path.startswith(('schemas/', 'registry/', 'examples/', '.agents/skills/', 'src/')):
-        return 'runtime-input', 'schema/registry/Skill/package input needs consumer closure'
-    if path.startswith('tests/'):
-        return 'test-input', 'fixture/helper data needs test consumer closure'
-    archive = path.startswith('work/') or path.startswith('docs/workstreams/') and '/attempts/' in path
-    if archive and PurePosixPath(path).name == '.gitattributes':
-        allowed = {b'* -text', b'* -text whitespace=cr-at-eol'}
-        if all(raw.strip() in allowed for _, raw in versions):
-            return 'archive-attributes', 'byte-preservation rule scoped to its directory'
-        return 'unknown', 'archive attributes have additional Git semantics'
-    if archive and suffix in DATA:
-        return 'evidence-data', 'archive instance; validation/real reads remain obligations'
-    if suffix == '.md':
-        return 'document', 'document bytes; actual runtime readers remain obligations'
-    return 'unknown', 'no accepted input category'
+    facts = input_facts(path, versions)
+    return facts['role'], facts['reason']
+
 
 
 def reference_observations(path, raw):
@@ -108,7 +73,30 @@ def verify_observed_plan(repo, plan):
         repository=binding['repository'], body=body, integration=binding['base'] == binding['head'])
     planner.require(binding == minimum['binding'] and plan['changes'] == minimum['changes'],
                     'observed plan Git facts mismatch')
+    planner.require(plan['selection'].get('witness_version') == minimum['selection'].get('witness_version'),
+                    'selection witness format changed; regenerate the plan from exact Git snapshots')
     planner.require_obligations(plan, minimum)
+
+
+def smoke_review(plan, policy):
+    """Expose the actual affected source witnesses used by independent smoke flags."""
+    selection = plan['selection']
+    witnesses = selection.get('affected_witnesses', {})
+    review = {}
+    for obligation, group_flag in (('package_smoke', 'package'), ('repository_smoke', 'repository')):
+        consumers = []
+        for path in selection.get('affected_paths', []):
+            relevant = (path in {'src/research_workbench/cli.py', 'src/research_workbench/__main__.py'}
+                        if obligation == 'package_smoke' else path.startswith('src/research_workbench/validation/'))
+            if relevant:
+                planner.require(path in witnesses, 'affected smoke consumer is missing its path witness')
+                witness = witnesses[path]
+                consumers.append({'path': path, **witness, 'contains_fallback_edge':
+                                  any(kind != 'syntax-reference' for kind in witness['edge_kinds'])})
+        review[obligation] = {'required': plan[obligation], 'accepted_reasons': plan['obligation_reasons'][obligation],
+            'accepted_groups': sorted(name for name in plan['test_groups'] if policy['groups'][name][group_flag]),
+            'affected_consumers': consumers}
+    return review
 
 
 def build_report(repo, plan):
@@ -123,8 +111,8 @@ def build_report(repo, plan):
         path = change['path']
         versions = [(key, inventory[path][0], planner.read_at(repo, binding[key], path))
                     for key, (inventory, _) in zip(('merge_base', 'head'), snapshots) if path in inventory]
-        role, reason = input_role(path, [(mode, raw) for _, mode, raw in versions])
-        inputs.append({**change, 'role': role, 'reason': reason,
+        facts = input_facts(path, [(mode, raw) for _, mode, raw in versions])
+        inputs.append({**change, **facts,
                        'versions': [{'snapshot': label, 'mode': mode, 'sha256': hashlib.sha256(raw).hexdigest()}
                                     for label, mode, raw in versions]})
     by_path = {row['path']: row for row in inputs}
@@ -158,10 +146,14 @@ def build_report(repo, plan):
                   'downstream': group['downstream']}
                  for name, group in sorted(policy['groups'].items())]
     report = {
-        'report_kind': 'ci-contract-shadow', 'schema_version': 1, 'execution_authority': False,
+        'report_kind': 'ci-contract-shadow', 'schema_version': 2, 'execution_authority': False,
         'binding': binding, 'observed_plan_id': plan['plan_id'], 'policy_sha256': plan['policy_sha256'],
         'engine_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        'producer_sources': {'.github/scripts/' + Path(path).name: hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                             for path in (__file__, ci_input_facts.__file__, planner.__file__, planner.dependencies.__file__,
+                                          Path(planner.__file__).with_name('check_pr_governance.py'))},
         'inputs': inputs, 'accepted_contracts': contracts, 'dependency_review': chains,
+        'smoke_review': smoke_review(plan, policy),
         'summary': {'input_roles': dict(sorted(Counter(row['role'] for row in inputs).items())),
             'available_test_modules': plan['selection'].get('scope_summary', {}).get('available_test_modules'),
             'dependency_selected_test_modules': len(chains), 'plan_test_selectors': len(plan['tests']),

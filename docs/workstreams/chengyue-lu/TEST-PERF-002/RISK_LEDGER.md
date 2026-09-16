@@ -18,6 +18,11 @@ Owner: 路诚钺 (`Chengyue-Lu`); cross-owner: 黄毅 (`let778750-cpu`); R2.
 
 ## Contract shadow v1
 
+Current migration: [shared facts and source witnesses](SHADOW_V2.md). Keep all execution
+obligations unchanged while validating multi-authority facts and affected-path evidence.
+The previous test-chain inference does not establish the actual smoke source predicate;
+the CLI opaque and validation resource causes require separate reviewed contracts.
+
 - The shadow role inventory cannot authorize execution exclusions. Preserve every accepted
   obligation and consumer chain, even for documents, archive data and apparent output literals.
 - Recompute the observed plan against immutable Git facts and accepted base policy; a candidate

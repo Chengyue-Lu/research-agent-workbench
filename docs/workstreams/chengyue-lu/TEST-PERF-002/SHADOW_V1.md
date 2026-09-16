@@ -1,5 +1,7 @@
 # CI contract shadow v1
 
+本文件保留首版阶段结果；当前实现与 smoke 来源修正见 [SHADOW_V2](SHADOW_V2.md)。
+
 TEST-PERF-002；owner Chengyue-Lu；R2；2026-09-16；Draft implementation。
 用户已认可 [CI 重规划方向](CI_REPLAN.md)，并授权第一版实现、Draft PR 和 Issue #48 进度记录。
 本版交付 P1 的输入模型与可运行对照报告；P1 的完整消费契约和 P2 的减测激活尚未完成。
@@ -92,9 +94,8 @@ python .github/scripts/ci_contract_shadow.py --plan ci-plan.json --output ci-con
 #65 在隔离的原始提交工作区实际执行所选 5 modules，134 PASS / 63.548 s；没有配对 full 执行，
 不能由此声称 hosted 缩时比例。#77 的 pyproject、#80 的 workflow 变化为保留完整基线提供明确依据。
 
-#80 的两项 smoke 另由 consumer closure 触发：`release_source_ci.py → deterministic_runner.py
-→ test_cli/test_validation`，第一条边为 `opaque-execution`。这条调用范围尚未证明有界；
-workflow 变化本身不能替代 smoke 的消费证明。后续契约需分别审查该链和 full/coverage authority。
+#80 的上述 test-level 链不能独立解释两项 smoke。v2 保留实际 affected source witnesses，
+确认 CLI 的直接 opaque 边和 validation 的独立 unbounded-resource 边；后续以该源码级证据为准。
 
 归档 `.log` 和旧 attributes 写法分别留下 1/7/22 个 unknown 输入，是后续输入契约需要补齐的分类范围。
 本轮未为这些样本增加减测例外。原始计划、报告、metadata、#65 真实执行和初次托管 diagnostic 绑定

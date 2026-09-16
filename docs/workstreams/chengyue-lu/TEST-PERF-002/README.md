@@ -15,9 +15,10 @@ for the next development stage. Its [business-module and cost inventory](MODULE_
 and [migration/acceptance matrix](CI_REPLAN_ACCEPTANCE.md) define the proposed replacement
 model. This proposal has not changed the accepted selection rules described below.
 
-The user-approved first implementation is [CI contract shadow v1](SHADOW_V1.md): an
-independent typed-input and consumer audit artifact. Required execution remains governed
-by the accepted plan; activation and narrower consumer contracts are later review steps.
+The current [shared input facts and source witnesses](SHADOW_V2.md) extend the
+[first shadow implementation](SHADOW_V1.md), with twelve historical branch comparisons.
+Required execution remains governed by the accepted plan; activation and narrower
+consumer contracts are later review steps.
 
 The next repair round after merged PR #66 is prepared in [Impact precision](IMPACT_PRECISION.md),
 with the real M14 hosted baseline, three reproduced module probes and independent coverage-selection acceptance.
