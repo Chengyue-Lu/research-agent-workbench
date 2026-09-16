@@ -1,0 +1,499 @@
+{
+  "version": 4,
+  "binding": {
+    "repository": "Example/repo",
+    "base": "e1e91cb7d654cf94c9510fb73d53b8590f11be8d",
+    "head": "5b76f093510b054c6eb1546b7ac3f325ec491759",
+    "merge_base": "e1e91cb7d654cf94c9510fb73d53b8590f11be8d",
+    "target": "5b76f093510b054c6eb1546b7ac3f325ec491759"
+  },
+  "change_class": "fast",
+  "risk": "R0",
+  "changes": [
+    {
+      "status": "M",
+      "path": "README.md"
+    }
+  ],
+  "surfaces": [
+    "documentation"
+  ],
+  "test_groups": [
+    "documentation"
+  ],
+  "tests": [
+    "test_documentation",
+    "test_pr_governance"
+  ],
+  "coverage_modules": [],
+  "impact_evidence": {},
+  "changed_lines": {},
+  "coverage_lines": {},
+  "coverage_tests": [],
+  "selection": {
+    "algorithm": "base-head-consumers-v1",
+    "inventory_sha256": "93e7e5ce83287c951b807b69d1f662033cdf1d20a398d6526e75927350b03854",
+    "selected": {},
+    "excluded": [
+      "test_api_session_runner",
+      "test_ci_checks",
+      "test_ci_dependencies",
+      "test_ci_plan",
+      "test_claim_trace",
+      "test_cli",
+      "test_cli_command_branches",
+      "test_coverage_policy",
+      "test_documentation",
+      "test_governance_helper_branches",
+      "test_pr_governance",
+      "test_provider_adapters",
+      "test_provider_conformance",
+      "test_provider_contract_branches",
+      "test_provider_port",
+      "test_skill_release_projection",
+      "test_unselected",
+      "test_validation_helpers"
+    ],
+    "selected_edge_kinds": {},
+    "scope_summary": {
+      "available_test_modules": 18,
+      "dependency_selected_test_modules": 0,
+      "opaque_execution_paths": 0,
+      "unbounded_resource_paths": 0
+    },
+    "exclusion_reasons": {
+      "test_api_session_runner": "outside base/head dependency closure",
+      "test_ci_checks": "outside base/head dependency closure",
+      "test_ci_dependencies": "outside base/head dependency closure",
+      "test_ci_plan": "outside base/head dependency closure",
+      "test_claim_trace": "outside base/head dependency closure",
+      "test_cli": "outside base/head dependency closure",
+      "test_cli_command_branches": "outside base/head dependency closure",
+      "test_coverage_policy": "outside base/head dependency closure",
+      "test_documentation": "outside base/head dependency closure",
+      "test_governance_helper_branches": "outside base/head dependency closure",
+      "test_pr_governance": "outside base/head dependency closure",
+      "test_provider_adapters": "outside base/head dependency closure",
+      "test_provider_conformance": "outside base/head dependency closure",
+      "test_provider_contract_branches": "outside base/head dependency closure",
+      "test_provider_port": "outside base/head dependency closure",
+      "test_skill_release_projection": "outside base/head dependency closure",
+      "test_unselected": "outside base/head dependency closure",
+      "test_validation_helpers": "outside base/head dependency closure"
+    },
+    "exclusion_reason": "outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately",
+    "opaque_consumers": [],
+    "errors": [],
+    "test_reachable_sources": [],
+    "affected_paths": [
+      "README.md"
+    ],
+    "witness_version": 1,
+    "affected_witnesses": {
+      "README.md": {
+        "chain": [
+          "README.md"
+        ],
+        "edge_kinds": []
+      }
+    },
+    "reviewed_contract_anchor": "",
+    "reviewed_opaque_boundary": []
+  },
+  "coverage_selection": {},
+  "policy_sha256": "8d7b68630b3144223fd739f2ce295e6c2a1bb5ee1166a5a9886655e8a52f2bb3",
+  "python_versions": [],
+  "behavioral_scope": "none",
+  "coverage_scope": "none",
+  "coverage_obligations": [],
+  "blocked_reasons": [],
+  "package_smoke": false,
+  "repository_smoke": false,
+  "reasons": [
+    "README.md -> documentation",
+    "test/document/archive data: README.md"
+  ],
+  "obligation_reasons": {
+    "behavioral_scope": [
+      "documentation obligations only"
+    ],
+    "coverage_scope": [
+      "no production/critical executable or coverage authority changed"
+    ],
+    "package_smoke": [
+      "no packaging/install surface changed"
+    ],
+    "repository_smoke": [
+      "no repository validation surface changed"
+    ]
+  },
+  "plan_id": "82034a8dc778428530a97b077803d67b05193dad4de850a7753c797ae733e5e6"
+}
+{
+  "version": 4,
+  "binding": {
+    "repository": "Example/repo",
+    "base": "e1e91cb7d654cf94c9510fb73d53b8590f11be8d",
+    "head": "5b76f093510b054c6eb1546b7ac3f325ec491759",
+    "merge_base": "e1e91cb7d654cf94c9510fb73d53b8590f11be8d",
+    "target": "5b76f093510b054c6eb1546b7ac3f325ec491759"
+  },
+  "change_class": "fast",
+  "risk": "R0",
+  "changes": [
+    {
+      "status": "M",
+      "path": "README.md"
+    }
+  ],
+  "surfaces": [
+    "documentation"
+  ],
+  "test_groups": [
+    "documentation"
+  ],
+  "tests": [
+    "test_documentation",
+    "test_pr_governance"
+  ],
+  "coverage_modules": [],
+  "impact_evidence": {},
+  "changed_lines": {},
+  "coverage_lines": {},
+  "coverage_tests": [],
+  "selection": {
+    "algorithm": "base-head-consumers-v1",
+    "inventory_sha256": "93e7e5ce83287c951b807b69d1f662033cdf1d20a398d6526e75927350b03854",
+    "selected": {},
+    "excluded": [
+      "test_api_session_runner",
+      "test_ci_checks",
+      "test_ci_dependencies",
+      "test_ci_plan",
+      "test_claim_trace",
+      "test_cli",
+      "test_cli_command_branches",
+      "test_coverage_policy",
+      "test_documentation",
+      "test_governance_helper_branches",
+      "test_pr_governance",
+      "test_provider_adapters",
+      "test_provider_conformance",
+      "test_provider_contract_branches",
+      "test_provider_port",
+      "test_skill_release_projection",
+      "test_unselected",
+      "test_validation_helpers"
+    ],
+    "selected_edge_kinds": {},
+    "scope_summary": {
+      "available_test_modules": 18,
+      "dependency_selected_test_modules": 0,
+      "opaque_execution_paths": 0,
+      "unbounded_resource_paths": 0
+    },
+    "exclusion_reasons": {
+      "test_api_session_runner": "outside base/head dependency closure",
+      "test_ci_checks": "outside base/head dependency closure",
+      "test_ci_dependencies": "outside base/head dependency closure",
+      "test_ci_plan": "outside base/head dependency closure",
+      "test_claim_trace": "outside base/head dependency closure",
+      "test_cli": "outside base/head dependency closure",
+      "test_cli_command_branches": "outside base/head dependency closure",
+      "test_coverage_policy": "outside base/head dependency closure",
+      "test_documentation": "outside base/head dependency closure",
+      "test_governance_helper_branches": "outside base/head dependency closure",
+      "test_pr_governance": "outside base/head dependency closure",
+      "test_provider_adapters": "outside base/head dependency closure",
+      "test_provider_conformance": "outside base/head dependency closure",
+      "test_provider_contract_branches": "outside base/head dependency closure",
+      "test_provider_port": "outside base/head dependency closure",
+      "test_skill_release_projection": "outside base/head dependency closure",
+      "test_unselected": "outside base/head dependency closure",
+      "test_validation_helpers": "outside base/head dependency closure"
+    },
+    "exclusion_reason": "outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately",
+    "opaque_consumers": [],
+    "errors": [],
+    "test_reachable_sources": [],
+    "affected_paths": [
+      "README.md"
+    ],
+    "witness_version": 1,
+    "affected_witnesses": {
+      "README.md": {
+        "chain": [
+          "README.md"
+        ],
+        "edge_kinds": []
+      }
+    },
+    "reviewed_contract_anchor": "",
+    "reviewed_opaque_boundary": []
+  },
+  "coverage_selection": {},
+  "policy_sha256": "8d7b68630b3144223fd739f2ce295e6c2a1bb5ee1166a5a9886655e8a52f2bb3",
+  "python_versions": [],
+  "behavioral_scope": "none",
+  "coverage_scope": "none",
+  "coverage_obligations": [],
+  "blocked_reasons": [],
+  "package_smoke": false,
+  "repository_smoke": false,
+  "reasons": [
+    "README.md -> documentation",
+    "test/document/archive data: README.md"
+  ],
+  "obligation_reasons": {
+    "behavioral_scope": [
+      "documentation obligations only"
+    ],
+    "coverage_scope": [
+      "no production/critical executable or coverage authority changed"
+    ],
+    "package_smoke": [
+      "no packaging/install surface changed"
+    ],
+    "repository_smoke": [
+      "no repository validation surface changed"
+    ]
+  },
+  "plan_id": "82034a8dc778428530a97b077803d67b05193dad4de850a7753c797ae733e5e6"
+}
+{
+  "version": 4,
+  "binding": {
+    "repository": "Example/repo",
+    "base": "e1e91cb7d654cf94c9510fb73d53b8590f11be8d",
+    "head": "5b76f093510b054c6eb1546b7ac3f325ec491759",
+    "merge_base": "e1e91cb7d654cf94c9510fb73d53b8590f11be8d",
+    "target": "5b76f093510b054c6eb1546b7ac3f325ec491759"
+  },
+  "change_class": "fast",
+  "risk": "R0",
+  "changes": [
+    {
+      "status": "M",
+      "path": "README.md"
+    }
+  ],
+  "surfaces": [
+    "documentation"
+  ],
+  "test_groups": [
+    "documentation"
+  ],
+  "tests": [
+    "test_documentation",
+    "test_pr_governance"
+  ],
+  "coverage_modules": [],
+  "impact_evidence": {},
+  "changed_lines": {},
+  "coverage_lines": {},
+  "coverage_tests": [],
+  "selection": {
+    "algorithm": "base-head-consumers-v1",
+    "inventory_sha256": "93e7e5ce83287c951b807b69d1f662033cdf1d20a398d6526e75927350b03854",
+    "selected": {},
+    "excluded": [
+      "test_api_session_runner",
+      "test_ci_checks",
+      "test_ci_dependencies",
+      "test_ci_plan",
+      "test_claim_trace",
+      "test_cli",
+      "test_cli_command_branches",
+      "test_coverage_policy",
+      "test_documentation",
+      "test_governance_helper_branches",
+      "test_pr_governance",
+      "test_provider_adapters",
+      "test_provider_conformance",
+      "test_provider_contract_branches",
+      "test_provider_port",
+      "test_skill_release_projection",
+      "test_unselected",
+      "test_validation_helpers"
+    ],
+    "selected_edge_kinds": {},
+    "scope_summary": {
+      "available_test_modules": 18,
+      "dependency_selected_test_modules": 0,
+      "opaque_execution_paths": 0,
+      "unbounded_resource_paths": 0
+    },
+    "exclusion_reasons": {
+      "test_api_session_runner": "outside base/head dependency closure",
+      "test_ci_checks": "outside base/head dependency closure",
+      "test_ci_dependencies": "outside base/head dependency closure",
+      "test_ci_plan": "outside base/head dependency closure",
+      "test_claim_trace": "outside base/head dependency closure",
+      "test_cli": "outside base/head dependency closure",
+      "test_cli_command_branches": "outside base/head dependency closure",
+      "test_coverage_policy": "outside base/head dependency closure",
+      "test_documentation": "outside base/head dependency closure",
+      "test_governance_helper_branches": "outside base/head dependency closure",
+      "test_pr_governance": "outside base/head dependency closure",
+      "test_provider_adapters": "outside base/head dependency closure",
+      "test_provider_conformance": "outside base/head dependency closure",
+      "test_provider_contract_branches": "outside base/head dependency closure",
+      "test_provider_port": "outside base/head dependency closure",
+      "test_skill_release_projection": "outside base/head dependency closure",
+      "test_unselected": "outside base/head dependency closure",
+      "test_validation_helpers": "outside base/head dependency closure"
+    },
+    "exclusion_reason": "outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately",
+    "opaque_consumers": [],
+    "errors": [],
+    "test_reachable_sources": [],
+    "affected_paths": [
+      "README.md"
+    ],
+    "witness_version": 1,
+    "affected_witnesses": {
+      "README.md": {
+        "chain": [
+          "README.md"
+        ],
+        "edge_kinds": []
+      }
+    },
+    "reviewed_contract_anchor": "",
+    "reviewed_opaque_boundary": []
+  },
+  "coverage_selection": {},
+  "policy_sha256": "8d7b68630b3144223fd739f2ce295e6c2a1bb5ee1166a5a9886655e8a52f2bb3",
+  "python_versions": [],
+  "behavioral_scope": "none",
+  "coverage_scope": "none",
+  "coverage_obligations": [],
+  "blocked_reasons": [],
+  "package_smoke": false,
+  "repository_smoke": false,
+  "reasons": [
+    "README.md -> documentation",
+    "test/document/archive data: README.md"
+  ],
+  "obligation_reasons": {
+    "behavioral_scope": [
+      "documentation obligations only"
+    ],
+    "coverage_scope": [
+      "no production/critical executable or coverage authority changed"
+    ],
+    "package_smoke": [
+      "no packaging/install surface changed"
+    ],
+    "repository_smoke": [
+      "no repository validation surface changed"
+    ]
+  },
+  "plan_id": "82034a8dc778428530a97b077803d67b05193dad4de850a7753c797ae733e5e6"
+}
+{"authority_changes":[],"base":"986695a77fcd8c54e54ca694e56801095cace8a4","execution_checks_proved":false,"head":"986695a77fcd8c54e54ca694e56801095cace8a4","observed_behavioral":"full","plan_id":"6f98dd35c636535be708f957ffbf8dc839fae230e583b781c729b22f4064ca3e","repository":"Example/repo","required_behavioral":"none","scope":"selection-authority floor only","status":"PASS","target":"986695a77fcd8c54e54ca694e56801095cace8a4","witness_commit":"986695a77fcd8c54e54ca694e56801095cace8a4","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+{"reason":"witness source drift","status":"BLOCK","witness_source_sha256":"186866d274a9e55c517a6d49f684c99ef36f4afeff0409c10bd93ce40d54031d"}
+
+{"reason":"witness checkout differs from reviewer-pinned commit","status":"BLOCK","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+{"authority_changes":[],"base":"cd853e2fd44e4b52a71c4cedc8d9aa90b78761f1","content_conclusion":null,"content_run":7,"content_status":"in_progress","execution_checks_proved":false,"head":"cd853e2fd44e4b52a71c4cedc8d9aa90b78761f1","observed_behavioral":"full","plan_id":"9ad8339a00fa5a2f9a4b54560154cda14853acfb4b162ef9d5d64a119de56fb3","repository":"Example/repo","required_behavioral":"none","scope":"selection-authority floor only","status":"PASS","target":"cd853e2fd44e4b52a71c4cedc8d9aa90b78761f1","witness_commit":"cd853e2fd44e4b52a71c4cedc8d9aa90b78761f1","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+{"reason":"invalid zip","status":"BLOCK","witness_commit":"cd853e2fd44e4b52a71c4cedc8d9aa90b78761f1","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+{"reason":"witness checkout differs from reviewer-pinned commit","status":"BLOCK","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=89.00% threshold=90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+coverage-policy: PASS
+coverage-policy: FAIL
+- coverage must be a mapping
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=94.00%/95.00% branch=89.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=89.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=85.00% threshold=90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+..........E......................................................................................................F..E..................................................................................................
+======================================================================
+ERROR: test_git_bound_consumer_record_cannot_refresh_its_own_failed_pin (tests.test_ci_contract_shadow.ContractShadowGitTests.test_git_bound_consumer_record_cannot_refresh_its_own_failed_pin)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\ci-replan\tests\test_ci_contract_shadow.py", line 177, in test_git_bound_consumer_record_cannot_refresh_its_own_failed_pin
+    report = shadow.build_report(self.repo, plan)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\_worktrees\RWB\ci-replan\.github\scripts\ci_contract_shadow.py", line 104, in build_report
+    verify_observed_plan(repo, plan)
+  File "D:\lcy\develop\_worktrees\RWB\ci-replan\.github\scripts\ci_contract_shadow.py", line 79, in verify_observed_plan
+    planner.require_obligations(plan, minimum)
+  File "D:\lcy\develop\_worktrees\RWB\ci-replan\.github\scripts\plan_ci.py", line 292, in require_obligations
+    require(not plan['blocked_reasons'] and not minimum['blocked_reasons'], 'unproved executable impact obligations')
+  File "D:\lcy\develop\_worktrees\RWB\ci-replan\.github\scripts\plan_ci.py", line 123, in require
+    raise ValueError(message)
+ValueError: unproved executable impact obligations
+
+======================================================================
+ERROR: test_missing_or_malformed_base_policy_falls_back_full (tests.test_ci_plan.PlannerTests.test_missing_or_malformed_base_policy_falls_back_full)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\ci-replan\tests\test_ci_plan.py", line 244, in test_missing_or_malformed_base_policy_falls_back_full
+    self.assertEqual('full', self.plan()['change_class'])
+                             ^^^^^^^^^^^
+  File "D:\lcy\develop\_worktrees\RWB\ci-replan\tests\test_ci_plan.py", line 91, in plan
+    return planner.make_plan(self.repo, **{'base': self.base, 'head': head, 'target': head,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\_worktrees\RWB\ci-replan\.github\scripts\plan_ci.py", line 387, in make_plan
+    validate_policy(policy)
+  File "D:\lcy\develop\_worktrees\RWB\ci-replan\.github\scripts\plan_ci.py", line 193, in validate_policy
+    require(set(policy) == (keys | {'consumer_contracts'} if policy.get('version') == 2 else keys)
+                                                             ^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'get'
+
+======================================================================
+FAIL: test_invalid_policy_groups_and_evidence_fail_closed (tests.test_ci_plan.PlannerTests.test_invalid_policy_groups_and_evidence_fail_closed) (policy={'policy_id': 'rwb-ci-impact', 'version': 2, 'surfaces': {'documentation': {'paths': ['README.md', 'CHANGELOG.md', 'DEVELOPMENT_HISTORY.md', 'docs/GETTING_STARTED.md', 'docs/README.md', 'docs/STATUS.md', 'docs/TASKS.md', 'docs/ROADMAP.md', 'docs/workstreams/**'], 'class': 'fast', 'groups': ['documentation']}, 'provider-wire': {'paths': ['src/research_workbench/adapters/models/openai.py', 'src/research_workbench/adapters/models/anthropic.py', 'src/research_workbench/adapters/models/gemini.py'], 'class': 'focused', 'groups': ['provider-wire']}, 'claim-local-function': {'paths': ['src/research_workbench/artifacts/claim_trace.py'], 'class': 'focused', 'groups': ['claim-local-function']}, 'projection-local-function': {'paths': ['src/research_workbench/capability/release_projection.py'], 'class': 'focused', 'groups': ['projection-local-function']}}, 'groups': {'documentation': {'tests': ['test_documentation', 'test_pr_governance'], 'downstream': [], 'coverage': [], 'package': False, 'repository': False}, 'provider-wire': {'tests': ['test_provider_adapters', 'test_provider_contract_branches', 'test_provider_port'], 'downstream': ['provider-conformance'], 'coverage': ['src/research_workbench/adapters/models/openai.py', 'src/research_workbench/adapters/models/anthropic.py', 'src/research_workbench/adapters/models/gemini.py'], 'package': False, 'repository': False}, 'provider-conformance': {'tests': ['test_provider_conformance'], 'downstream': ['provider-session'], 'coverage': [], 'package': False, 'repository': True}, 'provider-session': {'tests': ['test_api_session_runner'], 'downstream': ['provider-cli'], 'coverage': [], 'package': False, 'repository': False}, 'provider-cli': {'tests': ['test_cli', 'test_cli_command_branches', 'test_validation_helpers'], 'downstream': [], 'coverage': [], 'package': True, 'repository': False}, 'claim-local-function': {'tests': ['test_claim_trace'], 'downstream': [], 'coverage': ['src/research_workbench/artifacts/claim_trace.py'], 'coverage_tests': ['test_claim_trace'], 'change_scope': 'function-body', 'package': False, 'repository': False, 'impact_evidence': {'positive_tests': ['test_claim_trace.ClaimTraceTests.test_support_counterevidence_and_limits_locate_without_execution', 'test_claim_trace.PromotedClaimTraceTests.test_real_promotion_and_retained_negative_are_consumed_without_replay'], 'negative_tests': ['test_claim_trace.ClaimTraceTests.test_live_byte_drift_is_independent_of_declared_object_hash', 'test_claim_trace.ClaimTraceTests.test_missing_revision_unversioned_and_missing_evidence_are_unresolved', 'test_claim_trace.ClaimTraceTests.test_missing_and_wrong_raw_admission_do_not_yield_complete_trace', 'test_claim_trace.ClaimTraceTests.test_map_requires_exact_evidence_and_source_closure']}}, 'projection-local-function': {'tests': ['test_skill_release_projection'], 'downstream': [], 'coverage': ['src/research_workbench/capability/release_projection.py'], 'coverage_tests': ['test_skill_release_projection'], 'change_scope': 'function-body', 'package': False, 'repository': False, 'impact_evidence': {'positive_tests': ['test_skill_release_projection.SkillReleaseProjectionTests.test_verified_release_produces_narrow_deterministic_projection', 'test_skill_release_projection.SkillReleaseProjectionTests.test_empty_production_index_preserves_zero_skill_core'], 'negative_tests': ['test_skill_release_projection.SkillReleaseProjectionTests.test_publisher_requires_external_evidence_human_decision_and_runtime_boundaries', 'test_skill_release_projection.SkillReleaseProjectionTests.test_legacy_repository_skills_cannot_be_projected', 'test_skill_release_projection.SkillReleaseProjectionTests.test_projection_registry_and_derivation_are_fail_closed', 'test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_revalidates_external_evidence_and_human_decision', 'test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_shadow_only_authority_closure', 'test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_ambiguous_shadow_authority_closure', 'test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_cross_root_stitched_publication', 'test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_alias_only_authority_path', 'test_skill_release_projection.SkillReleaseProjectionTests.test_repository_projection_rejects_alias_only_index_path', 'test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_schema_boundary_is_fail_closed']}}}, 'impact_evidence': {'positive_tests': ['test_provider_adapters.OpenAIAdapterTests.test_text_request_disables_storage_and_maps_usage', 'test_provider_adapters.AnthropicAdapterTests.test_system_is_hoisted_and_required_max_tokens_default_is_visible', 'test_provider_adapters.GeminiAdapterTests.test_text_request_maps_system_usage_and_stop'], 'negative_tests': ['test_provider_adapters.OpenAIAdapterTests.test_model_mismatch_fails_before_credential_resolution', 'test_provider_adapters.AnthropicAdapterTests.test_temperature_above_provider_range_is_rejected_before_call', 'test_provider_adapters.GeminiAdapterTests.test_parallel_response_is_contract_violation_when_not_claimed']}, 'consumer_fingerprint': '46c1360cd5e2f55281619c7c9ce0bba55f53f71b4968a18f6a1120b441b410ac', 'consumer_contracts': [{'id': 'cli-git-head-observation', 'owner': 'Chengyue-Lu', 'consumer': 'src/research_workbench/cli.py', 'pins': {'src/research_workbench/cli.py': '3be2daa342fbddac3e1f7b535ef9dc5ab71e15dd138ad842b1ef3dc3e4a1798c', 'tests/test_m3_context_observability.py': 'b8647fe2d840e0028b442081207c394b3a5a04812f80ab604bd51cf28bc6e2fd'}, 'entrypoints': ['_context_resume_check', '_context_checkpoint'], 'inputs': ['Explicit args.root selects the project; git -C root rev-parse HEAD reads Git metadata.', 'The process inherits executable lookup and Git environment.'], 'outputs': ['Observed Git HEAD is compared with or stored in a checkpoint; return code becomes an error/risk.'], 'invariants': ['The two observed subprocess calls do not request Python or a candidate script.', 'Checkpoint parsing, digest, reference closure and resume semantics remain required.'], 'unresolved': ['Prove executable lookup/environment boundaries and each test invocation root.', 'Retain all other CLI imports, reads, commands and alternate consumer paths.'], 'positive_tests': ['test_m3_context_observability.ContextGovernanceTests.test_checkpoint_and_resume_are_file_recoverable'], 'negative_tests': ['test_m3_context_observability.ContextGovernanceTests.test_explicit_git_capture_fails_closed_outside_repository', 'test_m3_context_observability.ContextGovernanceTests.test_resume_check_rejects_git_head_conflict'], 'execution_authority': False}, {'id': 'validation-document-instances', 'owner': 'Chengyue-Lu', 'consumer': 'src/research_workbench/validation/documents.py', 'pins': {'src/research_workbench/validation/documents.py': '16cd9bb7d61820a9582e614daeecb8c2bee969534bb1b8a67795bb9a305361df', 'tests/test_validation.py': 'cbac9f43a00235fa3b8445a7e447d2eeee3aeadb119d39bfcade3e35d6b6cc3b'}, 'entrypoints': ['load_and_validate'], 'inputs': ['Caller-supplied iterable of paths; each document is read as bytes.', 'validate_documents still dispatches all applicable semantic validators and schema/catalog work.'], 'outputs': ['LoadedDocuments with byte digests and ordered ValidationIssues, including parse failures.'], 'invariants': ['The hash and parsed mapping must describe the same read bytes.', 'Changing one input instance does not itself change the reader implementation.'], 'unresolved': ['Map each caller to exact input instances, indirect refs, inventories and fixture lifecycle.', 'Do not suppress cross-document closure, global catalogs or unbound caller paths.'], 'positive_tests': ['test_validation.ValidationTests.test_repository_examples_and_registries_have_no_errors'], 'negative_tests': ['test_validation.ValidationTests.test_loaded_reference_cannot_skip_hash_check_if_path_disappears', 'test_validation.ValidationTests.test_loaded_reference_hash_uses_the_same_bytes_as_its_mapping'], 'execution_authority': False}, {'id': 'validation-schema-catalog', 'owner': 'Chengyue-Lu', 'consumer': 'src/research_workbench/validation/schemas.py', 'pins': {'src/research_workbench/resources.py': 'eb0c8900503453386c9a458a7e3f406294cbe749da2bbc2d4a62897d5995787e', 'src/research_workbench/validation/schemas.py': '6160357a985a8c20b42a0e08ba0760ad95984a732629e77cfe56ae89d560a099', 'tests/test_schemas.py': 'd0fc0c73d4d2bbb05ee38e161e9f7ad40c7880f6ade46ff73828cfe35d834ecc'}, 'entrypoints': ['SchemaCatalog.__init__', 'SchemaCatalog._load'], 'inputs': ['Versioned schema directory glob *.schema.json, with every current member read.', 'Default root constructs RuntimeResources and its actual whole-manifest integrity validation.'], 'outputs': ['Fresh per-catalog mutable schema and reference registry; immutable self-check cache only.'], 'invariants': ['A cache hit does not suppress fresh reads, pinned integrity or changed/invalid schema checks.'], 'unresolved': ['Whole catalog and RuntimeResources inventory are actual dependencies; partition requires separate design.', 'Explicit roots, resource_reader, symlinks and environment need invocation-specific binding.'], 'positive_tests': ['test_schemas.SchemaReuseTests.test_catalog_roots_and_reads_remain_independent_after_a_cache_hit'], 'negative_tests': ['test_schemas.SchemaReuseTests.test_schema_lifecycle_reuses_bytes_but_rechecks_changed_inputs_and_invalid_schemas'], 'execution_authority': False}, {'id': 'validation-capability-root-scan', 'owner': 'Chengyue-Lu', 'consumer': 'src/research_workbench/validation/capability.py', 'pins': {'src/research_workbench/validation/capability.py': '6819b2fe5fd5db6dc9e53ad09a1a89e920c9ef154b0f4527b83eeac3f8af192e', 'tests/test_capability_consumer.py': '74a936aec3034e883cbf71f0b14c851b3459c8ab680239fdb2e4c52c9d8d76c1'}, 'entrypoints': ['load_validated_capability_snapshot'], 'inputs': ['Externally supplied candidate path, document_roots and project root.', 'Each directory root is recursively scanned for document suffixes before load_and_validate.'], 'outputs': ['Validated read-only Snapshot and closure or a validation error.'], 'invariants': ['Candidate and document roots must remain inside the project.', 'External hash is checked against the bytes actually parsed.'], 'unresolved': ['Bind per-invocation root membership and added/deleted files; caller paths are not globally bounded.', 'Preserve repository closure and runtime-use qualification checks.'], 'positive_tests': ['test_capability_consumer.CapabilitySnapshotConsumerTests.test_structural_snapshot_loads_only_after_repository_validation'], 'negative_tests': ['test_capability_consumer.CapabilitySnapshotConsumerTests.test_external_hash_rejects_same_identity_rewrite', 'test_capability_consumer.CapabilitySnapshotConsumerTests.test_external_hash_is_bound_to_the_bytes_parsed_by_validation'], 'execution_authority': False}]})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\ci-replan\tests\test_ci_plan.py", line 394, in test_invalid_policy_groups_and_evidence_fail_closed
+    with self.subTest(policy=policy), self.assertRaises((ValueError, TypeError)):
+AssertionError: (<class 'ValueError'>, <class 'TypeError'>) not raised
+
+----------------------------------------------------------------------
+Ran 215 tests in 327.941s
+
+FAILED (failures=1, errors=2)
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/89.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%

@@ -1,0 +1,67 @@
+[
+  {
+    "before_plan": "pr65-plan.json",
+    "same_retained_bytes": "checks/corpus-after/pr65-plan.json",
+    "sha256": "b03ffd06632f20a74ed7579580ceec473cdd59ade90fd63afd474245fc20b948"
+  },
+  {
+    "before_plan": "pr68-plan.json",
+    "same_retained_bytes": "checks/corpus-after/pr68-plan.json",
+    "sha256": "9646b57a243a77a861c123b34d42a02705563006183ed44a8fcd03813e93600f"
+  },
+  {
+    "before_plan": "pr71-plan.json",
+    "same_retained_bytes": "checks/corpus-after/pr71-plan.json",
+    "sha256": "354476e9bab355258b34413d05c707b3d220102ce554acd2d4690904ee221812"
+  },
+  {
+    "before_plan": "pr73-plan.json",
+    "same_retained_bytes": "checks/corpus-after/pr73-plan.json",
+    "sha256": "2524e1cfc8919257e6c261e4e609afb443816bd4e49853a2f45f680744c9c30a"
+  },
+  {
+    "before_plan": "pr74-plan.json",
+    "same_retained_bytes": "checks/corpus-after/pr74-plan.json",
+    "sha256": "df1bcdd92c0bd13ab074afce1db69246844d52eec3a02ca61940435227e7883b"
+  },
+  {
+    "before_plan": "pr75-plan.json",
+    "same_retained_bytes": "checks/corpus-after/pr75-plan.json",
+    "sha256": "014179895e4a534301d73872abe7ce481d84ec567206c83dc242df6219826a88"
+  },
+  {
+    "before_plan": "pr77-plan.json",
+    "same_retained_bytes": "checks/corpus-after/pr77-plan.json",
+    "sha256": "25bc7178952a4793e0ef3b095ae1f7c439bb96d20b3151686de3c77124cfb3e2"
+  },
+  {
+    "before_plan": "pr78-plan.json",
+    "same_retained_bytes": "checks/corpus-after/pr78-plan.json",
+    "sha256": "22366f73f5fe863f1cddd203c6285e089e265cc6a9ca4640e1d3a55fc82fb71d"
+  },
+  {
+    "before_plan": "pr80-plan.json",
+    "same_retained_bytes": "checks/corpus-after/pr80-plan.json",
+    "sha256": "a56c9a21bfb1ed5e4c0fe3c2f376e0f6b0750ef9a8b0283b3d9c72916473bca6"
+  },
+  {
+    "before_plan": "pr81-plan.json",
+    "same_retained_bytes": "checks/corpus-after/pr81-plan.json",
+    "sha256": "833f767f5a26a7ba9db95f8eb81aa667d0170d0b2af4df4520a620be60cc5961"
+  },
+  {
+    "before_plan": "pr82-plan.json",
+    "same_retained_bytes": "checks/corpus-after/pr82-plan.json",
+    "sha256": "533b8ac5b60ef50cdaa2da4cbfff8badebd1f9ac3baf913bc2a1fde6e1008092"
+  },
+  {
+    "before_plan": "pr84-plan.json",
+    "same_retained_bytes": "checks/corpus-after/pr84-plan.json",
+    "sha256": "285b2031bb61d23868e6fef2858976aa668fc8dc29868ddff38bc76e09262523"
+  },
+  {
+    "before_plan": "pr86-plan.json",
+    "same_retained_bytes": "checks/corpus-after/pr86-plan.json",
+    "sha256": "bd7d486ca9ff3c7f4fab1f31535fdd032d8fbe2768bf7dd5fe9267c1d89d5ea3"
+  }
+]

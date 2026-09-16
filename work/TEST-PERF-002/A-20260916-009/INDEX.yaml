@@ -1,0 +1,170 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260916-009
+task_id: TEST-PERF-002
+task_revision: 37
+attempt_id: A-20260916-009
+archive_root: A-20260916-009
+baseline: 0d4a1d00a4c32ca9b822df6482a95920e7c21b1b
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 18a407fc8be495717aa5e71e04273f5c66e2111adcf9af021e2c86a14ee9c22e
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 4cefe3b5a879053ab46eb7dd198bdcfb7e1b7164f6051b4759c3cb7f7f9a01b9
+read_allowlist:
+- .github/**
+- AGENTS.md
+- PR85/86 CI and exact historical corpus Git facts
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- src/**
+- tests/**
+- work/TEST-PERF-002/A-20260916-005/**
+- work/TEST-PERF-002/A-20260916-006/**
+- work/TEST-PERF-002/A-20260916-007/**
+- work/TEST-PERF-002/A-20260916-008/**
+write_scope:
+- .github/scripts/ci_consumer_contracts.py
+- .github/scripts/ci_contract_shadow.py
+- .github/scripts/plan_ci.py
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/ci_impact_policy.yaml
+- tests/coverage_policy.yaml
+- tests/test_ci_consumer_contracts.py
+- tests/test_ci_contract_shadow.py
+- tests/test_ci_plan.py
+- work/TEST-PERF-002/A-20260916-009/**
+tool_allowlist:
+- Codex task read/wait
+- apply_patch
+- gh
+- git
+- python
+- shell
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 40623667bbb3a01015458eca88a8241f5fa60ff9cfe9aa2974a9a74f5345bf07
+  event_count: 4
+tool_event_refs:
+- path: tool-events/retain-p2-and-m5-intake-succeeded.json
+  sha256: 119cbc78ea59788d0f37cdb5ff5cc9c5605ed212dc14e9d4b50ee14d3a4c92f0
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs:
+- path: checks/corpus-after/matrix.json
+  sha256: c992ea146e354353d7e951b8ad7d142a08713e952d68e1891f560b8b27b016fd
+- path: checks/corpus-after/pr65-plan.json
+  sha256: b03ffd06632f20a74ed7579580ceec473cdd59ade90fd63afd474245fc20b948
+- path: checks/corpus-after/pr65-report.json
+  sha256: 67cb2704ffcee928deaea56b0dff701a0b63e3d8d7baaf302efc442c6e4f46e5
+- path: checks/corpus-after/pr68-plan.json
+  sha256: 9646b57a243a77a861c123b34d42a02705563006183ed44a8fcd03813e93600f
+- path: checks/corpus-after/pr68-report.json
+  sha256: 4bde08caad10d621f0868a3c80d4c5fc531d46f386fcfe472699779a59e780d2
+- path: checks/corpus-after/pr71-plan.json
+  sha256: 354476e9bab355258b34413d05c707b3d220102ce554acd2d4690904ee221812
+- path: checks/corpus-after/pr71-report.json
+  sha256: afb8130bda9efbbdb7ec4b35a248245c61ead580152df84262e4b3559d56fa4f
+- path: checks/corpus-after/pr73-plan.json
+  sha256: 2524e1cfc8919257e6c261e4e609afb443816bd4e49853a2f45f680744c9c30a
+- path: checks/corpus-after/pr73-report.json
+  sha256: ad54a208d1aad0e53749fed8a2bfaa54aafdf1254be8309c555f40fd63462b81
+- path: checks/corpus-after/pr74-plan.json
+  sha256: df1bcdd92c0bd13ab074afce1db69246844d52eec3a02ca61940435227e7883b
+- path: checks/corpus-after/pr74-report.json
+  sha256: 2f2c7d691c1e159d8c203b9acabcd3af41a1f43ac76825cf338ea5b852ac652c
+- path: checks/corpus-after/pr75-plan.json
+  sha256: 014179895e4a534301d73872abe7ce481d84ec567206c83dc242df6219826a88
+- path: checks/corpus-after/pr75-report.json
+  sha256: 4f23ee2bedba9ae92c470b99abe6742dab55dd6aeb4ced896d20ae3f694a77ba
+- path: checks/corpus-after/pr77-plan.json
+  sha256: 25bc7178952a4793e0ef3b095ae1f7c439bb96d20b3151686de3c77124cfb3e2
+- path: checks/corpus-after/pr77-report.json
+  sha256: 0773f33bfbdad6333bbe55d21379bb0a8b675e9e6a0498ba94ce237ba44d2569
+- path: checks/corpus-after/pr78-plan.json
+  sha256: 22366f73f5fe863f1cddd203c6285e089e265cc6a9ca4640e1d3a55fc82fb71d
+- path: checks/corpus-after/pr78-report.json
+  sha256: 5f04f0fc596efbbea9a2a1ece3743e0ebc85ca6ad665eb8dc8b39471ed17fc3d
+- path: checks/corpus-after/pr80-plan.json
+  sha256: a56c9a21bfb1ed5e4c0fe3c2f376e0f6b0750ef9a8b0283b3d9c72916473bca6
+- path: checks/corpus-after/pr80-report.json
+  sha256: 2634a21bb85546805d3765e77889300be5b65b41580b60e87e98bb9df8787cf1
+- path: checks/corpus-after/pr81-plan.json
+  sha256: 833f767f5a26a7ba9db95f8eb81aa667d0170d0b2af4df4520a620be60cc5961
+- path: checks/corpus-after/pr81-report.json
+  sha256: bb79e1e43ecd042141840df14d726fcfb65a160d1af0520db000df062e89de60
+- path: checks/corpus-after/pr82-plan.json
+  sha256: 533b8ac5b60ef50cdaa2da4cbfff8badebd1f9ac3baf913bc2a1fde6e1008092
+- path: checks/corpus-after/pr82-report.json
+  sha256: a5b1acf9aa9799ee1a835b9c5be5f39fe83be01d61ee21e89e8dc8efc038bdff
+- path: checks/corpus-after/pr84-plan.json
+  sha256: 285b2031bb61d23868e6fef2858976aa668fc8dc29868ddff38bc76e09262523
+- path: checks/corpus-after/pr84-report.json
+  sha256: 825ff07f5bb2c62dd6819e6531575cad1870cf5a41a8b1be827eb76bb5c98d37
+- path: checks/corpus-after/pr86-plan.json
+  sha256: bd7d486ca9ff3c7f4fab1f31535fdd032d8fbe2768bf7dd5fe9267c1d89d5ea3
+- path: checks/corpus-after/pr86-report.json
+  sha256: 57b88b2eab58dfe4d62b2a5a2f2b445fbb7a87cbb83e2aec0a93c76d8dceda97
+- path: checks/corpus-before-matrix.json
+  sha256: 0dd8ddd9afe4af86ad9a26e393ca216d175b7bfb15df396cf6c83cb22a32b194
+- path: checks/corpus-comparison.json
+  sha256: 6f52c759fa08c127b2ad8680c0d16649d6a9371a56e989eb5ddd76dd24031b7a
+- path: checks/coverage.json
+  sha256: edd891fb16ad4d3d2f40d74225c5fae500bb037861f67f762c079c0c0c6e09af
+- path: checks/declared-proof-ids.json
+  sha256: 5b58e33e5b0b9bca5d79073a7144ed1f7da5dfbef91ea5d84db02a0cfcc71425
+- path: checks/declared-proofs.log
+  sha256: 7aa98fe46d7a0821f6f4374a76489056d54618de7c9f8112271c17ee98df2e4d
+- path: checks/implementation-preflight.log
+  sha256: 51296fc863ad956a112572777f5bf80a107f3624fb229ffabcf5414d6a2b0ca9
+- path: checks/implementation/ci-contract-shadow.json
+  sha256: 36a22a93b527e16d059b1d2527039d82872e7cceb0148271297aa1461810a120
+- path: checks/implementation/ci-plan.json
+  sha256: a40c5c6a193c4a6a592807b80ef037215e11e0d485dc32536f3201c0f4609e5c
+- path: checks/implementation/preflight-summary.json
+  sha256: ed6fbd316fd2b6540d2e8ad2ab165a293c557b1de3f35b46f2e638fbc9acd5d7
+- path: checks/m5-007-tested-run.json
+  sha256: 72ac4ce6d72c9bcb17501388d1e0209e1ef5636eb2eae4b1ae43135b32ae4401
+- path: checks/m5-hosted-comparison.json
+  sha256: 66c44ea56c798349fe8fb44121066a601aa3e66f5e4570a905cb155d7a9c886a
+- path: checks/m5-hosted-plan/ci-plan.json
+  sha256: 0cf7a3bad78413d96c6857c1ecfe2b2ca43ca866393673d483b355e06f7d6c5a
+- path: checks/m5-intake.json
+  sha256: d1bf91faead47779e4d5d5cf5ace990f51272a0529015befce0babe2c8b60bba
+- path: checks/m5-intake.log
+  sha256: 98da39095d016035b59e17bd09549c9aebad3522e44eaa5fb06871c7233a463f
+- path: checks/pr86-metadata.json
+  sha256: eea791b3eb627baa129c790f9350ee9fa19d58bf003e1b49b78920c6d6e6dcb8
+- path: checks/previous-head-full-ci.json
+  sha256: f5c018bfd7b287acb512bb3d65f0d4b31452cadcc42a29a8d23a6daed1a85190
+- path: checks/producer/ci_consumer_contracts.py.txt
+  sha256: 3a9d6cdca0a22fc02fb0aeaa67f74949f1558d092fa2d4e65a707a2a0ce7a250
+- path: checks/producer/ci_contract_shadow.py.txt
+  sha256: c13410b1db44ced18d432ba22b65e206faae1d0321f47f885de0d5c7875171e5
+- path: checks/producer/plan_ci.py.txt
+  sha256: a79b0e6dc7d722cb835b4bd26a461753097f6979e7b0d2ed5b7af949be906211
+- path: checks/regression-initial.log
+  sha256: 56ca5556c9b07e075dfe14ebe9c6438c8fc88c44ab403895b88098fb00e29256
+- path: checks/regression.log
+  sha256: 892cc9af7ee9ef59583e2f3b551ff6a6361f1116792cf3652935a00d62e97ae6
+- path: checks/reproduction/archive_consumer_records.py.txt
+  sha256: 31bd4c0118cf17ec2da0efa901fdf1215a61aae9f31cc87eb855b7238e3a606d
+- path: checks/reproduction/audit_m5_intake.py.txt
+  sha256: 5780810df4abcd268061cdd7503f4dc536ed154e51c70c6d9c37d53898a40e52
+- path: checks/reproduction/compare_matrix.py.txt
+  sha256: 420e6fc8322865f2dfb9a768103409e152f4688e27687f31839164ca82b345b4
+- path: checks/reproduction/register_consumer_records.py.txt
+  sha256: 9cde64f2fe44a1efe0f6358ff1a0c87b920c51b90d7ab78246dd22e6b2bf5b77
+- path: checks/reproduction/replay_matrix.py.txt
+  sha256: 71d7ce3c24795b4ea0b54186418d98ffa1e24265f46d543e339332d57a46fe48
+- path: checks/reproduction/shadow_preflight_p2.py.txt
+  sha256: a0cab483f099b27dac1b756e6a07e4ca029c714eea3433949d48d69b40964b79
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events

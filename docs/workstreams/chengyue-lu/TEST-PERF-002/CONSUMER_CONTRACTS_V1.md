@@ -60,12 +60,22 @@ establishes their observed behavior, not complete invocation closure or permissi
 other cases. Historical planner/report comparisons retain exact Git/metadata bindings and
 compare full execution fields; they do not stand in for twelve full behavioral runs.
 
-M5-007 is being developed in the separate task **RWB开发 (3)**, PR #86
-(`feature/m5-007-harness-preflight`). It is monitored for H1/H2 implementation-slice test
-closure before intake. CI green, H1/H2 closure, whole M5-007 completion and human acceptance
-remain separate. Intake fetches immutable objects for isolated replay; it does not modify
-that development branch. The thread follow-up checks for completion every fifteen minutes
-and pauses after the slice has been included and recorded.
+M5-007's separate task **RWB开发 (3)** completed this development turn, and PR #86
+(`feature/m5-007-harness-preflight`) passed full CI at `b53a391ece3a4be7207c00c636dc9e1570e71473`.
+It is now the thirteenth immutable historical sample. Its base is
+`0d4a1d00a4c32ca9b822df6482a95920e7c21b1b`; hosted merge target is
+`8e7857369894e934ad6c5277f2a3ea2c68201bb8`. The head-target replay preserves the hosted
+execution fields and every original selection field; it does not reuse a merge-target plan ID.
+CI green, H1/H2 closure, whole M5-007 completion and human acceptance remain separate.
+Intake fetched Git objects without modifying that development branch.
+
+The current M5 plan selects 93/94 modules. All 29 behavioral FULL reasons are unclassified
+archive files; the Schema additions independently retain actual catalog/install validation.
+Raw graph diagnostics select 93/94 for archive seeds, 91/94 for business Python, 91/94 for
+test Python, 93/94 for schemas and 48/94 for ordinary documents. These are seed-category
+diagnostics, before full planner metadata/contract filtering, not substitute execution plans.
+The reference records flag M5's changed `validation/documents.py` and `test_schemas.py` pins.
+Thus fixing classification alone would not close the remaining consumer fan-out.
 
 ## Next activation requirements
 

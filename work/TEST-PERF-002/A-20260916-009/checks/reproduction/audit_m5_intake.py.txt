@@ -1,0 +1,58 @@
+"""Read-only M5 H1/H2 intake and category-isolated dependency diagnostics."""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+import sys
+
+p=argparse.ArgumentParser()
+p.add_argument('--repo',type=Path,required=True)
+p.add_argument('--metadata',type=Path,required=True)
+p.add_argument('--output',type=Path,required=True)
+a=p.parse_args();repo=a.repo.resolve()
+sys.path.insert(0,str(repo/'.github/scripts'))
+import plan_ci as planner
+import ci_consumer_contracts as contracts
+metadata=json.loads(a.metadata.read_bytes())
+base,head=metadata['baseRefOid'],metadata['headRefOid']
+plan=json.loads((a.output/'corpus-after/pr86-plan.json').read_bytes())
+assert plan['binding']['base']==base and plan['binding']['head']==head
+ci=json.loads((a.output/'m5-007-tested-run.json').read_bytes())
+assert ci['headSha']==head and ci['status']=='completed' and ci['conclusion']=='success'
+paths={row['path'] for row in plan['changes']}
+groups={
+    'attempt-archive':{p for p in paths if p.startswith('docs/workstreams/') and '/attempts/' in p},
+    'business-python':{p for p in paths if p.startswith('src/') and p.endswith('.py')},
+    'test-python':{p for p in paths if p.startswith('tests/') and p.endswith('.py')},
+    'schemas':{p for p in paths if p.startswith('schemas/')},
+    'ordinary-documents':{p for p in paths if p.endswith('.md') and '/attempts/' not in p},
+    'coverage-policy':{p for p in paths if p=='tests/coverage_policy.yaml'},
+}
+diagnostics=[]
+for name,seeds in groups.items():
+    selection,*_=planner.dependencies.select(repo,base,head,seeds)
+    diagnostics.append({'category':name,'seeds':sorted(seeds),
+        'selected_modules':len(selection['selected']),'available_modules':selection['scope_summary']['available_test_modules'],
+        'scope_summary':selection['scope_summary'],'affected_witnesses':selection['affected_witnesses'],
+        'execution_authority':False,'meaning':'dependency graph diagnostic; not a replacement PR plan'})
+policy=json.loads((repo/planner.POLICY).read_bytes())
+snapshots={label:planner.dependencies.snapshot(repo,commit)[0] for label,commit in (('base',base),('head',head))}
+reviews=contracts.review([],policy['consumer_contracts'],snapshots,
+    lambda label,path:planner.read_at(repo,base if label=='base' else head,path))
+result={'pr':86,'slice':'M5-007 H1/H2','binding':plan['binding'],'plan_id':plan['plan_id'],
+    'observed_ci':{'url':ci['url'],'conclusion':ci['conclusion'],'head':ci['headSha']},
+    'selected_modules':len(plan['selection']['selected']),'scope_summary':plan['selection']['scope_summary'],
+    'behavioral':plan['behavioral_scope'],'coverage':plan['coverage_scope'],
+    'behavioral_full_reason_count':len(plan['obligation_reasons']['behavioral_scope']),
+    'all_behavioral_full_reasons_are_archive_classification':all(
+        reason.startswith('unclassified dependency surface: docs/workstreams/')
+        for reason in plan['obligation_reasons']['behavioral_scope']),
+    'diagnostics':diagnostics,'reference_contract_review':reviews,
+    'reference_catalog_sha256':hashlib.sha256((repo/planner.POLICY).read_bytes()).hexdigest(),
+    'reference_catalog_context':'current Draft proposal, not M5 accepted policy; explicit pins only',
+    'source_producer':planner.git(repo,'rev-parse','HEAD').decode().strip(),
+    'execution_authority':False,'whole_m5_007_complete':False,'human_acceptance_claimed':False}
+(a.output/'m5-intake.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8',newline='\n')
+print(json.dumps({'selected':result['selected_modules'],'full_reasons':result['behavioral_full_reason_count'],
+    'categories':[{k:r[k] for k in ('category','selected_modules','available_modules')} for r in diagnostics],
+    'record_drift':{r['id']:r['checks']['head']['drift'] for r in reviews}},indent=2))
