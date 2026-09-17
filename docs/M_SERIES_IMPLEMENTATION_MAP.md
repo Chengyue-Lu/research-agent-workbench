@@ -108,6 +108,10 @@ flowchart LR
         M5003 --> M5004
         M5006 --> M5004
         M5007 --> M5004
+        M5007 --> M5008["M5-008 BLOCKED<br/>four-arm live pilot"]
+        A4G --> M5008
+        PG["pilot authorization<br/>external / unsatisfied"] --> M5008
+        M5008 --> M5004
         M5004 --> M5005["M5-005 BLOCKED"]
     end
 
@@ -125,14 +129,18 @@ flowchart LR
     M1106 -. "Projection + Supply" .-> A4G
     M1106 --> M5004
     M6004["M6-004 BLOCKED<br/>live Provider/session"] --> M5004
+    M6004 --> M5008
 ```
 
 M4-001～004 已闭合 bounded admission、promotion、Claim evidence localization 与 Run reconstruction；
 promotion eligibility 仍只由当次 pinned pipeline 重执行确立，不证明自报历史 provenance。当前开发入口是
 `M5-006 DONE → M6-008 DONE → M5-007 READY`；路诚钺按 [Harness 进入计划](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md) 从冻结 plan / 评价侧 preflight 开始。
 M5-004 的 M4 provenance 链、M5-003 计划契约、M11-006 mapping 机制、M6-008 baseline closeout 与 Skill replay Gate 已满足；
-仍等待两个 Human-approved public/private Case Dossier、M5-007 Harness、真实 A4 admission 与 M6-004 live
-Provider/session Gate。ADR-0020 已 exact-pin
+仍等待两个 Human-approved public/private Case Dossier、M5-007 Harness、M5-008 live pilot 验收、真实 A4 admission 与 M6-004 live
+Provider/session Gate。M5-008 使用独立获批的 pilot dossier，在完整 Harness、live conformance、A4 admission
+与专项授权闭合后验证四臂真实 Provider/Tool execution；当前 BLOCKED。验收只证明 exact source/config 的
+live 工程闭包，pilot runs 不进入 primary confirmatory run set；pilot 观察或调参影响的案例不能重新标为
+未观察 held-out。详见 [Live Pilot Gate](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_LIVE_PILOT_GATE.md)。ADR-0020 已 exact-pin
 双传输并关闭 `M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE`：A1/A2→M6、A3→M11 Core、A4→M11 Skill
 extension，primary `A4 − A2` 明确包含 transport difference；M5-006 已实现相应 Protocol/validators。`A4 − A3` 只有在
 `A3A4PairwiseComparabilityRecord` 证明唯一差异是 admitted Skill extension 时才可称 Skill conditional

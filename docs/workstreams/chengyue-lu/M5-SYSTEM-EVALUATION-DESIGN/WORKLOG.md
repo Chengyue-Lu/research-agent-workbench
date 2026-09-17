@@ -107,3 +107,15 @@ The hosted impact plan also includes the archived `export_capture.py` as an exec
 ## M5-007 进入准备（2026-09-16）
 
 PR75 接受合入后，M6-008 Task 收口与 M5-007 READY 激活在同一 feature/R2 提案中进行，既有 Task 定义不变。新增 [Harness 进入计划](M5-007_ENTRY_PLAN.md)，按 H1/H2 冻结 plan/preflight → H3 fresh 四臂 synthetic execution → H4 replay/盲审/metric/analysis → H5 集成验收推进。此处仅准备实施，未实现 Harness、运行真实模型或关闭 M5-004 的真实 case/live/admission 条件。
+
+## M5-008 task-definition（2026-09-17）
+
+基于 `develop@0d4a1d00a4c32ca9b822df6482a95920e7c21b1b`，按 Human 请求新增
+M5-008 Live Evaluation Pilot Gate，作为 M5-004 hard dependency。独立分支维护 Task 行、派生图和
+[pilot 验收定义](M5-008_LIVE_PILOT_GATE.md)；M5-007 定义与状态不变，PR86 H1/H2 不计作完整 Harness 接受。
+pilot 独立冻结工程 dossier，必须走真实四臂 transport、实际 Provider/Tool、失败与 cold replay/盲审/分析
+输入闭包；M6-004、A4 admission 和具名专项授权仍为执行前置。M5-008 为 BLOCKED；pilot 不产生
+confirmatory net-benefit conclusion，M5-004/005 保持 BLOCKED。
+
+[Definition Attempt](attempts/M5-008-DEFINITION-001/README.md) 记录输入、变更范围、检查与 capture gap。
+本次无 live 调用、Harness 实现或 Task DONE；Task-definition PR 的 CI/review 单独绑定其最终提交。
