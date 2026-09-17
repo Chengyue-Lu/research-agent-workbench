@@ -1,0 +1,169 @@
+"""Retain the witnessed-authority correction without rewriting earlier evidence."""
+import argparse
+from datetime import datetime
+import hashlib
+import json
+from pathlib import Path
+import re
+import subprocess
+import sys
+
+p = argparse.ArgumentParser()
+p.add_argument('--repo', type=Path, required=True)
+repo = p.parse_args().repo.resolve()
+scratch = Path(__file__).resolve().parent
+source = repo / '.rwb/contract-shadow/p2-authority-final'
+attempt = repo / 'work/TEST-PERF-002/A-20260916-010'
+assert not attempt.exists()
+summary = json.loads((source/'implementation/preflight-summary.json').read_bytes())
+head = subprocess.check_output(['git', '-C', str(repo), 'rev-parse', 'HEAD']).decode().strip()
+assert summary['head'] == head
+assert all(r['checkout_sha256'] == r['git_sha256'] for r in summary['source_manifest'])
+log = (source/'regression.log').read_text(encoding='utf-8')
+match = re.search(r'^Ran (\d+) tests in ([\d.]+)s$', log, re.M)
+assert match and int(match[1]) == 216 and '\nOK\n' in log
+seconds = float(match[2])
+coverage = json.loads((source/'coverage.json').read_bytes())
+assert len(coverage['files']) == 5
+metrics = []
+for path, row in coverage['files'].items():
+    s = row['summary']
+    assert s['percent_statements_covered'] >= 95 and s['percent_branches_covered'] >= 90
+    assert not s['excluded_lines']
+    metrics.append({'path': path, **s})
+comparison = json.loads((source/'plan-comparison.json').read_bytes())
+assert comparison['producer_commit'] == head and comparison['diagnostic_not_loaded_by_planner']
+assert len(comparison['cases']) == 13 and all(r['status'] == 'PASS' for r in comparison['cases'])
+for row in comparison['cases']:
+    assert hashlib.sha256((repo/row['retained_plan']).read_bytes()).hexdigest() == row['sha256']
+
+# Reuse business execution only when the exact declarations and all nine inputs remain unchanged.
+policy_path = 'tests/ci_impact_policy.yaml'
+policy = json.loads((repo/policy_path).read_bytes())
+old = json.loads(subprocess.check_output(['git', '-C', str(repo), 'show', '44abc86:'+policy_path]))
+assert policy['consumer_contracts'] == old['consumer_contracts']
+pins = {path: digest for r in policy['consumer_contracts'] for path, digest in r['pins'].items()}
+assert len(pins) == 9
+for path, digest in pins.items():
+    assert hashlib.sha256((repo/path).read_bytes()).hexdigest() == digest
+    assert (repo/path).read_bytes() == subprocess.check_output(['git', '-C', str(repo), 'show', head+':'+path])
+proof = repo/'work/TEST-PERF-002/A-20260916-009/checks/declared-proofs.log'
+proof_log = proof.read_text(encoding='utf-8')
+assert re.search(r'^Ran 11 tests in [\d.]+s$', proof_log, re.M) and '\nOK\n' in proof_log
+reuse = {'status': 'PASS', 'execution_producer': '44abc86acb638b22a6740ee178ab72d730838bc0',
+    'log': proof.relative_to(repo).as_posix(), 'sha256': hashlib.sha256(proof.read_bytes()).hexdigest(),
+    'tests': 11, 'consumer_definitions_unchanged': True, 'all_declared_pins_unchanged': pins,
+    'complete_input_closure_proved': False, 'execution_authority': False}
+run_path = repo/'work/TEST-PERF-002/A-20260916-009/checks/m5-007-tested-run.json'
+run = json.loads(run_path.read_bytes())
+assert run['headSha'] == 'b53a391ece3a4be7207c00c636dc9e1570e71473' and run['conclusion'] == 'success'
+def duration(row):
+    return (datetime.fromisoformat(row['completedAt'])-datetime.fromisoformat(row['startedAt'])).total_seconds()
+timing = {'run':run['url'], 'head':run['headSha'], 'source':run_path.relative_to(repo).as_posix(),
+    'source_sha256':hashlib.sha256(run_path.read_bytes()).hexdigest(),
+    'jobs':[{'name':j['name'], 'seconds':duration(j), 'steps_over_ten_seconds':[
+        {'name':s['name'], 'seconds':duration(s)} for s in j['steps'] if duration(s) >= 10]} for j in run['jobs']],
+    'paired_performance_improvement_proved':False}
+
+(attempt/'checks').mkdir(parents=True)
+(attempt/'.gitattributes').write_bytes(b'* -text whitespace=cr-at-eol\n')
+copies = {source/name: name for name in ('regression.log', 'coverage.json', 'plan-comparison.json',
+                                        'implementation-preflight.log')}
+for path in (source/'implementation').glob('*.json'):
+    copies[path] = 'implementation/'+path.name
+for name in ('regression.log', 'fixture-repair.log', 'fixture-final.log'):
+    copies[repo/'.rwb/contract-shadow/p2-authority'/name] = 'earlier-attempts/'+name
+for name in ('ci_consumer_contracts.py', 'plan_ci.py'):
+    copies[repo/'.github/scripts'/name] = 'producer/'+name+'.txt'
+for name in ('test_ci_consumer_contracts.py', 'test_ci_plan.py'):
+    copies[repo/'tests'/name] = 'producer/'+name+'.txt'
+for name in ('archive_consumer_authority.py', 'check_authority_relocation.py', 'shadow_preflight_p2.py'):
+    copies[scratch/name] = 'reproduction/'+name+'.txt'
+manifest = []
+for path, name in sorted(copies.items(), key=lambda r:r[1]):
+    raw = path.read_bytes()
+    dest = attempt/'checks'/name
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_bytes(raw)
+    manifest.append({'path': 'checks/'+name, 'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw)})
+for name, value in (('evidence-manifest.json', manifest), ('business-proof-reuse.json', reuse),
+                    ('critical-module-metrics.json', metrics), ('m5-hosted-timing.json', timing)):
+    (attempt/'checks'/name).write_text(json.dumps(value, indent=2)+'\n', encoding='utf-8', newline='\n')
+rows = '\n'.join(f"| {r['path']} | {r['covered_lines']}/{r['num_statements']} | "
+                 f"{r['covered_branches']}/{r['num_branches']} |" for r in metrics)
+(attempt/'RESULTS.md').write_text(f'''# Witnessed consumer-policy authority correction
+
+TEST-PERF-002; owner Chengyue-Lu; R2; A-20260916-010.
+Implementation: `{head}`; base: `{summary['base']}`.
+
+Strict consumer-policy validation now lives in the existing `plan_ci.py` authority.
+The planner and worker do not import the diagnostic consumer module, and the fixed independent
+witness inventory/root are unchanged. A fresh isolated process with a malicious diagnostic
+import sentinel loads the planner, validates v2 and rejects an execution-authority injection.
+The separate candidate-bootstrap deletion attack still fails at the independent witness.
+The diagnostic helper imports the planner validator; dependency flows toward existing authority.
+
+Local regression: 216 PASS / {seconds:.3f} s. Five changed CI modules meet critical 95/90
+with no exclusions. These CI tests are not a full repository behavioral run. The eleven
+previously executed business proofs are referenced by hash: their four declarations and all
+nine declared file pins remain byte-identical. This does not establish complete input closure.
+
+| Module | Statements | Branches |
+| --- | ---: | ---: |
+{rows}
+
+All thirteen historical plans remain byte-identical to A-20260916-009 after the authority move.
+No selection or execution obligation reduction has been activated. M5-007 H1/H2 intake and its
+hosted run remain in that prior archive: 93/94 selected modules and 29 archive-classification
+FULL reasons, independently of actual schema/catalog/install requirements.
+The hosted M5 coverage job took 1108 s (18 min 28 s), including 1089 s in its ordered
+behavior-plus-coverage test step. Python 3.13 compatibility took 586 s, with 572 s in tests.
+These are observed job/step durations, not isolated coverage instrumentation overhead or a
+paired before/after speedup. Python 3.11 compatibility consumes the shared execution receipt.
+
+The initial 216-test combined run failed because the isolated planner seed lacked the newly
+required consumer-proof module. The seed and explicit union assertions were updated; the union
+still executes each selected test once. Failed logs and the small repair checks are retained.
+The final rerun above uses the committed implementation and stable source files.
+
+Exact implementation head-target plan/minimum and governance pass. This archive commit and the
+hosted merge target require separate final checks. Old-head CI cannot stand in for those results.
+No merge or release action is authorized here. Earlier attempts remain byte-identical.
+Trace records a retrospective capture gap for events that were not streamed as they occurred.
+
+See [design](../../../docs/workstreams/chengyue-lu/TEST-PERF-002/CONSUMER_CONTRACTS_V1.md),
+[prior intake](../A-20260916-009/RESULTS.md), [comparison](checks/plan-comparison.json),
+[business reuse](checks/business-proof-reuse.json), [coverage](checks/critical-module-metrics.json),
+[M5 timing](checks/m5-hosted-timing.json),
+[preflight](checks/implementation/preflight-summary.json), [manifest](checks/evidence-manifest.json)
+and [Trace](checks/trace-validation.json).
+''', encoding='utf-8', newline='\n')
+
+sys.path.insert(0, str(repo/'src'))
+from research_workbench.observability.trace import AgentTraceRecorder, validate_attempt_trace
+r = AgentTraceRecorder(attempt, task_id='TEST-PERF-002', task_revision=38, attempt_id='A-20260916-010',
+    task_snapshot={'task_id':'TEST-PERF-002', 'revision':38, 'request':'其已完成，可以测试。',
+        'scope':'Complete M5 H1/H2 CI intake and preserve witnessed consumer-policy authority',
+        'delegation':False, 'required_skills':[]}, accountable_owner='Chengyue-Lu', actor_id='main-agent',
+    runtime_identity='Codex desktop', provider='OpenAI', baseline=summary['base'],
+    read_allowlist=['AGENTS.md','.github/**','tests/**','src/**',
+        'docs/workstreams/chengyue-lu/TEST-PERF-002/**','work/TEST-PERF-002/A-20260916-009/**',
+        'PR85/86 CI and exact historical corpus Git facts'],
+    write_scope=['.github/scripts/ci_consumer_contracts.py','.github/scripts/plan_ci.py',
+        'tests/test_ci_consumer_contracts.py','tests/test_ci_plan.py','tests/ci_impact_policy.yaml',
+        'tests/coverage_policy.yaml','docs/workstreams/chengyue-lu/TEST-PERF-002/**',
+        'work/TEST-PERF-002/A-20260916-010/**'], tool_allowlist=['git','gh','python','shell','apply_patch'])
+r.record_capture_gap('events', 'Retained final and failed checks are retrospective; unstreamed shell/debug events are not claimed complete.')
+r.record_tool_call(operation_id='retain-consumer-authority-checks', tool_name='python', status='succeeded',
+    arguments={'operation':'retain authority isolation, exact-head regression and plan comparison'},
+    result={'preflight':summary, 'tests':216, 'seconds':seconds, 'comparison':comparison,
+        'business_proof_reuse':reuse, 'retained_files':manifest}, result_entered_context=True)
+r._index['check_refs'] = [{'path':row['path'], 'sha256':row['sha256']} for row in manifest]
+r._refresh_index()
+r.seal('safe-paused')
+validation = validate_attempt_trace(repo, attempt)
+result = {'blocked':validation.blocked, 'risks':[{'code':x.code, 'level':x.level.value, 'message':x.message}
+                                              for x in validation.risks]}
+(attempt/'checks/trace-validation.json').write_text(json.dumps(result, indent=2)+'\n', encoding='utf-8', newline='\n')
+assert not validation.blocked
+print(json.dumps({'trace':result, 'retained_files':len(manifest), 'tests':216, 'seconds':seconds}))

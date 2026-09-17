@@ -1,0 +1,6 @@
+task_id: TEST-PERF-002
+revision: 35
+request: 你可以使用其他旧分支拉取下来做测试。
+scope: Historical branch replay and selected execution; original branches remain unchanged
+delegation: false
+required_skills: []

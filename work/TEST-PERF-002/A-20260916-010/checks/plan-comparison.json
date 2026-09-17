@@ -1,0 +1,193 @@
+{
+  "status": "PASS",
+  "producer_commit": "23fd135026e223c7ad9c4c17b279c17d31b4dbb7",
+  "diagnostic_not_loaded_by_planner": true,
+  "cases": [
+    {
+      "pr": 65,
+      "status": "PASS",
+      "retained_plan": "work/TEST-PERF-002/A-20260916-009/checks/corpus-after/pr65-plan.json",
+      "sha256": "b03ffd06632f20a74ed7579580ceec473cdd59ade90fd63afd474245fc20b948",
+      "plan_id": "c8abfac35dc9d9b5df283bfafa36d6b1f8b6ad4a2dfc726360a1779b04401ddd",
+      "binding": {
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "base": "690a9f8c89c32400bbc57b0781ef9b43205894db",
+        "head": "09f96193845ee0e73a215d87ba188b5aa5569704",
+        "merge_base": "690a9f8c89c32400bbc57b0781ef9b43205894db",
+        "target": "09f96193845ee0e73a215d87ba188b5aa5569704"
+      }
+    },
+    {
+      "pr": 68,
+      "status": "PASS",
+      "retained_plan": "work/TEST-PERF-002/A-20260916-009/checks/corpus-after/pr68-plan.json",
+      "sha256": "9646b57a243a77a861c123b34d42a02705563006183ed44a8fcd03813e93600f",
+      "plan_id": "f36fe6e3606f23f523a0e740d4e718d51efdcfb5bdfdd7e73a2583b63cf6a4fd",
+      "binding": {
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "base": "11c3b57dfbf8af0dc2587fc421d097e2544941c3",
+        "head": "0f6da949c9d89d4d5e0cea9cffad1e85465bb52c",
+        "merge_base": "11c3b57dfbf8af0dc2587fc421d097e2544941c3",
+        "target": "0f6da949c9d89d4d5e0cea9cffad1e85465bb52c"
+      }
+    },
+    {
+      "pr": 71,
+      "status": "PASS",
+      "retained_plan": "work/TEST-PERF-002/A-20260916-009/checks/corpus-after/pr71-plan.json",
+      "sha256": "354476e9bab355258b34413d05c707b3d220102ce554acd2d4690904ee221812",
+      "plan_id": "0cb924e63913c2e967577d5e48745e2a88b4ba5b68a3349135d5c23039a7e0da",
+      "binding": {
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "base": "b111dbbed9c250c0bcf3afe1c754819b30eae935",
+        "head": "303133a330149d1d62698d4dc063a871216636ac",
+        "merge_base": "b111dbbed9c250c0bcf3afe1c754819b30eae935",
+        "target": "303133a330149d1d62698d4dc063a871216636ac"
+      }
+    },
+    {
+      "pr": 73,
+      "status": "PASS",
+      "retained_plan": "work/TEST-PERF-002/A-20260916-009/checks/corpus-after/pr73-plan.json",
+      "sha256": "2524e1cfc8919257e6c261e4e609afb443816bd4e49853a2f45f680744c9c30a",
+      "plan_id": "0acdc0805a4729e5c42f57adc61038b9c4a953d17105dd429758f87d19d188b5",
+      "binding": {
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "base": "ab98caf25125e6567d8bb2c8afff02105b54c940",
+        "head": "34197d29bb6a45c405b4a4aa60cae4a3b2989387",
+        "merge_base": "ab98caf25125e6567d8bb2c8afff02105b54c940",
+        "target": "34197d29bb6a45c405b4a4aa60cae4a3b2989387"
+      }
+    },
+    {
+      "pr": 74,
+      "status": "PASS",
+      "retained_plan": "work/TEST-PERF-002/A-20260916-009/checks/corpus-after/pr74-plan.json",
+      "sha256": "df1bcdd92c0bd13ab074afce1db69246844d52eec3a02ca61940435227e7883b",
+      "plan_id": "4232ed39a8c5f649a1e5a51159c31ce6ecf8f32611c0dd52b1a5ebfedf3e859f",
+      "binding": {
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "base": "60bdf8c28f6cf8c52c04e481e0309bbd6e8cba8b",
+        "head": "b33e145d0524d1e9f2a32ddf696d3c08907e96c2",
+        "merge_base": "60bdf8c28f6cf8c52c04e481e0309bbd6e8cba8b",
+        "target": "b33e145d0524d1e9f2a32ddf696d3c08907e96c2"
+      }
+    },
+    {
+      "pr": 75,
+      "status": "PASS",
+      "retained_plan": "work/TEST-PERF-002/A-20260916-009/checks/corpus-after/pr75-plan.json",
+      "sha256": "014179895e4a534301d73872abe7ce481d84ec567206c83dc242df6219826a88",
+      "plan_id": "247fac8d9211e8c5b874faed6ba505aefc878538485e1e8636424b8db378910d",
+      "binding": {
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "base": "75fbf97c001c7e399135c97e603124cc7a2b06b3",
+        "head": "f704bfdaa5f9c3774dcf24ad06680576a1a60e0c",
+        "merge_base": "75fbf97c001c7e399135c97e603124cc7a2b06b3",
+        "target": "f704bfdaa5f9c3774dcf24ad06680576a1a60e0c"
+      }
+    },
+    {
+      "pr": 77,
+      "status": "PASS",
+      "retained_plan": "work/TEST-PERF-002/A-20260916-009/checks/corpus-after/pr77-plan.json",
+      "sha256": "25bc7178952a4793e0ef3b095ae1f7c439bb96d20b3151686de3c77124cfb3e2",
+      "plan_id": "edbac2731c503bd9874663108e13fdd8d91615fc03caa808f2c4d0df806c3feb",
+      "binding": {
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "base": "451644064f558601d5778b9b115390f882f4d260",
+        "head": "cbf646d1d4139da249277615a88f54d9cdf5586d",
+        "merge_base": "451644064f558601d5778b9b115390f882f4d260",
+        "target": "cbf646d1d4139da249277615a88f54d9cdf5586d"
+      }
+    },
+    {
+      "pr": 78,
+      "status": "PASS",
+      "retained_plan": "work/TEST-PERF-002/A-20260916-009/checks/corpus-after/pr78-plan.json",
+      "sha256": "22366f73f5fe863f1cddd203c6285e089e265cc6a9ca4640e1d3a55fc82fb71d",
+      "plan_id": "d4da6ba7db3bceb64bf466c32b33d67a294e22dcf28ccf8dbebd69aa48600ddd",
+      "binding": {
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "base": "8d34020ce7ed35e93c2f709567930417986de3c5",
+        "head": "f38e792f56168275c6f200452f72f9e4cd64205c",
+        "merge_base": "8d34020ce7ed35e93c2f709567930417986de3c5",
+        "target": "f38e792f56168275c6f200452f72f9e4cd64205c"
+      }
+    },
+    {
+      "pr": 80,
+      "status": "PASS",
+      "retained_plan": "work/TEST-PERF-002/A-20260916-009/checks/corpus-after/pr80-plan.json",
+      "sha256": "a56c9a21bfb1ed5e4c0fe3c2f376e0f6b0750ef9a8b0283b3d9c72916473bca6",
+      "plan_id": "fa6f776c63578ddafc2f441b1c67a26083bc98d2971ce8c07cff50562fbdb49b",
+      "binding": {
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "base": "b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22",
+        "head": "47f518a164c59bb123541bc8c0705f2106ee513e",
+        "merge_base": "b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22",
+        "target": "47f518a164c59bb123541bc8c0705f2106ee513e"
+      }
+    },
+    {
+      "pr": 81,
+      "status": "PASS",
+      "retained_plan": "work/TEST-PERF-002/A-20260916-009/checks/corpus-after/pr81-plan.json",
+      "sha256": "833f767f5a26a7ba9db95f8eb81aa667d0170d0b2af4df4520a620be60cc5961",
+      "plan_id": "4e724d73ee82c46a7c15d6999c41230796470ed4f84da90eae55763b511120bc",
+      "binding": {
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "base": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+        "head": "c529ac19e09ad436980acd46209fd964d9c80977",
+        "merge_base": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+        "target": "c529ac19e09ad436980acd46209fd964d9c80977"
+      }
+    },
+    {
+      "pr": 82,
+      "status": "PASS",
+      "retained_plan": "work/TEST-PERF-002/A-20260916-009/checks/corpus-after/pr82-plan.json",
+      "sha256": "533b8ac5b60ef50cdaa2da4cbfff8badebd1f9ac3baf913bc2a1fde6e1008092",
+      "plan_id": "10e3513583508c20299fe98e1721b8871a3979028eead9ba94eaba2fed4a268e",
+      "binding": {
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "base": "7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba",
+        "head": "705c4ba3f89110c73dfc3bee71e79ad36e1cf476",
+        "merge_base": "7b1323f5e9d91c304b6d5cfc89b7ea0e87f7c5ba",
+        "target": "705c4ba3f89110c73dfc3bee71e79ad36e1cf476"
+      }
+    },
+    {
+      "pr": 84,
+      "status": "PASS",
+      "retained_plan": "work/TEST-PERF-002/A-20260916-009/checks/corpus-after/pr84-plan.json",
+      "sha256": "285b2031bb61d23868e6fef2858976aa668fc8dc29868ddff38bc76e09262523",
+      "plan_id": "83b69f1fccc8eefe35efc342027ab283d92f7253c537e9eeb0478a9bfd2c7137",
+      "binding": {
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "base": "b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22",
+        "head": "dfe3165a90ebcef99d107aef8e790bf7abc0c13f",
+        "merge_base": "b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22",
+        "target": "dfe3165a90ebcef99d107aef8e790bf7abc0c13f"
+      }
+    },
+    {
+      "pr": 86,
+      "status": "PASS",
+      "retained_plan": "work/TEST-PERF-002/A-20260916-009/checks/corpus-after/pr86-plan.json",
+      "sha256": "bd7d486ca9ff3c7f4fab1f31535fdd032d8fbe2768bf7dd5fe9267c1d89d5ea3",
+      "plan_id": "002d470b28de19788c17040a0744d1368977cdb93f6ec14e2fef07ca07767fd1",
+      "binding": {
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "base": "0d4a1d00a4c32ca9b822df6482a95920e7c21b1b",
+        "head": "b53a391ece3a4be7207c00c636dc9e1570e71473",
+        "merge_base": "0d4a1d00a4c32ca9b822df6482a95920e7c21b1b",
+        "target": "b53a391ece3a4be7207c00c636dc9e1570e71473"
+      }
+    }
+  ],
+  "source_hashes": {
+    ".github/scripts/plan_ci.py": "55c21010a31671199908053b7d044355be0fe4cead16ffeb799bc2d5f7057ecb",
+    ".github/scripts/ci_consumer_contracts.py": "865a432e263d0bb10e748955b456df71ade0a5d00ddd17dbf81f7e1b4ccd140a"
+  }
+}

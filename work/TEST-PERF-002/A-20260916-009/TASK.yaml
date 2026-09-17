@@ -1,0 +1,7 @@
+task_id: TEST-PERF-002
+revision: 37
+request: 其已完成，可以测试。
+scope: Continue consumer record/drift implementation and include completed M5-007
+  H1/H2 tests in CI audit
+delegation: false
+required_skills: []

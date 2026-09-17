@@ -1,0 +1,230 @@
+{
+  "engine_commit": "47c09b95cc27fe59e1ebf1240ba3d3d6ef1a3543",
+  "engine_sha256": "fbd1fdb8fac80b39efc6bc548af37593c58c9d3500455bf99a814a99b736f57a",
+  "mode": "current-engine-historical-Git-facts; target=head; no historical or hosted CI attestation",
+  "cases": [
+    {
+      "pr": 65,
+      "name": "test-event-isolation",
+      "base": "690a9f8c89c32400bbc57b0781ef9b43205894db",
+      "head": "09f96193845ee0e73a215d87ba188b5aa5569704",
+      "status": "PASS",
+      "binding": {
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "base": "690a9f8c89c32400bbc57b0781ef9b43205894db",
+        "head": "09f96193845ee0e73a215d87ba188b5aa5569704",
+        "merge_base": "690a9f8c89c32400bbc57b0781ef9b43205894db",
+        "target": "09f96193845ee0e73a215d87ba188b5aa5569704"
+      },
+      "plan_id": "b3a5f109e1d9400b4234c4dba3a6fcfdb8de0094df3012f7d901ac1c30dfeca1",
+      "report_id": "391f75e8981b1b27e2d23416d7dd173719a337c185bb3215d4973444f8e81f8f",
+      "summary": {
+        "input_roles": {
+          "document": 6,
+          "evidence-data": 11,
+          "selection-policy-metadata": 1,
+          "test-code": 1,
+          "unknown": 1
+        },
+        "available_test_modules": 70,
+        "dependency_selected_test_modules": 4,
+        "plan_test_selectors": 5,
+        "coverage_test_selectors": 0,
+        "review_reasons": {
+          "accepted-dependency": 3,
+          "data-instance-to-code-consumers": 1
+        },
+        "classification_conflicts": [],
+        "unknown_inputs": [
+          "work/TEST-PERF-002/A-20260907-001/.gitattributes"
+        ]
+      },
+      "accepted_obligations": {
+        "risk": "R2",
+        "behavioral_scope": "focused",
+        "coverage_obligations": [],
+        "package_smoke": false,
+        "repository_smoke": false
+      },
+      "coverage_modules": [],
+      "obligation_reasons": {
+        "behavioral_scope": [
+          "complete affected base/head consumer and contract tests"
+        ],
+        "coverage_scope": [
+          "no production/critical executable or coverage authority changed"
+        ],
+        "package_smoke": [
+          "no packaging/install surface changed"
+        ],
+        "repository_smoke": [
+          "no repository validation surface changed"
+        ]
+      },
+      "local_analysis_seconds": 2.781
+    },
+    {
+      "pr": 80,
+      "name": "m14-source-ci",
+      "base": "b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22",
+      "head": "47f518a164c59bb123541bc8c0705f2106ee513e",
+      "status": "PASS",
+      "binding": {
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "base": "b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22",
+        "head": "47f518a164c59bb123541bc8c0705f2106ee513e",
+        "merge_base": "b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22",
+        "target": "47f518a164c59bb123541bc8c0705f2106ee513e"
+      },
+      "plan_id": "6ab9b8c8b8095de1b6a4d9f049c9602cea30490a23fe31f461cafb7c7613bc55",
+      "report_id": "cc3e49727beddecb4af413a72cd42d4156c3da45250f29a32323c4db0f9d1597",
+      "summary": {
+        "input_roles": {
+          "coverage-authority": 1,
+          "document": 26,
+          "evidence-data": 70,
+          "repository-authority": 1,
+          "selection-authority": 1,
+          "test-code": 2,
+          "unknown": 22
+        },
+        "available_test_modules": 93,
+        "dependency_selected_test_modules": 92,
+        "plan_test_selectors": 92,
+        "coverage_test_selectors": 109,
+        "review_reasons": {
+          "accepted-dependency": 5,
+          "data-instance-to-code-consumers": 1,
+          "opaque-execution": 30,
+          "unbounded-resource": 56
+        },
+        "classification_conflicts": [],
+        "unknown_inputs": [
+          "work/M14-005/A-20260915-003/.gitattributes",
+          "work/M14-005/A-20260915-003/tool-events/focused.log",
+          "work/M14-005/A-20260915-003/tool-events/governance-plan.log",
+          "work/M14-005/A-20260915-003/tool-events/repository.log",
+          "work/M14-005/A-20260915-003/tool-events/source-focused.log",
+          "work/M14-005/A-20260915-003/tool-events/trace-initial.log",
+          "work/M14-005/A-20260915-003/tool-events/whitespace-initial.log",
+          "work/M14-005/A-20260915-004/.gitattributes",
+          "work/M14-005/A-20260915-004/tool-events/focused.log",
+          "work/M14-005/A-20260915-004/tool-events/governance-plan.log",
+          "work/M14-005/A-20260915-004/tool-events/repository.log",
+          "work/M14-005/A-20260916-001/.gitattributes",
+          "work/M14-005/A-20260916-001/tool-events/focused-first-base.log",
+          "work/M14-005/A-20260916-001/tool-events/focused.log",
+          "work/M14-005/A-20260916-001/tool-events/governance-plan-first-base.log",
+          "work/M14-005/A-20260916-001/tool-events/governance-plan.log",
+          "work/M14-005/A-20260916-001/tool-events/repository.log",
+          "work/M14-005/A-20260916-002/.gitattributes",
+          "work/M14-005/A-20260916-002/tool-events/failed-cleanup.log",
+          "work/M14-005/A-20260916-002/tool-events/witness-after.log",
+          "work/M14-005/A-20260916-002/tool-events/witness-before.log",
+          "work/M14-005/A-20260916-002/tool-events/witness-full.log"
+        ]
+      },
+      "accepted_obligations": {
+        "risk": "R2",
+        "behavioral_scope": "full",
+        "coverage_obligations": [
+          "impact",
+          "repository"
+        ],
+        "package_smoke": true,
+        "repository_smoke": true
+      },
+      "coverage_modules": [
+        ".github/scripts/release_source_ci.py"
+      ],
+      "obligation_reasons": {
+        "behavioral_scope": [
+          "CI selection authority changed; complete behavioral bootstrap: .github/workflows/ci.yml"
+        ],
+        "coverage_scope": [
+          "changed executable/critical subjects retain impact 100/100 and critical 95/90 with acceptance",
+          "coverage authority changed: .github/workflows/ci.yml"
+        ],
+        "package_smoke": [
+          "affected public CLI consumer"
+        ],
+        "repository_smoke": [
+          "affected repository validation consumer"
+        ]
+      },
+      "local_analysis_seconds": 10.11
+    },
+    {
+      "pr": 77,
+      "name": "m14-quickstart",
+      "base": "451644064f558601d5778b9b115390f882f4d260",
+      "head": "cbf646d1d4139da249277615a88f54d9cdf5586d",
+      "status": "PASS",
+      "binding": {
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "base": "451644064f558601d5778b9b115390f882f4d260",
+        "head": "cbf646d1d4139da249277615a88f54d9cdf5586d",
+        "merge_base": "451644064f558601d5778b9b115390f882f4d260",
+        "target": "cbf646d1d4139da249277615a88f54d9cdf5586d"
+      },
+      "plan_id": "da93033ae0e00a63c011d1c4aa43667d07b6dbb59d0e40f8aa338b3d0a6a1b65",
+      "report_id": "d42c0ff82fa1025052d9ba6aae95d8f344fef74279d860b581b19e00893a32a7",
+      "summary": {
+        "input_roles": {
+          "document": 16,
+          "evidence-data": 15,
+          "executable": 1,
+          "packaging-authority": 1,
+          "test-code": 1,
+          "unknown": 7
+        },
+        "available_test_modules": 87,
+        "dependency_selected_test_modules": 86,
+        "plan_test_selectors": 86,
+        "coverage_test_selectors": 0,
+        "review_reasons": {
+          "accepted-dependency": 1,
+          "data-instance-to-code-consumers": 7,
+          "opaque-execution": 2,
+          "unbounded-resource": 76
+        },
+        "classification_conflicts": [],
+        "unknown_inputs": [
+          "work/M14-004/A-20260912-001/.gitattributes",
+          "work/M14-004/A-20260912-001/tool-events/focused-final.log",
+          "work/M14-004/A-20260912-001/tool-events/repository.log",
+          "work/M14-004/A-20260914-001/.gitattributes",
+          "work/M14-004/A-20260914-001/tool-events/before-fix.log",
+          "work/M14-004/A-20260914-001/tool-events/focused.log",
+          "work/M14-004/A-20260914-001/tool-events/repository.log"
+        ]
+      },
+      "accepted_obligations": {
+        "risk": "R2",
+        "behavioral_scope": "full",
+        "coverage_obligations": [
+          "repository"
+        ],
+        "package_smoke": true,
+        "repository_smoke": true
+      },
+      "coverage_modules": [],
+      "obligation_reasons": {
+        "behavioral_scope": [
+          "runtime/build environment changed: pyproject.toml"
+        ],
+        "coverage_scope": [
+          "coverage authority changed: pyproject.toml"
+        ],
+        "package_smoke": [
+          "package metadata changed: pyproject.toml",
+          "affected public CLI consumer"
+        ],
+        "repository_smoke": [
+          "affected repository validation consumer"
+        ]
+      },
+      "local_analysis_seconds": 6.531
+    }
+  ]
+}

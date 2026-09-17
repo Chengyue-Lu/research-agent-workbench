@@ -1,0 +1,64 @@
+"""Create the first four review records from explicitly inspected source and test files."""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+
+p=argparse.ArgumentParser()
+p.add_argument('--repo', type=Path, required=True)
+repo=p.parse_args().repo
+records=[]
+def add(identity, consumer, entrypoints, inputs, outputs, invariants, unresolved, positive, negative, extra=()):
+    paths={consumer, *extra, *('tests/'+name.split('.')[0]+'.py' for name in positive+negative)}
+    records.append({'id':identity,'owner':'Chengyue-Lu','consumer':consumer,
+        'pins':{path:hashlib.sha256((repo/path).read_bytes()).hexdigest() for path in sorted(paths)},
+        'entrypoints':entrypoints,'inputs':inputs,'outputs':outputs,'invariants':invariants,
+        'unresolved':unresolved,'positive_tests':positive,'negative_tests':negative,'execution_authority':False})
+add('cli-git-head-observation','src/research_workbench/cli.py',['_context_resume_check','_context_checkpoint'],
+    ['Explicit args.root selects the project; git -C root rev-parse HEAD reads Git metadata.',
+     'The process inherits executable lookup and Git environment.'],
+    ['Observed Git HEAD is compared with or stored in a checkpoint; return code becomes an error/risk.'],
+    ['The two observed subprocess calls do not request Python or a candidate script.',
+     'Checkpoint parsing, digest, reference closure and resume semantics remain required.'],
+    ['Prove executable lookup/environment boundaries and each test invocation root.',
+     'Retain all other CLI imports, reads, commands and alternate consumer paths.'],
+    ['test_m3_context_observability.ContextGovernanceTests.test_checkpoint_and_resume_are_file_recoverable'],
+    ['test_m3_context_observability.ContextGovernanceTests.test_explicit_git_capture_fails_closed_outside_repository',
+     'test_m3_context_observability.ContextGovernanceTests.test_resume_check_rejects_git_head_conflict'])
+add('validation-document-instances','src/research_workbench/validation/documents.py',['load_and_validate'],
+    ['Caller-supplied iterable of paths; each document is read as bytes.',
+     'validate_documents still dispatches all applicable semantic validators and schema/catalog work.'],
+    ['LoadedDocuments with byte digests and ordered ValidationIssues, including parse failures.'],
+    ['The hash and parsed mapping must describe the same read bytes.',
+     'Changing one input instance does not itself change the reader implementation.'],
+    ['Map each caller to exact input instances, indirect refs, inventories and fixture lifecycle.',
+     'Do not suppress cross-document closure, global catalogs or unbound caller paths.'],
+    ['test_validation.ValidationTests.test_repository_examples_and_registries_have_no_errors'],
+    ['test_validation.ValidationTests.test_loaded_reference_cannot_skip_hash_check_if_path_disappears',
+     'test_validation.ValidationTests.test_loaded_reference_hash_uses_the_same_bytes_as_its_mapping'])
+add('validation-schema-catalog','src/research_workbench/validation/schemas.py',['SchemaCatalog.__init__','SchemaCatalog._load'],
+    ['Versioned schema directory glob *.schema.json, with every current member read.',
+     'Default root constructs RuntimeResources and its actual whole-manifest integrity validation.'],
+    ['Fresh per-catalog mutable schema and reference registry; immutable self-check cache only.'],
+    ['A cache hit does not suppress fresh reads, pinned integrity or changed/invalid schema checks.'],
+    ['Whole catalog and RuntimeResources inventory are actual dependencies; partition requires separate design.',
+     'Explicit roots, resource_reader, symlinks and environment need invocation-specific binding.'],
+    ['test_schemas.SchemaReuseTests.test_catalog_roots_and_reads_remain_independent_after_a_cache_hit'],
+    ['test_schemas.SchemaReuseTests.test_schema_lifecycle_reuses_bytes_but_rechecks_changed_inputs_and_invalid_schemas'],
+    ['src/research_workbench/resources.py'])
+add('validation-capability-root-scan','src/research_workbench/validation/capability.py',['load_validated_capability_snapshot'],
+    ['Externally supplied candidate path, document_roots and project root.',
+     'Each directory root is recursively scanned for document suffixes before load_and_validate.'],
+    ['Validated read-only Snapshot and closure or a validation error.'],
+    ['Candidate and document roots must remain inside the project.',
+     'External hash is checked against the bytes actually parsed.'],
+    ['Bind per-invocation root membership and added/deleted files; caller paths are not globally bounded.',
+     'Preserve repository closure and runtime-use qualification checks.'],
+    ['test_capability_consumer.CapabilitySnapshotConsumerTests.test_structural_snapshot_loads_only_after_repository_validation'],
+    ['test_capability_consumer.CapabilitySnapshotConsumerTests.test_external_hash_rejects_same_identity_rewrite',
+     'test_capability_consumer.CapabilitySnapshotConsumerTests.test_external_hash_is_bound_to_the_bytes_parsed_by_validation'])
+path=repo/'tests/ci_impact_policy.yaml'
+policy=json.loads(path.read_bytes())
+policy.update(version=2,consumer_contracts=records)
+path.write_text(json.dumps(policy,indent=2,ensure_ascii=False)+'\n',encoding='utf-8',newline='\n')
+print(json.dumps({'contracts':len(records),'declared_pin_records':sum(len(r['pins']) for r in records)},indent=2))

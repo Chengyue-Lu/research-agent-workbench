@@ -1,0 +1,80 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260916-006
+task_id: TEST-PERF-002
+task_revision: 34
+attempt_id: A-20260916-006
+archive_root: A-20260916-006
+baseline: 0d4a1d00a4c32ca9b822df6482a95920e7c21b1b
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: cb25faeafc904129191f71ed5d49b1af94ae133573457962b8d722ff4e5e2d4b
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 15ce1e9fc95e95161c47625735853cc18f0a91bd4b84ea8d10e3f6bb2ae1db63
+read_allowlist:
+- .github/**
+- AGENTS.md
+- build_backend.py
+- docs/**
+- pyproject.toml
+- runtime-resources.json
+- src/**
+- tests/**
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/ci_contract_shadow.py
+- .github/workflows/ci.yml
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/coverage_policy.yaml
+- tests/test_ci_contract_shadow.py
+- work/TEST-PERF-002/A-20260916-006/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+- shell
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: bf76c237efb30a5d43fe5faa115d11858dd4e36078d13f989ed173180c0e028a
+  event_count: 4
+tool_event_refs:
+- path: tool-events/retain-local-shadow-evidence-succeeded.json
+  sha256: 87485cc665e82ccccd759ba13813e9443531e88e661927415a02ce88f9de210e
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs:
+- path: checks/shadow-focused.log
+  sha256: acf9e3f93eebb6cef2f85716bde8c38d6a60e0c0164d435fb4a317667ad2eef6
+- path: checks/shadow-coverage.json
+  sha256: f7dcb3e465a7ad47de0a427e654c48d5c95f10456e6e52b91dc0949268af06b2
+- path: checks/regression.log
+  sha256: 9c29b0f8993f929189a8afdf72f72702641487f5a761f27a3a03147a927e840a
+- path: checks/pr84-shadow.json
+  sha256: aede7eb58a3ae0ac79d29726d80894dc91bf82fd16a7b16d5dd0bc3fea674d11
+- path: checks/pr84-shadow-summary.json
+  sha256: e261873cb2fd98c77d58667333268f45e448380cd9c3cb39a14499ae81ab0098
+- path: checks/implementation-plan.json
+  sha256: 767ab862c7cdbdb0d555d850b4335b62ad938b2077c4504001d3974b3754829c
+- path: checks/implementation-preflight.json
+  sha256: 19ecb3e89d82fa3a50841d9b947ffce270f0d45e0e4a67f25c164bc9f9f05cf8
+- path: checks/implementation-preflight.log
+  sha256: d357de232edea23efdece2284350e249ef50c189b298d03377824b3e116f1d0c
+- path: checks/ci_contract_shadow.py.txt
+  sha256: fbd1fdb8fac80b39efc6bc548af37593c58c9d3500455bf99a814a99b736f57a
+- path: checks/test_ci_contract_shadow.py.txt
+  sha256: 08478186cc8ed13329af28966626787b796975b346a4e0953e66531c830afb09
+- path: checks/shadow_preflight.py.txt
+  sha256: e1277cb3e6f9b0d3c64a71c0c39e3f6a33c1d02334b35b4bca864b7db0c09ee5
+- path: checks/archive_shadow.py.txt
+  sha256: 4a8d63ae39f64d690ba43c792281df01a2213aa8449172de232852162721f92f
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events

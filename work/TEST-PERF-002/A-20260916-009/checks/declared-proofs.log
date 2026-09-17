@@ -1,0 +1,17 @@
+test_external_hash_is_bound_to_the_bytes_parsed_by_validation (tests.test_capability_consumer.CapabilitySnapshotConsumerTests.test_external_hash_is_bound_to_the_bytes_parsed_by_validation) ... ok
+test_external_hash_rejects_same_identity_rewrite (tests.test_capability_consumer.CapabilitySnapshotConsumerTests.test_external_hash_rejects_same_identity_rewrite) ... ok
+test_structural_snapshot_loads_only_after_repository_validation (tests.test_capability_consumer.CapabilitySnapshotConsumerTests.test_structural_snapshot_loads_only_after_repository_validation) ... ok
+test_checkpoint_and_resume_are_file_recoverable (tests.test_m3_context_observability.ContextGovernanceTests.test_checkpoint_and_resume_are_file_recoverable) ... ok
+test_explicit_git_capture_fails_closed_outside_repository (tests.test_m3_context_observability.ContextGovernanceTests.test_explicit_git_capture_fails_closed_outside_repository) ... ok
+test_resume_check_rejects_git_head_conflict (tests.test_m3_context_observability.ContextGovernanceTests.test_resume_check_rejects_git_head_conflict) ... ok
+test_catalog_roots_and_reads_remain_independent_after_a_cache_hit (tests.test_schemas.SchemaReuseTests.test_catalog_roots_and_reads_remain_independent_after_a_cache_hit) ... ok
+test_schema_lifecycle_reuses_bytes_but_rechecks_changed_inputs_and_invalid_schemas (tests.test_schemas.SchemaReuseTests.test_schema_lifecycle_reuses_bytes_but_rechecks_changed_inputs_and_invalid_schemas)
+Schema lifecycle: reuse, changed bytes, invalid schema, restore, rename, remove. ... ok
+test_loaded_reference_cannot_skip_hash_check_if_path_disappears (tests.test_validation.ValidationTests.test_loaded_reference_cannot_skip_hash_check_if_path_disappears) ... ok
+test_loaded_reference_hash_uses_the_same_bytes_as_its_mapping (tests.test_validation.ValidationTests.test_loaded_reference_hash_uses_the_same_bytes_as_its_mapping) ... ok
+test_repository_examples_and_registries_have_no_errors (tests.test_validation.ValidationTests.test_repository_examples_and_registries_have_no_errors) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 9.680s
+
+OK

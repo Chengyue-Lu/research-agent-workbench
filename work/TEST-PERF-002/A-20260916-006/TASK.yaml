@@ -1,0 +1,7 @@
+task_id: TEST-PERF-002
+revision: 34
+request: 我认可，尝试进行一版并提交到DraftPR，同时跟进到issue下。
+scope: P1 typed input and consumer shadow report, preserved authoritative CI obligations
+delegation: false
+required_skills: []
+implementation_commit: 627487c1d56f8c026bc9d460ecd4dd66279000ae

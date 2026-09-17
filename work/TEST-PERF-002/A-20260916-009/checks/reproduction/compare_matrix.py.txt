@@ -1,0 +1,46 @@
+"""Assert that the report/witness migration preserves all execution obligations."""
+import argparse
+import json
+from pathlib import Path
+
+p=argparse.ArgumentParser()
+p.add_argument('--before',type=Path,required=True)
+p.add_argument('--after',type=Path,required=True)
+p.add_argument('--output',type=Path,required=True)
+a=p.parse_args()
+before=json.loads((a.before/'matrix.json').read_bytes())
+after=json.loads((a.after/'matrix.json').read_bytes())
+assert {c['number'] for c in before['cases']}=={c['number'] for c in after['cases']}
+keys=('binding','changes','tests','test_groups','behavioral_scope','coverage_scope','coverage_obligations',
+      'coverage_tests','coverage_modules','impact_evidence','changed_lines','coverage_lines','package_smoke',
+      'repository_smoke','obligation_reasons','blocked_reasons')
+rows=[]
+for old in before['cases']:
+    pr=old['number']
+    new=next(row for row in after['cases'] if row['number']==pr)
+    original=json.loads((a.before/f'pr{pr}-plan.json').read_bytes())
+    current=json.loads((a.after/f'pr{pr}-plan.json').read_bytes())
+    for key in keys:
+        assert original[key]==current[key],(pr,key)
+    for key,value in original['selection'].items():
+        assert current['selection'][key]==value,(pr,key)
+    witnesses=current['selection']['affected_witnesses']
+    assert set(witnesses)==set(current['selection']['affected_paths'])
+    for path,witness in witnesses.items():
+        assert witness['chain'][-1]==path
+        assert len(witness['chain'])==len(witness['edge_kinds'])+1
+    report=json.loads((a.after/f'pr{pr}-report.json').read_bytes())
+    for flag in ('package_smoke','repository_smoke'):
+        assert report['smoke_review'][flag]['required']==current[flag]
+        for consumer in report['smoke_review'][flag]['affected_consumers']:
+            assert consumer['chain']==witnesses[consumer['path']]['chain']
+    rows.append({'pr':pr,'status':'PASS','selected':new['summary']['dependency_selected_test_modules'],
+        'available':new['summary']['available_test_modules'],'behavioral':current['behavioral_scope'],
+        'coverage':current['coverage_scope'],'unknown_before':len(old['summary']['unknown_inputs']),
+        'unknown_after':len(new['summary']['unknown_inputs']),
+        'affected_source_witnesses':len(witnesses),'plan_bytes':(a.after/f'pr{pr}-plan.json').stat().st_size})
+assert max(row['plan_bytes'] for row in rows)<4*1024*1024
+payload={'cases':rows,'preserved_execution_fields':list(keys),'all_previous_selection_fields_preserved':True,
+         'existing_witness_size_limit_respected':True,'no_scope_reduction_activated':True}
+a.output.write_text(json.dumps(payload,indent=2)+'\n',encoding='utf-8')
+print(json.dumps(payload,indent=2))

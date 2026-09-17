@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "hosted_binding": {
+    "base": "0d4a1d00a4c32ca9b822df6482a95920e7c21b1b",
+    "head": "b53a391ece3a4be7207c00c636dc9e1570e71473",
+    "merge_base": "0d4a1d00a4c32ca9b822df6482a95920e7c21b1b",
+    "repository": "Chengyue-Lu/research-agent-workbench",
+    "target": "8e7857369894e934ad6c5277f2a3ea2c68201bb8"
+  },
+  "hosted_plan_id": "2d28ef5173846accf6cd230b5aff4ee6e709fa9c2d94facc18425bde1a200388",
+  "replay_binding": {
+    "base": "0d4a1d00a4c32ca9b822df6482a95920e7c21b1b",
+    "head": "b53a391ece3a4be7207c00c636dc9e1570e71473",
+    "merge_base": "0d4a1d00a4c32ca9b822df6482a95920e7c21b1b",
+    "repository": "Chengyue-Lu/research-agent-workbench",
+    "target": "b53a391ece3a4be7207c00c636dc9e1570e71473"
+  },
+  "replay_plan_id": "002d470b28de19788c17040a0744d1368977cdb93f6ec14e2fef07ca07767fd1",
+  "execution_fields_equal": true,
+  "old_selection_fields_equal": true,
+  "all_thirteen_before_after_plan_bytes_equal": true
+}

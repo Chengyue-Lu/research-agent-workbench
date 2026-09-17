@@ -1,0 +1,79 @@
+{
+  "run": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/35107663587",
+  "head": "b53a391ece3a4be7207c00c636dc9e1570e71473",
+  "source": "work/TEST-PERF-002/A-20260916-009/checks/m5-007-tested-run.json",
+  "source_sha256": "72ac4ce6d72c9bcb17501388d1e0209e1ef5636eb2eae4b1ae43135b32ae4401",
+  "jobs": [
+    {
+      "name": "plan",
+      "seconds": 13.0,
+      "steps_over_ten_seconds": []
+    },
+    {
+      "name": "repository_smoke",
+      "seconds": 16.0,
+      "steps_over_ten_seconds": []
+    },
+    {
+      "name": "coverage-quality (3.11)",
+      "seconds": 1108.0,
+      "steps_over_ten_seconds": [
+        {
+          "name": "Run ordered behavior and coverage-only cases once",
+          "seconds": 1089.0
+        }
+      ]
+    },
+    {
+      "name": "documentation",
+      "seconds": 12.0,
+      "steps_over_ten_seconds": []
+    },
+    {
+      "name": "package-smoke (3.13)",
+      "seconds": 58.0,
+      "steps_over_ten_seconds": [
+        {
+          "name": "Validate both distribution routes outside checkout",
+          "seconds": 39.0
+        }
+      ]
+    },
+    {
+      "name": "compatibility (3.13)",
+      "seconds": 586.0,
+      "steps_over_ten_seconds": [
+        {
+          "name": "Run selected compatibility suite",
+          "seconds": 572.0
+        }
+      ]
+    },
+    {
+      "name": "package-smoke (3.11)",
+      "seconds": 55.0,
+      "steps_over_ten_seconds": [
+        {
+          "name": "Validate both distribution routes outside checkout",
+          "seconds": 33.0
+        }
+      ]
+    },
+    {
+      "name": "compatibility (3.11)",
+      "seconds": 22.0,
+      "steps_over_ten_seconds": []
+    },
+    {
+      "name": "test (3.13)",
+      "seconds": 13.0,
+      "steps_over_ten_seconds": []
+    },
+    {
+      "name": "test (3.11)",
+      "seconds": 16.0,
+      "steps_over_ten_seconds": []
+    }
+  ],
+  "paired_performance_improvement_proved": false
+}

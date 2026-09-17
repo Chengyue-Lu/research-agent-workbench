@@ -1,0 +1,144 @@
+"""Seal measured P2 and M5 intake evidence; preserve previous attempts unchanged."""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+import re
+import subprocess
+import sys
+
+p=argparse.ArgumentParser();p.add_argument('--repo',type=Path,required=True)
+repo=p.parse_args().repo.resolve();scratch=Path(__file__).resolve().parent
+source=repo/'.rwb/contract-shadow/p2';attempt=repo/'work/TEST-PERF-002/A-20260916-009'
+assert sorted(f.name for f in attempt.iterdir())==['RESULTS.md']
+(attempt/'checks').mkdir(exist_ok=False)
+(attempt/'.gitattributes').write_bytes(b'* -text whitespace=cr-at-eol\n')
+summary=json.loads((source/'implementation/preflight-summary.json').read_bytes())
+assert summary['head']==subprocess.check_output(['git','-C',str(repo),'rev-parse','HEAD']).decode().strip()
+assert all(r['checkout_sha256']==r['git_sha256'] for r in summary['source_manifest'])
+executions=[]
+for name,count in [('regression.log',215),('declared-proofs.log',11)]:
+    log=(source/name).read_text(encoding='utf-8')
+    match=re.search(r'^Ran (\d+) tests in ([\d.]+)s$',log,re.M)
+    assert match and int(match[1])==count and '\nOK\n' in log,name
+    executions.append({'log':name,'tests':count,'seconds':float(match[2]),'status':'PASS'})
+coverage=json.loads((source/'coverage.json').read_bytes())
+assert len(coverage['files'])==5
+for path,row in coverage['files'].items():
+    s=row['summary']
+    assert s['percent_statements_covered']>=95 and s['percent_branches_covered']>=90
+    assert not s['excluded_lines']
+comparison=json.loads((source/'corpus-comparison.json').read_bytes())
+assert len(comparison['cases'])==13 and all(r['status']=='PASS' for r in comparison['cases'])
+host=json.loads((source/'m5-hosted-comparison.json').read_bytes())
+assert host['all_thirteen_before_after_plan_bytes_equal'] and host['status']=='PASS'
+copies={}
+for directory in ('corpus-after','implementation','m5-hosted-plan'):
+    for f in (source/directory).glob('*.json'):
+        copies[f]=directory+'/'+f.name
+copies[source/'corpus-before/matrix.json']='corpus-before-matrix.json'
+for name in ('regression.log','regression-initial.log','coverage.json','declared-proofs.log','declared-proof-ids.json',
+             'corpus-comparison.json','m5-intake.json','m5-intake.log','m5-hosted-comparison.json',
+             'm5-007-tested-run.json','previous-head-full-ci.json','implementation-preflight.log'):
+    copies[source/name]=name
+copies[scratch/'corpus-pr86.json']='pr86-metadata.json'
+for name in ('register_consumer_records.py','audit_m5_intake.py','archive_consumer_records.py',
+             'replay_matrix.py','compare_matrix.py','shadow_preflight_p2.py'):
+    copies[scratch/name]='reproduction/'+name+'.txt'
+for name in ('ci_consumer_contracts.py','ci_contract_shadow.py','plan_ci.py'):
+    copies[repo/'.github/scripts'/name]='producer/'+name+'.txt'
+manifest=[]
+for f,name in sorted(copies.items(),key=lambda x:x[1]):
+    raw=f.read_bytes();target=attempt/'checks'/name
+    target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(raw)
+    manifest.append({'path':'checks/'+name,'sha256':hashlib.sha256(raw).hexdigest(),'bytes':len(raw)})
+(attempt/'checks/evidence-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8',newline='\n')
+# Before/after plan bytes are identical; retain one copy per case instead of duplicates.
+reuse=[]
+for f in sorted((source/'corpus-after').glob('*-plan.json')):
+    assert f.read_bytes()==(source/'corpus-before'/f.name).read_bytes()
+    reuse.append({'before_plan':f.name,'same_retained_bytes':'checks/corpus-after/'+f.name,
+                  'sha256':hashlib.sha256(f.read_bytes()).hexdigest()})
+(attempt/'checks/identical-plan-reuse.json').write_text(json.dumps(reuse,indent=2)+'\n',encoding='utf-8',newline='\n')
+(attempt/'RESULTS.md').write_text(f'''# Consumer records and M5 intake evidence
+
+TEST-PERF-002; owner Chengyue-Lu; R2; A-20260916-009.
+Implementation commit: `{summary['head']}`; base: `{summary['base']}`.
+User authorized continued CI replanning and testing M5-007 after its separate development/test turn closed.
+
+- Local CI suites: 215 PASS / {executions[0]['seconds']:.3f} s; declared business proofs: 11 PASS /
+  {executions[1]['seconds']:.3f} s. These are 226 distinct local tests, not a full-suite claim.
+- Five changed CI modules meet critical 95/90 with zero exclusions. New consumer records: 84/84
+  statements and 36/36 branches; shadow: 125/125 and 36/36; selector: 503/503 and 322/322;
+  input facts: 80/80 and 46/46; planner: 542/543 and 204/206. Missing planner paths are unchanged
+  CLI entry/error paths; the required changed coordinates are independently checked by hosted impact CI.
+- Thirteen exact historical before/after plans are byte-identical. Producer before: `45fcd894f6a1eac43663e22fed1a23e5983e5c74`.
+  Original Git/metadata bindings are retained. Before plan bytes reuse the same retained after copies;
+  original metadata for #65 through #84 remains in A-20260916-008, while #86 metadata is added here.
+- Implementation head-target preflight and governance PASS. Full behavioral plus impact/repository
+  coverage remain required. This evidence commit and hosted merge target need separate final checks.
+
+## M5-007 H1/H2 intake
+
+The other task completed its development turn and PR #86 passed full CI at
+`b53a391ece3a4be7207c00c636dc9e1570e71473`. Hosted run 35107663587 used target
+`8e7857369894e934ad6c5277f2a3ea2c68201bb8`; replay target=head. Execution fields and all
+original selection fields match; plan IDs remain distinct for those different targets.
+This is H1/H2 engineering test closure, not whole M5-007 completion or human acceptance.
+The branch was only fetched as immutable Git objects and was not rewritten.
+
+Its accepted plan selects 93/94 modules; all 29 behavioral FULL reasons are archive classification.
+Raw graph category diagnostics select archive 93/94, business Python 91/94, test Python 91/94,
+schemas 93/94 and ordinary documents 48/94. Raw probes do not apply all planner filters and cannot
+serve as execution plans. Real schema/catalog/install obligations remain independently necessary.
+Current reference records detect changed validation/documents.py and test_schemas.py pins.
+
+## Boundaries and retained failures
+
+Four records pin nine explicitly declared files and eleven positive/negative test IDs. Matching
+those pins is not complete input closure, evidence execution or safe-exclusion authority. Candidate
+rewrites are checked against base records; all execution_authority flags remain false. No active
+selection, threshold, exclusion, behavioral test or release gate is weakened.
+
+The initial 215-test run exposed non-object policy handling, an obsolete unknown-version fixture,
+and a new fixture lacking required policy-check test files. The object guard, unsupported version 3
+case and complete isolated Git fixture repair were followed by the successful rerun above. The raw
+initial failed log is retained. A good reader actually passes and an intentionally incorrect reader
+actually fails in isolated child processes; candidate pin refresh and worktree byte restoration
+cannot replace the original base declaration.
+
+Prior full PR85 CI at `45fcd89` is retained as prior-head evidence, not this implementation's result.
+No paired hosted performance gain or activated reduction is claimed. Trace declares a retrospective
+capture gap for unstreamed exchanges and does not claim complete runtime capture.
+
+See [design](../../../docs/workstreams/chengyue-lu/TEST-PERF-002/CONSUMER_CONTRACTS_V1.md),
+[comparison](checks/corpus-comparison.json), [M5 intake](checks/m5-intake.json),
+[hosted M5 binding](checks/m5-hosted-comparison.json), [module coverage](checks/coverage.json),
+[preflight](checks/implementation/preflight-summary.json), [manifest](checks/evidence-manifest.json),
+[identical plan reuse](checks/identical-plan-reuse.json) and [Trace](checks/trace-validation.json).
+''',encoding='utf-8',newline='\n')
+sys.path.insert(0,str(repo/'src'))
+from research_workbench.observability.trace import AgentTraceRecorder,validate_attempt_trace
+r=AgentTraceRecorder(attempt,task_id='TEST-PERF-002',task_revision=37,attempt_id='A-20260916-009',
+    task_snapshot={'task_id':'TEST-PERF-002','revision':37,'request':'其已完成，可以测试。',
+        'scope':'Continue consumer record/drift implementation and include completed M5-007 H1/H2 tests in CI audit',
+        'delegation':False,'required_skills':[]},accountable_owner='Chengyue-Lu',actor_id='main-agent',
+    runtime_identity='Codex desktop',provider='OpenAI',baseline=summary['base'],
+    read_allowlist=['AGENTS.md','.github/**','tests/**','src/**','docs/workstreams/chengyue-lu/TEST-PERF-002/**',
+        'PR85/86 CI and exact historical corpus Git facts','work/TEST-PERF-002/A-20260916-005/**',
+        'work/TEST-PERF-002/A-20260916-006/**','work/TEST-PERF-002/A-20260916-007/**','work/TEST-PERF-002/A-20260916-008/**'],
+    write_scope=['.github/scripts/ci_consumer_contracts.py','.github/scripts/plan_ci.py','.github/scripts/ci_contract_shadow.py',
+        'tests/test_ci_consumer_contracts.py','tests/test_ci_plan.py','tests/test_ci_contract_shadow.py',
+        'tests/ci_impact_policy.yaml','tests/coverage_policy.yaml','docs/workstreams/chengyue-lu/TEST-PERF-002/**',
+        'work/TEST-PERF-002/A-20260916-009/**'],tool_allowlist=['git','gh','python','shell','apply_patch','Codex task read/wait'])
+r.record_capture_gap('events','Retrospective outputs are retained; earlier shell/debug and task status exchanges were not fully streamed. No complete event capture is claimed.')
+r.record_tool_call(operation_id='retain-p2-and-m5-intake',tool_name='python',status='succeeded',
+    arguments={'operation':'retain measured checks, thirteen historical comparisons and completed M5 H1/H2 intake'},
+    result={'executions':executions,'preflight':summary,'m5_hosted_comparison':host,'retained_files':manifest},result_entered_context=True)
+r._index['check_refs']=[{'path':row['path'],'sha256':row['sha256']} for row in manifest]
+r._refresh_index();r.seal('safe-paused')
+validation=validate_attempt_trace(repo,attempt)
+result={'blocked':validation.blocked,'risks':[{'code':x.code,'level':x.level.value,'message':x.message} for x in validation.risks]}
+(attempt/'checks/trace-validation.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8',newline='\n')
+assert not validation.blocked
+print(json.dumps({'trace':result,'retained_files':len(manifest),'executions':executions},indent=2))

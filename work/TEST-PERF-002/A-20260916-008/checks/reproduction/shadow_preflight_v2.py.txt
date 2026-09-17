@@ -1,0 +1,64 @@
+"""Recompute exact checkout plan and governance for the shadow Draft."""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+import sys
+import yaml
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--repo', type=Path, required=True)
+parser.add_argument('--body', type=Path, required=True)
+parser.add_argument('--output', type=Path, required=True)
+args = parser.parse_args()
+repo = args.repo.resolve()
+sys.path.insert(0, str(repo / '.github/scripts'))
+import plan_ci as planner
+import ci_contract_shadow as shadow
+import check_pr_governance as governance
+
+head = planner.git(repo, 'rev-parse', 'HEAD').decode().strip()
+base = planner.git(repo, 'rev-parse', 'origin/develop').decode().strip()
+body = args.body.read_text(encoding='utf-8')
+plan = planner.make_plan(repo, base=base, head=head, target=head,
+    repository='Chengyue-Lu/research-agent-workbench', body=body)
+planner.verify_plan(repo, plan)
+assert plan['coverage_modules'] == ['.github/scripts/ci_contract_shadow.py', '.github/scripts/ci_dependencies.py', '.github/scripts/ci_input_facts.py'], plan['coverage_modules']
+assert plan['behavioral_scope'] == 'full'
+assert set(plan['coverage_obligations']) == {'impact', 'repository'}
+report = shadow.build_report(repo, plan)
+assert report['execution_authority'] is False and report['activation']['eligible'] is False
+before = yaml.safe_load(planner.read_at(repo, base, 'tests/coverage_policy.yaml'))
+after = yaml.safe_load(planner.read_at(repo, head, 'tests/coverage_policy.yaml'))
+assert before['thresholds'] == after['thresholds']
+assert before['suites']['coverage-quality']['omitted_modules'] == after['suites']['coverage-quality']['omitted_modules']
+assert planner.policy_delta(before, after)[0], 'non-monotonic coverage policy change'
+for path in ('pyproject.toml', '.github/scripts/check_coverage_policy.py'):
+    assert planner.read_at(repo, base, path) == planner.read_at(repo, head, path), path
+for path in planner.SELECTION_AUTHORITY - {'.github/workflows/ci.yml', '.github/scripts/ci_dependencies.py'}:
+    assert planner.read_at(repo, base, path) == planner.read_at(repo, head, path), path
+event = {'pull_request': {'body': body, 'mergeable': True,
+    'base': {'ref': 'develop', 'sha': base, 'repo': {'full_name': 'Chengyue-Lu/research-agent-workbench'}},
+    'head': {'ref': 'feature/ci-contract-shadow', 'sha': head, 'repo': {'full_name': 'Chengyue-Lu/research-agent-workbench'}}}}
+result = governance.check_pull_request(event)
+result.emit()
+assert not result.has_errors
+manifest = []
+for path in ('.github/scripts/ci_contract_shadow.py', '.github/scripts/ci_input_facts.py', '.github/scripts/ci_dependencies.py', 'tests/test_ci_contract_shadow.py', 'tests/test_ci_input_facts.py', 'tests/test_ci_dependencies.py',
+             'tests/coverage_policy.yaml', '.github/workflows/ci.yml'):
+    raw = (repo / path).read_bytes()
+    git_raw = planner.read_at(repo, head, path)
+    manifest.append({'path': path, 'checkout_sha256': hashlib.sha256(raw).hexdigest(),
+                     'git_sha256': hashlib.sha256(git_raw).hexdigest()})
+args.output.mkdir(parents=True, exist_ok=True)
+(args.output / 'ci-plan.json').write_bytes(planner.canonical(plan))
+(args.output / 'ci-contract-shadow.json').write_bytes(planner.canonical(report))
+summary = {'head': head, 'base': base, 'target': head, 'plan_id': plan['plan_id'],
+    'behavioral_scope': plan['behavioral_scope'], 'coverage_obligations': plan['coverage_obligations'],
+    'coverage_modules': plan['coverage_modules'], 'governance': 'PASS',
+    'source_manifest': manifest, 'source_test_coverage_scope': 'three changed CI Python modules',
+    'quality_thresholds_unchanged': True, 'coverage_exclusions_unchanged': True,
+    'other_selection_authority_preserved': True, 'shadow_report_id': report['report_id']}
+(args.output / 'preflight-summary.json').write_text(json.dumps(summary, indent=2)+'\n', encoding='utf-8')
+print(json.dumps(summary, indent=2))

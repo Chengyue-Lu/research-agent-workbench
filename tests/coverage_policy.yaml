@@ -1,5 +1,5 @@
 policy_id: rwb-coverage-policy
-version: 2.2.0
+version: 2.2.4
 source_root: src/research_workbench
 
 suites:
@@ -28,6 +28,9 @@ suites:
       - test_cli_command_branches
       - test_scaffold
       - test_ci_plan
+      - test_ci_contract_shadow
+      - test_ci_consumer_contracts
+      - test_ci_input_facts
       - test_ci_checks
       - test_ci_dependencies
       - test_selection_witness
@@ -146,6 +149,9 @@ thresholds:
     branch: 90
 
 critical_modules:
+  - .github/scripts/ci_contract_shadow.py
+  - .github/scripts/ci_consumer_contracts.py
+  - .github/scripts/ci_input_facts.py
   - src/research_workbench/execution/baseline_envelope.py
   - src/research_workbench/execution/baseline.py
   - src/research_workbench/execution/baseline_closeout.py
@@ -317,6 +323,41 @@ negative_acceptance:
       - test_ci_plan.PlannerTests.test_agent_can_add_groups_but_cannot_remove_minimum
       - test_ci_plan.PlannerTests.test_self_modified_policy_or_runner_cannot_authorize_less
       - test_ci_plan.PlannerTests.test_consumer_inventory_or_new_import_requires_full
+  - surface: ci-contract-shadow-boundary
+    modules:
+      - .github/scripts/ci_contract_shadow.py
+    positive_tests:
+      - test_ci_contract_shadow.ContractShadowGitTests.test_archive_classification_is_separate_from_execution_authority
+      - test_ci_contract_shadow.ContractShadowGitTests.test_actual_merge_target_and_integration_are_bound
+      - test_ci_contract_shadow.ContractShadowGitTests.test_static_smoke_witness_and_base_group_reasons_stay_distinct
+    negative_tests:
+      - test_ci_contract_shadow.ContractShadowGitTests.test_real_failing_document_consumer_remains_selected
+      - test_ci_contract_shadow.ContractShadowGitTests.test_tampered_or_weakened_plan_and_wrong_merge_are_rejected
+      - test_ci_contract_shadow.ContractShadowGitTests.test_candidate_policy_never_becomes_report_contract_authority
+      - test_ci_contract_shadow.InputRoleTests.test_scripts_modes_and_unsafe_paths_cannot_hide_as_documents
+      - test_ci_contract_shadow.ContractShadowGitTests.test_smoke_witness_reaches_actual_source_consumer_not_just_a_test_name
+      - test_ci_contract_shadow.ContractShadowGitTests.test_git_bound_consumer_record_cannot_refresh_its_own_failed_pin
+  - surface: ci-input-fact-boundaries
+    modules:
+      - .github/scripts/ci_input_facts.py
+    positive_tests:
+      - test_ci_input_facts.InputFactsTests.test_concurrent_authorities_are_not_lost_to_display_priority
+      - test_ci_input_facts.InputFactsTests.test_accepted_attribute_order_matches_git_for_archive_paths
+    negative_tests:
+      - test_ci_input_facts.InputFactsTests.test_archive_suffix_cannot_hide_code_or_git_type_drift
+      - test_ci_input_facts.InputFactsTests.test_unknown_attributes_macros_and_escapes_stay_unresolved
+  - surface: ci-consumer-contract-records
+    modules:
+      - .github/scripts/ci_consumer_contracts.py
+      - .github/scripts/plan_ci.py
+    positive_tests:
+      - test_ci_consumer_contracts.ConsumerContractTests.test_matching_pins_and_call_syntax_are_review_evidence_only
+      - test_ci_consumer_contracts.ConsumerContractTests.test_policy_v1_v2_and_live_records_preserve_explicit_version_boundary
+    negative_tests:
+      - test_ci_consumer_contracts.ConsumerContractTests.test_source_test_input_mode_and_identifier_drift_are_visible
+      - test_ci_consumer_contracts.ConsumerContractTests.test_candidate_rewrite_removal_and_new_record_never_become_base_authority
+      - test_ci_consumer_contracts.ConsumerContractTests.test_contract_schema_rejects_authority_and_unbound_evidence
+      - test_ci_consumer_contracts.ConsumerContractTests.test_policy_authority_does_not_import_candidate_diagnostic_module
   - surface: ci-impact-evidence-and-gates
     modules:
       - .github/scripts/ci_checks.py

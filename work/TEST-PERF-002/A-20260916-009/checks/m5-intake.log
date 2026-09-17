@@ -1,0 +1,46 @@
+{
+  "selected": 93,
+  "full_reasons": 29,
+  "categories": [
+    {
+      "category": "attempt-archive",
+      "selected_modules": 93,
+      "available_modules": 94
+    },
+    {
+      "category": "business-python",
+      "selected_modules": 91,
+      "available_modules": 94
+    },
+    {
+      "category": "test-python",
+      "selected_modules": 91,
+      "available_modules": 94
+    },
+    {
+      "category": "schemas",
+      "selected_modules": 93,
+      "available_modules": 94
+    },
+    {
+      "category": "ordinary-documents",
+      "selected_modules": 48,
+      "available_modules": 94
+    },
+    {
+      "category": "coverage-policy",
+      "selected_modules": 93,
+      "available_modules": 94
+    }
+  ],
+  "record_drift": {
+    "cli-git-head-observation": [],
+    "validation-capability-root-scan": [],
+    "validation-document-instances": [
+      "src/research_workbench/validation/documents.py: bytes changed"
+    ],
+    "validation-schema-catalog": [
+      "tests/test_schemas.py: bytes changed"
+    ]
+  }
+}

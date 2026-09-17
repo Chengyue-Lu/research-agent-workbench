@@ -271,6 +271,10 @@ class DependencyTests(unittest.TestCase):
         result = self.selection(blobs, blobs, ['src/leaf.py'])
         self.assertEqual(['syntax-reference'], result['selected_edge_kinds']['test_direct'])
         self.assertEqual(['opaque-execution', 'syntax-reference'], result['selected_edge_kinds']['test_dynamic'])
+        self.assertEqual(set(result['affected_paths']), set(result['affected_witnesses']))
+        for test, chain in result['selected'].items():
+            self.assertEqual({'chain': chain, 'edge_kinds': result['selected_edge_kinds'][test]},
+                             result['affected_witnesses'][chain[-1]])
         self.assertEqual(3, result['scope_summary']['available_test_modules'])
         self.assertEqual(2, result['scope_summary']['dependency_selected_test_modules'])
         self.assertEqual(1, result['scope_summary']['opaque_execution_paths'])

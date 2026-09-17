@@ -1,0 +1,32 @@
+{
+  "report_id": "13a0ec95a437b1cfd2b90b2baa3d32a1720d9e0250e7770e0455936b7cb11e88",
+  "execution_authority": false,
+  "summary": {
+    "input_roles": {
+      "archive-attributes": 1,
+      "document": 15,
+      "evidence-data": 8
+    },
+    "available_test_modules": 92,
+    "dependency_selected_test_modules": 91,
+    "plan_test_selectors": 91,
+    "coverage_test_selectors": 0,
+    "review_reasons": {
+      "data-instance-to-code-consumers": 10,
+      "unbounded-resource": 81
+    },
+    "classification_conflicts": [
+      "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/.gitattributes",
+      "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/ACTORS.yaml",
+      "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/INDEX.yaml",
+      "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/TASK.yaml",
+      "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/decisions/closeout-evidence-index.yaml",
+      "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/events.jsonl",
+      "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/evidence/closeout-evidence.json",
+      "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/evidence/trace-validation.json",
+      "docs/workstreams/huangyi/M6-BASELINE-EXECUTION/attempts/M6-CLOSEOUT-001/tool-events/closeout-evidence-export-unknown.json"
+    ],
+    "unknown_inputs": []
+  },
+  "analysis_seconds": 7.36
+}

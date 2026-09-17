@@ -2,6 +2,39 @@
 
 Owner: 路诚钺 (`Chengyue-Lu`); cross-owner: 黄毅 (`let778750-cpu`); R2.
 
+## September 16 CI replanning proposal
+
+- Scope evidence: exact base `b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22`, 99 source files,
+  92 test modules, PR84 hosted plan and both timed execution receipts. Static import reachability
+  and diagnostic edge removal do not prove safe exclusions; see [module audit](MODULE_AUDIT.md).
+- Unify data/code/authority classification and preserve input-instance boundaries. RuntimeResources
+  currently checks the full package; a narrower selector cannot pretend this business dependency is absent.
+- Scope reduction requires an accepted base contract and independent witness. Candidate contracts,
+  dynamic observations and old test names cannot authorize their own smaller evidence set.
+- [The proposal](CI_REPLAN.md) retains 90/95/90, changed 100/100, negative acceptance, ordered fixtures,
+  exact-target Gates and integration baselines. Its cost targets are unmeasured goals until paired trials.
+- Business extraction and test consolidation require API/lifecycle/negative-fault equivalence. This
+  documentation round changes no production policy or executable and carries no merge/release authority.
+
+## Contract shadow v1
+
+Current migration: [shared facts and source witnesses](SHADOW_V2.md). Keep all execution
+obligations unchanged while validating multi-authority facts and affected-path evidence.
+The previous test-chain inference does not establish the actual smoke source predicate;
+the CLI opaque and validation resource causes require separate reviewed contracts.
+
+- The shadow role inventory cannot authorize execution exclusions. Preserve every accepted
+  obligation and consumer chain, even for documents, archive data and apparent output literals.
+- Recompute the observed plan against immutable Git facts and accepted base policy; a candidate
+  contract, resigned weaker plan or mismatched merge target cannot enter accepted evidence.
+- The diagnostic job has separate artifacts and no outputs or aggregate consumers. Its report
+  cannot be consumed as plan v4. New source retains impact 100/100 and critical 95/90.
+- PR84 replay exposes 9 classification conflicts and retains 91/92 modules. This is P1 model
+  observability, not completed C01 scope reduction; input/consumer contracts and trusted
+  activation still require review. See [implementation](SHADOW_V1.md).
+
+## Historical risk controls
+
 | Risk | Control and evidence | Remaining review |
 |---|---|---|
 | A local contract hides initialization or a new dependency | New local-function contracts preserve module/class initialization, call expressions, string inputs and bindings; rejected changes restore ordinary consumers | Review [consumer inventories](CONSUMER_CONTRACTS.md), source/downstream mutants and exact future-base timings |

@@ -1,0 +1,219 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260916-008
+task_id: TEST-PERF-002
+task_revision: 36
+attempt_id: A-20260916-008
+archive_root: A-20260916-008
+baseline: 0d4a1d00a4c32ca9b822df6482a95920e7c21b1b
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: d4d68243e3c200ecd7d34026959b18f4b423128fdf7f73987940e5bccfdba5ab
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 06f88c25bafa4bce5b2c3150d39d21b843cbfb32449afe17fce6f7dea9a42614
+read_allowlist:
+- .github/**
+- AGENTS.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- historical PR exact Git facts and metadata
+- src/**
+- tests/**
+- work/TEST-PERF-002/A-20260916-005/**
+- work/TEST-PERF-002/A-20260916-006/**
+- work/TEST-PERF-002/A-20260916-007/**
+write_scope:
+- .github/scripts/ci_contract_shadow.py
+- .github/scripts/ci_dependencies.py
+- .github/scripts/ci_input_facts.py
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/coverage_policy.yaml
+- tests/test_ci_contract_shadow.py
+- tests/test_ci_dependencies.py
+- tests/test_ci_input_facts.py
+- work/TEST-PERF-002/A-20260916-008/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+- shell
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: da862d45ef15892ee2ffbe96ed5c23eaeb52b60e5e4122648de2f2b2b2227df6
+  event_count: 4
+tool_event_refs:
+- path: tool-events/retain-shadow-v2-succeeded.json
+  sha256: 58d51a37ee63232d781da7feac0f183b558403febb2ed9d8400df5fa2cc4ad79
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs:
+- path: checks/corpus-after/matrix.json
+  sha256: bd3feece6ae2ffb894a21a133d1ee1cc9359fb5e0cb6b5752a3e3b68094270ea
+- path: checks/corpus-after/pr65-plan.json
+  sha256: b03ffd06632f20a74ed7579580ceec473cdd59ade90fd63afd474245fc20b948
+- path: checks/corpus-after/pr65-report.json
+  sha256: cdf594a77501fe6cb2ebcaf758ad95e862d461e36b337a4c0f9966ac2c3325c3
+- path: checks/corpus-after/pr68-plan.json
+  sha256: 9646b57a243a77a861c123b34d42a02705563006183ed44a8fcd03813e93600f
+- path: checks/corpus-after/pr68-report.json
+  sha256: 89ce4c14fc351167bc5b778d332dee8ee237b3dca569a5efa568072c14a399fe
+- path: checks/corpus-after/pr71-plan.json
+  sha256: 354476e9bab355258b34413d05c707b3d220102ce554acd2d4690904ee221812
+- path: checks/corpus-after/pr71-report.json
+  sha256: d0eb9de6e8ab57ba06e6979225224d4d1ddee31c02cd2e52f28e28f9799a4826
+- path: checks/corpus-after/pr73-plan.json
+  sha256: 2524e1cfc8919257e6c261e4e609afb443816bd4e49853a2f45f680744c9c30a
+- path: checks/corpus-after/pr73-report.json
+  sha256: 6ca6bd678dd2f134d0ffe8f955d9291a3b1ac90daf6b49958e6b645491e319d9
+- path: checks/corpus-after/pr74-plan.json
+  sha256: df1bcdd92c0bd13ab074afce1db69246844d52eec3a02ca61940435227e7883b
+- path: checks/corpus-after/pr74-report.json
+  sha256: 8a969b31f2c45feeb6bcccc536824135dc1a034bfbe712f76cdccc069a9f1e8f
+- path: checks/corpus-after/pr75-plan.json
+  sha256: 014179895e4a534301d73872abe7ce481d84ec567206c83dc242df6219826a88
+- path: checks/corpus-after/pr75-report.json
+  sha256: 0faa8adec6ebda7d958052ea4b7488c3caa43ee9977f7b75ba5af96bf030e04d
+- path: checks/corpus-after/pr77-plan.json
+  sha256: 25bc7178952a4793e0ef3b095ae1f7c439bb96d20b3151686de3c77124cfb3e2
+- path: checks/corpus-after/pr77-report.json
+  sha256: 36eeeeb4f211ba65700b89bea27bb9069033b99bbe8d9f3525cfe65174bd1eac
+- path: checks/corpus-after/pr78-plan.json
+  sha256: 22366f73f5fe863f1cddd203c6285e089e265cc6a9ca4640e1d3a55fc82fb71d
+- path: checks/corpus-after/pr78-report.json
+  sha256: e95d6da1a0853a42b03ed1d847e8d0685244d890b65553f264983ec347d6f1d0
+- path: checks/corpus-after/pr80-plan.json
+  sha256: a56c9a21bfb1ed5e4c0fe3c2f376e0f6b0750ef9a8b0283b3d9c72916473bca6
+- path: checks/corpus-after/pr80-report.json
+  sha256: f0723df033e35ff42b0dd52d084a53d65fa92a7cf7fb26dbcbfc72698a5a865e
+- path: checks/corpus-after/pr81-plan.json
+  sha256: 833f767f5a26a7ba9db95f8eb81aa667d0170d0b2af4df4520a620be60cc5961
+- path: checks/corpus-after/pr81-report.json
+  sha256: 3da57eef440f78e712e421c32ed14c158645626561a3ba408a141629187120c4
+- path: checks/corpus-after/pr82-plan.json
+  sha256: 533b8ac5b60ef50cdaa2da4cbfff8badebd1f9ac3baf913bc2a1fde6e1008092
+- path: checks/corpus-after/pr82-report.json
+  sha256: 9b7c7da7ac4f4473d8a3ac314fab91c4afea2b904d5e834b720ac2cf812db2fb
+- path: checks/corpus-after/pr84-plan.json
+  sha256: 285b2031bb61d23868e6fef2858976aa668fc8dc29868ddff38bc76e09262523
+- path: checks/corpus-after/pr84-report.json
+  sha256: 6a994ce4610fd5d07830f4021c633857898ef34490abdd9722f988ad053ece7a
+- path: checks/corpus-before/matrix.json
+  sha256: 4964ba55d51663cfe03d3d7b5f655edb1a93ead0fa91284c1ec3097ce6b45f20
+- path: checks/corpus-before/pr65-plan.json
+  sha256: f05d61ca848574c67b1cd286def2b80050fef7b5b3cbc7be878e37b86b2f1690
+- path: checks/corpus-before/pr65-report.json
+  sha256: 2ac2d0b032a79f380ad4563d6e5d084237813caf5898c6e16bd8f7eab4d0f24e
+- path: checks/corpus-before/pr68-plan.json
+  sha256: 7f921a9e55b9b7b96084742a616fa93eb791d653ccfb01464486a351f68ebf7f
+- path: checks/corpus-before/pr68-report.json
+  sha256: 4d1c59cdfb785cd3cc7e70c48337449f5a359067281268ec76189b31723b717e
+- path: checks/corpus-before/pr71-plan.json
+  sha256: 9bee04d57a062b27e3066b13748eb7a7bf51a6ca64317cf80dd34ca7795c013d
+- path: checks/corpus-before/pr71-report.json
+  sha256: d0a33dc7b89ccad2707828475551f60e1be8bc8610ce89f80415588a66331245
+- path: checks/corpus-before/pr73-plan.json
+  sha256: 064a1c7ef37115eabf2022ab69602185cfb6d9e8bc660665e7cf8f3ebba3676b
+- path: checks/corpus-before/pr73-report.json
+  sha256: 98290975a07d466c6e3cdef70c29f3b8cc32871e7431357b73e3d9a325004be2
+- path: checks/corpus-before/pr74-plan.json
+  sha256: 64ec29f850c30f8e1f368ed82870cdc40a2ef6dd4b419a2b51dc628452129f50
+- path: checks/corpus-before/pr74-report.json
+  sha256: 4fb0f3b313d89007731cb034e34d5cbcbcab733e0b652d339649d8e22b30ec0e
+- path: checks/corpus-before/pr75-plan.json
+  sha256: 14974a16d97213cd678bff7ae1c264672d964222a7cbe726f085b3f6787ec865
+- path: checks/corpus-before/pr75-report.json
+  sha256: 161a846cffee469d47dc1625f551daacb80321dee9d9072465e8607626f5d79a
+- path: checks/corpus-before/pr77-plan.json
+  sha256: 362109648e17b38c8c04e8b029492d1263628e7e33915fdc8aafe2bad2e052da
+- path: checks/corpus-before/pr77-report.json
+  sha256: 1604251a02a6ff45ee10e1e199415c0a10e4dc20201a84f30371c318059e09ae
+- path: checks/corpus-before/pr78-plan.json
+  sha256: fc11e3831eb4dddfe84b4ef5d010c52ee261887e8bf0e0921ebdd2647201852b
+- path: checks/corpus-before/pr78-report.json
+  sha256: 9f45d57a71823b92293a393d2e7c6da2de8e4161f148c2d7474abca1524382df
+- path: checks/corpus-before/pr80-plan.json
+  sha256: c852d38721b24e02519ee65c08ed3fa2fcaf4175bae3bb6634c960fab7a79fa8
+- path: checks/corpus-before/pr80-report.json
+  sha256: 05ce520be6da22b0964d019a43c7db44c492f377b555d2da62d7505407e22612
+- path: checks/corpus-before/pr81-plan.json
+  sha256: c1fe50d49ad68692958e4f0e5cf04e80d2f349e524ce940b5360cc2b4f8558cf
+- path: checks/corpus-before/pr81-report.json
+  sha256: 66fac5bb2e522c55e98227425dec728812403813a08bb71774868e45cdcddc93
+- path: checks/corpus-before/pr82-plan.json
+  sha256: 0cd261b141179f1e0c7e9e5d624140c3294f6cd113e64946b079f4092dc286b4
+- path: checks/corpus-before/pr82-report.json
+  sha256: e0a6adc64b78e22642e6d0a14f2c62432afe74c82afc8af4c747a25aae1e659e
+- path: checks/corpus-before/pr84-plan.json
+  sha256: d80f65e6489d2eb214387eb5f7f893db1979e874b5c69c492a419275741a5bfd
+- path: checks/corpus-before/pr84-report.json
+  sha256: a24ece52ee19a8751041ed01bc6d234f21910eda68d1efaaaac88306111fdcd0
+- path: checks/corpus-comparison.json
+  sha256: 1272960a38db66b9053a5d147652ec32c16866d58432a70bb3a6c6a68287b465
+- path: checks/corpus-comparison.log
+  sha256: 1272960a38db66b9053a5d147652ec32c16866d58432a70bb3a6c6a68287b465
+- path: checks/pr-metadata/corpus-pr65.json
+  sha256: 6c0b972b1154a7498a478775a5c63acfbbf0ba219ebe8fc367a2a5c73e60ff29
+- path: checks/pr-metadata/corpus-pr68.json
+  sha256: cee0a6beaccdb5b54944deeb57dbe1b83bf83af1c67a326ac49fe84545991e38
+- path: checks/pr-metadata/corpus-pr71.json
+  sha256: c409c5faae1e30bc5c82ee249654ba6385fe92e7c933856306f461d4b4a4db70
+- path: checks/pr-metadata/corpus-pr73.json
+  sha256: 4734cf9eacdefd0acb03126eb9b2125a46c08e45358d96fd1cf259f573cf40dc
+- path: checks/pr-metadata/corpus-pr74.json
+  sha256: 93385ce8d6ba81e614478870e0572b9d717465a9b7b815b200a67b1139f3d1f5
+- path: checks/pr-metadata/corpus-pr75.json
+  sha256: 1822396721e2ea2f1c41a4f4f1fa6a1b893af1ea32550e57b0294a71ea27a169
+- path: checks/pr-metadata/corpus-pr77.json
+  sha256: a7d9e52bc3619e027485dcdffe1835445378edeb43cd380a337072701cc0da86
+- path: checks/pr-metadata/corpus-pr78.json
+  sha256: 7e7c02e4ffd07cd838d7b23f61d2f756b1b020e7b90f9bc2cb6a91deba4f27ed
+- path: checks/pr-metadata/corpus-pr80.json
+  sha256: 0a165538d85885a922b1e12aa6d489311b97685bed1063a849eab1f518469127
+- path: checks/pr-metadata/corpus-pr81.json
+  sha256: 52a73d6a91e28992291e52783d5a21211e4fbe5428d5af436433ea8243331ae7
+- path: checks/pr-metadata/corpus-pr82.json
+  sha256: ad030a42c748f0a39d9ac7503d22511ea4784275b30eb8922a20a2e098e85c7b
+- path: checks/pr-metadata/corpus-pr84.json
+  sha256: 32ecfdb7a58d7821dd50d0f6d2685eed5c467d695cacc5c736522b0468d33b6b
+- path: checks/producer/check_pr_governance.py.txt
+  sha256: 54257b48b6fab0fb644d501f514c20cb1959def340e578c490e68e38ef66de16
+- path: checks/producer/ci_contract_shadow.py.txt
+  sha256: 342188a3a3961c1aeb7fcf016ab16910d94817041ebcd821118ec6496171313a
+- path: checks/producer/ci_dependencies.py.txt
+  sha256: 5768999e3e6929f69ac87c56b94b9ecb66bf4ee527f48d97a21beb839110a20f
+- path: checks/producer/ci_input_facts.py.txt
+  sha256: a4fc10bc50f824b305a938cb8b12724fd3e02e8697a599c2459c4c664dbbeab8
+- path: checks/producer/plan_ci.py.txt
+  sha256: ba025e5c32d6b153049ec630bc0e22854423351776641452fff35f90d3d99e58
+- path: checks/reproduction/archive_shadow_v2.py.txt
+  sha256: 76b9c9cd1be98d90dc083f84581e833f2226322139e98a1f9ee179d70477dfdd
+- path: checks/reproduction/compare_matrix.py.txt
+  sha256: 420e6fc8322865f2dfb9a768103409e152f4688e27687f31839164ca82b345b4
+- path: checks/reproduction/replay_matrix.py.txt
+  sha256: 71d7ce3c24795b4ea0b54186418d98ffa1e24265f46d543e339332d57a46fe48
+- path: checks/reproduction/shadow_preflight_v2.py.txt
+  sha256: 23fa041cd2a85e9cc2193b82f632ff1f71bf913e575f512e32e3cf0124f08a71
+- path: checks/v2-coverage.json
+  sha256: e323f8f6014dcc37f6808f4a31c28f53d6650d2bab718b4646d9b7bc631101e2
+- path: checks/v2-focused.log
+  sha256: 933ef4232678a1a316f4eb622105a69b72a5d8d75b6f1fef42a422aa849fb56d
+- path: checks/v2-implementation/ci-contract-shadow.json
+  sha256: c830af33740b0c5e8f2c6742c7514fafe30e5b27a4527da01c12584758bd867b
+- path: checks/v2-implementation/ci-plan.json
+  sha256: 5eba2c83ac7efc0900c558a8f1343548d633cfe9eeff92bfde4b66edbf3c316f
+- path: checks/v2-implementation/preflight-summary.json
+  sha256: eab088a17ccfad2f29c59a8b9c6301fd55bb53ca09d19b849c8e37f5cef7ef42
+- path: checks/v2-preflight.log
+  sha256: 466e29860438412e0d85c8276586f9fed28853d3cf8ea61f9b6021b45106e4c6
+- path: checks/v2-regression.log
+  sha256: f21801a778f13335d9affe224d2c5266dec3da190c31670210ee0ec31140fb4e
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events

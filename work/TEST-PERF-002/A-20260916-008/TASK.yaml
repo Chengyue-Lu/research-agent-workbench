@@ -1,0 +1,7 @@
+task_id: TEST-PERF-002
+revision: 36
+request: 继续测试更多可能的分支，然后进一步推进整改。
+scope: Expanded historical corpus and input/source-witness correction; no scope reduction
+  activation
+delegation: false
+required_skills: []

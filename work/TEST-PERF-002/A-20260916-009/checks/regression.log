@@ -1,0 +1,457 @@
+{
+  "version": 4,
+  "binding": {
+    "repository": "Example/repo",
+    "base": "547f49e0d11f18bbe6121b8b9b8b9067f7a5ecc3",
+    "head": "bbbc965de31915b5f22b9ec33a51727d47e700b2",
+    "merge_base": "547f49e0d11f18bbe6121b8b9b8b9067f7a5ecc3",
+    "target": "bbbc965de31915b5f22b9ec33a51727d47e700b2"
+  },
+  "change_class": "fast",
+  "risk": "R0",
+  "changes": [
+    {
+      "status": "M",
+      "path": "README.md"
+    }
+  ],
+  "surfaces": [
+    "documentation"
+  ],
+  "test_groups": [
+    "documentation"
+  ],
+  "tests": [
+    "test_documentation",
+    "test_pr_governance"
+  ],
+  "coverage_modules": [],
+  "impact_evidence": {},
+  "changed_lines": {},
+  "coverage_lines": {},
+  "coverage_tests": [],
+  "selection": {
+    "algorithm": "base-head-consumers-v1",
+    "inventory_sha256": "d06e125d5b20465a30310876864e1ace11db4066f83aa6224eb764ba72ad041e",
+    "selected": {},
+    "excluded": [
+      "test_api_session_runner",
+      "test_ci_checks",
+      "test_ci_dependencies",
+      "test_ci_plan",
+      "test_claim_trace",
+      "test_cli",
+      "test_cli_command_branches",
+      "test_coverage_policy",
+      "test_documentation",
+      "test_governance_helper_branches",
+      "test_pr_governance",
+      "test_provider_adapters",
+      "test_provider_conformance",
+      "test_provider_contract_branches",
+      "test_provider_port",
+      "test_skill_release_projection",
+      "test_unselected",
+      "test_validation_helpers"
+    ],
+    "selected_edge_kinds": {},
+    "scope_summary": {
+      "available_test_modules": 18,
+      "dependency_selected_test_modules": 0,
+      "opaque_execution_paths": 0,
+      "unbounded_resource_paths": 0
+    },
+    "exclusion_reasons": {
+      "test_api_session_runner": "outside base/head dependency closure",
+      "test_ci_checks": "outside base/head dependency closure",
+      "test_ci_dependencies": "outside base/head dependency closure",
+      "test_ci_plan": "outside base/head dependency closure",
+      "test_claim_trace": "outside base/head dependency closure",
+      "test_cli": "outside base/head dependency closure",
+      "test_cli_command_branches": "outside base/head dependency closure",
+      "test_coverage_policy": "outside base/head dependency closure",
+      "test_documentation": "outside base/head dependency closure",
+      "test_governance_helper_branches": "outside base/head dependency closure",
+      "test_pr_governance": "outside base/head dependency closure",
+      "test_provider_adapters": "outside base/head dependency closure",
+      "test_provider_conformance": "outside base/head dependency closure",
+      "test_provider_contract_branches": "outside base/head dependency closure",
+      "test_provider_port": "outside base/head dependency closure",
+      "test_skill_release_projection": "outside base/head dependency closure",
+      "test_unselected": "outside base/head dependency closure",
+      "test_validation_helpers": "outside base/head dependency closure"
+    },
+    "exclusion_reason": "outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately",
+    "opaque_consumers": [],
+    "errors": [],
+    "test_reachable_sources": [],
+    "affected_paths": [
+      "README.md"
+    ],
+    "witness_version": 1,
+    "affected_witnesses": {
+      "README.md": {
+        "chain": [
+          "README.md"
+        ],
+        "edge_kinds": []
+      }
+    },
+    "reviewed_contract_anchor": "",
+    "reviewed_opaque_boundary": []
+  },
+  "coverage_selection": {},
+  "policy_sha256": "8d7b68630b3144223fd739f2ce295e6c2a1bb5ee1166a5a9886655e8a52f2bb3",
+  "python_versions": [],
+  "behavioral_scope": "none",
+  "coverage_scope": "none",
+  "coverage_obligations": [],
+  "blocked_reasons": [],
+  "package_smoke": false,
+  "repository_smoke": false,
+  "reasons": [
+    "README.md -> documentation",
+    "test/document/archive data: README.md"
+  ],
+  "obligation_reasons": {
+    "behavioral_scope": [
+      "documentation obligations only"
+    ],
+    "coverage_scope": [
+      "no production/critical executable or coverage authority changed"
+    ],
+    "package_smoke": [
+      "no packaging/install surface changed"
+    ],
+    "repository_smoke": [
+      "no repository validation surface changed"
+    ]
+  },
+  "plan_id": "090d74f2a5be01ed307c7fedca497a934aeb27b1e70777e4f787264d2df2417a"
+}
+{
+  "version": 4,
+  "binding": {
+    "repository": "Example/repo",
+    "base": "547f49e0d11f18bbe6121b8b9b8b9067f7a5ecc3",
+    "head": "bbbc965de31915b5f22b9ec33a51727d47e700b2",
+    "merge_base": "547f49e0d11f18bbe6121b8b9b8b9067f7a5ecc3",
+    "target": "bbbc965de31915b5f22b9ec33a51727d47e700b2"
+  },
+  "change_class": "fast",
+  "risk": "R0",
+  "changes": [
+    {
+      "status": "M",
+      "path": "README.md"
+    }
+  ],
+  "surfaces": [
+    "documentation"
+  ],
+  "test_groups": [
+    "documentation"
+  ],
+  "tests": [
+    "test_documentation",
+    "test_pr_governance"
+  ],
+  "coverage_modules": [],
+  "impact_evidence": {},
+  "changed_lines": {},
+  "coverage_lines": {},
+  "coverage_tests": [],
+  "selection": {
+    "algorithm": "base-head-consumers-v1",
+    "inventory_sha256": "d06e125d5b20465a30310876864e1ace11db4066f83aa6224eb764ba72ad041e",
+    "selected": {},
+    "excluded": [
+      "test_api_session_runner",
+      "test_ci_checks",
+      "test_ci_dependencies",
+      "test_ci_plan",
+      "test_claim_trace",
+      "test_cli",
+      "test_cli_command_branches",
+      "test_coverage_policy",
+      "test_documentation",
+      "test_governance_helper_branches",
+      "test_pr_governance",
+      "test_provider_adapters",
+      "test_provider_conformance",
+      "test_provider_contract_branches",
+      "test_provider_port",
+      "test_skill_release_projection",
+      "test_unselected",
+      "test_validation_helpers"
+    ],
+    "selected_edge_kinds": {},
+    "scope_summary": {
+      "available_test_modules": 18,
+      "dependency_selected_test_modules": 0,
+      "opaque_execution_paths": 0,
+      "unbounded_resource_paths": 0
+    },
+    "exclusion_reasons": {
+      "test_api_session_runner": "outside base/head dependency closure",
+      "test_ci_checks": "outside base/head dependency closure",
+      "test_ci_dependencies": "outside base/head dependency closure",
+      "test_ci_plan": "outside base/head dependency closure",
+      "test_claim_trace": "outside base/head dependency closure",
+      "test_cli": "outside base/head dependency closure",
+      "test_cli_command_branches": "outside base/head dependency closure",
+      "test_coverage_policy": "outside base/head dependency closure",
+      "test_documentation": "outside base/head dependency closure",
+      "test_governance_helper_branches": "outside base/head dependency closure",
+      "test_pr_governance": "outside base/head dependency closure",
+      "test_provider_adapters": "outside base/head dependency closure",
+      "test_provider_conformance": "outside base/head dependency closure",
+      "test_provider_contract_branches": "outside base/head dependency closure",
+      "test_provider_port": "outside base/head dependency closure",
+      "test_skill_release_projection": "outside base/head dependency closure",
+      "test_unselected": "outside base/head dependency closure",
+      "test_validation_helpers": "outside base/head dependency closure"
+    },
+    "exclusion_reason": "outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately",
+    "opaque_consumers": [],
+    "errors": [],
+    "test_reachable_sources": [],
+    "affected_paths": [
+      "README.md"
+    ],
+    "witness_version": 1,
+    "affected_witnesses": {
+      "README.md": {
+        "chain": [
+          "README.md"
+        ],
+        "edge_kinds": []
+      }
+    },
+    "reviewed_contract_anchor": "",
+    "reviewed_opaque_boundary": []
+  },
+  "coverage_selection": {},
+  "policy_sha256": "8d7b68630b3144223fd739f2ce295e6c2a1bb5ee1166a5a9886655e8a52f2bb3",
+  "python_versions": [],
+  "behavioral_scope": "none",
+  "coverage_scope": "none",
+  "coverage_obligations": [],
+  "blocked_reasons": [],
+  "package_smoke": false,
+  "repository_smoke": false,
+  "reasons": [
+    "README.md -> documentation",
+    "test/document/archive data: README.md"
+  ],
+  "obligation_reasons": {
+    "behavioral_scope": [
+      "documentation obligations only"
+    ],
+    "coverage_scope": [
+      "no production/critical executable or coverage authority changed"
+    ],
+    "package_smoke": [
+      "no packaging/install surface changed"
+    ],
+    "repository_smoke": [
+      "no repository validation surface changed"
+    ]
+  },
+  "plan_id": "090d74f2a5be01ed307c7fedca497a934aeb27b1e70777e4f787264d2df2417a"
+}
+{
+  "version": 4,
+  "binding": {
+    "repository": "Example/repo",
+    "base": "547f49e0d11f18bbe6121b8b9b8b9067f7a5ecc3",
+    "head": "bbbc965de31915b5f22b9ec33a51727d47e700b2",
+    "merge_base": "547f49e0d11f18bbe6121b8b9b8b9067f7a5ecc3",
+    "target": "bbbc965de31915b5f22b9ec33a51727d47e700b2"
+  },
+  "change_class": "fast",
+  "risk": "R0",
+  "changes": [
+    {
+      "status": "M",
+      "path": "README.md"
+    }
+  ],
+  "surfaces": [
+    "documentation"
+  ],
+  "test_groups": [
+    "documentation"
+  ],
+  "tests": [
+    "test_documentation",
+    "test_pr_governance"
+  ],
+  "coverage_modules": [],
+  "impact_evidence": {},
+  "changed_lines": {},
+  "coverage_lines": {},
+  "coverage_tests": [],
+  "selection": {
+    "algorithm": "base-head-consumers-v1",
+    "inventory_sha256": "d06e125d5b20465a30310876864e1ace11db4066f83aa6224eb764ba72ad041e",
+    "selected": {},
+    "excluded": [
+      "test_api_session_runner",
+      "test_ci_checks",
+      "test_ci_dependencies",
+      "test_ci_plan",
+      "test_claim_trace",
+      "test_cli",
+      "test_cli_command_branches",
+      "test_coverage_policy",
+      "test_documentation",
+      "test_governance_helper_branches",
+      "test_pr_governance",
+      "test_provider_adapters",
+      "test_provider_conformance",
+      "test_provider_contract_branches",
+      "test_provider_port",
+      "test_skill_release_projection",
+      "test_unselected",
+      "test_validation_helpers"
+    ],
+    "selected_edge_kinds": {},
+    "scope_summary": {
+      "available_test_modules": 18,
+      "dependency_selected_test_modules": 0,
+      "opaque_execution_paths": 0,
+      "unbounded_resource_paths": 0
+    },
+    "exclusion_reasons": {
+      "test_api_session_runner": "outside base/head dependency closure",
+      "test_ci_checks": "outside base/head dependency closure",
+      "test_ci_dependencies": "outside base/head dependency closure",
+      "test_ci_plan": "outside base/head dependency closure",
+      "test_claim_trace": "outside base/head dependency closure",
+      "test_cli": "outside base/head dependency closure",
+      "test_cli_command_branches": "outside base/head dependency closure",
+      "test_coverage_policy": "outside base/head dependency closure",
+      "test_documentation": "outside base/head dependency closure",
+      "test_governance_helper_branches": "outside base/head dependency closure",
+      "test_pr_governance": "outside base/head dependency closure",
+      "test_provider_adapters": "outside base/head dependency closure",
+      "test_provider_conformance": "outside base/head dependency closure",
+      "test_provider_contract_branches": "outside base/head dependency closure",
+      "test_provider_port": "outside base/head dependency closure",
+      "test_skill_release_projection": "outside base/head dependency closure",
+      "test_unselected": "outside base/head dependency closure",
+      "test_validation_helpers": "outside base/head dependency closure"
+    },
+    "exclusion_reason": "outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately",
+    "opaque_consumers": [],
+    "errors": [],
+    "test_reachable_sources": [],
+    "affected_paths": [
+      "README.md"
+    ],
+    "witness_version": 1,
+    "affected_witnesses": {
+      "README.md": {
+        "chain": [
+          "README.md"
+        ],
+        "edge_kinds": []
+      }
+    },
+    "reviewed_contract_anchor": "",
+    "reviewed_opaque_boundary": []
+  },
+  "coverage_selection": {},
+  "policy_sha256": "8d7b68630b3144223fd739f2ce295e6c2a1bb5ee1166a5a9886655e8a52f2bb3",
+  "python_versions": [],
+  "behavioral_scope": "none",
+  "coverage_scope": "none",
+  "coverage_obligations": [],
+  "blocked_reasons": [],
+  "package_smoke": false,
+  "repository_smoke": false,
+  "reasons": [
+    "README.md -> documentation",
+    "test/document/archive data: README.md"
+  ],
+  "obligation_reasons": {
+    "behavioral_scope": [
+      "documentation obligations only"
+    ],
+    "coverage_scope": [
+      "no production/critical executable or coverage authority changed"
+    ],
+    "package_smoke": [
+      "no packaging/install surface changed"
+    ],
+    "repository_smoke": [
+      "no repository validation surface changed"
+    ]
+  },
+  "plan_id": "090d74f2a5be01ed307c7fedca497a934aeb27b1e70777e4f787264d2df2417a"
+}
+{"authority_changes":[],"base":"b64c3b35897f1d8ee72eccfe04ebe4cd41a47aac","execution_checks_proved":false,"head":"b64c3b35897f1d8ee72eccfe04ebe4cd41a47aac","observed_behavioral":"full","plan_id":"13a80ccc8400343e6daad4013595a55d4b883875a98c0adc8efa529d3f555e72","repository":"Example/repo","required_behavioral":"none","scope":"selection-authority floor only","status":"PASS","target":"b64c3b35897f1d8ee72eccfe04ebe4cd41a47aac","witness_commit":"b64c3b35897f1d8ee72eccfe04ebe4cd41a47aac","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+{"reason":"witness source drift","status":"BLOCK","witness_source_sha256":"186866d274a9e55c517a6d49f684c99ef36f4afeff0409c10bd93ce40d54031d"}
+
+{"reason":"witness checkout differs from reviewer-pinned commit","status":"BLOCK","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+{"authority_changes":[],"base":"47969716ffa61549580d269f65f7e2d1f3d866d1","content_conclusion":null,"content_run":7,"content_status":"in_progress","execution_checks_proved":false,"head":"47969716ffa61549580d269f65f7e2d1f3d866d1","observed_behavioral":"full","plan_id":"1c57c473d4aab83cfe430bc96e965d693fb79cd1634ffcf0ed5511f1b12f9689","repository":"Example/repo","required_behavioral":"none","scope":"selection-authority floor only","status":"PASS","target":"47969716ffa61549580d269f65f7e2d1f3d866d1","witness_commit":"47969716ffa61549580d269f65f7e2d1f3d866d1","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+{"reason":"invalid zip","status":"BLOCK","witness_commit":"47969716ffa61549580d269f65f7e2d1f3d866d1","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+{"reason":"witness checkout differs from reviewer-pinned commit","status":"BLOCK","witness_source_sha256":"27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"}
+
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=89.00% threshold=90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+coverage-policy: PASS
+coverage-policy: FAIL
+- coverage must be a mapping
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=94.00%/95.00% branch=89.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=89.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=85.00% threshold=90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+.......................................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 215 tests in 325.941s
+
+OK
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/89.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%

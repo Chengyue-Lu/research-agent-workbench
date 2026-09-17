@@ -1,0 +1,87 @@
+[
+  {
+    "path": "checks/coverage.json",
+    "sha256": "20c033f83475e5b016ff6b96d6f7260d4a442518cf1bd0fdf9a83963ece9ac5e",
+    "bytes": 90604
+  },
+  {
+    "path": "checks/earlier-attempts/fixture-final.log",
+    "sha256": "efb0c3d6af15fb71a3478ca741bb6e4f46834cd70b98b8d846d6f9023494d030",
+    "bytes": 106
+  },
+  {
+    "path": "checks/earlier-attempts/fixture-repair.log",
+    "sha256": "4da1d5e9a559f92541ee90029b67a68037b3d7754651f6b02780a7d216a6f089",
+    "bytes": 821
+  },
+  {
+    "path": "checks/earlier-attempts/regression.log",
+    "sha256": "28ee57bbeeb062177b1bb1d3011daae5b167d9cb654f397686f136c262e5b705",
+    "bytes": 28386
+  },
+  {
+    "path": "checks/implementation-preflight.log",
+    "sha256": "dafff87eeba570fddf0f7ea1ca414406e9dd34706bb318c2315cda7e6e182949",
+    "bytes": 4999
+  },
+  {
+    "path": "checks/implementation/ci-contract-shadow.json",
+    "sha256": "db9d910435c854fe14d5a856fc9fa60181adb19427947ff4fed3b77ac7a107e8",
+    "bytes": 176545
+  },
+  {
+    "path": "checks/implementation/ci-plan.json",
+    "sha256": "d7c23030110c3d94d2f63cd846e6c0caff5292d4eba33b8b77ba3527e7bd2f12",
+    "bytes": 141331
+  },
+  {
+    "path": "checks/implementation/preflight-summary.json",
+    "sha256": "573ca8ecf38caf3a3ebaa1aa622026b85616078f61cf8044809ebb059d56f6e1",
+    "bytes": 4157
+  },
+  {
+    "path": "checks/plan-comparison.json",
+    "sha256": "9c73642ed29fab2da284fa0ee1d649768c804608ef3cab23196ea37c9d94dc51",
+    "bytes": 8881
+  },
+  {
+    "path": "checks/producer/ci_consumer_contracts.py.txt",
+    "sha256": "865a432e263d0bb10e748955b456df71ade0a5d00ddd17dbf81f7e1b4ccd140a",
+    "bytes": 4227
+  },
+  {
+    "path": "checks/producer/plan_ci.py.txt",
+    "sha256": "55c21010a31671199908053b7d044355be0fe4cead16ffeb799bc2d5f7057ecb",
+    "bytes": 46664
+  },
+  {
+    "path": "checks/producer/test_ci_consumer_contracts.py.txt",
+    "sha256": "6c67bb3b105aced5c610c2b94e239d366064fd24e380545e8ed6e313014a5ead",
+    "bytes": 8660
+  },
+  {
+    "path": "checks/producer/test_ci_plan.py.txt",
+    "sha256": "01c45a263afa57acf51b52951aa5b57b2ca8fc0220ce97932ba03d52f9223aae",
+    "bytes": 94809
+  },
+  {
+    "path": "checks/regression.log",
+    "sha256": "6a9b8070e779997b8752d9d4252d7dbf8e41d6c05460c90bf39255ddc1dcdbd9",
+    "bytes": 18940
+  },
+  {
+    "path": "checks/reproduction/archive_consumer_authority.py.txt",
+    "sha256": "92e3655de37e627455be3b52a18b9dd7c8ef8211efde0cfd7b30c36ca6006a90",
+    "bytes": 11088
+  },
+  {
+    "path": "checks/reproduction/check_authority_relocation.py.txt",
+    "sha256": "75704b8e23f2b6624e8de95130230eca485d9ce350016f43f792139bb5424128",
+    "bytes": 1864
+  },
+  {
+    "path": "checks/reproduction/shadow_preflight_p2.py.txt",
+    "sha256": "a0cab483f099b27dac1b756e6a07e4ca029c714eea3433949d48d69b40964b79",
+    "bytes": 4457
+  }
+]

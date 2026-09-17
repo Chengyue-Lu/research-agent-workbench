@@ -1,0 +1,120 @@
+"""Immutable Git/AST inventory for CI replanning; no product/test execution."""
+import argparse
+import ast
+from collections import Counter, defaultdict
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+import yaml
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--repo', type=Path, required=True)
+parser.add_argument('--output', type=Path, required=True)
+parser.add_argument('--timing', type=Path, action='append', default=[])
+args = parser.parse_args()
+def git(*words):
+    return subprocess.check_output(['git', '-C', str(args.repo), *words])
+base = git('rev-parse', 'HEAD').decode().strip()
+paths = git('ls-tree', '-r', '--name-only', base).decode().splitlines()
+tracked = {p: git('show', base + ':' + p) for p in paths if p.endswith('.py') and
+           (p.startswith(('src/', 'tests/', '.github/scripts/')) or p == 'build_backend.py')}
+policy = yaml.safe_load(git('show', base + ':tests/coverage_policy.yaml'))
+impact = json.loads(git('show', base + ':tests/ci_impact_policy.yaml'))
+
+def module(path):
+    value = path.removeprefix('src/').removesuffix('.py').replace('/', '.')
+    return value.removesuffix('.__init__')
+modules = {module(p): p for p in tracked}
+for p in tracked:
+    if p.startswith('tests/'):
+        modules[module(p).removeprefix('tests.')] = p
+reverse = defaultdict(set)
+records = {}
+for p, raw in tracked.items():
+    tree = ast.parse(raw)
+    imports = set()
+    defs = [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
+    for n in ast.walk(tree):
+        if isinstance(n, ast.Import):
+            imports.update(a.name for a in n.names)
+        if isinstance(n, ast.ImportFrom):
+            prefix = n.module or ''
+            if n.level:
+                package = module(p).split('.') if p.endswith('/__init__.py') else module(p).split('.')[:-1]
+                prefix = '.'.join(package[:len(package)-n.level+1] + ([prefix] if prefix else []))
+            imports.add(prefix)
+            imports.update(prefix + '.' + a.name for a in n.names)
+    dependencies = set()
+    for name in imports:
+        parts = name.split('.')
+        for i in range(1, len(parts)+1):
+            target = modules.get('.'.join(parts[:i]))
+            if target and target != p:
+                dependencies.add(target)
+                reverse[target].add(p)
+    calls = Counter()
+    for n in ast.walk(tree):
+        if isinstance(n, ast.Call):
+            name = ast.unparse(n.func)
+            if name.endswith(('read_text','read_bytes','open','glob','rglob','iterdir','write_text',
+                'write_bytes','copytree','TemporaryDirectory','SchemaCatalog','RuntimeResources')) or name.startswith('subprocess.'):
+                calls[name] += 1
+    area = p.split('/')[2] if p.startswith('src/research_workbench/') else 'tests' if p.startswith('tests/') else 'ci-build'
+    records[p] = {'area': area, 'sha256': hashlib.sha256(raw).hexdigest(), 'lines': len(raw.splitlines()),
+        'function_count': len(defs), 'test_methods_ast': sum(n.name.startswith('test_') for n in defs),
+        'longest_functions': sorted([{'name': n.name, 'line': n.lineno, 'lines': n.end_lineno-n.lineno+1}
+            for n in defs], key=lambda v: -v['lines'])[:3],
+        'imports': sorted(dependencies), 'critical': p in policy['critical_modules'],
+        'selected_call_syntax_counts_not_runtime_calls': dict(calls)}
+tests = {p for p in records if p.startswith('tests/test_')}
+def consumers(p):
+    seen = {p}
+    pending = [p]
+    for item in pending:
+        for target in reverse[item] - seen:
+            seen.add(target)
+            pending.append(target)
+    return sorted(seen & tests)
+for p, record in records.items():
+    record['direct_import_consumers'] = sorted(reverse[p])
+    record['transitive_import_test_consumers'] = consumers(p)
+areas = {}
+for area in sorted({v['area'] for p,v in records.items() if p.startswith('src/')}):
+    selected = {p:v for p,v in records.items() if p.startswith('src/') and v['area']==area}
+    areas[area] = {'files': len(selected), 'lines': sum(v['lines'] for v in selected.values()),
+        'critical_files': sum(v['critical'] for v in selected.values()),
+        'paths': sorted(selected),
+        'import_reachable_test_modules': sorted({t for v in selected.values() for t in v['transitive_import_test_consumers']})}
+timings = []
+for path in args.timing:
+    raw = path.read_bytes()
+    value = json.loads(raw)
+    by_module = defaultdict(lambda: {'cases': 0, 'seconds': 0.0, 'checkpoints': 0})
+    for test in value['tests']:
+        row = by_module[test['module']]
+        row['cases'] += 1
+        row['seconds'] += test['duration_seconds']
+        row['checkpoints'] += len(test.get('checkpoints', []))
+    timings.append({'artifact_name': path.name, 'sha256': hashlib.sha256(raw).hexdigest(),
+        **{k:value.get(k) for k in ('target','plan_id','suite','python_version','test_count','wall_seconds','successful','outcomes')},
+        'summed_case_seconds': sum(v['seconds'] for v in by_module.values()),
+        'modules': dict(sorted(by_module.items(), key=lambda item:-item[1]['seconds'])),
+        'slowest_cases': [{k:t[k] for k in ('canonical_id','duration_seconds','outcome')} for t in
+            sorted(value['tests'], key=lambda t:-t['duration_seconds'])[:20]]})
+result = {'base': base, 'method': 'AST import reachability includes package initializers; not actual calls or safe exclusions',
+    'source_files': sum(p.startswith('src/') for p in records), 'test_modules': len(tests),
+    'test_methods_ast': sum(records[p]['test_methods_ast'] for p in tests),
+    'test_helpers': sorted(p for p in records if p.startswith('tests/') and p not in tests),
+    'coverage_policy': {'version': policy['version'], 'critical_files': len(policy['critical_modules']),
+        'thresholds': policy['thresholds'], 'coverage_suite_modules': len(policy['suites']['coverage-quality']['modules']),
+        'negative_acceptance_contracts': len(policy['negative_acceptance']), 'justified_exclusions': policy['justified_exclusions']},
+    'impact_contract_groups': {k:{x:v[x] for x in ('tests','coverage','downstream') if x in v} for k,v in impact['groups'].items()},
+    'areas': areas, 'files': records, 'timings': timings}
+args.output.parent.mkdir(parents=True, exist_ok=True)
+args.output.write_text(json.dumps(result, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
+print(json.dumps({'base':base,'source_files':result['source_files'],'test_modules':len(tests),
+    'areas':{k:{x:v[x] for x in ('files','lines','critical_files')} for k,v in areas.items()},
+    'largest_sources': [{'path':p,'lines':v['lines'],'static_import_test_consumers':len(v['transitive_import_test_consumers'])} for p,v in
+        sorted(records.items(), key=lambda item:-item[1]['lines']) if p.startswith('src/')][:12],
+    'timings':[{k:v for k,v in t.items() if k not in ('modules','slowest_cases')} | {'top_modules':dict(list(t['modules'].items())[:12])} for t in timings]},indent=2))

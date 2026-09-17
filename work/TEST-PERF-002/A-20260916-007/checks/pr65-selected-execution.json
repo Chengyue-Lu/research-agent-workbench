@@ -1,0 +1,25 @@
+{
+  "binding": {
+    "base": "690a9f8c89c32400bbc57b0781ef9b43205894db",
+    "head": "09f96193845ee0e73a215d87ba188b5aa5569704",
+    "merge_base": "690a9f8c89c32400bbc57b0781ef9b43205894db",
+    "repository": "Chengyue-Lu/research-agent-workbench",
+    "target": "09f96193845ee0e73a215d87ba188b5aa5569704"
+  },
+  "plan_id": "b3a5f109e1d9400b4234c4dba3a6fcfdb8de0094df3012f7d901ac1c30dfeca1",
+  "mode": "local historical head; selected modules only",
+  "python": "3.11.16 (main, Sep  1 2026, 14:15:24) [MSC v.1944 64 bit (AMD64)]",
+  "test_modules": [
+    "test_ci_checks",
+    "test_ci_plan",
+    "test_coverage_policy",
+    "test_documentation",
+    "test_pr_governance"
+  ],
+  "test_count": 134,
+  "wall_seconds": 63.548,
+  "observed_exit_code": 0,
+  "status": "PASS",
+  "checkout_clean": true,
+  "full_suite_comparison": false
+}

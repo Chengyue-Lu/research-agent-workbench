@@ -1,0 +1,77 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260916-005
+task_id: TEST-PERF-002
+task_revision: 33
+attempt_id: A-20260916-005
+archive_root: A-20260916-005
+baseline: b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 18498e7a527449b2d6ca1f79d53c2fa4c9a1006a75465fe9ab2daa0d1a1f3698
+actors_ref:
+  path: ACTORS.yaml
+  sha256: e984d7e97ba9327cfbf513413069e35da73a91d25a3f3b624173eec540ae639f
+read_allowlist:
+- .github/**
+- AGENTS.md
+- build_backend.py
+- docs/**
+- pyproject.toml
+- registry/**
+- runtime-resources.json
+- schemas/**
+- src/**
+- tests/**
+- work/TEST-PERF-002/**
+write_scope:
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- work/TEST-PERF-002/A-20260916-005/**
+tool_allowlist:
+- apply_patch
+- gh
+- git
+- python
+- shell
+- web
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: f1fce55496d55f3320b02d5ea7e3d214d7dd8eb759ff5cfc9c02143438022a03
+  event_count: 4
+tool_event_refs:
+- path: tool-events/retained-inventory-and-hosted-evidence-succeeded.json
+  sha256: 759a5871a580d3393cf6f9f16454054856569008b6f54fb06a853456121495b5
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs:
+- path: checks/module-inventory.json
+  sha256: 895814fc3a43f85703aec59f302aa3f14132a8e83fe74a8778f5dc1503ade716
+- path: checks/pr84-scope-audit.json
+  sha256: 02aacc25d0df7cce37f98a04a61ca405c0d476d14e7b8a1c750d8ec5df9df5ba
+- path: checks/pr84-ci-plan.json
+  sha256: 8d11045ad1cefb70408722cb005fa9715836ba542e0f85288e00bd31af153ce0
+- path: checks/pr84-snapshot.json
+  sha256: 0a5486fe1953f4fb397e3be9c8d0de1cdff1316c7a160d007f368901ae5a0615
+- path: checks/pr84-hosted-run.json
+  sha256: a1c183eef079f3f165c38337248562bff61a96463d2bd6b87d9054017a7b8d0d
+- path: checks/full-test-results-3.13.json
+  sha256: 0c6940777e28719a89feb2750fd5d5233d2f3e0d7a894472eb1c1ef06c0820a1
+- path: checks/execution-test-results-3.11.json
+  sha256: 97213bb8bc814ca054906d1447b297796f963e858356556730295bca816e0f6d
+- path: checks/coverage-test-results.json
+  sha256: c917a110f839fbc37fdb0b53a48b3b1b918ab07253b65334301d2f1183937c39
+- path: checks/inventory_ci.py.txt
+  sha256: b582cfe78c84392c27cda4151635aa7a03b9935363397730052eafaa5efe798d
+- path: checks/audit_scope.py.txt
+  sha256: ecfddbd4009d642b8059673e0417c6ac4a32c322d2ab0b25aa42db3f2feee14e
+- path: checks/archive_replan.py.txt
+  sha256: 1736bb6d15915fd28fb359eb1ceaf1a99298f89c2146225ae9a84d30243880a4
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events

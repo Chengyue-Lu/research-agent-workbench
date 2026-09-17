@@ -1,0 +1,91 @@
+{
+  "head": "44abc86acb638b22a6740ee178ab72d730838bc0",
+  "base": "0d4a1d00a4c32ca9b822df6482a95920e7c21b1b",
+  "target": "44abc86acb638b22a6740ee178ab72d730838bc0",
+  "plan_id": "c63333fcac63c7eacd8d35f7a02521ac5ec98223060ea651175d137ef52b30f0",
+  "behavioral_scope": "full",
+  "coverage_obligations": [
+    "impact",
+    "repository"
+  ],
+  "coverage_modules": [
+    ".github/scripts/ci_consumer_contracts.py",
+    ".github/scripts/ci_contract_shadow.py",
+    ".github/scripts/ci_dependencies.py",
+    ".github/scripts/ci_input_facts.py",
+    ".github/scripts/plan_ci.py"
+  ],
+  "governance": "PASS",
+  "source_manifest": [
+    {
+      "path": ".github/scripts/ci_consumer_contracts.py",
+      "checkout_sha256": "3a9d6cdca0a22fc02fb0aeaa67f74949f1558d092fa2d4e65a707a2a0ce7a250",
+      "git_sha256": "3a9d6cdca0a22fc02fb0aeaa67f74949f1558d092fa2d4e65a707a2a0ce7a250"
+    },
+    {
+      "path": ".github/scripts/plan_ci.py",
+      "checkout_sha256": "a79b0e6dc7d722cb835b4bd26a461753097f6979e7b0d2ed5b7af949be906211",
+      "git_sha256": "a79b0e6dc7d722cb835b4bd26a461753097f6979e7b0d2ed5b7af949be906211"
+    },
+    {
+      "path": "tests/test_ci_consumer_contracts.py",
+      "checkout_sha256": "6ff22bd896b48e00ca403b8b72d1eb03e35357c9915c64fa91f38fa68f346707",
+      "git_sha256": "6ff22bd896b48e00ca403b8b72d1eb03e35357c9915c64fa91f38fa68f346707"
+    },
+    {
+      "path": "tests/test_ci_plan.py",
+      "checkout_sha256": "5dac2d9bbcba09b79aeef0f2a5ed8a8b708c49c4984021b3a0dfc09fcc30d0ee",
+      "git_sha256": "5dac2d9bbcba09b79aeef0f2a5ed8a8b708c49c4984021b3a0dfc09fcc30d0ee"
+    },
+    {
+      "path": "tests/ci_impact_policy.yaml",
+      "checkout_sha256": "490049075aa558829a2e6c2104a17ba1a90bfd2ff50657c6c6e20a7dd9ebba30",
+      "git_sha256": "490049075aa558829a2e6c2104a17ba1a90bfd2ff50657c6c6e20a7dd9ebba30"
+    },
+    {
+      "path": ".github/scripts/ci_contract_shadow.py",
+      "checkout_sha256": "c13410b1db44ced18d432ba22b65e206faae1d0321f47f885de0d5c7875171e5",
+      "git_sha256": "c13410b1db44ced18d432ba22b65e206faae1d0321f47f885de0d5c7875171e5"
+    },
+    {
+      "path": ".github/scripts/ci_input_facts.py",
+      "checkout_sha256": "a4fc10bc50f824b305a938cb8b12724fd3e02e8697a599c2459c4c664dbbeab8",
+      "git_sha256": "a4fc10bc50f824b305a938cb8b12724fd3e02e8697a599c2459c4c664dbbeab8"
+    },
+    {
+      "path": ".github/scripts/ci_dependencies.py",
+      "checkout_sha256": "5768999e3e6929f69ac87c56b94b9ecb66bf4ee527f48d97a21beb839110a20f",
+      "git_sha256": "5768999e3e6929f69ac87c56b94b9ecb66bf4ee527f48d97a21beb839110a20f"
+    },
+    {
+      "path": "tests/test_ci_contract_shadow.py",
+      "checkout_sha256": "d4af59dad4c53babe36a834c542c7d40f6eab3629db6c0cc3dacd77410d331b3",
+      "git_sha256": "d4af59dad4c53babe36a834c542c7d40f6eab3629db6c0cc3dacd77410d331b3"
+    },
+    {
+      "path": "tests/test_ci_input_facts.py",
+      "checkout_sha256": "b8198a0c0685c0cd64d84b1fe70443165074b37e09312c70c4896e04fc9c2d1c",
+      "git_sha256": "b8198a0c0685c0cd64d84b1fe70443165074b37e09312c70c4896e04fc9c2d1c"
+    },
+    {
+      "path": "tests/test_ci_dependencies.py",
+      "checkout_sha256": "a6cd0c74438c973649f5afeee49de42000f1a309d0d8fec4dfc8e6f633de7577",
+      "git_sha256": "a6cd0c74438c973649f5afeee49de42000f1a309d0d8fec4dfc8e6f633de7577"
+    },
+    {
+      "path": "tests/coverage_policy.yaml",
+      "checkout_sha256": "391630874f76eb2d7558ec815fcf6244f5f2a71f02e2adc11943c35c317b4a45",
+      "git_sha256": "391630874f76eb2d7558ec815fcf6244f5f2a71f02e2adc11943c35c317b4a45"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "checkout_sha256": "571e1dda06ab092b1fb7eedbd3bd05ac366d2c324eacf0d886acc5e9a9327b1b",
+      "git_sha256": "571e1dda06ab092b1fb7eedbd3bd05ac366d2c324eacf0d886acc5e9a9327b1b"
+    }
+  ],
+  "source_test_coverage_scope": "five CI Python modules changed by the Draft PR",
+  "quality_thresholds_unchanged": true,
+  "coverage_exclusions_unchanged": true,
+  "other_selection_authority_preserved": true,
+  "shadow_report_id": "687ed9cf66bfd4b7b41636e29d980a79a9782cb656056c7f239adeafe233adac"
+}

@@ -1,0 +1,42 @@
+{
+  "head": "627487c1d56f8c026bc9d460ecd4dd66279000ae",
+  "base": "0d4a1d00a4c32ca9b822df6482a95920e7c21b1b",
+  "target": "627487c1d56f8c026bc9d460ecd4dd66279000ae",
+  "plan_id": "b8590352c155563c2145bc83d42a761173e0b5bf5325bad983306775e1481940",
+  "behavioral_scope": "full",
+  "coverage_obligations": [
+    "impact",
+    "repository"
+  ],
+  "coverage_modules": [
+    ".github/scripts/ci_contract_shadow.py"
+  ],
+  "governance": "PASS",
+  "source_manifest": [
+    {
+      "path": ".github/scripts/ci_contract_shadow.py",
+      "checkout_sha256": "fbd1fdb8fac80b39efc6bc548af37593c58c9d3500455bf99a814a99b736f57a",
+      "git_sha256": "fbd1fdb8fac80b39efc6bc548af37593c58c9d3500455bf99a814a99b736f57a"
+    },
+    {
+      "path": "tests/test_ci_contract_shadow.py",
+      "checkout_sha256": "08478186cc8ed13329af28966626787b796975b346a4e0953e66531c830afb09",
+      "git_sha256": "08478186cc8ed13329af28966626787b796975b346a4e0953e66531c830afb09"
+    },
+    {
+      "path": "tests/coverage_policy.yaml",
+      "checkout_sha256": "e04fef1f1afe1306d932356791dcaffc15ca9cb43fedb183f9d8c67777d64dd7",
+      "git_sha256": "e04fef1f1afe1306d932356791dcaffc15ca9cb43fedb183f9d8c67777d64dd7"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "checkout_sha256": "571e1dda06ab092b1fb7eedbd3bd05ac366d2c324eacf0d886acc5e9a9327b1b",
+      "git_sha256": "571e1dda06ab092b1fb7eedbd3bd05ac366d2c324eacf0d886acc5e9a9327b1b"
+    }
+  ],
+  "source_test_coverage_scope": "shadow module only",
+  "quality_thresholds_unchanged": true,
+  "coverage_exclusions_unchanged": true,
+  "selection_authority_unchanged_except_diagnostic_workflow": true,
+  "shadow_report_id": "b52dc0eab238bfb54de499a6cdc2dec68deb4280794b2c226e44c651fc5a4a10"
+}

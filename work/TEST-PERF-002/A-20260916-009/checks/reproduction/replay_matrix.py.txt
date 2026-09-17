@@ -1,0 +1,45 @@
+"""Replay a declared historical corpus using the current report producer."""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+import sys
+import time
+
+p=argparse.ArgumentParser()
+p.add_argument('--repo',type=Path,required=True)
+p.add_argument('--metadata',type=Path,required=True)
+p.add_argument('--output',type=Path,required=True)
+a=p.parse_args()
+root=a.repo.resolve()
+sys.path.insert(0,str(root/'.github/scripts'))
+import plan_ci as planner
+import ci_contract_shadow as shadow
+a.output.mkdir(parents=True,exist_ok=True)
+cases=[]
+for file in sorted(a.metadata.glob('corpus-pr*.json')):
+    metadata=json.loads(file.read_bytes())
+    started=time.monotonic()
+    row={k:metadata[k] for k in ('number','title','headRefOid','baseRefOid')}
+    plan=planner.make_plan(root,base=metadata['baseRefOid'],head=metadata['headRefOid'],
+        target=metadata['headRefOid'],repository='Chengyue-Lu/research-agent-workbench',body=metadata['body'])
+    assert 'unknown governance risk metadata' not in plan['obligation_reasons']['behavioral_scope']
+    before=planner.canonical(plan)
+    report=shadow.build_report(root,plan)
+    assert before==planner.canonical(plan)
+    assert report['execution_authority'] is False and report['activation']['eligible'] is False
+    assert len(report['dependency_review'])==len(plan['selection']['selected'])
+    row.update({'status':'PASS','binding':plan['binding'],'plan_id':plan['plan_id'],
+        'report_id':report['report_id'],'summary':report['summary'],'obligations':report['accepted_obligations'],
+        'reasons':plan['obligation_reasons'],'seconds':round(time.monotonic()-started,3)})
+    prefix=f"pr{metadata['number']}"
+    (a.output/(prefix+'-plan.json')).write_bytes(before)
+    (a.output/(prefix+'-report.json')).write_bytes(planner.canonical(report))
+    cases.append(row)
+    print(json.dumps({'pr':row['number'],'summary':row['summary'],'obligations':row['obligations'],'seconds':row['seconds']}),flush=True)
+summary={'producer_commit':planner.git(root,'rev-parse','HEAD').decode().strip(),
+    'producer_checkout_dirty':bool(planner.git(root,'status','--porcelain','--','.github','tests')),
+    'producer_sha256':hashlib.sha256((root/'.github/scripts/ci_contract_shadow.py').read_bytes()).hexdigest(),
+    'mode':'current producer + original Git facts and PR metadata; target=head; no historical hosted attestation',
+    'cases':cases}
+(a.output/'matrix.json').write_text(json.dumps(summary,indent=2)+'\n',encoding='utf-8')
