@@ -14,7 +14,7 @@
 | A — Core Formalization | 把 Mode-first 方法论变成正式语义 | Mode Action、Method Resolution、Mode v0.2、Decision Authority | ADR-0013/0016 |
 | B — Evolution Foundation | 支持可迁移、可评测的能力演化 | Skill Need、Lifecycle v2、Migration、Protocol、Resolved Capability Snapshot | Phase A 稳定接口 |
 | C — Research State & Verification | 保存跨 Runtime 的研究意义 | State/Frontier、Failure、Evidence–Claim relation、Method Trace | A；部分依赖 B |
-| D — Evaluation Loop | 证明完整系统相对简单 baseline 的可复核净增量 | Evaluation Manifest、public/private Case Dossier、frozen Protocol、统一 Harness、blind Review、system-level analysis 与 disposition | ADR-0020 已接受 dual transport，M4 bounded provenance 链已实现；M5-006 Protocol 是当前入口，Harness 仍等待 baseline/Skill closeout，真实执行仍需获批案例及其 provenance、live execution 与人类批准 |
+| D — Evaluation Loop | 证明完整系统相对简单 baseline 的可复核净增量 | Evaluation Manifest、public/private Case Dossier、frozen Protocol、统一 Harness、blind Review、system-level analysis 与 disposition | ADR-0020 已接受 dual transport，M4 bounded provenance 链已实现；M5-006 Protocol 与 baseline/Skill closeout 已闭合，M5-007 正在实现 plan/preflight，真实执行仍需获批案例及其 provenance、live execution 与人类批准 |
 | E — Strategy & Governed Evolution | 有界吸收新策略和外部候选 | Strategy interface、candidate pipeline、merge/prune/promotion | B+C+D |
 | F — Execution Reintegration | 让 Runtime 消费冻结科研契约 | M11 Core：runtime bundle、supply-neutral resolved execution、Thin Host、Trace/Receipt integration；可选 Skill supply：release projection、统一 View semantic mapping | ADR-0019 与 M9-005 Core；Skill release projection 不 Gate Topic 4 Core；Topic 5 另受 Phase C Human/R2 closeout 约束 |
 
@@ -49,7 +49,7 @@ family 为什么存在、由什么 authority boundary 约束、何时允许启�
 | Phase A | Method/Core 与 Authority Rule Eligibility；不产生执行或 Human Decision | M8 | 已收口 |
 | Phase B | Capability demand/supply、Skill evolution、Protocol；不授予 Runtime authority | M9 | 已收口 |
 | Phase C | Research State、Failure、Method Trace 与 bounded verification | M10，复用历史 `M3-009`；M4 为 provenance support | bounded machine DAG 已实现；Human/R2 semantic closeout 仍独立 pending |
-| Phase D | Evaluation record、system-level baseline/net benefit 与 pruning；不自动 promotion | M5；baseline transport 复用 M6；部分 M7 experiments 由 TASKS 决定是否恢复 | ADR-0020 Gate A、M5-006 Protocol 与 M11-007 Skill replay / Gate B 已闭合；M6-008 已 DONE，M5-007 READY；M5-008 BLOCKED，作为 M5-004 前的四臂 live 工程验收；真实 case/provenance/live execution/Human review 保持独立 Gate |
+| Phase D | Evaluation record、system-level baseline/net benefit 与 pruning；不自动 promotion | M5；baseline transport 复用 M6；部分 M7 experiments 由 TASKS 决定是否恢复 | ADR-0020 Gate A、M5-006 Protocol 与 M11-007 Skill replay / Gate B 已闭合；M6-008 已 DONE，M5-007 IN_PROGRESS；M5-008 BLOCKED，作为 M5-004 前的四臂 live 工程验收；真实 case/provenance/live execution/Human review 保持独立 Gate |
 | Phase E | Strategy candidate 与 governed evolution；不得自动修改 Core | 既有 M2/M7；M13 仅 **RESERVED** | Phase C/D evidence 证明旧 group 不足后另行接受 |
 | Phase F / Topic 4 | Agent/Model/Provider/Runtime 消费 frozen contract；不拥有 Method/Claim/Gate/fallback authority | M11 Core 与 optional extension；M6 live conformance | M11 Core 与 optional Skill extension 已 bounded 实现；live conformance 仍依独立 Gate |
 | Topic 5 residual | Handoff、context rollover、safe pause/resume、recovery/continuation | M12 仅 **RESERVED** | Phase C closeout + 独立 Topic 5 R2 review/task-definition |
@@ -317,7 +317,7 @@ M11-003 提供 Core Host actual-fact 与 generic Trace/Receipt/Artifact closeout
 projection-backed Skill Supply mapping，但不传递前者。现有 Core Receipt 不支持 Skill-bearing actual binding，
 M11-007 的 `skill-execution@1.0.0` 已由 PR81 接受并合入，保留三种生命周期与独立文件 replay；
 [Gate B record](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md) exact-pin 实现、四个 synthetic proof、
-CI 与具名双方接受，现为 SATISFIED。M6-008 的 baseline transport 已由 PR75 接受并收口为 DONE，M5-007 的实现前置已满足，进入 READY。
+CI 与具名双方接受，现为 SATISFIED。M6-008 的 baseline transport 已由 PR75 接受并收口为 DONE，M5-007 的实现前置已满足，进入 IN_PROGRESS。
 首个开发切片为[冻结 Harness plan 与评价侧 preflight](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md)，随后接入实际 transport 与 replay，保持 M5-004 的外部执行 Gate。
 baseline transport architecture decision 已作为 M5-006 的 hard dependency 传递；Harness 必须实现其中冻结的
 arm→transport mapping 并消费 M6-008，不能通过 raw Task control、dummy Method/Snapshot 或 Skill Assignment

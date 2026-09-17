@@ -4,7 +4,7 @@
 
 风险：R2
 
-M5-006 已由 PR71 接受；M6-008 实现已由 PR75 合入，M11-007 / Gate B 已按 PR81/82 收口。PR84 已接受 M6-008 DONE 与 M5-007 READY；按 [M5-007 进入计划](M5-007_ENTRY_PLAN.md) 推进 synthetic Harness。本次 task-definition 新增 M5-008 BLOCKED，作为 M5-004 之前的独立 live 工程验收关口。
+M5-006 已由 PR71 接受；M6-008 实现已由 PR75 合入，M11-007 / Gate B 已按 PR81/82 收口。PR84 已接受 M6-008 DONE、M5-007 READY；从 [M5-007 进入计划](M5-007_ENTRY_PLAN.md) 和 [H1/H2 实施包](M5-007_H1_H2_PACKET.md) 推进 synthetic Harness；本分支实现 H1/H2 非执行 plan/preflight 并提出 IN_PROGRESS，H3–H5 待后续实施。M5-008 为 BLOCKED，作为 M5-004 之前的独立 live 工程验收关口。
 
 实施导航：[M5-007 进入计划](M5-007_ENTRY_PLAN.md)、[M5-008 Live Pilot Gate](M5-008_LIVE_PILOT_GATE.md)、[M5-006 历史进入计划](ENTRY_PLAN.md)、[Protocol / validator contract](../../../implementation/SYSTEM_EVALUATION_PROTOCOL.md)、
 [工作记录与验证](WORKLOG.md)、[Risk Ledger](RISK_LEDGER.md)。
@@ -290,7 +290,7 @@ pilot runs 不进入主确认性分析；pilot 观察或调参影响的 case/ora
 flowchart LR
     M5003["M5-003 DONE"] --> M5006["M5-006 DONE"]
     BTG["ADR-0020 dual transport<br/>Gate A satisfied"] --> M5006
-    M5006 --> M5007["M5-007 READY"]
+    M5006 --> M5007["M5-007 IN_PROGRESS"]
     M5006 --> M6008["M6-008 baseline envelope<br/>+ replay closeout / DONE"]
     M6008 --> M5007
     M1104["M11-004<br/>Core generic closeout<br/>M11-003 Host facts"] --> M5007
@@ -394,9 +394,9 @@ M5-005 必须引用 exact protocol、case dossiers、run set、blind reviews、a
 A4 看起来较优不自动触发 Skill promotion；既有开发成本也不自动触发 KEEP。`admission-overlap` case 的
 pilot/secondary evidence 不得作为 pruning 的唯一证据。该 Gate 明确保留删除无净收益复杂度的权力。
 
-## 8. 非目标与停止点
+## 8. 原始任务定义边界与当前停止点
 
-本 task-definition PR 不：
+原始 task-definition PR 的范围为：
 
 - 写 runner 或 Harness 实现；
 - 运行模型、选择真实案例或准入真实 Skill；
@@ -405,8 +405,8 @@ pilot/secondary evidence 不得作为 pruning 的唯一证据。该 Gate 明确�
 - 建立自动 Human judge、单一总分或 automatic promotion/pruning；
 - 宣称 RWB 已有 system-level net benefit。
 
-本次收口后，M5-007 是下一个 READY implementation 节点；先完成冻结 plan 与评价侧 preflight，
-再逐步接入四臂 synthetic execution/replay。M5-001/002 继续受 Human boundary 阻断，M5-004/005 按各自
+当前 M5-007 implementation 提案推进 H1/H2 冻结 plan 与评价侧 preflight，Task 为 IN_PROGRESS；
+H3–H5 后续接入四臂 synthetic execution/replay。M5-001/002 继续受 Human boundary 阻断，M5-004/005 按各自
 真实 execution/Human dependencies 保持 BLOCKED。Issue #55 继续跟踪 M5-007 内部重算与分析输入闭包。
 
 ## 9. 原始设计阶段的历史本地验证

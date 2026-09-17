@@ -201,6 +201,8 @@ class VersionedSchemaTests(unittest.TestCase):
                 "skill_need",
                 "skill_need_index",
                 "source_admission",
+                "evaluation_harness_plan",
+                "evaluation_harness_preflight",
                 "system_evaluation_protocol",
                 "task_packet",
             },

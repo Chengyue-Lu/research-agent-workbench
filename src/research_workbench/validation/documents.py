@@ -153,6 +153,8 @@ SCHEMA_KINDS = {
     "execution_receipt",
     "research_object",
     "evaluation_manifest",
+    "evaluation_harness_plan",
+    "evaluation_harness_preflight",
     "system_evaluation_protocol",
     "evaluation_measurement",
     "evaluation_provider_interface",

@@ -1,0 +1,6 @@
+{
+  "blocked": false,
+  "risks": [
+    "ContractRisk(code='TRACE-CAPTURE-DELAYED', level=<RiskLevel.WARNING: 'warning'>, message='[capture-gap] trace declares incomplete or delayed capture')"
+  ]
+}

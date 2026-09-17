@@ -47,7 +47,7 @@ and [WORKLOG](WORKLOG.md). Test fixtures are synthetic structural evidence, not 
 
 ## M5-007 进入时风险更新（2026-09-16）
 
-上文保留原设计及 M5-006 implementation 阶段状态。本次基于 PR71、PR75、PR81/82：Protocol、baseline 与 Skill closeout 已接受，Gate B 已 SATISFIED；M6 收口合入后 M5-007 READY。剩余 Harness 风险是 preflight 重算与实际执行混同、两种 transport 被强制同形、overlap/比较等级自报、失败选择性丢弃和盲审信息泄漏。H1–H5 的逐项负例与停止条件见 [进入计划](M5-007_ENTRY_PLAN.md)。生产 admission、真实 case/live 与科研净收益保持独立未满足条件。
+上文保留原设计及 M5-006 implementation 阶段状态。PR71、PR75、PR81/82 的 Protocol、baseline 与 Skill closeout 已接受，Gate B 已 SATISFIED；PR84 已接受 M6-008 DONE 与 M5-007 READY。剩余 Harness 风险是 preflight 重算与实际执行混同、两种 transport 被强制同形、overlap/比较等级自报、失败选择性丢弃和盲审信息泄漏。H1–H5 的逐项负例与停止条件见 [进入计划](M5-007_ENTRY_PLAN.md)，首个切片见 [H1/H2 实施包](M5-007_H1_H2_PACKET.md)。生产 admission、真实 case/live 与科研净收益保持独立未满足条件。
 
 ## M5-008 live pilot 定义（2026-09-17）
 
@@ -60,3 +60,13 @@ and [WORKLOG](WORKLOG.md). Test fixtures are synthetic structural evidence, not 
 | M5-PILOT-TRANSFER-001 | 旧版本 pilot PASS 对新 Harness/Provider/Tool/Skill 自动生效 | 具名接受 exact source/config/run set；M5-004 执行前复核适用性，影响执行/证据链的变更需重新验证 | M5-004 保持 BLOCKED |
 
 本次仅提交 Task 定义；上表控制是未来验收要求，不是已观测结果。详见 [Live Pilot Gate](M5-008_LIVE_PILOT_GATE.md)。
+
+## M5-007 H1/H2 implementation candidate
+
+| Risk / seam | Implemented control and adversarial evidence | Remaining acceptance |
+|---|---|---|
+| ARM-QUAL / producer ownership | H2 reads M6-produced A2 reference and independently validates it; a patched M6 producer raises if Harness calls it. A3 assembly uses supplied Resolver bindings and the explicit preflight time | M6/Resolver ownership unchanged; H3 actual transport remains pending |
+| OVERLAP / phase | H1 Schema contains scheduling phase only; H2 recomputes overlap and derives eligibility. Confirmatory blocks with admission overlap remain ineligible; unknown oracle blocks preflight | Real case approval and admission remain independent |
+| DRIFT / clock and trust | Explicit caller `preflight_checked_at`, external replay expected time, runtime availability checks, full input and validator pin rechecks; missing callback, future/stale records and self-upgraded results fail | Trusted admission verifier stays external; use-boundary execution checks belong to H3 |
+| LEAK / plan identity | Exact public input pins, private artifact hash alias rejection, bounded deterministic slots and cross-process order vector; compilation has no Provider/Tool/Host calls | Planned identities do not attest fresh actual sessions; H3–H5 remain pending |
+| TRACE / acceptance | Formal Task snapshot and retained tool evidence; incomplete capture is declared with its warning | Exact-head CI and cross-owner review; Task stays IN_PROGRESS |

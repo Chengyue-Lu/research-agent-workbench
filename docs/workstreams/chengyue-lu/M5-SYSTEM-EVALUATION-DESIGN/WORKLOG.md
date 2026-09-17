@@ -119,3 +119,60 @@ confirmatory net-benefit conclusion，M5-004/005 保持 BLOCKED。
 
 [Definition Attempt](attempts/M5-008-DEFINITION-001/README.md) 记录输入、变更范围、检查与 capture gap。
 本次无 live 调用、Harness 实现或 Task DONE；Task-definition PR 的 CI/review 单独绑定其最终提交。
+
+## M5-007 H1/H2 分支与接口准备（2026-09-16）
+
+PR84 已合入 `develop@0d4a1d00a4c32ca9b822df6482a95920e7c21b1b`，M6-008 DONE、M5-007 READY。
+从该基线建立独立分支 `feature/m5-007-harness-preflight` 和独立 Python 3.11.16 虚拟环境；editable
+安装的 import path 指向新 checkout，`pip check` 与 `rwb --help` 通过。主 develop checkout 保持原样。
+
+[H1/H2 实施包](M5-007_H1_H2_PACKET.md) 固定复用接口、调用方责任、拟定写入面、实现顺序和六组反例。
+已核对现有 baseline plan 尚不编排 case/replicate/retry；overlap/overlay/comparability 必须接收独立的
+case/time pins，A4 admission verifier 由授权评价侧提供；当前完整 synthetic A3/A4 fixture 的比较等级
+保持 package effect。首次 implementation PR 再提出 IN_PROGRESS，并在实施开始前建立正式 Attempt capture。
+
+进入基线回归：`test_evaluation_manifest`、`test_system_evaluation_protocol`、`test_evaluation_overlap`、
+`test_evaluation_overlay`、`test_evaluation_comparability`、`test_evaluation_contracts`、`test_baseline_envelope`
+共 **115 PASS / 0 skip**，60.775 秒；文档检查 **10 PASS**（含内链），repository validation
+**186 validated / 0 errors / 0 warnings**，diff check PASS。本地检查日志保存在未跟踪的
+`.rwb/m5-entry/`。这些结果是既有依赖的进入基线；新增 Harness、H3–H5、真实 case/live/admission
+与科学收益仍须各自实施和验收。此次准备只修改 workstream 文档，不修改 Task 状态、源码或 Schema。
+
+## M5-007 H1/H2 implementation candidate（2026-09-16）
+
+在 `develop@0d4a1d00a4c32ca9b822df6482a95920e7c21b1b` 上实现两个 version 1.0.0 的评价侧 record：
+确定性非执行 plan 和独立重算 preflight。H1 冻结 case/phase/replicate/arm/retry slots 与公共输入摘要；
+H2 复用 M5 validators，并验证外部 qualification、overlap、overlay、pairwise 和 admission callback。
+Task 提案仅为 M5-007 READY → IN_PROGRESS；所有 Task 定义、依赖、验收与其他状态逐项比较保持不变。
+
+本轮反馈落实为三个接口约束：Harness 只读取 M6 已产生的 A2 qualification；H1 phase 不产生 primary
+eligibility；H2 与 A3 组装使用显式 `preflight_checked_at`，重放由调用方提供 expected time。反例覆盖
+内部调用 M6 producer、confirmatory phase 掩盖 overlap、自选时间、缺失 admission verifier、私有输入
+哈希别名、记录/输入/validator drift 和 planned-to-actual 自我升级。
+
+提交前候选回归 **176 PASS / 0 skip，247.800 秒**，含新增 Harness **24 项**及现有 M5/M6、Schema、
+文档内链和 coverage-policy 检查。新增 H1 行覆盖 **100%**、分支 **95.83%**；H2 两项均 **100%**。
+repository validation **186/0/0**；portable package 的 direct wheel 与 sdist-wheel 两条路径、四个隔离
+安装 probe 全部通过，Runtime resources identical。初始诊断中固定向量预期、测试用过期时间和一次
+文档测试模块名错误均已纠正；最终上述回归通过。coverage 阈值未降低，也未新增豁免。
+
+[Attempt Archive](attempts/M5-007-H1-H2-001/README.md) 保留 Task snapshot、可观察工具记录与上述检查。
+Trace v0.1 无 BLOCK，仅保留 `TRACE-CAPTURE-DELAYED` / capture-gap warning，Attempt 为 incomplete；
+不将缺失的 provider frames/native events 重建为完整 capture。记录中的代码哈希绑定提交前候选字节；
+最终 full/coverage/governance/package CI 绑定 PR 的 exact head/base，证据由 GitHub Actions 保留。
+H1/H2 接受仍需 cross-owner review；H3–H5、真实执行与 M5-004 的 Human/live/admission 条件保持后续验收。
+
+PR86 首次 hosted [CI 35105112446](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/35105112446)
+绑定 head `94448bf781730b4af8528089a79794b748be2c2b`，Python 3.11/3.13 全量各 **1,355 PASS**；
+repository coverage policy 也通过（global line 94.96%）。CI 在更严格的 changed-branch 100% 门禁失败：
+H1 尚未覆盖 synthetic Protocol 的 `admission_case_closure_ref=null` 路径。补充该非执行计划正例及
+confirmatory Protocol 同样缺失 closure 时拒绝的反例；新用例本地通过，生产代码和所有门槛不变。
+原候选 Attempt evidence 保持冻结，后续 exact-head CI 由 PR86 关联；首次失败 run 只作为诊断记录。
+
+## PR85 后的 M5-007 集成（2026-09-17）
+
+按具名 Human 授权，PR85 先合入 `develop@348d6257ddd28637c9d06abe177fc685ac4368b6`；
+PR86 三个原提交纯 rebase，patch 内容不变。新基线 CI 发现新增 consumer record 的两处 pin 仍指向
+Harness 注册前的 `validation/documents.py` 与 Schema catalog 测试。只更新这两处显式 hash，保持
+accepted-base shadow drift、选择义务、全部测试断言与覆盖率门槛。详见
+[Integration Attempt](attempts/M5-007-REBASE-001/README.md)；新提交仍须 exact-head CI 与有效审核。

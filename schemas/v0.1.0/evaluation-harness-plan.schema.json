@@ -1,0 +1,243 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/evaluation-harness-plan.schema.json",
+  "title": "Evaluation Harness Plan",
+  "x-rwb-document-kind": "evaluation_harness_plan",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "version",
+    "status",
+    "request",
+    "manifest_ref",
+    "plan_input_sha256",
+    "frozen_conditions_sha256",
+    "permutation_algorithm",
+    "design",
+    "cases",
+    "blocks",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "evaluation_harness_plan"
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "status": {
+      "const": "compiled-not-executed"
+    },
+    "request": {
+      "$ref": "#/$defs/request"
+    },
+    "manifest_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "plan_input_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "frozen_conditions_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "permutation_algorithm": {
+      "const": "sha256-arm-order-v1"
+    },
+    "design": {
+      "$ref": "system-evaluation-protocol.schema.json#/properties/design"
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "case_id",
+          "case_ref",
+          "task_ref",
+          "public_payload_ref",
+          "public_payload_sha256"
+        ],
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "case_ref": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          },
+          "task_ref": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          },
+          "public_payload_ref": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          },
+          "public_payload_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "blocks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "phase",
+          "case_id",
+          "replicate",
+          "arms"
+        ],
+        "properties": {
+          "phase": {
+            "enum": [
+              "pilot",
+              "confirmatory"
+            ]
+          },
+          "case_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "replicate": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "arms": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "arm_id",
+                "attempt_slots"
+              ],
+              "properties": {
+                "arm_id": {
+                  "enum": [
+                    "plain-agent",
+                    "plain-agent-tool",
+                    "mode-no-skill",
+                    "mode-candidate-skill"
+                  ]
+                },
+                "attempt_slots": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "retry_index",
+                      "attempt_id",
+                      "session_id",
+                      "activation"
+                    ],
+                    "properties": {
+                      "retry_index": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "attempt_id": {
+                        "type": "string",
+                        "pattern": "^HA-[0-9a-f]{64}$"
+                      },
+                      "session_id": {
+                        "type": "string",
+                        "pattern": "^HS-[0-9a-f]{64}$"
+                      },
+                      "activation": {
+                        "enum": [
+                          "initial",
+                          "after-eligible-failure"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "minItems": 1
+                }
+              },
+              "additionalProperties": false
+            },
+            "minItems": 4,
+            "maxItems": 4
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "boundaries": {
+      "const": {
+        "runtime_input": false,
+        "execution_authority": false,
+        "actual_execution": false,
+        "supply_selection": false,
+        "human_decision": false,
+        "task_completion": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "request": {
+      "type": "object",
+      "required": [
+        "protocol_ref",
+        "case_closure_ref",
+        "case_selection_frozen_at",
+        "public_cases",
+        "plan_id",
+        "run_id"
+      ],
+      "properties": {
+        "protocol_ref": {
+          "$ref": "common.schema.json#/$defs/fileRef"
+        },
+        "case_closure_ref": {
+          "$ref": "common.schema.json#/$defs/fileRef"
+        },
+        "case_selection_frozen_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "public_cases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "case_id",
+              "public_payload_ref"
+            ],
+            "properties": {
+              "case_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "public_payload_ref": {
+                "$ref": "common.schema.json#/$defs/fileRef"
+              }
+            },
+            "additionalProperties": false
+          },
+          "minItems": 1
+        },
+        "plan_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

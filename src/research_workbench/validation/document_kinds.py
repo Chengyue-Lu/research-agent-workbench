@@ -14,6 +14,7 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
     if evaluation_kind == "skill-input-consumption":
         return "skill_execution_trace_fact"
     if isinstance(evaluation_kind, str) and evaluation_kind in {
+        "evaluation_harness_plan", "evaluation_harness_preflight",
         "system_evaluation_protocol", "evaluation_measurement", "evaluation_provider_interface",
         "arm_execution_qualification", "evaluation_case_closure", "admission_evidence_overlap",
         "a4_execution_qualification", "a3_a4_pairwise_comparability",
