@@ -168,3 +168,11 @@ repository coverage policy 也通过（global line 94.96%）。CI 在更严格�
 H1 尚未覆盖 synthetic Protocol 的 `admission_case_closure_ref=null` 路径。补充该非执行计划正例及
 confirmatory Protocol 同样缺失 closure 时拒绝的反例；新用例本地通过，生产代码和所有门槛不变。
 原候选 Attempt evidence 保持冻结，后续 exact-head CI 由 PR86 关联；首次失败 run 只作为诊断记录。
+
+## PR85 后的 M5-007 集成（2026-09-17）
+
+按具名 Human 授权，PR85 先合入 `develop@348d6257ddd28637c9d06abe177fc685ac4368b6`；
+PR86 三个原提交纯 rebase，patch 内容不变。新基线 CI 发现新增 consumer record 的两处 pin 仍指向
+Harness 注册前的 `validation/documents.py` 与 Schema catalog 测试。只更新这两处显式 hash，保持
+accepted-base shadow drift、选择义务、全部测试断言与覆盖率门槛。详见
+[Integration Attempt](attempts/M5-007-REBASE-001/README.md)；新提交仍须 exact-head CI 与有效审核。
