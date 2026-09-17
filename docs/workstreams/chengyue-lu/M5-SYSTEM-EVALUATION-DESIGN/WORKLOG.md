@@ -198,3 +198,12 @@ resources identical。失败的初期集成输出仅作为诊断保留，不作�
 字节 pins、检查输出和部分 delayed Trace；capture gaps 保持显式声明。最终 full/global coverage 与
 changed-line/branch 门禁由 Draft PR 的 exact-head/base hosted CI 执行；不把父 PR CI 当作 H3 的证据。
 M5-007 保持 IN_PROGRESS，H4/H5 与真实 M5-004 条件按原计划推进；此次提交 Draft，不 merge。
+
+## PR89 rebase 与正式 review 准备（2026-09-17）
+
+PR86 已合入 `develop@51dc3ab477f21f18ac3829bf553b5b779d49a4fe`。按用户授权，以原父
+`b53a391` 为边界只迁移 H3 提交；源码、Schema、H3/Trace 测试和原 Attempt Archive 字节不变。
+语义合并 STATUS / WORKLOG，保留主线 M5-008 Gate；更新当前文档与 CI consumer 的 Schema
+测试文件 pin。Task 定义和状态与 develop 相同。详情见
+[H3 integration record](attempts/M5-007-H3-REBASE-001/README.md)；新候选证据与正式 review 状态
+以 PR89 的 exact-head 检查为准。

@@ -2,9 +2,10 @@
 
 更新：2026-09-17。Owner：路诚钺。Execution 接口复核：黄毅。风险：R2。
 
-用户授权在仍未合入的 PR86（`b53a391ece3a4be7207c00c636dc9e1570e71473`）上继续 H3，
-完成后提交 Draft PR。分支 `feature/m5-007-harness-execution`，PR 目标仍为 `develop`。
-H1/H2 接受与 H3 review 分别完成；本次授权只提前进入独立开发，不代表接受父 PR。
+H1/H2 已由 PR86 合入 `develop@51dc3ab477f21f18ac3829bf553b5b779d49a4fe`。
+按用户 2026-09-17 的后续授权，PR89 将 H3 独立提交迁移到该基线，并转为正式 R2 feature PR。
+分支为 `feature/m5-007-harness-execution`，目标为 `develop`；H3 等待独立 review。
+原始 Draft 候选与本次集成分别留痕，见 [rebase 记录](attempts/M5-007-H3-REBASE-001/README.md)。
 
 ## 输入与执行边界
 
@@ -46,4 +47,4 @@ Attempt/retry 替换、漏记录、重复 run/Driver、越界目录和外层可�
 检查按当前 coverage policy 执行；结果写入 [H3 Attempt Archive](attempts/M5-007-H3-001/README.md)。
 
 不改变 Runtime 所有权、treatment、Resolver 选择权和 Human authority；若现有接口不能闭合证据，
-保留失败并停止该 run。cross-owner review 与 CI 是后续 R2 接受条件；Draft PR 不触发 merge。
+保留失败并停止该 run。cross-owner review 与 CI 是后续 R2 接受条件；本次授权范围为 rebase 与转为正式 PR。
