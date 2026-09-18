@@ -176,3 +176,49 @@ PR86 三个原提交纯 rebase，patch 内容不变。新基线 CI 发现新增 
 Harness 注册前的 `validation/documents.py` 与 Schema catalog 测试。只更新这两处显式 hash，保持
 accepted-base shadow drift、选择义务、全部测试断言与覆盖率门槛。详见
 [Integration Attempt](attempts/M5-007-REBASE-001/README.md)；新提交仍须 exact-head CI 与有效审核。
+
+## M5-007 H3 Draft candidate（2026-09-17）
+
+按用户授权，从仍 OPEN 的 PR86 `b53a391ece3a4be7207c00c636dc9e1570e71473` 建立
+`feature/m5-007-harness-execution`；进入与提交前观察到的 develop 均为
+`0d4a1d00a4c32ca9b822df6482a95920e7c21b1b`。父分支及主 develop checkout 保持 clean、原样。
+
+[H3 实施包](M5-007_H3_PACKET.md) 交付四臂 local synthetic 调度、每个必需 M11 capability slice 的
+独立 Host/Trace/Receipt、独占创建的 Attempt 账本和独立 cold replay。失败与重试按冻结顺序保留；
+M11 slices 共用整臂预算，后续 slice 阻断不会掩盖已有调用。集成中的 Trace token-boundary 修复使
+TASK-prefixed 路径继续形成有效 Skill fact，同时保留真实密钥脱敏。
+
+提交前候选：H3 **22/22 PASS**（branch coverage 下 451.036 秒），两个新模块 line/branch 均
+**100%**；含独立新进程中禁用执行端口、项目 Tool/checker 和外部进程的 replay。相关 H1/H2、
+Trace 与 governance 回归 **148 PASS**，文档/Schema/coverage-policy **37 PASS**；repository
+**186/0/0**，final portable package 的 direct wheel / sdist-wheel 四个安装 probe PASS，runtime
+resources identical。失败的初期集成输出仅作为诊断保留，不作为候选接受证据。
+
+[H3 Attempt Archive](attempts/M5-007-H3-001/README.md) 保存原始 Task snapshot、范围补充、候选
+字节 pins、检查输出和部分 delayed Trace；capture gaps 保持显式声明。最终 full/global coverage 与
+changed-line/branch 门禁由 Draft PR 的 exact-head/base hosted CI 执行；不把父 PR CI 当作 H3 的证据。
+M5-007 保持 IN_PROGRESS，H4/H5 与真实 M5-004 条件按原计划推进；此次提交 Draft，不 merge。
+
+## PR89 rebase 与正式 review 准备（2026-09-17）
+
+PR86 已合入 `develop@51dc3ab477f21f18ac3829bf553b5b779d49a4fe`。按用户授权，以原父
+`b53a391` 为边界只迁移 H3 提交；源码、Schema、H3/Trace 测试和原 Attempt Archive 字节不变。
+语义合并 STATUS / WORKLOG，保留主线 M5-008 Gate；更新当前文档与 CI consumer 的 Schema
+测试文件 pin。Task 定义和状态与 develop 相同。详情见
+[H3 integration record](attempts/M5-007-H3-REBASE-001/README.md)；新候选证据与正式 review 状态
+以 PR89 的 exact-head 检查为准。
+
+## PR89 dispatch deadline review 修复（2026-09-18）
+
+用户授权修复 review 并推送原 PR，无需等待远端 CI。进入候选为 `4b3101a`，develop 仍为
+`51dc3ab`。原 P2 指出 slice 间归档、回放和准备时间可耗尽整臂预算，却仍启动下一个 Driver。
+
+修复将可信时间检查放到 Host 完成 preflight 后、调用 Driver 前；所有 slice 共用首个 Host
+起点与 Protocol 预算。超时保留零调用的 blocked Host/Receipt；Harness 的每 slice dispatch
+观察与 Host 区间、实际决定和冻结预算独立交叉验证。Host 可选 guard 只能收紧调用许可，不能
+覆盖已有拒绝，异常保留未完成现场。A3/A4 的 deadline 边界、Host 准备延迟、时间证据篡改和
+原有完成/失败/retry/cold replay 纳入本地检查，详见
+[review Attempt](attempts/M5-007-H3-REVIEW-001/README.md)。
+
+原始 H3 与 rebase evidence 保持冻结。本地检查绑定候选源码 hashes，新 head 的远端 CI 与
+cross-owner rereview 按 PR89 独立进行；本次只提交修复，M5-007 仍 IN_PROGRESS。

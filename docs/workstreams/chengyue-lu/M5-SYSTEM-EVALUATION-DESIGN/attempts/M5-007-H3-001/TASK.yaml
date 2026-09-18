@@ -1,0 +1,58 @@
+task_id: M5-007
+revision: 1
+attempt_id: M5-007-H3-001
+accountable_owner: Chengyue-Lu
+interface_reviewer: let778750-cpu
+authorization:
+  source: current user instruction, 2026-09-17
+  scope: Continue the next M5-007 slice on unmerged PR86 and submit a Draft PR.
+parent_pr: 86
+parent_head: b53a391ece3a4be7207c00c636dc9e1570e71473
+develop_baseline: 0d4a1d00a4c32ca9b822df6482a95920e7c21b1b
+agent_profile: bounded-implementation
+required_skills: []
+delegation: false
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/ARCHITECTURE.md
+- docs/TASKS.md
+- docs/STATUS.md
+- docs/ROADMAP.md
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/modules/10-OBSERVABILITY_EVALUATION_COST.md
+- docs/implementation/**
+- docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/**
+- docs/workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/**
+- docs/workstreams/huangyi/M6-BASELINE-EXECUTION/**
+- src/research_workbench/**
+- schemas/**
+- tests/**
+- .github/**
+- pyproject.toml
+- build_backend.py
+- runtime-resources.json
+- registry/**
+- examples/**
+write_scope:
+- src/research_workbench/evaluation/**
+- src/research_workbench/validation/**
+- schemas/**
+- tests/**
+- docs/**
+- .rwb/**
+outputs:
+- H3 four-arm synthetic execution and independent replay using existing M6/M11 interfaces
+- fresh Attempt identity, failure and retry retention with adversarial tests
+- versioned evaluation records, documentation and verification evidence
+- Draft feature/R2 PR dependent on PR86, targeting develop
+budget:
+  scope: H3; H4/H5 remain later slices
+  real_provider_calls: 0
+  delegation: 0
+stop_conditions:
+- requires changing frozen treatment, Runtime ownership or Human authority
+- requires bypassing qualification, admission, use-boundary or cold replay checks
+- fixture evidence would be represented as live conformance or production admission
+- PR86 changes require resolving an incompatible interface

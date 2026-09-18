@@ -40,7 +40,7 @@ _SECRET_KEY = re.compile(
     re.IGNORECASE,
 )
 _SECRET_VALUE = re.compile(
-    r"(?i)(?:bearer\s+[A-Za-z0-9._~+/=-]{12,}|sk-[A-Za-z0-9_-]{12,}|"
+    r"(?i)(?:bearer\s+[A-Za-z0-9._~+/=-]{12,}|\bsk-[A-Za-z0-9_-]{12,}|"
     r"AIza[0-9A-Za-z_-]{20,}|(?:api[_-]?key|token|secret)\s*[:=]\s*\S{8,})"
 )
 _HIDDEN_REASONING_KEY = re.compile(

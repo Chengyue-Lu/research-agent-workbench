@@ -3,6 +3,7 @@ import inspect
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import Mock
 
 import yaml
 
@@ -80,6 +81,36 @@ class ExecutionHostTests(unittest.TestCase):
             self.assertIn("freshness", report["enforcement"]["preventive_controls"])
             self.assertIn("data-egress", report["enforcement"]["detective_controls"])
             self.assertFalse(report["enforcement"]["driver_claims_trusted"])
+
+    def test_dispatch_guard_only_narrows_host_authority_and_errors_propagate(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            _, view = self._build(root)
+            driver = RecordingDriver(root, view.document["binding"])
+
+            def execute(guard):
+                return execute_frozen_view(view, driver, report_id="HOST-GUARD", attempt_id="ATTEMPT-GUARD",
+                    clock=SequenceClock("2026-08-26T00:00:01Z", "2026-08-26T00:00:02Z"),
+                    schema_root=ROOT / "schemas", dispatch_guard=guard)
+
+            for value in (False, None, 1):
+                guard = Mock(return_value=value)
+                report = execute(guard)
+                guard.assert_called_once_with("2026-08-26T00:00:01Z")
+                self.assertEqual(report["status"], "blocked")
+                self.assertEqual(report["diagnostic"]["code"], "HOST-DISPATCH-BLOCKED")
+                self.assertEqual(driver.calls, 0)
+                self.assertTrue(report["actual_facts"]["complete"])
+            with self.assertRaisesRegex(RuntimeError, "clock unavailable"):
+                execute(Mock(side_effect=RuntimeError("clock unavailable")))
+            self.assertEqual(driver.calls, 0)
+            driver._binding = copy.deepcopy(plain(view.document["binding"]))
+            driver._binding["model"]["ref"] = "wrong-model"
+            guard = Mock(return_value=True)
+            report = execute(guard)
+            guard.assert_not_called()
+            self.assertEqual(report["diagnostic"]["code"], "HOST-BINDING-MISMATCH")
+            self.assertEqual(driver.calls, 0)
 
     def test_hash_valid_view_rewrite_is_rejected_by_deterministic_recomputation(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

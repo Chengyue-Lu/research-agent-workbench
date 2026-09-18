@@ -203,6 +203,7 @@ class VersionedSchemaTests(unittest.TestCase):
                 "source_admission",
                 "evaluation_harness_plan",
                 "evaluation_harness_preflight",
+                "evaluation_harness_execution",
                 "system_evaluation_protocol",
                 "task_packet",
             },

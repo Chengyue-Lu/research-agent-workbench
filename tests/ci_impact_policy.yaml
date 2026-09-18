@@ -263,7 +263,7 @@
       "pins": {
         "src/research_workbench/resources.py": "eb0c8900503453386c9a458a7e3f406294cbe749da2bbc2d4a62897d5995787e",
         "src/research_workbench/validation/schemas.py": "6160357a985a8c20b42a0e08ba0760ad95984a732629e77cfe56ae89d560a099",
-        "tests/test_schemas.py": "63fed5380ff7fe925a0edfee15d005a3c51637088f5ae918933dddf17bbd41ff"
+        "tests/test_schemas.py": "6b0d006c06debc32b94c470375bec696977a14cf47dac3161c2fa5ed65dc820b"
       },
       "entrypoints": [
         "SchemaCatalog.__init__",

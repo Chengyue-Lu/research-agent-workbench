@@ -1,0 +1,155 @@
+{
+  "entry_head": "4b3101a7aae10894bbca38facff9f32f68a74b92",
+  "base": "51dc3ab477f21f18ac3829bf553b5b779d49a4fe",
+  "scope": "Local focused candidate bytes; hosted full/coverage remains asynchronous",
+  "candidate_sha256": {
+    "src/research_workbench/evaluation/harness_execution.py": "542cda68d5aac661f01f262a9c311ca30abf2a20b8ed15e3e7147d77e53fb840",
+    "src/research_workbench/evaluation/harness_runtime.py": "7e9ffc2fd7369d6353657152b200ebf96ecb33c2140115a03ea9d55d841f6a8e",
+    "src/research_workbench/execution/host.py": "ce4044c4f59a91b5e6f89f401744957fa0df8b8e07248add0ba9808d6d7ae2c6",
+    "tests/test_evaluation_harness_execution.py": "a33ae8d1427f587bbc6646d02fdc7fe45dcb58ffc76d6f961b27bda79b4e3af8",
+    "tests/test_execution_host.py": "8150763a1420c110cd737aa4502a9a170537c40f2023e1833ebd17d87bc0f0c8"
+  },
+  "coverage": {
+    "src/research_workbench/evaluation/harness_execution.py": {
+      "summary": {
+        "covered_lines": 234,
+        "num_statements": 234,
+        "percent_covered": 100.0,
+        "percent_covered_display": "100",
+        "missing_lines": 0,
+        "excluded_lines": 0,
+        "percent_statements_covered": 100.0,
+        "percent_statements_covered_display": "100",
+        "num_branches": 44,
+        "num_partial_branches": 0,
+        "covered_branches": 44,
+        "missing_branches": 0,
+        "percent_branches_covered": 100.0,
+        "percent_branches_covered_display": "100"
+      },
+      "changed_missing_lines": [],
+      "changed_missing_branches": []
+    },
+    "src/research_workbench/evaluation/harness_runtime.py": {
+      "summary": {
+        "covered_lines": 69,
+        "num_statements": 69,
+        "percent_covered": 100.0,
+        "percent_covered_display": "100",
+        "missing_lines": 0,
+        "excluded_lines": 0,
+        "percent_statements_covered": 100.0,
+        "percent_statements_covered_display": "100",
+        "num_branches": 10,
+        "num_partial_branches": 0,
+        "covered_branches": 10,
+        "missing_branches": 0,
+        "percent_branches_covered": 100.0,
+        "percent_branches_covered_display": "100"
+      },
+      "changed_missing_lines": [],
+      "changed_missing_branches": []
+    },
+    "src/research_workbench/execution/host.py": {
+      "summary": {
+        "covered_lines": 250,
+        "num_statements": 303,
+        "percent_covered": 79.81438515081207,
+        "percent_covered_display": "80",
+        "missing_lines": 53,
+        "excluded_lines": 12,
+        "percent_statements_covered": 82.50825082508251,
+        "percent_statements_covered_display": "83",
+        "num_branches": 128,
+        "num_partial_branches": 30,
+        "covered_branches": 94,
+        "missing_branches": 34,
+        "percent_branches_covered": 73.4375,
+        "percent_branches_covered_display": "73"
+      },
+      "changed_missing_lines": [],
+      "changed_missing_branches": []
+    }
+  },
+  "checks": {
+    "focused": {
+      "passed": 35,
+      "seconds": 578.729
+    },
+    "contracts": {
+      "passed": 37,
+      "seconds": 1.109
+    },
+    "closeout": {
+      "passed": 56,
+      "seconds": 86.944
+    },
+    "repository": "validated=186 errors=0 warnings=0",
+    "package": {
+      "runtime_resources_identical": true,
+      "manifest_sha256": "999d722fcfcd54881ae34003e6d4194205fd53dd7b94acf23afac1f3a50d909f",
+      "installs": [
+        {
+          "merge_eligible": false,
+          "modes": 4,
+          "projections": 0,
+          "python": "3.11.16",
+          "resources": 142,
+          "scaffold_reconstruction": "matched",
+          "scaffold_template": "offline-demo",
+          "schemas": 94,
+          "validation_profile": "installed-runtime",
+          "route": "direct",
+          "isolated": true
+        },
+        {
+          "merge_eligible": false,
+          "modes": 4,
+          "projections": 0,
+          "python": "3.11.16",
+          "resources": 142,
+          "scaffold_reconstruction": "matched",
+          "scaffold_template": "offline-demo",
+          "schemas": 94,
+          "validation_profile": "installed-runtime",
+          "route": "direct",
+          "isolated": false
+        },
+        {
+          "merge_eligible": false,
+          "modes": 4,
+          "projections": 0,
+          "python": "3.11.16",
+          "resources": 142,
+          "scaffold_reconstruction": "matched",
+          "scaffold_template": "offline-demo",
+          "schemas": 94,
+          "validation_profile": "installed-runtime",
+          "route": "sdist-wheel",
+          "isolated": true
+        },
+        {
+          "merge_eligible": false,
+          "modes": 4,
+          "projections": 0,
+          "python": "3.11.16",
+          "resources": 142,
+          "scaffold_reconstruction": "matched",
+          "scaffold_template": "offline-demo",
+          "schemas": 94,
+          "validation_profile": "installed-runtime",
+          "route": "sdist-wheel",
+          "isolated": false
+        }
+      ],
+      "merge_eligible": false
+    }
+  },
+  "evidence_sha256": {
+    "closeout.log": "f6a8fbea82da0f74fed83e56308f4b172873e52dcc8cdfbd4a04e44b24e3c225",
+    "contracts.log": "b9c1a946bee0a0e514f1d5741b1528642a9f633fe6be103c836d3e5e588f0593",
+    "focused.log": "1ba2b2581cb5457b5b1ce94d99cfbd4f855360ecfbfda658f54c044f1464f5c1",
+    "package.json": "3d56608d629cbbde1335932fe40eb27519f9c496638d82c1723ad111438e91e0",
+    "repository.log": "6895861bf5f35b7669baaf95d9caf2b94c3a4e1d5682f29bbc73ba0aa0064633"
+  }
+}

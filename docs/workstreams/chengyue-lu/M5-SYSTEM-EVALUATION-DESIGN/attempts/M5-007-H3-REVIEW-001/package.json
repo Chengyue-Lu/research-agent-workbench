@@ -1,0 +1,59 @@
+{
+  "runtime_resources_identical": true,
+  "manifest_sha256": "999d722fcfcd54881ae34003e6d4194205fd53dd7b94acf23afac1f3a50d909f",
+  "installs": [
+    {
+      "merge_eligible": false,
+      "modes": 4,
+      "projections": 0,
+      "python": "3.11.16",
+      "resources": 142,
+      "scaffold_reconstruction": "matched",
+      "scaffold_template": "offline-demo",
+      "schemas": 94,
+      "validation_profile": "installed-runtime",
+      "route": "direct",
+      "isolated": true
+    },
+    {
+      "merge_eligible": false,
+      "modes": 4,
+      "projections": 0,
+      "python": "3.11.16",
+      "resources": 142,
+      "scaffold_reconstruction": "matched",
+      "scaffold_template": "offline-demo",
+      "schemas": 94,
+      "validation_profile": "installed-runtime",
+      "route": "direct",
+      "isolated": false
+    },
+    {
+      "merge_eligible": false,
+      "modes": 4,
+      "projections": 0,
+      "python": "3.11.16",
+      "resources": 142,
+      "scaffold_reconstruction": "matched",
+      "scaffold_template": "offline-demo",
+      "schemas": 94,
+      "validation_profile": "installed-runtime",
+      "route": "sdist-wheel",
+      "isolated": true
+    },
+    {
+      "merge_eligible": false,
+      "modes": 4,
+      "projections": 0,
+      "python": "3.11.16",
+      "resources": 142,
+      "scaffold_reconstruction": "matched",
+      "scaffold_template": "offline-demo",
+      "schemas": 94,
+      "validation_profile": "installed-runtime",
+      "route": "sdist-wheel",
+      "isolated": false
+    }
+  ],
+  "merge_eligible": false
+}

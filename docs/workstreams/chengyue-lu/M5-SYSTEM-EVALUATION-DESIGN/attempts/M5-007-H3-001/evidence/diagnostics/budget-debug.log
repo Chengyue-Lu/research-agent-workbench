@@ -1,0 +1,24 @@
+test_later_blocked_slice_is_an_arm_post_call_failure (tests.test_evaluation_harness_execution.HarnessExecutionTests.test_later_blocked_slice_is_an_arm_post_call_failure) ... ERROR
+
+======================================================================
+ERROR: test_later_blocked_slice_is_an_arm_post_call_failure (tests.test_evaluation_harness_execution.HarnessExecutionTests.test_later_blocked_slice_is_an_arm_post_call_failure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tests\test_evaluation_harness_execution.py", line 105, in test_later_blocked_slice_is_an_arm_post_call_failure
+    result = self.replay(self.execute(later_blocked=True))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\tests\test_evaluation_harness_execution.py", line 39, in execute
+    return execute_harness(self.f.inputs(), context=self.f.context, ports=self.f.ports(**options),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\src\research_workbench\evaluation\harness_execution.py", line 235, in execute_harness
+    lifecycle = _m11_progress(inputs, context, entry["receipts"], len(slices))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>\src\research_workbench\evaluation\harness_execution.py", line 122, in _m11_progress
+    if (totals["max_seconds"] >= budget["max_seconds"]
+                                 ~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'max_seconds'
+
+----------------------------------------------------------------------
+Ran 1 test in 15.520s
+
+FAILED (errors=1)

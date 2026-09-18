@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from types import MappingProxyType
-from typing import Any, Mapping, Protocol, Sequence
+from typing import Any, Callable, Mapping, Protocol, Sequence
 
 from research_workbench.artifacts.integrity import hash_bytes, resolve_within_root
 from research_workbench.execution.execution_view import (
@@ -435,8 +435,14 @@ def execute_frozen_view(
     clock: HostClock | None = None,
     schema_root: str | Path | None = None,
     closeout_contract: str = "core-execution@0.1.0",
+    dispatch_guard: Callable[[str], bool] | None = None,
 ) -> dict[str, Any]:
-    """Execute exactly once through one pre-bound driver and report facts."""
+    """Execute exactly once through one pre-bound driver and report facts.
+
+    A trusted caller may further restrict dispatch after Host preflight. The
+    guard receives the Host start time and must return exactly True to admit a
+    call. It cannot override any Host check; guard errors propagate unhandled.
+    """
 
     if closeout_contract not in {"core-execution@0.1.0", "skill-execution@1.0.0"}:
         raise ExecutionHostValidationError("unsupported execution closeout contract")
@@ -487,6 +493,9 @@ def execute_frozen_view(
             expected_consumption = selected_skill_consumption(view, schema_root=schema_root)
         except (OSError, ValueError, TypeError, KeyError):
             preflight_code = "HOST-SKILL-CLOSURE-INVALID"
+    if preflight_code is None and dispatch_guard is not None:
+        if dispatch_guard(started_at) is not True:
+            preflight_code = "HOST-DISPATCH-BLOCKED"
     if preflight_code is not None:
         completed, completed_at = _observe_time(trusted_clock, "completed_at")
         if completed < started:
