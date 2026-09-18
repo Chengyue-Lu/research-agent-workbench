@@ -70,3 +70,9 @@ and [WORKLOG](WORKLOG.md). Test fixtures are synthetic structural evidence, not 
 | DRIFT / clock and trust | Explicit caller `preflight_checked_at`, external replay expected time, runtime availability checks, full input and validator pin rechecks; missing callback, future/stale records and self-upgraded results fail | Trusted admission verifier stays external; use-boundary execution checks belong to H3 |
 | LEAK / plan identity | Exact public input pins, private artifact hash alias rejection, bounded deterministic slots and cross-process order vector; compilation has no Provider/Tool/Host calls | Planned identities do not attest fresh actual sessions; H3–H5 remain pending |
 | TRACE / acceptance | Formal Task snapshot and retained tool evidence; incomplete capture is declared with its warning | Exact-head CI and cross-owner review; Task stays IN_PROGRESS |
+
+## PR89 H3 dispatch deadline review（2026-09-18）
+
+| Risk / seam | Implemented control and adversarial evidence | Remaining acceptance |
+|---|---|---|
+| H3 / inter-slice deadline | Optional Host guard can only narrow dispatch after Host preflight; trusted boundary time is compared with the first Host start and frozen Protocol budget. Zero-call blocked Host/Receipt and per-slice observations survive cold replay. A3/A4 gap exhaustion, exact deadline, Host preparation delay and altered/missing time evidence are regression targets | Local candidate evidence in [review Attempt](attempts/M5-007-H3-REVIEW-001/README.md); new exact-head CI and cross-owner rereview remain required for acceptance |

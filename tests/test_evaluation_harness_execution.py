@@ -8,6 +8,7 @@ import sys
 import tempfile
 import unittest
 from dataclasses import replace
+from datetime import datetime, timedelta
 from pathlib import Path
 from unittest.mock import patch
 
@@ -19,6 +20,7 @@ from research_workbench.evaluation.pins import EvaluationValidationError
 from research_workbench.execution import GenericCloseoutValidationError
 from research_workbench.validation.document_kinds import infer_document_kind
 from tests.harness_execution_fixtures import ExecutionFixture, FixedClock, LocalDriver, LocalProvider
+from tests.system_evaluation_fixtures import AT
 
 
 class HarnessExecutionTests(unittest.TestCase):
@@ -122,6 +124,67 @@ class HarnessExecutionTests(unittest.TestCase):
         self.assertEqual(len(row["receipts"]), 1)
         self.assertEqual(len(self.f.drivers), 1)
 
+    def test_slice_gap_exhausts_deadline_for_core_and_skill_without_second_call(self):
+        from research_workbench.evaluation.harness_runtime import replay_slice
+
+        for skill, seconds in ((False, 120), (True, 121)):
+            with self.subTest(skill=skill, seconds=seconds):
+                if skill:
+                    self.setUp()
+                clock = FixedClock()
+
+                def delayed_replay(*args, **kwargs):
+                    result = replay_slice(*args, **kwargs)
+                    if kwargs["skill"] == skill and kwargs["attempt_id"].endswith("-S0"):
+                        clock.value = (datetime.fromisoformat(AT) + timedelta(seconds=seconds)).isoformat()
+                    return result
+
+                with patch("research_workbench.evaluation.harness_execution.replay_slice", delayed_replay):
+                    ref = execute_harness(self.f.inputs(), context=self.f.context, ports=self.f.ports(),
+                        clock=clock, admission_verifier=lambda _: True)
+                with patch.object(LocalDriver, "execute", side_effect=AssertionError("driver called")), \
+                     patch.object(LocalProvider, "generate", side_effect=AssertionError("provider called")):
+                    result = self.replay(ref)
+                row = self.f.doc(result["attempt_refs"][-1]["path"])
+                self.assertEqual(result["status"], "stopped")
+                self.assertEqual(row["arm_id"], "mode-candidate-skill" if skill else "mode-no-skill")
+                self.assertEqual(row["lifecycle"], "post-call-failed")
+                self.assertEqual([d.calls for d in self.f.drivers if d.skill == skill], [1, 0])
+                receipts = [self.f.doc(r["path"]) for r in row["receipts"]]
+                self.assertEqual([r["status"] for r in receipts], ["completed", "blocked"])
+                host = self.f.doc(receipts[-1]["host_report_ref"]["path"])
+                self.assertEqual(host["diagnostic"]["code"], "HOST-DISPATCH-BLOCKED")
+                self.assertEqual(host["actual_facts"]["provider_invocations"], 0)
+                self.assertIsNone(row["retry_class"])
+
+    def test_host_preparation_time_is_checked_at_actual_driver_dispatch(self):
+        from research_workbench.execution.host import load_runtime_bundle
+
+        clock, loads = FixedClock(), []
+
+        def delayed_load(*args, **kwargs):
+            bundle = load_runtime_bundle(*args, **kwargs)
+            loads.append(bundle)
+            if len(loads) == 2:
+                clock.value = (datetime.fromisoformat(AT) + timedelta(seconds=121)).isoformat()
+            return bundle
+
+        with patch("research_workbench.execution.host.load_runtime_bundle", delayed_load):
+            ref = execute_harness(self.f.inputs(), context=self.f.context, ports=self.f.ports(),
+                clock=clock, admission_verifier=lambda _: True)
+        result = self.replay(ref)
+        self.assertEqual(result["status"], "stopped")
+        self.assertEqual([d.calls for d in self.f.drivers], [1, 0])
+        row = self.f.doc(result["attempt_refs"][0]["path"])
+        host = self.f.doc(self.f.doc(row["receipts"][-1]["path"])["host_report_ref"]["path"])
+        self.assertEqual(datetime.fromisoformat(host["started_at"].replace("Z", "+00:00")), datetime.fromisoformat(AT))
+        # A hash-consistent altered observation cannot justify this blocked Host.
+        row["dispatch_checks"][-1]["checked_at"] = AT
+        result["attempt_refs"][0] = self.f.write(result["attempt_refs"][0]["path"], row)
+        forged = self.f.write(ref["path"], result)
+        with self.assertRaisesRegex(EvaluationValidationError, "dispatch decision"):
+            self.replay(forged)
+
     def test_driver_exception_preserves_unfinished_journal_and_host_trace(self):
         with self.assertRaises(GenericCloseoutValidationError):
             self.execute(exception=True)
@@ -214,9 +277,28 @@ class HarnessReplayTests(unittest.TestCase):
             self.replay(ref)
 
     def test_completed_arm_cannot_drop_a_required_slice(self):
-        ref = self.change_entry(lambda e: e["receipts"].pop())
+        ref = self.change_entry(lambda e: (e["receipts"].pop(), e["dispatch_checks"].pop()))
         with self.assertRaisesRegex(EvaluationValidationError, "omits required slices"):
             self.replay(ref)
+
+    def test_dispatch_observation_is_required_and_bounded_by_host_times(self):
+        cases = (
+            (lambda e: e["dispatch_checks"].pop(), "coverage mismatch"),
+            (lambda e: e["dispatch_checks"].__setitem__(0, None), "observation missing"),
+            (lambda e: e["dispatch_checks"][0].update(extra=True), "fields differ"),
+            (lambda e: e["dispatch_checks"][0].update(checked_at="2020-01-01T00:00:00Z"), "clock regressed"),
+            (lambda e: e["dispatch_checks"][0].update(checked_at="2030-01-01T00:00:00Z"), "follows Host completion"),
+        )
+        original = self.f.doc(self.good_ref["path"])
+        entry_ref = original["attempt_refs"][0]
+        entry = self.f.doc(entry_ref["path"])
+        for mutate, message in cases:
+            with self.subTest(message=message):
+                self.f.write(entry_ref["path"], entry)
+                self.f.write(self.good_ref["path"], original)
+                ref = self.change_entry(mutate)
+                with self.assertRaisesRegex(EvaluationValidationError, message):
+                    self.replay(ref)
 
     def test_attempt_identity_cannot_be_replaced(self):
         ref = self.change_entry(lambda e: e["slot"].update(attempt_id="OTHER-ATTEMPT"))

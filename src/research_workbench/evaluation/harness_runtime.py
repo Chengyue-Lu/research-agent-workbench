@@ -50,7 +50,8 @@ def load_slice(inputs, binding):
     return bundle, view
 
 
-def execute_slice(inputs, binding, *, attempt_id, destination, driver_factory, clock, skill):
+def execute_slice(inputs, binding, *, attempt_id, destination, driver_factory, clock, skill,
+                  dispatch_guard):
     """The supplied Driver owns actual operations and contemporaneous facts.
 
     It receives the frozen View, an Attempt recorder and a fresh output directory;
@@ -83,6 +84,7 @@ def execute_slice(inputs, binding, *, attempt_id, destination, driver_factory, c
     driver = driver_factory(view, recorder, destination)
     host = execute_frozen_view(view, driver, report_id="HOST-" + attempt_id,
         attempt_id=attempt_id, clock=clock, schema_root=inputs.catalog.root,
+        dispatch_guard=dispatch_guard,
         closeout_contract=SKILL_CLOSEOUT_CONTRACT if skill else "core-execution@0.1.0")
     host_ref = persist(inputs.root, destination / "host.json", host)
     recorder.record_attempt_status(host["status"], reason="Synthetic capability-slice execution")

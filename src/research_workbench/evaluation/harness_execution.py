@@ -126,6 +126,40 @@ def _m11_progress(inputs, context, receipt_refs, required):
     return "completed" if full else "in-progress"
 
 
+def _m11_window(inputs, context, receipt_refs, started_at):
+    """Use one arm origin, including time spent outside completed Host calls."""
+    started = timestamp(started_at)
+    origin, previous = started, started
+    if receipt_refs:
+        first = inputs.read(inputs.read(receipt_refs[0])["host_report_ref"])
+        last = inputs.read(inputs.read(receipt_refs[-1])["host_report_ref"])
+        origin, previous = timestamp(first["started_at"]), timestamp(last["completed_at"])
+    budget = inputs.read(context.expected_protocol_ref)["execution_time_budget_seconds"]
+    return origin, previous, budget
+
+
+def _m11_dispatch(window, started_at, checked_at):
+    origin, previous, budget = window
+    started, checked = timestamp(started_at), timestamp(checked_at)
+    require(checked >= started >= previous, "Harness dispatch clock regressed between calls")
+    return (checked - origin).total_seconds() < budget
+
+
+def _inspect_dispatch(inputs, context, receipt_refs, host, check):
+    blocked = host["execution_phase"] == "preflight-blocked"
+    deadline_blocked = host.get("diagnostic", {}).get("code") == "HOST-DISPATCH-BLOCKED"
+    if check is None:
+        require(blocked and not deadline_blocked, "Harness dispatch observation missing")
+        return
+    require(set(check) == {"checked_at"}, "Harness dispatch observation fields differ")
+    window = _m11_window(inputs, context, receipt_refs, host["started_at"])
+    allowed = _m11_dispatch(window, host["started_at"], check["checked_at"])
+    require(timestamp(check["checked_at"]) <= timestamp(host["completed_at"]),
+            "Harness dispatch observation follows Host completion")
+    require((allowed and not blocked) or (not allowed and blocked and deadline_blocked),
+            "Harness dispatch decision differs from the frozen arm deadline")
+
+
 def _inspect(inputs, context, preflight, case, arm_id, slot, entry):
     """Derive lifecycle and retry class only after independent receipt replay."""
     destination = _destination(inputs, case, slot)
@@ -134,6 +168,7 @@ def _inspect(inputs, context, preflight, case, arm_id, slot, entry):
     require(inputs.read(entry["started_ref"]) == {"block_index": entry["block_index"],
             "arm_id": arm_id, "slot": plain(slot)}, "Harness started marker differs from retained Attempt")
     if arm_id in BASELINE_ARMS:
+        require(entry["dispatch_checks"] == [], "baseline cannot carry M11 dispatch observations")
         require(len(entry["receipts"]) == 1, "baseline requires exactly one Receipt")
         envelope_ref = entry["envelope_ref"]
         require(inputs.read(envelope_ref) == _envelope(inputs, context, preflight, case, arm_id, slot),
@@ -156,12 +191,16 @@ def _inspect(inputs, context, preflight, case, arm_id, slot, entry):
     require(entry["envelope_ref"] is None, "M11 arm cannot substitute a baseline envelope")
     slices = _slices(inputs, preflight, case, arm_id)
     require(0 < len(entry["receipts"]) <= len(slices), "Harness slice coverage mismatch")
+    require(len(entry["dispatch_checks"]) == len(entry["receipts"]),
+            "Harness dispatch observation coverage mismatch")
     lifecycle = "in-progress"
     for index, receipt_ref in enumerate(entry["receipts"]):
         require(lifecycle == "in-progress", "Harness continued after a failed capability slice or exhausted budget")
         replay_slice(inputs, slices[index], receipt_ref,
             attempt_id=f"{slot['attempt_id']}-S{index}", destination=destination / str(index),
             skill=arm_id == "mode-candidate-skill", not_before=context.expected_preflight_checked_at)
+        host = inputs.read(inputs.read(receipt_ref)["host_report_ref"])
+        _inspect_dispatch(inputs, context, entry["receipts"][:index], host, entry["dispatch_checks"][index])
         lifecycle = _m11_progress(inputs, context, entry["receipts"][:index + 1], len(slices))
     require(lifecycle != "in-progress", "Harness completed arm omits required slices")
     return lifecycle, None
@@ -208,7 +247,8 @@ def execute_harness(inputs: EvaluationInputs, *, context: HarnessContext, ports:
                 identity = {"block_index": block_index, "arm_id": arm_id, "slot": plain(slot)}
                 sequence = len(entries)
                 started_ref = persist(inputs.root, directory / f"{sequence:06d}-started.json", identity)
-                entry = {**identity, "receipts": [], "envelope_ref": None, "started_ref": started_ref}
+                entry = {**identity, "receipts": [], "dispatch_checks": [],
+                         "envelope_ref": None, "started_ref": started_ref}
                 if arm_id in BASELINE_ARMS:
                     entry["envelope_ref"] = persist(inputs.root, directory / f"{sequence:06d}-envelope.json",
                         _envelope(inputs, context, preflight, case, arm_id, slot))
@@ -226,10 +266,24 @@ def execute_harness(inputs: EvaluationInputs, *, context: HarnessContext, ports:
                     slices = _slices(inputs, preflight, case, arm_id)
                     for index, binding in enumerate(slices):
                         inputs.recheck()
+                        check = None
+
+                        def dispatch_guard(started_at):
+                            nonlocal check
+                            # Read pinned inputs before observing time at the actual
+                            # Host-to-Driver boundary; replay uses the same derivation.
+                            window = _m11_window(inputs, context, entry["receipts"], started_at)
+                            checked_at = clock.now().isoformat()
+                            allowed = _m11_dispatch(window, started_at, checked_at)
+                            check = {"checked_at": checked_at}
+                            return allowed
+
                         receipt_ref = execute_slice(inputs, binding, attempt_id=f"{slot['attempt_id']}-S{index}",
                             destination=destination / str(index), clock=clock, skill=skill,
+                            dispatch_guard=dispatch_guard,
                             driver_factory=lambda *args: fresh(ports.skill_driver if skill else ports.core_driver, *args))
                         entry["receipts"].append(receipt_ref)
+                        entry["dispatch_checks"].append(check)
                         replay_slice(inputs, binding, receipt_ref,
                             attempt_id=f"{slot['attempt_id']}-S{index}", destination=destination / str(index), skill=skill,
                             not_before=context.expected_preflight_checked_at)
@@ -284,7 +338,8 @@ def replay_harness(inputs: EvaluationInputs, result_ref, *, context: HarnessCont
                         "Harness journal order substitution")
                 entry = inputs.read(ref)
                 require(set(entry) == {"block_index", "arm_id", "slot", "receipts", "envelope_ref",
-                                       "started_ref", "lifecycle", "retry_class"}, "Harness Attempt fields differ")
+                                       "started_ref", "lifecycle", "retry_class", "dispatch_checks"},
+                        "Harness Attempt fields differ")
                 require(entry["started_ref"]["path"] ==
                         (directory / f"{cursor:06d}-started.json").relative_to(inputs.root).as_posix(),
                         "Harness started marker order substitution")

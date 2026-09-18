@@ -1,6 +1,6 @@
 # M5-007 H3：四臂 synthetic execution
 
-更新：2026-09-17。Owner：路诚钺。Execution 接口复核：黄毅。风险：R2。
+更新：2026-09-18。Owner：路诚钺。Execution 接口复核：黄毅。风险：R2。
 
 H1/H2 已由 PR86 合入 `develop@51dc3ab477f21f18ac3829bf553b5b779d49a4fe`。
 按用户 2026-09-17 的后续授权，PR89 将 H3 独立提交迁移到该基线，并转为正式 R2 feature PR。
@@ -20,6 +20,13 @@ H1/H2 已由 PR86 合入 `develop@51dc3ab477f21f18ac3829bf553b5b779d49a4fe`。
   目录和文件 exclusive-create，run identity 与 frozen Attempt identity 均不能重复使用。
 - 所有 M11 slice 累计使用同一 arm 的冻结预算，耗尽后停止后续调用；累计超限按实际 facts 记为
   post-call failure。已执行 slice 后再遇 preflight block 时，整臂同样保留 post-call failure。
+- Host 完成自身 preflight 后、调用 Driver 前，通过可选的可信 `dispatch_guard` 再收紧调用条件。
+  Harness 以首个 Host 的 `started_at` 为整臂时间原点，在该边界读取可信当前时间；等于或超过
+  Protocol deadline 时生成零调用的 `HOST-DISPATCH-BLOCKED` Host/Receipt。准备、归档和回放
+  间隙计入同一 deadline。guard 不能覆盖 Host 拒绝，异常保持未完成现场。
+- Attempt 的 `dispatch_checks` 与 M11 Receipts 一一对应，记录实际边界的 `checked_at`；Host
+  自身 preflight 已拒绝时对应项为 null，baseline 为空数组。cold replay 从首个 Host、冻结预算、
+  每个 Host 的时间区间与该观察独立重算许可，拒绝缺失、时钟倒退、区间外时间或与 Host 不符的决定。
 - 每次 dispatch 前保留 started marker；执行后重新 replay Receipt，再保留 finished record。
   失败停止后保留已有全部记录；异常或 capture 不完整时保留 started marker 与已有 Host/Trace，不能生成有效的完成记录。
 
@@ -47,4 +54,6 @@ Attempt/retry 替换、漏记录、重复 run/Driver、越界目录和外层可�
 检查按当前 coverage policy 执行；结果写入 [H3 Attempt Archive](attempts/M5-007-H3-001/README.md)。
 
 不改变 Runtime 所有权、treatment、Resolver 选择权和 Human authority；若现有接口不能闭合证据，
-保留失败并停止该 run。cross-owner review 与 CI 是后续 R2 接受条件；本次授权范围为 rebase 与转为正式 PR。
+保留失败并停止该 run。cross-owner review 与 CI 是后续 R2 接受条件；2026-09-18 后续授权为修复
+PR89 review comment 并推送原 PR，无需等待远端 CI。修复记录见
+[review Attempt](attempts/M5-007-H3-REVIEW-001/README.md)。

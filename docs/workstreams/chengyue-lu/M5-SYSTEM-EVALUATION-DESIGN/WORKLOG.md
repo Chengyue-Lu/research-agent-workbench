@@ -207,3 +207,18 @@ PR86 已合入 `develop@51dc3ab477f21f18ac3829bf553b5b779d49a4fe`。按用户授
 测试文件 pin。Task 定义和状态与 develop 相同。详情见
 [H3 integration record](attempts/M5-007-H3-REBASE-001/README.md)；新候选证据与正式 review 状态
 以 PR89 的 exact-head 检查为准。
+
+## PR89 dispatch deadline review 修复（2026-09-18）
+
+用户授权修复 review 并推送原 PR，无需等待远端 CI。进入候选为 `4b3101a`，develop 仍为
+`51dc3ab`。原 P2 指出 slice 间归档、回放和准备时间可耗尽整臂预算，却仍启动下一个 Driver。
+
+修复将可信时间检查放到 Host 完成 preflight 后、调用 Driver 前；所有 slice 共用首个 Host
+起点与 Protocol 预算。超时保留零调用的 blocked Host/Receipt；Harness 的每 slice dispatch
+观察与 Host 区间、实际决定和冻结预算独立交叉验证。Host 可选 guard 只能收紧调用许可，不能
+覆盖已有拒绝，异常保留未完成现场。A3/A4 的 deadline 边界、Host 准备延迟、时间证据篡改和
+原有完成/失败/retry/cold replay 纳入本地检查，详见
+[review Attempt](attempts/M5-007-H3-REVIEW-001/README.md)。
+
+原始 H3 与 rebase evidence 保持冻结。本地检查绑定候选源码 hashes，新 head 的远端 CI 与
+cross-owner rereview 按 PR89 独立进行；本次只提交修复，M5-007 仍 IN_PROGRESS。
