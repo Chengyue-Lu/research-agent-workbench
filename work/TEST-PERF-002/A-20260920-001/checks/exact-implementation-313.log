@@ -1,0 +1,19 @@
+test_real_git_archive_routing_keeps_execution_and_ignores_worktree_rewrite (tests.test_ci_domain_audit.DomainGitTests.test_real_git_archive_routing_keeps_execution_and_ignores_worktree_rewrite) ... ok
+test_declarations_cannot_add_authority_or_hide_unknown_protocols (tests.test_ci_domain_audit.DomainModelTests.test_declarations_cannot_add_authority_or_hide_unknown_protocols) ... ok
+test_outcomes_remain_bound_and_missing_skipped_are_inconclusive (tests.test_ci_domain_audit.DomainModelTests.test_outcomes_remain_bound_and_missing_skipped_are_inconclusive) ... ok
+test_overlapping_runtime_document_is_not_collapsed_into_docs (tests.test_ci_domain_audit.DomainModelTests.test_overlapping_runtime_document_is_not_collapsed_into_docs) ... ok
+test_adr_numbers_are_unique (tests.test_documentation.DocumentationTests.test_adr_numbers_are_unique) ... ok
+test_document_surface_authorities_exist (tests.test_documentation.DocumentationTests.test_document_surface_authorities_exist) ... ok
+test_execution_runtime_audit_keeps_private_sources_out_of_git (tests.test_documentation.DocumentationTests.test_execution_runtime_audit_keeps_private_sources_out_of_git) ... ok
+test_first_contact_surfaces_do_not_own_internal_milestones (tests.test_documentation.DocumentationTests.test_first_contact_surfaces_do_not_own_internal_milestones) ... ok
+test_getting_started_uses_recommended_not_replay_path (tests.test_documentation.DocumentationTests.test_getting_started_uses_recommended_not_replay_path) ... ok
+test_internal_markdown_links_resolve (tests.test_documentation.DocumentationTests.test_internal_markdown_links_resolve) ... ok
+test_no_skill_path_requires_execution_view_without_assignment (tests.test_documentation.DocumentationTests.test_no_skill_path_requires_execution_view_without_assignment) ... ok
+test_public_projection_documentation_and_build_closure (tests.test_documentation.DocumentationTests.test_public_projection_documentation_and_build_closure) ... ok
+test_recovery_gate_separates_authority_from_implementation_evidence (tests.test_documentation.DocumentationTests.test_recovery_gate_separates_authority_from_implementation_evidence) ... ok
+test_stable_examples_do_not_use_retired_skill_packages (tests.test_documentation.DocumentationTests.test_stable_examples_do_not_use_retired_skill_packages) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 4.988s
+
+OK

@@ -1,0 +1,11 @@
+{
+  "blocked": false,
+  "risks": [
+    {
+      "code": "TRACE-CAPTURE-DELAYED",
+      "level": "warning",
+      "message": "[capture-gap] trace declares incomplete or delayed capture"
+    }
+  ],
+  "correction": "Initial trace used an unsupported stream enum; original bytes/check result retained in initial-invalid-trace.zip. Corrected to the schema-defined events stream and rebound ledger hash."
+}

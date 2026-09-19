@@ -120,3 +120,6 @@ python .github/scripts/ci_domain_audit.py --plan ci-plan.json --output ci-domain
 可另传 `--receipt execution-test-results.json`，显示具名失败/缺证据、模块 case 耗时合计和
 缺失耗时 ID。离线文件不能建立 GitHub 来源认证；该工具不将“接收到 receipt”宣称为执行证明。
 2A 不产生 candidate selected/skipped，也不估算缩时；这些比较与实际 coverage/smoke 对照在 2B 交付。
+
+五个真实 PR 回放、专项覆盖、独立审查及 PR90 成本证据见
+[A-20260920-001](../../../../work/TEST-PERF-002/A-20260920-001/RESULTS.md)。

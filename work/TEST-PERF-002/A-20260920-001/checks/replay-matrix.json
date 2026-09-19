@@ -1,0 +1,147 @@
+{
+  "base": "171d4654f88e926f239cdf25bc8168109b81f391",
+  "cases": [
+    {
+      "accepted_execution_unchanged": true,
+      "binding": {
+        "base": "690a9f8c89c32400bbc57b0781ef9b43205894db",
+        "head": "09f96193845ee0e73a215d87ba188b5aa5569704",
+        "merge_base": "690a9f8c89c32400bbc57b0781ef9b43205894db",
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "target": "09f96193845ee0e73a215d87ba188b5aa5569704"
+      },
+      "change_count": 20,
+      "domains": [
+        "ci-governance",
+        "documentation-archive"
+      ],
+      "execution_authority": false,
+      "missing_consumer_records": [
+        "cli-git-head-observation",
+        "validation-capability-root-scan",
+        "validation-document-instances",
+        "validation-schema-catalog"
+      ],
+      "plan_id": "c8abfac35dc9d9b5df283bfafa36d6b1f8b6ad4a2dfc726360a1779b04401ddd",
+      "pr": 65,
+      "report_id": "84d141b6c0e0d43ab1c9daf05d3f173524589d298291b00c1e0c83bc080ea664",
+      "source_plan": "work/TEST-PERF-002/A-20260916-009/checks/corpus-after/pr65-plan.json",
+      "source_plan_sha256": "b03ffd06632f20a74ed7579580ceec473cdd59ade90fd63afd474245fc20b948",
+      "wall_seconds": 3.036826
+    },
+    {
+      "accepted_execution_unchanged": true,
+      "binding": {
+        "base": "11c3b57dfbf8af0dc2587fc421d097e2544941c3",
+        "head": "0f6da949c9d89d4d5e0cea9cffad1e85465bb52c",
+        "merge_base": "11c3b57dfbf8af0dc2587fc421d097e2544941c3",
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "target": "0f6da949c9d89d4d5e0cea9cffad1e85465bb52c"
+      },
+      "change_count": 33,
+      "domains": [
+        "documentation-archive"
+      ],
+      "execution_authority": false,
+      "missing_consumer_records": [
+        "cli-git-head-observation",
+        "validation-capability-root-scan",
+        "validation-document-instances",
+        "validation-schema-catalog"
+      ],
+      "plan_id": "f36fe6e3606f23f523a0e740d4e718d51efdcfb5bdfdd7e73a2583b63cf6a4fd",
+      "pr": 68,
+      "report_id": "c0796391384cc58a0294db7444ed438dec9b14e813e73e898739cddc38e57523",
+      "source_plan": "work/TEST-PERF-002/A-20260916-009/checks/corpus-after/pr68-plan.json",
+      "source_plan_sha256": "9646b57a243a77a861c123b34d42a02705563006183ed44a8fcd03813e93600f",
+      "wall_seconds": 3.635789
+    },
+    {
+      "accepted_execution_unchanged": true,
+      "binding": {
+        "base": "b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22",
+        "head": "dfe3165a90ebcef99d107aef8e790bf7abc0c13f",
+        "merge_base": "b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22",
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "target": "dfe3165a90ebcef99d107aef8e790bf7abc0c13f"
+      },
+      "change_count": 24,
+      "domains": [
+        "documentation-archive"
+      ],
+      "execution_authority": false,
+      "missing_consumer_records": [
+        "cli-git-head-observation",
+        "validation-capability-root-scan",
+        "validation-document-instances",
+        "validation-schema-catalog"
+      ],
+      "plan_id": "83b69f1fccc8eefe35efc342027ab283d92f7253c537e9eeb0478a9bfd2c7137",
+      "pr": 84,
+      "report_id": "12fb4c54c8acd84daea67abf69b025205bf10df9606ee27142725a31cfb76813",
+      "source_plan": "work/TEST-PERF-002/A-20260916-009/checks/corpus-after/pr84-plan.json",
+      "source_plan_sha256": "285b2031bb61d23868e6fef2858976aa668fc8dc29868ddff38bc76e09262523",
+      "wall_seconds": 6.383277
+    },
+    {
+      "accepted_execution_unchanged": true,
+      "binding": {
+        "base": "0d4a1d00a4c32ca9b822df6482a95920e7c21b1b",
+        "head": "b53a391ece3a4be7207c00c636dc9e1570e71473",
+        "merge_base": "0d4a1d00a4c32ca9b822df6482a95920e7c21b1b",
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "target": "b53a391ece3a4be7207c00c636dc9e1570e71473"
+      },
+      "change_count": 52,
+      "domains": [
+        "ci-governance",
+        "documentation-archive",
+        "evaluation",
+        "release-runtime",
+        "validation-catalog"
+      ],
+      "execution_authority": false,
+      "missing_consumer_records": [
+        "cli-git-head-observation",
+        "validation-capability-root-scan",
+        "validation-document-instances",
+        "validation-schema-catalog"
+      ],
+      "plan_id": "002d470b28de19788c17040a0744d1368977cdb93f6ec14e2fef07ca07767fd1",
+      "pr": 86,
+      "report_id": "c75efabb1bf89de5c1726ccf2770e077cb61cb493fbf1041d668450de988e17a",
+      "source_plan": "work/TEST-PERF-002/A-20260916-009/checks/corpus-after/pr86-plan.json",
+      "source_plan_sha256": "bd7d486ca9ff3c7f4fab1f31535fdd032d8fbe2768bf7dd5fe9267c1d89d5ea3",
+      "wall_seconds": 6.923491
+    },
+    {
+      "accepted_execution_unchanged": true,
+      "binding": {
+        "base": "171d4654f88e926f239cdf25bc8168109b81f391",
+        "head": "d9042fd1611f152573a7d2cae176cb1e1ec70065",
+        "merge_base": "171d4654f88e926f239cdf25bc8168109b81f391",
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "target": "737fb4198eac1e51f42da2f2204971ef96ec5ace"
+      },
+      "change_count": 61,
+      "domains": [
+        "ci-governance",
+        "documentation-archive",
+        "evaluation",
+        "release-runtime",
+        "validation-catalog"
+      ],
+      "execution_authority": false,
+      "missing_consumer_records": [],
+      "plan_id": "8ca44bba92c53e16a9bcf324b191f3abcc9adb68e142f2e2e425ee43e15527ea",
+      "pr": 90,
+      "report_id": "ac3f854a5d044c3f1be22593dee7051c6534ea3d6659adc0e95d343e7116626d",
+      "source_plan": "pr90/artifacts/ci-plan/ci-plan.json",
+      "source_plan_sha256": "4a96b60efe8b5f15bfa686f0d490c1c54aeb7cdaebc62f461ec8898bd44a4e21",
+      "wall_seconds": 8.429146
+    }
+  ],
+  "execution_rerun": false,
+  "model_sha256": "8f8c2ab444e8d158a1f93cd8b8b1e209e61fb2e9c8fdee67b1a25764d9e6b0e3",
+  "speedup_proved": false
+}
