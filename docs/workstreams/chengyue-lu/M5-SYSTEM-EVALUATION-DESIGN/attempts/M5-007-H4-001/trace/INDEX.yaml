@@ -1,0 +1,91 @@
+schema_version: 0.1.0
+trace_id: TRACE-M5-007-H4-001
+task_id: M5-007
+task_revision: 1
+attempt_id: M5-007-H4-001
+archive_root: trace
+baseline: rwb-agent-trace-v0.1
+owner_actor_id: codex-m5-h4a
+owner: Chengyue-Lu
+attempt_status: incomplete
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: e14a2de3653f99353c2c83bf2ae1448ea2b3c9405e2490a9035cf340a8e32641
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 466f1e9f8116fcfc0733f3eaff3c1d70a0f4bc7bc7ca436018778c771f18f92e
+read_allowlist:
+- .github/**
+- .rwb/**
+- AGENTS.md
+- docs/**
+- schemas/**
+- src/research_workbench/**
+- tests/**
+write_scope:
+- .rwb/**
+- docs/STATUS.md
+- docs/implementation/**
+- docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/**
+- schemas/v0.1.0/evaluation-harness-evidence.schema.json
+- src/research_workbench/evaluation/harness_evidence.py
+- src/research_workbench/validation/**
+- tests/**
+tool_allowlist:
+- apply_patch
+- shell
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 7153c2ec32245eee8ffd97485c0a286d0bc0aefb8f270849b15542da28292e07
+  event_count: 23
+tool_event_refs:
+- path: tool-events/delayed-h4a-0001-succeeded.json
+  sha256: 6ccc41e275a0b8662d4f3c3e7d0695117d3c98d90b6a86f595775a6ef47eb0ad
+- path: tool-events/delayed-h4a-0002-succeeded.json
+  sha256: 4ae2c1638042d7829429f22dcbd187013cb6ca70e8c6a66ba188db050c73e127
+- path: tool-events/delayed-h4a-0003-failed.json
+  sha256: 7954ff366d2a680790c2cf99606bad2a2c2fbe367ae4bb14213569cee7032bbb
+- path: tool-events/delayed-h4a-0004-succeeded.json
+  sha256: 58d01c66ef2c55938013106e56cc7fa1f418656108e9308deb0ed7ddd75c9b74
+- path: tool-events/delayed-h4a-0005-attempted.json
+  sha256: 270d33bbb9e49257abd274e9f56c4592ea961e5ab629b3793cd6af78c08ddd3f
+- path: tool-events/delayed-h4a-0006-attempted.json
+  sha256: be82e10dcd9fb6e1b3fb90805b463d9a7ec9ef63e51d11c0f2b2b8510e2e7c92
+- path: tool-events/delayed-h4a-0007-succeeded.json
+  sha256: b60cd6e711e4c560feab402df9ed0e5808825e8623883f4a3d91b4ebcb296724
+- path: tool-events/delayed-h4a-0008-attempted.json
+  sha256: 0fe167353056f94989a5b72bb51b4bf483a3a7a7d9dd5dd2c038f63d06ac368b
+- path: tool-events/delayed-h4a-0009-attempted.json
+  sha256: d67fd2704204d0c311f68dc1299fdd48fa642eed258ae3637ebac700505beb05
+- path: tool-events/delayed-h4a-0010-attempted.json
+  sha256: fee9e546981752c1b709dc19ec43dd88ae5541de4b25cc60099395fa0317d504
+- path: tool-events/delayed-h4a-0011-succeeded.json
+  sha256: b18b4fcd864efb10e65bb20f10cdc182328e8b2ca957597a72e2184c9e7619f9
+- path: tool-events/delayed-h4a-0012-succeeded.json
+  sha256: 0e3e8226e7eb6631d6999b46c27f3d30f694f3c5b026c2b523e7e74016b81ad6
+- path: tool-events/delayed-h4a-0013-attempted.json
+  sha256: d10081cb5390ad63d8e5ef476024164f52cde6cb8a2eeadace466a666d483812
+- path: tool-events/delayed-h4a-0014-succeeded.json
+  sha256: ec79bde223eb2ff3499e469512cb506bbad4c85166f0a2c2b42d11cd19c101aa
+- path: tool-events/delayed-h4a-0015-succeeded.json
+  sha256: 7e65fa03125ae51cf4bc86b8bdd4ebd06803f40d86f2cd02af442554769d9fa2
+- path: tool-events/delayed-h4a-0016-attempted.json
+  sha256: 21d079fd8aa2148537a00e78e016db8e5a0b221c8f7bfbc6984202de22e18a4b
+- path: tool-events/delayed-h4a-0017-succeeded.json
+  sha256: 15800fd3d9526105880fd62d796882b29f6dcf69e2ab1686b5540748089e397f
+- path: tool-events/delayed-h4a-0018-succeeded.json
+  sha256: 7c791f8219df9b875fb035c6742582db117d5609b26be525444d7e875cf1a1d8
+- path: tool-events/delayed-h4a-0019-succeeded.json
+  sha256: 45feb7a8808be2db4d2cbbb6d59daf1d5a7f0bf95992ad30d614f83366a5af60
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: messages
