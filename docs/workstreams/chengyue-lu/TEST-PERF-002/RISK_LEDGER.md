@@ -173,3 +173,17 @@ for cross-owner review. Quality thresholds, exclusions, product contracts and re
 - Every final-plan coverage module must be checked after archive inclusion. A handpicked
   list of critical modules cannot establish complete candidate coverage, and successful
   test execution or a selection witness cannot substitute for a failed impact gate.
+
+## Issue #87 domain model, 2A
+
+- Domain patterns route review ownership and preserve overlapping roles. They do not
+  authorize skipping another domain, a shared reader, or a whole catalog consumer.
+- The offline audit preserves exact accepted execution fields, reports absent historical
+  consumer records, and records unknown/non-blob inputs without reading foreign Git objects.
+- Supplied receipts retain plan/target binding but do not establish GitHub authentication;
+  missing outcomes/durations remain visible. Cost sums are not critical-path savings.
+- Output/input aliases are rejected. The model and seven producer hashes bind the report.
+  Worker/planner/aggregate imports and execution outputs remain unchanged.
+- PR #90 is a new boundary/cost corpus item. Its business owner handles the retained
+  exporter/evidence contract; archive fallback and early measurement viability remain
+  CI diagnostic debt. Neither issue permits an unreviewed docs-path coverage exemption.

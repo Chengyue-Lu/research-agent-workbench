@@ -1,5 +1,8 @@
 # TEST-PERF-002 — Change-aware CI
 
+Issue #87 的 [2A 领域与消费者盘点](DOMAIN_MODEL.md) 提供八个领域的显式路由和离线审计工具。
+它保留原计划义务，为下一步候选集合与真实结果的 shadow 比较准备输入。
+
 - Audit ID: `TEST-PERF-002`; owner: 路诚钺 (`Chengyue-Lu`); cross-owner: 黄毅 (`let778750-cpu`).
 - Risk: R2, shared CI selection and quality authority.
 - Request: [Issue #48 restart](https://github.com/Chengyue-Lu/research-agent-workbench/issues/48#issuecomment-5558497614).
