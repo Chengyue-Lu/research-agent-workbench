@@ -23,6 +23,14 @@ SPEC = importlib.util.spec_from_file_location("m5_delayed_capture_export", EXPOR
 EXPORT = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(EXPORT)
 
+H4_EXPORTER = ROOT / (
+    "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/"
+    "attempts/M5-007-H4-001/export_capture.py"
+)
+H4_SPEC = importlib.util.spec_from_file_location("m5_h4_delayed_capture_export", H4_EXPORTER)
+H4_EXPORT = importlib.util.module_from_spec(H4_SPEC)
+H4_SPEC.loader.exec_module(H4_EXPORT)
+
 
 class M5TraceExportTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -113,3 +121,119 @@ class M5TraceExportTests(unittest.TestCase):
         report = json.loads((self.attempt / "trace-validation.json").read_text(encoding="utf-8"))
         self.assertTrue(report["blocked"])
         self.assertTrue(any(risk["level"] == "block" for risk in report["risks"]))
+
+
+class H4TraceExportTests(unittest.TestCase):
+    """Execute archived code without rewriting the frozen implementation Attempt."""
+
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.root = Path(directory.name)
+        self.archive = self.root / H4_EXPORTER.parent.relative_to(ROOT)
+        self.archive.mkdir(parents=True)
+        self.script = self.archive / H4_EXPORTER.name
+        self.script.write_bytes(H4_EXPORTER.read_bytes())
+        (self.root / "docs/TASKS.md").write_text(
+            "# Synthetic Task index\n| M5-007 | IN_PROGRESS | synthetic fixture |\n",
+            encoding="utf-8",
+        )
+        (self.root / ".rwb").mkdir()
+        self.write_spool([])
+
+    def write_spool(self, rows):
+        (self.root / ".rwb/h4-capture.json").write_text(json.dumps(rows), encoding="utf-8")
+
+    def invoke(self, *, script=False):
+        output = io.StringIO()
+        with patch.object(Path, "cwd", return_value=self.root), \
+             patch("subprocess.check_output", return_value="b" * 40 + "\n"), \
+             patch.object(H4_EXPORT, "__file__", str(self.script)), contextlib.redirect_stdout(output):
+            if script:
+                # Run the exact archived CLI code with a disposable __file__.
+                # The canonical code filename lets CI measure the real subject;
+                # its bytes and behavior are unchanged, including SystemExit.
+                with self.assertRaises(SystemExit) as raised:
+                    exec(compile(H4_EXPORTER.read_bytes(), str(H4_EXPORTER), "exec"),
+                         {"__name__": "__main__", "__file__": str(self.script)})
+                status = raised.exception.code
+            else:
+                status = H4_EXPORT.main()
+        return status, json.loads(output.getvalue())
+
+    def events(self):
+        return [json.loads(line) for line in (self.archive / "trace/events.jsonl")
+                .read_text(encoding="utf-8").splitlines()]
+
+    def test_cli_preserves_observed_results_outcomes_and_task_binding(self):
+        rows = [
+            {"tool": "exec_command", "arguments": {"cmd": "synthetic success"},
+             "result": {"exit_code": 0, "output": "synthetic\r\n"}},
+            {"tool": "exec_command", "arguments": {}, "result": {"exit_code": 1}},
+            {"tool": "write_stdin", "arguments": {"session_id": 7}, "result": {"session_id": 7}},
+            {"tool": "apply_patch", "arguments": {"patch": "synthetic patch"}, "result": {}},
+            {"tool": "apply_patch", "arguments": {}, "result": "unclassified result"},
+        ]
+        self.write_spool(rows)
+        status, report = self.invoke(script=True)
+        self.assertEqual(status, 0)
+        self.assertFalse(report["blocked"])
+        self.assertEqual([r["code"] for r in report["risks"]], ["TRACE-CAPTURE-DELAYED"])
+        events = self.events()
+        calls = [e["payload"] for e in events if e["event_type"] == "tool-call"]
+        self.assertEqual([c["status"] for c in calls], ["succeeded", "failed", "attempted", "unknown", "unknown"])
+        self.assertEqual([c["tool_name"] for c in calls], ["shell", "shell", "shell", "apply_patch", "apply_patch"])
+        for row, call in zip(rows, calls):
+            result = json.loads((self.archive / "trace" / call["result_ref"]["path"]).read_text(encoding="utf-8"))
+            self.assertEqual(result, row["result"])
+            self.assertEqual(call["arguments"], row["arguments"])
+        import yaml
+        task = yaml.safe_load((self.archive / "trace/TASK.yaml").read_text(encoding="utf-8"))
+        self.assertEqual(task["task_id"], "M5-007")
+        self.assertEqual(task["implementation_head"], "b" * 40)
+        self.assertIn("Delayed H4a export", events[0]["payload"]["reason"])
+        self.assertEqual(events[-1]["payload"]["to_status"], "incomplete")
+        self.assertEqual(self.script.read_bytes(), H4_EXPORTER.read_bytes())
+
+    def test_empty_spool_preserves_explicit_event_and_message_gaps(self):
+        status, report = self.invoke()
+        self.assertEqual(status, 0)
+        self.assertFalse(report["blocked"])
+        events = self.events()
+        self.assertFalse(any(e["event_type"] == "tool-call" for e in events))
+        gaps = [e for e in events if e["event_type"] == "capture-gap"]
+        self.assertEqual(len(gaps), 2)
+        self.assertTrue(all(e["task_id"] == "M5-007" for e in events))
+
+    def test_existing_or_escaping_archive_is_rejected_without_writes(self):
+        trace = self.archive / "trace"
+        trace.mkdir()
+        sentinel = trace / "sentinel.txt"
+        sentinel.write_bytes(b"retained original bytes")
+        with self.assertRaisesRegex(ValueError, "fresh trace directory"):
+            self.invoke()
+        outside = self.root.parent / "outside-h4-export.py"
+        with patch.object(Path, "cwd", return_value=self.root), \
+             patch.object(H4_EXPORT, "__file__", str(outside)), \
+             patch("subprocess.check_output", side_effect=AssertionError("Git must not run")):
+            with self.assertRaisesRegex(ValueError, "within the worktree"):
+                H4_EXPORT.main()
+        self.assertEqual(sentinel.read_bytes(), b"retained original bytes")
+        self.assertFalse((self.archive / "trace-validation.json").exists())
+
+    def test_post_seal_tampering_blocks_cli_and_persists_failure_report(self):
+        self.write_spool([{"tool": "exec_command", "arguments": {}, "result": {"exit_code": 0}}])
+        seal = AgentTraceRecorder.seal
+
+        def corrupt_after_seal(recorder, *args, **kwargs):
+            result = seal(recorder, *args, **kwargs)
+            path = next((self.archive / "trace/tool-events").glob("*.json"))
+            path.write_bytes(path.read_bytes() + b" ")
+            return result
+
+        with patch.object(AgentTraceRecorder, "seal", corrupt_after_seal):
+            status, report = self.invoke(script=True)
+        self.assertEqual(status, 1)
+        self.assertTrue(report["blocked"])
+        self.assertTrue(any(r["level"] == "block" for r in report["risks"]))
+        self.assertEqual(json.loads((self.archive / "trace-validation.json").read_text()), report)

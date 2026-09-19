@@ -249,3 +249,13 @@ repository validation **186/0/0**。这是进入基线检查，不是 H4 实现�
 inventory 一并注册。共享执行端口保持现有契约，Task/ROADMAP 无状态变更。
 本地检查、源码 pins 与部分可观察事件见 [H4a Attempt](attempts/M5-007-H4-001/README.md)。
 H4b/H4c/H5 仍待后续实现；该分支按普通 R2 implementation PR 请求黄毅审核，不自行合并。
+
+## PR90 archive exporter coverage repair（2026-09-20）
+
+独立核查 `d9042fd` 的 run 35449976025：1425 tests PASS 后，impact gate 因新归档 executable
+`M5-007-H4-001/export_capture.py` 未出现在 coverage report 而失败。原始 exporter 和 H4a evidence
+保持原字节，在已注册 `test_m5_trace_export` 中增加独立临时 root 的真实导出/失败反例。
+8 个 exporter tests PASS，原 CI 配置下脚本 39/39 statements、12/12 branches；54 个集成检查 PASS。
+证据及作用域见 [CI repair Attempt](attempts/M5-007-H4-CI-REPAIR-001/README.md)。
+共享 CI selector/authority、覆盖门槛和路径分类由 Issue87 任务负责；本修复不修改这些表面。
+旧 run 的 PASS 不归给新候选，远端 CI 保持异步；M5-007 仍 IN_PROGRESS，PR90 不自行合并。
