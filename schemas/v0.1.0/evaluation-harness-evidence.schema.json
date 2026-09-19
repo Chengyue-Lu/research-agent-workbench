@@ -1,0 +1,522 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/evaluation-harness-evidence.schema.json",
+  "title": "Evaluation Harness Actual Evidence",
+  "x-rwb-document-kind": "evaluation_harness_evidence",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "version",
+    "evidence_id",
+    "purpose",
+    "execution_ref",
+    "context",
+    "validator",
+    "execution_status",
+    "slots",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "evaluation_harness_evidence"
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "evidence_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "const": "synthetic-contract-proof"
+    },
+    "execution_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "context": {
+      "$ref": "evaluation-harness-execution.schema.json#/properties/context"
+    },
+    "validator": {
+      "type": "object",
+      "required": [
+        "identity",
+        "version",
+        "sources",
+        "schemas_sha256"
+      ],
+      "properties": {
+        "identity": {
+          "const": "evaluation-harness-evidence"
+        },
+        "version": {
+          "const": "1.0.0"
+        },
+        "sources": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "schemas_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "execution_status": {
+      "enum": [
+        "completed",
+        "stopped"
+      ]
+    },
+    "slots": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/slot"
+      },
+      "minItems": 1
+    },
+    "boundaries": {
+      "$ref": "evaluation-harness-execution.schema.json#/properties/boundaries"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "slot": {
+      "type": "object",
+      "required": [
+        "block_index",
+        "case_id",
+        "phase",
+        "replicate",
+        "arm_id",
+        "slot",
+        "journal_ref",
+        "lifecycle",
+        "retry_class",
+        "slices"
+      ],
+      "properties": {
+        "block_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "case_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "phase": {
+          "enum": [
+            "pilot",
+            "confirmatory"
+          ]
+        },
+        "replicate": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "arm_id": {
+          "enum": [
+            "plain-agent",
+            "plain-agent-tool",
+            "mode-no-skill",
+            "mode-candidate-skill"
+          ]
+        },
+        "slot": {
+          "$ref": "evaluation-harness-plan.schema.json#/properties/blocks/items/properties/arms/items/properties/attempt_slots/items"
+        },
+        "journal_ref": {
+          "oneOf": [
+            {
+              "$ref": "common.schema.json#/$defs/fileRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lifecycle": {
+          "enum": [
+            "not-started",
+            "completed",
+            "preflight-blocked",
+            "post-call-failed"
+          ]
+        },
+        "retry_class": {
+          "oneOf": [
+            {
+              "enum": [
+                "provider-transient",
+                "rate-limit",
+                "transport-interrupted"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "slices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/slice"
+          },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "slice": {
+      "type": "object",
+      "required": [
+        "slice_index",
+        "attempt_id",
+        "frozen",
+        "lifecycle",
+        "receipt_ref",
+        "actual",
+        "evidence",
+        "comparison"
+      ],
+      "properties": {
+        "slice_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "attempt_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "frozen": {
+          "$ref": "#/$defs/frozen"
+        },
+        "lifecycle": {
+          "enum": [
+            "not-started",
+            "completed",
+            "preflight-blocked",
+            "post-call-failed"
+          ]
+        },
+        "receipt_ref": {
+          "oneOf": [
+            {
+              "$ref": "common.schema.json#/$defs/fileRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "actual": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/actual"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/evidence"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "comparison": {
+          "enum": [
+            "not-observed",
+            "matches-frozen",
+            "differs-from-frozen"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "lifecycle": {
+                "const": "not-started"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "receipt_ref": {
+                "type": "null"
+              },
+              "actual": {
+                "type": "null"
+              },
+              "evidence": {
+                "type": "null"
+              },
+              "comparison": {
+                "const": "not-observed"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "receipt_ref": {
+                "$ref": "common.schema.json#/$defs/fileRef"
+              },
+              "evidence": {
+                "$ref": "#/$defs/evidence"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "lifecycle": {
+                "const": "preflight-blocked"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "actual": {
+                "type": "null"
+              },
+              "comparison": {
+                "const": "not-observed"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "lifecycle": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "actual": {
+                "$ref": "#/$defs/actual"
+              },
+              "comparison": {
+                "const": "matches-frozen"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "frozen": {
+      "type": "object",
+      "required": [
+        "qualification_ref",
+        "runtime_binding",
+        "binding",
+        "supply_report_ref",
+        "skill_consumption",
+        "tool_implementation_refs"
+      ],
+      "properties": {
+        "qualification_ref": {
+          "oneOf": [
+            {
+              "$ref": "common.schema.json#/$defs/fileRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runtime_binding": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "snapshot_ref",
+                "bundle_ref",
+                "view_ref"
+              ],
+              "properties": {
+                "snapshot_ref": {
+                  "$ref": "common.schema.json#/$defs/fileRef"
+                },
+                "bundle_ref": {
+                  "$ref": "common.schema.json#/$defs/fileRef"
+                },
+                "view_ref": {
+                  "$ref": "common.schema.json#/$defs/fileRef"
+                }
+              },
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "binding": {
+          "$ref": "resolved-execution-view.schema.json#/properties/binding"
+        },
+        "supply_report_ref": {
+          "oneOf": [
+            {
+              "$ref": "resolved-execution-view.schema.json#/properties/selected_supply_report_ref"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "skill_consumption": {
+          "oneOf": [
+            {
+              "$ref": "skill-execution-consumption.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tool_implementation_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "actual": {
+      "type": "object",
+      "required": [
+        "binding",
+        "binding_observations",
+        "supply_report_ref",
+        "skill_consumption",
+        "tool_implementation_refs"
+      ],
+      "properties": {
+        "binding": {
+          "oneOf": [
+            {
+              "$ref": "resolved-execution-view.schema.json#/properties/binding"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "binding_observations": {
+          "type": "array",
+          "items": {
+            "$ref": "resolved-execution-view.schema.json#/properties/binding"
+          }
+        },
+        "supply_report_ref": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "skill_consumption": {
+          "oneOf": [
+            {
+              "$ref": "skill-execution-consumption.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tool_implementation_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "host_ref",
+        "trace_ref",
+        "fact_refs",
+        "artifact_refs",
+        "validation_refs",
+        "diagnostic"
+      ],
+      "properties": {
+        "host_ref": {
+          "oneOf": [
+            {
+              "$ref": "common.schema.json#/$defs/fileRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "trace_ref": {
+          "$ref": "common.schema.json#/$defs/fileRef"
+        },
+        "fact_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          }
+        },
+        "artifact_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          }
+        },
+        "validation_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          },
+          "minItems": 1
+        },
+        "diagnostic": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "execution-host-report.schema.json#/properties/diagnostic"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

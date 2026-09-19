@@ -1,0 +1,38 @@
+{
+  "record_kind": "development-entry-verification",
+  "task": "M5-007",
+  "slice": "H4 preparation",
+  "accepted_base": "171d4654f88e926f239cdf25bc8168109b81f391",
+  "implementation_started": false,
+  "checks": {
+    "baseline_tests": {
+      "passed": 63,
+      "seconds": 54.542
+    },
+    "documentation_tests": {
+      "passed": 10,
+      "seconds": 0.34
+    },
+    "repository": {
+      "validated": 186,
+      "errors": 0,
+      "warnings": 0
+    },
+    "pip_check": "PASS",
+    "cli_help": "PASS",
+    "import_origin": "current-worktree/src"
+  },
+  "input_sha256": {
+    "docs/TASKS.md": "9dd653f2bd865ef9f6328c25d5a97dc007f4e4cebacf6524f5aced1dcea57641",
+    "src/research_workbench/evaluation/harness_execution.py": "542cda68d5aac661f01f262a9c311ca30abf2a20b8ed15e3e7147d77e53fb840",
+    "src/research_workbench/evaluation/harness_preflight.py": "8732f62adb6574c79260dbbd1366bf4e459183ff19ca0ca2ecaea8546cd55bec",
+    "src/research_workbench/evaluation/comparability.py": "b3acfb15917388620b3b1110401840a1d658e3c5783cc23579b6244744076d3a",
+    "src/research_workbench/evaluation/overlay.py": "ee41318fa2710bb70b2f0c63b250796d6b6049375afe859d51350d8029ccfe4c",
+    "src/research_workbench/evaluation/system_protocol.py": "88f3fe29071695a7b9d40876050606da39a7fac754fb7585015ece6619d562f9"
+  },
+  "evidence_sha256": {
+    "baseline-checks.txt": "affa40cf41be19c2b8b21ca6d649ac393544ca5f4c3dabaaa7ac2beab9b3c6a4",
+    "docs-checks.txt": "52f39e22f448eee62c30bf1e868141f616141196082a7a7c42bd14908242437c",
+    "repository-checks.txt": "6895861bf5f35b7669baaf95d9caf2b94c3a4e1d5682f29bbc73ba0aa0064633"
+  }
+}

@@ -76,3 +76,25 @@ and [WORKLOG](WORKLOG.md). Test fixtures are synthetic structural evidence, not 
 | Risk / seam | Implemented control and adversarial evidence | Remaining acceptance |
 |---|---|---|
 | H3 / inter-slice deadline | Optional Host guard can only narrow dispatch after Host preflight; trusted boundary time is compared with the first Host start and frozen Protocol budget. Zero-call blocked Host/Receipt and per-slice observations survive cold replay. A3/A4 gap exhaustion, exact deadline, Host preparation delay and altered/missing time evidence are regression targets | Local candidate evidence in [review Attempt](attempts/M5-007-H3-REVIEW-001/README.md); new exact-head CI and cross-owner rereview remain required for acceptance |
+
+## H4 进入准备（2026-09-19）
+
+PR89 已接受 H3 及其 deadline 修复。以下为 H4 待实现的控制，具体顺序见 [H4 实施包](M5-007_H4_PACKET.md)。
+
+| Risk / seam | Planned control and negative evidence | Entry status |
+|---|---|---|
+| ACTUAL / plan substitution | 独立 replay 完整四臂/全部 slices，再关联 actual binding/Projection/Supply；保留真实失败和零调用，不从 View 填 actual 值 | H4a 首个实现节点 |
+| BLIND / reveal ordering | 白名单匿名 projection 与私有映射分离；具名全量 review freeze 后才 reveal；拒绝路径/正文元数据泄漏、部分审查和事后改分 | H4b 待实现 |
+| METRIC / provenance | 现有 measurement Schema 外增加 run/Attempt/method/evidence 关联；旧记录缺失外层时间或成本时 unavailable，缺失不补零 | H4c 待实现 |
+| ANALYSIS / eligibility | 分析入口重新验证 actual closure、overlap、pairwise、review/reveal 和完整配对；pilot/失败/不完整数据保留明确用途边界 | H4c 待实现；M5-008/004 Gate 保持 |
+
+## H4a implementation candidate（2026-09-19）
+
+`evaluation_harness_evidence@1.0.0` 通过 H3 independent replay 读取实际 Receipt/Host/facts，再逐项
+关联冻结资格。显式保存所有 slots、必需 slices、失败 retry、停止与未启动项；completed 要求匹配，
+失败保留可验证 drift。篡改 actual Projection/Supply/binding、删失败/slice、换 case/Attempt、
+外层 pins 或 validator 身份均为负例。新进程关闭执行端口、network/process 和项目代码执行后回放。
+
+本地证据与 capture-gap 见 [H4a Attempt](attempts/M5-007-H4-001/README.md)。本候选只核对
+actual evidence；BLIND、METRIC、ANALYSIS 风险仍待 H4b/H4c，各记录 authority 保持 false。
+结构性回放不能证明真实执行环境、科研效果或 Human 接受；正式接受仍需 exact-head CI 和黄毅 review。

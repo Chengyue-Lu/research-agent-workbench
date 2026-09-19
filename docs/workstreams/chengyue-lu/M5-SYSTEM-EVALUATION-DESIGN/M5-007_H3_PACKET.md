@@ -1,10 +1,12 @@
 # M5-007 H3：四臂 synthetic execution
 
-更新：2026-09-18。Owner：路诚钺。Execution 接口复核：黄毅。风险：R2。
+更新：2026-09-19。Owner：路诚钺。Execution 接口复核：黄毅。风险：R2。
 
 H1/H2 已由 PR86 合入 `develop@51dc3ab477f21f18ac3829bf553b5b779d49a4fe`。
 按用户 2026-09-17 的后续授权，PR89 将 H3 独立提交迁移到该基线，并转为正式 R2 feature PR。
-分支为 `feature/m5-007-harness-execution`，目标为 `develop`；H3 等待独立 review。
+分支为 `feature/m5-007-harness-execution`，目标为 `develop`。H3 与 dispatch deadline 修复已获
+黄毅对 `d725f7e` 的 APPROVE，并由 PR89 于 2026-09-18 合入 `171d465`。
+下一切片为 [H4 评价证据与分析输入](M5-007_H4_PACKET.md)。
 原始 Draft 候选与本次集成分别留痕，见 [rebase 记录](attempts/M5-007-H3-REBASE-001/README.md)。
 
 ## 输入与执行边界

@@ -1,7 +1,7 @@
 # 实现状态
 
 状态：Current implementation authority
-更新：2026-09-16
+更新：2026-09-19
 
 本页只回答“仓库现在实现到哪里”。实时任务状态由 [`TASKS.md`](TASKS.md) 维护，依赖方向由 [`ROADMAP.md`](ROADMAP.md) 维护。
 
@@ -89,7 +89,7 @@ M14-005 继续 BLOCKED，后续分为两层：
 | Claim evidence localization（M4-003） | 只验证声明关系和文件位置；limitation 定位于 Claim 文本，不虚构独立来源；不判定 locator 科学含义、不接受 Claim、不证明历史运行或科学正确性 |
 | Skill 价值 | 现有 Registry 条目不构成已证明的普适研究增益；新任务可优先 no-Skill / direct-tool |
 | Skill new-binding | 生产 projection index 仍为空；M11-005/006 只证明可选 publication/mapping contract，未重新准入任何 legacy Skill，也未证明真实 trial、Provider 可用性或科研净增量 |
-| Phase D evaluation entry | [ADR-0020](decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) 已接受 A1/A2→M6、A3/A4→M11 的双传输；M5-006 Protocol 与 qualification/overlap/overlay/pairwise 校验器已实现。M11-007 [Skill closeout 1.0.0](implementation/SKILL_EXECUTION_CLOSEOUT.md) 已由 PR81 合入，[Gate B](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md) 绑定 exact implementation/replay/CI 和具名接受，状态 SATISFIED。M6-008 baseline envelope/replay closeout 已由 PR75 接受，Task 按[收口证据](workstreams/huangyi/M6-BASELINE-EXECUTION/CLOSEOUT.md) 为 DONE；M5-007 synthetic Harness IN_PROGRESS，[H1/H2](implementation/SYSTEM_EVALUATION_HARNESS.md) 已由 PR86 接受，提供确定性非执行 plan 与独立 preflight；PR89 提供 H3 四臂 synthetic execution/cold replay，等待 R2 review；H4/H5 的盲审、analysis 与集成收口仍待实施；真实 M5-004 execution 仍受原 live/case/admission Gate 约束，并新增 [M5-008 Live Pilot Gate](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_LIVE_PILOT_GATE.md) 作为正式评价前的工程验收任务；M5-008 BLOCKED，当前没有该任务的 live 验证或 confirmatory net-benefit evidence |
+| Phase D evaluation entry | [ADR-0020](decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) 已接受 A1/A2→M6、A3/A4→M11 的双传输；M5-006 Protocol 与 qualification/overlap/overlay/pairwise 校验器已实现。M11-007 [Skill closeout 1.0.0](implementation/SKILL_EXECUTION_CLOSEOUT.md) 已由 PR81 合入，[Gate B](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md) 绑定 exact implementation/replay/CI 和具名接受，状态 SATISFIED。M6-008 baseline envelope/replay closeout 已由 PR75 接受，Task 按[收口证据](workstreams/huangyi/M6-BASELINE-EXECUTION/CLOSEOUT.md) 为 DONE；M5-007 synthetic Harness IN_PROGRESS，[H1/H2](implementation/SYSTEM_EVALUATION_HARNESS.md) 已由 PR86 接受；H3 四臂 synthetic execution/cold replay 与整臂 dispatch deadline 修复已由 PR89 接受并合入；[H4](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H4_PACKET.md) H4a actual evidence 已实现候选并待审核；盲审、analysis 与 H5 集成收口仍待实施；真实 M5-004 execution 仍受原 live/case/admission Gate 约束，并新增 [M5-008 Live Pilot Gate](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_LIVE_PILOT_GATE.md) 作为正式评价前的工程验收任务；M5-008 BLOCKED，当前没有该任务的 live 验证或 confirmatory net-benefit evidence |
 | 发布 | M14-001～004 与 M1-009 已接受；M0-007 MIT 与远端 GitHub protection 已落实。M14-005 BLOCKED：外部 readiness 仍需本 PR R2 接受、fresh ruleset readback、具名 Human release decision；随后仍需 source-CI attestation、release-only checks、atomic cutover、exact source/parent freeze、projection/tree equality 与首发 tag/artifact closure，见 [M14 路线](ROADMAP.md#7-product--release-closure) |
 | 产品体验 | scaffold 支持离线项目入口；可视化、协作 UI 和运维流程仍待完善 |
 
