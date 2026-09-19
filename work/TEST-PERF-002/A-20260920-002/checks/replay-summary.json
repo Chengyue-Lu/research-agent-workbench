@@ -1,0 +1,92 @@
+[
+  {
+    "case": "broken-internal-link",
+    "target": "de0682dd582b6ce43356e8117d892489fa4be9b6",
+    "plan_id": "c222e7157feb2ec40621122a77c7a3f767ffaa1793ce6ba49480430e27484f66",
+    "plan_behavioral": "focused",
+    "plan_coverage": "none",
+    "observed_tests": 25,
+    "failed": [
+      "tests/test_documentation.py::DocumentationTests.test_internal_markdown_links_resolve"
+    ],
+    "behavioral_skips": 2,
+    "effective_skips": [
+      "tests/test_kernel.py::KernelObjectTests.test_claim_keeps_support_and_counterevidence_separate",
+      "tests/test_kernel.py::KernelObjectTests.test_revision_is_part_of_object_reference"
+    ],
+    "missed_failures": [],
+    "exit_code": 1,
+    "result": "inconclusive"
+  },
+  {
+    "case": "missing-public-navigation",
+    "target": "09a33b612cd559d74b45bbffd907d603e4fa70de",
+    "plan_id": "42366adb93de4c06de2e17c779b4644e2dacd05e595d23525ee316a9feae9335",
+    "plan_behavioral": "focused",
+    "plan_coverage": "none",
+    "observed_tests": 25,
+    "failed": [
+      "tests/test_public_surface.py::PublicSurfaceTests.test_public_navigation_and_support_have_one_source"
+    ],
+    "behavioral_skips": 2,
+    "effective_skips": [
+      "tests/test_kernel.py::KernelObjectTests.test_claim_keeps_support_and_counterevidence_separate",
+      "tests/test_kernel.py::KernelObjectTests.test_revision_is_part_of_object_reference"
+    ],
+    "missed_failures": [],
+    "exit_code": 1,
+    "result": "inconclusive"
+  },
+  {
+    "case": "public-internal-navigation",
+    "target": "1307bdb9f66fbe79fc583c65d062b0a7015db72c",
+    "plan_id": "fd114351b8cea5b64ac81c75b972b38d50423f1933963ccdec74d5096a05d633",
+    "plan_behavioral": "focused",
+    "plan_coverage": "none",
+    "observed_tests": 25,
+    "failed": [
+      "tests/test_documentation.py::DocumentationTests.test_public_projection_documentation_and_build_closure",
+      "tests/test_public_surface.py::PublicSurfaceTests.test_autolink_syntax_in_code_remains_literal",
+      "tests/test_public_surface.py::PublicSurfaceTests.test_markdown_reference_html_and_unicode_anchor_resolve",
+      "tests/test_public_surface.py::PublicSurfaceTests.test_rendered_public_entity_and_reference_destinations_resolve",
+      "tests/test_public_surface.py::PublicSurfaceTests.test_selected_source_has_closed_docs_and_build_inputs",
+      "tests/test_public_surface.py::PublicSurfaceTests.test_user_project_attempt_paths_are_not_repository_archive_links"
+    ],
+    "behavioral_skips": 2,
+    "effective_skips": [
+      "tests/test_kernel.py::KernelObjectTests.test_claim_keeps_support_and_counterevidence_separate",
+      "tests/test_kernel.py::KernelObjectTests.test_revision_is_part_of_object_reference"
+    ],
+    "missed_failures": [],
+    "exit_code": 1,
+    "result": "inconclusive"
+  },
+  {
+    "case": "unrelated-doc-control",
+    "target": "9724a4ee36889b327b33ba1ebb066a6e02521404",
+    "plan_id": "777a8ef84f852fa74b4df4b344876d9d377d62802d7939d70e79746772a15944",
+    "plan_behavioral": "focused",
+    "plan_coverage": "none",
+    "observed_tests": 25,
+    "failed": [],
+    "behavioral_skips": 2,
+    "effective_skips": [
+      "tests/test_kernel.py::KernelObjectTests.test_claim_keeps_support_and_counterevidence_separate",
+      "tests/test_kernel.py::KernelObjectTests.test_revision_is_part_of_object_reference"
+    ],
+    "missed_failures": [],
+    "exit_code": 0,
+    "result": "inconclusive"
+  },
+  {
+    "case": "pr90-mixed-source-schema-archive",
+    "target": "737fb4198eac1e51f42da2f2204971ef96ec5ace",
+    "B": 1425,
+    "C": 1399,
+    "behavioral_skips": 0,
+    "effective_skips": 0,
+    "result": "observed-no-missed-failure",
+    "historical_receipt_only": true,
+    "coverage_gate_pass": false
+  }
+]

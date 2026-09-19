@@ -1,0 +1,6 @@
+task_id: TEST-PERF-002
+revision: 40
+request: Continue Issue87 CI-only 2B after 2A; business PR belongs to development3
+scope: offline consumer proposal/outcome comparator with subset real failure probes
+delegation: true
+required_skills: []

@@ -187,3 +187,17 @@ for cross-owner review. Quality thresholds, exclusions, product contracts and re
 - PR #90 is a new boundary/cost corpus item. Its business owner handles the retained
   exporter/evidence contract; archive fallback and early measurement viability remain
   CI diagnostic debt. Neither issue permits an unreviewed docs-path coverage exemption.
+
+## Issue #87 consumer shadow, first 2B slice
+
+- Explicit invocation declarations produce behavioral proposals only. Unknown consumers,
+  stale/missing pins, empty deltas, changed membership and executable inputs remain selected.
+- Real README navigation can fail outside the documentation module. Several public-surface
+  fixtures retain other real document inputs; fixture construction does not prove isolation.
+  The first probe proposes only two audited in-memory Kernel methods as unrelated controls.
+- Coverage C can erase an apparent behavioral saving or move a case into a different fixture
+  lifecycle. Reports distinguish these cases; incomplete C leaves effective omissions unknown.
+- Failed/absent/skipped case and fixture evidence cannot establish safe exclusion. Offline
+  inventory/receipt provenance and complete input closure still require independent evidence.
+- No production exclusion, candidate coverage success or hosted speedup is authorized by
+  these reports. Complete accepted/candidate execution comparison precedes 2C review.
