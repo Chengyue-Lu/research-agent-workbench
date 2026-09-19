@@ -1,0 +1,47 @@
+{
+  "binding": {
+    "base": "171d4654f88e926f239cdf25bc8168109b81f391",
+    "head": "215e67251b11959595aaca1a417e23d25013a83f",
+    "merge_base": "171d4654f88e926f239cdf25bc8168109b81f391",
+    "repository": "Chengyue-Lu/research-agent-workbench",
+    "target": "215e67251b11959595aaca1a417e23d25013a83f"
+  },
+  "plan_id": "39c54cff8470d3576464680565273afb1e84cb426b2f2d1ca29cc6621c18efe4",
+  "coverage_obligations": [
+    "impact",
+    "repository"
+  ],
+  "coverage_modules": [
+    "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4-001/export_capture.py",
+    "src/research_workbench/evaluation/harness_evidence.py",
+    "src/research_workbench/validation/document_kinds.py",
+    "src/research_workbench/validation/documents.py"
+  ],
+  "subject": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4-001/export_capture.py",
+  "subject_coverage_summary": {
+    "covered_lines": 39,
+    "num_statements": 39,
+    "percent_covered": 100.0,
+    "percent_covered_display": "100",
+    "missing_lines": 0,
+    "excluded_lines": 0,
+    "percent_statements_covered": 100.0,
+    "percent_statements_covered_display": "100",
+    "num_branches": 12,
+    "num_partial_branches": 0,
+    "covered_branches": 12,
+    "missing_branches": 0,
+    "percent_branches_covered": 100.0,
+    "percent_branches_covered_display": "100"
+  },
+  "subject_missing_lines": [],
+  "subject_missing_branches": [],
+  "tests": {
+    "passed": 8,
+    "seconds": 4.285
+  },
+  "subject_sha256": "dbfc17a1913a313bcda0460869830549a6cba8d09a127af3424f611bda3afaab",
+  "test_source_sha256": "3bd8bfdedc13ff7036fbdd980b889ffa9e641854ce20246b1a39a0e51f93f987",
+  "configuration_sha256": "e919cd2a39eee08774479b36a6fe274080cf8f92369ff93b2d45feb591c82997",
+  "full_candidate_ci_proved": false
+}
