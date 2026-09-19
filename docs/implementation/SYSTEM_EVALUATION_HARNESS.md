@@ -1,4 +1,4 @@
-# System-Level Evaluation Harness — H1–H3
+# System-Level Evaluation Harness — H1–H4a
 
 Evaluation owner：路诚钺。Execution 接口 owner：黄毅。Record version：`1.0.0`。
 任务边界见 [M5-007](../TASKS.md)，完整施工顺序见 [进入计划](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md)。
@@ -6,7 +6,8 @@ Evaluation owner：路诚钺。Execution 接口 owner：黄毅。Record version�
 H1/H2 提供确定性计划及评价侧预检，其记录固定 `actual_execution=false`。
 H3 提供 synthetic 四臂执行、fresh Attempt 和执行后 replay；接口与验证范围见
 [H3 实施包](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H3_PACKET.md)。
-盲审、metrics、analysis 和持久化集成收口属于后续 H4/H5。所有记录保持
+H4a 提供 evaluation-owned actual evidence 与独立重算；盲审、metrics、analysis 和持久化集成收口
+属于后续 H4b/H4c/H5。所有记录保持
 `execution_authority=false`、`task_completion=false`，不改写 Manifest、Protocol 或 Runtime 契约。
 
 ## H1：冻结计划
@@ -86,11 +87,41 @@ H1 session ID 是评价侧预留身份，不伪称 Provider 服务端 session id
 Trace credential token 识别以词边界区分 `TASK-…` 路径与独立 `sk-…` 密钥；Skill fact 沿用
 现有 project-relative creation event 和验证器，真实密钥与敏感字段继续脱敏。
 
+## H4a：实际证据核对
+
+`evaluation/harness_evidence.py::compile_harness_evidence` 接受 `EvaluationInputs`、外部选定的
+`execution_ref`、同一 `HarnessContext`、`evidence_id` 和 `admission_verifier`，首先完整调用 H3
+`replay_harness`。输出 `evaluation_harness_evidence@1.0.0` 是 Evaluation 记录。
+
+`slots` 按冻结 block/arm/retry 顺序列出所有预留 Attempt，每项保留 case、phase、replicate、
+session/Attempt identity、journal ref 与生命周期。A1/A2 每个 Attempt 有一个 transport slice，
+A3/A4 列出该 Task 全部必需 slices。未执行的 retry 或停止后的 slots，以及未启动的后续 slices，
+均标为 `not-started`，没有 Receipt、actual 或执行 evidence；其 Attempt 名称只是预留身份。
+
+每个 slice 的 `frozen` 保存 qualification、Bundle/Snapshot/View 和预期 binding/Supply/Skill
+consumption。`actual` 只来自 replay 已验证的 Receipt/Host/typed facts；A1/A2 同时保留每次实际
+Provider response binding 和已调用 Tool implementation refs，A4 保留实际消费的 Projection/Skill
+身份与哈希。原始 Receipt、Trace、Host、artifact、validation/fact refs 仍可追溯。
+
+`comparison` 为 `not-observed`、`matches-frozen` 或 `differs-from-frozen`。completed slice 必须
+匹配冻结条件；可重放的 post-call failure 保留实际 drift 和原始 diagnostic。零调用 preflight
+block 没有 actual consumption。整臂 deadline failure 可以包含先前 completed slice 和随后
+零调用 blocked slice；H3 整臂状态保持原样，不能因单个 slice 成功而升级。
+
+`validate_harness_evidence` 另外要求调用方提供 `expected_execution_ref`、`expected_evidence_id`
+及完整 `HarnessContext` 和 admission verifier。它重新回放 H3、重建每一项并比较完整记录；
+删除失败/重试、漏 slice、替换 case/Attempt/实际身份或篡改 source/Schema/evidence pins 都会拒绝。
+新进程回放不调用执行端口，不执行项目 Tool/checker。Schema identity 使用 H2 相同的全 catalog
+指纹规则；输入 archives 必须与提供的 validator/Schema 版本相容，不能改写旧档案以迁就新版本。
+
+该记录始终保留 synthetic purpose，`analysis_eligibility` 和 Human/Task authority 为 false。
+阶段标签不产生 confirmatory eligibility；具名盲审、揭盲、measurement 和分析资格属于后续接口。
+
 ## 验证与读取边界
 
-三个 record 由 Schema catalog 和文档 kind 注册。通用 repository validation 证明结构；语义重算必须
+四个 record 由 Schema catalog 和文档 kind 注册。通用 repository validation 证明结构；语义重算必须
 调用上述 Harness API 并提供外部上下文与 admission authority。默认 CLI 不隐式补齐这些可信输入。
 
-对应测试为 `test_evaluation_harness_plan`、`test_evaluation_harness_preflight` 和
-`test_evaluation_harness_execution`。测试只使用 synthetic
+对应测试为 `test_evaluation_harness_plan`、`test_evaluation_harness_preflight`、
+`test_evaluation_harness_execution` 和 `test_evaluation_harness_evidence`。测试只使用 synthetic
 文件闭包；真实 case、live conformance、production admission 与科研效果仍按 M5-004 的独立条件验收。

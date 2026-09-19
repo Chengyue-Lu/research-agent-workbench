@@ -155,6 +155,7 @@ SCHEMA_KINDS = {
     "evaluation_manifest",
     "evaluation_harness_plan",
     "evaluation_harness_preflight",
+    "evaluation_harness_evidence",
     "system_evaluation_protocol",
     "evaluation_measurement",
     "evaluation_provider_interface",

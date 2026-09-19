@@ -1,0 +1,6 @@
+test_stopped_run_retains_distinct_pilot_and_confirmatory_replicates (tests.test_evaluation_harness_evidence.HarnessEvidenceReplicationTests.test_stopped_run_retains_distinct_pilot_and_confirmatory_replicates) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 45.851s
+
+OK
