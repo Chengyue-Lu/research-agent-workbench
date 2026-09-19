@@ -222,3 +222,19 @@ PR86 已合入 `develop@51dc3ab477f21f18ac3829bf553b5b779d49a4fe`。按用户授
 
 原始 H3 与 rebase evidence 保持冻结。本地检查绑定候选源码 hashes，新 head 的远端 CI 与
 cross-owner rereview 按 PR89 独立进行；本次只提交修复，M5-007 仍 IN_PROGRESS。
+
+## M5-007 H4 进入准备（2026-09-19）
+
+PR89 已由黄毅对 `d725f7e` APPROVE，并于 2026-09-18 合入 `develop@171d465`；合并树与该
+reviewed head 相同。H1–H3 已接受，M5-007 仍 IN_PROGRESS。按用户“准备继续推进”请求，
+从最新 develop 建立独立 `feature/m5-007-harness-evidence`，主 develop 与 H3 工作区保持原样。
+
+[H4 实施包](M5-007_H4_PACKET.md) 固定 H4a actual evidence → H4b blind review/reveal → H4c
+metric/analysis 的顺序。源码核对确认现有 measurement validator 不验证 run/Attempt evidence
+关联，pairwise validator 不消费 actual facts；H4 将在评价记录层闭合这些责任。旧 H3 缺失外层
+计时/成本数据时保持 unavailable，不能用 Host 区间或缺省零替代。首个实现节点为 H4a。
+
+新建独立 Python 3.11.16 环境，pip check、当前工作区 import 与 CLI help 正常。现有 Protocol /
+overlap / overlay / comparability / contract 五模块 **63 PASS，54.542 秒**；文档内链 **10 PASS**；
+repository validation **186/0/0**。这是进入基线检查，不是 H4 实现证据。结果与输入 hashes 见
+[entry record](attempts/M5-007-H4-ENTRY-001/README.md)。H4 实现开始前另建正式 Attempt capture。

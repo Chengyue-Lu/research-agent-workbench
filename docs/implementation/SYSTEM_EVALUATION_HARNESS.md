@@ -4,7 +4,7 @@ Evaluation owner：路诚钺。Execution 接口 owner：黄毅。Record version�
 任务边界见 [M5-007](../TASKS.md)，完整施工顺序见 [进入计划](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md)。
 
 H1/H2 提供确定性计划及评价侧预检，其记录固定 `actual_execution=false`。
-H3 在独立开发分支提供 synthetic 四臂执行、fresh Attempt 和执行后 replay；接口与验证范围见
+H3 提供 synthetic 四臂执行、fresh Attempt 和执行后 replay；接口与验证范围见
 [H3 实施包](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H3_PACKET.md)。
 盲审、metrics、analysis 和持久化集成收口属于后续 H4/H5。所有记录保持
 `execution_authority=false`、`task_completion=false`，不改写 Manifest、Protocol 或 Runtime 契约。
