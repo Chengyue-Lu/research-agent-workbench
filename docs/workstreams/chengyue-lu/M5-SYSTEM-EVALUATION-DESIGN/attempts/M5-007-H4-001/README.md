@@ -58,5 +58,8 @@ used stable resources; implementation source was unchanged. The replication delt
 different schedule. Full repository compatibility/global coverage remain the hosted CI obligation.
 
 The delayed [capture exporter](export_capture.py) preserves available tool payloads with explicit gaps.
-Trace validation and governance evidence are recorded with the implementation commit before publication.
+Implementation commit: `aa34d6a07c5e1b710cb156ed83e1453faccf739b`. [Governance](h4-governance.log) PASS;
+[Trace validation](trace-validation.json) has no BLOCK and retains `TRACE-CAPTURE-DELAYED`.
+The [Trace index](trace/INDEX.yaml) binds the partial captured payloads. Export timestamps describe
+export time; initial reads, some patches/waits and final publication are explicit capture gaps.
 Cross-owner review by Huang Yi and exact-head CI remain pending; M5-007 stays IN_PROGRESS.

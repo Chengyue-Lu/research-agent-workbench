@@ -1,0 +1,3 @@
+# Keep hash-pinned evidence stable on Windows and Linux checkouts.
+*.log text eol=lf
+*.jsonl text eol=lf
