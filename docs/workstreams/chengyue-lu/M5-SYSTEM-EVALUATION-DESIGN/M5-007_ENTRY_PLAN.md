@@ -11,7 +11,8 @@ M6-008 实现已由 PR75 合入，PR84 已接受 M6-008 DONE 与 M5-007 READY。
 PR86 已接受 H1/H2 和 M5-007 IN_PROGRESS。[H3 实施包](M5-007_H3_PACKET.md) 对应的 PR89
 已于 2026-09-18 经具名复审接受，合入 `develop@171d4654f88e926f239cdf25bc8168109b81f391`。
 当前进入 [H4 实施包](M5-007_H4_PACKET.md)：先核对实际执行证据，再闭合盲审/reveal 和 metric/analysis
-输入。准备分支为 `feature/m5-007-harness-evidence`；H4 尚未实现，H5 继续为最终集成收口。
+输入。`feature/m5-007-harness-evidence` 已实现 H4a actual evidence candidate，等待 exact-head CI
+与 cross-owner review；H4b/H4c 待实现，H5 继续为最终集成收口。
 
 | 前置 | 已接受依据 | Harness 消费接口 |
 |---|---|---|

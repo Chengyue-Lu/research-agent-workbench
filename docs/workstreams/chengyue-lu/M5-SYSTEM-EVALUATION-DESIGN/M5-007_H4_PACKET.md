@@ -4,7 +4,9 @@
 基线：`develop@171d4654f88e926f239cdf25bc8168109b81f391`（PR89）。
 分支：`feature/m5-007-harness-evidence`。跟踪：[Issue55](https://github.com/Chengyue-Lu/research-agent-workbench/issues/55)。
 
-本包是现有 M5-007 的 H4 实施细化。当前交付为进入准备，H4 尚未实现；M5-007 保持 IN_PROGRESS。
+本包是现有 M5-007 的 H4 实施细化。H4a actual evidence 已进入 implementation candidate；
+H4b/H4c 待实现，M5-007 保持 IN_PROGRESS。当前候选及本地验证见
+[H4a Attempt](attempts/M5-007-H4-001/README.md)。
 H1/H2 已由 PR86 接受；H3 与整臂 dispatch deadline 修复已由 PR89 接受并合入。
 接受依据及环境检查见 [H4 entry record](attempts/M5-007-H4-ENTRY-001/README.md)。
 

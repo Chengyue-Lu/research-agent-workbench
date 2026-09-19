@@ -238,3 +238,14 @@ metric/analysis 的顺序。源码核对确认现有 measurement validator 不�
 overlap / overlay / comparability / contract 五模块 **63 PASS，54.542 秒**；文档内链 **10 PASS**；
 repository validation **186/0/0**。这是进入基线检查，不是 H4 实现证据。结果与输入 hashes 见
 [entry record](attempts/M5-007-H4-ENTRY-001/README.md)。H4 实现开始前另建正式 Attempt capture。
+
+## M5-007 H4a implementation candidate（2026-09-19）
+
+用户授权“开始实现”，从 H4a actual evidence 开始。新增 evaluation-owned record、确定性编译与
+外部上下文驱动的独立验证：先 replay 完整 H3，再核对每项实际 binding/Supply/Skill consumption。
+所有预留 slots 和必需 slices 显式保留；失败 retry、未启动与零调用阻断不转写成成功。
+
+新增实际值替换、遗漏、身份/哈希/validator 漂移和禁执行冷回放反例；catalog、Schema 与 coverage
+inventory 一并注册。共享执行端口保持现有契约，Task/ROADMAP 无状态变更。
+本地检查、源码 pins 与部分可观察事件见 [H4a Attempt](attempts/M5-007-H4-001/README.md)。
+H4b/H4c/H5 仍待后续实现；该分支按普通 R2 implementation PR 请求黄毅审核，不自行合并。

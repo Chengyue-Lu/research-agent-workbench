@@ -1,5 +1,5 @@
 policy_id: rwb-coverage-policy
-version: 2.2.4
+version: 2.2.5
 source_root: src/research_workbench
 
 suites:
@@ -52,6 +52,7 @@ suites:
       - test_evaluation_harness_plan
       - test_evaluation_harness_preflight
       - test_evaluation_harness_execution
+      - test_evaluation_harness_evidence
       - test_m5_trace_export
       - test_governance_helper_branches
       - test_integrity
@@ -169,6 +170,7 @@ critical_modules:
   - src/research_workbench/evaluation/harness_preflight.py
   - src/research_workbench/evaluation/harness_execution.py
   - src/research_workbench/evaluation/harness_runtime.py
+  - src/research_workbench/evaluation/harness_evidence.py
   - .github/scripts/selection_witness.py
   - .github/scripts/ci_dependencies.py
   - .github/scripts/plan_ci.py
@@ -706,6 +708,18 @@ negative_acceptance:
       - test_evaluation_harness_execution.HarnessExecutionTests.test_driver_exception_preserves_unfinished_journal_and_host_trace
       - test_evaluation_harness_execution.HarnessReplayTests.test_completed_arm_cannot_drop_a_required_slice
       - test_evaluation_harness_execution.HarnessReplayTests.test_dropped_attempt_and_unfinished_marker_are_rejected
+
+  - surface: m5-harness-actual-evidence
+    modules:
+      - src/research_workbench/evaluation/harness_evidence.py
+    positive_tests:
+      - test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_four_arms_all_slices_and_failed_retry_replay
+      - test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_fresh_process_cold_replay_forbids_execution_and_project_code
+    negative_tests:
+      - test_evaluation_harness_evidence.HarnessEvidenceTests.test_failed_actual_binding_cannot_be_replaced_with_plan
+      - test_evaluation_harness_evidence.HarnessEvidenceTests.test_blocked_receipt_and_unstarted_slices_have_no_actual_facts
+      - test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_actual_projection_supply_tool_and_binding_tampering_are_rejected
+      - test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_missing_failure_slice_and_case_attempt_substitution_are_rejected
 
 justified_exclusions:
   - path: src/research_workbench/adapters/models/session.py

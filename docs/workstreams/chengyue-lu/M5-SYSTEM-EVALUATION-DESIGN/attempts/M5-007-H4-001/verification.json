@@ -1,0 +1,192 @@
+{
+  "task": "M5-007",
+  "slice": "H4a",
+  "base": "171d4654f88e926f239cdf25bc8168109b81f391",
+  "preparation_head": "baebdadc6619b171d99456835d32d9354fc5cdff",
+  "implementation_head": null,
+  "source_sha256": {
+    "src/research_workbench/evaluation/harness_evidence.py": "5f675320989823961eb8493f1989bbf0f95300a58079433dd24523de5b42937b",
+    "src/research_workbench/validation/document_kinds.py": "84324d0f4d48edbf730f3c267745fe0cd93084ca7f0fd6f12c6cc16589dff682",
+    "src/research_workbench/validation/documents.py": "823ebf863856cee8466d78c64e15d9062051105cadb8ba3760126c01f93c74c6",
+    "schemas/v0.1.0/evaluation-harness-evidence.schema.json": "ab3874af94f979b09af44b9f7c95701f41b3d7308e61e48f49fb63e1df350bcb",
+    "tests/test_evaluation_harness_evidence.py": "aa226b8b45528278261ac65151d922cb42094f502f5990756ae2594cc7a7480e",
+    "tests/test_schemas.py": "ab9b996e77510a701102342cb71cd16621a808560715d896686b3929506bb985",
+    "tests/coverage_policy.yaml": "400839bc83a09a7bc7b5af56af792c5c3adc70b862595e1c1e26ca7b09ae816e",
+    "tests/ci_impact_policy.yaml": "7250c4b9c2b61021badbc9c2401f3a853a1a816feab43b895b490876c50cd868"
+  },
+  "checks": {
+    "focused": {
+      "passed": 14,
+      "seconds": 606.769
+    },
+    "replication_delta": {
+      "passed": 1,
+      "seconds": 45.851
+    },
+    "validation_schema": {
+      "passed": 31,
+      "seconds": 9.578
+    },
+    "contracts_documentation_policy": {
+      "passed": 49,
+      "seconds": 10.965
+    },
+    "harness_evidence_coverage": {
+      "covered_lines": 102,
+      "num_statements": 102,
+      "percent_covered": 100.0,
+      "percent_covered_display": "100",
+      "missing_lines": 0,
+      "excluded_lines": 0,
+      "percent_statements_covered": 100.0,
+      "percent_statements_covered_display": "100",
+      "num_branches": 32,
+      "num_partial_branches": 0,
+      "covered_branches": 32,
+      "missing_branches": 0,
+      "percent_branches_covered": 100.0,
+      "percent_branches_covered_display": "100"
+    },
+    "changed_source_coverage": {
+      "src/research_workbench/evaluation/harness_evidence.py": {
+        "uncovered_changed_lines": [],
+        "uncovered_changed_branches": []
+      },
+      "src/research_workbench/validation/document_kinds.py": {
+        "uncovered_changed_lines": [],
+        "uncovered_changed_branches": []
+      },
+      "src/research_workbench/validation/documents.py": {
+        "uncovered_changed_lines": [],
+        "uncovered_changed_branches": []
+      }
+    },
+    "repository": {
+      "validated": 186,
+      "errors": 0,
+      "warnings": 0
+    },
+    "package": {
+      "runtime_resources_identical": true,
+      "manifest_sha256": "40f19b361cd6968c0bf1d1d41ddd7311b66203269c46619dad6b7915f6902df8",
+      "installs": [
+        {
+          "merge_eligible": false,
+          "modes": 4,
+          "projections": 0,
+          "python": "3.11.16",
+          "resources": 143,
+          "scaffold_reconstruction": "matched",
+          "scaffold_template": "offline-demo",
+          "schemas": 95,
+          "validation_profile": "installed-runtime",
+          "route": "direct",
+          "isolated": true
+        },
+        {
+          "merge_eligible": false,
+          "modes": 4,
+          "projections": 0,
+          "python": "3.11.16",
+          "resources": 143,
+          "scaffold_reconstruction": "matched",
+          "scaffold_template": "offline-demo",
+          "schemas": 95,
+          "validation_profile": "installed-runtime",
+          "route": "direct",
+          "isolated": false
+        },
+        {
+          "merge_eligible": false,
+          "modes": 4,
+          "projections": 0,
+          "python": "3.11.16",
+          "resources": 143,
+          "scaffold_reconstruction": "matched",
+          "scaffold_template": "offline-demo",
+          "schemas": 95,
+          "validation_profile": "installed-runtime",
+          "route": "sdist-wheel",
+          "isolated": true
+        },
+        {
+          "merge_eligible": false,
+          "modes": 4,
+          "projections": 0,
+          "python": "3.11.16",
+          "resources": 143,
+          "scaffold_reconstruction": "matched",
+          "scaffold_template": "offline-demo",
+          "schemas": 95,
+          "validation_profile": "installed-runtime",
+          "route": "sdist-wheel",
+          "isolated": false
+        }
+      ],
+      "merge_eligible": false
+    }
+  },
+  "evidence": {
+    "h4-focused-final.log": {
+      "original_local_sha256": "f9b59d7b4606ae43513caa54d73ca919403d0237106c639d0848b287b24dc2fa",
+      "archived_sha256": "f9b59d7b4606ae43513caa54d73ca919403d0237106c639d0848b287b24dc2fa",
+      "transformation": "UTF-8 BOM removed and machine paths normalized"
+    },
+    "h4-replication.log": {
+      "original_local_sha256": "3c8f0cfd27e221713f5bae9de61dd0fcc4f247c812424369872b754f8c51ec4e",
+      "archived_sha256": "3c8f0cfd27e221713f5bae9de61dd0fcc4f247c812424369872b754f8c51ec4e",
+      "transformation": "UTF-8 BOM removed and machine paths normalized"
+    },
+    "h4-focused-coverage.json": {
+      "original_local_sha256": "dbbef67362a7f8d5132794ae5105b1dba1b734d7420aa4aeb59aa8bc5665bed1",
+      "archived_sha256": "dbbef67362a7f8d5132794ae5105b1dba1b734d7420aa4aeb59aa8bc5665bed1",
+      "transformation": "UTF-8 BOM removed and machine paths normalized"
+    },
+    "h4-validation.log": {
+      "original_local_sha256": "1475724db19649617c3a12455e09dc6f4a873d1b9eb0ce63e636e5486c6e43e0",
+      "archived_sha256": "1475724db19649617c3a12455e09dc6f4a873d1b9eb0ce63e636e5486c6e43e0",
+      "transformation": "UTF-8 BOM removed and machine paths normalized"
+    },
+    "h4-validation-coverage.json": {
+      "original_local_sha256": "0aa5a16f13e2af45a38a79be9e549ecfdf73bb6699a0e30a4b8a44c3202b765a",
+      "archived_sha256": "0aa5a16f13e2af45a38a79be9e549ecfdf73bb6699a0e30a4b8a44c3202b765a",
+      "transformation": "UTF-8 BOM removed and machine paths normalized"
+    },
+    "h4-contracts.log": {
+      "original_local_sha256": "47330fe9e27aa5181c22987b542e21f743bb31db4d6bb028ccb17bbc5b1779fa",
+      "archived_sha256": "47330fe9e27aa5181c22987b542e21f743bb31db4d6bb028ccb17bbc5b1779fa",
+      "transformation": "UTF-8 BOM removed and machine paths normalized"
+    },
+    "h4-repository.log": {
+      "original_local_sha256": "255440a9ece3a188b00d67b928a848500938bdd0c6788d0dcac767adb46d7ef3",
+      "archived_sha256": "255440a9ece3a188b00d67b928a848500938bdd0c6788d0dcac767adb46d7ef3",
+      "transformation": "UTF-8 BOM removed and machine paths normalized"
+    },
+    "h4-package.json": {
+      "original_local_sha256": "f8e8425ec972bcc636b619aaf644bdd54bb1015b1d6285fa5c019ef46b99f9e0",
+      "archived_sha256": "f8e8425ec972bcc636b619aaf644bdd54bb1015b1d6285fa5c019ef46b99f9e0",
+      "transformation": "UTF-8 BOM removed and machine paths normalized"
+    },
+    "h4-package.log": {
+      "original_local_sha256": "14362b2f880a7146f0248d7a6fbd34e7778adfb807f636e24ab0fdf13505f0b5",
+      "archived_sha256": "14362b2f880a7146f0248d7a6fbd34e7778adfb807f636e24ab0fdf13505f0b5",
+      "transformation": "UTF-8 BOM removed and machine paths normalized"
+    },
+    "h4-focused.log": {
+      "original_local_sha256": "73c0eae28bf6b88b1327d1806031666534bf6161f8f7a0d5b918d031cda6b3ff",
+      "archived_sha256": "4830de200797f781c2448b79db514ceb8f07572baff2e7ff4c6e85e3169708ae",
+      "transformation": "UTF-8 BOM removed and machine paths normalized"
+    }
+  },
+  "limitations": [
+    "Scoped local checks; repository-wide coverage and full compatibility run asynchronously in hosted CI.",
+    "Initial diagnostic run is not acceptance: fixture deepcopy and a concurrent resource regeneration were corrected before the final run.",
+    "Partial delayed capture; no full native event-stream or original timestamp claim."
+  ],
+  "authority": {
+    "human_acceptance": false,
+    "task_completion": false,
+    "analysis_eligibility": false,
+    "merge": false
+  }
+}

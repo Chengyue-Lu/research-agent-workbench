@@ -204,6 +204,7 @@ class VersionedSchemaTests(unittest.TestCase):
                 "evaluation_harness_plan",
                 "evaluation_harness_preflight",
                 "evaluation_harness_execution",
+                "evaluation_harness_evidence",
                 "system_evaluation_protocol",
                 "task_packet",
             },

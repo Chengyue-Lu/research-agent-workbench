@@ -31,7 +31,7 @@
 - [Portable Runtime resources (M14-003)](RUNTIME_RESOURCES.md)
 - [Evaluation Manifest and non-executing plan contract (M5-003)](EVALUATION_MANIFEST_CONTRACT.md)
 - [System-Level Evaluation Protocol (M5-006)](SYSTEM_EVALUATION_PROTOCOL.md)
-- [System-Level Evaluation Harness plan/preflight (M5-007 H1/H2)](SYSTEM_EVALUATION_HARNESS.md)
+- [System-Level Evaluation Harness plan, execution and actual evidence (M5-007 H1–H4a)](SYSTEM_EVALUATION_HARNESS.md)
 - [Baseline A1/A2 transport (M6-008)](../workstreams/huangyi/M6-BASELINE-EXECUTION/README.md)
 - [File-authoritative Trace Core](TRACE_CORE.md)
 - [Execution Trace Adapter](EXECUTION_TRACE_ADAPTER.md)
