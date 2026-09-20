@@ -1,0 +1,119 @@
+schema_version: 0.1.0
+trace_id: TRACE-M14-005-A-20260921-001
+task_id: M14-005
+task_revision: 1
+attempt_id: A-20260921-001
+archive_root: A-20260921-001
+baseline: 171d4654f88e926f239cdf25bc8168109b81f391
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 09f9d61c10aa2ad2b7da08e5fdc5488ef9cb858eaca61321988f426a11563f1a
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 10b79c9a872785ac0c56497c214eae3d2bc3015894e9d0e5f590d05771b2e3a9
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/STATUS.md
+- docs/ROADMAP.md
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- .github/**
+- tests/**
+- examples/**
+- registry/**
+- work/M14-005/**
+- GitHub PR 80, Issue 57 and read-only CI/protection APIs
+write_scope:
+- docs/STATUS.md
+- tests/coverage_policy.yaml
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/SOURCE_CI.md
+- work/M14-005/A-20260921-001/**
+- M14 feature branch rebase and PR 80 evidence/review request
+tool_allowlist:
+- git
+- gh
+- python
+- apply_patch
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 97b954efe83d35da439baa5ed261c0c98e9fa7441749703d510113f47a8454a5
+  event_count: 25
+tool_event_refs:
+- path: tool-events/scope.json
+  sha256: 5d99fa800ea534256f6ffae684aab2ce71b719d989fa82d608f88f29bd4ccd7c
+- path: tool-events/focused.log
+  sha256: 1b76a1363012edfc3fefe2b7924d95f2a37fb5b5f1b912b8953ae1d30f444393
+- path: tool-events/repository.log
+  sha256: 255440a9ece3a188b00d67b928a848500938bdd0c6788d0dcac767adb46d7ef3
+- path: tool-events/governance-plan.log
+  sha256: 1a837850ba699f9c808dc95a718a92671b91ccb1e20b45f0cf9bfcdd7b8c8b9f
+- path: tool-events/ci-plan.json
+  sha256: 6a96460dfdd20b95831394832f994c32be3a6f5060884e20ae62ca2ab15ca8a9
+- path: tool-events/range-diff.log
+  sha256: a7872d884f3df8db2d30876d7f383f02b43a7e5c7ab054cd0d6cf0c49139ba2c
+- path: tool-events/remote-summary.json
+  sha256: 00ed2a27bae03db106cd336ab4691928121ef9ef655ae9f41488b530adb4c5a0
+- path: tool-events/pr-before.json
+  sha256: 4566227cf8ae92b91af0812bc2c12aa38f0c90d58ea4d325d292571e8fbea77a
+- path: tool-events/ruleset-23305447.json
+  sha256: 0ff90f049baacd39bd2542b00404b0e56caa448f18435d4ff1f745326d1e5892
+- path: tool-events/ruleset-23192001.json
+  sha256: 513512539c0f2b9dba2a8f90aa9661ec5c0a50f57a8c682c33efa160f8bcfd16
+- path: tool-events/ruleset-23305460.json
+  sha256: eaebbf8ba374742440b92bc057530236541c7a0de8322912bf963f3f1c81d1ee
+- path: tool-events/ruleset-23192054.json
+  sha256: 3b09ed868a99c027ac696318b6248ae0cfea60a81d10fc9a5a0338ac9d3a249b
+- path: tool-events/branch-develop.json
+  sha256: c6a81c331b38566a7cebb4bfcac9e51b0e5295936bc4e6b522f0f56a1bba5c69
+- path: tool-events/branch-main.json
+  sha256: 8d4551999d42b0982fe8257d8cc625a075c85b71ddcbf844341a25d821f11da8
+- path: tool-events/effective-develop.json
+  sha256: 9f8550d6d27ab4a00fc42e26335de43bcd94608b7dc92eb55a6b2155329edaab
+- path: tool-events/effective-main.json
+  sha256: ae4a840d91348e7a766b06f302a617f4ff267e0a7eafb893761377962e898ea3
+- path: tool-events/rulesets.json
+  sha256: ce0a8674a04501310d2730685cb67e69bc29e01e5e7081e07fd67843f5e949ca
+- path: tool-events/pr80.json
+  sha256: 8bac335fb29e8b04991071f3753a6d4eb0273d8dc6ecc4588c3898d0ea545ae9
+- path: tool-events/pr80-comments.json
+  sha256: 1d1878737c316126eda0942facaa70bf94ad2ef5206140b36667e65f6a6303d3
+handoff_refs:
+- path: WORKLOG.md
+  sha256: 5968a68a66dd1bb36afc8da73c3e59344d0c8478d409e791733f20bfc7338057
+decision_refs:
+- path: outputs/REBASE_AND_NEXT_STEPS.md
+  sha256: 8227f44bc5d8a85c16a3e367561f12a1ce418f5ab8cee2ecfec5fa463213fce9
+output_refs:
+- path: outputs/freeze.py.md
+  sha256: 59bd89085d7c9ee893384204d6980b9f2e6d6f013c3586ac3571c0456f8fc22f
+- path: outputs/readback.py.md
+  sha256: a14fc467d6548af0bee9a22945cd0ee1c5000e7ae1ada2e31b24fa5378252848
+- path: outputs/REBASE_AND_NEXT_STEPS.md
+  sha256: 8227f44bc5d8a85c16a3e367561f12a1ce418f5ab8cee2ecfec5fa463213fce9
+- path: outputs/VERIFICATION.json
+  sha256: 17ad5a8b3458ce4e3df3dba8aea098a3a194ab31d0b175a44d6beac64cde395f
+- path: outputs/verify_candidate.py.md
+  sha256: 553d043599c63f1f4f23d9eecb2f615d57941c127d54ac2f98f4af8aa6377a4c
+- path: outputs/ARCHIVE_PREFLIGHT.json
+  sha256: 16918c5c3c50644d70a0543fec0a8a942f6333bae8fd7484a9547a455bc050a8
+check_refs:
+- path: .gitattributes
+  sha256: 73e06bee6a2f29c04d9690e97efc94b0c407d0b0d600e0c33a0fc431ba36e838
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: tool-results
+- event_id: EVT-0004
+  affected_stream: file-revisions
+- event_id: EVT-0005
+  affected_stream: external-actions

@@ -1,0 +1,6 @@
+{
+  "stage": "unpublished archive preflight",
+  "result": "initial whitespace check failed",
+  "reason": "git range-diff retains whitespace-only context lines",
+  "remedy": "Preserve raw receipt bytes; ignore blank-at-eol only for this range-diff receipt. Recompute its archive attribute reference before first commit."
+}
