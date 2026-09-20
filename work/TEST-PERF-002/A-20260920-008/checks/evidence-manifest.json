@@ -1,0 +1,44 @@
+{
+  "files": [
+    {
+      "path": ".gitattributes",
+      "sha256": "f06202a408fef9b9ea69bb6b1cb8160dbb0378c5bb67a444d510d231813824c8"
+    },
+    {
+      "path": "ACTORS.yaml",
+      "sha256": "54600fb31abfa8c2785d12b1b46ec7f9bc86b83b874073249507f13237ae03ad"
+    },
+    {
+      "path": "checks/raw-evidence.zip",
+      "sha256": "a91f04978527fe76c0765062c7f5baf4f5ccc969689c2b4b195ccd0a8d6ccf4a"
+    },
+    {
+      "path": "checks/trace-validation.json",
+      "sha256": "67a7f72da07f01970328e804b86d85c5d0ca1fb8a0d10dbd41dfec1e4a7b8919"
+    },
+    {
+      "path": "checks/validation.json",
+      "sha256": "ea123acbd98fe34c7dfd260eb8703212f751c312fe5473dcd4f48574adf4764a"
+    },
+    {
+      "path": "events.jsonl",
+      "sha256": "c1ea3899ef322d49fc1e5460d10555ec48a24ca20d7985cb9fa386d674f4e619"
+    },
+    {
+      "path": "INDEX.yaml",
+      "sha256": "b773b78eaa08711792824745267a0b26b7f6cfc37bf9d719de1d69a6ecdfda3d"
+    },
+    {
+      "path": "RESULTS.md",
+      "sha256": "06a06b0a84b79615370e5dd26f92769b3ad2ac9732ac1f3e4bd99a8e9c080329"
+    },
+    {
+      "path": "TASK.yaml",
+      "sha256": "11d21c9939dafd03833f663b4bcf7060046bb1584eb7b61a417b9ef5a66c30b4"
+    },
+    {
+      "path": "tool-events/model-ci-evidence-succeeded.json",
+      "sha256": "4acd30c6c45106408fce149a6f93d7c28a37834e7ceb338d134b1ae0ec59b54c"
+    }
+  ]
+}

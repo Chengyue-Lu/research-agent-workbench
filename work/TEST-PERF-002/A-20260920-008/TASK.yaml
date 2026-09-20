@@ -1,0 +1,10 @@
+task_id: TEST-PERF-002
+revision: 43
+request: Validate the actual named diagnostic model with its production parser and
+  validator
+scope:
+- tests/test_ci_domain_audit.py
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- work/TEST-PERF-002/A-20260920-008/**
+delegation: true
+required_skills: []
