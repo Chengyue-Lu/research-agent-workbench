@@ -1,0 +1,35 @@
+fatal: path 'schemas/v0.1.0/skill-execution-consumption.schema.json' exists on disk, but not in 'e1022d408c805aefb81e9177020064fe85e0ebc3'
+Efatal: path 'schemas/v0.1.0/skill-execution-consumption.schema.json' exists on disk, but not in '7b3405189e06210cae6552b0eb7699b049e14d73'
+E
+======================================================================
+ERROR: test_repaired_archive_replays_and_its_checkers_reject_bad_subjects (tests.test_skill_closeout_review.SkillCloseoutReviewTests.test_repaired_archive_replays_and_its_checkers_reject_bad_subjects)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\m14-source-ci\.rwb\m14-pr97-ci-fix\fresh\tests\test_skill_closeout_review.py", line 183, in test_repaired_archive_replays_and_its_checkers_reject_bad_subjects
+    content = subprocess.check_output(['git','show',proof['implementation_commit']+':'+ref['path']],cwd=ROOT)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\research-agent-workbench\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\subprocess.py", line 466, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\research-agent-workbench\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'show', 'e1022d408c805aefb81e9177020064fe85e0ebc3:schemas/v0.1.0/skill-execution-consumption.schema.json']' returned non-zero exit status 128.
+
+======================================================================
+ERROR: test_archived_candidate_pins_and_replay_are_portable (tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_archived_candidate_pins_and_replay_are_portable)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\m14-source-ci\.rwb\m14-pr97-ci-fix\fresh\tests\test_skill_execution_closeout.py", line 404, in test_archived_candidate_pins_and_replay_are_portable
+    content = subprocess.check_output(['git', 'show', proof['implementation_commit'] + ':' + ref['path']], cwd=ROOT)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\research-agent-workbench\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\subprocess.py", line 466, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\research-agent-workbench\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'show', '7b3405189e06210cae6552b0eb7699b049e14d73:schemas/v0.1.0/skill-execution-consumption.schema.json']' returned non-zero exit status 128.
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.092s
+
+FAILED (errors=2)

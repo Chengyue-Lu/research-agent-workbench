@@ -1,0 +1,82 @@
+schema_version: 0.1.0
+trace_id: TRACE-M14-005-A-20260921-004
+task_id: M14-005
+task_revision: 1
+attempt_id: A-20260921-004
+archive_root: A-20260921-004
+baseline: 1b94a38ae13eada52054cced7b5f22666cb506af
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: b424ba96d59dd1483b992a5d8fb9b72dbea8aca1b7bcf80d2859c660132860db
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 17536c05ca65119a4ced250cb78bf22a2dcd5fa9d0585292af5dc515eb8de548
+read_allowlist:
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- .github/**
+- tests/**
+- work/M11-007/A-20260915-002/**
+- work/M11-007/A-20260915-003/**
+- work/M14-005/**
+- PR 97 CI failure and metadata
+write_scope:
+- tests/test_skill_closeout_review.py
+- tests/test_skill_execution_closeout.py
+- tests/fixtures/skill_closeout_sources/**
+- work/M14-005/A-20260921-004/**
+- PR 97 follow-up
+tool_allowlist:
+- git
+- gh
+- python
+- apply_patch
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 95d806a46fd78e8bd31b4926502b00fc33f7c8499802f6318f5e0d064f9703d3
+  event_count: 14
+tool_event_refs:
+- path: tool-events/fresh-red.log
+  sha256: 1456a59a8d76f5dbe2c211f4b7d24f4b3d39f32ea463d5676bf37760ac788311
+- path: tool-events/fresh-green.log
+  sha256: 31120f9601c3e86542ae1fbd40e34a249406b5f60410a9a7ef5dab0d34b41bb5
+- path: tool-events/fresh-tamper.log
+  sha256: 0043c19e6e8ef9efc8236ccd7f303d64a37738f04a179653f7d232c5af02862f
+- path: tool-events/focused.log
+  sha256: 95aab0f5637dc809c5823dd291621cb6d33fe2729b12339f075b99dc6c7d2392
+- path: tool-events/docs-policy-public.log
+  sha256: 5c10af0234390d274ba79f170a55e3fdfaa9e5f6b11727501b40e6ecc2be6f09
+- path: tool-events/verification.json
+  sha256: 400d52887ff634a5179c91bc76d139024a2499dfe3edeb950e211d8ed8439c00
+- path: tool-events/governance.log
+  sha256: a5e1dfe1772fea8d296fd665e38a22f6fec575e2e6cf8f4f3d5f5821ac68569a
+- path: tool-events/ci-plan.json
+  sha256: 407a25c4281cbe5625a1c9b6a6cfd611933306e2f085f73b447c001a9c62001e
+handoff_refs:
+- path: WORKLOG.md
+  sha256: 78e65fb6fde69f45a226175c2f7b04ad9655bdfee21421939efbbad77247e71e
+decision_refs:
+- path: outputs/REPAIR.md
+  sha256: ac4f67553c23fd69c8cdcb6cd8d497037c219bea424e97c93fc40bc7444681ee
+output_refs:
+- path: outputs/REPAIR.md
+  sha256: ac4f67553c23fd69c8cdcb6cd8d497037c219bea424e97c93fc40bc7444681ee
+check_refs:
+- path: .gitattributes
+  sha256: 60570bcd4aede16b611131a3d7f4f41231d477d6b5ac83ccb8381e28af2110a6
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: tool-results
+- event_id: EVT-0004
+  affected_stream: file-revisions
+- event_id: EVT-0005
+  affected_stream: external-actions

@@ -1,0 +1,29 @@
+task_id: M14-005
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+baseline: 1b94a38ae13eada52054cced7b5f22666cb506af
+agent_profile: bounded-ci-portability-repair
+required_skills: []
+delegation: false
+user_request: 97CI出现报错
+goal: Repair historical source hash replay in fresh squash clones.
+read_allowlist:
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- .github/**
+- tests/**
+- work/M11-007/A-20260915-002/**
+- work/M11-007/A-20260915-003/**
+- work/M14-005/**
+- PR 97 CI failure and metadata
+write_scope:
+- tests/test_skill_closeout_review.py
+- tests/test_skill_execution_closeout.py
+- tests/fixtures/skill_closeout_sources/**
+- work/M14-005/A-20260921-004/**
+- PR 97 follow-up
+stop_conditions:
+- Preserve original proof bytes and hash checks.
+- No product, release topology, remote protection or primary develop changes.

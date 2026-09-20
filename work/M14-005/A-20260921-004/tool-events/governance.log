@@ -1,0 +1,15 @@
+Declared risk: R2
+Inferred minimum: R2
+Effective risk: R2
+Reason:
+- .github/scripts/release_source_ci.py matches the R2 policy surface
+- PR declares a shared-contract impact
+- PR declares an authority, permission, or data-boundary impact
+Requirements:
+- pull request and required CI
+- cross-owner review or explicit single-PR maintainer exception before merge (DEVELOPMENT 5.4)
+- explicit authority basis
+- adversarial or negative evidence
+- owner-matched workstream and Risk Ledger
+governance: PASS
+{"base": "ea7d6c8cb619b392f79be439fc1ee214f6928cd9", "head": "ef09089e3b64ca0e39101634fb02b3b852652c66", "plan": "049cfc06911638a35f414d5cd0514e40e7735e4d80da239b3384db66b2a55921", "behavior": "full", "coverage": "impact+repository"}
