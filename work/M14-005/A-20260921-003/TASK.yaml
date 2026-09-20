@@ -1,0 +1,31 @@
+task_id: M14-005
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+agent_profile: bounded-release-preflight
+required_skills: []
+delegation: false
+baseline: 1b94a38ae13eada52054cced7b5f22666cb506af
+goal: Compose live source CI with independently pinned deterministic candidate checks.
+authority: Named preparation decision and current maintainer instruction to continue
+  development during CI.
+read_allowlist:
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- .github/**
+- tests/**
+- work/M14-005/**
+- GitHub Issue 57, PR 97 and current CI/protection APIs
+write_scope:
+- .github/scripts/release_preflight.py
+- tests/test_release_preflight.py
+- tests/coverage_policy.yaml
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- work/M14-005/A-20260921-003/**
+stop_conditions:
+- Separate R2 review; repair PR waiver does not apply.
+- No release refs/tags, topology activation, remote protection mutation or primary
+  develop modification.
