@@ -1,0 +1,11 @@
+{
+  "api_version": "2022-11-28",
+  "source": "ea7d6c8cb619b392f79be439fc1ee214f6928cd9",
+  "merged_pr": 80,
+  "live_transport_identity": "PASS",
+  "focused": 16,
+  "documentation_policy": 31,
+  "line_coverage": 100,
+  "branch_coverage": 100,
+  "full_protected_source_attestation": "Pending corrected integration"
+}

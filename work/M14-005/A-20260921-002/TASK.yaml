@@ -1,0 +1,28 @@
+task_id: M14-005
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+agent_profile: bounded-api-contract-repair
+required_skills: []
+delegation: false
+baseline: ea7d6c8cb619b392f79be439fc1ee214f6928cd9
+goal: Restore exact merged-source identity using the supported GitHub REST contract.
+read_allowlist:
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- .github/**
+- tests/**
+- work/M14-005/**
+- GitHub PR 80, Issue 57, CI and protection APIs
+- GitHub official REST API version and breaking-change documentation
+write_scope:
+- .github/scripts/release_source_ci.py
+- tests/test_release_source_ci.py
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/SOURCE_CI.md
+- work/M14-005/A-20260921-002/**
+- Dedicated repair PR and authorized merge
+stop_conditions:
+- Keep exact source identity checks and dormant release topology.
+- Preserve primary develop and prior frozen Attempts; no release refs or tags.

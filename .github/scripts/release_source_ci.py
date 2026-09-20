@@ -22,6 +22,9 @@ SOURCE_JOBS = REQUIRED + ['plan', 'documentation', 'repository_smoke',
                          'compatibility (3.11)', 'compatibility (3.13)',
                          'coverage-quality (3.11)', 'package-smoke (3.11)', 'package-smoke (3.13)']
 APP_ID = 15368
+# The producer requires merge_commit_sha, removed from REST 2026-03-10.
+# Keep the supported contract explicit; migrating it requires a new identity proof.
+API_VERSION = '2022-11-28'
 
 
 def require(condition, message):
@@ -50,7 +53,7 @@ class GitHub:
     def get(self, path):
         response = subprocess.check_output([
             'gh', 'api', '--hostname', 'github.com', '--method', 'GET',
-            '-H', 'X-GitHub-Api-Version: 2026-03-10', f'repos/{self.repository}' + (f'/{path}' if path else ''),
+            '-H', f'X-GitHub-Api-Version: {API_VERSION}', f'repos/{self.repository}' + (f'/{path}' if path else ''),
         ], text=True, encoding='utf-8')
         return json.loads(response)
 

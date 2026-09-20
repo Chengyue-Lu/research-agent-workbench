@@ -71,6 +71,13 @@ API contracts: [workflow runs and attempts](https://docs.github.com/en/rest/acti
 [check runs](https://docs.github.com/en/rest/checks/runs), and
 [commit-associated PRs](https://docs.github.com/en/rest/commits/commits#list-pull-requests-associated-with-a-commit).
 
+The transport pins REST API `2022-11-28`, whose supported PR response includes the required
+`merge_commit_sha` identity. GitHub [removed that field in `2026-03-10`](https://docs.github.com/en/rest/about-the-rest-api/breaking-changes#version-2026-03-10)
+from both associated-PR and PR-detail responses; switching only the header makes the producer reject every
+source. The [supported-version schedule](https://docs.github.com/en/rest/about-the-rest-api/api-versions#supported-api-versions)
+lists support through 2028-03-10. A future migration must establish an authenticated replacement identity
+and exercise the transport and response schema together. Missing identity still fails closed.
+
 ## Acceptance and next integration
 
 Deterministic fixtures exercise the actual squash-delta governance checker and separate live-observer
@@ -93,8 +100,14 @@ The [previous rebase Attempt](../../../../work/M14-005/A-20260916-001/INDEX.yaml
 The [current rebase Attempt](../../../../work/M14-005/A-20260921-001/INDEX.yaml) retains the M5/CI baseline,
 semantic STATUS/coverage conflict resolution, protection readback and the gated next-step plan.
 
-Next: review and integrate this READY candidate, verify that real protected push, then prepare release-only
-checks and their exact policy include. The named first-release decision authorizes implementation/cutover
+PR #80 was accepted as `ea7d6c8cb619b392f79be439fc1ee214f6928cd9`. Its first protected push
+[35536949452](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/35536949452)
+exposed the API-version mismatch above. The [contract repair Attempt](../../../../work/M14-005/A-20260921-002/INDEX.yaml)
+retains the failing regression, supported live responses and bounded maintainer authorization.
+Full source-CI closure requires the repaired integrated source's successful push and live `attest`.
+
+Next: integrate the API repair and verify its protected push; prepare release-only checks and their exact
+policy include on a separate development branch while CI runs. The named first-release decision authorizes implementation/cutover
 preparation; final release PR and tag require separate approval. Only the canonical Task status changes
 from BLOCKED to READY; its definition/dependencies, release policy, product/Skill inputs and topology remain
 unchanged. Live cutover remains gated by complete release checks, fresh protection evidence and R2 acceptance.

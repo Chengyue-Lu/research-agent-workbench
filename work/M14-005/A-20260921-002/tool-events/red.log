@@ -1,0 +1,18 @@
+E
+======================================================================
+ERROR: test_versioned_transport_preserves_the_required_merge_identity (tests.test_release_source_ci.MergedSourceTests.test_versioned_transport_preserves_the_required_merge_identity)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\m14-source-ci\tests\test_release_source_ci.py", line 241, in test_versioned_transport_preserves_the_required_merge_identity
+    result = source.merged_governance(self.root, source.GitHub(REPO), self.head)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\_worktrees\RWB\m14-source-ci\.github\scripts\release_source_ci.py", line 109, in merged_governance
+    require(len(candidates) == 1, 'one exact merged develop PR required')
+  File "D:\lcy\develop\_worktrees\RWB\m14-source-ci\.github\scripts\release_source_ci.py", line 29, in require
+    raise ValueError(message)
+ValueError: one exact merged develop PR required
+
+----------------------------------------------------------------------
+Ran 1 test in 1.003s
+
+FAILED (errors=1)
