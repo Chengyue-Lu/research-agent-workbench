@@ -40,7 +40,7 @@ def example(measure=False):
                  'dependencies_sha256':'a'*64,'runner_sha256':'b'*64,'coverage_config_sha256':'c'*64,
                  'invocation_context_sha256':'d'*64}
     accepted={'version':1,'role':'accepted','run_id':'A','environment':environment,'receipt':receipt,
-              'driver':{'sha256':'e'*64,'invocation':['python','experiment.py','accepted']},
+              'driver':{'sha256':'e'*64,'invocation':['python','experiment.py','--role','accepted']},
               'coverage':coverage_data() if measure else None,'coverage_binding':None,'smokes':{}}
     candidate=copy.deepcopy(accepted)
     candidate.update(role='candidate',run_id='B')
@@ -204,12 +204,52 @@ class PairedExecutionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'driver'):
             pair.compare_pair(plan,report,inventory,policy,a,b)
 
+    def test_role_only_invocations_and_smoke_membership_cannot_hide_other_execution(self):
+        plan,inventory,policy,report,a,b=example(False)
+        for argv in ([*b['driver']['invocation'],'--fixtures','cached-success'],
+                     ['python','experiment.py','candidate','--role','candidate'],
+                     ['python','other.py','candidate'],['python','experiment.py','accepted','extra']):
+            broken=copy.deepcopy(b);broken['driver']['invocation']=argv
+            with self.subTest(argv=argv):
+                self.assertEqual('inconclusive',pair.compare_pair(plan,report,inventory,policy,a,broken)['pair_status'])
+        for left,right in ((['accepted','x'],['candidate','x']),
+                           (['python','accepted'],['python','candidate']),
+                           (['python','experiment.py','accepted'],['python','experiment.py','candidate']),
+                           (['python','experiment.py','--input','accepted'],['python','experiment.py','--input','candidate']),
+                           (['python','experiment.py','--role','accepted','--role','fixed'],
+                            ['python','experiment.py','--role','candidate','--role','fixed']),
+                           (['python','experiment.py','--role','accepted'],['python','experiment.py','--role','other'])):
+            original,broken=copy.deepcopy(a),copy.deepcopy(b)
+            original['driver']['invocation']=left;broken['driver']['invocation']=right
+            with self.subTest(left=left,right=right):
+                self.assertEqual('inconclusive',pair.compare_pair(plan,report,inventory,policy,original,broken)['pair_status'])
+        b['driver']['invocation']=a['driver']['invocation'][:]
+        self.assertEqual('observed-matching-pair',pair.compare_pair(plan,report,inventory,policy,a,b)['pair_status'])
+        plan['package_smoke']=True
+        for bundle in (a,b):
+            bundle['smokes']['package_smoke']={'plan_id':'p','target':'t','run_id':bundle['run_id'],
+                'execution_receipt_sha256':pair.planner.digest(bundle['receipt']),
+                'artifact_sha256':'a'*64,
+                'conclusion':'success','source':bundle['run_id']+' original smoke log'}
+        self.assertEqual('observed-matching-pair',pair.compare_pair(plan,report,inventory,policy,a,b)['pair_status'])
+        b['smokes']=copy.deepcopy(a['smokes'])
+        with self.assertRaisesRegex(ValueError,'smoke artifact binding'):
+            pair.compare_pair(plan,report,inventory,policy,a,b)
+        b['smokes']['package_smoke']['run_id']=b['run_id']
+        with self.assertRaisesRegex(ValueError,'smoke artifact binding'):
+            pair.compare_pair(plan,report,inventory,policy,a,b)
+        b['smokes']['package_smoke']['execution_receipt_sha256']=pair.planner.digest(b['receipt'])
+        b['smokes']['package_smoke']['artifact_sha256']='invalid'
+        with self.assertRaisesRegex(ValueError,'smoke artifact binding'):
+            pair.compare_pair(plan,report,inventory,policy,a,b)
+
     def test_failed_skipped_missing_lifecycle_and_smoke_proofs_stay_inconclusive(self):
         plan,inventory,policy,report,a,b=example(True)
         mutations=[lambda r:r['receipt']['tests'][0].update(outcome='failed'),
                    lambda r:r['receipt']['tests'][0].update(checkpoints=[{'outcome':'skipped'}]),
                    lambda r:r['receipt'].update(execution_order=[B,A]),lambda r:r['receipt'].pop('execution'),
                    lambda r:r['receipt']['events'].update(errors=1),
+                   lambda r:r['receipt']['events'].update(skips=1),
                    lambda r:r['coverage']['files'][MODULE].update(missing_lines=[1]),
                    lambda r:r['coverage']['files'][MODULE].update(missing_branches=[[1,-1]]),
                    lambda r:r['coverage'].update(files={})]
@@ -221,13 +261,24 @@ class PairedExecutionTests(unittest.TestCase):
         self.assertEqual('missing',pair.compare_pair(plan,report,inventory,policy,a,b)['coverage']['candidate']['status'])
         plan,inventory,policy,report,a,b=example(False)
         plan['package_smoke']=True
-        a['smokes']['package_smoke']={'plan_id':'p','target':'t','conclusion':'success','source':'retained job log'}
+        plan['repository_smoke']=True
+        a['smokes']['package_smoke']={'plan_id':'p','target':'t','run_id':'A',
+            'execution_receipt_sha256':pair.planner.digest(a['receipt']),'artifact_sha256':'a'*64,
+            'conclusion':'success','source':'retained job log'}
+        a['smokes']['repository_smoke']=copy.deepcopy(a['smokes']['package_smoke'])
         for status in ('missing','failure','cancelled','skipped'):
-            b['smokes']['package_smoke']={'plan_id':'p','target':'t','conclusion':status,'source':'retained candidate log'}
+            b['smokes']['package_smoke']={'plan_id':'p','target':'t','run_id':'B',
+                'execution_receipt_sha256':pair.planner.digest(b['receipt']),'artifact_sha256':'b'*64,
+                'conclusion':status,'source':'retained candidate log'}
+            b['smokes']['repository_smoke']=copy.deepcopy(b['smokes']['package_smoke'])
             self.assertEqual('inconclusive',pair.compare_pair(plan,report,inventory,policy,a,b)['pair_status'])
         b['smokes']['package_smoke']['conclusion']='success'
+        self.assertEqual('inconclusive',pair.compare_pair(plan,report,inventory,policy,a,b)['pair_status'])
+        b['smokes']['repository_smoke']['conclusion']='success'
         self.assertEqual('observed-matching-pair',pair.compare_pair(plan,report,inventory,policy,a,b)['pair_status'])
         a['receipt']['wall_seconds']=0
+        a['smokes']['package_smoke']['execution_receipt_sha256']=pair.planner.digest(a['receipt'])
+        a['smokes']['repository_smoke']['execution_receipt_sha256']=pair.planner.digest(a['receipt'])
         self.assertIsNone(pair.compare_pair(plan,report,inventory,policy,a,b)['timing']['difference_percent'])
 
     def test_repository_thresholds_and_acceptance_mapping_are_still_enforced(self):

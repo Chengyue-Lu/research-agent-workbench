@@ -201,7 +201,7 @@ def compare_receipt(plan, inventory, candidate, receipt, *, suite_label=None):
         events = receipt.get('events')
         if (not isinstance(events, dict) or any(type(events.get(key)) is not int or events[key] < 0
                                                for key in ('failures', 'errors', 'skips')) or
-                events['failures'] or events['errors'] or receipt.get('successful') is not True):
+                events['failures'] or events['errors'] or events['skips'] or receipt.get('successful') is not True):
             blockers.append('accepted execution has missing or unsuccessful suite/fixture events')
         if receipt.get('execution_order') != expected:
             blockers.append('accepted execution order incomplete or different from collected inventory')

@@ -52,6 +52,7 @@ class ConsumerOutcomeTests(unittest.TestCase):
         for mutation in (lambda r: r.update(execution_order=[B, A, C]), lambda r: r.pop('events'),
                          lambda r: r.update(suite='coverage-quality'), lambda r: r.pop('execution'),
                          lambda r: r.update(test_count=2), lambda r: r['events'].update(errors=1),
+                         lambda r: r['events'].update(skips=1),
                          lambda r: r.update(successful=False), lambda r: r['tests'].pop()):
             broken = copy.deepcopy(receipt)
             mutation(broken)

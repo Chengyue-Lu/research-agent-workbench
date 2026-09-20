@@ -4,6 +4,8 @@ Owner: 路诚钺 (`Chengyue-Lu`); risk R2; [Issue #87](https://github.com/Chengy
 This first 2B slice follows the [domain inventory](DOMAIN_MODEL.md). It introduces
 an offline behavioral proposal and result comparator. Accepted execution still runs
 under the existing planner, witness, workers and aggregate Gates.
+The [review boundary](CONSUMER_SHADOW_READINESS.md) separates this diagnostic PR's
+completion requirements from later production activation.
 
 ## Protocol
 
@@ -119,6 +121,12 @@ platform, dependency inventory, runner, coverage configuration, invocation conte
 and the actual execution-driver source/invocation. It rejects using one execution
 as both pair members. A changed selection must use a `shadow-candidate` receipt;
 an unchanged candidate may retain its original native runner suite label.
+Invocations must be identical or differ only in the value of one `--role` argument
+from `accepted` to `candidate`; changing other options, values or their order keeps the pair
+inconclusive. Every smoke observation also binds its member's run ID and native
+execution receipt digest and retains the original smoke artifact digest. A copied
+opposite-member smoke is rejected. Aggregate
+skip events remain inconclusive even when individual case records omit the skip.
 
 Each raw coverage artifact is explicitly associated with its plan, target, run,
 source receipt digest and artifact digest. The existing impact and repository

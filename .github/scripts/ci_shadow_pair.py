@@ -53,8 +53,11 @@ def validate_bundle(plan, inventory, bundle, role):
     planner.require(isinstance(bundle['smokes'], dict) and
                     set(bundle['smokes']) <= {'package_smoke', 'repository_smoke'}, 'invalid smoke artifacts')
     for value in bundle['smokes'].values():
-        planner.require(isinstance(value, dict) and set(value) == {'plan_id', 'target', 'conclusion', 'source'} and
+        planner.require(isinstance(value, dict) and set(value) ==
+                        {'plan_id', 'target', 'run_id', 'execution_receipt_sha256', 'artifact_sha256', 'conclusion', 'source'} and
                         value['plan_id'] == plan['plan_id'] and value['target'] == plan['binding']['target'] and
+                        value['run_id'] == bundle['run_id'] and value['execution_receipt_sha256'] == planner.digest(receipt) and
+                        isinstance(value['artifact_sha256'], str) and re.fullmatch('[0-9a-f]{64}', value['artifact_sha256']) and
                         value['conclusion'] in {'success', 'failure', 'cancelled', 'skipped', 'missing'} and
                         isinstance(value['source'], str) and value['source'].strip(), 'smoke artifact binding/status invalid')
 
@@ -120,6 +123,13 @@ def compare_pair(plan, proposal_report, inventory, policy, accepted, candidate):
     blockers = []
     if accepted['driver']['sha256'] != candidate['driver']['sha256']:
         blockers.append('execution drivers differ; timing comparison has an uncontrolled code difference')
+    left, right = accepted['driver']['invocation'], candidate['driver']['invocation']
+    differences = [index for index, (a, b) in enumerate(zip(left, right)) if a != b]
+    role_only = (len(left) == len(right) and len(differences) == 1 and differences[0] >= 3 and
+                 left[differences[0]-1] == '--role' and left.count('--role') == 1 and
+                 (left[differences[0]], right[differences[0]]) == ('accepted', 'candidate'))
+    if left != right and not role_only:
+        blockers.append('execution invocations differ beyond the single --role argument')
     for role, result in (('accepted', observed), ('candidate', candidate_result)):
         if result['status'] != 'observed-no-missed-failure':
             blockers.append(role + ' execution incomplete or unsuccessful')

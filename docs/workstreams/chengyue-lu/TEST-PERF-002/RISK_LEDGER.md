@@ -215,3 +215,17 @@ for cross-owner review. Quality thresholds, exclusions, product contracts and re
   consistently before the accepted and candidate runs; a failed setup is not a passing baseline.
 - PR #92's diagnostic JSON input currently triggers unknown-surface FULL/repository.
   Declare and review its real consumers before changing that conservative fallback.
+
+## Paired protocol integrity review
+
+- A positive aggregate skip count remains inconclusive even if case rows claim all
+  passed. Unexplained events cannot disappear during outcome comparison.
+- Equal driver bytes do not authorize arbitrary argv differences. Only the single
+  explicit `--role` value may change between accepted and candidate; interpreter,
+  script, input, fixture and other argument changes remain confounders.
+- Smoke artifacts bind the member's run ID, native execution receipt digest and
+  original artifact digest. Opposite-member or stale associations are rejected;
+  these offline bindings do not establish authenticated execution provenance.
+- The [PR review boundary](CONSUMER_SHADOW_READINESS.md) requires current CI and
+  independent owner review. It keeps production activation and hosted speed claims
+  subject to the separate 2C requirements.
