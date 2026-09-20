@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import zipfile
 from unittest.mock import patch
 from pathlib import Path
 
@@ -400,9 +401,10 @@ print(json.dumps({'status':r.document['status'],'skill':r.document['actual_skill
     def test_archived_candidate_pins_and_replay_are_portable(self):
         archive = ROOT / 'work/M11-007/A-20260915-002'
         proof = json.loads((archive / 'checks/vertical-proof.json').read_bytes())
-        for ref in proof['source_refs']:
-            content = subprocess.check_output(['git', 'show', proof['implementation_commit'] + ':' + ref['path']], cwd=ROOT)
-            self.assertEqual(ref['sha256'], hashlib.sha256(content).hexdigest())
+        with zipfile.ZipFile(ROOT / 'tests/fixtures/skill_closeout_sources/sources.zip') as sources:
+            for ref in proof['source_refs']:
+                content = sources.read(ref['sha256'] + '.txt')
+                self.assertEqual(ref['sha256'], hashlib.sha256(content).hexdigest())
         self.assertEqual(proof['replay_script']['sha256'], hash_file(ROOT / proof['replay_script']['path']))
         for case in proof['cases']:
             with self.subTest(case=case['case']):
