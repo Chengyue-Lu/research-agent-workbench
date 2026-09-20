@@ -229,3 +229,8 @@ for cross-owner review. Quality thresholds, exclusions, product contracts and re
 - The [PR review boundary](CONSUMER_SHADOW_READINESS.md) requires current CI and
   independent owner review. It keeps production activation and hosted speed claims
   subject to the separate 2C requirements.
+- Diagnostic record updates in the impact-policy file can move the production
+  fingerprint anchor without changing its declared authority. PR #86/#89 reproduce
+  this inherited conservative expansion. Do not refresh the digest blindly or use
+  a historical narrow plan as proof of current-base savings. A separate anchor
+  repair must preserve new/changed consumer retention and independent witness checks.

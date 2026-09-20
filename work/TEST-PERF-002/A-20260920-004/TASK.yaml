@@ -1,0 +1,7 @@
+task_id: TEST-PERF-002
+revision: 42
+request: Continue PR92 to an explicit ready-for-merge boundary
+scope: CI-only paired protocol fixes, real coverage and smoke observations, readiness
+  evidence
+delegation: true
+required_skills: []

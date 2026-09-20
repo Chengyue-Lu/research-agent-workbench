@@ -146,6 +146,14 @@ but keeps the pair `inconclusive`. An `observed-matching-pair` result refers to 
 supplied inventories/artifacts, not authenticated completeness or activation authority.
 One local pair cannot establish hosted critical-path savings.
 
+A historical provider control also exercises real required coverage and both
+smokes: two fresh Python 3.11 executions each retain B=81/C=34, with no exclusions,
+and pass impact, repository and four package-install probes independently. An
+earlier guard-change control passes all behavioral cases but fails its changed
+coverage coordinates; that original failure is retained. These provider subjects
+are not critical inventory members. This control proves actual protocol handling,
+not repository coverage, a new critical threshold result or a speedup.
+
 ```text
 python .github/scripts/ci_shadow_pair.py --repo . --plan plan.json --proposal proposal.json --inventory inventory.json --accepted accepted-bundle.json --candidate candidate-bundle.json --output pair.json
 ```
@@ -164,3 +172,27 @@ Actual pair data, original setup-error evidence and the hosted #92 baseline are 
 The hosted #92 baseline passed all Gates with B=1418/C=1392 and coverage job 19m51s;
 its lone unclassified fallback was the diagnostic `domain-model.json` input. This
 is a future declaration-boundary item, not an exemption based on its docs path.
+Protocol repairs, the real impact/smoke controls and their independent review are
+retained in [Attempt A-20260920-004](../../../../work/TEST-PERF-002/A-20260920-004/RESULTS.md).
+
+## Inherited reviewed-leaf anchor issue
+
+Coverage pilot preparation at base `171d4654f88e926f239cdf25bc8168109b81f391`
+found an additional conservative expansion. The production planner chooses the most
+recent commit touching the entire impact-policy file as its reviewed fingerprint
+anchor. PR #86 and #89 changed diagnostic consumer-record pins only within that
+file, preserving the earlier fingerprint, groups and leaf definitions. Their new
+file anchors include changed non-leaf inventories and no longer match that digest.
+Consequently otherwise eligible leaf changes lose the reviewed opaque-consumer
+boundary; both behavioral and impact test selection can expand.
+
+The matching historical anchor is `348d6257ddd28637c9d06abe177fc685ac4368b6`.
+Experiments using it are historical controls, not narrow plans available at the
+current accepted base. The current-base expanded plans and exact fingerprint record
+changes are retained as diagnostic debt. A digest refresh would admit newly changed
+consumers into the reviewed inventory and needs its own closure audit.
+
+Repair requires a separately reviewed authority anchor that survives diagnostic-only
+record changes while continuing to retain new or changed consumers. The current PR
+does not alter that production selection mechanism. An unavailable or mismatched
+anchor continues to retain the conservative plan.
