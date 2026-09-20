@@ -1,0 +1,40 @@
+{
+  "capture": "Retained reports and handoff summaries; incomplete raw message stream declared",
+  "tasks": [
+    {
+      "agent": "domain_inventory",
+      "profile": "CI execution auditor",
+      "skills": [],
+      "owner": "Chengyue-Lu",
+      "write_scope": "assessment/accepted-doc only",
+      "budget": "initial12m; setup repair12m; common-driver10m",
+      "outputs": "full accepted and filtered candidate raw receipts/inventories; environment/pins/drivers; retained setup errors",
+      "stop": "one same-driver pair after setup and driver confounds explicitly repaired"
+    },
+    {
+      "agent": "domain_plan_review",
+      "profile": "CI consumer and integrity reviewer",
+      "skills": [],
+      "owner": "Chengyue-Lu",
+      "write_scope": "assessment/planner-consumer only",
+      "budget": "10m audit;8m review;4m recheck",
+      "outputs": "73-case19-pin consumer proposal; real executable mutant; driver finding and independent recheck"
+    },
+    {
+      "agent": "pr90_cost",
+      "profile": "CI measurement auditor",
+      "skills": [],
+      "owner": "Chengyue-Lu",
+      "write_scope": "assessment/pr92 only",
+      "budget": "10m",
+      "outputs": "verified hosted artifacts, real target, all Gate and cost summaries"
+    }
+  ],
+  "main_decisions": [
+    "Kernel controls are not in actual accepted B; zero savings",
+    "Keep original setup failure; prepare exact runtime resources and rerun accepted/candidate",
+    "Bind actual drivers and retain different-driver pair as inconclusive",
+    "One identical-driver rerun closes that measured confound; do not claim hosted acceptance",
+    "Guard workstream-only proposal scope, all others retained; preserve C and quality checkers"
+  ]
+}

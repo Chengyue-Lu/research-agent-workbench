@@ -1,0 +1,6 @@
+task_id: TEST-PERF-002
+revision: 41
+request: Continue CI-only2B complete accepted/candidate execution and coverage observations
+scope: paired comparator, scoped planner consumer, fresh local pair and hosted92 baseline
+delegation: true
+required_skills: []

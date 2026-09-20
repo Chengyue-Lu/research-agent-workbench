@@ -1,0 +1,1604 @@
+{
+  "binding": {
+    "base": "171d4654f88e926f239cdf25bc8168109b81f391",
+    "head": "b8b21b72459236508613e751d68aa02fc86967b1",
+    "merge_base": "171d4654f88e926f239cdf25bc8168109b81f391",
+    "repository": "Chengyue-Lu/research-agent-workbench",
+    "target": "f786ed5652af0320fb84ebfdecdba3b978da51de"
+  },
+  "plan_id": "d9fc68506c372f0a9b67ea6be4e4645a32a473a30cb092213dc3da6f60724746",
+  "policy_sha256": "f7fc9d92ce0271f323e5973751f1e08933d6398fc50faf251cdbda902f33d67a",
+  "plan": {
+    "risk": "R2",
+    "behavioral_scope": "full",
+    "coverage_scope": "impact+repository",
+    "coverage_obligations": [
+      "impact",
+      "repository"
+    ],
+    "coverage_modules": [
+      ".github/scripts/ci_consumer_shadow.py",
+      ".github/scripts/ci_domain_audit.py"
+    ],
+    "package_smoke": true,
+    "repository_smoke": true
+  },
+  "reason_counts": {
+    "behavioral_scope": {
+      "unclassified dependency surface": 1
+    },
+    "coverage_scope": {
+      "changed executable/critical subjects retain impact 100/100 and critical 95/90 with acceptance": 1,
+      "unclassified dependency surface": 1
+    },
+    "package_smoke": {
+      "unclassified dependency surface": 1,
+      "affected public CLI consumer": 1
+    },
+    "repository_smoke": {
+      "unclassified dependency surface": 1,
+      "affected repository validation consumer": 1
+    }
+  },
+  "policy_reason": [],
+  "B": 1418,
+  "C": 1392,
+  "B_union_C": 1418,
+  "B_intersection_C": 1392,
+  "C_minus_B": 0,
+  "B_minus_C": 26,
+  "executed": 1418,
+  "executed_unique": 1418,
+  "ordered_B_then_C_minus_B": true,
+  "coverage_execution": {
+    "wall_seconds": 1169.74693,
+    "sum_case_seconds": 1079.557003,
+    "outcomes": {
+      "errors": 0,
+      "expected_failure": 0,
+      "failed": 0,
+      "passed": 1418,
+      "passed_with_skips": 0,
+      "skipped": 0,
+      "unexpected_success": 0
+    },
+    "python_version": "3.11.16"
+  },
+  "compatibility_execution": {
+    "wall_seconds": 855.218937,
+    "sum_case_seconds": 798.230191,
+    "outcomes": {
+      "errors": 0,
+      "expected_failure": 0,
+      "failed": 0,
+      "passed": 1418,
+      "passed_with_skips": 0,
+      "skipped": 0,
+      "unexpected_success": 0
+    },
+    "python_version": "3.13.15"
+  },
+  "module_costs": [
+    {
+      "module": "test_evaluation_harness_execution",
+      "cases": 25,
+      "coverage_seconds": 318.4732900000001,
+      "compatibility_313_seconds": 238.896573,
+      "case_seconds_percent": 29.50036812460936
+    },
+    {
+      "module": "test_ci_plan",
+      "cases": 73,
+      "coverage_seconds": 86.69055799999995,
+      "compatibility_313_seconds": 54.40482399999994,
+      "case_seconds_percent": 8.030197364205321
+    },
+    {
+      "module": "test_evaluation_harness_preflight",
+      "cases": 13,
+      "coverage_seconds": 76.267288,
+      "compatibility_313_seconds": 51.30424800000001,
+      "case_seconds_percent": 7.064683734907882
+    },
+    {
+      "module": "test_baseline_execution",
+      "cases": 18,
+      "coverage_seconds": 69.12856000000001,
+      "compatibility_313_seconds": 69.750526,
+      "case_seconds_percent": 6.403419162480299
+    },
+    {
+      "module": "test_baseline_replay_integrity",
+      "cases": 19,
+      "coverage_seconds": 68.50551200000001,
+      "compatibility_313_seconds": 42.829392,
+      "case_seconds_percent": 6.345705859869264
+    },
+    {
+      "module": "test_skill_execution_closeout",
+      "cases": 33,
+      "coverage_seconds": 49.965848,
+      "compatibility_313_seconds": 33.692073,
+      "case_seconds_percent": 4.628365881667113
+    },
+    {
+      "module": "test_evaluation_overlay",
+      "cases": 19,
+      "coverage_seconds": 32.463336000000005,
+      "compatibility_313_seconds": 19.633974000000006,
+      "case_seconds_percent": 3.007097903101649
+    },
+    {
+      "module": "test_generic_execution_closeout",
+      "cases": 13,
+      "coverage_seconds": 25.604864,
+      "compatibility_313_seconds": 16.03319,
+      "case_seconds_percent": 2.3717936087530527
+    },
+    {
+      "module": "test_skill_closeout_review",
+      "cases": 10,
+      "coverage_seconds": 21.722991,
+      "compatibility_313_seconds": 13.751624999999997,
+      "case_seconds_percent": 2.012213430104534
+    },
+    {
+      "module": "test_scaffold",
+      "cases": 12,
+      "coverage_seconds": 17.857272000000002,
+      "compatibility_313_seconds": 13.113,
+      "case_seconds_percent": 1.6541296059750543
+    },
+    {
+      "module": "test_skill_evaluation",
+      "cases": 12,
+      "coverage_seconds": 15.422246000000001,
+      "compatibility_313_seconds": 13.023178,
+      "case_seconds_percent": 1.4285717157262516
+    },
+    {
+      "module": "test_artifacts_promotion",
+      "cases": 44,
+      "coverage_seconds": 15.345586999999998,
+      "compatibility_313_seconds": 12.691890000000006,
+      "case_seconds_percent": 1.4214707474784452
+    },
+    {
+      "module": "test_phase_c_gate",
+      "cases": 18,
+      "coverage_seconds": 14.608759999999998,
+      "compatibility_313_seconds": 18.867033000000003,
+      "case_seconds_percent": 1.353218029191924
+    },
+    {
+      "module": "test_skill_release_projection",
+      "cases": 16,
+      "coverage_seconds": 14.409621999999999,
+      "compatibility_313_seconds": 11.729011999999999,
+      "case_seconds_percent": 1.3347717591527681
+    },
+    {
+      "module": "test_evaluation_harness_plan",
+      "cases": 12,
+      "coverage_seconds": 14.001771999999999,
+      "compatibility_313_seconds": 12.388787,
+      "case_seconds_percent": 1.2969923738246547
+    },
+    {
+      "module": "test_execution_trace_adapter",
+      "cases": 14,
+      "coverage_seconds": 12.688124,
+      "compatibility_313_seconds": 10.601989999999999,
+      "case_seconds_percent": 1.1753083871199714
+    },
+    {
+      "module": "test_capability_consumer",
+      "cases": 8,
+      "coverage_seconds": 12.198820999999999,
+      "compatibility_313_seconds": 7.03352,
+      "case_seconds_percent": 1.129983962505035
+    },
+    {
+      "module": "test_runtime_resources",
+      "cases": 12,
+      "coverage_seconds": 11.595401,
+      "compatibility_313_seconds": 7.520891000000001,
+      "case_seconds_percent": 1.074088813075858
+    },
+    {
+      "module": "test_run_reconstruction",
+      "cases": 20,
+      "coverage_seconds": 11.123248999999998,
+      "compatibility_313_seconds": 10.06663,
+      "case_seconds_percent": 1.030353095676227
+    },
+    {
+      "module": "test_claim_trace",
+      "cases": 15,
+      "coverage_seconds": 10.824216000000002,
+      "compatibility_313_seconds": 9.502311999999998,
+      "case_seconds_percent": 1.0026534930457953
+    },
+    {
+      "module": "test_evaluation_overlap",
+      "cases": 13,
+      "coverage_seconds": 10.651737999999996,
+      "compatibility_313_seconds": 6.695333999999999,
+      "case_seconds_percent": 0.9866767544835238
+    },
+    {
+      "module": "test_system_evaluation_protocol",
+      "cases": 22,
+      "coverage_seconds": 10.130130999999997,
+      "compatibility_313_seconds": 6.738788,
+      "case_seconds_percent": 0.9383599913528603
+    },
+    {
+      "module": "test_agent_trace",
+      "cases": 39,
+      "coverage_seconds": 8.234863,
+      "compatibility_313_seconds": 6.294894000000001,
+      "case_seconds_percent": 0.7628002020380578
+    },
+    {
+      "module": "test_trace_properties",
+      "cases": 3,
+      "coverage_seconds": 7.830333999999999,
+      "compatibility_313_seconds": 6.238091,
+      "case_seconds_percent": 0.7253284428927927
+    },
+    {
+      "module": "test_execution_host",
+      "cases": 10,
+      "coverage_seconds": 7.1824340000000015,
+      "compatibility_313_seconds": 4.128792999999999,
+      "case_seconds_percent": 0.6653130849080326
+    },
+    {
+      "module": "test_research_state_critical_branches",
+      "cases": 21,
+      "coverage_seconds": 7.082346000000001,
+      "compatibility_313_seconds": 5.571897,
+      "case_seconds_percent": 0.6560418746132669
+    },
+    {
+      "module": "test_ci_contract_shadow",
+      "cases": 15,
+      "coverage_seconds": 6.985033,
+      "compatibility_313_seconds": 4.026078999999999,
+      "case_seconds_percent": 0.6470277142002848
+    },
+    {
+      "module": "test_m3_context_observability",
+      "cases": 17,
+      "coverage_seconds": 6.660321000000001,
+      "compatibility_313_seconds": 4.662984,
+      "case_seconds_percent": 0.6169494506998257
+    },
+    {
+      "module": "test_evaluation_contracts",
+      "cases": 6,
+      "coverage_seconds": 6.372758,
+      "compatibility_313_seconds": 4.717416999999999,
+      "case_seconds_percent": 0.5903123209141
+    },
+    {
+      "module": "test_baseline_envelope",
+      "cases": 8,
+      "coverage_seconds": 6.175780000000001,
+      "compatibility_313_seconds": 3.86634,
+      "case_seconds_percent": 0.5720661329450892
+    },
+    {
+      "module": "test_release_surface",
+      "cases": 38,
+      "coverage_seconds": 5.607018999999998,
+      "compatibility_313_seconds": 6.0872459999999995,
+      "case_seconds_percent": 0.5193814670664499
+    },
+    {
+      "module": "test_evaluation_manifest",
+      "cases": 44,
+      "coverage_seconds": 5.363346000000002,
+      "compatibility_313_seconds": 3.4576349999999993,
+      "case_seconds_percent": 0.4968098937893696
+    },
+    {
+      "module": "test_method_trace_candidate",
+      "cases": 24,
+      "coverage_seconds": 5.226206000000001,
+      "compatibility_313_seconds": 3.6514310000000005,
+      "case_seconds_percent": 0.48410653494690925
+    },
+    {
+      "module": "test_research_mode_migration",
+      "cases": 12,
+      "coverage_seconds": 4.950531000000001,
+      "compatibility_313_seconds": 2.816603,
+      "case_seconds_percent": 0.45857059759168656
+    },
+    {
+      "module": "test_method_resolutions",
+      "cases": 18,
+      "coverage_seconds": 4.900719,
+      "compatibility_313_seconds": 3.401307,
+      "case_seconds_percent": 0.4539564827407266
+    },
+    {
+      "module": "test_capability_resolution",
+      "cases": 18,
+      "coverage_seconds": 4.782935000000001,
+      "compatibility_313_seconds": 3.659411000000001,
+      "case_seconds_percent": 0.4430460815601788
+    },
+    {
+      "module": "test_m2_registry_runtime",
+      "cases": 18,
+      "coverage_seconds": 4.702396,
+      "compatibility_313_seconds": 6.179761,
+      "case_seconds_percent": 0.43558570663081514
+    },
+    {
+      "module": "test_mode_actions",
+      "cases": 13,
+      "coverage_seconds": 4.307794999999998,
+      "compatibility_313_seconds": 2.3813099999999996,
+      "case_seconds_percent": 0.3990335839635138
+    },
+    {
+      "module": "test_cli",
+      "cases": 11,
+      "coverage_seconds": 4.1926190000000005,
+      "compatibility_313_seconds": 3.043091,
+      "case_seconds_percent": 0.38836476335654885
+    },
+    {
+      "module": "test_execution_view",
+      "cases": 9,
+      "coverage_seconds": 3.7734850000000004,
+      "compatibility_313_seconds": 2.023145,
+      "case_seconds_percent": 0.34954013447310306
+    },
+    {
+      "module": "test_artifacts_validation_host",
+      "cases": 18,
+      "coverage_seconds": 3.7385240000000004,
+      "compatibility_313_seconds": 3.1599829999999995,
+      "case_seconds_percent": 0.34630167648497956
+    },
+    {
+      "module": "test_handoff_transfer",
+      "cases": 7,
+      "coverage_seconds": 3.539019,
+      "compatibility_313_seconds": 2.646319,
+      "case_seconds_percent": 0.3278214110200164
+    },
+    {
+      "module": "test_skill_runtime_extension",
+      "cases": 6,
+      "coverage_seconds": 3.5142740000000003,
+      "compatibility_313_seconds": 1.7961040000000001,
+      "case_seconds_percent": 0.3255292671192093
+    },
+    {
+      "module": "test_execution_contract_helpers",
+      "cases": 26,
+      "coverage_seconds": 3.3336770000000007,
+      "compatibility_313_seconds": 2.370743000000001,
+      "case_seconds_percent": 0.30880046081272106
+    },
+    {
+      "module": "test_research_attempt_failure",
+      "cases": 20,
+      "coverage_seconds": 3.3119790000000005,
+      "compatibility_313_seconds": 2.5076709999999998,
+      "case_seconds_percent": 0.306790562313642
+    },
+    {
+      "module": "test_runtime_bundle",
+      "cases": 12,
+      "coverage_seconds": 3.243005,
+      "compatibility_313_seconds": 1.68928,
+      "case_seconds_percent": 0.3004014601348476
+    },
+    {
+      "module": "test_skill_needs",
+      "cases": 10,
+      "coverage_seconds": 2.818775000000001,
+      "compatibility_313_seconds": 2.1603459999999997,
+      "case_seconds_percent": 0.2611047857748
+    },
+    {
+      "module": "test_ci_checks",
+      "cases": 23,
+      "coverage_seconds": 2.550387000000001,
+      "compatibility_313_seconds": 3.021948,
+      "case_seconds_percent": 0.2362438475145533
+    },
+    {
+      "module": "test_validation",
+      "cases": 8,
+      "coverage_seconds": 2.3109109999999995,
+      "compatibility_313_seconds": 1.5481749999999999,
+      "case_seconds_percent": 0.21406104481543525
+    },
+    {
+      "module": "test_schemas",
+      "cases": 6,
+      "coverage_seconds": 2.0651520000000003,
+      "compatibility_313_seconds": 1.422269,
+      "case_seconds_percent": 0.19129624413172377
+    },
+    {
+      "module": "test_ci_consumer_shadow",
+      "cases": 4,
+      "coverage_seconds": 2.0246990000000005,
+      "compatibility_313_seconds": 1.0940560000000004,
+      "case_seconds_percent": 0.1875490589541385
+    },
+    {
+      "module": "test_protocol_profiles",
+      "cases": 9,
+      "coverage_seconds": 2.016159,
+      "compatibility_313_seconds": 1.525843,
+      "case_seconds_percent": 0.18675799373236063
+    },
+    {
+      "module": "test_selection_witness",
+      "cases": 10,
+      "coverage_seconds": 1.892861,
+      "compatibility_313_seconds": 2.60168,
+      "case_seconds_percent": 0.17533682748941418
+    },
+    {
+      "module": "test_decision_authority",
+      "cases": 11,
+      "coverage_seconds": 1.8326310000000001,
+      "compatibility_313_seconds": 1.1209580000000001,
+      "case_seconds_percent": 0.16975768717235584
+    },
+    {
+      "module": "test_ci_domain_audit",
+      "cases": 4,
+      "coverage_seconds": 1.825703,
+      "compatibility_313_seconds": 0.9792160000000001,
+      "case_seconds_percent": 0.1691159424584827
+    },
+    {
+      "module": "test_research_state_candidate",
+      "cases": 15,
+      "coverage_seconds": 1.8148080000000006,
+      "compatibility_313_seconds": 1.4651640000000001,
+      "case_seconds_percent": 0.16810673220189382
+    },
+    {
+      "module": "test_phase_b_evolution_gate",
+      "cases": 9,
+      "coverage_seconds": 1.5958279999999998,
+      "compatibility_313_seconds": 0.891692,
+      "case_seconds_percent": 0.14782248603504267
+    },
+    {
+      "module": "test_public_surface",
+      "cases": 13,
+      "coverage_seconds": 1.3689930000000003,
+      "compatibility_313_seconds": 0.729956,
+      "case_seconds_percent": 0.12681062659921447
+    },
+    {
+      "module": "test_execution_archive_helpers",
+      "cases": 8,
+      "coverage_seconds": 1.1130399999999998,
+      "compatibility_313_seconds": 0.8627779999999999,
+      "case_seconds_percent": 0.10310154970112309
+    },
+    {
+      "module": "test_ci_dependencies",
+      "cases": 52,
+      "coverage_seconds": 1.076466,
+      "compatibility_313_seconds": 1.3374449999999993,
+      "case_seconds_percent": 0.09971367857450691
+    },
+    {
+      "module": "test_project_internal_handoff_fixtures",
+      "cases": 2,
+      "coverage_seconds": 0.9435899999999999,
+      "compatibility_313_seconds": 0.776555,
+      "case_seconds_percent": 0.08740529655940735
+    },
+    {
+      "module": "test_capability_requirements",
+      "cases": 11,
+      "coverage_seconds": 0.922731,
+      "compatibility_313_seconds": 0.7914300000000001,
+      "case_seconds_percent": 0.0854731151236856
+    },
+    {
+      "module": "test_cli_command_branches",
+      "cases": 4,
+      "coverage_seconds": 0.782592,
+      "compatibility_313_seconds": 0.65045,
+      "case_seconds_percent": 0.07249195714772275
+    },
+    {
+      "module": "test_m5_trace_export",
+      "cases": 4,
+      "coverage_seconds": 0.664585,
+      "compatibility_313_seconds": 0.44979499999999994,
+      "case_seconds_percent": 0.06156089934604408
+    },
+    {
+      "module": "test_api_session_runner",
+      "cases": 19,
+      "coverage_seconds": 0.6068830000000002,
+      "compatibility_313_seconds": 0.449112,
+      "case_seconds_percent": 0.056215929155526055
+    },
+    {
+      "module": "test_skill_evaluation_helpers",
+      "cases": 7,
+      "coverage_seconds": 0.5326130000000001,
+      "compatibility_313_seconds": 0.460218,
+      "case_seconds_percent": 0.04933625538252381
+    },
+    {
+      "module": "test_skill_lifecycle",
+      "cases": 7,
+      "coverage_seconds": 0.43007,
+      "compatibility_313_seconds": 0.29441999999999996,
+      "case_seconds_percent": 0.03983763699414398
+    },
+    {
+      "module": "test_candidate_claim_rewrite",
+      "cases": 5,
+      "coverage_seconds": 0.403029,
+      "compatibility_313_seconds": 0.429246,
+      "case_seconds_percent": 0.037332813263219605
+    },
+    {
+      "module": "test_provider_conformance",
+      "cases": 5,
+      "coverage_seconds": 0.329921,
+      "compatibility_313_seconds": 0.276633,
+      "case_seconds_percent": 0.030560776233508443
+    },
+    {
+      "module": "test_validation_helpers",
+      "cases": 8,
+      "coverage_seconds": 0.3249650000000001,
+      "compatibility_313_seconds": 0.277023,
+      "case_seconds_percent": 0.03010169903923083
+    },
+    {
+      "module": "test_critical_contract_branches",
+      "cases": 10,
+      "coverage_seconds": 0.29381999999999997,
+      "compatibility_313_seconds": 0.19582,
+      "case_seconds_percent": 0.027216719375030538
+    },
+    {
+      "module": "test_artifacts_admission",
+      "cases": 26,
+      "coverage_seconds": 0.27335899999999996,
+      "compatibility_313_seconds": 0.23141899999999996,
+      "case_seconds_percent": 0.02532140491334481
+    },
+    {
+      "module": "test_skill_archive_audit",
+      "cases": 3,
+      "coverage_seconds": 0.255891,
+      "compatibility_313_seconds": 0.210849,
+      "case_seconds_percent": 0.023703333801633447
+    },
+    {
+      "module": "test_mode_action_routing_fixtures",
+      "cases": 9,
+      "coverage_seconds": 0.250301,
+      "compatibility_313_seconds": 0.109507,
+      "case_seconds_percent": 0.023185528814544686
+    },
+    {
+      "module": "test_ci_consumer_contracts",
+      "cases": 6,
+      "coverage_seconds": 0.25013199999999997,
+      "compatibility_313_seconds": 0.19922200000000004,
+      "case_seconds_percent": 0.02316987424516758
+    },
+    {
+      "module": "test_release_oracle_replay",
+      "cases": 1,
+      "coverage_seconds": 0.203674,
+      "compatibility_313_seconds": 0.220828,
+      "case_seconds_percent": 0.018866442386460996
+    },
+    {
+      "module": "test_documentation",
+      "cases": 10,
+      "coverage_seconds": 0.172688,
+      "compatibility_313_seconds": 0.152308,
+      "case_seconds_percent": 0.01599619098575752
+    },
+    {
+      "module": "test_registry_require_branches",
+      "cases": 3,
+      "coverage_seconds": 0.122418,
+      "compatibility_313_seconds": 0.057423999999999996,
+      "case_seconds_percent": 0.011339651325479847
+    },
+    {
+      "module": "test_coverage_policy",
+      "cases": 21,
+      "coverage_seconds": 0.12231800000000002,
+      "compatibility_313_seconds": 0.06261999999999998,
+      "case_seconds_percent": 0.01133038826667683
+    },
+    {
+      "module": "test_test_runner",
+      "cases": 17,
+      "coverage_seconds": 0.11575099999999999,
+      "compatibility_313_seconds": 0.09473100000000002,
+      "case_seconds_percent": 0.010722083195082567
+    },
+    {
+      "module": "test_pr_governance",
+      "cases": 84,
+      "coverage_seconds": 0.09373700000000003,
+      "compatibility_313_seconds": 0.076678,
+      "case_seconds_percent": 0.008682913430185958
+    },
+    {
+      "module": "test_portable_build",
+      "cases": 8,
+      "coverage_seconds": 0.08311400000000002,
+      "compatibility_313_seconds": 0.12496900000000001,
+      "case_seconds_percent": 0.007698898693541246
+    },
+    {
+      "module": "test_contracts",
+      "cases": 7,
+      "coverage_seconds": 0.076881,
+      "compatibility_313_seconds": 0.041156,
+      "case_seconds_percent": 0.007121532238349068
+    },
+    {
+      "module": "test_relationships",
+      "cases": 7,
+      "coverage_seconds": 0.07063300000000002,
+      "compatibility_313_seconds": 0.033948,
+      "case_seconds_percent": 0.006542776324336439
+    },
+    {
+      "module": "test_governance_helper_branches",
+      "cases": 9,
+      "coverage_seconds": 0.059582,
+      "compatibility_313_seconds": 0.019627000000000002,
+      "case_seconds_percent": 0.005519115696014805
+    },
+    {
+      "module": "test_context_model_branches",
+      "cases": 4,
+      "coverage_seconds": 0.032694,
+      "compatibility_313_seconds": 0.021276999999999997,
+      "case_seconds_percent": 0.0030284644450590445
+    },
+    {
+      "module": "test_observability_model_branches",
+      "cases": 5,
+      "coverage_seconds": 0.027631,
+      "compatibility_313_seconds": 0.015125000000000001,
+      "case_seconds_percent": 0.0025594757778621907
+    },
+    {
+      "module": "test_provider_adapters",
+      "cases": 22,
+      "coverage_seconds": 0.026769,
+      "compatibility_313_seconds": 0.022611,
+      "case_seconds_percent": 0.0024796282109801667
+    },
+    {
+      "module": "test_provider_contract_branches",
+      "cases": 7,
+      "coverage_seconds": 0.021679999999999998,
+      "compatibility_313_seconds": 0.018139000000000002,
+      "case_seconds_percent": 0.0020082311484945275
+    },
+    {
+      "module": "test_ci_input_facts",
+      "cases": 6,
+      "coverage_seconds": 0.017891,
+      "compatibility_313_seconds": 0.017547999999999998,
+      "case_seconds_percent": 0.0016572538504481364
+    },
+    {
+      "module": "test_validation_critical_surfaces",
+      "cases": 9,
+      "coverage_seconds": 0.017216,
+      "compatibility_313_seconds": 0.013729999999999997,
+      "case_seconds_percent": 0.0015947282035277575
+    },
+    {
+      "module": "test_catalog",
+      "cases": 6,
+      "coverage_seconds": 0.006141999999999999,
+      "compatibility_313_seconds": 0.005639000000000001,
+      "case_seconds_percent": 0.0005689370716814293
+    },
+    {
+      "module": "test_trace_risk_codes",
+      "cases": 6,
+      "coverage_seconds": 0.004845,
+      "compatibility_313_seconds": 0.004725999999999999,
+      "case_seconds_percent": 0.0004487951990062725
+    },
+    {
+      "module": "test_evaluation_comparability",
+      "cases": 3,
+      "coverage_seconds": 0.0043549999999999995,
+      "compatibility_313_seconds": 0.0038140000000000005,
+      "case_seconds_percent": 0.0004034062108714791
+    },
+    {
+      "module": "test_capability_resolver_branches",
+      "cases": 3,
+      "coverage_seconds": 0.004007,
+      "compatibility_313_seconds": 0.003435,
+      "case_seconds_percent": 0.0003711707662369729
+    },
+    {
+      "module": "test_model_pool",
+      "cases": 5,
+      "coverage_seconds": 0.003574,
+      "compatibility_313_seconds": 0.0031520000000000003,
+      "case_seconds_percent": 0.00033106172161990045
+    },
+    {
+      "module": "test_provider_port",
+      "cases": 5,
+      "coverage_seconds": 0.0028179999999999998,
+      "compatibility_313_seconds": 0.002379,
+      "case_seconds_percent": 0.0002610329970690765
+    },
+    {
+      "module": "test_accepted_skill_migration_fixtures",
+      "cases": 5,
+      "coverage_seconds": 0.002672,
+      "compatibility_313_seconds": 0.002437,
+      "case_seconds_percent": 0.00024750893121666873
+    },
+    {
+      "module": "test_integrity",
+      "cases": 1,
+      "coverage_seconds": 0.001309,
+      "compatibility_313_seconds": 0.001381,
+      "case_seconds_percent": 0.00012125343973151924
+    },
+    {
+      "module": "test_kernel",
+      "cases": 2,
+      "coverage_seconds": 0.0011250000000000001,
+      "compatibility_313_seconds": 0.000959,
+      "case_seconds_percent": 0.0001042094115339642
+    }
+  ],
+  "slowest": [
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+      "duration_seconds": 49.990025,
+      "outcome": "passed"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_four_arms_execute_all_slices_and_cold_replay",
+      "duration_seconds": 41.269258,
+      "outcome": "passed"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_slice_gap_exhausts_deadline_for_core_and_skill_without_second_call",
+      "duration_seconds": 35.532672,
+      "outcome": "passed"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessReplayTests.test_dispatch_observation_is_required_and_bounded_by_host_times",
+      "duration_seconds": 23.240196,
+      "outcome": "passed"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_preflight.py::HarnessPreflightTests.test_preflight_results_and_validator_pins_are_not_self_attested",
+      "duration_seconds": 18.190223,
+      "outcome": "passed"
+    },
+    {
+      "canonical_id": "tests/test_baseline_execution.py::BaselineExecutionTests.test_same_tool_checks_every_requirement_availability_at_each_use",
+      "duration_seconds": 18.172054,
+      "outcome": "passed"
+    },
+    {
+      "canonical_id": "tests/test_baseline_replay_integrity.py::BaselineReplayIntegrityTests.test_each_fact_requires_one_exact_creation_before_further_activity",
+      "duration_seconds": 17.576845,
+      "outcome": "passed"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_nonretryable_and_exhausted_baseline_failures_stop_and_replay",
+      "duration_seconds": 17.539949,
+      "outcome": "passed"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessReplayTests.test_run_status_and_outer_context_cannot_be_self_certified",
+      "duration_seconds": 16.110059,
+      "outcome": "passed"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_host_preparation_time_is_checked_at_actual_driver_dispatch",
+      "duration_seconds": 15.585249,
+      "outcome": "passed"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_slices_share_the_frozen_arm_budget",
+      "duration_seconds": 11.533878,
+      "outcome": "passed"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessReplayTests.test_hash_consistent_shortened_completed_run_still_fails",
+      "duration_seconds": 11.293956,
+      "outcome": "passed"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_later_blocked_slice_is_an_arm_post_call_failure",
+      "duration_seconds": 10.941086,
+      "outcome": "passed"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_exhausted_arm_budget_stops_before_the_next_slice",
+      "duration_seconds": 9.965882,
+      "outcome": "passed"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_host_post_call_failure_is_retained_without_inferred_retry",
+      "duration_seconds": 9.69784,
+      "outcome": "passed"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_host_preflight_blocked_makes_no_driver_call",
+      "duration_seconds": 9.524477,
+      "outcome": "passed"
+    },
+    {
+      "canonical_id": "tests/test_baseline_replay_integrity.py::BaselineReplayIntegrityTests.test_completed_requires_a_successful_terminal_response",
+      "duration_seconds": 9.512435,
+      "outcome": "passed"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_preflight.py::HarnessPreflightTests.test_confirmatory_phase_never_overrides_admission_overlap",
+      "duration_seconds": 9.065133,
+      "outcome": "passed"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_preflight.py::HarnessPreflightTests.test_frozen_inputs_recompute_without_producing_a2_or_execution",
+      "duration_seconds": 8.873057,
+      "outcome": "passed"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_preflight.py::HarnessPreflightTests.test_pairwise_cannot_upgrade_or_replace_qualification_stage_and_time",
+      "duration_seconds": 8.734887,
+      "outcome": "passed"
+    }
+  ],
+  "jobs": [
+    {
+      "name": "plan",
+      "start": "2026-09-19T20:51:48Z",
+      "end": "2026-09-19T20:51:59Z",
+      "wall_seconds": 11.0,
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "seconds": 2.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install 'PyYAML>=6,<7'",
+          "seconds": 2.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python .github/scripts/plan_ci.py --output ci-plan.json",
+          "seconds": 4.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Explain selected obligations",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "seconds": 0.0,
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "CI contract shadow (diagnostic)",
+      "start": "2026-09-19T20:52:01Z",
+      "end": "2026-09-19T20:52:18Z",
+      "wall_seconds": 17.0,
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "seconds": 2.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "seconds": 2.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install 'PyYAML>=6,<7'",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/download-artifact@v4",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Audit typed inputs and retained consumer boundaries",
+          "seconds": 6.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "seconds": 0.0,
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "repository_smoke",
+      "start": "2026-09-19T20:52:01Z",
+      "end": "2026-09-19T20:52:15Z",
+      "wall_seconds": 14.0,
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -e '.[test]'",
+          "seconds": 5.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m research_workbench validate examples registry --root .",
+          "seconds": 3.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "seconds": 0.0,
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "documentation",
+      "start": "2026-09-19T20:52:01Z",
+      "end": "2026-09-19T20:52:13Z",
+      "wall_seconds": 12.0,
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "seconds": 2.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -e '.[test]'",
+          "seconds": 5.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/download-artifact@v4",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Documentation and task surface evidence",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "seconds": 0.0,
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "compatibility (3.13)",
+      "start": "2026-09-19T20:52:01Z",
+      "end": "2026-09-19T21:06:31Z",
+      "wall_seconds": 870.0,
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Start wall-time clock",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "seconds": 2.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -e \".[test]\"",
+          "seconds": 8.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/download-artifact@v4",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run selected compatibility suite",
+          "seconds": 856.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Report job wall time",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "seconds": 0.0,
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "coverage-quality (3.11)",
+      "start": "2026-09-19T20:52:01Z",
+      "end": "2026-09-19T21:11:52Z",
+      "wall_seconds": 1191.0,
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Start wall-time clock",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "seconds": 2.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -e \".[test]\"",
+          "seconds": 5.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/download-artifact@v4",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run ordered behavior and coverage-only cases once",
+          "seconds": 1173.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Export coverage evidence",
+          "seconds": 2.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Preserve coverage and duration evidence",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Enforce coverage obligations",
+          "seconds": 3.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Report job wall time",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "seconds": 0.0,
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "package-smoke (3.13)",
+      "start": "2026-09-19T20:52:01Z",
+      "end": "2026-09-19T20:53:00Z",
+      "wall_seconds": 59.0,
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Start wall-time clock",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "seconds": 2.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install \"build>=1.2,<2\"",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Validate both distribution routes outside checkout",
+          "seconds": 39.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m build --wheel",
+          "seconds": 2.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m venv .venv-smoke",
+          "seconds": 2.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run .venv-smoke/bin/python -m pip install dist/*.whl",
+          "seconds": 2.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run .venv-smoke/bin/rwb schema list",
+          "seconds": 2.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run .venv-smoke/bin/rwb validate examples registry",
+          "seconds": 2.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Report job wall time",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "seconds": 0.0,
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "package-smoke (3.11)",
+      "start": "2026-09-19T20:52:02Z",
+      "end": "2026-09-19T20:53:03Z",
+      "wall_seconds": 61.0,
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Start wall-time clock",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "seconds": 3.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install \"build>=1.2,<2\"",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Validate both distribution routes outside checkout",
+          "seconds": 40.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m build --wheel",
+          "seconds": 2.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m venv .venv-smoke",
+          "seconds": 4.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run .venv-smoke/bin/python -m pip install dist/*.whl",
+          "seconds": 2.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run .venv-smoke/bin/rwb schema list",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run .venv-smoke/bin/rwb validate examples registry",
+          "seconds": 3.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Report job wall time",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "seconds": 0.0,
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "compatibility (3.11)",
+      "start": "2026-09-19T21:11:54Z",
+      "end": "2026-09-19T21:12:16Z",
+      "wall_seconds": 22.0,
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "seconds": 2.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Require the planned coverage producer",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "seconds": 2.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -e '.[test]'",
+          "seconds": 6.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/download-artifact@v4",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/download-artifact@v4",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Prove the ordered behavioral execution",
+          "seconds": 7.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "seconds": 0.0,
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "test (3.13)",
+      "start": "2026-09-19T21:11:54Z",
+      "end": "2026-09-19T21:12:05Z",
+      "wall_seconds": 11.0,
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "seconds": 2.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install 'PyYAML>=6,<7'",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/download-artifact@v4",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify every required obligation",
+          "seconds": 4.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "seconds": 0.0,
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "test (3.11)",
+      "start": "2026-09-19T21:12:18Z",
+      "end": "2026-09-19T21:12:28Z",
+      "wall_seconds": 10.0,
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "seconds": 2.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "seconds": 2.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install 'PyYAML>=6,<7'",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/download-artifact@v4",
+          "seconds": 1.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify every required obligation",
+          "seconds": 2.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "seconds": 0.0,
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "seconds": 0.0,
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "created_to_first_job_seconds": 2.0,
+  "workflow_elapsed_seconds": 1243.0,
+  "job_wall_sum_seconds": 2278.0
+}
