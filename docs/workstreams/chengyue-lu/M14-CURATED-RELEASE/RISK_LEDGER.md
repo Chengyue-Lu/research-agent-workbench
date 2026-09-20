@@ -1,5 +1,9 @@
 # M14 Curated Release 风险台账
 
+当前实现候选增加 [trusted release preflight](RELEASE_CHECKS.md)：在 accepted source checkout 中组合在线
+source-CI 与独立 pins、重复投影、候选 parent/tree 检查，结束前重查 refs 和 CI attempt。
+它只形成审计证据；release-only workflow 的可信 bootstrap、candidate 安装/公开面检查与 atomic cutover 仍待验收。
+
 | ID | 类型 | 风险 | 控制 | 当前状态 |
 |---|---|---|---|---|
 | M14-GOV-001 | fact | 仅放行 `release/*` 分支名会绕过 source、surface 与 manifest 证明，或迁移期形成两条可绕行发布路径。 | M14-001 已实现 strict dormant same-repo/source/parent trust seam，且完整候选仍固定 ERROR；M14-002 exporter/checker 完成后 release path仍 BLOCK；M14-005 在全部 readiness Gate 闭合后才原子启用 release/v* 并禁用 direct develop→main。 | partially controlled；M14-001/002 已接受并阻断 branch-only/data-only bypass；protected source-CI attestation 与 atomic topology cutover 仍待 M14-005 实现 |

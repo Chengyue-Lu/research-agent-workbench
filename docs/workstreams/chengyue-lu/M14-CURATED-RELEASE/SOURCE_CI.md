@@ -107,7 +107,8 @@ retains the failing regression, supported live responses and bounded maintainer 
 Full source-CI closure requires the repaired integrated source's successful push and live `attest`.
 
 Next: integrate the API repair and verify its protected push; prepare release-only checks and their exact
-policy include on a separate development branch while CI runs. The named first-release decision authorizes implementation/cutover
+policy include on a separate development branch while CI runs. The first composition slice is the
+[trusted release preflight](RELEASE_CHECKS.md). The named first-release decision authorizes implementation/cutover
 preparation; final release PR and tag require separate approval. Only the canonical Task status changes
 from BLOCKED to READY; its definition/dependencies, release policy, product/Skill inputs and topology remain
 unchanged. Live cutover remains gated by complete release checks, fresh protection evidence and R2 acceptance.

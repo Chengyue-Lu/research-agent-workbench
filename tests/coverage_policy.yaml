@@ -1,5 +1,5 @@
 policy_id: rwb-coverage-policy
-version: 2.3.0
+version: 2.3.1
 source_root: src/research_workbench
 
 suites:
@@ -67,6 +67,7 @@ suites:
       - test_pr_governance
       - test_release_surface
       - test_release_source_ci
+      - test_release_preflight
       - test_release_oracle_replay
       - test_portable_build
       - test_runtime_resources
@@ -181,6 +182,7 @@ critical_modules:
   - .github/scripts/check_pr_governance.py
   - .github/scripts/release_surface.py
   - .github/scripts/release_source_ci.py
+  - .github/scripts/release_preflight.py
   - src/research_workbench/protocol/authority.py
   - src/research_workbench/capability/requirements.py
   - src/research_workbench/capability/supply.py
@@ -237,6 +239,15 @@ negative_acceptance:
       - test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_collectively_omitted_qualification_input_is_rejected
       - test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_tool_arguments_must_match_the_observed_provider_call
       - test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_validation_cannot_include_an_unrelated_subject
+  - surface: trusted-release-preflight
+    modules:
+      - .github/scripts/release_preflight.py
+    positive_tests:
+      - test_release_preflight.ReleasePreflightTests.test_live_source_and_repeated_projection_bind_exact_candidate_without_authority
+    negative_tests:
+      - test_release_preflight.ReleasePreflightTests.test_missing_live_success_blocks_before_any_projection
+      - test_release_preflight.ReleasePreflightTests.test_independent_pins_reject_manifest_self_claims_and_wrong_candidate
+      - test_release_preflight.ReleasePreflightTests.test_ref_and_ci_races_cannot_publish_a_success
   - surface: protected-release-source-ci
     modules:
       - .github/scripts/release_source_ci.py
