@@ -189,6 +189,9 @@ def _suite_for(args: argparse.Namespace) -> unittest.TestSuite:
         sys.path.insert(0, str(TESTS))
     if args.suite == "full":
         loaded = loader.discover(str(TESTS), pattern="test_*.py", top_level_dir=str(TESTS))
+        if loader.errors or loaded.countTestCases() == 0:
+            details = "\n".join(loader.errors) if loader.errors else "no tests collected"
+            raise ValueError("full suite has missing or empty test groups:\n" + details)
         _assert_unique_tests(loaded)
         return loaded
     if args.suite in {"focused", "impact", "coverage-plan"}:
@@ -236,6 +239,9 @@ def _suite_for(args: argparse.Namespace) -> unittest.TestSuite:
     if len(names) != len(set(names)):
         raise ValueError("coverage-quality suite contains duplicate module/test names")
     loaded = loader.loadTestsFromNames(names)
+    if loader.errors or loaded.countTestCases() == 0:
+        details = "\n".join(loader.errors) if loader.errors else "no tests collected"
+        raise ValueError("coverage-quality suite has missing or empty test groups:\n" + details)
     _assert_unique_tests(loaded)
     return loaded
 
@@ -479,6 +485,8 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         if args.coverage_results is None:
             raise ValueError("coverage execution requires --coverage-results output")
+        if not platform.python_version().startswith("3.11."):
+            raise ValueError("coverage execution requires Python 3.11")
         suite = OrderedCoverageExecution(_behavioral_suite(args, plan),
             lambda: _suite_for(argparse.Namespace(**{**vars(args), "suite": "coverage-plan"})))
     else:
