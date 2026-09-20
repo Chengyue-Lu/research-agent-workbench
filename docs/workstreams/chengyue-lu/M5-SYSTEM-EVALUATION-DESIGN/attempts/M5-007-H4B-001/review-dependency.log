@@ -1,0 +1,7 @@
+test_four_arms_all_slices_and_failed_retry_replay (tests.test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_four_arms_all_slices_and_failed_retry_replay) ... ok
+test_blocked_receipt_and_unstarted_slices_have_no_actual_facts (tests.test_evaluation_harness_evidence.HarnessEvidenceTests.test_blocked_receipt_and_unstarted_slices_have_no_actual_facts) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 105.589s
+
+OK

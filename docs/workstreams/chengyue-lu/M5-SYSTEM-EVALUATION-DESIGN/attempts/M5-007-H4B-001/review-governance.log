@@ -1,0 +1,24 @@
+Declared risk: R2
+Inferred minimum: R2
+Effective risk: R2
+Reason:
+- docs/STATUS.md matches the R1 policy surface
+- docs/implementation/README.md matches the R1 policy surface
+- docs/implementation/SYSTEM_EVALUATION_HARNESS.md matches the R1 policy surface
+- schemas/v0.1.0/evaluation-harness-evidence.schema.json matches the R1 policy surface
+- schemas/v0.1.0/evaluation-harness-human-review.schema.json matches the R1 policy surface
+- schemas/v0.1.0/evaluation-harness-review-artifact.schema.json matches the R1 policy surface
+- schemas/v0.1.0/evaluation-harness-review-freeze.schema.json matches the R1 policy surface
+- schemas/v0.1.0/evaluation-harness-review-mapping.schema.json matches the R1 policy surface
+- schemas/v0.1.0/evaluation-harness-review-package.schema.json matches the R1 policy surface
+- schemas/v0.1.0/evaluation-harness-review-policy.schema.json matches the R1 policy surface
+- schemas/v0.1.0/evaluation-harness-review-reveal.schema.json matches the R1 policy surface
+- PR declares a shared-contract impact
+- PR declares an authority, permission, or data-boundary impact
+Requirements:
+- pull request and required CI
+- cross-owner review or explicit single-PR maintainer exception before merge (DEVELOPMENT 5.4)
+- explicit authority basis
+- adversarial or negative evidence
+- owner-matched workstream and Risk Ledger
+governance: PASS

@@ -259,3 +259,12 @@ H4b/H4c/H5 仍待后续实现；该分支按普通 R2 implementation PR 请求�
 证据及作用域见 [CI repair Attempt](attempts/M5-007-H4-CI-REPAIR-001/README.md)。
 共享 CI selector/authority、覆盖门槛和路径分类由 Issue87 任务负责；本修复不修改这些表面。
 旧 run 的 PASS 不归给新候选，远端 CI 保持异步；M5-007 仍 IN_PROGRESS，PR90 不自行合并。
+
+## H4b 独立 draft candidate（2026-09-21）
+
+用户要求推进 H4b 并建立独立 draft PR，PR90 继续等待审核。新分支从 PR90 `b9ad97e`
+创建，面向 develop；H4a 尚未接受，draft 明确依赖及后续 rebase 顺序。实现提交 `e700b6f`
+增加匿名包/私有映射、具名 freeze/reveal 及七个 Evaluation Schemas，所有入口独立 replay H4a。
+本地专项 13 PASS、141/141 statements、12/12 branches；四臂新进程禁执行回放通过。
+完整 scoped checks、边界与保留 capture gaps 见 [H4b Attempt](attempts/M5-007-H4B-001/README.md)。
+H4c/H5 为后续节点，未运行真实 Provider，未给出 Human/Task/analysis 接受或 merge。

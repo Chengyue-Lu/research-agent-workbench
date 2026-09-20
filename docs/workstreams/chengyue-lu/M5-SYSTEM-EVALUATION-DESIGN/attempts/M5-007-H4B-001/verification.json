@@ -1,0 +1,143 @@
+{
+  "task_id": "M5-007",
+  "attempt_id": "M5-007-H4B-001",
+  "implementation_head": "e700b6fff86565a0fefa927f02bd3b1f1a06959b",
+  "dependency_head": "b9ad97ebf256351dd5e1540d5e688087394d474d",
+  "integration_base": "171d4654f88e926f239cdf25bc8168109b81f391",
+  "source_pins": {
+    "schemas/v0.1.0/evaluation-harness-human-review.schema.json": "dc03991c298957258196da7039c9b026d9a62cad4d970041addd9ed56eec8429",
+    "schemas/v0.1.0/evaluation-harness-review-artifact.schema.json": "9ba59c203292a031b2ef505af6c34cb64a1efceeca26c5df792d541b1a55d95b",
+    "schemas/v0.1.0/evaluation-harness-review-freeze.schema.json": "7c3db62c7d347f56d853f7aa94d624ce88de6fdc464a1c16e8b7dbac793dbcdd",
+    "schemas/v0.1.0/evaluation-harness-review-mapping.schema.json": "f7942622c6beb76242b97deab5c59c7afad29d03e39849c6aebef3c63e24decc",
+    "schemas/v0.1.0/evaluation-harness-review-package.schema.json": "619460ed0aaff626d1a84b8631e9ba639ec1488a340e8f3bfeb0f5ab42320fa9",
+    "schemas/v0.1.0/evaluation-harness-review-policy.schema.json": "832b0b1f31be1e0e17d800db1cb83fa284c35adf321b91248a8807c8e922cdba",
+    "schemas/v0.1.0/evaluation-harness-review-reveal.schema.json": "31629da507e54266f267ab706d110aa5430175017c11c785fe8b60222e39665e",
+    "src/research_workbench/evaluation/harness_review.py": "7d71a4f6b9037955e6387951f328a177fbc23a62e8b12e3e17043eb434edc196",
+    "src/research_workbench/validation/document_kinds.py": "65b761457b0e34651027428b0a8df690124ea04958df8e265451586d892a2b55",
+    "src/research_workbench/validation/documents.py": "c1b021435d9ad6af9129671c22d4b2b69c47a6fe3e39f5a99549d0fde62c82f5",
+    "tests/ci_impact_policy.yaml": "28dbbda0a95c2b52d15d67fa094c491b46325c5206151696c1747ae511b15c4d",
+    "tests/coverage_policy.yaml": "b65a9eef99b5068f2ac33ae9d4986165dad727efab2b667b73d2b9071e10561f",
+    "tests/harness_execution_fixtures.py": "aef9a50e541c5872d2a4ec2bdf41488e41a1a5295d9641a5e43672435f4bb59f",
+    "tests/test_evaluation_harness_review.py": "34a9012dc8a1afc955d35a18ea5ade78d74c43b29209710e86a617864840c611",
+    "tests/test_schemas.py": "d9d1f92d1969c858931d2ff3b9c82a9bb884679b6b36cb9c6efa93d1b9baa429"
+  },
+  "evidence": [
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4B-001/review-focused.log",
+      "sha256": "f57d2334e9efde3044acc6f03e92036185217dd7a709a06d76d05c95d3dcf07c",
+      "original_local_sha256": "b4d56d2a413fd0925771e084ee74d4d9fff61b02cdc94224913e9f0f000829a6",
+      "normalization": "UTF-8, LF, worktree path redacted"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4B-001/review-focused-coverage.json",
+      "sha256": "9de6777deb52c8567fe30835484e72a6d6eaaedb9f7d1bbdef52e8eeed2d4fcf",
+      "original_local_sha256": "9de6777deb52c8567fe30835484e72a6d6eaaedb9f7d1bbdef52e8eeed2d4fcf",
+      "normalization": "UTF-8, LF, worktree path redacted"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4B-001/review-registration.log",
+      "sha256": "0345b1f3878c9ed0ff1dd2039b359154975b06cea40969fb98f86db62d15da9f",
+      "original_local_sha256": "3ed4ae02db7e4df44a9d9cdfa64cd9523e689b50963f3f1159c6b95b5412c28a",
+      "normalization": "UTF-8, LF, worktree path redacted"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4B-001/review-registration-coverage.json",
+      "sha256": "a7aed4b4248b71dc5505c5132a4819a6a0e2ff24ede07afc57121c9e38b01a8b",
+      "original_local_sha256": "a7aed4b4248b71dc5505c5132a4819a6a0e2ff24ede07afc57121c9e38b01a8b",
+      "normalization": "UTF-8, LF, worktree path redacted"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4B-001/review-ci-contracts.log",
+      "sha256": "31ef158049193562de7bdc1e1afec28a6383f4e81805395f7ccb5b690b4e3261",
+      "original_local_sha256": "22fa901cdb3effdf017dc511f7bb8eddaeb3cbb64e37df8c3a3c6a4f4cd1f5b7",
+      "normalization": "UTF-8, LF, worktree path redacted"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4B-001/review-dependency.log",
+      "sha256": "1e0fa091d0c201821e8e542e493c427ba49de80f66bec9b5c0f24dbd6012894d",
+      "original_local_sha256": "3c91670da7ff7d49bffcac0f554ba3af2e648604e99919198fa7ef252eb13d0f",
+      "normalization": "UTF-8, LF, worktree path redacted"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4B-001/review-repository.log",
+      "sha256": "6895861bf5f35b7669baaf95d9caf2b94c3a4e1d5682f29bbc73ba0aa0064633",
+      "original_local_sha256": "255440a9ece3a188b00d67b928a848500938bdd0c6788d0dcac767adb46d7ef3",
+      "normalization": "UTF-8, LF, worktree path redacted"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4B-001/review-package.json",
+      "sha256": "3bd3acf6db03ee3d62f8fdfce997df956f77d9b67bfda6fcd0753d2d6974c5ee",
+      "original_local_sha256": "8ce351f57a3ea412da20706979b50447279f28ea48f608c09104a4131283caf7",
+      "normalization": "UTF-8, LF, worktree path redacted"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4B-001/review-package.log",
+      "sha256": "1adc173c28ba2a9010887992cb45839664f336b37675c026ebef7f7ac51f820d",
+      "original_local_sha256": "dd3ef566318370ff5a3cb6855a6a19f28a6694e7de456b325e6f218354bd411b",
+      "normalization": "UTF-8, LF, worktree path redacted"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4B-001/review-changed-coverage.json",
+      "sha256": "5a6c31114628476c7f4df5fac6a52e14802f9c900acf8bb130d1e235eb89d047",
+      "original_local_sha256": "5a6c31114628476c7f4df5fac6a52e14802f9c900acf8bb130d1e235eb89d047",
+      "normalization": "UTF-8, LF, worktree path redacted"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4B-001/review-governance.log",
+      "sha256": "ad7276ef43aec28027b6b7399440acf247a1943b1153637137030eb2b657865f",
+      "original_local_sha256": "d21350f970a6f8ff80efd3de9062cc6af6f8ff52ec80c55e18e534e2aeab2190",
+      "normalization": "UTF-8, LF, worktree path redacted"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4B-001/review-governance-event.json",
+      "sha256": "b62bff35b60090b2649d5fd79dcfee9cfbaef7ea6e7f2e8620ed38b9956afb74",
+      "original_local_sha256": "b62bff35b60090b2649d5fd79dcfee9cfbaef7ea6e7f2e8620ed38b9956afb74",
+      "normalization": "UTF-8, LF, worktree path redacted"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4B-001/review-ci-scoped.log",
+      "sha256": "e78d13b45f5764ab4a2c2174921794df11b0b541d361018e6b51143ad82095aa",
+      "original_local_sha256": "d5eb3b2ffb53152d9f13df742785cd29a8b283470dd614817f72e9c59438ef10",
+      "normalization": "UTF-8, LF, worktree path redacted"
+    }
+  ],
+  "checks": {
+    "h4b_focused": {
+      "passed": 13,
+      "seconds": 182.172,
+      "statements": "141/141",
+      "branches": "12/12"
+    },
+    "h4a_dependency": {
+      "passed": 2,
+      "seconds": 105.589
+    },
+    "registration_contracts": {
+      "passed": 53
+    },
+    "ci_consumer_contracts": {
+      "passed": 31
+    },
+    "candidate_ci_scoped": {
+      "passed": 20,
+      "new_module": "141/141 statements; 12/12 branches",
+      "archived_exporter": "39/39 statements; 12/12 branches"
+    },
+    "repository": {
+      "checked": 186,
+      "errors": 0,
+      "warnings": 0
+    },
+    "package": {
+      "install_probes": 4,
+      "resource_identity": true
+    },
+    "governance": "PASS"
+  },
+  "limitations": [
+    "PR90 remains awaiting review; this draft depends on it",
+    "No full-suite/global coverage or hosted CI acceptance claimed",
+    "Only bounded synthetic integer artifacts; no actual Human Review or efficacy evidence",
+    "Incomplete visible event capture, retained checks exported later with explicit gaps"
+  ]
+}

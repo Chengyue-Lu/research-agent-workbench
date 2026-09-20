@@ -51,4 +51,18 @@ hashes below; a work log does not substitute for omitted tool/event transcripts.
 - Initial unit fixture dates preceded the frozen case date; corrected synthetic clock constants
   before the final run. A local coverage-summary shell quoting error was rerun via a literal
   script. Neither diagnostic is represented as acceptance evidence.
-- Evidence/Trace archive and governance binding follow in a separate documentation commit.
+- Implementation commit: `e700b6fff86565a0fefa927f02bd3b1f1a06959b`.
+- [Source pins and verification manifest](verification.json) bind the retained local evidence.
+- [H4b focused log](review-focused.log) and [coverage](review-focused-coverage.json);
+  [H4a regression](review-dependency.log); [registration contracts](review-registration.log);
+  [CI consumer contracts](review-ci-contracts.log); [repository](review-repository.log);
+  [package](review-package.json); [governance](review-governance.log).
+- An additional [20-test scoped run](review-ci-scoped.log) used the actual candidate CI coverage
+  configuration. Its [coverage excerpt](review-ci-coverage-excerpt.json) shows H4b 141/141
+  statements and 12/12 branches, plus the inherited frozen exporter 39/39 and 12/12.
+  It does not replace the plan's full behavior and repository/global coverage obligations.
+- [Trace replay](trace-validation.json): no BLOCK; the explicit `TRACE-CAPTURE-DELAYED`
+  warning retains the missing intake/patch/native-message/publication events. Export timestamps
+  are not original execution timestamps. No executable exporter was added to the archive.
+- PR90 remains unchanged. Publish this candidate as a separate draft to develop, then wait for
+  PR90 acceptance before rebasing and advancing review. Hosted CI is asynchronous.
