@@ -1,4 +1,4 @@
-# System-Level Evaluation Harness — H1–H4a
+# System-Level Evaluation Harness — H1–H4b
 
 Evaluation owner：路诚钺。Execution 接口 owner：黄毅。Record version：`1.0.0`。
 任务边界见 [M5-007](../TASKS.md)，完整施工顺序见 [进入计划](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md)。
@@ -6,8 +6,8 @@ Evaluation owner：路诚钺。Execution 接口 owner：黄毅。Record version�
 H1/H2 提供确定性计划及评价侧预检，其记录固定 `actual_execution=false`。
 H3 提供 synthetic 四臂执行、fresh Attempt 和执行后 replay；接口与验证范围见
 [H3 实施包](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H3_PACKET.md)。
-H4a 提供 evaluation-owned actual evidence 与独立重算；盲审、metrics、analysis 和持久化集成收口
-属于后续 H4b/H4c/H5。所有记录保持
+H4a 提供 evaluation-owned actual evidence 与独立重算；H4b 增加有限 synthetic 格式的盲审、具名审查冻结和揭盲候选。metrics、analysis 和持久化集成收口
+属于后续 H4c/H5。所有记录保持
 `execution_authority=false`、`task_completion=false`，不改写 Manifest、Protocol 或 Runtime 契约。
 
 ## H1：冻结计划
@@ -118,13 +118,66 @@ H4a validator identity 同时绑定 baseline closeout、`execution/baseline.py` 
 须在新 identity 下重新编译和验证。
 
 该记录始终保留 synthetic purpose，`analysis_eligibility` 和 Human/Task authority 为 false。
-阶段标签不产生 confirmatory eligibility；具名盲审、揭盲、measurement 和分析资格属于后续接口。
+阶段标签不产生 confirmatory eligibility；H4b 消费该闭包，measurement 和分析资格属于后续接口。
+
+## H4b：有限格式盲审、具名冻结与揭盲
+
+`evaluation/harness_review.py` 新增七个 `@1.0.0` Evaluation-owned record kinds：
+`evaluation_harness_review_artifact`、`evaluation_harness_review_policy`、
+`evaluation_harness_review_package`、`evaluation_harness_review_mapping`、
+`evaluation_harness_human_review`、`evaluation_harness_review_freeze` 和
+`evaluation_harness_review_reveal`。它们仍仅支持 `synthetic-contract-proof`。
+这是 H4b 实施候选，依赖 PR90 的 H4a；不代表两个 PR 已经接受。
+
+`ReviewContext` 由调用方提供完整 HarnessContext、exact execution/evidence refs、evidence ID、
+preregistered policy ref、可信 policy registration time 和 package creation time。每次 package、
+freeze 或 reveal 验证均重做 H4a independent replay，再校验 case 集合、时间和 projection。
+policy 必须在 case selection freeze 前注册，包含全部 case 的受控公共 reference integer、
+固定 instruction/rubric 和 projection rule；不得从待验文件中自选可信时间或 authority。
+
+当前 projection rule 只支持 0–9 的 synthetic 整数回答：M6 artifact 必须是已验证 Receipt 的
+单个完整 text ModelResponse，正文必须恰为一个数字；M11 artifact 必须符合新
+`review_artifact` Schema，包含整数 answer 和明确的 transport metadata 字段。公开投影只输出
+整数与 availability；其余字段由固定规则丢弃。额外正文、嵌入 content metadata、未知字段、
+多个不同 artifacts 都阻断。一个 slice 的多个 output contracts 引用同一 artifact 时只展示一次，
+所有原始 refs 仍完整保存在私有映射中。该规则不证明任意自然语言的完全匿名性。
+
+`prepare_review_package` 返回两个独立对象。只有 `review_package` 可交给 reviewer：固定的
+公共任务说明与 rubric，加上匿名 slot ID、reference integer、answer 和 availability。每个计划
+slice（含失败、blocked 和未启动 retry）对应一个 slot；非 completed 输出不参与评分，公开包不
+暴露具体失败原因。别名使用系统私有随机熵，每次生成不同，按随机 ID 排序；不使用公开 seed、
+arm 顺序、路径或执行身份派生。`review_mapping` 保留全部 source refs、projection digest、
+case/arm/Attempt/slice/lifecycle、evidence/policy pins 和 validator identity。
+
+`projection_verifier` 是必需的外部授权回调，必须核实 preregistration 与 exact source-to-projection
+处理。回放使用外部固定的 package/mapping refs，重算所有投影及映射；不能只相信文件名已匿名化。
+调用方应将公共包和私有材料分别 exclusive-create 持久化（可使用 `harness_runtime.persist`），
+只分发公共包。该库不提供文件系统 ACL、分发服务或任意文本的自动去标识证明。
+
+`freeze_human_reviews` 接收 `FreezeContext`：外部选定 package/mapping refs、所有具名 review refs、
+每份 review 的可信 received_at 和 frozen_at。每个 slot 必须恰好评价一次，或具名记录
+`unreviewable` 及非空理由；无可评价输出的 slot 不能填分。代码不产生 Human score。reviewer 的
+稳定 actor ID 和名字由必需的 `human_verifier` 核验，不能用文件中的 approved 字段自我授权。
+回调分别核验 `human-review`、完整 `freeze` 和 `reveal` 操作；只有布尔 True 被接受。
+
+`reveal_human_reviews` 首先独立重验外部选定的 freeze 文件与全部 reviews，要求可信 reveal time
+严格晚于 freeze time，然后生成绑定同一 evidence/package/mapping/freeze 的 reveal record。
+`validate_review_freeze` 和 `validate_review_reveal` 要求调用方再次提供全部 expected refs/time，
+拒绝部分集合、重复 slot、事后改分、替换映射、提前或更改揭盲时间。分发方只在验证 reveal 后
+开放私有映射。重复验证同一不可变记录是允许的；对另一个冻结集合不能复用原 reveal。
+
+通用 Schema validation 仅证明结构；缺少外部 verifier 的文件不会得到 Human authority。
+synthetic fixtures 的 reviewer 和回调仅为序列测试，不是真实 Human Review。各私有记录保留
+runtime/execution/supply/Human/Task/analysis authority 全部为 false。新 Schema 会更新全 catalog
+identity；历史冻结闭包继续使用其匹配的 validator/catalog，不能改写旧 evidence 来迁就新版本。
 
 ## 验证与读取边界
 
-四个 record 由 Schema catalog 和文档 kind 注册。通用 repository validation 证明结构；语义重算必须
+H1–H4b records 由 Schema catalog 和文档 kind 注册。通用 repository validation 证明结构；语义重算必须
 调用上述 Harness API 并提供外部上下文与 admission authority。默认 CLI 不隐式补齐这些可信输入。
 
 对应测试为 `test_evaluation_harness_plan`、`test_evaluation_harness_preflight`、
-`test_evaluation_harness_execution` 和 `test_evaluation_harness_evidence`。测试只使用 synthetic
+`test_evaluation_harness_execution`、`test_evaluation_harness_evidence` 和
+`test_evaluation_harness_review`。后者包含四臂证据到冷进程 freeze/reveal 的闭包及外部 authority、
+时间、来源/映射/评分篡改、匿名泄漏和缺项反例。测试只使用 synthetic
 文件闭包；真实 case、live conformance、production admission 与科研效果仍按 M5-004 的独立条件验收。
