@@ -47,8 +47,8 @@ def validate_proposal(proposal):
     planner.require(isinstance(proposal['consumers'], list), 'consumer list required')
     ids = []
     for consumer in proposal['consumers']:
-        planner.require(isinstance(consumer, dict) and set(consumer) ==
-                        {'id', 'owner', 'invocation', 'tests', 'input_patterns', 'pins', 'assumptions', 'unknowns'},
+        fields = {'id', 'owner', 'invocation', 'tests', 'input_patterns', 'pins', 'assumptions', 'unknowns'}
+        planner.require(isinstance(consumer, dict) and set(consumer) in (fields, fields | {'changed_path_patterns'}),
                         'unsupported consumer fields')
         for field in ('id', 'owner', 'invocation'):
             planner.require(isinstance(consumer[field], str) and consumer[field].strip(), 'named consumer required')
@@ -60,6 +60,11 @@ def validate_proposal(proposal):
         planner.require(consumer['assumptions'], 'unproved closure assumptions must be explicit')
         for pattern in consumer['input_patterns']:
             portable(pattern)
+        if 'changed_path_patterns' in consumer:
+            domains.strings(consumer['changed_path_patterns'], 'changed path scope')
+            planner.require(consumer['changed_path_patterns'], 'empty changed path scope')
+            for pattern in consumer['changed_path_patterns']:
+                portable(pattern)
         pins = consumer['pins']
         planner.require(isinstance(pins, dict) and pins, 'source pins required')
         for path, signature in pins.items():
@@ -128,6 +133,9 @@ def candidate_selection(repo, plan, proposal, inventory):
     decisions = []
     for consumer in proposal['consumers']:
         reasons = list(fallback) + list(consumer['unknowns'])
+        if 'changed_path_patterns' in consumer and any(not any(fnmatchcase(path, pattern)
+                for pattern in consumer['changed_path_patterns']) for path in paths):
+            reasons.append('changed paths outside declared invocation pilot scope')
         drift = []
         for path, signature in consumer['pins'].items():
             for key, snapshot in snapshots.items():
@@ -159,7 +167,7 @@ def candidate_selection(repo, plan, proposal, inventory):
                                               set(inventory['runtime_ids']))}
 
 
-def compare_receipt(plan, inventory, candidate, receipt):
+def compare_receipt(plan, inventory, candidate, receipt, *, suite_label=None):
     expected = ordered_union(inventory['behavioral_order'], inventory['coverage_order'])
     actual, extras, blockers = {}, [], []
     if inventory['scope'] == 'observed-subset':
@@ -200,9 +208,9 @@ def compare_receipt(plan, inventory, candidate, receipt):
         if plan['coverage_obligations']:
             contract = {'contract': 'ordered-behavioral-v1', 'behavioral_order': inventory['behavioral_order'],
                         'coverage_order': inventory['coverage_order']}
-            if receipt.get('suite') != 'coverage-execution' or receipt.get('execution') != contract:
+            if receipt.get('suite') != (suite_label or 'coverage-execution') or receipt.get('execution') != contract:
                 blockers.append('source ordered coverage execution contract missing or mismatched')
-        elif receipt.get('suite') != plan['behavioral_scope']:
+        elif receipt.get('suite') != (suite_label or plan['behavioral_scope']):
             blockers.append('behavioral receipt suite differs from plan')
         if receipt.get('test_count') != len(actual) or extras:
             blockers.append('receipt inventory count or fixture/unexpected records require review')

@@ -201,3 +201,17 @@ for cross-owner review. Quality thresholds, exclusions, product contracts and re
   inventory/receipt provenance and complete input closure still require independent evidence.
 - No production exclusion, candidate coverage success or hosted speedup is authorized by
   these reports. Complete accepted/candidate execution comparison precedes 2C review.
+
+## Paired observations and fixture lifecycle
+
+- The initial Kernel control is absent from the complete accepted doc plan: it cannot
+  support a savings claim. The new scoped PlannerTests proposal needs unchanged 19-pin
+  inputs, fixed environment and explicit workstream change scope; it remains diagnostic.
+- Equal target/runner versions do not establish equal execution drivers. Bind the actual
+  wrapper source/invocation, and retain different-driver pairs as timing-confounded.
+- A case moved into C minus B can fail after fixture reinitialization despite full line
+  and branch coverage. Require actual separate outcomes before interpreting its coverage.
+- Keep failed fresh-checkout setup evidence. Generated runtime resources must be prepared
+  consistently before the accepted and candidate runs; a failed setup is not a passing baseline.
+- PR #92's diagnostic JSON input currently triggers unknown-surface FULL/repository.
+  Declare and review its real consumers before changing that conservative fallback.

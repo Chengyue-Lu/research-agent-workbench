@@ -203,6 +203,14 @@ class ConsumerGitTests(unittest.TestCase):
             self.assertEqual(original, planner.canonical(plan))
             stale = {**proposal, 'baseline': 'a' * 40}
             self.assertEqual([A, B], shadow.candidate_selection(repo, plan, stale, inventory)['behavioral_order'])
+            consumer['changed_path_patterns']=['docs/workstreams/**']
+            shadow.validate_proposal(proposal)
+            self.assertEqual([A, B],shadow.candidate_selection(repo,plan,proposal,inventory)['behavioral_order'])
+            consumer['changed_path_patterns']=['docs/**']
+            self.assertEqual([A],shadow.candidate_selection(repo,plan,proposal,inventory)['behavioral_order'])
+            consumer['changed_path_patterns']=[]
+            with self.assertRaisesRegex(ValueError,'empty changed path'):shadow.validate_proposal(proposal)
+            consumer.pop('changed_path_patterns')
             consumer['pins']['tests/absent.py'] = 'a' * 64
             self.assertEqual([A, B], shadow.candidate_selection(repo, plan, proposal, inventory)['behavioral_order'])
             consumer['pins'].pop('tests/absent.py')

@@ -18,6 +18,8 @@ test IDs, source/helper pins, input discovery patterns, explicit assumptions and
 unknowns. Matching pins establish byte agreement only. They do not prove a complete
 input closure or authorize a reduction. Pattern matching is case-sensitive and
 `*`/`**` can cross `/`, as in the domain diagnostic. Test identities and pins are exact.
+An optional nonempty `changed_path_patterns` field limits an invocation proposal
+to its reviewed input-change scope; a change outside that scope retains the tests.
 
 The first pilot considers only changes to existing regular Markdown under `docs/`
 or the root README. It checks both the PR delta and base-to-tested-target delta,
@@ -107,3 +109,50 @@ Current quality thresholds and fresh develop/main/release baselines remain in fo
 The 37-minute coverage problem is not solved by reducing a behavioral set alone.
 Coverage selection and the internal cost of genuinely required cases remain separate
 work items; this comparator makes that distinction measurable.
+
+## Paired execution observations
+
+[`ci_shadow_pair.py`](../../../../.github/scripts/ci_shadow_pair.py) extends the
+diagnostic with two separately recorded executions. It recomputes the proposal from
+the exact plan, matches canonical IDs/order and source receipts, and binds Python,
+platform, dependency inventory, runner, coverage configuration, invocation context
+and the actual execution-driver source/invocation. It rejects using one execution
+as both pair members. A changed selection must use a `shadow-candidate` receipt;
+an unchanged candidate may retain its original native runner suite label.
+
+Each raw coverage artifact is explicitly associated with its plan, target, run,
+source receipt digest and artifact digest. The existing impact and repository
+checkers evaluate each member separately, using the tested target's policy and
+matching checker sources. Global 90, critical 95/90, changed 100/100 and required
+positive/negative evidence remain their original requirements. Coverage missing,
+failed tests, skipped checkpoints or failed/missing smoke stay inconclusive.
+
+A real subprocess regression demonstrates why coverage and execution outcomes are
+separate: both runs execute every line and branch, but moving a case into the later
+coverage phase restarts its class fixture and makes its behavior fail. The paired
+diagnostic reports that failure instead of accepting the complete coverage map.
+
+Two drivers with different code remain a timing confound even on the same target
+and environment. The report preserves their observed wall times and quality results
+but keeps the pair `inconclusive`. An `observed-matching-pair` result refers to the
+supplied inventories/artifacts, not authenticated completeness or activation authority.
+One local pair cannot establish hosted critical-path savings.
+
+```text
+python .github/scripts/ci_shadow_pair.py --repo . --plan plan.json --proposal proposal.json --inventory inventory.json --accepted accepted-bundle.json --candidate candidate-bundle.json --output pair.json
+```
+
+The first complete doc-control observation uses the original plan's 325 tests
+across 13 modules, with C empty and both smokes not required. The previously proposed
+Kernel pair is already outside this B and saves zero actual work. A separate source
+audit identifies 73 PlannerTests that read 19 fixed source/config/fixture inputs and
+generate their Markdown inside temporary Git repositories. Their new proposal is
+limited to modified existing workstream Markdown; other consumers stay selected.
+The independent audit also runs a real planner-source mutation that makes an existing
+test fail, and that executable change remains outside the exclusion pilot.
+
+Actual pair data, original setup-error evidence and the hosted #92 baseline are in
+[Attempt A-20260920-003](../../../../work/TEST-PERF-002/A-20260920-003/RESULTS.md).
+The hosted #92 baseline passed all Gates with B=1418/C=1392 and coverage job 19m51s;
+its lone unclassified fallback was the diagnostic `domain-model.json` input. This
+is a future declaration-boundary item, not an exemption based on its docs path.
