@@ -121,5 +121,10 @@ python .github/scripts/ci_domain_audit.py --plan ci-plan.json --output ci-domain
 缺失耗时 ID。离线文件不能建立 GitHub 来源认证；该工具不将“接收到 receipt”宣称为执行证明。
 2A 不产生 candidate selected/skipped，也不估算缩时；这些比较与实际 coverage/smoke 对照在 2B 交付。
 
+`test_ci_domain_audit` 直接读取本页链接的真实 `domain-model.json`，使用正式 CLI 同一套
+重复键检查与 `validate_model` 验证文件契约；不固定领域数量、owner 文案或文件 digest。
+隔离副本在同一具名路径上引入执行权限、排除 pilot 或重复 JSON key 时，新增回归必须失败。
+这项实际输入验证不授予分类、减测或发布权限。
+
 五个真实 PR 回放、专项覆盖、独立审查及 PR90 成本证据见
 [A-20260920-001](../../../../work/TEST-PERF-002/A-20260920-001/RESULTS.md)。

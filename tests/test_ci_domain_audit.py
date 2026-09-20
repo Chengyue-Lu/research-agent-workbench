@@ -27,6 +27,11 @@ def model():
 
 
 class DomainModelTests(unittest.TestCase):
+    def test_named_repository_model_satisfies_official_validator(self):
+        """Bind the real default input to the same strict parser and validator as the CLI."""
+        value = json.loads((ROOT / audit.MODEL).read_bytes(), object_pairs_hook=planner.unique_object)
+        audit.validate_model(value)
+
     def test_overlapping_runtime_document_is_not_collapsed_into_docs(self):
         value = model()
         audit.validate_model(value)
