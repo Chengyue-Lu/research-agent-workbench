@@ -1,0 +1,55 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260920-007
+task_id: TEST-PERF-002
+task_revision: 43
+attempt_id: A-20260920-007
+archive_root: A-20260920-007
+baseline: 171d4654f88e926f239cdf25bc8168109b81f391
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: d06e5535b0384c83e17c3b7c2cc2490b2f17de921581950c6e245947421a90aa
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 7cca7fdf3cbe139d04d4c15d11b75f8141b0f8cd31e231a0efad7e6dad5c6f36
+read_allowlist:
+- .github/**
+- AGENTS.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- scoped historical CI prototypes, named source consumers and current PR evidence
+- tests/**
+- work/TEST-PERF-002/**
+write_scope:
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/run_unittest_suite.py
+- tests/test_ci_plan.py
+- tests/test_test_runner.py
+- work/TEST-PERF-002/A-20260920-007/**
+tool_allowlist:
+- collaboration
+- gh
+- git
+- goal
+- python
+- shell
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: d02a9931623c903d6aa3874ba13116df2056f1f580e5e724f39acc0a6be34a5c
+  event_count: 5
+tool_event_refs:
+- path: tool-events/preflight-ci-evidence-succeeded.json
+  sha256: 574a1ad2d42ab664fb35faaf0e75d383cc981aaab1f57c1f04ccbfd3c4f2be66
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: messages
+- event_id: EVT-0003
+  affected_stream: external-actions

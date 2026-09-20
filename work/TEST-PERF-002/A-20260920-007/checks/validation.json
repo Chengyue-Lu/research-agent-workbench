@@ -1,0 +1,651 @@
+{
+  "implementation": "50be82d05e087228293a9bf96b797bcf0f3ff844",
+  "base": "171d4654f88e926f239cdf25bc8168109b81f391",
+  "scope": "preflight",
+  "validation": {
+    "source_sha256": {
+      "tests/run_unittest_suite.py": "36bf86a6325e5465dc624356455e5376702ac6475b515572c405e7a487a607f9",
+      "tests/test_test_runner.py": "2f7db94d1e790d0169347fe847d92e136cb712034cf776bd4c9ef630ee6a8dfd",
+      "tests/test_ci_plan.py": "65b1dbfc795f406ae73626a5fc9bb6fa10a823eb0305289e624670a983ad626e",
+      "docs/workstreams/chengyue-lu/TEST-PERF-002/EARLY_PROOF.md": "73acb453c2b4bdc540d93b45d9688609150fe2a28df9ecbfbd6eed67b5f12739"
+    },
+    "execution_authority": false,
+    "commit": "50be82d05e087228293a9bf96b797bcf0f3ff844",
+    "accepted_base": "171d4654f88e926f239cdf25bc8168109b81f391",
+    "initial_test_base": "4119f8b2d8e1e64a0afead138d13061e2d89e996",
+    "branch": "fix/ci-runner-preflight",
+    "worktree_clean": true,
+    "original_commit_before_rebase": "b0a80c181519fc85f56ad8a76b5b80b6d540a83d",
+    "rebased_commit_before_documentation_amend": "fef9c35bd54f0c8f7e5a4595664c6c28f26d50d5",
+    "checks": {
+      "311": {
+        "python_version": "3.11.16",
+        "test_count": 96,
+        "successful": true,
+        "events": {
+          "errors": 0,
+          "failures": 0,
+          "skips": 0
+        },
+        "runner_wall_seconds": 267.489633,
+        "process_wall_seconds": 267.6239366000518,
+        "source_sha256": {
+          "tests/run_unittest_suite.py": "dae50d536f21499cdaba90b8a1a9a818b6882f909b641e0df03c9f69de585e7a",
+          "tests/test_test_runner.py": "f1f01e820076d464f597d40498d5bfbf254e728ba9d696ea331877b3928e0408",
+          "tests/test_ci_plan.py": "65b1dbfc795f406ae73626a5fc9bb6fa10a823eb0305289e624670a983ad626e"
+        },
+        "receipt_sha256": "391c92a6436312490fc1772a2efac52431ae9cf1927730db9cf74f049844a4bd",
+        "process": {
+          "argv": [
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+            "-B",
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-next-20260920\\early-proof-implementation\\verify.py",
+            "311"
+          ],
+          "cwd": "D:\\lcy\\develop\\_worktrees\\RWB\\ci-runner-preflight",
+          "returncode": 0,
+          "process_wall_seconds": 267.6239366000518,
+          "log_sha256": "25689f67392a2da662b3d7d88582963186cf222430579b45767d5213ccda7415"
+        }
+      },
+      "313": {
+        "python_version": "3.13.15",
+        "test_count": 96,
+        "successful": true,
+        "events": {
+          "errors": 0,
+          "failures": 0,
+          "skips": 0
+        },
+        "runner_wall_seconds": 254.018893,
+        "process_wall_seconds": 254.14485109999077,
+        "source_sha256": {
+          "tests/run_unittest_suite.py": "dae50d536f21499cdaba90b8a1a9a818b6882f909b641e0df03c9f69de585e7a",
+          "tests/test_test_runner.py": "f1f01e820076d464f597d40498d5bfbf254e728ba9d696ea331877b3928e0408",
+          "tests/test_ci_plan.py": "65b1dbfc795f406ae73626a5fc9bb6fa10a823eb0305289e624670a983ad626e"
+        },
+        "receipt_sha256": "805b7906b3caa2df7d716b6e73ff2ed07f0d35abd1819e1e7a48e8834eae286f",
+        "process": {
+          "argv": [
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv313\\Scripts\\python.exe",
+            "-B",
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-next-20260920\\early-proof-implementation\\verify.py",
+            "313"
+          ],
+          "cwd": "D:\\lcy\\develop\\_worktrees\\RWB\\ci-runner-preflight",
+          "returncode": 0,
+          "process_wall_seconds": 254.14485109999077,
+          "log_sha256": "30e77e596a2200d7cf3b3a230178f4752a5b4cd3b29da199385172c2da03b086"
+        }
+      },
+      "311-final": {
+        "python_version": "3.11.16",
+        "test_count": 23,
+        "successful": true,
+        "events": {
+          "errors": 0,
+          "failures": 0,
+          "skips": 0
+        },
+        "runner_wall_seconds": 0.396261,
+        "process_wall_seconds": 0.5214183999923989,
+        "source_sha256": {
+          "tests/run_unittest_suite.py": "36bf86a6325e5465dc624356455e5376702ac6475b515572c405e7a487a607f9",
+          "tests/test_test_runner.py": "2f7db94d1e790d0169347fe847d92e136cb712034cf776bd4c9ef630ee6a8dfd",
+          "tests/test_ci_plan.py": "65b1dbfc795f406ae73626a5fc9bb6fa10a823eb0305289e624670a983ad626e"
+        },
+        "receipt_sha256": "1c7eae1e6d2f9f731ca33349bbe07ef009be64632148015e1e3e834321b538a9",
+        "process": {
+          "argv": [
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+            "-B",
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-next-20260920\\early-proof-implementation\\verify-final.py",
+            "311-final"
+          ],
+          "cwd": "D:\\lcy\\develop\\_worktrees\\RWB\\ci-runner-preflight",
+          "returncode": 0,
+          "process_wall_seconds": 0.5214183999923989,
+          "log_sha256": "b7445b0452d7e1700a79fedf80d971e1f88ad9fa5a0ba593b654b80d6c8b9dfa"
+        }
+      },
+      "313-final": {
+        "python_version": "3.13.15",
+        "test_count": 23,
+        "successful": true,
+        "events": {
+          "errors": 0,
+          "failures": 0,
+          "skips": 0
+        },
+        "runner_wall_seconds": 0.340545,
+        "process_wall_seconds": 0.45053170004393905,
+        "source_sha256": {
+          "tests/run_unittest_suite.py": "36bf86a6325e5465dc624356455e5376702ac6475b515572c405e7a487a607f9",
+          "tests/test_test_runner.py": "2f7db94d1e790d0169347fe847d92e136cb712034cf776bd4c9ef630ee6a8dfd",
+          "tests/test_ci_plan.py": "65b1dbfc795f406ae73626a5fc9bb6fa10a823eb0305289e624670a983ad626e"
+        },
+        "receipt_sha256": "ea091e45b3e5aaaec10647ca6f79d3bad377efaa5c7f3997f06237d00707ceec",
+        "process": {
+          "argv": [
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv313\\Scripts\\python.exe",
+            "-B",
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-next-20260920\\early-proof-implementation\\verify-final.py",
+            "313-final"
+          ],
+          "cwd": "D:\\lcy\\develop\\_worktrees\\RWB\\ci-runner-preflight",
+          "returncode": 0,
+          "process_wall_seconds": 0.45053170004393905,
+          "log_sha256": "a090ccc10d21e04f9af6a15ffb1cf80f5822d0ac1c397fb16eee32a5d24e9db8"
+        }
+      }
+    },
+    "mutant_controls": [
+      {
+        "mutant": "producer-version",
+        "argv": [
+          "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+          "-B",
+          "-m",
+          "unittest",
+          "tests.test_test_runner.PreflightTests",
+          "-v"
+        ],
+        "cwd": "D:\\lcy\\develop\\_assessments\\rwb-ci-next-20260920\\early-proof-implementation\\mutants-final\\producer-version",
+        "exit": 1,
+        "wall_seconds": 0.2802159999846481,
+        "source_sha256": "6b2bc1bcf3fd996612b98ebd263923cd74cd232480d8e25e63efbe183f0dd652",
+        "log_sha256": "c2f43248840cc4b5ad5fba86153334dba5636fd6bf77d6e9a7dee9564fc7b469"
+      },
+      {
+        "mutant": "full-collection",
+        "argv": [
+          "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+          "-B",
+          "-m",
+          "unittest",
+          "tests.test_test_runner.PreflightTests",
+          "-v"
+        ],
+        "cwd": "D:\\lcy\\develop\\_assessments\\rwb-ci-next-20260920\\early-proof-implementation\\mutants-final\\full-collection",
+        "exit": 1,
+        "wall_seconds": 0.28423589997692034,
+        "source_sha256": "f57901632d5b4e67d3f16ba823c199f5d8cc1182ae0672bcab7b235168119eeb",
+        "log_sha256": "1ed0446c4949a1d1a78d336a43d08a8b533597dfd0fadb133743bb1872348912"
+      },
+      {
+        "mutant": "coverage-collection",
+        "argv": [
+          "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+          "-B",
+          "-m",
+          "unittest",
+          "tests.test_test_runner.PreflightTests",
+          "-v"
+        ],
+        "cwd": "D:\\lcy\\develop\\_assessments\\rwb-ci-next-20260920\\early-proof-implementation\\mutants-final\\coverage-collection",
+        "exit": 1,
+        "wall_seconds": 0.2672158000059426,
+        "source_sha256": "7768373c7a192442df2676fe28135bd10d06a38c16d906ac09c72b33f59b9881",
+        "log_sha256": "ec27ccca7318537f9fa03337aa18f7e9d92b9c632e33a860a636cd1b0b026c1e"
+      }
+    ],
+    "binding": {
+      "base": "171d4654f88e926f239cdf25bc8168109b81f391",
+      "initial_test_base": "4119f8b2d8e1e64a0afead138d13061e2d89e996",
+      "head": "50be82d05e087228293a9bf96b797bcf0f3ff844",
+      "production_input_equivalence": {
+        "tests/run_unittest_suite.py": "b759929d5ca97ff243e2cdc0b8e6949661b78cb35fd9647faf4e1a01feffa3c2",
+        "tests/test_test_runner.py": "cafa20141d929b77f3cc95f9a10c3836d1391a3058ad00d9d2adb85d1172ca25",
+        "tests/test_ci_plan.py": "01c45a263afa57acf51b52951aa5b57b2ca8fc0220ce97932ba03d52f9223aae",
+        "tests/ci_impact_policy.yaml": "f7fc9d92ce0271f323e5973751f1e08933d6398fc50faf251cdbda902f33d67a",
+        "tests/coverage_policy.yaml": "16091582704384847a07179bcd689d8d8bdd501cc4e56199208b06da57aec957",
+        ".github/scripts/plan_ci.py": "55c21010a31671199908053b7d044355be0fe4cead16ffeb799bc2d5f7057ecb",
+        ".github/scripts/ci_checks.py": "d1ef2da6a92be90b9d91e3c31a02198dba41b3e52e493703be0dfa4e3fb3cba6",
+        ".github/scripts/selection_witness.py": "27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d",
+        ".github/scripts/ci_dependencies.py": "5768999e3e6929f69ac87c56b94b9ecb66bf4ee527f48d97a21beb839110a20f",
+        ".github/scripts/ci_consumer_contracts.py": "865a432e263d0bb10e748955b456df71ade0a5d00ddd17dbf81f7e1b4ccd140a",
+        ".github/scripts/ci_input_facts.py": "a4fc10bc50f824b305a938cb8b12724fd3e02e8697a599c2459c4c664dbbeab8",
+        ".github/scripts/ci_contract_shadow.py": "c13410b1db44ced18d432ba22b65e206faae1d0321f47f885de0d5c7875171e5",
+        ".github/workflows/ci.yml": "571e1dda06ab092b1fb7eedbd3bd05ac366d2c324eacf0d886acc5e9a9327b1b",
+        ".github/scripts/check_coverage_policy.py": "f67b7abae68812260733ba1694a737c6d745a0194a17026f5147686239a5264a"
+      },
+      "plan_id": "33f5fdac52bc0579512b1b5c3d2042cae50029299b9e8c8a89c414aaf70977d4",
+      "obligations": {
+        "behavioral_scope": "full",
+        "coverage_scope": "impact+repository",
+        "coverage_obligations": [
+          "impact",
+          "repository"
+        ],
+        "package_smoke": true,
+        "repository_smoke": true,
+        "blocked_reasons": []
+      },
+      "witness_status": "PASS",
+      "documentation_links": 0,
+      "scope": "local plan/witness validation; no test/coverage/hosted success claim"
+    },
+    "scope": "focused local tests and independent selection witness; full behavioral/repository coverage/smokes/hosted CI remain pending"
+  },
+  "raw_archive_sha256": "1c1c13652a15f14e90140c9ef57a2a9264ea1e4dbc92c413aeff9b65952e3c9d",
+  "raw_members": [
+    {
+      "path": "archive_followup.py",
+      "bytes": 6339,
+      "sha256": "feb181e4ee67ed7561f7055a76867dbd16277575e9341d4900cc2bcc883d09eb"
+    },
+    {
+      "path": "early-proof-implementation/311-final-preflight.json",
+      "bytes": 3242,
+      "sha256": "1ff8e6425373d69c11cd7c89f8985ec59fb18d40852a511a7f0988a0bbfb314f"
+    },
+    {
+      "path": "early-proof-implementation/311-final-process.json",
+      "bytes": 477,
+      "sha256": "96a4fb0311dcb54c341463a6cab5995fadc2e25b4d0e77e180fee8891d46f86a"
+    },
+    {
+      "path": "early-proof-implementation/311-final-receipt.json",
+      "bytes": 41743,
+      "sha256": "1c7eae1e6d2f9f731ca33349bbe07ef009be64632148015e1e3e834321b538a9"
+    },
+    {
+      "path": "early-proof-implementation/311-final.log",
+      "bytes": 6725,
+      "sha256": "b7445b0452d7e1700a79fedf80d971e1f88ad9fa5a0ba593b654b80d6c8b9dfa"
+    },
+    {
+      "path": "early-proof-implementation/311-preflight.json",
+      "bytes": 10818,
+      "sha256": "891b9a560b7091fd08e01f0f9be2b2a0ef1aa495368272ecc201b0d8a7d9a0b8"
+    },
+    {
+      "path": "early-proof-implementation/311-process.json",
+      "bytes": 464,
+      "sha256": "ff630d2624f12a7d03e9eecf8e3e5c80851b3d8f1b4eedcb8061a71cf4f33673"
+    },
+    {
+      "path": "early-proof-implementation/311-receipt.json",
+      "bytes": 283895,
+      "sha256": "391c92a6436312490fc1772a2efac52431ae9cf1927730db9cf74f049844a4bd"
+    },
+    {
+      "path": "early-proof-implementation/311-runner-initial.log",
+      "bytes": 4577,
+      "sha256": "4c4671206a064f63feadc7baa3f534e2c3ef3ece24dde0c42a05e83b7a57a249"
+    },
+    {
+      "path": "early-proof-implementation/311.log",
+      "bytes": 32811,
+      "sha256": "25689f67392a2da662b3d7d88582963186cf222430579b45767d5213ccda7415"
+    },
+    {
+      "path": "early-proof-implementation/313-final-preflight.json",
+      "bytes": 3242,
+      "sha256": "f5723934533c70f00139eddfa69c757a38e3ee6e621bec1e25af849efb5eaa2f"
+    },
+    {
+      "path": "early-proof-implementation/313-final-process.json",
+      "bytes": 478,
+      "sha256": "ff5aae9e68d0237c82518ee6d2f052544ea91655bfa7110196db41221dfe50eb"
+    },
+    {
+      "path": "early-proof-implementation/313-final-receipt.json",
+      "bytes": 42264,
+      "sha256": "ea091e45b3e5aaaec10647ca6f79d3bad377efaa5c7f3997f06237d00707ceec"
+    },
+    {
+      "path": "early-proof-implementation/313-final.log",
+      "bytes": 6746,
+      "sha256": "a090ccc10d21e04f9af6a15ffb1cf80f5822d0ac1c397fb16eee32a5d24e9db8"
+    },
+    {
+      "path": "early-proof-implementation/313-preflight.json",
+      "bytes": 10818,
+      "sha256": "5eef355f6f1a953d1de64c40cd33b18e50228d0c57c0d53da2bdbca08816fdf0"
+    },
+    {
+      "path": "early-proof-implementation/313-process.json",
+      "bytes": 465,
+      "sha256": "59a8698dff904f486cba4f8d49fcdcd22b2269178bddaa604a2bdf138ca00125"
+    },
+    {
+      "path": "early-proof-implementation/313-receipt.json",
+      "bytes": 283044,
+      "sha256": "805b7906b3caa2df7d716b6e73ff2ed07f0d35abd1819e1e7a48e8834eae286f"
+    },
+    {
+      "path": "early-proof-implementation/313.log",
+      "bytes": 32801,
+      "sha256": "30e77e596a2200d7cf3b3a230178f4752a5b4cd3b29da199385172c2da03b086"
+    },
+    {
+      "path": "early-proof-implementation/FINAL_RECHECK.md",
+      "bytes": 4102,
+      "sha256": "4ef5a573d6c30620133f1eecee702bd437d770c6c5e4619f787fae93d4b7d1b7"
+    },
+    {
+      "path": "early-proof-implementation/FINAL_RECHECK_SHA256SUMS.txt",
+      "bytes": 263,
+      "sha256": "b2d6cd027868e45ba6ecefac3c09bf3123e0ad629e37252c8f3fa56d4cd067da"
+    },
+    {
+      "path": "early-proof-implementation/INDEPENDENT_REVIEW.md",
+      "bytes": 4733,
+      "sha256": "de818952e56d8bf9ccf2a94519aab3bbaa7b26abfef0cd910c72c0209690221f"
+    },
+    {
+      "path": "early-proof-implementation/REPORT.md",
+      "bytes": 7430,
+      "sha256": "8691383775fdc49a74fef48f0afd86bf6fd96cf0e6375d1ff98aae636f5aeff0"
+    },
+    {
+      "path": "early-proof-implementation/REVIEW_SHA256SUMS.txt",
+      "bytes": 256,
+      "sha256": "0b9314737926d78f708e6a4e152abf3a2b0be83bd3de970adb46e441ca0390f3"
+    },
+    {
+      "path": "early-proof-implementation/accepted-selection-witness.py",
+      "bytes": 8085,
+      "sha256": "27881ef6ec9b099706063b5164575cd88bff583b5f161a33ed9fbd06c082c07d"
+    },
+    {
+      "path": "early-proof-implementation/final-binding.json",
+      "bytes": 2216,
+      "sha256": "d3e160e056649426ee2a57c2c551fdd478dffc25f0ea64e67e344f90dc70c9bf"
+    },
+    {
+      "path": "early-proof-implementation/final-plan.json",
+      "bytes": 137102,
+      "sha256": "8c9b7bbb4a69398488cc94a13df97160722b4c6d64aeb63031d7113990c0d72c"
+    },
+    {
+      "path": "early-proof-implementation/final-reviewed.diff",
+      "bytes": 18255,
+      "sha256": "9fd335a41f5cd1b4a62a2e718d1d49ed9124d38bd1a5f3f138e43dc00a1bcf87"
+    },
+    {
+      "path": "early-proof-implementation/final-source-hashes.json",
+      "bytes": 1064,
+      "sha256": "013650443d4c8b28dec5dc19905c1c6106bfa85d53d77acebd2597d94e370bad"
+    },
+    {
+      "path": "early-proof-implementation/final-source/EARLY_PROOF.md.txt",
+      "bytes": 3001,
+      "sha256": "73acb453c2b4bdc540d93b45d9688609150fe2a28df9ecbfbd6eed67b5f12739"
+    },
+    {
+      "path": "early-proof-implementation/final-source/run_unittest_suite.py.txt",
+      "bytes": 25083,
+      "sha256": "36bf86a6325e5465dc624356455e5376702ac6475b515572c405e7a487a607f9"
+    },
+    {
+      "path": "early-proof-implementation/final-source/test_ci_plan.py.txt",
+      "bytes": 95556,
+      "sha256": "65b1dbfc795f406ae73626a5fc9bb6fa10a823eb0305289e624670a983ad626e"
+    },
+    {
+      "path": "early-proof-implementation/final-source/test_test_runner.py.txt",
+      "bytes": 33756,
+      "sha256": "2f7db94d1e790d0169347fe847d92e136cb712034cf776bd4c9ef630ee6a8dfd"
+    },
+    {
+      "path": "early-proof-implementation/final-witness.json",
+      "bytes": 800,
+      "sha256": "0269d59fe1b74898b6d805c13341d77f662eba4c72bdb9bd9e240b9e9fa82523"
+    },
+    {
+      "path": "early-proof-implementation/final_plan.py",
+      "bytes": 3222,
+      "sha256": "30f2f94a355cdfb58faa8276a286e1638eecda0adee67fb7e61289471bffd972"
+    },
+    {
+      "path": "early-proof-implementation/finalize.py",
+      "bytes": 10244,
+      "sha256": "0eb6e09bd5380ce726887ed3db1b18ca4d3d09d5cd93d6c9bf00672fed097385"
+    },
+    {
+      "path": "early-proof-implementation/launch-final.py",
+      "bytes": 1214,
+      "sha256": "97c564ebfeda9eb3eab80b696b2305d014f073ad3771fe9729cffcc01030ff15"
+    },
+    {
+      "path": "early-proof-implementation/launch.py",
+      "bytes": 1175,
+      "sha256": "f7908f9ea22cbfb355bbb452fb12e16e91991e17855345b60bce88522f269fd0"
+    },
+    {
+      "path": "early-proof-implementation/mutant-final-results.json",
+      "bytes": 1921,
+      "sha256": "3ff6ed29a9902bb41519e3adf8163f1c589fa5a8f65e1274c45758db422116c8"
+    },
+    {
+      "path": "early-proof-implementation/mutant-results.json",
+      "bytes": 1905,
+      "sha256": "2c0350ec9ae2a268b2704252fce1b91359297f802f21530f170310b2b9363445"
+    },
+    {
+      "path": "early-proof-implementation/mutants-final/coverage-collection/result.log",
+      "bytes": 4291,
+      "sha256": "ec27ccca7318537f9fa03337aa18f7e9d92b9c632e33a860a636cd1b0b026c1e"
+    },
+    {
+      "path": "early-proof-implementation/mutants-final/coverage-collection/tests/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "early-proof-implementation/mutants-final/coverage-collection/tests/run_unittest_suite.py",
+      "bytes": 25352,
+      "sha256": "7768373c7a192442df2676fe28135bd10d06a38c16d906ac09c72b33f59b9881"
+    },
+    {
+      "path": "early-proof-implementation/mutants-final/coverage-collection/tests/test_test_runner.py",
+      "bytes": 33756,
+      "sha256": "2f7db94d1e790d0169347fe847d92e136cb712034cf776bd4c9ef630ee6a8dfd"
+    },
+    {
+      "path": "early-proof-implementation/mutants-final/full-collection/result.log",
+      "bytes": 5076,
+      "sha256": "1ed0446c4949a1d1a78d336a43d08a8b533597dfd0fadb133743bb1872348912"
+    },
+    {
+      "path": "early-proof-implementation/mutants-final/full-collection/tests/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "early-proof-implementation/mutants-final/full-collection/tests/run_unittest_suite.py",
+      "bytes": 25352,
+      "sha256": "f57901632d5b4e67d3f16ba823c199f5d8cc1182ae0672bcab7b235168119eeb"
+    },
+    {
+      "path": "early-proof-implementation/mutants-final/full-collection/tests/test_test_runner.py",
+      "bytes": 33756,
+      "sha256": "2f7db94d1e790d0169347fe847d92e136cb712034cf776bd4c9ef630ee6a8dfd"
+    },
+    {
+      "path": "early-proof-implementation/mutants-final/producer-version/result.log",
+      "bytes": 4086,
+      "sha256": "c2f43248840cc4b5ad5fba86153334dba5636fd6bf77d6e9a7dee9564fc7b469"
+    },
+    {
+      "path": "early-proof-implementation/mutants-final/producer-version/tests/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "early-proof-implementation/mutants-final/producer-version/tests/run_unittest_suite.py",
+      "bytes": 25456,
+      "sha256": "6b2bc1bcf3fd996612b98ebd263923cd74cd232480d8e25e63efbe183f0dd652"
+    },
+    {
+      "path": "early-proof-implementation/mutants-final/producer-version/tests/test_test_runner.py",
+      "bytes": 33756,
+      "sha256": "2f7db94d1e790d0169347fe847d92e136cb712034cf776bd4c9ef630ee6a8dfd"
+    },
+    {
+      "path": "early-proof-implementation/mutants/coverage-collection/result.log",
+      "bytes": 4300,
+      "sha256": "a0743b0b46072ada9e503b455162fa611eaf5871ff464df7c8eb71b1cb9ca03b"
+    },
+    {
+      "path": "early-proof-implementation/mutants/coverage-collection/tests/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "early-proof-implementation/mutants/coverage-collection/tests/run_unittest_suite.py",
+      "bytes": 25248,
+      "sha256": "d7774e3f9b7b294b1388511c68be5ab542ca9eb0647f41df718bdccc35a54a34"
+    },
+    {
+      "path": "early-proof-implementation/mutants/coverage-collection/tests/test_test_runner.py",
+      "bytes": 33085,
+      "sha256": "f1f01e820076d464f597d40498d5bfbf254e728ba9d696ea331877b3928e0408"
+    },
+    {
+      "path": "early-proof-implementation/mutants/full-collection/result.log",
+      "bytes": 5068,
+      "sha256": "22823928141bddfe9176642070134394cdd14501a7c656b5f59108bd39f3b846"
+    },
+    {
+      "path": "early-proof-implementation/mutants/full-collection/tests/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "early-proof-implementation/mutants/full-collection/tests/run_unittest_suite.py",
+      "bytes": 25252,
+      "sha256": "60294eece862260bfa549798923e583f38c8a6ade87ca704215f8bb04f56916e"
+    },
+    {
+      "path": "early-proof-implementation/mutants/full-collection/tests/test_test_runner.py",
+      "bytes": 33085,
+      "sha256": "f1f01e820076d464f597d40498d5bfbf254e728ba9d696ea331877b3928e0408"
+    },
+    {
+      "path": "early-proof-implementation/mutants/producer-version/result.log",
+      "bytes": 5568,
+      "sha256": "ecf7e77355417a32e9a334787c1f3a9b2388654916b0a2af771a07fbddf3c1aa"
+    },
+    {
+      "path": "early-proof-implementation/mutants/producer-version/tests/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "early-proof-implementation/mutants/producer-version/tests/run_unittest_suite.py",
+      "bytes": 25252,
+      "sha256": "38efa29bbda5e08d39fa5ca78f3bcac00353aec375a4d55ceaada96c4c4a7b19"
+    },
+    {
+      "path": "early-proof-implementation/mutants/producer-version/tests/test_test_runner.py",
+      "bytes": 33085,
+      "sha256": "f1f01e820076d464f597d40498d5bfbf254e728ba9d696ea331877b3928e0408"
+    },
+    {
+      "path": "early-proof-implementation/mutations-final.py",
+      "bytes": 2056,
+      "sha256": "0936e90c6ad3b1265f140e43364e48390fd2c3c0f77543ac06002a2ca81303ea"
+    },
+    {
+      "path": "early-proof-implementation/mutations.py",
+      "bytes": 2029,
+      "sha256": "af59cb6164102a804d1d3ed58cae7789a255ae93ad6efde8ada8ccbeaf21fa66"
+    },
+    {
+      "path": "early-proof-implementation/reviewed.diff",
+      "bytes": 17358,
+      "sha256": "9111f46c4a33fc20f087574bb2c47955b4854cd288ca3fd70ed627cb78c121d1"
+    },
+    {
+      "path": "early-proof-implementation/sha256.json",
+      "bytes": 7726,
+      "sha256": "90e45643266e2836eea9fce79c238646a4852c0134486dc71c95bd5463593769"
+    },
+    {
+      "path": "early-proof-implementation/source-hashes.json",
+      "bytes": 885,
+      "sha256": "a69dd157069838f987fb680c96053f8e4a418c77b3debfad5caf51b409151297"
+    },
+    {
+      "path": "early-proof-implementation/tested-source-pins.json",
+      "bytes": 435,
+      "sha256": "e671ebbd5e1cf1f46cfe2566e29f576de288ead95c3d1a6caa1ae6ea8bbd1b6b"
+    },
+    {
+      "path": "early-proof-implementation/tested-source/EARLY_PROOF.md.txt",
+      "bytes": 2363,
+      "sha256": "9cfe0795aee2ace407590f00a9dbb405407e8e9be547c9c20cff3b9096afb9a8"
+    },
+    {
+      "path": "early-proof-implementation/tested-source/run_unittest_suite.py.txt",
+      "bytes": 24881,
+      "sha256": "dae50d536f21499cdaba90b8a1a9a818b6882f909b641e0df03c9f69de585e7a"
+    },
+    {
+      "path": "early-proof-implementation/tested-source/test_ci_plan.py.txt",
+      "bytes": 95556,
+      "sha256": "65b1dbfc795f406ae73626a5fc9bb6fa10a823eb0305289e624670a983ad626e"
+    },
+    {
+      "path": "early-proof-implementation/tested-source/test_test_runner.py.txt",
+      "bytes": 33085,
+      "sha256": "f1f01e820076d464f597d40498d5bfbf254e728ba9d696ea331877b3928e0408"
+    },
+    {
+      "path": "early-proof-implementation/validation.json",
+      "bytes": 10622,
+      "sha256": "e5485b46203693cad1fcda3da5ad773ad2b9f2830de7f5c7f6e9e94853702336"
+    },
+    {
+      "path": "early-proof-implementation/verify-final.py",
+      "bytes": 1698,
+      "sha256": "cfa9e98f40b778fa3f249c2031d8168fd564dbdd72b4932943bfb3da35000404"
+    },
+    {
+      "path": "early-proof-implementation/verify.py",
+      "bytes": 1692,
+      "sha256": "3d32c7aa78e15f7cdf4ef29f96f67dc7adee2b04085ffd7f8b2ba8654246ed55"
+    },
+    {
+      "path": "early-proof/EARLY_PROOF.md",
+      "bytes": 11946,
+      "sha256": "64aec9cd8c2735ac730dc7fd0c0d0b4d9157bc8270bd3d8d44a9f67dc45259b2"
+    },
+    {
+      "path": "early-proof/branch-disabled-control.ini",
+      "bytes": 4589,
+      "sha256": "077902d2371586706e35c7faf7c45723586a4eec25186006502bcca2f7a2d692"
+    },
+    {
+      "path": "early-proof/probe-11.json",
+      "bytes": 7456,
+      "sha256": "a08d5ca32c37cbabf579ef8a6bc396bf94afe03118959f969b7a913afde78654"
+    },
+    {
+      "path": "early-proof/probe-13.json",
+      "bytes": 7501,
+      "sha256": "38e040c27d0ff1c2aa8a7dcdf760b0f5eaab581ce45f6701dd0046c20572087a"
+    },
+    {
+      "path": "early-proof/probe.py",
+      "bytes": 6330,
+      "sha256": "c7fdacceb00540839ee6f9efe3be38f994078b451366f84fd705d04c31b1f210"
+    },
+    {
+      "path": "early-proof/runner-review.md",
+      "bytes": 8348,
+      "sha256": "e08efa94a0e0e60737ef6da8f237d54d23a706e79f455f626f779079ec88b4ea"
+    },
+    {
+      "path": "early-proof/sha256.json",
+      "bytes": 546,
+      "sha256": "b93fc199c4412b58c8c637c46fbcaf4dafdeb55a8cdddb8b2329d6d01de729c7"
+    }
+  ],
+  "hosted_exact_head_pending": true,
+  "human_review_pending": true,
+  "merged": false
+}
