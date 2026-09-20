@@ -38,6 +38,7 @@ COVERAGE_AUTHORITY = {'tests/coverage_policy.yaml', '.github/scripts/check_cover
                       'tests/run_unittest_suite.py', 'pyproject.toml', '.coveragerc', 'setup.cfg', 'tox.ini',
                       '.github/workflows/ci.yml'}
 METADATA = {'edited', 'labeled', 'unlabeled'}
+ANCHOR_HISTORY_LIMIT = 64
 
 
 def consumer_fingerprint(repo, commit, leaves):
@@ -49,6 +50,36 @@ def consumer_fingerprint(repo, commit, leaves):
                                                       or path == 'pyproject.toml'):
             inventory.append([path, metadata])
     return digest(sorted(inventory))
+
+
+def reviewed_contract_anchor(repo, base, policy, leaves):
+    """Keep an accepted anchor through diagnostic-only policy edits.
+
+    Search only the continuous first-parent authority epoch. A changed or invalid
+    policy is a barrier, even if an older commit happens to match the fingerprint.
+    New/changed consumers are still invalidated individually against the anchor.
+    """
+    authority = canonical({key: value for key, value in policy.items() if key != 'consumer_contracts'})
+    try:
+        current = git(repo, 'ls-tree', base, '--', POLICY).decode().split()
+        if not current or current[0] not in {'100644', '100755'}:
+            return ''
+        history = git(repo, 'log', '--first-parent', '--full-history', f'--max-count={ANCHOR_HISTORY_LIMIT}',
+                      '--format=%H', base, '--', POLICY).decode().split()
+        for commit in history:
+            entry = git(repo, 'ls-tree', commit, '--', POLICY).decode().split()
+            if not entry or entry[:2] != current[:2]:
+                return ''
+            historical = json.loads(read_at(repo, commit, POLICY), object_pairs_hook=unique_object)
+            validate_policy(historical)
+            if canonical({key: value for key, value in historical.items() if key != 'consumer_contracts'}) != authority:
+                return ''
+            if consumer_fingerprint(repo, commit, leaves) == policy['consumer_fingerprint']:
+                return commit
+    except (ValueError, TypeError, KeyError, AttributeError):
+        # Unavailable history and malformed historical policy cannot grant scope.
+        return ''
+    return ''
 
 
 def evidence_drift(repo, anchor, commit, names):
@@ -534,8 +565,9 @@ def make_plan(repo, *, base, head, target, repository, base_ref='develop', body=
         reasons.extend('local contract cannot bound initialization/dependency change: ' + p for p in sorted(rejected))
         anchor, reviewed = '', set()
         if bounded:
-            anchor = git(repo, 'log', '-1', '--format=%H', base, '--', POLICY).decode().strip()
-            if consumer_fingerprint(repo, anchor, leaves) == policy['consumer_fingerprint']:
+            anchor = reviewed_contract_anchor(repo, base, policy, leaves)
+            if anchor:
+                reasons.append('reviewed closure retained from authority-compatible policy anchor: ' + anchor)
                 accepted, _ = dependencies.snapshot(repo, anchor)
                 for name in groups:
                     group = policy['groups'][name]
