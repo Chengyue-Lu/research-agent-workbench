@@ -1,5 +1,5 @@
 policy_id: rwb-coverage-policy
-version: 2.2.4
+version: 2.3.0
 source_root: src/research_workbench
 
 suites:
@@ -65,6 +65,7 @@ suites:
       - test_protocol_profiles
       - test_pr_governance
       - test_release_surface
+      - test_release_source_ci
       - test_release_oracle_replay
       - test_portable_build
       - test_runtime_resources
@@ -177,6 +178,7 @@ critical_modules:
   - .github/scripts/check_coverage_policy.py
   - .github/scripts/check_pr_governance.py
   - .github/scripts/release_surface.py
+  - .github/scripts/release_source_ci.py
   - src/research_workbench/protocol/authority.py
   - src/research_workbench/capability/requirements.py
   - src/research_workbench/capability/supply.py
@@ -233,6 +235,17 @@ negative_acceptance:
       - test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_collectively_omitted_qualification_input_is_rejected
       - test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_tool_arguments_must_match_the_observed_provider_call
       - test_baseline_replay_integrity.BaselineReplayIntegrityTests.test_validation_cannot_include_an_unrelated_subject
+  - surface: protected-release-source-ci
+    modules:
+      - .github/scripts/release_source_ci.py
+    positive_tests:
+      - test_release_source_ci.AttestationTests.test_exact_push_attempt_and_app_bound_checks_produce_existing_source_ci_shape
+      - test_release_source_ci.MergedSourceTests.test_real_squash_delta_is_checked_with_actual_parent_and_authenticated_metadata
+    negative_tests:
+      - test_release_source_ci.AttestationTests.test_missing_duplicate_foreign_skipped_or_failed_jobs_cannot_attest
+      - test_release_source_ci.AttestationTests.test_check_names_alone_or_other_apps_suites_and_sources_are_not_evidence
+      - test_release_source_ci.AttestationTests.test_rerun_races_and_final_state_drift_fail_closed
+      - test_release_source_ci.MergedSourceTests.test_unassociated_ambiguous_unmerged_foreign_or_tree_drifted_source_is_rejected
   - surface: m5-protocol-and-arm-qualification
     modules:
       - src/research_workbench/evaluation/pins.py

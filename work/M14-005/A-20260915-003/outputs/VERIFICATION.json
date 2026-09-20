@@ -1,0 +1,30 @@
+{
+  "implementation_head": "65978304329be2ac58326181f864e642b94df9c0",
+  "baseline": "0bebafd81f0116a8269c63ac97378038a1eb2a5d",
+  "focused_passed": 247,
+  "source_fixture_checks_passed": 15,
+  "source_observer_coverage": {
+    "lines": "150/150",
+    "branches": "18/18"
+  },
+  "repository": {
+    "validated": 186,
+    "errors": 0,
+    "warnings": 0
+  },
+  "governance": "PASS",
+  "ci_plan": {
+    "behavioral": "full",
+    "coverage": "impact+repository",
+    "package": true
+  },
+  "live_negative": "Green develop CI 34939526577 rejected: missing governance",
+  "live_positive_protected_push": "Pending R2 integration; current PR checks cannot substitute this evidence.",
+  "canonical_tasks_unchanged": true,
+  "m14_005_state": "BLOCKED",
+  "primary_clean_unchanged": true,
+  "topology_changed": false,
+  "release_refs_created": false,
+  "remote_protection_mutated": false,
+  "final_head_hosted_ci": "Pending evidence commit/push; PR body will retain run and artifact bindings."
+}

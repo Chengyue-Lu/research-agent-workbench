@@ -1,5 +1,12 @@
 # M14-005 readiness preparation
 
+当前接续：许可与 readiness preparation 已通过 [PR #78](https://github.com/Chengyue-Lu/research-agent-workbench/pull/78)
+于 `e5827a1` 合入；M0-007 为 DONE。M14-005 当前候选凭[具名 v0.1.0 准备决定与 fresh protection 回读](FIRST_RELEASE_DECISION.md)
+从 BLOCKED 转为 READY。远端规则后续由
+[PR #79](https://github.com/Chengyue-Lu/research-agent-workbench/pull/79) 分为 main/develop hard/review 四层：
+hard 为 23305447 / 23305460，无 bypass；review 为 23192001 / 23192054，仅 Chengyue-Lu 的 PR-only 例外。
+下文保留 2026-09-14 准备阶段的部署与验证快照；当前实现接续见 [source-CI 准备](SOURCE_CI.md)。
+
 - 责任人：路诚钺（`Chengyue-Lu`）；风险 R2；Task：M0-007、M14-005。
 - 分支：`feature/m14-005-readiness`；integration base：`develop`。
 - 本轮工程基线：`f7a9715ed35787d3326283c22f834b1514c5c88c`，仅用于开发和演练定位。

@@ -1,0 +1,3 @@
+** -text
+tool-events/* whitespace=cr-at-eol,-blank-at-eof
+tool-events/range-diff.log whitespace=-blank-at-eol

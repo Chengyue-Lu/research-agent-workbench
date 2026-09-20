@@ -1,0 +1,37 @@
+task_id: M14-005
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+agent_profile: bounded-rebase-verification
+required_skills: []
+delegation: false
+baseline: 171d4654f88e926f239cdf25bc8168109b81f391
+user_request: 跟进到目前最新进度，M14-005有冲突待解决，然后说明下一步推进计划。
+goal: Resolve PR 80 against current develop, preserve accepted M5 and CI obligations,
+  validate the candidate and record staged next steps.
+read_allowlist:
+- AGENTS.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/STATUS.md
+- docs/ROADMAP.md
+- docs/M_SERIES_IMPLEMENTATION_MAP.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- .github/**
+- tests/**
+- examples/**
+- registry/**
+- work/M14-005/**
+- GitHub PR 80, Issue 57 and read-only CI/protection APIs
+write_scope:
+- docs/STATUS.md
+- tests/coverage_policy.yaml
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/SOURCE_CI.md
+- work/M14-005/A-20260921-001/**
+- M14 feature branch rebase and PR 80 evidence/review request
+stop_conditions:
+- Current-head CI and renewed R2 review; no merge without specific authorization.
+- Preserve prior Attempts, Task definitions, source-CI implementation and primary
+  develop.
+- No release ref/tag, topology activation, protection mutation or final release authorization.

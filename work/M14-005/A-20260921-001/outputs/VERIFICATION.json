@@ -1,0 +1,18 @@
+{
+  "checkpoint": "89614714e021d0f443f977ab6dda6d72c187c9bd",
+  "baseline": "171d4654f88e926f239cdf25bc8168109b81f391",
+  "focused_passed": 157,
+  "repository": {
+    "validated": 186,
+    "errors": 0,
+    "warnings": 0
+  },
+  "governance": "PASS",
+  "source_ci_bytes_unchanged": true,
+  "prior_attempts_unchanged": true,
+  "upstream_coverage_and_workflow_preserved": true,
+  "primary_develop_unchanged": true,
+  "final_head_ci": "Pending; PR 80 owns final receipts",
+  "merge_authorized": false,
+  "real_source_push": "Pending authorized integration"
+}

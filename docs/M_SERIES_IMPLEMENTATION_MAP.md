@@ -60,7 +60,7 @@ evidence，不生成 hard dependency。
 | M11 | Execution reintegration | task-defined；Core 与 optional Skill extension complete；生产 projection index 仍为空 |
 | M12 | Execution Continuity & Recovery | **RESERVED** |
 | M13 | Strategy & Governed Evolution | **RESERVED** |
-| M14 | Product / Release Closure | task-defined；M14-001/002/003 DONE，M14-004/005 依 DAG DONE/BLOCKED |
+| M14 | Product / Release Closure | task-defined；M14-001～004 DONE，M14-005 READY |
 
 `task-defined` 只表示该 family 已有原子 Task，不表示全部 Task 已完成。实时状态仍见 `TASKS.md`。
 
@@ -192,7 +192,7 @@ flowchart LR
     M14001 --> M14003["M14-003 DONE<br/>portable package"]
     M14002 --> M14004["M14-004 DONE<br/>public docs"]
     M14003 --> M14004
-    M14002 --> M14005["M14-005 BLOCKED<br/>first release"]
+    M14002 --> M14005["M14-005 READY<br/>first release"]
     M14003 --> M14005
     M14004 --> M14005
     M0007["M0-007 DONE<br/>license"] --> M14005
@@ -203,8 +203,8 @@ flowchart LR
 M14 只把 frozen `develop` 确定性投影为精选 `main`，不成为新产品语义 owner；exact current `main` 只作为
 generated release branch 的 Git 父提交。M14-001 已建立 dormant R2 trust anchor，M14-002 与 M14-003 已
 闭合 projection/package，但 release branch 继续 fail closed、现行 exact develop release 继续有效。
-M14-005 当前 BLOCKED：external readiness 仍需本 PR R2 接受、fresh ruleset readback 与具名 Human release decision。
-全部满足后才可提案 READY；后续 implementation 仍包括 protected source-CI attestation、release-only workflow/checks、
+M14-005 当前候选为 READY：[具名 v0.1.0 准备决定与 fresh protection 回读](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_DECISION.md)
+已闭合外部启动条件。后续 implementation 仍包括真实 protected source-CI 验收、release-only workflow/checks、
 atomic topology cutover、exact develop source/current main parent freeze、deterministic projection / prospective-tree equality，
 以及首发 R2 验收与 tag/artifact/hash closure，顺序见 [M14 路线](ROADMAP.md#7-product--release-closure)。首版允许 no-Skill Core，但不得发布
 未许可/未准入 Skill，也不得把 incomplete M5 evaluation 写成已证明价值。Issue #57 的 `REL-*` 仅为工作包

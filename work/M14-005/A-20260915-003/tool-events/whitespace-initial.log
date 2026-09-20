@@ -1,0 +1,1122 @@
+work/M14-005/A-20260915-002/tool-events/focused.log:1: trailing whitespace.
++............governance: FAIL
+work/M14-005/A-20260915-002/tool-events/focused.log:2: trailing whitespace.
++{
+work/M14-005/A-20260915-002/tool-events/focused.log:3: trailing whitespace.
++  "version": 4,
+work/M14-005/A-20260915-002/tool-events/focused.log:4: trailing whitespace.
++  "binding": {
+work/M14-005/A-20260915-002/tool-events/focused.log:5: trailing whitespace.
++    "repository": "Example/repo",
+work/M14-005/A-20260915-002/tool-events/focused.log:6: trailing whitespace.
++    "base": "c781125c0a8fb79693c1c100aaf4d8e3acbdbd19",
+work/M14-005/A-20260915-002/tool-events/focused.log:7: trailing whitespace.
++    "head": "4d10fb243f5fbeca5d8894207cf2d91e6c0318f0",
+work/M14-005/A-20260915-002/tool-events/focused.log:8: trailing whitespace.
++    "merge_base": "c781125c0a8fb79693c1c100aaf4d8e3acbdbd19",
+work/M14-005/A-20260915-002/tool-events/focused.log:9: trailing whitespace.
++    "target": "4d10fb243f5fbeca5d8894207cf2d91e6c0318f0"
+work/M14-005/A-20260915-002/tool-events/focused.log:10: trailing whitespace.
++  },
+work/M14-005/A-20260915-002/tool-events/focused.log:11: trailing whitespace.
++  "change_class": "fast",
+work/M14-005/A-20260915-002/tool-events/focused.log:12: trailing whitespace.
++  "risk": "R0",
+work/M14-005/A-20260915-002/tool-events/focused.log:13: trailing whitespace.
++  "changes": [
+work/M14-005/A-20260915-002/tool-events/focused.log:14: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/focused.log:15: trailing whitespace.
++      "status": "M",
+work/M14-005/A-20260915-002/tool-events/focused.log:16: trailing whitespace.
++      "path": "README.md"
+work/M14-005/A-20260915-002/tool-events/focused.log:17: trailing whitespace.
++    }
+work/M14-005/A-20260915-002/tool-events/focused.log:18: trailing whitespace.
++  ],
+work/M14-005/A-20260915-002/tool-events/focused.log:19: trailing whitespace.
++  "surfaces": [
+work/M14-005/A-20260915-002/tool-events/focused.log:20: trailing whitespace.
++    "documentation"
+work/M14-005/A-20260915-002/tool-events/focused.log:21: trailing whitespace.
++  ],
+work/M14-005/A-20260915-002/tool-events/focused.log:22: trailing whitespace.
++  "test_groups": [
+work/M14-005/A-20260915-002/tool-events/focused.log:23: trailing whitespace.
++    "documentation"
+work/M14-005/A-20260915-002/tool-events/focused.log:24: trailing whitespace.
++  ],
+work/M14-005/A-20260915-002/tool-events/focused.log:25: trailing whitespace.
++  "tests": [
+work/M14-005/A-20260915-002/tool-events/focused.log:26: trailing whitespace.
++    "test_documentation",
+work/M14-005/A-20260915-002/tool-events/focused.log:27: trailing whitespace.
++    "test_pr_governance"
+work/M14-005/A-20260915-002/tool-events/focused.log:28: trailing whitespace.
++  ],
+work/M14-005/A-20260915-002/tool-events/focused.log:29: trailing whitespace.
++  "coverage_modules": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:30: trailing whitespace.
++  "impact_evidence": {},
+work/M14-005/A-20260915-002/tool-events/focused.log:31: trailing whitespace.
++  "changed_lines": {},
+work/M14-005/A-20260915-002/tool-events/focused.log:32: trailing whitespace.
++  "coverage_lines": {},
+work/M14-005/A-20260915-002/tool-events/focused.log:33: trailing whitespace.
++  "coverage_tests": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:34: trailing whitespace.
++  "selection": {
+work/M14-005/A-20260915-002/tool-events/focused.log:35: trailing whitespace.
++    "algorithm": "base-head-consumers-v1",
+work/M14-005/A-20260915-002/tool-events/focused.log:36: trailing whitespace.
++    "inventory_sha256": "825934f9f8f83ab253999b69ad0d0ba0070cc947c807b259935b591c2ed7197a",
+work/M14-005/A-20260915-002/tool-events/focused.log:37: trailing whitespace.
++    "selected": {},
+work/M14-005/A-20260915-002/tool-events/focused.log:38: trailing whitespace.
++    "excluded": [
+work/M14-005/A-20260915-002/tool-events/focused.log:39: trailing whitespace.
++      "test_api_session_runner",
+work/M14-005/A-20260915-002/tool-events/focused.log:40: trailing whitespace.
++      "test_ci_checks",
+work/M14-005/A-20260915-002/tool-events/focused.log:41: trailing whitespace.
++      "test_ci_dependencies",
+work/M14-005/A-20260915-002/tool-events/focused.log:42: trailing whitespace.
++      "test_ci_plan",
+work/M14-005/A-20260915-002/tool-events/focused.log:43: trailing whitespace.
++      "test_claim_trace",
+work/M14-005/A-20260915-002/tool-events/focused.log:44: trailing whitespace.
++      "test_cli",
+work/M14-005/A-20260915-002/tool-events/focused.log:45: trailing whitespace.
++      "test_cli_command_branches",
+work/M14-005/A-20260915-002/tool-events/focused.log:46: trailing whitespace.
++      "test_coverage_policy",
+work/M14-005/A-20260915-002/tool-events/focused.log:47: trailing whitespace.
++      "test_documentation",
+work/M14-005/A-20260915-002/tool-events/focused.log:48: trailing whitespace.
++      "test_governance_helper_branches",
+work/M14-005/A-20260915-002/tool-events/focused.log:49: trailing whitespace.
++      "test_pr_governance",
+work/M14-005/A-20260915-002/tool-events/focused.log:50: trailing whitespace.
++      "test_provider_adapters",
+work/M14-005/A-20260915-002/tool-events/focused.log:51: trailing whitespace.
++      "test_provider_conformance",
+work/M14-005/A-20260915-002/tool-events/focused.log:52: trailing whitespace.
++      "test_provider_contract_branches",
+work/M14-005/A-20260915-002/tool-events/focused.log:53: trailing whitespace.
++      "test_provider_port",
+work/M14-005/A-20260915-002/tool-events/focused.log:54: trailing whitespace.
++      "test_skill_release_projection",
+work/M14-005/A-20260915-002/tool-events/focused.log:55: trailing whitespace.
++      "test_unselected",
+work/M14-005/A-20260915-002/tool-events/focused.log:56: trailing whitespace.
++      "test_validation_helpers"
+work/M14-005/A-20260915-002/tool-events/focused.log:57: trailing whitespace.
++    ],
+work/M14-005/A-20260915-002/tool-events/focused.log:58: trailing whitespace.
++    "exclusion_reasons": {
+work/M14-005/A-20260915-002/tool-events/focused.log:59: trailing whitespace.
++      "test_api_session_runner": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:60: trailing whitespace.
++      "test_ci_checks": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:61: trailing whitespace.
++      "test_ci_dependencies": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:62: trailing whitespace.
++      "test_ci_plan": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:63: trailing whitespace.
++      "test_claim_trace": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:64: trailing whitespace.
++      "test_cli": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:65: trailing whitespace.
++      "test_cli_command_branches": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:66: trailing whitespace.
++      "test_coverage_policy": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:67: trailing whitespace.
++      "test_documentation": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:68: trailing whitespace.
++      "test_governance_helper_branches": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:69: trailing whitespace.
++      "test_pr_governance": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:70: trailing whitespace.
++      "test_provider_adapters": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:71: trailing whitespace.
++      "test_provider_conformance": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:72: trailing whitespace.
++      "test_provider_contract_branches": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:73: trailing whitespace.
++      "test_provider_port": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:74: trailing whitespace.
++      "test_skill_release_projection": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:75: trailing whitespace.
++      "test_unselected": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:76: trailing whitespace.
++      "test_validation_helpers": "outside base/head dependency closure"
+work/M14-005/A-20260915-002/tool-events/focused.log:77: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/focused.log:78: trailing whitespace.
++    "exclusion_reason": "outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately",
+work/M14-005/A-20260915-002/tool-events/focused.log:79: trailing whitespace.
++    "opaque_consumers": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:80: trailing whitespace.
++    "errors": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:81: trailing whitespace.
++    "test_reachable_sources": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:82: trailing whitespace.
++    "affected_paths": [
+work/M14-005/A-20260915-002/tool-events/focused.log:83: trailing whitespace.
++      "README.md"
+work/M14-005/A-20260915-002/tool-events/focused.log:84: trailing whitespace.
++    ],
+work/M14-005/A-20260915-002/tool-events/focused.log:85: trailing whitespace.
++    "reviewed_contract_anchor": "",
+work/M14-005/A-20260915-002/tool-events/focused.log:86: trailing whitespace.
++    "reviewed_opaque_boundary": []
+work/M14-005/A-20260915-002/tool-events/focused.log:87: trailing whitespace.
++  },
+work/M14-005/A-20260915-002/tool-events/focused.log:88: trailing whitespace.
++  "coverage_selection": {},
+work/M14-005/A-20260915-002/tool-events/focused.log:89: trailing whitespace.
++  "policy_sha256": "d1b2c69d5f8b5c36b98e7525a091201f1c4c3ffba30cc4fea34588103a1c75e6",
+work/M14-005/A-20260915-002/tool-events/focused.log:90: trailing whitespace.
++  "python_versions": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:91: trailing whitespace.
++  "behavioral_scope": "none",
+work/M14-005/A-20260915-002/tool-events/focused.log:92: trailing whitespace.
++  "coverage_scope": "none",
+work/M14-005/A-20260915-002/tool-events/focused.log:93: trailing whitespace.
++  "coverage_obligations": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:94: trailing whitespace.
++  "blocked_reasons": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:95: trailing whitespace.
++  "package_smoke": false,
+work/M14-005/A-20260915-002/tool-events/focused.log:96: trailing whitespace.
++  "repository_smoke": false,
+work/M14-005/A-20260915-002/tool-events/focused.log:97: trailing whitespace.
++  "reasons": [
+work/M14-005/A-20260915-002/tool-events/focused.log:98: trailing whitespace.
++    "README.md -> documentation",
+work/M14-005/A-20260915-002/tool-events/focused.log:99: trailing whitespace.
++    "test/document/archive data: README.md"
+work/M14-005/A-20260915-002/tool-events/focused.log:100: trailing whitespace.
++  ],
+work/M14-005/A-20260915-002/tool-events/focused.log:101: trailing whitespace.
++  "obligation_reasons": {
+work/M14-005/A-20260915-002/tool-events/focused.log:102: trailing whitespace.
++    "behavioral_scope": [
+work/M14-005/A-20260915-002/tool-events/focused.log:103: trailing whitespace.
++      "documentation obligations only"
+work/M14-005/A-20260915-002/tool-events/focused.log:104: trailing whitespace.
++    ],
+work/M14-005/A-20260915-002/tool-events/focused.log:105: trailing whitespace.
++    "coverage_scope": [
+work/M14-005/A-20260915-002/tool-events/focused.log:106: trailing whitespace.
++      "no production/critical executable or coverage authority changed"
+work/M14-005/A-20260915-002/tool-events/focused.log:107: trailing whitespace.
++    ],
+work/M14-005/A-20260915-002/tool-events/focused.log:108: trailing whitespace.
++    "package_smoke": [
+work/M14-005/A-20260915-002/tool-events/focused.log:109: trailing whitespace.
++      "no packaging/install surface changed"
+work/M14-005/A-20260915-002/tool-events/focused.log:110: trailing whitespace.
++    ],
+work/M14-005/A-20260915-002/tool-events/focused.log:111: trailing whitespace.
++    "repository_smoke": [
+work/M14-005/A-20260915-002/tool-events/focused.log:112: trailing whitespace.
++      "no repository validation surface changed"
+work/M14-005/A-20260915-002/tool-events/focused.log:113: trailing whitespace.
++    ]
+work/M14-005/A-20260915-002/tool-events/focused.log:114: trailing whitespace.
++  },
+work/M14-005/A-20260915-002/tool-events/focused.log:115: trailing whitespace.
++  "plan_id": "2720250aee8b63a90f406f60dcc810abc59543d2ae9fb5826611381e08e12661"
+work/M14-005/A-20260915-002/tool-events/focused.log:116: trailing whitespace.
++}
+work/M14-005/A-20260915-002/tool-events/focused.log:117: trailing whitespace.
++{
+work/M14-005/A-20260915-002/tool-events/focused.log:118: trailing whitespace.
++  "version": 4,
+work/M14-005/A-20260915-002/tool-events/focused.log:119: trailing whitespace.
++  "binding": {
+work/M14-005/A-20260915-002/tool-events/focused.log:120: trailing whitespace.
++    "repository": "Example/repo",
+work/M14-005/A-20260915-002/tool-events/focused.log:121: trailing whitespace.
++    "base": "c781125c0a8fb79693c1c100aaf4d8e3acbdbd19",
+work/M14-005/A-20260915-002/tool-events/focused.log:122: trailing whitespace.
++    "head": "4d10fb243f5fbeca5d8894207cf2d91e6c0318f0",
+work/M14-005/A-20260915-002/tool-events/focused.log:123: trailing whitespace.
++    "merge_base": "c781125c0a8fb79693c1c100aaf4d8e3acbdbd19",
+work/M14-005/A-20260915-002/tool-events/focused.log:124: trailing whitespace.
++    "target": "4d10fb243f5fbeca5d8894207cf2d91e6c0318f0"
+work/M14-005/A-20260915-002/tool-events/focused.log:125: trailing whitespace.
++  },
+work/M14-005/A-20260915-002/tool-events/focused.log:126: trailing whitespace.
++  "change_class": "fast",
+work/M14-005/A-20260915-002/tool-events/focused.log:127: trailing whitespace.
++  "risk": "R0",
+work/M14-005/A-20260915-002/tool-events/focused.log:128: trailing whitespace.
++  "changes": [
+work/M14-005/A-20260915-002/tool-events/focused.log:129: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/focused.log:130: trailing whitespace.
++      "status": "M",
+work/M14-005/A-20260915-002/tool-events/focused.log:131: trailing whitespace.
++      "path": "README.md"
+work/M14-005/A-20260915-002/tool-events/focused.log:132: trailing whitespace.
++    }
+work/M14-005/A-20260915-002/tool-events/focused.log:133: trailing whitespace.
++  ],
+work/M14-005/A-20260915-002/tool-events/focused.log:134: trailing whitespace.
++  "surfaces": [
+work/M14-005/A-20260915-002/tool-events/focused.log:135: trailing whitespace.
++    "documentation"
+work/M14-005/A-20260915-002/tool-events/focused.log:136: trailing whitespace.
++  ],
+work/M14-005/A-20260915-002/tool-events/focused.log:137: trailing whitespace.
++  "test_groups": [
+work/M14-005/A-20260915-002/tool-events/focused.log:138: trailing whitespace.
++    "documentation"
+work/M14-005/A-20260915-002/tool-events/focused.log:139: trailing whitespace.
++  ],
+work/M14-005/A-20260915-002/tool-events/focused.log:140: trailing whitespace.
++  "tests": [
+work/M14-005/A-20260915-002/tool-events/focused.log:141: trailing whitespace.
++    "test_documentation",
+work/M14-005/A-20260915-002/tool-events/focused.log:142: trailing whitespace.
++    "test_pr_governance"
+work/M14-005/A-20260915-002/tool-events/focused.log:143: trailing whitespace.
++  ],
+work/M14-005/A-20260915-002/tool-events/focused.log:144: trailing whitespace.
++  "coverage_modules": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:145: trailing whitespace.
++  "impact_evidence": {},
+work/M14-005/A-20260915-002/tool-events/focused.log:146: trailing whitespace.
++  "changed_lines": {},
+work/M14-005/A-20260915-002/tool-events/focused.log:147: trailing whitespace.
++  "coverage_lines": {},
+work/M14-005/A-20260915-002/tool-events/focused.log:148: trailing whitespace.
++  "coverage_tests": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:149: trailing whitespace.
++  "selection": {
+work/M14-005/A-20260915-002/tool-events/focused.log:150: trailing whitespace.
++    "algorithm": "base-head-consumers-v1",
+work/M14-005/A-20260915-002/tool-events/focused.log:151: trailing whitespace.
++    "inventory_sha256": "825934f9f8f83ab253999b69ad0d0ba0070cc947c807b259935b591c2ed7197a",
+work/M14-005/A-20260915-002/tool-events/focused.log:152: trailing whitespace.
++    "selected": {},
+work/M14-005/A-20260915-002/tool-events/focused.log:153: trailing whitespace.
++    "excluded": [
+work/M14-005/A-20260915-002/tool-events/focused.log:154: trailing whitespace.
++      "test_api_session_runner",
+work/M14-005/A-20260915-002/tool-events/focused.log:155: trailing whitespace.
++      "test_ci_checks",
+work/M14-005/A-20260915-002/tool-events/focused.log:156: trailing whitespace.
++      "test_ci_dependencies",
+work/M14-005/A-20260915-002/tool-events/focused.log:157: trailing whitespace.
++      "test_ci_plan",
+work/M14-005/A-20260915-002/tool-events/focused.log:158: trailing whitespace.
++      "test_claim_trace",
+work/M14-005/A-20260915-002/tool-events/focused.log:159: trailing whitespace.
++      "test_cli",
+work/M14-005/A-20260915-002/tool-events/focused.log:160: trailing whitespace.
++      "test_cli_command_branches",
+work/M14-005/A-20260915-002/tool-events/focused.log:161: trailing whitespace.
++      "test_coverage_policy",
+work/M14-005/A-20260915-002/tool-events/focused.log:162: trailing whitespace.
++      "test_documentation",
+work/M14-005/A-20260915-002/tool-events/focused.log:163: trailing whitespace.
++      "test_governance_helper_branches",
+work/M14-005/A-20260915-002/tool-events/focused.log:164: trailing whitespace.
++      "test_pr_governance",
+work/M14-005/A-20260915-002/tool-events/focused.log:165: trailing whitespace.
++      "test_provider_adapters",
+work/M14-005/A-20260915-002/tool-events/focused.log:166: trailing whitespace.
++      "test_provider_conformance",
+work/M14-005/A-20260915-002/tool-events/focused.log:167: trailing whitespace.
++      "test_provider_contract_branches",
+work/M14-005/A-20260915-002/tool-events/focused.log:168: trailing whitespace.
++      "test_provider_port",
+work/M14-005/A-20260915-002/tool-events/focused.log:169: trailing whitespace.
++      "test_skill_release_projection",
+work/M14-005/A-20260915-002/tool-events/focused.log:170: trailing whitespace.
++      "test_unselected",
+work/M14-005/A-20260915-002/tool-events/focused.log:171: trailing whitespace.
++      "test_validation_helpers"
+work/M14-005/A-20260915-002/tool-events/focused.log:172: trailing whitespace.
++    ],
+work/M14-005/A-20260915-002/tool-events/focused.log:173: trailing whitespace.
++    "exclusion_reasons": {
+work/M14-005/A-20260915-002/tool-events/focused.log:174: trailing whitespace.
++      "test_api_session_runner": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:175: trailing whitespace.
++      "test_ci_checks": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:176: trailing whitespace.
++      "test_ci_dependencies": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:177: trailing whitespace.
++      "test_ci_plan": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:178: trailing whitespace.
++      "test_claim_trace": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:179: trailing whitespace.
++      "test_cli": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:180: trailing whitespace.
++      "test_cli_command_branches": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:181: trailing whitespace.
++      "test_coverage_policy": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:182: trailing whitespace.
++      "test_documentation": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:183: trailing whitespace.
++      "test_governance_helper_branches": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:184: trailing whitespace.
++      "test_pr_governance": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:185: trailing whitespace.
++      "test_provider_adapters": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:186: trailing whitespace.
++      "test_provider_conformance": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:187: trailing whitespace.
++      "test_provider_contract_branches": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:188: trailing whitespace.
++      "test_provider_port": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:189: trailing whitespace.
++      "test_skill_release_projection": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:190: trailing whitespace.
++      "test_unselected": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:191: trailing whitespace.
++      "test_validation_helpers": "outside base/head dependency closure"
+work/M14-005/A-20260915-002/tool-events/focused.log:192: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/focused.log:193: trailing whitespace.
++    "exclusion_reason": "outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately",
+work/M14-005/A-20260915-002/tool-events/focused.log:194: trailing whitespace.
++    "opaque_consumers": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:195: trailing whitespace.
++    "errors": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:196: trailing whitespace.
++    "test_reachable_sources": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:197: trailing whitespace.
++    "affected_paths": [
+work/M14-005/A-20260915-002/tool-events/focused.log:198: trailing whitespace.
++      "README.md"
+work/M14-005/A-20260915-002/tool-events/focused.log:199: trailing whitespace.
++    ],
+work/M14-005/A-20260915-002/tool-events/focused.log:200: trailing whitespace.
++    "reviewed_contract_anchor": "",
+work/M14-005/A-20260915-002/tool-events/focused.log:201: trailing whitespace.
++    "reviewed_opaque_boundary": []
+work/M14-005/A-20260915-002/tool-events/focused.log:202: trailing whitespace.
++  },
+work/M14-005/A-20260915-002/tool-events/focused.log:203: trailing whitespace.
++  "coverage_selection": {},
+work/M14-005/A-20260915-002/tool-events/focused.log:204: trailing whitespace.
++  "policy_sha256": "d1b2c69d5f8b5c36b98e7525a091201f1c4c3ffba30cc4fea34588103a1c75e6",
+work/M14-005/A-20260915-002/tool-events/focused.log:205: trailing whitespace.
++  "python_versions": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:206: trailing whitespace.
++  "behavioral_scope": "none",
+work/M14-005/A-20260915-002/tool-events/focused.log:207: trailing whitespace.
++  "coverage_scope": "none",
+work/M14-005/A-20260915-002/tool-events/focused.log:208: trailing whitespace.
++  "coverage_obligations": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:209: trailing whitespace.
++  "blocked_reasons": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:210: trailing whitespace.
++  "package_smoke": false,
+work/M14-005/A-20260915-002/tool-events/focused.log:211: trailing whitespace.
++  "repository_smoke": false,
+work/M14-005/A-20260915-002/tool-events/focused.log:212: trailing whitespace.
++  "reasons": [
+work/M14-005/A-20260915-002/tool-events/focused.log:213: trailing whitespace.
++    "README.md -> documentation",
+work/M14-005/A-20260915-002/tool-events/focused.log:214: trailing whitespace.
++    "test/document/archive data: README.md"
+work/M14-005/A-20260915-002/tool-events/focused.log:215: trailing whitespace.
++  ],
+work/M14-005/A-20260915-002/tool-events/focused.log:216: trailing whitespace.
++  "obligation_reasons": {
+work/M14-005/A-20260915-002/tool-events/focused.log:217: trailing whitespace.
++    "behavioral_scope": [
+work/M14-005/A-20260915-002/tool-events/focused.log:218: trailing whitespace.
++      "documentation obligations only"
+work/M14-005/A-20260915-002/tool-events/focused.log:219: trailing whitespace.
++    ],
+work/M14-005/A-20260915-002/tool-events/focused.log:220: trailing whitespace.
++    "coverage_scope": [
+work/M14-005/A-20260915-002/tool-events/focused.log:221: trailing whitespace.
++      "no production/critical executable or coverage authority changed"
+work/M14-005/A-20260915-002/tool-events/focused.log:222: trailing whitespace.
++    ],
+work/M14-005/A-20260915-002/tool-events/focused.log:223: trailing whitespace.
++    "package_smoke": [
+work/M14-005/A-20260915-002/tool-events/focused.log:224: trailing whitespace.
++      "no packaging/install surface changed"
+work/M14-005/A-20260915-002/tool-events/focused.log:225: trailing whitespace.
++    ],
+work/M14-005/A-20260915-002/tool-events/focused.log:226: trailing whitespace.
++    "repository_smoke": [
+work/M14-005/A-20260915-002/tool-events/focused.log:227: trailing whitespace.
++      "no repository validation surface changed"
+work/M14-005/A-20260915-002/tool-events/focused.log:228: trailing whitespace.
++    ]
+work/M14-005/A-20260915-002/tool-events/focused.log:229: trailing whitespace.
++  },
+work/M14-005/A-20260915-002/tool-events/focused.log:230: trailing whitespace.
++  "plan_id": "2720250aee8b63a90f406f60dcc810abc59543d2ae9fb5826611381e08e12661"
+work/M14-005/A-20260915-002/tool-events/focused.log:231: trailing whitespace.
++}
+work/M14-005/A-20260915-002/tool-events/focused.log:232: trailing whitespace.
++{
+work/M14-005/A-20260915-002/tool-events/focused.log:233: trailing whitespace.
++  "version": 4,
+work/M14-005/A-20260915-002/tool-events/focused.log:234: trailing whitespace.
++  "binding": {
+work/M14-005/A-20260915-002/tool-events/focused.log:235: trailing whitespace.
++    "repository": "Example/repo",
+work/M14-005/A-20260915-002/tool-events/focused.log:236: trailing whitespace.
++    "base": "c781125c0a8fb79693c1c100aaf4d8e3acbdbd19",
+work/M14-005/A-20260915-002/tool-events/focused.log:237: trailing whitespace.
++    "head": "4d10fb243f5fbeca5d8894207cf2d91e6c0318f0",
+work/M14-005/A-20260915-002/tool-events/focused.log:238: trailing whitespace.
++    "merge_base": "c781125c0a8fb79693c1c100aaf4d8e3acbdbd19",
+work/M14-005/A-20260915-002/tool-events/focused.log:239: trailing whitespace.
++    "target": "4d10fb243f5fbeca5d8894207cf2d91e6c0318f0"
+work/M14-005/A-20260915-002/tool-events/focused.log:240: trailing whitespace.
++  },
+work/M14-005/A-20260915-002/tool-events/focused.log:241: trailing whitespace.
++  "change_class": "fast",
+work/M14-005/A-20260915-002/tool-events/focused.log:242: trailing whitespace.
++  "risk": "R0",
+work/M14-005/A-20260915-002/tool-events/focused.log:243: trailing whitespace.
++  "changes": [
+work/M14-005/A-20260915-002/tool-events/focused.log:244: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/focused.log:245: trailing whitespace.
++      "status": "M",
+work/M14-005/A-20260915-002/tool-events/focused.log:246: trailing whitespace.
++      "path": "README.md"
+work/M14-005/A-20260915-002/tool-events/focused.log:247: trailing whitespace.
++    }
+work/M14-005/A-20260915-002/tool-events/focused.log:248: trailing whitespace.
++  ],
+work/M14-005/A-20260915-002/tool-events/focused.log:249: trailing whitespace.
++  "surfaces": [
+work/M14-005/A-20260915-002/tool-events/focused.log:250: trailing whitespace.
++    "documentation"
+work/M14-005/A-20260915-002/tool-events/focused.log:251: trailing whitespace.
++  ],
+work/M14-005/A-20260915-002/tool-events/focused.log:252: trailing whitespace.
++  "test_groups": [
+work/M14-005/A-20260915-002/tool-events/focused.log:253: trailing whitespace.
++    "documentation"
+work/M14-005/A-20260915-002/tool-events/focused.log:254: trailing whitespace.
++  ],
+work/M14-005/A-20260915-002/tool-events/focused.log:255: trailing whitespace.
++  "tests": [
+work/M14-005/A-20260915-002/tool-events/focused.log:256: trailing whitespace.
++    "test_documentation",
+work/M14-005/A-20260915-002/tool-events/focused.log:257: trailing whitespace.
++    "test_pr_governance"
+work/M14-005/A-20260915-002/tool-events/focused.log:258: trailing whitespace.
++  ],
+work/M14-005/A-20260915-002/tool-events/focused.log:259: trailing whitespace.
++  "coverage_modules": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:260: trailing whitespace.
++  "impact_evidence": {},
+work/M14-005/A-20260915-002/tool-events/focused.log:261: trailing whitespace.
++  "changed_lines": {},
+work/M14-005/A-20260915-002/tool-events/focused.log:262: trailing whitespace.
++  "coverage_lines": {},
+work/M14-005/A-20260915-002/tool-events/focused.log:263: trailing whitespace.
++  "coverage_tests": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:264: trailing whitespace.
++  "selection": {
+work/M14-005/A-20260915-002/tool-events/focused.log:265: trailing whitespace.
++    "algorithm": "base-head-consumers-v1",
+work/M14-005/A-20260915-002/tool-events/focused.log:266: trailing whitespace.
++    "inventory_sha256": "825934f9f8f83ab253999b69ad0d0ba0070cc947c807b259935b591c2ed7197a",
+work/M14-005/A-20260915-002/tool-events/focused.log:267: trailing whitespace.
++    "selected": {},
+work/M14-005/A-20260915-002/tool-events/focused.log:268: trailing whitespace.
++    "excluded": [
+work/M14-005/A-20260915-002/tool-events/focused.log:269: trailing whitespace.
++      "test_api_session_runner",
+work/M14-005/A-20260915-002/tool-events/focused.log:270: trailing whitespace.
++      "test_ci_checks",
+work/M14-005/A-20260915-002/tool-events/focused.log:271: trailing whitespace.
++      "test_ci_dependencies",
+work/M14-005/A-20260915-002/tool-events/focused.log:272: trailing whitespace.
++      "test_ci_plan",
+work/M14-005/A-20260915-002/tool-events/focused.log:273: trailing whitespace.
++      "test_claim_trace",
+work/M14-005/A-20260915-002/tool-events/focused.log:274: trailing whitespace.
++      "test_cli",
+work/M14-005/A-20260915-002/tool-events/focused.log:275: trailing whitespace.
++      "test_cli_command_branches",
+work/M14-005/A-20260915-002/tool-events/focused.log:276: trailing whitespace.
++      "test_coverage_policy",
+work/M14-005/A-20260915-002/tool-events/focused.log:277: trailing whitespace.
++      "test_documentation",
+work/M14-005/A-20260915-002/tool-events/focused.log:278: trailing whitespace.
++      "test_governance_helper_branches",
+work/M14-005/A-20260915-002/tool-events/focused.log:279: trailing whitespace.
++      "test_pr_governance",
+work/M14-005/A-20260915-002/tool-events/focused.log:280: trailing whitespace.
++      "test_provider_adapters",
+work/M14-005/A-20260915-002/tool-events/focused.log:281: trailing whitespace.
++      "test_provider_conformance",
+work/M14-005/A-20260915-002/tool-events/focused.log:282: trailing whitespace.
++      "test_provider_contract_branches",
+work/M14-005/A-20260915-002/tool-events/focused.log:283: trailing whitespace.
++      "test_provider_port",
+work/M14-005/A-20260915-002/tool-events/focused.log:284: trailing whitespace.
++      "test_skill_release_projection",
+work/M14-005/A-20260915-002/tool-events/focused.log:285: trailing whitespace.
++      "test_unselected",
+work/M14-005/A-20260915-002/tool-events/focused.log:286: trailing whitespace.
++      "test_validation_helpers"
+work/M14-005/A-20260915-002/tool-events/focused.log:287: trailing whitespace.
++    ],
+work/M14-005/A-20260915-002/tool-events/focused.log:288: trailing whitespace.
++    "exclusion_reasons": {
+work/M14-005/A-20260915-002/tool-events/focused.log:289: trailing whitespace.
++      "test_api_session_runner": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:290: trailing whitespace.
++      "test_ci_checks": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:291: trailing whitespace.
++      "test_ci_dependencies": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:292: trailing whitespace.
++      "test_ci_plan": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:293: trailing whitespace.
++      "test_claim_trace": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:294: trailing whitespace.
++      "test_cli": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:295: trailing whitespace.
++      "test_cli_command_branches": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:296: trailing whitespace.
++      "test_coverage_policy": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:297: trailing whitespace.
++      "test_documentation": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:298: trailing whitespace.
++      "test_governance_helper_branches": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:299: trailing whitespace.
++      "test_pr_governance": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:300: trailing whitespace.
++      "test_provider_adapters": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:301: trailing whitespace.
++      "test_provider_conformance": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:302: trailing whitespace.
++      "test_provider_contract_branches": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:303: trailing whitespace.
++      "test_provider_port": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:304: trailing whitespace.
++      "test_skill_release_projection": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:305: trailing whitespace.
++      "test_unselected": "outside base/head dependency closure",
+work/M14-005/A-20260915-002/tool-events/focused.log:306: trailing whitespace.
++      "test_validation_helpers": "outside base/head dependency closure"
+work/M14-005/A-20260915-002/tool-events/focused.log:307: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/focused.log:308: trailing whitespace.
++    "exclusion_reason": "outside new dependency obligations or covered by reviewed contract boundary; base groups and explicit additions are applied separately",
+work/M14-005/A-20260915-002/tool-events/focused.log:309: trailing whitespace.
++    "opaque_consumers": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:310: trailing whitespace.
++    "errors": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:311: trailing whitespace.
++    "test_reachable_sources": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:312: trailing whitespace.
++    "affected_paths": [
+work/M14-005/A-20260915-002/tool-events/focused.log:313: trailing whitespace.
++      "README.md"
+work/M14-005/A-20260915-002/tool-events/focused.log:314: trailing whitespace.
++    ],
+work/M14-005/A-20260915-002/tool-events/focused.log:315: trailing whitespace.
++    "reviewed_contract_anchor": "",
+work/M14-005/A-20260915-002/tool-events/focused.log:316: trailing whitespace.
++    "reviewed_opaque_boundary": []
+work/M14-005/A-20260915-002/tool-events/focused.log:317: trailing whitespace.
++  },
+work/M14-005/A-20260915-002/tool-events/focused.log:318: trailing whitespace.
++  "coverage_selection": {},
+work/M14-005/A-20260915-002/tool-events/focused.log:319: trailing whitespace.
++  "policy_sha256": "d1b2c69d5f8b5c36b98e7525a091201f1c4c3ffba30cc4fea34588103a1c75e6",
+work/M14-005/A-20260915-002/tool-events/focused.log:320: trailing whitespace.
++  "python_versions": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:321: trailing whitespace.
++  "behavioral_scope": "none",
+work/M14-005/A-20260915-002/tool-events/focused.log:322: trailing whitespace.
++  "coverage_scope": "none",
+work/M14-005/A-20260915-002/tool-events/focused.log:323: trailing whitespace.
++  "coverage_obligations": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:324: trailing whitespace.
++  "blocked_reasons": [],
+work/M14-005/A-20260915-002/tool-events/focused.log:325: trailing whitespace.
++  "package_smoke": false,
+work/M14-005/A-20260915-002/tool-events/focused.log:326: trailing whitespace.
++  "repository_smoke": false,
+work/M14-005/A-20260915-002/tool-events/focused.log:327: trailing whitespace.
++  "reasons": [
+work/M14-005/A-20260915-002/tool-events/focused.log:328: trailing whitespace.
++    "README.md -> documentation",
+work/M14-005/A-20260915-002/tool-events/focused.log:329: trailing whitespace.
++    "test/document/archive data: README.md"
+work/M14-005/A-20260915-002/tool-events/focused.log:330: trailing whitespace.
++  ],
+work/M14-005/A-20260915-002/tool-events/focused.log:331: trailing whitespace.
++  "obligation_reasons": {
+work/M14-005/A-20260915-002/tool-events/focused.log:332: trailing whitespace.
++    "behavioral_scope": [
+work/M14-005/A-20260915-002/tool-events/focused.log:333: trailing whitespace.
++      "documentation obligations only"
+work/M14-005/A-20260915-002/tool-events/focused.log:334: trailing whitespace.
++    ],
+work/M14-005/A-20260915-002/tool-events/focused.log:335: trailing whitespace.
++    "coverage_scope": [
+work/M14-005/A-20260915-002/tool-events/focused.log:336: trailing whitespace.
++      "no production/critical executable or coverage authority changed"
+work/M14-005/A-20260915-002/tool-events/focused.log:337: trailing whitespace.
++    ],
+work/M14-005/A-20260915-002/tool-events/focused.log:338: trailing whitespace.
++    "package_smoke": [
+work/M14-005/A-20260915-002/tool-events/focused.log:339: trailing whitespace.
++      "no packaging/install surface changed"
+work/M14-005/A-20260915-002/tool-events/focused.log:340: trailing whitespace.
++    ],
+work/M14-005/A-20260915-002/tool-events/focused.log:341: trailing whitespace.
++    "repository_smoke": [
+work/M14-005/A-20260915-002/tool-events/focused.log:342: trailing whitespace.
++      "no repository validation surface changed"
+work/M14-005/A-20260915-002/tool-events/focused.log:343: trailing whitespace.
++    ]
+work/M14-005/A-20260915-002/tool-events/focused.log:344: trailing whitespace.
++  },
+work/M14-005/A-20260915-002/tool-events/focused.log:345: trailing whitespace.
++  "plan_id": "2720250aee8b63a90f406f60dcc810abc59543d2ae9fb5826611381e08e12661"
+work/M14-005/A-20260915-002/tool-events/focused.log:346: trailing whitespace.
++..............................................................................................................................................................................................governance: FAIL: GITHUB_EVENT_PATH is required
+work/M14-005/A-20260915-002/tool-events/focused.log:347: trailing whitespace.
++governance: FAIL: Expecting value: line 1 column 1 (char 0)
+work/M14-005/A-20260915-002/tool-events/focused.log:348: trailing whitespace.
++.............................................
+work/M14-005/A-20260915-002/tool-events/focused.log:349: trailing whitespace.
++----------------------------------------------------------------------
+work/M14-005/A-20260915-002/tool-events/focused.log:350: trailing whitespace.
++Ran 247 tests in 242.725s
+work/M14-005/A-20260915-002/tool-events/focused.log:351: trailing whitespace.
++
+work/M14-005/A-20260915-002/tool-events/focused.log:352: trailing whitespace.
++OK
+work/M14-005/A-20260915-002/tool-events/focused.log:353: trailing whitespace.
++}
+work/M14-005/A-20260915-002/tool-events/focused.log:354: trailing whitespace.
++governance: push/non-PR event; PR-only checks skipped
+work/M14-005/A-20260915-002/tool-events/focused.log:355: trailing whitespace.
++global line=90.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:356: trailing whitespace.
++critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:357: trailing whitespace.
++global line=89.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:358: trailing whitespace.
++global line=90.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:359: trailing whitespace.
++critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:360: trailing whitespace.
++coverage-policy: PASS
+work/M14-005/A-20260915-002/tool-events/focused.log:361: trailing whitespace.
++coverage-policy: FAIL
+work/M14-005/A-20260915-002/tool-events/focused.log:362: trailing whitespace.
++- coverage must be a mapping
+work/M14-005/A-20260915-002/tool-events/focused.log:363: trailing whitespace.
++global line=90.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:364: trailing whitespace.
++critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:365: trailing whitespace.
++global line=90.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:366: trailing whitespace.
++critical src/research_workbench/protocol/authority.py line=94.00%/95.00% branch=89.00%/90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:367: trailing whitespace.
++global line=90.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:368: trailing whitespace.
++critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:369: trailing whitespace.
++global line=90.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:370: trailing whitespace.
++critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:371: trailing whitespace.
++global line=90.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:372: trailing whitespace.
++critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:373: trailing whitespace.
++global line=89.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:374: trailing whitespace.
++critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:375: trailing whitespace.
++global line=90.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:376: trailing whitespace.
++critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:377: trailing whitespace.
++global line=90.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:378: trailing whitespace.
++critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:379: trailing whitespace.
++global line=85.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:380: trailing whitespace.
++global line=90.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:381: trailing whitespace.
++critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:382: trailing whitespace.
++global line=90.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:383: trailing whitespace.
++critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:384: trailing whitespace.
++global line=90.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:385: trailing whitespace.
++critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/89.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:386: trailing whitespace.
++global line=90.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:387: trailing whitespace.
++critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:388: trailing whitespace.
++global line=90.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:389: trailing whitespace.
++critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:390: trailing whitespace.
++global line=90.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:391: trailing whitespace.
++critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:392: trailing whitespace.
++global line=90.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:393: trailing whitespace.
++critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:394: trailing whitespace.
++global line=90.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:395: trailing whitespace.
++critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:396: trailing whitespace.
++global line=90.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:397: trailing whitespace.
++critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:398: trailing whitespace.
++global line=90.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:399: trailing whitespace.
++critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:400: trailing whitespace.
++global line=90.00% threshold=90.00%
+work/M14-005/A-20260915-002/tool-events/focused.log:401: trailing whitespace.
++critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+work/M14-005/A-20260915-002/tool-events/governance-plan.log:1: trailing whitespace.
++Declared risk: R2
+work/M14-005/A-20260915-002/tool-events/governance-plan.log:2: trailing whitespace.
++Inferred minimum: R2
+work/M14-005/A-20260915-002/tool-events/governance-plan.log:3: trailing whitespace.
++Effective risk: R2
+work/M14-005/A-20260915-002/tool-events/governance-plan.log:4: trailing whitespace.
++Reason:
+work/M14-005/A-20260915-002/tool-events/governance-plan.log:5: trailing whitespace.
++- .github/scripts/release_source_ci.py matches the R2 policy surface
+work/M14-005/A-20260915-002/tool-events/governance-plan.log:6: trailing whitespace.
++- .github/workflows/ci.yml matches the R2 policy surface
+work/M14-005/A-20260915-002/tool-events/governance-plan.log:7: trailing whitespace.
++- docs/STATUS.md matches the R1 policy surface
+work/M14-005/A-20260915-002/tool-events/governance-plan.log:8: trailing whitespace.
++- docs/implementation/RELEASE_SURFACE.md matches the R1 policy surface
+work/M14-005/A-20260915-002/tool-events/governance-plan.log:9: trailing whitespace.
++- PR declares a shared-contract impact
+work/M14-005/A-20260915-002/tool-events/governance-plan.log:10: trailing whitespace.
++- PR declares an authority, permission, or data-boundary impact
+work/M14-005/A-20260915-002/tool-events/governance-plan.log:11: trailing whitespace.
++Requirements:
+work/M14-005/A-20260915-002/tool-events/governance-plan.log:12: trailing whitespace.
++- pull request and required CI
+work/M14-005/A-20260915-002/tool-events/governance-plan.log:13: trailing whitespace.
++- cross-owner review or explicit single-PR maintainer exception before merge (DEVELOPMENT 5.4)
+work/M14-005/A-20260915-002/tool-events/governance-plan.log:14: trailing whitespace.
++- explicit authority basis
+work/M14-005/A-20260915-002/tool-events/governance-plan.log:15: trailing whitespace.
++- adversarial or negative evidence
+work/M14-005/A-20260915-002/tool-events/governance-plan.log:16: trailing whitespace.
++- owner-matched workstream and Risk Ledger
+work/M14-005/A-20260915-002/tool-events/governance-plan.log:17: trailing whitespace.
++governance: PASS
+work/M14-005/A-20260915-002/tool-events/governance-plan.log:18: trailing whitespace.
++{"head": "65978304329be2ac58326181f864e642b94df9c0", "plan_id": "431c25bad273909528623fcacc0bc75b3299e920ba7d78b28b8e6ab5df356aa9", "behavioral": "full", "coverage": "impact+repository", "package": true, "blocked": []}
+work/M14-005/A-20260915-002/tool-events/issue57.json:1: trailing whitespace.
++{"body":"## 背景\n\n当前仓库把 `develop` 视为完整开发与集成线，并仅允许同仓库的精确 `develop -> main` release PR。新的发布目标是：\n\n- `develop` 保留完整工程真相，包括开发文档、Task/ROADMAP、workstream、测试、coverage、治理证据与候选材料；\n- `main` 只保留稳定、可安装、面向使用者的发行视图；\n- 不把完整测试流和内部施工文档继续带入 `main` tip。\n\n因此，`main` 不再等同于 `develop` 的完整树，而是从冻结的 develop SHA 确定性生成的 release projection。\n\n## 已确认的当前状态\n\n- `develop` 相对 `main` 前进 49 个提交，无反向分叉；\n- 差异包含 463 个文件，其中约有：\n  - 43 个源码文件；\n  - 43 个 Schema；\n  - 56 个 Registry 文件；\n  - 50 个测试文件；\n  - 126 个 workstream 文档；\n  - 24 个 implementation 文档；\n  - 75 个 examples；\n- 当前 `main` 已经包含测试、开发文档、workstream 和完整 CI，因此首次精选发布同时是一次 main tree 清理；\n- 仓库公开，默认分支为 `main`；\n- GitHub 端当前未发现 main/develop branch protection 或 repository ruleset；\n- 仓库当前没有 LICENSE；\n- wheel 当前只打包 Schema，但多处 CLI/Runtime 默认从 checkout 相对路径读取 `registry/`、`.agents/skills` 和 `.codex`；\n- 现有 package-smoke 在完整 checkout 中运行，不能证明裁剪后的 main 或独立 wheel 可用。\n\n## 决策\n\n采用内容来源与 Git ancestry 分离的稳定模型：\n\n```text\ncontent / provenance                         Git ancestry\n\ndevelop (完整工程真相 + 完整 CI)             exact current main tip Mn\n        |                                             |\n        | freeze exact source Dn                      | create release/vX.Y.Z\n        v                                             v\nexporter reads Dn Git blobs ----------------> generated release branch\n        |                                   (parent = Mn; tree = Tn)\n        | deterministic complete projection          |\n        v                                             | release PR + merge commit\ncurated tree Tn + RELEASE_MANIFEST                    v\n                                             main Mn+1 (tree = Tn)\n                                                     |\n                                                     v\n                                             tag / release artifact\n```\n\nfrozen `origin/develop` SHA 是内容/provenance source truth；release branch 从 exact current `main` tip 创建。\nexporter 只读取 frozen develop Git blobs和声明的 deterministic generated inputs，完整替换 release branch tree，\n因此 current main 不成为产品内容来源。release branch 不得作为普通人工编辑分支使用。\n\n### 核心规则\n\n1. `RELEASE_MANIFEST` 分别固定 source develop SHA/tree 与 parent main SHA/tree，并固定 release policy version/hash、包含/排除路径、产物 hash 和验证证据。\n2. Release surface 使用 allowlist，不依赖不断扩张的 denylist。\n3. release branch 不得修改产品实现、Schema、Authority、permission、hash 或 contract 语义。\n4. 运行时代码、Schema 和公开 Registry 必须与 source develop SHA 字节一致。\n5. release branch 只允许：\n   - 删除 policy 明确排除的文件；\n   - 生成公开导航；\n   - 更新版本及 release metadata。\n6. 任何实现或语义修复必须先回到 develop，再重新生成 release tree。\n7. release branch 不合并回 develop，避免把裁剪删除倒灌到开发线。\n8. main release 使用 merge commit，并在 merge 后打 tag。\n9. develop 在 release review 期间可以继续前进；本次 release scope 不随之自动扩大。\n10. checker 接受外部 expected source/parent，且合并前机器证明 prospective main merge-result tree、release projection tree 与 manifest closed output tree 完全相同；current main 前移时按新的 exact parent 重新生成 branch/tree/manifest。\n\n## 建议进入 main 的表面\n\n### 必须进入\n\n- `src/research_workbench/**`：第一版完整进入，不按模块裁剪源码；\n- 所有已发布 `schemas/**` 与必要 migration；\n- Runtime 必需的 Mode、Action、Authority、Protocol、Capability Registry；\n- `pyproject.toml`、`MANIFEST.in`、README、CHANGELOG；\n- 面向使用者的 Charter、Architecture、Getting Started、稳定 Modules、必要 Compatibility；\n- 少量 curated quickstart / contract / replay examples；\n- release-only workflow、release manifest 和 release-surface validator。\n\n### 条件进入\n\n- accepted Skill release、SkillReleaseProjection 和被其 exact hash 引用的 Skill package；\n- 平台适配示例；\n- 对使用者理解兼容性确有必要的 ADR。\n\n条件包括：license、exact hash、runtime eligibility、引用闭包和 clean-install 验证全部满足。\n\n### 仅保留在 develop\n\n- `tests/**` 与 coverage policy；\n- full behavioral、coverage-quality、adversarial 测试流；\n- `docs/DEVELOPMENT.md`、`docs/DEVELOP_TO_MAIN_RELEASE.md`；\n- `docs/TASKS.md`、`docs/ROADMAP.md`、`docs/STATUS.md`；\n- M-series/Developer 施工地图；\n- `docs/workstreams/**`、`docs/history/**`、内部 audit/reference；\n- implementation plan、migration plan、testing strategy、worklog templates；\n- `DEVELOPMENT_HISTORY.md`、`work/**`；\n- `skill-lab/candidates/**` 及 Candidate/Trial/Evaluation/Promotion 内部过程材料；\n- 完整 governance/coverage checker、内部 PR template 和开发侧 CODEOWNERS；\n- 默认 `.codex/**` 平台专属配置。必要时迁移为可选 integration example。\n\n## CI 分层\n\n### develop\n\n继续保持：\n\n- Python 3.11 / 3.13 full behavioral suite；\n- coverage-quality 90/95/90；\n- governance；\n- repository validation；\n- package-smoke；\n- negative/adversarial acceptance。\n\n### main / release PR\n\n只执行：\n\n- RELEASE_MANIFEST 与 external expected source/parent SHA 验证；\n- source develop SHA required checks 成功验证；\n- allowlist / exact byte identity 检查；\n- prospective merge-result / projection / manifest closed-tree equality；\n- wheel build；\n- Python 3.11 / 3.13 空目录 clean-install；\n- `rwb schema list`；\n- 最小 no-Skill quickstart；\n- 最小 Registry/Projection load；\n- 禁止 tests、workstream、开发文档意外进入。\n\n完整测试证据属于 source develop SHA；main 验证发布投影没有破坏来源、安装和最小执行闭包。\n\n## 必须先解决的 Blocker\n\n### B1 — 当前 Governance 拒绝 release branch\n\n现有规则只接受精确 `develop -> main`。必须先通过 R2 governance 变更允许：\n\n- base = `main`；\n- head = same-repository `release/v*`，且 Git parent 是 external expected exact current main tip；\n- manifest 分别固定 develop source SHA/tree 与 main parent SHA/tree；\n- source SHA 属于 develop history 且具备完整 CI，产品 bytes 只来自该 source 或声明的 deterministic generated inputs；\n- release diff 满足声明式 surface policy；\n- prospective merge-result tree、projection tree 与 manifest closed output tree 完全相同；\n- topology 在 REL-005 全部 readiness Gate 闭合前保持 dormant、release PR fail closed。\n\n### B2 — GitHub 远端保护未落地\n\n文档规则目前未被 GitHub branch protection/ruleset 强制执行。正式 release 前必须为 main/develop 配置相应保护，禁止直接 push 和 force push。\n\n### B3 — Portable package/data boundary 未闭合\n\n需要让 Registry/Schema/Skill runtime data 使用 package resources 或明确配置根，并在空目录验证 wheel；不能继续借用 checkout 文件通过 smoke。\n\n### B4 — License 未决定\n\n公开仓库无 LICENSE，accepted Skill 仍标记为 `project-original-unlicensed`。在许可证明确前不得把其描述为可复用公开发行资产。\n\n### B5 — 文档导航会产生断链\n\n移除 TASKS、STATUS、DEVELOPMENT、workstreams 后，README/GETTING_STARTED/docs index 必须切换到使用者导航，并新增 release-facing supported-features 页面。\n\n## 推荐工作拆分\n\n### REL-001 — Release topology and governance\n\n- 定义 develop、frozen source、current-main parent 与 curated main 的职责；\n- 识别 dormant `release/v* -> main` topology，并在 REL-005 readiness/cutover 前保持 fail closed；\n- 定义风险等级、review、merge、source/parent trust 与禁止项；\n- 更新 governance validator 和 canonical 文档。\n\n### REL-002 — Deterministic release surface\n\n- 新增 `.github/release-surface.yml`；\n- 新增确定性 exporter；\n- 新增 release manifest schema并分别 pin source develop 与 parent main；\n- 新增 allowlist、source-byte identity、unexpected/stale-file、连续版本与 prospective merge-tree 对抗测试；\n- 只交付生成与验证能力，不激活 release merge eligibility。\n\n### REL-003 — Portable package closure\n\n- 关闭 package-resource / repository-relative-path 缺口；\n- 建立真正离开 checkout 的 wheel smoke；\n- 明确 Runtime Registry 与 Maintainer Registry；\n- 明确 accepted Skill/Projection 的发布与许可证 Gate。\n\n### REL-004 — Public documentation surface\n\n- 建立公开文档单一来源；\n- 重写 README/GETTING_STARTED/navigation；\n- 新增 `SUPPORTED_FEATURES.md`；\n- 清理开发状态、施工编号和内部过程叙述。\n\n### REL-005 — Release readiness, topology cutover, and first curated release\n\n- 闭合 portable package、public docs、license、scaffold、source CI、remote protection 与具名 Human release decision；\n- 同时冻结 exact develop source SHA 与 exact current main parent SHA；\n- 从 current main 创建 `release/vX.Y.Z`，再从 frozen develop source 确定性生成完整 release tree；\n- 原子启用 `release/v* -> main` 并禁用 direct `develop -> main`；\n- 运行 release checks并证明 prospective merge-result exact equality；\n- 以 R2 release PR 合并到 main；\n- merge 后 tag 并校验 artifact/hash。\n\n## 验收条件\n\n- [ ] release tree 可从同一 develop source SHA、main parent SHA 与 policy inputs 重复生成；\n- [ ] 相同 source、parent、policy 与 release inputs 生成逐字节一致的完整 tree；\n- [ ] main 不包含 tests、workstreams、Task/ROADMAP/STATUS 和内部 audit；\n- [ ] 产品源码/Schema/公开 Registry 与 source SHA 无语义漂移；\n- [ ] wheel 在 checkout 外的 Python 3.11/3.13 环境可安装并完成最小 smoke；\n- [ ] release manifest 可追溯 source SHA、main parent SHA 和 exact CI evidence；\n- [ ] prospective merge-result tree、release projection tree 与 manifest closed output tree 完全相同；\n- [ ] main/develop 远端保护实际启用；\n- [ ] LICENSE / Skill license 边界明确；\n- [ ] release 分支无需、也不得合并回 develop；\n- [ ] 文档无指向被排除文件的断链。\n\n## 非目标\n\n本项不用于：\n\n- 改写 Runtime、Method、Claim、Human authority；\n- 修改现有产品 contract；\n- 降低 develop 的测试或 coverage Gate；\n- 删除 Git 历史中的旧文件；\n- 在 release branch 修复业务问题；\n- 按 Task 选择性 cherry-pick 已集成源码。\n\n> 注意：从 main tip 删除文件不会清除 Git 历史。如果要求开发文档或测试在历史中也不可见，应改用独立发行仓库，而不是同仓库 release branch。\n\n","comments":[{"id":"IC_kwDOT2gtDc8AAAABSndgcw","author":{"login":"Chengyue-Lu"},"authorAssociation":"OWNER","body":"已开启 task-definition PR #58：将 Issue #57 的 REL-001～005 映射为 canonical M14-001～005，并先固定 dormant release trust seam、atomic cutover、deterministic surface、portable package 与首次发行 Gate。该 PR 仅定义任务与边界，不实现 exporter/package migration，也不开放 release path。M14-001 是合并后的唯一初始实现入口。","createdAt":"2026-09-04T17:41:13Z","includesCreatedEdit":false,"isMinimized":false,"minimizedReason":"","reactionGroups":[],"url":"https://github.com/Chengyue-Lu/research-agent-workbench/issues/57#issuecomment-5544304755","viewerDidAuthor":true},{"id":"IC_kwDOT2gtDc8AAAABS3f4cg","author":{"login":"Chengyue-Lu"},"authorAssociation":"OWNER","body":"## 2026-09-07：与 M4 集成及 M1-009 用户入口的排期衔接\n\n完整计划见 [#59 的更新](https://github.com/Chengyue-Lu/research-agent-workbench/issues/59#issuecomment-5561116522)。\n\n本轮采用的切入节点是：#60（M14-001～003）、#61（M4-003）、#62（M4-004）各自验收合入 `develop` 后，从包含这些实现的共同 SHA 启动既有 M1-009。以仓库外安装→完整项目初始化→证据定位→Run 检查/重建的离线示例，验证 scaffold 实际可用并记录用户配置与纠正负担。\n\nM14-004 可以并行准备 public navigation；其 Quickstart 建议消费该实际走通的流程后定稿，并继续完成公开 surface、支持边界及链接检查。M14-004 的正式依赖仍是 M14-002/003，本安排不增加 M14/M4 相互依赖。\n\nM1-009 本来就是 M14-005 的 hard dependency。许可证、远端保护、其余 release readiness 与具名 Human release decision 继续按本 Issue 和 TASKS 执行；本次计划更新不激活 release path、不创建发布分支或 tag，也不将离线示例视为真实科研效果。\n","createdAt":"2026-09-06T18:05:07Z","includesCreatedEdit":false,"isMinimized":false,"minimizedReason":"","reactionGroups":[],"url":"https://github.com/Chengyue-Lu/research-agent-workbench/issues/57#issuecomment-5561120882","viewerDidAuthor":true},{"id":"IC_kwDOT2gtDc8AAAABT-PRjg","author":{"login":"Chengyue-Lu"},"authorAssociation":"OWNER","body":"## 2026-09-11：M14 当前推进线（M4 已闭合后的并行 release lane）\n\n本评论以当前 `develop@11c3b57dfbf8af0dc2587fc421d097e2544941c3` 为基线，取代此前仍把 #60/#61/#62 视为待合并前置的排期描述；不修改历史评论。\n\n### 当前状态\n\n- `M14-001`：DONE\n- `M14-002`：DONE\n- `M14-003`：DONE\n- `M14-004`：PARKED，但 hard dependencies `M14-002/003` 已满足\n- `M14-005`：BLOCKED，仍 hard-depend `M0-007`、`M1-009`、`M14-004`、GitHub remote protection 与具名 Human release decision\n- M4-001～004 已全部合入 develop；M4 不再是 release/documentation 准备的等待项\n- M5 可以并行推进，但 M14 不得把未完成的 Phase D evaluation 写成已证明的产品价值\n\n### 推荐顺序\n\n```text\nStage 0 — activation / state sync\n  M14-004 PARKED → READY\n  只同步状态与派生导航，不改 M14-004 identity/dependency/acceptance\n\nStage 1 — parallel readiness work\n  ├─ M14-004 public documentation surface\n  │    ├─ public navigation / single source of truth\n  │    ├─ README / Getting Started / SUPPORTED_FEATURES\n  │    ├─ structural / bounded / live / evaluated maturity vocabulary\n  │    ├─ release-tree link closure；不得引用 TASKS/STATUS/DEVELOPMENT/workstreams 等 excluded files\n  │    └─ Quickstart 最终消费 M1-009 实际 scaffold 流程，不以 synthetic checkout 流程冒充普通用户入口\n  │\n  ├─ M1-009 scaffold（既有 READY Task，可与 M14-004 并行）\n  │    └─ checkout 外安装 → init → exact resource/project roots → evidence/run inspection 的真实用户入口\n  │\n  └─ M14-005 prerequisites preparation\n       ├─ M0-007 license / project-original-unlicensed 边界的人类决定\n       ├─ main/develop remote protection / required checks 方案与实际配置准备\n       └─ release readiness evidence inventory\n\nStage 2 — M14-005 preflight\n  仅当 M0-007 + M1-009 + M14-004 + remote protection 均闭合后进入\n  → 具名 Human release decision\n  → freeze exact develop source SHA + exact current main parent SHA\n  → verify source required CI / package / public links / zero internal-surface leakage\n\nStage 3 — first curated release / topology cutover\n  current main parent\n    → create release/vX.Y.Z\n    → exporter only reads frozen develop Git blobs\n    → deterministic complete projection twice\n    → RELEASE_MANIFEST + prospective merge-tree equality\n    → release-only checks / dual-Python clean install / no-Skill smoke\n    → atomic enable release/v*→main and disable direct develop→main\n    → R2 merge-commit release PR\n    → tag / artifacts / hash closure\n```\n\n### M14-004 实施边界\n\nM14-004 可以现在并行开始，但建议先做一次很小的状态激活，把它从 `PARKED` 置为 `READY`；正式实现 PR 再完成 public surface。不要在 M14-004 中：\n\n- 修改 Runtime / Method / Claim / Human authority；\n- 把 production Skill availability 写成已成立（当前 release projection index 仍可为空）；\n- 把 M5 system-level net benefit 写成已实证；\n- 为了 public docs 修改 ADR/M5 frozen semantics；\n- 提前创建 release branch、tag 或开放 release topology。\n\n### M14-004 与 M1-009 的协同\n\n两者不新增 hard dependency，但建议采用“并行施工、Quickstart 后收口”的关系：\n\n```text\nM14-004 先完成 public IA / support matrix / maturity wording\nM1-009 完成可复用 scaffold + checkout-outside user flow\n                 ↓\nM14-004 用真实 scaffold flow 定稿 Getting Started / Quickstart\n```\n\n这样既不让 public docs 阻塞 scaffold，也避免 Quickstart 固化一个随后被 M1-009 推翻的临时流程。\n\n### M14-005 仍然不是当前入口\n\n当前 release lane 的执行入口是 **M14-004 + M1-009 的并行准备**，不是 M14-005。M14-005 继续拥有 remote protection、readiness/cutover、首次 curated main release 与 topology switch；在所有 hard gates 闭合前保持 fail closed。","createdAt":"2026-09-11T13:42:04Z","includesCreatedEdit":false,"isMinimized":false,"minimizedReason":"","reactionGroups":[],"url":"https://github.com/Chengyue-Lu/research-agent-workbench/issues/57#issuecomment-5635297678","viewerDidAuthor":true}],"state":"OPEN","title":"Curated main release architecture: develop projection, release surface, and CI boundaries"}
+work/M14-005/A-20260915-002/tool-events/pr78.json:1: trailing whitespace.
++{"baseRefOid":"8d34020ce7ed35e93c2f709567930417986de3c5","headRefOid":"f38e792f56168275c6f200452f72f9e4cd64205c","mergeCommit":{"oid":"e5827a1e9eb4b27b53e748fb696a28ee696f80c3"},"mergedAt":"2026-09-15T06:33:23Z","number":78,"state":"MERGED"}
+work/M14-005/A-20260915-002/tool-events/pr79.json:1: trailing whitespace.
++{"baseRefOid":"f7a9715ed35787d3326283c22f834b1514c5c88c","headRefOid":"f18944d326fbe0a84a0fe850193efeace50a43c4","mergeCommit":{"oid":"8d34020ce7ed35e93c2f709567930417986de3c5"},"mergedAt":"2026-09-15T06:17:24Z","number":79,"state":"MERGED"}
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:1: trailing whitespace.
++{
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:2: trailing whitespace.
++  "attempt": "A-20260915-001",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:3: trailing whitespace.
++  "status": "rejected-before-publication",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:4: trailing whitespace.
++  "reason": "Archive tool-name/allowlist mismatch",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:5: trailing whitespace.
++  "bytes_preserved": true,
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:6: trailing whitespace.
++  "successor": "A-20260915-002",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:7: trailing whitespace.
++  "files": [
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:8: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:9: trailing whitespace.
++      "path": ".gitattributes",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:10: trailing whitespace.
++      "sha256": "98a1dc732458e62c75bb7e7cc0eafc10f3299f9833761fbaf94f424e0e67c8b5"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:11: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:12: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:13: trailing whitespace.
++      "path": "ACTORS.yaml",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:14: trailing whitespace.
++      "sha256": "dcddacb52e131cca2c58ea06c1572252b72b10b13c06fc0e8aeae5d3606c1dfe"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:15: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:16: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:17: trailing whitespace.
++      "path": "events.jsonl",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:18: trailing whitespace.
++      "sha256": "bddbe8613b1e71419dee3076cb1383490b8ec6431c58daba50fc021d2b3b09ee"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:19: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:20: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:21: trailing whitespace.
++      "path": "INDEX.yaml",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:22: trailing whitespace.
++      "sha256": "3678f27f5c11ded2b7a5083d7ebc7a115357c95d76b2e305f04366d216b2389e"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:23: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:24: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:25: trailing whitespace.
++      "path": "TASK.yaml",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:26: trailing whitespace.
++      "sha256": "f958f1c4c489dcb9eec599b65cde0f683b6a470137bdb0f037828ee97c057bcf"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:27: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:28: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:29: trailing whitespace.
++      "path": "WORKLOG.md",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:30: trailing whitespace.
++      "sha256": "87ef9c03109ebb3574b35e74c05c7e08b5754ea33e4517f922aea824ea8c06aa"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:31: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:32: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:33: trailing whitespace.
++      "path": "outputs\\AUTHORITY.md",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:34: trailing whitespace.
++      "sha256": "001d4678fd3c025b4374c01c6b4acfa41139dbefe00d059aa3d2f31737907985"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:35: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:36: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:37: trailing whitespace.
++      "path": "outputs\\freeze.py.md",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:38: trailing whitespace.
++      "sha256": "4d00b1bf561662cd57f983f770e99c4679b449b667a57172df4f6371bfba4936"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:39: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:40: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:41: trailing whitespace.
++      "path": "outputs\\live_negative.py.md",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:42: trailing whitespace.
++      "sha256": "bf99a485628f248b45ec861913e71e8c8f72316bef88da2bb4e8f2424c189c5d"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:43: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:44: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:45: trailing whitespace.
++      "path": "outputs\\prepare_checks.py.md",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:46: trailing whitespace.
++      "sha256": "ab6a8cbd20b06c2ecb1da700f724b16a273ac9c6639c5051364800e927e06c90"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:47: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:48: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:49: trailing whitespace.
++      "path": "outputs\\VERIFICATION.json",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:50: trailing whitespace.
++      "sha256": "56c0359985bf9b27f67483bcb8ab98020aa9a938166dc61090c7925d48396034"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:51: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:52: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:53: trailing whitespace.
++      "path": "tool-events\\ci-plan.json",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:54: trailing whitespace.
++      "sha256": "deb7f6e66bb2cc156eb4ee82dc25dbe4330b35f8b90b21baf50e218fdbc45d5a"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:55: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:56: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:57: trailing whitespace.
++      "path": "tool-events\\focused.log",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:58: trailing whitespace.
++      "sha256": "def0a02e3a6dfdd828069b09595389cc59f0b09c30f88f7654a81fd642312cc1"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:59: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:60: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:61: trailing whitespace.
++      "path": "tool-events\\governance-plan.log",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:62: trailing whitespace.
++      "sha256": "7fbd85bb788d8280322441d351131660bfbf726cf77a3ca66c3c82ee10a1fe56"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:63: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:64: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:65: trailing whitespace.
++      "path": "tool-events\\issue57.json",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:66: trailing whitespace.
++      "sha256": "e1ae00210c9091680b3d330c9c9cc9794ed5db54ff9b5e8a94dddc89fe62798d"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:67: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:68: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:69: trailing whitespace.
++      "path": "tool-events\\live-negative.json",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:70: trailing whitespace.
++      "sha256": "b0332d025ee9760ab8467e5eb9bfc54a179b8052bb5179a0411dedfbb0de99b1"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:71: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:72: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:73: trailing whitespace.
++      "path": "tool-events\\pr78.json",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:74: trailing whitespace.
++      "sha256": "320d47dda8b026128d5d9a0a638f7da15fdf57f5b7701af00d5d33063ddcf2c0"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:75: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:76: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:77: trailing whitespace.
++      "path": "tool-events\\pr79.json",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:78: trailing whitespace.
++      "sha256": "8b8f374022e07e2238bd105ed25b37d0c74befa9c007e586da12f50d23cbc3d2"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:79: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:80: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:81: trailing whitespace.
++      "path": "tool-events\\repository.log",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:82: trailing whitespace.
++      "sha256": "255440a9ece3a188b00d67b928a848500938bdd0c6788d0dcac767adb46d7ef3"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:83: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:84: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:85: trailing whitespace.
++      "path": "tool-events\\ruleset-23192001.json",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:86: trailing whitespace.
++      "sha256": "dff0110cb9a1f0e77e89265708c5d43c9722f9286909493910c92f6f6cfb168e"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:87: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:88: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:89: trailing whitespace.
++      "path": "tool-events\\ruleset-23192054.json",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:90: trailing whitespace.
++      "sha256": "d8bca84c47a1b2c6854d9c2aba9a0a76066838574719ad5c4919cd28450492aa"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:91: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:92: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:93: trailing whitespace.
++      "path": "tool-events\\ruleset-23305447.json",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:94: trailing whitespace.
++      "sha256": "8e5934ca7be40fbf29f615c00a249279a45f988be4e19e80525768fc369412ae"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:95: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:96: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:97: trailing whitespace.
++      "path": "tool-events\\ruleset-23305460.json",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:98: trailing whitespace.
++      "sha256": "730e35c95693a02c076cf9c9f2acfc2a1d1c460c414efdbca7829040097ffc70"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:99: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:100: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:101: trailing whitespace.
++      "path": "tool-events\\scope.json",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:102: trailing whitespace.
++      "sha256": "3441abb092955b1cc6632717eacbb009b407086d988a8fb7b0521d11ab00c6d3"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:103: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:104: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:105: trailing whitespace.
++      "path": "tool-events\\source-coverage-summary.json",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:106: trailing whitespace.
++      "sha256": "4365447dd3d329713556a5ac0787378817d9cc7f44c33356dd949636d38546f0"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:107: trailing whitespace.
++    },
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:108: trailing whitespace.
++    {
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:109: trailing whitespace.
++      "path": "tool-events\\source-focused.log",
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:110: trailing whitespace.
++      "sha256": "1769fd25292a437af75924385effc930dafd59cb26dd7d2b154acde8ef92d564"
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:111: trailing whitespace.
++    }
+work/M14-005/A-20260915-002/tool-events/rejected-archive.json:112: trailing whitespace.
++  ]
+work/M14-005/A-20260915-002/tool-events/repository.log:1: trailing whitespace.
++validated=186 errors=0 warnings=0
+work/M14-005/A-20260915-002/tool-events/ruleset-23192001.json:1: trailing whitespace.
++{"id":23192001,"name":"RWB develop review","target":"branch","source_type":"Repository","source":"Chengyue-Lu/research-agent-workbench","enforcement":"active","conditions":{"ref_name":{"exclude":[],"include":["refs/heads/develop"]}},"rules":[{"type":"pull_request","parameters":{"required_approving_review_count":0,"dismiss_stale_reviews_on_push":true,"required_reviewers":[],"require_code_owner_review":true,"require_last_push_approval":false,"required_review_thread_resolution":true,"require_extra_approval_for_unattributed_changes":true,"allowed_merge_methods":["squash"]}}],"node_id":"RRS_lACqUmVwb3NpdG9yec5PaC0NzgFh4cE","created_at":"2026-09-14T01:07:48.403+08:00","updated_at":"2026-09-14T21:08:26.947+08:00","bypass_actors":[{"actor_id":140945476,"actor_type":"User","bypass_mode":"pull_request"}],"current_user_can_bypass":"pull_requests_only","_links":{"self":{"href":"https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/rulesets/23192001"},"html":{"href":"https://github.com/Chengyue-Lu/research-agent-workbench/rules/23192001"}}}
+work/M14-005/A-20260915-002/tool-events/ruleset-23192054.json:1: trailing whitespace.
++{"id":23192054,"name":"RWB main review","target":"branch","source_type":"Repository","source":"Chengyue-Lu/research-agent-workbench","enforcement":"active","conditions":{"ref_name":{"exclude":[],"include":["refs/heads/main"]}},"rules":[{"type":"pull_request","parameters":{"required_approving_review_count":1,"dismiss_stale_reviews_on_push":true,"required_reviewers":[],"require_code_owner_review":true,"require_last_push_approval":true,"required_review_thread_resolution":true,"require_extra_approval_for_unattributed_changes":true,"allowed_merge_methods":["merge"]}}],"node_id":"RRS_lACqUmVwb3NpdG9yec5PaC0NzgFh4fY","created_at":"2026-09-14T01:08:36.219+08:00","updated_at":"2026-09-14T21:08:32.872+08:00","bypass_actors":[{"actor_id":140945476,"actor_type":"User","bypass_mode":"pull_request"}],"current_user_can_bypass":"pull_requests_only","_links":{"self":{"href":"https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/rulesets/23192054"},"html":{"href":"https://github.com/Chengyue-Lu/research-agent-workbench/rules/23192054"}}}
+work/M14-005/A-20260915-002/tool-events/ruleset-23305447.json:1: trailing whitespace.
++{"id":23305447,"name":"RWB develop hard gates","target":"branch","source_type":"Repository","source":"Chengyue-Lu/research-agent-workbench","enforcement":"active","conditions":{"ref_name":{"exclude":[],"include":["refs/heads/develop"]}},"rules":[{"type":"deletion"},{"type":"non_fast_forward"},{"type":"pull_request","parameters":{"required_approving_review_count":0,"dismiss_stale_reviews_on_push":false,"required_reviewers":[],"require_code_owner_review":false,"require_last_push_approval":false,"required_review_thread_resolution":true,"require_extra_approval_for_unattributed_changes":false,"allowed_merge_methods":["squash"]}},{"type":"required_status_checks","parameters":{"strict_required_status_checks_policy":true,"do_not_enforce_on_create":false,"required_status_checks":[{"context":"governance","integration_id":15368},{"context":"test (3.11)","integration_id":15368},{"context":"test (3.13)","integration_id":15368}]}}],"node_id":"RRS_lACqUmVwb3NpdG9yec5PaC0NzgFjnOc","created_at":"2026-09-14T21:06:45.073+08:00","updated_at":"2026-09-14T21:06:45.166+08:00","bypass_actors":[],"current_user_can_bypass":"never","_links":{"self":{"href":"https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/rulesets/23305447"},"html":{"href":"https://github.com/Chengyue-Lu/research-agent-workbench/rules/23305447"}}}
+work/M14-005/A-20260915-002/tool-events/ruleset-23305460.json:1: trailing whitespace.
++{"id":23305460,"name":"RWB main hard gates","target":"branch","source_type":"Repository","source":"Chengyue-Lu/research-agent-workbench","enforcement":"active","conditions":{"ref_name":{"exclude":[],"include":["refs/heads/main"]}},"rules":[{"type":"deletion"},{"type":"non_fast_forward"},{"type":"pull_request","parameters":{"required_approving_review_count":0,"dismiss_stale_reviews_on_push":false,"required_reviewers":[],"require_code_owner_review":false,"require_last_push_approval":false,"required_review_thread_resolution":true,"require_extra_approval_for_unattributed_changes":false,"allowed_merge_methods":["merge"]}},{"type":"required_status_checks","parameters":{"strict_required_status_checks_policy":true,"do_not_enforce_on_create":false,"required_status_checks":[{"context":"governance","integration_id":15368},{"context":"test (3.11)","integration_id":15368},{"context":"test (3.13)","integration_id":15368}]}}],"node_id":"RRS_lACqUmVwb3NpdG9yec5PaC0NzgFjnPQ","created_at":"2026-09-14T21:06:50.326+08:00","updated_at":"2026-09-14T21:06:50.395+08:00","bypass_actors":[],"current_user_can_bypass":"never","_links":{"self":{"href":"https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/rulesets/23305460"},"html":{"href":"https://github.com/Chengyue-Lu/research-agent-workbench/rules/23305460"}}}
+work/M14-005/A-20260915-002/tool-events/source-focused.log:1: trailing whitespace.
++............governance: FAIL
+work/M14-005/A-20260915-002/tool-events/source-focused.log:2: trailing whitespace.
++...
+work/M14-005/A-20260915-002/tool-events/source-focused.log:3: trailing whitespace.
++----------------------------------------------------------------------
+work/M14-005/A-20260915-002/tool-events/source-focused.log:4: trailing whitespace.
++Ran 15 tests in 6.027s
+work/M14-005/A-20260915-002/tool-events/source-focused.log:5: trailing whitespace.
++
+work/M14-005/A-20260915-002/tool-events/source-focused.log:6: trailing whitespace.
++OK
+work/M14-005/A-20260915-002/tool-events/trace-initial.log:1: trailing whitespace.
++BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+work/M14-005/A-20260915-002/tool-events/trace-initial.log:2: trailing whitespace.
++BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+work/M14-005/A-20260915-002/tool-events/trace-initial.log:3: trailing whitespace.
++BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+work/M14-005/A-20260915-002/tool-events/trace-initial.log:4: trailing whitespace.
++BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+work/M14-005/A-20260915-002/tool-events/trace-initial.log:5: trailing whitespace.
++BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+work/M14-005/A-20260915-002/tool-events/trace-initial.log:6: trailing whitespace.
++BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+work/M14-005/A-20260915-002/tool-events/trace-initial.log:7: trailing whitespace.
++BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+work/M14-005/A-20260915-002/tool-events/trace-initial.log:8: trailing whitespace.
++BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+work/M14-005/A-20260915-002/tool-events/trace-initial.log:9: trailing whitespace.
++BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+work/M14-005/A-20260915-002/tool-events/trace-initial.log:10: trailing whitespace.
++BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+work/M14-005/A-20260915-002/tool-events/trace-initial.log:11: trailing whitespace.
++BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+work/M14-005/A-20260915-002/tool-events/trace-initial.log:12: trailing whitespace.
++BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+work/M14-005/A-20260915-002/tool-events/trace-initial.log:13: trailing whitespace.
++BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+work/M14-005/A-20260915-002/tool-events/trace-initial.log:14: trailing whitespace.
++BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+work/M14-005/A-20260915-002/tool-events/trace-initial.log:15: trailing whitespace.
++BLOCK   TRACE-READ-OUTSIDE-SCOPE     [tool-outside-scope] tool outside declared boundary: evidence-retention
+work/M14-005/A-20260915-002/tool-events/trace-initial.log:16: trailing whitespace.
++WARNING TRACE-CAPTURE-DELAYED        [capture-gap] trace declares incomplete or delayed capture
