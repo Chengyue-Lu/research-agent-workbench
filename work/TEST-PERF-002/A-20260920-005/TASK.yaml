@@ -1,0 +1,11 @@
+task_id: TEST-PERF-002
+revision: 43
+request: Repair reviewed policy anchor history and inventory unfinished CI work without
+  activating new consumer exclusions
+scope:
+- .github/scripts/plan_ci.py
+- tests/test_ci_plan.py
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- work/TEST-PERF-002/A-20260920-005/**
+delegation: true
+required_skills: []
