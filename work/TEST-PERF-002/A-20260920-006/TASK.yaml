@@ -1,0 +1,10 @@
+task_id: TEST-PERF-002
+revision: 43
+request: Port independent Git fixture setup optimization, preserve behavior, and prepare
+  a Draft PR
+scope:
+- tests/test_ci_plan.py
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- work/TEST-PERF-002/A-20260920-006/**
+delegation: true
+required_skills: []
