@@ -1,0 +1,51 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260920-001
+task_id: TEST-PERF-002
+task_revision: 39
+attempt_id: A-20260920-001
+archive_root: A-20260920-001
+baseline: 171d4654f88e926f239cdf25bc8168109b81f391
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: a3849635c6947a21f6ac15800b18f7dd38349435f783108ebb0bd1418d205784
+actors_ref:
+  path: ACTORS.yaml
+  sha256: ee919b5d1648284e2befb17a11771184f8f999409ccfa209dd9b3eb7e17a7aad
+read_allowlist:
+- .github/**
+- AGENTS.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- scoped PR90 evidence and business consumer snapshots
+- tests/**
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/ci_domain_audit.py
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/test_ci_domain_audit.py
+- work/TEST-PERF-002/A-20260920-001/**
+tool_allowlist:
+- collaboration
+- gh
+- git
+- python
+- shell
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 65f5d0f7f132d49aec0a2dc130c4790c97e50c56593490bc5f86aadc386e6eab
+  event_count: 4
+tool_event_refs:
+- path: tool-events/domain-cost-review-evidence-succeeded.json
+  sha256: 7f1cf46c5361af998c6b4f38df31a189a0c75c6a1b6704bec8e52bb80ffa1471
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events

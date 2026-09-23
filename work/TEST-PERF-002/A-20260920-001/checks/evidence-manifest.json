@@ -1,0 +1,84 @@
+{
+  "files": [
+    {
+      "path": ".gitattributes",
+      "sha256": "730a35ae3d558080083c3103d9ac8100c3f6561678092abe341701dfa331eb1d",
+      "bytes": 29
+    },
+    {
+      "path": "ACTORS.yaml",
+      "sha256": "ee919b5d1648284e2befb17a11771184f8f999409ccfa209dd9b3eb7e17a7aad",
+      "bytes": 399
+    },
+    {
+      "path": "checks/code-review.md",
+      "sha256": "3a044a1abdcee0e62d5901bb1be78f572e7f87e9f27564d1be3f5f012bb48bd5",
+      "bytes": 6648
+    },
+    {
+      "path": "checks/exact-implementation-313.log",
+      "sha256": "80b82e52d96642b362674684d7d92c7b3de41a2b312d84d8b2090a48d0922bb8",
+      "bytes": 2428
+    },
+    {
+      "path": "checks/initial-invalid-trace.zip",
+      "sha256": "0de4e0c4803ec7e92cbc0ea9065df031ea2f369b0a064931552251358d6068f9",
+      "bytes": 2101
+    },
+    {
+      "path": "checks/pr90-summary.json",
+      "sha256": "e5565a5f3286f7092cf357e929f946295cba22cb724a90aeab134af447dd3187",
+      "bytes": 49424
+    },
+    {
+      "path": "checks/PR90_COST_AUDIT.md",
+      "sha256": "9816b4dcf91516a6dc5ed81beb0042b9a617b0386fcc5c5c7451ed3d416d94a5",
+      "bytes": 10154
+    },
+    {
+      "path": "checks/raw-evidence.zip",
+      "sha256": "a467f69d3aace68f09f3c4e6034fc93286a7d7ffb90f7abfd01e12eb251f3d28",
+      "bytes": 819216
+    },
+    {
+      "path": "checks/replay-matrix.json",
+      "sha256": "a1de072b52ec1077446f34a273bfbf4aaef9a12cec6e3437132afd47be6e61e7",
+      "bytes": 6024
+    },
+    {
+      "path": "checks/trace-validation.json",
+      "sha256": "e74c0f8d75a5e373ff9df0b0f7966885a8e04cf613831e206722da590db51e00",
+      "bytes": 411
+    },
+    {
+      "path": "checks/validation.json",
+      "sha256": "a45a0cb3e36535debd03416a76aba12556df0ccefd744f51dc2137c5c1e0257a",
+      "bytes": 7818
+    },
+    {
+      "path": "events.jsonl",
+      "sha256": "65f5d0f7f132d49aec0a2dc130c4790c97e50c56593490bc5f86aadc386e6eab",
+      "bytes": 1888
+    },
+    {
+      "path": "INDEX.yaml",
+      "sha256": "a17ee8a556b3f217f4b1e44bb04e977415ee19e89dad098c2375ef274fd5e5bb",
+      "bytes": 1408
+    },
+    {
+      "path": "RESULTS.md",
+      "sha256": "6049ec2f179748ccbde6b6aeb2187664044d8170ff3e36d744ac5189479302f4",
+      "bytes": 4540
+    },
+    {
+      "path": "TASK.yaml",
+      "sha256": "a3849635c6947a21f6ac15800b18f7dd38349435f783108ebb0bd1418d205784",
+      "bytes": 249
+    },
+    {
+      "path": "tool-events/domain-cost-review-evidence-succeeded.json",
+      "sha256": "7f1cf46c5361af998c6b4f38df31a189a0c75c6a1b6704bec8e52bb80ffa1471",
+      "bytes": 6045
+    }
+  ]
+}

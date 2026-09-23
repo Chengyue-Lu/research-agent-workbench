@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "execution_authority": false,
+  "domains": [
+    {
+      "id": "ci-governance",
+      "owner": "Chengyue-Lu; cross-owner review for CI authority",
+      "source_patterns": [".github/scripts/*.py", "tests/run_unittest_suite.py"],
+      "test_patterns": ["tests/test_ci_*.py", "tests/test_coverage_policy.py", "tests/test_pr_governance.py", "tests/test_governance_helper_branches.py", "tests/test_selection_witness.py", "tests/test_test_runner.py"],
+      "input_patterns": [".github/workflows/*", ".github/governance-policy.json", ".github/CODEOWNERS", ".github/pull_request_template.md", "tests/ci_impact_policy.yaml", "tests/coverage_policy.yaml", "tests/fixtures/ci/**", "tests/__init__.py", ".gitattributes", ".gitignore", "AGENTS.md"],
+      "consumer_ids": [],
+      "unknowns": [
+        "Routing distinguishes neither planner selection authority from coverage authority nor semantic changes from metadata-only changes; the accepted exact-base policy and external witness retain that decision.",
+        "Git object identity, merge target, mode changes, environment, runner and Python versions are required inputs outside path membership.",
+        "Unknown executable inputs and modified diagnostics cannot authorize a smaller accepted plan."
+      ]
+    },
+    {
+      "id": "research-core",
+      "owner": "Chengyue-Lu; Huang Yi reviews adapter and execution crossings",
+      "source_patterns": ["src/research_workbench/kernel/**", "src/research_workbench/contracts/**", "src/research_workbench/io.py", "src/research_workbench/protocol/**", "src/research_workbench/capability/**", "src/research_workbench/context/**", "src/research_workbench/tasks/**", "src/research_workbench/artifacts/**", "src/research_workbench/research_state/**", "src/research_workbench/observability/**"],
+      "test_patterns": ["tests/test_kernel.py", "tests/test_contracts.py", "tests/test_critical_contract_branches.py", "tests/test_mode_*.py", "tests/test_protocol_profiles.py", "tests/test_method_*.py", "tests/test_decision_authority.py", "tests/test_research_*.py", "tests/test_phase_c_gate.py", "tests/test_phase_b_evolution_gate.py", "tests/test_capability_*.py", "tests/test_catalog.py", "tests/test_skill_archive_audit.py", "tests/test_skill_lifecycle.py", "tests/test_skill_needs.py", "tests/test_skill_release_projection.py", "tests/test_accepted_skill_migration_fixtures.py", "tests/test_candidate_claim_rewrite.py", "tests/test_context_*.py", "tests/test_handoff_transfer.py", "tests/test_project_internal_handoff_fixtures.py", "tests/test_m2_registry_runtime.py", "tests/test_m3_context_observability.py", "tests/test_artifacts_*.py", "tests/test_claim_trace.py", "tests/test_integrity.py", "tests/test_run_reconstruction.py", "tests/test_agent_trace.py", "tests/test_observability_*.py", "tests/test_trace_*.py"],
+      "input_patterns": ["registry/agents/**", "registry/authority/**", "registry/capabilities/**", "registry/modes/**", "registry/protocol-profiles/**", "registry/skill-needs/**", "registry/skills/**", "registry/validation-tools/**", ".agents/**", "skill-lab/**", "examples/artifacts/**", "examples/capability-resolution/**", "examples/continuity/**", "examples/decision-authority/**", "examples/method-resolution-tasks/**", "examples/method-resolutions/**", "examples/mode-skill-routing/**", "examples/modes/**", "examples/objects/**", "examples/observability/**", "examples/phase-c/**", "examples/profiles/**", "examples/run-reconstruction/**", "examples/skills/**", "tests/fixtures/trace/**", "tests/fixtures/claim-preserving-rewrite/**", "tests/fixtures/adversarial/**"],
+      "consumer_ids": ["cli-git-head-observation", "validation-capability-root-scan"],
+      "unknowns": [
+        "This ownership domain contains distinct Protocol, Capability, Context, M4 Artifact, Research State and Trace subcontracts; routing never requires all of them by itself.",
+        "Parser, hashing, package initialization and registry changes may have real consumers in every other domain.",
+        "Skill directories contain runtime inputs and potentially executable scripts; adding a Skill is not a documentation-only exclusion proof.",
+        "Trace archive instances and Trace implementation have different invocation boundaries; a same-name archive file does not bind a business consumer."
+      ]
+    },
+    {
+      "id": "validation-catalog",
+      "owner": "Chengyue-Lu; Huang Yi reviews Provider and execution document semantics",
+      "source_patterns": ["src/research_workbench/validation/**", "src/research_workbench/resources.py"],
+      "test_patterns": ["tests/test_validation*.py", "tests/test_schemas.py", "tests/test_registry_require_branches.py", "tests/test_relationships.py", "tests/test_capability_consumer.py", "tests/test_runtime_resources.py"],
+      "input_patterns": ["schemas/**", "registry/**", "runtime-resources.json", "tests/fixtures/valid/**", "tests/fixtures/invalid/**"],
+      "consumer_ids": ["validation-document-instances", "validation-schema-catalog", "validation-capability-root-scan"],
+      "unknowns": [
+        "SchemaCatalog reads every member of the requested versioned schema directory; its default constructor also validates RuntimeResources inventory.",
+        "load_and_validate caller inputs, indirect references, root membership and fixture lifecycle remain invocation-specific obligations.",
+        "Additions, deletions, renames, symlinks, explicit roots and alternate callers require closure; a changed data instance is not a changed reader implementation.",
+        "Registry and catalog routing can overlap other domains because whole-inventory validation is currently real behavior."
+      ]
+    },
+    {
+      "id": "provider-adapter",
+      "owner": "Huang Yi (let778750-cpu); Chengyue-Lu reviews core semantic crossings",
+      "source_patterns": ["src/research_workbench/adapters/**"],
+      "test_patterns": ["tests/test_provider_*.py", "tests/test_api_session_runner.py", "tests/test_model_pool.py"],
+      "input_patterns": ["registry/providers/**", "registry/models/**"],
+      "consumer_ids": [],
+      "unknowns": [
+        "The accepted provider-wire, provider-conformance, provider-session and provider-cli groups remain separate contracts with existing downstream obligations.",
+        "Provider SDK, network, credential, model slot and environment boundaries cannot be inferred from repository paths.",
+        "Local synthetic Provider tests do not establish live conformance or permit dropping actual session and CLI consumers."
+      ]
+    },
+    {
+      "id": "evaluation",
+      "owner": "Chengyue-Lu; Huang Yi reviews Provider ports and execution facts",
+      "source_patterns": ["src/research_workbench/evaluation/**"],
+      "test_patterns": ["tests/test_evaluation_*.py", "tests/test_skill_evaluation*.py", "tests/test_system_evaluation_protocol.py", "tests/test_m5_trace_export.py"],
+      "input_patterns": ["examples/evals/**", "tests/harness_fixtures.py", "tests/harness_execution_fixtures.py", "tests/system_evaluation_fixtures.py", "tests/baseline_fixtures.py", "tests/skill_runtime_fixtures.py", "tests/skill_closeout_fixtures.py"],
+      "consumer_ids": [],
+      "unknowns": [
+        "Manifest qualification, protocol, comparability, harness plan/preflight and harness execution/replay are separate subcontracts.",
+        "Harness execution uses real local execution ports and shares baseline/Skill fixtures; provider and execution crossings need exact invocation evidence.",
+        "Fixture inheritance, shared mutable seeds and imported test helpers are not closed by matching a helper filename.",
+        "Structural CI results remain separate from scientific efficacy and human acceptance."
+      ]
+    },
+    {
+      "id": "execution",
+      "owner": "Huang Yi (let778750-cpu); Chengyue-Lu owns View and Skill supply semantics",
+      "source_patterns": ["src/research_workbench/execution/**", "src/research_workbench/adapters/runtime.py", "src/research_workbench/observability/**"],
+      "test_patterns": ["tests/test_execution_*.py", "tests/test_runtime_bundle.py", "tests/test_baseline_*.py", "tests/test_generic_execution_closeout.py", "tests/test_skill_execution_closeout.py", "tests/test_skill_closeout_review.py", "tests/test_skill_runtime_extension.py"],
+      "input_patterns": ["tests/execution_fixtures.py", "tests/baseline_fixtures.py", "tests/skill_closeout_fixtures.py", "tests/skill_runtime_fixtures.py", "tests/harness_execution_fixtures.py", "tests/system_evaluation_fixtures.py", "examples/vertical-slice/**"],
+      "consumer_ids": [],
+      "unknowns": [
+        "Bundle/View, host, generic closeout, Skill extension, baseline transport and cold file replay require independent input and lifecycle contracts.",
+        "Shared initializers, Trace construction, helper inheritance and subprocesses retain their actual cross-domain obligations.",
+        "Fresh replay, authority checks, before-use and after-return invalidation are distinct failure boundaries; one successful execution does not replace them."
+      ]
+    },
+    {
+      "id": "release-runtime",
+      "owner": "Chengyue-Lu; Huang Yi reviews runtime and installation integration",
+      "source_patterns": ["src/research_workbench/__init__.py", "src/research_workbench/__main__.py", "src/research_workbench/cli.py", "src/research_workbench/scaffold.py", "src/research_workbench/resources.py", "build_backend.py", ".github/scripts/release_surface.py", ".github/scripts/portable_package_smoke.py"],
+      "test_patterns": ["tests/test_cli*.py", "tests/test_scaffold.py", "tests/test_runtime_resources.py", "tests/test_portable_build.py", "tests/test_public_surface.py", "tests/test_release_*.py"],
+      "input_patterns": ["pyproject.toml", "MANIFEST.in", "LICENSE", "runtime-resources.json", ".github/release-surface.yml", "src/research_workbench/_templates/**", "schemas/**", "registry/**", "examples/quickstart/**", "tests/public_surface_helpers.py", "README.md", "CHANGELOG.md", "docs/PROJECT_CHARTER.md", "docs/ARCHITECTURE.md", "docs/GETTING_STARTED.md", "docs/PUBLIC_GUIDE.md", "docs/SUPPORTED_FEATURES.md"],
+      "consumer_ids": ["cli-git-head-observation", "validation-schema-catalog"],
+      "unknowns": [
+        "CLI command families share one source file and broad imports; the Git HEAD observation record closes neither other commands nor alternate reads.",
+        "RuntimeResources and public source selection consume declared inventories and package documentation; release/installation membership is not ordinary documentation membership.",
+        "Generated README output names alone do not establish input consumption; constructor resources and public build closure remain real inputs.",
+        "Branch, tag, protected source-CI and release authority are independent governance requirements, not consequences of a passing diagnostic."
+      ]
+    },
+    {
+      "id": "documentation-archive",
+      "owner": "Chengyue-Lu; each workstream retains its named accountable owner",
+      "source_patterns": [],
+      "test_patterns": ["tests/test_documentation.py", "tests/test_pr_governance.py", "tests/test_public_surface.py"],
+      "input_patterns": ["README.md", "CHANGELOG.md", "DEVELOPMENT_HISTORY.md", "AGENTS.md", "docs/**", "work/**", "tests/public_surface_helpers.py", ".github/pull_request_template.md", ".github/CODEOWNERS"],
+      "consumer_ids": [],
+      "unknowns": [
+        "A docs or work path only routes review; it does not prove absence of runtime reads, scripts, schema references or catalog inclusion.",
+        "Documentation link checking reads all Markdown and observes existence of non-Markdown targets, including deleted and renamed targets.",
+        "Public source/build closure consumes some documentation and package inputs; archive hash, reference and root membership require their own actual validator invocation.",
+        "No accepted invocation-specific archive exclusion witness is declared; the first docs/archive pilot remains unactivated."
+      ]
+    }
+  ],
+  "pilots": []
+}

@@ -1,0 +1,7 @@
+task_id: TEST-PERF-002
+revision: 39
+request: Begin Issue87 CI implementation after PR90 37-minute coverage; business fixes
+  owned by development (3)
+scope: 2A domain/consumer audit and five immutable PR replays
+delegation: true
+required_skills: []
