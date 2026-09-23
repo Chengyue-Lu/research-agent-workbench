@@ -1376,7 +1376,8 @@ else: raise AssertionError('candidate worker accepted focused self-authorization
               'class Extra(unittest.TestCase):\n def test_extra(self): pass\n')
         write(self.repo, 'tests/test_unselected.py', 'import os, unittest\n'
               'class Other(unittest.TestCase):\n def test_existing(self):\n'
-              '  self.assertNotIn("RWB_COVERAGE_EXTRA_LOADED", os.environ)\n')
+              '  self.assertNotIn("RWB_COVERAGE_EXTRA_LOADED", os.environ)\n'
+              '  with open(os.environ["RWB_ORDERED_WORKER_MARKER"], "w") as marker: marker.write("ran")\n')
         self.base = self.commit('tests/coverage_policy.yaml', yaml.safe_dump(authority))
         self.commit()
         p = self.plan(force_full=True)
@@ -1388,12 +1389,24 @@ else: raise AssertionError('candidate worker accepted focused self-authorization
                 '--plan', str(plan_path), '--verbosity', '0']
         env = {**os.environ, 'GITHUB_EVENT_PATH': '', 'GITHUB_EVENT_NAME': 'pull_request', 'GITHUB_STEP_SUMMARY': ''}
         env.pop('RWB_COVERAGE_EXTRA_LOADED', None)
+        marker = Path(self.temp.name) / 'worker-marker.txt'
+        env['RWB_ORDERED_WORKER_MARKER'] = str(marker)
         def execute(*args):
             return subprocess.run([*argv, *args], cwd=self.repo, env=env, text=True,
                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         ordinary = execute('--suite', 'full', '--json-output', str(direct))
         self.assertEqual(0, ordinary.returncode, ordinary.stderr)
+        self.assertEqual('ran', marker.read_text())
+        marker.unlink()
         result = execute('--suite', 'coverage-execution', '--json-output', str(raw), '--coverage-results', str(coverage))
+        if sys.version_info[:2] != (3, 11):
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn('coverage execution requires Python 3.11', result.stderr)
+            self.assertFalse(raw.exists())
+            self.assertFalse(coverage.exists())
+            self.assertFalse(marker.exists())
+            return
+        self.assertEqual('ran', marker.read_text())
         record, original = json.loads(raw.read_bytes()), json.loads(direct.read_bytes())
         self.assertTrue(record['successful'])
         self.assertEqual(original['execution_order'], record['execution']['behavioral_order'])
@@ -1401,18 +1414,13 @@ else: raise AssertionError('candidate worker accepted focused self-authorization
         self.assertEqual(original['test_count'] + 1, record['test_count'])
         project_args = ['--suite', 'behavioral-evidence', '--json-output', str(projected), '--execution-results', str(raw)]
         projected_result = execute(*project_args)
-        if sys.version_info[:2] == (3, 11):
-            self.assertEqual(0, result.returncode, result.stderr)
-            self.assertEqual(0, projected_result.returncode, projected_result.stderr)
-            behavioral = json.loads(projected.read_bytes())
-            self.assertEqual(original['test_count'], behavioral['test_count'])
-            self.assertEqual(original['execution_order'], behavioral['execution_order'])
-            self.assertFalse(any('coverage_extra' in r['id'] for r in behavioral['tests']))
-            self.assertEqual(1, json.loads(coverage.read_bytes())['test_count'])
-        else:
-            self.assertNotEqual(0, result.returncode)
-            self.assertNotEqual(0, projected_result.returncode)
-            self.assertIn('mismatched binding', projected_result.stderr)
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual(0, projected_result.returncode, projected_result.stderr)
+        behavioral = json.loads(projected.read_bytes())
+        self.assertEqual(original['test_count'], behavioral['test_count'])
+        self.assertEqual(original['execution_order'], behavioral['execution_order'])
+        self.assertFalse(any('coverage_extra' in r['id'] for r in behavioral['tests']))
+        self.assertEqual(1, json.loads(coverage.read_bytes())['test_count'])
         record['tests'] = []
         raw.write_bytes(planner.canonical(record))
         with self.subTest(checkpoint='missing executed case'):
@@ -1452,11 +1460,16 @@ else: raise AssertionError('candidate worker accepted focused self-authorization
                         args += ['--coverage-results', str(Path(self.temp.name) / 'coverage.json')]
                     completed = subprocess.run(args, cwd=self.repo, env=env, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                     self.assertEqual(1, completed.returncode, completed.stderr)
+                    if suite == 'coverage-execution' and sys.version_info[:2] != (3, 11):
+                        self.assertIn('coverage execution requires Python 3.11', completed.stderr)
+                        self.assertFalse(output.exists())
+                        continue
                     receipt = json.loads(output.read_bytes())
                     self.assertFalse(receipt['successful'])
                     self.assertTrue(any('test_b_observes' in r['id'] and r['outcome'] == 'failed' for r in receipt['tests']))
                     receipts.append(receipt)
-                self.assertEqual(receipts[0]['execution_order'], receipts[1]['execution_order'])
+                if sys.version_info[:2] == (3, 11):
+                    self.assertEqual(receipts[0]['execution_order'], receipts[1]['execution_order'])
 
     def test_decorators_are_executable_impact_and_comments_keep_repository_guard(self):
         path = LEAVES[0]

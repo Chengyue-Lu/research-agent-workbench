@@ -1,0 +1,12 @@
+task_id: TEST-PERF-002
+revision: 43
+request: Reject invalid producer and native suite discovery inputs at existing ordered
+  runner boundaries
+scope:
+- tests/run_unittest_suite.py
+- tests/test_test_runner.py
+- tests/test_ci_plan.py
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- work/TEST-PERF-002/A-20260920-007/**
+delegation: true
+required_skills: []

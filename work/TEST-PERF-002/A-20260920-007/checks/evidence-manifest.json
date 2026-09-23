@@ -1,0 +1,44 @@
+{
+  "files": [
+    {
+      "path": ".gitattributes",
+      "sha256": "f06202a408fef9b9ea69bb6b1cb8160dbb0378c5bb67a444d510d231813824c8"
+    },
+    {
+      "path": "ACTORS.yaml",
+      "sha256": "7cca7fdf3cbe139d04d4c15d11b75f8141b0f8cd31e231a0efad7e6dad5c6f36"
+    },
+    {
+      "path": "checks/raw-evidence.zip",
+      "sha256": "1c1c13652a15f14e90140c9ef57a2a9264ea1e4dbc92c413aeff9b65952e3c9d"
+    },
+    {
+      "path": "checks/trace-validation.json",
+      "sha256": "67a7f72da07f01970328e804b86d85c5d0ca1fb8a0d10dbd41dfec1e4a7b8919"
+    },
+    {
+      "path": "checks/validation.json",
+      "sha256": "0df5e51c3088ea2bd188c5232c2ce6f6bb3980e327bd36605b6953c05523a98b"
+    },
+    {
+      "path": "events.jsonl",
+      "sha256": "d02a9931623c903d6aa3874ba13116df2056f1f580e5e724f39acc0a6be34a5c"
+    },
+    {
+      "path": "INDEX.yaml",
+      "sha256": "594dfad90b6f0de4e3573ac9818b6d80b75044884abc71de339174c942edc67b"
+    },
+    {
+      "path": "RESULTS.md",
+      "sha256": "1201d4bfcbd611c6e1cd517ac2c6324d4d4337fc94d1e0aaca0295c41cfaab30"
+    },
+    {
+      "path": "TASK.yaml",
+      "sha256": "d06e5535b0384c83e17c3b7c2cc2490b2f17de921581950c6e245947421a90aa"
+    },
+    {
+      "path": "tool-events/preflight-ci-evidence-succeeded.json",
+      "sha256": "574a1ad2d42ab664fb35faaf0e75d383cc981aaab1f57c1f04ccbfd3c4f2be66"
+    }
+  ]
+}

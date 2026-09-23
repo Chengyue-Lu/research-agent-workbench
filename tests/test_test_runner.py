@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import argparse
 import copy
-from contextlib import redirect_stderr, redirect_stdout
+from contextlib import contextmanager, redirect_stderr, redirect_stdout
 import importlib.util
 import io
 import json
@@ -381,6 +381,146 @@ class Example(unittest.TestCase):
         self.assertEqual(expected_events + ["coverage loaded", "setup", "b", "teardown"], module.events)
         self.assertEqual(1, payload["events"]["errors"])
         with self.assertRaises(ValueError): project(plan(), execution, payload)
+
+
+class PreflightTests(unittest.TestCase):
+    @contextmanager
+    def fixture(self):
+        """Load real temporary test modules without changing the suite loader."""
+        with tempfile.TemporaryDirectory() as directory, patch.dict(sys.modules), \
+             patch.object(sys, "path", list(sys.path)), patch.dict(os.environ, {}, clear=True):
+            root = Path(directory)
+            tests = root / "tests"
+            tests.mkdir()
+            for name in ("test_preflight_behavior", "test_preflight_broken", "preflight_coverage"):
+                sys.modules.pop(name, None)
+            events = root / "events.txt"
+            with patch.object(runner, "ROOT", root), patch.object(runner, "TESTS", tests), \
+                 patch.object(runner, "SOURCE", root / "src"):
+                yield root, tests, events
+
+    def write_case(self, tests, events, name, *, empty=False, broken=False):
+        source = ("import unittest\nfrom pathlib import Path\n"
+                  f"EVENTS = Path({str(events)!r})\n"
+                  "def note(value):\n"
+                  " with EVENTS.open('a', encoding='utf-8') as handle: handle.write(value+'\\n')\n"
+                  f"note({name + ':import'!r})\n")
+        if broken:
+            source += "raise ImportError('preflight import failure')\n"
+        elif empty:
+            source += "def load_tests(loader, tests, pattern): return unittest.TestSuite()\n"
+        else:
+            source += (f"def setUpModule(): note({name + ':module-setup'!r})\n"
+                       f"def tearDownModule(): note({name + ':module-teardown'!r})\n"
+                       "class Example(unittest.TestCase):\n"
+                       " @classmethod\n"
+                       f" def setUpClass(cls): note({name + ':class-setup'!r})\n"
+                       " @classmethod\n"
+                       f" def tearDownClass(cls): note({name + ':class-teardown'!r})\n"
+                       f" def test_ok(self): note({name + ':body'!r})\n")
+        (tests / (name + ".py")).write_text(source, encoding="utf-8")
+
+    def argv(self, root, suite, *, planned=True):
+        args = ["--suite", suite, "--json-output", str(root / "result.json"), "--verbosity", "0",
+                "--policy", str(root / "policy.yaml")]
+        if planned:
+            args.extend(["--plan", str(root / "plan.json")])
+        if suite == "coverage-execution":
+            args.extend(["--coverage-results", str(root / "coverage.json")])
+        return args
+
+    def test_wrong_producer_python_rejects_before_import_or_fixture_execution(self):
+        for version in ("3.13.15", "3.12.0"):
+            with self.subTest(version=version), self.fixture() as (root, tests, events):
+                self.write_case(tests, events, "test_preflight_behavior")
+                p = plan(); p["coverage_tests"] = ["test_preflight_behavior.Example.test_ok"]
+                with patch.object(runner, "_verified_plan", return_value=p), \
+                     patch.object(runner.platform, "python_version", return_value=version):
+                    with self.assertRaisesRegex(ValueError, "requires Python 3.11"):
+                        runner.main(self.argv(root, "coverage-execution"))
+                self.assertFalse(events.exists())
+                self.assertFalse((root / "result.json").exists())
+                self.assertFalse((root / "coverage.json").exists())
+
+    def test_full_loader_errors_reject_before_any_fixture_runs(self):
+        with self.fixture() as (root, tests, events):
+            self.write_case(tests, events, "test_preflight_behavior")
+            self.write_case(tests, events, "test_preflight_broken", broken=True)
+            with self.assertRaisesRegex(ValueError, "full suite has missing or empty") as error:
+                runner.main(self.argv(root, "full", planned=False))
+            self.assertIn("test_preflight_broken", str(error.exception))
+            self.assertIn("ImportError: preflight import failure", str(error.exception))
+            self.assertEqual(["test_preflight_behavior:import", "test_preflight_broken:import"],
+                             events.read_text().splitlines())
+            self.assertFalse((root / "result.json").exists())
+
+    def test_empty_full_behavior_rejects_before_loading_nonempty_coverage(self):
+        with self.fixture() as (root, tests, events):
+            self.write_case(tests, events, "test_preflight_behavior", empty=True)
+            self.write_case(tests, events, "preflight_coverage")
+            (root / "policy.yaml").write_text("suites:\n  coverage-quality:\n    modules: [preflight_coverage]\n")
+            with patch.object(runner, "_verified_plan", return_value=plan(["repository"])), \
+                 patch.object(runner.platform, "python_version", return_value="3.11.16"):
+                with self.assertRaisesRegex(ValueError, "no tests collected"):
+                    runner.main(self.argv(root, "coverage-execution"))
+            self.assertEqual(["test_preflight_behavior:import"], events.read_text().splitlines())
+            self.assertFalse((root / "result.json").exists())
+
+    def test_repository_loader_rejects_at_deferred_boundary_after_behavior_teardown(self):
+        for empty in (False, True):
+            with self.subTest(empty=empty), self.fixture() as (root, tests, events):
+                self.write_case(tests, events, "test_preflight_behavior")
+                self.write_case(tests, events, "preflight_coverage", empty=empty, broken=not empty)
+                (root / "policy.yaml").write_text("suites:\n  coverage-quality:\n    modules: [preflight_coverage]\n")
+                p = plan(["impact", "repository"])
+                p["coverage_tests"] = ["test_preflight_behavior.Example.test_ok"]
+                with patch.object(runner, "_verified_plan", return_value=p), \
+                     patch.object(runner.platform, "python_version", return_value="3.11.16"), \
+                     redirect_stderr(io.StringIO()):
+                    with self.assertRaisesRegex(ValueError, "coverage-quality suite has missing or empty") as error:
+                        runner.main(self.argv(root, "coverage-execution"))
+                if empty:
+                    self.assertIn("no tests collected", str(error.exception))
+                else:
+                    self.assertIn("preflight_coverage", str(error.exception))
+                    self.assertIn("ImportError: preflight import failure", str(error.exception))
+                self.assertEqual(["test_preflight_behavior:" + phase for phase in
+                                  ("import", "module-setup", "class-setup", "body", "class-teardown", "module-teardown")]
+                                 + ["preflight_coverage:import"], events.read_text().splitlines())
+                self.assertFalse((root / "coverage.json").exists())
+
+    def test_none_behavior_and_valid_deferred_coverage_keep_their_exact_scope(self):
+        for scope in ("none", "full"):
+            with self.subTest(scope=scope), self.fixture() as (root, tests, events):
+                self.write_case(tests, events, "test_preflight_behavior")
+                self.write_case(tests, events, "preflight_coverage")
+                (root / "policy.yaml").write_text("suites:\n  coverage-quality:\n    modules: [preflight_coverage]\n")
+                p = plan(["repository"]); p["behavioral_scope"] = scope
+                with patch.object(runner, "_verified_plan", return_value=p), \
+                     patch.object(runner.platform, "python_version", return_value="3.11.16"), \
+                     redirect_stderr(io.StringIO()), redirect_stdout(io.StringIO()):
+                    self.assertEqual(0, runner.main(self.argv(root, "coverage-execution")))
+                record = json.loads((root / "result.json").read_bytes())
+                expected_modules = (["test_preflight_behavior"] if scope == "full" else []) + ["preflight_coverage"]
+                self.assertEqual([module + ":" + phase for module in expected_modules for phase in
+                                  ("import", "module-setup", "class-setup", "body", "class-teardown", "module-teardown")],
+                                 events.read_text().splitlines())
+                self.assertEqual(0 if scope == "none" else 1, len(record["execution"]["behavioral_order"]))
+                self.assertEqual(1, json.loads((root / "coverage.json").read_bytes())["test_count"])
+
+    def test_ordinary_full_focused_and_impact_remain_supported_on_running_python(self):
+        for suite in ("full", "focused", "impact"):
+            with self.subTest(suite=suite), self.fixture() as (root, tests, events):
+                self.write_case(tests, events, "test_preflight_behavior")
+                p = plan(); p.update(behavioral_scope="focused", tests=["test_preflight_behavior"],
+                                     coverage_tests=["test_preflight_behavior.Example.test_ok"])
+                with patch.object(runner, "_verified_plan", return_value=p), \
+                     redirect_stderr(io.StringIO()), redirect_stdout(io.StringIO()):
+                    self.assertEqual(0, runner.main(self.argv(root, suite)))
+                record = json.loads((root / "result.json").read_bytes())
+                self.assertTrue(record["successful"])
+                self.assertEqual(1, record["test_count"])
+                self.assertEqual(1, events.read_text().splitlines().count("test_preflight_behavior:body"))
 
 
 class EntryPointTests(unittest.TestCase):
