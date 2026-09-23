@@ -1,0 +1,80 @@
+{
+  "files": [
+    {
+      "path": ".gitattributes",
+      "sha256": "f06202a408fef9b9ea69bb6b1cb8160dbb0378c5bb67a444d510d231813824c8"
+    },
+    {
+      "path": "ACTORS.yaml",
+      "sha256": "6c7bc363e9ec901d5bbf3d7600744c57888042ab180f74326255830c24b4bfbd"
+    },
+    {
+      "path": "checks/common-driver-handoff.md",
+      "sha256": "c62e40944c58ab58ea043c32ecc914360d75a8808186130678901eadc7c18ae3"
+    },
+    {
+      "path": "checks/delegation-summary.json",
+      "sha256": "7e5b38107e0a6e95a72b4ac8383945bf4678752e21be7b6a735d34ae13813a5f"
+    },
+    {
+      "path": "checks/execution-handoff.md",
+      "sha256": "07f7e925e2f371ccc7d926e8101196cfe39b2408935daf0be5416f17717def16"
+    },
+    {
+      "path": "checks/first-pair-summary.json",
+      "sha256": "c901b2c5152ff7ab7786411733d8602ec4338917162d0c9f0929e3d82208e0f7"
+    },
+    {
+      "path": "checks/paired-code-recheck.md",
+      "sha256": "f4a5fde1ffd1f54518ddab347ac0745b1da43fa69e0b07bdb1e9642ccf879cab"
+    },
+    {
+      "path": "checks/paired-summary.json",
+      "sha256": "1a430291c069428fef670dd9ed129c061d1fda23447ae2b6ed46bd27928f2d89"
+    },
+    {
+      "path": "checks/planner-consumer-review.md",
+      "sha256": "850b3b3ca1399e274ef1d67f4be135ab7572c91597c032e051c223ef871bbcb3"
+    },
+    {
+      "path": "checks/pr92-summary.json",
+      "sha256": "a31468dca864b8cf799c1f61b06d992a94891aba229c3307c503d50d7b466f78"
+    },
+    {
+      "path": "checks/PR92_HOSTED_BASELINE.md",
+      "sha256": "67e146471fcb20cceb8e1e85a7aecf51420e33ab4f8fbe9376114cf5e7049643"
+    },
+    {
+      "path": "checks/raw-evidence.zip",
+      "sha256": "28c17cfe6dcce9cdf8a4176f2d376984915c3f41da2237303d8ed69ab97f032f"
+    },
+    {
+      "path": "checks/trace-validation.json",
+      "sha256": "67a7f72da07f01970328e804b86d85c5d0ca1fb8a0d10dbd41dfec1e4a7b8919"
+    },
+    {
+      "path": "checks/validation.json",
+      "sha256": "82d7743296dd52408a93a4739df58cb30789e45a6d9a294dc2ae6ef0cdb83d79"
+    },
+    {
+      "path": "events.jsonl",
+      "sha256": "64ea3a2afe245a2367ea5bca8ba11fb34e495599ee0c7a42319399fbbe5d402c"
+    },
+    {
+      "path": "INDEX.yaml",
+      "sha256": "8567f8abe330cfa410cdb6cb4f48521b02a75e93d99c46ae1083a1a2c1d47755"
+    },
+    {
+      "path": "RESULTS.md",
+      "sha256": "93d5988390c4e5dbf5c63d41313d78c5759a22c6d1a29da30f86e4fba0425577"
+    },
+    {
+      "path": "TASK.yaml",
+      "sha256": "ab7903d3125ece62a3316dfe856c70988b8ee947f202c6f3e9f4058f86dea41a"
+    },
+    {
+      "path": "tool-events/paired-ci-evidence-succeeded.json",
+      "sha256": "8d28925100e2e4301a371111941590bb73a4dd261b471a4a2f7ae01d54c9f034"
+    }
+  ]
+}

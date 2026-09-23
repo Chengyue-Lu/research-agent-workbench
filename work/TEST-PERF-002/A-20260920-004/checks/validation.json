@@ -1,0 +1,1183 @@
+{
+  "implementation": "35b5b28eb070e588f80c92b1ea9371dd0fcf2fd6",
+  "base": "171d4654f88e926f239cdf25bc8168109b81f391",
+  "execution_authority": false,
+  "validation": {
+    "related_python311_passed": 52,
+    "related_seconds": 40.761,
+    "final_python311_passed": 11,
+    "final_seconds": 10.66,
+    "python313_passed": 11,
+    "python313_seconds": 8.412,
+    "modules": {
+      ".github\\scripts\\ci_consumer_shadow.py": {
+        "covered_lines": 205,
+        "num_statements": 205,
+        "percent_covered": 100.0,
+        "percent_covered_display": "100",
+        "missing_lines": 0,
+        "excluded_lines": 0,
+        "percent_statements_covered": 100.0,
+        "percent_statements_covered_display": "100",
+        "num_branches": 84,
+        "num_partial_branches": 0,
+        "covered_branches": 84,
+        "missing_branches": 0,
+        "percent_branches_covered": 100.0,
+        "percent_branches_covered_display": "100"
+      },
+      ".github\\scripts\\ci_shadow_pair.py": {
+        "covered_lines": 123,
+        "num_statements": 123,
+        "percent_covered": 100.0,
+        "percent_covered_display": "100",
+        "missing_lines": 0,
+        "excluded_lines": 0,
+        "percent_statements_covered": 100.0,
+        "percent_statements_covered_display": "100",
+        "num_branches": 40,
+        "num_partial_branches": 0,
+        "covered_branches": 40,
+        "missing_branches": 0,
+        "percent_branches_covered": 100.0,
+        "percent_branches_covered_display": "100"
+      }
+    },
+    "exclusions_added": 0,
+    "independent_review_findings_closed": 3
+  },
+  "raw_archive_sha256": "3835e63eb309646d709e5f21f7cc7838e2f3eb129a19da4187f1034ef47274e0",
+  "raw_members": [
+    {
+      "path": ".coverage",
+      "bytes": 167936,
+      "sha256": "cdbffb9f887fac90acd38d6b5efe5b3355951c728ed8dbab1a09d2e5a360cb15"
+    },
+    {
+      "path": ".coverage-final",
+      "bytes": 77824,
+      "sha256": "d0573962cd2e290f9157fb7781266b7e8ee626a525418232a49b8638a791a91c"
+    },
+    {
+      "path": "archive_ready_attempt.py",
+      "bytes": 6336,
+      "sha256": "7a47ce424613df497b1bb5a6c817f83dddb4984a2b64c0ba6ed61d981ecf16e3"
+    },
+    {
+      "path": "coverage-final.json",
+      "bytes": 21610,
+      "sha256": "97713d8093f069b20f15ed426ff0a4eaa973dab5b827e97e93df67098758bdae"
+    },
+    {
+      "path": "coverage-focused.ini",
+      "bytes": 82,
+      "sha256": "a223a713c0ddc57984595c0d65e641298618e890184edd1cc60181995c8a2ae8"
+    },
+    {
+      "path": "coverage-pilot/artifact-sha256.json",
+      "bytes": 5643,
+      "sha256": "6df86e5db20e27e203fa905c737b57c88d5be912c0adc438ede7e029c92b3b2c"
+    },
+    {
+      "path": "coverage-pilot/audit_anchors.py",
+      "bytes": 1036,
+      "sha256": "552f6738946372218eded1f679ec64326af216f5f62cd36eca3f77ef3f810bd1"
+    },
+    {
+      "path": "coverage-pilot/change.diff",
+      "bytes": 586,
+      "sha256": "f6047ee9e323879b53848088866e7ad7a4acfed3b46f4bc0bff826c32e5fd494"
+    },
+    {
+      "path": "coverage-pilot/checker-compatibility.json",
+      "bytes": 1626,
+      "sha256": "7d3cc598359325d27bb516f9b15c8e28d621036c16a5bf5a44968829f37923d8"
+    },
+    {
+      "path": "coverage-pilot/claim-integer-boundary/change.diff",
+      "bytes": 858,
+      "sha256": "690bf4e4557367aaa13d349aa68b24960b5e582360e6208691a3b07ad8c44558"
+    },
+    {
+      "path": "coverage-pilot/claim-integer-boundary/inventory.json",
+      "bytes": 631142,
+      "sha256": "2c70fc685a8e7075d19860fef77bb1b2dbd90b7f997b20f3bf944c040c5224b1"
+    },
+    {
+      "path": "coverage-pilot/claim-integer-boundary/plan.json",
+      "bytes": 144464,
+      "sha256": "5803cb0eee36b637ade70dd1061906f52404aae4962cb6096681bf30d0ded5c4"
+    },
+    {
+      "path": "coverage-pilot/claim-integer-boundary/summary.json",
+      "bytes": 10343,
+      "sha256": "70822bdd172ccb9fcae6bf1156759674d140f4a76288a0854366d617384e0dd1"
+    },
+    {
+      "path": "coverage-pilot/finalize_observations.py",
+      "bytes": 4145,
+      "sha256": "ff1ef78229686bae976ac190c6c79c2adca3637945ff23f05d7aa1d4d282dd56"
+    },
+    {
+      "path": "coverage-pilot/fingerprint-anchor-audit.json",
+      "bytes": 1561,
+      "sha256": "e09d3086f1c3a698d921a54b7fc74e51423d88442a340d596868dc601199d7f4"
+    },
+    {
+      "path": "coverage-pilot/frozen-existing-proposal.json",
+      "bytes": 12108,
+      "sha256": "14fa78505552734e4ed3b308418cf17fb31098587f6ad250175e986debf8f479"
+    },
+    {
+      "path": "coverage-pilot/HANDOFF.md",
+      "bytes": 5408,
+      "sha256": "6938854a4671922756db7b8b25fb75bb676357d9ce81f9524a264e868f6af05b"
+    },
+    {
+      "path": "coverage-pilot/historical-claim/change.diff",
+      "bytes": 858,
+      "sha256": "690bf4e4557367aaa13d349aa68b24960b5e582360e6208691a3b07ad8c44558"
+    },
+    {
+      "path": "coverage-pilot/historical-claim/inventory.json",
+      "bytes": 6379,
+      "sha256": "af14f7625a6e1c5ce87ad734e4ca001667a8cb8cebf6e55efddf3dfb1c43ac90"
+    },
+    {
+      "path": "coverage-pilot/historical-claim/plan.json",
+      "bytes": 12747,
+      "sha256": "67a361bcff86e0444e1e576076218ab78efb238531b6df987475e0fe6133c074"
+    },
+    {
+      "path": "coverage-pilot/historical-claim/summary.json",
+      "bytes": 1553,
+      "sha256": "65590c7cd7cc172abcf1cad40257c476444172dd0f80c843929daabac47e41a3"
+    },
+    {
+      "path": "coverage-pilot/historical-provider/change.diff",
+      "bytes": 691,
+      "sha256": "33896835838aa6e3e58d1e5a327bc433a3c9922f6d9b5d340dbedac8bba1dd98"
+    },
+    {
+      "path": "coverage-pilot/historical-provider/inventory.json",
+      "bytes": 30359,
+      "sha256": "210b0f96c4fc4752f8130ead61314923c432b82b65b83c0d0c493777c4a7da58"
+    },
+    {
+      "path": "coverage-pilot/historical-provider/plan.json",
+      "bytes": 14032,
+      "sha256": "96b15846df8442e191895d42e92a1756449a104f6cbb3219f13e95933443ad45"
+    },
+    {
+      "path": "coverage-pilot/historical-provider/summary.json",
+      "bytes": 1970,
+      "sha256": "d652fee24f7cdc017c0e4c5dc730cb7a0c64c1d3f4319d2c9d39fe46d92993f2"
+    },
+    {
+      "path": "coverage-pilot/inventory.json",
+      "bytes": 631142,
+      "sha256": "3ef1ac2b7275429e95b979ff8c28899ad27852e0a43a63f60107c38a9d146862"
+    },
+    {
+      "path": "coverage-pilot/observations.json",
+      "bytes": 30862,
+      "sha256": "9f4e964ad535f73e31f0af7140f9eec9cd52bccef2df7003b9d7e06444069ff7"
+    },
+    {
+      "path": "coverage-pilot/plan.json",
+      "bytes": 144462,
+      "sha256": "304eaed59ef319b4be48eaa2fcfd42e3fd7798b1b10eeb28a8a1e0efe7102177"
+    },
+    {
+      "path": "coverage-pilot/PREPARATION.md",
+      "bytes": 6787,
+      "sha256": "9fad398174210907c1fa163be199e9ecc1664e9d87ba7c4e61b3feaa0f1dab15"
+    },
+    {
+      "path": "coverage-pilot/prepare.py",
+      "bytes": 4051,
+      "sha256": "1ce33f4943d962ecab0bdb5d0ba0d076a8b8cd924c0c3c76cee7ae44d97f2a25"
+    },
+    {
+      "path": "coverage-pilot/prepare_positive.py",
+      "bytes": 2660,
+      "sha256": "05267656432e53be92d21651e91e3af79a5827df4a9fd0c32ba390b717675a4f"
+    },
+    {
+      "path": "coverage-pilot/prepare_variant.py",
+      "bytes": 3561,
+      "sha256": "67a1c8a8e0f2956d7d423659235a174500ec131b87b4b341d0847f1b53ac7864"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/.coverage-current",
+      "bytes": 634880,
+      "sha256": "6198ddf8ec0b5459a1b1051f364790aa2e784d1657723992532f89b5664e6ee4"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/accepted-bundle.json",
+      "bytes": 1385950,
+      "sha256": "2334546c1e42efe4dbb8e3f1b4ff7bd55e4c32f98ed7814905b86e779e728234"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/accepted-context.json",
+      "bytes": 1377,
+      "sha256": "72c5901961c8d8c4692749e6636fc5fd469bc5c66227069690a68a7c6a2baf3a"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/accepted-coverage-check.log",
+      "bytes": 1083,
+      "sha256": "edd64e4e11b2609fdf24e63cf2f1ae8ac7886b6bfd3579998e5db18dfbcfdd30"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/accepted-coverage-json.log",
+      "bytes": 124,
+      "sha256": "bdc120acfed6dbd0a08b2dca1eff4c2d746bf161edd15766626257211e461ed3"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/accepted-coverage-receipt.json",
+      "bytes": 48826,
+      "sha256": "2dbbab61d6fbd118bbc5c166d3edfcc56077dcce09cba90fcb3e1800460019c9"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/accepted-coverage.json",
+      "bytes": 1464106,
+      "sha256": "3767710c25518dc41ac781ae842b8ebb19b95a1c169e804c97f62b27d057c2c8"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/accepted-dependencies.json",
+      "bytes": 542,
+      "sha256": "88d6320ae4625a0b2525f2e2b7ca2065ec502a9ed8881c48838701a43dee7e7f"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/accepted-driver-result.json",
+      "bytes": 86,
+      "sha256": "90fd92931969916a39998d203febb5e8911a5b91112989e8236229f4a62a0bae"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/accepted-driver.json",
+      "bytes": 430,
+      "sha256": "1f6d8ec52a02bb8a12ba24869f07f4874a937f9861d4b146a9dadddeb7b42cfc"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/accepted-environment.json",
+      "bytes": 445,
+      "sha256": "69a2bb8c69d0c5395276e03f4f62ec282ed4d2667c8d8480099a30e62d761620"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/accepted-execution.log",
+      "bytes": 2713,
+      "sha256": "33f46d6ae8db6301a8616a026350e107f3931723cd4cd41c0c46da091a68a47f"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/accepted-expected.json",
+      "bytes": 22064,
+      "sha256": "a21898e1177b9406f4d5f23b8f19692030fb02ef737861c8f6ee353a6760c7c7"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/accepted-inventory.json",
+      "bytes": 30369,
+      "sha256": "61eccac0744386bb11f99f035bd6d7e9d9012d622f347146733a676d3ab938fb"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/accepted-receipt.json",
+      "bytes": 101746,
+      "sha256": "05debd5a2e87a5d9ed38af020356ac5b49c3d540cc12b6e5ee6f2e143012c43b"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/accepted-shadow.json",
+      "bytes": 107777,
+      "sha256": "605882d272ffc70ff2410183ebd62881c17ad1e5655c0036eb38d21c2ae24039"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/accepted-steps.json",
+      "bytes": 1755,
+      "sha256": "ac0cc58c2930d7ff47e251261494b82fbcb7b9adecd306abd36503ef9634b9f3"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/accepted.coverage",
+      "bytes": 634880,
+      "sha256": "6198ddf8ec0b5459a1b1051f364790aa2e784d1657723992532f89b5664e6ee4"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/compatibility.json",
+      "bytes": 1626,
+      "sha256": "7d3cc598359325d27bb516f9b15c8e28d621036c16a5bf5a44968829f37923d8"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/coverage.ini",
+      "bytes": 4613,
+      "sha256": "391200b07e020b1fe56a45ffb9638e6e955762a5c674a1009724366ec0bba9e5"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/failed-scenario.bundle",
+      "bytes": 735,
+      "sha256": "3700be6abea9f8584bcc02703051af2afa7c4229a2ca4a0a8e241c8a0146493b"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/observation-summary.json",
+      "bytes": 14293,
+      "sha256": "a4d250c8c47cc3f923c08e92c66889ca3c690d45bc4b0aaec8bf011cd1d3b453"
+    },
+    {
+      "path": "coverage-pilot/provider-pair/plan.json",
+      "bytes": 14032,
+      "sha256": "96b15846df8442e191895d42e92a1756449a104f6cbb3219f13e95933443ad45"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/change.diff",
+      "bytes": 626,
+      "sha256": "a59a99c38fdf9c9a643c7777cd7bb2b2305b625ddaddbb9230c1d5c88914ea22"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/checker-compatibility.json",
+      "bytes": 1626,
+      "sha256": "7d3cc598359325d27bb516f9b15c8e28d621036c16a5bf5a44968829f37923d8"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/finalize_short_pair.py",
+      "bytes": 2846,
+      "sha256": "b9be0407a31c2be8b6362e35a54faf1ca373277a8bb7d79f85917cf291d5c02b"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/historical-provider/plan.json",
+      "bytes": 14029,
+      "sha256": "80c620585c4629099969b98d05f9f89790e54307531a2d65c23f2723ccca8f73"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/preparation.json",
+      "bytes": 595,
+      "sha256": "2c20557744be2fcdc5194e9c8d811e5937d83082f3483d2c8c257e5b18adc9e1"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/prepare_short_temp.py",
+      "bytes": 2913,
+      "sha256": "a16cb25e1a04a6b9753dac8fc869bc66f9d6a642defd844e7b08acc7caf69a84"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/.coverage-current",
+      "bytes": 643072,
+      "sha256": "e0412c06f31235601af4a052d184e9d0b00d6dfc25992e6257c62ae3260cea2d"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/accepted-bundle.json",
+      "bytes": 1387633,
+      "sha256": "a2c193e5ad5cdd5953987d143423fd07d0b10ffe386ba4fc5b501756d39ddbdc"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/accepted-context.json",
+      "bytes": 1529,
+      "sha256": "d691e3ed8f0d86133f6847e41fa8c8e3818e3dd63c53672bc1a040d68295aa44"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/accepted-coverage-check.log",
+      "bytes": 245,
+      "sha256": "59ef4a953cc243ac9065b132ba6d4023be9d4e467c3c14aeba6adc97ac30096a"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/accepted-coverage-json.log",
+      "bytes": 142,
+      "sha256": "d9323c68669066b53875a33a8bc461c3bee99c4588798877acb8e3f2e92df97a"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/accepted-coverage-receipt.json",
+      "bytes": 48825,
+      "sha256": "a2ccd01fd75f4d27d50e77ad3f3325e100d793a4537b9b22fdaab560873270d6"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/accepted-coverage.json",
+      "bytes": 1464106,
+      "sha256": "25bcae12acb39492686978f57041dcf58f12baa221073e20ed5258767ff76292"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/accepted-dependencies.json",
+      "bytes": 542,
+      "sha256": "88d6320ae4625a0b2525f2e2b7ca2065ec502a9ed8881c48838701a43dee7e7f"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/accepted-driver-result.json",
+      "bytes": 86,
+      "sha256": "e84efbd4e37fd23d3c69fa1c5544f507e415f8c8e18d98de2d22f6352f4adec5"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/accepted-driver.json",
+      "bytes": 468,
+      "sha256": "fde27a84a7a24820fc62eebc65ec9de4cae1615910810dde9ff9b6e955ccf15c"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/accepted-environment.json",
+      "bytes": 445,
+      "sha256": "c53c55ed0cbde2bca092e593835fff9611a622042ac0cfb927b0b377452ab115"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/accepted-execution.log",
+      "bytes": 2753,
+      "sha256": "d06d389006d61d0763baf8f37a579fa91864ce929f612e901d25a7bd8f68981c"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/accepted-expected.json",
+      "bytes": 22064,
+      "sha256": "a21898e1177b9406f4d5f23b8f19692030fb02ef737861c8f6ee353a6760c7c7"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/accepted-inventory.json",
+      "bytes": 30369,
+      "sha256": "41fb471ba48778233a76164a0274fed6bcd087709b55b4435d56c6f17e54c60e"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/accepted-package_smoke.log",
+      "bytes": 23913,
+      "sha256": "07b9c826255e61eefe727cc0e7c20e8975442ac59b021c67a9f403c3dad89171"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/accepted-receipt.json",
+      "bytes": 102348,
+      "sha256": "86bbf8439c98100b1202d49fd32cb66e911aa4fb7feceb28f310e8edbc97fdd6"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/accepted-repository_smoke.log",
+      "bytes": 35,
+      "sha256": "255440a9ece3a188b00d67b928a848500938bdd0c6788d0dcac767adb46d7ef3"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/accepted-shadow.json",
+      "bytes": 107771,
+      "sha256": "0dc551f45f8628024415f383743fc04e90574127dee7ab84af910740826d37fe"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/accepted-smokes.json",
+      "bytes": 1142,
+      "sha256": "79c81f7c2b73d3129528605b7690687771eb43006e1b06e53bf694e571027e40"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/accepted-steps.json",
+      "bytes": 2897,
+      "sha256": "eee3b062005f8f585e3ca2d9592302b1e05e700872bec015850fa07667850dd7"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/accepted.coverage",
+      "bytes": 643072,
+      "sha256": "e0412c06f31235601af4a052d184e9d0b00d6dfc25992e6257c62ae3260cea2d"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/compatibility.json",
+      "bytes": 1626,
+      "sha256": "7d3cc598359325d27bb516f9b15c8e28d621036c16a5bf5a44968829f37923d8"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/coverage.ini",
+      "bytes": 4588,
+      "sha256": "84988e034ba80db3ef887195f66a1c782e79337c670db5b9f32ce81aea117272"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/observation-summary.json",
+      "bytes": 16567,
+      "sha256": "6cc3ee9979c1e7b8e768ec1d969b157c124b40658790ea1a20f86163c6cd55cd"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/plan.json",
+      "bytes": 14029,
+      "sha256": "80c620585c4629099969b98d05f9f89790e54307531a2d65c23f2723ccca8f73"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider-pair/positive-scenario.bundle",
+      "bytes": 768,
+      "sha256": "06963975406acd96bccfeee3c81191e3f28db4e8ed97613a1759c77cc5ca85b9"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/provider_driver.py",
+      "bytes": 3885,
+      "sha256": "759e4e29614d82349c68a277ae5c58ea9578f356ef38d057834897c00c1a5f20"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/run_provider_role.py",
+      "bytes": 3432,
+      "sha256": "6ab927cf15a63163f1e4d719a8d08d16248d3fcd081805592d6cea8dfc8f1b31"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/setup_pair.py",
+      "bytes": 1834,
+      "sha256": "01add5c4d3c8bdf9cb85668058ab1edb97ca5dd0bf0ee756b4a2089c819ef251"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/.coverage-current",
+      "bytes": 643072,
+      "sha256": "e0412c06f31235601af4a052d184e9d0b00d6dfc25992e6257c62ae3260cea2d"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/accepted-actual-temp-paths.json",
+      "bytes": 375,
+      "sha256": "6d3e8857f7389d5c56ac7a15245e7bb8e7f97cde5e19a4c4455ee24d05e17cbe"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/accepted-bundle.json",
+      "bytes": 1406670,
+      "sha256": "687b9f7dd65ca2c02a50f8a76d42e64047f2d67831fcef62563986e2f63c3b1b"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/accepted-context.json",
+      "bytes": 1381,
+      "sha256": "318abb6db5b9d5fc6db224471f5da419000607cf0d37e04b253ad71e44798ac5"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/accepted-coverage-check.log",
+      "bytes": 245,
+      "sha256": "59ef4a953cc243ac9065b132ba6d4023be9d4e467c3c14aeba6adc97ac30096a"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/accepted-coverage-json.log",
+      "bytes": 144,
+      "sha256": "23a3bef683387bf9f763881a2f1ce45fded81cbb4071e4539019361b7ca1e3b1"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/accepted-coverage-receipt.json",
+      "bytes": 48825,
+      "sha256": "c87c15085705c49240eee097a4668e1d5b4ec8f43f6a1af82aec6d6aa9e5db74"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/accepted-coverage.json",
+      "bytes": 1464106,
+      "sha256": "53f6c578854ef6bc2c292fb8edec855ac9e10d957927495d6a3203a6533b863b"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/accepted-dependencies.json",
+      "bytes": 542,
+      "sha256": "88d6320ae4625a0b2525f2e2b7ca2065ec502a9ed8881c48838701a43dee7e7f"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/accepted-driver-result.json",
+      "bytes": 86,
+      "sha256": "4d9a57971ce8cf42a904d987aac0fb9e48084ace812a4fd8b10122852c97db15"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/accepted-driver.json",
+      "bytes": 487,
+      "sha256": "e6a2ca44592cebbca4a2ca9171d125123bff75f00c90ff41b5c9fe70f6661e87"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/accepted-environment.json",
+      "bytes": 445,
+      "sha256": "a2096d960b3366d57758f4964edc91383c75fe89f7ecae9fa4fcac09d276db95"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/accepted-execution.log",
+      "bytes": 2754,
+      "sha256": "3b6e0e8957d8486cfab689d8bbf4698129635f6641b1dcd677a01109b9d3a811"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/accepted-expected.json",
+      "bytes": 22064,
+      "sha256": "a21898e1177b9406f4d5f23b8f19692030fb02ef737861c8f6ee353a6760c7c7"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/accepted-inventory.json",
+      "bytes": 30369,
+      "sha256": "41fb471ba48778233a76164a0274fed6bcd087709b55b4435d56c6f17e54c60e"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/accepted-package-results.json",
+      "bytes": 1617,
+      "sha256": "1e3f568123e93309908632f9750dbf94232cfccf4c7ccfe14b1966a3ed64e9e2"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/accepted-package_smoke.log",
+      "bytes": 1241,
+      "sha256": "52b3ee61ba62a183cdc39fe17914347ec4e268e946b5107d1317dc782a465007"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/accepted-receipt.json",
+      "bytes": 122371,
+      "sha256": "8fe08be3cee6afbcdbb6aadcadcba0aa81bf3f7a55acb83deb0102b7e04b55ec"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/accepted-repository_smoke.log",
+      "bytes": 35,
+      "sha256": "255440a9ece3a188b00d67b928a848500938bdd0c6788d0dcac767adb46d7ef3"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/accepted-smokes.json",
+      "bytes": 1149,
+      "sha256": "2b7925b6c6bd66d1c8145a9546fa0e0bfd85167ea80c67cac2956bfcc2cea332"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/accepted-steps.json",
+      "bytes": 2926,
+      "sha256": "174123cbfd769d9ef1d32c596357d14fee11799c276ec83ebd95cf7350bf0152"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/accepted.coverage",
+      "bytes": 643072,
+      "sha256": "a43e27dd18b07e03f9bb405be2015509e09241b4878b5c288b5fd97a12a86d2e"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/artifact-sha256.json",
+      "bytes": 4843,
+      "sha256": "7b24ac6ef5432afd2ceeb536c1d7f262338a00a047d7dcb6767cfb53cfba1f6c"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/candidate-actual-temp-paths.json",
+      "bytes": 375,
+      "sha256": "7df4531e40988ee3d9462f55a2d33f2b3d1293dffd85ae00a154d00f201baf73"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/candidate-bundle.json",
+      "bytes": 1387212,
+      "sha256": "56fa3ef8f4cc495cb741bce5522a86822eebe1afa4a88f896f7c0fd20ec87ef1"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/candidate-context.json",
+      "bytes": 1381,
+      "sha256": "318abb6db5b9d5fc6db224471f5da419000607cf0d37e04b253ad71e44798ac5"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/candidate-coverage-check.log",
+      "bytes": 245,
+      "sha256": "59ef4a953cc243ac9065b132ba6d4023be9d4e467c3c14aeba6adc97ac30096a"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/candidate-coverage-json.log",
+      "bytes": 145,
+      "sha256": "9855941f80dccf08a8eaca412ec7822d41e4d045d82d4ccb11f609b5f4a113b5"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/candidate-coverage-receipt.json",
+      "bytes": 48817,
+      "sha256": "7b0f77e8bbc8d35a8fccf19f7633be7c9ce37a8e0170054ad9dfec116ea1502f"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/candidate-coverage.json",
+      "bytes": 1464106,
+      "sha256": "75e55dff2be27e63f2502009ccb177042b20165b6a2091d2de51933692ab1c1d"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/candidate-dependencies.json",
+      "bytes": 542,
+      "sha256": "88d6320ae4625a0b2525f2e2b7ca2065ec502a9ed8881c48838701a43dee7e7f"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/candidate-driver-result.json",
+      "bytes": 86,
+      "sha256": "dec4159b21c260db2da4d529ce150c3ddaa571dd28c362b6cac6a91fa884c2af"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/candidate-driver.json",
+      "bytes": 488,
+      "sha256": "b95b421e652a28c459a37b01f9ecd71cf9ccb2fd392c9cac2e3218ced6ec2b82"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/candidate-environment.json",
+      "bytes": 445,
+      "sha256": "a2096d960b3366d57758f4964edc91383c75fe89f7ecae9fa4fcac09d276db95"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/candidate-execution.log",
+      "bytes": 2731,
+      "sha256": "d7b1a83ae474a1d1821024150b9dec8735aa64919a67cc578bb77f07add85262"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/candidate-expected.json",
+      "bytes": 22064,
+      "sha256": "a21898e1177b9406f4d5f23b8f19692030fb02ef737861c8f6ee353a6760c7c7"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/candidate-inventory.json",
+      "bytes": 30370,
+      "sha256": "d162457686544656a54ba73bbbb4210202453a3dd0d09fb3f01dc533d2b0be91"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/candidate-package-results.json",
+      "bytes": 1617,
+      "sha256": "1e3f568123e93309908632f9750dbf94232cfccf4c7ccfe14b1966a3ed64e9e2"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/candidate-package_smoke.log",
+      "bytes": 1241,
+      "sha256": "52b3ee61ba62a183cdc39fe17914347ec4e268e946b5107d1317dc782a465007"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/candidate-receipt.json",
+      "bytes": 101793,
+      "sha256": "36a719677eb74c17380dc062456d6943d25919901d87c01dd23a8d7370a8c1fb"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/candidate-repository_smoke.log",
+      "bytes": 35,
+      "sha256": "255440a9ece3a188b00d67b928a848500938bdd0c6788d0dcac767adb46d7ef3"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/candidate-smokes.json",
+      "bytes": 1153,
+      "sha256": "d35edf77e7e36dc843ac2f7c0b803090681c29cf58e1b8985b3ab0c8bfade5e2"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/candidate-steps.json",
+      "bytes": 2933,
+      "sha256": "2a71123ab26cf122ad40fda8b98bb48689e5fcb5cb70f6e120c8ecaac5dce666"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/candidate.coverage",
+      "bytes": 643072,
+      "sha256": "e0412c06f31235601af4a052d184e9d0b00d6dfc25992e6257c62ae3260cea2d"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/compatibility.json",
+      "bytes": 1626,
+      "sha256": "7d3cc598359325d27bb516f9b15c8e28d621036c16a5bf5a44968829f37923d8"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/coverage.ini",
+      "bytes": 4588,
+      "sha256": "84988e034ba80db3ef887195f66a1c782e79337c670db5b9f32ce81aea117272"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/paired-report.json",
+      "bytes": 46880,
+      "sha256": "88758a6c784ee2eebb8713510c5d20849e8c528240d5d943811d8d8bbfc1df78"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/plan.json",
+      "bytes": 14029,
+      "sha256": "80c620585c4629099969b98d05f9f89790e54307531a2d65c23f2723ccca8f73"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/prior-artifacts-unchanged.json",
+      "bytes": 2605,
+      "sha256": "035b5e06febf906109cfa49eb1e0b7a6d607fb42abda8d2ce72d690163fe5e36"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/provider_driver.py",
+      "bytes": 3869,
+      "sha256": "5a93e5bc31c5e541c0e8a8e9535fb1e24fb953542ecd5ba58969f1957632da0b"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/run_provider_role.py",
+      "bytes": 4318,
+      "sha256": "252e53b8887206e2822256b8cdf7f1423449e44a4f8a69576ecca381c9a7f851"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/setup-diagnosis.json",
+      "bytes": 624,
+      "sha256": "f60455f4de67c9c881fc430198ea887e9be14aa44a57c7f13893a3eb46e2ab97"
+    },
+    {
+      "path": "coverage-pilot/provider-positive/short-temp-pair/summary.json",
+      "bytes": 8934,
+      "sha256": "12b2b16651bc0a904d252f8484fe6256e914c6aa6f9d902d5e623d068284a149"
+    },
+    {
+      "path": "coverage-pilot/provider-timeout-control/change.diff",
+      "bytes": 712,
+      "sha256": "aa3cbe1ad5d8781ec3bb52736c9782529de64564eb0717669b909f893ed308be"
+    },
+    {
+      "path": "coverage-pilot/provider-timeout-control/inventory.json",
+      "bytes": 631142,
+      "sha256": "a70e3a09718f0a7e6ae2fd38615a661fa38ffda74b045b3bc2a9f7c6c9c5e53f"
+    },
+    {
+      "path": "coverage-pilot/provider-timeout-control/plan.json",
+      "bytes": 117584,
+      "sha256": "ec144148a5930e331e390f023e68535d468d811028821cf8cd5f040ec0cdba01"
+    },
+    {
+      "path": "coverage-pilot/provider-timeout-control/summary.json",
+      "bytes": 10564,
+      "sha256": "ac703c4caf927c82ed985a14d16901d742ab48630adbff3c55ecd1dcfdf5d546"
+    },
+    {
+      "path": "coverage-pilot/provider_driver.py",
+      "bytes": 3853,
+      "sha256": "5fe820e1171fcd9615bd644ef25a5d1a8745bb5c21507e1b71181f7fa1ca161c"
+    },
+    {
+      "path": "coverage-pilot/run_provider_role.py",
+      "bytes": 3398,
+      "sha256": "94f4ddf45f4b3a7103d34b2f72b57371e143e11f849cb4b494b03874f28dcf7b"
+    },
+    {
+      "path": "coverage-pilot/setup_pair.py",
+      "bytes": 1807,
+      "sha256": "e95684f407041726fb749809839a501749a2d3d57174db5232bb73ae6b63293e"
+    },
+    {
+      "path": "coverage-pilot/summary.json",
+      "bytes": 10683,
+      "sha256": "ff3885e0ef6851d94b6bf7f6a670d4ea1ca9474e1cdeca3a690156c5ef83f37c"
+    },
+    {
+      "path": "coverage.json",
+      "bytes": 231745,
+      "sha256": "e8c4dfdb68e06c596c4dc710f47d8c741d29717389606fd488fb6ab4f5e5d19a"
+    },
+    {
+      "path": "develop-rules.json",
+      "bytes": 1586,
+      "sha256": "9f8550d6d27ab4a00fc42e26335de43bcd94608b7dc92eb55a6b2155329edaab"
+    },
+    {
+      "path": "document-pair-recheck/report.json",
+      "bytes": 165134,
+      "sha256": "b09073d359a9b43dfcda18ffa1a440bf15071abc95ba777156ff4149fb14c737"
+    },
+    {
+      "path": "document-pair-recheck/sources.json",
+      "bytes": 827,
+      "sha256": "4a1a22585475741f7ccf637e770ec08830f7b485e5fc391d0a1e208b6da70b6c"
+    },
+    {
+      "path": "final-documentation.log",
+      "bytes": 1684,
+      "sha256": "f8688449188e0cd07bb13d151efd423ba79e47d5b37ef1e802075dc46ac6c194"
+    },
+    {
+      "path": "focused-311-final.log",
+      "bytes": 2220,
+      "sha256": "2b600b8e525c4149eb64a4d4b95b252e213ad0544ef475ffea09d5dd4e39e415"
+    },
+    {
+      "path": "focused-311.log",
+      "bytes": 10160,
+      "sha256": "7a38b25a7236412aacc04798ded092df57a325974f3f1c4518a2d3231cda1116"
+    },
+    {
+      "path": "focused-313.log",
+      "bytes": 2219,
+      "sha256": "c791e4e6be14d5d77dfe730a601a4ad45884e20bfcb6b311ad8a9896796d9ba6"
+    },
+    {
+      "path": "focused-initial.log",
+      "bytes": 2219,
+      "sha256": "1c7f06434f49559297b71b7da2100e6402f76beb474570d515dcedc09cd494ca"
+    },
+    {
+      "path": "goal-comment.md",
+      "bytes": 1017,
+      "sha256": "312a496efce43ec9ef0fc82e223cd4bc5be2f1fe7682956181565a277bb2c48e"
+    },
+    {
+      "path": "hosted92/artifacts/ci-contract-shadow/ci-contract-shadow.json",
+      "bytes": 99845,
+      "sha256": "3745da503caae6455d24ba69d84c60b29fa725318fc321af45b59057f2f90fbc"
+    },
+    {
+      "path": "hosted92/artifacts/ci-plan/ci-plan.json",
+      "bytes": 118024,
+      "sha256": "2149a763c9e3b9b6288eefee1b41653505d1618e45db278db6d98136d9235a2b"
+    },
+    {
+      "path": "hosted92/artifacts/compatibility-3.11-evidence/full-test-results-3.11.json",
+      "bytes": 1908150,
+      "sha256": "4446f3ce89c2c2ef6bdda31e30cbcaf1fed8848df41e384c7c29e7f075285441"
+    },
+    {
+      "path": "hosted92/artifacts/compatibility-3.13-evidence/full-test-results-3.13.json",
+      "bytes": 1744538,
+      "sha256": "e517eec0a8bb3af12d206108bf9ef18da64fa30c2f89e478604d491ec403669f"
+    },
+    {
+      "path": "hosted92/artifacts/coverage-quality-evidence/coverage-test-results.json",
+      "bytes": 1883633,
+      "sha256": "4ab1c03dc6311a61f98ec95b6fe165f94ef3ef962aea946dba83e84addf9c6f7"
+    },
+    {
+      "path": "hosted92/artifacts/coverage-quality-evidence/coverage.json",
+      "bytes": 1534101,
+      "sha256": "23fba8cfe6dbc314a78d7691b7af196503c0c29e22031d90327f17600de6d6eb"
+    },
+    {
+      "path": "hosted92/artifacts/coverage-quality-evidence/execution-test-results.json",
+      "bytes": 2089703,
+      "sha256": "1c7503cac82829af076390c7e939bbc139d21a75d01b52c21a261a4a84bf7603"
+    },
+    {
+      "path": "hosted92/artifacts.json",
+      "bytes": 3750,
+      "sha256": "8850e9c82271f9cf974944308bde9faf01a41a9d1d6acef234c31733461caa4f"
+    },
+    {
+      "path": "hosted92/check_evidence.py",
+      "bytes": 4770,
+      "sha256": "016768f2b8dc7ca327760bad4292ebb8362acc60c7f3fcd69aad75bbac51300a"
+    },
+    {
+      "path": "hosted92/checks.json",
+      "bytes": 18560,
+      "sha256": "8b3cf66bdc5c7c0ed27ddb4fdb20350ddbad7562c10a31c7dde303832d551426"
+    },
+    {
+      "path": "hosted92/ci-contract-shadow.zip",
+      "bytes": 11107,
+      "sha256": "cc1594830b5d4fea53fed3db816ab3ab4b2b4d526c241780f4ed21092105a94f"
+    },
+    {
+      "path": "hosted92/ci-plan.zip",
+      "bytes": 11518,
+      "sha256": "7e2b1e80d368bb08b9d516bc9b76c40a24c026811fe9a7e518c3150b59602c9a"
+    },
+    {
+      "path": "hosted92/compatibility-3.11-evidence.zip",
+      "bytes": 136419,
+      "sha256": "b30cf42aaa759f81da9750b9013202594acc30b69a9309de127339a2d54baa82"
+    },
+    {
+      "path": "hosted92/compatibility-3.13-evidence.zip",
+      "bytes": 144284,
+      "sha256": "b700cf511a92f193ceecdc99803d39be11cf0a3c3e1315df25f8f2ff4df7ba2a"
+    },
+    {
+      "path": "hosted92/compatibility-313.log",
+      "bytes": 357180,
+      "sha256": "d40b5cfed918f1a462e7445b01a33540ac29b0fe8adc4ff0c68e3737ac77d62f"
+    },
+    {
+      "path": "hosted92/coverage-quality-evidence.zip",
+      "bytes": 464278,
+      "sha256": "c2a32b27a6323ea99030c4aeaf187fc0c2cfa7d43d22833b2dbba4a53a8595b6"
+    },
+    {
+      "path": "hosted92/coverage.log",
+      "bytes": 536347,
+      "sha256": "f867f6e9fc3d4c4b31530ceeccbdc9e5a44a458fa8fea3e53c28f8f2228bd48a"
+    },
+    {
+      "path": "hosted92/governance-run.json",
+      "bytes": 2335,
+      "sha256": "6fece825e120317009e4d3aba10c0a0a8303acbd20b0e71d3ac3c0621dc6644b"
+    },
+    {
+      "path": "hosted92/governance.log",
+      "bytes": 603195,
+      "sha256": "e86f6d84077e1ab98ebf6cd345c368e36233706b0cfa7bfadf1b7e336cc44a70"
+    },
+    {
+      "path": "hosted92/make_report.py",
+      "bytes": 7468,
+      "sha256": "b62eda644972656a755cba79278d87f84c8c567bf36a2f1679ca607977513f08"
+    },
+    {
+      "path": "hosted92/package-smoke-311.log",
+      "bytes": 174674,
+      "sha256": "0f5d5081978eea6bb0d4ab9653406112c59cd9767c6705db097fbbc358eceafe"
+    },
+    {
+      "path": "hosted92/package-smoke-313.log",
+      "bytes": 174098,
+      "sha256": "df7ec7f41ac9db8ecb65ffbd437c1d4c2efa7d70039510fed4362dcc6d98f45e"
+    },
+    {
+      "path": "hosted92/pr.json",
+      "bytes": 4250,
+      "sha256": "8392167e3168589663d6300bf187c94b8109fdfc3070dc275b6ed3ac28e72aa4"
+    },
+    {
+      "path": "hosted92/preserve.py",
+      "bytes": 1318,
+      "sha256": "2f1063b8c6dda717e150925d3cfd2f3c214c057d32fb02d0f89f0aaf7263d23e"
+    },
+    {
+      "path": "hosted92/REPORT.md",
+      "bytes": 6439,
+      "sha256": "09a6e32c84bc079b47a326918cfd8131a30af54a86ce0fadecbc7500aba3580d"
+    },
+    {
+      "path": "hosted92/repository-smoke.log",
+      "bytes": 24803,
+      "sha256": "83caf69f5064c90d85110fded50e99d644e83f8444e899e88c0b2ba2ebbfe420"
+    },
+    {
+      "path": "hosted92/run-20260920-075445.json",
+      "bytes": 17879,
+      "sha256": "fc3a596fbe0124df7dcaf76a42d5c9f8677c542fe9af6ef3cd12e6770e067d5d"
+    },
+    {
+      "path": "hosted92/run-20260920-075741.json",
+      "bytes": 17879,
+      "sha256": "fc3a596fbe0124df7dcaf76a42d5c9f8677c542fe9af6ef3cd12e6770e067d5d"
+    },
+    {
+      "path": "hosted92/run-20260920-080010.json",
+      "bytes": 17879,
+      "sha256": "fc3a596fbe0124df7dcaf76a42d5c9f8677c542fe9af6ef3cd12e6770e067d5d"
+    },
+    {
+      "path": "hosted92/run-20260920-080129.json",
+      "bytes": 17879,
+      "sha256": "fc3a596fbe0124df7dcaf76a42d5c9f8677c542fe9af6ef3cd12e6770e067d5d"
+    },
+    {
+      "path": "hosted92/run-20260920-080353.json",
+      "bytes": 18077,
+      "sha256": "d129cf2d21224d56c0852c531c85e001c5307c4dd78a228e6a0ffa644aec554f"
+    },
+    {
+      "path": "hosted92/run-20260920-080549.json",
+      "bytes": 18077,
+      "sha256": "d129cf2d21224d56c0852c531c85e001c5307c4dd78a228e6a0ffa644aec554f"
+    },
+    {
+      "path": "hosted92/run-20260920-080813.json",
+      "bytes": 18077,
+      "sha256": "d129cf2d21224d56c0852c531c85e001c5307c4dd78a228e6a0ffa644aec554f"
+    },
+    {
+      "path": "hosted92/run-20260920-081117.json",
+      "bytes": 18077,
+      "sha256": "d129cf2d21224d56c0852c531c85e001c5307c4dd78a228e6a0ffa644aec554f"
+    },
+    {
+      "path": "hosted92/run-20260920-081347.json",
+      "bytes": 18077,
+      "sha256": "d129cf2d21224d56c0852c531c85e001c5307c4dd78a228e6a0ffa644aec554f"
+    },
+    {
+      "path": "hosted92/run-20260920-081612.json",
+      "bytes": 18086,
+      "sha256": "d370fa8d434167189af70e8262f1c3d47f2ae2db8427ecd4a763eb5f95a61312"
+    },
+    {
+      "path": "hosted92/run-20260920-081859.json",
+      "bytes": 24140,
+      "sha256": "fda00d98b2a115a510c60eb650c18a3e508825be2182f825e51b5a826f9270ba"
+    },
+    {
+      "path": "hosted92/run-api.json",
+      "bytes": 14313,
+      "sha256": "e7ed5225ab2597d9943eacdfb2e5565f60fb1a215633e8b8024c23d2efa6547d"
+    },
+    {
+      "path": "hosted92/run.json",
+      "bytes": 24140,
+      "sha256": "fda00d98b2a115a510c60eb650c18a3e508825be2182f825e51b5a826f9270ba"
+    },
+    {
+      "path": "hosted92/SHA256SUMS.json",
+      "bytes": 7009,
+      "sha256": "7b15ca5b8d29456bc1a968ff7c48af7ac5d083b58b460c85dc84f3d7bd94bd37"
+    },
+    {
+      "path": "hosted92/summarize.py",
+      "bytes": 3549,
+      "sha256": "0747bf5d57d7612bfb64c33826ae4e77ccff6d97472ad57fd80aaa1ed6e4a8f9"
+    },
+    {
+      "path": "hosted92/summary-console.txt",
+      "bytes": 4605,
+      "sha256": "87ce7c93bc5506cfb3dbeb2fec520a0ba474093ceff9c9024ef86332571faa4c"
+    },
+    {
+      "path": "hosted92/summary.json",
+      "bytes": 48925,
+      "sha256": "a7308b86e3be835b1b03780353cb3e1a63df36d9c3b5f9d2cc27c6bed02134e4"
+    },
+    {
+      "path": "hosted92/target-commit-api.json",
+      "bytes": 2791,
+      "sha256": "1c5958369278771bc0a93ee88c2a5372c7780e4a347d5a64cb97b089771d0c08"
+    },
+    {
+      "path": "hosted92/verification.json",
+      "bytes": 1079,
+      "sha256": "d6bb2e004e9b1a9803e188d3c0609858e397df2b8253a51db65d3e5587a357eb"
+    },
+    {
+      "path": "hosted92/workflow.log",
+      "bytes": 2506742,
+      "sha256": "4508a36298105117c373692fe523dfdd4908656664cdd2a0855cddfe20b51a31"
+    },
+    {
+      "path": "prepare_publication.py",
+      "bytes": 8414,
+      "sha256": "6b55b7d8ecc969b8452746ec0cefb3e8983cec6138f20efccf39235666af3b2b"
+    },
+    {
+      "path": "recheck_document_pair.py",
+      "bytes": 1920,
+      "sha256": "0fccda8863d454b9d1f677bb62523478df90d78ea24881345350e4d61645e1f2"
+    },
+    {
+      "path": "review/final-protocol-review.md",
+      "bytes": 6707,
+      "sha256": "2495907c3ef707bc3b02c0e5b4037530ce18237c97c5795ef8d5443979e9853d"
+    },
+    {
+      "path": "review/fingerprint-debt-sha256.json",
+      "bytes": 204,
+      "sha256": "87689833793812a285bb24e31c10e67242bee91f40f52e3e99b930b794b3a04f"
+    },
+    {
+      "path": "review/fingerprint-debt.md",
+      "bytes": 9719,
+      "sha256": "a35b80694f234f7e3f7422dd8d2838c3cb7ed905417efbc70411c7fe91ac7a5a"
+    },
+    {
+      "path": "review/fingerprint-record-deltas.json",
+      "bytes": 7502,
+      "sha256": "568a04bfff2e278690e26c412ab5c8745e0bc040a8d778d15e71c79e65f23426"
+    },
+    {
+      "path": "review/protocol-counterexamples.json",
+      "bytes": 1697,
+      "sha256": "20a80aa775c36871d81c12ae97b741bc025e7ae400937376320aab82eaa2089e"
+    },
+    {
+      "path": "review/real-pair-audit-sha256.json",
+      "bytes": 194,
+      "sha256": "7a49ab8d421c3826fb57d0b90efe910b647aa0c2a1ed2246c4184079be24f74d"
+    },
+    {
+      "path": "review/real-pair-audit.md",
+      "bytes": 4962,
+      "sha256": "eef603ee9f1cb973d141239beb97de57810747990570559df9d5d4a96df7711b"
+    },
+    {
+      "path": "review/real-pair-checks.json",
+      "bytes": 3136,
+      "sha256": "2dc1a332974b6d3cdd0fccc60ba76a2ee58edcd9b801f6b1df78b0a0d79d09ae"
+    },
+    {
+      "path": "review/recheck-counterexamples.json",
+      "bytes": 834,
+      "sha256": "5eeab8f5aa94075002a6c5b61f1a9ed8d25133933b7aa46f4aff111f7c474938"
+    },
+    {
+      "path": "review/recheck-focused.log",
+      "bytes": 901,
+      "sha256": "b94f6fbfa2c29068e9765205cafc770dbf9af3bf0b06b23cd2e225f287f6bd1a"
+    },
+    {
+      "path": "review/recheck-sha256.json",
+      "bytes": 388,
+      "sha256": "2d82816022a05db58604acee7827e1fbfb2327ab54d1d160cea72a28526f0229"
+    },
+    {
+      "path": "review/recheck-source-sha256.json",
+      "bytes": 435,
+      "sha256": "a9c5f90f68fa7291694264296a9171367631769484689c598e6f758a1d052308"
+    },
+    {
+      "path": "review/recheck.md",
+      "bytes": 3902,
+      "sha256": "80201033b6552404aae12df8de80c3eede5c8da73b4e7afb7c89237d3f96f466"
+    },
+    {
+      "path": "review/reproduce_protocol.py",
+      "bytes": 1255,
+      "sha256": "9ca9438685fb3cb6dca4b953036c6da1d3783711d9761001dddc31325e27a78a"
+    },
+    {
+      "path": "review/review-sha256.json",
+      "bytes": 304,
+      "sha256": "964dde308d5addba0741e5c9003002a46330e1d958c9e9413a234da756ef3448"
+    },
+    {
+      "path": "WORKLOG.md",
+      "bytes": 1573,
+      "sha256": "bb9391cfba9a3207a209de15cee3c145367302f6d7ccfb0c6c31eaeaa1185ec6"
+    }
+  ],
+  "limitations": [
+    "Offline provenance is not authentication",
+    "Historical narrow impact plans are not current-base performance evidence",
+    "Human cross-owner acceptance and dependency integration are separate from agent audits",
+    "No production exclusion activation or merge"
+  ]
+}

@@ -187,3 +187,50 @@ for cross-owner review. Quality thresholds, exclusions, product contracts and re
 - PR #90 is a new boundary/cost corpus item. Its business owner handles the retained
   exporter/evidence contract; archive fallback and early measurement viability remain
   CI diagnostic debt. Neither issue permits an unreviewed docs-path coverage exemption.
+
+## Issue #87 consumer shadow, first 2B slice
+
+- Explicit invocation declarations produce behavioral proposals only. Unknown consumers,
+  stale/missing pins, empty deltas, changed membership and executable inputs remain selected.
+- Real README navigation can fail outside the documentation module. Several public-surface
+  fixtures retain other real document inputs; fixture construction does not prove isolation.
+  The first probe proposes only two audited in-memory Kernel methods as unrelated controls.
+- Coverage C can erase an apparent behavioral saving or move a case into a different fixture
+  lifecycle. Reports distinguish these cases; incomplete C leaves effective omissions unknown.
+- Failed/absent/skipped case and fixture evidence cannot establish safe exclusion. Offline
+  inventory/receipt provenance and complete input closure still require independent evidence.
+- No production exclusion, candidate coverage success or hosted speedup is authorized by
+  these reports. Complete accepted/candidate execution comparison precedes 2C review.
+
+## Paired observations and fixture lifecycle
+
+- The initial Kernel control is absent from the complete accepted doc plan: it cannot
+  support a savings claim. The new scoped PlannerTests proposal needs unchanged 19-pin
+  inputs, fixed environment and explicit workstream change scope; it remains diagnostic.
+- Equal target/runner versions do not establish equal execution drivers. Bind the actual
+  wrapper source/invocation, and retain different-driver pairs as timing-confounded.
+- A case moved into C minus B can fail after fixture reinitialization despite full line
+  and branch coverage. Require actual separate outcomes before interpreting its coverage.
+- Keep failed fresh-checkout setup evidence. Generated runtime resources must be prepared
+  consistently before the accepted and candidate runs; a failed setup is not a passing baseline.
+- PR #92's diagnostic JSON input currently triggers unknown-surface FULL/repository.
+  Declare and review its real consumers before changing that conservative fallback.
+
+## Paired protocol integrity review
+
+- A positive aggregate skip count remains inconclusive even if case rows claim all
+  passed. Unexplained events cannot disappear during outcome comparison.
+- Equal driver bytes do not authorize arbitrary argv differences. Only the single
+  explicit `--role` value may change between accepted and candidate; interpreter,
+  script, input, fixture and other argument changes remain confounders.
+- Smoke artifacts bind the member's run ID, native execution receipt digest and
+  original artifact digest. Opposite-member or stale associations are rejected;
+  these offline bindings do not establish authenticated execution provenance.
+- The [PR review boundary](CONSUMER_SHADOW_READINESS.md) requires current CI and
+  independent owner review. It keeps production activation and hosted speed claims
+  subject to the separate 2C requirements.
+- Diagnostic record updates in the impact-policy file can move the production
+  fingerprint anchor without changing its declared authority. PR #86/#89 reproduce
+  this inherited conservative expansion. Do not refresh the digest blindly or use
+  a historical narrow plan as proof of current-base savings. A separate anchor
+  repair must preserve new/changed consumer retention and independent witness checks.

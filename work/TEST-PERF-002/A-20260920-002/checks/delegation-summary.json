@@ -1,0 +1,34 @@
+{
+  "capture": "partial retained visible artifacts and handoff summaries; original raw tool stream not fully captured",
+  "delegations": [
+    {
+      "agent": "domain_inventory",
+      "profile": "CI consumer auditor",
+      "skills": [],
+      "owner": "Chengyue-Lu",
+      "scope": "documentation/public-surface/kernel input audit and isolated 25-case real failures; assessment files only",
+      "budget": "15 minutes",
+      "output": "docs-input-audit.md plus docs-probes artifacts",
+      "handoff": "Three relevant mutations and one unrelated control executed; documentation-only selection misses public navigation; only kernel pair supported as unrelated control."
+    },
+    {
+      "agent": "domain_plan_review",
+      "profile": "CI trust reviewer",
+      "skills": [],
+      "owner": "Chengyue-Lu",
+      "scope": "read-only design and implementation checks, report files only",
+      "budget": "design 8m; review10m; recheck5m",
+      "outputs": [
+        "comparator-design-review.md",
+        "comparator-code-review.md",
+        "comparator-code-recheck.md"
+      ],
+      "handoff": "Four P2 issues including follow-up unknown-C overclaim repaired and independently rechecked; no activation or merge authorization."
+    }
+  ],
+  "main_responses": [
+    "Retain C/smoke obligations, distinguish effective skips and phase moves.",
+    "Extended docs-probe disposable write scope; no official branch changes or mocks.",
+    "Repaired receipt/checkpoint handling, exact IDs, empty diffs, and unknown coverage membership."
+  ]
+}

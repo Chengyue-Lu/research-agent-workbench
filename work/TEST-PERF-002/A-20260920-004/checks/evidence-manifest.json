@@ -1,0 +1,76 @@
+{
+  "files": [
+    {
+      "path": ".gitattributes",
+      "sha256": "f06202a408fef9b9ea69bb6b1cb8160dbb0378c5bb67a444d510d231813824c8"
+    },
+    {
+      "path": "ACTORS.yaml",
+      "sha256": "4a0630edb474acea477081a47ce6e0f4caf7fb082954d88643ceea894d61f2ea"
+    },
+    {
+      "path": "checks/coverage-pair-handoff.md",
+      "sha256": "6938854a4671922756db7b8b25fb75bb676357d9ce81f9524a264e868f6af05b"
+    },
+    {
+      "path": "checks/coverage-pair-summary.json",
+      "sha256": "12b2b16651bc0a904d252f8484fe6256e914c6aa6f9d902d5e623d068284a149"
+    },
+    {
+      "path": "checks/document-pair-recheck.json",
+      "sha256": "b09073d359a9b43dfcda18ffa1a440bf15071abc95ba777156ff4149fb14c737"
+    },
+    {
+      "path": "checks/fingerprint-debt.md",
+      "sha256": "a35b80694f234f7e3f7422dd8d2838c3cb7ed905417efbc70411c7fe91ac7a5a"
+    },
+    {
+      "path": "checks/hosted-baseline.md",
+      "sha256": "09a6e32c84bc079b47a326918cfd8131a30af54a86ce0fadecbc7500aba3580d"
+    },
+    {
+      "path": "checks/protocol-recheck.md",
+      "sha256": "80201033b6552404aae12df8de80c3eede5c8da73b4e7afb7c89237d3f96f466"
+    },
+    {
+      "path": "checks/protocol-review.md",
+      "sha256": "2495907c3ef707bc3b02c0e5b4037530ce18237c97c5795ef8d5443979e9853d"
+    },
+    {
+      "path": "checks/raw-evidence.zip",
+      "sha256": "3835e63eb309646d709e5f21f7cc7838e2f3eb129a19da4187f1034ef47274e0"
+    },
+    {
+      "path": "checks/real-pair-audit.md",
+      "sha256": "eef603ee9f1cb973d141239beb97de57810747990570559df9d5d4a96df7711b"
+    },
+    {
+      "path": "checks/trace-validation.json",
+      "sha256": "67a7f72da07f01970328e804b86d85c5d0ca1fb8a0d10dbd41dfec1e4a7b8919"
+    },
+    {
+      "path": "checks/validation.json",
+      "sha256": "543af1e526e95b10c03c34cb58a3146e675d50e5802f9890e14e727128b64fb0"
+    },
+    {
+      "path": "events.jsonl",
+      "sha256": "5d4e6e57212aa58be89882220831c7955d2bce978ae3d435f82cf0b69cfdb732"
+    },
+    {
+      "path": "INDEX.yaml",
+      "sha256": "26235c7453eec049f78e0013155206694ef18b60946ce760a2c098b99bf13192"
+    },
+    {
+      "path": "RESULTS.md",
+      "sha256": "059da0fab49a73d7e651c8bee62539e85b8a6fe7e3d958716ba6e40a67d53854"
+    },
+    {
+      "path": "TASK.yaml",
+      "sha256": "23afe4c81267f3a500a462d9b1dc59d537668c31f5277391cb1f3fdfc868f415"
+    },
+    {
+      "path": "tool-events/ci-readiness-evidence-succeeded.json",
+      "sha256": "3f0f69bc3e7a7301f7b1f71a6ccfbfc25ee731803ec3b922964847a3b69b10fb"
+    }
+  ]
+}
