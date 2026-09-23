@@ -1,0 +1,16 @@
+{
+  "review": "PR92 review 5287223195 minimal role binding fix",
+  "checked_at_utc": "2026-09-23T06:14:36.4839652Z",
+  "worktree": "D:\\lcy\\develop\\_worktrees\\RWB\\ci-consumer-shadow",
+  "sources": {
+    ".github/scripts/ci_shadow_pair.py": "915eb2bc84ce2f44a316bce5453673fe2dc504dfeb3527364b647610b05d613f",
+    "tests/test_ci_shadow_pair.py": "3406cf8fec49481e42323db1851e7e65b66ac067ae2d5b8194d3d4c07437b5c1",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/CONSUMER_SHADOW.md": "34302b1a4ee3aa5c9f99c4274e37203bbea324f29226c1e2e515e52387dc551e"
+  },
+  "source_stable": true,
+  "targeted_methods": 3,
+  "targeted_result": "PASS",
+  "findings": [],
+  "report_sha256": "9a020cd257c962594a9ab2d73f10d14522999dd42e979854934ffee41e7adc7d",
+  "tests_log_sha256": "4c5021c7089958c67d6e5e949e4fdf0435074740c391251f1c5e84f2936a2e59"
+}

@@ -1,0 +1,8 @@
+test_changed_behavioral_or_coverage_order_requires_distinct_driver_roles (tests.test_ci_shadow_pair.PairedExecutionTests.test_changed_behavioral_or_coverage_order_requires_distinct_driver_roles) ... ok
+test_identical_complete_orders_allow_same_native_invocation (tests.test_ci_shadow_pair.PairedExecutionTests.test_identical_complete_orders_allow_same_native_invocation) ... ok
+test_role_only_invocations_and_smoke_membership_cannot_hide_other_execution (tests.test_ci_shadow_pair.PairedExecutionTests.test_role_only_invocations_and_smoke_membership_cannot_hide_other_execution) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.009s
+
+OK

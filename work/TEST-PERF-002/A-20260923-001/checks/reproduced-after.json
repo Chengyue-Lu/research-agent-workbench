@@ -1,0 +1,177 @@
+{
+  "source": "D:\\lcy\\develop\\_worktrees\\RWB\\ci-consumer-shadow\\.github\\scripts\\ci_shadow_pair.py",
+  "source_sha256": "915eb2bc84ce2f44a316bce5453673fe2dc504dfeb3527364b647610b05d613f",
+  "accepted_behavioral_order": [
+    "tests/test_reader.py::C.test_a",
+    "tests/test_reader.py::C.test_b"
+  ],
+  "candidate_behavioral_order": [
+    "tests/test_reader.py::C.test_a"
+  ],
+  "accepted_invocation": [
+    "python",
+    "experiment.py",
+    "--role",
+    "accepted"
+  ],
+  "candidate_invocation": [
+    "python",
+    "experiment.py",
+    "--role",
+    "accepted"
+  ],
+  "result": {
+    "report_kind": "ci-shadow-pair",
+    "version": 1,
+    "execution_authority": false,
+    "binding": {
+      "target": "t"
+    },
+    "observed_plan_id": "p",
+    "proposal_report_id": "report",
+    "environment": {
+      "python_version": "3.11.16",
+      "platform": "test-os",
+      "machine": "x86_64",
+      "dependencies_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "runner_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "coverage_config_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "invocation_context_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "drivers": {
+      "accepted": {
+        "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "invocation": [
+          "python",
+          "experiment.py",
+          "--role",
+          "accepted"
+        ]
+      },
+      "candidate": {
+        "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "invocation": [
+          "python",
+          "experiment.py",
+          "--role",
+          "accepted"
+        ]
+      }
+    },
+    "bundles_sha256": {
+      "accepted": "a278dbe23a606ea69eb8ecbef9080e8f05c3295d9e8322977c3bc86bd9700689",
+      "candidate": "03690d08a8204aab64adfa225707b0749366559c5e32b1afe4088a5fdf19e5c7"
+    },
+    "behavioral_skips": [
+      "tests/test_reader.py::C.test_b"
+    ],
+    "effective_execution_skips": [
+      "tests/test_reader.py::C.test_b"
+    ],
+    "moved_to_coverage_phase": [],
+    "accepted_execution": {
+      "rows": [
+        {
+          "id": "tests/test_reader.py::C.test_a",
+          "candidate_execution": "select",
+          "accepted_outcome": "passed",
+          "checkpoint_failure": false,
+          "checkpoint_skip": false,
+          "duration_seconds": 1
+        },
+        {
+          "id": "tests/test_reader.py::C.test_b",
+          "candidate_execution": "skip",
+          "accepted_outcome": "passed",
+          "checkpoint_failure": false,
+          "checkpoint_skip": false,
+          "duration_seconds": 2
+        }
+      ],
+      "failing_ids": [],
+      "missed_failure_ids": [],
+      "inconclusive_ids": [],
+      "failure_exclusion_unknown_ids": [],
+      "unexpected_or_fixture_records": [],
+      "blockers": [],
+      "status": "observed-no-missed-failure",
+      "excluded_case_seconds_estimate": 2,
+      "duration_missing_ids": []
+    },
+    "candidate_execution": {
+      "rows": [
+        {
+          "id": "tests/test_reader.py::C.test_a",
+          "candidate_execution": "select",
+          "accepted_outcome": "passed",
+          "checkpoint_failure": false,
+          "checkpoint_skip": false,
+          "duration_seconds": 1
+        }
+      ],
+      "failing_ids": [],
+      "missed_failure_ids": [],
+      "inconclusive_ids": [],
+      "failure_exclusion_unknown_ids": [],
+      "unexpected_or_fixture_records": [],
+      "blockers": [],
+      "status": "observed-no-missed-failure",
+      "excluded_case_seconds_estimate": 0,
+      "duration_missing_ids": []
+    },
+    "coverage": {
+      "accepted": {
+        "status": "not-required",
+        "failures": [],
+        "artifact_supplied": false
+      },
+      "candidate": {
+        "status": "not-required",
+        "failures": [],
+        "artifact_supplied": false
+      }
+    },
+    "smokes": {
+      "accepted": {
+        "package_smoke": {
+          "required": false,
+          "conclusion": "not-required"
+        },
+        "repository_smoke": {
+          "required": false,
+          "conclusion": "not-required"
+        }
+      },
+      "candidate": {
+        "package_smoke": {
+          "required": false,
+          "conclusion": "not-required"
+        },
+        "repository_smoke": {
+          "required": false,
+          "conclusion": "not-required"
+        }
+      }
+    },
+    "pair_status": "inconclusive",
+    "blockers": [
+      "changed test orders require distinct accepted/candidate --role invocations"
+    ],
+    "timing": {
+      "accepted_runner_wall_seconds": 10.0,
+      "candidate_runner_wall_seconds": 6.0,
+      "difference_seconds": 4.0,
+      "difference_percent": 40.0,
+      "scope": "one supplied execution pair; excludes queue/setup; no statistical or hosted speed claim"
+    },
+    "activation": {
+      "eligible": false,
+      "blockers": [
+        "independent exclusion witness and input closure unproved",
+        "offline input provenance is not authentication",
+        "at least three fresh hosted pairs required"
+      ]
+    },
+    "savings_proved": false
+  }
+}

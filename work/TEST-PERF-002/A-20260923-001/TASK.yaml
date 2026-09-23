@@ -1,0 +1,10 @@
+task_id: TEST-PERF-002
+revision: 43
+request: Continue PR92 toward Ready by addressing review 5287223195
+scope: Changed shadow B/C order driver-role binding, regression and evidence
+delegation: true
+required_skills: []
+profile: CI 2B implementer plus independent bounded reviewer
+budget: one bounded P2; local related cases only; current CI and owner review remain
+  separate
+stop_condition: publish bounded fix and evidence, await new CI and cross-owner review
