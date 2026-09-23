@@ -215,9 +215,38 @@ class MergedSourceTests(unittest.TestCase):
         self.assertEqual('success', result['governance'])
         self.assertFalse(result['merge_eligible'])
 
+    def test_versioned_transport_preserves_the_required_merge_identity(self):
+        # GitHub 2026-03-10 removes merge_commit_sha from both PR endpoints.
+        # Exercise the real transport plus producer, rather than bypassing the
+        # request header in the in-memory API fixture.
+        real_output = subprocess.check_output
+        requests = []
+
+        def respond(args, **kwargs):
+            if args[0] != 'gh':
+                return real_output(args, **kwargs)
+            requests.append(args)
+            header = args[args.index('-H') + 1]
+            self.assertIn(header, ['X-GitHub-Api-Version: 2022-11-28',
+                                   'X-GitHub-Api-Version: 2026-03-10'])
+            path = args[-1].removeprefix(f'repos/{REPO}').lstrip('/')
+            response = deepcopy(self.rows[path])
+            if header.endswith('2026-03-10'):
+                for item in response if isinstance(response, list) else [response]:
+                    item.pop('merge_commit_sha', None)
+            return json.dumps(response)
+
+        with patch.object(source.subprocess, 'check_output', side_effect=respond), \
+             patch.dict(source.check_pull_request.__globals__, {'ROOT': self.root}), redirect_stdout(io.StringIO()):
+            result = source.merged_governance(self.root, source.GitHub(REPO), self.head)
+        self.assertEqual('success', result['governance'])
+        self.assertEqual(self.head, result['source'])
+        self.assertTrue(any(args[-1] == f'repos/{REPO}/pulls/17' for args in requests))
+
     def test_unassociated_ambiguous_unmerged_foreign_or_tree_drifted_source_is_rejected(self):
         endpoint = f'commits/{self.head}/pulls?per_page=100&page=1'
         for prs in [[], [self.pr, self.pr], [{**self.pr, 'merge_commit_sha': 'b' * 40}],
+                    [{key: value for key, value in self.pr.items() if key != 'merge_commit_sha'}],
                     [{**self.pr, 'merged_at': None}], [{**self.pr, 'number': False}]]:
             with self.subTest(prs=prs), self.assertRaises(ValueError):
                 rows = deepcopy(self.rows); rows[endpoint] = prs; self.replay(rows)

@@ -1,0 +1,86 @@
+schema_version: 0.1.0
+trace_id: TRACE-M14-005-A-20260921-002
+task_id: M14-005
+task_revision: 1
+attempt_id: A-20260921-002
+archive_root: A-20260921-002
+baseline: ea7d6c8cb619b392f79be439fc1ee214f6928cd9
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 6974162cadda3eebb5b5e30d073de96384f28338b7d03d511869bcafcc20a201
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 06d0d0cc8dc223b1376b44e2c5ed040d55b01bc84107d4e4ad42eb8f3e06d062
+read_allowlist:
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- .github/**
+- tests/**
+- work/M14-005/**
+- GitHub PR 80, Issue 57, CI and protection APIs
+- GitHub official REST API version and breaking-change documentation
+write_scope:
+- .github/scripts/release_source_ci.py
+- tests/test_release_source_ci.py
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/SOURCE_CI.md
+- work/M14-005/A-20260921-002/**
+- Dedicated repair PR and authorized merge
+tool_allowlist:
+- git
+- gh
+- python
+- apply_patch
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: e8c0ea3ffd564137bf90e2bcec867cbcda9b1c8571479a16e30331c872faa6e8
+  event_count: 16
+tool_event_refs:
+- path: tool-events/red.log
+  sha256: 1b265482c0392cceb6d28d2476cdbfee0466e80481ebe1042b91378255bec353
+- path: tool-events/source-focused.log
+  sha256: 3bba76f79409d841d5ec33a14e2f9231f6f38155e61eeeb13b61f0850b200db9
+- path: tool-events/docs-policy.log
+  sha256: 6255dd5314be991406299e6f8a8ebfda496ecf68b1aeb87485cb4c417a228e08
+- path: tool-events/verification.json
+  sha256: 355c926d566d71d5057a4c34252b54f6bdd9a21cc44e54e88ae80113c99c75e7
+- path: tool-events/associated-supported.json
+  sha256: 9a2c9f32314e2fce879718b6e93493a663c640c00c8244a463cda2089359af9d
+- path: tool-events/detail-supported.json
+  sha256: 02eb589dbfb2bda3040e33b36aa6c6c4b9a1bbfc16bf61129aa95a56f08361a6
+- path: tool-events/merged.json
+  sha256: 49a33dd49d279fab067f0ac5408860dac814e9957b3a0f3baae525521a19d4b5
+- path: tool-events/source-governance-failure.log
+  sha256: 45aea38b507e197e531d0eccdcd1bff613efc102117705319f31947640ee3472
+- path: tool-events/associated-20260310.json
+  sha256: b50a6e84daeb276cb0bcf367afffd5c29692408264983c4965ccd1ff3d54e9b6
+- path: tool-events/detail-20260310.json
+  sha256: c1c1cda2c31a172c2749509ec6243ba3a73f980b5ae29184affabb33979c8518
+handoff_refs:
+- path: WORKLOG.md
+  sha256: 7db6ae88e72a37f6ecadc71283c9da383a3db4b07e4ec08b6855594ce3a634b2
+decision_refs:
+- path: outputs/REPAIR.md
+  sha256: ce7f4dd5127051c6e24302aa1f2a50a1e1ac2578c4f6816bde2efba3921156b3
+output_refs:
+- path: outputs/REPAIR.md
+  sha256: ce7f4dd5127051c6e24302aa1f2a50a1e1ac2578c4f6816bde2efba3921156b3
+check_refs:
+- path: .gitattributes
+  sha256: 1527a8ef249278280c2e53267caa767e533dd7d7cfbc265db7496208d8e1f75f
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: tool-results
+- event_id: EVT-0004
+  affected_stream: file-revisions
+- event_id: EVT-0005
+  affected_stream: external-actions

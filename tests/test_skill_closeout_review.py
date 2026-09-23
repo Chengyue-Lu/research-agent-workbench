@@ -6,10 +6,10 @@ import hashlib
 import io
 import json
 import runpy
-import subprocess
 import sys
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -179,9 +179,10 @@ class SkillCloseoutReviewTests(unittest.TestCase):
     def test_repaired_archive_replays_and_its_checkers_reject_bad_subjects(self):
         archive = ROOT / 'work/M11-007/A-20260915-003'
         proof = json.loads((archive/'checks/vertical-proof.json').read_bytes())
-        for ref in proof['source_refs']:
-            content = subprocess.check_output(['git','show',proof['implementation_commit']+':'+ref['path']],cwd=ROOT)
-            self.assertEqual(ref['sha256'],hashlib.sha256(content).hexdigest())
+        with zipfile.ZipFile(ROOT / 'tests/fixtures/skill_closeout_sources/sources.zip') as sources:
+            for ref in proof['source_refs']:
+                content = sources.read(ref['sha256'] + '.txt')
+                self.assertEqual(ref['sha256'], hashlib.sha256(content).hexdigest())
         for case in proof['cases']:
             with self.subTest(case=case['case']):
                 for ref in case['files']:

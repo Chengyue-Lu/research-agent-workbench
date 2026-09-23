@@ -1,0 +1,201 @@
+{
+  "format": "sha256-keyed-historical-source-blobs",
+  "purpose": "hash verification only; never execute",
+  "zip_sha256": "667c78c1cb9aef4b78afae8716cf718c425e803d13c62b33af32765d169e2142",
+  "records": [
+    {
+      "proof_path": "work/M11-007/A-20260915-002/checks/vertical-proof.json",
+      "proof_sha256": "eeb86f824c398885df181e36d9e84c02bc3f3294e491da5649518a4114a6d312",
+      "implementation_commit": "7b3405189e06210cae6552b0eb7699b049e14d73",
+      "source_refs": [
+        {
+          "path": "schemas/v0.1.0/skill-execution-consumption.schema.json",
+          "sha256": "39df4b1c69fa4798e7103fb8fd97fcc8df718490b1079b20b24aff5f5707427f",
+          "git_blob": "479b97ffe1fcdd38a504ed7a4562e15505d7891d",
+          "size": 2693
+        },
+        {
+          "path": "schemas/v0.1.0/skill-execution-host-report.schema.json",
+          "sha256": "352dded306dde7f7b5b72aa2d73262ff22c87f1e714c6fadfe85a9359467dfc7",
+          "git_blob": "5944fcf272cfc94bb02f3e872f5609df3ddd585b",
+          "size": 12655
+        },
+        {
+          "path": "schemas/v0.1.0/skill-execution-receipt.schema.json",
+          "sha256": "2d3d3110697ec16870f2e0ef92f83b0bb6dfb6080d61a7ff94b1a0a0f5051608",
+          "git_blob": "c87ed21a58587fb91a4fda9d0dd4fa9910e9eae2",
+          "size": 6591
+        },
+        {
+          "path": "schemas/v0.1.0/skill-execution-trace-fact.schema.json",
+          "sha256": "fdd4bcdca300ddb6980f0395927d7698eee819dc78027361cb52cb6964492681",
+          "git_blob": "13607364105a4f9ccb5b9fdf1afc39acc022bd6b",
+          "size": 2298
+        },
+        {
+          "path": "src/research_workbench/execution/__init__.py",
+          "sha256": "f145892de8197cab50ccae3492a2a32b12c2f23b2fdd2502f6539069702b3dd9",
+          "git_blob": "b9060f762b64121f066c8baeb50219ea4f6de672",
+          "size": 3042
+        },
+        {
+          "path": "src/research_workbench/execution/generic_closeout.py",
+          "sha256": "b76ff2798ce8b244cc5f008ccf1e5e83c66fdfa264fd7c35ee1d648dc7d583b7",
+          "git_blob": "d1cc234006b3d0e9d8f6d6f1be201aef89490a53",
+          "size": 28069
+        },
+        {
+          "path": "src/research_workbench/execution/host.py",
+          "sha256": "80cd5b21d34e2587419d99fcf219170d7e4979a7023ee33c09b528c7801e93dc",
+          "git_blob": "11da424c9fd5204f015812d7d2c8e0bd9e29f0be",
+          "size": 25602
+        },
+        {
+          "path": "src/research_workbench/execution/skill_closeout.py",
+          "sha256": "4a97d59acbef99c83a78f3fa6953b6fb4446cc6026957106e78e6bccbe2c6fd0",
+          "git_blob": "c26c921e2261c392ec4b74d9c5e96c19dc71e365",
+          "size": 7685
+        },
+        {
+          "path": "src/research_workbench/execution/skill_facts.py",
+          "sha256": "987f99fb5d04b8230bfd2613a503d75ed525b62ec7a1c9a0181342ed9c1c9e55",
+          "git_blob": "811be997364d8beb2dc9002a9e26968280963481",
+          "size": 7548
+        },
+        {
+          "path": "src/research_workbench/validation/document_kinds.py",
+          "sha256": "a68b1725c68e29e8c39771f60f1107a0f5e113d904aba7780e561a3640cedc20",
+          "git_blob": "bfaf512993a54fec2db5fd869cdac2447b771612",
+          "size": 8811
+        },
+        {
+          "path": "tests/coverage_policy.yaml",
+          "sha256": "3f9eb791d97085d475b91e324d08cdac81a53fa8970626dd79b7957e6fd5e08e",
+          "git_blob": "b230f66f4201da0e4e11e9a2ad907a9116ee70a3",
+          "size": 40995
+        },
+        {
+          "path": "tests/skill_closeout_fixtures.py",
+          "sha256": "f368a18c3b3319b94b011b857b453b4344950117c93ab3ba4741027195802914",
+          "git_blob": "3863183694175f0669cd48d1d995b355bcb34b7a",
+          "size": 10135
+        },
+        {
+          "path": "tests/test_schemas.py",
+          "sha256": "6c5b3948ad7c644f31a4a3559e51997d4703d0cc9e2753a6db92207e07147bb8",
+          "git_blob": "d28ac3f2bb1cab86ee51e8152b49bc45c44f03cb",
+          "size": 9937
+        },
+        {
+          "path": "tests/test_skill_execution_closeout.py",
+          "sha256": "6cb36f49d56a8319ae48817b3646ac22e82857bc4071676627b4f5588696b7bc",
+          "git_blob": "3ea7b289ed2db4fd588e19d1f7614e9d1dc7a78b",
+          "size": 20504
+        }
+      ]
+    },
+    {
+      "proof_path": "work/M11-007/A-20260915-003/checks/vertical-proof.json",
+      "proof_sha256": "c71dd8394d19ee93afd1e036a9705dfae5107c8cf3ea0cd27bb2f65d1b7e59f0",
+      "implementation_commit": "e1022d408c805aefb81e9177020064fe85e0ebc3",
+      "source_refs": [
+        {
+          "path": "schemas/v0.1.0/skill-execution-consumption.schema.json",
+          "sha256": "39df4b1c69fa4798e7103fb8fd97fcc8df718490b1079b20b24aff5f5707427f",
+          "git_blob": "479b97ffe1fcdd38a504ed7a4562e15505d7891d",
+          "size": 2693
+        },
+        {
+          "path": "schemas/v0.1.0/skill-execution-host-report.schema.json",
+          "sha256": "352dded306dde7f7b5b72aa2d73262ff22c87f1e714c6fadfe85a9359467dfc7",
+          "git_blob": "5944fcf272cfc94bb02f3e872f5609df3ddd585b",
+          "size": 12655
+        },
+        {
+          "path": "schemas/v0.1.0/skill-execution-receipt.schema.json",
+          "sha256": "2d3d3110697ec16870f2e0ef92f83b0bb6dfb6080d61a7ff94b1a0a0f5051608",
+          "git_blob": "c87ed21a58587fb91a4fda9d0dd4fa9910e9eae2",
+          "size": 6591
+        },
+        {
+          "path": "schemas/v0.1.0/skill-execution-trace-fact.schema.json",
+          "sha256": "72e3fccde36476da6c9af5e21c876e90c16e6e3001a85bfb2b04c95314c6825a",
+          "git_blob": "5ef60d9f7380cd068bd62545d3b44261b61df01a",
+          "size": 2039
+        },
+        {
+          "path": "src/research_workbench/execution/__init__.py",
+          "sha256": "9144ee4c6f1be220e7a414a86045ce237dad9d184d031e376d6718f59fffc178",
+          "git_blob": "17b4698683417c6b50f0cc2c57aca52207cc6715",
+          "size": 3114
+        },
+        {
+          "path": "src/research_workbench/execution/generic_closeout.py",
+          "sha256": "c0ebc1d212cb25586f277728e48a315bbbc5f8f4c0677940179896284074a7dd",
+          "git_blob": "cac6fbf2132c13242be6bca557b3f59f3f1d3f3d",
+          "size": 29070
+        },
+        {
+          "path": "src/research_workbench/execution/host.py",
+          "sha256": "2229f666b13424e29af8a1cd9609ca19e1be8202548e1b7c1bff433cb12f9599",
+          "git_blob": "a86e988868c414888eaa1ba78394cad56c775c33",
+          "size": 25830
+        },
+        {
+          "path": "src/research_workbench/execution/skill_closeout.py",
+          "sha256": "8c6ec0b6790452b1ecec03a4945bebf8187d4a278274f5b2fba72546b64588bb",
+          "git_blob": "c1559d6d1ccc99c3ee0f7d7e777911ebc3e0f079",
+          "size": 9098
+        },
+        {
+          "path": "src/research_workbench/execution/skill_facts.py",
+          "sha256": "7f542631b9770fbb8dfa5b05d73f26463c69c9d68d0e47dfd8834b9fb594465e",
+          "git_blob": "9f4cd853efe5820c2a77fa38f86937ea908464c3",
+          "size": 8138
+        },
+        {
+          "path": "src/research_workbench/validation/document_kinds.py",
+          "sha256": "b653e3c17cb06ef97cebfaa75790a581d74970192d202ba09ad256906e003966",
+          "git_blob": "f6b8631a85af0b1e62167bb2270805940b4cb9aa",
+          "size": 8804
+        },
+        {
+          "path": "tests/coverage_policy.yaml",
+          "sha256": "87cb689f6653f4459b486ff68f7ab82929b93fdb7be9399834045f2073ff99a9",
+          "git_blob": "6c452e0de61a6492512126d52fcfba3951ab84ff",
+          "size": 41384
+        },
+        {
+          "path": "tests/skill_closeout_fixtures.py",
+          "sha256": "5ef7b3e505ef14d7a274a86a904ace5124a5caa117e1f3900893fda004c4be0b",
+          "git_blob": "f4f85a6418cf53eff5ee14ff8c0a93c6b5906e94",
+          "size": 10918
+        },
+        {
+          "path": "tests/test_execution_contract_helpers.py",
+          "sha256": "30959797bd065e59f6c8e7728722ad0fe92de5e15dc8f0267eeb0eefeec239b8",
+          "git_blob": "662a32914fc82b79d23707eccb132dcd4e944a34",
+          "size": 76679
+        },
+        {
+          "path": "tests/test_schemas.py",
+          "sha256": "6c5b3948ad7c644f31a4a3559e51997d4703d0cc9e2753a6db92207e07147bb8",
+          "git_blob": "d28ac3f2bb1cab86ee51e8152b49bc45c44f03cb",
+          "size": 9937
+        },
+        {
+          "path": "tests/test_skill_closeout_review.py",
+          "sha256": "e3beb68cbab2cd6eccf3b9a78395af51256a438d0d3db9470389fe4e2e2a25f7",
+          "git_blob": "1785eaf5cf9b455f0a10f12d207cdcd31f463544",
+          "size": 10314
+        },
+        {
+          "path": "tests/test_skill_execution_closeout.py",
+          "sha256": "4e771c347f93f6a0e0dbb8e1e59b2f03e8088b1f36205e275bb6df20e0ac010b",
+          "git_blob": "634ea6543489eb9f998982853fe9825273c0811c",
+          "size": 27383
+        }
+      ]
+    }
+  ]
+}

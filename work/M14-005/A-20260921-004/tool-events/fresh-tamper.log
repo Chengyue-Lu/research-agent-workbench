@@ -1,0 +1,16 @@
+F
+======================================================================
+FAIL: test_repaired_archive_replays_and_its_checkers_reject_bad_subjects (tests.test_skill_closeout_review.SkillCloseoutReviewTests.test_repaired_archive_replays_and_its_checkers_reject_bad_subjects)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\m14-source-ci\.rwb\m14-pr97-ci-fix\fresh\tests\test_skill_closeout_review.py", line 185, in test_repaired_archive_replays_and_its_checkers_reject_bad_subjects
+    self.assertEqual(ref['sha256'], hashlib.sha256(content).hexdigest())
+AssertionError: '39df4b1c69fa4798e7103fb8fd97fcc8df718490b1079b20b24aff5f5707427f' != '329b780d17d6eb0259fec3f688f272df8ae0f82adfb154d11ab8a73cf52985a4'
+- 39df4b1c69fa4798e7103fb8fd97fcc8df718490b1079b20b24aff5f5707427f
++ 329b780d17d6eb0259fec3f688f272df8ae0f82adfb154d11ab8a73cf52985a4
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.004s
+
+FAILED (failures=1)
