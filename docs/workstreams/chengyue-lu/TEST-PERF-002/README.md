@@ -6,6 +6,10 @@ Issue #87 的 [2A 领域与消费者盘点](DOMAIN_MODEL.md) 提供八个领域�
 [2B 消费者提案与执行对照](CONSUMER_SHADOW.md) 增加显式候选 behavioral 集合、
 真实失败探针和 ordered B/C 结果比较；coverage 与 smoke 义务继续保留。
 
+The [current follow-up inventory](CI_FOLLOWUP_INVENTORY.md) separates accepted work,
+active repairs and unfinished experiments. The [reviewed authority anchor repair](AUTHORITY_ANCHOR.md)
+addresses diagnostic metadata moving an existing selection boundary's Git anchor.
+
 - Audit ID: `TEST-PERF-002`; owner: 路诚钺 (`Chengyue-Lu`); cross-owner: 黄毅 (`let778750-cpu`).
 - Risk: R2, shared CI selection and quality authority.
 - Request: [Issue #48 restart](https://github.com/Chengyue-Lu/research-agent-workbench/issues/48#issuecomment-5558497614).

@@ -1,0 +1,44 @@
+{
+  "files": [
+    {
+      "path": ".gitattributes",
+      "sha256": "f06202a408fef9b9ea69bb6b1cb8160dbb0378c5bb67a444d510d231813824c8"
+    },
+    {
+      "path": "ACTORS.yaml",
+      "sha256": "357d7dc04efeab7f477cd10b9b1ffa0a8f11b63898cd579fac35924bd0a96e53"
+    },
+    {
+      "path": "checks/raw-evidence.zip",
+      "sha256": "ae0f4c31ce830e2921067b70b4bf081d39d0bbeca3fdccab996548bcd576befc"
+    },
+    {
+      "path": "checks/trace-validation.json",
+      "sha256": "67a7f72da07f01970328e804b86d85c5d0ca1fb8a0d10dbd41dfec1e4a7b8919"
+    },
+    {
+      "path": "checks/validation.json",
+      "sha256": "a34f05a5d318a324d91e7312e3b71e0e2959e48c342d7daefcae2c4cad9d8b67"
+    },
+    {
+      "path": "events.jsonl",
+      "sha256": "7418453e2496de8adb1d730c750a54f5d3304447610762787bae055b9c53bffe"
+    },
+    {
+      "path": "INDEX.yaml",
+      "sha256": "939eefb46459b8be54c1201621d5a16153d683d84158ff177f3eaa150c2bcfe8"
+    },
+    {
+      "path": "RESULTS.md",
+      "sha256": "cf71269c154fda7a000ae9151fa152d9774b9c44a6cd6aba3d32f01edd501fb9"
+    },
+    {
+      "path": "TASK.yaml",
+      "sha256": "08e153e0896e29293088d0aeaf1b8bb7c272bee7fbfbb2fb69a9c39f175ed847"
+    },
+    {
+      "path": "tool-events/anchor-ci-evidence-succeeded.json",
+      "sha256": "efac184212dd1acbcf0d47235067c14b44415db7fba81836856433d5eda5f402"
+    }
+  ]
+}

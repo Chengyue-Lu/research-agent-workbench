@@ -602,6 +602,141 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual({'positive_tests': [], 'negative_tests': []}, p['impact_evidence'])
         planner.verify_plan(self.repo, p)
 
+    def _accepted_opaque_anchor(self):
+        runtime = 'src/research_workbench/opaque_runtime.py'
+        write(self.repo, runtime, 'import subprocess\ndef run(command): return subprocess.run(command)\n')
+        self.commit('tests/test_runtime.py', 'from research_workbench.opaque_runtime import run\n')
+        policy = copy.deepcopy(self.policy)
+        policy['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, 'HEAD', LEAVES)
+        self.base = self.commit(planner.POLICY, planner.canonical(policy))
+        return self.base, policy, runtime
+
+    def test_diagnostic_policy_refresh_keeps_anchor_and_retains_new_changed_consumers(self):
+        anchor, policy, runtime = self._accepted_opaque_anchor()
+        # This accepted metadata edit also introduces a genuinely new consumer.
+        write(self.repo, 'tests/test_new_runtime.py', 'import subprocess\ndef run(): return subprocess.run([])\n')
+        policy['consumer_contracts'][0]['owner'] += ' (review routing)'
+        self.base = self.commit(planner.POLICY, planner.canonical(policy))
+        self.commit(LEAVES[0], 'VALUE=2\n')
+        plan = self.plan()
+        self.assertEqual(anchor, plan['selection']['reviewed_contract_anchor'])
+        self.assertNotIn('test_runtime', plan['tests'])
+        self.assertIn('test_new_runtime', plan['tests'])
+        self.assertIn(LEAVES[0], plan['selection']['reviewed_opaque_boundary'])
+        self.commit(runtime, 'import subprocess\ndef run(command): return subprocess.run(command, check=True)\n')
+        changed = self.plan()
+        self.assertIn('test_runtime', changed['tests'])
+        self.assertIn('test_runtime', changed['coverage_tests'])
+        planner.verify_plan(self.repo, changed)
+
+    def test_policy_history_barriers_cannot_backdate_reviewed_authority(self):
+        anchor, accepted, _ = self._accepted_opaque_anchor()
+        variants = {}
+        for key in ('groups', 'surfaces', 'impact_evidence', 'consumer_fingerprint', 'version'):
+            changed = copy.deepcopy(accepted)
+            if key == 'groups':
+                changed[key]['provider-wire']['package'] = not changed[key]['provider-wire']['package']
+            elif key == 'surfaces':
+                changed[key][next(iter(changed[key]))]['paths'].append('docs/new-surface.md')
+            elif key == 'impact_evidence':
+                changed[key]['positive_tests'].append('test_unselected.Other.test_existing')
+            elif key == 'version':
+                changed[key] = 1
+                changed.pop('consumer_contracts')
+            else:
+                changed[key] = '0' * 64
+            variants[key] = planner.canonical(changed)
+        variants.update(malformed=b'{', duplicate=b'{"groups":{},"groups":{}}',
+                        invalid_shape=b'[]')
+        invalid_record = copy.deepcopy(accepted)
+        invalid_record['consumer_contracts'][0]['execution_authority'] = True
+        variants['diagnostic_authority'] = planner.canonical(invalid_record)
+        for label, raw in variants.items():
+            with self.subTest(barrier=label):
+                command(self.repo, 'reset', '--hard', anchor)
+                self.commit(planner.POLICY, raw)
+                write(self.repo, 'tests/test_unselected.py', 'VALUE=2\n')
+                restored = copy.deepcopy(accepted)
+                restored['consumer_contracts'][0]['owner'] += ' (metadata refresh)'
+                self.base = self.commit(planner.POLICY, planner.canonical(restored))
+                self.commit(LEAVES[0], 'VALUE=2\n')
+                plan = self.plan()
+                self.assertEqual('', plan['selection']['reviewed_contract_anchor'])
+                self.assertIn('test_runtime', plan['tests'])
+
+    def test_policy_deletion_and_mode_changes_break_anchor_history(self):
+        anchor, policy, _ = self._accepted_opaque_anchor()
+        for mode in ('deleted', '100755', '120000'):
+            with self.subTest(barrier=mode):
+                command(self.repo, 'reset', '--hard', anchor)
+                if mode == 'deleted':
+                    command(self.repo, 'rm', planner.POLICY)
+                else:
+                    blob = command(self.repo, 'rev-parse', anchor + ':' + planner.POLICY)
+                    command(self.repo, 'update-index', '--cacheinfo', mode, blob, planner.POLICY)
+                command(self.repo, 'commit', '-qm', 'policy history barrier')
+                write(self.repo, planner.POLICY, planner.canonical(policy))
+                write(self.repo, 'tests/test_unselected.py', 'VALUE=2\n')
+                command(self.repo, 'add', '.')
+                blob = command(self.repo, 'rev-parse', anchor + ':' + planner.POLICY)
+                command(self.repo, 'update-index', '--cacheinfo', '100644', blob, planner.POLICY)
+                command(self.repo, 'commit', '-qm', 'restore accepted policy with changed inventory')
+                self.base = command(self.repo, 'rev-parse', 'HEAD')
+                self.commit(LEAVES[0], 'VALUE=2\n')
+                plan = self.plan()
+                self.assertEqual('', plan['selection']['reviewed_contract_anchor'])
+                self.assertIn('test_runtime', plan['tests'])
+        # A currently non-regular policy cannot serve as an authority anchor either.
+        command(self.repo, 'update-index', '--cacheinfo', '120000', blob, planner.POLICY)
+        command(self.repo, 'commit', '-qm', 'current nonregular policy')
+        base = command(self.repo, 'rev-parse', 'HEAD')
+        self.assertEqual('', planner.reviewed_contract_anchor(self.repo, base, policy, LEAVES))
+
+    def test_matching_side_branch_fingerprint_is_not_an_accepted_anchor(self):
+        anchor, policy, _ = self._accepted_opaque_anchor()
+        command(self.repo, 'checkout', '-qb', 'unaccepted-policy')
+        self.commit('tests/test_unselected.py', 'VALUE=2\n')
+        policy['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, 'HEAD', LEAVES)
+        side = self.commit(planner.POLICY, planner.canonical(policy))
+        self.assertEqual(side, planner.reviewed_contract_anchor(self.repo, side, policy, LEAVES))
+        command(self.repo, 'checkout', '-q', 'develop')
+        self.assertEqual(anchor, command(self.repo, 'rev-parse', 'HEAD'))
+        self.commit('tests/test_unselected.py', 'VALUE=3\n')
+        self.commit(planner.POLICY, planner.canonical(policy))
+        command(self.repo, 'merge', '--no-ff', '-s', 'ours', 'unaccepted-policy', '-m', 'retain first-parent inventory')
+        self.base = command(self.repo, 'rev-parse', 'HEAD')
+        self.commit(LEAVES[0], 'VALUE=2\n')
+        plan = self.plan()
+        self.assertEqual('', plan['selection']['reviewed_contract_anchor'])
+        self.assertIn('test_runtime', plan['tests'])
+
+    def test_missing_or_unmatched_anchor_history_retains_conservative_scope(self):
+        anchor, policy, _ = self._accepted_opaque_anchor()
+        original = planner.git
+        for result in (b'', b'not-a-commit\n', (anchor + '\n').encode()):
+            with self.subTest(history=result):
+                def history(repo, *args):
+                    return result if args[0] == 'log' else original(repo, *args)
+                with patch.object(planner, 'git', side_effect=history), \
+                        patch.object(planner, 'consumer_fingerprint', return_value='invalid'):
+                    self.assertEqual('', planner.reviewed_contract_anchor(self.repo, anchor, policy, LEAVES))
+        with patch.object(planner, 'git', return_value=b''):
+            self.assertEqual('', planner.reviewed_contract_anchor(self.repo, anchor, policy, LEAVES))
+
+    def test_anchor_history_limit_fails_closed_without_scanning_older_authority(self):
+        anchor, policy, _ = self._accepted_opaque_anchor()
+        write(self.repo, 'tests/test_unselected.py', 'VALUE=2\n')
+        policy['consumer_contracts'][0]['owner'] = 'review routing within scan bound'
+        self.base = self.commit(planner.POLICY, planner.canonical(policy))
+        # Exercise the real Git boundary with three commits, rather than paying for
+        # 64 diagnostic-only commits in every full suite. Production keeps its cap.
+        with patch.object(planner, 'ANCHOR_HISTORY_LIMIT', 2):
+            self.assertEqual(anchor, planner.reviewed_contract_anchor(self.repo, self.base, policy, LEAVES))
+        policy['consumer_contracts'][0]['owner'] = 'review routing beyond scan bound'
+        self.base = self.commit(planner.POLICY, planner.canonical(policy))
+        with patch.object(planner, 'ANCHOR_HISTORY_LIMIT', 2):
+            self.assertEqual('', planner.reviewed_contract_anchor(self.repo, self.base, policy, LEAVES))
+
     def test_unrelated_test_edit_expands_behavior_but_not_executable_coverage(self):
         leaf = 'src/research_workbench/example.py'
         write(self.repo, leaf, 'VALUE=1\n')
