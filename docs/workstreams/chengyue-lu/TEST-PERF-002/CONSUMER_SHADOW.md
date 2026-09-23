@@ -121,9 +121,12 @@ platform, dependency inventory, runner, coverage configuration, invocation conte
 and the actual execution-driver source/invocation. It rejects using one execution
 as both pair members. A changed selection must use a `shadow-candidate` receipt;
 an unchanged candidate may retain its original native runner suite label.
-Invocations must be identical or differ only in the value of one `--role` argument
-from `accepted` to `candidate`; changing other options, values or their order keeps the pair
-inconclusive. Every smoke observation also binds its member's run ID and native
+When either behavioral or coverage order changes, invocations must differ only in
+the value of one unique `--role` argument from `accepted` to `candidate`. Identical
+invocations are allowed only when both complete orders are unchanged. Missing or
+ambiguous roles for changed orders keep the pair inconclusive, as do other changes
+to options, values or their order. Every smoke observation also binds its member's
+run ID and native
 execution receipt digest and retains the original smoke artifact digest. A copied
 opposite-member smoke is rejected. Aggregate
 skip events remain inconclusive even when individual case records omit the skip.

@@ -223,8 +223,6 @@ class PairedExecutionTests(unittest.TestCase):
             original['driver']['invocation']=left;broken['driver']['invocation']=right
             with self.subTest(left=left,right=right):
                 self.assertEqual('inconclusive',pair.compare_pair(plan,report,inventory,policy,original,broken)['pair_status'])
-        b['driver']['invocation']=a['driver']['invocation'][:]
-        self.assertEqual('observed-matching-pair',pair.compare_pair(plan,report,inventory,policy,a,b)['pair_status'])
         plan['package_smoke']=True
         for bundle in (a,b):
             bundle['smokes']['package_smoke']={'plan_id':'p','target':'t','run_id':bundle['run_id'],
@@ -242,6 +240,61 @@ class PairedExecutionTests(unittest.TestCase):
         b['smokes']['package_smoke']['artifact_sha256']='invalid'
         with self.assertRaisesRegex(ValueError,'smoke artifact binding'):
             pair.compare_pair(plan,report,inventory,policy,a,b)
+
+    def test_changed_behavioral_or_coverage_order_requires_distinct_driver_roles(self):
+        for change in ('behavioral-selection', 'behavioral-order', 'coverage-order'):
+            with self.subTest(change=change):
+                plan,inventory,policy,report,a,b=example(change == 'coverage-order')
+                proposed=report['candidate']
+                if change == 'behavioral-order':
+                    proposed['behavioral_order']=[B,A]
+                elif change == 'coverage-order':
+                    # The execution union is unchanged: C order must still be bound.
+                    proposed['behavioral_order']=[A,B]
+                    proposed['coverage_order']=[B,A]
+                proposed['execution_order']=shadow.ordered_union(proposed['behavioral_order'],proposed['coverage_order'])
+                b['receipt']['execution_order']=proposed['execution_order']
+                b['receipt']['execution'].update(behavioral_order=proposed['behavioral_order'],coverage_order=proposed['coverage_order'])
+                b['receipt']['tests']=[copy.deepcopy(row) for row in a['receipt']['tests'] if row['canonical_id'] in proposed['execution_order']]
+                b['receipt']['test_count']=len(b['receipt']['tests'])
+                report['behavioral_skips']=[key for key in inventory['behavioral_order'] if key not in proposed['behavioral_order']]
+                report['effective_execution_skips']=[key for key in a['receipt']['execution_order'] if key not in proposed['execution_order']]
+                report['moved_to_coverage_phase']=[key for key in report['behavioral_skips'] if key in proposed['coverage_order']]
+                report['comparison']=shadow.compare_receipt(plan,inventory,proposed,a['receipt'])
+                bind_coverage(plan,b)
+                valid=pair.compare_pair(plan,report,inventory,policy,a,b)
+                self.assertEqual('observed-matching-pair',valid['pair_status'])
+                self.assertEqual([],valid['blockers'])
+                for argv in (a['driver']['invocation'],b['driver']['invocation'],
+                             ['python','experiment.py'],['python','experiment.py','--role','other'],
+                             ['python','experiment.py','--role','accepted','--role','candidate']):
+                    accepted,candidate=copy.deepcopy(a),copy.deepcopy(b)
+                    accepted['driver']['invocation']=argv[:]
+                    candidate['driver']['invocation']=argv[:]
+                    with self.subTest(invocation=argv):
+                        result=pair.compare_pair(plan,report,inventory,policy,accepted,candidate)
+                        self.assertEqual('inconclusive',result['pair_status'])
+                        self.assertEqual(['changed test orders require distinct accepted/candidate --role invocations'],result['blockers'])
+                        self.assertFalse(result['activation']['eligible'])
+
+    def test_identical_complete_orders_allow_same_native_invocation(self):
+        for measure in (False,True):
+            with self.subTest(coverage=measure):
+                plan,inventory,policy,report,a,b=example(measure)
+                proposed=report['candidate']
+                proposed.update(behavioral_order=inventory['behavioral_order'][:],coverage_order=inventory['coverage_order'][:])
+                proposed['execution_order']=shadow.ordered_union(proposed['behavioral_order'],proposed['coverage_order'])
+                b['receipt']=copy.deepcopy(a['receipt'])
+                b['receipt']['wall_seconds']=6.0
+                for bundle in (a,b):
+                    bundle['driver']['invocation']=['python','experiment.py']
+                    bind_coverage(plan,bundle)
+                report.update(behavioral_skips=[],effective_execution_skips=[],moved_to_coverage_phase=[])
+                report['comparison']=shadow.compare_receipt(plan,inventory,proposed,a['receipt'])
+                result=pair.compare_pair(plan,report,inventory,policy,a,b)
+                self.assertEqual('observed-matching-pair',result['pair_status'])
+                self.assertEqual([],result['blockers'])
+                self.assertFalse(result['activation']['eligible'])
 
     def test_failed_skipped_missing_lifecycle_and_smoke_proofs_stay_inconclusive(self):
         plan,inventory,policy,report,a,b=example(True)

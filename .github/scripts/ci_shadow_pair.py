@@ -130,6 +130,8 @@ def compare_pair(plan, proposal_report, inventory, policy, accepted, candidate):
                  (left[differences[0]], right[differences[0]]) == ('accepted', 'candidate'))
     if left != right and not role_only:
         blockers.append('execution invocations differ beyond the single --role argument')
+    if any(proposed[key] != inventory[key] for key in ('behavioral_order', 'coverage_order')) and not role_only:
+        blockers.append('changed test orders require distinct accepted/candidate --role invocations')
     for role, result in (('accepted', observed), ('candidate', candidate_result)):
         if result['status'] != 'observed-no-missed-failure':
             blockers.append(role + ' execution incomplete or unsuccessful')
