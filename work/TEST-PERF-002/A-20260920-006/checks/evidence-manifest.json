@@ -1,0 +1,44 @@
+{
+  "files": [
+    {
+      "path": ".gitattributes",
+      "sha256": "730a35ae3d558080083c3103d9ac8100c3f6561678092abe341701dfa331eb1d"
+    },
+    {
+      "path": "ACTORS.yaml",
+      "sha256": "ffd6c2e78836beade4e339d2c5d01e609d3bd7de4a27db3b386f0f25f8ae3f92"
+    },
+    {
+      "path": "checks/raw-evidence.zip",
+      "sha256": "af80c35921caa458b6293b306b4e632b17fd919174a4bf823969eaf181e228ff"
+    },
+    {
+      "path": "checks/trace-validation.json",
+      "sha256": "d56cca83267d50be7c166d7898b95e89bcf27844c91e7296f4bf23c4f2575646"
+    },
+    {
+      "path": "checks/validation.json",
+      "sha256": "a211b429ac7253b675d44b7709f4d6d281d6ffbb0795fc1348da53b6eba282bd"
+    },
+    {
+      "path": "events.jsonl",
+      "sha256": "baae38764d8fd9e08587dba74c161f5d10debc9fa641f7aa1febe3f390359d0b"
+    },
+    {
+      "path": "INDEX.yaml",
+      "sha256": "5d02ab5e0c341f93ba8fac5d8acd55948a37af706d5dfbaf03d6f6417150f0b0"
+    },
+    {
+      "path": "RESULTS.md",
+      "sha256": "b23a13eabf75d0bf2d2d30a00c54ef3f4b82048e53e7385bff6f3da569b9fd78"
+    },
+    {
+      "path": "TASK.yaml",
+      "sha256": "3239241f787ac88805cd1ac596f40c42d0da56578bb77bb9022346e62ff2940b"
+    },
+    {
+      "path": "tool-events/fixture-ci-evidence-succeeded.json",
+      "sha256": "24bb90b07f37fb8897e0e5559934f2793b8628401ba4a931e9eee1f7edf750f0"
+    }
+  ]
+}

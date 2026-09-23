@@ -1,0 +1,11 @@
+{
+  "blocked": false,
+  "risks": [
+    {
+      "code": "TRACE-CAPTURE-DELAYED",
+      "level": "warning",
+      "message": "[capture-gap] trace declares incomplete or delayed capture"
+    }
+  ],
+  "setup_note": "Initial archive validation stopped after sealing because this new worktree lacked generated research_workbench._runtime_pin. The documented build_backend.generate() was then run in the isolated worktree. All previously sealed files remained byte-identical; only missing post-seal metadata was added."
+}

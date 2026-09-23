@@ -1,5 +1,8 @@
 # Full-suite cost, test necessity and reusable evidence
 
+The [Git fixture clone port](FIXTURE_CLONE_COST.md) reduces per-case Git process
+launches while retaining independent objects and all existing scenarios.
+
 TEST-PERF-002; Chengyue-Lu; R2; Issue #48 / PR #70.
 
 ## Measured bottleneck

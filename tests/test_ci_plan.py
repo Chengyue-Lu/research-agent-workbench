@@ -75,11 +75,29 @@ class PlannerTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.repo = Path(self.temp.name) / 'repo'
-        command(Path(self.temp.name), 'clone', '-q', '--no-hardlinks', str(self.seed), str(self.repo))
-        command(self.repo, 'config', 'user.name', 'CI fixture')
-        command(self.repo, 'config', 'user.email', 'fixture@example.invalid')
-        command(self.repo, 'config', 'core.autocrlf', 'false')
+        # Install repository-local settings before checkout while keeping each
+        # fixture's independent object store and avoiding three Git processes.
+        command(Path(self.temp.name), 'clone', '-q', '--no-hardlinks',
+                '-c', 'user.name=CI fixture', '-c', 'user.email=fixture@example.invalid',
+                '-c', 'core.autocrlf=false', str(self.seed), str(self.repo))
         self.base = command(self.repo, 'rev-parse', 'HEAD')
+
+    def test_fixture_clone_keeps_local_identity_line_endings_and_isolation(self):
+        for key, value in (('user.name', 'CI fixture'), ('user.email', 'fixture@example.invalid'),
+                           ('core.autocrlf', 'false')):
+            with self.subTest(key=key):
+                self.assertEqual(value, command(self.repo, 'config', '--local', '--get', key))
+        self.assertEqual('develop', command(self.repo, 'symbolic-ref', '--short', 'HEAD'))
+        self.assertEqual(b'baseline\n', (self.repo / 'README.md').read_bytes())
+        self.assertFalse((self.repo / '.git/objects/info/alternates').exists())
+        seed_head = command(self.seed, 'rev-parse', 'HEAD')
+        self.assertEqual(seed_head, self.base)
+        head_object = Path('.git/objects') / seed_head[:2] / seed_head[2:]
+        self.assertFalse(os.path.samefile(self.seed / head_object, self.repo / head_object))
+        candidate = self.commit('README.md', 'isolated change\n')
+        self.assertNotEqual(seed_head, candidate)
+        self.assertEqual(seed_head, command(self.seed, 'rev-parse', 'HEAD'))
+        self.assertEqual(b'baseline\n', (self.seed / 'README.md').read_bytes())
 
     def commit(self, path='README.md', data='changed\n'):
         write(self.repo, path, data)
