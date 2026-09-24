@@ -1,0 +1,55 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260924-002
+task_id: TEST-PERF-002
+task_revision: 45
+attempt_id: A-20260924-002
+archive_root: A-20260924-002
+baseline: 6cf80610cc2d3b4ebdeb9f47a840cd0ec1870bbf
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 3b45e198c6c723c98438382b37ce8632c0a7c46c4e1b67f57ca9b69537cb113b
+actors_ref:
+  path: ACTORS.yaml
+  sha256: e3ba785da1d648036ae22be001b61be41d472c0e62cdae1b96bcfd9932b16bdb
+read_allowlist:
+- .github/scripts/**
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- run35851960207 native receipts
+- tests/**
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/plan_ci.py
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/test_ci_plan.py
+- work/TEST-PERF-002/A-20260924-002/**
+tool_allowlist:
+- collaboration
+- git
+- python
+- shell
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: af58aa217c50db90629faf18f27f1dd67a621f2d2dffc284574b277591f783b6
+  event_count: 6
+tool_event_refs:
+- path: tool-events/freeze-cost-evidence-succeeded.json
+  sha256: dbc050b6d83ae1b47e0383e75f83ca0bf4ef7c806bcd37c4e9cfb57838159e0d
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: messages
+- event_id: EVT-0003
+  affected_stream: file-revisions
+- event_id: EVT-0004
+  affected_stream: external-actions

@@ -1,0 +1,101 @@
+{
+  "base": "6cf80610cc2d3b4ebdeb9f47a840cd0ec1870bbf",
+  "implementation": "53bb67c597dcd1160aa01f7322e4b0f231d5e1fa",
+  "source_hashes": {
+    ".github/scripts/plan_ci.py": "8dd97ff415398dddefa1f8bfab4e0f6814dae8140626489608d510999db4b851",
+    "tests/test_ci_plan.py": "1abbaf971fff0f3eca9307adea8b7fbac404172dbcf59306a443b346c3cad5dc"
+  },
+  "local_tests": {
+    "python311_module": 84,
+    "python311_focused": 6,
+    "python313_focused": 6
+  },
+  "planner_module_coverage": {
+    "covered_lines": 588,
+    "statements": 589,
+    "line_percent": 99.830220713073,
+    "covered_branches": 222,
+    "branches": 224,
+    "branch_percent": 99.10714285714286
+  },
+  "local_changed_coverage_facts": {
+    "scope": "local changed executable coverage facts; not a native execution receipt or full impact acceptance",
+    "source": ".github/scripts/plan_ci.py",
+    "changed_lines": [
+      182,
+      183,
+      184,
+      185,
+      186,
+      187,
+      188,
+      189,
+      190,
+      192,
+      429
+    ],
+    "changed_executable_lines": [
+      182,
+      183,
+      184,
+      185,
+      186,
+      187,
+      188,
+      192,
+      429
+    ],
+    "changed_branch_arcs": [
+      [
+        184,
+        185
+      ],
+      [
+        184,
+        186
+      ]
+    ],
+    "missing_changed_lines": [],
+    "missing_changed_branches": [],
+    "covered_changed_lines": 9,
+    "covered_changed_branches": 2
+  },
+  "timing": {
+    "before": {
+      "values": [
+        34.71264599999995,
+        34.060856399999466,
+        34.40405100000498
+      ],
+      "median": 34.40405100000498,
+      "minimum": 34.060856399999466,
+      "maximum": 34.71264599999995
+    },
+    "after": {
+      "values": [
+        32.25954379999894,
+        32.5048039000103,
+        31.790704700004426
+      ],
+      "median": 32.25954379999894,
+      "minimum": 31.790704700004426,
+      "maximum": 32.5048039000103
+    },
+    "reduction_percent": 6.233298514775876,
+    "paired_deltas": [
+      -2.4531022000010125,
+      -1.556052499989164,
+      -2.6133463000005577
+    ],
+    "identical_ids_order_outcomes_checkpoints": true
+  },
+  "independent_review_sha256": "c818f834338109993255713fa2ffdfcb6c2177f8a96b0399e83cf394ae94bf23",
+  "raw_archive_sha256": "5a5d58df2afc96ec960ea3a4b095fd0bd96c55bf4629dab0920ba6c3b74fbb2d",
+  "limitations": [
+    "Working-tree local checks retain their original run identity; source equality with implementation blobs is checked now",
+    "One representative local timing case, not hosted/full-suite speedup acceptance",
+    "Initial ROOT failure and invalid coverage-source series are retained and excluded",
+    "Initial failed harness source was not snapshotted; collaboration/tool capture is partial",
+    "No selector activation, test deletion, threshold reduction or result reuse"
+  ]
+}

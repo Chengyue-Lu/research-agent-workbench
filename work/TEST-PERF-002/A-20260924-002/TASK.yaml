@@ -1,0 +1,12 @@
+task_id: TEST-PERF-002
+revision: 45
+request: Continue the next-stage CI improvement plan
+scope: Fresh exact-commit batching, real Git regressions, current native cost rankings
+  and local fair pairs
+delegation: true
+required_skills: []
+profile: CI cost implementer, independent reviewer and evidence curator
+budget: one bounded CI-owned cost slice; local module and focused checks plus three
+  fresh pairs
+stop_condition: archive source-bound local evidence; publication and hosted checks
+  remain separate
