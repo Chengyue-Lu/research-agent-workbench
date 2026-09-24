@@ -16,3 +16,9 @@ PR: [#90](https://github.com/Chengyue-Lu/research-agent-workbench/pull/90). Orig
 H4a 仍只处理 synthetic actual evidence，M5-007 保持 IN_PROGRESS。PR #96 的 H4b draft 依赖 H4a，但本次不改变 #96 的状态或提出对其合并的决定。
 
 Capture boundary: this addendum preserves deterministic rebase comparison and review decision context. Initial shell/event frames and test timestamps are not complete Agent Trace；旧 H4a archive 的 `TRACE-CAPTURE-DELAYED` warning 继续有效，不以本文件补造历史事件。
+
+## 2026-09-24 H4a source-identity repair
+
+[PR #90 independent review](https://github.com/Chengyue-Lu/research-agent-workbench/pull/90#issuecomment-5814646084) 对 `b1bdba8` 提出一个 P1：A1/A2 cold replay 通过 `baseline_closeout._replay_transport()` 调用 `baseline._request`、`_tool_inputs`、`_plain`，而原 H4a validator identity 未绑定 `execution/baseline.py`；这些函数还将 `adapters.models.port` 的 dataclasses 序列化为请求与 Tool 消息，因此该文件也影响重建结果。
+
+修复只在 H4a `validator_identity()` 增列上述两个直接源码 pin，不改变 M6 producer、历史归档或 H4a 数据 Schema；旧 validator identity 与新版本不相等时，`validate_harness_evidence` 在独立重算前拒绝旧证据。回归测试分别模拟请求 JSON 键顺序和 Tool strict 默认值变化，检验 pin 改变及旧记录拒绝。最终 head、定向测试和 hosted CI 以 PR 的当前提交与 checks 为准；新候选仍须 cross-owner R2 复审。

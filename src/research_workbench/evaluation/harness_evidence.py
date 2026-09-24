@@ -24,13 +24,14 @@ LIFECYCLES = {"completed": "completed", "failed": "post-call-failed", "blocked":
 
 
 def validator_identity(inputs):
-    """Pin this derivation and the replay entrypoints in addition to H2 inputs."""
+    """Pin H4 derivation, replay entrypoints, and direct baseline replay dependencies."""
     identity = preflight_identity(inputs)
     package = Path(__file__).resolve().parent.parent
     sources = dict(identity["sources"])
     for name in (
         "evaluation/harness_evidence.py", "evaluation/harness_execution.py",
         "evaluation/harness_runtime.py", "execution/baseline_closeout.py",
+        "execution/baseline.py", "adapters/models/port.py",
         "execution/generic_closeout.py", "execution/skill_closeout.py",
         "execution/skill_facts.py", "observability/trace.py", "execution/host.py",
         "execution/runtime_bundle.py",

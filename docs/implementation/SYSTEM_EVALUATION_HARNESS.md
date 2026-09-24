@@ -113,6 +113,9 @@ block 没有 actual consumption。整臂 deadline failure 可以包含先前 com
 删除失败/重试、漏 slice、替换 case/Attempt/实际身份或篡改 source/Schema/evidence pins 都会拒绝。
 新进程回放不调用执行端口，不执行项目 Tool/checker。Schema identity 使用 H2 相同的全 catalog
 指纹规则；输入 archives 必须与提供的 validator/Schema 版本相容，不能改写旧档案以迁就新版本。
+H4a validator identity 同时绑定 baseline closeout、`execution/baseline.py` 的请求/Tool 输入重建代码
+及 `adapters/models/port.py` 的消息与请求数据结构；这些回放语义的源码变化会使既存 H4a 证据失效，
+须在新 identity 下重新编译和验证。
 
 该记录始终保留 synthetic purpose，`analysis_eligibility` 和 Human/Task authority 为 false。
 阶段标签不产生 confirmatory eligibility；具名盲审、揭盲、measurement 和分析资格属于后续接口。

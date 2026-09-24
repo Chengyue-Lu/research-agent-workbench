@@ -1,6 +1,7 @@
 """Evaluation actual evidence must come from independently replayed receipts."""
 
 import copy
+import hashlib
 import json
 import shutil
 import subprocess
@@ -239,6 +240,33 @@ class HarnessEvidenceReplayTests(HarnessEvidenceFixture):
         with self.assertRaises(EvaluationValidationError):
             compile_harness_evidence(self.f.inputs(), execution_ref=self.good_ref, context=self.f.context,
                 evidence_id="H4-SYNTHETIC", admission_verifier=lambda _: False)
+
+    def test_baseline_replay_source_change_invalidates_saved_evidence(self):
+        # These direct replay dependencies shape the reconstructed request,
+        # including the dataclass fields serialized by baseline._plain.
+        original_read_bytes = Path.read_bytes
+        changes = (
+            ("execution/baseline.py", b"sort_keys=True", b"sort_keys=False"),
+            ("adapters/models/port.py", b"strict: bool = True", b"strict: bool = False"),
+        )
+        for relative, before, after in changes:
+            with self.subTest(source=relative):
+                source = ROOT / "src" / "research_workbench" / relative
+                key = "research_workbench/" + relative
+                old_identity = self.good_evidence["validator"]
+                original = original_read_bytes(source)
+                self.assertEqual(original.count(before), 1)
+                self.assertEqual(old_identity["sources"][key], hashlib.sha256(original).hexdigest())
+
+                def changed_bytes(path):
+                    content = original_read_bytes(path)
+                    return content.replace(before, after, 1) if path.resolve() == source.resolve() else content
+
+                with patch.object(Path, "read_bytes", changed_bytes):
+                    new_identity = validator_identity(self.f.inputs())
+                    self.assertNotEqual(new_identity["sources"][key], old_identity["sources"][key])
+                    with self.assertRaisesRegex(EvaluationValidationError, "validator identity drift"):
+                        self.validate(self.good_evidence, self.good_ref)
 
     def test_retained_artifact_and_hash_consistent_omitted_h3_attempt_fail_replay(self):
         artifact = next(s["evidence"]["artifact_refs"][0] for r in self.good_evidence["slots"]
