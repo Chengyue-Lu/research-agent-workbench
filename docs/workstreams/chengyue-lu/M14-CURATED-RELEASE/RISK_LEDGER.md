@@ -1,12 +1,15 @@
 # M14 Curated Release 风险台账
 
-当前实现候选增加 [trusted release preflight](RELEASE_CHECKS.md)：在 accepted source checkout 中组合在线
-source-CI 与独立 pins、重复投影、候选 parent/tree 检查，结束前重查 refs 和 CI attempt。
-它只形成审计证据；release-only workflow 的可信 bootstrap、candidate 安装/公开面检查与 atomic cutover 仍待验收。
+已接受的 source-CI 修复产生真实 protected-develop push 与 clean exact-source 在线验收；
+[历史观察身份](SOURCE_CI_ACCEPTANCE.json)已固定。当前 PR #98 的
+[trusted release preflight](RELEASE_CHECKS.md) 在 accepted source checkout 中组合在线 source-CI 与独立
+pins、重复投影、候选 parent/tree 检查，结束前重查 refs 和 CI attempt。它只形成审计证据；
+release-only workflow 的可信 bootstrap、append-only policy include、candidate 安装/公开面检查与
+atomic cutover 仍待验收。
 
 | ID | 类型 | 风险 | 控制 | 当前状态 |
 |---|---|---|---|---|
-| M14-GOV-001 | fact | 仅放行 `release/*` 分支名会绕过 source、surface 与 manifest 证明，或迁移期形成两条可绕行发布路径。 | M14-001 已实现 strict dormant same-repo/source/parent trust seam，且完整候选仍固定 ERROR；M14-002 exporter/checker 完成后 release path仍 BLOCK；M14-005 在全部 readiness Gate 闭合后才原子启用 release/v* 并禁用 direct develop→main。 | partially controlled；M14-001/002 已接受并阻断 branch-only/data-only bypass；protected source-CI attestation 与 atomic topology cutover 仍待 M14-005 实现 |
+| M14-GOV-001 | fact | 仅放行 `release/*` 分支名会绕过 source、surface 与 manifest 证明，或迁移期形成两条可绕行发布路径。 | M14-001 已实现 strict dormant same-repo/source/parent trust seam，且完整候选仍固定 ERROR；M14-002 exporter/checker 完成后 release path仍 BLOCK；M14-005 在全部 readiness Gate 闭合后才原子启用 release/v* 并禁用 direct develop→main。 | partially controlled；M14-001/002 已接受并阻断 branch-only/data-only bypass，真实 protected source-CI 在线验收已通过；release-only checks 与 atomic topology cutover 仍待 M14-005 实现 |
 | M14-SOURCE-001 | fact | 从 working tree 复制会吸收 dirty/untracked 文件或 Windows CRLF 转换，generated output 又可能脱离 provenance。 | M14-002 直接读取 frozen commit Git blobs；显式纳入 `.gitattributes`；每个输出分类 source/generated 并 pin blob/mode 或 generator/inputs；两次完整 tree 逐字节一致。 | controlled by M14-002 deterministic positive/negative fixtures；release authority remains dormant |
 | M14-MANIFEST-001 | fact | 攻击者同步改文件和 manifest hash 后伪造一致性。 | checker 接受外部 expected source SHA 与 current-main parent SHA，重读 source commit/policy、重算 prospective merge tree 并比较 Git blob bytes，不能只信 manifest。 | controlled by M14-002 deterministic positive/negative fixtures；release authority remains dormant |
 | M14-POLICY-001 | fact | allowlist 的 unknown/overlap/path collision 或同版本漂移改变公开面而未被识别。 | strict append-only policy Schema；拒绝 unknown、空/重复/重叠/不存在 include、file/tree ambiguity、case-fold/Unicode/Windows 路径冲突。 | controlled by M14-002 deterministic positive/negative fixtures；release authority remains dormant |
@@ -17,9 +20,9 @@ source-CI 与独立 pins、重复投影、候选 parent/tree 检查，结束前�
 | M14-DOCS-001 | fact | 裁剪 TASKS/STATUS/workstream 后公开 README 产生断链，或把 bounded/synthetic 能力写成产品完成。 | M14-004 建立 public-doc single source、projection link checker 与 evidence-bounded supported-features 页面。 | controlled by accepted M14-004（PR #77）；公开 Quickstart 已消费获接受的 M1-009，裁剪源码上的双分发路径验证与档案链接负例已验收；首发候选仍须重验公开链接与证据边界 |
 | M14-REMOTE-001 | fact | 仓库内 checker 无法阻止 direct/force push；远端设置还可能在发布前漂移。 | PR #79 接受 main/develop hard/review 分层；hard 无 bypass，review 仅具名维护者 PR-only；发布前重新读取。 | 四层已接受：develop 23305447/23192001，main 23305460/23192054；完整 remote Gate 仍须发行前 fresh readback |
 | M14-LICENSE-001 | fact | 技术可安装不等于具备项目/原创 Skill 发布许可。 | 维护者选择 MIT 并确认相关权利人授权；LICENSE、包元数据与当前原创 Skill 许可记录一致，外部许可保留。 | M0-007 closure 已由 PR #78 R2 接受；不替代 Skill admission/publication |
-| M14-SOURCE-CI-001 | fact | 同名绿色 check、PR rehearsal 或不同 attempt 的 job 不能证明 frozen develop 的完整 source CI。 | [source-CI slice](SOURCE_CI.md) 重验实际 squash delta，在线绑定 repository/workflow/run/attempt/job/check App 并拒绝观察期间的 rerun。 | implementation prepared；待 R2 接受后验证真实 protected push producer，当前没有授予 release eligibility |
+| M14-SOURCE-CI-001 | fact | 同名绿色 check、PR rehearsal 或不同 attempt 的 job 不能证明 frozen develop 的完整 source CI。 | [source-CI slice](SOURCE_CI.md) 重验实际 squash delta，在线绑定 repository/workflow/run/attempt/job/check App 并拒绝观察期间的 rerun。 | PR #97 修复已接受，真实 protected push run 35814704926 与 clean exact-source online `attest` PASS；[历史 pins](SOURCE_CI_ACCEPTANCE.json)仅作审计，未来 release caller 仍须实时观察；release eligibility 未授予 |
 | M14-EVAL-001 | fact | M5 真实 net-benefit 未完成却被 release 文案写成已证明价值。 | M14-004 support matrix 明确 structural/bounded/live/evaluated 层级；M14-005 review 校核 claim 不超证据。 | public support matrix 明确真实评估未完成；后续内容变更和 release review 继续校核 |
 | M14-ANCESTRY-001 | fact | release branch 若不以 current main 为父提交，连续发行会对 manifest 产生 add/add 冲突，并可能让旧版 generated 文件滞留在 merge result。 | 以 external expected current main tip 为 Git parent、frozen develop 为唯一内容来源；manifest 分别 pin source/parent；main 漂移即重建；合并前证明 prospective merge-result tree、projection tree 与 manifest closed output tree 完全相同。 | M14-002 consecutive-version / parent-drift / prospective-tree fixtures PASS；M14-005 live release pending |
-| M14-READINESS-001 | fact | topology recognition 或 surface checker 完成后过早开放 release PR，会绕过 package、public docs、license、remote protection 或 Human release decision。 | [具名 v0.1.0 准备决定与 fresh protection 回读](FIRST_RELEASE_DECISION.md) 支持 Task READY；全部机器门禁和 R2 验收后才可实际 cutover，最终发布另行批准。 | external start gates closed for this candidate；真实 source-CI / release checks / cutover / 首发验收仍待闭合 |
+| M14-READINESS-001 | fact | topology recognition 或 surface checker 完成后过早开放 release PR，会绕过 package、public docs、license、remote protection 或 Human release decision。 | [具名 v0.1.0 准备决定与 fresh protection 回读](FIRST_RELEASE_DECISION.md) 支持 Task READY；全部机器门禁和 R2 验收后才可实际 cutover，最终发布另行批准。 | external start gates 与真实 source-CI 已闭合；release-only workflow/checks、cutover 和首发候选验收仍待完成 |
 | M14-BRANCH-001 | fact | 在 release branch 修功能，或把精选删除反向合并到 develop。 | M14-001 已阻断 release branch 指向 develop，并要求 exact current-main 线性无 merge ancestry；M14-002 已实现 frozen-develop exporter 生成完整 tree，语义修复回 develop 后重建，release branch 永不回并。 | partially controlled；M14-002 tree enforcement 已接受；M14-005 live cutover 与首发 source/parent/tree 验收仍待实现 |
 | M14-FREEZE-001 | inference | 把计划分支 HEAD 当成首次发布 source SHA，导致 review 期间 scope 漂移。 | 只有 M14-005 在全部前置完成后冻结 source；task-definition/M14-001 不记录 release source manifest。 | controlled by current scope |

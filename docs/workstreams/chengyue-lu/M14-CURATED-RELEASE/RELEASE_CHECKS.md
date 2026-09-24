@@ -30,13 +30,17 @@ claim that a real release candidate or integrated-source preflight has been acce
 
 ## Following slices
 
-1. Accept the source API repair and verify its real protected develop push with online `attest`.
-2. Review this source-owned composition. Wire a trusted release-only workflow to it, prove the first-main
+The source API repair was accepted in PR #97. Its real protected develop
+[push run 35814704926](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/35814704926)
+and clean exact-source online `attest` passed; the [historical observation pins](SOURCE_CI_ACCEPTANCE.json)
+are audit evidence only. The remaining slices are:
+
+1. Review this source-owned composition. Wire a trusted release-only workflow to it, prove the first-main
    bootstrap trust anchor, and add the exact required workflow/public validator includes in a new
    append-only release-policy version. Candidate-controlled workflow code must not provide its own trust.
-3. Add candidate public-link/build-input closure and dual-Python clean-install evidence to that workflow.
+2. Add candidate public-link/build-input closure and dual-Python clean-install evidence to that workflow.
    Only then prepare and review atomic topology activation and direct-develop-path closure.
-4. Freeze the release source/current main parent after readiness, generate the real release candidate,
+3. Freeze the release source/current main parent after readiness, generate the real release candidate,
    and obtain the separate final release PR/tag/artifact decision.
 
 This implementation slice creates no release branch or tag and changes no remote protection settings.
