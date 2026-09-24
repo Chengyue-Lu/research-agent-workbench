@@ -179,10 +179,17 @@ def read_at(repo, commit, path):
     return git(repo, 'show', f'{commit}:{path}')
 
 
+def exact_commits(repo, values):
+    values = tuple(values)
+    for value in values:
+        require(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{40}', value), 'exact SHA-1 commit required')
+    resolved = git(repo, 'rev-parse', *(f'{value}^{{commit}}' for value in values)).decode().splitlines()
+    require(resolved == list(values), 'commit identity mismatch')
+    return values
+
+
 def exact_commit(repo, value):
-    require(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{40}', value), 'exact SHA-1 commit required')
-    require(git(repo, 'rev-parse', f'{value}^{{commit}}').decode().strip() == value, 'commit identity mismatch')
-    return value
+    return exact_commits(repo, (value,))[0]
 
 
 def changes(repo, base, head):
@@ -419,8 +426,7 @@ def workflow_semantic(raw):
 
 def make_plan(repo, *, base, head, target, repository, base_ref='develop', body='', integration=False,
               force_full=False, extra_groups=()):
-    for sha in (base, head, target):
-        exact_commit(repo, sha)
+    exact_commits(repo, (base, head, target))
     merge_base = git(repo, 'merge-base', base, head).decode().strip()
     binding = {'repository': repository, 'base': base, 'head': head, 'merge_base': merge_base, 'target': target}
     plan = {'version': 4, 'binding': binding, 'change_class': 'full', 'risk': 'R2', 'changes': [],

@@ -386,6 +386,69 @@ class PlannerTests(unittest.TestCase):
         with patch.object(planner, 'git', return_value=b'0'*40):
             with self.assertRaises(ValueError): planner.exact_commit(self.repo, self.base)
 
+    def test_exact_commits_batch_preserves_positions_and_single_commit_api(self):
+        head = self.commit()
+        target = self.commit('docs/ARCHITECTURE.md')
+        for values in ((self.base, head, target), (self.base, head, head), (head, head, head)):
+            with self.subTest(values=values), patch.object(planner, 'git', wraps=planner.git) as observed:
+                self.assertEqual(values, planner.exact_commits(self.repo, values))
+                observed.assert_called_once_with(self.repo, 'rev-parse', *(f'{value}^{{commit}}' for value in values))
+        self.assertEqual(head, planner.exact_commit(self.repo, head))
+
+    def test_exact_commits_rejects_all_malformed_positions_before_git(self):
+        invalid = (None, 1, True, b'0' * 40, 'HEAD', 'a' * 39, 'A' * 40,
+                   '--help', self.base + '~0', self.base + '\n')
+        with patch.object(planner, 'git', wraps=planner.git) as observed:
+            for value in invalid:
+                for position in range(3):
+                    values = [self.base] * 3
+                    values[position] = value
+                    with self.subTest(value=value, position=position), self.assertRaisesRegex(ValueError, 'exact SHA-1'):
+                        planner.exact_commits(self.repo, values)
+            with self.assertRaisesRegex(ValueError, 'exact SHA-1'):
+                planner.exact_commits(self.repo, ('f' * 40, 'HEAD', self.base))
+            observed.assert_not_called()
+
+    def test_exact_commits_rejects_noncommits_and_missing_objects_despite_replacements(self):
+        head = self.commit()
+        command(self.repo, 'tag', '-a', 'candidate-tag', '-m', 'annotated candidate', head)
+        objects = {
+            'blob': command(self.repo, 'rev-parse', head + ':README.md'),
+            'tree': command(self.repo, 'rev-parse', head + '^{tree}'),
+            'tag': command(self.repo, 'rev-parse', 'candidate-tag'),
+            'missing': 'f' * 40,
+        }
+        for replaced in (False, True):
+            for kind, value in objects.items():
+                if replaced:
+                    command(self.repo, 'update-ref', 'refs/replace/' + value, head)
+                for position in range(3):
+                    values = [self.base, head, head]
+                    values[position] = value
+                    with self.subTest(replaced=replaced, kind=kind, position=position), self.assertRaises(ValueError):
+                        planner.exact_commits(self.repo, values)
+
+    def test_each_verification_rechecks_commit_objects_after_cached_plan_reads(self):
+        self.base = self.commit()
+        head = self.commit('docs/ARCHITECTURE.md')
+        expected = ('rev-parse', *(f'{value}^{{commit}}' for value in (self.base, head, head)))
+        with patch.object(planner, 'git', wraps=planner.git) as observed:
+            plan = self.plan()
+            for _ in range(2):
+                self.assertEqual(plan, planner.verify_plan(self.repo, plan))
+            identity_calls = [call for call in observed.call_args_list if call.args[1:] == expected]
+            self.assertEqual(3, len(identity_calls))
+            object_path = self.repo / '.git' / 'objects' / self.base[:2] / self.base[2:]
+            hidden = Path(self.temp.name) / 'hidden-base-object'
+            object_path.rename(hidden)
+            try:
+                with self.assertRaisesRegex(ValueError, 'Git fact unavailable'):
+                    planner.verify_plan(self.repo, plan)
+                identity_calls = [call for call in observed.call_args_list if call.args[1:] == expected]
+                self.assertEqual(4, len(identity_calls))
+            finally:
+                hidden.rename(object_path)
+
     def test_nul_diff_rejects_ambiguous_paths_and_preserves_spaces(self):
         with patch.object(planner, 'git', return_value=b'M\0docs/a b.md\0'):
             self.assertEqual('docs/a b.md', planner.changes(self.repo,self.base,self.base)[0]['path'])
