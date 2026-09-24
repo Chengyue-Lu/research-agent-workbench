@@ -59,6 +59,8 @@ New local reports retain the original PR90 official plan and separately recomput
 PR84/65 from their immutable Git pairs. Accepted obligations, smoke and activation
 fields are identical between the previous and new report producers. These are
 diagnostic replays, not fresh behavioral CI or safe-exclusion acceptance.
+The [bounded Attempt](../../../../work/TEST-PERF-002/A-20260924-001/RESULTS.md)
+retains raw results, original review findings, corrected evidence and partial Trace.
 
 | Corpus | Changed inputs | Inputs with direct unknown obligations | Resource witnesses | Opaque witnesses |
 |---|---:|---:|---:|---:|
