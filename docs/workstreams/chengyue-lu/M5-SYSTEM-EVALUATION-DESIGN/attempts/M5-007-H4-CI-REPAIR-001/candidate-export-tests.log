@@ -1,0 +1,13 @@
+test_cli_preserves_observed_results_outcomes_and_task_binding (tests.test_m5_trace_export.H4TraceExportTests.test_cli_preserves_observed_results_outcomes_and_task_binding) ... ok
+test_empty_spool_preserves_explicit_event_and_message_gaps (tests.test_m5_trace_export.H4TraceExportTests.test_empty_spool_preserves_explicit_event_and_message_gaps) ... ok
+test_existing_or_escaping_archive_is_rejected_without_writes (tests.test_m5_trace_export.H4TraceExportTests.test_existing_or_escaping_archive_is_rejected_without_writes) ... ok
+test_post_seal_tampering_blocks_cli_and_persists_failure_report (tests.test_m5_trace_export.H4TraceExportTests.test_post_seal_tampering_blocks_cli_and_persists_failure_report) ... ok
+test_cli_preserves_payload_bytes_gaps_and_observed_outcomes (tests.test_m5_trace_export.M5TraceExportTests.test_cli_preserves_payload_bytes_gaps_and_observed_outcomes) ... ok
+test_empty_spool_remains_explicitly_gapped (tests.test_m5_trace_export.M5TraceExportTests.test_empty_spool_remains_explicitly_gapped) ... ok
+test_existing_or_escaping_archive_is_rejected_without_overwrite (tests.test_m5_trace_export.M5TraceExportTests.test_existing_or_escaping_archive_is_rejected_without_overwrite) ... ok
+test_post_seal_evidence_corruption_produces_block_and_nonzero_exit (tests.test_m5_trace_export.M5TraceExportTests.test_post_seal_evidence_corruption_produces_block_and_nonzero_exit) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 4.285s
+
+OK

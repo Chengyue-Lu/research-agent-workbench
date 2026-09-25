@@ -1,0 +1,460 @@
+test_a2_target_filters_qualification_to_same_task (tests.test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_a2_target_filters_qualification_to_same_task) ... ERROR
+test_actual_projection_supply_tool_and_binding_tampering_are_rejected (tests.test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_actual_projection_supply_tool_and_binding_tampering_are_rejected) ... ERROR
+test_completed_drift_is_rejected_even_if_upstream_replay_is_bypassed (tests.test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_completed_drift_is_rejected_even_if_upstream_replay_is_bypassed) ... ERROR
+test_external_run_context_and_validator_identity_cannot_be_self_selected (tests.test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_external_run_context_and_validator_identity_cannot_be_self_selected) ... ERROR
+test_four_arms_all_slices_and_failed_retry_replay (tests.test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_four_arms_all_slices_and_failed_retry_replay) ... ERROR
+test_fresh_process_cold_replay_forbids_execution_and_project_code (tests.test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_fresh_process_cold_replay_forbids_execution_and_project_code) ... ERROR
+test_missing_failure_slice_and_case_attempt_substitution_are_rejected (tests.test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_missing_failure_slice_and_case_attempt_substitution_are_rejected) ... ERROR
+test_retained_artifact_and_hash_consistent_omitted_h3_attempt_fail_replay (tests.test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_retained_artifact_and_hash_consistent_omitted_h3_attempt_fail_replay) ... ERROR
+test_validator_mutation_during_compilation_is_rejected (tests.test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_validator_mutation_during_compilation_is_rejected) ... ERROR
+test_baseline_preflight_blocked_retains_zero_call_receipt (tests.test_evaluation_harness_evidence.HarnessEvidenceTests.test_baseline_preflight_blocked_retains_zero_call_receipt) ... ok
+test_blocked_receipt_and_unstarted_slices_have_no_actual_facts (tests.test_evaluation_harness_evidence.HarnessEvidenceTests.test_blocked_receipt_and_unstarted_slices_have_no_actual_facts) ... ok
+test_dispatch_deadline_retains_completed_and_zero_call_blocked_slices (tests.test_evaluation_harness_evidence.HarnessEvidenceTests.test_dispatch_deadline_retains_completed_and_zero_call_blocked_slices) ... ok
+test_failed_actual_binding_cannot_be_replaced_with_plan (tests.test_evaluation_harness_evidence.HarnessEvidenceTests.test_failed_actual_binding_cannot_be_replaced_with_plan) ... ERROR
+
+======================================================================
+ERROR: test_a2_target_filters_qualification_to_same_task (tests.test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_a2_target_filters_qualification_to_same_task)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<worktree>\tests\test_evaluation_harness_evidence.py", line 35, in setUp
+    self.f = copy.deepcopy(self.prototype)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 271, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 231, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 206, in _deepcopy_list
+    append(deepcopy(a, memo))
+           ^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 271, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 231, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 265, in _reconstruct
+    y = func(*args)
+        ^^^^^^^^^^^
+TypeError: ProviderError.__init__() missing 1 required positional argument: 'message'
+
+======================================================================
+ERROR: test_actual_projection_supply_tool_and_binding_tampering_are_rejected (tests.test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_actual_projection_supply_tool_and_binding_tampering_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<worktree>\tests\test_evaluation_harness_evidence.py", line 35, in setUp
+    self.f = copy.deepcopy(self.prototype)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 271, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 231, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 206, in _deepcopy_list
+    append(deepcopy(a, memo))
+           ^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 271, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 231, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 265, in _reconstruct
+    y = func(*args)
+        ^^^^^^^^^^^
+TypeError: ProviderError.__init__() missing 1 required positional argument: 'message'
+
+======================================================================
+ERROR: test_completed_drift_is_rejected_even_if_upstream_replay_is_bypassed (tests.test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_completed_drift_is_rejected_even_if_upstream_replay_is_bypassed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<worktree>\tests\test_evaluation_harness_evidence.py", line 35, in setUp
+    self.f = copy.deepcopy(self.prototype)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 271, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 231, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 206, in _deepcopy_list
+    append(deepcopy(a, memo))
+           ^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 271, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 231, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 265, in _reconstruct
+    y = func(*args)
+        ^^^^^^^^^^^
+TypeError: ProviderError.__init__() missing 1 required positional argument: 'message'
+
+======================================================================
+ERROR: test_external_run_context_and_validator_identity_cannot_be_self_selected (tests.test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_external_run_context_and_validator_identity_cannot_be_self_selected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<worktree>\tests\test_evaluation_harness_evidence.py", line 35, in setUp
+    self.f = copy.deepcopy(self.prototype)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 271, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 231, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 206, in _deepcopy_list
+    append(deepcopy(a, memo))
+           ^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 271, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 231, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 265, in _reconstruct
+    y = func(*args)
+        ^^^^^^^^^^^
+TypeError: ProviderError.__init__() missing 1 required positional argument: 'message'
+
+======================================================================
+ERROR: test_four_arms_all_slices_and_failed_retry_replay (tests.test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_four_arms_all_slices_and_failed_retry_replay)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<worktree>\tests\test_evaluation_harness_evidence.py", line 35, in setUp
+    self.f = copy.deepcopy(self.prototype)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 271, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 231, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 206, in _deepcopy_list
+    append(deepcopy(a, memo))
+           ^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 271, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 231, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 265, in _reconstruct
+    y = func(*args)
+        ^^^^^^^^^^^
+TypeError: ProviderError.__init__() missing 1 required positional argument: 'message'
+
+======================================================================
+ERROR: test_fresh_process_cold_replay_forbids_execution_and_project_code (tests.test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_fresh_process_cold_replay_forbids_execution_and_project_code)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<worktree>\tests\test_evaluation_harness_evidence.py", line 35, in setUp
+    self.f = copy.deepcopy(self.prototype)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 271, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 231, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 206, in _deepcopy_list
+    append(deepcopy(a, memo))
+           ^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 271, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 231, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 265, in _reconstruct
+    y = func(*args)
+        ^^^^^^^^^^^
+TypeError: ProviderError.__init__() missing 1 required positional argument: 'message'
+
+======================================================================
+ERROR: test_missing_failure_slice_and_case_attempt_substitution_are_rejected (tests.test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_missing_failure_slice_and_case_attempt_substitution_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<worktree>\tests\test_evaluation_harness_evidence.py", line 35, in setUp
+    self.f = copy.deepcopy(self.prototype)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 271, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 231, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 206, in _deepcopy_list
+    append(deepcopy(a, memo))
+           ^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 271, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 231, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 265, in _reconstruct
+    y = func(*args)
+        ^^^^^^^^^^^
+TypeError: ProviderError.__init__() missing 1 required positional argument: 'message'
+
+======================================================================
+ERROR: test_retained_artifact_and_hash_consistent_omitted_h3_attempt_fail_replay (tests.test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_retained_artifact_and_hash_consistent_omitted_h3_attempt_fail_replay)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<worktree>\tests\test_evaluation_harness_evidence.py", line 35, in setUp
+    self.f = copy.deepcopy(self.prototype)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 271, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 231, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 206, in _deepcopy_list
+    append(deepcopy(a, memo))
+           ^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 271, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 231, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 265, in _reconstruct
+    y = func(*args)
+        ^^^^^^^^^^^
+TypeError: ProviderError.__init__() missing 1 required positional argument: 'message'
+
+======================================================================
+ERROR: test_validator_mutation_during_compilation_is_rejected (tests.test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_validator_mutation_during_compilation_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<worktree>\tests\test_evaluation_harness_evidence.py", line 35, in setUp
+    self.f = copy.deepcopy(self.prototype)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 271, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 231, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 206, in _deepcopy_list
+    append(deepcopy(a, memo))
+           ^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 271, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 231, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\copy.py", line 265, in _reconstruct
+    y = func(*args)
+        ^^^^^^^^^^^
+TypeError: ProviderError.__init__() missing 1 required positional argument: 'message'
+
+======================================================================
+ERROR: test_failed_actual_binding_cannot_be_replaced_with_plan (tests.test_evaluation_harness_evidence.HarnessEvidenceTests.test_failed_actual_binding_cannot_be_replaced_with_plan)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<worktree>\tests\test_evaluation_harness_evidence.py", line 58, in test_failed_actual_binding_cannot_be_replaced_with_plan
+    ref = execute_harness(self.f.inputs(), context=self.f.context,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<worktree>\src\research_workbench\evaluation\harness_execution.py", line 223, in execute_harness
+    plan, preflight = _context(inputs, context, admission_verifier)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<worktree>\src\research_workbench\evaluation\harness_execution.py", line 53, in _context
+    preflight = validate_harness_preflight(inputs,
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<worktree>\src\research_workbench\evaluation\harness_preflight.py", line 322, in validate_harness_preflight
+    expected = compile_harness_preflight(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<worktree>\src\research_workbench\evaluation\harness_preflight.py", line 149, in compile_harness_preflight
+    plan = validate_harness_plan(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "<worktree>\src\research_workbench\evaluation\harness_plan.py", line 292, in validate_harness_plan
+    expected = compile_harness_plan(inputs, **request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<worktree>\src\research_workbench\evaluation\harness_plan.py", line 87, in compile_harness_plan
+    baseline = compile_baseline_plan(manifest)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<worktree>\src\research_workbench\evaluation\manifest.py", line 353, in compile_baseline_plan
+    schema_errors = SchemaCatalog().validate("evaluation_manifest", document)
+                    ^^^^^^^^^^^^^^^
+  File "<worktree>\src\research_workbench\validation\schemas.py", line 31, in __init__
+    resource_reader = RuntimeResources()
+                      ^^^^^^^^^^^^^^^^^^
+  File "<worktree>\src\research_workbench\resources.py", line 101, in __init__
+    require(hashlib.sha256(data).hexdigest() == expected_sha256, "Runtime resource manifest hash drift")
+  File "<worktree>\src\research_workbench\resources.py", line 19, in require
+    raise ResourceError(message)
+research_workbench.resources.ResourceError: Runtime resource manifest hash drift
+
+----------------------------------------------------------------------
+Ran 13 tests in 240.246s
+
+FAILED (errors=10)

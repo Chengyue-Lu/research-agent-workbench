@@ -1,0 +1,35 @@
+{
+  "completeness": "partial",
+  "capture_gaps": [
+    "Initial reads included local assistant memory outside publication scope and are omitted.",
+    "Some tool arguments/results, native Provider frames and original timestamps were not captured."
+  ],
+  "records": [
+    {
+      "tool": "exec_command",
+      "arguments": {
+        "cmd": "$env:PYTHONUTF8='1'; $env:PYTHONIOENCODING='utf-8'; .venv/Scripts/python.exe -m unittest tests.test_m5_trace_export -v *> .rwb/h4-ci-repair/export-tests-initial.log; $repairExit=$LASTEXITCODE; Get-Content .rwb/h4-ci-repair/export-tests-initial.log -Tail 40; exit $repairExit",
+        "workdir": "<worktree>",
+        "max_output_tokens": 2500,
+        "yield_time_ms": 1000
+      },
+      "result": {
+        "chunk_id": "f957c9",
+        "wall_time_seconds": 3.1312493,
+        "exit_code": 0,
+        "original_token_count": 378,
+        "output": "test_cli_preserves_observed_results_outcomes_and_task_binding (tests.test_m5_trace_export.H4TraceExportTests.test_cli_preserves_observed_results_outcomes_and_task_binding) ... ok\r\ntest_empty_spool_preserves_explicit_event_and_message_gaps (tests.test_m5_trace_export.H4TraceExportTests.test_empty_spool_preserves_explicit_event_and_message_gaps) ... ok\r\ntest_existing_or_escaping_archive_is_rejected_without_writes (tests.test_m5_trace_export.H4TraceExportTests.test_existing_or_escaping_archive_is_rejected_without_writes) ... ok\r\ntest_post_seal_tampering_blocks_cli_and_persists_failure_report (tests.test_m5_trace_export.H4TraceExportTests.test_post_seal_tampering_blocks_cli_and_persists_failure_report) ... ok\r\ntest_cli_preserves_payload_bytes_gaps_and_observed_outcomes (tests.test_m5_trace_export.M5TraceExportTests.test_cli_preserves_payload_bytes_gaps_and_observed_outcomes) ... ok\r\ntest_empty_spool_remains_explicitly_gapped (tests.test_m5_trace_export.M5TraceExportTests.test_empty_spool_remains_explicitly_gapped) ... ok\r\ntest_existing_or_escaping_archive_is_rejected_without_overwrite (tests.test_m5_trace_export.M5TraceExportTests.test_existing_or_escaping_archive_is_rejected_without_overwrite) ... ok\r\ntest_post_seal_evidence_corruption_produces_block_and_nonzero_exit (tests.test_m5_trace_export.M5TraceExportTests.test_post_seal_evidence_corruption_produces_block_and_nonzero_exit) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 8 tests in 2.601s\r\n\r\nOK\r\n"
+      }
+    },
+    {
+      "tool": "exec_command",
+      "result": {
+        "chunk_id": "a322ee",
+        "wall_time_seconds": 4.0145092,
+        "exit_code": 0,
+        "original_token_count": 41,
+        "output": "----------------------------------------------------------------------\r\nRan 10 tests in 0.361s\r\n\r\nOK\r\n- owner-matched workstream and Risk Ledger\r\ngovernance: PASS\r\n"
+      }
+    }
+  ]
+}

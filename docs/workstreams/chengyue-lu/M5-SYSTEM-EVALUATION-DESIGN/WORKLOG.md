@@ -222,3 +222,40 @@ PR86 已合入 `develop@51dc3ab477f21f18ac3829bf553b5b779d49a4fe`。按用户授
 
 原始 H3 与 rebase evidence 保持冻结。本地检查绑定候选源码 hashes，新 head 的远端 CI 与
 cross-owner rereview 按 PR89 独立进行；本次只提交修复，M5-007 仍 IN_PROGRESS。
+
+## M5-007 H4 进入准备（2026-09-19）
+
+PR89 已由黄毅对 `d725f7e` APPROVE，并于 2026-09-18 合入 `develop@171d465`；合并树与该
+reviewed head 相同。H1–H3 已接受，M5-007 仍 IN_PROGRESS。按用户“准备继续推进”请求，
+从最新 develop 建立独立 `feature/m5-007-harness-evidence`，主 develop 与 H3 工作区保持原样。
+
+[H4 实施包](M5-007_H4_PACKET.md) 固定 H4a actual evidence → H4b blind review/reveal → H4c
+metric/analysis 的顺序。源码核对确认现有 measurement validator 不验证 run/Attempt evidence
+关联，pairwise validator 不消费 actual facts；H4 将在评价记录层闭合这些责任。旧 H3 缺失外层
+计时/成本数据时保持 unavailable，不能用 Host 区间或缺省零替代。首个实现节点为 H4a。
+
+新建独立 Python 3.11.16 环境，pip check、当前工作区 import 与 CLI help 正常。现有 Protocol /
+overlap / overlay / comparability / contract 五模块 **63 PASS，54.542 秒**；文档内链 **10 PASS**；
+repository validation **186/0/0**。这是进入基线检查，不是 H4 实现证据。结果与输入 hashes 见
+[entry record](attempts/M5-007-H4-ENTRY-001/README.md)。H4 实现开始前另建正式 Attempt capture。
+
+## M5-007 H4a implementation candidate（2026-09-19）
+
+用户授权“开始实现”，从 H4a actual evidence 开始。新增 evaluation-owned record、确定性编译与
+外部上下文驱动的独立验证：先 replay 完整 H3，再核对每项实际 binding/Supply/Skill consumption。
+所有预留 slots 和必需 slices 显式保留；失败 retry、未启动与零调用阻断不转写成成功。
+
+新增实际值替换、遗漏、身份/哈希/validator 漂移和禁执行冷回放反例；catalog、Schema 与 coverage
+inventory 一并注册。共享执行端口保持现有契约，Task/ROADMAP 无状态变更。
+本地检查、源码 pins 与部分可观察事件见 [H4a Attempt](attempts/M5-007-H4-001/README.md)。
+H4b/H4c/H5 仍待后续实现；该分支按普通 R2 implementation PR 请求黄毅审核，不自行合并。
+
+## PR90 archive exporter coverage repair（2026-09-20）
+
+独立核查 `d9042fd` 的 run 35449976025：1425 tests PASS 后，impact gate 因新归档 executable
+`M5-007-H4-001/export_capture.py` 未出现在 coverage report 而失败。原始 exporter 和 H4a evidence
+保持原字节，在已注册 `test_m5_trace_export` 中增加独立临时 root 的真实导出/失败反例。
+8 个 exporter tests PASS，原 CI 配置下脚本 39/39 statements、12/12 branches；54 个集成检查 PASS。
+证据及作用域见 [CI repair Attempt](attempts/M5-007-H4-CI-REPAIR-001/README.md)。
+共享 CI selector/authority、覆盖门槛和路径分类由 Issue87 任务负责；本修复不修改这些表面。
+旧 run 的 PASS 不归给新候选，远端 CI 保持异步；M5-007 仍 IN_PROGRESS，PR90 不自行合并。

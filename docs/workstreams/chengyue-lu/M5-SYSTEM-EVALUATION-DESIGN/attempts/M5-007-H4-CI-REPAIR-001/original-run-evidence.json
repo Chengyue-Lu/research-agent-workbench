@@ -1,0 +1,25 @@
+{
+  "run_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/35449976025",
+  "job_id": 105915342990,
+  "binding": {
+    "base": "171d4654f88e926f239cdf25bc8168109b81f391",
+    "head": "d9042fd1611f152573a7d2cae176cb1e1ec70065",
+    "merge_base": "171d4654f88e926f239cdf25bc8168109b81f391",
+    "repository": "Chengyue-Lu/research-agent-workbench",
+    "target": "737fb4198eac1e51f42da2f2204971ef96ec5ace"
+  },
+  "coverage_obligations": [
+    "impact",
+    "repository"
+  ],
+  "subject": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4-001/export_capture.py",
+  "subject_absent": true,
+  "job_log_sha256": "ef9baf4551cd37dfb220fcdd6703848e4a556f467d73d6a78ff1269bb8550d67",
+  "plan_sha256": "4a96b60efe8b5f15bfa686f0d490c1c54aeb7cdaebc62f461ec8898bd44a4e21",
+  "coverage_sha256": "e27f4944655cf6025eebdf6019a904fda0152d891aaf8b258fd2d97582a51dff",
+  "job_log_excerpt": [
+    "coverage-quality (3.11)\tUNKNOWN STEP\t2026-09-19T15:28:36.1518890Z Ran 1425 tests in 2227.070s",
+    "coverage-quality (3.11)\tUNKNOWN STEP\t2026-09-19T15:28:36.5218662Z suite_duration suite=coverage-execution tests=1425 wall_seconds=2239.891 p50_seconds=0.182 p95_seconds=4.814",
+    "coverage-quality (3.11)\tUNKNOWN STEP\t2026-09-19T15:28:44.2475185Z ValueError: impact module absent: docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4-001/export_capture.py"
+  ]
+}
