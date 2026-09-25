@@ -69,3 +69,7 @@ and complete B/C, coverage, smoke and lifecycle acceptance remain applicable.
 Production planning, consumer policy, independent witnesses and coverage
 thresholds retain their accepted behavior. The next boundary decision must use
 real call-site mappings and independent evidence before it can change selection.
+
+The follow-up [Attempt input boundary](ATTEMPT_INPUT_BOUNDARY.md) maps historical
+call sites separately from current observations and exercises membership,
+references and the whole Runtime resource constructor with real negative controls.
