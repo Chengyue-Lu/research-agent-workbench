@@ -2,6 +2,26 @@
 
 Owner: 路诚钺 (`Chengyue-Lu`); cross-owner: 黄毅 (`let778750-cpu`); R2.
 
+## September 24 planner commit batching
+
+- [The bounded cost slice](PLANNER_COMMIT_BATCH_COSTS.md) combines base/head/target
+  checks into one fresh Git operation. Validate every full SHA before invoking Git;
+  compare output positions including duplicates, disable replacement objects, and
+  repeat the operation on every verification. No identity cache or selector change.
+- Real Git regressions cover malformed inputs, non-commit/missing objects, replacement
+  refs and removal after prior verification. Independent static review found no
+  substantive issue; Python 3.11 and 3.13 each passed the six focused checks. All 84
+  planner cases passed under Python 3.11 with 99.8302% line / 99.1071% branch coverage.
+  Local changed-code facts cover 9/9 lines and 2/2 arcs; they do not replace native
+  impact or integration acceptance. Preserve the original working-tree run identity.
+- Three fair local pairs preserve the original case/checkpoint order and measure both
+  planner variants under branch coverage. The initial path failure and invalid
+  coverage-scope series are retained separately and cannot support performance claims.
+- The 6.23% representative-case reduction is local, not hosted or full-suite acceptance.
+  Preserve partial Trace capture and the first failed harness's missing source snapshot.
+  Full B/C order, runner preflight, negative acceptance, 90/95/90 and changed 100/100,
+  independent witness and cross-owner review remain unchanged.
+
 ## September 16 CI replanning proposal
 
 - Scope evidence: exact base `b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22`, 99 source files,

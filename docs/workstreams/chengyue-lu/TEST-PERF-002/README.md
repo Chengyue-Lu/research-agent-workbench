@@ -47,6 +47,9 @@ and the ordered behavioral/coverage producer with verified evidence projections.
 [Full-suite cost and test necessity](FULL_SUITE_COST.md) records direct profiling, bounded
 schema self-check reuse, long-test audit and the conditions for future cross-commit evidence reuse.
 
+[Planner commit batching](PLANNER_COMMIT_BATCH_COSTS.md) re-ranks the accepted integration
+receipts and validates one fresh Git identity optimization, with bounded local timing evidence.
+
 ## Selection authority
 
 [`plan_ci.py`](../../../../.github/scripts/plan_ci.py) reads exact base/head/merge-base Git facts and the
