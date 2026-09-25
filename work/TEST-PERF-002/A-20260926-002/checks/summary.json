@@ -1,0 +1,79 @@
+{
+  "status": "PASS-local-scoped",
+  "base": "5bf2227ca9b4d2f63f452e579185e7838028de78",
+  "implementation": "661c2ede26ea59122d3b048f453801d219e6c4c4",
+  "execution_authority": false,
+  "complete_input_closure_proved": false,
+  "hosted_execution_proved": false,
+  "new_tests": 12,
+  "new_scenarios_per_python": 16,
+  "related_tests_per_python": 22,
+  "existing_observations": 4,
+  "families": 3,
+  "existing_observation_head": "bbdb4d4beacbd01527c652c3e7993f39c49b73e6",
+  "source_pins": {
+    "tests/test_ci_attempt_inputs.py": "5d4ac3109c2784f528accf3722d3c0d957f053de6bbef2cb464e6cfc4bdb91ca",
+    "tests/test_ci_attribute_consumers.py": "0a0b7af4a01053e7623ac2b6d221f1618b247c5ccf90883c094207214af38b45",
+    "src/research_workbench/observability/trace.py": "e32a0e52759e97ab7f061ef5ae57976ec2c1aef5fe9133cce54c26c489d1be61",
+    "src/research_workbench/resources.py": "eb0c8900503453386c9a458a7e3f406294cbe749da2bbc2d4a62897d5995787e"
+  },
+  "local_results": {
+    "311": {
+      "status": "PASS",
+      "tests": 22,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "seconds": 38.179514800000106,
+      "python": "3.11.16 (main, Sep  1 2026, 14:15:24) [MSC v.1944 64 bit (AMD64)]",
+      "executable": "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+      "platform": "Windows-10-10.0.26200-SP0",
+      "argv": [
+        "D:/lcy/develop/_assessments/rwb-ci-pr101-next-20260926/run_local.py",
+        "D:/lcy/develop/_assessments/rwb-ci-pr101-next-20260926/local-tests/311-final",
+        "test_ci_attempt_inputs",
+        "test_ci_attribute_consumers",
+        "test_agent_trace.AgentTraceTests.test_hash_tamper_is_blocking",
+        "test_agent_trace.AgentTraceTests.test_transient_tool_result_ref_remains_hash_checked"
+      ],
+      "source_pins": {
+        "tests/test_ci_attempt_inputs.py": "5d4ac3109c2784f528accf3722d3c0d957f053de6bbef2cb464e6cfc4bdb91ca",
+        "tests/test_ci_attribute_consumers.py": "0a0b7af4a01053e7623ac2b6d221f1618b247c5ccf90883c094207214af38b45",
+        "src/research_workbench/observability/trace.py": "e32a0e52759e97ab7f061ef5ae57976ec2c1aef5fe9133cce54c26c489d1be61",
+        "src/research_workbench/resources.py": "eb0c8900503453386c9a458a7e3f406294cbe749da2bbc2d4a62897d5995787e"
+      },
+      "hosted_receipt": false
+    },
+    "313": {
+      "status": "PASS",
+      "tests": 22,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "seconds": 29.619061099999726,
+      "python": "3.13.15 (main, Sep  1 2026, 14:16:48) [MSC v.1944 64 bit (AMD64)]",
+      "executable": "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv313\\Scripts\\python.exe",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "argv": [
+        "D:/lcy/develop/_assessments/rwb-ci-pr101-next-20260926/run_local.py",
+        "D:/lcy/develop/_assessments/rwb-ci-pr101-next-20260926/local-tests/313-final",
+        "test_ci_attempt_inputs",
+        "test_ci_attribute_consumers",
+        "test_agent_trace.AgentTraceTests.test_hash_tamper_is_blocking",
+        "test_agent_trace.AgentTraceTests.test_transient_tool_result_ref_remains_hash_checked"
+      ],
+      "source_pins": {
+        "tests/test_ci_attempt_inputs.py": "5d4ac3109c2784f528accf3722d3c0d957f053de6bbef2cb464e6cfc4bdb91ca",
+        "tests/test_ci_attribute_consumers.py": "0a0b7af4a01053e7623ac2b6d221f1618b247c5ccf90883c094207214af38b45",
+        "src/research_workbench/observability/trace.py": "e32a0e52759e97ab7f061ef5ae57976ec2c1aef5fe9133cce54c26c489d1be61",
+        "src/research_workbench/resources.py": "eb0c8900503453386c9a458a7e3f406294cbe749da2bbc2d4a62897d5995787e"
+      },
+      "hosted_receipt": false
+    }
+  },
+  "independent_review_sha256": "c160952299d4f5d4d53554c5fa3cb87eadf8330485bd90e7e200958bf6862c3f",
+  "raw_zip_sha256": "7a67e186694d65e73bf54a14f54950f646b3a836ec90f07276a980fa46938659",
+  "diagnostic_scope": "audit open attempts and materialized inventories; not complete successful read receipts",
+  "first_failure": "outside_ref legitimately produced both schema-invalid and path-escape BLOCK; initial expected-one assertion was corrected",
+  "review_history": "initial delegated review could not authenticate; subsequent independent static review completed; formal owner approval remains pending"
+}
