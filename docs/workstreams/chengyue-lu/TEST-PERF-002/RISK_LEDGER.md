@@ -55,6 +55,12 @@ the CLI opaque and validation resource causes require separate reviewed contract
 
 ## Historical risk controls
 
+The [checkout/Attempt consumer experiment](ATTRIBUTE_CONSUMER_PROBE.md) uses the
+existing byte-hash oracle with fresh Git checkouts. Identical Git data blobs do
+not imply identical materialized inputs. Its valid/fault/repaired observations
+remain invocation-specific; schema-catalog and directory-membership dependencies
+still require independent closure before any production selection change.
+
 | Risk | Control and evidence | Remaining review |
 |---|---|---|
 | A local contract hides initialization or a new dependency | New local-function contracts preserve module/class initialization, call expressions, string inputs and bindings; rejected changes restore ordinary consumers | Review [consumer inventories](CONSUMER_CONTRACTS.md), source/downstream mutants and exact future-base timings |
