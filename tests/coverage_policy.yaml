@@ -744,6 +744,16 @@ negative_acceptance:
       - test_evaluation_harness_evidence.HarnessEvidenceTests.test_blocked_receipt_and_unstarted_slices_have_no_actual_facts
       - test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_actual_projection_supply_tool_and_binding_tampering_are_rejected
       - test_evaluation_harness_evidence.HarnessEvidenceReplayTests.test_missing_failure_slice_and_case_attempt_substitution_are_rejected
+  - surface: ci-shadow-propagation-review
+    modules:
+      - .github/scripts/ci_contract_shadow.py
+    positive_tests:
+      - test_ci_contract_shadow.ContractShadowGitTests.test_each_archive_input_retains_its_overlapping_resource_closure
+      - test_ci_contract_shadow.ContractShadowGitTests.test_mixed_executable_and_archive_inputs_keep_three_mechanisms
+    negative_tests:
+      - test_ci_contract_shadow.ContractShadowGitTests.test_resigned_unclassified_reasons_cannot_change_attribution
+      - test_ci_contract_shadow.ContractShadowGitTests.test_isolated_graph_uses_merge_base_when_both_sides_remove_a_reader
+      - test_ci_contract_shadow.ContractShadowGitTests.test_gitlink_reports_object_identity_without_inventing_blob_bytes
 
 justified_exclusions:
   - path: src/research_workbench/adapters/models/session.py

@@ -234,3 +234,16 @@ for cross-owner review. Quality thresholds, exclusions, product contracts and re
   this inherited conservative expansion. Do not refresh the digest blindly or use
   a historical narrow plan as proof of current-base savings. A separate anchor
   repair must preserve new/changed consumer retention and independent witness checks.
+
+## Per-input propagation review
+
+- Isolated ordinary closures omit reviewed overrides and may be wider than the accepted
+  plan. They are diagnostics, not execution minima or exclusion proofs.
+- Module membership overlaps across roots. A retained BFS path and its edge kinds are
+  not exhaustive causal evidence; no module-count change is a timing result.
+- Exact accepted unclassified obligations remain separate from input classification
+  and graph reachability. Non-blob inputs keep Git identity without fabricated bytes.
+- Added analysis reuses immutable graph caches within the report process. Its own
+  duration must be measured on real corpus before claiming practical diagnostic cost.
+- Production selection, thresholds, fixtures and B/C execution order remain unchanged;
+  activation still requires independent witnesses and real paired evidence.

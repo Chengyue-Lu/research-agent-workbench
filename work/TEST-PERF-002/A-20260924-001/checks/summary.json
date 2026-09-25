@@ -1,0 +1,231 @@
+{
+  "base": "6cf80610cc2d3b4ebdeb9f47a840cd0ec1870bbf",
+  "implementation": "ada2309696ab3a65a7c546ecf30c067f4d56b977",
+  "source_hashes": {
+    ".github/scripts/ci_contract_shadow.py": "d52f328826c9785f442ff1b7d30000611bea93f2ea9d04ff9ec7845fa2af3959",
+    "tests/test_ci_contract_shadow.py": "325ac3ab3391425b0e1c3b4ec7f21ac5546d37703092dc676fb46eb8d71b433f",
+    "tests/coverage_policy.yaml": "e7d761e37255cbc8636b92f517af43391da184bb985cd537914e8536ce20c690"
+  },
+  "local_tests": {
+    "python311": 35,
+    "python313": 35
+  },
+  "critical_coverage": {
+    "lines": [
+      151,
+      151
+    ],
+    "branches": [
+      44,
+      44
+    ]
+  },
+  "corpus": [
+    {
+      "case": "pr90-official",
+      "original_plan_id": "6c41e87b7af6be41f8e1f11a24e9f1f4ff67720198d200d220a7045e371852f4",
+      "plan_id": "6c41e87b7af6be41f8e1f11a24e9f1f4ff67720198d200d220a7045e371852f4",
+      "binding": {
+        "base": "6cf80610cc2d3b4ebdeb9f47a840cd0ec1870bbf",
+        "head": "b1bdba8b2da32cfa278c13d34f397e6982f69ba8",
+        "merge_base": "6cf80610cc2d3b4ebdeb9f47a840cd0ec1870bbf",
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "target": "3b3f21fd92d06aa8bf392a8a152e101be0a4d353"
+      },
+      "original_source_sha256": "69e5c7608abff92a9a6c3bf7404b65c18a024ef8c181038911af7ca6690179b7",
+      "identity": "current local diagnostic; not new hosted execution",
+      "runs": [
+        {
+          "role": "before",
+          "argv": [
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "-B",
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-next-stage-20260924\\shadow-corpus\\before-producer\\ci_contract_shadow.py",
+            "--repo",
+            "D:\\lcy\\develop\\_worktrees\\RWB\\ci-input-boundaries-v2",
+            "--plan",
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-next-stage-20260924\\shadow-corpus\\pr90-official\\plan.json",
+            "--output",
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-next-stage-20260924\\shadow-corpus\\pr90-official\\before-report.json"
+          ],
+          "seconds": 13.655999999988126,
+          "exit_code": 0
+        },
+        {
+          "role": "after",
+          "argv": [
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "-B",
+            "D:\\lcy\\develop\\_worktrees\\RWB\\ci-input-boundaries-v2\\.github\\scripts\\ci_contract_shadow.py",
+            "--repo",
+            "D:\\lcy\\develop\\_worktrees\\RWB\\ci-input-boundaries-v2",
+            "--plan",
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-next-stage-20260924\\shadow-corpus\\pr90-official\\plan.json",
+            "--output",
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-next-stage-20260924\\shadow-corpus\\pr90-official\\after-report.json"
+          ],
+          "seconds": 14.469000000011874,
+          "exit_code": 0
+        }
+      ],
+      "input_count": 73,
+      "isolated_inputs": 71,
+      "mechanisms": {
+        "unclassified-obligation": 51,
+        "unbounded-resource": 52,
+        "opaque-execution": 4
+      },
+      "source_hashes": {
+        ".github/scripts/check_pr_governance.py": "54257b48b6fab0fb644d501f514c20cb1959def340e578c490e68e38ef66de16",
+        ".github/scripts/ci_consumer_contracts.py": "865a432e263d0bb10e748955b456df71ade0a5d00ddd17dbf81f7e1b4ccd140a",
+        ".github/scripts/ci_contract_shadow.py": "d52f328826c9785f442ff1b7d30000611bea93f2ea9d04ff9ec7845fa2af3959",
+        ".github/scripts/ci_dependencies.py": "5768999e3e6929f69ac87c56b94b9ecb66bf4ee527f48d97a21beb839110a20f",
+        ".github/scripts/ci_input_facts.py": "a4fc10bc50f824b305a938cb8b12724fd3e02e8697a599c2459c4c664dbbeab8",
+        ".github/scripts/plan_ci.py": "748dde68d79cb67412ae0c1c3e054de92ffce0387f1985a7a00927018452c406"
+      }
+    },
+    {
+      "case": "pr84-replay",
+      "original_plan_id": "83b69f1fccc8eefe35efc342027ab283d92f7253c537e9eeb0478a9bfd2c7137",
+      "plan_id": "a1346282e4bdadb014ad5b9f697f8bdabca471007e1ac042f7da12c2b5781a6e",
+      "binding": {
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "base": "b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22",
+        "head": "dfe3165a90ebcef99d107aef8e790bf7abc0c13f",
+        "merge_base": "b041aeef8c32b74bc4399f90bf3fb49fbbb4fc22",
+        "target": "dfe3165a90ebcef99d107aef8e790bf7abc0c13f"
+      },
+      "original_source_sha256": "285b2031bb61d23868e6fef2858976aa668fc8dc29868ddff38bc76e09262523",
+      "identity": "current local diagnostic; not new hosted execution",
+      "runs": [
+        {
+          "role": "before",
+          "argv": [
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "-B",
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-next-stage-20260924\\shadow-corpus\\before-producer\\ci_contract_shadow.py",
+            "--repo",
+            "D:\\lcy\\develop\\_worktrees\\RWB\\ci-input-boundaries-v2",
+            "--plan",
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-next-stage-20260924\\shadow-corpus\\pr84-replay\\plan.json",
+            "--output",
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-next-stage-20260924\\shadow-corpus\\pr84-replay\\before-report.json"
+          ],
+          "seconds": 9.406000000002678,
+          "exit_code": 0
+        },
+        {
+          "role": "after",
+          "argv": [
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "-B",
+            "D:\\lcy\\develop\\_worktrees\\RWB\\ci-input-boundaries-v2\\.github\\scripts\\ci_contract_shadow.py",
+            "--repo",
+            "D:\\lcy\\develop\\_worktrees\\RWB\\ci-input-boundaries-v2",
+            "--plan",
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-next-stage-20260924\\shadow-corpus\\pr84-replay\\plan.json",
+            "--output",
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-next-stage-20260924\\shadow-corpus\\pr84-replay\\after-report.json"
+          ],
+          "seconds": 9.156000000002678,
+          "exit_code": 0
+        }
+      ],
+      "input_count": 24,
+      "isolated_inputs": 24,
+      "mechanisms": {
+        "unclassified-obligation": 9,
+        "unbounded-resource": 9,
+        "opaque-execution": 0
+      },
+      "source_hashes": {
+        ".github/scripts/check_pr_governance.py": "54257b48b6fab0fb644d501f514c20cb1959def340e578c490e68e38ef66de16",
+        ".github/scripts/ci_consumer_contracts.py": "865a432e263d0bb10e748955b456df71ade0a5d00ddd17dbf81f7e1b4ccd140a",
+        ".github/scripts/ci_contract_shadow.py": "d52f328826c9785f442ff1b7d30000611bea93f2ea9d04ff9ec7845fa2af3959",
+        ".github/scripts/ci_dependencies.py": "5768999e3e6929f69ac87c56b94b9ecb66bf4ee527f48d97a21beb839110a20f",
+        ".github/scripts/ci_input_facts.py": "a4fc10bc50f824b305a938cb8b12724fd3e02e8697a599c2459c4c664dbbeab8",
+        ".github/scripts/plan_ci.py": "748dde68d79cb67412ae0c1c3e054de92ffce0387f1985a7a00927018452c406"
+      }
+    },
+    {
+      "case": "pr65-replay",
+      "original_plan_id": "c8abfac35dc9d9b5df283bfafa36d6b1f8b6ad4a2dfc726360a1779b04401ddd",
+      "plan_id": "68213d3152a658263b9374234e879611f0a8144a81954dc6e1e1daac0d1ca1ab",
+      "binding": {
+        "repository": "Chengyue-Lu/research-agent-workbench",
+        "base": "690a9f8c89c32400bbc57b0781ef9b43205894db",
+        "head": "09f96193845ee0e73a215d87ba188b5aa5569704",
+        "merge_base": "690a9f8c89c32400bbc57b0781ef9b43205894db",
+        "target": "09f96193845ee0e73a215d87ba188b5aa5569704"
+      },
+      "original_source_sha256": "b03ffd06632f20a74ed7579580ceec473cdd59ade90fd63afd474245fc20b948",
+      "identity": "current local diagnostic; not new hosted execution",
+      "runs": [
+        {
+          "role": "before",
+          "argv": [
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "-B",
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-next-stage-20260924\\shadow-corpus\\before-producer\\ci_contract_shadow.py",
+            "--repo",
+            "D:\\lcy\\develop\\_worktrees\\RWB\\ci-input-boundaries-v2",
+            "--plan",
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-next-stage-20260924\\shadow-corpus\\pr65-replay\\plan.json",
+            "--output",
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-next-stage-20260924\\shadow-corpus\\pr65-replay\\before-report.json"
+          ],
+          "seconds": 3.0160000000032596,
+          "exit_code": 0
+        },
+        {
+          "role": "after",
+          "argv": [
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "-B",
+            "D:\\lcy\\develop\\_worktrees\\RWB\\ci-input-boundaries-v2\\.github\\scripts\\ci_contract_shadow.py",
+            "--repo",
+            "D:\\lcy\\develop\\_worktrees\\RWB\\ci-input-boundaries-v2",
+            "--plan",
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-next-stage-20260924\\shadow-corpus\\pr65-replay\\plan.json",
+            "--output",
+            "D:\\lcy\\develop\\_assessments\\rwb-ci-next-stage-20260924\\shadow-corpus\\pr65-replay\\after-report.json"
+          ],
+          "seconds": 3.0160000000032596,
+          "exit_code": 0
+        }
+      ],
+      "input_count": 20,
+      "isolated_inputs": 4,
+      "mechanisms": {
+        "unclassified-obligation": 0,
+        "unbounded-resource": 0,
+        "opaque-execution": 0
+      },
+      "source_hashes": {
+        ".github/scripts/check_pr_governance.py": "54257b48b6fab0fb644d501f514c20cb1959def340e578c490e68e38ef66de16",
+        ".github/scripts/ci_consumer_contracts.py": "865a432e263d0bb10e748955b456df71ade0a5d00ddd17dbf81f7e1b4ccd140a",
+        ".github/scripts/ci_contract_shadow.py": "d52f328826c9785f442ff1b7d30000611bea93f2ea9d04ff9ec7845fa2af3959",
+        ".github/scripts/ci_dependencies.py": "5768999e3e6929f69ac87c56b94b9ecb66bf4ee527f48d97a21beb839110a20f",
+        ".github/scripts/ci_input_facts.py": "a4fc10bc50f824b305a938cb8b12724fd3e02e8697a599c2459c4c664dbbeab8",
+        ".github/scripts/plan_ci.py": "748dde68d79cb67412ae0c1c3e054de92ffce0387f1985a7a00927018452c406"
+      }
+    }
+  ],
+  "limitations": [
+    "No production exclusion or CI reuse activation",
+    "No hosted speedup claim",
+    "Initial Python3.13 loader failed for missing PyYAML; configured rerun preserved separately"
+  ]
+}

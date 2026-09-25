@@ -255,6 +255,112 @@ class ContractShadowGitTests(unittest.TestCase):
         report=shadow.build_report(self.repo,self.plan())
         self.assertNotIn('forged',{c['id'] for c in report['accepted_contracts']})
         self.assertEqual('selection-policy-metadata',report['inputs'][0]['role'])
+        row = report['propagation_review']['inputs'][0]
+        self.assertFalse(row['accepted_graph_seed'])
+        self.assertIsNone(row['isolated_ordinary_closure'])
+        self.assertEqual([], row['unclassified_obligations'])
+
+    def test_each_archive_input_retains_its_overlapping_resource_closure(self):
+        paths = ['docs/workstreams/a/attempts/A/first.json', 'docs/workstreams/a/attempts/A/second.yaml']
+        write(self.repo, paths[0], '{}')
+        self.commit(paths[1], 'version: 1\n')
+        plan = self.plan()
+        original = planner.canonical(plan)
+        report = shadow.build_report(self.repo, plan)
+        review = report['propagation_review']
+        self.assertFalse(review['execution_authority'])
+        rows = {row['path']: row for row in review['inputs']}
+        for path in paths:
+            row = rows[path]
+            self.assertEqual(['behavioral_scope', 'coverage_scope', 'package_smoke', 'repository_smoke'],
+                             row['unclassified_obligations'])
+            self.assertEqual(['unclassified-obligation', 'unbounded-resource'], row['review_mechanisms'])
+            self.assertIn('test_unknown', row['isolated_ordinary_closure']['selected_modules'])
+            self.assertEqual([], row['isolated_ordinary_closure']['errors'])
+        self.assertEqual(rows[paths[0]]['isolated_ordinary_closure'], rows[paths[1]]['isolated_ordinary_closure'])
+        # A single accepted BFS witness cannot credit both roots; neither root is safe to discard.
+        self.assertNotEqual(rows[paths[0]]['retained_witness_modules'], rows[paths[1]]['retained_witness_modules'])
+        self.assertEqual(original, planner.canonical(plan))
+        self.assertEqual(report, shadow.build_report(self.repo, plan))
+
+    def test_mixed_executable_and_archive_inputs_keep_three_mechanisms(self):
+        source = 'src/research_workbench/leaf.py'
+        write(self.repo, source, 'VALUE=1\n')
+        write(self.repo, 'tests/test_leaf.py', 'from research_workbench import leaf\n')
+        self.base = self.commit('tests/test_dynamic.py', 'import runpy\ndef replay(path): return runpy.run_path(path)\n')
+        write(self.repo, source, 'VALUE=2\n')
+        archive = 'docs/workstreams/a/attempts/A/run.log'
+        self.commit(archive, 'captured execution')
+        plan = self.plan()
+        before = planner.canonical(plan)
+        report = shadow.build_report(self.repo, plan)
+        rows = {row['path']: row for row in report['propagation_review']['inputs']}
+        self.assertIn('opaque-execution', rows[source]['review_mechanisms'])
+        self.assertEqual([], rows[source]['unclassified_obligations'])
+        self.assertIn('test_dynamic', rows[source]['isolated_ordinary_closure']['witness_modules']['opaque-execution'])
+        self.assertIn('unclassified-obligation', rows[archive]['review_mechanisms'])
+        self.assertIn('unbounded-resource', rows[archive]['review_mechanisms'])
+        self.assertTrue(any(row['fallback_edge_kinds'] for row in report['dependency_review']))
+        self.assertEqual(before, planner.canonical(plan))
+        self.assertFalse(report['activation']['eligible'])
+
+    def test_gitlink_reports_object_identity_without_inventing_blob_bytes(self):
+        path = 'vendor/submodule'
+        command(self.repo, 'update-index', '--add', '--cacheinfo', '160000,' + self.base + ',' + path)
+        command(self.repo, 'commit', '-qm', 'candidate gitlink')
+        report = shadow.build_report(self.repo, self.plan())
+        row = report['inputs'][0]
+        self.assertEqual(path, row['path'])
+        self.assertEqual('unknown', row['role'])
+        self.assertIsNone(row['executable'])
+        version = row['versions'][0]
+        self.assertEqual(('160000', 'commit', self.base), (version['mode'], version['object_type'], version['object_id']))
+        self.assertFalse(version['content_available'])
+        self.assertIsNone(version['sha256'])
+        self.assertFalse(report['execution_authority'])
+
+    def test_resigned_unclassified_reasons_cannot_change_attribution(self):
+        self.commit('docs/workstreams/a/attempts/A/run.log', 'evidence')
+        plan = self.plan()
+        for obligation in plan['obligation_reasons']:
+            bad = copy.deepcopy(plan)
+            bad['obligation_reasons'][obligation] = []
+            unsigned = dict(bad); unsigned.pop('plan_id'); bad['plan_id'] = planner.digest(unsigned)
+            with self.subTest(obligation=obligation), self.assertRaisesRegex(ValueError, 'unclassified obligation'):
+                shadow.build_report(self.repo, bad)
+        for value in (None, {}, {**plan['obligation_reasons'], 'behavioral_scope': [3]},
+                      {**plan['obligation_reasons'], 'coverage_scope': ['unclassified dependency surface: invented.bin']}):
+            bad = copy.deepcopy(plan)
+            bad['obligation_reasons'] = value
+            unsigned = dict(bad); unsigned.pop('plan_id'); bad['plan_id'] = planner.digest(unsigned)
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                shadow.build_report(self.repo, bad)
+        extra = copy.deepcopy(plan)
+        extra['obligation_reasons']['behavioral_scope'].append('Agent requested additional complete regression')
+        unsigned = dict(extra); unsigned.pop('plan_id'); extra['plan_id'] = planner.digest(unsigned)
+        report = shadow.build_report(self.repo, extra)
+        self.assertEqual('full', report['accepted_obligations']['behavioral_scope'])
+
+    def test_isolated_graph_uses_merge_base_when_both_sides_remove_a_reader(self):
+        path = 'docs/workstreams/a/attempts/A/input.json'
+        reader = 'tests/test_retired.py'
+        write(self.repo, path, '{}')
+        self.base = self.commit(reader, 'INPUT = ' + repr(path) + '\n')
+        ancestor = self.base
+        write(self.repo, reader, 'VALUE = 0\n')
+        head = self.commit(path, '{"changed": true}')
+        command(self.repo, 'checkout', '-qb', 'base-side', ancestor)
+        base = self.commit(reader, 'VALUE = 0\n')
+        command(self.repo, 'merge', '--no-ff', '-m', 'merge', head)
+        target = command(self.repo, 'rev-parse', 'HEAD')
+        plan = planner.make_plan(self.repo, base=base, head=head, target=target, repository='Example/repo')
+        report = shadow.build_report(self.repo, plan)
+        review = report['propagation_review']
+        self.assertEqual({'merge_base': ancestor, 'head': head}, review['graph_binding'])
+        row = next(item for item in review['inputs'] if item['path'] == path)
+        self.assertIn('test_retired', row['isolated_ordinary_closure']['selected_modules'])
+        wrong, *_ = planner.dependencies.select(self.repo, base, head, {path})
+        self.assertNotIn('test_retired', wrong['selected'])
 
     def test_executable_keeps_ordinary_and_opaque_consumers(self):
         write(self.repo,'src/research_workbench/leaf.py','VALUE=1\n')
@@ -341,7 +447,7 @@ class ContractShadowGitTests(unittest.TestCase):
         self.assertEqual(['documentation'], package['accepted_groups'])
         self.assertFalse(package['affected_consumers'][0]['contains_fallback_edge'])
         self.assertEqual(6, len(report['producer_sources']))
-        self.assertEqual(3, report['schema_version'])
+        self.assertEqual(4, report['schema_version'])
 
 
 class ShadowWorkflowTests(unittest.TestCase):

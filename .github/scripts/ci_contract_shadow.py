@@ -77,6 +77,17 @@ def verify_observed_plan(repo, plan):
     planner.require(plan['selection'].get('witness_version') == minimum['selection'].get('witness_version'),
                     'selection witness format changed; regenerate the plan from exact Git snapshots')
     planner.require_obligations(plan, minimum)
+    reasons = plan.get('obligation_reasons')
+    planner.require(isinstance(reasons, dict) and reasons.keys() == minimum['obligation_reasons'].keys(),
+                    'observed obligation reason shape mismatch')
+    for obligation, expected in minimum['obligation_reasons'].items():
+        actual = reasons[obligation]
+        planner.require(isinstance(actual, list) and all(isinstance(item, str) for item in actual),
+                        'observed obligation reasons must be strings')
+        prefix = 'unclassified dependency surface: '
+        planner.require({item for item in actual if item.startswith(prefix)} ==
+                        {item for item in expected if item.startswith(prefix)},
+                        'observed unclassified obligation reasons mismatch')
 
 
 def smoke_review(plan, policy):
@@ -100,6 +111,44 @@ def smoke_review(plan, policy):
     return review
 
 
+def propagation_review(repo, plan, inputs):
+    """Separate obligation fallbacks from graph reachability and retained witnesses.
+
+    Isolated ordinary closures deliberately omit reviewed overrides. They expose
+    overlapping propagation, never a minimum execution set or an exclusion proof.
+    Each selected module still has only one diagnostic path witness per seed.
+    """
+    selection = plan['selection']
+    paths = selection.get('affected_witnesses', {})
+    rows = []
+    for item in inputs:
+        path = item['path']
+        reason = 'unclassified dependency surface: ' + path
+        fallback = [name for name, reasons in sorted(plan['obligation_reasons'].items()) if reason in reasons]
+        retained = sorted(test for test, chain in selection.get('selected', {}).items() if chain[0] == path)
+        seed = paths.get(path, {}).get('chain') == [path]
+        isolated = None
+        if seed:
+            graph, *_ = planner.dependencies.select(repo, plan['binding']['merge_base'], plan['binding']['head'], {path})
+            isolated = {'selected_modules': sorted(graph['selected']),
+                'witness_modules': {kind: sorted(test for test, kinds in graph['selected_edge_kinds'].items()
+                                                if kind in kinds)
+                                    for kind in ('unbounded-resource', 'opaque-execution')},
+                'errors': graph['errors']}
+        mechanisms = (['unclassified-obligation'] if fallback else [])
+        if isolated is not None:
+            mechanisms.extend(kind for kind, modules in isolated['witness_modules'].items() if modules)
+        rows.append({'path': path, 'input_role': item['role'], 'accepted_graph_seed': seed,
+                     'unclassified_obligations': fallback, 'retained_witness_modules': retained,
+                     'isolated_ordinary_closure': isolated, 'review_mechanisms': mechanisms})
+    return {'execution_authority': False,
+            'basis': 'per-input ordinary merge-base/head closure without reviewed overrides; not an execution minimum',
+            'graph_binding': {key: plan['binding'][key] for key in ('merge_base', 'head')},
+            'path_limit': 'one path per module and input; edge kinds are witnesses, not exhaustive or exclusive causes',
+            'count_unit': 'test module; overlapping sets must not be summed or treated as runtime cases or cost',
+            'inputs': rows}
+
+
 def build_report(repo, plan):
     verify_observed_plan(repo, plan)
     binding = plan['binding']
@@ -117,12 +166,15 @@ def build_report(repo, plan):
     inputs = []
     for change in plan['changes']:
         path = change['path']
-        versions = [(key, inventory[path][0], planner.read_at(repo, binding[key], path))
+        versions = [(key, inventory[path], planner.read_at(repo, binding[key], path)
+                     if inventory[path][1] == 'blob' else None)
                     for key, (inventory, _) in zip(('merge_base', 'head'), snapshots) if path in inventory]
-        facts = input_facts(path, [(mode, raw) for _, mode, raw in versions])
+        facts = input_facts(path, [(meta[0], raw if raw is not None else b'') for _, meta, raw in versions])
         inputs.append({**change, **facts,
-                       'versions': [{'snapshot': label, 'mode': mode, 'sha256': hashlib.sha256(raw).hexdigest()}
-                                    for label, mode, raw in versions]})
+                       'versions': [{'snapshot': label, 'mode': meta[0], 'object_type': meta[1], 'object_id': meta[2],
+                                     'content_available': raw is not None,
+                                     'sha256': hashlib.sha256(raw).hexdigest() if raw is not None else None}
+                                    for label, meta, raw in versions]})
     by_path = {row['path']: row for row in inputs}
     observations = {}
     chains = []
@@ -144,7 +196,9 @@ def build_report(repo, plan):
                    'opaque-execution' if 'opaque-execution' in kinds else
                    'data-instance-to-code-consumers' if role in {'document', 'evidence-data', 'archive-attributes'}
                    else 'accepted-dependency')
-        chains.append({'test': test, 'input_role': role, 'review_reason': concern, 'edges': edges})
+        chains.append({'test': test, 'input_role': role, 'review_reason': concern,
+                       'fallback_edge_kinds': sorted(set(kinds) & {'unbounded-resource', 'opaque-execution'}),
+                       'edges': edges})
     unknowns = [row['path'] for row in inputs if row['role'] == 'unknown']
     conflicts = [row['path'] for row in inputs if row['role'] in {'document', 'evidence-data', 'archive-attributes'}
                  and any('unclassified dependency surface: ' + row['path'] == reason
@@ -154,7 +208,7 @@ def build_report(repo, plan):
                   'downstream': group['downstream']}
                  for name, group in sorted(policy['groups'].items())]
     report = {
-        'report_kind': 'ci-contract-shadow', 'schema_version': 3, 'execution_authority': False,
+        'report_kind': 'ci-contract-shadow', 'schema_version': 4, 'execution_authority': False,
         'binding': binding, 'observed_plan_id': plan['plan_id'], 'policy_sha256': plan['policy_sha256'],
         'engine_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         'producer_sources': {'.github/scripts/' + Path(path).name: hashlib.sha256(Path(path).read_bytes()).hexdigest()
@@ -163,6 +217,7 @@ def build_report(repo, plan):
         'inputs': inputs, 'accepted_contracts': contracts, 'dependency_review': chains,
         'consumer_contract_review': consumer_contracts,
         'smoke_review': smoke_review(plan, policy),
+        'propagation_review': propagation_review(repo, plan, inputs),
         'summary': {'input_roles': dict(sorted(Counter(row['role'] for row in inputs).items())),
             'available_test_modules': plan['selection'].get('scope_summary', {}).get('available_test_modules'),
             'dependency_selected_test_modules': len(chains), 'plan_test_selectors': len(plan['tests']),

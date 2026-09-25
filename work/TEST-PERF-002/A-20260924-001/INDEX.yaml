@@ -1,0 +1,55 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260924-001
+task_id: TEST-PERF-002
+task_revision: 44
+attempt_id: A-20260924-001
+archive_root: A-20260924-001
+baseline: 6cf80610cc2d3b4ebdeb9f47a840cd0ec1870bbf
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: ee542b24167e8aff38275a1e7aea8f6eae719e96cb07469aef5b8ee2e1a74336
+actors_ref:
+  path: ACTORS.yaml
+  sha256: bb01ea9a59b70cb3c9cc80946ee3e7753b5c8264c91f15ddcdb4d69c84d20949
+read_allowlist:
+- .github/scripts/**
+- AGENTS.md
+- PR90 official plan
+- docs/DEVELOPMENT.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/**
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/ci_contract_shadow.py
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/coverage_policy.yaml
+- tests/test_ci_contract_shadow.py
+- work/TEST-PERF-002/A-20260924-001/**
+tool_allowlist:
+- collaboration
+- gh
+- git
+- python
+- shell
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: c93d63fe6a33f80b4b7f804304375cdedc942225b4bf9aef77cd6304044bfb85
+  event_count: 5
+tool_event_refs:
+- path: tool-events/freeze-propagation-evidence-succeeded.json
+  sha256: 80449e6fa1eebfa77b41edb32a475190d480ec1726a4f5e99b3e2079b55bdac5
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: messages
+- event_id: EVT-0003
+  affected_stream: external-actions

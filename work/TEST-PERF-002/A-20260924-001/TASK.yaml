@@ -1,0 +1,12 @@
+task_id: TEST-PERF-002
+revision: 44
+request: Continue the next-stage CI improvement plan
+scope: Per-input propagation diagnostics, exact Git regressions and immutable corpus
+  review
+delegation: true
+required_skills: []
+profile: CI implementer plus independent bounded reviewer
+budget: one diagnostic slice; local related validation and three immutable corpus
+  cases
+stop_condition: publish Draft implementation and bounded evidence; separate hosted
+  checks and review

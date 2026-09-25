@@ -1,0 +1,5 @@
+{
+  "initial_validation": "not executed: missing generated research_workbench._runtime_pin",
+  "remedy": "accepted build_backend.generate in isolated worktree, then validate existing sealed trace",
+  "source_changed": false
+}

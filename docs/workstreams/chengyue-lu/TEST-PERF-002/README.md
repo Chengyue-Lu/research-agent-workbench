@@ -162,6 +162,9 @@ check names does not claim remote protection is enabled. This PR does not change
 
 ## Delivery and review
 
+Per-input propagation and overlapping fallback observations are described in
+[the shadow schema 4 review](PROPAGATION_REVIEW.md).
+
 The [Risk Ledger](RISK_LEDGER.md), validation record, PR diff and bounded Attempt archive are the review inputs.
 Post-merge behavior and the integration fixture repair are recorded in [HOSTED_VERIFICATION.md](HOSTED_VERIFICATION.md).
 The work uses the existing Audit ID path, as PR #49 did, and does not modify M-series Task states. PR #65 was
