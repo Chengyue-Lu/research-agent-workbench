@@ -127,7 +127,7 @@ H4a validator identity 同时绑定 baseline closeout、`execution/baseline.py` 
 `evaluation_harness_review_package`、`evaluation_harness_review_mapping`、
 `evaluation_harness_human_review`、`evaluation_harness_review_freeze` 和
 `evaluation_harness_review_reveal`。它们仍仅支持 `synthetic-contract-proof`。
-这是 H4b 实施候选，依赖 PR90 的 H4a；不代表两个 PR 已经接受。
+H4a 已由 PR90 接受；H4b 是待独立审核的实施候选，尚未取得 Human review 或分析资格。
 
 `ReviewContext` 由调用方提供完整 HarnessContext、exact execution/evidence refs、evidence ID、
 preregistered policy ref、可信 policy registration time 和 package creation time。每次 package、

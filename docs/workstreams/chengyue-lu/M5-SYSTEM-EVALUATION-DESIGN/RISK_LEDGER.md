@@ -99,9 +99,9 @@ PR89 已接受 H3 及其 deadline 修复。以下为 H4 待实现的控制，具
 actual evidence；BLIND、METRIC、ANALYSIS 风险仍待 H4b/H4c，各记录 authority 保持 false。
 结构性回放不能证明真实执行环境、科研效果或 Human 接受；正式接受仍需 exact-head CI 和黄毅 review。
 
-## H4b draft candidate（2026-09-21）
+## H4b original draft candidate（2026-09-21；历史）
 
-PR90 的 H4a 仍待审核。H4b 在独立分支实现 bounded integer projection、随机私有别名、
+当时 PR90 的 H4a 仍待审核。H4b 在独立分支实现 bounded integer projection、随机私有别名、
 exact source-to-projection pins、外部具名 Human Review freeze 与晚于 freeze 的可信 reveal。
 正反证据见 [H4b Attempt](attempts/M5-007-H4B-001/README.md)。匿名输出不带 transport metadata、
 source paths 或执行顺序；部分/重复审查、无具名授权、时间与评分/映射替换均阻断。
