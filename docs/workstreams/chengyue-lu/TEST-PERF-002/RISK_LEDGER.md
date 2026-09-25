@@ -273,3 +273,12 @@ for cross-owner review. Quality thresholds, exclusions, product contracts and re
   duration must be measured on real corpus before claiming practical diagnostic cost.
 - Production selection, thresholds, fixtures and B/C execution order remain unchanged;
   activation still requires independent witnesses and real paired evidence.
+
+## Attempt invocation inputs
+
+- Archived exporter code and committed trace payload in the same directory have
+  different consumers. Preserve executable impact proof while mapping data calls.
+- Default Trace construction validates the whole Runtime manifest and directory
+  inventory, including non-schema resources; schema pins alone do not close it.
+- Observed Python file operations and successful negative controls are diagnostic
+  evidence. Missing observations are not absence proof or independent exclusion authority.
