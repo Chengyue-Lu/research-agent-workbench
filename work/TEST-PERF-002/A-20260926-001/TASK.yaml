@@ -1,0 +1,10 @@
+task_id: TEST-PERF-002
+revision: 45
+request: Continue and publish next Draft for early effect confirmation
+scope: Actual Attempt consumer and fresh checkout causal experiment; no execution
+  authority
+profile: CI experiment engineer and independent consumer reviewer
+required_skills: []
+delegation: true
+budget: one bounded test slice, local dual Python and three small fresh observations
+stop_condition: Draft publication with actual local evidence; hosted/review separately

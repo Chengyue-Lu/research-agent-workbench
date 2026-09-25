@@ -1,0 +1,120 @@
+{
+  "status": "PASS-local-generated-fixture",
+  "head": "4793e81d4963f291ae956d33464f363b6af68468",
+  "source_sha256": "0a0b7af4a01053e7623ac2b6d221f1618b247c5ccf90883c094207214af38b45",
+  "fresh_process_repeats": 3,
+  "wall_median_seconds": 12.952350500010652,
+  "scenario_timings": {
+    "base_binary": {
+      "consumer_median_seconds": 0.2780949000152759,
+      "consumer_range_seconds": [
+        0.244951000000583,
+        0.2781720999919344
+      ],
+      "setup_median_seconds": 0.44484250000095926
+    },
+    "base_lf": {
+      "consumer_median_seconds": 0.3517756999935955,
+      "consumer_range_seconds": [
+        0.3388021999853663,
+        0.41380050001316704
+      ],
+      "setup_median_seconds": 0.44784519998938777
+    },
+    "whitespace": {
+      "consumer_median_seconds": 0.39764830001513474,
+      "consumer_range_seconds": [
+        0.32925329997669905,
+        0.4057127000123728
+      ],
+      "setup_median_seconds": 0.4836139999970328
+    },
+    "crlf": {
+      "consumer_median_seconds": 0.39511069998843595,
+      "consumer_range_seconds": [
+        0.3484210000024177,
+        0.4016776999924332
+      ],
+      "setup_median_seconds": 0.4335615999880247
+    },
+    "repair": {
+      "consumer_median_seconds": 0.34990669999388047,
+      "consumer_range_seconds": [
+        0.266460199985886,
+        0.37710579999838956
+      ],
+      "setup_median_seconds": 0.44167830000515096
+    },
+    "outside": {
+      "consumer_median_seconds": 0.3891967000090517,
+      "consumer_range_seconds": [
+        0.3774933999811765,
+        0.40438379999250174
+      ],
+      "setup_median_seconds": 0.43843480001669377
+    },
+    "nested": {
+      "consumer_median_seconds": 0.3781714000215288,
+      "consumer_range_seconds": [
+        0.3696792999980971,
+        0.3850772000150755
+      ],
+      "setup_median_seconds": 0.4735905000125058
+    },
+    "missing": {
+      "consumer_median_seconds": 0.35872599997674115,
+      "consumer_range_seconds": [
+        0.3383097000187263,
+        0.3867170999874361
+      ],
+      "setup_median_seconds": 0.4569189999892842
+    },
+    "renamed": {
+      "consumer_median_seconds": 0.38476250000530854,
+      "consumer_range_seconds": [
+        0.34388019997277297,
+        0.4173931000113953
+      ],
+      "setup_median_seconds": 0.4364800000039395
+    },
+    "scale-1": {
+      "consumer_median_seconds": 0.36988889999338426,
+      "consumer_range_seconds": [
+        0.36836600000970066,
+        0.4089032999763731
+      ],
+      "setup_median_seconds": 0.43736579999676906
+    },
+    "scale-10": {
+      "consumer_median_seconds": 0.37116099998820573,
+      "consumer_range_seconds": [
+        0.3676065999898128,
+        0.40954059999785386
+      ],
+      "setup_median_seconds": 0.5020223999745212
+    },
+    "scale-100": {
+      "consumer_median_seconds": 0.3498222999915015,
+      "consumer_range_seconds": [
+        0.322478999994928,
+        0.37317890001577325
+      ],
+      "setup_median_seconds": 0.8489713000017218
+    }
+  },
+  "hosted_speedup_proved": false,
+  "safe_exclusions_proved": false,
+  "production_test_changes": false,
+  "base": "eb49093d6d89515c3e66bec29ee85e7a95bb9ce7",
+  "implementation": "4793e81d4963f291ae956d33464f363b6af68468",
+  "related_tests_each_python": 10,
+  "new_tests": 8,
+  "prior_negative_controls": 2,
+  "review": "independent static PASS; source 0a0b7af4a01053e7623ac2b6d221f1618b247c5ccf90883c094207214af38b45",
+  "quality": "production policies, thresholds, exclusions and tests unchanged",
+  "source_pins": {
+    "tests/test_ci_attribute_consumers.py": "0a0b7af4a01053e7623ac2b6d221f1618b247c5ccf90883c094207214af38b45",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/ATTRIBUTE_CONSUMER_PROBE.md": "5e7d5b71be935fadb6de1dcd9d7af49a187284e3a4a754ad222df17a487d891c",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/RISK_LEDGER.md": "9c4b99bd7f75f14ace12125f3c3d25991e406b6aabeb0669d7cc009c9654b7fb"
+  }
+}
