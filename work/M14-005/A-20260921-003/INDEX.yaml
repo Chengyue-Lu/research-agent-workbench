@@ -1,0 +1,78 @@
+schema_version: 0.1.0
+trace_id: TRACE-M14-005-A-20260921-003
+task_id: M14-005
+task_revision: 1
+attempt_id: A-20260921-003
+archive_root: A-20260921-003
+baseline: 1b94a38ae13eada52054cced7b5f22666cb506af
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 5b6ab9c08048f833653ea5899c87390a48367704d8ec8358f92084ad7850d3c8
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 08a0d02a1b529bc4a067578f78f1e66c27a9a07ccc98e6091d1683ed20d65a3d
+read_allowlist:
+- AGENTS.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- .github/**
+- tests/**
+- work/M14-005/**
+- GitHub Issue 57, PR 97 and current CI/protection APIs
+write_scope:
+- .github/scripts/release_preflight.py
+- tests/test_release_preflight.py
+- tests/coverage_policy.yaml
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- work/M14-005/A-20260921-003/**
+tool_allowlist:
+- git
+- gh
+- python
+- apply_patch
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: cefaf3eccacafac466a644b71a38e362b3ea17adb81c676d0d6a85edaa1631db
+  event_count: 12
+tool_event_refs:
+- path: tool-events/coverage.log
+  sha256: e3fdaca58932f5c00000ffded596869c74fb192ab863f610faf51e8fb276e8b6
+- path: tool-events/docs-policy-public.log
+  sha256: e76bd3ddbd178806657a7b101c51c41a08c813a981b37b8cf559d753bec0f963
+- path: tool-events/integration.log
+  sha256: 71862af1fb546f3d7a7730306f17162f0742c8e13e6cdc358948b8abcd9b2893
+- path: tool-events/verification.json
+  sha256: a06e5a9f184d2a3d0b0bd843d6b6624f61790000bd61d19f65f9faee09072e98
+- path: tool-events/governance.log
+  sha256: a42c87c56265e20a2b4367f15955ba7ed9dedf6587e683162fba7b9830d9f0e5
+- path: tool-events/ci-plan.json
+  sha256: 9b257b2f6293c8adb3720620ecc24fa84bdeb7f0fad3cb74743695e05a48f892
+handoff_refs:
+- path: WORKLOG.md
+  sha256: 8ae5fdb1e8f9a73393a16434dd230ff60a25410a864347f99ce98bc5071c109d
+decision_refs:
+- path: outputs/PREFLIGHT.md
+  sha256: 576e9d569edc3d5a30e38c6d78ef07ac2e2b9d5e1f8f8a39d368e59b14e1687f
+output_refs:
+- path: outputs/PREFLIGHT.md
+  sha256: 576e9d569edc3d5a30e38c6d78ef07ac2e2b9d5e1f8f8a39d368e59b14e1687f
+check_refs:
+- path: .gitattributes
+  sha256: 60570bcd4aede16b611131a3d7f4f41231d477d6b5ac83ccb8381e28af2110a6
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: tool-results
+- event_id: EVT-0004
+  affected_stream: file-revisions
+- event_id: EVT-0005
+  affected_stream: external-actions

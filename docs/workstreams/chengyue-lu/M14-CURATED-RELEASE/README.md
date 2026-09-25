@@ -3,7 +3,7 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 来源：[Issue #57](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57)
 - 架构决定：[ADR-0021](../../../decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md)
-- 状态：M14-001～004、M1-009 与 M0-007 已合入；[具名首发准备决定与保护回读](FIRST_RELEASE_DECISION.md) 支持 M14-005 READY；当前审查 [source-CI 实现](SOURCE_CI.md)，首次发行仍待闭合
+- 状态：M14-001～004、M1-009 与 M0-007 已合入；[具名首发准备决定与保护回读](FIRST_RELEASE_DECISION.md) 支持 M14-005 READY；[source-CI 修复及真实 protected push 在线验收](SOURCE_CI.md)已完成，当前审查 [trusted release preflight](RELEASE_CHECKS.md)，首次发行仍待闭合
 - diagnostic baseline：`origin/develop@dd2454b5595e33a12aa058529358d46d311a08c4`
 - task-definition integration base：`origin/develop@6a032e12c30a88a501258eec8c0b5d6c6082d81d`
 
@@ -195,11 +195,14 @@ task-definition 只写 canonical docs、ADR、workstream 与导航。后续实�
 ## 下一合法动作
 
 `M14-001～004`、M1-009 与 M0-007 已合入；[readiness 准备记录](READINESS_PREPARATION.md) 保留
-许可、远端保护和演练证据。当前 [source-CI slice](SOURCE_CI.md) 交付生产端与在线核验器，合入后的真实
-protected push 仍须验收。[具名 v0.1.0 准备决定与 fresh protection 回读](FIRST_RELEASE_DECISION.md) 已闭合
-外部启动条件，M14-005 在当前候选中为 READY，接续为：
+许可、远端保护和演练证据。[source-CI slice](SOURCE_CI.md) 的实现及修复已接受；PR #97 合入后的真实
+protected-develop push 与 clean exact-source 在线 `attest` 已通过，身份见[历史观察 pins](SOURCE_CI_ACCEPTANCE.json)。
+[具名 v0.1.0 准备决定与 fresh protection 回读](FIRST_RELEASE_DECISION.md) 已闭合外部启动条件，
+M14-005 仍为 READY，接续为：
 
-1. R2 审查并接受本候选的 Task 激活、具名决定与 source-CI 实现。
-2. M14-005 implementation：真实 protected source-CI 验收、release-only workflow/checks、atomic topology cutover，
-   然后冻结 exact develop source/current main parent，验证 deterministic projection / prospective-tree equality，
-   完成首发 R2 验收及 tag/artifact/hash closure；最终 release PR 合并与 tag 另行批准。
+1. 对当前 PR #98 的 [trusted release preflight](RELEASE_CHECKS.md) 完成独立 R2 审核与集成验收。
+2. 实现 trusted release-only workflow 与 first-main bootstrap，追加 exact policy include；再加入候选公开
+   链接/构建输入闭包及仓库外双 Python 安装检查。
+3. 经 R2 验收原子切换 release topology；随后冻结 exact develop source/current main parent，验证
+   deterministic projection / prospective-tree equality，完成首发 R2 验收及 tag/artifact/hash closure。
+   最终 release PR 合并与 tag 另行批准。

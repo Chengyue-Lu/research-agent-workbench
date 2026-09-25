@@ -1,0 +1,30 @@
+{
+  "base": "1b94a38ae13eada52054cced7b5f22666cb506af",
+  "head": "2e628eb774a4e802ca0c4dcdba6569ee8f4e072d",
+  "governance": "PASS",
+  "primary_develop_clean_unchanged": true,
+  "prior_attempts_unchanged": true,
+  "dormant_policy_unchanged": true,
+  "task_definitions_unchanged": true,
+  "source_and_surface_checkers_unchanged": true,
+  "preflight_tests": 9,
+  "documentation_policy_public_tests": 44,
+  "preflight_coverage": {
+    "covered_lines": 60,
+    "num_statements": 60,
+    "percent_covered": 100.0,
+    "percent_covered_display": "100",
+    "missing_lines": 0,
+    "excluded_lines": 0,
+    "percent_statements_covered": 100.0,
+    "percent_statements_covered_display": "100",
+    "num_branches": 8,
+    "num_partial_branches": 0,
+    "covered_branches": 8,
+    "missing_branches": 0,
+    "percent_branches_covered": 100.0,
+    "percent_branches_covered_display": "100"
+  },
+  "plan_scope": "focused",
+  "plan_id": "6e0d122ba3a3f120cc65c42debd40a67df4973242b24b5f36d3bdcd98a401d4a"
+}

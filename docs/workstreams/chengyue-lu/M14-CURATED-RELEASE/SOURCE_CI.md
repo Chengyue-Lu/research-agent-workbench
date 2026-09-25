@@ -2,7 +2,7 @@
 
 - Owner: 路诚钺 (`Chengyue-Lu`); R2; Task M14-005 is READY in this candidate under the
   [named v0.1.0 preparation decision and fresh protection readback](FIRST_RELEASE_DECISION.md).
-- Integration baseline: `171d4654f88e926f239cdf25bc8168109b81f391` (2026-09-21 rebase).
+- Original integration baseline: `171d4654f88e926f239cdf25bc8168109b81f391` (2026-09-21 rebase).
 - M0-007 was accepted in [PR #78](https://github.com/Chengyue-Lu/research-agent-workbench/pull/78).
   [PR #79](https://github.com/Chengyue-Lu/research-agent-workbench/pull/79) accepted the separate hard/review rulesets.
 - Scope: the develop-side source-CI producer and live observer. Release-only checks, their policy include,
@@ -84,12 +84,15 @@ Deterministic fixtures exercise the actual squash-delta governance checker and s
 identity/attempt/App rejection cases. The observer is a critical coverage surface with 95/90 thresholds
 and independent positive/negative evidence. Existing full integration, package and coverage gates stay active.
 
-The initial PR cannot prove its own post-merge develop push producer: that workflow first runs after its
-R2 acceptance into develop. Before claiming the source-CI gap closed, observe that resulting push run,
-invoke `attest` at the accepted source and retain its live graph observation. Separately download the
-producer receipt for audit inspection; this step is not performed by `attest` and does not supply trust.
-A previously green develop run
-without this job remains a negative control.
+An implementation PR could not prove its own post-merge develop push producer: that workflow first ran
+after R2 acceptance into develop. The repaired source has now been integrated and its actual protected
+push and clean exact-source online `attest` have passed. The [accepted-source audit pins](SOURCE_CI_ACCEPTANCE.json)
+retain the source SHA, push run/attempt, workflow and check-suite IDs, required job/check-run IDs and
+GitHub Actions App identity. The [original attestation output](SOURCE_CI_ATTESTATION_07083b8.json)
+is preserved byte-for-byte with its SHA-256 in that record. These files record a historical live
+observation, not a reusable trust token.
+The producer receipt was retained separately for audit inspection; `attest` did not consume it. A
+previously green develop run without the source-governance job remains a negative control.
 
 Engineering evidence: [Attempt index](../../../../work/M14-005/A-20260915-003/INDEX.yaml) and
 [verification](../../../../work/M14-005/A-20260915-003/outputs/VERIFICATION.json). Capture gaps and the rejected
@@ -104,10 +107,15 @@ PR #80 was accepted as `ea7d6c8cb619b392f79be439fc1ee214f6928cd9`. Its first pro
 [35536949452](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/35536949452)
 exposed the API-version mismatch above. The [contract repair Attempt](../../../../work/M14-005/A-20260921-002/INDEX.yaml)
 retains the failing regression, supported live responses and bounded maintainer authorization.
-Full source-CI closure requires the repaired integrated source's successful push and live `attest`.
+PR #97 accepted the transport repair as source
+`07083b8275616d95357c97ee19c674f869f5862e`. Its actual protected-develop
+[push run 35814704926](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/35814704926)
+completed successfully at attempt 1; the accepted source's clean, full-history online `attest` passed.
+The audit pins above preserve the source/workflow/run/suite/jobs/App observation without replacing the
+fresh live check required of any future release caller.
 
-Next: integrate the API repair and verify its protected push; prepare release-only checks and their exact
-policy include on a separate development branch while CI runs. The named first-release decision authorizes implementation/cutover
-preparation; final release PR and tag require separate approval. Only the canonical Task status changes
-from BLOCKED to READY; its definition/dependencies, release policy, product/Skill inputs and topology remain
-unchanged. Live cutover remains gated by complete release checks, fresh protection evidence and R2 acceptance.
+Next: review the [trusted release preflight](RELEASE_CHECKS.md), then implement the trusted release-only
+workflow and first-main bootstrap, the new append-only policy include, candidate public/install checks,
+and the separately reviewed atomic topology cutover. The named first-release decision authorizes
+implementation/cutover preparation; final release PR and tag require separate approval. M14-005 remains
+READY, while release eligibility and topology remain dormant.

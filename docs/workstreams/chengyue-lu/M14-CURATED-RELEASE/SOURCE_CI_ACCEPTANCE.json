@@ -1,0 +1,96 @@
+{
+  "record_type": "historical_source_ci_acceptance_audit",
+  "observed_at": "2026-09-24T13:07:51.304227+00:00",
+  "run_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/35814704926",
+  "original_live_attestation_sha256": "806cacfcf32d3dd115d7d93360cb378a661897741f78aca2a2a76c14d4f3770f",
+  "repository": {
+    "full_name": "Chengyue-Lu/research-agent-workbench",
+    "id": 1332227341
+  },
+  "source_sha": "07083b8275616d95357c97ee19c674f869f5862e",
+  "run": {
+    "id": 35814704926,
+    "attempt": 1,
+    "event": "push",
+    "branch": "develop",
+    "status": "completed",
+    "conclusion": "success",
+    "workflow_id": 333624988,
+    "check_suite_id": 96974682223
+  },
+  "workflow": {
+    "id": 333624988,
+    "name": "CI",
+    "path": ".github/workflows/ci.yml"
+  },
+  "check_app": {
+    "id": 15368,
+    "slug": "github-actions",
+    "name": "GitHub Actions"
+  },
+  "required_checks": [
+    "governance",
+    "test (3.11)",
+    "test (3.13)"
+  ],
+  "source_jobs": {
+    "compatibility (3.11)": {
+      "job_id": 107038603829,
+      "check_run_id": 107038603829,
+      "app_id": 15368
+    },
+    "compatibility (3.13)": {
+      "job_id": 107033682889,
+      "check_run_id": 107033682889,
+      "app_id": 15368
+    },
+    "coverage-quality (3.11)": {
+      "job_id": 107033682831,
+      "check_run_id": 107033682831,
+      "app_id": 15368
+    },
+    "documentation": {
+      "job_id": 107033682895,
+      "check_run_id": 107033682895,
+      "app_id": 15368
+    },
+    "governance": {
+      "job_id": 107033643318,
+      "check_run_id": 107033643318,
+      "app_id": 15368
+    },
+    "package-smoke (3.11)": {
+      "job_id": 107033682838,
+      "check_run_id": 107033682838,
+      "app_id": 15368
+    },
+    "package-smoke (3.13)": {
+      "job_id": 107033682842,
+      "check_run_id": 107033682842,
+      "app_id": 15368
+    },
+    "plan": {
+      "job_id": 107033643175,
+      "check_run_id": 107033643175,
+      "app_id": 15368
+    },
+    "repository_smoke": {
+      "job_id": 107033682879,
+      "check_run_id": 107033682879,
+      "app_id": 15368
+    },
+    "test (3.11)": {
+      "job_id": 107038668455,
+      "check_run_id": 107038668455,
+      "app_id": 15368
+    },
+    "test (3.13)": {
+      "job_id": 107038603778,
+      "check_run_id": 107038603778,
+      "app_id": 15368
+    }
+  },
+  "merge_eligible": false,
+  "trust_note": "Historical audit pins only. Future release caller must fetch protected refs and rerun the source-CI live observer; this file and the source-governance receipt are not trust tokens.",
+  "original_live_attestation_file": "SOURCE_CI_ATTESTATION_07083b8.json"
+}
