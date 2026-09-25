@@ -1,0 +1,39 @@
+{
+  "candidate_check": {
+    "files": 281,
+    "manifest_sha256": "6738d08a1f6bd9ba9e70726a18c5d5db09a8202c64f71f5e4f990c85178bdd13",
+    "merge_eligible": false,
+    "tree": "3f3707c1abc6df0d6879e9884428ae989e14a637"
+  },
+  "candidate_commit": "809ef12408af0f93ca007381b81eca57b63489ac",
+  "kind": "synthetic-first-main-candidate-rehearsal",
+  "merge_eligible": false,
+  "origin_develop_tracking_ref": "locally overridden to unmerged source",
+  "parent": "b1d5a5a5850e0e7541e4c460f15384cd45357ab2",
+  "policy_version": "1.3.0",
+  "projection_a": {
+    "files": 281,
+    "manifest_sha256": "6738d08a1f6bd9ba9e70726a18c5d5db09a8202c64f71f5e4f990c85178bdd13",
+    "merge_eligible": false,
+    "tree": "3f3707c1abc6df0d6879e9884428ae989e14a637"
+  },
+  "projection_b": {
+    "files": 281,
+    "manifest_sha256": "6738d08a1f6bd9ba9e70726a18c5d5db09a8202c64f71f5e4f990c85178bdd13",
+    "merge_eligible": false,
+    "tree": "3f3707c1abc6df0d6879e9884428ae989e14a637"
+  },
+  "public_check": {
+    "build_inputs": "success",
+    "candidate": "809ef12408af0f93ca007381b81eca57b63489ac",
+    "documentation": "success",
+    "files_checked": 281,
+    "merge_eligible": false,
+    "public_pages": 7,
+    "repository": "Chengyue-Lu/research-agent-workbench",
+    "source": "4ce940433e43f246b92dde602658ad3aeac0ef96"
+  },
+  "remote_branch_created": false,
+  "source": "4ce940433e43f246b92dde602658ad3aeac0ef96",
+  "source_ci_identity": "synthetic fixture; not live attestation"
+}

@@ -1,0 +1,90 @@
+schema_version: 0.1.0
+trace_id: TRACE-M14-005-A-20260926-001
+task_id: M14-005
+task_revision: 1
+attempt_id: A-20260926-001
+archive_root: A-20260926-001
+baseline: eb49093d6d89515c3e66bec29ee85e7a95bb9ce7
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: stage-completed
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: a8c7b50ad6b943422e4557cb3f1e89f0d493bc600eeae23c6dee69eb97e86f40
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 2bd575d21a5bc660368e271646c93acf0f963d5e0879ba4cbe61632d1bdab7a5
+read_allowlist:
+- AGENTS.md
+- README.md
+- PROJECT_MEMORY.md at the primary checkout
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/ROADMAP.md
+- docs/DEVELOP_TO_MAIN_RELEASE.md
+- docs/decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- .github/**
+- tests/**
+- work/M14-005/**
+- GitHub Issue 57, PR 98, and current develop/main ruleset readback
+- Official GitHub Actions event and workflow-dispatch documentation
+write_scope:
+- .github/workflows/release.yml
+- .github/scripts/release_public.py
+- .github/release-surface.yml
+- tests/public_surface_helpers.py
+- tests/test_release_public.py
+- tests/coverage_policy.yaml
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- work/M14-005/A-20260926-001/**
+- Feature branch and draft PR to develop
+tool_allowlist:
+- git
+- gh
+- python
+- apply_patch
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 47d4f12ff1b8799b28cdb55570dd886928dbafcda981d77351c1cb2d839a94dc
+  event_count: 13
+tool_event_refs:
+- path: tool-events/focused.log
+  sha256: 399140c0567a3f51242b94ad686635b654178872a56f66ad4dbc189764e1d06e
+- path: tool-events/public-coverage-tests.log
+  sha256: 5718c5407e596eab88a892c3ebff1a16feb658fb1dffa30bd57a557c3ff7032f
+- path: tool-events/public-coverage.json
+  sha256: d4a71319e6c28ea9ae3fb2c6deed84a91b5419682b99b8cd4ec4af4ce533a6f9
+- path: tool-events/repository-env-failure.log
+  sha256: 21b920fd71df361543266c21f0711f408db2b9043779957232fe11bc74ece48e
+- path: tool-events/repository.log
+  sha256: 255440a9ece3a188b00d67b928a848500938bdd0c6788d0dcac767adb46d7ef3
+- path: tool-events/structural-rehearsal.json
+  sha256: d919325c7e028bd5ceded43c557d80c289de2c53b2cbcdcf62fa4e6084b13b1b
+- path: tool-events/synthetic-candidate-check.json
+  sha256: 0202253540825aaa59cc8950452ccedb5df622f038229029e35a35775732b1ab
+handoff_refs:
+- path: WORKLOG.md
+  sha256: ee7d8d82a41ca2d73eed773fdae1d653fe2e6f168c927a8e34b646b8b6fd218d
+decision_refs:
+- path: outputs/WORKFLOW.md
+  sha256: 1bddcd821fe814c2a04db36a55ec5515f01b468799afd29812396a98b73cf1e4
+output_refs:
+- path: outputs/WORKFLOW.md
+  sha256: 1bddcd821fe814c2a04db36a55ec5515f01b468799afd29812396a98b73cf1e4
+check_refs:
+- path: .gitattributes
+  sha256: 60570bcd4aede16b611131a3d7f4f41231d477d6b5ac83ccb8381e28af2110a6
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: tool-results
+- event_id: EVT-0004
+  affected_stream: file-revisions
+- event_id: EVT-0005
+  affected_stream: external-actions
