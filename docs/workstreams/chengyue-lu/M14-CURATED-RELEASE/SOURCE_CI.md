@@ -114,8 +114,9 @@ completed successfully at attempt 1; the accepted source's clean, full-history o
 The audit pins above preserve the source/workflow/run/suite/jobs/App observation without replacing the
 fresh live check required of any future release caller.
 
-Next: review the [trusted release preflight](RELEASE_CHECKS.md), then implement the trusted release-only
-workflow and first-main bootstrap, the new append-only policy include, candidate public/install checks,
-and the separately reviewed atomic topology cutover. The named first-release decision authorizes
+Next: PR #98 accepted the [trusted release preflight](RELEASE_CHECKS.md), and its real protected
+develop push CI 36164963118 plus clean exact-source live attestation passed. Review the diagnostic
+release-only workflow and first-main bootstrap, append-only policy include, candidate public/install
+checks, and the separately reviewed atomic topology cutover. The named first-release decision authorizes
 implementation/cutover preparation; final release PR and tag require separate approval. M14-005 remains
 READY, while release eligibility and topology remain dormant.

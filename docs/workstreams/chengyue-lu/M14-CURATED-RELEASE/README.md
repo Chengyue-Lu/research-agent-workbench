@@ -3,7 +3,7 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 来源：[Issue #57](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57)
 - 架构决定：[ADR-0021](../../../decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md)
-- 状态：M14-001～004、M1-009 与 M0-007 已合入；[具名首发准备决定与保护回读](FIRST_RELEASE_DECISION.md) 支持 M14-005 READY；[source-CI 修复及真实 protected push 在线验收](SOURCE_CI.md)已完成，当前审查 [trusted release preflight](RELEASE_CHECKS.md)，首次发行仍待闭合
+- 状态：M14-001～004、M1-009 与 M0-007 已合入；[具名首发准备决定与保护回读](FIRST_RELEASE_DECISION.md) 支持 M14-005 READY；[source-CI](SOURCE_CI.md) 和 [trusted release preflight](RELEASE_CHECKS.md) 已经接受并完成真实 protected push 在线验收；正在准备诊断型 release-only workflow、公开面校验与追加 policy 版本，首次发行仍待闭合
 - diagnostic baseline：`origin/develop@dd2454b5595e33a12aa058529358d46d311a08c4`
 - task-definition integration base：`origin/develop@6a032e12c30a88a501258eec8c0b5d6c6082d81d`
 
@@ -200,9 +200,11 @@ protected-develop push 与 clean exact-source 在线 `attest` 已通过，身份
 [具名 v0.1.0 准备决定与 fresh protection 回读](FIRST_RELEASE_DECISION.md) 已闭合外部启动条件，
 M14-005 仍为 READY，接续为：
 
-1. 对当前 PR #98 的 [trusted release preflight](RELEASE_CHECKS.md) 完成独立 R2 审核与集成验收。
-2. 实现 trusted release-only workflow 与 first-main bootstrap，追加 exact policy include；再加入候选公开
-   链接/构建输入闭包及仓库外双 Python 安装检查。
+1. [PR #98](https://github.com/Chengyue-Lu/research-agent-workbench/pull/98) 已独立 R2 审核并合入
+   `develop@eb49093`；真实 [protected push CI36164963118](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36164963118)
+   与 clean source live attestation PASS；本地审计文件在仓库外单独保存。
+2. 审核诊断型 release-only workflow、first-main 信任边界、candidate 公开链接/构建输入检查和追加 policy
+   version；继续补全仓库外双 Python 安装、no-Skill/Registry/Projection 检查与真实 hosted first-main 观察。
 3. 经 R2 验收原子切换 release topology；随后冻结 exact develop source/current main parent，验证
    deterministic projection / prospective-tree equality，完成首发 R2 验收及 tag/artifact/hash closure。
    最终 release PR 合并与 tag 另行批准。

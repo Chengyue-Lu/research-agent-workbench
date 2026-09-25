@@ -1,11 +1,12 @@
 # M14 Curated Release 风险台账
 
-已接受的 source-CI 修复产生真实 protected-develop push 与 clean exact-source 在线验收；
-[历史观察身份](SOURCE_CI_ACCEPTANCE.json)已固定。当前 PR #98 的
+已接受的 source-CI 修复与 PR #98 均产生真实 protected-develop push 与 clean exact-source 在线验收；
+[历史观察身份](SOURCE_CI_ACCEPTANCE.json)已固定。已合入的
 [trusted release preflight](RELEASE_CHECKS.md) 在 accepted source checkout 中组合在线 source-CI 与独立
 pins、重复投影、候选 parent/tree 检查，结束前重查 refs 和 CI attempt。它只形成审计证据；
-release-only workflow 的可信 bootstrap、append-only policy include、candidate 安装/公开面检查与
-atomic cutover 仍待验收。
+诊断型 release-only workflow 的 first-main bootstrap、append-only policy include、candidate 公开面检查
+正在独立 R2 候选中验证；候选双 Python 安装检查与 atomic cutover 仍待验收。候选 workflow 的绿色
+check 不自证其代码来源，真实 first-main hosted 行为还须独立观察。
 
 | ID | 类型 | 风险 | 控制 | 当前状态 |
 |---|---|---|---|---|

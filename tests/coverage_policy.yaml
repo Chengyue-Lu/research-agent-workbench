@@ -68,6 +68,7 @@ suites:
       - test_release_surface
       - test_release_source_ci
       - test_release_preflight
+      - test_release_public
       - test_release_oracle_replay
       - test_portable_build
       - test_runtime_resources
@@ -183,6 +184,7 @@ critical_modules:
   - .github/scripts/release_surface.py
   - .github/scripts/release_source_ci.py
   - .github/scripts/release_preflight.py
+  - .github/scripts/release_public.py
   - src/research_workbench/protocol/authority.py
   - src/research_workbench/capability/requirements.py
   - src/research_workbench/capability/supply.py
@@ -248,6 +250,15 @@ negative_acceptance:
       - test_release_preflight.ReleasePreflightTests.test_missing_live_success_blocks_before_any_projection
       - test_release_preflight.ReleasePreflightTests.test_independent_pins_reject_manifest_self_claims_and_wrong_candidate
       - test_release_preflight.ReleasePreflightTests.test_ref_and_ci_races_cannot_publish_a_success
+  - surface: candidate-public-release-check
+    modules:
+      - .github/scripts/release_public.py
+    positive_tests:
+      - test_release_public.ReleasePublicTests.test_exact_candidate_blobs_pass_without_execution_or_merge_authority
+    negative_tests:
+      - test_release_public.ReleasePublicTests.test_links_build_inputs_and_internal_paths_fail_closed
+      - test_release_public.ReleasePublicTests.test_dirty_source_and_checker_drift_block
+      - test_release_public.ReleasePublicTests.test_cli_creates_only_a_success_receipt_and_refuses_overwrite
   - surface: protected-release-source-ci
     modules:
       - .github/scripts/release_source_ci.py
