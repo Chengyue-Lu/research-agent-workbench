@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+from contextlib import redirect_stderr
 import copy
 import hashlib
+import io
 import json
+import os
 from pathlib import Path
+import runpy
+import subprocess
 import sys
 import unittest
 from unittest.mock import patch
@@ -54,6 +59,12 @@ class ReleasePublicTests(unittest.TestCase):
         self.assertFalse(result['merge_eligible'])
         self.assertFalse((self.root / 'src/never-run.py').exists())
 
+    def test_named_html_anchor_is_a_valid_public_link_target(self):
+        files = copy.deepcopy(self.files)
+        files['README.md'] = ('100644', b'[Legacy](docs/GETTING_STARTED.md#legacy)\n')
+        files['docs/GETTING_STARTED.md'] = ('100644', b'<a name="legacy"></a>\n')
+        self.assertEqual('success', self.run_check(files)['documentation'])
+
     def test_links_build_inputs_and_internal_paths_fail_closed(self):
         for mutate, message in [
             (lambda f: f.__setitem__('README.md', ('100644', b'[broken](missing.md)\n')), 'missing link'),
@@ -93,11 +104,21 @@ class ReleasePublicTests(unittest.TestCase):
             public.main(args(bad_candidate))
         self.assertFalse(output.exists())
         good_candidate, _ = self.fixture.candidate(self.files)
-        with patch.object(public, 'ROOT', self.root):
-            self.assertEqual(0, public.main(args(good_candidate)))
-            self.assertFalse(json.loads(output.read_text(encoding='utf-8'))['merge_eligible'])
-            with self.assertRaisesRegex(ValueError, 'output already exists'):
-                public.main(args(good_candidate))
+        completed = subprocess.run(
+            [sys.executable, str(self.root / public.TOOL), *args(good_candidate)],
+            cwd=self.fixture.base, capture_output=True, text=True, check=False,
+            env={**os.environ, 'PYTHONDONTWRITEBYTECODE': '1'})
+        self.assertEqual(0, completed.returncode, completed.stderr)
+        self.assertFalse(json.loads(output.read_text(encoding='utf-8'))['merge_eligible'])
+        with patch.object(public, 'ROOT', self.root), \
+             self.assertRaisesRegex(ValueError, 'output already exists'):
+            public.main(args(good_candidate))
+
+    def test_cli_rejects_missing_required_inputs(self):
+        with patch.object(sys, 'argv', ['release_public.py']), \
+             redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as raised:
+            runpy.run_path(str(ROOT / public.TOOL), run_name='__main__')
+        self.assertEqual(2, raised.exception.code)
 
     def test_policy_adds_exact_release_files_without_rewriting_old_versions(self):
         policy = json.loads((ROOT / '.github/release-surface.yml').read_text(encoding='utf-8'))
