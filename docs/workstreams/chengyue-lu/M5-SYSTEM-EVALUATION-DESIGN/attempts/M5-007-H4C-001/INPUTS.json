@@ -1,0 +1,78 @@
+{
+  "base": "97d3b3d3141419b34ad47e0f42d9f01d0dfbd535",
+  "preparation": "3f90631dfa79dec9eaf5ba9ba937f1dfa079070b",
+  "inputs": [
+    {
+      "path": "AGENTS.md",
+      "commit": "3f90631dfa79dec9eaf5ba9ba937f1dfa079070b",
+      "blob_oid": "67da3f99859775bcdb593c2c5078575df1ad69ce",
+      "sha256": "9e3b17ec2306518fd23d52fc52c3dfdb69aa8108114fe23abb4516abaa584a3a"
+    },
+    {
+      "path": "README.md",
+      "commit": "3f90631dfa79dec9eaf5ba9ba937f1dfa079070b",
+      "blob_oid": "82051ae64c946ac749429d1dc83cfd0c20801ab3",
+      "sha256": "43d7c9e8d11c98ee8a56b19e3e1c449be0cdb17f49297db1eead6d420c778884"
+    },
+    {
+      "path": "docs/TASKS.md",
+      "commit": "3f90631dfa79dec9eaf5ba9ba937f1dfa079070b",
+      "blob_oid": "077392e1268525cda893f14977f9859727c2ef9e",
+      "sha256": "a38daa21f291719a6df93615c207752e558252607f159c4509a47bfe5a322398"
+    },
+    {
+      "path": "docs/DEVELOPMENT.md",
+      "commit": "3f90631dfa79dec9eaf5ba9ba937f1dfa079070b",
+      "blob_oid": "035a5171ef9da7ea549987dd95cbd6002e12305d",
+      "sha256": "95b84fb40db619f126e535ed33f3c9c43ff2424435e12b08eca4ce8da8c76bff"
+    },
+    {
+      "path": "docs/decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md",
+      "commit": "3f90631dfa79dec9eaf5ba9ba937f1dfa079070b",
+      "blob_oid": "cae0cd53afa1e275f6cd402e9ad0171dab1b6f18",
+      "sha256": "64edd73c44bc77f326a90c51e0a8cbf5fd28c4bbf1a5e18aca7f50250ce21a12"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H4C_PACKET.md",
+      "commit": "3f90631dfa79dec9eaf5ba9ba937f1dfa079070b",
+      "blob_oid": "d7d7a45f99f2b2d18ab27910122df5743babc96e",
+      "sha256": "2900ffd8380813b087a42fce3f511633abfb986a70158b08e8a8ef3ab545ff1d"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H4_PACKET.md",
+      "commit": "3f90631dfa79dec9eaf5ba9ba937f1dfa079070b",
+      "blob_oid": "091b67d52e6f5e4849dd248507bff3f065a36a15",
+      "sha256": "13dff3a63e2974dca77c5f5728b0eb9458570d656a15b1f19a11fdd2865be2c4"
+    },
+    {
+      "path": "src/research_workbench/evaluation/harness_review.py",
+      "commit": "3f90631dfa79dec9eaf5ba9ba937f1dfa079070b",
+      "blob_oid": "254bd9d5040b138f825017a59f8a2821c12b984c",
+      "sha256": "7d71a4f6b9037955e6387951f328a177fbc23a62e8b12e3e17043eb434edc196"
+    },
+    {
+      "path": "src/research_workbench/evaluation/harness_evidence.py",
+      "commit": "3f90631dfa79dec9eaf5ba9ba937f1dfa079070b",
+      "blob_oid": "d1f113ab62988faea5873491cdc4e45c8e9beee1",
+      "sha256": "63c6491439602c699b83f851d609900b4b5554e02f593d25f4cb6266cd54bf70"
+    },
+    {
+      "path": "src/research_workbench/evaluation/system_protocol.py",
+      "commit": "3f90631dfa79dec9eaf5ba9ba937f1dfa079070b",
+      "blob_oid": "c5e621b434b7375f51757456acd352d9f35c1e9a",
+      "sha256": "88f3fe29071695a7b9d40876050606da39a7fac754fb7585015ece6619d562f9"
+    },
+    {
+      "path": "tests/coverage_policy.yaml",
+      "commit": "3f90631dfa79dec9eaf5ba9ba937f1dfa079070b",
+      "blob_oid": "134e6446eeb1618dfb567379d4975dae8c92af9d",
+      "sha256": "ec64c08b7b9a5fa8f2689b88f6fddcf542a4bae046e105ee1fc7b6600ce4d165"
+    },
+    {
+      "path": "tests/ci_impact_policy.yaml",
+      "commit": "3f90631dfa79dec9eaf5ba9ba937f1dfa079070b",
+      "blob_oid": "a2d4d9a8186dac2c340abdf4b43810a46c83a027",
+      "sha256": "28dbbda0a95c2b52d15d67fa094c491b46325c5206151696c1747ae511b15c4d"
+    }
+  ]
+}

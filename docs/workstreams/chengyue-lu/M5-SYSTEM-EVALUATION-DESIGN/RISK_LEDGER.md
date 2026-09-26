@@ -122,3 +122,12 @@ PR96 H4b 已合入且实际 push CI SUCCESS；单次审核例外不扩到本切�
 | COST-TIME / missing scope | 全部失败/retry 与人工成本闭包；缺测量保持 unavailable；拒绝 Host/slice 耗时冒充外层时间、缺值补零及单位混用 | 本轮先消费旧数据，不强制增加 H3 采集 |
 | ANALYSIS / incomplete pairing | analysis-input 重验 actual/overlap/pairwise 与完整 block；保留 pilot/unknown/失败诊断，不能自报 primary eligibility | H4c 待实施；synthetic eligibility false |
 | IDENTITY / new Schema closure | exact candidate 重新生成 synthetic 输入；旧 archives 字节和身份保留，不回填旧 pins | 实施前固定输入与捕获；H5 最终收口 |
+
+## H4c implementation candidate (2026-09-27)
+
+| Risk / seam | Implemented control | Remaining acceptance |
+|---|---|---|
+| METRIC / source and method | exact run/Attempt/slice target, fixed arithmetic, external measurement verifier, frozen Human sources | verifier must independently attest the method and complete measurement scope; no research meter accepted |
+| COST-TIME / failures and missing scope | exact ordered all-Attempt ledgers, five Human cost components, trusted whole-arm clock; missing null | old local execution/rubric does not establish these measurements |
+| ANALYSIS / pairing and ceiling | revalidate H4a/H4b, actual identity, overlap, analysis-input pairwise and preregistration; complete blocks, method/unit equality | synthetic eligibility false; H5 and live Gates retained |
+| IDENTITY / replay | fresh candidate inputs and cold replay; previous archives unchanged | exact-head hosted CI and R2 review pending |

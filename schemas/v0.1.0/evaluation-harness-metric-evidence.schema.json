@@ -1,0 +1,610 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/evaluation-harness-metric-evidence.schema.json",
+  "title": "evaluation_harness_metric_evidence",
+  "x-rwb-document-kind": "evaluation_harness_metric_evidence",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "version",
+    "purpose",
+    "metrics_id",
+    "request",
+    "protocol_ref",
+    "evidence_ref",
+    "reveal_ref",
+    "checked_at",
+    "cells",
+    "validator",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "evaluation_harness_metric_evidence"
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "purpose": {
+      "const": "synthetic-contract-proof"
+    },
+    "metrics_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "request": {
+      "$ref": "#/$defs/request"
+    },
+    "protocol_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "evidence_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "reveal_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "checked_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "cells": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "target",
+          "attempts",
+          "complete",
+          "metrics"
+        ],
+        "properties": {
+          "target": {
+            "$ref": "#/$defs/target"
+          },
+          "attempts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "attempt_id",
+                "retry_index",
+                "lifecycle",
+                "journal_ref",
+                "slices"
+              ],
+              "properties": {
+                "attempt_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "retry_index": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "lifecycle": {
+                  "enum": [
+                    "not-started",
+                    "completed",
+                    "preflight-blocked",
+                    "post-call-failed"
+                  ]
+                },
+                "journal_ref": {
+                  "oneOf": [
+                    {
+                      "$ref": "common.schema.json#/$defs/fileRef"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "slices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "attempt_id",
+                      "slice_index",
+                      "lifecycle",
+                      "comparison",
+                      "receipt_ref"
+                    ],
+                    "properties": {
+                      "attempt_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "slice_index": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "lifecycle": {
+                        "enum": [
+                          "not-started",
+                          "completed",
+                          "preflight-blocked",
+                          "post-call-failed"
+                        ]
+                      },
+                      "comparison": {
+                        "enum": [
+                          "not-observed",
+                          "matches-frozen",
+                          "differs-from-frozen"
+                        ]
+                      },
+                      "receipt_ref": {
+                        "oneOf": [
+                          {
+                            "$ref": "common.schema.json#/$defs/fileRef"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "minItems": 1
+                }
+              },
+              "additionalProperties": false
+            },
+            "minItems": 1
+          },
+          "complete": {
+            "type": "boolean"
+          },
+          "metrics": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "metric_id",
+                "status",
+                "unit",
+                "value",
+                "reason",
+                "estimation_method",
+                "measurement_ref",
+                "method_ref",
+                "observation_ref",
+                "method_registered_at",
+                "observed_at"
+              ],
+              "properties": {
+                "metric_id": {
+                  "enum": [
+                    "method-violation",
+                    "claim-overreach",
+                    "provenance-error",
+                    "counterevidence-omission",
+                    "human-correction-distance",
+                    "omission-rate",
+                    "rework-count",
+                    "lookup-count",
+                    "h2-distortion-rate",
+                    "cascade-rate",
+                    "context-loaded",
+                    "cost",
+                    "completion-time"
+                  ]
+                },
+                "status": {
+                  "enum": [
+                    "measured",
+                    "estimated",
+                    "unavailable",
+                    "not-applicable"
+                  ]
+                },
+                "unit": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "value": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "estimation_method": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1
+                },
+                "measurement_ref": {
+                  "$ref": "common.schema.json#/$defs/fileRef"
+                },
+                "method_ref": {
+                  "oneOf": [
+                    {
+                      "$ref": "common.schema.json#/$defs/fileRef"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "observation_ref": {
+                  "oneOf": [
+                    {
+                      "$ref": "common.schema.json#/$defs/fileRef"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "method_registered_at": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "observed_at": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
+            },
+            "minItems": 13,
+            "maxItems": 13
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "validator": {
+      "type": "object",
+      "required": [
+        "identity",
+        "version",
+        "sources",
+        "schemas_sha256"
+      ],
+      "properties": {
+        "identity": {
+          "const": "evaluation-harness-analysis"
+        },
+        "version": {
+          "const": "1.0.0"
+        },
+        "sources": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "schemas_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "boundaries": {
+      "$ref": "evaluation-harness-execution.schema.json#/properties/boundaries"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "request": {
+      "type": "object",
+      "required": [
+        "review",
+        "freeze",
+        "expected_freeze_ref",
+        "expected_reveal_ref",
+        "revealed_at",
+        "checked_at",
+        "associations"
+      ],
+      "properties": {
+        "review": {
+          "type": "object",
+          "required": [
+            "harness",
+            "expected_execution_ref",
+            "expected_evidence_ref",
+            "expected_evidence_id",
+            "expected_policy_ref",
+            "policy_registered_at",
+            "package_created_at"
+          ],
+          "properties": {
+            "harness": {
+              "$ref": "evaluation-harness-execution.schema.json#/properties/context"
+            },
+            "expected_execution_ref": {
+              "$ref": "common.schema.json#/$defs/fileRef"
+            },
+            "expected_evidence_ref": {
+              "$ref": "common.schema.json#/$defs/fileRef"
+            },
+            "expected_evidence_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "expected_policy_ref": {
+              "$ref": "common.schema.json#/$defs/fileRef"
+            },
+            "policy_registered_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "package_created_at": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "additionalProperties": false
+        },
+        "freeze": {
+          "type": "object",
+          "required": [
+            "expected_package_ref",
+            "expected_mapping_ref",
+            "submissions",
+            "frozen_at"
+          ],
+          "properties": {
+            "expected_package_ref": {
+              "$ref": "common.schema.json#/$defs/fileRef"
+            },
+            "expected_mapping_ref": {
+              "$ref": "common.schema.json#/$defs/fileRef"
+            },
+            "submissions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "review_ref",
+                  "received_at"
+                ],
+                "properties": {
+                  "review_ref": {
+                    "$ref": "common.schema.json#/$defs/fileRef"
+                  },
+                  "received_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "minItems": 1
+            },
+            "frozen_at": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "additionalProperties": false
+        },
+        "expected_freeze_ref": {
+          "$ref": "common.schema.json#/$defs/fileRef"
+        },
+        "expected_reveal_ref": {
+          "$ref": "common.schema.json#/$defs/fileRef"
+        },
+        "revealed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "checked_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "associations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "block_index",
+              "arm_id",
+              "metric_id",
+              "measurement_ref",
+              "method_ref",
+              "observation_ref",
+              "method_registered_at",
+              "observed_at"
+            ],
+            "properties": {
+              "block_index": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "arm_id": {
+                "enum": [
+                  "plain-agent",
+                  "plain-agent-tool",
+                  "mode-no-skill",
+                  "mode-candidate-skill"
+                ]
+              },
+              "metric_id": {
+                "enum": [
+                  "method-violation",
+                  "claim-overreach",
+                  "provenance-error",
+                  "counterevidence-omission",
+                  "human-correction-distance",
+                  "omission-rate",
+                  "rework-count",
+                  "lookup-count",
+                  "h2-distortion-rate",
+                  "cascade-rate",
+                  "context-loaded",
+                  "cost",
+                  "completion-time"
+                ]
+              },
+              "measurement_ref": {
+                "$ref": "common.schema.json#/$defs/fileRef"
+              },
+              "method_ref": {
+                "oneOf": [
+                  {
+                    "$ref": "common.schema.json#/$defs/fileRef"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "observation_ref": {
+                "oneOf": [
+                  {
+                    "$ref": "common.schema.json#/$defs/fileRef"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "method_registered_at": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "observed_at": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "target": {
+      "type": "object",
+      "required": [
+        "block_index",
+        "case_id",
+        "phase",
+        "replicate",
+        "arm_id",
+        "run_id",
+        "attempts_sha256",
+        "attempt_ids",
+        "slices"
+      ],
+      "properties": {
+        "block_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "case_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "phase": {
+          "enum": [
+            "pilot",
+            "confirmatory"
+          ]
+        },
+        "replicate": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "arm_id": {
+          "enum": [
+            "plain-agent",
+            "plain-agent-tool",
+            "mode-no-skill",
+            "mode-candidate-skill"
+          ]
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "attempts_sha256": {
+          "$ref": "common.schema.json#/$defs/sha256"
+        },
+        "attempt_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "slices": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "attempt_id",
+              "slice_index"
+            ],
+            "properties": {
+              "attempt_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "slice_index": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "additionalProperties": false
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -281,3 +281,10 @@ PR96 单次维护者审核例外已使用完毕，不记为 cross-owner APPROVED
 基线/接受与输入 pins 见 [进入记录](attempts/M5-007-H4C-ENTRY-001/README.md)。
 本轮只完成准备；实施开始时固定新的 Task Attempt 和 exact candidate 输入。M5-007 IN_PROGRESS，
 H5 与 live/Human/release Gates 保持各自后继验收。
+
+## H4c implementation candidate (2026-09-27)
+
+Implemented four versioned records and metric/analysis compile/validate APIs under the accepted H4c packet.
+Retained all 13 statuses, actual failed/retry/unstarted scope, external method/observation trust and complete paired inputs.
+Candidate verification and capture-gap disclosure: [H4c Attempt](attempts/M5-007-H4C-001/README.md).
+M5-007 remains IN_PROGRESS; H4c review precedes H5 overall closeout. No previous exception extends to this PR.

@@ -1,4 +1,4 @@
-# System-Level Evaluation Harness — H1–H4b
+# System-Level Evaluation Harness — H1–H4c
 
 Evaluation owner：路诚钺。Execution 接口 owner：黄毅。Record version：`1.0.0`。
 任务边界见 [M5-007](../TASKS.md)，完整施工顺序见 [进入计划](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md)。
@@ -7,8 +7,8 @@ H1/H2 提供确定性计划及评价侧预检，其记录固定 `actual_executio
 H3 提供 synthetic 四臂执行、fresh Attempt 和执行后 replay；接口与验证范围见
 [H3 实施包](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H3_PACKET.md)。
 H4a 提供 evaluation-owned actual evidence 与独立重算；H4b 增加有限 synthetic 格式的盲审、具名审查冻结和揭盲。其实施已由 PR96 合入，实际 push CI SUCCESS；接受边界见
-[H4c 进入记录](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-ENTRY-001/README.md)。metrics、analysis 和持久化集成收口
-属于后续 [H4c](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H4C_PACKET.md)/H5。所有记录保持
+[H4c 进入记录](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-ENTRY-001/README.md)。当前候选实现
+[H4c](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H4C_PACKET.md) 的 measurement association 和配对分析输入；H5 为后续整体接受。所有记录保持
 `execution_authority=false`、`task_completion=false`，不改写 Manifest、Protocol 或 Runtime 契约。
 
 ## H1：冻结计划
@@ -183,3 +183,45 @@ H1–H4b records 由 Schema catalog 和文档 kind 注册。通用 repository va
 `test_evaluation_harness_review`。后者包含四臂证据到冷进程 freeze/reveal 的闭包及外部 authority、
 时间、来源/映射/评分篡改、匿名泄漏和缺项反例。测试只使用 synthetic
 文件闭包；真实 case、live conformance、production admission 与科研效果仍按 M5-004 的独立条件验收。
+
+
+## H4c：关联与独立配对输入（implementation candidate）
+
+`evaluation/harness_analysis.py` 提供 `compile_harness_metrics` / `validate_harness_metrics` 和
+`compile_harness_analysis` / `validate_harness_analysis`。新增四种 `1.0.0` 记录：
+`evaluation_harness_metric_method`、`evaluation_harness_metric_observation`、
+`evaluation_harness_metric_evidence`、`evaluation_harness_analysis_input`。
+它们只接受 `synthetic-contract-proof`；现有 `evaluation_measurement@1.0.0` 保持原契约。
+
+`MetricContext` 显式携带完整 Review/Freeze contexts、外部 selected freeze/reveal refs 和时间，以及
+每个 `(block_index, arm_id, metric_id)` 的 measurement/method/observation refs 和可信方法注册/观察时间。
+H4b reveal 先独立重验 H4a/H3；target 再从 frozen plan 与实际 slots 重建 run、case、phase、replicate、
+arm、全部 Attempt 集合、slice 集合与完整生命周期摘要哈希。每个计划单元必须列全 13 个指标。
+
+数值方法固定为整数 audit count、带正整数分母的 audit ratio、整臂 context ledger、完整 cost ledger
+或 trusted Harness whole-arm wall clock。observations 严格绑定 method pin、operation、target、可信时间
+和所选实际证据/冻结 reviews。context/cost ledger 精确保留所有 executed Attempts，包括失败与 retry；
+cost 还必须包含 preparation、supervision、review、correction、recovery 五项。completion-time 使用外层
+开始/结束观察，不能用 Host 或 slice 累加替代；单位及币种不换算。缺失值保持 null 和原因。
+
+除了 admission/projection/Human verifiers，调用方还必须提供独立的 `measurement_verifier`，每条记录
+仅接受回调严格返回 True。回调必须从外部可信依据审核该固定方法的适用性、注册/观察时间、完整
+计量口径、来源、分母与数值真实性；record 自报字段、算术相等和文件 hash 本身不建立这项权威。
+Human 指标仅消费 target 对应的冻结 ratings，代码不把 integer-equality 评分映射为科研指标。
+本候选没有提供已接受的科研计量器；真实四臂 fixture 的全部指标因此为 unavailable。手工数值
+unit fixture 只证明契约重建与拒绝路径，不能作为测量有效性证据。
+
+`AnalysisContext` 另固定 metrics ref/identity、分析时间和逐 case 的 `analysis-input` comparison refs。
+分析重新验证 metrics 整链、actual 与 frozen 身份、overlap 和 pairwise；comparison 必须引用对应
+预注册记录并保持既有解释 ceiling。按 plan 的完整 case/phase/replicate block 生成五组 contrast：
+A4−A2、A2−A1、A4−A3、A3−A2、A4−A1。不完整四臂 block 保留诊断且差值 unavailable；数值配对
+要求相同 unit 与 exact method ref，estimated 状态继续传播，缺失不补零。A4−A3 按独立重算输出
+Skill conditional increment、Skill-bearing package effect 或 unavailable。
+
+Protocol 的统计参数和 decision hierarchy 原样保存，供后续逐指标配对/区间分析；这里不计算加权
+总分、bootstrap 区间或科研效果结论。synthetic pairs 的 primary_confirmatory_eligible 固定 false，
+包括 confirmatory phase 和 held-out overlap。所有 authority boundaries 保持 false。
+
+新进程从持久化 records 读取并重建，禁用 Provider/Tool/Host、network/process 和项目内代码执行。
+新 Schema 与 source identity 使用当前候选重新生成的 synthetic inputs；历史 archives 原字节不变。
+验证、捕获缺口与接受边界见 [H4c Attempt](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/README.md)。
