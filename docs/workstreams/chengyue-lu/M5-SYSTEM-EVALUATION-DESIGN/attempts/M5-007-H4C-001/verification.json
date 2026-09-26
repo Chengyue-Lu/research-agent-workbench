@@ -1,0 +1,368 @@
+{
+  "task_id": "M5-007",
+  "attempt_id": "M5-007-H4C-001",
+  "implementation_head": "344737204422a69aa6b27a49329aa87010ca60ce",
+  "test_hardening_head": "791f4d56214cb8006f70301c4bcc4cdc856bdb16",
+  "integration_base": "97d3b3d3141419b34ad47e0f42d9f01d0dfbd535",
+  "source_pins": {
+    "schemas/v0.1.0/evaluation-harness-analysis-input.schema.json": "d67c9369162b4707f13f2ae9d484ea932cad57373429a1115d84b97fb9321a0c",
+    "schemas/v0.1.0/evaluation-harness-metric-evidence.schema.json": "4aff29e3b5124f3731a053b8cab8e3cf6a2b514246670f369518a1b4e9dab87f",
+    "schemas/v0.1.0/evaluation-harness-metric-method.schema.json": "c7587b497b25c66e3f123484e531ed5951170f15ba296039ef74fa082b5d61cc",
+    "schemas/v0.1.0/evaluation-harness-metric-observation.schema.json": "c350956b1110c8ad758c6c89fc98f270b79691813b8c0a3b8a5fbb4fa4200aeb",
+    "src/research_workbench/evaluation/harness_analysis.py": "b5f0836d10d6d29003cfa7d63433fcaade70c52a0f23c8d80a6c1787b9e3518c",
+    "src/research_workbench/validation/document_kinds.py": "23727deffce144754beefa3da90365c63aa7aa24d956f385cdaf2ed45d83e337",
+    "src/research_workbench/validation/documents.py": "7f9944b98b75cc2da5b47b210f915eaa43611330813c5c5900801e82141d3cbf",
+    "tests/ci_impact_policy.yaml": "e9e2117309007850623d92e976e553121b127c814601bfbaf66d2ee8ce236728",
+    "tests/coverage_policy.yaml": "3d0eb9fd9af12e8b54473bf627724dbaa3b59870e2e9342e1f86d5a734b5172e",
+    "tests/harness_analysis_data.py": "11ef69e88fe3afa9d6b636aef0117426e73167aa593b8470c6124c0693eff1d5",
+    "tests/harness_analysis_fixtures.py": "3e0fc91aa97ee8a3da2cdd1f5acc66955f6e610c30e807f2f4f6fa1c8a9ab049",
+    "tests/test_evaluation_harness_analysis.py": "41b7708c3e4b1371940aa925e5c9d4d12f6d62e84b719e9a656e44e9aabe9374",
+    "tests/test_schemas.py": "79541d2aee2c3101e41d285a1277cd3e0db0d931bfff12931060595753ea97dd"
+  },
+  "evidence": [
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-coverage-final.json",
+      "sha256": "ef7864a641ac3c033eff7cca4958a483a4b3c905b75206ca7bffa04513bf9599"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-coverage-final.log",
+      "sha256": "5774e3ca6aadaec9abc1de134346189b352288257a254365409c208d0f4b0ff1"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-coverage-results.json",
+      "sha256": "ee81c3072707f5655fbeb05bf4405fc322ae3f1644673c8af219f5b54834d5cd"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-coverage.json",
+      "sha256": "ee81c3072707f5655fbeb05bf4405fc322ae3f1644673c8af219f5b54834d5cd"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-coverage.log",
+      "sha256": "398aae2eb9ccaf95b8ca3f0480bbde3fc5ec5e359c0d7cf46a72daf5c9c99518"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-pins.json",
+      "sha256": "aa786bc914f511a7d07f3166168ff6c95798f2267fe6f97be40e3d84ab6bf09b"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-pins.log",
+      "sha256": "5774e3ca6aadaec9abc1de134346189b352288257a254365409c208d0f4b0ff1"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/ci-plan-candidate.json",
+      "sha256": "9f781ddff804ae5fa54cde529d5e4954fa6959fe893ee519e772313a3f0634a3"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/commands.jsonl",
+      "sha256": "68bcc0ac4d1a3d1dfa5d8bf00e02cca4eb6182f2393eb95389ff51957edc7e9a"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/coverage-json.json",
+      "sha256": "d5f39d10fa5b4184acefa00d3e112bcf7086945c33b40fa4477f50d8abbf31f1"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/coverage-json.log",
+      "sha256": "6d1981b5f82f0698aa0349e63842f470f37618f537d7ddd4751a13c97a7a0839"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/docs-final.json",
+      "sha256": "f0d388e7bff22f5bab3b29181f8089b6bd7ce3443b013829aee9ebf3d9c5dae5"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/docs-final.log",
+      "sha256": "815121ee8e6f9e68f9874ec664f8ebdf48adc4cc0af6ece14ff635b35f82d2bb"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-coverage.json",
+      "sha256": "a89284b15117593bc15cc754f8b6162c6701040a73ffc6574bc49434f7da5901"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-final.json",
+      "sha256": "b97285252845d8652ab817ddf95d4c169745d3c70822167ad2fe2717001aab9c"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-final.log",
+      "sha256": "7693ca466fcc0c5f34896963ab0fda97b8848702cefaa20d17438253aa91e72b"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-first.json",
+      "sha256": "79343b67946151b6e58a0f1fcf1f8049bc72cf66c55730b9741a663991a79353"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-first.log",
+      "sha256": "51553956b41c7ad505d02ae8f88404342549918b395b82b3b7ec23ec095e8b36"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-second.json",
+      "sha256": "d15b1a39f68caeb520bfff68c0c7e242558ba8fde0f23bcd8ac2d70b8c4193dc"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-second.log",
+      "sha256": "c6775b3f6d055cc22022ff7d800f3a092d9f325a47598510a7ea6943c50667b3"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/governance-candidate.json",
+      "sha256": "bbbaefa64120929d9779ddba16034925a2e04529572fc86fe83f486e77c16657"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/governance-candidate.log",
+      "sha256": "d0025e8d6fe2c35fb58fa38c4ed88577a6c23e05013053f4bc550a50f385e0f0"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/governance.json",
+      "sha256": "43b00e94c4b68668f5b5c2476af07d233f4b841212184bfce35d380862aa02ce"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/governance.log",
+      "sha256": "d0025e8d6fe2c35fb58fa38c4ed88577a6c23e05013053f4bc550a50f385e0f0"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/integration-first.json",
+      "sha256": "248e6e25564066ca2735a6d0ff0e5af01146886d9f699e310acdc6ed45a726cf"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/integration-first.log",
+      "sha256": "6e6375a40f9fec08c774bc0944f9119d921ddfecfa2dc45cd3134644df9d202b"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/integration-second.json",
+      "sha256": "ac39fe8cb9a1a9b0dfd55774773961ab9d3c54db34d78cd6e3af8f5cc3a109c4"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/integration-second.log",
+      "sha256": "77232c0300f0f7eb5d6bffee22d0c054339ad47111e9f1df009f697d5b8955bd"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan-candidate.json",
+      "sha256": "92faf51a2f24e28d3b2ac7fb3bc7cdb28d61bfae28da0cc13dbae0e7e8ab04a0"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan-candidate.log",
+      "sha256": "c60f8a5c594b23fe5c6edaa0ac4c8f5268f4b07e66ad14213332b20518d4725e"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan-final.json",
+      "sha256": "355b8c468c569e4d5e9918c9fd77f12c645b9f4359e23cb59283cb317c04adf7"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan-final.log",
+      "sha256": "c60f8a5c594b23fe5c6edaa0ac4c8f5268f4b07e66ad14213332b20518d4725e"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan.json",
+      "sha256": "cc15710289ef9e7649dc06bbf4633abfad468e69b19e239c819cd77371811978"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan.log",
+      "sha256": "c60f8a5c594b23fe5c6edaa0ac4c8f5268f4b07e66ad14213332b20518d4725e"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/package-results.json",
+      "sha256": "4a60807856c1f9c4d78df488e4bc7c63766fdc35a73b3c09fe69b7016843d4e2"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/package.json",
+      "sha256": "465ded141172b582d4149aee1173dcca7cff155794a204425ae514e104ce2a65"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/package.log",
+      "sha256": "b3c86d24790a53dc37eefad3cb96117b054841fa11a5a6616494063fe90eaa14"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/positive-roundtrip.json",
+      "sha256": "4502fa648554dac884944ecdbe333aa307fe3b0b975044f5cf691a9b43b7dba6"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/positive-roundtrip.log",
+      "sha256": "aa32636f42240bc35ee83a3cbbb5adccbe12942b3dfc2dcb30d4e07a680234e5"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/registration-coverage.json",
+      "sha256": "c103380fbf047a43ce244e50c86f4c827878db2090b7f8e1d2a76d4141ba7005"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/registration-coverage.log",
+      "sha256": "666880cf4cd097aee029e2d86b9643b66976336db9c6ad1ccee6bf8c8c00d37e"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/registration.json",
+      "sha256": "b91e77e7e2d4cbbb15542bb3e5a6eff93e12f81e2a036adce8c046f107b7878f"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/registration.log",
+      "sha256": "86712339684169b914068f4e1d9a82df6e3768bf5dfe2815d4ba23d259316e1c"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/repository.json",
+      "sha256": "930a2817f100119fb48e9dbcb32a78d1f7191f56c19a54911767e242017602ff"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/repository.log",
+      "sha256": "6895861bf5f35b7669baaf95d9caf2b94c3a4e1d5682f29bbc73ba0aa0064633"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/resources-final-schema.json",
+      "sha256": "8591531d78a21aaa5911249e8d4f14635d00b1add16cc6c97c3ade576b6389db"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/resources-final-schema.log",
+      "sha256": "1629190c10a9c7723b092802b7f0d026752ba65d22a6e1a1883c2d9c39ad806f"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/resources.json",
+      "sha256": "4d66097c82315bfd85629862fefab7538d5bb06a41b52011ec8a7a56c3b33c66"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/resources.log",
+      "sha256": "2a8e9fb867129434fe273587881332f0f26a1cd87b06cb2fc860888cc5ede013"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/review-regression.json",
+      "sha256": "a64ff407724218884dd38bd9d4713c0a6a042b93134cd10d0f9fb2827aa4bfea"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/review-regression.log",
+      "sha256": "c419d23a3390a0b38dde786ba6dfd722d0064651dcd0e7a146e9edee3599af86"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/scoped-coverage-checker.py.txt",
+      "sha256": "be8f6f971fb4691addb46fdd2ca3db6ad37904c12e8ef031c4255efa1fee754e"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/unit-coverage-interim.json",
+      "sha256": "acc6247110ee4f17adb3ade603a567dfe4396663eab2a1c0d2cbd5f45a6f34cc"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence-normalization.json",
+      "sha256": "f6bfd9a18ac7aa8b3f85400b3011cd1e120ffff039a3e472364359c3c8c983d5"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/INPUTS.json",
+      "sha256": "00d50ca6f36005ca355d87b95185300f570d1c58974f4a5df746bab9e9b6173c"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/README.md",
+      "sha256": "5cc5dc88dc976cf9ad42b1b779d1d6cb62950041f5bd358521b8cc8c496a2a18"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/TASK.md",
+      "sha256": "93a4235a05ac836ad4c49c1a2fbfc6d6315f27d4b6f3a6adf57d1c403ae37f2b"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/ACTORS.yaml",
+      "sha256": "c89df763409115b31732e92e19df253ba0b71d18f91e8fb6d67298d6871542a9"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/events.jsonl",
+      "sha256": "80874d3b068b8a293c5972c6da2e8fdb8ff50da9b3ae95d361c988f6408eb490"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/INDEX.yaml",
+      "sha256": "08e023b18db40ef00c74745bd2b86cef338b697bd5e2f3475c759103b9f1616b"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/TASK.yaml",
+      "sha256": "e89a27664560f77d7f90e10ca7fbb121201118843c66440e7164b9feb853206d"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0001-succeeded.json",
+      "sha256": "28a99e9703fad473b7fd4fcd0dbfe14758801c0ead4ea523ee94d7bf034882a7"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0002-failed.json",
+      "sha256": "6fc1b36d36fc4b77d05a876cff0dd5dd7c96128c820b478e442f1c425aca933c"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0003-succeeded.json",
+      "sha256": "edc0291fc8f4bfe915d669734d003d56285ec7e1213627e46123e2c02d81fa8a"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0004-failed.json",
+      "sha256": "225aa402e3cda5e16b7be3dcc7bcf0cd1b6338a0d4f4a9fda75df836fb532248"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0005-succeeded.json",
+      "sha256": "644544325b21659a8dbe9ae48a40e9c79519d4af30ecd97196f94bdb02065666"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0006-succeeded.json",
+      "sha256": "6995bcb8d15a8a9f55cacd12de9751277a4cc2607717007f5b99c02ca1a228bf"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0007-succeeded.json",
+      "sha256": "ebcf3bb3728363022e942261859668d67f18521ca3a10ac12cdb0da4009456f7"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0008-succeeded.json",
+      "sha256": "6785548d6a585be4d0f30dd0c4f4caff37565129bc9a19ec78ec93fd63848898"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0009-succeeded.json",
+      "sha256": "3bacdfe41e9e7d9e9ea0f4872260a9e54eac2a81f8793aa7ea29c6f7810d9568"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0010-succeeded.json",
+      "sha256": "b335f34df4dd709b69f2b677d138db0f0089f567e8e31da4a20d5ef93f712ef4"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0011-succeeded.json",
+      "sha256": "42cf0833070a763fa822b952e2cb1232a4f63500974b25ea8b235373b2be57f4"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0012-succeeded.json",
+      "sha256": "d99dae13bf414500257a8473a883972172f72eafdf5dbae5461807b2eff9ecec"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0013-succeeded.json",
+      "sha256": "af07c25df2c47215097a14c1453afd8ece7e74d0545d34b45f150687feef9ff3"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0014-succeeded.json",
+      "sha256": "6b0b4ab33c97698249840792a10833ef4e69189e1d58ecdc966564662a8f6f73"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0015-succeeded.json",
+      "sha256": "2f70a5466eda3f463bbf7d1036f23085447195631cffe80fe4d32cc6f79046aa"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0016-succeeded.json",
+      "sha256": "cc4fca045b0c8a7919ef9376eb254c5ff842a7940d5db55a249442dceb4ede9e"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0017-succeeded.json",
+      "sha256": "4d2da51da43b0a07a36ff4482df4c634ad2b672b207b800c469b69eaa4bb949b"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0018-failed.json",
+      "sha256": "8f16afaddc9b5478820b7788a83d3621619919b70a3b2367b19432caf98aedaf"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0019-succeeded.json",
+      "sha256": "f09b90721ddc4589c9760593965d8340e7521092a805d60ca0ddb625fd5bf1ce"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0020-succeeded.json",
+      "sha256": "c7e6f89285685440ab15a7194ff76fd60848473910d8adec8f453c1370516532"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0021-succeeded.json",
+      "sha256": "fe997f970df0ef43fa3c4052867764bb5c3e3ef3675fa0a2846b76b7133049fe"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0022-succeeded.json",
+      "sha256": "226e42a43bb4a4ff4f80e144d25e9d50b024776f94f9ca15b50d655d66664532"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0023-succeeded.json",
+      "sha256": "88efefa282dc9bd17a562cc8c821989a6b212477ba1874d4f62394daf2d06ba8"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace-validation.json",
+      "sha256": "d62ee95e2c650f36069264304750562460b04eb504d23ec7d7487ceba732e1e0"
+    }
+  ],
+  "validation_scope": "24-test focused run at implementation bytes plus the changed same-process positive roundtrip; scoped critical/changed coverage, registrations, repository, package and local governance. Full dual-Python/global and hosted CI are pending.",
+  "trace_capture": "delayed normalized command spool; incomplete; warning retained",
+  "merge_authorized": false,
+  "task_completion": false
+}

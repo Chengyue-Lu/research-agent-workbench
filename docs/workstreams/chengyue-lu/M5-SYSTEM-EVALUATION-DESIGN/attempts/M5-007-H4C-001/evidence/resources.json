@@ -1,0 +1,12 @@
+{
+  "name": "resources",
+  "argv": [
+    ".venv\\Scripts\\python.exe",
+    "-c",
+    "import build_backend; print(build_backend.generate())"
+  ],
+  "started_at": "2026-09-26T22:58:22.925282+00:00",
+  "elapsed_seconds": 0.4866560000082245,
+  "exit_code": 0,
+  "log": "resources.log"
+}

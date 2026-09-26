@@ -1,0 +1,15 @@
+{
+  "name": "coverage-json",
+  "argv": [
+    ".venv\\Scripts\\python.exe",
+    "-m",
+    "coverage",
+    "json",
+    "-o",
+    "work/M5-007/A-20260927-H4C-001/focused-coverage.json"
+  ],
+  "started_at": "2026-09-26T23:27:39.216433+00:00",
+  "elapsed_seconds": 0.1647196999983862,
+  "exit_code": 0,
+  "log": "coverage-json.log"
+}

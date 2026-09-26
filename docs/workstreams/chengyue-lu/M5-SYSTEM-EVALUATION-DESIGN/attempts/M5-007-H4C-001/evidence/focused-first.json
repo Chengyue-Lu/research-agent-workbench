@@ -1,0 +1,19 @@
+{
+  "name": "focused-first",
+  "argv": [
+    ".venv\\Scripts\\python.exe",
+    "-m",
+    "coverage",
+    "run",
+    "--branch",
+    "--source=research_workbench.evaluation.harness_analysis",
+    "-m",
+    "unittest",
+    "tests.test_evaluation_harness_analysis.HarnessAnalysisTests",
+    "-v"
+  ],
+  "started_at": "2026-09-26T23:05:10.038741+00:00",
+  "elapsed_seconds": 60.64893409999786,
+  "exit_code": 1,
+  "log": "focused-first.log"
+}

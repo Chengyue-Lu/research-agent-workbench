@@ -1,0 +1,6 @@
+{'path': 'src/research_workbench/evaluation/harness_analysis.py', 'changed_executable_lines': 222, 'uncovered_lines': [334], 'changed_branches': 52, 'uncovered_branches': [], 'summary': {'covered_lines': 221, 'num_statements': 222, 'percent_covered': 99.63503649635037, 'percent_covered_display': '99', 'missing_lines': 1, 'excluded_lines': 0, 'percent_statements_covered': 99.54954954954955, 'percent_statements_covered_display': '99', 'num_branches': 52, 'num_partial_branches': 0, 'covered_branches': 52, 'missing_branches': 0, 'percent_branches_covered': 100.0, 'percent_branches_covered_display': '100'}}
+Traceback (most recent call last):
+  File "<external-assessment>\check_scoped_coverage.py", line 17, in <module>
+    print(rows[-1]);assert not missing and not missing_arcs
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

@@ -1,0 +1,20 @@
+test_catalog_mutation_and_checker_change_cannot_poison_reused_self_checks (tests.test_schemas.SchemaReuseTests.test_catalog_mutation_and_checker_change_cannot_poison_reused_self_checks) ... ok
+test_catalog_roots_and_reads_remain_independent_after_a_cache_hit (tests.test_schemas.SchemaReuseTests.test_catalog_roots_and_reads_remain_independent_after_a_cache_hit) ... ok
+test_schema_lifecycle_reuses_bytes_but_rechecks_changed_inputs_and_invalid_schemas (tests.test_schemas.SchemaReuseTests.test_schema_lifecycle_reuses_bytes_but_rechecks_changed_inputs_and_invalid_schemas)
+Schema lifecycle: reuse, changed bytes, invalid schema, restore, rename, remove. ... ok
+test_all_seven_research_object_types_have_valid_positive_fixtures (tests.test_schemas.VersionedSchemaTests.test_all_seven_research_object_types_have_valid_positive_fixtures) ... ok
+test_all_seven_research_object_types_reject_negative_fixtures (tests.test_schemas.VersionedSchemaTests.test_all_seven_research_object_types_reject_negative_fixtures) ... ok
+test_contract_schema_catalog_is_complete (tests.test_schemas.VersionedSchemaTests.test_contract_schema_catalog_is_complete) ... ok
+test_absolute_write_scope_is_an_error_on_any_host (tests.test_validation.ValidationTests.test_absolute_write_scope_is_an_error_on_any_host) ... ok
+test_invalid_skill_selector_is_an_error (tests.test_validation.ValidationTests.test_invalid_skill_selector_is_an_error) ... ok
+test_loaded_reference_cannot_skip_hash_check_if_path_disappears (tests.test_validation.ValidationTests.test_loaded_reference_cannot_skip_hash_check_if_path_disappears) ... ok
+test_loaded_reference_hash_uses_the_same_bytes_as_its_mapping (tests.test_validation.ValidationTests.test_loaded_reference_hash_uses_the_same_bytes_as_its_mapping) ... ok
+test_repository_examples_and_registries_have_no_errors (tests.test_validation.ValidationTests.test_repository_examples_and_registries_have_no_errors) ... ok
+test_required_and_forbidden_skill_conflict_is_an_error (tests.test_validation.ValidationTests.test_required_and_forbidden_skill_conflict_is_an_error) ... ok
+test_rfc3339_validation_is_available_in_clean_install (tests.test_validation.ValidationTests.test_rfc3339_validation_is_available_in_clean_install) ... ok
+test_unversioned_forbidden_skill_conflicts_with_exact_required_version (tests.test_validation.ValidationTests.test_unversioned_forbidden_skill_conflicts_with_exact_required_version) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 7.189s
+
+OK

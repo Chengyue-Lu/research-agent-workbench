@@ -1,0 +1,19 @@
+{
+  "name": "registration",
+  "argv": [
+    ".venv\\Scripts\\python.exe",
+    "-m",
+    "unittest",
+    "tests.test_schemas",
+    "tests.test_documentation",
+    "tests.test_coverage_policy",
+    "tests.test_ci_consumer_contracts",
+    "tests.test_ci_contract_shadow",
+    "tests.test_system_evaluation_protocol",
+    "-v"
+  ],
+  "started_at": "2026-09-26T23:09:44.825203+00:00",
+  "elapsed_seconds": 41.628270600005635,
+  "exit_code": 0,
+  "log": "registration.log"
+}

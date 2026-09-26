@@ -1,0 +1,19 @@
+{
+  "name": "focused-second",
+  "argv": [
+    ".venv\\Scripts\\python.exe",
+    "-m",
+    "coverage",
+    "run",
+    "--branch",
+    "--source=research_workbench.evaluation.harness_analysis",
+    "-m",
+    "unittest",
+    "tests.test_evaluation_harness_analysis.HarnessAnalysisTests",
+    "-v"
+  ],
+  "started_at": "2026-09-26T23:07:18.045049+00:00",
+  "elapsed_seconds": 114.95159119999153,
+  "exit_code": 0,
+  "log": "focused-second.log"
+}

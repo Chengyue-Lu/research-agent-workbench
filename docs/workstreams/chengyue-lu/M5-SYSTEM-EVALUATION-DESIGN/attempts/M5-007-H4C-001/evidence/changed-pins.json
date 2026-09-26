@@ -1,0 +1,11 @@
+{
+  "name": "changed-pins",
+  "argv": [
+    ".venv\\Scripts\\python.exe",
+    "<external-assessment>\\check_scoped_coverage.py"
+  ],
+  "started_at": "2026-09-26T23:30:43.537012+00:00",
+  "elapsed_seconds": 0.18317460000980645,
+  "exit_code": 0,
+  "log": "changed-pins.log"
+}

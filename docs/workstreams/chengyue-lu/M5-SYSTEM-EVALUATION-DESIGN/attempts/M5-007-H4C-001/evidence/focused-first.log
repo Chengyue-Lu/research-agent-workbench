@@ -1,0 +1,311 @@
+test_actual_drift_and_incomplete_blocks_fail_or_remain_diagnostic (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_actual_drift_and_incomplete_blocks_fail_or_remain_diagnostic) ... ERROR
+test_all_failed_attempts_and_human_cost_components_are_required (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_all_failed_attempts_and_human_cost_components_are_required) ... ERROR
+test_analysis_requires_current_timed_preregistered_comparisons (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_analysis_requires_current_timed_preregistered_comparisons) ... ok
+test_complete_metrics_and_pairing_reconstruct_without_authority (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_complete_metrics_and_pairing_reconstruct_without_authority) ... ERROR
+test_context_currency_and_method_mismatches_are_not_paired (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_context_currency_and_method_mismatches_are_not_paired) ... ERROR
+test_estimation_method_is_pinned_and_paired_status_retained (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_estimation_method_is_pinned_and_paired_status_retained) ... ERROR
+test_external_measurement_authority_rejects_resigned_arithmetic_forgery (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_external_measurement_authority_rejects_resigned_arithmetic_forgery) ... ok
+test_human_source_cannot_be_replaced_by_execution_or_pre_freeze_review (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_human_source_cannot_be_replaced_by_execution_or_pre_freeze_review) ... ok
+test_measurement_target_protocol_value_and_unit_forgery_are_rejected (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_measurement_target_protocol_value_and_unit_forgery_are_rejected) ... ERROR
+test_method_operation_source_and_preregistration_substitution_are_rejected (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_method_operation_source_and_preregistration_substitution_are_rejected) ... ERROR
+test_missing_and_not_applicable_remain_null_and_diagnostic (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_missing_and_not_applicable_remain_null_and_diagnostic) ... ERROR
+test_missing_measurement_cannot_hide_numeric_or_unrelated_evidence (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_missing_measurement_cannot_hide_numeric_or_unrelated_evidence) ... ok
+test_missing_or_duplicate_associations_are_rejected (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_missing_or_duplicate_associations_are_rejected) ... ok
+test_observation_pin_time_and_source_forgery_are_rejected (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_observation_pin_time_and_source_forgery_are_rejected) ... ERROR
+test_outer_clock_cannot_be_replaced_by_host_or_slice_time (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_outer_clock_cannot_be_replaced_by_host_or_slice_time) ... ERROR
+test_pilot_overlap_unknown_and_package_comparison_never_upgrade_primary (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_pilot_overlap_unknown_and_package_comparison_never_upgrade_primary) ... ERROR
+test_ratio_denominator_and_count_integrality_are_checked (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_ratio_denominator_and_count_integrality_are_checked) ... ERROR
+test_resigned_result_or_validator_drift_cannot_reuse_validation (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_resigned_result_or_validator_drift_cannot_reuse_validation) ... ok
+test_run_case_replicate_attempt_slice_and_phase_substitution_are_rejected (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_run_case_replicate_attempt_slice_and_phase_substitution_are_rejected) ... ERROR
+
+======================================================================
+ERROR: test_actual_drift_and_incomplete_blocks_fail_or_remain_diagnostic (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_actual_drift_and_incomplete_blocks_fail_or_remain_diagnostic)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 321, in test_actual_drift_and_incomplete_blocks_fail_or_remain_diagnostic
+    for p in self.paired()["pairs"]))
+             ^^^^^^^^^^^^^
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 161, in paired
+    return analysis.compile_harness_analysis(self.inputs(), context=context, analysis_id="A1", **self.auth)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\harness_analysis.py", line 303, in compile_harness_analysis
+    overlap, comparisons = _comparisons(inputs, context, verifiers["admission_verifier"])
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\harness_analysis.py", line 257, in _comparisons
+    overlap = validate_overlap(inputs, inputs.read(preflight["request"]["overlap_ref"], "admission_evidence_overlap"),
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\pins.py", line 156, in read
+    self.validate(kind, document)
+  File "<workspace>\src\research_workbench\evaluation\pins.py", line 106, in validate
+    require(
+  File "<workspace>\src\research_workbench\evaluation\pins.py", line 25, in require
+    raise EvaluationValidationError(message)
+research_workbench.evaluation.pins.EvaluationValidationError: admission_evidence_overlap schema: $: 'schema_version' is a required property; $: 'record_kind' is a required property; $: 'assessment_id' is a required property; $: 'version' is a required property; $: 'admission_case_closure' is a required property
+
+======================================================================
+ERROR: test_all_failed_attempts_and_human_cost_components_are_required (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_all_failed_attempts_and_human_cost_components_are_required)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 253, in test_all_failed_attempts_and_human_cost_components_are_required
+    self.context = copy.deepcopy(original); self.alter("observation_ref", mutate, revalue=13)
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 131, in alter
+    ref = self.write(f"changed-{key}-{metric}-{arm}.json", document)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 32, in write
+    return persist(self.root, self.root / name, doc)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\harness_runtime.py", line 35, in persist
+    with path.open("x", encoding="utf-8", newline="\n") as stream:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\pathlib.py", line 1044, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileExistsError: [Errno 17] File exists: '<user-profile>\\AppData\\Local\\Temp\\tmp1w29q_ay\\changed-observation_ref-cost-plain-agent.json'
+
+======================================================================
+ERROR: test_complete_metrics_and_pairing_reconstruct_without_authority (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_complete_metrics_and_pairing_reconstruct_without_authority)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 173, in test_complete_metrics_and_pairing_reconstruct_without_authority
+    context = self.analysis_context(); paired = self.paired(context)
+                                                ^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 161, in paired
+    return analysis.compile_harness_analysis(self.inputs(), context=context, analysis_id="A1", **self.auth)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\harness_analysis.py", line 303, in compile_harness_analysis
+    overlap, comparisons = _comparisons(inputs, context, verifiers["admission_verifier"])
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\harness_analysis.py", line 257, in _comparisons
+    overlap = validate_overlap(inputs, inputs.read(preflight["request"]["overlap_ref"], "admission_evidence_overlap"),
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\pins.py", line 156, in read
+    self.validate(kind, document)
+  File "<workspace>\src\research_workbench\evaluation\pins.py", line 106, in validate
+    require(
+  File "<workspace>\src\research_workbench\evaluation\pins.py", line 25, in require
+    raise EvaluationValidationError(message)
+research_workbench.evaluation.pins.EvaluationValidationError: admission_evidence_overlap schema: $: 'schema_version' is a required property; $: 'record_kind' is a required property; $: 'assessment_id' is a required property; $: 'version' is a required property; $: 'admission_case_closure' is a required property
+
+======================================================================
+ERROR: test_context_currency_and_method_mismatches_are_not_paired (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_context_currency_and_method_mismatches_are_not_paired)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 259, in test_context_currency_and_method_mismatches_are_not_paired
+    result = self.paired()
+             ^^^^^^^^^^^^^
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 161, in paired
+    return analysis.compile_harness_analysis(self.inputs(), context=context, analysis_id="A1", **self.auth)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\harness_analysis.py", line 303, in compile_harness_analysis
+    overlap, comparisons = _comparisons(inputs, context, verifiers["admission_verifier"])
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\harness_analysis.py", line 257, in _comparisons
+    overlap = validate_overlap(inputs, inputs.read(preflight["request"]["overlap_ref"], "admission_evidence_overlap"),
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\pins.py", line 156, in read
+    self.validate(kind, document)
+  File "<workspace>\src\research_workbench\evaluation\pins.py", line 106, in validate
+    require(
+  File "<workspace>\src\research_workbench\evaluation\pins.py", line 25, in require
+    raise EvaluationValidationError(message)
+research_workbench.evaluation.pins.EvaluationValidationError: admission_evidence_overlap schema: $: 'schema_version' is a required property; $: 'record_kind' is a required property; $: 'assessment_id' is a required property; $: 'version' is a required property; $: 'admission_case_closure' is a required property
+
+======================================================================
+ERROR: test_estimation_method_is_pinned_and_paired_status_retained (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_estimation_method_is_pinned_and_paired_status_retained)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 199, in test_estimation_method_is_pinned_and_paired_status_retained
+    self.assertEqual(next(r for r in self.paired()["pairs"][0]["metrics"] if r["metric_id"] == "cost")["status"], "estimated")
+                                     ^^^^^^^^^^^^^
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 161, in paired
+    return analysis.compile_harness_analysis(self.inputs(), context=context, analysis_id="A1", **self.auth)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\harness_analysis.py", line 303, in compile_harness_analysis
+    overlap, comparisons = _comparisons(inputs, context, verifiers["admission_verifier"])
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\harness_analysis.py", line 257, in _comparisons
+    overlap = validate_overlap(inputs, inputs.read(preflight["request"]["overlap_ref"], "admission_evidence_overlap"),
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\pins.py", line 156, in read
+    self.validate(kind, document)
+  File "<workspace>\src\research_workbench\evaluation\pins.py", line 106, in validate
+    require(
+  File "<workspace>\src\research_workbench\evaluation\pins.py", line 25, in require
+    raise EvaluationValidationError(message)
+research_workbench.evaluation.pins.EvaluationValidationError: admission_evidence_overlap schema: $: 'schema_version' is a required property; $: 'record_kind' is a required property; $: 'assessment_id' is a required property; $: 'version' is a required property; $: 'admission_case_closure' is a required property
+
+======================================================================
+ERROR: test_measurement_target_protocol_value_and_unit_forgery_are_rejected (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_measurement_target_protocol_value_and_unit_forgery_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 222, in test_measurement_target_protocol_value_and_unit_forgery_are_rejected
+    self.alter("measurement_ref", lambda d: d.update({key: value}))
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 131, in alter
+    ref = self.write(f"changed-{key}-{metric}-{arm}.json", document)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 32, in write
+    return persist(self.root, self.root / name, doc)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\harness_runtime.py", line 35, in persist
+    with path.open("x", encoding="utf-8", newline="\n") as stream:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\pathlib.py", line 1044, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileExistsError: [Errno 17] File exists: '<user-profile>\\AppData\\Local\\Temp\\tmpq37s8rgy\\changed-measurement_ref-cost-plain-agent.json'
+
+======================================================================
+ERROR: test_method_operation_source_and_preregistration_substitution_are_rejected (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_method_operation_source_and_preregistration_substitution_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 230, in test_method_operation_source_and_preregistration_substitution_are_rejected
+    method = self.alter("method_ref", lambda d: d.update({key: value}))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 131, in alter
+    ref = self.write(f"changed-{key}-{metric}-{arm}.json", document)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 32, in write
+    return persist(self.root, self.root / name, doc)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\harness_runtime.py", line 35, in persist
+    with path.open("x", encoding="utf-8", newline="\n") as stream:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\pathlib.py", line 1044, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileExistsError: [Errno 17] File exists: '<user-profile>\\AppData\\Local\\Temp\\tmp3q7bu0iw\\changed-method_ref-cost-plain-agent.json'
+
+======================================================================
+ERROR: test_missing_and_not_applicable_remain_null_and_diagnostic (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_missing_and_not_applicable_remain_null_and_diagnostic)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 184, in test_missing_and_not_applicable_remain_null_and_diagnostic
+    pairs = self.paired()["pairs"]
+            ^^^^^^^^^^^^^
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 161, in paired
+    return analysis.compile_harness_analysis(self.inputs(), context=context, analysis_id="A1", **self.auth)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\harness_analysis.py", line 303, in compile_harness_analysis
+    overlap, comparisons = _comparisons(inputs, context, verifiers["admission_verifier"])
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\harness_analysis.py", line 257, in _comparisons
+    overlap = validate_overlap(inputs, inputs.read(preflight["request"]["overlap_ref"], "admission_evidence_overlap"),
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\pins.py", line 156, in read
+    self.validate(kind, document)
+  File "<workspace>\src\research_workbench\evaluation\pins.py", line 106, in validate
+    require(
+  File "<workspace>\src\research_workbench\evaluation\pins.py", line 25, in require
+    raise EvaluationValidationError(message)
+research_workbench.evaluation.pins.EvaluationValidationError: admission_evidence_overlap schema: $: 'schema_version' is a required property; $: 'record_kind' is a required property; $: 'assessment_id' is a required property; $: 'version' is a required property; $: 'admission_case_closure' is a required property
+
+======================================================================
+ERROR: test_observation_pin_time_and_source_forgery_are_rejected (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_observation_pin_time_and_source_forgery_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 242, in test_observation_pin_time_and_source_forgery_are_rejected
+    def test_observation_pin_time_and_source_forgery_are_rejected(self):
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 131, in alter
+    return next(r for r in self.context.associations if r["metric_id"] == metric and r["arm_id"] == arm)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 32, in write
+    path = self.root / name
+           ~~~~~~~~~~^~~~~~~
+  File "<workspace>\src\research_workbench\evaluation\harness_runtime.py", line 35, in persist
+    with path.open("x", encoding="utf-8", newline="\n") as stream:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\pathlib.py", line 1044, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileExistsError: [Errno 17] File exists: '<user-profile>\\AppData\\Local\\Temp\\tmprkzw1grz\\changed-observation_ref-cost-plain-agent.json'
+
+======================================================================
+ERROR: test_outer_clock_cannot_be_replaced_by_host_or_slice_time (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_outer_clock_cannot_be_replaced_by_host_or_slice_time)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 284, in test_outer_clock_cannot_be_replaced_by_host_or_slice_time
+    def test_outer_clock_cannot_be_replaced_by_host_or_slice_time(self):
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 131, in alter
+    return next(r for r in self.context.associations if r["metric_id"] == metric and r["arm_id"] == arm)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 32, in write
+    path = self.root / name
+           ~~~~~~~~~~^~~~~~~
+  File "<workspace>\src\research_workbench\evaluation\harness_runtime.py", line 35, in persist
+    with path.open("x", encoding="utf-8", newline="\n") as stream:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\pathlib.py", line 1044, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileExistsError: [Errno 17] File exists: '<user-profile>\\AppData\\Local\\Temp\\tmpcm0fj54i\\changed-observation_ref-completion-time-plain-agent.json'
+
+======================================================================
+ERROR: test_pilot_overlap_unknown_and_package_comparison_never_upgrade_primary (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_pilot_overlap_unknown_and_package_comparison_never_upgrade_primary)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 330, in test_pilot_overlap_unknown_and_package_comparison_never_upgrade_primary
+    with self.assertRaisesRegex(EvaluationValidationError, "actual identity drift"): self.paired()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 161, in paired
+    "unavailable": "not-comparable"}[interpretation], "interpretation": interpretation,
+  File "<workspace>\src\research_workbench\evaluation\harness_analysis.py", line 303, in compile_harness_analysis
+    overlap, comparisons = _comparisons(inputs, context, verifiers["admission_verifier"])
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\harness_analysis.py", line 257, in _comparisons
+    overlap = validate_overlap(inputs, inputs.read(preflight["request"]["overlap_ref"], "admission_evidence_overlap"),
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\pins.py", line 156, in read
+    self.validate(kind, document)
+  File "<workspace>\src\research_workbench\evaluation\pins.py", line 106, in validate
+    require(
+  File "<workspace>\src\research_workbench\evaluation\pins.py", line 25, in require
+    raise EvaluationValidationError(message)
+research_workbench.evaluation.pins.EvaluationValidationError: admission_evidence_overlap schema: $: 'schema_version' is a required property; $: 'record_kind' is a required property; $: 'assessment_id' is a required property; $: 'version' is a required property; $: 'admission_case_closure' is a required property
+
+======================================================================
+ERROR: test_ratio_denominator_and_count_integrality_are_checked (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_ratio_denominator_and_count_integrality_are_checked)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 273, in test_ratio_denominator_and_count_integrality_are_checked
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 131, in alter
+    return next(r for r in self.context.associations if r["metric_id"] == metric and r["arm_id"] == arm)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 32, in write
+    path = self.root / name
+           ~~~~~~~~~~^~~~~~~
+  File "<workspace>\src\research_workbench\evaluation\harness_runtime.py", line 35, in persist
+    with path.open("x", encoding="utf-8", newline="\n") as stream:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\pathlib.py", line 1044, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileExistsError: [Errno 17] File exists: '<user-profile>\\AppData\\Local\\Temp\\tmpi70nzplz\\changed-observation_ref-omission-rate-plain-agent.json'
+
+======================================================================
+ERROR: test_run_case_replicate_attempt_slice_and_phase_substitution_are_rejected (tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_run_case_replicate_attempt_slice_and_phase_substitution_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 214, in test_run_case_replicate_attempt_slice_and_phase_substitution_are_rejected
+    def test_run_case_replicate_attempt_slice_and_phase_substitution_are_rejected(self):
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 131, in alter
+    return next(r for r in self.context.associations if r["metric_id"] == metric and r["arm_id"] == arm)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 32, in write
+    path = self.root / name
+           ~~~~~~~~~~^~~~~~~
+  File "<workspace>\src\research_workbench\evaluation\harness_runtime.py", line 35, in persist
+    with path.open("x", encoding="utf-8", newline="\n") as stream:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<primary-checkout>\.rwb\m14-003\pythons\cpython-3.11.16-windows-x86_64-none\Lib\pathlib.py", line 1044, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileExistsError: [Errno 17] File exists: '<user-profile>\\AppData\\Local\\Temp\\tmpjjcmcddz\\changed-observation_ref-cost-plain-agent.json'
+
+----------------------------------------------------------------------
+Ran 19 tests in 59.896s
+
+FAILED (errors=13)

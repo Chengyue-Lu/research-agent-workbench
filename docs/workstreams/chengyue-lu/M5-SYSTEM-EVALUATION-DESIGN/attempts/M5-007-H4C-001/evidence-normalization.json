@@ -1,0 +1,320 @@
+[
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-coverage-final.json",
+    "sha256": "ef7864a641ac3c033eff7cca4958a483a4b3c905b75206ca7bffa04513bf9599",
+    "original_local_sha256": "4977d72d4398414f8aacad84b155a038cca31a71b4d115223773a6aa87bd8bc9",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-coverage-final.log",
+    "sha256": "5774e3ca6aadaec9abc1de134346189b352288257a254365409c208d0f4b0ff1",
+    "original_local_sha256": "603d9ede3983fde0f0cf892f9e906a9ec616b776acf94fa02c669590ad41e73b",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-coverage-results.json",
+    "sha256": "ee81c3072707f5655fbeb05bf4405fc322ae3f1644673c8af219f5b54834d5cd",
+    "original_local_sha256": "4918b9b7a16bd88e41a8220833dd124dedc4fa5e5ddf7c07652a8d8142ccc400",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-coverage.json",
+    "sha256": "ee81c3072707f5655fbeb05bf4405fc322ae3f1644673c8af219f5b54834d5cd",
+    "original_local_sha256": "4918b9b7a16bd88e41a8220833dd124dedc4fa5e5ddf7c07652a8d8142ccc400",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-coverage.log",
+    "sha256": "398aae2eb9ccaf95b8ca3f0480bbde3fc5ec5e359c0d7cf46a72daf5c9c99518",
+    "original_local_sha256": "1b5c4abfa6aa6e2dbd3f544aea92d8333a155eb2b8c14dc5b5e8f325db4cd156",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-pins.json",
+    "sha256": "aa786bc914f511a7d07f3166168ff6c95798f2267fe6f97be40e3d84ab6bf09b",
+    "original_local_sha256": "95a3e556d73bc13d8967937fe1a9f900a543ffa6fa3ee04e6f0029d44663faa1",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-pins.log",
+    "sha256": "5774e3ca6aadaec9abc1de134346189b352288257a254365409c208d0f4b0ff1",
+    "original_local_sha256": "603d9ede3983fde0f0cf892f9e906a9ec616b776acf94fa02c669590ad41e73b",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/ci-plan-candidate.json",
+    "sha256": "9f781ddff804ae5fa54cde529d5e4954fa6959fe893ee519e772313a3f0634a3",
+    "original_local_sha256": "1f7dfe1a40ffef73362281554c5d87bd535811467d362b03c8e30bcc1e305589",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/commands.jsonl",
+    "sha256": "68bcc0ac4d1a3d1dfa5d8bf00e02cca4eb6182f2393eb95389ff51957edc7e9a",
+    "original_local_sha256": "f7da15d90618a4056b63dfb73406d8136274963c00c3b1d63d6e75d415a7bcfd",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/coverage-json.json",
+    "sha256": "d5f39d10fa5b4184acefa00d3e112bcf7086945c33b40fa4477f50d8abbf31f1",
+    "original_local_sha256": "45885f87481cf8d7a81459fd7794f5d078de25a022c68c99c311e97d1b16f4a0",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/coverage-json.log",
+    "sha256": "6d1981b5f82f0698aa0349e63842f470f37618f537d7ddd4751a13c97a7a0839",
+    "original_local_sha256": "fcc56459ddb12e0d6f35d58859c15cc38ff95ab5336fbfc654a95afb81552144",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/docs-final.json",
+    "sha256": "f0d388e7bff22f5bab3b29181f8089b6bd7ce3443b013829aee9ebf3d9c5dae5",
+    "original_local_sha256": "a638c497ea60c96748a21ae4c1e9aabfbb5af6449ad489ad6780b2fd13b2b80f",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/docs-final.log",
+    "sha256": "815121ee8e6f9e68f9874ec664f8ebdf48adc4cc0af6ece14ff635b35f82d2bb",
+    "original_local_sha256": "afc15c0de1d9fcd45737b244647e492d58f376c1818f72a314fdeef3422f2942",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-coverage.json",
+    "sha256": "a89284b15117593bc15cc754f8b6162c6701040a73ffc6574bc49434f7da5901",
+    "original_local_sha256": "a89284b15117593bc15cc754f8b6162c6701040a73ffc6574bc49434f7da5901",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-final.json",
+    "sha256": "b97285252845d8652ab817ddf95d4c169745d3c70822167ad2fe2717001aab9c",
+    "original_local_sha256": "1276e6255f54c453c0cb180dcad3d29b276fdb199aa57440718082735c5bad95",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-final.log",
+    "sha256": "7693ca466fcc0c5f34896963ab0fda97b8848702cefaa20d17438253aa91e72b",
+    "original_local_sha256": "7b72b9809472ae292a9ee2c7b460fefa44e1e0252fa1ae25ae2f6a864e83c4d5",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-first.json",
+    "sha256": "79343b67946151b6e58a0f1fcf1f8049bc72cf66c55730b9741a663991a79353",
+    "original_local_sha256": "af8f5419387a0846283b63b1bad5d23d0ed5c997d7c30001a6bc35b83e7d811f",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-first.log",
+    "sha256": "51553956b41c7ad505d02ae8f88404342549918b395b82b3b7ec23ec095e8b36",
+    "original_local_sha256": "6d224f6532de35580fee9e94cb06b2fbb8a91a0fa5d84f3e2f9e9c11f7f9338f",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-second.json",
+    "sha256": "d15b1a39f68caeb520bfff68c0c7e242558ba8fde0f23bcd8ac2d70b8c4193dc",
+    "original_local_sha256": "0335970588bd56fde308db7019cf62db04db13ea59e496853fe57ff066eaa48a",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-second.log",
+    "sha256": "c6775b3f6d055cc22022ff7d800f3a092d9f325a47598510a7ea6943c50667b3",
+    "original_local_sha256": "14f63c5b5e44ee103f2470b3ee6417302a3724ed9e4254ed93e102df7b13875e",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/governance-candidate.json",
+    "sha256": "bbbaefa64120929d9779ddba16034925a2e04529572fc86fe83f486e77c16657",
+    "original_local_sha256": "bfb62b4fe583bfb72ef119dacbe8c3f502f9d5c7ada6735dca40d69d6c91fff7",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/governance-candidate.log",
+    "sha256": "d0025e8d6fe2c35fb58fa38c4ed88577a6c23e05013053f4bc550a50f385e0f0",
+    "original_local_sha256": "4fc6cb445c191decac7bd0bb2162145151fc3f4d5b889f1a2e38fb9d77ab5382",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/governance.json",
+    "sha256": "43b00e94c4b68668f5b5c2476af07d233f4b841212184bfce35d380862aa02ce",
+    "original_local_sha256": "3aac5ac46efe91aa979ef5fe6eb0df64f88d074be2e3ff694eafae508aed87bf",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/governance.log",
+    "sha256": "d0025e8d6fe2c35fb58fa38c4ed88577a6c23e05013053f4bc550a50f385e0f0",
+    "original_local_sha256": "4fc6cb445c191decac7bd0bb2162145151fc3f4d5b889f1a2e38fb9d77ab5382",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/integration-first.json",
+    "sha256": "248e6e25564066ca2735a6d0ff0e5af01146886d9f699e310acdc6ed45a726cf",
+    "original_local_sha256": "9a658824dfd4d9dcb542b12b5919f15b8725d207d904cffadd32abb718542410",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/integration-first.log",
+    "sha256": "6e6375a40f9fec08c774bc0944f9119d921ddfecfa2dc45cd3134644df9d202b",
+    "original_local_sha256": "5cd7ce35bd95cbf1c69015d4899e6aeb09b47634f6139d44f5b78538483205fe",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/integration-second.json",
+    "sha256": "ac39fe8cb9a1a9b0dfd55774773961ab9d3c54db34d78cd6e3af8f5cc3a109c4",
+    "original_local_sha256": "31a2d6b48b971328d32a1804f2a60556dca84a4340c2fa79a3bd57d06d87634f",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/integration-second.log",
+    "sha256": "77232c0300f0f7eb5d6bffee22d0c054339ad47111e9f1df009f697d5b8955bd",
+    "original_local_sha256": "de818a154da54a1b67dc87d38efead52aeab7e1ff627fa24d27316ebb67d08f7",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan-candidate.json",
+    "sha256": "92faf51a2f24e28d3b2ac7fb3bc7cdb28d61bfae28da0cc13dbae0e7e8ab04a0",
+    "original_local_sha256": "005955f004dd2a896192218d8533d53f1c752ce03b37bd71ae75fd95e0c9672e",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan-candidate.log",
+    "sha256": "c60f8a5c594b23fe5c6edaa0ac4c8f5268f4b07e66ad14213332b20518d4725e",
+    "original_local_sha256": "ba837ee5bf9efe0093fee6558b100c79747672d10090fe9060bc2cab8daaeaec",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan-final.json",
+    "sha256": "355b8c468c569e4d5e9918c9fd77f12c645b9f4359e23cb59283cb317c04adf7",
+    "original_local_sha256": "6f2dbd2520e2673bc00ca0e21a22b5f42fd4d5b5a8ae55d13d50dace0148b0c9",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan-final.log",
+    "sha256": "c60f8a5c594b23fe5c6edaa0ac4c8f5268f4b07e66ad14213332b20518d4725e",
+    "original_local_sha256": "ba837ee5bf9efe0093fee6558b100c79747672d10090fe9060bc2cab8daaeaec",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan.json",
+    "sha256": "cc15710289ef9e7649dc06bbf4633abfad468e69b19e239c819cd77371811978",
+    "original_local_sha256": "3c0530bc505e2fa55889ed0007cb3d00b185cbefa544106a9737661f651ad948",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan.log",
+    "sha256": "c60f8a5c594b23fe5c6edaa0ac4c8f5268f4b07e66ad14213332b20518d4725e",
+    "original_local_sha256": "ba837ee5bf9efe0093fee6558b100c79747672d10090fe9060bc2cab8daaeaec",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/package-results.json",
+    "sha256": "4a60807856c1f9c4d78df488e4bc7c63766fdc35a73b3c09fe69b7016843d4e2",
+    "original_local_sha256": "e41fc6a32dfe0a02165bbc2080a2af617b69c554926184b2ac2791b5540357c4",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/package.json",
+    "sha256": "465ded141172b582d4149aee1173dcca7cff155794a204425ae514e104ce2a65",
+    "original_local_sha256": "ce3978eafac3861735f2da76a8c132a3c50f3f7d7f0c6e3cd4625aff7dfd0c86",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/package.log",
+    "sha256": "b3c86d24790a53dc37eefad3cb96117b054841fa11a5a6616494063fe90eaa14",
+    "original_local_sha256": "3bce5f7dd036e7c12ce1eb725e47e059374fa378a5c77746f4d68c8c23a87bc4",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/positive-roundtrip.json",
+    "sha256": "4502fa648554dac884944ecdbe333aa307fe3b0b975044f5cf691a9b43b7dba6",
+    "original_local_sha256": "f7d23c6492a2ad11a66f28edb7f34500060d0124cd077beb950fc1108d50f015",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/positive-roundtrip.log",
+    "sha256": "aa32636f42240bc35ee83a3cbbb5adccbe12942b3dfc2dcb30d4e07a680234e5",
+    "original_local_sha256": "6e0271dfc15524ae24f2aab59c358efd459cac8e20c07b7d79c0e9260314cf65",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/registration-coverage.json",
+    "sha256": "c103380fbf047a43ce244e50c86f4c827878db2090b7f8e1d2a76d4141ba7005",
+    "original_local_sha256": "c103380fbf047a43ce244e50c86f4c827878db2090b7f8e1d2a76d4141ba7005",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/registration-coverage.log",
+    "sha256": "666880cf4cd097aee029e2d86b9643b66976336db9c6ad1ccee6bf8c8c00d37e",
+    "original_local_sha256": "5172f41e93320e54800cf270c54fb86c2311f5d57ac075884184f824f023d149",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/registration.json",
+    "sha256": "b91e77e7e2d4cbbb15542bb3e5a6eff93e12f81e2a036adce8c046f107b7878f",
+    "original_local_sha256": "0360e14b6f5e4ea56efb2ea41e7f898418587fe84c68f20617739015edaeb333",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/registration.log",
+    "sha256": "86712339684169b914068f4e1d9a82df6e3768bf5dfe2815d4ba23d259316e1c",
+    "original_local_sha256": "74871b48638f63e9028c91b4f140a8377a91718fd36d133c95113de745e72b52",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/repository.json",
+    "sha256": "930a2817f100119fb48e9dbcb32a78d1f7191f56c19a54911767e242017602ff",
+    "original_local_sha256": "bc2773503218c64e075393c54f9db4416083c9dda612d35f4c3848b52a572cb3",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/repository.log",
+    "sha256": "6895861bf5f35b7669baaf95d9caf2b94c3a4e1d5682f29bbc73ba0aa0064633",
+    "original_local_sha256": "255440a9ece3a188b00d67b928a848500938bdd0c6788d0dcac767adb46d7ef3",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/resources-final-schema.json",
+    "sha256": "8591531d78a21aaa5911249e8d4f14635d00b1add16cc6c97c3ade576b6389db",
+    "original_local_sha256": "593c0cca7fe7b61ac5c8e018f7012400ab6ca7ea7b81a983b5c63093b82dc25f",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/resources-final-schema.log",
+    "sha256": "1629190c10a9c7723b092802b7f0d026752ba65d22a6e1a1883c2d9c39ad806f",
+    "original_local_sha256": "f44abddffacbf4b8756eab6c95cf2f548c2db82ecd23785c920d51817a1d16b8",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/resources.json",
+    "sha256": "4d66097c82315bfd85629862fefab7538d5bb06a41b52011ec8a7a56c3b33c66",
+    "original_local_sha256": "b2da653e7a6639d54592d88b42af5a1b1c427f7b691e85fde21cc5186597b881",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/resources.log",
+    "sha256": "2a8e9fb867129434fe273587881332f0f26a1cd87b06cb2fc860888cc5ede013",
+    "original_local_sha256": "06cbb0cef7fdcf51a17164232f5208735bc8ef05c388948086d0c9a0c9095b56",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/review-regression.json",
+    "sha256": "a64ff407724218884dd38bd9d4713c0a6a042b93134cd10d0f9fb2827aa4bfea",
+    "original_local_sha256": "80e9e4765fbf7ea3b307a046df6c2b0a728e6f2303bada67480c1ed039be0d7e",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/review-regression.log",
+    "sha256": "c419d23a3390a0b38dde786ba6dfd722d0064651dcd0e7a146e9edee3599af86",
+    "original_local_sha256": "a93416f6c7e4c626722755ef9ffca7a681715278cb77ad426b2c277c866a90e9",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/unit-coverage-interim.json",
+    "sha256": "acc6247110ee4f17adb3ade603a567dfe4396663eab2a1c0d2cbd5f45a6f34cc",
+    "original_local_sha256": "acc6247110ee4f17adb3ade603a567dfe4396663eab2a1c0d2cbd5f45a6f34cc",
+    "normalization": "UTF-8 LF; workspace, assessment and user-profile prefixes redacted"
+  },
+  {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/scoped-coverage-checker.py.txt",
+    "sha256": "be8f6f971fb4691addb46fdd2ca3db6ad37904c12e8ef031c4255efa1fee754e",
+    "original_local_sha256": "e30b776ca818e8c47a02fc3c9f1bb9b515a1e00d2fd8a3c607773bd1f3392dca",
+    "normalization": "UTF-8 LF; local diagnostic implementation preserved as data"
+  }
+]
