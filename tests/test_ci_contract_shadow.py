@@ -142,6 +142,243 @@ class ContractShadowGitTests(unittest.TestCase):
         return planner.make_plan(self.repo, base=self.base, head=head, target=head, repository='Example/repo',
             body='- **Risk tier**: R2\n- **Shared contract**: no\n- **Authority impact**: no')
 
+    def invocation_fixture(self):
+        consumer = 'tests/test_invocations.py'
+        source = (b'import subprocess as child\ndef probe(executor, argv):\n'
+                  b' child.run(["git", "rev-parse", "HEAD"])\n return executor(argv)\n')
+        write(self.repo, 'src/research_workbench/leaf.py', 'VALUE=1\n')
+        self.base = self.commit(consumer, source)
+        self.commit('src/research_workbench/leaf.py', 'VALUE=2\n')
+        plan = self.plan()
+        return consumer, source, plan, shadow.build_report(self.repo, plan)
+
+    def test_invocation_catalog_binds_every_call_and_snapshot_without_changing_plan(self):
+        consumer, source, plan, report = self.invocation_fixture()
+        before = planner.canonical(plan)
+        catalog = report['invocation_evidence']
+        self.assertFalse(catalog['execution_authority'])
+        self.assertIn('never means absent inputs', catalog['unknown_argument_policy'])
+        columns = catalog['site_columns']
+        self.assertEqual(['span', 'scope', 'ast_sha256', 'callee', 'binding', 'operation', 'detail_id'], columns)
+        records = [row for row in catalog['consumers'] if row['consumer'] == consumer]
+        self.assertEqual({'merge_base', 'head'}, {row['snapshot'] for row in records})
+        self.assertEqual(2, len({row['id'] for row in records}))
+        self.assertEqual(1, len({row['source_id'] for row in records}))
+        for record in records:
+            self.assertEqual(plan['binding'][record['snapshot']], record['commit'])
+            self.assertEqual('100644', record['mode'])
+            self.assertEqual(hashlib.sha256(source).hexdigest(), record['source_sha256'])
+            self.assertEqual('parsed', record['analysis_status'])
+            self.assertNotIn('sites', record)
+            shared = catalog['sources'][record['source_id']]
+            self.assertEqual(consumer, shared['consumer'])
+            self.assertEqual(record['source_sha256'], shared['source_sha256'])
+            sites = [dict(zip(columns, row, strict=True)) for row in shared['calls']]
+            self.assertEqual(2, len(sites))
+            self.assertEqual(1, sum(site['operation'] == 'unknown' for site in sites))
+            self.assertTrue(record['fallback']['opaque'])
+            for site in sites:
+                detail = catalog['details'][site['detail_id']]
+                self.assertFalse(detail['execution_authority'])
+                self.assertEqual('unproved', detail['resolution']['input_closure'])
+                if site['operation'] == 'unknown':
+                    self.assertEqual({'resolution', 'unresolved', 'execution_authority'}, set(detail))
+                else:
+                    self.assertEqual({'dimensions', 'invocation', 'inputs', 'outputs', 'resolution',
+                                      'unresolved', 'execution_authority'}, set(detail))
+        linked = [edge for row in report['dependency_review'] for edge in row['edges']
+                  if edge['consumer'] == consumer]
+        self.assertTrue(linked)
+        for edge in linked:
+            self.assertEqual({row['id'] for row in records}, set(edge['invocation_evidence_ids']))
+        shadow.verify_invocation_evidence(self.repo, plan, report)
+        self.assertEqual(before, planner.canonical(plan))
+        self.assertFalse(report['activation']['eligible'])
+        # Dirty source cannot rewrite source-bound observations at either Git ref.
+        write(self.repo, consumer, 'pass\n')
+        self.assertEqual(catalog, shadow.build_report(self.repo, plan)['invocation_evidence'])
+        # A future classifier must not silently lose newly understood unknown-call
+        # inputs through this compact projection. This tests the schema boundary,
+        # not a mocked program execution or a substitute for dependency evidence.
+        describe = shadow.ci_input_facts.describe_invocation
+        def future_unknown_inputs(*args, **kwargs):
+            fact = describe(*args, **kwargs)
+            if fact['operation'] == 'unknown':
+                fact['inputs'] = [{'role': 'future-input-semantics'}]
+            return fact
+        with patch.object(shadow.ci_input_facts, 'describe_invocation', side_effect=future_unknown_inputs):
+            with self.assertRaisesRegex(ValueError, 'unknown call acquired input semantics'):
+                shadow.invocation_evidence(self.repo, plan)
+
+    def test_resigned_invocation_omission_forgery_and_dangling_links_are_rejected(self):
+        consumer, _, plan, original = self.invocation_fixture()
+        def catalog(report):
+            return report['invocation_evidence']
+        def target(report):
+            return next(row for row in catalog(report)['consumers']
+                        if row['consumer'] == consumer and row['snapshot'] == 'head')
+        def source(report):
+            return catalog(report)['sources'][target(report)['source_id']]
+        def unknown(report):
+            index = catalog(report)['site_columns'].index('operation')
+            return next(row for row in source(report)['calls'] if row[index] == 'unknown')
+        def detail(report):
+            index = catalog(report)['site_columns'].index('detail_id')
+            return catalog(report)['details'][unknown(report)[index]]
+        def change_site(report, column, value):
+            unknown(report)[catalog(report)['site_columns'].index(column)] = value
+        def omitted(report):
+            catalog(report)['consumers'].remove(target(report))
+        def duplicated(report):
+            catalog(report)['consumers'].append(copy.deepcopy(target(report)))
+        def missing_site(report):
+            source(report)['calls'].remove(unknown(report))
+        def dangling_edge(report):
+            edge = next(edge for row in report['dependency_review'] for edge in row['edges']
+                        if edge['consumer'] == consumer)
+            edge['invocation_evidence_ids'] = ['0' * 64]
+        def omitted_chain(report):
+            chain = next(row for row in report['dependency_review']
+                         if any(edge['consumer'] == consumer for edge in row['edges']))
+            report['dependency_review'].remove(chain)
+        def orphan_source(report):
+            extra = copy.deepcopy(source(report))
+            extra['consumer'] = 'tests/orphaned_source.py'
+            catalog(report)['sources']['pending-orphan'] = extra
+        def orphan_detail(report):
+            extra = copy.deepcopy(detail(report))
+            extra['unresolved'].append('orphaned-detail')
+            catalog(report)['details']['pending-orphan'] = extra
+        def reordered_columns(report):
+            columns = catalog(report)['site_columns']
+            columns[0], columns[1] = columns[1], columns[0]
+            # Even a consistently reordered encoding must not redefine the schema.
+            for shared in catalog(report)['sources'].values():
+                for row in shared['calls']:
+                    row[0], row[1] = row[1], row[0]
+        def wrong_source_binding(report):
+            other = next(row for row in catalog(report)['consumers']
+                         if row['source_id'] is not None and row['consumer'] != consumer)
+            target(report)['source_id'] = other['source_id']
+        mutations = {
+            'omitted-consumer': omitted,
+            'duplicated-consumer': duplicated,
+            'omitted-unknown-site': missing_site,
+            'dangling-edge': dangling_edge,
+            'omitted-chain': omitted_chain,
+            'wrong-path': lambda r: target(r).__setitem__('consumer', 'tests/elsewhere.py'),
+            'wrong-snapshot': lambda r: target(r).__setitem__('snapshot', 'merge_base'),
+            'wrong-source-hash': lambda r: target(r).__setitem__('source_sha256', '0' * 64),
+            'wrong-git-object': lambda r: target(r).__setitem__('object_id', '0' * 40),
+            'wrong-mode': lambda r: target(r).__setitem__('mode', '120000'),
+            'forged-classification': lambda r: change_site(r, 'operation', 'git-identity'),
+            'forged-site': lambda r: change_site(r, 'span', [999, 0, 999, 1]),
+            'forged-closure': lambda r: detail(r)['resolution'].__setitem__('input_closure', 'proved'),
+            'forged-authority': lambda r: r.__setitem__('execution_authority', True),
+            'wrong-plan': lambda r: r.__setitem__('observed_plan_id', '0' * 64),
+            'wrong-report-binding': lambda r: r['binding'].__setitem__('head', self.base),
+            'orphan-source': orphan_source,
+            'orphan-detail': orphan_detail,
+            'reordered-columns': reordered_columns,
+            'duplicated-column': lambda r: catalog(r)['site_columns'].__setitem__(0, 'scope'),
+            'wrong-source-binding': wrong_source_binding,
+            'dangling-source': lambda r: target(r).__setitem__('source_id', '0' * 64),
+            'dangling-detail': lambda r: change_site(r, 'detail_id', '0' * 64),
+        }
+        for name, mutate in mutations.items():
+            with self.subTest(mutation=name):
+                report = copy.deepcopy(original)
+                mutate(report)
+                # Re-sign all content-addressed tables and references so rejection
+                # must reconstruct evidence rather than only notice stale digests.
+                evidence = catalog(report)
+                detail_ids = {old_id: planner.digest(value) for old_id, value in evidence['details'].items()}
+                evidence['details'] = {detail_ids[old_id]: value for old_id, value in evidence['details'].items()}
+                detail_index = evidence['site_columns'].index('detail_id')
+                for shared in evidence['sources'].values():
+                    for row in shared['calls']:
+                        row[detail_index] = detail_ids.get(row[detail_index], row[detail_index])
+                source_ids = {old_id: planner.digest({'consumer': value['consumer'],
+                                                     'source_sha256': value['source_sha256']})
+                              for old_id, value in evidence['sources'].items()}
+                evidence['sources'] = {source_ids[old_id]: value for old_id, value in evidence['sources'].items()}
+                ids = {}
+                for row in evidence['consumers']:
+                    row['source_id'] = source_ids.get(row['source_id'], row['source_id'])
+                    old_id = row['id']
+                    unsigned = dict(row); unsigned.pop('id')
+                    row['id'] = planner.digest(unsigned)
+                    ids[old_id] = row['id']
+                for row in report['dependency_review']:
+                    for edge in row['edges']:
+                        edge['invocation_evidence_ids'] = [ids.get(value, value)
+                                                          for value in edge['invocation_evidence_ids']]
+                unsigned = dict(report); unsigned.pop('report_id')
+                report['report_id'] = planner.digest(unsigned)
+                with self.assertRaises(ValueError):
+                    shadow.verify_invocation_evidence(self.repo, plan, report)
+
+    def test_invocation_old_removed_calls_and_same_bytes_new_path_remain_distinct(self):
+        consumer, source, _, _ = self.invocation_fixture()
+        # Keep the original accepted two-call consumer, but remove its unknown
+        # call from head and add identical bytes at another consumer path.
+        relocated = 'tests/test_relocated_invocations.py'
+        write(self.repo, consumer, source.replace(b' return executor(argv)\n', b' return None\n'))
+        self.commit(relocated, source)
+        plan = self.plan()
+        report = shadow.build_report(self.repo, plan)
+        catalog = report['invocation_evidence']
+        rows = catalog['consumers']
+        def sites(record):
+            return [dict(zip(catalog['site_columns'], row, strict=True))
+                    for row in catalog['sources'][record['source_id']]['calls']]
+        old = next(row for row in rows if row['consumer'] == consumer and row['snapshot'] == 'merge_base')
+        current = next(row for row in rows if row['consumer'] == consumer and row['snapshot'] == 'head')
+        moved = next(row for row in rows if row['consumer'] == relocated and row['snapshot'] == 'head')
+        self.assertEqual((2, 1, 2), (len(sites(old)), len(sites(current)), len(sites(moved))))
+        self.assertEqual(old['source_sha256'], moved['source_sha256'])
+        self.assertNotEqual(old['id'], moved['id'])
+        self.assertEqual(3, len({row['source_id'] for row in (old, current, moved)}))
+        self.assertNotEqual(catalog['sources'][old['source_id']]['consumer'],
+                            catalog['sources'][moved['source_id']]['consumer'])
+        self.assertEqual(sites(old), sites(moved))
+        self.assertFalse(any(row['consumer'] == relocated and row['snapshot'] == 'merge_base' for row in rows))
+        self.assertIn('test_invocations', plan['selection']['selected'])
+        self.assertTrue(any(site['operation'] == 'unknown' for site in sites(old)))
+        shadow.verify_invocation_evidence(self.repo, plan, report)
+
+    def test_invocation_parse_and_git_mode_failures_remain_explicit(self):
+        consumer, _, _, _ = self.invocation_fixture()
+        self.commit(consumer, 'def incomplete(')
+        plan = self.plan()
+        with self.assertRaisesRegex(ValueError, 'unproved executable impact obligations'):
+            shadow.build_report(self.repo, plan)
+        catalog = shadow.invocation_evidence(self.repo, plan)
+        row = next(row for row in catalog['consumers']
+                   if row['consumer'] == consumer and row['snapshot'] == 'head')
+        self.assertEqual('unparseable', row['analysis_status'])
+        self.assertNotIn('sites', row)
+        self.assertEqual([], catalog['sources'][row['source_id']]['calls'])
+        self.assertTrue(row['fallback']['unlocated_causes'])
+        self.assertEqual(hashlib.sha256(b'def incomplete(').hexdigest(), row['source_sha256'])
+        self.assertFalse(catalog['execution_authority'])
+        # A real Git symlink entry need not be creatable by the Windows filesystem.
+        write(self.repo, consumer, '../tools/unknown.py')
+        blob = command(self.repo, 'hash-object', '-w', consumer)
+        command(self.repo, 'update-index', '--cacheinfo', '120000,' + blob + ',' + consumer)
+        command(self.repo, 'commit', '-qm', 'candidate symlink input')
+        plan = self.plan()
+        catalog = shadow.invocation_evidence(self.repo, plan)
+        row = next(row for row in catalog['consumers']
+                   if row['consumer'] == consumer and row['snapshot'] == 'head')
+        self.assertEqual(('120000', blob, 'non-regular-python'),
+                         (row['mode'], row['object_id'], row['analysis_status']))
+        self.assertIsNone(row['source_sha256'])
+        self.assertNotIn('sites', row)
+        self.assertIsNone(row['source_id'])
+        self.assertTrue(row['fallback']['unlocated_causes'])
+        self.assertFalse(catalog['execution_authority'])
+
     def test_archive_classification_is_separate_from_execution_authority(self):
         self.commit('docs/workstreams/a/attempts/A/INDEX.yaml', 'schema_version: 1\n')
         plan = self.plan()
@@ -447,7 +684,7 @@ class ContractShadowGitTests(unittest.TestCase):
         self.assertEqual(['documentation'], package['accepted_groups'])
         self.assertFalse(package['affected_consumers'][0]['contains_fallback_edge'])
         self.assertEqual(6, len(report['producer_sources']))
-        self.assertEqual(4, report['schema_version'])
+        self.assertEqual(5, report['schema_version'])
 
 
 class ShadowWorkflowTests(unittest.TestCase):

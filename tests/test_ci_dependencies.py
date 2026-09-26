@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import hashlib
 from pathlib import Path
 import subprocess
@@ -11,9 +12,160 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / '.github/scripts'))
 import ci_dependencies as deps
+import ci_input_facts as input_facts
 
 
 class DependencyTests(unittest.TestCase):
+    def test_invocation_sites_resolve_import_aliases_in_lexical_scope(self):
+        cases = (
+            ('import subprocess as child\ndef invoke():\n return child.run(["git", "rev-parse", "HEAD"])\n',
+             'subprocess.run', 'invoke'),
+            ('from subprocess import run as launch\ndef invoke():\n return launch(["git", "status"])\n',
+             'subprocess.run', 'invoke'),
+            ('class Worker:\n def invoke(self):\n  from subprocess import run as launch\n'
+             '  return launch(["git", "status"])\n', 'subprocess.run', 'Worker.invoke'),
+            ('import runpy as loader\ndef invoke():\n return loader.run_path("tools/fixed.py")\n',
+             'runpy.run_path', 'invoke'),
+        )
+        for source, callee, scope in cases:
+            with self.subTest(source=source):
+                rows = deps.invocation_sites('tools/consumer.py', source.encode())
+                self.assertEqual(1, len(rows))
+                self.assertIsInstance(rows[0]['call'], ast.Call)
+                self.assertEqual(callee, rows[0]['callee'])
+                self.assertEqual('proven-import', rows[0]['binding'])
+                self.assertEqual(scope, rows[0]['scope'])
+
+    def test_invocation_sites_do_not_prove_shadowed_rebound_or_escaped_imports(self):
+        cases = (
+            'import subprocess as child\ndef invoke(child):\n return child.run(["git", "status"])\n',
+            'from subprocess import run as launch\ndef invoke(launch):\n return launch(["git", "status"])\n',
+            'import subprocess as child\nchild = replacement\nchild.run(["git", "status"])\n',
+            'import subprocess as child\nlaunch = child.run\nlaunch(["git", "status"])\n',
+            'import subprocess as child\nexpose(child)\nchild.run(["git", "status"])\n',
+            'import subprocess as child\nchild.run = replacement\nchild.run(["git", "status"])\n',
+        )
+        for source in cases:
+            with self.subTest(source=source):
+                rows = deps.invocation_sites('tools/consumer.py', source.encode())
+                target = next(row for row in rows if row['call'].args
+                              and isinstance(row['call'].args[0], ast.List))
+                self.assertIn(target['binding'], {'unresolved', 'escaped'})
+        source = b'import subprocess as child\nclass Worker:\n child = replacement\n def invoke(self):\n  return child.run(["git", "status"])\n'
+        row, = deps.invocation_sites('tools/consumer.py', source)
+        self.assertEqual(('subprocess.run', 'Worker.invoke'), (row['callee'], row['scope']))
+        # The legacy escape analysis is module-wide; this slice may retain its
+        # conservative escape, but must not resolve the method through Worker.child.
+        self.assertIn(row['binding'], {'proven-import', 'escaped'})
+
+    def test_invocation_sites_keep_unknown_second_call_and_changed_source(self):
+        source = (b'import subprocess as child\ndef invoke(executor, argv):\n'
+                  b' child.run(["git", "rev-parse", "HEAD"])\n executor(argv)\n')
+        rows = deps.invocation_sites('tools/consumer.py', source)
+        self.assertEqual(2, len(rows))
+        fixed = next(row for row in rows if row['callee'] == 'subprocess.run')
+        unknown = next(row for row in rows if row is not fixed)
+        self.assertEqual('proven-import', fixed['binding'])
+        self.assertEqual('unresolved', unknown['binding'])
+        self.assertEqual({'invoke'}, {row['scope'] for row in rows})
+        self.assertNotEqual(fixed['call'].lineno, unknown['call'].lineno)
+        changed = source.replace(b'executor(argv)', b'executor(argv, shell=True)')
+        updated = deps.invocation_sites('tools/consumer.py', changed)
+        unknown_updated = next(row for row in updated if row['binding'] == 'unresolved')
+        self.assertEqual(['shell'], [kw.arg for kw in unknown_updated['call'].keywords])
+        self.assertEqual([], unknown['call'].keywords)
+
+    def test_invocation_sites_return_detached_asts_without_poisoning_cached_selection(self):
+        path = 'tools/consumer.py'
+        source = b'import subprocess as child\nchild.run(["git", "rev-parse", "HEAD"])\n'
+        first, = deps.invocation_sites(path, source)
+        original = ast.dump(first['call'], include_attributes=True)
+        first['call'].args[0].elts[0].value = 'injected'
+        first['call'].lineno = 999
+        first['binding'] = 'unresolved'
+        second, = deps.invocation_sites(path, source)
+        self.assertEqual(original, ast.dump(second['call'], include_attributes=True))
+        self.assertEqual('proven-import', second['binding'])
+        self.assertIsNot(first['call'], second['call'])
+        blobs = {
+            'src/pkg/leaf.py': b'VALUE=1\n',
+            path: source,
+            'tests/test_consumer.py': b'import tools.consumer\n',
+            'tests/test_direct.py': b'import pkg.leaf\n',
+            'tests/test_unrelated.py': b'import unittest\n',
+        }
+        before = deps.graph(blobs, set(blobs))
+        for name, raw in blobs.items():
+            deps.invocation_sites(name, raw)
+        self.assertEqual(before, deps.graph(blobs, set(blobs)))
+        selected = self.selection(blobs, blobs, ['src/pkg/leaf.py'])
+        self.assertEqual({'test_consumer', 'test_direct'}, set(selected['selected']))
+        self.assertEqual(['opaque-execution', 'syntax-reference'],
+                         selected['selected_edge_kinds']['test_consumer'])
+        self.assertEqual(['test_unrelated'], selected['excluded'])
+
+    def test_invocation_source_identity_binds_path_and_comment_bytes(self):
+        raw = b'import subprocess as child\nchild.run(["git", "rev-parse", "HEAD"])\n'
+        variants = [('tools/first.py', raw), ('tools/second.py', raw),
+                    ('tools/first.py', raw + b'# changed evidence bytes\n')]
+        records = []
+        for path, source in variants:
+            site, = deps.invocation_sites(path, source)
+            context = {key: site[key] for key in ('callee', 'binding', 'scope')}
+            record = input_facts.describe_invocation(path, source, site['call'], **context)
+            input_facts.verify_invocation(record, path, source, site['call'], **context)
+            self.assertEqual(path, record['consumer'])
+            self.assertEqual(hashlib.sha256(source).hexdigest(), record['source_sha256'])
+            self.assertFalse(record['execution_authority'])
+            self.assertEqual('unproved', record['resolution']['input_closure'])
+            records.append(record)
+        self.assertEqual(records[0]['callsite'], records[1]['callsite'])
+        self.assertEqual(records[0]['source_sha256'], records[1]['source_sha256'])
+        self.assertNotEqual(records[0]['consumer'], records[1]['consumer'])
+        self.assertEqual(records[0]['callsite'], records[2]['callsite'])
+        self.assertNotEqual(records[0]['source_sha256'], records[2]['source_sha256'])
+        for path, source in variants[1:]:
+            site, = deps.invocation_sites(path, source)
+            with self.subTest(path=path, source=source), self.assertRaises(ValueError):
+                input_facts.verify_invocation(records[0], path, source, site['call'],
+                    **{key: site[key] for key in ('callee', 'binding', 'scope')})
+
+    def test_invocation_parse_failure_is_distinct_from_no_calls_and_recovers(self):
+        path = 'tools/consumer.py'
+        for raw in (b'def incomplete(', b'\xff'):
+            with self.subTest(raw=raw):
+                self.assertIsNone(deps.invocation_sites(path, raw))
+                self.assertIsNone(deps._file_facts(path, raw))
+        self.assertEqual((), deps.invocation_sites(path, b'VALUE=1\n'))
+        repaired = b'import subprocess\nsubprocess.run(["git", "status"])\n'
+        record, = deps.invocation_sites(path, repaired)
+        self.assertEqual(('subprocess.run', 'proven-import', '<module>'),
+                         (record['callee'], record['binding'], record['scope']))
+
+    def test_invocation_import_proof_rejects_parameter_conditional_and_namespace_mutation(self):
+        cases = (
+            'def invoke(child):\n import subprocess as child\n child.run(["git", "status"])\n',
+            'def outer(child):\n def invoke():\n  import subprocess as child\n  child.run(["git", "status"])\n',
+            'if enabled:\n import subprocess as child\nchild.run(["git", "status"])\n',
+            'def invoke(enabled):\n if enabled:\n  import subprocess as child\n child.run(["git", "status"])\n',
+            'child.run(["git", "status"])\nimport subprocess as child\n',
+            'from . import subprocess as child\nchild.run(["git", "status"])\n',
+            'import os\nos.walk=replacement\nos.walk("data")\n',
+            'import hashlib\nhashlib.sha256=replacement\nhashlib.sha256(b"data")\n',
+            'import hashlib\ndel hashlib.sha256\nhashlib.sha256(b"data")\n',
+            'import hashlib\nhashlib.__dict__["sha256"]=replacement\nhashlib.sha256(b"data")\n',
+        )
+        for source in cases:
+            with self.subTest(source=source):
+                row, = deps.invocation_sites('tools/consumer.py', source.encode())
+                self.assertIn(row['binding'], {'unresolved', 'escaped'})
+        for source in ('import subprocess as child\nchild.run(["git", "status"])\n',
+                       'def invoke():\n import subprocess as child\n child.run(["git", "status"])\n'):
+            with self.subTest(source=source):
+                row, = deps.invocation_sites('tools/consumer.py', source.encode())
+                self.assertEqual('proven-import', row['binding'])
+                self.assertEqual('subprocess.run', row['callee'])
+
     def test_rooted_resource_inputs_exclude_unrelated_schema_and_follow_inventory(self):
         header = 'from pathlib import Path\nROOT=Path(__file__).resolve().parents[1]\n'
         for expression in ('(ROOT / "data/input.json").read_text()',
