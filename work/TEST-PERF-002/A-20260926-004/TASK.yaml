@@ -1,0 +1,11 @@
+task_id: TEST-PERF-002
+revision: 48
+request: Continue until actual test reduction
+scope: bounded diagnostic contracts; independent minimum; actual fault/coverage and
+  hosted pair preparation
+profile: CI boundary engineer
+required_skills: []
+delegation: true
+budget: three existing family contracts and minimum witness; focused local verification
+  and three fresh hosted pairs
+stop_condition: reviewable activation evidence; formal acceptance remains external

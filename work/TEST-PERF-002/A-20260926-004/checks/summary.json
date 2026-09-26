@@ -1,0 +1,218 @@
+{
+  "status": "PASS-local-scoped-with-retained-negative-results",
+  "base": "5bf2227ca9b4d2f63f452e579185e7838028de78",
+  "implementation": "005e942b192b024d4da9582838694fdc6082a57b",
+  "witness": {
+    "status": "PASS-local",
+    "python311_tests": 17,
+    "python313_tests": 17,
+    "python311_seconds": 58.477,
+    "python313_seconds": 53.627,
+    "coverage": {
+      "covered_lines": 187,
+      "num_statements": 187,
+      "percent_covered": 100.0,
+      "percent_covered_display": "100",
+      "missing_lines": 0,
+      "excluded_lines": 0,
+      "percent_statements_covered": 100.0,
+      "percent_statements_covered_display": "100",
+      "num_branches": 32,
+      "num_partial_branches": 0,
+      "covered_branches": 32,
+      "missing_branches": 0,
+      "percent_branches_covered": 100.0,
+      "percent_branches_covered_display": "100"
+    },
+    "source_sha256": {
+      ".github/scripts/ci_minimum_witness.py": "f847918c7abb35297c7eec549508bca0edd9e9e440cb375704ecf70e288a73e5",
+      "tests/test_ci_minimum_witness.py": "9dab317be6c81c28d15bc8241e2bcf72666623c523313ea7998f17d6dc7416ca"
+    },
+    "evidence_sha256": {
+      "final-311.log": "26ef85c5b3889d8817c9213ee917324df69f645fcb44615fea473edc32527ca1",
+      "final-313.log": "92f8fea91cdd3f1bd15b67846bd1abf2bd3ecb515bc9395d9b66f13dd481fca6",
+      "final-311.coverage": "08b027372b0072d0a7fe9d0b7b9ac789104cc130840b6430d8cddf034201f457",
+      "final-311.json": "596ade7eba46b4ceea8d55dd2ef18a9cc1865b9b0f0dc3e85b2b808495541e48"
+    },
+    "measurement": "actual parent source paths; no subprocess source remapping",
+    "independent_isolation_evidence": "eight original real isolated CLI tests; path probes are supplementary",
+    "hosted_execution_proved": false
+  },
+  "contracts": {
+    "status": "PASS-local-scoped",
+    "owned_files": {
+      "tests/test_ci_plan.py": "3fc65ae85709e4f24b7c205321fbb20d6f77ad44de558ad9ccb7d94b5fe5336f",
+      "tests/test_ci_domain_audit.py": "3fbf1bb6f1bfa28c5902d6fe82ee0ae759a4d5f5ce0b1660d552a2273be390ce"
+    },
+    "new_test_ids": [
+      "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_require_base_acceptance_and_complete_family_proof",
+      "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_restore_scope_for_boundary_and_proof_drift",
+      "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_keep_new_direct_and_opaque_consumers"
+    ],
+    "modified_existing_test": "tests.test_ci_domain_audit.DomainModelTests.test_overlapping_runtime_document_is_not_collapsed_into_docs",
+    "first_attempt": {
+      "python311": {
+        "tests": 4,
+        "failing_subtests": 5,
+        "methods_passed": 2,
+        "final_raw_chunk": "first-311-final-output.txt"
+      },
+      "python313": {
+        "tests": 4,
+        "failing_subtests": 5,
+        "methods_passed": 2,
+        "raw_capture": "interactive tool output only"
+      },
+      "causes": [
+        "version comparison changed inside planner.require call; existing function-body contract correctly rejects changed call AST",
+        "new test consumers change real proof test-directory membership; sufficient opaque closure correctly restored"
+      ]
+    },
+    "final_planner_runs": {
+      "311": {
+        "argv": [
+          "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_require_base_acceptance_and_complete_family_proof",
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_restore_scope_for_boundary_and_proof_drift",
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_keep_new_direct_and_opaque_consumers"
+        ],
+        "cwd": "D:\\lcy\\develop\\_worktrees\\RWB\\ci-attribute-consumer-probe",
+        "returncode": 0,
+        "seconds": 27.390999999995984,
+        "test_sources": {
+          "tests/test_ci_plan.py": "3fc65ae85709e4f24b7c205321fbb20d6f77ad44de558ad9ccb7d94b5fe5336f",
+          "tests/test_ci_domain_audit.py": "3fbf1bb6f1bfa28c5902d6fe82ee0ae759a4d5f5ce0b1660d552a2273be390ce"
+        },
+        "tests": [
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_require_base_acceptance_and_complete_family_proof",
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_restore_scope_for_boundary_and_proof_drift",
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_keep_new_direct_and_opaque_consumers"
+        ]
+      },
+      "313": {
+        "argv": [
+          "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv313\\Scripts\\python.exe",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_require_base_acceptance_and_complete_family_proof",
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_restore_scope_for_boundary_and_proof_drift",
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_keep_new_direct_and_opaque_consumers"
+        ],
+        "cwd": "D:\\lcy\\develop\\_worktrees\\RWB\\ci-attribute-consumer-probe",
+        "returncode": 0,
+        "seconds": 27.29699999999866,
+        "test_sources": {
+          "tests/test_ci_plan.py": "3fc65ae85709e4f24b7c205321fbb20d6f77ad44de558ad9ccb7d94b5fe5336f",
+          "tests/test_ci_domain_audit.py": "3fbf1bb6f1bfa28c5902d6fe82ee0ae759a4d5f5ce0b1660d552a2273be390ce"
+        },
+        "tests": [
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_require_base_acceptance_and_complete_family_proof",
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_restore_scope_for_boundary_and_proof_drift",
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_keep_new_direct_and_opaque_consumers"
+        ]
+      }
+    },
+    "domain_test": {
+      "python311": "PASS in first attempt, unchanged since",
+      "python313": "PASS in first attempt, unchanged since"
+    },
+    "diff_check": 0,
+    "quality_limits": "No new coverage measurement or hosted execution from this subtask"
+  },
+  "count_fault_closure": {
+    "status": "PASS-local-count-closure",
+    "synthetic_base": "654937e79e0f196688b8d12db57a545159a2298a",
+    "original_synthetic_base": "0e712d5039232860a51f97b1d43857b76f6e98f1",
+    "test_sha256": "3fbf1bb6f1bfa28c5902d6fe82ee0ae759a4d5f5ce0b1660d552a2273be390ce",
+    "cases": [
+      {
+        "label": "correct",
+        "head": "164d26b96af0a8cd5c9eb46f82eb5d1676aa9726",
+        "plan": "44e47a13b895ff7a972311e9985b22d853d3ccdf084f28aa37fae8acea63a5d4",
+        "B": 25,
+        "C": 25,
+        "union": 25,
+        "ordered_ids_sha256": "69be2d519953f68f26015f05087046dbfe3c755c0beff7e62d05568972a0a75e",
+        "python311_wall": 40.287003,
+        "python313_wall": 26.88987,
+        "successful311": true,
+        "successful313": true
+      },
+      {
+        "label": "same-count-fault",
+        "head": "804cb5b932a54542f5679c54370c9c79d0900cae",
+        "plan": "e29d841152d00f5678285fdd410ffefffe15da01faff5e9eb58f3383a580a2bb",
+        "B": 25,
+        "C": 25,
+        "union": 25,
+        "ordered_ids_sha256": "69be2d519953f68f26015f05087046dbfe3c755c0beff7e62d05568972a0a75e",
+        "python311_wall": 37.499516,
+        "python313_wall": 27.26031,
+        "successful311": false,
+        "successful313": false
+      }
+    ],
+    "same_B_C_order": true,
+    "correct_impact_subject": {
+      "covered_lines": 121,
+      "num_statements": 121,
+      "percent_covered": 100.0,
+      "percent_covered_display": "100",
+      "missing_lines": 0,
+      "excluded_lines": 0,
+      "percent_statements_covered": 100.0,
+      "percent_statements_covered_display": "100",
+      "num_branches": 38,
+      "num_partial_branches": 0,
+      "covered_branches": 38,
+      "missing_branches": 0,
+      "percent_branches_covered": 100.0,
+      "percent_branches_covered_display": "100"
+    },
+    "negative_outcome": "producer and behavioral fail on one actual counting assertion; failed producer emits no coverage projection",
+    "negative_impact": "nonzero because impact-results.json is absent; this is not an independent semantic rejection",
+    "old_fault_exact_raw": "ce9faa73585454c9afceb7813efe4f04811848ffbda3a396a9f432e33945d607",
+    "old_new_same_git_blob": "d7e231c74ce6e7459e375a9b69718cc4f09a9828",
+    "old_raw_direct_outcomes": {
+      "311": 1,
+      "313": 1
+    },
+    "preserved_source_clone": true
+  },
+  "local_reduced_union": [
+    20,
+    9,
+    25
+  ],
+  "old_same_source_union": 1510,
+  "local_producer_seconds": [
+    33.78,
+    12.94,
+    38.75
+  ],
+  "hosted_execution_proved": false,
+  "hosted_speedup_proved": false,
+  "production_reduction_activated": false,
+  "checker_accepted": false,
+  "cross_commit_reuse_activated": false,
+  "independent_review_sha256": "94e3d2a630d1c712cd9049df040ffbe35804d03b772f2fee11402c520167085a",
+  "paired_harness_review": {
+    "status": "PASS-bounded-experiment-harness",
+    "script_sha256": "7dd613aee2b4bb7bf3142de84909fa3b7c53f9001cf7d3b88fc6eb7e0e4d35f3",
+    "workflow_sha256": "e563d0c9a20fba20944a8879eb6e6000e73f23484af53a942ff1ec610b19ed4d",
+    "reduced_actual": "reduced-fixed/review-result.json",
+    "final_metadata": "final-light/summary.json",
+    "negative_order": "projection-negative/result.json",
+    "baseline_executed": false,
+    "hosted_executed": false,
+    "production_authority": false,
+    "remaining": "Actual three hosted pair outcomes and cross-pair environment consistency"
+  },
+  "raw_evidence_sha256": "9180e25e6f9e8ddee034aed19af03d12bf2b3bc57eea7ec3069a02b5823751b1"
+}

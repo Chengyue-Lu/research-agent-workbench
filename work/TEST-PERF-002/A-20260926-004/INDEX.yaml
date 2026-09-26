@@ -1,0 +1,62 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260926-004
+task_id: TEST-PERF-002
+task_revision: 48
+attempt_id: A-20260926-004
+archive_root: A-20260926-004
+baseline: 5bf2227ca9b4d2f63f452e579185e7838028de78
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 22c4ff3c2afd04100517ab1f46be141f8375b1e9b69cf94a91bb9929a9ad10ba
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 348e803bb6e7def0c68f5c1612b06e333131e741bfdd3201947f64a03ed00f8f
+read_allowlist:
+- .github/scripts/**
+- AGENTS.md
+- PROJECT_MEMORY.md
+- README.md
+- docs/DEVELOPMENT.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/**
+- work/TEST-PERF-002/**
+write_scope:
+- .github/scripts/ci_minimum_witness.py
+- .github/scripts/plan_ci.py
+- .github/scripts/selection_witness.py
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/ci_impact_policy.yaml
+- tests/coverage_policy.yaml
+- tests/test_ci_domain_audit.py
+- tests/test_ci_minimum_witness.py
+- tests/test_ci_plan.py
+- tests/test_selection_witness.py
+- work/TEST-PERF-002/A-20260926-004/**
+tool_allowlist:
+- collaboration
+- gh
+- git
+- python
+- shell
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: a9147468c5f0cee3777e702e01ca98dc5a843998d9c892e2303c7272e29647da
+  event_count: 5
+tool_event_refs:
+- path: tool-events/freeze-diagnostic-contract-proof-succeeded.json
+  sha256: b9c4179216d2bb9ae079a71cde334845835d59d1fa810b2890468f0914ecf92c
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: messages
+- event_id: EVT-0003
+  affected_stream: external-actions
