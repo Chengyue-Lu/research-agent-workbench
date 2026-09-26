@@ -1,6 +1,6 @@
 # M14-005 trusted release preflight
 
-This slice prepares the source-owned entry point for release-only checks. It joins the
+PR #98 accepted this source-owned entry point for release-only checks. It joins the
 [live source observer](SOURCE_CI.md) to the accepted deterministic exporter/checker.
 M14-005 remains READY and the release topology remains dormant.
 
@@ -28,6 +28,31 @@ Tests combine real Git projection/candidate fixtures with controlled live-observ
 source-CI suite separately exercises the authenticated API contract. These deterministic tests do not
 claim that a real release candidate or integrated-source preflight has been accepted.
 
+## Diagnostic first-main workflow preparation
+
+[PR #102](https://github.com/Chengyue-Lu/research-agent-workbench/pull/102) proposes
+`.github/workflows/release.yml` and the source-owned
+`.github/scripts/release_public.py` to append-only surface policy `1.3.0`. The workflow
+only responds to a `release/v*` pull request targeting `main` and uses externally
+maintained repository variable pins for the exact source, main parent, policy version,
+source-CI run and independent manifest SHA-256. Unset pins fail before checkout. It
+checks out the pinned develop source, fetches the candidate **as Git data**, runs the
+accepted preflight, then checks public links, internal paths and build inputs without
+executing candidate code. Both receipts have `merge_eligible: false`.
+
+This workflow is named `release preflight (diagnostic)` and is not a required status
+check. The first candidate may supply the workflow file in its PR merge ref; therefore
+its own result cannot authenticate its bytes or grant release authority. A reviewer
+must independently run source-owned preflight from a clean accepted develop checkout,
+verify the projected workflow and validator blobs against the frozen source, and check
+the actual GitHub run and effective rules. GitHub documents that `pull_request`
+workflows run from the PR merge commit, while `workflow_dispatch` requires the file
+on the default branch ([event reference](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows),
+[manual-run reference](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow)).
+The first-main hosted trigger and protected ruleset transition remain unproven until
+the separate R2 cutover; the current dormant topology and main hard gates still block
+release merging.
+
 ## Following slices
 
 The source API repair was accepted in PR #97. Its real protected develop
@@ -35,11 +60,10 @@ The source API repair was accepted in PR #97. Its real protected develop
 and clean exact-source online `attest` passed; the [historical observation pins](SOURCE_CI_ACCEPTANCE.json)
 are audit evidence only. The remaining slices are:
 
-1. Review this source-owned composition. Wire a trusted release-only workflow to it, prove the first-main
-   bootstrap trust anchor, and add the exact required workflow/public validator includes in a new
-   append-only release-policy version. Candidate-controlled workflow code must not provide its own trust.
-2. Add candidate public-link/build-input closure and dual-Python clean-install evidence to that workflow.
-   Only then prepare and review atomic topology activation and direct-develop-path closure.
+1. Obtain R2 review of the diagnostic workflow, first-main trust boundary, candidate public checker
+   and exact append-only policy include. Hosted first-main behavior still needs a real observed run.
+2. Add dual-Python checkout-outside clean-install and no-Skill/Registry/Projection evidence to the
+   release-only workflow. Only then prepare and review atomic topology activation and direct-develop-path closure.
 3. Freeze the release source/current main parent after readiness, generate the real release candidate,
    and obtain the separate final release PR/tag/artifact decision.
 

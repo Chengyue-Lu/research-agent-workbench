@@ -1,0 +1,24 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "D:\lcy\develop\_worktrees\RWB\m14-release-workflow\src\research_workbench\__main__.py", line 5, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "D:\lcy\develop\_worktrees\RWB\m14-release-workflow\src\research_workbench\cli.py", line 1954, in main
+    return int(args.handler(args))
+               ^^^^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\_worktrees\RWB\m14-release-workflow\src\research_workbench\cli.py", line 607, in _validate
+    documents, issues = load_and_validate(paths)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\_worktrees\RWB\m14-release-workflow\src\research_workbench\validation\documents.py", line 1860, in load_and_validate
+    issues.extend(validate_documents(documents))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\_worktrees\RWB\m14-release-workflow\src\research_workbench\validation\documents.py", line 1801, in validate_documents
+    schema_catalog = SchemaCatalog()
+                     ^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\_worktrees\RWB\m14-release-workflow\src\research_workbench\validation\schemas.py", line 31, in __init__
+    resource_reader = RuntimeResources()
+                      ^^^^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\_worktrees\RWB\m14-release-workflow\src\research_workbench\resources.py", line 87, in __init__
+    from research_workbench._runtime_pin import MANIFEST_SHA256
+ModuleNotFoundError: No module named 'research_workbench._runtime_pin'
