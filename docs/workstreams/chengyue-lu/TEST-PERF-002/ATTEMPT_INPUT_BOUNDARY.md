@@ -71,3 +71,7 @@ B/C plus coverage/smoke/lifecycle proof, and the required fresh hosted pairs. Re
 whole-Runtime and whole-catalog work stays selected until a separate partition is
 implemented and accepted. Global90, critical95/90, changed100/100 and fresh develop
 integration retain their current requirements.
+
+[Accepted Git proposal templates](ACCEPTED_CONSUMER_TEMPLATES.md) add declaration
+provenance to the existing shadow evaluator. This is one prerequisite for later
+independent exclusion evidence; it does not close the remaining input contract.

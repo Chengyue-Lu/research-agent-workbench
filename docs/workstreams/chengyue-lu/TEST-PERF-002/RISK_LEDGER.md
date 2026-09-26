@@ -282,3 +282,12 @@ for cross-owner review. Quality thresholds, exclusions, product contracts and re
   inventory, including non-schema resources; schema pins alone do not close it.
 - Observed Python file operations and successful negative controls are diagnostic
   evidence. Missing observations are not absence proof or independent exclusion authority.
+
+## Accepted declaration provenance
+
+- A declaration supplied by a candidate can rewrite unknowns, pins or ownership.
+  The accepted-Git template mode preserves the reviewer-selected source blob;
+  binding that template to the current base does not semantically requalify it.
+- Declaration provenance and checker provenance are separate. The new diagnostic
+  checker still needs acceptance and independent execution before it could support
+  production exclusion evidence. Existing activation blockers remain in force.
