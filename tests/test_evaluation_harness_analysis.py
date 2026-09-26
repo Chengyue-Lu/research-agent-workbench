@@ -161,7 +161,7 @@ class HarnessAnalysisTests(unittest.TestCase):
                                                             "preregistered_record_ref": self.pairwise_ref})
         return analysis.AnalysisContext(self.context, ref, "M1", ANALYZED, ({"case_id": "C1", "ref": pairwise_ref},))
 
-    def paired(self, context=None, interpretation="skill-conditional-increment", overlap="held-out"):
+    def paired(self, context=None, interpretation="skill-conditional-increment", overlap="held-out", validate_ref=None):
         context = context or self.analysis_context()
         result = {"status": {"skill-conditional-increment": "exact-skill-only", "skill-bearing-package-effect": "skill-bearing-package",
                   "unavailable": "not-comparable"}[interpretation], "interpretation": interpretation,
@@ -169,6 +169,9 @@ class HarnessAnalysisTests(unittest.TestCase):
         with patch.object(analysis, "validate_overlap", return_value={"overlap_status": overlap, "overlap_refs": [],
             "unresolved_reasons": [], "primary_confirmatory_eligible": overlap == "held-out"}), \
              patch.object(analysis, "validate_comparability", return_value=result):
+            if validate_ref is not None:
+                return analysis.validate_harness_analysis(self.inputs(), expected_analysis_ref=validate_ref,
+                    expected_analysis_id="A1", context=context, **self.auth)
             return analysis.compile_harness_analysis(self.inputs(), context=context, analysis_id="A1", **self.auth)
 
     def test_complete_metrics_and_pairing_reconstruct_without_authority(self):
@@ -182,6 +185,8 @@ class HarnessAnalysisTests(unittest.TestCase):
         self.assertEqual(analysis.validate_harness_metrics(self.inputs(), expected_metrics_ref=ref,
             expected_metrics_id="M1", context=self.context, **self.auth), document)
         context = self.analysis_context(); paired = self.paired(context)
+        paired_ref = self.write("analysis-roundtrip.json", paired)
+        self.assertEqual(self.paired(context, validate_ref=paired_ref), paired)
         self.assertEqual(len(paired["pairs"]), 5)
         self.assertTrue(all(r["value"] == 0 for p in paired["pairs"] for r in p["metrics"]))
         self.assertTrue(all(p["primary_confirmatory_eligible"] is False for p in paired["pairs"]))
