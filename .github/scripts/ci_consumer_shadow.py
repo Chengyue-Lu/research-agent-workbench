@@ -295,21 +295,69 @@ def build_report(repo, plan, proposal, inventory, receipt=None):
     return report
 
 
+def accepted_proposal(repo, plan, accepted_base, template_path):
+    """Bind a Git-frozen template; caller-supplied acceptance is not review proof."""
+    planner.require(accepted_base == plan['binding']['base'], 'accepted base differs from plan base')
+    planner.exact_commit(repo, accepted_base)
+    portable(template_path)
+    planner.require(template_path.endswith('.json') and not any(c in template_path for c in '*?'),
+                    'regular JSON template path required')
+    entry = planner.dependencies.snapshot(repo, accepted_base)[0].get(template_path)
+    planner.require(entry is not None and entry[:2] == ['100644', 'blob'],
+                    'accepted template must be a regular Git file')
+    raw = planner.read_at(repo, accepted_base, template_path)
+    planner.require(hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest() == entry[2],
+                    'accepted template Git blob mismatch')
+    template = json.loads(raw, object_pairs_hook=planner.unique_object)
+    planner.require(isinstance(template, dict) and set(template) ==
+                    {'version', 'execution_authority', 'consumers'}, 'unsupported accepted template shape')
+    proposal = {**template, 'baseline': accepted_base}
+    validate_proposal(proposal)
+    provenance = {'commit': accepted_base, 'path': template_path, 'git_blob': entry[2],
+                  'raw_sha256': hashlib.sha256(raw).hexdigest(),
+                  'effective_proposal_sha256': planner.digest(proposal),
+                  'binding_rule': 'inject explicit plan base; preserve consumer definitions unchanged',
+                  'qualification': 'binding only; acceptance, input closure and independent exclusion proof are external'}
+    return proposal, provenance
+
+
+def build_accepted_report(repo, plan, accepted_base, template_path, inventory, receipt=None):
+    proposal, provenance = accepted_proposal(repo, plan, accepted_base, template_path)
+    report = build_report(repo, plan, proposal, inventory, receipt)
+    report.pop('report_id')
+    report['accepted_template'] = provenance
+    report['activation']['blockers'].append(
+        'template binding does not authenticate checker/import dependencies or supply an independent accepted witness')
+    report['report_id'] = planner.digest(report)
+    return report
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--repo', type=Path, default=Path('.'))
-    for name in ('plan', 'proposal', 'inventory', 'output'):
+    for name in ('plan', 'inventory', 'output'):
         parser.add_argument('--' + name, type=Path, required=True)
+    proposals = parser.add_mutually_exclusive_group(required=True)
+    proposals.add_argument('--proposal', type=Path)
+    proposals.add_argument('--accepted-proposal-template')
+    parser.add_argument('--accepted-base')
     parser.add_argument('--receipt', type=Path)
     args = parser.parse_args(argv)
-    for source in (args.plan, args.proposal, args.inventory, args.receipt):
+    if bool(args.accepted_base) != (args.accepted_proposal_template is not None):
+        parser.error('--accepted-base is required only with --accepted-proposal-template')
+    template_input = args.repo / args.accepted_proposal_template if args.accepted_proposal_template is not None else None
+    for source in (args.plan, args.proposal, args.inventory, args.receipt, template_input):
         if source is not None:
             planner.require(source.resolve() != args.output.resolve() and not
                             (args.output.exists() and source.exists() and args.output.samefile(source)), 'output would overwrite input')
     def read(path):
         return json.loads(path.read_bytes(), object_pairs_hook=planner.unique_object)
-    report = build_report(args.repo.resolve(), read(args.plan), read(args.proposal), read(args.inventory),
-                          read(args.receipt) if args.receipt else None)
+    plan, inventory = read(args.plan), read(args.inventory)
+    receipt = read(args.receipt) if args.receipt else None
+    report = (build_accepted_report(args.repo.resolve(), plan, args.accepted_base,
+                                   args.accepted_proposal_template, inventory, receipt)
+              if args.accepted_proposal_template is not None else
+              build_report(args.repo.resolve(), plan, read(args.proposal), inventory, receipt))
     args.output.write_bytes(planner.canonical(report))
     print(json.dumps({'report_id': report['report_id'], 'execution_authority': False,
                       'comparison': report['comparison']['status']}))
