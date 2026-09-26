@@ -1,0 +1,11 @@
+task_id: TEST-PERF-002
+revision: 47
+request: Continue PR101
+scope: accepted Git declaration provenance; diagnostic only
+profile: CI boundary engineer
+required_skills: []
+delegation: true
+budget: one source adapter and real Git adversarial tests; scoped dual Python and
+  actual CI
+stop_condition: updated Draft with exact source and native evidence; activation remains
+  separate

@@ -1,0 +1,156 @@
+{
+  "status": "PASS-local-scoped",
+  "implementation": "a924be033d267de9345df6a0b94fd5e365cfe821",
+  "base": "5bf2227ca9b4d2f63f452e579185e7838028de78",
+  "related_tests_per_python": 20,
+  "new_tests": 7,
+  "local_results": {
+    "311": {
+      "status": "PASS",
+      "tests": 20,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "seconds": 24.46160470000177,
+      "python": "3.11.16 (main, Sep  1 2026, 14:15:24) [MSC v.1944 64 bit (AMD64)]",
+      "executable": "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+      "source_pins": {
+        ".github/scripts/ci_consumer_shadow.py": "f79b699e48ddd293427647d0b10a8d78fee312c1e8f6b0e437110326bbb29d8d",
+        "tests/test_ci_consumer_shadow.py": "eafdd464fd64eec19df73d675e095b4bd89e0e07d905d1e3492fb0a0af252034",
+        ".github/scripts/ci_shadow_pair.py": "915eb2bc84ce2f44a316bce5453673fe2dc504dfeb3527364b647610b05d613f"
+      },
+      "scope": "local related modules, not repository coverage/hosted execution",
+      "modules": {
+        ".github\\scripts\\ci_consumer_shadow.py": {
+          "summary": {
+            "covered_lines": 237,
+            "num_statements": 237,
+            "percent_covered": 100.0,
+            "percent_covered_display": "100",
+            "missing_lines": 0,
+            "excluded_lines": 0,
+            "percent_statements_covered": 100.0,
+            "percent_statements_covered_display": "100",
+            "num_branches": 86,
+            "num_partial_branches": 0,
+            "covered_branches": 86,
+            "missing_branches": 0,
+            "percent_branches_covered": 100.0,
+            "percent_branches_covered_display": "100"
+          },
+          "missing_lines": [],
+          "missing_branches": []
+        },
+        ".github\\scripts\\ci_shadow_pair.py": {
+          "summary": {
+            "covered_lines": 125,
+            "num_statements": 125,
+            "percent_covered": 100.0,
+            "percent_covered_display": "100",
+            "missing_lines": 0,
+            "excluded_lines": 0,
+            "percent_statements_covered": 100.0,
+            "percent_statements_covered_display": "100",
+            "num_branches": 42,
+            "num_partial_branches": 0,
+            "covered_branches": 42,
+            "missing_branches": 0,
+            "percent_branches_covered": 100.0,
+            "percent_branches_covered_display": "100"
+          },
+          "missing_lines": [],
+          "missing_branches": []
+        }
+      }
+    },
+    "313": {
+      "status": "PASS",
+      "tests": 20,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "seconds": 22.735833599996113,
+      "python": "3.13.15 (main, Sep  1 2026, 14:16:48) [MSC v.1944 64 bit (AMD64)]",
+      "executable": "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv313\\Scripts\\python.exe",
+      "source_pins": {
+        ".github/scripts/ci_consumer_shadow.py": "f79b699e48ddd293427647d0b10a8d78fee312c1e8f6b0e437110326bbb29d8d",
+        "tests/test_ci_consumer_shadow.py": "eafdd464fd64eec19df73d675e095b4bd89e0e07d905d1e3492fb0a0af252034",
+        ".github/scripts/ci_shadow_pair.py": "915eb2bc84ce2f44a316bce5453673fe2dc504dfeb3527364b647610b05d613f"
+      },
+      "scope": "local related modules, not repository coverage/hosted execution",
+      "modules": {
+        ".github\\scripts\\ci_consumer_shadow.py": {
+          "summary": {
+            "covered_lines": 237,
+            "num_statements": 237,
+            "percent_covered": 100.0,
+            "percent_covered_display": "100",
+            "missing_lines": 0,
+            "excluded_lines": 0,
+            "percent_statements_covered": 100.0,
+            "percent_statements_covered_display": "100",
+            "num_branches": 86,
+            "num_partial_branches": 0,
+            "covered_branches": 86,
+            "missing_branches": 0,
+            "percent_branches_covered": 100.0,
+            "percent_branches_covered_display": "100"
+          },
+          "missing_lines": [],
+          "missing_branches": []
+        },
+        ".github\\scripts\\ci_shadow_pair.py": {
+          "summary": {
+            "covered_lines": 125,
+            "num_statements": 125,
+            "percent_covered": 100.0,
+            "percent_covered_display": "100",
+            "missing_lines": 0,
+            "excluded_lines": 0,
+            "percent_statements_covered": 100.0,
+            "percent_statements_covered_display": "100",
+            "num_branches": 42,
+            "num_partial_branches": 0,
+            "covered_branches": 42,
+            "missing_branches": 0,
+            "percent_branches_covered": 100.0,
+            "percent_branches_covered_display": "100"
+          },
+          "missing_lines": [],
+          "missing_branches": []
+        }
+      }
+    }
+  },
+  "review": {
+    "status": "PASS",
+    "scope": "independent source review, no execution proof",
+    "reviewer": "exclusion_design",
+    "basis": {
+      "REPORT.md": "d5f0a90d2b7a718a41eb993e8ce17d40fef945639e0c193cd155e3268251b04c",
+      "FINAL_TEST_ADDENDUM.md": "2d0bb553887036ec535b8a0e7687923104d069b3e11f7270b0a637665fc96265"
+    },
+    "final_source_hashes": {
+      ".github/scripts/ci_consumer_shadow.py": "f79b699e48ddd293427647d0b10a8d78fee312c1e8f6b0e437110326bbb29d8d",
+      "tests/test_ci_consumer_shadow.py": "eafdd464fd64eec19df73d675e095b4bd89e0e07d905d1e3492fb0a0af252034",
+      "docs/workstreams/chengyue-lu/TEST-PERF-002/ACCEPTED_CONSUMER_TEMPLATES.md": "7f4f9279b452a6dd0179db8550707a592952e5c795c40f4c05e6715937678348"
+    }
+  },
+  "actual_base_refusal": {
+    "status": "PASS-expected-refusal",
+    "base": "5bf2227ca9b4d2f63f452e579185e7838028de78",
+    "candidate": "54da8a655b509ef908f978a0abad451779d53eba",
+    "path": "work/TEST-PERF-002/A-20260926-002/checks/consumer-proposal.json",
+    "plan_id": "8ae7ead6b81d017eebe0e458b2bf0c6d4d9f662e8abe125a3782d28944676842",
+    "reason": "accepted template must be a regular Git file",
+    "scope": "declaration source only; file absent at actual accepted base, not a semantic/execution witness",
+    "source_sha256": "f79b699e48ddd293427647d0b10a8d78fee312c1e8f6b0e437110326bbb29d8d"
+  },
+  "template_source": "A002 observation definitions unchanged, baseline intentionally omitted; candidate proposal only",
+  "template_raw_sha256": "5cbceac2b5ebb28736efc43a4aeef53ead717ad0ba69e9769b20201603455970",
+  "execution_authority": false,
+  "independent_witness_proved": false,
+  "input_closure_proved": false,
+  "hosted_execution_proved": false,
+  "raw_zip_sha256": "56b9bed10e445f201d8c3e0f49b299479c056ddaeb42897c99bc827d624250a7"
+}
