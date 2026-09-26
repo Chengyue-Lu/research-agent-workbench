@@ -1,0 +1,53 @@
+name: CI reduction experiment
+
+on:
+  push:
+    branches: [experiment/ci-reduction-20260926]
+
+permissions:
+  contents: read
+
+jobs:
+  pair:
+    name: Fresh coverage pair (${{ matrix.pair }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        pair: [1, 2, 3]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -e '.[test]'
+      - name: Execute two fresh arms on this runner
+        env:
+          PAIR: ${{ matrix.pair }}
+        run: >-
+          python .github/experiments/ci_reduction_pair.py
+          --source "$GITHUB_WORKSPACE"
+          --head 333dafffdbc87694f65e3e38330d42a69560089a
+          --pair "$PAIR"
+          --output "$RUNNER_TEMP/pair-$PAIR"
+      - name: Preserve successful and failed experimental evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fresh-pair-${{ matrix.pair }}
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            ${{ runner.temp }}/pair-${{ matrix.pair }}/*.json
+            ${{ runner.temp }}/pair-${{ matrix.pair }}/*.txt
+            ${{ runner.temp }}/pair-${{ matrix.pair }}/*.bundle
+            ${{ runner.temp }}/pair-${{ matrix.pair }}/baseline/*.json
+            ${{ runner.temp }}/pair-${{ matrix.pair }}/baseline/*.log
+            ${{ runner.temp }}/pair-${{ matrix.pair }}/baseline/*.ini
+            ${{ runner.temp }}/pair-${{ matrix.pair }}/reduced/*.json
+            ${{ runner.temp }}/pair-${{ matrix.pair }}/reduced/*.log
+            ${{ runner.temp }}/pair-${{ matrix.pair }}/reduced/*.ini
