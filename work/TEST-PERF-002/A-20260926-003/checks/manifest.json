@@ -1,0 +1,21 @@
+{
+  "actual-base-refusal.json": "b8dde26fc879cd05e1b2be6bc6880d3c5ad3aeaf6cc38a342410a11712554e5d",
+  "code-review/FINAL.json": "e26cead53093845a7009f375f0ddaf1dcb3bedef202177c40726a64e980483c8",
+  "code-review/FINAL_TEST_ADDENDUM.md": "2d0bb553887036ec535b8a0e7687923104d069b3e11f7270b0a637665fc96265",
+  "code-review/REPORT.md": "d5f0a90d2b7a718a41eb993e8ce17d40fef945639e0c193cd155e3268251b04c",
+  "design-review/REPORT.md": "d39bd09b05680298b926e0640897598d05b12b180c76e261a714846f66c9121b",
+  "freeze.py": "2c799bdc9c53012ca5db685894a6e33e2bd1aff6e2510a2468adf92b1e8622c0",
+  "implementation/REPORT.md": "4f1d83e1585d3111b6021405f5e6a26d69aac28df7a21d98a9eca905674b7d7e",
+  "implementation.json": "2087d02d1dfb68871fdb9b0639a9b7ede12306efc082e65d2f2baaa8dc6c0303",
+  "local-checks/311-final/coverage.data": "c5efd619d507a09aa8c215444b7268442fc39ccd8d611ead94f4e0ce5533ee1c",
+  "local-checks/311-final/coverage.json": "fe566f7a69dd3e909f635e857fe9d971661353d3e8f9924eb95f85c684b41865",
+  "local-checks/311-final/summary.json": "e5457093c9d7b22236eb4d2209de9dbb2631680a6586905dbead1111967fd8ce",
+  "local-checks/311-final/unittest.log": "afe27d05142c4a187b9b2f5bcdc66a103da4694453b29bd9f888b376658207c9",
+  "local-checks/313-final/coverage.data": "bf3edcd8e53edb4afbc7261c7240bcb6c66383e32ec98750388ac8577d095c01",
+  "local-checks/313-final/coverage.json": "be07e2b48c5b905e7b0859f15693373aea5592030a778b815a3343928010b487",
+  "local-checks/313-final/summary.json": "308d6affb026c0b58dcfd97d551526cc4514cfdebccbd9e5b38e83250afc1987",
+  "local-checks/313-final/unittest.log": "787301f80eeb9d439dc05161c5eeee632b578098c54b00db10541b83c4de427e",
+  "preserved-functions.json": "04a569274cefe31ecadb02320bd28b38cc95cfed01f6a0c3780874af976583dc",
+  "REQUEST.md": "e09b8f36180155dd8eec9034409e1d8e659455333b5edf0c84fa18fccfd6ff46",
+  "validate_local.py": "a2d7d479c658258f4963141f7bc3c66c51fddde00d5c156e6473c723b5542914"
+}
