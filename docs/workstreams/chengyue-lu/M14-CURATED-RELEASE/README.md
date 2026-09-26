@@ -3,8 +3,8 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 来源：[Issue #57](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57)
 - 架构决定：[ADR-0021](../../../decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md)
-- 状态：M14-001～004、M1-009 与 M0-007 已合入；[具名首发准备决定与保护回读](FIRST_RELEASE_DECISION.md) 支持 M14-005 READY；[source-CI](SOURCE_CI.md) 和 [trusted release preflight](RELEASE_CHECKS.md) 已经接受并完成真实 protected push 在线验收；正在准备诊断型 release-only workflow、公开面校验与追加 policy 版本，首次发行仍待闭合
-- diagnostic baseline：`origin/develop@dd2454b5595e33a12aa058529358d46d311a08c4`
+- 状态：M14-001～004、M1-009 与 M0-007 已合入；[具名首发准备决定与保护回读](FIRST_RELEASE_DECISION.md) 支持 M14-005 READY；[source-CI](SOURCE_CI.md) 和 [trusted release preflight](RELEASE_CHECKS.md) 已经接受并完成真实 protected push 在线验收；诊断型 release-only workflow、公开面校验与追加 policy 版本由 [PR #102](https://github.com/Chengyue-Lu/research-agent-workbench/pull/102) 提供审核候选，首次发行仍待闭合
+- diagnostic baseline：`origin/develop@5bf2227ca9b4d2f63f452e579185e7838028de78`
 - task-definition integration base：`origin/develop@6a032e12c30a88a501258eec8c0b5d6c6082d81d`
 
 ## 为什么激活 M14

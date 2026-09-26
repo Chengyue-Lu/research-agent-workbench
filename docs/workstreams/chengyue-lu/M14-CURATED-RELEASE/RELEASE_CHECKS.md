@@ -30,7 +30,8 @@ claim that a real release candidate or integrated-source preflight has been acce
 
 ## Diagnostic first-main workflow preparation
 
-The next develop-side slice adds `.github/workflows/release.yml` and the source-owned
+[PR #102](https://github.com/Chengyue-Lu/research-agent-workbench/pull/102) proposes
+`.github/workflows/release.yml` and the source-owned
 `.github/scripts/release_public.py` to append-only surface policy `1.3.0`. The workflow
 only responds to a `release/v*` pull request targeting `main` and uses externally
 maintained repository variable pins for the exact source, main parent, policy version,

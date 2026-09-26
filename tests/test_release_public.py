@@ -104,15 +104,19 @@ class ReleasePublicTests(unittest.TestCase):
             public.main(args(bad_candidate))
         self.assertFalse(output.exists())
         good_candidate, _ = self.fixture.candidate(self.files)
+        with patch.object(public, 'ROOT', self.root):
+            self.assertEqual(0, public.main(args(good_candidate)))
+        self.assertFalse(json.loads(output.read_text(encoding='utf-8'))['merge_eligible'])
+        with patch.object(public, 'ROOT', self.root), \
+             self.assertRaisesRegex(ValueError, 'output already exists'):
+            public.main(args(good_candidate))
+        output = self.fixture.base / 'public-cli-result.json'
         completed = subprocess.run(
             [sys.executable, str(self.root / public.TOOL), *args(good_candidate)],
             cwd=self.fixture.base, capture_output=True, text=True, check=False,
             env={**os.environ, 'PYTHONDONTWRITEBYTECODE': '1'})
         self.assertEqual(0, completed.returncode, completed.stderr)
         self.assertFalse(json.loads(output.read_text(encoding='utf-8'))['merge_eligible'])
-        with patch.object(public, 'ROOT', self.root), \
-             self.assertRaisesRegex(ValueError, 'output already exists'):
-            public.main(args(good_candidate))
 
     def test_cli_rejects_missing_required_inputs(self):
         with patch.object(sys, 'argv', ['release_public.py']), \
