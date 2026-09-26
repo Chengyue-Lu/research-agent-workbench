@@ -1,0 +1,82 @@
+{
+  "status": "PASS-local-scoped",
+  "base": "97d3b3d3141419b34ad47e0f42d9f01d0dfbd535",
+  "implementation_head": "c95f8d5d43296dc38a5b5e1090bc3f9c6dc7afad",
+  "quality": {
+    "status": "PASS-local-scoped",
+    "subjects": {
+      ".github/scripts/ci_dependencies.py": {
+        "source_sha256": "708d78f5e6c96b65daeba95c1353d60221330550ce487cff6206efeb7c206fa6",
+        "coverage_inputs": [
+          "combined-311/coverage.json",
+          "combined-compact-311/coverage.json"
+        ],
+        "lines": [
+          565,
+          565
+        ],
+        "branches": [
+          356,
+          356
+        ],
+        "changed_lines": 64,
+        "changed_outgoing_branches": 34,
+        "missing_lines": [],
+        "missing_branches": []
+      },
+      ".github/scripts/ci_contract_shadow.py": {
+        "source_sha256": "2d3c17c1f3fa33d97005a3f31ee71537232b9e6b0c255fbd8e09ebfdd1e00048",
+        "coverage_inputs": [
+          "combined-compact-311/coverage.json"
+        ],
+        "lines": [
+          205,
+          205
+        ],
+        "branches": [
+          62,
+          62
+        ],
+        "changed_lines": 54,
+        "changed_outgoing_branches": 18,
+        "missing_lines": [],
+        "missing_branches": []
+      },
+      ".github/scripts/ci_input_facts.py": {
+        "source_sha256": "67be59534ec6074ba25ee8eaa6f5bc6529de12bd119d455b10ef1df05b28d6b9",
+        "coverage_inputs": [
+          "invocation-unit/revision2/coverage.json"
+        ],
+        "lines": [
+          239,
+          239
+        ],
+        "branches": [
+          130,
+          130
+        ],
+        "changed_lines": 159,
+        "changed_outgoing_branches": 84,
+        "missing_lines": [],
+        "missing_branches": []
+      }
+    },
+    "scope": "Only unchanged-source local data combined for dependencies; shadow data uses compact source only.",
+    "repository_coverage_proved": false,
+    "hosted_execution_proved": false,
+    "production_result_reuse": false
+  },
+  "artifact_storage": "exact identical payloads stored once; manifest retains every original path/hash/size",
+  "files": 330,
+  "unique_payloads": 226,
+  "raw_evidence_sha256": "ab22c1f5f404e7fd5cbeb4fdefbbf2bf51bf19c064c8ae8a9f1369f019c80542",
+  "hosted_proved": false,
+  "repository_coverage_proved": false,
+  "selection_reduction_activated": false,
+  "review_reports": {
+    "independent-review.md": "8a63629f7d0c7c021c9c24180b5c60e5e387c5a082d36dfdc1a4202476d49b76",
+    "compact-independent-review.md": "5526228d6701c8d449403c65bf1e8a555024edf28f3b3d6910edeccd713b496d"
+  },
+  "m5_fixture_commit": "1b97af282d5c0cf062785fcbb7734ce6260319bd",
+  "m5_patch_in_this_implementation": false
+}

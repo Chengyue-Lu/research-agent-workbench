@@ -102,7 +102,7 @@ def function_body_only(before, after):
 
 
 @lru_cache(maxsize=512)
-def _file_facts(path, raw):
+def _file_analysis(path, raw):
     """Cache immutable syntax facts only; resolve them against each fresh inventory.
 
     Both the repository-relative path and exact Python bytes are inputs (relative
@@ -462,6 +462,7 @@ def _file_facts(path, raw):
             return target
         return None
 
+    escaped_capability = False
     for node in nodes:
         if isinstance(node, (ast.Name, ast.Attribute)):
             name = call_name(node)
@@ -469,6 +470,7 @@ def _file_facts(path, raw):
                 # A namespace stored/passed as a value can expose execution through
                 # later assignment/reflection. Keep its consumer without guessing aliases.
                 opaque = True
+                escaped_capability = True
             if (name in {'__import__', 'eval', 'exec', 'getattr', 'builtins.getattr',
                          'builtins.__import__', 'builtins.eval', 'builtins.exec',
                          'importlib.import_module', 'runpy.run_module', 'runpy.run_path'}
@@ -479,6 +481,7 @@ def _file_facts(path, raw):
                     # Passing or binding an execution capability loses its argument
                     # boundary. Preserve that consumer even when later aliases vary.
                     opaque = True
+                    escaped_capability = True
         if (isinstance(node, ast.Attribute) and node.attr in {'read_text', 'read_bytes', 'open', 'glob', 'rglob', 'iterdir'}) or (isinstance(node, ast.Name) and node.id == 'open'):
             resource_nodes.append(node)
         if not isinstance(node, ast.Call):
@@ -529,9 +532,85 @@ def _file_facts(path, raw):
         # inputs even when they appeared to be a builtin metadata operation.
         literals.update(length_metadata)
         links.update(length_metadata)
-    return (frozenset(links), frozenset(literals), frozenset(prefixes),
+    legacy = (frozenset(links), frozenset(literals), frozenset(prefixes),
             frozenset(basenames), opaque, resources, frozenset(fixed_reads), frozenset(fixed_runs),
             frozenset(fixed_directories))
+    mutated_imports = set()
+    for node in nodes:
+        if isinstance(node, (ast.Attribute, ast.Subscript)) and isinstance(node.ctx, (ast.Store, ast.Del)):
+            root = node
+            while isinstance(root, (ast.Attribute, ast.Subscript)):
+                root = root.value
+            if isinstance(root, ast.Name):
+                mutated_imports.add(root.id)
+    sites = []
+    for node in nodes:
+        if not isinstance(node, ast.Call):
+            continue
+        name = call_name(node.func)
+        root = node.func
+        suffix = []
+        while isinstance(root, ast.Attribute):
+            suffix.insert(0, root.attr)
+            root = root.value
+        values = lexical_values(root) if isinstance(root, ast.Name) else []
+        binding, resolved = 'unresolved', name or None
+        parameter_shadow = False
+        owner = scope(node)
+        while isinstance(root, ast.Name) and owner is not tree:
+            if isinstance(owner, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
+                args = owner.args
+                parameter_shadow |= any(arg is not None and arg.arg == root.id for arg in (
+                    *args.posonlyargs, *args.args, *args.kwonlyargs, args.vararg, args.kwarg))
+            owner = scope(owner)
+        if escaped_capability or path_mutation or isinstance(root, ast.Name) and root.id in mutated_imports:
+            binding = 'escaped'
+        elif (not parameter_shadow and len(values) == 1 and isinstance(values[0], (ast.Import, ast.ImportFrom))
+              and parents[values[0]] is scope(values[0]) and values[0].lineno < node.lineno):
+            declaration = values[0]
+            for item in declaration.names:
+                local = item.asname or (item.name.split('.')[0] if isinstance(declaration, ast.Import) else item.name)
+                if local != root.id or item.name == '*':
+                    continue
+                if isinstance(declaration, ast.ImportFrom):
+                    if declaration.level:
+                        continue
+                    target = str(declaration.module) + '.' + item.name
+                else:
+                    target = item.name if item.asname else item.name.split('.')[0]
+                resolved = '.'.join([target, *suffix])
+                binding = 'proven-import'
+        names = []
+        owner = scope(node)
+        while owner is not tree:
+            names.insert(0, getattr(owner, 'name', '<lambda>'))
+            owner = scope(owner)
+        sites.append((node, resolved, binding, '.'.join(names) or '<module>'))
+    return legacy, tuple(sites)
+
+
+def _file_facts(path, raw):
+    """Preserve the selection projection; diagnostic sites grant no exclusions."""
+    analysis = _file_analysis(path, raw)
+    return analysis[0] if analysis is not None else None
+
+
+def invocation_sites(path, raw):
+    """Return all call syntax from the same parse, never a call closure.
+
+    None means unparseable, not no effects. Nodes are detached copies so report
+    consumers cannot mutate cached syntax used by subsequent graph observations.
+    Ordinary unresolved calls do not gain opaque edges from this diagnostic data.
+    """
+    analysis = _file_analysis(path, raw)
+    if analysis is None:
+        return None
+    return tuple({'call': copy.deepcopy(call), 'callee': callee, 'binding': binding, 'scope': owner}
+                 for call, callee, binding, owner in analysis[1])
+
+
+_file_facts.cache_clear = _file_analysis.cache_clear
+_file_facts.cache_info = _file_analysis.cache_info
 
 
 def graph(blobs, paths):

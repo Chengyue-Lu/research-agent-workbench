@@ -1,0 +1,56 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260927-002
+task_id: TEST-PERF-002
+task_revision: 50
+attempt_id: A-20260927-002
+archive_root: A-20260927-002
+baseline: 97d3b3d3141419b34ad47e0f42d9f01d0dfbd535
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 60033999903105c002000a866992edd44efa5fe1156e4cc9ca73e769bca9b43b
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 16ce5262d31ce8c166f56b91f3ab399bce9b06acb1c4cb4dddf2300980a2cd0a
+read_allowlist:
+- .github/scripts/**
+- AGENTS.md
+- PROJECT_MEMORY.md
+- README.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- src/research_workbench/**
+- tests/**
+write_scope:
+- .github/scripts/ci_contract_shadow.py
+- .github/scripts/ci_dependencies.py
+- .github/scripts/ci_input_facts.py
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- tests/**
+- work/TEST-PERF-002/A-20260927-002/**
+tool_allowlist:
+- collaboration
+- gh
+- git
+- python
+- shell
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: e5f5b44429ec7be1a396be1cf57c196ea6dd47412d252520dd9ba7267f57becd
+  event_count: 5
+tool_event_refs:
+- path: tool-events/freeze-execution-inputs-succeeded.json
+  sha256: c29dabff659f7196fca0d0da3f967286941ba4c7f180fd30cb48b9f4e35f51e6
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: messages
+- event_id: EVT-0003
+  affected_stream: external-actions

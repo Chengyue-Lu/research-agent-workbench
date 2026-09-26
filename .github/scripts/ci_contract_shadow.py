@@ -149,6 +149,99 @@ def propagation_review(repo, plan, inputs):
             'inputs': rows}
 
 
+def invocation_evidence(repo, plan):
+    """Bind effect observations to both graph snapshots, retaining unknown causes.
+
+    A fallback edge is not proof that its source is read by any particular call.
+    Non-Python and non-regular entries retain Git identity without interpreting
+    their contents as Python. This catalog never participates in make_plan.
+    """
+    consumers = set(plan['selection'].get('affected_paths', []))
+    consumers.update(change['path'] for change in plan['changes'])
+    for chain in plan['selection'].get('selected', {}).values():
+        consumers.update(chain[1:])
+    records, sources, details = [], {}, {}
+    for label in ('merge_base', 'head'):
+        commit = plan['binding'][label]
+        inventory, blobs = planner.dependencies.snapshot(repo, commit)
+        for consumer in sorted(consumers & inventory.keys()):
+            mode, _, object_id = inventory[consumer]
+            raw = blobs.get(consumer)
+            legacy = planner.dependencies._file_facts(consumer, raw) if raw is not None else None
+            source_sha = hashlib.sha256(raw).hexdigest() if raw is not None else None
+            source = {'consumer': consumer, 'source_sha256': source_sha}
+            source_id = planner.digest(source) if raw is not None else None
+            if source_id is not None and source_id not in sources:
+                sites = planner.dependencies.invocation_sites(consumer, raw)
+                calls = []
+                for row in sites or ():
+                    fact = ci_input_facts.describe_invocation(consumer, raw, row['call'],
+                           callee=row['callee'], binding=row['binding'], scope=row['scope'])
+                    detail = {key: fact[key] for key in ('resolution', 'unresolved', 'execution_authority')}
+                    if fact['operation'] == 'unknown':
+                        planner.require(not any(fact[key] for key in ('dimensions', 'inputs', 'outputs')),
+                                        'unknown call acquired input semantics; update report projection')
+                    else:
+                        detail.update({key: fact[key] for key in ('dimensions', 'invocation', 'inputs', 'outputs')})
+                    detail_id = planner.digest(detail)
+                    details[detail_id] = detail
+                    site = fact['callsite']
+                    calls.append([site['span'], site['scope'], site['ast_sha256'], row['callee'],
+                                  row['binding'], fact['operation'], detail_id])
+                sources[source_id] = {**source, 'calls': calls}
+            record = {'snapshot': label, 'commit': commit, 'consumer': consumer,
+                'mode': mode, 'object_id': object_id,
+                'source_sha256': source_sha, 'source_id': source_id,
+                'analysis_status': ('parsed' if legacy is not None else 'unparseable')
+                                   if raw is not None else 'non-regular-python',
+                'fallback': {'opaque': legacy[4] if legacy is not None else None,
+                    'resources': legacy[5] if legacy is not None else None,
+                    'unlocated_causes': legacy is None or bool(legacy[4] or legacy[5])}}
+            records.append({'id': planner.digest(record), **record})
+    return {'execution_authority': False,
+        'basis': 'merge-base/head effect syntax; fallback causes may remain unlocated; not input closure or source-to-call attribution',
+        'unknown_argument_policy': 'unclassified context omitted from details; exact call AST/source remains bound; never means absent inputs',
+        'site_columns': ['span', 'scope', 'ast_sha256', 'callee', 'binding', 'operation', 'detail_id'],
+        'sources': sources, 'details': details,
+        'consumers': records}
+
+
+def _evidence_references(catalog):
+    references = {}
+    for record in catalog['consumers']:
+        references.setdefault(record['consumer'], []).append(record['id'])
+    return references
+
+
+def verify_invocation_evidence(repo, plan, report):
+    """Recompute exact Git observations, including omissions and edge associations.
+
+    This verifies report/source consistency, not independent closure certification.
+    Re-signing a report cannot legitimize removed unknown sites or changed inputs.
+    """
+    verify_observed_plan(repo, plan)
+    expected = invocation_evidence(repo, plan)
+    planner.require(planner.canonical(report.get('invocation_evidence')) == planner.canonical(expected),
+                    'invocation evidence does not match exact Git snapshots')
+    planner.require(report.get('binding') == plan['binding'] and report.get('observed_plan_id') == plan['plan_id']
+                    and report.get('execution_authority') is False,
+                    'invocation report binding or authority mismatch')
+    references = _evidence_references(expected)
+    actual = []
+    for row in report.get('dependency_review', []):
+        actual.append({'test': row.get('test'), 'edges': [
+            {key: edge.get(key) for key in ('source', 'consumer', 'accepted_kind', 'invocation_evidence_ids')}
+            for edge in row.get('edges', [])]})
+    chains = []
+    for test, chain in plan['selection'].get('selected', {}).items():
+        chains.append({'test': test, 'edges': [
+            {'source': source, 'consumer': consumer, 'accepted_kind': kind,
+             'invocation_evidence_ids': references.get(consumer, [])}
+            for source, consumer, kind in zip(chain, chain[1:], plan['selection']['selected_edge_kinds'][test])]})
+    planner.require(planner.canonical(actual) == planner.canonical(chains),
+                    'invocation evidence references do not match accepted dependency witnesses')
+
+
 def build_report(repo, plan):
     verify_observed_plan(repo, plan)
     binding = plan['binding']
@@ -176,6 +269,8 @@ def build_report(repo, plan):
                                      'sha256': hashlib.sha256(raw).hexdigest() if raw is not None else None}
                                     for label, meta, raw in versions]})
     by_path = {row['path']: row for row in inputs}
+    invocations = invocation_evidence(repo, plan)
+    invocation_references = _evidence_references(invocations)
     observations = {}
     chains = []
     for test, chain in plan['selection'].get('selected', {}).items():
@@ -190,7 +285,8 @@ def build_report(repo, plan):
                                      'observations': reference_observations(source, blobs.get(consumer, b''))})
                 observations[key] = versions
             edges.append({'source': source, 'consumer': consumer, 'accepted_kind': kind,
-                          'syntax_evidence': observations[key]})
+                          'syntax_evidence': observations[key],
+                          'invocation_evidence_ids': invocation_references.get(consumer, [])})
         role = by_path.get(chain[0], {}).get('role', 'transitive-input')
         concern = ('unbounded-resource' if 'unbounded-resource' in kinds else
                    'opaque-execution' if 'opaque-execution' in kinds else
@@ -208,13 +304,14 @@ def build_report(repo, plan):
                   'downstream': group['downstream']}
                  for name, group in sorted(policy['groups'].items())]
     report = {
-        'report_kind': 'ci-contract-shadow', 'schema_version': 4, 'execution_authority': False,
+        'report_kind': 'ci-contract-shadow', 'schema_version': 5, 'execution_authority': False,
         'binding': binding, 'observed_plan_id': plan['plan_id'], 'policy_sha256': plan['policy_sha256'],
         'engine_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         'producer_sources': {'.github/scripts/' + Path(path).name: hashlib.sha256(Path(path).read_bytes()).hexdigest()
                              for path in (__file__, ci_input_facts.__file__, ci_consumer_contracts.__file__, planner.__file__, planner.dependencies.__file__,
                                           Path(planner.__file__).with_name('check_pr_governance.py'))},
         'inputs': inputs, 'accepted_contracts': contracts, 'dependency_review': chains,
+        'invocation_evidence': invocations,
         'consumer_contract_review': consumer_contracts,
         'smoke_review': smoke_review(plan, policy),
         'propagation_review': propagation_review(repo, plan, inputs),
@@ -231,6 +328,7 @@ def build_report(repo, plan):
                                     'real failing-consumer and precision corpus']},
     }
     report['report_id'] = planner.digest(report)
+    verify_invocation_evidence(repo, plan, report)
     return report
 
 

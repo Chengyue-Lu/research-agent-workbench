@@ -1,5 +1,15 @@
 # TEST-PERF-002 Risk Ledger
 
+## September 27 execution and input boundaries
+
+| Risk | Control and evidence required | Remaining review |
+| --- | --- | --- |
+| Fixed syntax mistaken for complete execution closure | Facts retain unresolved target/environment/import/root dimensions and cannot change accepted selection; dynamic and fixed-operation controls | General boundary activation requires independent accepted-source verification |
+| Source identity or member-set dependencies discarded as metadata | Separate execution/content/member/identity roles; retain package/catalog pins and new-member controls | Any integrity-scope change needs its own contract and failure-timing review |
+| Recomputed fact schema accepts stale or altered source claims | Exact source and callsite binding, canonical reconstruction, tamper and omission controls | Candidate facts never authenticate their own authority |
+| New analyzer costs exceed saved execution | Reuse one AST pass and immutable facts; measure extraction/report costs independently | No producer speedup claim until actual paired execution |
+| Fixture extraction weakens cold or entry-point behavior | Preserve test IDs, actual cold process/Tool/Git protocol and intentional negative cases | Structure changes and subsequent reduction verified separately |
+
 Owner: 路诚钺 (`Chengyue-Lu`); cross-owner: 黄毅 (`let778750-cpu`); R2.
 
 ## September 24 planner commit batching
