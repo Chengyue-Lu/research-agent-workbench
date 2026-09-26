@@ -1,0 +1,54 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260926-005
+task_id: TEST-PERF-002
+task_revision: 49
+attempt_id: A-20260926-005
+archive_root: A-20260926-005
+baseline: 5bf2227ca9b4d2f63f452e579185e7838028de78
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: fe01ea5ecdaef6418c3330ffbe0952a0846530d5245413a4440939bb1c3bcdbe
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 91233bb09d4fac19848c9a05138117568d944c88bc7ef2b525be8d90c1670b6c
+read_allowlist:
+- .github/scripts/**
+- AGENTS.md
+- PROJECT_MEMORY.md
+- README.md
+- build_backend.py
+- runtime-resources.json
+- tests/**
+- work/TEST-PERF-002/**
+write_scope:
+- tests/ci_impact_policy.yaml
+- tests/test_ci_plan.py
+- work/TEST-PERF-002/A-20260926-005/**
+tool_allowlist:
+- collaboration
+- gh
+- git
+- python
+- shell
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: cb3e37b58b85659d09d819b7f9cbc23263fd2552112591c34b9d29328bf4f1ce
+  event_count: 5
+tool_event_refs:
+- path: tool-events/freeze-fixture-correction-succeeded.json
+  sha256: 227573863b444220aaeb584dc61664cec9978da3d7e016c05d2a6d05565059f2
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: messages
+- event_id: EVT-0003
+  affected_stream: external-actions

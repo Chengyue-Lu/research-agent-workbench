@@ -1,0 +1,147 @@
+{
+  "status": "PASS-local-repair; hosted-v1-failure-retained",
+  "implementation": {
+    "head": "a364087e5bac4c5315081e94cf45c3d6ec66dfc4",
+    "base": "5bf2227ca9b4d2f63f452e579185e7838028de78",
+    "parent": "333dafffdbc87694f65e3e38330d42a69560089a",
+    "fingerprint": "6d3a6ca86db8477642481ea4d8536b077aada0d1710576edb59d071074f26bec",
+    "test_sha256": "29d4eb756aca073be27d2ec19a975e6c65f722ba48e0aa803e9ddf410dffcbce",
+    "status": "implementation committed locally; not published",
+    "superseded_unpublished_formatting_commit": "e3ba32012d3670ed50a82b9f5691b8d6341f2806"
+  },
+  "fixture_checks": {
+    "status": "PASS",
+    "owned_file": "D:\\lcy\\develop\\_worktrees\\RWB\\ci-attribute-consumer-probe\\tests\\test_ci_plan.py",
+    "final_sha256": "29d4eb756aca073be27d2ec19a975e6c65f722ba48e0aa803e9ddf410dffcbce",
+    "scope": "Test fixture only; no policy or production edits, no commit or push",
+    "diff_check": 0,
+    "original_git_scenarios": 27,
+    "stages": {
+      "final-python-311": {
+        "argv": [
+          "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "tests.test_ci_plan.PlannerTests.test_diagnostic_fixture_accepts_equivalent_negated_membership_source",
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_require_base_acceptance_and_complete_family_proof",
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_restore_scope_for_boundary_and_proof_drift",
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_keep_new_direct_and_opaque_consumers"
+        ],
+        "cwd": "D:\\lcy\\develop\\_worktrees\\RWB\\ci-attribute-consumer-probe",
+        "returncode": 0,
+        "wall_seconds": 29.370511199995235,
+        "test_source_sha256": "0622e9b60fee043994ac29be36ec10dcfabbe57c358355b683b02581e91132c1"
+      },
+      "final-python-313": {
+        "argv": [
+          "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv313\\Scripts\\python.exe",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "tests.test_ci_plan.PlannerTests.test_diagnostic_fixture_accepts_equivalent_negated_membership_source",
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_require_base_acceptance_and_complete_family_proof",
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_restore_scope_for_boundary_and_proof_drift",
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_keep_new_direct_and_opaque_consumers"
+        ],
+        "cwd": "D:\\lcy\\develop\\_worktrees\\RWB\\ci-attribute-consumer-probe",
+        "returncode": 0,
+        "wall_seconds": 29.30768729999545,
+        "test_source_sha256": "0622e9b60fee043994ac29be36ec10dcfabbe57c358355b683b02581e91132c1"
+      },
+      "historical-python-311": {
+        "argv": [
+          "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "tests.test_ci_plan.PlannerTests.test_diagnostic_fixture_accepts_equivalent_negated_membership_source"
+        ],
+        "cwd": "D:\\lcy\\develop\\_worktrees\\RWB\\ci-attribute-consumer-probe",
+        "returncode": 0,
+        "wall_seconds": 2.5740338000032352,
+        "test_source_sha256": "29d4eb756aca073be27d2ec19a975e6c65f722ba48e0aa803e9ddf410dffcbce"
+      },
+      "historical-python-313": {
+        "argv": [
+          "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv313\\Scripts\\python.exe",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "tests.test_ci_plan.PlannerTests.test_diagnostic_fixture_accepts_equivalent_negated_membership_source"
+        ],
+        "cwd": "D:\\lcy\\develop\\_worktrees\\RWB\\ci-attribute-consumer-probe",
+        "returncode": 0,
+        "wall_seconds": 2.578815900000336,
+        "test_source_sha256": "29d4eb756aca073be27d2ec19a975e6c65f722ba48e0aa803e9ddf410dffcbce"
+      }
+    },
+    "identity_note": "The final change after final-python-* modified only the new historical-variant regression. Its historical-python-* reruns bind final source. The unchanged helper and three original methods retain their previously executed source identity; no old receipt was rebound."
+  },
+  "new_source_preflight": {
+    "status": "PASS",
+    "source": "a364087e5bac4c5315081e94cf45c3d6ec66dfc4",
+    "fixtures_per_arm": 3,
+    "scenarios_per_arm": 27,
+    "producer_executed": false,
+    "results": {
+      "baseline": {
+        "argv": [
+          "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_require_base_acceptance_and_complete_family_proof",
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_restore_scope_for_boundary_and_proof_drift",
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_keep_new_direct_and_opaque_consumers"
+        ],
+        "returncode": 0,
+        "wall_seconds": 29.14986759999738
+      },
+      "reduced": {
+        "argv": [
+          "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_require_base_acceptance_and_complete_family_proof",
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_restore_scope_for_boundary_and_proof_drift",
+          "tests.test_ci_plan.PlannerTests.test_real_diagnostic_contracts_keep_new_direct_and_opaque_consumers"
+        ],
+        "returncode": 0,
+        "wall_seconds": 29.149612400004116
+      }
+    },
+    "light_summary_sha256": "b78ee41fc2a65a9573474da8938b422935bec161ac2a7bb51cfb2776316d7eed"
+  },
+  "collected_counts": {
+    "baseline": {
+      "B": 1531,
+      "C": 1505,
+      "U": 1531
+    },
+    "reduced": {
+      "B": 20,
+      "C": 20,
+      "U": 20
+    }
+  },
+  "failed_experiment": {
+    "run": 36251614855,
+    "head": "e91675f95f1c6da05ab478636b8925151972b896",
+    "source": "333dafffdbc87694f65e3e38330d42a69560089a",
+    "valid_timing_pairs": 0
+  },
+  "review_sha256": "bdfc1ff48fc7d94107c62015ea84532abf75aae83d4927d4988bb9b9221452e6",
+  "harness_sha256": "d967afc0e9733afa7f9540c0de6427170f37e584c160129228f32dc1dfb6eef3",
+  "raw_evidence_sha256": "27763ca90fa4ae8ddf1b3c0e8dc1f8d3dd337132c490668b02b9d794d885078e",
+  "new_hosted_execution_proved": false,
+  "hosted_speedup_proved": false,
+  "production_reduction_activated": false
+}

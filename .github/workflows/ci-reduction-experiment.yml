@@ -31,7 +31,7 @@ jobs:
         run: >-
           python .github/experiments/ci_reduction_pair.py
           --source "$GITHUB_WORKSPACE"
-          --head 333dafffdbc87694f65e3e38330d42a69560089a
+          --head d4e94e2db8172dade2df729a04c817d1786843e7
           --pair "$PAIR"
           --output "$RUNNER_TEMP/pair-$PAIR"
       - name: Preserve successful and failed experimental evidence

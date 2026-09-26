@@ -57,14 +57,11 @@ def prepare(source, source_head, workspace, label):
     repo = workspace/label
     git(workspace, 'clone', '--no-hardlinks', '--no-checkout', '-q', str(source), str(repo))
     git(repo, 'checkout', '-q', '--detach', source_head)
-    # These two roots have identical implementation/tests. Only the three proposed
-    # base contracts differ. Neither local root is labelled production-accepted.
+    # Identical current contracts, source and tests. Only the base's authority
+    # anchor differs: missing proof must restore the ordinary consumer closure.
+    # Neither synthetic root is labelled production-accepted.
     policy = json.loads((repo/POLICY).read_bytes())
     assert all(name in policy['groups'] and name in policy['surfaces'] for name in GROUPS)
-    if label == 'baseline':
-        for name in GROUPS:
-            del policy['groups'][name]
-            del policy['surfaces'][name]
     (repo/POLICY).write_text(json.dumps(policy, sort_keys=True, indent=2)+'\n', encoding='utf-8')
     git(repo, 'add', POLICY)
     tree = git(repo, 'write-tree')
@@ -72,9 +69,10 @@ def prepare(source, source_head, workspace, label):
     expression = ('import json,sys; from pathlib import Path; sys.path.insert(0,".github/scripts"); '
         'import plan_ci as p; f=Path(p.POLICY); v=json.loads(f.read_bytes()); '
         'leaves={x for g in v["groups"].values() for x in g["coverage"]}; '
-        'v["consumer_fingerprint"]=p.consumer_fingerprint(Path.cwd(),sys.argv[1],leaves); '
+        'v["consumer_fingerprint"]=("0"*64 if sys.argv[2]=="baseline" else '
+        'p.consumer_fingerprint(Path.cwd(),sys.argv[1],leaves)); '
         'f.write_bytes(p.canonical(v))')
-    subprocess.run([sys.executable, '-c', expression, tree], cwd=repo, env=environment(repo), check=True)
+    subprocess.run([sys.executable, '-c', expression, tree, label], cwd=repo, env=environment(repo), check=True)
     git(repo, 'add', POLICY)
     git(repo, 'commit', '--allow-empty', '-qm', 'EXPERIMENT ONLY: ' + label + ' policy fixture')
     base = git(repo, 'rev-parse', 'HEAD')
@@ -110,8 +108,44 @@ def execute(repo, binding, out):
         'assert Path(v["research_workbench"]).is_relative_to(root); '
         'Path(sys.argv[1]).write_text(json.dumps(v),encoding="utf-8")')
     steps['imports'] = command(repo, out, 'imports', [sys.executable, '-c', origin_expression, str(out/'origins.json')])
+    # Editable installation generated only the outer checkout's resources. Each
+    # isolated source root needs its own fresh build outputs before execution.
+    runtime_paths = ('src/research_workbench/_runtime_data', 'src/research_workbench/_runtime_pin.py')
+    for relative in runtime_paths:
+        path = repo/relative
+        assert path.resolve().is_relative_to(repo.resolve()) and not path.exists() and not path.is_symlink()
+        assert not git(repo, 'ls-files', '--', relative)
+    runtime_expression = '''from pathlib import Path
+import hashlib,json,sys
+import build_backend
+root=Path.cwd().resolve()
+assert Path(build_backend.__file__).resolve()==root/'build_backend.py'
+assert build_backend.ROOT.resolve()==root
+pin=build_backend.generate(root)
+resources=root/'src/research_workbench/_runtime_data'
+files=[*resources.rglob('*'),root/'src/research_workbench/_runtime_pin.py']
+rows=[]
+for path in sorted(files):
+    assert not path.is_symlink() and path.resolve().is_relative_to(root)
+    if path.is_file():
+        rows.append([path.relative_to(root).as_posix(),hashlib.sha256(path.read_bytes()).hexdigest()])
+assert pin==hashlib.sha256((resources/'manifest.json').read_bytes()).hexdigest()
+Path(sys.argv[1]).write_text(json.dumps({'manifest_pin':pin,'files':rows},sort_keys=True),encoding='utf-8')
+'''
+    steps['runtime_setup'] = command(repo, out, 'runtime-setup', [sys.executable, '-c', runtime_expression,
+        str(out/'runtime-identity.json')])
     steps['plan'] = command(repo, out, 'plan', [sys.executable, '-c', expression,
         binding['base'], binding['head'], BODY, str(plan_path)])
+    plan = json.loads(plan_path.read_bytes())
+    boundary = plan['selection']['reviewed_opaque_boundary']
+    if out.name == 'baseline':
+        assert SUBJECT not in boundary
+        assert plan['selection']['reviewed_contract_anchor'] == ''
+    else:
+        assert boundary == [SUBJECT]
+        assert plan['selection']['reviewed_contract_anchor'] == binding['base']
+        assert plan['behavioral_scope'] == 'focused' and plan['coverage_scope'] == 'impact'
+        assert not plan['package_smoke'] and not plan['repository_smoke']
     config = out/'coverage.ini'
     steps['configure'] = command(repo, out, 'configure', [sys.executable,
         '.github/scripts/ci_checks.py', 'configure', '--plan', str(plan_path), '--config', str(config)])
@@ -171,12 +205,14 @@ def main():
     # the same fresh hosted machine; retain raw times, never subtract stale runs.
     order = ['baseline', 'reduced'] if args.pair % 2 else ['reduced', 'baseline']
     results = {label: execute(*prepared[label], out/label) for label in order}
+    assert (out/'baseline/runtime-identity.json').read_bytes() == (out/'reduced/runtime-identity.json').read_bytes()
     assert results['reduced']['counts']['U'] < results['baseline']['counts']['U']
     assert set(results['reduced']['ids']['U']) <= set(results['baseline']['ids']['U'])
     save(out/'pair.json', dict(status='PASS', pair=args.pair, order=order,
         counts={k: v['counts'] for k, v in results.items()},
         producer_seconds={k: v['steps']['producer']['wall_seconds'] for k, v in results.items()},
         source=args.head, production_authority=False,
+        comparison='ordinary missing-anchor closure versus matching-anchor contract; not a replay of historical policy',
         scope='fresh hosted ordered coverage producer pair; excludes setup and smokes'))
 
 

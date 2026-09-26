@@ -1,0 +1,10 @@
+task_id: TEST-PERF-002
+revision: 49
+request: Continue until actual test reduction
+profile: CI boundary engineer
+required_skills: []
+delegation: true
+scope: diagnostic fixture decoupling and corrected fresh paired experiment
+budget: only failed fixture/harness causes and relevant preflight
+stop_condition: reviewable real execution evidence; actual-base acceptance remains
+  external
