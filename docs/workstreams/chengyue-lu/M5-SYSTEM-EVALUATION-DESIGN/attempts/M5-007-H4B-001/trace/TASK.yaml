@@ -1,0 +1,43 @@
+task_id: M5-007
+revision: 1
+snapshot_kind: development-task-row
+source_ref:
+  path: docs/TASKS.md
+  sha256: 9dd653f2bd865ef9f6328c25d5a97dc007f4e4cebacf6524f5aced1dcea57641
+source_row: '| M5-007 | IN_PROGRESS | 建立 System-Level Evaluation Harness | M5-006,
+  M6-008, M11-004, M11-006, M11-007, `M5-SKILL-CLOSEOUT-REPLAY-GATE`（Issue #55 可审计外部条件）
+  | 编译 frozen plan、以 fresh Attempt/session 启动 exact arms，并在 A4 执行前于 Harness/Maintainer
+  侧验证 versioned execution-qualification overlay 与 `A4-RUNTIME-ADMISSION-GATE` 的逐跳
+  identity/hash closure；在 confirmatory freeze 前加载 `AdmissionEvidenceOverlapAssessment`，验证其
+  exact Evaluation/validator/input pins 与 `checked_at <= case_selection_frozen_at`，从
+  assessment 两侧闭包独立重算 M5-001/002 case / Task / input / private-oracle intersection、status
+  与 eligibility：缺失、`absent`/`unknown` 或未闭合即 fail closed，任一重叠必须记录为 `admission-overlap`、列入
+  `overlap_refs` 且令 `primary_confirmatory_eligible=false`；无解释的 candidate/Release substitution、hash
+  drift 或 Resolver 选择其他 Supply 也必须 fail closed，Runtime 不读取 candidate/evaluation/lifecycle
+  history；A1/A2 必须消费 M6-008 的 allowlisted treatment-visible baseline envelope 与 replay-valid
+  closeout；正式 A2/A3 必须加载并用 M5-006 validator 独立重算 exact `ArmExecutionQualificationRecord@1.0.0`：A2
+  record 由 M6-008 产生，A3 runtime Resolution/Snapshot 由唯一 Capability Resolver 产生/选择，M11
+  只验证并消费 exact Snapshot，且 record 只由 Harness 在 Maintainer/Evaluation preflight 组装；两者均须证明
+  frozen structural binding 与 runtime-execution binding 的 Task/Requirement/Supply/component/implementation/interface
+  及相关 A3 Mode/Action/Method 未替换、所有 ceiling 未放宽，并拒绝 `structural-replay`/`execution_input=false`/fixture-only
+  binding；在 plan/pre-run 与 analysis input 阶段加载并独立重算 `A3A4PairwiseComparabilityRecord`，只有
+  `exact-skill-only` 才可标注 Skill conditional increment，`skill-bearing-package` 必须降级为
+  bundled/package effect，`not-comparable` 令该 secondary contrast unavailable；预注册 exact
+  equality 后发生 drift 必须 fail closed，当前 Method/Supply disposition incompatibility 不得由
+  Harness 掩盖；A3/A4 分别消费 M11 Core/Skill extension，Harness/M6-008 不取得 Supply selection；Harness
+  不得把 raw Task control、dummy Method/Snapshot 或 Skill Assignment 注入 plain arms；以 M11-004（传递
+  M11-003）的 Core Host actual-fact / Trace / generic-closeout contract 和 M11-006 Skill
+  mapping 为明确输入，执行后必须由 typed execution fact 与 replay-valid Receipt 独立证明 actual Projection/Supply/binding
+  与 overlay 相同，区分 completed、post-call failed 与 preflight blocked，禁止用 planned View
+  冒充 actual facts；`M5-SKILL-CLOSEOUT-REPLAY-GATE` 必须先接受 projection-backed Skill actual
+  binding 的 replay-valid closeout seam，或由 R2 正式修订本 Task 验收，不能把 M11-004 Core Receipt
+  假写成已经支持 Skill；Harness 只能在不改变 arm treatment/read boundary 的评价记录层统一 evidence，闭合匿名化、metric
+  evidence、Human Review、reveal map 与 analysis input，不得 special-case A4、直接加载 candidate
+  目录、在 confirmatory run 使用 synthetic projection、自动 promotion/pruning/Human scoring；harness
+  implementation 不等待真实 case data，正式 execution 留给 M5-004 |'
+implementation_head: e700b6fff86565a0fefa927f02bd3b1f1a06959b
+owner: Chengyue-Lu
+risk: R2
+authorization: Implement H4b in a separate draft PR; leave PR90 awaiting review.
+required_skills: []
+delegation: false

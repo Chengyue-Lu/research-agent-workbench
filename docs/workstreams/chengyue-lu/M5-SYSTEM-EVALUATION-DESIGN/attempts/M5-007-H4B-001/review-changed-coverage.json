@@ -1,0 +1,10 @@
+{
+  "src/research_workbench/validation/document_kinds.py": {
+    "uncovered_changed_lines": [],
+    "uncovered_changed_branches": []
+  },
+  "src/research_workbench/validation/documents.py": {
+    "uncovered_changed_lines": [],
+    "uncovered_changed_branches": []
+  }
+}

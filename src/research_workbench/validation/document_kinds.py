@@ -16,6 +16,13 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
     if isinstance(evaluation_kind, str) and evaluation_kind in {
         "evaluation_harness_plan", "evaluation_harness_preflight", "evaluation_harness_execution",
         "evaluation_harness_evidence",
+        "evaluation_harness_review_artifact",
+        "evaluation_harness_review_policy",
+        "evaluation_harness_review_package",
+        "evaluation_harness_review_mapping",
+        "evaluation_harness_human_review",
+        "evaluation_harness_review_freeze",
+        "evaluation_harness_review_reveal",
         "system_evaluation_protocol", "evaluation_measurement", "evaluation_provider_interface",
         "arm_execution_qualification", "evaluation_case_closure", "admission_evidence_overlap",
         "a4_execution_qualification", "a3_a4_pairwise_comparability",

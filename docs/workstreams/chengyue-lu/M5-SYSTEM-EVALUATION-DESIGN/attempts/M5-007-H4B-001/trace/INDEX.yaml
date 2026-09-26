@@ -1,0 +1,69 @@
+schema_version: 0.1.0
+trace_id: TRACE-M5-007-H4B-001
+task_id: M5-007
+task_revision: 1
+attempt_id: M5-007-H4B-001
+archive_root: trace
+baseline: rwb-agent-trace-v0.1
+owner_actor_id: codex-m5-h4b
+owner: Chengyue-Lu
+attempt_status: incomplete
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 857139b4e52a840c90ec140ebd7901946a2f5c8cae3be7ac5b1e9b2cead31add
+actors_ref:
+  path: ACTORS.yaml
+  sha256: de674381d0be5db08aa07642970deea3ed4fc7611ce49090e178d58ebe013e3c
+read_allowlist:
+- .github/**
+- .rwb/**
+- AGENTS.md
+- docs/**
+- schemas/**
+- src/research_workbench/**
+- tests/**
+write_scope:
+- .rwb/**
+- docs/STATUS.md
+- docs/implementation/**
+- docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/**
+- schemas/v0.1.0/evaluation-harness-*.schema.json
+- src/research_workbench/evaluation/harness_review.py
+- src/research_workbench/validation/**
+- tests/**
+tool_allowlist:
+- apply_patch
+- shell
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 0976486cb6f723e0691e0354bed430c994ac95f6953b2b4141bed9baeffd29da
+  event_count: 12
+tool_event_refs:
+- path: tool-events/delayed-h4b-check-1-succeeded.json
+  sha256: d66e947a40150388f80b84dec1371e13732bf524f2f051fa9d5b51bbfe361b2e
+- path: tool-events/delayed-h4b-check-2-succeeded.json
+  sha256: e7fe7c34ac7d7b7ab870222b78a645fbf24031164d9b25398416783cb1c5f48c
+- path: tool-events/delayed-h4b-check-3-succeeded.json
+  sha256: ee888aa552ac1c5c1984d6bd85fed73e811ff86f29fc01792918f622e68c73e7
+- path: tool-events/delayed-h4b-check-4-succeeded.json
+  sha256: 4224af5f53be288393d5c798ffe31a04623993c046b9f24901396c9d1ed49c9f
+- path: tool-events/delayed-h4b-check-5-succeeded.json
+  sha256: 24834738830a54794c5e2441d3a29df4c291e8c99de6946a47648cfa2ca8eab7
+- path: tool-events/delayed-h4b-check-6-succeeded.json
+  sha256: a1b729098b1f85c01212d5e137b429ba5edb30f484d8678bab7e440e02d2f176
+- path: tool-events/delayed-h4b-check-7-succeeded.json
+  sha256: c9b35928a377d469c83d26442ee657ef29407a7f027ce9630ba2df92b2b40ff5
+- path: tool-events/delayed-h4b-check-8-succeeded.json
+  sha256: c5fb2a3917608603a4317d4030161790c4075f5770e09dfb9e0e7d44e7db08cd
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: messages

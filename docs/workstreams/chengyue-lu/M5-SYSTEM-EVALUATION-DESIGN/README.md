@@ -405,8 +405,9 @@ pilot/secondary evidence 不得作为 pruning 的唯一证据。该 Gate 明确�
 - 建立自动 Human judge、单一总分或 automatic promotion/pruning；
 - 宣称 RWB 已有 system-level net benefit。
 
-当前 PR89 在已接受的 PR86 H1/H2 基础上提供 [H3 四臂 synthetic execution/replay](M5-007_H3_PACKET.md)，
-Task 保持 IN_PROGRESS；H4/H5 的评价证据、分析输入与集成收口为后续切片。M5-001/002 继续受 Human boundary 阻断，M5-004/005 按各自
+H1/H2 与 [H3 四臂 synthetic execution/replay](M5-007_H3_PACKET.md) 已由 PR86/89 接受。
+H4a 已由 PR90 接受并合入，H4b 已在独立分支重基线为待审候选，见 [H4b Attempt](attempts/M5-007-H4B-001/README.md)。
+Task 保持 IN_PROGRESS；H4c 分析输入与 H5 集成收口为后续切片。M5-001/002 继续受 Human boundary 阻断，M5-004/005 按各自
 真实 execution/Human dependencies 保持 BLOCKED。Issue #55 继续跟踪 M5-007 内部重算与分析输入闭包。
 
 ## 9. 原始设计阶段的历史本地验证

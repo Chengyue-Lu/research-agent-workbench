@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/evaluation-harness-human-review.schema.json",
+  "title": "evaluation_harness_human_review",
+  "x-rwb-document-kind": "evaluation_harness_human_review",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "version",
+    "purpose",
+    "package_ref",
+    "reviewer",
+    "ratings",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "evaluation_harness_human_review"
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "purpose": {
+      "const": "synthetic-contract-proof"
+    },
+    "package_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "reviewer": {
+      "type": "object",
+      "required": [
+        "actor_id",
+        "display_name"
+      ],
+      "properties": {
+        "actor_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "display_name": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ratings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "anonymous_id",
+          "disposition",
+          "score",
+          "reason"
+        ],
+        "properties": {
+          "anonymous_id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{32}$"
+          },
+          "disposition": {
+            "enum": [
+              "scored",
+              "unreviewable"
+            ]
+          },
+          "score": {
+            "enum": [
+              "correct",
+              "incorrect",
+              null
+            ]
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "disposition": {
+                  "const": "scored"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "score": {
+                  "enum": [
+                    "correct",
+                    "incorrect"
+                  ]
+                },
+                "reason": {
+                  "type": "null"
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "score": {
+                  "type": "null"
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "minItems": 1
+    },
+    "boundaries": {
+      "$ref": "evaluation-harness-execution.schema.json#/properties/boundaries"
+    }
+  },
+  "additionalProperties": false
+}

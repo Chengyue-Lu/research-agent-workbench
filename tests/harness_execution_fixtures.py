@@ -52,7 +52,8 @@ class FixedClock:
 
 
 class LocalDriver:
-    def __init__(self, view, recorder, destination, *, skill=False, lifecycle="completed", exception=False, turns=1):
+    def __init__(self, view, recorder, destination, *, skill=False, lifecycle="completed", exception=False, turns=1, output=None):
+        self.output = output
         self.view, self.recorder, self.destination = view, recorder, destination
         self.skill, self.lifecycle, self.exception = skill, lifecycle, exception
         self.calls = 0
@@ -76,7 +77,7 @@ class LocalDriver:
             observed = read_skill_execution_inputs(root, file_ref(snapshot["selected_supply_report_ref"]),
                                                     schema_root=ROOT / "schemas")
             record_skill_execution_use(self.recorder, observed, fact_id="use-1", view_ref=view_ref)
-        output = {"status": "bounded", "skill": observed.projection["release"]["skill_id"] if observed else None}
+        output = self.output if self.output is not None else {"status": "bounded", "skill": observed.projection["release"]["skill_id"] if observed else None}
         for _ in range(self.turns):
             self.recorder.record("provider-request", {"input": "synthetic bounded contract check"})
             self.recorder.record("provider-response", {"output": output, "binding": self.observed_binding})

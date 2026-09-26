@@ -1,5 +1,5 @@
 policy_id: rwb-coverage-policy
-version: 2.3.1
+version: 2.3.2
 source_root: src/research_workbench
 
 suites:
@@ -53,6 +53,7 @@ suites:
       - test_evaluation_harness_preflight
       - test_evaluation_harness_execution
       - test_evaluation_harness_evidence
+      - test_evaluation_harness_review
       - test_m5_trace_export
       - test_governance_helper_branches
       - test_integrity
@@ -173,6 +174,7 @@ critical_modules:
   - src/research_workbench/evaluation/harness_execution.py
   - src/research_workbench/evaluation/harness_runtime.py
   - src/research_workbench/evaluation/harness_evidence.py
+  - src/research_workbench/evaluation/harness_review.py
   - .github/scripts/selection_witness.py
   - .github/scripts/ci_dependencies.py
   - .github/scripts/plan_ci.py
@@ -754,6 +756,18 @@ negative_acceptance:
       - test_ci_contract_shadow.ContractShadowGitTests.test_resigned_unclassified_reasons_cannot_change_attribution
       - test_ci_contract_shadow.ContractShadowGitTests.test_isolated_graph_uses_merge_base_when_both_sides_remove_a_reader
       - test_ci_contract_shadow.ContractShadowGitTests.test_gitlink_reports_object_identity_without_inventing_blob_bytes
+
+  - surface: m5-harness-blind-review
+    modules:
+      - src/research_workbench/evaluation/harness_review.py
+    positive_tests:
+      - test_evaluation_harness_review.HarnessReviewTests.test_freeze_and_reveal_require_complete_named_reviews
+      - test_evaluation_harness_review.HarnessReviewIntegrationTests.test_four_arm_evidence_to_review_freeze_and_fresh_process_reveal
+    negative_tests:
+      - test_evaluation_harness_review.HarnessReviewTests.test_mapping_package_and_source_substitution_are_rejected
+      - test_evaluation_harness_review.HarnessReviewTests.test_partial_duplicate_unknown_and_unscorable_reviews_are_rejected
+      - test_evaluation_harness_review.HarnessReviewTests.test_score_or_mapping_replacement_cannot_reuse_freeze_or_reveal
+      - test_evaluation_harness_review.HarnessReviewTests.test_authority_is_required_at_every_boundary_and_cannot_mutate_results
 
 justified_exclusions:
   - path: src/research_workbench/adapters/models/session.py

@@ -1,0 +1,14 @@
+{
+  "old_base": "eb49093d6d89515c3e66bec29ee85e7a95bb9ce7",
+  "old_head": "deffc2e73b763bb97da5f5567e4606e76293faa1",
+  "base": "5bf2227ca9b4d2f63f452e579185e7838028de78",
+  "rebased_head": "5d4f07c5bc5e993fc98495ccb96f670f3c23ccea",
+  "unchanged_h4b_paths_except_coverage_policy": 52,
+  "unchanged_new_baseline_paths_except_coverage_policy": 31,
+  "retained_negative_surfaces": 44,
+  "retained_critical_modules": 62,
+  "candidate_negative_surfaces": 45,
+  "candidate_critical_modules": 63,
+  "coverage_policy_only_h4b_additions": true,
+  "result": "PASS"
+}
