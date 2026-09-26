@@ -165,6 +165,9 @@ check names does not claim remote protection is enabled. This PR does not change
 
 ## Delivery and review
 
+Bounded offline diagnostic source changes and their independent minimum check are
+specified in [DIAGNOSTIC_SOURCE_CONTRACT.md](DIAGNOSTIC_SOURCE_CONTRACT.md).
+
 Per-input propagation and overlapping fallback observations are described in
 [the shadow schema 4 review](PROPAGATION_REVIEW.md).
 

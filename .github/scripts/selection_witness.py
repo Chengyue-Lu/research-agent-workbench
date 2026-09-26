@@ -16,7 +16,7 @@ import yaml
 
 AUTHORITY = ('.github/scripts/plan_ci.py', '.github/scripts/ci_dependencies.py',
              '.github/scripts/ci_checks.py', 'tests/run_unittest_suite.py', '.github/workflows/ci.yml',
-             '.github/scripts/selection_witness.py')
+             '.github/scripts/selection_witness.py', '.github/scripts/ci_minimum_witness.py')
 LIMIT = 4 * 1024 * 1024
 
 
