@@ -1,0 +1,57 @@
+import copy
+import json
+import subprocess
+from pathlib import Path
+
+import yaml
+
+OLD_BASE = 'eb49093d6d89515c3e66bec29ee85e7a95bb9ce7'
+OLD_HEAD = 'deffc2e73b763bb97da5f5567e4606e76293faa1'
+BASE = '5bf2227ca9b4d2f63f452e579185e7838028de78'
+POLICY = 'tests/coverage_policy.yaml'
+
+def git(*args):
+    return subprocess.check_output(['git', *args])
+
+def changed(before, after):
+    return git('diff', '--name-only', before, after).decode().splitlines()
+
+own_paths = changed(OLD_BASE, OLD_HEAD)
+for path in own_paths:
+    if path != POLICY:
+        assert git('show', f'{OLD_HEAD}:{path}') == git('show', f'HEAD:{path}'), path
+accepted_paths = changed(OLD_BASE, BASE)
+for path in accepted_paths:
+    if path != POLICY:
+        assert git('show', f'{BASE}:{path}') == git('show', f'HEAD:{path}'), path
+
+baseline = yaml.safe_load(git('show', f'{BASE}:{POLICY}'))
+candidate = yaml.safe_load(git('show', f'HEAD:{POLICY}'))
+normalized = copy.deepcopy(candidate)
+assert baseline['version'] == '2.3.1'
+assert normalized.pop('version') == '2.3.2'
+baseline.pop('version')
+normalized['suites']['coverage-quality']['modules'].remove('test_evaluation_harness_review')
+normalized['critical_modules'].remove('src/research_workbench/evaluation/harness_review.py')
+surface = [s for s in normalized['negative_acceptance'] if s['surface'] == 'm5-harness-blind-review']
+assert len(surface) == 1
+normalized['negative_acceptance'].remove(surface[0])
+assert normalized == baseline, 'candidate changed existing coverage obligations'
+
+result = {
+    'old_base': OLD_BASE,
+    'old_head': OLD_HEAD,
+    'base': BASE,
+    'rebased_head': git('rev-parse', 'HEAD').decode().strip(),
+    'unchanged_h4b_paths_except_coverage_policy': len(own_paths) - 1,
+    'unchanged_new_baseline_paths_except_coverage_policy': len(accepted_paths) - 1,
+    'retained_negative_surfaces': len(baseline['negative_acceptance']),
+    'retained_critical_modules': len(baseline['critical_modules']),
+    'candidate_negative_surfaces': len(candidate['negative_acceptance']),
+    'candidate_critical_modules': len(candidate['critical_modules']),
+    'coverage_policy_only_h4b_additions': True,
+    'result': 'PASS',
+}
+Path(__file__).with_name('equivalence.json').write_text(
+    json.dumps(result, indent=2) + '\n', encoding='utf-8')
+print(json.dumps(result))
