@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import copy
 import hashlib
 import importlib.util
@@ -1200,26 +1201,47 @@ class PlannerTests(unittest.TestCase):
         self.commit(leaf, 'import subprocess\nVALUE = 3\n')
         self.assertIn('test_runtime', self.plan()['tests'])
 
-    def _diagnostic_contracts(self):
+    def _diagnostic_source_edit(self, source, function_name, *, call=False):
+        """Add an explicit fixture statement without depending on expression spelling."""
+        tree = ast.parse(source)
+        functions = [node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == function_name]
+        self.assertEqual(1, len(functions), function_name)
+        function = functions[0]
+        statement = (ast.Expr(value=ast.Call(func=ast.Name(id='fixture_new_call', ctx=ast.Load()),
+                                             args=[], keywords=[])) if call else ast.Pass())
+        # Preserve a real function docstring and every existing executable statement.
+        offset = int(isinstance(function.body[0], ast.Expr) and
+                     isinstance(function.body[0].value, ast.Constant) and
+                     isinstance(function.body[0].value.value, str))
+        anchor = function.body[min(offset, len(function.body) - 1)]
+        self.assertGreater(anchor.lineno, function.lineno, 'fixture requires a multiline function')
+        lines = source.splitlines(keepends=True)
+        indentation = lines[anchor.lineno - 1][:anchor.col_offset]
+        position = anchor.lineno - 1 if offset < len(function.body) else anchor.end_lineno
+        lines.insert(position, indentation + ast.unparse(statement) + '\n')
+        changed = ''.join(lines)
+        self.assertNotEqual(planner.dependencies.semantic(source), planner.dependencies.semantic(changed))
+        self.assertEqual(not call, planner.dependencies.function_body_only(source.encode(), changed.encode()))
+        return changed
+
+    def _diagnostic_contracts(self, source_overrides=None):
         """Use the real source members and proof modules with real Git policy epochs."""
         members = (
-            ('consumer-shadow', 'ci_consumer_shadow', 'if identity not in seen]',
-             'if not identity in seen]', {'test_ci_consumer_shadow', 'test_ci_shadow_pair'}),
-            ('shadow-pair', 'ci_shadow_pair', '(a-b)/a*100 if a else None',
-             '(a-b)/a*100.0 if a else None', {'test_ci_shadow_pair'}),
-            ('domain-audit', 'ci_domain_audit', "counts[match['domain']] += 1",
-             "counts[match['domain']] += (0 + 1)",
+            ('consumer-shadow', 'ci_consumer_shadow', 'ordered_union',
+             {'test_ci_consumer_shadow', 'test_ci_shadow_pair'}),
+            ('shadow-pair', 'ci_shadow_pair', 'compare_pair', {'test_ci_shadow_pair'}),
+            ('domain-audit', 'ci_domain_audit', 'inventory_report',
              {'test_ci_domain_audit', 'test_ci_consumer_shadow', 'test_ci_shadow_pair'}),
         )
         policy = copy.deepcopy(self.policy)
         without = copy.deepcopy(policy)
         records = []
-        for suffix, module, before, after, proof in members:
+        for suffix, module, function_name, proof in members:
             identity = 'diagnostic-' + suffix + '-local-function'
             group = policy['groups'][identity]
             leaf = '.github/scripts/' + module + '.py'
-            source = (ROOT / leaf).read_text(encoding='utf-8')
-            self.assertEqual(1, source.count(before))
+            source = (source_overrides or {}).get(leaf, (ROOT / leaf).read_text(encoding='utf-8'))
+            changed = self._diagnostic_source_edit(source, function_name)
             self.assertEqual([leaf], group['coverage'])
             self.assertEqual(proof, set(group['tests']))
             self.assertEqual(proof, set(group['coverage_tests']))
@@ -1229,12 +1251,42 @@ class PlannerTests(unittest.TestCase):
                 write(self.repo, 'tests/' + name + '.py', (ROOT / 'tests' / (name + '.py')).read_bytes())
             without['groups'].pop(identity)
             without['surfaces'].pop(identity)
-            records.append((identity, leaf, source, source.replace(before, after), proof))
+            records.append((identity, leaf, source, changed, proof))
         write(self.repo, 'tests/test_independent_runtime.py', 'import subprocess\nsubprocess.run(command)\n')
         leaves = {path for group in policy['groups'].values() for path in group['coverage']}
         self.base = self.commit(planner.POLICY, planner.canonical(without))
         policy['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, self.base, leaves)
         return records, policy
+
+    def test_diagnostic_fixture_accepts_equivalent_negated_membership_source(self):
+        leaf = '.github/scripts/ci_consumer_shadow.py'
+        tree = ast.parse((ROOT / leaf).read_text(encoding='utf-8'))
+        # Retain the historical input that broke fixture construction, without
+        # requiring today's implementation to use that comprehension or spelling.
+        function = ast.parse('def ordered_union(behavioral, coverage):\n'
+                             '    seen = set(behavioral)\n'
+                             '    return behavioral + [identity for identity in coverage if not identity in seen]\n').body[0]
+        positions = [index for index, node in enumerate(tree.body)
+                     if isinstance(node, ast.FunctionDef) and node.name == 'ordered_union']
+        self.assertEqual(1, len(positions))
+        tree.body[positions[0]] = function
+        variant = ast.unparse(ast.fix_missing_locations(tree)) + '\n'
+        # This is the pinned historical fixture's behavior. The actual current
+        # implementation remains covered by the complete consumer proof suite.
+        namespace = {}
+        exec(compile(ast.fix_missing_locations(ast.Module(body=[function], type_ignores=[])),
+                     '<equivalent ordered_union fixture>', 'exec'), namespace)
+        self.assertEqual(['b', 'a', 'c'], namespace['ordered_union'](['b', 'a'], ['a', 'c']))
+        records, policy = self._diagnostic_contracts({leaf: variant})
+        _, _, source, changed, proof = next(row for row in records if row[1] == leaf)
+        self.assertEqual(variant, source)
+        self.base = self.commit(planner.POLICY, planner.canonical(policy))
+        self.commit(leaf, changed)
+        plan = self.plan()
+        self.assertEqual(sorted(proof), plan['tests'])
+        self.assertEqual(sorted(proof), plan['coverage_tests'])
+        self.assertEqual([leaf], plan['selection']['reviewed_opaque_boundary'])
+        self.assertFalse(plan['blocked_reasons'])
 
     def test_real_diagnostic_contracts_require_base_acceptance_and_complete_family_proof(self):
         records, policy = self._diagnostic_contracts()
@@ -1284,7 +1336,9 @@ class PlannerTests(unittest.TestCase):
                     if scenario == 'import':
                         candidate += '\nimport subprocess\n'
                     elif scenario == 'call':
-                        candidate = candidate.replace('planner.require(', 'planner.reject(', 1)
+                        function_name = {'consumer-shadow': 'ordered_union', 'shadow-pair': 'compare_pair',
+                                         'domain-audit': 'inventory_report'}[identity.removeprefix('diagnostic-').removesuffix('-local-function')]
+                        candidate = self._diagnostic_source_edit(changed, function_name, call=True)
                     elif scenario == 'initialization':
                         candidate += '\nINITIALIZATION_CHANGED = True\n'
                     elif scenario == 'new-function':
