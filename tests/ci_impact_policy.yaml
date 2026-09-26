@@ -47,6 +47,33 @@
       "groups": [
         "projection-local-function"
       ]
+    },
+    "diagnostic-consumer-shadow-local-function": {
+      "paths": [
+        ".github/scripts/ci_consumer_shadow.py"
+      ],
+      "class": "focused",
+      "groups": [
+        "diagnostic-consumer-shadow-local-function"
+      ]
+    },
+    "diagnostic-shadow-pair-local-function": {
+      "paths": [
+        ".github/scripts/ci_shadow_pair.py"
+      ],
+      "class": "focused",
+      "groups": [
+        "diagnostic-shadow-pair-local-function"
+      ]
+    },
+    "diagnostic-domain-audit-local-function": {
+      "paths": [
+        ".github/scripts/ci_domain_audit.py"
+      ],
+      "class": "focused",
+      "groups": [
+        "diagnostic-domain-audit-local-function"
+      ]
     }
   },
   "groups": {
@@ -169,6 +196,81 @@
           "test_skill_release_projection.SkillReleaseProjectionTests.test_projection_set_schema_boundary_is_fail_closed"
         ]
       }
+    },
+    "diagnostic-consumer-shadow-local-function": {
+      "tests": [
+        "test_ci_consumer_shadow",
+        "test_ci_shadow_pair"
+      ],
+      "downstream": [],
+      "coverage": [
+        ".github/scripts/ci_consumer_shadow.py"
+      ],
+      "coverage_tests": [
+        "test_ci_consumer_shadow",
+        "test_ci_shadow_pair"
+      ],
+      "change_scope": "function-body",
+      "package": false,
+      "repository": false,
+      "impact_evidence": {
+        "positive_tests": [
+          "test_ci_consumer_shadow.ConsumerGitTests.test_real_git_proposal_drift_membership_and_overlapping_consumers"
+        ],
+        "negative_tests": [
+          "test_ci_consumer_shadow.ConsumerOutcomeTests.test_malformed_or_rebound_inputs_are_rejected"
+        ]
+      }
+    },
+    "diagnostic-shadow-pair-local-function": {
+      "tests": [
+        "test_ci_shadow_pair"
+      ],
+      "downstream": [],
+      "coverage": [
+        ".github/scripts/ci_shadow_pair.py"
+      ],
+      "coverage_tests": [
+        "test_ci_shadow_pair"
+      ],
+      "change_scope": "function-body",
+      "package": false,
+      "repository": false,
+      "impact_evidence": {
+        "positive_tests": [
+          "test_ci_shadow_pair.PairedExecutionTests.test_identical_complete_orders_allow_same_native_invocation"
+        ],
+        "negative_tests": [
+          "test_ci_shadow_pair.PairedExecutionTests.test_changed_behavioral_or_coverage_order_requires_distinct_driver_roles"
+        ]
+      }
+    },
+    "diagnostic-domain-audit-local-function": {
+      "tests": [
+        "test_ci_domain_audit",
+        "test_ci_consumer_shadow",
+        "test_ci_shadow_pair"
+      ],
+      "downstream": [],
+      "coverage": [
+        ".github/scripts/ci_domain_audit.py"
+      ],
+      "coverage_tests": [
+        "test_ci_domain_audit",
+        "test_ci_consumer_shadow",
+        "test_ci_shadow_pair"
+      ],
+      "change_scope": "function-body",
+      "package": false,
+      "repository": false,
+      "impact_evidence": {
+        "positive_tests": [
+          "test_ci_domain_audit.DomainModelTests.test_named_repository_model_satisfies_official_validator"
+        ],
+        "negative_tests": [
+          "test_ci_domain_audit.DomainModelTests.test_declarations_cannot_add_authority_or_hide_unknown_protocols"
+        ]
+      }
     }
   },
   "impact_evidence": {
@@ -183,7 +285,7 @@
       "test_provider_adapters.GeminiAdapterTests.test_parallel_response_is_contract_violation_when_not_claimed"
     ]
   },
-  "consumer_fingerprint": "6550918ee9940e29a668a6a2880a8a9fb18873c2d8ebfff22b2e41eebc7382b0",
+  "consumer_fingerprint": "ef678cea11398b5f73093064692498b6684ef43feefaad2314c5895b36abec6a",
   "consumer_contracts": [
     {
       "id": "cli-git-head-observation",

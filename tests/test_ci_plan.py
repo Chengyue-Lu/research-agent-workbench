@@ -1200,6 +1200,131 @@ class PlannerTests(unittest.TestCase):
         self.commit(leaf, 'import subprocess\nVALUE = 3\n')
         self.assertIn('test_runtime', self.plan()['tests'])
 
+    def _diagnostic_contracts(self):
+        """Use the real source members and proof modules with real Git policy epochs."""
+        members = (
+            ('consumer-shadow', 'ci_consumer_shadow', 'if identity not in seen]',
+             'if not identity in seen]', {'test_ci_consumer_shadow', 'test_ci_shadow_pair'}),
+            ('shadow-pair', 'ci_shadow_pair', '(a-b)/a*100 if a else None',
+             '(a-b)/a*100.0 if a else None', {'test_ci_shadow_pair'}),
+            ('domain-audit', 'ci_domain_audit', "counts[match['domain']] += 1",
+             "counts[match['domain']] += (0 + 1)",
+             {'test_ci_domain_audit', 'test_ci_consumer_shadow', 'test_ci_shadow_pair'}),
+        )
+        policy = copy.deepcopy(self.policy)
+        without = copy.deepcopy(policy)
+        records = []
+        for suffix, module, before, after, proof in members:
+            identity = 'diagnostic-' + suffix + '-local-function'
+            group = policy['groups'][identity]
+            leaf = '.github/scripts/' + module + '.py'
+            source = (ROOT / leaf).read_text(encoding='utf-8')
+            self.assertEqual(1, source.count(before))
+            self.assertEqual([leaf], group['coverage'])
+            self.assertEqual(proof, set(group['tests']))
+            self.assertEqual(proof, set(group['coverage_tests']))
+            self.assertEqual('function-body', group['change_scope'])
+            write(self.repo, leaf, source)
+            for name in proof:
+                write(self.repo, 'tests/' + name + '.py', (ROOT / 'tests' / (name + '.py')).read_bytes())
+            without['groups'].pop(identity)
+            without['surfaces'].pop(identity)
+            records.append((identity, leaf, source, source.replace(before, after), proof))
+        write(self.repo, 'tests/test_independent_runtime.py', 'import subprocess\nsubprocess.run(command)\n')
+        leaves = {path for group in policy['groups'].values() for path in group['coverage']}
+        self.base = self.commit(planner.POLICY, planner.canonical(without))
+        policy['consumer_fingerprint'] = planner.consumer_fingerprint(self.repo, self.base, leaves)
+        return records, policy
+
+    def test_real_diagnostic_contracts_require_base_acceptance_and_complete_family_proof(self):
+        records, policy = self._diagnostic_contracts()
+        unaccepted = self.base
+        for identity, leaf, source, changed, proof in records:
+            with self.subTest(member=identity, authority='candidate-only'):
+                command(self.repo, 'reset', '--hard', unaccepted)
+                self.base = unaccepted
+                write(self.repo, planner.POLICY, planner.canonical(policy))
+                self.commit(leaf, changed)
+                plan = self.plan()
+                self.assertEqual([], plan['selection']['reviewed_opaque_boundary'])
+                self.assertIn('test_independent_runtime', plan['tests'])
+                self.assertIn('test_independent_runtime', plan['coverage_tests'])
+        command(self.repo, 'reset', '--hard', unaccepted)
+        accepted = self.commit(planner.POLICY, planner.canonical(policy))
+        self.base = accepted
+        for identity, leaf, source, changed, proof in records:
+            with self.subTest(member=identity, authority='accepted-base'):
+                command(self.repo, 'reset', '--hard', accepted)
+                self.commit(leaf, changed)
+                plan = self.plan(body=BODY.replace('R0', 'R2'))
+                self.assertEqual(('R2', 'focused', 'impact', False, False), tuple(plan[key] for key in
+                                 ('risk', 'behavioral_scope', 'coverage_scope', 'package_smoke', 'repository_smoke')))
+                self.assertEqual(sorted(proof), plan['tests'])
+                self.assertEqual(sorted(proof), plan['coverage_tests'])
+                self.assertEqual([leaf], plan['coverage_modules'])
+                self.assertEqual([leaf], plan['selection']['reviewed_opaque_boundary'])
+                self.assertEqual(accepted, plan['selection']['reviewed_contract_anchor'])
+                self.assertEqual(policy['groups'][identity]['impact_evidence'], plan['impact_evidence'])
+                self.assertFalse(plan['blocked_reasons'])
+                planner.verify_plan(self.repo, plan)
+
+    def test_real_diagnostic_contracts_restore_scope_for_boundary_and_proof_drift(self):
+        records, policy = self._diagnostic_contracts()
+        accepted = self.commit(planner.POLICY, planner.canonical(policy))
+        for identity, leaf, source, changed, proof in records:
+            for scenario in ('import', 'call', 'initialization', 'new-function', 'proof', 'missing-anchor'):
+                with self.subTest(member=identity, invalidation=scenario):
+                    command(self.repo, 'reset', '--hard', accepted)
+                    self.base = accepted
+                    if scenario == 'missing-anchor':
+                        unanchored = copy.deepcopy(policy)
+                        unanchored['consumer_fingerprint'] = '0' * 64
+                        self.base = self.commit(planner.POLICY, planner.canonical(unanchored))
+                    candidate = changed
+                    if scenario == 'import':
+                        candidate += '\nimport subprocess\n'
+                    elif scenario == 'call':
+                        candidate = candidate.replace('planner.require(', 'planner.reject(', 1)
+                    elif scenario == 'initialization':
+                        candidate += '\nINITIALIZATION_CHANGED = True\n'
+                    elif scenario == 'new-function':
+                        candidate += '\ndef added_entrypoint():\n    return 1\n'
+                    elif scenario == 'proof':
+                        name = sorted(proof)[0]
+                        path = 'tests/' + name + '.py'
+                        write(self.repo, path, (self.repo / path).read_bytes() + b'\n# proof byte drift\n')
+                    self.commit(leaf, candidate)
+                    plan = self.plan()
+                    self.assertNotIn(leaf, plan['selection']['reviewed_opaque_boundary'])
+                    self.assertIn('test_independent_runtime', plan['tests'])
+                    self.assertIn('test_independent_runtime', plan['coverage_tests'])
+                    self.assertTrue(proof <= set(plan['tests']))
+                    self.assertTrue(proof <= set(plan['coverage_tests']))
+                    self.assertEqual('impact', plan['coverage_scope'])
+                    self.assertFalse(plan['blocked_reasons'])
+
+    def test_real_diagnostic_contracts_keep_new_direct_and_opaque_consumers(self):
+        records, policy = self._diagnostic_contracts()
+        accepted = self.commit(planner.POLICY, planner.canonical(policy))
+        self.base = accepted
+        for identity, leaf, source, changed, proof in records:
+            with self.subTest(member=identity):
+                command(self.repo, 'reset', '--hard', accepted)
+                write(self.repo, 'tests/test_new_direct.py', 'import runpy\nrunpy.run_path("' + leaf + '")\n')
+                write(self.repo, 'tests/test_new_opaque.py', 'import subprocess\nsubprocess.run(command)\n')
+                self.commit(leaf, changed)
+                plan = self.plan()
+                expected = proof | {'test_new_direct', 'test_new_opaque'}
+                self.assertTrue(expected <= set(plan['tests']))
+                self.assertTrue(expected <= set(plan['coverage_tests']))
+                # Real proof modules consume test-directory membership. Adding
+                # a consumer invalidates that evidence and restores old opaque readers.
+                self.assertIn('test_independent_runtime', plan['tests'])
+                self.assertIn('test_independent_runtime', plan['coverage_tests'])
+                self.assertNotIn(leaf, plan['selection']['reviewed_opaque_boundary'])
+                self.assertIn('contract evidence implementation changed', ' '.join(plan['reasons']))
+                self.assertFalse(plan['blocked_reasons'])
+
     def test_monotonic_local_critical_addition_has_local_proof_and_cannot_remove_old_obligations(self):
         path = 'src/consumer.py'
         authority = yaml.safe_load((self.repo / 'tests/coverage_policy.yaml').read_bytes())

@@ -37,11 +37,22 @@ class DomainModelTests(unittest.TestCase):
         audit.validate_model(value)
         self.assertEqual(['docs', 'runtime'], [r['domain'] for r in audit.routes('docs/runtime.md', value)])
         self.assertEqual([], audit.routes('unmapped.bin', value))
-        report = audit.inventory_report({'docs/runtime.md': None, 'unmapped.bin': None,
-                                         'tests/test_reader.py': None}, value)
+        inventory = {'docs/runtime.md': None, 'docs/notes.md': None, 'work/A/report.json': None,
+                     'src/reader.py': None, 'tests/test_reader.py': None, 'unmapped.bin': None}
+        report = audit.inventory_report(inventory, value)
+        self.assertEqual(6, report['tracked_count'])
+        self.assertEqual({'docs': 3, 'runtime': 3}, report['domain_path_counts'])
         self.assertEqual(['unmapped.bin'], report['unassigned_paths'])
         self.assertFalse(report['membership_proved'])
-        self.assertEqual(['docs', 'runtime'], report['overlapping_paths'][0]['domains'])
+        self.assertEqual([{'path': 'docs/runtime.md', 'domains': ['docs', 'runtime']}],
+                         report['overlapping_paths'])
+        self.assertEqual({'tests/test_reader.py': [{'domain': 'runtime', 'roles': ['test']}]},
+                         report['test_routes'])
+        unmatched = audit.inventory_report({'unmapped.bin': None}, value)
+        self.assertEqual({}, unmatched['domain_path_counts'])
+        self.assertEqual(1, unmatched['tracked_count'])
+        self.assertEqual(['unmapped.bin'], unmatched['unassigned_paths'])
+        self.assertEqual([], unmatched['overlapping_paths'])
 
     def test_declarations_cannot_add_authority_or_hide_unknown_protocols(self):
         mutations = [lambda m: m.update(execution_authority=True), lambda m: m.update(version=True),

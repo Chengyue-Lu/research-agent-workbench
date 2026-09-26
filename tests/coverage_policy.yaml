@@ -34,6 +34,7 @@ suites:
       - test_ci_checks
       - test_ci_dependencies
       - test_selection_witness
+      - test_ci_minimum_witness
       - test_contracts
       - test_context_model_branches
       - test_critical_contract_branches
@@ -155,6 +156,7 @@ thresholds:
     branch: 90
 
 critical_modules:
+  - .github/scripts/ci_minimum_witness.py
   - .github/scripts/ci_contract_shadow.py
   - .github/scripts/ci_consumer_contracts.py
   - .github/scripts/ci_input_facts.py
@@ -329,6 +331,16 @@ negative_acceptance:
       - test_claim_trace.ClaimTraceTests.test_missing_revision_unversioned_and_missing_evidence_are_unresolved
       - test_claim_trace.ClaimTraceTests.test_missing_and_wrong_raw_admission_do_not_yield_complete_trace
       - test_claim_trace.ClaimTraceTests.test_map_requires_exact_evidence_and_source_closure
+  - surface: independent-planner-minimum-witness
+    modules:
+      - .github/scripts/ci_minimum_witness.py
+    positive_tests:
+      - test_ci_minimum_witness.MinimumWitnessTests.test_real_accepted_minimum_and_isolated_candidate_shadow_modules
+    negative_tests:
+      - test_ci_minimum_witness.MinimumWitnessTests.test_resigned_plan_cannot_remove_required_tests
+      - test_ci_minimum_witness.MinimumWitnessTests.test_resigned_plan_cannot_remove_coverage_or_smokes
+      - test_ci_minimum_witness.MinimumWitnessTests.test_candidate_policy_and_bootstrap_rewrite_do_not_choose_minimum
+      - test_ci_minimum_witness.MinimumWitnessTests.test_dirty_pinned_checker_helpers_and_wrong_identity_block
   - surface: independent-selection-authority-witness
     modules:
       - .github/scripts/selection_witness.py
