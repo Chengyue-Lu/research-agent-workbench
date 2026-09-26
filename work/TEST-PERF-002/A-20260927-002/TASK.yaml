@@ -1,0 +1,11 @@
+task_id: TEST-PERF-002
+revision: 50
+request: Implement systemic execution/input boundaries and set a continuing goal
+profile: CI execution-input model engineer
+required_skills: []
+scope: CI fact/parser/report and tests; independent local M5 fixture and process-coverage
+  probes
+delegation: true
+budget: bounded independent implementation/review and scoped tests; no unnecessary
+  full reruns
+stop_condition: independently reviewable Draft stage with exact evidence; no merge
