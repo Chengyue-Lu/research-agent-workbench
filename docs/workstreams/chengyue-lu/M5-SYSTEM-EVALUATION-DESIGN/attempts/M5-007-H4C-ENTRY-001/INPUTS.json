@@ -1,0 +1,104 @@
+{
+  "purpose": "implementation-entry-preparation",
+  "recorded_at": "2026-09-26T22:36:07.763088+00:00",
+  "accountable_owner": "Chengyue-Lu",
+  "agent_profile": "Evaluation Harness implementation preparation",
+  "skills": [],
+  "base": "97d3b3d3141419b34ad47e0f42d9f01d0dfbd535",
+  "task_status": "M5-007 IN_PROGRESS",
+  "inputs_at_base": [
+    {
+      "path": "AGENTS.md",
+      "git_blob": "67da3f99859775bcdb593c2c5078575df1ad69ce",
+      "git_blob_bytes_sha256": "9e3b17ec2306518fd23d52fc52c3dfdb69aa8108114fe23abb4516abaa584a3a"
+    },
+    {
+      "path": "docs/DEVELOPMENT.md",
+      "git_blob": "035a5171ef9da7ea549987dd95cbd6002e12305d",
+      "git_blob_bytes_sha256": "95b84fb40db619f126e535ed33f3c9c43ff2424435e12b08eca4ce8da8c76bff"
+    },
+    {
+      "path": "docs/TASKS.md",
+      "git_blob": "077392e1268525cda893f14977f9859727c2ef9e",
+      "git_blob_bytes_sha256": "a38daa21f291719a6df93615c207752e558252607f159c4509a47bfe5a322398"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H4_PACKET.md",
+      "git_blob": "e783c8e00a30d3dbb51e48e8aa3204f48026207d",
+      "git_blob_bytes_sha256": "1a09ec51d223ba9adc0d6789aad66dadb902f85f4d03337160b1bbff510d06ed"
+    },
+    {
+      "path": "docs/implementation/SYSTEM_EVALUATION_PROTOCOL.md",
+      "git_blob": "909d4e0a6dc3426a49efbe6dce5bf63db25cf6b2",
+      "git_blob_bytes_sha256": "9d0d6b96db979d42cc829849f9ef29a23098879e17700865f344063b6859a9b6"
+    },
+    {
+      "path": "src/research_workbench/evaluation/system_protocol.py",
+      "git_blob": "c5e621b434b7375f51757456acd352d9f35c1e9a",
+      "git_blob_bytes_sha256": "88f3fe29071695a7b9d40876050606da39a7fac754fb7585015ece6619d562f9"
+    },
+    {
+      "path": "src/research_workbench/evaluation/manifest.py",
+      "git_blob": "62e7bf3cdbda9e25f1a74c097e43da997eb2cb50",
+      "git_blob_bytes_sha256": "fa02ab2c16c8d57a2f1631998c5f12f7f96a868fb74e2350530ce4b8fb3dafe2"
+    },
+    {
+      "path": "src/research_workbench/evaluation/harness_evidence.py",
+      "git_blob": "d1f113ab62988faea5873491cdc4e45c8e9beee1",
+      "git_blob_bytes_sha256": "63c6491439602c699b83f851d609900b4b5554e02f593d25f4cb6266cd54bf70"
+    },
+    {
+      "path": "src/research_workbench/evaluation/harness_review.py",
+      "git_blob": "254bd9d5040b138f825017a59f8a2821c12b984c",
+      "git_blob_bytes_sha256": "7d71a4f6b9037955e6387951f328a177fbc23a62e8b12e3e17043eb434edc196"
+    },
+    {
+      "path": "src/research_workbench/evaluation/overlap.py",
+      "git_blob": "06b22d0037b83f480f8631f3639b6670307ee1d5",
+      "git_blob_bytes_sha256": "9f3834fad1f2121498af21fb1b323a38fcb6c8c3beb4fb0f9a918b377ecba134"
+    },
+    {
+      "path": "src/research_workbench/evaluation/comparability.py",
+      "git_blob": "c3a397a4d7997d5ecae96c87c9ec16fbb4e2ee03",
+      "git_blob_bytes_sha256": "b3acfb15917388620b3b1110401840a1d658e3c5783cc23579b6244744076d3a"
+    },
+    {
+      "path": "schemas/v0.1.0/evaluation-measurement.schema.json",
+      "git_blob": "09d373ef4c4b513d7cd826eac887942d9a0b334e",
+      "git_blob_bytes_sha256": "848f1cd53d311e81805fed9fc7c5d8435481efcb9c22aeccde7125477fa90ae1"
+    },
+    {
+      "path": "schemas/v0.1.0/system-evaluation-protocol.schema.json",
+      "git_blob": "b0cdc4a0027e27eb889730205021973501133ec5",
+      "git_blob_bytes_sha256": "3c7e49b36918fdb1f0f0cfc2fbc2d4a2a7a90a1cf9d23b384aca740ed58f3d13"
+    }
+  ],
+  "github_snapshots": {
+    "pr90": {
+      "mergeCommit": {
+        "oid": "a542a06f781b4b4bce6696a2e6a888f4243f66c0"
+      },
+      "mergedAt": "2026-09-25T16:00:28Z",
+      "number": 90,
+      "state": "MERGED",
+      "url": "https://github.com/Chengyue-Lu/research-agent-workbench/pull/90"
+    },
+    "pr96": {
+      "mergeCommit": {
+        "oid": "97d3b3d3141419b34ad47e0f42d9f01d0dfbd535"
+      },
+      "mergedAt": "2026-09-26T16:41:18Z",
+      "number": 96,
+      "state": "MERGED",
+      "url": "https://github.com/Chengyue-Lu/research-agent-workbench/pull/96"
+    },
+    "develop_push": {
+      "conclusion": "success",
+      "headSha": "97d3b3d3141419b34ad47e0f42d9f01d0dfbd535",
+      "status": "completed",
+      "updatedAt": "2026-09-26T17:21:51Z",
+      "url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36256347167"
+    }
+  },
+  "implementation_trace_claimed": false
+}

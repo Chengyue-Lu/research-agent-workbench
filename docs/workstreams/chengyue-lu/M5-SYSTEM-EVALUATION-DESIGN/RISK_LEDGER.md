@@ -110,3 +110,15 @@ BLIND 风险仅在此 finite synthetic contract 的本地测试中得到控制�
 任意自由文本匿名性、生产分发 ACL、真实 Human review 与科学有效性没有因此获得证明。
 调用方必须隔离私有 map/reviews 并在验证 reveal 后才开放映射。H4c METRIC/ANALYSIS 和 H5
 收口继续待实施；M5-007 IN_PROGRESS，M5-008/004/005 的 Gate 保持原状态。
+
+## H4c 进入准备（2026-09-27）
+
+PR96 H4b 已合入且实际 push CI SUCCESS；单次审核例外不扩到本切片。
+下表是 [H4c 实施包](M5-007_H4C_PACKET.md) 的待验收控制，不是已观测结果。
+
+| Risk / seam | Planned control and adversarial evidence | Entry status |
+|---|---|---|
+| METRIC / unrelated evidence | measurement 关联 exact run/Attempt/method/观察或冻结 review；重建数值、范围与分母，拒绝无关来源和自报 measured | H4c 首个实施 slice |
+| COST-TIME / missing scope | 全部失败/retry 与人工成本闭包；缺测量保持 unavailable；拒绝 Host/slice 耗时冒充外层时间、缺值补零及单位混用 | 本轮先消费旧数据，不强制增加 H3 采集 |
+| ANALYSIS / incomplete pairing | analysis-input 重验 actual/overlap/pairwise 与完整 block；保留 pilot/unknown/失败诊断，不能自报 primary eligibility | H4c 待实施；synthetic eligibility false |
+| IDENTITY / new Schema closure | exact candidate 重新生成 synthetic 输入；旧 archives 字节和身份保留，不回填旧 pins | 实施前固定输入与捕获；H5 最终收口 |

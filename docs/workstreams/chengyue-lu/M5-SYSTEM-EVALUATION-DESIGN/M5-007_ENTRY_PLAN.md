@@ -1,6 +1,6 @@
 # M5-007 Synthetic Harness 进入计划
 
-更新：2026-09-19。Task / Evaluation owner：路诚钺。Execution 接口复核：黄毅。风险：R2。
+更新：2026-09-27。Task / Evaluation owner：路诚钺。Execution 接口复核：黄毅。风险：R2。
 
 ## 进入节点
 
@@ -10,9 +10,11 @@ M6-008 实现已由 PR75 合入，PR84 已接受 M6-008 DONE 与 M5-007 READY。
 首个开发分支为 `feature/m5-007-harness-preflight`；具体接口、写入面与负例见 [H1/H2 实施包](M5-007_H1_H2_PACKET.md)。
 PR86 已接受 H1/H2 和 M5-007 IN_PROGRESS。[H3 实施包](M5-007_H3_PACKET.md) 对应的 PR89
 已于 2026-09-18 经具名复审接受，合入 `develop@171d4654f88e926f239cdf25bc8168109b81f391`。
-当前进入 [H4 实施包](M5-007_H4_PACKET.md)：先核对实际执行证据，再闭合盲审/reveal 和 metric/analysis
-输入。`feature/m5-007-harness-evidence` 已实现 H4a actual evidence candidate，等待 exact-head CI
-与 cross-owner review；H4b/H4c 待实现，H5 继续为最终集成收口。
+H4a 已由 PR90 接受并合入；H4b 已由 PR96 使用绑定该候选的单次维护者审核例外合入
+`develop@97d3b3d3141419b34ad47e0f42d9f01d0dfbd535`，实际 protected push CI36256347167 SUCCESS。
+合并方式及其接受边界见 [H4c 进入记录](attempts/M5-007-H4C-ENTRY-001/README.md)。
+下一节点为 [H4c measurement/analysis 实施包](M5-007_H4C_PACKET.md)，准备分支
+`feature/m5-007-harness-analysis` 基于上述 develop；H4c 尚未实现，H5 保持最终集成收口。
 
 | 前置 | 已接受依据 | Harness 消费接口 |
 |---|---|---|

@@ -268,3 +268,16 @@ H4b/H4c/H5 仍待后续实现；该分支按普通 R2 implementation PR 请求�
 本地专项 13 PASS、141/141 statements、12/12 branches；四臂新进程禁执行回放通过。
 完整 scoped checks、边界与保留 capture gaps 见 [H4b Attempt](attempts/M5-007-H4B-001/README.md)。
 H4c/H5 为后续节点，未运行真实 Provider，未给出 Human/Task/analysis 接受或 merge。
+
+## H4c 进入准备（2026-09-27）
+
+核对 PR90/96 MERGED 与 exact `develop@97d3b3d`；实际 push CI36256347167 completed/SUCCESS。
+PR96 单次维护者审核例外已使用完毕，不记为 cross-owner APPROVED。修正上述实施后的当前入口
+快照，历史 Attempts 保留。复用空闲 checkout，从 exact develop 创建 `feature/m5-007-harness-analysis`。
+
+[H4c 实施包](M5-007_H4C_PACKET.md) 固定 measurement association→配对 analysis input 的交付顺序、
+方法/观察/冻结 review 来源、缺测量状态、analysis-input actual/overlap/pairwise 重验与负例。
+源码/Schema 未改；独立 CI fixture 候选1b97af2不混入。文档10 PASS、diff check PASS；
+基线/接受与输入 pins 见 [进入记录](attempts/M5-007-H4C-ENTRY-001/README.md)。
+本轮只完成准备；实施开始时固定新的 Task Attempt 和 exact candidate 输入。M5-007 IN_PROGRESS，
+H5 与 live/Human/release Gates 保持各自后继验收。

@@ -6,8 +6,9 @@ Evaluation owner：路诚钺。Execution 接口 owner：黄毅。Record version�
 H1/H2 提供确定性计划及评价侧预检，其记录固定 `actual_execution=false`。
 H3 提供 synthetic 四臂执行、fresh Attempt 和执行后 replay；接口与验证范围见
 [H3 实施包](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H3_PACKET.md)。
-H4a 提供 evaluation-owned actual evidence 与独立重算；H4b 增加有限 synthetic 格式的盲审、具名审查冻结和揭盲候选。metrics、analysis 和持久化集成收口
-属于后续 H4c/H5。所有记录保持
+H4a 提供 evaluation-owned actual evidence 与独立重算；H4b 增加有限 synthetic 格式的盲审、具名审查冻结和揭盲。其实施已由 PR96 合入，实际 push CI SUCCESS；接受边界见
+[H4c 进入记录](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-ENTRY-001/README.md)。metrics、analysis 和持久化集成收口
+属于后续 [H4c](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H4C_PACKET.md)/H5。所有记录保持
 `execution_authority=false`、`task_completion=false`，不改写 Manifest、Protocol 或 Runtime 契约。
 
 ## H1：冻结计划
@@ -127,7 +128,8 @@ H4a validator identity 同时绑定 baseline closeout、`execution/baseline.py` 
 `evaluation_harness_review_package`、`evaluation_harness_review_mapping`、
 `evaluation_harness_human_review`、`evaluation_harness_review_freeze` 和
 `evaluation_harness_review_reveal`。它们仍仅支持 `synthetic-contract-proof`。
-H4a 已由 PR90 接受；H4b 是待独立审核的实施候选，尚未取得 Human review 或分析资格。
+H4a 已由 PR90 接受；H4b 已由 PR96 使用单次维护者审核例外合入，actual push CI SUCCESS。
+synthetic review fixtures 只证明本节的序列和独立验证，不产生真实 Human 评价或确认性分析资格。
 
 `ReviewContext` 由调用方提供完整 HarnessContext、exact execution/evidence refs、evidence ID、
 preregistered policy ref、可信 policy registration time 和 package creation time。每次 package、
