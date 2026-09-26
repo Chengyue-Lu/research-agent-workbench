@@ -55,6 +55,12 @@ the CLI opaque and validation resource causes require separate reviewed contract
 
 ## Historical risk controls
 
+The [checkout/Attempt consumer experiment](ATTRIBUTE_CONSUMER_PROBE.md) uses the
+existing byte-hash oracle with fresh Git checkouts. Identical Git data blobs do
+not imply identical materialized inputs. Its valid/fault/repaired observations
+remain invocation-specific; schema-catalog and directory-membership dependencies
+still require independent closure before any production selection change.
+
 | Risk | Control and evidence | Remaining review |
 |---|---|---|
 | A local contract hides initialization or a new dependency | New local-function contracts preserve module/class initialization, call expressions, string inputs and bindings; rejected changes restore ordinary consumers | Review [consumer inventories](CONSUMER_CONTRACTS.md), source/downstream mutants and exact future-base timings |
@@ -267,3 +273,21 @@ for cross-owner review. Quality thresholds, exclusions, product contracts and re
   duration must be measured on real corpus before claiming practical diagnostic cost.
 - Production selection, thresholds, fixtures and B/C execution order remain unchanged;
   activation still requires independent witnesses and real paired evidence.
+
+## Attempt invocation inputs
+
+- Archived exporter code and committed trace payload in the same directory have
+  different consumers. Preserve executable impact proof while mapping data calls.
+- Default Trace construction validates the whole Runtime manifest and directory
+  inventory, including non-schema resources; schema pins alone do not close it.
+- Observed Python file operations and successful negative controls are diagnostic
+  evidence. Missing observations are not absence proof or independent exclusion authority.
+
+## Accepted declaration provenance
+
+- A declaration supplied by a candidate can rewrite unknowns, pins or ownership.
+  The accepted-Git template mode preserves the reviewer-selected source blob;
+  binding that template to the current base does not semantically requalify it.
+- Declaration provenance and checker provenance are separate. The new diagnostic
+  checker still needs acceptance and independent execution before it could support
+  production exclusion evidence. Existing activation blockers remain in force.

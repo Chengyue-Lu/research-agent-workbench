@@ -1,0 +1,12 @@
+task_id: TEST-PERF-002
+revision: 46
+request: Continue on PR101
+scope: real Attempt input boundaries and historical invocation mapping; diagnostic
+  only
+profile: CI boundary engineer
+required_skills: []
+delegation: true
+budget: one bounded slice; scoped dual Python, four existing observations and static
+  review
+stop_condition: updated Draft with fresh hosted obligations and remaining activation
+  boundaries

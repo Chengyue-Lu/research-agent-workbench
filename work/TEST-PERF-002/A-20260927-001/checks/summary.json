@@ -1,0 +1,27 @@
+{
+  "status": "PASS-local-scoped",
+  "base": "97d3b3d3141419b34ad47e0f42d9f01d0dfbd535",
+  "implementation_head": "7c2bc7fc627be7b9dde02fbdc2f879d062fdee6d",
+  "rebase_original_head": "d4e94e2db8172dade2df729a04c817d1786843e7",
+  "rebase_patches_equivalent": 10,
+  "consumer_fingerprint_refresh": {
+    "before_head": "deae2679c7daba3fe23663aed65f5c8f786fb3b2",
+    "head": "7c2bc7fc627be7b9dde02fbdc2f879d062fdee6d",
+    "base": "97d3b3d3141419b34ad47e0f42d9f01d0dfbd535",
+    "old": "6d3a6ca86db8477642481ea4d8536b077aada0d1710576edb59d071074f26bec",
+    "new": "3d1a46f8603b5b9eabb87d0e32481df1cb39efd368f385bc910faa1f5ab23b56",
+    "policy_semantics_unchanged_except_fingerprint": true,
+    "policy_sha256": "f60a7c2d2667aab214a32f190d1ed932f8e08fab7ad8b92266864aafa350a971"
+  },
+  "composition_tests_per_python": 32,
+  "full_suite_proved": false,
+  "current_hosted_proved": false,
+  "M14_M5_collection_is_not_full_execution": true,
+  "production_reduction_activated": false,
+  "scope_reports": {
+    "m14-probes": "82c627eaf56987c38bedf0fe8696f7eb2f67c157aac54606bb81f3d2f779391f",
+    "m5-probes": "84192ca167464eb75affcf93d0989e5f0a015f2fd183bb04611d2c7be8c71632",
+    "rebase-independent": "73ca3513bf70968ba3add6b6648b209e5c1e108dce9e8a8ec8790668d9794ba9"
+  },
+  "raw_evidence_sha256": "43aba47a2cfb2414395dc1068c838ab39ad193759a9561d714cdc80b54355636"
+}

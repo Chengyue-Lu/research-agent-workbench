@@ -1,0 +1,11 @@
+task_id: TEST-PERF-002
+revision: 49
+request: Rebase latest, test M14-005 and M5-007 propagation, Ready for review then
+  stop
+profile: CI rebase and propagation engineer
+required_skills: []
+scope: PR101 CI implementation and isolated M14/M5 probes; preserve owner branches
+delegation: true
+budget: independent rebase review; bounded M14/M5 cases; scoped local and current
+  target hosted verification
+stop_condition: Ready for review after required validation; no merge

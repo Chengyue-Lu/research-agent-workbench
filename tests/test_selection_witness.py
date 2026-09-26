@@ -73,7 +73,8 @@ class WitnessTests(unittest.TestCase):
         self.assertIsNone(w.semantic('ci.yml',b'# empty\n'))
 
     def test_new_removed_modes_invalid_syntax_and_workflow_types_fail_closed(self):
-        for path,raw in [('.github/scripts/ci_checks.py',b'pass\n'),('.github/scripts/plan_ci.py',b'if ['),
+        for path,raw in [('.github/scripts/ci_checks.py',b'pass\n'),
+                         ('.github/scripts/ci_minimum_witness.py',b'pass\n'),('.github/scripts/plan_ci.py',b'if ['),
                          ('.github/workflows/ci.yml',b'key: ['),('.github/workflows/ci.yml',b'jobs: true\n')]:
             self.git('reset','--hard',self.base);self.write(path,raw);self.commit()
             self.assertEqual('full',self.check(self.plan())['required_behavioral'])

@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import zlib
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / '.github/scripts'))
@@ -275,6 +276,192 @@ class ConsumerGitTests(unittest.TestCase):
             # Explicitly unsupported identities never become wildcard exclusions.
             with self.assertRaises(ValueError):
                 shadow.identities(['tests/test_*.py::C.test_a'], 'test')
+
+
+class AcceptedTemplateTests(unittest.TestCase):
+    """An explicit base supplies definitions; candidate data cannot replace them."""
+    template_path = 'diagnostics/consumers.json'
+
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.repo = Path(self.temporary.name)
+        self.git('init', '-q', '-b', 'develop')
+        self.git('config', 'user.name', 'CI fixture')
+        self.git('config', 'user.email', 'fixture@example.invalid')
+        self.git('config', 'core.autocrlf', 'false')
+        for path in planner.TRUST_FILES:
+            self.write(path, (ROOT / path).read_bytes())
+        policy = {'policy_id': 'rwb-ci-impact', 'version': 1, 'consumer_fingerprint': '0' * 64,
+                  'surfaces': {'docs': {'paths': ['docs/**'], 'class': 'fast', 'groups': ['documentation']}},
+                  'groups': {'documentation': {'tests': ['test_reader'], 'downstream': [], 'coverage': [],
+                                              'package': False, 'repository': False}},
+                  'impact_evidence': {'positive_tests': ['test_reader.C.test_a'], 'negative_tests': ['test_reader.C.test_b']}}
+        self.write(planner.POLICY, planner.canonical(policy))
+        self.write('tests/test_reader.py', b'import unittest\nclass C(unittest.TestCase):\n def test_a(self): pass\n def test_b(self): pass\n')
+        self.write('tests/test_documentation.py', b'import unittest\n')
+        self.write('tests/test_pr_governance.py', b'import unittest\n')
+        self.write('docs/note.md', b'original\n')
+        self.template = {'version': 1, 'execution_authority': False, 'consumers': [{
+            'id': 'reader', 'owner': 'Chengyue-Lu', 'invocation': 'in-memory reader fixture', 'tests': [B],
+            'input_patterns': ['fixtures/**'],
+            'pins': {'tests/test_reader.py': hashlib.sha256((self.repo / 'tests/test_reader.py').read_bytes()).hexdigest()},
+            'assumptions': ['independent closure proof pending'], 'unknowns': ['unproved external input']}]}
+        self.raw = planner.canonical(self.template)
+        self.write(self.template_path, self.raw)
+        self.base = self.commit('accepted fixture')
+        self.write('docs/note.md', b'changed\n')
+        self.head = self.commit('document change')
+        self.plan = planner.make_plan(self.repo, base=self.base, head=self.head, target=self.head, repository='Example/repo')
+        _, self.inventory, _, _ = inputs(False)
+        self.inventory.update(plan_id=self.plan['plan_id'], target=self.head)
+        self.inventory['coverage_order'] = [B] if self.plan['coverage_obligations'] else []
+
+    def git(self, *args):
+        return subprocess.check_output(['git', '-C', str(self.repo), *args], stderr=subprocess.PIPE).decode().strip()
+
+    def write(self, path, raw):
+        target = self.repo / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(raw)
+
+    def commit(self, message):
+        self.git('add', '.')
+        self.git('commit', '-qm', message)
+        return self.git('rev-parse', 'HEAD')
+
+    def load(self, *, plan=None, base=None, path=None):
+        return shadow.accepted_proposal(self.repo, plan or self.plan, base or self.base, path or self.template_path)
+
+    def test_dirty_template_cannot_rewrite_unknowns_pins_or_test_ownership(self):
+        effective, provenance = self.load()
+        expected = {**self.template, 'baseline': self.base}
+        self.assertEqual(expected, effective)
+        original = shadow.build_accepted_report(self.repo, self.plan, self.base, self.template_path, self.inventory)
+        changed = copy.deepcopy(self.template)
+        changed['consumers'][0].update(unknowns=[], tests=[A], owner='candidate', pins={'tests/test_reader.py': '0' * 64})
+        self.write(self.template_path, planner.canonical(changed))
+        self.assertEqual([{'status': 'M', 'path': 'docs/note.md'}], self.plan['changes'])
+        self.assertEqual((effective, provenance), self.load())
+        self.assertEqual(original, shadow.build_accepted_report(self.repo, self.plan, self.base, self.template_path, self.inventory))
+        self.assertEqual('unknown', original['candidate']['consumers'][0]['decision'])
+        self.assertIn('unproved external input', original['candidate']['consumers'][0]['reasons'])
+        self.assertEqual(self.raw, planner.read_at(self.repo, self.base, self.template_path))
+
+    def test_report_keeps_external_diagnostics_and_distinguishes_binding_identity(self):
+        effective, provenance = self.load()
+        external = shadow.build_report(self.repo, self.plan, effective, self.inventory)
+        bound = shadow.build_accepted_report(self.repo, self.plan, self.base, self.template_path, self.inventory)
+        for key in ('candidate', 'accepted', 'comparison', 'coverage_comparison', 'smoke_comparison', 'proposal_sha256'):
+            self.assertEqual(external[key], bound[key], key)
+        self.assertEqual(self.base, provenance['commit'])
+        self.assertEqual(self.template_path, provenance['path'])
+        self.assertEqual(self.git('rev-parse', self.base + ':' + self.template_path), provenance['git_blob'])
+        self.assertEqual(hashlib.sha256(self.raw).hexdigest(), provenance['raw_sha256'])
+        self.assertEqual(planner.digest(effective), provenance['effective_proposal_sha256'])
+        self.assertEqual(provenance, bound['accepted_template'])
+        self.assertNotEqual(external['report_id'], bound['report_id'])
+        identity = bound.pop('report_id')
+        self.assertEqual(identity, planner.digest(bound))
+        self.assertFalse(bound['execution_authority'])
+        self.assertFalse(bound['activation']['eligible'])
+        self.assertIn('input closure and independent exclusion witness unproved', bound['activation']['blockers'][0])
+        self.assertIn('checker/import dependencies', bound['activation']['blockers'][-1])
+        rebound, new_source = self.load(plan={'binding': {'base': self.head}}, base=self.head)
+        self.assertEqual(effective['consumers'], rebound['consumers'])
+        self.assertEqual(provenance['raw_sha256'], new_source['raw_sha256'])
+        self.assertEqual(provenance['git_blob'], new_source['git_blob'])
+        self.assertNotEqual(provenance['effective_proposal_sha256'], new_source['effective_proposal_sha256'])
+
+    def test_committed_rewrite_deletion_and_mode_cannot_replace_base(self):
+        expected = self.load()
+        changed = copy.deepcopy(self.template)
+        changed['consumers'][0].update(unknowns=[], tests=[A], owner='candidate', pins={'tests/test_reader.py': '0' * 64})
+        self.write(self.template_path, planner.canonical(changed))
+        rewritten = self.commit('candidate redefines consumers')
+        for mode in ('rewrite', 'delete', 'symlink'):
+            if mode == 'delete':
+                self.git('rm', self.template_path)
+            elif mode == 'symlink':
+                blob = self.git('rev-parse', rewritten + ':' + self.template_path)
+                self.git('update-index', '--add', '--cacheinfo', '120000,' + blob + ',' + self.template_path)
+            if mode != 'rewrite':
+                self.git('commit', '-qm', 'candidate ' + mode)
+            head = self.git('rev-parse', 'HEAD')
+            plan = {'binding': {**self.plan['binding'], 'head': head, 'target': head}}
+            with self.subTest(mode=mode):
+                self.assertEqual(expected, self.load(plan=plan))
+        self.write('diagnostics/candidate-only.json', self.raw)
+        self.commit('candidate-only template')
+        with self.assertRaisesRegex(ValueError, 'regular Git file'):
+            self.load(path='diagnostics/candidate-only.json')
+
+    def test_explicit_full_commit_and_safe_regular_json_path_are_required(self):
+        with self.assertRaisesRegex(ValueError, 'differs from plan base'):
+            self.load(base=self.head)
+        blob = self.git('rev-parse', self.base + ':' + self.template_path)
+        for invalid in (self.base[:12], 'HEAD', 'f' * 40, blob):
+            with self.subTest(base=invalid), self.assertRaises(ValueError):
+                self.load(plan={'binding': {'base': invalid}}, base=invalid)
+        for invalid in ('../consumers.json', '/consumers.json', 'diagnostics/*.json', 'diagnostics/consumers.txt',
+                        'diagnostics/missing.json', 'diagnostics\\consumers.json'):
+            with self.subTest(path=invalid), self.assertRaises(ValueError):
+                self.load(path=invalid)
+        for mode in ('100755', '120000', '160000'):
+            target = self.base if mode == '160000' else blob
+            self.git('update-index', '--add', '--cacheinfo', mode + ',' + target + ',' + self.template_path)
+            self.git('commit', '-qm', 'accepted invalid mode ' + mode)
+            base = self.git('rev-parse', 'HEAD')
+            with self.subTest(mode=mode), self.assertRaisesRegex(ValueError, 'regular Git file'):
+                self.load(plan={'binding': {'base': base}}, base=base)
+        self.git('rm', '--cached', self.template_path)
+        self.git('commit', '-qm', 'accepted template removed')
+        removed = self.git('rev-parse', 'HEAD')
+        with self.assertRaisesRegex(ValueError, 'regular Git file'):
+            self.load(plan={'binding': {'base': removed}}, base=removed)
+
+    def test_invalid_frozen_template_and_duplicate_keys_are_rejected(self):
+        versions = [b'[]', b'{', b'{"version":1,"version":1,"execution_authority":false,"consumers":[]}']
+        for mutation in (lambda p: p.update(baseline=self.base), lambda p: p.update(version=True),
+                         lambda p: p.update(execution_authority=True), lambda p: p.update(consumers=None),
+                         lambda p: p['consumers'][0].update(pins={}), lambda p: p['consumers'][0].update(unknowns='erased')):
+            broken = copy.deepcopy(self.template)
+            mutation(broken)
+            versions.append(planner.canonical(broken))
+        versions.append(self.raw.replace(b'"owner":', b'"owner":"first","owner":'))
+        for index, raw in enumerate(versions):
+            self.write(self.template_path, raw)
+            base = self.commit('invalid accepted template ' + str(index))
+            with self.subTest(template=raw), self.assertRaises(ValueError):
+                self.load(plan={'binding': {'base': base}}, base=base)
+
+    def test_git_blob_content_must_match_tree_identity(self):
+        blob = self.git('rev-parse', self.base + ':' + self.template_path)
+        replacement = self.raw.replace(b'Chengyue-Lu', b'candidateXX')
+        self.assertNotEqual(self.raw, replacement)
+        loose_object = self.repo / '.git' / 'objects' / blob[:2] / blob[2:]
+        loose_object.chmod(0o600)
+        loose_object.write_bytes(zlib.compress(b'blob ' + str(len(replacement)).encode() + b'\0' + replacement))
+        with self.assertRaisesRegex(ValueError, 'Git blob mismatch'):
+            self.load()
+
+    def test_cli_selects_one_source_and_protects_local_template_from_output(self):
+        for name, data in (('plan', self.plan), ('inventory', self.inventory)):
+            self.write(name + '.json', planner.canonical(data))
+        args = ['--repo', str(self.repo), '--plan', str(self.repo / 'plan.json'),
+                '--inventory', str(self.repo / 'inventory.json'), '--output', str(self.repo / 'report.json')]
+        accepted = ['--accepted-proposal-template', self.template_path, '--accepted-base', self.base]
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(0, shadow.main(args + accepted))
+        result = json.loads((self.repo / 'report.json').read_bytes())
+        self.assertEqual(shadow.build_accepted_report(self.repo, self.plan, self.base, self.template_path, self.inventory), result)
+        for source in (self.repo / self.template_path, self.repo / 'plan.json', self.repo / 'inventory.json'):
+            with self.subTest(output=source), self.assertRaisesRegex(ValueError, 'overwrite'):
+                shadow.main(args[:-1] + [str(source)] + accepted)
+        for selection in (accepted[:2], ['--proposal', 'proposal.json', '--accepted-base', self.base],
+                          accepted + ['--proposal', 'proposal.json'], []):
+            with self.subTest(selection=selection), contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
+                shadow.main(args + selection)
 
 
 if __name__ == '__main__':
