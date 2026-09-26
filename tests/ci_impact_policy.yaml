@@ -285,7 +285,7 @@
       "test_provider_adapters.GeminiAdapterTests.test_parallel_response_is_contract_violation_when_not_claimed"
     ]
   },
-  "consumer_fingerprint": "6d3a6ca86db8477642481ea4d8536b077aada0d1710576edb59d071074f26bec",
+  "consumer_fingerprint": "3d1a46f8603b5b9eabb87d0e32481df1cb39efd368f385bc910faa1f5ab23b56",
   "consumer_contracts": [
     {
       "id": "cli-git-head-observation",
