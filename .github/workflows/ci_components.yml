@@ -1,0 +1,146 @@
+name: CI components
+
+on:
+  pull_request:
+    branches: [develop]
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [develop]
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: Short feedback scope; full suites use CI checkpoint
+        type: choice
+        options: [component, integration-smoke]
+        default: component
+      base:
+        description: Exact base commit SHA; empty uses the fetched develop tip
+        type: string
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-components-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      python_versions: ${{ steps.plan.outputs.python_versions }}
+      install: ${{ steps.plan.outputs.install }}
+      smoke: ${{ steps.plan.outputs.smoke }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - id: plan
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || inputs.base }}
+          HEAD: ${{ github.sha }}
+          PROFILE: ${{ github.event_name == 'push' && 'integration-smoke' || inputs.profile || 'component' }}
+        run: |
+          if [ -z "$BASE" ]; then BASE="$(git rev-parse origin/develop)"; fi
+          python .github/scripts/run_component_ci.py plan --base "$BASE" --head "$HEAD" --profile "$PROFILE" --output .rwb/plan.json --github-output "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: component-plan
+          path: .rwb/plan.json
+          if-no-files-found: error
+
+  execute:
+    name: Component (${{ matrix.python }})
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ${{ fromJSON(needs.plan.outputs.python_versions) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: component-plan
+          path: .rwb
+      - name: Create clean environment
+        run: |
+          python -m venv .rwb/environment
+          echo "$GITHUB_WORKSPACE/.rwb/environment/bin" >> "$GITHUB_PATH"
+      - name: Build and install wheel
+        if: needs.plan.outputs.install == 'true'
+        run: |
+          python -m pip install 'setuptools>=77' 'build>=1.2,<2'
+          python -m pip wheel --no-deps --no-build-isolation . --wheel-dir .rwb/wheels
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess, sys
+          wheels = list(Path('.rwb/wheels').glob('*.whl'))
+          if len(wheels) != 1:
+              raise SystemExit('expected exactly one candidate wheel')
+          subprocess.run([sys.executable, '-m', 'pip', 'install', str(wheels[0]) + '[test]'], check=True)
+          PY
+      - name: Documentation dependencies
+        if: needs.plan.outputs.install != 'true'
+        run: python -m pip install 'PyYAML>=6,<7' 'markdown-it-py>=4,<5' 'linkify-it-py>=2,<3'
+      - name: Installed product smoke
+        if: needs.plan.outputs.smoke == 'true'
+        run: python .github/scripts/ci_component_smoke.py --python "$(command -v python)" --output .rwb/smoke.json
+      - name: Run selected component tests
+        run: python .github/scripts/run_component_ci.py run --plan .rwb/plan.json --output .rwb/result.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: component-result-${{ matrix.python }}
+          path: |
+            .rwb/plan.json
+            .rwb/result.json
+            .rwb/smoke.json
+          if-no-files-found: error
+
+  result:
+    name: CI result
+    if: always()
+    needs: [plan, execute]
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: component-plan
+          path: .rwb
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: component-result-*
+          path: .rwb/native
+      - name: Require the plan and its actual producers to succeed
+        env:
+          PLAN: ${{ needs.plan.result }}
+          EXECUTION: ${{ needs.execute.result }}
+        run: |
+          python .github/scripts/ci_component_result.py --plan .rwb/plan.json --directory .rwb/native --plan-status "$PLAN" --execution-status "$EXECUTION" --output .rwb/ci-result.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ci-result
+          path: .rwb/ci-result.json
+          if-no-files-found: error

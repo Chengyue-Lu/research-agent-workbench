@@ -1,0 +1,162 @@
+{
+  "before.json": {
+    "sha256": "440399fd1fb1ba716865ed58aabe54e87bdc1679880296017728dabf2197b66b",
+    "bytes": 48449,
+    "member": "objects/440399fd1fb1ba716865ed58aabe54e87bdc1679880296017728dabf2197b66b"
+  },
+  "check_live.py": {
+    "sha256": "bac647d3ac872b35bb03c16ace2f757a06deaa63a074fd8009e131eb6238da3e",
+    "bytes": 1551,
+    "member": "objects/bac647d3ac872b35bb03c16ace2f757a06deaa63a074fd8009e131eb6238da3e"
+  },
+  "cutover-payloads/before.json": {
+    "sha256": "e648d1e7fb32c9bc407b29bf3d00f42c88dc0361732073cd8e51bf55fb84d1b8",
+    "bytes": 1864,
+    "member": "objects/e648d1e7fb32c9bc407b29bf3d00f42c88dc0361732073cd8e51bf55fb84d1b8"
+  },
+  "cutover-payloads/components.json": {
+    "sha256": "7c0b1a856827be02b6601a9cb59f4ca4f13479b08d9a52cbf63f7bcc45f23eb4",
+    "bytes": 1227,
+    "member": "objects/7c0b1a856827be02b6601a9cb59f4ca4f13479b08d9a52cbf63f7bcc45f23eb4"
+  },
+  "cutover-payloads/intersection.json": {
+    "sha256": "dbf3255cfdb774aef563e3a70ac61d951da359f64f55699e00c6039589fe9f50",
+    "bytes": 1425,
+    "member": "objects/dbf3255cfdb774aef563e3a70ac61d951da359f64f55699e00c6039589fe9f50"
+  },
+  "cutover-payloads/manifest.json": {
+    "sha256": "18d14b6c75aa14c466af35125ba79c924b63f0c4798f80bd45fc17ffc6b65fcb",
+    "bytes": 505,
+    "member": "objects/18d14b6c75aa14c466af35125ba79c924b63f0c4798f80bd45fc17ffc6b65fcb"
+  },
+  "cutover-payloads/rollback.json": {
+    "sha256": "d945f04448a8573867698f840fe9e1e1baa3c3afaac51b8dbf263f1c9c288246",
+    "bytes": 1328,
+    "member": "objects/d945f04448a8573867698f840fe9e1e1baa3c3afaac51b8dbf263f1c9c288246"
+  },
+  "freeze_stage.py": {
+    "sha256": "4274faa7461141274c55c29498f0e50df1b1c62daa7edfc2bcb6d21eef0ae375",
+    "bytes": 6779,
+    "member": "objects/4274faa7461141274c55c29498f0e50df1b1c62daa7edfc2bcb6d21eef0ae375"
+  },
+  "frozen-source/.github/scripts/ci_component_metadata.py": {
+    "sha256": "cff0d697aff14c672d686bf66a59448540d445ebc35a7f3fd14c68a950965a92",
+    "bytes": 5801,
+    "member": "objects/cff0d697aff14c672d686bf66a59448540d445ebc35a7f3fd14c68a950965a92"
+  },
+  "frozen-source/.github/scripts/ci_ruleset_migration.py": {
+    "sha256": "2f9380a850cc22bba44a1265254ea0528f4d2fd1c90f529df3f297508c4d5fb5",
+    "bytes": 3222,
+    "member": "objects/2f9380a850cc22bba44a1265254ea0528f4d2fd1c90f529df3f297508c4d5fb5"
+  },
+  "frozen-source/.github/workflows/ci-governance.yml": {
+    "sha256": "10d0bdaec7202173295af88fc86476165eea034c4ccf8a7fbcae68089ce54e8a",
+    "bytes": 1869,
+    "member": "objects/10d0bdaec7202173295af88fc86476165eea034c4ccf8a7fbcae68089ce54e8a"
+  },
+  "frozen-source/.github/workflows/ci.yml": {
+    "sha256": "c3fd6610ec7ecc7a1f6527a9290ee1405d1a1c9df8b390c3dd65aaf8973a8a81",
+    "bytes": 13824,
+    "member": "objects/c3fd6610ec7ecc7a1f6527a9290ee1405d1a1c9df8b390c3dd65aaf8973a8a81"
+  },
+  "frozen-source/docs/DEVELOPMENT.md": {
+    "sha256": "f274bcd7042eee138332dadc3f72bdf355ac0d8ecd72a736a2255d758c2778b2",
+    "bytes": 16574,
+    "member": "objects/f274bcd7042eee138332dadc3f72bdf355ac0d8ecd72a736a2255d758c2778b2"
+  },
+  "frozen-source/docs/workstreams/chengyue-lu/TEST-PERF-002/COMPONENT_CI.md": {
+    "sha256": "3738271e2eba2316c733a189e515c64203be8be91be6cc4bc664763ed8d343c2",
+    "bytes": 5866,
+    "member": "objects/3738271e2eba2316c733a189e515c64203be8be91be6cc4bc664763ed8d343c2"
+  },
+  "frozen-source/docs/workstreams/chengyue-lu/TEST-PERF-002/COMPONENT_CI_MIGRATION.md": {
+    "sha256": "a477686aec68a4c50d220bbc28566a76d34e1693d7f120e24b177469638fb3b6",
+    "bytes": 8915,
+    "member": "objects/a477686aec68a4c50d220bbc28566a76d34e1693d7f120e24b177469638fb3b6"
+  },
+  "frozen-source/docs/workstreams/chengyue-lu/TEST-PERF-002/RISK_LEDGER.md": {
+    "sha256": "c54b19108e2fda1ff4ad2bc49ba7f1fa778551b7180acbd3a4668bfa9d9b1728",
+    "bytes": 24368,
+    "member": "objects/c54b19108e2fda1ff4ad2bc49ba7f1fa778551b7180acbd3a4668bfa9d9b1728"
+  },
+  "frozen-source/tests/ci_components.json": {
+    "sha256": "f9f9fc2c0c108f6c18ce8d846493b013bdc5ddf3ef12ca0c82c20366f6c368fe",
+    "bytes": 13055,
+    "member": "objects/f9f9fc2c0c108f6c18ce8d846493b013bdc5ddf3ef12ca0c82c20366f6c368fe"
+  },
+  "frozen-source/tests/test_ci_checkpoint.py": {
+    "sha256": "04843928f45bccd2d76b9d7688bcdf081b68647a4144cfd0065d36df5c5c68d4",
+    "bytes": 4701,
+    "member": "objects/04843928f45bccd2d76b9d7688bcdf081b68647a4144cfd0065d36df5c5c68d4"
+  },
+  "frozen-source/tests/test_ci_component_metadata.py": {
+    "sha256": "28919c2859b2466be0e59bf026be5b12552b0e8e4642c534a62e37df5cc3d16a",
+    "bytes": 7927,
+    "member": "objects/28919c2859b2466be0e59bf026be5b12552b0e8e4642c534a62e37df5cc3d16a"
+  },
+  "frozen-source/tests/test_ci_components.py": {
+    "sha256": "c5550ee175225ee0c95b2139a7cc32f046b9479803a3e3112e2764da00bbe4ef",
+    "bytes": 13494,
+    "member": "objects/c5550ee175225ee0c95b2139a7cc32f046b9479803a3e3112e2764da00bbe4ef"
+  },
+  "frozen-source/tests/test_ci_ruleset_migration.py": {
+    "sha256": "52464b381f245576044cbbd35532cb6d53e90305a6f3efd486ff88a63904b110",
+    "bytes": 2660,
+    "member": "objects/52464b381f245576044cbbd35532cb6d53e90305a6f3efd486ff88a63904b110"
+  },
+  "live-prior-plan-binding.json": {
+    "sha256": "f4f779a073d1d520c4d2480cc819ed1f89814adb7a4556ec74499de8a908d51a",
+    "bytes": 857,
+    "member": "objects/f4f779a073d1d520c4d2480cc819ed1f89814adb7a4556ec74499de8a908d51a"
+  },
+  "live-sanity-initial-failure.json": {
+    "sha256": "461f6e328f32f9f60cd4198af8fb09c5cebb0e9ac2e858059b7a5e0f1cce25a0",
+    "bytes": 298,
+    "member": "objects/461f6e328f32f9f60cd4198af8fb09c5cebb0e9ac2e858059b7a5e0f1cce25a0"
+  },
+  "live-workflow-initial.json": {
+    "sha256": "6dd0ce4a8a727ff4443df72e02ccdeb13399287ebdc1338194b2ce313b9cd5ac",
+    "bytes": 609,
+    "member": "objects/6dd0ce4a8a727ff4443df72e02ccdeb13399287ebdc1338194b2ce313b9cd5ac"
+  },
+  "local-compat-docs/output.log": {
+    "sha256": "c587be3babab872182615a6dfb8a2d89c0e7c0b471b9a74dd6c9c1e15b9f9a1b",
+    "bytes": 5840,
+    "member": "objects/c587be3babab872182615a6dfb8a2d89c0e7c0b471b9a74dd6c9c1e15b9f9a1b"
+  },
+  "local-compat-docs/summary.json": {
+    "sha256": "3147e1fbbe9698b5412d007debc34ef31028a473cc3889c924eb1beba53e7f05",
+    "bytes": 1181,
+    "member": "objects/3147e1fbbe9698b5412d007debc34ef31028a473cc3889c924eb1beba53e7f05"
+  },
+  "local-metadata/output.log": {
+    "sha256": "3ff9b327fb552416435bdb8ca0837d4b5600eaa2ea851d5a1c0e0b96b50a3b35",
+    "bytes": 2187,
+    "member": "objects/3ff9b327fb552416435bdb8ca0837d4b5600eaa2ea851d5a1c0e0b96b50a3b35"
+  },
+  "local-metadata/summary.json": {
+    "sha256": "ca0b3372a955d58f48fb580aa1191187ec9a395631859e20ea9ddc25938e236b",
+    "bytes": 1118,
+    "member": "objects/ca0b3372a955d58f48fb580aa1191187ec9a395631859e20ea9ddc25938e236b"
+  },
+  "local-metadata-workflow-name/output.log": {
+    "sha256": "91ec060c613593c6d3f9757f8cac2d51c120de87193d32baddc58c233c924159",
+    "bytes": 1315,
+    "member": "objects/91ec060c613593c6d3f9757f8cac2d51c120de87193d32baddc58c233c924159"
+  },
+  "local-metadata-workflow-name/summary.json": {
+    "sha256": "79dedc5128b0c9c53d3ae3aa66faad37c16b22205503db79a1f362e434d1c935",
+    "bytes": 1059,
+    "member": "objects/79dedc5128b0c9c53d3ae3aa66faad37c16b22205503db79a1f362e434d1c935"
+  },
+  "REPORT.md": {
+    "sha256": "aa127ba8c5c1691af7fa6c6d2b72f71a45073eda0bde8f3c3b87008d433bac60",
+    "bytes": 1928,
+    "member": "objects/aa127ba8c5c1691af7fa6c6d2b72f71a45073eda0bde8f3c3b87008d433bac60"
+  },
+  "run_local.py": {
+    "sha256": "36f163f2b0352b189082027828be5662be770993c5b2b160e77463e24804adb0",
+    "bytes": 1244,
+    "member": "objects/36f163f2b0352b189082027828be5662be770993c5b2b160e77463e24804adb0"
+  }
+}

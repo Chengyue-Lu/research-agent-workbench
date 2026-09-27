@@ -148,7 +148,7 @@ CODEOWNERS 和 ruleset 决定；第 5.4 节的例外决定须另行绑定 exact 
 - CODEOWNERS 不使用全局 `*`，只覆盖共享契约与 authority-sensitive 路径；
 - `develop` 审核层的全局 approval count 为 0，但敏感路径要求 Code Owner review；`main` 审核层
   要求至少 1 approval 和 last-push approval。两者都保留 stale review dismissal；只有第 5.4 节可使用审核层例外。
-- 每个分支另设无 bypass 的硬门禁层：必须 PR、规定的 merge method、治理与 Python 3.11/3.13 checks、
+- 每个分支另设无 bypass 的硬门禁层：必须 PR、规定的 merge method、治理与该分支规定的 CI checks、
   latest-base 检查、conversation resolution，以及禁止 force/delete。审核层的 bypass 不覆盖硬门禁层。
 
 仓库内的治理检查负责验证来源拓扑、PR 元数据和 TASKS diff；GitHub ruleset 负责阻止直推、要求
@@ -185,6 +185,21 @@ bypass actors 必须为空。不得向合并了 CI 等硬门禁的 ruleset 直�
 可复制的决定与回读步骤见 [操作记录模板](workstreams/chengyue-lu/GOV-REVIEW-EXCEPTION-001/EXCEPTION_RECORD.md)。
 
 ## 6. 变更检查清单
+
+### 日常检查与完整验收
+
+面向 `develop` 的日常 PR 按稳定组件与直接测试关系执行，业务测试使用 Python3.11。
+普通文档运行文档检查；安装说明、构建或依赖变更附相应真实安装检查，依赖变更增加另一支持版本的安装 smoke。
+新增功能保留公共入口验证，修复保留具体故障反例和正常路径；共享 fixture 登记直接消费者。
+新增、删除、重命名和未知路径均在计划中显示，未知路径选最近组件、自身现存测试及短 smoke，不自动扩大为全仓。
+
+R0/R1/R2 规定审查强度，不等价于测试或 coverage 范围。coverage 在组件路线中用于诊断，不以统一百分比阻断；
+实际行为失败、错误结果身份及缺失的适用检查仍阻断。全仓及完整多版本验证使用明确 checkpoint，
+接受未登记跨组件问题可能延后发现的取舍；运行时权限、隔离和发布批准仍由实际入口约束。
+当前迁移阶段的 required-check 对应、旧 source-CI 兼容与回退见
+[组件 CI 迁移说明](workstreams/chengyue-lu/TEST-PERF-002/COMPONENT_CI_MIGRATION.md)。
+
+### 提交前确认
 
 - 变更属于 stable、status、planning、compatibility 还是 history 表面？
 - 是否改了对象含义、版本、消费者或迁移要求？

@@ -10,6 +10,9 @@ on:
   push:
     branches: [main, develop]
   pull_request:
+    # Develop PRs use CI components. Keep legacy main/source evidence until the
+    # checkpoint deployment and source-CI contract receive their own acceptance.
+    branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
 
 concurrency:
