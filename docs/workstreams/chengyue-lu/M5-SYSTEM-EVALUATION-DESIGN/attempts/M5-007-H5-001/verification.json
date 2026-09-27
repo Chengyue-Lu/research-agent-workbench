@@ -364,6 +364,48 @@
     },
     {
       "command": [
+        ".venv/Scripts/python.exe",
+        "work/m5-h5/governance.py"
+      ],
+      "cwd": ".",
+      "started_at": "2026-09-27T19:58:02.734031+00:00",
+      "ended_at": "2026-09-27T19:58:02.852193+00:00",
+      "elapsed_seconds": 0.125,
+      "exit_code": 1,
+      "output_path": "governance-candidate.log",
+      "capture": "native-command-only",
+      "metadata_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/governance-candidate.command.json",
+        "sha256": "c64158774985acf8ee10b845243cc2198e154b5c51d126a34ca8d7b95f308cab"
+      },
+      "output_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/governance-candidate.log",
+        "sha256": "2eb7fe0aec34823b52815b2987fa19a404f93cb3db67ec68b1cee40cf19ddf82"
+      }
+    },
+    {
+      "command": [
+        ".venv/Scripts/python.exe",
+        "work/m5-h5/governance.py"
+      ],
+      "cwd": ".",
+      "started_at": "2026-09-27T19:58:16.324986+00:00",
+      "ended_at": "2026-09-27T19:58:19.295514+00:00",
+      "elapsed_seconds": 2.9689999999827705,
+      "exit_code": 0,
+      "output_path": "governance-final.log",
+      "capture": "native-command-only",
+      "metadata_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/governance-final.command.json",
+        "sha256": "8087e458ecf9c60811f7dc8762c3b30eaf971da345a7158339918c6ef9ef5ced"
+      },
+      "output_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/governance-final.log",
+        "sha256": "556625871f98fa30c323614b40d476980a8c3cfa58ab018c646254475d28b165"
+      }
+    },
+    {
+      "command": [
         "<installed-environment>/Scripts/python.exe",
         "work/m5-h5/verify_installed.py"
       ],
@@ -463,6 +505,10 @@
     }
   ],
   "helper_final_snapshots": [
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/helpers/governance.py",
+      "sha256": "f1c42291bdf5eca46cf1c65fd008c8f8418a59ff9092dadf2c13a759d2c22e27"
+    },
     {
       "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/helpers/logged.py",
       "sha256": "828431b8e0486300023ee4070d12fe55df5f6fbd2620706e0cdd07990d38cce9"

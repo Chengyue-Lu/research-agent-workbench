@@ -258,5 +258,27 @@
     "transforms": [
       "portable interpreter/package/temp path labels"
     ]
+  },
+  {
+    "path": "evidence/governance-candidate.log",
+    "raw_sha256": "583388276cd5ad0c1f022fd1313ecc8d7d2de78345946b0cc0f9272b26b00952",
+    "archived_sha256": "2eb7fe0aec34823b52815b2987fa19a404f93cb3db67ec68b1cee40cf19ddf82",
+    "transforms": [
+      "UTF-8 decode",
+      "CRLF to LF",
+      "portable execution path labels"
+    ],
+    "trace": "post-freeze governance check; frozen Trace not rewritten"
+  },
+  {
+    "path": "evidence/governance-final.log",
+    "raw_sha256": "0eb3725d6afedd46605afd16725a5c7a63e39b89a89bf8a147ae224b97b7b6f7",
+    "archived_sha256": "556625871f98fa30c323614b40d476980a8c3cfa58ab018c646254475d28b165",
+    "transforms": [
+      "UTF-8 decode",
+      "CRLF to LF",
+      "portable execution path labels"
+    ],
+    "trace": "post-freeze governance check; frozen Trace not rewritten"
   }
 ]

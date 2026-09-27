@@ -60,6 +60,10 @@ Archive verification compared each ZIP member to its original file pin before ex
   replay cover 92/98 helper statements and 176/222 analysis statements; negative tests are not
   included in that measurement. H4c's existing 222/222 statements / 52/52 branches remain
   historical scoped evidence on the identical production source, not a new H5 full coverage run.
+- [Local candidate governance](evidence/governance-final.log): PASS, effective R2. This is a
+  post-freeze check; the original frozen Trace remains unchanged. The first local governance
+  import harness lacked its dataclass module registration and failed before invoking the checker;
+  that diagnostic is retained separately from the successful check.
 
 The first chain run retained 5 PASS / 2 failed assertions: a hardcoded 6-pair expectation
 ignored two frozen secondary contrasts, and one combined forgery expected reconstruction
