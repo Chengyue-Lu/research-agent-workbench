@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import copy
 import fnmatch
 from functools import lru_cache
 import hashlib
@@ -39,6 +40,39 @@ COVERAGE_AUTHORITY = {'tests/coverage_policy.yaml', '.github/scripts/check_cover
                       '.github/workflows/ci.yml'}
 METADATA = {'edited', 'labeled', 'unlabeled'}
 ANCHOR_HISTORY_LIMIT = 64
+
+
+def _coverage_parser_state():
+    loader = yaml.SafeLoader
+    # Keep identities alive as well as their IDs; never admit a replacement via
+    # custom equality or reuse of an object's address after it is collected.
+    identity = lambda value: (id(value), value)
+    return (identity(yaml.safe_load), identity(yaml.load), identity(loader),
+            tuple((key, identity(value)) for key, value in loader.yaml_constructors.items()),
+            tuple((key, identity(value)) for key, value in loader.yaml_multi_constructors.items()),
+            tuple((key, tuple((tag, identity(regex)) for tag, regex in rules))
+                  for key, rules in loader.yaml_implicit_resolvers.items()),
+            tuple(loader.yaml_path_resolvers.items()))
+
+
+_COVERAGE_PARSER_STATE = _coverage_parser_state()
+
+
+@lru_cache(maxsize=8)
+def _cached_coverage_policy(raw, parser):
+    return parser(raw)
+
+
+def parse_coverage_policy(raw):
+    """Cache stock byte parsing only; custom loader configuration stays live."""
+    if type(raw) is bytes:
+        try:
+            stock = _coverage_parser_state() == _COVERAGE_PARSER_STATE
+        except (AttributeError, TypeError, ValueError):
+            stock = False
+        if stock:
+            return copy.deepcopy(_cached_coverage_policy(raw, yaml.safe_load))
+    return yaml.safe_load(raw)
 
 
 def consumer_fingerprint(repo, commit, leaves):
@@ -465,8 +499,8 @@ def make_plan(repo, *, base, head, target, repository, base_ref='develop', body=
         require(rows, 'empty diff requires full evidence')
         selected, matched, executable, seeds = set(), set(), set(), set()
         package_reasons, repository_reasons = [], []
-        authority = yaml.safe_load(read_at(repo, base, 'tests/coverage_policy.yaml'))
-        candidate_authority = yaml.safe_load(read_at(repo, head, 'tests/coverage_policy.yaml'))
+        authority = parse_coverage_policy(read_at(repo, base, 'tests/coverage_policy.yaml'))
+        candidate_authority = parse_coverage_policy(read_at(repo, head, 'tests/coverage_policy.yaml'))
         before, old = dependencies.snapshot(repo, merge_base)
         after, new = dependencies.snapshot(repo, head)
         local_modules, added_tests = set(), set()

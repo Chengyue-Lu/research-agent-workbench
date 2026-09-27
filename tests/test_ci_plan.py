@@ -1695,5 +1695,175 @@ else: raise AssertionError('candidate worker accepted focused self-authorization
         self.assertEqual('focused', p['behavioral_scope'])
 
 
+class CoveragePolicyParsingTests(unittest.TestCase):
+    def setUp(self):
+        planner._cached_coverage_policy.cache_clear()
+        self.addCleanup(planner._cached_coverage_policy.cache_clear)
+
+    @staticmethod
+    def outcome(parse, value):
+        try:
+            return ('value', parse(value))
+        except Exception as exc:
+            return ('error', type(exc), str(exc))
+
+    def test_stock_policy_values_are_independent(self):
+        raw = b'a: &same\n  nested: [1, {key: value}]\nb: *same\n'
+        expected = yaml.safe_load(raw)
+        first = planner.parse_coverage_policy(raw)
+        second = planner.parse_coverage_policy(bytes(bytearray(raw)))
+        self.assertEqual(first, expected)
+        self.assertEqual(second, expected)
+        self.assertIsNot(first, second)
+        self.assertIs(first['a'], first['b'])
+        self.assertIs(second['a'], second['b'])
+        self.assertEqual(planner._cached_coverage_policy.cache_info().hits, 1)
+        first['a']['nested'][1]['key'] = 'poison'
+        first['a']['nested'].append(9)
+        self.assertEqual(planner.parse_coverage_policy(raw), expected)
+        self.assertEqual(second, expected)
+        recursive = b'&self [*self]'
+        first = planner.parse_coverage_policy(recursive)
+        second = planner.parse_coverage_policy(recursive)
+        self.assertIs(first, first[0])
+        self.assertIs(second, second[0])
+        self.assertIsNot(first, second)
+        changed = raw.replace(b'value', b'changed')
+        self.assertNotEqual(yaml.safe_load(changed), expected)
+        for sequence in ((raw, changed, raw), (changed, raw, changed)):
+            with self.subTest(sequence=sequence):
+                planner._cached_coverage_policy.cache_clear()
+                self.assertEqual([planner.parse_coverage_policy(value) for value in sequence],
+                                 [yaml.safe_load(value) for value in sequence])
+
+    def test_invalid_and_nonbytes_inputs_preserve_parser_behavior(self):
+        import io
+
+        class BytesSubclass(bytes):
+            __hash__ = None
+
+        for value in (None, 'a: [1, 2]', io.StringIO('a: [1, 2]'), BytesSubclass(b'a: [1, 2]')):
+            with self.subTest(type=type(value).__name__):
+                before = planner._cached_coverage_policy.cache_info()
+                expected = self.outcome(yaml.safe_load, value)
+                if hasattr(value, 'seek'):
+                    value.seek(0)
+                self.assertEqual(self.outcome(planner.parse_coverage_policy, value), expected)
+                self.assertEqual(planner._cached_coverage_policy.cache_info(), before)
+        invalid = b'a: [unfinished'
+        expected = self.outcome(yaml.safe_load, invalid)
+        self.assertEqual(expected[0], 'error')
+        before = planner._cached_coverage_policy.cache_info()
+        for _ in range(2):
+            self.assertEqual(self.outcome(planner.parse_coverage_policy, invalid), expected)
+        after = planner._cached_coverage_policy.cache_info()
+        self.assertEqual(after.misses, before.misses + 2)
+        self.assertEqual(after.currsize, before.currsize)
+
+    def test_parser_configuration_changes_bypass_cache_and_restore(self):
+        import re
+
+        raw = b'word'
+        self.assertEqual(planner.parse_coverage_policy(raw), 'word')
+        baseline = planner._cached_coverage_policy.cache_info()
+        loader = yaml.SafeLoader
+
+        def assert_uncached():
+            self.assertEqual(planner._cached_coverage_policy.cache_info(), baseline)
+
+        calls = []
+        def replaced_safe(value):
+            calls.append(value)
+            return {'replacement': len(calls)}
+        with patch.object(yaml, 'safe_load', replaced_safe):
+            self.assertEqual(planner.parse_coverage_policy(raw), {'replacement': 1})
+            self.assertEqual(planner.parse_coverage_policy(raw), {'replacement': 2})
+            assert_uncached()
+        calls = []
+        def replaced_load(value, Loader):
+            calls.append(Loader)
+            return {'load': len(calls)}
+        with patch.object(yaml, 'load', replaced_load):
+            self.assertEqual(planner.parse_coverage_policy(raw), {'load': 1})
+            self.assertEqual(planner.parse_coverage_policy(raw), {'load': 2})
+            assert_uncached()
+
+        class ChangedLoader(loader):
+            pass
+
+        seen = []
+        def changed_str(instance, node):
+            seen.append(node.value)
+            return 'custom-' + node.value
+        tag = 'tag:yaml.org,2002:str'
+        ChangedLoader.add_constructor(tag, changed_str)
+        with patch.object(yaml, 'SafeLoader', ChangedLoader):
+            self.assertEqual(planner.parse_coverage_policy(raw), 'custom-word')
+            self.assertEqual(planner.parse_coverage_policy(raw), 'custom-word')
+            self.assertEqual(seen, ['word', 'word'])
+            assert_uncached()
+
+        seen = []
+        def stateful_str(instance, node):
+            seen.append(node.value)
+            return [node.value, len(seen)]
+        with patch.dict(loader.yaml_constructors, {tag: stateful_str}):
+            self.assertEqual(planner.parse_coverage_policy(raw), ['word', 1])
+            self.assertEqual(planner.parse_coverage_policy(raw), ['word', 2])
+            assert_uncached()
+
+        seen = []
+        def stateful_multi(instance, suffix, node):
+            seen.append(suffix)
+            return [suffix, instance.construct_scalar(node), len(seen)]
+        with patch.dict(loader.yaml_multi_constructors, {'!demo:': stateful_multi}):
+            self.assertEqual(planner.parse_coverage_policy(b'!demo:x value'), ['x', 'value', 1])
+            self.assertEqual(planner.parse_coverage_policy(b'!demo:x value'), ['x', 'value', 2])
+            assert_uncached()
+
+        rules = loader.yaml_implicit_resolvers['t']
+        original_rules = list(rules)
+        try:
+            rules.insert(0, (tag, re.compile(r'^true$')))
+            self.assertEqual(planner.parse_coverage_policy(b'true'), 'true')
+            self.assertEqual(planner.parse_coverage_policy(b'true'), yaml.safe_load(b'true'))
+            assert_uncached()
+        finally:
+            rules[:] = original_rules
+
+        with patch.dict(loader.yaml_path_resolvers, {((), None): tag}):
+            self.assertNotEqual(planner._coverage_parser_state(), planner._COVERAGE_PARSER_STATE)
+            for _ in range(2):
+                self.assertEqual(planner.parse_coverage_policy(raw), yaml.safe_load(raw))
+            assert_uncached()
+            loader.yaml_path_resolvers[((), None)] = 'tag:yaml.org,2002:int'
+            self.assertEqual(self.outcome(planner.parse_coverage_policy, raw),
+                             self.outcome(yaml.safe_load, raw))
+            assert_uncached()
+        with patch.object(loader, 'yaml_implicit_resolvers', None):
+            self.assertEqual(self.outcome(planner.parse_coverage_policy, raw),
+                             self.outcome(yaml.safe_load, raw))
+            assert_uncached()
+        self.assertEqual(planner._coverage_parser_state(), planner._COVERAGE_PARSER_STATE)
+        self.assertEqual(planner.parse_coverage_policy(raw), 'word')
+        after = planner._cached_coverage_policy.cache_info()
+        self.assertEqual(after.hits, baseline.hits + 1)
+        self.assertEqual(after.misses, baseline.misses)
+
+    def test_cache_is_bounded_and_explicitly_clearable(self):
+        self.assertEqual(planner._cached_coverage_policy.cache_parameters()['maxsize'], 8)
+        for n in range(9):
+            self.assertEqual(planner.parse_coverage_policy(('n: ' + str(n)).encode()), {'n': n})
+        before = planner._cached_coverage_policy.cache_info()
+        self.assertEqual(before.currsize, 8)
+        self.assertEqual(planner.parse_coverage_policy(b'n: 0'), {'n': 0})
+        self.assertEqual(planner._cached_coverage_policy.cache_info().misses, before.misses + 1)
+        planner._cached_coverage_policy.cache_clear()
+        cleared = planner._cached_coverage_policy.cache_info()
+        self.assertEqual((cleared.hits, cleared.misses, cleared.currsize), (0, 0, 0))
+        self.assertEqual(planner.parse_coverage_policy(b'n: 0'), {'n': 0})
+        self.assertEqual(planner._cached_coverage_policy.cache_info().misses, 1)
+
+
 if __name__ == '__main__':
     unittest.main()

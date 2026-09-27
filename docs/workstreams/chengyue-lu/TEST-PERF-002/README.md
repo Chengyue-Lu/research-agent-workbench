@@ -4,6 +4,8 @@ The [execution and input boundary implementation](EXECUTION_INPUTS.md) follows
 the cross-development consultation: explain operation-specific inputs, preserve
 real integrity dependencies, and separately validate fixture and coverage costs.
 Its first slice retains current selection while establishing source-bound facts.
+The [coverage-policy parsing cost slice](POLICY_PARSE_COST.md) reuses only pure
+decoding within one process and preserves every planner verification.
 
 Issue #87 的 [2A 领域与消费者盘点](DOMAIN_MODEL.md) 提供八个领域的显式路由和离线审计工具。
 它保留原计划义务，为下一步候选集合与真实结果的 shadow 比较准备输入。
