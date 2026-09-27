@@ -1,0 +1,9 @@
+task_id: TEST-PERF-002
+revision: 52
+request: Continue generic CI input diagnostics with independent review
+profile: CI performance coordinator
+required_skills: []
+delegation: true
+scope: source-bound diagnostic implementation and local evidence
+budget: scoped tests and review
+stop_condition: reviewable local archive

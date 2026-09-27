@@ -1,0 +1,71 @@
+{
+  "status": "PASS-local-diagnostic-slice",
+  "accepted_base": "97d3b3d3141419b34ad47e0f42d9f01d0dfbd535",
+  "implementation_head": "36c973577b8353aecc2bace581bd825bd25ed42e",
+  "task_revision": 52,
+  "quality_sha256": "e9ddb44fda06d64f328e50d30011b262fb574d61a1bcb872e5d48edd6306db6b",
+  "local_validation_receipts": [
+    {
+      "path": "formal-fixed-311/summary.json",
+      "sha256": "397a33c71b8ac385aa48b8d95e5efa51cfe3a89aca19513b36c81a4708bd7fe5",
+      "python": "3.11",
+      "identity": {
+        "status": "PASS",
+        "returncode": 0,
+        "seconds": 106.59437169999,
+        "source_sha256": {
+          ".github/scripts/ci_dependencies.py": "361725faf8cf34b40cf212705ed4f093a6d39eab4dd3602c48fad1102c7405f6",
+          ".github/scripts/ci_input_facts.py": "72fc1835e8bda770ed57a2e6705ab95b4806697b569ac45a0f1699ccd324133c",
+          ".github/scripts/ci_contract_shadow.py": "ca6d5a3b9f26b33a0c29998cbd1784841306cdf64fdaf67f1bc08a7df7de4135",
+          "tests/test_ci_dependencies.py": "26d03f62605c384867f764b525ff0b5d17a82c14cc44fd782ccff69e5ef42418",
+          "tests/test_ci_input_facts.py": "21064e30f6ce107c1aaa3515a711a7feed3e5ba858a33e28d96e4dc43c0bdf81",
+          "tests/test_ci_contract_shadow.py": "6b896d97bbac884dc010bd963700c937c3ddd0a2aa8c4d80da6b8fcb7cde6ee4"
+        },
+        "repository_global_proof": null,
+        "coverage_export_returncode": 0
+      }
+    },
+    {
+      "path": "formal-fixed-313/summary.json",
+      "sha256": "54b4d2a2ceaa8a0762c70b346a220b2b4661c2ba75bef199fcc4492015349a89",
+      "python": "3.13",
+      "identity": {
+        "status": "PASS",
+        "returncode": 0,
+        "seconds": 75.2156655999861,
+        "source_sha256": {
+          ".github/scripts/ci_dependencies.py": "361725faf8cf34b40cf212705ed4f093a6d39eab4dd3602c48fad1102c7405f6",
+          ".github/scripts/ci_input_facts.py": "72fc1835e8bda770ed57a2e6705ab95b4806697b569ac45a0f1699ccd324133c",
+          ".github/scripts/ci_contract_shadow.py": "ca6d5a3b9f26b33a0c29998cbd1784841306cdf64fdaf67f1bc08a7df7de4135",
+          "tests/test_ci_dependencies.py": "26d03f62605c384867f764b525ff0b5d17a82c14cc44fd782ccff69e5ef42418",
+          "tests/test_ci_input_facts.py": "21064e30f6ce107c1aaa3515a711a7feed3e5ba858a33e28d96e4dc43c0bdf81",
+          "tests/test_ci_contract_shadow.py": "6b896d97bbac884dc010bd963700c937c3ddd0a2aa8c4d80da6b8fcb7cde6ee4"
+        },
+        "repository_global_proof": null
+      }
+    }
+  ],
+  "files": 234,
+  "unique_payloads": 187,
+  "raw_bytes": 8642498,
+  "raw_evidence_sha256": "c5704dd252e4a26dbc557085104342cb6a03c4f393ecf984ce4944c33fe1fcda",
+  "excluded_paths": [
+    "diagnostic-integration-candidate/fixture [checkout]",
+    "diagnostic-integration-candidate/new",
+    "diagnostic-integration-candidate/old",
+    "formal-packet-candidate/new",
+    "formal-packet-candidate/old",
+    "opaque-causes-candidate-v2/legacy",
+    "opaque-causes-candidate-v2/new",
+    "opaque-causes-candidate-v2/old",
+    "opaque-causes-candidate/new",
+    "opaque-causes-candidate/old",
+    "prefix-identity-fix/new",
+    "prefix-identity-fix/old"
+  ],
+  "m5_experiments_included": false,
+  "hosted_proved": false,
+  "repository_coverage_proved": false,
+  "selection_reduction_activated": false,
+  "cross_commit_execution_reuse": false
+}
