@@ -297,3 +297,14 @@ Registered H4c in the evaluation component and its fixture consumers in `tests/c
 Local adaptation checks: 15 component-selector tests PASS; all five relevant source/fixture inputs
 select the H4c test module. This verification does not repeat the historical full or coverage runs.
 The updated PR awaits its own component CI and governance results, then R2 review; M5-007 remains IN_PROGRESS.
+
+## PR104 installed-source mutation test repair (2026-09-28)
+
+Component run36333156402 on `20fc5be` retained 318 parent tests: 317 PASS, one evidence test
+failed in two source-mutation subtests; H4c24 and installed smoke8 passed. The fixed CI result
+correctly blocked the candidate. The test patched checkout src, while identity read the installed wheel.
+Resolve its mutation paths from the actual imported package, preserving both mutations, original hash
+equality, changed validator identity and saved-evidence rejection. Production and CI code are unchanged.
+An isolated fresh wheel environment with the actual component executor reproduced both failures
+(66.663 seconds) and passed the repaired case (64.323 seconds). Evidence remains under its original run;
+the repair candidate awaits its own component results and R2 review, with no merge or Task completion.
