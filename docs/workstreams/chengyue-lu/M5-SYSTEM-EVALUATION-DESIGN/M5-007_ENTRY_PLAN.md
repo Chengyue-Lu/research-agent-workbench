@@ -15,7 +15,8 @@ H4a 已由 PR90 接受并合入；H4b 已由 PR96 使用绑定该候选的单次
 合并方式及其接受边界见 [H4c 进入记录](attempts/M5-007-H4C-ENTRY-001/README.md)。
 下一节点为 [H4c measurement/analysis 实施包](M5-007_H4C_PACKET.md)，准备分支
 `feature/m5-007-harness-analysis` 基于上述 develop；H4c implementation candidate 的关联/配对与
-验证见 [H4c Attempt](attempts/M5-007-H4C-001/README.md)，仍待 R2 接受；H5 保持最终集成收口。
+验证见 [H4c Attempt](attempts/M5-007-H4C-001/README.md)，仍待 R2 接受；
+[H5](M5-007_H5_PACKET.md) 按用户授权准备独立 dependent draft，H4c 接受后才能集成并进行最终整体验收。
 
 | 前置 | 已接受依据 | Harness 消费接口 |
 |---|---|---|

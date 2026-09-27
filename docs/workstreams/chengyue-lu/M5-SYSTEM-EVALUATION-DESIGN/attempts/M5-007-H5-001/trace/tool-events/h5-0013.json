@@ -1,0 +1,24 @@
+{
+  "command": {
+    "command": [
+      ".venv/Scripts/python.exe",
+      "-m",
+      "coverage",
+      "json",
+      "--data-file=work/m5-h5/proof.coverage",
+      "-o",
+      "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/proof-coverage.json"
+    ],
+    "cwd": ".",
+    "started_at": "2026-09-27T19:51:53.392440+00:00",
+    "ended_at": "2026-09-27T19:51:53.547051+00:00",
+    "elapsed_seconds": 0.15599999998812564,
+    "exit_code": 0,
+    "output_path": "proof-coverage.log",
+    "capture": "native-command-only"
+  },
+  "combined_output": "Wrote JSON report to docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/proof-coverage.json\n",
+  "native_output_sha256": "84b628d7d3f6892a2e7f56f59cdbe8a8114a506afa2a943a2e9bb7da92062a23",
+  "archived_output_sha256": "9033374dbbbe466582885c3feb3df0f6eefab5a979f368de65e8b05db463d0cb",
+  "capture": "native command only; normalized delayed export"
+}

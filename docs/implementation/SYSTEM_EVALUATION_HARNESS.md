@@ -1,4 +1,4 @@
-# System-Level Evaluation Harness — H1–H4c
+# System-Level Evaluation Harness — H1–H5
 
 Evaluation owner：路诚钺。Execution 接口 owner：黄毅。Record version：`1.0.0`。
 任务边界见 [M5-007](../TASKS.md)，完整施工顺序见 [进入计划](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md)。
@@ -8,7 +8,8 @@ H3 提供 synthetic 四臂执行、fresh Attempt 和执行后 replay；接口与
 [H3 实施包](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H3_PACKET.md)。
 H4a 提供 evaluation-owned actual evidence 与独立重算；H4b 增加有限 synthetic 格式的盲审、具名审查冻结和揭盲。其实施已由 PR96 合入，实际 push CI SUCCESS；接受边界见
 [H4c 进入记录](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-ENTRY-001/README.md)。当前候选实现
-[H4c](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H4C_PACKET.md) 的 measurement association 和配对分析输入；H5 为后续整体接受。所有记录保持
+[H4c](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H4C_PACKET.md) 的 measurement association 和配对分析输入；
+[H5](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H5_PACKET.md) 在依赖 H4c 的独立 draft 中准备持久化证明，整体验收仍待 R2。所有记录保持
 `execution_authority=false`、`task_completion=false`，不改写 Manifest、Protocol 或 Runtime 契约。
 
 ## H1：冻结计划
@@ -225,3 +226,32 @@ Protocol 的统计参数和 decision hierarchy 原样保存，供后续逐指标
 新进程从持久化 records 读取并重建，禁用 Provider/Tool/Host、network/process 和项目内代码执行。
 新 Schema 与 source identity 使用当前候选重新生成的 synthetic inputs；历史 archives 原字节不变。
 验证、捕获缺口与接受边界见 [H4c Attempt](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/README.md)。
+
+## H5：持久化四臂证明（dependent draft）
+
+开发辅助入口 `python -m tests.harness_proof build --root <empty-proof-directory> --schemas schemas`
+调用现有 H1–H4c API，生成四臂真实本地 synthetic 执行和全部私有/公开闭包。
+一次 Provider transient failure 与独立 fresh retry 都保留在执行、actual evidence 和 metric cells。
+`analysis/replay-request.json` 保存调用方选择的完整 contexts 和 expected analysis ref/id；
+`proof-inventory.json` 保存 request ref、全部文件 pins 和受信 replay helper/synthetic verifier 源码 pins。
+该库存是开发证据格式，不是新的产品 Schema 或 authority。
+
+生成入口输出库存的 `{path, sha256}`。Windows 上使用短生成/回放目录，避免 retained Attempt
+内部层级超出系统路径限制。归档用 ZIP 原样保存完整文件；先核对外部留存的 ZIP SHA-256，
+再解压至空的短目录，不转换内部换行或改写 refs。用外部留存的库存原引用执行
+`python -m tests.harness_proof replay --root <proof-directory> --schemas schemas --inventory-ref '<original-reference-json>'`，
+不要在回放前从待验证库存重新计算这个外层 hash。
+冷回放读取各文件原始字节，调用公开 `validate_harness_analysis` 从显式 context 重建完整链；
+其 synthetic 回调来自受信仓库测试模块。回放过程禁止网络/子进程与证据目录代码执行，并禁用
+Provider/Host 执行入口。回放不运行生成器、qualified Tool handler 或私有 oracle/checker 代码。
+
+所有 13 项指标仍为 unavailable/null，Protocol 的预注册 contrasts 与统计参数原样保留，
+synthetic primary eligibility 始终 false。审核 rubric 只证明 synthetic review 的生命周期。
+哈希变化会拒绝；即使作者重新签名结果/上下文，也不能删除失败 Attempt、补零或取得确认性资格。
+外部 verifier 的拒绝、冻结时序及源码/Schema 身份变化分别独立拒绝。
+
+当前自动测试生成自己的新证据。归档 proof 是其 pinned source/Schema 下的历史证据；
+后续源码身份变化另建新 proof，不更新旧文件来伪造当前验证。
+交付、验证输出、原始库存引用与捕获缺口见
+[H5 Attempt](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/README.md)。
+H4c 接受及整体 R2 review 仍是收口条件，M5-007 保持 IN_PROGRESS。

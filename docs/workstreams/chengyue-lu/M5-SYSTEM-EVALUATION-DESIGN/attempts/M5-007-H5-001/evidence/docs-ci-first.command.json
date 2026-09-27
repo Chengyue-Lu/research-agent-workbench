@@ -1,0 +1,17 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-m",
+    "unittest",
+    "tests.test_documentation",
+    "tests.test_ci_components",
+    "-v"
+  ],
+  "cwd": ".",
+  "started_at": "2026-09-27T19:35:03.171382+00:00",
+  "ended_at": "2026-09-27T19:35:03.997123+00:00",
+  "elapsed_seconds": 0.8280000000086147,
+  "exit_code": 0,
+  "output_path": "docs-ci-first.log",
+  "capture": "native-command-only"
+}

@@ -1,0 +1,34 @@
+{
+  "command": {
+    "command": [
+      ".venv/Scripts/python.exe",
+      "-m",
+      "coverage",
+      "run",
+      "--append",
+      "--data-file=work/m5-h5/proof.coverage",
+      "--branch",
+      "--source=tests.harness_proof,research_workbench.evaluation.harness_analysis",
+      "-m",
+      "tests.harness_proof",
+      "replay",
+      "--root",
+      ".rwb/h5-archived-proof",
+      "--schemas",
+      "schemas",
+      "--inventory-ref",
+      "{\"path\":\"proof-inventory.json\",\"sha256\":\"c794fabd85e79cca382c03465f5cf9b2065c642fd2bcf4eb869fd173bb0c240f\"}"
+    ],
+    "cwd": ".",
+    "started_at": "2026-09-27T19:49:46.409207+00:00",
+    "ended_at": "2026-09-27T19:51:01.289722+00:00",
+    "elapsed_seconds": 74.89099999997416,
+    "exit_code": 0,
+    "output_path": "archived-cold-replay.log",
+    "capture": "native-command-only"
+  },
+  "combined_output": "{\"all_metrics_unavailable\": true, \"analysis_id\": \"H4C-ANALYSIS\", \"arms\": [\"mode-candidate-skill\", \"mode-no-skill\", \"plain-agent\", \"plain-agent-tool\"], \"cells\": 8, \"lifecycles\": {\"completed\": 8, \"not-started\": 7, \"post-call-failed\": 1}, \"pairs\": 10, \"primary_confirmatory_eligible\": false, \"purpose\": \"synthetic-contract-proof\"}\n",
+  "native_output_sha256": "58d0fa025d7c1daecbe6715043e4358cb05333ec3da40d7dc3b3338b9308b41f",
+  "archived_output_sha256": "4cb818228c7fa1f0ae6cbecbd5e57dfb2aa0f74920f37fc0f06a2a49c5eb08d9",
+  "capture": "native command only; normalized delayed export"
+}

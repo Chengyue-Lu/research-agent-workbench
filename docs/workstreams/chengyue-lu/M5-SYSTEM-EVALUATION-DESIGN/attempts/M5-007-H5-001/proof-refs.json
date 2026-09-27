@@ -1,0 +1,17 @@
+{
+  "purpose": "synthetic-contract-proof",
+  "observed_at": "2026-09-27T19:49:17.809582+00:00",
+  "archive_ref": {
+    "path": "vertical-proof.zip",
+    "sha256": "176c47b3ebbc8e71d3cdb27f835d82a8e5af2ac876638d7ca7d0c7601a063b2d"
+  },
+  "inventory_ref": {
+    "path": "proof-inventory.json",
+    "sha256": "c794fabd85e79cca382c03465f5cf9b2065c642fd2bcf4eb869fd173bb0c240f"
+  },
+  "retained_files": 454,
+  "uncompressed_bytes": 1699987,
+  "archive_bytes": 607567,
+  "source_binding": "Embedded validators pin production sources and all schemas; inventory pins repository replay helper and synthetic authority code.",
+  "extraction": "Verify archive_ref first, extract into an empty short directory, then pass the unchanged inventory_ref to tests.harness_proof replay."
+}

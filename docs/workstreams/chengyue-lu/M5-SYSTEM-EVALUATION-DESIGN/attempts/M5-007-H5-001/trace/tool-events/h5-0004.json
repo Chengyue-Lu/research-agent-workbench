@@ -1,0 +1,31 @@
+{
+  "command": {
+    "command": [
+      ".venv/Scripts/python.exe",
+      "-m",
+      "coverage",
+      "run",
+      "--data-file=work/m5-h5/proof.coverage",
+      "--branch",
+      "--source=tests.harness_proof,research_workbench.evaluation.harness_analysis",
+      "-m",
+      "tests.harness_proof",
+      "build",
+      "--root",
+      "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/vertical-proof",
+      "--schemas",
+      "schemas"
+    ],
+    "cwd": ".",
+    "started_at": "2026-09-27T19:39:54.675527+00:00",
+    "ended_at": "2026-09-27T19:40:14.964706+00:00",
+    "elapsed_seconds": 20.29700000002049,
+    "exit_code": 1,
+    "output_path": "build-proof.log",
+    "capture": "native-command-only"
+  },
+  "combined_output": "Traceback (most recent call last):\n  File \"<python-runtime>\\Lib\\pathlib.py\", line 1116, in mkdir\n    os.mkdir(self, mode)\nFileNotFoundError: [WinError 206] 文件名或扩展名太长。: '<repository-root>\\\\docs\\\\workstreams\\\\chengyue-lu\\\\M5-SYSTEM-EVALUATION-DESIGN\\\\attempts\\\\M5-007-H5-001\\\\vertical-proof\\\\work\\\\TASK-MR-ES-FROZEN-001\\\\harness\\\\HA-b59cdb1a75d2d3c53f3218f27631fc5961ad233a717724d281c91b6451d21740\\\\0\\\\trace'\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"<repository-root>\\tests\\harness_proof.py\", line 169, in <module>\n    main()\n  File \"<repository-root>\\tests\\harness_proof.py\", line 160, in main\n    result = build_proof(args.root, args.schemas)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repository-root>\\tests\\harness_proof.py\", line 72, in build_proof\n    fixture, context, analysis_ref, document = build_analysis_chain(root, provider_errors=(\n                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repository-root>\\tests\\harness_analysis_fixtures.py\", line 40, in build_analysis_chain\n    execution_ref = execute_harness(fixture.inputs(), context=fixture.context, ports=ports,\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repository-root>\\src\\research_workbench\\evaluation\\harness_execution.py\", line 281, in execute_harness\n    receipt_ref = execute_slice(inputs, binding, attempt_id=f\"{slot['attempt_id']}-S{index}\",\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repository-root>\\src\\research_workbench\\evaluation\\harness_runtime.py\", line 66, in execute_slice\n    recorder = AgentTraceRecorder(\n               ^^^^^^^^^^^^^^^^^^^\n  File \"<repository-root>\\src\\research_workbench\\observability\\trace.py\", line 222, in __init__\n    self.attempt_dir.mkdir(parents=True, exist_ok=True)\n  File \"<python-runtime>\\Lib\\pathlib.py\", line 1121, in mkdir\n    self.mkdir(mode, parents=False, exist_ok=exist_ok)\n  File \"<python-runtime>\\Lib\\pathlib.py\", line 1116, in mkdir\n    os.mkdir(self, mode)\nFileNotFoundError: [WinError 206] 文件名或扩展名太长。: '<repository-root>\\\\docs\\\\workstreams\\\\chengyue-lu\\\\M5-SYSTEM-EVALUATION-DESIGN\\\\attempts\\\\M5-007-H5-001\\\\vertical-proof\\\\work\\\\TASK-MR-ES-FROZEN-001\\\\harness\\\\HA-b59cdb1a75d2d3c53f3218f27631fc5961ad233a717724d281c91b6451d21740\\\\0\\\\trace'\n",
+  "native_output_sha256": "d07e04be46a8d2547a1a2256356586e5fc91dfd5ac7e9d1661751617671a49d8",
+  "archived_output_sha256": "25327e8083ab93d1fa1d7a00dece48f4f05478db209cdbd3b30b96f13628e660",
+  "capture": "native command only; normalized delayed export"
+}

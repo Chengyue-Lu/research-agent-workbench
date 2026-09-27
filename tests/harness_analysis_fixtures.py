@@ -29,9 +29,9 @@ def missing_associations(fixture, evidence):
     return tuple(requests)
 
 
-def build_analysis_chain(root):
+def build_analysis_chain(root, *, provider_errors=()):
     fixture = ExecutionFixture(root).build_execution()
-    ports = fixture.ports()
+    ports = fixture.ports(provider_errors=provider_errors)
     def driver(view, recorder, destination, skill=False):
         return LocalDriver(view, recorder, destination, skill=skill,
                            output=review._record("review_artifact", format="synthetic-integer-v1",

@@ -308,3 +308,24 @@ equality, changed validator identity and saved-evidence rejection. Production an
 An isolated fresh wheel environment with the actual component executor reproduced both failures
 (66.663 seconds) and passed the repaired case (64.323 seconds). Evidence remains under its original run;
 the repair candidate awaits its own component results and R2 review, with no merge or Task completion.
+
+## H5 dependent draft (2026-09-28)
+
+User authorized forward implementation and an independent draft. PR104 is still OPEN at
+`34a4b05`, with CI PASS and R2 pending; latest develop remains `24e1a3e`.
+Reuse the current isolated checkout on `feature/m5-007-harness-proof`; preserve local config.
+The [H5 packet](M5-007_H5_PACKET.md) keeps H4c acceptance ahead of integration/overall review.
+
+Implement the developer-only builder/replayer and current-source integrated tests. Preserve a real
+local transient Provider failure/fresh retry, all four arms, blind synthetic review/freeze/reveal,
+13 unavailable/null metrics and frozen comparison parameters. Pin every retained file, the outer
+request and trusted helper/authority sources; call the public analysis validator under denied
+Provider/Host/network/process/proof-code execution. No production source, Schema or Task definition changes.
+
+The complete 454-file proof is stored as an immutable ZIP to avoid Windows deep-path limits.
+Every member's original pin survived ZIP/extraction; new-process archived replay PASS, 8 cells /
+10 pairs / 8 completed + 1 failed + 7 not-started. Chain7 and independent current guard1 PASS,
+docs/selector25 PASS, repository186/0/0, short installed smoke8 PASS with 106-module/106-Schema
+byte equality. Proof-only coverage is diagnostic; no full/checkpoint or extra hosted run dispatched.
+Initial assertion/path/encoding diagnostics and capture gaps remain explicit in the
+[Attempt](attempts/M5-007-H5-001/README.md). M5-007 stays IN_PROGRESS, Issue55 OPEN, all live Gates retained.

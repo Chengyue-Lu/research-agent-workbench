@@ -1,0 +1,32 @@
+Traceback (most recent call last):
+  File "<python-runtime>\Lib\pathlib.py", line 1116, in mkdir
+    os.mkdir(self, mode)
+FileNotFoundError: [WinError 206] 文件名或扩展名太长。: '<repository-root>\\docs\\workstreams\\chengyue-lu\\M5-SYSTEM-EVALUATION-DESIGN\\attempts\\M5-007-H5-001\\vertical-proof\\work\\TASK-MR-ES-FROZEN-001\\harness\\HA-b59cdb1a75d2d3c53f3218f27631fc5961ad233a717724d281c91b6451d21740\\0\\trace'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<repository-root>\tests\harness_proof.py", line 169, in <module>
+    main()
+  File "<repository-root>\tests\harness_proof.py", line 160, in main
+    result = build_proof(args.root, args.schemas)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<repository-root>\tests\harness_proof.py", line 72, in build_proof
+    fixture, context, analysis_ref, document = build_analysis_chain(root, provider_errors=(
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<repository-root>\tests\harness_analysis_fixtures.py", line 40, in build_analysis_chain
+    execution_ref = execute_harness(fixture.inputs(), context=fixture.context, ports=ports,
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<repository-root>\src\research_workbench\evaluation\harness_execution.py", line 281, in execute_harness
+    receipt_ref = execute_slice(inputs, binding, attempt_id=f"{slot['attempt_id']}-S{index}",
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<repository-root>\src\research_workbench\evaluation\harness_runtime.py", line 66, in execute_slice
+    recorder = AgentTraceRecorder(
+               ^^^^^^^^^^^^^^^^^^^
+  File "<repository-root>\src\research_workbench\observability\trace.py", line 222, in __init__
+    self.attempt_dir.mkdir(parents=True, exist_ok=True)
+  File "<python-runtime>\Lib\pathlib.py", line 1121, in mkdir
+    self.mkdir(mode, parents=False, exist_ok=exist_ok)
+  File "<python-runtime>\Lib\pathlib.py", line 1116, in mkdir
+    os.mkdir(self, mode)
+FileNotFoundError: [WinError 206] 文件名或扩展名太长。: '<repository-root>\\docs\\workstreams\\chengyue-lu\\M5-SYSTEM-EVALUATION-DESIGN\\attempts\\M5-007-H5-001\\vertical-proof\\work\\TASK-MR-ES-FROZEN-001\\harness\\HA-b59cdb1a75d2d3c53f3218f27631fc5961ad233a717724d281c91b6451d21740\\0\\trace'

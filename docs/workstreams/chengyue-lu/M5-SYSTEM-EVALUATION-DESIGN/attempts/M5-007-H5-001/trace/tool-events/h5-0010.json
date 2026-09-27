@@ -1,0 +1,22 @@
+{
+  "command": {
+    "command": [
+      ".venv/Scripts/python.exe",
+      "-m",
+      "unittest",
+      "tests.test_evaluation_harness_proof",
+      "-v"
+    ],
+    "cwd": ".",
+    "started_at": "2026-09-27T19:33:13.711778+00:00",
+    "ended_at": "2026-09-27T19:39:09.281297+00:00",
+    "elapsed_seconds": 355.56200000000536,
+    "exit_code": 1,
+    "output_path": "focused-first.log",
+    "capture": "native-command-only"
+  },
+  "combined_output": "test_cold_persistent_replay_retains_four_arms_failure_retry_and_null_metrics (tests.test_evaluation_harness_proof.HarnessProofTests.test_cold_persistent_replay_retains_four_arms_failure_retry_and_null_metrics) ... FAIL\ntest_inventory_pin_drift_and_unrelated_file_drift_fail_before_replay (tests.test_evaluation_harness_proof.HarnessProofTests.test_inventory_pin_drift_and_unrelated_file_drift_fail_before_replay) ... ok\ntest_resigned_failed_attempt_deletion_cannot_be_hidden_by_successful_retry (tests.test_evaluation_harness_proof.HarnessProofTests.test_resigned_failed_attempt_deletion_cannot_be_hidden_by_successful_retry) ... ok\ntest_resigned_inventory_cannot_replace_trusted_sources_or_omit_request (tests.test_evaluation_harness_proof.HarnessProofTests.test_resigned_inventory_cannot_replace_trusted_sources_or_omit_request) ... ok\ntest_resigned_metric_zero_and_confirmatory_upgrade_are_independently_rejected (tests.test_evaluation_harness_proof.HarnessProofTests.test_resigned_metric_zero_and_confirmatory_upgrade_are_independently_rejected) ... FAIL\ntest_resigned_reveal_time_and_external_authority_remain_caller_owned (tests.test_evaluation_harness_proof.HarnessProofTests.test_resigned_reveal_time_and_external_authority_remain_caller_owned) ... ok\ntest_schema_drift_and_cold_execution_guards_fail_closed (tests.test_evaluation_harness_proof.HarnessProofTests.test_schema_drift_and_cold_execution_guards_fail_closed) ... ok\n\n======================================================================\nFAIL: test_cold_persistent_replay_retains_four_arms_failure_retry_and_null_metrics (tests.test_evaluation_harness_proof.HarnessProofTests.test_cold_persistent_replay_retains_four_arms_failure_retry_and_null_metrics)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"<repository-root>\\tests\\test_evaluation_harness_proof.py\", line 55, in test_cold_persistent_replay_retains_four_arms_failure_retry_and_null_metrics\n    self.assertEqual((data['cells'], data['pairs']), (8, 6))\nAssertionError: Tuples differ: (8, 10) != (8, 6)\n\nFirst differing element 1:\n10\n6\n\n- (8, 10)\n?     ^^\n\n+ (8, 6)\n?     ^\n\n\n======================================================================\nFAIL: test_resigned_metric_zero_and_confirmatory_upgrade_are_independently_rejected (tests.test_evaluation_harness_proof.HarnessProofTests.test_resigned_metric_zero_and_confirmatory_upgrade_are_independently_rejected)\n----------------------------------------------------------------------\nresearch_workbench.evaluation.pins.EvaluationValidationError: evaluation_harness_analysis_input schema: $.pairs[0].primary_confirmatory_eligible: False was expected\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"<repository-root>\\tests\\test_evaluation_harness_proof.py\", line 83, in test_resigned_metric_zero_and_confirmatory_upgrade_are_independently_rejected\n    self.replay(self.resign())\nAssertionError: \"independently rebuilt\" does not match \"evaluation_harness_analysis_input schema: $.pairs[0].primary_confirmatory_eligible: False was expected\"\n\n----------------------------------------------------------------------\nRan 7 tests in 355.145s\n\nFAILED (failures=2)\n",
+  "native_output_sha256": "bb70bb80786c82533bc86a56c0e4967e140c617ff023c88fddf46b06b24771be",
+  "archived_output_sha256": "a14dffe777938aac55ca0206d397e22fe52632a3c897a7f9c1a2cbeaa3cb73fe",
+  "capture": "native command only; normalized delayed export"
+}

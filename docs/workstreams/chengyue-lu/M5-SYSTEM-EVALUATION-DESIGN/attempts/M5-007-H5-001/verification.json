@@ -1,0 +1,486 @@
+{
+  "task": "M5-007",
+  "slice": "H5 dependent draft",
+  "acceptance": "pending H4c and overall R2",
+  "entry_commit": "34a4b05cacbce81459720c3363ef781a55334b42",
+  "production_source_schema_changed": false,
+  "source_refs": [
+    {
+      "path": "tests/harness_proof.py",
+      "sha256": "341f415b954977065f9ae3f0701364a6a7379f9b09412515e75453d1dec07b20"
+    },
+    {
+      "path": "tests/test_evaluation_harness_proof.py",
+      "sha256": "b17e59d59ca138d57bd51701f79f3147ee89f46016471af99da11375887d0303"
+    },
+    {
+      "path": "tests/harness_analysis_fixtures.py",
+      "sha256": "2442cba5a3464be28ff941493ab7f734069af5b3d8c7560f48595f9d0a06f3e4"
+    },
+    {
+      "path": "tests/ci_components.json",
+      "sha256": "7a2b82bf22fc5fc407842add6f9ba50e7ad059916d379de6f01ae07de6f33f1b"
+    }
+  ],
+  "proof_refs": {
+    "purpose": "synthetic-contract-proof",
+    "observed_at": "2026-09-27T19:49:17.809582+00:00",
+    "archive_ref": {
+      "path": "vertical-proof.zip",
+      "sha256": "176c47b3ebbc8e71d3cdb27f835d82a8e5af2ac876638d7ca7d0c7601a063b2d"
+    },
+    "inventory_ref": {
+      "path": "proof-inventory.json",
+      "sha256": "c794fabd85e79cca382c03465f5cf9b2065c642fd2bcf4eb869fd173bb0c240f"
+    },
+    "retained_files": 454,
+    "uncompressed_bytes": 1699987,
+    "archive_bytes": 607567,
+    "source_binding": "Embedded validators pin production sources and all schemas; inventory pins repository replay helper and synthetic authority code.",
+    "extraction": "Verify archive_ref first, extract into an empty short directory, then pass the unchanged inventory_ref to tests.harness_proof replay."
+  },
+  "cold_summary": {
+    "all_metrics_unavailable": true,
+    "analysis_id": "H4C-ANALYSIS",
+    "arms": [
+      "mode-candidate-skill",
+      "mode-no-skill",
+      "plain-agent",
+      "plain-agent-tool"
+    ],
+    "cells": 8,
+    "lifecycles": {
+      "completed": 8,
+      "not-started": 7,
+      "post-call-failed": 1
+    },
+    "pairs": 10,
+    "primary_confirmatory_eligible": false,
+    "purpose": "synthetic-contract-proof"
+  },
+  "source_coverage_diagnostic": {
+    "src/research_workbench/evaluation/harness_analysis.py": {
+      "covered_lines": 176,
+      "num_statements": 222,
+      "percent_covered": 77.00729927007299,
+      "percent_covered_display": "77",
+      "missing_lines": 46,
+      "excluded_lines": 0,
+      "percent_statements_covered": 79.27927927927928,
+      "percent_statements_covered_display": "79",
+      "num_branches": 52,
+      "num_partial_branches": 5,
+      "covered_branches": 35,
+      "missing_branches": 17,
+      "percent_branches_covered": 67.3076923076923,
+      "percent_branches_covered_display": "67"
+    },
+    "tests/harness_proof.py": {
+      "covered_lines": 92,
+      "num_statements": 98,
+      "percent_covered": 88.18181818181819,
+      "percent_covered_display": "88",
+      "missing_lines": 6,
+      "excluded_lines": 0,
+      "percent_statements_covered": 93.87755102040816,
+      "percent_statements_covered_display": "94",
+      "num_branches": 12,
+      "num_partial_branches": 1,
+      "covered_branches": 5,
+      "missing_branches": 7,
+      "percent_branches_covered": 41.666666666666664,
+      "percent_branches_covered_display": "42"
+    }
+  },
+  "commands": [
+    {
+      "command": [
+        ".venv/Scripts/python.exe",
+        "work/m5-h5/pack_proof.py"
+      ],
+      "cwd": ".",
+      "started_at": "2026-09-27T19:49:17.051966+00:00",
+      "ended_at": "2026-09-27T19:49:17.838589+00:00",
+      "elapsed_seconds": 0.7970000000204891,
+      "exit_code": 0,
+      "output_path": "archive-proof.log",
+      "capture": "native-command-only",
+      "metadata_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/archive-proof.command.json",
+        "sha256": "4909737bf5bfc04a1514fd25117f976069a2b2b0279ac17515128ffe14d8cc53"
+      },
+      "output_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/archive-proof.log",
+        "sha256": "e0d5c4aaea25982c61712c959e06862c60aa6c7302ad46c0cbaf9917693bc616"
+      }
+    },
+    {
+      "command": [
+        ".venv/Scripts/python.exe",
+        "-m",
+        "coverage",
+        "run",
+        "--append",
+        "--data-file=work/m5-h5/proof.coverage",
+        "--branch",
+        "--source=tests.harness_proof,research_workbench.evaluation.harness_analysis",
+        "-m",
+        "tests.harness_proof",
+        "replay",
+        "--root",
+        ".rwb/h5-archived-proof",
+        "--schemas",
+        "schemas",
+        "--inventory-ref",
+        "{\"path\":\"proof-inventory.json\",\"sha256\":\"c794fabd85e79cca382c03465f5cf9b2065c642fd2bcf4eb869fd173bb0c240f\"}"
+      ],
+      "cwd": ".",
+      "started_at": "2026-09-27T19:49:46.409207+00:00",
+      "ended_at": "2026-09-27T19:51:01.289722+00:00",
+      "elapsed_seconds": 74.89099999997416,
+      "exit_code": 0,
+      "output_path": "archived-cold-replay.log",
+      "capture": "native-command-only",
+      "metadata_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/archived-cold-replay.command.json",
+        "sha256": "3467879caf1f043ef354ff1efb16960d732ff691d0afa8f54ea60be3c2eace21"
+      },
+      "output_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/archived-cold-replay.log",
+        "sha256": "4cb818228c7fa1f0ae6cbecbd5e57dfb2aa0f74920f37fc0f06a2a49c5eb08d9"
+      }
+    },
+    {
+      "command": [
+        ".venv/Scripts/python.exe",
+        "-m",
+        "coverage",
+        "run",
+        "--data-file=work/m5-h5/proof.coverage",
+        "--branch",
+        "--source=tests.harness_proof,research_workbench.evaluation.harness_analysis",
+        "-m",
+        "tests.harness_proof",
+        "build",
+        "--root",
+        "work/h5-proof",
+        "--schemas",
+        "schemas"
+      ],
+      "cwd": ".",
+      "started_at": "2026-09-27T19:43:51.474920+00:00",
+      "ended_at": "2026-09-27T19:47:42.047851+00:00",
+      "elapsed_seconds": 230.5779999999795,
+      "exit_code": 0,
+      "output_path": "build-proof-short-root.log",
+      "capture": "native-command-only",
+      "metadata_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/build-proof-short-root.command.json",
+        "sha256": "452f12c96b21ea8cd17f0a91e2979af5dad162f9e44ea3c584f3de673b31edac"
+      },
+      "output_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/build-proof-short-root.log",
+        "sha256": "e33afad80debe4a40d69707cbceb16295bbee2f555dcf03b3f74b676ce075778"
+      }
+    },
+    {
+      "command": [
+        ".venv/Scripts/python.exe",
+        "-m",
+        "coverage",
+        "run",
+        "--data-file=work/m5-h5/proof.coverage",
+        "--branch",
+        "--source=tests.harness_proof,research_workbench.evaluation.harness_analysis",
+        "-m",
+        "tests.harness_proof",
+        "build",
+        "--root",
+        "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/vertical-proof",
+        "--schemas",
+        "schemas"
+      ],
+      "cwd": ".",
+      "started_at": "2026-09-27T19:39:54.675527+00:00",
+      "ended_at": "2026-09-27T19:40:14.964706+00:00",
+      "elapsed_seconds": 20.29700000002049,
+      "exit_code": 1,
+      "output_path": "build-proof.log",
+      "capture": "native-command-only",
+      "metadata_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/build-proof.command.json",
+        "sha256": "8ff7da1fa07b60ad1532df21bb0d92693c5416e2fa4b43238840ed37c77775df"
+      },
+      "output_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/build-proof.log",
+        "sha256": "25327e8083ab93d1fa1d7a00dece48f4f05478db209cdbd3b30b96f13628e660"
+      }
+    },
+    {
+      "command": [
+        ".venv/Scripts/python.exe",
+        "-m",
+        "unittest",
+        "tests.test_evaluation_harness_proof.HarnessProofGuardTests",
+        "-v"
+      ],
+      "cwd": ".",
+      "started_at": "2026-09-27T19:45:27.113055+00:00",
+      "ended_at": "2026-09-27T19:45:27.764857+00:00",
+      "elapsed_seconds": 0.6570000000065193,
+      "exit_code": 0,
+      "output_path": "cold-guards-final.log",
+      "capture": "native-command-only",
+      "metadata_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/cold-guards-final.command.json",
+        "sha256": "d751a871b3225d9c670c42bb84dca6cf13a8d2831536938220d89c6d10f0ae55"
+      },
+      "output_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/cold-guards-final.log",
+        "sha256": "31a71c3e63599acdf3497c6f370d0695b65de4c656742cfc57c8939413a78214"
+      }
+    },
+    {
+      "command": [
+        ".venv/Scripts/python.exe",
+        "-m",
+        "unittest",
+        "tests.test_documentation",
+        "tests.test_ci_components",
+        "-v"
+      ],
+      "cwd": ".",
+      "started_at": "2026-09-27T19:45:58.308553+00:00",
+      "ended_at": "2026-09-27T19:45:59.043908+00:00",
+      "elapsed_seconds": 0.7349999999860302,
+      "exit_code": 0,
+      "output_path": "docs-ci-final.log",
+      "capture": "native-command-only",
+      "metadata_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/docs-ci-final.command.json",
+        "sha256": "6cfb1505128c8decd0e42926393065fc89b0f08f801ed2e1edc2943666b10e69"
+      },
+      "output_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/docs-ci-final.log",
+        "sha256": "6a3359a08ee1331cadf06dd0aab8bbedfd22674b0dcbbf25b5f388c12854cbe0"
+      }
+    },
+    {
+      "command": [
+        ".venv/Scripts/python.exe",
+        "-m",
+        "unittest",
+        "tests.test_documentation",
+        "tests.test_ci_components",
+        "-v"
+      ],
+      "cwd": ".",
+      "started_at": "2026-09-27T19:35:03.171382+00:00",
+      "ended_at": "2026-09-27T19:35:03.997123+00:00",
+      "elapsed_seconds": 0.8280000000086147,
+      "exit_code": 0,
+      "output_path": "docs-ci-first.log",
+      "capture": "native-command-only",
+      "metadata_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/docs-ci-first.command.json",
+        "sha256": "4b095256f5902c84cf9c703417d78cd0acc2748cb5de4dac3ef21afd642b4b16"
+      },
+      "output_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/docs-ci-first.log",
+        "sha256": "7d2f0ea95dafe6248b8e452074378801dbf9e9e8bf02eca6e75c3b44e2e562e0"
+      }
+    },
+    {
+      "command": [
+        ".venv/Scripts/python.exe",
+        "-m",
+        "unittest",
+        "tests.test_documentation",
+        "-v"
+      ],
+      "cwd": ".",
+      "started_at": "2026-09-27T19:55:37.577854+00:00",
+      "ended_at": "2026-09-27T19:55:38.031704+00:00",
+      "elapsed_seconds": 0.45300000000861473,
+      "exit_code": 0,
+      "output_path": "docs-publication.log",
+      "capture": "native-command-only",
+      "metadata_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/docs-publication.command.json",
+        "sha256": "9d6d7f99f84f6c894ce2e3f1658d2dd5a1f9b7ff73122c20eb87d0f7f8e0eb81"
+      },
+      "output_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/docs-publication.log",
+        "sha256": "659cdfae08ae8c095595d4cce34c8a1459b5f3202213268371224e6374e9bb4f"
+      }
+    },
+    {
+      "command": [
+        ".venv/Scripts/python.exe",
+        "-m",
+        "unittest",
+        "tests.test_evaluation_harness_proof",
+        "-v"
+      ],
+      "cwd": ".",
+      "started_at": "2026-09-27T19:40:57.443559+00:00",
+      "ended_at": "2026-09-27T19:48:02.002425+00:00",
+      "elapsed_seconds": 424.56299999999464,
+      "exit_code": 0,
+      "output_path": "focused-final.log",
+      "capture": "native-command-only",
+      "metadata_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/focused-final.command.json",
+        "sha256": "677c76bc1d022c665dfa4bce75e682c9bea22af2d824e5c0d4034185bb93ea9b"
+      },
+      "output_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/focused-final.log",
+        "sha256": "4d3bafe8e94f0ff3b96c77324666cacc9d37f973bf9b3bfd453f748ca596255c"
+      }
+    },
+    {
+      "command": [
+        ".venv/Scripts/python.exe",
+        "-m",
+        "unittest",
+        "tests.test_evaluation_harness_proof",
+        "-v"
+      ],
+      "cwd": ".",
+      "started_at": "2026-09-27T19:33:13.711778+00:00",
+      "ended_at": "2026-09-27T19:39:09.281297+00:00",
+      "elapsed_seconds": 355.56200000000536,
+      "exit_code": 1,
+      "output_path": "focused-first.log",
+      "capture": "native-command-only",
+      "metadata_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/focused-first.command.json",
+        "sha256": "5d875449b5d4a64b56d4e17657a34e809212f9c3b296f9e280b5bb62812e5eca"
+      },
+      "output_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/focused-first.log",
+        "sha256": "a14dffe777938aac55ca0206d397e22fe52632a3c897a7f9c1a2cbeaa3cb73fe"
+      }
+    },
+    {
+      "command": [
+        "<installed-environment>/Scripts/python.exe",
+        "work/m5-h5/verify_installed.py"
+      ],
+      "cwd": ".",
+      "started_at": "2026-09-27T19:46:50.535938+00:00",
+      "ended_at": "2026-09-27T19:46:52.127981+00:00",
+      "elapsed_seconds": 1.5939999999827705,
+      "exit_code": 0,
+      "output_path": "installed-source-equality.log",
+      "capture": "native-command-only",
+      "metadata_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/installed-source-equality.command.json",
+        "sha256": "bf354ff7c05203af76c6f8de4a0effe0ae838634dc328436e668a553314d3752"
+      },
+      "output_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/installed-source-equality.log",
+        "sha256": "68e6bde38d45d7f4220ab31372aa050b88eba38683b309dd4f2d6741bc1af302"
+      }
+    },
+    {
+      "command": [
+        ".venv/Scripts/python.exe",
+        ".github/scripts/ci_component_smoke.py",
+        "--python",
+        "<installed-environment>/Scripts/python.exe",
+        "--output",
+        "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/package-smoke-results.json"
+      ],
+      "cwd": ".",
+      "started_at": "2026-09-27T19:41:53.526884+00:00",
+      "ended_at": "2026-09-27T19:42:03.500839+00:00",
+      "elapsed_seconds": 9.96899999998277,
+      "exit_code": 0,
+      "output_path": "package-smoke.log",
+      "capture": "native-command-only",
+      "metadata_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/package-smoke.command.json",
+        "sha256": "580fa384b9759081e0c7e5f544efadb713ee8bbcfcbb774b027f8461a39f8fdc"
+      },
+      "output_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/package-smoke.log",
+        "sha256": "eeadb6a46ad21788ffb95de51e9688422b3b1e1dbd4114ffffcbf2dfd67e110a"
+      }
+    },
+    {
+      "command": [
+        ".venv/Scripts/python.exe",
+        "-m",
+        "coverage",
+        "json",
+        "--data-file=work/m5-h5/proof.coverage",
+        "-o",
+        "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/proof-coverage.json"
+      ],
+      "cwd": ".",
+      "started_at": "2026-09-27T19:51:53.392440+00:00",
+      "ended_at": "2026-09-27T19:51:53.547051+00:00",
+      "elapsed_seconds": 0.15599999998812564,
+      "exit_code": 0,
+      "output_path": "proof-coverage.log",
+      "capture": "native-command-only",
+      "metadata_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/proof-coverage.command.json",
+        "sha256": "3a2e05437833276929f02502aa681bf0a17e084fff75cbbb3c9e5ddf4d30b924"
+      },
+      "output_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/proof-coverage.log",
+        "sha256": "9033374dbbbe466582885c3feb3df0f6eefab5a979f368de65e8b05db463d0cb"
+      }
+    },
+    {
+      "command": [
+        ".venv/Scripts/python.exe",
+        "-m",
+        "research_workbench",
+        "validate",
+        "examples",
+        "registry",
+        "--root",
+        "."
+      ],
+      "cwd": ".",
+      "started_at": "2026-09-27T19:37:58.492490+00:00",
+      "ended_at": "2026-09-27T19:38:00.691349+00:00",
+      "elapsed_seconds": 2.187000000005355,
+      "exit_code": 0,
+      "output_path": "repository.log",
+      "capture": "native-command-only",
+      "metadata_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/repository.command.json",
+        "sha256": "4c63935e6fb086e36df878706cee67c60fb3309569574689170f4a52267cef70"
+      },
+      "output_ref": {
+        "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/repository.log",
+        "sha256": "6895861bf5f35b7669baaf95d9caf2b94c3a4e1d5682f29bbc73ba0aa0064633"
+      }
+    }
+  ],
+  "helper_final_snapshots": [
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/helpers/logged.py",
+      "sha256": "828431b8e0486300023ee4070d12fe55df5f6fbd2620706e0cdd07990d38cce9"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/helpers/pack_proof.py",
+      "sha256": "6df975dae789f2e9a3438b441a9faa3ac1cd5661c4f70a7eed73a98c9eddb711"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/helpers/verify_installed.py",
+      "sha256": "9ba7eb4081de1aff6bd94155a99d28536121600a5c308c219795aa4519a8c45c"
+    }
+  ],
+  "helper_snapshot_limit": "Export-time helpers; initial logger version and other patch/export tools were not captured at original event time.",
+  "trace_validation_ref": {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace-validation.json",
+    "sha256": "c24e4185388dd3172fb438ff0623e9b9c2c413e5ede2e2f6325d5d5f88e352ef"
+  },
+  "hosted_ci": "pending; normal push/PR execution only",
+  "task_completion": false
+}

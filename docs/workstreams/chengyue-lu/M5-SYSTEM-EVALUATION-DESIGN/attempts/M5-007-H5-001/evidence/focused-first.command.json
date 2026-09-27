@@ -1,0 +1,16 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-m",
+    "unittest",
+    "tests.test_evaluation_harness_proof",
+    "-v"
+  ],
+  "cwd": ".",
+  "started_at": "2026-09-27T19:33:13.711778+00:00",
+  "ended_at": "2026-09-27T19:39:09.281297+00:00",
+  "elapsed_seconds": 355.56200000000536,
+  "exit_code": 1,
+  "output_path": "focused-first.log",
+  "capture": "native-command-only"
+}

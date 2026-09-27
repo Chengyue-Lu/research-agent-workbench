@@ -1,0 +1,1 @@
+{"all_metrics_unavailable": true, "analysis_id": "H4C-ANALYSIS", "arms": ["mode-candidate-skill", "mode-no-skill", "plain-agent", "plain-agent-tool"], "cells": 8, "lifecycles": {"completed": 8, "not-started": 7, "post-call-failed": 1}, "pairs": 10, "primary_confirmatory_eligible": false, "purpose": "synthetic-contract-proof"}
