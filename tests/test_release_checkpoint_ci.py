@@ -72,7 +72,8 @@ class CheckpointSourceTests(unittest.TestCase):
             value = result(); value['profile'] = profile
             with self.subTest(profile=profile), self.assertRaises(ValueError):
                 checkpoint.attest(fixture(value), old.SHA, old.RUN)
-        for key, wrong in [('schema_version', 2), ('contract_version', 'legacy-ci-v1'),
+        for key, wrong in [('schema_version', 2), ('schema_version', True), ('schema_version', 1.0),
+                           ('contract_version', 'legacy-ci-v1'),
                            ('head_sha', 'b'*40), ('base_sha', 'b'*40), ('producers', {}), ('results', [])]:
             value = result(); value[key] = wrong
             with self.subTest(key=key), self.assertRaises(ValueError): checkpoint.attest(fixture(value), old.SHA, old.RUN)

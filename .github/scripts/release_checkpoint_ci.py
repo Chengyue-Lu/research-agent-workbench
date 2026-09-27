@@ -30,7 +30,8 @@ def binding(run, api, identity, workflow_id, source, run_id):
 
 
 def validate_result(value, *, repository, source, run_id, attempt):
-    require(value.get('schema_version') == 1 and value.get('contract_version') == CONTRACT
+    require(type(value.get('schema_version')) is int and value['schema_version'] == 1
+            and value.get('contract_version') == CONTRACT
             and value.get('profile') == 'release-checkpoint', 'unsupported checkpoint result version/profile')
     require(value.get('head_sha') == value.get('base_sha') == source
             and value.get('conclusion') == 'success' and value.get('coverage') == 'diagnostic-only'
@@ -38,6 +39,8 @@ def validate_result(value, *, repository, source, run_id, attempt):
     require(value.get('context') == dict(repository=repository, event='workflow_dispatch',
             ref='refs/heads/develop', run_id=run_id, run_attempt=attempt,
             workflow_path=CHECKPOINT_WORKFLOW), 'foreign checkpoint result context')
+    require(type(value['context']['run_id']) is int and type(value['context']['run_attempt']) is int,
+            'checkpoint run identities must be integers')
     require(value.get('producers') == dict(plan='success', execute='success', governance='success'),
             'incomplete checkpoint producers')
     results = value.get('results', [])
