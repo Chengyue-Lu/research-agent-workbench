@@ -301,6 +301,7 @@ class EntrypointTests(unittest.TestCase):
             args = ['attest', '--repository', REPO, '--source', SHA, '--run-id', str(RUN), '--output', str(output)]
             api = API(fixture())
             with patch.object(source, 'GitHub', return_value=api), patch.object(source, 'local_source'), \
+                 patch.object(source, 'active_contract', return_value='legacy-ci-v1'), \
                  patch.object(source, 'git', return_value=SHA.encode()), redirect_stdout(io.StringIO()):
                 self.assertEqual(0, source.main(args))
                 self.assertEqual(ATTEMPT, json.loads(output.read_text())['observation']['run_attempt'])

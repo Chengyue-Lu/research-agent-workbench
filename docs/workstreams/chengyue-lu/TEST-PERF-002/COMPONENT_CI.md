@@ -1,66 +1,69 @@
-# 按组件执行的 CI 候选
+# 按组件执行的 CI
 
-2026-09-27。负责人 Chengyue-Lu；Audit ID TEST-PERF-002。**当前是隔离分支候选，尚未 hosted 执行或 activation。** 新方向依据 [Issue87 最新路线](https://github.com/Chengyue-Lu/research-agent-workbench/issues/87#issuecomment-5852428933)：普通反馈采用单一基线 Python、短 smoke、组件测试；完整验收放到明确 checkpoint。未登记跨组件回归和其他版本差异可能延迟发现，候选不承诺与旧全量检出等价。
+负责人 Chengyue-Lu；TEST-PERF-002；2026-09-27。PR105 实现候选，尚未切换 required checks。
+依据 [Issue87 路线决定](https://github.com/Chengyue-Lu/research-agent-workbench/issues/87#issuecomment-5852428933)，
+日常开发采用 Python3.11、短 smoke 和稳定组件测试组；完整验收在明确 checkpoint 执行。
+未登记跨组件回归和其他版本差异可能延迟发现，这是本路线明确接受的成本取舍。
 
-旧三组配对实验、完整输入闭包/独立选测 witness、global90/critical95/90/changed100/100 比例证明不再是本候选上线的前置条件；这一取舍来自最新 Issue 方向。旧证据保留原身份，现行生产 CI 和 required checks 在正式迁移前仍保持原义。迁移和发布边界见 [结果身份迁移包](COMPONENT_CI_MIGRATION.md)。
+## 日常流程
 
-## 当前入口与执行方式
+[ci_components.yml](../../../../.github/workflows/ci_components.yml) 名称为 CI components，
+在面向 develop 的 PR 内容事件及 develop push 上运行。PR 正文、标题编辑由既有治理工作流处理，
+不会重复执行业务测试。同一 PR 的过时执行取消；没有 workflow 级路径过滤。
 
-| 入口 | 当前行为 |
+| profile | 执行范围 |
 |---|---|
-| [ci_components.py](../../../../.github/scripts/ci_components.py) | 纯路径计划；组件整组、直接修改测试、已登记共享 fixture 直接消费者；增删/重命名考虑两侧 |
-| [run_component_ci.py](../../../../.github/scripts/run_component_ci.py) | 从 exact Git base/head、merge-base、候选 policy 和库存生成计划；消费时重算；复用现有测试计时记录，不调用旧图/witness/coverage 选择机制 |
-| [ci_component_smoke.py](../../../../.github/scripts/ci_component_smoke.py) | 已安装 wheel 的短 smoke；fresh checkout 外目录、隔离解释器、120 秒总预算；失败即停并保留 JSON |
-| [ci_components.yml](../../../../.github/workflows/ci_components.yml) | workflow `CI components candidate`；仅 `feature/ci-component-flow` push 与 manual；只读 contents 权限 |
+| component | PR默认：3.11组件测试；构建/依赖变化另加3.13安装smoke，业务仍只在3.11执行 |
+| integration-smoke | develop push：真实安装、短smoke与固定短回归 |
+| checkpoint | 显式或有新输入的夜间检查：全仓测试，Python3.11 |
+| release-checkpoint | 显式develop checkpoint：全仓测试与安装smoke，3.11/3.13，并核真实合入源治理 |
 
-候选结果名为 `CI components result (candidate)`。plan 和 execute 均须成功，aggregate 使用 always；失败、取消、缺失或 skip 不被当作成功。候选没有替换旧 `CI`，没有启用 pull_request、develop 定时任务或 required 保护，也不提供 release source-CI。
+日常固定汇总名为 `CI result`。[ci_component_result.py](../../../../.github/scripts/ci_component_result.py)
+核对 plan、各 Python 实际结果及适用 smoke。上游 failure/cancel/missing/skip 不能当作执行成功；
+纯文档明确不要求产品 smoke。新结果不替代尚在使用的两个旧 test checks。
 
-当前 planner 登记 15 个职责组件与 12 条共享 fixture 直接映射。没有归组的路径保留 `unknown_paths`，选择最近登记组件/现存同名测试及短 smoke，不自动升 FULL。CI 自身变更运行小回归；旧图/witness 测试文件仍存在并留在 checkpoint 库存。脚本自身 direct-test 映射的最后补充由协调方整合，不能把较早测试回执自动套到后续修改。
+[ci_components.py](../../../../.github/scripts/ci_components.py) 按目录职责选组件整组，
+追加直接修改测试、共享 fixture 的登记消费者和现存同名测试。增删与 rename 两侧均考虑。
+未映射路径公开列入 unknown_paths，选最近组件、自身测试与短smoke，不自动升级FULL。
+旧图分析器与其测试保留在 checkpoint 库存。
 
-| 当前 profile 名 | 代码中的执行范围 | 当前验证边界 |
-|---|---|---|
-| `component` | 默认 Python3.11 的组件业务测试；依赖/构建变化追加3.13安装与 smoke，业务仍3.11 | 已有下列本地有限证据，hosted 未运行 |
-| `integration-smoke` | 安装、短 smoke 与固定短回归 | 参数已实现；不是已上线 develop 流程 |
-| `checkpoint` | 全部候选 test_ 模块，单一3.11 | 入口已实现；本轮未运行全仓或夜间任务 |
-| `release-checkpoint` | 全部候选 test_ 模块与3.11/3.13安装 smoke | 入口已实现；未完成发布专属验收/授权，不是发布资格 |
+[run_component_ci.py](../../../../.github/scripts/run_component_ci.py) 从 Git base/head、merge-base、
+policy与跟踪文件生成计划；执行端重算以发现误传。digest是一致性校验，不提供独立授权。
+plan/native schema=0.1.0，authority=profile-result-only；汇总schema=1、contract_version=components-v1，
+记录事件、ref、run/attempt、source、实际范围和结论。没有跨提交测试结果复用。
 
-计划/结果当前 schema 为 `0.1.0`，authority 是 `candidate-unaccepted`。计划标注 coverage diagnostic-only，结果明确 not-collected；本轮未收集 coverage。上表是实际候选命名，迁移包中未来版本/profile 的建议仍待 activation 包统一决定。
+## 安装 smoke 与 coverage
 
-手动检查候选的入口如下；exact HEAD 必须已含候选 policy，以下不是本轮执行回执：
+[ci_component_smoke.py](../../../../.github/scripts/ci_component_smoke.py) 使用 fresh wheel 环境，
+在 checkout 外执行8步：import/Schema正反例、Runtime资源、schema CLI、research-state注册、
+离线项目初始化/检查、Task+Profile验证、非法timestamp的真实CLI拒绝。总预算120秒，失败即停。
+解释器保留venv的lexical absolute path，避免resolve POSIX链接后误用base Python。
 
-```sh
-python .github/scripts/run_component_ci.py plan --base <exact-base-sha> --head <exact-head-sha> --profile component --output .rwb/plan.json
-python .github/scripts/ci_component_smoke.py --python <fresh-wheel-environment-python> --output .rwb/smoke.json
-<fresh-wheel-environment-python> .github/scripts/run_component_ci.py run --plan .rwb/plan.json --output .rwb/result.json
-```
+七项固定短回归保留hash/路径完整性、disabled provider、未批准发布、Schema/dispatcher与CLI边界。
+原behavioral/adversarial测试没有删除。新链不收集阻断用coverage，标注diagnostic-only/not-collected。
+本切片未增加自动coverage采集，也未把组件通过宣称为全仓coverage。
 
-wheel 构建/新环境安装由 workflow 在 smoke 前完成；smoke 脚本自己不安装。纯文档走文档依赖和适用文档检查，不承担产品 smoke。测试结果不跨提交复用；plan digest 仅校验一致性，不提供独立授权。
+## Checkpoint
 
-## 已有本地阶段事实
+[ci_checkpoint.yml](../../../../.github/workflows/ci_checkpoint.yml) 独立运行，汇总名 `CI checkpoint result`。
+手动选择checkpoint或release-checkpoint；普通PR修改函数不会启动全仓。
+工作日02:30 Asia/Shanghai夜间计划由GitHub UTC schedule驱动。
 
-| 证据 | 结果与口径 |
-|---|---|
-| planner 独立目标回归 | 初始12项 PASS；只运行分类器自身测试，没有执行被选择业务集合 |
-| smoke runner 控制 | 3项 PASS，unittest 报告0.207秒；只验证正确负例、timeout、缺解释器的停止/报告行为 |
-| root 构建 wheel | exit0，2.857秒 |
-| root 创建 fresh venv | exit0，3.659秒 |
-| root 安装 wheel[test] | exit0，6.174秒 |
-| 首次真实 installed smoke | 失败；`SchemaValidationError.path` 不存在，首步停止；原 smoke.json 原样保留 |
-| 修正后的真实 installed smoke | 改用 `pointer`；CPython3.11.16、8步 PASS，9.469秒；smoke-corrected.json 独立保存 |
-| root 有界回归 | 6 runner + 10 documentation + 7既有定向回归，共23项 PASS、0失败/错误/skip；测试内部6.084秒，完整进程6.444秒 |
+[ci_checkpoint.py](../../../../.github/scripts/ci_checkpoint.py) 比较产品、依赖、测试及CI输入的Git blob指纹。
+仅近期成功的该夜间工作流marker可抑制相同内容的下一次执行。失败、过期/缺失记录、输入变化或显式checkpoint
+都执行。纯文档提交不反复触发全量；跳过只报告无新输入，不生成新回执、不把旧结果重签到新提交。
 
-8步包括 installed import 与 Schema 正反例、Runtime资源、schema CLI、research-state命令注册、no-skill项目创建/检查/Task+Profile验证、真实 CLI 拒绝非法 timestamp。负例必须得到预期 exit1 和 timestamp 诊断，任意失败不能冒充通过。CLI 用 `python -I -m research_workbench`，没有声称验证生成的 console launcher。
+仓库默认分支当前为main。GitHub schedule与manual discovery需要workflow存在于默认分支；
+合入develop本身不完成该登记。此次只准备实现，部署方式另行接受，不修改main或默认分支。
 
-七个既有回归覆盖 POSIX hash 顺序、路径/缺失/hash 守卫、disabled provider、缺可信发布期望、文档种类/Schema/dispatcher 和真实 research-state CLI。它们是 Issue 指定既有故障的定向控制，不是全业务、全平台或发布安全证明。
+## 证据与交付边界
 
-本地数字来自不同有界步骤，不相加冒充端到端 hosted 用时，也不推导相对旧 CI 的加速比。runner/YAML 静态检查通过，三项 review issue 已闭合。映射补轮保留19个已有脚本及 suite runner 的明确直接测试、registry 的职责子组；新增源码即使已落在组件内，也选其现存同名测试。没有递归调用图。
+旧候选 [36294874387](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36294874387)
+在a1983f3上通过42项实际测试、8步安装smoke：测试3.344秒，smoke12.993秒，run到汇总55秒。
+这是上一版候选的单次观察，不能套到当前修改，也不是M14/M5加速百分比。
+首次POSIX解释器失败与修复的原始身份保留在A-20260927-010及相应评估记录。
 
-分类器当前15个方法：最终规则运行时12项通过，3个仓库成员测试因测试用库存过窄失败；修正为 Git tracked inventory 加新候选模块浅层清单后，只补跑这3项通过。失败原样保留。这也移除了测试辅助代码对整个 checkout 的递归扫描，避免遍历 workflow 内的安装环境；hosted 新目标仍须实际执行完整候选集合。
-
-## 收尾与剩余事项
-
-首个真实候选 push `a5a104a` 的 [run36294739603](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36294739603) 在安装 smoke 失败，aggregate 也正确失败。wheel 构建及安装已成功；smoke 的 `Path.resolve()` 跟随 Linux venv 解释器符号链接，改用了没有该 wheel 的 base Python。修正为保留 lexical absolute path，并新增真实 POSIX 符号链接回归；Windows 跳过这个特定平台用例。失败原身份保留，新提交仍需自己的 hosted 执行。
-
-此候选停止于源码、有限回归和材料可审阅：当前未运行 hosted、nightly、全仓 checkpoint 或多版本完整业务；没有 commit/push、保护变更或发布操作由本记录任务产生。后续若开展候选真实 workflow 验证，应先冻结最终源码/映射并保留 exact source 身份与实际结果，不重启旧全闭包研究。
-
-required-check 与 source-CI 迁移按独立文档 prepare/accept/activate/rollback；当前材料不要求立即实施 source-CI v2。R2审核、具体合并与发布批准继续由既有制度决定。Task revision51、拟归档 A-20260927-010 的本地草案只用于审阅范围和证据索引，尚未建原生 Trace 或改写项目 Task 权威。
+当前HEAD的局部测试、版本兼容和hosted结果见PR105正文及本阶段独立archive。
+原生产36294876605的changed-lines覆盖失败保留，新绿色不改写它。
+旧三组配对实验、完整输入闭包/witness与覆盖百分比不是本路线的上线前提。
+版本消费、required切换和回退见[迁移包](COMPONENT_CI_MIGRATION.md)。

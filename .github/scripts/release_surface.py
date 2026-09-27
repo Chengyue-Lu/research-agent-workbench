@@ -28,6 +28,7 @@ MANIFEST = "RELEASE_MANIFEST.json"
 SCHEMAS = {
     "policy": "schemas/v0.1.0/release-surface-policy.schema.json",
     "manifest": "schemas/v0.1.0/release-manifest.schema.json",
+    "manifest_v2": "schemas/v0.2.0/release-manifest.schema.json",
 }
 VERSION = "1.0.0"
 OID = r"[0-9a-f]{40}"
@@ -67,6 +68,9 @@ def parse(data: bytes) -> Any:
 
 
 def validate(kind: str, value: Any, *, definition: str | None = None) -> None:
+    if kind == "manifest" and (value.get("schema_version") == "0.2.0" or
+            definition == "expectations" and value.get("source_ci", {}).get("schema_version") == 2):
+        kind = "manifest_v2"
     schema = parse((ROOT / SCHEMAS[kind]).read_bytes())
     if definition:
         schema = {**schema, "$ref": f"#/$defs/{definition}"}
@@ -226,7 +230,9 @@ def expectations(repo: Path, expected: dict) -> None:
             "current main parent drift; regenerate")
     ci = expected["source_ci"]
     require(ci["repository"] == expected["repository"] and ci["sha"] == expected["source"], "CI source binding mismatch")
-    require(ci["required_checks"] == REQUIRED_CHECKS, "CI required-check closure/canonical order mismatch")
+    checks = (["checkpoint-governance", "CI checkpoint result"]
+              if ci.get("schema_version") == 2 else REQUIRED_CHECKS)
+    require(ci["required_checks"] == checks, "CI required-check closure/canonical order mismatch")
 
 
 def project(repo: Path, expected: dict) -> dict[str, tuple[str, bytes]]:
@@ -278,7 +284,8 @@ def project(repo: Path, expected: dict) -> dict[str, tuple[str, bytes]]:
                         "generator": {"identity": "rwb-release-metadata", "version": VERSION,
                                       "path": TOOL, "sha256": digest((ROOT / TOOL).read_bytes()), "inputs": inputs}})
     paths_unique([*files, MANIFEST])
-    manifest = {"schema_version": "0.1.0", "kind": "release_manifest", "expectations": expected,
+    manifest = {"schema_version": "0.2.0" if expected['source_ci'].get('schema_version') == 2 else "0.1.0",
+                "kind": "release_manifest", "expectations": expected,
                 "source_tree": git(repo, "rev-parse", f"{source}^{{tree}}").decode().strip(),
                 "parent_tree": git(repo, "rev-parse", f"{expected['parent']}^{{tree}}").decode().strip(),
                 "policy": {"path": POLICY, "identity": "rwb-release-surface", "version": expected["policy_version"],

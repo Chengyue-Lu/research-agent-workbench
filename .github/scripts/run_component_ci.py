@@ -1,4 +1,4 @@
-"""Run the component-CI candidate without claiming legacy full/coverage authority."""
+"""Execute explicit component or checkpoint profiles with native test results."""
 from __future__ import annotations
 
 import argparse
@@ -95,7 +95,7 @@ def make_plan(repo, base, head, profile='component'):
     value.update(kind='component_ci_plan', schema_version='0.1.0', profile=profile,
                  base_sha=base, merge_base_sha=merge_base, head_sha=head,
                  policy_sha256=hashlib.sha256(raw).hexdigest(), changes=changes,
-                 execution_authority='candidate-unaccepted', coverage='diagnostic-only')
+                 execution_authority='profile-result-only', coverage='diagnostic-only')
     value['plan_sha256'] = hashlib.sha256(canonical(value)).hexdigest()
     return value
 
@@ -120,8 +120,8 @@ def load_plan(path, repo):
     expected = make_plan(repo, value['base_sha'], value['head_sha'], value['profile'])
     if canonical(value) != canonical(expected):
         raise ValueError('component plan differs from its Git inputs')
-    # The digest is integrity, not independent authority. The candidate check is
-    # deliberately not the current protected branch's required result.
+    # The digest checks integrity; required-check authority belongs to repository
+    # protection and is activated separately from this profile implementation.
     return value
 
 
@@ -166,7 +166,7 @@ def execute_plan(repo, value, *, python_version=None, execute=execute_modules):
         names.update(SHORT_REGRESSIONS)
     result = execute(repo, sorted(names))
     return dict(kind='component_ci_result', schema_version='0.1.0', profile=value['profile'],
-                authority='candidate-unaccepted', python=current, head_sha=value['head_sha'],
+                authority='profile-result-only', python=current, head_sha=value['head_sha'],
                 plan_sha256=value['plan_sha256'], selections=sorted(names), coverage='not-collected',
                 behavior=result)
 

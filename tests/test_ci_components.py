@@ -147,7 +147,7 @@ class ComponentPlanTests(unittest.TestCase):
                 self.assertTrue(report['smoke'])
                 self.assertEqual(['3.11'], report['python_versions'])
         workflow = self.plan(['.github/workflows/ci_components.yml'])
-        self.assertEqual(common, set(workflow['selected_tests']))
+        self.assertEqual(common | {'test_ci_component_result', 'test_ci_checkpoint'}, set(workflow['selected_tests']))
 
     def test_registry_specific_prefixes_keep_domain_owners(self):
         cases = {

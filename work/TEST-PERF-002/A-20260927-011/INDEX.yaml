@@ -1,0 +1,74 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260927-011
+task_id: TEST-PERF-002
+task_revision: 52
+attempt_id: A-20260927-011
+archive_root: A-20260927-011
+baseline: a1983f362d4073c21fe2172b67539fb1b97b8f8f
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 7e1310f35ad36553c16a5bb1a352a66e804e388f0b7a2fea1e3a954a2a76e01e
+actors_ref:
+  path: ACTORS.yaml
+  sha256: a018b1080e320866d36e7d1b1751626a39ebbe900739ac3c2267d021e46ae9bd
+read_allowlist:
+- .github/**
+- AGENTS.md
+- Issue87 latest direction
+- PROJECT_MEMORY.md
+- README.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- schemas/**
+- src/research_workbench/**
+- tests/**
+write_scope:
+- .github/scripts/check_pr_governance.py
+- .github/scripts/ci_checkpoint.py
+- .github/scripts/ci_component_result.py
+- .github/scripts/release_checkpoint_ci.py
+- .github/scripts/release_preflight.py
+- .github/scripts/release_source_ci.py
+- .github/scripts/release_surface.py
+- .github/scripts/run_component_ci.py
+- .github/source-ci-contract.json
+- .github/workflows/ci_checkpoint.yml
+- .github/workflows/ci_components.yml
+- docs/workstreams/chengyue-lu/TEST-PERF-002/COMPONENT_CI.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/COMPONENT_CI_MIGRATION.md
+- schemas/v0.2.0/release-manifest.schema.json
+- tests/ci_components.json
+- tests/test_ci_checkpoint.py
+- tests/test_ci_component_execution.py
+- tests/test_ci_component_result.py
+- tests/test_ci_components.py
+- tests/test_release_checkpoint_ci.py
+- tests/test_release_source_ci.py
+- work/TEST-PERF-002/A-20260927-011/**
+tool_allowlist:
+- gh
+- git
+- python
+- shell
+- thread-coordination
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: e149313af0ef965a90dcdc3fae805807fe26e26595a0a5ab8b98bfc05a89404c
+  event_count: 5
+tool_event_refs:
+- path: tool-events/freeze-activation-preparation-succeeded.json
+  sha256: e457992a4ff1246cfbc2285da4bcec95c8a92d1e7b03ad9b0e1c1a937bd6776a
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: messages
+- event_id: EVT-0003
+  affected_stream: external-actions

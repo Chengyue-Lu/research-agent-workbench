@@ -16,6 +16,7 @@ from check_pr_governance import check_pull_request
 
 ROOT = Path(__file__).resolve().parents[2]
 TOOL = '.github/scripts/release_source_ci.py'
+CONTRACT_POLICY = '.github/source-ci-contract.json'
 WORKFLOW = '.github/workflows/ci.yml'
 REQUIRED = ['governance', 'test (3.11)', 'test (3.13)']
 SOURCE_JOBS = REQUIRED + ['plan', 'documentation', 'repository_smoke',
@@ -56,6 +57,13 @@ class GitHub:
             '-H', f'X-GitHub-Api-Version: {API_VERSION}', f'repos/{self.repository}' + (f'/{path}' if path else ''),
         ], text=True, encoding='utf-8')
         return json.loads(response)
+
+    def download(self, artifact_id):
+        positive(artifact_id)
+        return subprocess.check_output([
+            'gh', 'api', '--hostname', 'github.com', '--method', 'GET',
+            '-H', f'X-GitHub-Api-Version: {API_VERSION}',
+            f'repos/{self.repository}/actions/artifacts/{artifact_id}/zip'])
 
     def pages(self, path, key=None):
         rows = []
@@ -100,6 +108,30 @@ def repository_id(api):
 
 def same_repository(value, repository, identity):
     require(value['full_name'] == repository and value['id'] == identity, 'foreign repository identity')
+
+
+def active_contract(root, source):
+    """Current release interpretation is source-owned, never selected by a manifest."""
+    value = json.loads(git(root, 'show', f'{source}:{CONTRACT_POLICY}'))
+    require(set(value) == {'schema_version', 'active_contract'} and type(value['schema_version']) is int
+            and value['schema_version'] == 1
+            and value['active_contract'] in ('legacy-ci-v1', 'components-v1'), 'invalid source-CI contract policy')
+    policy = json.loads(git(root, 'show', f'{source}:.github/governance-policy.json'))['curated_release_topology']
+    checkpoint = value['active_contract'] == 'components-v1'
+    require(policy['schema_version'] == (2 if checkpoint else 1)
+            and policy['source_ci_workflow'] == ('CI checkpoint' if checkpoint else 'CI')
+            and policy['source_ci_required_checks'] ==
+            (['checkpoint-governance', 'CI checkpoint result'] if checkpoint else REQUIRED),
+            'source-CI and release governance versions differ')
+    return value['active_contract']
+
+
+def attest_contract(api, source, run_id, contract):
+    if contract == 'legacy-ci-v1':
+        return attest(api, source, run_id)
+    require(contract == 'components-v1', 'unsupported source-CI contract')
+    from release_checkpoint_ci import attest as checkpoint_attest
+    return checkpoint_attest(api, source, run_id)
 
 
 def merged_governance(root, api, source):
@@ -211,7 +243,7 @@ def main(argv=None):
         require(git(ROOT, 'rev-parse', 'refs/remotes/origin/develop').decode().strip() == tip,
                 'fetch current develop before attesting')
         git(ROOT, 'merge-base', '--is-ancestor', args.source, tip)
-        result = attest(api, args.source, args.run_id)
+        result = attest_contract(api, args.source, args.run_id, active_contract(ROOT, args.source))
     # Publication is last and exclusive; failures never create a success receipt.
     with args.output.open('x', encoding='utf-8', newline='\n') as stream:
         stream.write(json.dumps(result, ensure_ascii=False, sort_keys=True, indent=2) + '\n')

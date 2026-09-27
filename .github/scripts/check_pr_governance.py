@@ -336,8 +336,9 @@ def validate_curated_release_policy(
         )
         valid = False
 
+    checkpoint = policy.get("schema_version") == 2
     expected_scalars = {
-        "schema_version": 1,
+        "schema_version": 2 if checkpoint else 1,
         "activation_state": "dormant",
         "activation_task": "M14-005",
         "base_ref": "main",
@@ -346,8 +347,9 @@ def validate_curated_release_policy(
         "minimum_risk": "R2",
         "same_repository": True,
         "source_ref": "develop",
-        "source_ci_workflow": "CI",
-        "source_ci_required_checks": ["governance", "test (3.11)", "test (3.13)"],
+        "source_ci_workflow": "CI checkpoint" if checkpoint else "CI",
+        "source_ci_required_checks": (["checkpoint-governance", "CI checkpoint result"] if checkpoint
+                                      else ["governance", "test (3.11)", "test (3.13)"]),
         "manifest_path": "RELEASE_MANIFEST.json",
         "expectations_source": "trusted-caller-attestation",
     }

@@ -16,7 +16,10 @@ import release_surface as surface
 ROOT = Path(__file__).resolve().parents[2]
 TOOL = '.github/scripts/release_preflight.py'
 TRUSTED_FILES = (TOOL, source_ci.TOOL, surface.TOOL, *surface.SCHEMAS.values(),
-                 '.github/scripts/check_pr_governance.py', '.github/governance-policy.json')
+                 '.github/scripts/check_pr_governance.py', '.github/governance-policy.json',
+                 source_ci.CONTRACT_POLICY, '.github/scripts/release_checkpoint_ci.py',
+                 '.github/scripts/ci_component_result.py', '.github/scripts/run_component_ci.py',
+                 '.github/scripts/ci_components.py')
 
 
 def current_refs(root, api, source, parent):
@@ -46,7 +49,8 @@ def check(root, api, *, source, parent, policy_version, release_version, run_id,
         source_ci.require(source_ci.git(root, 'show', f'{source}:{path}') == (ROOT / path).read_bytes(),
                           f'trusted source checker byte drift: {path}')
     before = current_refs(root, api, source, parent)
-    observation = source_ci.attest(api, source, run_id)
+    contract = source_ci.active_contract(root, source)
+    observation = source_ci.attest_contract(api, source, run_id, contract)
     expected = dict(repository=api.repository, source=source, parent=parent,
                     policy_version=policy_version, release_version=release_version,
                     source_ci=observation['source_ci'])
@@ -64,7 +68,7 @@ def check(root, api, *, source, parent, policy_version, release_version, run_id,
     after = current_refs(root, api, source, parent)
     source_ci.require(before == after, 'protected refs changed during preflight')
     # A rerun/state change after the first observation invalidates this attempt.
-    final_observation = source_ci.attest(api, source, run_id)
+    final_observation = source_ci.attest_contract(api, source, run_id, contract)
     source_ci.require(final_observation == observation, 'source CI changed during preflight')
     return dict(repository=api.repository, source=source, parent=parent, candidate=candidate,
                 policy_version=policy_version, release_version=release_version,

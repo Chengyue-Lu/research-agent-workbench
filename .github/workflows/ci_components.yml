@@ -1,14 +1,17 @@
-name: CI components candidate
+name: CI components
 
 on:
+  pull_request:
+    branches: [develop]
+    types: [opened, synchronize, reopened, ready_for_review]
   push:
-    branches: [feature/ci-component-flow]
+    branches: [develop]
   workflow_dispatch:
     inputs:
       profile:
-        description: Candidate scope; no profile grants release or protected-check authority
+        description: Short feedback scope; full suites use CI checkpoint
         type: choice
-        options: [component, integration-smoke, checkpoint, release-checkpoint]
+        options: [component, integration-smoke]
         default: component
       base:
         description: Exact base commit SHA; empty uses the fetched develop tip
@@ -19,7 +22,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: ci-components-candidate-${{ github.ref }}
+  group: ci-components-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -40,9 +43,9 @@ jobs:
           python-version: '3.11'
       - id: plan
         env:
-          BASE: ${{ inputs.base }}
+          BASE: ${{ github.event.pull_request.base.sha || inputs.base }}
           HEAD: ${{ github.sha }}
-          PROFILE: ${{ inputs.profile || 'component' }}
+          PROFILE: ${{ github.event_name == 'push' && 'integration-smoke' || inputs.profile || 'component' }}
         run: |
           if [ -z "$BASE" ]; then BASE="$(git rev-parse origin/develop)"; fi
           python .github/scripts/run_component_ci.py plan --base "$BASE" --head "$HEAD" --profile "$PROFILE" --output .rwb/plan.json --github-output "$GITHUB_OUTPUT"
@@ -53,11 +56,10 @@ jobs:
           if-no-files-found: error
 
   execute:
-    name: Component candidate (${{ matrix.python }})
+    name: Component (${{ matrix.python }})
     needs: plan
     runs-on: ubuntu-latest
-    # Explicit checkpoints may be longer; routine cost is reported separately.
-    timeout-minutes: 60
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -110,16 +112,35 @@ jobs:
           if-no-files-found: error
 
   result:
-    name: CI components result (candidate)
+    name: CI result
     if: always()
     needs: [plan, execute]
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - name: Require the plan and its execution to succeed
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: component-plan
+          path: .rwb
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: component-result-*
+          path: .rwb/native
+      - name: Require the plan and its actual producers to succeed
         env:
           PLAN: ${{ needs.plan.result }}
           EXECUTION: ${{ needs.execute.result }}
         run: |
-          echo "plan=$PLAN execution=$EXECUTION"
-          test "$PLAN" = success && test "$EXECUTION" = success
+          python .github/scripts/ci_component_result.py --plan .rwb/plan.json --directory .rwb/native --plan-status "$PLAN" --execution-status "$EXECUTION" --output .rwb/ci-result.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ci-result
+          path: .rwb/ci-result.json
+          if-no-files-found: error

@@ -11,7 +11,9 @@
         ".agents/skills/",
         "skill-lab/"
       ],
-      "paths": ["registry/skill-needs.json"],
+      "paths": [
+        "registry/skill-needs.json"
+      ],
       "tests": [
         "test_capability_resolution",
         "test_capability_requirements",
@@ -137,7 +139,9 @@
         "registry/authority/",
         "registry/protocol-profiles/"
       ],
-      "paths": ["registry/protocol-profiles.json"],
+      "paths": [
+        "registry/protocol-profiles.json"
+      ],
       "tests": [
         "test_protocol_profiles",
         "test_mode_actions",
@@ -318,26 +322,68 @@
     }
   },
   "direct_tests": {
-    ".github/scripts/check_coverage_policy.py": ["test_coverage_policy"],
-    ".github/scripts/check_pr_governance.py": ["test_pr_governance", "test_governance_helper_branches"],
-    ".github/scripts/ci_checks.py": ["test_ci_checks"],
-    ".github/scripts/ci_component_smoke.py": ["test_ci_component_smoke"],
-    ".github/scripts/ci_components.py": ["test_ci_components"],
-    ".github/scripts/ci_consumer_contracts.py": ["test_ci_consumer_contracts"],
-    ".github/scripts/ci_consumer_shadow.py": ["test_ci_consumer_shadow"],
-    ".github/scripts/ci_contract_shadow.py": ["test_ci_contract_shadow"],
-    ".github/scripts/ci_dependencies.py": ["test_ci_dependencies"],
-    ".github/scripts/ci_domain_audit.py": ["test_ci_domain_audit"],
-    ".github/scripts/ci_input_facts.py": ["test_ci_input_facts"],
-    ".github/scripts/ci_shadow_pair.py": ["test_ci_shadow_pair"],
-    ".github/scripts/plan_ci.py": ["test_ci_plan"],
-    ".github/scripts/portable_package_smoke.py": ["test_portable_build"],
-    ".github/scripts/release_preflight.py": ["test_release_preflight"],
-    ".github/scripts/release_source_ci.py": ["test_release_source_ci"],
-    ".github/scripts/release_surface.py": ["test_release_surface", "test_release_oracle_replay"],
-    ".github/scripts/run_component_ci.py": ["test_ci_component_execution"],
-    ".github/scripts/selection_witness.py": ["test_selection_witness"],
-    "tests/run_unittest_suite.py": ["test_test_runner"],
+    ".github/scripts/check_coverage_policy.py": [
+      "test_coverage_policy"
+    ],
+    ".github/scripts/check_pr_governance.py": [
+      "test_pr_governance",
+      "test_governance_helper_branches"
+    ],
+    ".github/scripts/ci_checks.py": [
+      "test_ci_checks"
+    ],
+    ".github/scripts/ci_component_smoke.py": [
+      "test_ci_component_smoke"
+    ],
+    ".github/scripts/ci_components.py": [
+      "test_ci_components"
+    ],
+    ".github/scripts/ci_consumer_contracts.py": [
+      "test_ci_consumer_contracts"
+    ],
+    ".github/scripts/ci_consumer_shadow.py": [
+      "test_ci_consumer_shadow"
+    ],
+    ".github/scripts/ci_contract_shadow.py": [
+      "test_ci_contract_shadow"
+    ],
+    ".github/scripts/ci_dependencies.py": [
+      "test_ci_dependencies"
+    ],
+    ".github/scripts/ci_domain_audit.py": [
+      "test_ci_domain_audit"
+    ],
+    ".github/scripts/ci_input_facts.py": [
+      "test_ci_input_facts"
+    ],
+    ".github/scripts/ci_shadow_pair.py": [
+      "test_ci_shadow_pair"
+    ],
+    ".github/scripts/plan_ci.py": [
+      "test_ci_plan"
+    ],
+    ".github/scripts/portable_package_smoke.py": [
+      "test_portable_build"
+    ],
+    ".github/scripts/release_preflight.py": [
+      "test_release_preflight"
+    ],
+    ".github/scripts/release_source_ci.py": [
+      "test_release_source_ci"
+    ],
+    ".github/scripts/release_surface.py": [
+      "test_release_surface",
+      "test_release_oracle_replay"
+    ],
+    ".github/scripts/run_component_ci.py": [
+      "test_ci_component_execution"
+    ],
+    ".github/scripts/selection_witness.py": [
+      "test_selection_witness"
+    ],
+    "tests/run_unittest_suite.py": [
+      "test_test_runner"
+    ],
     "tests/execution_fixtures.py": [
       "test_evaluation_overlay",
       "test_execution_view",
@@ -400,6 +446,32 @@
     "tests/fixtures/skill_closeout_sources/": [
       "test_skill_execution_closeout",
       "test_skill_closeout_review"
+    ],
+    ".github/scripts/ci_component_result.py": [
+      "test_ci_component_result",
+      "test_release_checkpoint_ci"
+    ],
+    ".github/scripts/ci_checkpoint.py": [
+      "test_ci_checkpoint"
+    ],
+    ".github/scripts/release_checkpoint_ci.py": [
+      "test_release_checkpoint_ci"
+    ],
+    ".github/workflows/ci_components.yml": [
+      "test_ci_checkpoint",
+      "test_ci_component_result"
+    ],
+    ".github/workflows/ci_checkpoint.yml": [
+      "test_ci_checkpoint",
+      "test_ci_component_result",
+      "test_release_checkpoint_ci"
+    ],
+    ".github/source-ci-contract.json": [
+      "test_release_checkpoint_ci",
+      "test_release_preflight"
+    ],
+    "schemas/v0.2.0/release-manifest.schema.json": [
+      "test_release_checkpoint_ci"
     ]
   },
   "nearest_components": {

@@ -1,0 +1,11 @@
+task_id: TEST-PERF-002
+revision: 52
+request: Continue PR105 component CI implementation
+profile: CI implementation and migration maintainer
+required_skills: []
+scope: PR/develop producer, fixed result, checkpoint scheduling, source-CI version
+  compatibility
+delegation: false
+budget: Bounded direct regressions and one actual PR content run
+stop_condition: Draft reviewable; no protection changes, merge, main deployment or
+  release activation

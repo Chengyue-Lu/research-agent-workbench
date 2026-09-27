@@ -133,6 +133,6 @@ class ComponentGitPlanTests(unittest.TestCase):
         self.assertEqual(full['python_versions'], ['3.11'])
         self.assertEqual(release['python_versions'], ['3.11', '3.13'])
         for value in (smoke, full, release):
-            self.assertEqual(value['execution_authority'], 'candidate-unaccepted')
+            self.assertEqual(value['execution_authority'], 'profile-result-only')
         with self.assertRaises(ValueError):
             runner.make_plan(self.root, '--bad', self.head)

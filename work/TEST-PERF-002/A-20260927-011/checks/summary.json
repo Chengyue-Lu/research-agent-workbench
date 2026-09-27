@@ -1,0 +1,42 @@
+{
+  "status": "PASS-local-staged-checks",
+  "starting_head": "a1983f362d4073c21fe2172b67539fb1b97b8f8f",
+  "source_sha256": {
+    ".github/scripts/ci_checkpoint.py": "a89515350c13fda36b8606d62454bc1aaf9edb0d5ef69d15685c86d2106933be",
+    ".github/scripts/ci_component_result.py": "ca970a24da4e87b3768ae189abfe45409dc751d56b8f6255f95c1c2d6a1b6207",
+    ".github/scripts/release_checkpoint_ci.py": "8cccfb7a1215d90ebd515c0f420aded4dfafd2555e40989c297a86c792d53ebd",
+    ".github/scripts/check_pr_governance.py": "9ec1398e6776f5eb4d1f215cc7b2f6b7282ebe27519b68f07391a52717c658f5",
+    ".github/scripts/release_preflight.py": "e6448c8382ad41e3669f193777f227b631ac6c8f3f2e2ef508b720ae35f0fe9b",
+    ".github/scripts/release_source_ci.py": "f20df32bf7a11758a2ba2e7675dd5603f6bf0245d095ee180f40bb6aecce39b3",
+    ".github/scripts/release_surface.py": "af8e5ab71ffc800eb0da960918900170164f2d777b37fc9dfbacdcdd826ad66a",
+    ".github/scripts/run_component_ci.py": "f2ae19fff9aae8216a39580a92336969164e9d074eb8d46f2de44d38f1af173d",
+    ".github/source-ci-contract.json": "143008bede7b0ca453e2a8a6d16eae949dbb917969cc4f5ea357420a664e635d",
+    ".github/workflows/ci_components.yml": "08c43ebc37b170102a34ab95b51455c21c1da109c9023ecf28545e56cdc39f40",
+    ".github/workflows/ci_checkpoint.yml": "6cface88453fbb536dd6f7f9f868b30bc0923929af8f0fbdc734ea65a944e74f",
+    "schemas/v0.2.0/release-manifest.schema.json": "dca77e32bd5be43664925128fce2021c0e66f521e41a731c2626e5bb480e832a",
+    "tests/ci_components.json": "278e28b5383b346592f6565138d98f107e1b8bbe6b83420a367f95f6451e54e5",
+    "tests/test_ci_checkpoint.py": "ecc285884229e191a370b1820a4dafb937767d78a093521c938747ae753b31cc",
+    "tests/test_ci_component_result.py": "3a4560bc126f8c40ad0dbd898bc158ec7dcbc83764e0de1ac14f2559c4742a55",
+    "tests/test_release_checkpoint_ci.py": "7eb8983a8ae83fb8d0abee57f6632abc867d4c7c69a8bf2c590f12533d83dde6",
+    "tests/test_ci_component_execution.py": "1b646373396c464b09bb3905dcbc760f809f153f2c7dc6ef41c3d8f12df0e560",
+    "tests/test_ci_components.py": "0ae00963a1bc49660245f05597142fd2f7f8670fd11e0413fd8e171cc68f4ae8",
+    "tests/test_release_source_ci.py": "cd047b4e578ee6147b5fa170b2bc58ff9efa8f35b1d9705095e37200616f547b",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/COMPONENT_CI.md": "10122a503763372c22b8a10ec7bc618f7af74908a76f8ef932533a4e02d4a1bf",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/COMPONENT_CI_MIGRATION.md": "4c94e891f5bfc6cd54abd82a618f31fa5ff0215af11f40b38c8b6eef4dd4685e"
+  },
+  "coverage": "not-collected",
+  "production_activated": false,
+  "hosted_current_head_verified": false,
+  "local_invocations": [
+    "44PASS",
+    "67:66PASS/1FAIL",
+    "mapping correction1PASS",
+    "version/compat/docs17PASS"
+  ],
+  "smoke_steps": 8,
+  "smoke_seconds": 9.927,
+  "default_branch": "main",
+  "checkpoint_deployed": false,
+  "raw_evidence_sha256": "8898ed5406f1ff6b7d1db6dbff880b9501290b41fbb5cfcc4e40eb76c3945150",
+  "files": 52
+}

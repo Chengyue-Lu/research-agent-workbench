@@ -1,0 +1,201 @@
+name: CI checkpoint
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: Complete baseline, or both supported Python versions and source governance
+        type: choice
+        options: [checkpoint, release-checkpoint]
+        default: checkpoint
+  schedule:
+    # Monday-Friday 02:30 Asia/Shanghai. GitHub schedules use UTC.
+    - cron: '30 18 * * 0-4'
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+concurrency:
+  group: ci-checkpoint-${{ github.event_name == 'schedule' && 'nightly' || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    name: checkpoint-plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      source: ${{ steps.source.outputs.sha }}
+      execute: ${{ steps.decision.outputs.execute }}
+      fingerprint: ${{ steps.decision.outputs.fingerprint }}
+      python_versions: ${{ steps.plan.outputs.python_versions }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'schedule' && 'develop' || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install 'PyYAML>=6,<7'
+      - id: source
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - id: decision
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE: ${{ steps.source.outputs.sha }}
+          REPOSITORY: ${{ github.repository }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          extra=()
+          if [ "$EVENT" = schedule ]; then extra+=(--scheduled); fi
+          python .github/scripts/ci_checkpoint.py --source "$SOURCE" --repository "$REPOSITORY" "${extra[@]}" --output .rwb/checkpoint-decision.json --github-output "$GITHUB_OUTPUT"
+      - id: plan
+        env:
+          SOURCE: ${{ steps.source.outputs.sha }}
+          PROFILE: ${{ inputs.profile || 'checkpoint' }}
+          REF: ${{ github.ref }}
+        run: |
+          if [ "$PROFILE" = release-checkpoint ] && [ "$REF" != refs/heads/develop ]; then
+            echo 'release-checkpoint must run on develop'; exit 1
+          fi
+          python .github/scripts/run_component_ci.py plan --base "$SOURCE" --head "$SOURCE" --profile "$PROFILE" --output .rwb/plan.json --github-output "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: component-plan
+          path: |
+            .rwb/plan.json
+            .rwb/checkpoint-decision.json
+          if-no-files-found: error
+
+  execute:
+    name: checkpoint (${{ matrix.python }})
+    needs: plan
+    if: needs.plan.outputs.execute == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ${{ fromJSON(needs.plan.outputs.python_versions) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.plan.outputs.source }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: component-plan
+          path: .rwb
+      - name: Create clean environment and install wheel
+        run: |
+          python -m venv .rwb/environment
+          echo "$GITHUB_WORKSPACE/.rwb/environment/bin" >> "$GITHUB_PATH"
+          .rwb/environment/bin/python -m pip install 'setuptools>=77' 'build>=1.2,<2'
+          .rwb/environment/bin/python -m pip wheel --no-deps --no-build-isolation . --wheel-dir .rwb/wheels
+          .rwb/environment/bin/python - <<'PY'
+          from pathlib import Path
+          import subprocess, sys
+          wheels = list(Path('.rwb/wheels').glob('*.whl'))
+          if len(wheels) != 1:
+              raise SystemExit('expected exactly one checkpoint wheel')
+          subprocess.run([sys.executable, '-m', 'pip', 'install', str(wheels[0]) + '[test]'], check=True)
+          PY
+      - name: Installed product smoke
+        run: python .github/scripts/ci_component_smoke.py --python "$(command -v python)" --output .rwb/smoke.json
+      - name: Complete checkpoint tests
+        run: python .github/scripts/run_component_ci.py run --plan .rwb/plan.json --output .rwb/result.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: component-result-${{ matrix.python }}
+          path: |
+            .rwb/plan.json
+            .rwb/result.json
+            .rwb/smoke.json
+          if-no-files-found: error
+
+  governance:
+    name: checkpoint-governance
+    needs: plan
+    if: github.event_name == 'workflow_dispatch' && inputs.profile == 'release-checkpoint'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.plan.outputs.source }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install 'PyYAML>=6,<7'
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE: ${{ needs.plan.outputs.source }}
+          REPOSITORY: ${{ github.repository }}
+        run: python .github/scripts/release_checkpoint_ci.py --source "$SOURCE" --repository "$REPOSITORY" --output "$RUNNER_TEMP/source-governance.json"
+
+  result:
+    name: CI checkpoint result
+    if: always()
+    needs: [plan, execute, governance]
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Require a successful scheduling decision
+        env:
+          PLAN: ${{ needs.plan.result }}
+          EXECUTE: ${{ needs.plan.outputs.execute }}
+          EXECUTION: ${{ needs.execute.result }}
+        run: |
+          test "$PLAN" = success
+          if [ "$EXECUTE" = false ]; then
+            test "$EXECUTION" = skipped
+            echo 'No new nightly inputs; no execution receipt produced.'
+          else
+            test "$EXECUTE" = true && test "$EXECUTION" = success
+          fi
+      - uses: actions/checkout@v4
+        if: needs.plan.outputs.execute == 'true'
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.plan.outputs.source }}
+      - uses: actions/setup-python@v5
+        if: needs.plan.outputs.execute == 'true'
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        if: needs.plan.outputs.execute == 'true'
+        with:
+          name: component-plan
+          path: .rwb
+      - uses: actions/download-artifact@v4
+        if: needs.plan.outputs.execute == 'true'
+        with:
+          pattern: component-result-*
+          path: .rwb/native
+      - name: Join actual producers
+        if: needs.plan.outputs.execute == 'true'
+        env:
+          PLAN: ${{ needs.plan.result }}
+          EXECUTION: ${{ needs.execute.result }}
+          GOVERNANCE: ${{ needs.governance.result }}
+        run: python .github/scripts/ci_component_result.py --plan .rwb/plan.json --directory .rwb/native --plan-status "$PLAN" --execution-status "$EXECUTION" --governance-status "$GOVERNANCE" --output .rwb/ci-result.json
+      - uses: actions/upload-artifact@v4
+        if: needs.plan.outputs.execute == 'true'
+        with:
+          name: checkpoint-result
+          path: .rwb/ci-result.json
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'schedule' && needs.plan.outputs.execute == 'true'
+        with:
+          name: nightly-content-${{ needs.plan.outputs.fingerprint }}
+          path: .rwb/checkpoint-decision.json
+          if-no-files-found: error
