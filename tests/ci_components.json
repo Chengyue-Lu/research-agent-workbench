@@ -324,6 +324,19 @@
     }
   },
   "direct_tests": {
+    ".github/scripts/release_public.py": [
+      "test_release_public",
+      "test_public_surface"
+    ],
+    ".github/release-surface.yml": [
+      "test_release_surface",
+      "test_release_oracle_replay",
+      "test_release_public",
+      "test_public_surface"
+    ],
+    "tests/public_surface_helpers.py": [
+      "test_public_surface"
+    ],
     ".github/scripts/check_coverage_policy.py": [
       "test_coverage_policy"
     ],
