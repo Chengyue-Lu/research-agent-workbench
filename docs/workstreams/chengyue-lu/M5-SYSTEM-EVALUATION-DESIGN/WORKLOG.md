@@ -288,3 +288,12 @@ Implemented four versioned records and metric/analysis compile/validate APIs und
 Retained all 13 statuses, actual failed/retry/unstarted scope, external method/observation trust and complete paired inputs.
 Candidate verification and capture-gap disclosure: [H4c Attempt](attempts/M5-007-H4C-001/README.md).
 M5-007 remains IN_PROGRESS; H4c review precedes H5 overall closeout. No previous exception extends to this PR.
+
+## PR104 component-CI rebase (2026-09-28)
+
+Rebased the four H4c commits from `97d3b3d` onto accepted PR105 `24e1a3e` without conflicts;
+range-diff retains their original patches and the H4c source, tests and Attempts retain their bytes.
+Registered H4c in the evaluation component and its fixture consumers in `tests/ci_components.json`.
+Local adaptation checks: 15 component-selector tests PASS; all five relevant source/fixture inputs
+select the H4c test module. This verification does not repeat the historical full or coverage runs.
+The updated PR awaits its own component CI and governance results, then R2 review; M5-007 remains IN_PROGRESS.
