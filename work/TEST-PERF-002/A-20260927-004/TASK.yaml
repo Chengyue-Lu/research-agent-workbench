@@ -1,0 +1,9 @@
+task_id: TEST-PERF-002
+revision: 51
+request: Continue measured CI execution-cost improvement
+profile: CI performance coordinator
+required_skills: []
+delegation: true
+scope: bounded pure-parse implementation and local evidence
+budget: bounded paired cases and scoped validation
+stop_condition: reviewable local source-bound archive

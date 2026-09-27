@@ -1,0 +1,978 @@
+{
+  "status": "PASS-local-scoped",
+  "accepted_base": "97d3b3d3141419b34ad47e0f42d9f01d0dfbd535",
+  "comparison_candidate": "725647f4d509fd4b29622c407286f400fcb6684f",
+  "implementation_head": "815c3a95ff86118e0c8bba6ed9bbf98162584f6c",
+  "local_validation_receipts": {
+    "311": {
+      "path": "policy-integration/validation311/summary.json",
+      "sha256": "46c34826611f9a36b9495fd448c8feab74a4db5ab65c4bcce8e714ca241ca18c",
+      "identity": {
+        "argv": [
+          "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+          "-X",
+          "utf8",
+          "-B",
+          "-m",
+          "coverage",
+          "run",
+          "--rcfile",
+          "D:\\lcy\\develop\\_assessments\\rwb-ci-execution-inputs-20260927\\next-boundary\\policy-integration\\validation311\\coverage.ini",
+          "-m",
+          "unittest",
+          "-v",
+          "tests.test_ci_plan",
+          "tests.test_ci_contract_shadow",
+          "tests.test_coverage_policy"
+        ],
+        "cwd": "D:\\lcy\\develop\\_worktrees\\RWB\\ci-input-boundaries-v2",
+        "source_sha256": {
+          ".github/scripts/plan_ci.py": "20ae01b14d33a4a37fb20961c95be339c3bfef2295af24be3ecdadf211fd63db",
+          "tests/test_ci_plan.py": "67afed33dc250e23fb8c11b32dc9324778414bab6d03ba666d34a22d20336654",
+          "tests/test_ci_contract_shadow.py": "d397d2fc13857e5b17c55935022910854e76a8315addac5613c8ff614d8d4bba",
+          "tests/test_coverage_policy.py": "41ac118842bd9c8ac23d5443bbdb353497a397e128b89f7d087144870d5b361b",
+          "tests/coverage_policy.yaml": "ec64c08b7b9a5fa8f2689b88f6fddcf542a4bae046e105ee1fc7b6600ce4d165",
+          "tests/ci_impact_policy.yaml": "c425f8267a3a42a60f9de78acbaaed99e0e67a2f1b41b5903e88e92ca0e9eeec"
+        },
+        "formal_gate": false,
+        "hosted": false,
+        "timing_interpretation": "correctness validation; versions run concurrently, not performance evidence",
+        "returncode": 0,
+        "wall_seconds": 329.7006235000008,
+        "export_returncode": 0,
+        "status": "PASS"
+      }
+    },
+    "313": {
+      "path": "policy-integration/validation313/summary.json",
+      "sha256": "61ed83b5cc8c2e8b3302c0d71bb9b4992e0cd27e915a8315e52321e4d7d079df",
+      "identity": {
+        "argv": [
+          "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv313\\Scripts\\python.exe",
+          "-X",
+          "utf8",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "tests.test_ci_plan",
+          "tests.test_ci_contract_shadow",
+          "tests.test_coverage_policy"
+        ],
+        "cwd": "D:\\lcy\\develop\\_worktrees\\RWB\\ci-input-boundaries-v2",
+        "source_sha256": {
+          ".github/scripts/plan_ci.py": "20ae01b14d33a4a37fb20961c95be339c3bfef2295af24be3ecdadf211fd63db",
+          "tests/test_ci_plan.py": "67afed33dc250e23fb8c11b32dc9324778414bab6d03ba666d34a22d20336654",
+          "tests/test_ci_contract_shadow.py": "d397d2fc13857e5b17c55935022910854e76a8315addac5613c8ff614d8d4bba",
+          "tests/test_coverage_policy.py": "41ac118842bd9c8ac23d5443bbdb353497a397e128b89f7d087144870d5b361b",
+          "tests/coverage_policy.yaml": "ec64c08b7b9a5fa8f2689b88f6fddcf542a4bae046e105ee1fc7b6600ce4d165",
+          "tests/ci_impact_policy.yaml": "c425f8267a3a42a60f9de78acbaaed99e0e67a2f1b41b5903e88e92ca0e9eeec"
+        },
+        "formal_gate": false,
+        "hosted": false,
+        "timing_interpretation": "correctness validation; versions run concurrently, not performance evidence",
+        "returncode": 0,
+        "wall_seconds": 294.0143012000044,
+        "status": "PASS"
+      }
+    }
+  },
+  "quality_review": {
+    "path": "policy-integration/COVERAGE_REVIEW.json",
+    "sha256": "3ac1208c4ef7940c831c8e1b39049b77ed4fe89168f0b5718996b6e4eac6c17a",
+    "receipt": {
+      "review_status": "PASS_FOR_LOCAL_PARSER_SLICE",
+      "comparison_candidate": "725647f4d509fd4b29622c407286f400fcb6684f",
+      "accepted_develop": "97d3b3d3141419b34ad47e0f42d9f01d0dfbd535",
+      "source_sha256": "20ae01b14d33a4a37fb20961c95be339c3bfef2295af24be3ecdadf211fd63db",
+      "ci_checks_sha256": "d1ef2da6a92be90b9d91e3c31a02198dba41b3e52e493703be0dfa4e3fb3cba6",
+      "coverage_json_sha256": "5a330110cc2a98eb6c6b9670da987ed40fc6ecc7caddf86f2da3d868dbef8153",
+      "coverage_data_sha256": "9b03446c54d2a0e9510f573e4401604d0123958decc4cf8f3b9c37dfaf649f14",
+      "config_sha256": "6e32ad22784f3d44fa575e707c2f4677ee3e79e1eeb05e11f7a5e47baa4308ca",
+      "coverage_meta": {
+        "format": 3,
+        "version": "7.16.1",
+        "timestamp": "2026-09-27T08:20:15.060947",
+        "branch_coverage": true,
+        "show_contexts": false
+      },
+      "validation": {
+        "311": {
+          "summary_sha256": "46c34826611f9a36b9495fd448c8feab74a4db5ab65c4bcce8e714ca241ca18c",
+          "stderr_sha256": "84a52a1259acff06bcd7aa35b96cda9f97168a8d319fddb66d70603ff6f6f349",
+          "returncode": 0,
+          "unique_pass_count": 133,
+          "module_counts": {
+            "test_ci_plan": 88,
+            "test_ci_contract_shadow": 24,
+            "test_coverage_policy": 21
+          },
+          "ids": [
+            "tests.test_ci_plan.CoveragePolicyParsingTests.test_cache_is_bounded_and_explicitly_clearable",
+            "tests.test_ci_plan.CoveragePolicyParsingTests.test_invalid_and_nonbytes_inputs_preserve_parser_behavior",
+            "tests.test_ci_plan.CoveragePolicyParsingTests.test_parser_configuration_changes_bypass_cache_and_restore",
+            "tests.test_ci_plan.CoveragePolicyParsingTests.test_stock_policy_values_are_independent",
+            "tests.test_ci_plan.PlannerTests.test_accepted_deterministic_ids_avoid_reloading_mixed_behavioral_module",
+            "tests.test_ci_plan.PlannerTests.test_accepted_test_consumer_drift_invalidates_old_closure",
+            "tests.test_ci_plan.PlannerTests.test_actual_pragma_and_runner_semantics_keep_repository_obligation",
+            "tests.test_ci_plan.PlannerTests.test_agent_can_add_groups_but_cannot_remove_minimum",
+            "tests.test_ci_plan.PlannerTests.test_anchor_history_limit_fails_closed_without_scanning_older_authority",
+            "tests.test_ci_plan.PlannerTests.test_assigned_execution_namespace_keeps_failing_reflective_consumer",
+            "tests.test_ci_plan.PlannerTests.test_candidate_policy_and_fingerprint_cannot_approve_new_consumer_closure",
+            "tests.test_ci_plan.PlannerTests.test_candidate_selector_returning_no_tests_cannot_authorize_focused",
+            "tests.test_ci_plan.PlannerTests.test_changed_lines_and_deleted_only_hunks",
+            "tests.test_ci_plan.PlannerTests.test_ci_script_contract_requires_base_acceptance_and_keeps_new_consumers",
+            "tests.test_ci_plan.PlannerTests.test_claim_contract_rejects_actual_promotion_fixture_drift",
+            "tests.test_ci_plan.PlannerTests.test_cli_emits_canonical_plan_and_workflow_outputs",
+            "tests.test_ci_plan.PlannerTests.test_comment_only_critical_change_has_no_executable_coverage_obligation",
+            "tests.test_ci_plan.PlannerTests.test_consumer_inventory_or_new_import_requires_full",
+            "tests.test_ci_plan.PlannerTests.test_contract_evidence_requires_refreshed_accepted_anchor_after_test_review",
+            "tests.test_ci_plan.PlannerTests.test_contract_pins_each_behavioral_proof_and_acceptance_module",
+            "tests.test_ci_plan.PlannerTests.test_contract_rejects_weakened_proof_implementation_with_unchanged_ids",
+            "tests.test_ci_plan.PlannerTests.test_contract_test_side_drift_and_accepted_readmission",
+            "tests.test_ci_plan.PlannerTests.test_coverage_authority_semantics_require_repository_proof",
+            "tests.test_ci_plan.PlannerTests.test_coverage_union_executes_repository_and_impact_tests_once",
+            "tests.test_ci_plan.PlannerTests.test_critical_subject_uses_explicit_base_proof_and_keeps_all_acceptance",
+            "tests.test_ci_plan.PlannerTests.test_critical_syntax_error_blocks_instead_of_erasing_impact",
+            "tests.test_ci_plan.PlannerTests.test_decorators_are_executable_impact_and_comments_keep_repository_guard",
+            "tests.test_ci_plan.PlannerTests.test_deleted_renamed_and_new_paths_require_full",
+            "tests.test_ci_plan.PlannerTests.test_deterministic_ids_reject_indirect_helper_and_fixture_drift",
+            "tests.test_ci_plan.PlannerTests.test_deterministic_proof_substitution_requires_unchanged_base_implementation",
+            "tests.test_ci_plan.PlannerTests.test_diagnostic_policy_refresh_keeps_anchor_and_retains_new_changed_consumers",
+            "tests.test_ci_plan.PlannerTests.test_dirty_or_untracked_source_cannot_consume_clean_head_plan",
+            "tests.test_ci_plan.PlannerTests.test_docs_fast_plan_is_explainable_and_replayable",
+            "tests.test_ci_plan.PlannerTests.test_each_verification_rechecks_commit_objects_after_cached_plan_reads",
+            "tests.test_ci_plan.PlannerTests.test_event_binds_actual_head_or_exact_merge_candidate",
+            "tests.test_ci_plan.PlannerTests.test_exact_commits_batch_preserves_positions_and_single_commit_api",
+            "tests.test_ci_plan.PlannerTests.test_exact_commits_rejects_all_malformed_positions_before_git",
+            "tests.test_ci_plan.PlannerTests.test_exact_commits_rejects_noncommits_and_missing_objects_despite_replacements",
+            "tests.test_ci_plan.PlannerTests.test_exact_proof_contract_requires_base_acceptance_and_rejects_same_suite_mutant",
+            "tests.test_ci_plan.PlannerTests.test_executable_mapping_is_bound_and_unmapped_changes_require_full",
+            "tests.test_ci_plan.PlannerTests.test_fixture_clone_keeps_local_identity_line_endings_and_isolation",
+            "tests.test_ci_plan.PlannerTests.test_full_fallback_on_missing_tests_and_git_fact_errors",
+            "tests.test_ci_plan.PlannerTests.test_function_contract_keeps_aliased_execution_opaque",
+            "tests.test_ci_plan.PlannerTests.test_function_contract_restores_consumers_for_initialization_and_new_downstream",
+            "tests.test_ci_plan.PlannerTests.test_git_type_change_adds_repository_without_erasing_other_impact",
+            "tests.test_ci_plan.PlannerTests.test_integration_release_force_and_empty_diff_are_full",
+            "tests.test_ci_plan.PlannerTests.test_invalid_policy_groups_and_evidence_fail_closed",
+            "tests.test_ci_plan.PlannerTests.test_manual_full_rerun_uses_current_pr_facts",
+            "tests.test_ci_plan.PlannerTests.test_markdown_resource_change_keeps_existing_failing_consumer",
+            "tests.test_ci_plan.PlannerTests.test_matching_side_branch_fingerprint_is_not_an_accepted_anchor",
+            "tests.test_ci_plan.PlannerTests.test_missing_or_malformed_base_policy_falls_back_full",
+            "tests.test_ci_plan.PlannerTests.test_missing_or_unmatched_anchor_history_retains_conservative_scope",
+            "tests.test_ci_plan.PlannerTests.test_mixed_docs_and_provider_keeps_full_impact_closure",
+            "tests.test_ci_plan.PlannerTests.test_monotonic_local_critical_addition_has_local_proof_and_cannot_remove_old_obligations",
+            "tests.test_ci_plan.PlannerTests.test_new_initializer_and_literal_fixture_input_cannot_extend_accepted_proof",
+            "tests.test_ci_plan.PlannerTests.test_new_markdown_is_fast_but_document_data_is_full",
+            "tests.test_ci_plan.PlannerTests.test_new_source_domain_selects_reverse_consumer_and_test_only_is_scoped",
+            "tests.test_ci_plan.PlannerTests.test_nul_diff_rejects_ambiguous_paths_and_preserves_spaces",
+            "tests.test_ci_plan.PlannerTests.test_policy_deletion_and_mode_changes_break_anchor_history",
+            "tests.test_ci_plan.PlannerTests.test_policy_history_barriers_cannot_backdate_reviewed_authority",
+            "tests.test_ci_plan.PlannerTests.test_pr65_exact_git_diff_is_full_behavior_without_coverage_or_smokes",
+            "tests.test_ci_plan.PlannerTests.test_pr68_document_path_set_does_not_propagate_through_name_checks_and_archive",
+            "tests.test_ci_plan.PlannerTests.test_projection_contract_rejects_actual_live_evaluation_helper_drift",
+            "tests.test_ci_plan.PlannerTests.test_proof_list_and_provenance_cannot_be_resigned_below_base_minimum",
+            "tests.test_ci_plan.PlannerTests.test_provider_and_independent_test_do_not_force_repository_or_full",
+            "tests.test_ci_plan.PlannerTests.test_provider_change_selects_downstream_groups_and_both_pythons",
+            "tests.test_ci_plan.PlannerTests.test_public_cli_and_validation_consumers_independently_select_smokes",
+            "tests.test_ci_plan.PlannerTests.test_r2_bounded_critical_validator_requires_impact_with_base_acceptance",
+            "tests.test_ci_plan.PlannerTests.test_r2_shared_and_unknown_paths_cannot_be_docs_fast",
+            "tests.test_ci_plan.PlannerTests.test_r2_test_fixture_and_fingerprint_refresh_have_no_coverage_or_smokes",
+            "tests.test_ci_plan.PlannerTests.test_real_ordered_worker_preserves_class_and_module_fixture_failures",
+            "tests.test_ci_plan.PlannerTests.test_real_workers_preserve_order_and_project_exact_git_plan_evidence",
+            "tests.test_ci_plan.PlannerTests.test_repository_requirement_preserves_bounded_impact_and_rejects_downgrade",
+            "tests.test_ci_plan.PlannerTests.test_reviewed_opaque_contract_is_invalidated_per_consumer",
+            "tests.test_ci_plan.PlannerTests.test_runner_consumes_valid_plan_and_rejects_full_as_focused",
+            "tests.test_ci_plan.PlannerTests.test_runner_main_executes_each_coverage_set_and_binds_real_results",
+            "tests.test_ci_plan.PlannerTests.test_selection_authority_semantics_require_full_behavior_independently",
+            "tests.test_ci_plan.PlannerTests.test_self_modified_policy_or_runner_cannot_authorize_less",
+            "tests.test_ci_plan.PlannerTests.test_smokes_and_coverage_config_are_independent_of_full_behavior",
+            "tests.test_ci_plan.PlannerTests.test_source_deletion_preserves_old_contract_consumers_without_candidate_lines",
+            "tests.test_ci_plan.PlannerTests.test_source_mode_change_requires_full",
+            "tests.test_ci_plan.PlannerTests.test_stale_base_requires_full_merge_validation",
+            "tests.test_ci_plan.PlannerTests.test_test_only_planner_input_does_not_become_a_product_executable_change",
+            "tests.test_ci_plan.PlannerTests.test_unknown_executable_and_integration_are_complete_fail_safe",
+            "tests.test_ci_plan.PlannerTests.test_unrelated_test_edit_expands_behavior_but_not_executable_coverage",
+            "tests.test_ci_plan.PlannerTests.test_validator_inventory_mapping_and_new_import_fail_safe",
+            "tests.test_ci_plan.PlannerTests.test_workflow_formatting_does_not_seed_resource_or_coverage_fallback",
+            "tests.test_ci_plan.PlannerTests.test_wrong_digest_target_and_lowered_class_are_rejected",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_actual_merge_target_and_integration_are_bound",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_archive_classification_is_separate_from_execution_authority",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_candidate_policy_never_becomes_report_contract_authority",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_cli_preserves_plan_and_never_writes_github_outputs",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_each_archive_input_retains_its_overlapping_resource_closure",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_executable_keeps_ordinary_and_opaque_consumers",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_git_bound_consumer_record_cannot_refresh_its_own_failed_pin",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_gitlink_reports_object_identity_without_inventing_blob_bytes",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_invocation_catalog_binds_every_call_and_snapshot_without_changing_plan",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_invocation_old_removed_calls_and_same_bytes_new_path_remain_distinct",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_invocation_parse_and_git_mode_failures_remain_explicit",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_isolated_graph_uses_merge_base_when_both_sides_remove_a_reader",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_mixed_executable_and_archive_inputs_keep_three_mechanisms",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_old_consumers_and_removed_inputs_are_retained",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_real_failing_document_consumer_remains_selected",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_resigned_invocation_omission_forgery_and_dangling_links_are_rejected",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_resigned_unclassified_reasons_cannot_change_attribution",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_smoke_witness_reaches_actual_source_consumer_not_just_a_test_name",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_static_smoke_witness_and_base_group_reasons_stay_distinct",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_tampered_or_weakened_plan_and_wrong_merge_are_rejected",
+            "tests.test_ci_contract_shadow.InputRoleTests.test_reference_evidence_distinguishes_read_write_and_bare_names",
+            "tests.test_ci_contract_shadow.InputRoleTests.test_scripts_modes_and_unsafe_paths_cannot_hide_as_documents",
+            "tests.test_ci_contract_shadow.InputRoleTests.test_typed_inputs_preserve_runtime_test_and_archive_boundaries",
+            "tests.test_ci_contract_shadow.ShadowWorkflowTests.test_shadow_job_has_no_execution_outputs_or_aggregate_consumers",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_branch_collection_is_mandatory",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_checker_helpers_and_structural_failures_are_explicit",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_checker_main_reports_pass_and_fail_without_traceback",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_coverage_suite_rejects_same_canonical_test_loaded_through_module_aliases",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_coverage_suite_supports_exact_test_selectors_without_duplicates",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_declared_exclusions_exactly_match_coverage_json",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_each_critical_file_has_independent_line_and_branch_gates",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_exact_thresholds_and_positive_negative_evidence_pass",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_exclusion_line_shape_and_duplicates_are_fail_closed",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_exclusion_requires_exact_auditable_location",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_global_line_threshold_is_fail_closed",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_malformed_coverage_exclusions_fail_closed",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_missing_critical_file_is_blocking",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_missing_negative_acceptance_result_is_blocking",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_policy_cannot_downgrade_the_quality_floor",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_positive_and_negative_evidence_must_be_disjoint",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_positive_and_negative_evidence_must_be_nonempty_lists",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_positive_and_negative_evidence_reject_internal_duplicates",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_repository_policy_covers_bounded_capability_validation_surfaces",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_source_root_is_canonical_and_cannot_be_narrowed",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_undeclared_actual_and_nonexistent_declared_exclusions_fail"
+          ],
+          "source_sha256": {
+            ".github/scripts/plan_ci.py": "20ae01b14d33a4a37fb20961c95be339c3bfef2295af24be3ecdadf211fd63db",
+            "tests/test_ci_plan.py": "67afed33dc250e23fb8c11b32dc9324778414bab6d03ba666d34a22d20336654",
+            "tests/test_ci_contract_shadow.py": "d397d2fc13857e5b17c55935022910854e76a8315addac5613c8ff614d8d4bba",
+            "tests/test_coverage_policy.py": "41ac118842bd9c8ac23d5443bbdb353497a397e128b89f7d087144870d5b361b",
+            "tests/coverage_policy.yaml": "ec64c08b7b9a5fa8f2689b88f6fddcf542a4bae046e105ee1fc7b6600ce4d165",
+            "tests/ci_impact_policy.yaml": "c425f8267a3a42a60f9de78acbaaed99e0e67a2f1b41b5903e88e92ca0e9eeec"
+          },
+          "formal_gate": false,
+          "hosted": false
+        },
+        "313": {
+          "summary_sha256": "61ed83b5cc8c2e8b3302c0d71bb9b4992e0cd27e915a8315e52321e4d7d079df",
+          "stderr_sha256": "99e8a8e0382f2f812abd51ce1cec786bb035e8f76da986e88ab1fb111b5213cd",
+          "returncode": 0,
+          "unique_pass_count": 133,
+          "module_counts": {
+            "test_ci_plan": 88,
+            "test_ci_contract_shadow": 24,
+            "test_coverage_policy": 21
+          },
+          "ids": [
+            "tests.test_ci_plan.CoveragePolicyParsingTests.test_cache_is_bounded_and_explicitly_clearable",
+            "tests.test_ci_plan.CoveragePolicyParsingTests.test_invalid_and_nonbytes_inputs_preserve_parser_behavior",
+            "tests.test_ci_plan.CoveragePolicyParsingTests.test_parser_configuration_changes_bypass_cache_and_restore",
+            "tests.test_ci_plan.CoveragePolicyParsingTests.test_stock_policy_values_are_independent",
+            "tests.test_ci_plan.PlannerTests.test_accepted_deterministic_ids_avoid_reloading_mixed_behavioral_module",
+            "tests.test_ci_plan.PlannerTests.test_accepted_test_consumer_drift_invalidates_old_closure",
+            "tests.test_ci_plan.PlannerTests.test_actual_pragma_and_runner_semantics_keep_repository_obligation",
+            "tests.test_ci_plan.PlannerTests.test_agent_can_add_groups_but_cannot_remove_minimum",
+            "tests.test_ci_plan.PlannerTests.test_anchor_history_limit_fails_closed_without_scanning_older_authority",
+            "tests.test_ci_plan.PlannerTests.test_assigned_execution_namespace_keeps_failing_reflective_consumer",
+            "tests.test_ci_plan.PlannerTests.test_candidate_policy_and_fingerprint_cannot_approve_new_consumer_closure",
+            "tests.test_ci_plan.PlannerTests.test_candidate_selector_returning_no_tests_cannot_authorize_focused",
+            "tests.test_ci_plan.PlannerTests.test_changed_lines_and_deleted_only_hunks",
+            "tests.test_ci_plan.PlannerTests.test_ci_script_contract_requires_base_acceptance_and_keeps_new_consumers",
+            "tests.test_ci_plan.PlannerTests.test_claim_contract_rejects_actual_promotion_fixture_drift",
+            "tests.test_ci_plan.PlannerTests.test_cli_emits_canonical_plan_and_workflow_outputs",
+            "tests.test_ci_plan.PlannerTests.test_comment_only_critical_change_has_no_executable_coverage_obligation",
+            "tests.test_ci_plan.PlannerTests.test_consumer_inventory_or_new_import_requires_full",
+            "tests.test_ci_plan.PlannerTests.test_contract_evidence_requires_refreshed_accepted_anchor_after_test_review",
+            "tests.test_ci_plan.PlannerTests.test_contract_pins_each_behavioral_proof_and_acceptance_module",
+            "tests.test_ci_plan.PlannerTests.test_contract_rejects_weakened_proof_implementation_with_unchanged_ids",
+            "tests.test_ci_plan.PlannerTests.test_contract_test_side_drift_and_accepted_readmission",
+            "tests.test_ci_plan.PlannerTests.test_coverage_authority_semantics_require_repository_proof",
+            "tests.test_ci_plan.PlannerTests.test_coverage_union_executes_repository_and_impact_tests_once",
+            "tests.test_ci_plan.PlannerTests.test_critical_subject_uses_explicit_base_proof_and_keeps_all_acceptance",
+            "tests.test_ci_plan.PlannerTests.test_critical_syntax_error_blocks_instead_of_erasing_impact",
+            "tests.test_ci_plan.PlannerTests.test_decorators_are_executable_impact_and_comments_keep_repository_guard",
+            "tests.test_ci_plan.PlannerTests.test_deleted_renamed_and_new_paths_require_full",
+            "tests.test_ci_plan.PlannerTests.test_deterministic_ids_reject_indirect_helper_and_fixture_drift",
+            "tests.test_ci_plan.PlannerTests.test_deterministic_proof_substitution_requires_unchanged_base_implementation",
+            "tests.test_ci_plan.PlannerTests.test_diagnostic_policy_refresh_keeps_anchor_and_retains_new_changed_consumers",
+            "tests.test_ci_plan.PlannerTests.test_dirty_or_untracked_source_cannot_consume_clean_head_plan",
+            "tests.test_ci_plan.PlannerTests.test_docs_fast_plan_is_explainable_and_replayable",
+            "tests.test_ci_plan.PlannerTests.test_each_verification_rechecks_commit_objects_after_cached_plan_reads",
+            "tests.test_ci_plan.PlannerTests.test_event_binds_actual_head_or_exact_merge_candidate",
+            "tests.test_ci_plan.PlannerTests.test_exact_commits_batch_preserves_positions_and_single_commit_api",
+            "tests.test_ci_plan.PlannerTests.test_exact_commits_rejects_all_malformed_positions_before_git",
+            "tests.test_ci_plan.PlannerTests.test_exact_commits_rejects_noncommits_and_missing_objects_despite_replacements",
+            "tests.test_ci_plan.PlannerTests.test_exact_proof_contract_requires_base_acceptance_and_rejects_same_suite_mutant",
+            "tests.test_ci_plan.PlannerTests.test_executable_mapping_is_bound_and_unmapped_changes_require_full",
+            "tests.test_ci_plan.PlannerTests.test_fixture_clone_keeps_local_identity_line_endings_and_isolation",
+            "tests.test_ci_plan.PlannerTests.test_full_fallback_on_missing_tests_and_git_fact_errors",
+            "tests.test_ci_plan.PlannerTests.test_function_contract_keeps_aliased_execution_opaque",
+            "tests.test_ci_plan.PlannerTests.test_function_contract_restores_consumers_for_initialization_and_new_downstream",
+            "tests.test_ci_plan.PlannerTests.test_git_type_change_adds_repository_without_erasing_other_impact",
+            "tests.test_ci_plan.PlannerTests.test_integration_release_force_and_empty_diff_are_full",
+            "tests.test_ci_plan.PlannerTests.test_invalid_policy_groups_and_evidence_fail_closed",
+            "tests.test_ci_plan.PlannerTests.test_manual_full_rerun_uses_current_pr_facts",
+            "tests.test_ci_plan.PlannerTests.test_markdown_resource_change_keeps_existing_failing_consumer",
+            "tests.test_ci_plan.PlannerTests.test_matching_side_branch_fingerprint_is_not_an_accepted_anchor",
+            "tests.test_ci_plan.PlannerTests.test_missing_or_malformed_base_policy_falls_back_full",
+            "tests.test_ci_plan.PlannerTests.test_missing_or_unmatched_anchor_history_retains_conservative_scope",
+            "tests.test_ci_plan.PlannerTests.test_mixed_docs_and_provider_keeps_full_impact_closure",
+            "tests.test_ci_plan.PlannerTests.test_monotonic_local_critical_addition_has_local_proof_and_cannot_remove_old_obligations",
+            "tests.test_ci_plan.PlannerTests.test_new_initializer_and_literal_fixture_input_cannot_extend_accepted_proof",
+            "tests.test_ci_plan.PlannerTests.test_new_markdown_is_fast_but_document_data_is_full",
+            "tests.test_ci_plan.PlannerTests.test_new_source_domain_selects_reverse_consumer_and_test_only_is_scoped",
+            "tests.test_ci_plan.PlannerTests.test_nul_diff_rejects_ambiguous_paths_and_preserves_spaces",
+            "tests.test_ci_plan.PlannerTests.test_policy_deletion_and_mode_changes_break_anchor_history",
+            "tests.test_ci_plan.PlannerTests.test_policy_history_barriers_cannot_backdate_reviewed_authority",
+            "tests.test_ci_plan.PlannerTests.test_pr65_exact_git_diff_is_full_behavior_without_coverage_or_smokes",
+            "tests.test_ci_plan.PlannerTests.test_pr68_document_path_set_does_not_propagate_through_name_checks_and_archive",
+            "tests.test_ci_plan.PlannerTests.test_projection_contract_rejects_actual_live_evaluation_helper_drift",
+            "tests.test_ci_plan.PlannerTests.test_proof_list_and_provenance_cannot_be_resigned_below_base_minimum",
+            "tests.test_ci_plan.PlannerTests.test_provider_and_independent_test_do_not_force_repository_or_full",
+            "tests.test_ci_plan.PlannerTests.test_provider_change_selects_downstream_groups_and_both_pythons",
+            "tests.test_ci_plan.PlannerTests.test_public_cli_and_validation_consumers_independently_select_smokes",
+            "tests.test_ci_plan.PlannerTests.test_r2_bounded_critical_validator_requires_impact_with_base_acceptance",
+            "tests.test_ci_plan.PlannerTests.test_r2_shared_and_unknown_paths_cannot_be_docs_fast",
+            "tests.test_ci_plan.PlannerTests.test_r2_test_fixture_and_fingerprint_refresh_have_no_coverage_or_smokes",
+            "tests.test_ci_plan.PlannerTests.test_real_ordered_worker_preserves_class_and_module_fixture_failures",
+            "tests.test_ci_plan.PlannerTests.test_real_workers_preserve_order_and_project_exact_git_plan_evidence",
+            "tests.test_ci_plan.PlannerTests.test_repository_requirement_preserves_bounded_impact_and_rejects_downgrade",
+            "tests.test_ci_plan.PlannerTests.test_reviewed_opaque_contract_is_invalidated_per_consumer",
+            "tests.test_ci_plan.PlannerTests.test_runner_consumes_valid_plan_and_rejects_full_as_focused",
+            "tests.test_ci_plan.PlannerTests.test_runner_main_executes_each_coverage_set_and_binds_real_results",
+            "tests.test_ci_plan.PlannerTests.test_selection_authority_semantics_require_full_behavior_independently",
+            "tests.test_ci_plan.PlannerTests.test_self_modified_policy_or_runner_cannot_authorize_less",
+            "tests.test_ci_plan.PlannerTests.test_smokes_and_coverage_config_are_independent_of_full_behavior",
+            "tests.test_ci_plan.PlannerTests.test_source_deletion_preserves_old_contract_consumers_without_candidate_lines",
+            "tests.test_ci_plan.PlannerTests.test_source_mode_change_requires_full",
+            "tests.test_ci_plan.PlannerTests.test_stale_base_requires_full_merge_validation",
+            "tests.test_ci_plan.PlannerTests.test_test_only_planner_input_does_not_become_a_product_executable_change",
+            "tests.test_ci_plan.PlannerTests.test_unknown_executable_and_integration_are_complete_fail_safe",
+            "tests.test_ci_plan.PlannerTests.test_unrelated_test_edit_expands_behavior_but_not_executable_coverage",
+            "tests.test_ci_plan.PlannerTests.test_validator_inventory_mapping_and_new_import_fail_safe",
+            "tests.test_ci_plan.PlannerTests.test_workflow_formatting_does_not_seed_resource_or_coverage_fallback",
+            "tests.test_ci_plan.PlannerTests.test_wrong_digest_target_and_lowered_class_are_rejected",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_actual_merge_target_and_integration_are_bound",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_archive_classification_is_separate_from_execution_authority",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_candidate_policy_never_becomes_report_contract_authority",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_cli_preserves_plan_and_never_writes_github_outputs",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_each_archive_input_retains_its_overlapping_resource_closure",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_executable_keeps_ordinary_and_opaque_consumers",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_git_bound_consumer_record_cannot_refresh_its_own_failed_pin",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_gitlink_reports_object_identity_without_inventing_blob_bytes",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_invocation_catalog_binds_every_call_and_snapshot_without_changing_plan",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_invocation_old_removed_calls_and_same_bytes_new_path_remain_distinct",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_invocation_parse_and_git_mode_failures_remain_explicit",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_isolated_graph_uses_merge_base_when_both_sides_remove_a_reader",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_mixed_executable_and_archive_inputs_keep_three_mechanisms",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_old_consumers_and_removed_inputs_are_retained",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_real_failing_document_consumer_remains_selected",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_resigned_invocation_omission_forgery_and_dangling_links_are_rejected",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_resigned_unclassified_reasons_cannot_change_attribution",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_smoke_witness_reaches_actual_source_consumer_not_just_a_test_name",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_static_smoke_witness_and_base_group_reasons_stay_distinct",
+            "tests.test_ci_contract_shadow.ContractShadowGitTests.test_tampered_or_weakened_plan_and_wrong_merge_are_rejected",
+            "tests.test_ci_contract_shadow.InputRoleTests.test_reference_evidence_distinguishes_read_write_and_bare_names",
+            "tests.test_ci_contract_shadow.InputRoleTests.test_scripts_modes_and_unsafe_paths_cannot_hide_as_documents",
+            "tests.test_ci_contract_shadow.InputRoleTests.test_typed_inputs_preserve_runtime_test_and_archive_boundaries",
+            "tests.test_ci_contract_shadow.ShadowWorkflowTests.test_shadow_job_has_no_execution_outputs_or_aggregate_consumers",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_branch_collection_is_mandatory",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_checker_helpers_and_structural_failures_are_explicit",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_checker_main_reports_pass_and_fail_without_traceback",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_coverage_suite_rejects_same_canonical_test_loaded_through_module_aliases",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_coverage_suite_supports_exact_test_selectors_without_duplicates",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_declared_exclusions_exactly_match_coverage_json",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_each_critical_file_has_independent_line_and_branch_gates",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_exact_thresholds_and_positive_negative_evidence_pass",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_exclusion_line_shape_and_duplicates_are_fail_closed",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_exclusion_requires_exact_auditable_location",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_global_line_threshold_is_fail_closed",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_malformed_coverage_exclusions_fail_closed",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_missing_critical_file_is_blocking",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_missing_negative_acceptance_result_is_blocking",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_policy_cannot_downgrade_the_quality_floor",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_positive_and_negative_evidence_must_be_disjoint",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_positive_and_negative_evidence_must_be_nonempty_lists",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_positive_and_negative_evidence_reject_internal_duplicates",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_repository_policy_covers_bounded_capability_validation_surfaces",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_source_root_is_canonical_and_cannot_be_narrowed",
+            "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_undeclared_actual_and_nonexistent_declared_exclusions_fail"
+          ],
+          "source_sha256": {
+            ".github/scripts/plan_ci.py": "20ae01b14d33a4a37fb20961c95be339c3bfef2295af24be3ecdadf211fd63db",
+            "tests/test_ci_plan.py": "67afed33dc250e23fb8c11b32dc9324778414bab6d03ba666d34a22d20336654",
+            "tests/test_ci_contract_shadow.py": "d397d2fc13857e5b17c55935022910854e76a8315addac5613c8ff614d8d4bba",
+            "tests/test_coverage_policy.py": "41ac118842bd9c8ac23d5443bbdb353497a397e128b89f7d087144870d5b361b",
+            "tests/coverage_policy.yaml": "ec64c08b7b9a5fa8f2689b88f6fddcf542a4bae046e105ee1fc7b6600ce4d165",
+            "tests/ci_impact_policy.yaml": "c425f8267a3a42a60f9de78acbaaed99e0e67a2f1b41b5903e88e92ca0e9eeec"
+          },
+          "formal_gate": false,
+          "hosted": false
+        }
+      },
+      "critical": {
+        "covered_lines": 606,
+        "statements": 607,
+        "line_percent": 99.83525535420098,
+        "covered_branches": 226,
+        "branches": 228,
+        "branch_percent": 99.12280701754386,
+        "excluded_lines": [],
+        "missing_lines": [
+          827
+        ],
+        "missing_branches": [
+          [
+            817,
+            823
+          ],
+          [
+            826,
+            827
+          ]
+        ],
+        "floor": {
+          "line": 95,
+          "branch": 90
+        }
+      },
+      "physical": {
+        "mapped_lines": [
+          6,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          502,
+          503
+        ],
+        "executable_lines": [
+          6,
+          45,
+          46,
+          49,
+          50,
+          58,
+          61,
+          62,
+          63,
+          66,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          502,
+          503
+        ],
+        "covered_lines": 20,
+        "total_executable_lines": 20,
+        "missing_lines": [],
+        "executed_outgoing_branches": [
+          [
+            68,
+            69
+          ],
+          [
+            68,
+            75
+          ],
+          [
+            73,
+            74
+          ],
+          [
+            73,
+            75
+          ]
+        ],
+        "missing_outgoing_branches": [],
+        "covered_outgoing_branch_count": 4,
+        "total_outgoing_branch_count": 4
+      },
+      "enclosing_statement": {
+        "mapped_lines": [
+          6,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          58,
+          61,
+          62,
+          63,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          502,
+          503
+        ],
+        "executable_lines": [
+          6,
+          45,
+          46,
+          49,
+          50,
+          58,
+          61,
+          62,
+          63,
+          66,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          502,
+          503
+        ],
+        "covered_lines": 20,
+        "total_executable_lines": 20,
+        "missing_lines": [],
+        "executed_outgoing_branches": [
+          [
+            68,
+            69
+          ],
+          [
+            68,
+            75
+          ],
+          [
+            73,
+            74
+          ],
+          [
+            73,
+            75
+          ]
+        ],
+        "missing_outgoing_branches": [],
+        "covered_outgoing_branch_count": 4,
+        "total_outgoing_branch_count": 4
+      },
+      "ignored_module_blank_comment_lines": [
+        56,
+        57,
+        59,
+        60,
+        64,
+        65,
+        76,
+        77
+      ],
+      "critical_acceptance_mappings": [
+        {
+          "surface": "ci-impact-planning",
+          "required": [
+            "test_ci_plan.PlannerTests.test_agent_can_add_groups_but_cannot_remove_minimum",
+            "test_ci_plan.PlannerTests.test_consumer_inventory_or_new_import_requires_full",
+            "test_ci_plan.PlannerTests.test_docs_fast_plan_is_explainable_and_replayable",
+            "test_ci_plan.PlannerTests.test_provider_change_selects_downstream_groups_and_both_pythons",
+            "test_ci_plan.PlannerTests.test_self_modified_policy_or_runner_cannot_authorize_less"
+          ],
+          "missing_from_local_passes": []
+        },
+        {
+          "surface": "ci-consumer-contract-records",
+          "required": [
+            "test_ci_consumer_contracts.ConsumerContractTests.test_candidate_rewrite_removal_and_new_record_never_become_base_authority",
+            "test_ci_consumer_contracts.ConsumerContractTests.test_contract_schema_rejects_authority_and_unbound_evidence",
+            "test_ci_consumer_contracts.ConsumerContractTests.test_matching_pins_and_call_syntax_are_review_evidence_only",
+            "test_ci_consumer_contracts.ConsumerContractTests.test_policy_authority_does_not_import_candidate_diagnostic_module",
+            "test_ci_consumer_contracts.ConsumerContractTests.test_policy_v1_v2_and_live_records_preserve_explicit_version_boundary",
+            "test_ci_consumer_contracts.ConsumerContractTests.test_source_test_input_mode_and_identifier_drift_are_visible"
+          ],
+          "missing_from_local_passes": [
+            "test_ci_consumer_contracts.ConsumerContractTests.test_candidate_rewrite_removal_and_new_record_never_become_base_authority",
+            "test_ci_consumer_contracts.ConsumerContractTests.test_contract_schema_rejects_authority_and_unbound_evidence",
+            "test_ci_consumer_contracts.ConsumerContractTests.test_matching_pins_and_call_syntax_are_review_evidence_only",
+            "test_ci_consumer_contracts.ConsumerContractTests.test_policy_authority_does_not_import_candidate_diagnostic_module",
+            "test_ci_consumer_contracts.ConsumerContractTests.test_policy_v1_v2_and_live_records_preserve_explicit_version_boundary",
+            "test_ci_consumer_contracts.ConsumerContractTests.test_source_test_input_mode_and_identifier_drift_are_visible"
+          ]
+        }
+      ],
+      "diff_sha256": "184c45db259a5fe89af37ad83e67558d898787d1cdc36746445e41f8c9254625",
+      "diff": "diff --git a/.github/scripts/plan_ci.py b/.github/scripts/plan_ci.py\nindex 4c250ed..1bbf609 100644\n--- a/.github/scripts/plan_ci.py\n+++ b/.github/scripts/plan_ci.py\n@@ -5,0 +6 @@ import ast\n+import copy\n@@ -43,0 +45,33 @@ ANCHOR_HISTORY_LIMIT = 64\n+def _coverage_parser_state():\n+    loader = yaml.SafeLoader\n+    # Keep identities alive as well as their IDs; never admit a replacement via\n+    # custom equality or reuse of an object's address after it is collected.\n+    identity = lambda value: (id(value), value)\n+    return (identity(yaml.safe_load), identity(yaml.load), identity(loader),\n+            tuple((key, identity(value)) for key, value in loader.yaml_constructors.items()),\n+            tuple((key, identity(value)) for key, value in loader.yaml_multi_constructors.items()),\n+            tuple((key, tuple((tag, identity(regex)) for tag, regex in rules))\n+                  for key, rules in loader.yaml_implicit_resolvers.items()),\n+            tuple(loader.yaml_path_resolvers.items()))\n+\n+\n+_COVERAGE_PARSER_STATE = _coverage_parser_state()\n+\n+\n+@lru_cache(maxsize=8)\n+def _cached_coverage_policy(raw, parser):\n+    return parser(raw)\n+\n+\n+def parse_coverage_policy(raw):\n+    \"\"\"Cache stock byte parsing only; custom loader configuration stays live.\"\"\"\n+    if type(raw) is bytes:\n+        try:\n+            stock = _coverage_parser_state() == _COVERAGE_PARSER_STATE\n+        except (AttributeError, TypeError, ValueError):\n+            stock = False\n+        if stock:\n+            return copy.deepcopy(_cached_coverage_policy(raw, yaml.safe_load))\n+    return yaml.safe_load(raw)\n+\n+\n@@ -468,2 +502,2 @@ def make_plan(repo, *, base, head, target, repository, base_ref='develop', body=\n-        authority = yaml.safe_load(read_at(repo, base, 'tests/coverage_policy.yaml'))\n-        candidate_authority = yaml.safe_load(read_at(repo, head, 'tests/coverage_policy.yaml'))\n+        authority = parse_coverage_policy(read_at(repo, base, 'tests/coverage_policy.yaml'))\n+        candidate_authority = parse_coverage_policy(read_at(repo, head, 'tests/coverage_policy.yaml'))\n",
+      "scope": "Read-only extraction of existing local results. Comparison725 parser delta only, not actual accepted97d PR coverage; no formal target/plan receipt."
+    }
+  },
+  "measurement": {
+    "path": "policy-parse-candidate/v2/measurement-summary.json",
+    "sha256": "96243cc9073b80a2e1a6a2d4e6fb6e770130c7d24f6f6caab80c712441a085ed",
+    "groups": {
+      "unprofiled": {
+        "planner": {
+          "pairs": [
+            {
+              "number": 1,
+              "old_wall": 19.12317210000765,
+              "new_wall": 18.326735599999665,
+              "old_cpu": 3.640625,
+              "new_cpu": 2.546875,
+              "new_cache": {
+                "hits": 45,
+                "misses": 3,
+                "maxsize": 8,
+                "currsize": 3
+              },
+              "wall_delta_percent": -4.164771910449239
+            },
+            {
+              "number": 2,
+              "old_wall": 19.113537500001257,
+              "new_wall": 17.950853599992115,
+              "old_cpu": 3.671875,
+              "new_cpu": 2.5,
+              "new_cache": {
+                "hits": 45,
+                "misses": 3,
+                "maxsize": 8,
+                "currsize": 3
+              },
+              "wall_delta_percent": -6.083038788654715
+            },
+            {
+              "number": 3,
+              "old_wall": 18.972810200008098,
+              "new_wall": 17.836404399989988,
+              "old_cpu": 3.8125,
+              "new_cpu": 2.8125,
+              "new_cache": {
+                "hits": 45,
+                "misses": 3,
+                "maxsize": 8,
+                "currsize": 3
+              },
+              "wall_delta_percent": -5.9896546059245654
+            }
+          ],
+          "stats": {
+            "old": {
+              "median_wall": 19.113537500001257,
+              "min_wall": 18.972810200008098,
+              "max_wall": 19.12317210000765
+            },
+            "new": {
+              "median_wall": 17.950853599992115,
+              "min_wall": 17.836404399989988,
+              "max_wall": 18.326735599999665
+            },
+            "median_wall_delta_percent": -6.083038788654715
+          },
+          "sample_count": 3
+        },
+        "shadow": {
+          "pairs": [
+            {
+              "number": 1,
+              "old_wall": 10.739414700001362,
+              "new_wall": 9.565936200000579,
+              "old_cpu": 6.234375,
+              "new_cpu": 5.171875,
+              "new_cache": {
+                "hits": 51,
+                "misses": 1,
+                "maxsize": 8,
+                "currsize": 1
+              },
+              "wall_delta_percent": -10.926838498941983
+            },
+            {
+              "number": 2,
+              "old_wall": 10.704049899999518,
+              "new_wall": 9.580203099991195,
+              "old_cpu": 6.375,
+              "new_cpu": 5.296875,
+              "new_cache": {
+                "hits": 51,
+                "misses": 1,
+                "maxsize": 8,
+                "currsize": 1
+              },
+              "wall_delta_percent": -10.499267198001139
+            },
+            {
+              "number": 3,
+              "old_wall": 10.708150799997384,
+              "new_wall": 9.451472500004456,
+              "old_cpu": 6.34375,
+              "new_cpu": 4.96875,
+              "new_cache": {
+                "hits": 51,
+                "misses": 1,
+                "maxsize": 8,
+                "currsize": 1
+              },
+              "wall_delta_percent": -11.735717244411937
+            }
+          ],
+          "stats": {
+            "old": {
+              "median_wall": 10.708150799997384,
+              "min_wall": 10.704049899999518,
+              "max_wall": 10.739414700001362
+            },
+            "new": {
+              "median_wall": 9.565936200000579,
+              "min_wall": 9.451472500004456,
+              "max_wall": 9.580203099991195
+            },
+            "median_wall_delta_percent": -10.666777311327035
+          },
+          "sample_count": 3
+        }
+      },
+      "branch": {
+        "planner": {
+          "pairs": [
+            {
+              "number": 2,
+              "old_wall": 22.544708699992043,
+              "new_wall": 18.985656000004383,
+              "old_cpu": 7.265625,
+              "new_cpu": 3.6875,
+              "new_cache": {
+                "hits": 45,
+                "misses": 3,
+                "maxsize": 8,
+                "currsize": 3
+              },
+              "wall_delta_percent": -15.786643098160392,
+              "branch_projection": {
+                "old": {
+                  "measured_file_count": 122,
+                  "executed_file_count": 3,
+                  "plan_ci": {
+                    "covered_lines": 448,
+                    "num_statements": 589,
+                    "percent_covered": 72.69372693726937,
+                    "percent_covered_display": "73",
+                    "missing_lines": 141,
+                    "excluded_lines": 0,
+                    "percent_statements_covered": 76.06112054329371,
+                    "percent_statements_covered_display": "76",
+                    "num_branches": 224,
+                    "num_partial_branches": 35,
+                    "covered_branches": 143,
+                    "missing_branches": 81,
+                    "percent_branches_covered": 63.839285714285715,
+                    "percent_branches_covered_display": "64"
+                  },
+                  "has_test_fixture_or_external_paths": false
+                },
+                "new": {
+                  "measured_file_count": 122,
+                  "executed_file_count": 3,
+                  "plan_ci": {
+                    "covered_lines": 463,
+                    "num_statements": 607,
+                    "percent_covered": 72.81437125748504,
+                    "percent_covered_display": "73",
+                    "missing_lines": 144,
+                    "excluded_lines": 0,
+                    "percent_statements_covered": 76.27677100494233,
+                    "percent_statements_covered_display": "76",
+                    "num_branches": 228,
+                    "num_partial_branches": 37,
+                    "covered_branches": 145,
+                    "missing_branches": 83,
+                    "percent_branches_covered": 63.59649122807018,
+                    "percent_branches_covered_display": "64"
+                  },
+                  "has_test_fixture_or_external_paths": false
+                }
+              }
+            }
+          ],
+          "stats": {
+            "old": {
+              "median_wall": 22.544708699992043,
+              "min_wall": 22.544708699992043,
+              "max_wall": 22.544708699992043
+            },
+            "new": {
+              "median_wall": 18.985656000004383,
+              "min_wall": 18.985656000004383,
+              "max_wall": 18.985656000004383
+            },
+            "median_wall_delta_percent": -15.786643098160392
+          },
+          "sample_count": 1
+        },
+        "shadow": {
+          "pairs": [
+            {
+              "number": 2,
+              "old_wall": 21.13561199999822,
+              "new_wall": 16.98945449999883,
+              "old_cpu": 16.25,
+              "new_cpu": 12.359375,
+              "new_cache": {
+                "hits": 51,
+                "misses": 1,
+                "maxsize": 8,
+                "currsize": 1
+              },
+              "wall_delta_percent": -19.61692663548016,
+              "branch_projection": {
+                "old": {
+                  "measured_file_count": 122,
+                  "executed_file_count": 6,
+                  "plan_ci": {
+                    "covered_lines": 344,
+                    "num_statements": 589,
+                    "percent_covered": 53.628536285362856,
+                    "percent_covered_display": "54",
+                    "missing_lines": 245,
+                    "excluded_lines": 0,
+                    "percent_statements_covered": 58.40407470288625,
+                    "percent_statements_covered_display": "58",
+                    "num_branches": 224,
+                    "num_partial_branches": 38,
+                    "covered_branches": 92,
+                    "missing_branches": 132,
+                    "percent_branches_covered": 41.07142857142857,
+                    "percent_branches_covered_display": "41"
+                  },
+                  "has_test_fixture_or_external_paths": false
+                },
+                "new": {
+                  "measured_file_count": 122,
+                  "executed_file_count": 6,
+                  "plan_ci": {
+                    "covered_lines": 359,
+                    "num_statements": 607,
+                    "percent_covered": 54.25149700598802,
+                    "percent_covered_display": "54",
+                    "missing_lines": 248,
+                    "excluded_lines": 0,
+                    "percent_statements_covered": 59.14332784184514,
+                    "percent_statements_covered_display": "59",
+                    "num_branches": 228,
+                    "num_partial_branches": 40,
+                    "covered_branches": 94,
+                    "missing_branches": 134,
+                    "percent_branches_covered": 41.228070175438596,
+                    "percent_branches_covered_display": "41"
+                  },
+                  "has_test_fixture_or_external_paths": false
+                }
+              }
+            }
+          ],
+          "stats": {
+            "old": {
+              "median_wall": 21.13561199999822,
+              "min_wall": 21.13561199999822,
+              "max_wall": 21.13561199999822
+            },
+            "new": {
+              "median_wall": 16.98945449999883,
+              "min_wall": 16.98945449999883,
+              "max_wall": 16.98945449999883
+            },
+            "median_wall_delta_percent": -19.61692663548016
+          },
+          "sample_count": 1
+        }
+      }
+    }
+  },
+  "diagnostic_cache_candidate": "DO_NOT_ADOPT_CURRENT_CANDIDATE",
+  "files": 383,
+  "unique_payloads": 274,
+  "raw_bytes": 58750166,
+  "raw_evidence_sha256": "f2c46a6dcc379abdd0399dfff6d35a6ef7cf7c57a5004cdadc6b8db7cbcbc50d",
+  "excluded_paths": [
+    "ci-cost-profile/actual-profile-attempt-001/source",
+    "ci-cost-profile/actual-profile-attempt-002/case-1/temporary",
+    "ci-cost-profile/actual-profile-attempt-002/case-2/temporary",
+    "ci-cost-profile/actual-profile-attempt-002/source",
+    "demand-analysis-candidate/new",
+    "demand-analysis-candidate/old",
+    "policy-parse-candidate/full-new",
+    "policy-parse-candidate/full-old",
+    "policy-parse-candidate/new",
+    "policy-parse-candidate/old",
+    "policy-parse-candidate/pair-001/planner-new/temporary",
+    "policy-parse-candidate/pair-001/planner-old/temporary",
+    "policy-parse-candidate/pair-001/shadow-new/temporary",
+    "policy-parse-candidate/pair-001/shadow-old/temporary",
+    "policy-parse-candidate/v2/__pycache__",
+    "policy-parse-candidate/v2/full-new",
+    "policy-parse-candidate/v2/full-old",
+    "policy-parse-candidate/v2/measurement/branch-pair-002/planner-new/temporary",
+    "policy-parse-candidate/v2/measurement/branch-pair-002/planner-old/temporary",
+    "policy-parse-candidate/v2/measurement/branch-pair-002/shadow-new/temporary",
+    "policy-parse-candidate/v2/measurement/branch-pair-002/shadow-old/temporary",
+    "policy-parse-candidate/v2/measurement/unprofiled-pair-001/planner-new/temporary",
+    "policy-parse-candidate/v2/measurement/unprofiled-pair-001/planner-old/temporary",
+    "policy-parse-candidate/v2/measurement/unprofiled-pair-001/shadow-new/temporary",
+    "policy-parse-candidate/v2/measurement/unprofiled-pair-001/shadow-old/temporary",
+    "policy-parse-candidate/v2/measurement/unprofiled-pair-002/planner-new/temporary",
+    "policy-parse-candidate/v2/measurement/unprofiled-pair-002/planner-old/temporary",
+    "policy-parse-candidate/v2/measurement/unprofiled-pair-002/shadow-new/temporary",
+    "policy-parse-candidate/v2/measurement/unprofiled-pair-002/shadow-old/temporary",
+    "policy-parse-candidate/v2/measurement/unprofiled-pair-003/planner-new/temporary",
+    "policy-parse-candidate/v2/measurement/unprofiled-pair-003/planner-old/temporary",
+    "policy-parse-candidate/v2/measurement/unprofiled-pair-003/shadow-new/temporary",
+    "policy-parse-candidate/v2/measurement/unprofiled-pair-003/shadow-old/temporary"
+  ],
+  "explicitly_excluded_stage": "m5-hotspot-profile: late run incomplete at archive planning; separate future evidence only",
+  "hosted_proved": false,
+  "repository_coverage_proved": false,
+  "final_committed_head_gates_proved": false,
+  "selection_reduction_activated": false,
+  "cross_commit_execution_reuse": false
+}
