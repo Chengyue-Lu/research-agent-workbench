@@ -278,3 +278,19 @@ for cross-owner review. Quality thresholds, exclusions, product contracts and re
   duration must be measured on real corpus before claiming practical diagnostic cost.
 - Production selection, thresholds, fixtures and B/C execution order remain unchanged;
   activation still requires independent witnesses and real paired evidence.
+
+## Fixed-entry and opacity diagnostics
+
+- A recognized Python module prefix proves only argument and lexical-binding
+  shape. Dynamic tail inputs, import initialization and runtime hooks remain
+  unresolved; the prefix cannot authorize exclusions.
+- A single source can have several independent opacity causes. Explaining one
+  call must not erase another cause, a fixed-run inventory obligation, or the
+  separate resource fallback. The complete catalog is reconstructed from Git.
+- Legal source can exceed diagnostic formatting limits without exceeding Python
+  parsing limits. Large integers, recursive formatting and escaped surrogate
+  targets must preserve ordinary graph behavior and explicit unknown identities.
+  Diagnostic failures must not be converted into a clean input-closure claim.
+- Local parser caching and selection reduction have separate acceptance evidence.
+  A failed experiment setup is retained as a failed attempt. Controlled case
+  timings do not establish repository-wide CI savings or deployment portability.

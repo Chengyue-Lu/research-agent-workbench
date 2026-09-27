@@ -686,6 +686,142 @@ class ContractShadowGitTests(unittest.TestCase):
         self.assertEqual(6, len(report['producer_sources']))
         self.assertEqual(5, report['schema_version'])
 
+    def _opacity_report_fixture(self):
+        consumer = 'tests/test_opacity_report.py'
+        raw = (b'import alpha as same\nimport beta as same\nimport runpy\nfrom pathlib import Path\n'
+               b'runpy.run_path(Path(__file__).parent / "missing.py")\nexec(payload)\n')
+        write(self.repo, 'src/research_workbench/opacity_leaf.py', 'VALUE=1\n')
+        write(self.repo, 'docs/opacity-input.json', '{}\n')
+        write(self.repo, 'tests/test_opacity_surrogate.py',
+              b'import runpy\nfrom pathlib import Path\nrunpy.run_path(Path(__file__).parent / "\\ud800")\n')
+        self.base = self.commit(consumer, raw)
+        write(self.repo, 'docs/opacity-input.json', '{"changed":true}\n')
+        self.commit('src/research_workbench/opacity_leaf.py', 'VALUE=2\n')
+        plan = self.plan()
+        return consumer, raw, plan, shadow.build_report(self.repo, plan)
+
+    def _opacity_source(self, report, consumer, snapshot='head'):
+        catalog = report['invocation_evidence']
+        record = next(row for row in catalog['consumers']
+                      if row['consumer'] == consumer and row['snapshot'] == snapshot)
+        return catalog['sources'][record['source_id']]
+
+    def _resign_opacity_report(self, report):
+        catalog = report['invocation_evidence']
+        for source in catalog['sources'].values():
+            opacity = source.get('opacity_causes')
+            if opacity is not None:
+                for cause in opacity['causes']:
+                    cause['cause_id'] = planner.digest({key: value for key, value in cause.items() if key != 'cause_id'})
+        ids = {}
+        for record in catalog['consumers']:
+            original = record['id']
+            record['id'] = planner.digest({key: value for key, value in record.items() if key != 'id'})
+            ids[original] = record['id']
+        for row in report['dependency_review']:
+            for edge in row['edges']:
+                edge['invocation_evidence_ids'] = [ids.get(value, value) for value in edge['invocation_evidence_ids']]
+        report['report_id'] = planner.digest({key: value for key, value in report.items() if key != 'report_id'})
+
+    def test_opacity_sources_keep_parallel_causes_inventory_and_plan_authority(self):
+        consumer, raw, plan, report = self._opacity_report_fixture()
+        before = planner.canonical(plan)
+        catalog = report['invocation_evidence']
+        records = [row for row in catalog['consumers'] if row['consumer'] == consumer]
+        self.assertEqual({'merge_base', 'head'}, {row['snapshot'] for row in records})
+        self.assertEqual(1, len({row['source_id'] for row in records}))
+        opacity = self._opacity_source(report, consumer)['opacity_causes']
+        self.assertEqual(hashlib.sha256(raw).hexdigest(), opacity['source_sha256'])
+        self.assertEqual({'alias-conflict', 'dynamic-execution'}, {row['kind'] for row in opacity['causes']})
+        self.assertEqual(1, len(opacity['inventory_obligations']))
+        self.assertEqual({'syntax': 'complete', 'inventory': 'unproved'}, opacity['coverage'])
+        self.assertFalse(opacity['execution_authority'])
+        self.assertTrue(all(row['fallback']['opaque'] and row['fallback']['unlocated_causes'] for row in records))
+        resources = [row for row in catalog['consumers'] if row['consumer'] == 'tests/test_unknown.py']
+        self.assertTrue(resources)
+        self.assertTrue(all(row['fallback']['resources'] and row['fallback']['unlocated_causes'] for row in resources))
+        unknown = self._opacity_source(report, 'tests/test_opacity_surrogate.py')['opacity_causes']
+        self.assertEqual('unknown', unknown['status'])
+        self.assertEqual('unproved', unknown['coverage']['inventory'])
+        self.assertIsNone(unknown['inventory_obligations'][0]['target_path_sha256'])
+        self.assertEqual(['target-path-identity-unavailable'], unknown['unknowns'])
+        shadow.verify_invocation_evidence(self.repo, plan, report)
+        self.assertEqual(before, planner.canonical(plan))
+        self.assertEqual(before, planner.canonical(self.plan()))
+        self.assertIn('test_opacity_report', plan['selection']['selected'])
+        self.assertFalse(report['execution_authority'])
+        self.assertFalse(report['activation']['eligible'])
+        self.assertEqual(5, report['schema_version'])
+        weakened = copy.deepcopy(plan)
+        weakened['selection']['selected'].pop('test_opacity_report')
+        weakened['plan_id'] = planner.digest({key: value for key, value in weakened.items() if key != 'plan_id'})
+        with self.assertRaises(ValueError):
+            shadow.build_report(self.repo, weakened)
+
+    def test_resigned_opacity_omission_forgery_and_unknown_erasure_are_rejected(self):
+        consumer, _, plan, original = self._opacity_report_fixture()
+        mutations = {
+            'omit-alias-cause': lambda value: value['causes'].__setitem__(slice(None), [row for row in value['causes'] if row['kind'] != 'alias-conflict']),
+            'omit-execution-cause': lambda value: value['causes'].__setitem__(slice(None), [row for row in value['causes'] if row['kind'] != 'dynamic-execution']),
+            'forge-cause-kind': lambda value: value['causes'][0].__setitem__('kind', 'known-safe'),
+            'forge-cause-site': lambda value: value['causes'][0]['site'].__setitem__('span', [999, 0, 999, 1]),
+            'omit-inventory-obligation': lambda value: value['inventory_obligations'].clear(),
+            'forge-inventory-closure': lambda value: value['coverage'].__setitem__('inventory', 'complete'),
+            'forge-cause-source': lambda value: value.__setitem__('source_sha256', '0' * 64),
+            'forge-cause-authority': lambda value: value.__setitem__('execution_authority', True),
+        }
+        for name, mutate in mutations.items():
+            with self.subTest(case=name):
+                report = copy.deepcopy(original)
+                mutate(self._opacity_source(report, consumer)['opacity_causes'])
+                self._resign_opacity_report(report)
+                with self.assertRaisesRegex(ValueError, 'exact Git snapshots'):
+                    shadow.verify_invocation_evidence(self.repo, plan, report)
+        for name in ('omit-opacity-field', 'erase-unknown-reason', 'clear-unlocated-fallback'):
+            with self.subTest(case=name):
+                report = copy.deepcopy(original)
+                if name == 'omit-opacity-field':
+                    del self._opacity_source(report, consumer)['opacity_causes']
+                elif name == 'erase-unknown-reason':
+                    self._opacity_source(report, 'tests/test_opacity_surrogate.py')['opacity_causes']['unknowns'].clear()
+                else:
+                    for row in report['invocation_evidence']['consumers']:
+                        if row['consumer'] == consumer:
+                            row['fallback']['unlocated_causes'] = False
+                self._resign_opacity_report(report)
+                with self.assertRaisesRegex(ValueError, 'exact Git snapshots'):
+                    shadow.verify_invocation_evidence(self.repo, plan, report)
+
+    def test_opacity_sources_follow_exact_git_versions_and_parse_failures(self):
+        consumer, source, plan, original = self._opacity_report_fixture()
+        write(self.repo, consumer, 'pass\n')
+        self.assertEqual(original['invocation_evidence'], shadow.invocation_evidence(self.repo, plan))
+        self.commit(consumer, source.replace(b'exec(payload)\n', b'pass\n'))
+        changed_plan = self.plan()
+        changed_report = shadow.build_report(self.repo, changed_plan)
+        before = self._opacity_source(changed_report, consumer, 'merge_base')['opacity_causes']
+        after = self._opacity_source(changed_report, consumer)['opacity_causes']
+        self.assertNotEqual(before['source_sha256'], after['source_sha256'])
+        self.assertEqual({'alias-conflict', 'dynamic-execution'}, {row['kind'] for row in before['causes']})
+        self.assertEqual({'alias-conflict'}, {row['kind'] for row in after['causes']})
+        stale = copy.deepcopy(original)
+        stale['binding'] = copy.deepcopy(changed_plan['binding'])
+        stale['observed_plan_id'] = changed_plan['plan_id']
+        self._resign_opacity_report(stale)
+        with self.assertRaisesRegex(ValueError, 'exact Git snapshots'):
+            shadow.verify_invocation_evidence(self.repo, changed_plan, stale)
+        self.commit(consumer, 'def broken(:\n')
+        broken_plan = self.plan()
+        with self.assertRaises(ValueError):
+            shadow.build_report(self.repo, broken_plan)
+        catalog = shadow.invocation_evidence(self.repo, broken_plan)
+        unknown = self._opacity_source({'invocation_evidence': catalog}, consumer)['opacity_causes']
+        self.assertEqual('unknown', unknown['status'])
+        self.assertEqual('unknown', unknown['coverage']['syntax'])
+        self.assertEqual(['unparseable-source'], unknown['unknowns'])
+        self.assertFalse(unknown['execution_authority'])
+
+
 
 class ShadowWorkflowTests(unittest.TestCase):
     def test_shadow_job_has_no_execution_outputs_or_aggregate_consumers(self):

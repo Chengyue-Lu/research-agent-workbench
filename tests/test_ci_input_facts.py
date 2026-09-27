@@ -370,3 +370,139 @@ class InvocationFactsTests(unittest.TestCase):
                        {'callee': ''}, {'callee': 1}, {'call': ast.Call(func=ast.Name(id='run'), args=[], keywords=[])}):
             with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):
                 facts.describe_invocation(**(inputs | kwargs))
+
+
+class ModulePrefixFactsTests(unittest.TestCase):
+    def _prefix_records(self, source):
+        path, raw = 'tools/prefix_consumer.py', source.encode('utf-8')
+        sites = planner.dependencies.invocation_sites(path, raw)
+        records = []
+        for site in sites:
+            record = facts.describe_invocation(path, raw, **site)
+            facts.verify_invocation(record, path, raw, **site)
+            self.assertFalse(record['execution_authority'])
+            self.assertEqual('unproved', record['resolution']['input_closure'])
+            records.append(record)
+        return records
+
+    def test_same_interpreter_prefix_keeps_private_tail_and_unproved_closure(self):
+        cases = {
+            'dynamic-tail': 'import subprocess\nimport sys\nsubprocess.run([sys.executable,"-m","private.module",path,secret])\n',
+            'import-aliases': 'from subprocess import run as launch\nfrom sys import executable as interpreter\nlaunch([interpreter,"-m","private.module",path,secret])\n',
+        }
+        for name, source in cases.items():
+            with self.subTest(case=name):
+                record, = self._prefix_records(source)
+                self.assertEqual('python-module', record['operation'])
+                self.assertEqual('known', record['resolution']['target_shape'])
+                self.assertTrue({'dynamic-python-arguments', 'python-import-closure',
+                    'interpreter-identity-unproved', 'python-startup-and-environment',
+                    'argument-input-routing-unproved'} <= set(record['unresolved']))
+                self.assertIn({'role': 'python-arguments', 'argv_start': 3, 'count': 2}, record['inputs'])
+                self.assertEqual(list(range(5)), [row['position'] for row in record['invocation']['argv']['items']])
+                self.assertNotIn('private.module', json.dumps(record))
+                self.assertNotIn('secret', json.dumps(record))
+        with self.subTest(case='additional-unknown-call'):
+            records = self._prefix_records(cases['dynamic-tail'] + 'unknown(command)\n')
+            self.assertEqual(['python-module', 'unknown'], [row['operation'] for row in records])
+
+    def test_prefix_rejects_shadowed_mutated_or_deleted_bindings(self):
+        prelude = 'import subprocess\nimport sys\n'
+        call = 'subprocess.run([sys.executable,"-m","private.module",tail])\n'
+        cases = {
+            'interpreter-parameter': prelude + 'def invoke(sys):\n    ' + call,
+            'callee-parameter': prelude + 'def invoke(subprocess):\n    ' + call,
+            'interpreter-rebound': prelude + 'sys = replacement\n' + call,
+            'late-import': 'import subprocess\n' + call + 'import sys\n',
+            'conditional-import': 'import subprocess\nif enabled:\n    import sys\n' + call,
+            'attribute-write': prelude + 'sys.executable = replacement\n' + call,
+            'dictionary-export': prelude + 'namespace=sys.__dict__\nnamespace["executable"]="other"\n' + call,
+            'namespace-escape': prelude + 'namespace=sys\n' + call,
+            'registry-subscript': prelude + 'namespace=sys.modules["sys"]\nnamespace.executable="other"\n' + call,
+            'registry-get': prelude + 'namespace=sys.modules.get("sys")\nnamespace.executable="other"\n' + call,
+            'registry-import-alias': prelude + 'from sys import modules as registry\nnamespace=registry["sys"]\n' + call,
+            'delete-namespace': prelude + 'del sys\n' + call,
+            'delete-attribute': prelude + 'del sys.executable\n' + call,
+            'delete-executable-alias': 'import subprocess\nfrom sys import executable as interpreter\ndel interpreter\nsubprocess.run([interpreter,"-m","private.module"])\n',
+            'delete-callee-alias': 'from subprocess import run as launch\nimport sys\ndel launch\nlaunch([sys.executable,"-m","private.module"])\n',
+            'builtin-delattr': prelude + 'delattr(sys,"executable")\n' + call,
+            'qualified-delattr': prelude + 'import builtins as bi\nbi.delattr(sys,"executable")\n' + call,
+            'imported-delattr': prelude + 'from builtins import delattr as erase\nerase(sys,"executable")\n' + call,
+        }
+        for name, source in cases.items():
+            with self.subTest(case=name):
+                records = self._prefix_records(source)
+                record = next(row for row in records if row['callee']['resolved'] == 'subprocess.run')
+                self.assertNotEqual('python-module', record['operation'])
+                self.assertEqual('unknown', record['resolution']['target_shape'])
+
+    def test_prefix_hazards_obey_lexical_scope_in_both_directions(self):
+        prelude = 'import subprocess\nimport sys\n'
+        call = 'subprocess.run([sys.executable,"-m","private.module",tail])\n'
+        cases = {
+            'global-registry-local-collision': (prelude + 'namespace=sys.modules["sys"]\ndef unrelated():\n    import another as sys\n' + call, False),
+            'aliased-registry-local-collision': ('import subprocess\nimport sys as sy\nnamespace=sy.modules.get("sys")\ndef unrelated():\n    import another as sy\nsubprocess.run([sy.executable,"-m","private.module"])\n', False),
+            'inner-real-registry': (prelude + 'import another as registry\ndef possible():\n    import sys as registry\n    ns=registry.modules["sys"]\n' + call, False),
+            'qualified-delattr-collision': (prelude + 'import builtins as bi\nbi.delattr(sys,"executable")\ndef unrelated():\n    import another as bi\n' + call, False),
+            'deleted-global-collision': (prelude + 'del sys\ndef unrelated():\n    import another as sys\n' + call, False),
+            'unrelated-registry-spelling': (prelude + 'import another as registry\nunused=registry.modules\ndef unrelated():\n    import sys as registry\n' + call, True),
+            'unrelated-delattr-attribute': (prelude + 'import another as bi\nbi.delattr("unused","value")\ndef unrelated():\n    import builtins as bi\n' + call, True),
+            'unrelated-local-deletion': (prelude + 'def unrelated():\n    import another as sys\n    del sys\n' + call, True),
+            'unrelated-callee-deletion': ('from subprocess import run as launch\nimport sys\ndef unrelated():\n    from another import run as launch\n    del launch\nlaunch([sys.executable,"-m","private.module",tail])\n', True),
+        }
+        for name, (source, known) in cases.items():
+            with self.subTest(case=name):
+                record = next(row for row in self._prefix_records(source) if row['callee']['resolved'] == 'subprocess.run')
+                self.assertEqual(known, record['operation'] == 'python-module')
+                self.assertEqual('known' if known else 'unknown', record['resolution']['target_shape'])
+
+    def test_prefix_options_and_invalid_compilation_do_not_gain_semantics(self):
+        prelude = 'import subprocess\nimport sys\n'
+        cases = {
+            'shell-true': 'subprocess.run([sys.executable,"-m","pkg"],shell=True)',
+            'shell-unknown': 'subprocess.run([sys.executable,"-m","pkg"],shell=flag)',
+            'executable-override': 'subprocess.run([sys.executable,"-m","pkg"],executable=None)',
+            'keyword-expansion': 'subprocess.run([sys.executable,"-m","pkg"],**options)',
+            'argv-expansion': 'subprocess.run([sys.executable,"-m","pkg",*arguments])',
+            'positional-options': 'subprocess.Popen([sys.executable,"-m","pkg"],-1)',
+            'unsupported-option': 'subprocess.run([sys.executable,"-m","pkg"],preexec_fn=hook)',
+            'duplicate-argv': 'subprocess.run([sys.executable,"-m","pkg"],args=[sys.executable,"-m","other"])',
+            'dynamic-module': 'subprocess.run([sys.executable,"-m",module])',
+            'additional-python-flag': 'subprocess.run([sys.executable,"-I","-m","pkg"])',
+            'duplicate-shell': 'subprocess.run([sys.executable,"-m","pkg"],shell=False,shell=True)',
+            'late-future': 'from __future__ import annotations\nsubprocess.run([sys.executable,"-m","pkg"])',
+        }
+        for name, expression in cases.items():
+            with self.subTest(case=name):
+                record, = self._prefix_records(prelude + expression + '\n')
+                self.assertNotEqual('python-module', record['operation'])
+                self.assertEqual('unknown', record['resolution']['target_shape'])
+
+    def test_prefix_identity_and_cached_ast_cannot_be_forged(self):
+        dependencies = planner.dependencies
+        path = 'tools/identity_prefix.py'
+        raw = b'import subprocess\nimport sys\nsubprocess.run([sys.executable,"-m","pkg",tail])\n'
+        site, = dependencies.invocation_sites(path, raw)
+        original = facts.describe_invocation(path, raw, **site)
+        altered = copy.deepcopy(site['call'])
+        altered.args[0].elts[0] = ast.Name(id='imposter', ctx=ast.Load())
+        self.assertIsNone(dependencies.invocation_executable_binding(path, raw, altered))
+        forged = facts.describe_invocation(path, raw, altered, callee=site['callee'], binding=site['binding'], scope=site['scope'])
+        self.assertNotEqual('python-module', forged['operation'])
+        with self.assertRaises(ValueError):
+            facts.verify_invocation(forged, path, raw, **site)
+        self.assertEqual(original, facts.describe_invocation(path, raw, **dependencies.invocation_sites(path, raw)[0]))
+
+    def test_module_prefix_empty_or_literal_tail_keeps_unproved_input_routing(self):
+        for name, tail, count in (('empty-tail', '', 0), ('literal-tail', ',"literal-one","literal-two"', 2)):
+            with self.subTest(case=name):
+                source = 'import subprocess,sys\nsubprocess.run([sys.executable,"-m","pkg"' + tail + '])\n'
+                record, = self._prefix_records(source)
+                self.assertEqual('python-module', record['operation'])
+                self.assertEqual('known', record['resolution']['target_shape'])
+                self.assertIn({'role': 'python-arguments', 'argv_start': 3, 'count': count}, record['inputs'])
+                self.assertNotIn('dynamic-python-arguments', record['unresolved'])
+                self.assertIn('argument-input-routing-unproved', record['unresolved'])
+                self.assertEqual('unproved', record['resolution']['input_closure'])
+                self.assertFalse(record['execution_authority'])
+                self.assertNotIn('literal-one', json.dumps(record))

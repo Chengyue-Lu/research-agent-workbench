@@ -88,3 +88,33 @@ unreferenced records, altered source bindings or changed classifications. Known
 command shapes retain unresolved executable, import, environment and resource
 dependencies. Argument and environment payloads are represented by shape and
 hash; the report does not copy their source literals.
+
+## Fixed entry points and fallback causes
+
+The Python module prefix can be recognized independently of dynamic trailing
+arguments. A literal module after a verified lexical `sys.executable, "-m"`
+prefix describes the target shape. Interpreter identity, startup hooks, import
+closure and the routing of trailing arguments remain unproved. Shadowed, deleted
+or escaped bindings and process overrides retain an unknown target. A matching
+prefix alone cannot remove a dependency edge.
+
+Each deduplicated source record also explains every syntax predicate that made
+the existing analyzer classify that source as opaque. Records retain concurrent
+causes, exact source identity and call locations. Fixed `runpy` paths have
+separate inventory obligations: source syntax cannot prove target existence,
+regular-file mode or the absence of symlinks. Resource fallback remains separate
+from executable fallback.
+
+These facts describe the existing analyzer's coverage, rather than complete
+Python behavior. Parse failures and unavailable diagnostic identities remain
+explicit unknowns. Diagnostic identity formatting must not introduce failures
+into ordinary dependency-graph construction or alter process-wide limits. The
+report verifier reconstructs the cause catalog from exact Git snapshots; a
+re-signed report with an omitted cause or inventory obligation is rejected.
+Existing selection, report schema5 and execution authority remain unchanged.
+
+The next exclusion boundary must certify the complete operation, its import and
+resource context, and all remaining causes under accepted rules. An ordinary
+business function requires no individual exemption declaration. Development
+guidance should make execution and I/O boundaries explicit, while the checker
+derives ordinary call and input facts automatically.

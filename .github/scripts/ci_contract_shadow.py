@@ -188,7 +188,11 @@ def invocation_evidence(repo, plan):
                     site = fact['callsite']
                     calls.append([site['span'], site['scope'], site['ast_sha256'], row['callee'],
                                   row['binding'], fact['operation'], detail_id])
-                sources[source_id] = {**source, 'calls': calls}
+                # All legacy syntax causes and inventory duties share the exact
+                # deduplicated source. They do not close resource/input effects
+                # or change the accepted fallback predicates below.
+                sources[source_id] = {**source, 'calls': calls,
+                    'opacity_causes': planner.dependencies.opacity_causes(consumer, raw)}
             record = {'snapshot': label, 'commit': commit, 'consumer': consumer,
                 'mode': mode, 'object_id': object_id,
                 'source_sha256': source_sha, 'source_id': source_id,

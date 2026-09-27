@@ -117,6 +117,9 @@ def _file_analysis(path, raw):
     except (SyntaxError, UnicodeError):
         return None
     aliases = {}
+    alias_sites = {}
+    causes = []
+    inventory_obligations = []
     nodes = tuple(ast.walk(tree))
     parents = {child: parent for parent in nodes for child in ast.iter_child_nodes(parent)}
     @lru_cache(maxsize=None)
@@ -126,6 +129,22 @@ def _file_analysis(path, raw):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)):
                 break
         return node
+
+    def cause_site(node):
+        names = []
+        owner = scope(node)
+        while owner is not tree:
+            names.insert(0, getattr(owner, 'name', '<lambda>'))
+            owner = scope(owner)
+        return (node, tuple(getattr(node, key, None) for key in
+                ('lineno', 'col_offset', 'end_lineno', 'end_col_offset')),
+                '.'.join(names) or '<module>')
+
+    def record_cause(kind, node, detail, related=()):
+        # Record every trigger, including triggers after the boolean became true.
+        # Reuse private cached syntax; serialize identities only on API demand.
+        # Diagnostic serialization must never fail the legacy selection path.
+        causes.append((kind, detail, cause_site(node), tuple(cause_site(n) for n in related)))
 
     bindings = defaultdict(lambda: defaultdict(list))
     import_targets = defaultdict(set)
@@ -341,11 +360,13 @@ def _file_analysis(path, raw):
                 return path_value(receiver)
         return False
 
-    def alias(name, target):
+    def alias(name, target, node):
         nonlocal opaque
         if name in aliases and aliases[name] != target:
             opaque = True
+            record_cause('alias-conflict', node, 'different-import-target', (alias_sites[name],))
         aliases[name] = target
+        alias_sites[name] = node
 
     def link(name):
         links.add(name)
@@ -358,7 +379,7 @@ def _file_analysis(path, raw):
     for node in nodes:
         if isinstance(node, ast.Import):
             for item in node.names:
-                alias(item.asname or item.name.split('.')[0], item.name if item.asname else item.name.split('.')[0])
+                alias(item.asname or item.name.split('.')[0], item.name if item.asname else item.name.split('.')[0], item)
                 link(item.name)
         elif isinstance(node, ast.ImportFrom):
             package = module_name(path).split('.')
@@ -369,7 +390,7 @@ def _file_analysis(path, raw):
             link(name)
             for item in node.names:
                 full = name + '.' + item.name
-                alias(item.asname or item.name, full)
+                alias(item.asname or item.name, full, item)
                 link(full)
         elif isinstance(node, ast.Constant) and isinstance(node.value, str):
             parent = parents.get(node)
@@ -470,6 +491,7 @@ def _file_analysis(path, raw):
                 # A namespace stored/passed as a value can expose execution through
                 # later assignment/reflection. Keep its consumer without guessing aliases.
                 opaque = True
+                record_cause('namespace-escape', node, 'execution-namespace-as-value')
                 escaped_capability = True
             if (name in {'__import__', 'eval', 'exec', 'getattr', 'builtins.getattr',
                          'builtins.__import__', 'builtins.eval', 'builtins.exec',
@@ -481,6 +503,7 @@ def _file_analysis(path, raw):
                     # Passing or binding an execution capability loses its argument
                     # boundary. Preserve that consumer even when later aliases vary.
                     opaque = True
+                    record_cause('capability-escape', node, 'execution-capability-outside-direct-call')
                     escaped_capability = True
         if (isinstance(node, ast.Attribute) and node.attr in {'read_text', 'read_bytes', 'open', 'glob', 'rglob', 'iterdir'}) or (isinstance(node, ast.Name) and node.id == 'open'):
             resource_nodes.append(node)
@@ -497,17 +520,29 @@ def _file_analysis(path, raw):
                 # Reflection can store/pass a capability before calling it. Its
                 # consumer remains opaque without attempting points-to analysis.
                 opaque = True
+                record_cause('reflection', node, 'potential-execution-capability')
         if name in {'__import__', 'builtins.__import__', 'importlib.import_module', 'runpy.run_module', 'runpy.run_path'}:
             if node.args and isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str):
                 link(node.args[0].value)
             elif name == 'runpy.run_path' and (target := run_path_target(node)) is not None:
                 fixed_runs.add(target)
+                inventory_obligations.append((cause_site(node), target))
             else:
                 opaque = True
+                detail = 'run-path' if name == 'runpy.run_path' else (
+                    'run-module' if name == 'runpy.run_module' else 'import-module')
+                record_cause('dynamic-import-run', node, detail)
         elif not name or name in {'eval', 'exec', 'builtins.eval', 'builtins.exec'} or name.startswith(('subprocess.', 'os.system', 'os.popen')):
             opaque = True
+            if not name:
+                record_cause('unknown-call-target', node, 'unnamed-callable-expression')
+            elif name in {'eval', 'exec', 'builtins.eval', 'builtins.exec'}:
+                record_cause('dynamic-execution', node, 'eval' if name.endswith('eval') else 'exec')
+            else:
+                record_cause('dynamic-process', node, 'subprocess' if name.startswith('subprocess.') else 'shell')
         elif name.endswith(('.exec_module', '.spec_from_file_location')):
             opaque = True
+            record_cause('dynamic-loader', node, 'exec-module' if name.endswith('.exec_module') else 'spec-from-file-location')
     for node in resource_nodes:
         parent = parents.get(node)
         target = repository_path(node.value) if isinstance(node, ast.Attribute) else None
@@ -543,12 +578,9 @@ def _file_analysis(path, raw):
                 root = root.value
             if isinstance(root, ast.Name):
                 mutated_imports.add(root.id)
-    sites = []
-    for node in nodes:
-        if not isinstance(node, ast.Call):
-            continue
-        name = call_name(node.func)
-        root = node.func
+    def diagnostic_binding(expression, node):
+        name = call_name(expression)
+        root = expression
         suffix = []
         while isinstance(root, ast.Attribute):
             suffix.insert(0, root.attr)
@@ -580,19 +612,204 @@ def _file_analysis(path, raw):
                     target = item.name if item.asname else item.name.split('.')[0]
                 resolved = '.'.join([target, *suffix])
                 binding = 'proven-import'
+        return resolved, binding
+
+    # These hazards only restrict the new executable-prefix projection. They
+    # do not alter legacy dependency facts or existing invocation-site bindings.
+    @lru_cache(maxsize=None)
+    def prefix_import_targets(expression):
+        """Possible lexical import targets, never flattened file-wide aliases.
+
+        Hazard checks preserve potential targets when a binding is ambiguous;
+        only diagnostic_binding can prove the actual prefix's imported callee.
+        """
+        root, suffix = expression, []
+        while isinstance(root, ast.Attribute):
+            suffix.insert(0, root.attr)
+            root = root.value
+        if not isinstance(root, ast.Name):
+            return frozenset()
+        values = lexical_values(root)
+        declarations = [v for v in values if isinstance(v, (ast.Import, ast.ImportFrom))]
+        targets = set()
+        for declaration in declarations:
+            for item in declaration.names:
+                local = item.asname or (item.name.split('.')[0] if isinstance(declaration, ast.Import) else item.name)
+                if local != root.id or item.name == '*':
+                    continue
+                if isinstance(declaration, ast.ImportFrom):
+                    if declaration.level:
+                        continue
+                    target = str(declaration.module) + '.' + item.name
+                else:
+                    target = item.name if item.asname else item.name.split('.')[0]
+                targets.add(target)
+        if not declarations and (not values or any(v is None for v in values)):
+            # A parameter/global/nonlocal ambiguity cannot prove capability absence.
+            targets.update(import_targets.get(root.id, ()))
+            if root.id == 'delattr':
+                targets.add('builtins.delattr')
+        return frozenset('.'.join([target, *suffix]) for target in targets)
+
+    deleted_targets = set().union(*(prefix_import_targets(n) for n in nodes
+        if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Del)))
+    namespace_escape = any(isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load)
+        and 'sys' in prefix_import_targets(n)
+        and not (isinstance(parents.get(n), ast.Attribute) and parents[n].value is n) for n in nodes)
+    registry_escape = any(isinstance(n, (ast.Name, ast.Attribute))
+        and prefix_import_targets(n) & {'sys.modules', 'sys.__dict__'} for n in nodes)
+    reflective_delete = any(isinstance(n, ast.Call)
+        and 'builtins.delattr' in prefix_import_targets(n.func) for n in nodes)
+    prefix_syntax_valid = None
+    sites = []
+    executable_bindings = {}
+    for node in nodes:
+        if not isinstance(node, ast.Call):
+            continue
+        resolved, binding = diagnostic_binding(node.func, node)
+        arguments = [keyword.value for keyword in node.keywords if keyword.arg == 'args']
+        argv = arguments[0] if arguments else node.args[0] if node.args else None
+        if (isinstance(argv, (ast.List, ast.Tuple)) and len(argv.elts) >= 3
+                and isinstance(argv.elts[1], ast.Constant) and argv.elts[1].value == '-m'
+                and isinstance(argv.elts[2], ast.Constant) and type(argv.elts[2].value) is str):
+            executable, executable_binding = diagnostic_binding(argv.elts[0], node)
+            prefix_targets = prefix_import_targets(argv.elts[0]) | prefix_import_targets(node.func)
+            deleted_binding = any(target == removed or target.startswith(removed + '.')
+                                  for target in prefix_targets for removed in deleted_targets)
+            if registry_escape or namespace_escape or reflective_delete or deleted_binding:
+                executable_binding = 'escaped'
+            if prefix_syntax_valid is None:
+                try:
+                    # Validate the existing AST once; never parse again or execute.
+                    # ast.parse alone accepts duplicate keywords/late future imports.
+                    compile(tree, path, 'exec', dont_inherit=True)
+                except (SyntaxError, ValueError, TypeError, RecursionError):
+                    prefix_syntax_valid = False
+                else:
+                    prefix_syntax_valid = True
+            if not prefix_syntax_valid:
+                executable_binding = 'unresolved'
+            # Keep the source AST private. Diagnostic identity formatting can
+            # fail on valid Python (for example a large hexadecimal integer),
+            # so legacy facts/graph construction must not require it.
+            executable_bindings[_invocation_span(node)] = (
+                node, (resolved, binding, executable, executable_binding))
         names = []
         owner = scope(node)
         while owner is not tree:
             names.insert(0, getattr(owner, 'name', '<lambda>'))
             owner = scope(owner)
         sites.append((node, resolved, binding, '.'.join(names) or '<module>'))
-    return legacy, tuple(sites)
+    return legacy, tuple(sites), executable_bindings, tuple(causes), tuple(inventory_obligations)
+
+
+def _invocation_span(call):
+    return tuple(getattr(call, name, None) for name in
+                 ('lineno', 'col_offset', 'end_lineno', 'end_col_offset'))
+
+
+def _invocation_key(call):
+    return (_invocation_span(call),
+            hashlib.sha256(ast.dump(call, include_attributes=False).encode()).hexdigest())
+
+
+def invocation_executable_binding(path, raw, call):
+    """Query fixed-module prefix binding from the same parse, without copying AST.
+
+    The exact call's source span and AST must match. This returns lexical facts
+    only; runtime interpreter identity and import context remain unproved.
+    """
+    if not isinstance(call, ast.Call):
+        return None
+    analysis = _file_analysis(path, raw)
+    observed = analysis[2].get(_invocation_span(call)) if analysis is not None else None
+    if observed is None:
+        return None
+    source_call, binding = observed
+    try:
+        matches = _invocation_key(source_call) == _invocation_key(call)
+    except (ValueError, UnicodeError, RecursionError, TypeError):
+        # Unavailable identity is no lexical proof. Do not adjust global limits
+        # or poison the private parsed source for later diagnostic queries.
+        return None
+    return binding if matches else None
 
 
 def _file_facts(path, raw):
     """Preserve the selection projection; diagnostic sites grant no exclusions."""
     analysis = _file_analysis(path, raw)
     return analysis[0] if analysis is not None else None
+
+
+def opacity_causes(path, raw):
+    """Return detached JSON facts for every legacy syntax-opacity trigger.
+
+    This describes the existing conservative analyzer, not runtime reachability
+    or an exclusion proof. Inventory-dependent graph opacity is explicitly
+    unproved: path/raw alone cannot know target existence, modes or symlinks.
+    Parse failure is unknown, never a false boolean or an empty effect claim.
+    Private sites reuse the existing parse; identities are serialized only here.
+    Unavailable diagnostic identities stay explicit unknowns. No source or argv
+    is published, and serialization cannot affect legacy graph construction.
+    """
+    if (not isinstance(path, str) or not path or path.startswith('/') or '\\' in path
+            or ':' in path or any(part in {'', '.', '..'} for part in path.split('/'))):
+        raise ValueError('unsafe consumer path')
+    if not isinstance(raw, bytes):
+        raise ValueError('invalid source bytes')
+    analysis = _file_analysis(path, raw)
+    source_sha = hashlib.sha256(raw).hexdigest()
+
+    def site_fact(site):
+        node, span, owner = site
+        try:
+            ast_sha = hashlib.sha256(ast.dump(node, include_attributes=False).encode('utf-8')).hexdigest()
+        except (ValueError, UnicodeError, RecursionError):
+            # Parsed integer constants can exceed decimal conversion limits;
+            # recursive formatting also has limits. Never adjust global limits.
+            ast_sha = None
+        fact = {'node': type(node).__name__, 'span': list(span), 'ast_sha256': ast_sha, 'scope': owner}
+        if ast_sha is None:
+            fact.update(identity_status='unknown', unknowns=['ast-identity-unavailable'])
+            result['status'] = 'unknown'
+            result['coverage']['syntax'] = 'partial'
+            if 'ast-identity-unavailable' not in result['unknowns']:
+                result['unknowns'].append('ast-identity-unavailable')
+        return fact
+
+    result = {'schema_version': 1, 'consumer': path, 'source_sha256': source_sha,
+              'status': 'unknown' if analysis is None else 'analyzed',
+              'legacy_opaque': None if analysis is None else analysis[0][4],
+              'coverage': {'syntax': 'unknown' if analysis is None else 'complete',
+                           'inventory': 'unproved'},
+              'causes': [], 'inventory_obligations': [],
+              'unknowns': ['unparseable-source'] if analysis is None else [],
+              'execution_authority': False}
+    records = analysis[3] if analysis is not None else ()
+    for kind, detail, site, related in records:
+        fact = {'consumer': path, 'source_sha256': source_sha, 'kind': kind,
+                'detail': detail, 'site': site_fact(site) if site is not None else None,
+                'related_sites': [site_fact(other) for other in related]}
+        fact['cause_id'] = hashlib.sha256(json.dumps(fact, sort_keys=True,
+            separators=(',', ':'), ensure_ascii=True).encode('utf-8')).hexdigest()
+        result['causes'].append(fact)
+    for site, target in analysis[4] if analysis is not None else ():
+        try:
+            target_sha = hashlib.sha256(target.encode('utf-8')).hexdigest()
+        except (ValueError, UnicodeError, RecursionError):
+            target_sha = None
+        obligation = {
+            'consumer': path, 'source_sha256': source_sha,
+            'kind': 'fixed-run-inventory', 'site': site_fact(site),
+            'target_path_sha256': target_sha, 'status': 'unproved',
+            'checks': ['target-present-in-python-blobs', 'listed-target-and-ancestors-have-regular-modes']}
+        if target_sha is None:
+            obligation.update(identity_status='unknown', unknowns=['target-path-identity-unavailable'])
+            result['status'] = 'unknown'
+            if 'target-path-identity-unavailable' not in result['unknowns']:
+                result['unknowns'].append('target-path-identity-unavailable')
+        result['inventory_obligations'].append(obligation)
+    return result
 
 
 def invocation_sites(path, raw):

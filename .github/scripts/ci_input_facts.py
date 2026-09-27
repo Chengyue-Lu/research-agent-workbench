@@ -57,6 +57,37 @@ def _fixed_strings(node):
     return None
 
 
+def _same_interpreter_module(consumer, raw, call, argv, facts, callee, binding):
+    """Recognize a lexically bound module prefix without publishing argv data."""
+    if (not isinstance(argv, (ast.List, ast.Tuple)) or len(argv.elts) < 3
+            or not isinstance(argv.elts[0], (ast.Name, ast.Attribute))
+            or sum(item.arg == 'args' for item in call.keywords) + bool(call.args) != 1
+            or any(isinstance(item, ast.Starred) for item in argv.elts)
+            or not isinstance(argv.elts[1], ast.Constant) or argv.elts[1].value != '-m'
+            or not isinstance(argv.elts[2], ast.Constant) or type(argv.elts[2].value) is not str
+            or not all(part.isidentifier() for part in argv.elts[2].value.split('.'))):
+        return False
+    # This uses the existing analyzer's cached lexical facts, not argv spelling
+    # or caller-supplied claims about the interpreter expression.
+    from ci_dependencies import invocation_executable_binding
+    observed = invocation_executable_binding(consumer, raw, call)
+    if observed != (callee, binding, 'sys.executable', 'proven-import'):
+        return False
+    facts['operation'] = 'python-module'
+    facts['dimensions'].append('content')
+    facts['resolution']['target_shape'] = 'known'
+    facts['inputs'].extend([
+        {'role': 'interpreter-reference', 'name': 'sys.executable', 'argv_index': 0},
+        {'role': 'module-name', 'argv_index': 2},
+        {'role': 'python-arguments', 'argv_start': 3, 'count': len(argv.elts) - 3},
+    ])
+    facts['unresolved'].extend(['interpreter-identity-unproved', 'python-startup-and-environment',
+                                'python-import-closure', 'argument-input-routing-unproved'])
+    if any(not isinstance(item, ast.Constant) or type(item.value) is not str for item in argv.elts[3:]):
+        facts['unresolved'].append('dynamic-python-arguments')
+    return True
+
+
 def _process_operation(argv, facts):
     """Recognize a bounded command shape, not its executable or materialized inputs."""
     fixed = _fixed_strings(argv)
@@ -184,7 +215,8 @@ def describe_invocation(consumer, raw, call, *, callee, binding, scope=''):
                      'explicit-executable-override', 'unsupported-positional-process-options',
                      'unsupported-process-options'}
         if shell_false and not overrides & set(result['unresolved']):
-            _process_operation(argv, result)
+            if not _same_interpreter_module(consumer, raw, call, argv, result, callee, binding):
+                _process_operation(argv, result)
         elif not shell_false:
             result['unresolved'].append('shell-execution' if isinstance(shell, ast.Constant) and
                                          shell.value is True else 'unknown-shell')

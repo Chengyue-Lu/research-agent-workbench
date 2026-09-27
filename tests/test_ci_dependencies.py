@@ -1001,5 +1001,259 @@ class DependencyTests(unittest.TestCase):
         self.assertTrue(deps.function_body_only(before, before.replace(b'value[0:]', b'value[1:]')))
 
 
+class OpacityCauseTests(unittest.TestCase):
+    def setUp(self):
+        deps._file_facts.cache_clear()
+        self.addCleanup(deps._file_facts.cache_clear)
+
+    def test_legacy_trigger_families_have_source_bound_syntax_causes(self):
+        cases = {
+            'alias-conflict': ('import alpha as same\nimport beta as same\n', {'alias-conflict'}),
+            'namespace-escape': ('import subprocess\nsaved=subprocess\n', {'namespace-escape'}),
+            'capability-escape': ('import subprocess\nsaved=subprocess.run\n', {'capability-escape'}),
+            'reflection': ('getattr(make(),attr)\n', {'reflection'}),
+            'dynamic-import': ('__import__(target)\n', {'dynamic-import-run'}),
+            'dynamic-run': ('import runpy\nrunpy.run_path(target)\n', {'dynamic-import-run'}),
+            'dynamic-process': ('import subprocess\nsubprocess.run(argv)\n', {'dynamic-process'}),
+            'dynamic-execution': ('exec(payload)\n', {'dynamic-execution'}),
+            'dynamic-loader': ('loader.exec_module(module)\n', {'dynamic-loader'}),
+            'unknown-call-target': ('factory()()\n', {'unknown-call-target'}),
+            'ordinary-call': ('helper(payload)\n', set()),
+            'resource-only': ('open("resource.json")\n', set()),
+        }
+        for name, (source, expected) in cases.items():
+            with self.subTest(case=name):
+                raw = source.encode()
+                report = deps.opacity_causes('tools/consumer.py', raw)
+                self.assertEqual(expected, {row['kind'] for row in report['causes']})
+                self.assertEqual(bool(expected), report['legacy_opaque'])
+                self.assertEqual({'syntax': 'complete', 'inventory': 'unproved'}, report['coverage'])
+                self.assertFalse(report['execution_authority'])
+                for cause in report['causes']:
+                    self.assertEqual('tools/consumer.py', cause['consumer'])
+                    self.assertEqual(hashlib.sha256(raw).hexdigest(), cause['source_sha256'])
+                    self.assertIsNotNone(cause['site']['ast_sha256'])
+
+    def test_parallel_causes_and_alias_predecessors_are_not_lost_or_shared(self):
+        import json
+        raw = b'import alpha as same\nimport beta as same\nimport gamma as same\nexec(payload)\n'
+        report = deps.opacity_causes('tools/parallel.py', raw)
+        self.assertEqual(3, len(report['causes']))
+        self.assertEqual(3, len({row['cause_id'] for row in report['causes']}))
+        aliases = [row for row in report['causes'] if row['kind'] == 'alias-conflict']
+        self.assertEqual([2, 3], [row['site']['span'][0] for row in aliases])
+        self.assertEqual([1, 2], [row['related_sites'][0]['span'][0] for row in aliases])
+        expected = json.loads(json.dumps(report))
+        report['causes'][0]['related_sites'][0]['span'].clear()
+        report['coverage']['syntax'] = 'forged'
+        self.assertEqual(expected, deps.opacity_causes('tools/parallel.py', raw))
+        for name, path, content in (('new-path', 'tools/other.py', raw),
+                                    ('changed-bytes', 'tools/parallel.py', raw + b'# note\n')):
+            with self.subTest(case=name):
+                changed = deps.opacity_causes(path, content)
+                self.assertNotEqual(expected['causes'][0]['cause_id'], changed['causes'][0]['cause_id'])
+
+    def test_parse_failure_stays_unknown_and_empty_source_is_distinct(self):
+        cases = {'syntax': b'def broken(:\n', 'encoding': b'# coding: utf-8\n\xff', 'null-byte': b'x\x00'}
+        for name, raw in cases.items():
+            with self.subTest(case=name):
+                report = deps.opacity_causes('tools/broken.py', raw)
+                self.assertEqual('unknown', report['status'])
+                self.assertEqual('unknown', report['coverage']['syntax'])
+                self.assertIsNone(report['legacy_opaque'])
+                self.assertEqual(['unparseable-source'], report['unknowns'])
+                self.assertFalse(report['execution_authority'])
+        empty = deps.opacity_causes('tools/empty.py', b'VALUE=1\n')
+        self.assertEqual('analyzed', empty['status'])
+        self.assertEqual([], empty['causes'])
+        self.assertFalse(empty['legacy_opaque'])
+
+    def test_fixed_run_inventory_duties_do_not_close_syntax_or_resources(self):
+        path = 'tools/consumer.py'
+        raw = b'import runpy\nfrom pathlib import Path\nrunpy.run_path(Path(__file__).parent / "target.py")\n'
+        report = deps.opacity_causes(path, raw)
+        self.assertEqual([], report['causes'])
+        self.assertFalse(report['legacy_opaque'])
+        obligation, = report['inventory_obligations']
+        self.assertEqual('fixed-run-inventory', obligation['kind'])
+        self.assertEqual('unproved', obligation['status'])
+        self.assertEqual(hashlib.sha256(b'tools/target.py').hexdigest(), obligation['target_path_sha256'])
+        for name, mode, present in (('regular', '100644', True), ('missing', None, False), ('symlink', '120000', True)):
+            with self.subTest(case=name):
+                blobs = {path: raw}
+                inventory = {path: ['100644', 'blob', 'consumer']}
+                if present:
+                    blobs['tools/target.py'] = b'pass\n'
+                    inventory['tools/target.py'] = [mode, 'blob', 'target']
+                self.assertEqual(name != 'regular', path in deps.graph(blobs, inventory)[1])
+                self.assertEqual(report, deps.opacity_causes(path, raw))
+        combined = deps.opacity_causes(path, raw + b'runpy.run_path(Path(__file__).parent / "other.py")\nexec(payload)\n')
+        self.assertEqual(2, len(combined['inventory_obligations']))
+        self.assertEqual(['dynamic-execution'], [row['kind'] for row in combined['causes']])
+        self.assertEqual('unproved', combined['coverage']['inventory'])
+        resources = b'from pathlib import Path\ndef read(root,name): return (Path(root)/name).read_bytes()\n'
+        self.assertTrue(deps._file_facts(path, resources)[5])
+        self.assertEqual([], deps.opacity_causes(path, resources)['causes'])
+
+    def test_large_integer_identity_failure_preserves_cause_and_limits(self):
+        limit = sys.get_int_max_str_digits()
+        if not 0 < limit <= 4300:
+            self.skipTest('counterexample requires an active decimal limit at most 4300; test never changes it')
+        limits = (limit, sys.getrecursionlimit())
+        raw = b'exec(0x' + b'f' * 5000 + b')\nexec(payload)\n'
+        facts = deps._file_facts('tools/large_int.py', raw)
+        self.assertEqual(9, len(facts))
+        self.assertTrue(facts[4])
+        report = deps.opacity_causes('tools/large_int.py', raw)
+        self.assertEqual('unknown', report['status'])
+        self.assertEqual('partial', report['coverage']['syntax'])
+        self.assertEqual(['ast-identity-unavailable'], report['unknowns'])
+        self.assertEqual(2, len(report['causes']))
+        unknown = next(row for row in report['causes'] if row['site']['ast_sha256'] is None)
+        known = next(row for row in report['causes'] if row['site']['ast_sha256'] is not None)
+        self.assertEqual('dynamic-execution', unknown['kind'])
+        self.assertEqual('unknown', unknown['site']['identity_status'])
+        self.assertEqual('dynamic-execution', known['kind'])
+        self.assertEqual(limits, (sys.get_int_max_str_digits(), sys.getrecursionlimit()))
+        self.assertFalse(report['execution_authority'])
+
+    def test_surrogate_target_retains_unknown_and_adjacent_known_obligation(self):
+        import json
+        raw = (b'import runpy\nfrom pathlib import Path\n'
+               b'runpy.run_path(Path(__file__).parent / "\\ud800")\n'
+               b'runpy.run_path(Path(__file__).parent / "normal.py")\n')
+        report = deps.opacity_causes('tools/surrogate.py', raw)
+        self.assertFalse(report['legacy_opaque'])
+        self.assertEqual('unknown', report['status'])
+        self.assertEqual({'syntax': 'complete', 'inventory': 'unproved'}, report['coverage'])
+        self.assertEqual(['target-path-identity-unavailable'], report['unknowns'])
+        self.assertEqual(2, len(report['inventory_obligations']))
+        unknown = next(row for row in report['inventory_obligations'] if row['target_path_sha256'] is None)
+        self.assertEqual('unknown', unknown['identity_status'])
+        self.assertIsNotNone(unknown['site']['ast_sha256'])
+        self.assertEqual('unproved', unknown['status'])
+        expected = json.loads(json.dumps(report))
+        unknown['unknowns'].clear()
+        unknown['checks'].clear()
+        self.assertEqual(expected, deps.opacity_causes('tools/surrogate.py', raw))
+
+    def test_legacy_graph_does_not_require_diagnostic_ast_serialization(self):
+        path, raw = 'tools/diagnostic_limit.py', b'exec(0x123)\n'
+        original_parse = ast.parse
+        with patch.object(deps.ast, 'parse', wraps=original_parse) as parsed, \
+             patch.object(deps.ast, 'dump', side_effect=RecursionError('diagnostic identity limit')) as dumped:
+            self.assertTrue(deps._file_facts(path, raw)[4])
+            self.assertIn(path, deps.graph({path: raw}, {path: ['100644', 'blob', 'source']})[1])
+            self.assertEqual(0, dumped.call_count)
+            report = deps.opacity_causes(path, raw)
+            self.assertEqual('partial', report['coverage']['syntax'])
+            self.assertEqual(['ast-identity-unavailable'], report['unknowns'])
+            self.assertEqual(1, len(report['causes']))
+            self.assertEqual(1, parsed.call_count)
+        repaired = deps.opacity_causes(path, raw)
+        self.assertEqual('complete', repaired['coverage']['syntax'])
+        self.assertIsNotNone(repaired['causes'][0]['site']['ast_sha256'])
+
+
+class PrefixIdentityBoundaryTests(unittest.TestCase):
+    def setUp(self):
+        deps._file_facts.cache_clear()
+        self.addCleanup(deps._file_facts.cache_clear)
+
+    def test_large_integer_module_prefix_does_not_break_legacy_facts_or_graph(self):
+        limit = sys.get_int_max_str_digits()
+        if not 0 < limit <= 4300:
+            self.skipTest('counterexample requires an active decimal limit at most 4300; no limits are changed')
+        limits = (limit, sys.getrecursionlimit())
+        path = 'tools/large_prefix.py'
+        raw = b'import subprocess,sys\nsubprocess.run([sys.executable,"-m","pkg",0x' + b'f' * 5000 + b'])\n'
+        self.assertTrue(deps._file_facts(path, raw)[4])
+        self.assertIn(path, deps.graph({path: raw}, {path: ['100644', 'blob', 'source']})[1])
+        site, = deps.invocation_sites(path, raw)
+        self.assertIsNone(deps.invocation_executable_binding(path, raw, site['call']))
+        self.assertEqual('partial', deps.opacity_causes(path, raw)['coverage']['syntax'])
+        self.assertEqual(limits, (sys.get_int_max_str_digits(), sys.getrecursionlimit()))
+
+    def test_prefix_identity_errors_are_query_local_and_recover_without_reparse(self):
+        path = 'tools/prefix_identity_limit.py'
+        raw = b'import subprocess,sys\nsubprocess.run([sys.executable,"-m","pkg",tail])\n'
+        for name, error in (('decimal-limit', ValueError), ('encoding-limit', UnicodeError),
+                            ('depth-limit', RecursionError), ('invalid-identity-shape', TypeError)):
+            with self.subTest(case=name):
+                deps._file_facts.cache_clear()
+                original_parse = ast.parse
+                with patch.object(deps.ast, 'parse', wraps=original_parse) as parsed:
+                    with patch.object(deps.ast, 'dump', side_effect=error('diagnostic identity unavailable')) as dumped:
+                        self.assertTrue(deps._file_facts(path, raw)[4])
+                        self.assertIn(path, deps.graph({path: raw}, {path: ['100644', 'blob', 'source']})[1])
+                        site, = deps.invocation_sites(path, raw)
+                        self.assertEqual(0, dumped.call_count)
+                        self.assertIsNone(deps.invocation_executable_binding(path, raw, site['call']))
+                    self.assertEqual(('subprocess.run', 'proven-import', 'sys.executable', 'proven-import'),
+                                     deps.invocation_executable_binding(path, raw, site['call']))
+                    self.assertEqual(1, parsed.call_count)
+
+    def test_unavailable_prefix_compilation_never_proves_an_entry(self):
+        path = 'tools/prefix_compile_limit.py'
+        raw = b'import subprocess,sys\nsubprocess.run([sys.executable,"-m","pkg",tail])\n'
+        for name, error in (('compiler-value-error', ValueError), ('compiler-depth-error', RecursionError)):
+            with self.subTest(case=name):
+                deps._file_facts.cache_clear()
+                with patch.object(deps, 'compile', side_effect=error('compiler unavailable'), create=True):
+                    self.assertTrue(deps._file_facts(path, raw)[4])
+                    self.assertIn(path, deps.graph({path: raw}, {path: ['100644', 'blob', 'source']})[1])
+                    site, = deps.invocation_sites(path, raw)
+                    record = input_facts.describe_invocation(path, raw, **site)
+                    self.assertNotEqual('python-module', record['operation'])
+                    self.assertEqual('unknown', record['resolution']['target_shape'])
+                    self.assertFalse(record['execution_authority'])
+
+    def test_prefix_query_requires_matching_call_span_and_ast(self):
+        path = 'tools/exact_prefix.py'
+        raw = b'import subprocess,sys\nsubprocess.run([sys.executable,"-m","pkg",tail])\n'
+        site, = deps.invocation_sites(path, raw)
+        source_call = site['call']
+        self.assertIsNotNone(deps.invocation_executable_binding(path, raw, source_call))
+        for name, value in (('non-call', ast.Constant(value=1)),
+                            ('missing-span', ast.Call(func=ast.Name(id='helper', ctx=ast.Load()), args=[], keywords=[]))):
+            with self.subTest(case=name):
+                self.assertIsNone(deps.invocation_executable_binding(path, raw, value))
+        same_span = ast.parse('subprocess.run([sys.executable,"-m","different",tail])').body[0].value
+        for name in ('lineno', 'col_offset', 'end_lineno', 'end_col_offset'):
+            setattr(same_span, name, getattr(source_call, name))
+        self.assertIsNone(deps.invocation_executable_binding(path, raw, same_span))
+        source_call.lineno += 1
+        self.assertIsNone(deps.invocation_executable_binding(path, raw, source_call))
+        fresh, = deps.invocation_sites(path, raw)
+        self.assertIsNotNone(deps.invocation_executable_binding(path, raw, fresh['call']))
+        self.assertIsNone(deps.invocation_executable_binding('tools/broken.py', b'def broken(', fresh['call']))
+
+    def test_opacity_query_rejects_nonportable_paths_and_nonbytes(self):
+        for name, path in (('not-string', None), ('empty', ''), ('absolute', '/a.py'),
+                           ('parent', '../a.py'), ('drive', 'C:/a.py'), ('backslash', 'a\\b.py'),
+                           ('dot-component', 'tools/./a.py'), ('empty-component', 'tools//a.py')):
+            with self.subTest(case=name), self.assertRaisesRegex(ValueError, 'unsafe consumer path'):
+                deps.opacity_causes(path, b'pass\n')
+        for name, raw in (('text', 'pass\n'), ('mutable-bytes', bytearray(b'pass\n'))):
+            with self.subTest(case=name), self.assertRaisesRegex(ValueError, 'invalid source bytes'):
+                deps.opacity_causes('tools/a.py', raw)
+
+    def test_multiple_unknown_identities_keep_each_obligation_and_one_reason(self):
+        raw = (b'import runpy\nfrom pathlib import Path\n'
+               b'runpy.run_path(Path(__file__).parent / "\\ud800")\n'
+               b'runpy.run_path(Path(__file__).parent / "\\ud801")\nexec(first)\nexec(second)\n')
+        with patch.object(deps.ast, 'dump', side_effect=RecursionError('diagnostic depth')):
+            report = deps.opacity_causes('tools/multiple_unknown.py', raw)
+        self.assertEqual('unknown', report['status'])
+        self.assertEqual('partial', report['coverage']['syntax'])
+        self.assertEqual(2, len(report['causes']))
+        self.assertEqual(2, len(report['inventory_obligations']))
+        self.assertEqual(1, report['unknowns'].count('ast-identity-unavailable'))
+        self.assertEqual(1, report['unknowns'].count('target-path-identity-unavailable'))
+        self.assertTrue(all(row['site']['ast_sha256'] is None for row in report['causes']))
+        self.assertTrue(all(row['target_path_sha256'] is None for row in report['inventory_obligations']))
+        self.assertFalse(report['execution_authority'])
+
+
 if __name__ == '__main__':
     unittest.main()
