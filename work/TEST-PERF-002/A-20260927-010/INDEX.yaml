@@ -1,0 +1,63 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260927-010
+task_id: TEST-PERF-002
+task_revision: 51
+attempt_id: A-20260927-010
+archive_root: A-20260927-010
+baseline: 97d3b3d3141419b34ad47e0f42d9f01d0dfbd535
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 740f1c52370c7cbf5d644715616af96aaf00ca0df377fa2ae0f859b1f80e0265
+actors_ref:
+  path: ACTORS.yaml
+  sha256: cd2307113abafe8495849c87506902e1355fcc02bae1b3e0330a643aada73438
+read_allowlist:
+- .github/**
+- AGENTS.md
+- Issue87 current direction
+- PROJECT_MEMORY.md
+- README.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- src/research_workbench/**
+- tests/**
+write_scope:
+- .github/scripts/ci_component_smoke.py
+- .github/scripts/ci_components.py
+- .github/scripts/run_component_ci.py
+- .github/workflows/ci_components.yml
+- docs/workstreams/chengyue-lu/TEST-PERF-002/COMPONENT_CI.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/COMPONENT_CI_MIGRATION.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/README.md
+- tests/ci_components.json
+- tests/test_ci_component_execution.py
+- tests/test_ci_component_smoke.py
+- tests/test_ci_components.py
+- work/TEST-PERF-002/A-20260927-010/**
+tool_allowlist:
+- collaboration
+- gh
+- git
+- python
+- shell
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 50d977edcd1317da5abef58a068f7abc2ce36f852bd11f5274bc3653d8b4b56b
+  event_count: 5
+tool_event_refs:
+- path: tool-events/freeze-component-ci-succeeded.json
+  sha256: 3f5991c1f9c74eb77976e08162f47849e3703e11a158760616d1f550dbf3ab83
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: messages
+- event_id: EVT-0003
+  affected_stream: external-actions

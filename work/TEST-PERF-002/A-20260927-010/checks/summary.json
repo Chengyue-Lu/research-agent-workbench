@@ -1,0 +1,27 @@
+{
+  "status": "PASS-local-bounded",
+  "base": "97d3b3d3141419b34ad47e0f42d9f01d0dfbd535",
+  "source_sha256": {
+    ".github/scripts/ci_components.py": "76dd4143aabb6c11e29f82e1ebebc223af04084e8c4850f74a94a8add2270659",
+    ".github/scripts/run_component_ci.py": "28f776538d3caed564c6a02641e182ffc59943223a07a135f1be87e442b21385",
+    ".github/scripts/ci_component_smoke.py": "0823b388d391596e5155e00fdc09743375c89a8a66bacf38c6535cae11b805c2",
+    ".github/workflows/ci_components.yml": "6921a66792005c3548031910fc0f36ba2b03748480e919dcbbb46efe66e9a40c",
+    "tests/ci_components.json": "8d55c42965a0e13fe80956c52cda266df67405e88fa4cf8620a1deca15a5a312",
+    "tests/test_ci_components.py": "d8d94b9d108e133ff4c9fa3daec95057e3df83a1a28c8c65772423cdf7f7f48e",
+    "tests/test_ci_component_execution.py": "4ca2111e2d4d5e23ddd92f07a61fdd7083bb5fd8be3735fc2695fbfac5e95f10",
+    "tests/test_ci_component_smoke.py": "1124708d8f551ba645cf7731d1ecbb3fd851921a37cc3a325ac799dd7bb98551",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/COMPONENT_CI.md": "0b195d518e257fa00bf4f6b453e3dc19d0c2e1f40c586af28af4f036019aff3e",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/COMPONENT_CI_MIGRATION.md": "0f331dba4e76ab5b3330a8a5ef8ed2887d55df2815d5ba335b75cc0bd3493ce6",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/README.md": "62e7febae8e154993e0043d819eb7a198efcd4fa1a80175776b4801b855eefa7"
+  },
+  "smoke_steps": 8,
+  "smoke_seconds": 9.469,
+  "regressions": 23,
+  "regression_seconds": 6.084022500013816,
+  "coverage": "not-collected",
+  "hosted_verified": false,
+  "production_activated": false,
+  "earlier_smoke_failure": "local/smoke.json",
+  "files": 65,
+  "raw_evidence_sha256": "238dc50817ed3e474c03d201969895004f27c91ba505e180a83f883e943d98bd"
+}

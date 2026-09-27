@@ -1,5 +1,7 @@
 # TEST-PERF-002 — Change-aware CI
 
+2026-09-27 最新 Issue 方向与隔离分支实施见[按组件执行的 CI 候选](COMPONENT_CI.md)；该候选尚未 activation，以下保留既有流程与证据的原始说明。
+
 Issue #87 的 [2A 领域与消费者盘点](DOMAIN_MODEL.md) 提供八个领域的显式路由和离线审计工具。
 它保留原计划义务，为下一步候选集合与真实结果的 shadow 比较准备输入。
 

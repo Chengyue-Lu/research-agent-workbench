@@ -1,0 +1,12 @@
+task_id: TEST-PERF-002
+revision: 51
+request: Close earlier CI work and follow current Issue87 direction
+profile: Component CI engineer and bounded independent reviewers
+required_skills: []
+scope: Independent candidate component planner, baseline runner, installed smoke,
+  result migration documentation
+delegation: true
+budget: Small classifier/runner checks, known behavior regressions and one new candidate
+  workflow
+stop_condition: Reviewable candidate; no production activation, merge or protection
+  change
