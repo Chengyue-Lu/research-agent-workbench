@@ -118,7 +118,9 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if args.timeout < 1:
         parser.error("--timeout must be positive")
-    report = smoke(args.python.resolve(), timeout=args.timeout)
+    # venv/bin/python is commonly a symlink to the base interpreter on POSIX.
+    # Keep its lexical path so Python discovers the adjacent pyvenv.cfg.
+    report = smoke(args.python.absolute(), timeout=args.timeout)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"{PROFILE}: {report['status']} ({report['elapsed_seconds']:.3f}s)")

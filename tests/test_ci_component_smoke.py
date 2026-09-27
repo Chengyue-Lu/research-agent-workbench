@@ -6,6 +6,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / ".github/scripts/ci_component_smoke.py"
@@ -15,6 +16,16 @@ SPEC.loader.exec_module(smoke)
 
 
 class ComponentSmokeTests(unittest.TestCase):
+    @unittest.skipIf(os.name == 'nt', 'POSIX venv interpreter symlink regression')
+    def test_cli_preserves_venv_interpreter_symlink(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            link = root / 'python'
+            link.symlink_to(sys.executable)
+            with patch.object(smoke, 'smoke', return_value={'status':'success','elapsed_seconds':0}) as probe:
+                self.assertEqual(0, smoke.main(['--python', str(link), '--output', str(root/'report.json')]))
+            probe.assert_called_once_with(link.absolute(), timeout=120)
+
     def step(self, code, **kwargs):
         return smoke.run_step("control", [sys.executable, "-I", "-c", code],
                               cwd=SCRIPT.parent, env=os.environ.copy(), timeout=5, **kwargs)

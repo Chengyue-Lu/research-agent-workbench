@@ -59,6 +59,8 @@ wheel 构建/新环境安装由 workflow 在 smoke 前完成；smoke 脚本自�
 
 ## 收尾与剩余事项
 
+首个真实候选 push `a5a104a` 的 [run36294739603](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36294739603) 在安装 smoke 失败，aggregate 也正确失败。wheel 构建及安装已成功；smoke 的 `Path.resolve()` 跟随 Linux venv 解释器符号链接，改用了没有该 wheel 的 base Python。修正为保留 lexical absolute path，并新增真实 POSIX 符号链接回归；Windows 跳过这个特定平台用例。失败原身份保留，新提交仍需自己的 hosted 执行。
+
 此候选停止于源码、有限回归和材料可审阅：当前未运行 hosted、nightly、全仓 checkpoint 或多版本完整业务；没有 commit/push、保护变更或发布操作由本记录任务产生。后续若开展候选真实 workflow 验证，应先冻结最终源码/映射并保留 exact source 身份与实际结果，不重启旧全闭包研究。
 
 required-check 与 source-CI 迁移按独立文档 prepare/accept/activate/rollback；当前材料不要求立即实施 source-CI v2。R2审核、具体合并与发布批准继续由既有制度决定。Task revision51、拟归档 A-20260927-010 的本地草案只用于审阅范围和证据索引，尚未建原生 Trace 或改写项目 Task 权威。
