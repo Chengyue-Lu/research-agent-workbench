@@ -56,6 +56,7 @@ class CheckpointTests(unittest.TestCase):
         full = yaml.load((ROOT/checkpoint.WORKFLOW).read_text(), Loader=yaml.BaseLoader)
         self.assertEqual(['develop'], daily['on']['pull_request']['branches'])
         self.assertNotIn('edited', daily['on']['pull_request']['types'])
+        self.assertNotIn('ready_for_review', daily['on']['pull_request']['types'])
         self.assertNotIn('paths', daily['on']['pull_request'])
         self.assertEqual(['develop'], daily['on']['push']['branches'])
         self.assertEqual(['component', 'integration-smoke'], daily['on']['workflow_dispatch']['inputs']['profile']['options'])
