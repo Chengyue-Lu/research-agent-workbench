@@ -124,6 +124,8 @@ class ComponentPlanTests(unittest.TestCase):
             'check_coverage_policy': ['test_coverage_policy'],
             'check_pr_governance': ['test_pr_governance', 'test_governance_helper_branches'],
             'ci_checks': ['test_ci_checks'], 'ci_component_smoke': ['test_ci_component_smoke'],
+            'ci_component_metadata': ['test_ci_component_metadata'],
+            'ci_ruleset_migration': ['test_ci_ruleset_migration'],
             'ci_components': ['test_ci_components'], 'ci_consumer_contracts': ['test_ci_consumer_contracts'],
             'ci_consumer_shadow': ['test_ci_consumer_shadow'], 'ci_contract_shadow': ['test_ci_contract_shadow'],
             'ci_dependencies': ['test_ci_dependencies'], 'ci_domain_audit': ['test_ci_domain_audit'],

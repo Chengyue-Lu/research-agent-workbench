@@ -22,6 +22,15 @@
 核对 plan、各 Python 实际结果及适用 smoke。上游 failure/cancel/missing/skip 不能当作执行成功；
 纯文档明确不要求产品 smoke。新结果不替代尚在使用的两个旧 test checks。
 
+develop 的 metadata/Ready 事件使用 [ci_component_metadata.py](../../../../.github/scripts/ci_component_metadata.py)
+核同仓工作流、同一 PR 的 base/head/test-merge、当前 Git 重算计划和 API 工件摘要，写出 `plan-reference-only`。
+内容执行失败或取消不会把真实计划变成不存在；metadata 只证明引用一致，独立 `CI result` 继续阻断执行失败。
+它不发布测试成功、coverage 或发布凭据。main 的治理继续使用原 legacy 语义。
+
+旧 `ci.yml` 在本候选中停止自动运行 develop PR，只保留 main PR、main/develop push 和显式恢复入口。
+这是第一阶段日常减测：合并后的 develop 仍同时运行旧 full/source-CI 兼容基线，直至 checkpoint 部署和版本切换被接受。
+因此 PR 内快速迭代不再每次触发旧全量；此阶段也不把 develop 的总成本宣称为短 smoke 成本。
+
 [ci_components.py](../../../../.github/scripts/ci_components.py) 按目录职责选组件整组，
 追加直接修改测试、共享 fixture 的登记消费者和现存同名测试。增删与 rename 两侧均考虑。
 未映射路径公开列入 unknown_paths，选最近组件、自身测试与短smoke，不自动升级FULL。

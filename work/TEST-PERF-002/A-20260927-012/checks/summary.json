@@ -1,0 +1,33 @@
+{
+  "status": "PASS-local-premerge-preparation",
+  "starting_head": "12b52ff2e6bf7690ca6b821751162a482eaf7b3f",
+  "source_sha256": {
+    ".github/scripts/ci_component_metadata.py": "cff0d697aff14c672d686bf66a59448540d445ebc35a7f3fd14c68a950965a92",
+    ".github/scripts/ci_ruleset_migration.py": "2f9380a850cc22bba44a1265254ea0528f4d2fd1c90f529df3f297508c4d5fb5",
+    ".github/workflows/ci-governance.yml": "10d0bdaec7202173295af88fc86476165eea034c4ccf8a7fbcae68089ce54e8a",
+    ".github/workflows/ci.yml": "c3fd6610ec7ecc7a1f6527a9290ee1405d1a1c9df8b390c3dd65aaf8973a8a81",
+    "tests/test_ci_component_metadata.py": "28919c2859b2466be0e59bf026be5b12552b0e8e4642c534a62e37df5cc3d16a",
+    "tests/test_ci_ruleset_migration.py": "52464b381f245576044cbbd35532cb6d53e90305a6f3efd486ff88a63904b110",
+    "tests/test_ci_checkpoint.py": "04843928f45bccd2d76b9d7688bcdf081b68647a4144cfd0065d36df5c5c68d4",
+    "tests/test_ci_components.py": "c5550ee175225ee0c95b2139a7cc32f046b9479803a3e3112e2764da00bbe4ef",
+    "tests/ci_components.json": "f9f9fc2c0c108f6c18ce8d846493b013bdc5ddf3ef12ca0c82c20366f6c368fe",
+    "docs/DEVELOPMENT.md": "f274bcd7042eee138332dadc3f72bdf355ac0d8ecd72a736a2255d758c2778b2",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/COMPONENT_CI.md": "3738271e2eba2316c733a189e515c64203be8be91be6cc4bc664763ed8d343c2",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/COMPONENT_CI_MIGRATION.md": "a477686aec68a4c50d220bbc28566a76d34e1693d7f120e24b177469638fb3b6",
+    "docs/workstreams/chengyue-lu/TEST-PERF-002/RISK_LEDGER.md": "c54b19108e2fda1ff4ad2bc49ba7f1fa778551b7180acbd3a4668bfa9d9b1728"
+  },
+  "distinct_local_tests": 45,
+  "invocations": [
+    "9PASS",
+    "36PASS",
+    "4 changed metadata tests PASS"
+  ],
+  "live_api": "PASS prior-plan sanity only",
+  "coverage": "not-collected",
+  "ruleset_applied": false,
+  "hosted_current_head_verified": false,
+  "default_branch": "main",
+  "checkpoint_deployed": false,
+  "raw_evidence_sha256": "22eb1e72c888e1c22d67257f3ddbaf36a8e3df4485a2644644b3031b1575a6a0",
+  "files": 32
+}

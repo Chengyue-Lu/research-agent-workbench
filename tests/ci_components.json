@@ -472,6 +472,20 @@
     ],
     "schemas/v0.2.0/release-manifest.schema.json": [
       "test_release_checkpoint_ci"
+    ],
+    ".github/scripts/ci_component_metadata.py": [
+      "test_ci_component_metadata"
+    ],
+    ".github/scripts/ci_ruleset_migration.py": [
+      "test_ci_ruleset_migration"
+    ],
+    ".github/workflows/ci-governance.yml": [
+      "test_ci_component_metadata",
+      "test_ci_checkpoint"
+    ],
+    ".github/workflows/ci.yml": [
+      "test_ci_checkpoint",
+      "test_ci_checks"
     ]
   },
   "nearest_components": {

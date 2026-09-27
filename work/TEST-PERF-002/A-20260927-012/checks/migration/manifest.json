@@ -1,0 +1,12 @@
+{
+  "repository": "Chengyue-Lu/research-agent-workbench",
+  "ruleset_id": 23305447,
+  "before_sha256": "03b15b07a045ae8c4eefb714f9b97fc9288ca200f61387170a078d763b72d9f8",
+  "payload_sha256": {
+    "rollback": "1378506361fc59f84c17656bcef7c4421e4e13825a8a134d2d8062656f663d6a",
+    "intersection": "1d47fda79dd17e479e138b4f00b8f89ae0d03b39e3db6b143c72a50884ac192a",
+    "components": "5ce9bf5e9ef2af9fabcc35671bc5f2c6af1597615bbb21a2e15f2f32fac74a40"
+  },
+  "applied": false,
+  "approval_granted": false
+}

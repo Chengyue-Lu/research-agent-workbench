@@ -12,6 +12,7 @@ concurrency:
 permissions:
   contents: read
   actions: read
+  pull-requests: read
 
 jobs:
   governance:
@@ -25,10 +26,22 @@ jobs:
           python-version: '3.11'
       - run: python -m pip install 'PyYAML>=6,<7'
       - run: python .github/scripts/check_pr_governance.py
-      - name: Recompute current obligations
+      - name: Bind develop metadata to the component content plan
+        if: github.base_ref == 'develop' && contains(fromJSON('["edited", "labeled", "unlabeled", "ready_for_review"]'), github.event.action)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python .github/scripts/ci_component_metadata.py --output component-metadata.json
+      - name: Recompute legacy release obligations
+        if: github.base_ref != 'develop'
         run: python .github/scripts/plan_ci.py --output metadata-plan.json
-      - name: Metadata must retain a matching content plan
-        if: contains(fromJSON('["edited", "labeled", "unlabeled"]'), github.event.action)
+      - name: Release metadata must retain a matching legacy content plan
+        if: github.base_ref != 'develop' && contains(fromJSON('["edited", "labeled", "unlabeled"]'), github.event.action)
         env:
           GH_TOKEN: ${{ github.token }}
         run: python .github/scripts/ci_checks.py metadata --plan metadata-plan.json
+      - uses: actions/upload-artifact@v4
+        if: github.base_ref == 'develop' && contains(fromJSON('["edited", "labeled", "unlabeled", "ready_for_review"]'), github.event.action)
+        with:
+          name: component-metadata
+          path: component-metadata.json
+          if-no-files-found: error

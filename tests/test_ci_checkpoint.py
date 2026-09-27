@@ -66,3 +66,14 @@ class CheckpointTests(unittest.TestCase):
         self.assertEqual('30 18 * * 0-4', full['on']['schedule'][0]['cron'])
         self.assertEqual('CI checkpoint result', full['jobs']['result']['name'])
         self.assertEqual('always()', full['jobs']['result']['if'])
+        legacy = yaml.load((ROOT/'.github/workflows/ci.yml').read_text(), Loader=yaml.BaseLoader)
+        governance = yaml.load((ROOT/'.github/workflows/ci-governance.yml').read_text(), Loader=yaml.BaseLoader)
+        self.assertEqual(['main'], legacy['on']['pull_request']['branches'])
+        self.assertEqual(['main', 'develop'], legacy['on']['push']['branches'])
+        steps = {step.get('name'): step for step in governance['jobs']['governance']['steps'] if 'name' in step}
+        component = steps['Bind develop metadata to the component content plan']
+        self.assertIn("github.base_ref == 'develop'", component['if'])
+        self.assertIn('ready_for_review', component['if'])
+        self.assertIn('ci_component_metadata.py', component['run'])
+        for name in ('Recompute legacy release obligations', 'Release metadata must retain a matching legacy content plan'):
+            self.assertIn("github.base_ref != 'develop'", steps[name]['if'])

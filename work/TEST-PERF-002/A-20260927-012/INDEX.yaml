@@ -1,0 +1,64 @@
+schema_version: 0.1.0
+trace_id: TRACE-A-20260927-012
+task_id: TEST-PERF-002
+task_revision: 53
+attempt_id: A-20260927-012
+archive_root: A-20260927-012
+baseline: 12b52ff2e6bf7690ca6b821751162a482eaf7b3f
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 70b2b90c9ba5a920bd01ef4898659a71ca68c58715dba265a7602a2c3dc78bf7
+actors_ref:
+  path: ACTORS.yaml
+  sha256: c426e18885f72b62ca257ea3d2bde11657c8b23ece09363e2973c5deaa066fb3
+read_allowlist:
+- .github/**
+- AGENTS.md
+- Issue87 and PR105
+- PROJECT_MEMORY.md
+- README.md
+- docs/**
+- src/research_workbench/**
+- tests/**
+write_scope:
+- .github/scripts/ci_component_metadata.py
+- .github/scripts/ci_ruleset_migration.py
+- .github/workflows/ci-governance.yml
+- .github/workflows/ci.yml
+- docs/DEVELOPMENT.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/COMPONENT_CI.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/COMPONENT_CI_MIGRATION.md
+- docs/workstreams/chengyue-lu/TEST-PERF-002/RISK_LEDGER.md
+- tests/ci_components.json
+- tests/test_ci_checkpoint.py
+- tests/test_ci_component_metadata.py
+- tests/test_ci_components.py
+- tests/test_ci_ruleset_migration.py
+- work/TEST-PERF-002/A-20260927-012/**
+tool_allowlist:
+- gh
+- git
+- python
+- shell
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 1f6e108e861b0a6086da28a81093c3e997ebbb8a8dd71558f4b19646bcf49bf7
+  event_count: 5
+tool_event_refs:
+- path: tool-events/freeze-premerge-preparation-succeeded.json
+  sha256: 5d986abe7c6724ac0557c7879b04c6a1ec3f89ea65ef0e87e3dd43017013deeb
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: messages
+- event_id: EVT-0003
+  affected_stream: external-actions

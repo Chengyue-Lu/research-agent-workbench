@@ -267,3 +267,20 @@ for cross-owner review. Quality thresholds, exclusions, product contracts and re
   duration must be measured on real corpus before claiming practical diagnostic cost.
 - Production selection, thresholds, fixtures and B/C execution order remain unchanged;
   activation still requires independent witnesses and real paired evidence.
+
+## Component route and PR cutover
+
+The September27 Issue87 decision and [component migration](COMPONENT_CI_MIGRATION.md)
+supersede the above closure/witness prerequisites for the new daily route.
+
+- Component grouping deliberately accepts delayed detection of unregistered cross-component
+  regressions. Keep direct consumers, public-entry smoke and concrete negative assertions;
+  do not claim component success equals full coverage or release qualification.
+- Metadata authenticates a plan reference, including when its execution failed. The separately
+  required CI result must remain enforced; metadata success cannot replace that result.
+- Required migration has no bypass actors, keeps strict/App/review/thread/ref protections and
+  preserves all non-check rules. A ruleset snapshot can become stale; compare live state before
+  each write and stop on drift. The repository helper only prepares payloads and performs no PUT.
+- Phase1 retires automatic develop PR full execution only. Keep develop push legacy full/source-CI
+  until checkpoint deployment and source-version activation are separately accepted. Old branches
+  lacking the new result remain blocked until migrated and tested; no old result is re-signed.

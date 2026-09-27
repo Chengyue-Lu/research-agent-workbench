@@ -1,0 +1,11 @@
+task_id: TEST-PERF-002
+revision: 53
+request: Complete premerge implementation and verification before user requests review
+profile: CI implementation and migration maintainer
+required_skills: []
+scope: Component metadata binding, develop PR trigger retirement, read-only cutover
+  and rollback preparation
+delegation: false
+budget: Bounded regressions and one new PR content execution
+stop_condition: Ready for independent review; no protection mutation, merge, main
+  deployment or source/release activation
