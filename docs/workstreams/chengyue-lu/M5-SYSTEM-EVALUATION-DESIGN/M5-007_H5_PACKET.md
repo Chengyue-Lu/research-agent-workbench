@@ -2,8 +2,8 @@
 
 日期：2026-09-28。Task / Evaluation owner：路诚钺。Execution 接口复核：黄毅。风险：R2。
 Task 保持 IN_PROGRESS。H4c 已由 PR104 经具名 R2 审核接受并合入 `develop@26eca5742ba08d504d273423471fd7aab876a6d5`。
-H5 在 `feature/m5-007-harness-proof` 上 rebase 到该基线，PR106 进入独立 R2 审核；
-本轮准备 review 不代表 H5 或 M5-007 整体验收。
+H5 的 PR106 已获黄毅 exact-head R2 接受并合入 `develop@81a058b228a5da2a6f46192a954f62efc72895e3`；
+这仅接受 H5 实现切片，不代表 M5-007 整体验收。
 
 ## 交付与边界
 
@@ -28,7 +28,7 @@ Skills[]、预算、捕获缺口和验证输出。按现行 component CI 执行 
 fixture 消费者和短 installed smoke；coverage 是诊断。repository/docs/governance 检查分别
 保留身份，scoped PASS 不代替 hosted CI/R2 接受。
 
-H5 候选不将 M5-007 置 DONE，不关闭 Issue55；仍需 PR106 的 R2 审核和整体收口。
+H5 接受不将 M5-007 置 DONE，不关闭 Issue55；仍需独立完成整体收口。
 不进行真实 case/live Provider、bootstrap 数值计算、加权评分、自动 admission/promotion、
 M5-008/004/005 Gate 解除或发布。若必须更改已接受 Task/Protocol/权威/Runtime ownership，
 保存最小失败证据并转具名 review。

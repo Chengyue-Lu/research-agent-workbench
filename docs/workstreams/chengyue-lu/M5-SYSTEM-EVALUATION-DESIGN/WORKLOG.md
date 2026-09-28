@@ -359,3 +359,15 @@ separation. [Entry Attempt](attempts/M5-007-CLOSEOUT-ENTRY-001/README.md) retain
 hashes and capture limits. No H5 archive rewrite, product/Schema change, Task DONE,
 Issue55 closure, live execution or PR106 merge occurred. This remains a Draft until
 PR106 review/merge and a fresh exact-head closeout audit.
+
+## PR106 normal merge / PR107 independent closeout rebase (2026-09-28)
+
+Huang Yi approved PR106 at exact head `68e612b353233bb8faf739d5012876739793cd84`
+after independent 8/8 proof tests and cold replay. Component CI36431821489 and
+governance CI36432661027 succeeded; review threads were empty and merge state CLEAN.
+Normal squash merge produced `develop@81a058b228a5da2a6f46192a954f62efc72895e3`
+(2026-09-28 15:29:38 UTC). The approved head and merge Git trees are equal.
+PR107's closeout-only commit was rebased onto the merge without conflicts;
+`range-diff` showed patch equivalence. The historical closeout entry Attempt
+remains pinned to the prior PR106 head. PR107 stays Draft for independent overall
+Task review; M5-007 remains IN_PROGRESS and Issue55 remains OPEN.

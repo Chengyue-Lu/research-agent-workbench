@@ -160,3 +160,15 @@ are green, but the named H5 R2 review is still outstanding. A successful synthet
 replay is not Task DONE, and an old ZIP cannot certify changed source/schema identity.
 The Draft preserves IN_PROGRESS and Issue55 OPEN; the M6-004, A4 admission and pilot
 authorization blockers keep M5-008 BLOCKED independently of this preparation.
+
+## PR106 accepted / PR107 rebased closeout draft (2026-09-28)
+
+PR106 received named cross-owner R2 approval at exact head
+`68e612b353233bb8faf739d5012876739793cd84` and normal squash merge as
+`develop@81a058b228a5da2a6f46192a954f62efc72895e3`. The merged tree equals
+the accepted head; H5 implementation acceptance is closed. PR107's independent
+closeout patch was rebased onto that commit without conflicts and remains Draft.
+The historical entry Attempt still pins the pre-merge snapshot; it is not a
+current-head hash claim. The remaining R2 risk is whole-Task H1–H5 evidence and
+acceptance, separate from H5 slice review. M5-007 stays IN_PROGRESS, Issue55 OPEN
+and M5-008 BLOCKED; no live, admission or scientific gate changes.
