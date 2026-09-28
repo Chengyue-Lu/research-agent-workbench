@@ -1,7 +1,7 @@
 # M5-007 H1–H5 整体验收准备
 
-日期：2026-09-28。Task / Evaluation owner：路诚钺；Execution 接口复核：黄毅。风险：R2。
-状态：PR106 H5 已具名 R2 接受并合入；本收口 Draft 已 rebase 到 `develop@81a058b228a5da2a6f46192a954f62efc72895e3`。
+首次记录：2026-09-28；更新：2026-09-29。Task / Evaluation owner：路诚钺；Execution 接口复核：黄毅。风险：R2。
+状态：PR106 H5 已具名 R2 接受并合入；PR107 收口审查候选已 rebase 到最新 `develop@39cf61e9fc728a2a6c1494b7a641a011dd6bf114`。
 M5-007 仍为 IN_PROGRESS，Issue55 仍 OPEN，整体验收尚未作出。
 
 ## 目标与输入
@@ -21,7 +21,7 @@ M5-007 仍为 IN_PROGRESS，Issue55 仍 OPEN，整体验收尚未作出。
 | H4c | [PR104](https://github.com/Chengyue-Lu/research-agent-workbench/pull/104) 具名 R2 接受并 MERGED，`26eca5742ba08d504d273423471fd7aab876a6d5` | 四种版本化 method/observation/metric/analysis records、13 项缺测量状态、实际全 Attempt 与 paired input 重算 |
 | H5 | [PR106](https://github.com/Chengyue-Lu/research-agent-workbench/pull/106) 由黄毅具名 R2 接受 exact head `68e612b353233bb8faf739d5012876739793cd84`，MERGED 为 `81a058b228a5da2a6f46192a954f62efc72895e3` | 454 文件的持久化 proof、外部 inventory/request pin、新进程全链 replay 与篡改/越权/生命周期负例；[H5 Attempt](attempts/M5-007-H5-001/README.md) 保持历史字节 |
 
-PR106 当前 head 的 [component CI](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36431821489)
+PR106 合入前获批 head 的 [component CI](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36431821489)
 和[最新治理检查](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36432661027)
 均 SUCCESS；黄毅在该 exact head 的正式 review 已 APPROVED，PR106 已正常 squash 合入。
 合入前后 Git tree 字节等价；整体 M5-007 的具名 R2 接受仍是独立决定。
@@ -30,11 +30,12 @@ H5 proof 的 ZIP SHA-256 为 `176c47b3ebbc8e71d3cdb27f835d82a8e5af2ac876638d7ca7
 13 指标全部 unavailable/null，synthetic primary eligibility 为 false。以上是结构与重放证据，
 不证明科研有效性或真实 Provider/Human/admission。
 
-## 从 Draft 到正式收口的顺序
+## 整体验收步骤
 
-1. PR106 已完成 exact-head R2 review 与正常 squash merge；本 Draft 已从其旧 head 无冲突
-   rebase 到合入后的 `develop@81a058b`，独立收口补丁 `range-diff` 等价。合入后
-   protected-push CI 与本 Draft 新 head 的 PR CI 须分别核对，不能借用旧 head 结果。
+1. PR106 已完成 exact-head R2 review 与正常 squash merge；PR107 先从旧 head 无冲突
+   rebase 到合入后的 `develop@81a058b`，再等价迁入最新 `develop@39cf61e`。两次
+   `range-diff` 均显示独立收口补丁等价。各基线及本 PR 新 head 的 CI 须分别核对，
+   不能借用旧 head 结果。
 2. 独立复核 M5-007 Task 行的全部验收：冻结和实际 binding、qualification/overlap/pairwise、
    typed execution fact/Receipt、失败/retry、blind review/reveal、metric/analysis、全链 cold
    replay、negative tests 与双方接口边界。任何新发现保存具体失败证据，回到所属 H 切片修复。
@@ -42,7 +43,7 @@ H5 proof 的 ZIP SHA-256 为 `176c47b3ebbc8e71d3cdb27f835d82a8e5af2ac876638d7ca7
    `docs/TASKS.md` 的 M5-007 `IN_PROGRESS → DONE`；Issue55 是否关闭须再核对其独立
    Gate 与内部 acceptance，不能因 PR106 CI 绿灯自动关闭。
 
-当前 Draft 仅同步已接受 H5 的实现状态，不修改 `docs/TASKS.md` 或 Issue55，也不自行合并。
+本审查候选仅同步已接受 H5 的实现状态，不修改 `docs/TASKS.md` 或 Issue55，也不自行合并。
 旧 H5 proof 只在其 pinned source/Schema/helper 身份下有效；若接受中的源码身份变化，
 必须生成新的证据，不能改写旧 archive 的 hashes。
 

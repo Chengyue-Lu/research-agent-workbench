@@ -371,3 +371,15 @@ PR107's closeout-only commit was rebased onto the merge without conflicts;
 `range-diff` showed patch equivalence. The historical closeout entry Attempt
 remains pinned to the prior PR106 head. PR107 stays Draft for independent overall
 Task review; M5-007 remains IN_PROGRESS and Issue55 remains OPEN.
+
+## PR107 latest-base rebase and review entry (2026-09-29)
+
+Fetched origin and rebased PR107's two docs-only commits from `develop@81a058b`
+onto `develop@39cf61e9fc728a2a6c1494b7a641a011dd6bf114` without conflicts.
+Both commits are patch-equivalent by `git range-diff`. The new base contains
+PR102's M14 release diagnostics and does not change the M5 Harness source,
+schemas or retained H5 proof. The closeout Attempt keeps its original
+pre-PR106-merge pins; it is not rewritten as current-head evidence.
+M5-007 remains IN_PROGRESS, Issue55 OPEN and the M5-008 live gate BLOCKED.
+This PR is offered for review of the overall acceptance preparation, not a
+Task DONE decision.
