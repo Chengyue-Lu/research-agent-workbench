@@ -7,9 +7,9 @@ H1/H2 提供确定性计划及评价侧预检，其记录固定 `actual_executio
 H3 提供 synthetic 四臂执行、fresh Attempt 和执行后 replay；接口与验证范围见
 [H3 实施包](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H3_PACKET.md)。
 H4a 提供 evaluation-owned actual evidence 与独立重算；H4b 增加有限 synthetic 格式的盲审、具名审查冻结和揭盲。其实施已由 PR96 合入，实际 push CI SUCCESS；接受边界见
-[H4c 进入记录](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-ENTRY-001/README.md)。当前候选实现
+[H4c 进入记录](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-ENTRY-001/README.md)。PR104 已接受
 [H4c](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H4C_PACKET.md) 的 measurement association 和配对分析输入；
-[H5](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H5_PACKET.md) 在依赖 H4c 的独立 draft 中准备持久化证明，整体验收仍待 R2。所有记录保持
+[H5](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H5_PACKET.md) 的 PR106 已 rebase 到合入 H4c 的基线，进入独立 R2 review，整体验收仍待定。所有记录保持
 `execution_authority=false`、`task_completion=false`，不改写 Manifest、Protocol 或 Runtime 契约。
 
 ## H1：冻结计划
@@ -186,7 +186,7 @@ H1–H4b records 由 Schema catalog 和文档 kind 注册。通用 repository va
 文件闭包；真实 case、live conformance、production admission 与科研效果仍按 M5-004 的独立条件验收。
 
 
-## H4c：关联与独立配对输入（implementation candidate）
+## H4c：关联与独立配对输入（PR104 已接受）
 
 `evaluation/harness_analysis.py` 提供 `compile_harness_metrics` / `validate_harness_metrics` 和
 `compile_harness_analysis` / `validate_harness_analysis`。新增四种 `1.0.0` 记录：
@@ -227,7 +227,7 @@ Protocol 的统计参数和 decision hierarchy 原样保存，供后续逐指标
 新 Schema 与 source identity 使用当前候选重新生成的 synthetic inputs；历史 archives 原字节不变。
 验证、捕获缺口与接受边界见 [H4c Attempt](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/README.md)。
 
-## H5：持久化四臂证明（dependent draft）
+## H5：持久化四臂证明（PR106 R2 候选）
 
 开发辅助入口 `python -m tests.harness_proof build --root <empty-proof-directory> --schemas schemas`
 调用现有 H1–H4c API，生成四臂真实本地 synthetic 执行和全部私有/公开闭包。
@@ -254,4 +254,4 @@ synthetic primary eligibility 始终 false。审核 rubric 只证明 synthetic r
 后续源码身份变化另建新 proof，不更新旧文件来伪造当前验证。
 交付、验证输出、原始库存引用与捕获缺口见
 [H5 Attempt](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/README.md)。
-H4c 接受及整体 R2 review 仍是收口条件，M5-007 保持 IN_PROGRESS。
+H4c 已接受；H5 的 PR106 R2 review 和整体收口仍待完成，M5-007 保持 IN_PROGRESS。

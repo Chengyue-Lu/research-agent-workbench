@@ -329,3 +329,21 @@ docs/selector25 PASS, repository186/0/0, short installed smoke8 PASS with 106-mo
 byte equality. Proof-only coverage is diagnostic; no full/checkpoint or extra hosted run dispatched.
 Initial assertion/path/encoding diagnostics and capture gaps remain explicit in the
 [Attempt](attempts/M5-007-H5-001/README.md). M5-007 stays IN_PROGRESS, Issue55 OPEN, all live Gates retained.
+
+## PR104 merge / PR106 H5 rebase and review entry (2026-09-28)
+
+PR104 obtained named cross-owner R2 approval on `34a4b05cacbce81459720c3363ef781a55334b42`.
+All required checks passed and review threads had no unresolved blockers. Normal squash merge
+produced `develop@26eca5742ba08d504d273423471fd7aab876a6d5`.
+
+Rebased the two H5 commits from the former PR104 head onto that develop commit without conflicts:
+`f6a199b` → `17dc32d` and `a1aba27` → `7d09587`. `git range-diff` matched both patches and
+the rebased committed Git tree was byte-identical to `a1aba27`; historical proof ZIP, pins,
+Trace and Attempt records were not rewritten. Local user config remained outside the commit.
+The earlier hosted component CI run 36346486222 was SUCCESS on `a1aba27`; it is not a claim
+about the new head. After the live status/navigation updates, Python 3.11 documentation and
+public-surface tests passed 23/23, including internal Markdown links; `git diff --check` passed.
+
+PR106 now carries H5 alone over accepted H4c. Its own exact-head hosted checks and named
+cross-owner R2 review remain required. M5-007 stays IN_PROGRESS and Issue55 remains open;
+synthetic proof does not satisfy the live, admission, Human or scientific gates.

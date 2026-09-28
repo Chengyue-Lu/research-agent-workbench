@@ -141,3 +141,13 @@ PR96 H4b 已合入且实际 push CI SUCCESS；单次审核例外不扩到本切�
 | REPLAY / authored authority | caller-pinned inventory/request, repository-owned synthetic callbacks, denied execution ports/network/proof code | synthetic fixtures do not constitute actual admission or Human authority |
 | IDENTITY / stale archive | helper/source/Schema identities retained; active tests generate current inputs | future source changes require a new proof, not rewritten historical pins |
 | METRIC / efficacy | 13 explicit unavailable/null metrics, preserved comparison ceiling and false primary eligibility | M5-008/004/005 Gates and scientific conclusions remain reserved |
+
+## PR104 accepted / PR106 review entry (2026-09-28)
+
+PR104 received named R2 approval at `34a4b05` with required checks green and no unresolved
+review threads, then squash-merged as `develop@26eca5742ba08d504d273423471fd7aab876a6d5`.
+The H5 branch was rebased onto that accepted baseline without conflicts. Both H5 patches and the
+complete Git tree are byte-equivalent to the prior `a1aba27` candidate; the historical H5 Attempt
+remains unchanged. H4c acceptance resolves the prerequisite row above. PR106 still needs its own
+exact-head hosted checks and cross-owner R2 review before H5 or M5-007 can be accepted. The
+synthetic proof does not unlock M5-008/004/005 or establish scientific effectiveness.

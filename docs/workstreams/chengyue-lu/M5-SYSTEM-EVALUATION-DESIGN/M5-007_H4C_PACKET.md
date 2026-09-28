@@ -3,8 +3,9 @@
 日期：2026-09-27。Task / Evaluation owner：路诚钺。Execution 接口复核：黄毅。风险：R2。
 进入基线：`develop@97d3b3d3141419b34ad47e0f42d9f01d0dfbd535`。
 准备分支：`feature/m5-007-harness-analysis`。跟踪：[Issue55](https://github.com/Chengyue-Lu/research-agent-workbench/issues/55)。
-状态：H4c 代码与四种版本化记录已形成 implementation candidate，验证证据见
-[H4c Attempt](attempts/M5-007-H4C-001/README.md)；等待 exact-head CI 和 R2 review。本包细化已接受 M5-007，不改 Task 定义或验收。
+状态：H4c 代码与四种版本化记录已由 PR104 具名 R2 接受，squash merge 为
+`develop@26eca5742ba08d504d273423471fd7aab876a6d5`。原始候选验证证据见
+[H4c Attempt](attempts/M5-007-H4C-001/README.md)；本包细化已接受 M5-007，不改 Task 定义或验收。
 
 ## 1. 进入依据和首个交付
 
