@@ -126,15 +126,19 @@ class ReleasePublicTests(unittest.TestCase):
 
     def test_policy_adds_exact_release_files_without_rewriting_old_versions(self):
         policy = json.loads((ROOT / '.github/release-surface.yml').read_text(encoding='utf-8'))
-        self.assertEqual(['1.0.0', '1.1.0', '1.2.0', '1.3.0'],
+        self.assertEqual(['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0'],
                          [item['version'] for item in policy['policies']])
         old = json.dumps(policy['policies'][:3], sort_keys=True, ensure_ascii=False,
                          separators=(',', ':')).encode('utf-8')
         self.assertEqual('3f5dc8637765ca2567427c31d26dc046c08d2577a8c4f87401977091f51b2156',
                          hashlib.sha256(old).hexdigest())
-        additions = {item['path'] for item in policy['policies'][-1]['include']} - {
-            item['path'] for item in policy['policies'][-2]['include']}
+        additions = {item['path'] for item in policy['policies'][-2]['include']} - {
+            item['path'] for item in policy['policies'][-3]['include']}
         self.assertEqual({'.github/workflows/release.yml', public.TOOL}, additions)
+        installation = {item['path'] for item in policy['policies'][-1]['include']} - {
+            item['path'] for item in policy['policies'][-2]['include']}
+        self.assertEqual({'.github/scripts/release_install.py',
+                          '.github/scripts/portable_package_smoke.py'}, installation)
 
     def test_first_main_workflow_keeps_candidate_as_data_and_has_no_required_gate_name(self):
         workflow = yaml.load((ROOT / '.github/workflows/release.yml').read_text(encoding='utf-8'),
@@ -142,14 +146,14 @@ class ReleasePublicTests(unittest.TestCase):
         self.assertEqual(['main'], workflow['on']['pull_request']['branches'])
         self.assertNotIn('pull_request_target', workflow['on'])
         job = workflow['jobs']['preflight']
-        self.assertEqual('release preflight (diagnostic)', job['name'])
+        self.assertEqual('release preflight (diagnostic, ${{ matrix.python-version }})', job['name'])
+        self.assertEqual(['3.11', '3.13'], job['strategy']['matrix']['python-version'])
         checkout = next(step for step in job['steps'] if step.get('uses', '').startswith('actions/checkout@'))
         self.assertEqual('${{ vars.RWB_RELEASE_SOURCE_SHA }}', checkout['with']['ref'])
         self.assertEqual('false', checkout['with']['persist-credentials'])
         runs = '\n'.join(step['run'] for step in job['steps'] if 'run' in step)
         self.assertIn('refs/pull/${PR_NUMBER}/head:refs/remotes/origin/rwb-release-candidate', runs)
-        self.assertIn('release_preflight.py', runs)
-        self.assertIn('release_public.py', runs)
+        self.assertIn('release_install.py', runs)
         self.assertNotIn('checkout@', runs)
 
 

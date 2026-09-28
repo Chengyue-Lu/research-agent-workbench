@@ -3,7 +3,7 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 来源：[Issue #57](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57)
 - 架构决定：[ADR-0021](../../../decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md)
-- 状态：M14-001～004、M1-009 与 M0-007 已合入；[具名首发准备决定与保护回读](FIRST_RELEASE_DECISION.md) 支持 M14-005 READY；[source-CI](SOURCE_CI.md) 和 [trusted release preflight](RELEASE_CHECKS.md) 已经接受并完成真实 protected push 在线验收；诊断型 release-only workflow、公开面校验与追加 policy 版本由 [PR #102](https://github.com/Chengyue-Lu/research-agent-workbench/pull/102) 提供审核候选，首次发行仍待闭合
+- 状态：M14-001～004、M1-009 与 M0-007 已合入；[具名首发准备决定与保护回读](FIRST_RELEASE_DECISION.md) 支持 M14-005 READY；[source-CI](SOURCE_CI.md)、[trusted release preflight](RELEASE_CHECKS.md) 与 [PR #102](https://github.com/Chengyue-Lu/research-agent-workbench/pull/102) 的诊断型 release-only workflow/公开面校验已接受；双 Python 候选安装诊断正准备 R2 审核，首次发行仍待闭合
 - diagnostic baseline：`origin/develop@dd2454b5595e33a12aa058529358d46d311a08c4`
 - PR #102 integration base：`origin/develop@81a058b228a5da2a6f46192a954f62efc72895e3`
 - task-definition integration base：`origin/develop@6a032e12c30a88a501258eec8c0b5d6c6082d81d`
@@ -204,8 +204,7 @@ M14-005 仍为 READY，接续为：
 1. [PR #98](https://github.com/Chengyue-Lu/research-agent-workbench/pull/98) 已独立 R2 审核并合入
    `develop@eb49093`；真实 [protected push CI36164963118](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36164963118)
    与 clean source live attestation PASS；本地审计文件在仓库外单独保存。
-2. 审核诊断型 release-only workflow、first-main 信任边界、candidate 公开链接/构建输入检查和追加 policy
-   version；继续补全仓库外双 Python 安装、no-Skill/Registry/Projection 检查与真实 hosted first-main 观察。
+2. PR #102 已合入 `develop@39cf61e`；该 exact source 的真实 protected push [CI 36446927798](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36446927798) 与 clean source live `attest` 已通过。继续 R2 审核仓库外双 Python 候选安装、no-Skill/Registry/Projection 检查；真实 hosted first-main 观察仍待 cutover 阶段。
 3. 经 R2 验收原子切换 release topology；随后冻结 exact develop source/current main parent，验证
    deterministic projection / prospective-tree equality，完成首发 R2 验收及 tag/artifact/hash closure。
    最终 release PR 合并与 tag 另行批准。

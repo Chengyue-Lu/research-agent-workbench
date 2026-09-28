@@ -17,6 +17,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PROBE = '''import json, sys
+if not __debug__:
+    raise RuntimeError("optimized installed probe is forbidden")
 from pathlib import Path
 import research_workbench
 from importlib.metadata import metadata
@@ -70,7 +72,7 @@ def run(args, *, cwd, env=None):
     return result.stdout
 
 
-def closure(wheel):
+def closure(wheel, source_root=ROOT):
     with zipfile.ZipFile(wheel) as archive:
         metadata_paths = [name for name in archive.namelist() if name.endswith(".dist-info/METADATA")]
         assert len(metadata_paths) == 1, "wheel metadata closure missing or ambiguous"
@@ -78,7 +80,7 @@ def closure(wheel):
         assert metadata["License-Expression"] == "MIT", "wheel license expression mismatch"
         assert metadata.get_all("License-File") == ["LICENSE"], "wheel license file declaration mismatch"
         license_path = metadata_paths[0].removesuffix("METADATA") + "licenses/LICENSE"
-        assert archive.read(license_path) == (ROOT / "LICENSE").read_bytes(), "wheel license bytes mismatch"
+        assert archive.read(license_path) == (source_root / "LICENSE").read_bytes(), "wheel license bytes mismatch"
         prefix = "research_workbench/_runtime_data/"
         assets = {name.removeprefix(prefix): archive.read(name) for name in archive.namelist() if name.startswith(prefix)}
         manifest = json.loads(assets["manifest.json"])
@@ -89,41 +91,41 @@ def closure(wheel):
         return assets
 
 
-def snapshot_sources(target):
+def snapshot_sources(target, source_root=ROOT):
     """Keep build hooks from replacing an editable install's live resources."""
     target.mkdir()
-    shutil.copytree(ROOT / "src", target / "src", ignore=shutil.ignore_patterns(
+    shutil.copytree(source_root / "src", target / "src", ignore=shutil.ignore_patterns(
         "_runtime_data", "_runtime_pin.py", "__pycache__", "*.egg-info", "*.pyc"))
-    shutil.copytree(ROOT / "schemas", target / "schemas")
+    shutil.copytree(source_root / "schemas", target / "schemas")
     paths = {"pyproject.toml", "MANIFEST.in", "README.md", "LICENSE", "build_backend.py", "runtime-resources.json"}
-    spec = json.loads((ROOT / "runtime-resources.json").read_bytes())
+    spec = json.loads((source_root / "runtime-resources.json").read_bytes())
     for entry in spec["catalogs"]:
         paths.add(entry["path"])
         if "entry_kind" in entry:
-            paths.update(row["document_path"] for row in json.loads((ROOT / entry["path"]).read_bytes())["entries"])
+            paths.update(row["document_path"] for row in json.loads((source_root / entry["path"]).read_bytes())["entries"])
     paths.update(entry["path"] for entry in spec["release_assets"])
     for relative in paths:
-        source = ROOT / relative
-        assert source.resolve().is_relative_to(ROOT) and not source.is_symlink()
+        source = source_root / relative
+        assert source.resolve().is_relative_to(source_root) and not source.is_symlink()
         destination = target / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source, destination)
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--python", action="append", help="interpreter(s) used for fresh installs")
-    parser.add_argument("--output", type=Path, required=True)
-    args = parser.parse_args()
-    if args.python:
-        args.python = [str(Path(path).resolve()) for path in args.python]
+def check(source_root=ROOT, interpreters=None):
+    if not __debug__:
+        raise RuntimeError("optimized package smoke is forbidden")
+    source_root = Path(source_root).resolve()
+    assert source_root.is_dir(), "invalid package source"
+    interpreters = [str(Path(path).resolve()) for path in (interpreters or [sys.executable])]
     results = []
     with tempfile.TemporaryDirectory(prefix="rwb-portable-install-") as temporary:
         work = Path(temporary).resolve()
-        assert not work.is_relative_to(ROOT)
-        clean_env = {key: value for key, value in os.environ.items() if key not in ("PYTHONPATH", "PYTHONHOME")}
+        assert not work.is_relative_to(source_root)
+        clean_env = {key: value for key, value in os.environ.items()
+                     if key not in ("PYTHONPATH", "PYTHONHOME", "PYTHONOPTIMIZE")}
         build_source = work / "source"
-        snapshot_sources(build_source)
+        snapshot_sources(build_source, source_root)
         direct, sdist, rebuilt = (work / name for name in ("direct", "sdist", "rebuilt"))
         for path in (direct, sdist, rebuilt):
             path.mkdir()
@@ -134,8 +136,8 @@ def main():
         source = next((work / "unpacked").iterdir())
         run([sys.executable, "-m", "build", "--wheel", "--outdir", rebuilt, source], cwd=work, env=clean_env)
         wheels = [next(path.glob("*.whl")) for path in (direct, rebuilt)]
-        assert closure(wheels[0]) == closure(wheels[1]), "direct/sdist Runtime resources differ"
-        for number, interpreter in enumerate(args.python or [sys.executable]):
+        assert closure(wheels[0], source_root) == closure(wheels[1], source_root), "direct/sdist Runtime resources differ"
+        for number, interpreter in enumerate(interpreters):
             for route, wheel in zip(("direct", "sdist-wheel"), wheels):
                 venv = work / f"venv-{number}-{route}"
                 run([interpreter, "-m", "venv", venv], cwd=work, env=clean_env)
@@ -168,8 +170,19 @@ else:
     raise AssertionError("corrupt resource accepted")
 '''
                 assert "blocked" in run([python, "-I", "-c", corrupt], cwd=work, env=clean_env)
-        report = {"runtime_resources_identical": True, "manifest_sha256": hashlib.sha256(closure(wheels[0])["manifest.json"]).hexdigest(),
+        report = {"runtime_resources_identical": True, "manifest_sha256": hashlib.sha256(closure(wheels[0], source_root)["manifest.json"]).hexdigest(),
                   "installs": results, "merge_eligible": False}
+    return report
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--python", action="append", help="interpreter(s) used for fresh installs")
+    parser.add_argument("--source-root", type=Path, default=ROOT,
+                        help="verified release projection or current source checkout")
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    report = check(args.source_root, args.python)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report, sort_keys=True))

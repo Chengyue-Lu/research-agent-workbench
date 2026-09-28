@@ -5,7 +5,7 @@
 [trusted release preflight](RELEASE_CHECKS.md) 在 accepted source checkout 中组合在线 source-CI 与独立
 pins、重复投影、候选 parent/tree 检查，结束前重查 refs 和 CI attempt。它只形成审计证据；
 诊断型 release-only workflow 的 first-main bootstrap、append-only policy include、candidate 公开面检查
-正在独立 R2 候选中验证；候选双 Python 安装检查与 atomic cutover 仍待验收。候选 workflow 的绿色
+已由 PR #102 接受；候选双 Python 安装检查正在独立 R2 候选中验证，atomic cutover 仍待验收。候选 workflow 的绿色
 check 不自证其代码来源，真实 first-main hosted 行为还须独立观察。
 
 | ID | 类型 | 风险 | 控制 | 当前状态 |
@@ -15,7 +15,7 @@ check 不自证其代码来源，真实 first-main hosted 行为还须独立观�
 | M14-MANIFEST-001 | fact | 攻击者同步改文件和 manifest hash 后伪造一致性。 | checker 接受外部 expected source SHA 与 current-main parent SHA，重读 source commit/policy、重算 prospective merge tree 并比较 Git blob bytes，不能只信 manifest。 | controlled by M14-002 deterministic positive/negative fixtures；release authority remains dormant |
 | M14-POLICY-001 | fact | allowlist 的 unknown/overlap/path collision 或同版本漂移改变公开面而未被识别。 | strict append-only policy Schema；拒绝 unknown、空/重复/重叠/不存在 include、file/tree ambiguity、case-fold/Unicode/Windows 路径冲突。 | controlled by M14-002 deterministic positive/negative fixtures；release authority remains dormant |
 | M14-SURFACE-001 | fact | denylist 或宽泛 `registry/**` 随仓库增长泄漏 tests、workstream、Need/Evaluation/Lifecycle/private 材料。 | versioned allowlist、closed output set、unexpected hidden/file/tree 对抗测试；Runtime 与 Maintainer Registry 分离。 | controlled by accepted M14-002 closed projection、M14-003 explicit package catalog 与 M14-004 public docs/link closure；首发候选仍须重验零内部材料泄漏 |
-| M14-PACKAGE-001 | fact | wheel 在 checkout 内 smoke 通过，但独立安装缺 Registry/Projection 或借用了 cwd。 | 独立 RuntimeResourceManifest、project/runtime/integration 三 root、CWD/PYTHONPATH poison、direct wheel 与 sdist→wheel exact asset 对账、Python 3.11/3.13 空目录 smoke。 | controlled by M14-003 dual-Python direct/sdist wheel and adversarial resource checks |
+| M14-PACKAGE-001 | fact | wheel 在 checkout 内 smoke 通过，但独立安装缺 Registry/Projection 或借用了 cwd。 | 独立 RuntimeResourceManifest、project/runtime/integration 三 root、CWD/PYTHONPATH poison、direct wheel 与 sdist→wheel exact asset 对账、Python 3.11/3.13 空目录 smoke；release-only 检查必须从已核对的完整候选投影构建并复查 live refs/CI。 | M14-003 source package closure 已接受；候选投影双 Python 诊断正在 R2 验证，真实首发候选尚未执行 |
 | M14-VALIDATION-001 | fact | installed Runtime 复用 repository publication validator 会迫使 Need/Evaluation/Lifecycle 历史进入发行物，反向破坏 M11 data boundary。 | 分离 repository/maintainer publication Gate 与 installed-runtime catalog Gate；后者只消费 manifest-attested published bytes/index，不降低前者的完整 provenance 校验。 | controlled by M14-003 dual-Python direct/sdist wheel and adversarial resource checks |
 | M14-SKILL-001 | fact | 未许可/未获准入 Skill 因目录复制进入发行物，或非空 Projection 未绑定实际随包 Skill bytes。 | no-Skill Core 为默认；不发布 legacy accepted selector/整个 `.agents` tree；非空 index 仅按 logical→installed mapping 闭合 exact accepted manifest/package bytes并拒绝 orphan/unindexed asset；license/publication truth 仍由 develop Gate。 | license blocker closed（M0-007 MIT closure 已由 PR #78 接受）；生产 Projection index 仍为空，当前没有 Skill-bearing release selection/admission |
 | M14-DOCS-001 | fact | 裁剪 TASKS/STATUS/workstream 后公开 README 产生断链，或把 bounded/synthetic 能力写成产品完成。 | M14-004 建立 public-doc single source、projection link checker 与 evidence-bounded supported-features 页面。 | controlled by accepted M14-004（PR #77）；公开 Quickstart 已消费获接受的 M1-009，裁剪源码上的双分发路径验证与档案链接负例已验收；首发候选仍须重验公开链接与证据边界 |
