@@ -151,3 +151,12 @@ complete Git tree are byte-equivalent to the prior `a1aba27` candidate; the hist
 remains unchanged. H4c acceptance resolves the prerequisite row above. PR106 still needs its own
 exact-head hosted checks and cross-owner R2 review before H5 or M5-007 can be accepted. The
 synthetic proof does not unlock M5-008/004/005 or establish scientific effectiveness.
+
+## M5-007 dependent closeout preparation (2026-09-28)
+
+The [closeout packet](M5-007_CLOSEOUT_PACKET.md) maps accepted H1–H4c and the PR106 H5
+candidate to the unchanged Task acceptance. PR106 exact-head component/governance checks
+are green, but the named H5 R2 review is still outstanding. A successful synthetic
+replay is not Task DONE, and an old ZIP cannot certify changed source/schema identity.
+The Draft preserves IN_PROGRESS and Issue55 OPEN; the M6-004, A4 admission and pilot
+authorization blockers keep M5-008 BLOCKED independently of this preparation.

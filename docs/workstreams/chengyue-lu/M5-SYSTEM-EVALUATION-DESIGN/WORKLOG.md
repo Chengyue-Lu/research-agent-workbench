@@ -347,3 +347,15 @@ public-surface tests passed 23/23, including internal Markdown links; `git diff 
 PR106 now carries H5 alone over accepted H4c. Its own exact-head hosted checks and named
 cross-owner R2 review remain required. M5-007 stays IN_PROGRESS and Issue55 remains open;
 synthetic proof does not satisfy the live, admission, Human or scientific gates.
+
+## M5-007 closeout preparation (2026-09-28)
+
+With PR106 still OPEN/Ready, its exact head `68e612b` passed hosted component
+CI36431821489 and governance CI36432661027; the requested cross-owner R2 review is
+not yet an approval. Created a separate dependent `feature/m5-007-harness-closeout`
+branch from that head. [Closeout packet](M5-007_CLOSEOUT_PACKET.md) records accepted
+H1–H4c merge identities, H5 proof/CI pins, final acceptance checks and live Gate
+separation. [Entry Attempt](attempts/M5-007-CLOSEOUT-ENTRY-001/README.md) retains input
+hashes and capture limits. No H5 archive rewrite, product/Schema change, Task DONE,
+Issue55 closure, live execution or PR106 merge occurred. This remains a Draft until
+PR106 review/merge and a fresh exact-head closeout audit.

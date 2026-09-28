@@ -10,6 +10,9 @@ H4c 的历史 [Attempt 与验证](attempts/M5-007-H4C-001/README.md) 保留；PR
 后继 [H5 持久化证明](M5-007_H5_PACKET.md) 的 PR106 已 rebase 到该基线，准备独立 R2 review；
 [Attempt](attempts/M5-007-H5-001/README.md) 保存原始候选证据。H5 与整体 M5-007 接受仍待审核。
 
+[M5-007 整体验收准备](M5-007_CLOSEOUT_PACKET.md) 在依赖 PR106 的独立 Draft 中汇总 H1–H5
+身份、证据与待审条件；此入口不改变 M5-007 IN_PROGRESS 或后继 live Gate。
+
 实施导航：[M5-007 进入计划](M5-007_ENTRY_PLAN.md)、[M5-008 Live Pilot Gate](M5-008_LIVE_PILOT_GATE.md)、[M5-006 历史进入计划](ENTRY_PLAN.md)、[Protocol / validator contract](../../../implementation/SYSTEM_EVALUATION_PROTOCOL.md)、
 [工作记录与验证](WORKLOG.md)、[Risk Ledger](RISK_LEDGER.md)。
 

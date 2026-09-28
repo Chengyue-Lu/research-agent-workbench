@@ -1,0 +1,31 @@
+{
+  "entry_baseline": "68e612b353233bb8faf739d5012876739793cd84",
+  "accepted_develop": "26eca5742ba08d504d273423471fd7aab876a6d5",
+  "task_id": "M5-007",
+  "input_refs": [
+    {
+      "path": "docs/TASKS.md",
+      "sha256": "a38daa21f291719a6df93615c207752e558252607f159c4509a47bfe5a322398"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md",
+      "sha256": "0cd9f41c93714718c11c08e2b2ed426107ff7f193b7bd21ff7fcd287541efc3c"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H5_PACKET.md",
+      "sha256": "1ce8787fc38a541c5e0b5eb37830625630070ef53e028e9d5e82f50ea1c2b450"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/README.md",
+      "sha256": "a79b4e689dbe13361006a649354aaae12e3c760d91b8abfc9d71a7dcc385954e"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/vertical-proof.zip",
+      "sha256": "176c47b3ebbc8e71d3cdb27f835d82a8e5af2ac876638d7ca7d0c7601a063b2d"
+    }
+  ],
+  "external_checks": {
+    "pr106_component_ci": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36431821489",
+    "pr106_governance": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36432661027"
+  }
+}
