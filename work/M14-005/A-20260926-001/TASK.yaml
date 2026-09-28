@@ -1,0 +1,43 @@
+task_id: M14-005
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+agent_profile: bounded-release-workflow
+required_skills: []
+delegation: false
+baseline: eb49093d6d89515c3e66bec29ee85e7a95bb9ce7
+goal: Prepare diagnostic release-only workflow, first-main trust boundary, exact
+  append-only policy include and candidate public checker without enabling release.
+authority: User requested continuation after PR 98 integration; FIRST_RELEASE_DECISION
+  authorizes M14-005 preparation, not final release PR/tag or topology cutover.
+read_allowlist:
+- AGENTS.md
+- README.md
+- PROJECT_MEMORY.md at the primary checkout
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/ROADMAP.md
+- docs/DEVELOP_TO_MAIN_RELEASE.md
+- docs/decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- .github/**
+- tests/**
+- work/M14-005/**
+- GitHub Issue 57, PR 98, and current develop/main ruleset readback
+- Official GitHub Actions event and workflow-dispatch documentation
+write_scope:
+- .github/workflows/release.yml
+- .github/scripts/release_public.py
+- .github/release-surface.yml
+- tests/public_surface_helpers.py
+- tests/test_release_public.py
+- tests/coverage_policy.yaml
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- work/M14-005/A-20260926-001/**
+- Feature branch and draft PR to develop
+stop_conditions:
+- Keep release/v* to main dormant and direct develop to main unchanged.
+- No release branch, tag, main merge, remote ruleset mutation or first-release publication.
+- No candidate code execution, candidate self-attestation or green diagnostic as trust token.
+- Separate R2 review before integration; no self-merge.

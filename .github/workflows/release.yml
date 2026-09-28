@@ -1,0 +1,103 @@
+name: Curated release preflight
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+# This is diagnostic until the separately reviewed M14-005 topology/ruleset cutover.
+# The first main candidate supplies this workflow as a source blob; its own green
+# check is not an independent trust anchor. Reviewers must run source-owned
+# preflight from an accepted develop checkout with independently pinned inputs.
+permissions:
+  actions: read
+  checks: read
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: curated-release-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  preflight:
+    name: release preflight (diagnostic)
+    if: startsWith(github.head_ref, 'release/v')
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: ${{ github.repository }}
+      HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+      HEAD_REF: ${{ github.head_ref }}
+      CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      # These pins are maintained outside the candidate branch. They are unset
+      # during preparation, so this workflow fails closed until release review.
+      SOURCE_SHA: ${{ vars.RWB_RELEASE_SOURCE_SHA }}
+      PARENT_SHA: ${{ vars.RWB_RELEASE_PARENT_SHA }}
+      POLICY_VERSION: ${{ vars.RWB_RELEASE_POLICY_VERSION }}
+      SOURCE_CI_RUN_ID: ${{ vars.RWB_RELEASE_SOURCE_CI_RUN_ID }}
+      MANIFEST_SHA256: ${{ vars.RWB_RELEASE_MANIFEST_SHA256 }}
+    steps:
+      - name: Require independent pins before checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$HEAD_REPOSITORY" == "$REPOSITORY" ]]
+          [[ "$HEAD_REF" =~ ^release/v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$PARENT_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$BASE_SHA" == "$PARENT_SHA" ]]
+          [[ "$MANIFEST_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$POLICY_VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
+          [[ "$SOURCE_CI_RUN_ID" =~ ^[1-9][0-9]*$ ]]
+          [[ "$PR_NUMBER" =~ ^[1-9][0-9]*$ ]]
+          echo "RELEASE_VERSION=${HEAD_REF#release/v}" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ vars.RWB_RELEASE_SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install source-owned checker dependencies
+        run: python -m pip install 'jsonschema>=4.23,<5' 'PyYAML>=6,<7' 'markdown-it-py>=4,<5' 'linkify-it-py>=2,<3'
+      - name: Fetch protected refs and candidate as data
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin \
+            '+refs/heads/develop:refs/remotes/origin/develop' \
+            '+refs/heads/main:refs/remotes/origin/main' \
+            "+refs/pull/${PR_NUMBER}/head:refs/remotes/origin/rwb-release-candidate"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse refs/remotes/origin/rwb-release-candidate)" = "$CANDIDATE_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+      - name: Rebuild the exact projection and check the candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/release_preflight.py \
+            --repository "$REPOSITORY" --source "$SOURCE_SHA" --parent "$PARENT_SHA" \
+            --policy-version "$POLICY_VERSION" --release-version "$RELEASE_VERSION" \
+            --run-id "$SOURCE_CI_RUN_ID" --candidate "$CANDIDATE_SHA" \
+            --manifest-sha256 "$MANIFEST_SHA256" \
+            --output "$RUNNER_TEMP/release-preflight.json"
+      - name: Check candidate public links and build inputs without executing it
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/release_public.py \
+            --repository "$REPOSITORY" --source "$SOURCE_SHA" --candidate "$CANDIDATE_SHA" \
+            --output "$RUNNER_TEMP/release-public.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-preflight-diagnostic
+          path: |
+            ${{ runner.temp }}/release-preflight.json
+            ${{ runner.temp }}/release-public.json
+          if-no-files-found: ignore

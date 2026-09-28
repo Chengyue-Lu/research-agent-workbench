@@ -1,31 +1,21 @@
-"""Development-side checks over the bytes selected for a public source tree."""
+"""Development-side selection of current policy files; validators live in release_public."""
 from __future__ import annotations
 
 import json
-import posixpath
-import re
 import subprocess
-from html.parser import HTMLParser
+import sys
 from pathlib import Path
-from urllib.parse import unquote, urlsplit
 
-from markdown_it import MarkdownIt
-
-
-PUBLIC_PAGES = (
-    "README.md", "CHANGELOG.md", "docs/PROJECT_CHARTER.md", "docs/ARCHITECTURE.md",
-    "docs/GETTING_STARTED.md", "docs/PUBLIC_GUIDE.md", "docs/SUPPORTED_FEATURES.md",
-)
-INTERNAL_PATH = re.compile(
-    r"(?:^|[/\s`(])(?:TASKS\.md|STATUS\.md|ROADMAP\.md|DEVELOPMENT\.md|"
-    r"DEVELOPMENT_HISTORY\.md|DEVELOP_TO_MAIN_RELEASE\.md|M_SERIES_IMPLEMENTATION_MAP\.md|"
-    r"DEVELOPER_ARCHITECTURE_MAP\.md|workstreams/|history/|tests/)", re.I)
-ARCHIVE_LINK = re.compile(r"(?:^|/)work(?:/|$)", re.I)
-MILESTONE = re.compile(r"\b(?:M\d+-\d+|K-[A-Z0-9-]+)\b")
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / ".github" / "scripts"))
+try:
+    from release_public import PUBLIC_PAGES, build_input_errors, documentation_errors
+finally:
+    sys.path.pop(0)
 
 
 def selected_files(root: Path) -> dict[str, bytes]:
-    """Use Git's source set, including proposed untracked inputs, never ignored build output."""
+    """Include tracked and proposed untracked source inputs, not ignored build output."""
     names = subprocess.check_output(
         ["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"], cwd=root
     ).decode().split("\0")
@@ -38,80 +28,3 @@ def selected_files(root: Path) -> dict[str, bytes]:
             raise ValueError(f"missing include: {entry['path']}")
         selected.update(matches)
     return {name: (root / name).read_bytes() for name in sorted(selected)}
-
-
-class HtmlLinks(HTMLParser):
-    def __init__(self):
-        super().__init__()
-        self.targets = []
-        self.anchors = set()
-
-    def handle_starttag(self, tag, attrs):
-        for key, value in attrs:
-            if value is not None and key in ("href", "src"):
-                self.targets.append(value)
-            if value is not None and (key == "id" or (tag == "a" and key == "name")):
-                self.anchors.add(value)
-
-
-def headings(text: str) -> set[str]:
-    html = HtmlLinks()
-    html.feed(text)
-    anchors = set(html.anchors)
-    counts = {}
-    for heading in re.findall(r"^#{1,6}\s+(.+?)\s*#*\s*$", text, re.M):
-        slug = re.sub(r"[^\w\- ]", "", heading.lower()).replace(" ", "-")
-        count = counts.get(slug, 0)
-        counts[slug] = count + 1
-        anchors.add(slug if not count else f"{slug}-{count}")
-    return anchors
-
-
-def documentation_errors(files: dict[str, bytes]) -> list[str]:
-    errors = [f"missing public page: {name}" for name in PUBLIC_PAGES if name not in files]
-    markdown = MarkdownIt("gfm-like")
-    for name, data in files.items():
-        if not name.endswith(".md"):
-            continue
-        text = data.decode("utf-8")
-        if INTERNAL_PATH.search(unquote(text)) or MILESTONE.search(text):
-            errors.append(f"internal navigation or milestone: {name}")
-        # Parse rendered href/src values: Markdown entities, references and URI
-        # autolinks have link semantics; code spans/blocks remain literal text.
-        # HTMLParser decodes rendered attribute entities once, before urlsplit.
-        html = HtmlLinks()
-        html.feed(markdown.render(text))
-        for target in html.targets:
-            parsed = urlsplit(target)
-            if parsed.scheme in ("http", "https", "mailto") or parsed.netloc:
-                if INTERNAL_PATH.search(unquote(parsed.path)) or ARCHIVE_LINK.search(unquote(parsed.path)):
-                    errors.append(f"internal external link: {name} -> {target}")
-                continue
-            path = unquote(parsed.path)
-            if parsed.scheme or path.startswith("/") or "\\" in path:
-                errors.append(f"nonportable link: {name} -> {target}")
-                continue
-            resolved = posixpath.normpath(posixpath.join(posixpath.dirname(name), path)) if path else name
-            if INTERNAL_PATH.search(resolved) or ARCHIVE_LINK.search(resolved):
-                errors.append(f"internal link: {name} -> {target}")
-                continue
-            if resolved.startswith("../") or not (resolved in files or any(
-                candidate.startswith(resolved.rstrip("/") + "/") for candidate in files
-            )):
-                errors.append(f"missing link: {name} -> {target}")
-            elif parsed.fragment and resolved.endswith(".md") and resolved in files:
-                if unquote(parsed.fragment) not in headings(files[resolved].decode("utf-8")):
-                    errors.append(f"missing anchor: {name} -> {target}")
-    return errors
-
-
-def build_input_errors(files: dict[str, bytes]) -> list[str]:
-    required = {"pyproject.toml", "MANIFEST.in", "README.md", "LICENSE", "build_backend.py", "runtime-resources.json"}
-    if "runtime-resources.json" in files:
-        spec = json.loads(files["runtime-resources.json"])
-        for catalog in spec["catalogs"]:
-            required.add(catalog["path"])
-            if "entry_kind" in catalog and catalog["path"] in files:
-                required.update(row["document_path"] for row in json.loads(files[catalog["path"]])["entries"])
-        required.update(row["path"] for row in spec["release_assets"])
-    return [f"missing build input: {name}" for name in sorted(required - files.keys())]
