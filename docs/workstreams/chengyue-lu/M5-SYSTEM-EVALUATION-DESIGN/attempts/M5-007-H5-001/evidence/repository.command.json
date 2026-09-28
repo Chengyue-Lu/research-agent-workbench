@@ -1,0 +1,19 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-m",
+    "research_workbench",
+    "validate",
+    "examples",
+    "registry",
+    "--root",
+    "."
+  ],
+  "cwd": ".",
+  "started_at": "2026-09-27T19:37:58.492490+00:00",
+  "ended_at": "2026-09-27T19:38:00.691349+00:00",
+  "elapsed_seconds": 2.187000000005355,
+  "exit_code": 0,
+  "output_path": "repository.log",
+  "capture": "native-command-only"
+}

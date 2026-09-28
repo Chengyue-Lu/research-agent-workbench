@@ -1,0 +1,25 @@
+{
+  "command": {
+    "command": [
+      ".venv/Scripts/python.exe",
+      "-m",
+      "research_workbench",
+      "validate",
+      "examples",
+      "registry",
+      "--root",
+      "."
+    ],
+    "cwd": ".",
+    "started_at": "2026-09-27T19:37:58.492490+00:00",
+    "ended_at": "2026-09-27T19:38:00.691349+00:00",
+    "elapsed_seconds": 2.187000000005355,
+    "exit_code": 0,
+    "output_path": "repository.log",
+    "capture": "native-command-only"
+  },
+  "combined_output": "validated=186 errors=0 warnings=0\n",
+  "native_output_sha256": "255440a9ece3a188b00d67b928a848500938bdd0c6788d0dcac767adb46d7ef3",
+  "archived_output_sha256": "6895861bf5f35b7669baaf95d9caf2b94c3a4e1d5682f29bbc73ba0aa0064633",
+  "capture": "native command only; normalized delayed export"
+}

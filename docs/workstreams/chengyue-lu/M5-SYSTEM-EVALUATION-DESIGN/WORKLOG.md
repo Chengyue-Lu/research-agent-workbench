@@ -308,3 +308,42 @@ equality, changed validator identity and saved-evidence rejection. Production an
 An isolated fresh wheel environment with the actual component executor reproduced both failures
 (66.663 seconds) and passed the repaired case (64.323 seconds). Evidence remains under its original run;
 the repair candidate awaits its own component results and R2 review, with no merge or Task completion.
+
+## H5 dependent draft (2026-09-28)
+
+User authorized forward implementation and an independent draft. PR104 is still OPEN at
+`34a4b05`, with CI PASS and R2 pending; latest develop remains `24e1a3e`.
+Reuse the current isolated checkout on `feature/m5-007-harness-proof`; preserve local config.
+The [H5 packet](M5-007_H5_PACKET.md) keeps H4c acceptance ahead of integration/overall review.
+
+Implement the developer-only builder/replayer and current-source integrated tests. Preserve a real
+local transient Provider failure/fresh retry, all four arms, blind synthetic review/freeze/reveal,
+13 unavailable/null metrics and frozen comparison parameters. Pin every retained file, the outer
+request and trusted helper/authority sources; call the public analysis validator under denied
+Provider/Host/network/process/proof-code execution. No production source, Schema or Task definition changes.
+
+The complete 454-file proof is stored as an immutable ZIP to avoid Windows deep-path limits.
+Every member's original pin survived ZIP/extraction; new-process archived replay PASS, 8 cells /
+10 pairs / 8 completed + 1 failed + 7 not-started. Chain7 and independent current guard1 PASS,
+docs/selector25 PASS, repository186/0/0, short installed smoke8 PASS with 106-module/106-Schema
+byte equality. Proof-only coverage is diagnostic; no full/checkpoint or extra hosted run dispatched.
+Initial assertion/path/encoding diagnostics and capture gaps remain explicit in the
+[Attempt](attempts/M5-007-H5-001/README.md). M5-007 stays IN_PROGRESS, Issue55 OPEN, all live Gates retained.
+
+## PR104 merge / PR106 H5 rebase and review entry (2026-09-28)
+
+PR104 obtained named cross-owner R2 approval on `34a4b05cacbce81459720c3363ef781a55334b42`.
+All required checks passed and review threads had no unresolved blockers. Normal squash merge
+produced `develop@26eca5742ba08d504d273423471fd7aab876a6d5`.
+
+Rebased the two H5 commits from the former PR104 head onto that develop commit without conflicts:
+`f6a199b` → `17dc32d` and `a1aba27` → `7d09587`. `git range-diff` matched both patches and
+the rebased committed Git tree was byte-identical to `a1aba27`; historical proof ZIP, pins,
+Trace and Attempt records were not rewritten. Local user config remained outside the commit.
+The earlier hosted component CI run 36346486222 was SUCCESS on `a1aba27`; it is not a claim
+about the new head. After the live status/navigation updates, Python 3.11 documentation and
+public-surface tests passed 23/23, including internal Markdown links; `git diff --check` passed.
+
+PR106 now carries H5 alone over accepted H4c. Its own exact-head hosted checks and named
+cross-owner R2 review remain required. M5-007 stays IN_PROGRESS and Issue55 remains open;
+synthetic proof does not satisfy the live, admission, Human or scientific gates.

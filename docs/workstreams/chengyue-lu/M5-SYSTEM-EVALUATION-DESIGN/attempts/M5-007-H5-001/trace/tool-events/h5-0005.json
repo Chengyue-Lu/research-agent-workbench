@@ -1,0 +1,22 @@
+{
+  "command": {
+    "command": [
+      ".venv/Scripts/python.exe",
+      "-m",
+      "unittest",
+      "tests.test_evaluation_harness_proof.HarnessProofGuardTests",
+      "-v"
+    ],
+    "cwd": ".",
+    "started_at": "2026-09-27T19:45:27.113055+00:00",
+    "ended_at": "2026-09-27T19:45:27.764857+00:00",
+    "elapsed_seconds": 0.6570000000065193,
+    "exit_code": 0,
+    "output_path": "cold-guards-final.log",
+    "capture": "native-command-only"
+  },
+  "combined_output": "test_cold_execution_guards_fail_closed (tests.test_evaluation_harness_proof.HarnessProofGuardTests.test_cold_execution_guards_fail_closed) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.329s\n\nOK\n",
+  "native_output_sha256": "1dfc99eeecf8b323ad1cb709eff587cc54a478d417bd125b52a0774e0d4354b3",
+  "archived_output_sha256": "31a71c3e63599acdf3497c6f370d0695b65de4c656742cfc57c8939413a78214",
+  "capture": "native command only; normalized delayed export"
+}

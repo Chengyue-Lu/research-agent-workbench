@@ -1,0 +1,80 @@
+{
+  "entry_commit": "34a4b05cacbce81459720c3363ef781a55334b42",
+  "develop_base": "24e1a3eb5d503e56868a10d5222b79ad544e3f86",
+  "dependency": {
+    "pr": 104,
+    "state_observed": "OPEN; CI PASS; R2 pending"
+  },
+  "inputs": [
+    {
+      "path": "AGENTS.md",
+      "git_blob": "67da3f99859775bcdb593c2c5078575df1ad69ce",
+      "sha256": "9e3b17ec2306518fd23d52fc52c3dfdb69aa8108114fe23abb4516abaa584a3a"
+    },
+    {
+      "path": "docs/TASKS.md",
+      "git_blob": "077392e1268525cda893f14977f9859727c2ef9e",
+      "sha256": "a38daa21f291719a6df93615c207752e558252607f159c4509a47bfe5a322398"
+    },
+    {
+      "path": "docs/DEVELOPMENT.md",
+      "git_blob": "74c70f59e1e81ed3d5990d59966bc672a045de3c",
+      "sha256": "f274bcd7042eee138332dadc3f72bdf355ac0d8ecd72a736a2255d758c2778b2"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md",
+      "git_blob": "c9b1a068cff45146b097c02444b9e0522908ea0a",
+      "sha256": "290a7eeb1b197347faf1de86dd1ab80e9fff36cdd250e89217656e1f70d0488d"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H4C_PACKET.md",
+      "git_blob": "8b728447663bb8979476277bc2b1b9ef18d950c3",
+      "sha256": "c9ea8772b5e1c95368a6c7c7811f8e470ddf8997ae7040617a2b574427b3855e"
+    },
+    {
+      "path": "tests/harness_analysis_fixtures.py",
+      "git_blob": "ddeabb0994aa030a35a59157bcbcd9a14022c45f",
+      "sha256": "3e0fc91aa97ee8a3da2cdd1f5acc66955f6e610c30e807f2f4f6fa1c8a9ab049"
+    },
+    {
+      "path": "tests/harness_analysis_data.py",
+      "git_blob": "d9899fe7cee64d30d067bedbe1ee41b43e8c43e5",
+      "sha256": "11ef69e88fe3afa9d6b636aef0117426e73167aa593b8470c6124c0693eff1d5"
+    },
+    {
+      "path": "tests/harness_execution_fixtures.py",
+      "git_blob": "0b00cf44adc02421e78fde942e76b89f47dd77b5",
+      "sha256": "aef9a50e541c5872d2a4ec2bdf41488e41a1a5295d9641a5e43672435f4bb59f"
+    },
+    {
+      "path": "tests/harness_fixtures.py",
+      "git_blob": "5b30890d3a5276459fda157684a69271a78db7db",
+      "sha256": "32178051bc456c664dd133eea172f4ad09efe703e940b889a564044eb73ac083"
+    },
+    {
+      "path": "src/research_workbench/evaluation/harness_analysis.py",
+      "git_blob": "5783bcf62e5c52f2e9f50ec8c52db44d37ba5e7e",
+      "sha256": "b5f0836d10d6d29003cfa7d63433fcaade70c52a0f23c8d80a6c1787b9e3518c"
+    },
+    {
+      "path": "src/research_workbench/evaluation/harness_execution.py",
+      "git_blob": "398cb92cef03738f774f5d84ba945ee545d31eb3",
+      "sha256": "542cda68d5aac661f01f262a9c311ca30abf2a20b8ed15e3e7147d77e53fb840"
+    },
+    {
+      "path": "src/research_workbench/evaluation/harness_evidence.py",
+      "git_blob": "d1f113ab62988faea5873491cdc4e45c8e9beee1",
+      "sha256": "63c6491439602c699b83f851d609900b4b5554e02f593d25f4cb6266cd54bf70"
+    },
+    {
+      "path": "src/research_workbench/evaluation/harness_review.py",
+      "git_blob": "254bd9d5040b138f825017a59f8a2821c12b984c",
+      "sha256": "7d71a4f6b9037955e6387951f328a177fbc23a62e8b12e3e17043eb434edc196"
+    },
+    {
+      "path": "tests/ci_components.json",
+      "git_blob": "32f91d4b8288f12e77ba555ffe24ef3c67c76a83",
+      "sha256": "80e4dd047789c6f2e7d1001e81684e7f64b35d35431e76e8f8f373b5fdf54a75"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-m",
+    "unittest",
+    "tests.test_documentation",
+    "-v"
+  ],
+  "cwd": ".",
+  "started_at": "2026-09-27T19:55:37.577854+00:00",
+  "ended_at": "2026-09-27T19:55:38.031704+00:00",
+  "elapsed_seconds": 0.45300000000861473,
+  "exit_code": 0,
+  "output_path": "docs-publication.log",
+  "capture": "native-command-only"
+}

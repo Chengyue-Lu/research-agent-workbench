@@ -1,0 +1,30 @@
+test_adr_numbers_are_unique (tests.test_documentation.DocumentationTests.test_adr_numbers_are_unique) ... ok
+test_document_surface_authorities_exist (tests.test_documentation.DocumentationTests.test_document_surface_authorities_exist) ... ok
+test_execution_runtime_audit_keeps_private_sources_out_of_git (tests.test_documentation.DocumentationTests.test_execution_runtime_audit_keeps_private_sources_out_of_git) ... ok
+test_first_contact_surfaces_do_not_own_internal_milestones (tests.test_documentation.DocumentationTests.test_first_contact_surfaces_do_not_own_internal_milestones) ... ok
+test_getting_started_uses_recommended_not_replay_path (tests.test_documentation.DocumentationTests.test_getting_started_uses_recommended_not_replay_path) ... ok
+test_internal_markdown_links_resolve (tests.test_documentation.DocumentationTests.test_internal_markdown_links_resolve) ... ok
+test_no_skill_path_requires_execution_view_without_assignment (tests.test_documentation.DocumentationTests.test_no_skill_path_requires_execution_view_without_assignment) ... ok
+test_public_projection_documentation_and_build_closure (tests.test_documentation.DocumentationTests.test_public_projection_documentation_and_build_closure) ... ok
+test_recovery_gate_separates_authority_from_implementation_evidence (tests.test_documentation.DocumentationTests.test_recovery_gate_separates_authority_from_implementation_evidence) ... ok
+test_stable_examples_do_not_use_retired_skill_packages (tests.test_documentation.DocumentationTests.test_stable_examples_do_not_use_retired_skill_packages) ... ok
+test_build_change_requests_install_compatibility_smokes (tests.test_ci_components.ComponentPlanTests.test_build_change_requests_install_compatibility_smokes) ... ok
+test_ci_scripts_keep_their_own_explicit_direct_tests (tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests) ... ok
+test_component_source_selects_whole_group_on_baseline (tests.test_ci_components.ComponentPlanTests.test_component_source_selects_whole_group_on_baseline) ... ok
+test_every_mapping_names_an_actual_test_module (tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module) ... ok
+test_invalid_inputs_fail_and_planning_is_deterministic_without_mutation (tests.test_ci_components.ComponentPlanTests.test_invalid_inputs_fail_and_planning_is_deterministic_without_mutation) ... ok
+test_known_component_keeps_new_source_own_test (tests.test_ci_components.ComponentPlanTests.test_known_component_keeps_new_source_own_test) ... ok
+test_new_and_deleted_source_stay_with_their_components (tests.test_ci_components.ComponentPlanTests.test_new_and_deleted_source_stay_with_their_components) ... ok
+test_pure_docs_skip_product_smoke_and_install_docs_are_explicit (tests.test_ci_components.ComponentPlanTests.test_pure_docs_skip_product_smoke_and_install_docs_are_explicit) ... ok
+test_registry_specific_prefixes_keep_domain_owners (tests.test_ci_components.ComponentPlanTests.test_registry_specific_prefixes_keep_domain_owners) ... ok
+test_rename_considers_old_and_new_component_paths (tests.test_ci_components.ComponentPlanTests.test_rename_considers_old_and_new_component_paths) ... ok
+test_schema_and_registry_changes_request_contract_checks (tests.test_ci_components.ComponentPlanTests.test_schema_and_registry_changes_request_contract_checks) ... ok
+test_shared_fixture_uses_only_its_declared_direct_map (tests.test_ci_components.ComponentPlanTests.test_shared_fixture_uses_only_its_declared_direct_map) ... ok
+test_tests_are_direct_and_deleted_tests_are_not_run (tests.test_ci_components.ComponentPlanTests.test_tests_are_direct_and_deleted_tests_are_not_run) ... ok
+test_top_level_source_and_exact_override_keep_stable_owners (tests.test_ci_components.ComponentPlanTests.test_top_level_source_and_exact_override_keep_stable_owners) ... ok
+test_unknown_path_selects_nearest_and_self_test_without_full (tests.test_ci_components.ComponentPlanTests.test_unknown_path_selects_nearest_and_self_test_without_full) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 0.736s
+
+OK

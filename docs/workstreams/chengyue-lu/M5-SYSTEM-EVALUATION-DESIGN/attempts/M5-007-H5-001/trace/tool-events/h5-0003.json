@@ -1,0 +1,31 @@
+{
+  "command": {
+    "command": [
+      ".venv/Scripts/python.exe",
+      "-m",
+      "coverage",
+      "run",
+      "--data-file=work/m5-h5/proof.coverage",
+      "--branch",
+      "--source=tests.harness_proof,research_workbench.evaluation.harness_analysis",
+      "-m",
+      "tests.harness_proof",
+      "build",
+      "--root",
+      "work/h5-proof",
+      "--schemas",
+      "schemas"
+    ],
+    "cwd": ".",
+    "started_at": "2026-09-27T19:43:51.474920+00:00",
+    "ended_at": "2026-09-27T19:47:42.047851+00:00",
+    "elapsed_seconds": 230.5779999999795,
+    "exit_code": 0,
+    "output_path": "build-proof-short-root.log",
+    "capture": "native-command-only"
+  },
+  "combined_output": "{\"path\": \"proof-inventory.json\", \"sha256\": \"c794fabd85e79cca382c03465f5cf9b2065c642fd2bcf4eb869fd173bb0c240f\"}\n",
+  "native_output_sha256": "815236281d4de71a7fa2045f6a77cdfad29e7649bdf0cd2a1f952816d9e97c91",
+  "archived_output_sha256": "e33afad80debe4a40d69707cbceb16295bbee2f555dcf03b3f74b676ce075778",
+  "capture": "native command only; normalized delayed export"
+}

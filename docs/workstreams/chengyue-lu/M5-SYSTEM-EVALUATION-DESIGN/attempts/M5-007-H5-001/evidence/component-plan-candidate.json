@@ -1,0 +1,2224 @@
+{
+  "version": 1,
+  "selected_tests": [
+    "test_ci_component_execution",
+    "test_ci_component_smoke",
+    "test_ci_components",
+    "test_documentation",
+    "test_evaluation_comparability",
+    "test_evaluation_contracts",
+    "test_evaluation_harness_analysis",
+    "test_evaluation_harness_evidence",
+    "test_evaluation_harness_execution",
+    "test_evaluation_harness_plan",
+    "test_evaluation_harness_preflight",
+    "test_evaluation_harness_proof",
+    "test_evaluation_harness_review",
+    "test_evaluation_manifest",
+    "test_evaluation_overlap",
+    "test_evaluation_overlay",
+    "test_phase_b_evolution_gate",
+    "test_relationships",
+    "test_schemas",
+    "test_skill_evaluation",
+    "test_skill_evaluation_helpers",
+    "test_system_evaluation_protocol",
+    "test_validation",
+    "test_validation_critical_surfaces",
+    "test_validation_helpers"
+  ],
+  "components": [
+    "ci_tooling",
+    "docs",
+    "evaluation",
+    "validation_schema"
+  ],
+  "reasons": [
+    {
+      "path": ".gitattributes",
+      "kind": "unmapped-path",
+      "component": null,
+      "tests": []
+    },
+    {
+      "path": "docs/STATUS.md",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/implementation/SYSTEM_EVALUATION_HARNESS.md",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H4C_PACKET.md",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H4_PACKET.md",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H5_PACKET.md",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/README.md",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/RISK_LEDGER.md",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/WORKLOG.md",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/INPUTS.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/README.md",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/TASK.md",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence-normalization.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-coverage-final.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-coverage-final.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-coverage-results.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-coverage.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-coverage.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-pins.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-pins.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/ci-plan-candidate.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/commands.jsonl",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/coverage-json.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/coverage-json.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/docs-final.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/docs-final.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-coverage.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-final.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-final.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-first.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-first.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-second.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-second.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/governance-candidate.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/governance-candidate.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/governance.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/governance.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/integration-first.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/integration-first.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/integration-second.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/integration-second.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan-candidate.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan-candidate.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan-final.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan-final.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/package-results.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/package.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/package.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/positive-roundtrip.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/positive-roundtrip.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/registration-coverage.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/registration-coverage.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/registration.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/registration.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/repository.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/repository.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/resources-final-schema.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/resources-final-schema.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/resources.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/resources.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/review-regression.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/review-regression.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/scoped-coverage-checker.py.txt",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/unit-coverage-interim.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace-validation.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/ACTORS.yaml",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/INDEX.yaml",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/TASK.yaml",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/events.jsonl",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0001-succeeded.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0002-failed.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0003-succeeded.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0004-failed.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0005-succeeded.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0006-succeeded.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0007-succeeded.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0008-succeeded.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0009-succeeded.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0010-succeeded.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0011-succeeded.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0012-succeeded.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0013-succeeded.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0014-succeeded.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0015-succeeded.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0016-succeeded.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0017-succeeded.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0018-failed.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0019-succeeded.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0020-succeeded.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0021-succeeded.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0022-succeeded.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0023-succeeded.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/verification.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-ENTRY-001/INPUTS.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-ENTRY-001/README.md",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/INPUTS.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/README.md",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/TASK.md",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence-normalization.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/archive-proof.command.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/archive-proof.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/archived-cold-replay.command.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/archived-cold-replay.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/build-proof-short-root.command.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/build-proof-short-root.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/build-proof.command.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/build-proof.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/cold-guards-final.command.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/cold-guards-final.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/docs-ci-final.command.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/docs-ci-final.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/docs-ci-first.command.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/docs-ci-first.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/docs-publication.command.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/docs-publication.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/focused-final.command.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/focused-final.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/focused-first.command.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/focused-first.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/helpers/logged.py",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/helpers/pack_proof.py",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/helpers/verify_installed.py",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/installed-source-equality.command.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/installed-source-equality.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/package-smoke-results.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/package-smoke.command.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/package-smoke.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/proof-coverage.command.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/proof-coverage.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/proof-coverage.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/repository.command.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/repository.log",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/proof-inventory.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/proof-refs.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace-validation.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/ACTORS.yaml",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/INDEX.yaml",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/TASK.yaml",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/events.jsonl",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0001.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0002.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0003.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0004.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0005.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0006.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0007.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0008.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0009.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0010.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0011.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0012.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0013.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0014.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/verification.json",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/vertical-proof.zip",
+      "kind": "documentation",
+      "component": "docs",
+      "tests": [
+        "test_documentation"
+      ]
+    },
+    {
+      "path": "schemas/v0.1.0/evaluation-harness-analysis-input.schema.json",
+      "kind": "component",
+      "component": "validation_schema",
+      "tests": [
+        "test_phase_b_evolution_gate",
+        "test_relationships",
+        "test_schemas",
+        "test_validation",
+        "test_validation_critical_surfaces",
+        "test_validation_helpers"
+      ]
+    },
+    {
+      "path": "schemas/v0.1.0/evaluation-harness-metric-evidence.schema.json",
+      "kind": "component",
+      "component": "validation_schema",
+      "tests": [
+        "test_phase_b_evolution_gate",
+        "test_relationships",
+        "test_schemas",
+        "test_validation",
+        "test_validation_critical_surfaces",
+        "test_validation_helpers"
+      ]
+    },
+    {
+      "path": "schemas/v0.1.0/evaluation-harness-metric-method.schema.json",
+      "kind": "component",
+      "component": "validation_schema",
+      "tests": [
+        "test_phase_b_evolution_gate",
+        "test_relationships",
+        "test_schemas",
+        "test_validation",
+        "test_validation_critical_surfaces",
+        "test_validation_helpers"
+      ]
+    },
+    {
+      "path": "schemas/v0.1.0/evaluation-harness-metric-observation.schema.json",
+      "kind": "component",
+      "component": "validation_schema",
+      "tests": [
+        "test_phase_b_evolution_gate",
+        "test_relationships",
+        "test_schemas",
+        "test_validation",
+        "test_validation_critical_surfaces",
+        "test_validation_helpers"
+      ]
+    },
+    {
+      "path": "src/research_workbench/evaluation/harness_analysis.py",
+      "kind": "component",
+      "component": "evaluation",
+      "tests": [
+        "test_evaluation_comparability",
+        "test_evaluation_contracts",
+        "test_evaluation_harness_analysis",
+        "test_evaluation_harness_evidence",
+        "test_evaluation_harness_execution",
+        "test_evaluation_harness_plan",
+        "test_evaluation_harness_preflight",
+        "test_evaluation_harness_proof",
+        "test_evaluation_harness_review",
+        "test_evaluation_manifest",
+        "test_evaluation_overlap",
+        "test_evaluation_overlay",
+        "test_skill_evaluation",
+        "test_skill_evaluation_helpers",
+        "test_system_evaluation_protocol"
+      ]
+    },
+    {
+      "path": "src/research_workbench/validation/document_kinds.py",
+      "kind": "component",
+      "component": "validation_schema",
+      "tests": [
+        "test_phase_b_evolution_gate",
+        "test_relationships",
+        "test_schemas",
+        "test_validation",
+        "test_validation_critical_surfaces",
+        "test_validation_helpers"
+      ]
+    },
+    {
+      "path": "src/research_workbench/validation/documents.py",
+      "kind": "component",
+      "component": "validation_schema",
+      "tests": [
+        "test_phase_b_evolution_gate",
+        "test_relationships",
+        "test_schemas",
+        "test_validation",
+        "test_validation_critical_surfaces",
+        "test_validation_helpers"
+      ]
+    },
+    {
+      "path": "tests/ci_components.json",
+      "kind": "component",
+      "component": "ci_tooling",
+      "tests": [
+        "test_ci_component_execution",
+        "test_ci_component_smoke",
+        "test_ci_components"
+      ]
+    },
+    {
+      "path": "tests/ci_impact_policy.yaml",
+      "kind": "nearest-component",
+      "component": "ci_tooling",
+      "tests": [
+        "test_ci_component_execution",
+        "test_ci_component_smoke",
+        "test_ci_components"
+      ]
+    },
+    {
+      "path": "tests/ci_impact_policy.yaml",
+      "kind": "unmapped-path",
+      "component": null,
+      "tests": []
+    },
+    {
+      "path": "tests/coverage_policy.yaml",
+      "kind": "nearest-component",
+      "component": "ci_tooling",
+      "tests": [
+        "test_ci_component_execution",
+        "test_ci_component_smoke",
+        "test_ci_components"
+      ]
+    },
+    {
+      "path": "tests/coverage_policy.yaml",
+      "kind": "unmapped-path",
+      "component": null,
+      "tests": []
+    },
+    {
+      "path": "tests/harness_analysis_data.py",
+      "kind": "direct-map",
+      "component": null,
+      "tests": [
+        "test_evaluation_harness_analysis",
+        "test_evaluation_harness_proof"
+      ]
+    },
+    {
+      "path": "tests/harness_analysis_fixtures.py",
+      "kind": "direct-map",
+      "component": null,
+      "tests": [
+        "test_evaluation_harness_analysis",
+        "test_evaluation_harness_proof"
+      ]
+    },
+    {
+      "path": "tests/harness_proof.py",
+      "kind": "direct-map",
+      "component": null,
+      "tests": [
+        "test_evaluation_harness_proof"
+      ]
+    },
+    {
+      "path": "tests/test_evaluation_harness_analysis.py",
+      "kind": "direct-test",
+      "component": null,
+      "tests": [
+        "test_evaluation_harness_analysis"
+      ]
+    },
+    {
+      "path": "tests/test_evaluation_harness_evidence.py",
+      "kind": "direct-test",
+      "component": null,
+      "tests": [
+        "test_evaluation_harness_evidence"
+      ]
+    },
+    {
+      "path": "tests/test_evaluation_harness_proof.py",
+      "kind": "direct-test",
+      "component": null,
+      "tests": [
+        "test_evaluation_harness_proof"
+      ]
+    },
+    {
+      "path": "tests/test_schemas.py",
+      "kind": "direct-test",
+      "component": null,
+      "tests": [
+        "test_schemas"
+      ]
+    }
+  ],
+  "unknown_paths": [
+    ".gitattributes",
+    "tests/ci_impact_policy.yaml",
+    "tests/coverage_policy.yaml"
+  ],
+  "docs": true,
+  "smoke": true,
+  "install": false,
+  "contracts": true,
+  "python_versions": [
+    "3.11"
+  ],
+  "kind": "component_ci_plan",
+  "schema_version": "0.1.0",
+  "profile": "component",
+  "base_sha": "24e1a3eb5d503e56868a10d5222b79ad544e3f86",
+  "merge_base_sha": "24e1a3eb5d503e56868a10d5222b79ad544e3f86",
+  "head_sha": "f6a199b713f1ecd451608d6fd3ab058765db4a83",
+  "policy_sha256": "7a2b82bf22fc5fc407842add6f9ba50e7ad059916d379de6f01ae07de6f33f1b",
+  "changes": [
+    {
+      "status": "M",
+      "path": ".gitattributes"
+    },
+    {
+      "status": "M",
+      "path": "docs/STATUS.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/implementation/SYSTEM_EVALUATION_HARNESS.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H4C_PACKET.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H4_PACKET.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H5_PACKET.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/README.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/RISK_LEDGER.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/WORKLOG.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/INPUTS.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/README.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/TASK.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence-normalization.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-coverage-final.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-coverage-final.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-coverage-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-coverage.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-coverage.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-pins.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/changed-pins.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/ci-plan-candidate.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/commands.jsonl"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/coverage-json.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/coverage-json.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/docs-final.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/docs-final.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-coverage.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-final.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-final.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-first.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-first.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-second.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/focused-second.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/governance-candidate.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/governance-candidate.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/governance.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/governance.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/integration-first.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/integration-first.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/integration-second.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/integration-second.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan-candidate.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan-candidate.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan-final.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan-final.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/local-plan.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/package-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/package.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/package.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/positive-roundtrip.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/positive-roundtrip.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/registration-coverage.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/registration-coverage.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/registration.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/registration.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/repository.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/repository.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/resources-final-schema.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/resources-final-schema.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/resources.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/resources.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/review-regression.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/review-regression.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/scoped-coverage-checker.py.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/evidence/unit-coverage-interim.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace-validation.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/ACTORS.yaml"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/INDEX.yaml"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/TASK.yaml"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/events.jsonl"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0001-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0002-failed.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0003-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0004-failed.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0005-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0006-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0007-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0008-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0009-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0010-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0011-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0012-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0013-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0014-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0015-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0016-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0017-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0018-failed.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0019-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0020-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0021-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0022-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/trace/tool-events/delayed-h4c-0023-succeeded.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-ENTRY-001/INPUTS.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-ENTRY-001/README.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/INPUTS.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/README.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/TASK.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence-normalization.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/archive-proof.command.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/archive-proof.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/archived-cold-replay.command.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/archived-cold-replay.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/build-proof-short-root.command.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/build-proof-short-root.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/build-proof.command.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/build-proof.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/cold-guards-final.command.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/cold-guards-final.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/docs-ci-final.command.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/docs-ci-final.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/docs-ci-first.command.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/docs-ci-first.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/docs-publication.command.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/docs-publication.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/focused-final.command.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/focused-final.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/focused-first.command.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/focused-first.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/helpers/logged.py"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/helpers/pack_proof.py"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/helpers/verify_installed.py"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/installed-source-equality.command.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/installed-source-equality.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/package-smoke-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/package-smoke.command.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/package-smoke.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/proof-coverage.command.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/proof-coverage.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/proof-coverage.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/repository.command.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/repository.log"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/proof-inventory.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/proof-refs.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace-validation.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/ACTORS.yaml"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/INDEX.yaml"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/TASK.yaml"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/events.jsonl"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0001.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0002.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0003.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0004.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0005.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0006.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0007.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0008.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0009.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0010.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0011.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0012.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0013.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/tool-events/h5-0014.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/vertical-proof.zip"
+    },
+    {
+      "status": "A",
+      "path": "schemas/v0.1.0/evaluation-harness-analysis-input.schema.json"
+    },
+    {
+      "status": "A",
+      "path": "schemas/v0.1.0/evaluation-harness-metric-evidence.schema.json"
+    },
+    {
+      "status": "A",
+      "path": "schemas/v0.1.0/evaluation-harness-metric-method.schema.json"
+    },
+    {
+      "status": "A",
+      "path": "schemas/v0.1.0/evaluation-harness-metric-observation.schema.json"
+    },
+    {
+      "status": "A",
+      "path": "src/research_workbench/evaluation/harness_analysis.py"
+    },
+    {
+      "status": "M",
+      "path": "src/research_workbench/validation/document_kinds.py"
+    },
+    {
+      "status": "M",
+      "path": "src/research_workbench/validation/documents.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/ci_components.json"
+    },
+    {
+      "status": "M",
+      "path": "tests/ci_impact_policy.yaml"
+    },
+    {
+      "status": "M",
+      "path": "tests/coverage_policy.yaml"
+    },
+    {
+      "status": "A",
+      "path": "tests/harness_analysis_data.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/harness_analysis_fixtures.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/harness_proof.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/test_evaluation_harness_analysis.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_evaluation_harness_evidence.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/test_evaluation_harness_proof.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_schemas.py"
+    }
+  ],
+  "execution_authority": "profile-result-only",
+  "coverage": "diagnostic-only",
+  "plan_sha256": "7c43a8ddb5c996d79142949312526a08a1ad8f2659f863333a6c81f55fc87a54"
+}

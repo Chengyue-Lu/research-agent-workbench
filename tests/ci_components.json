@@ -92,6 +92,7 @@
         "test_evaluation_harness_evidence",
         "test_evaluation_harness_review",
         "test_evaluation_harness_analysis",
+        "test_evaluation_harness_proof",
         "test_skill_evaluation",
         "test_skill_evaluation_helpers",
         "test_system_evaluation_protocol"
@@ -386,6 +387,7 @@
       "test_test_runner"
     ],
     "tests/execution_fixtures.py": [
+      "test_evaluation_harness_proof",
       "test_evaluation_overlay",
       "test_execution_view",
       "test_generic_execution_closeout",
@@ -399,6 +401,7 @@
     "tests/system_evaluation_fixtures.py": [
       "test_evaluation_contracts",
       "test_evaluation_harness_analysis",
+      "test_evaluation_harness_proof",
       "test_evaluation_harness_evidence",
       "test_evaluation_harness_plan",
       "test_evaluation_harness_execution",
@@ -409,25 +412,33 @@
       "test_system_evaluation_protocol"
     ],
     "tests/baseline_fixtures.py": [
+      "test_evaluation_harness_proof",
       "test_baseline_envelope",
       "test_baseline_execution",
       "test_baseline_replay_integrity"
     ],
     "tests/harness_fixtures.py": [
+      "test_evaluation_harness_proof",
       "test_evaluation_harness_plan",
       "test_evaluation_harness_preflight"
     ],
     "tests/harness_execution_fixtures.py": [
       "test_evaluation_harness_analysis",
+      "test_evaluation_harness_proof",
       "test_evaluation_harness_evidence",
       "test_evaluation_harness_execution",
       "test_evaluation_harness_review"
     ],
     "tests/harness_analysis_data.py": [
-      "test_evaluation_harness_analysis"
+      "test_evaluation_harness_analysis",
+      "test_evaluation_harness_proof"
     ],
     "tests/harness_analysis_fixtures.py": [
-      "test_evaluation_harness_analysis"
+      "test_evaluation_harness_analysis",
+      "test_evaluation_harness_proof"
+    ],
+    "tests/harness_proof.py": [
+      "test_evaluation_harness_proof"
     ],
     "tests/skill_runtime_fixtures.py": [
       "test_skill_runtime_extension"

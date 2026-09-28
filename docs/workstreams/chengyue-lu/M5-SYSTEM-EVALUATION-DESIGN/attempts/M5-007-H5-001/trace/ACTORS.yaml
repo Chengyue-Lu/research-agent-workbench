@@ -1,0 +1,10 @@
+schema_version: 0.1.0
+task_id: M5-007
+task_revision: 1
+attempt_id: M5-007-H5-001
+actors:
+- actor_id: codex-m5-h5
+  actor_type: runtime-adapter
+  role: bounded synthetic integration and native evidence runner
+  runtime_identity: Codex local agent; partial delayed export
+  accountable_owner: Chengyue-Lu

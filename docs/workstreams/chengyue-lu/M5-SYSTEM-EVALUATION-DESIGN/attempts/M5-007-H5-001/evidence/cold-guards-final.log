@@ -1,0 +1,6 @@
+test_cold_execution_guards_fail_closed (tests.test_evaluation_harness_proof.HarnessProofGuardTests.test_cold_execution_guards_fail_closed) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.329s
+
+OK

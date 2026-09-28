@@ -1,0 +1,23 @@
+{
+  "command": {
+    "command": [
+      ".venv/Scripts/python.exe",
+      ".github/scripts/ci_component_smoke.py",
+      "--python",
+      "<installed-environment>/Scripts/python.exe",
+      "--output",
+      "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/evidence/package-smoke-results.json"
+    ],
+    "cwd": ".",
+    "started_at": "2026-09-27T19:41:53.526884+00:00",
+    "ended_at": "2026-09-27T19:42:03.500839+00:00",
+    "elapsed_seconds": 9.96899999998277,
+    "exit_code": 0,
+    "output_path": "package-smoke.log",
+    "capture": "native-command-only"
+  },
+  "combined_output": "installed-component-smoke-v1: success (9.922s)\n",
+  "native_output_sha256": "7d690ee20031e0f886aec30117b41043830379b15cfe80329aa154da9d1c99ca",
+  "archived_output_sha256": "eeadb6a46ad21788ffb95de51e9688422b3b1e1dbd4114ffffcbf2dfd67e110a",
+  "capture": "native command only; normalized delayed export"
+}

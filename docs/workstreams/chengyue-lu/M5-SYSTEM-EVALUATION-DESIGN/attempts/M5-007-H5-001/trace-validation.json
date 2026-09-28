@@ -1,0 +1,14 @@
+{
+  "index_ref": {
+    "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/trace/INDEX.yaml",
+    "sha256": "4c7812abec22571dcb76450ad7af4b44cac781d62ea3d511c99211d26cd629a1"
+  },
+  "capture": "post-export deterministic check; not an original runtime event",
+  "findings": [
+    {
+      "code": "TRACE-CAPTURE-DELAYED",
+      "level": "warning",
+      "message": "[capture-gap] trace declares incomplete or delayed capture"
+    }
+  ]
+}

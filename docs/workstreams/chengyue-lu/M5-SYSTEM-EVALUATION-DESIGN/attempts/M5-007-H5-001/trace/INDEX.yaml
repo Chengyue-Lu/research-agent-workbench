@@ -1,0 +1,80 @@
+schema_version: 0.1.0
+trace_id: TRACE-M5-007-H5-001
+task_id: M5-007
+task_revision: 1
+attempt_id: M5-007-H5-001
+archive_root: trace
+baseline: rwb-agent-trace-v0.1
+owner_actor_id: codex-m5-h5
+owner: Chengyue-Lu
+attempt_status: incomplete
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 1e5f6d6dbd34f1931297ce63da67fbf227ee3d84b77e8e1f7585e880a44855d7
+actors_ref:
+  path: ACTORS.yaml
+  sha256: c494120a33569d7a1be9e76c15716b99b4fd1c965c0296046990991e411da98f
+read_allowlist:
+- AGENTS.md
+- README.md
+- docs/**
+- schemas/**
+- src/**
+- tests/**
+- .github/**
+- work/**
+write_scope:
+- tests/**
+- docs/STATUS.md
+- docs/implementation/SYSTEM_EVALUATION_HARNESS.md
+- docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/**
+- .gitattributes
+- work/**
+tool_allowlist:
+- shell
+- apply_patch
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: dba106d87d040f79c6ee238b646bbb3e940b41931c1282c79c8760a16c9f2459
+  event_count: 18
+tool_event_refs:
+- path: tool-events/h5-0001.json
+  sha256: 87f5d4037dca4ab81cbefa1fefc524d8541d74b8b76f6a5f45593ce8752833c2
+- path: tool-events/h5-0002.json
+  sha256: f4cc2fa7f5f882f9cb25ce6d3c8f90446eed4ba8d7ba6cb5b5c5d7cd7343146a
+- path: tool-events/h5-0003.json
+  sha256: b87f14da07073674ebfc2f6b2f30103b078c85dc85ee61aee83cba1d33e1eebd
+- path: tool-events/h5-0004.json
+  sha256: bcd4a62783630b0038d254bfcce32e6a3715f14da25f7a08f0cdfe9fe0e10091
+- path: tool-events/h5-0005.json
+  sha256: e399c3ec16ae44358a100b5808040af82d28c793b446d264204df73d6a7c2f04
+- path: tool-events/h5-0006.json
+  sha256: 6332919170be96af971b9c70b5eaeda66fc6c9f60761786aa64fce2b47841a64
+- path: tool-events/h5-0007.json
+  sha256: e81a4d2c5221826ccac3d9805114f907fb1b95ae36581ac1a47338b43c3225d8
+- path: tool-events/h5-0008.json
+  sha256: dc57b845f6b8622b24ab97f4b3fa8e816555f75fcdd727d783a4697e2c30fe04
+- path: tool-events/h5-0009.json
+  sha256: 8049cd3f606064b5a813829617928955b92d666ba794ee2d90a62fbe577452f8
+- path: tool-events/h5-0010.json
+  sha256: 8a9fcf9c9862b01ae2a0d4a9c1c009e2df0e1bc437ccabd774db06ad863989c0
+- path: tool-events/h5-0011.json
+  sha256: 73e42123723ee9e1c5398f1e9a28f5cc201452d84bd348ccedb36d188b6a0768
+- path: tool-events/h5-0012.json
+  sha256: 4f689e83bbfe6b0b991729293acbe6de274f2f7c11348bebc09df440159f78e5
+- path: tool-events/h5-0013.json
+  sha256: e96037104192d4ccea041a42ca0bbf47b1fffd44f8589d842ef0e94b66c0dd83
+- path: tool-events/h5-0014.json
+  sha256: e61ed262f3b2cac1cc55be3a90ffd12160b6ee3e97c574724574e46c9580a02e
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: messages

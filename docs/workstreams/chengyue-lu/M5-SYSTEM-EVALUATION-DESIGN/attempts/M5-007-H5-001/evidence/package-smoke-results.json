@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "profile": "installed-component-smoke-v1",
+  "python": "<installed-environment>\\Scripts\\python.exe",
+  "status": "success",
+  "steps": [
+    {
+      "name": "installed-import-and-schema",
+      "expected_exit": 0,
+      "status": "success",
+      "exit_code": 0,
+      "stdout": "{\"distribution\": \"0.1.0\", \"invalid_timestamp_rejected\": true, \"package\": \"<installed-environment>\\\\Lib\\\\site-packages\\\\research_workbench\\\\__init__.py\", \"positive_schema\": true, \"python\": \"3.11.16\"}\n",
+      "stderr": "",
+      "elapsed_seconds": 1.219
+    },
+    {
+      "name": "runtime-resources",
+      "expected_exit": 0,
+      "status": "success",
+      "exit_code": 0,
+      "stdout": "{\"merge_eligible\": false, \"modes\": 4, \"projections\": 0, \"resources\": 155, \"schemas\": 106, \"validation_profile\": \"installed-runtime\"}\n",
+      "stderr": "",
+      "elapsed_seconds": 1.437
+    },
+    {
+      "name": "schema-cli",
+      "expected_exit": 0,
+      "status": "success",
+      "exit_code": 0,
+      "stdout": "a3-a4-pairwise-comparability\tdocument\na4-execution-qualification\tdocument\nadmission-evidence-overlap\tdocument\nagent-profile\tdocument\nagent-trace-actors\tdocument\nagent-trace-envelope\tdocument\nagent-trace-event\tdocument\nagent-trace-index\tdocument\narm-execution-qualification\tdocument\nattempt\tdocument\nattempt-completion-manifest\tdocument\nauthority-rule-eligibility\tdocument\nbaseline-execution-envelope\tdocument\nbaseline-execution-fact\tdocument\nbaseline-execution-receipt\tdocument\ncapability-conformance-evidence\tdocument\ncapability-requirement\tdocument\ncapability-requirement-index\tdocument\ncapability-resolution\tdocument\ncapability-supply-common\tshared\ncapability-supply-report\tdocument\nclaim-evidence-map\tdocument\ncommon\tshared\ncontext-snapshot\tdocument\ndecision-authority-matrix\tdocument\ndeterministic-check-report\tdocument\nevaluation-case-closure\tdocument\nevaluation-harness-analysis-input\tdocument\nevaluation-harness-evidence\tdocument\nevaluation-harness-execution\tdocument\nevaluation-harness-human-review\tdocument\nevaluation-harness-metric-evidence\tdocument\nevaluation-harness-metric-method\tdocument\nevaluation-harness-metric-observation\tdocument\nevaluation-harness-plan\tdocument\nevaluation-harness-preflight\tdocument\nevaluation-harness-review-artifact\tdocument\nevaluation-harness-review-freeze\tdocument\nevaluation-harness-review-mapping\tdocument\nevaluation-harness-review-package\tdocument\nevaluation-harness-review-policy\tdocument\nevaluation-harness-review-reveal\tdocument\nevaluation-manifest\tdocument\nevaluation-measurement\tdocument\nevaluation-provider-interface\tdocument\nexecution-binding\tdocument\nexecution-core-gate\tdocument\nexecution-host-report\tdocument\nexecution-policy\tdocument\nexecution-receipt\tdocument\nexecution-trace-fact\tdocument\ngeneric-execution-receipt\tdocument\nhandoff-packet\tdocument\nhandoff-transfer-audit\tdocument\nhandoff-transfer-manifest\tdocument\nmain-state\tdocument\nmethod-resolution\tdocument\nmethod-trace\tdocument\nmode-action\tdocument\nmode-action-registry\tdocument\nphase-b-evolution-gate\tdocument\nphase-c-gate-manifest\tdocument\nphase-c-gate-report\tdocument\nproject-protocol\tdocument\npromotion-execution-receipt\tdocument\npromotion-record\tdocument\npromotion-validation-authority-registry\tdocument\npromotion-validation-execution\tdocument\npromotion-validation-host-receipt\tdocument\npromotion-validation-policy\tdocument\nprotocol-profile\tdocument\nprotocol-profile-index\tdocument\nprovider-conformance-report\tdocument\nrelease-manifest\tshared\nrelease-surface-policy\tshared\nresearch-attempt-lineage\tdocument\nresearch-failure\tdocument\nresearch-mode\tdocument\nresearch-mode-migration\tdocument\nresearch-object\tdocument\nresearch-state\tdocument\nresolved-capability-snapshot\tdocument\nresolved-execution-view\tdocument\nrun-reconstruction-environment\tdocument\nrun-reconstruction-manifest\tdocument\nrun-reconstruction-report\tdocument\nruntime-bundle-manifest\tdocument\nruntime-resource-manifest\tdocument\nskill-archive-audit\tdocument\nskill-assignment\tdocument\nskill-evaluation\tdocument\nskill-execution-consumption\tdocument\nskill-execution-host-report\tdocument\nskill-execution-receipt\tdocument\nskill-execution-trace-fact\tdocument\nskill-lifecycle-index\tdocument\nskill-lifecycle-migration\tdocument\nskill-lifecycle-record\tdocument\nskill-manifest\tdocument\nskill-need\tdocument\nskill-need-index\tdocument\nskill-release-projection\tdocument\nskill-release-projection-index\tdocument\nsource-admission\tdocument\nsystem-evaluation-protocol\tdocument\ntask-packet\tdocument\n",
+      "stderr": "",
+      "elapsed_seconds": 1.266
+    },
+    {
+      "name": "research-state-command",
+      "expected_exit": 0,
+      "status": "success",
+      "exit_code": 0,
+      "stdout": "usage: rwb research-state [-h] {validate,gate} ...\n\npositional arguments:\n  {validate,gate}\n    validate       validate schema and exact refs without scanning the\n                   repository\n    gate           run the two runner-owned bounded cases in fresh processes\n\noptions:\n  -h, --help       show this help message and exit\n",
+      "stderr": "",
+      "elapsed_seconds": 0.281
+    },
+    {
+      "name": "offline-project-init",
+      "expected_exit": 0,
+      "status": "success",
+      "exit_code": 0,
+      "stdout": "initialized 'ci-smoke' at <temporary-root>\\project (no-skill)\nRuntime resources: <installed-environment>\\Lib\\site-packages\\research_workbench\\_runtime_data\n",
+      "stderr": "",
+      "elapsed_seconds": 1.594
+    },
+    {
+      "name": "offline-project-check",
+      "expected_exit": 0,
+      "status": "success",
+      "exit_code": 0,
+      "stdout": "{\n  \"project_id\": \"ci-smoke\",\n  \"project_root\": \"<temporary-root>\\\\project\",\n  \"runtime_root\": \"<installed-environment>\\\\Lib\\\\site-packages\\\\research_workbench\\\\_runtime_data\",\n  \"runtime_manifest_sha256\": \"4e6b1be6107922e46354d5a3e23602ec724d76853d57434217184916960a4c54\",\n  \"template\": \"no-skill\",\n  \"resources\": {\n    \"resources\": 155,\n    \"schemas\": 106,\n    \"modes\": 4,\n    \"projections\": 0,\n    \"validation_profile\": \"installed-runtime\",\n    \"merge_eligible\": false\n  },\n  \"executed\": false\n}\n",
+      "stderr": "",
+      "elapsed_seconds": 1.578
+    },
+    {
+      "name": "offline-task-validate",
+      "expected_exit": 0,
+      "status": "success",
+      "exit_code": 0,
+      "stdout": "validated=2 errors=0 warnings=0\n",
+      "stderr": "",
+      "elapsed_seconds": 1.266
+    },
+    {
+      "name": "invalid-timestamp-cli",
+      "expected_exit": 1,
+      "status": "success",
+      "exit_code": 1,
+      "stdout": "ERROR   SCHEMA-INVALID       invalid-decision.json: $.timestamp: 'not-a-timestamp' is not a 'date-time'\nvalidated=1 errors=1 warnings=0\n",
+      "stderr": "",
+      "elapsed_seconds": 1.265
+    }
+  ],
+  "scope": "installed short smoke",
+  "elapsed_seconds": 9.922
+}

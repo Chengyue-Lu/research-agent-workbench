@@ -1,0 +1,25 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-m",
+    "coverage",
+    "run",
+    "--data-file=work/m5-h5/proof.coverage",
+    "--branch",
+    "--source=tests.harness_proof,research_workbench.evaluation.harness_analysis",
+    "-m",
+    "tests.harness_proof",
+    "build",
+    "--root",
+    "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/vertical-proof",
+    "--schemas",
+    "schemas"
+  ],
+  "cwd": ".",
+  "started_at": "2026-09-27T19:39:54.675527+00:00",
+  "ended_at": "2026-09-27T19:40:14.964706+00:00",
+  "elapsed_seconds": 20.29700000002049,
+  "exit_code": 1,
+  "output_path": "build-proof.log",
+  "capture": "native-command-only"
+}

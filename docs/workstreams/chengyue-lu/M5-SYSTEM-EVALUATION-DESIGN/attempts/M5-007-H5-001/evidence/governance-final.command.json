@@ -1,0 +1,13 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "work/m5-h5/governance.py"
+  ],
+  "cwd": ".",
+  "started_at": "2026-09-27T19:58:16.324986+00:00",
+  "ended_at": "2026-09-27T19:58:19.295514+00:00",
+  "elapsed_seconds": 2.9689999999827705,
+  "exit_code": 0,
+  "output_path": "governance-final.log",
+  "capture": "native-command-only"
+}
