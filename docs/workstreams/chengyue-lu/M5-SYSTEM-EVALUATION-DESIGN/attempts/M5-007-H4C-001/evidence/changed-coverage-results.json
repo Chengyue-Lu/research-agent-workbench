@@ -1,0 +1,75 @@
+{
+  "implementation_head": "791f4d56214cb8006f70301c4bcc4cdc856bdb16",
+  "modules": [
+    {
+      "path": "src/research_workbench/evaluation/harness_analysis.py",
+      "changed_executable_lines": 222,
+      "uncovered_lines": [],
+      "changed_branches": 52,
+      "uncovered_branches": [],
+      "summary": {
+        "covered_lines": 222,
+        "num_statements": 222,
+        "percent_covered": 100.0,
+        "percent_covered_display": "100",
+        "missing_lines": 0,
+        "excluded_lines": 0,
+        "percent_statements_covered": 100.0,
+        "percent_statements_covered_display": "100",
+        "num_branches": 52,
+        "num_partial_branches": 0,
+        "covered_branches": 52,
+        "missing_branches": 0,
+        "percent_branches_covered": 100.0,
+        "percent_branches_covered_display": "100"
+      }
+    },
+    {
+      "path": "src/research_workbench/validation/document_kinds.py",
+      "changed_executable_lines": 0,
+      "uncovered_lines": [],
+      "changed_branches": 0,
+      "uncovered_branches": [],
+      "summary": {
+        "covered_lines": 111,
+        "num_statements": 135,
+        "percent_covered": 81.88679245283019,
+        "percent_covered_display": "82",
+        "missing_lines": 24,
+        "excluded_lines": 0,
+        "percent_statements_covered": 82.22222222222223,
+        "percent_statements_covered_display": "82",
+        "num_branches": 130,
+        "num_partial_branches": 24,
+        "covered_branches": 106,
+        "missing_branches": 24,
+        "percent_branches_covered": 81.53846153846153,
+        "percent_branches_covered_display": "82"
+      }
+    },
+    {
+      "path": "src/research_workbench/validation/documents.py",
+      "changed_executable_lines": 0,
+      "uncovered_lines": [],
+      "changed_branches": 0,
+      "uncovered_branches": [],
+      "summary": {
+        "covered_lines": 589,
+        "num_statements": 778,
+        "percent_covered": 71.36222910216718,
+        "percent_covered_display": "71",
+        "missing_lines": 189,
+        "excluded_lines": 0,
+        "percent_statements_covered": 75.706940874036,
+        "percent_statements_covered_display": "76",
+        "num_branches": 514,
+        "num_partial_branches": 173,
+        "covered_branches": 333,
+        "missing_branches": 181,
+        "percent_branches_covered": 64.78599221789884,
+        "percent_branches_covered_display": "65"
+      }
+    }
+  ],
+  "scope": "changed implementation source only; no global coverage claim"
+}

@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/evaluation-harness-metric-method.schema.json",
+  "title": "evaluation_harness_metric_method",
+  "x-rwb-document-kind": "evaluation_harness_metric_method",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "version",
+    "purpose",
+    "method_id",
+    "metric_id",
+    "unit",
+    "operation",
+    "source",
+    "registered_at",
+    "estimation_method",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "evaluation_harness_metric_method"
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "purpose": {
+      "const": "synthetic-contract-proof"
+    },
+    "method_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "metric_id": {
+      "enum": [
+        "method-violation",
+        "claim-overreach",
+        "provenance-error",
+        "counterevidence-omission",
+        "human-correction-distance",
+        "omission-rate",
+        "rework-count",
+        "lookup-count",
+        "h2-distortion-rate",
+        "cascade-rate",
+        "context-loaded",
+        "cost",
+        "completion-time"
+      ]
+    },
+    "unit": {
+      "type": "string",
+      "minLength": 1
+    },
+    "operation": {
+      "enum": [
+        "audit-count",
+        "audit-ratio",
+        "context-ledger",
+        "cost-ledger",
+        "outer-wall-clock"
+      ]
+    },
+    "source": {
+      "enum": [
+        "frozen-human-review",
+        "execution-observation"
+      ]
+    },
+    "registered_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "estimation_method": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "boundaries": {
+      "$ref": "evaluation-harness-execution.schema.json#/properties/boundaries"
+    }
+  },
+  "additionalProperties": false
+}

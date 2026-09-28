@@ -91,6 +91,7 @@
         "test_evaluation_harness_execution",
         "test_evaluation_harness_evidence",
         "test_evaluation_harness_review",
+        "test_evaluation_harness_analysis",
         "test_skill_evaluation",
         "test_skill_evaluation_helpers",
         "test_system_evaluation_protocol"
@@ -397,6 +398,7 @@
     ],
     "tests/system_evaluation_fixtures.py": [
       "test_evaluation_contracts",
+      "test_evaluation_harness_analysis",
       "test_evaluation_harness_evidence",
       "test_evaluation_harness_plan",
       "test_evaluation_harness_execution",
@@ -416,9 +418,16 @@
       "test_evaluation_harness_preflight"
     ],
     "tests/harness_execution_fixtures.py": [
+      "test_evaluation_harness_analysis",
       "test_evaluation_harness_evidence",
       "test_evaluation_harness_execution",
       "test_evaluation_harness_review"
+    ],
+    "tests/harness_analysis_data.py": [
+      "test_evaluation_harness_analysis"
+    ],
+    "tests/harness_analysis_fixtures.py": [
+      "test_evaluation_harness_analysis"
     ],
     "tests/skill_runtime_fixtures.py": [
       "test_skill_runtime_extension"

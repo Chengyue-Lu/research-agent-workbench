@@ -9,3 +9,6 @@
 *.txt text eol=lf
 *.yaml text eol=lf
 *.yml text eol=lf
+
+# Preserve the byte-pinned H4c evidence across Windows and Unix checkouts.
+docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/** text eol=lf

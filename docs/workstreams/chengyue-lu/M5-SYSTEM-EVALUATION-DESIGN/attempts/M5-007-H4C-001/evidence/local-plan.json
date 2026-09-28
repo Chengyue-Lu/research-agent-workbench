@@ -1,0 +1,11 @@
+{
+  "name": "local-plan",
+  "argv": [
+    ".venv\\Scripts\\python.exe",
+    "<external-assessment>\\local_plan.py"
+  ],
+  "started_at": "2026-09-26T23:18:40.978473+00:00",
+  "elapsed_seconds": 6.632318700008909,
+  "exit_code": 0,
+  "log": "local-plan.log"
+}

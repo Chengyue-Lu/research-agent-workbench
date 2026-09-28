@@ -13,6 +13,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from research_workbench.adapters.models import ProviderError, ProviderErrorCategory
+from research_workbench.evaluation import harness_evidence
 from research_workbench.evaluation.harness_evidence import (
     compile_harness_evidence, validate_harness_evidence, validator_identity, _targets, _observation, _comparison,
 )
@@ -245,13 +246,15 @@ class HarnessEvidenceReplayTests(HarnessEvidenceFixture):
         # These direct replay dependencies shape the reconstructed request,
         # including the dataclass fields serialized by baseline._plain.
         original_read_bytes = Path.read_bytes
+        # Identity reads the imported package in both source and wheel installs.
+        package = Path(harness_evidence.__file__).resolve().parent.parent
         changes = (
             ("execution/baseline.py", b"sort_keys=True", b"sort_keys=False"),
             ("adapters/models/port.py", b"strict: bool = True", b"strict: bool = False"),
         )
         for relative, before, after in changes:
             with self.subTest(source=relative):
-                source = ROOT / "src" / "research_workbench" / relative
+                source = package / relative
                 key = "research_workbench/" + relative
                 old_identity = self.good_evidence["validator"]
                 original = original_read_bytes(source)

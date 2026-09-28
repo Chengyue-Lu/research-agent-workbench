@@ -1,0 +1,18 @@
+import json,re,subprocess
+from pathlib import Path
+root=Path.cwd();work=root/'work/M5-007/A-20260927-H4C-001'
+paths=['src/research_workbench/evaluation/harness_analysis.py','src/research_workbench/validation/document_kinds.py','src/research_workbench/validation/documents.py']
+coverage={}
+for name in ['focused-coverage.json','registration-coverage.json']:
+ for p,v in json.loads((work/name).read_bytes())['files'].items():coverage[p.replace('\\','/')]=v
+rows=[]
+for p in paths:
+ raw=subprocess.check_output(['git','diff','--unified=0','97d3b3d3141419b34ad47e0f42d9f01d0dfbd535...HEAD','--',p],text=True)
+ changed=set()
+ for a,b in re.findall(r'^@@ .*?\+(\d+)(?:,(\d+))? @@',raw,re.M):changed.update(range(int(a),int(a)+(int(b) if b else 1)))
+ d=coverage[p]; executable=set(d['executed_lines'])|set(d['missing_lines']); selected=changed&executable
+ arcs=[a for a in d.get('executed_branches',[])+d.get('missing_branches',[]) if a[0] in changed]
+ missing=selected&set(d['missing_lines']); missing_arcs=[a for a in d.get('missing_branches',[]) if a in arcs]
+ rows.append({'path':p,'changed_executable_lines':len(selected),'uncovered_lines':sorted(missing),'changed_branches':len(arcs),'uncovered_branches':missing_arcs,'summary':d['summary']})
+ print(rows[-1]);assert not missing and not missing_arcs
+(work/'changed-coverage-results.json').write_text(json.dumps({'implementation_head':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'modules':rows,'scope':'changed implementation source only; no global coverage claim'},indent=2)+'\n',encoding='utf-8')

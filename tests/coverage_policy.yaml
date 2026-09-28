@@ -1,5 +1,5 @@
 policy_id: rwb-coverage-policy
-version: 2.3.2
+version: 2.3.3
 source_root: src/research_workbench
 
 suites:
@@ -54,6 +54,7 @@ suites:
       - test_evaluation_harness_execution
       - test_evaluation_harness_evidence
       - test_evaluation_harness_review
+      - test_evaluation_harness_analysis
       - test_m5_trace_export
       - test_governance_helper_branches
       - test_integrity
@@ -175,6 +176,7 @@ critical_modules:
   - src/research_workbench/evaluation/harness_runtime.py
   - src/research_workbench/evaluation/harness_evidence.py
   - src/research_workbench/evaluation/harness_review.py
+  - src/research_workbench/evaluation/harness_analysis.py
   - .github/scripts/selection_witness.py
   - .github/scripts/ci_dependencies.py
   - .github/scripts/plan_ci.py
@@ -768,6 +770,18 @@ negative_acceptance:
       - test_evaluation_harness_review.HarnessReviewTests.test_partial_duplicate_unknown_and_unscorable_reviews_are_rejected
       - test_evaluation_harness_review.HarnessReviewTests.test_score_or_mapping_replacement_cannot_reuse_freeze_or_reveal
       - test_evaluation_harness_review.HarnessReviewTests.test_authority_is_required_at_every_boundary_and_cannot_mutate_results
+
+  - surface: m5-harness-measurement-and-paired-input
+    modules:
+      - src/research_workbench/evaluation/harness_analysis.py
+    positive_tests:
+      - test_evaluation_harness_analysis.HarnessAnalysisTests.test_complete_metrics_and_pairing_reconstruct_without_authority
+      - test_evaluation_harness_analysis.HarnessAnalysisIntegrationTests.test_real_four_arm_chain_and_cold_analysis_replay
+    negative_tests:
+      - test_evaluation_harness_analysis.HarnessAnalysisTests.test_run_case_replicate_attempt_slice_and_phase_substitution_are_rejected
+      - test_evaluation_harness_analysis.HarnessAnalysisTests.test_all_failed_attempts_and_human_cost_components_are_required
+      - test_evaluation_harness_analysis.HarnessAnalysisTests.test_external_measurement_authority_rejects_resigned_arithmetic_forgery
+      - test_evaluation_harness_analysis.HarnessAnalysisTests.test_analysis_requires_current_timed_preregistered_comparisons
 
 justified_exclusions:
   - path: src/research_workbench/adapters/models/session.py

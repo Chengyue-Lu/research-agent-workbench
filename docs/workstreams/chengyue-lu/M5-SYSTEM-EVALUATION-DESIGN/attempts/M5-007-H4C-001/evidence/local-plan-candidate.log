@@ -1,0 +1,1 @@
+{'behavioral_scope': 'full', 'coverage_scope': 'impact+repository', 'coverage_obligations': ['impact', 'repository'], 'package_smoke': True, 'repository_smoke': True, 'blocked_reasons': []}

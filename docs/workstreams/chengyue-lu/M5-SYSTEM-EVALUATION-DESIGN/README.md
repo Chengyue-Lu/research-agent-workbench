@@ -4,7 +4,9 @@
 
 风险：R2
 
-M5-006 已由 PR71 接受；M6-008 实现已由 PR75 合入，M11-007 / Gate B 已按 PR81/82 收口。PR84 已接受 M6-008 DONE，PR86 已接受 [H1/H2](M5-007_H1_H2_PACKET.md) 非执行 plan/preflight 与 M5-007 IN_PROGRESS；PR89 在该基线上提供 [H3 四臂 synthetic execution/replay](M5-007_H3_PACKET.md)，等待独立 R2 review。H4/H5 待后续实施。M5-008 为 BLOCKED，作为 M5-004 之前的独立 live 工程验收关口。
+M5-006 已由 PR71 接受；M6-008 实现已由 PR75 合入，M11-007 / Gate B 已按 PR81/82 收口。PR84 已接受 M6-008 DONE，PR86 已接受 [H1/H2](M5-007_H1_H2_PACKET.md) 非执行 plan/preflight 与 M5-007 IN_PROGRESS；PR89 已接受 [H3 四臂 synthetic execution/replay](M5-007_H3_PACKET.md)，PR90 已接受 H4a actual evidence，PR96 已使用单次维护者审核例外合入 H4b synthetic 盲审/冻结/揭盲实现。当前候选实现 [H4c measurement/analysis](M5-007_H4C_PACKET.md)，H5 为后续集成收口。M5-008 为 BLOCKED，作为 M5-004 之前的独立 live 工程验收关口。
+
+H4c 当前 implementation candidate 见 [Attempt 与验证](attempts/M5-007-H4C-001/README.md)，尚待 CI/R2 接受。
 
 实施导航：[M5-007 进入计划](M5-007_ENTRY_PLAN.md)、[M5-008 Live Pilot Gate](M5-008_LIVE_PILOT_GATE.md)、[M5-006 历史进入计划](ENTRY_PLAN.md)、[Protocol / validator contract](../../../implementation/SYSTEM_EVALUATION_PROTOCOL.md)、
 [工作记录与验证](WORKLOG.md)、[Risk Ledger](RISK_LEDGER.md)。
@@ -406,8 +408,8 @@ pilot/secondary evidence 不得作为 pruning 的唯一证据。该 Gate 明确�
 - 宣称 RWB 已有 system-level net benefit。
 
 H1/H2 与 [H3 四臂 synthetic execution/replay](M5-007_H3_PACKET.md) 已由 PR86/89 接受。
-H4a 已由 PR90 接受并合入，H4b 已在独立分支重基线为待审候选，见 [H4b Attempt](attempts/M5-007-H4B-001/README.md)。
-Task 保持 IN_PROGRESS；H4c 分析输入与 H5 集成收口为后续切片。M5-001/002 继续受 Human boundary 阻断，M5-004/005 按各自
+H4a 已由 PR90 接受并合入，H4b 已由 PR96 合入且实际 push CI SUCCESS，见 [H4c 进入记录](attempts/M5-007-H4C-ENTRY-001/README.md)。
+Task 保持 IN_PROGRESS；[H4c measurement/analysis 实施包](M5-007_H4C_PACKET.md) 已准备，H5 为后续切片。M5-001/002 继续受 Human boundary 阻断，M5-004/005 按各自
 真实 execution/Human dependencies 保持 BLOCKED。Issue #55 继续跟踪 M5-007 内部重算与分析输入闭包。
 
 ## 9. 原始设计阶段的历史本地验证

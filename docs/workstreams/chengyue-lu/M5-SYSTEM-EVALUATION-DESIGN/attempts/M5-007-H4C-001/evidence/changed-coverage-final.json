@@ -1,0 +1,11 @@
+{
+  "name": "changed-coverage-final",
+  "argv": [
+    ".venv\\Scripts\\python.exe",
+    "<external-assessment>\\check_scoped_coverage.py"
+  ],
+  "started_at": "2026-09-26T23:29:13.061982+00:00",
+  "elapsed_seconds": 0.18829700000060257,
+  "exit_code": 0,
+  "log": "changed-coverage-final.log"
+}

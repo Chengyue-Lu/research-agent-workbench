@@ -1,0 +1,100 @@
+schema_version: 0.1.0
+trace_id: TRACE-M5-007-H4C-001
+task_id: M5-007
+task_revision: 1
+attempt_id: M5-007-H4C-001
+archive_root: trace
+baseline: rwb-agent-trace-v0.1
+owner_actor_id: codex-m5-h4c
+owner: Chengyue-Lu
+attempt_status: incomplete
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: e89a27664560f77d7f90e10ca7fbb121201118843c66440e7164b9feb853206d
+actors_ref:
+  path: ACTORS.yaml
+  sha256: c89df763409115b31732e92e19df253ba0b71d18f91e8fb6d67298d6871542a9
+read_allowlist:
+- .github/**
+- AGENTS.md
+- README.md
+- docs/**
+- schemas/**
+- src/**
+- tests/**
+- work/**
+write_scope:
+- docs/STATUS.md
+- docs/implementation/**
+- docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/**
+- schemas/v0.1.0/evaluation-harness-*.schema.json
+- src/research_workbench/evaluation/harness_analysis.py
+- src/research_workbench/validation/**
+- tests/**
+- work/**
+tool_allowlist:
+- apply_patch
+- shell
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 80874d3b068b8a293c5972c6da2e8fdb8ff50da9b3ae95d361c988f6408eb490
+  event_count: 27
+tool_event_refs:
+- path: tool-events/delayed-h4c-0001-succeeded.json
+  sha256: 28a99e9703fad473b7fd4fcd0dbfe14758801c0ead4ea523ee94d7bf034882a7
+- path: tool-events/delayed-h4c-0002-failed.json
+  sha256: 6fc1b36d36fc4b77d05a876cff0dd5dd7c96128c820b478e442f1c425aca933c
+- path: tool-events/delayed-h4c-0003-succeeded.json
+  sha256: edc0291fc8f4bfe915d669734d003d56285ec7e1213627e46123e2c02d81fa8a
+- path: tool-events/delayed-h4c-0004-failed.json
+  sha256: 225aa402e3cda5e16b7be3dcc7bcf0cd1b6338a0d4f4a9fda75df836fb532248
+- path: tool-events/delayed-h4c-0005-succeeded.json
+  sha256: 644544325b21659a8dbe9ae48a40e9c79519d4af30ecd97196f94bdb02065666
+- path: tool-events/delayed-h4c-0006-succeeded.json
+  sha256: 6995bcb8d15a8a9f55cacd12de9751277a4cc2607717007f5b99c02ca1a228bf
+- path: tool-events/delayed-h4c-0007-succeeded.json
+  sha256: ebcf3bb3728363022e942261859668d67f18521ca3a10ac12cdb0da4009456f7
+- path: tool-events/delayed-h4c-0008-succeeded.json
+  sha256: 6785548d6a585be4d0f30dd0c4f4caff37565129bc9a19ec78ec93fd63848898
+- path: tool-events/delayed-h4c-0009-succeeded.json
+  sha256: 3bacdfe41e9e7d9e9ea0f4872260a9e54eac2a81f8793aa7ea29c6f7810d9568
+- path: tool-events/delayed-h4c-0010-succeeded.json
+  sha256: b335f34df4dd709b69f2b677d138db0f0089f567e8e31da4a20d5ef93f712ef4
+- path: tool-events/delayed-h4c-0011-succeeded.json
+  sha256: 42cf0833070a763fa822b952e2cb1232a4f63500974b25ea8b235373b2be57f4
+- path: tool-events/delayed-h4c-0012-succeeded.json
+  sha256: d99dae13bf414500257a8473a883972172f72eafdf5dbae5461807b2eff9ecec
+- path: tool-events/delayed-h4c-0013-succeeded.json
+  sha256: af07c25df2c47215097a14c1453afd8ece7e74d0545d34b45f150687feef9ff3
+- path: tool-events/delayed-h4c-0014-succeeded.json
+  sha256: 6b0b4ab33c97698249840792a10833ef4e69189e1d58ecdc966564662a8f6f73
+- path: tool-events/delayed-h4c-0015-succeeded.json
+  sha256: 2f70a5466eda3f463bbf7d1036f23085447195631cffe80fe4d32cc6f79046aa
+- path: tool-events/delayed-h4c-0016-succeeded.json
+  sha256: cc4fca045b0c8a7919ef9376eb254c5ff842a7940d5db55a249442dceb4ede9e
+- path: tool-events/delayed-h4c-0017-succeeded.json
+  sha256: 4d2da51da43b0a07a36ff4482df4c634ad2b672b207b800c469b69eaa4bb949b
+- path: tool-events/delayed-h4c-0018-failed.json
+  sha256: 8f16afaddc9b5478820b7788a83d3621619919b70a3b2367b19432caf98aedaf
+- path: tool-events/delayed-h4c-0019-succeeded.json
+  sha256: f09b90721ddc4589c9760593965d8340e7521092a805d60ca0ddb625fd5bf1ce
+- path: tool-events/delayed-h4c-0020-succeeded.json
+  sha256: c7e6f89285685440ab15a7194ff76fd60848473910d8adec8f453c1370516532
+- path: tool-events/delayed-h4c-0021-succeeded.json
+  sha256: fe997f970df0ef43fa3c4052867764bb5c3e3ef3675fa0a2846b76b7133049fe
+- path: tool-events/delayed-h4c-0022-succeeded.json
+  sha256: 226e42a43bb4a4ff4f80e144d25e9d50b024776f94f9ca15b50d655d66664532
+- path: tool-events/delayed-h4c-0023-succeeded.json
+  sha256: 88efefa282dc9bd17a562cc8c821989a6b212477ba1874d4f62394daf2d06ba8
+handoff_refs: []
+decision_refs: []
+output_refs: []
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: messages

@@ -1,0 +1,15 @@
+{
+  "name": "review-regression",
+  "argv": [
+    ".venv\\Scripts\\python.exe",
+    "-m",
+    "unittest",
+    "tests.test_evaluation_harness_review.HarnessReviewTests",
+    "tests.test_m5_trace_export",
+    "-v"
+  ],
+  "started_at": "2026-09-26T23:17:33.808134+00:00",
+  "elapsed_seconds": 7.263161000009859,
+  "exit_code": 0,
+  "log": "review-regression.log"
+}

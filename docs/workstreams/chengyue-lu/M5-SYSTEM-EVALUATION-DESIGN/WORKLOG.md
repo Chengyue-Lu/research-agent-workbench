@@ -268,3 +268,43 @@ H4b/H4c/H5 仍待后续实现；该分支按普通 R2 implementation PR 请求�
 本地专项 13 PASS、141/141 statements、12/12 branches；四臂新进程禁执行回放通过。
 完整 scoped checks、边界与保留 capture gaps 见 [H4b Attempt](attempts/M5-007-H4B-001/README.md)。
 H4c/H5 为后续节点，未运行真实 Provider，未给出 Human/Task/analysis 接受或 merge。
+
+## H4c 进入准备（2026-09-27）
+
+核对 PR90/96 MERGED 与 exact `develop@97d3b3d`；实际 push CI36256347167 completed/SUCCESS。
+PR96 单次维护者审核例外已使用完毕，不记为 cross-owner APPROVED。修正上述实施后的当前入口
+快照，历史 Attempts 保留。复用空闲 checkout，从 exact develop 创建 `feature/m5-007-harness-analysis`。
+
+[H4c 实施包](M5-007_H4C_PACKET.md) 固定 measurement association→配对 analysis input 的交付顺序、
+方法/观察/冻结 review 来源、缺测量状态、analysis-input actual/overlap/pairwise 重验与负例。
+源码/Schema 未改；独立 CI fixture 候选1b97af2不混入。文档10 PASS、diff check PASS；
+基线/接受与输入 pins 见 [进入记录](attempts/M5-007-H4C-ENTRY-001/README.md)。
+本轮只完成准备；实施开始时固定新的 Task Attempt 和 exact candidate 输入。M5-007 IN_PROGRESS，
+H5 与 live/Human/release Gates 保持各自后继验收。
+
+## H4c implementation candidate (2026-09-27)
+
+Implemented four versioned records and metric/analysis compile/validate APIs under the accepted H4c packet.
+Retained all 13 statuses, actual failed/retry/unstarted scope, external method/observation trust and complete paired inputs.
+Candidate verification and capture-gap disclosure: [H4c Attempt](attempts/M5-007-H4C-001/README.md).
+M5-007 remains IN_PROGRESS; H4c review precedes H5 overall closeout. No previous exception extends to this PR.
+
+## PR104 component-CI rebase (2026-09-28)
+
+Rebased the four H4c commits from `97d3b3d` onto accepted PR105 `24e1a3e` without conflicts;
+range-diff retains their original patches and the H4c source, tests and Attempts retain their bytes.
+Registered H4c in the evaluation component and its fixture consumers in `tests/ci_components.json`.
+Local adaptation checks: 15 component-selector tests PASS; all five relevant source/fixture inputs
+select the H4c test module. This verification does not repeat the historical full or coverage runs.
+The updated PR awaits its own component CI and governance results, then R2 review; M5-007 remains IN_PROGRESS.
+
+## PR104 installed-source mutation test repair (2026-09-28)
+
+Component run36333156402 on `20fc5be` retained 318 parent tests: 317 PASS, one evidence test
+failed in two source-mutation subtests; H4c24 and installed smoke8 passed. The fixed CI result
+correctly blocked the candidate. The test patched checkout src, while identity read the installed wheel.
+Resolve its mutation paths from the actual imported package, preserving both mutations, original hash
+equality, changed validator identity and saved-evidence rejection. Production and CI code are unchanged.
+An isolated fresh wheel environment with the actual component executor reproduced both failures
+(66.663 seconds) and passed the repaired case (64.323 seconds). Evidence remains under its original run;
+the repair candidate awaits its own component results and R2 review, with no merge or Task completion.

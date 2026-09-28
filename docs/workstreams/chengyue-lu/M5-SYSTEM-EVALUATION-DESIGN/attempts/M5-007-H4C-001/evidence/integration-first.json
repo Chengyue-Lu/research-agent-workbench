@@ -1,0 +1,14 @@
+{
+  "name": "integration-first",
+  "argv": [
+    ".venv\\Scripts\\python.exe",
+    "-m",
+    "unittest",
+    "tests.test_evaluation_harness_analysis.HarnessAnalysisIntegrationTests",
+    "-v"
+  ],
+  "started_at": "2026-09-26T23:06:18.329890+00:00",
+  "elapsed_seconds": 68.19704030000139,
+  "exit_code": 1,
+  "log": "integration-first.log"
+}

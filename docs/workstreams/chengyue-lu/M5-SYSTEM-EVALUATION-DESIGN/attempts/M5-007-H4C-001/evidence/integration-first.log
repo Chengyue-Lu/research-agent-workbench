@@ -1,0 +1,30 @@
+test_real_four_arm_chain_and_cold_analysis_replay (tests.test_evaluation_harness_analysis.HarnessAnalysisIntegrationTests.test_real_four_arm_chain_and_cold_analysis_replay) ... ERROR
+
+======================================================================
+ERROR: test_real_four_arm_chain_and_cold_analysis_replay (tests.test_evaluation_harness_analysis.HarnessAnalysisIntegrationTests.test_real_four_arm_chain_and_cold_analysis_replay)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_evaluation_harness_analysis.py", line 367, in test_real_four_arm_chain_and_cold_analysis_replay
+    with self.assertRaises(EvaluationValidationError): self.compile(measurement_verifier=drift)
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\tests\harness_analysis_fixtures.py", line 51, in build_analysis_chain
+    package, mapping = review.prepare_review_package(fixture.inputs(), context=context,
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\harness_review.py", line 157, in prepare_review_package
+    package, entries = _materialize(inputs, evidence, policy, aliases)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\harness_review.py", line 130, in _materialize
+    projection, sources = _project(inputs, row)
+                          ^^^^^^^^^^^^^^^^^^^^^
+  File "<workspace>\src\research_workbench\evaluation\harness_review.py", line 117, in _project
+    inputs.validate(PREFIX + "review_artifact", document)
+  File "<workspace>\src\research_workbench\evaluation\pins.py", line 106, in validate
+    require(
+  File "<workspace>\src\research_workbench\evaluation\pins.py", line 25, in require
+    raise EvaluationValidationError(message)
+research_workbench.evaluation.pins.EvaluationValidationError: evaluation_harness_review_artifact schema: $.transport_metadata: 'skill' is a required property
+
+----------------------------------------------------------------------
+Ran 1 test in 67.860s
+
+FAILED (errors=1)
