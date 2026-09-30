@@ -140,18 +140,21 @@ class ReleasePublicTests(unittest.TestCase):
         self.assertEqual({'.github/scripts/release_install.py',
                           '.github/scripts/portable_package_smoke.py'}, installation)
 
-    def test_first_main_workflow_keeps_candidate_as_data_and_has_no_required_gate_name(self):
+    def test_first_main_workflow_checks_every_main_pr_and_keeps_candidate_as_data(self):
         workflow = yaml.load((ROOT / '.github/workflows/release.yml').read_text(encoding='utf-8'),
                              Loader=yaml.BaseLoader)
         self.assertEqual(['main'], workflow['on']['pull_request']['branches'])
         self.assertNotIn('pull_request_target', workflow['on'])
         job = workflow['jobs']['preflight']
-        self.assertEqual('release preflight (diagnostic, ${{ matrix.python-version }})', job['name'])
+        self.assertEqual('release preflight (${{ matrix.python-version }})', job['name'])
+        self.assertNotIn('if', job)
         self.assertEqual(['3.11', '3.13'], job['strategy']['matrix']['python-version'])
         checkout = next(step for step in job['steps'] if step.get('uses', '').startswith('actions/checkout@'))
         self.assertEqual('${{ vars.RWB_RELEASE_SOURCE_SHA }}', checkout['with']['ref'])
         self.assertEqual('false', checkout['with']['persist-credentials'])
         runs = '\n'.join(step['run'] for step in job['steps'] if 'run' in step)
+        self.assertIn('[[ "$HEAD_REF" =~ ^release/v', runs)
+        self.assertIn('[[ "$HEAD_REPOSITORY" == "$REPOSITORY" ]]', runs)
         self.assertIn('refs/pull/${PR_NUMBER}/head:refs/remotes/origin/rwb-release-candidate', runs)
         self.assertIn('release_install.py', runs)
         self.assertNotIn('checkout@', runs)

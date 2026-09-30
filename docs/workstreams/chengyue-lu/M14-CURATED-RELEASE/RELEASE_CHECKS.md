@@ -40,7 +40,7 @@ checks out the pinned develop source, fetches the candidate **as Git data**, run
 accepted preflight, then checks public links, internal paths and build inputs without
 executing candidate code. Both receipts have `merge_eligible: false`.
 
-This workflow is named `release preflight (diagnostic)` and is not a required status
+This workflow was named `release preflight (diagnostic)` in PR #102 and is not a required status
 check. The first candidate may supply the workflow file in its PR merge ref; therefore
 its own result cannot authenticate its bytes or grant release authority. A reviewer
 must independently run source-owned preflight from a clean accepted develop checkout,
@@ -55,7 +55,7 @@ release merging.
 
 ## Candidate installed-package diagnostic
 
-The next develop-side slice appends surface policy `1.4.0` and extends that diagnostic
+PR [#108](https://github.com/Chengyue-Lu/research-agent-workbench/pull/108) appended surface policy `1.4.0` and extended that diagnostic
 workflow to Python 3.11 and 3.13. Each matrix run invokes source-owned `release_install.py`,
 which performs live source-CI preflight and candidate public checks, verifies its own and
 `portable_package_smoke.py` bytes against the accepted
@@ -72,6 +72,30 @@ receipt embeds the preflight/public/install observations and remains `merge_elig
 neither this diagnostic nor PR CI replaces an
 independent exact-source run on the actual first-main candidate.
 
+## Cutover preparation after PR #108
+
+PR #108 was independently approved and squash-merged as `develop@3189049` with the
+same tree as its reviewed head. Its protected push [CI 36662594652](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36662594652)
+passed, and a clean exact-source live `attest` of that run passed. These are accepted
+source facts, not a release source freeze or a first-main observation.
+
+The next R2 preparation changes the matrix job name to `release preflight (3.11)` /
+`release preflight (3.13)` and removes the job-level branch `if`. Every main-bound PR
+therefore reaches the first-step same-repository/version/pin guard; a non-release head
+fails instead of producing a skipped check that a ruleset could treat as satisfied.
+The release topology remains dormant, and main's current required checks are unchanged.
+
+The source-owned `release_ruleset_cutover.py` prepares a **read-only** single-ruleset
+payload for the later main hard-gate swap. It requires a clean accepted develop source,
+fresh protected source/main refs, live source CI before and after four active hard/review
+ruleset and effective-rule readbacks, the exact GitHub Actions App check identities, and
+the existing main reviewer/merge rules. It writes the old and proposed payloads with
+hashes and `applied: false`; it never updates GitHub. A future writer must independently
+reobserve the prestate immediately before the one main-hard-ruleset update and stop on
+any drift. The payload and its green tests do not themselves activate release eligibility.
+The current readback and non-authorizing payload are retained in the
+[cutover preparation Attempt](../../../../work/M14-005/A-20260930-001/INDEX.yaml).
+
 ## Following slices
 
 The source API repair was accepted in PR #97. Its real protected develop
@@ -79,12 +103,15 @@ The source API repair was accepted in PR #97. Its real protected develop
 and clean exact-source online `attest` passed; the [historical observation pins](SOURCE_CI_ACCEPTANCE.json)
 are audit evidence only. The remaining slices are:
 
-1. Obtain R2 review of the dual-Python candidate install diagnostic and its append-only policy version.
-   Hosted first-main behavior still needs a real observed run.
-2. Only after this evidence is accepted, prepare and review atomic topology activation and
-   direct-develop-path closure.
-3. Freeze the release source/current main parent after readiness, generate the real release candidate,
-   and obtain the separate final release PR/tag/artifact decision.
+1. R2-review the cutover preparation. No remote ruleset or governance activation changes in this slice.
+2. After acceptance, freeze the exact develop source/current main parent for a real candidate,
+   independently verify its source-owned workflow bytes and observe its hosted main-PR checks
+   while the old required checks continue to block merging. Rebuild on any source/parent drift.
+3. With R2 review and fresh readiness evidence, activate the governed release topology and
+   replace the main hard ruleset's old required contexts in one update; re-read effective
+   rules and prove direct `develop -> main` remains blocked. A failed or ambiguous update
+   requires fail-closed reconciliation before any release merge.
+4. Obtain separate final release-PR merge approval, then close tag/artifact/hash evidence.
 
 This implementation slice creates no release branch or tag and changes no remote protection settings.
 The small API repair's review waiver does not apply to this subsequent R2 change.

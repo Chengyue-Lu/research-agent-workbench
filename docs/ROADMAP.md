@@ -403,9 +403,9 @@ M0-007 MIT 与 GitHub remote protection 已落实。[具名 v0.1.0 准备决定�
 闭合外部启动条件；当前候选将 M14-005 BLOCKED → READY。接续顺序为：
 
 1. **Task activation / R2 integration**：在同一候选审查 READY 状态、具名决定与 source-CI 实现。
-2. **M14-005 implementation**：真实 protected source-CI attestation 与诊断型 release-only preflight/公开面检查已在 develop 验收；继续完成双 Python 候选安装检查与真实 hosted first-main 观察；
-   经 R2 验收原子启用 `release/v* -> main` 并禁用 direct `develop -> main`；随后冻结 exact develop source/current
-   main parent，验证 deterministic projection / prospective-tree equality，再闭合首个 curated release 的 R2 PR、
+2. **M14-005 implementation**：真实 protected source-CI attestation、诊断型 release-only preflight/公开面检查与双 Python 候选安装诊断已在 develop 验收；当前准备 R2 cutover 方案。随后冻结 exact develop source/current main parent，形成并独立校核真实首发候选、观察 hosted first-main 检查；
+   经 R2 验收且 fresh readback 后原子启用 `release/v* -> main` 并禁用 direct `develop -> main`，
+   验证 deterministic projection / prospective-tree equality，再闭合首个 curated release 的 R2 PR、
    merge commit 与 tag/artifact/hash。当前 [source-CI slice](workstreams/chengyue-lu/M14-CURATED-RELEASE/SOURCE_CI.md)
    的 producer/observer 和真实 protected push 已接受；[release checks](workstreams/chengyue-lu/M14-CURATED-RELEASE/RELEASE_CHECKS.md)记录后续验收。
    最终 release PR 合并及 tag 由维护者在完整候选验收后另行批准。

@@ -512,6 +512,9 @@
     ".github/scripts/ci_ruleset_migration.py": [
       "test_ci_ruleset_migration"
     ],
+    ".github/scripts/release_ruleset_cutover.py": [
+      "test_release_ruleset_cutover"
+    ],
     ".github/workflows/ci-governance.yml": [
       "test_ci_component_metadata",
       "test_ci_checkpoint"

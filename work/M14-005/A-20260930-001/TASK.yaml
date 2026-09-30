@@ -1,0 +1,42 @@
+schema_version: 0.1.0
+task_id: M14-005
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+agent_profile: bounded-release-cutover-preparation
+required_skills: []
+delegation: false
+baseline: 318904977c0492322e1bffe3e28532bc712e321b
+goal: Prepare a fail-closed, reviewable main ruleset cutover payload and non-skipping release preflight checks.
+authority: The user authorized merging approved PR 108 and continuing the M14-005 line. The named first-release decision authorizes develop-side preparation; final release merge and tag require separate approval.
+read_allowlist:
+- AGENTS.md
+- README.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- .github/**
+- tests/**
+- work/M14-005/**
+- protected develop/main refs, four active rulesets, effective rules and source CI run 36662594652
+write_scope:
+- .gitattributes
+- .github/workflows/release.yml
+- .github/scripts/release_ruleset_cutover.py
+- tests/test_release_public.py
+- tests/test_release_ruleset_cutover.py
+- tests/coverage_policy.yaml
+- tests/ci_components.json
+- docs/STATUS.md
+- docs/ROADMAP.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- work/M14-005/A-20260930-001/**
+- feature branch and review PR to develop
+stop_conditions:
+- Keep the repository release topology dormant and all remote rulesets unchanged.
+- Do not create a release branch or tag, merge into main, or publish a first release.
+- A ruleset payload is evidence for review, never an authorization to apply it.
+- Require independent R2 review and exact-head CI before integration.

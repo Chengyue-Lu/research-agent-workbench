@@ -5,12 +5,13 @@
 [trusted release preflight](RELEASE_CHECKS.md) 在 accepted source checkout 中组合在线 source-CI 与独立
 pins、重复投影、候选 parent/tree 检查，结束前重查 refs 和 CI attempt。它只形成审计证据；
 诊断型 release-only workflow 的 first-main bootstrap、append-only policy include、candidate 公开面检查
-已由 PR #102 接受；候选双 Python 安装检查正在独立 R2 候选中验证，atomic cutover 仍待验收。候选 workflow 的绿色
+已由 PR #102 接受；候选双 Python 安装检查已由 PR #108 独立 R2 验收并合入，atomic cutover 仍待验收。候选 workflow 的绿色
 check 不自证其代码来源，真实 first-main hosted 行为还须独立观察。
 
 | ID | 类型 | 风险 | 控制 | 当前状态 |
 |---|---|---|---|---|
 | M14-GOV-001 | fact | 仅放行 `release/*` 分支名会绕过 source、surface 与 manifest 证明，或迁移期形成两条可绕行发布路径。 | M14-001 已实现 strict dormant same-repo/source/parent trust seam，且完整候选仍固定 ERROR；M14-002 exporter/checker 完成后 release path仍 BLOCK；M14-005 在全部 readiness Gate 闭合后才原子启用 release/v* 并禁用 direct develop→main。 | partially controlled；M14-001/002 已接受并阻断 branch-only/data-only bypass，真实 protected source-CI 在线验收已通过；release-only checks 与 atomic topology cutover 仍待 M14-005 实现 |
+| M14-CUTOVER-001 | fact | main 的旧 required contexts 与候选 release workflow 不匹配；若跳过非 release head 的矩阵 job，GitHub 可能将 skipped required check 视为成功，或切换载荷意外降低保护。 | 候选矩阵 job 对所有 main PR 运行，首步拒绝非同仓库 canonical release head/缺失独立 pins；只读 preparer 验四层 ruleset、effective rules、保护 flag、精确 refs 与前后两次 source CI，生成仅替换 main hard required contexts 的单次更新载荷和回滚快照；实际更新另经 R2 验收与 fresh prestate readback。 | 本轮为 cutover preparation 候选；main 远端仍要求旧 checks，dormant topology 未改变，真实 hosted first-main 与实际 ruleset 切换待验收 |
 | M14-SOURCE-001 | fact | 从 working tree 复制会吸收 dirty/untracked 文件或 Windows CRLF 转换，generated output 又可能脱离 provenance。 | M14-002 直接读取 frozen commit Git blobs；显式纳入 `.gitattributes`；每个输出分类 source/generated 并 pin blob/mode 或 generator/inputs；两次完整 tree 逐字节一致。 | controlled by M14-002 deterministic positive/negative fixtures；release authority remains dormant |
 | M14-MANIFEST-001 | fact | 攻击者同步改文件和 manifest hash 后伪造一致性。 | checker 接受外部 expected source SHA 与 current-main parent SHA，重读 source commit/policy、重算 prospective merge tree 并比较 Git blob bytes，不能只信 manifest。 | controlled by M14-002 deterministic positive/negative fixtures；release authority remains dormant |
 | M14-POLICY-001 | fact | allowlist 的 unknown/overlap/path collision 或同版本漂移改变公开面而未被识别。 | strict append-only policy Schema；拒绝 unknown、空/重复/重叠/不存在 include、file/tree ambiguity、case-fold/Unicode/Windows 路径冲突。 | controlled by M14-002 deterministic positive/negative fixtures；release authority remains dormant |

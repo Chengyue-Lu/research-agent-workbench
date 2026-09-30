@@ -5,7 +5,7 @@ on:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
 
-# This is diagnostic until the separately reviewed M14-005 topology/ruleset cutover.
+# This remains non-authorizing until the separately reviewed M14-005 cutover.
 # The first main candidate supplies this workflow as a source blob; its own green
 # check is not an independent trust anchor. Reviewers must run source-owned
 # preflight from an accepted develop checkout with independently pinned inputs.
@@ -21,8 +21,9 @@ concurrency:
 
 jobs:
   preflight:
-    name: release preflight (diagnostic, ${{ matrix.python-version }})
-    if: startsWith(github.head_ref, 'release/v')
+    # Every main-bound PR must reach the rejecting branch/pin guard. A skipped
+    # job can satisfy a required status check, so never skip non-release heads.
+    name: release preflight (${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

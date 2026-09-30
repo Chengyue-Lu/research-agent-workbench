@@ -1,0 +1,67 @@
+{
+  "merge_eligible": false,
+  "observation": {
+    "check_suite_id": 99288679911,
+    "jobs": {
+      "compatibility (3.11)": {
+        "check_run_id": 109727038003,
+        "job_id": 109727038003
+      },
+      "compatibility (3.13)": {
+        "check_run_id": 109720424697,
+        "job_id": 109720424697
+      },
+      "coverage-quality (3.11)": {
+        "check_run_id": 109720424626,
+        "job_id": 109720424626
+      },
+      "documentation": {
+        "check_run_id": 109720424671,
+        "job_id": 109720424671
+      },
+      "governance": {
+        "check_run_id": 109720374122,
+        "job_id": 109720374122
+      },
+      "package-smoke (3.11)": {
+        "check_run_id": 109720424704,
+        "job_id": 109720424704
+      },
+      "package-smoke (3.13)": {
+        "check_run_id": 109720424656,
+        "job_id": 109720424656
+      },
+      "plan": {
+        "check_run_id": 109720374368,
+        "job_id": 109720374368
+      },
+      "repository_smoke": {
+        "check_run_id": 109720424620,
+        "job_id": 109720424620
+      },
+      "test (3.11)": {
+        "check_run_id": 109727132750,
+        "job_id": 109727132750
+      },
+      "test (3.13)": {
+        "check_run_id": 109727037934,
+        "job_id": 109727037934
+      }
+    },
+    "repository_id": 1332227341,
+    "run_attempt": 1,
+    "workflow_id": 333624988
+  },
+  "source_ci": {
+    "conclusion": "success",
+    "repository": "Chengyue-Lu/research-agent-workbench",
+    "required_checks": [
+      "governance",
+      "test (3.11)",
+      "test (3.13)"
+    ],
+    "run_id": 36662594652,
+    "sha": "318904977c0492322e1bffe3e28532bc712e321b",
+    "workflow": "CI"
+  }
+}
