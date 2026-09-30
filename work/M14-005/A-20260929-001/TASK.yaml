@@ -1,0 +1,43 @@
+schema_version: 0.1.0
+task_id: M14-005
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+agent_profile: bounded-release-install-diagnostic
+required_skills: []
+delegation: false
+baseline: 39cf61e9fc728a2a6c1494b7a641a011dd6bf114
+goal: Add a source-owned, candidate-bound dual-Python installed-package diagnostic to the dormant release-only workflow.
+authority: User requested continuation of the M14-005 line after the accepted PR 102. The named preparation decision authorizes develop-side readiness work, not release publication.
+read_allowlist:
+- AGENTS.md
+- README.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- .github/**
+- tests/**
+- work/M14-005/**
+- protected develop/main refs and source CI run 36446927798
+write_scope:
+- .github/workflows/release.yml
+- .github/scripts/release_install.py
+- .github/scripts/portable_package_smoke.py
+- .github/release-surface.yml
+- tests/test_release_install.py
+- tests/test_release_public.py
+- tests/test_portable_build.py
+- tests/coverage_policy.yaml
+- docs/STATUS.md
+- docs/ROADMAP.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- work/M14-005/A-20260929-001/**
+- feature branch and review PR to develop
+stop_conditions:
+- Keep release/v* to main dormant and direct develop to main unchanged.
+- No release branch, tag, main merge, remote ruleset mutation or first-release publication.
+- Build only the independently rebuilt, manifest-pinned projection after source trust checks.
+- Diagnostic success has no merge authority; separate R2 review before integration.

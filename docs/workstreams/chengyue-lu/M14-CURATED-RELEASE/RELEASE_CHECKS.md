@@ -30,9 +30,9 @@ claim that a real release candidate or integrated-source preflight has been acce
 
 ## Diagnostic first-main workflow preparation
 
-[PR #102](https://github.com/Chengyue-Lu/research-agent-workbench/pull/102) proposes
+[PR #102](https://github.com/Chengyue-Lu/research-agent-workbench/pull/102) accepted
 `.github/workflows/release.yml` and the source-owned
-`.github/scripts/release_public.py` to append-only surface policy `1.3.0`. The workflow
+`.github/scripts/release_public.py` in append-only surface policy `1.3.0`. The workflow
 only responds to a `release/v*` pull request targeting `main` and uses externally
 maintained repository variable pins for the exact source, main parent, policy version,
 source-CI run and independent manifest SHA-256. Unset pins fail before checkout. It
@@ -53,6 +53,25 @@ The first-main hosted trigger and protected ruleset transition remain unproven u
 the separate R2 cutover; the current dormant topology and main hard gates still block
 release merging.
 
+## Candidate installed-package diagnostic
+
+The next develop-side slice appends surface policy `1.4.0` and extends that diagnostic
+workflow to Python 3.11 and 3.13. Each matrix run invokes source-owned `release_install.py`,
+which performs live source-CI preflight and candidate public checks, verifies its own and
+`portable_package_smoke.py` bytes against the accepted
+source, reconstructs the exact candidate projection outside checkout and checks the
+independent manifest pin and complete Git tree before any build backend executes.
+
+From that projection, the portable smoke builds a direct wheel and an sdist-derived
+wheel in temporary directories. It compares packaged Runtime assets and license bytes,
+installs both into fresh virtual environments, and runs isolated and poisoned-path
+no-Skill Quickstart, Registry, Projection and scaffold/reconstruction probes from empty
+project directories. Missing or corrupt packaged resources fail closed. After installation,
+the source-owned wrapper reobserves protected refs and the complete CI attempt. Its
+receipt embeds the preflight/public/install observations and remains `merge_eligible: false`;
+neither this diagnostic nor PR CI replaces an
+independent exact-source run on the actual first-main candidate.
+
 ## Following slices
 
 The source API repair was accepted in PR #97. Its real protected develop
@@ -60,10 +79,10 @@ The source API repair was accepted in PR #97. Its real protected develop
 and clean exact-source online `attest` passed; the [historical observation pins](SOURCE_CI_ACCEPTANCE.json)
 are audit evidence only. The remaining slices are:
 
-1. Obtain R2 review of the diagnostic workflow, first-main trust boundary, candidate public checker
-   and exact append-only policy include. Hosted first-main behavior still needs a real observed run.
-2. Add dual-Python checkout-outside clean-install and no-Skill/Registry/Projection evidence to the
-   release-only workflow. Only then prepare and review atomic topology activation and direct-develop-path closure.
+1. Obtain R2 review of the dual-Python candidate install diagnostic and its append-only policy version.
+   Hosted first-main behavior still needs a real observed run.
+2. Only after this evidence is accepted, prepare and review atomic topology activation and
+   direct-develop-path closure.
 3. Freeze the release source/current main parent after readiness, generate the real release candidate,
    and obtain the separate final release PR/tag/artifact decision.
 

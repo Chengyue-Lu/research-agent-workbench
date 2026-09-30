@@ -21,9 +21,13 @@ concurrency:
 
 jobs:
   preflight:
-    name: release preflight (diagnostic)
+    name: release preflight (diagnostic, ${{ matrix.python-version }})
     if: startsWith(github.head_ref, 'release/v')
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.13']
     env:
       GH_TOKEN: ${{ github.token }}
       REPOSITORY: ${{ github.repository }}
@@ -62,9 +66,9 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ matrix.python-version }}
       - name: Install source-owned checker dependencies
-        run: python -m pip install 'jsonschema>=4.23,<5' 'PyYAML>=6,<7' 'markdown-it-py>=4,<5' 'linkify-it-py>=2,<3'
+        run: python -m pip install 'jsonschema>=4.23,<5' 'PyYAML>=6,<7' 'markdown-it-py>=4,<5' 'linkify-it-py>=2,<3' 'build>=1.2,<2'
       - name: Fetch protected refs and candidate as data
         shell: bash
         run: |
@@ -76,28 +80,20 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test "$(git rev-parse refs/remotes/origin/rwb-release-candidate)" = "$CANDIDATE_SHA"
           test -z "$(git status --porcelain --untracked-files=all)"
-      - name: Rebuild the exact projection and check the candidate
+      - name: Check candidate and both installed distribution routes outside checkout
         shell: bash
         run: |
           set -euo pipefail
-          python .github/scripts/release_preflight.py \
+          python .github/scripts/release_install.py \
             --repository "$REPOSITORY" --source "$SOURCE_SHA" --parent "$PARENT_SHA" \
             --policy-version "$POLICY_VERSION" --release-version "$RELEASE_VERSION" \
             --run-id "$SOURCE_CI_RUN_ID" --candidate "$CANDIDATE_SHA" \
-            --manifest-sha256 "$MANIFEST_SHA256" \
-            --output "$RUNNER_TEMP/release-preflight.json"
-      - name: Check candidate public links and build inputs without executing it
-        shell: bash
-        run: |
-          set -euo pipefail
-          python .github/scripts/release_public.py \
-            --repository "$REPOSITORY" --source "$SOURCE_SHA" --candidate "$CANDIDATE_SHA" \
-            --output "$RUNNER_TEMP/release-public.json"
+            --manifest-sha256 "$MANIFEST_SHA256" --python "$(command -v python)" \
+            --output "$RUNNER_TEMP/release-install.json"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: release-preflight-diagnostic
+          name: release-preflight-diagnostic-${{ matrix.python-version }}
           path: |
-            ${{ runner.temp }}/release-preflight.json
-            ${{ runner.temp }}/release-public.json
+            ${{ runner.temp }}/release-install.json
           if-no-files-found: ignore

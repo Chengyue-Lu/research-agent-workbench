@@ -28,7 +28,7 @@ hash-pinned packaged Runtime catalog、三 root 分离与双 Python checkout 外
 Quickstart 消费获接受的 M1-009 scaffold，串联输入校验、证据定位、Run 检查/重建和报告校验，
 仅证明固定离线工程示例的 bounded 重建。M0-007 已落实 MIT，远端 main/develop 保护已启用并回读留证。
 M14-005 在当前候选中转为 READY：[具名 v0.1.0 准备决定与 fresh protection 回读](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_DECISION.md)
-已闭合外部启动条件。后续须验收真实 protected source-CI，完成 release-only workflow/checks 与 atomic topology
+已闭合外部启动条件。真实 protected source-CI 和诊断型 release-only preflight 已验收；后续须完成双 Python 候选安装检查与 atomic topology
 cutover，冻结 exact develop source/current main parent，验证 deterministic projection / prospective-tree equality。
 最终 release PR 与 tag/artifact/hash closure 仍须独立验收和维护者发布批准。
 
@@ -90,7 +90,7 @@ exact `develop -> main` 执行规则保持不变。
 | Skill 价值 | 现有 Registry 条目不构成已证明的普适研究增益；新任务可优先 no-Skill / direct-tool |
 | Skill new-binding | 生产 projection index 仍为空；M11-005/006 只证明可选 publication/mapping contract，未重新准入任何 legacy Skill，也未证明真实 trial、Provider 可用性或科研净增量 |
 | Phase D evaluation entry | [ADR-0020](decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) 已接受 A1/A2→M6、A3/A4→M11 的双传输；M5-006 Protocol 与 qualification/overlap/overlay/pairwise 校验器已实现。M11-007 [Skill closeout 1.0.0](implementation/SKILL_EXECUTION_CLOSEOUT.md) 已由 PR81 合入，[Gate B](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md) 绑定 exact implementation/replay/CI 和具名接受，状态 SATISFIED。M6-008 baseline envelope/replay closeout 已由 PR75 接受，Task 按[收口证据](workstreams/huangyi/M6-BASELINE-EXECUTION/CLOSEOUT.md) 为 DONE；M5-007 synthetic Harness IN_PROGRESS，[H1/H2](implementation/SYSTEM_EVALUATION_HARNESS.md) 已由 PR86 接受，提供确定性非执行 plan 与独立 preflight；H3 四臂 synthetic execution/cold replay 与整臂 dispatch deadline 修复已由 PR89 接受并合入；[H4](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H4_PACKET.md) H4a actual evidence 已由 PR90 接受并合入；H4b synthetic 盲审/具名冻结/受控揭盲已由 PR96 使用单次维护者审核例外合入，actual develop push CI SUCCESS；[H4c measurement/analysis](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H4C_PACKET.md) 关联/方法/观察记录及独立配对输入已由 PR104 具名 R2 接受并合入 develop@26eca5742ba08d504d273423471fd7aab876a6d5（原始[验证](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/README.md)）；[H5 持久化证明](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H5_PACKET.md) 的 PR106 已 rebase 到该基线并准备 R2 审核，H5 与整体 M5-007 收口仍待接受；真实 M5-004 execution 仍受原 live/case/admission Gate 约束，并新增 [M5-008 Live Pilot Gate](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_LIVE_PILOT_GATE.md) 作为正式评价前的工程验收任务；M5-008 BLOCKED，当前没有该任务的 live 验证或 confirmatory net-benefit evidence |
-| 发布 | M14-001～004、M1-009 与 M0-007 已接受；具名 v0.1.0 准备决定和 fresh protection 回读支持本候选将 M14-005 置为 READY。真实 source-CI、release-only checks、atomic cutover、exact source/parent freeze、projection/tree equality 与首发 tag/artifact closure 仍待验收；最终发布另行批准，见 [M14 路线](ROADMAP.md#7-product--release-closure) |
+| 发布 | M14-001～004、M1-009 与 M0-007 已接受；具名 v0.1.0 准备决定和 fresh protection 回读支持 M14-005 READY。真实 source-CI 与诊断型 release-only preflight 已验收；双 Python 候选安装检查、hosted first-main 观察、atomic cutover、exact source/parent freeze、projection/tree equality 与首发 tag/artifact closure 仍待验收；最终发布另行批准，见 [M14 路线](ROADMAP.md#7-product--release-closure) |
 | 产品体验 | scaffold 支持离线项目入口；可视化、协作 UI 和运维流程仍待完善 |
 
 ## 支持边界

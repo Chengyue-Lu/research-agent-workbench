@@ -1,0 +1,8 @@
+......
+----------------------------------------------------------------------
+Ran 6 tests in 28.247s
+
+OK
+D:\lcy\develop\_worktrees\RWB\m14-pr102-ci\.rwb\m14-pr102-ci-311\Lib\site-packages\coverage\inorout.py:558: CoverageWarning: Module research_workbench was never imported. (module-not-imported); see https://coverage.readthedocs.io/en/7.16.1/messages.html#warning-module-not-imported
+  self.warn(f"Module {pkg} was never imported.", slug="module-not-imported")
+{"result": "PASS", "candidate": "b39fb736faf3c4e7b78d274746c4407502ac48e5", "python": "3.11", "merge_eligible": false}

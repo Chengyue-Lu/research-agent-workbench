@@ -106,8 +106,7 @@ class PortableBuildTests(unittest.TestCase):
         asset.write_bytes(b"synthetic")
         spec["release_assets"] = [{"path": relative, "kind": "skill_asset"}]
         (target / "runtime-resources.json").write_text(json.dumps(spec))
-        with patch.object(smoke, "ROOT", target):
-            smoke.snapshot_sources(self.root / "second")
+        smoke.snapshot_sources(self.root / "second", target)
         self.assertEqual(b"synthetic", (self.root / "second" / relative).read_bytes())
 
     def wheel(self, path, *, corrupt=False):
@@ -184,7 +183,8 @@ class PortableBuildTests(unittest.TestCase):
             output = self.root / "report.json"
             with self.subTest(interpreters=interpreters), patch.object(sys, "argv", ["smoke", "--output", str(output), *interpreters]), patch.object(
                 smoke, "run", side_effect=run
-            ), patch.object(smoke, "snapshot_sources", side_effect=lambda p: p.mkdir()), redirect_stdout(io.StringIO()):
+            ), patch.object(smoke, "snapshot_sources", side_effect=lambda p, source: p.mkdir()), \
+                 patch.dict(smoke.os.environ, {"PYTHONOPTIMIZE": "1"}), redirect_stdout(io.StringIO()):
                 smoke.main()
             report = json.loads(output.read_bytes())
             self.assertTrue(report["runtime_resources_identical"])
@@ -192,7 +192,8 @@ class PortableBuildTests(unittest.TestCase):
             self.assertEqual({(route, isolated) for route in ("direct", "sdist-wheel") for isolated in (True, False)},
                              {(row["route"], row["isolated"]) for row in report["installs"]})
             self.assertEqual(3, sum("build" in args for args, _, _ in calls))
-            self.assertTrue(all("PYTHONHOME" not in env for _, _, env in calls))
+            self.assertTrue(all("PYTHONHOME" not in env and "PYTHONOPTIMIZE" not in env
+                                for _, _, env in calls))
             for args, cwd, env in calls:
                 self.assertFalse(cwd.is_relative_to(ROOT))
                 self.assertEqual("PYTHONPATH" in env, "-c" in args and args[-1] == smoke.PROBE and "-I" not in args)

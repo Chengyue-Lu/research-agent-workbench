@@ -1,0 +1,85 @@
+schema_version: 0.1.0
+trace_id: TRACE-M14-005-A-20260929-001
+task_id: M14-005
+task_revision: 1
+attempt_id: A-20260929-001
+archive_root: A-20260929-001
+baseline: 39cf61e9fc728a2a6c1494b7a641a011dd6bf114
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: stage-completed
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 5ed080ba72e910d1d585847d7b4dac61364e258b957bc6aed1c1c95a57ba62f5
+actors_ref:
+  path: ACTORS.yaml
+  sha256: 1431c643a6dbed1b1efdd640d148a4413715178f4140edd077c6c8dc241e3dfd
+read_allowlist:
+- AGENTS.md
+- README.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- .github/**
+- tests/**
+- work/M14-005/**
+- protected develop/main refs and source CI run 36446927798
+write_scope:
+- .github/workflows/release.yml
+- .github/scripts/release_install.py
+- .github/scripts/portable_package_smoke.py
+- .github/release-surface.yml
+- tests/test_release_install.py
+- tests/test_release_public.py
+- tests/test_portable_build.py
+- tests/coverage_policy.yaml
+- docs/STATUS.md
+- docs/ROADMAP.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- work/M14-005/A-20260929-001/**
+- feature branch and review PR to develop
+tool_allowlist:
+- git
+- gh
+- python
+- apply_patch
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: ae9e4e4410979574d790083a11e25d8926faf506a09f18b31a9989379b5410bb
+  event_count: 10
+tool_event_refs:
+- path: tool-events/focused.log
+  sha256: 7fdce2557791e6eef56098b0519c3b33c2cc801051b2941ba8e4660b1681423d
+- path: tool-events/install-coverage-tests.log
+  sha256: 85a1eec9b30b1c0a3c1d11d3235576e9750c29d7d4a1b49e110e7fd596397b0c
+- path: tool-events/install-coverage.json
+  sha256: eea1aeaa96026bbb7acee6aa1fb33d951a2b10369a52e4832f6ef0b553ca6217
+- path: tool-events/portable-source-311.json
+  sha256: 3e7593e1a9d90df180d5a087d6fcf02f2bc6b86e47e274d8433ddd6b24117fb7
+- path: tool-events/portable-source-313.json
+  sha256: c17a6cc8be41a08c78c261bb7af47fa25a6875014b0e1247c1c5dc70fde3766d
+- path: tool-events/repository.log
+  sha256: 255440a9ece3a188b00d67b928a848500938bdd0c6788d0dcac767adb46d7ef3
+- path: tool-events/source-attestation.json
+  sha256: a73d5b9a7629abecd304117209f378a9609a34c3db71f44743e83c4de8cf62aa
+handoff_refs:
+- path: WORKLOG.md
+  sha256: e0e837dc8a2f7754898bd1778aa836d1b9e3f09d7300d3eecdf7c86ca5e357f9
+decision_refs:
+- path: outputs/VERIFICATION.md
+  sha256: c6f4c5ec935c115c90facf8e33afd1ed57d17c2a7bd3c44e2d9e9df30ce077a0
+output_refs:
+- path: outputs/VERIFICATION.md
+  sha256: c6f4c5ec935c115c90facf8e33afd1ed57d17c2a7bd3c44e2d9e9df30ce077a0
+check_refs:
+- path: .gitattributes
+  sha256: 60570bcd4aede16b611131a3d7f4f41231d477d6b5ac83ccb8381e28af2110a6
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
