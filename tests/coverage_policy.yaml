@@ -1,5 +1,5 @@
 policy_id: rwb-coverage-policy
-version: 2.3.4
+version: 2.3.5
 source_root: src/research_workbench
 
 suites:
@@ -72,6 +72,7 @@ suites:
       - test_release_preflight
       - test_release_public
       - test_release_install
+      - test_release_ruleset_cutover
       - test_release_oracle_replay
       - test_portable_build
       - test_runtime_resources
@@ -191,6 +192,7 @@ critical_modules:
   - .github/scripts/release_preflight.py
   - .github/scripts/release_public.py
   - .github/scripts/release_install.py
+  - .github/scripts/release_ruleset_cutover.py
   - src/research_workbench/protocol/authority.py
   - src/research_workbench/capability/requirements.py
   - src/research_workbench/capability/supply.py
@@ -275,6 +277,16 @@ negative_acceptance:
       - test_release_install.ReleaseInstallTests.test_changed_candidate_and_changed_refs_fail_closed
       - test_release_install.ReleaseInstallTests.test_ci_rerun_and_incomplete_or_authorizing_install_fail_closed
       - test_release_install.ReleaseInstallTests.test_cli_writes_only_complete_non_authorizing_receipt
+  - surface: release-ruleset-cutover-preparation
+    modules:
+      - .github/scripts/release_ruleset_cutover.py
+    positive_tests:
+      - test_release_ruleset_cutover.ReleaseRulesetCutoverTests.test_single_payload_swaps_only_main_checks_after_source_ci_and_four_layer_readback
+      - test_release_ruleset_cutover.ReleaseRulesetCutoverTests.test_cli_writes_new_non_authorizing_artifacts_only
+    negative_tests:
+      - test_release_ruleset_cutover.ReleaseRulesetCutoverTests.test_mutated_scope_bypass_review_or_old_checks_block
+      - test_release_ruleset_cutover.ReleaseRulesetCutoverTests.test_foreign_ruleset_effective_mismatch_and_tip_drift_block
+      - test_release_ruleset_cutover.ReleaseRulesetCutoverTests.test_ci_attempt_change_during_readback_blocks
   - surface: protected-release-source-ci
     modules:
       - .github/scripts/release_source_ci.py
