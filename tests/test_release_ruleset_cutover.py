@@ -1,7 +1,10 @@
 """M14-005 cutover preparation must preserve protection and refuse drift."""
 import copy
+import contextlib
+import io
 import json
 from pathlib import Path
+import runpy
 import sys
 import tempfile
 import unittest
@@ -75,6 +78,16 @@ class FakeAPI:
 
 
 class ReleaseRulesetCutoverTests(unittest.TestCase):
+    def test_module_entrypoint_exposes_cli_help(self):
+        script = ROOT / cutover.TOOL
+        output = io.StringIO()
+        with (mock.patch.object(sys, 'argv', [str(script), '--help']),
+              contextlib.redirect_stdout(output),
+              self.assertRaises(SystemExit) as exit_status):
+            runpy.run_path(str(script), run_name='__main__')
+        self.assertEqual(0, exit_status.exception.code)
+        self.assertIn('--main-hard-ruleset', output.getvalue())
+
     def prepare(self, api=None):
         api = api or FakeAPI()
         with (mock.patch.object(cutover.source_ci, 'active_contract', return_value='legacy-ci-v1'),
