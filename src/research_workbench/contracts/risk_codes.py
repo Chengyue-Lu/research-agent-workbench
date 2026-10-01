@@ -135,7 +135,49 @@ RECOVERY_RISK_CODE_REGISTRY = (
 
 RECOVERY_RISK_CODES = frozenset(entry.code for entry in RECOVERY_RISK_CODE_REGISTRY)
 
+ARTIFACT_RISK_CODE_REGISTRY = (
+    RiskCodeEntry(
+        "ARTIFACT-HASH-MISMATCH",
+        "BLOCK",
+        "Admitted artifact bytes differ from their declared hash.",
+    ),
+    RiskCodeEntry(
+        "ARTIFACT-INBOX-CITED",
+        "BLOCK",
+        "A document cites mutable inbox content that was never admitted.",
+    ),
+    RiskCodeEntry(
+        "ARTIFACT-MISSING-PROVENANCE",
+        "BLOCK",
+        "An admitted source lacks the provenance facts required to re-locate it.",
+    ),
+    RiskCodeEntry(
+        "ARTIFACT-NEGATIVE-DROPPED",
+        "BLOCK",
+        "A validated subject, including a declared negative result, lacks an exact disposition.",
+    ),
+    RiskCodeEntry(
+        "ARTIFACT-OVERWRITE",
+        "BLOCK",
+        "Promotion would overwrite or ambiguously publish a target artifact.",
+    ),
+    RiskCodeEntry(
+        "ARTIFACT-PROMOTION-BYPASS",
+        "BLOCK",
+        "Promotion bypasses its workspace, validation, target-zone, or authority boundary.",
+    ),
+    RiskCodeEntry(
+        "VALIDATION-EXECUTION-UNPROVEN",
+        "BLOCK",
+        "A validation execution triple fails closure or deterministic re-execution equivalence; eligibility is a validity fact established only by promotion-time re-execution, never by the recorded provenance metadata.",
+    ),
+)
+
+ARTIFACT_RISK_CODES = frozenset(entry.code for entry in ARTIFACT_RISK_CODE_REGISTRY)
+
 __all__ = [
+    "ARTIFACT_RISK_CODE_REGISTRY",
+    "ARTIFACT_RISK_CODES",
     "EXECUTION_TRACE_RISK_CODE_REGISTRY",
     "EXECUTION_TRACE_RISK_CODES",
     "EXECUTION_ARCHIVE_RISK_CODE_REGISTRY",

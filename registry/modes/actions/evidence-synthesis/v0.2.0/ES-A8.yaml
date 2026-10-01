@@ -1,0 +1,19 @@
+schema_version: 0.1.0
+action_id: ES-A8
+version: 2.0.0
+mode_ref: evidence-synthesis@0.2.0
+title: Promote or reject a synthesis Claim
+intent: Convert reviewed Evidence relations into an explicit human-owned Claim decision within the project ceiling.
+triggers:
+  - A synthesis Claim is proposed for acceptance, rejection, revision, or withdrawal.
+non_triggers:
+  - Only structural validation or draft generation is requested.
+failure_modes: [structural pass treated as scientific truth, claim ceiling exceeded, counterevidence ignored]
+required_artifacts: [claim, decision]
+claim_effects:
+  may_support: [synthesis_supported, unresolved, withdrawn]
+  cannot_alone_support: [experimentally_supported]
+  notes: [Only the Human Gate changes formal Claim status.]
+human_gates: [approve-or-reject-synthesis-claim]
+stop_conditions: [A named human records a bounded decision with reasons and unresolved limits.]
+blocked_conditions: [Required Evidence review is incomplete or decision authority is unavailable.]

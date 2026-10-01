@@ -1,6 +1,7 @@
 [build-system]
-requires = ["setuptools>=69"]
-build-backend = "setuptools.build_meta"
+requires = ["setuptools>=77"]
+build-backend = "build_backend"
+backend-path = ["."]
 
 [project]
 name = "research-agent-workbench"
@@ -9,6 +10,8 @@ description = "A human-governed, provider-neutral research agent workbench."
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "Research Agent Workbench contributors" }]
+license = "MIT"
+license-files = ["LICENSE"]
 dependencies = [
   "jsonschema>=4.23,<5",
   "PyYAML>=6,<7",
@@ -17,9 +20,12 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
+  "setuptools>=77", # Runtime resource tests import the build backend directly.
   "build>=1.2,<2",
   "coverage>=7.6,<8",
   "hypothesis>=6.112,<7",
+  "markdown-it-py>=4,<5", # Public-surface checks inspect rendered Markdown links.
+  "linkify-it-py>=2,<3",
 ]
 
 [project.scripts]
@@ -28,12 +34,15 @@ rwb = "research_workbench.cli:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
-[tool.setuptools.data-files]
-"share/research-agent-workbench/schemas/v0.1.0" = ["schemas/v0.1.0/*.schema.json"]
+[tool.setuptools.cmdclass]
+sdist = "build_backend.RuntimeSdist"
+
+[tool.setuptools.package-data]
+research_workbench = ["_runtime_data/**/*", "_runtime_data/manifest.json", "_templates/**/*"]
 
 [tool.coverage.run]
-source = ["research_workbench"]
+source = ["research_workbench", ".github/scripts"]
+branch = true
 
 [tool.coverage.report]
 show_missing = true
-fail_under = 80

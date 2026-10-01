@@ -14,6 +14,19 @@
       "type": "string",
       "pattern": "^(?:sha256:)?[0-9a-fA-F]{64}$"
     },
+    "claimStrength": {
+      "enum": [
+        "exploratory",
+        "source_reported",
+        "derivation_supported",
+        "simulation_supported",
+        "observationally_supported",
+        "experimentally_supported",
+        "synthesis_supported",
+        "unresolved",
+        "withdrawn"
+      ]
+    },
     "relativePath": {
       "type": "string",
       "minLength": 1,

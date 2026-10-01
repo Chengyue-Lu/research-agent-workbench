@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/arm-execution-qualification.schema.json",
+  "title": "Arm Execution Qualification",
+  "x-rwb-document-kind": "arm_execution_qualification",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "qualification_id",
+    "version",
+    "protocol_ref",
+    "manifest_ref",
+    "arm_id",
+    "producer",
+    "checked_at",
+    "bindings",
+    "qualified",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "arm_execution_qualification"
+    },
+    "qualification_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "protocol_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "manifest_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "arm_id": {
+      "enum": [
+        "plain-agent-tool",
+        "mode-no-skill"
+      ]
+    },
+    "producer": {
+      "enum": [
+        "m6-baseline-transport",
+        "evaluation-harness"
+      ]
+    },
+    "checked_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "bindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "frozen_snapshot_ref",
+          "runtime_snapshot_ref",
+          "implementation_ref",
+          "component_refs",
+          "interface_ref"
+        ],
+        "properties": {
+          "frozen_snapshot_ref": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          },
+          "runtime_snapshot_ref": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          },
+          "implementation_ref": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          },
+          "component_refs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "component_ref",
+                "version",
+                "file_ref"
+              ],
+              "properties": {
+                "component_ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "version": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "file_ref": {
+                  "$ref": "common.schema.json#/$defs/fileRef"
+                }
+              },
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "interface_ref": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "qualified": {
+      "const": true
+    },
+    "boundaries": {
+      "const": {
+        "runtime_input": false,
+        "execution_authority": false,
+        "supply_selection": false,
+        "human_decision": false,
+        "claim_acceptance": false,
+        "promotion": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

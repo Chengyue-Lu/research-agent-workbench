@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/decision-authority-matrix.schema.json",
+  "title": "Decision Authority Matrix",
+  "$comment": "A provider-neutral authority boundary. Passing this schema does not authorize a decision or prove scientific validity.",
+  "x-rwb-document-kind": "decision_authority_matrix",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "matrix_id",
+    "version",
+    "authority_classes",
+    "entries",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "matrix_id": { "const": "rwb-decision-authority" },
+    "version": { "const": "1.0.0" },
+    "authority_classes": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": { "enum": ["agent", "deterministic-resolver", "human-gate"] },
+      "allOf": [
+        { "contains": { "const": "agent" } },
+        { "contains": { "const": "deterministic-resolver" } },
+        { "contains": { "const": "human-gate" } }
+      ]
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/authorityEntry" }
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "uniqueItems": true
+    }
+  },
+  "$defs": {
+    "authorityEntry": {
+      "type": "object",
+      "required": ["decision_kind", "description", "rules", "denied_disposition"],
+      "properties": {
+        "decision_kind": {
+          "enum": [
+            "mode-selection",
+            "action-selection",
+            "mechanism-selection",
+            "skill-tool-binding",
+            "permission-relaxation",
+            "data-boundary-relaxation",
+            "claim-promotion"
+          ]
+        },
+        "description": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "rules": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/authorityRule" }
+        },
+        "denied_disposition": { "enum": ["blocked", "human-gate"] }
+      },
+      "additionalProperties": false
+    },
+    "authorityRule": {
+      "type": "object",
+      "required": [
+        "operation",
+        "actor_class",
+        "required_facts",
+        "human_gate_required",
+        "effect"
+      ],
+      "properties": {
+        "operation": { "enum": ["propose", "validate", "commit"] },
+        "actor_class": { "enum": ["agent", "deterministic-resolver", "human-gate"] },
+        "required_facts": { "$ref": "common.schema.json#/$defs/stringArray" },
+        "human_gate_required": { "type": "boolean" },
+        "effect": {
+          "enum": ["non-binding-proposal", "structural-validation", "binding-decision"]
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "human_gate_required": { "const": true } } },
+          "then": {
+            "properties": {
+              "operation": { "const": "commit" },
+              "actor_class": { "const": "human-gate" }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,309 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/release-manifest.schema.json",
+  "title": "Deterministic release manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "kind",
+    "expectations",
+    "source_tree",
+    "parent_tree",
+    "policy",
+    "excluded",
+    "outputs",
+    "manifest_rule"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "kind": {
+      "const": "release_manifest"
+    },
+    "expectations": {
+      "$ref": "#/$defs/expectations"
+    },
+    "source_tree": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "parent_tree": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "policy": {
+      "type": "object",
+      "required": [
+        "path",
+        "identity",
+        "version",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "const": ".github/release-surface.yml"
+        },
+        "identity": {
+          "const": "rwb-release-surface"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "excluded": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "path",
+              "mode",
+              "blob",
+              "size",
+              "sha256",
+              "origin"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "mode": {
+                "enum": [
+                  "100644",
+                  "100755"
+                ]
+              },
+              "blob": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{40}$"
+              },
+              "size": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "origin": {
+                "const": "source_blob"
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "required": [
+              "path",
+              "mode",
+              "blob",
+              "size",
+              "sha256",
+              "origin",
+              "generator"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "mode": {
+                "enum": [
+                  "100644",
+                  "100755"
+                ]
+              },
+              "blob": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{40}$"
+              },
+              "size": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "origin": {
+                "const": "generated"
+              },
+              "generator": {
+                "type": "object",
+                "required": [
+                  "identity",
+                  "version",
+                  "path",
+                  "sha256",
+                  "inputs"
+                ],
+                "properties": {
+                  "identity": {
+                    "const": "rwb-release-metadata"
+                  },
+                  "version": {
+                    "const": "1.0.0"
+                  },
+                  "path": {
+                    "const": ".github/scripts/release_surface.py"
+                  },
+                  "sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "inputs": {
+                    "type": "object",
+                    "required": [
+                      "repository",
+                      "source",
+                      "parent",
+                      "release_version",
+                      "policy_version",
+                      "policy_sha256",
+                      "label"
+                    ],
+                    "properties": {
+                      "repository": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+                      },
+                      "source": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{40}$"
+                      },
+                      "parent": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{40}$"
+                      },
+                      "release_version": {
+                        "type": "string",
+                        "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+                      },
+                      "policy_version": {
+                        "type": "string",
+                        "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+                      },
+                      "policy_sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "label": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9-]{0,63}$"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "manifest_rule": {
+      "const": "manifest-last; closed tree includes these canonical bytes; no self hash"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "expectations": {
+      "type": "object",
+      "required": [
+        "repository",
+        "source",
+        "parent",
+        "policy_version",
+        "release_version",
+        "source_ci"
+      ],
+      "properties": {
+        "repository": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+        },
+        "source": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "parent": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "policy_version": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+        },
+        "release_version": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+        },
+        "source_ci": {
+          "type": "object",
+          "required": [
+            "repository",
+            "sha",
+            "workflow",
+            "run_id",
+            "conclusion",
+            "required_checks"
+          ],
+          "properties": {
+            "repository": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+            },
+            "sha": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$"
+            },
+            "workflow": {
+              "const": "CI"
+            },
+            "run_id": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "conclusion": {
+              "const": "success"
+            },
+            "required_checks": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

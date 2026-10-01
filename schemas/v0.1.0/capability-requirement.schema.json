@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/capability-requirement.schema.json",
+  "title": "Capability Requirement",
+  "$comment": "A requirement_id is an immutable demand identity. Semantic changes require a new requirement_id and an explicit migration; this contract never identifies supply.",
+  "x-rwb-document-kind": "capability_requirement",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "requirement_id",
+    "objective",
+    "applies_when",
+    "not_applicable_when",
+    "required_inputs",
+    "required_outputs",
+    "required_artifacts",
+    "constraints",
+    "verification_expectations",
+    "unsatisfied_requirement"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "requirement_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "objective": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "applies_when": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+    "not_applicable_when": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+    "required_inputs": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+    "required_outputs": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+    "required_artifacts": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+    "constraints": { "$ref": "#/$defs/constraints" },
+    "verification_expectations": { "$ref": "#/$defs/verificationExpectations" },
+    "unsatisfied_requirement": { "$ref": "#/$defs/unsatisfiedRequirement" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "nonEmptyUniqueStrings": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "uniqueStrings": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "uniqueItems": true
+    },
+    "permissionCeiling": {
+      "description": "An upper bound only. It cannot grant a permission absent from Task or Human authority.",
+      "type": "object",
+      "required": ["filesystem", "network", "external_write"],
+      "properties": {
+        "filesystem": {
+          "enum": [
+            "forbidden",
+            "read-only",
+            "worktree-write",
+            "workspace-write"
+          ]
+        },
+        "network": {
+          "enum": ["forbidden", "search-and-fetch", "allowed"]
+        },
+        "external_write": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "dataEgress": {
+      "type": "object",
+      "required": ["policy", "allowed_payloads", "forbidden_payloads"],
+      "properties": {
+        "policy": { "enum": ["forbidden", "allowlisted-only"] },
+        "allowed_payloads": { "$ref": "#/$defs/uniqueStrings" },
+        "forbidden_payloads": { "$ref": "#/$defs/nonEmptyUniqueStrings" }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": { "properties": { "policy": { "const": "forbidden" } }, "required": ["policy"] },
+          "then": { "properties": { "allowed_payloads": { "maxItems": 0 } } },
+          "else": { "properties": { "allowed_payloads": { "minItems": 1 } } }
+        }
+      ]
+    },
+    "sideEffects": {
+      "type": "object",
+      "required": ["policy", "allowed_effects"],
+      "properties": {
+        "policy": { "enum": ["none", "allowlisted-only"] },
+        "allowed_effects": { "$ref": "#/$defs/uniqueStrings" }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": { "properties": { "policy": { "const": "none" } }, "required": ["policy"] },
+          "then": { "properties": { "allowed_effects": { "maxItems": 0 } } },
+          "else": { "properties": { "allowed_effects": { "minItems": 1 } } }
+        }
+      ]
+    },
+    "constraints": {
+      "type": "object",
+      "required": ["permission_ceiling", "data_egress", "side_effects"],
+      "properties": {
+        "permission_ceiling": { "$ref": "#/$defs/permissionCeiling" },
+        "data_egress": { "$ref": "#/$defs/dataEgress" },
+        "side_effects": { "$ref": "#/$defs/sideEffects" }
+      },
+      "additionalProperties": false
+    },
+    "verificationExpectations": {
+      "description": "Structural expectations only; their presence does not prove scientific validity or record a Human decision.",
+      "type": "object",
+      "required": ["deterministic", "semantic", "human"],
+      "properties": {
+        "deterministic": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+        "semantic": { "$ref": "#/$defs/uniqueStrings" },
+        "human": { "$ref": "#/$defs/uniqueStrings" }
+      },
+      "additionalProperties": false
+    },
+    "unsatisfiedRequirement": {
+      "description": "The demand remains stable when no supply is bound. Supply status is decided by a later Capability Resolution.",
+      "type": "object",
+      "required": ["method_contract", "supply_binding", "next_stage"],
+      "properties": {
+        "method_contract": { "const": "unchanged" },
+        "supply_binding": { "const": "prohibited" },
+        "next_stage": { "const": "capability-resolution" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

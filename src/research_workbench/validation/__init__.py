@@ -4,6 +4,11 @@ from research_workbench.validation.documents import (
     validate_documents,
 )
 from research_workbench.validation.schemas import SchemaCatalog
+from research_workbench.validation.capability import (
+    CapabilitySnapshotValidationError,
+    ValidatedCapabilitySnapshot,
+    load_validated_capability_snapshot,
+)
 from research_workbench.capability.resolver import check_task_binding
 from research_workbench.contracts.risks import ContractRisk, RiskLevel
 from research_workbench.validation.relationships import (
@@ -15,9 +20,11 @@ from research_workbench.validation.relationships import (
 
 __all__ = [
     "ContractRisk",
+    "CapabilitySnapshotValidationError",
     "RiskLevel",
     "SchemaCatalog",
     "Severity",
+    "ValidatedCapabilitySnapshot",
     "ValidationIssue",
     "check_handoff_against_task",
     "check_claim_ceiling",
@@ -25,4 +32,5 @@ __all__ = [
     "check_task_binding",
     "check_write_scope_overlap",
     "validate_documents",
+    "load_validated_capability_snapshot",
 ]

@@ -1,0 +1,950 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/admission-evidence-overlap.schema.json",
+  "title": "Admission Evidence Overlap",
+  "x-rwb-document-kind": "admission_evidence_overlap",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "assessment_id",
+    "version",
+    "admission_case_closure",
+    "comparison_input_closure",
+    "assessment_result",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "admission_evidence_overlap"
+    },
+    "assessment_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "admission_case_closure": {
+      "type": "object",
+      "required": [
+        "skill_evaluation_ref",
+        "candidate_id",
+        "skill_id",
+        "skill_version",
+        "closure"
+      ],
+      "properties": {
+        "skill_evaluation_ref": {
+          "$ref": "common.schema.json#/$defs/fileRef"
+        },
+        "candidate_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "skill_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "skill_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "closure": {
+          "type": "object",
+          "required": [
+            "schema_version",
+            "record_kind",
+            "closure_id",
+            "version",
+            "scope",
+            "cases",
+            "boundaries"
+          ],
+          "properties": {
+            "schema_version": {
+              "const": "0.1.0"
+            },
+            "record_kind": {
+              "const": "evaluation_case_closure"
+            },
+            "closure_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version": {
+              "const": "1.0.0"
+            },
+            "scope": {
+              "enum": [
+                "admission",
+                "confirmatory"
+              ]
+            },
+            "cases": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "case",
+                  "task_kind",
+                  "task",
+                  "formal_inputs",
+                  "private_oracle",
+                  "checker",
+                  "human_adjudication"
+                ],
+                "properties": {
+                  "case": {
+                    "type": "object",
+                    "required": [
+                      "state",
+                      "identity",
+                      "ref",
+                      "reason"
+                    ],
+                    "properties": {
+                      "state": {
+                        "enum": [
+                          "resolved",
+                          "absent",
+                          "unknown"
+                        ]
+                      },
+                      "identity": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1
+                      },
+                      "ref": {
+                        "oneOf": [
+                          {
+                            "$ref": "common.schema.json#/$defs/fileRef"
+                          },
+                          {
+                            "const": null
+                          }
+                        ]
+                      },
+                      "reason": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "additionalProperties": false,
+                    "allOf": [
+                      {
+                        "if": {
+                          "properties": {
+                            "state": {
+                              "const": "resolved"
+                            }
+                          }
+                        },
+                        "then": {
+                          "properties": {
+                            "identity": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "ref": {
+                              "$ref": "common.schema.json#/$defs/fileRef"
+                            }
+                          }
+                        },
+                        "else": {
+                          "properties": {
+                            "identity": {
+                              "const": null
+                            },
+                            "ref": {
+                              "const": null
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "task_kind": {
+                    "enum": [
+                      "formal-task",
+                      "opaque-task-contract"
+                    ]
+                  },
+                  "task": {
+                    "type": "object",
+                    "required": [
+                      "state",
+                      "identity",
+                      "ref",
+                      "reason"
+                    ],
+                    "properties": {
+                      "state": {
+                        "enum": [
+                          "resolved",
+                          "absent",
+                          "unknown"
+                        ]
+                      },
+                      "identity": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1
+                      },
+                      "ref": {
+                        "oneOf": [
+                          {
+                            "$ref": "common.schema.json#/$defs/fileRef"
+                          },
+                          {
+                            "const": null
+                          }
+                        ]
+                      },
+                      "reason": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "additionalProperties": false,
+                    "allOf": [
+                      {
+                        "if": {
+                          "properties": {
+                            "state": {
+                              "const": "resolved"
+                            }
+                          }
+                        },
+                        "then": {
+                          "properties": {
+                            "identity": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "ref": {
+                              "$ref": "common.schema.json#/$defs/fileRef"
+                            }
+                          }
+                        },
+                        "else": {
+                          "properties": {
+                            "identity": {
+                              "const": null
+                            },
+                            "ref": {
+                              "const": null
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "formal_inputs": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "state",
+                        "identity",
+                        "ref",
+                        "reason"
+                      ],
+                      "properties": {
+                        "state": {
+                          "enum": [
+                            "resolved",
+                            "absent",
+                            "unknown"
+                          ]
+                        },
+                        "identity": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "minLength": 1
+                        },
+                        "ref": {
+                          "oneOf": [
+                            {
+                              "$ref": "common.schema.json#/$defs/fileRef"
+                            },
+                            {
+                              "const": null
+                            }
+                          ]
+                        },
+                        "reason": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "additionalProperties": false,
+                      "allOf": [
+                        {
+                          "if": {
+                            "properties": {
+                              "state": {
+                                "const": "resolved"
+                              }
+                            }
+                          },
+                          "then": {
+                            "properties": {
+                              "identity": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "ref": {
+                                "$ref": "common.schema.json#/$defs/fileRef"
+                              }
+                            }
+                          },
+                          "else": {
+                            "properties": {
+                              "identity": {
+                                "const": null
+                              },
+                              "ref": {
+                                "const": null
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "minItems": 0,
+                    "uniqueItems": true
+                  },
+                  "private_oracle": {
+                    "type": "object",
+                    "required": [
+                      "state",
+                      "identity",
+                      "ref",
+                      "reason"
+                    ],
+                    "properties": {
+                      "state": {
+                        "enum": [
+                          "resolved",
+                          "absent",
+                          "unknown"
+                        ]
+                      },
+                      "identity": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1
+                      },
+                      "ref": {
+                        "oneOf": [
+                          {
+                            "$ref": "common.schema.json#/$defs/fileRef"
+                          },
+                          {
+                            "const": null
+                          }
+                        ]
+                      },
+                      "reason": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "additionalProperties": false,
+                    "allOf": [
+                      {
+                        "if": {
+                          "properties": {
+                            "state": {
+                              "const": "resolved"
+                            }
+                          }
+                        },
+                        "then": {
+                          "properties": {
+                            "identity": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "ref": {
+                              "$ref": "common.schema.json#/$defs/fileRef"
+                            }
+                          }
+                        },
+                        "else": {
+                          "properties": {
+                            "identity": {
+                              "const": null
+                            },
+                            "ref": {
+                              "const": null
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "checker": {
+                    "type": "object",
+                    "required": [
+                      "state",
+                      "identity",
+                      "ref",
+                      "reason"
+                    ],
+                    "properties": {
+                      "state": {
+                        "enum": [
+                          "resolved",
+                          "absent",
+                          "unknown"
+                        ]
+                      },
+                      "identity": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1
+                      },
+                      "ref": {
+                        "oneOf": [
+                          {
+                            "$ref": "common.schema.json#/$defs/fileRef"
+                          },
+                          {
+                            "const": null
+                          }
+                        ]
+                      },
+                      "reason": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "additionalProperties": false,
+                    "allOf": [
+                      {
+                        "if": {
+                          "properties": {
+                            "state": {
+                              "const": "resolved"
+                            }
+                          }
+                        },
+                        "then": {
+                          "properties": {
+                            "identity": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "ref": {
+                              "$ref": "common.schema.json#/$defs/fileRef"
+                            }
+                          }
+                        },
+                        "else": {
+                          "properties": {
+                            "identity": {
+                              "const": null
+                            },
+                            "ref": {
+                              "const": null
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "human_adjudication": {
+                    "type": "object",
+                    "required": [
+                      "state",
+                      "identity",
+                      "ref",
+                      "reason"
+                    ],
+                    "properties": {
+                      "state": {
+                        "enum": [
+                          "resolved",
+                          "absent",
+                          "unknown"
+                        ]
+                      },
+                      "identity": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1
+                      },
+                      "ref": {
+                        "oneOf": [
+                          {
+                            "$ref": "common.schema.json#/$defs/fileRef"
+                          },
+                          {
+                            "const": null
+                          }
+                        ]
+                      },
+                      "reason": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "additionalProperties": false,
+                    "allOf": [
+                      {
+                        "if": {
+                          "properties": {
+                            "state": {
+                              "const": "resolved"
+                            }
+                          }
+                        },
+                        "then": {
+                          "properties": {
+                            "identity": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "ref": {
+                              "$ref": "common.schema.json#/$defs/fileRef"
+                            }
+                          }
+                        },
+                        "else": {
+                          "properties": {
+                            "identity": {
+                              "const": null
+                            },
+                            "ref": {
+                              "const": null
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "boundaries": {
+              "const": {
+                "runtime_input": false,
+                "execution_authority": false,
+                "supply_selection": false,
+                "human_decision": false,
+                "claim_acceptance": false,
+                "promotion": false
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "comparison_input_closure": {
+      "type": "object",
+      "required": [
+        "protocol_ref",
+        "case_closure_ref",
+        "admission_closure_sha256",
+        "admission_subjects",
+        "comparison_subjects",
+        "input_digest"
+      ],
+      "properties": {
+        "protocol_ref": {
+          "$ref": "common.schema.json#/$defs/fileRef"
+        },
+        "case_closure_ref": {
+          "$ref": "common.schema.json#/$defs/fileRef"
+        },
+        "admission_closure_sha256": {
+          "$ref": "common.schema.json#/$defs/sha256"
+        },
+        "admission_subjects": {
+          "type": "object",
+          "required": [
+            "case",
+            "task",
+            "formal-input",
+            "private-oracle"
+          ],
+          "properties": {
+            "case": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "identity",
+                  "path",
+                  "sha256"
+                ],
+                "properties": {
+                  "identity": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "sha256": {
+                    "$ref": "common.schema.json#/$defs/sha256"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            },
+            "task": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "identity",
+                  "path",
+                  "sha256"
+                ],
+                "properties": {
+                  "identity": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "sha256": {
+                    "$ref": "common.schema.json#/$defs/sha256"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            },
+            "formal-input": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "identity",
+                  "path",
+                  "sha256"
+                ],
+                "properties": {
+                  "identity": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "sha256": {
+                    "$ref": "common.schema.json#/$defs/sha256"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            },
+            "private-oracle": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "identity",
+                  "path",
+                  "sha256"
+                ],
+                "properties": {
+                  "identity": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "sha256": {
+                    "$ref": "common.schema.json#/$defs/sha256"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "comparison_subjects": {
+          "type": "object",
+          "required": [
+            "case",
+            "task",
+            "formal-input",
+            "private-oracle"
+          ],
+          "properties": {
+            "case": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "identity",
+                  "path",
+                  "sha256"
+                ],
+                "properties": {
+                  "identity": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "sha256": {
+                    "$ref": "common.schema.json#/$defs/sha256"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            },
+            "task": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "identity",
+                  "path",
+                  "sha256"
+                ],
+                "properties": {
+                  "identity": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "sha256": {
+                    "$ref": "common.schema.json#/$defs/sha256"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            },
+            "formal-input": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "identity",
+                  "path",
+                  "sha256"
+                ],
+                "properties": {
+                  "identity": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "sha256": {
+                    "$ref": "common.schema.json#/$defs/sha256"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            },
+            "private-oracle": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "identity",
+                  "path",
+                  "sha256"
+                ],
+                "properties": {
+                  "identity": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "sha256": {
+                    "$ref": "common.schema.json#/$defs/sha256"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "input_digest": {
+          "$ref": "common.schema.json#/$defs/sha256"
+        }
+      },
+      "additionalProperties": false
+    },
+    "assessment_result": {
+      "type": "object",
+      "required": [
+        "checked_at",
+        "validator",
+        "overlap_status",
+        "overlap_refs",
+        "unresolved_reasons",
+        "primary_confirmatory_eligible"
+      ],
+      "properties": {
+        "checked_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "validator": {
+          "type": "object",
+          "required": [
+            "validator_id",
+            "version",
+            "entrypoint_ref",
+            "dependency_refs"
+          ],
+          "properties": {
+            "validator_id": {
+              "const": "M5-OVERLAP-VALIDATOR"
+            },
+            "version": {
+              "const": "1.0.0"
+            },
+            "entrypoint_ref": {
+              "$ref": "common.schema.json#/$defs/fileRef"
+            },
+            "dependency_refs": {
+              "type": "array",
+              "items": {
+                "$ref": "common.schema.json#/$defs/fileRef"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "overlap_status": {
+          "enum": [
+            "held-out",
+            "admission-overlap",
+            "unresolved"
+          ]
+        },
+        "overlap_refs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "category",
+              "admission_identity",
+              "comparison_identity",
+              "by"
+            ],
+            "properties": {
+              "category": {
+                "enum": [
+                  "case",
+                  "task",
+                  "formal-input",
+                  "private-oracle"
+                ]
+              },
+              "admission_identity": {
+                "type": "string",
+                "minLength": 1
+              },
+              "comparison_identity": {
+                "type": "string",
+                "minLength": 1
+              },
+              "by": {
+                "enum": [
+                  "identity",
+                  "hash",
+                  "identity-and-hash"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "unresolved_reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "primary_confirmatory_eligible": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "boundaries": {
+      "const": {
+        "runtime_input": false,
+        "execution_authority": false,
+        "supply_selection": false,
+        "human_decision": false,
+        "claim_acceptance": false,
+        "promotion": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

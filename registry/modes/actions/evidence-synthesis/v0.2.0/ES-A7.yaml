@@ -1,0 +1,19 @@
+schema_version: 0.1.0
+action_id: ES-A7
+version: 2.0.0
+mode_ref: evidence-synthesis@0.2.0
+title: Verify citation and Claim locators
+intent: Confirm that each citation resolves to the intended version and locally supports the nearby bounded statement.
+triggers:
+  - A Claim or synthesis draft cites external Evidence.
+non_triggers:
+  - No external citation or locator is present.
+failure_modes: [valid identifier but unsupported Claim, retraction or correction omitted, locator drift]
+required_artifacts: [citation-ledger, resolver-receipt]
+claim_effects:
+  may_support: [source_reported]
+  cannot_alone_support: [synthesis_supported]
+  notes: [Locator validity is necessary but not sufficient for semantic support.]
+human_gates: [judge-support-strength-and-replacement]
+stop_conditions: [Every in-scope citation has a resolved version, locator, and support disposition.]
+blocked_conditions: [A cited source version or supporting passage cannot be recovered.]

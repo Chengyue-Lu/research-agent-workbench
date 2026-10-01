@@ -110,13 +110,7 @@
           "properties": {
             "object_type": { "const": "claim" },
             "statement": { "type": "string", "minLength": 1 },
-            "strength": {
-              "enum": [
-                "exploratory", "source_reported", "derivation_supported", "simulation_supported",
-                "observationally_supported", "experimentally_supported", "synthesis_supported",
-                "unresolved", "withdrawn"
-              ]
-            },
+            "strength": { "$ref": "common.schema.json#/$defs/claimStrength" },
             "support_refs": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/objectRef" } },
             "counterevidence_refs": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/objectRef" } },
             "limitations": { "$ref": "common.schema.json#/$defs/stringArray" }

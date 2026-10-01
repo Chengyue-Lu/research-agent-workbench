@@ -35,6 +35,12 @@ def hash_file(path: str | Path) -> str:
     return digest.hexdigest()
 
 
+def hash_bytes(content: bytes) -> str:
+    """Return the SHA-256 digest for an already captured immutable byte view."""
+
+    return hashlib.sha256(content).hexdigest()
+
+
 def hash_directory(path: str | Path) -> str:
     """Hash stable package sources, excluding generated interpreter/OS caches."""
 

@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/skill-lifecycle-migration.schema.json",
+  "title": "Accepted Registry to Skill Lifecycle v2 Migration",
+  "$comment": "The migration pins exact source entries, not a unique or latest current Registry state, so appending a new accepted Skill cannot invalidate old mappings.",
+  "x-rwb-document-kind": "skill_lifecycle_migration",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "migration_id",
+    "migration_version",
+    "source_registry_path",
+    "target_index_path",
+    "entries",
+    "replay_policy",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "migration_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "migration_version": { "$ref": "common.schema.json#/$defs/semver" },
+    "source_registry_path": { "$ref": "common.schema.json#/$defs/relativePath" },
+    "target_index_path": { "$ref": "common.schema.json#/$defs/relativePath" },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["source", "target", "disposition"],
+        "properties": {
+          "source": {
+            "type": "object",
+            "required": ["skill_id", "version", "manifest_path", "content_hash", "package_hash", "legacy_lifecycle"],
+            "properties": {
+              "skill_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+              "version": { "$ref": "common.schema.json#/$defs/semver" },
+              "manifest_path": { "$ref": "common.schema.json#/$defs/relativePath" },
+              "content_hash": { "$ref": "common.schema.json#/$defs/sha256" },
+              "package_hash": { "$ref": "common.schema.json#/$defs/sha256" },
+              "legacy_lifecycle": { "enum": ["active", "legacy", "deprecated"] }
+            },
+            "additionalProperties": false
+          },
+          "target": {
+            "type": "object",
+            "required": ["lifecycle_ref", "document_path", "content_hash"],
+            "properties": {
+              "lifecycle_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+              "document_path": { "$ref": "common.schema.json#/$defs/relativePath" },
+              "content_hash": { "$ref": "common.schema.json#/$defs/sha256" }
+            },
+            "additionalProperties": false
+          },
+          "disposition": { "enum": ["legacy-preserved", "retired"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "replay_policy": {
+      "type": "object",
+      "required": ["source_registry", "historical_assignments", "new_assignments", "append_stability"],
+      "properties": {
+        "source_registry": { "const": "preserved" },
+        "historical_assignments": { "const": "exact-version-replay" },
+        "new_assignments": { "const": "require-lifecycle-runtime-eligibility" },
+        "append_stability": { "const": "match-pinned-source-entries-only" }
+      },
+      "additionalProperties": false
+    },
+    "limitations": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": false
+}

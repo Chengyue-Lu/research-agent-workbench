@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/evaluation-harness-review-reveal.schema.json",
+  "title": "evaluation_harness_review_reveal",
+  "x-rwb-document-kind": "evaluation_harness_review_reveal",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "version",
+    "purpose",
+    "freeze_ref",
+    "package_ref",
+    "mapping_ref",
+    "evidence_ref",
+    "revealed_at",
+    "validator",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "evaluation_harness_review_reveal"
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "purpose": {
+      "const": "synthetic-contract-proof"
+    },
+    "freeze_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "package_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "mapping_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "evidence_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "revealed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "validator": {
+      "type": "object",
+      "required": [
+        "identity",
+        "version",
+        "sources",
+        "schemas_sha256"
+      ],
+      "properties": {
+        "identity": {
+          "const": "evaluation-harness-review"
+        },
+        "version": {
+          "const": "1.0.0"
+        },
+        "sources": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "schemas_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "boundaries": {
+      "$ref": "evaluation-harness-execution.schema.json#/properties/boundaries"
+    }
+  },
+  "additionalProperties": false
+}

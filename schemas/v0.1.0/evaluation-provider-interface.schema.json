@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/evaluation-provider-interface.schema.json",
+  "title": "Evaluation Provider Interface",
+  "x-rwb-document-kind": "evaluation_provider_interface",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "interface_id",
+    "version",
+    "supply_identity",
+    "supported_inputs",
+    "supported_outputs",
+    "provided_capabilities",
+    "provider_visible_interface",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "evaluation_provider_interface"
+    },
+    "interface_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "supply_identity": {
+      "$ref": "capability-supply-common.schema.json#/$defs/supplyIdentity"
+    },
+    "supported_inputs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "supported_outputs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "provided_capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "provider_visible_interface": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "boundaries": {
+      "const": {
+        "runtime_input": false,
+        "execution_authority": false,
+        "supply_selection": false,
+        "human_decision": false,
+        "claim_acceptance": false,
+        "promotion": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

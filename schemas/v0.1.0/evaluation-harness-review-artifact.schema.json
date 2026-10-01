@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/evaluation-harness-review-artifact.schema.json",
+  "title": "evaluation_harness_review_artifact",
+  "x-rwb-document-kind": "evaluation_harness_review_artifact",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "version",
+    "purpose",
+    "format",
+    "answer",
+    "transport_metadata"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "evaluation_harness_review_artifact"
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "purpose": {
+      "const": "synthetic-contract-proof"
+    },
+    "format": {
+      "const": "synthetic-integer-v1"
+    },
+    "answer": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9
+    },
+    "transport_metadata": {
+      "type": "object",
+      "required": [
+        "skill"
+      ],
+      "properties": {
+        "skill": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

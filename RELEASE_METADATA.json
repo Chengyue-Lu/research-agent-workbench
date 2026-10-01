@@ -1,0 +1,9 @@
+{
+  "label": "structural-alpha",
+  "parent": "b1d5a5a5850e0e7541e4c460f15384cd45357ab2",
+  "policy_sha256": "d4d6569208e2e64a47fbf246fd1d0e2948d2c6d97948fa9ee3fc8f2973ff1f80",
+  "policy_version": "1.5.0",
+  "release_version": "0.1.0",
+  "repository": "Chengyue-Lu/research-agent-workbench",
+  "source": "1ac70be6095f0c7aac5cf4de1cd30ca4ca959b60"
+}

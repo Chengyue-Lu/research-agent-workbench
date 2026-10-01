@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/a3-a4-pairwise-comparability.schema.json",
+  "title": "A3 A4 Pairwise Comparability",
+  "x-rwb-document-kind": "a3_a4_pairwise_comparability",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "comparability_id",
+    "version",
+    "protocol_ref",
+    "manifest_ref",
+    "a3_qualification_ref",
+    "a4_overlay_ref",
+    "a3_runtime_bindings",
+    "case_closure_ref",
+    "checked_at",
+    "stage",
+    "preregistered_record_ref",
+    "result",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "a3_a4_pairwise_comparability"
+    },
+    "comparability_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "protocol_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "manifest_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "a3_qualification_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "a4_overlay_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "a3_runtime_bindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "snapshot_ref",
+          "bundle_ref",
+          "view_ref"
+        ],
+        "properties": {
+          "snapshot_ref": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          },
+          "bundle_ref": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          },
+          "view_ref": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "case_closure_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "checked_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "stage": {
+      "enum": [
+        "plan-pre-run",
+        "analysis-input"
+      ]
+    },
+    "preregistered_record_ref": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/fileRef"
+        },
+        {
+          "const": null
+        }
+      ]
+    },
+    "result": {
+      "type": "object",
+      "required": [
+        "status",
+        "interpretation",
+        "mismatches",
+        "comparison_digest"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "exact-skill-only",
+            "skill-bearing-package",
+            "not-comparable"
+          ]
+        },
+        "interpretation": {
+          "enum": [
+            "skill-conditional-increment",
+            "skill-bearing-package-effect",
+            "unavailable"
+          ]
+        },
+        "mismatches": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "comparison_digest": {
+          "$ref": "common.schema.json#/$defs/sha256"
+        }
+      },
+      "additionalProperties": false
+    },
+    "boundaries": {
+      "const": {
+        "runtime_input": false,
+        "execution_authority": false,
+        "supply_selection": false,
+        "human_decision": false,
+        "claim_acceptance": false,
+        "promotion": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "stage": {
+            "const": "analysis-input"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "preregistered_record_ref": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "preregistered_record_ref": {
+            "const": null
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,292 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/skill-execution-receipt.schema.json",
+  "title": "Skill Execution Receipt 1.0.0",
+  "$comment": "Independent Skill execution contract. Core and legacy schemas retain their published semantics.",
+  "x-rwb-document-kind": "skill_execution_receipt",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "attempt_id",
+    "execution_kind",
+    "status",
+    "completion_claim",
+    "task_ref",
+    "execution_scope",
+    "view_ref",
+    "host_report_ref",
+    "trace_ref",
+    "artifact_refs",
+    "validation_refs",
+    "started_at",
+    "finished_at",
+    "limitations",
+    "boundaries",
+    "contract_version",
+    "runtime_bundle_ref",
+    "snapshot_ref",
+    "resolution_ref",
+    "requested_skill_consumption",
+    "record_kind"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "receipt_id": {
+      "$ref": "common.schema.json#/$defs/nonEmptyString"
+    },
+    "attempt_id": {
+      "$ref": "common.schema.json#/$defs/nonEmptyString"
+    },
+    "execution_kind": {
+      "const": "skill"
+    },
+    "status": {
+      "enum": [
+        "completed",
+        "failed",
+        "blocked"
+      ]
+    },
+    "completion_claim": {
+      "enum": [
+        "action-capability-slice-only",
+        "none"
+      ]
+    },
+    "task_ref": {
+      "$ref": "#/$defs/revisionedFileRef"
+    },
+    "execution_scope": {
+      "$ref": "runtime-bundle-manifest.schema.json#/properties/execution_scope"
+    },
+    "view_ref": {
+      "$ref": "#/$defs/revisionedFileRef"
+    },
+    "host_report_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "trace_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "artifact_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "contract",
+          "path",
+          "sha256"
+        ],
+        "properties": {
+          "contract": {
+            "$ref": "common.schema.json#/$defs/nonEmptyString"
+          },
+          "path": {
+            "$ref": "common.schema.json#/$defs/relativePath"
+          },
+          "sha256": {
+            "$ref": "common.schema.json#/$defs/sha256"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "validation_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "common.schema.json#/$defs/fileRef"
+      }
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "finished_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "limitations": {
+      "allOf": [
+        {
+          "$ref": "common.schema.json#/$defs/stringArray"
+        },
+        {
+          "minItems": 1
+        }
+      ]
+    },
+    "boundaries": {
+      "type": "object",
+      "required": [
+        "skill_assignment",
+        "method_decision",
+        "claim_effect",
+        "human_decision",
+        "topic5_recovery",
+        "task_completion"
+      ],
+      "properties": {
+        "skill_assignment": {
+          "const": "absent"
+        },
+        "method_decision": {
+          "const": false
+        },
+        "claim_effect": {
+          "const": false
+        },
+        "human_decision": {
+          "const": false
+        },
+        "topic5_recovery": {
+          "const": false
+        },
+        "task_completion": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "contract_version": {
+      "const": "1.0.0"
+    },
+    "actual_skill_consumption": {
+      "$ref": "skill-execution-consumption.schema.json"
+    },
+    "runtime_bundle_ref": {
+      "$ref": "execution-host-report.schema.json#/$defs/revisionedFileRef"
+    },
+    "snapshot_ref": {
+      "$ref": "execution-host-report.schema.json#/$defs/revisionedFileRef"
+    },
+    "resolution_ref": {
+      "type": "object",
+      "required": [
+        "ref",
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "ref": {
+          "$ref": "common.schema.json#/$defs/nonEmptyString"
+        },
+        "path": {
+          "$ref": "common.schema.json#/$defs/relativePath"
+        },
+        "sha256": {
+          "$ref": "common.schema.json#/$defs/sha256"
+        }
+      },
+      "additionalProperties": false
+    },
+    "requested_skill_consumption": {
+      "$ref": "skill-execution-consumption.schema.json"
+    },
+    "actual_binding": {
+      "$ref": "execution-host-report.schema.json#/properties/actual_binding"
+    },
+    "actual_supply_report_ref": {
+      "$ref": "common.schema.json#/$defs/nonEmptyString"
+    },
+    "record_kind": {
+      "const": "skill_execution_receipt"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "completed"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "completion_claim": {
+            "const": "action-capability-slice-only"
+          },
+          "artifact_refs": {
+            "minItems": 1
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "completion_claim": {
+            "const": "none"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "blocked"
+          }
+        }
+      },
+      "then": {
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "actual_skill_consumption"
+              ]
+            },
+            {
+              "required": [
+                "actual_binding"
+              ]
+            },
+            {
+              "required": [
+                "actual_supply_report_ref"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "required": [
+          "actual_skill_consumption",
+          "actual_binding",
+          "actual_supply_report_ref"
+        ]
+      }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "revisionedFileRef": {
+      "type": "object",
+      "required": [
+        "ref",
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "ref": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*@r[1-9][0-9]*$"
+        },
+        "path": {
+          "$ref": "common.schema.json#/$defs/relativePath"
+        },
+        "sha256": {
+          "$ref": "common.schema.json#/$defs/sha256"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -361,6 +361,32 @@ def _effective_permissions(
     )
 
 
+def permission_policy_covers(ceiling: PermissionPolicy, required: PermissionPolicy) -> bool:
+    """Whether a Requirement ceiling contains a Supply permission fact."""
+
+    if ceiling.filesystem not in FILESYSTEM_RANK or required.filesystem not in FILESYSTEM_RANK:
+        return False
+    if ceiling.network not in NETWORK_RANK or required.network not in NETWORK_RANK:
+        return False
+    if FILESYSTEM_RANK[ceiling.filesystem] < FILESYSTEM_RANK[required.filesystem]:
+        return False
+    if NETWORK_RANK[ceiling.network] < NETWORK_RANK[required.network]:
+        return False
+    if required.external_write and not ceiling.external_write:
+        return False
+    if required.allowed_roots:
+        if not ceiling.allowed_roots:
+            return False
+        for required_root in required.allowed_roots:
+            if not any(
+                required_root == ceiling_root
+                or required_root.startswith(ceiling_root.rstrip("/") + "/")
+                for ceiling_root in ceiling.allowed_roots
+            ):
+                return False
+    return True
+
+
 def resolve_task(
     task: TaskPacket,
     profile: AgentProfile,

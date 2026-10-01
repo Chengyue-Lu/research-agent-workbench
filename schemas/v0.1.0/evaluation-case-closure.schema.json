@@ -1,0 +1,511 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/evaluation-case-closure.schema.json",
+  "title": "Evaluation Case Closure",
+  "x-rwb-document-kind": "evaluation_case_closure",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "closure_id",
+    "version",
+    "scope",
+    "cases",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "evaluation_case_closure"
+    },
+    "closure_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "scope": {
+      "enum": [
+        "admission",
+        "confirmatory"
+      ]
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "case",
+          "task_kind",
+          "task",
+          "formal_inputs",
+          "private_oracle",
+          "checker",
+          "human_adjudication"
+        ],
+        "properties": {
+          "case": {
+            "type": "object",
+            "required": [
+              "state",
+              "identity",
+              "ref",
+              "reason"
+            ],
+            "properties": {
+              "state": {
+                "enum": [
+                  "resolved",
+                  "absent",
+                  "unknown"
+                ]
+              },
+              "identity": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              },
+              "ref": {
+                "oneOf": [
+                  {
+                    "$ref": "common.schema.json#/$defs/fileRef"
+                  },
+                  {
+                    "const": null
+                  }
+                ]
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "state": {
+                      "const": "resolved"
+                    }
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "identity": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "ref": {
+                      "$ref": "common.schema.json#/$defs/fileRef"
+                    }
+                  }
+                },
+                "else": {
+                  "properties": {
+                    "identity": {
+                      "const": null
+                    },
+                    "ref": {
+                      "const": null
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "task_kind": {
+            "enum": [
+              "formal-task",
+              "opaque-task-contract"
+            ]
+          },
+          "task": {
+            "type": "object",
+            "required": [
+              "state",
+              "identity",
+              "ref",
+              "reason"
+            ],
+            "properties": {
+              "state": {
+                "enum": [
+                  "resolved",
+                  "absent",
+                  "unknown"
+                ]
+              },
+              "identity": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              },
+              "ref": {
+                "oneOf": [
+                  {
+                    "$ref": "common.schema.json#/$defs/fileRef"
+                  },
+                  {
+                    "const": null
+                  }
+                ]
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "state": {
+                      "const": "resolved"
+                    }
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "identity": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "ref": {
+                      "$ref": "common.schema.json#/$defs/fileRef"
+                    }
+                  }
+                },
+                "else": {
+                  "properties": {
+                    "identity": {
+                      "const": null
+                    },
+                    "ref": {
+                      "const": null
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "formal_inputs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "state",
+                "identity",
+                "ref",
+                "reason"
+              ],
+              "properties": {
+                "state": {
+                  "enum": [
+                    "resolved",
+                    "absent",
+                    "unknown"
+                  ]
+                },
+                "identity": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1
+                },
+                "ref": {
+                  "oneOf": [
+                    {
+                      "$ref": "common.schema.json#/$defs/fileRef"
+                    },
+                    {
+                      "const": null
+                    }
+                  ]
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "additionalProperties": false,
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "state": {
+                        "const": "resolved"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "identity": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "ref": {
+                        "$ref": "common.schema.json#/$defs/fileRef"
+                      }
+                    }
+                  },
+                  "else": {
+                    "properties": {
+                      "identity": {
+                        "const": null
+                      },
+                      "ref": {
+                        "const": null
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "minItems": 0,
+            "uniqueItems": true
+          },
+          "private_oracle": {
+            "type": "object",
+            "required": [
+              "state",
+              "identity",
+              "ref",
+              "reason"
+            ],
+            "properties": {
+              "state": {
+                "enum": [
+                  "resolved",
+                  "absent",
+                  "unknown"
+                ]
+              },
+              "identity": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              },
+              "ref": {
+                "oneOf": [
+                  {
+                    "$ref": "common.schema.json#/$defs/fileRef"
+                  },
+                  {
+                    "const": null
+                  }
+                ]
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "state": {
+                      "const": "resolved"
+                    }
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "identity": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "ref": {
+                      "$ref": "common.schema.json#/$defs/fileRef"
+                    }
+                  }
+                },
+                "else": {
+                  "properties": {
+                    "identity": {
+                      "const": null
+                    },
+                    "ref": {
+                      "const": null
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "checker": {
+            "type": "object",
+            "required": [
+              "state",
+              "identity",
+              "ref",
+              "reason"
+            ],
+            "properties": {
+              "state": {
+                "enum": [
+                  "resolved",
+                  "absent",
+                  "unknown"
+                ]
+              },
+              "identity": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              },
+              "ref": {
+                "oneOf": [
+                  {
+                    "$ref": "common.schema.json#/$defs/fileRef"
+                  },
+                  {
+                    "const": null
+                  }
+                ]
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "state": {
+                      "const": "resolved"
+                    }
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "identity": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "ref": {
+                      "$ref": "common.schema.json#/$defs/fileRef"
+                    }
+                  }
+                },
+                "else": {
+                  "properties": {
+                    "identity": {
+                      "const": null
+                    },
+                    "ref": {
+                      "const": null
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "human_adjudication": {
+            "type": "object",
+            "required": [
+              "state",
+              "identity",
+              "ref",
+              "reason"
+            ],
+            "properties": {
+              "state": {
+                "enum": [
+                  "resolved",
+                  "absent",
+                  "unknown"
+                ]
+              },
+              "identity": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              },
+              "ref": {
+                "oneOf": [
+                  {
+                    "$ref": "common.schema.json#/$defs/fileRef"
+                  },
+                  {
+                    "const": null
+                  }
+                ]
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "state": {
+                      "const": "resolved"
+                    }
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "identity": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "ref": {
+                      "$ref": "common.schema.json#/$defs/fileRef"
+                    }
+                  }
+                },
+                "else": {
+                  "properties": {
+                    "identity": {
+                      "const": null
+                    },
+                    "ref": {
+                      "const": null
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "boundaries": {
+      "const": {
+        "runtime_input": false,
+        "execution_authority": false,
+        "supply_selection": false,
+        "human_decision": false,
+        "claim_acceptance": false,
+        "promotion": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

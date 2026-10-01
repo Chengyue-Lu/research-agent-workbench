@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/skill-release-projection.schema.json",
+  "title": "Skill Release Projection",
+  "$comment": "A deterministic, runtime-minimal publication derived from one accepted immutable Skill Release and externally verified Human admission. It is neither a writable lifecycle record nor an execution authorization.",
+  "x-rwb-document-kind": "skill_release_projection",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "projection_id",
+    "projection_version",
+    "release",
+    "runtime_contract",
+    "eligibility",
+    "admission_provenance",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "projection_id": { "type": "string", "pattern": "^[0-9A-Za-z][0-9A-Za-z._-]*$" },
+    "projection_version": { "$ref": "common.schema.json#/$defs/semver" },
+    "release": {
+      "type": "object",
+      "required": [
+        "skill_id",
+        "skill_version",
+        "release_ref",
+        "manifest_path",
+        "manifest_sha256",
+        "content_hash",
+        "package_hash"
+      ],
+      "properties": {
+        "skill_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "skill_version": { "$ref": "common.schema.json#/$defs/semver" },
+        "release_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "manifest_path": { "$ref": "common.schema.json#/$defs/relativePath" },
+        "manifest_sha256": { "$ref": "common.schema.json#/$defs/sha256" },
+        "content_hash": { "$ref": "common.schema.json#/$defs/sha256" },
+        "package_hash": { "$ref": "common.schema.json#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    },
+    "runtime_contract": {
+      "type": "object",
+      "required": [
+        "provided_capabilities",
+        "supported_inputs",
+        "supported_outputs",
+        "dependencies",
+        "compatibility",
+        "permission_ceiling",
+        "data_egress_ceiling",
+        "side_effect_ceiling"
+      ],
+      "properties": {
+        "provided_capabilities": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+        "supported_inputs": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+        "supported_outputs": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+        "dependencies": {
+          "type": "object",
+          "required": ["required_tools", "optional_tools"],
+          "properties": {
+            "required_tools": { "$ref": "#/$defs/uniqueStrings" },
+            "optional_tools": { "$ref": "#/$defs/uniqueStrings" }
+          },
+          "additionalProperties": false
+        },
+        "compatibility": {
+          "type": "object",
+          "required": ["applies_to_modes", "excludes", "incompatible_with"],
+          "properties": {
+            "applies_to_modes": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+            "excludes": { "$ref": "#/$defs/uniqueStrings" },
+            "incompatible_with": { "$ref": "#/$defs/uniqueStrings" }
+          },
+          "additionalProperties": false
+        },
+        "permission_ceiling": { "$ref": "common.schema.json#/$defs/permissions" },
+        "data_egress_ceiling": { "$ref": "capability-requirement.schema.json#/$defs/dataEgress" },
+        "side_effect_ceiling": { "$ref": "capability-requirement.schema.json#/$defs/sideEffects" }
+      },
+      "additionalProperties": false
+    },
+    "eligibility": {
+      "type": "object",
+      "required": ["state", "eligibility_ref", "scopes"],
+      "properties": {
+        "state": { "const": "eligible" },
+        "eligibility_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "scopes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "contains": { "const": "new-binding" },
+          "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "admission_provenance": {
+      "type": "object",
+      "required": [
+        "lifecycle_ref",
+        "lifecycle_document_path",
+        "lifecycle_content_hash",
+        "decision_owner",
+        "decision_ref"
+      ],
+      "properties": {
+        "lifecycle_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "lifecycle_document_path": { "$ref": "common.schema.json#/$defs/relativePath" },
+        "lifecycle_content_hash": { "$ref": "common.schema.json#/$defs/sha256" },
+        "decision_owner": { "const": "human" },
+        "decision_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "additionalProperties": false
+    },
+    "boundaries": {
+      "type": "object",
+      "required": [
+        "stores_need",
+        "stores_candidate",
+        "stores_trial_or_evaluation_results",
+        "stores_metrics_or_deliberation",
+        "stores_lifecycle_history",
+        "selects_supply",
+        "grants_execution",
+        "grants_permission",
+        "owns_fallback",
+        "promotes_claim",
+        "satisfies_human_gate"
+      ],
+      "properties": {
+        "stores_need": { "const": false },
+        "stores_candidate": { "const": false },
+        "stores_trial_or_evaluation_results": { "const": false },
+        "stores_metrics_or_deliberation": { "const": false },
+        "stores_lifecycle_history": { "const": false },
+        "selects_supply": { "const": false },
+        "grants_execution": { "const": false },
+        "grants_permission": { "const": false },
+        "owns_fallback": { "const": false },
+        "promotes_claim": { "const": false },
+        "satisfies_human_gate": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "uniqueStrings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+    },
+    "nonEmptyUniqueStrings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+    }
+  }
+}

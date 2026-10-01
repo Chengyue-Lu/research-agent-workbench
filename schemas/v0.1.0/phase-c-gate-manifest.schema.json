@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/phase-c-gate-manifest.schema.json",
+  "title": "Phase C Bounded Gate Source Manifest",
+  "x-rwb-document-kind": "phase_c_gate_manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "case_id",
+    "profile",
+    "state_alias",
+    "method_trace_alias",
+    "documents",
+    "candidate_paths",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "case_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "profile": { "enum": ["evidence-synthesis", "simulation-negative"] },
+    "state_alias": { "$ref": "#/$defs/alias" },
+    "method_trace_alias": { "$ref": "#/$defs/alias" },
+    "documents": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/document" }
+    },
+    "candidate_paths": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/candidatePath" }
+    },
+    "boundaries": {
+      "type": "object",
+      "required": [
+        "runner_owned_exact_closure",
+        "fresh_process",
+        "oracle_in_actor_scope",
+        "topic_5_authorized"
+      ],
+      "properties": {
+        "runner_owned_exact_closure": { "const": true },
+        "fresh_process": { "const": true },
+        "oracle_in_actor_scope": { "const": false },
+        "topic_5_authorized": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "alias": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "identity": {
+      "type": "object",
+      "required": ["object_id", "revision"],
+      "properties": {
+        "object_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "revision": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "document": {
+      "type": "object",
+      "required": ["alias", "kind", "identity", "source_ref"],
+      "properties": {
+        "alias": { "$ref": "#/$defs/alias" },
+        "kind": {
+          "enum": [
+            "research_state",
+            "research_object",
+            "research_attempt_lineage",
+            "attempt",
+            "research_failure",
+            "task_packet",
+            "method_resolution",
+            "method_trace"
+          ]
+        },
+        "identity": { "$ref": "#/$defs/identity" },
+        "source_ref": { "$ref": "common.schema.json#/$defs/fileRef" }
+      },
+      "additionalProperties": false
+    },
+    "candidatePath": {
+      "type": "object",
+      "required": ["path_id", "reopen_basis_refs"],
+      "properties": {
+        "path_id": { "$ref": "#/$defs/alias" },
+        "repeats_failure_ref": { "$ref": "common.schema.json#/$defs/objectRef" },
+        "reopen_basis_refs": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/objectRef" },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

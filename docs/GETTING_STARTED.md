@@ -1,100 +1,121 @@
 # 上手指南
 
-本指南面向第一次接触 RWB 的开发者，演示当前受支持的离线 alpha 路径：安装、验证仓库、解析一个不依赖 Skill 的 Task，并理解输出边界。全程不调用模型、网络或外部服务。
+本指南演示仓库外的离线用户路径：安装、创建 no-Skill 项目、校验输入，再显式重建一个 bounded 工程示例。
+安装需要获取 Python 依赖；安装后的这些命令不调用模型或外部服务。
 
-## 1. 准备环境
+## 1. 安装
 
-需要 Python 3.11 或更高版本、Git 和 PowerShell、bash 或等价终端。克隆仓库后，在根目录建立独立虚拟环境并安装：
+需要 Python 3.11+，已验证的安装环境为 Python 3.11 和 3.13。取得本源码目录后，在根目录执行：
 
-```powershell
+```shell
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-python -m pip install -e .
 ```
 
-如需运行测试，可安装 `python -m pip install -e ".[test]"`。
+PowerShell 使用 `.\.venv\Scripts\Activate.ps1` 激活；bash 使用 `source .venv/bin/activate`。
+随后安装到该环境：
 
-## 2. 验证仓库基线
+```shell
+python -m pip install .
+```
 
-```powershell
-rwb validate examples registry
+命令从本地源码构建 wheel 并安装。使用已取得的 wheel 时，也可执行
+`python -m pip install /path/to/research_agent_workbench-0.1.0-py3-none-any.whl`，替换为实际文件路径。
+这里不假设已有 PyPI 发布或可下载的正式发行物。
+
+## 2. 在源码目录外检查资源
+
+保持虚拟环境激活，切换到一个新的工作目录：
+
+```shell
+cd ..
+mkdir rwb-demo
+cd rwb-demo
+rwb resources check
 rwb schema list
 ```
 
-第一条命令检查示例与 Registry 的 Schema、引用和确定性规则；第二条列出可用 Schema。成功只说明结构与引用有效，不代表研究内容科学正确。
+`resources check` 校验随包 RuntimeResourceManifest 的 pin、文件哈希、索引和引用闭包。
+Schema、Mode/Action、Authority、Requirement、Protocol Profile 和 Projection index 由安装包提供。
+生产 Projection index 为空；资源检查成功不表示存在可执行的已发布 Skill。
 
-## 3. 初始化一个最小项目
+## 3. 创建项目与 no-Skill 输入
 
-```powershell
-rwb init work/quickstart-project --project-id quickstart
+```shell
+rwb init project --project-id quickstart
+rwb project check project
+rwb validate project/tasks/task.yaml project/profiles/local-no-skill.yaml --root project
 ```
 
-该命令创建最小文件式项目入口，不会复制完整仓库模板、安装外部工具或启动 Agent。
+`init` 默认创建完整 no-Skill 模板：Project Protocol、Task、本地 Profile、工作目录、使用说明和资源 pin。
+`project check` 校验项目身份、模板版本和安装资源的 exact hash；项目可移到新目录后继续检查。
+Registry 和发布的 Skill 资源由安装包提供，无需从源码目录复制。初始化拒绝覆盖非空目录。
+模板另有 `--template offline-demo` 离线工程示例和 `--template minimal` 最小入口。
+`resources quickstart` 仍可单独复制安装包中的 [no-Skill Task](../examples/quickstart/task-no-skill.yaml)。
 
-## 4. 阅读一个 no-Skill Task
+Task 的 `required_skills` 为空，同时保留输入、输出、权限、预算、写入范围和停止条件。
+成功表示输入契约与引用可校验，尚未执行研究 Task，也未生成 Runtime Bundle、Execution View 或研究结论。
+再次体验时选用新的项目目录。
 
-仓库提供 [`examples/quickstart/task-no-skill.yaml`](../examples/quickstart/task-no-skill.yaml)。它要求产出一个有界 Handoff packet，但不要求 Skill 或外部能力。
+## 4. 定位证据并重建离线示例
 
-```powershell
-Get-Content examples/quickstart/task-no-skill.yaml
-rwb validate examples registry
+回到第 2 节创建的 `rwb-demo` 目录，为示例创建另一个项目：
+
+```shell
+rwb init offline-project --template offline-demo --project-id offline-demo
+rwb project check offline-project
+cd offline-project
+rwb validate tasks/task.yaml profiles/local-no-skill.yaml --root .
+rwb run check examples/run-reconstruction/linear-recurrence/manifest.yaml --root .
+rwb hash examples/run-reconstruction/linear-recurrence/trajectory.csv
 ```
 
-重点观察：
+`offline-demo` 包含固定整数递推的 synthetic reference fixture。初始化只写文件，不运行代码；
+其环境描述绑定到初始化所用的 Python 解释器。保持同一虚拟环境完成以下步骤。
 
-- Task 自己声明输入、输出、权限和写入范围；
-- `required_skills` 为空是合法结果；
-- 预算、原子边界和停止条件仍由 Task 约束。
+先用文本编辑器打开 `examples/run-reconstruction/linear-recurrence/manifest.yaml`，按引用核对这些文件：
 
-这个文件代表已接受的 no-Skill Task 语义，并会参与仓库验证。alpha CLI 的 `task resolve` 目前仍要求
-显式 Skill 或 Registry 中可选的 active Skill，尚不能为该文件生成 no-Skill Assignment；因此本指南
-不伪造一条解析成功路径。该实现缺口集中记录在[实现状态](STATUS.md)。实际 Runtime 接入后应消费
-冻结 Assignment、在声明范围内产生工件，并把可观察事件写入 Attempt Archive。
+| 文件 | 用途 |
+|---|---|
+| `inputs.json.txt`、`parameters.json.txt` | 初始值与递推参数（JSON 内容） |
+| `simulate.py` | 将由用户显式执行的示例代码 |
+| `environment.json` | 当前解释器的环境绑定 |
+| `run.yaml`、`trajectory.csv` | 合成参考 Run 与预期输出 |
 
-## 5. 验证已有 Trace 或执行归档
+`run check` 成功表示 manifest 中的文件 pin 与环境可校验；`hash` 输出可与 manifest 的预期输出哈希对照。
+确认代码可信后，显式启动一个独立进程重建该例：
 
-当 Runtime 已经产生文件式 Attempt，可运行：
-
-```powershell
-rwb trace validate --attempt <attempt-directory> --root .
-rwb execute verify `
-  --attempt <attempt-directory> `
-  --protocol <protocol-file> `
-  --root .
+```shell
+rwb run reproduce examples/run-reconstruction/linear-recurrence/manifest.yaml --root . --attempt-dir work/demo/A-001
+rwb validate work/demo/A-001/reconstruction-report.json --root .
 ```
 
-Trace 校验检查 Envelope、Index、事件、工具结果与文件之间的闭集关系；执行校验在此基础上检查归档和协议约束。尖括号参数必须替换为真实路径。不要把校验通过解读为方法适用或科学结论已获批准。
+预期报告 `work/demo/A-001/reconstruction-report.json` 中 `status` 为 `matched`，随后报告校验成功。
+报告记录本次实际捕获的输入、输出、stdout/stderr 与诊断；沿其文件引用查看证据。
+参考轨迹的零净变化也是需要保留的结果。`matched` 只证明这组固定文件能够重建，不接受科学 Claim，
+也不证明通用研究 Task、Provider 或 Skill 的效果。重建执行受信代码，不提供 OS sandbox。
 
-## 6. 接入模型或其他 Runtime
+每次重建使用新的 Attempt 目录，例如 `work/demo/A-002`。若已有目标目录，选新目录并保留原材料；
+若 pin 或解释器环境不匹配，先检查文件和环境，勿把修改哈希当作复现成功。
 
-核心集成顺序是：
+## 5. 验证自己已有的工件
 
-1. 把外部系统的能力映射为 Agent、Model、Tool 和权限元数据；
-2. 让 Adapter 消费冻结 Assignment，而不是读取整仓库自行规划；
-3. 将输入、消息、调用、临时结果和正式输出写入 Attempt Archive；
-4. 生成 Handoff / Receipt，并运行确定性验证；
-5. 把方法、权限和 Claim 决定交给相应 Human Gate。
+```shell
+rwb validate /path/to/document.yaml --root /path/to/project
+rwb trace validate --attempt /path/to/attempt --root /path/to/project
+```
 
-Codex、OpenCode、自建 API Runner、MCP 或本地 CLI 都应停留在 Adapter 边界。平台会话可用于执行，但不是跨会话权威状态。
+替换为自己的真实文件路径。项目文件从显式 root 读取，默认 Runtime catalog 从安装包读取。
+平台配置通过独立 integration root 提供。维护者 Registry、Provider 配置和模型凭据须由相应命令显式指定。
+Trace 验证检查事件、索引和结果闭包；方法适用性、Claim 接受与发布仍由具名人类决定。
 
-## 7. 常见问题
+## 6. 后续集成
 
-### `rwb` 命令不存在
+Runtime 接入按 Capability Supply Report → Resolution → Snapshot → Runtime Bundle → Resolved Execution View
+→ Thin Host 的顺序冻结并消费执行边界。no-Skill、direct-tool 与 Skill-bearing 路径共享该 Core；
+Skill-bearing 路径额外携带其精确 Skill 绑定。该路径当前由集成者显式接线，尚无一键研究运行入口。
 
-确认虚拟环境已激活，并重新执行 `python -m pip install -e .`。也可运行 `python -c "import research_workbench; print(research_workbench.__file__)"` 检查安装。
+若 `rwb` 命令不存在，确认虚拟环境已激活，并运行
+`python -c "import research_workbench; print(research_workbench.__file__)"` 检查安装位置。
+若资源检查失败，从可信源码或 wheel 重新安装；若任务能力或权限冲突，复核输入边界并由任务负责人决定后续。
 
-### 解析提示能力或权限冲突
-
-不要通过放宽 Profile 或静默增加 Skill 来绕过。先检查 Task 的 `required_capabilities`、`required_outputs`、`permissions` 和 `write_scope` 是否必要；不能安全满足时应拆分或阻塞。
-
-### 为什么没有自动启动 Agent
-
-RWB 的可移植核心负责契约、解析、验证和连续性。实际模型调用由显式 Adapter 或原生 Runtime 执行；这避免把某一家平台变成核心依赖。
-
-## 8. 下一步阅读
-
-- [总体架构](ARCHITECTURE.md)：理解各平面和传递关系；
-- [实现状态](STATUS.md)：确认哪些能力可用、哪些仍有限；
-- [兼容性说明](compatibility/README.md)：处理旧工件；
-- [开发协作指南](DEVELOPMENT.md)：开始贡献代码或文档。
+下一步：[支持能力与证据边界](SUPPORTED_FEATURES.md) · [公开模块导航](PUBLIC_GUIDE.md) · [总体架构](ARCHITECTURE.md)。

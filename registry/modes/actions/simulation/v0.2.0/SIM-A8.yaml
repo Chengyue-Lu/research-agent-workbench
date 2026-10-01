@@ -1,0 +1,19 @@
+schema_version: 0.1.0
+action_id: SIM-A8
+version: 2.0.0
+mode_ref: simulation@0.2.0
+title: Generate and inspect simulation figures
+intent: Produce figures whose encoding, transformation, export, and provenance preserve the bounded simulation result.
+triggers:
+  - Simulation Evidence must be communicated through a figure.
+non_triggers:
+  - No visual artifact is required, or an accepted figure is only copied unchanged.
+failure_modes: [misleading color scale, undisclosed interpolation or clipping, provenance loss]
+required_artifacts: [figure-spec, rendered-artifact, lineage]
+claim_effects:
+  may_support: []
+  cannot_alone_support: [simulation_supported]
+  notes: [A figure communicates existing Evidence and cannot strengthen its Claim ceiling.]
+human_gates: [approve-final-scientific-expression]
+stop_conditions: [Encoding, transformations, export, and lineage pass inspection.]
+blocked_conditions: [The figure cannot be linked to frozen Run data and transformation metadata.]

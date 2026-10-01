@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/protocol-profile-index.schema.json",
+  "title": "Protocol Profile Integrity Index",
+  "$comment": "A closed immutable reference/path/hash index. It is not a project selector, workflow registry, supply registry, or runtime routing table.",
+  "x-rwb-document-kind": "protocol_profile_index",
+  "type": "object",
+  "required": ["schema_version", "registry_kind", "generated_at", "entries"],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "registry_kind": { "const": "protocol_profile_index" },
+    "generated_at": { "type": "string", "format": "date" },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["profile_ref", "profile_id", "version", "document_path", "content_hash"],
+        "properties": {
+          "profile_ref": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*@[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+          },
+          "profile_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "version": { "$ref": "common.schema.json#/$defs/semver" },
+          "document_path": { "$ref": "common.schema.json#/$defs/relativePath" },
+          "content_hash": { "$ref": "common.schema.json#/$defs/sha256" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

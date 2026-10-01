@@ -1,0 +1,424 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/evaluation-harness-analysis-input.schema.json",
+  "title": "evaluation_harness_analysis_input",
+  "x-rwb-document-kind": "evaluation_harness_analysis_input",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "version",
+    "purpose",
+    "analysis_id",
+    "request",
+    "metrics_ref",
+    "protocol_ref",
+    "reveal_ref",
+    "checked_at",
+    "overlap",
+    "comparisons",
+    "statistical_parameters",
+    "decision_hierarchy",
+    "pairs",
+    "validator",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "evaluation_harness_analysis_input"
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "purpose": {
+      "const": "synthetic-contract-proof"
+    },
+    "analysis_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "request": {
+      "$ref": "#/$defs/request"
+    },
+    "metrics_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "protocol_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "reveal_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "checked_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "overlap": {
+      "type": "object",
+      "required": [
+        "overlap_status",
+        "overlap_refs",
+        "unresolved_reasons",
+        "primary_confirmatory_eligible"
+      ],
+      "properties": {
+        "overlap_status": {
+          "enum": [
+            "held-out",
+            "admission-overlap",
+            "unresolved"
+          ]
+        },
+        "overlap_refs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "category",
+              "admission_identity",
+              "comparison_identity",
+              "by"
+            ],
+            "properties": {
+              "category": {
+                "enum": [
+                  "case",
+                  "task",
+                  "formal-input",
+                  "private-oracle"
+                ]
+              },
+              "admission_identity": {
+                "type": "string",
+                "minLength": 1
+              },
+              "comparison_identity": {
+                "type": "string",
+                "minLength": 1
+              },
+              "by": {
+                "enum": [
+                  "identity",
+                  "hash",
+                  "identity-and-hash"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "unresolved_reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "primary_confirmatory_eligible": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "comparisons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "case_id",
+          "ref",
+          "result"
+        ],
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "ref": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          },
+          "result": {
+            "$ref": "a3-a4-pairwise-comparability.schema.json#/properties/result"
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "statistical_parameters": {
+      "$ref": "system-evaluation-protocol.schema.json#/properties/design/properties/analysis"
+    },
+    "decision_hierarchy": {
+      "const": [
+        "research-integrity",
+        "quality-and-correction",
+        "efficiency-and-cost"
+      ]
+    },
+    "pairs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "block_index",
+          "case_id",
+          "phase",
+          "replicate",
+          "contrast",
+          "interpretation",
+          "complete_block",
+          "primary_confirmatory_eligible",
+          "metrics"
+        ],
+        "properties": {
+          "block_index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "case_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "phase": {
+            "enum": [
+              "pilot",
+              "confirmatory"
+            ]
+          },
+          "replicate": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "contrast": {
+            "enum": [
+              "A4-A2",
+              "A2-A1",
+              "A4-A3",
+              "A3-A2",
+              "A4-A1"
+            ]
+          },
+          "interpretation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "complete_block": {
+            "type": "boolean"
+          },
+          "primary_confirmatory_eligible": {
+            "const": false
+          },
+          "metrics": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "metric_id",
+                "left_measurement_ref",
+                "right_measurement_ref",
+                "left_status",
+                "right_status",
+                "left_unit",
+                "right_unit",
+                "status",
+                "value",
+                "reason"
+              ],
+              "properties": {
+                "metric_id": {
+                  "enum": [
+                    "method-violation",
+                    "claim-overreach",
+                    "provenance-error",
+                    "counterevidence-omission",
+                    "human-correction-distance",
+                    "omission-rate",
+                    "rework-count",
+                    "lookup-count",
+                    "h2-distortion-rate",
+                    "cascade-rate",
+                    "context-loaded",
+                    "cost",
+                    "completion-time"
+                  ]
+                },
+                "left_measurement_ref": {
+                  "$ref": "common.schema.json#/$defs/fileRef"
+                },
+                "right_measurement_ref": {
+                  "$ref": "common.schema.json#/$defs/fileRef"
+                },
+                "left_status": {
+                  "enum": [
+                    "measured",
+                    "estimated",
+                    "unavailable",
+                    "not-applicable"
+                  ]
+                },
+                "right_status": {
+                  "enum": [
+                    "measured",
+                    "estimated",
+                    "unavailable",
+                    "not-applicable"
+                  ]
+                },
+                "left_unit": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "right_unit": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "status": {
+                  "enum": [
+                    "measured",
+                    "estimated",
+                    "unavailable",
+                    "not-applicable"
+                  ]
+                },
+                "value": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "additionalProperties": false,
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "status": {
+                        "enum": [
+                          "unavailable",
+                          "not-applicable"
+                        ]
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "value": {
+                        "type": "null"
+                      }
+                    }
+                  },
+                  "else": {
+                    "properties": {
+                      "value": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "minItems": 13,
+            "maxItems": 13
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "validator": {
+      "type": "object",
+      "required": [
+        "identity",
+        "version",
+        "sources",
+        "schemas_sha256"
+      ],
+      "properties": {
+        "identity": {
+          "const": "evaluation-harness-analysis"
+        },
+        "version": {
+          "const": "1.0.0"
+        },
+        "sources": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "schemas_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "boundaries": {
+      "$ref": "evaluation-harness-execution.schema.json#/properties/boundaries"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "request": {
+      "type": "object",
+      "required": [
+        "metrics",
+        "expected_metrics_ref",
+        "expected_metrics_id",
+        "checked_at",
+        "pairwise"
+      ],
+      "properties": {
+        "metrics": {
+          "$ref": "evaluation-harness-metric-evidence.schema.json#/$defs/request"
+        },
+        "expected_metrics_ref": {
+          "$ref": "common.schema.json#/$defs/fileRef"
+        },
+        "expected_metrics_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checked_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "pairwise": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "case_id",
+              "ref"
+            ],
+            "properties": {
+              "case_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "ref": {
+                "$ref": "common.schema.json#/$defs/fileRef"
+              }
+            },
+            "additionalProperties": false
+          },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
