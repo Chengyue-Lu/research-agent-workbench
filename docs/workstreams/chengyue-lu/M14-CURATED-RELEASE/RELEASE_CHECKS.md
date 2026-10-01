@@ -2,7 +2,9 @@
 
 PR #98 accepted this source-owned entry point for release-only checks. It joins the
 [live source observer](SOURCE_CI.md) to the accepted deterministic exporter/checker.
-M14-005 remains READY and the release topology remains dormant.
+M14-005 remains READY. The active-topology implementation and remote transition are
+reviewed separately in the [cutover plan](CUTOVER.md); this entry point itself
+never grants merge authority.
 
 Run from the clean, exact accepted develop source after fetching origin. Supply the source,
 current main parent, policy/release versions, source CI run, candidate commit and independently
@@ -132,15 +134,28 @@ The source API repair was accepted in PR #97. Its real protected develop
 and clean exact-source online `attest` passed; the [historical observation pins](SOURCE_CI_ACCEPTANCE.json)
 are audit evidence only. The remaining slices are:
 
-1. Review and accept the develop-side governance correction; observe its protected push
-   CI, then rebuild the candidate from that exact source and refresh the external pins.
-2. Repeat source-owned and hosted first-main checks on the rebuilt candidate while
-   the old required checks continue to block merging.
+1. PR #117 accepted the develop-side governance correction as `develop@331809f`;
+   actual protected source CI 36806326706 and clean-source live attestation passed.
+   Rebuilt #116 candidate `ef29d7e` and refreshed pins passed source-owned and
+   hosted run 36810996919 on both Python versions, with independent identity/hash/blob
+   verification. Governance replay with fresh expectations now has only the dormant
+   error; absent expectations still fail closed.
+2. Independently review the source-side activation and live PR governance implementation.
+   Its actual integrated source CI must pass, then regenerate candidate/pins/hosted
+   evidence from that new source. The old required checks continue to block merging.
 3. With R2 review and fresh readiness evidence, activate the governed release topology and
    replace the main hard ruleset's old required contexts in one update; re-read effective
    rules and prove direct `develop -> main` remains blocked. A failed or ambiguous update
    requires fail-closed reconciliation before any release merge.
 4. Obtain separate final release-PR merge approval, then close tag/artifact/hash evidence.
+
+The current activation candidate requires `--pr-number` in `release_install.py`.
+After its fresh preflight, source-owned `release_governance.py` reads current PR metadata
+and executes full R2 governance using live source CI and independent pins. Task/workstream
+evidence comes from that trusted source. It reobserves PR body/head/base/state after
+installation, and body editing triggers both release jobs. Append-only policy 1.5.0
+adds this helper; both policy/checker activation and direct-develop rejection are
+reviewed together. No saved receipt is accepted as a live trust token.
 
 This implementation slice creates no release branch or tag and changes no remote protection settings.
 The small API repair's review waiver does not apply to this subsequent R2 change.

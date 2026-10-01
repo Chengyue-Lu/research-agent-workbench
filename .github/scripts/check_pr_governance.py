@@ -336,10 +336,12 @@ def validate_curated_release_policy(
         )
         valid = False
 
+    if policy.get("activation_state") not in ("dormant", "active"):
+        report.add("ERROR", "RELEASE-POLICY-VALUE", "unknown curated release activation state")
+        valid = False
     checkpoint = policy.get("schema_version") == 2
     expected_scalars = {
         "schema_version": 2 if checkpoint else 1,
-        "activation_state": "dormant",
         "activation_task": "M14-005",
         "base_ref": "main",
         "head_ref_pattern": CURATED_RELEASE_HEAD_PATTERN,
@@ -358,7 +360,7 @@ def validate_curated_release_policy(
             report.add(
                 "ERROR",
                 "RELEASE-POLICY-VALUE",
-                f"curated release policy {field_name} must remain {expected!r} during M14-001",
+                f"curated release policy {field_name} must be {expected!r}",
             )
             valid = False
 
@@ -367,7 +369,7 @@ def validate_curated_release_policy(
         report.add(
             "ERROR",
             "RELEASE-POLICY-FACTS",
-            "curated release policy must declare the exact M14-001 external trust facts",
+            "curated release policy must declare the exact external trust facts",
         )
         valid = False
     return valid
@@ -391,6 +393,11 @@ def validate_topology(
         return TopologyValidation(curated_release_attempt=release_attempt)
     if base_ref == "main":
         if head_ref == "develop":
+            if policy.get("activation_state") == "active":
+                report.add(
+                    "ERROR", "TOPOLOGY-DIRECT-RELEASE-DISABLED",
+                    "active curated topology rejects direct develop -> main",
+                )
             if head_repository != base_repository:
                 report.add(
                     "ERROR",
@@ -426,7 +433,7 @@ def validate_topology(
             topology_matched = (
                 policy_valid and branch_valid and repository_valid and class_valid
             )
-            if topology_matched:
+            if topology_matched and policy.get("activation_state") == "dormant":
                 report.add(
                     "ERROR",
                     "TOPOLOGY-RELEASE-DORMANT",

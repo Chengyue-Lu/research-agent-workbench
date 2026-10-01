@@ -3,9 +3,9 @@ name: Curated release preflight
 on:
   pull_request:
     branches: [main]
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened, ready_for_review, edited]
 
-# This remains non-authorizing until the separately reviewed M14-005 cutover.
+# Main's required contexts are switched only after separate R2 acceptance.
 # The first main candidate supplies this workflow as a source blob; its own green
 # check is not an independent trust anchor. Reviewers must run source-owned
 # preflight from an accepted develop checkout with independently pinned inputs.
@@ -81,7 +81,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test "$(git rev-parse refs/remotes/origin/rwb-release-candidate)" = "$CANDIDATE_SHA"
           test -z "$(git status --porcelain --untracked-files=all)"
-      - name: Check candidate and both installed distribution routes outside checkout
+      - name: Govern live PR and check both installed distribution routes outside checkout
         shell: bash
         run: |
           set -euo pipefail
@@ -90,6 +90,7 @@ jobs:
             --policy-version "$POLICY_VERSION" --release-version "$RELEASE_VERSION" \
             --run-id "$SOURCE_CI_RUN_ID" --candidate "$CANDIDATE_SHA" \
             --manifest-sha256 "$MANIFEST_SHA256" --python "$(command -v python)" \
+            --pr-number "$PR_NUMBER" \
             --output "$RUNNER_TEMP/release-install.json"
       - uses: actions/upload-artifact@v4
         if: always()

@@ -1,112 +1,78 @@
-# `develop` → `main` 发布合并规范
+# Curated main 发布合并规范
 
-状态：Stable release rules；M14-001 dormant trust seam implemented
-更新：2026-09-05
+状态：Stable release rules
 
-本文规定已在 `develop` 集成的项目状态如何进入 `main`。这里的“发布”是仓库稳定线发布，表示
-项目接受该提交集为共享真值；它不自动表示公开发行、许可证问题解决、真实 Provider 兼容、科研
-有效性或产品成熟度已经获批。
+`develop` 保存完整工程真相，frozen develop commit 是产品内容与 provenance 来源；exact current
+`main` 是生成式 release branch 的 Git 父提交。发布不自动证明真实 Provider、科学有效性、M5 净收益
+或 Skill 准入。架构依据见 [ADR-0021](decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md)。
 
-> [Issue #57](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57) 与
-> [ADR-0021](decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md) 已接受未来的 curated release 目标：
-> frozen `develop` 是内容与 provenance 来源，exact current `main` 是 release branch 的 Git 父提交。
-> M14-001 已建立只识别、校验并阻断的 dormant topology，M14-002 已建立 deterministic export/check；
-> M14-003/004 后续闭合 portable package 与 public docs。在 M14-005
-> readiness/cutover 验收前，本页以下 exact `develop -> main` 规则仍是唯一可执行规则，不得提前手工使用
-> `release/* -> main`。
-
-## 1. 唯一允许的拓扑
+## 1. 允许的拓扑
 
 ```text
-feature / task-definition branch
-        │ squash merge
-        ▼
-     develop
-        │ same-repository release PR + merge commit
-        ▼
-       main
+feature / task-definition → develop → frozen source Git blobs
+                                        │ deterministic complete projection
+exact current main ── Git parent ──→ release/vX.Y.Z → main merge commit
 ```
 
-- `main` 只接受同一仓库中以精确 `develop` 分支为 head 的 PR；
-- release PR 的 base 必须是 `main`，PR class 必须是 `release`；
-- 禁止从 feature、个人、临时汇总、fork 或重新拼装的 release branch 直接进入 `main`；
-- 紧急修复仍先进入 `develop`，CI 与 authority gate 保持；reviewer 不可用时仅可按开发指南第 5.4 节采用单次维护者例外；
-- 禁止直接 push、force push 或删除 `develop` / `main`。
+- 普通实现与语义修复通过 PR、CI 和相应 owner 审查进入 `develop`；
+- active curated topology 只接受同仓库 canonical `release/vMAJOR.MINOR.PATCH → main`，拒绝 direct
+  `develop → main`、fork、feature head、非 canonical version 和 release branch 回并 develop；
+- release branch 由 exporter 完整生成；产品字节只来自 frozen source 或 policy 声明的 deterministic
+  generated inputs，不能在该分支修复产品；
+- `main` 使用 merge commit，`develop` 使用 squash；两者禁止 direct push、force push 和删除。
 
-该拓扑由 `.github/scripts/check_pr_governance.py` 校验。GitHub ruleset 负责远端阻断；仓库规则与
-ruleset 两者都生效后，才能宣称分支受到完整保护。
+仓库 topology 与 GitHub required contexts 共同保护发布。远端 contexts 尚未切换时，旧 hard gate
+继续阻断 curated release；source policy 激活不会自动修改远端规则。实际切换遵循
+[cutover runbook](workstreams/chengyue-lu/M14-CURATED-RELEASE/CUTOVER.md)，在一次 main hard-ruleset
+更新中替换 required contexts，保持 strict、App identity、review、conversation 与 force/delete 保护。
 
-### 1.1 M14-001 dormant seam（不是第二条可执行拓扑）
+## 2. 来源、候选与在线治理
 
-`.github/governance-policy.json` 现已声明 strict `release/vMAJOR.MINOR.PATCH -> main` 候选面；治理器只在
-base 为 `main`、head 为同仓库 canonical SemVer 分支且 PR class 为 `release` 时将其识别为 curated-release
-attempt，并自动提升到 R2。识别不等于准入：任何结构正确的候选仍产生
-`TOPOLOGY-RELEASE-DORMANT` `ERROR`，仅修改 policy 数据也不能切到 active。
+发布负责人先确认 M14-005 的 hard dependencies、license、scaffold、package/public closure、远端保护与
+具名准备决定。随后从接受的 source 执行以下检查：
 
-该 seam 把以下内容作为相互独立的 prerequisite 进行 fail-closed 校核：
+1. 冻结 exact source SHA、current main parent、policy/release version、source CI run 和独立 manifest
+   SHA-256；这些 pins 在候选之外维护，PR body 或 manifest 不能自报信任事实。
+2. 从 clean exact-source checkout 在线验证实际 protected develop CI 的 repository/workflow/run/attempt/
+   suite/job/check App 身份与成功状态；保存的 receipts 不能代替新的在线观察。
+3. 从 Git blobs 重复构建 projection，验证 source/generated provenance、allowlist、closed outputs、
+   Git mode/blob 与 manifest；证明 candidate tree、projection tree 与 prospective main merge-result
+   tree 完全相同。main parent 前移必须重新生成。
+4. `release_install.py --pr-number NUMBER` 在同次 live preflight 后读取当前 PR 的在线元数据，并以
+   该次观察的 source CI 事实调用完整 R2 PR governance。Task/workstream 只从 prerequisite-validated
+   frozen source 读取；缺失 authority、adversarial evidence、正式 Task 或可信前提都阻断。
+5. 从已验证的投影构建 direct wheel 和 sdist-derived wheel；Python 3.11/3.13 分别在独立环境、空目录
+   和受污染路径中执行 package resources、no-Skill、Registry/Projection 与 scaffold 重建检查。
+6. 安装结束前重新读取 source/main、CI attempt 与 PR 的 body/head/base/state。观察漂移使该检查失败。
+   PR body 编辑也触发双 Python release jobs，不能借用编辑前的治理成功。
 
-- external expected source repository、exact `develop` ref/SHA 与 fetched develop history；
-- 绑定同一 source SHA 的具名 CI workflow、run identity、required-check success closure；
-- external expected current-main SHA、PR event base、merge-base、首提交 parent 与无 merge commit 的线性历史；
-- `RELEASE_MANIFEST.json` 是否存在，以及其原始 bytes 是否匹配 external expected SHA-256。
+开发侧 checker、Task 表、完整测试和 workstream 不进入 public candidate。workflow 先检验同仓库
+canonical head 与 external pins，再 checkout frozen source；candidate 始终作为 Git data，不能提供
+可执行 checker。首发 workflow 来自 PR merge ref，其绿色结果不自证代码来源；独立 reviewer 还需核对
+workflow/checker blobs、实际 hosted run 和完整 remote Gate。
 
-这些 expectation 只能由未来受保护调用方以显式 attestation 传入；PR body、release branch、manifest 自报值和
-普通进程环境都不会自动获得 trust。当前 hosted workflow 尚未建立这种 attestation；M14-002 的
-manifest/exporter/checker 只交付离线生成与验证能力，候选仍在 prerequisite 或 dormant Gate 处阻断。fresh main/develop observation、
-GitHub required-check authenticity 和最终 readiness 仍由 M14-005 闭合，本节不宣称真实 release 已可执行。
-
-## 2. 创建 release PR 前
-
-发布负责人必须先确认：
-
-1. `origin/develop` 与 `origin/main` 已重新获取，拟发布 head 确为当前远端 `develop`；
-2. 所含 feature/task-definition PR 均已在 `develop` 完成各自要求的 CI 与审查，不在 release PR 中
-   偷渡新的实现、Task 定义或 authority 决定；
-3. `develop` 的完整 CI 通过，工作树干净，且与 `main` 无未解决冲突；
-4. `STATUS.md`、`TASKS.md`、迁移说明、已知限制和必要 History 能准确描述拟发布状态；
-5. 涉及治理、架构、共享契约、权限、数据、Method/Claim/Gate 或 Runtime authority 时，原变更的
-   具名 owner、跨 owner 审查或单次维护者例外及证据仍可追溯；
-6. 明确本次仓库发布不解除仍存在的许可证、外部发布、真实环境、科学正确性或净收益 Gate。
-
-若 `develop` 在审查期间前进，release PR 会随 exact `develop` 自动扩大范围。负责人必须重新检查
-新增提交和 CI；不得把“最初看过旧 head”当成对新 head 的批准。若不能接受新增范围，应暂停发布，
-先在 `develop` 完成分段或回退决定，而不是建立替代 release branch 绕开 exact-head 规则。
+source-owned receipts 都保留 `merge_eligible=false`：机器有效性不替代人类审查、远端门禁或最终发布批准。
+`develop` 可以在 review 期间前进，但 frozen source 不随其自动扩大；更换 source 必须重新生成候选、pins
+和证据。兼容 dormant policy 仍拒绝 curated release，不允许以数据或环境绕过上述检查。
 
 ## 3. PR 元数据与审查
 
-release PR 使用仓库模板，并至少填写：
+release PR 使用 `PR 类型: release`、正式 `M14-005`、`Risk tier: R2`、具名责任人及 source-owned
+workstream，说明内容范围、验证、authority basis、adversarial evidence、残余限制与后续动作。release PR
+不重定义 Task，不借裁剪删除改变 Runtime/Claim/Human authority，也不将 READY 擅自写为 DONE。
 
-- `PR 类型: release`；
-- `任务 ID`：通常为 `none`，release 不重新定义或完成 Task；若治理器要求正式 Audit ID，则使用
-  对应已存在的 release/governance workstream，不临时伪造 Task；
-- `风险等级`：不得低于本次 diff 推导出的有效风险；
-- `责任人`：对本次发布边界作判断的具名维护者；
-- `工作流目录`、authority basis 与 adversarial evidence：按有效风险和仓库治理器要求填写；
-- 范围、已纳入提交/PR、验证证据、残余风险和明确未发布内容。
+至少一名 cross-owner reviewer 按 exact candidate/base 审查。main review rules 要求 Code Owner、stale
+review dismissal 与 last-push approval。新 head、失效证据、冲突、未解决 conversation 和失败或缺失的
+required check 均阻断合并。单次维护者审核例外仅按[开发指南第 5.4 节](DEVELOPMENT.md#54-reviewer-不可用时的单次维护者例外)
+另行具名授权；它不豁免来源、CI、topology、artifact 或最终发布决定。
 
-至少一名具备相应 authority 的维护者审查 release PR。若 head 在批准后变化，应重新确认最新 diff；
-未解决 conversation、失败/缺失的必需检查、冲突或 Governance `ERROR` 均阻断合并。
+## 4. 合并、tag 与后续
 
-reviewer 暂无空闲时，路诚钺可按[开发指南第 5.4 节](DEVELOPMENT.md#54-reviewer-不可用时的单次维护者例外)
-批准绑定 exact base/head 的单次审核例外，无需等待。release PR 作者可承担该维护者责任，但仍须明确
-作出本次 Human release decision；M14 readiness、source CI、topology 与 artifact closure 要求继续生效。
+1. 维护者在完整候选和 remote Gate 验收后另行批准最终发布合并。
+2. exact candidate 以 merge commit 进入 main；合并前后证明 main tree 等于 manifest closed tree，
+   回读 PR merge identity、保护、检查与 review 状态。
+3. 在批准的 merge commit 上完成 tag、artifact/hash closure；候选检查通过不自动授权 tag 或制品发布。
+4. release branch 不合并回 develop；后续修复先进入 develop，再从新 source/current main 重新生成。
 
-## 4. 合并方式
-
-- release PR 使用 **merge commit**，不使用 squash、rebase merge 或手工 cherry-pick；
-- merge commit 是一次稳定线发布边界，并保留 `develop` 的集成历史；
-- 不在 GitHub 网页或本地额外修改 release 内容；任何修复先通过正常 PR 进入 `develop`，然后由同一
-  release PR head 自然纳入；
-- 合并后回读 `main` head、release PR 的 `mergedAt`/merge commit、必需检查与 branch protection；
-- 若本次发布触发 History、迁移或远端 ruleset rollout，按对应 workstream 完成记录和验证。
-
-## 5. 合并后的边界
-
-- `main` 成为已接受共享真值；`develop` 继续作为下一批变更的唯一集成线；
-- feature 分支不得改以 `main` 为日常集成目标；
-- 远端分支清理只删除已合并且不再承担审计/恢复用途的分支，不删除 `main`、`develop` 或他人活动分支；
-- 仓库稳定线发布与公开制品发布是两件事。缺少 LICENSE、外部数据/模型授权、真实 conformance、
-  安全审查或科学证据时，必须继续保持对应 Gate，不得因进入 `main` 而改写为已完成。
-
-日常 feature/task-definition 规则见[开发协作指南](DEVELOPMENT.md)，远端保护部署见相应 Governance
-workstream 的 rollout 记录。
+远端分支清理保留活动 owner 与审计恢复用途。发布记录留在对应 workstream，实时成熟度、Task 状态和
+依赖分别由 `STATUS.md`、`TASKS.md`、`ROADMAP.md` 维护。

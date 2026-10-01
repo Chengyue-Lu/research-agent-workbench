@@ -1,0 +1,80 @@
+schema_version: 0.1.0
+trace_id: TRACE-M14-005-A-20261001-002
+task_id: M14-005
+task_revision: 1
+attempt_id: A-20261001-002
+archive_root: A-20261001-002
+baseline: 331809fc7d8fc0a72bb9bc72f59363495e2917c8
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 4a5149fe6dfb35b112e0e39f293e12884085146ec900674cb4c2df6676aad9b4
+actors_ref:
+  path: ACTORS.yaml
+  sha256: f69f00efe30937e56b1952995d5cfc155f7afbe750db9537cae8a078cdd89267
+read_allowlist:
+- AGENTS.md
+- README.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/DEVELOP_TO_MAIN_RELEASE.md
+- docs/TASKS.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- .github/**
+- tests/**
+- work/M14-005/**
+- protected refs, M14 PRs and source/release CI, four rulesets/effective rules
+write_scope:
+- .github/governance-policy.json
+- .github/scripts/check_pr_governance.py
+- .github/scripts/release_governance.py
+- .github/scripts/release_install.py
+- .github/workflows/release.yml
+- .github/release-surface.yml
+- tests/test_pr_governance.py
+- tests/test_release_governance.py
+- tests/test_release_install.py
+- tests/test_release_checkpoint_ci.py
+- tests/test_release_public.py
+- tests/test_release_surface.py
+- tests/ci_components.json
+- tests/test_ci_components.py
+- tests/coverage_policy.yaml
+- docs/DEVELOPMENT.md
+- docs/DEVELOP_TO_MAIN_RELEASE.md
+- docs/STATUS.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- work/M14-005/A-20261001-002/**
+- .gitattributes
+- isolated M14 feature branch and implementation PR
+tool_allowlist:
+- git
+- gh
+- python
+- apply_patch
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 01a2664c34d3ea9cda7ca596b0572676f5bdc967ca6878be598f3f4d0f22ec21
+  event_count: 3
+tool_event_refs: []
+handoff_refs:
+- path: WORKLOG.md
+  sha256: f7722e54ed12a6ef7bce4a279277ec5e09d6cc66f241d4c9dad7fe7a32787b37
+decision_refs: []
+output_refs:
+- path: outputs/VERIFICATION.md
+  sha256: b10ba05d7fbd7d59c81e06e06446de4219fca79fd5d609739a283c370f51001d
+- path: outputs/validation-summary.json
+  sha256: bd4395e838f19df0812fbc186898301e63f7e6b6986685066e00328e6e500d88
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events

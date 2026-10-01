@@ -72,6 +72,7 @@ suites:
       - test_release_preflight
       - test_release_public
       - test_release_install
+      - test_release_governance
       - test_release_ruleset_cutover
       - test_release_oracle_replay
       - test_portable_build
@@ -192,6 +193,7 @@ critical_modules:
   - .github/scripts/release_preflight.py
   - .github/scripts/release_public.py
   - .github/scripts/release_install.py
+  - .github/scripts/release_governance.py
   - .github/scripts/release_ruleset_cutover.py
   - src/research_workbench/protocol/authority.py
   - src/research_workbench/capability/requirements.py
@@ -486,7 +488,8 @@ negative_acceptance:
       - .github/scripts/check_pr_governance.py
     positive_tests:
       - test_pr_governance.TopologyTests.test_feature_to_develop_passes
-      - test_pr_governance.TopologyTests.test_develop_to_main_release_passes
+      - test_pr_governance.TopologyTests.test_dormant_topology_retains_legacy_develop_to_main
+      - test_pr_governance.ReleaseTrustIntegrationTests.test_active_topology_requires_the_same_trusted_prerequisites
       - test_pr_governance.ReleaseTrustTopologyTests.test_valid_release_prerequisites_have_no_specific_failures
       - test_pr_governance.ReleaseTrustIntegrationTests.test_develop_to_main_check_remains_executable
       - test_pr_governance.PolicyAndCodeownersTests.test_curated_release_required_checks_exist_in_ci_workflow
@@ -497,7 +500,8 @@ negative_acceptance:
       - test_pr_governance.ReleaseTrustTopologyTests.test_branch_name_alone_cannot_supply_trusted_expectations
       - test_pr_governance.ReleaseTrustTopologyTests.test_source_repository_ref_sha_history_and_ci_drift_fail_closed
       - test_pr_governance.ReleaseTrustTopologyTests.test_parent_and_manifest_drift_fail_closed
-      - test_pr_governance.ReleaseTrustTopologyTests.test_policy_shape_and_activation_cannot_be_weakened_by_data_only
+      - test_pr_governance.ReleaseTrustTopologyTests.test_policy_shape_and_unknown_activation_fail_closed
+      - test_pr_governance.TopologyTests.test_active_topology_rejects_direct_develop_to_main
       - test_pr_governance.ReleaseTrustTopologyTests.test_prerequisite_helper_revalidates_canonical_policy
       - test_pr_governance.ReleaseTrustTopologyTests.test_unknown_expectation_fields_are_rejected
       - test_pr_governance.ReleaseTrustIntegrationTests.test_fully_valid_release_candidate_remains_dormant_and_r2
@@ -507,6 +511,16 @@ negative_acceptance:
       - test_pr_governance.TasksAuthorityTests.test_done_task_is_immutable
       - test_pr_governance.PublishedIdentityIntegrationTests.test_move_out_is_detected_when_changed_path_is_not_published
       - test_governance_helper_branches.GovernanceHelperBranchTests.test_workstream_risk_git_and_main_boundaries_are_observable
+  - surface: live-curated-release-governance
+    modules:
+      - .github/scripts/release_governance.py
+    positive_tests:
+      - test_release_governance.ReleaseGovernanceTests.test_real_git_candidate_uses_live_metadata_and_development_source
+    negative_tests:
+      - test_release_governance.ReleaseGovernanceTests.test_direct_develop_fork_bad_version_parent_or_closed_pr_fail
+      - test_release_governance.ReleaseGovernanceTests.test_unknown_task_or_missing_authority_metadata_fail
+      - test_release_governance.ReleaseGovernanceTests.test_dormant_policy_and_mismatched_fresh_preflight_fail
+      - test_release_governance.ReleaseGovernanceTests.test_body_or_ref_changes_after_build_invalidate_receipt
   - surface: authority-rule-eligibility
     modules:
       - src/research_workbench/protocol/authority.py

@@ -341,8 +341,9 @@
       "test_coverage_policy"
     ],
     ".github/scripts/check_pr_governance.py": [
+      "test_governance_helper_branches",
       "test_pr_governance",
-      "test_governance_helper_branches"
+      "test_release_governance"
     ],
     ".github/scripts/ci_checks.py": [
       "test_ci_checks"
@@ -522,6 +523,26 @@
     ".github/workflows/ci.yml": [
       "test_ci_checkpoint",
       "test_ci_checks"
+    ],
+    ".github/scripts/release_governance.py": [
+      "test_pr_governance",
+      "test_release_governance",
+      "test_release_install"
+    ],
+    ".github/scripts/release_install.py": [
+      "test_pr_governance",
+      "test_release_governance",
+      "test_release_install"
+    ],
+    ".github/workflows/release.yml": [
+      "test_pr_governance",
+      "test_release_governance",
+      "test_release_install"
+    ],
+    ".github/governance-policy.json": [
+      "test_pr_governance",
+      "test_release_governance",
+      "test_release_install"
     ]
   },
   "nearest_components": {

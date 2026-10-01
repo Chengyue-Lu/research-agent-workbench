@@ -59,10 +59,10 @@ Task status、hard dependency 与 implementation scheduling 只在 [`TASKS.md`](
   审查由风险等级和敏感路径触发；
 - 功能/文档分支以 `develop` 为集成基线，PR 目标为 `develop` 并 squash merge；开发期间 stale base
   只产生 warning，实际冲突或共享契约不兼容仍阻断合并；
-- 一个完整 workstream 在 `develop` 完成集成验证后，只通过同仓库 `develop → main` PR 发布，
-  该发布使用 merge commit 形成清晰边界；`main` 不接受其他来源分支；
-- 创建、审查与合并 release PR 时必须遵守独立的 [`develop` → `main` 发布合并规范](DEVELOP_TO_MAIN_RELEASE.md)；
-- 紧急变更仍走 `feature → develop → main`，不得绕过 CI 或 authority gate；可以压缩普通过程文档，
+- 产品内容在 `develop` 完成集成验证后，从 frozen source 确定性生成同仓库 `release/vX.Y.Z → main`
+  PR；release branch 以 exact current main 为父提交，发布使用 merge commit；active curated topology 拒绝 direct `develop → main`；
+- 创建、审查与合并 release PR 时必须遵守独立的 [curated main 发布合并规范](DEVELOP_TO_MAIN_RELEASE.md)；
+- 紧急变更仍走 `feature → develop → generated release → main`，不得绕过 CI 或 authority gate；可以压缩普通过程文档，
   并在安全恢复后补齐被明确推迟的记录；
 - [`docs/workstreams/`](workstreams/README.md) 按风险和复杂度触发，不再是每个 PR 的必需附件；
 - Handoff 给出基线提交、修改路径、验证证据、未证明内容和下一动作。
@@ -101,7 +101,7 @@ ERROR`；只有 `ERROR` 使 CI 失败，并必须解释推导风险、原因和�
 |---|---|---|---|
 | `feature` | `develop` | implementation/bugfix/refactor/test/docs/status/completion；可合法置 `DONE`，不能改 Task 定义/依赖/验收 | squash |
 | `task-definition` | `develop` | 仅文档；可新增或调整声明的未完成 Task，不能同时置 `DONE` | squash |
-| `release` | `main` | 只能来自同仓库 exact `develop`；不重新授权新的任务重定义 | merge commit |
+| `release` | `main` | 来自同仓库生成式 `release/vX.Y.Z`，绑定 frozen develop source 与 exact current main parent；不重新授权 Task 定义 | merge commit |
 
 Task 状态机允许 `PARKED → READY → IN_PROGRESS → DONE`、`READY/IN_PROGRESS → BLOCKED`、
 `BLOCKED → READY/IN_PROGRESS/DONE`，以及小任务 `READY → DONE`。进入 `READY` 或 `IN_PROGRESS`

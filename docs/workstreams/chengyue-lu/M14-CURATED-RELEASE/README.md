@@ -8,6 +8,10 @@
 - PR #102 integration base：`origin/develop@81a058b228a5da2a6f46192a954f62efc72895e3`
 - task-definition integration base：`origin/develop@6a032e12c30a88a501258eec8c0b5d6c6082d81d`
 
+当前接续：#117 已合入 `develop@331809f`，实际 source CI/live attest PASS；Draft #116 的
+`ef29d7e` 候选双 Python hosted 诊断与独立核验 PASS。[CUTOVER](CUTOVER.md) 提出 source-owned live PR
+governance 和 active topology 的 R2 实现；远端保护仍未切换，接受该实现后须从新 source 重建候选。
+
 ## 为什么激活 M14
 
 M1-009 的边界是 external scaffold 与 `0.x` compatibility，M11 的边界是 Runtime Bundle/View/Host/Receipt。

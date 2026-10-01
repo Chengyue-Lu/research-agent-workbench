@@ -1,0 +1,66 @@
+{
+  "base": "331809fc7d8fc0a72bb9bc72f59363495e2917c8",
+  "focused_311": 121,
+  "focused_313": 105,
+  "ci_map": 15,
+  "docs": 10,
+  "repository": {
+    "validated": 186,
+    "errors": 0,
+    "warnings": 0
+  },
+  "release_projection_regression": 56,
+  "coverage": {
+    ".github/scripts/check_pr_governance.py": {
+      "covered_lines": 677,
+      "num_statements": 689,
+      "percent_covered": 98.19458375125376,
+      "percent_covered_display": "98",
+      "missing_lines": 12,
+      "excluded_lines": 0,
+      "percent_statements_covered": 98.25834542815674,
+      "percent_statements_covered_display": "98",
+      "num_branches": 308,
+      "num_partial_branches": 6,
+      "covered_branches": 302,
+      "missing_branches": 6,
+      "percent_branches_covered": 98.05194805194805,
+      "percent_branches_covered_display": "98"
+    },
+    ".github/scripts/release_governance.py": {
+      "covered_lines": 35,
+      "num_statements": 35,
+      "percent_covered": 100.0,
+      "percent_covered_display": "100",
+      "missing_lines": 0,
+      "excluded_lines": 0,
+      "percent_statements_covered": 100.0,
+      "percent_statements_covered_display": "100",
+      "num_branches": 4,
+      "num_partial_branches": 0,
+      "covered_branches": 4,
+      "missing_branches": 0,
+      "percent_branches_covered": 100.0,
+      "percent_branches_covered_display": "100"
+    },
+    ".github/scripts/release_install.py": {
+      "covered_lines": 53,
+      "num_statements": 53,
+      "percent_covered": 100.0,
+      "percent_covered_display": "100",
+      "missing_lines": 0,
+      "excluded_lines": 0,
+      "percent_statements_covered": 100.0,
+      "percent_statements_covered_display": "100",
+      "num_branches": 6,
+      "num_partial_branches": 0,
+      "covered_branches": 6,
+      "missing_branches": 0,
+      "percent_branches_covered": 100.0,
+      "percent_branches_covered_display": "100"
+    }
+  },
+  "full_suite_run": false,
+  "remote_cutover_applied": false,
+  "merge_eligible": false
+}

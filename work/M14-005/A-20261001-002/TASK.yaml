@@ -1,0 +1,54 @@
+schema_version: 0.1.0
+task_id: M14-005
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+agent_profile: bounded-curated-release-cutover
+required_skills: []
+delegation: false
+baseline: 331809fc7d8fc0a72bb9bc72f59363495e2917c8
+goal: Wire live source-owned PR governance into release checks and propose atomic curated topology activation for independent R2 review.
+authority: The user accepted the PR117 integration and rebuilt candidate update, then explicitly authorized continuing the independent R2 cutover implementation. FIRST_RELEASE_DECISION authorizes preparation, not final release merge or tag.
+read_allowlist:
+- AGENTS.md
+- README.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/DEVELOP_TO_MAIN_RELEASE.md
+- docs/TASKS.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- .github/**
+- tests/**
+- work/M14-005/**
+- protected refs, M14 PRs and source/release CI, four rulesets/effective rules
+write_scope:
+- .github/governance-policy.json
+- .github/scripts/check_pr_governance.py
+- .github/scripts/release_governance.py
+- .github/scripts/release_install.py
+- .github/workflows/release.yml
+- .github/release-surface.yml
+- tests/test_pr_governance.py
+- tests/test_release_governance.py
+- tests/test_release_install.py
+- tests/test_release_checkpoint_ci.py
+- tests/test_release_public.py
+- tests/test_release_surface.py
+- tests/ci_components.json
+- tests/test_ci_components.py
+- tests/coverage_policy.yaml
+- docs/DEVELOPMENT.md
+- docs/DEVELOP_TO_MAIN_RELEASE.md
+- docs/STATUS.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- work/M14-005/A-20261001-002/**
+- .gitattributes
+- isolated M14 feature branch and implementation PR
+stop_conditions:
+- Require independent R2 review and exact-head CI before integrating this proposal.
+- Do not apply remote rulesets, merge main, create tag or publish artifacts.
+- Keep local primary develop and existing frozen Attempt archives unchanged.
+- Rebuild the release candidate from accepted source after integration; old candidate evidence is historical.

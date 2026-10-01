@@ -126,25 +126,29 @@ class ReleasePublicTests(unittest.TestCase):
 
     def test_policy_adds_exact_release_files_without_rewriting_old_versions(self):
         policy = json.loads((ROOT / '.github/release-surface.yml').read_text(encoding='utf-8'))
-        self.assertEqual(['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0'],
+        self.assertEqual(['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0'],
                          [item['version'] for item in policy['policies']])
         old = json.dumps(policy['policies'][:3], sort_keys=True, ensure_ascii=False,
                          separators=(',', ':')).encode('utf-8')
         self.assertEqual('3f5dc8637765ca2567427c31d26dc046c08d2577a8c4f87401977091f51b2156',
                          hashlib.sha256(old).hexdigest())
-        additions = {item['path'] for item in policy['policies'][-2]['include']} - {
-            item['path'] for item in policy['policies'][-3]['include']}
+        additions = {item['path'] for item in policy['policies'][3]['include']} - {
+            item['path'] for item in policy['policies'][2]['include']}
         self.assertEqual({'.github/workflows/release.yml', public.TOOL}, additions)
-        installation = {item['path'] for item in policy['policies'][-1]['include']} - {
-            item['path'] for item in policy['policies'][-2]['include']}
+        installation = {item['path'] for item in policy['policies'][4]['include']} - {
+            item['path'] for item in policy['policies'][3]['include']}
         self.assertEqual({'.github/scripts/release_install.py',
                           '.github/scripts/portable_package_smoke.py'}, installation)
+        activation = {item['path'] for item in policy['policies'][5]['include']} - {
+            item['path'] for item in policy['policies'][4]['include']}
+        self.assertEqual({'.github/scripts/release_governance.py'}, activation)
 
     def test_first_main_workflow_checks_every_main_pr_and_keeps_candidate_as_data(self):
         workflow = yaml.load((ROOT / '.github/workflows/release.yml').read_text(encoding='utf-8'),
                              Loader=yaml.BaseLoader)
         self.assertEqual(['main'], workflow['on']['pull_request']['branches'])
         self.assertNotIn('pull_request_target', workflow['on'])
+        self.assertIn('edited', workflow['on']['pull_request']['types'])
         job = workflow['jobs']['preflight']
         self.assertEqual('release preflight (${{ matrix.python-version }})', job['name'])
         self.assertNotIn('if', job)
@@ -157,6 +161,7 @@ class ReleasePublicTests(unittest.TestCase):
         self.assertIn('[[ "$HEAD_REPOSITORY" == "$REPOSITORY" ]]', runs)
         self.assertIn('refs/pull/${PR_NUMBER}/head:refs/remotes/origin/rwb-release-candidate', runs)
         self.assertIn('release_install.py', runs)
+        self.assertIn('--pr-number "$PR_NUMBER"', runs)
         self.assertNotIn('checkout@', runs)
 
 
