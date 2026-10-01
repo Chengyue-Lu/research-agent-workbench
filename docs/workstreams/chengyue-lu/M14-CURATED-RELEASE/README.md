@@ -3,14 +3,14 @@
 - 责任人：路诚钺（GitHub `Chengyue-Lu`）
 - 来源：[Issue #57](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57)
 - 架构决定：[ADR-0021](../../../decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md)
-- 状态：M14-001～004、M1-009 与 M0-007 已合入；[具名首发准备决定与保护回读](FIRST_RELEASE_DECISION.md) 支持 M14-005 READY；[source-CI](SOURCE_CI.md)、[trusted release preflight](RELEASE_CHECKS.md)、[PR #102](https://github.com/Chengyue-Lu/research-agent-workbench/pull/102) 的诊断型 workflow/公开面校验及 [PR #108](https://github.com/Chengyue-Lu/research-agent-workbench/pull/108) 的双 Python 候选安装诊断已接受；cutover 准备与首次发行仍待闭合
+- 状态：M14-001～005、M1-009 与 M0-007 已接受；#116 经最终 R2 审核正常 merge，annotated `v0.1.0` GitHub alpha prerelease 与五个附件的下载哈希闭合，见[首发完成记录](FIRST_RELEASE_COMPLETE.md)
 - diagnostic baseline：`origin/develop@dd2454b5595e33a12aa058529358d46d311a08c4`
 - PR #102 integration base：`origin/develop@81a058b228a5da2a6f46192a954f62efc72895e3`
 - task-definition integration base：`origin/develop@6a032e12c30a88a501258eec8c0b5d6c6082d81d`
 
-当前接续：#117 已合入 `develop@331809f`，实际 source CI/live attest PASS；Draft #116 的
-`ef29d7e` 候选双 Python hosted 诊断与独立核验 PASS。[CUTOVER](CUTOVER.md) 提出 source-owned live PR
-governance 和 active topology 的 R2 实现；远端保护仍未切换，接受该实现后须从新 source 重建候选。
+当前接续：[首发完成记录](FIRST_RELEASE_COMPLETE.md)固定 accepted source `1ac70be`、#116 最终
+R2 approval、实际 `main@b5a9963`、tag 与资产哈希。source 侧只同步完成状态和证据；后续产品变更继续
+进入 develop，再依据新的具名版本决定执行独立 curated release。早期准备/诊断文档保留其历史时点。
 
 ## 为什么激活 M14
 
@@ -51,7 +51,7 @@ flowchart LR
     M14001 --> M14003["M14-003 DONE<br/>REL-003 portable package"]
     M14002 --> M14004["M14-004 DONE<br/>REL-004 public docs"]
     M14003 --> M14004
-    M14002 --> M14005["M14-005 READY<br/>REL-005 readiness + first release"]
+    M14002 --> M14005["M14-005 DONE<br/>REL-005 first curated release"]
     M14003 --> M14005
     M14004 --> M14005
     M1009["M1-009 DONE<br/>scaffold/compatibility"] --> M14005
@@ -199,16 +199,7 @@ task-definition 只写 canonical docs、ADR、workstream 与导航。后续实�
 
 ## 下一合法动作
 
-`M14-001～004`、M1-009 与 M0-007 已合入；[readiness 准备记录](READINESS_PREPARATION.md) 保留
-许可、远端保护和演练证据。[source-CI slice](SOURCE_CI.md) 的实现及修复已接受；PR #97 合入后的真实
-protected-develop push 与 clean exact-source 在线 `attest` 已通过，身份见[历史观察 pins](SOURCE_CI_ACCEPTANCE.json)。
-[具名 v0.1.0 准备决定与 fresh protection 回读](FIRST_RELEASE_DECISION.md) 已闭合外部启动条件，
-M14-005 仍为 READY，接续为：
-
-1. [PR #98](https://github.com/Chengyue-Lu/research-agent-workbench/pull/98) 已独立 R2 审核并合入
-   `develop@eb49093`；真实 [protected push CI36164963118](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36164963118)
-   与 clean source live attestation PASS；本地审计文件在仓库外单独保存。
-2. PR #102 已合入 `develop@39cf61e`；该 exact source 的真实 protected push [CI 36446927798](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36446927798) 与 clean source live `attest` 已通过。PR #108 随后以 reviewed-tree 相同的 `develop@3189049` 合入，真实 [CI 36662594652](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36662594652) 与 clean exact-source live `attest` 通过。
-3. 当前 R2 候选准备 atomic topology cutover，远端规则与 dormant policy 均不在本 slice 改动。验收后冻结 exact develop source/current main parent，形成真实候选并观察 hosted first-main；fresh readback 后原子切换 release topology，验证
-   deterministic projection / prospective-tree equality，完成首发 R2 验收及 tag/artifact/hash closure。
-   最终 release PR 合并与 tag 另行批准。
+M14-001～005 的首发链已闭合，source 侧完成记录由正常 feature PR/R2 审核接受，不从 release branch
+回并。具体首发身份、验收和残余风险见[完成记录](FIRST_RELEASE_COMPLETE.md)与[风险台账](RISK_LEDGER.md)。
+后续产品修复先在 develop 接受；新的 curated 版本另行冻结 source/current main parent、重算完整投影并
+通过独立 CI、R2 与维护者 merge/tag/publish 决定。当前没有新增 M14 Task 或解除其他线 Gate 的授权。

@@ -53,7 +53,7 @@ family 为什么存在、由什么 authority boundary 约束、何时允许启�
 | Phase E | Strategy candidate 与 governed evolution；不得自动修改 Core | 既有 M2/M7；M13 仅 **RESERVED** | Phase C/D evidence 证明旧 group 不足后另行接受 |
 | Phase F / Topic 4 | Agent/Model/Provider/Runtime 消费 frozen contract；不拥有 Method/Claim/Gate/fallback authority | M11 Core 与 optional extension；M6 live conformance | M11 Core 与 optional Skill extension 已 bounded 实现；live conformance 仍依独立 Gate |
 | Topic 5 residual | Handoff、context rollover、safe pause/resume、recovery/continuation | M12 仅 **RESERVED** | Phase C closeout + 独立 Topic 5 R2 review/task-definition |
-| Product / release closure | Ordinary-user E2E、package/runtime/release governance | M14-001/002/003 trust、surface 与 portable package DONE | M14-004 public docs、M1-009 scaffold、MIT 已落实；具名 v0.1.0 准备决定与 fresh protection 回读支持 M14-005 READY，后续为真实 source-CI 验收、release-only checks、cutover、freeze/projection 与首发闭包（见第 7 节） |
+| Product / release closure | Ordinary-user E2E、package/runtime/release governance | M14-001～005 curated release chain DONE | 首个 `v0.1.0` GitHub alpha prerelease 已完成 R2/merge/tag/附件下载核验；后续产品修复从 develop 经独立 frozen-source release 发布，不解除 live/research evaluation Gate（见第 7 节） |
 
 ```mermaid
 flowchart LR
@@ -395,20 +395,16 @@ M14-001 release topology + source trust
               M14-005 first curated release
 ```
 
-M14-001 已完成 dormant release topology/source-trust seam，`release/v*` 在 topology helper 与完整 checker
-中都 fail closed；branch name、PR body 或普通环境不能替代 trusted external attestation。M14-002 已闭合
-deterministic projection/export/check；M14-003 已闭合 portable Runtime resource/package 边界。
-M14-004 已闭合公开文档与仓库外 Quickstart；M1-009 scaffold 已接受。M14-001～004 完成都不产生 release merge eligibility。
-M0-007 MIT 与 GitHub remote protection 已落实。[具名 v0.1.0 准备决定与 fresh protection 回读](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_DECISION.md)
-闭合外部启动条件；当前候选将 M14-005 BLOCKED → READY。接续顺序为：
+M14-001～004、M1-009 与 M0-007 已接受。M14-005 已闭合真实 protected source-CI、release-only
+checks、active topology/live governance、完整远端 context cutover、首发 exact source/parent freeze、
+deterministic projection/prospective-tree equality、R2 release review 与 merge/tag/artifact/hash。
+[首发完成记录](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_COMPLETE.md)固定 #116、`main@b5a9963`、annotated `v0.1.0` 和五个已下载核验的
+GitHub alpha 附件；M14 family 的已定义 implementation chain 为 DONE。
 
-1. **Task activation / R2 integration**：在同一候选审查 READY 状态、具名决定与 source-CI 实现。
-2. **M14-005 implementation**：真实 protected source-CI attestation、诊断型 release-only preflight/公开面检查与双 Python 候选安装诊断已在 develop 验收；当前准备 R2 cutover 方案。随后冻结 exact develop source/current main parent，形成并独立校核真实首发候选、观察 hosted first-main 检查；
-   经 R2 验收且 fresh readback 后原子启用 `release/v* -> main` 并禁用 direct `develop -> main`，
-   验证 deterministic projection / prospective-tree equality，再闭合首个 curated release 的 R2 PR、
-   merge commit 与 tag/artifact/hash。当前 [source-CI slice](workstreams/chengyue-lu/M14-CURATED-RELEASE/SOURCE_CI.md)
-   的 producer/observer 和真实 protected push 已接受；[release checks](workstreams/chengyue-lu/M14-CURATED-RELEASE/RELEASE_CHECKS.md)记录后续验收。
-   最终 release PR 合并及 tag 由维护者在完整候选验收后另行批准。
+后续方向是维护已接受的发行机制：产品修复在 develop 验收；有新的具名版本决定时，重新冻结
+source/current main parent，生成下一版本 projection，完成独立 source-CI、release/public/package checks、
+R2 审核及具体 merge/tag/publish 决定。每次发行沿用同一 trust boundary，不继承本次批准；版本或
+policy 的语义变化按现有 Task/ADR 治理。M14 完成不激活 M12/M13，也不解除 M5 的真实评价 Gate。
 
 发行分离两条受信关系：内容/provenance 从 `develop full engineering truth -> frozen exact commit ->
 deterministic projection`，Git ancestry 从 `exact current main -> generated release/v* -> new curated main`。
@@ -422,9 +418,9 @@ installed Runtime 只消费独立 RuntimeResourceManifest 下的 published Schem
 验证重新打包 Need/Evaluation/Lifecycle 私有历史；最终 RELEASE_MANIFEST 再 pin wheel、resource manifest 与
 source-CI。默认资源不依赖 cwd；首版 no-Skill Core 不等待真实 Skill 准入。
 
-在 M14-005 readiness/cutover 完成前，现有 exact `develop -> main` 仍是执行事实，不能根据本 Roadmap 手工放行
-`release/* -> main`。精确验收与 negative boundaries 见 [`TASKS.md`](TASKS.md) 和
-[M14 workstream](workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md)。
+当前 active curated topology 只允许受信同仓库 `release/v* -> main`，拒绝 direct `develop -> main`。
+硬门禁无 bypass；每次发布重新核验完整保护、exact source/parent/manifest 和具名审核/发布决定。
+验收边界见 [`TASKS.md`](TASKS.md) 和 [M14 workstream](workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md)。
 
 ## 8. 不在近期关键路径
 

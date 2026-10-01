@@ -1,5 +1,20 @@
 # M14 Curated Release 风险台账
 
+## 首发完成观察（2026-10-01）
+
+[首发完成记录](FIRST_RELEASE_COMPLETE.md)闭合实际 source/candidate/main/tag/assets。原准备阶段台账保留在下节；其 pending/dormant 描述是当时的观察，不是当前放行状态。
+
+| 风险范围 | 当前控制与剩余边界 |
+|---|---|
+| topology / ruleset / readiness | #118 接受 active policy/live R2 governance；main hard contexts 单次切换并完整回读，两个 hard 无 bypass。真实 PR119/run36850013496 双 required jobs 在 checkout 前拒绝 direct develop，零 skipped；最终 #116 正常审核和 merge |
+| source / manifest / policy / ancestry / metadata | exact source1ac、parentb1、candidate830、policy1.5.0、298-file tree 和 manifest 绑定 source-owned/live R2 核验；最终实际 merge tree 相同。发布时四层保护无漂移；下一版本重新观察，不继承冻结 pins |
+| package / public docs / surface | actual-main direct/sdist-derived wheel 逻辑内容与资源相同，双 Python 八探针/scaffold PASS；closed public projection 接受。五个附件下载 hash/size 与发行元数据一致 |
+| branch / future fixes | annotated v0.1.0 和已发布附件保持原身份；产品修复回 develop，新的版本独立审查/冻结/发布，release branch 不回并 |
+| Skill / Provider / scientific value | 155 Runtime resources、106 schemas、4 versioned Mode 文档、空 Projection；只证明安装和离线工程链，不证明 Skill admission、live Provider 或真实科研 net-benefit |
+| audit visibility / Trace | 路诚钺负责完整远端规则确认与执行，黄毅负责技术测试/最终 R2 审核；不将其有限字段可见性写成完整远端认证。调用方 A-20261001-007 保留可观察 receipt 与 capture-gap，不捕获隐藏推理 |
+
+## 历史准备阶段台账
+
 已接受的 source-CI 修复与 PR #98 均产生真实 protected-develop push 与 clean exact-source 在线验收；
 [历史观察身份](SOURCE_CI_ACCEPTANCE.json)已固定。已合入的
 [trusted release preflight](RELEASE_CHECKS.md) 在 accepted source checkout 中组合在线 source-CI 与独立
