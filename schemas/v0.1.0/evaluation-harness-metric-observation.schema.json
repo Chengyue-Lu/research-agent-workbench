@@ -1,0 +1,383 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/evaluation-harness-metric-observation.schema.json",
+  "title": "evaluation_harness_metric_observation",
+  "x-rwb-document-kind": "evaluation_harness_metric_observation",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "version",
+    "purpose",
+    "observation_id",
+    "method_ref",
+    "target",
+    "operation",
+    "observed_at",
+    "source_refs",
+    "data",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "evaluation_harness_metric_observation"
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "purpose": {
+      "const": "synthetic-contract-proof"
+    },
+    "observation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "method_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "target": {
+      "$ref": "#/$defs/target"
+    },
+    "operation": {
+      "enum": [
+        "audit-count",
+        "audit-ratio",
+        "context-ledger",
+        "cost-ledger",
+        "outer-wall-clock"
+      ]
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/fileRef"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "data": {},
+    "boundaries": {
+      "$ref": "evaluation-harness-execution.schema.json#/properties/boundaries"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "target": {
+      "type": "object",
+      "required": [
+        "block_index",
+        "case_id",
+        "phase",
+        "replicate",
+        "arm_id",
+        "run_id",
+        "attempts_sha256",
+        "attempt_ids",
+        "slices"
+      ],
+      "properties": {
+        "block_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "case_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "phase": {
+          "enum": [
+            "pilot",
+            "confirmatory"
+          ]
+        },
+        "replicate": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "arm_id": {
+          "enum": [
+            "plain-agent",
+            "plain-agent-tool",
+            "mode-no-skill",
+            "mode-candidate-skill"
+          ]
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "attempts_sha256": {
+          "$ref": "common.schema.json#/$defs/sha256"
+        },
+        "attempt_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "slices": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "attempt_id",
+              "slice_index"
+            ],
+            "properties": {
+              "attempt_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "slice_index": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "additionalProperties": false
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "audit-count"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": [
+              "count"
+            ],
+            "properties": {
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "audit-ratio"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": [
+              "numerator",
+              "denominator"
+            ],
+            "properties": {
+              "numerator": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "denominator": {
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "context-ledger"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": [
+              "unit",
+              "attempts"
+            ],
+            "properties": {
+              "unit": {
+                "enum": [
+                  "characters",
+                  "tokens"
+                ]
+              },
+              "attempts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "attempt_id",
+                    "value"
+                  ],
+                  "properties": {
+                    "attempt_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "value": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "minItems": 0
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "cost-ledger"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": [
+              "unit",
+              "execution",
+              "human"
+            ],
+            "properties": {
+              "unit": {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              },
+              "execution": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "attempt_id",
+                    "value"
+                  ],
+                  "properties": {
+                    "attempt_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "value": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "minItems": 0
+              },
+              "human": {
+                "type": "object",
+                "required": [
+                  "preparation",
+                  "supervision",
+                  "review",
+                  "correction",
+                  "recovery"
+                ],
+                "properties": {
+                  "preparation": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "supervision": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "review": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "correction": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "recovery": {
+                    "type": "number",
+                    "minimum": 0
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "outer-wall-clock"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": [
+              "clock",
+              "started_at",
+              "finished_at"
+            ],
+            "properties": {
+              "clock": {
+                "const": "trusted-harness-whole-arm"
+              },
+              "started_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "finished_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,246 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/skill-need.schema.json",
+  "title": "Skill Need",
+  "$comment": "A Skill Need defines a semantic gap and the evidence required to evaluate future candidates. It never stores trial results, promotion evidence, admission, runtime eligibility, or supply availability.",
+  "x-rwb-document-kind": "skill_need",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "need_ref",
+    "need_id",
+    "version",
+    "title",
+    "mode_refs",
+    "origin_actions",
+    "triggers",
+    "non_triggers",
+    "semantic_gap",
+    "baseline",
+    "expected_increment",
+    "evaluation_requirements",
+    "domain_scope",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "need_ref": { "$ref": "#/$defs/needRef" },
+    "need_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "version": { "$ref": "common.schema.json#/$defs/semver" },
+    "title": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "mode_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*@[0-9]+\\.[0-9]+\\.[0-9]+$"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "origin_actions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/actionReference" },
+      "minItems": 1
+    },
+    "triggers": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+    "non_triggers": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+    "semantic_gap": { "$ref": "#/$defs/semanticGap" },
+    "baseline": { "$ref": "#/$defs/baseline" },
+    "expected_increment": { "$ref": "#/$defs/expectedIncrement" },
+    "evaluation_requirements": { "$ref": "#/$defs/evaluationRequirements" },
+    "domain_scope": { "$ref": "#/$defs/domainScope" },
+    "boundaries": { "$ref": "#/$defs/boundaries" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "needRef": {
+      "type": "string",
+      "pattern": "^NEED-[A-Z0-9]+(?:-[A-Z0-9]+)*$"
+    },
+    "nonEmptyUniqueStrings": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "actionReference": {
+      "type": "object",
+      "required": ["action_ref", "content_hash"],
+      "properties": {
+        "action_ref": {
+          "type": "string",
+          "pattern": "^[A-Z]+-A[0-9]+@[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "content_hash": { "$ref": "common.schema.json#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    },
+    "semanticGap": {
+      "type": "object",
+      "required": [
+        "missing_judgment",
+        "failure_if_unaddressed",
+        "why_not_mode_or_task",
+        "why_not_direct_tool"
+      ],
+      "properties": {
+        "missing_judgment": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "failure_if_unaddressed": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "why_not_mode_or_task": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "why_not_direct_tool": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "additionalProperties": false
+    },
+    "baseline": {
+      "type": "object",
+      "required": ["route", "capability_requirement_refs", "procedure", "known_limitations"],
+      "properties": {
+        "route": { "enum": ["mode-plus-no-skill", "mode-plus-direct-tool"] },
+        "capability_requirement_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "procedure": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+        "known_limitations": { "$ref": "#/$defs/nonEmptyUniqueStrings" }
+      },
+      "additionalProperties": false
+    },
+    "expectedIncrement": {
+      "type": "object",
+      "required": ["outcomes", "non_goals", "minimum_decision_rule"],
+      "properties": {
+        "outcomes": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+        "non_goals": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+        "minimum_decision_rule": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "additionalProperties": false
+    },
+    "evidenceClass": {
+      "type": "object",
+      "required": ["evidence_class_id", "description"],
+      "properties": {
+        "evidence_class_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "description": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "additionalProperties": false
+    },
+    "criterion": {
+      "type": "object",
+      "required": ["criterion_id", "description", "assessment", "evidence_class_refs"],
+      "properties": {
+        "criterion_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "description": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "assessment": { "enum": ["pass-fail", "lower-is-better", "higher-is-better", "blinded-human-judgment"] },
+        "evidence_class_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "evaluationRequirements": {
+      "type": "object",
+      "required": [
+        "comparison_arms",
+        "required_evidence_classes",
+        "criteria",
+        "coverage_requirements",
+        "stop_conditions"
+      ],
+      "properties": {
+        "comparison_arms": {
+          "type": "array",
+          "prefixItems": [
+            { "const": "plain-agent" },
+            { "const": "plain-plus-capability" },
+            { "const": "mode-plus-no-skill" },
+            { "const": "mode-plus-candidate-skill" }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "required_evidence_classes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/evidenceClass" },
+          "minItems": 1
+        },
+        "criteria": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/criterion" },
+          "minItems": 1
+        },
+        "coverage_requirements": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+        "stop_conditions": { "$ref": "#/$defs/nonEmptyUniqueStrings" }
+      },
+      "additionalProperties": false
+    },
+    "domainVariant": {
+      "type": "object",
+      "required": ["variant_id", "applies_when", "variation"],
+      "properties": {
+        "variant_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "applies_when": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "variation": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "additionalProperties": false
+    },
+    "domainScope": {
+      "type": "object",
+      "required": ["included", "excluded", "variants"],
+      "properties": {
+        "included": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+        "excluded": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+        "variants": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/domainVariant" },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "boundaries": {
+      "type": "object",
+      "required": [
+        "records_trial_results",
+        "records_evaluation_results",
+        "records_promotion_evidence",
+        "records_runtime_eligibility",
+        "is_candidate",
+        "is_assignment",
+        "promotion_owner"
+      ],
+      "properties": {
+        "records_trial_results": { "const": false },
+        "records_evaluation_results": { "const": false },
+        "records_promotion_evidence": { "const": false },
+        "records_runtime_eligibility": { "const": false },
+        "is_candidate": { "const": false },
+        "is_assignment": { "const": false },
+        "promotion_owner": { "const": "human" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

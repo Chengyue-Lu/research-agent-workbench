@@ -21,6 +21,21 @@ from research_workbench.adapters.models import (
     run_provider_conformance,
 )
 from research_workbench.artifacts.integrity import hash_directory, hash_file, resolve_within_root
+from research_workbench.artifacts.admission import (
+    build_admission_mapping,
+    check_raw_reference_admission,
+    check_source_admission,
+    inbox_citation_risk,
+    path_cites_inbox,
+    sidecar_path_for,
+)
+from research_workbench.artifacts.promotion import (
+    check_promotion,
+    execute_promotion,
+    load_promotion_record,
+)
+from research_workbench.artifacts.validation_host import run_validation_execution
+from research_workbench.artifacts.run_reconstruction import check_run_manifest, reproduce_run
 from research_workbench.capability import (
     AcceptedSkillRegistry,
     AgentProfile,
@@ -106,10 +121,27 @@ def _print_risks(risks) -> int:
 
 
 def _document_reference_risks(document: Mapping[str, Any], root: Path):
+    if document.get("document_kind") == "claim_evidence_map":
+        from research_workbench.artifacts.claim_trace import localize_claim
+
+        try:
+            problems = localize_claim(root, document)["problems"]
+        except ValueError as exc:
+            problems = [str(exc)]
+        return [ContractRisk("CLAIM-TRACE-INCOMPLETE", RiskLevel.BLOCK, problem) for problem in problems]
     kind = infer_document_kind(document)
     references: tuple[FileReference, ...] = ()
     path_only: list[str] = []
     extra_risks: list[ContractRisk] = []
+    if kind == "run_reconstruction_manifest":
+        return [ContractRisk("RUN-RECONSTRUCTION-" + issue["status"].upper(), RiskLevel.BLOCK,
+                             issue["detail"]) for issue in check_run_manifest(root, document)]
+    if kind == "run_reconstruction_report":
+        references = tuple(FileReference.from_mapping(document[key])
+                           for key in ("manifest_ref", "stdout_ref", "stderr_ref", "promotion_receipt_ref")
+                           if key in document)
+        references += tuple(FileReference.from_mapping(reference)
+                            for key in ("staged_refs", "output_refs") for reference in document.get(key, []))
     if kind == "task_packet":
         references = TaskPacket.from_mapping(document).input_refs
     elif kind == "handoff_packet":
@@ -193,6 +225,86 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
         for subject_ref in document.get("subject_refs", []):
             if isinstance(subject_ref, Mapping):
                 references += (FileReference.from_mapping(subject_ref),)
+    elif kind == "promotion_record":
+        for key in (
+            "task_ref",
+            "validation_authority_registry",
+            "validation_report",
+            "validation_policy",
+            "validation_execution",
+        ):
+            reference = document.get(key)
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
+        for entry in document.get("entries", []):
+            if isinstance(entry, Mapping) and isinstance(entry.get("artifact"), Mapping):
+                references += (FileReference.from_mapping(entry["artifact"]),)
+    elif kind == "promotion_validation_authority_registry":
+        for entry in document.get("accepted_policies", []):
+            if not isinstance(entry, Mapping):
+                continue
+            policy_ref = entry.get("policy_ref")
+            if isinstance(policy_ref, Mapping):
+                references += (FileReference.from_mapping(policy_ref),)
+            for key in ("checker", "runner", "host"):
+                component = entry.get(key)
+                if isinstance(component, Mapping) and isinstance(component.get("source_ref"), Mapping):
+                    references += (FileReference.from_mapping(component["source_ref"]),)
+    elif kind == "promotion_validation_policy":
+        for key in ("checker", "runner"):
+            component = document.get(key)
+            if isinstance(component, Mapping) and isinstance(component.get("source_ref"), Mapping):
+                references += (FileReference.from_mapping(component["source_ref"]),)
+    elif kind == "promotion_validation_execution":
+        for key in ("task_ref", "authority_registry_ref", "policy_ref", "report_ref"):
+            reference = document.get(key)
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
+        for key in ("checker", "runner", "host"):
+            component = document.get(key)
+            if isinstance(component, Mapping) and isinstance(component.get("source_ref"), Mapping):
+                references += (FileReference.from_mapping(component["source_ref"]),)
+        for reference in document.get("subject_refs", []):
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
+    elif kind == "promotion_validation_host_receipt":
+        for key in ("task_ref", "authority_registry_ref", "policy_ref", "report_ref"):
+            reference = document.get(key)
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
+        for key in ("checker", "runner", "host"):
+            component = document.get(key)
+            if isinstance(component, Mapping) and isinstance(component.get("source_ref"), Mapping):
+                references += (FileReference.from_mapping(component["source_ref"]),)
+        for reference in document.get("subject_refs", []):
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
+    elif kind == "promotion_execution_receipt":
+        for key in (
+            "promotion_record_ref",
+            "task_ref",
+            "validation_authority_registry_ref",
+            "validation_policy_ref",
+            "validation_execution_ref",
+            "validation_report_ref",
+        ):
+            reference = document.get(key)
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
+        for key in ("checker", "runner", "host"):
+            component = document.get(key)
+            if isinstance(component, Mapping) and isinstance(component.get("source_ref"), Mapping):
+                references += (FileReference.from_mapping(component["source_ref"]),)
+        for reference in document.get("source_artifact_refs", []):
+            if isinstance(reference, Mapping):
+                references += (FileReference.from_mapping(reference),)
+        for target in document.get("target_artifact_refs", []):
+            if not isinstance(target, Mapping):
+                continue
+            for key in ("source_ref", "target_ref"):
+                reference = target.get(key)
+                if isinstance(reference, Mapping):
+                    references += (FileReference.from_mapping(reference),)
     elif kind == "handoff_transfer_manifest":
         for source_ref in document.get("source_artifact_refs", []):
             if isinstance(source_ref, Mapping):
@@ -235,10 +347,70 @@ def _document_reference_risks(document: Mapping[str, Any], root: Path):
         admission = document.get("admission")
         if isinstance(admission, Mapping) and isinstance(admission.get("decision_ref"), str):
             path_only.append(str(admission["decision_ref"]))
+    elif kind == "source_admission":
+        extra_risks.extend(check_source_admission(root, document))
+    elif kind == "evaluation_manifest":
+        from research_workbench.evaluation.manifest import check_reference_closure
+
+        frozen = document.get("frozen_conditions")
+        if isinstance(frozen, Mapping):
+            for task_ref in frozen.get("task_packet_refs", []):
+                if isinstance(task_ref, Mapping):
+                    references += (FileReference.from_mapping(task_ref),)
+            model = frozen.get("model")
+            if isinstance(model, Mapping) and isinstance(model.get("pool_ref"), Mapping):
+                references += (FileReference.from_mapping(model["pool_ref"]),)
+            context = frozen.get("context")
+            if isinstance(context, Mapping):
+                for key in ("policy_ref", "data_policy_ref"):
+                    reference = context.get(key)
+                    if isinstance(reference, Mapping):
+                        references += (FileReference.from_mapping(reference),)
+                for reference in context.get("initial_context_refs", []):
+                    if isinstance(reference, Mapping):
+                        references += (FileReference.from_mapping(reference),)
+        for arm in document.get("arms", []):
+            if not isinstance(arm, Mapping):
+                continue
+            for reference in arm.get("capability_snapshot_refs", []):
+                if isinstance(reference, Mapping):
+                    references += (FileReference.from_mapping(reference),)
+            for key in ("skill_evaluation_ref",):
+                reference = arm.get(key)
+                if isinstance(reference, Mapping):
+                    references += (FileReference.from_mapping(reference),)
+            binding = arm.get("skill_binding")
+            if isinstance(binding, Mapping) and isinstance(binding.get("source_ref"), Mapping):
+                references += (FileReference.from_mapping(binding["source_ref"]),)
+            control = arm.get("treatment_control")
+            if isinstance(control, Mapping):
+                for reference in control.get("method_resolution_refs", []):
+                    if isinstance(reference, Mapping):
+                        references += (FileReference.from_mapping(reference),)
+        for problem in check_reference_closure(root, document):
+            extra_risks.append(
+                ContractRisk("EVAL-MANIFEST-INVALID", RiskLevel.BLOCK, problem)
+            )
     risks = check_references(root, references)
     risks.extend(extra_risks)
+    for reference in references:
+        if path_cites_inbox(reference.path):
+            risks.append(inbox_citation_risk(reference.path))
+        if kind != "source_admission":
+            risks.extend(
+                check_raw_reference_admission(
+                    root,
+                    reference.path,
+                    reference_sha256=reference.sha256,
+                )
+            )
     for relative in path_only:
         resolved = resolve_within_root(root, relative)
+        if path_cites_inbox(relative):
+            risks.append(inbox_citation_risk(relative))
+            continue
+        if kind != "source_admission":
+            risks.extend(check_raw_reference_admission(root, relative))
         if resolved is None:
             risks.append(ContractRisk("REF-OUTSIDE-ROOT", RiskLevel.BLOCK, f"reference escapes root: {relative}"))
         elif not resolved.is_file():
@@ -255,6 +427,179 @@ def _load_valid(path: str | Path, kind: str) -> Mapping[str, Any]:
         rendered = "; ".join(f"{error.pointer}: {error.message}" for error in errors[:5])
         raise ValueError(f"{path}: schema validation failed: {rendered}")
     return document
+
+
+def _source_admit(args: argparse.Namespace) -> int:
+    root = Path(args.root).resolve()
+    source_path = Path(args.file)
+    if not source_path.is_file():
+        raise FileNotFoundError(source_path)
+    content = source_path.read_bytes()
+    admitted_path = args.admitted_path or f"sources/raw/{source_path.name}"
+    mapping = build_admission_mapping(
+        original_filename=source_path.name,
+        admitted_path=admitted_path,
+        content=content,
+        origin={"uri": args.origin_uri, "doi": args.doi, "device": args.device},
+        acquired_at=args.acquired_at,
+        operator=args.operator,
+        license_or_data_use=args.license,
+        parser_name=args.parser_name,
+        parser_version=args.parser_version,
+        sensitivity=args.sensitivity,
+        egress_restriction=args.egress_restriction,
+        admission_id=args.id,
+    )
+    sidecar = sidecar_path_for(mapping["admitted_path"])
+    if args.execute:
+        target = resolve_within_root(root, mapping["admitted_path"])
+        sidecar_target = resolve_within_root(root, sidecar)
+        if target is None or sidecar_target is None:
+            raise ValueError(f"admitted_path escapes root: {mapping['admitted_path']}")
+        if target.exists() or sidecar_target.exists():
+            raise FileExistsError("refusing to overwrite admitted bytes or provenance sidecar")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(content)
+        _write_yaml(sidecar_target, mapping)
+        print(f"admitted: {mapping['admitted_path']}")
+        print(f"sidecar:  {sidecar}")
+    else:
+        print(yaml.safe_dump(mapping, sort_keys=False, allow_unicode=True), end="")
+        print(f"(dry run; pass --execute to copy bytes and write {sidecar})")
+    return 0
+
+
+def _source_check(args: argparse.Namespace) -> int:
+    document = load_document(args.admission)
+    if not isinstance(document, Mapping):
+        print("ERROR   DOCUMENT-INVALID              admission document must be an object")
+        return 1
+    errors = SchemaCatalog().validate("source_admission", document)
+    for error in errors:
+        print(f"ERROR   SCHEMA-INVALID               {error.pointer}: {error.message}")
+    if errors:
+        return 1
+    return _print_risks(check_source_admission(Path(args.root).resolve(), document))
+
+
+def _run_check(args: argparse.Namespace) -> int:
+    root = Path(args.root).resolve()
+    try:
+        document = load_document(root / args.manifest)
+    except yaml.YAMLError as exc:
+        raise ContractError("manifest", f"cannot parse reconstruction manifest: {exc}") from exc
+    issues = check_run_manifest(root, document)
+    for issue in issues:
+        print(f"blocked: {issue['status']}: {issue['detail']}")
+    if not issues:
+        print("ok: pinned reconstruction closure is valid (no code executed)")
+    return 1 if issues else 0
+
+
+def _run_reproduce(args: argparse.Namespace) -> int:
+    report = reproduce_run(args.root, args.manifest, attempt_dir=args.attempt_dir)
+    print(json.dumps(report, indent=2, sort_keys=True))
+    return 0 if report["status"] == "matched" else 1
+
+
+def _promotion_validate(args: argparse.Namespace) -> int:
+    root = Path(args.root).resolve()
+    try:
+        document, record_reference = load_promotion_record(root, args.record)
+    except ContractError as exc:
+        print(f"ERROR   DOCUMENT-INVALID              {exc}")
+        return 1
+    return _print_risks(check_promotion(root, document, record_reference=record_reference))
+
+
+def _promotion_execute(args: argparse.Namespace) -> int:
+    result = execute_promotion(Path(args.root).resolve(), args.record)
+    for target in result.targets:
+        print(f"promoted: {target}")
+    if not result.targets:
+        print("ok: all validated entries retained in work")
+    print(f"receipt: {result.receipt}")
+    return 0
+
+
+def _validation_run(args: argparse.Namespace) -> int:
+    try:
+        result = run_validation_execution(
+            Path(args.root).resolve(),
+            args.task,
+            attempt_id=args.attempt,
+            subjects=tuple(args.subject),
+            operator=args.operator,
+            report_path=args.report_path,
+        )
+    except ContractError as exc:
+        print(f"ERROR   VALIDATION-EXECUTION-UNPROVEN {exc}")
+        return 1
+    print(f"report: {result.report_path}")
+    print(f"execution: {result.execution_path}")
+    print(f"receipt: {result.receipt_path}")
+    if result.outcome != "pass":
+        print("blocked: validation execution outcome is not pass")
+        return 1
+    print("ok: validation run produced a PASS provenance triple (eligibility is established by promotion-time re-execution)")
+    return 0
+
+
+def _eval_check(args: argparse.Namespace) -> int:
+    document = load_document(args.manifest)
+    if not isinstance(document, Mapping):
+        print("ERROR   DOCUMENT-INVALID              evaluation manifest must be an object")
+        return 1
+    errors = SchemaCatalog().validate("evaluation_manifest", document)
+    for error in errors:
+        print(f"ERROR   SCHEMA-INVALID               {error.pointer}: {error.message}")
+    from research_workbench.evaluation.manifest import check_evaluation_manifest
+
+    problems = check_evaluation_manifest(document)
+    for problem in problems:
+        print(f"ERROR   EVAL-MANIFEST-INVALID        {problem}")
+    if errors or problems:
+        return 1
+    reference_risks = _document_reference_risks(document, Path(args.root).resolve())
+    exit_code = _print_risks(reference_risks)
+    print("metric set: fixed vocabulary verified (13 metrics)")
+    return exit_code
+
+
+def _eval_verify(args: argparse.Namespace) -> int:
+    from research_workbench.evaluation.contracts import verify_evaluation_record
+
+    try:
+        protocol_ref = None
+        case_ref = None
+        if args.protocol or args.protocol_sha256:
+            if not args.protocol or not args.protocol_sha256:
+                raise ValueError("--protocol and --protocol-sha256 must be supplied together")
+            protocol_ref = {"path": args.protocol, "sha256": args.protocol_sha256}
+        if args.case_closure or args.case_closure_sha256:
+            if not args.case_closure or not args.case_closure_sha256:
+                raise ValueError("--case-closure and --case-closure-sha256 must be supplied together")
+            case_ref = {"path": args.case_closure, "sha256": args.case_closure_sha256}
+        result = verify_evaluation_record(args.root, {"path": args.record, "sha256": args.sha256},
+            expected_protocol_ref=protocol_ref, expected_case_closure_ref=case_ref,
+            case_selection_frozen_at=args.case_selection_frozen_at)
+    except (ValueError, OSError, KeyError, TypeError) as exc:
+        print(f"ERROR   EVALUATION-CONTRACT-INVALID {exc}")
+        return 1
+    print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+    return 0
+
+
+def _eval_plan(args: argparse.Namespace) -> int:
+    document = _load_valid(args.manifest, "evaluation_manifest")
+    from research_workbench.evaluation.manifest import compile_baseline_plan
+
+    reference_risks = _document_reference_risks(document, Path(args.root).resolve())
+    if reference_risks and _print_risks(reference_risks):
+        return 1
+    plan = compile_baseline_plan(document)
+    print(json.dumps(plan, ensure_ascii=False, indent=2, sort_keys=True))
+    return 0
 
 
 def _validate(args: argparse.Namespace) -> int:
@@ -290,35 +635,26 @@ def _hash(args: argparse.Namespace) -> int:
 
 
 def _init_project(args: argparse.Namespace) -> int:
-    root = Path(args.path)
-    if root.exists() and any(root.iterdir()):
-        raise FileExistsError(f"refusing to initialize a non-empty directory: {root}")
-    root.mkdir(parents=True, exist_ok=True)
-    project_id = args.project_id or root.name
-    protocol = {
-        "schema_version": "0.1.0",
-        "project_id": project_id,
-        "revision": 1,
-        "question_refs": [],
-        "active_modes": [],
-        "claim_ceiling": ["unresolved"],
-        "required_human_gates": ["approve_main_claim", "approve_external_release"],
-        "budgets": {
-            "max_parallel_subagents": 1,
-            "max_delegation_depth": 1,
-            "coordination_cost_ratio_warn": 0.33,
-        },
-        "context_policy": {"proactive_checkpoint": True, "main_raw_material": "on-demand"},
-        "data_boundary": {"local_only": True, "external_upload_requires_approval": True},
-    }
-    errors = SchemaCatalog().validate("project_protocol", protocol)
-    if errors:
-        raise ValueError("internal protocol template failed schema validation")
-    _write_yaml(root / "project-protocol.yaml", protocol)
-    for directory in ("objects", "tasks", "handoffs", "checkpoints", "work"):
-        (root / directory).mkdir()
-    print(f"initialized {project_id!r} at {root}")
+    from research_workbench.resources import RuntimeResources
+    from research_workbench.scaffold import initialize_project
+    resources = RuntimeResources(args.runtime_root, expected_sha256=args.manifest_sha256)
+    result = initialize_project(args.path, project_id=args.project_id,
+                                template=args.template, resources=resources)
+    if args.json:
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+    else:
+        print(f"initialized {result['project_id']!r} at {result['project_root']} ({result['template']})")
+        print(f"Runtime resources: {result['runtime_root']}")
     return 0
+
+
+def _project_check(args: argparse.Namespace) -> int:
+    from research_workbench.resources import RuntimeResources
+    from research_workbench.scaffold import check_project
+    resources = RuntimeResources(args.runtime_root, expected_sha256=args.manifest_sha256)
+    print(json.dumps(check_project(args.path, resources=resources), ensure_ascii=False, indent=2))
+    return 0
+
 
 
 def _skill_candidates(args: argparse.Namespace) -> int:
@@ -582,7 +918,7 @@ def _runtime_codex_render(args: argparse.Namespace) -> int:
         )
     except ResolutionError as exc:
         return _print_risks(exc.risks)
-    adapter = CodexRuntimeAdapter(args.root, platform_version=args.platform_version)
+    adapter = CodexRuntimeAdapter(args.integration_root, platform_version=args.platform_version)
     prompt = adapter.render_task_prompt(task, profile, assignment)
     if args.output:
         _write_text(Path(args.output), prompt)
@@ -672,7 +1008,74 @@ def _reference_check(args: argparse.Namespace) -> int:
     return _print_risks(_document_reference_risks(document, Path(args.root).resolve()))
 
 
+def _research_state_validate(args: argparse.Namespace) -> int:
+    from research_workbench.research_state import (
+        ClosureIndex,
+        check_research_attempt_lineage,
+        check_research_failure,
+        check_research_state,
+        check_method_trace,
+    )
+
+    document_path = Path(args.document)
+    document = load_document(document_path)
+    checkers = {
+        "research_state": check_research_state,
+        "research_attempt_lineage": check_research_attempt_lineage,
+        "research_failure": check_research_failure,
+        "method_trace": check_method_trace,
+    }
+    kind = infer_document_kind(document) if isinstance(document, Mapping) else None
+    if kind not in checkers:
+        print("ERROR   DOCUMENT-UNKNOWN              not a bounded Phase C document")
+        return 1
+    errors = SchemaCatalog().validate(kind, document)
+    for error in errors:
+        print(f"ERROR   SCHEMA-INVALID               {error.pointer}: {error.message}")
+    if errors:
+        return 1
+    closure_paths = list(iter_documents(args.closure))
+    if document_path not in closure_paths:
+        closure_paths.append(document_path)
+    index = ClosureIndex.from_paths(closure_paths)
+    problems = checkers[kind](document, index)
+    for problem in problems:
+        print(f"ERROR   PHASE-C-CLOSURE-INVALID       {problem}")
+    if problems:
+        return 1
+    print(f"closure: ok ({kind}; explicit_documents={len(closure_paths)})")
+    return 0
+
+
+def _research_state_gate(args: argparse.Namespace) -> int:
+    from research_workbench.research_state import GateCase, run_phase_c_gate
+
+    output = Path(args.output)
+    if output.exists():
+        raise FileExistsError(f"Phase C Gate output already exists: {output}")
+    cases = [
+        GateCase(Path(manifest), Path(oracle))
+        for manifest, oracle in args.case
+    ]
+    report = run_phase_c_gate(cases, project_root=Path(args.root).resolve())
+    output.parent.mkdir(parents=True, exist_ok=True)
+    _write_text(output, json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
+    status = report["machine_gate"]["status"]
+    print(f"Phase C bounded Gate: {status}; report={output}")
+    return 0 if status == "pass" else 1
+
+
 def _claim_trace(args: argparse.Namespace) -> int:
+    if args.evidence_map:
+        from research_workbench.artifacts.claim_trace import localize_claim
+
+        trace = localize_claim(args.root, load_document(args.evidence_map), claim_path=args.claim)
+        print(json.dumps(trace, ensure_ascii=False, indent=2))
+        result = 0 if trace["complete"] else 1
+        if args.protocol:
+            protocol = ProjectProtocol.from_mapping(_load_valid(args.protocol, "project_protocol"))
+            result = max(result, _print_risks(check_claim_ceiling(protocol, str(trace["strength"]))))
+        return result
     document = load_document(args.claim)
     if not isinstance(document, Mapping):
         print("ERROR   DOCUMENT-INVALID              claim document must be an object")
@@ -685,6 +1088,7 @@ def _claim_trace(args: argparse.Namespace) -> int:
             print("ERROR   OBJECT-NOT-CLAIM             document object_type is not claim")
         return 1
     trace = {
+        "localization_status": "not-requested",
         "claim_id": document["object_id"],
         "revision": document["revision"],
         "strength": document["strength"],
@@ -1059,14 +1463,54 @@ def _context_checkpoint(args: argparse.Namespace) -> int:
     return 0
 
 
+def _resources_check(args: argparse.Namespace) -> int:
+    from research_workbench.resources import RuntimeResources
+    resources = RuntimeResources(args.runtime_root, expected_sha256=args.manifest_sha256)
+    print(json.dumps(resources.validate_catalog(), sort_keys=True))
+    return 0
+
+
+def _resources_quickstart(args: argparse.Namespace) -> int:
+    from research_workbench.resources import RuntimeResources
+    resources = RuntimeResources(args.runtime_root, expected_sha256=args.manifest_sha256)
+    resources.validate_catalog()
+    output = Path(args.output)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with output.open("xb") as stream:
+        stream.write(resources.read("examples/quickstart/task-no-skill.yaml"))
+    print(f"No-Skill structural Task written to {output}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="rwb", description="Research Agent Workbench utilities")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    init_parser = subparsers.add_parser("init", help="initialize a minimal file-first project")
+    resources = subparsers.add_parser("resources", help="validate installed Runtime resources")
+    resource_commands = resources.add_subparsers(dest="resources_command", required=True)
+    resource_check = resource_commands.add_parser("check")
+    resource_quickstart = resource_commands.add_parser("quickstart")
+    for command in (resource_check, resource_quickstart):
+        command.add_argument("--runtime-root", help="absolute resource override root")
+        command.add_argument("--manifest-sha256", help="external digest required with a resource override")
+    resource_check.set_defaults(handler=_resources_check)
+    resource_quickstart.add_argument("--output", required=True)
+    resource_quickstart.set_defaults(handler=_resources_quickstart)
+
+    init_parser = subparsers.add_parser("init", help="initialize a reusable local project")
     init_parser.add_argument("path")
     init_parser.add_argument("--project-id")
+    init_parser.add_argument("--template", choices=("no-skill", "offline-demo", "minimal"), default="no-skill")
+    init_parser.add_argument("--json", action="store_true")
     init_parser.set_defaults(handler=_init_project)
+    project = subparsers.add_parser("project", help="check an explicit project and its Runtime pin")
+    project_commands = project.add_subparsers(dest="project_command", required=True)
+    project_check = project_commands.add_parser("check")
+    project_check.add_argument("path")
+    project_check.set_defaults(handler=_project_check)
+    for command in (init_parser, project_check):
+        command.add_argument("--runtime-root", help="absolute resource override root")
+        command.add_argument("--manifest-sha256", help="external digest required with a resource override")
 
     validate = subparsers.add_parser("validate", help="run schema, deterministic, and reference checks")
     validate.add_argument("paths", nargs="+", help="document files or directories")
@@ -1093,7 +1537,7 @@ def build_parser() -> argparse.ArgumentParser:
     skills = subparsers.add_parser("skills", help="inspect the skill candidate registry")
     skill_subparsers = skills.add_subparsers(dest="skills_command", required=True)
     candidates = skill_subparsers.add_parser("candidates", help="list or filter candidates")
-    candidates.add_argument("--registry", default=str(DEFAULT_CANDIDATES))
+    candidates.add_argument("--registry", required=True)
     candidates.add_argument("--status")
     candidates.add_argument("--mode")
     candidates.add_argument("--capability")
@@ -1101,7 +1545,7 @@ def build_parser() -> argparse.ArgumentParser:
     candidates.set_defaults(handler=_skill_candidates)
     accepted = skill_subparsers.add_parser("accepted", help="validate and list accepted repository Skills")
     accepted.add_argument("--registry", default=str(DEFAULT_ACCEPTED))
-    accepted.add_argument("--root", default=".")
+    accepted.add_argument("--root", required=True)
     accepted.add_argument("--json", action="store_true")
     accepted.set_defaults(handler=_skill_accepted)
     archive_audit = skill_subparsers.add_parser(
@@ -1111,7 +1555,7 @@ def build_parser() -> argparse.ArgumentParser:
     archive_audit.add_argument("archive")
     archive_audit.add_argument("--source-id", required=True)
     archive_audit.add_argument("--expected-sha256", required=True)
-    archive_audit.add_argument("--registry", default=str(DEFAULT_CANDIDATES))
+    archive_audit.add_argument("--registry", required=True)
     archive_audit.add_argument("--generated-at")
     archive_audit.add_argument("--output")
     archive_audit.set_defaults(handler=_skill_audit_archive)
@@ -1125,21 +1569,21 @@ def build_parser() -> argparse.ArgumentParser:
         help="check paired outputs, receipts, context, blind review, and case coverage",
     )
     skill_eval_assess.add_argument("evaluation")
-    skill_eval_assess.add_argument("--root", default=".")
-    skill_eval_assess.add_argument("--registry", default=str(DEFAULT_CANDIDATES))
+    skill_eval_assess.add_argument("--root", required=True)
+    skill_eval_assess.add_argument("--registry", required=True)
     skill_eval_assess.set_defaults(handler=_skill_eval_assess)
 
     providers = subparsers.add_parser("providers", help="inspect model provider baselines")
     provider_subparsers = providers.add_subparsers(dest="providers_command", required=True)
     provider_list = provider_subparsers.add_parser("list")
-    provider_list.add_argument("--registry", default="registry/providers/capabilities.json")
+    provider_list.add_argument("--registry", required=True)
     provider_list.add_argument("--json", action="store_true")
     provider_list.set_defaults(handler=_provider_list)
     provider_probe = provider_subparsers.add_parser(
         "probe",
         help="validate non-secret adapter config and optionally check environment presence",
     )
-    provider_probe.add_argument("--config", default="registry/providers/adapters.yaml")
+    provider_probe.add_argument("--config", required=True)
     provider_probe.add_argument(
         "--check-environment",
         action="store_true",
@@ -1151,7 +1595,7 @@ def build_parser() -> argparse.ArgumentParser:
         "conformance",
         help="plan or explicitly execute bounded synthetic provider checks",
     )
-    provider_conformance.add_argument("--config", default="registry/providers/adapters.yaml")
+    provider_conformance.add_argument("--config", required=True)
     provider_conformance.add_argument("--adapter", required=True)
     provider_conformance.add_argument(
         "--check",
@@ -1179,7 +1623,7 @@ def build_parser() -> argparse.ArgumentParser:
         "probe",
         help="validate model slots without choosing, ranking, or calling a model",
     )
-    model_probe.add_argument("--config", default="registry/models/pool.example.yaml")
+    model_probe.add_argument("--config", required=True)
     model_probe.add_argument(
         "--check-environment",
         action="store_true",
@@ -1210,14 +1654,15 @@ def build_parser() -> argparse.ArgumentParser:
     codex = runtime_subparsers.add_parser("codex", help="inspect the Codex native adapter")
     codex_subparsers = codex.add_subparsers(dest="codex_command", required=True)
     codex_validate = codex_subparsers.add_parser("validate")
-    codex_validate.add_argument("--root", default=".")
+    codex_validate.add_argument("--root", "--integration-root", required=True)
     codex_validate.add_argument("--platform-version", default="unprobed")
     codex_validate.set_defaults(handler=_runtime_codex_validate)
     codex_render = codex_subparsers.add_parser("render")
     codex_render.add_argument("task")
     codex_render.add_argument("--profile", required=True)
     codex_render.add_argument("--registry", default=str(DEFAULT_ACCEPTED))
-    codex_render.add_argument("--root", default=".")
+    codex_render.add_argument("--root", required=True)
+    codex_render.add_argument("--integration-root", required=True)
     codex_render.add_argument("--platform-version", default="unprobed")
     codex_render.add_argument(
         "--historical-replay",
@@ -1255,7 +1700,97 @@ def build_parser() -> argparse.ArgumentParser:
     claim_trace = claim_subparsers.add_parser("trace")
     claim_trace.add_argument("claim")
     claim_trace.add_argument("--protocol")
+    claim_trace.add_argument("--root", default=".")
+    claim_trace.add_argument("--evidence-map", help="exact file and provenance bindings for evidence localization")
     claim_trace.set_defaults(handler=_claim_trace)
+
+    source = subparsers.add_parser("source", help="admit raw sources with provenance sidecars")
+    source_subparsers = source.add_subparsers(dest="source_command", required=True)
+    source_admit = source_subparsers.add_parser(
+        "admit", help="build (and optionally execute) a source admission sidecar"
+    )
+    source_admit.add_argument("file", help="bytes to admit, e.g. an inbox file")
+    source_admit.add_argument("--root", default=".")
+    source_admit.add_argument("--admitted-path", help="target path under sources/raw/")
+    source_admit.add_argument("--origin-uri")
+    source_admit.add_argument("--doi")
+    source_admit.add_argument("--device")
+    source_admit.add_argument("--acquired-at", required=True, help="explicit ISO-8601 timestamp")
+    source_admit.add_argument("--operator", required=True, help="named accountable operator")
+    source_admit.add_argument("--license", required=True, help="license or data-use boundary")
+    source_admit.add_argument("--parser-name", required=True)
+    source_admit.add_argument("--parser-version", required=True)
+    source_admit.add_argument("--sensitivity", required=True)
+    source_admit.add_argument("--egress-restriction", required=True)
+    source_admit.add_argument("--id", help="explicit admission_id; defaults to a hash-derived id")
+    source_admit.add_argument(
+        "--execute",
+        action="store_true",
+        help="copy the bytes into sources/raw and write the sidecar; default is a dry run",
+    )
+    source_admit.set_defaults(handler=_source_admit)
+    source_check = source_subparsers.add_parser("check", help="verify an admission sidecar")
+    source_check.add_argument("admission")
+    source_check.add_argument("--root", default=".")
+    source_check.set_defaults(handler=_source_check)
+
+    run = subparsers.add_parser("run", help="inspect or reconstruct a file-pinned scientific Run")
+    run_subparsers = run.add_subparsers(dest="run_command", required=True)
+    run_check = run_subparsers.add_parser("check", help="check manifest pins without executing code")
+    run_check.add_argument("manifest")
+    run_check.add_argument("--root", default=".")
+    run_check.set_defaults(handler=_run_check)
+    run_reproduce = run_subparsers.add_parser(
+        "reproduce", help="execute trusted pinned Python code in a new work directory; not an OS sandbox"
+    )
+    run_reproduce.add_argument("manifest")
+    run_reproduce.add_argument("--root", default=".")
+    run_reproduce.add_argument("--attempt-dir", required=True, help="new directory inside root/work")
+    run_reproduce.set_defaults(handler=_run_reproduce)
+
+    promotion = subparsers.add_parser(
+        "promotion", help="validate or execute fail-closed work artifact promotion"
+    )
+    promotion_subparsers = promotion.add_subparsers(dest="promotion_command", required=True)
+    promotion_validate = promotion_subparsers.add_parser(
+        "validate",
+        help="verify pins and boundaries, then deterministically re-execute the "
+        "pinned validation pipeline in a scratch directory (trusted side-effect-free components required)",
+    )
+    promotion_validate.add_argument("record")
+    promotion_validate.add_argument("--root", default=".")
+    promotion_validate.set_defaults(handler=_promotion_validate)
+    promotion_execute = promotion_subparsers.add_parser(
+        "execute", help="stage, revalidate, and exclusively publish eligible bytes"
+    )
+    promotion_execute.add_argument("record")
+    promotion_execute.add_argument("--root", default=".")
+    promotion_execute.set_defaults(handler=_promotion_execute)
+
+    validation = subparsers.add_parser(
+        "validation", help="run the validation pipeline for artifact promotion"
+    )
+    validation_subparsers = validation.add_subparsers(dest="validation_command", required=True)
+    validation_run = validation_subparsers.add_parser(
+        "run",
+        help="actually invoke the accepted runner/checker and persist the run's "
+        "provenance triple (report/execution/host receipt); promotion eligibility "
+        "itself is established later by promotion-time re-execution",
+    )
+    validation_run.add_argument("--task", required=True, help="file-bound canonical Task Packet")
+    validation_run.add_argument("--attempt", required=True, help="Attempt ID under work/<task>/")
+    validation_run.add_argument(
+        "--subject",
+        action="append",
+        required=True,
+        help="subject path inside the workspace; repeat for each subject",
+    )
+    validation_run.add_argument("--operator", required=True, help="named accountable operator")
+    validation_run.add_argument(
+        "--report-path", help="report path override; must stay inside the workspace"
+    )
+    validation_run.add_argument("--root", default=".")
+    validation_run.set_defaults(handler=_validation_run)
 
     trace = subparsers.add_parser("trace", help="validate a file-authoritative Attempt trace")
     trace_subparsers = trace.add_subparsers(dest="trace_command", required=True)
@@ -1263,6 +1798,33 @@ def build_parser() -> argparse.ArgumentParser:
     trace_validate.add_argument("--attempt", required=True, help="Attempt directory or INDEX.yaml")
     trace_validate.add_argument("--root", default=".")
     trace_validate.set_defaults(handler=_trace_validate)
+
+    evaluation = subparsers.add_parser("eval", help="inspect comparison evaluation manifests")
+    evaluation_subparsers = evaluation.add_subparsers(dest="eval_command", required=True)
+    eval_check = evaluation_subparsers.add_parser(
+        "check", help="verify a fixed-metric evaluation manifest and its frozen arms"
+    )
+    eval_check.add_argument("manifest")
+    eval_check.add_argument("--root", default=".")
+    eval_check.set_defaults(handler=_eval_check)
+    eval_plan = evaluation_subparsers.add_parser(
+        "plan", help="compile the non-executing deterministic four-arm baseline plan"
+    )
+    eval_plan.add_argument("manifest")
+    eval_plan.add_argument("--root", default=".")
+    eval_plan.set_defaults(handler=_eval_plan)
+    eval_verify = evaluation_subparsers.add_parser(
+        "verify", help="recompute an exact-pinned M5 protocol or qualification record"
+    )
+    eval_verify.add_argument("record", help="record path relative to the explicit evaluation root")
+    eval_verify.add_argument("--root", required=True)
+    eval_verify.add_argument("--sha256", required=True)
+    eval_verify.add_argument("--protocol")
+    eval_verify.add_argument("--protocol-sha256")
+    eval_verify.add_argument("--case-closure")
+    eval_verify.add_argument("--case-closure-sha256")
+    eval_verify.add_argument("--case-selection-frozen-at")
+    eval_verify.set_defaults(handler=_eval_verify)
 
     execute = subparsers.add_parser("execute", help="verify a committed execution archive")
     execute_subparsers = execute.add_subparsers(dest="execute_command", required=True)
@@ -1351,6 +1913,38 @@ def build_parser() -> argparse.ArgumentParser:
     execution_assess.add_argument("--protocol", required=True)
     execution_assess.add_argument("--root", default=".")
     execution_assess.set_defaults(handler=_execution_assess)
+    research_state_cmd = subparsers.add_parser(
+        "research-state", help="validate one bounded Phase C document against an explicit closure"
+    )
+    research_state_subparsers = research_state_cmd.add_subparsers(
+        dest="research_state_command", required=True
+    )
+    research_state_validate = research_state_subparsers.add_parser(
+        "validate", help="validate schema and exact refs without scanning the repository"
+    )
+    research_state_validate.add_argument("document")
+    research_state_validate.add_argument(
+        "--closure",
+        action="append",
+        required=True,
+        help="explicit closure file or directory; repeat for multiple roots",
+    )
+    research_state_validate.set_defaults(handler=_research_state_validate)
+    research_state_gate = research_state_subparsers.add_parser(
+        "gate",
+        help="run the two runner-owned bounded cases in fresh processes",
+    )
+    research_state_gate.add_argument(
+        "--case",
+        action="append",
+        nargs=2,
+        metavar=("MANIFEST", "PRIVATE_ORACLE"),
+        required=True,
+        help="source manifest and private oracle; repeat exactly twice",
+    )
+    research_state_gate.add_argument("--root", default=".")
+    research_state_gate.add_argument("--output", required=True)
+    research_state_gate.set_defaults(handler=_research_state_gate)
     return parser
 
 

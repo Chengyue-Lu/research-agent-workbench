@@ -1,0 +1,19 @@
+schema_version: 0.1.0
+action_id: ES-A4
+version: 1.0.0
+mode_ref: evidence-synthesis@0.1.0
+title: Form atomic Evidence records
+intent: Extract bounded, locatable Evidence while separating source statements from agent inference.
+triggers:
+  - A frozen source contains material relevant to the bounded question.
+non_triggers:
+  - Only a source list or search result needs to be recorded.
+failure_modes: [inference recorded as source fact, counterevidence omitted, semantic over-extraction]
+required_artifacts: [evidence-record]
+claim_effects:
+  may_support: [source_reported]
+  cannot_alone_support: [synthesis_supported, experimentally_supported]
+  notes: [Each Evidence record is limited to its source, locator, and stated limitations.]
+human_gates: [sample-high-risk-extraction]
+stop_conditions: [All in-scope records pass locator and source-separation checks.]
+blocked_conditions: [The relevant passage cannot be located in an approved frozen source.]

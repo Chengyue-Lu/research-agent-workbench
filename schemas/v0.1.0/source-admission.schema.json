@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/source-admission.schema.json",
+  "title": "Source Admission",
+  "x-rwb-document-kind": "source_admission",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "admission_id",
+    "original_filename",
+    "admitted_path",
+    "sha256",
+    "acquisition",
+    "license_or_data_use",
+    "parser",
+    "sensitivity",
+    "egress_restriction"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "admission_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "original_filename": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "admitted_path": {
+      "allOf": [
+        { "$ref": "common.schema.json#/$defs/relativePath" },
+        { "pattern": "(^|/)sources/raw/.+" }
+      ]
+    },
+    "sha256": { "$ref": "common.schema.json#/$defs/sha256" },
+    "acquisition": {
+      "type": "object",
+      "required": ["origin", "acquired_at", "operator"],
+      "properties": {
+        "origin": {
+          "type": "object",
+          "properties": {
+            "uri": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+            "doi": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+            "device": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+          },
+          "additionalProperties": false,
+          "anyOf": [
+            { "required": ["uri"] },
+            { "required": ["doi"] },
+            { "required": ["device"] }
+          ]
+        },
+        "acquired_at": { "type": "string", "format": "date-time" },
+        "operator": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "additionalProperties": false
+    },
+    "license_or_data_use": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "parser": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "version": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+      },
+      "additionalProperties": false
+    },
+    "sensitivity": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "egress_restriction": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "derivatives": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "sha256", "relation"],
+        "properties": {
+          "path": { "$ref": "common.schema.json#/$defs/relativePath" },
+          "sha256": { "$ref": "common.schema.json#/$defs/sha256" },
+          "relation": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "metadata": { "type": "object" }
+  },
+  "additionalProperties": false
+}

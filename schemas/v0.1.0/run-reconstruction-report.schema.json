@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/run-reconstruction-report.schema.json",
+  "x-rwb-document-kind": "run_reconstruction_report",
+  "type": "object",
+  "required": ["schema_version", "report_kind", "reconstruction_id", "manifest_ref", "status", "detail", "executed", "returncode", "duration_seconds", "comparisons", "staged_refs", "output_refs", "stdout_ref", "stderr_ref", "authority_boundaries", "limitations"],
+  "properties": {
+    "schema_version": {"const": "0.1.0"},
+    "report_kind": {"const": "run-reconstruction"},
+    "reconstruction_id": {"type": "string", "minLength": 1},
+    "manifest_ref": {"$ref": "common.schema.json#/$defs/fileRef"},
+    "promotion_receipt_ref": {"$ref": "common.schema.json#/$defs/fileRef"},
+    "run_id": {"type": "string", "minLength": 1},
+    "negative_result": {"type": "boolean"},
+    "status": {"enum": ["matched", "pin-drift", "prerequisite-missing", "manifest-invalid", "run-failed", "output-different"]},
+    "detail": {"type": "string"},
+    "executed": {"type": "boolean"},
+    "returncode": {"type": ["integer", "null"]},
+    "duration_seconds": {"type": "number", "minimum": 0},
+    "child_pid": {"type": "integer", "minimum": 1},
+    "command": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "cwd": {"type": "string", "minLength": 1},
+    "python": {
+      "type": "object", "required": ["implementation", "version", "platform"],
+      "properties": {"implementation": {"type": "string"}, "version": {"type": "string"}, "platform": {"type": "string"}},
+      "additionalProperties": false
+    },
+    "staged_refs": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/fileRef"}},
+    "output_refs": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/fileRef"}},
+    "stdout_ref": {"$ref": "common.schema.json#/$defs/fileRef"},
+    "stderr_ref": {"$ref": "common.schema.json#/$defs/fileRef"},
+    "comparisons": {
+      "type": "array", "items": {
+        "type": "object", "required": ["output_path", "expected_sha256", "actual_sha256", "matched"],
+        "properties": {
+          "output_path": {"type": "string"},
+          "expected_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+          "actual_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+          "matched": {"type": "boolean"}
+        }, "additionalProperties": false
+      }
+    },
+    "authority_boundaries": {
+      "type": "object", "required": ["claim_acceptance", "human_decision", "scientific_correctness", "promotion"],
+      "properties": {"claim_acceptance": {"const": false}, "human_decision": {"const": false}, "scientific_correctness": {"const": false}, "promotion": {"const": false}},
+      "additionalProperties": false
+    },
+    "limitations": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1}
+  },
+  "additionalProperties": false
+}

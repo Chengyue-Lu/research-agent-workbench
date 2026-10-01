@@ -1,0 +1,240 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/evaluation-manifest.schema.json",
+  "title": "Evaluation Manifest",
+  "x-rwb-document-kind": "evaluation_manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "manifest_id",
+    "status",
+    "arms",
+    "metric_set",
+    "frozen_conditions",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "manifest_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "status": { "enum": ["planned", "armed", "completed", "superseded"] },
+    "arms": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": { "$ref": "#/$defs/armConfig" }
+    },
+    "metric_set": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["metric_id", "definition", "unit", "direction"],
+        "properties": {
+          "metric_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "definition": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "unit": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "direction": { "enum": ["lower-is-better", "higher-is-better"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "frozen_conditions": {
+      "type": "object",
+      "required": [
+        "task_packet_refs",
+        "model",
+        "host",
+        "budget",
+        "context",
+        "evidence_classes"
+      ],
+      "properties": {
+        "task_packet_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "common.schema.json#/$defs/fileRef" }
+        },
+        "model": {
+          "type": "object",
+          "required": ["pool_ref", "slot_id", "provider_adapter", "model_id"],
+          "properties": {
+            "pool_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+            "slot_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+            "provider_adapter": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+            "model_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+          },
+          "additionalProperties": false
+        },
+        "host": {
+          "type": "object",
+          "required": ["host_id", "platform", "runtime"],
+          "properties": {
+            "host_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+            "platform": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+            "runtime": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+          },
+          "additionalProperties": false
+        },
+        "budget": {
+          "type": "object",
+          "required": ["max_turns", "max_output_tokens", "max_parallel"],
+          "properties": {
+            "max_turns": { "type": "integer", "minimum": 1 },
+            "max_output_tokens": { "type": "integer", "minimum": 1 },
+            "max_parallel": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        "context": {
+          "type": "object",
+          "required": [
+            "policy_ref",
+            "data_policy_ref",
+            "max_input_tokens",
+            "initial_context_refs"
+          ],
+          "properties": {
+            "policy_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+            "data_policy_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+            "max_input_tokens": { "type": "integer", "minimum": 1 },
+            "initial_context_refs": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "$ref": "common.schema.json#/$defs/fileRef" }
+            }
+          },
+          "additionalProperties": false
+        },
+        "evidence_classes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+        },
+        "notes": { "$ref": "common.schema.json#/$defs/stringArray" }
+      },
+      "additionalProperties": false
+    },
+    "limitations": { "$ref": "common.schema.json#/$defs/stringArray" },
+    "metadata": { "type": "object" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "phaseDArm": {
+      "enum": ["plain-agent", "plain-agent-tool", "mode-no-skill", "mode-candidate-skill"]
+    },
+    "skillBinding": {
+      "type": "object",
+      "required": ["skill_id", "version", "content_hash", "source_ref"],
+      "properties": {
+        "skill_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "version": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "content_hash": { "$ref": "common.schema.json#/$defs/sha256" },
+        "source_ref": { "$ref": "common.schema.json#/$defs/fileRef" }
+      },
+      "additionalProperties": false
+    },
+    "treatmentControl": {
+      "type": "object",
+      "required": ["mode_method_control"],
+      "properties": {
+        "mode_method_control": { "enum": ["suppressed", "exact"] },
+        "mode_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" }
+        },
+        "method_resolution_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "common.schema.json#/$defs/fileRef" }
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": { "mode_method_control": { "const": "exact" } },
+            "required": ["mode_method_control"]
+          },
+          "then": { "required": ["mode_refs", "method_resolution_refs"] }
+        },
+        {
+          "if": {
+            "properties": { "mode_method_control": { "const": "suppressed" } },
+            "required": ["mode_method_control"]
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                { "required": ["mode_refs"] },
+                { "required": ["method_resolution_refs"] }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "armConfig": {
+      "type": "object",
+      "required": ["arm_id", "treatment_control"],
+      "properties": {
+        "arm_id": { "$ref": "#/$defs/phaseDArm" },
+        "treatment_control": { "$ref": "#/$defs/treatmentControl" },
+        "capability_snapshot_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "common.schema.json#/$defs/fileRef" }
+        },
+        "skill_binding": { "$ref": "#/$defs/skillBinding" },
+        "skill_evaluation_ref": { "$ref": "common.schema.json#/$defs/fileRef" }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": { "arm_id": { "const": "plain-agent" } },
+            "required": ["arm_id"]
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                { "required": ["capability_snapshot_refs"] },
+                { "required": ["skill_binding"] },
+                { "required": ["skill_evaluation_ref"] }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "arm_id": { "enum": ["plain-agent-tool", "mode-no-skill"] }
+            },
+            "required": ["arm_id"]
+          },
+          "then": {
+            "required": ["capability_snapshot_refs"],
+            "not": {
+              "anyOf": [
+                { "required": ["skill_binding"] },
+                { "required": ["skill_evaluation_ref"] }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "arm_id": { "const": "mode-candidate-skill" } },
+            "required": ["arm_id"]
+          },
+          "then": { "required": ["skill_binding", "skill_evaluation_ref"] }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,19 @@
+schema_version: 0.1.0
+action_id: SIM-A1
+version: 2.0.0
+mode_ref: simulation@0.2.0
+title: Freeze model purpose, assumptions, and parameter boundary
+intent: Define what the model represents, what it does not represent, and the parameter domain of the simulation Task.
+triggers:
+  - A simulation model or its intended use is introduced or materially revised.
+non_triggers:
+  - A frozen Run is replayed without changing its purpose or assumptions.
+failure_modes: [model treated as reality, out-of-scope extrapolation, undefined model purpose]
+required_artifacts: [method, assumption-ledger, parameter-boundary]
+claim_effects:
+  may_support: []
+  cannot_alone_support: [simulation_supported, experimentally_supported]
+  notes: [Freezing assumptions bounds later Claims but produces no simulation Evidence.]
+human_gates: [approve-model-purpose-and-assumptions]
+stop_conditions: [Purpose, assumptions, and parameter boundary are versioned and approved.]
+blocked_conditions: [The intended use or material assumptions remain unresolved.]

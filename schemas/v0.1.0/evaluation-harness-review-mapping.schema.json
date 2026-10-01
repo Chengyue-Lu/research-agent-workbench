@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/evaluation-harness-review-mapping.schema.json",
+  "title": "evaluation_harness_review_mapping",
+  "x-rwb-document-kind": "evaluation_harness_review_mapping",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "version",
+    "purpose",
+    "evidence_ref",
+    "policy_ref",
+    "created_at",
+    "package_sha256",
+    "entries",
+    "validator",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "evaluation_harness_review_mapping"
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "purpose": {
+      "const": "synthetic-contract-proof"
+    },
+    "evidence_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "policy_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "package_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "anonymous_id",
+          "case_id",
+          "arm_id",
+          "attempt_id",
+          "slice_index",
+          "lifecycle",
+          "source_refs",
+          "projection_sha256"
+        ],
+        "properties": {
+          "anonymous_id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{32}$"
+          },
+          "case_id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "arm_id": {
+            "enum": [
+              "plain-agent",
+              "plain-agent-tool",
+              "mode-no-skill",
+              "mode-candidate-skill"
+            ]
+          },
+          "attempt_id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "slice_index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "lifecycle": {
+            "enum": [
+              "completed",
+              "post-call-failed",
+              "preflight-blocked",
+              "not-started"
+            ]
+          },
+          "source_refs": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/fileRef"
+            }
+          },
+          "projection_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "validator": {
+      "type": "object",
+      "required": [
+        "identity",
+        "version",
+        "sources",
+        "schemas_sha256"
+      ],
+      "properties": {
+        "identity": {
+          "const": "evaluation-harness-review"
+        },
+        "version": {
+          "const": "1.0.0"
+        },
+        "sources": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "schemas_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "boundaries": {
+      "$ref": "evaluation-harness-execution.schema.json#/properties/boundaries"
+    }
+  },
+  "additionalProperties": false
+}

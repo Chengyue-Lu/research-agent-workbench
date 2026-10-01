@@ -1,0 +1,19 @@
+schema_version: 0.1.0
+action_id: ES-A5
+version: 1.0.0
+mode_ref: evidence-synthesis@0.1.0
+title: Appraise source applicability and quality
+intent: Record discipline-aware applicability, limitations, and quality flags without reducing appraisal to a universal score.
+triggers:
+  - Evidence weight depends on source design, population, measurement, or domain standards.
+non_triggers:
+  - The Task only verifies source identity or locator integrity.
+failure_modes: [venue hierarchy treated as absolute weight, domain standards ignored, applicability overstated]
+required_artifacts: [appraisal-note, quality-flags]
+claim_effects:
+  may_support: []
+  cannot_alone_support: [synthesis_supported]
+  notes: [Appraisal constrains Evidence weight; it does not approve the final weighting decision.]
+human_gates: [approve-source-weight]
+stop_conditions: [Applicability and material limitations are explicit for every appraised source.]
+blocked_conditions: [Required domain criteria or source details are unavailable.]

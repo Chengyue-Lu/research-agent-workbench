@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/capability-requirement-index.schema.json",
+  "title": "Capability Requirement Integrity Index",
+  "$comment": "This is a closed demand-side path/hash index, not a supply discovery, availability, active-version, fallback, or routing registry.",
+  "x-rwb-document-kind": "capability_requirement_index",
+  "type": "object",
+  "required": ["schema_version", "registry_kind", "generated_at", "entries"],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "registry_kind": { "const": "capability_requirement_index" },
+    "generated_at": { "type": "string", "format": "date" },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["requirement_id", "document_path", "content_hash"],
+        "properties": {
+          "requirement_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "document_path": { "$ref": "common.schema.json#/$defs/relativePath" },
+          "content_hash": { "$ref": "common.schema.json#/$defs/sha256" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

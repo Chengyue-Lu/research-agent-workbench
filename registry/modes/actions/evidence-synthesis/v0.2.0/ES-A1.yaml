@@ -1,0 +1,20 @@
+schema_version: 0.1.0
+action_id: ES-A1
+version: 2.0.0
+mode_ref: evidence-synthesis@0.2.0
+title: Freeze question, scope, and source boundary
+intent: Establish the bounded research question and admissible source space before evidence work begins.
+triggers:
+  - A new or materially revised evidence-synthesis question is opened.
+  - The admissible source boundary or claim ceiling is not yet frozen.
+non_triggers:
+  - Representation-only work that inherits an approved question and boundary.
+failure_modes: [untestable question, scope drift, unapproved source inclusion]
+required_artifacts: [question-ref, source-boundary, claim-ceiling]
+claim_effects:
+  may_support: []
+  cannot_alone_support: [source_reported, synthesis_supported]
+  notes: [Freezing a boundary does not create Evidence or approve a Claim.]
+human_gates: [approve-question-and-source-boundary]
+stop_conditions: [The question, boundary, and claim ceiling are versioned and approved.]
+blocked_conditions: [The question remains ambiguous, or no lawful source boundary can be defined.]

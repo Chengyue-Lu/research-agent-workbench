@@ -1,0 +1,98 @@
+schema_version: 0.1.0
+profile_id: prisma-systematic-review-reporting
+version: 1.0.0
+title: Bounded PRISMA-aligned systematic review reporting
+method_standard:
+  family: PRISMA
+  edition: "2020"
+  profile_scope: bounded-subset
+  compliance_claim: not-established
+  notes:
+    - This Profile captures selected reporting and audit expectations and does not certify full PRISMA compliance.
+    - Applicability is decided for a bounded Task; the Profile does not make every evidence-synthesis Task a systematic review.
+applicability:
+  applicable_when:
+    - The Task is explicitly framed as a systematic review or a PRISMA-aligned evidence synthesis.
+    - Search, selection, appraisal, synthesis, and reporting decisions must remain auditable as a bounded set.
+  not_applicable_when:
+    - The Task is an ad hoc source lookup, narrative note, or single-source extraction without a systematic-review claim.
+    - The Task only reuses an already accepted synthesis without changing its search, selection, appraisal, or reporting basis.
+compatible_mode_refs: [evidence-synthesis@0.2.0]
+scoped_actions:
+  - action_ref: ES-A1@2.0.0
+    content_hash: sha256:8c9b503394bdc38a6e261f49e44d1b06f9b5ad6baadc8908259405f194e41338
+  - action_ref: ES-A2@2.0.0
+    content_hash: sha256:ffb22926df53fffe7a3a9632d2b0978e94c788764383adc659f505601a0f5435
+  - action_ref: ES-A3@2.0.0
+    content_hash: sha256:935227b3fcbaa9d2a7f438899097c14910e6a6df552db3651c0a9ca96cb9bf03
+  - action_ref: ES-A5@2.0.0
+    content_hash: sha256:ea5ec921181f502d1f39631266c0719cfa498c36766e72d2aa6c6296f35203b6
+  - action_ref: ES-A6@2.0.0
+    content_hash: sha256:572230ba92c8efb3c2f436bbcaabfde048d91316d9016b1c6c520d3b9929cb18
+  - action_ref: ES-A7@2.0.0
+    content_hash: sha256:bdb300429df4486a34412e362804a792682308ebc87f821cb68fdfdcb8bcde95
+  - action_ref: ES-A8@2.0.0
+    content_hash: sha256:538d1c7a34fa6bfdcd59d6ba5ee949b777e6207be092735cffa51946ba3a061b
+method_obligations:
+  - obligation_id: PRISMA-SCOPE
+    statement: Record the review question, eligibility boundary, registration or protocol status, and any justified departures.
+    applies_to_action_refs: [ES-A1@2.0.0]
+    evidence_expectation_refs: [PRISMA-PROTOCOL-EVIDENCE]
+    gate_expectation_refs: [approve-systematic-review-protocol]
+  - obligation_id: PRISMA-SEARCH-SELECTION
+    statement: Preserve reproducible search descriptions and accountable inclusion, exclusion, duplicate-removal, and selection counts.
+    applies_to_action_refs: [ES-A2@2.0.0, ES-A3@2.0.0]
+    evidence_expectation_refs: [PRISMA-SEARCH-EVIDENCE, PRISMA-SELECTION-EVIDENCE]
+    gate_expectation_refs: [approve-systematic-review-coverage]
+  - obligation_id: PRISMA-APPRAISAL-SYNTHESIS
+    statement: Make appraisal choices, synthesis population, missing results, heterogeneity, conflicts, and limitations inspectable.
+    applies_to_action_refs: [ES-A5@2.0.0, ES-A6@2.0.0]
+    evidence_expectation_refs: [PRISMA-APPRAISAL-EVIDENCE, PRISMA-SYNTHESIS-EVIDENCE]
+    gate_expectation_refs: [approve-systematic-review-synthesis-boundary]
+  - obligation_id: PRISMA-REPORT-TRACEABILITY
+    statement: Link reported results and limitations to the frozen source set and preserve a review-level audit trail.
+    applies_to_action_refs: [ES-A7@2.0.0, ES-A8@2.0.0]
+    evidence_expectation_refs: [PRISMA-REPORT-EVIDENCE]
+    gate_expectation_refs: [approve-prisma-aligned-report]
+evidence_expectations:
+  - expectation_id: PRISMA-PROTOCOL-EVIDENCE
+    statement: Evidence identifies the frozen question, eligibility criteria, review protocol status, and protocol deviations.
+    evidence_classes: [review-protocol-ref, eligibility-boundary, deviation-ledger]
+  - expectation_id: PRISMA-SEARCH-EVIDENCE
+    statement: Evidence records databases or sources, complete search expressions, dates, boundaries, and rerun-relevant details.
+    evidence_classes: [search-strategy-record, source-boundary, search-date-ledger]
+  - expectation_id: PRISMA-SELECTION-EVIDENCE
+    statement: Evidence accounts for record movement and exclusion reasons without requiring one specific diagram renderer.
+    evidence_classes: [selection-ledger, exclusion-reason-ledger, selection-count-summary]
+  - expectation_id: PRISMA-APPRAISAL-EVIDENCE
+    statement: Evidence records the chosen appraisal method and item-level judgments or reasons for non-applicability.
+    evidence_classes: [appraisal-method-ref, appraisal-record]
+  - expectation_id: PRISMA-SYNTHESIS-EVIDENCE
+    statement: Evidence exposes synthesis inputs, missing results, conflicts, heterogeneity, assumptions, and limitations.
+    evidence_classes: [synthesis-input-set, conflict-ledger, limitation-record]
+  - expectation_id: PRISMA-REPORT-EVIDENCE
+    statement: Evidence links review-level statements, tables, and flow counts to frozen records and decision artifacts.
+    evidence_classes: [report-trace-map, source-locator-ledger, review-decision-ref]
+gate_expectations:
+  - gate_ref: approve-systematic-review-protocol
+    effect: additive-only
+    rationale: A Human decides whether the bounded protocol and eligibility boundary are acceptable for this review.
+  - gate_ref: approve-systematic-review-coverage
+    effect: additive-only
+    rationale: A Human accepts residual search and selection coverage risk; the Profile does not infer completeness.
+  - gate_ref: approve-systematic-review-synthesis-boundary
+    effect: additive-only
+    rationale: A Human accepts the synthesis population, exclusions, heterogeneity treatment, and declared limits.
+  - gate_ref: approve-prisma-aligned-report
+    effect: additive-only
+    rationale: A Human accepts the bounded report as PRISMA-aligned without treating it as automatic compliance certification.
+boundaries:
+  defines_global_dag: false
+  copies_mode_action_contract: false
+  binds_skill: false
+  binds_tool: false
+  binds_provider: false
+  binds_runtime: false
+  owns_routing: false
+  grants_claim_effect: false
+  grants_human_decision: false

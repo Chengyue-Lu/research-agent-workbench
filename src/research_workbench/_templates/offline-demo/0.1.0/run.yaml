@@ -1,0 +1,13 @@
+schema_version: 0.1.0
+object_type: run
+object_id: RUN-M4-LINEAR-001
+revision: 1
+status: completed
+method_ref: METH-SYNTHETIC-INTEGER-RECURRENCE@1
+input_refs: [INPUT-M4-LINEAR-001@1, PARAMS-M4-LINEAR-001@1]
+environment_ref: ENV-M4-LINEAR-001@1
+started_at: "2026-09-06T00:00:00Z"
+output_refs: [ARTIFACT-M4-TRAJECTORY-001@1]
+metadata:
+  fixture: true
+  limitation: Synthetic engineering fixture; no physical interpretation.

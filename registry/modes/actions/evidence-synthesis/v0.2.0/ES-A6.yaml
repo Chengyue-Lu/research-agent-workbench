@@ -1,0 +1,19 @@
+schema_version: 0.1.0
+action_id: ES-A6
+version: 2.0.0
+mode_ref: evidence-synthesis@0.2.0
+title: Synthesize support, conflict, limits, and unknowns
+intent: Relate Evidence to a bounded Claim while preserving real contradictions, scope differences, and decision-changing gaps.
+triggers:
+  - Multiple Evidence records bear on the same bounded Claim.
+non_triggers:
+  - A single source is being atomically extracted without cross-source interpretation.
+failure_modes: [majority vote substituted for synthesis, scope difference mislabeled as conflict, unknowns discarded]
+required_artifacts: [claim-evidence-relation-map, synthesis-draft]
+claim_effects:
+  may_support: [synthesis_supported]
+  cannot_alone_support: [experimentally_supported]
+  notes: [The Claim remains bounded by source applicability and unresolved counterevidence.]
+human_gates: [approve-synthesis-interpretation]
+stop_conditions: [Support, conflict, limitations, and unknowns are all represented and linked.]
+blocked_conditions: [Evidence scopes cannot be reconciled without an unapproved interpretive assumption.]

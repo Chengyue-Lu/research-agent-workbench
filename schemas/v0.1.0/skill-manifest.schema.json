@@ -21,6 +21,16 @@
     "required_tools": { "$ref": "common.schema.json#/$defs/stringArray" },
     "optional_tools": { "$ref": "common.schema.json#/$defs/stringArray" },
     "permission_ceiling": { "$ref": "common.schema.json#/$defs/permissions" },
+    "runtime_boundaries": {
+      "description": "Optional runtime publication ceilings. Legacy manifests without this block cannot produce a SkillReleaseProjection.",
+      "type": "object",
+      "required": ["data_egress_ceiling", "side_effect_ceiling"],
+      "properties": {
+        "data_egress_ceiling": { "$ref": "capability-requirement.schema.json#/$defs/dataEgress" },
+        "side_effect_ceiling": { "$ref": "capability-requirement.schema.json#/$defs/sideEffects" }
+      },
+      "additionalProperties": false
+    },
     "input_contracts": { "$ref": "common.schema.json#/$defs/stringArray" },
     "output_contracts": { "$ref": "common.schema.json#/$defs/stringArray" },
     "context_cost": {

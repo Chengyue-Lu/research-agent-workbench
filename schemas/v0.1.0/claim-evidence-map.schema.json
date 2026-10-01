@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/claim-evidence-map.schema.json",
+  "title": "Claim Evidence Map",
+  "$comment": "An explicit read set joining existing object identities to pinned files. It does not accept a Claim or attest historical execution.",
+  "x-rwb-document-kind": "claim_evidence_map",
+  "type": "object",
+  "required": ["schema_version", "document_kind", "claim_ref", "evidence_refs", "source_bindings"],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "document_kind": { "const": "claim_evidence_map" },
+    "claim_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+    "evidence_refs": {
+      "type": "array", "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/fileRef" }
+    },
+    "source_bindings": {
+      "type": "array", "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["source_ref", "artifact_ref", "provenance_ref"],
+        "properties": {
+          "source_ref": {
+            "allOf": [
+              { "$ref": "common.schema.json#/$defs/objectRef" },
+              { "type": "object" }
+            ]
+          },
+          "artifact_ref": { "$ref": "common.schema.json#/$defs/fileRef" },
+          "provenance_ref": { "$ref": "common.schema.json#/$defs/fileRef" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

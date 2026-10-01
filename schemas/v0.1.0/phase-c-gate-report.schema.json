@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/phase-c-gate-report.schema.json",
+  "title": "Phase C Bounded Gate Report",
+  "x-rwb-document-kind": "phase_c_gate_report",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "gate_id",
+    "gate_input_sha256",
+    "machine_gate",
+    "human_semantic_review",
+    "r2_closeout",
+    "phase_c_closeout",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "gate_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+    "gate_input_sha256": { "$ref": "common.schema.json#/$defs/sha256" },
+    "machine_gate": {
+      "type": "object",
+      "required": ["status", "cases"],
+      "properties": {
+        "status": { "enum": ["pass", "fail"] },
+        "cases": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": { "$ref": "#/$defs/caseResult" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "human_semantic_review": { "$ref": "#/$defs/reviewState" },
+    "r2_closeout": { "$ref": "#/$defs/reviewState" },
+    "phase_c_closeout": { "const": "pending" },
+    "boundaries": {
+      "type": "object",
+      "required": [
+        "reviewer_reconstruction_proven",
+        "scientific_correctness_proven",
+        "topic_5_authorized",
+        "complete_process_read_surface_proven"
+      ],
+      "properties": {
+        "reviewer_reconstruction_proven": { "const": false },
+        "scientific_correctness_proven": { "const": false },
+        "topic_5_authorized": { "const": false },
+        "complete_process_read_surface_proven": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "caseResult": {
+      "type": "object",
+      "required": [
+        "case_id",
+        "profile",
+        "status",
+        "actor_pid",
+        "answer_sha256",
+        "source_manifest_sha256",
+        "private_oracle_sha256",
+        "input_closure_sha256",
+        "case_data_read_surface",
+        "trusted_runtime_schema_surface",
+        "oracle_checks"
+      ],
+      "properties": {
+        "case_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "profile": { "enum": ["evidence-synthesis", "simulation-negative"] },
+        "status": { "enum": ["pass", "fail"] },
+        "actor_pid": { "type": ["integer", "null"], "minimum": 1 },
+        "answer_sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+        "source_manifest_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "private_oracle_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "input_closure_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "case_data_read_surface": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/relativePath" },
+          "uniqueItems": true
+        },
+        "trusted_runtime_schema_surface": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "prefixItems": [
+            {
+              "const": {
+                "kind": "runtime",
+                "locator": "python-and-research-workbench-preloaded-runtime",
+                "assurance": "declared-preloaded"
+              }
+            },
+            {
+              "const": {
+                "kind": "schema",
+                "locator": "schema-catalog:v0.1.0",
+                "assurance": "read-only-allowlisted"
+              }
+            }
+          ],
+          "items": false
+        },
+        "oracle_checks": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+          "uniqueItems": true
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "status": { "const": "pass" } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "actor_pid": { "type": "integer", "minimum": 1 },
+              "answer_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+              "source_manifest_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+              "private_oracle_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+              "input_closure_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+              "case_data_read_surface": { "minItems": 1 },
+              "oracle_checks": { "minItems": 1 }
+            }
+          },
+          "else": {
+            "properties": {
+              "actor_pid": { "type": "null" },
+              "answer_sha256": { "type": "null" },
+              "oracle_checks": { "minItems": 1 }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "reviewState": {
+      "type": "object",
+      "required": ["status", "actor", "evidence_ref"],
+      "properties": {
+        "status": { "enum": ["pending", "accepted", "rejected"] },
+        "actor": { "type": ["string", "null"], "minLength": 1 },
+        "evidence_ref": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "common.schema.json#/$defs/fileRef" }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "pending" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "actor": { "type": "null" },
+              "evidence_ref": { "type": "null" }
+            }
+          },
+          "else": {
+            "properties": {
+              "actor": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+              "evidence_ref": { "$ref": "common.schema.json#/$defs/fileRef" }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

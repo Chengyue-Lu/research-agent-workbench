@@ -1,0 +1,49 @@
+schema_version: 0.1.0
+requirement_id: document-read
+objective: Read an approved, bounded source and return replayable fragments without changing the source or its data boundary.
+applies_when:
+  - The method needs bytes, pages, or fragments from an already identified source.
+  - The Task has declared the source identity and read boundary.
+not_applicable_when:
+  - The method needs discovery of unknown literature or sources.
+  - The method needs a judgment about source quality or Claim support.
+required_inputs:
+  - source-reference
+  - expected-source-hash
+  - read-boundary
+  - data-boundary
+required_outputs:
+  - bounded-document-fragments
+  - stable-source-locators
+  - observed-source-hash
+required_artifacts:
+  - read-receipt
+constraints:
+  permission_ceiling:
+    filesystem: worktree-write
+    network: forbidden
+    external_write: false
+  data_egress:
+    policy: forbidden
+    allowed_payloads: []
+    forbidden_payloads:
+      - private-full-text
+      - unpublished-results
+      - unrelated-project-context
+  side_effects:
+    policy: allowlisted-only
+    allowed_effects:
+      - task-local-read-cache
+verification_expectations:
+  deterministic:
+    - The observed source hash matches the expected source hash.
+    - Every returned locator resolves inside the declared read boundary.
+    - The read receipt identifies the source, boundary, and output artifacts.
+  semantic:
+    - Parsed fragments preserve source wording and expose omissions or parser limitations.
+  human:
+    - Any proposal to widen the data boundary or transfer source bytes requires a separate Human decision.
+unsatisfied_requirement:
+  method_contract: unchanged
+  supply_binding: prohibited
+  next_stage: capability-resolution

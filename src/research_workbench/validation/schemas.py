@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import json
-import sysconfig
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -11,21 +11,10 @@ from jsonschema.exceptions import SchemaError
 from referencing import Registry, Resource
 
 
-SOURCE_SCHEMA_ROOT = Path(__file__).resolve().parents[3] / "schemas"
-TARGET_INSTALL_SCHEMA_ROOT = (
-    Path(__file__).resolve().parents[2] / "share" / "research-agent-workbench" / "schemas"
-)
-INSTALLED_SCHEMA_ROOT = (
-    Path(sysconfig.get_path("data")) / "share" / "research-agent-workbench" / "schemas"
-)
-DEFAULT_SCHEMA_ROOT = next(
-    (
-        candidate
-        for candidate in (SOURCE_SCHEMA_ROOT, TARGET_INSTALL_SCHEMA_ROOT, INSTALLED_SCHEMA_ROOT)
-        if candidate.is_dir()
-    ),
-    SOURCE_SCHEMA_ROOT,
-)
+@lru_cache(maxsize=256)
+def _check_schema_bytes(raw: bytes, checker) -> None:
+    """Reuse only successful schema self-checks for identical bytes and checker."""
+    checker(json.loads(raw))
 
 
 @dataclass(frozen=True, slots=True)
@@ -36,8 +25,15 @@ class SchemaValidationError:
 
 
 class SchemaCatalog:
-    def __init__(self, root: str | Path | None = None, version: str = "0.1.0") -> None:
-        self.root = Path(root) if root is not None else DEFAULT_SCHEMA_ROOT
+    def __init__(self, root: str | Path | None = None, version: str = "0.1.0", *, resource_reader=None) -> None:
+        if root is None:
+            from research_workbench.resources import RuntimeResources
+            resource_reader = RuntimeResources()
+            root = resource_reader.schema_root
+        self._resource_reader = resource_reader
+        self.root = Path(root)
+        if resource_reader is not None and self.root != resource_reader.schema_root:
+            raise ValueError("Schema root differs from pinned Runtime resources")
         self.version = version
         self.directory = self.root / f"v{version}"
         self._schemas: dict[str, Mapping[str, Any]] = {}
@@ -50,11 +46,17 @@ class SchemaCatalog:
             raise FileNotFoundError(f"schema version not found: {self.directory}")
         resources: list[tuple[str, Resource[Any]]] = []
         for path in sorted(self.directory.glob("*.schema.json")):
-            with path.open("r", encoding="utf-8") as stream:
-                schema = json.load(stream)
+            if self._resource_reader is None:
+                raw = path.read_bytes()
+            else:
+                logical = path.relative_to(self._resource_reader.catalog_root).as_posix()
+                raw = self._resource_reader.read(logical)
+            # Reads and pinned resource integrity checks still run on every load.
+            # Each catalog owns fresh mutable schemas and its own reference registry.
+            schema = json.loads(raw)
             if not isinstance(schema, Mapping):
                 raise SchemaError(f"schema must be an object: {path}")
-            Draft202012Validator.check_schema(schema)
+            _check_schema_bytes(raw, Draft202012Validator.check_schema)
             schema_id = schema.get("$id")
             if not isinstance(schema_id, str):
                 raise SchemaError(f"schema lacks $id: {path}")

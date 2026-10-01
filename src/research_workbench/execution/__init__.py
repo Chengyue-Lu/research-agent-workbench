@@ -8,10 +8,54 @@ from research_workbench.execution.archive import (
     verify_execution_archive,
 )
 from research_workbench.execution.runner import TracedSessionResult, run_traced_session
+from research_workbench.execution.runtime_bundle import (
+    RuntimeBundleIssue,
+    RuntimeBundleValidationError,
+    ValidatedRuntimeBundle,
+    load_runtime_bundle,
+)
+from research_workbench.execution.execution_view import (
+    ExecutionViewIssue,
+    ExecutionViewValidationError,
+    PinnedExecutionInput,
+    produce_resolved_execution_view,
+)
+from research_workbench.execution.host import (
+    ExecutionDriverResult,
+    ExecutionHostValidationError,
+    FrozenExecutionDriver,
+    FrozenExecutionRequest,
+    HostClock,
+    SystemHostClock,
+    ValidatedExecutionView,
+    execute_frozen_view,
+    load_resolved_execution_view,
+)
+from research_workbench.execution.generic_closeout import (
+    CloseoutPin,
+    GenericCloseoutValidationError,
+    ValidatedGenericReceipt,
+    build_execution_core_gate,
+    build_generic_execution_receipt,
+    validate_generic_execution_receipt,
+)
 from research_workbench.execution.recovery import (
     RecoveryPreparation,
     RecoverySeed,
     prepare_recovery_attempt,
+)
+from research_workbench.execution.skill_facts import (
+    ObservedSkillInputs,
+    SKILL_CLOSEOUT_CONTRACT,
+    SkillExecutionFactError,
+    read_skill_execution_inputs,
+    record_skill_execution_use,
+    record_skill_execution_result,
+)
+from research_workbench.execution.skill_closeout import (
+    ValidatedSkillReceipt,
+    build_skill_execution_receipt,
+    validate_skill_execution_receipt,
 )
 
 __all__ = [
@@ -26,5 +70,37 @@ __all__ = [
     "finalize_execution_archive",
     "prepare_recovery_attempt",
     "run_traced_session",
+    "RuntimeBundleIssue",
+    "RuntimeBundleValidationError",
+    "ValidatedRuntimeBundle",
+    "load_runtime_bundle",
+    "ExecutionViewIssue",
+    "ExecutionViewValidationError",
+    "PinnedExecutionInput",
+    "produce_resolved_execution_view",
+    "ExecutionDriverResult",
+    "ExecutionHostValidationError",
+    "FrozenExecutionDriver",
+    "FrozenExecutionRequest",
+    "HostClock",
+    "SystemHostClock",
+    "ValidatedExecutionView",
+    "execute_frozen_view",
+    "load_resolved_execution_view",
+    "CloseoutPin",
+    "GenericCloseoutValidationError",
+    "ValidatedGenericReceipt",
+    "build_execution_core_gate",
+    "build_generic_execution_receipt",
+    "validate_generic_execution_receipt",
     "verify_execution_archive",
+    "ObservedSkillInputs",
+    "SKILL_CLOSEOUT_CONTRACT",
+    "SkillExecutionFactError",
+    "read_skill_execution_inputs",
+    "record_skill_execution_use",
+    "record_skill_execution_result",
+    "ValidatedSkillReceipt",
+    "build_skill_execution_receipt",
+    "validate_skill_execution_receipt",
 ]

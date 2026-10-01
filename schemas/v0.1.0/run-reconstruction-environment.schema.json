@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/run-reconstruction-environment.schema.json",
+  "title": "Standard Library Run Environment",
+  "x-rwb-document-kind": "run_reconstruction_environment",
+  "type": "object",
+  "required": ["schema_version", "environment_kind", "python_implementation", "python_version", "platform", "dependencies"],
+  "properties": {
+    "schema_version": {"const": "0.1.0"},
+    "environment_kind": {"const": "python-stdlib-reconstruction"},
+    "python_implementation": {"const": "CPython"},
+    "python_version": {"type": "string", "pattern": "^3\\.[0-9]+\\.[0-9]+$"},
+    "platform": {"enum": ["win32", "linux", "darwin"]},
+    "dependencies": {"const": "stdlib-only"}
+  }, "additionalProperties": false
+}

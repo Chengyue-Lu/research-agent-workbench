@@ -1,0 +1,51 @@
+schema_version: 0.1.0
+requirement_id: literature-search
+objective: Execute an approved literature query within frozen source and result boundaries and return replayable normalized results.
+applies_when:
+  - The method already contains a bounded query plan and requires literature discovery.
+  - The Task permits the approved query payload to cross the declared data boundary.
+not_applicable_when:
+  - The source set is already frozen and search would expand scope.
+  - The method still needs semantic design of the query plan or approval of source weights.
+required_inputs:
+  - approved-query-plan
+  - source-boundary
+  - date-and-language-boundary
+  - result-limit
+required_outputs:
+  - normalized-search-results
+  - executed-query-record
+  - coverage-limitations
+required_artifacts:
+  - query-receipt
+constraints:
+  permission_ceiling:
+    filesystem: worktree-write
+    network: search-and-fetch
+    external_write: false
+  data_egress:
+    policy: allowlisted-only
+    allowed_payloads:
+      - approved-query
+      - approved-bibliographic-identifiers
+    forbidden_payloads:
+      - private-full-text
+      - unpublished-results
+      - unrelated-project-context
+  side_effects:
+    policy: allowlisted-only
+    allowed_effects:
+      - external-query-log
+      - bounded-rate-limit-consumption
+verification_expectations:
+  deterministic:
+    - Results conform to the normalized result contract.
+    - The receipt records the executed query, source boundary, limit, and observation time or snapshot.
+  semantic:
+    - Coverage limitations and source-specific ranking effects remain explicit.
+  human:
+    - Query expansion, source substitution, or data-boundary relaxation requires a separate Human decision.
+unsatisfied_requirement:
+  method_contract: unchanged
+  supply_binding: prohibited
+  next_stage: capability-resolution

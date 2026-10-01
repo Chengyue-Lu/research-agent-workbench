@@ -1,9 +1,18 @@
 * text=auto
 
+*.csv text eol=lf
 *.json text eol=lf
 *.md text eol=lf
+*.oracle text eol=lf
 *.py text eol=lf
 *.toml text eol=lf
 *.txt text eol=lf
 *.yaml text eol=lf
 *.yml text eol=lf
+
+# Preserve the byte-pinned H4c evidence across Windows and Unix checkouts.
+docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/** text eol=lf
+docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/** text eol=lf
+docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/vertical-proof.zip -text
+work/M14-005/A-20260930-001/events.jsonl text eol=lf
+work/M14-005/A-20261001-002/events.jsonl text eol=lf
