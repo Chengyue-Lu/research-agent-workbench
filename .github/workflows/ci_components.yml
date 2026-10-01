@@ -95,7 +95,7 @@ jobs:
           PY
       - name: Documentation dependencies
         if: needs.plan.outputs.install != 'true'
-        run: python -m pip install 'PyYAML>=6,<7' 'markdown-it-py>=4,<5' 'linkify-it-py>=2,<3'
+        run: python -m pip install 'jsonschema>=4.23,<5' 'PyYAML>=6,<7' 'markdown-it-py>=4,<5' 'linkify-it-py>=2,<3'
       - name: Installed product smoke
         if: needs.plan.outputs.smoke == 'true'
         run: python .github/scripts/ci_component_smoke.py --python "$(command -v python)" --output .rwb/smoke.json
