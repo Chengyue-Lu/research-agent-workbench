@@ -383,3 +383,22 @@ pre-PR106-merge pins; it is not rewritten as current-head evidence.
 M5-007 remains IN_PROGRESS, Issue55 OPEN and the M5-008 live gate BLOCKED.
 This PR is offered for review of the overall acceptance preparation, not a
 Task DONE decision.
+
+## PR107 rebase onto completed release baseline (2026-10-01)
+
+Rebased the M5-007 closeout review candidate onto `develop@54192efed0fe68ab7b7bd2fb5005c8710b16535a`.
+The `docs/STATUS.md` conflict was resolved by retaining both the accepted H5
+implementation / pending M5-007 whole-Task state and the accepted M14 first-release
+state. No M5 Harness source, Schema, trusted H5 replay helper or historical proof
+changed in the intervening release commits. The old branch's docs-only
+`jsonschema` CI dependency fix was already present in the new baseline and its
+duplicate commit was omitted. The closeout entry Attempt remains pinned to its
+original pre-PR106-merge inputs; current-head validation and review must be
+re-established separately. M5-007 remains IN_PROGRESS and Issue55 remains OPEN.
+The prior docs-only CI failure remains [run 36497143420](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36497143420);
+the new baseline contains the correction, so this PR does not reapply it.
+Python 3.11 related documentation/public-surface/CI/governance tests ran 138:
+137 passed and one explicitly Windows-skipped case. A wheel built from this
+candidate validated the repository examples/registry at 186/0/0; diff check
+passed. Huang Yi's prior PR107 approval was bound to the old base/head and
+must be refreshed for this rebased candidate.

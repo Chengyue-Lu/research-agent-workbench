@@ -1,7 +1,7 @@
 # M5-007 H1–H5 整体验收准备
 
-首次记录：2026-09-28；更新：2026-09-29。Task / Evaluation owner：路诚钺；Execution 接口复核：黄毅。风险：R2。
-状态：PR106 H5 已具名 R2 接受并合入；PR107 收口审查候选已 rebase 到最新 `develop@39cf61e9fc728a2a6c1494b7a641a011dd6bf114`。
+首次记录：2026-09-28；更新：2026-10-01。Task / Evaluation owner：路诚钺；Execution 接口复核：黄毅。风险：R2。
+状态：PR106 H5 已具名 R2 接受并合入；PR107 收口审查候选已 rebase 到最新 `develop@54192efed0fe68ab7b7bd2fb5005c8710b16535a`。
 M5-007 仍为 IN_PROGRESS，Issue55 仍 OPEN，整体验收尚未作出。
 
 ## 目标与输入
@@ -32,10 +32,10 @@ H5 proof 的 ZIP SHA-256 为 `176c47b3ebbc8e71d3cdb27f835d82a8e5af2ac876638d7ca7
 
 ## 整体验收步骤
 
-1. PR106 已完成 exact-head R2 review 与正常 squash merge；PR107 先从旧 head 无冲突
-   rebase 到合入后的 `develop@81a058b`，再等价迁入最新 `develop@39cf61e`。两次
-   `range-diff` 均显示独立收口补丁等价。各基线及本 PR 新 head 的 CI 须分别核对，
-   不能借用旧 head 结果。
+1. PR106 已完成 exact-head R2 review 与正常 squash merge；PR107 的原文档补丁先迁至
+   `develop@81a058b`、再等价迁至 `develop@39cf61e`，现已 rebase 到首发收口后的
+   `develop@54192ef`。`docs/STATUS.md` 同时保留 H5 接受与 M14 首发完成；旧分支的
+   文档 CI 依赖修复已由新基线吸收。各基线及本 PR 新 head 的 CI 须分别核对。
 2. 独立复核 M5-007 Task 行的全部验收：冻结和实际 binding、qualification/overlap/pairwise、
    typed execution fact/Receipt、失败/retry、blind review/reveal、metric/analysis、全链 cold
    replay、negative tests 与双方接口边界。任何新发现保存具体失败证据，回到所属 H 切片修复。
@@ -54,4 +54,4 @@ M5-008 仍为 BLOCKED：除 M5-007 完整接受外，仍要求 M6-004 live confo
 M6-004 当前也是 BLOCKED；本包不调用真实 API、不消耗凭据、不执行 Tool 副作用。
 M5-004/005 的真实 case、Human 决策、正式分析与 Skill lifecycle Gate 原样保留。
 路诚钺负责 Evaluation/Task 接受，黄毅负责 Execution 接口复核；自动测试、归档 hash
-和本 Draft 都不能代替具名接受。
+和本 PR 都不能代替具名接受。
