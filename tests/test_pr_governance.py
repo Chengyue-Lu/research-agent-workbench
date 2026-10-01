@@ -327,10 +327,17 @@ class TopologyTests(unittest.TestCase):
         )
         self.assertFalse(report.has_errors)
 
-    def test_develop_to_main_release_passes(self) -> None:
+    def test_active_topology_rejects_direct_develop_to_main(self) -> None:
         report = self.check(
             base_ref="main", head_ref="develop", base_repository="org/repo", head_repository="org/repo", pr_class="release"
         )
+        self.assertEqual({"TOPOLOGY-DIRECT-RELEASE-DISABLED"}, codes(report, "ERROR"))
+
+    def test_dormant_topology_retains_legacy_develop_to_main(self) -> None:
+        with mock.patch.object(governance, "CURATED_RELEASE_TOPOLOGY",
+                               {**governance.CURATED_RELEASE_TOPOLOGY, "activation_state": "dormant"}):
+            report = self.check(base_ref="main", head_ref="develop", base_repository="org/repo",
+                                head_repository="org/repo", pr_class="release")
         self.assertFalse(report.has_errors)
 
     def test_feature_to_main_fails(self) -> None:
@@ -374,6 +381,7 @@ class TopologyTests(unittest.TestCase):
             head_repository="org/repo",
             pr_class="release",
             report=report,
+            release_policy={**governance.CURATED_RELEASE_TOPOLOGY, "activation_state": "dormant"},
         )
         self.assertTrue(result.curated_release_attempt)
         self.assertTrue(result.curated_release_topology_matched)
@@ -517,9 +525,9 @@ class ReleaseTrustTopologyTests(unittest.TestCase):
                 self.assertFalse(valid)
                 self.assertIn(expected_code, codes(report, "ERROR"))
 
-    def test_policy_shape_and_activation_cannot_be_weakened_by_data_only(self) -> None:
+    def test_policy_shape_and_unknown_activation_fail_closed(self) -> None:
         cases = (
-            ({**governance.CURATED_RELEASE_TOPOLOGY, "activation_state": "active"}, "RELEASE-POLICY-VALUE"),
+            ({**governance.CURATED_RELEASE_TOPOLOGY, "activation_state": "enabled"}, "RELEASE-POLICY-VALUE"),
             ({**governance.CURATED_RELEASE_TOPOLOGY, "unknown": True}, "RELEASE-POLICY-SHAPE"),
             ({**governance.CURATED_RELEASE_TOPOLOGY, "required_external_facts": []}, "RELEASE-POLICY-FACTS"),
         )
@@ -558,6 +566,13 @@ class ReleaseTrustTopologyTests(unittest.TestCase):
 
 
 class ReleaseTrustIntegrationTests(unittest.TestCase):
+    def setUp(self) -> None:
+        # Replay the accepted dormant seam independently of the current activation.
+        self.dormant = {**governance.CURATED_RELEASE_TOPOLOGY, "activation_state": "dormant"}
+        self.patch_policy = mock.patch.object(governance, "CURATED_RELEASE_TOPOLOGY", self.dormant)
+        self.patch_policy.start()
+        self.addCleanup(self.patch_policy.stop)
+
     BASE_SHA = "a" * 40
     HEAD_SHA = "b" * 40
     SOURCE_SHA = "c" * 40
@@ -676,6 +691,15 @@ class ReleaseTrustIntegrationTests(unittest.TestCase):
             "curated release topology attempts are always governed as R2",
             report.risk_reasons,
         )
+
+    def test_active_topology_requires_the_same_trusted_prerequisites(self) -> None:
+        with mock.patch.object(governance, "CURATED_RELEASE_TOPOLOGY",
+                               {**self.dormant, "activation_state": "active"}):
+            accepted = self.run_release(self.expectations())
+            missing = self.run_release({})
+        self.assertFalse(accepted.has_errors, accepted.findings)
+        self.assertEqual("R2", accepted.effective_risk)
+        self.assertEqual({"RELEASE-EXPECTATIONS-MISSING"}, codes(missing, "ERROR"))
 
     def test_pr_body_or_branch_name_cannot_replace_trusted_expectations(self) -> None:
         report = self.run_release({})
@@ -1067,10 +1091,10 @@ class PolicyAndCodeownersTests(unittest.TestCase):
         self.assertEqual(["R0", "R1", "R2"], policy["risk_order"])
         self.assertEqual(["INFO", "WARNING", "ERROR"], policy["finding_severities"])
 
-    def test_curated_release_policy_is_strict_declarative_and_dormant(self) -> None:
+    def test_curated_release_policy_is_strict_declarative_and_active(self) -> None:
         policy = json.loads((ROOT / ".github" / "governance-policy.json").read_text(encoding="utf-8"))
         release = policy["curated_release_topology"]
-        self.assertEqual("dormant", release["activation_state"])
+        self.assertEqual("active", release["activation_state"])
         self.assertEqual("M14-005", release["activation_task"])
         self.assertEqual("main", release["base_ref"])
         self.assertEqual("develop", release["source_ref"])

@@ -11,6 +11,7 @@ from pathlib import Path
 import tempfile
 
 import portable_package_smoke as portable
+import release_governance as governance
 import release_preflight as preflight
 import release_public as public
 import release_source_ci as source_ci
@@ -24,15 +25,18 @@ PACKAGE_TOOL = '.github/scripts/portable_package_smoke.py'
 
 def check(root: Path, api, *, source: str, parent: str, policy_version: str,
           release_version: str, run_id: int, candidate: str, manifest_sha256: str,
-          interpreter: str) -> dict:
+          interpreter: str, pr_number: int) -> dict:
     source_ci.require(__debug__, 'optimized release checker is forbidden')
     # The live preflight must finish before any projected build backend is run.
     trusted = preflight.check(root, api, source=source, parent=parent,
                               policy_version=policy_version, release_version=release_version,
                               run_id=run_id, candidate=candidate, manifest_sha256=manifest_sha256)
-    for path in (TOOL, PACKAGE_TOOL):
+    for path in (TOOL, PACKAGE_TOOL, governance.TOOL):
         source_ci.require(source_ci.git(root, 'show', f'{source}:{path}') == (root / path).read_bytes(),
                           f'trusted release install byte drift: {path}')
+    governance_result = governance.check(api, number=pr_number, source=source, parent=parent,
+        candidate=candidate, release_version=release_version, manifest_sha256=manifest_sha256,
+        preflight=trusted)
     public_result = public.check(root, api.repository, source, candidate)
     expected = dict(repository=api.repository, source=source, parent=parent,
                     policy_version=policy_version, release_version=release_version,
@@ -52,6 +56,8 @@ def check(root: Path, api, *, source: str, parent: str, policy_version: str,
     source_ci.require(source_ci.attest_contract(api, source, run_id,
                       source_ci.active_contract(root, source))['observation'] == trusted['observation'],
                       'source CI changed during install')
+    governance.reobserve(api, governance_result, release_version=release_version,
+                         repository_id=trusted['observation']['repository_id'])
     source_ci.require(trusted['merge_eligible'] is False and public_result['merge_eligible'] is False
                       and package['merge_eligible'] is False, 'diagnostic cannot grant merge authority')
     source_ci.require(package['runtime_resources_identical'] and
@@ -61,7 +67,8 @@ def check(root: Path, api, *, source: str, parent: str, policy_version: str,
                       'both clean-install routes and isolation modes required')
     return dict(repository=api.repository, source=source, parent=parent, candidate=candidate,
                 policy_version=policy_version, release_version=release_version,
-                preflight=trusted, projection=rebuilt, public=public_result, package=package,
+                preflight=trusted, projection=rebuilt, governance=governance_result,
+                public=public_result, package=package,
                 python=package['installs'][0]['python'], merge_eligible=False)
 
 
@@ -72,6 +79,7 @@ def main(argv=None) -> int:
         parser.add_argument('--' + name, required=True)
     parser.add_argument('--run-id', type=int, required=True)
     parser.add_argument('--python', required=True, help='exact interpreter used for fresh installs')
+    parser.add_argument('--pr-number', type=int, required=True, help='live same-repository main PR')
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args(argv)
     source_ci.require(not args.output.exists(), 'output already exists')
@@ -79,7 +87,7 @@ def main(argv=None) -> int:
                    parent=args.parent, policy_version=args.policy_version,
                    release_version=args.release_version, run_id=args.run_id,
                    candidate=args.candidate, manifest_sha256=args.manifest_sha256,
-                   interpreter=args.python)
+                   interpreter=args.python, pr_number=args.pr_number)
     with args.output.open('x', encoding='utf-8', newline='\n') as stream:
         stream.write(json.dumps(result, ensure_ascii=False, sort_keys=True, indent=2) + '\n')
     print(json.dumps({'result': 'PASS', 'candidate': args.candidate,

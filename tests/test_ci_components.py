@@ -122,7 +122,7 @@ class ComponentPlanTests(unittest.TestCase):
         common = {'test_ci_components', 'test_ci_component_execution', 'test_ci_component_smoke'}
         own = {
             'check_coverage_policy': ['test_coverage_policy'],
-            'check_pr_governance': ['test_pr_governance', 'test_governance_helper_branches'],
+            'check_pr_governance': ['test_pr_governance', 'test_governance_helper_branches', 'test_release_governance'],
             'ci_checks': ['test_ci_checks'], 'ci_component_smoke': ['test_ci_component_smoke'],
             'ci_component_metadata': ['test_ci_component_metadata'],
             'ci_ruleset_migration': ['test_ci_ruleset_migration'],
@@ -132,6 +132,8 @@ class ComponentPlanTests(unittest.TestCase):
             'ci_input_facts': ['test_ci_input_facts'], 'ci_shadow_pair': ['test_ci_shadow_pair'],
             'plan_ci': ['test_ci_plan'], 'portable_package_smoke': ['test_portable_build'],
             'release_preflight': ['test_release_preflight'], 'release_source_ci': ['test_release_source_ci'],
+            'release_governance': ['test_pr_governance', 'test_release_governance', 'test_release_install'],
+            'release_install': ['test_pr_governance', 'test_release_governance', 'test_release_install'],
             'release_surface': ['test_release_surface', 'test_release_oracle_replay'],
             'run_component_ci': ['test_ci_component_execution'], 'selection_witness': ['test_selection_witness'],
         }

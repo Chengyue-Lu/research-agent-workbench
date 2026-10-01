@@ -32,7 +32,7 @@ class ReleaseInstallTests(unittest.TestCase):
         self.fixture.setUp()
         self.addCleanup(self.fixture.doCleanups)
         self.root = self.fixture.repo
-        for path in (installation.TOOL, installation.PACKAGE_TOOL):
+        for path in (installation.TOOL, installation.PACKAGE_TOOL, installation.governance.TOOL):
             fixtures.write(self.root, path, (ROOT / path).read_bytes())
         self.fixture.update_source()
         self.expected = self.fixture.expected
@@ -43,12 +43,19 @@ class ReleaseInstallTests(unittest.TestCase):
                            'files': len(files), 'merge_eligible': False}
         self.trusted = {'projection': self.projection, 'source_ci': self.expected['source_ci'],
                         'protected_refs': {'develop': self.expected['source'], 'main': self.expected['parent']},
-                        'observation': {'run_attempt': 1}, 'merge_eligible': False}
+                        'observation': {'run_attempt': 1, 'repository_id': 42}, 'merge_eligible': False}
         self.api = type('API', (), {'repository': 'Example/workbench'})()
         self.kwargs = dict(source=self.expected['source'], parent=self.expected['parent'],
                            policy_version='1.0.0', release_version='1.0.0', run_id=123,
                            candidate=self.candidate, manifest_sha256=self.projection['manifest_sha256'],
-                           interpreter=sys.executable)
+                           interpreter=sys.executable, pr_number=7)
+        self.pr_check = patch.object(installation.governance, 'check', return_value={
+            'governance': 'success', 'merge_eligible': False})
+        self.pr_check.start()
+        self.addCleanup(self.pr_check.stop)
+        self.pr_reobserve = patch.object(installation.governance, 'reobserve')
+        self.pr_reobserve.start()
+        self.addCleanup(self.pr_reobserve.stop)
         self.package = {'runtime_resources_identical': True,
                         'installs': [{'python': '3.11', 'route': route, 'isolated': isolated}
                                      for route in ('direct', 'sdist-wheel') for isolated in (True, False)],
@@ -122,13 +129,23 @@ class ReleaseInstallTests(unittest.TestCase):
                         installation.check(self.root, self.api, **kwargs)
                     self.assertEqual(failure == 'refs', package.called)
 
+    def test_governance_failure_prevents_build_and_metadata_drift_prevents_receipt(self):
+        for phase in ('check', 'reobserve'):
+            mocks = self.bound()
+            with (self.subTest(phase=phase), mocks[0], mocks[1], mocks[2] as package,
+                  mocks[3], mocks[4], mocks[5],
+                  patch.object(installation.governance, phase, side_effect=ValueError('PR governance drift'))):
+                with self.assertRaisesRegex(ValueError, 'PR governance drift'):
+                    installation.check(self.root, self.api, **self.kwargs)
+                self.assertEqual(phase == 'reobserve', package.called)
+
     def test_ci_rerun_and_incomplete_or_authorizing_install_fail_closed(self):
         for failure in ('rerun', 'missing-route', 'authority'):
             with self.subTest(failure=failure):
                 mocks = self.bound()
                 with mocks[0], mocks[1], mocks[2] as package, mocks[3], mocks[4] as attestation, mocks[5]:
                     if failure == 'rerun':
-                        attestation.return_value = {'observation': {'run_attempt': 2}}
+                        attestation.return_value = {'observation': {'run_attempt': 2, 'repository_id': 42}}
                     elif failure == 'missing-route':
                         package.return_value = {**self.package, 'installs': self.package['installs'][:-1]}
                     else:

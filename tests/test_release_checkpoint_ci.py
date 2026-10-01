@@ -126,14 +126,14 @@ class CheckpointSourceTests(unittest.TestCase):
     def test_versioned_governance_policy_keeps_dormant_topology(self):
         policy = deepcopy(governance.CURATED_RELEASE_TOPOLOGY)
         policy.update(schema_version=2, source_ci_workflow='CI checkpoint',
-                      source_ci_required_checks=checkpoint.CHECKPOINT_REQUIRED)
+                      source_ci_required_checks=checkpoint.CHECKPOINT_REQUIRED, activation_state='dormant')
         report = governance.GovernanceReport()
         self.assertTrue(governance.validate_curated_release_policy(policy, report))
         governance.validate_topology(base_ref='main', head_ref='release/v1.0.0',
             base_repository=old.REPO, head_repository=old.REPO, pr_class='release',
             report=report, release_policy=policy)
         self.assertTrue(report.has_errors)
-        policy['activation_state'] = 'active'
+        policy['activation_state'] = 'unknown'
         self.assertFalse(governance.validate_curated_release_policy(policy, governance.GovernanceReport()))
 
 

@@ -603,7 +603,7 @@ class ReleaseSurfaceTests(unittest.TestCase):
         for path in selected:
             self.assertFalse(path.startswith(("tests/", "work/", "docs/workstreams/", ".codex/", "skill-lab/")), path)
         governance = json.loads((ROOT / ".github/governance-policy.json").read_text(encoding="utf-8"))
-        self.assertEqual("dormant", governance["curated_release_topology"]["activation_state"])
+        self.assertEqual("active", governance["curated_release_topology"]["activation_state"])
 
 
 if __name__ == "__main__":
