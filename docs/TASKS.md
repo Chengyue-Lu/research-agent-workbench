@@ -225,7 +225,7 @@ implementation / acceptance identity。
 | M14-002 | DONE | 建立 deterministic release surface、manifest 与 export/check（REL-002） | 路诚钺 | R2 | Product / Release Projection | M14-001 | strict、append-only versioned allowlist 与 manifest Schema 驱动同一 export/check 实现；每个输出分类为 source-blob 或 exact allowlisted generated，分别 pin blob/mode/size/hash 或 generator identity/version/hash/inputs，manifest 使用无自哈希歧义的 canonical UTF-8 JSON/LF/稳定排序且禁止时间、随机数和临时绝对路径；直接读取 frozen develop commit Git blobs，在以 exact current main 为 Git parent 的生成分支上完整构建 projection，并由 external expected repository/source/parent 重算 selection/excluded/output closure；unknown/重复/overlap/不存在 include、casefold/Unicode/Windows path collision、dirty tree、CRLF、mode/byte drift、额外/隐藏/移动/遗留文件、path escape、symlink/gitlink、undeclared generated、policy drift 及同步重算伪 hash 全部阻断；连续 v1→v2 fixture 证明旧版独有 generated 文件不会残留，prospective merge-result tree、projection tree 与 manifest closed output tree 完全相同，main parent 漂移时必须重新生成；critical checker 满足 95/90 与独立正反 evidence，但不启用 release merge path |
 | M14-003 | DONE | 闭合 portable package 与 Runtime data boundary（REL-003） | 路诚钺 | R2 | Product / Package + Runtime Resources | M14-001 | 定义独立 hash-pinned `RuntimeResourceManifest`、packaged default resolver，并分离 project/filesystem、immutable runtime-resource、integration-config 三个 root，禁止隐式 CWD/checkout fallback；公开 Runtime catalog 与 maintainer/publication history 分离，repository publication validation 与 installed-runtime catalog validation 分层；wheel/sdist→wheel exact assets 在清空 `PYTHONPATH` 的 checkout 外 Python 3.11/3.13 环境加载 Schema、Mode/Action、Authority、Requirement、Profile 与空 Projection，并由 wheel-owned/generated input 完成 no-Skill structural quickstart；非空 Projection 必须通过 logical→installed path mapping 闭合其 exact immutable Skill manifest/package bytes且拒绝 orphan/unindexed asset，否则 fail closed；legacy `accepted.json` selector、`sources.json`、Need/Evaluation/Lifecycle、provider baseline、broad `.agents/**` 与 `.codex/**` 不得成为 packaged default，但被 Projection exact path/hash 引用的单个 accepted manifest/package 可作为条件 Runtime Release asset |
 | M14-004 | DONE | 建立 public documentation surface（REL-004） | 路诚钺 | R2 | Product / Public Documentation | M14-002, M14-003 | README、Getting Started、Supported Features 与公开导航有单一来源，release tree 无指向 TASKS/STATUS/DEVELOPMENT/workstream 等排除文件的断链；文档区分 structural、bounded、live 与 evaluated 证据，不把空 Projection index、未完成 M5、synthetic fixture 或未验证 Provider 写成已交付能力 |
-| M14-005 | READY | 生成并验收首个 curated main release（REL-005） | 路诚钺 | R2 | Product / Release | M0-007, M1-009, M14-002, M14-003, M14-004, `GITHUB-RELEASE-PROTECTION-GATE` | 在全部依赖、许可证、scaffold、远端保护与具名 Human release decision 闭合后，冻结 exact develop source SHA 和 exact current main parent SHA；从该 main tip 创建 release branch，由 exporter 只读取 frozen develop Git blobs并完整构建 tree/manifest，两次生成稳定；main 前移必须按新 parent 重建；source required CI、release checks、双 Python clean-install、no-Skill smoke、Registry/Projection load、公开链接与零内部材料泄漏均通过，且 prospective merge-result tree = projection tree = manifest closed output tree；同一 Task 的治理激活与首次 release 按可审计 slice 执行，原子启用 `release/v* -> main` 并禁用 direct `develop -> main`；R2 release PR 以 merge commit 合入 main 后 tag/artifact/hash 与 manifest 闭合，release branch 不回并 develop |
+| M14-005 | DONE | 生成并验收首个 curated main release（REL-005） | 路诚钺 | R2 | Product / Release | M0-007, M1-009, M14-002, M14-003, M14-004, `GITHUB-RELEASE-PROTECTION-GATE` | 在全部依赖、许可证、scaffold、远端保护与具名 Human release decision 闭合后，冻结 exact develop source SHA 和 exact current main parent SHA；从该 main tip 创建 release branch，由 exporter 只读取 frozen develop Git blobs并完整构建 tree/manifest，两次生成稳定；main 前移必须按新 parent 重建；source required CI、release checks、双 Python clean-install、no-Skill smoke、Registry/Projection load、公开链接与零内部材料泄漏均通过，且 prospective merge-result tree = projection tree = manifest closed output tree；同一 Task 的治理激活与首次 release 按可审计 slice 执行，原子启用 `release/v* -> main` 并禁用 direct `develop -> main`；R2 release PR 以 merge commit 合入 main 后 tag/artifact/hash 与 manifest 闭合，release branch 不回并 develop |
 
 ## Future M-series reservations
 
@@ -275,7 +275,7 @@ M13 不等于 strategy framework approval。
 | `M14-002` | 路诚钺 | R2 | Product / Release | Projection | deterministic allowlist/manifest/export/check 与连续版本 closed-tree fixtures 已实现，DONE |
 | `M14-003` | 路诚钺 | R2 | Product / Release | Package/Runtime Resources | packaged RuntimeResourceManifest、三 root、双 Python 安装与 conditional Skill closure 已完成，DONE |
 | `M14-004` | 路诚钺 | R2 | Product / Release | Public Documentation | 公开导航、支持矩阵与仓库外 Quickstart 已由 PR #77 验收合入，DONE |
-| `M14-005` | 路诚钺 | R2 | Product / Release | First Curated Release | M0-007 MIT、M1-009 与 M14-002～004 实现链已闭合；[具名 v0.1.0 准备决定与 fresh protection 回读](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_DECISION.md) 闭合外部启动条件，当前候选 BLOCKED → READY。随后验收真实 protected source-CI，完成 release-only workflow/checks、atomic topology cutover、exact source/parent freeze、projection/prospective-tree equality；最终 release PR 与 tag/artifact closure 仍需独立验收和发布批准 |
+| `M14-005` | 路诚钺 | R2 | Product / Release | First Curated Release | 全部依赖与外部门禁闭合；#118 接受 active topology/live governance，完整 ruleset cutover 与真实 direct-develop 反例已验收；#116 经最终 R2 APPROVED 正常 merge 为 `main@b5a9963`，annotated `v0.1.0` 与五个 GitHub alpha 附件发布并下载逐字节核验。source/parent/tree/manifest、八个 actual-main 安装探针及具名 merge/publish 决定见[首发完成记录](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_COMPLETE.md)；release branch 不回并 develop |
 
 ## 历史 GitHub Issues
 
@@ -301,11 +301,11 @@ semantic closeout，后者不等于 live Provider 或 ordinary-user E2E。M11-00
 publication/mapping 也已按独立 Task identity 完成；它不阻塞零 Skill Core、不建立第二条 Runtime consumer
 path，也不等于任何真实 Skill 已获准入、证明研究增量或获得 Runtime new-binding 资格。
 
-M14 已由 Issue #57 与 ADR-0021 完成 family activation/task-definition；`M14-001` 已建立 dormant
-release trust anchor，严格候选即使 prerequisites 成立也仍由 topology Gate 阻断。M14-002 已经 owner 激活并闭合
-deterministic surface；M14-003 已完成 portable package，M14-004 已闭合 public surface；M14-005 仍不得绕过
-package、许可证、scaffold 或 GitHub remote protection Gate。M14-001～004 都不产生 release merge eligibility；
-M14-005 readiness/cutover 前继续以现行治理为准，不手工创建 release tree。
+M14-001～005 已按各自 Task 验收完成；[首发完成记录](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_COMPLETE.md)绑定 accepted frozen
+source、exact main parent、R2 release PR、实际 merge tree、annotated tag 与已下载核验的发行附件。
+当前执行 `feature -> develop -> generated release/v* -> main`：direct `develop -> main` 被拒绝，
+每次后续发行仍需独立 source-CI、parent freshness、projection/package/public checks、R2 审核与维护者发布决定。
+release branch 不接收产品修复，也不回并 develop。M14 DONE 不解除其他 Task 的 Human/live/evaluation Gate。
 
 Issue #41 新增或规范化的 M4、M5、M10、M11 dependency chains 保持逐 Task implementation /
 acceptance identity；PR 组织统一遵守 `DEVELOPMENT.md` 的 module-level DAG 规则。Governance v2 的

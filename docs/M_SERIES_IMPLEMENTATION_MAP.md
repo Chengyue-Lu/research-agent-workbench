@@ -60,7 +60,7 @@ evidence，不生成 hard dependency。
 | M11 | Execution reintegration | task-defined；Core 与 optional Skill extension complete；生产 projection index 仍为空 |
 | M12 | Execution Continuity & Recovery | **RESERVED** |
 | M13 | Strategy & Governed Evolution | **RESERVED** |
-| M14 | Product / Release Closure | task-defined；M14-001～004 DONE，M14-005 READY |
+| M14 | Product / Release Closure | M14-001～005 DONE；首个 curated alpha release 已验收 |
 
 `task-defined` 只表示该 family 已有原子 Task，不表示全部 Task 已完成。实时状态仍见 `TASKS.md`。
 
@@ -192,7 +192,7 @@ flowchart LR
     M14001 --> M14003["M14-003 DONE<br/>portable package"]
     M14002 --> M14004["M14-004 DONE<br/>public docs"]
     M14003 --> M14004
-    M14002 --> M14005["M14-005 READY<br/>first release"]
+    M14002 --> M14005["M14-005 DONE<br/>first release"]
     M14003 --> M14005
     M14004 --> M14005
     M0007["M0-007 DONE<br/>license"] --> M14005
@@ -201,14 +201,11 @@ flowchart LR
 ```
 
 M14 只把 frozen `develop` 确定性投影为精选 `main`，不成为新产品语义 owner；exact current `main` 只作为
-generated release branch 的 Git 父提交。M14-001 已建立 dormant R2 trust anchor，M14-002 与 M14-003 已
-闭合 projection/package，但 release branch 继续 fail closed、现行 exact develop release 继续有效。
-M14-005 当前候选为 READY：[具名 v0.1.0 准备决定与 fresh protection 回读](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_DECISION.md)
-已闭合外部启动条件。后续 implementation 仍包括真实 protected source-CI 验收、release-only workflow/checks、
-atomic topology cutover、exact develop source/current main parent freeze、deterministic projection / prospective-tree equality，
-以及首发 R2 验收与 tag/artifact/hash closure，顺序见 [M14 路线](ROADMAP.md#7-product--release-closure)。首版允许 no-Skill Core，但不得发布
-未许可/未准入 Skill，也不得把 incomplete M5 evaluation 写成已证明价值。Issue #57 的 `REL-*` 仅为工作包
-别名，不能替代图中的 Task identity。
+generated release branch 的 Git 父提交。M14-001～005 已完成，首个 `v0.1.0` alpha 的 R2/merge/tag/附件
+闭包见[首发完成记录](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_COMPLETE.md)。当前 active topology 拒绝 direct develop release；后续版本继续
+独立验证 frozen source/current main parent、projection/package/public checks 与具名审核/发布决定。
+首版 no-Skill Core 不授予真实 Skill admission 或科研价值，其他任务 Gate 保持独立；Issue #57 的
+`REL-*` 仍仅为工作包别名，不能替代 canonical Task identity。
 
 ## 4. Reservation activation
 
