@@ -98,15 +98,44 @@ The current readback and non-authorizing payload are retained in the
 
 ## Following slices
 
+### First candidate diagnostic (2026-10-01)
+
+[PR #115](https://github.com/Chengyue-Lu/research-agent-workbench/pull/115) was
+cross-owner approved and merged as `develop@cebae4b3d9116d750b5573afce77a3e0bfd2b12f`.
+Its actual protected [push CI run 36791544994](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36791544994)
+completed successfully, and a clean exact-source live attestation passed. From that
+source and `main@b1d5a5a5850e0e7541e4c460f15384cd45357ab2`, the first
+candidate was built on `release/v0.1.0` at
+`4d7df013277124b1721f3a5d93f2f15d64d3f2e5`; its manifest SHA-256 is
+`57cd04184fb17210f504c946a1e46213857870e46343ec3b75e0a77c724d1677`.
+Source-owned double projection, preflight, public check and local Python 3.13 package
+installation passed. Draft [PR #116](https://github.com/Chengyue-Lu/research-agent-workbench/pull/116)
+triggered actual [first-main hosted run 36797275971](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36797275971):
+both Python 3.11 and 3.13 diagnostic checks passed. The workflow and validator blobs
+in the PR merge ref match the frozen source, and all four remote rulesets and both
+effective-rule views were read without mutation. Every receipt still reports
+`merge_eligible: false`; the PR remains a blocked draft.
+
+The independent PR-governance replay exposed a develop-side issue: policy correctly
+omits `docs/TASKS.md` and `docs/workstreams/**` from the public candidate, but the
+governance checker still read them from its head. This yields `TASK-READ` and
+`WORKSTREAM-EVIDENCE` in addition to the expected dormant/missing-expectations errors.
+The proposed fix reads declared Task IDs and R2 workstream evidence from the trusted
+source only after release prerequisites validate; an untrusted attempt still fails
+closed without reading development-only candidate documents. This correction requires
+its own develop PR and accepted source CI, followed by rebuilding the candidate and
+refreshing external pins before any cutover. The first diagnostic candidate and its
+run remain evidence, not the final releasable source.
+
 The source API repair was accepted in PR #97. Its real protected develop
 [push run 35814704926](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/35814704926)
 and clean exact-source online `attest` passed; the [historical observation pins](SOURCE_CI_ACCEPTANCE.json)
 are audit evidence only. The remaining slices are:
 
-1. R2-review the cutover preparation. No remote ruleset or governance activation changes in this slice.
-2. After acceptance, freeze the exact develop source/current main parent for a real candidate,
-   independently verify its source-owned workflow bytes and observe its hosted main-PR checks
-   while the old required checks continue to block merging. Rebuild on any source/parent drift.
+1. Review and accept the develop-side governance correction; observe its protected push
+   CI, then rebuild the candidate from that exact source and refresh the external pins.
+2. Repeat source-owned and hosted first-main checks on the rebuilt candidate while
+   the old required checks continue to block merging.
 3. With R2 review and fresh readiness evidence, activate the governed release topology and
    replace the main hard ruleset's old required contexts in one update; re-read effective
    rules and prove direct `develop -> main` remains blocked. A failed or ambiguous update

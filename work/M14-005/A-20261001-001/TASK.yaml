@@ -1,0 +1,35 @@
+schema_version: 0.1.0
+task_id: M14-005
+revision: 1
+owner: Chengyue-Lu
+risk: R2
+agent_profile: bounded-curated-release-diagnostic
+required_skills: []
+delegation: false
+baseline: cebae4b3d9116d750b5573afce77a3e0bfd2b12f
+goal: Build and independently inspect the first main candidate, then repair the discovered develop-side governance document lookup.
+authority: The user authorized merging the approved PR 115 and continuing M14-005. The named v0.1.0 decision authorizes candidate preparation; final release merge and tag require separate approval.
+read_allowlist:
+- AGENTS.md
+- README.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- .github/**
+- tests/**
+- work/M14-005/**
+- protected develop/main refs, source CI, release PR, four active rulesets and effective rules
+write_scope:
+- .github/scripts/check_pr_governance.py
+- tests/test_pr_governance.py
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/RELEASE_CHECKS.md
+- work/M14-005/A-20261001-001/**
+- isolated feature branch, release candidate branch and review PRs
+stop_conditions:
+- Keep release governance dormant and current remote rulesets unchanged.
+- Do not merge into main, create a tag or publish an artifact.
+- Do not treat a diagnostic hosted check or locally supplied expectation as release authority.
+- Require independent R2 review and exact-head CI before integrating the governance correction.

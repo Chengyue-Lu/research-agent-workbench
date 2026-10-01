@@ -568,7 +568,7 @@ class ReleaseTrustIntegrationTests(unittest.TestCase):
 | M14-001 | READY | Release trust seam | none | Remains dormant |
 """
 
-    def release_event(self) -> dict[str, object]:
+    def release_event(self, *, task_ids: str = "M14-001") -> dict[str, object]:
         return {
             "pull_request": {
                 "base": {
@@ -583,7 +583,7 @@ class ReleaseTrustIntegrationTests(unittest.TestCase):
                 },
                 "body": valid_body(
                     pr_class="release",
-                    task_ids="M14-001",
+                    task_ids=task_ids,
                     risk="R2",
                     workstream="docs/workstreams/chengyue-lu/M14-CURATED-RELEASE",
                     shared_contract="yes",
@@ -623,8 +623,20 @@ class ReleaseTrustIntegrationTests(unittest.TestCase):
         expectations: dict[str, str] | None,
         *,
         history_error: bool = False,
+        task_ids: str = "M14-001",
+        missing_source_tasks: bool = False,
+        empty_source_tasks: bool = False,
+        missing_source_workstream: bool = False,
     ) -> object:
-        def read_blob(_: str, path: str) -> str:
+        def read_blob(revision: str, path: str) -> str:
+            if revision == self.HEAD_SHA and (path == "docs/TASKS.md" or path.startswith("docs/workstreams/")):
+                raise governance.GovernanceError("internal development document absent from release tree")
+            if missing_source_tasks and revision == self.SOURCE_SHA and path == "docs/TASKS.md":
+                raise governance.GovernanceError("trusted source TASKS unavailable")
+            if empty_source_tasks and revision == self.SOURCE_SHA and path == "docs/TASKS.md":
+                return "# No Task rows"
+            if missing_source_workstream and revision == self.SOURCE_SHA and path.startswith("docs/workstreams/"):
+                raise governance.GovernanceError("trusted source workstream unavailable")
             return self.TASKS if path == "docs/TASKS.md" else "workstream evidence"
 
         with (
@@ -651,8 +663,10 @@ class ReleaseTrustIntegrationTests(unittest.TestCase):
             mock.patch.object(governance, "_published_documents_at", return_value={}),
         ):
             if expectations is None:
-                return governance.check_pull_request(self.release_event())
-            return governance.check_pull_request(self.release_event(), release_expectations=expectations)
+                return governance.check_pull_request(self.release_event(task_ids=task_ids))
+            return governance.check_pull_request(
+                self.release_event(task_ids=task_ids), release_expectations=expectations
+            )
 
     def test_fully_valid_release_candidate_remains_dormant_and_r2(self) -> None:
         report = self.run_release(self.expectations())
@@ -665,8 +679,26 @@ class ReleaseTrustIntegrationTests(unittest.TestCase):
 
     def test_pr_body_or_branch_name_cannot_replace_trusted_expectations(self) -> None:
         report = self.run_release({})
-        self.assertIn("RELEASE-EXPECTATIONS-MISSING", codes(report, "ERROR"))
-        self.assertIn("TOPOLOGY-RELEASE-DORMANT", codes(report, "ERROR"))
+        self.assertEqual(
+            {"RELEASE-EXPECTATIONS-MISSING", "TOPOLOGY-RELEASE-DORMANT"},
+            codes(report, "ERROR"),
+        )
+
+    def test_curated_release_task_ids_come_from_trusted_source(self) -> None:
+        report = self.run_release(self.expectations(), task_ids="M14-999")
+        self.assertIn("RELEASE-TASK-ID", codes(report, "ERROR"))
+
+    def test_missing_trusted_source_tasks_blocks(self) -> None:
+        report = self.run_release(self.expectations(), missing_source_tasks=True)
+        self.assertIn("TASK-READ", codes(report, "ERROR"))
+
+    def test_empty_trusted_source_tasks_blocks(self) -> None:
+        report = self.run_release(self.expectations(), empty_source_tasks=True)
+        self.assertIn("RELEASE-TASK-SOURCE", codes(report, "ERROR"))
+
+    def test_missing_trusted_source_workstream_blocks(self) -> None:
+        report = self.run_release(self.expectations(), missing_source_workstream=True)
+        self.assertIn("WORKSTREAM-EVIDENCE", codes(report, "ERROR"))
 
     def test_process_environment_is_not_implicitly_trusted(self) -> None:
         environment = {
