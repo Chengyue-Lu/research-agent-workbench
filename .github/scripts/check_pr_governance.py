@@ -1053,6 +1053,17 @@ def validate_workstream(
         report.add("ERROR", "WORKSTREAM-EVIDENCE", str(exc))
 
 
+def validate_curated_release_task_source(
+    *, source_sha: str, declared_task_ids: set[str], report: GovernanceReport
+) -> None:
+    """Release candidates omit TASKS; resolve declared IDs at the trusted source."""
+    rows = parse_task_rows(_read_blob(source_sha, "docs/TASKS.md"))
+    if not rows:
+        report.add("ERROR", "RELEASE-TASK-SOURCE", "trusted source has no TASKS rows")
+    for task_id in sorted(declared_task_ids - rows.keys()):
+        report.add("ERROR", "RELEASE-TASK-ID", f"Task ID absent from trusted source: {task_id}")
+
+
 def validate_risk_requirements(
     *, effective_risk: str, sections: Mapping[str, str], raw_task_ids: str, report: GovernanceReport
 ) -> None:
@@ -1232,6 +1243,7 @@ def check_pull_request(
         changed_paths = []
         merge_base = base_sha
 
+    release_evidence_sha = None
     if topology.curated_release_topology_matched:
         expectations = (
             {}
@@ -1243,7 +1255,7 @@ def check_pull_request(
         try:
             release_history = _release_history(base_sha, head_sha)
             source_exists = _commit_exists(source_sha)
-            validate_curated_release_prerequisites(
+            prerequisites_valid = validate_curated_release_prerequisites(
                 base_sha=base_sha,
                 base_repository=base_repository,
                 head_repository=head_repository,
@@ -1263,6 +1275,8 @@ def check_pull_request(
                 ),
                 report=report,
             )
+            if prerequisites_valid:
+                release_evidence_sha = source_sha
         except GovernanceError as exc:
             report.add("ERROR", "RELEASE-TRUST-READ", str(exc))
 
@@ -1280,25 +1294,32 @@ def check_pull_request(
         raw_task_ids=metadata.get("Task ID(s)", "none"),
         report=report,
     )
-    validate_workstream(
-        raw_workstream=metadata.get("Workstream", "none"),
-        owner=metadata.get("Accountable owner", ""),
-        effective_risk=effective,
-        head_sha=head_sha,
-        report=report,
-    )
-
-    try:
-        validate_task_changes(
-            base_text=_read_blob(merge_base, "docs/TASKS.md"),
-            head_text=_read_blob(head_sha, "docs/TASKS.md"),
-            pr_class=metadata.get("PR class", ""),
-            changed_paths=changed_paths,
-            declared_task_ids=task_ids_from_metadata(metadata.get("Task ID(s)", "none")),
+    if not topology.curated_release_attempt or release_evidence_sha is not None:
+        validate_workstream(
+            raw_workstream=metadata.get("Workstream", "none"),
+            owner=metadata.get("Accountable owner", ""),
             effective_risk=effective,
-            verification_evidence=sections.get("Verification evidence", ""),
+            head_sha=release_evidence_sha or head_sha,
             report=report,
         )
+
+    try:
+        declared_task_ids = task_ids_from_metadata(metadata.get("Task ID(s)", "none"))
+        if release_evidence_sha is not None:
+            validate_curated_release_task_source(
+                source_sha=release_evidence_sha, declared_task_ids=declared_task_ids, report=report
+            )
+        elif not topology.curated_release_attempt:
+            validate_task_changes(
+                base_text=_read_blob(merge_base, "docs/TASKS.md"),
+                head_text=_read_blob(head_sha, "docs/TASKS.md"),
+                pr_class=metadata.get("PR class", ""),
+                changed_paths=changed_paths,
+                declared_task_ids=declared_task_ids,
+                effective_risk=effective,
+                verification_evidence=sections.get("Verification evidence", ""),
+                report=report,
+            )
     except GovernanceError as exc:
         report.add("ERROR", "TASK-READ", str(exc))
 

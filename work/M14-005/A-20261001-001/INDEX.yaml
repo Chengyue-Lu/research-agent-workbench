@@ -1,0 +1,61 @@
+schema_version: 0.1.0
+trace_id: TRACE-M14-005-A-20261001-001
+task_id: M14-005
+task_revision: 1
+attempt_id: A-20261001-001
+archive_root: A-20261001-001
+baseline: cebae4b3d9116d750b5573afce77a3e0bfd2b12f
+owner_actor_id: main-agent
+owner: Chengyue-Lu
+attempt_status: safe-paused
+trace_status: frozen
+completeness: gapped
+task_ref:
+  path: TASK.yaml
+  sha256: 16bf2104ecdbadc36a94cb5114dc5f3a76e518ce9d819d76a50da6a66cd0e8f5
+actors_ref:
+  path: ACTORS.yaml
+  sha256: de792eacaa797b9ac22b335252fa08b8a054ba98c3269a3be0235508be2606a5
+read_allowlist:
+- AGENTS.md
+- README.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- docs/TASKS.md
+- docs/ROADMAP.md
+- docs/STATUS.md
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/**
+- .github/**
+- tests/**
+- work/M14-005/**
+- protected develop/main refs, source CI, release PR, four active rulesets and effective rules
+write_scope:
+- .github/scripts/check_pr_governance.py
+- tests/test_pr_governance.py
+- docs/workstreams/chengyue-lu/M14-CURATED-RELEASE/RELEASE_CHECKS.md
+- work/M14-005/A-20261001-001/**
+- isolated feature branch, release candidate branch and review PRs
+tool_allowlist:
+- git
+- gh
+- python
+- apply_patch
+messages: []
+event_ledger:
+  path: events.jsonl
+  sha256: 275ee9b7450138f55974e67eeb6a47094cf87651477bbf59704580534cfbae0f
+  event_count: 4
+tool_event_refs: []
+handoff_refs:
+- path: WORKLOG.md
+  sha256: 2de72785e526dfeff9a2d283a7d6f9f65bbe87ef51f63c2fe06240d8c3239e83
+decision_refs: []
+output_refs:
+- path: outputs/VERIFICATION.md
+  sha256: 4bd85ff032e853ff6a8a880bfae81f029e9baa3300786a4e31c69e820a711ba2
+check_refs: []
+capture_gaps:
+- event_id: EVT-0002
+  affected_stream: events
+- event_id: EVT-0003
+  affected_stream: external-actions
