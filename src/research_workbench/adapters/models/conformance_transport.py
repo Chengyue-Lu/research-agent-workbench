@@ -58,6 +58,7 @@ class GuardedConformanceTransport:
 
     Entry is committed after the delegated method has returned or raised. A
     crash before that receipt retains the durable intent and full reservation.
+    The caller guard can be checked more than once for the same send stage.
     """
 
     __slots__ = ("_delegate", "_journal", "_guard", "_clock", "_deadline", "_binding",
@@ -240,6 +241,18 @@ class GuardedConformanceTransport:
         object.__setattr__(self, "_intent_attempted", True)
         self._journal.persist_send_intent(self._active)
         object.__setattr__(self, "_intent_durable", True)
+        # Persistence and its callbacks can consume the remaining time or
+        # invalidate the caller's gate. Recheck before delegated entry; a
+        # refusal here retains the committed intent and full reservation.
+        self._guarded("send")
+        self._body_verify()
+        remaining = self._remaining()
+        if type(request.timeout_seconds) not in {int, float} or not math.isfinite(request.timeout_seconds) or request.timeout_seconds <= 0:
+            _fail("transport-protocol-failed")
+        clipped = replace(request, timeout_seconds=min(float(request.timeout_seconds), remaining))
+        if self._body_policy_pin is not None:
+            self._body_checked(lambda: validate_encoded_body(self._body_policy, self._body_admission,
+                                                            self._body_state, clipped.body))
         send = self._delegate.send
         try:
             response = send(clipped)

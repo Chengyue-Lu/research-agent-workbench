@@ -226,8 +226,9 @@ class ProfileConformanceTests(unittest.TestCase):
                                                  "tool_executions": 1, "responses_received": 3})
         self.assertTrue(all(report["assertions"].values()))
         self.assertEqual(report["accounting"]["known_total_tokens"], 21)
-        self.assertEqual(self.guard_stages, [("preinvoke", 1), ("send", 1), ("preinvoke", 2), ("send", 2),
-                                           ("preinvoke", 3), ("send", 3)])
+        self.assertEqual(self.guard_stages, [("preinvoke", 1), ("send", 1), ("send", 1),
+                                           ("preinvoke", 2), ("send", 2), ("send", 2),
+                                           ("preinvoke", 3), ("send", 3), ("send", 3)])
         first, second, third = [json.loads(item.body) for item in self.transport.requests]
         self.assertEqual(first["tool_choice"], {"type": "function", "name": "add_ints"})
         self.assertEqual(second["tool_choice"], "none")
