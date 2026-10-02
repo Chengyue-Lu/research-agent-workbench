@@ -2,7 +2,9 @@
 
 继续同一 [R2 Draft PR128](https://github.com/Chengyue-Lu/research-agent-workbench/pull/128)，
 base `27cbf860e48e9639bd3af32a58c12bfd88d87526`；cross-owner审核请求维持，不代具名接受/merge。
-最终候选 source/head、冻结检查见[CHECKS](CHECKS.md)。
+产品源`f7969bb2a3434ef603cce5743884307af5025473`；测试修复源`5a0b19d73f63477b66613ffade73045b75a74ed7`仅补新kind清单。
+831组件原轮826PASS/1catalog FAIL/4skip，该清单修复6PASS；产品/Schema/CI/policy同源。
+177资源/119模块/安装8smokes及独立复核见[CHECKS](CHECKS.md)。
 
 新增显式源码闭包和 manifest1.1/policy-v3，ConfiguredProvider构造及credential前重验，
 baseline1.2 producer/use/cold replay消费全图引用。旧manifest/Envelope保持原语义，新绑定

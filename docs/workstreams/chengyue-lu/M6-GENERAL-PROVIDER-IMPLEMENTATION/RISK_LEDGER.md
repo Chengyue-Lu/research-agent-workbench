@@ -22,6 +22,7 @@
 | 可序列化结果冒称具名接受 | 独立版本化闭集report Schema，报告只记录计数/数值/固定code/非秘密identity refs，fresh排他输出；CLI只离线计划 | guard/input上界caller-attested，source refs为局部，M6-009未DONE、M6-010仍BLOCKED |
 | 历史模型模板被当当前服务 | 官方 models/deprecations 已明确 Google2.0 Flash 关闭；新工厂在凭据前拒绝 | 原字节保留回放；独立 Gemma profile 仅 Text/off 合成路径，账户与远端接受保持 unknown |
 | Windows 换行导致 FileRef 与 Git 字节不一致 | 规范为已有 Git LF blob、重 pin 33 个正例；独立 working/Git 核查 | 原失败源/receipts 保留；此前双 Python 切片不是最终新 hash 的多平台安装证明 |
+| 新图消费者拒绝路径不完整 | 独立复现MappingProxy构造拒绝、旧manifest降级遗漏引用及静态异常出口漏import，最终修复和针对性复验3/3PASS；组件原轮及清单修复分别留档 | 仅当前声明的离线作用域，driver/report和完整运行context另整合 |
 | 过程留痕缺口 | 独占本地 archive 保留 dispatch、工作日志、原失败及 source receipts | 平台未暴露或未导出的完整工具事件不伪造；capture gap 保留 |
 
 真实 Provider/API 调用、真实 Key 值读取为 0；各冻结源的安装检查见对应 Attempt CHECKS。M5 Pilot、A4 admission、Phase C、
