@@ -90,7 +90,7 @@ class TransportSafetyTests(unittest.TestCase):
         rendered = repr(request)
         self.assertNotIn("super-secret", rendered)
         self.assertNotIn("private research", rendered)
-        self.assertIn("example.invalid", rendered)
+        self.assertNotIn("example.invalid", rendered)
         response_value = HttpResponse(
             status_code=200,
             headers={"set-cookie": "sensitive-response-value"},

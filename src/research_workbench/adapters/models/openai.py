@@ -278,17 +278,20 @@ class OpenAIResponsesProvider:
                 ProviderErrorCategory.CONTRACT_VIOLATION,
                 f"OpenAI function_call at output[{index}] lacks call_id or name",
             )
+        invalid_json = False
         try:
             decoded = json.loads(arguments) if isinstance(arguments, str) else arguments
-        except json.JSONDecodeError as exc:
+        except json.JSONDecodeError:
+            invalid_json = True
+        if invalid_json:
             raise ProviderError(
                 ProviderErrorCategory.CONTRACT_VIOLATION,
-                f"OpenAI function_call {call_id!r} has invalid JSON arguments",
-            ) from exc
+                "OpenAI function_call has invalid JSON arguments",
+            )
         if not isinstance(decoded, Mapping):
             raise ProviderError(
                 ProviderErrorCategory.CONTRACT_VIOLATION,
-                f"OpenAI function_call {call_id!r} arguments are not an object",
+                "OpenAI function_call arguments are not an object",
             )
         return ToolCall(call_id=call_id, name=name, arguments=dict(decoded))
 

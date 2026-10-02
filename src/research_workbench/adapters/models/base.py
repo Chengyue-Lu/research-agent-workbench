@@ -10,13 +10,13 @@ from jsonschema.exceptions import SchemaError
 
 from research_workbench.adapters.models.http import (
     CredentialProvider,
-    CredentialUnavailable,
     HttpRequest,
     HttpResponse,
     HttpTransport,
     HttpTransportError,
     decode_json_object,
     json_body,
+    validate_https_endpoint,
 )
 from research_workbench.adapters.models.port import (
     Capability,
@@ -179,34 +179,64 @@ def perform_json_request(
     payload: Mapping[str, object],
     timeout_seconds: float,
 ) -> tuple[HttpResponse, Mapping[str, object]]:
+    failure: ProviderError | None = None
+    try:
+        validate_https_endpoint(url)
+    except ValueError:
+        failure = ProviderError(ProviderErrorCategory.INVALID_REQUEST, "provider endpoint is invalid")
+    if failure is not None:
+        raise failure
+    # Non-secret serialization/admission precedes any credential access.
+    body = json_body(payload)
     try:
         secret = credential.resolve()
-    except CredentialUnavailable as exc:
-        raise ProviderError(ProviderErrorCategory.AUTHENTICATION, str(exc)) from exc
+    except Exception:
+        failure = ProviderError(ProviderErrorCategory.AUTHENTICATION, "provider credential is unavailable")
+    if failure is not None:
+        raise failure
     authenticated = {key: value.replace("{API_KEY}", secret) for key, value in headers.items()}
     try:
         response = transport.send(
-            HttpRequest("POST", url, authenticated, json_body(payload), timeout_seconds)
+            HttpRequest("POST", url, authenticated, body, timeout_seconds)
         )
     except HttpTransportError as exc:
-        category = ProviderErrorCategory.TRANSIENT if exc.retryable else ProviderErrorCategory.INVALID_REQUEST
-        raise ProviderError(category, str(exc), retryable=exc.retryable) from exc
+        retryable = exc.retryable if type(exc.retryable) is bool else False
+        status_code = exc.status_code if type(exc.status_code) is int and 100 <= exc.status_code <= 599 else None
+        category = ProviderErrorCategory.TRANSIENT if retryable else ProviderErrorCategory.INVALID_REQUEST
+        failure = ProviderError(
+            category, "provider transport failed", retryable=retryable, status_code=status_code
+        )
+    except Exception:
+        failure = ProviderError(ProviderErrorCategory.UNKNOWN, "provider transport failed")
+    if failure is not None:
+        raise failure
+    if type(response.status_code) is not int or not 100 <= response.status_code <= 599:
+        raise ProviderError(ProviderErrorCategory.CONTRACT_VIOLATION, "provider transport returned an invalid status")
+    if 300 <= response.status_code < 400:
+        raise ProviderError(
+            ProviderErrorCategory.INVALID_REQUEST,
+            "provider redirect was refused",
+            status_code=response.status_code,
+        )
     try:
         document = decode_json_object(response.body, provider=provider)
-    except ValueError as exc:
+    except ValueError:
         if response.status_code >= 400:
             category, retryable = generic_error_category(response.status_code)
-            raise ProviderError(
+            failure = ProviderError(
                 category,
-                f"{provider} API returned HTTP {response.status_code} with a non-JSON error body",
+                "provider API returned a non-JSON error body",
                 retryable=retryable,
                 status_code=response.status_code,
-            ) from exc
-        raise ProviderError(
-            ProviderErrorCategory.CONTRACT_VIOLATION,
-            str(exc),
-            status_code=response.status_code,
-        ) from exc
+            )
+        else:
+            failure = ProviderError(
+                ProviderErrorCategory.CONTRACT_VIOLATION,
+                "provider returned an invalid JSON response",
+                status_code=response.status_code,
+            )
+    if failure is not None:
+        raise failure
     return response, document
 
 
@@ -240,11 +270,32 @@ def raise_provider_http_error(
         retryable = category in {ProviderErrorCategory.RATE_LIMIT, ProviderErrorCategory.TRANSIENT}
     raise ProviderError(
         category,
-        f"{provider} API request failed: {message}",
+        "provider API request failed",
         retryable=retryable,
         status_code=status_code,
-        provider_code=provider_code,
+        provider_code=(
+            provider_code
+            if isinstance(provider_code, str) and provider_code in _PUBLIC_PROVIDER_ERROR_CODES.get(provider, ())
+            else None
+        ),
     )
+
+
+_PUBLIC_PROVIDER_ERROR_CODES: dict[str, frozenset[str]] = {
+    # Raw provider messages and unknown codes may echo credentials or inputs.
+    # Only existing, explicitly understood error codes cross this boundary.
+    "openai": frozenset({
+        "context_length_exceeded", "max_tokens", "content_filter", "safety",
+    }),
+    "anthropic": frozenset({
+        "authentication_error", "permission_error", "invalid_request_error",
+        "request_too_large", "rate_limit_error", "overloaded_error",
+    }),
+    "google": frozenset({
+        "UNAUTHENTICATED", "PERMISSION_DENIED", "INVALID_ARGUMENT", "FAILED_PRECONDITION",
+        "RESOURCE_EXHAUSTED", "UNAVAILABLE", "DEADLINE_EXCEEDED",
+    }),
+}
 
 
 def validate_structured_response(request: ModelRequest, response: ModelResponse) -> ModelResponse:
@@ -256,22 +307,21 @@ def validate_structured_response(request: ModelRequest, response: ModelResponse)
     schema = request.response_format.schema
     assert isinstance(schema, Mapping)
     text = "".join(block.text or "" for block in response.output if block.kind == "text")
+    invalid_json = False
     try:
         value = json.loads(text)
-    except json.JSONDecodeError as exc:
+    except json.JSONDecodeError:
+        invalid_json = True
+    if invalid_json:
         raise ProviderError(
             ProviderErrorCategory.CONTRACT_VIOLATION,
             f"{response.provider} returned invalid JSON for structured output",
-        ) from exc
+        )
     errors = sorted(Draft202012Validator(schema).iter_errors(value), key=lambda item: list(item.absolute_path))
     if errors:
-        first = errors[0]
-        pointer = "$" + "".join(
-            f"[{part}]" if isinstance(part, int) else f".{part}" for part in first.absolute_path
-        )
         raise ProviderError(
             ProviderErrorCategory.CONTRACT_VIOLATION,
-            f"{response.provider} structured output failed local validation at {pointer}: {first.message}",
+            f"{response.provider} structured output failed local validation",
         )
     return response
 
@@ -285,28 +335,23 @@ def validate_response_contract(request: ModelRequest, response: ModelResponse) -
         if call.call_id in seen_ids:
             raise ProviderError(
                 ProviderErrorCategory.CONTRACT_VIOLATION,
-                f"{response.provider} returned duplicate tool call id: {call.call_id}",
+                f"{response.provider} returned duplicate tool call ids",
             )
         seen_ids.add(call.call_id)
         definition = definitions.get(call.name)
         if definition is None:
             raise ProviderError(
                 ProviderErrorCategory.CONTRACT_VIOLATION,
-                f"{response.provider} called undeclared tool: {call.name}",
+                f"{response.provider} called an undeclared tool",
             )
         errors = sorted(
             Draft202012Validator(definition.input_schema).iter_errors(call.arguments),
             key=lambda item: list(item.absolute_path),
         )
         if errors:
-            first = errors[0]
-            pointer = "$" + "".join(
-                f"[{part}]" if isinstance(part, int) else f".{part}" for part in first.absolute_path
-            )
             raise ProviderError(
                 ProviderErrorCategory.CONTRACT_VIOLATION,
-                f"{response.provider} tool call {call.name!r} failed local validation at "
-                f"{pointer}: {first.message}",
+                f"{response.provider} tool call failed local validation",
             )
     if response.tool_calls and request.tool_choice.kind == "none":
         raise ProviderError(

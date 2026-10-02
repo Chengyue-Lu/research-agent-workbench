@@ -6,8 +6,8 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
-from urllib.parse import urlparse
 
+from research_workbench.adapters.models.http import validate_https_endpoint
 from research_workbench.adapters.models.port import Capability
 from research_workbench.io import load_document
 
@@ -40,6 +40,9 @@ class ProviderAdapterConfig:
     capabilities: frozenset[Capability]
     live_conformance: str
 
+    def __post_init__(self) -> None:
+        validate_https_endpoint(self.base_url, allow_query=False)
+
     @classmethod
     def from_mapping(cls, value: Mapping[str, Any]) -> "ProviderAdapterConfig":
         required = {
@@ -65,9 +68,7 @@ class ProviderAdapterConfig:
         if not isinstance(value["enabled"], bool):
             raise ValueError(f"provider adapter {adapter_id!r} enabled must be boolean")
         base_url = _nonempty_string(value["base_url"], "base_url").rstrip("/")
-        parsed = urlparse(base_url)
-        if parsed.scheme != "https" or not parsed.netloc or parsed.query or parsed.fragment:
-            raise ValueError(f"provider adapter {adapter_id!r} base_url must be an HTTPS origin/path")
+        validate_https_endpoint(base_url, allow_query=False)
         credential_env = _environment_name(value["credential_env"], "credential_env")
         model_env = _environment_name(value["model_env"], "model_env")
         raw_capabilities = value["capabilities"]
