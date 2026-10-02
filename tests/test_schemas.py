@@ -180,6 +180,7 @@ class VersionedSchemaTests(unittest.TestCase):
                 "provider_api_profile",
                 "provider_adapters_v2",
                 "provider_binding_manifest",
+                "provider_source_closure",
                 "conformance_session_policy",
                 "research_mode",
                 "runtime_resource_manifest",
