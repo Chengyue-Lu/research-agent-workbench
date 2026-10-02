@@ -1,0 +1,19 @@
+{
+  "fixture_kind": "public-vendor-profile-configuration",
+  "schema_positive": true,
+  "resolve_expected": "resolve-nonsecret-only",
+  "provider": "bytedance-ark",
+  "profile_ref": {
+    "path": "registry/providers/profiles/bytedance-ark-chat-completions-v1.json",
+    "sha256": "27bbbd1ed99c2110dc0dafda1ca15d00417e099430b31abe8824c6cbbd1871d5"
+  },
+  "requested_id": "seed-2-0-lite-260228",
+  "live_accepted": false,
+  "credential_reads": 0,
+  "presence_checks": 0,
+  "network_calls": 0,
+  "notes": [
+    "Positive means schema/config structure only; it does not prove current account availability or live acceptance.",
+    "All negative patches use array paths; apply to a deep copy of the indicated positive document."
+  ]
+}

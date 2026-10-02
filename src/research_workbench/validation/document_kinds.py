@@ -31,6 +31,7 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         "arm_execution_qualification", "evaluation_case_closure", "admission_evidence_overlap",
         "a4_execution_qualification", "a3_a4_pairwise_comparability",
         "baseline_execution_envelope", "baseline_execution_fact", "baseline_execution_receipt",
+        "provider_api_profile", "provider_binding_manifest",
     }:
         return evaluation_kind
     if document.get("manifest_kind") == "python-file-reconstruction":
@@ -41,7 +42,11 @@ def infer_document_kind(document: Mapping[str, Any]) -> str | None:
         return "run_reconstruction_report"
     if document.get("document_kind") == "claim_evidence_map":
         return "claim_evidence_map"
+    if {"policy_id", "initial_choice", "after_successful_tool_result", "max_model_turns"} <= document.keys():
+        return "conformance_session_policy"
     registry_kind = document.get("registry_kind")
+    if registry_kind == "provider_adapters" and "config_version" in document:
+        return "provider_adapters_v2"
     if isinstance(registry_kind, str):
         return registry_kind
     if "attempt_id" in document and "task_id" in document:

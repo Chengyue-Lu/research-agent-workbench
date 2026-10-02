@@ -1,0 +1,34 @@
+{
+  "schema_version": "0.1.0",
+  "registry_kind": "provider_adapters",
+  "config_version": "2.0.0",
+  "config_id": "openrouter-profile-fixture-v2",
+  "adapters": [
+    {
+      "adapter_id": "openrouter-profile-fixture",
+      "enabled": true,
+      "profile_ref": {
+        "path": "registry/providers/profiles/openrouter-chat-completions-v1.json",
+        "sha256": "34b980a0775ec908347817b82b15c091d9b3653e1e71d23e7a44d4a91c93da36"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "openai/gpt-5.2"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "RWB_FIXTURE_API_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 10,
+        "max_response_bytes": 65536,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    }
+  ]
+}

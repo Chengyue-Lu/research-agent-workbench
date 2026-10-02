@@ -1,0 +1,819 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/provider-api-profile.schema.json",
+  "title": "Provider API Profile",
+  "x-rwb-document-kind": "provider_api_profile",
+  "$comment": "ProviderApiProfile@1.0.0 isolated candidate. Mapping and parameter policy IDs match the implemented closed family registry at codec_version=1.0.0. Structural validity does not accept a vendor/model/mode, prove live conformance, or authorize credential access. Runtime validates exact vendor/profile/model/mode combinations, fixed endpoint templates, observed model policy, source closure and FileRef roots/hashes.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "version",
+    "profile_id",
+    "identity",
+    "protocol",
+    "endpoint",
+    "auth",
+    "model",
+    "generation",
+    "mapping",
+    "implementation",
+    "data_policy_evidence",
+    "documentation_refs"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "provider_api_profile"
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "profile_id": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "identity": {
+      "$ref": "#/$defs/identity"
+    },
+    "protocol": {
+      "$ref": "#/$defs/protocol"
+    },
+    "endpoint": {
+      "$ref": "#/$defs/endpoint"
+    },
+    "auth": {
+      "$ref": "#/$defs/auth"
+    },
+    "model": {
+      "$ref": "#/$defs/model"
+    },
+    "generation": {
+      "$ref": "#/$defs/generation"
+    },
+    "mapping": {
+      "$ref": "#/$defs/mapping"
+    },
+    "implementation": {
+      "$ref": "#/$defs/implementation"
+    },
+    "data_policy_evidence": {
+      "$ref": "#/$defs/dataPolicyEvidence"
+    },
+    "documentation_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uri",
+        "pattern": "^https://[^\\s/@?#]+(?:[/?#][^\\s]*)?$(?![\\s\\S])"
+      },
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "protocol": {
+            "properties": {
+              "family": {
+                "const": "responses"
+              }
+            },
+            "required": [
+              "family"
+            ]
+          }
+        },
+        "required": [
+          "protocol"
+        ]
+      },
+      "then": {
+        "properties": {
+          "auth": {
+            "properties": {
+              "header_name": {
+                "const": "Authorization"
+              },
+              "prefix": {
+                "const": "Bearer "
+              },
+              "public_parameters": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              }
+            }
+          },
+          "generation": {
+            "properties": {
+              "parameter_profile_id": {
+                "const": "responses:parameters:v1"
+              }
+            }
+          },
+          "mapping": {
+            "properties": {
+              "role_policy_id": {
+                "const": "responses:role:v1"
+              },
+              "tool_policy_id": {
+                "const": "responses:tool:v1"
+              },
+              "schema_policy_id": {
+                "const": "responses:schema:v1"
+              },
+              "usage_policy_id": {
+                "const": "responses:usage:v1"
+              },
+              "finish_policy_id": {
+                "const": "responses:finish:v1"
+              },
+              "error_policy_id": {
+                "const": "responses:error:v1"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "protocol": {
+            "properties": {
+              "family": {
+                "const": "chat-completions"
+              }
+            },
+            "required": [
+              "family"
+            ]
+          }
+        },
+        "required": [
+          "protocol"
+        ]
+      },
+      "then": {
+        "properties": {
+          "auth": {
+            "properties": {
+              "header_name": {
+                "const": "Authorization"
+              },
+              "prefix": {
+                "const": "Bearer "
+              },
+              "public_parameters": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              }
+            }
+          },
+          "generation": {
+            "properties": {
+              "parameter_profile_id": {
+                "const": "chat-completions:parameters:v1"
+              }
+            }
+          },
+          "mapping": {
+            "properties": {
+              "role_policy_id": {
+                "const": "chat-completions:role:v1"
+              },
+              "tool_policy_id": {
+                "const": "chat-completions:tool:v1"
+              },
+              "schema_policy_id": {
+                "const": "chat-completions:schema:v1"
+              },
+              "usage_policy_id": {
+                "const": "chat-completions:usage:v1"
+              },
+              "finish_policy_id": {
+                "const": "chat-completions:finish:v1"
+              },
+              "error_policy_id": {
+                "const": "chat-completions:error:v1"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "protocol": {
+            "properties": {
+              "family": {
+                "const": "anthropic-messages"
+              }
+            },
+            "required": [
+              "family"
+            ]
+          }
+        },
+        "required": [
+          "protocol"
+        ]
+      },
+      "then": {
+        "properties": {
+          "auth": {
+            "properties": {
+              "header_name": {
+                "const": "x-api-key"
+              },
+              "prefix": {
+                "const": ""
+              },
+              "public_parameters": {
+                "type": "object",
+                "required": [
+                  "anthropic-version"
+                ],
+                "properties": {
+                  "anthropic-version": {
+                    "const": "2023-06-01"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "generation": {
+            "properties": {
+              "parameter_profile_id": {
+                "const": "anthropic-messages:parameters:v1"
+              }
+            }
+          },
+          "mapping": {
+            "properties": {
+              "role_policy_id": {
+                "const": "anthropic-messages:role:v1"
+              },
+              "tool_policy_id": {
+                "const": "anthropic-messages:tool:v1"
+              },
+              "schema_policy_id": {
+                "const": "anthropic-messages:schema:v1"
+              },
+              "usage_policy_id": {
+                "const": "anthropic-messages:usage:v1"
+              },
+              "finish_policy_id": {
+                "const": "anthropic-messages:finish:v1"
+              },
+              "error_policy_id": {
+                "const": "anthropic-messages:error:v1"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "protocol": {
+            "properties": {
+              "family": {
+                "const": "gemini-generate-content"
+              }
+            },
+            "required": [
+              "family"
+            ]
+          }
+        },
+        "required": [
+          "protocol"
+        ]
+      },
+      "then": {
+        "properties": {
+          "auth": {
+            "properties": {
+              "header_name": {
+                "const": "x-goog-api-key"
+              },
+              "prefix": {
+                "const": ""
+              },
+              "public_parameters": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              }
+            }
+          },
+          "generation": {
+            "properties": {
+              "parameter_profile_id": {
+                "const": "gemini-generate-content:parameters:v1"
+              }
+            }
+          },
+          "mapping": {
+            "properties": {
+              "role_policy_id": {
+                "const": "gemini-generate-content:role:v1"
+              },
+              "tool_policy_id": {
+                "const": "gemini-generate-content:tool:v1"
+              },
+              "schema_policy_id": {
+                "const": "gemini-generate-content:schema:v1"
+              },
+              "usage_policy_id": {
+                "const": "gemini-generate-content:usage:v1"
+              },
+              "finish_policy_id": {
+                "const": "gemini-generate-content:finish:v1"
+              },
+              "error_policy_id": {
+                "const": "gemini-generate-content:error:v1"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?=.*\\S)[^\\u0000-\\u001F\\u007F]+$(?![\\s\\S])"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$(?![\\s\\S])"
+    },
+    "portableRelativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$(?![\\s\\S])",
+      "allOf": [
+        {
+          "not": {
+            "pattern": "(?:^|/)\\.{1,2}(?:/|$)"
+          }
+        },
+        {
+          "not": {
+            "pattern": "\\.(?:/|$)"
+          }
+        },
+        {
+          "not": {
+            "pattern": "(?:^|/)(?:[Cc][Oo][Nn]|[Pp][Rr][Nn]|[Aa][Uu][Xx]|[Nn][Uu][Ll]|[Cc][Oo][Mm][1-9]|[Ll][Pp][Tt][1-9])(?:\\.[^/]+)?(?:/|$)"
+          }
+        }
+      ]
+    },
+    "fileRef": {
+      "type": "object",
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/portableRelativePath"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      },
+      "additionalProperties": false
+    },
+    "identity": {
+      "type": "object",
+      "required": [
+        "provider",
+        "operator",
+        "service",
+        "model_publisher",
+        "access_region",
+        "deployment_region"
+      ],
+      "properties": {
+        "provider": {
+          "enum": [
+            "openai",
+            "anthropic",
+            "google",
+            "deepseek",
+            "alibaba-dashscope",
+            "zhipu",
+            "moonshot",
+            "minimax",
+            "siliconflow",
+            "bytedance-ark",
+            "openrouter"
+          ]
+        },
+        "operator": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "service": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "model_publisher": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "access_region": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "deployment_region": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "protocol": {
+      "type": "object",
+      "required": [
+        "family",
+        "revision"
+      ],
+      "properties": {
+        "family": {
+          "enum": [
+            "responses",
+            "chat-completions",
+            "anthropic-messages",
+            "gemini-generate-content"
+          ]
+        },
+        "revision": {
+          "const": "1.0.0"
+        }
+      },
+      "additionalProperties": false
+    },
+    "endpoint": {
+      "type": "object",
+      "required": [
+        "origin",
+        "base_path",
+        "operation_path",
+        "api_version"
+      ],
+      "properties": {
+        "origin": {
+          "type": "string",
+          "pattern": "^https://[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?(?::[0-9]{1,5})?$(?![\\s\\S])"
+        },
+        "base_path": {
+          "type": "string",
+          "pattern": "^(?:|/(?:[A-Za-z0-9._~{}:-]+/)*[A-Za-z0-9._~{}:-]*)$(?![\\s\\S])",
+          "not": {
+            "pattern": "(?:^|/)\\.{1,2}(?:/|$)"
+          }
+        },
+        "operation_path": {
+          "type": "string",
+          "pattern": "^/(?:[A-Za-z0-9._~{}:-]+/)*[A-Za-z0-9._~{}:-]*$(?![\\s\\S])",
+          "not": {
+            "pattern": "(?:^|/)\\.{1,2}(?:/|$)"
+          }
+        },
+        "api_version": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "auth": {
+      "type": "object",
+      "required": [
+        "kind",
+        "header_name",
+        "prefix",
+        "public_parameters"
+      ],
+      "properties": {
+        "kind": {
+          "const": "api-key-header"
+        },
+        "header_name": {
+          "enum": [
+            "Authorization",
+            "x-api-key",
+            "x-goog-api-key"
+          ]
+        },
+        "prefix": {
+          "enum": [
+            "Bearer ",
+            ""
+          ]
+        },
+        "public_parameters": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "required": [
+                "anthropic-version"
+              ],
+              "properties": {
+                "anthropic-version": {
+                  "const": "2023-06-01"
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "model": {
+      "type": "object",
+      "required": [
+        "requested_id",
+        "publisher",
+        "observed_policy",
+        "allowed_observed_ids",
+        "documented_revision"
+      ],
+      "properties": {
+        "requested_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "publisher": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "observed_policy": {
+          "enum": [
+            "exact",
+            "explicit-allowlist"
+          ]
+        },
+        "allowed_observed_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "documented_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "observed_policy": {
+                "const": "exact"
+              }
+            },
+            "required": [
+              "observed_policy"
+            ]
+          },
+          "then": {
+            "properties": {
+              "allowed_observed_ids": {
+                "maxItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "generation": {
+      "type": "object",
+      "required": [
+        "mode",
+        "parameter_profile_id",
+        "continuation_policy"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "standard",
+            "nonthinking"
+          ]
+        },
+        "parameter_profile_id": {
+          "enum": [
+            "responses:parameters:v1",
+            "chat-completions:parameters:v1",
+            "anthropic-messages:parameters:v1",
+            "gemini-generate-content:parameters:v1"
+          ]
+        },
+        "continuation_policy": {
+          "const": "local-messages-only"
+        }
+      },
+      "additionalProperties": false
+    },
+    "mapping": {
+      "type": "object",
+      "required": [
+        "role_policy_id",
+        "tool_policy_id",
+        "schema_policy_id",
+        "usage_policy_id",
+        "finish_policy_id",
+        "error_policy_id"
+      ],
+      "properties": {
+        "role_policy_id": {
+          "enum": [
+            "responses:role:v1",
+            "chat-completions:role:v1",
+            "anthropic-messages:role:v1",
+            "gemini-generate-content:role:v1"
+          ]
+        },
+        "tool_policy_id": {
+          "enum": [
+            "responses:tool:v1",
+            "chat-completions:tool:v1",
+            "anthropic-messages:tool:v1",
+            "gemini-generate-content:tool:v1"
+          ]
+        },
+        "schema_policy_id": {
+          "enum": [
+            "responses:schema:v1",
+            "chat-completions:schema:v1",
+            "anthropic-messages:schema:v1",
+            "gemini-generate-content:schema:v1"
+          ]
+        },
+        "usage_policy_id": {
+          "enum": [
+            "responses:usage:v1",
+            "chat-completions:usage:v1",
+            "anthropic-messages:usage:v1",
+            "gemini-generate-content:usage:v1"
+          ]
+        },
+        "finish_policy_id": {
+          "enum": [
+            "responses:finish:v1",
+            "chat-completions:finish:v1",
+            "anthropic-messages:finish:v1",
+            "gemini-generate-content:finish:v1"
+          ]
+        },
+        "error_policy_id": {
+          "enum": [
+            "responses:error:v1",
+            "chat-completions:error:v1",
+            "anthropic-messages:error:v1",
+            "gemini-generate-content:error:v1"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "implementation": {
+      "type": "object",
+      "required": [
+        "adapter_version",
+        "codec_version",
+        "capabilities",
+        "limits",
+        "known_gaps",
+        "binding_policy_version"
+      ],
+      "properties": {
+        "adapter_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "codec_version": {
+          "const": "1.0.0"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "text",
+              "tools",
+              "structured_output",
+              "parallel_tools"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "limits": {
+          "$ref": "#/$defs/limits"
+        },
+        "known_gaps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          },
+          "uniqueItems": true
+        },
+        "binding_policy_version": {
+          "const": "provider-binding-v2"
+        }
+      },
+      "additionalProperties": false
+    },
+    "limits": {
+      "type": "object",
+      "required": [
+        "max_output_tokens",
+        "max_tools"
+      ],
+      "properties": {
+        "max_output_tokens": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 256
+        },
+        "max_tools": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        }
+      },
+      "additionalProperties": false
+    },
+    "dataPolicyEvidence": {
+      "type": "object",
+      "required": [
+        "regions_ref",
+        "controls_ref"
+      ],
+      "properties": {
+        "regions_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/fileRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "controls_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/fileRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "schema_version": "0.1.0",
+  "record_kind": "provider_api_profile",
+  "version": "1.0.0",
+  "profile_id": "anthropic-anthropic-messages-standard-v1",
+  "identity": {
+    "provider": "anthropic",
+    "operator": "Anthropic",
+    "service": "Claude API",
+    "model_publisher": "Anthropic",
+    "access_region": null,
+    "deployment_region": null
+  },
+  "protocol": {
+    "family": "anthropic-messages",
+    "revision": "1.0.0"
+  },
+  "endpoint": {
+    "origin": "https://api.anthropic.com",
+    "base_path": "/v1",
+    "operation_path": "/messages",
+    "api_version": "2023-06-01"
+  },
+  "auth": {
+    "kind": "api-key-header",
+    "header_name": "x-api-key",
+    "prefix": "",
+    "public_parameters": {
+      "anthropic-version": "2023-06-01"
+    }
+  },
+  "model": {
+    "requested_id": "claude-sonnet-4-6",
+    "publisher": "Anthropic",
+    "observed_policy": "exact",
+    "allowed_observed_ids": [
+      "claude-sonnet-4-6"
+    ],
+    "documented_revision": null
+  },
+  "generation": {
+    "mode": "standard",
+    "parameter_profile_id": "anthropic-messages:parameters:v1",
+    "continuation_policy": "local-messages-only"
+  },
+  "mapping": {
+    "role_policy_id": "anthropic-messages:role:v1",
+    "tool_policy_id": "anthropic-messages:tool:v1",
+    "schema_policy_id": "anthropic-messages:schema:v1",
+    "usage_policy_id": "anthropic-messages:usage:v1",
+    "finish_policy_id": "anthropic-messages:finish:v1",
+    "error_policy_id": "anthropic-messages:error:v1"
+  },
+  "implementation": {
+    "adapter_version": "1.0.0",
+    "codec_version": "1.0.0",
+    "capabilities": [
+      "text",
+      "tools"
+    ],
+    "limits": {
+      "max_output_tokens": 256,
+      "max_tools": 8
+    },
+    "known_gaps": [
+      "thinking-and-signature-continuation-not-supported",
+      "strict-schema-exact-model-evidence-not-frozen",
+      "multi-workspace-keys-require-unimplemented-workspace-binding",
+      "pending-live-exact-binding",
+      "data-policy-evidence-unavailable"
+    ],
+    "binding_policy_version": "provider-binding-v2"
+  },
+  "data_policy_evidence": {
+    "regions_ref": null,
+    "controls_ref": null
+  },
+  "documentation_refs": [
+    "https://platform.claude.com/docs/en/api/overview",
+    "https://platform.claude.com/docs/en/api/http/messages",
+    "https://platform.claude.com/docs/en/build-with-claude/extended-thinking"
+  ]
+}

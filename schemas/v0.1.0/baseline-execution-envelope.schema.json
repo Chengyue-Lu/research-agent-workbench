@@ -8,7 +8,7 @@
   "properties": {
     "schema_version": {"const": "0.1.0"},
     "record_kind": {"const": "baseline_execution_envelope"},
-    "version": {"const": "1.0.0"},
+    "version": {"enum": ["1.0.0", "1.1.0"]},
     "envelope_id": {"type": "string", "minLength": 1},
     "provider_visible_payload": {
       "type": "object",
@@ -58,7 +58,8 @@
         "context": {"$ref": "evaluation-manifest.schema.json#/properties/frozen_conditions/properties/context"},
         "permissions": {"$ref": "common.schema.json#/$defs/permissions"},
         "write_scope": {"$ref": "task-packet.schema.json#/properties/write_scope"},
-        "compiler_ref": {"$ref": "common.schema.json#/$defs/fileRef"}
+        "compiler_ref": {"$ref": "common.schema.json#/$defs/fileRef"},
+        "provider_binding_manifest_ref": {"$ref": "common.schema.json#/$defs/fileRef"}
       },
       "additionalProperties": false
     },
@@ -92,6 +93,11 @@
           "transport_enforcement_metadata": {"properties": {"qualification_ref": {"$ref": "common.schema.json#/$defs/fileRef"}}}
         }
       }
+    },
+    {
+      "if": {"properties": {"version": {"const": "1.1.0"}}},
+      "then": {"properties": {"transport_enforcement_metadata": {"required": ["provider_binding_manifest_ref"]}}},
+      "else": {"properties": {"transport_enforcement_metadata": {"not": {"required": ["provider_binding_manifest_ref"]}}}}
     }
   ],
   "$defs": {

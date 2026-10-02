@@ -1,0 +1,34 @@
+{
+  "schema_version": "0.1.0",
+  "registry_kind": "provider_adapters",
+  "config_version": "2.0.0",
+  "config_id": "minimax-profile-fixture-v2",
+  "adapters": [
+    {
+      "adapter_id": "minimax-profile-fixture",
+      "enabled": true,
+      "profile_ref": {
+        "path": "registry/providers/profiles/minimax-responses-v1.json",
+        "sha256": "7d3be3ec91e5995d11662527532f399c7b2d67382d00094169e56c219099dc20"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "MiniMax-M3"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "RWB_FIXTURE_API_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 10,
+        "max_response_bytes": 65536,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    }
+  ]
+}

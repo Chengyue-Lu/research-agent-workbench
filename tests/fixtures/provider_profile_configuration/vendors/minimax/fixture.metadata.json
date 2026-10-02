@@ -1,0 +1,19 @@
+{
+  "fixture_kind": "public-vendor-profile-configuration",
+  "schema_positive": true,
+  "resolve_expected": "resolve-nonsecret-only",
+  "provider": "minimax",
+  "profile_ref": {
+    "path": "registry/providers/profiles/minimax-responses-v1.json",
+    "sha256": "7d3be3ec91e5995d11662527532f399c7b2d67382d00094169e56c219099dc20"
+  },
+  "requested_id": "MiniMax-M3",
+  "live_accepted": false,
+  "credential_reads": 0,
+  "presence_checks": 0,
+  "network_calls": 0,
+  "notes": [
+    "Positive means schema/config structure only; it does not prove current account availability or live acceptance.",
+    "All negative patches use array paths; apply to a deep copy of the indicated positive document."
+  ]
+}

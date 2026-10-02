@@ -1,0 +1,103 @@
+[
+  {
+    "case_id": "unknown-profile-field",
+    "target": "profile",
+    "patches": [
+      {
+        "path": [
+          "unexpected"
+        ],
+        "value": true
+      }
+    ],
+    "expected": "schema-and-parser-reject"
+  },
+  {
+    "case_id": "wrong-auth-header",
+    "target": "profile",
+    "patches": [
+      {
+        "path": [
+          "auth",
+          "header_name"
+        ],
+        "value": "X-Unsupported-Auth"
+      }
+    ],
+    "expected": "schema-and-parser-reject-before-credential"
+  },
+  {
+    "case_id": "model-selector-drift",
+    "target": "config",
+    "patches": [
+      {
+        "path": [
+          "adapters",
+          0,
+          "model_selector",
+          "value"
+        ],
+        "value": "unlisted-model"
+      }
+    ],
+    "expected": "resolve-reject-before-credential"
+  },
+  {
+    "case_id": "unknown-config-field",
+    "target": "config",
+    "patches": [
+      {
+        "path": [
+          "unexpected"
+        ],
+        "value": true
+      }
+    ],
+    "expected": "schema-and-parser-reject"
+  },
+  {
+    "case_id": "unsupported-thinking-mode",
+    "target": "profile",
+    "patches": [
+      {
+        "path": [
+          "generation",
+          "mode"
+        ],
+        "value": "thinking"
+      }
+    ],
+    "expected": "schema-and-parser-reject-before-credential"
+  },
+  {
+    "case_id": "unsupported-data-controls-capability",
+    "target": "profile",
+    "patches": [
+      {
+        "path": [
+          "implementation",
+          "capabilities"
+        ],
+        "value": [
+          "text",
+          "data_controls"
+        ]
+      }
+    ],
+    "expected": "schema-and-parser-reject-before-credential"
+  },
+  {
+    "case_id": "unknown-mapping-policy",
+    "target": "profile",
+    "patches": [
+      {
+        "path": [
+          "mapping",
+          "role_policy_id"
+        ],
+        "value": "unregistered-policy-v1"
+      }
+    ],
+    "expected": "schema-and-parser-reject-before-credential"
+  }
+]

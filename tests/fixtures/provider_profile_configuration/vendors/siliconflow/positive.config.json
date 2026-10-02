@@ -1,0 +1,34 @@
+{
+  "schema_version": "0.1.0",
+  "registry_kind": "provider_adapters",
+  "config_version": "2.0.0",
+  "config_id": "siliconflow-profile-fixture-v2",
+  "adapters": [
+    {
+      "adapter_id": "siliconflow-profile-fixture",
+      "enabled": true,
+      "profile_ref": {
+        "path": "registry/providers/profiles/siliconflow-chat-completions-v1.json",
+        "sha256": "3178a891b5d04486e42b8f58453e82eec004492ac4c7754a53d40038f36a6e24"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "deepseek-ai/DeepSeek-V4-Flash"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "RWB_FIXTURE_API_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 10,
+        "max_response_bytes": 65536,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "synthetic-response",
+  "model": "glm-5.2",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "synthetic profile answer"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 2,
+    "completion_tokens": 3
+  }
+}

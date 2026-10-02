@@ -97,6 +97,10 @@ DOCUMENT_REQUIRED: dict[str, tuple[str, ...]] = {
 }
 
 SCHEMA_KINDS = {
+    "provider_api_profile",
+    "provider_adapters_v2",
+    "provider_binding_manifest",
+    "conformance_session_policy",
     "run_reconstruction_manifest",
     "run_reconstruction_environment",
     "run_reconstruction_report",
@@ -336,7 +340,7 @@ def _validate_registry(
                         ("provider", "api_surface", "adapter_status", "capabilities", "semantic_notes", "sources"),
                     )
                 )
-    elif kind == "provider_adapters":
+    elif kind in {"provider_adapters", "provider_adapters_v2"}:
         seen = set()
         for index, adapter in enumerate(document.get("adapters", [])):
             if not isinstance(adapter, Mapping):
@@ -357,6 +361,9 @@ def _validate_registry(
                         "model_env",
                         "capabilities",
                         "live_conformance",
+                    ) if kind == "provider_adapters" else (
+                        "adapter_id", "enabled", "profile_ref", "model_selector",
+                        "credential_source", "capabilities", "transport", "conformance_ref",
                     ),
                 )
             )

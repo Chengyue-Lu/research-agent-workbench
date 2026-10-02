@@ -1,0 +1,34 @@
+{
+  "schema_version": "0.1.0",
+  "registry_kind": "provider_adapters",
+  "config_version": "2.0.0",
+  "config_id": "openai-profile-fixture-v2",
+  "adapters": [
+    {
+      "adapter_id": "openai-profile-fixture",
+      "enabled": true,
+      "profile_ref": {
+        "path": "registry/providers/profiles/openai-responses-v1.json",
+        "sha256": "2680b3e3e14d6cd54d7c34e3945775b1e54b44072f08b582e0e3d55c6472d1ab"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "gpt-4o-mini-2024-07-18"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "RWB_FIXTURE_API_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 10,
+        "max_response_bytes": 65536,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "schema_version": "0.1.0",
+  "registry_kind": "provider_adapters",
+  "config_version": "2.0.0",
+  "config_id": "moonshot-profile-fixture-v2",
+  "adapters": [
+    {
+      "adapter_id": "moonshot-profile-fixture",
+      "enabled": true,
+      "profile_ref": {
+        "path": "registry/providers/profiles/moonshot-chat-completions-v1.json",
+        "sha256": "4d23fa32817e231729bc352097dd72cc42756cbc715a07bcd366f42e707856cf"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "kimi-k2.6"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "RWB_FIXTURE_API_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 10,
+        "max_response_bytes": 65536,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    }
+  ]
+}

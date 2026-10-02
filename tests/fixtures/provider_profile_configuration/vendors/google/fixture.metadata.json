@@ -1,0 +1,19 @@
+{
+  "fixture_kind": "public-vendor-profile-configuration",
+  "schema_positive": true,
+  "resolve_expected": "resolve-nonsecret-only",
+  "provider": "google",
+  "profile_ref": {
+    "path": "registry/providers/profiles/google-gemini-generate-content-v1.json",
+    "sha256": "6a61e066c9a70597193f24c039da06ef51f2f3d3fa8bf877ecc4ce26b5a3ed6d"
+  },
+  "requested_id": "gemini-2.0-flash",
+  "live_accepted": false,
+  "credential_reads": 0,
+  "presence_checks": 0,
+  "network_calls": 0,
+  "notes": [
+    "Positive means schema/config structure only; it does not prove current account availability or live acceptance.",
+    "All negative patches use array paths; apply to a deep copy of the indicated positive document."
+  ]
+}

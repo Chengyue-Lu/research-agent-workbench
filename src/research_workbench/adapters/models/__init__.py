@@ -5,6 +5,13 @@ from research_workbench.adapters.models.configuration import (
     load_provider_adapter_configs,
     probe_provider_adapters,
 )
+from research_workbench.adapters.models.configured import ConfiguredProvider, build_profile_provider
+from research_workbench.adapters.models.profile_configuration import (
+    ProviderAdapterConfigV2,
+    ProviderApiProfile,
+    load_profile_configurations,
+    resolve_profile_configuration,
+)
 from research_workbench.adapters.models.conformance import (
     CHECK_ORDER,
     ConformanceBudgetRecord,
@@ -64,6 +71,10 @@ from research_workbench.adapters.models.session import (
     IsolatedApiSessionRunner,
     SessionEventSink,
 )
+from research_workbench.adapters.models.session_policy import (
+    ConformanceSessionPolicy,
+    ConformanceSessionSummarySink,
+)
 
 __all__ = [
     "AggregateUsage",
@@ -76,6 +87,9 @@ __all__ = [
     "CHECK_ORDER",
     "ConformanceBudgetRecord",
     "ConformanceCheckResult",
+    "ConformanceSessionPolicy",
+    "ConformanceSessionSummarySink",
+    "ConfiguredProvider",
     "ContentBlock",
     "ClientTool",
     "CredentialProvider",
@@ -100,6 +114,8 @@ __all__ = [
     "ModelSlotConfig",
     "OpenAIResponsesProvider",
     "ProviderAdapterConfig",
+    "ProviderAdapterConfigV2",
+    "ProviderApiProfile",
     "ProviderConformanceReport",
     "ProviderCapabilities",
     "ProviderError",
@@ -113,11 +129,14 @@ __all__ = [
     "Usage",
     "UrllibTransport",
     "build_live_provider",
+    "build_profile_provider",
     "conformance_plan",
     "get_provider_adapter_config",
     "load_model_pool",
     "load_provider_adapter_configs",
+    "load_profile_configurations",
     "probe_provider_adapters",
     "required_capabilities",
+    "resolve_profile_configuration",
     "run_provider_conformance",
 ]

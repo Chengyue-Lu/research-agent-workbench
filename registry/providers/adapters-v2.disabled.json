@@ -1,0 +1,294 @@
+{
+  "schema_version": "0.1.0",
+  "registry_kind": "provider_adapters",
+  "config_version": "2.0.0",
+  "config_id": "public-vendor-profiles-disabled-v2",
+  "adapters": [
+    {
+      "adapter_id": "alibaba-dashscope-chat-completions-nonthinking-v1",
+      "enabled": false,
+      "profile_ref": {
+        "path": "registry/providers/profiles/alibaba-dashscope-chat-completions-v1.json",
+        "sha256": "6235f606f04e25888f3863d1bffb262bee58ecf9b5ceda6271cae84bde58678a"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "qwen3.8-max"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "DASHSCOPE_API_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 60,
+        "max_response_bytes": 8388608,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    },
+    {
+      "adapter_id": "anthropic-anthropic-messages-standard-v1",
+      "enabled": false,
+      "profile_ref": {
+        "path": "registry/providers/profiles/anthropic-anthropic-messages-v1.json",
+        "sha256": "081e649b06b466a9bfd9fa61189c64bbfb190f3979b771c984ca7f7867ed6d58"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "claude-sonnet-4-6"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "ANTHROPIC_API_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 60,
+        "max_response_bytes": 8388608,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    },
+    {
+      "adapter_id": "bytedance-ark-chat-completions-nonthinking-v1",
+      "enabled": false,
+      "profile_ref": {
+        "path": "registry/providers/profiles/bytedance-ark-chat-completions-v1.json",
+        "sha256": "27bbbd1ed99c2110dc0dafda1ca15d00417e099430b31abe8824c6cbbd1871d5"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "seed-2-0-lite-260228"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "ARK_API_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 60,
+        "max_response_bytes": 8388608,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    },
+    {
+      "adapter_id": "deepseek-responses-nonthinking-v1",
+      "enabled": false,
+      "profile_ref": {
+        "path": "registry/providers/profiles/deepseek-responses-v1.json",
+        "sha256": "aeb383c278bfb974c6998683ce8d6caab859a60880a76d880142c008585f12f0"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "deepseek-flash"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "DEEPSEEK_API_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 60,
+        "max_response_bytes": 8388608,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    },
+    {
+      "adapter_id": "google-gemini-generate-content-standard-v1",
+      "enabled": false,
+      "profile_ref": {
+        "path": "registry/providers/profiles/google-gemini-generate-content-v1.json",
+        "sha256": "6a61e066c9a70597193f24c039da06ef51f2f3d3fa8bf877ecc4ce26b5a3ed6d"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "gemini-2.0-flash"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "GEMINI_API_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 60,
+        "max_response_bytes": 8388608,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    },
+    {
+      "adapter_id": "minimax-responses-nonthinking-v1",
+      "enabled": false,
+      "profile_ref": {
+        "path": "registry/providers/profiles/minimax-responses-v1.json",
+        "sha256": "7d3be3ec91e5995d11662527532f399c7b2d67382d00094169e56c219099dc20"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "MiniMax-M3"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "MINIMAX_API_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 60,
+        "max_response_bytes": 8388608,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    },
+    {
+      "adapter_id": "moonshot-chat-completions-nonthinking-v1",
+      "enabled": false,
+      "profile_ref": {
+        "path": "registry/providers/profiles/moonshot-chat-completions-v1.json",
+        "sha256": "4d23fa32817e231729bc352097dd72cc42756cbc715a07bcd366f42e707856cf"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "kimi-k2.6"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "MOONSHOT_API_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 60,
+        "max_response_bytes": 8388608,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    },
+    {
+      "adapter_id": "openai-responses-standard-v1",
+      "enabled": false,
+      "profile_ref": {
+        "path": "registry/providers/profiles/openai-responses-v1.json",
+        "sha256": "2680b3e3e14d6cd54d7c34e3945775b1e54b44072f08b582e0e3d55c6472d1ab"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "gpt-4o-mini-2024-07-18"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "OPENAI_API_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 60,
+        "max_response_bytes": 8388608,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    },
+    {
+      "adapter_id": "openrouter-chat-completions-standard-v1",
+      "enabled": false,
+      "profile_ref": {
+        "path": "registry/providers/profiles/openrouter-chat-completions-v1.json",
+        "sha256": "34b980a0775ec908347817b82b15c091d9b3653e1e71d23e7a44d4a91c93da36"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "openai/gpt-5.2"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "OPENROUTER_API_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 60,
+        "max_response_bytes": 8388608,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    },
+    {
+      "adapter_id": "siliconflow-chat-completions-nonthinking-v1",
+      "enabled": false,
+      "profile_ref": {
+        "path": "registry/providers/profiles/siliconflow-chat-completions-v1.json",
+        "sha256": "3178a891b5d04486e42b8f58453e82eec004492ac4c7754a53d40038f36a6e24"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "deepseek-ai/DeepSeek-V4-Flash"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "SILICONFLOW_API_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 60,
+        "max_response_bytes": 8388608,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    },
+    {
+      "adapter_id": "zhipu-chat-completions-nonthinking-v1",
+      "enabled": false,
+      "profile_ref": {
+        "path": "registry/providers/profiles/zhipu-chat-completions-v1.json",
+        "sha256": "8781d48f765de8107dde8e6a82619d5f60ab232efd7c3a8d6364be5a0af9f1cd"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "glm-5.2"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "ZHIPU_API_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 60,
+        "max_response_bytes": 8388608,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    }
+  ]
+}

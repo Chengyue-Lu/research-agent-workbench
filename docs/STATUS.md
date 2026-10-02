@@ -36,7 +36,7 @@ exact identities、source/hosted CI、review/merge/publish 决定和附件哈希
 Skill admission、正式研究评价或科学有效性。产品修复继续进入 develop，再独立冻结下一次 curated
 release；当前 release branch 不回并 develop，原 tag/附件保持不变。
 
-通用API接入目前进入任务定义：M6-009为offline-first协议/profile与凭据接口路线，M6-010为独立DeepSeek Flash验收，详见[计划](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-DEFINITION/PLAN.md)。当前没有新增厂商实现或live PASS；原M6-004 OpenAI验收仍BLOCKED。保存本地Key和晚间时间安排不证明Provider或Pilot已经可用。
+通用API接入的M6-009正在实施offline-first协议/profile与凭据接口，M6-010为独立DeepSeek Flash验收，详见[计划](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-DEFINITION/PLAN.md)及[实现记录](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/README.md)。当前实现包含闭集配置、真实厂商身份、四协议映射、版本化绑定与显式两轮Session政策；部分厂商的模型/模式政策及真实测试入口尚未闭合，M6-009未完成、M6-010仍BLOCKED，无新增live PASS。原M6-004 OpenAI验收仍BLOCKED；保存本地Key和晚间时间安排不证明Provider或Pilot已经可用。
 
 ## 已实现
 

@@ -1,0 +1,212 @@
+{
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "version",
+    "binding_policy_version",
+    "manifest_id",
+    "adapter_class",
+    "adapter_version",
+    "provider_identity",
+    "profile_ref",
+    "resolved_config_ref",
+    "implementation_refs",
+    "transport_identity",
+    "credential_reference",
+    "credential_class",
+    "component_modules",
+    "code_runtime",
+    "limitations",
+    "model_policy",
+    "generation_policy"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "provider_binding_manifest"
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "binding_policy_version": {
+      "const": "provider-binding-v2"
+    },
+    "manifest_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "adapter_class": {
+      "const": "research_workbench.adapters.models.configured.ConfiguredProvider"
+    },
+    "adapter_version": {
+      "$ref": "provider-api-profile.schema.json#/$defs/semver"
+    },
+    "provider_identity": {
+      "$ref": "provider-api-profile.schema.json#/$defs/identity"
+    },
+    "profile_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "resolved_config_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "implementation_refs": {
+      "type": "array",
+      "minItems": 7,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": [
+          "module",
+          "source_ref",
+          "runtime_fingerprint",
+          "callables",
+          "constants",
+          "defaults"
+        ],
+        "properties": {
+          "module": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_ref": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          },
+          "runtime_fingerprint": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "callables": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "constants": {
+            "type": "object"
+          },
+          "defaults": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "transport_identity": {
+      "type": "object",
+      "required": [
+        "class",
+        "options"
+      ],
+      "properties": {
+        "class": {
+          "type": "string",
+          "minLength": 1
+        },
+        "options": {
+          "type": "object",
+          "required": [
+            "max_response_bytes"
+          ],
+          "properties": {
+            "max_response_bytes": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "credential_reference": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name"
+      ],
+      "properties": {
+        "kind": {
+          "const": "environment"
+        },
+        "name": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "credential_class": {
+      "type": "string",
+      "minLength": 1
+    },
+    "component_modules": {
+      "type": "object",
+      "required": [
+        "transport",
+        "credential"
+      ],
+      "properties": {
+        "transport": {
+          "type": "string",
+          "minLength": 1
+        },
+        "credential": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "code_runtime": {
+      "type": "object",
+      "required": [
+        "implementation",
+        "version",
+        "optimization",
+        "fingerprint_policy"
+      ],
+      "properties": {
+        "implementation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "optimization": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fingerprint_policy": {
+          "const": "python-code-fields-v1"
+        }
+      },
+      "additionalProperties": false
+    },
+    "limitations": {
+      "const": [
+        "Independent source checks cover explicit source-declared callables and closed first-party policy registries; generated dataclass methods and dependency behavior are not independently source-attested.",
+        "Cold replay requires the frozen Python code runtime; remote provider/model/account authentication is not established.",
+        "Injected transport/credential modules pin explicit class callables and source bytes, not arbitrary component module globals."
+      ]
+    },
+    "model_policy": {
+      "$ref": "provider-api-profile.schema.json#/$defs/model"
+    },
+    "generation_policy": {
+      "$ref": "provider-api-profile.schema.json#/$defs/generation"
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/provider-binding-manifest.schema.json",
+  "title": "Provider Binding Manifest",
+  "x-rwb-document-kind": "provider_binding_manifest",
+  "$comment": "Explicit local configuration and implementation closure; not a credential, remote model attestation, selection or execution authorization."
+}

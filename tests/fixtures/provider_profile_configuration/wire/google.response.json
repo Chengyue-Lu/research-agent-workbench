@@ -1,0 +1,22 @@
+{
+  "responseId": "synthetic-response",
+  "modelVersion": "gemini-2.0-flash",
+  "candidates": [
+    {
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "synthetic profile answer"
+          }
+        ]
+      },
+      "finishReason": "STOP"
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 2,
+    "candidatesTokenCount": 3,
+    "thoughtsTokenCount": 0
+  }
+}

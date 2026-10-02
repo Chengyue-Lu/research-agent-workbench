@@ -1,0 +1,83 @@
+{
+  "schema_version": "0.1.0",
+  "record_kind": "provider_api_profile",
+  "version": "1.0.0",
+  "profile_id": "alibaba-dashscope-chat-completions-nonthinking-v1",
+  "identity": {
+    "provider": "alibaba-dashscope",
+    "operator": "Alibaba Cloud",
+    "service": "Model Studio DashScope Virginia",
+    "model_publisher": "Alibaba Qwen",
+    "access_region": "us-virginia",
+    "deployment_region": null
+  },
+  "protocol": {
+    "family": "chat-completions",
+    "revision": "1.0.0"
+  },
+  "endpoint": {
+    "origin": "https://dashscope-us.aliyuncs.com",
+    "base_path": "/compatible-mode/v1",
+    "operation_path": "/chat/completions",
+    "api_version": null
+  },
+  "auth": {
+    "kind": "api-key-header",
+    "header_name": "Authorization",
+    "prefix": "Bearer ",
+    "public_parameters": {}
+  },
+  "model": {
+    "requested_id": "qwen3.8-max",
+    "publisher": "Alibaba Qwen",
+    "observed_policy": "exact",
+    "allowed_observed_ids": [
+      "qwen3.8-max"
+    ],
+    "documented_revision": null
+  },
+  "generation": {
+    "mode": "nonthinking",
+    "parameter_profile_id": "chat-completions:parameters:v1",
+    "continuation_policy": "local-messages-only"
+  },
+  "mapping": {
+    "role_policy_id": "chat-completions:role:v1",
+    "tool_policy_id": "chat-completions:tool:v1",
+    "schema_policy_id": "chat-completions:schema:v1",
+    "usage_policy_id": "chat-completions:usage:v1",
+    "finish_policy_id": "chat-completions:finish:v1",
+    "error_policy_id": "chat-completions:error:v1"
+  },
+  "implementation": {
+    "adapter_version": "1.0.0",
+    "codec_version": "1.0.0",
+    "capabilities": [
+      "text",
+      "tools",
+      "structured_output"
+    ],
+    "limits": {
+      "max_output_tokens": 256,
+      "max_tools": 8
+    },
+    "known_gaps": [
+      "key-region-and-model-account-entitlement-not-verified",
+      "parallel-tools-exact-model-mode-evidence-not-frozen",
+      "thinking-continuation-not-supported",
+      "pending-live-exact-binding",
+      "data-policy-evidence-unavailable"
+    ],
+    "binding_policy_version": "provider-binding-v2"
+  },
+  "data_policy_evidence": {
+    "regions_ref": null,
+    "controls_ref": null
+  },
+  "documentation_refs": [
+    "https://www.alibabacloud.com/help/en/model-studio/compatibility-of-openai-with-dashscope",
+    "https://www.alibabacloud.com/help/en/model-studio/qwen-function-calling",
+    "https://www.alibabacloud.com/help/en/model-studio/qwen-structured-output",
+    "https://www.alibabacloud.com/help/en/model-studio/deep-thinking"
+  ]
+}

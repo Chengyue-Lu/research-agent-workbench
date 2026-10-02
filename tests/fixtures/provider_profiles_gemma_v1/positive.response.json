@@ -1,0 +1,22 @@
+{
+  "modelVersion": "gemma-4-26b-a4b-it",
+  "responseId": "synthetic-gemma-response",
+  "candidates": [
+    {
+      "finishReason": "STOP",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "synthetic ok"
+          }
+        ]
+      }
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 5,
+    "candidatesTokenCount": 2,
+    "totalTokenCount": 7
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "schema_version": "0.1.0",
+  "registry_kind": "provider_adapters",
+  "config_version": "2.0.0",
+  "config_id": "deepseek-profile-fixture-v2",
+  "adapters": [
+    {
+      "adapter_id": "deepseek-profile-fixture",
+      "enabled": true,
+      "profile_ref": {
+        "path": "registry/providers/profiles/deepseek-responses-v1.json",
+        "sha256": "aeb383c278bfb974c6998683ce8d6caab859a60880a76d880142c008585f12f0"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "deepseek-flash"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "RWB_FIXTURE_API_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 10,
+        "max_response_bytes": 65536,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    }
+  ]
+}
