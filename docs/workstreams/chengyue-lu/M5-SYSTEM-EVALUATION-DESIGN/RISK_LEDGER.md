@@ -151,3 +151,24 @@ complete Git tree are byte-equivalent to the prior `a1aba27` candidate; the hist
 remains unchanged. H4c acceptance resolves the prerequisite row above. PR106 still needs its own
 exact-head hosted checks and cross-owner R2 review before H5 or M5-007 can be accepted. The
 synthetic proof does not unlock M5-008/004/005 or establish scientific effectiveness.
+
+## M5-007 dependent closeout preparation (2026-09-28)
+
+The [closeout packet](M5-007_CLOSEOUT_PACKET.md) maps accepted H1–H4c and the PR106 H5
+candidate to the unchanged Task acceptance. PR106 exact-head component/governance checks
+are green, but the named H5 R2 review is still outstanding. A successful synthetic
+replay is not Task DONE, and an old ZIP cannot certify changed source/schema identity.
+The Draft preserves IN_PROGRESS and Issue55 OPEN; the M6-004, A4 admission and pilot
+authorization blockers keep M5-008 BLOCKED independently of this preparation.
+
+## PR106 accepted / PR107 rebased closeout draft (2026-09-28)
+
+PR106 received named cross-owner R2 approval at exact head
+`68e612b353233bb8faf739d5012876739793cd84` and normal squash merge as
+`develop@81a058b228a5da2a6f46192a954f62efc72895e3`. The merged tree equals
+the accepted head; H5 implementation acceptance is closed. PR107's independent
+closeout patch was rebased onto that commit without conflicts and remains Draft.
+The historical entry Attempt still pins the pre-merge snapshot; it is not a
+current-head hash claim. The remaining R2 risk is whole-Task H1–H5 evidence and
+acceptance, separate from H5 slice review. M5-007 stays IN_PROGRESS, Issue55 OPEN
+and M5-008 BLOCKED; no live, admission or scientific gate changes.

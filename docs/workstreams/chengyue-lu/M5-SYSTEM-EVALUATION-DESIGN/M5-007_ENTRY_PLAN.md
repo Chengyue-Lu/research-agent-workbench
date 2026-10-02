@@ -16,7 +16,7 @@ H4a 已由 PR90 接受并合入；H4b 已由 PR96 使用绑定该候选的单次
 [H4c measurement/analysis 实施包](M5-007_H4C_PACKET.md) 已由 PR104 具名 R2 接受并合入
 `develop@26eca5742ba08d504d273423471fd7aab876a6d5`；原始关联/配对验证见
 [H4c Attempt](attempts/M5-007-H4C-001/README.md)。当前 [H5](M5-007_H5_PACKET.md)
-独立候选 PR106 已 rebase 到该基线，待其 R2 审核及最终整体验收。
+PR106 已获黄毅 exact-head R2 接受并合入 `develop@81a058b228a5da2a6f46192a954f62efc72895e3`；H1–H5 整体验收仍待独立复核。
 
 | 前置 | 已接受依据 | Harness 消费接口 |
 |---|---|---|

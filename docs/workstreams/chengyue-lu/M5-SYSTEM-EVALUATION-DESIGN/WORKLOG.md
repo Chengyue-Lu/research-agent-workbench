@@ -347,3 +347,58 @@ public-surface tests passed 23/23, including internal Markdown links; `git diff 
 PR106 now carries H5 alone over accepted H4c. Its own exact-head hosted checks and named
 cross-owner R2 review remain required. M5-007 stays IN_PROGRESS and Issue55 remains open;
 synthetic proof does not satisfy the live, admission, Human or scientific gates.
+
+## M5-007 closeout preparation (2026-09-28)
+
+With PR106 still OPEN/Ready, its exact head `68e612b` passed hosted component
+CI36431821489 and governance CI36432661027; the requested cross-owner R2 review is
+not yet an approval. Created a separate dependent `feature/m5-007-harness-closeout`
+branch from that head. [Closeout packet](M5-007_CLOSEOUT_PACKET.md) records accepted
+H1–H4c merge identities, H5 proof/CI pins, final acceptance checks and live Gate
+separation. [Entry Attempt](attempts/M5-007-CLOSEOUT-ENTRY-001/README.md) retains input
+hashes and capture limits. No H5 archive rewrite, product/Schema change, Task DONE,
+Issue55 closure, live execution or PR106 merge occurred. This remains a Draft until
+PR106 review/merge and a fresh exact-head closeout audit.
+
+## PR106 normal merge / PR107 independent closeout rebase (2026-09-28)
+
+Huang Yi approved PR106 at exact head `68e612b353233bb8faf739d5012876739793cd84`
+after independent 8/8 proof tests and cold replay. Component CI36431821489 and
+governance CI36432661027 succeeded; review threads were empty and merge state CLEAN.
+Normal squash merge produced `develop@81a058b228a5da2a6f46192a954f62efc72895e3`
+(2026-09-28 15:29:38 UTC). The approved head and merge Git trees are equal.
+PR107's closeout-only commit was rebased onto the merge without conflicts;
+`range-diff` showed patch equivalence. The historical closeout entry Attempt
+remains pinned to the prior PR106 head. PR107 stays Draft for independent overall
+Task review; M5-007 remains IN_PROGRESS and Issue55 remains OPEN.
+
+## PR107 latest-base rebase and review entry (2026-09-29)
+
+Fetched origin and rebased PR107's two docs-only commits from `develop@81a058b`
+onto `develop@39cf61e9fc728a2a6c1494b7a641a011dd6bf114` without conflicts.
+Both commits are patch-equivalent by `git range-diff`. The new base contains
+PR102's M14 release diagnostics and does not change the M5 Harness source,
+schemas or retained H5 proof. The closeout Attempt keeps its original
+pre-PR106-merge pins; it is not rewritten as current-head evidence.
+M5-007 remains IN_PROGRESS, Issue55 OPEN and the M5-008 live gate BLOCKED.
+This PR is offered for review of the overall acceptance preparation, not a
+Task DONE decision.
+
+## PR107 rebase onto completed release baseline (2026-10-01)
+
+Rebased the M5-007 closeout review candidate onto `develop@54192efed0fe68ab7b7bd2fb5005c8710b16535a`.
+The `docs/STATUS.md` conflict was resolved by retaining both the accepted H5
+implementation / pending M5-007 whole-Task state and the accepted M14 first-release
+state. No M5 Harness source, Schema, trusted H5 replay helper or historical proof
+changed in the intervening release commits. The old branch's docs-only
+`jsonschema` CI dependency fix was already present in the new baseline and its
+duplicate commit was omitted. The closeout entry Attempt remains pinned to its
+original pre-PR106-merge inputs; current-head validation and review must be
+re-established separately. M5-007 remains IN_PROGRESS and Issue55 remains OPEN.
+The prior docs-only CI failure remains [run 36497143420](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36497143420);
+the new baseline contains the correction, so this PR does not reapply it.
+Python 3.11 related documentation/public-surface/CI/governance tests ran 138:
+137 passed and one explicitly Windows-skipped case. A wheel built from this
+candidate validated the repository examples/registry at 186/0/0; diff check
+passed. Huang Yi's prior PR107 approval was bound to the old base/head and
+must be refreshed for this rebased candidate.

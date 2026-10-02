@@ -4,11 +4,14 @@
 
 风险：R2
 
-M5-006 已由 PR71 接受；M6-008 实现已由 PR75 合入，M11-007 / Gate B 已按 PR81/82 收口。PR84 已接受 M6-008 DONE，PR86 已接受 [H1/H2](M5-007_H1_H2_PACKET.md) 非执行 plan/preflight 与 M5-007 IN_PROGRESS；PR89 已接受 [H3 四臂 synthetic execution/replay](M5-007_H3_PACKET.md)，PR90 已接受 H4a actual evidence，PR96 已使用单次维护者审核例外合入 H4b synthetic 盲审/冻结/揭盲实现。PR104 已接受并合入 [H4c measurement/analysis](M5-007_H4C_PACKET.md)；H5 为当前 R2 候选。M5-008 为 BLOCKED，作为 M5-004 之前的独立 live 工程验收关口。
+M5-006 已由 PR71 接受；M6-008 实现已由 PR75 合入，M11-007 / Gate B 已按 PR81/82 收口。PR84 已接受 M6-008 DONE，PR86 已接受 [H1/H2](M5-007_H1_H2_PACKET.md) 非执行 plan/preflight 与 M5-007 IN_PROGRESS；PR89 已接受 [H3 四臂 synthetic execution/replay](M5-007_H3_PACKET.md)，PR90 已接受 H4a actual evidence，PR96 已使用单次维护者审核例外合入 H4b synthetic 盲审/冻结/揭盲实现。PR104 已接受并合入 [H4c measurement/analysis](M5-007_H4C_PACKET.md)；H5 已由 PR106 具名 R2 接受并合入。M5-007 整体验收仍待独立复核，M5-008 为 BLOCKED，作为 M5-004 之前的独立 live 工程验收关口。
 
 H4c 的历史 [Attempt 与验证](attempts/M5-007-H4C-001/README.md) 保留；PR104 已具名 R2 接受并 squash merge 为 `26eca5742ba08d504d273423471fd7aab876a6d5`。
-后继 [H5 持久化证明](M5-007_H5_PACKET.md) 的 PR106 已 rebase 到该基线，准备独立 R2 review；
-[Attempt](attempts/M5-007-H5-001/README.md) 保存原始候选证据。H5 与整体 M5-007 接受仍待审核。
+后继 [H5 持久化证明](M5-007_H5_PACKET.md) 的 PR106 已获黄毅 exact-head R2 接受并合入 `develop@81a058b228a5da2a6f46192a954f62efc72895e3`；
+[Attempt](attempts/M5-007-H5-001/README.md) 保存原始证明。H5 已接受，整体 M5-007 接受仍待审核。
+
+[M5-007 整体验收准备](M5-007_CLOSEOUT_PACKET.md) 已在独立 PR107 中 rebase 到最新 `develop@54192ef`，汇总 H1–H5
+身份、证据与待审条件；此入口不改变 M5-007 IN_PROGRESS 或后继 live Gate。
 
 实施导航：[M5-007 进入计划](M5-007_ENTRY_PLAN.md)、[M5-008 Live Pilot Gate](M5-008_LIVE_PILOT_GATE.md)、[M5-006 历史进入计划](ENTRY_PLAN.md)、[Protocol / validator contract](../../../implementation/SYSTEM_EVALUATION_PROTOCOL.md)、
 [工作记录与验证](WORKLOG.md)、[Risk Ledger](RISK_LEDGER.md)。
