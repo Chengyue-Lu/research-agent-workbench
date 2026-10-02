@@ -128,7 +128,7 @@ flowchart LR
     SCG["M5-SKILL-CLOSEOUT-REPLAY-GATE<br/>Issue #55 / satisfied"] --> M5007
     M1106 -. "Projection + Supply" .-> A4G
     M1106 --> M5004
-    M6009["M6-009 READY<br/>general offline Provider"] --> M6010["M6-010 BLOCKED<br/>DeepSeek Flash live"]
+    M6009["M6-009 IN_PROGRESS<br/>general offline Provider"] --> M6010["M6-010 BLOCKED<br/>DeepSeek Flash live"]
     M6010 --> M5004
     M6010 --> M5008
 ```

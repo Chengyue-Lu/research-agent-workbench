@@ -1,0 +1,77 @@
+{
+  "schema_version": "0.1.0",
+  "record_kind": "provider_api_profile",
+  "version": "1.0.0",
+  "profile_id": "google-gemma4-text-minimal-v1",
+  "identity": {
+    "provider": "google",
+    "operator": "Google",
+    "service": "Gemini Developer API",
+    "model_publisher": "Google",
+    "access_region": null,
+    "deployment_region": null
+  },
+  "protocol": {
+    "family": "gemini-generate-content",
+    "revision": "1.0.0"
+  },
+  "endpoint": {
+    "origin": "https://generativelanguage.googleapis.com",
+    "base_path": "/v1beta",
+    "operation_path": "/models/{model}:generateContent",
+    "api_version": "v1beta"
+  },
+  "auth": {
+    "kind": "api-key-header",
+    "header_name": "x-goog-api-key",
+    "prefix": "",
+    "public_parameters": {}
+  },
+  "model": {
+    "requested_id": "gemma-4-26b-a4b-it",
+    "publisher": "Google",
+    "observed_policy": "exact",
+    "allowed_observed_ids": ["gemma-4-26b-a4b-it"],
+    "documented_revision": null
+  },
+  "generation": {
+    "mode": "standard",
+    "parameter_profile_id": "gemini-generate-content:parameters:v1",
+    "continuation_policy": "local-messages-only"
+  },
+  "mapping": {
+    "role_policy_id": "gemini-generate-content:role:v1",
+    "tool_policy_id": "gemini-generate-content:tool:v1",
+    "schema_policy_id": "gemini-generate-content:schema:v1",
+    "usage_policy_id": "gemini-generate-content:usage:v1",
+    "finish_policy_id": "gemini-generate-content:finish:v1",
+    "error_policy_id": "gemini-generate-content:error:v1"
+  },
+  "implementation": {
+    "adapter_version": "1.0.0",
+    "codec_version": "1.0.0",
+    "capabilities": ["text"],
+    "limits": {
+      "max_output_tokens": 256,
+      "max_tools": 8
+    },
+    "known_gaps": [
+      "standard-wire-mode-has-exact-gemma4-minimal-off-policy-only",
+      "tools-and-structured-output-not-implemented-for-this-profile",
+      "thought-and-signature-continuation-not-supported",
+      "current-account-availability-unknown",
+      "pending-live-exact-binding",
+      "data-policy-evidence-unavailable"
+    ],
+    "binding_policy_version": "provider-binding-v2"
+  },
+  "data_policy_evidence": {
+    "regions_ref": null,
+    "controls_ref": null
+  },
+  "documentation_refs": [
+    "https://ai.google.dev/gemma/docs/core/gemma_on_gemini_api",
+    "https://ai.google.dev/api/generate-content",
+    "https://ai.google.dev/gemini-api/docs/api-key"
+  ]
+}

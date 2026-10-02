@@ -27,6 +27,15 @@ POLICY_IDS = MappingProxyType({family: MappingProxyType({
     f"{kind}_policy_id": f"{family}:{kind}:v1"
     for kind in ("role", "tool", "schema", "usage", "finish", "error")}) for family in FAMILIES})
 PARAMETER_POLICY_IDS = MappingProxyType({family: f"{family}:parameters:v1" for family in FAMILIES})
+GEMMA_TEXT_PROFILE_ID = "google-gemma4-text-minimal-v1"
+GEMMA_TEXT_MODEL = "gemma-4-26b-a4b-it"
+# Google documents minimal=off specifically for Gemma 4. Gemini 3 minimal is
+# still thinking, so this policy must remain bound to the exact model tuple.
+GEMMA_TEXT_PARAMETERS = MappingProxyType({
+    ("google", "gemini-generate-content", GEMMA_TEXT_MODEL, "standard"): MappingProxyType({
+        "thinkingConfig": MappingProxyType({"thinkingLevel": "minimal"}),
+    }),
+})
 NATIVE_PARAMETER_REGISTRY = MappingProxyType({
     ("deepseek", "responses", "nonthinking"): MappingProxyType({"reasoning": MappingProxyType({"effort": "none"})}),
     ("deepseek", "chat-completions", "nonthinking"): MappingProxyType({"thinking": MappingProxyType({"type": "disabled"})}),
@@ -188,6 +197,11 @@ def _profile(document: Mapping[str, object]) -> _Profile:
         _error("profile capability is not implemented", unsupported=True)
     if not supported <= _CODEC_CAPABILITIES:
         _error("profile claims capabilities outside this codec slice", unsupported=True)
+    if document.get("profile_id") == GEMMA_TEXT_PROFILE_ID or requested_model == GEMMA_TEXT_MODEL:
+        if (document.get("profile_id") != GEMMA_TEXT_PROFILE_ID
+                or (provider, family, requested_model, mode) not in GEMMA_TEXT_PARAMETERS
+                or supported != frozenset({Capability.TEXT})):
+            _error("Gemma Text policy requires its exact profile/model and Text-only capability", unsupported=True)
     return _Profile(provider, family, requested_model, str(mode),
                     str(mapping["role_policy_id"]), str(mapping["tool_policy_id"]),
                     str(mapping["schema_policy_id"]), endpoint.get("base_path") == "/beta", supported)
@@ -486,6 +500,8 @@ def _encode_gemini(request: ModelRequest, profile: _Profile) -> dict[str, object
             choice["allowedFunctionNames"] = [request.tool_choice.name]
         payload["toolConfig"] = {"functionCallingConfig": choice}
     generation: dict[str, object] = {}
+    generation.update(_json_value(GEMMA_TEXT_PARAMETERS.get(
+        (profile.provider, profile.family, profile.model, profile.mode), {})))
     if request.max_output_tokens is not None:
         generation["maxOutputTokens"] = request.max_output_tokens
     if request.temperature is not None:

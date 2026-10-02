@@ -7,6 +7,7 @@ from typing import Any, Mapping
 
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import SchemaError
+from referencing.exceptions import Unresolvable
 
 from research_workbench.adapters.models.http import (
     CredentialProvider,
@@ -298,6 +299,30 @@ _PUBLIC_PROVIDER_ERROR_CODES: dict[str, frozenset[str]] = {
 }
 
 
+def _response_schema_errors(schema: Mapping[str, Any], value: object) -> list[Any]:
+    """Consume validation without exporting reference-resolution diagnostics."""
+    try:
+        return sorted(
+            Draft202012Validator(schema).iter_errors(value),
+            key=lambda item: list(item.absolute_path),
+        )
+    except Unresolvable:
+        pass
+    # Construct and raise outside the resolver handler. The caller may itself
+    # be handling a private exception, so also clear its implicit chain before
+    # this content-free failure propagates.
+    failure = ProviderError(
+        ProviderErrorCategory.CONTRACT_VIOLATION,
+        "response schema reference could not be resolved",
+    )
+    try:
+        raise failure from None
+    finally:
+        failure.__cause__ = None
+        failure.__context__ = None
+        failure.__suppress_context__ = True
+
+
 def validate_structured_response(request: ModelRequest, response: ModelResponse) -> ModelResponse:
     if request.response_format.kind != "json_schema" or response.finish_reason not in {
         FinishReason.COMPLETE,
@@ -317,7 +342,7 @@ def validate_structured_response(request: ModelRequest, response: ModelResponse)
             ProviderErrorCategory.CONTRACT_VIOLATION,
             f"{response.provider} returned invalid JSON for structured output",
         )
-    errors = sorted(Draft202012Validator(schema).iter_errors(value), key=lambda item: list(item.absolute_path))
+    errors = _response_schema_errors(schema, value)
     if errors:
         raise ProviderError(
             ProviderErrorCategory.CONTRACT_VIOLATION,
@@ -344,10 +369,7 @@ def validate_response_contract(request: ModelRequest, response: ModelResponse) -
                 ProviderErrorCategory.CONTRACT_VIOLATION,
                 f"{response.provider} called an undeclared tool",
             )
-        errors = sorted(
-            Draft202012Validator(definition.input_schema).iter_errors(call.arguments),
-            key=lambda item: list(item.absolute_path),
-        )
+        errors = _response_schema_errors(definition.input_schema, call.arguments)
         if errors:
             raise ProviderError(
                 ProviderErrorCategory.CONTRACT_VIOLATION,

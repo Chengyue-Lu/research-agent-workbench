@@ -86,7 +86,11 @@ class ConfiguredProviderTests(unittest.TestCase):
         self.root = Path(self.tmp.name)
 
     def build(self, vendor: str = "deepseek", *, enabled: bool = True, credential_name: str = "SYNTHETIC_API_KEY"):
-        paths = sorted((ROOT / "registry/providers/profiles").glob(f"{vendor}-*.json"))
+        # This consumer exercises the retained retired Gemini profile; current
+        # Google/Gemma profiles have their own exact positive/negative tests.
+        paths = ([ROOT / "registry/providers/profiles/google-gemini-generate-content-v1.json"]
+                 if vendor == "google" else
+                 sorted((ROOT / "registry/providers/profiles").glob(f"{vendor}-*.json")))
         self.assertEqual(len(paths), 1)
         document = json.loads(paths[0].read_text(encoding="utf-8"))
         path = self.root / "profile.json"
