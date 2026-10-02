@@ -24,7 +24,7 @@ CI component plan 和 tests/ci_components.json 的直接输入映射，以及已
 调用者负责输入上界、实际 send 标记和独立用量回执；此 helper 不证明跨进程持久余额、
 真实发送、计费上界或 live 接受。累计用户上限为输入加输出 10,000,000，失败同计。
 本轮用户直接接受PR125定义，并确认费用/币种/账单不可得不阻断；PR126获正式批准后合入。
-持久journal切片限25分钟，旧响应引用错误修复限10分钟；均零Provider/API、Key和安装。
+持久journal切片限25分钟、独立复核限8分钟；旧响应引用错误修复限10分钟，Gemma Text切片限15分钟；均零Provider/API、Key和安装。
 继承定义以已接受develop为准，M6-009仅推进IN_PROGRESS，不改验收/依赖或置DONE。
 停止条件：Core identity、Runtime ownership、Human authority 或未声明消费者需要变化时只提出问题。
 输出：可重现的离线候选、原失败与最终源哈希、独立有界复核、检查和 Compact Handoff。

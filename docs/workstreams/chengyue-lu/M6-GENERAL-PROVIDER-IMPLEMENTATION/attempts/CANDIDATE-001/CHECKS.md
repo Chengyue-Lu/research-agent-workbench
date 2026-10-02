@@ -64,3 +64,21 @@ profiles、wire-codecs、factory、factory-review、binding、session 和 sessio
 本 helper 无现有入口消费者，仅约束同一进程内、调用者声明的输入上界及 send/verified receipt；
 不证明计费上界、真实 HTTP 发送、跨进程持久余额、账单结算或 Task/live 接受。
 本切片 archive 为 `.rwb/m6-general-prototype/usage-ledger/`、`usage-ledger-review/` 和 `flash-heartbeat-checks/`。
+
+## 接受基线后的最终源检查
+
+PR126 正式 cross-owner APPROVED 后正常 squash 合入 `f5afc4b`；PR125 按用户直接文档接受并同步费用决定后正常 squash 合入 `64c93c0`。原六个实现提交 patch 等价 rebase，不沿用旧定义拒绝的资格判断，也不把本实现当已接受。
+
+本轮源提交 `b1c5679d55d5938adf5f3c050002dd138b4f815d`，actual component 起点 `64c93c05ab1267a796eecbee94e1920c44b72e97`：
+
+- component **553 tests = 551 PASS + 2 Windows skip，0 failure/error**，306.678秒，unknown paths0；
+- repository **199 documents / 0 errors / 0 warnings**；
+- 3.11 非 editable 当前 wheel 安装 smoke **8/8 PASS**，10.406秒；15个改动产品源码的 wheel、installed bytes 与 Git blob 全等，pip check PASS；default110/all versions111 Schema；
+- R2 feature exact-base/source 治理 **0 errors / 0 warnings**，仅合法 M6-009 READY→IN_PROGRESS 提示；
+- 持久 journal owner **57/57**（journal28＋原 ledger29）及独立 **8/8 workflows PASS**，含真实 Windows crash/reopen、双进程竞争、锁/namespace/limits/unknown token/费用对象不读/隐私错误边界；
+- Gemma Text slice **42/42**（新增13＋原codec29）及响应引用安全 **6/6 PASS**；根另复核旧factory15和repository直接6通过；
+- 十二份 profile 覆盖十一家身份，九家离线 fake 正例；Gemma 仅 Text，原退休Google、SiliconFlow/OpenRouter 的拒绝继续保留。
+
+当前归档为 `.rwb/m6-general-prototype/accepted-base-integration/`；各切片冻结 source/hash、dispatch、Handoff与独立复核见 `journal/`、`journal-review/`、`gemma-profile/`、`reference-error-repair/`。Gemma 首轮断言不符和 journal review runner 的初始子进程/import/escaping 失败均保留。根 component 首次传短 SHA 被预检拒绝，改完整 SHA；首次调用无 main 的 cli module 是空 no-op，实际 package main 复验199/0/0。它们没有修改产品来规避检查，不能记初轮 PASS。
+
+用户最新决定覆盖此前费用暂停建议：费用/币种/账单不可得为 unknown，不阻断；未知 token 仍保留预占并停止。SQLite journal 不认证实际发送、input计费上界、另一DB或文件替换/回滚；实际 driver、唯一预算路径、完整运行 source closure、报告/CLI及 profile 安装 catalog 仍未完成。本轮无 full/global coverage、多Python/sdist最终资格或真实 Provider/API/Key/presence 证据；M6-009仅IN_PROGRESS，M6-010仍BLOCKED。

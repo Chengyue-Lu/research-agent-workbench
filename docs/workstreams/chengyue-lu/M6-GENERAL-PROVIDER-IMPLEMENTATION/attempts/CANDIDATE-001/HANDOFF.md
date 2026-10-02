@@ -28,3 +28,5 @@ SQLite journal 已追加持久 intent/entry/预占、Windows crash/reopen 和双
 输出目标，凭据只通过获授权 child 进程载入。上限 10,000,000 input＋output tokens；失败同计。
 费用、币种或账单不可得记录 unknown 不停止，未知 token 用量仍停止。
 当前未执行真实调用，不运行 M5 Pilot 或 A4 admission。
+
+最新完整源 `b1c5679`：component551 PASS+2 Windows skip、repository199/0/0、当前wheel8/8、15产品源码与Git blob全等、R2治理0error0warning。原026/b911证据仍按原source范围保留。定义已接受，本实现仍待draft独立R2审查；真实调用0。
