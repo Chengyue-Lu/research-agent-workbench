@@ -93,7 +93,7 @@ D表示官方正文给出该行限定范围内的明确事实；P表示有事实
 | F05 角色 | D | generateContent Content.role仅user/model，systemInstruction是独立字段。 | native API形状不证明全部Gemma能力或其他surface映射。 | [G1][G1] |
 | F06 ToolChoice | P | native FunctionCallingConfig有AUTO/ANY/NONE/VALIDATED，allowedFunctionNames仅ANY或VALIDATED时限制函数名。 | selected model支持及强制行为未验；Interactions的tool_choice不能代替该配置。 | [G16][G16]、[G14][G14] |
 | F07 Tool 往返 | P | functionCall/Response 是 native 形状；Gemini3 Tool 签名须原样续传。 | Gemma text 示例不等于 Gemma Tool 往返已经验收。 | [G6][G6]、[G7][G7]、[MX][MX]、V2 |
-| F08 并行 Tool | U | 未取得所选Gemma/Gemini型号并行数量/关闭控制的正文事实。 | G16可限制函数名但非单call；G14当前含Interactions示例，不能借来填写generateContent的exact保证。 | [G16][G16]、[G14][G14]、[G6][G6] |
+| F08 并行 Tool | U | G6 native generateContent指南明确一轮可返回多个函数调用，dated支持表列十个Gemini型号的parallel能力；G16的NONE禁止全部函数，allowedFunctionNames限名称。 | 所选Gemma4并行支持、数量上限及允许一call但关闭并行的保证仍未取得；该型号未出现于这三份正文，不推断不支持。ANY/名称不限制数量，SDK automatic_function_calling.disable只关闭自动执行；G14 Interactions配置单独保留。 | [G6][G6]、[G16][G16]、[G14][G14]；R8 |
 | F09 Schema / JSON | P | response Schema 为子集；2.5 Flash-Lite 在结构化输出表，Gemini3 mixed feature 是另列 preview。 | JSON 模式、所选模型 keyword/enforcement 与混合 Tool 支持须分开。 | [G8][G8]、V2 |
 | F10 thinking / context 续传 | P | Gemma4 特有 minimal=off；Gemini3 minimal 不能当 off；2.5 Flash-Lite 可 thinkingBudget=0。 | Gemma/各 Gemini 思考与 thoughtSignature 续传分别核；账户及返回内容未实测。 | [G5][G5]、[G7][G7]、[G9][G9]、V2 |
 | F11 stream / cancellation | P | native streamGenerateContent 独立于 OpenAI stream。 | 所选模型事件、取消后终态/用量仍待冻结。 | [G1][G1]、[MX][MX] |
@@ -422,3 +422,5 @@ R6为FOLLOWUP-008的两组公开补充：Qwen所选型号价行/普通角色/usa
 [Q11]: https://www.alibabacloud.com/help/en/model-studio/context-cache "Qwen Context Cache observed pricing href"
 
 R7为FOLLOWUP-009的Qwen Responses与Q9实际Context Cache href两目标公开补核，取得时间2026-10-02T21:32:32Z；两页标示更新2026-09-28。按surface补充缓存用量、所选read价例外、Session cache与续传，D31/P129/U5不变。R6及原始收据保持；不修改任何profile能力，console-only未知不转为账户访问。实体身份与检查见[FOLLOWUP-009](../M6-GENERAL-PROVIDER-IMPLEMENTATION/attempts/FOLLOWUP-009/CHECKS.md)。
+
+R8为FOLLOWUP-010的G6/G14/G16三目标公开补核，取得时间2026-10-02T22:15:20Z–22:15:23Z；页面分别标示更新2026-09-16/09-23/09-11。native generateContent、Interactions和SDK自动执行分别记录；所选Gemma4 F08仍U，D31/P129/U5不变，不修改profile或访问账户。公开实体与条件化Flash输入预留依据见[FOLLOWUP-010](../M6-GENERAL-PROVIDER-IMPLEMENTATION/attempts/FOLLOWUP-010/CHECKS.md)。
