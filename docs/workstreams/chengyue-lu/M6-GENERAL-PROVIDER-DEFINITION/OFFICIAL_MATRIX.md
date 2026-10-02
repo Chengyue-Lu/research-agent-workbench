@@ -10,10 +10,10 @@
 | Anthropic | Messages；Bearer或仍支持x-api-key，version/workspace独立。 | output_config.format/strict Tool；thinking/signature/stream与usage-cache有专有语义。 | 所选模型续传与Schema方言要离线证明；旧x-api-key仍合法。 | [接口/认证](https://platform.claude.com/docs/en/api/overview)；[能力/限制](https://platform.claude.com/docs/en/build-with-claude/structured-outputs)；R3:anthropic-overview |
 | Gemini | generateContent / streamGenerateContent；x-goog-api-key。 | response schema子集、functionCall/Response；Gemini3要求Tool thoughtSignature原样续传。 | 现有Google Adapter没有thinking controls/完整signature续传。 | [接口/认证](https://ai.google.dev/api/generate-content)；[能力/限制](https://ai.google.dev/gemini-api/docs/generate-content/thought-signatures)；R3:gemini-api |
 | DeepSeek | Responses/Chat/Anthropic；Bearer；首轮请求ID deepseek-flash，当前标称V4.1-Flash。 | Responses reasoning.effort=none关闭思考；Chat thinking.disabled；developer降user、strict差别。 | Flash/18:00约束已指定，exact Slot/profile/预算/调用Gate尚未闭合。 | [接口/认证](https://api-docs.deepseek.com/quick_start/pricing)；[能力/限制](https://api-docs.deepseek.com/api/create-response/)；R3:deepseek-pricing-current |
-| Qwen/DashScope | Chat＋Responses compatible-mode；地区/workspace/Key须一起绑定。 | json_object与json_schema支持model/mode集合不同；thinking/Tool/usage另有参数。 | 概要和细型号表有粒度差异，按exact model/profile验证。 | [接口/认证](https://www.alibabacloud.com/help/en/model-studio/compatibility-of-openai-with-dashscope)；[能力/限制](https://www.alibabacloud.com/help/en/model-studio/qwen-structured-output)；R3:qwen-chat |
+| Qwen/DashScope | Chat＋Responses compatible-mode；地区/workspace/Key须一起绑定。 | json_object与json_schema支持model/mode集合不同；Tool指南示例有auto/none/指定函数，Qwen非思考required不能保证调用、思考模式不支持required。 | 概要和细型号表有粒度差异，按exact model/profile验证；托管Kimi的required示例不证明Qwen支持。 | [接口/认证](https://www.alibabacloud.com/help/en/model-studio/compatibility-of-openai-with-dashscope)；[Schema限制](https://www.alibabacloud.com/help/en/model-studio/qwen-structured-output)；[Tool限制](https://www.alibabacloud.com/help/en/model-studio/qwen-function-calling)；R3:qwen-chat；R5:qwen-tool-choice |
 | GLM/Z.AI/智谱 | 国际Chat /api/paas/v4；中国Responses /api/v1、Claude /api/anthropic；账户不同。 | Z.AI已读JSON Object非server Schema保证；thinking默认/clear_thinking/effort随型号。 | 中国surface不得推广到国际/Coding Plan；always-thinks型号不进入非思考profile。 | [接口/认证](https://docs.bigmodel.cn/cn/guide/develop/responses/introduction)；[能力/限制](https://docs.z.ai/api-reference/llm/chat-completion)；R3:glm-cn-responses |
 | Moonshot/Kimi | Chat＋Responses＋Messages；Moonshot Key；文档转platform.kimi.ai。 | Schema支持与稳定性随k3/k2.7-code/k2.6；reasoning_content/Tool/stream需匹配型号。 | alias与actual model、区域账户/复杂Schema仍按profile验收。 | [接口/认证](https://platform.kimi.ai/docs/api/responses)；[能力/限制](https://platform.kimi.ai/docs/guide/response_format)；R3:kimi-responses |
-| MiniMax | Chat＋Responses＋Anthropic；MiniMax Key/订阅或PAYG权限分开。 | M3.1-Flash-Preview none报400，M2.x可忽略none；思考Tool块须续传。 | 首轮非思考不能默认覆盖全M系；strict Schema保证未确认。 | [接口/认证](https://platform.minimax.io/docs/api-reference/responses-create)；[能力/限制](https://platform.minimax.io/docs/api-reference/text-openai-api)；R3:minimax-responses |
+| MiniMax | Chat＋Responses＋Anthropic；MiniMax Key/订阅或PAYG权限分开。 | Responses输入message角色枚举为user/assistant/system/developer/tool；M3.1-Flash-Preview none报400，M2.x可忽略none；思考Tool块须续传。 | 输入枚举不证明角色优先级；首轮非思考不能默认覆盖全M系；strict Schema保证未确认。 | [接口/认证](https://platform.minimax.io/docs/api-reference/responses-create)；[能力/限制](https://platform.minimax.io/docs/api-reference/text-openai-api)；R3:minimax-responses；R5:minimax-input-roles |
 | SiliconFlow | 已读Chat；Bearer；provider仍为平台，publisher/model全名另列。 | API有json_schema/json_object/Tool/stream/usage，effort取决于所选托管model。 | Anthropic参数未核实；error/index直读不可达，搜索证据保留。 | [接口/认证](https://docs.siliconflow.cn/docs/api/chat-completions-post)；[能力/限制](https://docs.siliconflow.cn/en/faqs/error-code)；R3:siliconflow-api |
 | ByteDance/Ark | Chat/Responses；中国/BytePlus端点不同；Key或Access Key签名。 | 签名model须Endpoint ID；thinking encrypted/content与provider-state续传不同。 | Schema按model约束；部分猜测URL为普通页，不充证据；fallback须拒绝。 | [接口/认证](https://docs.volcengine.com/docs/ark/base-url-and-authentication?lang=en)；[能力/限制](https://docs.volcengine.com/docs/ark/chat-api?lang=zh&redirect=1)；R3:ark-auth |
 | OpenRouter | Chat/Responses；OpenRouter Key；网关operator与actual upstream分别固定。 | 默认路由/fallback；需full endpoint slug、only/order、allow_fallbacks=false、require_parameters。 | Schema/Tool/思考依upstream；actual路由/转换和整链privacy/region须独立证明。 | [接口/认证](https://openrouter.ai/docs/guides/routing/provider-selection)；[能力/限制](https://openrouter.ai/docs/guides/privacy/data-collection)；R3:openrouter-routing |
@@ -27,7 +27,7 @@ Flash模型与价格：deepseek-flash当前标称DeepSeek-V4.1-Flash；每1M tok
 
 OpenRouter应保留网关身份与actual upstream；router metadata只作provider-reported路由/转换事实，不作weights认证。data_collection/ZDR与gateway/upstream日志及region共同匹配任务要求，缺证据即不进入exact Runtime binding。[metadata](https://openrouter.ai/docs/guides/features/router-metadata)、[upstream logging](https://openrouter.ai/docs/guides/privacy/provider-logging)、[ZDR](https://openrouter.ai/docs/guides/features/zdr)。
 
-现行M6-004 OpenAI谓词保持。协调者报告的未接受候选为M6-009通用四协议离线接入、M6-010独立Flash live；定义协调者为Chengyue-Lu，workstream候选docs/workstreams/chengyue-lu/M6-GENERAL-PROVIDER-DEFINITION，黄毅M6维护不变。live总最多3次：指定Tool轮1＋真实純函数结果/text轮2形成Session，再Schema轮3；无额外probe/retry/fallback，失败计入，未执行。Task接受、exact实现/config/其他预算与调用授权仍是独立条件。
+现行M6-004 OpenAI谓词保持。M6-009负责通用四协议离线接入，M6-010负责独立Flash部件调用；任务定义已接受，完整实现与exact-run接受独立，黄毅M6维护不变。执行计划为每Attempt最多3次：指定Tool轮1＋真实纯函数结果/text轮2形成Session，再Schema轮3。失败即停并归档，离线诊断/修复/重新冻结后才可另建fresh Attempt，最多再复验2个Attempt；没有额外probe、自动retry或fallback。所有成功及失败input+output累计不得超过10,000,000；Attempt数量是执行计划，不是消耗目标或用户指定9次调用。exact实现/config/时间窗/输入预占依据/累计历史与具名调用接受仍是独立条件；未执行真实调用。
 
 ## Source receipts
 
@@ -35,6 +35,14 @@ R1/R2/R3为本次公开文档收集回执；hash只证明收集记录内容身�
 - R1 FETCH_RECEIPTS.json SHA-256: 75343eade1b6cf91e1a43ef16b6fff5e94b84184880ca11b3e9d8dbdeaba26e6
 - R2 REFERENCE_FETCH_RECEIPTS.json SHA-256: f02d411a1e78b2185a74bfb8d17d8eb34301bf4acfdedbafca7ac6753010b0b4
 - R3 SURVEY_FETCH_RECEIPTS.json SHA-256: 8420291ed64fa04ffb52d9334ba160eaa2723e3f54e0778afac79a5e0b71d2c1
+
+R5为2026-10-02T20:07:58Z的两项无认证官方文档补充；原R1/R2/R3与字段表R4观察保持。
+公开实体与纯JSON提取仅本地归档，便携核验摘要见
+[FOLLOWUP-007](../M6-GENERAL-PROVIDER-IMPLEMENTATION/attempts/FOLLOWUP-007/CHECKS.md)。
+
+- Qwen / qwen-tool-choice entity SHA-256: 17a2bd0e9ee57bd0ea42ce754cc03f11bfd2524b2184b8986110085dd34717af
+- MiniMax / minimax-input-roles entity SHA-256: 6494bc81c95951f0b568b841a266f4b4d265a5aeb65469fc97384b12949a7952
+- MiniMax / input-contract extraction SHA-256: bd89b211bc15b7efcb799e1c226703055f5003659cae8607f7f1bc1e55d163be
 
 R3条目对应的原页SHA-256（用于独立对账）：
 

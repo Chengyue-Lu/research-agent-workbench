@@ -7,7 +7,6 @@ import json
 from pathlib import Path
 import shutil
 import tempfile
-import time
 import unittest
 from unittest.mock import patch
 from uuid import uuid4
@@ -27,6 +26,12 @@ from tests import test_configured_provider as helpers
 from tests.test_provider_binding_graph import _components
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def _contract_monotonic():
+    # These contract tests measure source/config/body binding, not CI host CPU
+    # time. Advancing deadline and timeout failures have dedicated transport tests.
+    return 0.0
 
 
 class SyntheticOpener:
@@ -70,7 +75,8 @@ class ProfileConformanceBindingTests(unittest.TestCase):
             try:
                 transport = UrllibTransport(max_response_bytes=config["transport"]["max_response_bytes"])
                 bounded = GuardedConformanceTransport(transport, journal, lambda stage, ordinal: True,
-                    deadline=time.monotonic() + 120, body_policy=ConformanceBodyPolicy(max_output_tokens=32))
+                    deadline=120, clock=_contract_monotonic,
+                    body_policy=ConformanceBodyPolicy(max_output_tokens=32))
                 provider = build_profile_provider(cls.config, root=cls.template_root,
                     transport=bounded, credential=_components().SyntheticCredential())
                 cls.reference = stage_provider_binding(provider, root=cls.template_root, destination="binding",
@@ -97,7 +103,8 @@ class ProfileConformanceBindingTests(unittest.TestCase):
         options = dict(root=self.root, journal=self.journal, transport=self.transport,
             credential=self.credential, guard=lambda stage, ordinal: True,
             input_upper_tokens=(100, 100, 100), max_output_tokens=32, max_seconds=120,
-            body_policy=ConformanceBodyPolicy(max_output_tokens=32), binding_manifest_ref=self.reference)
+            body_policy=ConformanceBodyPolicy(max_output_tokens=32), binding_manifest_ref=self.reference,
+            clock=_contract_monotonic)
         options.update(overrides)
         with patch("urllib.request.build_opener", return_value=self.opener):
             return run_profile_conformance(self.config, **options)

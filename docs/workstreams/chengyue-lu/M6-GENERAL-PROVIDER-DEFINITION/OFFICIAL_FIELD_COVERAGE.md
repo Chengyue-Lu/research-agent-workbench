@@ -131,7 +131,7 @@ D表示官方正文给出该行限定范围内的明确事实；P表示有事实
 | F03 访问区域 / 部署区域 | P | Chat新文档endpoint含WorkspaceId，列北京cn-beijing/新加坡ap-southeast-1/香港cn-hongkong等maas地区hostname。 | access不认证推理/处理地域，旧入口与workspace迁移及actual账户待绑。 | [Q1][Q1]、[Q9][Q9] |
 | F04 model alias / revision | P | 官方 Tool 示例 qwen3.8-max，结构化指南列 Qwen3.8-Max。 | alias/revision、observed ID 与当前账户权限不能由示例认证。 | [Q1][Q1]、[Q3][Q3]、V1 |
 | F05 角色 | P | Chat例子system/user，输出assistant；Tool guide回传role=tool及tool_call_id。 | 完整developer/角色限制与Responses映射待核。 | [Q1][Q1]、[Q4][Q4] |
-| F06 ToolChoice | P | qwen3.8-max非思考Tool例子默认auto，指南可指定function.name；总结结果时移除强制choice。 | required/none/strict完整model表仍待核，不推广别型号。 | [Q4][Q4] |
+| F06 ToolChoice | P | qwen3.8-max非思考示例列auto/none/指定function；指南明确Qwen非思考required不能保证调用，思考模式不支持required。 | required代码示例为托管kimi/kimi-k3，不能借给Qwen；strict及其他exact型号表仍待核，指定函数不保证单call。 | [Q4][Q4]、[MX][MX] R5:qwen-tool-choice |
 | F07 Tool 往返 | P | Tool循环追加assistant输出，再以同tool_call.id写role=tool.tool_call_id并回传原始结果。 | 多call配对、停止/失败与所选Session边界另核。 | [Q4][Q4] |
 | F08 并行 Tool | P | qwen3.8-max+enable_thinking=false示例parallel_tool_calls=true允许无依赖Tool并行；有依赖用串行loop。 | false服务器保证与数量上限未核，不能从true例子推导。 | [Q4][Q4] |
 | F09 Schema / JSON | P | json_object/json_schema支持集合不同；Schema列string/number/integer/boolean/object/array/enum，strict例子容许optional字段。 | exact region/model keyword/enforcement另绑，不复制OpenAI全属性required规则。 | [Q3][Q3] |
@@ -190,7 +190,7 @@ D表示官方正文给出该行限定范围内的明确事实；P表示有事实
 | F02 认证 | P | Bearer API Key；订阅/PAYG entitlement 分开。 | 实际所选账户权限和版本适用性未验证。 | [M1][M1]、V1 |
 | F03 访问区域 / 部署区域 | P | 2026-03-30国际privacy说个人数据存于美国data center。 | 不是全部API推理deployment或中国账户事实，actual处理地域未知。 | [M8][M8] |
 | F04 model alias / revision | P | 所选文档 exact MiniMax-M3；M3.1-Flash-Preview 与 M2.x 另列。 | alias/revision 与远端 observed identity/账户可用仍未认证。 | [M1][M1]、V1 |
-| F05 角色 | P | Responses input可string或完整history array，instructions提供system，输出message.role=assistant。 | 输入角色白名单未完整提取，不由Anthropic-compatible反推。 | [M1][M1] |
+| F05 角色 | P | Responses requestBody的input可string/history array；item分message/function_call/function_call_output/reasoning；message.role枚举user/assistant/system/developer/tool，instructions为独立string。 | 枚举不证明优先级/降级、全部M3 off往返或signature语义；不由Anthropic-compatible反推。 | [M1][M1]、[MX][MX] R5:minimax-input-roles |
 | F06 ToolChoice | P | MiniMax-M3 文档支持的 ToolChoice 为 none/auto。 | required/specific 未形成支持依据，不能默认启用。 | [M1][M1]、V1 |
 | F07 Tool 往返 | P | function calling guide 和思考 Tool 块存在专有语义。 | 完整 exact M3 off 的 call/result/signature 往返仍待逐字段核验。 | [M4][M4]、[MX][MX] |
 | F08 并行 Tool | P | Responses response有parallel_tool_calls boolean、例子true；函数guide允许多个Tool。 | M3请求控制/并行数量enforcement未知，不由响应字段推保证。 | [M1][M1]、[M4][M4] |
