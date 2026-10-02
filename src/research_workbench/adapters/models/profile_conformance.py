@@ -13,6 +13,9 @@ import time
 from pathlib import Path
 
 from research_workbench.adapters.models.configured import build_profile_provider
+from research_workbench.adapters.models.conformance_body import (
+    policy_pin, prepare_body_admission, validated_response_context,
+)
 from research_workbench.adapters.models.conformance_journal import ConformanceUsageJournal
 from research_workbench.adapters.models.conformance_transport import GuardedConformanceTransport, ConformanceTransportError
 from research_workbench.adapters.models.port import (
@@ -148,7 +151,7 @@ def _observed_usage(http_response, profile):
 
 
 class _BudgetedProvider:
-    def __init__(self, provider, transport, journal, bounds, output):
+    def __init__(self, provider, transport, journal, bounds, output, body_policy=None):
         self.provider, self.transport, self.journal = provider, transport, journal
         self.bounds, self.output = bounds, output
         self.calls = []
@@ -156,6 +159,8 @@ class _BudgetedProvider:
         self.invocations = 0
         self.entries = 0
         self.stop = None
+        self.body_policy = body_policy
+        self.validated_context = None
 
     def capabilities(self):
         return self.provider.capabilities()
@@ -177,9 +182,23 @@ class _BudgetedProvider:
                 "response_received": False, "assertion_passed": False,
                 "input_tokens": None, "output_tokens": None, "cached_input_tokens": None, "reasoning_tokens": None}
         try:
+            body_options = {}
+            if self.body_policy is not None:
+                context = self.validated_context if phase == "result-text" else (None, ())
+                if context is None:
+                    self.stop = "transport-protocol-failed"
+                    _provider_stop()
+                body_options = {"body_phase": phase, "model_request": request,
+                                "expected_call_id": context[0], "expected_assistant_text": context[1]}
+                try:
+                    prepare_body_admission(self.body_policy, phase, request,
+                        expected_call_id=context[0], expected_assistant_text=context[1])
+                except Exception:
+                    self.stop = "transport-protocol-failed"
+                    _provider_stop()
             handle = self.journal.reserve(input_upper_tokens=self.bounds[index], output_upper_tokens=self.output)
             self.calls.append(call)
-            self.transport.arm(handle)
+            self.transport.arm(handle, **body_options)
             self.transport.preinvoke()
             self.invocations += 1
             response = self.provider.generate(request)
@@ -201,6 +220,12 @@ class _BudgetedProvider:
                 self.stop = {"specific-tool": "tool-shape-failed", "result-text": "text-assertion-failed",
                              "structured": "schema-assertion-failed"}[phase]
                 _provider_stop()
+            if self.body_policy is not None and phase == "specific-tool":
+                try:
+                    self.validated_context = validated_response_context(response)
+                except Exception:
+                    self.stop = "transport-protocol-failed"
+                    _provider_stop()
             return response
         except Exception as error:
             if self.stop is None:
@@ -271,7 +296,7 @@ def _report(plan, journal, budget, assertions, tool_executions, stop):
 
 def run_profile_conformance(config, *, root, journal, transport, credential, guard,
                             input_upper_tokens=None, max_output_tokens=256, max_seconds=120,
-                            clock=None, event_sink=None, repair_refreeze_confirmed=False):
+                            clock=None, event_sink=None, repair_refreeze_confirmed=False, body_policy=None):
     """Explicit caller-attested execution kernel; no live eligibility is granted."""
     plan = profile_conformance_plan(config, root=root, max_output_tokens=max_output_tokens, max_seconds=max_seconds)
     assertions = {"tool_call_shape": False, "tool_executed_once": False, "text_exact": False, "schema_exact": False}
@@ -279,6 +304,19 @@ def run_profile_conformance(config, *, root, journal, transport, credential, gua
         _fail("accounting-failed")
     if plan["readiness"] != "ready":
         return _report(plan, journal, None, assertions, 0, "plan-blocked")
+    if body_policy is not None:
+        try:
+            policy_pin(body_policy)
+            selected_profile, _ = resolve_profile_configuration(config, root=root)
+            document = selected_profile.document
+            if (plan["provider"] != body_policy.provider or plan["requested_model"] != body_policy.model
+                    or plan["protocol_family"] != body_policy.protocol_family
+                    or plan["profile_id"] != "deepseek-responses-nonthinking-v1"
+                    or document["generation"]["mode"] != body_policy.mode
+                    or max_output_tokens != body_policy.max_output_tokens):
+                raise ValueError("unsupported synthetic body profile")
+        except Exception:
+            return _report(plan, journal, None, assertions, 0, "transport-protocol-failed")
     if (type(input_upper_tokens) is not tuple or len(input_upper_tokens) != 3
             or any(type(value) is not int or not 0 < value <= 10_000_000 for value in input_upper_tokens)):
         return _report(plan, journal, None, assertions, 0, "input-bounds-required")
@@ -295,7 +333,8 @@ def run_profile_conformance(config, *, root, journal, transport, credential, gua
     if type(started) not in {int, float} or not math.isfinite(started):
         return _report(plan, journal, None, assertions, 0, "deadline-exhausted")
     try:
-        bounded = GuardedConformanceTransport(transport, journal, guard, deadline=started + max_seconds, clock=actual_clock)
+        bounded = GuardedConformanceTransport(transport, journal, guard, deadline=started + max_seconds, clock=actual_clock,
+                                             body_policy=body_policy)
         provider = build_profile_provider(config, root=root, transport=bounded, credential=credential)
     except Exception:
         return _report(plan, journal, None, assertions, 0, "provider-construction-refused")
@@ -303,7 +342,7 @@ def run_profile_conformance(config, *, root, journal, transport, credential, gua
         journal.start_attempt(repair_refreeze_confirmed=repair_refreeze_confirmed)
     except Exception:
         return _report(plan, journal, None, assertions, 0, "attempt-admission-refused")
-    budget = _BudgetedProvider(provider, bounded, journal, input_upper_tokens, max_output_tokens)
+    budget = _BudgetedProvider(provider, bounded, journal, input_upper_tokens, max_output_tokens, body_policy=body_policy)
     tool_runs = 0
     tool_schema = {"type": "object", "properties": {"a": {"type": "integer", "enum": [3]},
                     "b": {"type": "integer", "enum": [4]}}, "required": ["a", "b"], "additionalProperties": False}

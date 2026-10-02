@@ -4,7 +4,7 @@
 |---|---|---|
 | 协议兼容抹平服务身份或能力 | 实际 profile → factory → 编解码离线检查；未知角色、strict、模式、能力在凭据前拒绝 | 十四份 profile、十一家工厂 fake 正例；新 SF/OR 仅 standard Text，不代表当前远端接受 |
 | 密钥被重定向或错误诊断暴露 | 复用 PR126 的拒绝重定向和晚解析传输；畸形 Tool JSON 与响应 Schema 未解析引用错误在 except 外抛出，cause/context 均清空 | 不承诺解释器内存或 frame-local 擦除 |
-| endpoint/config/helper 漂移未进入绑定 | actual instance、源码 bytes、声明七模块的 callable/defaults/政策常量及独立 cold replay | 七模块以外的实际 helper 及完整 conformance 运行图仍待新版本消费闭合；生成的 dataclass 方法和外部依赖未独立源码认证 |
+| endpoint/config/helper 漂移未进入绑定 | opt-in manifest1.1/policy-v3 派生 helper/package-init 图，检查支持语法的 callable/defaults/alias/global/class policy；ConfiguredProvider、baseline1.2 和独立 cold replay 显式消费 | compiler/native/dependency 及生成 dataclass/Enum/typing 行为是声明信任边界；现有 driver/报告仍非完整运行上下文，旧版本保持原七模块语义 |
 | 冻结类仍允许嵌套修改 | 深冻结配置/profile/政策；实际 transport/credential 方法及 options 在使用前重验 | fake identity 保持 fake，不认证远端或 fixture 内容 |
 | 摘要故障漏记已收到的用量 | 显式路径先保存已freeze/validate响应；FOLLOWUP-001将request、Tool attempt/result/context及普通终态捕获故障统一为SAFE_PAUSED，gap/stop写入各至多一次，终态失败不重复写入 | 不认证远端账单；unknown tokens不补零，不再执行后续Tool/模型；默认Session不变 |
 | first Tool 成功被误当完整 Session 成功 | 新政策显式两轮、Tool1；失败/取消/超限/未知 usage 不过渡 | caller 仍独立断言最终业务值及跨 probe 预算 |
@@ -17,6 +17,7 @@
 | 安装包缺少新profile或读取不同字节 | 显式打包14profile与两份禁用配置；新配置仅三家Text模板，typed kinds/FileRef/hash由已校验字节解析 | 原11adapter配置字节与disabled保留，不推导厂商live能力 |
 | 公共源码缺少已声明安装输入 | 原 draft policy1.6.0 的13输入保持原对象，append1.7.0仅增两个Text profile与一份disabled配置；旧七个policy对象不变 | 不树形开放provider目录，不执行export或发布，不改变Skill projection、release gate与main/tag；作为R2候选审查 |
 | 驱动误把shape当往返或严格远端Schema | 一次纯Tool实际执行、第二轮实际call ID/result进入历史后验证精确文本，第三轮enum Schema与本地exact业务断言分开 | 新内核只有合成离线证据，remote strict与live qualified均false |
+| 冻结合成计划与实际编码 body 漂移 | 显式 immutable body policy，credential 前核 ModelRequest，intent 前核实际 closed JSON bytes；local phase 与真实 call ID/history/result 绑定 | None 保持原路径；远端 Responses strict 方言、service 并行/取消和实际费用不由本地断言推导 |
 | 发送意图冒称实际网络发送 | 预占与持久intent先于委托transport调用；记录委托方法入口，失败未知保留预占；检查delegate方法/响应界限与剩余deadline | 不认证socket、远端账单、官方时间窗或调用者guard的权威；完整运行闭包另验 |
 | 可序列化结果冒称具名接受 | 独立版本化闭集report Schema，报告只记录计数/数值/固定code/非秘密identity refs，fresh排他输出；CLI只离线计划 | guard/input上界caller-attested，source refs为局部，M6-009未DONE、M6-010仍BLOCKED |
 | 历史模型模板被当当前服务 | 官方 models/deprecations 已明确 Google2.0 Flash 关闭；新工厂在凭据前拒绝 | 原字节保留回放；独立 Gemma profile 仅 Text/off 合成路径，账户与远端接受保持 unknown |

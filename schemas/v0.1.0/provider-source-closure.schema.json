@@ -1,0 +1,331 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/provider-source-closure.schema.json",
+  "title": "Provider source closure",
+  "x-rwb-document-kind": "provider_source_closure",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "provider_source_closure"
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "policy": {
+      "const": "provider-source-closure-v1"
+    },
+    "roots": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z_][A-Za-z_0-9]*(?:\\.[A-Za-z_][A-Za-z_0-9]*)*$",
+        "maxLength": 512
+      },
+      "maxItems": 160,
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "compiler": {
+      "type": "object",
+      "properties": {
+        "implementation": {
+          "const": "cpython"
+        },
+        "version": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "maxItems": 3,
+          "minItems": 3
+        },
+        "optimization": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "code_policy": {
+          "const": "python-code-fields-v1"
+        }
+      },
+      "required": [
+        "implementation",
+        "version",
+        "optimization",
+        "code_policy"
+      ],
+      "additionalProperties": false
+    },
+    "modules": {
+      "type": "object",
+      "maxProperties": 160,
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "source_ref": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          },
+          "is_package": {
+            "type": "boolean"
+          },
+          "dependencies": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z_0-9]*(?:\\.[A-Za-z_][A-Za-z_0-9]*)*$",
+              "maxLength": 512
+            },
+            "maxItems": 160,
+            "uniqueItems": true
+          },
+          "claims": {
+            "type": "object",
+            "properties": {
+              "compiled_callables": {
+                "type": "object",
+                "maxProperties": 20000,
+                "additionalProperties": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              },
+              "defaults": {
+                "type": "object",
+                "maxProperties": 20000,
+                "additionalProperties": {
+                  "type": "object",
+                  "properties": {
+                    "positional": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/$defs/jsonValue"
+                      },
+                      "maxItems": 20000
+                    },
+                    "keyword": {
+                      "type": "object",
+                      "maxProperties": 20000,
+                      "additionalProperties": {
+                        "$ref": "#/$defs/jsonValue"
+                      }
+                    }
+                  },
+                  "required": [
+                    "positional",
+                    "keyword"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "wrappers": {
+                "type": "object",
+                "maxProperties": 20000,
+                "additionalProperties": {
+                  "type": "array",
+                  "items": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "enum": [
+                              "staticmethod",
+                              "classmethod",
+                              "property",
+                              "abstractmethod"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "kind"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "const": "lru_cache"
+                          },
+                          "parameters": {
+                            "type": "object",
+                            "properties": {
+                              "maxsize": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ]
+                              },
+                              "typed": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "maxsize",
+                              "typed"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "parameters"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  },
+                  "maxItems": 8
+                }
+              },
+              "globals": {
+                "type": "object",
+                "maxProperties": 20000,
+                "additionalProperties": {
+                  "$ref": "#/$defs/jsonValue"
+                }
+              },
+              "classes": {
+                "type": "object",
+                "maxProperties": 20000,
+                "additionalProperties": {
+                  "type": "object",
+                  "properties": {
+                    "policies": {
+                      "type": "object",
+                      "maxProperties": 20000,
+                      "additionalProperties": {
+                        "$ref": "#/$defs/jsonValue"
+                      }
+                    },
+                    "bases": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "maxLength": 2000000
+                      },
+                      "maxItems": 32
+                    },
+                    "decorators": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "maxLength": 2000000
+                      },
+                      "maxItems": 32
+                    }
+                  },
+                  "required": [
+                    "policies",
+                    "bases",
+                    "decorators"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "aliases": {
+                "type": "object",
+                "maxProperties": 20000,
+                "additionalProperties": {
+                  "type": "object",
+                  "properties": {
+                    "module": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z_][A-Za-z_0-9]*(?:\\.[A-Za-z_][A-Za-z_0-9]*)*$",
+                      "maxLength": 512
+                    },
+                    "attribute": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 512
+                    }
+                  },
+                  "required": [
+                    "module",
+                    "attribute"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "compiled_callables",
+              "defaults",
+              "wrappers",
+              "globals",
+              "classes",
+              "aliases"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "source_ref",
+          "is_package",
+          "dependencies",
+          "claims"
+        ],
+        "additionalProperties": false
+      },
+      "minProperties": 1,
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[A-Za-z_][A-Za-z_0-9]*(?:\\.[A-Za-z_][A-Za-z_0-9]*)*$",
+        "maxLength": 512
+      }
+    },
+    "trusted_boundaries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 3,
+      "minItems": 3
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_kind",
+    "version",
+    "policy",
+    "roots",
+    "compiler",
+    "modules",
+    "trusted_boundaries"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "jsonValue": {
+      "oneOf": [
+        {
+          "type": [
+            "null",
+            "boolean",
+            "number",
+            "string"
+          ]
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/jsonValue"
+          },
+          "maxItems": 20000
+        },
+        {
+          "type": "object",
+          "maxProperties": 20000,
+          "additionalProperties": {
+            "$ref": "#/$defs/jsonValue"
+          }
+        }
+      ]
+    }
+  }
+}

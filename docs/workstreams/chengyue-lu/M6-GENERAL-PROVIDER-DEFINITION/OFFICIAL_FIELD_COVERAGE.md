@@ -1,8 +1,8 @@
 # 官方字段覆盖与待核清单
 
-本表按 [M6-009 计划](PLAN.md) 的资料字段整理 **2026-10-02 已冻结的文档摘要**，编辑日期为 2026-10-03。覆盖十一家公共服务/网关；Azure、Vertex、Bedrock 的认证与部署边界另列。本轮只读既有来源记录，未访问网络或 Provider API。
+本表按 [M6-009 计划](PLAN.md) 补核2026-10-02 UTC（北京时间2026-10-03）的官方公开文档/政策正文，保留此前已冻结摘要。十一家公共服务/网关与Azure/Vertex/Bedrock边界分列。本轮使用web与无认证document GET，没有调用模型API、账户端点或读取Key/环境凭据。
 
-`D` 表示已冻结摘要给出明确字段事实；`P` 表示有相关事实，但该字段尚有列明的 exact 条件待核；`U` 表示本轮已读摘要尚无可填值。`U` 不表示官方没有该资料，也不表示服务不支持。每项都有已收集的官方入口或后续核验入口；HTTP200、URL 存在或来源 hash 不等于该字段已被核验。
+D表示官方正文给出该行限定范围内的明确事实；P表示有事实但仍有列明的exact条件；U表示本轮未取得该字段的正文事实，不表示官方无资料/服务不支持。每行保留官方来源或待核入口；HTTP200、URL和hash不等于字段已核。所有新增事实observed/retrieved date为2026-10-02 UTC，明确政策更新日另列。服务器Date/Last-Modified与搜索cache时间不充当发布日期。
 
 事实始终保留 model/surface/mode 与日期边界。协议兼容、厂商文档、离线实现、账户可用和具名 live 接受分开。本表不改变 Task 状态、选择模型或授予运行资格；高级能力允许继续明确待核或拒绝。只对首轮 DeepSeek Flash 的非思考 Tool 要求原生关闭，不要求全部厂商以同一模式接入。
 
@@ -26,21 +26,21 @@
 | F14 | 价格 / 时间窗 |
 | F15 | 账户数据控制 |
 
-11 × 15 = **165 项已登记**：D 17，P 75，U 73。这是资料状态统计：92 项有已保留事实（D＋P），其中 75 项仍部分待核；73 项未填事实值。不是 165 项能力通过或 M6-009 完成率。
+11 × 15 = **165 项已登记**：D 31，P 129，U 5。原为D17/P75/U73，本轮补强115行。目前160项有保留事实、129项仍有待核、5项无正文事实；不是能力通过、live验证或M6-009完成率。
 
 | 服务 | D | P | U |
 |---|---:|---:|---:|
-| OpenAI | 2 | 6 | 7 |
-| Anthropic | 2 | 7 | 6 |
-| Google Gemini Developer API（含独立 Gemma 文档事实） | 2 | 6 | 7 |
-| DeepSeek | 3 | 9 | 3 |
-| Alibaba Qwen / DashScope | 1 | 6 | 8 |
-| Zhipu GLM / Z.AI / 智谱 | 1 | 5 | 9 |
-| Moonshot / Kimi | 1 | 6 | 8 |
-| MiniMax | 1 | 6 | 8 |
-| SiliconFlow | 2 | 9 | 4 |
-| ByteDance / Ark / BytePlus | 0 | 6 | 9 |
-| OpenRouter | 2 | 9 | 4 |
+| OpenAI | 4 | 11 | 0 |
+| Anthropic | 3 | 12 | 0 |
+| Google Gemini Developer API（含独立 Gemma 文档事实） | 4 | 10 | 1 |
+| DeepSeek | 6 | 9 | 0 |
+| Alibaba Qwen / DashScope | 2 | 13 | 0 |
+| Zhipu GLM / Z.AI / 智谱 | 3 | 11 | 1 |
+| Moonshot / Kimi | 2 | 12 | 1 |
+| MiniMax | 1 | 14 | 0 |
+| SiliconFlow | 2 | 12 | 1 |
+| ByteDance / Ark / BytePlus | 2 | 13 | 0 |
+| OpenRouter | 2 | 12 | 1 |
 
 ## OpenAI
 
@@ -48,39 +48,39 @@
 |---|---|---|---|---|
 | F01 endpoint / API surface | D | Responses 与 Chat 是分别定义的 API surface。 | 本条为日期化文档事实；实际账户/远端结果另验。 | [O1][O1] |
 | F02 认证 | D | Bearer 认证；surface 与 model snapshot 分别固定。 | 本条为日期化文档事实；实际账户/远端结果另验。 | [MX][MX] |
-| F03 访问区域 / 部署区域 | U | 本轮已读摘要未冻结该字段的可用值。 | 核对所选服务的访问限制、部署区域和账户地域；不能从 hostname 代填。 | [O1][O1] |
-| F04 model alias / revision | P | structured-output 指南明确举出 gpt-4o-mini-2024-07-18 snapshot。 | 其他 alias 的漂移/版本、远端 observed ID 与权重身份未由文档例子证明。 | [O2][O2]、V1 |
-| F05 角色 | U | 本轮已读摘要未冻结该字段的可用值。 | 补所选 Responses/Chat 的 system/developer/user/assistant/tool 映射；不能跨 surface 推广。 | [O1][O1] |
-| F06 ToolChoice | P | Responses reference 有 function Tool 入口。 | 固定模型的 none/auto/required/specific、strict 与约束组合须逐项补证。 | [O1][O1]、V1 |
-| F07 Tool 往返 | P | 文档定义 function Tool surface。 | 完整 call ID/arguments/result 回传及停止状态契约须逐模型/协议冻结。 | [O1][O1]、V1 |
-| F08 并行 Tool | U | 本轮已读摘要未冻结该字段的可用值。 | 补 exact snapshot 的 parallel_tool_calls 与并行返回约束。 | [O1][O1] |
+| F03 访问区域 / 部署区域 | P | 官方your-data区分符合资格project的data residency与处理区域；system/schema等数据不受全部地域保证。 | actual project资格/区域未知，不由hostname猜部署。 | [O7][O7] |
+| F04 model alias / revision | P | model card当前列gpt-4o-mini与gpt-4o-mini-2024-07-18，上下文128000、最大输出16384。 | 文档型号不证明actual serving/revision或账户权限；新模型不替旧snapshot。 | [O10][O10]、[O2][O2] |
+| F05 角色 | P | Responses reference明确developer/system优先于user；function_call_output为独立item。 | 完整Chat角色转换和所选snapshot限制待核，不把Tool item当普通role。 | [O1][O1]、[O6][O6] |
+| F06 ToolChoice | P | 指南列auto/required/none/指定function；strict要求对象additionalProperties=false且属性全部required。 | 所选snapshot/Tool/strict组合另验。 | [O6][O6]、[O2][O2] |
+| F07 Tool 往返 | D | Responses返回function_call；回传function_call_output用相同call_id，前轮output可追加至后轮input。 | 原厂文档契约不授予别厂商状态存储或Session接受。 | [O6][O6] |
+| F08 并行 Tool | D | parallel_tool_calls=false使一次返回零或一个函数call，built-in Tool另有约束。 | actual所选model/Tool组合另验。 | [O6][O6] |
 | F09 Schema / JSON | P | JSON Schema/strict 依模型与 Schema 子集，指南明确该 snapshot。 | 所选 Schema keyword 子集和服务器 enforcement 不能由本地 JSON 校验代替。 | [O2][O2]、V1 |
 | F10 thinking / context 续传 | P | reasoning continuation 是独立语义。 | 所选非 reasoning snapshot 是否返回专有项、后续模型的续传必须分别核验。 | [MX][MX]、[O3][O3] |
 | F11 stream / cancellation | P | Responses 与 Chat 的 stream 不能混 parse。 | 所选 surface 的事件、取消后 usage/charge 与终态仍待逐字段冻结。 | [MX][MX]、[O4][O4] |
-| F12 usage / cache / reasoning | U | 本轮已读摘要未冻结该字段的可用值。 | 补 input/output/cache/reasoning 计数、缺失值、total 关系与失败 charge 规则。 | [O1][O1] |
-| F13 error / retry / rate | U | 本轮已读摘要未冻结该字段的可用值。 | 错误页已有收集条目；补所选协议错误体、retry 与账户 RPM/TPM，HTTP200 不等于字段已读。 | [O5][O5] |
-| F14 价格 / 时间窗 | U | 本轮已读摘要未冻结该字段的可用值。 | 从官方导航定位所选 snapshot 定价、cache 计价和时间窗；本轮不写数值。 | [O1][O1] |
-| F15 账户数据控制 | U | 本轮已读摘要未冻结该字段的可用值。 | 从官方导航定位账户 retention/training/region 政策并绑定实际账户；不据原厂身份推定。 | [O1][O1] |
+| F12 usage / cache / reasoning | P | Responses usage有input/output/total；input细分cached/cache_write，output细分reasoning；示例total=input+output。 | 缺失/失败/取消不填零，子项不能再次加到total。 | [O1][O1] |
+| F13 error / retry / rate | P | rate按org/project/model管理RPM/RPD/TPM等；429包含rate及quota/credit不足，500/503为服务问题。 | actual tier/shared limits未知；官方退避建议不授权本轮retry。 | [O8][O8]、[O5][O5] |
+| F14 价格 / 时间窗 | P | GPT-4o-mini USD/1M input0.15、cached0.075、output0.60；Batch为独立模式。 | actual service tier/账单未核；本页不提供通用idle折扣。 | [O10][O10]、[O9][O9] |
+| F15 账户数据控制 | P | API默认不训练（opt-in另定）；abuse日志通常最长30天，Responses state默认/store=true至少30天；ZDR须资格。 | actual project设置/地域及法律安全例外另核，不宣称全部数据零留存。 | [O7][O7] |
 
 ## Anthropic
 
 | 字段 | 状态 | 已冻结的有限事实 | unresolved / 后续核验 | 来源 |
 |---|---|---|---|---|
 | F01 endpoint / API surface | D | Messages；overview 固定 /v1/messages。 | 本条为日期化文档事实；实际账户/远端结果另验。 | [AN1][AN1]、V1 |
-| F02 认证 | D | overview 保留 x-api-key；api version 与 workspace 独立，当前摘要也区分 Bearer。 | 本条为日期化文档事实；实际账户/远端结果另验。 | [AN1][AN1]、[MX][MX] |
-| F03 访问区域 / 部署区域 | U | 本轮已读摘要未冻结该字段的可用值。 | 核对所选 workspace/账户访问区域与部署/处理区域；未知保持未知。 | [AN1][AN1] |
+| F02 认证 | D | direct API支持Authorization Bearer，x-api-key为仍支持的fallback；anthropic-version必填，多workspace Key须workspace header。 | 认证形状不证明actual权限，云服务IAM独立。 | [AN1][AN1] |
+| F03 访问区域 / 部署区域 | P | direct API overview指向支持国家/地区；数据政策区分direct API与云服务。 | 账户访问与actual处理/部署地域未知，不继承Bedrock/Vertex。 | [AN1][AN1]、[AN11][AN11] |
 | F04 model alias / revision | P | thinking 示例使用 claude-sonnet-4-6。 | 例子中的 ID 不认证当前权限、immutable revision 或 allowed observed alias。 | [AN2][AN2]、V1 |
-| F05 角色 | U | 本轮已读摘要未冻结该字段的可用值。 | 补 Messages 的 system 与 messages role 边界，不能复制 Responses developer 规则。 | [AN3][AN3] |
-| F06 ToolChoice | P | 文档存在 strict Tool surface。 | exact model 的 choice、strict 与 thinking 组合尚未逐项冻结。 | [AN4][AN4]、[MX][MX] |
-| F07 Tool 往返 | P | Messages reference 定义 text/Tool 形状。 | tool_use/tool_result 与 signature 的 exact 往返细则仍需单独冻结。 | [AN3][AN3]、V1 |
-| F08 并行 Tool | U | 本轮已读摘要未冻结该字段的可用值。 | 补 exact model/模式的并行 Tool 与控制参数。 | [AN3][AN3] |
+| F05 角色 | D | Messages输入messages.role为user/assistant；system为顶层字段，不存在输入system role。 | 仅Messages文档形状，不复制Responses developer。 | [AN13][AN13] |
+| F06 ToolChoice | P | 指南列auto/any/tool/none；手动extended thinking与any/tool强制选择不兼容。 | Sonnet4.6 exact mode/strict组合另验，新模型限制不反推旧型号。 | [AN7][AN7]、[AN12][AN12] |
+| F07 Tool 往返 | P | assistant tool_use含id/name/input，user tool_result用tool_use_id；client执行后回传。 | 顺序/全部call配对/signature及exact模式仍待绑定；旧handle-tool-results抓取404已保留。 | [AN13][AN13]、[AN7][AN7] |
+| F08 并行 Tool | P | disable_parallel_tool_use放在tool_choice内；auto时至多一call，any/tool时恰一call（模型允许该choice时）。 | Sonnet4.6 thinking/strict组合仍待核，不是顶层同名参数。 | [AN12][AN12] |
 | F09 Schema / JSON | P | 文档有 output_config.format 与 strict Tool。 | 该 exact model 的 Schema 子集/enforcement 未由摘要闭合。 | [AN4][AN4]、[MX][MX] |
 | F10 thinking / context 续传 | P | thinking/signature 有专有续传语义；示例包含 disabled-thinking 形状。 | 需要思考/签名的组合不能从 plain text 契约推导。 | [AN2][AN2]、[AN3][AN3]、V1 |
 | F11 stream / cancellation | P | stream 有专有格式。 | 事件和取消后终态/计费须对所选 Messages 模式冻结。 | [AN5][AN5]、[MX][MX] |
-| F12 usage / cache / reasoning | P | usage-cache 有专有语义。 | 补 cache creation/read、reasoning 与 input/output 的计数关系、缺失与失败值。 | [AN3][AN3]、[MX][MX] |
-| F13 error / retry / rate | U | 本轮已读摘要未冻结该字段的可用值。 | 错误页已收集；补结构化 error/retry 和账户 RPM/TPM，不能从兼容接口猜限额。 | [AN6][AN6] |
-| F14 价格 / 时间窗 | U | 本轮已读摘要未冻结该字段的可用值。 | 从官方导航定位 exact model 的定价、缓存计价/时间窗，订阅与 API 分开。 | [AN1][AN1] |
-| F15 账户数据控制 | U | 本轮已读摘要未冻结该字段的可用值。 | 补所选 workspace 的日志/retention/training/地域约束及官方账户政策。 | [AN1][AN1] |
+| F12 usage / cache / reasoning | P | 全部input=input_tokens+cache_creation_input_tokens+cache_read_input_tokens；output独列；cache-read通常不计ITPM，有模型例外。 | 失败/取消及missing分项未知，不把input_tokens当全部input。 | [AN13][AN13]、[AN8][AN8] |
+| F13 error / retry / rate | P | 按RPM/ITPM/OTPM及spend tier限额；error.type/message及request_id，413请求过大、429rate、529overloaded。 | actual org/workspace/model tier未知，SDK retry另由调用计划约束。 | [AN6][AN6]、[AN8][AN8] |
+| F14 价格 / 时间窗 | P | Sonnet4.6 USD/1M input3/output15；cache 5m write3.75、1h6、read0.30；US inference_geo为1.1倍。 | actual region/tier/Batch未绑，Batch不是idle折扣。 | [AN9][AN9] |
+| F15 账户数据控制 | P | 商业API通常30天内删除input/output，feature/合同/使用政策/法律例外另定；ZDR须org启用且功能合资格。 | actual ZDR/feature未知，flagged/feedback可更久，不推广全部新模型/云服务。 | [AN10][AN10]、[AN11][AN11] |
 
 ## Google Gemini Developer API（含独立 Gemma 文档事实）
 
@@ -88,19 +88,19 @@
 |---|---|---|---|---|
 | F01 endpoint / API surface | D | generateContent / streamGenerateContent；native API 示例为 /v1beta/models/{model}:generateContent。 | 本条为日期化文档事实；实际账户/远端结果另验。 | [G1][G1]、V1 |
 | F02 认证 | D | API-key guide 支持 x-goog-api-key。 | 本条为日期化文档事实；实际账户/远端结果另验。 | [G2][G2]、V1 |
-| F03 访问区域 / 部署区域 | U | 本轮已读摘要未冻结该字段的可用值。 | Developer API 的账户访问限制、处理/部署区域须另核；不可据 Google 身份推广到 Vertex。 | [G2][G2] |
+| F03 访问区域 / 部署区域 | P | available-regions列美国、新加坡等；条款允许在Google/代理设施所在国处理。 | actual访问资格/处理位置未知，清单不等于可选Vertex location。 | [G15][G15]、[G13][G13] |
 | F04 model alias / revision | P | 旧 gemini-2.0-flash 在后续 models/deprecations 明确已关闭；Gemma 官方页列 gemma-4-26b-a4b-it / gemma-4-31b-it。 | Gemma facts 仅 dated extracted view；新 alias/revision、当前账户权限与 observed ID 仍未认证。 | [G3][G3]、[G4][G4]、[G5][G5]、V2 |
-| F05 角色 | P | Gemma 页有 text、system instruction 与 multi-turn 示例。 | 不能从示例推广全部 Gemini/Gemma role 或跨模型映射。 | [G5][G5]、V2 |
-| F06 ToolChoice | U | 本轮已读摘要未冻结该字段的可用值。 | function calling 示例不完整覆盖每个模型的 none/auto/required/specific；须所选 model card/API reference 另核。 | [G6][G6] |
+| F05 角色 | D | generateContent Content.role仅user/model，systemInstruction是独立字段。 | native API形状不证明全部Gemma能力或其他surface映射。 | [G1][G1] |
+| F06 ToolChoice | P | native FunctionCallingConfig有AUTO/ANY/NONE/VALIDATED，allowedFunctionNames仅ANY或VALIDATED时限制函数名。 | selected model支持及强制行为未验；Interactions的tool_choice不能代替该配置。 | [G16][G16]、[G14][G14] |
 | F07 Tool 往返 | P | functionCall/Response 是 native 形状；Gemini3 Tool 签名须原样续传。 | Gemma text 示例不等于 Gemma Tool 往返已经验收。 | [G6][G6]、[G7][G7]、[MX][MX]、V2 |
-| F08 并行 Tool | U | 本轮已读摘要未冻结该字段的可用值。 | 补所选模型并行函数调用和返回配对约束。 | [G6][G6] |
+| F08 并行 Tool | U | 未取得所选Gemma/Gemini型号并行数量/关闭控制的正文事实。 | G16可限制函数名但非单call；G14当前含Interactions示例，不能借来填写generateContent的exact保证。 | [G16][G16]、[G14][G14]、[G6][G6] |
 | F09 Schema / JSON | P | response Schema 为子集；2.5 Flash-Lite 在结构化输出表，Gemini3 mixed feature 是另列 preview。 | JSON 模式、所选模型 keyword/enforcement 与混合 Tool 支持须分开。 | [G8][G8]、V2 |
 | F10 thinking / context 续传 | P | Gemma4 特有 minimal=off；Gemini3 minimal 不能当 off；2.5 Flash-Lite 可 thinkingBudget=0。 | Gemma/各 Gemini 思考与 thoughtSignature 续传分别核；账户及返回内容未实测。 | [G5][G5]、[G7][G7]、[G9][G9]、V2 |
 | F11 stream / cancellation | P | native streamGenerateContent 独立于 OpenAI stream。 | 所选模型事件、取消后终态/用量仍待冻结。 | [G1][G1]、[MX][MX] |
-| F12 usage / cache / reasoning | U | 本轮已读摘要未冻结该字段的可用值。 | 补 prompt/candidate/total/thought/cache 字段、缺失值与输出上限关系；不推断 thoughts=0。 | [G1][G1] |
-| F13 error / retry / rate | U | 本轮已读摘要未冻结该字段的可用值。 | troubleshooting 页已收集；补所选模型错误体、retry、账户 rate/tier。 | [G10][G10] |
-| F14 价格 / 时间窗 | U | 本轮已读摘要未冻结该字段的可用值。 | 从官方 model/API 导航定位所选 Gemini 或 Gemma 的价格/额度/时间窗；不把“低成本”当数值。 | [G3][G3]、[G5][G5] |
-| F15 账户数据控制 | U | 本轮已读摘要未冻结该字段的可用值。 | 补 Developer API 所选账户/计费层的数据处理、retention/training/地域；不由无历史用户限制推断权限。 | [G2][G2]、[G3][G3] |
+| F12 usage / cache / reasoning | D | usageMetadata区分prompt/cachedContent/candidates/thoughts/toolUsePrompt，totalTokenCount=prompt+thoughts+candidates。 | missing保留unknown，不能假设thoughts已含在candidates，缓存不重复加总。 | [G1][G1] |
+| F13 error / retry / rate | P | 限额按project而非Key，RPM/TPM/RPD依tier/model；troubleshooting区分429资源耗尽与400/403/5xx。 | actual tier/动态limit未查，取消/失败charge/retry契约待核。 | [G12][G12]、[G10][G10] |
+| F14 价格 / 时间窗 | P | Gemma4 pricing：free-tier input/output/cache/storage免费，paid-tier不可用；其他Gemini按型号/tier另价。 | 免费仍受rate/账户条件，产品改进规则须结合条款和actual billing，免费不等于不训练。 | [G11][G11]、[G13][G13] |
+| F15 账户数据控制 | P | active Cloud Billing project的Paid Services不用prompts/responses改善产品；unpaid通常可改善，EEA/CH/UK另定，安全日志例外。 | actual billing/地域未查，安全日志固定天数未取得，不推广Vertex。 | [G13][G13] |
 
 ## DeepSeek
 
@@ -108,79 +108,79 @@
 |---|---|---|---|---|
 | F01 endpoint / API surface | D | Responses、Chat 与 Anthropic-compatible 分别有入口；Responses reference 与 guide 独立。 | 本条为日期化文档事实；实际账户/远端结果另验。 | [DS1][DS1]、[DS2][DS2]、[DS3][DS3]、[MX][MX] |
 | F02 认证 | D | Bearer 认证。 | 本条为日期化文档事实；实际账户/远端结果另验。 | [MX][MX]、[DS4][DS4] |
-| F03 访问区域 / 部署区域 | U | 本轮已读摘要未冻结该字段的可用值。 | 补所选账户服务访问/处理区域和数据地域，不从 api.deepseek.com 猜部署。 | [DS1][DS1] |
-| F04 model alias / revision | P | 2026-10-02 pricing snapshot 将 deepseek-flash 标为 DeepSeek-V4.1-Flash。 | alias 可漂移；实际 observed ID、权重/账户仍需 exact live binding。 | [DS4][DS4]、V1 |
-| F05 角色 | P | Responses guide 的 developer 降 user 语义与原厂 Responses 不同。 | 所选 role 的完整白名单须按 exact surface 冻结；文档兼容不授予隐式身份替换。 | [DS2][DS2]、[MX][MX] |
-| F06 ToolChoice | P | Responses/Chat 的 Tool choice、thinking 与 strict 入口有差别。 | exact Flash + off 的 choice/strict 组合须按所选 surface 单独核验。 | [DS1][DS1]、[DS3][DS3]、[DS5][DS5] |
-| F07 Tool 往返 | P | 官方 Tool guide 定义客户端执行及函数结果往返。 | Session 两轮/本地纯函数执行与业务结果是独立实现验收。 | [DS5][DS5] |
-| F08 并行 Tool | D | 已冻结准备摘要指出所选 service 总启用并行 Tool calling。 | 本条为日期化文档事实；实际账户/远端结果另验。 | [DS2][DS2]、V1 |
-| F09 Schema / JSON | P | Responses format、Chat JSON mode 与 Beta strict/Schema 子集各有独立规则。 | 不能由 Chat strict 或本地 Schema PASS 推导 Responses remote strict。 | [DS1][DS1]、[DS5][DS5]、[DS6][DS6]、V1 |
-| F10 thinking / context 续传 | P | Responses reasoning.effort=none 关闭思考；Chat thinking.disabled；thinking guide 另列上下文续传限制。 | 首轮仅 Flash off；其他 mode/续传与模型不得自动继承。 | [DS1][DS1]、[DS3][DS3]、[DS7][DS7]、V1 |
-| F11 stream / cancellation | U | 本轮已读摘要未冻结该字段的可用值。 | 官方 stream/keep-alive 相关入口已收集；精确取消/最终 usage/charge 契约需逐 surface 提取。 | [DS1][DS1]、[DS8][DS8] |
-| F12 usage / cache / reasoning | P | pricing 区分 input cache-hit、cache-miss、output；reference/guide 描述停止与 usage。 | 失败/取消/reasoning 总量及缺失计数不能填零，实际账单另验。 | [DS1][DS1]、[DS4][DS4] |
-| F13 error / retry / rate | P | errors 文档含 402/422 与 auth/rate/transient 错误；Rate Limit & Isolation 为账户级限制。 | 具体账户阈值、retry 与失败 charge 仍待绑定；user isolation 不等于 fresh 上下文。 | [DS8][DS8]、[DS9][DS9] |
-| F14 价格 / 时间窗 | P | dated 闲时 USD/1M：input-hit 0.003、input-miss 0.15、output 0.60；工作日高峰 UTC01–04/06–10，排除中国公共假日，其余闲时。 | 运行前重核价格/节假日与北京时间18:00后约束；文档价格不是用户预算或实际 charge。 | [DS4][DS4]、[MX][MX] |
-| F15 账户数据控制 | U | 本轮已读摘要未冻结该字段的可用值。 | 补账户日志/retention/training/区域控制的官方政策；本轮不声明 data-control capability。 | [DS1][DS1] |
+| F03 访问区域 / 部署区域 | P | privacy policy说明所收集信息存于中华人民共和国境内。 | 政策存储事实不认证推理部署；客户下游终端用户数据不受该一般政策全部覆盖。 | [DS11][DS11] |
+| F04 model alias / revision | P | pricing将deepseek-flash映射DeepSeek-V4.1-Flash；models reference例子context_window=1048576、max_output_tokens=393216。 | alias可变；只读metadata文档，未调用models endpoint，actual身份/权限未认证。 | [DS4][DS4]、[DS10][DS10] |
+| F05 角色 | D | Responses支持system/developer/user/assistant；developer按user处理，instructions为首system，function_call/output为独立item。 | 只限DeepSeek Responses，不冒充原厂developer权威。 | [DS1][DS1]、[DS2][DS2] |
+| F06 ToolChoice | D | Responses原生tool_choice为none/auto（默认）/required/指定{name,type:function}；Tool原生name/parameters。 | 文档支持不是Flash非思考Tool live接受；Chat strict另有边界。 | [DS1][DS1]、[DS2][DS2] |
+| F07 Tool 往返 | P | Responses每轮传完整input；call_id须非空且唯一、每call须配对应function_call_output；previous_response_id/conversation/store/background不支持。 | Session本地history/所有ID配对/终态另验；store=false不等于隐私零留存。 | [DS1][DS1]、[DS2][DS2] |
+| F08 并行 Tool | D | Responses忽略parallel_tool_calls与max_tool_calls，始终并行，两个参数不能保证单call。 | 本地有界执行/返回拒绝规则由实现计划约束；named choice也不自动单call。 | [DS2][DS2] |
+| F09 Schema / JSON | P | Responses text.format有text/json_object/json_schema(name/schema)；Chat Beta strict Tool子集含enum及required/additionalProperties规则。 | 未取得Responses独立strict/keyword表，Chat enum不是Responses enforcement证据；截断JSON须拒绝。 | [DS1][DS1]、[DS2][DS2]、[DS5][DS5]、[DS6][DS6] |
+| F10 thinking / context 续传 | D | 所选deepseek-responses-nonthinking-v1为deepseek-flash+reasoning.effort=none；此原生值关思考（默认high）；max_output_tokens含reasoning。 | 这是所选profile/文档关系非live接受；Chat thinking.disabled是另surface，其他型号不继承。 | [DS1][DS1]、[DS2][DS2]、[DS7][DS7] |
+| F11 stream / cancellation | P | Responses语义SSE以response.completed/incomplete/failed终止，无[DONE]；完成event携完整response/usage。 | 取消/断连/失败最终usage/charge未知；首轮非stream不偷换contract。 | [DS1][DS1]、[DS2][DS2] |
+| F12 usage / cache / reasoning | P | Responses input+output=total，cached为input子项、reasoning为output子项；incomplete原因max_output_tokens/content_filter，message可incomplete。 | 失败missing不填零；保留停止状态和已收用量，未完成Tool拒绝；子项不重复加总。 | [DS1][DS1]、[DS2][DS2]、[DS4][DS4] |
+| F13 error / retry / rate | P | Flash account并发2500（全部Keys合计），user_id用于KV/scheduling/content-safety隔离；错误400/401/402/422/429/500/503分列。 | 并发不是RPM/TPM或用户预算，账户可用/余额未知；不授权自动retry/fallback。 | [DS8][DS8]、[DS9][DS9] |
+| F14 价格 / 时间窗 | P | USD/1M Flash闲时hit0.003/miss0.15/output0.60，峰时两倍；峰UTC工作日01–04/06–10排除中国公共假日，其余闲时。 | 执行前重核日期/假日与北京时间18:00后；文档价格非actual账单或消费目标。 | [DS4][DS4] |
+| F15 账户数据控制 | P | 2026-02-10 privacy有输入收集、模型改进/训练目的与opt-out权利；按必要期限/活跃账户留存，未给通用API固定天数。 | 不是API no-training/ZDR承诺；actual账户条款未查，不一概新增合成测试gate。 | [DS11][DS11] |
 
 ## Alibaba Qwen / DashScope
 
 | 字段 | 状态 | 已冻结的有限事实 | unresolved / 后续核验 | 来源 |
 |---|---|---|---|---|
 | F01 endpoint / API surface | D | Chat + Responses compatible-mode；Chat reference 固定 Virginia access origin。 | 本条为日期化文档事实；实际账户/远端结果另验。 | [Q1][Q1]、[Q2][Q2]、V1 |
-| F02 认证 | P | 地区/workspace/Key 须一起绑定。 | 所选 surface 的认证 header、workspace scope 和账户 entitlement 尚须具体核验。 | [Q1][Q1]、[MX][MX] |
-| F03 访问区域 / 部署区域 | P | 准备摘要有 Virginia access_region。 | 访问点不等于 model deployment/处理地域；所选账户 region/workspace 未实测。 | [Q1][Q1]、V1 |
+| F02 认证 | D | compatible-mode Chat使用Authorization Bearer DashScope Key；地区Key不同且workspace须匹配endpoint。 | 仅该surface认证形状；actual权限/Responses认证另绑。 | [Q1][Q1] |
+| F03 访问区域 / 部署区域 | P | Chat新文档endpoint含WorkspaceId，列北京cn-beijing/新加坡ap-southeast-1/香港cn-hongkong等maas地区hostname。 | access不认证推理/处理地域，旧入口与workspace迁移及actual账户待绑。 | [Q1][Q1]、[Q9][Q9] |
 | F04 model alias / revision | P | 官方 Tool 示例 qwen3.8-max，结构化指南列 Qwen3.8-Max。 | alias/revision、observed ID 与当前账户权限不能由示例认证。 | [Q1][Q1]、[Q3][Q3]、V1 |
-| F05 角色 | U | 本轮已读摘要未冻结该字段的可用值。 | 补所选 compatible surface 对 system/developer/user/tool 的角色支持/降级规则。 | [Q1][Q1]、[Q2][Q2] |
-| F06 ToolChoice | U | 本轮已读摘要未冻结该字段的可用值。 | 补 qwen3.8-max + enable_thinking=false 的 choice/strict 子集。 | [Q4][Q4] |
-| F07 Tool 往返 | P | 有 function Tool 与 thinking=false 示例。 | exact model 的 call ID/arguments/result 及多轮边界仍待逐字段冻结。 | [Q4][Q4]、V1 |
-| F08 并行 Tool | U | 本轮已读摘要未冻结该字段的可用值。 | 补 exact model/mode 的 parallel_tool_calls 及响应并行限制。 | [Q4][Q4] |
-| F09 Schema / JSON | P | json_object 和 json_schema 支持 model/mode 集合不同；指南列 Qwen3.8-Max Schema 支持。 | JSON 与 strict enforcement/keyword 子集不互换。 | [Q3][Q3]、V1 |
+| F05 角色 | P | Chat例子system/user，输出assistant；Tool guide回传role=tool及tool_call_id。 | 完整developer/角色限制与Responses映射待核。 | [Q1][Q1]、[Q4][Q4] |
+| F06 ToolChoice | P | qwen3.8-max非思考Tool例子默认auto，指南可指定function.name；总结结果时移除强制choice。 | required/none/strict完整model表仍待核，不推广别型号。 | [Q4][Q4] |
+| F07 Tool 往返 | P | Tool循环追加assistant输出，再以同tool_call.id写role=tool.tool_call_id并回传原始结果。 | 多call配对、停止/失败与所选Session边界另核。 | [Q4][Q4] |
+| F08 并行 Tool | P | qwen3.8-max+enable_thinking=false示例parallel_tool_calls=true允许无依赖Tool并行；有依赖用串行loop。 | false服务器保证与数量上限未核，不能从true例子推导。 | [Q4][Q4] |
+| F09 Schema / JSON | P | json_object/json_schema支持集合不同；Schema列string/number/integer/boolean/object/array/enum，strict例子容许optional字段。 | exact region/model keyword/enforcement另绑，不复制OpenAI全属性required规则。 | [Q3][Q3] |
 | F10 thinking / context 续传 | P | qwen3.8-max Tool 示例发送 enable_thinking=false。 | 不得推广至全 Qwen；reasoning/context 续传未由 off 请求证明。 | [Q4][Q4]、[Q5][Q5]、V1 |
-| F11 stream / cancellation | U | 本轮已读摘要未冻结该字段的可用值。 | stream 页已收集；补 exact 模式事件、结束与取消后 usage。 | [Q6][Q6] |
-| F12 usage / cache / reasoning | U | 本轮已读摘要未冻结该字段的可用值。 | 摘要只指出 usage 另有参数；补 cache/reasoning 与 output 上限/总量关系。 | [Q1][Q1] |
-| F13 error / retry / rate | U | 本轮已读摘要未冻结该字段的可用值。 | error-code 页已收集；补 exact surface 的错误、retry 和账户/region 的 RPM/TPM。 | [Q7][Q7] |
-| F14 价格 / 时间窗 | U | 本轮已读摘要未冻结该字段的可用值。 | 从官方导航定位所选 region/model 的定价、cache/思考计价与时间窗。 | [Q1][Q1] |
-| F15 账户数据控制 | U | 本轮已读摘要未冻结该字段的可用值。 | 补该 region/workspace 账户的数据 retention/training/跨境/处理地域政策。 | [Q1][Q1] |
+| F11 stream / cancellation | P | Chat include_usage=true最后chunk给usage且choices=[]，此前文本delta累积。 | exact取消/断连/结束与charge未知；最后空choices不索引文本。 | [Q1][Q1]、[Q6][Q6] |
+| F12 usage / cache / reasoning | P | Chat表明prompt为input、completion为output、total为二者和；stream最后chunk可返三项。 | cache/reasoning与失败/截断计数另核，不从非思考请求填0。 | [Q1][Q1] |
+| F13 error / retry / rate | P | rate按model/region列RPM/TPM（input+output），秒级RPS/TPS可能按分钟限额/60。 | actual workspace/model quota未知；未调用quota API，错误/重试按surface另绑。 | [Q8][Q8]、[Q7][Q7] |
+| F14 价格 / 时间窗 | P | International qwen-plus（对应2025-12-01）≤256k USD/1M input0.40/nonthinking output1.20/thinking4；其他region/context另价。 | 所选qwen3.8-max须对具体价行；某些qwen3.7夜价不推广qwen-plus/3.8。 | [Q9][Q9] |
+| F15 账户数据控制 | P | Model Studio FAQ承诺不使用客户数据训练模型，说明传输/存储加密。 | actual region/workspace留存期限/跨境/例外未取得，加密不是ZDR。 | [Q10][Q10] |
 
 ## Zhipu GLM / Z.AI / 智谱
 
 | 字段 | 状态 | 已冻结的有限事实 | unresolved / 后续核验 | 来源 |
 |---|---|---|---|---|
 | F01 endpoint / API surface | D | 国际 Chat /api/paas/v4；中国 Responses /api/v1、Claude-compatible /api/anthropic 独列。 | 本条为日期化文档事实；实际账户/远端结果另验。 | [Z1][Z1]、[Z2][Z2]、[Z3][Z3]、[MX][MX] |
-| F02 认证 | P | 国际/中国/Coding Plan 账户分开。 | 所选账户认证 header/token scope 未在本轮摘要逐项冻结，不以兼容性推定互换。 | [Z1][Z1]、[Z2][Z2]、[MX][MX] |
-| F03 访问区域 / 部署区域 | P | 国际与中国 surface 不能相互推广。 | access 限制、deployment/处理地域与账户绑定仍 unresolved。 | [Z1][Z1]、[Z2][Z2]、[MX][MX] |
+| F02 认证 | D | Z.AI国际Chat为Authorization Bearer；中国BigModel/Coding Plan认证独立。 | actual套餐/权限未验，不互换国际/中国Key。 | [Z1][Z1] |
+| F03 访问区域 / 部署区域 | P | 国际API DPA说Customer Data通常在新加坡；中国BigModel服务边界另列。 | 通常存储不认证exact推理deployment，所选地区/中国数据位置未知。 | [Z11][Z11]、[Z2][Z2] |
 | F04 model alias / revision | P | 国际 enum 列 glm-5.2；thinking 文档排除强制思考 GLM-5.3/5.3-FLASH。 | revision/alias 当前解析和账户可用未观测。 | [Z1][Z1]、[Z4][Z4]、V1 |
-| F05 角色 | U | 本轮已读摘要未冻结该字段的可用值。 | 补所选国际 Chat role 规则，不借中国 Claude-compatible 语义。 | [Z1][Z1] |
-| F06 ToolChoice | U | 本轮已读摘要未冻结该字段的可用值。 | 补 exact glm-5.2 off 的 choice/strict 控制。 | [Z1][Z1] |
-| F07 Tool 往返 | U | 本轮已读摘要未冻结该字段的可用值。 | API 有 Tool surface；完整 exact call/result 往返须另提取冻结。 | [Z1][Z1] |
-| F08 并行 Tool | U | 本轮已读摘要未冻结该字段的可用值。 | 补该模型/模式并行 Tool 控制与返回集合。 | [Z1][Z1] |
+| F05 角色 | D | 国际Chat明确system/user/assistant/tool四种messages；输入不能只有system或assistant。 | 仅国际Chat，不借中国Claude-compatible。 | [Z1][Z1] |
+| F06 ToolChoice | P | 国际Chat reference tool_choice enum只列auto，函数Tool输出另列。 | none/required/specific/strict未补证，glm-5.2 off远端组合仍未验。 | [Z1][Z1] |
+| F07 Tool 往返 | P | response tool_calls含id/type/function.name/arguments，tool为独立输入类。 | exact完整往返配对/错误终态未提取，保留部分事实。 | [Z1][Z1] |
+| F08 并行 Tool | U | 未取得glm-5.2 off并行控制/数量的官方正文保证。 | Z1有Tool schema/auto选择，未提取parallel字段不表示不支持；须所选型号补证，不借中国surface。 | [Z1][Z1]、[Z4][Z4] |
 | F09 Schema / JSON | P | 已读 Z.AI JSON Object 不是 server Schema 保证。 | exact Schema/JSON dialect、keyword 与 enforcement 保持 unresolved。 | [Z5][Z5]、[MX][MX]、V1 |
-| F10 thinking / context 续传 | P | thinking.disabled 适用范围按型号；强制思考型号例外。 | clear_thinking/effort 与续传需 exact 模式核验。 | [Z4][Z4]、V1 |
-| F11 stream / cancellation | U | 本轮已读摘要未冻结该字段的可用值。 | stream 页已有收集条目；补 exact 事件和 cancellation usage/charge。 | [Z6][Z6] |
-| F12 usage / cache / reasoning | U | 本轮已读摘要未冻结该字段的可用值。 | 补 prompt/completion/cache/reasoning 计数和缺失值/总量，不复制其他 Chat 服务。 | [Z1][Z1] |
-| F13 error / retry / rate | U | 本轮已读摘要未冻结该字段的可用值。 | 国际与中国 errors 均有收集条目；补所选账户/surface error/retry/rate 数值。 | [Z7][Z7]、[Z8][Z8] |
-| F14 价格 / 时间窗 | U | 本轮已读摘要未冻结该字段的可用值。 | 从官方 model/API 导航定位国际/中国/Coding Plan 所选 API 定价和时间窗。 | [Z1][Z1]、[Z2][Z2] |
-| F15 账户数据控制 | U | 本轮已读摘要未冻结该字段的可用值。 | 补 exact 账户服务的数据控制/日志/retention/training 与地域条款。 | [Z1][Z1]、[Z2][Z2] |
+| F10 thinking / context 续传 | P | GLM4.5+有thinking enabled/disabled，5.3/Flash只enabled；clear_thinking=true默认移旧reasoning，false需全量原样历史。 | glm-5.2 exact off/preserved实测独立，新5.3限制不替旧profile。 | [Z1][Z1]、[Z4][Z4] |
+| F11 stream / cancellation | P | 国际Chat stream=true为Event Stream，终止data:[DONE]；false/省略为同步。 | 取消usage/charge、error event与selected型号终态待核。 | [Z1][Z1]、[Z6][Z6] |
+| F12 usage / cache / reasoning | P | 国际reference列prompt/completion/total_tokens与prompt_tokens_details.cached_tokens。 | reasoning是否含completion、失败/缺失关系unknown，不复制别服务算法。 | [Z1][Z1] |
+| F13 error / retry / rate | P | 国际错误页区分HTTP/business码；429可并发/套餐限额/产品Key类型错误，不能全当短暂rate。 | actual model/account限额数字/retry hint未取得，中国码不混用。 | [Z7][Z7]、[Z8][Z8] |
+| F14 价格 / 时间窗 | P | Z.AI GLM5.2 USD/1M input1.40/cache0.26/output4.40，cache storage标limited-time free；4.7/Flash另价。 | free结束日期、actual套餐/账单/idle价未核，国际价不复制中国。 | [Z9][Z9] |
+| F15 账户数据控制 | P | 2026-04-14 API terms默认不以developer内容改善模型（明确同意另定）；API DPA说实时API内容不存储，其他数据按期限/例外处理。 | consumer privacy排除API customer，actual合同/地域/例外未知，不宣称全部元数据零留存。 | [Z10][Z10]、[Z11][Z11] |
 
 ## Moonshot / Kimi
 
 | 字段 | 状态 | 已冻结的有限事实 | unresolved / 后续核验 | 来源 |
 |---|---|---|---|---|
 | F01 endpoint / API surface | D | Chat /api.moonshot.ai/v1/chat/completions；另列 Responses 与 Messages；文档迁至 platform.kimi.ai。 | 本条为日期化文档事实；实际账户/远端结果另验。 | [K1][K1]、[K2][K2]、[K3][K3]、[MX][MX]、V1 |
-| F02 认证 | P | Moonshot Key；兼容 surface 与区域账户须区分。 | exact header/workspace/token scope 未在摘要完整冻结。 | [K1][K1]、[MX][MX] |
-| F03 访问区域 / 部署区域 | U | 本轮已读摘要未冻结该字段的可用值。 | 补所选账户/域名的访问地域和 deployment/处理地域。 | [K1][K1] |
+| F02 认证 | D | 国际Chat api.moonshot.ai/v1为Authorization Bearer；K2.6例子一致。 | actual账户/中国区/其他surface权限另核。 | [K1][K1] |
+| F03 访问区域 / 部署区域 | P | 国际privacy说明所收集个人信息安全存储在新加坡。 | 不是model deployment或全部API业务数据地域保证，不推广中国Moonshot。 | [K12][K12] |
 | F04 model alias / revision | P | model overview 用 kimi-k2.6 且列专有参数约束。 | k3/k2.7-code 等不是同一 profile；alias/revision/observed identity 未认证。 | [K4][K4]、V1 |
-| F05 角色 | U | 本轮已读摘要未冻结该字段的可用值。 | 补所选 Chat role 与 reasoning_content/history 的角色约束。 | [K1][K1]、[K5][K5] |
-| F06 ToolChoice | P | 准备摘要记录 required 不支持、specific 未验证；不得按通用 Chat 视为支持。 | exact none/auto/specific 与模式组合须另核。 | [K1][K1]、[K4][K4]、V1 |
-| F07 Tool 往返 | P | 官方 Tool guide 已列入收集导航。 | 本轮摘要未冻结完整 call/result配对与每一错误/停止状态。 | [K6][K6] |
-| F08 并行 Tool | U | 本轮已读摘要未冻结该字段的可用值。 | 补 exact 模型 off 的并行调用与控制字段。 | [K6][K6] |
+| F05 角色 | P | K2.6 Chat多轮含system/user/assistant；Tool结果为role=tool并带tool_call_id。 | 完整白名单/降级与preserved reasoning历史按型号绑定。 | [K1][K1]、[K6][K6] |
+| F06 ToolChoice | P | 参数表明确K2.6/K2.7-code不支持required且报错；K3支持auto/none/required。 | 通用Chat指定function对象不证明K2.6 specific，不能借新K3补旧profile。 | [K4][K4]、[K1][K1] |
+| F07 Tool 往返 | P | Chat stateless，后轮追加完整assistant/Tool结果，tool_call_id关联调用ID。 | thinking须含reasoning原样续传，selected off Session配对/终态/上限另验。 | [K1][K1]、[K4][K4]、[K6][K6] |
+| F08 并行 Tool | U | 未取得kimi-k2.6 off并行控制与返回数量官方保证。 | K1/K4同时含K3/K2.x，不借K3行为给K2.6；K6配对ID不证明parallel。 | [K1][K1]、[K4][K4]、[K6][K6] |
 | F09 Schema / JSON | P | 格式/Schema 稳定性随 k3/k2.7-code/k2.6 不同。 | 该 profile 的复杂 Schema/enforcement 未冻结。 | [K7][K7]、[MX][MX] |
 | F10 thinking / context 续传 | P | kimi-k2.6 overview 接受 thinking.disabled；参数 override 有限制。 | preserved reasoning/context 续传须独立 contract，不能由 disabled 推导。 | [K4][K4]、[K5][K5]、V1 |
-| F11 stream / cancellation | U | 本轮已读摘要未冻结该字段的可用值。 | stream 页已收集；补该模型事件、取消与返回 usage。 | [K8][K8] |
-| F12 usage / cache / reasoning | U | 本轮已读摘要未冻结该字段的可用值。 | 补 cache/reasoning/prompt/completion 总量与缺失值，不从 Chat family 推值。 | [K1][K1] |
-| F13 error / retry / rate | U | 本轮已读摘要未冻结该字段的可用值。 | errors 页已收集；补所选账户 rate、retry 与 failed charge。 | [K9][K9] |
-| F14 价格 / 时间窗 | U | 本轮已读摘要未冻结该字段的可用值。 | 从官方 model/API 导航定位 exact Kimi 及区域账户定价/cache/时间窗。 | [K4][K4] |
-| F15 账户数据控制 | U | 本轮已读摘要未冻结该字段的可用值。 | 补该账户 retention/training/日志及地域数据控制。 | [K1][K1] |
+| F11 stream / cancellation | P | Chat SSE；include_usage=true最后chunk给完整cache breakdown，finish_reason非null停止。 | 取消/失败usage/charge未知，中间无usage不当0。 | [K1][K1]、[K8][K8] |
+| F12 usage / cache / reasoning | P | prompt_tokens是全部input；cached/cache_write/uncached互斥且和为prompt；org隔离cache默认5m可1h、不支持手清。 | reasoning/output与失败计数另核；KV cache不是服务器历史留存承诺。 | [K1][K1] |
+| F13 error / retry / rate | P | limits按累计付费tier列concurrency/RPM/TPM/TPD；errors区分长度/auth/rate/服务问题。 | actual tier/model限额未查，不授权自动retry。 | [K11][K11]、[K9][K9] |
+| F14 价格 / 时间窗 | P | 国际K2.6 USD/1M input0.95/output4/cache hit0.16；K3与缓存write TTL另价。 | actual region/套餐/cache写价/时间折扣未绑，新K3不替K2.6。 | [K10][K10] |
+| F15 账户数据控制 | P | 国际Model Use允许Customer Content训练/改善，书面enterprise协议可另定；privacy留存按必要期限。 | stateless不等于不训练/零留存；actual企业合同/期限未知。 | [K13][K13]、[K12][K12] |
 
 ## MiniMax
 
@@ -188,19 +188,19 @@
 |---|---|---|---|---|
 | F01 endpoint / API surface | D | Chat、Responses、Anthropic-compatible 独列；Responses 为 /v1/responses。 | 本条为日期化文档事实；实际账户/远端结果另验。 | [M1][M1]、[M2][M2]、[M3][M3]、[MX][MX]、V1 |
 | F02 认证 | P | Bearer API Key；订阅/PAYG entitlement 分开。 | 实际所选账户权限和版本适用性未验证。 | [M1][M1]、V1 |
-| F03 访问区域 / 部署区域 | U | 本轮已读摘要未冻结该字段的可用值。 | 核对所选服务的 access/deployment/处理地域，不能由域名或模型publisher推值。 | [M1][M1] |
+| F03 访问区域 / 部署区域 | P | 2026-03-30国际privacy说个人数据存于美国data center。 | 不是全部API推理deployment或中国账户事实，actual处理地域未知。 | [M8][M8] |
 | F04 model alias / revision | P | 所选文档 exact MiniMax-M3；M3.1-Flash-Preview 与 M2.x 另列。 | alias/revision 与远端 observed identity/账户可用仍未认证。 | [M1][M1]、V1 |
-| F05 角色 | U | 本轮已读摘要未冻结该字段的可用值。 | 补所选 Responses 的 role 规则，不能从 Anthropic-compatible 反推。 | [M1][M1] |
+| F05 角色 | P | Responses input可string或完整history array，instructions提供system，输出message.role=assistant。 | 输入角色白名单未完整提取，不由Anthropic-compatible反推。 | [M1][M1] |
 | F06 ToolChoice | P | MiniMax-M3 文档支持的 ToolChoice 为 none/auto。 | required/specific 未形成支持依据，不能默认启用。 | [M1][M1]、V1 |
 | F07 Tool 往返 | P | function calling guide 和思考 Tool 块存在专有语义。 | 完整 exact M3 off 的 call/result/signature 往返仍待逐字段核验。 | [M4][M4]、[MX][MX] |
-| F08 并行 Tool | U | 本轮已读摘要未冻结该字段的可用值。 | 补 exact M3/模式的并行 Tool 控制与返回上限。 | [M4][M4] |
+| F08 并行 Tool | P | Responses response有parallel_tool_calls boolean、例子true；函数guide允许多个Tool。 | M3请求控制/并行数量enforcement未知，不由响应字段推保证。 | [M1][M1]、[M4][M4] |
 | F09 Schema / JSON | P | strict Schema 保证未确认。 | 补所选 model/surface 的 JSON/Schema keyword 与 enforcement。 | [M1][M1]、[MX][MX] |
 | F10 thinking / context 续传 | P | M3 默认无非none effort时思考off；M3.1-Flash-Preview none报400；M2.x不能由none保证off。 | 思考 Tool 块续传独立，不把其他M系继承为同一off profile。 | [M1][M1]、V1、[MX][MX] |
-| F11 stream / cancellation | U | 本轮已读摘要未冻结该字段的可用值。 | 补所选 Responses stream 事件、取消/终态与用量；兼容 Messages stream 不能代替。 | [M1][M1] |
-| F12 usage / cache / reasoning | U | 本轮已读摘要未冻结该字段的可用值。 | 补缓存/思考 usage 分项、计数关系及失败值；不从 off 请求填零。 | [M1][M1] |
-| F13 error / retry / rate | U | 本轮已读摘要未冻结该字段的可用值。 | errorcode 页已收集；补 exact surface/账户 rate 与retry、失败 charge。 | [M5][M5] |
-| F14 价格 / 时间窗 | U | 本轮已读摘要未冻结该字段的可用值。 | 从官方 API 导航定位 exact M3 的PAYG/cache/时间窗；订阅金额不替API单价。 | [M1][M1] |
-| F15 账户数据控制 | U | 本轮已读摘要未冻结该字段的可用值。 | 补该服务账户 retention/training/日志/处理地域。 | [M1][M1] |
+| F11 stream / cancellation | P | Responses stream=true启用SSE，status有completed/incomplete/failed与error/incomplete_details。 | 事件序列/取消/断连usage/charge待核，Messages stream不能代替。 | [M1][M1] |
+| F12 usage / cache / reasoning | P | Responses例子input/output/total，cache为input子项、reasoning为output子项；max_output_tokens含reasoning，过小可incomplete且无message。 | 例子不证明每个M3分项；missing/failed不填0，子项不重复相加。 | [M1][M1] |
+| F13 error / retry / rate | P | native码1001timeout/1002rate/1004auth/1008balance/1024internal；rate按model/interface列RPM/TPM。 | compatible错误形状不照抄native；actual M3 tier/failed charge未验。 | [M5][M5]、[M6][M6] |
+| F14 价格 / 时间窗 | P | PAYG M3 standard≤512k input USD/1M input0.30/output1.20/cache read0.06，>512k两倍；priority为1.5倍。 | actual tier/账单未核，PAYG Key与Token Plan订阅Key/credits不同，不是闲时价。 | [M7][M7]、[M9][M9] |
+| F15 账户数据控制 | P | privacy按必要目的/法律期限留存个人数据并支持撤回/删除；paid terms区分PAYG与订阅Key。 | 未取得覆盖全部selected API prompt的no-training/固定期限；actual合同未知。 | [M8][M8]、[M9][M9] |
 
 ## SiliconFlow
 
@@ -209,38 +209,38 @@
 | F01 endpoint / API surface | D | China hosted Chat：POST https://api.siliconflow.cn/v1/chat/completions。 | 本条为日期化文档事实；实际账户/远端结果另验。 | [SF1][SF1]、[SF2][SF2] |
 | F02 认证 | D | Bearer API Key；operator 为 SiliconFlow，publisher/model 全名另列。 | 本条为日期化文档事实；实际账户/远端结果另验。 | [SF1][SF1]、[SF2][SF2] |
 | F03 访问区域 / 部署区域 | P | 已冻结 China access endpoint；国际站不能给中国账户授权。 | 真实 deployment/processing region、账户权限未观测。 | [SF1][SF1]、[SF2][SF2]、V2 |
-| F04 model alias / revision | P | API 示例 deepseek-ai/DeepSeek-V4-Flash；stream 示例 Qwen/Qwen2.5-72B-Instruct。 | Qwen例子不证明当前serving/revision；hosted model 不等于原厂服务，observed model 必须另冻结。 | [SF1][SF1]、[SF3][SF3]、[SF2][SF2]、V2 |
-| F05 角色 | U | 本轮已读摘要未冻结该字段的可用值。 | 补所选 hosted exact 模型的 system/developer/user/tool 白名单与降级规则。 | [SF1][SF1] |
-| F06 ToolChoice | U | 本轮已读摘要未冻结该字段的可用值。 | 通用 tools 表不证明 exact hosted model 的 none/auto/required/specific。 | [SF1][SF1] |
+| F04 model alias / revision | P | 当前pricing SSR目录列Qwen/Qwen2.5-72B-Instruct及contextLen32768；API DeepSeekV4例子独立。 | 当前目录不认证actual serving/weight revision，operator不是DashScope。 | [SF6][SF6]、[SF1][SF1]、[SF3][SF3] |
+| F05 角色 | P | China Chat例子含system/user/assistant，tools例子仍为hosted DeepSeekV4。 | exact Qwen tool/developer/角色白名单未取得，不跨hosted型号推广。 | [SF1][SF1] |
+| F06 ToolChoice | P | China API例子tool_choice=auto、function tools及enum参数例子。 | exact Qwen none/required/specific/strict未取得，例子非全型号保证。 | [SF1][SF1] |
 | F07 Tool 往返 | P | API 有该 hosted DeepSeek 的 Tool 示例。 | exact Qwen/所选模型mode 的 call/result 往返未闭合。 | [SF1][SF1]、[SF2][SF2]、V2 |
-| F08 并行 Tool | U | 本轮已读摘要未冻结该字段的可用值。 | 补 exact hosted model/mode 的并行参数和数量/返回配对约束。 | [SF1][SF1] |
+| F08 并行 Tool | U | 未取得hosted Qwen/Qwen2.5-72B-Instruct的parallel控制/数量正文事实。 | SF1通用tools及其他型号例子不证明该Qwen，需operator/model补证；不继承DashScope。 | [SF1][SF1]、[SF6][SF6] |
 | F09 Schema / JSON | P | API 列 json_object/json_schema；JSON guide 示例实际为 json_object。 | 标题/总表不证明 exact 模型 strict Schema/enforcement。 | [SF1][SF1]、[SF4][SF4]、[SF2][SF2]、V2 |
 | F10 thinking / context 续传 | P | enable_thinking 泛称多数推理模型；effort 对 V4-Flash 举high/max。 | 没有 exact V4/Qwen false=off 映射；standard text 不能宣称默认off，continuation另验。 | [SF1][SF1]、[SF5][SF5]、[SF2][SF2]、V2 |
 | F11 stream / cancellation | P | stream 示例分 reasoning_content/content 及 [DONE]。 | 所选 model nonstream/stream差异、取消后 usage/charge未冻结。 | [SF3][SF3]、[SF2][SF2] |
 | F12 usage / cache / reasoning | P | API 示例 prompt/completion/total、reasoning/cache tokens；max_tokens不包含 reasoning。 | 样例不能证明 exact Qwen/mode用量；total/reasoning预算关系与未知分项保持unresolved。 | [SF1][SF1]、[SF2][SF2] |
-| F13 error / retry / rate | P | API 有 HTTP/business/rate-limit 示例；专门error/index直读失败如实记录。 | 账户RPM/TPM、完整错误语义/retry未冻结；不从本地256/8限额造vendor quota。 | [SF1][SF1]、[SF2][SF2]、[MX][MX] |
-| F14 价格 / 时间窗 | P | pricing可见文本仅部分model集合。 | 所选完整ID的价格/cache/时间窗未取得；未见Qwen2.5不能推断停售。 | [SF6][SF6]、V2 |
-| F15 账户数据控制 | U | 本轮已读摘要未冻结该字段的可用值。 | 补China账户日志/retention/training/地域；不继承direct DeepSeek/DashScope政策。 | [SF1][SF1] |
+| F13 error / retry / rate | P | API列400/401/403/404/429/503/504；429例子TPM，503有business50505；旧error/index失败保留。 | selected账号RPM/TPM与完整retry未知，本地预算不是vendor quota。 | [SF1][SF1] |
+| F14 价格 / 时间窗 | P | 当前SSR同一Qwen/Qwen2.5-72B-Instruct的prompt和completion价格均¥4.13/M tokens，关联model price references。 | 目录数值非actual账单；cache/idle/账户优惠未取得。 | [SF6][SF6] |
+| F15 账户数据控制 | P | 2026-07-30 policy：API业务input/output仅推理短时处理、不长期存储/训练，结束销毁或不可恢复；记录IP/model/token/time/status和安全审查。 | 法律/特定产品/技术支持例外保留；metadata期限/actual合同未知，旧/privacy缓存非当前政策。 | [SF7][SF7] |
 
 ## ByteDance / Ark / BytePlus
 
 | 字段 | 状态 | 已冻结的有限事实 | unresolved / 后续核验 | 来源 |
 |---|---|---|---|---|
-| F01 endpoint / API surface | P | Chat/Responses；中国Volcengine与BytePlus分开；搜索回执有Singapore origin。 | 部分HTTP200为普通页/正文不完整；所选exact API surface还需强原源核验。 | [A1][A1]、[A2][A2]、[A3][A3]、[MX][MX]、V1 |
-| F02 认证 | P | Key 或Access Key签名；签名model须Endpoint ID；所选BytePlus示例为Bearer。 | 不能从Bearer示例推广所有签名部署或中国账户。 | [A1][A1]、[A3][A3]、V1、[MX][MX] |
-| F03 访问区域 / 部署区域 | P | BytePlus示例Singapore access，非中国endpoint证据。 | deployment/processing region与账户数据地域仍unknown。 | [A3][A3]、V1 |
-| F04 model alias / revision | P | 官方搜索回执示例 seed-2-0-lite-260228。 | 来源质量为search/extracted；observed ID、revision与账户serving未认证。 | [A3][A3]、V1 |
-| F05 角色 | U | 本轮已读摘要未冻结该字段的可用值。 | 补所选Chat/Responses角色规则，不能以compatible字样猜映射。 | [A2][A2] |
-| F06 ToolChoice | U | 本轮已读摘要未冻结该字段的可用值。 | 补exact model/off的Tool choice与strict支持。 | [A4][A4] |
-| F07 Tool 往返 | U | 本轮已读摘要未冻结该字段的可用值。 | Tool页有收集入口，但所选off组合完整往返未由摘要冻结。 | [A4][A4] |
-| F08 并行 Tool | U | 本轮已读摘要未冻结该字段的可用值。 | 补exact endpoint/model/mode的parallel规则。 | [A4][A4] |
-| F09 Schema / JSON | P | Schema按model约束。 | selected model的keyword/JSON/remote strict组合未闭合；HTTP200不是事实值。 | [A5][A5]、[MX][MX]、V1 |
-| F10 thinking / context 续传 | P | 搜索示例包含thinking.disabled；encrypted/content/provider-state续传语义分开。 | 不推广至其他endpoint/型号；思考/加密续传尚待独立契约。 | [A3][A3]、[MX][MX]、V1 |
-| F11 stream / cancellation | U | 本轮已读摘要未冻结该字段的可用值。 | 补所选surface事件和取消后终态/usage/charge，不能复制OpenAI stream。 | [A2][A2] |
-| F12 usage / cache / reasoning | U | 本轮已读摘要未冻结该字段的可用值。 | 补usage/cache/reasoning字段与上限/总量，来源正文不完整处保持unresolved。 | [A2][A2] |
-| F13 error / retry / rate | U | 本轮已读摘要未冻结该字段的可用值。 | 补exact服务错误/retry/rate；明确拒绝fallback不证明账户阈值。 | [A1][A1]、[A2][A2] |
-| F14 价格 / 时间窗 | U | 本轮已读摘要未冻结该字段的可用值。 | 从官方导航定位exact endpoint/model/region的价格/cache/时间窗。 | [A1][A1] |
-| F15 账户数据控制 | U | 本轮已读摘要未冻结该字段的可用值。 | 补中国或BytePlus所选账户retention/training/地域/日志；两服务不共享默认承诺。 | [A1][A1] |
+| F01 endpoint / API surface | D | BytePlus Chat实际HTML内MDContent明确api/v3/chat/completions，函数示例origin ark.ap-southeast.bytepluses.com。 | 此前JS/search局限本轮正文补强；Responses/中国Volcengine另绑。 | [A2][A2]、[A4][A4] |
+| F02 认证 | P | BytePlus函数正文例子Bearer Key访问Singapore Chat；中国/Access-Key签名另列。 | 不推广全部签名Endpoint ID/中国账户/其他surface权限。 | [A2][A2]、[A4][A4]、[A1][A1] |
+| F03 访问区域 / 部署区域 | P | BytePlus例子Singapore access；Data Processing正文列部署/处理可在Malaysia、Indonesia及EU/EEA，content-filter触发内容另存Malaysia。 | access/推理deployment/安全存储不同，actual region/策略未知，中国Ark不继承。 | [A4][A4]、[A8][A8] |
+| F04 model alias / revision | P | 函数正文例子seed-2-0-lite-260228；Chat按该及后续version区分encrypted_content。 | 本轮有entity/嵌入MD hash，仍非actual serving/immutable weights/权限。 | [A2][A2]、[A4][A4] |
+| F05 角色 | D | BytePlus Chat定义system/user/assistant/tool四类，tool须tool_call_id。 | 仅Chat正文形状，不复制为Responses developer。 | [A2][A2] |
+| F06 ToolChoice | P | BytePlus Chat列none/auto/required/指定function；required一或多call，默认无tools为none、有tools为auto。 | exact seed2lite off/strict须模型表与远端另验。 | [A2][A2] |
+| F07 Tool 往返 | P | tool结果须附模型生成的同一tool_call_id，client执行并回传。 | 全部call配对/错误终态/selected off Session边界待验，例子不授本地执行资格。 | [A2][A2]、[A4][A4] |
+| F08 并行 Tool | P | parallel_tool_calls默认true；false限制至多一call，guide明确仅模型支持该控制时成立。 | selected seed2lite/模式控制与返回上限分别核验。 | [A2][A2]、[A4][A4] |
+| F09 Schema / JSON | P | Chat列text/json_object/json_schema；strict默认false，true遵schema，但有model/beta边界。 | selected keyword/enforcement待核；Schema guide未提正文，不把HTTP200当通过。 | [A2][A2]、[A5][A5] |
+| F10 thinking / context 续传 | P | Chat有thinking enabled/disabled/auto，支持/默认依模型；encrypted_content与reasoning_content续传不同。 | selected off及加密/明文历史独立，参数存在不证明全型号off。 | [A2][A2]、[A3][A3] |
+| F11 stream / cancellation | P | Chat SSE以[DONE]终止；chunk_include_usage=true可给每chunk累计usage，另有最终usage选项。 | 累计值不能逐chunk相加，取消/断连final charge未知。 | [A2][A2] |
+| F12 usage / cache / reasoning | P | usage total=input+output；prompt细分cached、completion细分reasoning；max_tokens管答案，max_completion_tokens管reasoning+答案。 | 缺失/失败/取消unknown，预算不重复加或忽略reasoning。 | [A2][A2] |
+| F13 error / retry / rate | P | model activation按account/base model共用RPM/TPM，endpoint可另设限额；同base多个endpoint不增加quota。 | actual额度、完整错误/retry/failed charge待核。 | [A6][A6]、[A2][A2] |
+| F14 价格 / 时间窗 | P | BytePlus standard seed-2-0-lite-260228 prompt≤128k USD/1M input0.25/cache0.05/output2，cache storage0.0083/M tokens/hour；更长tier另价。 | Flex/Batch另价，actual service tier/账单未知，不推广中国Ark/视频折扣。 | [A11][A11] |
+| F15 账户数据控制 | P | BytePlus terms默认不训练Customer Data（opt-in另定）；content filter触发input/output在Malaysia存180天，中国条款独立。 | 非所有请求180天/全部数据零留存；actual过滤/合同/安全例外未查。 | [A7][A7]、[A8][A8]、[A9][A9] |
 
 ## OpenRouter
 
@@ -249,18 +249,18 @@
 | F01 endpoint / API surface | D | gateway Chat /api/v1/chat/completions；Responses另列，operator仍OpenRouter。 | 本条为日期化文档事实；实际账户/远端结果另验。 | [OR1][OR1]、[OR2][OR2]、[MX][MX] |
 | F02 认证 | D | Bearer OpenRouter Key；不能替代原厂Key/身份。 | 本条为日期化文档事实；实际账户/远端结果另验。 | [OR1][OR1]、[MX][MX] |
 | F03 访问区域 / 部署区域 | P | base upstream slug可匹配多区域/变体；metadata.region不是upstream部署地域。 | available upstream信息之外保持unknown，整个chain地域未认证。 | [OR2][OR2]、[OR3][OR3]、[OR4][OR4] |
-| F04 model alias / revision | P | 官方例子请求openai/gpt-5.2；model页列Text/Tool/format与OpenAI/Azure供应方。 | model/alias/revision/actual upstream不由slug认证；默认model必须显式处理。 | [OR1][OR1]、[OR5][OR5]、V2 |
-| F05 角色 | U | 本轮已读摘要未冻结该字段的可用值。 | 补所选gateway/model roles与转换政策；compatible不等于原厂role全支持。 | [OR1][OR1] |
-| F06 ToolChoice | P | require_parameters可过滤不支持参数的供应方；默认可能忽略参数。 | ToolChoice仍依exact upstream/mode，不能由gateway字段存在声明支持。 | [OR2][OR2] |
+| F04 model alias / revision | P | 当前openai/gpt-4.1-mini页列OpenAI/Azure及价格；旧gpt5.2为另个文档例子。 | slug非actual upstream/revision/region认证，不从列表替换profile。 | [OR12][OR12]、[OR5][OR5]、[OR2][OR2] |
+| F05 角色 | P | gateway Chat消息类型user/assistant/system及tool(tool_call_id)，非OpenAI model的name可前缀转换。 | selected upstream角色/developer转换未证，不宣称原厂全支持。 | [OR1][OR1] |
+| F06 ToolChoice | P | gateway ToolChoice类型none/auto/指定function；require_parameters=true过滤不支持参数的provider，默认可能忽略。 | required/strict依selected upstream另证，不复制别gateway型号。 | [OR1][OR1]、[OR2][OR2] |
 | F07 Tool 往返 | P | API有工具转换行为，metadata可报告pipeline。 | 完整所选Tool/result/转换规则须冻结；本最小text资料不证明Tool闭合。 | [OR1][OR1]、[OR3][OR3] |
-| F08 并行 Tool | U | 本轮已读摘要未冻结该字段的可用值。 | 补exact upstream/model并行Tool与gateway转换关系。 | [OR1][OR1] |
+| F08 并行 Tool | U | 未取得openai/gpt-4.1-mini所选upstream的parallel控制/gateway转换数量保证。 | OR1通用Tool/OR2过滤不能替upstream型号并行文档；需selected route独立补证。 | [OR1][OR1]、[OR2][OR2]、[OR12][OR12] |
 | F09 Schema / JSON | P | gateway Schema/Tool能力依upstream。 | selected model的strict/keyword/JSON enforcement未由总表认证。 | [OR6][OR6]、[MX][MX] |
 | F10 thinking / context 续传 | P | effort=none是否适用依模型；exclude=true仅隐藏；mandatory reasoning会拒none。 | 不得从非推理benchmark标签推off；context continuation须exact冻结。 | [OR7][OR7]、V2 |
-| F11 stream / cancellation | U | 本轮已读摘要未冻结该字段的可用值。 | stream页已收集；补gateway/upstream事件、取消后charge/usage与错误状态。 | [OR8][OR8] |
-| F12 usage / cache / reasoning | P | cache-hit回复省略router metadata。 | usage/cache/reasoning计数和完整route观察不由普通model envelope闭合。 | [OR3][OR3]、[OR1][OR1] |
-| F13 error / retry / rate | P | 默认router/fallback；allow_fallbacks=false禁fallback，require_parameters=true过滤不支持参数；空交集失败。 | error页有入口；账户rate、失败charge/retry仍待冻结，不允许隐式fallback补证。 | [OR2][OR2]、[OR9][OR9] |
-| F14 价格 / 时间窗 | U | 本轮已读摘要未冻结该字段的可用值。 | 补所选gateway slug、upstream与cache/reasoning单价/时间窗；model列表不等于账户账单。 | [OR5][OR5] |
-| F15 账户数据控制 | P | gateway与upstream数据政策独立；ZDR/data_collection偏好不建立整个chain retention/region保证。 | actual账户policy与上游unknown必须显式处理；reported metadata不是weights/privacy认证。 | [OR4][OR4]、[OR10][OR10]、[OR11][OR11] |
+| F11 stream / cancellation | P | SSE有comment keepalive，最终[DONE]前usage chunk含非空choices/重复finish_reason；midstream rate可SSE error/finish_reason=error。 | 取消计费/usage未知，HTTP200不排除中途失败，不照搬OpenAI空choices。 | [OR1][OR1]、[OR8][OR8]、[OR13][OR13] |
+| F12 usage / cache / reasoning | P | native tokenizer计数，prompt+completion=total，cache-read/write与reasoning可选子项，cost_details可分BYOK upstream。 | cache hit省router metadata仍保留；cost不是identity证据，unknown不填0。 | [OR1][OR1]、[OR3][OR3]、[OR14][OR14] |
+| F13 error / retry / rate | P | 402为credit、429可gateway或upstream rate；platform错误可有X-RateLimit-*，Retry-After有条件返回。 | 默认gateway fallback仍须显式关；actual限额/failed charge未知，未访问Key查询端点。 | [OR13][OR13]、[OR9][OR9]、[OR2][OR2] |
+| F14 价格 / 时间窗 | P | openai/gpt-4.1-mini USD/1M input0.40/output1.60/cache read0.10；gateway价格按provider列。 | actual route/upstream/账单/其他费用未核，未取得通用idle价。 | [OR12][OR12] |
+| F15 账户数据控制 | P | gateway自身prompt retention默认关（opt-in另定），upstream日志/训练另有条款，ZDR路由为独立控制。 | actual账号logging/ZDR/upstream政策未验，不合并承诺。 | [OR10][OR10]、[OR4][OR4]、[OR11][OR11] |
 
 ## 企业服务的独立边界
 
@@ -272,13 +272,15 @@
 
 ## 来源强度与补证顺序
 
-MX 为 [既有官方矩阵](OFFICIAL_MATRIX.md)，保留 R1/R2/R3 收集回执及官方原页 hash。V1 为 2026-10-02 逐家 profile source-facts 摘要：snapshot/搜索回执与结构检查分开，exact model 例子不等于账户运行；V2 为同日 Google/SiliconFlow/OpenRouter 独立补证摘要。V1/V2 的本地记录 hash 在本次文档回执中冻结，具体事实的官方链接列在各行。来源代号表示出处，不把 local record hash 冒充原始 HTTP body hash。
+MX 为 [既有官方矩阵](OFFICIAL_MATRIX.md)，保留 R1/R2/R3 收集回执及官方原页 hash。V1 为 2026-10-02 逐家 profile source-facts 摘要：snapshot/搜索回执与结构检查分开，exact model 例子不等于账户运行；V2 为同日 Google/SiliconFlow/OpenRouter 独立补证摘要。V1/V2 hash为既有摘要保留的记录身份，R4未重新认证其原始记录；本轮新增事实按实际官方正文与独立回执补强，链接列在各行。来源代号表示出处，不把 local record hash 冒充原始 HTTP body hash。
 
 来源记录身份：V1（public-vendor-candidate-source-facts，observed 2026-10-02）SHA-256：`e6e3a74fb8a14bd933abcd6b911ae99658df7e0c8a198d9902fef332155342fa`；V2（local-vendor-gap-preparation，retrieved 2026-10-02）SHA-256：`82f235e922cc459d21ff6d72463cef5b10b6b516255bd0bbb2a55356e1d3a9a5`。这些是有限事实记录的 hash，非对应官方原页 body hash。
 
-Google models/deprecations 有独立 raw/extracted hash；Gemma、部分 Ark 与 OpenRouter补证保留 dated extracted/search 事实，未取得强原始正文的字段如实保留该限制。SiliconFlow API raw/extracted 收集与专门 error/index 抓取失败分开；来源失败不代表能力缺失。本轮不读取全部 rawdocs，也不把后续新候选代码或新检索写为已接受事实。
+R4为本轮官方公开补核：原表/源矩阵各有保留副本。实际document GET保存实体bytes、状态/finalURL、encoding、SHA-256；派生text/BytePlus嵌入MD另hash。web可见结果原样保存，摘要/搜索结果绝不生成或冒充原bodySHA。DeepSeek八份文档实体均取得；BytePlus此前JS/search限制通过实体中的MDContent正文补强。原404/timeout/错误导航保留，失败不代表能力缺失。
 
-下一次资料采集先选择 exact endpoint/model/mode，再集中核对表中 P/U：角色和 Tool choice/往返/并行、Schema keyword 与远端 enforcement、思考/签名续传、取消/失败 usage 与账户 rate，以及 pricing/time/account data。可复用已冻结 snapshot 的字段提取；需更新或缺页时另行有界获取官方来源并保存日期、质量与原始/提取 hash。账户权限和实际费用另有 live/账单证据，不能用文档填成实测。
+本轮source pins、逐字段变更/未决与检查回执在隔离执行archive，公开文档只用官方HTTP URL/同目录相对链接。正文hash、派生摘录、web可见输出是不同证据层，资料取得不等于远端能力通过。未取得平台全量导出仍有capture-gap。
+
+后续优先绑定exact surface/model/mode：DeepSeek Responses独立strict/Schema keyword表、各型号并行Tool控制、signature/加密续传、取消/失败usage/charge、实际账户tier/地域/合同依各行补核。账户条件未知不表示公共政策缺失，不一概强设为所有合成测试gate。本次不更改实现model/profile、Task接受、live资格或全目标状态。
 
 OpenRouter 的 full endpoint slug 在要求具体 upstream 变体时才有相应观察要求；[计划](PLAN.md)允许不可得 upstream identity 保持 unknown，旧补证中的强 upstream/region 方案属于提案。无论采用何种最低 TEXT profile，都不能隐式获得 Router/fallback/retry 或把 reported metadata当认证；gateway 与 upstream 数据控制也不合并。
 
@@ -366,3 +368,47 @@ OpenRouter 的 full endpoint slug 在要求具体 upstream 变体时才有相应
 [OR9]: https://openrouter.ai/docs/api_reference/errors-and-debugging "OpenRouter errors"
 [OR10]: https://openrouter.ai/docs/guides/privacy/data-collection "OpenRouter data collection"
 [OR11]: https://openrouter.ai/docs/guides/features/zdr "OpenRouter ZDR"
+
+[O6]: https://developers.openai.com/api/docs/guides/function-calling "OpenAI function calling"
+[O7]: https://developers.openai.com/api/docs/guides/your-data "OpenAI your data"
+[O8]: https://developers.openai.com/api/docs/guides/rate-limits "OpenAI rate limits"
+[O9]: https://developers.openai.com/api/docs/pricing "OpenAI pricing"
+[O10]: https://developers.openai.com/api/docs/models/gpt-4o-mini "OpenAI GPT-4o-mini model card"
+[AN7]: https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools "Anthropic define tools"
+[AN8]: https://platform.claude.com/docs/en/api/rate-limits "Anthropic rate limits"
+[AN9]: https://platform.claude.com/docs/en/about-claude/pricing "Anthropic pricing"
+[AN10]: https://privacy.claude.com/en/articles/7996866-how-long-do-you-store-my-organization-s-data "Anthropic commercial retention"
+[AN11]: https://platform.claude.com/docs/en/manage-claude/api-and-data-retention "Anthropic API data retention"
+[AN12]: https://platform.claude.com/docs/en/agents-and-tools/tool-use/parallel-tool-use "Anthropic parallel tools"
+[AN13]: https://platform.claude.com/docs/en/api/messages.md "Anthropic Messages raw documentation"
+[G11]: https://ai.google.dev/gemini-api/docs/pricing "Gemini pricing"
+[G12]: https://ai.google.dev/gemini-api/docs/rate-limits "Gemini rate limits"
+[G13]: https://ai.google.dev/gemini-api/terms "Gemini API terms"
+[G14]: https://ai.google.dev/gemini-api/docs/function-calling "Google function calling with surface boundary"
+[G15]: https://ai.google.dev/gemini-api/docs/available-regions "Google available regions"
+[G16]: https://ai.google.dev/api/caching#FunctionCallingConfig "Native FunctionCallingConfig reference"
+[DS10]: https://api-docs.deepseek.com/api/list-models/ "DeepSeek models metadata reference only"
+[DS11]: https://cdn.deepseek.com/policies/en-US/deepseek-privacy-policy.html "DeepSeek privacy policy"
+[Q8]: https://www.alibabacloud.com/help/en/model-studio/rate-limit "Model Studio rate limits"
+[Q9]: https://www.alibabacloud.com/help/en/model-studio/model-pricing "Model Studio pricing"
+[Q10]: https://www.alibabacloud.com/help/en/model-studio/faq-about-alibaba-cloud-model-studio "Model Studio FAQ data training"
+[Z9]: https://docs.z.ai/guides/overview/pricing "Z.AI pricing"
+[Z10]: https://chat.z.ai/legal-agreement/terms-of-service "Z.AI terms API section"
+[Z11]: https://chat.z.ai/legal-agreement/privacy-policy "Z.AI privacy and API DPA"
+[K10]: https://platform.kimi.ai/docs/pricing/chat "Kimi international prices"
+[K11]: https://platform.kimi.ai/docs/pricing/limits "Kimi tier rate limits"
+[K12]: https://platform.kimi.ai/docs/agreement/userprivacy "Kimi international privacy"
+[K13]: https://platform.kimi.ai/docs/agreement/modeluse "Kimi Model Use terms"
+[M6]: https://platform.minimax.io/docs/guides/rate-limits "MiniMax rate limits"
+[M7]: https://platform.minimax.io/docs/guides/pricing-paygo "MiniMax PAYG prices"
+[M8]: https://platform.minimax.io/protocol/privacy-policy "MiniMax privacy"
+[M9]: https://platform.minimax.io/protocol/paid-agreement "MiniMax paid terms"
+[SF7]: https://docs.siliconflow.cn/docs/legals/privacy-policy "SiliconFlow policy 2026-07-30"
+[A6]: https://docs.byteplus.com/en/docs/modelark/1159200 "BytePlus model activation rate limits"
+[A7]: https://docs.byteplus.com/en/docs/legal/docs-service-specific-terms "BytePlus service terms"
+[A8]: https://docs.byteplus.com/zh-CN/docs/ModelArk/BytePlus_ModelArk_Data_Processing "BytePlus ModelArk data processing"
+[A9]: https://docs.volcengine.com/docs/ark/volcengine-ark-platform-terms?lang=zh "China Ark platform terms"
+[A11]: https://docs.byteplus.com/en/docs/modelark/1099320 "BytePlus Pricing embedded document"
+[OR12]: https://openrouter.ai/openai/gpt-4.1-mini "OpenRouter GPT-4.1-mini prices"
+[OR13]: https://openrouter.ai/docs/api_reference/limits "OpenRouter credit rate limits"
+[OR14]: https://openrouter.ai/docs/cookbook/administration/usage-accounting "OpenRouter usage accounting"

@@ -235,7 +235,7 @@ def compile_baseline_envelope(
     document = {
         "schema_version": "0.1.0",
         "record_kind": KIND,
-        "version": "1.1.0" if configured else "1.0.0",
+        "version": ("1.2.0" if provider_manifest["version"] == "1.1.0" else "1.1.0") if configured else "1.0.0",
         "envelope_id": envelope_id,
         "provider_visible_payload": payload,
         "transport_enforcement_metadata": {

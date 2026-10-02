@@ -5,9 +5,11 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from research_workbench.adapters.models.conformance_body import ConformanceBodyPolicy, prepare_body_admission
 from research_workbench.adapters.models.conformance_journal import ConformanceUsageJournal
 from research_workbench.adapters.models.conformance_transport import GuardedConformanceTransport, ConformanceTransportError
 from research_workbench.adapters.models.http import HttpRequest, HttpResponse
+from tests.test_conformance_body import synthetic_request
 
 
 class FakeDelegate:
@@ -149,6 +151,66 @@ class ConformanceTransportTests(unittest.TestCase):
         with self.assertRaises(ConformanceTransportError):
             transport.preinvoke()
         self.assertEqual(self.delegate.requests, [])
+
+    def test_explicit_model_request_guard_mutation_refuses_before_intent(self):
+        model = synthetic_request()
+        def guard(stage, ordinal):
+            model.tools[0].input_schema["properties"]["a"]["enum"][0] = 9
+            return True
+        bounded = GuardedConformanceTransport(self.delegate, self.journal, guard, deadline=15, clock=self.clock,
+                                              body_policy=ConformanceBodyPolicy(max_output_tokens=32))
+        handle = self.journal.reserve(input_upper_tokens=100, output_upper_tokens=32)
+        bounded.arm(handle, body_phase="specific-tool", model_request=model)
+        with self.assertRaises(ConformanceTransportError):
+            bounded.preinvoke()
+        self.assertFalse(bounded.intent_attempted)
+        self.assertEqual(0, self.journal.snapshot()["durable_send_intents"])
+        self.assertEqual([], self.delegate.requests)
+
+    def test_actual_body_guard_mutation_refuses_without_reading_headers(self):
+        model = synthetic_request()
+        policy = ConformanceBodyPolicy(max_output_tokens=32)
+        body = prepare_body_admission(policy, "specific-tool", model).expected_body
+        class OpaqueHeaders:
+            def __iter__(self):
+                raise AssertionError("must not read headers")
+        request = HttpRequest("POST", "https://synthetic.invalid", OpaqueHeaders(), body)
+        def guard(stage, ordinal):
+            if stage == "send":
+                object.__setattr__(request, "body", b'{}')
+            return True
+        bounded = GuardedConformanceTransport(self.delegate, self.journal, guard, deadline=15, clock=self.clock, body_policy=policy)
+        handle = self.journal.reserve(input_upper_tokens=100, output_upper_tokens=32)
+        bounded.arm(handle, body_phase="specific-tool", model_request=model)
+        bounded.preinvoke()
+        with self.assertRaises(ConformanceTransportError):
+            bounded.send(request)
+        self.assertFalse(bounded.intent_attempted)
+        self.assertEqual(0, self.journal.snapshot()["durable_send_intents"])
+        self.assertEqual([], self.delegate.requests)
+
+    def test_policy_removal_by_guard_cannot_downgrade_explicit_admission(self):
+        model = synthetic_request()
+        def guard(stage, ordinal):
+            object.__setattr__(bounded, "_body_policy", None)
+            object.__setattr__(bounded, "_body_policy_pin", None)
+            return True
+        bounded = GuardedConformanceTransport(self.delegate, self.journal, guard, deadline=15, clock=self.clock,
+                                              body_policy=ConformanceBodyPolicy(max_output_tokens=32))
+        handle = self.journal.reserve(input_upper_tokens=100, output_upper_tokens=32)
+        bounded.arm(handle, body_phase="specific-tool", model_request=model)
+        with self.assertRaises(ConformanceTransportError):
+            bounded.preinvoke()
+        self.assertFalse(bounded.intent_attempted)
+        self.assertEqual([], self.delegate.requests)
+
+    def test_explicit_body_cannot_exceed_reserved_output_limit(self):
+        bounded = GuardedConformanceTransport(self.delegate, self.journal, self.guard, deadline=15, clock=self.clock,
+                                              body_policy=ConformanceBodyPolicy(max_output_tokens=32))
+        handle = self.journal.reserve(input_upper_tokens=100, output_upper_tokens=16)
+        with self.assertRaises(ConformanceTransportError):
+            bounded.arm(handle, body_phase="specific-tool", model_request=synthetic_request())
+        self.assertFalse(bounded.intent_attempted)
 
 
 if __name__ == "__main__":

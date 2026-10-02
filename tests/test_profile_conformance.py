@@ -1,15 +1,18 @@
 """Three-call fake profile driver, privacy and durable failures; no env/Key I/O."""
 
 import json
+from dataclasses import replace
 import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
 from research_workbench.adapters.models.conformance_journal import ConformanceUsageJournal
+from research_workbench.adapters.models.conformance_body import ConformanceBodyPolicy
+from research_workbench.adapters.models.port import ContentBlock, Message
 from research_workbench.adapters.models.http import HttpResponse
 from research_workbench.adapters.models.profile_configuration import ProviderAdapterConfigV2
-from research_workbench.adapters.models.profile_conformance import profile_conformance_plan, run_profile_conformance
+from research_workbench.adapters.models.profile_conformance import ProfileConformanceError, profile_conformance_plan, run_profile_conformance
 from tests import test_configured_provider as configured_helpers
 
 
@@ -24,6 +27,7 @@ class NativeSequence:
         self.unknown_usage = False
         self.identity_drift = False
         self.bad_money = False
+        self.first_text = ""
 
     def send(self, request):
         self.requests.append(request)
@@ -41,6 +45,9 @@ class NativeSequence:
         if phase == 1:
             document["output"] = [{"type": "function_call", "status": "completed", "call_id": "synthetic-private-call-id",
                 "name": "add_ints", "arguments": '{"a":3,"b":4}'}]
+            if self.first_text:
+                document["output"].insert(0, {"type": "message", "role": "assistant", "status": "completed",
+                    "content": [{"type": "output_text", "text": self.first_text}]})
         else:
             text = ("8" if self.bad_text else "7") if phase == 2 else ('{"sum":8}' if self.bad_schema else '{"sum":7}')
             document["output"] = [{"type": "message", "role": "assistant", "status": "completed",
@@ -91,6 +98,126 @@ class ProfileConformanceTests(unittest.TestCase):
         self.assertFalse(plan["live_qualified"])
         self.assertEqual(self.helper.credential.resolutions, 0)
         self.assertEqual(self.helper.credential.presence_checks, 0)
+
+    def test_explicit_body_policy_three_phases_with_bound_first_response_text(self):
+        self.transport.first_text = "Adding two synthetic integers."
+        report = self.run_driver(body_policy=ConformanceBodyPolicy(max_output_tokens=32))
+        self.assertEqual("completed", report["stop_code"])
+        self.assertEqual(3, self.helper.credential.resolutions)
+        self.assertEqual(3, report["accounting"]["durable_send_intents"])
+        self.assertFalse(report["live_qualified"])
+        second = json.loads(self.transport.requests[1].body)
+        self.assertIn({"role": "assistant", "content": self.transport.first_text}, second["input"])
+        self.assertNotIn(self.transport.first_text, json.dumps(report))
+
+    def test_explicit_body_phase_uses_local_index_after_failed_attempt(self):
+        policy = ConformanceBodyPolicy(max_output_tokens=32)
+        self.transport.bad_text = True
+        failed = self.run_driver(body_policy=policy)
+        self.assertEqual("text-assertion-failed", failed["stop_code"])
+        self.assertEqual(2, len(self.transport.requests))
+        self.transport = NativeSequence(self.transport.model)
+        report = self.run_driver(body_policy=policy, repair_refreeze_confirmed=True)
+        self.assertEqual("completed", report["stop_code"])
+        self.assertEqual(35, report["accounting"]["known_total_tokens"])
+        first = json.loads(self.transport.requests[0].body)
+        self.assertEqual({"type": "function", "name": "add_ints"}, first["tool_choice"])
+        self.assertIn(("preinvoke", 3), self.guard_stages)
+        self.assertEqual(5, self.helper.credential.resolutions)
+
+    def test_capture_triggered_history_text_mutation_stops_without_second_key_or_intent(self):
+        from research_workbench.adapters.models.profile_conformance import _BudgetedProvider
+        capture_observed = []
+        original = _BudgetedProvider.generate
+        def retain(provider, request):
+            if len(provider.calls) == 1 and capture_observed:
+                assistant = request.messages[1]
+                # Simulate a local side effect after the summary callback:
+                # actual next prepared history gained text absent from the
+                # same first validated response. The sink receives no raw data.
+                changed = replace(assistant, content=(ContentBlock("text", text="new unbound text"), *assistant.content))
+                request = replace(request, messages=(request.messages[0], changed, request.messages[2]))
+            return original(provider, request)
+        class MutatingCapture:
+            conformance_summary_version = "1.0.0"
+            def record(sink, kind, payload):
+                if kind == "tool-context-summary":
+                    capture_observed.append(True)
+        with patch.object(_BudgetedProvider, "generate", retain):
+            report = self.run_driver(body_policy=ConformanceBodyPolicy(max_output_tokens=32), event_sink=MutatingCapture())
+        self.assertNotEqual("completed", report["stop_code"])
+        self.assertEqual(1, self.helper.credential.resolutions)
+        self.assertEqual(1, report["accounting"]["durable_send_intents"])
+        self.assertEqual(7, report["accounting"]["known_total_tokens"])
+
+    def test_oversize_first_response_text_stops_with_known_usage_and_no_second_send(self):
+        self.transport.first_text = "x" * 129
+        report = self.run_driver(body_policy=ConformanceBodyPolicy(max_output_tokens=32))
+        self.assertEqual("transport-protocol-failed", report["stop_code"])
+        self.assertEqual(1, self.helper.credential.resolutions)
+        self.assertEqual(1, len(self.transport.requests))
+        self.assertEqual(7, report["accounting"]["known_total_tokens"])
+
+    def test_wrong_prepared_request_rejects_before_first_credential(self):
+        from research_workbench.adapters.models.profile_conformance import _BudgetedProvider
+        original = _BudgetedProvider.generate
+        def altered(provider, request):
+            return original(provider, replace(request, messages=(Message("user", (ContentBlock("text", text="unbound"),)),)))
+        with patch.object(_BudgetedProvider, "generate", altered):
+            report = self.run_driver(body_policy=ConformanceBodyPolicy(max_output_tokens=32))
+        self.assertEqual("transport-protocol-failed", report["stop_code"])
+        self.assertEqual(0, self.helper.credential.resolutions)
+        self.assertEqual(0, report["accounting"]["durable_send_intents"])
+        self.assertEqual([], self.transport.requests)
+
+    def test_other_vendor_is_rejected_before_credential_or_attempt(self):
+        helper = configured_helpers.ConfiguredProviderTests()
+        helper.setUp()
+        self.addCleanup(helper.doCleanups)
+        provider = helper.build("openai")
+        mapping = dict(provider.resolved_config)
+        mapping.pop("model")
+        mapping["model_selector"] = {"kind": "literal", "value": provider.model}
+        config = ProviderAdapterConfigV2.from_mapping(mapping)
+        report = run_profile_conformance(config, root=helper.root, journal=self.journal, transport=self.transport,
+            credential=helper.credential, guard=self.guard, input_upper_tokens=(100, 100, 100), max_output_tokens=32,
+            body_policy=ConformanceBodyPolicy(max_output_tokens=32))
+        self.assertEqual("transport-protocol-failed", report["stop_code"])
+        self.assertEqual(0, helper.credential.resolutions)
+        self.assertEqual([], report["accounting"]["attempts"])
+        self.assertEqual([], self.transport.requests)
+
+    def test_generation_mode_drift_is_rejected_before_credential_or_attempt(self):
+        import hashlib
+        document = json.loads(self.helper.profile_path.read_text(encoding="utf-8"))
+        document["generation"]["mode"] = "standard"
+        raw = json.dumps(document).encode()
+        self.helper.profile_path.write_bytes(raw)
+        mapping = self.config.to_mapping()
+        mapping["profile_ref"]["sha256"] = hashlib.sha256(raw).hexdigest()
+        config = ProviderAdapterConfigV2.from_mapping(mapping)
+        # DeepSeek generation policy already rejects this incompatible mode
+        # in the pure plan parser, before the explicit body policy is reached.
+        with self.assertRaises(ProfileConformanceError) as captured:
+            run_profile_conformance(config, root=self.helper.root, journal=self.journal, transport=self.transport,
+                credential=self.helper.credential, guard=self.guard, input_upper_tokens=(100, 100, 100), max_output_tokens=32,
+                body_policy=ConformanceBodyPolicy(max_output_tokens=32))
+        self.assertEqual("plan-blocked", captured.exception.code)
+        self.assertEqual(0, self.helper.credential.resolutions)
+        self.assertEqual([], self.journal.snapshot()["attempts"])
+
+    def test_send_guard_body_policy_drift_has_no_intent_or_extra_key(self):
+        policy = ConformanceBodyPolicy(max_output_tokens=32)
+        def guard(stage, ordinal):
+            if stage == "send":
+                object.__setattr__(policy, "max_body_bytes", 2048)
+            return True
+        report = self.run_driver(body_policy=policy, guard=guard)
+        self.assertEqual("transport-protocol-failed", report["stop_code"])
+        self.assertEqual(1, self.helper.credential.resolutions)
+        self.assertEqual(0, report["accounting"]["durable_send_intents"])
+        self.assertEqual(0, report["accounting"]["unresolved_reserved_tokens"])
+        self.assertEqual([], self.transport.requests)
 
     def test_complete_three_call_path_exact_history_and_redacted_report(self):
         report = self.run_driver()
