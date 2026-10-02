@@ -7,6 +7,7 @@ Provider/Session Task maintenance 保持黄毅，公共 Capability/View/DataPoli
 - [范围、接口与离线/live顺序](PLAN.md)：M6-009通用Key接入，M6-010首轮Flash；保留原M6-004。
 - [官方资料矩阵](OFFICIAL_MATRIX.md)：主流协议/认证/能力、模型/模式及明确未决；只有文档证据。
 - [Risk Ledger](RISK_LEDGER.md)：身份、凭据、费用、参数与Gate反例。
+- [实施预检](PREPARATION.md)：实际零调用碰撞、Session/probe 缺口、范围与预算更新。
 - [Task definition attempt](attempts/DEFINITION-001/TASK.md)、[验证](attempts/DEFINITION-001/CHECKS.md)、[交接](attempts/DEFINITION-001/HANDOFF.md)。
 
 Task状态与依赖以[TASKS](../../../TASKS.md)为准。Draft候选未合入前，develop仍只有现行已接受Task；

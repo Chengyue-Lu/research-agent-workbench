@@ -9,7 +9,7 @@ Docs-only candidate; no Provider product test, full/coverage, new live run or Hu
   "kind": "docs-only task-definition audit",
   "base": "1c9cef27983e93362be33830f989e124ad3ccc41",
   "source_task_sha256": "8e83f401c56afb9728feedb65ff2463abe0d433c3ab913f9960981660cf6363a",
-  "candidate_task_sha256": "4644b5eaadb02ee0a026da7bae4d73a3c5103ffc909478a5730b9a48952aab97",
+  "candidate_task_sha256": "a4360a95133b4e0bcbc017bae24528cb0cd94810f6dd632361ebfe43faa69719",
   "added": [
     "M6-009",
     "M6-010"
@@ -44,7 +44,7 @@ Docs-only candidate; no Provider product test, full/coverage, new live run or Hu
 
 ## Documentation/public check
 
-Python 3.11; existing tests.test_documentation + tests.test_public_surface. Log SHA-256 `6766306db3cc63a9df0da9bc053adf522d0587a4cf7d43de15e245cd9a0d284a`.
+Python 3.11; existing tests.test_documentation + tests.test_public_surface. Log SHA-256 `31f59f28a9dcc1caa8e638131f92a59dd9754560146ff4c30cf6943ab782a7cb`.
 
 ```text
 test_adr_numbers_are_unique (tests.test_documentation.DocumentationTests.test_adr_numbers_are_unique) ... ok
@@ -72,7 +72,7 @@ test_selected_source_has_closed_docs_and_build_inputs (tests.test_public_surface
 test_user_project_attempt_paths_are_not_repository_archive_links (tests.test_public_surface.PublicSurfaceTests.test_user_project_attempt_paths_are_not_repository_archive_links) ... ok
 
 ----------------------------------------------------------------------
-Ran 23 tests in 0.867s
+Ran 23 tests in 0.856s
 
 OK
 
@@ -85,3 +85,9 @@ Independent review found 3 shape + 2 Session requests exceeded accepted ADR-0007
 ## Exact-head governance
 
 Full PR metadata/topology/workstream/published-identity check is recorded against the published candidate commit in the PR/local receipt after commit; this file is not a self-referential exact-head attestation.
+
+## Preparation and budget follow-up
+
+User final API input+output ceiling is 10,000,000 tokens, failed calls included. Bounded independent definition review found no actionable blocker in binding/Session/probe scope and budget semantics; it reviewed a point-in-time uncommitted candidate, not a Human approval or final-head live attestation. Review SHA-256 `1769fec44c92c6187d308ab1295fb023bfaa076c02aa107ed4976b64672f3ab6`.
+
+Separate source-attested endpoint collision probe matched the loaded bytes of six explicitly selected modules to the base Git blobs and again observed different endpoints with equal binding, credential.resolve/send both zero. Receipt SHA-256 `61475a323e002f21d3cfa14323e452945df21f202579299192287d8c3802a139`. This is local preparation evidence, not new product conformance.

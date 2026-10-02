@@ -8,7 +8,8 @@ Task owner：黄毅；Capability/View/DataPolicy 与 M5 Evaluation 交界由路�
 
 用户要求最终以通用层接入主流 API Key，官方资料完整收集；首轮真实测试只使用 DeepSeek Flash，
 在北京时间 18:00 后对齐官方闲时价格。密钥已由用户交互存入本地凭据库，项目只引用凭据来源。
-该输入确定测试厂商、模型系列和时间下限；具体 exact model/profile、账户数据边界、预算与当前
+用户进一步允许为失败后的修复复验预留预算，累计 input+output tokens 不超过 10,000,000。
+该输入确定测试厂商、模型系列、时间下限与累计 token 上限；具体 exact model/profile、账户数据边界与当前
 implementation 的执行资格仍须冻结。它没有接受新的 Task、Scope/Skill/Pilot 或授权 merge。
 
 复用 [ADR-0003](../../../decisions/0003-PROVIDER-NEUTRAL-MODEL-PORT.md) 的 ModelProvider 端口与
@@ -50,6 +51,16 @@ M6-004 继续保存原 OpenAI 真实验收范围与 BLOCKED 事实。M5-008/M5-0
    只声明实现且在 exact profile 验证的能力。本地 JSON Schema PASS 与远端 strict enforcement
    分别表示；JSON mode 不能冒充远端 strict Schema。成本 actual/estimated/unknown 与 cache/
    reasoning 分项保留，不把未知费用填零。
+6. 新 profile 的 exact binding 固定实际 endpoint、非秘密解析配置、credential source reference、
+   mode/auth/transport 与实际加载的 codec/helper/Port 实现闭包；不只 hash generate 所在单文件。
+   新版本 manifest/envelope 使 M6 baseline producer 与 cold replay 独立派生同一引用闭包，
+   在用边界重算并匹配已选 Protocol，不选择或换绑 Provider；旧 envelope/report 原语义回放。
+7. conformance 显式采用版本化 Session policy：指定 Tool 首轮，成功验证并执行一次纯函数后，
+   第二轮显式 ToolChoice.none 验证 text；runner 默认保持旧 caller ToolChoice 不变。probe 的
+   wire Schema 方言与本地业务断言分别验证，旧 const probe 保留；不得靠 wrapper 暗改请求。
+
+这些谓词由[实施预检与修正范围](PREPARATION.md)列出的真实零调用反例和读取结果支持；
+它们是后续离线验收要求，不是此定义 PR 已完成的产品实现。
 
 ## 资料覆盖与证据等级
 
@@ -69,11 +80,17 @@ source/config/validator/Windows Host/Tool implementation 与界面、官方价�
 执行者、输出目标、凭据引用及具名授权。北京时间不得早于 18:00；跨出官方优惠窗前停止新请求。
 到达时间窗口不自动授予执行资格。模型别名发生漂移或报告不能闭合时先停，不换模型凑通过。
 
-预算候选为不超过 3 次 provider invocation，遵循 ADR-0007 的首轮上限：第1轮要求一次指定client
+每 Attempt 不超过 3 次 provider invocation，遵循 ADR-0007 的首轮上限：第1轮要求一次指定client
 Tool call，第2轮携带经验证的Tool结果并验证text，另1次验证Schema；前2轮同时构成bounded
-Tool Session，不在三次shape probes之外追加往返。每次最多 64 output tokens、1 次确定性无副作用 Tool、0 retry、有限输入/
-累计 token/费用/time ceiling。它是待冻结候选，未记录为已批准的数值预算。第一项失败后停止，保留
-实际调用数、用量/费用可得性、失败与剩余 slots；不为测试故意发无效 live 请求。
+Tool Session，不在三次shape probes之外追加往返。用户已批准累计 input+output 不超过
+10,000,000 tokens，所有成功和失败调用同计，cache/reasoning 子项不重复相加。该上限是停止
+条件，不是消耗目标。执行计划采用每次最多 256 output tokens、每 Attempt 最多一次确定性
+无副作用 Tool、120 秒、0 自动 retry/fallback；初始 Attempt 失败即停，诊断、离线修复、重新冻结
+后才可建立 fresh Attempt，最多预留两次修复复验。上述小批数值是实施计划，不冒称用户逐项指定。
+原 US$0.01 只是询问候选，未记作批准的金额上限；按冻结官方价格保守预估并核对费用。
+有限输入/每 Attempt token/transport timeout 与剩余 deadline 在 exact-run packet 中确定。
+保留实际调用数、用量/费用可得性、失败与剩余 slots；费用或 token 无法核对时暂停新请求，
+不把 unknown 填 0，不抹去失败重开，也不为测试故意发无效 live 请求。
 
 固定合成输入，不读取研究语料或 private oracle；本地 Tool handler 真正执行一次且参数先本地验证。
 shape conformance 与 session evidence 分层留存，不把不执行 Tool 的 shape probe 当往返通过。
@@ -88,6 +105,9 @@ M6-008 baseline 的 exact binding 消费点、M5-008 Gate；官方矩阵及对�
 import metadata 定位，写明必要性后扩大读集。禁止读取用户凭据原文或无关研究/Agent 工作区。
 
 产品 write scope：M6 model adapters/非秘密 config/直接 conformance CLI/tests/schemas/registry；
+另显式包括 `execution/baseline.py`、`execution/baseline_envelope.py`、
+`execution/baseline_closeout.py` 及其直接 tests/Schema/fixtures，只用于版本化 Provider binding
+闭包的 producer/use-boundary/cold replay，不改 Core five-component shape、四臂或 Resolver。
 涉及公共 Port 的语义变化需原 owner 共同确认。M5/M11/Resolver/Skill/Research State 的实现不在
 M6-009 write scope。M6-010 输出仅为本地 exact-run packet 和脱敏审查证据；失败不得改写历史 PASS。
 

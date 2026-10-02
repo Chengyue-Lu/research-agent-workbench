@@ -12,6 +12,12 @@ Provider依赖明确改为M6-010。原M6-004 OpenAI范围及全部70个DONE定�
 本线程已安排当天18:05一次跟进，先检查exact Task/source/config/时间/预算，未闭合时保持零请求。
 窗口保存和定时配置是本地准备，不成为runtime Supply或执行许可证。
 
+用户最新更正累计真实 API input+output 预算为 10,000,000 tokens，失败同计；小批执行计划、
+失败归档/离线修复/fresh Attempt 与未知费用停见[PLAN](../../PLAN.md)。晚间 heartbeat 已同步。
+追加零调用预检的 endpoint 碰撞、helper/config closure、explicit Session transition 与 probe 方言
+见[PREPARATION](../../PREPARATION.md)。定义显式补入 M6 baseline 三个直接消费者及回放范围；
+既有 M6-001 transport 凭据修复在独立维护分支，未把其产品改动夹入本 docs-only PR。
+
 独立技术定义review发现初稿“3shape+2session”超出ADR-0007三次上限，已改为两轮Tool/text Session
 加一次Schema、合计≤3。反例及检查见[CHECKS](CHECKS.md)。这不是具名Human cross-owner approval。
 
