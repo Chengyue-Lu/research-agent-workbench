@@ -87,15 +87,18 @@ Tool Session，不在三次shape probes之外追加往返。用户已批准累�
 条件，不是消耗目标。执行计划采用每次最多 256 output tokens、每 Attempt 最多一次确定性
 无副作用 Tool、120 秒、0 自动 retry/fallback；初始 Attempt 失败即停，诊断、离线修复、重新冻结
 后才可建立 fresh Attempt，最多预留两次修复复验。上述小批数值是实施计划，不冒称用户逐项指定。
-原 US$0.01 只是询问候选，未记作批准的金额上限；按冻结官方价格保守预估并核对费用。
+原 US$0.01 只是询问候选，未记作批准的金额上限；按冻结官方价格保留可得估价。
+用户进一步确认账户余额充足，计费币种和账单查询不是本次测试前置条件；
+费用不可得时记录 unknown，不推断币种、实际收费或账单已核对，不因此阻断请求。
 有限输入/每 Attempt token/transport timeout 与剩余 deadline 在 exact-run packet 中确定。
-保留实际调用数、用量/费用可得性、失败与剩余 slots；费用或 token 无法核对时暂停新请求，
+保留实际调用数、用量/费用可得性、失败与剩余 slots；token 用量无法核对时暂停新请求，
 不把 unknown 填 0，不抹去失败重开，也不为测试故意发无效 live 请求。
 
 固定合成输入，不读取研究语料或 private oracle；本地 Tool handler 真正执行一次且参数先本地验证。
 shape conformance 与 session evidence 分层留存，不把不执行 Tool 的 shape probe 当往返通过。
 报告记录 requested/observed provider/model/profile、actual config/source pins、usage/stops、成功/失败
-和 redaction 事实；不保留密钥、原始 prompt/response/tool arguments/隐藏思考。费用未知按冻结策略停。
+和 redaction 事实；不保留密钥、原始 prompt/response/tool arguments/隐藏思考。费用未知如实保留，
+累计 token 预占与停止条件独立执行，不能把费用未知误当 token 已知或无消耗。
 
 ## 读取、输出与停止
 

@@ -91,3 +91,9 @@ Full PR metadata/topology/workstream/published-identity check is recorded agains
 User final API input+output ceiling is 10,000,000 tokens, failed calls included. Bounded independent definition review found no actionable blocker in binding/Session/probe scope and budget semantics; it reviewed a point-in-time uncommitted candidate, not a Human approval or final-head live attestation. Review SHA-256 `1769fec44c92c6187d308ab1295fb023bfaa076c02aa107ed4976b64672f3ab6`.
 
 Separate source-attested endpoint collision probe matched the loaded bytes of six explicitly selected modules to the base Git blobs and again observed different endpoints with equal binding, credential.resolve/send both zero. Receipt SHA-256 `61475a323e002f21d3cfa14323e452945df21f202579299192287d8c3802a139`. This is local preparation evidence, not new product conformance.
+# 用户直接接受与费用策略补充
+
+用户直接接受此纯文档定义，并明确余额充足、计费币种/账单不可得不作为测试前置条件。
+PLAN、Risk Ledger 和 Handoff 同步该指令；累计输入加输出 10,000,000、未知token停止、
+Flash/北京时间18:00后及官方闲时、三调用/无自动retry/fallback保持。
+此直接接受不记录为黄毅新的review或reviewer不可用事实，也不代填产品离线或live通过。

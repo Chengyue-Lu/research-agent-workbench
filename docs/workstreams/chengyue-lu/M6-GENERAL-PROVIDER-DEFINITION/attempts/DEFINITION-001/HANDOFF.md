@@ -13,7 +13,8 @@ Provider依赖明确改为M6-010。原M6-004 OpenAI范围及全部70个DONE定�
 窗口保存和定时配置是本地准备，不成为runtime Supply或执行许可证。
 
 用户最新更正累计真实 API input+output 预算为 10,000,000 tokens，失败同计；小批执行计划、
-失败归档/离线修复/fresh Attempt 与未知费用停见[PLAN](../../PLAN.md)。晚间 heartbeat 已同步。
+失败归档/离线修复/fresh Attempt 与未知token停见[PLAN](../../PLAN.md)。晚间 heartbeat 已同步。
+用户后续明确账户余额充足，计费币种和账单不可得不阻断本次部件测试；费用仍如实记录unknown。
 追加零调用预检的 endpoint 碰撞、helper/config closure、explicit Session transition 与 probe 方言
 见[PREPARATION](../../PREPARATION.md)。定义显式补入 M6 baseline 三个直接消费者及回放范围；
 既有 M6-001 transport 凭据修复在独立维护分支，未把其产品改动夹入本 docs-only PR。

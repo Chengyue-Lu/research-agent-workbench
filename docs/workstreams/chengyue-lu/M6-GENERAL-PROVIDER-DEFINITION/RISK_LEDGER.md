@@ -12,7 +12,7 @@
 | 凭据泄漏或过早读取 | Key 进入日志/Trace/失败消息 | 晚解析 interface、repr/异常脱敏；预检失败的credential resolver计数0；fake sentinel 不能进入任何输出；OS bridge只对子进程注入 | 已授权 child 必须可信，不承诺不可变字符串全内存清零 |
 | 自动redirect携带认证头 | 自选HTTPS endpoint之外追加跨host/降级请求 | 既有M6-001 transport维护先拒绝redirect，userinfo在resolve前拒绝；错误cause/正文不进持久诊断 | 离线handler证明不能写成真实外泄；自选endpoint仍须可信 |
 | 相同模板表示多厂商全部通过 | 错误 support/科研证据 | 官方、离线、live三等级；禁用默认值；每家factory/encoder/decoder独立fixtures；unsupported能力明确拒绝 | 非DeepSeek没有live接受 |
-| 费用/思考/token未知 | 失控开销/重复付费 | 硬 invocation/输出/累计/time/费用，0retry；未知成本按冻结策略停止，全部失败留存 | 取消与remote billing可能仅有detective事实 |
+| 费用/思考/token未知 | 失控开销/重复付费 | 硬 invocation/输出/累计token/time，0retry；未知token保留预占并停止，全部失败留存；用户接受费用/币种/账单不可得，记录unknown不填零 | 取消与remote billing可能仅有detective事实；不声称账单已核对 |
 | 晚间调度被当成执行许可 | 缺失Gate时发请求 | 时间与exact Task/config/授权全部满足才调用，零请求负例 | 本机应用需保持可运行 |
 | DS结果覆盖旧OpenAI验收或解锁Pilot | 虚假DONE/权限扩大 | M6-004定义和BLOCKED保留；新M6-010只接受Flash exact binding；M5 Gates保持 | 后续正式source/config drift须重验 |
 | 跨worktree写冲突 | 他人更新丢失 | 独占产品worktree；共享PROJECT_MEMORY写前重读；child只交付各自准备包 | 集成前latest-base复核 |
