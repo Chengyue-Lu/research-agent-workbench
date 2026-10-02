@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://research-agent-workbench.local/schemas/v0.1.0/provider-adapters-v2.schema.json",
   "title": "Provider Adapters V2",
-  "x-rwb-document-kind": "provider_adapters",
+  "x-rwb-document-kind": "provider_adapters_v2",
   "$comment": "Closed ProviderAdapterConfigV2@2.0.0 candidate; disabled adapters receive the same structural validation. Runtime additionally rejects duplicate adapter_id values, conflicting FileRefs, unsupported credential backends, profile/vendor/model/mode combinations and capability gaps before credential access. os-vault is format-only and cannot execute without an explicitly implemented backend.",
   "type": "object",
   "required": [
