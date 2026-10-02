@@ -1,0 +1,121 @@
+{
+  "entry_source": "b033c0535baded6dafcbea18f638fda58858ee92",
+  "input_checks": [
+    {
+      "path": "docs/TASKS.md",
+      "expected": "8e83f401c56afb9728feedb65ff2463abe0d433c3ab913f9960981660cf6363a",
+      "actual": "8e83f401c56afb9728feedb65ff2463abe0d433c3ab913f9960981660cf6363a",
+      "match": true
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_LIVE_PILOT_GATE.md",
+      "expected": "493792ddc5fbb4fb4a9f112eab54dc85f095c0a2ecbfc35fa7d38fe7ba936040",
+      "actual": "493792ddc5fbb4fb4a9f112eab54dc85f095c0a2ecbfc35fa7d38fe7ba936040",
+      "match": true
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_COMPLETION.md",
+      "expected": "ce41868af2a1c37ec9056a05b9c28b914f023eec090495671d53c0312971f008",
+      "actual": "ce41868af2a1c37ec9056a05b9c28b914f023eec090495671d53c0312971f008",
+      "match": true
+    },
+    {
+      "path": "src/research_workbench/evaluation/harness_execution.py",
+      "expected": "542cda68d5aac661f01f262a9c311ca30abf2a20b8ed15e3e7147d77e53fb840",
+      "actual": "542cda68d5aac661f01f262a9c311ca30abf2a20b8ed15e3e7147d77e53fb840",
+      "match": true
+    },
+    {
+      "path": "src/research_workbench/evaluation/harness_evidence.py",
+      "expected": "63c6491439602c699b83f851d609900b4b5554e02f593d25f4cb6266cd54bf70",
+      "actual": "63c6491439602c699b83f851d609900b4b5554e02f593d25f4cb6266cd54bf70",
+      "match": true
+    },
+    {
+      "path": "src/research_workbench/evaluation/harness_review.py",
+      "expected": "7d71a4f6b9037955e6387951f328a177fbc23a62e8b12e3e17043eb434edc196",
+      "actual": "7d71a4f6b9037955e6387951f328a177fbc23a62e8b12e3e17043eb434edc196",
+      "match": true
+    },
+    {
+      "path": "src/research_workbench/evaluation/harness_analysis.py",
+      "expected": "b5f0836d10d6d29003cfa7d63433fcaade70c52a0f23c8d80a6c1787b9e3518c",
+      "actual": "b5f0836d10d6d29003cfa7d63433fcaade70c52a0f23c8d80a6c1787b9e3518c",
+      "match": true
+    },
+    {
+      "path": "schemas/v0.1.0/system-evaluation-protocol.schema.json",
+      "expected": "3c7e49b36918fdb1f0f0cfc2fbc2d4a2a7a90a1cf9d23b384aca740ed58f3d13",
+      "actual": "3c7e49b36918fdb1f0f0cfc2fbc2d4a2a7a90a1cf9d23b384aca740ed58f3d13",
+      "match": true
+    },
+    {
+      "path": "schemas/v0.1.0/evaluation-harness-evidence.schema.json",
+      "expected": "ab3874af94f979b09af44b9f7c95701f41b3d7308e61e48f49fb63e1df350bcb",
+      "actual": "ab3874af94f979b09af44b9f7c95701f41b3d7308e61e48f49fb63e1df350bcb",
+      "match": true
+    },
+    {
+      "path": "schemas/v0.1.0/evaluation-harness-review-package.schema.json",
+      "expected": "619460ed0aaff626d1a84b8631e9ba639ec1488a340e8f3bfeb0f5ab42320fa9",
+      "actual": "619460ed0aaff626d1a84b8631e9ba639ec1488a340e8f3bfeb0f5ab42320fa9",
+      "match": true
+    },
+    {
+      "path": "schemas/v0.1.0/evaluation-harness-human-review.schema.json",
+      "expected": "dc03991c298957258196da7039c9b026d9a62cad4d970041addd9ed56eec8429",
+      "actual": "dc03991c298957258196da7039c9b026d9a62cad4d970041addd9ed56eec8429",
+      "match": true
+    },
+    {
+      "path": "schemas/v0.1.0/evaluation-harness-analysis-input.schema.json",
+      "expected": "d67c9369162b4707f13f2ae9d484ea932cad57373429a1115d84b97fb9321a0c",
+      "actual": "d67c9369162b4707f13f2ae9d484ea932cad57373429a1115d84b97fb9321a0c",
+      "match": true
+    },
+    {
+      "path": "registry/skills/release-projections.json",
+      "expected": "0b0d2c650445e536bd7d4873f640e884dac07c73dde0b6aa92fbbd7fd037f014",
+      "actual": "0b0d2c650445e536bd7d4873f640e884dac07c73dde0b6aa92fbbd7fd037f014",
+      "match": true
+    }
+  ],
+  "task_statuses": {
+    "M5-007": "DONE",
+    "M5-008": "BLOCKED",
+    "M6-004": "BLOCKED",
+    "M5-001": "BLOCKED",
+    "M5-002": "BLOCKED",
+    "M5-004": "BLOCKED",
+    "M5-005": "BLOCKED"
+  },
+  "task_file_unchanged": true,
+  "product_schema_registry_test_ci_diff": [],
+  "prior_attempts_checked": 23,
+  "prior_attempt_diff": [],
+  "observed_synthetic_protocol_guard": true,
+  "observed_bounded_integer_review_projection": true,
+  "observed_schema_purpose_constraints": {
+    "schemas/v0.1.0/system-evaluation-protocol.schema.json": {
+      "enum": [
+        "synthetic-contract-proof",
+        "confirmatory-protocol"
+      ]
+    },
+    "schemas/v0.1.0/evaluation-harness-evidence.schema.json": {
+      "const": "synthetic-contract-proof"
+    },
+    "schemas/v0.1.0/evaluation-harness-review-package.schema.json": {
+      "const": "synthetic-contract-proof"
+    },
+    "schemas/v0.1.0/evaluation-harness-human-review.schema.json": {
+      "const": "synthetic-contract-proof"
+    },
+    "schemas/v0.1.0/evaluation-harness-analysis-input.schema.json": {
+      "const": "synthetic-contract-proof"
+    }
+  },
+  "projection_index_entries": 0,
+  "evidence_level": "Static source observations; no live calls or general anonymity test",
+  "pass": true
+}

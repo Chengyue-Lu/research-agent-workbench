@@ -198,3 +198,15 @@ a replacement of the retained proof. M5-008 and formal M5-004/005 stay gated.
 The owner's instruction authorizes preparing this closeout. It does not invent a
 cross-owner approval or reviewer-unavailable confirmation. No historical gate or
 Task acceptance is redefined, and Issue #55 is closed only after accepted integration.
+
+## Completion and live-pilot preparation (2026-10-02)
+
+The prior candidate was directly accepted by Chengyue-Lu and merged as PR122;
+M5-007 DONE / Issue55 completed. The [receipt](M5-007_CLOSEOUT_RECEIPT.md) records
+that decision without asserting cross-owner approval or reviewer unavailability.
+
+| Preparation risk | Current observation/control | Required downstream evidence |
+|---|---|---|
+| Existing synthetic ports reused as live authorization | H3 requires synthetic Protocol; H4 producers/Schemas and finite integer review retain that purpose | Versioned live-purpose and bounded review design within M5-008's R2 scope; no relabeling or silent legacy widening |
+| M5-007 completion treated as the pilot start gate | M6-004 BLOCKED, projection index empty, no pilot-specific authorization supplied | Exact conformance, actual A4 admission and named budget/data/Tool/time authorization before activation/calls |
+| Preparation observations treated as execution evidence | [Entry Attempt](attempts/M5-008-ENTRY-001/README.md) pins the accepted source and labels all results as static/docs checks | Complete live run set, actual facts, independent replay and Human review/freeze/reveal before M5-008 DONE |

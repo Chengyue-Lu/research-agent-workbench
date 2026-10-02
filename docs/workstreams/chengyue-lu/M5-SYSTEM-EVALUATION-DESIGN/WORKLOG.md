@@ -438,3 +438,21 @@ keep their original identities. Current documentation/governance and Task-row
 checks are recorded separately. The twelve Issue criteria have evidence mappings;
 named whole-Task review and merge remain the final closeout conditions. M5-008,
 real case/admission/live/Human gates stay BLOCKED; no real calls or release action.
+
+## M5-007 completed / M5-008 entry preparation (2026-10-02)
+
+The owner explicitly accepted the concrete PR122 closeout and waived waiting for
+review. Normal exact-head squash produced develop@b033c0535baded6dafcbea18f638fda58858ee92;
+the tree equals verified head f242b9f. Actual Task/Gate reads confirm M5-007 DONE;
+Issue55 completed at 05:04:54Z. This is the recorded owner decision, without a new
+cross-owner APPROVED or reviewer-unavailable finding. The
+[completion receipt](M5-007_CLOSEOUT_RECEIPT.md) links the original authorization,
+merge/issue receipts and CI observations. Actual component push36967054955 SUCCESS;
+new source CI36967055050 remains separately observed.
+
+[Issue123](https://github.com/Chengyue-Lu/research-agent-workbench/issues/123) now tracks
+M5-008 independently. The [entry plan](M5-008_ENTRY_PLAN.md) records missing conformance,
+A4 admission and pilot authorization, plus the current synthetic-only execution
+guard, fixed synthetic-purpose records and bounded integer review format. This
+documentation maintenance does not define a new live contract, activate the Task or
+call external services; M5-008 and downstream case/live/Human gates stay BLOCKED.

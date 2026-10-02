@@ -1,7 +1,7 @@
 # M5-007 H1–H5 整体验收复核
 
-当前接续：[整项收口候选](M5-007_COMPLETION.md)在 `develop@30600f2` 上将具名验收、
-Task DONE 提案与 Issue #55 关闭条件放在同一 PR 中审查；原复核 Attempt 保留。
+当前接续：[PR122 完成回执](M5-007_CLOSEOUT_RECEIPT.md)记录 owner 直接接受、actual develop@b033c05、
+Task DONE 和 Issue #55 completed；原复核 Attempt 保留。后继为 M5-008 进入准备。
 下文是 PR121 的 2026-10-02 复核记录，原基线、验证身份及当时 pending 状态不改写。
 
 日期：2026-10-02。Task / Evaluation owner：路诚钺；Execution 接口复核：黄毅。风险：R2。
