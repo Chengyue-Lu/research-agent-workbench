@@ -13,7 +13,7 @@
 | 定义或 CI 被误当实现接受 | PR125定义按用户直接接受合入；PR126按正式cross-owner批准合入；本候选仅推进M6-009 IN_PROGRESS | 合法基线上另审实现，不自动merge/置DONE/live |
 | fresh Attempt 清除失败用量 | 显式 anchor 先 durable checkpoint 再 DB commit；prefix rollback、torn tail、单边回退、同 anchor 换 DB 与不确定提交均停，未知保持预占；默认 journal 原语义不变 | caller 仍固定唯一 DB/anchor/namespace；同用户同时重写两份或另选 anchor 不获全局防篡改认证；输入依据与真实 send 另验；unknown 金额不停止 |
 | 记账失败带出原 Provider 异常 | 独立 P2 原反例保留；统一错误出口清空 cause/context，实际 traceback 回归通过 | 仅 content-free ledger 错误边界，不承诺 Python frame-local 擦除 |
-| 主流模板覆盖被误当完整实现 | SiliconFlow/OpenRouter 保留 blocking；另行核实最小可运行政策 | 未闭合前不提议 M6-009 完成 |
+| 主流模板覆盖被误当完整实现 | 旧 SF 非思考与 OR GPT-5.2 模板保留 blocking；新增独立 standard Text profile 的实际 factory 合成正例 | 新文本路径不解锁旧模板，账户与远端能力未验；未闭合前不提议 M6-009 完成 |
 | 安装包缺少新profile或读取不同字节 | 显式打包14profile与两份禁用配置；新配置仅三家Text模板，typed kinds/FileRef/hash由已校验字节解析 | 原11adapter配置字节与disabled保留，不推导厂商live能力 |
 | 公共源码缺少已声明安装输入 | 原 draft policy1.6.0 的13输入保持原对象，append1.7.0仅增两个Text profile与一份disabled配置；旧七个policy对象不变 | 不树形开放provider目录，不执行export或发布，不改变Skill projection、release gate与main/tag；作为R2候选审查 |
 | 驱动误把shape当往返或严格远端Schema | 一次纯Tool实际执行、第二轮实际call ID/result进入历史后验证精确文本，第三轮enum Schema与本地exact业务断言分开 | 新内核只有合成离线证据，remote strict与live qualified均false |
