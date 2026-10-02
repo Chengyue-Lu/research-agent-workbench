@@ -10,6 +10,8 @@
 | capture callback 修改当前输入或 Tool 结果 | 私有完整输入指纹及 Tool 参数/结果指纹，在 capture 后和执行/入上下文前重验 | 失败不发下一轮；回调与任意 Tool handler 的纯度仍由调用方冻结 |
 | 显式 Session 经旧 Trace 泄露 raw dataclass | 独立闭集隐私摘要 sink；显式政策拒绝 generic recorder，摘要无原始内容或内容派生哈希 | 旧 M3 recorder 问题保留为独立维护缺口，未修改 Trace Core |
 | 定义或 CI 被误当具名接受 | Task 真值不变；保留未接受定义和隔离候选 | 正式产品 PR 等待合法集成基线，不自动 merge |
+| fresh Attempt 清除失败用量 | 新进程内 ledger 保留成功/失败 input+output；未知保持预占并阻断，仅显式独立用量回执可结算 | 新实例会重置内存；输入上界、send 标记、持久余额及费用暂停条件仍需实际 driver 闭合 |
+| 记账失败带出原 Provider 异常 | 独立 P2 原反例保留；统一错误出口清空 cause/context，实际 traceback 回归通过 | 仅 content-free ledger 错误边界，不承诺 Python frame-local 擦除 |
 | 主流模板覆盖被误当完整实现 | SiliconFlow/OpenRouter 保留 blocking；另行核实最小可运行政策 | 未闭合前不提议 M6-009 完成 |
 | 历史模型模板被当当前服务 | 官方 models/deprecations 已明确 Google2.0 Flash 关闭；新工厂在凭据前拒绝 | 原字节保留回放；新模型另立已核验 profile，不按日期臆测实际关闭日 |
 | Windows 换行导致 FileRef 与 Git 字节不一致 | 规范为已有 Git LF blob、重 pin 33 个正例；独立 working/Git 核查 | 原失败源/receipts 保留；此前双 Python 切片不是最终新 hash 的多平台安装证明 |

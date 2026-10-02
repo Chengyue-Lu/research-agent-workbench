@@ -12,7 +12,7 @@ ADR0003/0007 与 Provider Adapter plan，M6 Port/base/http/配置/协议/Session
 baseline producer/envelope/replay 的直接消费接口，以及相关 Schema/tests/fixtures、
 CI component plan 和 tests/ci_components.json 的直接输入映射，以及已核验官方资料。
 
-写域：新 configured/profile_configuration/wire_codecs/provider_binding/session_policy，
+写域：新 configured/profile_configuration/wire_codecs/provider_binding/session_policy/conformance_ledger，
 显式 optional Session 分支、baseline 的 manifest 直接消费者、对应新 Schema/profile/禁用模板/
 测试、组件 CI 的直接测试/fixture 输入映射、通用 repository validator 的新文档 kind/v2 分派和本 workstream。协议、配置、绑定、Session 委派写域互斥；协调者串行整合。
 不修改旧三 facade/Port、M5/M11/Resolver/Skill 实现或 Task 完成状态。
@@ -20,6 +20,9 @@ CI component plan 和 tests/ci_components.json 的直接输入映射，以及已
 预算：各实现切片 30～45 分钟，补充复核限 20 分钟；各委派均 0 Provider/API、真实凭据读取、安装。
 根整合另做有界 repository/schema/资源检查，并可在本 worktree 忽略目录的独立环境安装当前 wheel；
 不改变全局环境或其他 owner 的环境，不下载 Provider SDK，不读取 Key。
+18:07 heartbeat 补充切片：纯进程内 token 预占与结算限 20 分钟，独立复核限 10 分钟。
+调用者负责输入上界、实际 send 标记和独立用量回执；此 helper 不证明跨进程持久余额、
+真实发送、计费上界或 live 接受。累计用户上限为输入加输出 10,000,000，失败同计。
 停止条件：Core identity、Runtime ownership、Human authority 或未声明消费者需要变化时只提出问题。
 输出：可重现的离线候选、原失败与最终源哈希、独立有界复核、检查和 Compact Handoff。
 正式 feature PR 需合法 base 和原风险/审核门禁；不把依赖 PR 的未接受定义混入 develop 产品 PR。

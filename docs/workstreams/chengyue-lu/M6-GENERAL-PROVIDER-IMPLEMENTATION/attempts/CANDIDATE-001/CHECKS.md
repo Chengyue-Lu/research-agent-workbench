@@ -45,3 +45,22 @@ profiles、wire-codecs、factory、factory-review、binding、session 和 sessio
 
 初始 Runtime 资源缺失、profile/codec 政策不一致、测试 fixture 错误及独立审查原失败日志保留。
 不能用后续 PASS 覆盖前一源版本的失败，也不能把较早源哈希上的检查移用到新源。
+
+## 18:07 heartbeat：进程内用量记账切片
+
+新增 `conformance_ledger.py`，文件 SHA256 为
+`e0caed691bc8a007cfecb22e7586105e5dc990305baa5fea779ab6b97350d3e2`；
+对应测试 SHA256 为 `7a4dfe2fa11265cffa37d1496a36c17b07818fc421a4fcf41eddc07fbf061bd4`。
+
+- owner focused **29/29 PASS**；独立复核 **8/8 workflows + 29/29 tests PASS**，源码前后稳定；
+- root 记账、CI 登记及文档/public surface 联合 **67/67 PASS**，无 skip/error/failure，三个直接输入哈希稳定；
+- 原始独立 P2 为异常隐式上下文带出 Provider 错误，已清除 cause/context 并补真实 traceback 回归；
+- root 首次验证器缺少 repo import path，产生两个 `tests` 导入错误；仅修验证器，原日志保留，未改产品源；
+- 新测试已登记 adapters 组件；当前新切片未重新构建 wheel、运行 full/coverage 或真实 conformance。
+
+预占、Provider invocation、调用者报告的 send attempt、响应及结算事实分开记录。
+失败用量仍累计；未知用量保留预占并阻断，不能通过 fresh Attempt 清零。
+缺少 reported cost 时保留有效 token 数，金额仍 unknown，费用核对及暂停条件由实际 driver 负责。
+本 helper 无现有入口消费者，仅约束同一进程内、调用者声明的输入上界及 send/verified receipt；
+不证明计费上界、真实 HTTP 发送、跨进程持久余额、账单结算或 Task/live 接受。
+本切片 archive 为 `.rwb/m6-general-prototype/usage-ledger/`、`usage-ledger-review/` 和 `flash-heartbeat-checks/`。

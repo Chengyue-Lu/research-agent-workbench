@@ -73,6 +73,7 @@
         "test_api_session_runner",
         "test_configured_provider",
         "test_conformance_session_policy",
+        "test_conformance_usage_ledger",
         "test_profile_wire_codecs",
         "test_provider_binding",
         "test_provider_profile_configuration",

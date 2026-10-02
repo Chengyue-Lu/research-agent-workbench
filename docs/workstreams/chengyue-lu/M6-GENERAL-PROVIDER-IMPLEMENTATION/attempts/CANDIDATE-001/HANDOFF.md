@@ -17,7 +17,9 @@ Schema 已按现有 build backend 纳入 ignored Runtime 资源，安装/最终�
 真实 develop 发布预检仍有 5 个 Task-definition 拒绝，implementation PR 尚未创建。
 
 下一步：继续闭合 SiliconFlow/OpenRouter 和当前模型资料；
-实现新的 probe/报告/CLI、显式调用账本与 source/政策 pins；合法 base 上再发布 R2 implementation PR。
+纯进程内 token 预占/结算 helper 已准备，29 owner、8 独立 workflows 及 root 联合 67 项通过；
+原错误上下文泄露 P2 与 root 验证器导入失败均保留，修复复验见 CHECKS。
+实现新的 probe/报告/CLI、实际 send 的持久账本与 source/政策 pins；合法 base 上再发布 R2 implementation PR。
 真实 Flash 运行需要独立 exact packet，核对接受状态、运行 source/config/model/Windows、时间/预算/
 费用与输出目标，凭据只通过获授权 child 进程载入。上限 10,000,000 input＋output tokens；失败同计。
 当前未执行真实调用，不运行 M5 Pilot 或 A4 admission。
