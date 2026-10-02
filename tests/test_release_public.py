@@ -126,7 +126,7 @@ class ReleasePublicTests(unittest.TestCase):
 
     def test_policy_adds_exact_release_files_without_rewriting_old_versions(self):
         policy = json.loads((ROOT / '.github/release-surface.yml').read_text(encoding='utf-8'))
-        self.assertEqual(['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0'],
+        self.assertEqual(['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0'],
                          [item['version'] for item in policy['policies']])
         old = json.dumps(policy['policies'][:3], sort_keys=True, ensure_ascii=False,
                          separators=(',', ':')).encode('utf-8')
@@ -142,6 +142,17 @@ class ReleasePublicTests(unittest.TestCase):
         activation = {item['path'] for item in policy['policies'][5]['include']} - {
             item['path'] for item in policy['policies'][4]['include']}
         self.assertEqual({'.github/scripts/release_governance.py'}, activation)
+        old_six = json.dumps(policy['policies'][:6], sort_keys=True, ensure_ascii=False,
+                             separators=(',', ':')).encode('utf-8')
+        self.assertEqual('8a352c9a5da8e13a70a6edc0671b4ace72ef3d7313eb07cfdcd38023b0954ee7',
+                         hashlib.sha256(old_six).hexdigest())
+        provider_inputs = {item['path'] for item in policy['policies'][6]['include']} - {
+            item['path'] for item in policy['policies'][5]['include']}
+        resources = json.loads((ROOT / 'runtime-resources.json').read_bytes())
+        self.assertEqual({item['path'] for item in resources['catalogs']
+                          if item['kind'] in {'provider_api_profile', 'provider_adapters_v2'}}, provider_inputs)
+        self.assertTrue(all(item['kind'] == 'file' for item in policy['policies'][6]['include']
+                            if item['path'] in provider_inputs))
 
     def test_first_main_workflow_checks_every_main_pr_and_keeps_candidate_as_data(self):
         workflow = yaml.load((ROOT / '.github/workflows/release.yml').read_text(encoding='utf-8'),

@@ -23,6 +23,7 @@ tests/test_ci_consumer_contracts.py：保留政策和历史 pins，仅验证版�
 release-surface policy 1.6.0 复用1.5.0，仅加入十三个非秘密provider文件的exact路径；
 保留全部旧policy对象和append-only规则。追加tests/test_schemas.py的新报告kind清单与
 tests/test_public_surface.py的exact文件/disabled约束。此提议不执行export或任何发布，
+tests/test_release_public.py保留旧六版本canonical hash，并验证新版本的exact文件增量。
 不修改Skill projection、release gate、实际main/branch/tag；在新R2候选中一并审核。
 
 实施：四个其余摘要阶段统一有界停止；固定至多三次synthetic调用完成一次add_ints(3,4)→
