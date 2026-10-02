@@ -35,6 +35,21 @@ class PublicSurfaceTests(unittest.TestCase):
         for path in ("src/research_workbench", "schemas"):
             self.assertIn({"path": path, "kind": "tree"}, policy["include"])
 
+    def test_provider_build_inputs_are_exact_disabled_public_templates(self):
+        spec = json.loads(self.files['runtime-resources.json'])
+        expected = {row['path'] for row in spec['catalogs']
+                    if row['kind'] in {'provider_api_profile', 'provider_adapters_v2'}}
+        self.assertEqual(13, len(expected))
+        policy = json.loads(self.files['.github/release-surface.yml'])['policies'][-1]
+        actual = {row['path'] for row in policy['include'] if row['path'].startswith('registry/providers/')}
+        self.assertEqual(expected, actual)
+        self.assertTrue(all(row['kind'] == 'file' for row in policy['include']
+                            if row['path'].startswith('registry/providers/')))
+        self.assertNotIn('registry/providers/private-key.json', self.files)
+        config = json.loads(self.files['registry/providers/adapters-v2.disabled.json'])
+        self.assertEqual(11, len(config['adapters']))
+        self.assertTrue(all(adapter['enabled'] is False for adapter in config['adapters']))
+
     def test_public_navigation_and_support_have_one_source(self):
         for name in PUBLIC_PAGES:
             if name not in ("CHANGELOG.md", "docs/SUPPORTED_FEATURES.md"):

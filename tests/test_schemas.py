@@ -176,6 +176,7 @@ class VersionedSchemaTests(unittest.TestCase):
                 "protocol_profile",
                 "protocol_profile_index",
                 "provider_conformance_report",
+                "profile_conformance_report",
                 "provider_api_profile",
                 "provider_adapters_v2",
                 "provider_binding_manifest",

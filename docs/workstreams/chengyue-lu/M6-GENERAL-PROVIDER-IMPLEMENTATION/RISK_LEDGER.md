@@ -15,6 +15,7 @@
 | 记账失败带出原 Provider 异常 | 独立 P2 原反例保留；统一错误出口清空 cause/context，实际 traceback 回归通过 | 仅 content-free ledger 错误边界，不承诺 Python frame-local 擦除 |
 | 主流模板覆盖被误当完整实现 | SiliconFlow/OpenRouter 保留 blocking；另行核实最小可运行政策 | 未闭合前不提议 M6-009 完成 |
 | 安装包缺少新profile或读取不同字节 | 显式打包12profile与原11adapter禁用配置，typed resource kind及其FileRef/hash闭合，由已校验字节解析 | 保持原配置字节与disabled，不推导厂商live能力 |
+| 公共源码缺少已声明安装输入 | draft提议append policy1.6.0，复用1.5.0，仅追加13个非秘密provider exact文件；旧六个policy对象不变 | 不树形开放provider目录，不执行export或发布，不改变Skill projection、release gate与main/tag；作为R2候选审查 |
 | 驱动误把shape当往返或严格远端Schema | 一次纯Tool实际执行、第二轮实际call ID/result进入历史后验证精确文本，第三轮enum Schema与本地exact业务断言分开 | 新内核只有合成离线证据，remote strict与live qualified均false |
 | 发送意图冒称实际网络发送 | 预占与持久intent先于委托transport调用；记录委托方法入口，失败未知保留预占；检查delegate方法/响应界限与剩余deadline | 不认证socket、远端账单、官方时间窗或调用者guard的权威；完整运行闭包另验 |
 | 可序列化结果冒称具名接受 | 独立版本化闭集report Schema，报告只记录计数/数值/固定code/非秘密identity refs，fresh排他输出；CLI只离线计划 | guard/input上界caller-attested，source refs为局部，M6-009未DONE、M6-010仍BLOCKED |

@@ -19,6 +19,12 @@ catalog owner仅资源清单、typed kinds/manifest Schema和直接测试；root
 tests/test_ci_consumer_contracts.py：保留政策和历史 pins，仅验证版本、诊断无执行权与
 实际 consumer 的字节漂移可见；不得重写历史接受记录或降低运行接受义务。
 
+组件联测发现安装资源需要同时闭合 public source 的构建输入。追加 draft 数据提议：
+release-surface policy 1.6.0 复用1.5.0，仅加入十三个非秘密provider文件的exact路径；
+保留全部旧policy对象和append-only规则。追加tests/test_schemas.py的新报告kind清单与
+tests/test_public_surface.py的exact文件/disabled约束。此提议不执行export或任何发布，
+不修改Skill projection、release gate、实际main/branch/tag；在新R2候选中一并审核。
+
 实施：四个其余摘要阶段统一有界停止；固定至多三次synthetic调用完成一次add_ints(3,4)→
 第二轮none-choice精确文本7→独立enum Schema和本地业务断言；复用持久Journal预占、intent、
 委托transport入口观测及已知失败token结算，unknown保留预占停止；打包原disabled模板与profile。
