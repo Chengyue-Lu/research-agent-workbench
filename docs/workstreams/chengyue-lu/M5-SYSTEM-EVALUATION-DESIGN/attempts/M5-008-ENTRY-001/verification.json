@@ -1,0 +1,26 @@
+{
+  "entry_source": "b033c0535baded6dafcbea18f638fda58858ee92",
+  "verification_scope": "Static accepted-source and documentation checks only",
+  "input_hashes": {
+    "checked": 13,
+    "pass": true,
+    "evidence": "evidence/source-entry.json"
+  },
+  "documentation_and_public_surface": {
+    "command": "python -m unittest tests.test_documentation tests.test_public_surface",
+    "passed": 23,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 0.844
+  },
+  "task_rows_changed": false,
+  "product_schema_registry_tests_ci_changed": false,
+  "live_calls": 0,
+  "task_status": "BLOCKED",
+  "implementation_started": false,
+  "live_purpose_or_anonymity_proved": false,
+  "new_full_coverage_harness_or_package_run": false,
+  "prior_attempts_unchanged": 23,
+  "git_diff_check": "passed"
+}

@@ -1,0 +1,70 @@
+{
+  "task_id": "M5-008",
+  "entry_source": "b033c0535baded6dafcbea18f638fda58858ee92",
+  "entry_tree": "4906d461b14c54dfedba1e6b0199b886882a83a2",
+  "hash_scope": "Raw Git file-content bytes at the accepted entry source",
+  "input_refs": [
+    {
+      "path": "docs/TASKS.md",
+      "sha256": "8e83f401c56afb9728feedb65ff2463abe0d433c3ab913f9960981660cf6363a"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_LIVE_PILOT_GATE.md",
+      "sha256": "493792ddc5fbb4fb4a9f112eab54dc85f095c0a2ecbfc35fa7d38fe7ba936040"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_COMPLETION.md",
+      "sha256": "ce41868af2a1c37ec9056a05b9c28b914f023eec090495671d53c0312971f008"
+    },
+    {
+      "path": "src/research_workbench/evaluation/harness_execution.py",
+      "sha256": "542cda68d5aac661f01f262a9c311ca30abf2a20b8ed15e3e7147d77e53fb840"
+    },
+    {
+      "path": "src/research_workbench/evaluation/harness_evidence.py",
+      "sha256": "63c6491439602c699b83f851d609900b4b5554e02f593d25f4cb6266cd54bf70"
+    },
+    {
+      "path": "src/research_workbench/evaluation/harness_review.py",
+      "sha256": "7d71a4f6b9037955e6387951f328a177fbc23a62e8b12e3e17043eb434edc196"
+    },
+    {
+      "path": "src/research_workbench/evaluation/harness_analysis.py",
+      "sha256": "b5f0836d10d6d29003cfa7d63433fcaade70c52a0f23c8d80a6c1787b9e3518c"
+    },
+    {
+      "path": "schemas/v0.1.0/system-evaluation-protocol.schema.json",
+      "sha256": "3c7e49b36918fdb1f0f0cfc2fbc2d4a2a7a90a1cf9d23b384aca740ed58f3d13"
+    },
+    {
+      "path": "schemas/v0.1.0/evaluation-harness-evidence.schema.json",
+      "sha256": "ab3874af94f979b09af44b9f7c95701f41b3d7308e61e48f49fb63e1df350bcb"
+    },
+    {
+      "path": "schemas/v0.1.0/evaluation-harness-review-package.schema.json",
+      "sha256": "619460ed0aaff626d1a84b8631e9ba639ec1488a340e8f3bfeb0f5ab42320fa9"
+    },
+    {
+      "path": "schemas/v0.1.0/evaluation-harness-human-review.schema.json",
+      "sha256": "dc03991c298957258196da7039c9b026d9a62cad4d970041addd9ed56eec8429"
+    },
+    {
+      "path": "schemas/v0.1.0/evaluation-harness-analysis-input.schema.json",
+      "sha256": "d67c9369162b4707f13f2ae9d484ea932cad57373429a1115d84b97fb9321a0c"
+    },
+    {
+      "path": "registry/skills/release-projections.json",
+      "sha256": "0b0d2c650445e536bd7d4873f640e884dac07c73dde0b6aa92fbbd7fd037f014"
+    }
+  ],
+  "predecessor_pr": "https://github.com/Chengyue-Lu/research-agent-workbench/pull/122",
+  "owner_closeout_decision": "https://github.com/Chengyue-Lu/research-agent-workbench/pull/122#issuecomment-5945892095",
+  "closed_issue": {
+    "url": "https://github.com/Chengyue-Lu/research-agent-workbench/issues/55",
+    "closed_at": "2026-10-02T05:04:54Z",
+    "state_reason": "COMPLETED"
+  },
+  "entry_issue": "https://github.com/Chengyue-Lu/research-agent-workbench/issues/123",
+  "task_status": "BLOCKED",
+  "live_authorization_supplied": false
+}

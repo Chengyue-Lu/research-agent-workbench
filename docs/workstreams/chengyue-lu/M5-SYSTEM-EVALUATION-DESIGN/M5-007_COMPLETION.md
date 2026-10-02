@@ -1,5 +1,9 @@
 # M5-007 整项收口候选
 
+最终结果：PR122 已按用户明确的直接接受/不等待审核指示合入 `develop@b033c05`，
+M5-007 DONE、Issue55 completed；[完成回执](M5-007_CLOSEOUT_RECEIPT.md)保存 actual merge、验证和决定。
+下文保留 PR122 创建时的候选记录，原 Attempt 与其 pending 观察不改写。
+
 日期：2026-10-02。Task / Evaluation owner：路诚钺（`Chengyue-Lu`）；
 Execution 接口复核：黄毅（`let778750-cpu`）。风险：R2；PR class：feature。
 进入基线：`develop@30600f2e9ae25852289f1d0ca12f114291c31457`。

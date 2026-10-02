@@ -4,15 +4,15 @@
 
 风险：R2
 
-M5-006 已由 PR71 接受；M6-008 实现已由 PR75 合入，M11-007 / Gate B 已按 PR81/82 收口。PR84 已接受 M6-008 DONE，PR86 已接受 [H1/H2](M5-007_H1_H2_PACKET.md) 非执行 plan/preflight 与 M5-007 IN_PROGRESS；PR89 已接受 [H3 四臂 synthetic execution/replay](M5-007_H3_PACKET.md)，PR90 已接受 H4a actual evidence，PR96 已使用单次维护者审核例外合入 H4b synthetic 盲审/冻结/揭盲实现。PR104 已接受并合入 [H4c measurement/analysis](M5-007_H4C_PACKET.md)；H5 已由 PR106 具名 R2 接受并合入。[整项收口候选](M5-007_COMPLETION.md)同一 PR 提出具名整项接受、M5-007 DONE 与 Issue #55 关闭条件；合入前共享基线仍为 IN_PROGRESS / OPEN。M5-008 为 BLOCKED，作为 M5-004 之前的独立 live 工程验收关口。
+M5-006 已由 PR71 接受；M6-008 实现已由 PR75 合入，M11-007 / Gate B 已按 PR81/82 收口。PR84 已接受 M6-008 DONE，PR86 已接受 [H1/H2](M5-007_H1_H2_PACKET.md) 非执行 plan/preflight 与 M5-007 IN_PROGRESS；PR89 已接受 [H3 四臂 synthetic execution/replay](M5-007_H3_PACKET.md)，PR90 已接受 H4a actual evidence，PR96 已使用单次维护者审核例外合入 H4b synthetic 盲审/冻结/揭盲实现。PR104 已接受并合入 [H4c measurement/analysis](M5-007_H4C_PACKET.md)；H5 已由 PR106 具名 R2 接受并合入。[整项收口](M5-007_CLOSEOUT_RECEIPT.md)已由 PR122 按路诚钺明确的直接接受/不等待审核指示合入 develop@b033c05，M5-007 DONE、Issue #55 completed。M5-008 为 BLOCKED，作为 M5-004 之前的独立 live 工程验收关口。
 
 H4c 的历史 [Attempt 与验证](attempts/M5-007-H4C-001/README.md) 保留；PR104 已具名 R2 接受并 squash merge 为 `26eca5742ba08d504d273423471fd7aab876a6d5`。
 后继 [H5 持久化证明](M5-007_H5_PACKET.md) 的 PR106 已获黄毅 exact-head R2 接受并合入 `develop@81a058b228a5da2a6f46192a954f62efc72895e3`；
-[Attempt](attempts/M5-007-H5-001/README.md) 保存原始证明。H5 已接受，整体 M5-007 接受由当前收口 PR 独立审查。
+[Attempt](attempts/M5-007-H5-001/README.md) 保存原始证明。H5 切片接受与 PR122 的整项 owner 接受分别保留身份。
 
 [M5-007 整体验收准备](M5-007_CLOSEOUT_PACKET.md) 已由 PR107 合入 `develop@2618ef4`；
 [整体验收复核](M5-007_ACCEPTANCE_REVIEW.md) 已由 PR121 合入 `develop@30600f2`，对照 Task、源码与 H1–H5 证明。
-两者没有改变 Task 状态；本候选以[新 Attempt](attempts/M5-007-COMPLETION-001/README.md)提出 DONE，后继 live Gate 保持。
+两者当时没有改变 Task 状态；后继 PR122 已完成 DONE 收口。[M5-008 接手计划](M5-008_ENTRY_PLAN.md)与 [Issue #123](https://github.com/Chengyue-Lu/research-agent-workbench/issues/123)独立跟踪三个未满足 Gate 和 live-purpose/审查格式缺口，Task 继续 BLOCKED。
 
 实施导航：[M5-007 进入计划](M5-007_ENTRY_PLAN.md)、[M5-008 Live Pilot Gate](M5-008_LIVE_PILOT_GATE.md)、[M5-006 历史进入计划](ENTRY_PLAN.md)、[Protocol / validator contract](../../../implementation/SYSTEM_EVALUATION_PROTOCOL.md)、
 [工作记录与验证](WORKLOG.md)、[Risk Ledger](RISK_LEDGER.md)。
@@ -298,7 +298,7 @@ pilot runs 不进入主确认性分析；pilot 观察或调参影响的 case/ora
 flowchart LR
     M5003["M5-003 DONE"] --> M5006["M5-006 DONE"]
     BTG["ADR-0020 dual transport<br/>Gate A satisfied"] --> M5006
-    M5006 --> M5007["M5-007 DONE candidate"]
+    M5006 --> M5007["M5-007 DONE"]
     M5006 --> M6008["M6-008 baseline envelope<br/>+ replay closeout / DONE"]
     M6008 --> M5007
     M1104["M11-004<br/>Core generic closeout<br/>M11-003 Host facts"] --> M5007
@@ -415,8 +415,8 @@ pilot/secondary evidence 不得作为 pruning 的唯一证据。该 Gate 明确�
 
 H1/H2、[H3 四臂 synthetic execution/replay](M5-007_H3_PACKET.md)、H4a/H4b、
 [H4c measurement/analysis](M5-007_H4C_PACKET.md)和[H5 持久化证明](M5-007_H5_PACKET.md)均已合入。
-当前[整项收口](M5-007_COMPLETION.md)提出 Task DONE，并逐项核对 Issue #55 的十二项条件；
-Issue 在具名 R2 接受和合入前仍 OPEN。M5-001/002 保留 Human boundary，M5-008/004/005
+PR122 已[完成整项收口](M5-007_CLOSEOUT_RECEIPT.md)，Task DONE、Issue #55 completed，十二项条件与直接接受记录齐备。
+[M5-008 进入准备](M5-008_ENTRY_PLAN.md)不解除 live Gate；M5-001/002 保留 Human boundary，M5-008/004/005
 按各自 live/admission/case/Human dependencies 保持 BLOCKED。
 
 ## 9. 原始设计阶段的历史本地验证

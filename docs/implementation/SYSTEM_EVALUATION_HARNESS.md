@@ -9,7 +9,7 @@ H3 提供 synthetic 四臂执行、fresh Attempt 和执行后 replay；接口与
 H4a 提供 evaluation-owned actual evidence 与独立重算；H4b 增加有限 synthetic 格式的盲审、具名审查冻结和揭盲。其实施已由 PR96 合入，实际 push CI SUCCESS；接受边界见
 [H4c 进入记录](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-ENTRY-001/README.md)。PR104 已接受
 [H4c](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H4C_PACKET.md) 的 measurement association 和配对分析输入；
-[H5](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H5_PACKET.md) 的 PR106 已获具名 R2 接受并合入 develop@81a058b228a5da2a6f46192a954f62efc72895e3，M5-007 整体验收仍待定。所有记录保持
+[H5](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H5_PACKET.md) 的 PR106 已获具名 R2 接受并合入 develop@81a058b228a5da2a6f46192a954f62efc72895e3；M5-007 已按 PR122 的具名 owner 直接接受收口为 DONE，actual develop@b033c0535baded6dafcbea18f638fda58858ee92，见[完成记录](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_CLOSEOUT_RECEIPT.md)。所有记录保持
 `execution_authority=false`、`task_completion=false`，不改写 Manifest、Protocol 或 Runtime 契约。
 
 ## H1：冻结计划
